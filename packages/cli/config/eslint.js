@@ -14,14 +14,29 @@
  * limitations under the License.
  */
 
-import { Command } from 'commander';
-import { run } from '../../helpers/run';
-
-export default async (cmd: Command) => {
-  const args = ['lint', '--max-warnings=0', '--format=codeframe'];
-  if (cmd.fix) {
-    args.push('--fix');
-  }
-
-  await run('web-scripts', args);
+module.exports = {
+  extends: [
+    '@spotify/eslint-config-base',
+    '@spotify/eslint-config-react',
+    '@spotify/eslint-config-typescript',
+    'prettier',
+    'prettier/react',
+    'prettier/@typescript-eslint',
+    'plugin:jest/recommended',
+  ],
+  parser: '@typescript-eslint/parser',
+  plugins: ['notice'],
+  env: {
+    jest: true,
+  },
+  parserOptions: {
+    ecmaVersion: 2018,
+    sourceType: 'module',
+  },
+  settings: {
+    react: {
+      version: 'detect',
+    },
+  },
+  ignorePatterns: ['**/dist/**', '**/build/**'],
 };
