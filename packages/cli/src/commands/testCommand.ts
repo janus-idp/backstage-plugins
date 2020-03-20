@@ -14,19 +14,23 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { render } from '@testing-library/react';
-import ExampleComponent from './ExampleComponent';
-import { ThemeProvider } from '@material-ui/core';
-import { BackstageTheme } from '@spotify-backstage/core';
+import { Command } from 'commander';
+import { resolve as resolvePath } from 'path';
+import { run } from '../helpers/run';
 
-describe('ExampleComponent', () => {
-  it('should render', () => {
-    const rendered = render(
-      <ThemeProvider theme={BackstageTheme}>
-        <ExampleComponent />
-      </ThemeProvider>,
-    );
-    expect(rendered.getByText('Welcome to {{ id }}!')).toBeInTheDocument();
-  });
-});
+export default async (cmd: Command) => {
+  const args = [
+    'test',
+    '--config',
+    resolvePath(__dirname, '../../config/jest.js'),
+  ];
+
+  if (cmd.watch) {
+    args.push('--watch');
+  }
+  if (cmd.coverage) {
+    args.push('--coverage');
+  }
+
+  await run('web-scripts', args, { stdio: 'inherit' });
+};

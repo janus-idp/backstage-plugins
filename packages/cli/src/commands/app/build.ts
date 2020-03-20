@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-import { Command } from 'commander';
 import { run } from '../../helpers/run';
 
-export default async (cmd: Command) => {
-  const args = ['lint', '--max-warnings=0', '--format=codeframe'];
-  if (cmd.fix) {
-    args.push('--fix');
-  }
+export default async () => {
+  const args = ['build'];
 
-  await run('web-scripts', args);
+  await run('react-scripts', args, {
+    env: {
+      EXTEND_ESLINT: 'true',
+      SKIP_PREFLIGHT_CHECK: 'true',
+    },
+  });
 };
