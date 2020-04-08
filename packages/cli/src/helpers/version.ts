@@ -14,19 +14,13 @@
  * limitations under the License.
  */
 
-import { Command } from 'commander';
-import { run } from 'helpers/run';
-import { paths } from 'helpers/paths';
+import fs from 'fs-extra';
+import { paths } from './paths';
 
-export default async (cmd: Command) => {
-  const args = ['test', '--config', paths.resolveOwn('config/jest.js')];
+export function findVersion() {
+  const pkgContent = fs.readFileSync(paths.resolveOwn('package.json'), 'utf8');
+  return JSON.parse(pkgContent).version;
+}
 
-  if (cmd.watch) {
-    args.push('--watch');
-  }
-  if (cmd.coverage) {
-    args.push('--coverage');
-  }
-
-  await run('web-scripts', args, { stdio: 'inherit' });
-};
+export const version = findVersion();
+export const isDev = fs.pathExistsSync(paths.resolveOwn('src'));
