@@ -17,10 +17,8 @@
 module.exports = {
   extends: [
     '@spotify/eslint-config-base',
-    '@spotify/eslint-config-react',
     '@spotify/eslint-config-typescript',
     'prettier',
-    'prettier/react',
     'prettier/@typescript-eslint',
     'plugin:jest/recommended',
     'plugin:monorepo/recommended',
@@ -34,13 +32,10 @@ module.exports = {
     ecmaVersion: 2018,
     sourceType: 'module',
   },
-  settings: {
-    react: {
-      version: 'detect',
-    },
-  },
   ignorePatterns: ['**/dist/**', '**/build/**'],
   rules: {
+    'no-console': 0, // Permitted in console programs
+    'new-cap': ['error', { capIsNew: false }], // Because Express constructs things e.g. like 'const r = express.Router()'
     'import/no-duplicates': 'warn',
     'import/no-extraneous-dependencies': [
       'error',
@@ -59,13 +54,6 @@ module.exports = {
     ],
   },
   overrides: [
-    {
-      files: ['**/*.ts?(x)'],
-      rules: {
-        // Default to not enforcing prop-types in typescript
-        'react/prop-types': 0,
-      },
-    },
     {
       files: ['*.test.*', 'src/setupTests.*', 'dev/**'],
       rules: {
