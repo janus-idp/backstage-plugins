@@ -19,7 +19,7 @@ import { Command } from 'commander';
 
 export default async (cmd: Command) => {
   const waitForExit = await serveBundle({
-    entry: 'src/index',
+    entry: 'dev/index',
     checksEnabled: cmd.check,
   });
 

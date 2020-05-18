@@ -14,14 +14,4 @@
  * limitations under the License.
  */
 
-import { serveBundle } from '../../lib/bundler';
-import { Command } from 'commander';
-
-export default async (cmd: Command) => {
-  const waitForExit = await serveBundle({
-    entry: 'src/index',
-    checksEnabled: cmd.check,
-  });
-
-  await waitForExit();
-};
+export { buildPackage } from './packager';
