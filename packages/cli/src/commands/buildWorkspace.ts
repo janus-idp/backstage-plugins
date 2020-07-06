@@ -14,6 +14,16 @@
  * limitations under the License.
  */
 
-import '@testing-library/jest-dom';
+import fs from 'fs-extra';
+import { Command } from 'commander';
+import { createDistWorkspace } from '../lib/packager';
 
-require('jest-fetch-mock').enableMocks();
+export default async (dir: string, _cmd: Command, packages: string[]) => {
+  if (!(await fs.pathExists(dir))) {
+    throw new Error(`Target workspace directory doesn't exist, '${dir}'`);
+  }
+
+  await createDistWorkspace(packages, {
+    targetDir: dir,
+  });
+};
