@@ -18,17 +18,20 @@ import { Command } from 'commander';
 import { loadConfig } from '@backstage/config-loader';
 import { ConfigReader } from '@backstage/config';
 import { paths } from '../../lib/paths';
-import { buildBundle } from '../../lib/bundler';
+import { stringify as stringifyYaml } from 'yaml';
 
 export default async (cmd: Command) => {
   const appConfigs = await loadConfig({
-    env: process.env.NODE_ENV ?? 'production',
+    env: cmd.env ?? process.env.NODE_ENV ?? 'development',
+    shouldReadSecrets: cmd.withSecrets ?? false,
     rootPaths: [paths.targetRoot, paths.targetDir],
   });
-  await buildBundle({
-    entry: 'src/index',
-    statsJsonEnabled: cmd.stats,
-    config: ConfigReader.fromConfigs(appConfigs),
-    appConfigs,
-  });
+
+  const flatConfig = ConfigReader.fromConfigs(appConfigs).get();
+
+  if (cmd.format === 'json') {
+    process.stdout.write(`${JSON.stringify(flatConfig, null, 2)}\n`);
+  } else {
+    process.stdout.write(`${stringifyYaml(flatConfig)}\n`);
+  }
 };
