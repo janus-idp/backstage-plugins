@@ -13,15 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+export const pluginsFileContent = `    
+export { plugin as WelcomePlugin } from '@backstage/plugin-welcome';
+export { plugin as LighthousePlugin } from '@backstage/plugin-lighthouse';`;
 
-import { Command } from 'commander';
-import { buildBundle } from '../../lib/bundler';
-import { loadCliConfig } from '../../lib/config';
+export const codeownersFileContent = `
+*                                           @spotify/backstage-core
+/docs/features/techdocs                     @spotify/techdocs-core
+/plugins/cost-insights                      @spotify/silver-lining
+`;
 
-export default async (cmd: Command) => {
-  await buildBundle({
-    entry: 'dev/index',
-    statsJsonEnabled: cmd.stats,
-    ...(await loadCliConfig(cmd.config)),
-  });
+export const packageFileContent = {
+  name: 'example-app',
+  version: '0.1.1',
+  dependencies: {},
+  devDependencies: {},
+  scripts: {},
 };
