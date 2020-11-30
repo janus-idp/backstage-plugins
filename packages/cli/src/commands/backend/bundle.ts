@@ -14,22 +14,26 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
 import { Command } from 'commander';
-import { buildBundle } from '../../lib/bundler';
-import { parseParallel, PARALLEL_ENV_VAR } from '../../lib/parallel';
-import { loadCliConfig } from '../../lib/config';
+import fs from 'fs-extra';
+import { createDistWorkspace } from '../../lib/packager';
 import { paths } from '../../lib/paths';
+import { parseParallel, PARALLEL_ENV_VAR } from '../../lib/parallel';
+
+const PKG_PATH = 'package.json';
+const TARGET_DIR = 'dist-workspace';
 
 export default async (cmd: Command) => {
-  const { name } = await fs.readJson(paths.resolveTarget('package.json'));
-  await buildBundle({
-    entry: 'src/index',
+  const targetDir = paths.resolveTarget(TARGET_DIR);
+  const pkgPath = paths.resolveTarget(PKG_PATH);
+  const pkg = await fs.readJson(pkgPath);
+
+  await fs.remove(targetDir);
+  await fs.mkdir(targetDir);
+  await createDistWorkspace([pkg.name], {
+    targetDir: targetDir,
+    buildDependencies: Boolean(cmd.build),
     parallel: parseParallel(process.env[PARALLEL_ENV_VAR]),
-    statsJsonEnabled: cmd.stats,
-    ...(await loadCliConfig({
-      args: cmd.config,
-      fromPackage: name,
-    })),
+    skeleton: 'skeleton.tar',
   });
 };
