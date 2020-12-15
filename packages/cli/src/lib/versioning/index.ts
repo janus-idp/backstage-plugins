@@ -14,22 +14,5 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
-import { Command } from 'commander';
-import { serveBundle } from '../../lib/bundler';
-import { loadCliConfig } from '../../lib/config';
-import { paths } from '../../lib/paths';
-
-export default async (cmd: Command) => {
-  const { name } = await fs.readJson(paths.resolveTarget('package.json'));
-  const waitForExit = await serveBundle({
-    entry: 'dev/index',
-    checksEnabled: cmd.check,
-    ...(await loadCliConfig({
-      args: cmd.config,
-      fromPackage: name,
-    })),
-  });
-
-  await waitForExit();
-};
+export { Lockfile } from './Lockfile';
+export { fetchPackageInfo, mapDependencies } from './packages';

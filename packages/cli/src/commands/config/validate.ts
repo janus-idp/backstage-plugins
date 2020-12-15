@@ -15,13 +15,11 @@
  */
 
 import { Command } from 'commander';
-import { buildBundle } from '../../lib/bundler';
 import { loadCliConfig } from '../../lib/config';
 
 export default async (cmd: Command) => {
-  await buildBundle({
-    entry: 'dev/index',
-    statsJsonEnabled: cmd.stats,
-    ...(await loadCliConfig(cmd.config)),
+  await loadCliConfig({
+    args: cmd.config,
+    fromPackage: cmd.package,
   });
 };
