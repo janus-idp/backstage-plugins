@@ -14,22 +14,12 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
 import { Command } from 'commander';
-import { buildBundle } from '../../lib/bundler';
-import { parseParallel, PARALLEL_ENV_VAR } from '../../lib/parallel';
 import { loadCliConfig } from '../../lib/config';
-import { paths } from '../../lib/paths';
 
 export default async (cmd: Command) => {
-  const { name } = await fs.readJson(paths.resolveTarget('package.json'));
-  await buildBundle({
-    entry: 'src/index',
-    parallel: parseParallel(process.env[PARALLEL_ENV_VAR]),
-    statsJsonEnabled: cmd.stats,
-    ...(await loadCliConfig({
-      args: cmd.config,
-      fromPackage: name,
-    })),
+  await loadCliConfig({
+    args: cmd.config,
+    fromPackage: cmd.package,
   });
 };
