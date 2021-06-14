@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,27 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
+import { JsonObject } from '@backstage/config';
+import { mergeConfigSchemas } from '@backstage/config-loader';
 import { Command } from 'commander';
-import { buildBundle } from '../../lib/bundler';
-import { parseParallel, PARALLEL_ENV_VAR } from '../../lib/parallel';
+import { JSONSchema7 as JSONSchema } from 'json-schema';
+import openBrowser from 'react-dev-utils/openBrowser';
 import { loadCliConfig } from '../../lib/config';
-import { paths } from '../../lib/paths';
+
+const DOCS_URL = 'https://config.backstage.io';
 
 export default async (cmd: Command) => {
-  const { name } = await fs.readJson(paths.resolveTarget('package.json'));
-  await buildBundle({
-    entry: 'src/index',
-    parallel: parseParallel(process.env[PARALLEL_ENV_VAR]),
-    statsJsonEnabled: cmd.stats,
-    ...(await loadCliConfig({
-      args: cmd.config,
-      fromPackage: name,
-      mockEnv: cmd.lax,
-    })),
+  const { schema: appSchemas } = await loadCliConfig({
+    args: [],
+    fromPackage: cmd.package,
+    mockEnv: true,
   });
+
+  const schema = mergeConfigSchemas(
+    (appSchemas.serialize().schemas as JsonObject[]).map(
+      _ => _.value as JSONSchema,
+    ),
+  );
+
+  openBrowser(`${DOCS_URL}#schema=${JSON.stringify(schema)}`);
 };
