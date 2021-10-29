@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-throw new Error(
-  'The ./jestEsmTransform.js transform has been removed, switch to using ./jestSucraseTransform.js instead',
-);
+export { appRoute } from './appRoute';
+export { dependencies } from './dependencies';
+export { message } from './message';
