@@ -118,6 +118,9 @@ export const TektonDashboardFetchComponent = () => {
   const config = useApi(configApiRef)
   const { entity } = useEntity();
   const tektonBuildNamespace = entity?.metadata.annotations?.[TEKTON_PIPELINES_BUILD_NAMESPACE] ?? '';
+  if (!tektonBuildNamespace) {
+    throw new Error("The field 'metadata.annotations.tektonci' is missing.");
+  }
   const backendUrl = config.getString('backend.baseUrl')
 
   const { value, loading, error } = useAsync(async (): Promise<PipelineRun[]> => {

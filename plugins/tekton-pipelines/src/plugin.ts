@@ -17,6 +17,12 @@ import { createPlugin, createRoutableExtension } from '@backstage/core-plugin-ap
 
 import { rootRouteRef } from './routes';
 
+import { Entity } from '@backstage/catalog-model';
+
+export const TEKTON_PIPELINES_BUILD_NAMESPACE = 'tektonci/build-namespace';
+
+export const isTektonCiAvailable = (entity: Entity) =>Boolean(entity?.metadata.annotations?.[TEKTON_PIPELINES_BUILD_NAMESPACE]);
+
 export const tektonPipelinesPluginPlugin = createPlugin({
   id: 'tekton-pipelines-plugin',
   routes: {
