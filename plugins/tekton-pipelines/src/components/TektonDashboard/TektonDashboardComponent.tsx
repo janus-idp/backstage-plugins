@@ -27,7 +27,7 @@ import { TektonDashboardFetchComponent } from '../TektonDashboardFetchComponent'
 
 export const TektonDashboardComponent = () => (
   <Page themeId="tool">
-    <Header title="Welcome to tekton-pipelines-plugin!" subtitle="CI/CD">
+    <Header title="Tekton Pipelines" subtitle="CI/CD">
       <HeaderLabel label="Owner" value="Team X" />
       <HeaderLabel label="Lifecycle" value="Alpha" />
     </Header>

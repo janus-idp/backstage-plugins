@@ -20,6 +20,7 @@ import Alert from '@material-ui/lab/Alert';
 import useAsync from 'react-use/lib/useAsync';
 import { Typography, Box } from '@material-ui/core';
 import { configApiRef, useApi } from '@backstage/core-plugin-api'
+import { useEntity } from '@backstage/plugin-catalog-react'
 
 
 interface PipelineRun {
@@ -45,6 +46,9 @@ type DenseTableProps = {
   pipelineruns: PipelineRun[];
 };
 
+
+export const TEKTON_PIPELINES_BUILD_NAMESPACE = 'tektonci/build-namespace';
+
 function getStatusComponent(status: string | undefined = '') {
     if (status == 'Created') {
       return <StatusPending />;
@@ -69,11 +73,6 @@ function getStatusComponent(status: string | undefined = '') {
 
 };
 
-/*
-export type CITableBuildInfo = {
-  status: string;
-};
-*/
 
 export const DenseTable = ({ pipelineruns }: DenseTableProps) => {
 
@@ -101,7 +100,7 @@ export const DenseTable = ({ pipelineruns }: DenseTableProps) => {
 
   return (
     <Table
-      title="PipelineRun List (fetching data from tekton)"
+      title="List of PipelineRun resources"
       options={{ search: false, paging: false }}
       columns={columns}
       data={data}
@@ -117,6 +116,8 @@ fetch(`${backendUrl}/frobs-aggregator/summary`)
 
 export const TektonDashboardFetchComponent = () => {
   const config = useApi(configApiRef)
+  const { entity } = useEntity();
+  const tektonBuildNamespace = entity?.metadata.annotations?.[TEKTON_PIPELINES_BUILD_NAMESPACE] ?? '';
   const backendUrl = config.getString('backend.baseUrl')
 
   const { value, loading, error } = useAsync(async (): Promise<PipelineRun[]> => {
@@ -125,8 +126,8 @@ export const TektonDashboardFetchComponent = () => {
                                   headers: new Headers({
                                     'Accept': 'application/json'
                                 })    
-    */
-    const response = await fetch(`${backendUrl}/api/tekton/pipelineruns?namespace=sample-go-application-build`, {                                  
+    */   
+    const response = await fetch(`${backendUrl}/api/tekton/pipelineruns?namespace=${tektonBuildNamespace}`, {                                  
       headers: new Headers({
         'Accept': 'application/json'
     })    
