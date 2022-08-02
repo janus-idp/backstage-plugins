@@ -33,7 +33,7 @@ export const TektonDashboardComponent = () => (
     </Header>
     <Content>
       <ContentHeader title="Tekton Pipelines">
-        <SupportButton>A description of your plugin goes here.</SupportButton>
+        <SupportButton>Tetkon Pipelines</SupportButton>
       </ContentHeader>
       <Grid container spacing={3} direction="column">
         <Grid item>

@@ -18,15 +18,15 @@ import React from 'react';
 import { Table, TableColumn, Progress, StatusError, StatusOK, StatusPending, StatusRunning, StatusWarning } from '@backstage/core-components';
 import Alert from '@material-ui/lab/Alert';
 import useAsync from 'react-use/lib/useAsync';
-import { Typography, Box } from '@material-ui/core';
+import { Typography, Box} from '@material-ui/core';
 import { configApiRef, useApi } from '@backstage/core-plugin-api'
 import { useEntity } from '@backstage/plugin-catalog-react'
-
 
 interface PipelineRun {
   metadata: {
     name: string; 
     namespace: string; 
+    labels: Array<string>;
   }
   status: {
     conditions: [
@@ -48,6 +48,7 @@ type DenseTableProps = {
 
 
 export const TEKTON_PIPELINES_BUILD_NAMESPACE = 'tektonci/build-namespace';
+export const TEKTON_PIPELINES_LABEL_SELECTOR = "tektonci/pipeline-label-selector";
 
 function getStatusComponent(status: string | undefined = '') {
     if (status == 'Created') {
@@ -87,50 +88,43 @@ export const DenseTable = ({ pipelineruns }: DenseTableProps) => {
         <Typography variant="button">{condition.status}</Typography>
       </Box>
     ),
-    },    
+    },   
   ];
 
   const data = pipelineruns.map(pipelinerun => {
     return {
       name: pipelinerun.metadata.name,
       namespace: pipelinerun.metadata.namespace,
-      status: pipelinerun.status.conditions.map(condition => condition.reason)
+      status: pipelinerun.status.conditions.map(condition => condition.reason),
     };
   });
 
+  
   return (
     <Table
       title="List of PipelineRun resources"
-      options={{ search: false, paging: false }}
+      options={{ search: false, paging: true }}
       columns={columns}
       data={data}
-    />
+    />    
   );
+  
+  
 };
-
-/*
-fetch(`${backendUrl}/frobs-aggregator/summary`)
-  .then(response => response.json())
-  .then(payload => setSummary(payload as FrobSummary));
-*/
 
 export const TektonDashboardFetchComponent = () => {
   const config = useApi(configApiRef)
   const { entity } = useEntity();
   const tektonBuildNamespace = entity?.metadata.annotations?.[TEKTON_PIPELINES_BUILD_NAMESPACE] ?? '';
+  const tektonLabelSelector = entity?.metadata.annotations?.[TEKTON_PIPELINES_LABEL_SELECTOR] ?? '';
   if (!tektonBuildNamespace) {
-    throw new Error("The field 'metadata.annotations.tektonci' is missing.");
+    throw new Error("The field 'metadata.annotations.tektonci/build-namespace' is missing.");
   }
+
   const backendUrl = config.getString('backend.baseUrl')
 
   const { value, loading, error } = useAsync(async (): Promise<PipelineRun[]> => {
-    /*    
-    const response = await fetch(`${backendUrl}/tekton-pipelines-backend/pipelineruns?namespace=sample-go-application-build`, {                                  
-                                  headers: new Headers({
-                                    'Accept': 'application/json'
-                                })    
-    */   
-    const response = await fetch(`${backendUrl}/api/tekton/pipelineruns?namespace=${tektonBuildNamespace}`, {                                  
+    const response = await fetch(`${backendUrl}/api/tekton/pipelineruns?namespace=${tektonBuildNamespace}&selector=${tektonLabelSelector}`, {                                  
       headers: new Headers({
         'Accept': 'application/json'
     })    
