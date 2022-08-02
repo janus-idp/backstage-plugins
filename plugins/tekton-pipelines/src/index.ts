@@ -13,4 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { tektonPipelinesPluginPlugin, TektonPipelinesPluginPage, isTektonCiAvailable } from './plugin';
+export { tektonPipelinesPluginPlugin, TektonPipelinesPluginPage } from './plugin';
+export { isTektonCiAvailable } from './Router';
