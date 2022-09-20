@@ -32,8 +32,8 @@ export const TektonDashboardComponent = () => (
       <HeaderLabel label="Lifecycle" value="Alpha" />
     </Header>
     <Content>
-      <ContentHeader title="Tekton Pipelines">
-        <SupportButton>Tetkon Pipelines</SupportButton>
+      <ContentHeader title="PipelineRuns">
+        <SupportButton>PipelineRuns</SupportButton>
       </ContentHeader>
       <Grid container spacing={3} direction="column">
         <Grid item>

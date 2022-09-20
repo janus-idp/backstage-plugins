@@ -15,12 +15,14 @@ curl -s https://rancher.jquad.rocks/apis/tekton.dev/v1beta1/namespaces/sample-go
  * limitations under the License.
  */
 import React from 'react';
-import { Table, TableColumn, Progress, StatusError, StatusOK, StatusPending, StatusRunning, StatusWarning } from '@backstage/core-components';
+import {Progress, StatusError, StatusOK, StatusPending, StatusRunning, StatusWarning } from '@backstage/core-components';
 import Alert from '@material-ui/lab/Alert';
 import useAsync from 'react-use/lib/useAsync';
-import { Typography, Box} from '@material-ui/core';
+import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
+import { Table, Typography, Box, TableContainer, TableBody, TableRow, TableCell, IconButton, Collapse, TableHead, Paper } from '@material-ui/core';
 import { configApiRef, useApi } from '@backstage/core-plugin-api'
 import { useEntity } from '@backstage/plugin-catalog-react'
+
 
 interface PipelineRun {
   metadata: {
@@ -28,10 +30,30 @@ interface PipelineRun {
     namespace: string; 
     labels: Array<string>;
   }
+
+  pipelineRunDashboardUrl: string;
+
+  taskRuns: Array<TaskRun>;
+
   status: {
     conditions: [
       Condition
     ]
+  }
+
+}
+
+interface TaskRun {
+  metadata: {
+    name: string; 
+    namespace: string;
+    labels: Array<string>;
+  }
+  status: {
+    conditions: [
+      Condition
+    ]
+    startTime: Date
   }
 }
 
@@ -49,6 +71,64 @@ type DenseTableProps = {
 
 export const TEKTON_PIPELINES_BUILD_NAMESPACE = 'tektonci/build-namespace';
 export const TEKTON_PIPELINES_LABEL_SELECTOR = "tektonci/pipeline-label-selector";
+
+function Row(props: { pipelineRun: PipelineRun }) {
+  const { pipelineRun } = props;
+  const [open, setOpen] = React.useState(false);
+  
+  return (  
+    <React.Fragment>
+      <TableRow>
+        <TableCell>
+          <IconButton
+            aria-label="expand row"
+            size="small"
+            onClick={() => setOpen(!open)}
+          >
+            {open ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+          </IconButton>
+        </TableCell>
+        <TableCell component="th" scope="row">
+          {pipelineRun.metadata.name}
+        </TableCell>
+        <TableCell align="right">{pipelineRun.metadata.namespace}</TableCell>
+        <TableCell align="right">{pipelineRun.status.conditions[0].reason}</TableCell>
+        <TableCell align="right"><a href={pipelineRun.pipelineRunDashboardUrl} target="_blank">Link</a></TableCell>
+      </TableRow>
+      <TableRow>
+        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+          <Collapse in={open} timeout="auto" unmountOnExit>
+            <Box sx={{ margin: 1 }}>
+              <Typography variant="h6" gutterBottom component="div">
+                TaskRuns
+              </Typography>
+              <Table size="small" aria-label="taskruns">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Name</TableCell>
+                    <TableCell>Status</TableCell>
+                  </TableRow>
+                </TableHead>                
+                <TableBody>
+                  {pipelineRun.taskRuns !== undefined && 
+                  pipelineRun.taskRuns.map((taskRunRow) => (
+                    <TableRow key={taskRunRow.metadata.name}>
+                      <TableCell component="th" scope="row">
+                        {taskRunRow.metadata.name}
+                      </TableCell>
+                      <TableCell>{taskRunRow.status.conditions[0].reason}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>           
+              </Table>
+            </Box>
+          </Collapse>
+        </TableCell>
+      </TableRow>
+    </React.Fragment>
+  );
+}
+
 
 function getStatusComponent(status: string | undefined = '') {
     if (status == 'Created') {
@@ -74,43 +154,30 @@ function getStatusComponent(status: string | undefined = '') {
 
 };
 
+export const CollapsibleTable = ({ pipelineruns }: DenseTableProps) => { 
 
-export const DenseTable = ({ pipelineruns }: DenseTableProps) => {
-
-  const columns: TableColumn[] = [
-    { title: 'Name', field: 'name' },
-    { title: 'Namespace', field: 'namespace' },
-    { title: 'Status', field: 'status',
-    render: (condition: Partial<Condition>) => (
-      <Box display="flex" alignItems="center">
-        {getStatusComponent(condition.status)}
-        <Box mr={1} />
-        <Typography variant="button">{condition.status}</Typography>
-      </Box>
-    ),
-    },   
-  ];
-
-  const data = pipelineruns.map(pipelinerun => {
-    return {
-      name: pipelinerun.metadata.name,
-      namespace: pipelinerun.metadata.namespace,
-      status: pipelinerun.status.conditions.map(condition => condition.reason),
-    };
-  });
-
-  
   return (
-    <Table
-      title="List of PipelineRun resources"
-      options={{ search: false, paging: true }}
-      columns={columns}
-      data={data}
-    />    
+    <TableContainer component={Paper}>
+      <Table aria-label="collapsible table">
+        <TableHead>
+          <TableRow>
+            <TableCell />
+            <TableCell>Name</TableCell>
+            <TableCell align="right">Namespace</TableCell>
+            <TableCell align="right">Status</TableCell>
+            <TableCell align="right">Dashboard</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {pipelineruns.map((pipelineRun) => (
+            <Row key={pipelineRun.metadata.name} pipelineRun={pipelineRun} />
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
-  
-  
-};
+}
+
 
 export const TektonDashboardFetchComponent = () => {
   const config = useApi(configApiRef)
@@ -135,11 +202,12 @@ export const TektonDashboardFetchComponent = () => {
     return data;
   }, []);
 
+
   if (loading) {
     return <Progress />;
   } else if (error) {
     return <Alert severity="error">{error.message}</Alert>;
   }
 
-  return <DenseTable pipelineruns={value || []} />;
+  return <CollapsibleTable pipelineruns={value || []} />;
 };
