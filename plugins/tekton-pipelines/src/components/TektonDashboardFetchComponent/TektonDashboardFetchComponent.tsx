@@ -39,6 +39,10 @@ interface PipelineRun {
     conditions: [
       Condition
     ]
+    startTime: Date
+    completionTime: Date
+    duration: number
+    durationString: string
   }
 
 }
@@ -52,8 +56,11 @@ interface TaskRun {
   status: {
     conditions: [
       Condition
-    ]
+    ],
     startTime: Date
+    completionTime: Date
+    duration: number
+    durationString: string
   }
 }
 
@@ -93,6 +100,8 @@ function Row(props: { pipelineRun: PipelineRun }) {
         </TableCell>
         <TableCell align="right">{pipelineRun.metadata.namespace}</TableCell>
         <TableCell align="right">{pipelineRun.status.conditions[0].reason}</TableCell>
+        <TableCell align="right">{pipelineRun.status.startTime}</TableCell>
+        <TableCell align="right">{pipelineRun.status.durationString}</TableCell>
         <TableCell align="right"><a href={pipelineRun.pipelineRunDashboardUrl} target="_blank">Link</a></TableCell>
       </TableRow>
       <TableRow>
@@ -107,6 +116,8 @@ function Row(props: { pipelineRun: PipelineRun }) {
                   <TableRow>
                     <TableCell>Name</TableCell>
                     <TableCell>Status</TableCell>
+                    <TableCell>Start Time</TableCell>
+                    <TableCell>Duration</TableCell>
                   </TableRow>
                 </TableHead>                
                 <TableBody>
@@ -117,6 +128,8 @@ function Row(props: { pipelineRun: PipelineRun }) {
                         {taskRunRow.metadata.name}
                       </TableCell>
                       <TableCell>{taskRunRow.status.conditions[0].reason}</TableCell>
+                      <TableCell>{taskRunRow.status.startTime}</TableCell>
+                      <TableCell>{taskRunRow.status.durationString}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>           
@@ -165,6 +178,8 @@ export const CollapsibleTable = ({ pipelineruns }: DenseTableProps) => {
             <TableCell>Name</TableCell>
             <TableCell align="right">Namespace</TableCell>
             <TableCell align="right">Status</TableCell>
+            <TableCell align="right">Start Time</TableCell>
+            <TableCell align="right">Duration</TableCell>
             <TableCell align="right">Dashboard</TableCell>
           </TableRow>
         </TableHead>
