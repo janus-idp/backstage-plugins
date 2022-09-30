@@ -19,9 +19,10 @@ import {Progress, StatusError, StatusOK, StatusPending, StatusRunning, StatusWar
 import Alert from '@material-ui/lab/Alert';
 import useAsync from 'react-use/lib/useAsync';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
-import { Table, Typography, Box, TableContainer, TableBody, TableRow, TableCell, IconButton, Collapse, TableHead, Paper } from '@material-ui/core';
+import { Table, Typography, Box, TableContainer, TableBody, TableRow, TableCell, IconButton, Collapse, TableHead, Paper, Button, ListItem, List, ListItemIcon, Divider, SwipeableDrawer, TextField } from '@material-ui/core';
 import { configApiRef, useApi } from '@backstage/core-plugin-api'
 import { useEntity } from '@backstage/plugin-catalog-react'
+import { Skeleton } from '@material-ui/lab';
 
 
 interface PipelineRun {
@@ -62,6 +63,7 @@ interface TaskRun {
     duration: number
     durationString: string
   }
+  log: string;
 }
 
 interface Condition {
@@ -79,9 +81,82 @@ type DenseTableProps = {
 export const TEKTON_PIPELINES_BUILD_NAMESPACE = 'tektonci/build-namespace';
 export const TEKTON_PIPELINES_LABEL_SELECTOR = "tektonci/pipeline-label-selector";
 
+type Anchor = 'top' | 'left' | 'bottom' | 'right';
+
+function SwipeableTemporaryDrawer() {
+  const [state, setState] = React.useState({
+    right: false,
+  });
+
+  const toggleDrawer =
+    (anchor: Anchor, open: boolean) =>
+    (event: React.KeyboardEvent | React.MouseEvent) => {
+      if (
+        event &&
+        event.type === 'keydown' &&
+        ((event as React.KeyboardEvent).key === 'Tab' ||
+          (event as React.KeyboardEvent).key === 'Shift')
+      ) {
+        return;
+      }
+
+      setState({ ...state, [anchor]: open });
+    };
+
+  const list = (anchor: Anchor) => (
+    <Box
+      sx={{ width: anchor === 'top' || anchor === 'bottom' ? 'auto' : 250 }}
+      role="presentation"
+      onClick={toggleDrawer(anchor, false)}
+      onKeyDown={toggleDrawer(anchor, false)}
+    >
+      <List>
+        {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
+          <ListItem key={text}>
+            <Button>
+              {text}
+            </Button>
+          </ListItem>
+        ))}
+      </List>
+    </Box>
+  );
+
+  return (
+    <div>
+      {(['right'] as const).map((anchor) => (
+        <React.Fragment key={anchor}>
+          <Button onClick={toggleDrawer(anchor, true)}>{anchor}</Button>
+          <SwipeableDrawer
+            anchor={anchor}
+            open={state[anchor]}
+            onClose={toggleDrawer(anchor, false)}
+            onOpen={toggleDrawer(anchor, true)}
+          >
+            {list(anchor)}
+          </SwipeableDrawer>
+        </React.Fragment>
+      ))}
+    </div>
+  );
+}
+
+
 function Row(props: { pipelineRun: PipelineRun }) {
   const { pipelineRun } = props;
   const [open, setOpen] = React.useState(false);
+  const [openDrawer, setOpenDrawer] = React.useState(false)
+  /*
+  const toggleDrawer = (newOpen: boolean) => () => {
+    setOpenDrawer(newOpen);
+  };
+  */
+  /*
+  const showAlert = (a: string) => {
+    alert(a);
+  }
+  */
+
   
   return (  
     <React.Fragment>
@@ -118,6 +193,7 @@ function Row(props: { pipelineRun: PipelineRun }) {
                     <TableCell>Status</TableCell>
                     <TableCell>Start Time</TableCell>
                     <TableCell>Duration</TableCell>
+                    <TableCell>Logs</TableCell>
                   </TableRow>
                 </TableHead>                
                 <TableBody>
@@ -130,6 +206,24 @@ function Row(props: { pipelineRun: PipelineRun }) {
                       <TableCell>{taskRunRow.status.conditions[0].reason}</TableCell>
                       <TableCell>{taskRunRow.status.startTime}</TableCell>
                       <TableCell>{taskRunRow.status.durationString}</TableCell>
+                      <TableCell>
+                      <Button variant="outlined" onClick={() => setOpenDrawer(true)}>Show log</Button>
+                      {openDrawer && (<SwipeableDrawer
+                              anchor="bottom"
+                              open={open}
+                              onClose={() => setOpenDrawer(false)}
+                              onOpen={() => setOpenDrawer(true)}
+                              disableSwipeToOpen={false}
+                              ModalProps={{
+                                keepMounted: true,
+                              }}
+                            >
+                              <Box>                               
+                                {taskRunRow.log}
+                              </Box>
+                        </SwipeableDrawer>
+                      )}
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>           
