@@ -58,12 +58,28 @@ interface TaskRun {
     conditions: [
       Condition
     ],
-    startTime: Date
-    completionTime: Date
-    duration: number
-    durationString: string
+    podName: string;
+    steps: Array<Step>;
+    startTime: Date;
+    completionTime: Date;
+    duration: number;
+    durationString: string;
   }
+}
+
+interface Step {
+  container: string;
+  name: string;
+  terminated: Terminated;
   log: string;
+}
+
+interface Terminated {
+  startTime: Date
+  completionTime: Date
+  duration: number
+  durationString: string  
+  reason: string
 }
 
 interface Condition {
@@ -218,9 +234,9 @@ function Row(props: { pipelineRun: PipelineRun }) {
                                 keepMounted: true,
                               }}
                             >
-                              <Box>                               
-                                {taskRunRow.log}
-                              </Box>
+                            <Box>
+                              {taskRunRow.status.steps[0].name}
+                            </Box>
                         </SwipeableDrawer>
                       )}
                       </TableCell>
