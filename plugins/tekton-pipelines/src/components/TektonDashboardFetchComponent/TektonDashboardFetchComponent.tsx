@@ -14,15 +14,14 @@ curl -s https://rancher.jquad.rocks/apis/tekton.dev/v1beta1/namespaces/sample-go
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import React, { Fragment } from 'react';
 import {Progress, StatusError, StatusOK, StatusPending, StatusRunning, StatusWarning } from '@backstage/core-components';
 import Alert from '@material-ui/lab/Alert';
 import useAsync from 'react-use/lib/useAsync';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@material-ui/icons';
-import { Table, Typography, Box, TableContainer, TableBody, TableRow, TableCell, IconButton, Collapse, TableHead, Paper, Button, ListItem, List, ListItemIcon, Divider, SwipeableDrawer, TextField } from '@material-ui/core';
+import { Table, Typography, Box, TableContainer, TableBody, TableRow, TableCell, IconButton, Collapse, TableHead, Paper, Button, SwipeableDrawer, Divider } from '@material-ui/core';
 import { configApiRef, useApi } from '@backstage/core-plugin-api'
 import { useEntity } from '@backstage/plugin-catalog-react'
-import { Skeleton } from '@material-ui/lab';
 
 
 interface PipelineRun {
@@ -75,8 +74,8 @@ interface Step {
 }
 
 interface Terminated {
-  startTime: Date
-  completionTime: Date
+  startedAt: Date
+  finishedAt: Date
   duration: number
   durationString: string  
   reason: string
@@ -99,13 +98,54 @@ export const TEKTON_PIPELINES_LABEL_SELECTOR = "tektonci/pipeline-label-selector
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
-function SwipeableTemporaryDrawer() {
+function NewlineText(props: { text: string; }): JSX.Element {
+  const text = props.text;
+  const newText = text.split('\n').map(str => <p>{str}</p>);
+  
+  return (
+    <Box>{newText}</Box>
+  );
+}
+
+function StatusComponent(props: { reason: string; }): JSX.Element {
+  if (props.reason == 'Created') {
+    return <StatusPending />;
+  } else
+  if (props.reason == 'Running') {
+    return <StatusRunning />;
+  } else
+  if (props.reason == 'Completed') {
+    return <StatusOK />;
+  } else
+  if (props.reason == 'Succeeded') {
+    return <StatusOK />;
+  } else
+  if (props.reason == 'PipelineRunCancelled') {
+    return <StatusWarning />;
+  } else
+  if (props.reason == 'Failed') {
+    return <StatusError />;      
+  } 
+  if (props.reason == 'Error') {
+    return <StatusError />;      
+  } else {
+    return <StatusPending />;
+  }
+}
+
+function Row(props: { pipelineRun: PipelineRun }) {
+  const { pipelineRun } = props;
+  const [open, setOpen] = React.useState(false);
+  
   const [state, setState] = React.useState({
-    right: false,
+    bottom: false,
+    logValue: "",
   });
+ 
+ const anchor: Anchor = 'bottom';
 
   const toggleDrawer =
-    (anchor: Anchor, open: boolean) =>
+    (anchor: Anchor, open: boolean, logValue: string) =>
     (event: React.KeyboardEvent | React.MouseEvent) => {
       if (
         event &&
@@ -115,65 +155,10 @@ function SwipeableTemporaryDrawer() {
       ) {
         return;
       }
-
+      state.logValue = logValue
       setState({ ...state, [anchor]: open });
     };
 
-  const list = (anchor: Anchor) => (
-    <Box
-      sx={{ width: anchor === 'top' || anchor === 'bottom' ? 'auto' : 250 }}
-      role="presentation"
-      onClick={toggleDrawer(anchor, false)}
-      onKeyDown={toggleDrawer(anchor, false)}
-    >
-      <List>
-        {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-          <ListItem key={text}>
-            <Button>
-              {text}
-            </Button>
-          </ListItem>
-        ))}
-      </List>
-    </Box>
-  );
-
-  return (
-    <div>
-      {(['right'] as const).map((anchor) => (
-        <React.Fragment key={anchor}>
-          <Button onClick={toggleDrawer(anchor, true)}>{anchor}</Button>
-          <SwipeableDrawer
-            anchor={anchor}
-            open={state[anchor]}
-            onClose={toggleDrawer(anchor, false)}
-            onOpen={toggleDrawer(anchor, true)}
-          >
-            {list(anchor)}
-          </SwipeableDrawer>
-        </React.Fragment>
-      ))}
-    </div>
-  );
-}
-
-
-function Row(props: { pipelineRun: PipelineRun }) {
-  const { pipelineRun } = props;
-  const [open, setOpen] = React.useState(false);
-  const [openDrawer, setOpenDrawer] = React.useState(false)
-  /*
-  const toggleDrawer = (newOpen: boolean) => () => {
-    setOpenDrawer(newOpen);
-  };
-  */
-  /*
-  const showAlert = (a: string) => {
-    alert(a);
-  }
-  */
-
-  
   return (  
     <React.Fragment>
       <TableRow>
@@ -190,92 +175,75 @@ function Row(props: { pipelineRun: PipelineRun }) {
           {pipelineRun.metadata.name}
         </TableCell>
         <TableCell align="right">{pipelineRun.metadata.namespace}</TableCell>
-        <TableCell align="right">{pipelineRun.status.conditions[0].reason}</TableCell>
+        <TableCell align="right"><StatusComponent reason={pipelineRun.status.conditions[0].reason}/>{pipelineRun.status.conditions[0].reason}</TableCell>
         <TableCell align="right">{pipelineRun.status.startTime}</TableCell>
         <TableCell align="right">{pipelineRun.status.durationString}</TableCell>
         <TableCell align="right"><a href={pipelineRun.pipelineRunDashboardUrl} target="_blank">Link</a></TableCell>
       </TableRow>
-      <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box sx={{ margin: 1 }}>
-              <Typography variant="h6" gutterBottom component="div">
+      <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+      <Collapse in={open} timeout="auto" unmountOnExit>   
+      <Typography variant="h6" gutterBottom component="div">
                 TaskRuns
-              </Typography>
-              <Table size="small" aria-label="taskruns">
+      </Typography>
+      <Table size="small" aria-label="taskruns">
                 <TableHead>
                   <TableRow>
                     <TableCell>Name</TableCell>
+                    <TableCell>Step</TableCell>
                     <TableCell>Status</TableCell>
-                    <TableCell>Start Time</TableCell>
                     <TableCell>Duration</TableCell>
                     <TableCell>Logs</TableCell>
                   </TableRow>
-                </TableHead>                
+                </TableHead>                                         
                 <TableBody>
                   {pipelineRun.taskRuns !== undefined && 
                   pipelineRun.taskRuns.map((taskRunRow) => (
-                    <TableRow key={taskRunRow.metadata.name}>
-                      <TableCell component="th" scope="row">
-                        {taskRunRow.metadata.name}
-                      </TableCell>
-                      <TableCell>{taskRunRow.status.conditions[0].reason}</TableCell>
-                      <TableCell>{taskRunRow.status.startTime}</TableCell>
-                      <TableCell>{taskRunRow.status.durationString}</TableCell>
-                      <TableCell>
-                      <Button variant="outlined" onClick={() => setOpenDrawer(true)}>Show log</Button>
-                      {openDrawer && (<SwipeableDrawer
-                              anchor="bottom"
-                              open={open}
-                              onClose={() => setOpenDrawer(false)}
-                              onOpen={() => setOpenDrawer(true)}
-                              disableSwipeToOpen={false}
-                              ModalProps={{
-                                keepMounted: true,
-                              }}
-                            >
-                            <Box>
-                              {taskRunRow.status.steps[0].name}
-                            </Box>
-                        </SwipeableDrawer>
-                      )}
-                      </TableCell>
+                    <Fragment>
+                    <Divider></Divider>
+                    <TableRow key={taskRunRow.metadata.name} style={{ backgroundColor: "#1a1a1a" }}>
+                      <TableCell align="left" rowSpan={taskRunRow.status.steps.length + 1}>
+                        {taskRunRow.metadata.name}                        
+                      </TableCell>                                    
                     </TableRow>
-                  ))}
-                </TableBody>           
-              </Table>
-            </Box>
-          </Collapse>
-        </TableCell>
-      </TableRow>
+                      {taskRunRow.status.steps !== undefined && 
+                      taskRunRow.status.steps.map((step) => (
+                        <TableRow key={step.name} style={{ backgroundColor: "#1a1a1a" }}>     
+                          <TableCell>
+                            {step.name}
+                          </TableCell>                                                    
+                          <TableCell>
+                           <StatusComponent reason={step.terminated.reason}/>{step.terminated.reason}
+                          </TableCell>
+                          <TableCell>
+                            {step.terminated.durationString}
+                          </TableCell>                                                    
+                          <TableCell>
+                          <Button onClick={toggleDrawer(anchor, true, step.log)}>Show Log</Button>
+                        <SwipeableDrawer
+                          anchor={anchor}
+                          open={state[anchor]}
+                          onClose={toggleDrawer(anchor, false, "")}
+                          onOpen={toggleDrawer(anchor, true, step.log)}   
+                          
+                        >
+                        <Typography style={{ wordWrap: "break-word", width: "auto", margin: 10 }}>1
+                        <NewlineText text={state.logValue} />                                
+                        </Typography>
+                        </SwipeableDrawer>                        
+                          </TableCell>                                               
+                        </TableRow>
+                      ))}                 
+                      <Divider></Divider>                                                               
+                    </Fragment>
+                  ))}                  
+                </TableBody>
+                </Table> 
+                </Collapse>  
+      </TableCell>                        
     </React.Fragment>
   );
 }
 
-
-function getStatusComponent(status: string | undefined = '') {
-    if (status == 'Created') {
-      return <StatusPending />;
-    } else
-    if (status == 'Running') {
-      return <StatusRunning />;
-    } else
-    if (status == 'Completed') {
-      return <StatusOK />;
-    } else
-    if (status == 'Succeeded') {
-      return <StatusOK />;
-    } else
-    if (status == 'PipelineRunCancelled') {
-      return <StatusWarning />;
-    } else
-    if (status == 'Failed') {
-      return <StatusError />;      
-    } else {
-      return <StatusPending />;
-    }
-
-};
 
 export const CollapsibleTable = ({ pipelineruns }: DenseTableProps) => { 
 
