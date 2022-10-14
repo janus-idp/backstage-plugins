@@ -1,5 +1,4 @@
 /*
-curl -s https://rancher.jquad.rocks/apis/tekton.dev/v1beta1/namespaces/sample-go-aplication-build/pipelineruns --header "Authorization: Bearer token-ms7t6:lwsftplxxrll7wq4fnl5fl5t42l7pxfp2rnggr62cg4ml7ds5ckbh2" -v
  * Copyright 2022 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,7 +37,7 @@ interface PipelineRun {
   metadata: {
     name: string;
     namespace: string;
-    labels: Array<string>;
+    labels: Record<string, Label>;
   }
 
   pipelineRunDashboardUrl: string;
@@ -61,7 +60,7 @@ interface TaskRun {
   metadata: {
     name: string;
     namespace: string;
-    labels: Array<string>;
+    labels: Record<string, Label>;
   }
   status: {
     conditions: [
@@ -74,6 +73,11 @@ interface TaskRun {
     duration: number;
     durationString: string;
   }
+}
+
+interface Label {
+  key: string;
+  value: string;
 }
 
 interface Step {
@@ -221,6 +225,7 @@ function Row(props: { pipelineRun: PipelineRun }) {
         ) {
           return;
         }
+        
         state.logValue = logValue
         setState({ ...state, [anchor]: open });
       };
