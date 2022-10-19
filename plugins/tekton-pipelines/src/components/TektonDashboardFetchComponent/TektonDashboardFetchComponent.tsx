@@ -142,9 +142,9 @@ function StatusComponent(props: { reason: string; }): JSX.Element {
             }
   if (props.reason == 'Error') {
     return <StatusError />;
-  } else {
+  } 
     return <StatusPending />;
-  }
+  
 }
 
 function TablePaginationActions(props: TablePaginationActionsProps) {
@@ -270,7 +270,7 @@ function Row(props: { pipelineRun: PipelineRun }) {
               {pipelineRun.taskRuns !== undefined &&
                 pipelineRun.taskRuns.map((taskRunRow) => (
                   <Fragment>
-                    <Divider></Divider>
+                    <Divider />
                     <TableRow key={taskRunRow.metadata.name} style={{ backgroundColor: "#1a1a1a" }}>
                       <TableCell align="left" rowSpan={taskRunRow.status.steps.length + 1}>
                         {taskRunRow.metadata.name}
@@ -304,7 +304,7 @@ function Row(props: { pipelineRun: PipelineRun }) {
                           </TableCell>
                         </TableRow>
                       ))}
-                    <Divider></Divider>
+                    <Divider />
                   </Fragment>
                 ))}
             </TableBody>
