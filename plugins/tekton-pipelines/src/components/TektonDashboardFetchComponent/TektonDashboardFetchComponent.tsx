@@ -17,6 +17,7 @@ import React, { Fragment } from 'react';
 import { Progress, StatusError, StatusOK, StatusPending, StatusRunning, StatusWarning } from '@backstage/core-components';
 import Alert from '@material-ui/lab/Alert';
 import useAsync from 'react-use/lib/useAsync';
+// eslint-disable-next-line  no-restricted-imports
 import { KeyboardArrowDown, KeyboardArrowUp, KeyboardArrowLeft, KeyboardArrowRight, LastPage, FirstPage } from '@material-ui/icons';
 import { Table, Typography, Box, TableContainer, TableBody, TableRow, TableCell, IconButton, Collapse, TableHead, Paper, Button, SwipeableDrawer, Divider, TableFooter, TablePagination, useTheme } from '@material-ui/core';
 import { configApiRef, useApi } from '@backstage/core-plugin-api'
@@ -122,29 +123,29 @@ function NewlineText(props: { text: string; }): JSX.Element {
 }
 
 function StatusComponent(props: { reason: string; }): JSX.Element {
-  if (props.reason == 'Created') {
+  if (props.reason === 'Created') {
     return <StatusPending />;
   } else
-    if (props.reason == 'Running') {
+    if (props.reason === 'Running') {
       return <StatusRunning />;
     } else
-      if (props.reason == 'Completed') {
+      if (props.reason === 'Completed') {
         return <StatusOK />;
       } else
-        if (props.reason == 'Succeeded') {
+        if (props.reason === 'Succeeded') {
           return <StatusOK />;
         } else
-          if (props.reason == 'PipelineRunCancelled') {
+          if (props.reason === 'PipelineRunCancelled') {
             return <StatusWarning />;
           } else
-            if (props.reason == 'Failed') {
+            if (props.reason === 'Failed') {
               return <StatusError />;
             }
-  if (props.reason == 'Error') {
+  if (props.reason === 'Error') {
     return <StatusError />;
-  } 
-    return <StatusPending />;
-  
+  }
+  return <StatusPending />;
+
 }
 
 function TablePaginationActions(props: TablePaginationActionsProps) {
@@ -215,6 +216,7 @@ function Row(props: { pipelineRun: PipelineRun }) {
   const anchor: Anchor = 'bottom';
 
   const toggleDrawer =
+    // eslint-disable-next-line  @typescript-eslint/no-shadow
     (anchor: Anchor, open: boolean, logValue: string) =>
       (event: React.KeyboardEvent | React.MouseEvent) => {
         if (
@@ -225,7 +227,7 @@ function Row(props: { pipelineRun: PipelineRun }) {
         ) {
           return;
         }
-        
+
         state.logValue = logValue
         setState({ ...state, [anchor]: open });
       };
