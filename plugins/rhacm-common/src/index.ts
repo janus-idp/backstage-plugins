@@ -1,4 +1,11 @@
-export interface ClusterDetails {
+/***/
+/**
+ * Common functionalities for the rhacm plugin.
+ *
+ * @packageDocumentation
+ */
+
+export type ClusterDetails = {
   consoleUrl?: string,
   kubernetesVersion?: string,
   name?: string,

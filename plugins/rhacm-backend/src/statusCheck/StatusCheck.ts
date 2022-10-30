@@ -1,5 +1,5 @@
 import { Config } from "@backstage/config";
-import { ClusterDetails } from "../types/types";
+import { ClusterDetails } from "@internal/backstage-plugin-rhacm-common";
 import { CustomObjectsApi } from "@kubernetes/client-node"
 import { Logger } from 'winston';
 import { getCustomObjectsApi } from "./kubernetesApi";

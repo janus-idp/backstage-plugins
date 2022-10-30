@@ -26,6 +26,7 @@
   "dependencies": {
     "@backstage/backend-common": "^0.15.2",
     "@backstage/config": "^1.0.3",
+    "@internal/backstage-plugin-rhacm-common": "*",
     "@kubernetes/client-node": "^0.17.1",
     "@types/express": "*",
     "express": "^4.17.1",

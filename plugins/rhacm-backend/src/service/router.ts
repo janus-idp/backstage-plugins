@@ -20,7 +20,7 @@ import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { StatusCheck } from '../statusCheck/StatusCheck';
-import { ClusterDetails } from '../types/types';
+import { ClusterDetails } from '@internal/backstage-plugin-rhacm-common';
 
 export interface RouterOptions {
   logger: Logger;
