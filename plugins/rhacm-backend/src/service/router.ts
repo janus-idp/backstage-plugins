@@ -19,8 +19,15 @@ import { Config } from '@backstage/config';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
-import { StatusCheck } from '../statusCheck/StatusCheck';
 import { ClusterDetails } from '@internal/backstage-plugin-rhacm-common';
+import { HUB_CLUSTER_NAME_IN_ACM } from '../constants';
+import {
+  getManagedCluster,
+  getManagedClusters,
+  hubApiClient,
+} from '../helpers/kubernetes';
+import { parseManagedCluster } from '../helpers/parser';
+import { getHubClusterName } from '../helpers/config';
 
 export interface RouterOptions {
   logger: Logger;
@@ -36,42 +43,51 @@ export async function createRouter(
   const unavailableCluster: ClusterDetails = {
     status: {
       available: false,
-      reason: 'ACM cluster unreachable'
-    }
-  }
+      reason: 'Management Hub cluster is unreachable',
+    },
+  };
 
-  const statusCheck = new StatusCheck(config, logger);
+  const hubClusterName = getHubClusterName(config);
+  const api = hubApiClient(config, logger);
 
   const router = Router();
   router.use(express.json());
 
-  router.get('/status/:clusterName', ({ params: { clusterName }}, response) => {
-    logger.info(`Incoming status request for ${clusterName} cluster`)
-    statusCheck.getClusterStatus(clusterName)
-      .then((resp) => {
-        response.send(statusCheck.parseStatusCheck(resp.body))
-      })
-      .catch((resp) => {
-        logger.warn(resp);
-        response.send(unavailableCluster);
-      })
-  });
+  router.get(
+    '/status/:clusterName',
+    ({ params: { clusterName } }, response) => {
+      logger.info(`Incoming status request for ${clusterName} cluster`);
+
+      const normalizedClusterName =
+        clusterName === hubClusterName ? HUB_CLUSTER_NAME_IN_ACM : clusterName;
+
+      return (getManagedCluster(api, normalizedClusterName) as Promise<any>)
+        .then(resp => {
+          response.send(parseManagedCluster(resp));
+        })
+        .catch(resp => {
+          logger.warn(resp);
+          response.send(unavailableCluster);
+        });
+    },
+  );
 
   router.get('/status', (_, response) => {
-    logger.info(`Incoming status request for all clusters`)
-    statusCheck.getAllClustersStatus()
-      .then((resp) => {
-        const parsedClusters: Array<ClusterDetails> = resp.body.items
-          .map((cluster: any) => (
-            statusCheck.parseStatusCheck(cluster)
-          ))
-        response.send(parsedClusters)
+    logger.info(`Incoming status request for all clusters`);
+
+    return (getManagedClusters(api) as Promise<any>)
+      .then(resp => {
+        const parsedClusters: Array<ClusterDetails> =
+          resp.items.map(parseManagedCluster);
+        response.send(parsedClusters);
       })
-      .catch((resp) => {
+      .catch(resp => {
         logger.warn(resp);
         response.send([unavailableCluster]);
-      })
+      });
   });
+
   router.use(errorHandler());
+
   return router;
 }

@@ -25,8 +25,11 @@
   "configSchema": "schema.d.ts",
   "dependencies": {
     "@backstage/backend-common": "^0.15.2",
+    "@backstage/catalog-client": "^1.1.1",
+    "@backstage/catalog-model": "^1.1.2",
     "@backstage/config": "^1.0.3",
     "@internal/backstage-plugin-rhacm-common": "*",
+    "@backstage/plugin-catalog-node": "^1.2.0",
     "@kubernetes/client-node": "^0.17.1",
     "@types/express": "*",
     "express": "^4.17.1",

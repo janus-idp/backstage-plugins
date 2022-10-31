@@ -1,9 +1,9 @@
 export interface Config {
-  clusterStatus: {
+  rhacm: {
     /**
      * Name of the cluster where the ACM(Advanced Cluster Management) operator is installed
      * @visiblity frontend
      */
-    acmCluster: string;
+    hub: string;
   }
 }
