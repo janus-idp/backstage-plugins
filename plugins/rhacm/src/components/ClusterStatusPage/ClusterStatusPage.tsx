@@ -80,13 +80,13 @@ const CatalogClusters = () => {
   const [clusterEntities, setClusterEntities] = useState<clusterEntity[]>([]);
   const [{ loading, error }, refresh] = useAsyncFn(
     async () => {
-      const response = await catalogApi.getEntities();
+      const entities = await catalogApi.getEntities();
       const clusters = await getClusters(configApi)
 
-      const clusterResourceEntities = response.items.filter(
+      const clusterResourceEntities = entities.items.filter(
         e => (
           e.kind === 'Resource' &&
-          e.spec?.type === 'cluster'
+          e.spec?.type === 'kubernetes-cluster'
         )
       );
 
@@ -95,7 +95,7 @@ const CatalogClusters = () => {
           cd.name === entity.metadata.name
         ))
         return {
-          status: !!cluster?.status.available!,
+          status: cluster?.status.available!,
           entity: entity,
         }
       }));
@@ -122,7 +122,7 @@ const CatalogClusters = () => {
       {clusterEntities.map(clusterEntity => (
         <Grid item xs={12} sm={6} md={4} lg={3} xl={2} key={clusterEntity.entity.metadata.name}>
           <EntityRefLink entityRef={clusterEntity.entity} className={classes.link}>
-            <InfoCard
+            <InfoCard divider={false} noPadding
               className={classes.root}
               title={
                 <div className={classes.subheader}>
@@ -130,9 +130,7 @@ const CatalogClusters = () => {
                   {clusterEntity.entity.metadata.title || clusterEntity.entity.metadata.name}
                 </div>
               }
-            >
-              <Typography paragraph>{clusterEntity.entity.metadata.description}</Typography>
-            </InfoCard>
+            />
           </EntityRefLink>
         </Grid>
       ))}
@@ -157,7 +155,7 @@ export const ClusterStatusPage = ({ logo } : { logo?: React.ReactNode}) => {
                 variant='h1'
                 className={typography}
               >
-                Clusters
+                Manged Clusters
               </Typography>
             </Grid>
             <Grid container item xs={12} justifyContent="center" >
