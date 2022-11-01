@@ -15,14 +15,10 @@ export const getClustersFromConfig = (config: Config): Config[] => {
 export const getHubClusterFromConfig = (config: Config) => {
   const hub = config
     .getConfigArray(CLUSTERS_PATH)
-    .find(method =>
-      method
-        .getConfigArray('clusters')
-        .find(
-          cluster =>
-            cluster.getString('name') ===
-            config.getString(HUB_CLUSTER_CONFIG_PATH),
-        ),
+    .flatMap(method => method.getOptionalConfigArray('clusters') || [])
+    .find(
+      cluster =>
+        cluster.getString('name') === config.getString(HUB_CLUSTER_CONFIG_PATH),
     );
   if (!hub) {
     throw new Error('Hub cluster not defined in kubernetes config');
