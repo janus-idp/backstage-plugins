@@ -23,9 +23,28 @@ import {
   HeaderLabel,
   SupportButton,
 } from '@backstage/core-components';
-import { TektonDashboardFetchComponent } from '../TektonDashboardFetchComponent';
+import { usePipelineRunObjects } from '../../hooks/usePipelineRunObjects';
+import { Entity } from '@backstage/catalog-model';
 
-export const TektonDashboardComponent = () => (
+type TektonContentProps = {
+  entity: Entity;
+  refreshIntervalMs?: number;
+  children?: React.ReactNode;
+};
+
+export const TektonDashboardComponent = ({
+  entity,
+  refreshIntervalMs,
+}: TektonContentProps)  => {
+  const { pipelineRunObjects, loading, error } = usePipelineRunObjects(entity,
+    refreshIntervalMs,);
+  if (loading) {
+    return <div>Loading</div>;
+  }
+  if (error) {
+    return <div>{error}</div>;
+  }
+  return (
   <Page themeId="tool">
     <Header title="Tekton Pipelines" subtitle="CI/CD">
       <HeaderLabel label="Owner" value="Team X" />
@@ -37,9 +56,18 @@ export const TektonDashboardComponent = () => (
       </ContentHeader>
       <Grid container spacing={3} direction="column">
         <Grid item>
-          <TektonDashboardFetchComponent />
+        {pipelineRunObjects?.length > 0 &&
+                pipelineRunObjects?.map((pipelineRun, i) => {
+
+                  return (
+                    <Grid item key={i} xs={12}>
+                      {pipelineRun.metadata.name}
+                    </Grid>
+                  );
+                })}
         </Grid>
-      </Grid>
+      </Grid>     
     </Content>
   </Page>
-);
+  )
+  };

@@ -14,34 +14,42 @@
  * limitations under the License.
  */
 import React from 'react';
-import { TektonDashboardComponent } from './TektonDashboardComponent';
-import { ThemeProvider } from '@material-ui/core';
-import { lightTheme } from '@backstage/theme';
-import { rest } from 'msw';
-import { setupServer } from 'msw/node';
+import { render, waitFor } from '@testing-library/react';
 import {
-  setupRequestMockHandlers,
-  renderInTestApp,
+  wrapInTestApp,
 } from "@backstage/test-utils";
+import { TektonDashboardComponent } from './TektonDashboardComponent';
+import { usePipelineRunObjects } from '../../hooks/usePipelineRunObjects';
+
+jest.mock('../../hooks/usePipelineRunObjects')
 
 describe('TektonDashboardComponent', () => {
-  const server = setupServer();
-  // Enable sane handlers for network requests
-  setupRequestMockHandlers(server);
-
-  // setup mock response
-  beforeEach(() => {
-    server.use(
-      rest.get('/*', (_, res, ctx) => res(ctx.status(200), ctx.json({}))),
+  it('render empty response', async () => {
+    (usePipelineRunObjects as any).mockReturnValue({
+      pipelineRunObjects: {
+        pipelineRuns: [],
+      },
+      error: undefined,
+    });
+    await waitFor(() => {
+    const { getByText } = render(
+      wrapInTestApp(
+        <TektonDashboardComponent
+        entity={
+          {
+            metadata: {
+              name: 'some-entity',
+            },
+          } as any
+        }
+        />,
+      ),
     );
+   
+    expect(getByText('PipelineRuns')).toBeInTheDocument();
   });
 
-  it('should render', async () => {
-    const rendered = await renderInTestApp(
-      <ThemeProvider theme={lightTheme}>
-        <TektonDashboardComponent />
-      </ThemeProvider>,
-    );
-    expect(rendered.getByText('Welcome to tekton-pipelines-plugin!')).toBeInTheDocument();
   });
+ 
+  
 });

@@ -13,22 +13,60 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createPlugin, createRoutableExtension } from '@backstage/core-plugin-api';
+import { createApiFactory, createPlugin, createRoutableExtension, createRouteRef, discoveryApiRef } from '@backstage/core-plugin-api';
+import { tektonApiRef } from './api';
+import { TektonBackendClient } from './api/TektonBackendClient';
 
-import { rootRouteRef } from './routes';
+export const rootRouteRef = createRouteRef({
+  id: 'tekton-pipelines-plugin',
+});
 
 export const tektonPipelinesPluginPlugin = createPlugin({
   id: 'tekton-pipelines-plugin',
+  apis: [
+    createApiFactory({
+      api: tektonApiRef,
+      deps: {
+        discoveryApi: discoveryApiRef,
+      },
+      factory: ({ discoveryApi }) => new TektonBackendClient({discoveryApi}),
+    }),
+  ],
   routes: {
     root: rootRouteRef,
   },
 });
 
-export const TektonPipelinesPluginPage = tektonPipelinesPluginPlugin.provide(
+/*
+export const TektonPipelinesPluginPage: () => JSX.Element = tektonPipelinesPluginPlugin.provide(
   createRoutableExtension({
     name: 'TektonPipelinesPluginPage',
     component: () =>
       import('./components/TektonDashboard').then(m => m.TektonDashboardComponent),
+    mountPoint: rootRouteRef,
+  }),
+);
+*/
+
+/**
+ * Props of EntityTektonPipelinesContentProps
+ *
+ * @public
+ */
+ export type EntityTektonPipelinesContentProps = {
+  /**
+   * Sets the refresh interval in milliseconds. The default value is 10000 (10 seconds)
+   */
+  refreshIntervalMs?: number;
+};
+
+
+export const EntityTektonPipelinesContent: (
+  props: EntityTektonPipelinesContentProps,
+) => JSX.Element = tektonPipelinesPluginPlugin.provide(
+  createRoutableExtension({
+    name: 'EntityTektonPipelinesContent',
+    component: () => import('./Router').then(m => m.Router),
     mountPoint: rootRouteRef,
   }),
 );
