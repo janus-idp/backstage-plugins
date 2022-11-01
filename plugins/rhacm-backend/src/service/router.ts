@@ -40,13 +40,6 @@ export async function createRouter(
   const { logger } = options;
   const { config } = options;
 
-  const unavailableCluster: ClusterDetails = {
-    status: {
-      available: false,
-      reason: 'Management Hub cluster is unreachable',
-    },
-  };
-
   const hubClusterName = getHubClusterName(config);
   const api = hubApiClient(config, logger);
 
@@ -65,10 +58,6 @@ export async function createRouter(
         .then(resp => {
           response.send(parseManagedCluster(resp));
         })
-        .catch(resp => {
-          logger.warn(resp);
-          response.send(unavailableCluster);
-        });
     },
   );
 
@@ -81,13 +70,9 @@ export async function createRouter(
           resp.items.map(parseManagedCluster);
         response.send(parsedClusters);
       })
-      .catch(resp => {
-        logger.warn(resp);
-        response.send([unavailableCluster]);
-      });
   });
 
-  router.use(errorHandler());
+  router.use(errorHandler({logClientErrors: true}));
 
   return router;
 }

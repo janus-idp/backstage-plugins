@@ -48,18 +48,24 @@ export const hubApiClient = (config: Config, logger: Logger) => {
   return getCustomObjectsApi(hubClusterConfig, logger)
 }
 
-
-const kubeApiResponseHandler = (call: Promise<{
-  response: http.IncomingMessage;
-  body: object;
-}>) => {
-  return call.then(r => {
-    if (r.response.statusCode !== 200) {
-      throw new Error(r.response.statusMessage)
-    }
-    return r.body
-  })
-}
+const kubeApiResponseHandler = (
+  call: Promise<{
+    response: http.IncomingMessage;
+    body: object;
+  }>,
+) => {
+  return call
+    .then(r => {
+      return r.body;
+    })
+    .catch(r => {
+      throw Object.assign(new Error(r.body.reason), {
+        statusCode: r.body.code,
+        name: r.body.reason,
+        ...r.body,
+      });
+    });
+};
 
 export const getManagedCluster = (api: CustomObjectsApi, name: string) => {
   return kubeApiResponseHandler(api.getClusterCustomObject(
