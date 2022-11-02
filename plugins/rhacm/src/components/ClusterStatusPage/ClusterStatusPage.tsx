@@ -25,14 +25,14 @@ import { getClusters } from '../../helpers/apiClient';
 import { HomePageCompanyLogo } from '@backstage/plugin-home';
 
 interface clusterEntity {
-  status: boolean,
-  entity: Entity
+  status: boolean;
+  entity: Entity;
 }
 
 const useStyles = makeStyles(theme => ({
   container: {
     margin: theme.spacing(5, 0),
-    "& > svg": {
+    '& > svg': {
       width: 'auto',
       height: 150,
     },
@@ -80,25 +80,20 @@ const CatalogClusters = () => {
   const [clusterEntities, setClusterEntities] = useState<clusterEntity[]>([]);
   const [{ loading, error }, refresh] = useAsyncFn(
     async () => {
-      const entities = await catalogApi.getEntities();
-      const clusters = await getClusters(configApi)
+      const clusterResourceEntities = await catalogApi.getEntities({
+        filter: { kind: 'Resource', 'spec.type': 'kubernetes-cluster' },
+      });
+      const clusters = await getClusters(configApi);
 
-      const clusterResourceEntities = entities.items.filter(
-        e => (
-          e.kind === 'Resource' &&
-          e.spec?.type === 'kubernetes-cluster'
-        )
+      setClusterEntities(
+        clusterResourceEntities.items.map(entity => {
+          const cluster = clusters.find(cd => cd.name === entity.metadata.name);
+          return {
+            status: cluster?.status.available!,
+            entity: entity,
+          };
+        }),
       );
-
-      setClusterEntities(clusterResourceEntities.map(entity => {
-        const cluster = clusters.find(cd => (
-          cd.name === entity.metadata.name
-        ))
-        return {
-          status: cluster?.status.available!,
-          entity: entity,
-        }
-      }));
     },
     [catalogApi],
     { loading: true },
