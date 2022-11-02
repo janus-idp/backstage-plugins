@@ -25,6 +25,7 @@ import {
 } from '@backstage/core-components';
 import { usePipelineRunObjects } from '../../hooks/usePipelineRunObjects';
 import { Entity } from '@backstage/catalog-model';
+import { CollapsibleTable } from '../CollapsibleTable';
 
 type TektonContentProps = {
   entity: Entity;
@@ -44,6 +45,7 @@ export const TektonDashboardComponent = ({
   if (error) {
     return <div>{error}</div>;
   }
+
   return (
   <Page themeId="tool">
     <Header title="Tekton Pipelines" subtitle="CI/CD">
@@ -56,15 +58,9 @@ export const TektonDashboardComponent = ({
       </ContentHeader>
       <Grid container spacing={3} direction="column">
         <Grid item>
-        {pipelineRunObjects?.length > 0 &&
-                pipelineRunObjects?.map((pipelineRun, i) => {
-
-                  return (
-                    <Grid item key={i} xs={12}>
-                      {pipelineRun.metadata.name}
-                    </Grid>
-                  );
-                })}
+        {(pipelineRunObjects != undefined && pipelineRunObjects?.length > 0) && 
+            <CollapsibleTable pipelineruns={pipelineRunObjects} />              
+        }               
         </Grid>
       </Grid>     
     </Content>
