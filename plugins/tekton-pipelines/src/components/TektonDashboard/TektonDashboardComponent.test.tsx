@@ -49,7 +49,6 @@ describe('TektonDashboardComponent', () => {
     expect(getByText('PipelineRuns')).toBeInTheDocument();
   });
 
-  });
- 
+  });  
   
 });
