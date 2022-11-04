@@ -19,7 +19,7 @@ export class TektonBackendClient implements TektonApi {
   }
 
   async getHealth(): Promise<{ status: string; }> {
-    const url = `${await this.discoveryApi.getBaseUrl('tekton-pipelines-plugin')}/health`;
+    const url = `${await this.discoveryApi.getBaseUrl('tekton-pipelines')}/health`;
     const response = await fetch(url, {
       method: 'GET',
     });
@@ -27,7 +27,9 @@ export class TektonBackendClient implements TektonApi {
   }
 
   async getPipelineRuns(baseUrl: string, authorizationBearerToken: string, namespace: string, selector: string, dashboardBaseUrl: string): Promise<PipelineRun[]> {
-    const url = `${await this.discoveryApi.getBaseUrl('tekton-pipelines-plugin')}/pipelineruns`;
+    const tektonBuildNamespace = "sample-go-application-build"; //entity?.metadata.annotations?.[TEKTON_PIPELINES_BUILD_NAMESPACE] ?? '';
+    const tektonLabelSelector = "" //entity?.metadata.annotations?.[TEKTON_PIPELINES_LABEL_SELECTOR] ?? '';
+    const url = `${await this.discoveryApi.getBaseUrl('tekton-pipelines')}/pipelineruns?namespace=${tektonBuildNamespace}&selector=${tektonLabelSelector}`;
     const response = await fetch(url, {
       method: 'GET',
     });

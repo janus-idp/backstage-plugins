@@ -18,11 +18,11 @@ import { tektonApiRef } from './api';
 import { TektonBackendClient } from './api/TektonBackendClient';
 
 export const rootRouteRef = createRouteRef({
-  id: 'tekton-pipelines-plugin',
+  id: 'tekton-pipelines',
 });
 
 export const tektonPipelinesPluginPlugin = createPlugin({
-  id: 'tekton-pipelines-plugin',
+  id: 'tekton-pipelines',
   apis: [
     createApiFactory({
       api: tektonApiRef,

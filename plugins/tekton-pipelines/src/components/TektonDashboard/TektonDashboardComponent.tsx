@@ -22,10 +22,12 @@ import {
   ContentHeader,
   HeaderLabel,
   SupportButton,
+  Progress,
 } from '@backstage/core-components';
 import { usePipelineRunObjects } from '../../hooks/usePipelineRunObjects';
 import { Entity } from '@backstage/catalog-model';
 import { CollapsibleTable } from '../CollapsibleTable';
+import { Alert } from '@material-ui/lab';
 
 type TektonContentProps = {
   entity: Entity;
@@ -35,15 +37,15 @@ type TektonContentProps = {
 
 export const TektonDashboardComponent = ({
   entity,
-  refreshIntervalMs,
+  refreshIntervalMs,  
 }: TektonContentProps)  => {
   const { pipelineRunObjects, loading, error } = usePipelineRunObjects(entity,
     refreshIntervalMs,);
   if (loading) {
-    return <div>Loading</div>;
-  }
-  if (error) {
-    return <div>{error}</div>;
+    //return <div>Loading</div>;
+    return <Progress />;
+  } else if (error) {
+    return <Alert severity="error">{error}</Alert>;
   }
 
   return (

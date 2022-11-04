@@ -8,5 +8,5 @@ export interface TektonApi {
 }
 
 export const tektonApiRef = createApiRef<TektonApi>({
-  id: 'tekton-pipelines-plugin',
+  id: 'plugin.tekton-pipelines.service',
 });
