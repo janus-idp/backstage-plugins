@@ -17,7 +17,17 @@ export class TektonBackendClient implements TektonApi {
 
   private async handleResponse(response: Response): Promise<any> {
     if (!response.ok) {
-      throw new Error();
+      const payload = await response.text();
+      let message;
+      switch (response.status) {
+        case 404:
+          message =
+            'Could not find the Kubernetes Backend (HTTP 404). Make sure the plugin has been fully installed.';
+          break;
+        default:
+          message = `Request failed with ${response.status} ${response.statusText}, ${payload}`;
+      }
+      throw new Error(message);
     }
     return await response.json();
   }
