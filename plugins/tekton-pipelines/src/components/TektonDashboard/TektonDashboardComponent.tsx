@@ -28,6 +28,7 @@ import { usePipelineRunObjects } from '../../hooks/usePipelineRunObjects';
 import { Entity } from '@backstage/catalog-model';
 import { CollapsibleTable } from '../CollapsibleTable';
 import { Alert } from '@material-ui/lab';
+import { useEntity } from '@backstage/plugin-catalog-react';
 
 type TektonContentProps = {
   entity: Entity;

@@ -19,7 +19,7 @@ import { tektonPipelinesPluginPlugin, EntityTektonPipelinesContent } from '../sr
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { Entity } from '@backstage/catalog-model';
 import { TestApiProvider } from '@backstage/test-utils';
-import { Label, PipelineRun, TaskRun } from '@jquad-group/plugin-tekton-pipelines-common';
+import { Label, PipelineRun, PipelineRunsByEntityRequest, TaskRun } from '@jquad-group/plugin-tekton-pipelines-common';
 import { TektonApi, tektonApiRef } from '../src/api/types';
 
 const mockEntity: Entity = {
@@ -46,7 +46,7 @@ class MockTektonClient implements TektonApi {
     return { status: 'ok'};
   }
 
-  async getPipelineRuns(baseUrl: string, authorizationBearerToken: string, namespace: string, selector: string, dashboardBaseUrl: string): Promise<PipelineRun[]> {
+  async getPipelineRuns(request: PipelineRunsByEntityRequest, baseUrl: string, authorizationBearerToken: string, namespace: string, selector: string, dashboardBaseUrl: string): Promise<PipelineRun[]> {
     const recordMock: Record<string, Label> = {
       "testKey": 
       {key: "test-key", value: "test-value"},
