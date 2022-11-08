@@ -16,11 +16,12 @@ export const usePipelineRunObjects = (
   intervalMs: number = 10000,
 ): PipelineRunObjects => {
   const tektonApi = useApi(tektonApiRef);
-  const prRequest: PipelineRunsByEntityRequest = {
+  const request: PipelineRunsByEntityRequest = {
     entity: entity,
   }
   const getObjects = useCallback(async (): Promise<PipelineRun[]> => {
-    return await tektonApi.getPipelineRuns(prRequest, "","","","","");
+    return await tektonApi.getPipelineRuns(request,"","","","","");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tektonApi, entity]);
   
   

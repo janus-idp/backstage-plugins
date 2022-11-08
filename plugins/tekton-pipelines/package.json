@@ -27,10 +27,11 @@
     "@backstage/core-plugin-api": "^1.0.7",
     "@backstage/plugin-catalog-react": "^1.2.0",
     "@backstage/theme": "^0.2.16",
-    "@jquad-group/plugin-tekton-pipelines-common": "2.0.0-debug",
+    "@jquad-group/plugin-tekton-pipelines-common": "^2.0.0-debug",
     "@material-ui/core": "^4.9.13",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.57",
+    "react-router-dom": "^6.4.3",
     "react-use": "^17.2.4"
   },
   "peerDependencies": {

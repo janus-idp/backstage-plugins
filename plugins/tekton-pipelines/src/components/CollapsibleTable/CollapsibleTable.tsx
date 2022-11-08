@@ -16,13 +16,13 @@ type PipelineRunProps = {
 export const CollapsibleTable = ({ pipelineruns }: PipelineRunProps) => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-
+  let emptyRows: number;
   // Avoid a layout jump when reaching the last page with empty rows.
-  if (pipelineruns != undefined) {
-  var emptyRows =
+  if (pipelineruns !== undefined) {
+    emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - pipelineruns.length) : 0;
   } else {
-    var emptyRows =
+    emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage) : 0;
   }
 
@@ -55,7 +55,7 @@ export const CollapsibleTable = ({ pipelineruns }: PipelineRunProps) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {(pipelineruns != undefined) && (rowsPerPage > 0
+          {(pipelineruns !== undefined) && (rowsPerPage > 0
             ? pipelineruns.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
             : pipelineruns
           ).map((pipelineRun) => (            
@@ -68,7 +68,7 @@ export const CollapsibleTable = ({ pipelineruns }: PipelineRunProps) => {
           )}
         </TableBody>
         <TableFooter>
-          { pipelineruns != undefined && <TableRow>
+          { pipelineruns !== undefined && <TableRow>
             <TablePagination
               rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
               colSpan={7}

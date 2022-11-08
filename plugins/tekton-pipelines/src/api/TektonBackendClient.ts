@@ -41,8 +41,8 @@ export class TektonBackendClient implements TektonApi {
   }
 
   async getPipelineRuns(request: PipelineRunsByEntityRequest, baseUrl: string, authorizationBearerToken: string, namespace: string, selector: string, dashboardBaseUrl: string): Promise<PipelineRun[]> {    
-    const tektonBuildNamespace = request?.entity.metadata.annotations?.[TEKTON_PIPELINES_BUILD_NAMESPACE] ?? '';//"sample-go-application-build"; //entity?.metadata.annotations?.[TEKTON_PIPELINES_BUILD_NAMESPACE] ?? '';
-    const tektonLabelSelector = request?.entity.metadata.annotations?.[TEKTON_PIPELINES_LABEL_SELECTOR] ?? ''; //""; //entity?.metadata.annotations?.[TEKTON_PIPELINES_LABEL_SELECTOR] ?? '';
+    const tektonBuildNamespace = request?.entity.metadata.annotations?.[TEKTON_PIPELINES_BUILD_NAMESPACE] ?? '';
+    const tektonLabelSelector = request?.entity.metadata.annotations?.[TEKTON_PIPELINES_LABEL_SELECTOR] ?? ''; 
     const url = `${await this.discoveryApi.getBaseUrl('tekton-pipelines')}/pipelineruns?namespace=${tektonBuildNamespace}&selector=${tektonLabelSelector}`;
     const response = await fetch(url, {
       method: 'GET',

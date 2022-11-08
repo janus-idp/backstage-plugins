@@ -27,7 +27,6 @@ export const TektonDashboardComponent = ({
   const { pipelineRunObjects, loading, error } = usePipelineRunObjects(entity,
     refreshIntervalMs,);
   if (loading) {
-    //return <div>Loading</div>;
     return <Progress />;
   } else if (error) {
     return <Alert severity="error">{error}</Alert>;
@@ -45,7 +44,7 @@ export const TektonDashboardComponent = ({
       </ContentHeader>
       <Grid container spacing={3} direction="column">
         <Grid item>
-        {(pipelineRunObjects != undefined && pipelineRunObjects?.length > 0) && 
+        {(pipelineRunObjects !== undefined && pipelineRunObjects?.length > 0) && 
             <CollapsibleTable pipelineruns={pipelineRunObjects} />              
         }               
         </Grid>

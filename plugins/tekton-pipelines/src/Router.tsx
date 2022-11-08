@@ -46,7 +46,7 @@ export const Router = (props: { refreshIntervalMs?: number }) => {
         <Button
           variant="contained"
           color="primary"
-          href="https://backstage.io/docs/features/kubernetes/configuration#surfacing-your-kubernetes-components-as-part-of-an-entity" to={''}        >
+          href="https://backstage.io/docs/features/kubernetes/configuration#surfacing-your-kubernetes-components-as-part-of-an-entity" to=''>
           Read Kubernetes Plugin Docs
         </Button>
       </>
