@@ -13,6 +13,12 @@ export const getClustersFromConfig = (config: Config): Config[] => {
 };
 
 export const getHubClusterFromConfig = (config: Config) => {
+  try {
+    config.getString(HUB_CLUSTER_CONFIG_PATH)
+  } catch (err) {
+    throw new Error(`Hub cluster must be specified in config at '${HUB_CLUSTER_CONFIG_PATH}'`);
+  }
+
   const hub = config
     .getConfigArray(CLUSTERS_PATH)
     .flatMap(method => method.getOptionalConfigArray('clusters') || [])
