@@ -24,9 +24,13 @@ import {
 import {
   ANNOTATION_ORIGIN_LOCATION,
   ANNOTATION_LOCATION,
-} from '@backstage/catalog-model'
-import { CustomObjectsApi } from "@kubernetes/client-node"
-import { getManagedCluster, getManagedClusters, hubApiClient } from '../helpers/kubernetes';
+} from '@backstage/catalog-model';
+import { CustomObjectsApi } from '@kubernetes/client-node';
+import {
+  getManagedCluster,
+  getManagedClusters,
+  hubApiClient,
+} from '../helpers/kubernetes';
 import { CONSOLE_CLAIM, HUB_CLUSTER_NAME_IN_ACM } from '../constants';
 import { getClaim } from '../helpers/parser';
 import { getHubClusterName } from '../helpers/config';
@@ -40,7 +44,11 @@ export class ManagedClusterProvider implements EntityProvider {
   protected readonly logger: winston.Logger;
   protected connection?: EntityProviderConnection;
 
-  protected constructor(client: CustomObjectsApi, hubName: string, options: { logger: winston.Logger }) {
+  protected constructor(
+    client: CustomObjectsApi,
+    hubName: string,
+    options: { logger: winston.Logger },
+  ) {
     this.client = client;
     this.hubName = hubName;
     this.logger = options.logger;
@@ -65,12 +73,15 @@ export class ManagedClusterProvider implements EntityProvider {
       throw new Error('Not initialized');
     }
 
-    this.logger.info(
-      `Providing OpenShift cluster resources from RHACM`,
+    this.logger.info(`Providing OpenShift cluster resources from RHACM`);
+    const hubConsole = getClaim(
+      await getManagedCluster(this.client, HUB_CLUSTER_NAME_IN_ACM),
+      CONSOLE_CLAIM,
     );
-    const hubConsole = getClaim(await getManagedCluster(this.client, HUB_CLUSTER_NAME_IN_ACM), CONSOLE_CLAIM)
 
-    const resources: ResourceEntity[] = (await getManagedClusters(this.client) as {items: Array<any>}).items.map((i) => {
+    const resources: ResourceEntity[] = (
+      (await getManagedClusters(this.client)) as { items: Array<any> }
+    ).items.map(i => {
       return {
         kind: 'Resource',
         apiVersion: 'backstage.io/v1beta1',
@@ -79,30 +90,32 @@ export class ManagedClusterProvider implements EntityProvider {
           title: i.metadata?.labels?.name,
           annotations: {
             [ANNOTATION_LOCATION]: `${this.getProviderName()}:${this.hubName}`,
-            [ANNOTATION_ORIGIN_LOCATION]: `${this.getProviderName()}:${this.hubName}`,
+            [ANNOTATION_ORIGIN_LOCATION]: `${this.getProviderName()}:${
+              this.hubName
+            }`,
           },
           links: [
             {
               url: getClaim(i, CONSOLE_CLAIM),
-              title: "OpenShift Console",
-              icon: "dashboard"
+              title: 'OpenShift Console',
+              icon: 'dashboard',
             },
             {
               url: `${hubConsole}/multicloud/infrastructure/clusters/details/${i.metadata.name}/`,
-              title: "RHACM Console",
+              title: 'RHACM Console',
             },
             i.metadata?.labels?.clusterID && {
               url: `https://console.redhat.com/openshift/details/s/${i.metadata.labels.clusterID}`,
               title: 'OpenShift Cluster Manager',
-            }
-          ]
+            },
+          ],
         },
         spec: {
           owner: 'unknown',
           type: 'kubernetes-cluster',
         },
       };
-    })
+    });
 
     await this.connection.applyMutation({
       type: 'full',

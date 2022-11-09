@@ -5,5 +5,5 @@ export interface Config {
      * @visiblity frontend
      */
     hub: string;
-  }
+  };
 }

@@ -1,10 +1,13 @@
-import { Config } from "@backstage/config";
-import { CustomObjectsApi, KubeConfig } from "@kubernetes/client-node"
+import { Config } from '@backstage/config';
+import { CustomObjectsApi, KubeConfig } from '@kubernetes/client-node';
 import { Logger } from 'winston';
-import { getHubClusterFromConfig } from "./config";
+import { getHubClusterFromConfig } from './config';
 import http from 'http';
 
-export const getCustomObjectsApi = (clusterConfig: Config, logger: Logger): CustomObjectsApi => {
+export const getCustomObjectsApi = (
+  clusterConfig: Config,
+  logger: Logger,
+): CustomObjectsApi => {
   const clusterToken = clusterConfig.getOptionalString('serviceAccountToken');
   const kubeConfig = new KubeConfig();
 
@@ -40,13 +43,12 @@ export const getCustomObjectsApi = (clusterConfig: Config, logger: Logger): Cust
     currentContext: context.name,
   });
   return kubeConfig.makeApiClient(CustomObjectsApi);
-}
-
+};
 
 export const hubApiClient = (config: Config, logger: Logger) => {
-  const hubClusterConfig = getHubClusterFromConfig(config)
-  return getCustomObjectsApi(hubClusterConfig, logger)
-}
+  const hubClusterConfig = getHubClusterFromConfig(config);
+  return getCustomObjectsApi(hubClusterConfig, logger);
+};
 
 const kubeApiResponseHandler = (
   call: Promise<{
@@ -68,18 +70,22 @@ const kubeApiResponseHandler = (
 };
 
 export const getManagedCluster = (api: CustomObjectsApi, name: string) => {
-  return kubeApiResponseHandler(api.getClusterCustomObject(
-    'cluster.open-cluster-management.io',
-    'v1',
-    'managedclusters',
-    name,
-  ))
-}
+  return kubeApiResponseHandler(
+    api.getClusterCustomObject(
+      'cluster.open-cluster-management.io',
+      'v1',
+      'managedclusters',
+      name,
+    ),
+  );
+};
 
 export const getManagedClusters = (api: CustomObjectsApi) => {
-  return kubeApiResponseHandler(api.listClusterCustomObject(
-    'cluster.open-cluster-management.io',
-    'v1',
-    'managedclusters'
-  ))
-}
+  return kubeApiResponseHandler(
+    api.listClusterCustomObject(
+      'cluster.open-cluster-management.io',
+      'v1',
+      'managedclusters',
+    ),
+  );
+};

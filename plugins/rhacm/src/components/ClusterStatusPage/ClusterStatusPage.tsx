@@ -115,14 +115,32 @@ const CatalogClusters = () => {
   return (
     <>
       {clusterEntities.map(clusterEntity => (
-        <Grid item xs={12} sm={6} md={4} lg={3} xl={2} key={clusterEntity.entity.metadata.name}>
-          <EntityRefLink entityRef={clusterEntity.entity} className={classes.link}>
-            <InfoCard divider={false} noPadding
+        <Grid
+          item
+          xs={12}
+          sm={6}
+          md={4}
+          lg={3}
+          xl={2}
+          key={clusterEntity.entity.metadata.name}
+        >
+          <EntityRefLink
+            entityRef={clusterEntity.entity}
+            className={classes.link}
+          >
+            <InfoCard
+              divider={false}
+              noPadding
               className={classes.root}
               title={
                 <div className={classes.subheader}>
-                  {clusterEntity.status === true ? <StatusOK /> : <StatusError />}
-                  {clusterEntity.entity.metadata.title || clusterEntity.entity.metadata.name}
+                  {clusterEntity.status === true ? (
+                    <StatusOK />
+                  ) : (
+                    <StatusError />
+                  )}
+                  {clusterEntity.entity.metadata.title ||
+                    clusterEntity.entity.metadata.name}
                 </div>
               }
             />
@@ -133,7 +151,7 @@ const CatalogClusters = () => {
   );
 };
 
-export const ClusterStatusPage = ({ logo } : { logo?: React.ReactNode}) => {
+export const ClusterStatusPage = ({ logo }: { logo?: React.ReactNode }) => {
   const { container, typography } = useStyles();
 
   return (
@@ -141,19 +159,13 @@ export const ClusterStatusPage = ({ logo } : { logo?: React.ReactNode}) => {
       <Page themeId="clusters">
         <Content>
           <Grid container justifyContent="center" spacing={6}>
-            <HomePageCompanyLogo
-              className={container}
-              logo={logo}
-            />
+            <HomePageCompanyLogo className={container} logo={logo} />
             <Grid container item xs={12} alignItems="center" direction="row">
-              <Typography
-                variant='h1'
-                className={typography}
-              >
+              <Typography variant="h1" className={typography}>
                 Manged Clusters
               </Typography>
             </Grid>
-            <Grid container item xs={12} justifyContent="center" >
+            <Grid container item xs={12} justifyContent="center">
               <CatalogClusters />
             </Grid>
           </Grid>

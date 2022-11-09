@@ -5,9 +5,11 @@ const HUB_CLUSTER_CONFIG_PATH = 'rhacm.hub';
 
 export const getHubClusterFromConfig = (config: Config) => {
   try {
-    config.getString(HUB_CLUSTER_CONFIG_PATH)
+    config.getString(HUB_CLUSTER_CONFIG_PATH);
   } catch (err) {
-    throw new Error(`Hub cluster must be specified in config at '${HUB_CLUSTER_CONFIG_PATH}'`);
+    throw new Error(
+      `Hub cluster must be specified in config at '${HUB_CLUSTER_CONFIG_PATH}'`,
+    );
   }
 
   const hub = config

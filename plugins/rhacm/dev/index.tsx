@@ -7,6 +7,6 @@ createDevApp()
   .addPage({
     element: <RhacmPage />,
     title: 'Root Page',
-    path: '/rhacm'
+    path: '/rhacm',
   })
   .render();

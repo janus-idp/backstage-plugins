@@ -54,25 +54,25 @@ export async function createRouter(
       const normalizedClusterName =
         clusterName === hubClusterName ? HUB_CLUSTER_NAME_IN_ACM : clusterName;
 
-      return (getManagedCluster(api, normalizedClusterName) as Promise<any>)
-        .then(resp => {
-          response.send(parseManagedCluster(resp));
-        })
+      return (
+        getManagedCluster(api, normalizedClusterName) as Promise<any>
+      ).then(resp => {
+        response.send(parseManagedCluster(resp));
+      });
     },
   );
 
   router.get('/status', (_, response) => {
     logger.info(`Incoming status request for all clusters`);
 
-    return (getManagedClusters(api) as Promise<any>)
-      .then(resp => {
-        const parsedClusters: Array<ClusterDetails> =
-          resp.items.map(parseManagedCluster);
-        response.send(parsedClusters);
-      })
+    return (getManagedClusters(api) as Promise<any>).then(resp => {
+      const parsedClusters: Array<ClusterDetails> =
+        resp.items.map(parseManagedCluster);
+      response.send(parsedClusters);
+    });
   });
 
-  router.use(errorHandler({logClientErrors: true}));
+  router.use(errorHandler({ logClientErrors: true }));
 
   return router;
 }
