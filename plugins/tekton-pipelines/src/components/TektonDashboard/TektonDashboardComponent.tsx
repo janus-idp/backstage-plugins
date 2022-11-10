@@ -47,7 +47,7 @@ export const TektonDashboardComponent = ({
     <Page themeId="tool">
       <Header title="Tekton Pipelines" subtitle="CI/CD">
         <HeaderLabel label="Owner" value="Team Y" />
-        <HeaderLabel label="Lifecycle" value="MyDog" />
+        <HeaderLabel label="Lifecycle" value="Alpha" />
       </Header>
       <Content>
         <ContentHeader title="PipelineRuns">
