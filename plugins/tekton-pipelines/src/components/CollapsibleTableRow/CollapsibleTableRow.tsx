@@ -4,8 +4,10 @@ import { StatusError, StatusOK, StatusPending, StatusRunning, StatusWarning } fr
 import { KeyboardArrowDown, KeyboardArrowUp, KeyboardArrowLeft, KeyboardArrowRight, LastPage, FirstPage } from '@material-ui/icons';
 import { Table, Typography, Box, TableBody, TableRow, TableCell, IconButton, Collapse, TableHead, Button, SwipeableDrawer, Divider, useTheme } from '@material-ui/core';
 import { TablePaginationActionsProps } from '@material-ui/core/TablePagination/TablePaginationActions';
+/* ignore lint error for internal dependencies */
+/* eslint-disable */
 import { PipelineRun } from '@jquad-group/plugin-tekton-pipelines-common';
-
+/* eslint-enable */
 export const TEKTON_PIPELINES_BUILD_NAMESPACE = 'tektonci/build-namespace';
 export const TEKTON_PIPELINES_LABEL_SELECTOR = "tektonci/pipeline-label-selector";
 

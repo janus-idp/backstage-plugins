@@ -1,10 +1,13 @@
 import { useCallback } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import { tektonApiRef } from '../api/types';
+/* ignore lint error for internal dependencies */
+/* eslint-disable */
 import { PipelineRun, PipelineRunsByEntityRequest } from '@jquad-group/plugin-tekton-pipelines-common';
+/* eslint-enable */
 import useAsync from 'react-use/lib/useAsync';
 import { Entity } from '@backstage/catalog-model';
-import logger from '../logging/logger';
+
 
 export interface PipelineRunObjects {
   pipelineRunObjects?: PipelineRun[];

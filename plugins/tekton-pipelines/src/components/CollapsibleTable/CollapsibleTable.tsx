@@ -1,7 +1,10 @@
 import React from 'react';
 // eslint-disable-next-line  no-restricted-imports
 import { Table, TableContainer, TableBody, TableRow, TableCell, TableHead, Paper, TablePagination, TableFooter } from '@material-ui/core';
+/* ignore lint error for internal dependencies */
+/* eslint-disable */
 import { PipelineRun } from '@jquad-group/plugin-tekton-pipelines-common';
+/* eslint-enable */
 import TablePaginationActions from '@material-ui/core/TablePagination/TablePaginationActions';
 import { CollapsibleTableRow } from '../CollapsibleTableRow';
 

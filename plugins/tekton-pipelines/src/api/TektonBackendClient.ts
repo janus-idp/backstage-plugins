@@ -1,7 +1,9 @@
 import { TektonApi } from './types';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
+/* ignore lint error for internal dependencies */
+/* eslint-disable */
 import { PipelineRun, PipelineRunsByEntityRequest } from '@jquad-group/plugin-tekton-pipelines-common'
-
+/* eslint-enable */
 export const TEKTON_PIPELINES_BUILD_NAMESPACE = 'tektonci/build-namespace';
 export const TEKTON_PIPELINES_LABEL_SELECTOR = "tektonci/pipeline-label-selector";
 

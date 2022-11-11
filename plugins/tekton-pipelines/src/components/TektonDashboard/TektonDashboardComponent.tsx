@@ -30,11 +30,12 @@ export const TektonDashboardComponent = ({
     refreshIntervalMs,
   );
 
-  logger.log('TektonDashboardComponent loading ' + loading);
-  logger.log('TektonDashboardComponent error ' + error);
+  logger.log(`TektonDashboardComponent loading ${loading}`);
+  logger.log(`TektonDashboardComponent error ${error}`);
   logger.log(
-    'TektonDashboardComponent pipelineRunObjects ' +
-      JSON.stringify(pipelineRunObjects),
+    `TektonDashboardComponent pipelineRunObjects ${JSON.stringify(
+      pipelineRunObjects,
+    )}`,
   );
 
   if (loading) {
