@@ -1,0 +1,1 @@
+export { CollapsibleTable } from './CollapsibleTable';

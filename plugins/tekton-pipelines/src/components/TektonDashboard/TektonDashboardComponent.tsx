@@ -1,18 +1,3 @@
-/*
- * Copyright 2022 The Backstage Authors
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 import React from 'react';
 import { Grid } from '@material-ui/core';
 import {
@@ -22,24 +7,62 @@ import {
   ContentHeader,
   HeaderLabel,
   SupportButton,
+  Progress,
 } from '@backstage/core-components';
-import { TektonDashboardFetchComponent } from '../TektonDashboardFetchComponent';
+import { usePipelineRunObjects } from '../../hooks/usePipelineRunObjects';
+import { Entity } from '@backstage/catalog-model';
+import { CollapsibleTable } from '../CollapsibleTable';
+import { Alert } from '@material-ui/lab';
+import logger from '../../logging/logger';
 
-export const TektonDashboardComponent = () => (
-  <Page themeId="tool">
-    <Header title="Tekton Pipelines" subtitle="CI/CD">
-      <HeaderLabel label="Owner" value="Team X" />
-      <HeaderLabel label="Lifecycle" value="Alpha" />
-    </Header>
-    <Content>
-      <ContentHeader title="PipelineRuns">
-        <SupportButton>PipelineRuns</SupportButton>
-      </ContentHeader>
-      <Grid container spacing={3} direction="column">
-        <Grid item>
-          <TektonDashboardFetchComponent />
+type TektonContentProps = {
+  entity: Entity;
+  refreshIntervalMs?: number;
+  children?: React.ReactNode;
+};
+
+export const TektonDashboardComponent = ({
+  entity,
+  refreshIntervalMs,
+}: TektonContentProps) => {
+  const { pipelineRunObjects, loading, error } = usePipelineRunObjects(
+    entity,
+    refreshIntervalMs,
+  );
+
+  logger.log(`TektonDashboardComponent loading ${loading}`);
+  logger.log(`TektonDashboardComponent error ${error}`);
+  logger.log(
+    `TektonDashboardComponent pipelineRunObjects ${JSON.stringify(
+      pipelineRunObjects,
+    )}`,
+  );
+
+  if (loading) {
+    return <Progress />;
+  } else if (error) {
+    return <Alert severity="error">{error}</Alert>;
+  }
+
+  return (
+    <Page themeId="tool">
+      <Header title="Tekton Pipelines" subtitle="CI/CD">
+        <HeaderLabel label="Owner" value="Team Y" />
+        <HeaderLabel label="Lifecycle" value="Alpha" />
+      </Header>
+      <Content>
+        <ContentHeader title="PipelineRuns">
+          <SupportButton>PipelineRuns</SupportButton>
+        </ContentHeader>
+        <Grid container spacing={3} direction="column">
+          <Grid item>
+            {pipelineRunObjects !== undefined &&
+              pipelineRunObjects?.length > 0 && (
+                <CollapsibleTable pipelineruns={pipelineRunObjects} />
+              )}
+          </Grid>
         </Grid>
-      </Grid>
-    </Content>
-  </Page>
-);
+      </Content>
+    </Page>
+  );
+};
