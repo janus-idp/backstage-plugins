@@ -20,7 +20,7 @@ export const isTektonCiAvailable = (entity: Entity) =>
 export const Router = (props: { refreshIntervalMs?: number }) => {
   const { entity } = useEntity();
 
-  logger.log(`Router entity ${JSON.stringify(entity)}`);
+  logger.debug(`Router entity ${JSON.stringify(entity)}`);
 
   const tektonPipelinesAnnotationValue =
     entity.metadata.annotations?.[TEKTON_PIPELINES_BUILD_NAMESPACE];
@@ -28,10 +28,10 @@ export const Router = (props: { refreshIntervalMs?: number }) => {
   const tektonPipelinesLabelSelectorQueryAnnotationValue =
     entity.metadata.annotations?.[TEKTON_PIPELINES_LABEL_SELECTOR];
 
-  logger.log(
+  logger.debug(
     `Router tektonPipelinesAnnotationValue ${tektonPipelinesAnnotationValue}`,
   );
-  logger.log(
+  logger.debug(
     `Router tektonPipelinesLabelSelectorQueryAnnotationValue ${tektonPipelinesLabelSelectorQueryAnnotationValue}`,
   );
 

@@ -1,0 +1,901 @@
+{
+    "apiVersion": "tekton.dev/v1beta1",
+    "kind": "PipelineRun",
+    "metadata": {
+        "creationTimestamp": "2022-10-25T18:41:36Z",
+        "generateName": "feature-added-catalog-info-",
+        "generation": 1,
+        "labels": {
+            "kustomize.toolkit.fluxcd.io/name": "build-pipeline",
+            "kustomize.toolkit.fluxcd.io/namespace": "sample-go-application-build",
+            "pipeline.jquad.rocks/pr.branch.commit": "ab43364d1c192228832068e93c0a1357412e48af",
+            "pipeline.jquad.rocks/pr.branch.name": "feature-added-catalog-info",
+            "tekton.dev/pipeline": "pullrequest-pipeline-go"
+        },
+        "name": "feature-added-catalog-info-xdjk9",
+        "namespace": "sample-go-application-build",
+        "ownerReferences": [
+            {
+                "apiVersion": "pipeline.jquad.rocks/v1alpha1",
+                "blockOwnerDeletion": true,
+                "controller": true,
+                "kind": "PipelineTrigger",
+                "name": "pipelinetrigger-for-sample-go-application",
+                "uid": "81601ec0-c693-41c3-9605-4cfa5bf84f2f"
+            }
+        ],
+        "resourceVersion": "142055452",
+        "uid": "c8abf18e-ab08-4b09-af49-94c7d287b96a"
+    },
+    "spec": {
+        "params": [
+            {
+                "name": "repositoryName",
+                "value": "sample-go-application"
+            },
+            {
+                "name": "pathToContext",
+                "value": "/workspace/repo"
+            },
+            {
+                "name": "commit",
+                "value": ""
+            },
+            {
+                "name": "branch-name",
+                "value": "feature/added-catalog-info"
+            },
+            {
+                "name": "repo-url",
+                "value": "git@github.com:jquad-group/sample-go-application.git"
+            },
+            {
+                "name": "repo-url-alternate",
+                "value": "git@github.com:jquad-group/sample-go-application.git"
+            },
+            {
+                "name": "gitrevision",
+                "value": "feature/added-catalog-info"
+            },
+            {
+                "name": "projectname",
+                "value": "sample-go-application"
+            },
+            {
+                "name": "statusUrl",
+                "value": "https://api.github.com/repos/jquad-group/sample-go-application/statuses/ab43364d1c192228832068e93c0a1357412e48af"
+            },
+            {
+                "name": "state",
+                "value": "success"
+            },
+            {
+                "name": "targetUrl",
+                "value": "https://rancher.jquad.rocks/k8s/clusters/local/api/v1/namespaces/tekton-pipelines/services/http:tekton-dashboard:9097/proxy/#/pipelineruns"
+            },
+            {
+                "name": "context",
+                "value": "jquad-group/tekton-ci"
+            },
+            {
+                "name": "githubSecretName",
+                "value": "git-clone"
+            },
+            {
+                "name": "githubUsernameKey",
+                "value": "username"
+            },
+            {
+                "name": "githubPasswordKey",
+                "value": "password"
+            }
+        ],
+        "pipelineRef": {
+            "name": "pullrequest-pipeline-go"
+        },
+        "podTemplate": {
+            "securityContext": {
+                "fsGroup": 0,
+                "runAsGroup": 0,
+                "runAsUser": 0
+            }
+        },
+        "serviceAccountName": "build-robot",
+        "timeout": "1h0m0s",
+        "workspaces": [
+            {
+                "name": "workspace",
+                "volumeClaimTemplate": {
+                    "metadata": {
+                        "creationTimestamp": null
+                    },
+                    "spec": {
+                        "accessModes": [
+                            "ReadWriteOnce"
+                        ],
+                        "resources": {
+                            "requests": {
+                                "storage": "1Gi"
+                            }
+                        }
+                    },
+                    "status": {}
+                }
+            }
+        ]
+    },
+    "status": {
+        "completionTime": "2022-10-25T18:42:30Z",
+        "conditions": [
+            {
+                "lastTransitionTime": "2022-10-25T18:42:30Z",
+                "message": "Tasks Completed: 4 (Failed: 0, Cancelled 0), Skipped: 1",
+                "reason": "Completed",
+                "status": "True",
+                "type": "Succeeded"
+            }
+        ],
+        "finallyStartTime": "2022-10-25T18:42:22Z",
+        "pipelineSpec": {
+            "finally": [
+                {
+                    "name": "github-commit-status-error",
+                    "params": [
+                        {
+                            "name": "statusUrl",
+                            "value": "https://api.github.com/repos/jquad-group/sample-go-application/statuses/ab43364d1c192228832068e93c0a1357412e48af"
+                        },
+                        {
+                            "name": "description",
+                            "value": "The build has failed."
+                        },
+                        {
+                            "name": "state",
+                            "value": "error"
+                        },
+                        {
+                            "name": "targetUrl",
+                            "value": "https://rancher.jquad.rocks/k8s/clusters/local/api/v1/namespaces/tekton-pipelines/services/http:tekton-dashboard:9097/proxy/#/pipelineruns"
+                        },
+                        {
+                            "name": "context",
+                            "value": "jquad-group/tekton-ci"
+                        },
+                        {
+                            "name": "secretName",
+                            "value": "git-clone"
+                        },
+                        {
+                            "name": "usernameKey",
+                            "value": "username"
+                        },
+                        {
+                            "name": "passwordKey",
+                            "value": "password"
+                        }
+                    ],
+                    "taskRef": {
+                        "kind": "Task",
+                        "name": "github-commit-status"
+                    },
+                    "when": [
+                        {
+                            "input": "$(tasks.build-and-test-task-go.status)",
+                            "operator": "in",
+                            "values": [
+                                "Failed"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "github-commit-status-success",
+                    "params": [
+                        {
+                            "name": "statusUrl",
+                            "value": "https://api.github.com/repos/jquad-group/sample-go-application/statuses/ab43364d1c192228832068e93c0a1357412e48af"
+                        },
+                        {
+                            "name": "description",
+                            "value": "The build was successfull."
+                        },
+                        {
+                            "name": "state",
+                            "value": "success"
+                        },
+                        {
+                            "name": "targetUrl",
+                            "value": "https://rancher.jquad.rocks/k8s/clusters/local/api/v1/namespaces/tekton-pipelines/services/http:tekton-dashboard:9097/proxy/#/pipelineruns"
+                        },
+                        {
+                            "name": "context",
+                            "value": "jquad-group/tekton-ci"
+                        },
+                        {
+                            "name": "secretName",
+                            "value": "git-clone"
+                        },
+                        {
+                            "name": "usernameKey",
+                            "value": "username"
+                        },
+                        {
+                            "name": "passwordKey",
+                            "value": "password"
+                        }
+                    ],
+                    "taskRef": {
+                        "kind": "Task",
+                        "name": "github-commit-status"
+                    },
+                    "when": [
+                        {
+                            "input": "$(tasks.build-and-test-task-go.status)",
+                            "operator": "in",
+                            "values": [
+                                "Succeeded"
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "params": [
+                {
+                    "name": "repo-url",
+                    "type": "string"
+                },
+                {
+                    "default": "",
+                    "description": "The git repository URL to clone from.",
+                    "name": "repo-url-alternate",
+                    "type": "string"
+                },
+                {
+                    "description": "The git branch to clone.",
+                    "name": "branch-name",
+                    "type": "string"
+                },
+                {
+                    "description": "the git project name",
+                    "name": "projectname",
+                    "type": "string"
+                },
+                {
+                    "description": "the name of the image",
+                    "name": "repositoryName",
+                    "type": "string"
+                },
+                {
+                    "description": "The build context used by Kaniko",
+                    "name": "pathToContext",
+                    "type": "string"
+                },
+                {
+                    "default": "",
+                    "description": "subdirectory",
+                    "name": "subdirectory",
+                    "type": "string"
+                },
+                {
+                    "name": "statusUrl",
+                    "type": "string"
+                },
+                {
+                    "default": "pending",
+                    "name": "statePending",
+                    "type": "string"
+                },
+                {
+                    "default": "The build was successfull.",
+                    "name": "descriptionSuccess",
+                    "type": "string"
+                },
+                {
+                    "default": "success",
+                    "name": "stateSuccess",
+                    "type": "string"
+                },
+                {
+                    "default": "error",
+                    "name": "stateError",
+                    "type": "string"
+                },
+                {
+                    "default": "The build has failed.",
+                    "name": "descriptionError",
+                    "type": "string"
+                },
+                {
+                    "default": "The build is currently running.",
+                    "name": "descriptionPending",
+                    "type": "string"
+                },
+                {
+                    "default": "https://rancher.jquad.rocks/pipeline",
+                    "name": "targetUrl",
+                    "type": "string"
+                },
+                {
+                    "default": "jquad-group/tekton-ci",
+                    "name": "context",
+                    "type": "string"
+                },
+                {
+                    "name": "githubSecretName",
+                    "type": "string"
+                },
+                {
+                    "name": "githubUsernameKey",
+                    "type": "string"
+                },
+                {
+                    "name": "githubPasswordKey",
+                    "type": "string"
+                }
+            ],
+            "tasks": [
+                {
+                    "name": "clone",
+                    "params": [
+                        {
+                            "name": "url",
+                            "value": "git@github.com:jquad-group/sample-go-application.git"
+                        },
+                        {
+                            "name": "url-alternate",
+                            "value": "git@github.com:jquad-group/sample-go-application.git"
+                        },
+                        {
+                            "name": "revision",
+                            "value": "feature/added-catalog-info"
+                        },
+                        {
+                            "name": "refspec",
+                            "value": "+refs/tags/*:refs/tags/* +refs/heads/*:refs/heads/*"
+                        },
+                        {
+                            "name": "deleteExisting",
+                            "value": "true"
+                        },
+                        {
+                            "name": "sslVerify",
+                            "value": "false"
+                        },
+                        {
+                            "name": "depth",
+                            "value": "1"
+                        },
+                        {
+                            "name": "subdirectory",
+                            "value": ""
+                        }
+                    ],
+                    "taskRef": {
+                        "kind": "Task",
+                        "name": "git-clone"
+                    },
+                    "workspaces": [
+                        {
+                            "name": "repo",
+                            "workspace": "workspace"
+                        }
+                    ]
+                },
+                {
+                    "name": "github-commit-status-pending",
+                    "params": [
+                        {
+                            "name": "statusUrl",
+                            "value": "https://api.github.com/repos/jquad-group/sample-go-application/statuses/ab43364d1c192228832068e93c0a1357412e48af"
+                        },
+                        {
+                            "name": "description",
+                            "value": "The build is currently running."
+                        },
+                        {
+                            "name": "state",
+                            "value": "pending"
+                        },
+                        {
+                            "name": "targetUrl",
+                            "value": "https://rancher.jquad.rocks/k8s/clusters/local/api/v1/namespaces/tekton-pipelines/services/http:tekton-dashboard:9097/proxy/#/pipelineruns"
+                        },
+                        {
+                            "name": "context",
+                            "value": "jquad-group/tekton-ci"
+                        },
+                        {
+                            "name": "secretName",
+                            "value": "git-clone"
+                        },
+                        {
+                            "name": "usernameKey",
+                            "value": "username"
+                        },
+                        {
+                            "name": "passwordKey",
+                            "value": "password"
+                        }
+                    ],
+                    "runAfter": [
+                        "clone"
+                    ],
+                    "taskRef": {
+                        "kind": "Task",
+                        "name": "github-commit-status"
+                    }
+                },
+                {
+                    "name": "build-and-test-task-go",
+                    "runAfter": [
+                        "github-commit-status-pending"
+                    ],
+                    "taskRef": {
+                        "kind": "Task",
+                        "name": "build-and-test-task-go"
+                    },
+                    "workspaces": [
+                        {
+                            "name": "repo",
+                            "workspace": "workspace"
+                        }
+                    ]
+                }
+            ],
+            "workspaces": [
+                {
+                    "name": "workspace"
+                }
+            ]
+        },
+        "skippedTasks": [
+            {
+                "name": "github-commit-status-error",
+                "reason": "When Expressions evaluated to false",
+                "whenExpressions": [
+                    {
+                        "input": "Succeeded",
+                        "operator": "in",
+                        "values": [
+                            "Failed"
+                        ]
+                    }
+                ]
+            }
+        ],
+        "startTime": "2022-10-25T18:41:36Z",
+        "taskRuns": {
+            "feature-added-catalog-info-xdjk9-build-and-test-task-go": {
+                "pipelineTaskName": "build-and-test-task-go",
+                "status": {
+                    "completionTime": "2022-10-25T18:42:22Z",
+                    "conditions": [
+                        {
+                            "lastTransitionTime": "2022-10-25T18:42:22Z",
+                            "message": "All Steps have completed executing",
+                            "reason": "Succeeded",
+                            "status": "True",
+                            "type": "Succeeded"
+                        }
+                    ],
+                    "podName": "feature-added-catalog-info-xdjk9-build-and-test-task-go-pod",
+                    "startTime": "2022-10-25T18:42:07Z",
+                    "steps": [
+                        {
+                            "container": "step-test",
+                            "imageID": "docker.io/library/golang@sha256:b1ff3263f543b4c458e172f3df429a3e7dfed29d4359ab839a614f903252e1df",
+                            "name": "test",
+                            "terminated": {
+                                "containerID": "containerd://fb2c58d4ac624483829c480e7a1b1532296741645a11fe7b63c93bc2d36c54d0",
+                                "exitCode": 0,
+                                "finishedAt": "2022-10-25T18:42:21Z",
+                                "reason": "Completed",
+                                "startedAt": "2022-10-25T18:42:21Z"
+                            }
+                        },
+                        {
+                            "container": "step-build",
+                            "imageID": "docker.io/library/golang@sha256:b1ff3263f543b4c458e172f3df429a3e7dfed29d4359ab839a614f903252e1df",
+                            "name": "build",
+                            "terminated": {
+                                "containerID": "containerd://d83b2cdce00d458ac38c428c321aafa9e8f0014a561ef41b7731e28520f7ee00",
+                                "exitCode": 0,
+                                "finishedAt": "2022-10-25T18:42:21Z",
+                                "reason": "Completed",
+                                "startedAt": "2022-10-25T18:42:21Z"
+                            }
+                        }
+                    ],
+                    "taskSpec": {
+                        "steps": [
+                            {
+                                "image": "golang:1.17.11",
+                                "imagePullPolicy": "IfNotPresent",
+                                "name": "test",
+                                "resources": {},
+                                "script": "echo \"cd /workspace/repo\"\necho \"make test\""
+                            },
+                            {
+                                "image": "golang:1.17.11",
+                                "imagePullPolicy": "IfNotPresent",
+                                "name": "build",
+                                "resources": {},
+                                "script": "echo \"cd /workspace/repo\"\necho \"make\"        "
+                            }
+                        ],
+                        "workspaces": [
+                            {
+                                "name": "repo"
+                            }
+                        ]
+                    }
+                }
+            },
+            "feature-added-catalog-info-xdjk9-clone": {
+                "pipelineTaskName": "clone",
+                "status": {
+                    "completionTime": "2022-10-25T18:41:58Z",
+                    "conditions": [
+                        {
+                            "lastTransitionTime": "2022-10-25T18:41:58Z",
+                            "message": "All Steps have completed executing",
+                            "reason": "Succeeded",
+                            "status": "True",
+                            "type": "Succeeded"
+                        }
+                    ],
+                    "podName": "feature-added-catalog-info-xdjk9-clone-pod",
+                    "resourcesResult": [
+                        {
+                            "key": "url",
+                            "value": "git@github.com:jquad-group/sample-go-application.git"
+                        }
+                    ],
+                    "startTime": "2022-10-25T18:41:36Z",
+                    "steps": [
+                        {
+                            "container": "step-clone",
+                            "imageID": "gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/git-init@sha256:ec618dfa0fc23ae90105135be96bb8c0f9250bfd7682d9d5bab845ab6fd50528",
+                            "name": "clone",
+                            "terminated": {
+                                "containerID": "containerd://8bad7073f6311c42171babfd74fe073ea3275c16308fbfffee2b2c81f25fc7d9",
+                                "exitCode": 0,
+                                "finishedAt": "2022-10-25T18:41:57Z",
+                                "message": "[{\"key\":\"commit\",\"value\":\"ab43364d1c192228832068e93c0a1357412e48af\",\"type\":1},{\"key\":\"lock-pid\",\"value\":\"caa37cd2-f38b-4689-add3-8efeac75715f\\n\",\"type\":1},{\"key\":\"url\",\"value\":\"git@github.com:jquad-group/sample-go-application.git\"}]",
+                                "reason": "Completed",
+                                "startedAt": "2022-10-25T18:41:56Z"
+                            }
+                        }
+                    ],
+                    "taskResults": [
+                        {
+                            "name": "commit",
+                            "type": "string",
+                            "value": "ab43364d1c192228832068e93c0a1357412e48af"
+                        },
+                        {
+                            "name": "lock-pid",
+                            "type": "string",
+                            "value": "caa37cd2-f38b-4689-add3-8efeac75715f\n"
+                        }
+                    ],
+                    "taskSpec": {
+                        "params": [
+                            {
+                                "description": "git https or ssh url to clone",
+                                "name": "url",
+                                "type": "string"
+                            },
+                            {
+                                "default": "",
+                                "description": "git https or ssh url to clone if not provided, url is used as default",
+                                "name": "url-alternate",
+                                "type": "string"
+                            },
+                            {
+                                "default": "master",
+                                "description": "git revision to checkout (branch, tag, sha, refÔÇª)",
+                                "name": "revision",
+                                "type": "string"
+                            },
+                            {
+                                "default": "",
+                                "description": "(optional) git refspec to fetch before checking out revision",
+                                "name": "refspec",
+                                "type": "string"
+                            },
+                            {
+                                "default": "false",
+                                "description": "defines if the resource should initialize and fetch the submodules",
+                                "name": "submodules",
+                                "type": "string"
+                            },
+                            {
+                                "default": "1",
+                                "description": "performs a shallow clone where only the most recent commit(s) will be fetched",
+                                "name": "depth",
+                                "type": "string"
+                            },
+                            {
+                                "default": "true",
+                                "description": "defines if http.sslVerify should be set to true or false in the global git config",
+                                "name": "sslVerify",
+                                "type": "string"
+                            },
+                            {
+                                "default": "",
+                                "description": "subdirectory inside the \"output\" workspace to clone the git repo into",
+                                "name": "subdirectory",
+                                "type": "string"
+                            },
+                            {
+                                "default": "false",
+                                "description": "clean out the contents of the repo's destination directory (if it already exists) before trying to clone the repo there",
+                                "name": "deleteExisting",
+                                "type": "string"
+                            },
+                            {
+                                "default": "",
+                                "description": "git HTTP proxy server for non-SSL requests",
+                                "name": "httpProxy",
+                                "type": "string"
+                            },
+                            {
+                                "default": "",
+                                "description": "git HTTPS proxy server for SSL requests",
+                                "name": "httpsProxy",
+                                "type": "string"
+                            },
+                            {
+                                "default": "",
+                                "description": "git no proxy - opt out of proxying HTTP/HTTPS requests",
+                                "name": "noProxy",
+                                "type": "string"
+                            },
+                            {
+                                "default": "gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/git-init:v0.37.0",
+                                "description": "The image used where the git-init binary is.",
+                                "name": "gitInitImage",
+                                "type": "string"
+                            }
+                        ],
+                        "results": [
+                            {
+                                "description": "The precise commit SHA that was fetched by this Task",
+                                "name": "commit",
+                                "type": "string"
+                            },
+                            {
+                                "description": "The final execution status should be \"Succeeded\", can be replaced in \u003e tekton v20.x",
+                                "name": "status",
+                                "type": "string"
+                            },
+                            {
+                                "description": "the pid set by the first step",
+                                "name": "lock-pid",
+                                "type": "string"
+                            }
+                        ],
+                        "steps": [
+                            {
+                                "image": "gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/git-init:v0.37.0",
+                                "imagePullPolicy": "Always",
+                                "name": "clone",
+                                "resources": {},
+                                "script": "# check if given alternate url starts with https\nURL=\"git@github.com:jquad-group/sample-go-application.git\"\nif  echo \"git@github.com:jquad-group/sample-go-application.git\" | grep -E \"^[[:blank:]]*http[s]{0,1}://.+$\" ; then\n  URL=\"git@github.com:jquad-group/sample-go-application.git\"\nfi\n\nif  echo \"$URL\" | grep -v -E \"^[[:blank:]]*http[s]{0,1}://.+$\" ; then\n  echo \"Provide a valid https URI, either in url or in url-alternate\"\nfi\n\nCHECKOUT_DIR=\"/workspace/repo/\"\n\n# Locks\nTARGETDIR=\"/workspace/repo\"\nLOCKFOLDER=$TARGETDIR/.lock\nPIDFILE=$LOCKFOLDER/.pid\nLOGFILE=log\ndeleteLock(){\n    pid=$(cat /tekton/results/lock-pid)\n    content=$(cat $PIDFILE)\n    if [ \"$pid\" == \"$content\" ];then\n        echo \"deleting lock\"\n        rm -rf $LOCKFOLDER;\n    fi\n}\n\n# For exit not applicable in this use case\n#trapfunctions\ntrap_exit() {\n    echo \"trapping exit signal\" \u003e\u00262\n    deleteLock\n}\ntrap_int() {\n    echo \"trapping int signal\" \u003e\u00262\n    deleteLock\n    exit 1\n}\ntrap_term() {\n    echo \"trapping term signal\" \u003e\u00262\n    deleteLock\n    exit 3\n}\n#\n#\ntrap trap_exit EXIT\ntrap trap_int  INT\ntrap trap_term  TERM\n\naquireLock(){\n  mkdir -pv $TARGETDIR\n  let i=1\n  while ! mkdir $LOCKFOLDER ; do\n      echo \"waiting\"\n      sleep $i\n      let i+=2;\n      if $i \u003e= 60 ; then\n        # don't wait indefinitely\n        exit 4\n      fi\n  done\n\n  PID=caa37cd2-f38b-4689-add3-8efeac75715f\n  echo \"aquired Lock\"\n  echo $PID \u003e $PIDFILE\n  echo $PID \u003e /tekton/results/lock-pid\n  echo $PID\n  touch $LOCKFOLDER\n}\n\n\ncleandir() {\n  # Delete any existing contents of the repo directory if it exists.\n  #\n  # We don't just \"rm -rf $CHECKOUT_DIR\" because $CHECKOUT_DIR might be \"/\"\n  # or the root of a mounted volume.\n  if [[ -d \"$CHECKOUT_DIR\" ]] ; then\n    # Delete non-hidden files and directories\n    rm -rf \"$CHECKOUT_DIR\"/*\n    # Delete files and directories starting with . but excluding .. and .lock\n    rm -rf  $CHECKOUT_DIR/.[!.]*[!lock]*\n    # Delete files and directories starting with .. plus any other character\n    rm -rf \"$CHECKOUT_DIR\"/..?*\n  fi\n}\n\naquireLock\n\nif [[ \"true\" == \"true\" ]] ; then\n  cleandir\nfi\ntest -z \"\" || export HTTP_PROXY=\ntest -z \"\" || export HTTPS_PROXY=\ntest -z \"\" || export NO_PROXY=\n/ko-app/git-init \\\n  -url \"$URL\" \\\n  -revision \"feature/added-catalog-info\" \\\n  -refspec \"+refs/tags/*:refs/tags/* +refs/heads/*:refs/heads/*\" \\\n  -path \"$CHECKOUT_DIR\" \\\n  -sslVerify=\"false\" \\\n  -submodules=\"false\" \\\n  -depth \"1\"\ncd \"$CHECKOUT_DIR\"\nRESULT_SHA=\"$(git rev-parse HEAD | tr -d '\\n')\"\n\nEXIT_CODE=\"$?\"\n# deleted by trap\n# deleteLock\nif [ \"$EXIT_CODE\" != 0 ]\nthen\n  exit $EXIT_CODE\nfi\n# Make sure we don't add a trailing newline to the result!\necho -n \"$RESULT_SHA\" \u003e /tekton/results/commit"
+                            }
+                        ],
+                        "workspaces": [
+                            {
+                                "description": "The git repo will be cloned onto the volume backing this workspace",
+                                "name": "repo"
+                            }
+                        ]
+                    }
+                }
+            },
+            "feature-added-catalog-info-xdjk9-github-commit-status-pending": {
+                "pipelineTaskName": "github-commit-status-pending",
+                "status": {
+                    "completionTime": "2022-10-25T18:42:06Z",
+                    "conditions": [
+                        {
+                            "lastTransitionTime": "2022-10-25T18:42:06Z",
+                            "message": "All Steps have completed executing",
+                            "reason": "Succeeded",
+                            "status": "True",
+                            "type": "Succeeded"
+                        }
+                    ],
+                    "podName": "feature-added-catalog-info-eff154312f63d856ff7e731ca728fd3c-pod",
+                    "startTime": "2022-10-25T18:41:58Z",
+                    "steps": [
+                        {
+                            "container": "step-set-github-commit-status",
+                            "imageID": "docker.io/alpine/curl@sha256:81372de8c566f2d731bde924bed45230018e6d7c21d051c15e283eb8e06dfa2d",
+                            "name": "set-github-commit-status",
+                            "terminated": {
+                                "containerID": "containerd://7a0e6b0c6a032743c2fda5bfb7a0b9e44be36eb07394fb46a66eae78db2f240b",
+                                "exitCode": 0,
+                                "finishedAt": "2022-10-25T18:42:06Z",
+                                "reason": "Completed",
+                                "startedAt": "2022-10-25T18:42:06Z"
+                            }
+                        }
+                    ],
+                    "taskSpec": {
+                        "params": [
+                            {
+                                "name": "statusUrl",
+                                "type": "string"
+                            },
+                            {
+                                "default": "success",
+                                "name": "state",
+                                "type": "string"
+                            },
+                            {
+                                "name": "description",
+                                "type": "string"
+                            },
+                            {
+                                "default": "https://rancher.jquad.rocks/pipeline",
+                                "name": "targetUrl",
+                                "type": "string"
+                            },
+                            {
+                                "default": "jquad-group/tekton-ci",
+                                "name": "context",
+                                "type": "string"
+                            },
+                            {
+                                "name": "secretName",
+                                "type": "string"
+                            },
+                            {
+                                "default": "username",
+                                "name": "usernameKey",
+                                "type": "string"
+                            },
+                            {
+                                "default": "password",
+                                "name": "passwordKey",
+                                "type": "string"
+                            }
+                        ],
+                        "steps": [
+                            {
+                                "env": [
+                                    {
+                                        "name": "GITHUB_PASSWORD",
+                                        "valueFrom": {
+                                            "secretKeyRef": {
+                                                "key": "password",
+                                                "name": "git-clone"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "GITHUB_USER",
+                                        "valueFrom": {
+                                            "secretKeyRef": {
+                                                "key": "username",
+                                                "name": "git-clone"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "image": "alpine/curl:latest",
+                                "imagePullPolicy": "Always",
+                                "name": "set-github-commit-status",
+                                "resources": {},
+                                "script": "curl \\\n-i \\\n-u \\\n\"${GITHUB_USER}:${GITHUB_PASSWORD}\" \\\n-X \\\nPOST \\\n-H \\\n\"Accept: application/vnd.github.v3+json\" \\\nhttps://api.github.com/repos/jquad-group/sample-go-application/statuses/ab43364d1c192228832068e93c0a1357412e48af \\\n-d \\\n\"{\\\"state\\\":\\\"pending\\\",\\\"target_url\\\":\\\"https://rancher.jquad.rocks/k8s/clusters/local/api/v1/namespaces/tekton-pipelines/services/http:tekton-dashboard:9097/proxy/#/pipelineruns\\\",\\\"description\\\":\\\"The build is currently running.\\\",\\\"context\\\":\\\"jquad-group/tekton-ci\\\"}\""
+                            }
+                        ]
+                    }
+                }
+            },
+            "feature-added-catalog-info-xdjk9-github-commit-status-success": {
+                "pipelineTaskName": "github-commit-status-success",
+                "status": {
+                    "completionTime": "2022-10-25T18:42:30Z",
+                    "conditions": [
+                        {
+                            "lastTransitionTime": "2022-10-25T18:42:30Z",
+                            "message": "All Steps have completed executing",
+                            "reason": "Succeeded",
+                            "status": "True",
+                            "type": "Succeeded"
+                        }
+                    ],
+                    "podName": "feature-added-catalog-info-6f82ba3e4ddf3855f05e660aa435643a-pod",
+                    "startTime": "2022-10-25T18:42:22Z",
+                    "steps": [
+                        {
+                            "container": "step-set-github-commit-status",
+                            "imageID": "docker.io/alpine/curl@sha256:81372de8c566f2d731bde924bed45230018e6d7c21d051c15e283eb8e06dfa2d",
+                            "name": "set-github-commit-status",
+                            "terminated": {
+                                "containerID": "containerd://d4f158d13389fef26d714708f91f226a58868751a7edc496b3a0f3d16f96e69c",
+                                "exitCode": 0,
+                                "finishedAt": "2022-10-25T18:42:29Z",
+                                "reason": "Completed",
+                                "startedAt": "2022-10-25T18:42:29Z"
+                            }
+                        }
+                    ],
+                    "taskSpec": {
+                        "params": [
+                            {
+                                "name": "statusUrl",
+                                "type": "string"
+                            },
+                            {
+                                "default": "success",
+                                "name": "state",
+                                "type": "string"
+                            },
+                            {
+                                "name": "description",
+                                "type": "string"
+                            },
+                            {
+                                "default": "https://rancher.jquad.rocks/pipeline",
+                                "name": "targetUrl",
+                                "type": "string"
+                            },
+                            {
+                                "default": "jquad-group/tekton-ci",
+                                "name": "context",
+                                "type": "string"
+                            },
+                            {
+                                "name": "secretName",
+                                "type": "string"
+                            },
+                            {
+                                "default": "username",
+                                "name": "usernameKey",
+                                "type": "string"
+                            },
+                            {
+                                "default": "password",
+                                "name": "passwordKey",
+                                "type": "string"
+                            }
+                        ],
+                        "steps": [
+                            {
+                                "env": [
+                                    {
+                                        "name": "GITHUB_PASSWORD",
+                                        "valueFrom": {
+                                            "secretKeyRef": {
+                                                "key": "password",
+                                                "name": "git-clone"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "GITHUB_USER",
+                                        "valueFrom": {
+                                            "secretKeyRef": {
+                                                "key": "username",
+                                                "name": "git-clone"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "image": "alpine/curl:latest",
+                                "imagePullPolicy": "Always",
+                                "name": "set-github-commit-status",
+                                "resources": {},
+                                "script": "curl \\\n-i \\\n-u \\\n\"${GITHUB_USER}:${GITHUB_PASSWORD}\" \\\n-X \\\nPOST \\\n-H \\\n\"Accept: application/vnd.github.v3+json\" \\\nhttps://api.github.com/repos/jquad-group/sample-go-application/statuses/ab43364d1c192228832068e93c0a1357412e48af \\\n-d \\\n\"{\\\"state\\\":\\\"success\\\",\\\"target_url\\\":\\\"https://rancher.jquad.rocks/k8s/clusters/local/api/v1/namespaces/tekton-pipelines/services/http:tekton-dashboard:9097/proxy/#/pipelineruns\\\",\\\"description\\\":\\\"The build was successfull.\\\",\\\"context\\\":\\\"jquad-group/tekton-ci\\\"}\""
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}
