@@ -31,6 +31,7 @@ export class TektonBackendClient implements TektonApi {
       }
       throw new Error(message);
     }
+    
     return await response.json();
   }
 

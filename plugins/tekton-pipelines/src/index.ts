@@ -6,4 +6,3 @@ export {
 export type { EntityTektonPipelinesContentProps } from './plugin';
 export { isTektonCiAvailable, Router } from './Router';
 export * from './api';
-export * from './hooks';

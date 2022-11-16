@@ -44,12 +44,22 @@ export function TektonDashboardComponent(props: TektonContentProps) {
 
   useEffect(() => {
     setInterval(() => {
-      logger.debug('TektonDashboardComponent Query TektonApi')
+      logger.debug('TektonDashboardComponent Query TektonApi');
       tektonApi
         .getPipelineRuns({ entity: props.entity }, '', '', '', '', '')
         .then(respPipelineRuns => {
+          return respPipelineRuns.sort((pipelineA, pipelineB) =>
+            pipelineA.status.startTime > pipelineB.status.startTime ? -1 : 1,
+          );
+        })
+        .then(respPipelineRuns => {
           logger.debug(
             `TektonDashboardComponent Pipeline Runs Count: ${respPipelineRuns.length}`,
+          );
+          logger.debug(
+            `TektonDashboardComponent Pipeline Runs: ${JSON.stringify(
+              respPipelineRuns,
+            )} end`,
           );
           setPipelineRuns(respPipelineRuns);
           setLoading(false);

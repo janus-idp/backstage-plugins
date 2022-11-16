@@ -10,7 +10,7 @@ import { act } from '@testing-library/react';
 import React from 'react';
 import { TektonBackendClientMock } from '../../api/TektonBackendClientMock';
 import { getTektonApi } from '../../api/types';
-import * as pipelineRunFileMock from './__fixtures__/pipelinerun.json';
+import pipelineRunFileMock from './__fixtures__/pipelinerun.json';
 
 jest.mock('../../api/types');
 
@@ -55,6 +55,7 @@ describe('TektonDashboardComponent', () => {
   });
 
   it('renders the progress bar and then Dashboard', async () => {
+    
     const pipelienRun = pipelineRunFileMock as unknown as PipelineRun;
     const pipelineRuns = [pipelienRun] as PipelineRun[];
     const tektonBackendClientMock = new TektonBackendClientMock(pipelineRuns);
@@ -95,7 +96,6 @@ describe('TektonDashboardComponent', () => {
     });
   });
   it('renders the progress bar and then error', async () => {
-    const pipelienRun = pipelineRunFileMock as unknown as PipelineRun;
     const pipelineRuns = [] as PipelineRun[];
     const tektonBackendClientMock = new TektonBackendClientMock(
       pipelineRuns,
