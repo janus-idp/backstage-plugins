@@ -43,7 +43,7 @@ export function TektonDashboardComponent(props: TektonContentProps) {
   const tektonApi = getTektonApi();
 
   useEffect(() => {
-    setInterval(() => {
+    const interval = setInterval(() => {
       logger.debug('TektonDashboardComponent Query TektonApi');
       tektonApi
         .getPipelineRuns({ entity: props.entity }, '', '', '', '', '')
@@ -73,6 +73,8 @@ export function TektonDashboardComponent(props: TektonContentProps) {
           setError(error.toString());
         });
     }, props.refreshIntervalMs || DEFAULT_REFRESH_INTERVALL);
+    return (() => clearInterval(interval));
+
   }, [props.entity]);
 
   if (loading) {
