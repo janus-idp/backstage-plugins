@@ -172,8 +172,7 @@ export function CollapsibleTableRow(props: { pipelineRun: PipelineRun }) {
               {pipelineRun.taskRuns !== undefined &&
                 pipelineRun.taskRuns.map((taskRunRow) => (
                   <Fragment>
-                    <Divider />
-                    <TableRow key={taskRunRow.metadata.name}>
+                    <TableRow key={taskRunRow.metadata.name} style={{border: "1px solid rgb(0, 0, 0)"}}>
                       <TableCell align="left" rowSpan={taskRunRow.status.steps.length + 1}>
                         {taskRunRow.metadata.name}
                       </TableCell>
@@ -206,7 +205,6 @@ export function CollapsibleTableRow(props: { pipelineRun: PipelineRun }) {
                           </TableCell>
                         </TableRow>
                       ))}
-                    <Divider />
                   </Fragment>
                 ))}
             </TableBody>
