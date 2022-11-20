@@ -44,7 +44,7 @@ export const CollapsibleTable = ({ pipelineruns }: PipelineRunProps) => {
   };
 
   return (
-    <TableContainer component={Paper} data-testid="collapsible-table-container">
+    <TableContainer data-testid="collapsible-table-container">
       <Table aria-label="collapsible table">
         <TableHead>
           <TableRow>
