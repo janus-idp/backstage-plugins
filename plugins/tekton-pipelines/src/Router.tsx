@@ -6,7 +6,6 @@ import {
 import { useEntity } from '@backstage/plugin-catalog-react';
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { BrowserRouter } from 'react-router-dom';
 import { TektonDashboardComponent } from './components/TektonDashboard';
 import logger from './logging/logger';
 
