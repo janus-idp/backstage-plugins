@@ -15,14 +15,14 @@ export type ClusterDetails = {
   platform?: string;
   region?: string;
   allocatableResources?: {
-    cpuCores: number;
-    memorySize: string;
-    numberOfPods: number;
+    cpuCores?: number;
+    memorySize?: string;
+    numberOfPods?: number;
   };
   availableResources?: {
-    cpuCores: number;
-    memorySize: string;
-    numberOfPods: number;
+    cpuCores?: number;
+    memorySize?: string;
+    numberOfPods?: number;
   };
   status: {
     available: boolean;

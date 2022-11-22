@@ -3,9 +3,12 @@ import { Config } from '@backstage/config';
 const CLUSTERS_PATH = 'kubernetes.clusterLocatorMethods';
 const HUB_CLUSTER_CONFIG_PATH = 'rhacm.hub';
 
+export const getHubClusterName = (config: Config) =>
+  config.getString(HUB_CLUSTER_CONFIG_PATH);
+
 export const getHubClusterFromConfig = (config: Config) => {
   try {
-    config.getString(HUB_CLUSTER_CONFIG_PATH);
+    getHubClusterName(config);
   } catch (err) {
     throw new Error(
       `Hub cluster must be specified in config at '${HUB_CLUSTER_CONFIG_PATH}'`,
@@ -24,6 +27,3 @@ export const getHubClusterFromConfig = (config: Config) => {
   }
   return hub;
 };
-
-export const getHubClusterName = (config: Config) =>
-  config.getString(HUB_CLUSTER_CONFIG_PATH);
