@@ -1,0 +1,20 @@
+{
+    "extends": [
+        "config:js-lib",
+        ":gitSignOff",
+        "group:allNonMajor",
+        "group:linters",
+        "group:semantic-releaseMonorepo"
+    ],
+    "npm": {
+        "stabilityDays": 1
+    },
+    "packageRules": [
+        {
+            "matchManagers": [
+                "github-actions"
+            ],
+            "groupName": "GitHub Actions"
+        }
+    ]
+}

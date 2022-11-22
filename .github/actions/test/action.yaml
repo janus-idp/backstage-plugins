@@ -1,0 +1,32 @@
+name: Test
+description: Test Node.js package
+inputs:
+  args:
+    description: Backstage CLI repo build arguments
+    default: ""
+runs:
+  using: "composite"
+  steps:
+    - name: Read Node.js version
+      id: node_version
+      uses: juliangruber/read-file-action@v1
+      with:
+        path: ./.nvmrc
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: "${{ steps.node_version.outputs.content }}"
+        cache: 'yarn'
+
+    - name: Install dependencies
+      shell: bash
+      run: yarn --prefer-offline --frozen-lockfile
+
+    - name: Run lint
+      shell: bash
+      run: yarn lint -- ${{ inputs.args }}
+
+    - name: Run tests
+      shell: bash
+      run: yarn test
