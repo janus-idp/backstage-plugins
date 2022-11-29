@@ -4,9 +4,9 @@ import { useCluster } from '../ClusterContext';
 import { TableCardFromData } from '../TableCardFromData';
 
 export const ClusterInfoCard = () => {
-  const { data, loading, error } = useCluster();
+  const { data } = useCluster();
 
-  if (error || loading) {
+  if (!data) {
     return null;
   }
 

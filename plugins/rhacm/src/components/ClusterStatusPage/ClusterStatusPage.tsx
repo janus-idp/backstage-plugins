@@ -23,6 +23,8 @@ import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { getClusters } from '../../helpers/apiClient';
 import { HomePageCompanyLogo } from '@backstage/plugin-home';
+import { ErrorResponseBody } from '@backstage/errors';
+import { ClusterDetails } from '@internal/backstage-plugin-rhacm-common';
 
 interface clusterEntity {
   status: boolean;
@@ -83,11 +85,18 @@ const CatalogClusters = () => {
       const clusterResourceEntities = await catalogApi.getEntities({
         filter: { kind: 'Resource', 'spec.type': 'kubernetes-cluster' },
       });
+
       const clusters = await getClusters(configApi);
+
+      if ('error' in clusters) {
+        throw new Error((clusters as ErrorResponseBody).error.message);
+      }
 
       setClusterEntities(
         clusterResourceEntities.items.map(entity => {
-          const cluster = clusters.find(cd => cd.name === entity.metadata.name);
+          const cluster = (clusters as ClusterDetails[]).find(
+            cd => cd.name === entity.metadata.name,
+          );
           return {
             status: cluster?.status.available!,
             entity: entity,
@@ -102,7 +111,7 @@ const CatalogClusters = () => {
 
   if (error) {
     return (
-      <WarningPanel severity="error" title="Could not fetch catalog entities.">
+      <WarningPanel severity="error" title="Could not fetch clusters from Hub.">
         <CodeSnippet language="text" text={error.toString()} />
       </WarningPanel>
     );

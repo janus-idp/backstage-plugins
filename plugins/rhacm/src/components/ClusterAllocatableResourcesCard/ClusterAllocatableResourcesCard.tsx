@@ -4,9 +4,13 @@ import { useCluster } from '../ClusterContext';
 import { TableCardFromData } from '../TableCardFromData';
 
 export const ClusterAllocatableResourceCard = (): any => {
-  const { data, loading, error } = useCluster();
+  const { data } = useCluster();
 
-  if (!('allocatableResources' in data) || error || loading) {
+  if (!data) {
+    return null;
+  }
+
+  if (!('allocatableResources' in data!)) {
     return null;
   }
 

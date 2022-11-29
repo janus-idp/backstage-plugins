@@ -5,26 +5,25 @@ import useAsyncFn from 'react-use/lib/useAsyncFn';
 import useDebounce from 'react-use/lib/useDebounce';
 import { ClusterDetails } from '@internal/backstage-plugin-rhacm-common';
 import { getClusterByName } from '../../helpers/apiClient';
+import { ErrorResponseBody } from '@backstage/errors';
 
-const defaultClusterDetails: ClusterDetails = {
-  status: {
-    available: false,
-    reason: 'Loading',
-  },
+type ClusterContextType = {
+  data: ClusterDetails | null;
+  loading: boolean;
+  error: Error | null;
 };
 
-const ClusterContext = createContext({
-  // Have to put a default cluster details since it has to have a status by definition
-  data: defaultClusterDetails,
-  loading: true,
-  error: false,
-});
+const ClusterContext = createContext<ClusterContextType>(
+  {} as ClusterContextType,
+);
 
 export const ClusterContextProvider = (props: any) => {
   const { entity } = useEntity();
   const configApi = useApi(configApiRef);
-  const [cluster, setCluster] = useState<ClusterDetails>(defaultClusterDetails);
-  const [{ loading, error }, refresh] = useAsyncFn(
+  const [cluster, setCluster] = useState(
+    {} as ClusterDetails | ErrorResponseBody,
+  );
+  const [{ loading, error: asyncError }, refresh] = useAsyncFn(
     async () => {
       setCluster(await getClusterByName(configApi, entity.metadata.name));
     },
@@ -32,19 +31,21 @@ export const ClusterContextProvider = (props: any) => {
     { loading: true },
   );
   useDebounce(refresh, 10);
-
-  let errorBool = false;
-  /*
-  Error can either be undefined or Error(), if its undefined, no error happended
-  if cluster has some 'error' key, it means the API sent back an error response
-  */
-  if (error instanceof Error || 'error' in cluster) {
-    errorBool = true;
-  }
+  const isError = Boolean(asyncError || 'error' in cluster);
+  const error = isError
+    ? asyncError ||
+      Object.assign(new Error((cluster as ErrorResponseBody)?.error?.message), {
+        ...(cluster as ErrorResponseBody)?.error,
+      })
+    : null;
 
   return (
     <ClusterContext.Provider
-      value={{ data: cluster, loading, error: errorBool }}
+      value={{
+        data: isError || loading ? null : (cluster as ClusterDetails),
+        loading,
+        error,
+      }}
     >
       {props.children}
     </ClusterContext.Provider>

@@ -1,4 +1,5 @@
 import { ConfigApi } from '@backstage/core-plugin-api';
+import { ErrorResponseBody } from '@backstage/errors';
 import { ClusterDetails } from '@internal/backstage-plugin-rhacm-common';
 
 const clusterApiFetchCall = (
@@ -14,9 +15,11 @@ const clusterApiFetchCall = (
 
 export const getClusters = async (
   configApi: ConfigApi,
-): Promise<ClusterDetails[]> => clusterApiFetchCall(configApi, '');
+): Promise<ClusterDetails[] | ErrorResponseBody> =>
+  clusterApiFetchCall(configApi, '');
 
 export const getClusterByName = async (
   configApi: ConfigApi,
   name: string,
-): Promise<ClusterDetails> => clusterApiFetchCall(configApi, `/${name}`);
+): Promise<ClusterDetails | ErrorResponseBody> =>
+  clusterApiFetchCall(configApi, `/${name}`);
