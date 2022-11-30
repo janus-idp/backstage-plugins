@@ -25,7 +25,7 @@ runs:
 
     - name: Run lint
       shell: bash
-      run: yarn lint -- ${{ inputs.args }}
+      run: yarn lint ${{ inputs.args }}
 
     - name: Run tests
       shell: bash

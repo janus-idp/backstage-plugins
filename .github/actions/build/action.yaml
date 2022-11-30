@@ -25,4 +25,4 @@ runs:
 
     - name: Build all packages
       shell: bash
-      run: yarn build -- ${{ inputs.args }}
+      run: yarn build ${{ inputs.args }}
