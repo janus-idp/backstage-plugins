@@ -28,8 +28,8 @@ jobs:
       - name: Build all packages
         uses: ./.github/actions/build
 
-      # - name: Release via semantic-release
-      #   run: npm run release
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #     NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Release via semantic-release
+        run: npm run release || true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
