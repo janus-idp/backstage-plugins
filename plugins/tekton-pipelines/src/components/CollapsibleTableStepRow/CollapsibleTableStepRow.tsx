@@ -43,8 +43,7 @@ export function CollapsibleTableStepRow(props: { taskRun: TaskRun }) {
 
   const [data, setData] = React.useState({data: []});
   const [isLoading, setIsLoading] = React.useState(false);
-  const [err, setErr] = React.useState('');
-  const tektonApi = getTektonApi();
+
 
   const handleClick = async (stepName: string) => {
     setIsLoading(true);
@@ -60,7 +59,7 @@ export function CollapsibleTableStepRow(props: { taskRun: TaskRun }) {
       const response = await fetch('http://localhost:7007/api/tekton-pipelines/logs?namespace=pipeline-trigger-operator-system-build&taskRunPodName=main-mzrnr-clone-pod&stepContainer=step-clone', {
         method: 'GET',
         headers: {
-          Accept: 'text/plain',
+          Accept: 'application/json',
         },
       });
 
@@ -102,7 +101,7 @@ export function CollapsibleTableStepRow(props: { taskRun: TaskRun }) {
               {step.terminated.durationString}
             </TableCell>
             <TableCell>
-              <Button onClick={() => handleClick(step.name)}>Download Log</Button>
+              <Button onClick={() => handleClick(step.name)}>Download Heh</Button>
             </TableCell>
           </TableRow>
         ))}
