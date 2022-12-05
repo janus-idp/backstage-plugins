@@ -14,7 +14,7 @@ If you start developing a plugin that you aim to release as open source, we sugg
 
 You can also use this process if you have an idea for a good plugin but you hope that someone else will pick up the work.
 
-## Start a new plugin
+## Create a new plugin
 
 Run the following command to start a new plugin and follow the instructions:
 
@@ -26,28 +26,22 @@ yarn new
 
 ## Develop a new plugin together with a local backstage instance
 
-If you don't already have a backstage instance repository, you can easily create one via the following command. Please do so outside of this repository.
+Backstage's support for standalone plugin development is very limited (especially for backend plugins), therefore we include a minimal test instance within this repository.
 
-```sh
-npx @backstage/create-app
-```
+1. Install the plugin via `yarn workspace [app|backend] add @janus-idp/<PLUGIN_NAME>@*` (`@*` at the end ensures the package is always linked to the local package in the `plugins` folder)
+2. Run `yarn start`
 
-Then, please [link](https://classic.yarnpkg.com/lang/en/docs/cli/link/) the plugin package to this instance:
+### Developing a frontend plugin
 
-```sh
-pushd plugins/<YOUR_PLUGIN>
-yarn link
-popd
-pushd <YOUR_BACKSTAGE_INSTANCE>
-yarn link @janus-idp/<YOUR_PLUGIN>
-popd
-```
+In case your plugin supports standalone mode, you can use `yarn start` command in your plugin directory directly and you don't have to install the plugin as mentioned above.
 
-To revert this change, please use [`yarn unlink`](https://classic.yarnpkg.com/en/docs/cli/unlink) in reverse order.
+### Plugin specific config file
+
+You can augment the configuration for a plugin by running `yarn start --config <CONFIG_FILE>`.
 
 ## Releasing packages
 
-Backstage plugins in the Janus-IDP community aim for high release velocity for the time being. This allows us to rapidly prototype, develop and test plugins in the wild. Current release schedule reflects this approach, therefore a new release is triggered on each **push** to the *main* branch. Only packages which are affected by the recent changes are released.
+Backstage plugins in the Janus-IDP community aim for high release velocity for the time being. This allows us to rapidly prototype, develop and test plugins in the wild. Current release schedule reflects this approach, therefore a new release is triggered on each **push** to the _main_ branch. Only packages which are affected by the recent changes are released.
 
 ### Configuration
 
@@ -72,10 +66,10 @@ We use [semantic-release](https://semantic-release.gitbook.io/semantic-release/)
 
 Please read [following guidelines](https://semantic-release.gitbook.io/semantic-release/#commit-message-format) to learn, how to format your commit messages:
 
-| Commit message | Release type |
-| -------------- | ------------ |
-| <pre>fix(pencil): stop graphite breaking when too much pressure applied</pre> | Fix Release (`vX.Y.⬆️` ) |
-| <pre>feat(pencil): add 'graphiteWidth' option</pre> | Feature Release (`vX.⬆️.0`) |
+| Commit message                                                                                                                                                                                        | Release type                                                                                                      |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| <pre>fix(pencil): stop graphite breaking when too much pressure applied</pre>                                                                                                                         | Fix Release (`vX.Y.⬆️` )                                                                                          |
+| <pre>feat(pencil): add 'graphiteWidth' option</pre>                                                                                                                                                   | Feature Release (`vX.⬆️.0`)                                                                                       |
 | <pre>perf(pencil): remove graphiteWidth option<br><br>BREAKING CHANGE: The graphiteWidth option has been removed.<br>The default graphite width of 10mm is always used for performance reasons.</pre> | Breaking Release (`v⬆️.0.0`) <br>(Note that the `BREAKING CHANGE:` token must be **in the footer** of the commit) |
 
 Commit messages are used to populate a `CHANGELOG.md` file for each individual package (if the commit is relevant for that particular package folder).
