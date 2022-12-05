@@ -54,4 +54,14 @@ export class TektonBackendClient implements TektonApi {
     return await this.handleResponse(response);
   }
 
+  async getLogs(baseUrl: string, authorizationBearerToken: string, namespace: string, taskRunPodName: string, stepContainer: string): Promise<string> {    
+
+    const url = `${await this.discoveryApi.getBaseUrl('tekton-pipelines')}/logs?namespace=${namespace}&taskRunPodName=${taskRunPodName}&${stepContainer}`;
+    const response = await fetch(url, {
+      method: 'GET',
+    });
+    
+    return await this.handleResponse(response);
+  }  
+
 }

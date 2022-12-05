@@ -2,25 +2,17 @@ import React, { Fragment } from 'react';
 import { StatusError, StatusOK, StatusPending, StatusRunning, StatusWarning } from '@backstage/core-components';
 // eslint-disable-next-line  no-restricted-imports
 import { KeyboardArrowDown, KeyboardArrowUp, KeyboardArrowLeft, KeyboardArrowRight, LastPage, FirstPage } from '@material-ui/icons';
-import { Table, Typography, Box, TableBody, TableRow, TableCell, IconButton, Collapse, TableHead, Button, SwipeableDrawer, Divider, useTheme } from '@material-ui/core';
+import { Table, Typography, Box, TableBody, TableRow, TableCell, IconButton, Collapse, TableHead, Button, useTheme } from '@material-ui/core';
 import { TablePaginationActionsProps } from '@material-ui/core/TablePagination/TablePaginationActions';
 /* ignore lint error for internal dependencies */
 /* eslint-disable */
 import { PipelineRun } from '@jquad-group/plugin-tekton-pipelines-common';
+import { setEnvironmentData } from 'worker_threads';
 /* eslint-enable */
 export const TEKTON_PIPELINES_BUILD_NAMESPACE = 'tektonci/build-namespace';
 export const TEKTON_PIPELINES_LABEL_SELECTOR = "tektonci/pipeline-label-selector";
 
-type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
-function NewlineText(props: { text: string; }): JSX.Element {
-  const text = props.text;
-  const newText = text.split('\n').map(str => <p>{str}</p>);
-
-  return (
-    <Box>{newText}</Box>
-  );
-}
 
 function StatusComponent(props: { reason: string; }): JSX.Element {
   if (props.reason === 'Created') {
@@ -104,34 +96,11 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
   );
 }
 
+ 
 export function CollapsibleTableRow(props: { pipelineRun: PipelineRun }) {
   const { pipelineRun } = props;
   const [open, setOpen] = React.useState(false);
-
-  const [state, setState] = React.useState({
-    bottom: false,
-    logValue: "",
-  });
-
-  const anchor: Anchor = 'bottom';
-
-  const toggleDrawer =
-    // eslint-disable-next-line  @typescript-eslint/no-shadow
-    (anchor: Anchor, open: boolean, logValue: string) =>
-      (event: React.KeyboardEvent | React.MouseEvent) => {
-        if (
-          event &&
-          event.type === 'keydown' &&
-          ((event as React.KeyboardEvent).key === 'Tab' ||
-            (event as React.KeyboardEvent).key === 'Shift')
-        ) {
-          return;
-        }
-
-        state.logValue = logValue
-        setState({ ...state, [anchor]: open });
-      };
-
+  
   return (
     <React.Fragment>
       <TableRow>
@@ -165,7 +134,7 @@ export function CollapsibleTableRow(props: { pipelineRun: PipelineRun }) {
                 <TableCell>Step</TableCell>
                 <TableCell>Status</TableCell>
                 <TableCell>Duration</TableCell>
-                <TableCell>Logs</TableCell>
+                <TableCell>Log</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -190,18 +159,7 @@ export function CollapsibleTableRow(props: { pipelineRun: PipelineRun }) {
                             {step.terminated.durationString}
                           </TableCell>
                           <TableCell>
-                            <Button onClick={toggleDrawer(anchor, true, step.log)}>Show Log</Button>
-                            <SwipeableDrawer
-                              anchor={anchor}
-                              open={state[anchor]}
-                              onClose={toggleDrawer(anchor, false, "")}
-                              onOpen={toggleDrawer(anchor, true, step.log)}
-
-                            >
-                              <Typography style={{ wordWrap: "break-word", width: "auto", margin: 10 }}>1
-                                <NewlineText text={state.logValue} />
-                              </Typography>
-                            </SwipeableDrawer>
+                            <Button>Download Log</Button>
                           </TableCell>
                         </TableRow>
                       ))}
