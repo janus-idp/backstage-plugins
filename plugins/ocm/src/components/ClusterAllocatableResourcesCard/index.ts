@@ -1,0 +1,1 @@
+export { ClusterAllocatableResourceCard } from './ClusterAllocatableResourcesCard';
