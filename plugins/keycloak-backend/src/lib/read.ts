@@ -20,17 +20,16 @@ import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 import { Logger } from 'winston';
 import { KEYCLOAK_ID_ANNOTATION, KEYCLOAK_REALM_ANNOTATION } from './constants';
 import GroupRepresentation from '@keycloak/keycloak-admin-client/lib/defs/groupRepresentation';
-import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
 
-export async function readKeycloakRealm(
+export const readKeycloakRealm = async (
   client: KeycloakAdminClient,
   config: KeycloakProviderConfig,
   logger: Logger,
 ): Promise<{
   users: UserEntity[];
   groups: GroupEntity[];
-}> {
-  const { users } = await readKeycloakUsers(client, config);
+}> => {
+  const users = await readKeycloakUsers(client, config.realm);
   const { groups, groupMembers } = await readKeycloakGroups(
     client,
     config,
@@ -66,16 +65,16 @@ export async function readKeycloakRealm(
   }
 
   return { users, groups };
-}
+};
 
-export async function readKeycloakGroups(
+export const readKeycloakGroups = async (
   client: KeycloakAdminClient,
   config: KeycloakProviderConfig,
   logger: Logger,
 ): Promise<{
   groups: GroupEntity[];
   groupMembers: Map<string, string[]>;
-}> {
+}> => {
   const groups: GroupEntity[] = [];
   const groupMembers = new Map<string, string[]>();
 
@@ -96,50 +95,33 @@ export async function readKeycloakGroups(
   }
 
   return { groups, groupMembers };
-}
+};
 
-export async function readKeycloakUsers(
+export const readKeycloakUsers = async (
   client: KeycloakAdminClient,
-  config: KeycloakProviderConfig,
-): Promise<{
-  users: UserEntity[];
-}> {
-  const users: UserEntity[] = [];
-
-  const keycloakUsers = await client.users.find({ realm: config.realm });
-
-  for (const keycloakUser of keycloakUsers) {
-    const entity: UserEntity = {
-      apiVersion: 'backstage.io/v1beta1',
-      kind: 'User',
-      metadata: {
-        name: keycloakUser.username!,
-        annotations: {
-          [KEYCLOAK_ID_ANNOTATION]: keycloakUser.id!,
-          [KEYCLOAK_REALM_ANNOTATION]: config.realm,
-        },
+  realm: string,
+): Promise<UserEntity[]> => {
+  return (await client.users.find({ realm })).map(user => ({
+    apiVersion: 'backstage.io/v1beta1',
+    kind: 'User',
+    metadata: {
+      name: user.username!,
+      annotations: {
+        [KEYCLOAK_ID_ANNOTATION]: user.id!,
+        [KEYCLOAK_REALM_ANNOTATION]: realm,
       },
-      spec: {
-        profile: {},
-        memberOf: [],
+    },
+    spec: {
+      profile: {
+        email: user.email,
+        displayName: [user.firstName, user.lastName].filter(Boolean).join(' '),
       },
-    };
+      memberOf: [],
+    },
+  }));
+};
 
-    let displayNameArray = [keycloakUser.firstName, keycloakUser.lastName];
-    displayNameArray = displayNameArray.filter(Boolean);
-
-    const displayName = displayNameArray.join(' ');
-
-    if (keycloakUser.email) entity.spec.profile!.email = keycloakUser.email;
-    if (displayName) entity.spec.profile!.displayName = displayName;
-
-    users.push(entity);
-  }
-
-  return { users };
-}
-
-export async function addGroup(
+export const addGroup = async (
   client: KeycloakAdminClient,
   keycloakGroup: GroupRepresentation,
   keycloakParentGroup: GroupRepresentation | undefined,
@@ -148,16 +130,30 @@ export async function addGroup(
 ): Promise<{
   addedGroups: GroupEntity[];
   addedGroupMembers: Map<string, string[]>;
-}> {
+}> => {
   const groups: GroupEntity[] = [];
   const groupMembers = new Map<string, string[]>();
 
   // Transform into Entity
-  const group = await defaultGroupTransformer(keycloakGroup, config);
-
-  if (keycloakParentGroup !== undefined) {
-    group.spec.parent = keycloakParentGroup.name;
-  }
+  const group = {
+    apiVersion: 'backstage.io/v1beta1',
+    kind: 'Group',
+    metadata: {
+      name: keycloakGroup.name!,
+      annotations: {
+        [KEYCLOAK_ID_ANNOTATION]: keycloakGroup.id!,
+        [KEYCLOAK_REALM_ANNOTATION]: config.realm,
+      },
+    },
+    spec: {
+      type: 'group',
+      profile: {
+        displayName: keycloakGroup.name!,
+      },
+      children: [],
+      parent: keycloakParentGroup?.name,
+    },
+  } as GroupEntity;
 
   groups.push(group);
 
@@ -165,7 +161,10 @@ export async function addGroup(
   groupMembers.set(
     keycloakGroup.id!,
     Array.from(
-      await readGroupMembers(client, config, keycloakGroup),
+      await client.groups.listMembers({
+        id: keycloakGroup.id!,
+        realm: config.realm,
+      }),
       x => x.username!,
     ),
   );
@@ -190,41 +189,4 @@ export async function addGroup(
   }
 
   return { addedGroups: groups, addedGroupMembers: groupMembers };
-}
-
-export async function readGroupMembers(
-  client: KeycloakAdminClient,
-  config: KeycloakProviderConfig,
-  group: GroupRepresentation,
-): Promise<UserRepresentation[]> {
-  return await client.groups.listMembers({
-    id: group.id!,
-    realm: config.realm,
-  });
-}
-
-export async function defaultGroupTransformer(
-  group: GroupRepresentation,
-  config: KeycloakProviderConfig,
-): Promise<GroupEntity> {
-  const entity: GroupEntity = {
-    apiVersion: 'backstage.io/v1beta1',
-    kind: 'Group',
-    metadata: {
-      name: group.name!,
-      annotations: {
-        [KEYCLOAK_ID_ANNOTATION]: group.id!,
-        [KEYCLOAK_REALM_ANNOTATION]: config.realm,
-      },
-    },
-    spec: {
-      type: 'group',
-      profile: {
-        displayName: group.name!,
-      },
-      children: [],
-    },
-  };
-
-  return entity;
-}
+};

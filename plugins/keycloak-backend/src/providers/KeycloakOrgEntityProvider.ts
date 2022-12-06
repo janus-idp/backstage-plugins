@@ -251,15 +251,13 @@ function trackProgress(logger: Logger) {
 }
 
 // Makes sure that emitted entities have a proper location
-export function withLocations(
+export const withLocations = (
   baseUrl: string,
   realm: string,
   entity: Entity,
-): Entity {
-  const location =
-    entity.kind === 'Group'
-      ? `url:${baseUrl}/admin/realms/${realm}/groups/${entity.metadata.annotations?.[KEYCLOAK_ID_ANNOTATION]}`
-      : `url:${baseUrl}/admin/realms/${realm}/users/${entity.metadata.annotations?.[KEYCLOAK_ID_ANNOTATION]}`;
+): Entity => {
+  const kind = entity.kind === 'Group' ? 'groups' : 'users';
+  const location = `url:${baseUrl}/admin/realms/${realm}/${kind}/${entity.metadata.annotations?.[KEYCLOAK_ID_ANNOTATION]}`;
   return merge(
     {
       metadata: {
@@ -271,4 +269,4 @@ export function withLocations(
     },
     entity,
   ) as Entity;
-}
+};
