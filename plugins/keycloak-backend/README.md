@@ -6,9 +6,8 @@ This backend plugin integrates Keycloak into Backstage
 
 The following capabilities are included within this plugin:
 
-* Synchronization of Keycloak Users in a Realm
-* Synchronization of Keycloak Groups in a Realm and their Users
-
+- Synchronization of Keycloak Users in a Realm
+- Synchronization of Keycloak Groups in a Realm and their Users
 
 ## Configuration
 
@@ -16,21 +15,21 @@ Communication between Backstage and Keycloak is facilitated through the Keycloak
 
 The following table describes the parameters that can configured in the `app-config.yaml` file to enable the plugin:
 
-| Name | Description | Default Value | Required |
-| -----| ----------- | ------------- | -------- |
-| `baseUrl` | Location of the Keycloak server, such as `https://localhost:8443/auth`. Note: newer versions of Keycloak omit the `/auth` context path. | "" | Yes |
-| `realm` | Realm to synchronize | `master` | No |
-| `loginRealm` | Realm used to authenticate against | `master` | No |
-| `username` | Username to authenticate as | "" | Yes if using password based authentication | 
-| `password` | Password to authenticate as | "" | Yes if using password based authentication | 
-| `clientId` | Client Id to authenticate with | "" | Yes if using client credentials based authentication | 
-| `clientSecret` | Client Secret to authenticate with | "" | Yes if using client credentials based authentication | 
+| Name           | Description                                                                                                                             | Default Value | Required                                             |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ------------- | ---------------------------------------------------- |
+| `baseUrl`      | Location of the Keycloak server, such as `https://localhost:8443/auth`. Note: newer versions of Keycloak omit the `/auth` context path. | ""            | Yes                                                  |
+| `realm`        | Realm to synchronize                                                                                                                    | `master`      | No                                                   |
+| `loginRealm`   | Realm used to authenticate against                                                                                                      | `master`      | No                                                   |
+| `username`     | Username to authenticate as                                                                                                             | ""            | Yes if using password based authentication           |
+| `password`     | Password to authenticate as                                                                                                             | ""            | Yes if using password based authentication           |
+| `clientId`     | Client Id to authenticate with                                                                                                          | ""            | Yes if using client credentials based authentication |
+| `clientSecret` | Client Secret to authenticate with                                                                                                      | ""            | Yes if using client credentials based authentication |
 
 When using client credentials, the access type must be set to `confidential` and service accounts must be enabled. The following roles are required to be added from the `realm-management` client role:
 
-* query-groups
-* query-users
-* view-users
+- query-groups
+- query-users
+- view-users
 
 ## Installation
 

@@ -5,7 +5,7 @@ inputs:
     description: Backstage CLI repo build arguments
     default: --all
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
     - name: Read Node.js version
       id: node_version
@@ -16,7 +16,7 @@ runs:
     - name: Setup Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: "${{ steps.node_version.outputs.content }}"
+        node-version: '${{ steps.node_version.outputs.content }}'
         cache: 'yarn'
 
     - name: Install dependencies
