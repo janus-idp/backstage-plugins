@@ -20,15 +20,12 @@ import {
   TaskScheduleDefinition,
 } from '@backstage/backend-tasks';
 
-
-
 /**
  * The configuration parameters for a single Keycloak provider.
  *
  * @public
  */
 export type KeycloakProviderConfig = {
-
   /**
    * Identifier of the provider which will be used i.e. at the location key for ingested entities.
    */
@@ -40,25 +37,25 @@ export type KeycloakProviderConfig = {
   baseUrl: string;
 
   /**
-   * The username to use for authenticating requests 
+   * The username to use for authenticating requests
    * If specified, password must also be specified
    */
   username?: string;
 
   /**
-   * The password to use for authenticating requests 
+   * The password to use for authenticating requests
    * If specified, username must also be specified
    */
   password?: string;
 
   /**
-   * The clientId to use for authenticating requests 
+   * The clientId to use for authenticating requests
    * If specified, clientSecret must also be specified
    */
   clientId?: string;
 
   /**
-   * The clientSecret to use for authenticating requests 
+   * The clientSecret to use for authenticating requests
    * If specified, clientId must also be specified
    */
   clientSecret?: string;
@@ -69,23 +66,17 @@ export type KeycloakProviderConfig = {
   realm: string;
 
   /**
-  * name of the Keycloak login realm
-  */
+   * name of the Keycloak login realm
+   */
   loginRealm?: string;
 
   /**
-  * Schedule configuration for refresh tasks.
-  */
+   * Schedule configuration for refresh tasks.
+   */
   schedule?: TaskScheduleDefinition;
-
-
-
 };
 
-export function readProviderConfigs(
-  config: Config,
-): KeycloakProviderConfig[] {
-
+export function readProviderConfigs(config: Config): KeycloakProviderConfig[] {
   const providersConfig = config.getOptionalConfig(
     'catalog.providers.keycloakOrg',
   );
@@ -98,18 +89,24 @@ export function readProviderConfigs(
 
     const baseUrl = providerConfigInstance.getString('baseUrl');
     const realm = providerConfigInstance.getOptionalString('realm') ?? 'master';
-    const loginRealm = providerConfigInstance.getOptionalString('loginRealm') ?? 'master';
+    const loginRealm =
+      providerConfigInstance.getOptionalString('loginRealm') ?? 'master';
     const username = providerConfigInstance.getOptionalString('username');
     const password = providerConfigInstance.getOptionalString('password');
     const clientId = providerConfigInstance.getOptionalString('clientId');
-    const clientSecret = providerConfigInstance.getOptionalString('clientSecret');
+    const clientSecret =
+      providerConfigInstance.getOptionalString('clientSecret');
 
     if (clientId && !clientSecret) {
-      throw new Error(`clientSecret must be provided when clientId is defined.`);
+      throw new Error(
+        `clientSecret must be provided when clientId is defined.`,
+      );
     }
 
     if (clientSecret && !clientId) {
-      throw new Error(`clientId must be provided when clientSecret is defined.`);
+      throw new Error(
+        `clientId must be provided when clientSecret is defined.`,
+      );
     }
 
     if (username && !password) {
@@ -120,11 +117,9 @@ export function readProviderConfigs(
       throw new Error(`username must be provided when password is defined.`);
     }
 
-
     const schedule = config.has('schedule')
       ? readTaskScheduleDefinitionFromConfig(config.getConfig('schedule'))
       : undefined;
-
 
     return {
       id,
@@ -136,8 +131,6 @@ export function readProviderConfigs(
       clientId,
       clientSecret,
       schedule,
-    }
+    };
   });
-
-
 }

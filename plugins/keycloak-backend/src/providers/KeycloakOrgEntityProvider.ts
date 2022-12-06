@@ -17,12 +17,10 @@
 import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
 import KcAdminClient from '@keycloak/keycloak-admin-client';
-import type { Credentials } from '@keycloak/keycloak-admin-client/lib/utils/auth'
+import type { Credentials } from '@keycloak/keycloak-admin-client/lib/utils/auth';
 import * as uuid from 'uuid';
 import { merge } from 'lodash';
-import {
-  KEYCLOAK_ID_ANNOTATION,
-} from '../lib';
+import { KEYCLOAK_ID_ANNOTATION } from '../lib';
 import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
@@ -43,14 +41,12 @@ import { readProviderConfigs } from '../lib/config';
 import { Logger } from 'winston';
 import { readKeycloakRealm } from '../lib/read';
 
-
 /**
  * Options for {@link KeycloakOrgEntityProvider}.
  *
  * @public
  */
 export interface KeycloakOrgEntityProviderOptions {
-
   /**
    * A unique, stable identifier for this provider.
    *
@@ -79,7 +75,6 @@ export interface KeycloakOrgEntityProviderOptions {
    */
   scheduler?: PluginTaskScheduler;
 
-
   /**
    * The logger to use.
    */
@@ -94,11 +89,7 @@ export interface KeycloakOrgEntityProviderOptions {
    * The function that transforms a group entry in LDAP to an entity.
    */
   groupTransformer?: GroupTransformer;
-
-
 }
-
-
 
 /**
  * Ingests org data (users and groups) from GitHub.
@@ -113,9 +104,7 @@ export class KeycloakOrgEntityProvider implements EntityProvider {
     configRoot: Config,
     options: KeycloakOrgEntityProviderOptions,
   ): KeycloakOrgEntityProvider[] {
-
     return readProviderConfigs(configRoot).map(providerConfig => {
-
       if (!options.schedule && !providerConfig.schedule) {
         throw new Error(
           `No schedule provided neither via code nor config for MicrosoftGraphOrgEntityProvider:${providerConfig.id}.`,
@@ -126,7 +115,6 @@ export class KeycloakOrgEntityProvider implements EntityProvider {
         options.schedule ??
         options.scheduler!.createScheduledTaskRunner(providerConfig.schedule!);
 
-
       const provider = new KeycloakOrgEntityProvider({
         id: providerConfig.id,
         provider: providerConfig,
@@ -136,7 +124,6 @@ export class KeycloakOrgEntityProvider implements EntityProvider {
       if (taskRunner !== 'manual') {
         provider.schedule(taskRunner);
       }
-
 
       return provider;
     });
@@ -150,7 +137,7 @@ export class KeycloakOrgEntityProvider implements EntityProvider {
       userTransformer?: UserTransformer;
       groupTransformer?: GroupTransformer;
     },
-  ) { }
+  ) {}
 
   getProviderName(): string {
     return `KeycloakOrgEntityProvider:${this.options.id}`;
@@ -182,30 +169,28 @@ export class KeycloakOrgEntityProvider implements EntityProvider {
     let credentials: Credentials;
 
     if (provider.username && provider.password) {
-
       credentials = {
         grantType: 'password',
         clientId: provider.clientId ?? 'admin-cli',
         username: provider.username,
         password: provider.password,
       };
-
     } else {
       credentials = {
         grantType: 'client_credentials',
         clientId: provider.clientId!,
         clientSecret: provider.clientSecret,
-
       };
     }
-    
+
     await kcAdminClient.auth(credentials);
 
     const { users, groups } = await readKeycloakRealm(
       kcAdminClient,
       provider,
-      logger);
-      
+      logger,
+    );
+
     const { markCommitComplete } = markReadComplete({ users, groups });
 
     await this.connection.applyMutation({
@@ -240,7 +225,6 @@ export class KeycloakOrgEntityProvider implements EntityProvider {
       });
     };
   }
-
 }
 
 // Helps wrap the timing and logging behaviors
@@ -266,7 +250,6 @@ function trackProgress(logger: Logger) {
   return { markReadComplete };
 }
 
-
 // Makes sure that emitted entities have a proper location
 export function withLocations(
   baseUrl: string,
@@ -276,7 +259,7 @@ export function withLocations(
   const location =
     entity.kind === 'Group'
       ? `url:${baseUrl}/admin/realms/${realm}/groups/${entity.metadata.annotations?.[KEYCLOAK_ID_ANNOTATION]}`
-      : `url:${baseUrl}/admin/realms/${realm}/users/${entity.metadata.annotations?.[KEYCLOAK_ID_ANNOTATION]}`
+      : `url:${baseUrl}/admin/realms/${realm}/users/${entity.metadata.annotations?.[KEYCLOAK_ID_ANNOTATION]}`;
   return merge(
     {
       metadata: {

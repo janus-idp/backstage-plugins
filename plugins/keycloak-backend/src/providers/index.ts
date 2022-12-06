@@ -15,4 +15,4 @@
  */
 
 export { KeycloakOrgEntityProvider } from './KeycloakOrgEntityProvider';
-export type {KeycloakOrgEntityProviderOptions} from './KeycloakOrgEntityProvider';
+export type { KeycloakOrgEntityProviderOptions } from './KeycloakOrgEntityProvider';
