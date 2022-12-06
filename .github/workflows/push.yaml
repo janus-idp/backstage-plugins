@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+concurrency:
+  group: push
+  cancel-in-progress: true
+
 jobs:
   test:
     name: Test
@@ -29,7 +33,7 @@ jobs:
         uses: ./.github/actions/build
 
       - name: Release via semantic-release
-        run: npm run release || true
+        run: yarn release --ignore-private-packages || true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
