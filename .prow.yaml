@@ -8,13 +8,13 @@ presubmits:
       containers:
         - image: quay.io/thoth-station/thoth-precommit-py38:v0.12.5
           command:
-            - "pre-commit"
-            - "run"
-            - "--all-files"
+            - 'pre-commit'
+            - 'run'
+            - '--all-files'
           resources:
             requests:
-              memory: "500Mi"
-              cpu: "300m"
+              memory: '500Mi'
+              cpu: '300m'
             limits:
-              memory: "1Gi"
-              cpu: "300m"
+              memory: '1Gi'
+              cpu: '300m'

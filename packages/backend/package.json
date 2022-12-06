@@ -1,0 +1,54 @@
+{
+  "name": "backend",
+  "version": "0.0.0",
+  "main": "dist/index.cjs.js",
+  "types": "src/index.ts",
+  "private": true,
+  "backstage": {
+    "role": "backend"
+  },
+  "scripts": {
+    "start": "backstage-cli package start",
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "clean": "backstage-cli package clean",
+    "build-image": "docker build ../.. -f Dockerfile --tag backstage"
+  },
+  "dependencies": {
+    "app": "link:../app",
+    "@backstage/backend-common": "^0.16.0",
+    "@backstage/backend-tasks": "^0.3.7",
+    "@backstage/catalog-model": "^1.1.3",
+    "@backstage/catalog-client": "^1.1.2",
+    "@backstage/config": "^1.0.4",
+    "@backstage/plugin-app-backend": "^0.3.38",
+    "@backstage/plugin-auth-backend": "^0.17.1",
+    "@backstage/plugin-auth-node": "^0.2.7",
+    "@backstage/plugin-catalog-backend": "^1.5.1",
+    "@backstage/plugin-permission-common": "^0.7.1",
+    "@backstage/plugin-permission-node": "^0.7.1",
+    "@backstage/plugin-proxy-backend": "^0.2.32",
+    "@backstage/plugin-scaffolder-backend": "^1.8.0",
+    "@backstage/plugin-search-backend": "^1.1.1",
+    "@backstage/plugin-search-backend-module-pg": "^0.4.2",
+    "@backstage/plugin-search-backend-node": "^1.0.4",
+    "@backstage/plugin-techdocs-backend": "^1.4.1",
+    "better-sqlite3": "^7.5.0",
+    "dockerode": "^3.3.1",
+    "express": "^4.17.1",
+    "express-promise-router": "^4.1.0",
+    "pg": "^8.3.0",
+    "winston": "^3.2.1"
+  },
+  "devDependencies": {
+    "@backstage/cli": "^0.21.0",
+    "@types/dockerode": "^3.3.0",
+    "@types/express-serve-static-core": "^4.17.5",
+    "@types/express": "^4.17.6",
+    "@types/luxon": "^2.0.4"
+  },
+  "files": [
+    "dist"
+  ]
+}

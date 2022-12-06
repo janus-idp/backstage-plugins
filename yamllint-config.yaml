@@ -8,3 +8,5 @@ rules:
     indent-sequences: whatever
   hyphens:
     max-spaces-after: 4
+  comments:
+    min-spaces-from-content: 1

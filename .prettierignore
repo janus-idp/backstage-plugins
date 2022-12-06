@@ -2,5 +2,3 @@ dist
 dist-types
 coverage
 .vscode
-*.yaml
-*.md
