@@ -2,13 +2,10 @@ import React, { Fragment } from 'react';
 import { StatusError, StatusOK, StatusPending, StatusRunning, StatusWarning } from '@backstage/core-components';
 // eslint-disable-next-line  no-restricted-imports
 import { TableRow, TableCell, Button} from '@material-ui/core';
+import { getTektonApi } from '../../api/types';
 /* ignore lint error for internal dependencies */
 /* eslint-disable */
 import { TaskRun } from '@jquad-group/plugin-tekton-pipelines-common';
-import { getTektonApi } from '../../api/types';
-/* eslint-enable */
-export const TEKTON_PIPELINES_BUILD_NAMESPACE = 'tektonci/build-namespace';
-export const TEKTON_PIPELINES_LABEL_SELECTOR = "tektonci/pipeline-label-selector";
 
 
 function StatusComponent(props: { reason: string; }): JSX.Element {
@@ -43,18 +40,15 @@ export function CollapsibleTableStepRow(props: { taskRun: TaskRun }) {
 
   const [data, setData] = React.useState({data: []});
   const [isLoading, setIsLoading] = React.useState(false);
-
+  const tektonApi = getTektonApi();
 
   const handleClick = async (stepName: string) => {
     setIsLoading(true);
-
-    /*
-    console.log("TESTING")
-    const response = tektonApi.getLogs('','',taskRun.metadata.namespace, taskRun.status.podName, stepName);
-    console.log(response);
-    */
-    console.log("CALLING")
     
+    const response = tektonApi.getLogs('','',taskRun.metadata.namespace, taskRun.status.podName, "step-" + stepName);
+    //console.log(response);
+    
+    /*
     try {
       const response = await fetch('http://localhost:7007/api/tekton-pipelines/logs?namespace=pipeline-trigger-operator-system-build&taskRunPodName=main-mzrnr-clone-pod&stepContainer=step-clone', {
         method: 'GET',
@@ -77,6 +71,7 @@ export function CollapsibleTableStepRow(props: { taskRun: TaskRun }) {
     } finally {
       setIsLoading(false);
     }
+    */
     
     
   };
@@ -101,7 +96,7 @@ export function CollapsibleTableStepRow(props: { taskRun: TaskRun }) {
               {step.terminated.durationString}
             </TableCell>
             <TableCell>
-              <Button onClick={() => handleClick(step.name)}>Download Heh</Button>
+              <Button onClick={() => handleClick(step.name)}>Download</Button>
             </TableCell>
           </TableRow>
         ))}

@@ -8,6 +8,7 @@ import { TablePaginationActionsProps } from '@material-ui/core/TablePagination/T
 /* eslint-disable */
 import { PipelineRun } from '@jquad-group/plugin-tekton-pipelines-common';
 import { setEnvironmentData } from 'worker_threads';
+import { CollapsibleTableStepRow } from '../CollapsibleTableStepRow';
 /* eslint-enable */
 export const TEKTON_PIPELINES_BUILD_NAMESPACE = 'tektonci/build-namespace';
 export const TEKTON_PIPELINES_LABEL_SELECTOR = "tektonci/pipeline-label-selector";
@@ -140,30 +141,7 @@ export function CollapsibleTableRow(props: { pipelineRun: PipelineRun }) {
             <TableBody>
               {pipelineRun.taskRuns !== undefined &&
                 pipelineRun.taskRuns.map((taskRunRow) => (
-                  <Fragment>
-                    <TableRow key={taskRunRow.metadata.name} style={{border: "1px solid rgb(0, 0, 0)"}}>
-                      <TableCell align="left" rowSpan={taskRunRow.status.steps.length + 1}>
-                        {taskRunRow.metadata.name}
-                      </TableCell>
-                    </TableRow>
-                    {taskRunRow.status.steps !== undefined &&
-                      taskRunRow.status.steps.map((step) => (
-                        <TableRow key={step.name}>
-                          <TableCell>
-                            {step.name}
-                          </TableCell>
-                          <TableCell>
-                            <StatusComponent reason={step.terminated.reason} />{step.terminated.reason}
-                          </TableCell>
-                          <TableCell>
-                            {step.terminated.durationString}
-                          </TableCell>
-                          <TableCell>
-                            <Button>Download Log</Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                  </Fragment>
+                  <CollapsibleTableStepRow taskRun={taskRunRow}/>
                 ))}
             </TableBody>
           </Table>
