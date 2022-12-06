@@ -23,6 +23,10 @@ runs:
       shell: bash
       run: yarn --prefer-offline --frozen-lockfile
 
+    - name: Compile all packages
+      shell: bash
+      run: yarn tsc
+
     - name: Build all packages
       shell: bash
       run: yarn build ${{ inputs.args }}
