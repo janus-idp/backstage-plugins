@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import { StatusError, StatusOK, StatusPending, StatusRunning, StatusWarning } from '@backstage/core-components';
 // eslint-disable-next-line  no-restricted-imports
-import { TableRow, TableCell, Button } from '@material-ui/core';
+import { TableRow, TableCell, Button, CircularProgress } from '@material-ui/core';
 import { getTektonApi } from '../../api/types';
 /* ignore lint error for internal dependencies */
 /* eslint-disable */
@@ -67,11 +67,15 @@ export function StepRow(props: { namespace: string, podName: string, step: Step 
               {step.terminated.durationString}
             </TableCell>
             <TableCell>
-              <Button value="logs" onClick={() => handleClick(step)}>Show Log</Button>
+              <Button value="logs" onClick={() => handleClick(step)} disabled={isLoading}>Show Log</Button>
+              {isLoading && (
+                <CircularProgress size={15}/>
+              )}
+                
                {!isLoading && data.data !== "" && (     
                 <StepLog opened={true} log={data.data} />
-              )}
-            </TableCell>
+              )} 
+            </TableCell>          
           </TableRow>
     </Fragment>
   );
