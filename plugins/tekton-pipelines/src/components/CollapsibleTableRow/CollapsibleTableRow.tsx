@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import { StatusError, StatusOK, StatusPending, StatusRunning, StatusWarning } from '@backstage/core-components';
 // eslint-disable-next-line  no-restricted-imports
 import { KeyboardArrowDown, KeyboardArrowUp, KeyboardArrowLeft, KeyboardArrowRight, LastPage, FirstPage } from '@material-ui/icons';
@@ -8,7 +8,7 @@ import { TablePaginationActionsProps } from '@material-ui/core/TablePagination/T
 /* eslint-disable */
 import { PipelineRun } from '@jquad-group/plugin-tekton-pipelines-common';
 import { setEnvironmentData } from 'worker_threads';
-import { CollapsibleTableStepRow } from '../CollapsibleTableStepRow';
+import { TaskRunRow } from '../TaskRunRow';
 /* eslint-enable */
 export const TEKTON_PIPELINES_BUILD_NAMESPACE = 'tektonci/build-namespace';
 export const TEKTON_PIPELINES_LABEL_SELECTOR = "tektonci/pipeline-label-selector";
@@ -141,7 +141,7 @@ export function CollapsibleTableRow(props: { pipelineRun: PipelineRun }) {
             <TableBody>
               {pipelineRun.taskRuns !== undefined &&
                 pipelineRun.taskRuns.map((taskRunRow) => (
-                  <CollapsibleTableStepRow taskRun={taskRunRow}/>
+                  <TaskRunRow taskRun={taskRunRow}/>
                 ))}
             </TableBody>
           </Table>
