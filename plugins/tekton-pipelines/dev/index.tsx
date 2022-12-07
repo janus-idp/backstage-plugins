@@ -30,7 +30,8 @@ const mockEntity: Entity = {
 
 class MockTektonClient implements TektonApi {
   getLogs(baseUrl: string, authorizationBearerToken: string, namespace: string, taskRunPodName: string, stepContainer: string): Promise<string> {
-    throw new Error('Method not implemented.');
+    const logMock = Promise.resolve('this is example log');
+    return logMock;
   }
 
   async getHealth(): Promise<{ status: string; }> {
