@@ -18,7 +18,7 @@ export function TaskRunRow(props: { taskRun: TaskRun }) {
       </TableRow>      
       {taskRun.status.steps !== undefined &&
         taskRun.status.steps.map((step) => (
-          <StepRow namespace={taskRun.metadata.namespace} podName={taskRun.status.podName} step={step}/>
+          <StepRow key={step.name} namespace={taskRun.metadata.namespace} podName={taskRun.status.podName} step={step}/>
         ))}
     </Fragment>
   );

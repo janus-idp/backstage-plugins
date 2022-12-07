@@ -141,7 +141,7 @@ export function CollapsibleTableRow(props: { pipelineRun: PipelineRun }) {
             <TableBody>
               {pipelineRun.taskRuns !== undefined &&
                 pipelineRun.taskRuns.map((taskRunRow) => (
-                  <TaskRunRow taskRun={taskRunRow}/>
+                  <TaskRunRow key={taskRunRow.metadata.name} taskRun={taskRunRow}/>
                 ))}
             </TableBody>
           </Table>
