@@ -37,7 +37,7 @@ The package must be installed into the backend of Backstage. When not integratin
 
 ```shell
 # From your Backstage root directory
-yarn add --cwd packages/backend @janus-idp/keycloak-backend
+yarn add --cwd packages/backend @janus-idp/backstage-plugin-keycloak-backend
 ```
 
 Next add the basic configuration to `app-config.yaml`:
@@ -58,7 +58,7 @@ Finally, register the plugin in the `packages/backend/src/plugins/catalog.ts` fi
 
 ```javascript
  // packages/backend/src/plugins/catalog.ts
-+import { KeycloakOrgEntityProvider } from 'catalog-backend-module-keycloak';
++import { KeycloakOrgEntityProvider } from '@janus-idp/backstage-plugin-keycloak-backend';
 
  export default async function createPlugin(
    env: PluginEnvironment,
@@ -77,3 +77,9 @@ Finally, register the plugin in the `packages/backend/src/plugins/catalog.ts` fi
 +    }),
 +  );
 ```
+
+## Limitations:
+
+If you have selfsigned/corporate certificate issues, the temporary solution (and not recommended) is to set the following environment variable before starting Backstage:
+
+`NODE_TLS_REJECT_UNAUTHORIZED=0`
