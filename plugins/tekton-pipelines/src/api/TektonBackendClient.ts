@@ -35,9 +35,9 @@ export class TektonBackendClient implements TektonApi {
     const contentType = response.headers.get("Content-Type");
     if (contentType && contentType.indexOf("application/json") !== -1) {
       return response.json();
-    } else {
-      return response.text();
-    }
+    } 
+
+    return response.text();
   }
 
   async getHealth(): Promise<{ status: string; }> {
