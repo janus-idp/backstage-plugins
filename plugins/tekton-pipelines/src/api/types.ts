@@ -8,6 +8,7 @@ import { useApi as getBackstageCorePluginApi} from '@backstage/core-plugin-api';
 
 export interface TektonApi {
   getHealth(): Promise<{ status: string; }>;
+  getLogs(baseUrl: string, authorizationBearerToken: string, namespace: string, taskRunPodName: string, stepContainer: string): Promise<string>;
   getPipelineRuns(request: PipelineRunsByEntityRequest, baseUrl: string, authorizationBearerToken: string, namespace: string, selector: string, dashboardBaseUrl: string): Promise<PipelineRun[]>;
 }
 

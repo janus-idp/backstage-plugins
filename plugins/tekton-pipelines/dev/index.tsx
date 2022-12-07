@@ -29,6 +29,10 @@ const mockEntity: Entity = {
 };
 
 class MockTektonClient implements TektonApi {
+  getLogs(baseUrl: string, authorizationBearerToken: string, namespace: string, taskRunPodName: string, stepContainer: string): Promise<string> {
+    const logMock = Promise.resolve('this is example log');
+    return logMock;
+  }
 
   async getHealth(): Promise<{ status: string; }> {
     return { status: 'ok'};
