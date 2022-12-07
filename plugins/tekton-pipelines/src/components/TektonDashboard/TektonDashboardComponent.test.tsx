@@ -17,7 +17,8 @@ jest.mock('../../api/types');
 describe('TektonDashboardComponent', () => {
   it('renders the progress bar and then empty Dashboard', async () => {
     const pipelineRuns = [] as PipelineRun[];
-    const tektonBackendClientMock = new TektonBackendClientMock(pipelineRuns);
+    const logs = "";
+    const tektonBackendClientMock = new TektonBackendClientMock(pipelineRuns, logs);
     const request = {} as Entity;
 
     jest.useFakeTimers();
@@ -58,7 +59,8 @@ describe('TektonDashboardComponent', () => {
     
     const pipelienRun = pipelineRunFileMock as unknown as PipelineRun;
     const pipelineRuns = [pipelienRun] as PipelineRun[];
-    const tektonBackendClientMock = new TektonBackendClientMock(pipelineRuns);
+    const logs = "";
+    const tektonBackendClientMock = new TektonBackendClientMock(pipelineRuns, logs);
     const request = {} as Entity;
 
     jest.useFakeTimers();
@@ -97,8 +99,10 @@ describe('TektonDashboardComponent', () => {
   });
   it('renders the progress bar and then error', async () => {
     const pipelineRuns = [] as PipelineRun[];
+    const logs = "";
     const tektonBackendClientMock = new TektonBackendClientMock(
       pipelineRuns,
+      logs,
       'error404',
     );
     const request = {} as Entity;
