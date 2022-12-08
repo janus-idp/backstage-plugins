@@ -5058,10 +5058,10 @@
   resolved "https://registry.yarnpkg.com/@spotify/eslint-config-typescript/-/eslint-config-typescript-14.1.2.tgz#db406210c34e7a811c79a2a1826525bcc411a22e"
   integrity sha512-uIB20TlFhUaME5wsEoKPPEBizViFE6yLLpA3b1GL+ilEaEIoWBzBKWkicWmMVZSfbweu8fc1hWaMtpNSTAz4zA==
 
-"@spotify/prettier-config@12.0.0":
-  version "12.0.0"
-  resolved "https://registry.yarnpkg.com/@spotify/prettier-config/-/prettier-config-12.0.0.tgz#936ca5e977cfccbccd1731ab98b1f2bf65852b5d"
-  integrity sha512-64WWqE40U/WwWV8iIQBseTU+b2t+SdJSyQoCLdVPCKM9uf7KOjRivVwXe4KlWoV3y7duNSGuB2UgWhkXzscVmQ==
+"@spotify/prettier-config@14.1.2":
+  version "14.1.2"
+  resolved "https://registry.yarnpkg.com/@spotify/prettier-config/-/prettier-config-14.1.2.tgz#f17e1d2b774d3902075f837d923dd4ae5e773fd2"
+  integrity sha512-Yk3oWUDDl4TIuUbqAV7aDnfFN8kPDxaHRv01YpjPw5k9wE1ctRNLzeMQNHPzo2d1oY+9MA89Txu+wiRxfLiVTw==
 
 "@sucrase/jest-plugin@^2.1.1":
   version "2.2.1"
