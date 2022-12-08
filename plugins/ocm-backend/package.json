@@ -46,6 +46,6 @@
   },
   "files": [
     "dist",
-    "config.d.ts"
+    "schema.d.ts"
   ]
 }
