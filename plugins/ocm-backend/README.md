@@ -1,9 +1,5 @@
-# cluster-status
+# Open Cluster Management plugin for Backstage
 
-Welcome to the cluster-status backend plugin! This plugin serves as the backend for showing the status page of resources with `kind: cluster`.
+This plugin integrates your Backstage instance with Open Cluster Management.
 
-## Documentation
-
-More detailed documentation is located in the [`backstage` component documentation][1].
-
-[1]: https://service-catalog.operate-first.cloud/catalog/default/component/backstage/docs
+This is just a part of the plugin, for documentation please refer to [`@janus-idp/backstage-plugin-ocm` documentation](https://github.com/janus-idp/backstage-plugins/tree/main/plugins/ocm-backend).
