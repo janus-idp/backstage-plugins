@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-ocm [1.0.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm@1.0.0...@janus-idp/backstage-plugin-ocm@1.0.1) (2022-12-08)
+
+
+### Bug Fixes
+
+* Fix typo in cluster status page ocm ([c06304a](https://github.com/janus-idp/backstage-plugins/commit/c06304aeec782b0f51d108d9cad617c3e6a95fa2))
+
 # @janus-idp/backstage-plugin-ocm 1.0.0 (2022-12-07)
 
 
