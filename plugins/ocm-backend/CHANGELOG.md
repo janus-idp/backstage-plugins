@@ -1,3 +1,11 @@
+## @janus-idp/backstage-plugin-ocm-backend [1.0.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@1.0.0...@janus-idp/backstage-plugin-ocm-backend@1.0.1) (2022-12-08)
+
+
+### Bug Fixes
+
+* **deps:** update dependency node-fetch to v3 ([908bcc0](https://github.com/janus-idp/backstage-plugins/commit/908bcc054bec063eeabb6d787e6da261bef08c77))
+* **deps:** update dependency yn to v5 ([ac5cde9](https://github.com/janus-idp/backstage-plugins/commit/ac5cde953288296601061c87bd03ddfa9a3b7631))
+
 # @janus-idp/backstage-plugin-ocm-backend 1.0.0 (2022-12-07)
 
 
