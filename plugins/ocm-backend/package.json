@@ -42,7 +42,7 @@
     "@types/supertest": "2.0.12",
     "msw": "0.49.1",
     "nock": "13.2.9",
-    "supertest": "6.3.2"
+    "supertest": "6.3.3"
   },
   "files": [
     "dist",
