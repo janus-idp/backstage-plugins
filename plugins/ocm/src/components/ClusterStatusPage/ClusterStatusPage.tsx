@@ -171,7 +171,7 @@ export const ClusterStatusPage = ({ logo }: { logo?: React.ReactNode }) => {
             <HomePageCompanyLogo className={container} logo={logo} />
             <Grid container item xs={12} alignItems="center" direction="row">
               <Typography variant="h1" className={typography}>
-                Manged Clusters
+                Managed Clusters
               </Typography>
             </Grid>
             <Grid container item xs={12} justifyContent="center">
