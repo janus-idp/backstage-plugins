@@ -35,11 +35,11 @@
   },
   "devDependencies": {
     "@backstage/cli": "0.21.1",
-    "@types/lodash": "^4.14.189",
-    "@types/supertest": "^2.0.12",
-    "@types/uuid": "^8.0.0",
-    "supertest": "^6.2.4",
-    "msw": "^0.47.0"
+    "@types/lodash": "4.14.191",
+    "@types/supertest": "2.0.12",
+    "@types/uuid": "8.3.4",
+    "supertest": "6.3.2",
+    "msw": "0.47.4"
   },
   "files": [
     "dist"
