@@ -1,3 +1,11 @@
+## @janus-idp/backstage-plugin-keycloak-backend [1.0.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-keycloak-backend@1.0.0...@janus-idp/backstage-plugin-keycloak-backend@1.0.1) (2022-12-08)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @keycloak/keycloak-admin-client to v20 ([2bce9a3](https://github.com/janus-idp/backstage-plugins/commit/2bce9a3c328ed8cc694c42fec437abc2e08c6448))
+* **deps:** update dependency uuid to v9 ([50e01ad](https://github.com/janus-idp/backstage-plugins/commit/50e01ad91af4de530ba16a4d3d33a9dbf86413e0))
+
 # @janus-idp/backstage-plugin-keycloak-backend 1.0.0 (2022-12-07)
 
 
