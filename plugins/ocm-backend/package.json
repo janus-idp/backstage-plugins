@@ -37,12 +37,12 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@types/express": "*",
-    "@backstage/cli": "^0.21.1",
-    "@types/supertest": "^2.0.8",
-    "msw": "^0.35.0",
-    "nock": "^13.2.9",
-    "supertest": "^4.0.2"
+    "@types/express": "4.17.14",
+    "@backstage/cli": "0.21.1",
+    "@types/supertest": "2.0.12",
+    "msw": "0.35.0",
+    "nock": "13.2.9",
+    "supertest": "4.0.2"
   },
   "files": [
     "dist"
