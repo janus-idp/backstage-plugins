@@ -45,6 +45,7 @@
     "supertest": "6.3.2"
   },
   "files": [
-    "dist"
+    "dist",
+    "config.d.ts"
   ]
 }
