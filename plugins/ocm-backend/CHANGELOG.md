@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-ocm-backend [1.0.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@1.0.2...@janus-idp/backstage-plugin-ocm-backend@1.0.3) (2022-12-08)
+
+
+### Bug Fixes
+
+* **ocm-backend:** Package config schema with the plugin - retry ([2a7b186](https://github.com/janus-idp/backstage-plugins/commit/2a7b186f90ca20fc050ede8fb7d99a18ba5e6532))
+
 ## @janus-idp/backstage-plugin-ocm-backend [1.0.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@1.0.1...@janus-idp/backstage-plugin-ocm-backend@1.0.2) (2022-12-08)
 
 
