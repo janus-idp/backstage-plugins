@@ -91,6 +91,27 @@ export interface KeycloakOrgEntityProviderOptions {
   groupTransformer?: GroupTransformer;
 }
 
+// Makes sure that emitted entities have a proper location
+export const withLocations = (
+  baseUrl: string,
+  realm: string,
+  entity: Entity,
+): Entity => {
+  const kind = entity.kind === 'Group' ? 'groups' : 'users';
+  const location = `url:${baseUrl}/admin/realms/${realm}/${kind}/${entity.metadata.annotations?.[KEYCLOAK_ID_ANNOTATION]}`;
+  return merge(
+    {
+      metadata: {
+        annotations: {
+          [ANNOTATION_LOCATION]: location,
+          [ANNOTATION_ORIGIN_LOCATION]: location,
+        },
+      },
+    },
+    entity,
+  ) as Entity;
+};
+
 /**
  * Ingests org data (users and groups) from GitHub.
  *
@@ -185,11 +206,7 @@ export class KeycloakOrgEntityProvider implements EntityProvider {
 
     await kcAdminClient.auth(credentials);
 
-    const { users, groups } = await readKeycloakRealm(
-      kcAdminClient,
-      provider,
-      logger,
-    );
+    const { users, groups } = await readKeycloakRealm(kcAdminClient, provider);
 
     const { markCommitComplete } = markReadComplete({ users, groups });
 
@@ -248,27 +265,4 @@ function trackProgress(logger: Logger) {
   }
 
   return { markReadComplete };
-}
-
-// Makes sure that emitted entities have a proper location
-export function withLocations(
-  baseUrl: string,
-  realm: string,
-  entity: Entity,
-): Entity {
-  const location =
-    entity.kind === 'Group'
-      ? `url:${baseUrl}/admin/realms/${realm}/groups/${entity.metadata.annotations?.[KEYCLOAK_ID_ANNOTATION]}`
-      : `url:${baseUrl}/admin/realms/${realm}/users/${entity.metadata.annotations?.[KEYCLOAK_ID_ANNOTATION]}`;
-  return merge(
-    {
-      metadata: {
-        annotations: {
-          [ANNOTATION_LOCATION]: location,
-          [ANNOTATION_ORIGIN_LOCATION]: location,
-        },
-      },
-    },
-    entity,
-  ) as Entity;
 }

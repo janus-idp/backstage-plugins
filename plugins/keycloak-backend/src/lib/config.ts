@@ -76,7 +76,9 @@ export type KeycloakProviderConfig = {
   schedule?: TaskScheduleDefinition;
 };
 
-export function readProviderConfigs(config: Config): KeycloakProviderConfig[] {
+export const readProviderConfigs = (
+  config: Config,
+): KeycloakProviderConfig[] => {
   const providersConfig = config.getOptionalConfig(
     'catalog.providers.keycloakOrg',
   );
@@ -133,4 +135,4 @@ export function readProviderConfigs(config: Config): KeycloakProviderConfig[] {
       schedule,
     };
   });
-}
+};
