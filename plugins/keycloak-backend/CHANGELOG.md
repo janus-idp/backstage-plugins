@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-keycloak-backend [1.0.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-keycloak-backend@1.0.1...@janus-idp/backstage-plugin-keycloak-backend@1.0.2) (2022-12-12)
+
+
+### Bug Fixes
+
+* **keycloak:** Downgrade to keycloak client v18 ([#46](https://github.com/janus-idp/backstage-plugins/issues/46)) ([24d40ec](https://github.com/janus-idp/backstage-plugins/commit/24d40ec26ad45681b97df16191be6ac6469a9bc6))
+
 ## @janus-idp/backstage-plugin-keycloak-backend [1.0.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-keycloak-backend@1.0.0...@janus-idp/backstage-plugin-keycloak-backend@1.0.1) (2022-12-08)
 
 
