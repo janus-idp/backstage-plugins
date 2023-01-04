@@ -49,7 +49,7 @@ describe('getCustomObjectsApi', () => {
 });
 
 describe('hubApiClient', () => {
-  it('should return an api client configured with the hub cluster', () => {
+  it('should return an api client configured with the hub cluster from kubernetes config', () => {
     const config = new ConfigReader({
       kubernetes: {
         clusterLocatorMethods: [
@@ -66,7 +66,28 @@ describe('hubApiClient', () => {
         ],
       },
       ocm: {
-        hub: 'cluster2',
+        cluster: {
+          name: 'cluster2',
+        },
+      },
+    });
+
+    const result = hubApiClient(config, logger);
+
+    expect(result.basePath).toBe('http://cluster2.com');
+    // These fields aren't on the type but are there
+    const auth = (result as any).authentications.default;
+    expect(auth.clusters[0].name).toBe('cluster2');
+  });
+
+  it('should return an api client configured with the hub cluster from the ocm config', () => {
+    const config = new ConfigReader({
+      ocm: {
+        hub: {
+          name: 'cluster2',
+          url: 'http://cluster2.com',
+          serviceAccountToken: 'TOKEN',
+        },
       },
     });
 

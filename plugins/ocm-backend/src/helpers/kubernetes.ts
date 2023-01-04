@@ -46,7 +46,7 @@ export const getCustomObjectsApi = (
 };
 
 export const hubApiClient = (config: Config, logger: Logger) => {
-  const hubClusterConfig = getHubClusterFromConfig(config);
+  const hubClusterConfig = getHubClusterFromConfig(config, logger);
   return getCustomObjectsApi(hubClusterConfig, logger);
 };
 
