@@ -83,3 +83,21 @@ Finally, register the plugin in the `packages/backend/src/plugins/catalog.ts` fi
 If you have selfsigned/corporate certificate issues, the temporary solution (and not recommended) is to set the following environment variable before starting Backstage:
 
 `NODE_TLS_REJECT_UNAUTHORIZED=0`
+
+### Viewing imported users and groups in backstage
+
+After configuring the plugin as described in the previous sections the plugin
+will import users and groups when started and on a regular basis. Once
+the first import is complete you can list the users from the catalog page
+by select `User`:
+![](./images/users.jpg)
+
+You will then see the list of users:
+![](./images/user-list.jpg)
+
+Selecting one of those users will show the information imported from Keycloak:
+![](./images/user2.jpg)
+
+Similarly you can select `Group`, view the list and then select/view the information imported from
+Keycloak for a group:
+![](./images/group1.jpg)
