@@ -18,7 +18,7 @@ const valueFormatter = (value: any): any => {
       return <Link to={value}>{value}</Link>;
     }
   }
-  return value.toString();
+  return value;
 };
 
 export const TableCardFromData = ({
@@ -30,12 +30,12 @@ export const TableCardFromData = ({
   title: string;
   nameMap: Map<string, string>;
 }) => {
-  const parsedData: { name: string; value: string }[] = [];
+  const parsedData: { name: string; value: any }[] = [];
   const entries = Object.entries(data);
 
   nameMap.forEach((_, key) => {
     const entry = entries.find(e => e[0] === key)!;
-    // If key of the map doesnt have an prop in the cluster object, continue
+    // If key of the map doesn't have an prop in the cluster object, continue
     if (entry === undefined) {
       return;
     }
