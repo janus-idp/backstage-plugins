@@ -89,3 +89,13 @@ export const getManagedClusters = (api: CustomObjectsApi) => {
     ),
   );
 };
+
+export const getManagedClustersInfo = (api: CustomObjectsApi) => {
+  return kubeApiResponseHandler(
+    api.listClusterCustomObject(
+      'internal.open-cluster-management.io',
+      'v1beta1',
+      'managedclusterinfos',
+    ),
+  );
+};
