@@ -1,5 +1,5 @@
-# backstage-plugin-ocm-common
+# Open Cluster Management plugin for Backstage
 
-Welcome to the common package for the Open Cluster Management plugin!
+This plugin integrates your Backstage instance with Open Cluster Management.
 
-_This plugin was created through the Backstage CLI_
+This is just a part of the plugin, for documentation please refer to [`@janus-idp/backstage-plugin-ocm` documentation](https://github.com/janus-idp/backstage-plugins/tree/main/plugins/ocm-backend).
