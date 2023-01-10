@@ -9,17 +9,17 @@ export interface Config {
     };
     hub?: {
       /**
-       * Url of the hub cluster API endpoint, applies if name is not defined
+       * Url of the hub cluster API endpoint
        * @visibility frontend
        */
       url: string;
       /**
-       * Name of the cluster endpoint
+       * Name of the cluster
        * @visibility frontend
        */
       name: string;
       /**
-       * Service Account Token for the SA which is used for querying data from the hub
+       * Service Account Token which is used for querying data from the hub
        * @visibility secret
        */
       serviceAccountToken?: string;
