@@ -59,25 +59,40 @@ This plugin is made up of 2 packages:
    yarn workspace backend add @janus-idp/backstage-plugin-ocm-backend
    ```
 
-2. Next, you need to configure it. Please add following to your `app-config.yaml` file:
+2. Next, you need to configure it. There are two possible configurations.
 
-   ```diff
-   # app-config.yaml
-   kubernetes:
-     serviceLocatorMethod:
-       type: "multiTenant"
-     clusterLocatorMethods:
-       - type: "config"
-         clusters:
-           - name: <cluster-name>
-           ...
-           ...
+   1. The information about your hub is provided purely by the OCM configuration. In order to use this configuration please add the following to your `app-config.yaml` file:
 
-   + ocm:
-   +   hub: <cluster-name> # Match the cluster name in kubernetes plugin config
-   ```
+      ```diff
+      # app-config.yaml
+      + ocm:
+      +   hub:
+      +     name: # Name of the cluster
+      +     url: # Url of the hub cluster API endpoint
+      +     serviceAccountToken: # Token used for querying data from the hub
+      +     skipTLSVerify: # Skip TLS certificate verification, defaults to false
+      +     caData: # Base64-encoded CA bundle in PEM format
+      ```
 
-   Please consult the documentation to [Backstage Kubernetes plugin](https://backstage.io/docs/features/kubernetes/configuration#configuring-kubernetes-clusters) for details on its configuration. Hub cluster must be connected via Service Account.
+   2. The hub configuration is tied to the kubernetes plugin configuration by providing the name of the hub. This is useful when you already use a kubernetes plugin in your backstage instance. Please add following to your `app-config.yaml` file:
+
+      ```diff
+      # app-config.yaml
+      kubernetes:
+        serviceLocatorMethod:
+          type: "multiTenant"
+        clusterLocatorMethods:
+          - type: "config"
+            clusters:
+              - name: <cluster-name>
+              ...
+              ...
+
+      + ocm:
+      +   cluster: <cluster-name> # Match the cluster name in kubernetes plugin config
+      ```
+
+      Please consult the documentation to [Backstage Kubernetes plugin](https://backstage.io/docs/features/kubernetes/configuration#configuring-kubernetes-clusters) for details on its configuration. Hub cluster must be connected via Service Account.
 
 3. Create new plugin instance in `packages/backend/src/plugins/ocm.ts`:
 
