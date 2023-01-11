@@ -19,14 +19,14 @@ import { Config } from '@backstage/config';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
-import { ClusterDetails } from '@janus-idp/backstage-plugin-ocm-common';
 import { HUB_CLUSTER_NAME_IN_OCM } from '../constants';
 import {
   getManagedCluster,
   getManagedClusters,
+  getManagedClustersInfo,
   hubApiClient,
 } from '../helpers/kubernetes';
-import { parseManagedCluster } from '../helpers/parser';
+import { parseManagedCluster, parseUpdateInfo } from '../helpers/parser';
 import { getHubClusterName } from '../helpers/config';
 
 export interface RouterOptions {
@@ -56,8 +56,16 @@ export async function createRouter(
 
       return (
         getManagedCluster(api, normalizedClusterName) as Promise<any>
-      ).then(resp => {
-        response.send(parseManagedCluster(resp));
+      ).then(async resp => {
+        response.send({
+          ...parseManagedCluster(resp),
+          ...parseUpdateInfo(
+            (await (getManagedClustersInfo(api) as Promise<any>)).items.find(
+              (clusterInfo: any) =>
+                clusterInfo.metadata.name === normalizedClusterName,
+            ),
+          ),
+        });
       });
     },
   );
@@ -65,10 +73,18 @@ export async function createRouter(
   router.get('/status', (_, response) => {
     logger.info(`Incoming status request for all clusters`);
 
-    return (getManagedClusters(api) as Promise<any>).then(resp => {
-      const parsedClusters: Array<ClusterDetails> =
-        resp.items.map(parseManagedCluster);
-      response.send(parsedClusters);
+    return (getManagedClusters(api) as Promise<any>).then(async resp => {
+      const clusterInfo = (await (getManagedClustersInfo(api) as Promise<any>))
+        .items;
+
+      response.send(
+        resp.items.map((clusterStatus: any, index: number) => {
+          return {
+            ...parseManagedCluster(clusterStatus),
+            ...parseUpdateInfo(clusterInfo[index]),
+          };
+        }),
+      );
     });
   });
 

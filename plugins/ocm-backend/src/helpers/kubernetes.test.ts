@@ -4,6 +4,7 @@ import {
   hubApiClient,
   getManagedCluster,
   getManagedClusters,
+  getManagedClustersInfo,
 } from './kubernetes';
 import { createLogger } from 'winston';
 import transports from 'winston/lib/winston/transports';
@@ -174,5 +175,36 @@ describe('getManagedCluster', () => {
 
     expect(result.statusCode).toBe(404);
     expect(result.name).toBe('NotFound');
+  });
+});
+
+describe('getManagedClustersInfo', () => {
+  it('should return some clusters', async () => {
+    nock(kubeConfig.clusters[0].server)
+      .get(
+        '/apis/internal.open-cluster-management.io/v1beta1/managedclusterinfos',
+      )
+      .reply(200, {
+        body: {
+          items: [
+            {
+              kind: 'ManagedClusterInfo',
+              metadata: {
+                name: 'cluster1',
+              },
+            },
+            {
+              kind: 'ManagedClusterInfo',
+              metadata: {
+                name: 'cluster2',
+              },
+            },
+          ],
+        },
+      });
+
+    const result: any = await getManagedClustersInfo(getApi());
+    expect(result.body.items[0].metadata.name).toBe('cluster1');
+    expect(result.body.items[1].metadata.name).toBe('cluster2');
   });
 });

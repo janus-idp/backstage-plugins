@@ -1,5 +1,10 @@
 import { ClusterDetails } from '@janus-idp/backstage-plugin-ocm-common';
-import { getClaim, parseManagedCluster, parseResources } from './parser';
+import {
+  getClaim,
+  parseManagedCluster,
+  parseResources,
+  parseUpdateInfo,
+} from './parser';
 
 describe('getClaim', () => {
   it('should extract a cluster claim value from a cluster object', () => {
@@ -272,5 +277,118 @@ describe('parseManagedCluster', () => {
     };
 
     expect(result).toStrictEqual(expected);
+  });
+});
+
+describe('parseUpdateInfo', () => {
+  it('should correctly parse update information from ClusterInfo', () => {
+    const clusterInfo = {
+      metadata: {},
+      status: {
+        distributionInfo: {
+          ocp: {
+            availableUpdates: ['1.0.1', '1.0.2', '1.0.3', '1.0.0'],
+            versionAvailableUpdates: [
+              {
+                url: 'http://exampleone.com',
+                version: '1.0.1',
+              },
+              {
+                url: 'http://exampletwo.com',
+                version: '1.0.2',
+              },
+              {
+                url: 'http://examplethree.com',
+                version: '1.0.3',
+              },
+              {
+                url: 'http://examplezero.com',
+                version: '1.0.0',
+              },
+            ],
+          },
+        },
+      },
+    };
+
+    const result = parseUpdateInfo(clusterInfo);
+
+    expect(result).toEqual({
+      update: {
+        available: true,
+        version: '1.0.3',
+        url: 'http://examplethree.com',
+      },
+    });
+  });
+
+  it('should correctly parse while there are no updates available with no arrays', () => {
+    const clusterInfo = {
+      metadata: {},
+      status: {
+        distributionInfo: {
+          ocp: {},
+        },
+      },
+    };
+
+    const result = parseUpdateInfo(clusterInfo);
+
+    expect(result).toEqual({
+      update: {
+        available: false,
+      },
+    });
+  });
+
+  it('should correctly parse while there are no updates available with empty arrays', () => {
+    const clusterInfo = {
+      metadata: {},
+      status: {
+        distributionInfo: {
+          ocp: {
+            availableUpdates: [],
+            versionAvailableUpdates: [],
+          },
+        },
+      },
+    };
+
+    const result = parseUpdateInfo(clusterInfo);
+
+    expect(result).toEqual({
+      update: {
+        available: false,
+      },
+    });
+  });
+
+  it('should correctly parse while there is only one update available', () => {
+    const clusterInfo = {
+      metadata: {},
+      status: {
+        distributionInfo: {
+          ocp: {
+            availableUpdates: ['1.0.1'],
+            versionAvailableUpdates: [
+              {
+                url: 'http://exampleone.com',
+                version: '1.0.1',
+              },
+            ],
+          },
+        },
+      },
+    };
+
+    const result = parseUpdateInfo(clusterInfo);
+
+    expect(result).toEqual({
+      update: {
+        available: true,
+        version: '1.0.1',
+        url: 'http://exampleone.com',
+      },
+    });
   });
 });

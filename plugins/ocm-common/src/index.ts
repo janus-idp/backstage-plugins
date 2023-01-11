@@ -24,6 +24,11 @@ export type ClusterDetails = {
     memorySize?: string;
     numberOfPods?: number;
   };
+  update?: {
+    available?: boolean;
+    version?: string;
+    url?: string;
+  };
   status: {
     available: boolean;
     reason: string;

@@ -22,6 +22,14 @@ This plugin integrates your Backstage instance with Open Cluster Management's Mu
          - get
          - watch
          - list
+     - apiGroups:
+         - internal.open-cluster-management.io
+       resources:
+         - managedclusterinfos
+       verbs:
+         - get
+         - watch
+         - list
    ```
 
 ## Capabilities

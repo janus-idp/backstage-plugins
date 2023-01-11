@@ -1,5 +1,6 @@
 import { CONSOLE_CLAIM } from '../constants';
 import { ClusterDetails } from '@janus-idp/backstage-plugin-ocm-common';
+import { maxSatisfying } from 'semver';
 
 const convertCpus = (cpus: string | undefined): number | undefined => {
   if (!cpus) {
@@ -56,5 +57,31 @@ export const parseManagedCluster = (cluster: any): ClusterDetails => {
   return {
     ...status,
     ...parsedClusterInfo,
+  };
+};
+
+export const parseUpdateInfo = (clusterInfo: any) => {
+  const { availableUpdates, versionAvailableUpdates } =
+    clusterInfo.status.distributionInfo.ocp;
+  /*
+   * We assume here that if availableUpdates is empty
+   * versionAvailableUpdates also has to be empty
+   */
+  if (!availableUpdates || availableUpdates.length === 0) {
+    return {
+      update: {
+        available: false,
+      },
+    };
+  }
+
+  const version = maxSatisfying(availableUpdates, '*');
+
+  return {
+    update: {
+      available: true,
+      version,
+      url: versionAvailableUpdates[availableUpdates.indexOf(version)].url,
+    },
   };
 };
