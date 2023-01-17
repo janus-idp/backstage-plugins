@@ -1,3 +1,10 @@
+# @janus-idp/backstage-plugin-ocm-common [1.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-common@1.0.0...@janus-idp/backstage-plugin-ocm-common@1.1.0) (2023-01-17)
+
+
+### Features
+
+* **ocm:** Add cluster update information to the ocm status endpoint ([eb50fec](https://github.com/janus-idp/backstage-plugins/commit/eb50fec30ca2397931b986421055e46922810d21))
+
 # @janus-idp/backstage-plugin-ocm-common 1.0.0 (2022-12-07)
 
 
