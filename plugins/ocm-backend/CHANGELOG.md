@@ -1,3 +1,10 @@
+# @janus-idp/backstage-plugin-ocm-backend [1.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@1.1.0...@janus-idp/backstage-plugin-ocm-backend@1.2.0) (2023-01-18)
+
+
+### Features
+
+* **ocm:** Add an option to decouple ocm config from k8s plugin ([4566ed2](https://github.com/janus-idp/backstage-plugins/commit/4566ed26bd4510a85242fd078ac9144e426b18f8))
+
 # @janus-idp/backstage-plugin-ocm-backend [1.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@1.0.3...@janus-idp/backstage-plugin-ocm-backend@1.1.0) (2023-01-17)
 
 
