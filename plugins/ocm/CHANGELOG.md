@@ -1,3 +1,10 @@
+# @janus-idp/backstage-plugin-ocm [1.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm@1.0.2...@janus-idp/backstage-plugin-ocm@1.1.0) (2023-01-18)
+
+
+### Features
+
+* **ocm:** Add a frontend indicator for cluster upgrades ([a9c0b73](https://github.com/janus-idp/backstage-plugins/commit/a9c0b73af9d4fbcd3806c2a6ed1a3dda848c2035))
+
 ## @janus-idp/backstage-plugin-ocm [1.0.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm@1.0.1...@janus-idp/backstage-plugin-ocm@1.0.2) (2023-01-17)
 
 
