@@ -1,12 +1,10 @@
 export interface Config {
   ocm: {
-    cluster?: {
-      /**
-       * Match cluster name where the Open Cluster Management operator is installed from the kubernetes plugin configuration
-       * @visibility frontend
-       */
-      name: string;
-    };
+    /**
+     * Match cluster name where the Open Cluster Management operator is installed from the kubernetes plugin configuration
+     * @visibility frontend
+     */
+    cluster?: string;
     hub?: {
       /**
        * Url of the hub cluster API endpoint

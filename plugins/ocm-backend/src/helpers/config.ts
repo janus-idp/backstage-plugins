@@ -3,7 +3,7 @@ import { Logger } from 'winston';
 
 const CLUSTERS_PATH = 'kubernetes.clusterLocatorMethods';
 const OCM_PREFIX = 'ocm';
-const CLUSTER_CONFIG_PATH = `${OCM_PREFIX}.cluster`;
+const CLUSTER_CONFIG_PATH = OCM_PREFIX;
 const HUB_CONFIG_PATH = `${OCM_PREFIX}.hub`;
 
 export const getConfigVariantPath = (config: Config): string => {
@@ -19,12 +19,16 @@ export const getConfigVariantPath = (config: Config): string => {
 };
 
 export const getHubClusterName = (config: Config): string => {
-  const path = `${getConfigVariantPath(config)}.name`;
-  try {
-    return config.getString(path);
-  } catch (err) {
-    throw new Error(`'${path}' must be specified in hub config`);
+  const path = getConfigVariantPath(config);
+  const name =
+    config.getOptionalString(`${path}.name`) ||
+    config.getOptionalString(`${path}.cluster`);
+  if (!name) {
+    throw new Error(
+      `'${HUB_CONFIG_PATH}.name' or '${CLUSTER_CONFIG_PATH}.cluster' must be specified in ocm config`,
+    );
   }
+  return name;
 };
 
 export const getHubClusterFromKubernetesConfig = (config: Config): Config => {
@@ -34,7 +38,7 @@ export const getHubClusterFromKubernetesConfig = (config: Config): Config => {
     .find(
       cluster =>
         cluster.getString('name') ===
-        config.getOptionalString(`${CLUSTER_CONFIG_PATH}.name`),
+        config.getOptionalString(`${CLUSTER_CONFIG_PATH}.cluster`),
     );
   if (!hub) {
     throw new Error('Hub cluster not defined in kubernetes config');

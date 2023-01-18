@@ -66,9 +66,7 @@ describe('hubApiClient', () => {
         ],
       },
       ocm: {
-        cluster: {
-          name: 'cluster2',
-        },
+        cluster: 'cluster2',
       },
     });
 

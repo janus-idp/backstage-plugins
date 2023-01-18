@@ -44,7 +44,7 @@ describe('getConfigVariantPath', () => {
 
     const result = getConfigVariantPath(config);
 
-    expect(result).toEqual('ocm.cluster');
+    expect(result).toEqual('ocm');
   });
 
   it('should throw if neither cluster or hub are configured', () => {
@@ -62,9 +62,7 @@ describe('getHubClusterName', () => {
   it('should get the hub cluster name from ocm cluster config', () => {
     const config = new ConfigReader({
       ocm: {
-        cluster: {
-          name: 'cluster2',
-        },
+        cluster: 'cluster2',
       },
     });
 
@@ -108,7 +106,9 @@ describe('getHubClusterName', () => {
 
     const result = () => getHubClusterName(config);
 
-    expect(result).toThrow("'ocm.hub.name' must be specified in hub config");
+    expect(result).toThrow(
+      "'ocm.hub.name' or 'ocm.cluster' must be specified in ocm config",
+    );
   });
 });
 
@@ -134,9 +134,7 @@ describe('getHubClusterFromKubernetesConfig', () => {
         ],
       },
       ocm: {
-        cluster: {
-          name: 'cluster2',
-        },
+        cluster: 'cluster2',
       },
     });
 
@@ -167,9 +165,7 @@ describe('getHubClusterFromKubernetesConfig', () => {
         ],
       },
       ocm: {
-        cluster: {
-          name: 'cluster2',
-        },
+        cluster: 'cluster2',
       },
     });
 
@@ -347,9 +343,7 @@ describe('getHubClusterFromConfig', () => {
         ],
       },
       ocm: {
-        cluster: {
-          name: 'cluster1',
-        },
+        cluster: 'cluster1',
       },
     });
 
