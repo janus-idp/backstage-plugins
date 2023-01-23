@@ -5,7 +5,7 @@ import { FitAddon } from 'xterm-addon-fit';
 import { AttachAddon } from 'xterm-addon-attach';
 import { InfoCard, Progress } from '@backstage/core-components';
 import { useApi, configApiRef } from '@backstage/core-plugin-api';
-
+import { createWorkspace, getWorkspace } from './utils';
 import './static/xterm.css';
 
 const useTerminalStyles = makeStyles({
@@ -55,10 +55,10 @@ export const TerminalComponent = () => {
     terminal.loadAddon(new AttachAddon(ws));
     const fitAddon = new FitAddon();
     terminal.loadAddon(fitAddon);
-    fitAddon.fit();
     if (termRef.current) {
       terminal.open(termRef.current);
     }
+    fitAddon.fit();
   }, []);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -68,25 +68,39 @@ export const TerminalComponent = () => {
       cluster: clusterRef.current?.value,
     });
   };
-
+  const setupPod = async (link: string, token: string) => {
+    const terminalID = await createWorkspace(link, token);
+    let workspaceID;
+    let phase;
+    while (phase !== 'Running') {
+      [workspaceID, phase] = await getWorkspace(link, token, terminalID);
+    }
+    return { workspaceID, terminalID };
+  };
   React.useEffect(() => {
     if (!formData.token || !formData.cluster) {
       return;
     }
+    const { token, cluster } = formData;
     setLoading(true);
-    const ws = new WebSocket(webSocketUrl, [
-      `base64url.bearer.authorization.k8s.io.${encodeURIComponent(
-        formData.token,
-      )}`,
-      `base64url.console.link.k8s.io.${encodeURIComponent(formData.cluster)}`,
-    ]);
-    ws.onopen = () => {
-      setLoading(false);
-      setWebsocketRunning(true);
-      setupTerminal(ws);
-    };
-    ws.onclose = () => {};
-  }, [formData, setupTerminal]);
+    setupPod(cluster, token).then(names => {
+      const ws = new WebSocket(webSocketUrl, [
+        'terminal.k8s.io',
+        `base64url.bearer.authorization.k8s.io.${encodeURIComponent(token)}`,
+        `base64url.console.link.k8s.io.${encodeURIComponent(cluster)}`,
+        `base64url.workspace.id.k8s.io.${encodeURIComponent(
+          names.workspaceID,
+        )}`,
+        `base64url.terminal.id.k8s.io.${encodeURIComponent(names.terminalID)}`,
+      ]);
+      ws.onopen = () => {
+        setLoading(false);
+        setWebsocketRunning(true);
+        setupTerminal(ws);
+      };
+      ws.onclose = () => {};
+    });
+  }, [formData, setupTerminal, webSocketUrl]);
 
   if (loading) {
     return <Progress />;
