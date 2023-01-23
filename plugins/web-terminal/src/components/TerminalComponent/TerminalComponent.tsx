@@ -50,15 +50,15 @@ export const TerminalComponent = () => {
    * Terminal is attached to created websocket, attachment allows user
    * to interact with terminal as they would with a normal terminal
    */
-  const setupTerminal = useCallback((ws: WebSocket) => {
+  const setupTerminal = useCallback(() => {
     const terminal = new Terminal();
-    terminal.loadAddon(new AttachAddon(ws));
     const fitAddon = new FitAddon();
     terminal.loadAddon(fitAddon);
     if (termRef.current) {
       terminal.open(termRef.current);
     }
     fitAddon.fit();
+    return terminal;
   }, []);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -68,6 +68,7 @@ export const TerminalComponent = () => {
       cluster: clusterRef.current?.value,
     });
   };
+
   const setupPod = async (link: string, token: string) => {
     const terminalID = await createWorkspace(link, token);
     let workspaceID;
@@ -77,6 +78,7 @@ export const TerminalComponent = () => {
     }
     return { workspaceID, terminalID };
   };
+
   React.useEffect(() => {
     if (!formData.token || !formData.cluster) {
       return;
@@ -84,6 +86,10 @@ export const TerminalComponent = () => {
     const { token, cluster } = formData;
     setLoading(true);
     setupPod(cluster, token).then(names => {
+      setLoading(false);
+      setWebsocketRunning(true);
+      const terminal = setupTerminal();
+      terminal.writeln('Starting terminal, please wait...');
       const ws = new WebSocket(webSocketUrl, [
         'terminal.k8s.io',
         `base64url.bearer.authorization.k8s.io.${encodeURIComponent(token)}`,
@@ -92,11 +98,13 @@ export const TerminalComponent = () => {
           names.workspaceID,
         )}`,
         `base64url.terminal.id.k8s.io.${encodeURIComponent(names.terminalID)}`,
+        `base64url.terminal.size.k8s.io.${encodeURIComponent(
+          `${terminal.cols}x${terminal.rows}`,
+        )}`,
       ]);
       ws.onopen = () => {
-        setLoading(false);
-        setWebsocketRunning(true);
-        setupTerminal(ws);
+        terminal.clear();
+        terminal.loadAddon(new AttachAddon(ws));
       };
       ws.onclose = () => {};
     });
