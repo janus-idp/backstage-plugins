@@ -11,9 +11,9 @@ import {
 
 /* ignore lint error for internal dependencies */
 /* eslint-disable */
-import { Cluster, PipelineRun } from '@jquad-group/plugin-tekton-pipelines-common';
+import { Cluster } from '@jquad-group/plugin-tekton-pipelines-common';
 /* eslint-disable */
-import { Grid } from '@material-ui/core';
+import { Box, Grid } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React, { useEffect, useState } from 'react';
 import { getTektonApi } from '../../api/types';
@@ -113,6 +113,11 @@ export function TektonDashboardComponent(props: TektonContentProps) {
             <Grid item>
               <CollapsibleTable clusterName={cluster.name} pipelineruns={cluster.pipelineRuns} />
             </Grid>           
+            )}
+            { cluster.error !== undefined && (
+            <Grid item>
+              <Box textAlign="center" fontSize="20px">{cluster.error}</Box>
+            </Grid>                      
             )}
             </Grid>         
           )
