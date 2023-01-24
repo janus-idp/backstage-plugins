@@ -31,6 +31,7 @@ export class TektonBackendClientMock implements TektonApi {
   async getLogs(
     baseUrl: string,
     authorizationBearerToken: string,
+    clusterName: string,
     namespace: string,
     taskRunPodName: string,
     stepContainer: string,

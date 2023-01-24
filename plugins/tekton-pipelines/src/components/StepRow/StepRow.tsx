@@ -35,8 +35,8 @@ function StatusComponent(props: { reason: string; }): JSX.Element {
 
 }
 
-export function StepRow(props: { namespace: string, podName: string, step: Step }) {
-  const { namespace, podName, step } = props;
+export function StepRow(props: { clusterName: string, namespace: string, podName: string, step: Step }) {
+  const { clusterName, namespace, podName, step } = props;
 
   const [data, setData] = React.useState({data: ""});
   const [isLoading, setIsLoading] = React.useState(false);
@@ -45,7 +45,7 @@ export function StepRow(props: { namespace: string, podName: string, step: Step 
   const handleClick = async (step: Step) => {
     setIsLoading(true);
     
-    const response = tektonApi.getLogs('','', namespace, podName, "step-" + step.name);
+    const response = tektonApi.getLogs('','', clusterName, namespace, podName, "step-" + step.name);
     const log = await response;
     data.data = log;
     step.log = log;

@@ -111,7 +111,7 @@ export function TektonDashboardComponent(props: TektonContentProps) {
             <ContentHeader title={cluster.name} textAlign="center"></ContentHeader>
             { cluster.pipelineRuns !== undefined && cluster.pipelineRuns !== null && cluster.pipelineRuns.length > 0 && (
             <Grid item>
-              <CollapsibleTable pipelineruns={cluster.pipelineRuns} />
+              <CollapsibleTable clusterName={cluster.name} pipelineruns={cluster.pipelineRuns} />
             </Grid>           
             )}
             </Grid>         
