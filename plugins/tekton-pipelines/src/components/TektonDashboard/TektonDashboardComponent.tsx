@@ -52,8 +52,6 @@ export function TektonDashboardComponent(props: TektonContentProps) {
       tektonApi
         .getPipelineRuns({ entity: props.entity }, '', '', '', '', '', '')
         .then(clusters => {
-                logger.info("test")
-                logger.info(clusters)
                 const sorted = clusters.map((cluster) => 
                       cluster.pipelineRuns.sort((pipelineA, pipelineB) =>
                       pipelineA.status.startTime > pipelineB.status.startTime ? -1 : 1,
