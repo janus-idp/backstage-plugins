@@ -13,10 +13,11 @@ export const TEKTON_PIPELINES_LABEL_SELECTOR = "tektonci/pipeline-label-selector
 
 
 type PipelineRunProps = {
+  clusterName?: string;
   pipelineruns?: PipelineRun[];
 };
 
-export const CollapsibleTable = ({ pipelineruns }: PipelineRunProps) => {
+export const CollapsibleTable = ({ clusterName, pipelineruns }: PipelineRunProps) => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   let emptyRows: number;
@@ -58,11 +59,11 @@ export const CollapsibleTable = ({ pipelineruns }: PipelineRunProps) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {(pipelineruns !== undefined) && (rowsPerPage > 0
+          {(pipelineruns !== undefined) && (clusterName !== undefined) && (rowsPerPage > 0
             ? pipelineruns.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
             : pipelineruns
           ).map((pipelineRun) => (            
-            <CollapsibleTableRow key={pipelineRun.metadata.name} pipelineRun={pipelineRun} />
+            <CollapsibleTableRow key={pipelineRun.metadata.name} clusterName={clusterName} pipelineRun={pipelineRun} />
           ))}
           {emptyRows > 0 && (
             <TableRow style={{ height: 53 * emptyRows }}>

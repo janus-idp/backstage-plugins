@@ -8,7 +8,7 @@ describe('CollapsibleTable', () => {
   it('should render a pipelinerun', async () => {
     const { getByText, debug } = render(
       wrapInTestApp(
-        <CollapsibleTable pipelineruns={[pipelineRunFileMock as any]} />,
+        <CollapsibleTable clusterName="Cluster1" pipelineruns={[pipelineRunFileMock as any]} />,
       ),
     );
 

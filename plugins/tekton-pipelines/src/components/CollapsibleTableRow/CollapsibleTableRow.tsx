@@ -98,8 +98,8 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
 }
 
  
-export function CollapsibleTableRow(props: { pipelineRun: PipelineRun }) {
-  const { pipelineRun } = props;
+export function CollapsibleTableRow(props: { clusterName: string, pipelineRun: PipelineRun }) {
+  const { clusterName, pipelineRun } = props;
   const [open, setOpen] = React.useState(false);
   
   return (
@@ -141,7 +141,7 @@ export function CollapsibleTableRow(props: { pipelineRun: PipelineRun }) {
             <TableBody>
               {pipelineRun.taskRuns !== undefined &&
                 pipelineRun.taskRuns.map((taskRunRow) => (
-                  <TaskRunRow key={taskRunRow.metadata.name} taskRun={taskRunRow}/>
+                  <TaskRunRow key={taskRunRow.metadata.name} clusterName={clusterName} taskRun={taskRunRow}/>
                 ))}
             </TableBody>
           </Table>

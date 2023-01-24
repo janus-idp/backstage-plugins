@@ -6,8 +6,8 @@ import { TableRow, TableCell } from '@material-ui/core';
 import { TaskRun } from '@jquad-group/plugin-tekton-pipelines-common';
 import { StepRow } from '../StepRow';
 
-export function TaskRunRow(props: { taskRun: TaskRun }) {
-  const { taskRun } = props;
+export function TaskRunRow(props: { clusterName: string, taskRun: TaskRun }) {
+  const { clusterName, taskRun } = props;
   
   return (
     <Fragment>
@@ -18,7 +18,7 @@ export function TaskRunRow(props: { taskRun: TaskRun }) {
       </TableRow>      
       {taskRun.status.steps !== undefined &&
         taskRun.status.steps.map((step) => (
-          <StepRow key={step.name} namespace={taskRun.metadata.namespace} podName={taskRun.status.podName} step={step}/>
+          <StepRow key={step.name} clusterName={clusterName} namespace={taskRun.metadata.namespace} podName={taskRun.status.podName} step={step}/>
         ))}
     </Fragment>
   );
