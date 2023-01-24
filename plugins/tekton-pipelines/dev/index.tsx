@@ -6,7 +6,7 @@ import { Entity } from '@backstage/catalog-model';
 import { TestApiProvider } from '@backstage/test-utils';
 /* ignore lint error for internal dependencies */
 /* eslint-disable */
-import { Label, PipelineRun, PipelineRunsByEntityRequest, TaskRun } from '@jquad-group/plugin-tekton-pipelines-common';
+import { Cluster, Label, PipelineRun, PipelineRunsByEntityRequest, TaskRun } from '@jquad-group/plugin-tekton-pipelines-common';
 /* eslint-enable */
 import { TektonApi, tektonApiRef } from '../src/api/types';
 
@@ -38,7 +38,7 @@ class MockTektonClient implements TektonApi {
     return { status: 'ok'};
   }
 
-  async getPipelineRuns(request: PipelineRunsByEntityRequest, baseUrl: string, authorizationBearerToken: string, namespace: string, selector: string, dashboardBaseUrl: string): Promise<PipelineRun[]> {
+  async getPipelineRuns(request: PipelineRunsByEntityRequest, name: string, baseUrl: string, authorizationBearerToken: string, namespace: string, selector: string, dashboardBaseUrl: string): Promise<Cluster[]> {
     const recordMock: Record<string, Label> = {
       "testKey": 
       {key: "test-key", value: "test-value"},
@@ -169,8 +169,12 @@ class MockTektonClient implements TektonApi {
     };
     const pipelineRuns: PipelineRun[] = [];
     pipelineRuns.push(pipelineRunMock);
-    
-    return pipelineRuns;
+    const tempCluster = {} as Cluster
+    tempCluster.name = "Cluster1"
+    tempCluster.pipelineRuns = pipelineRuns
+    const clusters: Cluster[] = []
+    clusters.push(tempCluster)
+    return clusters;
   }
   
 }
