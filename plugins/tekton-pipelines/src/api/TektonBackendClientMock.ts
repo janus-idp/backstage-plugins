@@ -1,6 +1,7 @@
 /* ignore lint error for internal dependencies */
 /* eslint-disable */
 import {
+  Cluster,
   PipelineRun,
   PipelineRunsByEntityRequest,
 } from '@jquad-group/plugin-tekton-pipelines-common';
@@ -8,17 +9,17 @@ import {
 import { TektonApi } from './types';
 
 export class TektonBackendClientMock implements TektonApi {
-  private readonly pipelineRuns: PipelineRun[];
+  private readonly clusters: Cluster[];
   private readonly logs: string;
   private readonly error: string | undefined;
   private request: PipelineRunsByEntityRequest | null = null;
 
   constructor(
-    pipelineRuns: PipelineRun[],
+    clusters: Cluster[],
     logs: string,
     error: string | undefined = undefined,
   ) {
-    this.pipelineRuns = pipelineRuns;
+    this.clusters = clusters;
     this.logs = logs;
     this.error = error;
   }
@@ -43,17 +44,18 @@ export class TektonBackendClientMock implements TektonApi {
 
   async getPipelineRuns(
     request: PipelineRunsByEntityRequest,
+    naem: string,
     baseUrl: string,
     authorizationBearerToken: string,
     namespace: string,
     selector: string,
     dashboardBaseUrl: string,
-  ): Promise<PipelineRun[]> {
+  ): Promise<Cluster[]> {
     this.request = request;
     if (this.error) {
       return Promise.reject(new Error(this.error));
     }
-    return Promise.resolve(this.pipelineRuns);
+    return Promise.resolve(this.clusters);
   }
 
   getRequest() {

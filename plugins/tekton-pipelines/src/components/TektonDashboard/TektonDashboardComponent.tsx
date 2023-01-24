@@ -11,7 +11,7 @@ import {
 
 /* ignore lint error for internal dependencies */
 /* eslint-disable */
-import { PipelineRun } from '@jquad-group/plugin-tekton-pipelines-common';
+import { Cluster, PipelineRun } from '@jquad-group/plugin-tekton-pipelines-common';
 /* eslint-disable */
 import { Grid } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
@@ -37,31 +37,41 @@ export function TektonDashboardComponent(props: TektonContentProps) {
   );
 
   const [loading, setLoading] = useState(true);
-  const [pipelineRuns, setPipelineRuns] = useState<PipelineRun[] | null>(null);
+  const [clusters, setClusters] = useState<Cluster[]>();
   const [error, setError] = useState<string | null>(null);
 
   const tektonApi = getTektonApi();
-
+  
+  /*
+  const clusterSize = tektonApi.getClusterSize();
+  logger.info("size: " + clusterSize);
+  */
   useEffect(() => {
     const interval = setInterval(() => {
       logger.debug('TektonDashboardComponent Query TektonApi');
       tektonApi
-        .getPipelineRuns({ entity: props.entity }, '', '', '', '', '')
-        .then(respPipelineRuns => {
-          return respPipelineRuns.sort((pipelineA, pipelineB) =>
-            pipelineA.status.startTime > pipelineB.status.startTime ? -1 : 1,
-          );
-        })
-        .then(respPipelineRuns => {
+        .getPipelineRuns({ entity: props.entity }, '', '', '', '', '', '')
+        .then(clusters => {
+                logger.info("test")
+                logger.info(clusters)
+                const sorted = clusters.map((cluster) => 
+                      cluster.pipelineRuns.sort((pipelineA, pipelineB) =>
+                      pipelineA.status.startTime > pipelineB.status.startTime ? -1 : 1,
+                    )
+                      )
+                return clusters
+          }
+        )
+        .then(clusters => {
           logger.debug(
-            `TektonDashboardComponent Pipeline Runs Count: ${respPipelineRuns.length}`,
+            `TektonDashboardComponent Pipeline Runs Count: ${Object.keys(clusters).length}`,
           );
           logger.debug(
             `TektonDashboardComponent Pipeline Runs: ${JSON.stringify(
-              respPipelineRuns,
+              clusters,
             )} end`,
           );
-          setPipelineRuns(respPipelineRuns);
+          setClusters(clusters);
           setLoading(false);
           setError(null);
         })
@@ -95,13 +105,18 @@ export function TektonDashboardComponent(props: TektonContentProps) {
         <ContentHeader title="PipelineRuns">
           <SupportButton>PipelineRuns</SupportButton>
         </ContentHeader>
-        <Grid container spacing={3} direction="column">
-          <Grid item>
-            {pipelineRuns !== null && pipelineRuns?.length > 0 && (
-              <CollapsibleTable pipelineruns={pipelineRuns} />
+        {clusters !== undefined && clusters?.length > 0 && (
+          clusters.map((cluster) => 
+            <Grid container spacing={3} direction="column">
+            <ContentHeader title={cluster.name} textAlign="center"></ContentHeader>
+            { cluster.pipelineRuns !== undefined && cluster.pipelineRuns !== null && cluster.pipelineRuns.length > 0 && (
+            <Grid item>
+              <CollapsibleTable pipelineruns={cluster.pipelineRuns} />
+            </Grid>           
             )}
-          </Grid>
-        </Grid>
+            </Grid>         
+          )
+        )}
       </Content>
     </Page>
   );
