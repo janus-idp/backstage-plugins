@@ -344,8 +344,6 @@ describe('createRouter', () => {
             kind: 'managedclusters',
           },
           code: 404,
-          level: 'error',
-          service: 'backstage',
         },
         request: { method: 'GET', url: '/status/non_existent_cluster' },
         response: { statusCode: 404 },
