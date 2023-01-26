@@ -49,7 +49,7 @@
     "@testing-library/user-event": "14.4.3",
     "@types/node": "18.11.18",
     "cross-fetch": "3.1.5",
-    "msw": "0.49.3"
+    "msw": "1.0.0"
   },
   "files": [
     "dist"
