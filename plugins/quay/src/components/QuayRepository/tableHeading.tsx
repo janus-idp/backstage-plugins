@@ -1,8 +1,7 @@
-import { TableColumn } from '@backstage/core-components'
+import { TableColumn } from '@backstage/core-components';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 
 export const columns: TableColumn[] = [
-
   {
     title: 'Tag',
     field: 'name',
@@ -16,7 +15,6 @@ export const columns: TableColumn[] = [
     title: 'Size',
     field: 'size',
     type: 'numeric',
-    
   },
   {
     title: 'Manifest',

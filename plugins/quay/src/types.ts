@@ -11,9 +11,22 @@ export interface Tag {
   manifest_digest: string;
   reversion: boolean;
   size: number;
-  start_ts: number;
-  manifest_list: ManifestList;
+  start_ts?: number;
+  end_ts?: number;
+  manifest_list?: ManifestList;
   expiration?: string;
+}
+
+export interface LabelsResponse {
+  labels: Label[];
+}
+
+export interface Label {
+  id: string;
+  key: string;
+  value: string;
+  source_type: string;
+  media_type: string;
 }
 
 export interface ManifestList {
@@ -74,8 +87,8 @@ export interface Vulnerability {
 
 export interface VulnerabilityMetadata {
   UpdatedBy: string;
-  RepoName: string;
-  RepoLink: string;
+  RepoName: string | null;
+  RepoLink: string | null;
   DistroName: string;
   DistroVersion: string;
   NVD: {
@@ -104,3 +117,23 @@ export const VulnerabilityOrder = {
   [VulnerabilitySeverity.Negligible]: 4,
   [VulnerabilitySeverity.Unknown]: 5,
 };
+
+export interface ManifestByDigestResponse {
+  digest: string;
+  is_manifest_list: boolean;
+  manifest_data: string;
+  config_media_type: string;
+  layers: LayerByDigest[];
+}
+
+export interface LayerByDigest {
+  index: number;
+  compressed_size: number;
+  is_remote: boolean;
+  urls: string[] | null;
+  command: string[] | null;
+  comment: string | null;
+  author: string | null;
+  blob_digest: string;
+  created_datetime: string;
+}

@@ -1,16 +1,17 @@
-import { 
-  createApiFactory, 
+import {
+  createApiFactory,
   createComponentExtension,
   createPlugin,
-  discoveryApiRef 
+  discoveryApiRef,
+  configApiRef,
 } from '@backstage/core-plugin-api';
-import { Entity } from '@backstage/catalog-model'
+import { Entity } from '@backstage/catalog-model';
 import { rootRouteRef } from './routes';
 import { QuayApiClient, quayApiRef } from './api';
 import { QUAY_ANNOTATION_REPOSITORY } from './components/useQuayAppData';
 
 export const quayPlugin = createPlugin({
-  id: 'quay-frontend',
+  id: 'quay',
   routes: {
     root: rootRouteRef,
   },
@@ -19,10 +20,12 @@ export const quayPlugin = createPlugin({
       api: quayApiRef,
       deps: {
         discoveryApi: discoveryApiRef,
+        configApi: configApiRef,
       },
-      factory: ({ discoveryApi }) => new QuayApiClient({ discoveryApi }),
+      factory: ({ discoveryApi, configApi }) =>
+        new QuayApiClient({ discoveryApi, configApi }),
     }),
-  ], 
+  ],
 });
 
 export const QuayPage = quayPlugin.provide(
@@ -30,10 +33,10 @@ export const QuayPage = quayPlugin.provide(
     name: 'QuayPage',
     component: {
       lazy: () =>
-      import('./components/QuayDashboardPage').then(m => m.QuayDashboardPage),
+        import('./components/QuayDashboardPage').then(m => m.QuayDashboardPage),
     },
   }),
 );
 
 export const isQuayAvailable = (entity: Entity) =>
-  Boolean(entity?.metadata.annotations?.[QUAY_ANNOTATION_REPOSITORY])
+  Boolean(entity?.metadata.annotations?.[QUAY_ANNOTATION_REPOSITORY]);
