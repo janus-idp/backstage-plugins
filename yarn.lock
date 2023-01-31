@@ -6288,10 +6288,10 @@
   resolved "https://registry.yarnpkg.com/@spotify/eslint-config-typescript/-/eslint-config-typescript-14.1.2.tgz#db406210c34e7a811c79a2a1826525bcc411a22e"
   integrity sha512-uIB20TlFhUaME5wsEoKPPEBizViFE6yLLpA3b1GL+ilEaEIoWBzBKWkicWmMVZSfbweu8fc1hWaMtpNSTAz4zA==
 
-"@spotify/prettier-config@14.1.4":
-  version "14.1.4"
-  resolved "https://registry.yarnpkg.com/@spotify/prettier-config/-/prettier-config-14.1.4.tgz#a0262b92d75a58c54f2a12edfd9af536e3468732"
-  integrity sha512-BwjsPDXytBN2V2KdYbqX81z4naxcBYoewZHffaaWW8OI5+ro3kMuR1wsngMQn+WpHlcwY2rgMIhmanKit6PP+w==
+"@spotify/prettier-config@14.1.5":
+  version "14.1.5"
+  resolved "https://registry.yarnpkg.com/@spotify/prettier-config/-/prettier-config-14.1.5.tgz#fc281797af1b854bc448b73ae40f67a7a52b187a"
+  integrity sha512-GpxiaCzMBMu44ckWFrECtVMNWoqUrkskgGNwpgXa65NdQwNZc9846xixCtHccqfxD47+MKzJn4qOWUpzwsZvBQ==
 
 "@sucrase/webpack-loader@^2.0.0":
   version "2.0.0"
@@ -10011,10 +10011,10 @@ csstype@^3.0.2, csstype@^3.0.6:
   resolved "https://registry.yarnpkg.com/csstype/-/csstype-3.1.1.tgz#841b532c45c758ee546a11d5bd7b7b473c8c30b9"
   integrity sha512-DJR/VvkAvSZW9bTouZue2sSxDwdTN92uHjqeKVm+0dAqdfNykRzQ95tay8aXMBAAPpUiq4Qcug2L7neoRh2Egw==
 
-cypress@12.4.0:
-  version "12.4.0"
-  resolved "https://registry.yarnpkg.com/cypress/-/cypress-12.4.0.tgz#de695bc51aec9d995456077a9c3e0ddadfb105c6"
-  integrity sha512-//h93K/yGC/7pxv1KamlkADbKHLp5h3f9rZDE2McRjXZDagMETH0sXowOOanvhsH8cFt/JWspIcK+p9cuaoAqg==
+cypress@12.4.1:
+  version "12.4.1"
+  resolved "https://registry.yarnpkg.com/cypress/-/cypress-12.4.1.tgz#6121b49fd7d833d1f4a0f486034f063467f433af"
+  integrity sha512-IFMPzc1RJ22Fac+YbdqywtpcuqZXqQJh+JqZDXn+A15zG/dw99njfv8f0bTvD+WAHhP118+xWG/VwilkFg1rnA==
   dependencies:
     "@cypress/request" "^2.88.10"
     "@cypress/xvfb" "^1.2.4"
