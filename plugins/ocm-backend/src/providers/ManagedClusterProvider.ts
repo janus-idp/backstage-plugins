@@ -24,6 +24,7 @@ import {
 import {
   ANNOTATION_ORIGIN_LOCATION,
   ANNOTATION_LOCATION,
+  ANNOTATION_KUBERNETES_API_SERVER,
 } from '@backstage/catalog-model';
 import { CustomObjectsApi } from '@kubernetes/client-node';
 import {
@@ -91,6 +92,11 @@ export class ManagedClusterProvider implements EntityProvider {
           name: i.metadata.name,
           title: i.metadata?.labels?.name,
           annotations: {
+            /**
+             * Can also be pulled from ManagedClusterInfo on .spec.masterEndpoint (details in discussion: https://github.com/janus-idp/backstage-plugins/pull/94#discussion_r1093228858)
+             */
+            [ANNOTATION_KUBERNETES_API_SERVER]:
+              i.spec?.managedClusterClientConfigs?.[0]?.url,
             [ANNOTATION_LOCATION]: `${this.getProviderName()}:${this.hubName}`,
             [ANNOTATION_ORIGIN_LOCATION]: `${this.getProviderName()}:${
               this.hubName
