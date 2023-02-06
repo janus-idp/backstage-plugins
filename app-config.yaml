@@ -51,7 +51,13 @@ proxy:
     changeOrigin: true
   '/quay/api':
     target: 'https://quay.io'
+    headers:
+      X-Requested-With: 'XMLHttpRequest'
+      # Uncomment the following line to access a private Quay Repository using a token
+      # Authorization: 'Bearer <YOUR TOKEN>'
     changeOrigin: true
+    # Change to "false" in case of using self hosted quay instance with a self-signed certificate
+    secure: true
 
 # Reference documentation http://backstage.io/docs/features/techdocs/configuration
 # Note: After experimenting with basic setup, use CI/CD to generate docs
