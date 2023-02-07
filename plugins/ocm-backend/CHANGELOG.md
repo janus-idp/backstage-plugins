@@ -1,3 +1,10 @@
+# @janus-idp/backstage-plugin-ocm-backend [1.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@1.2.1...@janus-idp/backstage-plugin-ocm-backend@1.3.0) (2023-02-07)
+
+
+### Features
+
+* Add API server annotation ([c57db67](https://github.com/janus-idp/backstage-plugins/commit/c57db6738b46e7df9b0c010e4d41d502b372a29a))
+
 ## @janus-idp/backstage-plugin-ocm-backend [1.2.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@1.2.0...@janus-idp/backstage-plugin-ocm-backend@1.2.1) (2023-01-25)
 
 
