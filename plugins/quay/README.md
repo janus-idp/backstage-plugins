@@ -1,13 +1,8 @@
-# quay-frontend
+# Quay plugin for Backstage
 
-Welcome to the quay-frontend plugin!
-This plugin will show you information about your docker images within quay
-
-_This plugin was created through the Backstage CLI_
+This plugin will show you information about your container images within Quay registry
 
 ## Getting started
-
-### Enabling frontend
 
 1. Install the plugin
 
@@ -23,6 +18,13 @@ _This plugin was created through the Backstage CLI_
      '/quay/api':
        target: 'https://quay.io'
        changeOrigin: true
+       headers:
+         X-Requested-With: 'XMLHttpRequest'
+         # Uncomment the following line to access a private Quay Repository using a token
+         # Authorization: 'Bearer <YOUR TOKEN>'
+       changeOrigin: true
+       # Change to "false" in case of using self hosted quay instance with a self-signed certificate
+       secure: true
    ```
 
 3. Enable additional tab on the entity view page
@@ -48,3 +50,15 @@ _This plugin was created through the Backstage CLI_
      annotations:
        'quay.io/repository-slug': `<ORGANIZATION>/<REPOSITORY>',
    ```
+
+## Development
+
+In [Backstage plugin terminology](https://backstage.io/docs/local-dev/cli-build-system#package-roles), this is a `frontend-plugin`. However it requires backend proxy to be available at all times. Development environment therefore requires you to run a backend instance as well. You can start a live dev session from the repository root using following commands concurrently:
+
+```
+yarn start-backend
+```
+
+```
+yarn workspace @janus-idp/backstage-plugin-quay run start
+```
