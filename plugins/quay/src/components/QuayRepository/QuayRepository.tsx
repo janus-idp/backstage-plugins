@@ -10,15 +10,14 @@ export function QuayRepository(props: RepositoryProps) {
   const quayClient = useApi(quayApiRef);
   const classes = useStyles();
   const [tags, setTags] = useState<Tag[]>([]);
-  const title =
-    'Quay repository: ' + props.organization + '/' + props.repository;
+  const title = `Quay repository: ${props.organization}/${props.repository}`;
 
   const { loading } = useAsync(async () => {
     const tagsResponse = await quayClient.getTags(
       props.organization,
       props.repository,
     );
-    if (tagsResponse.page == 1) {
+    if (tagsResponse.page === 1) {
       setTags(tagsResponse.tags);
     } else {
       setTags(currentTags => [...currentTags, ...tagsResponse.tags]);

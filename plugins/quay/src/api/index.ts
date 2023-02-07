@@ -1,9 +1,6 @@
 import {
   DiscoveryApi,
   ConfigApi,
-  fetchApiRef,
-  FetchApi,
-  useApi,
   createApiRef,
 } from '@backstage/core-plugin-api';
 import {
@@ -49,12 +46,10 @@ export class QuayApiClient implements QuayApiV1 {
   private readonly discoveryApi: DiscoveryApi;
 
   private readonly configApi: ConfigApi;
-  private readonly fetch: FetchApi['fetch'];
 
   constructor(options: Options) {
     this.discoveryApi = options.discoveryApi;
     this.configApi = options.configApi;
-    this.fetch = useApi(fetchApiRef).fetch;
   }
 
   private async getBaseUrl() {
@@ -64,7 +59,7 @@ export class QuayApiClient implements QuayApiV1 {
   }
 
   private async fetcher(url: string) {
-    const response = await this.fetch(url, {
+    const response = await fetch(url, {
       headers: { 'Content-Type': 'application/json' },
     });
     if (!response.ok) {

@@ -1,1 +1,1 @@
-export { QuayWidget } from './QuayWidget'
+export { QuayWidget } from './QuayWidget';

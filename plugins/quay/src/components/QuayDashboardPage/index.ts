@@ -1,1 +1,1 @@
-export { QuayDashboardPage } from './QuayDashboardPage'
+export { QuayDashboardPage } from './QuayDashboardPage';

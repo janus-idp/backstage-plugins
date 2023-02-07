@@ -1,15 +1,15 @@
-import { useEntity } from '@backstage/plugin-catalog-react'
-import React from 'react'
-import { QuayRepository } from '../QuayRepository'
-import { useQuayAppData } from '../useQuayAppData'
+import { useEntity } from '@backstage/plugin-catalog-react';
+import React from 'react';
+import { QuayRepository } from '../QuayRepository';
+import { useQuayAppData } from '../useQuayAppData';
 
 export const QuayDashboardPage = () => {
-  const { entity } = useEntity()
-  const { repositorySlug } = useQuayAppData({ entity })
-  const info = repositorySlug.split('/')
+  const { entity } = useEntity();
+  const { repositorySlug } = useQuayAppData({ entity });
+  const info = repositorySlug.split('/');
 
-  const organization = info.shift() as 'string'
-  const repository = info.join('/')
+  const organization = info.shift() as 'string';
+  const repository = info.join('/');
 
   return (
     <QuayRepository
@@ -17,5 +17,5 @@ export const QuayDashboardPage = () => {
       repository={repository}
       widget={false}
     />
-  )
-}
+  );
+};

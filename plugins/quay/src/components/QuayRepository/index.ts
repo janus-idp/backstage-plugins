@@ -1,1 +1,1 @@
-export { QuayRepository } from './QuayRepository'
+export { QuayRepository } from './QuayRepository';
