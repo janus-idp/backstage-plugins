@@ -39,7 +39,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "0.22.1",
-    "@types/express": "4.17.16",
+    "@types/express": "4.17.17",
     "@types/supertest": "2.0.12",
     "msw": "1.0.0",
     "nock": "13.3.0",
