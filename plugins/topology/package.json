@@ -1,5 +1,5 @@
 {
-  "name": "@janus-idp/plugin-topology",
+  "name": "@janus-idp/backstage-plugin-topology",
   "version": "0.1.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -23,13 +23,26 @@
     "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
+    "@backstage/catalog-model": "1.1.5",
     "@backstage/core-components": "^0.12.3",
     "@backstage/core-plugin-api": "^1.3.0",
+    "@backstage/plugin-catalog-react": "1.2.4",
     "@backstage/theme": "^0.2.16",
     "@material-ui/core": "^4.9.13",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.45",
-    "react-use": "^17.2.4"
+    "react-use": "^17.2.4",
+    "@patternfly/patternfly": "4.217.1",
+    "@patternfly/react-core": "4.267.6",
+    "@patternfly/react-icons": "^4.93.3",
+    "@patternfly/react-styles": "^4.92.3",
+    "@patternfly/react-topology": "^4.91.9",
+    "mobx": "^5.15.4",
+    "mobx-react": "^6.2.0",
+    "lodash": "^4.17.19",
+    "classnames": "2.x",
+    "@patternfly/react-charts": "6.94.7",
+    "@patternfly/react-tokens": "4.93.6"
   },
   "peerDependencies": {
     "react": "^16.13.1 || ^17.0.0"

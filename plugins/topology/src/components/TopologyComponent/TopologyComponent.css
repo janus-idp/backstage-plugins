@@ -1,0 +1,6 @@
+.pf-ri__topology {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
