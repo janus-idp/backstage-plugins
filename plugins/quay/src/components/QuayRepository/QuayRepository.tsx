@@ -18,7 +18,7 @@ export function QuayRepository(props: RepositoryProps) {
       props.organization,
       props.repository,
     );
-    if (tagsResponse.page == 1) {
+    if (tagsResponse.page === 1) {
       setTags(tagsResponse.tags);
     } else {
       setTags(currentTags => [...currentTags, ...tagsResponse.tags]);
@@ -31,21 +31,19 @@ export function QuayRepository(props: RepositoryProps) {
   }
 
   const data = tags?.map((tags: Tag) => {
-      return {
-          name: tags.name,
-          last_modified: formatDate(tags.last_modified),
-          size: formatSize(tags.size),
-          manifest_digest: tags.manifest_digest.substring(0, 19),
-          // expiration: tags.expiration,
-          // is_manifest_list: tags.is_manifest_list,
-          // reversion: tags.reversion,
-          // start_ts: tags.start_ts,
-          // end_ts: tags.end_ts,
-          // manifest_list: tags.manifest_list,
-          
-      };
+    return {
+      name: tags.name,
+      last_modified: formatDate(tags.last_modified),
+      size: formatSize(tags.size),
+      manifest_digest: tags.manifest_digest.substring(0, 19),
+      // expiration: tags.expiration,
+      // is_manifest_list: tags.is_manifest_list,
+      // reversion: tags.reversion,
+      // start_ts: tags.start_ts,
+      // end_ts: tags.end_ts,
+      // manifest_list: tags.manifest_list,
+    };
   });
-
 
   return (
     <div style={{ border: '1px solid #ddd' }}>
