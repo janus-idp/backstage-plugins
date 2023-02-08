@@ -30,18 +30,18 @@ export function QuayRepository(props: RepositoryProps) {
     return <Progress />;
   }
 
-  const data = tags?.map((tags: Tag) => {
+  const data = tags?.map((tag: Tag) => {
     return {
-      name: tags.name,
-      last_modified: formatDate(tags.last_modified),
-      size: formatSize(tags.size),
-      manifest_digest: tags.manifest_digest.substring(0, 19),
-      // expiration: tags.expiration,
-      // is_manifest_list: tags.is_manifest_list,
-      // reversion: tags.reversion,
-      // start_ts: tags.start_ts,
-      // end_ts: tags.end_ts,
-      // manifest_list: tags.manifest_list,
+      name: tag.name,
+      last_modified: formatDate(tag.last_modified),
+      size: formatSize(tag.size),
+      manifest_digest: tag.manifest_digest.substring(0, 19),
+      // expiration: tag.expiration,
+      // is_manifest_list: tag.is_manifest_list,
+      // reversion: tag.reversion,
+      // start_ts: tag.start_ts,
+      // end_ts: tag.end_ts,
+      // manifest_list: tag.manifest_list,
     };
   });
 
