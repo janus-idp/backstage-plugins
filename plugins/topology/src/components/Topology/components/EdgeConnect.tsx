@@ -11,35 +11,7 @@ type EdgeConnectProps = {
   element?: GraphElement;
 } & Partial<WithSelectionProps>;
 
-const EdgeConnect: React.FunctionComponent<EdgeConnectProps> = ({
-  element,
-  ...rest
-}) => {
-  const data = element?.getData() ?? {};
-
-  const passedData = React.useMemo(() => {
-    if (!element) {
-      return {};
-    }
-    const newData = { ...data };
-    Object.keys(newData).forEach(key => {
-      if (newData[key] === undefined) {
-        delete newData[key];
-      }
-    });
-    return newData;
-  }, [data]);
-
-  if (!element || !isEdge(element)) {
-    return null;
-  }
-  return (
-    <DefaultEdge
-      element={element}
-      {...rest}
-      {...passedData}
-    />
-  );
-};
+const EdgeConnect: React.FunctionComponent<EdgeConnectProps> = ({ element, ...rest }) =>
+  !element || !isEdge(element) ? null : <DefaultEdge element={element} {...rest} />;
 
 export default observer(EdgeConnect);
