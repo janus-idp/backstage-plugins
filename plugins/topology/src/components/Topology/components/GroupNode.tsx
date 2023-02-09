@@ -1,11 +1,11 @@
 import * as React from 'react';
 import {
   DefaultGroup,
+  GraphElement,
+  isNode,
   Node,
   observer,
   ScaleDetailsLevel,
-  ShapeProps,
-  WithContextMenuProps,
   WithDragNodeProps,
   WithSelectionProps,
 } from '@patternfly/react-topology';
@@ -14,6 +14,8 @@ import DefaultIcon from '@patternfly/react-icons/dist/esm/icons/builder-image-ic
 import useDetailsLevel from '@patternfly/react-topology/dist/esm/hooks/useDetailsLevel';
 
 const ICON_PADDING = 20;
+const collapsedWidth = 75;
+const collapsedHeight = 75;
 
 export enum DataTypes {
   Default,
@@ -21,25 +23,16 @@ export enum DataTypes {
 }
 
 type GroupNodeProps = {
-  element: Node;
-  collapsible: boolean;
-  collapsedWidth?: number;
-  collapsedHeight?: number;
-  onCollapseChange?: (group: Node, collapsed: boolean) => void;
-  getCollapsedShape?: (node: Node) => React.FunctionComponent<ShapeProps>;
-  collapsedShadowOffset?: number; // defaults to 10
-} & WithContextMenuProps &
-  WithDragNodeProps &
-  WithSelectionProps;
+  element?: GraphElement;
+} & Partial<WithSelectionProps & WithDragNodeProps>;
 
 const GroupNode: React.FunctionComponent<GroupNodeProps> = ({
   element,
-  onContextMenu,
-  contextMenuOpen,
-  collapsedWidth = 75,
-  collapsedHeight = 75,
   ...rest
 }) => {
+  if (!element || !isNode(element)) {
+    return null;
+  }
   const data = element.getData();
   const detailsLevel = useDetailsLevel();
 
@@ -84,8 +77,6 @@ const GroupNode: React.FunctionComponent<GroupNodeProps> = ({
 
   return (
     <DefaultGroup
-      onContextMenu={data.showContextMenu ? onContextMenu : undefined}
-      contextMenuOpen={contextMenuOpen}
       element={element}
       collapsedWidth={collapsedWidth}
       collapsedHeight={collapsedHeight}
@@ -93,7 +84,7 @@ const GroupNode: React.FunctionComponent<GroupNodeProps> = ({
       {...rest}
       {...passedData}
     >
-      {element.isCollapsed() ? renderIcon() : null}
+      {(element as Node).isCollapsed() ? renderIcon() : null}
     </DefaultGroup>
   );
 };
