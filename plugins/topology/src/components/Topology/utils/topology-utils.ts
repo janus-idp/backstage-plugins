@@ -1,11 +1,17 @@
 import * as _ from 'lodash';
+import { resourceModels } from '../models';
 import {
   KindsMap,
   OverviewItem,
   TopologyDataObject,
   TopologyDataResources,
+  TopologyResourcesObject,
 } from '../types/topology-types';
-import { K8sResourceKind, WatchedResourceType } from '../types/types';
+import {
+  K8sResourceKind,
+  WatchedResourceType,
+  WatchK8sResults,
+} from '../types/types';
 
 export const WORKLOAD_TYPES = ['deployments', 'jobs', 'pods'];
 
@@ -31,6 +37,33 @@ export const groupVersionFor = (apiVersion: string) => ({
   version:
     apiVersion.split('/').length === 2 ? apiVersion.split('/')[1] : apiVersion,
 });
+
+export const apiVersionForWorkloadType = (type: string) => {
+  return resourceModels[type]?.apiGroup
+    ? `${resourceModels[type].apiGroup}/${resourceModels[type].apiVersion}`
+    : resourceModels[type]?.apiVersion;
+};
+
+export const workloadKind = (type: string) => {
+  return resourceModels[type].kind;
+};
+
+export const getResources = (k8sObjects: any) =>
+  k8sObjects.items[0].resources.reduce(
+    (acc: WatchK8sResults<TopologyResourcesObject>, res: any) => ({
+      ...acc,
+      [res.type]: {
+        data: res.resources.map((rval: K8sResourceKind) => ({
+          ...rval,
+          kind: workloadKind(res.type),
+          apiVersion: apiVersionForWorkloadType(res.type),
+        })),
+        loaded: true,
+        loadError: '',
+      },
+    }),
+    {},
+  );
 
 type DeploymentLablesAnnotations = {
   [key: string]: string;
@@ -89,7 +122,7 @@ export const getWorkloadResources2 = (
         ? resources[resourceKind].data.map(res => {
             const resKind = res.kind || kindsMap[resourceKind];
             let kind = resKind;
-            let apiVersion;
+            let apiVersion = apiVersionForWorkloadType(resourceKind);
             if (resKind && isGroupVersionKind(resKind)) {
               kind = kindForReference(resKind);
               apiVersion = apiVersionForReference(resKind);

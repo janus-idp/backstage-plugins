@@ -36,3 +36,23 @@ export const DeploymentModel: K8sModel = {
   id: 'deployment',
   labelPlural: 'Deployments',
 };
+
+export const ServiceModel: K8sModel = {
+  apiVersion: 'v1',
+  label: 'Service',
+  labelKey: 'public~Service',
+  plural: 'services',
+  abbr: 'S',
+  namespaced: true,
+  kind: 'Service',
+  id: 'service',
+  labelPlural: 'Services',
+  labelPluralKey: 'public~Services',
+};
+
+export const resourceModels = {
+  [DeploymentModel.plural]: DeploymentModel,
+  [PodModel.plural]: PodModel,
+  [ReplicaSetModel.plural]: ReplicaSetModel,
+  [ServiceModel.plural]: ServiceModel,
+};

@@ -17,7 +17,10 @@ import {
 import defaultLayoutFactory from './layouts/defaultLayoutFactory';
 import TopologyComponentFactory from './components/TopologyComponentFactory';
 import { updateTopologyDataModel } from './data-transforms/updateTopologyDataModel';
-import { mockResources, mockWatchedRes } from '../../data/mock-watched-res';
+import { mockWatchedRes } from '../../data/mock-watched-res';
+import { useEntity } from '@backstage/plugin-catalog-react';
+import { useKubernetesObjects } from '@backstage/plugin-kubernetes';
+import { getResources } from './utils/topology-utils';
 
 interface TopologyViewWorkloadComponentProps {
   useSidebar: boolean;
@@ -30,25 +33,29 @@ const TopologyViewWorkloadComponent: React.FunctionComponent<
   const [selectedIds, setSelectedIds] = React.useState<string[]>([]);
   const controller = useVisualizationController();
   const [dataModel, setDataModel] = React.useState({});
-
+  const { entity } = useEntity();
+  const { kubernetesObjects, error } = useKubernetesObjects(entity);
   const layout = 'ColaNoForce';
 
   React.useEffect(() => {
     const fetchData = async () => {
-      const watchedRes = mockWatchedRes();
-      const dataModelRes = await updateTopologyDataModel(
-        mockResources,
-        watchedRes,
-      );
-      if (dataModelRes.model) {
-        setDataModel(dataModelRes.model);
+      if (kubernetesObjects && !error) {
+        const k8sResources = getResources(kubernetesObjects);
+        const watchedRes = mockWatchedRes();
+        const dataModelRes = await updateTopologyDataModel(
+          k8sResources,
+          watchedRes,
+        );
+        if (dataModelRes.model) {
+          setDataModel(dataModelRes.model);
+        }
       }
     };
 
     fetchData();
     // Don't update on option changes, its handled differently to not re-layout
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [kubernetesObjects, error]);
 
   React.useEffect(() => {
     if (dataModel) {
