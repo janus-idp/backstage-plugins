@@ -40,14 +40,14 @@ export const DeploymentModel: K8sModel = {
 export const ServiceModel: K8sModel = {
   apiVersion: 'v1',
   label: 'Service',
-  labelKey: 'public~Service',
+  labelKey: 'Service',
   plural: 'services',
   abbr: 'S',
   namespaced: true,
   kind: 'Service',
   id: 'service',
   labelPlural: 'Services',
-  labelPluralKey: 'public~Services',
+  labelPluralKey: 'Services',
 };
 
 export const resourceModels = {

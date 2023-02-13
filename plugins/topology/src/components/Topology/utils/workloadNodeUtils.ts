@@ -74,7 +74,7 @@ const podWarnings = (pod: PodKind) => {
   return null;
 };
 
-export const getPodStatus = (pod: PodKind) => {
+export const getPodStatus = (pod: PodKind): AllPodStatus => {
   if (pod.metadata?.deletionTimestamp) {
     return AllPodStatus.Terminating;
   }
@@ -92,7 +92,7 @@ export const getPodStatus = (pod: PodKind) => {
   if (phase === AllPodStatus.Running && !isReady(pod)) {
     return AllPodStatus.NotReady;
   }
-  return AllPodStatus.Unknown;
+  return phase as AllPodStatus;
 };
 
 export const calculateRadius = (size: number) => {

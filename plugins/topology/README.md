@@ -4,8 +4,63 @@ This plugin will help with visualizing the workloads like Deployment, Replicaset
 
 ## Prerequisites
 
-2. Installed [Kubernetes backend plugin for Backstage](https://github.com/backstage/backstage/tree/master/plugins/kubernetes-backend)
-3. Kubernetes plugin is properly configured
+1. Install and configure kubernetes plugin by following these guides:
+   https://backstage.io/docs/features/kubernetes/installation
+   https://backstage.io/docs/features/kubernetes/configuration
+2. Kubernetes plugin is properly configured and able to connect to the cluster via a `ServiceAccount`
+3. Following `ClusterRole` must be granted to ServiceAccount accessing the cluster: (k8s plugin by default tries to fetch the following resources and if access is not provided an error is shown)
+   ```yaml
+   apiVersion: rbac.authorization.k8s.io/v1
+   kind: ClusterRole
+   metadata:
+     name: backstage-read-only
+   rules:
+     - apiGroups:
+         - '*'
+       resources:
+         - pods
+         - configmaps
+         - services
+         - deployments
+         - replicasets
+         - horizontalpodautoscalers
+         - ingresses
+         - statefulsets
+         - limitranges
+         - daemonsets
+       verbs:
+         - get
+         - list
+         - watch
+     - apiGroups:
+         - batch
+       resources:
+         - jobs
+         - cronjobs
+       verbs:
+         - get
+         - list
+         - watch
+     - apiGroups:
+         - metrics.k8s.io
+       resources:
+         - pods
+       verbs:
+         - get
+         - list
+   ```
+4. To get the resources from a k8s cluster add the following annotations to the entity's catalog-info.yaml as K8s plugin identifies if the provided entity has k8s resources and if yes from which namespace it should get the resources based on the following annotations.
+   ```yaml
+   annotations:
+     backstage.io/kubernetes-id: <BACKSTAGE_ENTITY_NAME>
+     backstage.io/kubernetes-namespace: <RESOURCE_NS>
+   ```
+5. A custom label selector can also be added which will then be used by Backstage to find the resources. The label selector takes precedence over the id annotation.
+   `'backstage.io/kubernetes-label-selector': 'app=my-app,component=front-end`
+6. For k8s plugin to get the desired entity's k8s resources the following label should be added to the resources(if label selector is used then the labels mentioned in that should be present on the resource):
+   ```yaml
+   'backstage.io/kubernetes-id': <BACKSTAGE_ENTITY_NAME>`
+   ```
 
 ## Getting started
 
@@ -30,30 +85,6 @@ This plugin will help with visualizing the workloads like Deployment, Replicaset
      </EntityPageLayout>
    );
    ```
-
-3. Annotate your entity with
-
-   ```yaml
-   metadata:
-     annotations:
-       'backstage.io/kubernetes-id': `<BACKSTAGE_ENTITY_NAME>`
-   ```
-
-For k8s plugin to get the desired entity's k8s resources the following label should be added to the resources
-
-```yaml
-'backstage.io/kubernetes-id': <BACKSTAGE_ENTITY_NAME>`
-```
-
-K8s plugin identifies if the provided entity has k8s resources and if yes from which namespace it should get the resources based on the following annotations added to the entity's catalog-info.yaml
-
-A custom label selector can also be added which will then be used by Backstage to find the resources. The label selector takes precedence over the id annotation.
-
-```yaml
-  'backstage.io/kubernetes-label-selector': 'app=my-app,component=front-end`
-```
-
-In order to use k8s plugin to get the resources for Topology view, the above annotations/labels should be in place.
 
 ## Development
 

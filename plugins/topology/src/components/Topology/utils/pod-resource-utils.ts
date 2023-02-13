@@ -58,9 +58,9 @@ export const getActiveReplicaSets = (
   deployment: K8sResourceKind,
   resources: any,
 ) => {
-  const { replicaSets } = resources;
+  const { replicasets } = resources;
   const currentRevision = getDeploymentRevision(deployment);
-  const ownedRS = getOwnedResources(deployment, replicaSets?.data);
+  const ownedRS = getOwnedResources(deployment, replicasets?.data);
   return _.filter(
     ownedRS,
     rs =>
@@ -299,7 +299,7 @@ export const getResourcesToWatchForPods = (kind: string, namespace: string) => {
         kind: 'Pod',
         namespace,
       },
-      replicaSets: {
+      replicasets: {
         isList: true,
         kind: 'ReplicaSet',
         namespace,

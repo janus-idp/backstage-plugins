@@ -53,11 +53,14 @@ export const getResources = (k8sObjects: any) =>
     (acc: WatchK8sResults<TopologyResourcesObject>, res: any) => ({
       ...acc,
       [res.type]: {
-        data: res.resources.map((rval: K8sResourceKind) => ({
-          ...rval,
-          kind: workloadKind(res.type),
-          apiVersion: apiVersionForWorkloadType(res.type),
-        })),
+        data:
+          (resourceModels[res.type] &&
+            res.resources.map((rval: K8sResourceKind) => ({
+              ...rval,
+              kind: workloadKind(res.type),
+              apiVersion: apiVersionForWorkloadType(res.type),
+            }))) ??
+          [],
         loaded: true,
         loadError: '',
       },

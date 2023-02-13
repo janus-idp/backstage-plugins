@@ -24,7 +24,7 @@ export const mockResources: WatchK8sResults<TopologyResourcesObject> = {
     loaded: true,
     loadError: '',
   },
-  replicaSets: {
+  replicasets: {
     loaded: true,
     loadError: '',
     data: [mockReplicasetData, mockReplicasetData2],
