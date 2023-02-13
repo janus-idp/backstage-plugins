@@ -30,11 +30,11 @@ export const isContainerLoopingFilter = (containerStatus: ContainerStatus) => {
 const numContainersReadyFilter = (pod: PodKind) => {
   const containerStatuses = pod.status?.containerStatuses;
   let numReady = 0;
-  containerStatuses?.forEach((status) => {
+  containerStatuses?.forEach(status => {
     if (status.ready) {
       numReady++;
     }
-  })
+  });
   return numReady;
 };
 
@@ -43,7 +43,7 @@ const isReady = (pod: PodKind) => {
     spec: { containers },
   } = pod;
   const numReady = numContainersReadyFilter(pod);
-  const total = containers ? Object.keys(containers).length : 0
+  const total = containers ? Object.keys(containers).length : 0;
 
   return numReady === total;
 };
@@ -52,22 +52,24 @@ const podWarnings = (pod: PodKind) => {
   const phase = pod.status?.phase;
   const containerStatuses = pod.status?.containerStatuses;
   if (phase === AllPodStatus.Running && containerStatuses) {
-    return containerStatuses.map(containerStatus => {
-      if (!containerStatus.state) {
-        return null;
-      }
-
-      if (isContainerFailedFilter(containerStatus)) {
-        if (pod.metadata?.deletionTimestamp) {
-          return AllPodStatus.Failed;
+    return containerStatuses
+      .map(containerStatus => {
+        if (!containerStatus.state) {
+          return null;
         }
-        return AllPodStatus.Warning;
-      }
-      if (isContainerLoopingFilter(containerStatus)) {
-        return AllPodStatus.CrashLoopBackOff;
-      }
-      return null;
-    }).filter(x => x);
+
+        if (isContainerFailedFilter(containerStatus)) {
+          if (pod.metadata?.deletionTimestamp) {
+            return AllPodStatus.Failed;
+          }
+          return AllPodStatus.Warning;
+        }
+        if (isContainerLoopingFilter(containerStatus)) {
+          return AllPodStatus.CrashLoopBackOff;
+        }
+        return null;
+      })
+      .filter(x => x);
   }
   return null;
 };
@@ -90,7 +92,7 @@ export const getPodStatus = (pod: PodKind) => {
   if (phase === AllPodStatus.Running && !isReady(pod)) {
     return AllPodStatus.NotReady;
   }
-  return phase;
+  return AllPodStatus.Unknown;
 };
 
 export const calculateRadius = (size: number) => {

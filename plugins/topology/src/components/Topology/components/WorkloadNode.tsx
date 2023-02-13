@@ -122,70 +122,74 @@ type InnerWorkloadNodeProps = {
   element: Node;
 } & Partial<WithSelectionProps & WithDragNodeProps>;
 
-const InnerWorkloadNode: React.FC<InnerWorkloadNodeProps> = observer(({ element, ...rest }) => {
-  const resource = getTopologyResourceObject(
-    element.getData(),
-  ) as K8sResourceKind;
-  const { podData, loadError, loaded } = usePodsWatcher(
-    resource,
-    resource.kind,
-    resource.metadata?.namespace,
-  );
-  const donutStatus = loaded && !loadError ? podData : null;
-  const { width, height } = element.getDimensions();
-  const workloadData = element.getData().data;
-  const [hover, hoverRef] = useHover();
-  const size = Math.min(width, height);
-  const { radius, decoratorRadius } = calculateRadius(size);
-  const cx = width / 2;
-  const cy = height / 2;
-  const { decorators } = element.getGraph().getData() ?? {};
-  const controller = useVisualizationController();
-  const detailsLevel = controller.getGraph().getDetailsLevel();
-  const showDetails = hover || detailsLevel !== ScaleDetailsLevel.low;
-  const nodeDecorators =
-    showDetails && decorators
-      ? getNodeDecorators(
-        element,
-        decorators,
-        cx,
-        cy,
-        radius,
-        decoratorRadius,
-      )
-      : null;
-  const pipelineStatus =
-    element.getData()?.resources?.pipelineRunStatus ?? 'Unknown';
+const InnerWorkloadNode: React.FC<InnerWorkloadNodeProps> = observer(
+  ({ element, ...rest }) => {
+    const resource = getTopologyResourceObject(
+      element.getData(),
+    ) as K8sResourceKind;
+    const { podData, loadError, loaded } = usePodsWatcher(
+      resource,
+      resource.kind,
+      resource.metadata?.namespace,
+    );
+    const donutStatus = loaded && !loadError ? podData : null;
+    const { width, height } = element.getDimensions();
+    const workloadData = element.getData().data;
+    const [hover, hoverRef] = useHover();
+    const size = Math.min(width, height);
+    const { radius, decoratorRadius } = calculateRadius(size);
+    const cx = width / 2;
+    const cy = height / 2;
+    const { decorators } = element.getGraph().getData() ?? {};
+    const controller = useVisualizationController();
+    const detailsLevel = controller.getGraph().getDetailsLevel();
+    const showDetails = hover || detailsLevel !== ScaleDetailsLevel.low;
+    const nodeDecorators =
+      showDetails && decorators
+        ? getNodeDecorators(
+            element,
+            decorators,
+            cx,
+            cy,
+            radius,
+            decoratorRadius,
+          )
+        : null;
+    const pipelineStatus =
+      element.getData()?.resources?.pipelineRunStatus ?? 'Unknown';
 
-  return (
-    <g className="tp-workload-node">
-      <BaseNode
-        className="tp-workload-node"
-        hoverRef={hoverRef as (node: Element) => () => void}
-        innerRadius={podSetInnerRadius(size, donutStatus)}
-        kind={workloadData?.kind}
-        element={element}
-        nodeStatus={
-          !showDetails
-            ? getAggregateStatus(donutStatus, pipelineStatus)
-            : undefined
-        }
-        attachments={nodeDecorators}
-        {...rest}
-      >
-        {donutStatus && showDetails ? (
-          <PodSet size={size} x={cx} y={cy} data={donutStatus} showPodCount />
-        ) : null}
-      </BaseNode>
-    </g>
-  );
-});
+    return (
+      <g className="tp-workload-node">
+        <BaseNode
+          className="tp-workload-node"
+          hoverRef={hoverRef as (node: Element) => () => void}
+          innerRadius={podSetInnerRadius(size, donutStatus)}
+          kind={workloadData?.kind}
+          element={element}
+          nodeStatus={
+            !showDetails
+              ? getAggregateStatus(donutStatus, pipelineStatus)
+              : undefined
+          }
+          attachments={nodeDecorators}
+          {...rest}
+        >
+          {donutStatus && showDetails ? (
+            <PodSet size={size} x={cx} y={cy} data={donutStatus} showPodCount />
+          ) : null}
+        </BaseNode>
+      </g>
+    );
+  },
+);
 
 type WorkloadNodeProps = {
   element?: GraphElement;
 } & Partial<WithSelectionProps & WithDragNodeProps>;
 
 const WorkloadNode: React.FC<WorkloadNodeProps> = ({ element, ...rest }) =>
-  !element || !isNode(element) ? null : <InnerWorkloadNode element={element} {...rest} />;
+  !element || !isNode(element) ? null : (
+    <InnerWorkloadNode element={element} {...rest} />
+  );
 
 export default WorkloadNode;
