@@ -50,7 +50,7 @@ import { ThreeScaleApiEntityProvider } from '@fmenesesg/threescale-backstage-pro
 
   const { processingEngine, router } = await builder.build();
 [...]
-``` 
+```
 
 ## Troubleshoot
 
