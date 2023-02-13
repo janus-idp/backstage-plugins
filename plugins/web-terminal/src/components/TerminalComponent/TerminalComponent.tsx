@@ -5,6 +5,7 @@ import { FitAddon } from 'xterm-addon-fit';
 import { AttachAddon } from 'xterm-addon-attach';
 import { InfoCard, Progress } from '@backstage/core-components';
 import { useApi, configApiRef } from '@backstage/core-plugin-api';
+import { useEntity } from '@backstage/plugin-catalog-react';
 import { createWorkspace, getWorkspace } from './utils';
 import './static/xterm.css';
 
@@ -30,7 +31,6 @@ const useTerminalStyles = makeStyles({
 
 interface IFormData {
   token: string | undefined;
-  cluster: string | undefined;
 }
 
 export const TerminalComponent = () => {
@@ -38,11 +38,13 @@ export const TerminalComponent = () => {
   const [loading, setLoading] = React.useState(false);
   const [formData, setFormData] = React.useState<IFormData>({
     token: undefined,
-    cluster: undefined,
   });
+  const { entity } = useEntity();
+  const cluster = entity.metadata.annotations?.[
+    'kubernetes.io/api-server'
+  ]?.replace(/(https?:\/\/)/, '');
   const classes = useTerminalStyles();
   const tokenRef = React.useRef<HTMLInputElement>(null);
-  const clusterRef = React.useRef<HTMLInputElement>(null);
   const termRef = React.useRef(null);
   const config = useApi(configApiRef);
   const webSocketUrl = config.getString('webTerminal.webSocketUrl');
@@ -65,7 +67,6 @@ export const TerminalComponent = () => {
     event.preventDefault();
     setFormData({
       token: tokenRef.current?.value,
-      cluster: clusterRef.current?.value,
     });
   };
 
@@ -80,10 +81,10 @@ export const TerminalComponent = () => {
   };
 
   React.useEffect(() => {
-    if (!formData.token || !formData.cluster) {
+    if (!formData.token || !cluster) {
       return;
     }
-    const { token, cluster } = formData;
+    const { token } = formData;
     setLoading(true);
     setupPod(cluster, token).then(names => {
       setLoading(false);
@@ -108,7 +109,7 @@ export const TerminalComponent = () => {
       };
       ws.onclose = () => {};
     });
-  }, [formData, setupTerminal, webSocketUrl]);
+  }, [formData, setupTerminal, webSocketUrl, cluster]);
 
   if (loading) {
     return <Progress />;
@@ -122,7 +123,6 @@ export const TerminalComponent = () => {
     <div>
       <InfoCard title="Web Terminal" noPadding>
         <form onSubmit={handleSubmit} className={classes.formDisplay}>
-          <TextField label="Cluster" variant="outlined" inputRef={clusterRef} />
           <TextField
             label="Token"
             type="password"
