@@ -16,7 +16,7 @@ import DefaultGraph from './DefaultGraph';
 const TopologyComponentFactory: ComponentFactory = (
   kind: ModelKind,
   type: string,
-): React.ComponentType<{ element: GraphElement}> | undefined => {
+): React.ComponentType<{ element: GraphElement }> | undefined => {
   if (kind === ModelKind.graph) {
     return withPanZoom()(DefaultGraph);
   }
@@ -26,7 +26,6 @@ const TopologyComponentFactory: ComponentFactory = (
     case TYPE_APPLICATION_GROUP:
       return withDragNode()(withSelection()(GroupNode));
     case TYPE_CONNECTS_TO:
-      /* @ts-ignore */
       return withSelection()(EdgeConnect);
     default:
       return undefined;

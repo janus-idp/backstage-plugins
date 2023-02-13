@@ -14,7 +14,10 @@ type GroupNodeProps = {
   element?: GraphElement;
 } & Partial<WithSelectionProps & WithDragNodeProps>;
 
-const GroupNode: React.FunctionComponent<GroupNodeProps> = ({ element, ...rest }) => {
+const GroupNode: React.FunctionComponent<GroupNodeProps> = ({
+  element,
+  ...rest
+}) => {
   const detailsLevel = useDetailsLevel();
 
   if (!element || !isNode(element)) {
@@ -26,8 +29,7 @@ const GroupNode: React.FunctionComponent<GroupNodeProps> = ({ element, ...rest }
       element={element}
       showLabel={detailsLevel === ScaleDetailsLevel.high}
       {...rest}
-    >
-    </DefaultGroup>
+    />
   );
 };
 

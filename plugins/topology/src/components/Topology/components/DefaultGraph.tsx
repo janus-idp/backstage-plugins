@@ -5,7 +5,7 @@ import {
   observer,
   WithPanZoomProps,
   GraphComponent,
-  isGraph
+  isGraph,
 } from '@patternfly/react-topology';
 
 export type ElementProps = {
@@ -15,7 +15,7 @@ export type ElementProps = {
 export type DefaultGraphProps = ElementProps & WithPanZoomProps;
 const DefaultGraph: React.FunctionComponent<DefaultGraphProps> = ({
   element,
-  panZoomRef
+  panZoomRef,
 }) => {
   if (!isGraph) {
     return null;

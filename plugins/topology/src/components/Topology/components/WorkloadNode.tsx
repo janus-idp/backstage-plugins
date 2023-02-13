@@ -136,7 +136,7 @@ const WorkloadNode: React.FC<WorkloadNodeProps> = ({ element, ...rest }) => {
     resource.kind,
     resource.metadata?.namespace,
   );
-  const donutStatus = loaded && !loadError ? podData : null
+  const donutStatus = loaded && !loadError ? podData : null;
   const { width, height } = nodeElement.getDimensions();
   const workloadData = element.getData().data;
   const [hover, hoverRef] = useHover();
@@ -147,18 +147,17 @@ const WorkloadNode: React.FC<WorkloadNodeProps> = ({ element, ...rest }) => {
   const { decorators } = element.getGraph().getData() ?? {};
   const controller = useVisualizationController();
   const detailsLevel = controller.getGraph().getDetailsLevel();
-  const showDetails =
-    hover || detailsLevel !== ScaleDetailsLevel.low;
+  const showDetails = hover || detailsLevel !== ScaleDetailsLevel.low;
   const nodeDecorators =
     showDetails && decorators
       ? getNodeDecorators(
-        nodeElement,
-        decorators,
-        cx,
-        cy,
-        radius,
-        decoratorRadius,
-      )
+          nodeElement,
+          decorators,
+          cx,
+          cy,
+          radius,
+          decoratorRadius,
+        )
       : null;
   const pipelineStatus =
     element.getData()?.resources?.pipelineRunStatus ?? 'Unknown';
@@ -180,13 +179,7 @@ const WorkloadNode: React.FC<WorkloadNodeProps> = ({ element, ...rest }) => {
         {...rest}
       >
         {donutStatus && showDetails ? (
-          <PodSet
-            size={size}
-            x={cx}
-            y={cy}
-            data={donutStatus}
-            showPodCount
-          />
+          <PodSet size={size} x={cx} y={cy} data={donutStatus} showPodCount />
         ) : null}
       </BaseNode>
     </g>

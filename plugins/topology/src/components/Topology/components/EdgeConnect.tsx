@@ -11,7 +11,12 @@ type EdgeConnectProps = {
   element?: GraphElement;
 } & Partial<WithSelectionProps>;
 
-const EdgeConnect: React.FunctionComponent<EdgeConnectProps> = ({ element, ...rest }) =>
-  !element || !isEdge(element) ? null : <DefaultEdge element={element} {...rest} />;
+const EdgeConnect: React.FunctionComponent<EdgeConnectProps> = ({
+  element,
+  ...rest
+}) =>
+  !element || !isEdge(element) ? null : (
+    <DefaultEdge element={element} {...rest} />
+  );
 
 export default observer(EdgeConnect);
