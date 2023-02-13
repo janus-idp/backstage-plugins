@@ -2,7 +2,9 @@ import { readTaskScheduleDefinitionFromConfig } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
 import { ThreeScaleConfig } from './types';
 
-export function readThreeScaleApiEntityConfigs(config: Config): ThreeScaleConfig[] {
+export function readThreeScaleApiEntityConfigs(
+  config: Config,
+): ThreeScaleConfig[] {
   const configs: ThreeScaleConfig[] = [];
 
   const providerConfigs = config.getOptionalConfig(
@@ -14,14 +16,18 @@ export function readThreeScaleApiEntityConfigs(config: Config): ThreeScaleConfig
   }
 
   for (const id of providerConfigs.keys()) {
-    configs.push(readThreeScaleApiEntityConfig(id, providerConfigs.getConfig(id)));
+    configs.push(
+      readThreeScaleApiEntityConfig(id, providerConfigs.getConfig(id)),
+    );
   }
 
   return configs;
 }
 
-function readThreeScaleApiEntityConfig(id: string, config: Config): ThreeScaleConfig {
-
+function readThreeScaleApiEntityConfig(
+  id: string,
+  config: Config,
+): ThreeScaleConfig {
   const baseUrl = config.getString('baseUrl');
   const accessToken = config.getString('accessToken');
   const systemLabel = config.getOptionalString('systemLabel');

@@ -26,17 +26,17 @@ export class ThreeScaleApiEntityProvider implements EntityProvider {
   private readonly logger: Logger;
   private readonly scheduleFn: () => Promise<void>;
   private connection?: EntityProviderConnection;
-  
+
   static fromConfig(
-      configRoot: Config, 
-      options: {
-        logger: Logger;
-        schedule?: TaskRunner;
-        scheduler?: PluginTaskScheduler;
-      }) : ThreeScaleApiEntityProvider[] {
+    configRoot: Config,
+    options: {
+      logger: Logger;
+      schedule?: TaskRunner;
+      scheduler?: PluginTaskScheduler;
+    }): ThreeScaleApiEntityProvider[] {
 
     const providerConfigs = readThreeScaleApiEntityConfigs(configRoot);
-    
+
     if (!options.schedule && !options.scheduler) {
       throw new Error('Either schedule or scheduler must be provided.');
     }
@@ -51,7 +51,7 @@ export class ThreeScaleApiEntityProvider implements EntityProvider {
 
       const taskRunner = options.schedule ??
         options.scheduler!.createScheduledTaskRunner(providerConfig.schedule!);
-    
+
       return new ThreeScaleApiEntityProvider(
         providerConfig,
         options.logger,
@@ -110,24 +110,25 @@ export class ThreeScaleApiEntityProvider implements EntityProvider {
     let apiDocs: APIDocs;
     let fetchServices: boolean = true;
     while (fetchServices) {
-      services = await listServices(this.baseUrl, this.accessToken , page, ThreeScaleApiEntityProvider.SERVICES_FETCH_SIZE);
+      services = await listServices(this.baseUrl, this.accessToken, page, ThreeScaleApiEntityProvider.SERVICES_FETCH_SIZE);
       apiDocs = await listApiDocs(this.baseUrl, this.accessToken);
       for (const element of services.services) {
         const service = element;
-        this.logger.debug("Find service " + service.service.name);
+        this.logger.debug(`Find service ${service.service.name}`);
 
         // Trying to find the API Doc for the service.
-        let apiDoc = apiDocs.api_docs.find((obj) => {
-          return obj.api_doc.service_id == service.service.id});
-        let proxy = await getProxyConfig(this.baseUrl, this.accessToken, service.service.id);
-        if (apiDoc != null) {
-          const apiEntity: ApiEntity = this.buildApiEntityFromService(service, apiDoc, proxy);
+        const apiDoc = apiDocs.api_docs.find((obj) => {
+          return obj.api_doc.service_id === service.service.id
+        });
+        const proxy = await getProxyConfig(this.baseUrl, this.accessToken, service.service.id);
+        if (apiDoc !== null) {
+          const apiEntity: ApiEntity = this.buildApiEntityFromService(service, apiDoc!, proxy);
           entities.push(apiEntity);
-          this.logger.info("Discovered ApiEntity " + service.service.name);
+          this.logger.info(`Discovered ApiEntity ${service.service.name}`);
         }
-        
+
       };
-    
+
       if (services.services.length < ThreeScaleApiEntityProvider.SERVICES_FETCH_SIZE) {
         fetchServices = false
       }
@@ -149,12 +150,11 @@ export class ThreeScaleApiEntityProvider implements EntityProvider {
     const location = `url:${this.baseUrl}/apiconfig/services/${service.service.id}`;
 
     let description: string | undefined;
-    let spec;
-    spec = JSON.parse(apiDoc.api_doc.body);
+    const spec = JSON.parse(apiDoc.api_doc.body);
     description = spec.info.description;
 
     if (!description) {
-      description = 'Version: ' + service.service.description;
+      description = `Version: ${service.service.description}`;
     }
 
     return {
@@ -165,11 +165,11 @@ export class ThreeScaleApiEntityProvider implements EntityProvider {
           [ANNOTATION_LOCATION]: location,
           [ANNOTATION_ORIGIN_LOCATION]: location
         },
-        // TODO: add tenant name
+        //  TODO: add tenant name
         name: `${service.service.system_name}}`.replaceAll('}', ''),
         description: description,
-        //TODO: add labels
-        //labels: this.getApiEntityLabels(service),
+        //  TODO: add labels
+        //  labels: this.getApiEntityLabels(service),
         links: [
           {
             url: `${this.baseUrl}/apiconfig/services/${service.service.id}`,
