@@ -118,16 +118,11 @@ export const getAggregateStatus = (
   return NodeStatus.default;
 };
 
-type WorkloadNodeProps = {
-  element?: GraphElement;
+type InnerWorkloadNodeProps = {
+  element: Node;
 } & Partial<WithSelectionProps & WithDragNodeProps>;
 
-const WorkloadNode: React.FC<WorkloadNodeProps> = ({ element, ...rest }) => {
-  if (!element || !isNode(element)) {
-    return null;
-  }
-  const nodeElement = element as Node;
-
+const InnerWorkloadNode: React.FC<InnerWorkloadNodeProps> = observer(({ element, ...rest }) => {
   const resource = getTopologyResourceObject(
     element.getData(),
   ) as K8sResourceKind;
@@ -137,7 +132,7 @@ const WorkloadNode: React.FC<WorkloadNodeProps> = ({ element, ...rest }) => {
     resource.metadata?.namespace,
   );
   const donutStatus = loaded && !loadError ? podData : null;
-  const { width, height } = nodeElement.getDimensions();
+  const { width, height } = element.getDimensions();
   const workloadData = element.getData().data;
   const [hover, hoverRef] = useHover();
   const size = Math.min(width, height);
@@ -151,13 +146,13 @@ const WorkloadNode: React.FC<WorkloadNodeProps> = ({ element, ...rest }) => {
   const nodeDecorators =
     showDetails && decorators
       ? getNodeDecorators(
-          nodeElement,
-          decorators,
-          cx,
-          cy,
-          radius,
-          decoratorRadius,
-        )
+        element,
+        decorators,
+        cx,
+        cy,
+        radius,
+        decoratorRadius,
+      )
       : null;
   const pipelineStatus =
     element.getData()?.resources?.pipelineRunStatus ?? 'Unknown';
@@ -169,7 +164,7 @@ const WorkloadNode: React.FC<WorkloadNodeProps> = ({ element, ...rest }) => {
         hoverRef={hoverRef as (node: Element) => () => void}
         innerRadius={podSetInnerRadius(size, donutStatus)}
         kind={workloadData?.kind}
-        element={nodeElement}
+        element={element}
         nodeStatus={
           !showDetails
             ? getAggregateStatus(donutStatus, pipelineStatus)
@@ -184,6 +179,13 @@ const WorkloadNode: React.FC<WorkloadNodeProps> = ({ element, ...rest }) => {
       </BaseNode>
     </g>
   );
-};
+});
 
-export default observer(WorkloadNode);
+type WorkloadNodeProps = {
+  element?: GraphElement;
+} & Partial<WithSelectionProps & WithDragNodeProps>;
+
+const WorkloadNode: React.FC<WorkloadNodeProps> = ({ element, ...rest }) =>
+  !element || !isNode(element) ? null : <InnerWorkloadNode element={element} {...rest} />;
+
+export default WorkloadNode;
