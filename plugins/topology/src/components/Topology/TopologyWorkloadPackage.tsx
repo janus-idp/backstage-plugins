@@ -1,5 +1,4 @@
 import * as React from 'react';
-import * as _ from 'lodash';
 import {
   action,
   createTopologyControlButtons,
@@ -72,12 +71,12 @@ const TopologyViewWorkloadComponent: React.FunctionComponent<
 
   const topologySideBar = (
     <TopologySideBar
-      show={_.size(selectedIds) > 0}
+      show={selectedIds.length > 0}
       resizable={sideBarResizable}
       onClose={() => setSelectedIds([])}
     >
       <div style={{ marginTop: 27, marginLeft: 20, overflow: 'auto' }}>
-        {_.head(selectedIds)}
+        {selectedIds[0]}
       </div>
     </TopologySideBar>
   );
@@ -106,7 +105,7 @@ const TopologyViewWorkloadComponent: React.FunctionComponent<
         />
       }
       sideBar={useSidebar && topologySideBar}
-      sideBarOpen={useSidebar && _.size(selectedIds) > 0}
+      sideBarOpen={useSidebar && selectedIds.length > 0}
       sideBarResizable={sideBarResizable}
     >
       <VisualizationSurface state={{ selectedIds }} />

@@ -1,4 +1,3 @@
-import * as _ from 'lodash';
 import {
   AllPodStatus,
   DEPLOYMENT_PHASE,
@@ -31,11 +30,11 @@ export const isContainerLoopingFilter = (containerStatus: ContainerStatus) => {
 const numContainersReadyFilter = (pod: PodKind) => {
   const containerStatuses = pod.status?.containerStatuses;
   let numReady = 0;
-  _.forEach(containerStatuses, status => {
+  containerStatuses?.forEach((status) => {
     if (status.ready) {
       numReady++;
     }
-  });
+  })
   return numReady;
 };
 
@@ -44,7 +43,7 @@ const isReady = (pod: PodKind) => {
     spec: { containers },
   } = pod;
   const numReady = numContainersReadyFilter(pod);
-  const total = _.size(containers);
+  const total = containers ? Object.keys(containers).length : 0
 
   return numReady === total;
 };
@@ -53,13 +52,13 @@ const podWarnings = (pod: PodKind) => {
   const phase = pod.status?.phase;
   const containerStatuses = pod.status?.containerStatuses;
   if (phase === AllPodStatus.Running && containerStatuses) {
-    return _.map(containerStatuses, containerStatus => {
+    return containerStatuses.map(containerStatus => {
       if (!containerStatus.state) {
         return null;
       }
 
       if (isContainerFailedFilter(containerStatus)) {
-        if (_.has(pod, ['metadata', 'deletionTimestamp'])) {
+        if (pod.metadata?.deletionTimestamp) {
           return AllPodStatus.Failed;
         }
         return AllPodStatus.Warning;
@@ -74,7 +73,7 @@ const podWarnings = (pod: PodKind) => {
 };
 
 export const getPodStatus = (pod: PodKind) => {
-  if (_.has(pod, ['metadata', 'deletionTimestamp'])) {
+  if (pod.metadata?.deletionTimestamp) {
     return AllPodStatus.Terminating;
   }
   const warnings = podWarnings(pod);
@@ -87,7 +86,7 @@ export const getPodStatus = (pod: PodKind) => {
     }
     return AllPodStatus.Warning;
   }
-  const phase = _.get(pod, ['status', 'phase'], AllPodStatus.Unknown);
+  const phase = pod.status?.phase ?? AllPodStatus.Unknown;
   if (phase === AllPodStatus.Running && !isReady(pod)) {
     return AllPodStatus.NotReady;
   }
@@ -114,7 +113,7 @@ export const calculateRadius = (size: number) => {
 
 const getScalingUp = (dc: K8sResourceKind) => {
   return {
-    ..._.pick(dc, 'metadata'),
+    ...(dc.metadata && dc.metadata),
     status: {
       phase: AllPodStatus.ScalingUp,
     },
@@ -141,7 +140,7 @@ export const getPodData = (
   inProgressDeploymentData: ExtPodKind[] | null;
   completedDeploymentData: ExtPodKind[];
 } => {
-  const strategy = _.get(podRCData.obj, ['spec', 'strategy', 'type'], null);
+  const strategy = podRCData.obj?.spec?.strategy?.type || null;
   const currentDeploymentphase = podRCData.current && podRCData.current.phase;
   const currentPods = podRCData.current && podRCData.current.pods;
   const previousPods = podRCData.previous && podRCData.previous.pods;
