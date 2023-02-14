@@ -16,7 +16,7 @@ export const TopologyPage = topologyPlugin.provide(
   createRoutableExtension({
     name: 'TopologyPage',
     component: () =>
-      import('./components/TopologyComponent').then(m => m.TopologyComponent),
+      import('./components/Topology').then(m => m.TopologyComponent),
     mountPoint: rootRouteRef,
   }),
 );
