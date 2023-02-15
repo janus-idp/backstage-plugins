@@ -11,7 +11,7 @@ const mockEntity: Entity = {
     name: 'backstage',
     description: 'backstage.io',
     annotations: {
-      'quay.io/repository-slug': 'operate-first/service-catalog',
+      'quay.io/repository-slug': 'janus-idp/redhat-backstage-build',
     },
   },
   spec: {

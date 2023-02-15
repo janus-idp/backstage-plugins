@@ -6,10 +6,23 @@ import { columns, useStyles } from './tableHeading';
 import { Tag } from '../../types';
 import { quayApiRef } from '../../api';
 import { formatDate, formatSize } from '../utils';
+import { Box, Chip, makeStyles } from '@material-ui/core';
+
+const useLocalStyles = makeStyles({
+  chip: {
+    margin: 0,
+    marginRight: '.2em',
+    height: '1.5em',
+    '& > span': {
+      padding: '.3em',
+    },
+  },
+});
 
 export function QuayRepository(props: RepositoryProps) {
   const quayClient = useApi(quayApiRef);
   const classes = useStyles();
+  const localClasses = useLocalStyles();
   const [tags, setTags] = useState<Tag[]>([]);
   const title = `Quay repository: ${props.organization}/${props.repository}`;
 
@@ -31,12 +44,19 @@ export function QuayRepository(props: RepositoryProps) {
   }
 
   const data = tags?.map((tag: Tag) => {
+    const hashFunc = tag.manifest_digest.substring(0, 6);
+    const shortHash = tag.manifest_digest.substring(7, 19);
     return {
       name: tag.name,
       last_modified: formatDate(tag.last_modified),
       size: formatSize(tag.size),
-      manifest_digest: tag.manifest_digest.substring(0, 19),
-      // expiration: tag.expiration,
+      manifest_digest: (
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Chip label={hashFunc} className={localClasses.chip} />
+          {shortHash}
+        </Box>
+      ),
+      expiration: tag.expiration,
       // is_manifest_list: tag.is_manifest_list,
       // reversion: tag.reversion,
       // start_ts: tag.start_ts,
