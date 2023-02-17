@@ -8,5 +8,10 @@ export interface Config {
      * @visibility frontend
      */
     webSocketUrl: string;
+    /**
+     * The namespace where DevWorkspace will be created
+     * @visibility frontend
+     */
+    defaultNamespace?: string;
   };
 }

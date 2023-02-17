@@ -1,57 +1,67 @@
-const NAMESPACE = 'openshift-terminal';
-const WORKSPACE_ENDPOINT = `apis/workspace.devfile.io/v1alpha2/namespaces/${NAMESPACE}/devworkspaces`;
+const WORKSPACE_ENDPOINT = `apis/workspace.devfile.io/v1alpha2/namespaces`;
 
-const workspace = {
-  apiVersion: 'workspace.devfile.io/v1alpha2',
-  kind: 'DevWorkspace',
-  metadata: {
-    generateName: 'web-terminal-',
-    namespace: NAMESPACE,
-    labels: {
-      'console.openshift.io/terminal': 'true',
+export const createWorkspace = async (
+  link: string,
+  token: string,
+  namespace: string,
+) => {
+  const workspace = {
+    apiVersion: 'workspace.devfile.io/v1alpha2',
+    kind: 'DevWorkspace',
+    metadata: {
+      generateName: 'web-terminal-',
+      namespace: namespace,
+      labels: {
+        'console.openshift.io/terminal': 'true',
+      },
+      annotations: {
+        'controller.devfile.io/restricted-access': 'true',
+        'controller.devfile.io/devworkspace-source': 'web-terminal',
+      },
     },
-    annotations: {
-      'controller.devfile.io/restricted-access': 'true',
-      'controller.devfile.io/devworkspace-source': 'web-terminal',
-    },
-  },
-  spec: {
-    started: true,
-    routingClass: 'web-terminal',
-    template: {
-      components: [
-        {
-          name: 'web-terminal-tooling',
-          plugin: {
-            kubernetes: {
-              name: 'web-terminal-tooling',
-              namespace: 'openshift-operators',
+    spec: {
+      started: true,
+      routingClass: 'web-terminal',
+      template: {
+        components: [
+          {
+            name: 'web-terminal-tooling',
+            plugin: {
+              kubernetes: {
+                name: 'web-terminal-tooling',
+                namespace: 'openshift-operators',
+              },
             },
           },
-        },
-        {
-          name: 'web-terminal-exec',
-          plugin: {
-            kubernetes: {
-              name: 'web-terminal-exec',
-              namespace: 'openshift-operators',
+          {
+            name: 'web-terminal-exec',
+            plugin: {
+              kubernetes: {
+                name: 'web-terminal-exec',
+                namespace: 'openshift-operators',
+              },
             },
           },
-        },
-      ],
+        ],
+      },
     },
-  },
-};
-export const createWorkspace = async (link: string, token: string) => {
-  const response = await fetch(`https://${link}/${WORKSPACE_ENDPOINT}`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
+  };
+
+  const response = await fetch(
+    `https://${link}/${WORKSPACE_ENDPOINT}/${namespace}/devworkspaces`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(workspace),
     },
-    body: JSON.stringify(workspace),
-  });
+  );
   const data = await response.json();
+  if (response.status !== 200 && response.status !== 201) {
+    throw new Error(data.message);
+  }
   return data.metadata.name;
 };
 
@@ -59,9 +69,10 @@ export const getWorkspace = async (
   link: string,
   token: string,
   name: string,
+  namespace: string,
 ) => {
   const response = await fetch(
-    `https://${link}/${WORKSPACE_ENDPOINT}/${name}`,
+    `https://${link}/${WORKSPACE_ENDPOINT}/${namespace}/devworkspaces/${name}`,
     {
       method: 'GET',
       headers: {
@@ -71,4 +82,18 @@ export const getWorkspace = async (
   );
   const data = await response.json();
   return [data.status.devworkspaceId, data.status.phase];
+};
+
+export const getNamespaces = async (link: string, token: string) => {
+  const response = await fetch(`https://${link}/api/v1/namespaces`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  const data = await response.json();
+  if (response.status !== 200) {
+    return [];
+  }
+  return data.items.map((item: any) => item.metadata.name);
 };

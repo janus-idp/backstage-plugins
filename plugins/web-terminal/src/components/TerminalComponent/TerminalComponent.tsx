@@ -6,10 +6,16 @@ import { AttachAddon } from 'xterm-addon-attach';
 import { InfoCard, Progress } from '@backstage/core-components';
 import { useApi, configApiRef } from '@backstage/core-plugin-api';
 import { useEntity } from '@backstage/plugin-catalog-react';
-import { createWorkspace, getWorkspace } from './utils';
+import {
+  createWorkspace,
+  getDefaultNamespace,
+  getNamespaces,
+  getWorkspace,
+} from './utils';
 import './static/xterm.css';
+import { NamespacePickerDialog } from '../NamespacePickerDialog';
 
-const useTerminalStyles = makeStyles({
+const useStyles = makeStyles({
   term: {
     width: '100%',
     height: '400px',
@@ -29,24 +35,25 @@ const useTerminalStyles = makeStyles({
   },
 });
 
-interface IFormData {
-  token: string | undefined;
-}
-
 export const TerminalComponent = () => {
+  const config = useApi(configApiRef);
+  const defaultNamespace = getDefaultNamespace(config);
+
   const [websocketRunning, setWebsocketRunning] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
-  const [formData, setFormData] = React.useState<IFormData>({
-    token: undefined,
-  });
+  const [displayModal, setDisplayModal] = React.useState(false);
+  const [token, setToken] = React.useState<string | undefined>(undefined);
+  const [namespace, setNamespace] = React.useState<string | undefined>(
+    defaultNamespace,
+  );
+
   const { entity } = useEntity();
   const cluster = entity.metadata.annotations?.[
     'kubernetes.io/api-server'
   ]?.replace(/(https?:\/\/)/, '');
-  const classes = useTerminalStyles();
+  const classes = useStyles();
   const tokenRef = React.useRef<HTMLInputElement>(null);
   const termRef = React.useRef(null);
-  const config = useApi(configApiRef);
   const webSocketUrl = config.getString('webTerminal.webSocketUrl');
   /**
    * Terminal is attached to created websocket, attachment allows user
@@ -65,28 +72,54 @@ export const TerminalComponent = () => {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setFormData({
-      token: tokenRef.current?.value,
-    });
+    setToken(tokenRef.current?.value);
   };
 
-  const setupPod = async (link: string, token: string) => {
-    const terminalID = await createWorkspace(link, token);
+  const handleSubmitModal = (selectedNamespace: string) => {
+    setNamespace(selectedNamespace);
+    setDisplayModal(false);
+  };
+
+  const handleClose = () => {
+    setToken(undefined);
+    setDisplayModal(false);
+  };
+
+  const setupPod = async (
+    link: string,
+    usedToken: string,
+    usedNamespace: string,
+  ) => {
+    let terminalID;
+    try {
+      terminalID = await createWorkspace(link, usedToken, usedNamespace);
+    } catch (error) {
+      return undefined;
+    }
     let workspaceID;
     let phase;
     while (phase !== 'Running') {
-      [workspaceID, phase] = await getWorkspace(link, token, terminalID);
+      [workspaceID, phase] = await getWorkspace(
+        link,
+        usedToken,
+        terminalID,
+        usedNamespace,
+      );
     }
     return { workspaceID, terminalID };
   };
 
   React.useEffect(() => {
-    if (!formData.token || !cluster) {
+    if (!token || !cluster) {
       return;
     }
-    const { token } = formData;
     setLoading(true);
-    setupPod(cluster, token).then(names => {
+    setupPod(cluster, token, namespace!).then(names => {
+      if (!names) {
+        setDisplayModal(true);
+        setLoading(false);
+        return;
+      }
       setLoading(false);
       setWebsocketRunning(true);
       const terminal = setupTerminal();
@@ -98,6 +131,7 @@ export const TerminalComponent = () => {
         `base64url.workspace.id.k8s.io.${encodeURIComponent(
           names.workspaceID,
         )}`,
+        `base64url.namespace.k8s.io.${encodeURIComponent(namespace!)}`,
         `base64url.terminal.id.k8s.io.${encodeURIComponent(names.terminalID)}`,
         `base64url.terminal.size.k8s.io.${encodeURIComponent(
           `${terminal.cols}x${terminal.rows}`,
@@ -109,7 +143,7 @@ export const TerminalComponent = () => {
       };
       ws.onclose = () => {};
     });
-  }, [formData, setupTerminal, webSocketUrl, cluster]);
+  }, [token, namespace, setupTerminal, webSocketUrl, cluster]);
 
   if (loading) {
     return <Progress />;
@@ -128,11 +162,21 @@ export const TerminalComponent = () => {
             type="password"
             variant="outlined"
             inputRef={tokenRef}
+            required
           />
           <Button type="submit" color="primary" variant="contained">
             Submit
           </Button>
         </form>
+        {displayModal && (
+          <NamespacePickerDialog
+            onInit={() => getNamespaces(cluster!, token!)}
+            previousNamespace={namespace!}
+            open={displayModal}
+            handleClose={handleClose}
+            onSubmit={handleSubmitModal}
+          />
+        )}
       </InfoCard>
     </div>
   );
