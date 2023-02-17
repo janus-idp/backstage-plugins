@@ -1,1 +1,0 @@
-'http://console-openshift-console.apps.ecosystemeng-sno-sau.fsi-partner.rhecoeng.com/apis/tekton.dev/v1beta1/namespaces/loki-backstage/pipelineruns'
