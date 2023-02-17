@@ -7,7 +7,6 @@ import {
   TableRow,
   TableCell,
   TableHead,
-  Paper,
   TablePagination,
   TableFooter,
 } from '@material-ui/core';
@@ -45,7 +44,7 @@ export const CollapsibleTable = ({
   }
 
   const handleChangePage = (
-    event: React.MouseEvent<HTMLButtonElement> | null,
+    _event: React.MouseEvent<HTMLButtonElement> | null,
     newPage: number,
   ) => {
     setPage(newPage);

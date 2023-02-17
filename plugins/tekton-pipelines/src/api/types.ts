@@ -3,7 +3,6 @@ import { createApiRef } from '@backstage/core-plugin-api';
 /* eslint-disable */
 import {
   Cluster,
-  PipelineRun,
   PipelineRunsByEntityRequest,
 } from '@jquad-group/plugin-tekton-pipelines-common';
 /* eslint-enable */

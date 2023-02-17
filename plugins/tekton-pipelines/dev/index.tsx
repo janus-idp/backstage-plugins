@@ -39,11 +39,11 @@ const mockEntity: Entity = {
 
 class MockTektonClient implements TektonApi {
   getLogs(
-    baseUrl: string,
-    authorizationBearerToken: string,
-    namespace: string,
-    taskRunPodName: string,
-    stepContainer: string,
+    _baseUrl: string,
+    _authorizationBearerToken: string,
+    _namespace: string,
+    _taskRunPodName: string,
+    _stepContainer: string,
   ): Promise<string> {
     const logMock = Promise.resolve('this is example log');
     return logMock;
@@ -54,13 +54,13 @@ class MockTektonClient implements TektonApi {
   }
 
   async getPipelineRuns(
-    request: PipelineRunsByEntityRequest,
-    name: string,
-    baseUrl: string,
-    authorizationBearerToken: string,
-    namespace: string,
-    selector: string,
-    dashboardBaseUrl: string,
+    _request: PipelineRunsByEntityRequest,
+    _name: string,
+    _baseUrl: string,
+    _authorizationBearerToken: string,
+    _namespace: string,
+    _selector: string,
+    _dashboardBaseUrl: string,
   ): Promise<Cluster[]> {
     const recordMock: Record<string, Label> = {
       testKey: { key: 'test-key', value: 'test-value' },

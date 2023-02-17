@@ -2,7 +2,6 @@
 /* eslint-disable */
 import {
   Cluster,
-  PipelineRun,
   PipelineRunsByEntityRequest,
 } from '@jquad-group/plugin-tekton-pipelines-common';
 /* eslint-enable */
@@ -29,12 +28,12 @@ export class TektonBackendClientMock implements TektonApi {
   }
 
   async getLogs(
-    baseUrl: string,
-    authorizationBearerToken: string,
-    clusterName: string,
-    namespace: string,
-    taskRunPodName: string,
-    stepContainer: string,
+    _baseUrl: string,
+    _authorizationBearerToken: string,
+    _clusterName: string,
+    _namespace: string,
+    _taskRunPodName: string,
+    _stepContainer: string,
   ): Promise<string> {
     if (this.error) {
       return Promise.reject(new Error(this.error));
@@ -44,12 +43,12 @@ export class TektonBackendClientMock implements TektonApi {
 
   async getPipelineRuns(
     request: PipelineRunsByEntityRequest,
-    naem: string,
-    baseUrl: string,
-    authorizationBearerToken: string,
-    namespace: string,
-    selector: string,
-    dashboardBaseUrl: string,
+    _naem: string,
+    _baseUrl: string,
+    _authorizationBearerToken: string,
+    _namespace: string,
+    _selector: string,
+    _dashboardBaseUrl: string,
   ): Promise<Cluster[]> {
     this.request = request;
     if (this.error) {

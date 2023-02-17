@@ -4,7 +4,6 @@ import { DiscoveryApi } from '@backstage/core-plugin-api';
 /* eslint-disable */
 import {
   Cluster,
-  PipelineRun,
   PipelineRunsByEntityRequest,
 } from '@jquad-group/plugin-tekton-pipelines-common';
 /* eslint-enable */
@@ -54,12 +53,12 @@ export class TektonBackendClient implements TektonApi {
 
   async getPipelineRuns(
     request: PipelineRunsByEntityRequest,
-    name: string,
-    baseUrl: string,
-    authorizationBearerToken: string,
-    namespace: string,
-    selector: string,
-    dashboardBaseUrl: string,
+    _name: string,
+    _baseUrl: string,
+    _authorizationBearerToken: string,
+    _namespace: string,
+    _selector: string,
+    _dashboardBaseUrl: string,
   ): Promise<Cluster[]> {
     const tektonBuildNamespace =
       request?.entity.metadata.annotations?.[
@@ -78,8 +77,8 @@ export class TektonBackendClient implements TektonApi {
   }
 
   async getLogs(
-    baseUrl: string,
-    authorizationBearerToken: string,
+    _baseUrl: string,
+    _authorizationBearerToken: string,
     clusterName: string,
     namespace: string,
     taskRunPodName: string,

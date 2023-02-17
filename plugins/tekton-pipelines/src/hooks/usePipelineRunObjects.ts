@@ -5,7 +5,6 @@ import { tektonApiRef } from '../api/types';
 /* eslint-disable */
 import {
   Cluster,
-  PipelineRun,
   PipelineRunsByEntityRequest,
 } from '@jquad-group/plugin-tekton-pipelines-common';
 /* eslint-enable */
@@ -20,7 +19,7 @@ export interface PipelineRunObjects {
 
 export const usePipelineRunObjects = (
   entity: Entity,
-  intervalMs: number = 10000,
+  _intervalMs: number = 10000,
 ): PipelineRunObjects => {
   const tektonApi = useApi(tektonApiRef);
   const request: PipelineRunsByEntityRequest = {

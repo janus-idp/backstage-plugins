@@ -22,7 +22,6 @@ jest.mock('../../api/types');
 describe('TektonDashboardComponent', () => {
   it('renders the progress bar and then empty Dashboard', async () => {
     const clusters = [] as Cluster[];
-    const pipelineRuns = [] as PipelineRun[];
     const logs = '';
     const tektonBackendClientMock = new TektonBackendClientMock(clusters, logs);
     const request = {} as Entity;
@@ -76,7 +75,7 @@ describe('TektonDashboardComponent', () => {
 
     (getTektonApi as jest.Mock).mockReturnValueOnce(tektonBackendClientMock);
 
-    const { debug, queryByRole, queryByText, queryByTestId } = render(
+    const { debug, queryByRole, queryByText } = render(
       wrapInTestApp(
         <TektonDashboardComponent entity={request} refreshIntervalMs={1000} />,
       ),
