@@ -13,7 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createApiFactory, createPlugin, createRoutableExtension, createRouteRef, discoveryApiRef } from '@backstage/core-plugin-api';
+import {
+  createApiFactory,
+  createPlugin,
+  createRoutableExtension,
+  createRouteRef,
+  discoveryApiRef,
+} from '@backstage/core-plugin-api';
 import { tektonApiRef } from './api';
 import { TektonBackendClient } from './api/TektonBackendClient';
 
@@ -29,7 +35,7 @@ export const tektonPipelinesPluginPlugin = createPlugin({
       deps: {
         discoveryApi: discoveryApiRef,
       },
-      factory: ({ discoveryApi }) => new TektonBackendClient({discoveryApi}),
+      factory: ({ discoveryApi }) => new TektonBackendClient({ discoveryApi }),
     }),
   ],
   routes: {
@@ -53,13 +59,12 @@ export const TektonPipelinesPluginPage: () => JSX.Element = tektonPipelinesPlugi
  *
  * @public
  */
- export type EntityTektonPipelinesContentProps = {
+export type EntityTektonPipelinesContentProps = {
   /**
    * Sets the refresh interval in milliseconds. The default value is 10000 (10 seconds)
    */
   refreshIntervalMs?: number;
 };
-
 
 export const EntityTektonPipelinesContent: (
   props: EntityTektonPipelinesContentProps,

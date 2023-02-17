@@ -1,6 +1,9 @@
 /* ignore lint error for internal dependencies */
 /* eslint-disable */
-import { Cluster, PipelineRun } from '@jquad-group/plugin-tekton-pipelines-common';
+import {
+  Cluster,
+  PipelineRun,
+} from '@jquad-group/plugin-tekton-pipelines-common';
 /* eslint-enable */
 import { wrapInTestApp } from '@backstage/test-utils';
 import { render, waitFor } from '@testing-library/react';
@@ -18,9 +21,9 @@ jest.mock('../../api/types');
 
 describe('TektonDashboardComponent', () => {
   it('renders the progress bar and then empty Dashboard', async () => {
-    const clusters = [] as Cluster[]
+    const clusters = [] as Cluster[];
     const pipelineRuns = [] as PipelineRun[];
-    const logs = "";
+    const logs = '';
     const tektonBackendClientMock = new TektonBackendClientMock(clusters, logs);
     const request = {} as Entity;
 
@@ -59,14 +62,13 @@ describe('TektonDashboardComponent', () => {
   });
 
   it('renders the progress bar and then Dashboard', async () => {
-    
     const pipelienRun = pipelineRunFileMock as unknown as PipelineRun;
     const cluster = clusterFileMock as unknown as Cluster;
-    const clusters = clustersFileMock as unknown as Cluster[]
+    const clusters = clustersFileMock as unknown as Cluster[];
     const pipelineRuns = [pipelienRun] as PipelineRun[];
-    cluster.name = "Cluster1"
-    cluster.pipelineRuns = pipelineRuns
-    const logs = "";
+    cluster.name = 'Cluster1';
+    cluster.pipelineRuns = pipelineRuns;
+    const logs = '';
     const tektonBackendClientMock = new TektonBackendClientMock(clusters, logs);
     const request = {} as Entity;
 
@@ -105,7 +107,7 @@ describe('TektonDashboardComponent', () => {
   });
   it('renders the progress bar and then error', async () => {
     const clusters = [] as Cluster[];
-    const logs = "";
+    const logs = '';
     const tektonBackendClientMock = new TektonBackendClientMock(
       clusters,
       logs,

@@ -39,19 +39,17 @@ export const Router = (props: { refreshIntervalMs?: number }) => {
     tektonPipelinesLabelSelectorQueryAnnotationValue
   ) {
     return (
-   
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <TektonDashboardComponent
-                entity={entity}
-                refreshIntervalMs={props.refreshIntervalMs}
-              />
-            }
-          />
-        </Routes>
- 
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <TektonDashboardComponent
+              entity={entity}
+              refreshIntervalMs={props.refreshIntervalMs}
+            />
+          }
+        />
+      </Routes>
     );
   }
 

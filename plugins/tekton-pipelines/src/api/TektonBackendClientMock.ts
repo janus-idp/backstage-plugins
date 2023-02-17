@@ -36,11 +36,10 @@ export class TektonBackendClientMock implements TektonApi {
     taskRunPodName: string,
     stepContainer: string,
   ): Promise<string> {
-    
     if (this.error) {
-      return Promise.reject(new Error(this.error))
+      return Promise.reject(new Error(this.error));
     }
-    return Promise.resolve(this.logs)
+    return Promise.resolve(this.logs);
   }
 
   async getPipelineRuns(

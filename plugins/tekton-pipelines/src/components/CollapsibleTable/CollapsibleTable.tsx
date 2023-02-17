@@ -1,6 +1,16 @@
 import React from 'react';
 // eslint-disable-next-line  no-restricted-imports
-import { Table, TableContainer, TableBody, TableRow, TableCell, TableHead, Paper, TablePagination, TableFooter } from '@material-ui/core';
+import {
+  Table,
+  TableContainer,
+  TableBody,
+  TableRow,
+  TableCell,
+  TableHead,
+  Paper,
+  TablePagination,
+  TableFooter,
+} from '@material-ui/core';
 /* ignore lint error for internal dependencies */
 /* eslint-disable */
 import { PipelineRun } from '@jquad-group/plugin-tekton-pipelines-common';
@@ -9,25 +19,29 @@ import TablePaginationActions from '@material-ui/core/TablePagination/TablePagin
 import { CollapsibleTableRow } from '../CollapsibleTableRow';
 
 export const TEKTON_PIPELINES_BUILD_NAMESPACE = 'tektonci/build-namespace';
-export const TEKTON_PIPELINES_LABEL_SELECTOR = "tektonci/pipeline-label-selector";
-
+export const TEKTON_PIPELINES_LABEL_SELECTOR =
+  'tektonci/pipeline-label-selector';
 
 type PipelineRunProps = {
   clusterName?: string;
   pipelineruns?: PipelineRun[];
 };
 
-export const CollapsibleTable = ({ clusterName, pipelineruns }: PipelineRunProps) => {
+export const CollapsibleTable = ({
+  clusterName,
+  pipelineruns,
+}: PipelineRunProps) => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   let emptyRows: number;
   // Avoid a layout jump when reaching the last page with empty rows.
   if (pipelineruns !== undefined) {
     emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - pipelineruns.length) : 0;
+      page > 0
+        ? Math.max(0, (1 + page) * rowsPerPage - pipelineruns.length)
+        : 0;
   } else {
-    emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage) : 0;
+    emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage) : 0;
   }
 
   const handleChangePage = (
@@ -59,12 +73,21 @@ export const CollapsibleTable = ({ clusterName, pipelineruns }: PipelineRunProps
           </TableRow>
         </TableHead>
         <TableBody>
-          {(pipelineruns !== undefined) && (clusterName !== undefined) && (rowsPerPage > 0
-            ? pipelineruns.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-            : pipelineruns
-          ).map((pipelineRun) => (            
-            <CollapsibleTableRow key={pipelineRun.metadata.name} clusterName={clusterName} pipelineRun={pipelineRun} />
-          ))}
+          {pipelineruns !== undefined &&
+            clusterName !== undefined &&
+            (rowsPerPage > 0
+              ? pipelineruns.slice(
+                  page * rowsPerPage,
+                  page * rowsPerPage + rowsPerPage,
+                )
+              : pipelineruns
+            ).map(pipelineRun => (
+              <CollapsibleTableRow
+                key={pipelineRun.metadata.name}
+                clusterName={clusterName}
+                pipelineRun={pipelineRun}
+              />
+            ))}
           {emptyRows > 0 && (
             <TableRow style={{ height: 53 * emptyRows }}>
               <TableCell colSpan={7} />
@@ -72,28 +95,28 @@ export const CollapsibleTable = ({ clusterName, pipelineruns }: PipelineRunProps
           )}
         </TableBody>
         <TableFooter>
-          { pipelineruns !== undefined && <TableRow>
-            <TablePagination
-              rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
-              colSpan={7}
-              count={pipelineruns.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              SelectProps={{
-                inputProps: {
-                  'aria-label': 'rows per page',
-                },
-                native: true,
-              }}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-              ActionsComponent={TablePaginationActions}
-            />
-          </TableRow>
-          }
+          {pipelineruns !== undefined && (
+            <TableRow>
+              <TablePagination
+                rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+                colSpan={7}
+                count={pipelineruns.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                SelectProps={{
+                  inputProps: {
+                    'aria-label': 'rows per page',
+                  },
+                  native: true,
+                }}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+                ActionsComponent={TablePaginationActions}
+              />
+            </TableRow>
+          )}
         </TableFooter>
       </Table>
     </TableContainer>
   );
-}
-
+};

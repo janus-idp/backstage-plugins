@@ -41,7 +41,7 @@ export function TektonDashboardComponent(props: TektonContentProps) {
   const [error, setError] = useState<string | null>(null);
 
   const tektonApi = getTektonApi();
-  
+
   /*
   const clusterSize = tektonApi.getClusterSize();
   logger.info("size: " + clusterSize);
@@ -52,17 +52,18 @@ export function TektonDashboardComponent(props: TektonContentProps) {
       tektonApi
         .getPipelineRuns({ entity: props.entity }, '', '', '', '', '', '')
         .then(clusters => {
-                const sorted = clusters.map((cluster) => 
-                      cluster.pipelineRuns.sort((pipelineA, pipelineB) =>
-                      pipelineA.status.startTime > pipelineB.status.startTime ? -1 : 1,
-                    )
-                      )
-                return clusters
-          }
-        )
+          const sorted = clusters.map(cluster =>
+            cluster.pipelineRuns.sort((pipelineA, pipelineB) =>
+              pipelineA.status.startTime > pipelineB.status.startTime ? -1 : 1,
+            ),
+          );
+          return clusters;
+        })
         .then(clusters => {
           logger.debug(
-            `TektonDashboardComponent Pipeline Runs Count: ${Object.keys(clusters).length}`,
+            `TektonDashboardComponent Pipeline Runs Count: ${
+              Object.keys(clusters).length
+            }`,
           );
           logger.debug(
             `TektonDashboardComponent Pipeline Runs: ${JSON.stringify(
@@ -81,8 +82,7 @@ export function TektonDashboardComponent(props: TektonContentProps) {
           setError(error.toString());
         });
     }, props.refreshIntervalMs || DEFAULT_REFRESH_INTERVALL);
-    return (() => clearInterval(interval));
-
+    return () => clearInterval(interval);
   }, [props.entity]);
 
   if (loading) {
@@ -103,23 +103,33 @@ export function TektonDashboardComponent(props: TektonContentProps) {
         <ContentHeader title="PipelineRuns">
           <SupportButton>PipelineRuns</SupportButton>
         </ContentHeader>
-        {clusters !== undefined && clusters?.length > 0 && (
-          clusters.map((cluster) => 
+        {clusters !== undefined &&
+          clusters?.length > 0 &&
+          clusters.map(cluster => (
             <Grid container spacing={3} direction="column">
-            <ContentHeader title={cluster.name} textAlign="center"></ContentHeader>
-            { cluster.pipelineRuns !== undefined && cluster.pipelineRuns !== null && cluster.pipelineRuns.length > 0 && (
-            <Grid item>
-              <CollapsibleTable clusterName={cluster.name} pipelineruns={cluster.pipelineRuns} />
-            </Grid>           
-            )}
-            { cluster.error !== undefined && (
-            <Grid item>
-              <Box textAlign="center" fontSize="20px">{cluster.error}</Box>
-            </Grid>                      
-            )}
-            </Grid>         
-          )
-        )}
+              <ContentHeader
+                title={cluster.name}
+                textAlign="center"
+              ></ContentHeader>
+              {cluster.pipelineRuns !== undefined &&
+                cluster.pipelineRuns !== null &&
+                cluster.pipelineRuns.length > 0 && (
+                  <Grid item>
+                    <CollapsibleTable
+                      clusterName={cluster.name}
+                      pipelineruns={cluster.pipelineRuns}
+                    />
+                  </Grid>
+                )}
+              {cluster.error !== undefined && (
+                <Grid item>
+                  <Box textAlign="center" fontSize="20px">
+                    {cluster.error}
+                  </Box>
+                </Grid>
+              )}
+            </Grid>
+          ))}
       </Content>
     </Page>
   );

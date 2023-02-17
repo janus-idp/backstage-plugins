@@ -1,135 +1,135 @@
 {
-    "metadata": {
-        "labels": {
-            "testKey": {
-                "key": "test-key",
-                "value": "test-value"
-            }
-        },
-        "name": "feature-added-catalog-info-xdjk9",
-        "namespace": "sample-go-application-build"
+  "metadata": {
+    "labels": {
+      "testKey": {
+        "key": "test-key",
+        "value": "test-value"
+      }
     },
-    "pipelineRunDashboardUrl": "https://mock.dashboard",
-    "taskRuns": [
-        {
-            "metadata": {
-                "name": "taskrun-1",
-                "namespace": "sample-go-application-build",
-                "labels": {
-                    "testKey": {
-                        "key": "test-key",
-                        "value": "test-value"
-                    }
-                }
-            },
-            "status": {
-                "podName": "taskrun-1-pod",
-                "startTime": "2022-10-25T18:42:30.000Z",
-                "completionTime": "2022-10-25T18:47:30.000Z",
-                "duration": 5,
-                "durationString": "5m",
-                "steps": [
-                    {
-                        "container": "taskrun-container",
-                        "log": "some log",
-                        "name": "taskrun-name",
-                        "terminated": {
-                            "duration": 5,
-                            "durationString": "5m",
-                            "finishedAt": "2022-10-25T18:47:30.000Z",
-                            "reason": "Completed",
-                            "startedAt": "2022-10-25T18:42:30.000Z"
-                        }
-                    }
-                ],
-                "conditions": [
-                    {
-                        "message": "Tasks Completed: 4 (Failed: 0, Cancelled 0), Skipped: 1",
-                        "reason": "Completed",
-                        "status": "True",
-                        "type": "Succeeded"
-                    }
-                ]
-            }
-        },
-        {
-            "metadata": {
-                "name": "taskrun-2",
-                "namespace": "sample-go-application-build",
-                "labels": {
-                    "testKey": {
-                        "key": "test-key",
-                        "value": "test-value"
-                    }
-                }
-            },
-            "status": {
-                "podName": "taskrun-2-pod",
-                "startTime": "2022-10-25T18:42:30.000Z",
-                "completionTime": "2022-10-25T18:47:30.000Z",
-                "duration": 5,
-                "durationString": "5m",
-                "steps": [
-                    {
-                        "container": "taskrun-clone",
-                        "log": "clone",
-                        "name": "taskrun-name",
-                        "terminated": {
-                            "duration": 5,
-                            "durationString": "5m",
-                            "finishedAt": "2022-10-25T18:47:30.000Z",
-                            "reason": "Completed",
-                            "startedAt": "2022-10-25T18:42:30.000Z"
-                        }
-                    },
-                    {
-                        "container": "taskrun-build",
-                        "log": "clone",
-                        "name": "build",
-                        "terminated": {
-                            "duration": 5,
-                            "durationString": "5m",
-                            "finishedAt": "2022-10-25T18:47:30.000Z",
-                            "reason": "Completed",
-                            "startedAt": "2022-10-25T18:42:30.000Z"
-                        }
-                    },
-                    {
-                        "container": "taskrun-test",
-                        "log": "test",
-                        "name": "test",
-                        "terminated": {
-                            "duration": 5,
-                            "durationString": "5m",
-                            "finishedAt": "2022-10-25T18:47:30.000Z",
-                            "reason": "Completed",
-                            "startedAt": "2022-10-25T18:42:30.000Z"
-                        }
-                    }
-                ],
-                "conditions": [
-                    {
-                        "message": "Tasks Completed: 4 (Failed: 0, Cancelled 0), Skipped: 1",
-                        "reason": "Completed",
-                        "status": "True",
-                        "type": "Succeeded"
-                    }
-                ]
-            }
+    "name": "feature-added-catalog-info-xdjk9",
+    "namespace": "sample-go-application-build"
+  },
+  "pipelineRunDashboardUrl": "https://mock.dashboard",
+  "taskRuns": [
+    {
+      "metadata": {
+        "name": "taskrun-1",
+        "namespace": "sample-go-application-build",
+        "labels": {
+          "testKey": {
+            "key": "test-key",
+            "value": "test-value"
+          }
         }
-    ],
-    "status": {
+      },
+      "status": {
+        "podName": "taskrun-1-pod",
         "startTime": "2022-10-25T18:42:30.000Z",
         "completionTime": "2022-10-25T18:47:30.000Z",
         "duration": 5,
         "durationString": "5m",
-        "conditions": [
-            {
-                "message": "Tasks Completed: 4 (Failed: 0, Cancelled 0), Skipped: 1",
-                "reason": "Completed",
-                "status": "True",
-                "type": "Succeeded"
+        "steps": [
+          {
+            "container": "taskrun-container",
+            "log": "some log",
+            "name": "taskrun-name",
+            "terminated": {
+              "duration": 5,
+              "durationString": "5m",
+              "finishedAt": "2022-10-25T18:47:30.000Z",
+              "reason": "Completed",
+              "startedAt": "2022-10-25T18:42:30.000Z"
             }
+          }
+        ],
+        "conditions": [
+          {
+            "message": "Tasks Completed: 4 (Failed: 0, Cancelled 0), Skipped: 1",
+            "reason": "Completed",
+            "status": "True",
+            "type": "Succeeded"
+          }
         ]
+      }
+    },
+    {
+      "metadata": {
+        "name": "taskrun-2",
+        "namespace": "sample-go-application-build",
+        "labels": {
+          "testKey": {
+            "key": "test-key",
+            "value": "test-value"
+          }
+        }
+      },
+      "status": {
+        "podName": "taskrun-2-pod",
+        "startTime": "2022-10-25T18:42:30.000Z",
+        "completionTime": "2022-10-25T18:47:30.000Z",
+        "duration": 5,
+        "durationString": "5m",
+        "steps": [
+          {
+            "container": "taskrun-clone",
+            "log": "clone",
+            "name": "taskrun-name",
+            "terminated": {
+              "duration": 5,
+              "durationString": "5m",
+              "finishedAt": "2022-10-25T18:47:30.000Z",
+              "reason": "Completed",
+              "startedAt": "2022-10-25T18:42:30.000Z"
+            }
+          },
+          {
+            "container": "taskrun-build",
+            "log": "clone",
+            "name": "build",
+            "terminated": {
+              "duration": 5,
+              "durationString": "5m",
+              "finishedAt": "2022-10-25T18:47:30.000Z",
+              "reason": "Completed",
+              "startedAt": "2022-10-25T18:42:30.000Z"
+            }
+          },
+          {
+            "container": "taskrun-test",
+            "log": "test",
+            "name": "test",
+            "terminated": {
+              "duration": 5,
+              "durationString": "5m",
+              "finishedAt": "2022-10-25T18:47:30.000Z",
+              "reason": "Completed",
+              "startedAt": "2022-10-25T18:42:30.000Z"
+            }
+          }
+        ],
+        "conditions": [
+          {
+            "message": "Tasks Completed: 4 (Failed: 0, Cancelled 0), Skipped: 1",
+            "reason": "Completed",
+            "status": "True",
+            "type": "Succeeded"
+          }
+        ]
+      }
     }
+  ],
+  "status": {
+    "startTime": "2022-10-25T18:42:30.000Z",
+    "completionTime": "2022-10-25T18:47:30.000Z",
+    "duration": 5,
+    "durationString": "5m",
+    "conditions": [
+      {
+        "message": "Tasks Completed: 4 (Failed: 0, Cancelled 0), Skipped: 1",
+        "reason": "Completed",
+        "status": "True",
+        "type": "Succeeded"
+      }
+    ]
+  }
 }

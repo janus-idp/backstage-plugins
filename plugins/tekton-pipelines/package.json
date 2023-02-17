@@ -1,6 +1,6 @@
 {
-  "name": "@jquad-group/plugin-tekton-pipelines",
-  "version": "0.2.5",
+  "name": "@janus-idp/backstage-plugin-tekton-pipelines",
+  "version": "1.0.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -27,6 +27,7 @@
     "@backstage/core-plugin-api": "^1.0.7",
     "@backstage/plugin-catalog-react": "^1.2.0",
     "@backstage/theme": "^0.2.16",
+    "@jquad-group/plugin-tekton-pipelines-common": "0.3.1",
     "@material-ui/core": "^4.9.13",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.57",
