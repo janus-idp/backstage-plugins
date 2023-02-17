@@ -109,3 +109,10 @@ catalog:
     #   target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/acme-corp.yaml
     #   rules:
     #     - allow: [User, Group]
+
+tekton:
+  - name: cluster1
+    baseUrl: https://api.ecosystemeng-sno-sau.fsi-partner.rhecoeng.com:6443
+    authorizationBearerToken: 'sha256~KBZt0FsMZxSqMbifWKZegGM5POfcagEw_9aGThYbkqs'
+    dashboardBaseUrl: http://console-openshift-console.apps.ecosystemeng-sno-sau.fsi-partner.rhecoeng.com
+
