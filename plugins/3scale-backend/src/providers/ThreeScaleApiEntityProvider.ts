@@ -134,23 +134,32 @@ export class ThreeScaleApiEntityProvider implements EntityProvider {
         const service = element;
         this.logger.debug(`Find service ${service.service.name}`);
 
-        // Trying to find the API Doc for the service.
-        const apiDoc = apiDocs.api_docs.find(obj => {
-          return obj.api_doc.service_id === service.service.id;
-        });
+        // Trying to find the API Doc for the service and validate if api doc was assigned to an API.
+        const findApiDoc = (): APIDocElement | undefined => {
+          return apiDocs.api_docs.find(item => {
+            if (item.api_doc.service_id !== undefined) {
+              return item.api_doc.service_id === service.service.id;
+            }
+            return false;
+          });
+        };
+
+        const apiDoc = findApiDoc();
+
         const proxy = await getProxyConfig(
           this.baseUrl,
           this.accessToken,
           service.service.id,
         );
-        if (apiDoc !== null) {
+        if (apiDoc !== undefined) {
+          this.logger.info(apiDoc);
           const apiEntity: ApiEntity = this.buildApiEntityFromService(
             service,
-            apiDoc!,
+            apiDoc,
             proxy,
           );
           entities.push(apiEntity);
-          this.logger.info(`Discovered ApiEntity ${service.service.name}`);
+          this.logger.debug(`Discovered ApiEntity ${service.service.name}`);
         }
       }
 
@@ -169,7 +178,7 @@ export class ThreeScaleApiEntityProvider implements EntityProvider {
       type: 'full',
       entities: entities.map(entity => ({
         entity,
-        locationKey: 'ThreeScaleApiEntityProvider',
+        locationKey: this.getProviderName(),
       })),
     });
   }
@@ -181,13 +190,7 @@ export class ThreeScaleApiEntityProvider implements EntityProvider {
   ): ApiEntity {
     const location = `url:${this.baseUrl}/apiconfig/services/${service.service.id}`;
 
-    let description: string | undefined;
     const spec = JSON.parse(apiDoc.api_doc.body);
-    description = spec.info.description;
-
-    if (!description) {
-      description = `Version: ${service.service.description}`;
-    }
 
     return {
       kind: 'API',
@@ -198,8 +201,9 @@ export class ThreeScaleApiEntityProvider implements EntityProvider {
           [ANNOTATION_ORIGIN_LOCATION]: location,
         },
         //  TODO: add tenant name
-        name: `${service.service.system_name}}`.replaceAll('}', ''),
-        description: description,
+        name: `${service.service.system_name}`,
+        description:
+          spec.info.description || `Version: ${service.service.description}`,
         //  TODO: add labels
         //  labels: this.getApiEntityLabels(service),
         links: [

@@ -7,7 +7,7 @@ This is a plugin for synchronizing 3scale content into [Backstage.io](https://ba
 1. Install the plugin
 
    ```sh
-   yarn add --cwd packages/backend @fmenesesg/threescale-backstage-provider
+   yarn workspace backend add @janus-idp/backstage-plugin-3scale-backend
    ```
 
 ## Configure
