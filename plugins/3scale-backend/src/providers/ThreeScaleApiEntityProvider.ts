@@ -135,16 +135,12 @@ export class ThreeScaleApiEntityProvider implements EntityProvider {
         this.logger.debug(`Find service ${service.service.name}`);
 
         // Trying to find the API Doc for the service and validate if api doc was assigned to an API.
-        const findApiDoc = (): APIDocElement | undefined => {
-          return apiDocs.api_docs.find(item => {
-            if (item.api_doc.service_id !== undefined) {
-              return item.api_doc.service_id === service.service.id;
-            }
-            return false;
-          });
-        };
-
-        const apiDoc = findApiDoc();
+        const apiDoc = apiDocs.api_docs.find(obj => {
+          if (obj.api_doc.service_id !== undefined) {
+            return obj.api_doc.service_id === service.service.id;
+          }
+          return false;
+        });
 
         const proxy = await getProxyConfig(
           this.baseUrl,
