@@ -13,7 +13,7 @@ import { EmptyProjectsState } from './EmptyProjectsState';
 import { useCommonStyles } from '../../styles';
 import { PageHeader } from '../PageHeader';
 
-export const ProjectsOverviewPage = () => {
+export const ProjectOverviewPage = () => {
   const commonStyles = useCommonStyles();
 
   const projectFilterItems = [

@@ -1,12 +1,14 @@
 import {createPlugin, createRoutableExtension,} from '@backstage/core-plugin-api';
-import {newProjectRouteRef, projectsRouteRef, rootRouteRef} from './routes';
+import {projectOverviewRouteRef, workflowRouteRef, notificationRouteRef, trainingRouteRef, rootRouteRef} from './routes';
 
 export const orionPlugin = createPlugin({
     id: 'parodos',
     routes: {
         root: rootRouteRef,
-        newproject: newProjectRouteRef,
-        projects: projectsRouteRef,
+        projectOverview: projectOverviewRouteRef,
+        workflow: workflowRouteRef,
+        notification: notificationRouteRef,
+        training: trainingRouteRef,
     },
 });
 
