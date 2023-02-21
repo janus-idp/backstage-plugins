@@ -19,11 +19,11 @@ export const EmptyProjectsState = () => {
         You don’t have any projects on here yet!
       </Typography>
       <Typography paragraph>
-        To start using Orion, you’ll first need to initiate a project
+        To start using Parodos, you’ll first need to initiate a project
         assessment.
       </Typography>
       <Typography paragraph>
-        <Link to="/orion/newproject">GET STARTED</Link>
+        <Link to="/parodos/newproject">GET STARTED</Link>
       </Typography>
     </Card>
   );

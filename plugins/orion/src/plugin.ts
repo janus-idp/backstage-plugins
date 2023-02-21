@@ -6,7 +6,7 @@ import {
 import { newProjectRouteRef, projectsRouteRef, rootRouteRef } from './routes';
 
 export const orionPlugin = createPlugin({
-  id: 'orion',
+  id: 'parodos',
   routes: {
     root: rootRouteRef,
     newproject: newProjectRouteRef,
@@ -18,7 +18,6 @@ export const OrionPage = orionPlugin.provide(
   createRoutableExtension({
     name: 'OrionPage',
     component: () =>
-      // import('./components/ExampleComponent').then(m => m.ExampleComponent),
       import('./components/PluginRouter').then(
         m => m.PluginRouter,
       ),
