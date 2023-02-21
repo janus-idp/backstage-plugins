@@ -16,6 +16,13 @@ export const workflowRouteRef = createSubRouteRef({
   path: '/workflow',
 });
 
+export const deployRouteRef = createSubRouteRef({
+  id: 'deploy',
+  parent: rootRouteRef,
+  path: '/deploy',
+});
+
+
 
 export const notificationRouteRef = createSubRouteRef({
   id: 'notification',

@@ -5,7 +5,7 @@ import {Content, ContentHeader, Page, SupportButton, Tabs} from "@backstage/core
 import {Typography} from "@material-ui/core";
 
 
-export const Notification = () => {
+export const Deploy = () => {
     const toastContext = useContext(ToastContext);
     useEffect(() => {
         toastContext.handleOpenToast(
@@ -17,11 +17,11 @@ export const Notification = () => {
         <Page themeId="tool">
             <PageHeader/>
             <Content>
-                <ContentHeader title="Notification">
+                <ContentHeader title="Deploy">
                     <SupportButton title="Need help?">Lorem Ipsum</SupportButton>
                 </ContentHeader>
                 <Typography paragraph>
-                    Check and update notifications
+                    Start deploying service
                 </Typography>
                 <Tabs
                     tabs={[{
