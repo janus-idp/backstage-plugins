@@ -13,4 +13,7 @@ export const useCommonStyles = makeStyles({
   floatright: {
     float: 'right',
   },
+  paddingtop1: {
+    'padding-top': '1rem !important',
+  },
 });
