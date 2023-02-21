@@ -2,7 +2,6 @@ import React from 'react';
 import {
   Content,
   ContentHeader,
-  Header,
   Link,
   Page,
   Select,
@@ -12,6 +11,7 @@ import { Add } from '@material-ui/icons';
 import { Grid } from '@material-ui/core';
 import { EmptyProjectsState } from '../EmptyProjectsState';
 import { useCommonStyles } from '../../styles';
+import { PageHeader } from '../PageHeader';
 
 export const ProjectAssessmentPage = () => {
   const commonStyles = useCommonStyles();
@@ -22,6 +22,9 @@ export const ProjectAssessmentPage = () => {
       value: 'bar',
     },
   ];
+  const projects = [
+    /* TODO */
+  ];
 
   const onFilterProjects = () => {
     console.log('TODO: https://issues.redhat.com/browse/FLPATH-52');
@@ -29,8 +32,8 @@ export const ProjectAssessmentPage = () => {
 
   return (
     <Page themeId="tool">
+      <PageHeader />
       <Content>
-        <Header title="Orion" />
         <ContentHeader title="Projects overview">
           <SupportButton title="Need help?">Lorem Ipsum</SupportButton>
         </ContentHeader>
@@ -52,9 +55,11 @@ export const ProjectAssessmentPage = () => {
             </Link>
           </Grid>
 
-          <Grid item xs={12}>
-            <EmptyProjectsState />
-          </Grid>
+          {!projects?.length && (
+            <Grid item xs={12}>
+              <EmptyProjectsState />
+            </Grid>
+          )}
         </Grid>
       </Content>
     </Page>
