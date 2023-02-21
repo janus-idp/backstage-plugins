@@ -13,7 +13,7 @@ interface ThreeScaleConfig {
 export interface Config {
   catalog?: {
     providers?: {
-      threeScaleApiEntity?: Record<string, ThreeScaleConfig>;
+      threeScaleApiEntity?: { [key: string]: ThreeScaleConfig };
     };
   };
 }
