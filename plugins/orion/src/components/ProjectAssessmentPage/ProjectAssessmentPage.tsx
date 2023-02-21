@@ -49,7 +49,7 @@ export const ProjectAssessmentPage = () => {
           </Grid>
 
           <Grid item xs={3}>
-            <Link to="/orion/newproject">
+            <Link to="/parodos/newproject">
               <Add className={commonStyles.inlineicon} />
               &nbsp;Add new project
             </Link>
