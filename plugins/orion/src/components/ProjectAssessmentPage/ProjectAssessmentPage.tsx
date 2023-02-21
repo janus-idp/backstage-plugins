@@ -3,13 +3,19 @@ import {
   Content,
   ContentHeader,
   Header,
+  Link,
   Page,
   Select,
+  SupportButton,
 } from '@backstage/core-components';
 import { Add } from '@material-ui/icons';
 import { Grid } from '@material-ui/core';
+import { EmptyProjectsState } from '../EmptyProjectsState';
+import { useCommonStyles } from '../../styles';
 
 export const ProjectAssessmentPage = () => {
+  const commonStyles = useCommonStyles();
+
   const projectFilterItems = [
     /* TODO: https://issues.redhat.com/browse/FLPATH-52 */ {
       label: 'foo',
@@ -23,11 +29,13 @@ export const ProjectAssessmentPage = () => {
 
   return (
     <Page themeId="tool">
-      <Header title="Orion" />
       <Content>
-        <ContentHeader title="Projects overview" />
+        <Header title="Orion" />
+        <ContentHeader title="Projects overview">
+          <SupportButton title="Need help?">Lorem Ipsum</SupportButton>
+        </ContentHeader>
 
-        <Grid container spacing={3}>
+        <Grid container direction="row">
           <Grid item xs={3}>
             <Select
               onChange={onFilterProjects}
@@ -38,10 +46,14 @@ export const ProjectAssessmentPage = () => {
           </Grid>
 
           <Grid item xs={3}>
-            <span>
-              <Add className="inline-icon" />
+            <Link to="/orion/newproject">
+              <Add className={commonStyles.inlineicon} />
               &nbsp;Add new project
-            </span>
+            </Link>
+          </Grid>
+
+          <Grid item xs={12}>
+            <EmptyProjectsState />
           </Grid>
         </Grid>
       </Content>
