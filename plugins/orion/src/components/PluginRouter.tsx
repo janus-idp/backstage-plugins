@@ -1,5 +1,6 @@
 import React from 'react';
 import { Routes, Route} from 'react-router-dom';
+import { NewProjectPage } from './NewProjectPage';
 import { ProjectAssessmentPage } from './ProjectAssessmentPage';
 
 export const PluginRouter = () => (
@@ -7,7 +8,6 @@ export const PluginRouter = () => (
       <Route path="/" element={<ProjectAssessmentPage />} />
       <Route path="/projects" element={<ProjectAssessmentPage />} />
   
-      {/* TODO: change following to NewProjectPage */}
-      <Route path="/newproject" element={<ProjectAssessmentPage />} />
+      <Route path="/newproject" element={<NewProjectPage />} />
     </Routes>
   );
