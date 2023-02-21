@@ -5,6 +5,7 @@ import {Workflow} from "./workflow";
 import {Deploy} from "./deploy";
 import {Notification} from "./notification";
 import {Training} from "./training";
+import {Metrics} from "./metrics";
 
 export const PluginRouter = () => (
     <Routes>
@@ -14,5 +15,6 @@ export const PluginRouter = () => (
         <Route path="/deploy" element={<Deploy/>}/>
         <Route path="/notification" element={<Notification/>}/>
         <Route path="/training" element={<Training/>}/>
+        <Route path="/metrics" element={<Metrics/>}/>
     </Routes>
 );

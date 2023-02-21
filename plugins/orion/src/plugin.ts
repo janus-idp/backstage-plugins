@@ -1,5 +1,5 @@
 import {createPlugin, createRoutableExtension,} from '@backstage/core-plugin-api';
-import {projectOverviewRouteRef, workflowRouteRef, deployRouteRef, notificationRouteRef, trainingRouteRef, rootRouteRef} from './routes';
+import {projectOverviewRouteRef, workflowRouteRef, deployRouteRef, notificationRouteRef, trainingRouteRef, metricsRouteRef, rootRouteRef} from './routes';
 
 export const orionPlugin = createPlugin({
     id: 'parodos',
@@ -10,6 +10,7 @@ export const orionPlugin = createPlugin({
         deploy: deployRouteRef,
         notification: notificationRouteRef,
         training: trainingRouteRef,
+        metrics: metricsRouteRef
     },
 });
 
