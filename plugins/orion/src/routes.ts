@@ -22,17 +22,20 @@ export const deployRouteRef = createSubRouteRef({
   path: '/deploy',
 });
 
-
-
 export const notificationRouteRef = createSubRouteRef({
   id: 'notification',
   parent: rootRouteRef,
   path: '/notification',
 });
 
-
 export const trainingRouteRef = createSubRouteRef({
   id: 'training',
   parent: rootRouteRef,
   path: '/training',
+});
+
+export const metricsRouteRef = createSubRouteRef({
+  id: 'metrics',
+  parent: rootRouteRef,
+  path: '/metrics',
 });
