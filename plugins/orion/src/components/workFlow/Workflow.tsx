@@ -38,7 +38,7 @@ const useStyles = makeStyles({
   },
 });
 
-export const NewProjectPage = () => {
+export const Workflow = () => {
   const commonStyles = useCommonStyles();
   const styles = useStyles();
 

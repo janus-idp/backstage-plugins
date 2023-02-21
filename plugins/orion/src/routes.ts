@@ -4,14 +4,28 @@ export const rootRouteRef = createRouteRef({
   id: 'parodos',
 });
 
-export const newProjectRouteRef = createSubRouteRef({
-  id: 'parodos-workflow',
+export const projectOverviewRouteRef = createSubRouteRef({
+  id: 'project-overview',
+  parent: rootRouteRef,
+  path: '/project-overview',
+});
+
+export const workflowRouteRef = createSubRouteRef({
+  id: 'workflow',
   parent: rootRouteRef,
   path: '/workflow',
 });
 
-export const projectsRouteRef = createSubRouteRef({
-  id: 'parodos-projects',
+
+export const notificationRouteRef = createSubRouteRef({
+  id: 'notification',
   parent: rootRouteRef,
-  path: '/projects',
+  path: '/notification',
+});
+
+
+export const trainingRouteRef = createSubRouteRef({
+  id: 'training',
+  parent: rootRouteRef,
+  path: '/training',
 });
