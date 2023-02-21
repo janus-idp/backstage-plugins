@@ -16,4 +16,7 @@ export const useCommonStyles = makeStyles({
   paddingtop1: {
     'padding-top': '1rem !important',
   },
+  margintop1: {
+    'margin-top': '1rem !important',
+  },
 });
