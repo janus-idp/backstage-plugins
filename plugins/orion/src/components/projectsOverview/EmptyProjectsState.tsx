@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, makeStyles, Typography } from '@material-ui/core';
 import { Link } from '@backstage/core-components';
 import { InfoOutlined } from '@material-ui/icons';
-import { useCommonStyles } from '../styles';
+import { useCommonStyles } from '../../styles';
 
 export const useStyles = makeStyles({
   paddingtop: {'padding-top': '2rem'},

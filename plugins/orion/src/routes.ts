@@ -5,9 +5,9 @@ export const rootRouteRef = createRouteRef({
 });
 
 export const newProjectRouteRef = createSubRouteRef({
-  id: 'parodos-new-project',
+  id: 'parodos-workflow',
   parent: rootRouteRef,
-  path: '/newproject',
+  path: '/workflow',
 });
 
 export const projectsRouteRef = createSubRouteRef({
