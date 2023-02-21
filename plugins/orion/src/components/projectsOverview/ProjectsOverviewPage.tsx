@@ -9,11 +9,11 @@ import {
 } from '@backstage/core-components';
 import { Add } from '@material-ui/icons';
 import { Grid } from '@material-ui/core';
-import { EmptyProjectsState } from '../EmptyProjectsState';
+import { EmptyProjectsState } from './EmptyProjectsState';
 import { useCommonStyles } from '../../styles';
 import { PageHeader } from '../PageHeader';
 
-export const ProjectAssessmentPage = () => {
+export const ProjectsOverviewPage = () => {
   const commonStyles = useCommonStyles();
 
   const projectFilterItems = [

@@ -6,8 +6,8 @@ import {
   Page,
   SupportButton,
 } from '@backstage/core-components';
-import { PageHeader } from './PageHeader';
-import { useCommonStyles } from '../styles';
+import { PageHeader } from '../PageHeader';
+import { useCommonStyles } from '../../styles';
 import {
   Button,
   Card,
