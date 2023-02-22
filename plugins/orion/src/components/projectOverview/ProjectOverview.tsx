@@ -49,7 +49,7 @@ export const ProjectOverviewPage = () => {
           </Grid>
 
           <Grid item xs={3}>
-            <Link to="/parodos/newproject">
+            <Link to="/parodos/workflow">
               <Add className={commonStyles.inlineicon} />
               &nbsp;Add new project
             </Link>
