@@ -1,28 +1,28 @@
-import { ConfigReader } from '@backstage/config';
 import {
-  getCustomObjectsApi,
   hubApiClient,
   getManagedCluster,
-  getManagedClusters,
-  getManagedClustersInfo,
+  listManagedClusters,
+  getManagedClusterInfo,
 } from './kubernetes';
 import { createLogger } from 'winston';
 import transports from 'winston/lib/winston/transports';
 import { CustomObjectsApi, KubeConfig } from '@kubernetes/client-node';
 import nock from 'nock';
+import { OcmConfig } from '../types';
 
 const logger = createLogger({
   transports: [new transports.Console({ silent: true })],
 });
 
-describe('getCustomObjectsApi', () => {
+describe('hubApiClient', () => {
   it('should use the default config if there is no service account token configured', () => {
-    process.env.KUBECONFIG = `${__dirname}/test_data/kubeconfig.yaml`;
-    const clusterConfig = new ConfigReader({
-      name: 'cluster1',
-    });
+    process.env.KUBECONFIG = `${__dirname}/../fixtures/kubeconfig.yaml`;
+    const clusterConfig = {
+      id: 'foo',
+      hubResourceName: 'cluster1',
+    } as OcmConfig;
 
-    const result = getCustomObjectsApi(clusterConfig, logger);
+    const result = hubApiClient(clusterConfig, logger);
 
     expect(result.basePath).toBe('http://example.com');
     // These fields aren't on the type but are there
@@ -32,69 +32,20 @@ describe('getCustomObjectsApi', () => {
   });
 
   it('should use the provided config in the returned api client', () => {
-    const clusterConfig = new ConfigReader({
-      name: 'cluster1',
+    const clusterConfig = {
+      id: 'foo',
+      hubResourceName: 'cluster1',
       serviceAccountToken: 'TOKEN',
       url: 'http://cluster.com',
-    });
+    } as OcmConfig;
 
-    const result = getCustomObjectsApi(clusterConfig, logger);
+    const result = hubApiClient(clusterConfig, logger);
 
     expect(result.basePath).toBe('http://cluster.com');
     // These fields aren't on the type but are there
     const auth = (result as any).authentications.default;
     expect(auth.clusters[0].name).toBe('cluster1');
     expect(auth.users[0].token).toBe('TOKEN');
-  });
-});
-
-describe('hubApiClient', () => {
-  it('should return an api client configured with the hub cluster from kubernetes config', () => {
-    const config = new ConfigReader({
-      kubernetes: {
-        clusterLocatorMethods: [
-          {
-            type: 'config',
-            clusters: [
-              {
-                name: 'cluster2',
-                serviceAccountToken: 'TOKEN',
-                url: 'http://cluster2.com',
-              },
-            ],
-          },
-        ],
-      },
-      ocm: {
-        cluster: 'cluster2',
-      },
-    });
-
-    const result = hubApiClient(config, logger);
-
-    expect(result.basePath).toBe('http://cluster2.com');
-    // These fields aren't on the type but are there
-    const auth = (result as any).authentications.default;
-    expect(auth.clusters[0].name).toBe('cluster2');
-  });
-
-  it('should return an api client configured with the hub cluster from the ocm config', () => {
-    const config = new ConfigReader({
-      ocm: {
-        hub: {
-          name: 'cluster2',
-          url: 'http://cluster2.com',
-          serviceAccountToken: 'TOKEN',
-        },
-      },
-    });
-
-    const result = hubApiClient(config, logger);
-
-    expect(result.basePath).toBe('http://cluster2.com');
-    // These fields aren't on the type but are there
-    const auth = (result as any).authentications.default;
-    expect(auth.clusters[0].name).toBe('cluster2');
   });
 });
 
@@ -118,25 +69,15 @@ describe('getManagedClusters', () => {
       .reply(200, {
         body: {
           items: [
-            {
-              kind: 'ManagedCluster',
-              metadata: {
-                name: 'cluster1',
-              },
-            },
-            {
-              kind: 'ManagedCluster',
-              metadata: {
-                name: 'cluster2',
-              },
-            },
+            require(`${__dirname}/../fixtures/cluster.open-cluster-management.io/managedclusters/cluster1.json`),
+            require(`${__dirname}/../fixtures/cluster.open-cluster-management.io/managedclusters/local-cluster.json`),
           ],
         },
       });
 
-    const result: any = await getManagedClusters(getApi());
+    const result: any = await listManagedClusters(getApi());
     expect(result.body.items[0].metadata.name).toBe('cluster1');
-    expect(result.body.items[1].metadata.name).toBe('cluster2');
+    expect(result.body.items[1].metadata.name).toBe('local-cluster');
   });
 });
 
@@ -147,22 +88,14 @@ describe('getManagedCluster', () => {
         '/apis/cluster.open-cluster-management.io/v1/managedclusters/cluster1',
       )
       .reply(200, {
-        body: {
-          metadata: {
-            name: 'cluster1',
-          },
-        },
+        body: require(`${__dirname}/../fixtures/cluster.open-cluster-management.io/managedclusters/cluster1.json`),
       });
     nock(kubeConfig.clusters[0].server)
       .get(
-        '/apis/cluster.open-cluster-management.io/v1/managedclusters/cluster2',
+        '/apis/cluster.open-cluster-management.io/v1/managedclusters/local-cluster',
       )
       .reply(200, {
-        body: {
-          metadata: {
-            name: 'cluster2',
-          },
-        },
+        body: require(`${__dirname}/../fixtures/cluster.open-cluster-management.io/managedclusters/local-cluster.json`),
       });
 
     const result: any = await getManagedCluster(getApi(), 'cluster1');
@@ -197,33 +130,17 @@ describe('getManagedCluster', () => {
   });
 });
 
-describe('getManagedClustersInfo', () => {
-  it('should return some clusters', async () => {
+describe('getManagedClusterInfo', () => {
+  it('should return cluster', async () => {
     nock(kubeConfig.clusters[0].server)
       .get(
-        '/apis/internal.open-cluster-management.io/v1beta1/managedclusterinfos',
+        '/apis/internal.open-cluster-management.io/v1beta1/namespaces/local-cluster/managedclusterinfos/local-cluster',
       )
       .reply(200, {
-        body: {
-          items: [
-            {
-              kind: 'ManagedClusterInfo',
-              metadata: {
-                name: 'cluster1',
-              },
-            },
-            {
-              kind: 'ManagedClusterInfo',
-              metadata: {
-                name: 'cluster2',
-              },
-            },
-          ],
-        },
+        body: require(`${__dirname}/../fixtures/internal.open-cluster-management.io/managedclusterinfos/local-cluster.json`),
       });
 
-    const result: any = await getManagedClustersInfo(getApi());
-    expect(result.body.items[0].metadata.name).toBe('cluster1');
-    expect(result.body.items[1].metadata.name).toBe('cluster2');
+    const result: any = await getManagedClusterInfo(getApi(), 'local-cluster');
+    expect(result.body.metadata.name).toBe('local-cluster');
   });
 });
