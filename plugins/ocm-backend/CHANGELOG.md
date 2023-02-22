@@ -1,3 +1,18 @@
+# @janus-idp/backstage-plugin-ocm-backend [1.4.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@1.3.0...@janus-idp/backstage-plugin-ocm-backend@1.4.0) (2023-02-22)
+
+
+### Features
+
+* Add cluster ID annotation ([0f99891](https://github.com/janus-idp/backstage-plugins/commit/0f9989108eef9a2370fd1c544306fe2c2e160a89))
+
+
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-ocm-common:** upgraded to 1.2.0
+
 # @janus-idp/backstage-plugin-ocm-backend [1.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@1.2.1...@janus-idp/backstage-plugin-ocm-backend@1.3.0) (2023-02-07)
 
 
