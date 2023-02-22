@@ -1,11 +1,11 @@
 import React from 'react';
 import { Card, makeStyles, Typography } from '@material-ui/core';
 import { Link } from '@backstage/core-components';
-import { InfoOutlined } from '@material-ui/icons';
+import InfoOutlined from '@material-ui/icons/InfoOutlined';
 import { useCommonStyles } from '../../styles';
 
 export const useStyles = makeStyles({
-  paddingtop: {'padding-top': '2rem'},
+  paddingtop: { 'padding-top': '2rem' },
 });
 
 export const EmptyProjectsState = () => {
