@@ -10,19 +10,13 @@ import { Grid } from '@material-ui/core';
 import { EmptyProjectsState } from './EmptyProjectsState';
 import { useCommonStyles } from '../../styles';
 import { ParodosPage } from '../ParodosPage';
+import { mockProjectFilterItems, mockProjects } from './mockData';
 
 export const ProjectOverviewPage = () => {
   const commonStyles = useCommonStyles();
 
-  const projectFilterItems = [
-    /* TODO: https://issues.redhat.com/browse/FLPATH-52 */ {
-      label: 'foo',
-      value: 'bar',
-    },
-  ];
-  const projects = [
-    /* TODO */
-  ];
+  const projectFilterItems = mockProjectFilterItems;
+  const projects = mockProjects;
 
   const onFilterProjects = () => {
     // eslint-disable-next-line no-console
