@@ -24,7 +24,7 @@ import { Entity } from '@backstage/catalog-model';
 import { getClusters } from '../../helpers/apiClient';
 import { HomePageCompanyLogo } from '@backstage/plugin-home';
 import { ErrorResponseBody } from '@backstage/errors';
-import { ClusterDetails } from '@janus-idp/backstage-plugin-ocm-common';
+import { ClusterOverview } from '@janus-idp/backstage-plugin-ocm-common';
 
 interface clusterEntity {
   status: boolean;
@@ -94,7 +94,7 @@ const CatalogClusters = () => {
 
       setClusterEntities(
         clusterResourceEntities.items.map(entity => {
-          const cluster = (clusters as ClusterDetails[]).find(
+          const cluster = (clusters as ClusterOverview[]).find(
             cd => cd.name === entity.metadata.name,
           );
           return {

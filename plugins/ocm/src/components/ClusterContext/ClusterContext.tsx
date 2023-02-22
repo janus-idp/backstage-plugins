@@ -3,12 +3,15 @@ import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
 import useDebounce from 'react-use/lib/useDebounce';
-import { ClusterDetails } from '@janus-idp/backstage-plugin-ocm-common';
+import {
+  ANNOTATION_PROVIDER_ID,
+  Cluster,
+} from '@janus-idp/backstage-plugin-ocm-common';
 import { getClusterByName } from '../../helpers/apiClient';
 import { ErrorResponseBody } from '@backstage/errors';
 
 type ClusterContextType = {
-  data: ClusterDetails | null;
+  data: Cluster | null;
   loading: boolean;
   error: Error | null;
 };
@@ -20,12 +23,16 @@ const ClusterContext = createContext<ClusterContextType>(
 export const ClusterContextProvider = (props: any) => {
   const { entity } = useEntity();
   const configApi = useApi(configApiRef);
-  const [cluster, setCluster] = useState(
-    {} as ClusterDetails | ErrorResponseBody,
-  );
+  const [cluster, setCluster] = useState({} as Cluster | ErrorResponseBody);
   const [{ loading, error: asyncError }, refresh] = useAsyncFn(
     async () => {
-      setCluster(await getClusterByName(configApi, entity.metadata.name));
+      const providerId = entity.metadata.annotations![ANNOTATION_PROVIDER_ID];
+      const cl = await getClusterByName(
+        configApi,
+        providerId,
+        entity.metadata.name,
+      );
+      setCluster(cl);
     },
     [],
     { loading: true },
@@ -42,7 +49,7 @@ export const ClusterContextProvider = (props: any) => {
   return (
     <ClusterContext.Provider
       value={{
-        data: isError || loading ? null : (cluster as ClusterDetails),
+        data: isError || loading ? null : (cluster as Cluster),
         loading,
         error,
       }}

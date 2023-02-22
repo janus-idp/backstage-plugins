@@ -63,20 +63,22 @@ This plugin is made up of 2 packages:
 
    1. The information about your hub is provided purely by the OCM configuration. In order to use this configuration please add the following to your `app-config.yaml` file:
 
-      ```diff
+      ```yaml
       # app-config.yaml
-      + ocm:
-      +   hub:
-      +     name: # Name of the cluster
-      +     url: # Url of the hub cluster API endpoint
-      +     serviceAccountToken: # Token used for querying data from the hub
-      +     skipTLSVerify: # Skip TLS certificate verification, defaults to false
-      +     caData: # Base64-encoded CA bundle in PEM format
+      catalog:
+        providers:
+          ocm:
+            env: # Key is reflected as provider ID. Defines and claims plugin instance ownership of entities
+              name: # Name that the hub cluster will assume in Backstage Catalog (in OCM this is always local-cluster which can be confusing)
+              url: # Url of the hub cluster API endpoint
+              serviceAccountToken: # Token used for querying data from the hub
+              skipTLSVerify: # Skip TLS certificate verification, defaults to false
+              caData: # Base64-encoded CA bundle in PEM format
       ```
 
-   2. The hub configuration is tied to the kubernetes plugin configuration by providing the name of the hub. This is useful when you already use a kubernetes plugin in your backstage instance. Please add following to your `app-config.yaml` file:
+   2. The hub configuration can be tied to the kubernetes plugin configuration by providing the name of the hub. This is useful when you already use a kubernetes plugin in your backstage instance. Please add following to your `app-config.yaml` file:
 
-      ```diff
+      ```yaml
       # app-config.yaml
       kubernetes:
         serviceLocatorMethod:
@@ -86,10 +88,12 @@ This plugin is made up of 2 packages:
             clusters:
               - name: <cluster-name>
               ...
-              ...
 
-      + ocm:
-      +   cluster: <cluster-name> # Match the cluster name in kubernetes plugin config
+      catalog:
+        providers:
+          ocm:
+            env: # Key is reflected as provider ID. Defines and claims plugin instance ownership of entities
+              kubernetesPluginRef: <cluster-name> # Match the cluster name in kubernetes plugin config
       ```
 
       Please consult the documentation to [Backstage Kubernetes plugin](https://backstage.io/docs/features/kubernetes/configuration#configuring-kubernetes-clusters) for details on its configuration. Hub cluster must be connected via Service Account.
@@ -150,14 +154,16 @@ This plugin is made up of 2 packages:
        const { processingEngine, router } = await builder.build();
        await processingEngine.start();
        ...
-   +   await env.scheduler.scheduleTask({
-   +     id: 'run_ocm_refresh',
-   +     fn: async () => {
-   +       await ocm.run();
-   +     },
-   +     frequency: { minutes: 30 },
-   +     timeout: { minutes: 10 },
-   +   });
+   +   await Promise.all(
+   +     ocm.map(
+   +       o => env.scheduler.scheduleTask({
+   +         id: `run_ocm_refresh_${o.getProviderName()}`,
+   +         fn: async () => { await o.run() },
+   +         frequency: { minutes: 30 },
+   +         timeout: { minutes: 10 },
+   +       })
+   +     )
+   +   );
        return router;
      }
    ```
