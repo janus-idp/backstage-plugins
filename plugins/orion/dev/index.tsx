@@ -7,6 +7,6 @@ createDevApp()
   .addPage({
     element: <OrionPage />,
     title: 'Root Page',
-    path: '/parodos'
+    path: '/parodos',
   })
   .render();

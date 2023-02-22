@@ -1,10 +1,6 @@
 import React, { useContext, useEffect } from 'react';
 import ToastContext from '../../context/toast';
-import {
-  ContentHeader,
-  SupportButton,
-  Tabs,
-} from '@backstage/core-components';
+import { ContentHeader, SupportButton, Tabs } from '@backstage/core-components';
 import { Typography } from '@material-ui/core';
 import { ParodosPage } from '../ParodosPage';
 
