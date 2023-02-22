@@ -70,7 +70,7 @@ export const TrainingHistory = () => {
             <Grid item xs={3}>
                 <Select
                     onChange={onFilterProjects}
-                    placeholder={"All Courses"}
+                    placeholder="All Courses"
                     label="Filter by"
                     items={projectFilterItems}
                 />
@@ -84,10 +84,10 @@ export const TrainingHistory = () => {
                                 aria-controls="panel1bh-content"
                                 id="panel1bh-header"
                             >
-                                <Grid container direction={"row"} alignItems="center" spacing={2}>
+                                <Grid container direction="row" alignItems="center" spacing={2}>
                                     <Grid item xs={1}>
                                         <Checkbox
-                                            color={"primary"}
+                                            color="primary"
                                             // checked={notificationIsSelected}
                                             // onClick={() =>
                                             //     NotificationListItemUtils.handleSelectNotification({
@@ -99,10 +99,10 @@ export const TrainingHistory = () => {
                                         />
                                     </Grid>
                                     <Grid item xs={6}>
-                                        <Typography variant={"body2"}>{training.course.title}</Typography>
+                                        <Typography variant="body2">{training.course.title}</Typography>
                                     </Grid>
                                     <Grid item xs={3}>
-                                        <Typography variant={"body2"}>{training.date}</Typography>
+                                        <Typography variant="body2">{training.date}</Typography>
                                     </Grid>
                                 </Grid>
                             </AccordionSummary>
@@ -113,7 +113,7 @@ export const TrainingHistory = () => {
                     ))
                 }
             </Grid>
-            <Grid container direction={"row"} justifyContent={"center"}>
+            <Grid container direction="row" justifyContent="center">
                 <TablePagination
                     component="div"
                     count={filteredTrainings.length}

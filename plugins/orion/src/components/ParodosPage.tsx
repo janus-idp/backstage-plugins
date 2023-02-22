@@ -19,14 +19,12 @@ export const ParodosPage: React.FC = ({ children }) => {
   const { pathname } = useLocation();
 
   React.useEffect(() => {
-    console.log('--- pathname: ', pathname);
     const index =
       navigationMap.findIndex(({ route }) => pathname.includes(route)) || 0;
     setSelectedTab(index);
   }, [pathname]);
 
   const onChangeTab = (index: number) => {
-    console.log('--- onChangeTab: ', index, ' - ', navigationMap[index].route);
     setSelectedTab(index);
     window.location.href = `${pluginRoutePrefix}${navigationMap[index].route}`;
   };

@@ -57,6 +57,7 @@ export const Workflow = () => {
   const onStartAssessment = () => {
     setAssessmentStatus('inprogress');
 
+    // eslint-disable-next-line no-console
     console.log('TODO: implement start assessment');
     setTimeout(() => setAssessmentStatus('complete'), 3000);
     // HTTP POST /api/v1/projects) with the "name".
@@ -88,6 +89,7 @@ export const Workflow = () => {
   });
 
   const getOnApplicationStart = (app: ApplicationType) => () => {
+    // eslint-disable-next-line no-console
     console.log('TODO: implement handler for applilcation: ', app);
   };
 

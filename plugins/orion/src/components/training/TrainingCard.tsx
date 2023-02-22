@@ -32,11 +32,11 @@ export const TrainingCard = ({training}: Props) => {
     return (
         <Grid container direction="row" justifyContent="flex-start" spacing={2}>
             <Grid item xs={6}>
-                <List dense={true}>
+                <List dense>
                     {
                         Object.keys(fields).map((key) => (
                             <ListItem key={key}>
-                                <Typography variant={"body2"} style={{whiteSpace: 'normal'}}>
+                                <Typography variant="body2" style={{whiteSpace: 'normal'}}>
                                     {key === 'course' ?
                                         `${fields.course} - ${training.course.title}` :
                                         `${fields[key as keyof Training]} - ${training[key as keyof Training]}`

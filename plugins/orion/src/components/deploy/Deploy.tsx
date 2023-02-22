@@ -11,7 +11,7 @@ export const Deploy = () => {
         toastContext.handleOpenToast(
             `Oops! Something went wrong. Please try again`,
         );
-    }, []);
+    }, [toastContext]);
 
     return (
         <Page themeId="tool">
