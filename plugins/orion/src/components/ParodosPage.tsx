@@ -40,7 +40,7 @@ export const ParodosPage: React.FC = ({ children }) => {
           label: (
             <TabLabel icon={icon} label={label} />
           ) as unknown as string /* Hack, since HeaderTabs accept string only. Contrary to Tabs coponent. */,
-          
+
           // To consider: we can use Content here over react-router, the behavior would be smoother
         }))}
       />
