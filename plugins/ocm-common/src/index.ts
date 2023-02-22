@@ -34,3 +34,5 @@ export type ClusterDetails = {
     reason: string;
   };
 };
+
+export const ANNOTATION_CLUSTER_ID = 'janus-idp.io/ocm-cluster-id';

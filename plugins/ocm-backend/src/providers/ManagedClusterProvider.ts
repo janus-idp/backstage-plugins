@@ -35,6 +35,7 @@ import {
 import { CONSOLE_CLAIM, HUB_CLUSTER_NAME_IN_OCM } from '../constants';
 import { getClaim } from '../helpers/parser';
 import { getHubClusterName } from '../helpers/config';
+import { ANNOTATION_CLUSTER_ID } from '@janus-idp/backstage-plugin-ocm-common';
 
 /**
  * Provides OpenShift cluster resource entities from Open Cluster Management.
@@ -97,6 +98,7 @@ export class ManagedClusterProvider implements EntityProvider {
              */
             [ANNOTATION_KUBERNETES_API_SERVER]:
               i.spec?.managedClusterClientConfigs?.[0]?.url,
+            [ANNOTATION_CLUSTER_ID]: i.metadata?.labels?.clusterID,
             [ANNOTATION_LOCATION]: `${this.getProviderName()}:${this.hubName}`,
             [ANNOTATION_ORIGIN_LOCATION]: `${this.getProviderName()}:${
               this.hubName
