@@ -47,6 +47,7 @@ export class ManagedClusterProvider implements EntityProvider {
   protected readonly client: CustomObjectsApi;
   protected readonly hubResourceName: string;
   protected readonly id: string;
+  protected readonly owner: string;
   protected readonly logger: winston.Logger;
   protected connection?: EntityProviderConnection;
 
@@ -55,11 +56,13 @@ export class ManagedClusterProvider implements EntityProvider {
     hubResourceName: string,
     id: string,
     options: { logger: winston.Logger },
+    owner: string,
   ) {
     this.client = client;
     this.hubResourceName = hubResourceName;
     this.id = id;
     this.logger = options.logger;
+    this.owner = owner;
   }
 
   static fromConfig(config: Config, options: { logger: winston.Logger }) {
@@ -70,6 +73,7 @@ export class ManagedClusterProvider implements EntityProvider {
         provider.hubResourceName,
         provider.id,
         options,
+        provider.owner,
       );
     });
   }
@@ -138,7 +142,7 @@ export class ManagedClusterProvider implements EntityProvider {
           ],
         },
         spec: {
-          owner: 'unknown',
+          owner: this.owner,
           type: 'kubernetes-cluster',
         },
       };

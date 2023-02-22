@@ -36,7 +36,12 @@ export interface Config {
         /**
          * Key is reflected as provider ID. Defines and claims plugin instance ownership of entities
          */
-        [key: string]: KubernetesPluginRef | HubClusterConfig;
+        [key: string]: (KubernetesPluginRef | HubClusterConfig) & {
+          /**
+           * Owner reference to created cluster entities in the catalog
+           */
+          owner?: string;
+        };
       };
     };
   };
