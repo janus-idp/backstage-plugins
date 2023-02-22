@@ -5,7 +5,7 @@ import {
   Select,
   SupportButton,
 } from '@backstage/core-components';
-import { Add } from '@material-ui/icons';
+import Add from '@material-ui/icons/Add';
 import { Grid } from '@material-ui/core';
 import { EmptyProjectsState } from './EmptyProjectsState';
 import { useCommonStyles } from '../../styles';
@@ -25,6 +25,7 @@ export const ProjectOverviewPage = () => {
   ];
 
   const onFilterProjects = () => {
+    // eslint-disable-next-line no-console
     console.log('TODO: https://issues.redhat.com/browse/FLPATH-52');
   };
 

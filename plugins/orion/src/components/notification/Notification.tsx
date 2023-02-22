@@ -14,7 +14,7 @@ export const Notification = () => {
     toastContext.handleOpenToast(
       `Oops! Something went wrong. Please try again`,
     );
-  }, []);
+  }, [toastContext]);
 
   return (
     <ParodosPage>
