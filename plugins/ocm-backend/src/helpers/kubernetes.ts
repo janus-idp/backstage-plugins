@@ -1,43 +1,47 @@
-import { Config } from '@backstage/config';
-import { CustomObjectsApi, KubeConfig } from '@kubernetes/client-node';
+import {
+  CustomObjectsApi,
+  KubeConfig,
+  KubernetesListObject,
+} from '@kubernetes/client-node';
 import { Logger } from 'winston';
-import { getHubClusterFromConfig } from './config';
 import http from 'http';
+import { ManagedCluster, ManagedClusterInfo, OcmConfig } from '../types';
 
-export const getCustomObjectsApi = (
-  clusterConfig: Config,
+export const hubApiClient = (
+  clusterConfig: OcmConfig,
   logger: Logger,
 ): CustomObjectsApi => {
-  const clusterToken = clusterConfig.getOptionalString('serviceAccountToken');
   const kubeConfig = new KubeConfig();
 
-  if (!clusterToken) {
+  if (!clusterConfig.serviceAccountToken) {
     logger.info('Using default kubernetes config');
     kubeConfig.loadFromDefault();
     return kubeConfig.makeApiClient(CustomObjectsApi);
   }
 
   logger.info('Loading kubernetes config from config file');
-  const cluster = {
-    name: clusterConfig.getString('name'),
-    server: clusterConfig.getString('url'),
-    skipTLSVerify: clusterConfig.getOptionalBoolean('skipTLSVerify') ?? false,
-    caData: clusterConfig.getOptionalString('caData'),
-  };
 
   const user = {
     name: 'backstage',
-    token: clusterToken,
+    token: clusterConfig.serviceAccountToken,
   };
 
   const context = {
-    name: cluster.name,
+    name: clusterConfig.hubResourceName,
     user: user.name,
-    cluster: cluster.name,
+    cluster: clusterConfig.hubResourceName,
   };
 
   kubeConfig.loadFromOptions({
-    clusters: [cluster],
+    clusters: [
+      {
+        server: clusterConfig.url,
+        name: clusterConfig.hubResourceName,
+        serviceAccountToken: clusterConfig.serviceAccountToken,
+        skipTLSVerify: clusterConfig.skipTLSVerify,
+        caData: clusterConfig.caData,
+      },
+    ],
     users: [user],
     contexts: [context],
     currentContext: context.name,
@@ -45,12 +49,7 @@ export const getCustomObjectsApi = (
   return kubeConfig.makeApiClient(CustomObjectsApi);
 };
 
-export const hubApiClient = (config: Config, logger: Logger) => {
-  const hubClusterConfig = getHubClusterFromConfig(config, logger);
-  return getCustomObjectsApi(hubClusterConfig, logger);
-};
-
-const kubeApiResponseHandler = (
+const kubeApiResponseHandler = <T extends Object>(
   call: Promise<{
     response: http.IncomingMessage;
     body: object;
@@ -58,7 +57,7 @@ const kubeApiResponseHandler = (
 ) => {
   return call
     .then(r => {
-      return r.body;
+      return r.body as T;
     })
     .catch(r => {
       throw Object.assign(new Error(r.body.reason), {
@@ -70,7 +69,7 @@ const kubeApiResponseHandler = (
 };
 
 export const getManagedCluster = (api: CustomObjectsApi, name: string) => {
-  return kubeApiResponseHandler(
+  return kubeApiResponseHandler<ManagedCluster>(
     api.getClusterCustomObject(
       'cluster.open-cluster-management.io',
       'v1',
@@ -80,8 +79,8 @@ export const getManagedCluster = (api: CustomObjectsApi, name: string) => {
   );
 };
 
-export const getManagedClusters = (api: CustomObjectsApi) => {
-  return kubeApiResponseHandler(
+export const listManagedClusters = (api: CustomObjectsApi) => {
+  return kubeApiResponseHandler<KubernetesListObject<ManagedCluster>>(
     api.listClusterCustomObject(
       'cluster.open-cluster-management.io',
       'v1',
@@ -90,12 +89,14 @@ export const getManagedClusters = (api: CustomObjectsApi) => {
   );
 };
 
-export const getManagedClustersInfo = (api: CustomObjectsApi) => {
-  return kubeApiResponseHandler(
-    api.listClusterCustomObject(
+export const getManagedClusterInfo = (api: CustomObjectsApi, name: string) => {
+  return kubeApiResponseHandler<ManagedClusterInfo>(
+    api.getNamespacedCustomObject(
       'internal.open-cluster-management.io',
       'v1beta1',
+      name,
       'managedclusterinfos',
+      name,
     ),
   );
 };

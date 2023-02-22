@@ -1,82 +1,84 @@
 import { Config } from '@backstage/config';
-import { Logger } from 'winston';
+import { OcmConfig } from '../types';
 
-const CLUSTERS_PATH = 'kubernetes.clusterLocatorMethods';
-const OCM_PREFIX = 'ocm';
-const CLUSTER_CONFIG_PATH = OCM_PREFIX;
-const HUB_CONFIG_PATH = `${OCM_PREFIX}.hub`;
+const KUBERNETES_PLUGIN_CONFIG = 'kubernetes.clusterLocatorMethods';
+const OCM_PREFIX = 'catalog.providers.ocm';
+const KUBERNETES_PLUGIN_KEY = 'kubernetesPluginRef';
 
-export const getConfigVariantPath = (config: Config): string => {
-  const hubConfig = config.has(HUB_CONFIG_PATH);
-
-  if (!hubConfig && !config.has(CLUSTER_CONFIG_PATH)) {
-    throw new Error(
-      `Neither hub or cluster configuration were specified at '${OCM_PREFIX}.' config`,
-    );
+export const deferToKubernetesPlugin = (config: Config): boolean => {
+  if (config.has(KUBERNETES_PLUGIN_KEY)) {
+    return true;
   }
-
-  return hubConfig ? HUB_CONFIG_PATH : CLUSTER_CONFIG_PATH;
+  return false;
 };
 
-export const getHubClusterName = (config: Config): string => {
-  const path = getConfigVariantPath(config);
-  const name =
-    config.getOptionalString(`${path}.name`) ||
-    config.getOptionalString(`${path}.cluster`);
-  if (!name) {
-    throw new Error(
-      `'${HUB_CONFIG_PATH}.name' or '${CLUSTER_CONFIG_PATH}.cluster' must be specified in ocm config`,
-    );
-  }
-  return name;
-};
+export const getHubClusterFromKubernetesConfig = (
+  id: string,
+  config: Config,
+  globalConfig: Config,
+): Config => {
+  const name = config.getOptionalString(KUBERNETES_PLUGIN_KEY);
+  const _logTemplate = `Hub cluster ${OCM_PREFIX}.${id}.${KUBERNETES_PLUGIN_KEY}=${name}`;
 
-export const getHubClusterFromKubernetesConfig = (config: Config): Config => {
-  const hub = config
-    .getConfigArray(CLUSTERS_PATH)
+  const hub = globalConfig
+    .getConfigArray(KUBERNETES_PLUGIN_CONFIG)
     .flatMap(method => method.getOptionalConfigArray('clusters') || [])
-    .find(
-      cluster =>
-        cluster.getString('name') ===
-        config.getOptionalString(`${CLUSTER_CONFIG_PATH}.cluster`),
-    );
+    .find(cluster => cluster.getString('name') === name);
   if (!hub) {
-    throw new Error('Hub cluster not defined in kubernetes config');
+    throw new Error(
+      `${_logTemplate} not defined in kubernetes in ${KUBERNETES_PLUGIN_CONFIG}.clusters`,
+    );
+  }
+
+  if (hub.getString('authProvider') !== 'serviceAccount') {
+    throw new Error(`${_logTemplate} has to authenticate via 'serviceAccount'`);
   }
   return hub;
 };
 
-export const getHubClusterFromOcmConfig = (config: Config): Config => {
-  const hub = config.getConfig(HUB_CONFIG_PATH);
+export const getHubClusterFromOcmConfig = (
+  id: string,
+  config: Config,
+): Config => {
   // Check if required values are valid
   const requiredValues = ['name', 'url'];
   requiredValues.forEach(key => {
-    if (!config.has(`${HUB_CONFIG_PATH}.${key}`)) {
+    if (!config.has(key)) {
       throw new Error(
-        `Hub cluster ${key} must be specified in config at '${HUB_CONFIG_PATH}.${key}'`,
+        `Value must be specified in config at '${OCM_PREFIX}.${id}.${key}'`,
       );
     }
   });
-  return hub;
+  return config;
 };
 
 export const getHubClusterFromConfig = (
+  id: string,
   config: Config,
-  logger: Logger,
-): Config => {
-  // If no configuration is found an error is thrown
-  const path = getConfigVariantPath(config);
+  globalConfig: Config,
+): OcmConfig => {
+  const hub = deferToKubernetesPlugin(config)
+    ? getHubClusterFromKubernetesConfig(id, config, globalConfig)
+    : getHubClusterFromOcmConfig(id, config);
 
-  if (path === HUB_CONFIG_PATH) {
-    logger.info(`Loading config from ${HUB_CONFIG_PATH} config`);
-    return getHubClusterFromOcmConfig(config);
-  }
-  if (path === CLUSTER_CONFIG_PATH) {
-    logger.info(`Loading config from ${CLUSTER_CONFIG_PATH} config`);
-    return getHubClusterFromKubernetesConfig(config);
+  return {
+    id,
+    url: hub.getString('url'),
+    hubResourceName: hub.getString('name'),
+    serviceAccountToken: hub.getOptionalString('serviceAccountToken'),
+    skipTLSVerify: hub.getOptionalBoolean('skipTLSVerify') || false,
+    caData: hub.getOptionalString('caData'),
+  };
+};
+
+export const readOcmConfigs = (config: Config): OcmConfig[] => {
+  const ocmConfigs = config.getOptionalConfig(OCM_PREFIX);
+
+  if (!ocmConfigs) {
+    return [];
   }
 
-  throw new Error(
-    'An unknown error occurred while getting the OCM configuration',
-  );
+  return ocmConfigs
+    .keys()
+    .map(id => getHubClusterFromConfig(id, ocmConfigs.getConfig(id), config));
 };

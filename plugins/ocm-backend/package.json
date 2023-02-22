@@ -21,7 +21,7 @@
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack"
   },
-  "configSchema": "schema.d.ts",
+  "configSchema": "config.d.ts",
   "dependencies": {
     "@backstage/backend-common": "^0.18.1",
     "@backstage/catalog-client": "^1.3.0",
@@ -47,7 +47,7 @@
   },
   "files": [
     "dist",
-    "schema.d.ts"
+    "config.d.ts"
   ],
   "repository": "github:janus-idp/backstage-plugins",
   "keywords": [
