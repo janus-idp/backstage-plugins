@@ -18,6 +18,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import { ParodosPage } from '../ParodosPage';
+import { mockApplications } from './mockData';
 
 type ApplicationType = {
   id: string;
@@ -25,6 +26,8 @@ type ApplicationType = {
   subtitle: string;
   description: string;
 };
+
+type AssessmentStatusType = 'none' | 'inprogress' | 'complete';
 
 const useStyles = makeStyles({
   applicationHeader: {
@@ -42,9 +45,8 @@ export const Workflow = () => {
 
   const [projectName, setProjectName] = React.useState<string>();
   const [projectRepoOrImage, setProjectRepoOrImage] = React.useState<string>();
-  const [assessmentStatus, setAssessmentStatus] = React.useState<
-    'none' | 'inprogress' | 'complete'
-  >('none');
+  const [assessmentStatus, setAssessmentStatus] =
+    React.useState<AssessmentStatusType>('none');
 
   const onChangeProjectName: OutlinedInputProps['onChange'] = event => {
     setProjectName(event.target.value);
@@ -64,29 +66,7 @@ export const Workflow = () => {
     // and others, i.e. workflows: https://issues.redhat.com/browse/FLPATH-50?focusedCommentId=21768215&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-21768215
   };
 
-  const applications: ApplicationType[] = [
-    // TODO: fectch from API
-    {
-      id: 'app-andromeda',
-      name: 'Onboard to Andromeda',
-      subtitle: 'New application',
-      description: 'Lorem ipsum',
-    },
-    {
-      id: 'app-solitaire',
-      name: 'Sign up for Solitaire',
-      subtitle: 'Mandatory for all new employees',
-      description: 'Company-wide championship',
-    },
-  ];
-  [1, 2, 3, 4, 5, 6].forEach(i => {
-    applications.push({
-      id: `app-${i}`,
-      name: `Application ${i}`,
-      subtitle: `Subtitle ${i}`,
-      description: `Description ${i}`,
-    });
-  });
+  const applications: ApplicationType[] = mockApplications;
 
   const getOnApplicationStart = (app: ApplicationType) => () => {
     // eslint-disable-next-line no-console
