@@ -1,8 +1,26 @@
 import React from 'react';
-import { Content, HeaderTabs, Tabs, Page } from '@backstage/core-components';
+import { Content, HeaderTabs, Page } from '@backstage/core-components';
 import { useLocation } from 'react-router-dom';
 import { PageHeader } from './PageHeader';
-import { navigationMap, pluginRoutePrefix } from './PluginRouter';
+import {
+  AssessmentIcon,
+  NotificationsIcon,
+  ProjectsIcon,
+  TrainingIcon,
+} from './icons';
+
+export const pluginRoutePrefix = '/parodos';
+
+export const navigationMap = [
+  { label: 'Projects', route: '/project-overview', icon: <ProjectsIcon /> },
+  { label: 'Assessment', route: '/workflow', icon: <AssessmentIcon /> },
+  {
+    label: 'Notifications',
+    route: '/notification',
+    icon: <NotificationsIcon />,
+  },
+  { label: 'Training', route: '/training', icon: <TrainingIcon /> },
+];
 
 export const TabLabel: React.FC<{ icon?: React.ReactNode; label: string }> = ({
   icon,
