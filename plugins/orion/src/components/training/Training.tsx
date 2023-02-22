@@ -1,17 +1,12 @@
-import React, {useContext, useEffect} from "react";
-import ToastContext from "../../context/toast";
+import React from "react";
 import {PageHeader} from "../PageHeader";
 import {Content, ContentHeader, Page, SupportButton, Tabs} from "@backstage/core-components";
 import {Typography} from "@material-ui/core";
-
+import {TrainingCard} from "./TrainingCard";
+import {mockRecentTraining} from "./mock/mockTraining";
+import {TrainingHistory} from "./TrainingHistory";
 
 export const Training = () => {
-    const toastContext = useContext(ToastContext);
-    useEffect(() => {
-        toastContext.handleOpenToast(
-            `Oops! Something went wrong. Please try again`,
-        );
-    }, []);
 
     return (
         <Page themeId="tool">
@@ -26,10 +21,10 @@ export const Training = () => {
                 <Tabs
                     tabs={[{
                         label: `RECENT`,
-                        content: <div>recent</div>,
+                        content: <TrainingCard training={mockRecentTraining}/>,
                     }, {
                         label: `HISTORY`,
-                        content: <div>history</div>,
+                        content: <TrainingHistory/>,
                     }]}
                 />
             </Content>
