@@ -162,6 +162,7 @@ export const Workflow = () => {
                         variant="text"
                         onClick={getOnApplicationStart(application)}
                         color="primary"
+                        href="/parodos/onboarding"
                       >
                         START
                       </Button>
