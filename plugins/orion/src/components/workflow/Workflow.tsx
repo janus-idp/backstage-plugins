@@ -17,6 +17,8 @@ import {
   TextField,
   Typography,
 } from '@material-ui/core';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
+
 import { ParodosPage } from '../ParodosPage';
 import { mockApplications } from './mockData';
 
@@ -43,10 +45,14 @@ export const Workflow = () => {
   const commonStyles = useCommonStyles();
   const styles = useStyles();
 
-  const [projectName, setProjectName] = React.useState<string>();
+  const config = useApi(configApiRef);
+
+  const [projectName, setProjectName] = React.useState<string>('');
   const [projectRepoOrImage, setProjectRepoOrImage] = React.useState<string>();
   const [assessmentStatus, setAssessmentStatus] =
     React.useState<AssessmentStatusType>('none');
+  const [_, setError] = React.useState<string>();
+  // TODO: render error
 
   const onChangeProjectName: OutlinedInputProps['onChange'] = event => {
     setProjectName(event.target.value);
@@ -59,11 +65,33 @@ export const Workflow = () => {
   const onStartAssessment = () => {
     setAssessmentStatus('inprogress');
 
-    // eslint-disable-next-line no-console
-    console.log('TODO: implement start assessment');
-    setTimeout(() => setAssessmentStatus('complete'), 3000);
-    // HTTP POST /api/v1/projects) with the "name".
-    // and others, i.e. workflows: https://issues.redhat.com/browse/FLPATH-50?focusedCommentId=21768215&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-21768215
+    const doItAsync = async () => {
+      try {
+        const backendUrl = config.getString('backend.baseUrl');
+
+        const response = await fetch(
+          `${backendUrl}/api/proxy/parodos/projects`,
+          {
+            method: 'POST',
+            body: JSON.stringify({
+              name: projectName,
+              repo: projectRepoOrImage, // Not used yet
+            }),
+          },
+        );
+        await response.json(); // So far we don't need the response
+
+        // TODO: and others, i.e. workflows: https://issues.redhat.com/browse/FLPATH-50?focusedCommentId=21768215&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-21768215
+        setTimeout(() => setAssessmentStatus('complete'), 3000);
+        // eslint-disable-next-line no-console
+        console.log('TODO: implement fully start assessment');
+      } catch (e) {
+        setError('Failed to start assessment.');
+        // eslint-disable-next-line no-console
+        console.error('Error: ', e);
+      }
+    };
+    doItAsync();
   };
 
   const applications: ApplicationType[] = mockApplications;
@@ -162,6 +190,7 @@ export const Workflow = () => {
                         variant="text"
                         onClick={getOnApplicationStart(application)}
                         color="primary"
+                        // TODO: following should be moved to getOnApplicationStart() or pass the application as a parameter here
                         href="/parodos/onboarding"
                       >
                         START

@@ -51,6 +51,15 @@ proxy:
   # '/test':
   #   target: 'https://example.com'
   #   changeOrigin: true
+  '/parodos':
+    target: 'http://localhost:8080/api/v1'
+    changeOrigin: true
+    redirect: follow
+    cache: 'no-cache'
+    headers:
+      Content-Type: 'application/json'
+      accept: 'application/json'
+      Authorization: 'Basic dGVzdDp0ZXN0'
 
 # Reference documentation http://backstage.io/docs/features/techdocs/configuration
 # Note: After experimenting with basic setup, use CI/CD to generate docs
