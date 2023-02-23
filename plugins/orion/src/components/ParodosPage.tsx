@@ -23,6 +23,7 @@ export const navigationMap = [
     icon: <NotificationsIcon />,
   },
   { label: 'Training', route: '/training', icon: <TrainingIcon /> },
+  { label: 'Onboarding', route: '/onboarding', icon: <AssessmentIcon /> },
 ];
 
 const useStyles = makeStyles({
