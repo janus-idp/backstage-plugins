@@ -1,44 +1,15 @@
-import React, { useContext, useEffect } from 'react';
-import ToastContext from '../../context/toast';
-import { PageHeader } from '../PageHeader';
-import {
-  Content,
-  ContentHeader,
-  Page,
-  SupportButton,
-  Tabs,
-} from '@backstage/core-components';
+import React from 'react';
+import { ContentHeader, SupportButton } from '@backstage/core-components';
 import { Typography } from '@material-ui/core';
+import { ParodosPage } from '../ParodosPage';
 
 export const Metrics = () => {
-  const toastContext = useContext(ToastContext);
-  useEffect(() => {
-    toastContext.handleOpenToast(
-      `Oops! Something went wrong. Please try again`,
-    );
-  }, [toastContext]);
-
   return (
-    <Page themeId="tool">
-      <PageHeader />
-      <Content>
-        <ContentHeader title="Metrics">
-          <SupportButton title="Need help?">Lorem Ipsum</SupportButton>
-        </ContentHeader>
-        <Typography paragraph>Get insight of application metrics</Typography>
-        <Tabs
-          tabs={[
-            {
-              label: `RECENT`,
-              content: <div>recent</div>,
-            },
-            {
-              label: `HISTORY`,
-              content: <div>history</div>,
-            },
-          ]}
-        />
-      </Content>
-    </Page>
+    <ParodosPage>
+      <ContentHeader title="Metrics">
+        <SupportButton title="Need help?">Lorem Ipsum</SupportButton>
+      </ContentHeader>
+      <Typography paragraph>Get insight of application metrics</Typography>
+    </ParodosPage>
   );
 };
