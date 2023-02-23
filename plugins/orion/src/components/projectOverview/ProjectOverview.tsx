@@ -15,7 +15,7 @@ import { useCommonStyles } from '../../styles';
 import { ParodosPage } from '../ParodosPage';
 import { ProjectStatusType, ProjectType } from './types';
 import { ProjectsTable } from './ProjectsTable';
-import { mockProjects } from './mockData';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
 
 const projectFilterItems: { label: string; value: ProjectStatusType }[] = [
   { label: 'All Projects', value: 'all-projects' },
@@ -29,28 +29,25 @@ export const ProjectOverviewPage = () => {
   const [filteredProjects, setFilteredProjects] = React.useState<ProjectType[]>(
     [],
   );
+  const config = useApi(configApiRef);
 
   const {
     value: allProjects,
     loading: loadingProjects,
     error: errorProjects,
   } = useAsync(async (): Promise<ProjectType[]> => {
-    // TODO: proxy does not work so far
-    // TODO: https://issues.redhat.com/browse/FLPATH-131
-    // const response = await fetch('/api/proxy/parodos/projects', {
-    //   method: 'GET',
-    //   cache: 'no-cache',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     accept: 'application/json',
-    //     Authorization: 'Basic dGVzdDp0ZXN0' /* TODO: test:test */,
-    //   },
-    //   redirect: 'follow',
-    // });
-    // const data = await response.json();
-    // console.log('--data: ', data);
-    // return data.results;
-    return mockProjects;
+    // TODO: finish after https://issues.redhat.com/browse/FLPATH-131
+    // return mockProjects;
+
+    const backendUrl = config.getString('backend.baseUrl');
+    const response = await fetch(`${backendUrl}/api/proxy/parodos/projects`);
+    const receivedProjects = (await response.json()) as ProjectType[];
+
+    // mock status for now:
+    const status: ProjectStatusType = 'in-progress';
+    const result = receivedProjects.map(project => ({ ...project, status }));
+
+    return result;
   }, []);
 
   React.useEffect(() => {

@@ -25,7 +25,10 @@ export const ProjectsTable: React.FC<{ projects: ProjectType[] }> = ({
   const data = projects.map(project => {
     return {
       ...project,
-      status: HumanReadableProjectStatus[project.status || ''] || '',
+      // TODO: Add human-readable time format
+      status: project.status
+        ? HumanReadableProjectStatus[project.status]
+        : undefined,
     };
   });
 
