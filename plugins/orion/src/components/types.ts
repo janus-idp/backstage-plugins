@@ -5,7 +5,7 @@ export type ProjectType = {
   name: string;
   username: string;
   description: string;
-  createdDate: string;
+  createDate: string;
   modifyDate: string;
 
   /* TODO: https://issues.redhat.com/browse/FLPATH-131 */

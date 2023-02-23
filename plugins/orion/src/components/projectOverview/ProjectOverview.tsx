@@ -13,7 +13,7 @@ import { useAsync } from 'react-use';
 import { EmptyProjectsState } from './EmptyProjectsState';
 import { useCommonStyles } from '../../styles';
 import { ParodosPage } from '../ParodosPage';
-import { ProjectStatusType, ProjectType } from './types';
+import { ProjectStatusType, ProjectType } from '../types';
 import { ProjectsTable } from './ProjectsTable';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 

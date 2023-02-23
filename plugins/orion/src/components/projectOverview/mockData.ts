@@ -1,4 +1,4 @@
-import { ProjectType } from './types';
+import { ProjectType } from '../types';
 
 export const mockProjects: ProjectType[] = [
   /* TODO: https://issues.redhat.com/browse/FLPATH-52 */
@@ -7,7 +7,7 @@ export const mockProjects: ProjectType[] = [
     name: 'Project 1',
     username: 'User 1',
     description: 'Description 1',
-    createdDate: '2021-01-01',
+    createDate: '2021-01-01',
     modifyDate: '2021-01-01',
     status: 'in-progress',
   },
@@ -16,7 +16,7 @@ export const mockProjects: ProjectType[] = [
     name: 'Project 2',
     username: 'User 2',
     description: 'Description 2',
-    createdDate: '2021-01-01',
+    createDate: '2021-01-01',
     modifyDate: '2021-01-01',
     status: 'on-boarded',
   },
@@ -25,7 +25,7 @@ export const mockProjects: ProjectType[] = [
     name: 'Project 3',
     username: 'User 3',
     description: 'Description 3',
-    createdDate: '2021-01-01',
+    createDate: '2021-01-01',
     modifyDate: '2021-01-01',
     status: 'in-progress',
   },

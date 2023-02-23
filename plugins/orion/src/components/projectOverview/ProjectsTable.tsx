@@ -1,14 +1,10 @@
 import React from 'react';
-import { ProjectStatusType, ProjectType } from './types';
+import { ProjectType } from '../types';
 import { Table, TableColumn } from '@backstage/core-components';
-
-const HumanReadableProjectStatus: {
-  [key in ProjectStatusType]: string;
-} = {
-  'in-progress': 'In Progress',
-  'on-boarded': 'On Boarded',
-  'all-projects': '', // Should not appear in the table
-};
+import {
+  getHumanReadableDate,
+  HumanReadableProjectStatus,
+} from '../converters';
 
 export const ProjectsTable: React.FC<{ projects: ProjectType[] }> = ({
   projects,
@@ -18,14 +14,15 @@ export const ProjectsTable: React.FC<{ projects: ProjectType[] }> = ({
     { title: 'User', field: 'username' },
     { title: 'Status', field: 'status' },
     { title: 'Description', field: 'description' },
-    { title: 'Created', field: 'createdDate' },
+    { title: 'Created', field: 'createDate' },
     { title: 'Modified', field: 'modifyDate' },
   ];
 
   const data = projects.map(project => {
     return {
       ...project,
-      // TODO: Add human-readable time format
+      createDate: getHumanReadableDate(project.createDate),
+      modifyDate: getHumanReadableDate(project.modifyDate),
       status: project.status
         ? HumanReadableProjectStatus[project.status]
         : undefined,
