@@ -13,7 +13,8 @@ import {
   TrainingIcon,
   MetricsIcon,
 } from './icons';
-import { mockProjects } from './projectOverview/mockData';
+import { ProjectType } from './types';
+import { useBackendUrl } from './api';
 
 export const pluginRoutePrefix = '/parodos';
 
@@ -55,11 +56,23 @@ export const ParodosPage: React.FC = ({ children }) => {
   const [selectedTab, setSelectedTab] = React.useState(0);
   const { pathname } = useLocation();
   const [isProject, setIsProject] = React.useState(true);
+  const backendUrl = useBackendUrl();
 
   React.useEffect(() => {
-    // TODO: load the data
-    setIsProject(mockProjects.length > 0);
-  }, [setIsProject]);
+    const doItAsync = async () => {
+      try {
+        const response = await fetch(
+          `${backendUrl}/api/proxy/parodos/projects`,
+        );
+        const receivedProjects = (await response.json()) as ProjectType[];
+        setIsProject(receivedProjects.length > 0);
+      } catch (e) {
+        setIsProject(false);
+        // TODO: render error
+      }
+    };
+    doItAsync();
+  }, [setIsProject, backendUrl]);
 
   React.useEffect(() => {
     const index =
