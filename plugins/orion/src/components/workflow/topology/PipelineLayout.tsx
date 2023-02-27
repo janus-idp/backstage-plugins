@@ -92,7 +92,7 @@ export const PipelineLayout = React.memo(() => {
             ? GROUPED_PIPELINE_NODE_SEPARATION_HORIZONTAL
             : GROUPED_PIPELINE_NODE_SEPARATION_HORIZONTAL,
         ignoreGroups: true,
-        nodeDistance: -20,
+        // nodeDistance: -20,
       }),
   );
   controller.fromModel(

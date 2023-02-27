@@ -51,7 +51,7 @@ const DemoTaskNode: any = ({
       status={data.whenStatus}
       leftOffset={
         hasTaskIcon
-          ? DEFAULT_WHEN_OFFSET + (element.getBounds().height - 4) * 0.75
+          ? DEFAULT_WHEN_OFFSET + (element.getBounds().height - 4) * 0.85
           : DEFAULT_WHEN_OFFSET
       }
     />
@@ -85,6 +85,7 @@ const DemoTaskNode: any = ({
         {...rest}
         badgePopoverParams={badgePopoverParams}
         badgeTooltip={data.badgeTooltips && DEMO_TIP_TEXT}
+        truncateLength={20}
       >
         {whenDecorator}
       </TaskNode>
