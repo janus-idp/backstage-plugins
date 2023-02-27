@@ -1,5 +1,6 @@
 import React from 'react';
 import { Content, HeaderTabs, Page } from '@backstage/core-components';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { useLocation } from 'react-router-dom';
 import StarIcon from '@material-ui/icons/Star';
 import { makeStyles } from '@material-ui/core';
@@ -13,7 +14,7 @@ import {
   TrainingIcon,
   MetricsIcon,
 } from './icons';
-import { mockProjects } from './projectOverview/mockData';
+import { ProjectType } from './types';
 
 export const pluginRoutePrefix = '/parodos';
 
@@ -55,11 +56,24 @@ export const ParodosPage: React.FC = ({ children }) => {
   const [selectedTab, setSelectedTab] = React.useState(0);
   const { pathname } = useLocation();
   const [isProject, setIsProject] = React.useState(true);
+  const config = useApi(configApiRef);
 
   React.useEffect(() => {
-    // TODO: load the data
-    setIsProject(mockProjects.length > 0);
-  }, [setIsProject]);
+    const doItAsync = async () => {
+      try {
+        const backendUrl = config.getString('backend.baseUrl');
+        const response = await fetch(
+          `${backendUrl}/api/proxy/parodos/projects`,
+        );
+        const receivedProjects = (await response.json()) as ProjectType[];
+        setIsProject(receivedProjects.length > 0);
+      } catch (e) {
+        setIsProject(false);
+        // TODO: render error
+      }
+    };
+    doItAsync();
+  }, [setIsProject, config]);
 
   React.useEffect(() => {
     const index =
