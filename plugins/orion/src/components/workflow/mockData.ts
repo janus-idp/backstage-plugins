@@ -2,6 +2,7 @@ export const mockApplications = [
   // TODO: fectch from API: https://issues.redhat.com/browse/FLPATH-102
   {
     id: 'app-andromeda',
+    // TODO: mind using just "Andromeda" instead of "Onboard to Andromeda"
     name: 'Onboard to Andromeda',
     subtitle: 'New application',
     description: 'Lorem ipsum',

@@ -21,15 +21,7 @@ import {
 import { ParodosPage } from '../ParodosPage';
 import { mockApplications } from './mockData';
 import { useBackendUrl } from '../api';
-
-type ApplicationType = {
-  id: string;
-  name: string;
-  subtitle: string;
-  description: string;
-};
-
-type AssessmentStatusType = 'none' | 'inprogress' | 'complete';
+import { ApplicationType, AssessmentStatusType } from '../types';
 
 const useStyles = makeStyles({
   applicationHeader: {
@@ -96,10 +88,10 @@ export const Workflow = () => {
 
   const applications: ApplicationType[] = mockApplications;
 
-  const getOnApplicationStart = (app: ApplicationType) => () => {
-    // eslint-disable-next-line no-console
-    console.log('TODO: implement handler for applilcation: ', app);
-  };
+  // const getOnApplicationStart = (app: ApplicationType) => () => {
+  //   // eslint-disable-next-line no-console
+  //   console.log('TODO: implement handler for applilcation: ', app);
+  // };
 
   return (
     <ParodosPage>
@@ -188,10 +180,10 @@ export const Workflow = () => {
                       <Button
                         id={application.id}
                         variant="text"
-                        onClick={getOnApplicationStart(application)}
+                        // onClick={getOnApplicationStart(application)}
                         color="primary"
                         // TODO: following should be moved to getOnApplicationStart() or pass the application as a parameter here
-                        href="/parodos/onboarding"
+                        href={`/parodos/onboarding/${application.id}/new/`}
                       >
                         START
                       </Button>
