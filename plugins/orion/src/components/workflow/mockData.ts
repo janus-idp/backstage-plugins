@@ -1,5 +1,5 @@
 export const mockApplications = [
-  // TODO: fectch from API
+  // TODO: fectch from API: https://issues.redhat.com/browse/FLPATH-102
   {
     id: 'app-andromeda',
     name: 'Onboard to Andromeda',

@@ -85,6 +85,9 @@ export const Workflow = () => {
         setTimeout(() => setAssessmentStatus('complete'), 3000);
         // eslint-disable-next-line no-console
         console.log('TODO: implement fully start assessment');
+        // TODO: blocked by https://issues.redhat.com/browse/FLPATH-99
+        // TODO: https://issues.redhat.com/browse/FLPATH-100
+        // TODO: https://issues.redhat.com/browse/FLPATH-101
       } catch (e) {
         setError('Failed to start assessment.');
         // eslint-disable-next-line no-console
