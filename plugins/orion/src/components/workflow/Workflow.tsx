@@ -17,10 +17,10 @@ import {
   TextField,
   Typography,
 } from '@material-ui/core';
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
 
 import { ParodosPage } from '../ParodosPage';
 import { mockApplications } from './mockData';
+import { useBackendUrl } from '../api';
 
 type ApplicationType = {
   id: string;
@@ -44,8 +44,7 @@ const useStyles = makeStyles({
 export const Workflow = () => {
   const commonStyles = useCommonStyles();
   const styles = useStyles();
-
-  const config = useApi(configApiRef);
+  const backendUrl = useBackendUrl();
 
   const [projectName, setProjectName] = React.useState<string>('');
   const [projectRepoOrImage, setProjectRepoOrImage] = React.useState<string>();
@@ -67,8 +66,6 @@ export const Workflow = () => {
 
     const doItAsync = async () => {
       try {
-        const backendUrl = config.getString('backend.baseUrl');
-
         const response = await fetch(
           `${backendUrl}/api/proxy/parodos/projects`,
           {

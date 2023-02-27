@@ -15,7 +15,7 @@ import { useCommonStyles } from '../../styles';
 import { ParodosPage } from '../ParodosPage';
 import { ProjectStatusType, ProjectType } from '../types';
 import { ProjectsTable } from './ProjectsTable';
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import { useBackendUrl } from '../api';
 
 const projectFilterItems: { label: string; value: ProjectStatusType }[] = [
   { label: 'All Projects', value: 'all-projects' },
@@ -29,7 +29,7 @@ export const ProjectOverviewPage = () => {
   const [filteredProjects, setFilteredProjects] = React.useState<ProjectType[]>(
     [],
   );
-  const config = useApi(configApiRef);
+  const backendUrl = useBackendUrl();
 
   const {
     value: allProjects,
@@ -39,7 +39,6 @@ export const ProjectOverviewPage = () => {
     // TODO: finish after https://issues.redhat.com/browse/FLPATH-131
     // return mockProjects;
 
-    const backendUrl = config.getString('backend.baseUrl');
     const response = await fetch(`${backendUrl}/api/proxy/parodos/projects`);
     const receivedProjects = (await response.json()) as ProjectType[];
 

@@ -1,6 +1,5 @@
 import React from 'react';
 import { Content, HeaderTabs, Page } from '@backstage/core-components';
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { useLocation } from 'react-router-dom';
 import StarIcon from '@material-ui/icons/Star';
 import { makeStyles } from '@material-ui/core';
@@ -15,6 +14,7 @@ import {
   MetricsIcon,
 } from './icons';
 import { ProjectType } from './types';
+import { useBackendUrl } from './api';
 
 export const pluginRoutePrefix = '/parodos';
 
@@ -56,12 +56,11 @@ export const ParodosPage: React.FC = ({ children }) => {
   const [selectedTab, setSelectedTab] = React.useState(0);
   const { pathname } = useLocation();
   const [isProject, setIsProject] = React.useState(true);
-  const config = useApi(configApiRef);
+  const backendUrl = useBackendUrl();
 
   React.useEffect(() => {
     const doItAsync = async () => {
       try {
-        const backendUrl = config.getString('backend.baseUrl');
         const response = await fetch(
           `${backendUrl}/api/proxy/parodos/projects`,
         );
@@ -73,7 +72,7 @@ export const ParodosPage: React.FC = ({ children }) => {
       }
     };
     doItAsync();
-  }, [setIsProject, config]);
+  }, [setIsProject, backendUrl]);
 
   React.useEffect(() => {
     const index =
