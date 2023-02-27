@@ -1,7 +1,7 @@
 import React from 'react';
 import { ContentHeader, SupportButton } from '@backstage/core-components';
 import { Button, ButtonGroup, Chip, Grid, Typography } from '@material-ui/core';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { ParodosPage } from '../ParodosPage';
 import {
   ApplicationType,
@@ -81,9 +81,10 @@ const getWorkflowParameters = (
 export const Onboarding: React.FC<{ isNew?: boolean }> = ({ isNew }) => {
   const { appId } = useParams();
   const backendUrl = useBackendUrl();
+  const navigate = useNavigate();
   const [application, setApplication] = React.useState<ApplicationType>();
   const [error, setError] = React.useState<string>();
-  const [isStartDisabled, setIsStartDisabled] = React.useState<boolean>(true);
+  const [isStartDisabled, setIsStartDisabled] = React.useState<boolean>(false);
   const [workflowParameters, setWorkflowParameters] = React.useState<
     WorkFlowTaskParameterType[]
   >([]);
@@ -151,6 +152,12 @@ export const Onboarding: React.FC<{ isNew?: boolean }> = ({ isNew }) => {
     // eslint-disable-next-line no-console
     console.log('TODO: implement onStart');
     // TODO: call HTTP POST to /workflow/execute
+    const executionId = 'responded-execution-id';
+
+    // navigate to workflow Detail page after start
+    navigate(`/parodos/onboarding/${executionId}/workflow-detail`, {
+      state: { isNew: isNew },
+    });
   };
 
   return (

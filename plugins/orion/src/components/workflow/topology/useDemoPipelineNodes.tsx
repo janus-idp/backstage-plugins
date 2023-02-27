@@ -7,12 +7,13 @@ import {
 import '@patternfly/react-styles/css/components/Topology/topology-components.css';
 import { mockTasks } from './mock/mockTasks';
 import LockIcon from '@material-ui/icons/Lock';
+import './TopologyComponent.css';
 
-export const NODE_PADDING_VERTICAL = 45;
-export const NODE_PADDING_HORIZONTAL = 15;
+export const NODE_PADDING_VERTICAL = 15;
+export const NODE_PADDING_HORIZONTAL = 10;
 
 export const DEFAULT_TASK_WIDTH = 200;
-export const DEFAULT_TASK_HEIGHT = 32;
+export const DEFAULT_TASK_HEIGHT = 30;
 
 export const useDemoPipelineNodes = (
   showContextMenu: boolean,
@@ -72,8 +73,6 @@ export const useDemoPipelineNodes = (
     const whenTasks = tasks.filter((_task, index) => index !== 0);
     whenTasks.forEach(task => {
       task.data.whenStatus = getConditionMet(task.data.status);
-      task.data.whenOffset = 1;
-      task.data.whenSize = 1;
     });
 
     return [...tasks]; // , ...finallyNodes, finallyGroup];
