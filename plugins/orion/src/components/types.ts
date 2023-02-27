@@ -1,3 +1,5 @@
+// Important: KEEP FOLLOWING TYPES IN SYNC WITH BACKEND TYPES
+
 export type ProjectStatusType = 'all-projects' | 'in-progress' | 'on-boarded';
 export type AssessmentStatusType = 'none' | 'inprogress' | 'complete';
 
@@ -18,4 +20,37 @@ export type ApplicationType = {
   name: string;
   subtitle: string;
   description: string;
+};
+
+export type WorkFlowTaskParameterType = {
+  key: string;
+  description: string;
+  optional: boolean;
+  type:
+    | 'PASSWORD'
+    | 'TEXT'
+    | 'EMAIL'
+    | 'DATE'
+    | 'NUMBER'
+    | 'URL'
+    | 'MOCK-SELECT';
+};
+
+export type WorkFlowTaskDefinitionType = {
+  id: string;
+  name: string;
+  parameters: WorkFlowTaskParameterType[];
+  outputs: ('EXCEPTION' | 'HTTP2XX' | 'NO_EXCEPTION' | 'OTHER')[];
+  workFlowChecker: string;
+  nextWorkFlow: string;
+};
+
+export type WorkflowDefinitionType = {
+  id: string;
+  name: string;
+  type: string; // TODO: enum
+  author: string;
+  createDate: string;
+  modifyDate: string;
+  tasks: WorkFlowTaskDefinitionType[];
 };
