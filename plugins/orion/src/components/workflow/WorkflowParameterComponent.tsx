@@ -2,6 +2,7 @@ import React from 'react';
 import { TextField } from '@material-ui/core';
 import { DatePicker } from '@patternfly/react-core';
 import { WorkFlowTaskParameterType } from '../types';
+import { Select, SelectedItems, SelectItem } from '@backstage/core-components';
 
 export const WorkflowParameterComponent: React.FC<{
   param: WorkFlowTaskParameterType;
@@ -51,6 +52,26 @@ export const WorkflowParameterComponent: React.FC<{
           // TODO: add validation
           // TODO: store the value in the state
         }}
+      />
+    );
+  }
+
+  if (param.type === 'MOCK-SELECT') {
+    const items: SelectItem[] = (param.options || []).map(opt => ({
+      label: opt.key,
+      value: opt.value,
+    }));
+
+    return (
+      <Select
+        onChange={(selected: SelectedItems) => {
+          console.log('selected', selected);
+        }}
+        label={param.key}
+        // required={!param.optional}
+        // helperText={param.description}
+        items={items}
+        selected={undefined /* value */}
       />
     );
   }

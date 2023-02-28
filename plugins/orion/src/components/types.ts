@@ -33,7 +33,13 @@ export type WorkFlowTaskParameterType = {
     | 'DATE'
     | 'NUMBER'
     | 'URL'
-    | 'MOCK-SELECT';
+    | 'MOCK-SELECT' /* TODO: swagger is missing this type */;
+  options?: {
+    // for MOCK-SELECT
+    // TODO: swagger is missing this type
+    key: string;
+    value: string;
+  }[];
 };
 
 export type WorkFlowTaskDefinitionType = {

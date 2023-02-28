@@ -62,4 +62,14 @@ export const mockWorkflowParams: WorkFlowTaskParameterType[] = [
     optional: true,
     type: 'PASSWORD',
   },
+  { // TODO: swagger is missing this type
+    key: 'param7',
+    description: 'Select parameter',
+    optional: false,
+    type: 'MOCK-SELECT',
+    options: [
+      { key: 'option1', value: 'Option 1' },
+      { key: 'option2', value: 'Option 2' },
+    ],
+  },
 ];
