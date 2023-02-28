@@ -6,7 +6,6 @@ import { makeStyles } from '@material-ui/core';
 import { PageHeader } from './PageHeader';
 import {
   AssessmentIcon,
-  OnboardingIcon,
   DeployIcon,
   NotificationIcon,
   ProjectsIcon,
@@ -21,7 +20,6 @@ export const pluginRoutePrefix = '/parodos';
 export const navigationMap = [
   { label: 'Projects', route: '/project-overview', icon: <ProjectsIcon /> },
   { label: 'Assessment', route: '/workflow', icon: <AssessmentIcon /> },
-  { label: 'Onboarding', route: '/onboarding', icon: <OnboardingIcon /> },
   { label: 'Deploy', route: '/Deploy', icon: <DeployIcon /> },
   { label: 'Notification', route: '/notification', icon: <NotificationIcon /> },
   { label: 'Training', route: '/training', icon: <TrainingIcon /> },
