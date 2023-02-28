@@ -11,6 +11,7 @@ import {
 import { mockApplications, mockWorkflowParams } from './mockData';
 import { useBackendUrl } from '../api';
 import { WorkflowParameterComponent } from './WorkflowParameterComponent';
+import { WorkflowParametersContextProvider } from '../../context/WorkflowParametersContext';
 
 // TODO: use WorkflowStepper component after http://161.156.17.167:8080/swagger-ui/index.html#/Workflow/execute
 
@@ -177,27 +178,33 @@ export const Onboarding: React.FC<{ isNew?: boolean }> = ({ isNew }) => {
         Please provide additional information related to your project.
       </Typography>
 
-      <Grid container spacing={3}>
-        {workflowParameters.map(param => (
-          <Grid item xs={2} key={param.key}>
-            <WorkflowParameterComponent param={param} />
-          </Grid>
-        ))}
-      </Grid>
+      <WorkflowParametersContextProvider>
+        <Grid container spacing={3}>
+          {workflowParameters.map(param => (
+            <Grid item xs={2} key={param.key}>
+              <WorkflowParameterComponent param={param} />
+            </Grid>
+          ))}
+        </Grid>
 
-      <ButtonGroup>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={onStart}
-          disabled={isStartDisabled}
-        >
-          Start
-        </Button>
-        <Button variant="text" color="primary" href="/parodos/project-overview">
-          Cancel onboarding
-        </Button>
-      </ButtonGroup>
+        <ButtonGroup>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={onStart}
+            disabled={isStartDisabled}
+          >
+            Start
+          </Button>
+          <Button
+            variant="text"
+            color="primary"
+            href="/parodos/project-overview"
+          >
+            Cancel onboarding
+          </Button>
+        </ButtonGroup>
+      </WorkflowParametersContextProvider>
     </ParodosPage>
   );
 };
