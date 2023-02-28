@@ -9,7 +9,7 @@ import {
   kubernetesApiRef,
 } from '@backstage/plugin-kubernetes';
 import { TestApiProvider } from '@backstage/test-utils';
-import deployment from '../src/__fixtures__/1-deployments.json';
+import { mockKubernetesResponse } from '../src/__fixtures__/1-deployments';
 
 const mockEntity: Entity = {
   apiVersion: 'backstage.io/v1alpha1',
@@ -86,7 +86,9 @@ createDevApp()
   .addPage({
     element: (
       <TestApiProvider
-        apis={[[kubernetesApiRef, new MockKubernetesClient(deployment)]]}
+        apis={[
+          [kubernetesApiRef, new MockKubernetesClient(mockKubernetesResponse)],
+        ]}
       >
         <EntityProvider entity={mockEntity}>
           <div style={{ height: '100vh' }}>
@@ -101,7 +103,9 @@ createDevApp()
   .addPage({
     element: (
       <TestApiProvider
-        apis={[[kubernetesApiRef, new MockKubernetesClient(deployment)]]}
+        apis={[
+          [kubernetesApiRef, new MockKubernetesClient(mockKubernetesResponse)],
+        ]}
       >
         <EntityProvider entity={mockEntity}>
           <EntityKubernetesContent />

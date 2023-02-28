@@ -16,7 +16,8 @@ import PodSet, { podSetInnerRadius } from '../Pods/PodSet';
 import { getTopologyResourceObject } from '../../utils/topology-utils';
 import { usePodsWatcher } from '../../hooks/usePodsWatcher';
 import { AllPodStatus } from '../Pods/pod';
-import { getPodStatus } from '../../utils/workload-node-utils';
+import { calculateRadius, getPodStatus } from '../../utils/workload-node-utils';
+import { getNodeDecorators } from './decorators/getNodeDecorators';
 
 import './WorkloadNode.css';
 
@@ -65,11 +66,16 @@ const InnerWorkloadNode: React.FC<InnerWorkloadNodeProps> = observer(
     const workloadData = element.getData().data;
     const [hover, hoverRef] = useHover();
     const size = Math.min(width, height);
+    const { radius, decoratorRadius } = calculateRadius(size);
     const cx = width / 2;
     const cy = height / 2;
+    const { decorators } = element.getGraph().getData() ?? {};
     const controller = useVisualizationController();
     const detailsLevel = controller.getGraph().getDetailsLevel();
     const showDetails = hover || detailsLevel !== ScaleDetailsLevel.low;
+    const nodeDecorators = showDetails
+      ? getNodeDecorators(element, decorators, cx, cy, radius, decoratorRadius)
+      : null;
 
     return (
       <g className="tp-workload-node">
@@ -82,6 +88,7 @@ const InnerWorkloadNode: React.FC<InnerWorkloadNodeProps> = observer(
           nodeStatus={
             !showDetails ? getAggregateStatus(donutStatus) : undefined
           }
+          attachments={nodeDecorators}
           {...rest}
         >
           {donutStatus && showDetails ? (

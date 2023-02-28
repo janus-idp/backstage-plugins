@@ -43,7 +43,7 @@ const getOwnedResources = <T extends K8sWorkloadResource>(
   resources: T[],
 ): T[] => {
   const uid = obj?.metadata?.uid;
-  if (!uid) {
+  if (!uid || !resources) {
     return [];
   }
   return resources.filter(res => {

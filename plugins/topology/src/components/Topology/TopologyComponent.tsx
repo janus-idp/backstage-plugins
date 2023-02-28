@@ -3,6 +3,7 @@ import '@patternfly/patternfly/patternfly-charts-theme-dark.css';
 import '@patternfly/react-core/dist/styles/base.css';
 import { useTheme } from '@material-ui/core/styles';
 import '@patternfly/patternfly/patternfly-theme-dark.css';
+import '@patternfly/patternfly/utilities/Accessibility/accessibility.css';
 import { TopologyWorkloadView } from './TopologyWorkloadView';
 import { K8sResourcesContext } from '../../hooks/K8sResourcesContext';
 import { useAllWatchResources } from '../../hooks/useAllWatchResources';
@@ -32,6 +33,7 @@ export const TopologyComponent = () => {
     ModelsPlural.pods,
     ModelsPlural.services,
     ModelsPlural.replicasets,
+    ModelsPlural.ingresses,
   ];
 
   const k8sResponseData = useAllWatchResources(watchedResources);
