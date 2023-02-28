@@ -19,16 +19,16 @@ import {
 } from '@material-ui/core';
 
 import { ParodosPage } from '../ParodosPage';
-import { mockApplications } from './mockData';
 import { useBackendUrl } from '../api';
-import { ApplicationType, AssessmentStatusType } from '../types';
+import { AssessmentStatusType, WorkflowDefinitionType } from '../types';
+import { mockAndromedaWorkflowDefinition } from './mockData';
 
 const useStyles = makeStyles({
   applicationHeader: {
     background: 'gray',
   },
   applicationCard: {
-    'max-height': '15rem',
+    'height': '15rem',
     width: '17rem',
   },
 });
@@ -42,6 +42,9 @@ export const Workflow = () => {
   const [projectRepoOrImage, setProjectRepoOrImage] = React.useState<string>();
   const [assessmentStatus, setAssessmentStatus] =
     React.useState<AssessmentStatusType>('none');
+  const [workflowDefinitions, setWorkflowDefinitions] = React.useState<
+    WorkflowDefinitionType[]
+  >([]);
   const [_, setError] = React.useState<string>();
   // TODO: render error
 
@@ -70,8 +73,8 @@ export const Workflow = () => {
         );
         await response.json(); // So far we don't need the response
 
-        // TODO: and others, i.e. workflows: https://issues.redhat.com/browse/FLPATH-50?focusedCommentId=21768215&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-21768215
-        setTimeout(() => setAssessmentStatus('complete'), 3000);
+        setAssessmentStatus('complete');
+
         // eslint-disable-next-line no-console
         console.log('TODO: implement fully start assessment');
         // TODO: blocked by https://issues.redhat.com/browse/FLPATH-99
@@ -86,12 +89,31 @@ export const Workflow = () => {
     doItAsync();
   };
 
-  const applications: ApplicationType[] = mockApplications;
+  React.useEffect(() => {
+    const doItAsync = async () => {
+      try {
+        const response = await fetch(
+          `${backendUrl}/api/proxy/parodos/workflowdefinitions`,
+        );
+        const allWorkflowDefinitions =
+          (await response.json()) as WorkflowDefinitionType[];
 
-  // const getOnApplicationStart = (app: ApplicationType) => () => {
-  //   // eslint-disable-next-line no-console
-  //   console.log('TODO: implement handler for applilcation: ', app);
-  // };
+        let filteredWorkflowDefinitions = allWorkflowDefinitions.filter(
+          workflowDefinition => workflowDefinition.type === 'ASSESSMENT',
+        );
+
+        // mock
+        filteredWorkflowDefinitions = [mockAndromedaWorkflowDefinition, ...filteredWorkflowDefinitions];
+
+        setWorkflowDefinitions(filteredWorkflowDefinitions);
+      } catch (e) {
+        setError('Failed to get workflow definitions.');
+        // eslint-disable-next-line no-console
+        console.error('Error: ', e);
+      }
+    };
+    doItAsync();
+  }, []);
 
   return (
     <ParodosPage>
@@ -161,29 +183,26 @@ export const Workflow = () => {
               option(s):
             </Typography>
             <Grid container direction="row" spacing={2}>
-              {applications.map(application => (
+              {workflowDefinitions.map(workflow => (
                 <Grid item>
                   <Card
-                    key={application.name}
+                    key={workflow.name}
                     raised
                     className={styles.applicationCard}
                   >
                     <CardMedia>
                       <ItemCardHeader
-                        title={application.name}
-                        subtitle={application.subtitle}
+                        title={workflow.name}
                         classes={{ root: styles.applicationHeader }}
                       />
                     </CardMedia>
-                    <CardContent>{application.description}</CardContent>
+                    <CardContent>{workflow.description}</CardContent>
                     <CardActions>
                       <Button
-                        id={application.id}
+                        id={workflow.id}
                         variant="text"
-                        // onClick={getOnApplicationStart(application)}
                         color="primary"
-                        // TODO: following should be moved to getOnApplicationStart() or pass the application as a parameter here
-                        href={`/parodos/onboarding/${application.id}/new/`}
+                        href={`/parodos/onboarding/${workflow.id}/new/`}
                       >
                         START
                       </Button>

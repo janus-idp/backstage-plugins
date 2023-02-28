@@ -15,12 +15,12 @@ export type ProjectType = {
   status?: ProjectStatusType;
 };
 
-export type ApplicationType = {
-  id: string;
-  name: string;
-  subtitle: string;
-  description: string;
-};
+// export type ApplicationType = {
+//   id: string;
+//   name: string;
+//   subtitle: string;
+//   description: string;
+// };
 
 export type WorkFlowTaskParameterType = {
   key: string;
@@ -47,16 +47,18 @@ export type WorkFlowTaskDefinitionType = {
   name: string;
   parameters: WorkFlowTaskParameterType[];
   outputs: ('EXCEPTION' | 'HTTP2XX' | 'NO_EXCEPTION' | 'OTHER')[];
-  workFlowChecker: string;
-  nextWorkFlow: string;
+  workFlowChecker?: string;
+  nextWorkFlow?: string;
 };
 
 export type WorkflowDefinitionType = {
   id: string;
   name: string;
-  type: string; // TODO: enum
+  type: string; // TODO: should be enum
   author: string;
   createDate: string;
   modifyDate: string;
   tasks: WorkFlowTaskDefinitionType[];
+
+  description?: string; // TODO: this is missing in swagger, so mocking it
 };
