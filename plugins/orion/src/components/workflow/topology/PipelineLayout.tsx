@@ -22,6 +22,7 @@ import '@patternfly/react-styles/css/components/Topology/topology-components.css
 import pipelineComponentFactory from './pipelineComponentFactory';
 import { useDemoPipelineNodes } from './useDemoPipelineNodes';
 import { GROUPED_PIPELINE_NODE_SEPARATION_HORIZONTAL } from './DemoTaskGroupEdge';
+import { WorkFlowTask } from './type/WorkFlowTask';
 
 export const PIPELINE_NODE_SEPARATION_VERTICAL = 10;
 
@@ -30,11 +31,16 @@ export const LAYOUT_TITLE = 'Layout';
 const PIPELINE_LAYOUT = 'PipelineLayout';
 const GROUPED_PIPELINE_LAYOUT = 'GroupedPipelineLayout';
 
-const TopologyPipelineLayout: React.FC = () => {
+type Props = {
+  tasks: WorkFlowTask[];
+  setSelectedTask: (selectedTask: string) => void;
+};
+
+const TopologyPipelineLayout = (props: Props) => {
   const [selectedIds, setSelectedIds] = React.useState<string[]>();
 
   const controller = useVisualizationController();
-  const pipelineNodes = useDemoPipelineNodes(false, false, false, false);
+  const pipelineNodes = useDemoPipelineNodes(props.tasks);
 
   React.useEffect(() => {
     const spacerNodes = getSpacerNodes(pipelineNodes);
@@ -68,6 +74,7 @@ const TopologyPipelineLayout: React.FC = () => {
 
   useEventListener<SelectionEventListener>(SELECTION_EVENT, ids => {
     setSelectedIds(ids);
+    props.setSelectedTask(ids.toString());
   });
 
   return (
@@ -79,7 +86,7 @@ const TopologyPipelineLayout: React.FC = () => {
 
 TopologyPipelineLayout.displayName = 'TopologyPipelineLayout';
 
-export const PipelineLayout = React.memo(() => {
+export const PipelineLayout = React.memo((props: Props) => {
   const controller = new Visualization();
   controller.setFitToScreenOnLayout(true);
   controller.registerComponentFactory(pipelineComponentFactory);
@@ -92,7 +99,6 @@ export const PipelineLayout = React.memo(() => {
             ? GROUPED_PIPELINE_NODE_SEPARATION_HORIZONTAL
             : GROUPED_PIPELINE_NODE_SEPARATION_HORIZONTAL,
         ignoreGroups: true,
-        // nodeDistance: -20,
       }),
   );
   controller.fromModel(
@@ -113,7 +119,7 @@ export const PipelineLayout = React.memo(() => {
 
   return (
     <VisualizationProvider controller={controller}>
-      <TopologyPipelineLayout />
+      <TopologyPipelineLayout {...props} />
     </VisualizationProvider>
   );
 });

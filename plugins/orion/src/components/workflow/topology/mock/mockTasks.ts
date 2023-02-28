@@ -62,3 +62,30 @@ export const mockTasks: WorkFlowTask[] = [
     runAfterTasks: [],
   },
 ];
+
+export const mockTasks2: WorkFlowTask[] = [
+  {
+    id: `project-information`,
+    type: DEFAULT_TASK_NODE_TYPE,
+    label: `Project Information`,
+    status: 'completed',
+    locked: false,
+    runAfterTasks: [],
+  },
+  {
+    id: `SSL Certification`,
+    type: DEFAULT_TASK_NODE_TYPE,
+    label: `SSL Certification`,
+    status: 'in_progress',
+    locked: false,
+    runAfterTasks: [`project-information`],
+  },
+  {
+    id: `AD Groups`,
+    type: DEFAULT_TASK_NODE_TYPE,
+    label: `AD Groups`,
+    status: 'completed',
+    locked: false,
+    runAfterTasks: [`project-information`],
+  },
+];

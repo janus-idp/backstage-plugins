@@ -5,9 +5,8 @@ import {
   WhenStatus,
 } from '@patternfly/react-topology';
 import '@patternfly/react-styles/css/components/Topology/topology-components.css';
-import { mockTasks } from './mock/mockTasks';
 import LockIcon from '@material-ui/icons/Lock';
-import './TopologyComponent.css';
+import { WorkFlowTask } from './type/WorkFlowTask';
 
 export const NODE_PADDING_VERTICAL = 15;
 export const NODE_PADDING_HORIZONTAL = 10;
@@ -16,10 +15,7 @@ export const DEFAULT_TASK_WIDTH = 200;
 export const DEFAULT_TASK_HEIGHT = 30;
 
 export const useDemoPipelineNodes = (
-  showContextMenu: boolean,
-  showBadges: boolean,
-  showIcons: boolean,
-  badgeTooltips: boolean,
+  workflowTasks: WorkFlowTask[],
 ): PipelineNodeModel[] =>
   React.useMemo(() => {
     const getStatus: any = (status: string) => {
@@ -35,22 +31,16 @@ export const useDemoPipelineNodes = (
     };
 
     // Create a task node for each task status
-    const tasks = mockTasks.map(workFlowTask => {
+    const tasks = workflowTasks.map(workFlowTask => {
       // Set all the standard fields
       const task: PipelineNodeModel = {
         id: workFlowTask.id,
         type: workFlowTask.type,
         label: workFlowTask.label,
-        width:
-          DEFAULT_TASK_WIDTH +
-          (showContextMenu ? 10 : 0) +
-          (showBadges ? 40 : 0),
+        width: DEFAULT_TASK_WIDTH,
         height: DEFAULT_TASK_HEIGHT,
         style: {
-          padding: [
-            NODE_PADDING_VERTICAL,
-            NODE_PADDING_HORIZONTAL + (showIcons ? 25 : 0),
-          ],
+          padding: [NODE_PADDING_VERTICAL, NODE_PADDING_HORIZONTAL + 25],
         },
         runAfterTasks: workFlowTask.runAfterTasks,
       };
@@ -58,12 +48,7 @@ export const useDemoPipelineNodes = (
       // put options in data, our DEMO task node will pass them along to the TaskNode
       task.data = {
         status: getStatus(workFlowTask.status),
-        badge: showBadges ? '3/4' : undefined,
-        badgeTooltips,
         taskIcon: workFlowTask.locked ? <LockIcon color="error" /> : null,
-        taskIconTooltip: showIcons ? 'Environment' : undefined,
-        showContextMenu,
-        // columnGroup: index % STATUS_PER_ROW
       };
 
       return task;
@@ -75,5 +60,5 @@ export const useDemoPipelineNodes = (
       task.data.whenStatus = getConditionMet(task.data.status);
     });
 
-    return [...tasks]; // , ...finallyNodes, finallyGroup];
-  }, [badgeTooltips, showBadges, showContextMenu, showIcons]);
+    return tasks;
+  }, [workflowTasks]);
