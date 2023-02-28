@@ -20,7 +20,11 @@ import {
 import { useCommonStyles } from '../../styles';
 import { ParodosPage } from '../ParodosPage';
 import { useBackendUrl } from '../api';
-import { AssessmentStatusType, ProjectType, WorkflowDefinitionType } from '../types';
+import {
+  AssessmentStatusType,
+  ProjectType,
+  WorkflowDefinitionType,
+} from '../types';
 import { mockAndromedaWorkflowDefinition } from './mockData';
 
 const useStyles = makeStyles({
@@ -28,7 +32,7 @@ const useStyles = makeStyles({
     background: 'gray',
   },
   applicationCard: {
-    'height': '15rem',
+    height: '15rem',
     width: '17rem',
   },
 });
@@ -72,8 +76,8 @@ export const Workflow = () => {
             }),
           },
         );
-        const project = (await response.json()) as ProjectType;
-        setProject(project);
+        const prj = (await response.json()) as ProjectType;
+        setProject(prj);
 
         setAssessmentStatus('complete');
 
@@ -105,7 +109,10 @@ export const Workflow = () => {
         );
 
         // mock
-        filteredWorkflowDefinitions = [mockAndromedaWorkflowDefinition, ...filteredWorkflowDefinitions];
+        filteredWorkflowDefinitions = [
+          mockAndromedaWorkflowDefinition,
+          ...filteredWorkflowDefinitions,
+        ];
 
         setWorkflowDefinitions(filteredWorkflowDefinitions);
       } catch (e) {
@@ -115,7 +122,7 @@ export const Workflow = () => {
       }
     };
     doItAsync();
-  }, []);
+  }, [backendUrl]);
 
   return (
     <ParodosPage>

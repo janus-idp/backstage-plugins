@@ -18,8 +18,6 @@ import {
 } from '../../context/WorkflowParametersContext';
 import { mockAndromedaWorkflowDefinition } from './mockData';
 
-// TODO: use WorkflowStepper component after http://161.156.17.167:8080/swagger-ui/index.html#/Workflow/execute
-
 const getAllFlattenedParameters = (
   allWorkflowDefinitions: WorkflowDefinitionType[],
   workflowDefinition: WorkflowDefinitionType,
@@ -98,7 +96,6 @@ export const OnboardingImpl: React.FC<OnboardingProps> = ({ isNew }) => {
   const [workflowParameters, setWorkflowParameters] = React.useState<
     WorkFlowTaskParameterType[]
   >([]); // parameters from whole chain of tasks - nextWorkflow
-  // TODO: provide inra for storing dynamic parameters
 
   React.useEffect(() => {
     if (!workflowId) {
@@ -145,7 +142,7 @@ export const OnboardingImpl: React.FC<OnboardingProps> = ({ isNew }) => {
 
   const onStart = async () => {
     const body: WorkflowType = {
-      projectId,
+      projectId: projectId || 'missing',
       workFlowName: workflow?.name || 'missing',
       workFlowTasks:
         workflow?.tasks.map(task => {
@@ -178,6 +175,7 @@ export const OnboardingImpl: React.FC<OnboardingProps> = ({ isNew }) => {
       });
     } catch (e) {
       setError('Failed to start workflow');
+      // eslint-disable-next-line no-console
       console.error('Failed to start workflow: ', e);
     }
   };
