@@ -3,7 +3,13 @@ import { ContentHeader, SupportButton } from '@backstage/core-components';
 import { Button, ButtonGroup, Chip, Grid, Typography } from '@material-ui/core';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ParodosPage } from '../ParodosPage';
-import { WorkflowDefinitionType, WorkFlowTaskParameterType } from '../types';
+import {
+  WorkflowDefinitionType,
+  WorkflowExecuteResponseType,
+  WorkflowTaskArgumentType,
+  WorkFlowTaskParameterType,
+  WorkflowType,
+} from '../types';
 import { useBackendUrl } from '../api';
 import { WorkflowParameterComponent } from './WorkflowParameterComponent';
 import {
@@ -83,7 +89,7 @@ type OnboardingProps = {
 };
 
 export const OnboardingImpl: React.FC<OnboardingProps> = ({ isNew }) => {
-  const { workflowId } = useParams();
+  const { workflowId, projectId } = useParams();
   const backendUrl = useBackendUrl();
   const navigate = useNavigate();
   const { getParamValue } = React.useContext(WorkflowParametersContext);
@@ -137,16 +143,43 @@ export const OnboardingImpl: React.FC<OnboardingProps> = ({ isNew }) => {
     doItAsync();
   }, [workflowId, backendUrl]);
 
-  const onStart = () => {
-    // eslint-disable-next-line no-console
-    console.log('TODO: implement onStart');
-    // TODO: call HTTP POST to /workflow/execute
-    const executionId = 'responded-execution-id';
+  const onStart = async () => {
+    const body: WorkflowType = {
+      projectId,
+      workFlowName: workflow?.name || 'missing',
+      workFlowTasks:
+        workflow?.tasks.map(task => {
+          const args: WorkflowTaskArgumentType[] = [];
+          task.parameters?.forEach(param => {
+            const value = getParamValue(param.key);
+            if (value) {
+              args.push({ key: param.key, value });
+            }
+          });
 
-    // navigate to workflow Detail page after start
-    navigate(`/parodos/onboarding/${executionId}/workflow-detail`, {
-      state: { isNew: isNew },
-    });
+          return {
+            name: task.name,
+            arguments: args,
+          };
+        }) || [],
+    };
+
+    try {
+      const data = await fetch(`${backendUrl}/api/proxy/parodos/workflows`, {
+        method: 'POST',
+        body: JSON.stringify(body),
+      });
+      const response = (await data.json()) as WorkflowExecuteResponseType;
+      const executionId = response.workFlowExecutionId;
+
+      // navigate to workflow Detail page after start
+      navigate(`/parodos/onboarding/${executionId}/workflow-detail`, {
+        state: { isNew: isNew },
+      });
+    } catch (e) {
+      setError('Failed to start workflow');
+      console.error('Failed to start workflow: ', e);
+    }
   };
 
   const isStartDisabled = !workflowParameters.every(param => {

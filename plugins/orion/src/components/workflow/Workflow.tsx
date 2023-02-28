@@ -4,7 +4,6 @@ import {
   ItemCardHeader,
   SupportButton,
 } from '@backstage/core-components';
-import { useCommonStyles } from '../../styles';
 import {
   Button,
   Card,
@@ -18,9 +17,10 @@ import {
   Typography,
 } from '@material-ui/core';
 
+import { useCommonStyles } from '../../styles';
 import { ParodosPage } from '../ParodosPage';
 import { useBackendUrl } from '../api';
-import { AssessmentStatusType, WorkflowDefinitionType } from '../types';
+import { AssessmentStatusType, ProjectType, WorkflowDefinitionType } from '../types';
 import { mockAndromedaWorkflowDefinition } from './mockData';
 
 const useStyles = makeStyles({
@@ -39,6 +39,7 @@ export const Workflow = () => {
   const backendUrl = useBackendUrl();
 
   const [projectName, setProjectName] = React.useState<string>('');
+  const [project, setProject] = React.useState<ProjectType>();
   const [projectRepoOrImage, setProjectRepoOrImage] = React.useState<string>();
   const [assessmentStatus, setAssessmentStatus] =
     React.useState<AssessmentStatusType>('none');
@@ -71,7 +72,8 @@ export const Workflow = () => {
             }),
           },
         );
-        await response.json(); // So far we don't need the response
+        const project = (await response.json()) as ProjectType;
+        setProject(project);
 
         setAssessmentStatus('complete');
 
@@ -202,7 +204,7 @@ export const Workflow = () => {
                         id={workflow.id}
                         variant="text"
                         color="primary"
-                        href={`/parodos/onboarding/${workflow.id}/new/`}
+                        href={`/parodos/onboarding/${project?.id}/${workflow.id}/new/`}
                       >
                         START
                       </Button>

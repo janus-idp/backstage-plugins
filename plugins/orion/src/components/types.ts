@@ -15,13 +15,6 @@ export type ProjectType = {
   status?: ProjectStatusType;
 };
 
-// export type ApplicationType = {
-//   id: string;
-//   name: string;
-//   subtitle: string;
-//   description: string;
-// };
-
 export type WorkFlowTaskParameterType = {
   key: string;
   description: string;
@@ -61,4 +54,25 @@ export type WorkflowDefinitionType = {
   tasks: WorkFlowTaskDefinitionType[];
 
   description?: string; // TODO: this is missing in swagger, so mocking it
+};
+
+export type WorkflowTaskArgumentType = {
+  key: string;
+  value: string;
+};
+
+export type WorkflowType = {
+  projectId: string;
+  workFlowName: string;
+  workFlowTasks: {
+    name: string;
+    arguments: WorkflowTaskArgumentType[];
+  }[];
+};
+
+export type WorkflowExecuteResponseType = {
+  workFlowExecutionId: 'string';
+  workFlowOptions: {
+    /* TODO */
+  };
 };
