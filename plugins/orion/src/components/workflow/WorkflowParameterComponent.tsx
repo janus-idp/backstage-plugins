@@ -2,10 +2,16 @@ import React from 'react';
 import { TextField } from '@material-ui/core';
 import { DatePicker } from '@patternfly/react-core';
 import { WorkFlowTaskParameterType } from '../types';
+import { Select, SelectedItems, SelectItem } from '@backstage/core-components';
+import { WorkflowParametersContext } from '../../context/WorkflowParametersContext';
 
 export const WorkflowParameterComponent: React.FC<{
   param: WorkFlowTaskParameterType;
 }> = ({ param }) => {
+  const { getParamValue, setParamValue } = React.useContext(
+    WorkflowParametersContext,
+  );
+
   if (['TEXT', 'PASSWORD', 'EMAIL', 'URL', 'NUMBER'].includes(param.type)) {
     let type: string;
     switch (param.type) {
@@ -32,9 +38,10 @@ export const WorkflowParameterComponent: React.FC<{
         label={param.key}
         required={!param.optional}
         type={type}
-        onChange={() => {
+        value={getParamValue(param.key)}
+        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
           // TODO: add validation
-          // TODO: store the value in the state
+          setParamValue(param.key, event.target.value);
         }}
         variant="outlined"
       />
@@ -47,10 +54,32 @@ export const WorkflowParameterComponent: React.FC<{
         label={param.key}
         required={!param.optional}
         helperText={param.description}
-        onChange={() => {
+        value={getParamValue(param.key)}
+        onChange={(_, value: string) => {
           // TODO: add validation
-          // TODO: store the value in the state
+          setParamValue(param.key, value);
         }}
+      />
+    );
+  }
+
+  if (param.type === 'MOCK-SELECT') {
+    const items: SelectItem[] = (param.options || []).map(opt => ({
+      label: opt.key,
+      value: opt.value,
+    }));
+
+    return (
+      <Select
+        onChange={(selected: SelectedItems) => {
+          const value = Array.isArray(selected) ? selected[0] : selected;
+          setParamValue(param.key, value as string);
+        }}
+        label={param.key}
+        // required={!param.optional}
+        // helperText={param.description}
+        items={items}
+        selected={getParamValue(param.key)}
       />
     );
   }

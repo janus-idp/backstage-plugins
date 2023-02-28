@@ -18,12 +18,21 @@ import { useBackendUrl } from './api';
 export const pluginRoutePrefix = '/parodos';
 
 export const navigationMap = [
-  { label: 'Projects', route: '/project-overview', icon: <ProjectsIcon /> },
-  { label: 'Assessment', route: '/workflow', icon: <AssessmentIcon /> },
-  { label: 'Deploy', route: '/Deploy', icon: <DeployIcon /> },
-  { label: 'Notification', route: '/notification', icon: <NotificationIcon /> },
-  { label: 'Training', route: '/training', icon: <TrainingIcon /> },
-  { label: 'Metrics', route: '/metrics', icon: <MetricsIcon /> },
+  { label: 'Projects', routes: ['/project-overview'], icon: <ProjectsIcon /> },
+  {
+    label: 'Assessment',
+    routes: ['/workflow', '/onboarding/'],
+    icon: <AssessmentIcon />,
+  },
+
+  { label: 'Deploy', routes: ['/Deploy'], icon: <DeployIcon /> },
+  {
+    label: 'Notification',
+    routes: ['/notification'],
+    icon: <NotificationIcon />,
+  },
+  { label: 'Training', routes: ['/training'], icon: <TrainingIcon /> },
+  { label: 'Metrics', routes: ['/metrics'], icon: <MetricsIcon /> },
 ];
 
 const useStyles = makeStyles({
@@ -74,13 +83,15 @@ export const ParodosPage: React.FC = ({ children }) => {
 
   React.useEffect(() => {
     const index =
-      navigationMap.findIndex(({ route }) => pathname.includes(route)) || 0;
+      navigationMap.findIndex(({ routes }) =>
+        routes.find(route => pathname.includes(route)),
+      ) || 0;
     setSelectedTab(index);
   }, [pathname]);
 
   const onChangeTab = (index: number) => {
     setSelectedTab(index);
-    window.location.href = `${pluginRoutePrefix}${navigationMap[index].route}`;
+    window.location.href = `${pluginRoutePrefix}${navigationMap[index].routes[0]}`;
   };
 
   return (

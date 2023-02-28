@@ -15,13 +15,6 @@ export type ProjectType = {
   status?: ProjectStatusType;
 };
 
-export type ApplicationType = {
-  id: string;
-  name: string;
-  subtitle: string;
-  description: string;
-};
-
 export type WorkFlowTaskParameterType = {
   key: string;
   description: string;
@@ -33,7 +26,13 @@ export type WorkFlowTaskParameterType = {
     | 'DATE'
     | 'NUMBER'
     | 'URL'
-    | 'MOCK-SELECT';
+    | 'MOCK-SELECT' /* TODO: swagger is missing this type */;
+  options?: {
+    // for MOCK-SELECT
+    // TODO: swagger is missing this type
+    key: string;
+    value: string;
+  }[];
 };
 
 export type WorkFlowTaskDefinitionType = {
@@ -41,16 +40,39 @@ export type WorkFlowTaskDefinitionType = {
   name: string;
   parameters: WorkFlowTaskParameterType[];
   outputs: ('EXCEPTION' | 'HTTP2XX' | 'NO_EXCEPTION' | 'OTHER')[];
-  workFlowChecker: string;
-  nextWorkFlow: string;
+  workFlowChecker?: string;
+  nextWorkFlow?: string;
 };
 
 export type WorkflowDefinitionType = {
   id: string;
   name: string;
-  type: string; // TODO: enum
+  type: string; // TODO: should be enum
   author: string;
   createDate: string;
   modifyDate: string;
   tasks: WorkFlowTaskDefinitionType[];
+
+  description?: string; // TODO: this is missing in swagger, so mocking it
+};
+
+export type WorkflowTaskArgumentType = {
+  key: string;
+  value: string;
+};
+
+export type WorkflowType = {
+  projectId: string;
+  workFlowName: string;
+  workFlowTasks: {
+    name: string;
+    arguments: WorkflowTaskArgumentType[];
+  }[];
+};
+
+export type WorkflowExecuteResponseType = {
+  workFlowExecutionId: 'string';
+  workFlowOptions: {
+    /* TODO */
+  };
 };
