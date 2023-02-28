@@ -2,27 +2,29 @@ import React from 'react';
 import '@patternfly/react-core/dist/styles/base.css';
 import { PipelineLayout } from './PipelineLayout';
 
-import './TopologyComponent.css';
+import { makeStyles } from '@material-ui/core';
+import { WorkFlowTask } from './type/WorkFlowTask';
 
-export const WorkFlowStepper = () => {
+const useStyles = makeStyles(theme => ({
+  pfRi__topologyDemo: {
+    width: '100%',
+    height: '35%',
+    '& .pf-topology-visualization-surface__svg': {
+      background: theme.palette.background.default,
+    },
+  },
+}));
+
+type Props = {
+  tasks: WorkFlowTask[];
+  setSelectedTask: (selectedTask: string) => void;
+};
+
+export const WorkFlowStepper = (props: Props) => {
+  const classes = useStyles();
   return (
-    <div className="pf-ri__topology-demo">
-      <PipelineLayout />
+    <div className={classes.pfRi__topologyDemo}>
+      <PipelineLayout {...props} />
     </div>
   );
 };
-
-// export const WorkFlowStepper = () => {
-//   return (
-//       <ParodosPage>
-//           <ContentHeader title="Onboarding">
-//               <SupportButton title="Need help?">Lorem Ipsum</SupportButton>
-//           </ContentHeader>
-//           <Typography paragraph>
-//               You are onboarding: org-name/new-project
-//           </Typography>
-//           <TopologyContentBody/>
-//           <WorkFlowLogViewer/>
-//       </ParodosPage>
-//   );
-// };
