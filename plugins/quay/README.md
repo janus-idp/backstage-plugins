@@ -7,7 +7,7 @@ This plugin will show you information about your container images within Quay re
 1. Install the plugin
 
    ```bash
-   yarn workspace app add @fmenesesg/backstage-plugin-quay
+   yarn workspace app add @janus-idp/backstage-plugin-quay
    ```
 
 2. Set the proxy to desired Quay server
@@ -17,7 +17,6 @@ This plugin will show you information about your container images within Quay re
    proxy:
      '/quay/api':
        target: 'https://quay.io'
-       changeOrigin: true
        headers:
          X-Requested-With: 'XMLHttpRequest'
          # Uncomment the following line to access a private Quay Repository using a token
@@ -31,7 +30,7 @@ This plugin will show you information about your container images within Quay re
 
    ```ts
    // packages/app/src/components/catalog/EntityPage.tsx
-   import { QuayPage, isQuayAvailable } from '@fmenesesg/backstage-plugin-quay';
+   import { QuayPage, isQuayAvailable } from '@janus-idp/backstage-plugin-quay';
 
    const serviceEntityPage = (
      <EntityPageLayout>
