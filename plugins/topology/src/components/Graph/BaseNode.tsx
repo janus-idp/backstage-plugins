@@ -88,6 +88,7 @@ const BaseNode: React.FC<BaseNodeProps> = ({
           badge={kindData && kindData.kindAbbr}
           badgeColor={kindData && kindData.kindColor}
           showStatusBackground={!showDetails}
+          className={className}
           {...rest}
         >
           <g data-test-id="base-node-handler">
