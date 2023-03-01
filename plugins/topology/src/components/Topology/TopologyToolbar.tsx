@@ -6,13 +6,13 @@ import {
   SelectVariant,
   SelectOptionObject,
 } from '@patternfly/react-core';
-import { K8sResourcesClustersContext } from '../../hooks/K8sResourcesContext';
+import { K8sResourcesContext } from '../../hooks/K8sResourcesContext';
 
 const TopologyToolbar: React.FC<{
   setClusterContext: React.Dispatch<React.SetStateAction<number>>;
 }> = ({ setClusterContext }) => {
-  const clusters = React.useContext(K8sResourcesClustersContext);
-  const clusterOptions = clusters.map(cluster => ({
+  const { clusters: k8sClusters } = React.useContext(K8sResourcesContext);
+  const clusterOptions = k8sClusters.map(cluster => ({
     value: cluster,
     disabled: false,
   }));
@@ -31,7 +31,7 @@ const TopologyToolbar: React.FC<{
     _e: React.ChangeEvent | React.MouseEvent,
     selection: string | SelectOptionObject,
   ) => {
-    const index = clusters.findIndex(cluster => cluster === selection);
+    const index = k8sClusters.findIndex(cluster => cluster === selection);
     setClusterContext(index);
     setClusterSelected(selection);
     setClusterFilterIsExpanded(false);

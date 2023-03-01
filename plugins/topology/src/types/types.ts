@@ -26,3 +26,21 @@ export type IngressRule = {
   schema: string;
   rules: V1IngressRule[];
 };
+
+export type ClusterError = {
+  errorType?: string;
+  message?: string;
+  resourcePath?: string;
+  statusCode?: number;
+};
+
+export type ClusterErrors = ClusterError[];
+
+export type K8sResourcesContextData = {
+  watchResourcesData?: K8sResponseData;
+  loading?: boolean;
+  responseError?: string;
+  selectedClusterErrors?: ClusterErrors;
+  clusters: string[];
+  setSelectedCluster: React.Dispatch<React.SetStateAction<number>>;
+};

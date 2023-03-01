@@ -5,14 +5,17 @@ import { useDeepCompareMemoize } from './useDeepCompareMemoize';
 import { Model } from '@patternfly/react-topology';
 import { K8sResourcesContext } from './K8sResourcesContext';
 
-export const useWorkloadsWatcher = (): { loaded: boolean; dataModel: any } => {
+export const useWorkloadsWatcher = (): {
+  loaded: boolean;
+  dataModel: any;
+} => {
   const [loaded, setLoaded] = React.useState<boolean>(false);
   const [dataModel, setDataModel] = React.useState<Model | null>(null);
   const k8sResponseData = React.useContext(K8sResourcesContext);
 
   const updateResults = React.useCallback(
-    async ({ watchResourcesData, loading, error }) => {
-      if (!loading && !error) {
+    async ({ watchResourcesData, loading, responseError }) => {
+      if (!responseError && !loading) {
         const dataModelRes = await updateTopologyDataModel(watchResourcesData);
         if (dataModelRes.model) {
           setDataModel(dataModelRes.model);

@@ -4,8 +4,8 @@ import { TopologyComponent } from './TopologyComponent';
 import { TopologyWorkloadView } from './TopologyWorkloadView';
 import { useTheme } from '@material-ui/core';
 
-jest.mock('../../hooks/useAllWatchResources', () => ({
-  useAllWatchResources: () => ({
+jest.mock('../../hooks/useK8sObjectsResponse', () => ({
+  useK8sObjectsResponse: () => ({
     watchResourcesData: {
       deployments: {
         data: [],
@@ -15,7 +15,10 @@ jest.mock('../../hooks/useAllWatchResources', () => ({
       },
     },
     loading: false,
-    error: '',
+    responseError: '',
+    selectedClusterErrors: [],
+    clusters: [],
+    setSelectedCluster: () => {},
   }),
 }));
 

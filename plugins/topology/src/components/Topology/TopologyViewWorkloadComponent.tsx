@@ -12,21 +12,30 @@ import { TopologyEmptyState } from './TopologyEmptyState';
 import { useWorkloadsWatcher } from '../../hooks/useWorkloadWatcher';
 import { TopologyControlBar } from './TopologyControlBar';
 import TopologyToolbar from './TopologyToolbar';
-import { K8sResourcesClustersContext } from '../../hooks/K8sResourcesContext';
+import { K8sResourcesContext } from '../../hooks/K8sResourcesContext';
+import TopologyErrorPanel from './TopologyErrorPanel';
+import { ClusterErrors } from '../../types/types';
+
+import './TopologyToolbar.css';
 
 type TopologyViewWorkloadComponentProps = {
-  useToolbar: boolean;
-  onClusterChange: React.Dispatch<React.SetStateAction<number>>;
+  useToolbar?: boolean;
 };
 
 const TopologyViewWorkloadComponent: React.FC<
   TopologyViewWorkloadComponentProps
-> = ({ useToolbar = false, onClusterChange }) => {
+> = ({ useToolbar = false }) => {
   const [selectedIds, setSelectedIds] = React.useState<string[]>([]);
   const controller = useVisualizationController();
   const layout = 'ColaNoForce';
   const { loaded, dataModel } = useWorkloadsWatcher();
-  const k8sClusters = React.useContext(K8sResourcesClustersContext);
+  const { clusters, selectedClusterErrors, setSelectedCluster, responseError } =
+    React.useContext(K8sResourcesContext);
+
+  const allErrors: ClusterErrors = [
+    ...(responseError ? [{ message: responseError }] : []),
+    ...(selectedClusterErrors ?? []),
+  ];
 
   React.useEffect(() => {
     if (loaded && dataModel) {
@@ -48,26 +57,35 @@ const TopologyViewWorkloadComponent: React.FC<
 
   if (!loaded) return <Progress />;
 
-  return k8sClusters.length < 1 ? (
-    <TopologyEmptyState />
-  ) : (
-    <TopologyView
-      controlBar={
-        loaded &&
-        dataModel?.nodes?.length > 0 && (
-          <TopologyControlBar controller={controller} />
-        )
-      }
-      viewToolbar={
-        useToolbar && <TopologyToolbar setClusterContext={onClusterChange} />
-      }
-    >
-      {loaded && dataModel?.nodes?.length === 0 ? (
+  return (
+    <>
+      {allErrors && allErrors.length > 0 && (
+        <TopologyErrorPanel allErrors={allErrors} />
+      )}
+      {clusters.length < 1 ? (
         <TopologyEmptyState />
       ) : (
-        <VisualizationSurface state={{ selectedIds }} />
+        <TopologyView
+          controlBar={
+            loaded &&
+            dataModel?.nodes?.length > 0 && (
+              <TopologyControlBar controller={controller} />
+            )
+          }
+          viewToolbar={
+            useToolbar && (
+              <TopologyToolbar setClusterContext={setSelectedCluster} />
+            )
+          }
+        >
+          {loaded && dataModel?.nodes?.length === 0 ? (
+            <TopologyEmptyState />
+          ) : (
+            <VisualizationSurface state={{ selectedIds }} />
+          )}
+        </TopologyView>
       )}
-    </TopologyView>
+    </>
   );
 };
 

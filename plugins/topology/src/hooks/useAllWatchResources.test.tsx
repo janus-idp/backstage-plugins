@@ -1,24 +1,8 @@
 import { useAllWatchResources } from './useAllWatchResources';
 import { renderHook } from '@testing-library/react-hooks';
-import { useKubernetesObjects } from '@backstage/plugin-kubernetes';
+import { KubernetesObjects } from '@backstage/plugin-kubernetes';
 import kubernetesObject from '../__fixtures__/kubernetesObject.json';
 import { ModelsPlural } from '../models';
-
-jest.mock('@backstage/plugin-kubernetes', () => ({
-  useKubernetesObjects: jest.fn(),
-}));
-
-const mockUseKubernetesObjects = useKubernetesObjects as jest.Mock;
-
-jest.mock('@backstage/plugin-catalog-react', () => ({
-  useEntity: () => ({
-    entity: {
-      metadata: {
-        name: 'test',
-      },
-    },
-  }),
-}));
 
 const watchedResources = [
   ModelsPlural.deployments,
@@ -28,74 +12,59 @@ const watchedResources = [
 ];
 
 describe('useAllWatchResources', () => {
-  it('should return loading as true, with no error if request is pending', () => {
-    mockUseKubernetesObjects.mockReturnValue({
-      kubernetesObjects: [],
+  it('should return watchResourcesData as empty if no resources found', () => {
+    const k8sObjectsResponse = {
       loading: true,
       error: '',
-    });
-    const { result } = renderHook(() => useAllWatchResources(watchedResources));
-    expect(result.current.loading).toEqual(true);
-  });
-
-  it('should return watchResourcesData as empty, loading as false, with no error if no resources found', () => {
-    mockUseKubernetesObjects.mockReturnValue({
-      kubernetesObjects: [],
-      loading: false,
-      error: '',
-    });
-    const { result } = renderHook(() => useAllWatchResources(watchedResources));
-    expect(result.current.watchResourcesData).toEqual({});
-    expect(result.current.loading).toEqual(false);
-  });
-
-  it('should return watchResourcesData, loading as false, with no error if resources are present', () => {
-    mockUseKubernetesObjects.mockReturnValue({
-      kubernetesObjects: kubernetesObject,
-      loading: false,
-      error: '',
-    });
-    const { result } = renderHook(() => useAllWatchResources(watchedResources));
-    expect(result.current.watchResourcesData?.pods?.data).toHaveLength(1);
-    expect(result.current.watchResourcesData?.deployments?.data).toHaveLength(
-      0,
+    };
+    const { result } = renderHook(() =>
+      useAllWatchResources(watchedResources, k8sObjectsResponse, 0),
     );
-    expect(result.current.loading).toEqual(false);
+    expect(result.current).toEqual({});
   });
 
-  it('should return watchResourcesData as empty, loading as false, with no error if resources are present but it is not in in watchedResources', () => {
-    mockUseKubernetesObjects.mockReturnValue({
+  it('should return watchResourcesData if resources are present', () => {
+    const k8sObjectsResponse = {
       kubernetesObjects: kubernetesObject,
       loading: false,
       error: '',
-    });
-    const { result } = renderHook(() => useAllWatchResources());
-    expect(result.current.watchResourcesData).toEqual({});
-    expect(result.current.loading).toEqual(false);
+    } as KubernetesObjects;
+    const { result } = renderHook(() =>
+      useAllWatchResources(watchedResources, k8sObjectsResponse, 0),
+    );
+    expect(result.current?.pods?.data).toHaveLength(1);
+    expect(result.current?.deployments?.data).toHaveLength(0);
+  });
+
+  it('should return watchResourcesData as empty if resources are present but it is not in in watchedResources', () => {
+    const k8sObjectsResponse = {
+      kubernetesObjects: kubernetesObject,
+      loading: false,
+      error: '',
+    } as KubernetesObjects;
+    const { result } = renderHook(() =>
+      useAllWatchResources([], k8sObjectsResponse, 0),
+    );
+    expect(result.current).toEqual({});
   });
 
   it('should update watchResourcesData as per API response', () => {
-    mockUseKubernetesObjects.mockReturnValue({
-      kubernetesObjects: [],
+    let k8sObjectsResponse = {
       loading: false,
       error: '',
-    });
+    };
     const { result, rerender } = renderHook(() =>
-      useAllWatchResources(watchedResources),
+      useAllWatchResources(watchedResources, k8sObjectsResponse, 0),
     );
-    expect(result.current.watchResourcesData).toEqual({});
-    expect(result.current.loading).toEqual(false);
+    expect(result.current).toEqual({});
 
-    mockUseKubernetesObjects.mockReturnValue({
+    k8sObjectsResponse = {
       kubernetesObjects: kubernetesObject,
       loading: false,
       error: '',
-    });
+    } as any;
     rerender();
-    expect(result.current.watchResourcesData?.pods?.data).toHaveLength(1);
-    expect(result.current.watchResourcesData?.deployments?.data).toHaveLength(
-      0,
-    );
-    expect(result.current.loading).toEqual(false);
+    expect(result.current?.pods?.data).toHaveLength(1);
+    expect(result.current?.deployments?.data).toHaveLength(0);
   });
 });

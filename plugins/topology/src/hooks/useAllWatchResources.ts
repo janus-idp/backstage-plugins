@@ -1,16 +1,14 @@
 import { KubernetesObjects } from '@backstage/plugin-kubernetes';
-import { useState, useContext, useEffect } from 'react';
-import { K8sResponse } from '../types/topology-types';
+import { useState, useEffect } from 'react';
 import { K8sResponseData } from '../types/types';
 import { getK8sResources } from '../utils/topology-utils';
-import { K8sResourcesClusterContext } from './K8sResourcesContext';
 
 export const useAllWatchResources = (
   watchedResource: string[] = [],
   k8sObjectsResponse: KubernetesObjects,
-): K8sResponse => {
+  cluster: number,
+): K8sResponseData => {
   const { kubernetesObjects, loading, error } = k8sObjectsResponse;
-  const cluster = useContext(K8sResourcesClusterContext);
   const [resources, setResources] = useState<K8sResponseData>({});
 
   useEffect(() => {
@@ -35,5 +33,5 @@ export const useAllWatchResources = (
     {},
   );
 
-  return { watchResourcesData, loading, error };
+  return watchResourcesData;
 };
