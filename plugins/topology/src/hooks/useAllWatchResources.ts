@@ -1,25 +1,29 @@
-import { useEntity } from '@backstage/plugin-catalog-react';
-import { useKubernetesObjects } from '@backstage/plugin-kubernetes';
-import * as React from 'react';
+import { KubernetesObjects } from '@backstage/plugin-kubernetes';
+import { useState, useContext, useEffect } from 'react';
 import { K8sResponse } from '../types/topology-types';
 import { K8sResponseData } from '../types/types';
 import { getK8sResources } from '../utils/topology-utils';
+import { K8sResourcesClusterContext } from './K8sResourcesContext';
 
 export const useAllWatchResources = (
   watchedResource: string[] = [],
+  k8sObjectsResponse: KubernetesObjects,
 ): K8sResponse => {
-  const { entity } = useEntity();
-  const { kubernetesObjects, loading, error } = useKubernetesObjects(entity);
-  const [resources, setResources] = React.useState<K8sResponseData>({});
+  const { kubernetesObjects, loading, error } = k8sObjectsResponse;
+  const cluster = useContext(K8sResourcesClusterContext);
+  const [resources, setResources] = useState<K8sResponseData>({});
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!loading && kubernetesObjects && !error) {
-      const k8sResources: K8sResponseData = getK8sResources(kubernetesObjects);
+      const k8sResources: K8sResponseData = getK8sResources(
+        cluster,
+        kubernetesObjects,
+      );
       if (k8sResources) {
         setResources(k8sResources);
       }
     }
-  }, [loading, kubernetesObjects, error]);
+  }, [loading, kubernetesObjects, error, cluster]);
 
   const watchResourcesData = watchedResource.reduce(
     (acc: K8sResponseData, resKind) => {

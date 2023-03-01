@@ -20,10 +20,15 @@ const workloadKind = (type: string) => {
   return resourceModels[type].kind;
 };
 
+export const getClusters = (k8sObjects: ObjectsByEntityResponse) => {
+  return k8sObjects.items.map((item: any) => item.cluster.name);
+};
+
 export const getK8sResources = (
+  cluster: number,
   k8sObjects: ObjectsByEntityResponse,
-): K8sResponseData =>
-  k8sObjects.items?.[0]?.resources?.reduce(
+) =>
+  k8sObjects.items?.[cluster]?.resources?.reduce(
     (acc: K8sResponseData, res: any) => ({
       ...acc,
       [res.type]: {

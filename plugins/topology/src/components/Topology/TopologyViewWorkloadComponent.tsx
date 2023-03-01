@@ -11,12 +11,22 @@ import { Progress } from '@backstage/core-components';
 import { TopologyEmptyState } from './TopologyEmptyState';
 import { useWorkloadsWatcher } from '../../hooks/useWorkloadWatcher';
 import { TopologyControlBar } from './TopologyControlBar';
+import TopologyToolbar from './TopologyToolbar';
+import { K8sResourcesClustersContext } from '../../hooks/K8sResourcesContext';
 
-const TopologyViewWorkloadComponent = () => {
+type TopologyViewWorkloadComponentProps = {
+  useToolbar: boolean;
+  onClusterChange: React.Dispatch<React.SetStateAction<number>>;
+};
+
+const TopologyViewWorkloadComponent: React.FC<
+  TopologyViewWorkloadComponentProps
+> = ({ useToolbar = false, onClusterChange }) => {
   const [selectedIds, setSelectedIds] = React.useState<string[]>([]);
   const controller = useVisualizationController();
   const layout = 'ColaNoForce';
   const { loaded, dataModel } = useWorkloadsWatcher();
+  const k8sClusters = React.useContext(K8sResourcesClustersContext);
 
   React.useEffect(() => {
     if (loaded && dataModel) {
@@ -38,11 +48,25 @@ const TopologyViewWorkloadComponent = () => {
 
   if (!loaded) return <Progress />;
 
-  return loaded && dataModel?.nodes?.length === 0 ? (
+  return k8sClusters.length < 1 ? (
     <TopologyEmptyState />
   ) : (
-    <TopologyView controlBar={<TopologyControlBar controller={controller} />}>
-      <VisualizationSurface state={{ selectedIds }} />
+    <TopologyView
+      controlBar={
+        loaded &&
+        dataModel?.nodes?.length > 0 && (
+          <TopologyControlBar controller={controller} />
+        )
+      }
+      viewToolbar={
+        useToolbar && <TopologyToolbar setClusterContext={onClusterChange} />
+      }
+    >
+      {loaded && dataModel?.nodes?.length === 0 ? (
+        <TopologyEmptyState />
+      ) : (
+        <VisualizationSurface state={{ selectedIds }} />
+      )}
     </TopologyView>
   );
 };
