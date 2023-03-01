@@ -15,18 +15,20 @@ export type ProjectType = {
   status?: ProjectStatusType;
 };
 
+export type WorkflowParameterComponentType =
+  | 'PASSWORD'
+  | 'TEXT'
+  | 'EMAIL'
+  | 'DATE'
+  | 'NUMBER'
+  | 'URL'
+  | 'MOCK-SELECT' /* TODO: swagger is missing this type */;
+
 export type WorkFlowTaskParameterType = {
   key: string;
   description: string;
   optional: boolean;
-  type:
-    | 'PASSWORD'
-    | 'TEXT'
-    | 'EMAIL'
-    | 'DATE'
-    | 'NUMBER'
-    | 'URL'
-    | 'MOCK-SELECT' /* TODO: swagger is missing this type */;
+  type: WorkflowParameterComponentType;
   options?: {
     // for MOCK-SELECT
     // TODO: swagger is missing this type

@@ -90,7 +90,9 @@ export const OnboardingImpl: React.FC<OnboardingProps> = ({ isNew }) => {
   const { workflowId, projectId } = useParams();
   const backendUrl = useBackendUrl();
   const navigate = useNavigate();
-  const { getParamValue } = React.useContext(WorkflowParametersContext);
+  const { getParamValue, getParamValidation } = React.useContext(
+    WorkflowParametersContext,
+  );
   const [error, setError] = React.useState<string>();
   const [workflow, setWorkflow] = React.useState<WorkflowDefinitionType>();
   const [workflowParameters, setWorkflowParameters] = React.useState<
@@ -181,8 +183,12 @@ export const OnboardingImpl: React.FC<OnboardingProps> = ({ isNew }) => {
   };
 
   const isStartDisabled = !workflowParameters.every(param => {
-    // Simple check for Required fields
-    return param.optional || !!getParamValue(param.key);
+    // Make sure all required fields are entered
+    if (param.optional && !getParamValue(param.key)) {
+      return false;
+    }
+
+    return !getParamValidation(param.key);
   });
 
   return (
