@@ -7,11 +7,10 @@ import {
   SupportButton,
 } from '@backstage/core-components';
 import Add from '@material-ui/icons/Add';
-import { Grid } from '@material-ui/core';
+import { Box, Card, Grid, makeStyles } from '@material-ui/core';
 import { useAsync } from 'react-use';
 
 import { EmptyProjectsState } from './EmptyProjectsState';
-import { useCommonStyles } from '../../styles';
 import { ParodosPage } from '../ParodosPage';
 import { ProjectStatusType, ProjectType } from '../types';
 import { ProjectsTable } from './ProjectsTable';
@@ -23,8 +22,21 @@ const projectFilterItems: { label: string; value: ProjectStatusType }[] = [
   { label: 'On Boarded', value: 'on-boarded' },
 ];
 
-export const ProjectOverviewPage = () => {
-  const commonStyles = useCommonStyles();
+export const useStyles = makeStyles(theme => ({
+  full: {
+    height: '100%',
+    padding: `${theme.spacing(2)}px`
+  },
+  addIcon: {
+    display: 'flex',
+    alignItems: 'center',
+    marginLeft: `${theme.spacing(2)}px`,
+    marginTop:  `${theme.spacing(2)}px`
+  }
+}));
+
+export const ProjectOverviewPage = (): JSX.Element => {
+  const styles = useStyles();
   const [projectFilter, setProjectFilter] = React.useState('all-projects');
   const [filteredProjects, setFilteredProjects] = React.useState<ProjectType[]>(
     [],
@@ -99,15 +111,35 @@ export const ProjectOverviewPage = () => {
   return (
     <ParodosPage>
       <ContentHeader title="Projects overview">
-        <Link to="/parodos/workflow">
-          <Add className={commonStyles.inlineicon} />
-          &nbsp;Add new project
-        </Link>
-
         <SupportButton title="Need help?">Lorem Ipsum</SupportButton>
       </ContentHeader>
+      <Card className={styles.full}>
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateRows: '1fr auto 3fr',
+          }}
+        >
+          <Grid container direction="row" spacing={0} alignItems="center">
+            <Grid item xs={2}>
+              <Select
+                onChange={onFilterProjects}
+                label="Filter by"
+                items={projectFilterItems}
+                selected={projectFilter}
+              />
+            </Grid>
 
-      {content}
+            <Grid item xs={9}>
+              <Link to="/parodos/workflow"  className={styles.addIcon}>
+                <Add />
+                Add new project
+              </Link>
+            </Grid>
+          </Grid>
+          {content}
+        </Box>
+      </Card>
     </ParodosPage>
   );
 };
