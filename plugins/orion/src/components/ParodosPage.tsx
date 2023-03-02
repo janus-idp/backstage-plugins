@@ -14,6 +14,8 @@ import {
 } from './icons';
 import { ProjectType } from './types';
 import { useBackendUrl } from './api';
+import useAsync from 'react-use/lib/useAsync';
+import { ErrorMessage } from './errors/ErrorMessage';
 
 export const pluginRoutePrefix = '/parodos';
 
@@ -65,21 +67,14 @@ export const ParodosPage: React.FC = ({ children }) => {
   const [isProject, setIsProject] = React.useState(true);
   const backendUrl = useBackendUrl();
 
-  React.useEffect(() => {
-    const doItAsync = async () => {
-      try {
-        const response = await fetch(
-          `${backendUrl}/api/proxy/parodos/projects`,
-        );
-        const receivedProjects = (await response.json()) as ProjectType[];
-        setIsProject(receivedProjects.length > 0);
-      } catch (e) {
-        setIsProject(false);
-        // TODO: render error
-      }
-    };
-    doItAsync();
-  }, [setIsProject, backendUrl]);
+  const { error} = useAsync(async () => {
+    const response = await fetch(
+      `${backendUrl}/api/proxy/parodos/projects`,
+    );
+
+    const receivedProjects = (await response.json()) as ProjectType[];
+    setIsProject(receivedProjects.length > 0);
+  }, []);
 
   React.useEffect(() => {
     const index =
@@ -97,6 +92,7 @@ export const ParodosPage: React.FC = ({ children }) => {
   return (
     <Page themeId="tool">
       <PageHeader />
+      {error && <ErrorMessage error={error}/>}
       <HeaderTabs
         selectedIndex={selectedTab}
         onChange={onChangeTab}
