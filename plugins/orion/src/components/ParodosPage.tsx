@@ -67,10 +67,8 @@ export const ParodosPage: React.FC = ({ children }) => {
   const [isProject, setIsProject] = React.useState(true);
   const backendUrl = useBackendUrl();
 
-  const { error} = useAsync(async () => {
-    const response = await fetch(
-      `${backendUrl}/api/proxy/parodos/projects`,
-    );
+  const { error } = useAsync(async () => {
+    const response = await fetch(`${backendUrl}/api/proxy/parodos/projects`);
 
     const receivedProjects = (await response.json()) as ProjectType[];
     setIsProject(receivedProjects.length > 0);
@@ -92,7 +90,7 @@ export const ParodosPage: React.FC = ({ children }) => {
   return (
     <Page themeId="tool">
       <PageHeader />
-      {error && <ErrorMessage error={error}/>}
+      {error && <ErrorMessage error={error} />}
       <HeaderTabs
         selectedIndex={selectedTab}
         onChange={onChangeTab}
