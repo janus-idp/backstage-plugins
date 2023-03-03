@@ -4,11 +4,12 @@ import { Link } from '@backstage/core-components';
 import { ProjectIcon } from '../icons/Project';
 
 export const useStyles = makeStyles(theme => ({
-  center: {
+  spacing: {
+    display: 'grid',
     placeItems: 'center',
-    marginTop: `${theme.spacing(5)}px`,
-    [theme.breakpoints.up('md')]: {
-      marginTop: `${theme.spacing(15)}px`,
+    marginTop: theme.spacing(5),
+    [theme.breakpoints.up('xl')]: {
+      gridTemplateRows: 'auto 1.5fr 1fr 1.5fr',
     },
   },
 }));
@@ -17,10 +18,7 @@ export const EmptyProjectsState = () => {
   const styles = useStyles();
 
   return (
-    <Box
-      className={styles.center}
-      sx={{ display: 'grid', gridTemplateRows: 'auto 1.5fr 1fr 2fr' }}
-    >
+    <Box className={styles.spacing}>
       <ProjectIcon style={{ fontSize: '6rem' }} />
       <Typography variant="h6">
         You don&apos;t have any projects on here yet!

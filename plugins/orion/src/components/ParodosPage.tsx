@@ -90,7 +90,6 @@ export const ParodosPage: React.FC = ({ children }) => {
   return (
     <Page themeId="tool">
       <PageHeader />
-      {error && <ErrorMessage error={error} />}
       <HeaderTabs
         selectedIndex={selectedTab}
         onChange={onChangeTab}
@@ -110,8 +109,10 @@ export const ParodosPage: React.FC = ({ children }) => {
           };
         })}
       />
-
-      <Content>{children}</Content>
+      <Content>
+        {error && <ErrorMessage error={error} />}
+        {children}
+      </Content>
     </Page>
   );
 };

@@ -33,7 +33,6 @@
     "@patternfly/react-icons": "^4.93.6",
     "@patternfly/react-styles": "^4.92.6",
     "@patternfly/react-topology": "^4.91.27",
-    "classnames": "^2.3.2",
     "mobx": "^5.15.4",
     "mobx-react": "^6.2.0",
     "react-use": "^17.2.4"

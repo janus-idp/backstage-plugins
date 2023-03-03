@@ -24,17 +24,17 @@ const projectFilterItems: { label: string; value: ProjectStatusType }[] = [
 
 export const useStyles = makeStyles(theme => ({
   full: {
-    minHeight: '95%',
+    minHeight: '90%',
   },
   table: {
-    marginTop: `${theme.spacing(5)}px`
+    marginTop: theme.spacing(5),
   },
   addIcon: {
     display: 'flex',
     alignItems: 'center',
-    marginTop: `${theme.spacing(2)}px`,
+    marginTop: theme.spacing(2),
     [theme.breakpoints.up('md')]: {
-      marginLeft: `${theme.spacing(2)}px`,
+      marginLeft: theme.spacing(2),
     },
   },
 }));
@@ -48,7 +48,7 @@ export const ProjectOverviewPage = (): JSX.Element => {
   const backendUrl = useBackendUrl();
 
   const {
-    value: allProjects,
+    value: allProjects = [],
     loading: loadingProjects,
     error: errorProjects,
   } = useAsync(async (): Promise<ProjectType[]> => {
@@ -87,11 +87,12 @@ export const ProjectOverviewPage = (): JSX.Element => {
   };
 
   let content: React.ReactElement | null = null;
+
   if (loadingProjects) {
     content = <div>Loading...</div>;
   } else if (errorProjects) {
     content = <div>Error: {errorProjects.message}</div>;
-  } else if (allProjects && allProjects.length > 0) {
+  } else if (allProjects.length > 0) {
     content = (
       <Grid item className={styles.table}>
         <ProjectsTable projects={filteredProjects} />
@@ -99,12 +100,7 @@ export const ProjectOverviewPage = (): JSX.Element => {
     );
   } else {
     content = (
-      <Grid
-        container
-        direction="column"
-        justifyContent="space-around"
-        alignItems="center"
-      >
+      <Grid container direction="column" alignItems="center" spacing={0}>
         <EmptyProjectsState />
       </Grid>
     );
