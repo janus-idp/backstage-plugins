@@ -75,10 +75,10 @@ export const ParodosPage: React.FC = ({ children }) => {
   }, []);
 
   React.useEffect(() => {
-    const index =
-      navigationMap.findIndex(({ routes }) =>
-        routes.find(route => pathname.includes(route)),
-      ) || 0;
+    let index = navigationMap.findIndex(({ routes }) =>
+      routes.find(route => pathname.includes(route)),
+    );
+    index = index < 0 ? 0 : index;
     setSelectedTab(index);
   }, [pathname]);
 
