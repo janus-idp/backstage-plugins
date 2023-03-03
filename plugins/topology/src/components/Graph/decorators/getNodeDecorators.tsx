@@ -4,44 +4,21 @@ import {
   TopologyQuadrant,
 } from '@patternfly/react-topology/dist/esm/types';
 import { TopologyDecorator } from '../../../types/topology-types';
+import { getDefaultShapeDecoratorCenter } from '@patternfly/react-topology';
 
 const getExtensionDecoratorForQuadrant = (
   location: string,
   element: Node,
   decorators: { [key: string]: TopologyDecorator[] },
-  centerX: number,
-  centerY: number,
-  nodeRadius: number,
   decoratorRadius: number,
-  nodeWidth: number,
-  nodeHeight: number,
 ): React.ReactElement => {
-  let x: number;
-  let y: number;
-  const deltaX = nodeRadius > 0 ? nodeRadius : nodeWidth / 2;
-  const deltaY = nodeRadius > 0 ? nodeRadius : nodeHeight / 2;
-  const offset = nodeRadius > 0 ? decoratorRadius * 0.7 : 0;
-  switch (location) {
-    case TopologyQuadrant.upperRight:
-      x = centerX + deltaX - offset;
-      y = centerY - deltaY + offset;
-      break;
-    case TopologyQuadrant.lowerRight:
-      x = centerX + deltaX - offset;
-      y = centerY + deltaY - offset;
-      break;
-    case TopologyQuadrant.upperLeft:
-      x = centerX - deltaX + offset;
-      y = centerY - deltaY + offset;
-      break;
-    case TopologyQuadrant.lowerLeft:
-      x = centerX - deltaX + offset;
-      y = centerY + deltaY - offset;
-      break;
-    default:
-      x = centerX;
-      y = centerY;
-  }
+  const quadrant : TopologyQuadrant = TopologyQuadrant[location as keyof typeof TopologyQuadrant];
+  let { x, y } = getDefaultShapeDecoratorCenter(quadrant, element);
+  const offset = decoratorRadius * 0.4;
+  const top  = quadrant === TopologyQuadrant.upperRight || quadrant === TopologyQuadrant.upperLeft;
+  const left  = quadrant === TopologyQuadrant.upperLeft || quadrant === TopologyQuadrant.lowerLeft;
+  x += left ? -1 * offset : offset;
+  y += top ? -1 * offset : offset;
 
   let retDecorator;
   let i = 0;
@@ -60,12 +37,7 @@ const getExtensionDecoratorForQuadrant = (
 export const getNodeDecorators = (
   element: Node,
   decorators: { [key: string]: TopologyDecorator[] },
-  centerX: number,
-  centerY: number,
-  nodeRadius: number, // -1 to use width/height
   decoratorRadius: number,
-  nodeWidth?: number,
-  nodeHeight?: number,
 ): React.ReactNode => {
   const keys = decorators ? Object.keys(decorators) : [];
   return (
@@ -75,12 +47,7 @@ export const getNodeDecorators = (
           key,
           element,
           decorators,
-          centerX,
-          centerY,
-          nodeRadius,
           decoratorRadius,
-          nodeWidth as number,
-          nodeHeight as number,
         ),
       )}
     </>
