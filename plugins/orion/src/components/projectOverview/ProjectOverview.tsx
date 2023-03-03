@@ -7,7 +7,7 @@ import {
   SupportButton,
 } from '@backstage/core-components';
 import Add from '@material-ui/icons/Add';
-import { Box, Card, Grid, makeStyles } from '@material-ui/core';
+import { Card, CardContent, Grid, makeStyles } from '@material-ui/core';
 import { useAsync } from 'react-use';
 
 import { EmptyProjectsState } from './EmptyProjectsState';
@@ -25,14 +25,15 @@ const projectFilterItems: { label: string; value: ProjectStatusType }[] = [
 export const useStyles = makeStyles(theme => ({
   full: {
     height: '100%',
-    padding: `${theme.spacing(2)}px`
   },
   addIcon: {
     display: 'flex',
     alignItems: 'center',
-    marginLeft: `${theme.spacing(2)}px`,
-    marginTop:  `${theme.spacing(2)}px`
-  }
+    marginTop: `${theme.spacing(2)}px`,
+    [theme.breakpoints.up('md')]: {
+      marginLeft: `${theme.spacing(2)}px`,
+    }
+  },
 }));
 
 export const ProjectOverviewPage = (): JSX.Element => {
@@ -114,14 +115,9 @@ export const ProjectOverviewPage = (): JSX.Element => {
         <SupportButton title="Need help?">Lorem Ipsum</SupportButton>
       </ContentHeader>
       <Card className={styles.full}>
-        <Box
-          sx={{
-            display: 'grid',
-            gridTemplateRows: '1fr auto 3fr',
-          }}
-        >
+        <CardContent>
           <Grid container direction="row" spacing={0} alignItems="center">
-            <Grid item xs={2}>
+            <Grid item xs={11} md={3} lg={2}>
               <Select
                 onChange={onFilterProjects}
                 label="Filter by"
@@ -130,15 +126,17 @@ export const ProjectOverviewPage = (): JSX.Element => {
               />
             </Grid>
 
-            <Grid item xs={9}>
-              <Link to="/parodos/workflow"  className={styles.addIcon}>
+            <Grid item xs={11} md={3} lg={9}>
+              <Link to="/parodos/workflow" className={styles.addIcon}>
                 <Add />
                 Add new project
               </Link>
             </Grid>
           </Grid>
-          {content}
-        </Box>
+          <Grid container direction="column" justifyContent="space-around" alignItems="center">
+            {content}
+          </Grid>
+        </CardContent>
       </Card>
     </ParodosPage>
   );
