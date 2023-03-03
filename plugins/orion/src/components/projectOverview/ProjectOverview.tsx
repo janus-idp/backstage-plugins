@@ -24,7 +24,10 @@ const projectFilterItems: { label: string; value: ProjectStatusType }[] = [
 
 export const useStyles = makeStyles(theme => ({
   full: {
-    height: '100%',
+    minHeight: '95%',
+  },
+  table: {
+    marginTop: `${theme.spacing(5)}px`
   },
   addIcon: {
     display: 'flex',
@@ -32,7 +35,7 @@ export const useStyles = makeStyles(theme => ({
     marginTop: `${theme.spacing(2)}px`,
     [theme.breakpoints.up('md')]: {
       marginLeft: `${theme.spacing(2)}px`,
-    }
+    },
   },
 }));
 
@@ -90,23 +93,21 @@ export const ProjectOverviewPage = (): JSX.Element => {
     content = <div>Error: {errorProjects.message}</div>;
   } else if (allProjects && allProjects.length > 0) {
     content = (
-      <Grid container direction="row" spacing={0}>
-        <Grid item xs={3}>
-          <Select
-            onChange={onFilterProjects}
-            label="Filter by"
-            items={projectFilterItems}
-            selected={projectFilter}
-          />
-        </Grid>
-
-        <Grid item xs={9}>
-          <ProjectsTable projects={filteredProjects} />
-        </Grid>
+      <Grid item className={styles.table}>
+        <ProjectsTable projects={filteredProjects} />
       </Grid>
     );
   } else {
-    content = <EmptyProjectsState />;
+    content = (
+      <Grid
+        container
+        direction="column"
+        justifyContent="space-around"
+        alignItems="center"
+      >
+        <EmptyProjectsState />
+      </Grid>
+    );
   }
 
   return (
@@ -116,7 +117,7 @@ export const ProjectOverviewPage = (): JSX.Element => {
       </ContentHeader>
       <Card className={styles.full}>
         <CardContent>
-          <Grid container direction="row" spacing={0} alignItems="center">
+          <Grid container direction="row" alignItems="center">
             <Grid item xs={11} md={3} lg={2}>
               <Select
                 onChange={onFilterProjects}
@@ -133,9 +134,8 @@ export const ProjectOverviewPage = (): JSX.Element => {
               </Link>
             </Grid>
           </Grid>
-          <Grid container direction="column" justifyContent="space-around" alignItems="center">
-            {content}
-          </Grid>
+
+          {content}
         </CardContent>
       </Card>
     </ParodosPage>

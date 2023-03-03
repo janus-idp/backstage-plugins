@@ -8,8 +8,8 @@ export const useStyles = makeStyles(theme => ({
     placeItems: 'center',
     marginTop: `${theme.spacing(5)}px`,
     [theme.breakpoints.up('md')]: {
-      marginTop: `${theme.spacing(15)}px`
-    }
+      marginTop: `${theme.spacing(15)}px`,
+    },
   },
 }));
 
