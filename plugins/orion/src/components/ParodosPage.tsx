@@ -12,7 +12,7 @@ import {
   TrainingIcon,
   MetricsIcon,
 } from './icons';
-import { ProjectType } from './types';
+import { ProjectType, PropsFromComponent } from './types';
 import { useBackendUrl } from './api';
 import useAsync from 'react-use/lib/useAsync';
 import { ErrorMessage } from './errors/ErrorMessage';
@@ -61,7 +61,16 @@ export const TabLabel: React.FC<{
     </>
   );
 };
-export const ParodosPage: React.FC = ({ children }) => {
+
+// Unfortunately backstage do not export the props type for <Content />
+type ContentProps = PropsFromComponent<typeof Content>;
+
+type ParodosPageProps = ContentProps;
+
+export const ParodosPage: React.FC<ParodosPageProps> = ({
+  children,
+  ...props
+}) => {
   const [selectedTab, setSelectedTab] = React.useState(0);
   const { pathname } = useLocation();
   const [isProject, setIsProject] = React.useState(true);
@@ -109,7 +118,7 @@ export const ParodosPage: React.FC = ({ children }) => {
           };
         })}
       />
-      <Content>
+      <Content {...props}>
         {error && <ErrorMessage error={error} />}
         {children}
       </Content>

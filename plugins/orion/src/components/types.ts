@@ -78,3 +78,7 @@ export type WorkflowExecuteResponseType = {
     /* TODO */
   };
 };
+
+export type PropsFromComponent<C> = C extends (props: infer P) => JSX.Element
+  ? P
+  : never;
