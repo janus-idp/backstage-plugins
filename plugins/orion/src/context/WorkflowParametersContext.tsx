@@ -3,7 +3,7 @@ import { ValidatorType } from '../components/workflow/validators';
 
 type ParamValidationType = string;
 
-type WorkflowParametersContextType = {
+export type WorkflowParametersContextType = {
   getParamValue: (key: string) => string | undefined;
   setParamValue: (key: string, value: string, validator: ValidatorType) => void;
   getParamValidation: (key: string) => ParamValidationType | undefined;
