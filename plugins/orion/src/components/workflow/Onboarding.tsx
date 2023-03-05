@@ -3,13 +3,7 @@ import { ContentHeader, SupportButton } from '@backstage/core-components';
 import { Button, ButtonGroup, Chip, Grid, Typography } from '@material-ui/core';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ParodosPage } from '../ParodosPage';
-import {
-  WorkflowDefinitionType,
-  WorkflowExecuteResponseType,
-  WorkflowTaskArgumentType,
-  WorkFlowTaskParameterType,
-  WorkflowType,
-} from '../types';
+import { WorkflowDefinitionType, WorkFlowTaskParameterType } from '../types';
 import { useBackendUrl } from '../api';
 import { WorkflowParameterComponent } from './WorkflowParameterComponent';
 import {
@@ -17,70 +11,7 @@ import {
   WorkflowParametersContextProvider,
 } from '../../context/WorkflowParametersContext';
 import { mockAndromedaWorkflowDefinition } from './mockData';
-
-const getAllFlattenedParameters = (
-  allWorkflowDefinitions: WorkflowDefinitionType[],
-  workflowDefinition: WorkflowDefinitionType,
-): WorkFlowTaskParameterType[] => {
-  const tasks = workflowDefinition.tasks || [];
-  const paramsOfAllTasks: WorkFlowTaskParameterType[][] = tasks.map(task => {
-    const taskParameters = task.parameters || [];
-    // TODO: more filtering or mapping?
-    return taskParameters;
-  });
-  const allFlatParameters: WorkFlowTaskParameterType[] =
-    paramsOfAllTasks.flat();
-
-  // Deep-dive into sub-workflows
-  // Assumption: there are no loops in the workflow definitions
-  tasks.forEach(task => {
-    if (!task.nextWorkFlow) {
-      return;
-    }
-
-    const subworkflowDefinition = allWorkflowDefinitions.find(
-      def => def.id === task.nextWorkFlow,
-    );
-    if (!subworkflowDefinition) {
-      // eslint-disable-next-line no-console
-      console.info('Can not find subworkflow definition for task: ', task);
-      return;
-    }
-    allFlatParameters.push(
-      ...getAllFlattenedParameters(
-        allWorkflowDefinitions,
-        subworkflowDefinition,
-      ),
-    );
-  });
-
-  return allFlatParameters;
-};
-
-// TODO: Gather workflow-level parameters as well. So far we collect task-level parameters only since the Workflow-level params are missing in the swagger.
-const getWorkflowParameters = (
-  allWorkflowDefinitions: WorkflowDefinitionType[],
-  workflowDefinition: WorkflowDefinitionType,
-): WorkFlowTaskParameterType[] => {
-  const allFlatParameters = getAllFlattenedParameters(
-    allWorkflowDefinitions,
-    workflowDefinition,
-  );
-
-  // Filter unique by key
-  // Assumptions:
-  // - the "key" of a parameter is unique over all workflow definitions and tasks
-  const filteredParameters: WorkFlowTaskParameterType[] = [];
-  const map = new Map();
-  for (const item of allFlatParameters) {
-    if (!map.has(item.key)) {
-      map.set(item.key, true);
-      filteredParameters.push(item);
-    }
-  }
-
-  return filteredParameters;
-};
+import { getWorkflowParameters, startWorkflow } from './commands';
 
 type OnboardingProps = {
   isNew?: boolean;
@@ -99,6 +30,7 @@ export const OnboardingImpl: React.FC<OnboardingProps> = ({ isNew }) => {
     WorkFlowTaskParameterType[]
   >([]); // parameters from whole chain of tasks - nextWorkflow
 
+  // Get a list of workflow parameters to ask the user for
   React.useEffect(() => {
     if (!workflowId) {
       return;
@@ -113,7 +45,7 @@ export const OnboardingImpl: React.FC<OnboardingProps> = ({ isNew }) => {
         let allWorkflowDefinitions =
           (await response.json()) as WorkflowDefinitionType[];
 
-        // append mock
+        // append mock - TODO: remove
         allWorkflowDefinitions = [
           mockAndromedaWorkflowDefinition,
           ...allWorkflowDefinitions,
@@ -143,52 +75,42 @@ export const OnboardingImpl: React.FC<OnboardingProps> = ({ isNew }) => {
   }, [workflowId, backendUrl]);
 
   const onStart = async () => {
-    const body: WorkflowType = {
-      projectId: projectId || 'missing',
-      workFlowName: workflow?.name || 'missing',
-      workFlowTasks:
-        workflow?.tasks.map(task => {
-          const args: WorkflowTaskArgumentType[] = [];
-          task.parameters?.forEach(param => {
-            const value = getParamValue(param.key);
-            if (value) {
-              args.push({ key: param.key, value });
-            }
-          });
-
-          return {
-            name: task.name,
-            arguments: args,
-          };
-        }) || [],
-    };
-
-    try {
-      const data = await fetch(`${backendUrl}/api/proxy/parodos/workflows`, {
-        method: 'POST',
-        body: JSON.stringify(body),
-      });
-      const response = (await data.json()) as WorkflowExecuteResponseType;
-      const executionId = response.workFlowExecutionId;
-
-      // navigate to workflow Detail page after start
-      navigate(`/parodos/onboarding/${executionId}/workflow-detail`, {
-        state: { isNew: isNew },
-      });
-    } catch (e) {
-      setError('Failed to start workflow');
-      // eslint-disable-next-line no-console
-      console.error('Failed to start workflow: ', e);
+    if (!projectId) {
+      setError('No project ID.');
+      return;
     }
+    if (!workflow) {
+      setError('No workflow.');
+      return; // should not happen
+    }
+
+    const executionId = await startWorkflow({
+      workflow,
+      projectId,
+      getParamValue,
+      backendUrl,
+      setError,
+    });
+
+    if (!executionId) {
+      // eslint-disable-next-line no-console
+      console.info('Missing workflow execution ID.');
+      // return; // Navigate anyway - for now
+    }
+
+    // navigate to workflow Detail page after start
+    navigate(`/parodos/onboarding/${executionId}/workflow-detail`, {
+      state: { isNew: isNew },
+    });
   };
 
-  const isStartDisabled = !workflowParameters.every(param => {
+  const isStartDisabled = !!workflowParameters.find(param => {
     // Make sure all required fields are entered
-    if (param.optional && !getParamValue(param.key)) {
-      return false;
+    if (!param.optional && !getParamValue(param.key)) {
+      return true;
     }
 
-    return !getParamValidation(param.key);
+    return !!getParamValidation(param.key);
   });
 
   return (

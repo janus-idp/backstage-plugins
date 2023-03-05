@@ -24,8 +24,15 @@ import {
   AssessmentStatusType,
   ProjectType,
   WorkflowDefinitionType,
+  WorkFlowTaskParameterType,
 } from '../types';
 import { mockAndromedaWorkflowDefinition } from './mockData';
+import { WorkflowParameterComponent } from './WorkflowParameterComponent';
+import { getWorkflowParameters, startWorkflow } from './commands';
+import {
+  WorkflowParametersContext,
+  WorkflowParametersContextProvider,
+} from '../../context/WorkflowParametersContext';
 
 const useStyles = makeStyles({
   applicationHeader: {
@@ -37,55 +44,105 @@ const useStyles = makeStyles({
   },
 });
 
-export const Workflow = () => {
+const WorkflowImpl: React.FC = () => {
   const commonStyles = useCommonStyles();
   const styles = useStyles();
   const backendUrl = useBackendUrl();
 
   const [projectName, setProjectName] = React.useState<string>('');
+  const { getParamValue, getParamValidation } = React.useContext(
+    WorkflowParametersContext,
+  );
   const [project, setProject] = React.useState<ProjectType>();
-  const [projectRepoOrImage, setProjectRepoOrImage] = React.useState<string>();
   const [assessmentStatus, setAssessmentStatus] =
     React.useState<AssessmentStatusType>('none');
+  const [assessmentWorkflowDefinition, setAssessmentWorkflowDefinition] =
+    React.useState<WorkflowDefinitionType>();
   const [workflowDefinitions, setWorkflowDefinitions] = React.useState<
     WorkflowDefinitionType[]
   >([]);
+  const [assessmentParameters, setAssessmentParameters] = React.useState<
+    WorkFlowTaskParameterType[]
+  >([]);
   const [_, setError] = React.useState<string>();
-  // TODO: render error
 
   const onChangeProjectName: OutlinedInputProps['onChange'] = event => {
     setProjectName(event.target.value);
   };
 
-  const onChangeProjectRepoOrImage: OutlinedInputProps['onChange'] = event => {
-    setProjectRepoOrImage(event.target.value);
-  };
+  // Get a list of the ASSESSMENT workflow parameters to ask the user for
+  React.useEffect(() => {
+    const doItAsync = async () => {
+      const response = await fetch(
+        `${backendUrl}/api/proxy/parodos/workflowdefinitions`,
+      );
+      const allWorkflowDefinitions =
+        (await response.json()) as WorkflowDefinitionType[];
+      const assessmentDefinition = allWorkflowDefinitions.find(
+        def => def.type === 'ASSESSMENT',
+      );
+
+      if (!assessmentDefinition) {
+        setError('Could not find assessment definition.');
+        return;
+      }
+
+      const params = getWorkflowParameters(
+        allWorkflowDefinitions,
+        assessmentDefinition,
+      );
+
+      setAssessmentWorkflowDefinition(assessmentDefinition);
+      setAssessmentParameters(params);
+    };
+    doItAsync();
+  }, [backendUrl]);
 
   const onStartAssessment = () => {
+    // TODO: get the state dynmically
     setAssessmentStatus('inprogress');
 
     const doItAsync = async () => {
+      if (!assessmentWorkflowDefinition) {
+        setError('Missing assessment definition.');
+        return;
+      }
+
       try {
+        // TODO: shouldn't following be executed as a part of the Assessment workflow?
+        // It was said to call following but should be part of the backend flow, imho
         const response = await fetch(
           `${backendUrl}/api/proxy/parodos/projects`,
           {
             method: 'POST',
             body: JSON.stringify({
               name: projectName,
-              repo: projectRepoOrImage, // Not used yet
             }),
           },
         );
         const prj = (await response.json()) as ProjectType;
         setProject(prj);
 
-        setAssessmentStatus('complete');
+        // Start the assessment workflow
+        const executionId = await startWorkflow({
+          workflow: assessmentWorkflowDefinition,
+          projectId: prj.id,
+          getParamValue,
+          backendUrl,
+          setError,
+        });
 
+        // TODO: Implement Cancel - https://issues.redhat.com/browse/FLPATH-101
         // eslint-disable-next-line no-console
-        console.log('TODO: implement fully start assessment');
-        // TODO: blocked by https://issues.redhat.com/browse/FLPATH-99
-        // TODO: https://issues.redhat.com/browse/FLPATH-100
-        // TODO: https://issues.redhat.com/browse/FLPATH-101
+        console.log(
+          'Assessment executionId: ',
+          executionId,
+          ', do something about it.',
+        );
+
+        // TODO: replace following by proper monitoring
+        // https://issues.redhat.com/browse/FLPATH-100
+        setAssessmentStatus('complete');
       } catch (e) {
         setError('Failed to start assessment.');
         // eslint-disable-next-line no-console
@@ -95,6 +152,7 @@ export const Workflow = () => {
     doItAsync();
   };
 
+  // Read workflows to display once the Assessment is over
   React.useEffect(() => {
     const doItAsync = async () => {
       try {
@@ -105,10 +163,12 @@ export const Workflow = () => {
           (await response.json()) as WorkflowDefinitionType[];
 
         let filteredWorkflowDefinitions = allWorkflowDefinitions.filter(
-          workflowDefinition => workflowDefinition.type === 'ASSESSMENT',
+          workflowDefinition =>
+            // TODO: is following correct?
+            !['ASSESSMENT', 'CHECKER'].includes(workflowDefinition.type),
         );
 
-        // mock
+        // mock - TODO: remove
         filteredWorkflowDefinitions = [
           mockAndromedaWorkflowDefinition,
           ...filteredWorkflowDefinitions,
@@ -124,6 +184,18 @@ export const Workflow = () => {
     doItAsync();
   }, [backendUrl]);
 
+  const isStartDisabled =
+    assessmentStatus !== 'none' ||
+    !projectName ||
+    !!assessmentParameters.find(param => {
+      // Make sure all required fields are entered
+      if (!param.optional && !getParamValue(param.key)) {
+        return true;
+      }
+
+      return !!getParamValidation(param.key);
+    });
+
   return (
     <ParodosPage>
       <ContentHeader title="Project assessment">
@@ -137,6 +209,7 @@ export const Workflow = () => {
       <Grid container direction="column" spacing={2}>
         <Grid container direction="row" spacing={2}>
           <Grid item>
+            {/* This one seems to be special, on top of the Assessment workflow */}
             <TextField
               id="project-name"
               disabled={assessmentStatus !== 'none'}
@@ -147,16 +220,12 @@ export const Workflow = () => {
             />
           </Grid>
 
-          <Grid item xs={5}>
-            <TextField
-              id="project-repo-or-image"
-              disabled={assessmentStatus !== 'none'}
-              label="Git Repo URL or Container Image"
-              variant="outlined"
-              value={projectRepoOrImage}
-              onChange={onChangeProjectRepoOrImage}
-              fullWidth
-            />
+          <Grid container spacing={3}>
+            {assessmentParameters.map(param => (
+              <Grid item xs={2} key={param.key}>
+                <WorkflowParameterComponent param={param} />
+              </Grid>
+            ))}
           </Grid>
 
           <Grid item className={commonStyles.paddingtop1}>
@@ -172,10 +241,10 @@ export const Workflow = () => {
             ) : (
               <Button
                 id="assessment-start"
+                disabled={isStartDisabled}
                 variant="contained"
                 onClick={onStartAssessment}
                 color="primary"
-                disabled={assessmentStatus === 'complete'}
               >
                 START ASSESSMENT
               </Button>
@@ -226,3 +295,9 @@ export const Workflow = () => {
     </ParodosPage>
   );
 };
+
+export const Workflow: React.FC = props => (
+  <WorkflowParametersContextProvider>
+    <WorkflowImpl {...props} />
+  </WorkflowParametersContextProvider>
+);
