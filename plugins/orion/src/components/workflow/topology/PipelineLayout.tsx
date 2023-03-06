@@ -69,7 +69,6 @@ const TopologyPipelineLayout = (props: Props) => {
       },
       true,
     );
-    controller.getGraph().layout();
   }, [controller, pipelineNodes]);
 
   useEventListener<SelectionEventListener>(SELECTION_EVENT, ids => {
@@ -113,9 +112,11 @@ export const PipelineLayout = React.memo((props: Props) => {
     },
     false,
   );
+
   controller.addEventListener(GRAPH_LAYOUT_END_EVENT, () => {
-    controller.getGraph().fit(5);
+    controller.getGraph().fit(70);
   });
+  controller.getGraph().layout();
 
   return (
     <VisualizationProvider controller={controller}>
