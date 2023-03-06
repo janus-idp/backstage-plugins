@@ -1,3 +1,18 @@
+## @janus-idp/backstage-plugin-ocm-backend [1.4.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@1.4.0...@janus-idp/backstage-plugin-ocm-backend@1.4.1) (2023-03-06)
+
+
+### Bug Fixes
+
+* **metadata:** adding default metadata to current plugins ([06776da](https://github.com/janus-idp/backstage-plugins/commit/06776dafdbab6d4fa85b92d5b676f65d97bbdb44)), closes [#155](https://github.com/janus-idp/backstage-plugins/issues/155) [#155](https://github.com/janus-idp/backstage-plugins/issues/155)
+
+
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-ocm-common:** upgraded to 1.2.1
+
 # @janus-idp/backstage-plugin-ocm-backend [1.4.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@1.3.0...@janus-idp/backstage-plugin-ocm-backend@1.4.0) (2023-02-22)
 
 
