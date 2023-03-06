@@ -7,11 +7,10 @@ import {
   SupportButton,
 } from '@backstage/core-components';
 import Add from '@material-ui/icons/Add';
-import { Grid } from '@material-ui/core';
+import { Card, CardContent, Grid, makeStyles } from '@material-ui/core';
 import { useAsync } from 'react-use';
 
 import { EmptyProjectsState } from './EmptyProjectsState';
-import { useCommonStyles } from '../../styles';
 import { ParodosPage } from '../ParodosPage';
 import { ProjectStatusType, ProjectType } from '../types';
 import { ProjectsTable } from './ProjectsTable';
@@ -23,8 +22,31 @@ const projectFilterItems: { label: string; value: ProjectStatusType }[] = [
   { label: 'On Boarded', value: 'on-boarded' },
 ];
 
-export const ProjectOverviewPage = () => {
-  const commonStyles = useCommonStyles();
+export const useStyles = makeStyles(theme => ({
+  content: {
+    minHeight: 0,
+    maxHeight: '100%',
+  },
+  fullHeight: {
+    display: 'flex',
+    minHeight: 0,
+    height: '100%',
+  },
+  table: {
+    marginTop: theme.spacing(5),
+  },
+  addIcon: {
+    display: 'flex',
+    alignItems: 'center',
+    marginTop: theme.spacing(2),
+    [theme.breakpoints.up('md')]: {
+      marginLeft: theme.spacing(2),
+    },
+  },
+}));
+
+export const ProjectOverviewPage = (): JSX.Element => {
+  const styles = useStyles();
   const [projectFilter, setProjectFilter] = React.useState('all-projects');
   const [filteredProjects, setFilteredProjects] = React.useState<ProjectType[]>(
     [],
@@ -32,7 +54,7 @@ export const ProjectOverviewPage = () => {
   const backendUrl = useBackendUrl();
 
   const {
-    value: allProjects,
+    value: allProjects = [],
     loading: loadingProjects,
     error: errorProjects,
   } = useAsync(async (): Promise<ProjectType[]> => {
@@ -71,43 +93,54 @@ export const ProjectOverviewPage = () => {
   };
 
   let content: React.ReactElement | null = null;
+
   if (loadingProjects) {
     content = <div>Loading...</div>;
   } else if (errorProjects) {
     content = <div>Error: {errorProjects.message}</div>;
-  } else if (allProjects && allProjects.length > 0) {
+  } else if (allProjects.length > 0) {
     content = (
-      <Grid container direction="row" spacing={0}>
-        <Grid item xs={3}>
-          <Select
-            onChange={onFilterProjects}
-            label="Filter by"
-            items={projectFilterItems}
-            selected={projectFilter}
-          />
-        </Grid>
-
-        <Grid item xs={9}>
-          <ProjectsTable projects={filteredProjects} />
-        </Grid>
+      <Grid item className={styles.table}>
+        <ProjectsTable projects={filteredProjects} />
       </Grid>
     );
   } else {
-    content = <EmptyProjectsState />;
+    content = (
+      <Grid container direction="column" alignItems="center" spacing={0}>
+        <EmptyProjectsState />
+      </Grid>
+    );
   }
 
   return (
-    <ParodosPage>
+    <ParodosPage stretch className={styles.content}>
       <ContentHeader title="Projects overview">
-        <Link to="/parodos/workflow">
-          <Add className={commonStyles.inlineicon} />
-          &nbsp;Add new project
-        </Link>
-
         <SupportButton title="Need help?">Lorem Ipsum</SupportButton>
       </ContentHeader>
+      <Card className={styles.fullHeight}>
+        <CardContent>
+          <Grid container direction="row" alignItems="center">
+            <Grid item xs={11} md={4} lg={2}>
+              <Select
+                onChange={onFilterProjects}
+                label="Filter by"
+                items={projectFilterItems}
+                selected={projectFilter}
+                margin="none"
+              />
+            </Grid>
 
-      {content}
+            <Grid item xs={11} md={7} lg={9}>
+              <Link to="/parodos/workflow" className={styles.addIcon}>
+                <Add />
+                Add new project
+              </Link>
+            </Grid>
+          </Grid>
+
+          {content}
+        </CardContent>
+      </Card>
     </ParodosPage>
   );
 };
