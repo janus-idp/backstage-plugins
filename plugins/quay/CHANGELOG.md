@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-quay [1.1.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.1.0...@janus-idp/backstage-plugin-quay@1.1.1) (2023-03-06)
+
+
+### Bug Fixes
+
+* **metadata:** adding default metadata to current plugins ([06776da](https://github.com/janus-idp/backstage-plugins/commit/06776dafdbab6d4fa85b92d5b676f65d97bbdb44)), closes [#155](https://github.com/janus-idp/backstage-plugins/issues/155) [#155](https://github.com/janus-idp/backstage-plugins/issues/155)
+
 # @janus-idp/backstage-plugin-quay [1.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.0.0...@janus-idp/backstage-plugin-quay@1.1.0) (2023-02-16)
 
 
