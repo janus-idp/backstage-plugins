@@ -14,15 +14,11 @@ import {
   WithContextMenuProps,
   WithSelectionProps,
 } from '@patternfly/react-topology';
-import { PopoverProps } from '@patternfly/react-core';
 
 type DemoTaskNodeProps = {
   element: Node;
 } & WithContextMenuProps &
   WithSelectionProps;
-
-const DEMO_TIP_TEXT =
-  'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam id feugiat augue, nec fringilla turpis.';
 
 const DemoTaskNode: any = ({
   element,
@@ -57,13 +53,6 @@ const DemoTaskNode: any = ({
     />
   ) : null;
 
-  // Set the badgePopoverParams, but if the node has badgeTooltips, this will be ignored
-  const badgePopoverParams: PopoverProps = {
-    headerContent: 'Popover header',
-    bodyContent: DEMO_TIP_TEXT,
-    footerContent: 'Popover footer',
-  };
-
   return (
     <Layer
       id={
@@ -75,16 +64,10 @@ const DemoTaskNode: any = ({
       <TaskNode
         ref={hoverRef}
         element={element}
-        onContextMenu={data.showContextMenu ? onContextMenu : undefined}
-        contextMenuOpen={contextMenuOpen}
-        scaleNode={
-          (hover || contextMenuOpen) && detailsLevel !== ScaleDetailsLevel.high
-        }
+        scaleNode={hover && detailsLevel !== ScaleDetailsLevel.high}
         hideDetailsAtMedium
         {...passedData}
         {...rest}
-        badgePopoverParams={badgePopoverParams}
-        badgeTooltip={data.badgeTooltips && DEMO_TIP_TEXT}
         truncateLength={20}
       >
         {whenDecorator}

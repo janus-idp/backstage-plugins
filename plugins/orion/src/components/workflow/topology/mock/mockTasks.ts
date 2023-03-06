@@ -1,7 +1,4 @@
-import {
-  DEFAULT_FINALLY_NODE_TYPE,
-  DEFAULT_TASK_NODE_TYPE,
-} from '@patternfly/react-topology';
+import { DEFAULT_TASK_NODE_TYPE } from '@patternfly/react-topology';
 import { WorkFlowTask } from '../type/WorkFlowTask';
 
 export const mockTasks: WorkFlowTask[] = [
@@ -47,19 +44,19 @@ export const mockTasks: WorkFlowTask[] = [
   },
   {
     id: `Load Balancer`,
-    type: DEFAULT_FINALLY_NODE_TYPE,
+    type: DEFAULT_TASK_NODE_TYPE,
     status: 'pending',
     label: `Load Balancer`,
     locked: true,
-    runAfterTasks: [],
+    runAfterTasks: [`Namespace`, `SSL Certification`],
   },
   {
     id: `Single Sign-on`,
-    type: DEFAULT_FINALLY_NODE_TYPE,
+    type: DEFAULT_TASK_NODE_TYPE,
     status: 'pending',
     label: `Single Sign-on`,
     locked: true,
-    runAfterTasks: [],
+    runAfterTasks: [`Namespace`, `SSL Certification`],
   },
 ];
 
