@@ -33,7 +33,6 @@
     "@material-ui/core": "^4.9.13",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.45",
-    "react-use": "^17.2.4",
     "@patternfly/patternfly": "4.217.1",
     "@patternfly/react-charts": "6.94.7",
     "@patternfly/react-core": "4.267.6",
@@ -44,7 +43,8 @@
     "classnames": "2.x",
     "lodash": "^4.17.19",
     "mobx": "^5.15.4",
-    "mobx-react": "^6.2.0"
+    "mobx-react": "^6.2.0",
+    "react-use": "^17.2.4"
   },
   "peerDependencies": {
     "react": "^16.13.1 || ^17.0.0"
@@ -64,5 +64,12 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "repository": "github:janus-idp/backstage-plugins",
+  "keywords": [
+    "backstage",
+    "plugin"
+  ],
+  "homepage": "https://janus-idp.io/",
+  "bugs": "https://github.com/janus-idp/backstage-plugins/issues"
 }
