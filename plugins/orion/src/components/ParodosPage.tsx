@@ -16,6 +16,7 @@ import { ProjectType, PropsFromComponent } from './types';
 import { useBackendUrl } from './api';
 import useAsync from 'react-use/lib/useAsync';
 import { ErrorMessage } from './errors/ErrorMessage';
+import { useNavigate } from 'react-router-dom';
 
 export const pluginRoutePrefix = '/parodos';
 
@@ -52,7 +53,6 @@ export const TabLabel: React.FC<{
   highlighted?: boolean;
 }> = ({ icon, label, highlighted }) => {
   const styles = useStyles();
-
   return (
     <>
       {icon}
@@ -75,6 +75,7 @@ export const ParodosPage: React.FC<ParodosPageProps> = ({
   const { pathname } = useLocation();
   const [isProject, setIsProject] = React.useState(true);
   const backendUrl = useBackendUrl();
+  const navigate = useNavigate();
 
   const { error } = useAsync(async () => {
     const response = await fetch(`${backendUrl}/api/proxy/parodos/projects`);
@@ -93,7 +94,7 @@ export const ParodosPage: React.FC<ParodosPageProps> = ({
 
   const onChangeTab = (index: number) => {
     setSelectedTab(index);
-    window.location.href = `${pluginRoutePrefix}${navigationMap[index].routes[0]}`;
+    navigate(`${pluginRoutePrefix}${navigationMap[index].routes[0]}`);
   };
 
   return (

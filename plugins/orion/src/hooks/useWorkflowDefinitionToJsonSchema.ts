@@ -41,8 +41,9 @@ export function getUiSchema(type: WorkFlowTaskParameterType) {
 
 export function useWorkflowDefinitionToJsonSchema(
   workflowDefinition: string,
+  filterType: 'byId' | 'byType',
 ): AsyncState<FormSchema> {
-  const result = useGetWorkflowDefinition(workflowDefinition);
+  const result = useGetWorkflowDefinition(workflowDefinition, filterType);
 
   if (!result.value) {
     return { ...result, value: undefined };

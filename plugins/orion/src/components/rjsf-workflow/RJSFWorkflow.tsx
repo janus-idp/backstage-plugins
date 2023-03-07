@@ -31,7 +31,7 @@ function RJSFWorkflowView(): JSX.Element {
     loading,
     error,
     value: formSchema,
-  } = useWorkflowDefinitionToJsonSchema('ASSESSMENT');
+  } = useWorkflowDefinitionToJsonSchema('ASSESSMENT', 'byType');
   const [, startAssessment] = useAsyncFn(async ({ formData }: IChangeEvent) => {
     setAssessmentStatus('inprogress');
 
@@ -58,7 +58,7 @@ function RJSFWorkflowView(): JSX.Element {
   }, [error, errorApi]);
 
   return (
-    <ParodosPage>
+    <ParodosPage stretch>
       <ContentHeader title="Project assessment">
         <SupportButton title="Need help?">Lorem Ipsum</SupportButton>
       </ContentHeader>
@@ -68,7 +68,7 @@ function RJSFWorkflowView(): JSX.Element {
       </Typography>
       {loading && <Progress />}
       {assessmentSchema.schema && (
-        <InfoCard noPadding>
+        <InfoCard>
           <Stepper formSchema={assessmentSchema} onSubmit={startAssessment}>
             <Button
               type="submit"

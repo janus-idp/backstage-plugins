@@ -28,6 +28,7 @@ export const workflowDefinitionSchema = z.object({
   name: z.string(),
   username: z.string().optional(),
   description: z.string().optional(),
+  author: z.string().optional().nullable(),
   createDate: z.string(),
   modifyDate: z.string(),
   type: z.string(),

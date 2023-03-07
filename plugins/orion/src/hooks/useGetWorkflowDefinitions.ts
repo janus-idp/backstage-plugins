@@ -1,27 +1,36 @@
 import useAsync, { type AsyncState } from 'react-use/lib/useAsync';
 import { useBackendUrl } from '../components/api/useBackendUrl';
-import type { WorkflowDefinitionType } from '../components/types';
 import { assert } from 'assert-ts';
+import { WorkflowDefinition } from '../models/workflowDefinitionSchema';
+import { mockAndromedaWorkflowDefinition } from '../components/workflow/mockData';
 
-export function useGetWorkflowDefinitions(): AsyncState<
-  WorkflowDefinitionType[]
-> {
+export function useGetWorkflowDefinitions(): AsyncState<WorkflowDefinition[]> {
   const backendUrl = useBackendUrl();
 
   return useAsync(async function getWorkflowDefinitions(): Promise<
-    WorkflowDefinitionType[]
+    WorkflowDefinition[]
   > {
     const response = await fetch(
       `${backendUrl}/api/proxy/parodos/workflowdefinitions`,
     );
 
-    return (await response.json()) as WorkflowDefinitionType[];
+    const workflowDefinitions = (await response.json()) as WorkflowDefinition[];
+
+    return [...workflowDefinitions, mockAndromedaWorkflowDefinition];
   });
 }
 
+const predicates = {
+  byId: (workflow: WorkflowDefinition) => workflow.id,
+  byType: (workflow: WorkflowDefinition) => workflow.type,
+} as const;
+
+type Predicates = keyof typeof predicates;
+
 export function useGetWorkflowDefinition(
-  workflowDefinitionType: string,
-): AsyncState<WorkflowDefinitionType> {
+  value: string,
+  filterBy: Predicates,
+): AsyncState<WorkflowDefinition> {
   const result = useGetWorkflowDefinitions();
 
   if (!result.value) {
@@ -31,13 +40,10 @@ export function useGetWorkflowDefinition(
   const { value: allWorkflowDefinitions } = result;
 
   const workflowDefinition = allWorkflowDefinitions?.find(
-    def => def.type === workflowDefinitionType,
+    def => predicates[filterBy](def) === value,
   );
 
-  assert(
-    !!workflowDefinition,
-    `no workflow definition for type ${workflowDefinitionType}`,
-  );
+  assert(!!workflowDefinition, `no workflow definition for type ${value}`);
 
   return { value: workflowDefinition, loading: false, error: undefined };
 }

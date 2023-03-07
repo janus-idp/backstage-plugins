@@ -1,12 +1,13 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { ProjectOverviewPage } from './projectOverview';
-import { Onboarding, WorkFlowDetail } from './workflow';
+import { WorkFlowDetail } from './workflow';
 import { Deploy } from './deploy';
 import { Notification } from './notification';
 import { Training } from './training';
 import { Metrics } from './metrics';
 import { RJSFWorkflow } from './rjsf-workflow/RJSFWorkflow';
+import { Onboarding } from './rjsf-workflow/Onboarding';
 
 export const PluginRouter = () => (
   <Routes>
