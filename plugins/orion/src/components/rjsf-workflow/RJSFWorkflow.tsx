@@ -6,21 +6,19 @@ import {
   SupportButton,
 } from '@backstage/core-components';
 import { useEffect } from 'react';
-import { useGetWorkflowDefinition } from '../../hooks/useGetWorkflowDefinitions';
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { Stepper } from './Stepper';
 import { WorkflowParametersContextProvider } from '../../context/WorkflowParametersContext';
 import { ParodosPage } from '../ParodosPage';
 import { Typography } from '@material-ui/core';
+import { useWorkflowDefinitionToJsonSchema } from '../../hooks/useWorkflowDefinitionToJsonSchema';
 
 function RJSFWorkflowView(): JSX.Element {
   const {
     loading,
     error,
-    value: assessment,
-  } = useGetWorkflowDefinition('ASSESSMENT');
-
-  console.log({loading, error, assessment})
+    value: formSchema,
+  } = useWorkflowDefinitionToJsonSchema('ASSESSMENT');
 
   const errorApi = useApi(errorApiRef);
 
@@ -40,9 +38,9 @@ function RJSFWorkflowView(): JSX.Element {
         it qualifies for.
       </Typography>
       {loading && <Progress />}
-      {assessment && (
+      {formSchema && (
         <InfoCard noPadding>
-          <Stepper />
+          <Stepper formSchema={formSchema} />
         </InfoCard>
       )}
     </ParodosPage>

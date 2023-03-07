@@ -1,9 +1,11 @@
-import useAsync from 'react-use/lib/useAsync';
+import useAsync, { type AsyncState } from 'react-use/lib/useAsync';
 import { useBackendUrl } from '../components/api/useBackendUrl';
-import { WorkflowDefinitionType } from '../components/types';
+import type { WorkflowDefinitionType } from '../components/types';
 import { assert } from 'assert-ts';
 
-export function useGetWorkflowDefinitions() {
+export function useGetWorkflowDefinitions(): AsyncState<
+  WorkflowDefinitionType[]
+> {
   const backendUrl = useBackendUrl();
 
   return useAsync(async function getWorkflowDefinitions(): Promise<
@@ -17,7 +19,9 @@ export function useGetWorkflowDefinitions() {
   });
 }
 
-export function useGetWorkflowDefinition(workflowDefinitionType: string) {
+export function useGetWorkflowDefinition(
+  workflowDefinitionType: string,
+): AsyncState<WorkflowDefinitionType> {
   const result = useGetWorkflowDefinitions();
 
   if (!result.value) {
@@ -35,5 +39,5 @@ export function useGetWorkflowDefinition(workflowDefinitionType: string) {
     `no workflow definition for type ${workflowDefinitionType}`,
   );
 
-  return { value: workflowDefinition, loading: false, error: null };
+  return { value: workflowDefinition, loading: false, error: undefined };
 }
