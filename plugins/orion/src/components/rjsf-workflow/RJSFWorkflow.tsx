@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import {
   ContentHeader,
   InfoCard,
@@ -13,36 +13,36 @@ import { ParodosPage } from '../ParodosPage';
 import { Typography, Button } from '@material-ui/core';
 import { useWorkflowDefinitionToJsonSchema } from '../../hooks/useWorkflowDefinitionToJsonSchema';
 import { useGetProjectAssessmentSchema } from './useGetProjectAssessmentSchema';
-import type { AssessmentStatusType, ProjectType } from '../types';
+import type { AssessmentStatusType } from '../types';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
 import { useBackendUrl } from '../api';
 import { IChangeEvent } from '@rjsf/core-v5';
+import { type Project } from '../../models/workflowDefinitionSchema';
+import { WorkflowDefinitions } from './WorkflowDefinitions';
+import { useGetWorkflowDefinitions } from '../../hooks/useGetWorkflowDefinitions';
 
 function RJSFWorkflowView(): JSX.Element {
-  const [, setProject] = useState<ProjectType>();
+  const [project, setProject] = useState<Project>();
   const backendUrl = useBackendUrl();
-  const [assessmentStatus, setAssessmentStatus] = useState<AssessmentStatusType>('none');
+  const { value: workflowDefinitions = [] } = useGetWorkflowDefinitions();
+  const [assessmentStatus, setAssessmentStatus] =
+    useState<AssessmentStatusType>('none');
   const {
     loading,
     error,
     value: formSchema,
   } = useWorkflowDefinitionToJsonSchema('ASSESSMENT');
-  const [, startAssessment] = useAsyncFn(async ({formData}: IChangeEvent) => {
+  const [, startAssessment] = useAsyncFn(async ({ formData }: IChangeEvent) => {
     setAssessmentStatus('inprogress');
 
-    const response = await fetch(
-      `${backendUrl}/api/proxy/parodos/projects`,
-      {
-        method: 'POST',
-        body: JSON.stringify({
-          name: formData.projectName,
-        }),
-      },
-    );
+    const response = await fetch(`${backendUrl}/api/proxy/parodos/projects`, {
+      method: 'POST',
+      body: JSON.stringify({
+        name: formData.projectName,
+      }),
+    });
 
-    const prj = (await response.json()) as ProjectType;
-    setProject(prj);
-
+    setProject((await response.json()) as Project);
 
     setAssessmentStatus('complete');
   }, []);
@@ -76,10 +76,22 @@ function RJSFWorkflowView(): JSX.Element {
               variant="contained"
               color="primary"
             >
-              {assessmentStatus === 'inprogress' ? 'START ASSESSMENT' : 'IN PROGRESS'}
+              {assessmentStatus === 'inprogress'
+                ? 'IN PROGRESS'
+                : 'START ASSESSMENT'}
             </Button>
           </Stepper>
         </InfoCard>
+      )}
+      {assessmentStatus === 'complete' && project && (
+        <WorkflowDefinitions
+          project={project}
+          workflowDefinitions={workflowDefinitions.filter(
+            workflowDefinition =>
+              // TODO: is following correct?
+              !['ASSESSMENT', 'CHECKER'].includes(workflowDefinition.type),
+          )}
+        />
       )}
     </ParodosPage>
   );
