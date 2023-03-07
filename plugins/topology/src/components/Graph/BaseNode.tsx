@@ -66,20 +66,14 @@ const BaseNode: React.FC<BaseNodeProps> = ({
   const kindData = kind && getKindStringAndAbbreviation(kind);
 
   return (
-    <Layer
-      id={
-        hover && detailsLevel !== ScaleDetailsLevel.high
-          ? TOP_LAYER
-          : DEFAULT_LAYER
-      }
-    >
+    <Layer id={hover ? TOP_LAYER : DEFAULT_LAYER}>
       <g
         ref={nodeHoverRefs as React.LegacyRef<SVGGElement>}
         data-test-id={element.getLabel()}
       >
         <DefaultNode
           element={element}
-          showLabel
+          showLabel={showDetails}
           scaleNode={hover && detailsLevel !== ScaleDetailsLevel.high}
           badge={kindData && kindData.kindAbbr}
           badgeColor={kindData && kindData.kindColor}

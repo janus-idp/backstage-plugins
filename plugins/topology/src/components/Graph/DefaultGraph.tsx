@@ -3,33 +3,31 @@ import {
   GraphElement,
   Graph,
   observer,
-  WithPanZoomProps,
   GraphComponent,
   isGraph,
+  WithPanZoomProps,
+  WithSelectionProps
 } from '@patternfly/react-topology';
 
-type ElementProps = {
-  element: GraphElement;
-};
+type DefaultGraphProps = {
+  element?: GraphElement;
+} & Partial<WithPanZoomProps> & Partial<WithSelectionProps>;
 
-type DefaultGraphProps = ElementProps & WithPanZoomProps;
-
-const DefaultGraph: React.FunctionComponent<DefaultGraphProps> = ({
-  element,
-  panZoomRef,
-}) => {
+const DefaultGraph: React.FunctionComponent<DefaultGraphProps> = ({ element, ...rest }) => {
   if (!isGraph) {
     return null;
   }
   return (
     <GraphComponent
       element={element as Graph}
-      panZoomRef={panZoomRef}
+      // The parameters need to be made optional in GraphComponent. Overwritten by ...rest if passed
+      panZoomRef={() => {}}
       dndDropRef={() => {}}
       selected={false}
       onSelect={() => {}}
       onContextMenu={() => {}}
       contextMenuOpen={false}
+      {...rest}
     />
   );
 };

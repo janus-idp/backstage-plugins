@@ -17,7 +17,7 @@ import {
 } from '../const';
 import {
   OdcNodeModel,
-  TopologyDataModelDepicted,
+  TopologyDataModelDepicted, TopologyDataObject
 } from '../types/topology-types';
 import { K8sWorkloadResource } from '../types/types';
 
@@ -39,7 +39,7 @@ export const WorkloadModelProps = {
 export const getTopologyNodeItem = (
   resource: K8sWorkloadResource,
   type: string,
-  data: any,
+  data: TopologyDataObject,
   nodeProps?: Omit<OdcNodeModel, 'type' | 'data' | 'children' | 'id' | 'label'>,
   children?: string[],
   resourceKind?: string,

@@ -53,12 +53,13 @@ export const createTopologyNodeData = (
   overviewItem: OverviewItem,
   type: string,
   defaultIcon: string,
-) => {
+  url?: string | null,
+): TopologyDataObject => {
   const dcUID = resource.metadata?.uid;
   const deploymentsLabels = resource.metadata?.labels ?? {};
 
   return {
-    id: dcUID,
+    id: dcUID as string,
     name: resource?.metadata?.name || deploymentsLabels[INSTANCE_LABEL],
     type,
     resource,
@@ -68,6 +69,7 @@ export const createTopologyNodeData = (
     data: {
       kind: resource?.kind,
       builderImage: defaultIcon,
+      url,
     },
   };
 };

@@ -22,7 +22,7 @@ const TopologyComponentFactory: ComponentFactory = (
   type: string,
 ): React.ComponentType<{ element: GraphElement }> | undefined => {
   if (kind === ModelKind.graph) {
-    return withPanZoom()(DefaultGraph);
+    return withPanZoom()(withSelection()(DefaultGraph));
   }
   switch (type) {
     case TYPE_WORKLOAD:

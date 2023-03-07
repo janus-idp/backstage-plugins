@@ -1,26 +1,21 @@
 import * as React from 'react';
 import { Tooltip, TooltipPosition } from '@patternfly/react-core';
 import { ExternalLinkAltIcon } from '@patternfly/react-icons';
-import { Node } from '@patternfly/react-topology';
 import Decorator from './Decorator';
-import { getTopologyResourceObject } from '../../../utils/topology-utils';
-import { useIngressURL } from '../../../hooks/useIngressURL';
 
 interface DefaultDecoratorProps {
-  element: Node;
+  url?: string;
   radius: number;
   x: number;
   y: number;
 }
 
 export const UrlDecorator: React.FC<DefaultDecoratorProps> = ({
-  element,
+  url,
   radius,
   x,
   y,
 }) => {
-  const resourceObj = getTopologyResourceObject(element.getData());
-  const url = useIngressURL(resourceObj);
   if (!url) {
     return null;
   }
@@ -42,10 +37,3 @@ export const UrlDecorator: React.FC<DefaultDecoratorProps> = ({
     </Tooltip>
   );
 };
-
-export const getUrlDecorator = (
-  element: Node,
-  radius: number,
-  x: number,
-  y: number,
-) => <UrlDecorator key="url" element={element} radius={radius} x={x} y={y} />;
