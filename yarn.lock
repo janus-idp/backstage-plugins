@@ -6030,6 +6030,17 @@
     nanoid "^3.3.4"
     prop-types "^15.7.2"
 
+"@rjsf/core-v5@npm:@rjsf/core@5.2.0", "@rjsf/core@^5.2.0":
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/@rjsf/core/-/core-5.2.0.tgz#5adaa8a9c666c76a94b39065797bf23ce8bf0e2f"
+  integrity sha512-Kj9NBD3Fu5hk1czB7ZreORHvmbOwFH2+3xnfJWERW/+MupV2RsMIyiah2Aa7UQsxymLmvLPaUIWpgx5IAW+dsQ==
+  dependencies:
+    lodash "^4.17.15"
+    lodash-es "^4.17.15"
+    markdown-to-jsx "^7.1.9"
+    nanoid "^3.3.4"
+    prop-types "^15.7.2"
+
 "@rjsf/core@^3.2.1":
   version "3.2.1"
   resolved "https://registry.yarnpkg.com/@rjsf/core/-/core-3.2.1.tgz#8a7b24c9a6f01f0ecb093fdfc777172c12b1b009"
@@ -6050,6 +6061,11 @@
   resolved "https://registry.yarnpkg.com/@rjsf/material-ui/-/material-ui-5.1.0.tgz#b2ce079d768018945982ec390f3bc99198da9fb4"
   integrity sha512-nvu8PsyOo7ypuH6ZNNPbdK0LkzMkCNzUuEAib5jWoAuMb9NNVqI3OoEu1DAVQv3trrWi8BxV3hU+7917PcdmRA==
 
+"@rjsf/material-ui-v5@npm:@rjsf/material-ui@5.2.0":
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/@rjsf/material-ui/-/material-ui-5.2.0.tgz#b3498fda4ca28847403a7c3aa7e091ab0fdb2574"
+  integrity sha512-CrrhrzjCk6+Q4yea7K+fmhKZ1X+o0yvAK8MopvWKYRL0SRx9tJYgaOpFcJ5JN2624zILmV6rcsNPm/u6bdo1Eg==
+
 "@rjsf/material-ui@^3.2.1":
   version "3.2.1"
   resolved "https://registry.yarnpkg.com/@rjsf/material-ui/-/material-ui-3.2.1.tgz#84fbf322485aee3a84101e189161f0687779ec8d"
@@ -6066,10 +6082,31 @@
     lodash-es "^4.17.15"
     react-is "^18.2.0"
 
+"@rjsf/utils@^5.2.0":
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/@rjsf/utils/-/utils-5.2.0.tgz#91e4e7d24fba41a9bcd13c418fbe560813c4403a"
+  integrity sha512-oCMukaBTdo/f9NaiOrGa4PN9ZAcM2zZcxYmWnfbRSZz3KEOAML9qYgR0QtV5HpMPJkzm026LTNa8NK9QG7HFEw==
+  dependencies:
+    json-schema-merge-allof "^0.8.1"
+    jsonpointer "^5.0.1"
+    lodash "^4.17.15"
+    lodash-es "^4.17.15"
+    react-is "^18.2.0"
+
 "@rjsf/validator-ajv8@5.1.0":
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/@rjsf/validator-ajv8/-/validator-ajv8-5.1.0.tgz#e9c2cfa9c4aeec7df4ece7981701a31df4684a86"
   integrity sha512-J3+cPT+saU2i4nOe8EDIMAWfrM4T48J8kgFL5O2mAObzlOI6O1UOSc0Rt82ag5zHhyAON0B6t0nG54/eDiCWfA==
+  dependencies:
+    ajv "^8.12.0"
+    ajv-formats "^2.1.1"
+    lodash "^4.17.15"
+    lodash-es "^4.17.15"
+
+"@rjsf/validator-ajv8@^5.2.0":
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/@rjsf/validator-ajv8/-/validator-ajv8-5.2.0.tgz#15289f2d436d3cbf78805abebf969c74f4d72ae0"
+  integrity sha512-MW5pxdH+qhs2iQEfnT4kiJYXei0OMQedpd0/U4/uPIV79gRhmWHTONy4t1pylnifc/fXbX7I6N2yvKrDjuq+zg==
   dependencies:
     ajv "^8.12.0"
     ajv-formats "^2.1.1"
@@ -8196,6 +8233,11 @@ assert-plus@1.0.0, assert-plus@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/assert-plus/-/assert-plus-1.0.0.tgz#f12e0f3c5d77b0b1cdd9146942e4e96c1e4dd525"
   integrity sha512-NfJ4UzBCcQGLDlQq7nHxH+tv3kyZ0hHQqF5BO6J7tNJeP5do1llPr8dZ8zHonfhAu0PHAdMkSo+8o0wxg9lZWw==
+
+assert-ts@^0.3.4:
+  version "0.3.4"
+  resolved "https://registry.yarnpkg.com/assert-ts/-/assert-ts-0.3.4.tgz#a452d6c9fc88e543bffded343a32deb48573ddf2"
+  integrity sha512-CQtNOdOCzzZfE3TF9a1vFTcz4ZfJYM6iHoWYCkpFY3wdk6CkFvevuLwpOFVL/KMJ9vCNIbeidWH5uo/Y8sLVWg==
 
 assert@^1.1.1:
   version "1.5.0"
@@ -15382,6 +15424,11 @@ markdown-table@^3.0.0:
   resolved "https://registry.yarnpkg.com/markdown-table/-/markdown-table-3.0.3.tgz#e6331d30e493127e031dd385488b5bd326e4a6bd"
   integrity sha512-Z1NL3Tb1M9wH4XESsCDEksWoKTdlUafKc4pt0GRwjUyXaCFZ+dc3g2erqB6zm3szA2IUSi7VnPI+o/9jnxh9hw==
 
+markdown-to-jsx@^7.1.9:
+  version "7.1.9"
+  resolved "https://registry.yarnpkg.com/markdown-to-jsx/-/markdown-to-jsx-7.1.9.tgz#1ffae0cda07c189163d273bd57a5b8f8f8745586"
+  integrity sha512-x4STVIKIJR0mGgZIZ5RyAeQD7FEZd5tS8m/htbcVGlex32J+hlSLj+ExrHCxP6nRKF1EKbcO7i6WhC1GtOpBlA==
+
 marked@^4.0.10, marked@^4.0.14:
   version "4.2.12"
   resolved "https://registry.yarnpkg.com/marked/-/marked-4.2.12.tgz#d69a64e21d71b06250da995dcd065c11083bebb5"
@@ -22109,6 +22156,11 @@ zod-to-json-schema@~3.18.0:
   version "3.18.2"
   resolved "https://registry.yarnpkg.com/zod-to-json-schema/-/zod-to-json-schema-3.18.2.tgz#ce540062c6b57e5cc170aae57dad5eeb76d64f7b"
   integrity sha512-Vv1emSad6nJGRJUD/cdVxSgxtT3PnaUiHHZ+PxDU5vx+klM9eDekuIj6lO+tZTbATK+6ktJfY2C+WXn2mMX3Jw==
+
+zod@^3.21.4:
+  version "3.21.4"
+  resolved "https://registry.yarnpkg.com/zod/-/zod-3.21.4.tgz#10882231d992519f0a10b5dd58a38c9dabbb64db"
+  integrity sha512-m46AKbrzKVzOzs/DZgVnG5H55N1sv1M8qZU3A8RIKbs3mrACDNeIOeilDymVb2HdmP8uwshOCF4uJ8uM9rCqJw==
 
 zod@~3.18.0:
   version "3.18.0"
