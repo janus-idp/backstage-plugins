@@ -1,5 +1,6 @@
 import {
   V1Deployment,
+  V1IngressRule,
   V1Pod,
   V1ReplicaSet,
   V1Service,
@@ -19,4 +20,9 @@ export type K8sWorkloadResource =
 
 export type K8sResponseData = {
   [key: string]: { data: K8sWorkloadResource[] };
+};
+
+export type IngressRule = {
+  schema: string;
+  rules: V1IngressRule[];
 };

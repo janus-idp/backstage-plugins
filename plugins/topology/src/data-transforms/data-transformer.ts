@@ -1,12 +1,9 @@
 import { Model, NodeModel } from '@patternfly/react-topology';
-import { V1Ingress, V1Service } from '@kubernetes/client-node';
 import { TYPE_APPLICATION_GROUP, TYPE_WORKLOAD } from '../const';
 import { K8sWorkloadResource, K8sResponseData } from '../types/types';
 import {
   createOverviewItemForType,
-  getIngressesForServices,
-  getIngressesURL,
-  getServicesForResource
+  getIngressURLForResource,
 } from '../utils/resource-utils';
 import {
   createTopologyNodeData,
@@ -20,22 +17,9 @@ import {
   mergeGroup,
   WorkloadModelProps,
 } from '../utils/transform-utils';
+import { getPodsDataForResource } from '../utils/pod-resource-utils';
 
-const validUrl = (url?: string | null) =>
-  url?.startsWith('http://') || url?.startsWith('https://');
-
-const getIngressURLForResource = (
-  resources: K8sResponseData,
-  resource: K8sWorkloadResource
-): string | undefined => {
-  const services = getServicesForResource(resource, resources.services?.data as V1Service[]);
-  const servicesNames = services.map((s: V1Service) => s.metadata?.name ?? '');
-  const ingresses = getIngressesForServices(servicesNames, resources.ingresses.data as V1Ingress[]);
-  const ingressURL = getIngressesURL(ingresses) || undefined;
-  return validUrl(ingressURL) ? ingressURL : undefined;
-};
-
-const getBaseTopologyDataModel = (resources: K8sResponseData): Model => {
+export const getBaseTopologyDataModel = (resources: K8sResponseData): Model => {
   const baseDataModel: Model = {
     nodes: [],
     edges: [],
@@ -56,7 +40,8 @@ const getBaseTopologyDataModel = (resources: K8sResponseData): Model => {
             item,
             TYPE_WORKLOAD,
             'default image',
-            getIngressURLForResource(resources, resource)
+            getIngressURLForResource(resources, resource),
+            getPodsDataForResource(resource, resources),
           );
           typedDataModel.nodes?.push(
             getTopologyNodeItem(

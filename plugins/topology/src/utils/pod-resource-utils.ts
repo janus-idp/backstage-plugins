@@ -257,9 +257,9 @@ const getPodsForDeployment = (
  */
 export const getPodsDataForResource = (
   resource: K8sWorkloadResource,
-  kind: string,
   resources: K8sResponseData,
 ): PodRCData => {
+  const kind = resource.kind;
   switch (kind) {
     case 'Deployment':
       return getPodsForDeployment(resource as V1Deployment, resources);

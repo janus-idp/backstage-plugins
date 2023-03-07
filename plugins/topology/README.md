@@ -56,11 +56,7 @@ This plugin will help with visualizing the workloads like Deployment, Replicaset
 
 ## Development
 
-In [Backstage plugin terminology](https://backstage.io/docs/local-dev/cli-build-system#package-roles), this is a `frontend-plugin`. However it requires k8s backend plugin to be available at all times. Development environment therefore requires you to run a backend instance as well. You can start a live dev session from the repository root using following commands concurrently:
-
-```
-yarn start-backend
-```
+In [Backstage plugin terminology](https://backstage.io/docs/local-dev/cli-build-system#package-roles), this is a `frontend-plugin`. You can start a live dev session from the repository root using below command:
 
 ```
 yarn workspace @janus-idp/backstage-plugin-topology run start

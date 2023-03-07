@@ -5,7 +5,6 @@ import { render } from '@testing-library/react';
 import { useWorkloadsWatcher } from '../../hooks/useWorkloadWatcher';
 import { TopologyEmptyState } from './TopologyEmptyState';
 import TopologyViewWorkloadComponent from './TopologyViewWorkloadComponent';
-import { GraphData } from '../../types/topology-types';
 
 jest.mock('../../hooks/useWorkloadWatcher', () => ({
   useWorkloadsWatcher: jest.fn(),
@@ -21,31 +20,12 @@ jest.mock('@patternfly/react-topology', () => ({
       }),
     }),
     fromModel: () => {},
-    getGraph: () => ({
-      setData: (data: GraphData) => data,
-    }),
   }),
   useEventListener: () => {},
   action: () => {},
   createTopologyControlButtons: () => {},
   VisualizationSurface: () => <div>VisualizationSurface</div>,
   TopologyView: () => <div>TopologyView</div>,
-}));
-
-// mock useGraphData hook
-jest.mock('../../hooks/useGraphData', () => ({
-  useGraphData: () => ({
-    decorators: {
-      upperRight: [
-        {
-          id: 'ingress-url',
-          priority: 1,
-          quadrant: 'upperRight',
-          decorator: jest.fn(),
-        },
-      ],
-    },
-  }),
 }));
 
 describe('TopologyViewWorkloadComponent', () => {

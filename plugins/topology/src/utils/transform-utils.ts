@@ -17,7 +17,8 @@ import {
 } from '../const';
 import {
   OdcNodeModel,
-  TopologyDataModelDepicted, TopologyDataObject
+  TopologyDataModelDepicted,
+  TopologyDataObject,
 } from '../types/topology-types';
 import { K8sWorkloadResource } from '../types/types';
 

@@ -11,12 +11,10 @@ import {
   useHover,
   useVisualizationController,
   WithDragNodeProps,
-  WithSelectionProps
+  WithSelectionProps,
 } from '@patternfly/react-topology';
 import BaseNode from './BaseNode';
 import PodSet, { podSetInnerRadius } from '../Pods/PodSet';
-import { getTopologyResourceObject } from '../../utils/topology-utils';
-import { usePodsWatcher } from '../../hooks/usePodsWatcher';
 import { AllPodStatus } from '../Pods/pod';
 import { calculateRadius, getPodStatus } from '../../utils/workload-node-utils';
 import { UrlDecorator } from './decorators/UrlDecorator';
@@ -62,11 +60,9 @@ type InnerWorkloadNodeProps = {
 const InnerWorkloadNode: React.FC<InnerWorkloadNodeProps> = observer(
   ({ element, ...rest }) => {
     const data = element.getData();
-    const resource = getTopologyResourceObject(data);
-    const { podData, loadError, loaded } = usePodsWatcher(resource);
-    const donutStatus = loaded && !loadError ? podData : null;
     const { width, height } = element.getDimensions();
     const workloadData = data.data;
+    const donutStatus = workloadData.podsData;
     const [hover, hoverRef] = useHover();
     const size = Math.min(width, height);
     const { decoratorRadius } = calculateRadius(size);
@@ -80,9 +76,19 @@ const InnerWorkloadNode: React.FC<InnerWorkloadNodeProps> = observer(
       if (!workloadData?.url) {
         return null;
       }
-      const { x, y } = getDefaultShapeDecoratorCenter(TopologyQuadrant.upperRight, element);
+      const { x, y } = getDefaultShapeDecoratorCenter(
+        TopologyQuadrant.upperRight,
+        element,
+      );
       const offset = decoratorRadius * 0.4;
-      return <UrlDecorator url={workloadData.url} radius={decoratorRadius} x={x + offset} y={y - offset} />;
+      return (
+        <UrlDecorator
+          url={workloadData.url}
+          radius={decoratorRadius}
+          x={x + offset}
+          y={y - offset}
+        />
+      );
     }, [workloadData?.url, element, decoratorRadius]);
 
     return (
