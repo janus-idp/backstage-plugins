@@ -5,6 +5,7 @@ import request from 'supertest';
 import { createLogger, transports } from 'winston';
 import { createRouter } from './router';
 
+const FIXTURES_DIR = `${__dirname}/../../__fixtures__`;
 const logger = createLogger({
   transports: [new transports.Console({ silent: true })],
 });
@@ -39,8 +40,8 @@ describe('createRouter', () => {
         .get('/apis/cluster.open-cluster-management.io/v1/managedclusters')
         .reply(200, {
           items: [
-            require(`${__dirname}/../fixtures/cluster.open-cluster-management.io/managedclusters/local-cluster.json`),
-            require(`${__dirname}/../fixtures/cluster.open-cluster-management.io/managedclusters/cluster1.json`),
+            require(`${FIXTURES_DIR}/cluster.open-cluster-management.io/managedclusters/local-cluster.json`),
+            require(`${FIXTURES_DIR}/cluster.open-cluster-management.io/managedclusters/cluster1.json`),
           ],
         })
         .persist();
@@ -81,46 +82,35 @@ describe('createRouter', () => {
         )
         .reply(
           200,
-          require(`${__dirname}/../fixtures/cluster.open-cluster-management.io/managedclusters/local-cluster.json`),
+          require(`${FIXTURES_DIR}/cluster.open-cluster-management.io/managedclusters/local-cluster.json`),
         )
         .get(
           '/apis/cluster.open-cluster-management.io/v1/managedclusters/cluster1',
         )
         .reply(
           200,
-          require(`${__dirname}/../fixtures/cluster.open-cluster-management.io/managedclusters/cluster1.json`),
+          require(`${FIXTURES_DIR}/cluster.open-cluster-management.io/managedclusters/cluster1.json`),
         )
         .get(
           '/apis/cluster.open-cluster-management.io/v1/managedclusters/non_existent_cluster',
         )
-        .reply(404, {
-          kind: 'Status',
-          apiVersion: 'v1',
-          metadata: {},
-          status: 'Failure',
-          message:
-            'managedclusters.cluster.open-cluster-management.io "non_existent_cluster" not found',
-          reason: 'NotFound',
-          details: {
-            name: 'non_existent_cluster',
-            group: 'cluster.open-cluster-management.io',
-            kind: 'managedclusters',
-          },
-          code: 404,
-        })
+        .reply(
+          404,
+          require(`${FIXTURES_DIR}/cluster.open-cluster-management.io/managedclusters/non_existent_cluster.json`),
+        )
         .get(
           '/apis/internal.open-cluster-management.io/v1beta1/namespaces/cluster1/managedclusterinfos/cluster1',
         )
         .reply(
           200,
-          require(`${__dirname}/../fixtures/internal.open-cluster-management.io/managedclusterinfos/cluster1.json`),
+          require(`${FIXTURES_DIR}/internal.open-cluster-management.io/managedclusterinfos/cluster1.json`),
         )
         .get(
           '/apis/internal.open-cluster-management.io/v1beta1/namespaces/local-cluster/managedclusterinfos/local-cluster',
         )
         .reply(
           200,
-          require(`${__dirname}/../fixtures/internal.open-cluster-management.io/managedclusterinfos/local-cluster.json`),
+          require(`${FIXTURES_DIR}/internal.open-cluster-management.io/managedclusterinfos/local-cluster.json`),
         )
         .persist();
     });

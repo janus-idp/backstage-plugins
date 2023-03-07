@@ -15,10 +15,25 @@
  */
 
 import { getRootLogger } from '@backstage/backend-common';
+import { handlers } from '../__fixtures__/handlers';
+import { startStandaloneServer } from '../dev';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { setupServer } from 'msw/node';
 
 const logger = getRootLogger();
+const port = process.env.PLUGIN_PORT ? Number(process.env.PLUGIN_PORT) : 7007;
+const server = setupServer(...handlers);
+
+server.listen();
+
+startStandaloneServer({ port, enableCors: false, logger }).catch(err => {
+  logger.error(err);
+  server.close();
+  process.exit(1);
+});
 
 process.on('SIGINT', () => {
   logger.info('CTRL+C pressed; exiting.');
+  server.close();
   process.exit(0);
 });
