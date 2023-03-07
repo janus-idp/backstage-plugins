@@ -1,16 +1,21 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, type ReactNode, FormEvent } from 'react';
 import validator from '@rjsf/validator-ajv8';
 import { Form } from './Form/Form';
-import { IChangeEvent } from '@rjsf/core-v5';
-import { type JsonValue } from '@backstage/types';
-import { FormSchema } from '../types';
+import { FormState, type FormProps, type IChangeEvent } from '@rjsf/core-v5';
+import type { FormSchema } from '../types';
 
-interface StepperProps {
+type StepperProps = Pick<FormProps, 'onSubmit'> & {
   formSchema: FormSchema;
-}
+  children?: ReactNode;
+};
 
-export function Stepper(props: StepperProps): JSX.Element {
+export function Stepper({
+  formSchema,
+  onSubmit,
+  children,
+}: StepperProps): JSX.Element {
   const [formState, setFormState] = useState<Record<string, any>>({});
+
 
   const handleChange = useCallback(
     (e: IChangeEvent) =>
@@ -18,12 +23,11 @@ export function Stepper(props: StepperProps): JSX.Element {
     [setFormState],
   );
 
-  const handleNext = async ({
-    formData = {},
-  }: {
-    formData?: Record<string, JsonValue>;
-  }) => {
-    setFormState(current => ({ ...current, ...formData }));
+  const handleSubmit = async (data: IChangeEvent, e: FormEvent<any>) => {
+    if(!onSubmit) {
+      return;
+    }
+    await onSubmit(data, e);
   };
 
   return (
@@ -34,8 +38,10 @@ export function Stepper(props: StepperProps): JSX.Element {
       onChange={handleChange}
       formData={formState}
       formContext={{ formData: formState }}
-      onSubmit={handleNext}
-      {...props.formSchema}
-    />
+      onSubmit={handleSubmit}
+      {...formSchema}
+    >
+      {children}
+    </Form>
   );
 }

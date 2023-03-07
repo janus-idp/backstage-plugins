@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   ContentHeader,
   InfoCard,
@@ -10,15 +10,44 @@ import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { Stepper } from './Stepper';
 import { WorkflowParametersContextProvider } from '../../context/WorkflowParametersContext';
 import { ParodosPage } from '../ParodosPage';
-import { Typography } from '@material-ui/core';
+import { Typography, Button } from '@material-ui/core';
 import { useWorkflowDefinitionToJsonSchema } from '../../hooks/useWorkflowDefinitionToJsonSchema';
+import { useGetProjectAssessmentSchema } from './useGetProjectAssessmentSchema';
+import type { AssessmentStatusType, ProjectType } from '../types';
+import useAsyncFn from 'react-use/lib/useAsyncFn';
+import { useBackendUrl } from '../api';
+import { IChangeEvent } from '@rjsf/core-v5';
 
 function RJSFWorkflowView(): JSX.Element {
+  const [, setProject] = useState<ProjectType>();
+  const backendUrl = useBackendUrl();
+  const [assessmentStatus, setAssessmentStatus] = useState<AssessmentStatusType>('none');
   const {
     loading,
     error,
     value: formSchema,
   } = useWorkflowDefinitionToJsonSchema('ASSESSMENT');
+  const [, startAssessment] = useAsyncFn(async ({formData}: IChangeEvent) => {
+    setAssessmentStatus('inprogress');
+
+    const response = await fetch(
+      `${backendUrl}/api/proxy/parodos/projects`,
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          name: formData.projectName,
+        }),
+      },
+    );
+
+    const prj = (await response.json()) as ProjectType;
+    setProject(prj);
+
+
+    setAssessmentStatus('complete');
+  }, []);
+
+  const assessmentSchema = useGetProjectAssessmentSchema(formSchema);
 
   const errorApi = useApi(errorApiRef);
 
@@ -38,9 +67,18 @@ function RJSFWorkflowView(): JSX.Element {
         it qualifies for.
       </Typography>
       {loading && <Progress />}
-      {formSchema && (
+      {assessmentSchema.schema && (
         <InfoCard noPadding>
-          <Stepper formSchema={formSchema} />
+          <Stepper formSchema={assessmentSchema} onSubmit={startAssessment}>
+            <Button
+              type="submit"
+              disabled={assessmentStatus === 'inprogress'}
+              variant="contained"
+              color="primary"
+            >
+              {assessmentStatus === 'inprogress' ? 'START ASSESSMENT' : 'IN PROGRESS'}
+            </Button>
+          </Stepper>
         </InfoCard>
       )}
     </ParodosPage>

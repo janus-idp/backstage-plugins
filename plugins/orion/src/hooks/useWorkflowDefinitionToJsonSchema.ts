@@ -2,12 +2,12 @@ import { useGetWorkflowDefinition } from './useGetWorkflowDefinitions';
 import {
   type WorkFlowTaskParameterType,
   workflowDefinitionSchema,
-} from '../models/workflowDefinitionSchema'
+} from '../models/workflowDefinitionSchema';
 import { assert } from 'assert-ts';
 import { FormSchema } from '../components/types';
 import { type AsyncState } from 'react-use/lib/useAsync';
 
-function getJsonSchemaType(type: WorkFlowTaskParameterType) {
+export function getJsonSchemaType(type: WorkFlowTaskParameterType) {
   switch (type) {
     case 'PASSWORD':
     case 'TEXT':
@@ -20,7 +20,7 @@ function getJsonSchemaType(type: WorkFlowTaskParameterType) {
   }
 }
 
-function getUiSchema(type: WorkFlowTaskParameterType) {
+export function getUiSchema(type: WorkFlowTaskParameterType) {
   switch (type) {
     case 'PASSWORD':
       return {
@@ -39,7 +39,9 @@ function getUiSchema(type: WorkFlowTaskParameterType) {
   }
 }
 
-export function useWorkflowDefinitionToJsonSchema(workflowDefinition: string): AsyncState<FormSchema> {
+export function useWorkflowDefinitionToJsonSchema(
+  workflowDefinition: string,
+): AsyncState<FormSchema> {
   const result = useGetWorkflowDefinition(workflowDefinition);
 
   if (!result.value) {
