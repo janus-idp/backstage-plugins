@@ -73,9 +73,13 @@ const InnerWorkloadNode: React.FC<InnerWorkloadNodeProps> = observer(
     const controller = useVisualizationController();
     const detailsLevel = controller.getGraph().getDetailsLevel();
     const showDetails = hover || detailsLevel !== ScaleDetailsLevel.low;
-    const nodeDecorators = React.useMemo(() => showDetails
-      ? getNodeDecorators(element, decorators, decoratorRadius)
-      : null, [showDetails, element, decorators, decoratorRadius]);
+    const nodeDecorators = React.useMemo(
+      () =>
+        showDetails
+          ? getNodeDecorators(element, decorators, decoratorRadius)
+          : null,
+      [showDetails, element, decorators, decoratorRadius],
+    );
 
     return (
       <g className="tp-workload-node">

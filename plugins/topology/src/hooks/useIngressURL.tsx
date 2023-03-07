@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { K8sWorkloadResource } from '../types/types';
-import { getRoutesURL } from '../utils/resource-utils';
+import { getIngressesURL } from '../utils/resource-utils';
 import { useIngressesWatcher } from './useIngressesWatcher';
 
 export const useIngressURL = (resource: K8sWorkloadResource): string | null => {
@@ -12,7 +12,10 @@ export const useIngressURL = (resource: K8sWorkloadResource): string | null => {
     return ingressResources.ingresses;
   }, [ingressResources]);
 
-  const watchedURL = React.useMemo(() => getRoutesURL(ingresses), [ingresses]);
+  const watchedURL = React.useMemo(
+    () => getIngressesURL(ingresses),
+    [ingresses],
+  );
   const url = watchedURL;
   if (!url || !(url.startsWith('http://') || url.startsWith('https://'))) {
     return null;

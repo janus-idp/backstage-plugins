@@ -447,3 +447,25 @@ export const mockKubernetesResponse = {
     },
   ],
 };
+
+export const mockK8sResourcesData = {
+  loading: false,
+  error: '',
+  watchResourcesData: {
+    deployments: {
+      data: mockKubernetesResponse.deployments,
+    },
+    pods: {
+      data: mockKubernetesResponse.pods,
+    },
+    replicaSets: {
+      data: mockKubernetesResponse.replicaSets,
+    },
+    services: {
+      data: mockKubernetesResponse.services,
+    },
+    ingresses: {
+      data: mockKubernetesResponse.ingresses,
+    },
+  },
+};

@@ -29,9 +29,11 @@ export const useIngressesWatcher = (
     }
   }, [error, loading, watchResourcesData]);
 
-  const servicesNames = React.useMemo(
+  const servicesNames: string[] = React.useMemo(
     () =>
-      !watchedServices.loadError && watchedServices.loaded
+      !watchedServices.loadError &&
+      watchedServices.loaded &&
+      watchedServices.services
         ? watchedServices.services.map((s: V1Service) => s.metadata?.name)
         : [],
     [

@@ -97,7 +97,7 @@ export const getServicesForResource = (
   });
 };
 
-export const getRouteWebURL = (ingress: V1Ingress): string => {
+export const getIngressWebURL = (ingress: V1Ingress): string => {
   const scheme = ingress.spec?.tls ? 'https' : 'http';
   const { host, http } = ingress.spec?.rules?.[0] || {};
   let url = `${scheme}://${host}`;
@@ -107,13 +107,10 @@ export const getRouteWebURL = (ingress: V1Ingress): string => {
   return url;
 };
 
-export const getRoutesURL = (ingresses: V1Ingress[]): string | null => {
-  if (
-    ingresses.length > 0 &&
-    ingresses[0]?.spec?.rules &&
-    ingresses[0]?.spec?.rules?.length > 0
-  ) {
-    return getRouteWebURL(ingresses[0]);
+export const getIngressesURL = (ingresses: V1Ingress[] = []): string | null => {
+  const [ingress] = ingresses;
+  if (ingress && ingress.spec?.rules) {
+    return getIngressWebURL(ingress);
   }
   return null;
 };
