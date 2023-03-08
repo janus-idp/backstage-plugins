@@ -11,7 +11,6 @@ import { Stepper } from './Stepper';
 import { WorkflowParametersContextProvider } from '../../context/WorkflowParametersContext';
 import { ParodosPage } from '../ParodosPage';
 import { Typography, Button, makeStyles, Grid } from '@material-ui/core';
-import { useWorkflowDefinitionToJsonSchema } from '../../hooks/useWorkflowDefinitionToJsonSchema';
 import { useGetProjectAssessmentSchema } from './useGetProjectAssessmentSchema';
 import type { AssessmentStatusType } from '../types';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
@@ -35,11 +34,7 @@ function RJSFWorkflowView(): JSX.Element {
     useState<AssessmentStatusType>('none');
   const styles = useStyles();
 
-  const {
-    loading,
-    error,
-    value: formSchema,
-  } = useWorkflowDefinitionToJsonSchema('ASSESSMENT', 'byType');
+  const { loading, error, value: formSchema } = useGetProjectAssessmentSchema();
 
   const [, startAssessment] = useAsyncFn(async ({ formData }: IChangeEvent) => {
     setAssessmentStatus('inprogress');
@@ -55,8 +50,6 @@ function RJSFWorkflowView(): JSX.Element {
 
     setAssessmentStatus('complete');
   }, []);
-
-  const assessmentSchema = useGetProjectAssessmentSchema(formSchema);
 
   const errorApi = useApi(errorApiRef);
 
@@ -81,12 +74,12 @@ function RJSFWorkflowView(): JSX.Element {
         it qualifies for.
       </Typography>
       {loading && <Progress />}
-      {assessmentSchema.schema && (
+      {formSchema?.schema && (
         <InfoCard className={styles.fullHeight}>
           <Grid container direction="row">
             <Grid item xs={12} xl={8}>
               <Stepper
-                formSchema={assessmentSchema}
+                formSchema={formSchema}
                 onSubmit={startAssessment}
                 disabled={disableForm}
               >

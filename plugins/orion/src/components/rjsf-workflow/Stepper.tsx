@@ -8,7 +8,7 @@ import { JsonValue } from '@backstage/types';
 
 type StepperProps = Pick<
   FormProps,
-  'onSubmit' | 'disabled' | 'onChange' | 'className'
+  'onSubmit' | 'disabled' | 'onChange' | 'className' | 'transformErrors'
 > & {
   formSchema: FormSchema;
   children?: ReactNode;
@@ -20,6 +20,7 @@ export function Stepper({
   onChange = (e: IChangeEvent) => e,
   disabled = false,
   className,
+  transformErrors,
   children,
 }: StepperProps): JSX.Element {
   const [formState, setFormState] = useState<Record<string, JsonValue>>({});
@@ -48,6 +49,7 @@ export function Stepper({
         ...formSchema.uiSchema,
         ['ui:ObjectFieldTemplate']: FluidLayout as any,
       }}
+      transformErrors={transformErrors}
     >
       {children}
     </Form>

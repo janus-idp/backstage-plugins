@@ -1,36 +1,34 @@
-import { useMemo } from 'react';
-import { getUiSchema } from '../../hooks/useWorkflowDefinitionToJsonSchema';
+import { type AsyncState } from 'react-use/lib/useAsync';
+import { useGetWorkflowDefinition } from '../../hooks/useGetWorkflowDefinitions';
 import { FormSchema } from '../types';
+import { jsonSchemaFromWorkflowDefinition } from '../../hooks/useWorkflowDefinitionToJsonSchema';
 
-export function useGetProjectAssessmentSchema(
-  formSchema: FormSchema | undefined,
-): FormSchema {
-  // TODO: tidy this up.  Use deepmerge maybe
-  return useMemo(
-    () =>
-      !formSchema
-        ? {}
-        : {
-            ...formSchema,
-            schema: {
-              properties: {
-                projectName: {
-                  title: 'Name',
-                  type: 'string',
-                },
-                ...(formSchema.schema.properties as any),
-              },
-              required: [...(formSchema.schema.required as any), 'projectName'],
-            },
-            uiSchema: {
-              projectName: {
-                ...getUiSchema('TEXT'),
-                'ui:help': 'New Project',
-                'ui:autocomplete': 'Off',
-              },
-              ...formSchema.uiSchema,
-            },
-          },
-    [formSchema],
-  ) as FormSchema;
+export function useGetProjectAssessmentSchema(): AsyncState<FormSchema> {
+  // TODO: check this
+  const result = useGetWorkflowDefinition('ASSESSMENT', 'byType');
+
+  if (!result.value) {
+    return { ...result, value: undefined };
+  }
+
+  const cloned = { ...result.value };
+
+  // not sure why this is not coming from the API
+  cloned.tasks.unshift({
+    id: 'project-name',
+    name: 'project-name',
+    parameters: [
+      {
+        key: 'Name',
+        description: 'New Project',
+        optional: false,
+        type: 'TEXT',
+      },
+    ],
+    outputs: [],
+  });
+
+  const formSchema = jsonSchemaFromWorkflowDefinition(cloned);
+
+  return { ...result, value: formSchema };
 }

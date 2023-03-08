@@ -2,6 +2,7 @@ import { useGetWorkflowDefinition } from './useGetWorkflowDefinitions';
 import {
   type WorkFlowTaskParameterType,
   workflowDefinitionSchema,
+  WorkflowDefinition,
 } from '../models/workflowDefinitionSchema';
 import { assert } from 'assert-ts';
 import { FormSchema } from '../components/types';
@@ -11,7 +12,6 @@ export function getJsonSchemaType(type: WorkFlowTaskParameterType) {
   switch (type) {
     case 'PASSWORD':
     case 'TEXT':
-    case 'URL':
       return {
         type: 'string',
       };
@@ -32,6 +32,11 @@ export function getJsonSchemaType(type: WorkFlowTaskParameterType) {
     case 'MOCK-SELECT':
       return {
         type: 'array',
+      };
+    case 'URL':
+      return {
+        type: 'string',
+        pattern: '^(https?)://',
       };
     default:
       return {
@@ -55,10 +60,6 @@ export function getUiSchema(type: WorkFlowTaskParameterType) {
       return {
         'ui:widget': 'email',
       };
-    // case 'MOCK-SELECT':
-    //   return {
-    //     'ui:widget': 'checkboxes'
-    //   }
     case 'URL':
     case 'NUMBER':
       return {};
@@ -67,32 +68,13 @@ export function getUiSchema(type: WorkFlowTaskParameterType) {
   }
 }
 
-export function useWorkflowDefinitionToJsonSchema(
-  workflowDefinition: string,
-  filterType: 'byId' | 'byType',
-): AsyncState<FormSchema> {
-  const result = useGetWorkflowDefinition(workflowDefinition, filterType);
-
-  if (!result.value) {
-    return { ...result, value: undefined };
-  }
-
-  const { value: definition } = result;
-
-  const parseResult = workflowDefinitionSchema.safeParse(definition);
-
-  if (result.error) {
-    return { loading: false, error: result.error, value: undefined };
-  }
-
-  assert(parseResult.success, `workflowDefinitionSchema parse failed.`);
-
-  const { data: raw } = parseResult;
-
-  const parameters = raw.tasks.flatMap(x => x.parameters);
+export function jsonSchemaFromWorkflowDefinition(
+  workflowDefinition: WorkflowDefinition,
+): FormSchema {
+  const parameters = workflowDefinition.tasks.flatMap(x => x.parameters);
 
   const schema: Record<string, any> = {
-    title: raw.description ?? raw.type,
+    title: workflowDefinition.description ?? workflowDefinition.type,
     properties: {},
     required: [],
   };
@@ -118,25 +100,6 @@ export function useWorkflowDefinitionToJsonSchema(
         type: 'string',
         ...selectOptions,
       };
-
-      // schema.properties[key] = {
-      //   ...schema.properties[key],
-      //   items: {
-      //     type: 'string',
-      //     ...selectOptions
-      //   }
-      // }
-
-      // schema.properties[key] = {
-      //   ...schema.properties[key],
-      //   type: "array",
-      //   items: {
-      //     type: "boolean",
-      //     enum: options.map(option => option.key),
-      //     enumNames: options.map(option => option.value),
-      //   },
-      //   uniqueItems: true,
-      // }
     }
 
     uiSchema[key] = {
@@ -150,5 +113,32 @@ export function useWorkflowDefinitionToJsonSchema(
     }
   }
 
-  return { value: { schema, uiSchema }, loading: false, error: undefined };
+  return { schema, uiSchema };
+}
+
+export function useWorkflowDefinitionToJsonSchema(
+  workflowDefinition: string,
+  filterType: 'byId' | 'byType',
+): AsyncState<FormSchema> {
+  const result = useGetWorkflowDefinition(workflowDefinition, filterType);
+
+  if (!result.value) {
+    return { ...result, value: undefined };
+  }
+
+  const { value: definition } = result;
+
+  const parseResult = workflowDefinitionSchema.safeParse(definition);
+
+  if (result.error) {
+    return { loading: false, error: result.error, value: undefined };
+  }
+
+  assert(parseResult.success, `workflowDefinitionSchema parse failed.`);
+
+  const { data: raw } = parseResult;
+
+  const formSchema = jsonSchemaFromWorkflowDefinition(raw);
+
+  return { value: formSchema, loading: false, error: undefined };
 }

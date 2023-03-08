@@ -19,6 +19,11 @@ import { useWorkflowDefinitionToJsonSchema } from '../../hooks/useWorkflowDefini
 import { assert } from 'assert-ts';
 import { Stepper } from './Stepper';
 import { useGetWorkflowDefinition } from '../../hooks/useGetWorkflowDefinitions';
+import useAsyncFn from 'react-use/lib/useAsyncFn';
+import { useBackendUrl } from '../api/useBackendUrl';
+import { type IChangeEvent } from '@rjsf/core-v5';
+import { WorkflowExecuteResponseType } from '../types';
+import { type RJSFValidationError } from '@rjsf/utils';
 
 interface OnboardingProps {
   isNew: boolean;
@@ -37,6 +42,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export function Onboarding({ isNew }: OnboardingProps): JSX.Element {
+  const backendUrl = useBackendUrl();
   const { workflowId, projectId } = useParams();
   const styles = useStyles();
 
@@ -52,11 +58,50 @@ export function Onboarding({ isNew }: OnboardingProps): JSX.Element {
 
   const navigate = useNavigate();
 
-  const onStart = async () => {
-    console.log(workflow);
-    console.log(navigate);
-    console.log(projectId);
-  };
+  const [
+    { error: startWorkflowError, loading: startWorkflowLoading },
+    startWorkflow,
+  ] = useAsyncFn(
+    async ({ formData }: IChangeEvent) => {
+      assert(!!workflow);
+      assert(!!projectId);
+
+      const payload = {
+        projectId,
+        workFlowName: workflow.name || 'missing',
+        workFlowTasks: workflow.tasks.map(task => {
+          return {
+            name: task.name,
+            arguments: task.parameters.map(param => {
+              const value = formData[param.key];
+
+              return {
+                key: param.key,
+                value: value ?? null,
+              };
+            }),
+          };
+        }),
+      };
+
+      const data = await fetch(`${backendUrl}/api/proxy/parodos/workflows`, {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      });
+
+      const response = (await data.json()) as WorkflowExecuteResponseType;
+      const executionId = response.workFlowExecutionId;
+
+      navigate(`/parodos/onboarding/${executionId}/workflow-detail`, {
+        state: { isNew: isNew },
+      });
+    },
+    [workflow, projectId],
+  );
+
+  if (startWorkflowError) {
+    throw startWorkflowError;
+  }
 
   return (
     <ParodosPage>
@@ -71,13 +116,24 @@ export function Onboarding({ isNew }: OnboardingProps): JSX.Element {
       <Typography paragraph>
         You are onboarding {workflow?.id || '...'}.
       </Typography>
-      {loading && <Progress />}
+      {loading || (startWorkflowLoading && <Progress />)}
       {formSchema?.schema && (
         <InfoCard>
           <Typography paragraph>
             Please provide additional information related to your project.
           </Typography>
-          <Stepper formSchema={formSchema} onSubmit={onStart}>
+          <Stepper
+            formSchema={formSchema}
+            onSubmit={startWorkflow}
+            disabled={startWorkflowLoading}
+            transformErrors={(errors: RJSFValidationError[]) => {
+              return errors.map(err =>
+                err?.message?.includes('must match pattern')
+                  ? { ...err, message: 'invalid url' }
+                  : err,
+              );
+            }}
+          >
             <ButtonGroup orientation="vertical">
               <Button
                 type="submit"
