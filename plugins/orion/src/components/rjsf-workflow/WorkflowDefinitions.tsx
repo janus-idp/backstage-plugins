@@ -51,7 +51,7 @@ export function WorkflowDefinitions({
       </Typography>
       <Grid container direction="row" spacing={2}>
         {workflowDefinitions.map(workflow => (
-          <Grid item xs={11} lg={6} xl={5}>
+          <Grid item xs={12} lg={6} xl={4} key={workflow.id}>
             <Card
               raised={false}
               key={workflow.name}

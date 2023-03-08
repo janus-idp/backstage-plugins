@@ -29,6 +29,10 @@ export function getJsonSchemaType(type: WorkFlowTaskParameterType) {
         type: 'string',
         format: 'email',
       };
+    case 'MOCK-SELECT':
+      return {
+        type: 'array',
+      };
     default:
       return {
         type: 'string',
@@ -51,6 +55,10 @@ export function getUiSchema(type: WorkFlowTaskParameterType) {
       return {
         'ui:widget': 'email',
       };
+    // case 'MOCK-SELECT':
+    //   return {
+    //     'ui:widget': 'checkboxes'
+    //   }
     case 'URL':
     case 'NUMBER':
       return {};
@@ -91,7 +99,7 @@ export function useWorkflowDefinitionToJsonSchema(
 
   const uiSchema: Record<string, any> = {};
 
-  for (const { key, type, description, optional } of parameters) {
+  for (const { key, type, description, optional, options = [] } of parameters) {
     const required = !optional;
 
     schema.properties[key] = {
@@ -99,9 +107,42 @@ export function useWorkflowDefinitionToJsonSchema(
       ...getJsonSchemaType(type),
     };
 
+    if (options.length > 0) {
+      const selectOptions = {
+        enum: options.map(option => option.key),
+        enumNames: options.map(option => option.value),
+      };
+
+      schema.properties[key] = {
+        ...schema.properties[key],
+        type: 'string',
+        ...selectOptions,
+      };
+
+      // schema.properties[key] = {
+      //   ...schema.properties[key],
+      //   items: {
+      //     type: 'string',
+      //     ...selectOptions
+      //   }
+      // }
+
+      // schema.properties[key] = {
+      //   ...schema.properties[key],
+      //   type: "array",
+      //   items: {
+      //     type: "boolean",
+      //     enum: options.map(option => option.key),
+      //     enumNames: options.map(option => option.value),
+      //   },
+      //   uniqueItems: true,
+      // }
+    }
+
     uiSchema[key] = {
       ...getUiSchema(type),
       'ui:help': description,
+      'ui:autocomplete': 'Off',
     };
 
     if (required) {

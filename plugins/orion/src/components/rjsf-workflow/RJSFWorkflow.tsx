@@ -10,7 +10,7 @@ import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { Stepper } from './Stepper';
 import { WorkflowParametersContextProvider } from '../../context/WorkflowParametersContext';
 import { ParodosPage } from '../ParodosPage';
-import { Typography, Button } from '@material-ui/core';
+import { Typography, Button, makeStyles, Grid } from '@material-ui/core';
 import { useWorkflowDefinitionToJsonSchema } from '../../hooks/useWorkflowDefinitionToJsonSchema';
 import { useGetProjectAssessmentSchema } from './useGetProjectAssessmentSchema';
 import type { AssessmentStatusType } from '../types';
@@ -21,12 +21,19 @@ import { type Project } from '../../models/workflowDefinitionSchema';
 import { WorkflowDefinitions } from './WorkflowDefinitions';
 import { useGetWorkflowDefinitions } from '../../hooks/useGetWorkflowDefinitions';
 
+const useStyles = makeStyles({
+  fullHeight: {
+    height: '100%',
+  },
+});
+
 function RJSFWorkflowView(): JSX.Element {
   const [project, setProject] = useState<Project>();
   const backendUrl = useBackendUrl();
   const { value: workflowDefinitions = [] } = useGetWorkflowDefinitions();
   const [assessmentStatus, setAssessmentStatus] =
     useState<AssessmentStatusType>('none');
+  const styles = useStyles();
 
   const {
     loading,
@@ -60,6 +67,9 @@ function RJSFWorkflowView(): JSX.Element {
   }, [error, errorApi]);
 
   const inProgress = assessmentStatus === 'inprogress';
+  const complete = assessmentStatus === 'complete';
+
+  const disableForm = inProgress || complete;
 
   return (
     <ParodosPage stretch>
@@ -72,31 +82,39 @@ function RJSFWorkflowView(): JSX.Element {
       </Typography>
       {loading && <Progress />}
       {assessmentSchema.schema && (
-        <InfoCard>
-          <Stepper
-            formSchema={assessmentSchema}
-            onSubmit={startAssessment}
-            disabled={inProgress}
-          >
-            <Button
-              type="submit"
-              disabled={inProgress}
-              variant="contained"
-              color="primary"
-            >
-              {inProgress ? 'IN PROGRESS' : 'START ASSESSMENT'}
-            </Button>
-          </Stepper>
-          {assessmentStatus === 'complete' && project && (
-            <WorkflowDefinitions
-              project={project}
-              workflowDefinitions={workflowDefinitions.filter(
-                workflowDefinition =>
-                  // TODO: is following correct?
-                  !['ASSESSMENT', 'CHECKER'].includes(workflowDefinition.type),
+        <InfoCard className={styles.fullHeight}>
+          <Grid container direction="row">
+            <Grid item xs={12} xl={8}>
+              <Stepper
+                formSchema={assessmentSchema}
+                onSubmit={startAssessment}
+                disabled={disableForm}
+              >
+                <Button
+                  type="submit"
+                  disabled={disableForm}
+                  variant="contained"
+                  color="primary"
+                >
+                  {inProgress ? 'IN PROGRESS' : 'START ASSESSMENT'}
+                </Button>
+              </Stepper>
+            </Grid>
+            <Grid item xs={12}>
+              {assessmentStatus === 'complete' && project && (
+                <WorkflowDefinitions
+                  project={project}
+                  workflowDefinitions={workflowDefinitions.filter(
+                    workflowDefinition =>
+                      // TODO: is following correct?
+                      !['ASSESSMENT', 'CHECKER'].includes(
+                        workflowDefinition.type,
+                      ),
+                  )}
+                />
               )}
-            />
-          )}
+            </Grid>
+          </Grid>
         </InfoCard>
       )}
     </ParodosPage>

@@ -23,10 +23,6 @@ const projectFilterItems: { label: string; value: ProjectStatusType }[] = [
 ];
 
 export const useStyles = makeStyles(theme => ({
-  content: {
-    minHeight: 0,
-    maxHeight: '100%',
-  },
   fullHeight: {
     display: 'flex',
     minHeight: 0,
@@ -113,14 +109,14 @@ export const ProjectOverviewPage = (): JSX.Element => {
   }
 
   return (
-    <ParodosPage stretch className={styles.content}>
+    <ParodosPage stretch>
       <ContentHeader title="Projects overview">
         <SupportButton title="Need help?">Lorem Ipsum</SupportButton>
       </ContentHeader>
       <Card className={styles.fullHeight}>
         <CardContent>
           <Grid container direction="row" alignItems="center">
-            <Grid item xs={11} md={4} lg={2}>
+            <Grid item xs={12} md={4} lg={2}>
               <Select
                 onChange={onFilterProjects}
                 label="Filter by"
@@ -130,7 +126,7 @@ export const ProjectOverviewPage = (): JSX.Element => {
               />
             </Grid>
 
-            <Grid item xs={11} md={7} lg={9}>
+            <Grid item xs={12} md={8} lg={10}>
               <Link to="/parodos/workflow" className={styles.addIcon}>
                 <Add />
                 Add new project

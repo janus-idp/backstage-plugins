@@ -25,7 +25,8 @@ export function useGetProjectAssessmentSchema(
             uiSchema: {
               projectName: {
                 ...getUiSchema('TEXT'),
-                'ui:help': 'Project name',
+                'ui:help': 'New Project',
+                'ui:autocomplete': 'Off',
               },
               ...formSchema.uiSchema,
             },
