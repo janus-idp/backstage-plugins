@@ -27,11 +27,13 @@ function RJSFWorkflowView(): JSX.Element {
   const { value: workflowDefinitions = [] } = useGetWorkflowDefinitions();
   const [assessmentStatus, setAssessmentStatus] =
     useState<AssessmentStatusType>('none');
+
   const {
     loading,
     error,
     value: formSchema,
   } = useWorkflowDefinitionToJsonSchema('ASSESSMENT', 'byType');
+
   const [, startAssessment] = useAsyncFn(async ({ formData }: IChangeEvent) => {
     setAssessmentStatus('inprogress');
 
@@ -57,6 +59,8 @@ function RJSFWorkflowView(): JSX.Element {
     }
   }, [error, errorApi]);
 
+  const inProgress = assessmentStatus === 'inprogress';
+
   return (
     <ParodosPage stretch>
       <ContentHeader title="Project assessment">
@@ -69,29 +73,31 @@ function RJSFWorkflowView(): JSX.Element {
       {loading && <Progress />}
       {assessmentSchema.schema && (
         <InfoCard>
-          <Stepper formSchema={assessmentSchema} onSubmit={startAssessment}>
+          <Stepper
+            formSchema={assessmentSchema}
+            onSubmit={startAssessment}
+            disabled={inProgress}
+          >
             <Button
               type="submit"
-              disabled={assessmentStatus === 'inprogress'}
+              disabled={inProgress}
               variant="contained"
               color="primary"
             >
-              {assessmentStatus === 'inprogress'
-                ? 'IN PROGRESS'
-                : 'START ASSESSMENT'}
+              {inProgress ? 'IN PROGRESS' : 'START ASSESSMENT'}
             </Button>
           </Stepper>
-        </InfoCard>
-      )}
-      {assessmentStatus === 'complete' && project && (
-        <WorkflowDefinitions
-          project={project}
-          workflowDefinitions={workflowDefinitions.filter(
-            workflowDefinition =>
-              // TODO: is following correct?
-              !['ASSESSMENT', 'CHECKER'].includes(workflowDefinition.type),
+          {assessmentStatus === 'complete' && project && (
+            <WorkflowDefinitions
+              project={project}
+              workflowDefinitions={workflowDefinitions.filter(
+                workflowDefinition =>
+                  // TODO: is following correct?
+                  !['ASSESSMENT', 'CHECKER'].includes(workflowDefinition.type),
+              )}
+            />
           )}
-        />
+        </InfoCard>
       )}
     </ParodosPage>
   );

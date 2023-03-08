@@ -12,11 +12,27 @@ export function getJsonSchemaType(type: WorkFlowTaskParameterType) {
     case 'PASSWORD':
     case 'TEXT':
     case 'URL':
-      return 'string';
+      return {
+        type: 'string',
+      };
     case 'NUMBER':
-      return 'number';
+      return {
+        type: 'number',
+      };
+    case 'DATE':
+      return {
+        type: 'string',
+        format: 'date',
+      };
+    case 'EMAIL':
+      return {
+        type: 'string',
+        format: 'email',
+      };
     default:
-      return 'string';
+      return {
+        type: 'string',
+      };
   }
 }
 
@@ -30,6 +46,10 @@ export function getUiSchema(type: WorkFlowTaskParameterType) {
     case 'TEXT':
       return {
         'ui:emptyValue': undefined,
+      };
+    case 'EMAIL':
+      return {
+        'ui:widget': 'email',
       };
     case 'URL':
     case 'NUMBER':
@@ -69,19 +89,19 @@ export function useWorkflowDefinitionToJsonSchema(
     required: [],
   };
 
-  let uiSchema: Record<string, any> = {};
+  const uiSchema: Record<string, any> = {};
 
-  for (const { key, type, optional } of parameters) {
+  for (const { key, type, description, optional } of parameters) {
     const required = !optional;
 
     schema.properties[key] = {
-      title: undefined,
-      type: getJsonSchemaType(type),
+      title: key,
+      ...getJsonSchemaType(type),
     };
 
-    uiSchema = {
-      ...uiSchema,
+    uiSchema[key] = {
       ...getUiSchema(type),
+      'ui:help': description,
     };
 
     if (required) {

@@ -22,15 +22,19 @@ interface WorkflowDefinitionsProps {
   workflowDefinitions: WorkflowDefinition[];
 }
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   applicationHeader: {
-    background: 'gray',
+    background: theme.palette.background.default,
+    color: theme.palette.text.primary,
+    '& h4': {
+      fontWeight: 400,
+    },
   },
   applicationCard: {
-    // height: '15rem',
-    // width: '17rem',
+    background: theme.palette.background.default,
+    height: '100%',
   },
-});
+}));
 
 export function WorkflowDefinitions({
   project,
@@ -47,8 +51,12 @@ export function WorkflowDefinitions({
       </Typography>
       <Grid container direction="row" spacing={2}>
         {workflowDefinitions.map(workflow => (
-          <Grid item>
-            <Card key={workflow.name} raised className={styles.applicationCard}>
+          <Grid item xs={11} lg={6} xl={5}>
+            <Card
+              raised={false}
+              key={workflow.name}
+              className={styles.applicationCard}
+            >
               <CardMedia>
                 <ItemCardHeader
                   title={workflow.name}

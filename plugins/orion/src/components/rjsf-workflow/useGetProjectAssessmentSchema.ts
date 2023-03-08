@@ -15,7 +15,7 @@ export function useGetProjectAssessmentSchema(
             schema: {
               properties: {
                 projectName: {
-                  title: 'Project Name',
+                  title: 'Name',
                   type: 'string',
                 },
                 ...(formSchema.schema.properties as any),
@@ -25,6 +25,7 @@ export function useGetProjectAssessmentSchema(
             uiSchema: {
               projectName: {
                 ...getUiSchema('TEXT'),
+                'ui:help': 'Project name',
               },
               ...formSchema.uiSchema,
             },

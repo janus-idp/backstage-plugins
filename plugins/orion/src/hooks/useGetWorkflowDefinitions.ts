@@ -16,7 +16,7 @@ export function useGetWorkflowDefinitions(): AsyncState<WorkflowDefinition[]> {
 
     const workflowDefinitions = (await response.json()) as WorkflowDefinition[];
 
-    return [...workflowDefinitions, mockAndromedaWorkflowDefinition];
+    return [mockAndromedaWorkflowDefinition, ...workflowDefinitions];
   });
 }
 
