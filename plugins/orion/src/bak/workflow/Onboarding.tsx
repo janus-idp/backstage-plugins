@@ -50,7 +50,7 @@ export const OnboardingImpl: React.FC<OnboardingProps> = ({ isNew }) => {
 
         // append mock - TODO: remove
         allWorkflowDefinitions = [
-          mockAndromedaWorkflowDefinition,
+          mockAndromedaWorkflowDefinition as WorkflowDefinitionType,
           ...allWorkflowDefinitions,
         ];
 

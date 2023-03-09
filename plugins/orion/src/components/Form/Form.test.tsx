@@ -7,28 +7,25 @@ import { Form } from './Form';
 
 // very simple test to at least check we have not broken the JSONForm
 describe('<Form />', () => {
-  const mockWorkflow = {...mockAndromedaWorkflowDefinition, tasks: [mockAndromedaWorkflowDefinition.tasks[0]]};
-  const formSchema: FormSchema  = jsonSchemaFromWorkflowDefinition(mockWorkflow)
-  
+  const mockWorkflow = {
+    ...mockAndromedaWorkflowDefinition,
+    tasks: [mockAndromedaWorkflowDefinition.tasks[0]],
+  };
+  const formSchema: FormSchema = jsonSchemaFromWorkflowDefinition(mockWorkflow);
+
   it('renders the dynamic form', () => {
     const { getByRole } = render(
-      <Form
-        formSchema={formSchema}
-        onSubmit={jest.fn()}
-      />
+      <Form formSchema={formSchema} onSubmit={jest.fn()} />,
     );
 
-    expect(getByRole('textbox', {name: 'api-server'})).toBeInTheDocument()
+    expect(getByRole('textbox', { name: 'api-server' })).toBeInTheDocument();
   });
 
   it('can submit the form', async () => {
     const onSubmit = jest.fn();
 
     const { getByRole } = render(
-      <Form
-        formSchema={formSchema}
-        onSubmit={onSubmit}
-      />
+      <Form formSchema={formSchema} onSubmit={onSubmit} />,
     );
 
     await fireEvent.change(getByRole('textbox', { name: 'api-server' }), {
@@ -40,5 +37,5 @@ describe('<Form />', () => {
     });
 
     expect(onSubmit).toHaveBeenCalled();
-  })
+  });
 });

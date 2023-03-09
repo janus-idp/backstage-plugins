@@ -1,4 +1,7 @@
-import { WorkFlowTaskParameter, type WorkflowDefinition } from '../../models/workflowDefinitionSchema';
+import {
+  WorkFlowTaskParameter,
+  type WorkflowDefinition,
+} from '../../models/workflowDefinitionSchema';
 
 export const mockAndromedaWorkflowDefinition: WorkflowDefinition = {
   id: 'andromeda',

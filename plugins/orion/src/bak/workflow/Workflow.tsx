@@ -170,7 +170,7 @@ const WorkflowImpl: React.FC = () => {
 
         // mock - TODO: remove
         filteredWorkflowDefinitions = [
-          mockAndromedaWorkflowDefinition,
+          mockAndromedaWorkflowDefinition as WorkflowDefinitionType,
           ...filteredWorkflowDefinitions,
         ];
 
