@@ -1,4 +1,4 @@
-import { ProjectType } from '../types';
+import { ProjectType } from '../components/types';
 
 export const mockProjects: ProjectType[] = [
   /* TODO: https://issues.redhat.com/browse/FLPATH-52 */

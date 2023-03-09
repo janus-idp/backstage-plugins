@@ -54,8 +54,7 @@ export const ToastProvider = ({ children }: Props) => {
       }}
     >
       <Box>
-        {/* TODO: This is causing every page to have a scrollbar, it would be great to know why it is here */}
-        <div style={{ margin: 15 }}>
+        <div>
           <Snackbar
             anchorOrigin={{
               vertical: 'bottom',

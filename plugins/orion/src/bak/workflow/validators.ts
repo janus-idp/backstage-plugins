@@ -1,4 +1,4 @@
-import { WorkFlowTaskParameterType } from '../types';
+import { WorkFlowTaskParameterType } from '../../components/types';
 
 export type ValidationType = string;
 // returns error text if validation fails or empty string if validation succeeds

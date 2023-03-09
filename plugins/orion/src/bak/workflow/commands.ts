@@ -1,11 +1,11 @@
-import { WorkflowParametersContextType } from '../../context/WorkflowParametersContext';
+import { WorkflowParametersContextType } from '../context/WorkflowParametersContext';
 import {
   WorkflowDefinitionType,
   WorkflowExecuteResponseType,
   WorkflowTaskArgumentType,
   WorkFlowTaskParameterType,
   WorkflowType,
-} from '../types';
+} from '../../components/types';
 
 export const startWorkflow = async ({
   projectId,

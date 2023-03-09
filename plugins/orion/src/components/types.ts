@@ -1,5 +1,8 @@
 // Important: KEEP FOLLOWING TYPES IN SYNC WITH BACKEND TYPES
 
+import type { JsonObject } from '@backstage/types';
+import type { UiSchema } from '@rjsf/utils';
+
 export type ProjectStatusType = 'all-projects' | 'in-progress' | 'on-boarded';
 export type AssessmentStatusType = 'none' | 'inprogress' | 'complete';
 
@@ -82,3 +85,8 @@ export type WorkflowExecuteResponseType = {
 export type PropsFromComponent<C> = C extends (props: infer P) => JSX.Element
   ? P
   : never;
+
+export interface FormSchema {
+  schema: JsonObject;
+  uiSchema: UiSchema;
+}
