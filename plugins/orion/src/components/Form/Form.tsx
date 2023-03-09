@@ -38,6 +38,7 @@ export function Form({
 
   return (
     <JsonForm
+      idPrefix=""
       className={className}
       validator={validator}
       noHtml5Validate

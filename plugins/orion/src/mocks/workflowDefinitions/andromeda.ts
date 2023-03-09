@@ -1,9 +1,6 @@
-import {
-  WorkflowDefinitionType,
-  WorkFlowTaskParameterType,
-} from '../../components/types';
+import { WorkFlowTaskParameter, type WorkflowDefinition } from '../../models/workflowDefinitionSchema';
 
-export const mockAndromedaWorkflowDefinition: WorkflowDefinitionType = {
+export const mockAndromedaWorkflowDefinition: WorkflowDefinition = {
   id: 'andromeda',
   name: 'Onboard to Andromeda',
   type: 'INFRASTRUCTURE',
@@ -84,7 +81,7 @@ export const mockAndromedaWorkflowDefinition: WorkflowDefinitionType = {
   ],
 };
 
-export const mockWorkflowParams: WorkFlowTaskParameterType[] = [
+export const mockWorkflowParams: WorkFlowTaskParameter[] = [
   {
     key: 'param1',
     description: 'Some text only.',

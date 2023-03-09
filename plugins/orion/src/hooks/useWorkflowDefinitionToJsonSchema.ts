@@ -74,6 +74,7 @@ export function jsonSchemaFromWorkflowDefinition(
   const parameters = workflowDefinition.tasks.flatMap(x => x.parameters);
 
   const schema: Record<string, any> = {
+    type: 'object',
     title: workflowDefinition.description ?? workflowDefinition.type,
     properties: {},
     required: [],
