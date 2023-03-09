@@ -30,9 +30,12 @@ const isIdled = (deployment: K8sWorkloadResource): boolean => {
   ];
 };
 
-const getDeploymentRevision = (obj: K8sWorkloadResource) => {
-  const revision = getAnnotation(obj, DEPLOYMENT_REVISION_ANNOTATION);
-  return revision && Number.isFinite(revision) && parseInt(revision, 10);
+export const getDeploymentRevision = (
+  obj: K8sWorkloadResource,
+): number | null => {
+  const revisionAnnotation = getAnnotation(obj, DEPLOYMENT_REVISION_ANNOTATION);
+  const revision = revisionAnnotation && parseInt(revisionAnnotation, 10);
+  return revision && Number.isFinite(revision) ? revision : null;
 };
 
 const getOwnedResources = <T extends K8sWorkloadResource>(
