@@ -1,4 +1,4 @@
-import { ParodosPage } from '../ParodosPage';
+import { ParodosPage } from '../../ParodosPage';
 import { ContentHeader, SupportButton } from '@backstage/core-components';
 import { Chip, Typography } from '@material-ui/core';
 import { WorkFlowLogViewer } from './WorkFlowLogViewer';

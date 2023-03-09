@@ -1,5 +1,5 @@
 import React from 'react';
-import { ValidatorType } from '../components/workflow/validators';
+import { ValidatorType } from '../workflow/validators';
 
 type ParamValidationType = string;
 

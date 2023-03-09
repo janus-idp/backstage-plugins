@@ -2,7 +2,7 @@ import useAsync, { type AsyncState } from 'react-use/lib/useAsync';
 import { useBackendUrl } from '../components/api/useBackendUrl';
 import { assert } from 'assert-ts';
 import { WorkflowDefinition } from '../models/workflowDefinitionSchema';
-import { mockAndromedaWorkflowDefinition } from '../components/workflow/mockData';
+import { mockAndromedaWorkflowDefinition } from '../mocks/workflowDefinitions/andromeda';
 
 export function useGetWorkflowDefinitions(): AsyncState<WorkflowDefinition[]> {
   const backendUrl = useBackendUrl();

@@ -7,7 +7,7 @@ import {
   SupportButton,
 } from '@backstage/core-components';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { ParodosPage } from '../ParodosPage';
+import { ParodosPage } from '../../ParodosPage';
 import {
   Button,
   ButtonGroup,
@@ -15,14 +15,14 @@ import {
   makeStyles,
   Typography,
 } from '@material-ui/core';
-import { useWorkflowDefinitionToJsonSchema } from '../../hooks/useWorkflowDefinitionToJsonSchema';
+import { useWorkflowDefinitionToJsonSchema } from '../../../hooks/useWorkflowDefinitionToJsonSchema';
 import { assert } from 'assert-ts';
-import { Stepper } from './Stepper';
-import { useGetWorkflowDefinition } from '../../hooks/useGetWorkflowDefinitions';
+import { Form } from '../../Form/Form';
+import { useGetWorkflowDefinition } from '../../../hooks/useGetWorkflowDefinitions';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
-import { useBackendUrl } from '../api/useBackendUrl';
+import { useBackendUrl } from '../../api/useBackendUrl';
 import { type IChangeEvent } from '@rjsf/core-v5';
-import { WorkflowExecuteResponseType } from '../types';
+import { WorkflowExecuteResponseType } from '../../types';
 import { type RJSFValidationError } from '@rjsf/utils';
 
 interface OnboardingProps {
@@ -122,7 +122,7 @@ export function Onboarding({ isNew }: OnboardingProps): JSX.Element {
           <Typography paragraph>
             Please provide additional information related to your project.
           </Typography>
-          <Stepper
+          <Form
             formSchema={formSchema}
             onSubmit={startWorkflow}
             disabled={startWorkflowLoading}
@@ -153,7 +153,7 @@ export function Onboarding({ isNew }: OnboardingProps): JSX.Element {
                 Cancel and exit onboarding
               </Button>
             </ButtonGroup>
-          </Stepper>
+          </Form>
         </InfoCard>
       )}
     </ParodosPage>

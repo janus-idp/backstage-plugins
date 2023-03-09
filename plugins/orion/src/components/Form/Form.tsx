@@ -1,20 +1,23 @@
 import React, { useState, useCallback, type ReactNode } from 'react';
 import validator from '@rjsf/validator-ajv8';
-import { Form } from './Form/Form';
-import { type FormProps, type IChangeEvent } from '@rjsf/core-v5';
+import { Form as JsonForm } from './RJSF';
+import {
+  type FormProps as JsonFormProps,
+  type IChangeEvent,
+} from '@rjsf/core-v5';
 import type { FormSchema } from '../types';
-import { FluidLayout } from '../layouts/FluidLayout';
+import { FluidFormLayout } from '../layouts/FluidFormLayout';
 import { JsonValue } from '@backstage/types';
 
-type StepperProps = Pick<
-  FormProps,
+type FormProps = Pick<
+  JsonFormProps,
   'onSubmit' | 'disabled' | 'onChange' | 'className' | 'transformErrors'
 > & {
   formSchema: FormSchema;
   children?: ReactNode;
 };
 
-export function Stepper({
+export function Form({
   formSchema,
   onSubmit,
   onChange = (e: IChangeEvent) => e,
@@ -22,7 +25,7 @@ export function Stepper({
   className,
   transformErrors,
   children,
-}: StepperProps): JSX.Element {
+}: FormProps): JSX.Element {
   const [formState, setFormState] = useState<Record<string, JsonValue>>({});
 
   const handleChange = useCallback(
@@ -34,7 +37,7 @@ export function Stepper({
   );
 
   return (
-    <Form
+    <JsonForm
       className={className}
       validator={validator}
       noHtml5Validate
@@ -47,11 +50,11 @@ export function Stepper({
       disabled={disabled}
       uiSchema={{
         ...formSchema.uiSchema,
-        ['ui:ObjectFieldTemplate']: FluidLayout as any,
+        ['ui:ObjectFieldTemplate']: FluidFormLayout as any,
       }}
       transformErrors={transformErrors}
     >
       {children}
-    </Form>
+    </JsonForm>
   );
 }

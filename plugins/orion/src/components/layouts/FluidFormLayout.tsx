@@ -2,7 +2,7 @@ import React from 'react';
 import { ObjectFieldTemplateProps } from '@rjsf/core';
 import { Box, Grid } from '@material-ui/core';
 
-export function FluidLayout(props: ObjectFieldTemplateProps): JSX.Element {
+export function FluidFormLayout(props: ObjectFieldTemplateProps): JSX.Element {
   const { properties, description, title } = props;
 
   return (

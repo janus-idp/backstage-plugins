@@ -2,16 +2,19 @@ import React from 'react';
 import { ContentHeader, SupportButton } from '@backstage/core-components';
 import { Button, ButtonGroup, Chip, Grid, Typography } from '@material-ui/core';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ParodosPage } from '../ParodosPage';
-import { WorkflowDefinitionType, WorkFlowTaskParameterType } from '../types';
-import { useBackendUrl } from '../api';
+import { ParodosPage } from '../../components/ParodosPage';
+import {
+  WorkflowDefinitionType,
+  WorkFlowTaskParameterType,
+} from '../../components/types';
+import { useBackendUrl } from '../../components/api';
 import { WorkflowParameterComponent } from './WorkflowParameterComponent';
 import {
   WorkflowParametersContext,
   WorkflowParametersContextProvider,
-} from '../../context/WorkflowParametersContext';
-import { mockAndromedaWorkflowDefinition } from './mockData';
+} from '../context/WorkflowParametersContext';
 import { getWorkflowParameters, startWorkflow } from './commands';
+import { mockAndromedaWorkflowDefinition } from '../../mocks/workflowDefinitions/andromeda';
 
 type OnboardingProps = {
   isNew?: boolean;

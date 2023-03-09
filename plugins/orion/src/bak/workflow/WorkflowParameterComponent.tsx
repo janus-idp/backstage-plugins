@@ -1,9 +1,9 @@
 import React from 'react';
 import { makeStyles, TextField } from '@material-ui/core';
 import { DatePicker } from '@patternfly/react-core';
-import { WorkFlowTaskParameterType } from '../types';
+import { WorkFlowTaskParameterType } from '../../components/types';
 import { Select, SelectedItems, SelectItem } from '@backstage/core-components';
-import { WorkflowParametersContext } from '../../context/WorkflowParametersContext';
+import { WorkflowParametersContext } from '../context/WorkflowParametersContext';
 import { getParamValidator, ValidationType } from './validators';
 
 const useStyles = makeStyles({
