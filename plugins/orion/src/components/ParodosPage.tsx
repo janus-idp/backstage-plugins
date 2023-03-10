@@ -17,6 +17,7 @@ import { useBackendUrl } from './api';
 import useAsync from 'react-use/lib/useAsync';
 import { ErrorMessage } from './errors/ErrorMessage';
 import { useNavigate } from 'react-router-dom';
+import * as urls from '../urls';
 
 export const pluginRoutePrefix = '/parodos';
 
@@ -78,11 +79,11 @@ export const ParodosPage: React.FC<ParodosPageProps> = ({
   const navigate = useNavigate();
 
   const { error } = useAsync(async () => {
-    const response = await fetch(`${backendUrl}/api/proxy/parodos/projects`);
+    const response = await fetch(`${backendUrl}${urls.Projects}`);
 
     const receivedProjects = (await response.json()) as ProjectType[];
     setIsProject(receivedProjects.length > 0);
-  }, []);
+  }, [backendUrl]);
 
   React.useEffect(() => {
     let index = navigationMap.findIndex(({ routes }) =>

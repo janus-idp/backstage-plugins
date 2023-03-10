@@ -58,8 +58,3 @@ export type WorkFlowTaskParameter = z.infer<
 >;
 
 export type WorkFlowTaskParameterType = WorkFlowTaskParameter['type'];
-
-export type Project = Pick<
-  WorkflowDefinition,
-  'id' | 'name' | 'username' | 'description' | 'modifyDate'
->;

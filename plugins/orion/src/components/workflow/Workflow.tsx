@@ -15,9 +15,17 @@ import type { AssessmentStatusType } from '../types';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
 import { useBackendUrl } from '../api';
 import { IChangeEvent } from '@rjsf/core-v5';
-import { type Project } from '../../models/workflowDefinitionSchema';
-import { WorkflowDefinitions } from './WorkflowDefinitions';
-import { useGetWorkflowDefinitions } from '../../hooks/useGetWorkflowDefinitions';
+import * as urls from '../../urls';
+import {
+  displayableWorkflowOptions,
+  workflowSchema,
+} from '../../models/workflow';
+import { type Project, projectSchema } from '../../models/project';
+import { ASSESSMENT_WORKFLOW } from './constants';
+import {
+  WorkflowOptionsList,
+  type WorkflowOptionsListItem,
+} from './WorkflowOptionsList';
 
 const useStyles = makeStyles({
   fullHeight: {
@@ -28,35 +36,84 @@ const useStyles = makeStyles({
 export function Workflow(): JSX.Element {
   const [project, setProject] = useState<Project>();
   const backendUrl = useBackendUrl();
-  const { value: workflowDefinitions = [] } = useGetWorkflowDefinitions();
   const [assessmentStatus, setAssessmentStatus] =
     useState<AssessmentStatusType>('none');
+  const [workflowOptions, setWorkflowOptions] = useState<
+    WorkflowOptionsListItem[]
+  >([]);
   const styles = useStyles();
 
   const { loading, error, value: formSchema } = useGetProjectAssessmentSchema();
 
-  const [, startAssessment] = useAsyncFn(async ({ formData }: IChangeEvent) => {
-    setAssessmentStatus('inprogress');
+  const [{ error: startAssessmentError }, startAssessment] = useAsyncFn(
+    async ({ formData }: IChangeEvent) => {
+      setAssessmentStatus('inprogress');
 
-    const response = await fetch(`${backendUrl}/api/proxy/parodos/projects`, {
-      method: 'POST',
-      body: JSON.stringify({
-        name: formData.projectName,
-      }),
-    });
+      const newProjectResponse = await fetch(`${backendUrl}${urls.Projects}`, {
+        method: 'POST',
+        body: JSON.stringify({
+          name: formData.Name,
+        }),
+      });
 
-    setProject((await response.json()) as Project);
+      const newProject = projectSchema.parse(await newProjectResponse.json());
 
-    setAssessmentStatus('complete');
-  }, []);
+      setProject(newProject);
+
+      const workFlowResponse = await fetch(`${backendUrl}${urls.Workflows}`, {
+        method: 'POST',
+        body: JSON.stringify({
+          projectId: newProject.id,
+          workFlowName: ASSESSMENT_WORKFLOW,
+          workFlowTasks: [],
+        }),
+      });
+
+      const workflow = workflowSchema.parse(await workFlowResponse.json());
+
+      const options = displayableWorkflowOptions.flatMap(option => {
+        const items = workflow.workFlowOptions[option];
+
+        if (items.length === 0) {
+          return items;
+        }
+
+        const optionType = option
+          .replace(/([a-z])([A-Z])/g, '$1 $2')
+          .split(' ')[0]
+          .toUpperCase();
+
+        return items.map(item => ({
+          ...item,
+          type: optionType,
+        }));
+      }) as WorkflowOptionsListItem[];
+
+      setWorkflowOptions(options);
+
+      setAssessmentStatus('complete');
+    },
+    [backendUrl],
+  );
 
   const errorApi = useApi(errorApiRef);
 
+  // TODO: we could generalise all errors if we used react-query
   useEffect(() => {
     if (error) {
-      errorApi.post(new Error(`Getting definition failed, ${error}`));
+      // eslint-disable-next-line no-console
+      console.error(error);
+      errorApi.post(new Error(`Getting definition failed`));
     }
   }, [error, errorApi]);
+
+  useEffect(() => {
+    if (startAssessmentError) {
+      // eslint-disable-next-line no-console
+      console.error(startAssessmentError);
+      errorApi.post(new Error(`Creating assessment failed`));
+    }
+  }, [errorApi, startAssessmentError]);
 
   const inProgress = assessmentStatus === 'inprogress';
   const complete = assessmentStatus === 'complete';
@@ -94,15 +151,9 @@ export function Workflow(): JSX.Element {
             </Grid>
             <Grid item xs={12}>
               {assessmentStatus === 'complete' && project && (
-                <WorkflowDefinitions
+                <WorkflowOptionsList
                   project={project}
-                  workflowDefinitions={workflowDefinitions.filter(
-                    workflowDefinition =>
-                      // TODO: is following correct?
-                      !['ASSESSMENT', 'CHECKER'].includes(
-                        workflowDefinition.type,
-                      ),
-                  )}
+                  workflowOptions={workflowOptions}
                 />
               )}
             </Grid>

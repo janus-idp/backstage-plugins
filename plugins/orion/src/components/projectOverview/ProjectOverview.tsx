@@ -9,7 +9,7 @@ import {
 import Add from '@material-ui/icons/Add';
 import { Card, CardContent, Grid, makeStyles } from '@material-ui/core';
 import { useAsync } from 'react-use';
-
+import * as urls from '../../urls';
 import { EmptyProjectsState } from './EmptyProjectsState';
 import { ParodosPage } from '../ParodosPage';
 import { ProjectStatusType, ProjectType } from '../types';
@@ -55,9 +55,8 @@ export const ProjectOverviewPage = (): JSX.Element => {
     error: errorProjects,
   } = useAsync(async (): Promise<ProjectType[]> => {
     // TODO: finish after https://issues.redhat.com/browse/FLPATH-131
-    // return mockProjects;
 
-    const response = await fetch(`${backendUrl}/api/proxy/parodos/projects`);
+    const response = await fetch(`${backendUrl}${urls.Projects}`);
     const receivedProjects = (await response.json()) as ProjectType[];
 
     // mock status for now:
@@ -65,7 +64,7 @@ export const ProjectOverviewPage = (): JSX.Element => {
     const result = receivedProjects.map(project => ({ ...project, status }));
 
     return result;
-  }, []);
+  }, [backendUrl]);
 
   React.useEffect(() => {
     if (!allProjects) {

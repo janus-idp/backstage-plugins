@@ -24,6 +24,7 @@ import { useBackendUrl } from '../../api/useBackendUrl';
 import { type IChangeEvent } from '@rjsf/core-v5';
 import { WorkflowExecuteResponseType } from '../../types';
 import { type RJSFValidationError } from '@rjsf/utils';
+import * as urls from '../../../urls';
 
 interface OnboardingProps {
   isNew: boolean;
@@ -43,18 +44,18 @@ const useStyles = makeStyles(theme => ({
 
 export function Onboarding({ isNew }: OnboardingProps): JSX.Element {
   const backendUrl = useBackendUrl();
-  const { workflowId, projectId } = useParams();
+  const { workflowName, projectId } = useParams();
   const styles = useStyles();
 
-  assert(!!workflowId, `no workflowId in Onboarding`);
+  assert(!!workflowName, `no workflowId in Onboarding`);
 
   const {
     loading,
     error,
     value: formSchema,
-  } = useWorkflowDefinitionToJsonSchema(workflowId, 'byId');
+  } = useWorkflowDefinitionToJsonSchema(workflowName, 'byName');
 
-  const { value: workflow } = useGetWorkflowDefinition(workflowId, 'byId');
+  const { value: workflow } = useGetWorkflowDefinition(workflowName, 'byName');
 
   const navigate = useNavigate();
 
@@ -68,7 +69,7 @@ export function Onboarding({ isNew }: OnboardingProps): JSX.Element {
 
       const payload = {
         projectId,
-        workFlowName: workflow.name || 'missing',
+        workFlowName: workflow.name,
         workFlowTasks: workflow.tasks.map(task => {
           return {
             name: task.name,
@@ -84,7 +85,7 @@ export function Onboarding({ isNew }: OnboardingProps): JSX.Element {
         }),
       };
 
-      const data = await fetch(`${backendUrl}/api/proxy/parodos/workflows`, {
+      const data = await fetch(`${backendUrl}${urls.Workflows}`, {
         method: 'POST',
         body: JSON.stringify(payload),
       });
@@ -96,7 +97,7 @@ export function Onboarding({ isNew }: OnboardingProps): JSX.Element {
         state: { isNew: isNew },
       });
     },
-    [workflow, projectId],
+    [workflow, projectId, backendUrl, navigate, isNew],
   );
 
   if (startWorkflowError) {
@@ -109,13 +110,11 @@ export function Onboarding({ isNew }: OnboardingProps): JSX.Element {
       {!error && isNew && <Chip label="New application" color="secondary" />}
 
       {!error && (
-        <ContentHeader title={`${workflow?.name || '...'}`}>
+        <ContentHeader title={`${workflow?.name}`}>
           <SupportButton title="Need help?">Lorem Ipsum</SupportButton>
         </ContentHeader>
       )}
-      <Typography paragraph>
-        You are onboarding {workflow?.id || '...'}.
-      </Typography>
+      <Typography paragraph>You are onboarding {workflow?.name}.</Typography>
       {loading || (startWorkflowLoading && <Progress />)}
       {formSchema?.schema && (
         <InfoCard>
