@@ -59,7 +59,7 @@ proxy:
     headers:
       Content-Type: 'application/json'
       accept: 'application/json'
-      Authorization: 'Basic dGVzdDp0ZXN0'
+      Authorization: ${PARODOS_AUTH_KEY}
 
 # Reference documentation http://backstage.io/docs/features/techdocs/configuration
 # Note: After experimenting with basic setup, use CI/CD to generate docs
