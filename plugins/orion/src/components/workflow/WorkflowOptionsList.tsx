@@ -55,6 +55,7 @@ export function WorkflowOptionsList({
           <Grid item xs={12} lg={6} xl={4} key={workflowOption.identifier}>
             <Card raised={false} className={styles.applicationCard}>
               <CardMedia>
+                <CardContent>{workflowOption.type}</CardContent>
                 <ItemCardHeader
                   title={workflowOption.displayName}
                   classes={{ root: styles.applicationHeader }}

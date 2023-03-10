@@ -25,11 +25,11 @@ const predicates = {
   byName: (workflow: WorkflowDefinition) => workflow.name,
 } as const;
 
-type Predicates = keyof typeof predicates;
+export type GetDefinitionFilter = keyof typeof predicates;
 
 export function useGetWorkflowDefinition(
   value: string,
-  filterBy: Predicates,
+  filterBy: GetDefinitionFilter,
 ): AsyncState<WorkflowDefinition> {
   const result = useGetWorkflowDefinitions();
 

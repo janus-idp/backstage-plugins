@@ -83,7 +83,7 @@ export const ParodosPage: React.FC<ParodosPageProps> = ({
 
     const receivedProjects = (await response.json()) as ProjectType[];
     setIsProject(receivedProjects.length > 0);
-  }, []);
+  }, [backendUrl]);
 
   React.useEffect(() => {
     let index = navigationMap.findIndex(({ routes }) =>

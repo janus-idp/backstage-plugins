@@ -70,25 +70,25 @@ export function Workflow(): JSX.Element {
       });
 
       const workflow = workflowSchema.parse(await workFlowResponse.json());
-      
-      
+
       const options = displayableWorkflowOptions.flatMap(option => {
         const items = workflow.workFlowOptions[option];
-        
+
         if (items.length === 0) {
           return items;
         }
-        
+
         const optionType = option
-        .replace(/([a-z])([A-Z])/g, '$1 $2')
-        .toUpperCase();
-        
+          .replace(/([a-z])([A-Z])/g, '$1 $2')
+          .split(' ')[0]
+          .toUpperCase();
+
         return items.map(item => ({
           ...item,
           type: optionType,
         }));
       }) as WorkflowOptionsListItem[];
-      
+
       setWorkflowOptions(options);
 
       setAssessmentStatus('complete');

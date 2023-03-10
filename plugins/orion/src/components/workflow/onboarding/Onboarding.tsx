@@ -44,18 +44,18 @@ const useStyles = makeStyles(theme => ({
 
 export function Onboarding({ isNew }: OnboardingProps): JSX.Element {
   const backendUrl = useBackendUrl();
-  const { workflowId, projectId } = useParams();
+  const { workflowName, projectId } = useParams();
   const styles = useStyles();
 
-  assert(!!workflowId, `no workflowId in Onboarding`);
+  assert(!!workflowName, `no workflowId in Onboarding`);
 
   const {
     loading,
     error,
     value: formSchema,
-  } = useWorkflowDefinitionToJsonSchema(workflowId, 'byId');
+  } = useWorkflowDefinitionToJsonSchema(workflowName, 'byName');
 
-  const { value: workflow } = useGetWorkflowDefinition(workflowId, 'byId');
+  const { value: workflow } = useGetWorkflowDefinition(workflowName, 'byName');
 
   const navigate = useNavigate();
 

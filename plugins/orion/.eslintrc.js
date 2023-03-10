@@ -3,13 +3,13 @@ module.exports = require('@backstage/cli/config/eslint-factory')(__dirname, {
     'react-hooks/rules-of-hooks': [
       'error',
       {
-        additionalHooks: '(useIsomorphicLayoutEffect|useAsync)',
+        additionalHooks: '(useAsync|useAsync)',
       },
     ],
     'react-hooks/exhaustive-deps': [
       'error',
       {
-        additionalHooks: '(useIsomorphicLayoutEffect|useAsyncFn)',
+        additionalHooks: '(useAsync|useAsyncFn)',
       },
     ],
   },

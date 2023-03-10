@@ -1,4 +1,7 @@
-import { useGetWorkflowDefinition } from './useGetWorkflowDefinitions';
+import {
+  GetDefinitionFilter,
+  useGetWorkflowDefinition,
+} from './useGetWorkflowDefinitions';
 import {
   type WorkFlowTaskParameterType,
   workflowDefinitionSchema,
@@ -119,7 +122,7 @@ export function jsonSchemaFromWorkflowDefinition(
 
 export function useWorkflowDefinitionToJsonSchema(
   workflowDefinition: string,
-  filterType: 'byId' | 'byType',
+  filterType: GetDefinitionFilter,
 ): AsyncState<FormSchema> {
   const result = useGetWorkflowDefinition(workflowDefinition, filterType);
 

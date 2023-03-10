@@ -13,7 +13,7 @@ export function useGetProjectAssessmentSchema(): AsyncState<FormSchema> {
 
   const cloned = JSON.parse(JSON.stringify(result.value));
 
-  // this should be coming from the API
+  // TODO: this should be coming from the API
   cloned.tasks[0].parameters.unshift({
     key: 'Name',
     description: 'New Project',

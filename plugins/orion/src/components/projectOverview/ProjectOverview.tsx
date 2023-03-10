@@ -64,7 +64,7 @@ export const ProjectOverviewPage = (): JSX.Element => {
     const result = receivedProjects.map(project => ({ ...project, status }));
 
     return result;
-  }, []);
+  }, [backendUrl]);
 
   React.useEffect(() => {
     if (!allProjects) {
