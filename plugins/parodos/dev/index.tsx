@@ -1,11 +1,11 @@
 import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
-import { orionPlugin, OrionPage } from '../src/plugin';
+import { parodosPlugin, ParodosPage } from '../src/plugin';
 
 createDevApp()
-  .registerPlugin(orionPlugin)
+  .registerPlugin(parodosPlugin)
   .addPage({
-    element: <OrionPage />,
+    element: <ParodosPage />,
     title: 'Root Page',
     path: '/parodos',
   })

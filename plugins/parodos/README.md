@@ -1,26 +1,24 @@
-# Parodos (orion)
+# Parodos
 
 Welcome to the parodos plugin!
-
-former name: Orion
 
 ## Setup
 
 1. Install the plugin into the Backstage app in `packages/app`
 
 ```bash
-yarn add --cwd packages/app @parodos/plugin-orion
+yarn add --cwd packages/app @parodos/plugin-parodos
 ```
 
 2. Add the `/parodos/` route in `/packages/app/src/App.tsx`
 
 ```ts
-import { OrionPage } from '@parodos/plugin-orion';
+import { ParodosPage } from '@parodos/plugin-parodos';
 
 const routes = (
   <FlatRoutes>
     // ...
-    <Route path="/parodos" element={<OrionPage />} />
+    <Route path="/parodos" element={<ParodosPage />} />
   </FlatRoutes>
 ```
 

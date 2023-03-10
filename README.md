@@ -24,7 +24,7 @@ proxy:
 
 ### NPM Package
 
-To create an NPM package that can be installed via vendored dependencies, run `./scripts/build-orion.sh`. This will generate `success Wrote tarball to "/Users/tarasmankovski/Repositories/red-hat/backstage-orion/plugins/orion/parodos-plugin-orion-v0.1.0.tgz".` which gives you path to the generated `.tgz` file. 
+To create an NPM package that can be installed via vendored dependencies, run `./scripts/build-frontend.sh`. This will generate `success Wrote tarball to ".../plugins/parodos/parodos-plugin-parodos-v0.1.0.tgz".` which gives you path to the generated `.tgz` file.
 
 
 ### Docker image

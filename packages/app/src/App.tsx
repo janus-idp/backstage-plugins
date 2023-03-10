@@ -33,7 +33,7 @@ import { AppRouter, FlatRoutes } from '@backstage/core-app-api';
 import { CatalogGraphPage } from '@backstage/plugin-catalog-graph';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
-import { OrionPage } from '@parodos/plugin-orion';
+import { ParodosPage } from '@parodos/plugin-parodos';
 
 const app = createApp({
   apis,
@@ -92,7 +92,7 @@ const routes = (
     </Route>
     <Route path="/settings" element={<UserSettingsPage />} />
     <Route path="/catalog-graph" element={<CatalogGraphPage />} />
-    <Route path="/parodos" element={<OrionPage />} />
+    <Route path="/parodos" element={<ParodosPage />} />
   </FlatRoutes>
 );
 
