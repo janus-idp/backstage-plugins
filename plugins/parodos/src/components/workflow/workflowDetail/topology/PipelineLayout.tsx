@@ -13,7 +13,6 @@ import {
   SelectionEventListener,
   TopologyView,
   useEventListener,
-  useVisualizationController,
   Visualization,
   VisualizationProvider,
   VisualizationSurface,
@@ -21,25 +20,21 @@ import {
 import '@patternfly/react-styles/css/components/Topology/topology-components.css';
 import pipelineComponentFactory from './pipelineComponentFactory';
 import { useDemoPipelineNodes } from './useDemoPipelineNodes';
-import { GROUPED_PIPELINE_NODE_SEPARATION_HORIZONTAL } from './DemoTaskGroupEdge';
 import { WorkFlowTask } from './type/WorkFlowTask';
 
 export const PIPELINE_NODE_SEPARATION_VERTICAL = 10;
 
-export const LAYOUT_TITLE = 'Layout';
-
 const PIPELINE_LAYOUT = 'PipelineLayout';
-const GROUPED_PIPELINE_LAYOUT = 'GroupedPipelineLayout';
 
+const controller = new Visualization();
 type Props = {
   tasks: WorkFlowTask[];
   setSelectedTask: (selectedTask: string) => void;
+  controller: any;
 };
 
 const TopologyPipelineLayout = (props: Props) => {
   const [selectedIds, setSelectedIds] = React.useState<string[]>();
-
-  const controller = useVisualizationController();
   const pipelineNodes = useDemoPipelineNodes(props.tasks);
 
   React.useEffect(() => {
@@ -60,16 +55,15 @@ const TopologyPipelineLayout = (props: Props) => {
         graph: {
           id: 'g1',
           type: 'graph',
-          x: 25,
-          y: 25,
           layout: PIPELINE_LAYOUT,
+          // to disable scale, add: scaleExtent: [1, 0],
         },
         nodes,
         edges,
       },
       true,
     );
-  }, [controller, pipelineNodes]);
+  }, [pipelineNodes, props.tasks]);
 
   useEventListener<SelectionEventListener>(SELECTION_EVENT, ids => {
     setSelectedIds(ids);
@@ -86,37 +80,19 @@ const TopologyPipelineLayout = (props: Props) => {
 TopologyPipelineLayout.displayName = 'TopologyPipelineLayout';
 
 export const PipelineLayout = React.memo((props: Props) => {
-  const controller = new Visualization();
   controller.setFitToScreenOnLayout(true);
   controller.registerComponentFactory(pipelineComponentFactory);
   controller.registerLayoutFactory(
-    (type: string, graph: Graph): Layout | undefined =>
+    (_type: string, graph: Graph): Layout | undefined =>
       new PipelineDagreLayout(graph, {
         nodesep: PIPELINE_NODE_SEPARATION_VERTICAL,
-        ranksep:
-          type === GROUPED_PIPELINE_LAYOUT
-            ? GROUPED_PIPELINE_NODE_SEPARATION_HORIZONTAL
-            : GROUPED_PIPELINE_NODE_SEPARATION_HORIZONTAL,
         ignoreGroups: true,
       }),
-  );
-  controller.fromModel(
-    {
-      graph: {
-        id: 'g1',
-        type: 'graph',
-        x: 25,
-        y: 25,
-        layout: PIPELINE_LAYOUT,
-      },
-    },
-    false,
   );
 
   controller.addEventListener(GRAPH_LAYOUT_END_EVENT, () => {
     controller.getGraph().fit(70);
   });
-  controller.getGraph().layout();
 
   return (
     <VisualizationProvider controller={controller}>

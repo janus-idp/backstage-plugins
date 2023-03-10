@@ -24,7 +24,7 @@ export const PluginRouter = () => (
     />
     <Route
       path="/onboarding/:executionId/workflow-detail"
-      element={<WorkFlowDetail isNew />}
+      element={<WorkFlowDetail />}
     />
   </Routes>
 );

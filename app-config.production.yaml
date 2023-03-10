@@ -1,6 +1,10 @@
 app:
   # Should be the same as backend.baseUrl when using the `app-backend` plugin.
+  title: Scaffolded Backstage App
   baseUrl: http://localhost:7007
+
+organization:
+  name: Parodos
 
 backend:
   # Note that the baseUrl should be the URL that the browser and other clients
@@ -11,22 +15,44 @@ backend:
   baseUrl: http://localhost:7007
   # The listener can also be expressed as a single <host>:<port> string. In this case we bind to
   # all interfaces, the most permissive setting. The right value depends on your specific deployment.
-  listen: ':7007'
+  listen:
+    port: 7007
 
   # config options: https://node-postgres.com/api/client
+  #  database:
+  #    client: pg
+  #    connection:
+  #      host: ${POSTGRES_HOST}
+  #      port: ${POSTGRES_PORT}
+  #      user: ${POSTGRES_USER}
+  #      password: ${POSTGRES_PASSWORD}
+  # https://node-postgres.com/features/ssl
+  # you can set the sslmode configuration option via the `PGSSLMODE` environment variable
+  # see https://www.postgresql.org/docs/current/libpq-ssl.html Table 33.1. SSL Mode Descriptions (e.g. require)
+  # ssl:
+  #   ca: # if you have a CA file and want to verify it you can uncomment this section
+  #     $file: <file-path>/ca/server.crt
   database:
-    client: pg
-    connection:
-      host: ${POSTGRES_HOST}
-      port: ${POSTGRES_PORT}
-      user: ${POSTGRES_USER}
-      password: ${POSTGRES_PASSWORD}
-      # https://node-postgres.com/features/ssl
-      # you can set the sslmode configuration option via the `PGSSLMODE` environment variable
-      # see https://www.postgresql.org/docs/current/libpq-ssl.html Table 33.1. SSL Mode Descriptions (e.g. require)
-      # ssl:
-      #   ca: # if you have a CA file and want to verify it you can uncomment this section
-      #     $file: <file-path>/ca/server.crt
+    client: better-sqlite3
+    connection: ':memory:'
+  cache:
+    store: memory
+
+proxy:
+  ### Example for how to add a proxy endpoint for the frontend.
+  ### A typical reason to do this is to handle HTTPS and CORS for internal services.
+  # '/test':
+  #   target: 'https://example.com'
+  #   changeOrigin: true
+  '/parodos':
+    target: 'http://localhost:8080/api/v1'
+    changeOrigin: true
+    redirect: follow
+    cache: 'no-cache'
+    headers:
+      Content-Type: 'application/json'
+      accept: 'application/json'
+      Authorization: 'Basic dGVzdDp0ZXN0'
 
 catalog:
   # Overrides the default list locations from app-config.yaml as these contain example data.

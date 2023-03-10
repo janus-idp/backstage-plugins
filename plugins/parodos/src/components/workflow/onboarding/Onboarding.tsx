@@ -17,7 +17,10 @@ import { Button, Chip, makeStyles, Typography } from '@material-ui/core';
 import { useWorkflowDefinitionToJsonSchema } from '../../../hooks/useWorkflowDefinitionToJsonSchema/useWorkflowDefinitionToJsonSchema';
 import { assert } from 'assert-ts';
 import { Form } from '../../Form/Form';
-import { useGetWorkflowDefinition } from '../../../hooks/useGetWorkflowDefinitions';
+import {
+  useGetWorkflowDefinition,
+  useGetWorkflowTasksForTopology,
+} from '../../../hooks/useGetWorkflowDefinitions';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
 import { useBackendUrl } from '../../api/useBackendUrl';
 import { type IChangeEvent } from '@rjsf/core-v5';
@@ -61,6 +64,9 @@ export function Onboarding({ isNew }: OnboardingProps): JSX.Element {
   } = useWorkflowDefinitionToJsonSchema(workflowName, 'byName');
 
   const { value: workflow } = useGetWorkflowDefinition(workflowName, 'byName');
+  const { value: tasks } = useGetWorkflowTasksForTopology(
+    workflow ? workflow.name : '',
+  );
 
   const navigate = useNavigate();
 
@@ -107,10 +113,10 @@ export function Onboarding({ isNew }: OnboardingProps): JSX.Element {
       const executionId = response.workFlowExecutionId;
 
       navigate(`/parodos/onboarding/${executionId}/workflow-detail`, {
-        state: { isNew: isNew },
+        state: { isNew: isNew, initTasks: tasks },
       });
     },
-    [workflow, projectId, backendUrl, navigate, isNew],
+    [workflow, projectId, backendUrl, navigate, isNew, tasks],
   );
 
   useEffect(() => {
