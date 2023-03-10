@@ -6,6 +6,7 @@ import {
   type WorkFlowTaskParameterType,
   workflowDefinitionSchema,
   WorkflowDefinition,
+  WorkFlowTaskParameter,
 } from '../models/workflowDefinitionSchema';
 import { assert } from 'assert-ts';
 import { FormSchema } from '../components/types';
@@ -74,7 +75,13 @@ export function getUiSchema(type: WorkFlowTaskParameterType) {
 export function jsonSchemaFromWorkflowDefinition(
   workflowDefinition: WorkflowDefinition,
 ): FormSchema {
-  const parameters = workflowDefinition.tasks.flatMap(x => x.parameters);
+  // TODO: remove!!  Ugly hack to endusre there is only 1 element with the same key or
+  // react-json-schema-form will not work correctly
+  const parameters = workflowDefinition.tasks
+    .flatMap(x => x.parameters)
+    .reduce((acc, param) => {
+      return !!acc.find(p => p.key === param.key) ? acc : [...acc, param];
+    }, [] as Exclude<WorkFlowTaskParameter[], 'undefined'>);
 
   const schema: Record<string, any> = {
     type: 'object',

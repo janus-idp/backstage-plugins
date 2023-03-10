@@ -6,7 +6,12 @@ import {
   Progress,
   SupportButton,
 } from '@backstage/core-components';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import {
+  Link,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from 'react-router-dom';
 import { ParodosPage } from '../../ParodosPage';
 import {
   Button,
@@ -46,6 +51,9 @@ export function Onboarding({ isNew }: OnboardingProps): JSX.Element {
   const backendUrl = useBackendUrl();
   const { workflowName, projectId } = useParams();
   const styles = useStyles();
+  const [searchParams] = useSearchParams();
+
+  const workflowOption = searchParams.get('option');
 
   assert(!!workflowName, `no workflowId in Onboarding`);
 
@@ -110,11 +118,11 @@ export function Onboarding({ isNew }: OnboardingProps): JSX.Element {
       {!error && isNew && <Chip label="New application" color="secondary" />}
 
       {!error && (
-        <ContentHeader title={`${workflow?.name}`}>
+        <ContentHeader title={`${workflowOption}`}>
           <SupportButton title="Need help?">Lorem Ipsum</SupportButton>
         </ContentHeader>
       )}
-      <Typography paragraph>You are onboarding {workflow?.name}.</Typography>
+      <Typography paragraph>You are onboarding {workflowOption}.</Typography>
       {loading || (startWorkflowLoading && <Progress />)}
       {formSchema?.schema && (
         <InfoCard>

@@ -67,7 +67,8 @@ export function WorkflowOptionsList({
                   variant="text"
                   color="primary"
                   component={Link}
-                  to={`/parodos/onboarding/${project?.id}/${workflowOption.workFlowName}/new/`}
+                  // passing the workflow option as query param as a short term measure.  Need proper state management
+                  to={`/parodos/onboarding/${project?.id}/${workflowOption.workFlowName}/new/?option=${workflowOption.displayName}`}
                 >
                   START
                 </Button>
