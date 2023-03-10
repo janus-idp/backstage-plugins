@@ -97,7 +97,7 @@ export function Onboarding({ isNew }: OnboardingProps): JSX.Element {
         state: { isNew: isNew },
       });
     },
-    [workflow, projectId],
+    [workflow, projectId, backendUrl, navigate, isNew],
   );
 
   if (startWorkflowError) {

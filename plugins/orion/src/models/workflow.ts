@@ -24,3 +24,17 @@ export const workflowSchema = z.object({
 export type Workflow = z.infer<typeof workflowSchema>;
 
 export type WorkflowOptionItem = z.infer<typeof workflowOptionItem>;
+
+export type DisplayableOptions = Exclude<
+  keyof Workflow['workFlowOptions'],
+  'optionsAvailable' | 'currentVersion'
+>;
+
+export const displayableWorkflowOptions: readonly DisplayableOptions[] = [
+  'newOptions',
+  'upgradeOptions',
+  'continuationOptions',
+  'upgradeOptions',
+  'migrationOptions',
+  'otherOptions',
+] as const;

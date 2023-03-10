@@ -10,14 +10,16 @@ import {
   Typography,
 } from '@material-ui/core';
 import React from 'react';
-import { type WorkflowDefinition } from '../../models/workflowDefinitionSchema';
 import { useCommonStyles } from '../../styles';
 import { Link } from 'react-router-dom';
 import { type Project } from '../../models/project';
+import { type WorkflowOptionItem } from '../../models/workflow';
 
-interface WorkflowDefinitionsProps {
+export type WorkflowOptionsListItem = WorkflowOptionItem & { type: string };
+
+interface WorkflowOptionsListProps {
   project: Project;
-  workflowDefinitions: WorkflowDefinition[];
+  workflowOptions: WorkflowOptionsListItem[];
 }
 
 const useStyles = makeStyles(theme => ({
@@ -35,10 +37,10 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export function WorkflowDefinitions({
+export function WorkflowOptionsList({
   project,
-  workflowDefinitions,
-}: WorkflowDefinitionsProps): JSX.Element {
+  workflowOptions,
+}: WorkflowOptionsListProps): JSX.Element {
   const commonStyles = useCommonStyles();
   const styles = useStyles();
 
@@ -49,27 +51,22 @@ export function WorkflowDefinitions({
         option(s):
       </Typography>
       <Grid container direction="row" spacing={2}>
-        {workflowDefinitions.map(workflow => (
-          <Grid item xs={12} lg={6} xl={4} key={workflow.id}>
-            <Card
-              raised={false}
-              key={workflow.name}
-              className={styles.applicationCard}
-            >
+        {workflowOptions.map(workflowOption => (
+          <Grid item xs={12} lg={6} xl={4} key={workflowOption.identifier}>
+            <Card raised={false} className={styles.applicationCard}>
               <CardMedia>
                 <ItemCardHeader
-                  title={workflow.name}
+                  title={workflowOption.displayName}
                   classes={{ root: styles.applicationHeader }}
                 />
               </CardMedia>
-              <CardContent>{workflow.description}</CardContent>
+              <CardContent>{workflowOption.description}</CardContent>
               <CardActions>
                 <Button
-                  id={workflow.id}
                   variant="text"
                   color="primary"
                   component={Link}
-                  to={`/parodos/onboarding/${project?.id}/${workflow.id}/new/`}
+                  to={`/parodos/onboarding/${project?.id}/${workflowOption.workFlowName}/new/`}
                 >
                   START
                 </Button>
