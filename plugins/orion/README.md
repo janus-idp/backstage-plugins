@@ -63,3 +63,15 @@ proxy:
     headers:
       Authorization: 'Basic dGVzdDp0ZXN0'
 ```
+
+## Building Package
+
+To create an NPM package that can be installed via vendored dependencies, run the following commands.
+
+```bash
+yarn install
+yarn tsc
+yarn build:all
+yarn workspace @parodos/plugin-orion pack
+```
+
