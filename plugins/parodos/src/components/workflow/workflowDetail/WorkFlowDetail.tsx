@@ -21,7 +21,6 @@ export const WorkFlowDetail = () => {
   const [selectedTask, setSelectedTask] = useState<string | null>('');
   const [allTasks, setAllTasks] = useState<WorkFlowTask[]>(initTasks);
   const [log, setLog] = useState<string>(``);
-  // const [count, setCount] = useState<number>(0);
   const [countlog, setCountlog] = useState<number>(0);
   const backendUrl = useBackendUrl();
 

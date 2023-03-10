@@ -30,7 +30,6 @@ const controller = new Visualization();
 type Props = {
   tasks: WorkFlowTask[];
   setSelectedTask: (selectedTask: string) => void;
-  controller: any;
 };
 
 const TopologyPipelineLayout = (props: Props) => {

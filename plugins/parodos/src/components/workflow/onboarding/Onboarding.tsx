@@ -64,9 +64,7 @@ export function Onboarding({ isNew }: OnboardingProps): JSX.Element {
   } = useWorkflowDefinitionToJsonSchema(workflowName, 'byName');
 
   const { value: workflow } = useGetWorkflowDefinition(workflowName, 'byName');
-  const { value: tasks } = useGetWorkflowTasksForTopology(
-    workflow ? workflow.name : '',
-  );
+  const { value: tasks } = useGetWorkflowTasksForTopology(workflowName);
 
   const navigate = useNavigate();
 
@@ -84,7 +82,7 @@ export function Onboarding({ isNew }: OnboardingProps): JSX.Element {
         workFlowTasks: workflow.works.map(work => {
           return {
             name: work.name,
-            arguments: work.parameters.map(param => {
+            arguments: work.parameters?.map(param => {
               const value = lodashGet(
                 formData,
                 `${work.name}.${param.key}`,

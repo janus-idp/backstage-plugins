@@ -57,7 +57,7 @@ export type WorkflowDefinitionType = {
   author: string;
   createDate: string;
   modifyDate: string;
-  tasks: WorkDefinitionType[];
+  works: WorkDefinitionType[];
 
   description?: string; // TODO: this is missing in swagger, so mocking it
 };

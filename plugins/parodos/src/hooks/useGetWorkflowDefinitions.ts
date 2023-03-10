@@ -1,9 +1,13 @@
 import useAsync, { type AsyncState } from 'react-use/lib/useAsync';
 import { useBackendUrl } from '../components/api/useBackendUrl';
 import { assert } from 'assert-ts';
-import { WorkflowDefinition } from '../models/workflowDefinitionSchema';
+import {
+  WorkflowDefinition,
+  WorkType,
+} from '../models/workflowDefinitionSchema';
 import * as urls from '../urls';
 import { WorkFlowTask } from '../components/workflow/workflowDetail/topology/type/WorkFlowTask';
+import { taskDisplayName } from '../utils/string';
 
 export function useGetWorkflowDefinitions(): AsyncState<WorkflowDefinition[]> {
   const backendUrl = useBackendUrl();
@@ -66,56 +70,48 @@ export function useGetWorkflowTasksForTopology(
     label: 'Project Information',
     runAfterTasks: [],
   });
-  rootWorkflowDefinition?.tasks.forEach(task => {
-    result.push({
-      id: task.name,
-      status: 'pending',
-      locked: false,
-      label: task.name,
-      runAfterTasks: [result[0].id],
-    });
-    if (task.nextWorkFlow)
-      addTasks(
-        result,
-        task.nextWorkFlow,
-        task.name,
-        allWorkflowDefinitions,
-        task.workFlowChecker !== undefined,
-      );
-  });
+  if (rootWorkflowDefinition)
+    addTasks(result, rootWorkflowDefinition, [result[0].id]);
+
   return { value: result, loading: false, error: undefined };
 }
 
 function addTasks(
   result: WorkFlowTask[],
-  workflowName: string,
-  previousTaskName: string,
-  allWorkflowDefinitions: WorkflowDefinition[],
-  hasChecker: boolean = false,
-) {
-  const targetWorkflowDefinition = allWorkflowDefinitions?.filter(
-    workflowDefinition => workflowDefinition.id === workflowName,
-  )[0];
-  targetWorkflowDefinition?.tasks.forEach(task => {
-    let foundTask = result.find(existingTask => existingTask.id === task.name);
-    if (!foundTask) {
-      foundTask = {
-        id: task.name,
+  work: WorkType | WorkflowDefinition,
+  runAfterTasks: string[],
+): string[] {
+  let previousTasks: string[] = [];
+
+  work.works?.forEach((subWork, index) => {
+    if (subWork.workType === 'TASK') {
+      result.push({
+        id: subWork.name,
         status: 'pending',
-        locked: hasChecker,
-        label: task.name,
-        runAfterTasks: [previousTaskName],
-      };
-      result.push(foundTask);
-    } else foundTask.runAfterTasks.push(previousTaskName);
-    foundTask.runAfterTasks = [...new Set(foundTask?.runAfterTasks)];
-    if (task.nextWorkFlow)
-      addTasks(
+        locked: false,
+        label: taskDisplayName(subWork.name),
+        runAfterTasks:
+          work.processingType === 'PARALLEL' || index === 0
+            ? runAfterTasks
+            : previousTasks,
+      });
+
+      if (work.processingType === 'PARALLEL') {
+        previousTasks = [...previousTasks, subWork.name];
+      } else previousTasks = [subWork.name];
+    } else {
+      const tasks = addTasks(
         result,
-        task.nextWorkFlow,
-        task.name,
-        allWorkflowDefinitions,
-        true,
+        subWork,
+        work.processingType === 'PARALLEL' || index === 0
+          ? runAfterTasks
+          : previousTasks,
       );
+      previousTasks =
+        work.processingType === 'PARALLEL'
+          ? [...tasks, ...previousTasks]
+          : tasks;
+    }
   });
+  return previousTasks;
 }

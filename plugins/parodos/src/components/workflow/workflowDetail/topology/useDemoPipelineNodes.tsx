@@ -18,7 +18,6 @@ export const DEFAULT_TASK_HEIGHT = 30;
 export function useDemoPipelineNodes(
   workflowTasks: WorkFlowTask[],
 ): PipelineNodeModel[] {
-  // React.useMemo(() => {
   const getStatus: any = (status: string) => {
     if (status === 'completed') return RunStatus.Succeeded;
     else if (status === 'in_progress') return RunStatus.InProgress;
@@ -31,9 +30,7 @@ export function useDemoPipelineNodes(
     return WhenStatus.Unmet;
   };
 
-  // Create a task node for each task status
   const tasks = workflowTasks.map(workFlowTask => {
-    // Set all the standard fields
     const task: PipelineNodeModel = {
       id: workFlowTask.id,
       type: DEFAULT_TASK_NODE_TYPE,
@@ -46,7 +43,6 @@ export function useDemoPipelineNodes(
       runAfterTasks: workFlowTask.runAfterTasks,
     };
 
-    // put options in data, our DEMO task node will pass them along to the TaskNode
     task.data = {
       status: getStatus(workFlowTask.status),
       taskIcon: workFlowTask.locked ? <LockIcon color="error" /> : null,
@@ -55,11 +51,10 @@ export function useDemoPipelineNodes(
     return task;
   });
 
-  // Add when tasks to the nodes that are not first in the row
   const whenTasks = tasks.filter((_task, index) => index !== 0);
   whenTasks.forEach(task => {
     task.data.whenStatus = getConditionMet(task.data.status);
   });
 
   return tasks;
-} // , [workflowTasks]);
+}

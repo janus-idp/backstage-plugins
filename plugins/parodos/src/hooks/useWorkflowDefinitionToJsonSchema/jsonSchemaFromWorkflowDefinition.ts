@@ -6,7 +6,7 @@ import {
 import type { FormSchema, Step } from '../../components/types';
 import set from 'lodash.set';
 import get from 'lodash.get';
-import { capitalize } from '../../utils/string';
+import { taskDisplayName } from '../../utils/string';
 
 export function getJsonSchemaType(type: WorkFlowTaskParameterType) {
   switch (type) {
@@ -116,11 +116,7 @@ function buildWorksTree(
 }
 
 function transformWorkToStep(work: WorkType): Step {
-  const title = work.name
-    .replace(/([a-z])([A-Z])/g, '$1 $2')
-    .split(' ')
-    .map(capitalize)
-    .join(' '); // TODO: task label would be good here
+  const title = taskDisplayName(work.name); // TODO: task label would be good here
 
   const schema: Record<string, any> = {
     type: 'object',
@@ -149,7 +145,7 @@ function transformWorkToStep(work: WorkType): Step {
     description,
     optional,
     options = [],
-  } of work.parameters) {
+  } of work.parameters ? work.parameters : []) {
     const propertiesPath = `properties.${work.name}.properties.${key}`;
     const required = !optional;
 
@@ -158,7 +154,7 @@ function transformWorkToStep(work: WorkType): Step {
       ...getJsonSchemaType(type),
     });
 
-    if (options.length > 0) {
+    if (options && options.length > 0) {
       set(
         schema,
         `${propertiesPath}.enum`,
