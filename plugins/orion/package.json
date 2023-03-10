@@ -1,5 +1,5 @@
 {
-  "name": "@internal/plugin-orion",
+  "name": "@parodos/plugin-orion",
   "version": "0.1.0",
   "main": "src/index.ts",
   "types": "src/index.ts",

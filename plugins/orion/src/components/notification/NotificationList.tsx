@@ -10,7 +10,7 @@ import {
 } from '@material-ui/core';
 import { Select, SelectedItems, SelectItem } from '@backstage/core-components';
 import React, { useEffect, useState } from 'react';
-import { Notification } from './type/Notification';
+import type { Notification } from './type/Notification';
 import { mockNotifications } from './mock/mockNotifications';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { grey } from '@material-ui/core/colors';
@@ -86,8 +86,8 @@ export const NotificationList = () => {
         />
       </Grid>
       <Grid item>
-        {filteredNotifications.map(notification => (
-          <ParodosAccordion square>
+        {filteredNotifications.map((notification, i) => (
+          <ParodosAccordion square key={i}>
             <AccordionSummary
               expandIcon={<ExpandMoreIcon />}
               aria-controls="panel1bh-content"

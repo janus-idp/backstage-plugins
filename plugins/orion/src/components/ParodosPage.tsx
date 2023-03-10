@@ -95,6 +95,7 @@ export const ParodosPage: React.FC<ParodosPageProps> = ({
 
   const onChangeTab = (index: number) => {
     setSelectedTab(index);
+    // TODO: use links here.  The first route is only ever used
     navigate(`${pluginRoutePrefix}${navigationMap[index].routes[0]}`);
   };
 

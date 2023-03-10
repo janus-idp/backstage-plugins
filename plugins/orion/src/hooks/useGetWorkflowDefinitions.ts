@@ -2,7 +2,6 @@ import useAsync, { type AsyncState } from 'react-use/lib/useAsync';
 import { useBackendUrl } from '../components/api/useBackendUrl';
 import { assert } from 'assert-ts';
 import { WorkflowDefinition } from '../models/workflowDefinitionSchema';
-import { mockAndromedaWorkflowDefinition } from '../mocks/workflowDefinitions/andromeda';
 import * as urls from '../urls';
 
 export function useGetWorkflowDefinitions(): AsyncState<WorkflowDefinition[]> {
@@ -13,9 +12,7 @@ export function useGetWorkflowDefinitions(): AsyncState<WorkflowDefinition[]> {
   > {
     const response = await fetch(`${backendUrl}${urls.WorkflowDefinitions}`);
 
-    const workflowDefinitions = (await response.json()) as WorkflowDefinition[];
-
-    return [mockAndromedaWorkflowDefinition, ...workflowDefinitions];
+    return (await response.json()) as WorkflowDefinition[];
   });
 }
 
