@@ -3,6 +3,7 @@ import { useBackendUrl } from '../components/api/useBackendUrl';
 import { assert } from 'assert-ts';
 import { WorkflowDefinition } from '../models/workflowDefinitionSchema';
 import { mockAndromedaWorkflowDefinition } from '../mocks/workflowDefinitions/andromeda';
+import * as urls from '../urls';
 
 export function useGetWorkflowDefinitions(): AsyncState<WorkflowDefinition[]> {
   const backendUrl = useBackendUrl();
@@ -10,9 +11,7 @@ export function useGetWorkflowDefinitions(): AsyncState<WorkflowDefinition[]> {
   return useAsync(async function getWorkflowDefinitions(): Promise<
     WorkflowDefinition[]
   > {
-    const response = await fetch(
-      `${backendUrl}/api/proxy/parodos/workflowdefinitions`,
-    );
+    const response = await fetch(`${backendUrl}${urls.WorkflowDefinitions}`);
 
     const workflowDefinitions = (await response.json()) as WorkflowDefinition[];
 
@@ -23,6 +22,7 @@ export function useGetWorkflowDefinitions(): AsyncState<WorkflowDefinition[]> {
 const predicates = {
   byId: (workflow: WorkflowDefinition) => workflow.id,
   byType: (workflow: WorkflowDefinition) => workflow.type,
+  byName: (workflow: WorkflowDefinition) => workflow.name,
 } as const;
 
 type Predicates = keyof typeof predicates;

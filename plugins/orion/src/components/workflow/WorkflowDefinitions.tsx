@@ -10,12 +10,10 @@ import {
   Typography,
 } from '@material-ui/core';
 import React from 'react';
-import {
-  type WorkflowDefinition,
-  type Project,
-} from '../../models/workflowDefinitionSchema';
+import { type WorkflowDefinition } from '../../models/workflowDefinitionSchema';
 import { useCommonStyles } from '../../styles';
 import { Link } from 'react-router-dom';
+import { type Project } from '../../models/project';
 
 interface WorkflowDefinitionsProps {
   project: Project;
@@ -32,6 +30,7 @@ const useStyles = makeStyles(theme => ({
   },
   applicationCard: {
     background: theme.palette.background.default,
+    color: theme.palette.text.secondary,
     height: '100%',
   },
 }));

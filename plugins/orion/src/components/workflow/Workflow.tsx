@@ -15,9 +15,13 @@ import type { AssessmentStatusType } from '../types';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
 import { useBackendUrl } from '../api';
 import { IChangeEvent } from '@rjsf/core-v5';
-import { type Project } from '../../models/workflowDefinitionSchema';
 import { WorkflowDefinitions } from './WorkflowDefinitions';
 import { useGetWorkflowDefinitions } from '../../hooks/useGetWorkflowDefinitions';
+import * as urls from '../../urls';
+import { workflowSchema } from '../../models/workflow';
+import { assert } from 'assert-ts';
+import { type Project, projectSchema } from '../../models/project';
+import { ASSESSMENT_WORKFLOW } from './constants';
 
 const useStyles = makeStyles({
   fullHeight: {
@@ -38,16 +42,43 @@ export function Workflow(): JSX.Element {
   const [, startAssessment] = useAsyncFn(async ({ formData }: IChangeEvent) => {
     setAssessmentStatus('inprogress');
 
-    const response = await fetch(`${backendUrl}/api/proxy/parodos/projects`, {
+    const newProjectResponse = await fetch(`${backendUrl}${urls.Projects}`, {
       method: 'POST',
       body: JSON.stringify({
-        name: formData.projectName,
+        name: formData.Name,
       }),
     });
 
-    setProject((await response.json()) as Project);
+    const newProjectResult = projectSchema.safeParse(
+      await newProjectResponse.json(),
+    );
+
+    assert(newProjectResult.success);
+
+    const newProject = newProjectResult.data;
+
+    setProject(newProject);
+
+    const workFlowResponse = await fetch(`${backendUrl}${urls.Workflows}`, {
+      method: 'POST',
+      body: JSON.stringify({
+        projectId: newProject.id,
+        workFlowName: ASSESSMENT_WORKFLOW,
+        workFlowTasks: [],
+      }),
+    });
+
+    const workflowResult = workflowSchema.safeParse(
+      await workFlowResponse.json(),
+    );
+
+    assert(workflowResult.success);
 
     setAssessmentStatus('complete');
+
+    const workflow = workflowResult.data;
+
+    console.log(workflow);
   }, []);
 
   const errorApi = useApi(errorApiRef);
