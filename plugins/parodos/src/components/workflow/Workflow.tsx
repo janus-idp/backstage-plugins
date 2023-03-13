@@ -27,11 +27,14 @@ import {
   type WorkflowOptionsListItem,
 } from './WorkflowOptionsList';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   fullHeight: {
     height: '100%',
   },
-});
+  form: {
+    marginTop: theme.spacing(2),
+  },
+}));
 
 export function Workflow(): JSX.Element {
   const [project, setProject] = useState<Project>();
@@ -132,7 +135,7 @@ export function Workflow(): JSX.Element {
       {loading && <Progress />}
       {formSchema && (
         <InfoCard className={styles.fullHeight}>
-          <Grid container direction="row">
+          <Grid container direction="row" className={styles.form}>
             <Grid item xs={12} xl={8}>
               <Form
                 formSchema={formSchema}

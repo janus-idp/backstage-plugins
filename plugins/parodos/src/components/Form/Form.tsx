@@ -47,18 +47,17 @@ export function Form({
     (e: IChangeEvent) => {
       setFormState(current => ({ ...current, ...e.formData }));
       onChange({ ...e, formData: formState });
-
     },
     [formState, onChange],
-    );
-    
-    const handleNext = async (data: IChangeEvent, e: React.FormEvent<any>) => {
-      setFormState(current => ({ ...current, ...data.formData }));
-      
-      if (activeStep === formSchema.steps.length - 1) {
-        await onSubmit(data, e);
-      } else {
-        setActiveStep(prev => prev + 1);
+  );
+
+  const handleNext = async (data: IChangeEvent, e: React.FormEvent<any>) => {
+    setFormState(current => ({ ...current, ...data.formData }));
+
+    if (activeStep === formSchema.steps.length - 1) {
+      await onSubmit(data, e);
+    } else {
+      setActiveStep(prev => prev + 1);
     }
   };
 

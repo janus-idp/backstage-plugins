@@ -91,7 +91,7 @@ export function jsonSchemaFromWorkflowDefinition(
   for (const task of workflowDefinition.tasks) {
     const schema: Record<string, any> = {
       type: 'object',
-      title: workflowDefinition.description ?? workflowDefinition.type,
+      title: task.name,
       properties: {},
       required: [],
     };
