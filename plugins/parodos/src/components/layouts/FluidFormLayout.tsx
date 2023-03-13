@@ -3,7 +3,7 @@ import { ObjectFieldTemplateProps } from '@rjsf/core';
 import { Box, Grid } from '@material-ui/core';
 
 export function FluidFormLayout(props: ObjectFieldTemplateProps): JSX.Element {
-  const { properties, description } = props;
+  const { properties } = props;
 
   return (
     <Box marginBottom={2}>
@@ -14,7 +14,6 @@ export function FluidFormLayout(props: ObjectFieldTemplateProps): JSX.Element {
           </Grid>
         ))}
       </Grid>
-      {description}
     </Box>
   );
 }

@@ -14,7 +14,9 @@ import {
   StepLabel,
   Stepper,
   Button,
+  makeStyles,
 } from '@material-ui/core';
+import cs from 'classnames';
 
 type FormProps = Pick<
   JsonFormProps,
@@ -24,6 +26,22 @@ type FormProps = Pick<
     formSchema: FormSchema;
     children?: ReactNode;
   };
+
+const useStyles = makeStyles(theme => ({
+  stepLabel: {
+    '& span': {
+      fontSize: '1.25rem',
+    },
+  },
+  form: {
+    '& h5': {
+      fontSize: theme.typography.fontSize,
+    },
+    '& h5 + hr': {
+      display: 'none',
+    },
+  },
+}));
 
 export function Form({
   formSchema,
@@ -36,6 +54,7 @@ export function Form({
 }: FormProps): JSX.Element {
   const [activeStep, setActiveStep] = useState(0);
   const [formState, setFormState] = useState<Record<string, JsonValue>>({});
+  const styles = useStyles();
 
   const currentStep = formSchema.steps[activeStep];
 
@@ -64,7 +83,7 @@ export function Form({
   const TheForm = (
     <JsonForm
       idPrefix=""
-      className={className}
+      className={cs(styles.form, className)}
       validator={validator}
       noHtml5Validate
       showErrorList={false}
@@ -84,9 +103,9 @@ export function Form({
         children
       ) : (
         <>
-          {activeStep > 0 && <Button onClick={handleBack}>Back</Button>}
+          {activeStep > 0 && <Button onClick={handleBack}>PREVIOUS</Button>}
           <Button variant="contained" color="primary" type="submit">
-            Next
+            NEXT
           </Button>
         </>
       )}
@@ -102,7 +121,9 @@ export function Form({
       <Stepper activeStep={activeStep} orientation="vertical">
         {formSchema.steps.map((step, index) => (
           <Step key={index}>
-            <StepLabel>{step.schema.title}</StepLabel>
+            <StepLabel className={styles.stepLabel}>
+              {step.schema.title}
+            </StepLabel>
             <StepContent key={index}>{TheForm}</StepContent>
           </Step>
         ))}

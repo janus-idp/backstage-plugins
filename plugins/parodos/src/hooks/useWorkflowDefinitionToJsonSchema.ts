@@ -5,11 +5,13 @@ import {
 import {
   type WorkFlowTaskParameterType,
   workflowDefinitionSchema,
-  WorkflowDefinition,
+  type WorkflowDefinition,
 } from '../models/workflowDefinitionSchema';
 import { assert } from 'assert-ts';
 import { FormSchema } from '../components/types';
 import { type AsyncState } from 'react-use/lib/useAsync';
+import lodashSet from 'lodash.set';
+import lodashGet from 'lodash.get';
 import { type UiSchema } from '@rjsf/core';
 import type { JsonObject } from '@backstage/types';
 
@@ -96,8 +98,19 @@ export function jsonSchemaFromWorkflowDefinition(
       required: [],
     };
 
+    const nested = workflowDefinition.tasks.length > 1;
+
     const uiSchema: Record<string, any> = {};
-    const parameters = task.parameters;
+    if (nested) {
+      schema.required.push(task.name);
+      lodashSet(schema, `properties.${task.name}`, {
+        properties: {},
+        required: [],
+      });
+      uiSchema[task.name] = {
+        'ui:hidden': true,
+      };
+    }
 
     for (const {
       key,
@@ -105,38 +118,46 @@ export function jsonSchemaFromWorkflowDefinition(
       description,
       optional,
       options = [],
-    } of parameters) {
+    } of task.parameters) {
+      const propertiesPath = nested
+        ? `properties.${task.name}.properties.${key}`
+        : `properties.${key}`;
       const required = !optional;
 
-      schema.properties[key] = {
-        title: key,
+      lodashSet(schema, propertiesPath, {
+        title: `${key}`,
         ...getJsonSchemaType(type),
-      };
+      });
 
       if (options.length > 0) {
-        const selectOptions = {
-          enum: options.map(option => option.key),
-          enumNames: options.map(option => option.value),
-        };
-
-        schema.properties[key] = {
-          ...schema.properties[key],
-          type: 'string',
-          ...selectOptions,
-        };
+        lodashSet(
+          schema,
+          `${propertiesPath}.enum`,
+          options.map(option => option.key),
+        );
+        lodashSet(
+          schema,
+          `${propertiesPath}.enumNames`,
+          options.map(option => option.value),
+        );
       }
 
-      uiSchema[key] = {
+      const objectPath = nested ? `${task.name}.${key}` : key;
+
+      lodashSet(uiSchema, objectPath, {
         ...getUiSchema(type),
         'ui:help': description,
         'ui:autocomplete': 'Off',
-      };
+      });
 
       if (required) {
-        schema.required.push(key);
+        const requiredPath = nested
+          ? `properties.${task.name}.required`
+          : 'required';
+        const taskRequired = lodashGet(schema, requiredPath);
+        taskRequired.push(key);
       }
     }
-
     result.steps.push({ schema, uiSchema });
   }
 
