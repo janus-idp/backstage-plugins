@@ -8,10 +8,9 @@ import {
 } from '@patternfly/react-core';
 import { K8sResourcesContext } from '../../hooks/K8sResourcesContext';
 
-const TopologyToolbar: React.FC<{
-  setClusterContext: React.Dispatch<React.SetStateAction<number>>;
-}> = ({ setClusterContext }) => {
-  const { clusters: k8sClusters } = React.useContext(K8sResourcesContext);
+const TopologyToolbar: React.FC = () => {
+  const { clusters: k8sClusters, setSelectedCluster: setClusterContext } =
+    React.useContext(K8sResourcesContext);
   const clusterOptions = k8sClusters.map(cluster => ({
     value: cluster,
     disabled: false,

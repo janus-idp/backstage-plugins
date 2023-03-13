@@ -1,7 +1,7 @@
 import { useAllWatchResources } from './useAllWatchResources';
 import { renderHook } from '@testing-library/react-hooks';
 import { KubernetesObjects } from '@backstage/plugin-kubernetes';
-import kubernetesObject from '../__fixtures__/kubernetesObject.json';
+import { kubernetesObject } from '../__fixtures__/kubernetesObject';
 import { ModelsPlural } from '../models';
 
 const watchedResources = [
@@ -14,9 +14,9 @@ const watchedResources = [
 describe('useAllWatchResources', () => {
   it('should return watchResourcesData as empty if no resources found', () => {
     const k8sObjectsResponse = {
-      loading: true,
+      loading: false,
       error: '',
-    };
+    } as KubernetesObjects;
     const { result } = renderHook(() =>
       useAllWatchResources(watchedResources, k8sObjectsResponse, 0),
     );
@@ -32,7 +32,7 @@ describe('useAllWatchResources', () => {
     const { result } = renderHook(() =>
       useAllWatchResources(watchedResources, k8sObjectsResponse, 0),
     );
-    expect(result.current?.pods?.data).toHaveLength(1);
+    expect(result.current?.pods?.data).toHaveLength(2);
     expect(result.current?.deployments?.data).toHaveLength(0);
   });
 
@@ -52,7 +52,7 @@ describe('useAllWatchResources', () => {
     let k8sObjectsResponse = {
       loading: false,
       error: '',
-    };
+    } as KubernetesObjects;
     const { result, rerender } = renderHook(() =>
       useAllWatchResources(watchedResources, k8sObjectsResponse, 0),
     );
@@ -62,9 +62,9 @@ describe('useAllWatchResources', () => {
       kubernetesObjects: kubernetesObject,
       loading: false,
       error: '',
-    } as any;
+    } as KubernetesObjects;
     rerender();
-    expect(result.current?.pods?.data).toHaveLength(1);
+    expect(result.current?.pods?.data).toHaveLength(2);
     expect(result.current?.deployments?.data).toHaveLength(0);
   });
 });

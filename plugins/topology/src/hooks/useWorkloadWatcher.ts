@@ -15,11 +15,15 @@ export const useWorkloadsWatcher = (): {
 
   const updateResults = React.useCallback(
     async ({ watchResourcesData, loading, responseError }) => {
-      if (!responseError && !loading) {
-        const dataModelRes = await updateTopologyDataModel(watchResourcesData);
-        if (dataModelRes.model) {
-          setDataModel(dataModelRes.model);
-          setLoaded(true);
+      if (!loading) {
+        setLoaded(true);
+        if (!responseError) {
+          const dataModelRes = await updateTopologyDataModel(
+            watchResourcesData,
+          );
+          if (dataModelRes.model) {
+            setDataModel(dataModelRes.model);
+          }
         }
       }
     },

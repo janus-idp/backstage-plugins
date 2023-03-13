@@ -4,7 +4,7 @@ import {
   Node,
   TopologyQuadrant,
 } from '@patternfly/react-topology/dist/esm/types';
-import { K8sWorkloadResource, K8sResponseData } from './types';
+import { K8sWorkloadResource } from './types';
 
 export type OverviewItem<T = K8sWorkloadResource> = {
   obj: T;
@@ -35,12 +35,6 @@ export type ResKindAbbrColor = {
   kindStr: string;
   kindAbbr?: string;
   kindColor?: string;
-};
-
-export type K8sResponse = {
-  watchResourcesData?: K8sResponseData;
-  loading?: boolean;
-  error?: string;
 };
 
 export type TopologyDecoratorGetter = (

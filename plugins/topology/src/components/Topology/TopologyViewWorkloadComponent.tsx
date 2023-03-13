@@ -29,7 +29,7 @@ const TopologyViewWorkloadComponent: React.FC<
   const controller = useVisualizationController();
   const layout = 'ColaNoForce';
   const { loaded, dataModel } = useWorkloadsWatcher();
-  const { clusters, selectedClusterErrors, setSelectedCluster, responseError } =
+  const { clusters, selectedClusterErrors, responseError } =
     React.useContext(K8sResourcesContext);
 
   const allErrors: ClusterErrors = [
@@ -55,7 +55,12 @@ const TopologyViewWorkloadComponent: React.FC<
     setSelectedIds(ids);
   });
 
-  if (!loaded) return <Progress />;
+  if (!loaded)
+    return (
+      <div data-testid="topology-progress">
+        <Progress />
+      </div>
+    );
 
   return (
     <>
@@ -72,11 +77,7 @@ const TopologyViewWorkloadComponent: React.FC<
               <TopologyControlBar controller={controller} />
             )
           }
-          viewToolbar={
-            useToolbar && (
-              <TopologyToolbar setClusterContext={setSelectedCluster} />
-            )
-          }
+          viewToolbar={useToolbar && <TopologyToolbar />}
         >
           {loaded && dataModel?.nodes?.length === 0 ? (
             <TopologyEmptyState />

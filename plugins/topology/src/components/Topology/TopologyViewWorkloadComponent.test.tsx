@@ -1,10 +1,8 @@
 import * as React from 'react';
-import { Progress } from '@backstage/core-components';
-import { TopologyView } from '@patternfly/react-topology';
 import { render } from '@testing-library/react';
 import { useWorkloadsWatcher } from '../../hooks/useWorkloadWatcher';
-import { TopologyEmptyState } from './TopologyEmptyState';
 import TopologyViewWorkloadComponent from './TopologyViewWorkloadComponent';
+import { K8sResourcesContext } from '../../hooks/K8sResourcesContext';
 
 jest.mock('../../hooks/useWorkloadWatcher', () => ({
   useWorkloadsWatcher: jest.fn(),
@@ -34,8 +32,8 @@ describe('TopologyViewWorkloadComponent', () => {
       loaded: false,
       dataModel: { nodes: [] },
     });
-    render(<TopologyViewWorkloadComponent />);
-    expect(Progress).toBeDefined();
+    const { getByTestId } = render(<TopologyViewWorkloadComponent />);
+    expect(getByTestId('topology-progress')).not.toBeNull();
   });
 
   it('should render TopologyEmptyState when no data is available and loading is false', () => {
@@ -43,9 +41,12 @@ describe('TopologyViewWorkloadComponent', () => {
       loaded: true,
       dataModel: { nodes: [] },
     });
-    const { getByText } = render(<TopologyViewWorkloadComponent />);
-    expect(TopologyEmptyState).toBeTruthy();
-    expect(getByText('No resources found')).toBeInTheDocument();
+    const { getByRole } = render(<TopologyViewWorkloadComponent />);
+    expect(
+      getByRole('heading', {
+        name: /no resources found/i,
+      }),
+    ).not.toBeNull();
   });
 
   it('should render TopologyView when data is available and loading is false', () => {
@@ -53,7 +54,13 @@ describe('TopologyViewWorkloadComponent', () => {
       loaded: true,
       dataModel: { nodes: [{}] },
     });
-    render(<TopologyViewWorkloadComponent />);
-    expect(TopologyView).toBeDefined();
+    const { getByText } = render(
+      <K8sResourcesContext.Provider
+        value={{ clusters: ['ocp'], setSelectedCluster: () => {} }}
+      >
+        <TopologyViewWorkloadComponent />
+      </K8sResourcesContext.Provider>,
+    );
+    expect(getByText(/topologyview/i)).not.toBeNull();
   });
 });
