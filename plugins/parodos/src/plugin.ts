@@ -4,16 +4,16 @@ import {
 } from '@backstage/core-plugin-api';
 import { rootRouteRef } from './routes';
 
-export const orionPlugin = createPlugin({
+export const parodosPlugin = createPlugin({
   id: 'parodos',
   routes: {
     root: rootRouteRef,
   },
 });
 
-export const OrionPage = orionPlugin.provide(
+export const ParodosPage = parodosPlugin.provide(
   createRoutableExtension({
-    name: 'OrionPage',
+    name: 'ParodosPage',
     component: () => import('./components/App').then(m => m.App),
     mountPoint: rootRouteRef,
   }),
