@@ -18,11 +18,12 @@ import {
 
 type FormProps = Pick<
   JsonFormProps,
-  'onSubmit' | 'disabled' | 'onChange' | 'className' | 'transformErrors'
-> & {
-  formSchema: FormSchema;
-  children?: ReactNode;
-};
+  'disabled' | 'onChange' | 'className' | 'transformErrors'
+> &
+  Required<Pick<JsonFormProps, 'onSubmit'>> & {
+    formSchema: FormSchema;
+    children?: ReactNode;
+  };
 
 export function Form({
   formSchema,
@@ -38,19 +39,64 @@ export function Form({
 
   const currentStep = formSchema.steps[activeStep];
 
+  const handleBack = () => {
+    setActiveStep(prevActiveStep => prevActiveStep - 1);
+  };
+
   const handleChange = useCallback(
     (e: IChangeEvent) => {
       setFormState(current => ({ ...current, ...e.formData }));
       onChange({ ...e, formData: formState });
 
-      setActiveStep(prev => prev + 1);
     },
     [formState, onChange],
+    );
+    
+    const handleNext = async (data: IChangeEvent, e: React.FormEvent<any>) => {
+      setFormState(current => ({ ...current, ...data.formData }));
+      
+      if (activeStep === formSchema.steps.length - 1) {
+        await onSubmit(data, e);
+      } else {
+        setActiveStep(prev => prev + 1);
+    }
+  };
+
+  const TheForm = (
+    <JsonForm
+      idPrefix=""
+      className={className}
+      validator={validator}
+      noHtml5Validate
+      showErrorList={false}
+      onChange={handleChange}
+      formData={formState}
+      formContext={{ formData: formState }}
+      onSubmit={handleNext}
+      schema={currentStep.schema}
+      disabled={disabled}
+      uiSchema={{
+        ...currentStep.uiSchema,
+        ['ui:ObjectFieldTemplate']: FluidFormLayout as any,
+      }}
+      transformErrors={transformErrors}
+    >
+      {formSchema.steps.length === 1 ? (
+        children
+      ) : (
+        <>
+          {activeStep > 0 && <Button onClick={handleBack}>Back</Button>}
+          <Button variant="contained" color="primary" type="submit">
+            Next
+          </Button>
+        </>
+      )}
+    </JsonForm>
   );
 
-  const handleBack = () => {
-    setActiveStep(prevActiveStep => prevActiveStep - 1);
-  };
+  if (formSchema.steps.length === 1) {
+    return TheForm;
+  }
 
   return (
     <>
@@ -58,34 +104,9 @@ export function Form({
         {formSchema.steps.map((step, index) => (
           <Step key={index}>
             <StepLabel>{step.schema.title}</StepLabel>
-            <StepContent key={index}>
-              <JsonForm
-                idPrefix=""
-                className={className}
-                validator={validator}
-                noHtml5Validate
-                showErrorList={false}
-                onChange={handleChange}
-                formData={formState}
-                formContext={{ formData: formState }}
-                onSubmit={onSubmit}
-                schema={currentStep.schema}
-                disabled={disabled}
-                uiSchema={{
-                  ...currentStep.uiSchema,
-                  ['ui:ObjectFieldTemplate']: FluidFormLayout as any,
-                }}
-                transformErrors={transformErrors}
-              >
-                {activeStep > 0 && <Button onClick={handleBack}>Back</Button>}
-                <Button variant="contained" color="primary" type="submit">
-                  Next
-                </Button>
-              </JsonForm>
-            </StepContent>
+            <StepContent key={index}>{TheForm}</StepContent>
           </Step>
         ))}
-        {children}
       </Stepper>
     </>
   );

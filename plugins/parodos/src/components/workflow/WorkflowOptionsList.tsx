@@ -53,7 +53,11 @@ export function WorkflowOptionsList({
       <Grid container direction="row" spacing={2}>
         {workflowOptions.map(workflowOption => (
           <Grid item xs={12} lg={6} xl={4} key={workflowOption.identifier}>
-            <Card raised={false} className={styles.applicationCard}>
+            <Card
+              className={styles.applicationCard}
+              variant="elevation"
+              elevation={3}
+            >
               <CardMedia>
                 <CardContent>{workflowOption.type}</CardContent>
                 <ItemCardHeader
