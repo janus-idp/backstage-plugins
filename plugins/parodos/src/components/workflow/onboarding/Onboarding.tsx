@@ -13,13 +13,7 @@ import {
   useSearchParams,
 } from 'react-router-dom';
 import { ParodosPage } from '../../ParodosPage';
-import {
-  Button,
-  ButtonGroup,
-  Chip,
-  makeStyles,
-  Typography,
-} from '@material-ui/core';
+import { Button, Chip, makeStyles, Typography } from '@material-ui/core';
 import { useWorkflowDefinitionToJsonSchema } from '../../../hooks/useWorkflowDefinitionToJsonSchema';
 import { assert } from 'assert-ts';
 import { Form } from '../../Form/Form';
@@ -124,7 +118,7 @@ export function Onboarding({ isNew }: OnboardingProps): JSX.Element {
       )}
       <Typography paragraph>You are onboarding {workflowOption}.</Typography>
       {loading || (startWorkflowLoading && <Progress />)}
-      {formSchema?.schema && (
+      {formSchema && formSchema.steps.length > 0 && (
         <InfoCard>
           <Typography paragraph>
             Please provide additional information related to your project.
@@ -141,25 +135,15 @@ export function Onboarding({ isNew }: OnboardingProps): JSX.Element {
               );
             }}
           >
-            <ButtonGroup orientation="vertical">
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                className={styles.start}
-              >
-                Start
-              </Button>
-              <Button
-                variant="text"
-                component={Link}
-                color="primary"
-                to="/parodos/project-overview"
-                className={styles.cancel}
-              >
-                Cancel and exit onboarding
-              </Button>
-            </ButtonGroup>
+            <Button
+              variant="text"
+              component={Link}
+              color="primary"
+              to="/parodos/project-overview"
+              className={styles.cancel}
+            >
+              Cancel and exit onboarding
+            </Button>
           </Form>
         </InfoCard>
       )}

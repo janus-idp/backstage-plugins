@@ -130,7 +130,7 @@ export function Workflow(): JSX.Element {
         it qualifies for.
       </Typography>
       {loading && <Progress />}
-      {formSchema?.schema && (
+      {formSchema && (
         <InfoCard className={styles.fullHeight}>
           <Grid container direction="row">
             <Grid item xs={12} xl={8}>
