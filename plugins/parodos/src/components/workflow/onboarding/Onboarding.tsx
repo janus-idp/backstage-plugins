@@ -114,12 +114,12 @@ export function Onboarding({ isNew }: OnboardingProps): JSX.Element {
   );
 
   useEffect(() => {
-    if(startWorkflowError) {
+    if (startWorkflowError) {
       console.error(startWorkflowError);
 
       errorApi.post(new Error('Start workflow failed'));
     }
-  }, [errorApi, startWorkflowError])
+  }, [errorApi, startWorkflowError]);
 
   return (
     <ParodosPage>
