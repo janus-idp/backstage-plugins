@@ -68,6 +68,10 @@ export function Workflow(): JSX.Element {
         }),
       });
 
+      if (!newProjectResponse.ok) {
+        throw new Error(newProjectResponse.statusText);
+      }
+
       const newProject = projectSchema.parse(await newProjectResponse.json());
 
       setProject(newProject);
@@ -80,6 +84,10 @@ export function Workflow(): JSX.Element {
           workFlowTasks: [],
         }),
       });
+
+      if (!workFlowResponse.ok) {
+        throw new Error(workFlowResponse.statusText);
+      }
 
       const workflow = workflowSchema.parse(await workFlowResponse.json());
 

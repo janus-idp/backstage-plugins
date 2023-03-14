@@ -112,11 +112,13 @@ export function Form({
         children
       ) : (
         <div>
-          {activeStep > -1 && (
-            <Button className={styles.previous} onClick={handleBack}>
-              PREVIOUS
-            </Button>
-          )}
+          <Button
+            disabled={activeStep === 0}
+            className={styles.previous}
+            onClick={handleBack}
+          >
+            PREVIOUS
+          </Button>
           <Button
             variant="contained"
             color="primary"
@@ -148,6 +150,7 @@ export function Form({
           </Step>
         ))}
       </Stepper>
+      {children}
     </>
   );
 }

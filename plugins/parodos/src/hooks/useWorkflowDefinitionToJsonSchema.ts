@@ -10,8 +10,8 @@ import {
 import { assert } from 'assert-ts';
 import { FormSchema } from '../components/types';
 import { type AsyncState } from 'react-use/lib/useAsync';
-import lodashSet from 'lodash.set';
-import lodashGet from 'lodash.get';
+import set from 'lodash.set';
+import get from 'lodash.get';
 import { type UiSchema } from '@rjsf/core';
 import type { JsonObject } from '@backstage/types';
 
@@ -100,7 +100,8 @@ export function jsonSchemaFromWorkflowDefinition(
 
     const uiSchema: Record<string, any> = {};
     schema.required.push(task.name);
-    lodashSet(schema, `properties.${task.name}`, {
+    set(schema, `properties.${task.name}`, {
+      type: 'object',
       properties: {},
       required: [],
     });
@@ -118,18 +119,18 @@ export function jsonSchemaFromWorkflowDefinition(
       const propertiesPath = `properties.${task.name}.properties.${key}`;
       const required = !optional;
 
-      lodashSet(schema, propertiesPath, {
+      set(schema, propertiesPath, {
         title: `${key}`,
         ...getJsonSchemaType(type),
       });
 
       if (options.length > 0) {
-        lodashSet(
+        set(
           schema,
           `${propertiesPath}.enum`,
           options.map(option => option.key),
         );
-        lodashSet(
+        set(
           schema,
           `${propertiesPath}.enumNames`,
           options.map(option => option.value),
@@ -138,15 +139,15 @@ export function jsonSchemaFromWorkflowDefinition(
 
       const objectPath = `${task.name}.${key}`;
 
-      lodashSet(uiSchema, objectPath, {
+      set(uiSchema, objectPath, {
         ...getUiSchema(type),
         'ui:help': description,
-        'ui:autocomplete': 'Off',
+        // 'ui:autocomplete': 'Off',
       });
 
       if (required) {
         const requiredPath = `properties.${task.name}.required`;
-        const taskRequired = lodashGet(schema, requiredPath);
+        const taskRequired = get(schema, requiredPath);
         taskRequired.push(key);
       }
     }
