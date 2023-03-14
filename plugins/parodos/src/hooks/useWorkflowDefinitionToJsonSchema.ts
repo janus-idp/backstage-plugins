@@ -14,6 +14,7 @@ import set from 'lodash.set';
 import get from 'lodash.get';
 import { type UiSchema } from '@rjsf/core';
 import type { JsonObject } from '@backstage/types';
+import { capitalize } from '../utils/string';
 
 export function getJsonSchemaType(type: WorkFlowTaskParameterType) {
   switch (type) {
@@ -93,7 +94,11 @@ export function jsonSchemaFromWorkflowDefinition(
   for (const task of workflowDefinition.tasks) {
     const schema: Record<string, any> = {
       type: 'object',
-      title: task.name,
+      title: task.name
+        .replace(/([a-z])([A-Z])/g, '$1 $2')
+        .split(' ')
+        .map(capitalize)
+        .join(' '), // TODO: task label would be good here
       properties: {},
       required: [],
     };
