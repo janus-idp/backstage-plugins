@@ -143,7 +143,7 @@ export function Form({
           <Step key={index}>
             {hideTitle === false && (
               <StepLabel className={styles.stepLabel}>
-                {step.schema.title}
+                {step.title}
               </StepLabel>
             )}
             <StepContent key={index}>{TheForm}</StepContent>

@@ -12,8 +12,6 @@ import { FormSchema } from '../components/types';
 import { type AsyncState } from 'react-use/lib/useAsync';
 import set from 'lodash.set';
 import get from 'lodash.get';
-import { type UiSchema } from '@rjsf/core';
-import type { JsonObject } from '@backstage/types';
 import { capitalize } from '../utils/string';
 
 export function getJsonSchemaType(type: WorkFlowTaskParameterType) {
@@ -76,14 +74,6 @@ export function getUiSchema(type: WorkFlowTaskParameterType) {
   }
 }
 
-export interface Step {
-  uiSchema: UiSchema;
-  mergedSchema: JsonObject;
-  schema: JsonObject;
-  title: string;
-  description?: string;
-}
-
 export function jsonSchemaFromWorkflowDefinition(
   workflowDefinition: WorkflowDefinition,
 ): FormSchema {
@@ -92,13 +82,15 @@ export function jsonSchemaFromWorkflowDefinition(
   };
 
   for (const task of workflowDefinition.tasks) {
+    const title = task.name
+      .replace(/([a-z])([A-Z])/g, '$1 $2')
+      .split(' ')
+      .map(capitalize)
+      .join(' '); // TODO: task label would be good here
+
     const schema: Record<string, any> = {
       type: 'object',
-      title: task.name
-        .replace(/([a-z])([A-Z])/g, '$1 $2')
-        .split(' ')
-        .map(capitalize)
-        .join(' '), // TODO: task label would be good here
+      title,
       properties: {},
       required: [],
     };
@@ -110,6 +102,7 @@ export function jsonSchemaFromWorkflowDefinition(
       properties: {},
       required: [],
     });
+
     uiSchema[task.name] = {
       'ui:hidden': true,
     };
@@ -156,7 +149,7 @@ export function jsonSchemaFromWorkflowDefinition(
         taskRequired.push(key);
       }
     }
-    result.steps.push({ schema, uiSchema });
+    result.steps.push({ schema, uiSchema, title, mergedSchema: schema });
   }
 
   return result;

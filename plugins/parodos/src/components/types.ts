@@ -86,9 +86,14 @@ export type PropsFromComponent<C> = C extends (props: infer P) => JSX.Element
   ? P
   : never;
 
+export interface Step {
+  uiSchema: UiSchema;
+  mergedSchema: JsonObject;
+  schema: JsonObject;
+  title: string;
+  description?: string;
+}
+
 export interface FormSchema {
-  steps: {
-    schema: JsonObject;
-    uiSchema: UiSchema;
-  }[];
+  steps: Step[];
 }
