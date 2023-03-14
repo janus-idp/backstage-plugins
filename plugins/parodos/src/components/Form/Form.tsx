@@ -15,8 +15,6 @@ import {
   Button,
   makeStyles,
 } from '@material-ui/core';
-import cs from 'classnames';
-import { FluidFieldTemplate } from '../layouts/FluidFieldTemplate';
 import { FluidObjectFieldTemplate } from '../layouts/FluidObjectFieldTemplate';
 
 type FormProps = Pick<
@@ -26,14 +24,25 @@ type FormProps = Pick<
   Required<Pick<JsonFormProps, 'onSubmit'>> & {
     formSchema: FormSchema;
     title?: string;
+    hideTitle?: boolean;
     children?: ReactNode;
   };
 
-const useStyles = makeStyles(_theme => ({
+const useStyles = makeStyles(theme => ({
   stepLabel: {
     '& span': {
       fontSize: '1.25rem',
     },
+  },
+  previous: {
+    border: `1px solid ${theme.palette.primary.main}`,
+    color: theme.palette.text.primary,
+    marginRight: theme.spacing(1),
+    textTransform: 'uppercase',
+  },
+  next: {
+    paddingRight: theme.spacing(4),
+    paddingLeft: theme.spacing(4),
   },
 }));
 
@@ -45,6 +54,7 @@ export function Form({
   disabled = false,
   className,
   transformErrors,
+  hideTitle = false,
   children,
 }: FormProps): JSX.Element {
   const [activeStep, setActiveStep] = useState(0);
@@ -78,7 +88,7 @@ export function Form({
   const TheForm = (
     <JsonForm
       idPrefix=""
-      className={cs(styles.form, className)}
+      className={className}
       validator={validator}
       noHtml5Validate
       showErrorList={false}
@@ -89,25 +99,33 @@ export function Form({
       schema={currentStep.schema}
       disabled={disabled}
       templates={{
-        ObjectFieldTemplate: FluidObjectFieldTemplate as any,
+        ObjectFieldTemplate: FluidObjectFieldTemplate,
       }}
       uiSchema={{
         ...currentStep.uiSchema,
-        // ['ui:ObjectFieldTemplate']: FluidObjectFieldTemplate as any,
-        // ['ui:FieldTemplate']: FluidFieldTemplate as any,
         ['ui:title']: title,
+        ['ui:show-title']: hideTitle === false,
       }}
       transformErrors={transformErrors}
     >
       {formSchema.steps.length === 1 ? (
         children
       ) : (
-        <>
-          {activeStep > 0 && <Button onClick={handleBack}>PREVIOUS</Button>}
-          <Button variant="contained" color="primary" type="submit">
+        <div>
+          {activeStep > -1 && (
+            <Button className={styles.previous} onClick={handleBack}>
+              PREVIOUS
+            </Button>
+          )}
+          <Button
+            variant="contained"
+            color="primary"
+            type="submit"
+            className={styles.next}
+          >
             NEXT
           </Button>
-        </>
+        </div>
       )}
     </JsonForm>
   );
@@ -121,9 +139,11 @@ export function Form({
       <Stepper activeStep={activeStep} orientation="vertical">
         {formSchema.steps.map((step, index) => (
           <Step key={index}>
-            <StepLabel className={styles.stepLabel}>
-              {step.schema.title}
-            </StepLabel>
+            {hideTitle === false && (
+              <StepLabel className={styles.stepLabel}>
+                {step.schema.title}
+              </StepLabel>
+            )}
             <StepContent key={index}>{TheForm}</StepContent>
           </Step>
         ))}

@@ -43,7 +43,7 @@ export function getJsonSchemaType(type: WorkFlowTaskParameterType) {
     case 'URL':
       return {
         type: 'string',
-        pattern: '^(https?)://',
+        pattern: '^(https?)://', // TODO: better regex
       };
     default:
       return {

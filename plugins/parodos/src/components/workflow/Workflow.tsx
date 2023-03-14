@@ -26,6 +26,7 @@ import {
   WorkflowOptionsList,
   type WorkflowOptionsListItem,
 } from './WorkflowOptionsList';
+import { assert } from 'assert-ts';
 
 const useStyles = makeStyles(theme => ({
   fullHeight: {
@@ -35,6 +36,12 @@ const useStyles = makeStyles(theme => ({
     marginTop: theme.spacing(2),
   },
 }));
+
+interface ProjectsPayload {
+  onboardingAssessmentTask: {
+    Name: string;
+  };
+}
 
 export function Workflow(): JSX.Element {
   const [project, setProject] = useState<Project>();
@@ -49,13 +56,15 @@ export function Workflow(): JSX.Element {
   const { loading, error, value: formSchema } = useGetProjectAssessmentSchema();
 
   const [{ error: startAssessmentError }, startAssessment] = useAsyncFn(
-    async ({ formData }: IChangeEvent) => {
+    async ({ formData }: IChangeEvent<ProjectsPayload>) => {
+      assert(!!formData, `no formData`);
+
       setAssessmentStatus('inprogress');
 
       const newProjectResponse = await fetch(`${backendUrl}${urls.Projects}`, {
         method: 'POST',
         body: JSON.stringify({
-          name: formData.Name,
+          name: formData.onboardingAssessmentTask.Name,
         }),
       });
 
@@ -141,6 +150,7 @@ export function Workflow(): JSX.Element {
                 formSchema={formSchema}
                 onSubmit={startAssessment}
                 disabled={disableForm}
+                hideTitle
               >
                 <Button
                   type="submit"

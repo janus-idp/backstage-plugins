@@ -10,15 +10,21 @@ import {
   titleId,
 } from '@rjsf/utils';
 import { Box, makeStyles, Typography } from '@material-ui/core';
+import { CSSProperties } from '@material-ui/core/styles/withStyles';
 
 const useStyles = makeStyles(theme => ({
   container: {
-    marginTop: theme.spacing(2)
+    marginTop: theme.spacing(2),
   },
   item: {
-    marginBottom: theme.spacing(2)
-  }
-}))
+    marginBottom: theme.spacing(2),
+  },
+  title: {
+    fontSize: '1rem',
+    fontWeight: theme.typography
+      .fontWeightRegular as CSSProperties['fontWeight'],
+  },
+}));
 
 export function FluidObjectFieldTemplate<
   T = any,
@@ -50,14 +56,20 @@ export function FluidObjectFieldTemplate<
     properties.length === 1 &&
     uiSchema?.[properties[0].content.key as string]['ui:hidden'] === true;
 
+  const showTitle = uiSchema?.['ui:show-title'];
+
   return (
     <>
-      <Box id={titleId(idSchema)} mb={1} mt={1}>
-        <Typography variant="h5">{title}</Typography>
-      </Box>
+      {showTitle && (
+        <Box id={titleId(idSchema)} mb={1} mt={1}>
+          <Typography variant="h5" className={styles.title}>
+            {title}
+          </Typography>
+        </Box>
+      )}
       {(uiOptions.description || description) &&
         {
-          /* could add description here */
+          /* TODO: could add description here */
         }}
       {isContainer ? (
         properties[0].content
