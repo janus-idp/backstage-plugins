@@ -98,19 +98,15 @@ export function jsonSchemaFromWorkflowDefinition(
       required: [],
     };
 
-    const nested = workflowDefinition.tasks.length > 1;
-
     const uiSchema: Record<string, any> = {};
-    if (nested) {
-      schema.required.push(task.name);
-      lodashSet(schema, `properties.${task.name}`, {
-        properties: {},
-        required: [],
-      });
-      uiSchema[task.name] = {
-        'ui:hidden': true,
-      };
-    }
+    schema.required.push(task.name);
+    lodashSet(schema, `properties.${task.name}`, {
+      properties: {},
+      required: [],
+    });
+    uiSchema[task.name] = {
+      'ui:hidden': true,
+    };
 
     for (const {
       key,
@@ -119,9 +115,7 @@ export function jsonSchemaFromWorkflowDefinition(
       optional,
       options = [],
     } of task.parameters) {
-      const propertiesPath = nested
-        ? `properties.${task.name}.properties.${key}`
-        : `properties.${key}`;
+      const propertiesPath = `properties.${task.name}.properties.${key}`;
       const required = !optional;
 
       lodashSet(schema, propertiesPath, {
@@ -142,7 +136,7 @@ export function jsonSchemaFromWorkflowDefinition(
         );
       }
 
-      const objectPath = nested ? `${task.name}.${key}` : key;
+      const objectPath = `${task.name}.${key}`;
 
       lodashSet(uiSchema, objectPath, {
         ...getUiSchema(type),
@@ -151,9 +145,7 @@ export function jsonSchemaFromWorkflowDefinition(
       });
 
       if (required) {
-        const requiredPath = nested
-          ? `properties.${task.name}.required`
-          : 'required';
+        const requiredPath = `properties.${task.name}.required`;
         const taskRequired = lodashGet(schema, requiredPath);
         taskRequired.push(key);
       }

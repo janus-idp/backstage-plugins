@@ -6,7 +6,6 @@ import {
   type IChangeEvent,
 } from '@rjsf/core-v5';
 import type { FormSchema } from '../types';
-import { FluidFormLayout } from '../layouts/FluidFormLayout';
 import { JsonValue } from '@backstage/types';
 import {
   Step,
@@ -17,6 +16,8 @@ import {
   makeStyles,
 } from '@material-ui/core';
 import cs from 'classnames';
+import { FluidFieldTemplate } from '../layouts/FluidFieldTemplate';
+import { FluidObjectFieldTemplate } from '../layouts/FluidObjectFieldTemplate';
 
 type FormProps = Pick<
   JsonFormProps,
@@ -24,27 +25,21 @@ type FormProps = Pick<
 > &
   Required<Pick<JsonFormProps, 'onSubmit'>> & {
     formSchema: FormSchema;
+    title?: string;
     children?: ReactNode;
   };
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(_theme => ({
   stepLabel: {
     '& span': {
       fontSize: '1.25rem',
-    },
-  },
-  form: {
-    '& h5': {
-      fontSize: theme.typography.fontSize,
-    },
-    '& h5 + hr': {
-      display: 'none',
     },
   },
 }));
 
 export function Form({
   formSchema,
+  title,
   onSubmit,
   onChange = (e: IChangeEvent) => e,
   disabled = false,
@@ -93,9 +88,14 @@ export function Form({
       onSubmit={handleNext}
       schema={currentStep.schema}
       disabled={disabled}
+      templates={{
+        ObjectFieldTemplate: FluidObjectFieldTemplate as any,
+      }}
       uiSchema={{
         ...currentStep.uiSchema,
-        ['ui:ObjectFieldTemplate']: FluidFormLayout as any,
+        // ['ui:ObjectFieldTemplate']: FluidObjectFieldTemplate as any,
+        // ['ui:FieldTemplate']: FluidFieldTemplate as any,
+        ['ui:title']: title,
       }}
       transformErrors={transformErrors}
     >
