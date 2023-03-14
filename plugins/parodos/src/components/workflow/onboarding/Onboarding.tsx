@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   ContentHeader,
   InfoCard,
@@ -13,13 +13,7 @@ import {
   useSearchParams,
 } from 'react-router-dom';
 import { ParodosPage } from '../../ParodosPage';
-import {
-  Button,
-  ButtonGroup,
-  Chip,
-  makeStyles,
-  Typography,
-} from '@material-ui/core';
+import { Button, Chip, makeStyles, Typography } from '@material-ui/core';
 import { useWorkflowDefinitionToJsonSchema } from '../../../hooks/useWorkflowDefinitionToJsonSchema';
 import { assert } from 'assert-ts';
 import { Form } from '../../Form/Form';
@@ -30,6 +24,8 @@ import { type IChangeEvent } from '@rjsf/core-v5';
 import { WorkflowExecuteResponseType } from '../../types';
 import { type RJSFValidationError } from '@rjsf/utils';
 import * as urls from '../../../urls';
+import lodashGet from 'lodash.get';
+import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 
 interface OnboardingProps {
   isNew: boolean;
@@ -52,6 +48,7 @@ export function Onboarding({ isNew }: OnboardingProps): JSX.Element {
   const { workflowName, projectId } = useParams();
   const styles = useStyles();
   const [searchParams] = useSearchParams();
+  const errorApi = useApi(errorApiRef);
 
   const workflowOption = searchParams.get('option');
 
@@ -82,11 +79,15 @@ export function Onboarding({ isNew }: OnboardingProps): JSX.Element {
           return {
             name: task.name,
             arguments: task.parameters.map(param => {
-              const value = formData[param.key];
+              const value = lodashGet(
+                formData,
+                `${task.name}.${param.key}`,
+                null,
+              );
 
               return {
                 key: param.key,
-                value: value ?? null,
+                value: value,
               };
             }),
           };
@@ -98,6 +99,10 @@ export function Onboarding({ isNew }: OnboardingProps): JSX.Element {
         body: JSON.stringify(payload),
       });
 
+      if (!data.ok) {
+        throw new Error(`${data.status} - ${data.statusText}`);
+      }
+
       const response = (await data.json()) as WorkflowExecuteResponseType;
       const executionId = response.workFlowExecutionId;
 
@@ -108,9 +113,13 @@ export function Onboarding({ isNew }: OnboardingProps): JSX.Element {
     [workflow, projectId, backendUrl, navigate, isNew],
   );
 
-  if (startWorkflowError) {
-    throw startWorkflowError;
-  }
+  useEffect(() => {
+    if (startWorkflowError) {
+      console.error(startWorkflowError);
+
+      errorApi.post(new Error('Start workflow failed'));
+    }
+  }, [errorApi, startWorkflowError]);
 
   return (
     <ParodosPage>
@@ -124,7 +133,7 @@ export function Onboarding({ isNew }: OnboardingProps): JSX.Element {
       )}
       <Typography paragraph>You are onboarding {workflowOption}.</Typography>
       {loading || (startWorkflowLoading && <Progress />)}
-      {formSchema?.schema && (
+      {formSchema && formSchema.steps.length > 0 && (
         <InfoCard>
           <Typography paragraph>
             Please provide additional information related to your project.
@@ -141,25 +150,15 @@ export function Onboarding({ isNew }: OnboardingProps): JSX.Element {
               );
             }}
           >
-            <ButtonGroup orientation="vertical">
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                className={styles.start}
-              >
-                Start
-              </Button>
-              <Button
-                variant="text"
-                component={Link}
-                color="primary"
-                to="/parodos/project-overview"
-                className={styles.cancel}
-              >
-                Cancel and exit onboarding
-              </Button>
-            </ButtonGroup>
+            <Button
+              variant="text"
+              component={Link}
+              color="primary"
+              to="/parodos/project-overview"
+              className={styles.cancel}
+            >
+              Cancel and exit onboarding
+            </Button>
           </Form>
         </InfoCard>
       )}
