@@ -61,9 +61,11 @@ describe('<Form />', () => {
     it('can submit the multi-step form', async () => {
       const onSubmit = jest.fn();
 
-      const { getByRole } = render(
+      const { getByRole, getByText } = render(
         <Form formSchema={formSchema} onSubmit={onSubmit} />,
       );
+
+      expect(getByText('Ad Group Work Flow Task')).toBeInTheDocument();
 
       await fireEvent.change(getByRole('textbox', { name: 'api-server' }), {
         target: { value: 'https://someurl.com' },
