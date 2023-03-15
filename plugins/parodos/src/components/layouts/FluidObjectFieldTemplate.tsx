@@ -15,9 +15,13 @@ import { CSSProperties } from '@material-ui/core/styles/withStyles';
 const useStyles = makeStyles(theme => ({
   container: {
     marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(3),
   },
   item: {
     marginBottom: theme.spacing(2),
+    '& .field-array  .MuiPaper-root': {
+        boxShadow: 'none',
+    },
   },
   title: {
     fontSize: '1rem',
@@ -75,9 +79,22 @@ export function FluidObjectFieldTemplate<
       {isContainer ? (
         properties[0].content
       ) : (
-        <Grid container spacing={2} className={styles.item}>
-          {properties.map((element, index) =>
-            element.hidden ? (
+        <Grid container spacing={2} className={styles.container}>
+          {properties.map((element, index) => {
+            const container =
+              element.content.props.uiSchema['ui:hidden'] === true;
+
+            if (container) {
+              return (
+                <Grid container className={styles.container}>
+                  <Grid item xs={12} className={styles.item}>
+                    {element.content}
+                  </Grid>
+                </Grid>
+              );
+            }
+
+            return element.hidden ? (
               element.content
             ) : (
               <Grid
@@ -86,12 +103,12 @@ export function FluidObjectFieldTemplate<
                 md={6}
                 lg={4}
                 key={index}
-                style={{ marginBottom: '10px' }}
+                className={styles.item}
               >
                 {element.content}
               </Grid>
-            ),
-          )}
+            );
+          })}
           {canExpand(schema, uiSchema, formData) && (
             <Grid container justifyContent="flex-end">
               <Grid item>

@@ -41,7 +41,7 @@ const useStyles = makeStyles(theme => ({
     textTransform: 'uppercase',
     '&:disabled': {
       border: `1px solid ${theme.palette.text.disabled}`,
-    }
+    },
   },
   next: {
     paddingRight: theme.spacing(4),

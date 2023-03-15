@@ -45,6 +45,7 @@
     "@rjsf/validator-ajv8": "^5.2.0",
     "@total-typescript/ts-reset": "^0.4.2",
     "assert-ts": "^0.3.4",
+    "classnames": "^2.3.2",
     "lodash.set": "^4.3.2",
     "lodash.get": "^4.4.2",
     "mobx": "^5.15.4",
