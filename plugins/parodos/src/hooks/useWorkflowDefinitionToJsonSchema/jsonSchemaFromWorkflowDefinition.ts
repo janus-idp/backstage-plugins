@@ -29,15 +29,13 @@ export function getJsonSchemaType(type: WorkFlowTaskParameterType) {
         type: 'string',
         format: 'email',
       };
-    case 'MOCK-SELECT':
-      return {
-        type: 'array',
-      };
     case 'URL':
       return {
         type: 'string',
         pattern: '^(https?)://', // TODO: better regex
       };
+    case 'MOCK-SELECT':
+      return {};
     default:
       return {
         type: 'string',
