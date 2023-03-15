@@ -1,7 +1,6 @@
-import React from 'react';
+import React, { forwardRef, useCallback, useMemo, type ReactNode } from 'react';
 import { Content, HeaderTabs, Page } from '@backstage/core-components';
 import { useLocation } from 'react-router-dom';
-import StarIcon from '@material-ui/icons/Star';
 import { makeStyles } from '@material-ui/core';
 import { PageHeader } from './PageHeader';
 import {
@@ -12,12 +11,13 @@ import {
   TrainingIcon,
   MetricsIcon,
 } from './icons';
-import { ProjectType, PropsFromComponent } from './types';
-import { useBackendUrl } from './api';
-import useAsync from 'react-use/lib/useAsync';
-import { ErrorMessage } from './errors/ErrorMessage';
+import type { ProjectType, PropsFromComponent } from './types';
 import { useNavigate } from 'react-router-dom';
+import StarIcon from '@material-ui/icons/Star';
+import { useBackendUrl } from './api/useBackendUrl';
+import useAsync from 'react-use/lib/useAsync';
 import * as urls from '../urls';
+import { ErrorMessage } from './errors/ErrorMessage';
 
 export const pluginRoutePrefix = '/parodos';
 
@@ -48,20 +48,25 @@ const useStyles = makeStyles({
   },
 });
 
-export const TabLabel: React.FC<{
-  icon?: React.ReactNode;
-  label: string;
-  highlighted?: boolean;
-}> = ({ icon, label, highlighted }) => {
-  const styles = useStyles();
-  return (
-    <>
-      {icon}
-      {highlighted && <StarIcon className={styles.highlightedTab} />}
-      {label}
-    </>
-  );
-};
+interface TabLabelProps {
+  icon: ReactNode;
+  highlighted: boolean;
+  children: ReactNode;
+}
+
+export const TabLabel = forwardRef<HTMLSpanElement, TabLabelProps>(
+  ({ children, icon, highlighted, ...props }, ref) => {
+    const styles = useStyles();
+
+    return (
+      <span {...props} ref={ref}>
+        {icon}
+        {highlighted && <StarIcon className={styles.highlightedTab} />}
+        {children}
+      </span>
+    );
+  },
+);
 
 // Unfortunately backstage do not export the props type for <Content />
 type ContentProps = PropsFromComponent<typeof Content>;
@@ -72,11 +77,16 @@ export const ParodosPage: React.FC<ParodosPageProps> = ({
   children,
   ...props
 }) => {
-  const [selectedTab, setSelectedTab] = React.useState(0);
   const { pathname } = useLocation();
   const [isProject, setIsProject] = React.useState(true);
   const backendUrl = useBackendUrl();
-  const navigate = useNavigate();
+  const selectedTab = useMemo(
+    () =>
+      navigationMap.findIndex(({ routes }) =>
+        routes.find(route => pathname.includes(route)),
+      ),
+    [pathname],
+  );
 
   const { error } = useAsync(async () => {
     const response = await fetch(`${backendUrl}${urls.Projects}`);
@@ -85,41 +95,45 @@ export const ParodosPage: React.FC<ParodosPageProps> = ({
     setIsProject(receivedProjects.length > 0);
   }, [backendUrl]);
 
-  React.useEffect(() => {
-    let index = navigationMap.findIndex(({ routes }) =>
-      routes.find(route => pathname.includes(route)),
-    );
-    index = index < 0 ? 0 : index;
-    setSelectedTab(index);
-  }, [pathname]);
+  const navigate = useNavigate();
 
-  const onChangeTab = (index: number) => {
-    setSelectedTab(index);
-    // TODO: use links here.  The first route is only ever used
-    navigate(`${pluginRoutePrefix}${navigationMap[index].routes[0]}`);
-  };
+  const tabs = useMemo(
+    () =>
+      navigationMap.map(({ label }, index) => {
+        // TODO: this should be coming from state with recoil or something
+        const highlighted = selectedTab === 0 && index === 1 && !isProject;
+        return {
+          id: index.toString(),
+          label,
+          tabProps: {
+            component: (p: TabLabelProps) => (
+              <TabLabel
+                {...p}
+                highlighted={highlighted}
+                icon={navigationMap[index].icon}
+              />
+            ),
+          },
+        };
+      }),
+    [isProject, selectedTab],
+  );
+
+  const onTabChange = useCallback(
+    tabIndex => {
+      const { routes } = navigationMap[tabIndex];
+      navigate(`${pluginRoutePrefix}${routes[0]}`);
+    },
+    [navigate],
+  );
 
   return (
     <Page themeId="tool">
       <PageHeader />
       <HeaderTabs
         selectedIndex={selectedTab}
-        onChange={onChangeTab}
-        tabs={navigationMap.map(({ label, icon }, index) => {
-          const highlighted =
-            selectedTab === 0 /* When on Projects tab only */ &&
-            index === 1 /* for the Assessment tab only */ &&
-            !isProject;
-
-          return {
-            id: index.toString(),
-            label: (
-              <TabLabel icon={icon} label={label} highlighted={highlighted} />
-            ) as unknown as string /* Hack, since HeaderTabs accept string only. Contrary to Tabs coponent. */,
-
-            // To consider: we can use Content here over react-router, the behavior would be smoother
-          };
-        })}
+        onChange={onTabChange}
+        tabs={tabs}
       />
       <Content {...props}>
         {error && <ErrorMessage error={error} />}
