@@ -1,3 +1,10 @@
+# @janus-idp/backstage-plugin-ocm [1.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm@1.1.3...@janus-idp/backstage-plugin-ocm@1.2.0) (2023-03-15)
+
+
+### Features
+
+* **ocm:** Add header to the ocm cluster status page ([#167](https://github.com/janus-idp/backstage-plugins/issues/167)) ([52bb702](https://github.com/janus-idp/backstage-plugins/commit/52bb7029f39575f98649f40f4f37c5b648d88368))
+
 ## @janus-idp/backstage-plugin-ocm [1.1.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm@1.1.2...@janus-idp/backstage-plugin-ocm@1.1.3) (2023-03-06)
 
 
