@@ -8,13 +8,9 @@ import {
   CodeSnippet,
   StatusOK,
   StatusError,
+  Header,
 } from '@backstage/core-components';
-import {
-  CircularProgress,
-  Grid,
-  makeStyles,
-  Typography,
-} from '@material-ui/core';
+import { CircularProgress, Grid, makeStyles } from '@material-ui/core';
 
 import { catalogApiRef, EntityRefLink } from '@backstage/plugin-catalog-react';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
@@ -38,11 +34,6 @@ const useStyles = makeStyles(theme => ({
       width: 'auto',
       height: 150,
     },
-  },
-  typography: {
-    display: 'flex',
-    padding: '8px 0',
-    margin: 'auto',
   },
 }));
 
@@ -161,19 +152,15 @@ const CatalogClusters = () => {
 };
 
 export const ClusterStatusPage = ({ logo }: { logo?: React.ReactNode }) => {
-  const { container, typography } = useStyles();
+  const { container } = useStyles();
 
   return (
     <SearchContextProvider>
       <Page themeId="clusters">
+        <Header title="Your Managed Clusters" />
         <Content>
           <Grid container justifyContent="center" spacing={6}>
             <HomePageCompanyLogo className={container} logo={logo} />
-            <Grid container item xs={12} alignItems="center" direction="row">
-              <Typography variant="h1" className={typography}>
-                Managed Clusters
-              </Typography>
-            </Grid>
             <Grid container item xs={12} justifyContent="center">
               <CatalogClusters />
             </Grid>
