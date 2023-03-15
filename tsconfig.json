@@ -4,8 +4,7 @@
     "packages/*/src",
     "plugins/*/src",
     "plugins/*/dev",
-    "plugins/*/migrations",
-    "./reset.d.ts"
+    "plugins/*/migrations"
   ],
   "exclude": ["node_modules"],
   "compilerOptions": {

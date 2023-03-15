@@ -20,7 +20,7 @@ const useStyles = makeStyles(theme => ({
   item: {
     marginBottom: theme.spacing(2),
     '& .field-array  .MuiPaper-root': {
-        boxShadow: 'none',
+      boxShadow: 'none',
     },
   },
   title: {
