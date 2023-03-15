@@ -75,13 +75,13 @@ export function Onboarding({ isNew }: OnboardingProps): JSX.Element {
       const payload = {
         projectId,
         workFlowName: workflow.name,
-        workFlowTasks: workflow.tasks.map(task => {
+        workFlowTasks: workflow.works.map(work => {
           return {
-            name: task.name,
-            arguments: task.parameters.map(param => {
+            name: work.name,
+            arguments: work.parameters.map(param => {
               const value = lodashGet(
                 formData,
-                `${task.name}.${param.key}`,
+                `${work.name}.${param.key}`,
                 null,
               );
 

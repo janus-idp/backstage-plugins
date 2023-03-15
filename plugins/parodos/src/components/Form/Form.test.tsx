@@ -10,7 +10,7 @@ describe('<Form />', () => {
   describe('no stepper', () => {
     const mockWorkflow = {
       ...mockAndromedaWorkflowDefinition,
-      tasks: [mockAndromedaWorkflowDefinition.tasks[0]],
+      works: [mockAndromedaWorkflowDefinition.works[0]],
     };
     const formSchema: FormSchema =
       jsonSchemaFromWorkflowDefinition(mockWorkflow);

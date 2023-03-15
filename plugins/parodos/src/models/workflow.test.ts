@@ -1,4 +1,4 @@
-import { workflowSchema, type Workflow } from './workflow';
+import { workflowSchema } from './workflow';
 
 describe('workflow', () => {
   it('parses the workflow response', () => {
@@ -21,7 +21,7 @@ describe('workflow', () => {
         otherOptions: [],
         optionsAvailable: false,
       },
-    }) as { success: true; data: Workflow };
+    });
 
     expect(result.success).toBe(true);
   });

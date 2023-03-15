@@ -81,7 +81,7 @@ export function jsonSchemaFromWorkflowDefinition(
     steps: [],
   };
 
-  for (const task of workflowDefinition.tasks) {
+  for (const task of workflowDefinition.works) {
     const title = task.name
       .replace(/([a-z])([A-Z])/g, '$1 $2')
       .split(' ')

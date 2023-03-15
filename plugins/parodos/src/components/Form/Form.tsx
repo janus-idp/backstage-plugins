@@ -142,9 +142,7 @@ export function Form({
         {formSchema.steps.map((step, index) => (
           <Step key={index}>
             {hideTitle === false && (
-              <StepLabel className={styles.stepLabel}>
-                {step.title}
-              </StepLabel>
+              <StepLabel className={styles.stepLabel}>{step.title}</StepLabel>
             )}
             <StepContent key={index}>{TheForm}</StepContent>
           </Step>

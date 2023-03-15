@@ -81,7 +81,7 @@ export function Workflow(): JSX.Element {
         body: JSON.stringify({
           projectId: newProject.id,
           workFlowName: ASSESSMENT_WORKFLOW,
-          workFlowTasks: [],
+          works: [],
         }),
       });
 
