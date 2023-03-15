@@ -1,7 +1,7 @@
 import React from 'react';
 import { mockAndromedaWorkflowDefinition } from '../../mocks/workflowDefinitions/andromeda';
 import { FormSchema } from '../types';
-import { jsonSchemaFromWorkflowDefinition } from '../../hooks/useWorkflowDefinitionToJsonSchema';
+import { jsonSchemaFromWorkflowDefinition } from '../../hooks/useWorkflowDefinitionToJsonSchema/jsonSchemaFromWorkflowDefinition';
 import { act, fireEvent, render } from '@testing-library/react';
 import { Form } from './Form';
 

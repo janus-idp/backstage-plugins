@@ -1,19 +1,12 @@
 import {
-  GetDefinitionFilter,
-  useGetWorkflowDefinition,
-} from './useGetWorkflowDefinitions';
-import {
-  workflowDefinitionSchema,
   type WorkFlowTaskParameterType,
   type WorkflowDefinition,
   type WorkType,
-} from '../models/workflowDefinitionSchema';
-import { assert } from 'assert-ts';
-import type { FormSchema, Step } from '../components/types';
-import { type AsyncState } from 'react-use/lib/useAsync';
+} from '../../models/workflowDefinitionSchema';
+import type { FormSchema, Step } from '../../components/types';
 import set from 'lodash.set';
 import get from 'lodash.get';
-import { capitalize } from '../utils/string';
+import { capitalize } from '../../utils/string';
 
 export function getJsonSchemaType(type: WorkFlowTaskParameterType) {
   switch (type) {
@@ -72,6 +65,55 @@ export function getUiSchema(type: WorkFlowTaskParameterType) {
       return {};
     default:
       return {};
+  }
+}
+
+function buildWorksTree(
+  work: WorkType,
+  {
+    schema,
+    uiSchema,
+    title,
+  }: {
+    schema: Record<string, any>;
+    uiSchema: Record<string, any>;
+    title: string;
+  },
+): void {
+  const key = Object.keys(schema)[0];
+
+  set(schema, `properties.${key}.properties.works`, {
+    type: 'array',
+    title: `${title} works`,
+    items: [],
+  });
+
+  set(uiSchema, `${key}.works.items`, []);
+
+  const works = work.works ?? [];
+
+  for (const [index, childWork] of works.entries()) {
+    const childStep = transformWorkToStep(childWork);
+
+    const nextSchemaKey = `properties.${key}.properties.works.items[${index}]`;
+    const nextUiSchemaKey = `${key}.works.items[${index}]`;
+
+    set(schema, nextSchemaKey, childStep.schema);
+
+    set(uiSchema, `${key}.works.['ui:hidden']`, true);
+    set(uiSchema, nextUiSchemaKey, childStep.uiSchema);
+
+    const childWorks = childWork.works ?? [];
+
+    if (childWorks.length > 0) {
+      for (const nextChildWork of childWorks) {
+        buildWorksTree(nextChildWork, {
+          schema: get(schema, nextSchemaKey),
+          uiSchema: get(uiSchema, nextUiSchemaKey),
+          title: get(schema, `${nextSchemaKey}.title`),
+        });
+      }
+    }
   }
 }
 
@@ -146,6 +188,12 @@ function transformWorkToStep(work: WorkType): Step {
     }
   }
 
+  const works = work.works ?? [];
+
+  if (works.length > 0) {
+    buildWorksTree(work, { schema, uiSchema, title });
+  }
+
   return { schema, uiSchema, title, mergedSchema: schema };
 }
 
@@ -159,60 +207,8 @@ export function jsonSchemaFromWorkflowDefinition(
   for (const work of workflowDefinition.works) {
     const step = transformWorkToStep(work);
 
-    if (work.works && work.works.length > 0) {
-      const key = Object.keys(step.schema)[0];
-
-      set(step.schema, `properties.${key}.properties.works`, {
-        type: 'array',
-        title: `${step.title} works`,
-        items: [],
-      });
-
-      set(step.uiSchema, `${key}.works.items`, []);
-
-      for (const [index, childWork] of work.works.entries()) {
-        const childStep = transformWorkToStep(childWork);
-
-        set(
-          step.schema,
-          `properties.${key}.properties.works.items[${index}]`,
-          childStep.schema,
-        );
-
-        set(step.uiSchema, `${key}.works.['ui:hidden']`, true);
-        set(step.uiSchema, `${key}.works.items[${index}]`, childStep.uiSchema);
-      }
-    }
-
     result.steps.push(step);
   }
 
   return result;
-}
-
-export function useWorkflowDefinitionToJsonSchema(
-  workflowDefinition: string,
-  filterType: GetDefinitionFilter,
-): AsyncState<FormSchema> {
-  const result = useGetWorkflowDefinition(workflowDefinition, filterType);
-
-  if (!result.value) {
-    return { ...result, value: undefined };
-  }
-
-  const { value: definition } = result;
-
-  const parseResult = workflowDefinitionSchema.safeParse(definition);
-
-  if (result.error) {
-    return { loading: false, error: result.error, value: undefined };
-  }
-
-  assert(parseResult.success, `workflowDefinitionSchema parse failed.`);
-
-  const { data: raw } = parseResult;
-
-  const formSchema = jsonSchemaFromWorkflowDefinition(raw);
-
-  return { value: formSchema, loading: false, error: undefined };
 }

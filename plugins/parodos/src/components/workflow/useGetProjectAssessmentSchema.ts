@@ -1,7 +1,7 @@
 import { type AsyncState } from 'react-use/lib/useAsync';
 import { useGetWorkflowDefinition } from '../../hooks/useGetWorkflowDefinitions';
 import { FormSchema } from '../types';
-import { jsonSchemaFromWorkflowDefinition } from '../../hooks/useWorkflowDefinitionToJsonSchema';
+import { jsonSchemaFromWorkflowDefinition } from '../../hooks/useWorkflowDefinitionToJsonSchema/jsonSchemaFromWorkflowDefinition';
 import { ASSESSMENT_WORKFLOW } from './constants';
 import { WorkflowDefinition } from '../../models/workflowDefinitionSchema';
 
