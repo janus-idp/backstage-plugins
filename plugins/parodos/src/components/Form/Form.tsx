@@ -39,6 +39,9 @@ const useStyles = makeStyles(theme => ({
     color: theme.palette.text.primary,
     marginRight: theme.spacing(1),
     textTransform: 'uppercase',
+    '&:disabled': {
+      border: `1px solid ${theme.palette.text.disabled}`,
+    },
   },
   next: {
     paddingRight: theme.spacing(4),
@@ -142,9 +145,7 @@ export function Form({
         {formSchema.steps.map((step, index) => (
           <Step key={index}>
             {hideTitle === false && (
-              <StepLabel className={styles.stepLabel}>
-                {step.schema.title}
-              </StepLabel>
+              <StepLabel className={styles.stepLabel}>{step.title}</StepLabel>
             )}
             <StepContent key={index}>{TheForm}</StepContent>
           </Step>

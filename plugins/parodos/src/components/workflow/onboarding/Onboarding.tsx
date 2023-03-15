@@ -14,7 +14,7 @@ import {
 } from 'react-router-dom';
 import { ParodosPage } from '../../ParodosPage';
 import { Button, Chip, makeStyles, Typography } from '@material-ui/core';
-import { useWorkflowDefinitionToJsonSchema } from '../../../hooks/useWorkflowDefinitionToJsonSchema';
+import { useWorkflowDefinitionToJsonSchema } from '../../../hooks/useWorkflowDefinitionToJsonSchema/useWorkflowDefinitionToJsonSchema';
 import { assert } from 'assert-ts';
 import { Form } from '../../Form/Form';
 import { useGetWorkflowDefinition } from '../../../hooks/useGetWorkflowDefinitions';
@@ -75,13 +75,13 @@ export function Onboarding({ isNew }: OnboardingProps): JSX.Element {
       const payload = {
         projectId,
         workFlowName: workflow.name,
-        workFlowTasks: workflow.tasks.map(task => {
+        workFlowTasks: workflow.works.map(work => {
           return {
-            name: task.name,
-            arguments: task.parameters.map(param => {
+            name: work.name,
+            arguments: work.parameters.map(param => {
               const value = lodashGet(
                 formData,
-                `${task.name}.${param.key}`,
+                `${work.name}.${param.key}`,
                 null,
               );
 

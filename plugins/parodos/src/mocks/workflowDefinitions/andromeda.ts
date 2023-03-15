@@ -11,7 +11,8 @@ export const mockAndromedaWorkflowDefinition: WorkflowDefinition = {
   author: 'John Doe',
   createDate: '2020-01-01T00:00:00.000Z',
   modifyDate: '2020-01-01T00:00:00.000Z',
-  tasks: [
+  processingType: 'SEQUENTIAL',
+  works: [
     {
       id: 'c7ba1d55-82e0-4037-9549-26a73fe40599',
       name: 'adGroupWorkFlowTask',
@@ -23,9 +24,8 @@ export const mockAndromedaWorkflowDefinition: WorkflowDefinition = {
           type: 'URL',
         },
       ],
+      workType: 'TASK',
       outputs: ['OTHER'],
-      workFlowChecker: '6702fac4-eeaf-4b82-9bd2-20c473712184',
-      nextWorkFlow: 'aca36ef8-d388-4c64-81dc-4de63511b8a6',
     },
     {
       id: 'mock-task-1',
@@ -38,6 +38,7 @@ export const mockAndromedaWorkflowDefinition: WorkflowDefinition = {
           type: 'TEXT',
         },
       ],
+      workType: 'TASK',
       outputs: ['OTHER'],
     },
   ],

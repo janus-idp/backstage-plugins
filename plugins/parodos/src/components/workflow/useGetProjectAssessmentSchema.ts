@@ -1,8 +1,9 @@
 import { type AsyncState } from 'react-use/lib/useAsync';
 import { useGetWorkflowDefinition } from '../../hooks/useGetWorkflowDefinitions';
 import { FormSchema } from '../types';
-import { jsonSchemaFromWorkflowDefinition } from '../../hooks/useWorkflowDefinitionToJsonSchema';
+import { jsonSchemaFromWorkflowDefinition } from '../../hooks/useWorkflowDefinitionToJsonSchema/jsonSchemaFromWorkflowDefinition';
 import { ASSESSMENT_WORKFLOW } from './constants';
+import { WorkflowDefinition } from '../../models/workflowDefinitionSchema';
 
 export function useGetProjectAssessmentSchema(): AsyncState<FormSchema> {
   const result = useGetWorkflowDefinition(ASSESSMENT_WORKFLOW, 'byName');
@@ -11,10 +12,10 @@ export function useGetProjectAssessmentSchema(): AsyncState<FormSchema> {
     return { ...result, value: undefined };
   }
 
-  const cloned = JSON.parse(JSON.stringify(result.value));
+  const cloned = JSON.parse(JSON.stringify(result.value)) as WorkflowDefinition;
 
   // TODO: this should be coming from the API
-  cloned.tasks[0].parameters.unshift({
+  cloned.works[0].parameters.unshift({
     key: 'Name',
     description: 'New Project',
     optional: false,

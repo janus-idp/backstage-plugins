@@ -1,4 +1,4 @@
-import { Project, projectSchema } from './project';
+import { projectSchema } from './project';
 
 describe('project', () => {
   it('parses the project response', () => {
@@ -9,7 +9,7 @@ describe('project', () => {
       createDate: '2023-03-09T20:43:05.061+00:00',
       modifyDate: '2023-03-09T20:43:05.061+00:00',
       username: null,
-    }) as { success: true; data: Project };
+    });
 
     expect(result.success).toBe(true);
   });
