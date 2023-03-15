@@ -3,12 +3,13 @@ import {
   useGetWorkflowDefinition,
 } from './useGetWorkflowDefinitions';
 import {
-  type WorkFlowTaskParameterType,
   workflowDefinitionSchema,
+  type WorkFlowTaskParameterType,
   type WorkflowDefinition,
+  type WorkType,
 } from '../models/workflowDefinitionSchema';
 import { assert } from 'assert-ts';
-import { FormSchema } from '../components/types';
+import type { FormSchema, Step } from '../components/types';
 import { type AsyncState } from 'react-use/lib/useAsync';
 import set from 'lodash.set';
 import get from 'lodash.get';
@@ -74,6 +75,80 @@ export function getUiSchema(type: WorkFlowTaskParameterType) {
   }
 }
 
+function transformWorkToStep(work: WorkType): Step {
+  const title = work.name
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .split(' ')
+    .map(capitalize)
+    .join(' '); // TODO: task label would be good here
+
+  const schema: Record<string, any> = {
+    type: 'object',
+    title,
+    properties: {},
+    required: [],
+  };
+
+  const uiSchema: Record<string, any> = {};
+
+  schema.required.push(work.name);
+
+  set(schema, `properties.${work.name}`, {
+    type: 'object',
+    properties: {},
+    required: [],
+  });
+
+  uiSchema[work.name] = {
+    'ui:hidden': true,
+  };
+
+  for (const {
+    key,
+    type,
+    description,
+    optional,
+    options = [],
+  } of work.parameters) {
+    const propertiesPath = `properties.${work.name}.properties.${key}`;
+    const required = !optional;
+
+    set(schema, propertiesPath, {
+      title: `${key}`,
+      ...getJsonSchemaType(type),
+    });
+
+    if (options.length > 0) {
+      set(
+        schema,
+        `${propertiesPath}.enum`,
+        options.map(option => option.key),
+      );
+      set(
+        schema,
+        `${propertiesPath}.enumNames`,
+        options.map(option => option.value),
+      );
+    }
+
+    const objectPath = `${work.name}.${key}`;
+
+    set(uiSchema, objectPath, {
+      ...getUiSchema(type),
+      'ui:help': description,
+      // 'ui:autocomplete': 'Off',
+    });
+
+    if (required) {
+      const requiredPath = `properties.${work.name}.required`;
+      const taskRequired = get(schema, requiredPath);
+      taskRequired.push(key);
+    }
+  }
+
+  return { schema, uiSchema, title, mergedSchema: schema };
+}
+
 export function jsonSchemaFromWorkflowDefinition(
   workflowDefinition: WorkflowDefinition,
 ): FormSchema {
@@ -81,75 +156,35 @@ export function jsonSchemaFromWorkflowDefinition(
     steps: [],
   };
 
-  for (const task of workflowDefinition.works) {
-    const title = task.name
-      .replace(/([a-z])([A-Z])/g, '$1 $2')
-      .split(' ')
-      .map(capitalize)
-      .join(' '); // TODO: task label would be good here
+  for (const work of workflowDefinition.works) {
+    const step = transformWorkToStep(work);
 
-    const schema: Record<string, any> = {
-      type: 'object',
-      title,
-      properties: {},
-      required: [],
-    };
+    if (work.works && work.works.length > 0) {
+      const key = Object.keys(step.schema)[0];
 
-    const uiSchema: Record<string, any> = {};
-    schema.required.push(task.name);
-    set(schema, `properties.${task.name}`, {
-      type: 'object',
-      properties: {},
-      required: [],
-    });
-
-    uiSchema[task.name] = {
-      'ui:hidden': true,
-    };
-
-    for (const {
-      key,
-      type,
-      description,
-      optional,
-      options = [],
-    } of task.parameters) {
-      const propertiesPath = `properties.${task.name}.properties.${key}`;
-      const required = !optional;
-
-      set(schema, propertiesPath, {
-        title: `${key}`,
-        ...getJsonSchemaType(type),
+      set(step.schema, `properties.${key}.properties.works`, {
+        type: 'array',
+        title: `${step.title} works`,
+        items: [],
       });
 
-      if (options.length > 0) {
+      set(step.uiSchema, `${key}.works.items`, []);
+
+      for (const [index, childWork] of work.works.entries()) {
+        const childStep = transformWorkToStep(childWork);
+
         set(
-          schema,
-          `${propertiesPath}.enum`,
-          options.map(option => option.key),
+          step.schema,
+          `properties.${key}.properties.works.items[${index}]`,
+          childStep.schema,
         );
-        set(
-          schema,
-          `${propertiesPath}.enumNames`,
-          options.map(option => option.value),
-        );
-      }
 
-      const objectPath = `${task.name}.${key}`;
-
-      set(uiSchema, objectPath, {
-        ...getUiSchema(type),
-        'ui:help': description,
-        // 'ui:autocomplete': 'Off',
-      });
-
-      if (required) {
-        const requiredPath = `properties.${task.name}.required`;
-        const taskRequired = get(schema, requiredPath);
-        taskRequired.push(key);
+        set(step.uiSchema, `${key}.works.['ui:hidden']`, true);
+        set(step.uiSchema, `${key}.works.items[${index}]`, childStep.uiSchema);
       }
     }
-    result.steps.push({ schema, uiSchema, title, mergedSchema: schema });
+
+    result.steps.push(step);
   }
 
   return result;

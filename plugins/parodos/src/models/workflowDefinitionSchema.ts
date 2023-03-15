@@ -10,7 +10,10 @@ const parameterTypes = z.union([
   z.literal('URL'),
 ]);
 
-const processingType = z.union([z.literal('SEQUENTIAL'), z.literal('PARALLEL')])
+const processingType = z.union([
+  z.literal('SEQUENTIAL'),
+  z.literal('PARALLEL'),
+]);
 
 export const workFlowTaskParameterTypeSchema = z.object({
   key: z.string(),
@@ -32,14 +35,17 @@ export const baseWorkSchema = z.object({
   name: z.string(),
   parameters: z.array(workFlowTaskParameterTypeSchema),
   workType: z.string(), // TODO: could this be a union?
-  outputs: z.array(
-    z.union([
-      z.literal('EXCEPTION'),
-      z.literal('HTTP2XX'),
-      z.literal('NO_EXCEPTION'),
-      z.literal('OTHER'),
-    ]),
-  ).optional(),
+  processingType: processingType.optional(),
+  outputs: z
+    .array(
+      z.union([
+        z.literal('EXCEPTION'),
+        z.literal('HTTP2XX'),
+        z.literal('NO_EXCEPTION'),
+        z.literal('OTHER'),
+      ]),
+    )
+    .optional(),
 });
 
 export type WorkType = z.infer<typeof baseWorkSchema> & {
