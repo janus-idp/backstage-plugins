@@ -11,17 +11,15 @@ describe('jsonSchemaFromWorkflowDefinition', () => {
 
     expect(result.steps.length).toBeGreaterThan(0);
 
-    const key = Object.keys(result.steps[0].schema)[0];
-
     const childSchemaWorks = get(
       result.steps[0]?.schema,
-      `properties.${key}.properties.works.items`,
+      'properties.subWorkFlowOne.properties.works.items',
       [],
     ) as WorkType[];
 
     const childUiSchemaWorks = get(
       result.steps[0].uiSchema,
-      `${key}.works.items`,
+      'subWorkFlowOne.works.items',
     );
 
     expect(childSchemaWorks).toHaveLength(2);

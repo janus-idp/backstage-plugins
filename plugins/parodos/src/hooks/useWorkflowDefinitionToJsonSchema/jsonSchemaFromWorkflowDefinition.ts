@@ -80,7 +80,7 @@ function buildWorksTree(
     title: string;
   },
 ): void {
-  const key = Object.keys(schema)[0];
+  const key = Object.keys(schema.properties)[0];
 
   set(schema, `properties.${key}.properties.works`, {
     type: 'array',
