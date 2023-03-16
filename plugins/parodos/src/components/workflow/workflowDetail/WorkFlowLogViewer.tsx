@@ -13,8 +13,13 @@ const ParodosLogViewer = withStyles(theme => ({
   },
 }))(LogViewer);
 
-export const WorkFlowLogViewer = ({ log }: { log: string }) => (
-  <div style={{ height: '43%' }}>
+interface WorkFlowLogViewerProps {
+  log: string;
+  className?: string;
+}
+
+export const WorkFlowLogViewer = ({ className, log }: WorkFlowLogViewerProps) => (
+  <div className={className}>
     <ParodosLogViewer text={log} />
   </div>
 );
