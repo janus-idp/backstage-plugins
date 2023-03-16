@@ -6061,6 +6061,38 @@
   resolved "https://registry.yarnpkg.com/@opentelemetry/api/-/api-1.4.0.tgz#2c91791a9ba6ca0a0f4aaac5e45d58df13639ac8"
   integrity sha512-IgMK9i3sFGNUqPMbjABm0G26g0QCKCUBfglhQ7rQq6WcxbKfEHRcmwsoER4hZcuYqJgkYn2OeuoJIv7Jsftp7g==
 
+"@parodos/plugin-parodos@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@parodos/plugin-parodos/-/plugin-parodos-0.1.0.tgz#34aebd4732e9148afde87a831d94876e69e7495f"
+  integrity sha512-pzc/U0GpaDH/4KtabuduUQ3zpTWjSS2F9hVMhFk4kfEXoy6QUqSv/AKsyLhKwH7N225jBJfvqKrR6lgSdeU4Gw==
+  dependencies:
+    "@backstage/core-components" "^0.12.4"
+    "@backstage/core-plugin-api" "^1.4.0"
+    "@backstage/theme" "^0.2.17"
+    "@backstage/types" "^1.0.2"
+    "@emotion/react" "^11.10.6"
+    "@emotion/styled" "^11.10.6"
+    "@material-ui/core" "^4.12.2"
+    "@material-ui/icons" "^4.9.1"
+    "@material-ui/lab" "4.0.0-alpha.57"
+    "@mui/icons-material" "^5.11.11"
+    "@mui/material" "^5.11.12"
+    "@patternfly/react-core" "^4.276.6"
+    "@patternfly/react-icons" "^4.93.6"
+    "@patternfly/react-styles" "^4.92.6"
+    "@patternfly/react-topology" "^4.91.27"
+    "@rjsf/core" "^5.2.0"
+    "@rjsf/core-v5" "npm:@rjsf/core@5.2.0"
+    "@rjsf/material-ui-v5" "npm:@rjsf/material-ui@5.2.0"
+    "@rjsf/mui" "^5.2.0"
+    "@rjsf/utils" "^5.2.0"
+    "@rjsf/validator-ajv8" "^5.2.0"
+    assert-ts "^0.3.4"
+    mobx "^5.15.4"
+    mobx-react "^6.2.0"
+    react-use "^17.2.4"
+    zod "^3.21.4"
+
 "@patternfly/react-core@^4.276.6":
   version "4.276.6"
   resolved "https://registry.yarnpkg.com/@patternfly/react-core/-/react-core-4.276.6.tgz#fa39aa61022f70bf350b2efc660bdeb096bda447"

@@ -4,7 +4,7 @@ import {
   Progress,
   SupportButton,
 } from '@backstage/core-components';
-import { Box, Chip, Typography } from '@material-ui/core';
+import { Box, Chip, makeStyles, Typography } from '@material-ui/core';
 import { WorkFlowLogViewer } from './WorkFlowLogViewer';
 import React, { useEffect, useState } from 'react';
 import { WorkFlowStepper } from './topology/WorkFlowStepper';
@@ -14,31 +14,25 @@ import * as urls from '../../../urls';
 import { useBackendUrl } from '../../api';
 import { WorkflowTask } from '../../../models/workflowTaskSchema';
 
-
 const useStyles = makeStyles(_theme => ({
   container: {
     display: 'flex',
     flexDirection: 'column',
   },
   badge: {
-    alignSelf: 'flex-start'
+    alignSelf: 'flex-start',
   },
   detailContainer: {
-    display: 'flex',
     flex: 1,
-    flexDirection: 'column',
-  },
-  stepper: {
-    flex: 1,
+    display: 'grid',
+    gridTemplateRows: '1fr 1fr',
+    minHeight: 0,
   },
   viewerContainer: {
-    display: 'flex',
-    flex: 1
+    display: 'grid',
+    minHeight: 0,
   },
-  viewer: {
-    flex: 1,
-  }
-}))
+}));
 
 export const WorkFlowDetail = () => {
   const { executionId } = useParams();
@@ -107,7 +101,13 @@ export const WorkFlowDetail = () => {
 
   return (
     <ParodosPage className={styles.container}>
-      {isNew && <Chip className={styles.badge} label="New application" color="secondary" />}
+      {isNew && (
+        <Chip
+          className={styles.badge}
+          label="New application"
+          color="secondary"
+        />
+      )}
       <ContentHeader title="Onboarding">
         <SupportButton title="Need help?">Lorem Ipsum</SupportButton>
       </ContentHeader>
@@ -116,13 +116,13 @@ export const WorkFlowDetail = () => {
       </Typography>
 
       <Box className={styles.detailContainer}>
-      {allTasks.length > 0 ? (
-        <WorkFlowStepper tasks={allTasks} setSelectedTask={setSelectedTask} />
-      ) : (
-        <Progress />
-      )}
+        {allTasks.length > 0 ? (
+          <WorkFlowStepper tasks={allTasks} setSelectedTask={setSelectedTask} />
+        ) : (
+          <Progress />
+        )}
         <div className={styles.viewerContainer}>
-        {log !== '' && <WorkFlowLogViewer className={styles.viewer} log={log} />}
+          {log !== '' && <WorkFlowLogViewer log={log} />}
         </div>
       </Box>
     </ParodosPage>
