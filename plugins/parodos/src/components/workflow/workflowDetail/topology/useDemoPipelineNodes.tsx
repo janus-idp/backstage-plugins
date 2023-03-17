@@ -19,10 +19,8 @@ export function useDemoPipelineNodes(
   workflowTasks: WorkflowTask[],
 ): PipelineNodeModel[] {
   const getStatus = (status: WorkflowTask['status']) => {
-    if (status === 'COMPLETED') return RunStatus.Succeeded;
-    else if (status === 'IN_PROGRESS') return RunStatus.InProgress;
-    if (status.toLowerCase() === 'completed') return RunStatus.Succeeded;
-    else if (status.toLowerCase() === 'in_progress')
+    if (status.toUpperCase() === 'COMPLETED') return RunStatus.Succeeded;
+    else if (status.toUpperCase() === 'IN_PROGRESS')
       return RunStatus.InProgress;
     return RunStatus.Pending;
   };

@@ -61,19 +61,20 @@ export const WorkFlowDetail = () => {
   useEffect(() => {
     const updateWorks = (works: WorkStatus[]) => {
       let needUpdate = false;
-      works?.forEach(work => {
+      const tasks = [...allTasks];
+      for (const work of works) {
         if (work.type === 'TASK') {
-          const foundTask = allTasks.find(task => task.id === work.name);
+          const foundTask = tasks.find(task => task.id === work.name);
           if (foundTask && foundTask.status !== work.status) {
             foundTask.status = work.status;
             needUpdate = true;
           }
         } else if (work.works) updateWorks(work.works);
-      });
-      if (needUpdate) setAllTasks(allTasks);
+      }
+      if (needUpdate) setAllTasks(tasks);
     };
 
-    const updateWorkflowExecutionState = async (): Promise<WorkStatus[]> => {
+    const updateWorkflowExecutionState = async () => {
       const data = await fetch(
         `${backendUrl}${urls.Workflows}/${executionId}/status`,
       );
