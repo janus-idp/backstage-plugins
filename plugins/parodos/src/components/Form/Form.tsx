@@ -19,7 +19,7 @@ import { FluidObjectFieldTemplate } from '../layouts/FluidObjectFieldTemplate';
 
 type FormProps = Pick<
   JsonFormProps,
-  'disabled' | 'onChange' | 'className' | 'transformErrors'
+  'disabled' | 'onChange' | 'className' | 'transformErrors' | 'fields'
 > &
   Required<Pick<JsonFormProps, 'onSubmit'>> & {
     formSchema: FormSchema;
@@ -59,6 +59,7 @@ export function Form({
   transformErrors,
   hideTitle = false,
   children,
+  ...props
 }: FormProps): JSX.Element {
   const [activeStep, setActiveStep] = useState(0);
   const [formState, setFormState] = useState<Record<string, JsonValue>>({});
@@ -110,6 +111,7 @@ export function Form({
         ['ui:show-title']: hideTitle === false,
       }}
       transformErrors={transformErrors}
+      {...props}
     >
       {formSchema.steps.length === 1 ? (
         children

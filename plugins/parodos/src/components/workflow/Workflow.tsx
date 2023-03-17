@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   ContentHeader,
   InfoCard,
@@ -26,6 +26,7 @@ import {
 } from './WorkflowOptionsList';
 import { assert } from 'assert-ts';
 import { useStore } from '../../stores/workflowStore/workflowStore';
+import { ProjectPicker } from '../Form/extensions/ProjectPicker/ProjectPicker';
 
 const useStyles = makeStyles(theme => ({
   fullHeight: {
@@ -33,12 +34,27 @@ const useStyles = makeStyles(theme => ({
   },
   form: {
     marginTop: theme.spacing(2),
+    // TODO: these selectors are brittle
+    // we could do something like ["ui:xs"]: 12
+    '& .MuiGrid-grid-xs-12:nth-child(3)': {
+      maxWidth: '100%',
+      flexBasis: '100%',
+      paddingTop: 0,
+    },
+    '& .field-boolean > div > label': {
+      display: 'inline-block',
+      marginBottom: theme.spacing(2),
+      '& + div': {
+        flexDirection: 'row',
+      },
+    },
   },
 }));
 
 interface ProjectsPayload {
   onboardingAssessmentTask: {
     Name: string;
+    newProject: boolean;
   };
 }
 
@@ -46,6 +62,8 @@ export function Workflow(): JSX.Element {
   const projectsUrl = useStore(state => state.getApiUrl(urls.Projects));
   const workflowsUrl = useStore(state => state.getApiUrl(urls.Workflows));
   const addProject = useStore(state => state.addProject);
+  const hasProjects = useStore(state => state.hasProjects());
+  const [isNewProject, setIsNewProject] = useState(true);
 
   const [project, setProject] = useState<Project>();
   const [assessmentStatus, setAssessmentStatus] =
@@ -55,7 +73,10 @@ export function Workflow(): JSX.Element {
   >([]);
   const styles = useStyles();
 
-  const formSchema = useGetProjectAssessmentSchema();
+  const formSchema = useGetProjectAssessmentSchema({
+    hasProjects,
+    newProject: isNewProject,
+  });
 
   const [{ error: startAssessmentError }, startAssessment] = useAsyncFn(
     async ({ formData }: IChangeEvent<ProjectsPayload>) => {
@@ -130,6 +151,23 @@ export function Workflow(): JSX.Element {
     }
   }, [errorApi, startAssessmentError]);
 
+  const changeHandler = useCallback(
+    async (e: IChangeEvent<ProjectsPayload>) => {
+      if (!e.formData?.onboardingAssessmentTask) {
+        return;
+      }
+
+      const { newProject: nextIsNewProject } =
+        e.formData.onboardingAssessmentTask;
+
+      if (nextIsNewProject !== isNewProject) {
+        setProject(undefined);
+        setIsNewProject(nextIsNewProject);
+      }
+    },
+    [isNewProject],
+  );
+
   const inProgress = assessmentStatus === 'inprogress';
   const complete = assessmentStatus === 'complete';
 
@@ -152,7 +190,9 @@ export function Workflow(): JSX.Element {
                 formSchema={formSchema}
                 onSubmit={startAssessment}
                 disabled={disableForm}
+                onChange={changeHandler}
                 hideTitle
+                fields={{ProjectPicker: ProjectPicker as any}}
               >
                 <Button
                   // We cannot submit button when in progress

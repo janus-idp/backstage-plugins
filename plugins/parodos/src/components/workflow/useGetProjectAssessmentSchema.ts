@@ -3,8 +3,14 @@ import { jsonSchemaFromWorkflowDefinition } from '../../hooks/useWorkflowDefinit
 import { ASSESSMENT_WORKFLOW } from './constants';
 import { WorkflowDefinition } from '../../models/workflowDefinitionSchema';
 import { useStore } from '../../stores/workflowStore/workflowStore';
+import set from 'lodash.set';
 
-export function useGetProjectAssessmentSchema(): FormSchema {
+interface Props {
+  hasProjects: boolean;
+  newProject: boolean;
+}
+
+export function useGetProjectAssessmentSchema({ hasProjects, newProject }: Props): FormSchema {
   const definition = useStore(state =>
     state.getWorkDefinitionBy('byName', ASSESSMENT_WORKFLOW),
   );
@@ -20,6 +26,34 @@ export function useGetProjectAssessmentSchema(): FormSchema {
   });
 
   const formSchema = jsonSchemaFromWorkflowDefinition(cloned);
+  
+  if(newProject === false) {
+    set(
+      formSchema,
+      `steps[0].uiSchema.onboardingAssessmentTask.Name.['ui:field']`,
+      'ProjectPicker',
+    );
+  }
+
+  set(
+    formSchema,
+    `steps[0].schema.properties.onboardingAssessmentTask.properties.newProject`,
+    {
+      title: 'Is this a new assessment for this project?',
+      type: 'boolean',
+      default: true,
+    },
+  );
+
+
+  set(
+     formSchema,
+    `steps[0].uiSchema.onboardingAssessmentTask.newProject`,
+    {
+      'ui:widget': 'radio',
+      'ui:disabled': !hasProjects
+    },
+  );
 
   return formSchema;
 }

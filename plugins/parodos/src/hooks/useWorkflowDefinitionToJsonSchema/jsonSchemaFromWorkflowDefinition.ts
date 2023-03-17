@@ -123,7 +123,7 @@ function transformWorkToStep(work: WorkType): Step {
     set(uiSchema, objectPath, {
       ...getUiSchema(type),
       'ui:help': description,
-      // 'ui:autocomplete': 'Off',
+      'ui:autocomplete': 'Off',
     });
 
     if (required) {

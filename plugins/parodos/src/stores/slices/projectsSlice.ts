@@ -9,7 +9,7 @@ export const createProjectsSlice: StateCreator<
   [],
   ProjectsSlice
 > = (set, get) => ({
-  projectsLoading: false,
+  projectsLoading: true,
   projectsError: undefined,
   hasProjects() {
     return get().projects.length > 0;

@@ -65,10 +65,7 @@ export function Onboarding({ isNew }: OnboardingProps): JSX.Element {
 
   const navigate = useNavigate();
 
-  const [
-    { error: startWorkflowError, loading: startWorkflowLoading },
-    startWorkflow,
-  ] = useAsyncFn(
+  const [{ error, loading }, startWorkflow] = useAsyncFn(
     async ({ formData }: IChangeEvent) => {
       assert(!!workflow);
       assert(!!projectId);
@@ -115,12 +112,12 @@ export function Onboarding({ isNew }: OnboardingProps): JSX.Element {
   );
 
   useEffect(() => {
-    if (startWorkflowError) {
-      console.error(startWorkflowError);
+    if (error) {
+      console.error(error);
 
       errorApi.post(new Error('Start workflow failed'));
     }
-  }, [errorApi, startWorkflowError]);
+  }, [errorApi, error]);
 
   return (
     <ParodosPage>
@@ -130,7 +127,7 @@ export function Onboarding({ isNew }: OnboardingProps): JSX.Element {
         <SupportButton title="Need help?">Lorem Ipsum</SupportButton>
       </ContentHeader>
       <Typography paragraph>You are onboarding {workflowOption}.</Typography>
-      {startWorkflowLoading && <Progress />}
+      {loading && <Progress />}
       {formSchema.steps.length > 0 && (
         <InfoCard>
           <Typography paragraph>
@@ -139,7 +136,7 @@ export function Onboarding({ isNew }: OnboardingProps): JSX.Element {
           <Form
             formSchema={formSchema}
             onSubmit={startWorkflow}
-            disabled={startWorkflowLoading}
+            disabled={loading}
             transformErrors={(errors: RJSFValidationError[]) => {
               return errors.map(err =>
                 err?.message?.includes('must match pattern')
