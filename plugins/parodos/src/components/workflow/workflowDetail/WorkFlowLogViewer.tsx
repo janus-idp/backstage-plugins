@@ -14,7 +14,7 @@ const ParodosLogViewer = withStyles(theme => ({
 }))(LogViewer);
 
 export const WorkFlowLogViewer = ({ log }: { log: string }) => (
-  <div style={{ height: '43%' }}>
+  <div>
     <ParodosLogViewer text={log} />
   </div>
 );

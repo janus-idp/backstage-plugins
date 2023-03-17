@@ -8,7 +8,6 @@ import { WorkflowTask } from '../../../../models/workflowTaskSchema';
 const useStyles = makeStyles(theme => ({
   pfRi__topologyDemo: {
     width: '100%',
-    height: '35%',
     '& .pf-topology-visualization-surface__svg': {
       background: theme.palette.background.default,
     },
