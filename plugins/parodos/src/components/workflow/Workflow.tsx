@@ -27,6 +27,7 @@ import {
   type WorkflowOptionsListItem,
 } from './WorkflowOptionsList';
 import { assert } from 'assert-ts';
+import { useStore } from '../../stores/workflowStore/workflowStore';
 
 const useStyles = makeStyles(theme => ({
   fullHeight: {
@@ -52,6 +53,7 @@ export function Workflow(): JSX.Element {
     WorkflowOptionsListItem[]
   >([]);
   const styles = useStyles();
+  const addProject = useStore(state => state.addProject);
 
   const { loading, error, value: formSchema } = useGetProjectAssessmentSchema();
 
@@ -111,14 +113,15 @@ export function Workflow(): JSX.Element {
 
       setWorkflowOptions(options);
 
+      addProject(newProject);
+
       setAssessmentStatus('complete');
     },
-    [backendUrl],
+    [addProject, backendUrl],
   );
 
   const errorApi = useApi(errorApiRef);
 
-  // TODO: we could generalise all errors if we used react-query
   useEffect(() => {
     if (error) {
       // eslint-disable-next-line no-console

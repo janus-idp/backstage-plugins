@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   ContentHeader,
   Link,
@@ -8,13 +8,12 @@ import {
 } from '@backstage/core-components';
 import Add from '@material-ui/icons/Add';
 import { Card, CardContent, Grid, makeStyles } from '@material-ui/core';
-import { useAsync } from 'react-use';
-import * as urls from '../../urls';
 import { EmptyProjectsState } from './EmptyProjectsState';
 import { ParodosPage } from '../ParodosPage';
-import { ProjectStatusType, ProjectType } from '../types';
+import { ProjectStatusType } from '../types';
 import { ProjectsTable } from './ProjectsTable';
-import { useBackendUrl } from '../api';
+import { useStore } from '../../stores/workflowStore/workflowStore';
+import { Project } from '../../models/project';
 
 const projectFilterItems: { label: string; value: ProjectStatusType }[] = [
   { label: 'All Projects', value: 'all-projects' },
@@ -44,42 +43,22 @@ export const useStyles = makeStyles(theme => ({
 export const ProjectOverviewPage = (): JSX.Element => {
   const styles = useStyles();
   const [projectFilter, setProjectFilter] = React.useState('all-projects');
-  const [filteredProjects, setFilteredProjects] = React.useState<ProjectType[]>(
-    [],
-  );
-  const backendUrl = useBackendUrl();
+  const [filteredProjects, setFilteredProjects] = React.useState<Project[]>([]);
+  const projects = useStore(state => state.projects);
+  const loading = useStore(state => state.projectsLoading);
 
-  const {
-    value: allProjects = [],
-    loading: loadingProjects,
-    error: errorProjects,
-  } = useAsync(async (): Promise<ProjectType[]> => {
-    // TODO: finish after https://issues.redhat.com/browse/FLPATH-131
-
-    const response = await fetch(`${backendUrl}${urls.Projects}`);
-    const receivedProjects = (await response.json()) as ProjectType[];
-
-    // mock status for now:
-    const status: ProjectStatusType = 'in-progress';
-    const result = receivedProjects.map(project => ({ ...project, status }));
-
-    return result;
-  }, [backendUrl]);
-
-  React.useEffect(() => {
-    if (!allProjects) {
+  useEffect(() => {
+    if (!projects) {
       setFilteredProjects([]);
       return;
     }
 
-    let filtered = allProjects;
+    let filtered = projects;
     if (projectFilter !== 'all-projects') {
-      filtered = allProjects.filter(
-        project => project.status === projectFilter,
-      );
+      filtered = projects.filter(project => project.status === projectFilter);
     }
     setFilteredProjects(filtered);
-  }, [allProjects, projectFilter]);
+  }, [projectFilter, projects]);
 
   const onFilterProjects = (selected: SelectedItems) => {
     setProjectFilter(
@@ -89,11 +68,9 @@ export const ProjectOverviewPage = (): JSX.Element => {
 
   let content: React.ReactElement | null = null;
 
-  if (loadingProjects) {
+  if (loading) {
     content = <div>Loading...</div>;
-  } else if (errorProjects) {
-    content = <div>Error: {errorProjects.message}</div>;
-  } else if (allProjects.length > 0) {
+  } else if (projects.length > 0) {
     content = (
       <Grid item className={styles.table}>
         <ProjectsTable projects={filteredProjects} />

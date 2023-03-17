@@ -2,18 +2,27 @@ import type { Project } from '../models/project';
 import type { WorkflowDefinition } from '../models/workflowDefinitionSchema';
 
 export interface UISlice {
-  baseUrl: string;
+  baseUrl: string | undefined;
   setBaseUrl(url: string): void;
+  loading(): boolean;
+  error(): unknown | undefined;
 }
 
 export interface WorkflowSlice {
   workflowDefinitions: WorkflowDefinition[];
-  fetch(): Promise<void>;
+  fetchDefinitions(): Promise<void>;
+  // TODO: find a pattern that will allow loading and error on each slice
+  workflowLoading: boolean;
+  workflowError: unknown | undefined;
 }
 
 export interface ProjectsSlice {
   projects: Project[];
-  fetch(): Promise<void>;
+  fetchProjects(): Promise<void>;
+  hasProjects(): boolean;
+  addProject(project: Project): void;
+  projectsLoading: boolean;
+  projectsError: Error | undefined;
 }
 
 export type StateMiddleware = [

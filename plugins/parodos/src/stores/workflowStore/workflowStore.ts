@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import { devtools } from 'zustand/middleware/devtools';
+import { devtools } from 'zustand/middleware';
 import { createProjectsSlice } from '../slices/projectsSlice';
 import { State } from '../types';
 import { createUISlice } from '../slices/uiSlice';

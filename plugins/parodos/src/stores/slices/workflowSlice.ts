@@ -1,10 +1,7 @@
 import type { StateCreator } from 'zustand';
-import type {
-  StateMiddleware,
-  WorkflowSlice,
-  State,
-} from '../types';
+import type { StateMiddleware, WorkflowSlice, State } from '../types';
 import * as urls from '../../urls';
+import { unstable_batchedUpdates } from 'react-dom';
 
 export const createWorkflowSlice: StateCreator<
   State,
@@ -13,12 +10,29 @@ export const createWorkflowSlice: StateCreator<
   WorkflowSlice
 > = (set, get) => ({
   workflowDefinitions: [],
-  async fetch() {
-    const response = await fetch(`${get().baseUrl}${urls.Projects}`);
-    const projects = await response.json();
-
+  workflowLoading: false,
+  workflowError: undefined,
+  async fetchDefinitions() {
     set(state => {
-      state.projects = projects;
+      state.workflowLoading = true;
     });
+
+    try {
+      const response = await fetch(
+        `${get().baseUrl}${urls.WorkflowDefinitions}`,
+      );
+      const definitions = await response.json();
+
+      set(state => {
+        unstable_batchedUpdates(() => {
+          state.workflowDefinitions = definitions;
+          state.workflowLoading = false;
+        });
+      });
+    } catch (e) {
+      set(state => {
+        state.workflowError = e;
+      });
+    }
   },
 });
