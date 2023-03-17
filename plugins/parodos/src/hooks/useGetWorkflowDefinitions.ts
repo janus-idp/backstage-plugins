@@ -6,8 +6,8 @@ import {
   WorkType,
 } from '../models/workflowDefinitionSchema';
 import * as urls from '../urls';
-import { WorkFlowTask } from '../components/workflow/workflowDetail/topology/type/WorkFlowTask';
 import { taskDisplayName } from '../utils/string';
+import { WorkFlowTask } from '../models/workFlowTaskSchema';
 
 export function useGetWorkflowDefinitions(): AsyncState<WorkflowDefinition[]> {
   const backendUrl = useBackendUrl();
@@ -65,7 +65,7 @@ export function useGetWorkflowTasksForTopology(
   const result: WorkFlowTask[] = [];
   result.push({
     id: 'Project Information',
-    status: 'completed',
+    status: 'COMPLETED',
     locked: false,
     label: 'Project Information',
     runAfterTasks: [],
@@ -87,7 +87,7 @@ function addTasks(
     if (subWork.workType === 'TASK') {
       result.push({
         id: subWork.name,
-        status: 'pending',
+        status: 'PENDING',
         locked: false,
         label: taskDisplayName(subWork.name),
         runAfterTasks:

@@ -20,7 +20,7 @@ import {
 import '@patternfly/react-styles/css/components/Topology/topology-components.css';
 import pipelineComponentFactory from './pipelineComponentFactory';
 import { useDemoPipelineNodes } from './useDemoPipelineNodes';
-import { WorkFlowTask } from './type/WorkFlowTask';
+import { WorkFlowTask } from '../../../../models/workFlowTaskSchema';
 
 export const PIPELINE_NODE_SEPARATION_VERTICAL = 10;
 

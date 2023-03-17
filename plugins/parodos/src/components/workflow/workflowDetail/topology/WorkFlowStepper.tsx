@@ -3,7 +3,7 @@ import '@patternfly/react-core/dist/styles/base.css';
 import { PipelineLayout } from './PipelineLayout';
 
 import { makeStyles } from '@material-ui/core';
-import { WorkFlowTask } from './type/WorkFlowTask';
+import { WorkFlowTask } from '../../../../models/workFlowTaskSchema';
 
 const useStyles = makeStyles(theme => ({
   pfRi__topologyDemo: {

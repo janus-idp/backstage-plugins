@@ -9,10 +9,10 @@ import { WorkFlowLogViewer } from './WorkFlowLogViewer';
 import React, { useEffect, useState } from 'react';
 import { WorkFlowStepper } from './topology/WorkFlowStepper';
 import { useLocation, useParams } from 'react-router-dom';
-import { WorkFlowTask } from './topology/type/WorkFlowTask';
 import { mockLog } from './topology/mock/mockLog';
 import * as urls from '../../../urls';
 import { useBackendUrl } from '../../api';
+import { WorkFlowTask } from '../../../models/workFlowTaskSchema';
 
 export const WorkFlowDetail = () => {
   const { executionId } = useParams();
@@ -42,7 +42,7 @@ export const WorkFlowDetail = () => {
       const result: WorkFlowTask[] = [
         {
           id: 'Project Information',
-          status: 'completed',
+          status: 'COMPLETED',
           locked: false,
           label: 'Project Information',
           runAfterTasks: [],
