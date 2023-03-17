@@ -105,10 +105,14 @@ function buildWorksTree(
 
     if (childWorks.length > 0) {
       for (const nextChildWork of childWorks) {
+        const nextSchema = get(schema, nextSchemaKey);
+        const nextUiSchema = get(uiSchema, nextUiSchemaKey);
+        const nextTitle = get(schema, `${nextSchemaKey}.title`);
+
         buildWorksTree(nextChildWork, {
-          schema: get(schema, nextSchemaKey),
-          uiSchema: get(uiSchema, nextUiSchemaKey),
-          title: get(schema, `${nextSchemaKey}.title`),
+          schema: nextSchema,
+          uiSchema: nextUiSchema,
+          title: nextTitle,
         });
       }
     }
@@ -197,6 +201,17 @@ export function jsonSchemaFromWorkflowDefinition(
   const result: FormSchema = {
     steps: [],
   };
+
+  const parameters = workflowDefinition.parameters ?? [];
+
+  if (parameters.length > 0) {
+    const step = transformWorkToStep({
+      name: workflowDefinition.name,
+      parameters: [...parameters],
+    } as WorkType);
+
+    result.steps.push(step);
+  }
 
   for (const work of workflowDefinition.works) {
     const step = transformWorkToStep(work);
