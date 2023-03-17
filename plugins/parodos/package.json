@@ -44,13 +44,14 @@
     "@rjsf/mui": "^5.2.0",
     "@rjsf/validator-ajv8": "^5.2.0",
     "assert-ts": "^0.3.4",
-    "classnames": "^2.3.2",
+    "immer": "^9.0.19",
     "lodash.set": "^4.3.2",
     "lodash.get": "^4.4.2",
-    "mobx": "^5.15.4",
-    "mobx-react": "^6.2.0",
+    "mobx": "^6.8.0",
+    "mobx-react": "^7.6.0",
     "react-use": "^17.2.4",
-    "zod": "^3.21.4"
+    "zod": "^3.21.4",
+    "zustand": "^4.3.6"
   },
   "peerDependencies": {
     "react": "^16.13.1 || ^17.0.0",
