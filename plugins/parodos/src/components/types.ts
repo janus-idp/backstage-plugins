@@ -27,7 +27,7 @@ export type WorkflowParameterComponentType =
   | 'URL'
   | 'MOCK-SELECT' /* TODO: swagger is missing this type */;
 
-export type WorkFlowTaskParameterType = {
+export type WorkParameterType = {
   key: string;
   description: string;
   optional: boolean;
@@ -40,10 +40,11 @@ export type WorkFlowTaskParameterType = {
   }[];
 };
 
-export type WorkFlowTaskDefinitionType = {
+export type WorkDefinitionType = {
   id: string;
   name: string;
-  parameters: WorkFlowTaskParameterType[];
+  parameters: WorkParameterType[];
+  works: WorkDefinitionType[];
   outputs: ('EXCEPTION' | 'HTTP2XX' | 'NO_EXCEPTION' | 'OTHER')[];
   workFlowChecker?: string;
   nextWorkFlow?: string;
@@ -56,12 +57,12 @@ export type WorkflowDefinitionType = {
   author: string;
   createDate: string;
   modifyDate: string;
-  tasks: WorkFlowTaskDefinitionType[];
+  works: WorkDefinitionType[];
 
   description?: string; // TODO: this is missing in swagger, so mocking it
 };
 
-export type WorkflowTaskArgumentType = {
+export type WorkArgumentType = {
   key: string;
   value: string;
 };
@@ -69,9 +70,9 @@ export type WorkflowTaskArgumentType = {
 export type WorkflowType = {
   projectId: string;
   workFlowName: string;
-  workFlowTasks: {
+  works: {
     name: string;
-    arguments: WorkflowTaskArgumentType[];
+    arguments: WorkArgumentType[];
   }[];
 };
 

@@ -1,8 +1,7 @@
 export type WorkFlowTask = {
   id: string;
-  type: string;
   label: string;
-  status: string;
+  status: 'completed' | 'in_progress' | 'pending' | 'failed';
   runAfterTasks: string[];
   locked: boolean;
 };

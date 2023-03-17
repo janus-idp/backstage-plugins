@@ -7,7 +7,6 @@ export const mockAndromedaWorkflowDefinition: WorkflowDefinition = {
   id: 'andromeda',
   name: 'Onboard to Andromeda',
   type: 'INFRASTRUCTURE',
-  description: 'Description of the Andromenda workflow',
   author: 'John Doe',
   createDate: '2020-01-01T00:00:00.000Z',
   modifyDate: '2020-01-01T00:00:00.000Z',

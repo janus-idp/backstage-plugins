@@ -27,15 +27,17 @@ export const workFlowTaskParameterTypeSchema = z.object({
         value: z.string(),
       }),
     )
-    .optional(),
+    .optional()
+    .nullable(),
 });
 
 export const baseWorkSchema = z.object({
   id: z.string(),
   name: z.string(),
-  parameters: z.array(workFlowTaskParameterTypeSchema),
+  parameters: z.array(workFlowTaskParameterTypeSchema).optional().nullable(),
   workType: z.string(), // TODO: could this be a union?
   processingType: processingType.optional(),
+  author: z.string().optional().nullable(),
   outputs: z
     .array(
       z.union([
@@ -62,9 +64,9 @@ export const workflowDefinitionSchema = z.object({
   type: z.string(),
   processingType,
   author: z.string().optional().nullable(),
-  description: z.string().optional(),
   createDate: z.string(),
   modifyDate: z.string(),
+  parameters: z.array(workFlowTaskParameterTypeSchema).optional(),
   works: z.array(workSchema),
 });
 

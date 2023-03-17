@@ -1,8 +1,13 @@
 import useAsync, { type AsyncState } from 'react-use/lib/useAsync';
 import { useBackendUrl } from '../components/api/useBackendUrl';
 import { assert } from 'assert-ts';
-import { WorkflowDefinition } from '../models/workflowDefinitionSchema';
+import {
+  WorkflowDefinition,
+  WorkType,
+} from '../models/workflowDefinitionSchema';
 import * as urls from '../urls';
+import { WorkFlowTask } from '../components/workflow/workflowDetail/topology/type/WorkFlowTask';
+import { taskDisplayName } from '../utils/string';
 
 export function useGetWorkflowDefinitions(): AsyncState<WorkflowDefinition[]> {
   const backendUrl = useBackendUrl();
@@ -43,4 +48,70 @@ export function useGetWorkflowDefinition(
   assert(!!workflowDefinition, `no workflow definition for type ${value}`);
 
   return { value: workflowDefinition, loading: false, error: undefined };
+}
+
+export function useGetWorkflowTasksForTopology(
+  selectedWorkFlowName: string,
+): AsyncState<WorkFlowTask[]> {
+  const workflowDefinitions = useGetWorkflowDefinitions();
+
+  if (!workflowDefinitions.value) {
+    return { ...workflowDefinitions, value: undefined };
+  }
+  const { value: allWorkflowDefinitions } = workflowDefinitions;
+  const rootWorkflowDefinition = allWorkflowDefinitions?.find(
+    workflowDefinition => workflowDefinition.name === selectedWorkFlowName,
+  );
+  const result: WorkFlowTask[] = [];
+  result.push({
+    id: 'Project Information',
+    status: 'completed',
+    locked: false,
+    label: 'Project Information',
+    runAfterTasks: [],
+  });
+  if (rootWorkflowDefinition)
+    addTasks(result, rootWorkflowDefinition, [result[0].id]);
+
+  return { value: result, loading: false, error: undefined };
+}
+
+function addTasks(
+  result: WorkFlowTask[],
+  work: WorkType | WorkflowDefinition,
+  runAfterTasks: string[],
+): string[] {
+  let previousTasks: string[] = [];
+
+  work.works?.forEach((subWork, index) => {
+    if (subWork.workType === 'TASK') {
+      result.push({
+        id: subWork.name,
+        status: 'pending',
+        locked: false,
+        label: taskDisplayName(subWork.name),
+        runAfterTasks:
+          work.processingType === 'PARALLEL' || index === 0
+            ? runAfterTasks
+            : previousTasks,
+      });
+
+      if (work.processingType === 'PARALLEL') {
+        previousTasks = [...previousTasks, subWork.name];
+      } else previousTasks = [subWork.name];
+    } else {
+      const tasks = addTasks(
+        result,
+        subWork,
+        work.processingType === 'PARALLEL' || index === 0
+          ? runAfterTasks
+          : previousTasks,
+      );
+      previousTasks =
+        work.processingType === 'PARALLEL'
+          ? [...tasks, ...previousTasks]
+          : tasks;
+    }
+  });
+  return previousTasks;
 }

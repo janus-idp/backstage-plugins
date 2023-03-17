@@ -15,7 +15,7 @@ export function useGetProjectAssessmentSchema(): AsyncState<FormSchema> {
   const cloned = JSON.parse(JSON.stringify(result.value)) as WorkflowDefinition;
 
   // TODO: this should be coming from the API
-  cloned.works[0].parameters.unshift({
+  cloned.works[0].parameters?.unshift({
     key: 'Name',
     description: 'New Project',
     optional: false,
