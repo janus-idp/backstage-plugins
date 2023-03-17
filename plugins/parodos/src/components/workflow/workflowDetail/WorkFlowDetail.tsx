@@ -12,7 +12,11 @@ import { useLocation, useParams } from 'react-router-dom';
 import { mockLog } from './topology/mock/mockLog';
 import * as urls from '../../../urls';
 import { useBackendUrl } from '../../api';
-import {WorkflowStatus, WorkflowTask, WorkStatus} from '../../../models/workflowTaskSchema';
+import {
+  WorkflowStatus,
+  WorkflowTask,
+  WorkStatus,
+} from '../../../models/workflowTaskSchema';
 
 export const WorkFlowDetail = () => {
   const { executionId } = useParams();
@@ -43,16 +47,16 @@ export const WorkFlowDetail = () => {
             foundTask.status = work.status;
             needUpdate = true;
           }
-        } else if (work.works)
-          updateWorks(work.works);
+        } else if (work.works) updateWorks(work.works);
       });
-      if (needUpdate)
-        setAllTasks(allTasks);
+      if (needUpdate) setAllTasks(allTasks);
     };
 
     const updateWorkflowExecutionState = async (): Promise<WorkStatus[]> => {
       // TODO api call to get subsequent execution CHAIN detail
-      const data = await fetch(`${backendUrl}${urls.Workflows}/${executionId}/status`);
+      const data = await fetch(
+        `${backendUrl}${urls.Workflows}/${executionId}/status`,
+      );
 
       const response = (await data.json()) as WorkflowStatus;
 

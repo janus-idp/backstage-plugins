@@ -10,7 +10,4 @@ function taskDisplayName(taskName: string): string {
     .join(' ');
 }
 
-export {
-  capitalize,
-  taskDisplayName,
-}
+export { capitalize, taskDisplayName };
