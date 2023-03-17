@@ -4,7 +4,7 @@ import {
   Progress,
   SupportButton,
 } from '@backstage/core-components';
-import { Chip, Typography } from '@material-ui/core';
+import { Box, Chip, makeStyles, Typography } from '@material-ui/core';
 import { WorkFlowLogViewer } from './WorkFlowLogViewer';
 import React, { useEffect, useState } from 'react';
 import { WorkFlowStepper } from './topology/WorkFlowStepper';
@@ -18,6 +18,26 @@ import {
   WorkStatus,
 } from '../../../models/workflowTaskSchema';
 
+const useStyles = makeStyles(_theme => ({
+  container: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  badge: {
+    alignSelf: 'flex-start',
+  },
+  detailContainer: {
+    flex: 1,
+    display: 'grid',
+    gridTemplateRows: '1fr 1fr',
+    minHeight: 0,
+  },
+  viewerContainer: {
+    display: 'grid',
+    minHeight: 0,
+  },
+}));
+
 export const WorkFlowDetail = () => {
   const { executionId } = useParams();
   const { state } = useLocation();
@@ -27,6 +47,7 @@ export const WorkFlowDetail = () => {
   const [log, setLog] = useState<string>(``);
   const [countlog, setCountlog] = useState<number>(0);
   const backendUrl = useBackendUrl();
+  const styles = useStyles();
 
   const getSelectedTaskLog = React.useCallback(
     (templog: string) => {
@@ -53,7 +74,6 @@ export const WorkFlowDetail = () => {
     };
 
     const updateWorkflowExecutionState = async (): Promise<WorkStatus[]> => {
-      // TODO api call to get subsequent execution CHAIN detail
       const data = await fetch(
         `${backendUrl}${urls.Workflows}/${executionId}/status`,
       );
@@ -91,20 +111,31 @@ export const WorkFlowDetail = () => {
   }, [countlog, executionId, getSelectedTaskLog, selectedTask]);
 
   return (
-    <ParodosPage>
-      {isNew && <Chip label="New application" color="secondary" />}
+    <ParodosPage className={styles.container}>
+      {isNew && (
+        <Chip
+          className={styles.badge}
+          label="New application"
+          color="secondary"
+        />
+      )}
       <ContentHeader title="Onboarding">
         <SupportButton title="Need help?">Lorem Ipsum</SupportButton>
       </ContentHeader>
       <Typography paragraph>
         You are onboarding: org-name/new-project. Execution Id is {executionId}
       </Typography>
-      {allTasks.length > 0 ? (
-        <WorkFlowStepper tasks={allTasks} setSelectedTask={setSelectedTask} />
-      ) : (
-        <Progress />
-      )}
-      {log !== '' && <WorkFlowLogViewer log={log} />}
+
+      <Box className={styles.detailContainer}>
+        {allTasks.length > 0 ? (
+          <WorkFlowStepper tasks={allTasks} setSelectedTask={setSelectedTask} />
+        ) : (
+          <Progress />
+        )}
+        <div className={styles.viewerContainer}>
+          {log !== '' && <WorkFlowLogViewer log={log} />}
+        </div>
+      </Box>
     </ParodosPage>
   );
 };
