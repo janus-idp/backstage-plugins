@@ -2,6 +2,7 @@ import { mockRecursiveWorksWorkflowDefinition } from '../../mocks/workflowDefini
 import { jsonSchemaFromWorkflowDefinition } from './jsonSchemaFromWorkflowDefinition';
 import get from 'lodash.get';
 import { WorkType } from '../../models/workflowDefinitionSchema';
+import { mockDeepRecursiveWorks } from '../../mocks/workflowDefinitions/deepRecursiveWorks';
 
 describe('jsonSchemaFromWorkflowDefinition', () => {
   it('transforms a workflow definition with recursive works', () => {
@@ -24,5 +25,17 @@ describe('jsonSchemaFromWorkflowDefinition', () => {
 
     expect(childSchemaWorks).toHaveLength(2);
     expect(childUiSchemaWorks).toHaveLength(2);
+  });
+
+  it('transforms deeply nested recursive structure', () => {
+    const result = jsonSchemaFromWorkflowDefinition(
+      mockDeepRecursiveWorks,
+    );
+
+    const childWorks = get(result.steps[1]?.schema, 'properties.subWorkFlowThree.properties.works.items[0].properties.subWorkFlowTwo.properties.works.items', []) as unknown as any[];
+
+    console.dir(childWorks, { depth: 33 });
+
+    expect(childWorks.length).toBeGreaterThan(0);
   });
 });
