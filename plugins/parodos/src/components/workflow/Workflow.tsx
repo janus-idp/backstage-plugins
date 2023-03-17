@@ -176,6 +176,23 @@ export function Workflow(): JSX.Element {
     [createWorkflow, isNewProject],
   );
 
+  const changeHandler = useCallback(
+    async (e: IChangeEvent<ProjectsPayload>) => {
+      if (!e.formData?.onboardingAssessmentTask) {
+        return;
+      }
+
+      const { newProject: nextIsNewProject } =
+        e.formData.onboardingAssessmentTask;
+
+      if (nextIsNewProject !== isNewProject) {
+        setProject(undefined);
+        setIsNewProject(nextIsNewProject);
+      }
+    },
+    [isNewProject],
+  );
+
   const inProgress = assessmentStatus === 'inprogress';
   const complete = assessmentStatus === 'complete';
 

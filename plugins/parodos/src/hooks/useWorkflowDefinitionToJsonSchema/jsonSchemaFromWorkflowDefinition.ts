@@ -128,7 +128,7 @@ function transformWorkToStep(work: WorkType): Step {
       ...getUiSchema(format ?? (type as ParameterFormat)),
       'ui:field': field,
       'ui:help': description,
-      // 'ui:autocomplete': 'Off',
+      'ui:autocomplete': 'Off',
     });
 
     if (required) {

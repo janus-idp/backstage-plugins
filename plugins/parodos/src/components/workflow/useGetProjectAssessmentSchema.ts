@@ -58,6 +58,34 @@ export function useGetProjectAssessmentSchema({
   }
 
   const formSchema = jsonSchemaFromWorkflowDefinition(cloned);
+  
+  if(newProject === false) {
+    set(
+      formSchema,
+      `steps[0].uiSchema.onboardingAssessmentTask.Name.['ui:field']`,
+      'ProjectPicker',
+    );
+  }
+
+  set(
+    formSchema,
+    `steps[0].schema.properties.onboardingAssessmentTask.properties.newProject`,
+    {
+      title: 'Is this a new assessment for this project?',
+      type: 'boolean',
+      default: true,
+    },
+  );
+
+
+  set(
+     formSchema,
+    `steps[0].uiSchema.onboardingAssessmentTask.newProject`,
+    {
+      'ui:widget': 'radio',
+      'ui:disabled': !hasProjects
+    },
+  );
 
   set(formSchema, `steps[0].uiSchema.onboardingAssessmentTask.['ui:order']`, [
     'newProject',
