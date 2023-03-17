@@ -145,7 +145,7 @@ function transformWorkToStep(work: WorkType): Step {
     description,
     optional,
     options = [],
-  } of work.parameters ? work.parameters : []) {
+  } of work.parameters ?? []) {
     const propertiesPath = `properties.${work.name}.properties.${key}`;
     const required = !optional;
 
