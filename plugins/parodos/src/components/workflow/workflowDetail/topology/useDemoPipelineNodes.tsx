@@ -7,7 +7,7 @@ import {
 } from '@patternfly/react-topology';
 import '@patternfly/react-styles/css/components/Topology/topology-components.css';
 import LockIcon from '@material-ui/icons/Lock';
-import { WorkFlowTask } from '../../../../models/workFlowTaskSchema';
+import { WorkflowTask } from '../../../../models/workflowTaskSchema';
 
 export const NODE_PADDING_VERTICAL = 15;
 export const NODE_PADDING_HORIZONTAL = 10;
@@ -16,9 +16,11 @@ export const DEFAULT_TASK_WIDTH = 200;
 export const DEFAULT_TASK_HEIGHT = 30;
 
 export function useDemoPipelineNodes(
-  workflowTasks: WorkFlowTask[],
+  workflowTasks: WorkflowTask[],
 ): PipelineNodeModel[] {
-  const getStatus: any = (status: string) => {
+  const getStatus = (status: WorkflowTask['status']) => {
+    if (status === 'COMPLETED') return RunStatus.Succeeded;
+    else if (status === 'IN_PROGRESS') return RunStatus.InProgress;
     if (status.toLowerCase() === 'completed') return RunStatus.Succeeded;
     else if (status.toLowerCase() === 'in_progress')
       return RunStatus.InProgress;

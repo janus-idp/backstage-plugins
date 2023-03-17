@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const workFlowTaskSchema = z.object({
+export const workflowTaskSchema = z.object({
   id: z.string(),
   label: z.string(),
   status: z.union([
@@ -13,4 +13,4 @@ export const workFlowTaskSchema = z.object({
   locked: z.boolean(),
 });
 
-export type WorkFlowTask = z.infer<typeof workFlowTaskSchema>;
+export type WorkflowTask = z.infer<typeof workflowTaskSchema>;
