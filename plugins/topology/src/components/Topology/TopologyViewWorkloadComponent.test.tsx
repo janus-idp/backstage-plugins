@@ -26,7 +26,6 @@ jest.mock('@patternfly/react-topology', () => ({
   createTopologyControlButtons: () => {},
   VisualizationSurface: () => <div>VisualizationSurface</div>,
   TopologyView: () => <div>TopologyView</div>,
-  TopologyControlBar: () => <div>TopologyControlBar</div>,
 }));
 
 describe('TopologyViewWorkloadComponent', () => {

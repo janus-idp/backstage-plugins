@@ -1,11 +1,7 @@
 import * as React from 'react';
 import {
-  action,
-  createTopologyControlButtons,
-  defaultControlButtonsOptions,
   SelectionEventListener,
   SELECTION_EVENT,
-  TopologyControlBar,
   TopologyView,
   useEventListener,
   useVisualizationController,
@@ -14,6 +10,7 @@ import {
 import { Progress } from '@backstage/core-components';
 import { TopologyEmptyState } from './TopologyEmptyState';
 import { useWorkloadsWatcher } from '../../hooks/useWorkloadWatcher';
+import { TopologyControlBar } from './TopologyControlBar';
 
 const TopologyViewWorkloadComponent = () => {
   const [selectedIds, setSelectedIds] = React.useState<string[]>([]);
@@ -44,29 +41,7 @@ const TopologyViewWorkloadComponent = () => {
   return loaded && dataModel?.nodes?.length === 0 ? (
     <TopologyEmptyState />
   ) : (
-    <TopologyView
-      controlBar={
-        <TopologyControlBar
-          controlButtons={createTopologyControlButtons({
-            ...defaultControlButtonsOptions,
-            zoomInCallback: action(() => {
-              controller.getGraph().scaleBy(4 / 3);
-            }),
-            zoomOutCallback: action(() => {
-              controller.getGraph().scaleBy(0.75);
-            }),
-            fitToScreenCallback: action(() => {
-              controller.getGraph().fit(80);
-            }),
-            resetViewCallback: action(() => {
-              controller.getGraph().reset();
-              controller.getGraph().layout();
-            }),
-            legend: false,
-          })}
-        />
-      }
-    >
+    <TopologyView controlBar={<TopologyControlBar controller={controller} />}>
       <VisualizationSurface state={{ selectedIds }} />
     </TopologyView>
   );

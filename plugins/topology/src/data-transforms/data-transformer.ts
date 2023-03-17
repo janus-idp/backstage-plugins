@@ -1,7 +1,10 @@
 import { Model, NodeModel } from '@patternfly/react-topology';
 import { TYPE_APPLICATION_GROUP, TYPE_WORKLOAD } from '../const';
 import { K8sWorkloadResource, K8sResponseData } from '../types/types';
-import { createOverviewItemForType } from '../utils/resource-utils';
+import {
+  createOverviewItemForType,
+  getIngressURLForResource,
+} from '../utils/resource-utils';
 import {
   createTopologyNodeData,
   WORKLOAD_TYPES,
@@ -14,8 +17,9 @@ import {
   mergeGroup,
   WorkloadModelProps,
 } from '../utils/transform-utils';
+import { getPodsDataForResource } from '../utils/pod-resource-utils';
 
-const getBaseTopologyDataModel = (resources: K8sResponseData): Model => {
+export const getBaseTopologyDataModel = (resources: K8sResponseData): Model => {
   const baseDataModel: Model = {
     nodes: [],
     edges: [],
@@ -36,6 +40,8 @@ const getBaseTopologyDataModel = (resources: K8sResponseData): Model => {
             item,
             TYPE_WORKLOAD,
             'default image',
+            getIngressURLForResource(resources, resource),
+            getPodsDataForResource(resource, resources),
           );
           typedDataModel.nodes?.push(
             getTopologyNodeItem(

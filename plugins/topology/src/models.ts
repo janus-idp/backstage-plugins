@@ -22,11 +22,17 @@ export const ServiceGVK: GroupVersionKind = {
   kind: 'Service',
 };
 
+export const IngressesGVK: GroupVersionKind = {
+  apiVersion: 'networking.k8s.io/v1',
+  kind: 'Ingress',
+};
+
 export enum ModelsPlural {
   deployments = 'deployments',
   pods = 'pods',
   replicasets = 'replicasets',
   services = 'services',
+  ingresses = 'ingresses',
 }
 
 export const resourceModels: { [key: string]: GroupVersionKind } = {
@@ -34,4 +40,5 @@ export const resourceModels: { [key: string]: GroupVersionKind } = {
   [ModelsPlural.pods]: PodGVK,
   [ModelsPlural.replicasets]: ReplicaSetGVK,
   [ModelsPlural.services]: ServiceGVK,
+  [ModelsPlural.ingresses]: IngressesGVK,
 };

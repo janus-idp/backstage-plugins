@@ -1,11 +1,13 @@
 import * as React from 'react';
 import {
+  getDefaultShapeDecoratorCenter,
   GraphElement,
   isNode,
   Node,
   NodeStatus,
   observer,
   ScaleDetailsLevel,
+  TopologyQuadrant,
   useHover,
   useVisualizationController,
   WithDragNodeProps,
@@ -13,10 +15,9 @@ import {
 } from '@patternfly/react-topology';
 import BaseNode from './BaseNode';
 import PodSet, { podSetInnerRadius } from '../Pods/PodSet';
-import { getTopologyResourceObject } from '../../utils/topology-utils';
-import { usePodsWatcher } from '../../hooks/usePodsWatcher';
 import { AllPodStatus } from '../Pods/pod';
-import { getPodStatus } from '../../utils/workload-node-utils';
+import { calculateRadius, getPodStatus } from '../../utils/workload-node-utils';
+import { UrlDecorator } from './decorators/UrlDecorator';
 
 import './WorkloadNode.css';
 
@@ -58,18 +59,37 @@ type InnerWorkloadNodeProps = {
 
 const InnerWorkloadNode: React.FC<InnerWorkloadNodeProps> = observer(
   ({ element, ...rest }) => {
-    const resource = getTopologyResourceObject(element.getData());
-    const { podData, loadError, loaded } = usePodsWatcher(resource);
-    const donutStatus = loaded && !loadError ? podData : null;
+    const data = element.getData();
     const { width, height } = element.getDimensions();
-    const workloadData = element.getData().data;
+    const workloadData = data.data;
+    const donutStatus = workloadData.podsData;
     const [hover, hoverRef] = useHover();
     const size = Math.min(width, height);
+    const { decoratorRadius } = calculateRadius(size);
     const cx = width / 2;
     const cy = height / 2;
     const controller = useVisualizationController();
     const detailsLevel = controller.getGraph().getDetailsLevel();
     const showDetails = hover || detailsLevel !== ScaleDetailsLevel.low;
+
+    const urlDecorator = React.useMemo(() => {
+      if (!workloadData?.url) {
+        return null;
+      }
+      const { x, y } = getDefaultShapeDecoratorCenter(
+        TopologyQuadrant.upperRight,
+        element,
+      );
+      const offset = decoratorRadius * 0.4;
+      return (
+        <UrlDecorator
+          url={workloadData.url}
+          radius={decoratorRadius}
+          x={x + offset}
+          y={y - offset}
+        />
+      );
+    }, [workloadData?.url, element, decoratorRadius]);
 
     return (
       <g className="tp-workload-node">
@@ -82,6 +102,7 @@ const InnerWorkloadNode: React.FC<InnerWorkloadNodeProps> = observer(
           nodeStatus={
             !showDetails ? getAggregateStatus(donutStatus) : undefined
           }
+          attachments={showDetails && urlDecorator}
           {...rest}
         >
           {donutStatus && showDetails ? (

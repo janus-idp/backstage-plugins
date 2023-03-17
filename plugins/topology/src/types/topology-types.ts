@@ -1,5 +1,9 @@
 import { V1Pod } from '@kubernetes/client-node';
 import { Model, NodeModel } from '@patternfly/react-topology';
+import {
+  Node,
+  TopologyQuadrant,
+} from '@patternfly/react-topology/dist/esm/types';
 import { K8sWorkloadResource, K8sResponseData } from './types';
 
 export type OverviewItem<T = K8sWorkloadResource> = {
@@ -37,4 +41,22 @@ export type K8sResponse = {
   watchResourcesData?: K8sResponseData;
   loading?: boolean;
   error?: string;
+};
+
+export type TopologyDecoratorGetter = (
+  element: Node,
+  radius: number,
+  centerX: number,
+  centerY: number,
+) => React.ReactElement;
+
+export type TopologyDecorator = {
+  id: string;
+  priority: number;
+  quadrant: TopologyQuadrant;
+  decorator: TopologyDecoratorGetter;
+};
+
+export type GraphData = {
+  decorators?: { [key: string]: TopologyDecorator[] };
 };

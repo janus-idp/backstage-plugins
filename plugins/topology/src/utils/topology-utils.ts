@@ -1,6 +1,7 @@
 import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
 import { INSTANCE_LABEL } from '../const';
 import { ModelsPlural, resourceModels } from '../models';
+import { PodRCData } from '../types/pods';
 import { OverviewItem, TopologyDataObject } from '../types/topology-types';
 import { K8sWorkloadResource, K8sResponseData } from '../types/types';
 
@@ -8,12 +9,6 @@ export const WORKLOAD_TYPES: string[] = [
   ModelsPlural.deployments,
   ModelsPlural.pods,
 ];
-
-export const getTopologyResourceObject = (
-  topologyObject: TopologyDataObject,
-): K8sWorkloadResource => {
-  return topologyObject?.resource || topologyObject?.resources?.obj;
-};
 
 const apiVersionForWorkloadType = (type: string) => {
   return resourceModels[type]?.apiGroup
@@ -53,12 +48,14 @@ export const createTopologyNodeData = (
   overviewItem: OverviewItem,
   type: string,
   defaultIcon: string,
-) => {
+  url?: string | null,
+  podsData?: PodRCData,
+): TopologyDataObject => {
   const dcUID = resource.metadata?.uid;
   const deploymentsLabels = resource.metadata?.labels ?? {};
 
   return {
-    id: dcUID,
+    id: dcUID as string,
     name: resource?.metadata?.name || deploymentsLabels[INSTANCE_LABEL],
     type,
     resource,
@@ -68,6 +65,8 @@ export const createTopologyNodeData = (
     data: {
       kind: resource?.kind,
       builderImage: defaultIcon,
+      url,
+      podsData,
     },
   };
 };

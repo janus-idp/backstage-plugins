@@ -10,7 +10,6 @@ import {
   ScaleDetailsLevel,
   TOP_LAYER,
   useCombineRefs,
-  WithContextMenuProps,
   WithDragNodeProps,
   WithSelectionProps,
   useHover,
@@ -39,8 +38,7 @@ type BaseNodeProps = {
   showStatusBackground?: boolean;
   alertVariant?: NodeStatus;
 } & Partial<WithSelectionProps> &
-  Partial<WithDragNodeProps> &
-  Partial<WithContextMenuProps>;
+  Partial<WithDragNodeProps>;
 
 const BaseNode: React.FC<BaseNodeProps> = ({
   className,
@@ -50,8 +48,6 @@ const BaseNode: React.FC<BaseNodeProps> = ({
   element,
   hoverRef,
   children,
-  onContextMenu,
-  contextMenuOpen,
   alertVariant,
   ...rest
 }) => {
@@ -66,25 +62,19 @@ const BaseNode: React.FC<BaseNodeProps> = ({
   const iconRadius = innerRadius * 0.9;
 
   const detailsLevel = element.getController().getGraph().getDetailsLevel();
-  const showDetails =
-    hover || contextMenuOpen || detailsLevel !== ScaleDetailsLevel.low;
+  const showDetails = hover || detailsLevel !== ScaleDetailsLevel.low;
   const kindData = kind && getKindStringAndAbbreviation(kind);
 
   return (
-    <Layer id={hover || contextMenuOpen ? TOP_LAYER : DEFAULT_LAYER}>
+    <Layer id={hover ? TOP_LAYER : DEFAULT_LAYER}>
       <g
         ref={nodeHoverRefs as React.LegacyRef<SVGGElement>}
         data-test-id={element.getLabel()}
       >
         <DefaultNode
           element={element}
-          showLabel
-          scaleNode={
-            (hover || contextMenuOpen) &&
-            detailsLevel !== ScaleDetailsLevel.high
-          }
-          onContextMenu={onContextMenu}
-          contextMenuOpen={contextMenuOpen}
+          showLabel={showDetails}
+          scaleNode={hover && detailsLevel !== ScaleDetailsLevel.high}
           badge={kindData && kindData.kindAbbr}
           badgeColor={kindData && kindData.kindColor}
           showStatusBackground={!showDetails}
