@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useStore } from 'zustand';
+import { useStore } from '../stores/workflowStore/workflowStore';
 import { useBackendUrl } from './api/useBackendUrl';
 import { PluginRouter } from './PluginRouter';
 
