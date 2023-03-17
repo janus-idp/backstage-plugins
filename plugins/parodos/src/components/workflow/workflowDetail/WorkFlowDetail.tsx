@@ -12,7 +12,11 @@ import { useLocation, useParams } from 'react-router-dom';
 import { mockLog } from './topology/mock/mockLog';
 import * as urls from '../../../urls';
 import { useBackendUrl } from '../../api';
-import { WorkflowTask } from '../../../models/workflowTaskSchema';
+import {
+  WorkflowStatus,
+  WorkflowTask,
+  WorkStatus,
+} from '../../../models/workflowTaskSchema';
 
 const useStyles = makeStyles(_theme => ({
   container: {
@@ -55,25 +59,33 @@ export const WorkFlowDetail = () => {
 
   // update task state regularly
   useEffect(() => {
-    const updateWorkflowExecutionState = async (): Promise<WorkflowTask[]> => {
-      // TODO api call to get subsequent execution CHAIN detail
-      const data = await fetch(`${backendUrl}${urls.Workflows}`);
+    const updateWorks = (works: WorkStatus[]) => {
+      let needUpdate = false;
+      const tasks = [...allTasks];
+      for (const work of works) {
+        if (work.type === 'TASK') {
+          const foundTask = tasks.find(task => task.id === work.name);
+          if (foundTask && foundTask.status !== work.status) {
+            foundTask.status = work.status;
+            needUpdate = true;
+          }
+        } else if (work.works) updateWorks(work.works);
+      }
+      if (needUpdate) setAllTasks(tasks);
+    };
 
-      const response = (await data.json()) as WorkflowTask[];
-      return [
-        {
-          id: 'Project Information',
-          status: 'COMPLETED',
-          locked: false,
-          label: 'Project Information',
-          runAfterTasks: [],
-        },
-        ...response,
-      ];
+    const updateWorkflowExecutionState = async () => {
+      const data = await fetch(
+        `${backendUrl}${urls.Workflows}/${executionId}/status`,
+      );
+
+      const response = (await data.json()) as WorkflowStatus;
+
+      return response.works;
     };
     const taskInterval = setInterval(() => {
-      updateWorkflowExecutionState().then(updatedTasks => {
-        if (updatedTasks !== allTasks) setAllTasks(updatedTasks);
+      updateWorkflowExecutionState().then(fetchedTasks => {
+        updateWorks(fetchedTasks);
       });
     }, 5000);
 
