@@ -6,12 +6,24 @@ export interface UISlice {
   setBaseUrl(url: string): void;
   loading(): boolean;
   error(): unknown | undefined;
+  getApiUrl(url: string): string;
 }
+
+export const predicates = {
+  byId: (workflow: WorkflowDefinition) => workflow.id,
+  byType: (workflow: WorkflowDefinition) => workflow.type,
+  byName: (workflow: WorkflowDefinition) => workflow.name,
+} as const;
+
+export type GetDefinitionFilter = keyof typeof predicates;
 
 export interface WorkflowSlice {
   workflowDefinitions: WorkflowDefinition[];
+  getWorkDefinitionBy(
+    filterBy: GetDefinitionFilter,
+    value: string,
+  ): WorkflowDefinition | undefined;
   fetchDefinitions(): Promise<void>;
-  // TODO: find a pattern that will allow loading and error on each slice
   workflowLoading: boolean;
   workflowError: unknown | undefined;
 }

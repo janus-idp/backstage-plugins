@@ -8,16 +8,16 @@ export const App = () => {
   const setBaseUrl = useStore(state => state.setBaseUrl);
   const fetchProjects = useStore(state => state.fetchProjects);
   const fetchDefinitions = useStore(state => state.fetchDefinitions);
-  
+
   useEffect(() => {
     setBaseUrl(backendUrl);
-  
+
     async function initialiseStore() {
       await Promise.all([fetchProjects(), fetchDefinitions()]);
     }
-  
+
     initialiseStore();
   }, [backendUrl, fetchDefinitions, fetchProjects, setBaseUrl]);
-  
+
   return <PluginRouter />;
 };

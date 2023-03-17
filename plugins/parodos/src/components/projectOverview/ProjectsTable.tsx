@@ -25,7 +25,7 @@ export const ProjectsTable: React.FC<{ projects: Project[] }> = ({
       modifyDate: getHumanReadableDate(project.modifyDate),
       status: project.status
         ? HumanReadableProjectStatus[project.status]
-        : undefined,
+        : 'In Progress',
     };
   });
 

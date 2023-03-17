@@ -8,6 +8,9 @@ export const createUISlice: StateCreator<
   UISlice
 > = (set, get) => ({
   baseUrl: '',
+  getApiUrl(url: string) {
+    return `${get().baseUrl}${url}`;
+  },
   setBaseUrl(url) {
     set(state => {
       state.baseUrl = url;

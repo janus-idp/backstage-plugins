@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   ContentHeader,
   InfoCard,
-  Progress,
   SupportButton,
 } from '@backstage/core-components';
 import { useEffect } from 'react';
@@ -13,7 +12,6 @@ import { Typography, Button, makeStyles, Grid } from '@material-ui/core';
 import { useGetProjectAssessmentSchema } from './useGetProjectAssessmentSchema';
 import type { AssessmentStatusType } from '../types';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
-import { useBackendUrl } from '../api';
 import { IChangeEvent } from '@rjsf/core-v5';
 import * as urls from '../../urls';
 import {
@@ -45,17 +43,19 @@ interface ProjectsPayload {
 }
 
 export function Workflow(): JSX.Element {
+  const projectsUrl = useStore(state => state.getApiUrl(urls.Projects));
+  const workflowsUrl = useStore(state => state.getApiUrl(urls.Workflows));
+  const addProject = useStore(state => state.addProject);
+
   const [project, setProject] = useState<Project>();
-  const backendUrl = useBackendUrl();
   const [assessmentStatus, setAssessmentStatus] =
     useState<AssessmentStatusType>('none');
   const [workflowOptions, setWorkflowOptions] = useState<
     WorkflowOptionsListItem[]
   >([]);
   const styles = useStyles();
-  const addProject = useStore(state => state.addProject);
 
-  const { loading, error, value: formSchema } = useGetProjectAssessmentSchema();
+  const formSchema = useGetProjectAssessmentSchema();
 
   const [{ error: startAssessmentError }, startAssessment] = useAsyncFn(
     async ({ formData }: IChangeEvent<ProjectsPayload>) => {
@@ -63,7 +63,7 @@ export function Workflow(): JSX.Element {
 
       setAssessmentStatus('inprogress');
 
-      const newProjectResponse = await fetch(`${backendUrl}${urls.Projects}`, {
+      const newProjectResponse = await fetch(projectsUrl, {
         method: 'POST',
         body: JSON.stringify({
           name: formData.onboardingAssessmentTask.Name,
@@ -78,7 +78,7 @@ export function Workflow(): JSX.Element {
 
       setProject(newProject);
 
-      const workFlowResponse = await fetch(`${backendUrl}${urls.Workflows}`, {
+      const workFlowResponse = await fetch(workflowsUrl, {
         method: 'POST',
         body: JSON.stringify({
           projectId: newProject.id,
@@ -117,18 +117,10 @@ export function Workflow(): JSX.Element {
 
       setAssessmentStatus('complete');
     },
-    [addProject, backendUrl],
+    [addProject, projectsUrl, workflowsUrl],
   );
 
   const errorApi = useApi(errorApiRef);
-
-  useEffect(() => {
-    if (error) {
-      // eslint-disable-next-line no-console
-      console.error(error);
-      errorApi.post(new Error(`Getting definition failed`));
-    }
-  }, [error, errorApi]);
 
   useEffect(() => {
     if (startAssessmentError) {
@@ -152,7 +144,6 @@ export function Workflow(): JSX.Element {
         Select a project for an assessment of what additional workflows, if any,
         it qualifies for.
       </Typography>
-      {loading && <Progress />}
       {formSchema && (
         <InfoCard className={styles.fullHeight}>
           <Grid container direction="row" className={styles.form}>

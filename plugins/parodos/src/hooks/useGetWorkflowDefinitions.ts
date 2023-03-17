@@ -1,68 +1,20 @@
-import useAsync, { type AsyncState } from 'react-use/lib/useAsync';
-import { useBackendUrl } from '../components/api/useBackendUrl';
-import { assert } from 'assert-ts';
 import {
   WorkflowDefinition,
   WorkType,
 } from '../models/workflowDefinitionSchema';
-import * as urls from '../urls';
 import { taskDisplayName } from '../utils/string';
 import { WorkflowTask } from '../models/workflowTaskSchema';
-
-export function useGetWorkflowDefinitions(): AsyncState<WorkflowDefinition[]> {
-  const backendUrl = useBackendUrl();
-
-  return useAsync(async function getWorkflowDefinitions(): Promise<
-    WorkflowDefinition[]
-  > {
-    const response = await fetch(`${backendUrl}${urls.WorkflowDefinitions}`);
-
-    return (await response.json()) as WorkflowDefinition[];
-  });
-}
-
-const predicates = {
-  byId: (workflow: WorkflowDefinition) => workflow.id,
-  byType: (workflow: WorkflowDefinition) => workflow.type,
-  byName: (workflow: WorkflowDefinition) => workflow.name,
-} as const;
-
-export type GetDefinitionFilter = keyof typeof predicates;
-
-export function useGetWorkflowDefinition(
-  value: string,
-  filterBy: GetDefinitionFilter,
-): AsyncState<WorkflowDefinition> {
-  const result = useGetWorkflowDefinitions();
-
-  if (!result.value) {
-    return { ...result, value: undefined };
-  }
-
-  const { value: allWorkflowDefinitions } = result;
-
-  const workflowDefinition = allWorkflowDefinitions?.find(
-    def => predicates[filterBy](def) === value,
-  );
-
-  assert(!!workflowDefinition, `no workflow definition for type ${value}`);
-
-  return { value: workflowDefinition, loading: false, error: undefined };
-}
+import { useStore } from '../stores/workflowStore/workflowStore';
 
 export function useGetWorkflowTasksForTopology(
   selectedWorkFlowName: string,
-): AsyncState<WorkflowTask[]> {
-  const workflowDefinitions = useGetWorkflowDefinitions();
-
-  if (!workflowDefinitions.value) {
-    return { ...workflowDefinitions, value: undefined };
-  }
-  const { value: allWorkflowDefinitions } = workflowDefinitions;
-  const rootWorkflowDefinition = allWorkflowDefinitions?.find(
-    workflowDefinition => workflowDefinition.name === selectedWorkFlowName,
+): WorkflowTask[] {
+  const rootWorkflowDefinition = useStore(state =>
+    state.getWorkDefinitionBy('byName', selectedWorkFlowName),
   );
+
   const result: WorkflowTask[] = [];
+
   result.push({
     id: 'Project Information',
     status: 'COMPLETED',
@@ -70,10 +22,11 @@ export function useGetWorkflowTasksForTopology(
     label: 'Project Information',
     runAfterTasks: [],
   });
+
   if (rootWorkflowDefinition)
     addTasks(result, rootWorkflowDefinition, [result[0].id]);
 
-  return { value: result, loading: false, error: undefined };
+  return result;
 }
 
 function addTasks(
