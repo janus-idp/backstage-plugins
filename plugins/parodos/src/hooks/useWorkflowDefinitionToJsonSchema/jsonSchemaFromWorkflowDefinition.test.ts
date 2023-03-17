@@ -28,14 +28,20 @@ describe('jsonSchemaFromWorkflowDefinition', () => {
   });
 
   it('transforms deeply nested recursive structure', () => {
-    const result = jsonSchemaFromWorkflowDefinition(
-      mockDeepRecursiveWorks,
+    const result = jsonSchemaFromWorkflowDefinition(mockDeepRecursiveWorks);
+
+    const comment = get(
+      result.steps[1]?.schema,
+      'properties.subWorkFlowThree.properties.works.items[1].properties.subWorkFlowTwo.properties.works.items[0].properties.subWorkFlowOne.properties.comment.title',
     );
 
-    const childWorks = get(result.steps[1]?.schema, 'properties.subWorkFlowThree.properties.works.items[0].properties.subWorkFlowTwo.properties.works.items', []) as unknown as any[];
+    expect(comment).toBe('comment');
 
-    console.dir(childWorks, { depth: 33 });
+    const singleSignOn = get(
+      result.steps[2]?.schema,
+      'properties.subWorkFlowFour.properties.works.items[1].title',
+    );
 
-    expect(childWorks.length).toBeGreaterThan(0);
+    expect(singleSignOn).toBe('Single Sign On Work Flow Task');
   });
 });

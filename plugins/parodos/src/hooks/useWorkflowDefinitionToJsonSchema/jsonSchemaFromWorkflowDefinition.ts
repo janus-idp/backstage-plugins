@@ -66,59 +66,6 @@ export function getUiSchema(type: WorkFlowTaskParameterType) {
   }
 }
 
-function buildWorksTree(
-  work: WorkType,
-  {
-    schema,
-    uiSchema,
-    title,
-  }: {
-    schema: Record<string, any>;
-    uiSchema: Record<string, any>;
-    title: string;
-  },
-): void {
-  const key = Object.keys(schema.properties)[0];
-
-  set(schema, `properties.${key}.properties.works`, {
-    type: 'array',
-    title: `${title} works`,
-    items: [],
-  });
-
-  set(uiSchema, `${key}.works.items`, []);
-
-  const works = work.works ?? [];
-
-  for (const [index, childWork] of works.entries()) {
-    const childStep = transformWorkToStep(childWork);
-
-    const nextSchemaKey = `properties.${key}.properties.works.items[${index}]`;
-    const nextUiSchemaKey = `${key}.works.items[${index}]`;
-
-    set(schema, nextSchemaKey, childStep.schema);
-
-    set(uiSchema, `${key}.works.['ui:hidden']`, true);
-    set(uiSchema, nextUiSchemaKey, childStep.uiSchema);
-
-    const childWorks = childWork.works ?? [];
-
-    if (childWorks.length > 0) {
-      for (const nextChildWork of childWorks) {
-        const nextSchema = get(schema, nextSchemaKey);
-        const nextUiSchema = get(uiSchema, nextUiSchemaKey);
-        const nextTitle = get(schema, `${nextSchemaKey}.title`);
-
-        buildWorksTree(nextChildWork, {
-          schema: nextSchema,
-          uiSchema: nextUiSchema,
-          title: nextTitle,
-        });
-      }
-    }
-  }
-}
-
 function transformWorkToStep(work: WorkType): Step {
   const title = taskDisplayName(work.name); // TODO: task label would be good here
 
@@ -189,7 +136,29 @@ function transformWorkToStep(work: WorkType): Step {
   const works = work.works ?? [];
 
   if (works.length > 0) {
-    buildWorksTree(work, { schema, uiSchema, title });
+    const key = Object.keys(schema.properties)[0];
+
+    set(schema, `properties.${key}.properties.works`, {
+      type: 'array',
+      title: `${title} works`,
+      items: [],
+    });
+
+    set(uiSchema, `${key}.works.items`, []);
+
+    const childWorks = work.works ?? [];
+
+    for (const [index, childWork] of childWorks.entries()) {
+      const childStep = transformWorkToStep(childWork);
+
+      const nextSchemaKey = `properties.${key}.properties.works.items[${index}]`;
+      const nextUiSchemaKey = `${key}.works.items[${index}]`;
+
+      set(schema, nextSchemaKey, childStep.schema);
+
+      set(uiSchema, `${key}.works.['ui:hidden']`, true);
+      set(uiSchema, nextUiSchemaKey, childStep.uiSchema);
+    }
   }
 
   return { schema, uiSchema, title, mergedSchema: schema };
