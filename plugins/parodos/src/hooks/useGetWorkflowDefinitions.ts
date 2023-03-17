@@ -6,8 +6,8 @@ import {
   WorkType,
 } from '../models/workflowDefinitionSchema';
 import * as urls from '../urls';
-import { WorkFlowTask } from '../components/workflow/workflowDetail/topology/type/WorkFlowTask';
 import { taskDisplayName } from '../utils/string';
+import { WorkflowTask } from '../models/workflowTaskSchema';
 
 export function useGetWorkflowDefinitions(): AsyncState<WorkflowDefinition[]> {
   const backendUrl = useBackendUrl();
@@ -52,7 +52,7 @@ export function useGetWorkflowDefinition(
 
 export function useGetWorkflowTasksForTopology(
   selectedWorkFlowName: string,
-): AsyncState<WorkFlowTask[]> {
+): AsyncState<WorkflowTask[]> {
   const workflowDefinitions = useGetWorkflowDefinitions();
 
   if (!workflowDefinitions.value) {
@@ -62,10 +62,10 @@ export function useGetWorkflowTasksForTopology(
   const rootWorkflowDefinition = allWorkflowDefinitions?.find(
     workflowDefinition => workflowDefinition.name === selectedWorkFlowName,
   );
-  const result: WorkFlowTask[] = [];
+  const result: WorkflowTask[] = [];
   result.push({
     id: 'Project Information',
-    status: 'completed',
+    status: 'COMPLETED',
     locked: false,
     label: 'Project Information',
     runAfterTasks: [],
@@ -77,7 +77,7 @@ export function useGetWorkflowTasksForTopology(
 }
 
 function addTasks(
-  result: WorkFlowTask[],
+  result: WorkflowTask[],
   work: WorkType | WorkflowDefinition,
   runAfterTasks: string[],
 ): string[] {
@@ -87,7 +87,7 @@ function addTasks(
     if (subWork.workType === 'TASK') {
       result.push({
         id: subWork.name,
-        status: 'pending',
+        status: 'PENDING',
         locked: false,
         label: taskDisplayName(subWork.name),
         runAfterTasks:

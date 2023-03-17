@@ -9,17 +9,17 @@ import { WorkFlowLogViewer } from './WorkFlowLogViewer';
 import React, { useEffect, useState } from 'react';
 import { WorkFlowStepper } from './topology/WorkFlowStepper';
 import { useLocation, useParams } from 'react-router-dom';
-import { WorkFlowTask } from './topology/type/WorkFlowTask';
 import { mockLog } from './topology/mock/mockLog';
 import * as urls from '../../../urls';
 import { useBackendUrl } from '../../api';
+import { WorkflowTask } from '../../../models/workflowTaskSchema';
 
 export const WorkFlowDetail = () => {
   const { executionId } = useParams();
   const { state } = useLocation();
   const { isNew, initTasks } = state;
   const [selectedTask, setSelectedTask] = useState<string | null>('');
-  const [allTasks, setAllTasks] = useState<WorkFlowTask[]>(initTasks);
+  const [allTasks, setAllTasks] = useState<WorkflowTask[]>(initTasks);
   const [log, setLog] = useState<string>(``);
   const [countlog, setCountlog] = useState<number>(0);
   const backendUrl = useBackendUrl();
@@ -34,22 +34,21 @@ export const WorkFlowDetail = () => {
 
   // update task state regularly
   useEffect(() => {
-    const updateWorkflowExecutionState = async () => {
+    const updateWorkflowExecutionState = async (): Promise<WorkflowTask[]> => {
       // TODO api call to get subsequent execution CHAIN detail
       const data = await fetch(`${backendUrl}${urls.Workflows}`);
 
-      const response = (await data.json()) as WorkFlowTask[];
-      const result: WorkFlowTask[] = [
+      const response = (await data.json()) as WorkflowTask[];
+      return [
         {
           id: 'Project Information',
-          status: 'completed',
+          status: 'COMPLETED',
           locked: false,
           label: 'Project Information',
           runAfterTasks: [],
         },
         ...response,
       ];
-      return result;
     };
     const taskInterval = setInterval(() => {
       updateWorkflowExecutionState().then(updatedTasks => {

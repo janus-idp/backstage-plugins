@@ -20,7 +20,7 @@ import {
 import '@patternfly/react-styles/css/components/Topology/topology-components.css';
 import pipelineComponentFactory from './pipelineComponentFactory';
 import { useDemoPipelineNodes } from './useDemoPipelineNodes';
-import { WorkFlowTask } from './type/WorkFlowTask';
+import { WorkflowTask } from '../../../../models/workflowTaskSchema';
 
 export const PIPELINE_NODE_SEPARATION_VERTICAL = 10;
 
@@ -28,7 +28,7 @@ const PIPELINE_LAYOUT = 'PipelineLayout';
 
 const controller = new Visualization();
 type Props = {
-  tasks: WorkFlowTask[];
+  tasks: WorkflowTask[];
   setSelectedTask: (selectedTask: string) => void;
 };
 
