@@ -18,7 +18,10 @@ export const DEFAULT_TASK_HEIGHT = 30;
 export function useDemoPipelineNodes(
   workflowTasks: WorkFlowTask[],
 ): PipelineNodeModel[] {
-  const getStatus: any = (status: string) => {
+  const getStatus = (status: WorkflowTask['status') => {
+    if (status === 'COMPLETED') return RunStatus.Succeeded;
+    else if (status === 'IN_PROGRESS')
+      return RunStatus.InProgress;
     if (status.toLowerCase() === 'completed') return RunStatus.Succeeded;
     else if (status.toLowerCase() === 'in_progress')
       return RunStatus.InProgress;
