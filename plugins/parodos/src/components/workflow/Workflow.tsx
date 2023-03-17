@@ -203,7 +203,7 @@ export function Workflow(): JSX.Element {
                 disabled={disableForm}
                 onChange={changeHandler}
                 hideTitle
-                // TODO: fix typing with fields
+                // fix typing with fields
                 fields={{ ProjectPicker: ProjectPicker as any }}
               >
                 {isNewProject ? (
