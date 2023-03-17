@@ -1,3 +1,10 @@
+# @janus-idp/backstage-plugin-topology [1.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.0.3...@janus-idp/backstage-plugin-topology@1.1.0) (2023-03-17)
+
+
+### Features
+
+* **topology:** adds support for decorator in topology for ingress ([#148](https://github.com/janus-idp/backstage-plugins/issues/148)) ([05d17c2](https://github.com/janus-idp/backstage-plugins/commit/05d17c2cd004ab467b18f460ce70ae30898f093e))
+
 ## @janus-idp/backstage-plugin-topology [1.0.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.0.2...@janus-idp/backstage-plugin-topology@1.0.3) (2023-03-10)
 
 
