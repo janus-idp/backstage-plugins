@@ -1,4 +1,6 @@
 import * as React from 'react';
-import { K8sResponse } from '../types/topology-types';
+import { K8sResourcesContextData } from '../types/types';
 
-export const K8sResourcesContext = React.createContext<K8sResponse>({});
+export const K8sResourcesContext = React.createContext<K8sResourcesContextData>(
+  { clusters: [], setSelectedCluster: () => {} },
+);

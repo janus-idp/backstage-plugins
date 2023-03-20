@@ -11,12 +11,31 @@ import { Progress } from '@backstage/core-components';
 import { TopologyEmptyState } from './TopologyEmptyState';
 import { useWorkloadsWatcher } from '../../hooks/useWorkloadWatcher';
 import { TopologyControlBar } from './TopologyControlBar';
+import TopologyToolbar from './TopologyToolbar';
+import { K8sResourcesContext } from '../../hooks/K8sResourcesContext';
+import TopologyErrorPanel from './TopologyErrorPanel';
+import { ClusterErrors } from '../../types/types';
 
-const TopologyViewWorkloadComponent = () => {
+import './TopologyToolbar.css';
+
+type TopologyViewWorkloadComponentProps = {
+  useToolbar?: boolean;
+};
+
+const TopologyViewWorkloadComponent: React.FC<
+  TopologyViewWorkloadComponentProps
+> = ({ useToolbar = false }) => {
   const [selectedIds, setSelectedIds] = React.useState<string[]>([]);
   const controller = useVisualizationController();
   const layout = 'ColaNoForce';
   const { loaded, dataModel } = useWorkloadsWatcher();
+  const { clusters, selectedClusterErrors, responseError } =
+    React.useContext(K8sResourcesContext);
+
+  const allErrors: ClusterErrors = [
+    ...(responseError ? [{ message: responseError }] : []),
+    ...(selectedClusterErrors ?? []),
+  ];
 
   React.useEffect(() => {
     if (loaded && dataModel) {
@@ -36,14 +55,38 @@ const TopologyViewWorkloadComponent = () => {
     setSelectedIds(ids);
   });
 
-  if (!loaded) return <Progress />;
+  if (!loaded)
+    return (
+      <div data-testid="topology-progress">
+        <Progress />
+      </div>
+    );
 
-  return loaded && dataModel?.nodes?.length === 0 ? (
-    <TopologyEmptyState />
-  ) : (
-    <TopologyView controlBar={<TopologyControlBar controller={controller} />}>
-      <VisualizationSurface state={{ selectedIds }} />
-    </TopologyView>
+  return (
+    <>
+      {allErrors && allErrors.length > 0 && (
+        <TopologyErrorPanel allErrors={allErrors} />
+      )}
+      {clusters.length < 1 ? (
+        <TopologyEmptyState />
+      ) : (
+        <TopologyView
+          controlBar={
+            loaded &&
+            dataModel?.nodes?.length > 0 && (
+              <TopologyControlBar controller={controller} />
+            )
+          }
+          viewToolbar={useToolbar && <TopologyToolbar />}
+        >
+          {loaded && dataModel?.nodes?.length === 0 ? (
+            <TopologyEmptyState />
+          ) : (
+            <VisualizationSurface state={{ selectedIds }} />
+          )}
+        </TopologyView>
+      )}
+    </>
   );
 };
 

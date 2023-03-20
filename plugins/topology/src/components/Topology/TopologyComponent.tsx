@@ -5,9 +5,9 @@ import { useTheme } from '@material-ui/core/styles';
 import '@patternfly/patternfly/patternfly-theme-dark.css';
 import '@patternfly/patternfly/utilities/Accessibility/accessibility.css';
 import { TopologyWorkloadView } from './TopologyWorkloadView';
-import { K8sResourcesContext } from '../../hooks/K8sResourcesContext';
-import { useAllWatchResources } from '../../hooks/useAllWatchResources';
 import { ModelsPlural } from '../../models';
+import { K8sResourcesContext } from '../../hooks/K8sResourcesContext';
+import { useK8sObjectsResponse } from '../../hooks/useK8sObjectsResponse';
 
 import './TopologyComponent.css';
 
@@ -36,10 +36,10 @@ export const TopologyComponent = () => {
     ModelsPlural.ingresses,
   ];
 
-  const k8sResponseData = useAllWatchResources(watchedResources);
+  const k8sResourcesContextData = useK8sObjectsResponse(watchedResources);
 
   return (
-    <K8sResourcesContext.Provider value={k8sResponseData}>
+    <K8sResourcesContext.Provider value={k8sResourcesContextData}>
       <div className="pf-ri__topology">
         <TopologyWorkloadView />
       </div>

@@ -1,11 +1,10 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { TopologyComponent } from './TopologyComponent';
-import { TopologyWorkloadView } from './TopologyWorkloadView';
 import { useTheme } from '@material-ui/core';
 
-jest.mock('../../hooks/useAllWatchResources', () => ({
-  useAllWatchResources: () => ({
+jest.mock('../../hooks/useK8sObjectsResponse', () => ({
+  useK8sObjectsResponse: () => ({
     watchResourcesData: {
       deployments: {
         data: [],
@@ -15,7 +14,10 @@ jest.mock('../../hooks/useAllWatchResources', () => ({
       },
     },
     loading: false,
-    error: '',
+    responseError: '',
+    selectedClusterErrors: [],
+    clusters: [],
+    setSelectedCluster: () => {},
   }),
 }));
 
@@ -36,8 +38,8 @@ describe('TopologyComponent', () => {
         type: 'dark',
       },
     });
-    render(<TopologyComponent />);
-    expect(TopologyWorkloadView).toBeDefined();
+    const { getByText } = render(<TopologyComponent />);
+    expect(getByText(/topologyworkloadview/i)).not.toBeNull();
   });
 
   it('should show dark theme', () => {

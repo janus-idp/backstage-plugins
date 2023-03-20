@@ -3,7 +3,11 @@ import { INSTANCE_LABEL } from '../const';
 import { ModelsPlural, resourceModels } from '../models';
 import { PodRCData } from '../types/pods';
 import { OverviewItem, TopologyDataObject } from '../types/topology-types';
-import { K8sWorkloadResource, K8sResponseData } from '../types/types';
+import {
+  K8sWorkloadResource,
+  K8sResponseData,
+  ClusterErrors,
+} from '../types/types';
 
 export const WORKLOAD_TYPES: string[] = [
   ModelsPlural.deployments,
@@ -20,10 +24,21 @@ const workloadKind = (type: string) => {
   return resourceModels[type].kind;
 };
 
+export const getClusters = (k8sObjects: ObjectsByEntityResponse) => {
+  const clusters: string[] = k8sObjects.items.map(
+    (item: any) => item.cluster.name,
+  );
+  const errors: ClusterErrors[] = k8sObjects.items.map(
+    (item: any) => item.errors,
+  );
+  return { clusters, errors };
+};
+
 export const getK8sResources = (
+  cluster: number,
   k8sObjects: ObjectsByEntityResponse,
-): K8sResponseData =>
-  k8sObjects.items?.[0]?.resources?.reduce(
+) =>
+  k8sObjects.items?.[cluster]?.resources?.reduce(
     (acc: K8sResponseData, res: any) => ({
       ...acc,
       [res.type]: {

@@ -14,7 +14,7 @@ export const TopologyWorkloadView = React.memo(() => {
 
   return (
     <VisualizationProvider controller={controller}>
-      <TopologyViewWorkloadComponent />
+      <TopologyViewWorkloadComponent useToolbar />
     </VisualizationProvider>
   );
 });
