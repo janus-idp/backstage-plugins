@@ -21,8 +21,6 @@ export function PickerField<T>(props: PickerFieldExtensionProps<T>) {
 
   const onSelect: AutoCompleteProps<T>['onChange'] = useCallback(
     (_, value) => {
-      // eslint-disable-next-line no-console
-      console.log(value);
       onChange(value);
     },
     [onChange],
