@@ -5,6 +5,8 @@ import { type PickerFieldExtensionProps } from './types';
 
 type AutoCompleteProps<T> = UseAutocompleteProps<T, boolean, boolean, boolean>;
 
+type AutoCompleteProps<T> = UseAutocompleteProps<T, boolean, boolean, boolean>;
+
 export function PickerField<T>(props: PickerFieldExtensionProps<T>) {
   const {
     onChange,
@@ -19,6 +21,8 @@ export function PickerField<T>(props: PickerFieldExtensionProps<T>) {
 
   const onSelect: AutoCompleteProps<T>['onChange'] = useCallback(
     (_, value) => {
+      // eslint-disable-next-line no-console
+      console.log(value);
       onChange(value);
     },
     [onChange],
