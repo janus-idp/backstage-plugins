@@ -43,7 +43,7 @@ export function useGetProjectAssessmentSchema({
     cloned.works[0].parameters = [];
 
     cloned.works[0].parameters?.unshift({
-      key: 'Name',
+      key: 'Project',
       optional: false,
       type: 'TEXT',
       field: 'ProjectPicker',

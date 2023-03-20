@@ -20,6 +20,7 @@ export type WorkflowOptionsListItem = WorkflowOptionItem & { type: string };
 interface WorkflowOptionsListProps {
   project: Project;
   workflowOptions: WorkflowOptionsListItem[];
+  isNew: boolean;
 }
 
 const useStyles = makeStyles(theme => ({
@@ -40,15 +41,17 @@ const useStyles = makeStyles(theme => ({
 export function WorkflowOptionsList({
   project,
   workflowOptions,
+  isNew
 }: WorkflowOptionsListProps): JSX.Element {
   const commonStyles = useCommonStyles();
   const styles = useStyles();
 
+  const introduction = isNew ? "Assessment completed. To continue please select from the following option(s):" : "Your project qualifies for the following option(s):";
+
   return (
     <>
       <Typography paragraph className={commonStyles.margintop1}>
-        Assessment completed. To continue please select from the following
-        option(s):
+        {introduction}
       </Typography>
       <Grid container direction="row" spacing={2}>
         {workflowOptions.map(workflowOption => (

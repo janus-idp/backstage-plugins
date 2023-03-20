@@ -49,7 +49,6 @@ export function PickerField<T>(props: PickerFieldExtensionProps<T>) {
             margin="none"
             helperText={description}
             FormHelperTextProps={{ style: { marginLeft: 0 } }}
-            variant="outlined"
             required={required}
             InputProps={params.InputProps}
           />
