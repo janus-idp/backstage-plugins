@@ -34,6 +34,11 @@ export function getJsonSchemaType(type: WorkFlowTaskParameterType) {
         type: 'string',
         pattern: '^(https?)://', // TODO: better regex
       };
+    case 'BOOLEAN': {
+      return {
+        type: 'boolean'
+      }
+    }
     case 'MOCK-SELECT':
       return {};
     default:
@@ -58,6 +63,12 @@ export function getUiSchema(type: WorkFlowTaskParameterType) {
       return {
         'ui:widget': 'email',
       };
+    case 'BOOLEAN': {
+      return {
+        // TODO: what if needs to be a checkbox list?
+        'ui:widget': 'radio'
+      }
+    }
     case 'URL':
     case 'NUMBER':
       return {};
@@ -95,6 +106,7 @@ function transformWorkToStep(work: WorkType): Step {
     type,
     description,
     optional,
+    default: fieldDefault,
     options = [],
   } of work.parameters ?? []) {
     const propertiesPath = `properties.${work.name}.properties.${key}`;
@@ -103,6 +115,7 @@ function transformWorkToStep(work: WorkType): Step {
     set(schema, propertiesPath, {
       title: `${key}`,
       ...getJsonSchemaType(type),
+      ...{default: fieldDefault}
     });
 
     if (options && options.length > 0) {

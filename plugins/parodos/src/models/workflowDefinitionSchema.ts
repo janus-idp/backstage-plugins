@@ -8,6 +8,7 @@ const parameterTypes = z.union([
   z.literal('NUMBER'),
   z.literal('MOCK-SELECT'),
   z.literal('URL'),
+  z.literal('BOOLEAN')
 ]);
 
 const processingType = z.union([
@@ -29,6 +30,9 @@ export const workFlowTaskParameterTypeSchema = z.object({
     )
     .optional()
     .nullable(),
+    default: z.any().optional(),
+    field: z.string().optional(),
+    disabled: z.boolean().optional().default(false)
 });
 
 export const baseWorkSchema = z.object({

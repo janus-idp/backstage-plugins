@@ -1,7 +1,7 @@
 import { FormSchema } from '../types';
 import { jsonSchemaFromWorkflowDefinition } from '../../hooks/useWorkflowDefinitionToJsonSchema/jsonSchemaFromWorkflowDefinition';
 import { ASSESSMENT_WORKFLOW } from './constants';
-import { WorkflowDefinition } from '../../models/workflowDefinitionSchema';
+import type { WorkflowDefinition, WorkFlowTaskParameter } from '../../models/workflowDefinitionSchema';
 import { useStore } from '../../stores/workflowStore/workflowStore';
 import set from 'lodash.set';
 
@@ -9,6 +9,15 @@ interface Props {
   hasProjects: boolean;
   newProject: boolean;
 }
+
+
+const newProjectChoice: WorkFlowTaskParameter = {
+  key: 'newProject',
+  description: 'Is this a new assessment for this project?',
+  type: 'BOOLEAN',
+  optional: true,
+  default: true
+};
 
 export function useGetProjectAssessmentSchema({
   hasProjects,
@@ -18,40 +27,36 @@ export function useGetProjectAssessmentSchema({
     state.getWorkDefinitionBy('byName', ASSESSMENT_WORKFLOW),
   );
 
+  
+  let formSchema: FormSchema;
+  
   const cloned = JSON.parse(JSON.stringify(definition)) as WorkflowDefinition;
 
-  // TODO: this should be coming from the API
-  cloned.works[0].parameters?.unshift({
-    key: 'Name',
-    description: newProject ? 'New Project' : '',
-    optional: false,
-    type: 'TEXT',
-  });
+  if(newProject) {
+    cloned.works[0].parameters?.unshift({
+      key: 'Name',
+      description: 'New Project',
+      optional: false,
+      type: 'TEXT',
+    });
 
-  const formSchema = jsonSchemaFromWorkflowDefinition(cloned);
+    cloned.works[0].parameters?.push(newProjectChoice);
 
-  if (newProject === false) {
-    set(
-      formSchema,
-      `steps[0].uiSchema.onboardingAssessmentTask.Name.['ui:field']`,
-      'ProjectPicker',
-    );
+    formSchema = jsonSchemaFromWorkflowDefinition(cloned);
+  } else {
+    cloned.works[0].parameters = [newProjectChoice];
+
+    cloned.works[0].parameters?.push({
+      key: 'Name',
+      description: 'Project Name',
+      optional: false,
+      type: 'TEXT',
+      field: 'ProjectPicker',
+      disabled: !hasProjects
+    });
+
+    formSchema = jsonSchemaFromWorkflowDefinition(cloned);
   }
-
-  set(
-    formSchema,
-    `steps[0].schema.properties.onboardingAssessmentTask.properties.newProject`,
-    {
-      title: 'Is this a new assessment for this project?',
-      type: 'boolean',
-      default: true,
-    },
-  );
-
-  set(formSchema, `steps[0].uiSchema.onboardingAssessmentTask.newProject`, {
-    'ui:widget': 'radio',
-    'ui:disabled': !hasProjects,
-  });
 
   return formSchema;
 }
