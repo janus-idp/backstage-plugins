@@ -13,7 +13,6 @@ export function ProjectPicker(props: ProjectPickerProps): JSX.Element {
       {...props}
       schema={{
         title: 'Project Name',
-        description: 'Choose existing project',
       }}
       options={projects}
       getOptionLabel={option => option.name}

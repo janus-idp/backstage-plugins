@@ -36,8 +36,8 @@ export function getJsonSchemaType(type: WorkFlowTaskParameterType) {
       };
     case 'BOOLEAN': {
       return {
-        type: 'boolean'
-      }
+        type: 'boolean',
+      };
     }
     case 'MOCK-SELECT':
       return {};
@@ -66,8 +66,8 @@ export function getUiSchema(type: WorkFlowTaskParameterType) {
     case 'BOOLEAN': {
       return {
         // TODO: what if needs to be a checkbox list?
-        'ui:widget': 'radio'
-      }
+        'ui:widget': 'radio',
+      };
     }
     case 'URL':
     case 'NUMBER':
@@ -107,6 +107,7 @@ function transformWorkToStep(work: WorkType): Step {
     description,
     optional,
     default: fieldDefault,
+    field,
     options = [],
   } of work.parameters ?? []) {
     const propertiesPath = `properties.${work.name}.properties.${key}`;
@@ -115,7 +116,7 @@ function transformWorkToStep(work: WorkType): Step {
     set(schema, propertiesPath, {
       title: `${key}`,
       ...getJsonSchemaType(type),
-      ...{default: fieldDefault}
+      ...{ default: fieldDefault },
     });
 
     if (options && options.length > 0) {
@@ -135,6 +136,7 @@ function transformWorkToStep(work: WorkType): Step {
 
     set(uiSchema, objectPath, {
       ...getUiSchema(type),
+      'ui:field': field,
       'ui:help': description,
       'ui:autocomplete': 'Off',
     });

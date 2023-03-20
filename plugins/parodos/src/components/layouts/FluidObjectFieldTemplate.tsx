@@ -58,7 +58,7 @@ export function FluidObjectFieldTemplate<
 
   const isContainer =
     properties.length === 1 &&
-    uiSchema?.[properties[0].content.key as string]['ui:hidden'] === true;
+    uiSchema?.[properties[0].content.key as string]?.['ui:hidden'] === true;
 
   // TODO: reinstate when there is a task description
   const showTitle = false; // uiSchema?.['ui:show-title'];

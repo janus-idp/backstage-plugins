@@ -12,7 +12,7 @@ type AutoCompleteProps<T> = UseAutocompleteProps<T, boolean, boolean, boolean>;
 export function PickerField<T>(props: PickerFieldExtensionProps<T>) {
   const {
     onChange,
-    schema: { title = 'Entity', description = 'An entity from the catalog' },
+    schema: { title = '', description = '' },
     required,
     rawErrors,
     formData,

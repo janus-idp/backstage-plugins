@@ -8,7 +8,7 @@ const parameterTypes = z.union([
   z.literal('NUMBER'),
   z.literal('MOCK-SELECT'),
   z.literal('URL'),
-  z.literal('BOOLEAN')
+  z.literal('BOOLEAN'),
 ]);
 
 const processingType = z.union([
@@ -18,7 +18,7 @@ const processingType = z.union([
 
 export const workFlowTaskParameterTypeSchema = z.object({
   key: z.string(),
-  description: z.string(),
+  description: z.string().optional(),
   optional: z.boolean(),
   type: parameterTypes,
   options: z
@@ -30,9 +30,9 @@ export const workFlowTaskParameterTypeSchema = z.object({
     )
     .optional()
     .nullable(),
-    default: z.any().optional(),
-    field: z.string().optional(),
-    disabled: z.boolean().optional().default(false)
+  default: z.any().optional(),
+  field: z.string().optional(),
+  disabled: z.boolean().default(false).optional(),
 });
 
 export const baseWorkSchema = z.object({

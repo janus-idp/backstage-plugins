@@ -36,7 +36,7 @@ const useStyles = makeStyles(theme => ({
     marginTop: theme.spacing(2),
     // TODO: these selectors are brittle
     // we could do something like ["ui:xs"]: 12
-    '& .MuiGrid-grid-xs-12:nth-child(3)': {
+    '& .MuiGrid-grid-xs-12:nth-child(1)': {
       maxWidth: '100%',
       flexBasis: '100%',
       paddingTop: 0,
@@ -48,17 +48,23 @@ const useStyles = makeStyles(theme => ({
         flexDirection: 'row',
       },
     },
+    '& .field-boolean p': {
+      marginLeft: 0,
+      marginTop: theme.spacing(1),
+      marginBottom: theme.spacing(1),
+    },
   },
 }));
 
 interface ProjectsPayload {
   onboardingAssessmentTask: {
-    Name: string | Project;
+    Name?: string;
     newProject: boolean;
+    Project?: Project;
   };
 }
 
-function isProject(input: string | Project): input is Project {
+function isProject(input?: string | Project): input is Project {
   return typeof input !== 'string' && typeof input?.id === 'string';
 }
 
@@ -69,7 +75,7 @@ export function Workflow(): JSX.Element {
   const hasProjects = useStore(state => state.hasProjects());
   const [isNewProject, setIsNewProject] = useState(true);
 
-  const [project, setProject] = useState<Project>();
+  const [project, setProject] = useState<Project | undefined>();
   const [assessmentStatus, setAssessmentStatus] =
     useState<AssessmentStatusType>('none');
   const [workflowOptions, setWorkflowOptions] = useState<
@@ -82,31 +88,12 @@ export function Workflow(): JSX.Element {
     newProject: isNewProject,
   });
 
-  const [{ error: startAssessmentError }, startAssessment] = useAsyncFn(
-    async ({ formData }: IChangeEvent<ProjectsPayload>) => {
-      assert(!!formData, `no formData`);
-
-      setAssessmentStatus('inprogress');
-
-      const newProjectResponse = await fetch(projectsUrl, {
-        method: 'POST',
-        body: JSON.stringify({
-          name: formData.onboardingAssessmentTask.Name,
-        }),
-      });
-
-      if (!newProjectResponse.ok) {
-        throw new Error(newProjectResponse.statusText);
-      }
-
-      const newProject = projectSchema.parse(await newProjectResponse.json());
-
-      setProject(newProject);
-
+  const [{ error: createWorkflowError }, createWorkflow] = useAsyncFn(
+    async ({ workflowProject }: { workflowProject: Project }) => {
       const workFlowResponse = await fetch(workflowsUrl, {
         method: 'POST',
         body: JSON.stringify({
-          projectId: newProject.id,
+          projectId: workflowProject.id,
           workFlowName: ASSESSMENT_WORKFLOW,
           works: [],
         }),
@@ -136,24 +123,52 @@ export function Workflow(): JSX.Element {
         }));
       }) as WorkflowOptionsListItem[];
 
-      setWorkflowOptions(options);
-
-      addProject(newProject);
+      setProject(workflowProject);
 
       setAssessmentStatus('complete');
+
+      setWorkflowOptions(options);
     },
-    [addProject, projectsUrl, workflowsUrl],
+    [workflowsUrl],
+  );
+
+  const [{ error: startAssessmentError }, startAssessment] = useAsyncFn(
+    async ({ formData }: IChangeEvent<ProjectsPayload>) => {
+      assert(!!formData, `no formData`);
+
+      setAssessmentStatus('inprogress');
+
+      const newProjectResponse = await fetch(projectsUrl, {
+        method: 'POST',
+        body: JSON.stringify({
+          name: formData.onboardingAssessmentTask.Name,
+        }),
+      });
+
+      if (!newProjectResponse.ok) {
+        throw new Error(newProjectResponse.statusText);
+      }
+
+      const newProject = projectSchema.parse(await newProjectResponse.json());
+
+      setProject(newProject);
+
+      await createWorkflow({ workflowProject: newProject });
+
+      addProject(newProject);
+    },
+    [addProject, createWorkflow, projectsUrl],
   );
 
   const errorApi = useApi(errorApiRef);
 
   useEffect(() => {
-    if (startAssessmentError) {
+    if (startAssessmentError || createWorkflowError) {
       // eslint-disable-next-line no-console
-      console.error(startAssessmentError);
+      console.error(startAssessmentError ?? createWorkflowError);
       errorApi.post(new Error(`Creating assessment failed`));
     }
-  }, [errorApi, startAssessmentError]);
+  }, [createWorkflowError, errorApi, startAssessmentError]);
 
   const changeHandler = useCallback(
     async (e: IChangeEvent<ProjectsPayload>) => {
@@ -181,6 +196,8 @@ export function Workflow(): JSX.Element {
 
   const disableForm = inProgress || complete;
 
+  const displayOptions = assessmentStatus === 'complete' && project;
+
   return (
     <ParodosPage stretch>
       <ContentHeader title="Project assessment">
@@ -200,22 +217,28 @@ export function Workflow(): JSX.Element {
                 disabled={disableForm}
                 onChange={changeHandler}
                 hideTitle
+                // TODO: fix typing with fields
                 fields={{ ProjectPicker: ProjectPicker as any }}
               >
-                <Button
-                  // We cannot submit button when in progress
-                  type="submit"
-                  disabled={disableForm ?? inProgress}
-                  variant="contained"
-                  color="primary"
-                >
-                  {inProgress ? 'IN PROGRESS' : 'START ASSESSMENT'}
-                </Button>
+                {isNewProject ? (
+                  <Button
+                    type="submit"
+                    disabled={disableForm ?? inProgress}
+                    variant="contained"
+                    color="primary"
+                  >
+                    {inProgress ? 'IN PROGRESS' : 'START ASSESSMENT'}
+                  </Button>
+                ) : (
+                  <></>
+                )}
+                {!isNewProject && WorkflowOptionsList}
               </Form>
             </Grid>
             <Grid item xs={12}>
-              {assessmentStatus === 'complete' && project && (
+              {displayOptions && (
                 <WorkflowOptionsList
+                  isNew={isNewProject}
                   project={project}
                   workflowOptions={workflowOptions}
                 />
