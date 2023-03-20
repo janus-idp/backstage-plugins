@@ -1,3 +1,10 @@
+# @janus-idp/backstage-plugin-topology [1.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.1.0...@janus-idp/backstage-plugin-topology@1.2.0) (2023-03-20)
+
+
+### Features
+
+* **topology:** Add filter resources by cluster functionality in Topology plugin ([#146](https://github.com/janus-idp/backstage-plugins/issues/146)) ([811f72f](https://github.com/janus-idp/backstage-plugins/commit/811f72f1425962753a74310117b752991eb49360))
+
 # @janus-idp/backstage-plugin-topology [1.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.0.3...@janus-idp/backstage-plugin-topology@1.1.0) (2023-03-17)
 
 
