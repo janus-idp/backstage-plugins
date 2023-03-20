@@ -53,9 +53,13 @@ const useStyles = makeStyles(theme => ({
 
 interface ProjectsPayload {
   onboardingAssessmentTask: {
-    Name: string;
+    Name: string | Project;
     newProject: boolean;
   };
+}
+
+function isProject(input: string | Project): input is Project {
+  return typeof input !== 'string' && typeof input?.id === 'string';
 }
 
 export function Workflow(): JSX.Element {
@@ -157,15 +161,19 @@ export function Workflow(): JSX.Element {
         return;
       }
 
-      const { newProject: nextIsNewProject } =
+      const { newProject: nextIsNewProject, Project } =
         e.formData.onboardingAssessmentTask;
 
       if (nextIsNewProject !== isNewProject) {
         setProject(undefined);
         setIsNewProject(nextIsNewProject);
       }
+
+      if (nextIsNewProject === false && isProject(Project)) {
+        await createWorkflow({ workflowProject: Project });
+      }
     },
-    [isNewProject],
+    [createWorkflow, isNewProject],
   );
 
   const inProgress = assessmentStatus === 'inprogress';

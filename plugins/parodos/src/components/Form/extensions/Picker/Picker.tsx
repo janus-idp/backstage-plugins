@@ -14,7 +14,6 @@ export function PickerField<T>(props: PickerFieldExtensionProps<T>) {
     onChange,
     schema: { title = 'Entity', description = 'An entity from the catalog' },
     required,
-    // uiSchema,
     rawErrors,
     formData,
     options,
@@ -24,8 +23,6 @@ export function PickerField<T>(props: PickerFieldExtensionProps<T>) {
 
   const onSelect: AutoCompleteProps<T>['onChange'] = useCallback(
     (_, value) => {
-      // eslint-disable-next-line no-console
-      console.log(value);
       onChange(value);
     },
     [onChange],
