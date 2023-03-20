@@ -192,7 +192,7 @@ export function Workflow(): JSX.Element {
                 disabled={disableForm}
                 onChange={changeHandler}
                 hideTitle
-                fields={{ProjectPicker: ProjectPicker as any}}
+                fields={{ ProjectPicker: ProjectPicker as any }}
               >
                 <Button
                   // We cannot submit button when in progress

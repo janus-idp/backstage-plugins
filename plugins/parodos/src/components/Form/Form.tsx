@@ -73,10 +73,10 @@ export function Form({
 
   const handleChange = useCallback(
     (e: IChangeEvent) => {
+      onChange(e);
       setFormState(current => ({ ...current, ...e.formData }));
-      onChange({ ...e, formData: formState });
     },
-    [formState, onChange],
+    [onChange],
   );
 
   const handleNext = async (data: IChangeEvent, e: React.FormEvent<any>) => {

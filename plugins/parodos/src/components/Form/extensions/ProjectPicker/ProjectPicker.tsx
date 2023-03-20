@@ -8,14 +8,12 @@ type ProjectPickerProps = PickerFieldExtensionProps<Project>;
 export function ProjectPicker(props: ProjectPickerProps): JSX.Element {
   const projects = useStore(state => state.projects);
 
-  console.log('here!!!!!')
-
   return (
     <PickerField<Project>
       {...props}
       schema={{
-        title: 'New roject',
-        description: 'New Project',
+        title: 'Project Name',
+        description: 'Choose existing project',
       }}
       options={projects}
       getOptionLabel={option => option.name}

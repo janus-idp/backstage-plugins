@@ -7,6 +7,8 @@ import {
   type UseAutocompleteProps,
 } from '@mui/material';
 
+type AutoCompleteProps<T> = UseAutocompleteProps<T, boolean, boolean, boolean>;
+
 export function PickerField<T>(props: PickerFieldExtensionProps<T>) {
   const {
     onChange,
@@ -20,13 +22,10 @@ export function PickerField<T>(props: PickerFieldExtensionProps<T>) {
     getOptionLabel,
   } = props;
 
-  const onSelect: UseAutocompleteProps<
-    T,
-    boolean,
-    boolean,
-    boolean
-  >['onChange'] = useCallback(
+  const onSelect: AutoCompleteProps<T>['onChange'] = useCallback(
     (_, value) => {
+      // eslint-disable-next-line no-console
+      console.log(value);
       onChange(value);
     },
     [onChange],
@@ -34,7 +33,7 @@ export function PickerField<T>(props: PickerFieldExtensionProps<T>) {
 
   return (
     <FormControl
-      margin="normal"
+      margin="none"
       required={required}
       error={(rawErrors ?? []).length > 0 && !formData}
     >
@@ -43,14 +42,16 @@ export function PickerField<T>(props: PickerFieldExtensionProps<T>) {
         onChange={onSelect}
         options={options}
         autoSelect
-        getOptionLabel={getOptionLabel}
+        getOptionLabel={
+          getOptionLabel as AutoCompleteProps<T>['getOptionLabel']
+        }
         renderInput={params => (
           <TextField
             {...params}
             label={title}
-            margin="dense"
+            margin="none"
             helperText={description}
-            FormHelperTextProps={{ margin: 'dense', style: { marginLeft: 0 } }}
+            FormHelperTextProps={{ style: { marginLeft: 0 } }}
             variant="outlined"
             required={required}
             InputProps={params.InputProps}

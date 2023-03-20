@@ -10,7 +10,10 @@ interface Props {
   newProject: boolean;
 }
 
-export function useGetProjectAssessmentSchema({ hasProjects, newProject }: Props): FormSchema {
+export function useGetProjectAssessmentSchema({
+  hasProjects,
+  newProject,
+}: Props): FormSchema {
   const definition = useStore(state =>
     state.getWorkDefinitionBy('byName', ASSESSMENT_WORKFLOW),
   );
@@ -20,14 +23,14 @@ export function useGetProjectAssessmentSchema({ hasProjects, newProject }: Props
   // TODO: this should be coming from the API
   cloned.works[0].parameters?.unshift({
     key: 'Name',
-    description: 'New Project',
+    description: newProject ? 'New Project' : '',
     optional: false,
     type: 'TEXT',
   });
 
   const formSchema = jsonSchemaFromWorkflowDefinition(cloned);
-  
-  if(newProject === false) {
+
+  if (newProject === false) {
     set(
       formSchema,
       `steps[0].uiSchema.onboardingAssessmentTask.Name.['ui:field']`,
@@ -45,15 +48,10 @@ export function useGetProjectAssessmentSchema({ hasProjects, newProject }: Props
     },
   );
 
-
-  set(
-     formSchema,
-    `steps[0].uiSchema.onboardingAssessmentTask.newProject`,
-    {
-      'ui:widget': 'radio',
-      'ui:disabled': !hasProjects
-    },
-  );
+  set(formSchema, `steps[0].uiSchema.onboardingAssessmentTask.newProject`, {
+    'ui:widget': 'radio',
+    'ui:disabled': !hasProjects,
+  });
 
   return formSchema;
 }
