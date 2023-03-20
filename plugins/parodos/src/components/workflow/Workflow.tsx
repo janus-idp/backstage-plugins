@@ -34,6 +34,7 @@ const useStyles = makeStyles(theme => ({
     height: '100%',
   },
   form: {
+    marginTop: theme.spacing(2),
     '& .field-boolean > div > label': {
       display: 'inline-block',
       marginBottom: theme.spacing(2),
@@ -174,23 +175,6 @@ export function Workflow(): JSX.Element {
       }
     },
     [createWorkflow, isNewProject],
-  );
-
-  const changeHandler = useCallback(
-    async (e: IChangeEvent<ProjectsPayload>) => {
-      if (!e.formData?.onboardingAssessmentTask) {
-        return;
-      }
-
-      const { newProject: nextIsNewProject } =
-        e.formData.onboardingAssessmentTask;
-
-      if (nextIsNewProject !== isNewProject) {
-        setProject(undefined);
-        setIsNewProject(nextIsNewProject);
-      }
-    },
-    [isNewProject],
   );
 
   const inProgress = assessmentStatus === 'inprogress';
