@@ -56,6 +56,10 @@ const useStyles = makeStyles(theme => ({
   formWrapper: {
     padding: theme.spacing(2),
   },
+  stepper: {
+    margin: 0,
+    paddingLeft: theme.spacing(1)
+  }
 }));
 
 export function Form({
@@ -156,7 +160,7 @@ export function Form({
       <Stepper
         activeStep={activeStep}
         orientation="horizontal"
-        variant="elevation"
+        className={styles.stepper}
       >
         {formSchema.steps.map((step, index) => (
           <Step key={index}>
