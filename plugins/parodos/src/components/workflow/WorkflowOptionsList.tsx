@@ -41,12 +41,14 @@ const useStyles = makeStyles(theme => ({
 export function WorkflowOptionsList({
   project,
   workflowOptions,
-  isNew
+  isNew,
 }: WorkflowOptionsListProps): JSX.Element {
   const commonStyles = useCommonStyles();
   const styles = useStyles();
 
-  const introduction = isNew ? "Assessment completed. To continue please select from the following option(s):" : "Your project qualifies for the following option(s):";
+  const introduction = isNew
+    ? 'Assessment completed. To continue please select from the following option(s):'
+    : 'Your project qualifies for the following option(s):';
 
   return (
     <>
