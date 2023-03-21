@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-topology [1.2.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.2.0...@janus-idp/backstage-plugin-topology@1.2.1) (2023-03-21)
+
+
+### Bug Fixes
+
+* **deps:** update dependency mobx to v6 ([#153](https://github.com/janus-idp/backstage-plugins/issues/153)) ([33ba4a8](https://github.com/janus-idp/backstage-plugins/commit/33ba4a87b250d8bd209e9465d8c0bcd814f85cd3))
+
 # @janus-idp/backstage-plugin-topology [1.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.1.0...@janus-idp/backstage-plugin-topology@1.2.0) (2023-03-20)
 
 
