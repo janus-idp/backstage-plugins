@@ -155,8 +155,9 @@ export function Workflow(): JSX.Element {
                 hideTitle
               >
                 <Button
+                  // We cannot submit button when in progress
                   type="submit"
-                  disabled={disableForm}
+                  disabled={disableForm ?? inProgress}
                   variant="contained"
                   color="primary"
                 >

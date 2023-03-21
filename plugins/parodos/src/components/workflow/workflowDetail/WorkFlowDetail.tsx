@@ -77,6 +77,7 @@ export const WorkFlowDetail = () => {
     const updateWorkflowExecutionState = async () => {
       const data = await fetch(`${workflowsUrl}/${executionId}/status`);
 
+      // TODO: so far failing, should be fixed by https://issues.redhat.com/browse/FLPATH-184
       const response = (await data.json()) as WorkflowStatus;
 
       return response.works;
