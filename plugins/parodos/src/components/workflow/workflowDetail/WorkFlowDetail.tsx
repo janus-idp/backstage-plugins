@@ -11,12 +11,12 @@ import { WorkFlowStepper } from './topology/WorkFlowStepper';
 import { useLocation, useParams } from 'react-router-dom';
 import { mockLog } from './topology/mock/mockLog';
 import * as urls from '../../../urls';
-import { useBackendUrl } from '../../api';
 import {
   WorkflowStatus,
   WorkflowTask,
   WorkStatus,
 } from '../../../models/workflowTaskSchema';
+import { useStore } from '../../../stores/workflowStore/workflowStore';
 
 const useStyles = makeStyles(_theme => ({
   container: {
@@ -46,7 +46,7 @@ export const WorkFlowDetail = () => {
   const [allTasks, setAllTasks] = useState<WorkflowTask[]>(initTasks);
   const [log, setLog] = useState<string>(``);
   const [countlog, setCountlog] = useState<number>(0);
-  const backendUrl = useBackendUrl();
+  const workflowsUrl = useStore(store => store.getApiUrl(urls.Workflows));
   const styles = useStyles();
 
   const getSelectedTaskLog = React.useCallback(
@@ -75,9 +75,7 @@ export const WorkFlowDetail = () => {
     };
 
     const updateWorkflowExecutionState = async () => {
-      const data = await fetch(
-        `${backendUrl}${urls.Workflows}/${executionId}/status`,
-      );
+      const data = await fetch(`${workflowsUrl}/${executionId}/status`);
 
       const response = (await data.json()) as WorkflowStatus;
 
@@ -90,7 +88,7 @@ export const WorkFlowDetail = () => {
     }, 5000);
 
     return () => clearInterval(taskInterval);
-  }, [allTasks, backendUrl, executionId]);
+  }, [allTasks, executionId, workflowsUrl]);
 
   // update log of selected task regularly
   useEffect(() => {

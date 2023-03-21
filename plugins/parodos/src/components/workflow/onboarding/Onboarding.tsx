@@ -17,18 +17,15 @@ import { Button, Chip, makeStyles, Typography } from '@material-ui/core';
 import { useWorkflowDefinitionToJsonSchema } from '../../../hooks/useWorkflowDefinitionToJsonSchema/useWorkflowDefinitionToJsonSchema';
 import { assert } from 'assert-ts';
 import { Form } from '../../Form/Form';
-import {
-  useGetWorkflowDefinition,
-  useGetWorkflowTasksForTopology,
-} from '../../../hooks/useGetWorkflowDefinitions';
+import { useGetWorkflowTasksForTopology } from '../../../hooks/useGetWorkflowDefinitions';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
-import { useBackendUrl } from '../../api/useBackendUrl';
 import { type IChangeEvent } from '@rjsf/core-v5';
 import { WorkflowExecuteResponseType } from '../../types';
 import { type RJSFValidationError } from '@rjsf/utils';
 import * as urls from '../../../urls';
 import lodashGet from 'lodash.get';
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
+import { useStore } from '../../../stores/workflowStore/workflowStore';
 
 interface OnboardingProps {
   isNew: boolean;
@@ -47,24 +44,24 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export function Onboarding({ isNew }: OnboardingProps): JSX.Element {
-  const backendUrl = useBackendUrl();
   const { workflowName, projectId } = useParams();
+  const workflowsUrl = useStore(state => state.getApiUrl(urls.Workflows));
+
+  assert(!!workflowName, `no workflowId in Onboarding`);
+
+  const workflow = useStore(state =>
+    state.getWorkDefinitionBy('byName', workflowName),
+  );
+
   const styles = useStyles();
   const [searchParams] = useSearchParams();
   const errorApi = useApi(errorApiRef);
 
   const workflowOption = searchParams.get('option');
 
-  assert(!!workflowName, `no workflowId in Onboarding`);
+  const formSchema = useWorkflowDefinitionToJsonSchema(workflowName, 'byName');
 
-  const {
-    loading,
-    error,
-    value: formSchema,
-  } = useWorkflowDefinitionToJsonSchema(workflowName, 'byName');
-
-  const { value: workflow } = useGetWorkflowDefinition(workflowName, 'byName');
-  const { value: tasks } = useGetWorkflowTasksForTopology(workflowName);
+  const tasks = useGetWorkflowTasksForTopology(workflowName);
 
   const navigate = useNavigate();
 
@@ -98,7 +95,7 @@ export function Onboarding({ isNew }: OnboardingProps): JSX.Element {
         }),
       };
 
-      const data = await fetch(`${backendUrl}${urls.Workflows}`, {
+      const data = await fetch(workflowsUrl, {
         method: 'POST',
         body: JSON.stringify(payload),
       });
@@ -114,7 +111,7 @@ export function Onboarding({ isNew }: OnboardingProps): JSX.Element {
         state: { isNew: isNew, initTasks: tasks },
       });
     },
-    [workflow, projectId, backendUrl, navigate, isNew, tasks],
+    [workflow, projectId, workflowsUrl, navigate, isNew, tasks],
   );
 
   useEffect(() => {
@@ -127,17 +124,14 @@ export function Onboarding({ isNew }: OnboardingProps): JSX.Element {
 
   return (
     <ParodosPage>
-      {error && <Typography>{error}</Typography>}
-      {!error && isNew && <Chip label="New application" color="secondary" />}
+      {isNew && <Chip label="New application" color="secondary" />}
 
-      {!error && (
-        <ContentHeader title={`${workflowOption}`}>
-          <SupportButton title="Need help?">Lorem Ipsum</SupportButton>
-        </ContentHeader>
-      )}
+      <ContentHeader title={`${workflowOption}`}>
+        <SupportButton title="Need help?">Lorem Ipsum</SupportButton>
+      </ContentHeader>
       <Typography paragraph>You are onboarding {workflowOption}.</Typography>
-      {loading || (startWorkflowLoading && <Progress />)}
-      {formSchema && formSchema.steps.length > 0 && (
+      {startWorkflowLoading && <Progress />}
+      {formSchema.steps.length > 0 && (
         <InfoCard>
           <Typography paragraph>
             Please provide additional information related to your project.

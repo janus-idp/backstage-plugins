@@ -1,15 +1,13 @@
-import React, { useCallback, useMemo, useState, type FC } from 'react';
+import React, { useCallback, useMemo, type FC } from 'react';
 import { Content, HeaderTabs, Page } from '@backstage/core-components';
 import { useLocation } from 'react-router-dom';
 import { PageHeader } from '../PageHeader';
-import type { ProjectType, PropsFromComponent } from '../types';
+import type { PropsFromComponent } from '../types';
 import { useNavigate } from 'react-router-dom';
-import { useBackendUrl } from '../api/useBackendUrl';
-import useAsync from 'react-use/lib/useAsync';
-import * as urls from '../../urls';
-import { ErrorMessage } from '../errors/ErrorMessage';
 import { TabLabel, TabLabelProps } from './TabLabel';
 import { navigationMap, pluginRoutePrefix } from './navigationMap';
+import { useStore } from '../../stores/workflowStore/workflowStore';
+import { ErrorMessage } from '../errors/ErrorMessage';
 
 // Unfortunately backstage do not export the props type for <Content />
 type ContentProps = PropsFromComponent<typeof Content>;
@@ -25,17 +23,9 @@ export const ParodosPage: FC<ParodosPageProps> = ({ children, ...props }) => {
       ),
     [pathname],
   );
-  // TODO: this should be coming from application state with mobx, recoil or something
-  const [hasProjects, setHasProjects] = useState(true);
-  const backendUrl = useBackendUrl();
+  const hasProjects = useStore(state => state.hasProjects());
+  const error = useStore(state => state.error());
   const navigate = useNavigate();
-
-  const { error } = useAsync(async () => {
-    const response = await fetch(`${backendUrl}${urls.Projects}`);
-
-    const receivedProjects = (await response.json()) as ProjectType[];
-    setHasProjects(receivedProjects.length > 0);
-  }, [backendUrl]);
 
   const tabs = useMemo(
     () =>
@@ -76,7 +66,7 @@ export const ParodosPage: FC<ParodosPageProps> = ({ children, ...props }) => {
         tabs={tabs}
       />
       <Content {...props}>
-        {error && <ErrorMessage error={error} />}
+        {error && <ErrorMessage error={error as Error} />}
         {children}
       </Content>
     </Page>
