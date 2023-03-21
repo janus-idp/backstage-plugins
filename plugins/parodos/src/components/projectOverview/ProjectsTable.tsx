@@ -9,6 +9,7 @@ import { Project } from '../../models/project';
 export const ProjectsTable: React.FC<{ projects: Project[] }> = ({
   projects,
 }) => {
+  // TODO: additional fields tracked here: https://issues.redhat.com/browse/FLPATH-131
   const columns: TableColumn[] = [
     { title: 'Name', field: 'name' },
     { title: 'User', field: 'username' },
@@ -32,7 +33,7 @@ export const ProjectsTable: React.FC<{ projects: Project[] }> = ({
   return (
     <Table
       title="Projects"
-      options={{ search: false, paging: false }}
+      options={{ search: false, paging: true }}
       columns={columns}
       data={data}
     />

@@ -18,13 +18,17 @@ export const ParodosPage: FC<ParodosPageProps> = ({ children, ...props }) => {
   const { pathname } = useLocation();
   const selectedTab = useMemo(
     () =>
-      navigationMap.findIndex(({ routes }) =>
-        routes.find(route => pathname.includes(route)),
+      Math.max(
+        navigationMap.findIndex(({ routes }) =>
+          routes.find(route => pathname.includes(route)),
+        ),
+        0,
       ),
     [pathname],
   );
   const hasProjects = useStore(state => state.hasProjects());
   const error = useStore(state => state.error());
+
   const navigate = useNavigate();
 
   const tabs = useMemo(

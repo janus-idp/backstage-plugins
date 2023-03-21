@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   ContentHeader,
   Link,
@@ -13,7 +13,6 @@ import { ParodosPage } from '../ParodosPage';
 import { ProjectStatusType } from '../types';
 import { ProjectsTable } from './ProjectsTable';
 import { useStore } from '../../stores/workflowStore/workflowStore';
-import { Project } from '../../models/project';
 
 const projectFilterItems: { label: string; value: ProjectStatusType }[] = [
   { label: 'All Projects', value: 'all-projects' },
@@ -43,22 +42,17 @@ export const useStyles = makeStyles(theme => ({
 export const ProjectOverviewPage = (): JSX.Element => {
   const styles = useStyles();
   const [projectFilter, setProjectFilter] = React.useState('all-projects');
-  const [filteredProjects, setFilteredProjects] = React.useState<Project[]>([]);
-  const projects = useStore(state => state.projects);
+
+  const allProjects = useStore(state => state.projects);
   const loading = useStore(state => state.projectsLoading);
 
-  useEffect(() => {
-    if (!projects) {
-      setFilteredProjects([]);
-      return;
+  const filteredProjects = React.useMemo(() => {
+    if (projectFilter === 'all-projects') {
+      return allProjects;
     }
 
-    let filtered = projects;
-    if (projectFilter !== 'all-projects') {
-      filtered = projects.filter(project => project.status === projectFilter);
-    }
-    setFilteredProjects(filtered);
-  }, [projectFilter, projects]);
+    return allProjects.filter(project => project.status === projectFilter);
+  }, [allProjects, projectFilter]);
 
   const onFilterProjects = (selected: SelectedItems) => {
     setProjectFilter(
@@ -70,7 +64,7 @@ export const ProjectOverviewPage = (): JSX.Element => {
 
   if (loading) {
     content = <div>Loading...</div>;
-  } else if (projects.length > 0) {
+  } else if (allProjects.length > 0) {
     content = (
       <Grid item className={styles.table}>
         <ProjectsTable projects={filteredProjects} />
