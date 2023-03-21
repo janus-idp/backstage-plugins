@@ -9,7 +9,6 @@ import type { FormSchema } from '../types';
 import { JsonValue } from '@backstage/types';
 import {
   Step,
-  StepContent,
   StepLabel,
   Stepper,
   Button,
@@ -47,6 +46,15 @@ const useStyles = makeStyles(theme => ({
   next: {
     paddingRight: theme.spacing(4),
     paddingLeft: theme.spacing(4),
+  },
+  backButton: {
+    marginRight: theme.spacing(1),
+  },
+  buttonContainer: {
+    marginBottom: theme.spacing(2),
+  },
+  formWrapper: {
+    padding: theme.spacing(2),
   },
 }));
 
@@ -118,7 +126,7 @@ export function Form({
       {formSchema.steps.length === 1 ? (
         children
       ) : (
-        <div>
+        <div className={styles.buttonContainer}>
           <Button
             disabled={activeStep === 0}
             className={styles.previous}
@@ -145,17 +153,25 @@ export function Form({
 
   return (
     <>
-      <Stepper activeStep={activeStep} orientation="vertical">
+      <Stepper
+        activeStep={activeStep}
+        orientation="horizontal"
+        variant="elevation"
+      >
         {formSchema.steps.map((step, index) => (
           <Step key={index}>
             {hideTitle === false && (
               <StepLabel className={styles.stepLabel}>{step.title}</StepLabel>
             )}
-            <StepContent key={index}>{TheForm}</StepContent>
           </Step>
         ))}
       </Stepper>
-      {children}
+      <div className={styles.formWrapper}>
+        <>
+          {TheForm}
+          {children}
+        </>
+      </div>
     </>
   );
 }
