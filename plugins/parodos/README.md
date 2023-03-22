@@ -58,6 +58,14 @@ For local development set the `PARODOS_AUTH_KEY` environment variable to 'Basic 
 ```yaml
 proxy:
   '/parodos':
+    target: 'http://localhost:8080/api/v1'
+    changeOrigin: true
+    redirect: follow
+    cache: 'no-cache'
     headers:
-      Authorization: 'Basic dGVzdDp0ZXN0'
+      Content-Type: 'application/json'
+      accept: 'application/json'
+      Authorization: ${PARODOS_AUTH_KEY}
 ```
+
+Running `yarn workspace @janus-idp/backstage-plugin-parodos dev` from the root will start both the backend proxy server and the frontend development server.

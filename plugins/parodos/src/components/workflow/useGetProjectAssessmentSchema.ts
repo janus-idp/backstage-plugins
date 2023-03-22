@@ -14,9 +14,8 @@ interface Props {
 }
 
 const newProjectChoice: WorkFlowTaskParameter = {
-  key: 'newProject',
-  type: 'BOOLEAN',
-  optional: true,
+  type: 'boolean',
+  required: true,
   default: true,
 };
 
@@ -30,30 +29,30 @@ export function useGetProjectAssessmentSchema({
 
   const cloned = JSON.parse(JSON.stringify(definition)) as WorkflowDefinition;
 
+  cloned.works[0].parameters = cloned.works[0].parameters ?? {};
+
   if (newProject) {
-    cloned.works[0].parameters?.unshift({
-      key: 'Name',
+    cloned.works[0].parameters.Name = {
       description: 'New Project',
-      optional: false,
-      type: 'TEXT',
-    });
+      required: false,
+      format: 'text',
+      type: 'string',
+    };
 
-    cloned.works[0].parameters?.unshift(newProjectChoice);
+    cloned.works[0].parameters.newProject = { ...newProjectChoice };
   } else {
-    cloned.works[0].parameters = [];
-
-    cloned.works[0].parameters?.unshift({
-      key: 'project',
-      optional: false,
-      type: 'TEXT',
+    cloned.works[0].parameters.project = {
+      required: false,
+      type: 'string',
+      format: 'text',
       field: 'ProjectPicker',
       disabled: !hasProjects,
-    });
+    };
 
-    cloned.works[0].parameters?.unshift({
+    cloned.works[0].parameters.newProject = {
       ...newProjectChoice,
       description: 'Search for an existing project to execute a new workflow:',
-    });
+    };
   }
 
   const formSchema = jsonSchemaFromWorkflowDefinition(cloned);

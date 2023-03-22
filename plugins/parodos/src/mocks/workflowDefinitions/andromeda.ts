@@ -15,80 +15,79 @@ export const mockAndromedaWorkflowDefinition: WorkflowDefinition = {
     {
       id: 'c7ba1d55-82e0-4037-9549-26a73fe40599',
       name: 'adGroupWorkFlowTask',
-      parameters: [
-        {
-          key: 'api-server',
+      parameters: {
+        ['api-server']: {
           description: 'The api server',
-          optional: false,
-          type: 'URL',
+          required: false,
+          type: 'string',
+          format: 'url',
         },
-      ],
+      },
       workType: 'TASK',
       outputs: ['OTHER'],
     },
     {
       id: 'mock-task-1',
       name: 'mock-task-1',
-      parameters: [
-        {
-          key: 'param1',
+      parameters: {
+        param1: {
           description: 'Some text only.',
-          optional: false,
-          type: 'TEXT',
+          required: false,
+          type: 'string',
+          format: 'text',
         },
-      ],
+      },
       workType: 'TASK',
       outputs: ['OTHER'],
     },
   ],
 };
 
-export const mockWorkflowParams: WorkFlowTaskParameter[] = [
-  {
-    key: 'param1',
+export const mockWorkflowParams: Record<string, WorkFlowTaskParameter> = {
+  param1: {
     description: 'Some text only.',
-    optional: false,
-    type: 'TEXT',
+    required: false,
+    type: 'string',
+    format: 'text',
   },
-  {
-    key: 'param2',
+  param2: {
     description: 'An URL parameter',
-    optional: true,
-    type: 'URL',
+    required: true,
+    type: 'string',
+    format: 'url',
   },
-  {
-    key: 'param3',
+  param3: {
     description: 'Date parameter type.',
-    optional: false,
-    type: 'DATE',
+    required: false,
+    type: 'string',
+    format: 'date',
   },
-  {
-    key: 'param4',
+  param4: {
     description: 'Email parameter',
-    optional: true,
-    type: 'EMAIL',
+    required: true,
+    format: 'email',
+    type: 'string',
   },
-  {
-    key: 'param5',
+  param5: {
     description: 'Numeric parameter',
-    optional: false,
-    type: 'NUMBER',
+    required: false,
+    type: 'number',
   },
-  {
-    key: 'param6',
+  param6: {
     description: 'Password parameter',
-    optional: true,
-    type: 'PASSWORD',
+    required: true,
+    type: 'string',
+    format: 'password',
   },
-  {
-    // TODO: swagger is missing this type
-    key: 'param7',
-    description: 'Select parameter',
-    optional: false,
-    type: 'MOCK-SELECT',
-    options: [
-      { key: 'option1', value: 'Option 1' },
-      { key: 'option2', value: 'Option 2' },
-    ],
-  },
-];
+  // {
+  //   // TODO: not sure about this
+  //   key: 'param7',
+  //   description: 'Select parameter',
+  //   required: false,
+  //   type: 'MOCK-SELECT',
+  //   options: [
+  //     { key: 'option1', value: 'Option 1' },
+  //     { key: 'option2', value: 'Option 2' },
+  //   ],
+  // },
+};

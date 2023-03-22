@@ -12,7 +12,6 @@ export function ErrorMessage({ error }: ErrorPanelProps): JSX.Element | null {
       return;
     }
 
-    // simple error message to user
     errorApi.post(new Error('An error has occurred'));
   }, [errorApi]);
 

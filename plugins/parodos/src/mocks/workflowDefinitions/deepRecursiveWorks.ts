@@ -1,179 +1,100 @@
 import { type WorkflowDefinition } from '../../models/workflowDefinitionSchema';
 
 export const mockDeepRecursiveWorks: WorkflowDefinition = {
-  id: '5ba64c7c-5f3a-47cc-9237-ed82985f9860',
-  name: 'masterWorkFlow',
+  id: '527da27e-f461-4fac-8618-8d667c89166a',
+  name: 'subWorkFlowThree',
   type: 'INFRASTRUCTURE',
-  processingType: 'SEQUENTIAL',
+  processingType: 'PARALLEL',
   author: null,
-  createDate: '2023-03-17T15:53:08.496+00:00',
-  modifyDate: '2023-03-17T15:53:08.497+00:00',
-  parameters: [
-    {
-      key: 'workloadId',
-      description: 'The workload id',
-      optional: false,
-      type: 'TEXT',
-    },
-    {
-      key: 'projectUrl',
-      description: 'The project url',
-      optional: true,
-      type: 'URL',
-    },
-  ],
+  createDate: '2023-03-22T16:16:01.434+00:00',
+  modifyDate: '2023-03-22T16:16:01.435+00:00',
   works: [
     {
-      id: 'cf549b50-db51-44cb-8c27-cb0cf820e06e',
-      name: 'subWorkFlowThree',
-      workType: 'WORKFLOW',
-      processingType: 'PARALLEL',
-      works: [
-        {
-          id: '121eb0c7-6b38-4142-8dd4-5ef62d876d95',
-          name: 'sslCertificationWorkFlowTask',
-          parameters: [
-            {
-              key: 'domainName',
-              description: 'The domain name',
-              optional: false,
-              type: 'URL',
-            },
-            {
-              key: 'ipAddress',
-              description: 'The api address',
-              optional: false,
-              type: 'TEXT',
-            },
-          ],
-          workType: 'TASK',
-          outputs: ['HTTP2XX'],
+      id: '30897703-0d9a-45a4-97b4-66cf95c122de',
+      name: 'sslCertificationWorkFlowTask',
+      workType: 'TASK',
+      parameters: {
+        domainName: {
+          format: 'url',
+          description: 'The domain name',
+          type: 'string',
+          required: true,
         },
-        {
-          id: 'ac71fad0-1a71-452c-92ea-1c05dca66263',
-          name: 'subWorkFlowTwo',
-          workType: 'WORKFLOW',
-          processingType: 'SEQUENTIAL',
-          works: [
-            {
-              id: '5c0f8071-860a-4433-afa4-7c58bdaeb71f',
-              name: 'subWorkFlowOne',
-              parameters: [
-                {
-                  key: 'comment',
-                  description: 'The workflow comment',
-                  optional: false,
-                  type: 'TEXT',
-                },
-              ],
-              workType: 'WORKFLOW',
-              processingType: 'PARALLEL',
-              works: [
-                {
-                  id: 'dfa1da17-9bc2-4be2-9703-06bce8168bd3',
-                  name: 'adGroupsWorkFlowTask',
-                  parameters: [
-                    {
-                      key: 'adGroups',
-                      description: 'The ad groups',
-                      optional: false,
-                      type: 'TEXT',
-                    },
-                    {
-                      key: 'userId',
-                      description: 'The user id',
-                      optional: false,
-                      type: 'TEXT',
-                    },
-                  ],
-                  workType: 'TASK',
-                  outputs: ['HTTP2XX', 'EXCEPTION'],
-                },
-                {
-                  id: '088b87b3-5f81-4411-88c1-053be4aa3955',
-                  name: 'splunkMonitoringWorkFlowTask',
-                  parameters: [
-                    {
-                      key: 'clusterName',
-                      description: 'The cluster name',
-                      optional: false,
-                      type: 'TEXT',
-                    },
-                    {
-                      key: 'hostname',
-                      description: 'The hostname',
-                      optional: false,
-                      type: 'TEXT',
-                    },
-                  ],
-                  workType: 'TASK',
-                  outputs: ['OTHER'],
-                },
-              ],
-            },
-            {
-              id: 'b17a9260-3846-4b25-a661-11955de1a1ce',
-              name: 'namespaceWorkFlowTask',
-              parameters: [
-                {
-                  key: 'projectId',
-                  description: 'The project id',
-                  optional: false,
-                  type: 'NUMBER',
-                },
-              ],
-              workType: 'TASK',
-              outputs: ['HTTP2XX'],
-            },
-          ],
+        ipAddress: {
+          format: 'text',
+          description: 'The api address',
+          type: 'string',
+          required: true,
         },
-      ],
+      },
+      outputs: ['HTTP2XX'],
     },
     {
-      id: '6b38a6e5-f4d2-4f98-ac40-6bbfec16a1dc',
-      name: 'subWorkFlowFour',
+      id: '772cfa8b-da7d-49af-8f8c-0abc95fd086b',
+      name: 'subWorkFlowTwo',
       workType: 'WORKFLOW',
-      processingType: 'PARALLEL',
+      processingType: 'SEQUENTIAL',
       works: [
         {
-          id: '2f721120-7412-40ab-a2ec-bb6d915ed7ea',
-          name: 'loadBalancerWorkFlowTask',
-          parameters: [
+          id: '8c5659e6-6776-427e-bf1e-daede1f764dc',
+          name: 'subWorkFlowOne',
+          workType: 'WORKFLOW',
+          processingType: 'PARALLEL',
+          works: [
             {
-              key: 'hostname',
-              description: 'The hostname',
-              optional: false,
-              type: 'URL',
+              id: '5d596e07-e245-46e6-98fa-1a98143c68e0',
+              name: 'adGroupsWorkFlowTask',
+              workType: 'TASK',
+              parameters: {
+                adGroups: {
+                  format: 'text',
+                  description: 'The ad groups',
+                  type: 'string',
+                  required: true,
+                },
+                userId: {
+                  format: 'text',
+                  description: 'The user id',
+                  type: 'string',
+                  required: true,
+                },
+              },
+              outputs: ['HTTP2XX', 'EXCEPTION'],
             },
             {
-              key: 'appId',
-              description: 'The app id',
-              optional: false,
-              type: 'TEXT',
+              id: '397b452a-9833-455a-a22d-6bc985b8cd52',
+              name: 'splunkMonitoringWorkFlowTask',
+              workType: 'TASK',
+              parameters: {
+                hostname: {
+                  format: 'text',
+                  description: 'The hostname',
+                  type: 'string',
+                  required: true,
+                },
+                clusterName: {
+                  format: 'text',
+                  description: 'The cluster name',
+                  type: 'string',
+                  required: true,
+                },
+              },
+              outputs: ['OTHER'],
             },
           ],
-          workType: 'TASK',
-          outputs: ['HTTP2XX'],
         },
         {
-          id: '4743c53d-bbdc-4c5d-9141-f50033127d5d',
-          name: 'singleSignOnWorkFlowTask',
-          parameters: [
-            {
-              key: 'userId',
-              description: 'The user id',
-              optional: false,
-              type: 'TEXT',
-            },
-            {
-              key: 'password',
-              description: 'The password',
-              optional: false,
-              type: 'PASSWORD',
-            },
-          ],
+          id: '3616aeda-1daf-4cce-bccc-f0857bff8482',
+          name: 'namespaceWorkFlowTask',
           workType: 'TASK',
-          outputs: ['OTHER'],
+          parameters: {
+            projectId: {
+              description: 'The project id',
+              type: 'number',
+              required: true,
+            },
+          },
+          outputs: ['HTTP2XX'],
         },
       ],
     },

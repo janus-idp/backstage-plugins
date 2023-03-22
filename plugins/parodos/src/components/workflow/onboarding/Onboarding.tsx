@@ -73,18 +73,18 @@ export function Onboarding({ isNew }: OnboardingProps): JSX.Element {
       const payload = {
         projectId,
         workFlowName: workflow.name,
-        workFlowTasks: workflow.works.map(work => {
+        // TODO: top level parameters
+        // arguments: Object.entries(workflow.parameters ?? {}).map(([key]) => {
+
+        // }),
+        works: workflow.works.map(work => {
           return {
-            name: work.name,
-            arguments: work.parameters?.map(param => {
-              const value = lodashGet(
-                formData,
-                `${work.name}.${param.key}`,
-                null,
-              );
+            workName: work.name,
+            arguments: Object.entries(work.parameters ?? {}).map(([key]) => {
+              const value = lodashGet(formData, `${work.name}.${key}`, null);
 
               return {
-                key: param.key,
+                key: key,
                 value: value,
               };
             }),
