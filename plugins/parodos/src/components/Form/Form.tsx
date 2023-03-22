@@ -16,6 +16,7 @@ import {
   makeStyles,
 } from '@material-ui/core';
 import { FluidObjectFieldTemplate } from '../layouts/FluidObjectFieldTemplate';
+import { OutlinedBaseInputTemplate } from './widgets/TextAreaWidget';
 
 type FormProps = Pick<
   JsonFormProps,
@@ -104,6 +105,7 @@ export function Form({
       disabled={disabled}
       templates={{
         ObjectFieldTemplate: FluidObjectFieldTemplate,
+        BaseInputTemplate: OutlinedBaseInputTemplate as any,
       }}
       uiSchema={{
         ...currentStep.uiSchema,

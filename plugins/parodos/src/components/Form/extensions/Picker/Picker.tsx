@@ -1,11 +1,7 @@
+import { FormControl, TextField } from '@material-ui/core';
+import { Autocomplete, UseAutocompleteProps } from '@material-ui/lab';
 import React, { useCallback } from 'react';
 import { type PickerFieldExtensionProps } from './types';
-import {
-  Autocomplete,
-  FormControl,
-  TextField,
-  type UseAutocompleteProps,
-} from '@mui/material';
 
 type AutoCompleteProps<T> = UseAutocompleteProps<T, boolean, boolean, boolean>;
 
@@ -51,6 +47,7 @@ export function PickerField<T>(props: PickerFieldExtensionProps<T>) {
             FormHelperTextProps={{ style: { marginLeft: 0 } }}
             required={required}
             InputProps={params.InputProps}
+            variant="outlined"
           />
         )}
       />

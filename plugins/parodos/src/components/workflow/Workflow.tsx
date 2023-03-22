@@ -36,7 +36,7 @@ const useStyles = makeStyles(theme => ({
     marginTop: theme.spacing(2),
     // TODO: these selectors are brittle
     // we could do something like ["ui:xs"]: 12
-    '& .MuiGrid-grid-xs-12:nth-child(1)': {
+    '& div[class*="MuiGrid-grid-xs-12"]:nth-child(1)': {
       maxWidth: '100%',
       flexBasis: '100%',
       paddingTop: 0,
@@ -48,11 +48,6 @@ const useStyles = makeStyles(theme => ({
         flexDirection: 'row',
       },
     },
-    '& .field-boolean p': {
-      marginLeft: 0,
-      marginTop: theme.spacing(1),
-      marginBottom: theme.spacing(1),
-    },
   },
 }));
 
@@ -60,7 +55,7 @@ interface ProjectsPayload {
   onboardingAssessmentTask: {
     Name?: string;
     newProject: boolean;
-    Project?: Project;
+    project?: Project;
   };
 }
 
@@ -176,7 +171,7 @@ export function Workflow(): JSX.Element {
         return;
       }
 
-      const { newProject: nextIsNewProject, Project } =
+      const { newProject: nextIsNewProject, project } =
         e.formData.onboardingAssessmentTask;
 
       if (nextIsNewProject !== isNewProject) {
@@ -184,8 +179,8 @@ export function Workflow(): JSX.Element {
         setIsNewProject(nextIsNewProject);
       }
 
-      if (nextIsNewProject === false && isProject(Project)) {
-        await createWorkflow({ workflowProject: Project });
+      if (nextIsNewProject === false && isProject(project)) {
+        await createWorkflow({ workflowProject: project });
       }
     },
     [createWorkflow, isNewProject],
@@ -232,7 +227,6 @@ export function Workflow(): JSX.Element {
                 ) : (
                   <></>
                 )}
-                {!isNewProject && WorkflowOptionsList}
               </Form>
             </Grid>
             <Grid item xs={12}>

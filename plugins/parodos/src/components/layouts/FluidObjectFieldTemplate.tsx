@@ -1,5 +1,4 @@
 import React from 'react';
-import Grid from '@mui/material/Grid';
 import {
   FormContextType,
   ObjectFieldTemplateProps,
@@ -9,7 +8,7 @@ import {
   getUiOptions,
   titleId,
 } from '@rjsf/utils';
-import { Box, makeStyles, Typography } from '@material-ui/core';
+import { Box, Grid, makeStyles, Typography } from '@material-ui/core';
 import { CSSProperties } from '@material-ui/core/styles/withStyles';
 
 const useStyles = makeStyles(theme => ({
@@ -86,10 +85,8 @@ export function FluidObjectFieldTemplate<
 
             if (container) {
               return (
-                <Grid container className={styles.container}>
-                  <Grid item xs={12} className={styles.item}>
-                    {element.content}
-                  </Grid>
+                <Grid item xs={12} className={styles.item}>
+                  {element.content}
                 </Grid>
               );
             }
