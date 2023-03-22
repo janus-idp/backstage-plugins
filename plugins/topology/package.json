@@ -42,8 +42,6 @@
     "@patternfly/react-topology": "^4.91.9",
     "classnames": "2.x",
     "lodash": "^4.17.19",
-    "mobx": "^6.0.0",
-    "mobx-react": "^7.0.0",
     "react-router-dom": "^6.3.0",
     "react-use": "^17.2.4"
   },
