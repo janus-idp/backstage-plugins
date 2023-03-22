@@ -15,7 +15,7 @@ export const createWorkflowSlice: StateCreator<
   WorkflowSlice
 > = (set, get) => ({
   workflowDefinitions: [],
-  workflowLoading: false,
+  workflowLoading: true,
   workflowError: undefined,
   getWorkDefinitionBy(filterBy, value) {
     const workflowDefinition = get().workflowDefinitions.find(

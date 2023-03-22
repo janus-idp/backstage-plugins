@@ -16,10 +16,11 @@ import {
   makeStyles,
 } from '@material-ui/core';
 import { FluidObjectFieldTemplate } from '../layouts/FluidObjectFieldTemplate';
+import { OutlinedBaseInputTemplate } from './widgets/TextAreaWidget';
 
 type FormProps = Pick<
   JsonFormProps,
-  'disabled' | 'onChange' | 'className' | 'transformErrors'
+  'disabled' | 'onChange' | 'className' | 'transformErrors' | 'fields'
 > &
   Required<Pick<JsonFormProps, 'onSubmit'>> & {
     formSchema: FormSchema;
@@ -59,6 +60,7 @@ export function Form({
   transformErrors,
   hideTitle = false,
   children,
+  ...props
 }: FormProps): JSX.Element {
   const [activeStep, setActiveStep] = useState(0);
   const [formState, setFormState] = useState<Record<string, JsonValue>>({});
@@ -72,10 +74,10 @@ export function Form({
 
   const handleChange = useCallback(
     (e: IChangeEvent) => {
+      onChange(e);
       setFormState(current => ({ ...current, ...e.formData }));
-      onChange({ ...e, formData: formState });
     },
-    [formState, onChange],
+    [onChange],
   );
 
   const handleNext = async (data: IChangeEvent, e: React.FormEvent<any>) => {
@@ -103,6 +105,7 @@ export function Form({
       disabled={disabled}
       templates={{
         ObjectFieldTemplate: FluidObjectFieldTemplate,
+        BaseInputTemplate: OutlinedBaseInputTemplate as any,
       }}
       uiSchema={{
         ...currentStep.uiSchema,
@@ -110,6 +113,7 @@ export function Form({
         ['ui:show-title']: hideTitle === false,
       }}
       transformErrors={transformErrors}
+      {...props}
     >
       {formSchema.steps.length === 1 ? (
         children

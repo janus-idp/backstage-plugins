@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   ContentHeader,
   InfoCard,
@@ -26,6 +26,8 @@ import {
 } from './WorkflowOptionsList';
 import { assert } from 'assert-ts';
 import { useStore } from '../../stores/workflowStore/workflowStore';
+import { ProjectPicker } from '../Form/extensions/ProjectPicker/ProjectPicker';
+import { taskDisplayName } from '../../utils/string';
 
 const useStyles = makeStyles(theme => ({
   fullHeight: {
@@ -33,21 +35,36 @@ const useStyles = makeStyles(theme => ({
   },
   form: {
     marginTop: theme.spacing(2),
+    '& .field-boolean > div > label': {
+      display: 'inline-block',
+      marginBottom: theme.spacing(2),
+      '& + div': {
+        flexDirection: 'row',
+      },
+    },
   },
 }));
 
 interface ProjectsPayload {
   onboardingAssessmentTask: {
-    Name: string;
+    Name?: string;
+    newProject: boolean;
+    project?: Project;
   };
+}
+
+function isProject(input?: string | Project): input is Project {
+  return typeof input !== 'string' && typeof input?.id === 'string';
 }
 
 export function Workflow(): JSX.Element {
   const projectsUrl = useStore(state => state.getApiUrl(urls.Projects));
   const workflowsUrl = useStore(state => state.getApiUrl(urls.Workflows));
   const addProject = useStore(state => state.addProject);
+  const hasProjects = useStore(state => state.hasProjects());
+  const [isNewProject, setIsNewProject] = useState(true);
 
-  const [project, setProject] = useState<Project>();
+  const [project, setProject] = useState<Project | undefined>();
   const [assessmentStatus, setAssessmentStatus] =
     useState<AssessmentStatusType>('none');
   const [workflowOptions, setWorkflowOptions] = useState<
@@ -55,7 +72,51 @@ export function Workflow(): JSX.Element {
   >([]);
   const styles = useStyles();
 
-  const formSchema = useGetProjectAssessmentSchema();
+  const formSchema = useGetProjectAssessmentSchema({
+    hasProjects,
+    newProject: isNewProject,
+  });
+
+  const [{ error: createWorkflowError }, createWorkflow] = useAsyncFn(
+    async ({ workflowProject }: { workflowProject: Project }) => {
+      const workFlowResponse = await fetch(workflowsUrl, {
+        method: 'POST',
+        body: JSON.stringify({
+          projectId: workflowProject.id,
+          workFlowName: ASSESSMENT_WORKFLOW,
+          works: [],
+        }),
+      });
+
+      if (!workFlowResponse.ok) {
+        throw new Error(workFlowResponse.statusText);
+      }
+
+      const workflow = workflowSchema.parse(await workFlowResponse.json());
+
+      const options = displayableWorkflowOptions.flatMap(option => {
+        const items = workflow.workFlowOptions[option];
+
+        if (items.length === 0) {
+          return items;
+        }
+
+        const optionType = taskDisplayName(option);
+
+        return items.map(item => ({
+          ...item,
+          type: optionType,
+        }));
+      }) as WorkflowOptionsListItem[];
+
+      setProject(workflowProject);
+
+      setAssessmentStatus('complete');
+
+      setWorkflowOptions(options);
+    },
+    [workflowsUrl],
+  );
 
   const [{ error: startAssessmentError }, startAssessment] = useAsyncFn(
     async ({ formData }: IChangeEvent<ProjectsPayload>) => {
@@ -78,62 +139,50 @@ export function Workflow(): JSX.Element {
 
       setProject(newProject);
 
-      const workFlowResponse = await fetch(workflowsUrl, {
-        method: 'POST',
-        body: JSON.stringify({
-          projectId: newProject.id,
-          workFlowName: ASSESSMENT_WORKFLOW,
-          works: [],
-        }),
-      });
-
-      if (!workFlowResponse.ok) {
-        throw new Error(workFlowResponse.statusText);
-      }
-
-      const workflow = workflowSchema.parse(await workFlowResponse.json());
-
-      const options = displayableWorkflowOptions.flatMap(option => {
-        const items = workflow.workFlowOptions[option];
-
-        if (items.length === 0) {
-          return items;
-        }
-
-        const optionType = option
-          .replace(/([a-z])([A-Z])/g, '$1 $2')
-          .split(' ')[0]
-          .toUpperCase();
-
-        return items.map(item => ({
-          ...item,
-          type: optionType,
-        }));
-      }) as WorkflowOptionsListItem[];
-
-      setWorkflowOptions(options);
+      await createWorkflow({ workflowProject: newProject });
 
       addProject(newProject);
-
-      setAssessmentStatus('complete');
     },
-    [addProject, projectsUrl, workflowsUrl],
+    [addProject, createWorkflow, projectsUrl],
   );
 
   const errorApi = useApi(errorApiRef);
 
   useEffect(() => {
-    if (startAssessmentError) {
+    if (startAssessmentError || createWorkflowError) {
       // eslint-disable-next-line no-console
-      console.error(startAssessmentError);
+      console.error(startAssessmentError ?? createWorkflowError);
       errorApi.post(new Error(`Creating assessment failed`));
     }
-  }, [errorApi, startAssessmentError]);
+  }, [createWorkflowError, errorApi, startAssessmentError]);
+
+  const changeHandler = useCallback(
+    async (e: IChangeEvent<ProjectsPayload>) => {
+      if (!e.formData?.onboardingAssessmentTask) {
+        return;
+      }
+
+      const { newProject: nextIsNewProject, project: selectedProject } =
+        e.formData.onboardingAssessmentTask;
+
+      if (nextIsNewProject !== isNewProject) {
+        setProject(undefined);
+        setIsNewProject(nextIsNewProject);
+      }
+
+      if (nextIsNewProject === false && isProject(selectedProject)) {
+        await createWorkflow({ workflowProject: selectedProject });
+      }
+    },
+    [createWorkflow, isNewProject],
+  );
 
   const inProgress = assessmentStatus === 'inprogress';
   const complete = assessmentStatus === 'complete';
 
   const disableForm = inProgress || complete;
+
+  const displayOptions = assessmentStatus === 'complete' && project;
 
   return (
     <ParodosPage stretch>
@@ -152,22 +201,29 @@ export function Workflow(): JSX.Element {
                 formSchema={formSchema}
                 onSubmit={startAssessment}
                 disabled={disableForm}
+                onChange={changeHandler}
                 hideTitle
+                // TODO: fix typing with fields
+                fields={{ ProjectPicker: ProjectPicker as any }}
               >
-                <Button
-                  // We cannot submit button when in progress
-                  type="submit"
-                  disabled={disableForm ?? inProgress}
-                  variant="contained"
-                  color="primary"
-                >
-                  {inProgress ? 'IN PROGRESS' : 'START ASSESSMENT'}
-                </Button>
+                {isNewProject ? (
+                  <Button
+                    type="submit"
+                    disabled={disableForm ?? inProgress}
+                    variant="contained"
+                    color="primary"
+                  >
+                    {inProgress ? 'IN PROGRESS' : 'START ASSESSMENT'}
+                  </Button>
+                ) : (
+                  <></>
+                )}
               </Form>
             </Grid>
             <Grid item xs={12}>
-              {assessmentStatus === 'complete' && project && (
+              {displayOptions && (
                 <WorkflowOptionsList
+                  isNew={isNewProject}
                   project={project}
                   workflowOptions={workflowOptions}
                 />

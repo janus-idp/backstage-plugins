@@ -1,5 +1,4 @@
 import React from 'react';
-import Grid from '@mui/material/Grid';
 import {
   FormContextType,
   ObjectFieldTemplateProps,
@@ -9,8 +8,9 @@ import {
   getUiOptions,
   titleId,
 } from '@rjsf/utils';
-import { Box, makeStyles, Typography } from '@material-ui/core';
+import { Box, Grid, makeStyles, Typography } from '@material-ui/core';
 import { CSSProperties } from '@material-ui/core/styles/withStyles';
+import { getGridSize } from './getGridsize';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -22,6 +22,9 @@ const useStyles = makeStyles(theme => ({
     '& .field-array  .MuiPaper-root': {
       boxShadow: 'none',
     },
+  },
+  item2: {
+    border: '10px solid red',
   },
   title: {
     fontSize: '1rem',
@@ -56,9 +59,10 @@ export function FluidObjectFieldTemplate<
     ButtonTemplates: { AddButton },
   } = registry.templates;
 
+  const currentUiSchema = uiSchema?.[properties[0].content.key as string];
+
   const isContainer =
-    properties.length === 1 &&
-    uiSchema?.[properties[0].content.key as string]['ui:hidden'] === true;
+    properties.length === 1 && currentUiSchema?.['ui:hidden'] === true;
 
   // TODO: reinstate when there is a task description
   const showTitle = false; // uiSchema?.['ui:show-title'];
@@ -86,10 +90,8 @@ export function FluidObjectFieldTemplate<
 
             if (container) {
               return (
-                <Grid container className={styles.container}>
-                  <Grid item xs={12} className={styles.item}>
-                    {element.content}
-                  </Grid>
+                <Grid item xs={12} className={styles.item}>
+                  {element.content}
                 </Grid>
               );
             }
@@ -99,11 +101,9 @@ export function FluidObjectFieldTemplate<
             ) : (
               <Grid
                 item
-                xs={12}
-                md={6}
-                lg={4}
                 key={index}
                 className={styles.item}
+                {...getGridSize(uiSchema?.[element.content?.key as string])}
               >
                 {element.content}
               </Grid>

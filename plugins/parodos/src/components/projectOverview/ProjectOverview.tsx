@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type ReactElement, useMemo, useState } from 'react';
 import {
   ContentHeader,
   Link,
@@ -41,12 +41,12 @@ export const useStyles = makeStyles(theme => ({
 
 export const ProjectOverviewPage = (): JSX.Element => {
   const styles = useStyles();
-  const [projectFilter, setProjectFilter] = React.useState('all-projects');
+  const [projectFilter, setProjectFilter] = useState('all-projects');
 
   const allProjects = useStore(state => state.projects);
   const loading = useStore(state => state.projectsLoading);
 
-  const filteredProjects = React.useMemo(() => {
+  const filteredProjects = useMemo(() => {
     if (projectFilter === 'all-projects') {
       return allProjects;
     }
@@ -55,12 +55,10 @@ export const ProjectOverviewPage = (): JSX.Element => {
   }, [allProjects, projectFilter]);
 
   const onFilterProjects = (selected: SelectedItems) => {
-    setProjectFilter(
-      selected as ProjectStatusType /* we have single-selection here */,
-    );
+    setProjectFilter(selected as ProjectStatusType);
   };
 
-  let content: React.ReactElement | null = null;
+  let content: ReactElement | null = null;
 
   if (loading) {
     content = <div>Loading...</div>;
