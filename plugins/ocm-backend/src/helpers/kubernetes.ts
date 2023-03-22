@@ -60,6 +60,13 @@ const kubeApiResponseHandler = <T extends Object>(
       return r.body as T;
     })
     .catch(r => {
+      if (!r.body) {
+        throw Object.assign(new Error(r.message), {
+          // If there is no body, there is not status code, default to 500
+          statusCode: 500,
+          name: r.message,
+        });
+      }
       throw Object.assign(new Error(r.body.reason), {
         statusCode: r.body.code,
         name: r.body.reason,

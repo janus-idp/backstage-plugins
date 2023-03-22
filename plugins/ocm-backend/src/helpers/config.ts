@@ -5,6 +5,16 @@ const KUBERNETES_PLUGIN_CONFIG = 'kubernetes.clusterLocatorMethods';
 const OCM_PREFIX = 'catalog.providers.ocm';
 const KUBERNETES_PLUGIN_KEY = 'kubernetesPluginRef';
 
+const isValidUrl = (url: string): boolean => {
+  try {
+    // eslint-disable-next-line no-new
+    new URL(url);
+  } catch (error) {
+    return false;
+  }
+  return true;
+};
+
 export const deferToKubernetesPlugin = (config: Config): boolean => {
   if (config.has(KUBERNETES_PLUGIN_KEY)) {
     return true;
@@ -61,9 +71,14 @@ export const getHubClusterFromConfig = (
     ? getHubClusterFromKubernetesConfig(id, config, globalConfig)
     : getHubClusterFromOcmConfig(id, config);
 
+  const url = config.getString('url');
+  if (!isValidUrl(url)) {
+    throw new Error(`"${url}" is not a valid url`);
+  }
+
   return {
     id,
-    url: hub.getString('url'),
+    url,
     hubResourceName: hub.getString('name'),
     serviceAccountToken: hub.getOptionalString('serviceAccountToken'),
     skipTLSVerify: hub.getOptionalBoolean('skipTLSVerify') || false,
