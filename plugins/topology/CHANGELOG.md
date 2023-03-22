@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-topology [1.2.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.2.2...@janus-idp/backstage-plugin-topology@1.2.3) (2023-03-22)
+
+
+### Bug Fixes
+
+* **topology:** removed mobx and mobx-react from direct dependency and use one from @patternfly/react-topology ([#188](https://github.com/janus-idp/backstage-plugins/issues/188)) ([fe6f935](https://github.com/janus-idp/backstage-plugins/commit/fe6f9352789f3d243f5da1d7e3469298321fd5d4))
+
 ## @janus-idp/backstage-plugin-topology [1.2.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.2.1...@janus-idp/backstage-plugin-topology@1.2.2) (2023-03-21)
 
 
