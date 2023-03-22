@@ -73,5 +73,11 @@ export function useGetProjectAssessmentSchema({
     );
   }
 
+  set(
+    formSchema,
+    `steps[0].uiSchema.onboardingAssessmentTask.newProject.['ui:xs']`,
+    12,
+  );
+
   return formSchema;
 }

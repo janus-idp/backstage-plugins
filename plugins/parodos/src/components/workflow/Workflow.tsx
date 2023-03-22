@@ -27,6 +27,7 @@ import {
 import { assert } from 'assert-ts';
 import { useStore } from '../../stores/workflowStore/workflowStore';
 import { ProjectPicker } from '../Form/extensions/ProjectPicker/ProjectPicker';
+import { taskDisplayName } from '../../utils/string';
 
 const useStyles = makeStyles(theme => ({
   fullHeight: {
@@ -34,13 +35,6 @@ const useStyles = makeStyles(theme => ({
   },
   form: {
     marginTop: theme.spacing(2),
-    // TODO: these selectors are brittle
-    // we could do something like ["ui:xs"]: 12
-    '& div[class*="MuiGrid-grid-xs-12"]:nth-child(1)': {
-      maxWidth: '100%',
-      flexBasis: '100%',
-      paddingTop: 0,
-    },
     '& .field-boolean > div > label': {
       display: 'inline-block',
       marginBottom: theme.spacing(2),
@@ -107,10 +101,7 @@ export function Workflow(): JSX.Element {
           return items;
         }
 
-        const optionType = option
-          .replace(/([a-z])([A-Z])/g, '$1 $2')
-          .split(' ')[0]
-          .toUpperCase();
+        const optionType = taskDisplayName(option);
 
         return items.map(item => ({
           ...item,
