@@ -171,7 +171,7 @@ export function Workflow(): JSX.Element {
         return;
       }
 
-      const { newProject: nextIsNewProject, project } =
+      const { newProject: nextIsNewProject, project: selectedProject } =
         e.formData.onboardingAssessmentTask;
 
       if (nextIsNewProject !== isNewProject) {
@@ -179,8 +179,8 @@ export function Workflow(): JSX.Element {
         setIsNewProject(nextIsNewProject);
       }
 
-      if (nextIsNewProject === false && isProject(project)) {
-        await createWorkflow({ workflowProject: project });
+      if (nextIsNewProject === false && isProject(selectedProject)) {
+        await createWorkflow({ workflowProject: selectedProject });
       }
     },
     [createWorkflow, isNewProject],
