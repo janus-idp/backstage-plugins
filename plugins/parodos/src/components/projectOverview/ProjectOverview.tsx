@@ -55,7 +55,9 @@ export const ProjectOverviewPage = (): JSX.Element => {
   }, [allProjects, projectFilter]);
 
   const onFilterProjects = (selected: SelectedItems) => {
-    setProjectFilter(selected as ProjectStatusType);
+    setProjectFilter(
+      selected as ProjectStatusType
+    );
   };
 
   let content: ReactElement | null = null;
