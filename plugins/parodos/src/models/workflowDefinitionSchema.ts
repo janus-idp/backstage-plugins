@@ -85,6 +85,4 @@ export type WorkFlowTaskParameter = z.infer<
   typeof workFlowTaskParameterTypeSchema
 >;
 
-export type WorkFlowTaskParameterType = WorkFlowTaskParameter['type'];
-
 export type ParameterFormat = WorkFlowTaskParameter['format'];

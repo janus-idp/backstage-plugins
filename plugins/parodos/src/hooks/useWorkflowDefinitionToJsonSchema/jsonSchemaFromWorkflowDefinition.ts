@@ -161,7 +161,7 @@ function transformWorkToStep(work: WorkType): Step {
 
       set(schema, nextSchemaKey, childStep.schema);
 
-      set(uiSchema, `${key}.works.['ui:hidden']`, true);
+      // set(uiSchema, `${key}.works.['ui:hidden']`, true);
       set(uiSchema, nextUiSchemaKey, childStep.uiSchema);
     }
   }
@@ -192,6 +192,8 @@ export function jsonSchemaFromWorkflowDefinition(
 
     result.steps.push(step);
   }
+
+  console.log(result)
 
   return result;
 }

@@ -87,7 +87,7 @@ export function FluidObjectFieldTemplate<
 
             if (container) {
               return (
-                <Grid item xs={12} className={styles.item}>
+                <Grid item xs={12} className={styles.item} key={index}>
                   {element.content}
                 </Grid>
               );
