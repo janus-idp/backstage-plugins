@@ -1,6 +1,4 @@
-import { WorkflowDefinition } from '../../models/workflowDefinitionSchema';
-
-export const mockRecursiveWorksWorkflowDefinition: WorkflowDefinition = {
+export const mockRecursiveWorksWorkflowDefinition = {
   id: 'ea22c6ed-b7d4-48bf-98d2-f7c1c78643d8',
   name: 'subWorkFlowTwo',
   type: 'INFRASTRUCTURE',
@@ -22,13 +20,13 @@ export const mockRecursiveWorksWorkflowDefinition: WorkflowDefinition = {
           parameters: {
             adGroups: {
               description: 'The ad groups',
-              required: false,
+              required: 'false',
               type: 'string',
               format: 'text',
             },
             userId: {
               description: 'The user id',
-              required: false,
+              required: 'false',
               type: 'string',
               format: 'text',
             },
@@ -42,13 +40,13 @@ export const mockRecursiveWorksWorkflowDefinition: WorkflowDefinition = {
           parameters: {
             clusterName: {
               description: 'The cluster name',
-              required: false,
+              required: 'false',
               type: 'string',
               format: 'text',
             },
             hostname: {
               description: 'The hostname',
-              required: false,
+              required: 'false',
               type: 'string',
               format: 'text',
             },
@@ -61,7 +59,7 @@ export const mockRecursiveWorksWorkflowDefinition: WorkflowDefinition = {
           type: 'string',
           format: 'text',
           description: 'The workflow comment',
-          required: false,
+          required: 'false',
         },
       },
     },
@@ -72,7 +70,7 @@ export const mockRecursiveWorksWorkflowDefinition: WorkflowDefinition = {
       parameters: {
         projectId: {
           description: 'The project id',
-          required: false,
+          required: 'false',
           type: 'number',
         },
       },

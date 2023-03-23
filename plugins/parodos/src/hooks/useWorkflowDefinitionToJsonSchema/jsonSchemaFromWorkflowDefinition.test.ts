@@ -1,13 +1,16 @@
 import { mockRecursiveWorksWorkflowDefinition } from '../../mocks/workflowDefinitions/recursiveWorks';
 import { jsonSchemaFromWorkflowDefinition } from './jsonSchemaFromWorkflowDefinition';
 import get from 'lodash.get';
-import { WorkType } from '../../models/workflowDefinitionSchema';
+import {
+  WorkflowDefinition,
+  WorkType,
+} from '../../models/workflowDefinitionSchema';
 import { mockDeepRecursiveWorks } from '../../mocks/workflowDefinitions/deepRecursiveWorks';
 
 describe('jsonSchemaFromWorkflowDefinition', () => {
   it('transforms a workflow definition with recursive works', () => {
     const result = jsonSchemaFromWorkflowDefinition(
-      mockRecursiveWorksWorkflowDefinition,
+      mockRecursiveWorksWorkflowDefinition as unknown as WorkflowDefinition,
     );
 
     expect(result.steps.length).toBeGreaterThan(0);
