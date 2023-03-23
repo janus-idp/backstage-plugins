@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   AssessmentIcon,
-  DeployIcon,
   NotificationIcon,
   ProjectsIcon,
   TrainingIcon,
@@ -18,7 +17,6 @@ export const navigationMap = [
     icon: <AssessmentIcon />,
   },
 
-  { label: 'Deploy', routes: ['/Deploy'], icon: <DeployIcon /> },
   {
     label: 'Notification',
     routes: ['/notification'],
