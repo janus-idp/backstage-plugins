@@ -165,13 +165,15 @@ export function Form({
         orientation="horizontal"
         className={styles.stepper}
       >
-        {formSchema.steps.filter(step => typeof step.parent === 'undefined').map((step, index) => (
-          <Step key={index}>
-            {hideTitle === false && (
-              <StepLabel className={styles.stepLabel}>{step.title}</StepLabel>
-            )}
-          </Step>
-        ))}
+        {formSchema.steps
+          .filter(step => typeof step.parent === 'undefined')
+          .map((step, index) => (
+            <Step key={index}>
+              {hideTitle === false && (
+                <StepLabel className={styles.stepLabel}>{step.title}</StepLabel>
+              )}
+            </Step>
+          ))}
       </Stepper>
       <div className={styles.formWrapper}>
         <>

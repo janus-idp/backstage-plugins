@@ -156,7 +156,7 @@ function transformWorkToStep(
 
     const childWorks = work.works ?? [];
 
-    for (const childWork of childWorks) {
+    for (const [index, childWork] of childWorks.entries()) {
       const children: Step[] = [];
       const childStep = transformWorkToStep(childWork, children, depth + 1);
 
@@ -164,16 +164,15 @@ function transformWorkToStep(
 
       for (const child of children) {
         child.parent = childStep;
-        acc.push(child);
       }
 
-      // const nextSchemaKey = `properties.${key}.properties.works.items[${index}]`;
-      // const nextUiSchemaKey = `${key}.works.items[${index}]`;
+      const nextSchemaKey = `properties.${key}.properties.works.items[${index}]`;
+      const nextUiSchemaKey = `${key}.works.items[${index}]`;
 
-      // set(schema, nextSchemaKey, childStep.schema);
+      set(schema, nextSchemaKey, childStep.schema);
 
-      // set(uiSchema, `${key}.works.['ui:hidden']`, true);
-      // set(uiSchema, nextUiSchemaKey, childStep.uiSchema);
+      set(uiSchema, `${key}.works.['ui:hidden']`, true);
+      set(uiSchema, nextUiSchemaKey, childStep.uiSchema);
     }
   }
 
@@ -204,7 +203,7 @@ export function jsonSchemaFromWorkflowDefinition(
 
     result.steps.push(step);
 
-    for(const child of children) {
+    for (const child of children) {
       child.parent = step;
       result.steps.push(child);
     }
