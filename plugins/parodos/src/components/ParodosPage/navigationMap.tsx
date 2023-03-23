@@ -3,7 +3,6 @@ import {
   AssessmentIcon,
   NotificationIcon,
   ProjectsIcon,
-  TrainingIcon,
   MetricsIcon,
 } from '../icons';
 
@@ -22,6 +21,5 @@ export const navigationMap = [
     routes: ['/notification'],
     icon: <NotificationIcon />,
   },
-  { label: 'Training', routes: ['/training'], icon: <TrainingIcon /> },
   { label: 'Metrics', routes: ['/metrics'], icon: <MetricsIcon /> },
 ];
