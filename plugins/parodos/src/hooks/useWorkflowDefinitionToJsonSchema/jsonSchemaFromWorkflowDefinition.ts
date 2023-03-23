@@ -209,7 +209,5 @@ export function jsonSchemaFromWorkflowDefinition(
     }
   }
 
-  console.log(result);
-
   return result;
 }

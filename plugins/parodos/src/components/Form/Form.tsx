@@ -121,7 +121,6 @@ export function Form({
         BaseInputTemplate: OutlinedBaseInputTemplate as any,
         ArrayFieldTemplate: ArrayFieldTemplate,
       }}
-      noValidate
       uiSchema={{
         ...currentStep.uiSchema,
         ['ui:title']: title,
