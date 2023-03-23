@@ -5,8 +5,6 @@ import { type PickerFieldExtensionProps } from './types';
 
 type AutoCompleteProps<T> = UseAutocompleteProps<T, boolean, boolean, boolean>;
 
-type AutoCompleteProps<T> = UseAutocompleteProps<T, boolean, boolean, boolean>;
-
 export function PickerField<T>(props: PickerFieldExtensionProps<T>) {
   const {
     onChange,

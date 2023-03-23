@@ -58,8 +58,8 @@ const useStyles = makeStyles(theme => ({
   },
   stepper: {
     margin: 0,
-    paddingLeft: theme.spacing(1)
-  }
+    paddingLeft: theme.spacing(1),
+  },
 }));
 
 export function Form({
