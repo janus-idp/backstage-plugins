@@ -1,0 +1,1 @@
+export { ArtifactoryDashboardPage } from './ArtifactoryDashboardPage';
