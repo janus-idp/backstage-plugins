@@ -73,10 +73,14 @@ export function Onboarding({ isNew }: OnboardingProps): JSX.Element {
       const payload = {
         projectId,
         workFlowName: workflow.name,
-        // TODO: top level parameters
-        // arguments: Object.entries(workflow.parameters ?? {}).map(([key]) => {
+        arguments: Object.entries(workflow.parameters ?? {}).map(([key]) => {
+          const value = lodashGet(formData, `${workflow.name}.${key}`, null);
 
-        // }),
+          return {
+            key,
+            value,
+          };
+        }),
         works: workflow.works.map(work => {
           return {
             workName: work.name,
@@ -84,8 +88,8 @@ export function Onboarding({ isNew }: OnboardingProps): JSX.Element {
               const value = lodashGet(formData, `${work.name}.${key}`, null);
 
               return {
-                key: key,
-                value: value,
+                key,
+                value,
               };
             }),
           };

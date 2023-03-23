@@ -5,4 +5,5 @@ jest.mock('@material-ui/core/styles', () => ({
   createStyles: () => () => ({}),
   makeStyles: () => () => ({}),
   withStyles: () => () => ({}),
+  createTheme: () => () => ({}),
 }));

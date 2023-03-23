@@ -34,7 +34,6 @@ const useStyles = makeStyles(theme => ({
     height: '100%',
   },
   form: {
-    marginTop: theme.spacing(2),
     '& .field-boolean > div > label': {
       display: 'inline-block',
       marginBottom: theme.spacing(2),

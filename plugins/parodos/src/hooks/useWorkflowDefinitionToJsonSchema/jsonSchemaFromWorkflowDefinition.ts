@@ -101,7 +101,16 @@ function transformWorkToStep(work: WorkType): Step {
 
   for (const [
     key,
-    { description, type, required, format, default: fieldDefault, field },
+    {
+      description,
+      type,
+      required,
+      format,
+      default: fieldDefault,
+      field,
+      minLength,
+      maxLength,
+    },
   ] of Object.entries(work.parameters ?? {})) {
     const propertiesPath = `properties.${work.name}.properties.${key}`;
 
@@ -109,6 +118,8 @@ function transformWorkToStep(work: WorkType): Step {
       title: `${key}`,
       ...getJsonSchemaType(format ?? (type as ParameterFormat)),
       ...{ default: fieldDefault },
+      minLength,
+      maxLength,
     });
 
     const objectPath = `${work.name}.${key}`;
@@ -117,7 +128,7 @@ function transformWorkToStep(work: WorkType): Step {
       ...getUiSchema(format ?? (type as ParameterFormat)),
       'ui:field': field,
       'ui:help': description,
-      'ui:autocomplete': 'Off',
+      // 'ui:autocomplete': 'Off',
     });
 
     if (required) {

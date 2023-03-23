@@ -1,4 +1,4 @@
-import React, { type ReactNode } from 'react';
+import React, { forwardRef, type ReactNode } from 'react';
 import { makeStyles } from '@material-ui/core';
 import StarIcon from '@material-ui/icons/Star';
 
@@ -17,19 +17,21 @@ export interface TabLabelProps {
   children: ReactNode;
 }
 
-export function TabLabel({
-  children,
+export const tabLabelCreator = ({
   icon,
   highlighted,
-  ...props
-}: TabLabelProps) {
-  const styles = useStyles();
+}: {
+  icon: ReactNode;
+  highlighted: boolean;
+}) =>
+  forwardRef<HTMLSpanElement, TabLabelProps>(({ children, ...props }, ref) => {
+    const styles = useStyles();
 
-  return (
-    <span {...props}>
-      {icon}
-      {highlighted && <StarIcon className={styles.highlightedTab} />}
-      {children}
-    </span>
-  );
-}
+    return (
+      <span {...props} ref={ref}>
+        {icon}
+        {highlighted && <StarIcon className={styles.highlightedTab} />}
+        {children}
+      </span>
+    );
+  });

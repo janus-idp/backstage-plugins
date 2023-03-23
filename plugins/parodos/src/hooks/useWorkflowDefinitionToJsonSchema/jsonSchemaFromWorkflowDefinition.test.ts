@@ -30,18 +30,17 @@ describe('jsonSchemaFromWorkflowDefinition', () => {
   it('transforms deeply nested recursive structure', () => {
     const result = jsonSchemaFromWorkflowDefinition(mockDeepRecursiveWorks);
 
-    const comment = get(
+    const domainName = get(
+      result.steps[0]?.schema,
+      'properties.sslCertificationWorkFlowTask.properties.domainName.title',
+    );
+
+    expect(domainName).toBe('domainName');
+    const clusterName = get(
       result.steps[1]?.schema,
-      'properties.subWorkFlowThree.properties.works.items[1].properties.subWorkFlowTwo.properties.works.items[0].properties.subWorkFlowOne.properties.comment.title',
+      'properties.subWorkFlowTwo.properties.works.items[0].properties.subWorkFlowOne.properties.works.items[1].properties.splunkMonitoringWorkFlowTask.properties.clusterName.title',
     );
 
-    expect(comment).toBe('comment');
-
-    const singleSignOn = get(
-      result.steps[2]?.schema,
-      'properties.subWorkFlowFour.properties.works.items[1].title',
-    );
-
-    expect(singleSignOn).toBe('Single Sign On Work Flow Task');
+    expect(clusterName).toBe('clusterName');
   });
 });

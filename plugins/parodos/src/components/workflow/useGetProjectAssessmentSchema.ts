@@ -32,15 +32,22 @@ export function useGetProjectAssessmentSchema({
   cloned.works[0].parameters = cloned.works[0].parameters ?? {};
 
   if (newProject) {
+    cloned.works[0].parameters.newProject = { ...newProjectChoice };
+
     cloned.works[0].parameters.Name = {
       description: 'New Project',
       required: false,
       format: 'text',
       type: 'string',
     };
-
-    cloned.works[0].parameters.newProject = { ...newProjectChoice };
   } else {
+    cloned.works[0].parameters = {};
+
+    cloned.works[0].parameters.newProject = {
+      ...newProjectChoice,
+      description: 'Search for an existing project to execute a new workflow:',
+    };
+
     cloned.works[0].parameters.project = {
       required: false,
       type: 'string',
@@ -48,14 +55,15 @@ export function useGetProjectAssessmentSchema({
       field: 'ProjectPicker',
       disabled: !hasProjects,
     };
-
-    cloned.works[0].parameters.newProject = {
-      ...newProjectChoice,
-      description: 'Search for an existing project to execute a new workflow:',
-    };
   }
 
   const formSchema = jsonSchemaFromWorkflowDefinition(cloned);
+
+  set(formSchema, `steps[0].uiSchema.onboardingAssessmentTask.['ui:order']`, [
+    'newProject',
+    'Name',
+    '*',
+  ]);
 
   // TODO: should be able to do this with ui:title
   set(
