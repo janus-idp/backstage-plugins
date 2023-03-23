@@ -8,8 +8,6 @@ const ParodosLogViewer = withStyles(theme => ({
   },
   log: {
     background: theme.palette.background.paper,
-    // fontSize: theme.typography.body2.fontSize,
-    // fontFamily: theme.typography.fontFamily,
   },
 }))(LogViewer);
 

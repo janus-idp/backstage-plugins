@@ -40,7 +40,7 @@ export const baseWorkSchema = z.object({
     .record(z.string(), workFlowTaskParameterTypeSchema)
     .optional()
     .nullable(),
-  workType: z.union([z.literal('TASK'), z.literal('WORKFLOW')]), // TODO: could this be a union?
+  workType: z.union([z.literal('TASK'), z.literal('WORKFLOW')]),
   processingType: processingType.optional(),
   author: z.string().optional().nullable(),
   outputs: z
