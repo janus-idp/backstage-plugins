@@ -36,7 +36,7 @@ export function useGetProjectAssessmentSchema({
 
     cloned.works[0].parameters.Name = {
       description: 'New Project',
-      required: false,
+      required: true,
       format: 'text',
       type: 'string',
     };
@@ -49,7 +49,7 @@ export function useGetProjectAssessmentSchema({
     };
 
     cloned.works[0].parameters.project = {
-      required: false,
+      required: true,
       type: 'string',
       format: 'text',
       field: 'ProjectPicker',
