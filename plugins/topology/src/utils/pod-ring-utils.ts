@@ -1,10 +1,11 @@
 import * as React from 'react';
 import { ChartLabel } from '@patternfly/react-charts';
 import classNames from 'classnames';
+import { V1DaemonSet, V1Deployment, V1Pod } from '@kubernetes/client-node';
 import { getPodStatus } from './workload-node-utils';
 import { AllPodStatus } from '../components/Pods/pod';
-import { V1Deployment, V1Pod } from '@kubernetes/client-node';
 import { K8sWorkloadResource } from '../types/types';
+import { CronJobGVK, DaemonSetGVK, JobGVK, PodGVK } from '../models';
 
 const getTitleComponent = (
   longTitle: boolean = false,
@@ -94,7 +95,7 @@ const podRingLabel = (
   ownerKind: string,
   pods: V1Pod[],
 ) => {
-  let currentPodCount;
+  let currentPodCount = 0;
   let desiredPodCount;
   let isPending;
   let titleData;
@@ -108,9 +109,29 @@ const podRingLabel = (
 
   const failedPodCount = getFailedPods(pods);
   switch (ownerKind) {
-    case 'Pod':
+    case DaemonSetGVK.kind:
+      currentPodCount =
+        ((obj as V1DaemonSet).status?.currentNumberScheduled || 0) +
+        failedPodCount;
+      desiredPodCount = (obj as V1DaemonSet).status?.desiredNumberScheduled;
+      isPending = isPendingPods(pods, currentPodCount, desiredPodCount);
+      titleData = getTitleAndSubtitle(
+        isPending,
+        currentPodCount,
+        desiredPodCount,
+      );
+      podRingLabelData.title = titleData.title as string;
+      podRingLabelData.subTitle = titleData.subTitle;
+      podRingLabelData.longSubtitle = titleData.longSubtitle;
+      break;
+    case PodGVK.kind:
+    case JobGVK.kind:
       podRingLabelData.title = '1';
-      podRingLabelData.subTitle = 'Pod';
+      podRingLabelData.subTitle = PodGVK.kind;
+      break;
+    case CronJobGVK.kind:
+      podRingLabelData.title = `${pods.length}`;
+      podRingLabelData.subTitle = podKindString(currentPodCount);
       break;
     default:
       currentPodCount =

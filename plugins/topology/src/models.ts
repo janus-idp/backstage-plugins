@@ -27,12 +27,40 @@ export const IngressesGVK: GroupVersionKind = {
   kind: 'Ingress',
 };
 
+export const DaemonSetGVK: GroupVersionKind = {
+  apiVersion: 'v1',
+  apiGroup: 'apps',
+  kind: 'DaemonSet',
+};
+
+export const StatefulSetGVK: GroupVersionKind = {
+  apiVersion: 'v1',
+  apiGroup: 'apps',
+  kind: 'StatefulSet',
+};
+
+export const JobGVK: GroupVersionKind = {
+  apiVersion: 'v1',
+  apiGroup: 'batch',
+  kind: 'Job',
+};
+
+export const CronJobGVK: GroupVersionKind = {
+  apiVersion: 'v1',
+  apiGroup: 'batch',
+  kind: 'CronJob',
+};
+
 export enum ModelsPlural {
   deployments = 'deployments',
   pods = 'pods',
   replicasets = 'replicasets',
   services = 'services',
   ingresses = 'ingresses',
+  jobs = 'jobs',
+  daemonsets = 'daemonsets',
+  cronjobs = 'cronjobs',
+  statefulsets = 'statefulsets',
 }
 
 export const resourceModels: { [key: string]: GroupVersionKind } = {
@@ -41,4 +69,8 @@ export const resourceModels: { [key: string]: GroupVersionKind } = {
   [ModelsPlural.replicasets]: ReplicaSetGVK,
   [ModelsPlural.services]: ServiceGVK,
   [ModelsPlural.ingresses]: IngressesGVK,
+  [ModelsPlural.daemonsets]: DaemonSetGVK,
+  [ModelsPlural.cronjobs]: CronJobGVK,
+  [ModelsPlural.jobs]: JobGVK,
+  [ModelsPlural.statefulsets]: StatefulSetGVK,
 };

@@ -4,6 +4,10 @@ import {
   V1Pod,
   V1ReplicaSet,
   V1Service,
+  V1StatefulSet,
+  V1DaemonSet,
+  V1Job,
+  V1CronJob,
 } from '@kubernetes/client-node';
 
 export type GroupVersionKind = {
@@ -16,7 +20,11 @@ export type K8sWorkloadResource =
   | V1Deployment
   | V1Pod
   | V1Service
-  | V1ReplicaSet;
+  | V1ReplicaSet
+  | V1CronJob
+  | V1DaemonSet
+  | V1Job
+  | V1StatefulSet;
 
 export type K8sResponseData = {
   [key: string]: { data: K8sWorkloadResource[] };

@@ -34,6 +34,10 @@ export const TopologyComponent = () => {
     ModelsPlural.services,
     ModelsPlural.replicasets,
     ModelsPlural.ingresses,
+    ModelsPlural.daemonsets,
+    ModelsPlural.statefulsets,
+    ModelsPlural.cronjobs,
+    ModelsPlural.jobs,
   ];
 
   const k8sResourcesContextData = useK8sObjectsResponse(watchedResources);

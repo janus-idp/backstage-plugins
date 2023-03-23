@@ -4,6 +4,667 @@ export const mockKubernetesResponse = {
       kind: 'Pod',
       apiVersion: 'v1',
       metadata: {
+        name: 'test-deployment-645f8d4887-8dmrr',
+        generateName: 'test-deployment-645f8d4887-',
+        namespace: 'test-app',
+        uid: 'c98130d7-a1bd-4f93-8477-e00a1971b9bd',
+        resourceVersion: '42257',
+        labels: {
+          app: 'name',
+          'backstage.io/kubernetes-id': 'backstage',
+          'pod-template-hash': '645f8d4887',
+        },
+        ownerReferences: [
+          {
+            apiVersion: 'apps/v1',
+            kind: 'ReplicaSet',
+            name: 'test-deployment-645f8d4887',
+            uid: '6165cda0-8ada-4468-960d-122b5230db27',
+            controller: true,
+            blockOwnerDeletion: true,
+          },
+        ],
+      },
+      spec: {
+        volumes: [
+          {
+            name: 'kube-api-access-7g8nf',
+            projected: {
+              sources: [
+                {
+                  serviceAccountToken: {
+                    expirationSeconds: 3607,
+                    path: 'token',
+                  },
+                },
+                {
+                  configMap: {
+                    name: 'kube-root-ca.crt',
+                    items: [
+                      {
+                        key: 'ca.crt',
+                        path: 'ca.crt',
+                      },
+                    ],
+                  },
+                },
+                {
+                  downwardAPI: {
+                    items: [
+                      {
+                        path: 'namespace',
+                        fieldRef: {
+                          apiVersion: 'v1',
+                          fieldPath: 'metadata.namespace',
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+              defaultMode: 420,
+            },
+          },
+        ],
+        containers: [
+          {
+            name: 'container',
+            image: 'openshift/hello-openshift',
+            ports: [
+              {
+                containerPort: 8080,
+                protocol: 'TCP',
+              },
+            ],
+            resources: {},
+            volumeMounts: [
+              {
+                name: 'kube-api-access-7g8nf',
+                readOnly: true,
+                mountPath: '/var/run/secrets/kubernetes.io/serviceaccount',
+              },
+            ],
+            terminationMessagePath: '/dev/termination-log',
+            terminationMessagePolicy: 'File',
+            imagePullPolicy: 'Always',
+          },
+        ],
+        restartPolicy: 'Always',
+        terminationGracePeriodSeconds: 30,
+        dnsPolicy: 'ClusterFirst',
+        serviceAccountName: 'default',
+        serviceAccount: 'default',
+        nodeName: 'minikube',
+        securityContext: {},
+        schedulerName: 'default-scheduler',
+        tolerations: [
+          {
+            key: 'node.kubernetes.io/not-ready',
+            operator: 'Exists',
+            effect: 'NoExecute',
+            tolerationSeconds: 300,
+          },
+          {
+            key: 'node.kubernetes.io/unreachable',
+            operator: 'Exists',
+            effect: 'NoExecute',
+            tolerationSeconds: 300,
+          },
+        ],
+        priority: 0,
+        enableServiceLinks: true,
+        preemptionPolicy: 'PreemptLowerPriority',
+      },
+      status: {
+        phase: 'Running',
+        conditions: [
+          {
+            type: 'Initialized',
+            status: 'True',
+          },
+          {
+            type: 'Ready',
+            status: 'True',
+          },
+          {
+            type: 'ContainersReady',
+            status: 'True',
+          },
+          {
+            type: 'PodScheduled',
+            status: 'True',
+          },
+        ],
+        hostIP: '192.168.64.6',
+        podIP: '10.244.0.32',
+        podIPs: [
+          {
+            ip: '10.244.0.32',
+          },
+        ],
+        startTime: '2023-02-15T09:00:37Z',
+        containerStatuses: [
+          {
+            name: 'container',
+            state: {
+              running: {
+                startedAt: '2023-02-15T09:00:43Z',
+              },
+            },
+            lastState: {},
+            ready: true,
+            restartCount: 0,
+            image: 'openshift/hello-openshift:latest',
+            imageID:
+              'docker-pullable://openshift/hello-openshift@sha256:aaea76ff622d2f8bcb32e538e7b3cd0ef6d291953f3e7c9f556c1ba5baf47e2e',
+            containerID:
+              'docker://28d5d65bdf20591f9386567917d0881d96bd467e4269d988ea3d473d3d40470f',
+            started: true,
+          },
+        ],
+        qosClass: 'BestEffort',
+      },
+    },
+    {
+      kind: 'Pod',
+      apiVersion: 'v1',
+      metadata: {
+        name: 'test-deployment-645f8d4887-8dmrr',
+        generateName: 'test-deployment-645f8d4887-',
+        namespace: 'test-app',
+        uid: 'c98130d7-a1bd-4f93-8477-e00a1971b9bd',
+        resourceVersion: '42257',
+        labels: {
+          app: 'name',
+          'backstage.io/kubernetes-id': 'backstage',
+          'pod-template-hash': '645f8d4887',
+        },
+        ownerReferences: [
+          {
+            apiVersion: 'batch/v1',
+            kind: 'Job',
+            name: 'busybox-cron-27992986',
+            uid: 'da070cbb-aa23-40bd-ae90-8db1354b2044',
+            controller: true,
+            blockOwnerDeletion: true,
+          },
+        ],
+      },
+      spec: {
+        volumes: [
+          {
+            name: 'kube-api-access-7g8nf',
+            projected: {
+              sources: [
+                {
+                  serviceAccountToken: {
+                    expirationSeconds: 3607,
+                    path: 'token',
+                  },
+                },
+                {
+                  configMap: {
+                    name: 'kube-root-ca.crt',
+                    items: [
+                      {
+                        key: 'ca.crt',
+                        path: 'ca.crt',
+                      },
+                    ],
+                  },
+                },
+                {
+                  downwardAPI: {
+                    items: [
+                      {
+                        path: 'namespace',
+                        fieldRef: {
+                          apiVersion: 'v1',
+                          fieldPath: 'metadata.namespace',
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+              defaultMode: 420,
+            },
+          },
+        ],
+        containers: [
+          {
+            name: 'container',
+            image: 'openshift/hello-openshift',
+            ports: [
+              {
+                containerPort: 8080,
+                protocol: 'TCP',
+              },
+            ],
+            resources: {},
+            volumeMounts: [
+              {
+                name: 'kube-api-access-7g8nf',
+                readOnly: true,
+                mountPath: '/var/run/secrets/kubernetes.io/serviceaccount',
+              },
+            ],
+            terminationMessagePath: '/dev/termination-log',
+            terminationMessagePolicy: 'File',
+            imagePullPolicy: 'Always',
+          },
+        ],
+        restartPolicy: 'Always',
+        terminationGracePeriodSeconds: 30,
+        dnsPolicy: 'ClusterFirst',
+        serviceAccountName: 'default',
+        serviceAccount: 'default',
+        nodeName: 'minikube',
+        securityContext: {},
+        schedulerName: 'default-scheduler',
+        tolerations: [
+          {
+            key: 'node.kubernetes.io/not-ready',
+            operator: 'Exists',
+            effect: 'NoExecute',
+            tolerationSeconds: 300,
+          },
+          {
+            key: 'node.kubernetes.io/unreachable',
+            operator: 'Exists',
+            effect: 'NoExecute',
+            tolerationSeconds: 300,
+          },
+        ],
+        priority: 0,
+        enableServiceLinks: true,
+        preemptionPolicy: 'PreemptLowerPriority',
+      },
+      status: {
+        phase: 'Running',
+        conditions: [
+          {
+            type: 'Initialized',
+            status: 'True',
+          },
+          {
+            type: 'Ready',
+            status: 'True',
+          },
+          {
+            type: 'ContainersReady',
+            status: 'True',
+          },
+          {
+            type: 'PodScheduled',
+            status: 'True',
+          },
+        ],
+        hostIP: '192.168.64.6',
+        podIP: '10.244.0.32',
+        podIPs: [
+          {
+            ip: '10.244.0.32',
+          },
+        ],
+        containerStatuses: [
+          {
+            name: 'container',
+            state: {
+              running: {
+                startedAt: new Date('2023-02-15T09:00:43Z'),
+              },
+            },
+            lastState: {},
+            ready: true,
+            restartCount: 0,
+            image: 'openshift/hello-openshift:latest',
+            imageID:
+              'docker-pullable://openshift/hello-openshift@sha256:aaea76ff622d2f8bcb32e538e7b3cd0ef6d291953f3e7c9f556c1ba5baf47e2e',
+            containerID:
+              'docker://28d5d65bdf20591f9386567917d0881d96bd467e4269d988ea3d473d3d40470f',
+            started: true,
+          },
+        ],
+        qosClass: 'BestEffort',
+      },
+    },
+    {
+      kind: 'Pod',
+      apiVersion: 'v1',
+      metadata: {
+        name: 'test-deployment-645f8d4887-d77ff',
+        generateName: 'test-deployment-645f8d4887-',
+        namespace: 'test-app',
+        uid: 'e656560a-8113-4578-946e-2407ad0530af',
+        resourceVersion: '42257',
+        creationTimestamp: '2023-02-15T09:00:36Z',
+        labels: {
+          app: 'name',
+          'backstage.io/kubernetes-id': 'backstage',
+          'pod-template-hash': 'bfb8bb77',
+        },
+        ownerReferences: [
+          {
+            apiVersion: 'apps/v1',
+            kind: 'ReplicaSet',
+            name: 'test-deployment-645f8d4887',
+            uid: '6165cda0-8ada-4468-960d-122b5230db27',
+            controller: true,
+            blockOwnerDeletion: true,
+          },
+        ],
+      },
+      spec: {
+        volumes: [
+          {
+            name: 'kube-api-access-7g8nf',
+            projected: {
+              sources: [
+                {
+                  serviceAccountToken: {
+                    expirationSeconds: 3607,
+                    path: 'token',
+                  },
+                },
+                {
+                  configMap: {
+                    name: 'kube-root-ca.crt',
+                    items: [
+                      {
+                        key: 'ca.crt',
+                        path: 'ca.crt',
+                      },
+                    ],
+                  },
+                },
+                {
+                  downwardAPI: {
+                    items: [
+                      {
+                        path: 'namespace',
+                        fieldRef: {
+                          apiVersion: 'v1',
+                          fieldPath: 'metadata.namespace',
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+              defaultMode: 420,
+            },
+          },
+        ],
+        containers: [
+          {
+            name: 'container',
+            image: 'openshift/hello-openshift',
+            ports: [
+              {
+                containerPort: 8080,
+                protocol: 'TCP',
+              },
+            ],
+            resources: {},
+            volumeMounts: [
+              {
+                name: 'kube-api-access-7g8nf',
+                readOnly: true,
+                mountPath: '/var/run/secrets/kubernetes.io/serviceaccount',
+              },
+            ],
+            terminationMessagePath: '/dev/termination-log',
+            terminationMessagePolicy: 'File',
+            imagePullPolicy: 'Always',
+          },
+        ],
+        restartPolicy: 'Always',
+        terminationGracePeriodSeconds: 30,
+        dnsPolicy: 'ClusterFirst',
+        serviceAccountName: 'default',
+        serviceAccount: 'default',
+        nodeName: 'minikube',
+        securityContext: {},
+        schedulerName: 'default-scheduler',
+        tolerations: [
+          {
+            key: 'node.kubernetes.io/not-ready',
+            operator: 'Exists',
+            effect: 'NoExecute',
+            tolerationSeconds: 300,
+          },
+          {
+            key: 'node.kubernetes.io/unreachable',
+            operator: 'Exists',
+            effect: 'NoExecute',
+            tolerationSeconds: 300,
+          },
+        ],
+        priority: 0,
+        enableServiceLinks: true,
+        preemptionPolicy: 'PreemptLowerPriority',
+      },
+      status: {
+        phase: 'Running',
+        conditions: [
+          {
+            type: 'Initialized',
+            status: 'True',
+          },
+          {
+            type: 'Ready',
+            status: 'True',
+          },
+          {
+            type: 'ContainersReady',
+            status: 'True',
+          },
+          {
+            type: 'PodScheduled',
+            status: 'True',
+          },
+        ],
+        hostIP: '192.168.64.6',
+        podIP: '10.244.0.32',
+        podIPs: [
+          {
+            ip: '10.244.0.32',
+          },
+        ],
+        startTime: new Date('2023-02-15T09:00:37Z'),
+        containerStatuses: [
+          {
+            name: 'container',
+            state: {
+              running: {
+                startedAt: new Date('2023-02-15T09:00:43Z'),
+              },
+            },
+            lastState: {},
+            ready: true,
+            restartCount: 0,
+            image: 'openshift/hello-openshift:latest',
+            imageID:
+              'docker-pullable://openshift/hello-openshift@sha256:aaea76ff622d2f8bcb32e538e7b3cd0ef6d291953f3e7c9f556c1ba5baf47e2e',
+            containerID:
+              'docker://28d5d65bdf20591f9386567917d0881d96bd467e4269d988ea3d473d3d40470f',
+            started: true,
+          },
+        ],
+        qosClass: 'BestEffort',
+      },
+    },
+    {
+      kind: 'Pod',
+      apiVersion: 'v1',
+      metadata: {
+        name: 'test-deployment-645f8d4887-n8644',
+        generateName: 'test-deployment-645f8d4887-',
+        namespace: 'test-app',
+        uid: '966d4fa1-379a-4dea-8add-2dcff7257dcd',
+        resourceVersion: '42257',
+        creationTimestamp: '2023-02-15T09:00:36Z',
+        labels: {
+          app: 'name',
+          'backstage.io/kubernetes-id': 'backstage',
+          'pod-template-hash': 'bfb8bb77',
+        },
+        ownerReferences: [
+          {
+            apiVersion: 'apps/v1',
+            kind: 'ReplicaSet',
+            name: 'test-deployment-645f8d4887',
+            uid: '6165cda0-8ada-4468-960d-122b5230db27',
+            controller: true,
+            blockOwnerDeletion: true,
+          },
+        ],
+      },
+      spec: {
+        volumes: [
+          {
+            name: 'kube-api-access-7g8nf',
+            projected: {
+              sources: [
+                {
+                  serviceAccountToken: {
+                    expirationSeconds: 3607,
+                    path: 'token',
+                  },
+                },
+                {
+                  configMap: {
+                    name: 'kube-root-ca.crt',
+                    items: [
+                      {
+                        key: 'ca.crt',
+                        path: 'ca.crt',
+                      },
+                    ],
+                  },
+                },
+                {
+                  downwardAPI: {
+                    items: [
+                      {
+                        path: 'namespace',
+                        fieldRef: {
+                          apiVersion: 'v1',
+                          fieldPath: 'metadata.namespace',
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+              defaultMode: 420,
+            },
+          },
+        ],
+        containers: [
+          {
+            name: 'container',
+            image: 'openshift/hello-openshift',
+            ports: [
+              {
+                containerPort: 8080,
+                protocol: 'TCP',
+              },
+            ],
+            resources: {},
+            volumeMounts: [
+              {
+                name: 'kube-api-access-7g8nf',
+                readOnly: true,
+                mountPath: '/var/run/secrets/kubernetes.io/serviceaccount',
+              },
+            ],
+            terminationMessagePath: '/dev/termination-log',
+            terminationMessagePolicy: 'File',
+            imagePullPolicy: 'Always',
+          },
+        ],
+        restartPolicy: 'Always',
+        terminationGracePeriodSeconds: 30,
+        dnsPolicy: 'ClusterFirst',
+        serviceAccountName: 'default',
+        serviceAccount: 'default',
+        nodeName: 'minikube',
+        securityContext: {},
+        schedulerName: 'default-scheduler',
+        tolerations: [
+          {
+            key: 'node.kubernetes.io/not-ready',
+            operator: 'Exists',
+            effect: 'NoExecute',
+            tolerationSeconds: 300,
+          },
+          {
+            key: 'node.kubernetes.io/unreachable',
+            operator: 'Exists',
+            effect: 'NoExecute',
+            tolerationSeconds: 300,
+          },
+        ],
+        priority: 0,
+        enableServiceLinks: true,
+        preemptionPolicy: 'PreemptLowerPriority',
+      },
+      status: {
+        phase: 'Running',
+        conditions: [
+          {
+            type: 'Initialized',
+            status: 'True',
+          },
+          {
+            type: 'Ready',
+            status: 'True',
+          },
+          {
+            type: 'ContainersReady',
+            status: 'True',
+          },
+          {
+            type: 'PodScheduled',
+            status: 'True',
+          },
+        ],
+        hostIP: '192.168.64.6',
+        podIP: '10.244.0.32',
+        podIPs: [
+          {
+            ip: '10.244.0.32',
+          },
+        ],
+        startTime: new Date('2023-02-15T09:00:37Z'),
+        containerStatuses: [
+          {
+            name: 'container',
+            state: {
+              running: {
+                startedAt: new Date('2023-02-15T09:00:43Z'),
+              },
+            },
+            lastState: {},
+            ready: true,
+            restartCount: 0,
+            image: 'openshift/hello-openshift:latest',
+            imageID:
+              'docker-pullable://openshift/hello-openshift@sha256:aaea76ff622d2f8bcb32e538e7b3cd0ef6d291953f3e7c9f556c1ba5baf47e2e',
+            containerID:
+              'docker://28d5d65bdf20591f9386567917d0881d96bd467e4269d988ea3d473d3d40470f',
+            started: true,
+          },
+        ],
+        qosClass: 'BestEffort',
+      },
+    },
+    {
+      kind: 'Pod',
+      apiVersion: 'v1',
+      metadata: {
         name: 'hello-world-bfb8bb77-vrptd',
         generateName: 'hello-world-bfb8bb77-',
         namespace: 'test-app',
@@ -122,26 +783,18 @@ export const mockKubernetesResponse = {
           {
             type: 'Initialized',
             status: 'True',
-            lastProbeTime: null,
-            lastTransitionTime: '2023-02-15T09:00:37Z',
           },
           {
             type: 'Ready',
             status: 'True',
-            lastProbeTime: null,
-            lastTransitionTime: '2023-02-15T09:00:43Z',
           },
           {
             type: 'ContainersReady',
             status: 'True',
-            lastProbeTime: null,
-            lastTransitionTime: '2023-02-15T09:00:43Z',
           },
           {
             type: 'PodScheduled',
             status: 'True',
-            lastProbeTime: null,
-            lastTransitionTime: '2023-02-15T09:00:36Z',
           },
         ],
         hostIP: '192.168.64.6',
@@ -151,13 +804,13 @@ export const mockKubernetesResponse = {
             ip: '10.244.0.32',
           },
         ],
-        startTime: '2023-02-15T09:00:37Z',
+        startTime: new Date('2023-02-15T09:00:37Z'),
         containerStatuses: [
           {
             name: 'container',
             state: {
               running: {
-                startedAt: '2023-02-15T09:00:43Z',
+                startedAt: new Date('2023-02-15T09:00:43Z'),
               },
             },
             lastState: {},
@@ -348,8 +1001,429 @@ export const mockKubernetesResponse = {
         qosClass: 'BestEffort',
       },
     },
+    {
+      kind: 'Pod',
+      apiVersion: 'v1',
+      metadata: {
+        name: 'example-0',
+        generateName: 'example-',
+        namespace: 'test-app',
+        uid: 'e656560a-8113-4578-946e-2407ad0530af',
+        resourceVersion: '42257',
+        creationTimestamp: '2023-02-15T09:00:36Z',
+        labels: {
+          app: 'name',
+          'backstage.io/kubernetes-id': 'backstage',
+          'pod-template-hash': 'bfb8bb77',
+        },
+        ownerReferences: [
+          {
+            apiVersion: 'apps/v1',
+            kind: 'StatefulSet',
+            name: 'example',
+            uid: 'b7e67f5c-3f68-4ff5-bee4-43a9b388aa6f',
+            controller: true,
+            blockOwnerDeletion: true,
+          },
+        ],
+      },
+      spec: {
+        volumes: [
+          {
+            name: 'kube-api-access-7g8nf',
+            projected: {
+              sources: [
+                {
+                  serviceAccountToken: {
+                    expirationSeconds: 3607,
+                    path: 'token',
+                  },
+                },
+                {
+                  configMap: {
+                    name: 'kube-root-ca.crt',
+                    items: [
+                      {
+                        key: 'ca.crt',
+                        path: 'ca.crt',
+                      },
+                    ],
+                  },
+                },
+                {
+                  downwardAPI: {
+                    items: [
+                      {
+                        path: 'namespace',
+                        fieldRef: {
+                          apiVersion: 'v1',
+                          fieldPath: 'metadata.namespace',
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+              defaultMode: 420,
+            },
+          },
+        ],
+        containers: [
+          {
+            name: 'container',
+            image: 'openshift/hello-openshift',
+            ports: [
+              {
+                containerPort: 8080,
+                protocol: 'TCP',
+              },
+            ],
+            resources: {},
+            volumeMounts: [
+              {
+                name: 'kube-api-access-7g8nf',
+                readOnly: true,
+                mountPath: '/var/run/secrets/kubernetes.io/serviceaccount',
+              },
+            ],
+            terminationMessagePath: '/dev/termination-log',
+            terminationMessagePolicy: 'File',
+            imagePullPolicy: 'Always',
+          },
+        ],
+        restartPolicy: 'Always',
+        terminationGracePeriodSeconds: 30,
+        dnsPolicy: 'ClusterFirst',
+        serviceAccountName: 'default',
+        serviceAccount: 'default',
+        nodeName: 'minikube',
+        securityContext: {},
+        schedulerName: 'default-scheduler',
+        tolerations: [
+          {
+            key: 'node.kubernetes.io/not-ready',
+            operator: 'Exists',
+            effect: 'NoExecute',
+            tolerationSeconds: 300,
+          },
+          {
+            key: 'node.kubernetes.io/unreachable',
+            operator: 'Exists',
+            effect: 'NoExecute',
+            tolerationSeconds: 300,
+          },
+        ],
+        priority: 0,
+        enableServiceLinks: true,
+        preemptionPolicy: 'PreemptLowerPriority',
+      },
+      status: {
+        phase: 'Running',
+        conditions: [
+          {
+            type: 'Initialized',
+            status: 'True',
+          },
+          {
+            type: 'Ready',
+            status: 'True',
+          },
+          {
+            type: 'ContainersReady',
+            status: 'True',
+          },
+          {
+            type: 'PodScheduled',
+            status: 'True',
+          },
+        ],
+        hostIP: '192.168.64.6',
+        podIP: '10.244.0.32',
+        podIPs: [
+          {
+            ip: '10.244.0.32',
+          },
+        ],
+        startTime: new Date('2023-02-15T09:00:37Z'),
+        containerStatuses: [
+          {
+            name: 'container',
+            state: {
+              running: {
+                startedAt: new Date('2023-02-15T09:00:43Z'),
+              },
+            },
+            lastState: {},
+            ready: true,
+            restartCount: 0,
+            image: 'openshift/hello-openshift:latest',
+            imageID:
+              'docker-pullable://openshift/hello-openshift@sha256:aaea76ff622d2f8bcb32e538e7b3cd0ef6d291953f3e7c9f556c1ba5baf47e2e',
+            containerID:
+              'docker://28d5d65bdf20591f9386567917d0881d96bd467e4269d988ea3d473d3d40470f',
+            started: true,
+          },
+        ],
+        qosClass: 'BestEffort',
+      },
+    },
+    {
+      kind: 'Pod',
+      apiVersion: 'v1',
+      metadata: {
+        name: 'example-0',
+        generateName: 'example-',
+        namespace: 'test-app',
+        uid: 'e656560a-8113-4578-946e-2407ad0530af',
+        resourceVersion: '42257',
+        creationTimestamp: '2023-02-15T09:00:36Z',
+        labels: {
+          app: 'name',
+          'backstage.io/kubernetes-id': 'backstage',
+          'pod-template-hash': 'bfb8bb77',
+        },
+        ownerReferences: [
+          {
+            apiVersion: 'apps/v1',
+            kind: 'DaemonSet',
+            name: 'example',
+            uid: '0c4a82c9-a6e6-11e9-a20f-52fdfc072182',
+            controller: true,
+            blockOwnerDeletion: true,
+          },
+        ],
+      },
+      spec: {
+        volumes: [
+          {
+            name: 'kube-api-access-7g8nf',
+            projected: {
+              sources: [
+                {
+                  serviceAccountToken: {
+                    expirationSeconds: 3607,
+                    path: 'token',
+                  },
+                },
+                {
+                  configMap: {
+                    name: 'kube-root-ca.crt',
+                    items: [
+                      {
+                        key: 'ca.crt',
+                        path: 'ca.crt',
+                      },
+                    ],
+                  },
+                },
+                {
+                  downwardAPI: {
+                    items: [
+                      {
+                        path: 'namespace',
+                        fieldRef: {
+                          apiVersion: 'v1',
+                          fieldPath: 'metadata.namespace',
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+              defaultMode: 420,
+            },
+          },
+        ],
+        containers: [
+          {
+            name: 'container',
+            image: 'openshift/hello-openshift',
+            ports: [
+              {
+                containerPort: 8080,
+                protocol: 'TCP',
+              },
+            ],
+            resources: {},
+            volumeMounts: [
+              {
+                name: 'kube-api-access-7g8nf',
+                readOnly: true,
+                mountPath: '/var/run/secrets/kubernetes.io/serviceaccount',
+              },
+            ],
+            terminationMessagePath: '/dev/termination-log',
+            terminationMessagePolicy: 'File',
+            imagePullPolicy: 'Always',
+          },
+        ],
+        restartPolicy: 'Always',
+        terminationGracePeriodSeconds: 30,
+        dnsPolicy: 'ClusterFirst',
+        serviceAccountName: 'default',
+        serviceAccount: 'default',
+        nodeName: 'minikube',
+        securityContext: {},
+        schedulerName: 'default-scheduler',
+        tolerations: [
+          {
+            key: 'node.kubernetes.io/not-ready',
+            operator: 'Exists',
+            effect: 'NoExecute',
+            tolerationSeconds: 300,
+          },
+          {
+            key: 'node.kubernetes.io/unreachable',
+            operator: 'Exists',
+            effect: 'NoExecute',
+            tolerationSeconds: 300,
+          },
+        ],
+        priority: 0,
+        enableServiceLinks: true,
+        preemptionPolicy: 'PreemptLowerPriority',
+      },
+      status: {
+        phase: 'Running',
+        conditions: [
+          {
+            type: 'Initialized',
+            status: 'True',
+            lastProbeTime: null,
+            lastTransitionTime: '2023-02-15T09:00:37Z',
+          },
+          {
+            type: 'Ready',
+            status: 'True',
+            lastProbeTime: null,
+            lastTransitionTime: '2023-02-15T09:00:43Z',
+          },
+          {
+            type: 'ContainersReady',
+            status: 'True',
+            lastProbeTime: null,
+            lastTransitionTime: '2023-02-15T09:00:43Z',
+          },
+          {
+            type: 'PodScheduled',
+            status: 'True',
+            lastProbeTime: null,
+            lastTransitionTime: '2023-02-15T09:00:36Z',
+          },
+        ],
+        hostIP: '192.168.64.6',
+        podIP: '10.244.0.32',
+        podIPs: [
+          {
+            ip: '10.244.0.32',
+          },
+        ],
+        startTime: '2023-02-15T09:00:37Z',
+        containerStatuses: [
+          {
+            name: 'container',
+            state: {
+              running: {
+                startedAt: '2023-02-15T09:00:43Z',
+              },
+            },
+            lastState: {},
+            ready: true,
+            restartCount: 0,
+            image: 'openshift/hello-openshift:latest',
+            imageID:
+              'docker-pullable://openshift/hello-openshift@sha256:aaea76ff622d2f8bcb32e538e7b3cd0ef6d291953f3e7c9f556c1ba5baf47e2e',
+            containerID:
+              'docker://28d5d65bdf20591f9386567917d0881d96bd467e4269d988ea3d473d3d40470f',
+            started: true,
+          },
+        ],
+        qosClass: 'BestEffort',
+      },
+    },
   ],
-  replicaSets: [
+  replicasets: [
+    {
+      kind: 'ReplicaSet',
+      apiVersion: 'apps/v1',
+      metadata: {
+        name: 'test-deployment-645f8d4887',
+        namespace: 'test-app',
+        uid: '6165cda0-8ada-4468-960d-122b5230db27',
+        resourceVersion: '42258',
+        generation: 1,
+        creationTimestamp: '2023-02-15T09:00:36Z',
+        labels: {
+          app: 'name',
+          'backstage.io/kubernetes-id': 'backstage',
+          'pod-template-hash': 'bfb8bb77',
+        },
+        annotations: {
+          'deployment.kubernetes.io/desired-replicas': '3',
+          'deployment.kubernetes.io/max-replicas': '4',
+          'deployment.kubernetes.io/revision': '1',
+        },
+        ownerReferences: [
+          {
+            apiVersion: 'apps/v1',
+            kind: 'Deployment',
+            name: 'test-deployment',
+            uid: 'd358f6d8-5940-4035-9cc4-72c8e2de70d4',
+            controller: true,
+            blockOwnerDeletion: true,
+          },
+        ],
+      },
+      spec: {
+        replicas: 1,
+        selector: {
+          matchLabels: {
+            app: 'name',
+            'pod-template-hash': 'bfb8bb77',
+          },
+        },
+        template: {
+          metadata: {
+            creationTimestamp: null,
+            labels: {
+              app: 'name',
+              'backstage.io/kubernetes-id': 'backstage',
+              'pod-template-hash': 'bfb8bb77',
+            },
+          },
+          spec: {
+            containers: [
+              {
+                name: 'container',
+                image: 'openshift/hello-openshift',
+                ports: [
+                  {
+                    containerPort: 8080,
+                    protocol: 'TCP',
+                  },
+                ],
+                resources: {},
+                terminationMessagePath: '/dev/termination-log',
+                terminationMessagePolicy: 'File',
+                imagePullPolicy: 'Always',
+              },
+            ],
+            restartPolicy: 'Always',
+            terminationGracePeriodSeconds: 30,
+            dnsPolicy: 'ClusterFirst',
+            securityContext: {},
+            schedulerName: 'default-scheduler',
+          },
+        },
+      },
+      status: {
+        replicas: 3,
+        fullyLabeledReplicas: 3,
+        readyReplicas: 3,
+        availableReplicas: 3,
+        observedGeneration: 1,
+      },
+    },
     {
       kind: 'ReplicaSet',
       apiVersion: 'apps/v1',
@@ -518,12 +1592,11 @@ export const mockKubernetesResponse = {
       kind: 'Deployment',
       apiVersion: 'apps/v1',
       metadata: {
-        name: 'hello-world',
+        name: 'test-deployment',
         namespace: 'test-app',
-        uid: '17094219-d12e-431c-bb3f-ee0876f11b04',
+        uid: 'd358f6d8-5940-4035-9cc4-72c8e2de70d4',
         resourceVersion: '42259',
         generation: 1,
-        creationTimestamp: '2023-02-15T09:00:36Z',
         labels: {
           'backstage.io/kubernetes-id': 'backstage',
         },
@@ -590,16 +1663,100 @@ export const mockKubernetesResponse = {
           {
             type: 'Available',
             status: 'True',
-            lastUpdateTime: '2023-02-15T09:00:43Z',
-            lastTransitionTime: '2023-02-15T09:00:43Z',
             reason: 'MinimumReplicasAvailable',
             message: 'Deployment has minimum availability.',
           },
           {
             type: 'Progressing',
             status: 'True',
-            lastUpdateTime: '2023-02-15T09:00:43Z',
-            lastTransitionTime: '2023-02-15T09:00:36Z',
+            reason: 'NewReplicaSetAvailable',
+            message:
+              'ReplicaSet "hello-world-bfb8bb77" has successfully progressed.',
+          },
+        ],
+      },
+    },
+    {
+      kind: 'Deployment',
+      apiVersion: 'apps/v1',
+      metadata: {
+        name: 'hello-world',
+        namespace: 'test-app',
+        uid: '17094219-d12e-431c-bb3f-ee0876f11b04',
+        resourceVersion: '42259',
+        generation: 1,
+        labels: {
+          'backstage.io/kubernetes-id': 'backstage',
+        },
+        annotations: {
+          'deployment.kubernetes.io/revision': '1',
+        },
+      },
+      spec: {
+        replicas: 1,
+        selector: {
+          matchLabels: {
+            app: 'name',
+          },
+        },
+        template: {
+          metadata: {
+            creationTimestamp: null,
+            labels: {
+              app: 'name',
+              'backstage.io/kubernetes-id': 'backstage',
+            },
+          },
+          spec: {
+            containers: [
+              {
+                name: 'container',
+                image: 'openshift/hello-openshift',
+                ports: [
+                  {
+                    containerPort: 8080,
+                    protocol: 'TCP',
+                  },
+                ],
+                resources: {},
+                terminationMessagePath: '/dev/termination-log',
+                terminationMessagePolicy: 'File',
+                imagePullPolicy: 'Always',
+              },
+            ],
+            restartPolicy: 'Always',
+            terminationGracePeriodSeconds: 30,
+            dnsPolicy: 'ClusterFirst',
+            securityContext: {},
+            schedulerName: 'default-scheduler',
+          },
+        },
+        strategy: {
+          type: 'RollingUpdate',
+          rollingUpdate: {
+            maxUnavailable: '25%',
+            maxSurge: '25%',
+          },
+        },
+        revisionHistoryLimit: 10,
+        progressDeadlineSeconds: 600,
+      },
+      status: {
+        observedGeneration: 1,
+        replicas: 1,
+        updatedReplicas: 1,
+        readyReplicas: 1,
+        availableReplicas: 1,
+        conditions: [
+          {
+            type: 'Available',
+            status: 'True',
+            reason: 'MinimumReplicasAvailable',
+            message: 'Deployment has minimum availability.',
+          },
+          {
+            type: 'Progressing',
+            status: 'True',
             reason: 'NewReplicaSetAvailable',
             message:
               'ReplicaSet "hello-world-bfb8bb77" has successfully progressed.',
@@ -616,7 +1773,7 @@ export const mockKubernetesResponse = {
         uid: '58f0c8ba-492a-4460-9105-dabe475062dd',
         resourceVersion: '491059',
         generation: 1,
-        creationTimestamp: '2023-03-08T07:32:26Z',
+        creationTimestamp: new Date('2023-02-15T09:00:36Z'),
         labels: {
           'backstage.io/kubernetes-id': 'backstage',
         },
@@ -633,7 +1790,6 @@ export const mockKubernetesResponse = {
         },
         template: {
           metadata: {
-            creationTimestamp: null,
             labels: {
               app: 'hello-world-45',
               'backstage.io/kubernetes-id': 'backstage',
@@ -683,16 +1839,12 @@ export const mockKubernetesResponse = {
           {
             type: 'Available',
             status: 'True',
-            lastUpdateTime: '2023-03-08T07:32:31Z',
-            lastTransitionTime: '2023-03-08T07:32:31Z',
             reason: 'MinimumReplicasAvailable',
             message: 'Deployment has minimum availability.',
           },
           {
             type: 'Progressing',
             status: 'True',
-            lastUpdateTime: '2023-03-08T07:32:31Z',
-            lastTransitionTime: '2023-03-08T07:32:26Z',
             reason: 'NewReplicaSetAvailable',
             message:
               'ReplicaSet "hello-world-45-bfb8bb77" has successfully progressed.',
@@ -794,6 +1946,281 @@ export const mockKubernetesResponse = {
       },
     },
   ],
+  statefulsets: [
+    {
+      apiVersion: 'apps/v1',
+      kind: 'StatefulSet',
+      metadata: {
+        generation: 1,
+        labels: {
+          'backstage.io/kubernetes-id': 'test-backstage',
+        },
+        name: 'example-ss',
+        namespace: 'deb-test',
+        resourceVersion: '70480',
+        uid: 'b7e67f5c-3f68-4ff5-bee4-43a9b388aa6f',
+      },
+      spec: {
+        podManagementPolicy: 'OrderedReady',
+        replicas: 3,
+        revisionHistoryLimit: 10,
+        selector: { matchLabels: {} },
+        serviceName: 'httpd',
+        template: {
+          metadata: {},
+        },
+        updateStrategy: {
+          type: 'RollingUpdate',
+          rollingUpdate: {},
+        },
+      },
+      status: {
+        observedGeneration: 1,
+        replicas: 1,
+        currentReplicas: 1,
+        updatedReplicas: 1,
+        currentRevision: 'example-5bdc6b6c9b',
+        updateRevision: 'example-5bdc6b6c9b',
+        collisionCount: 0,
+        availableReplicas: 0,
+      },
+    },
+    {
+      apiVersion: 'apps/v1',
+      kind: 'StatefulSet',
+      metadata: {
+        generation: 1,
+        labels: {
+          'backstage.io/kubernetes-id': 'test-backstage',
+        },
+        name: 'example',
+        namespace: 'deb-test',
+        resourceVersion: '70480',
+        uid: 'c7afef06-4f6b-4582-9d3e-81ad69b10a75',
+      },
+      spec: {
+        podManagementPolicy: 'OrderedReady',
+        replicas: 3,
+        revisionHistoryLimit: 10,
+        selector: { matchLabels: {} },
+        serviceName: 'httpd',
+        template: {
+          metadata: {
+            labels: {
+              app: 'name',
+            },
+          },
+          spec: {
+            terminationGracePeriodSeconds: 10,
+            containers: {
+              name: 'httpd',
+              image:
+                'image-registry.openshift-image-registry.svc:5000/openshift/httpd:latest',
+              ports: [{ containerPort: 8080, name: 'web' }],
+              volumeMounts: [{ name: 'www', mountPath: '/var/www/html' }],
+            },
+          },
+        },
+        updateStrategy: {
+          type: 'RollingUpdate',
+          rollingUpdate: {},
+        },
+      },
+      status: {},
+    },
+  ],
+  cronJobs: [
+    {
+      apiVersion: 'batch/v1',
+      kind: 'CronJob',
+      metadata: {
+        labels: {
+          'backstage.io/kubernetes-id': 'test-backstage',
+        },
+        name: 'example',
+        namespace: 'deb-test',
+        resourceVersion: '70698',
+        uid: '36869a06-aa02-425c-a2ea-3202a4f4d7d7',
+      },
+      spec: {
+        schedule: '*/1 * * * *',
+        jobTemplate: {
+          metadata: {
+            creationTimestamp: new Date('2023-03-08T07:32:26Z'),
+          },
+          spec: {
+            template: {
+              metadata: {
+                creationTimestamp: new Date('2023-03-08T07:32:26Z'),
+                labels: {
+                  app: 'name',
+                  'backstage.io/kubernetes-id': 'backstage',
+                },
+              },
+              spec: {
+                containers: [
+                  {
+                    name: 'busybox',
+                    image: 'busybox:latest',
+                    resources: {},
+                    terminationMessagePath: '/dev/termination-log',
+                    terminationMessagePolicy: 'File',
+                    imagePullPolicy: 'Always',
+                  },
+                ],
+
+                restartPolicy: 'OnFailure',
+                terminationGracePeriodSeconds: 30,
+                dnsPolicy: 'ClusterFirst',
+                securityContext: {},
+                schedulerName: 'default-scheduler',
+              },
+              resources: {},
+            },
+          },
+        },
+      },
+    },
+  ],
+  jobs: [
+    {
+      apiVersion: 'batch/v1',
+      kind: 'Job',
+      metadata: {
+        annotations: '',
+        labels: {
+          'backstage.io/kubernetes-id': 'test-backstage',
+        },
+        name: 'busybox-cron-27992986',
+        namespace: 'deb-test',
+        ownerReferences: [
+          {
+            apiVersion: 'batch/v1',
+            kind: 'CronJob',
+            name: 'example',
+            uid: '36869a06-aa02-425c-a2ea-3202a4f4d7d7',
+          },
+        ],
+        uid: 'da070cbb-aa23-40bd-ae90-8db1354b2044',
+      },
+      spec: {},
+      status: {},
+    },
+    {
+      apiVersion: 'batch/v1',
+      kind: 'Job',
+      metadata: {
+        annotations: '',
+        labels: {
+          'backstage.io/kubernetes-id': 'test-backstage',
+        },
+        name: 'pi',
+        namespace: 'deb-test',
+        uid: 'da070cbb-aa23-40bd-ae90-8db1354b2044',
+      },
+      spec: {
+        template: {
+          metadata: {
+            name: 'pi',
+            creationTimestamp: null,
+            labels: {
+              app: 'name',
+              'backstage.io/kubernetes-id': 'backstage',
+            },
+          },
+          spec: {
+            containers: [
+              {
+                name: 'pi',
+                image: 'perl',
+                command: ['perl', '-Mbignum=bpi', '-wle', 'print bpi(2000)'],
+                resources: {},
+                terminationMessagePath: '/dev/termination-log',
+                terminationMessagePolicy: 'File',
+                imagePullPolicy: 'Always',
+              },
+            ],
+            restartPolicy: 'Never',
+            terminationGracePeriodSeconds: 30,
+            dnsPolicy: 'ClusterFirst',
+            securityContext: {},
+            schedulerName: 'default-scheduler',
+          },
+        },
+      },
+      status: {},
+    },
+  ],
+
+  daemonSets: [
+    {
+      metadata: {
+        name: 'daemonset-testing',
+        namespace: 'testing',
+        uid: '0c4a82c9-a6e6-11e9-a20f-52fdfc072182',
+        resourceVersion: '700614',
+        generation: 1,
+        annotations: {
+          'deprecated.daemonset.template.generation': '1',
+        },
+      },
+      spec: {
+        selector: {
+          matchLabels: {
+            app: 'hello-openshift',
+          },
+        },
+        template: {
+          metadata: {
+            labels: {
+              app: 'name',
+            },
+          },
+          spec: {
+            containers: [
+              {
+                name: 'hello-openshift',
+                image: 'openshift/hello-openshift',
+                ports: [
+                  {
+                    containerPort: 8080,
+                    protocol: 'TCP',
+                  },
+                ],
+                resources: {},
+                terminationMessagePath: '/dev/termination-log',
+                terminationMessagePolicy: 'File',
+                imagePullPolicy: 'Always',
+              },
+            ],
+            restartPolicy: 'Always',
+            terminationGracePeriodSeconds: 30,
+            dnsPolicy: 'ClusterFirst',
+            securityContext: {},
+            schedulerName: 'default-scheduler',
+          },
+        },
+        updateStrategy: {
+          type: 'RollingUpdate',
+          rollingUpdate: {
+            maxUnavailable: 1,
+          },
+        },
+        revisionHistoryLimit: 10,
+      },
+      status: {
+        currentNumberScheduled: 1,
+        numberMisscheduled: 0,
+        desiredNumberScheduled: 1,
+        numberReady: 0,
+        observedGeneration: 1,
+        updatedNumberScheduled: 1,
+        numberUnavailable: 1,
+      },
+      kind: 'DaemonSet',
+      apiVersion: 'apps/v1',
+    },
+  ],
 };
 
 export const mockK8sResourcesData = {
@@ -807,7 +2234,7 @@ export const mockK8sResourcesData = {
       data: mockKubernetesResponse.pods,
     },
     replicaSets: {
-      data: mockKubernetesResponse.replicaSets,
+      data: mockKubernetesResponse.replicasets,
     },
     services: {
       data: mockKubernetesResponse.services,

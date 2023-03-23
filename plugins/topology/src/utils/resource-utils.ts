@@ -1,9 +1,13 @@
 import {
+  V1CronJob,
+  V1DaemonSet,
   V1Deployment,
   V1Ingress,
+  V1Job,
   V1Pod,
   V1PodTemplate,
   V1Service,
+  V1StatefulSet,
 } from '@kubernetes/client-node';
 import { OverviewItem } from '../types/topology-types';
 import {
@@ -25,7 +29,7 @@ const validPod = (pod: V1Pod) => {
 };
 
 const isStandaloneJob = (job: K8sWorkloadResource) =>
-  job.metadata?.ownerReferences?.find(owner => owner.kind === 'CronJob');
+  !job.metadata?.ownerReferences?.find(owner => owner.kind === 'CronJob');
 
 export const createOverviewItemForType = (
   type: string,
@@ -86,6 +90,14 @@ const getPodTemplate = (
       return resource as V1PodTemplate;
     case 'Deployment':
       return (resource as V1Deployment).spec?.template;
+    case 'StatefulSet':
+      return (resource as V1StatefulSet).spec?.template;
+    case 'Job':
+      return (resource as V1Job).spec?.template;
+    case 'CronJob':
+      return (resource as V1CronJob).spec?.jobTemplate?.spec?.template;
+    case 'DaemonSet':
+      return (resource as V1DaemonSet).spec?.template;
     default:
       return undefined;
   }
