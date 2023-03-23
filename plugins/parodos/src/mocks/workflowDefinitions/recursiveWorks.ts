@@ -20,13 +20,13 @@ export const mockRecursiveWorksWorkflowDefinition = {
           parameters: {
             adGroups: {
               description: 'The ad groups',
-              required: 'false',
+              required: false,
               type: 'string',
               format: 'text',
             },
             userId: {
               description: 'The user id',
-              required: 'true',
+              required: true,
               type: 'string',
               format: 'text',
             },
@@ -40,13 +40,13 @@ export const mockRecursiveWorksWorkflowDefinition = {
           parameters: {
             clusterName: {
               description: 'The cluster name',
-              required: 'false',
+              required: false,
               type: 'string',
               format: 'text',
             },
             hostname: {
               description: 'The hostname',
-              required: 'false',
+              required: false,
               type: 'string',
               format: 'text',
             },
@@ -59,7 +59,7 @@ export const mockRecursiveWorksWorkflowDefinition = {
           type: 'string',
           format: 'text',
           description: 'The workflow comment',
-          required: 'false',
+          required: false,
         },
       },
     },
@@ -70,7 +70,7 @@ export const mockRecursiveWorksWorkflowDefinition = {
       parameters: {
         projectId: {
           description: 'The project id',
-          required: 'false',
+          required: false,
           type: 'number',
         },
       },
