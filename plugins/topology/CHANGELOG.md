@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-topology [1.2.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.2.3...@janus-idp/backstage-plugin-topology@1.2.4) (2023-03-23)
+
+
+### Bug Fixes
+
+* **topology:** updates PF versions ([#195](https://github.com/janus-idp/backstage-plugins/issues/195)) ([67e136e](https://github.com/janus-idp/backstage-plugins/commit/67e136e4ded19feb754a0bbc45776e95fa0e2498))
+
 ## @janus-idp/backstage-plugin-topology [1.2.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.2.2...@janus-idp/backstage-plugin-topology@1.2.3) (2023-03-22)
 
 
