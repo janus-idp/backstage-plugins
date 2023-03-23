@@ -53,7 +53,7 @@ export function ArtifactoryRepository(props: RepositoryProps) {
         </Box>
       ),
       repositories:
-      `${edge.node.repos.length}` +
+        `${edge.node.repos.length}` +
         ' | ' +
         `${edge.node.repos.map(repo => repo.name).join('| ')}`,
     };
