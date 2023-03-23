@@ -75,7 +75,11 @@ export function getUiSchema(type: ParameterFormat) {
   }
 }
 
-function transformWorkToStep(work: WorkType): Step {
+function transformWorkToStep(
+  work: WorkType,
+  acc: Step[] = [],
+  depth: number = 1,
+) {
   const title = taskDisplayName(work.name); // TODO: task label would be good here
 
   const schema: Record<string, any> = {
@@ -128,7 +132,6 @@ function transformWorkToStep(work: WorkType): Step {
       ...getUiSchema(format ?? (type as ParameterFormat)),
       'ui:field': field,
       'ui:help': description,
-      'ui:autocomplete': 'Off',
     });
 
     if (required) {
@@ -153,20 +156,28 @@ function transformWorkToStep(work: WorkType): Step {
 
     const childWorks = work.works ?? [];
 
-    for (const [index, childWork] of childWorks.entries()) {
-      const childStep = transformWorkToStep(childWork);
+    for (const childWork of childWorks) {
+      const children: Step[] = [];
+      const childStep = transformWorkToStep(childWork, children, depth + 1);
 
-      const nextSchemaKey = `properties.${key}.properties.works.items[${index}]`;
-      const nextUiSchemaKey = `${key}.works.items[${index}]`;
+      acc.push(childStep);
 
-      set(schema, nextSchemaKey, childStep.schema);
+      for (const child of children) {
+        child.parent = childStep;
+        acc.push(child);
+      }
+
+      // const nextSchemaKey = `properties.${key}.properties.works.items[${index}]`;
+      // const nextUiSchemaKey = `${key}.works.items[${index}]`;
+
+      // set(schema, nextSchemaKey, childStep.schema);
 
       // set(uiSchema, `${key}.works.['ui:hidden']`, true);
-      set(uiSchema, nextUiSchemaKey, childStep.uiSchema);
+      // set(uiSchema, nextUiSchemaKey, childStep.uiSchema);
     }
   }
 
-  return { schema, uiSchema, title, mergedSchema: schema };
+  return { schema, uiSchema, title, mergedSchema: schema, parent: undefined };
 }
 
 export function jsonSchemaFromWorkflowDefinition(
@@ -188,12 +199,18 @@ export function jsonSchemaFromWorkflowDefinition(
   }
 
   for (const work of workflowDefinition.works) {
-    const step = transformWorkToStep(work);
+    const children: Step[] = [];
+    const step = transformWorkToStep(work, children);
 
     result.steps.push(step);
+
+    for(const child of children) {
+      child.parent = step;
+      result.steps.push(child);
+    }
   }
 
-  console.log(result)
+  console.log(result);
 
   return result;
 }

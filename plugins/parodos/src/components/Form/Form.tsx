@@ -16,6 +16,7 @@ import {
 } from '@material-ui/core';
 import { FluidObjectFieldTemplate } from '../layouts/FluidObjectFieldTemplate';
 import { OutlinedBaseInputTemplate } from './widgets/TextAreaWidget';
+import ArrayFieldTemplate from './Templates/ArrayFieldTemplate';
 
 type FormProps = Pick<
   JsonFormProps,
@@ -118,7 +119,9 @@ export function Form({
       templates={{
         ObjectFieldTemplate: FluidObjectFieldTemplate,
         BaseInputTemplate: OutlinedBaseInputTemplate as any,
+        ArrayFieldTemplate: ArrayFieldTemplate,
       }}
+      noValidate
       uiSchema={{
         ...currentStep.uiSchema,
         ['ui:title']: title,
@@ -162,7 +165,7 @@ export function Form({
         orientation="horizontal"
         className={styles.stepper}
       >
-        {formSchema.steps.map((step, index) => (
+        {formSchema.steps.filter(step => typeof step.parent === 'undefined').map((step, index) => (
           <Step key={index}>
             {hideTitle === false && (
               <StepLabel className={styles.stepLabel}>{step.title}</StepLabel>
