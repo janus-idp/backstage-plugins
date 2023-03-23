@@ -26,7 +26,7 @@ export const mockRecursiveWorksWorkflowDefinition = {
             },
             userId: {
               description: 'The user id',
-              required: 'false',
+              required: 'true',
               type: 'string',
               format: 'text',
             },

@@ -23,16 +23,23 @@ describe('WorkflowDefinitionSchema', () => {
     expect(result.data.works[0]?.works?.[0].name).toBe('adGroupsWorkFlowTask');
   });
 
-  it('should coerce required correctly', () => {
+  it('should transform required correctly', () => {
     expect(result.success).toBe(true);
 
     assert(result.success);
 
-    const required =
+    const falseRequired =
       result.data.works[0]?.works?.[0].parameters?.adGroups?.required;
 
-    expect(typeof required).toBe('boolean');
+    expect(typeof falseRequired).toBe('boolean');
 
-    expect(required).toBe(false);
+    expect(falseRequired).toBe(false);
+
+    const trueRequired =
+      result.data.works[0]?.works?.[0].parameters?.userId?.required;
+
+    expect(typeof trueRequired).toBe('boolean');
+
+    expect(trueRequired).toBe(true);
   });
 });

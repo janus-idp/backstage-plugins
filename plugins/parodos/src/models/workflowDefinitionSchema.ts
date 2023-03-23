@@ -67,7 +67,7 @@ export type WorkType = z.infer<typeof baseWorkSchema> & {
 
 export type WorkTypeInput = {
   [K in keyof WorkType]: K extends 'parameters'
-    ? Record<any, InputParameter> | null
+    ? Record<string, InputParameter> | null
     : K extends 'works'
     ? WorkTypeInput[]
     : WorkType[K];
