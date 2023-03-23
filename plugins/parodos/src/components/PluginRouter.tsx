@@ -3,7 +3,6 @@ import { Route, Routes } from 'react-router-dom';
 import { ProjectOverviewPage } from './projectOverview';
 import { Deploy } from './deploy';
 import { Notification } from './notification';
-import { Training } from './training';
 import { Metrics } from './metrics';
 import { Workflow } from './workflow/Workflow';
 import { Onboarding } from './workflow/onboarding/Onboarding';
@@ -16,7 +15,6 @@ export const PluginRouter = () => (
     <Route path="/workflow" element={<Workflow />} />
     <Route path="/deploy" element={<Deploy />} />
     <Route path="/notification" element={<Notification />} />
-    <Route path="/training" element={<Training />} />
     <Route path="/metrics" element={<Metrics />} />
     <Route
       path="/onboarding/:projectId/:workflowName/new/"
