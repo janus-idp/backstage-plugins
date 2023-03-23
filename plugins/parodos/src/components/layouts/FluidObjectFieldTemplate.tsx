@@ -23,9 +23,6 @@ const useStyles = makeStyles(theme => ({
       boxShadow: 'none',
     },
   },
-  item2: {
-    border: '10px solid red',
-  },
   title: {
     fontSize: '1rem',
     fontWeight: theme.typography

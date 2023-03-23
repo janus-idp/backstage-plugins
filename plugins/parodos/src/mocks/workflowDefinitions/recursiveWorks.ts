@@ -1,6 +1,4 @@
-import { WorkflowDefinition } from '../../models/workflowDefinitionSchema';
-
-export const mockRecursiveWorksWorkflowDefinition: WorkflowDefinition = {
+export const mockRecursiveWorksWorkflowDefinition = {
   id: 'ea22c6ed-b7d4-48bf-98d2-f7c1c78643d8',
   name: 'subWorkFlowTwo',
   type: 'INFRASTRUCTURE',
@@ -19,64 +17,63 @@ export const mockRecursiveWorksWorkflowDefinition: WorkflowDefinition = {
           id: '684d5cc0-3da7-4b18-9712-a60622748c5a',
           name: 'adGroupsWorkFlowTask',
           workType: 'TASK',
-          parameters: [
-            {
+          parameters: {
+            adGroups: {
               description: 'The ad groups',
-              optional: false,
-              type: 'TEXT',
-              key: 'adGroups',
+              required: 'false',
+              type: 'string',
+              format: 'text',
             },
-            {
+            userId: {
               description: 'The user id',
-              optional: false,
-              type: 'TEXT',
-              key: 'userId',
+              required: 'true',
+              type: 'string',
+              format: 'text',
             },
-          ],
+          },
           outputs: ['HTTP2XX', 'EXCEPTION'],
         },
         {
           id: '09d93c82-8865-45fe-9348-bd6ef5b9aeb3',
           name: 'splunkMonitoringWorkFlowTask',
           workType: 'TASK',
-          parameters: [
-            {
+          parameters: {
+            clusterName: {
               description: 'The cluster name',
-              optional: false,
-              type: 'TEXT',
-              key: 'clusterName',
+              required: 'false',
+              type: 'string',
+              format: 'text',
             },
-            {
+            hostname: {
               description: 'The hostname',
-              optional: false,
-              type: 'TEXT',
-              key: 'hostname',
+              required: 'false',
+              type: 'string',
+              format: 'text',
             },
-          ],
+          },
           outputs: ['OTHER'],
         },
       ],
-      parameters: [
-        {
-          key: 'comment',
-          type: 'TEXT',
+      parameters: {
+        comment: {
+          type: 'string',
+          format: 'text',
           description: 'The workflow comment',
-          optional: false,
+          required: 'false',
         },
-      ],
+      },
     },
     {
       id: 'e8d23ee9-8406-423c-beb7-c4e4f3ba0a21',
       name: 'namespaceWorkFlowTask',
       workType: 'TASK',
-      parameters: [
-        {
+      parameters: {
+        projectId: {
           description: 'The project id',
-          optional: false,
-          type: 'NUMBER',
-          key: 'projectId',
+          required: 'false',
+          type: 'number',
         },
-      ],
+      },
       outputs: ['HTTP2XX'],
     },
   ],

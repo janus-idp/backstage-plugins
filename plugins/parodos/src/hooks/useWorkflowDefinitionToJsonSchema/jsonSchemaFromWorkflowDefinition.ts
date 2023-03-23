@@ -1,5 +1,5 @@
 import {
-  type WorkFlowTaskParameterType,
+  type ParameterFormat,
   type WorkflowDefinition,
   type WorkType,
 } from '../../models/workflowDefinitionSchema';
@@ -8,39 +8,37 @@ import set from 'lodash.set';
 import get from 'lodash.get';
 import { taskDisplayName } from '../../utils/string';
 
-export function getJsonSchemaType(type: WorkFlowTaskParameterType) {
+export function getJsonSchemaType(type: ParameterFormat) {
   switch (type) {
-    case 'PASSWORD':
-    case 'TEXT':
+    case 'password':
+    case 'text':
       return {
         type: 'string',
       };
-    case 'NUMBER':
+    case 'number':
       return {
         type: 'number',
       };
-    case 'DATE':
+    case 'date':
       return {
         type: 'string',
         format: 'date',
       };
-    case 'EMAIL':
+    case 'email':
       return {
         type: 'string',
         format: 'email',
       };
-    case 'URL':
+    case 'url':
       return {
         type: 'string',
         pattern: '^(https?)://', // TODO: better regex
       };
-    case 'BOOLEAN': {
+    case 'boolean': {
       return {
         type: 'boolean',
       };
     }
-    case 'MOCK-SELECT':
-      return {};
     default:
       return {
         type: 'string',
@@ -48,29 +46,29 @@ export function getJsonSchemaType(type: WorkFlowTaskParameterType) {
   }
 }
 
-export function getUiSchema(type: WorkFlowTaskParameterType) {
+export function getUiSchema(type: ParameterFormat) {
   switch (type) {
-    case 'PASSWORD':
+    case 'password':
       return {
         'ui:emptyValue': undefined,
         'ui:widget': 'password',
       };
-    case 'TEXT':
+    case 'text':
       return {
         'ui:emptyValue': undefined,
       };
-    case 'EMAIL':
+    case 'email':
       return {
         'ui:widget': 'email',
       };
-    case 'BOOLEAN': {
+    case 'boolean': {
       return {
         // TODO: what if needs to be a checkbox list?
         'ui:widget': 'radio',
       };
     }
-    case 'URL':
-    case 'NUMBER':
+    case 'url':
+    case 'number':
       return {};
     default:
       return {};
@@ -101,44 +99,36 @@ function transformWorkToStep(work: WorkType): Step {
     'ui:hidden': true,
   };
 
-  for (const {
+  for (const [
     key,
-    type,
-    description,
-    optional,
-    default: fieldDefault,
-    field,
-    options = [],
-  } of work.parameters ?? []) {
+    {
+      description,
+      type,
+      required,
+      format,
+      default: fieldDefault,
+      field,
+      minLength,
+      maxLength,
+    },
+  ] of Object.entries(work.parameters ?? {})) {
     const propertiesPath = `properties.${work.name}.properties.${key}`;
-    const required = !optional;
 
     set(schema, propertiesPath, {
       title: `${key}`,
-      ...getJsonSchemaType(type),
+      ...getJsonSchemaType(format ?? (type as ParameterFormat)),
       ...{ default: fieldDefault },
+      minLength,
+      maxLength,
     });
-
-    if (options && options.length > 0) {
-      set(
-        schema,
-        `${propertiesPath}.enum`,
-        options.map(option => option.key),
-      );
-      set(
-        schema,
-        `${propertiesPath}.enumNames`,
-        options.map(option => option.value),
-      );
-    }
 
     const objectPath = `${work.name}.${key}`;
 
     set(uiSchema, objectPath, {
-      ...getUiSchema(type),
+      ...getUiSchema(format ?? (type as ParameterFormat)),
       'ui:field': field,
       'ui:help': description,
-      'ui:autocomplete': 'Off',
+      // 'ui:autocomplete': 'Off',
     });
 
     if (required) {
@@ -186,12 +176,12 @@ export function jsonSchemaFromWorkflowDefinition(
     steps: [],
   };
 
-  const parameters = workflowDefinition.parameters ?? [];
+  const parameters = workflowDefinition.parameters ?? {};
 
-  if (parameters.length > 0) {
+  if (Object.keys(parameters).length > 0) {
     const step = transformWorkToStep({
       name: workflowDefinition.name,
-      parameters: [...parameters],
+      parameters,
     } as WorkType);
 
     result.steps.push(step);

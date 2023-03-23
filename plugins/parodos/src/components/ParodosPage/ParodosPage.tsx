@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom';
 import { PageHeader } from '../PageHeader';
 import type { PropsFromComponent } from '../types';
 import { useNavigate } from 'react-router-dom';
-import { TabLabel, TabLabelProps } from './TabLabel';
+import { tabLabelCreator } from './TabLabel';
 import { navigationMap, pluginRoutePrefix } from './navigationMap';
 import { useStore } from '../../stores/workflowStore/workflowStore';
 import { ErrorMessage } from '../errors/ErrorMessage';
@@ -40,13 +40,10 @@ export const ParodosPage: FC<ParodosPageProps> = ({ children, ...props }) => {
           id: index.toString(),
           label,
           tabProps: {
-            component: (p: TabLabelProps) => (
-              <TabLabel
-                {...p}
-                highlighted={highlighted}
-                icon={navigationMap[index].icon}
-              />
-            ),
+            component: tabLabelCreator({
+              icon: navigationMap[index].icon,
+              highlighted,
+            }),
           },
         };
       }),
