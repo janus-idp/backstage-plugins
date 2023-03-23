@@ -1,5 +1,5 @@
 import { Button, makeStyles, TextField } from '@material-ui/core';
-import React, { useCallback } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
 import { AttachAddon } from 'xterm-addon-attach';
@@ -55,6 +55,7 @@ export const TerminalComponent = () => {
   const tokenRef = React.useRef<HTMLInputElement>(null);
   const termRef = React.useRef(null);
   const webSocketUrl = config.getString('webTerminal.webSocketUrl');
+  const restServerUrl = config.getString('webTerminal.restServerUrl');
   /**
    * Terminal is attached to created websocket, attachment allows user
    * to interact with terminal as they would with a normal terminal
@@ -92,7 +93,12 @@ export const TerminalComponent = () => {
   ) => {
     let terminalID;
     try {
-      terminalID = await createWorkspace(link, usedToken, usedNamespace);
+      terminalID = await createWorkspace(
+        restServerUrl,
+        link,
+        usedToken,
+        usedNamespace,
+      );
     } catch (error) {
       return undefined;
     }
@@ -100,6 +106,7 @@ export const TerminalComponent = () => {
     let phase;
     while (phase !== 'Running') {
       [workspaceID, phase] = await getWorkspace(
+        restServerUrl,
         link,
         usedToken,
         terminalID,
@@ -109,12 +116,15 @@ export const TerminalComponent = () => {
     return { workspaceID, terminalID };
   };
 
+  const setupPodRef = useRef(setupPod);
+
   React.useEffect(() => {
     if (!token || !cluster) {
       return;
     }
+    const setupPodCurrent = setupPodRef.current;
     setLoading(true);
-    setupPod(cluster, token, namespace!).then(names => {
+    setupPodCurrent(cluster, token, namespace!).then(names => {
       if (!names) {
         setDisplayModal(true);
         setLoading(false);
@@ -170,7 +180,7 @@ export const TerminalComponent = () => {
         </form>
         {displayModal && (
           <NamespacePickerDialog
-            onInit={() => getNamespaces(cluster!, token!)}
+            onInit={() => getNamespaces(restServerUrl, cluster!, token!)}
             previousNamespace={namespace!}
             open={displayModal}
             handleClose={handleClose}
