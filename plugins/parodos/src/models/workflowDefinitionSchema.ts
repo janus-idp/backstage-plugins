@@ -23,7 +23,7 @@ const processingType = z.union([
 
 export const workFlowTaskParameterTypeSchema = z.object({
   description: z.string().optional(),
-  required: z.string().transform(val => val === 'true'),
+  required: z.boolean(),
   type: parameterTypes,
   format: parameterFormat.optional(),
   minLength: z.number().optional(),
@@ -32,12 +32,6 @@ export const workFlowTaskParameterTypeSchema = z.object({
   field: z.string().optional(),
   disabled: z.boolean().default(false).optional(),
 });
-
-type Parameter = z.infer<typeof workFlowTaskParameterTypeSchema>;
-
-type InputParameter = {
-  [K in keyof Parameter]: K extends 'required' ? string : Parameter[K];
-};
 
 export const baseWorkSchema = z.object({
   id: z.string(),
@@ -65,15 +59,7 @@ export type WorkType = z.infer<typeof baseWorkSchema> & {
   works?: WorkType[];
 };
 
-export type WorkTypeInput = {
-  [K in keyof WorkType]: K extends 'parameters'
-    ? Record<string, InputParameter> | null
-    : K extends 'works'
-    ? WorkTypeInput[]
-    : WorkType[K];
-};
-
-export const workSchema: z.ZodType<WorkType, z.ZodTypeDef, WorkTypeInput> =
+export const workSchema: z.ZodType<WorkType, z.ZodTypeDef> =
   baseWorkSchema.extend({
     works: z.lazy(() => workSchema.array()).optional(),
   });
