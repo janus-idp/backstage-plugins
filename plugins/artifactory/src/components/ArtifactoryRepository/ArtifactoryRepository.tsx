@@ -39,7 +39,6 @@ export function ArtifactoryRepository(props: RepositoryProps) {
   }
 
   const data = edges?.map((edge: Edge) => {
-    //const hashFunc = edge.node.files.find(manifest => manifest.name = "manifest.json")?.sha256.substring(0, 6);
     const shortHash = edge.node.files
       .find(manifest => manifest.name === 'manifest.json')
       ?.sha256.substring(0, 12);
@@ -54,9 +53,9 @@ export function ArtifactoryRepository(props: RepositoryProps) {
         </Box>
       ),
       repositories:
-        edge.node.repos.length +
+      `${edge.node.repos.length}` +
         ' | ' +
-        edge.node.repos.map(repo => repo.name).join('| '),
+        `${edge.node.repos.map(repo => repo.name).join('| ')}`,
     };
   });
 
