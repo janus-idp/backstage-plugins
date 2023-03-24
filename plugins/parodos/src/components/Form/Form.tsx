@@ -22,6 +22,7 @@ type FormProps = Pick<
     formSchema: FormSchema;
     title?: string;
     hideTitle?: boolean;
+    stepLess?: boolean;
     children?: ReactNode;
   };
 
@@ -34,6 +35,7 @@ export function Form({
   className,
   transformErrors,
   hideTitle = false,
+  stepLess = false,
   children,
   ...props
 }: FormProps): JSX.Element {
@@ -93,7 +95,7 @@ export function Form({
       transformErrors={transformErrors}
       {...props}
     >
-      {formSchema.steps.length === 1 ? (
+      {stepLess ? (
         children
       ) : (
         <div className={styles.buttonContainer}>
@@ -117,7 +119,7 @@ export function Form({
     </JsonForm>
   );
 
-  if (formSchema.steps.length === 1) {
+  if (stepLess) {
     return TheForm;
   }
 

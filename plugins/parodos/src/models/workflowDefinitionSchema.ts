@@ -23,7 +23,7 @@ const processingType = z.union([
 
 export const workFlowTaskParameterTypeSchema = z.object({
   description: z.string().optional(),
-  required: z.boolean(),
+  required: z.boolean().optional(),
   type: parameterTypes,
   format: parameterFormat.optional(),
   minLength: z.number().optional(),

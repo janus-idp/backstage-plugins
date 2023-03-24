@@ -197,7 +197,7 @@ export function jsonSchemaFromWorkflowDefinition(
     result.steps.push(step);
   }
 
-  for (const work of workflowDefinition.works) {
+  for (const work of workflowDefinition.works.filter(w => Object.keys(w.parameters ?? {}).length > 0 || (w?.works ?? []).length > 0)) {
     const children: Step[] = [];
     const step = transformWorkToStep(work, children);
 
@@ -205,7 +205,6 @@ export function jsonSchemaFromWorkflowDefinition(
 
     for (const child of children) {
       child.parent = step;
-      result.steps.push(child);
     }
   }
 

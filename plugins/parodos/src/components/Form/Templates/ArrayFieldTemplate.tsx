@@ -62,6 +62,10 @@ export default function ArrayFieldTemplate<
 
       setTimeout(() => {
         if (isValid) {
+          if(activeItem !== items.length -1 ) {
+            setActiveItem(prev => prev + 1);
+          }
+          
           return;
         }
 
@@ -75,7 +79,7 @@ export default function ArrayFieldTemplate<
         }
       });
     },
-    [activeItem, form],
+    [activeItem, form, items.length],
   );
 
   const styles = useStyles();
