@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  AssessmentIcon,
-  NotificationIcon,
-  ProjectsIcon,
-  MetricsIcon,
-} from '../icons';
+import { AssessmentIcon, NotificationIcon, ProjectsIcon } from '../icons';
 
 export const pluginRoutePrefix = '/parodos';
 
@@ -21,5 +16,4 @@ export const navigationMap = [
     routes: ['/notification'],
     icon: <NotificationIcon />,
   },
-  { label: 'Metrics', routes: ['/metrics'], icon: <MetricsIcon /> },
 ];
