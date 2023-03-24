@@ -1,4 +1,4 @@
-import React, { useState, useCallback, type ReactNode } from 'react';
+import React, { useState, useCallback, type ReactNode, useRef } from 'react';
 import validator from '@rjsf/validator-ajv8';
 import { Form as JsonForm } from './RJSF';
 import {
@@ -17,6 +17,8 @@ import {
 import { FluidObjectFieldTemplate } from '../layouts/FluidObjectFieldTemplate';
 import { OutlinedBaseInputTemplate } from './widgets/TextAreaWidget';
 import ArrayFieldTemplate from './Templates/ArrayFieldTemplate';
+import { default as CoreForm } from '@rjsf/core-v5';
+import { useStyles } from './styles';
 
 type FormProps = Pick<
   JsonFormProps,
@@ -28,40 +30,6 @@ type FormProps = Pick<
     hideTitle?: boolean;
     children?: ReactNode;
   };
-
-const useStyles = makeStyles(theme => ({
-  stepLabel: {
-    '& span': {
-      fontSize: '1.25rem',
-    },
-  },
-  previous: {
-    border: `1px solid ${theme.palette.primary.main}`,
-    color: theme.palette.text.primary,
-    marginRight: theme.spacing(1),
-    textTransform: 'uppercase',
-    '&:disabled': {
-      border: `1px solid ${theme.palette.text.disabled}`,
-    },
-  },
-  next: {
-    paddingRight: theme.spacing(4),
-    paddingLeft: theme.spacing(4),
-  },
-  backButton: {
-    marginRight: theme.spacing(1),
-  },
-  buttonContainer: {
-    marginBottom: theme.spacing(2),
-  },
-  formWrapper: {
-    padding: theme.spacing(2),
-  },
-  stepper: {
-    margin: 0,
-    paddingLeft: theme.spacing(1),
-  },
-}));
 
 export function Form({
   formSchema,
@@ -78,6 +46,7 @@ export function Form({
   const [activeStep, setActiveStep] = useState(0);
   const [formState, setFormState] = useState<Record<string, JsonValue>>({});
   const styles = useStyles();
+  const formRef = useRef<CoreForm>(null);
 
   const currentStep = formSchema.steps[activeStep];
 
@@ -105,6 +74,7 @@ export function Form({
 
   const TheForm = (
     <JsonForm
+      ref={formRef}
       idPrefix=""
       className={className}
       validator={validator}
@@ -112,7 +82,7 @@ export function Form({
       showErrorList={false}
       onChange={handleChange}
       formData={formState}
-      formContext={{ formData: formState }}
+      formContext={{ formData: formState, form: formRef}}
       onSubmit={handleNext}
       schema={currentStep.schema}
       disabled={disabled}

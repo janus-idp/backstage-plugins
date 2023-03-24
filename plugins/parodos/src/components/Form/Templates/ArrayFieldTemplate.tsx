@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import React, { useState } from 'react';
+import React, { useCallback, useState, type MouseEvent } from 'react';
 import {
   getTemplate,
   getUiOptions,
@@ -17,18 +17,25 @@ import {
   StepLabel,
   Stepper,
 } from '@material-ui/core';
-import { IChangeEvent } from '@rjsf/core-v5';
+import {assert} from 'assert-ts';
+import { default as Form } from '@rjsf/core-v5'
 
 const useStyles = makeStyles(_theme => ({
   stepper: {
-    background: '#F4F4F4;',
+    background: '#F4F4F4',
+    '& div[class^="MuiPaper-root"]': {
+      boxShadow: 'none',
+      background: '#F4F4F4',
+      '& input': {
+        background: _theme.palette.background.paper
+      }
+    }
   },
   stepLabel: {
     '& span': {
       fontSize: '1.25rem',
     },
   },
-  container: {},
 }));
 
 /** The `ArrayFieldTemplate` component is the template used to render all items in an array.
@@ -41,15 +48,10 @@ export default function ArrayFieldTemplate<
   F extends FormContextType = any,
 >(props: ArrayFieldTemplateProps<T, S, F>) {
   const {
-    disabled,
-    idSchema,
     uiSchema,
     items,
-    readonly,
     registry,
-    required,
-    schema,
-    title,
+    formContext
   } = props;
   const uiOptions = getUiOptions(uiSchema);
   const ArrayFieldItemTemplate = getTemplate<'ArrayFieldItemTemplate', T, S, F>(
@@ -57,65 +59,78 @@ export default function ArrayFieldTemplate<
     registry,
     uiOptions,
   );
-  const [activeStep, setActiveStep] = useState(0);
+  const [activeItem, setActiveItem] = useState(0);
 
-  const handleNext = async (data: IChangeEvent, e: React.FormEvent<any>) => {
-    // setFormState(current => ({ ...current, ...data.formData }));
+  const form = formContext?.form?.current as Form;
 
-    console.log({data,e})
+  
+  const handleNext = useCallback((_e: MouseEvent) => {
+    assert(!!form, 'no form in ArrayFieldTemplate');
+    
+    const isValid = form.validateForm();
+    
+    setTimeout(() => {
+      if(isValid) {
+        return;
+      }
 
-    if (activeStep === items.length - 1) {
-      console.log('we are don')
-      // await onSubmit(data, e);
-    } else {
-      setActiveStep(prev => prev + 1);
-    }
-  };
+      // find the current array item index
+      const indexes = form.state.errors.map(error => Number(error.property?.match(/(\d+)/g)?.[0]));
+
+      if(!indexes.includes(activeItem)) {
+        setActiveItem(prev => prev + 1);
+      }
+    })
+
+  }, [activeItem, form]);
 
   const styles = useStyles();
   return (
-    <div className={styles.container}>
-      <Stepper activeStep={activeStep} orientation="vertical" className={styles.stepper}>
+    <>
+      <Stepper activeStep={activeItem} orientation="vertical" className={styles.stepper}>
         {items &&
           items.map(
             (
               { key, ...itemProps }: ArrayFieldTemplateItemType<T, S, F>,
               index,
-            ) => (
-              <Step key={index}>
-                <StepLabel
-                  StepIconProps={{ icon: String.fromCharCode(65 + index) }}
-                  className={styles.stepLabel}
-                >
-                  {uiOptions.title || title}
-                </StepLabel>
-                <StepContent key={index}>
-                  <>
-                    <ArrayFieldItemTemplate key={key} {...itemProps} />
-                    <div>
-                      <Button
-                        disabled={activeStep === 0}
-                        // className={styles.previous}
-                        onClick={() => setActiveStep((a) => activeStep === 0 ? 0 : a - 1)}
-                      >
-                        PREVIOUS
-                      </Button>
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        type="submit"
-                        onClick={handleNext}
-                        // className={styles.next}
-                      >
-                        NEXT
-                      </Button>
-                    </div>
-                  </>
-                </StepContent>
-              </Step>
-            ),
+            ) => {
+              return (
+                <Step key={key}>
+                  <StepLabel
+                    StepIconProps={{ icon: String.fromCharCode(65 + index) }}
+                    className={styles.stepLabel}
+                  >
+                    {uiOptions.title || itemProps.schema.title}
+                  </StepLabel>
+                  <StepContent key={key}>
+                    <>
+                      <ArrayFieldItemTemplate key={key} {...itemProps} />
+                      <div>
+                        <Button
+                          disabled={activeItem === 0}
+                          // className={styles.previous}
+                          onClick={() => setActiveItem((a) => activeItem === 0 ? 0 : a - 1)}
+                        >
+                          PREVIOUS
+                        </Button>
+                        <Button
+                          variant="contained"
+                          type="button"
+                          color="primary"
+                          onClick={handleNext}
+                          disabled={activeItem === items.length - 1}
+                          // className={styles.next}
+                        >
+                          NEXT
+                        </Button>
+                      </div>
+                    </>
+                  </StepContent>
+                </Step>
+              )
+            }
           )}
       </Stepper>
-    </div>
+    </>
   );
 }
