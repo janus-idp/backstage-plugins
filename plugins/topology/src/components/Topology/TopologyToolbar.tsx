@@ -39,7 +39,7 @@ const TopologyToolbar: React.FC = () => {
   return (
     <>
       <ToolbarItem variant="label" id="cluster-filter">
-        Filter by cluster
+        Cluster
       </ToolbarItem>
       <ToolbarItem>
         <Select
