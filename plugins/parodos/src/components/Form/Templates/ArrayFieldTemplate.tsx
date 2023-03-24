@@ -21,14 +21,15 @@ import { assert } from 'assert-ts';
 import { default as Form } from '@rjsf/core-v5';
 import { useStyles as useFormStyles } from '../styles';
 
-const useStyles = makeStyles(_theme => ({
+const useStyles = makeStyles(theme => ({
   stepper: {
-    background: '#F4F4F4',
+    marginBottom: theme.spacing(2),
+    background: theme.palette.background.default,
     '& div[class^="MuiPaper-root"]': {
       boxShadow: 'none',
-      background: '#F4F4F4',
+      background: theme.palette.background.default,
       '& input': {
-        background: _theme.palette.background.paper,
+        background: theme.palette.background.paper,
       },
     },
   },
