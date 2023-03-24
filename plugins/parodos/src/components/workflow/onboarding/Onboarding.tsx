@@ -26,8 +26,6 @@ import * as urls from '../../../urls';
 import lodashGet from 'lodash.get';
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { useStore } from '../../../stores/workflowStore/workflowStore';
-import { mockDeepRecursiveWorks } from '../../../mocks/workflowDefinitions/deepRecursiveWorks';
-import { jsonSchemaFromWorkflowDefinition } from '../../../hooks/useWorkflowDefinitionToJsonSchema/jsonSchemaFromWorkflowDefinition';
 
 interface OnboardingProps {
   isNew: boolean;
@@ -51,13 +49,9 @@ export function Onboarding({ isNew }: OnboardingProps): JSX.Element {
 
   assert(!!workflowName, `no workflowId in Onboarding`);
 
-  // const workflow = useStore(state =>
-  //   state.getWorkDefinitionBy('byName', workflowName),
-  // );
-
-  const workflow = mockDeepRecursiveWorks;
-
-  console.log(workflow);
+  const workflow = useStore(state =>
+    state.getWorkDefinitionBy('byName', workflowName),
+  );
 
   const styles = useStyles();
   const [searchParams] = useSearchParams();
@@ -65,7 +59,7 @@ export function Onboarding({ isNew }: OnboardingProps): JSX.Element {
 
   const workflowOption = searchParams.get('option');
 
-  const formSchema = jsonSchemaFromWorkflowDefinition(mockDeepRecursiveWorks); // useWorkflowDefinitionToJsonSchema(workflowName, 'byName');
+  const formSchema = useWorkflowDefinitionToJsonSchema(workflowName, 'byName');
 
   const tasks = useGetWorkflowTasksForTopology(workflowName);
 

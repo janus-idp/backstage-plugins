@@ -7,13 +7,7 @@ import {
 } from '@rjsf/core-v5';
 import type { FormSchema } from '../types';
 import { JsonValue } from '@backstage/types';
-import {
-  Step,
-  StepLabel,
-  Stepper,
-  Button,
-  makeStyles,
-} from '@material-ui/core';
+import { Step, StepLabel, Stepper, Button } from '@material-ui/core';
 import { FluidObjectFieldTemplate } from '../layouts/FluidObjectFieldTemplate';
 import { OutlinedBaseInputTemplate } from './widgets/TextAreaWidget';
 import ArrayFieldTemplate from './Templates/ArrayFieldTemplate';
@@ -82,7 +76,7 @@ export function Form({
       showErrorList={false}
       onChange={handleChange}
       formData={formState}
-      formContext={{ formData: formState, form: formRef}}
+      formContext={{ formData: formState, form: formRef }}
       onSubmit={handleNext}
       schema={currentStep.schema}
       disabled={disabled}

@@ -17,8 +17,9 @@ import {
   StepLabel,
   Stepper,
 } from '@material-ui/core';
-import {assert} from 'assert-ts';
-import { default as Form } from '@rjsf/core-v5'
+import { assert } from 'assert-ts';
+import { default as Form } from '@rjsf/core-v5';
+import { useStyles as useFormStyles } from '../styles';
 
 const useStyles = makeStyles(_theme => ({
   stepper: {
@@ -27,13 +28,8 @@ const useStyles = makeStyles(_theme => ({
       boxShadow: 'none',
       background: '#F4F4F4',
       '& input': {
-        background: _theme.palette.background.paper
-      }
-    }
-  },
-  stepLabel: {
-    '& span': {
-      fontSize: '1.25rem',
+        background: _theme.palette.background.paper,
+      },
     },
   },
 }));
@@ -47,12 +43,7 @@ export default function ArrayFieldTemplate<
   S extends StrictRJSFSchema = RJSFSchema,
   F extends FormContextType = any,
 >(props: ArrayFieldTemplateProps<T, S, F>) {
-  const {
-    uiSchema,
-    items,
-    registry,
-    formContext
-  } = props;
+  const { uiSchema, items, registry, formContext } = props;
   const uiOptions = getUiOptions(uiSchema);
   const ArrayFieldItemTemplate = getTemplate<'ArrayFieldItemTemplate', T, S, F>(
     'ArrayFieldItemTemplate',
@@ -63,31 +54,40 @@ export default function ArrayFieldTemplate<
 
   const form = formContext?.form?.current as Form;
 
-  
-  const handleNext = useCallback((_e: MouseEvent) => {
-    assert(!!form, 'no form in ArrayFieldTemplate');
-    
-    const isValid = form.validateForm();
-    
-    setTimeout(() => {
-      if(isValid) {
-        return;
-      }
+  const handleNext = useCallback(
+    (_e: MouseEvent) => {
+      assert(!!form, 'no form in ArrayFieldTemplate');
 
-      // find the current array item index
-      const indexes = form.state.errors.map(error => Number(error.property?.match(/(\d+)/g)?.[0]));
+      const isValid = form.validateForm();
 
-      if(!indexes.includes(activeItem)) {
-        setActiveItem(prev => prev + 1);
-      }
-    })
+      setTimeout(() => {
+        if (isValid) {
+          return;
+        }
 
-  }, [activeItem, form]);
+        // find the current array item index to see if we can progress or not
+        const indexes = form.state.errors.map(error =>
+          Number(error.property?.match(/(\d+)/g)?.[0]),
+        );
+
+        if (!indexes.includes(activeItem)) {
+          setActiveItem(prev => prev + 1);
+        }
+      });
+    },
+    [activeItem, form],
+  );
 
   const styles = useStyles();
+  const formStyles = useFormStyles();
+
   return (
     <>
-      <Stepper activeStep={activeItem} orientation="vertical" className={styles.stepper}>
+      <Stepper
+        activeStep={activeItem}
+        orientation="vertical"
+        className={styles.stepper}
+      >
         {items &&
           items.map(
             (
@@ -98,7 +98,7 @@ export default function ArrayFieldTemplate<
                 <Step key={key}>
                   <StepLabel
                     StepIconProps={{ icon: String.fromCharCode(65 + index) }}
-                    className={styles.stepLabel}
+                    className={formStyles.stepLabel}
                   >
                     {uiOptions.title || itemProps.schema.title}
                   </StepLabel>
@@ -108,8 +108,10 @@ export default function ArrayFieldTemplate<
                       <div>
                         <Button
                           disabled={activeItem === 0}
-                          // className={styles.previous}
-                          onClick={() => setActiveItem((a) => activeItem === 0 ? 0 : a - 1)}
+                          className={formStyles.previous}
+                          onClick={() =>
+                            setActiveItem(a => (activeItem === 0 ? 0 : a - 1))
+                          }
                         >
                           PREVIOUS
                         </Button>
@@ -119,7 +121,7 @@ export default function ArrayFieldTemplate<
                           color="primary"
                           onClick={handleNext}
                           disabled={activeItem === items.length - 1}
-                          // className={styles.next}
+                          className={formStyles.next}
                         >
                           NEXT
                         </Button>
@@ -127,8 +129,8 @@ export default function ArrayFieldTemplate<
                     </>
                   </StepContent>
                 </Step>
-              )
-            }
+              );
+            },
           )}
       </Stepper>
     </>
