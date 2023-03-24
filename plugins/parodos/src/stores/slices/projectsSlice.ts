@@ -31,6 +31,7 @@ export const createProjectsSlice: StateCreator<
         });
       });
     } catch (e) {
+      // eslint-disable-next-line no-console
       console.error('fetchProjects error: ', e);
       set(state => {
         state.projectsError = e as Error;
