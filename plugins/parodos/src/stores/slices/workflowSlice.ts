@@ -42,6 +42,7 @@ export const createWorkflowSlice: StateCreator<
         });
       });
     } catch (e) {
+      console.error('fetchDefinitions error: ', e);
       set(state => {
         state.workflowError = e;
       });
