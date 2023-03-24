@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-topology [1.2.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.2.4...@janus-idp/backstage-plugin-topology@1.2.5) (2023-03-24)
+
+
+### Bug Fixes
+
+* **topology:** Change toolbar text and spacing ([#202](https://github.com/janus-idp/backstage-plugins/issues/202)) ([d2fc80c](https://github.com/janus-idp/backstage-plugins/commit/d2fc80c6b577474864d694f51c14561fc4a2ae40))
+
 ## @janus-idp/backstage-plugin-topology [1.2.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.2.3...@janus-idp/backstage-plugin-topology@1.2.4) (2023-03-23)
 
 
