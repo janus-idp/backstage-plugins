@@ -75,11 +75,7 @@ export function getUiSchema(type: ParameterFormat) {
   }
 }
 
-function transformWorkToStep(
-  work: WorkType,
-  acc: Step[] = [],
-  depth: number = 1,
-) {
+function transformWorkToStep(work: WorkType, nestedSteps: Step[] = []) {
   const title = taskDisplayName(work.name); // TODO: task label would be good here
 
   const schema: Record<string, any> = {
@@ -158,12 +154,12 @@ function transformWorkToStep(
 
     for (const [index, childWork] of childWorks.entries()) {
       const children: Step[] = [];
-      const childStep = transformWorkToStep(childWork, children, depth + 1);
 
-      acc.push(childStep);
+      const childStep = transformWorkToStep(childWork, children);
 
-      for (const child of children) {
-        child.parent = childStep;
+      if (childWork.workType === 'WORKFLOW') {
+        nestedSteps.push(childStep);
+        continue;
       }
 
       const nextSchemaKey = `properties.${key}.properties.works.items[${index}]`;
@@ -197,14 +193,20 @@ export function jsonSchemaFromWorkflowDefinition(
     result.steps.push(step);
   }
 
-  for (const work of workflowDefinition.works.filter(w => Object.keys(w.parameters ?? {}).length > 0 || (w?.works ?? []).length > 0)) {
-    const children: Step[] = [];
-    const step = transformWorkToStep(work, children);
+  for (const work of workflowDefinition.works.filter(
+    w =>
+      Object.keys(w.parameters ?? {}).length > 0 || (w?.works ?? []).length > 0,
+  )) {
+    const nestedSteps: Step[] = [];
+    const step = transformWorkToStep(work, nestedSteps);
 
     result.steps.push(step);
 
-    for (const child of children) {
-      child.parent = step;
+    // We don't want to nest the recusive structure many levels deep
+    // so instead we flatten the structure and only allow one level of nesting
+    for (const nestedStep of nestedSteps) {
+      nestedStep.parent = step;
+      result.steps.push(nestedStep);
     }
   }
 

@@ -44,8 +44,32 @@ export default function ArrayFieldTemplate<
   S extends StrictRJSFSchema = RJSFSchema,
   F extends FormContextType = any,
 >(props: ArrayFieldTemplateProps<T, S, F>) {
-  const { uiSchema, items, registry, formContext } = props;
+  const {
+    idSchema,
+    uiSchema,
+    items,
+    registry,
+    required,
+    schema,
+    title,
+    formContext,
+  } = props;
   const uiOptions = getUiOptions(uiSchema);
+
+  const ArrayFieldTitleTemplate = getTemplate<
+    'ArrayFieldTitleTemplate',
+    T,
+    S,
+    F
+  >('ArrayFieldTitleTemplate', registry, uiOptions);
+
+  const ArrayFieldDescriptionTemplate = getTemplate<
+    'ArrayFieldDescriptionTemplate',
+    T,
+    S,
+    F
+  >('ArrayFieldDescriptionTemplate', registry, uiOptions);
+
   const ArrayFieldItemTemplate = getTemplate<'ArrayFieldItemTemplate', T, S, F>(
     'ArrayFieldItemTemplate',
     registry,
@@ -62,11 +86,11 @@ export default function ArrayFieldTemplate<
       const isValid = form.validateForm();
 
       setTimeout(() => {
-        if (isValid) {
-          if(activeItem !== items.length -1 ) {
+        if (!isValid) {
+          if (activeItem !== items.length - 1) {
             setActiveItem(prev => prev + 1);
           }
-          
+
           return;
         }
 
@@ -88,6 +112,21 @@ export default function ArrayFieldTemplate<
 
   return (
     <>
+      <ArrayFieldTitleTemplate
+        idSchema={idSchema}
+        title={uiOptions.title || title}
+        schema={schema}
+        uiSchema={uiSchema}
+        required={required}
+        registry={registry}
+      />
+      <ArrayFieldDescriptionTemplate
+        idSchema={idSchema}
+        description={uiOptions.description || schema.description}
+        schema={schema}
+        uiSchema={uiSchema}
+        registry={registry}
+      />
       <Stepper
         activeStep={activeItem}
         orientation="vertical"
