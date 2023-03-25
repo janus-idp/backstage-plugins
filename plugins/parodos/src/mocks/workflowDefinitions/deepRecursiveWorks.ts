@@ -84,46 +84,6 @@ export const mockDeepRecursiveWorks: WorkflowDefinition = {
           ],
         },
         {
-          id: '5d596e07-e245-46e6-98fa-1a98143c68e0',
-          name: 'adGroupsWorkFlowTask',
-          workType: 'TASK',
-          parameters: {
-            adGroups: {
-              format: 'text',
-              description: 'The ad groups',
-              type: 'string',
-              required: true,
-            },
-            userId: {
-              format: 'text',
-              description: 'The user id',
-              type: 'string',
-              required: true,
-            },
-          },
-          outputs: ['HTTP2XX', 'EXCEPTION'],
-        },
-        {
-          id: '397b452a-9833-455a-a22d-6bc985b8cd52',
-          name: 'splunkMonitoringWorkFlowTask',
-          workType: 'TASK',
-          parameters: {
-            hostname: {
-              format: 'text',
-              description: 'The hostname',
-              type: 'string',
-              required: true,
-            },
-            clusterName: {
-              format: 'text',
-              description: 'The cluster name',
-              type: 'string',
-              required: true,
-            },
-          },
-          outputs: ['OTHER'],
-        },
-        {
           id: '3616aeda-1daf-4cce-bccc-f0857bff8482',
           name: 'namespaceWorkFlowTask',
           workType: 'TASK',

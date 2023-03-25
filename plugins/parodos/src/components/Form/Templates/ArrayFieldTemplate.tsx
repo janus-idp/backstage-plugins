@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import React, { useCallback, useState, type MouseEvent } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   getTemplate,
   getUiOptions,
@@ -63,13 +63,6 @@ export default function ArrayFieldTemplate<
     F
   >('ArrayFieldTitleTemplate', registry, uiOptions);
 
-  const ArrayFieldDescriptionTemplate = getTemplate<
-    'ArrayFieldDescriptionTemplate',
-    T,
-    S,
-    F
-  >('ArrayFieldDescriptionTemplate', registry, uiOptions);
-
   const ArrayFieldItemTemplate = getTemplate<'ArrayFieldItemTemplate', T, S, F>(
     'ArrayFieldItemTemplate',
     registry,
@@ -79,33 +72,28 @@ export default function ArrayFieldTemplate<
 
   const form = formContext?.form?.current as Form;
 
-  const handleNext = useCallback(
-    (_e: MouseEvent) => {
-      assert(!!form, 'no form in ArrayFieldTemplate');
+  const handleNext = useCallback(() => {
+    assert(!!form, 'no form in ArrayFieldTemplate');
 
-      const isValid = form.validateForm();
+    const isValid = form.validateForm();
 
-      setTimeout(() => {
-        if (!isValid) {
-          if (activeItem !== items.length - 1) {
-            setActiveItem(prev => prev + 1);
-          }
+    setTimeout(() => {
+      if (isValid) {
+        setActiveItem(prev => prev + 1);
 
-          return;
-        }
+        return;
+      }
 
-        // find the current array item index to see if we can progress or not
-        const indexes = form.state.errors.map(error =>
-          Number(error.property?.match(/(\d+)/g)?.[0]),
-        );
+      // find the current array item index to see if we can progress or not
+      const indexes = form.state.errors.map(error =>
+        Number(error.property?.match(/(\d+)/g)?.[0]),
+      );
 
-        if (!indexes.includes(activeItem)) {
-          setActiveItem(prev => prev + 1);
-        }
-      });
-    },
-    [activeItem, form, items.length],
-  );
+      if (!indexes.includes(activeItem)) {
+        setActiveItem(prev => prev + 1);
+      }
+    });
+  }, [activeItem, form]);
 
   const styles = useStyles();
   const formStyles = useFormStyles();
@@ -118,13 +106,6 @@ export default function ArrayFieldTemplate<
         schema={schema}
         uiSchema={uiSchema}
         required={required}
-        registry={registry}
-      />
-      <ArrayFieldDescriptionTemplate
-        idSchema={idSchema}
-        description={uiOptions.description || schema.description}
-        schema={schema}
-        uiSchema={uiSchema}
         registry={registry}
       />
       <Stepper
@@ -164,7 +145,6 @@ export default function ArrayFieldTemplate<
                           type="button"
                           color="primary"
                           onClick={handleNext}
-                          disabled={activeItem === items.length - 1}
                           className={formStyles.next}
                         >
                           NEXT
