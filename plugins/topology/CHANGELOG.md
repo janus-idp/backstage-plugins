@@ -1,3 +1,24 @@
+## @janus-idp/backstage-plugin-topology [1.2.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.2.4...@janus-idp/backstage-plugin-topology@1.2.5) (2023-03-24)
+
+
+### Bug Fixes
+
+* **topology:** Change toolbar text and spacing ([#202](https://github.com/janus-idp/backstage-plugins/issues/202)) ([d2fc80c](https://github.com/janus-idp/backstage-plugins/commit/d2fc80c6b577474864d694f51c14561fc4a2ae40))
+
+## @janus-idp/backstage-plugin-topology [1.2.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.2.3...@janus-idp/backstage-plugin-topology@1.2.4) (2023-03-23)
+
+
+### Bug Fixes
+
+* **topology:** updates PF versions ([#195](https://github.com/janus-idp/backstage-plugins/issues/195)) ([67e136e](https://github.com/janus-idp/backstage-plugins/commit/67e136e4ded19feb754a0bbc45776e95fa0e2498))
+
+## @janus-idp/backstage-plugin-topology [1.2.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.2.2...@janus-idp/backstage-plugin-topology@1.2.3) (2023-03-22)
+
+
+### Bug Fixes
+
+* **topology:** removed mobx and mobx-react from direct dependency and use one from @patternfly/react-topology ([#188](https://github.com/janus-idp/backstage-plugins/issues/188)) ([fe6f935](https://github.com/janus-idp/backstage-plugins/commit/fe6f9352789f3d243f5da1d7e3469298321fd5d4))
+
 ## @janus-idp/backstage-plugin-topology [1.2.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.2.1...@janus-idp/backstage-plugin-topology@1.2.2) (2023-03-21)
 
 
