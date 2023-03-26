@@ -150,8 +150,20 @@ export const createSonarQubeProjectAction = () => {
         visibility,
       } = ctx.input;
 
-      if (!token && !username && !password) {
-        throw new Error('Token or username and password are required');
+      if (!token && (!username || !password)) {
+        throw new Error('"token" or "username" and "password" are required input parameters');
+      }
+
+      if(!baseUrl){
+        throw new Error('"baseUrl" is a required input parameter');
+      }
+
+      if(!name){
+        throw new Error('"name" is a required input parameter');
+      }
+
+      if(!key){
+        throw new Error('"key" is a required input parameter');
       }
 
       const requestParams: RequestParameters = {
@@ -197,16 +209,18 @@ export const createSonarQubeProjectAction = () => {
         } else {
           if (!response.statusText) {
             const responseBody = await response.json();
-            const errorList = responseBody['errors'];
+            const errorList = responseBody.errors;
             errorMessage = errorList[0]['msg'];
           }
         }
 
         throw new Error(
-          `Failed to create SonarQube project, status ${response.status}: ${errorMessage}`,
+          `Failed to create SonarQube project, status ${response.status} - ${errorMessage}`,
         );
       }
+
       ctx.output('projectUrl', `${baseUrl}/dashboard?id=${key}`);
+      
     },
   });
 };
