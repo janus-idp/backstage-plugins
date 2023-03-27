@@ -1,7 +1,5 @@
 # [Backstage](https://backstage.io)
 
-This is your newly scaffolded Backstage App, Good Luck!
-
 To start the app, run:
 
 ```sh
@@ -11,11 +9,19 @@ yarn dev
 
 ## Local development
 
-For local development set the `PARODOS_AUTH_KEY` environment variable to 'Basic dGVzdDp0ZXN0'. This token is base64 encoded string containing `test:test`. You can also use `PARODOS_AUTH_KEY="Basic dGVzdDp0ZXN0" yarn dev` to start development environment with the test token. You can also create an `app-config.local.yaml` file with the following content to automatically include the token.
+For local development set the `PARODOS_AUTH_KEY` environment variable to 'Basic dGVzdDp0ZXN0'.
+This token is base64 encoded string containing `test:test`.
+
+You can also use `PARODOS_AUTH_KEY="Basic dGVzdDp0ZXN0" yarn dev` to start development environment with the test token.
+You can also create an `app-config.local.yaml` file with the following content to automatically include the token.
 
 ```yaml
 proxy:
   '/parodos':
+    headers:
+      Authorization: 'Basic dGVzdDp0ZXN0'
+
+  '/parodos-notifications':
     headers:
       Authorization: 'Basic dGVzdDp0ZXN0'
 ```
