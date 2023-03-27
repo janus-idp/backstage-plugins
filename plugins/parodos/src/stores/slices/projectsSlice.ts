@@ -17,7 +17,7 @@ export const createProjectsSlice: StateCreator<
   projects: [],
   async fetchProjects() {
     set(state => {
-      state.workflowLoading = true;
+      state.projectsLoading = true;
     });
 
     try {
@@ -31,8 +31,10 @@ export const createProjectsSlice: StateCreator<
         });
       });
     } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('fetchProjects error: ', e);
       set(state => {
-        state.workflowError = e;
+        state.projectsError = e as Error;
       });
     }
   },

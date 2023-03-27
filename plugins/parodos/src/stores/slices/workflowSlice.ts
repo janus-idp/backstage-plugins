@@ -42,6 +42,8 @@ export const createWorkflowSlice: StateCreator<
         });
       });
     } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('fetchDefinitions error: ', e);
       set(state => {
         state.workflowError = e;
       });
