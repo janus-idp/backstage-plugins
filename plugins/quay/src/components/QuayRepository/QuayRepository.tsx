@@ -1,4 +1,5 @@
 import React from 'react';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { Link, Progress, Table } from '@backstage/core-components';
 import { columns, useStyles } from './tableHeading';
 import { useRepository, useTags } from '../../hooks';
@@ -8,7 +9,19 @@ type QuayRepositoryProps = Record<never, any>;
 export function QuayRepository(_props: QuayRepositoryProps) {
   const { repository, organization } = useRepository();
   const classes = useStyles();
-  const title = `Quay repository: ${organization}/${repository}`;
+  const configApi = useApi(configApiRef);
+  const quayUiUrl = configApi.getOptionalString('quay.uiUrl');
+
+  const title = quayUiUrl ? (
+    <>
+      {`Quay repository: `}
+      <Link
+        to={`${quayUiUrl}/repository/${organization}/${repository}`}
+      >{`${organization}/${repository}`}</Link>
+    </>
+  ) : (
+    `Quay repository: ${organization}/${repository}`
+  );
   const { loading, data } = useTags(organization, repository);
 
   if (loading) {
