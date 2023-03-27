@@ -46,7 +46,6 @@ export const NotificationList: React.FC = () => {
   const fetchNotifications = useStore(state => state.fetchNotifications);
   const loading = useStore(state => state.notificationsLoading);
 
-  console.log('--- NotificationList, notifications: ', notifications);
   const [notificationFilter, setNotificationFilter] =
     useState<NotificationState>('ALL');
 
@@ -68,13 +67,12 @@ export const NotificationList: React.FC = () => {
   };
 
   const onFilterNotifications = (arg: SelectedItems) => {
-    console.log('--- onFileterNotifications arg: ', arg);
     setNotificationFilter(arg as NotificationState);
   };
 
   useEffect(() => {
     fetchNotifications({ state: notificationFilter, page, rowsPerPage });
-  }, [notificationFilter, page, rowsPerPage]);
+  }, [notificationFilter, page, rowsPerPage, fetchNotifications]);
 
   const getOnDelete =
     (
@@ -82,6 +80,7 @@ export const NotificationList: React.FC = () => {
     ): React.MouseEventHandler<HTMLButtonElement> =>
     e => {
       e.stopPropagation();
+      // eslint-disable-next-line no-alert
       console.log('--- TODO: implement onDelete, notification: ', notification);
     };
 

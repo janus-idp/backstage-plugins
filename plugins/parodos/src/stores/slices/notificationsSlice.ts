@@ -68,17 +68,19 @@ export const createNotificationsSlice: StateCreator<
       // or the "srot" param for pagination
       let urlQuery = `?page=${page}&size=${rowsPerPage}`;
       if (stateParam && stateParam !== 'ALL') {
-        urlQuery += '&state=' + stateParam;
+        urlQuery += `&state=${stateParam}`;
       }
 
+      // eslint-disable-next-line no-alert
       console.info('Using mock notifications...');
       const notifications = mockNotifications;
+
       // TODO: Uncomment once backend is ready:
       // console.log('--- about to fetch');
       // const response = await fetch(
       //   `${get().baseUrl}${urls.Notifications}${urlQuery}`,
       // );
-      
+
       // const notifications = await response.json();
       // console.log('--- notifications: ', notifications);
 
