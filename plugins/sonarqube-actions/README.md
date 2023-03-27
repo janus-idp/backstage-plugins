@@ -84,6 +84,7 @@ The following actions are currently supported in this module:
 | password       | string |    No    | SonarQube password                                                                                                       |                       |
 
    > **Warning**
+   > 
    > Either the `token` or `username` and `password` input combination are required. 
    > If the three of them are provided, the `token` will take precedence
 
