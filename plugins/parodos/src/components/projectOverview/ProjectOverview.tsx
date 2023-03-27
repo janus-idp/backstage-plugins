@@ -13,6 +13,7 @@ import { ParodosPage } from '../ParodosPage';
 import { ProjectsTable } from './ProjectsTable';
 import { useStore } from '../../stores/workflowStore/workflowStore';
 import { ProjectStatus } from '../../models/project';
+import { Loading } from '../Loading';
 
 type ProjectFilters = ProjectStatus | 'all-projects';
 
@@ -64,7 +65,7 @@ export const ProjectOverviewPage = (): JSX.Element => {
   let content: ReactElement | null = null;
 
   if (loading) {
-    content = <div>Loading...</div>;
+    content = <Loading />;
   } else if (allProjects.length > 0) {
     content = (
       <Grid item className={styles.table}>
