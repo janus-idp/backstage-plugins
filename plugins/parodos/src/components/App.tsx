@@ -17,6 +17,8 @@ export const App = () => {
     setBaseUrl(backendUrl);
 
     async function initialiseStore() {
+      // We do not pre-fetch notifications, let's do that on demand.
+      // TODO: fetch unread notificaionts count and keep it updated to render te tip to the user.
       await Promise.all([fetchProjects(fetch), fetchDefinitions(fetch)]);
     }
 
