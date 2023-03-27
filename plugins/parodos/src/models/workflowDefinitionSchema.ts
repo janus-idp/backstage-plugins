@@ -23,11 +23,11 @@ const processingType = z.union([
 
 export const workFlowTaskParameterTypeSchema = z.object({
   description: z.string().optional(),
-  required: z.boolean(),
+  required: z.boolean().optional(),
   type: parameterTypes,
   format: parameterFormat.optional(),
-  minLength: z.number().optional(),
-  maxLength: z.number().optional(),
+  minLength: z.coerce.number().optional(),
+  maxLength: z.coerce.number().optional(),
   default: z.any().optional(),
   field: z.string().optional(),
   disabled: z.boolean().default(false).optional(),
@@ -84,7 +84,5 @@ export type WorkflowDefinition = z.infer<typeof workflowDefinitionSchema>;
 export type WorkFlowTaskParameter = z.infer<
   typeof workFlowTaskParameterTypeSchema
 >;
-
-export type WorkFlowTaskParameterType = WorkFlowTaskParameter['type'];
 
 export type ParameterFormat = WorkFlowTaskParameter['format'];

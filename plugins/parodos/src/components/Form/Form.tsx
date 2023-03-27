@@ -1,4 +1,4 @@
-import React, { useState, useCallback, type ReactNode } from 'react';
+import React, { useState, useCallback, type ReactNode, useRef } from 'react';
 import validator from '@rjsf/validator-ajv8';
 import { Form as JsonForm } from './RJSF';
 import {
@@ -9,14 +9,16 @@ import type { FormSchema } from '../types';
 import { JsonValue } from '@backstage/types';
 import {
   Step,
-  StepContent,
   StepLabel,
   Stepper,
   Button,
-  makeStyles,
+  ButtonGroup,
 } from '@material-ui/core';
 import { FluidObjectFieldTemplate } from '../layouts/FluidObjectFieldTemplate';
 import { OutlinedBaseInputTemplate } from './widgets/TextAreaWidget';
+import ArrayFieldTemplate from './Templates/ArrayFieldTemplate';
+import { default as CoreForm } from '@rjsf/core-v5';
+import { useStyles } from './styles';
 
 type FormProps = Pick<
   JsonFormProps,
@@ -26,29 +28,9 @@ type FormProps = Pick<
     formSchema: FormSchema;
     title?: string;
     hideTitle?: boolean;
+    stepLess?: boolean;
     children?: ReactNode;
   };
-
-const useStyles = makeStyles(theme => ({
-  stepLabel: {
-    '& span': {
-      fontSize: '1.25rem',
-    },
-  },
-  previous: {
-    border: `1px solid ${theme.palette.primary.main}`,
-    color: theme.palette.text.primary,
-    marginRight: theme.spacing(1),
-    textTransform: 'uppercase',
-    '&:disabled': {
-      border: `1px solid ${theme.palette.text.disabled}`,
-    },
-  },
-  next: {
-    paddingRight: theme.spacing(4),
-    paddingLeft: theme.spacing(4),
-  },
-}));
 
 export function Form({
   formSchema,
@@ -59,12 +41,14 @@ export function Form({
   className,
   transformErrors,
   hideTitle = false,
+  stepLess = false,
   children,
   ...props
 }: FormProps): JSX.Element {
   const [activeStep, setActiveStep] = useState(0);
   const [formState, setFormState] = useState<Record<string, JsonValue>>({});
   const styles = useStyles();
+  const formRef = useRef<CoreForm>(null);
 
   const currentStep = formSchema.steps[activeStep];
 
@@ -92,6 +76,7 @@ export function Form({
 
   const TheForm = (
     <JsonForm
+      ref={formRef}
       idPrefix=""
       className={className}
       validator={validator}
@@ -99,13 +84,14 @@ export function Form({
       showErrorList={false}
       onChange={handleChange}
       formData={formState}
-      formContext={{ formData: formState }}
+      formContext={{ formData: formState, form: formRef }}
       onSubmit={handleNext}
       schema={currentStep.schema}
       disabled={disabled}
       templates={{
         ObjectFieldTemplate: FluidObjectFieldTemplate,
         BaseInputTemplate: OutlinedBaseInputTemplate as any,
+        ArrayFieldTemplate: ArrayFieldTemplate,
       }}
       uiSchema={{
         ...currentStep.uiSchema,
@@ -115,10 +101,10 @@ export function Form({
       transformErrors={transformErrors}
       {...props}
     >
-      {formSchema.steps.length === 1 ? (
+      {stepLess ? (
         children
       ) : (
-        <div>
+        <ButtonGroup className={styles.buttonContainer}>
           <Button
             disabled={activeStep === 0}
             className={styles.previous}
@@ -134,28 +120,36 @@ export function Form({
           >
             NEXT
           </Button>
-        </div>
+        </ButtonGroup>
       )}
     </JsonForm>
   );
 
-  if (formSchema.steps.length === 1) {
+  if (stepLess) {
     return TheForm;
   }
 
   return (
     <>
-      <Stepper activeStep={activeStep} orientation="vertical">
+      <Stepper
+        activeStep={activeStep}
+        orientation="horizontal"
+        className={styles.stepper}
+      >
         {formSchema.steps.map((step, index) => (
           <Step key={index}>
             {hideTitle === false && (
               <StepLabel className={styles.stepLabel}>{step.title}</StepLabel>
             )}
-            <StepContent key={index}>{TheForm}</StepContent>
           </Step>
         ))}
       </Stepper>
-      {children}
+      <div className={styles.formWrapper}>
+        <>
+          {TheForm}
+          {children}
+        </>
+      </div>
     </>
   );
 }

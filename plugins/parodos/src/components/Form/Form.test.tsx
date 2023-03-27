@@ -35,7 +35,7 @@ describe('<Form />', () => {
       });
 
       await act(async () => {
-        await fireEvent.click(getByRole('button', { name: 'Submit' }));
+        await fireEvent.click(getByRole('button', { name: 'NEXT' }));
       });
 
       expect(onSubmit).toHaveBeenCalled();

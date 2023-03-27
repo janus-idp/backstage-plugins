@@ -40,8 +40,8 @@ describe('jsonSchemaFromWorkflowDefinition', () => {
 
     expect(domainName).toBe('domainName');
     const clusterName = get(
-      result.steps[1]?.schema,
-      'properties.subWorkFlowTwo.properties.works.items[0].properties.subWorkFlowOne.properties.works.items[1].properties.splunkMonitoringWorkFlowTask.properties.clusterName.title',
+      result.steps[2]?.schema,
+      'properties.subWorkFlowOne.properties.works.items[1].properties.splunkMonitoringWorkFlowTask.properties.clusterName.title',
     );
 
     expect(clusterName).toBe('clusterName');

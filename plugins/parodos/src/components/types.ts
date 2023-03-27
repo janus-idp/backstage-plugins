@@ -93,6 +93,7 @@ export interface Step {
   schema: JsonObject;
   title: string;
   description?: string;
+  parent?: Step;
 }
 
 export interface FormSchema {

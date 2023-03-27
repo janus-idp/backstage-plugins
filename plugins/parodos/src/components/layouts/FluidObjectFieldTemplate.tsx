@@ -82,17 +82,6 @@ export function FluidObjectFieldTemplate<
       ) : (
         <Grid container spacing={2} className={styles.container}>
           {properties.map((element, index) => {
-            const container =
-              element.content.props.uiSchema['ui:hidden'] === true;
-
-            if (container) {
-              return (
-                <Grid item xs={12} className={styles.item}>
-                  {element.content}
-                </Grid>
-              );
-            }
-
             return element.hidden ? (
               element.content
             ) : (

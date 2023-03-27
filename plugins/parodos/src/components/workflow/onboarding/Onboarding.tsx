@@ -6,26 +6,18 @@ import {
   Progress,
   SupportButton,
 } from '@backstage/core-components';
-import {
-  Link,
-  useNavigate,
-  useParams,
-  useSearchParams,
-} from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { ParodosPage } from '../../ParodosPage';
 import { Button, Chip, makeStyles, Typography } from '@material-ui/core';
 import { useWorkflowDefinitionToJsonSchema } from '../../../hooks/useWorkflowDefinitionToJsonSchema/useWorkflowDefinitionToJsonSchema';
 import { assert } from 'assert-ts';
 import { Form } from '../../Form/Form';
 import { useGetWorkflowTasksForTopology } from '../../../hooks/useGetWorkflowDefinitions';
-import useAsyncFn from 'react-use/lib/useAsyncFn';
-import { type IChangeEvent } from '@rjsf/core-v5';
-import { WorkflowExecuteResponseType } from '../../types';
 import { type RJSFValidationError } from '@rjsf/utils';
 import * as urls from '../../../urls';
-import lodashGet from 'lodash.get';
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { useStore } from '../../../stores/workflowStore/workflowStore';
+import { useStartWorkflow } from '../hooks/useStartWorkflow';
 
 interface OnboardingProps {
   isNew: boolean;
@@ -63,57 +55,16 @@ export function Onboarding({ isNew }: OnboardingProps): JSX.Element {
 
   const tasks = useGetWorkflowTasksForTopology(workflowName);
 
-  const navigate = useNavigate();
+  assert(!!workflow);
+  assert(!!projectId);
 
-  const [{ error, loading }, startWorkflow] = useAsyncFn(
-    async ({ formData }: IChangeEvent) => {
-      assert(!!workflow);
-      assert(!!projectId);
-
-      const payload = {
-        projectId,
-        workFlowName: workflow.name,
-        arguments: Object.entries(workflow.parameters ?? {}).map(([key]) => {
-          const value = lodashGet(formData, `${workflow.name}.${key}`, null);
-
-          return {
-            key,
-            value,
-          };
-        }),
-        works: workflow.works.map(work => {
-          return {
-            workName: work.name,
-            arguments: Object.entries(work.parameters ?? {}).map(([key]) => {
-              const value = lodashGet(formData, `${work.name}.${key}`, null);
-
-              return {
-                key,
-                value,
-              };
-            }),
-          };
-        }),
-      };
-
-      const data = await fetch(workflowsUrl, {
-        method: 'POST',
-        body: JSON.stringify(payload),
-      });
-
-      if (!data.ok) {
-        throw new Error(`${data.status} - ${data.statusText}`);
-      }
-
-      const response = (await data.json()) as WorkflowExecuteResponseType;
-      const executionId = response.workFlowExecutionId;
-
-      navigate(`/parodos/onboarding/${executionId}/workflow-detail`, {
-        state: { isNew: isNew, initTasks: tasks },
-      });
-    },
-    [workflow, projectId, workflowsUrl, navigate, isNew, tasks],
-  );
+  const [{ error, loading }, startWorkflow] = useStartWorkflow({
+    workflowsUrl,
+    workflow,
+    projectId,
+    tasks,
+    isNew,
+  });
 
   useEffect(() => {
     if (error) {

@@ -1,5 +1,5 @@
 import { FormControl, TextField } from '@material-ui/core';
-import { Autocomplete, UseAutocompleteProps } from '@material-ui/lab';
+import { Autocomplete, type UseAutocompleteProps } from '@material-ui/lab';
 import React, { useCallback } from 'react';
 import { type PickerFieldExtensionProps } from './types';
 
