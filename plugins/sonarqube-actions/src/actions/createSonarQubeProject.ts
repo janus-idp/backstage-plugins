@@ -97,15 +97,13 @@ export const createSonarQubeProjectAction = () => {
             type: 'string',
             title: 'Branch',
             description:
-              'Name of the main branch of the project. If not provided, \
-              the default main branch name will be used',
+              'Name of the main branch of the project. If not provided, the default main branch name will be used',
           },
           visibility: {
             type: 'string',
             title: 'Visibility',
             description:
-              'Wether the created project should be visible to everyone or only specific groups. \
-              If no visibility is specified, the default project visibility will be used. Allowed values: "public" or "private"',
+              'Whether the created project should be visible to everyone or only specific groups. If no visibility is specified, the default project visibility will be used. Allowed values: "public" or "private"',
           },
           token: {
             type: 'string',
@@ -211,7 +209,7 @@ export const createSonarQubeProjectAction = () => {
           if (!response.statusText) {
             const responseBody = await response.json();
             const errorList = responseBody.errors;
-            errorMessage = errorList[0]['msg'];
+            errorMessage = errorList[0].msg;
           }
         }
 
