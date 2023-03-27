@@ -96,3 +96,28 @@ The following actions are currently supported in this module:
 | projectUrl | string | SonarQube project URL created by this action |             |
 
 ## Development
+
+1. Add the local package dependency to the Backstage instance
+   ```shell
+   yarn workspace backend --cwd packages/backend add file:./plugins/sonarqube-actions
+   ```
+2. [Register](#getting-started) the SonarQube actions in your Backstage project
+3. **Optional**: You can use the sample templates from this repository and add them as `locations` of your `app-config.yaml` file
+   ```yaml
+   ...
+   
+   catalog:
+    locations:
+    - type: file
+      target: ../../plugins/sonarqube-actions/examples/templates/01-sonar-template.yaml
+      rules:
+        - allow: [Template]
+    - type: file
+      target: ../../plugins/sonarqube-actions/examples/templates/02-sonar-template.yaml
+      rules:
+        - allow: [Template]
+   
+   ...
+   ```
+4. Run `yarn dev`
+5. :rocket: Start using the SonarQube actions in your templates
