@@ -11,6 +11,7 @@ import {
 } from '@rjsf/utils';
 import {
   Button,
+  ButtonGroup,
   makeStyles,
   Step,
   StepContent,
@@ -130,7 +131,7 @@ export default function ArrayFieldTemplate<
                   <StepContent key={key}>
                     <>
                       <ArrayFieldItemTemplate key={key} {...itemProps} />
-                      <div>
+                      <ButtonGroup>
                         <Button
                           disabled={activeItem === 0}
                           className={formStyles.previous}
@@ -149,7 +150,7 @@ export default function ArrayFieldTemplate<
                         >
                           NEXT
                         </Button>
-                      </div>
+                      </ButtonGroup>
                     </>
                   </StepContent>
                 </Step>
