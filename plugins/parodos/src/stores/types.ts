@@ -1,6 +1,10 @@
 import { FetchApi } from '@backstage/core-plugin-api';
 import type { Project } from '../models/project';
 import type { WorkflowDefinition } from '../models/workflowDefinitionSchema';
+import type {
+  NotificationContent,
+  NotificationLink,
+} from '../models/notification';
 
 export interface UISlice {
   baseUrl: string | undefined;
@@ -38,9 +42,25 @@ export interface ProjectsSlice {
   projectsError: Error | undefined;
 }
 
+export type NotificationState = 'ALL' | 'UNREAD' | 'ARCHIVED';
+
+export interface NotificationsSlice {
+  notifications: NotificationContent[];
+  fetchNotifications(params: {
+    state: NotificationState;
+    page: number;
+    rowsPerPage: number;
+  }): Promise<void>;
+  notificationsLoading: boolean;
+  notificationsError: Error | undefined;
+}
+
 export type StateMiddleware = [
   ['zustand/immer', never],
   ['zustand/devtools', never],
 ];
 
-export type State = UISlice & WorkflowSlice & ProjectsSlice;
+export type State = UISlice &
+  WorkflowSlice &
+  ProjectsSlice &
+  NotificationsSlice;
