@@ -7,7 +7,13 @@ import {
 } from '@rjsf/core-v5';
 import type { FormSchema } from '../types';
 import { JsonValue } from '@backstage/types';
-import { Step, StepLabel, Stepper, Button } from '@material-ui/core';
+import {
+  Step,
+  StepLabel,
+  Stepper,
+  Button,
+  ButtonGroup,
+} from '@material-ui/core';
 import { FluidObjectFieldTemplate } from '../layouts/FluidObjectFieldTemplate';
 import { OutlinedBaseInputTemplate } from './widgets/TextAreaWidget';
 import ArrayFieldTemplate from './Templates/ArrayFieldTemplate';
@@ -98,7 +104,7 @@ export function Form({
       {stepLess ? (
         children
       ) : (
-        <div className={styles.buttonContainer}>
+        <ButtonGroup className={styles.buttonContainer}>
           <Button
             disabled={activeStep === 0}
             className={styles.previous}
@@ -114,7 +120,7 @@ export function Form({
           >
             NEXT
           </Button>
-        </div>
+        </ButtonGroup>
       )}
     </JsonForm>
   );
