@@ -1,5 +1,5 @@
 {
-  "name": "@janus-idp/sonarqube-actions",
+  "name": "@janus-idp/backstage-scaffolder-backend-module-sonarqube",
   "description": "The sonarqube module for @backstage/plugin-scaffolder-backend",
   "version": "0.1.0",
   "main": "src/index.ts",

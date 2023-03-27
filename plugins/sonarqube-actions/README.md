@@ -15,7 +15,7 @@ The following actions are currently supported in this module:
 
 1. Install the action package in your Backstage project
     ```bash
-   yarn workspace backend add @janus-idp/sonarqube-actions
+   yarn workspace backend add @janus-idp/backstage-scaffolder-backend-module-sonarqube
    ```
 2. [Register](https://backstage.io/docs/features/software-templates/writing-custom-actions#registering-custom-actions) the SonarQube actions by modifying the `packages/backend/src/plugins/scaffolder.ts` file from your project with the following changes:
    ```ts
@@ -24,7 +24,7 @@ The following actions are currently supported in this module:
    import {ScmIntegrations} from '@backstage/integration'
    import { Router } from 'express';
    import type { PluginEnvironment } from '../types';
-   import { createSonarQubeProjectAction } from '@janus-idp/sonarqube-actions';
+   import { createSonarQubeProjectAction } from '@janus-idp/backstage-scaffolder-backend-module-sonarqube';
    
    export default async function createPlugin(
     env: PluginEnvironment,

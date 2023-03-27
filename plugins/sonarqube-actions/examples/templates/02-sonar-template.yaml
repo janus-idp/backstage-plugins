@@ -87,4 +87,3 @@ spec:
     links:
       - title: SonarQube project URL
         url: ${{ steps['create-sonar-project'].output.projectUrl }}
-      
