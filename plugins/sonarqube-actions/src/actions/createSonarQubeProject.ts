@@ -196,6 +196,7 @@ export const createSonarQubeProjectAction = () => {
 
       const response = await fetch(encodedURI, {
         headers: {
+          'Content-Type': 'application/json',
           Authorization: `Basic ${encodedAuthString}`,
         },
         method: 'POST',
