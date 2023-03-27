@@ -157,6 +157,8 @@ function transformWorkToStep(work: WorkType, nestedSteps: Step[] = []) {
 
       const childStep = transformWorkToStep(childWork, children);
 
+      // We don't want to nest the recusive structure many levels deep
+      // so instead we flatten the structure and only allow one level of nesting
       if (childWork.workType === 'WORKFLOW') {
         nestedSteps.push(childStep);
         continue;
@@ -202,8 +204,6 @@ export function jsonSchemaFromWorkflowDefinition(
 
     result.steps.push(step);
 
-    // We don't want to nest the recusive structure many levels deep
-    // so instead we flatten the structure and only allow one level of nesting
     for (const nestedStep of nestedSteps) {
       nestedStep.parent = step;
       result.steps.push(nestedStep);
