@@ -104,7 +104,7 @@ export function Form({
       {stepLess ? (
         children
       ) : (
-        <ButtonGroup className={styles.buttonContainer}>
+        <ButtonGroup className={styles.buttonContainer} variant="contained">
           <Button
             disabled={activeStep === 0}
             className={styles.previous}

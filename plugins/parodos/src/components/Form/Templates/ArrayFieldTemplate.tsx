@@ -115,48 +115,50 @@ export default function ArrayFieldTemplate<
         className={styles.stepper}
       >
         {items &&
-          items.map(
-            (
-              { key, ...itemProps }: ArrayFieldTemplateItemType<T, S, F>,
-              index,
-            ) => {
-              return (
-                <Step key={key}>
-                  <StepLabel
-                    StepIconProps={{ icon: String.fromCharCode(65 + index) }}
-                    className={formStyles.stepLabel}
-                  >
-                    {uiOptions.title || itemProps.schema.title}
-                  </StepLabel>
-                  <StepContent key={key}>
-                    <>
-                      <ArrayFieldItemTemplate key={key} {...itemProps} />
-                      <ButtonGroup>
-                        <Button
-                          disabled={activeItem === 0}
-                          className={formStyles.previous}
-                          onClick={() =>
-                            setActiveItem(a => (activeItem === 0 ? 0 : a - 1))
-                          }
-                        >
-                          PREVIOUS
-                        </Button>
-                        <Button
-                          variant="contained"
-                          type="button"
-                          color="primary"
-                          onClick={handleNext}
-                          className={formStyles.next}
-                        >
-                          NEXT
-                        </Button>
-                      </ButtonGroup>
-                    </>
-                  </StepContent>
-                </Step>
-              );
-            },
-          )}
+          items
+            .filter(Boolean)
+            .map(
+              (
+                { key, ...itemProps }: ArrayFieldTemplateItemType<T, S, F>,
+                index,
+              ) => {
+                return (
+                  <Step key={key}>
+                    <StepLabel
+                      StepIconProps={{ icon: String.fromCharCode(65 + index) }}
+                      className={formStyles.stepLabel}
+                    >
+                      {uiOptions.title || itemProps.schema.title}
+                    </StepLabel>
+                    <StepContent key={key}>
+                      <>
+                        <ArrayFieldItemTemplate key={key} {...itemProps} />
+                        <ButtonGroup variant="contained">
+                          <Button
+                            disabled={activeItem === 0}
+                            className={formStyles.previous}
+                            onClick={() =>
+                              setActiveItem(a => (activeItem === 0 ? 0 : a - 1))
+                            }
+                          >
+                            PREVIOUS
+                          </Button>
+                          <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            onClick={handleNext}
+                            className={formStyles.next}
+                          >
+                            NEXT
+                          </Button>
+                        </ButtonGroup>
+                      </>
+                    </StepContent>
+                  </Step>
+                );
+              },
+            )}
       </Stepper>
     </>
   );
