@@ -1,10 +1,7 @@
 import { FetchApi } from '@backstage/core-plugin-api';
 import type { Project } from '../models/project';
 import type { WorkflowDefinition } from '../models/workflowDefinitionSchema';
-import type {
-  NotificationContent,
-  NotificationLink,
-} from '../models/notification';
+import type { NotificationContent } from '../models/notification';
 
 export interface UISlice {
   baseUrl: string | undefined;

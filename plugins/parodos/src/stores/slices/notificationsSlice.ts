@@ -5,7 +5,7 @@ import { Notifications } from '../../models/notification';
 import * as urls from '../../urls';
 
 // TODO: remove following
-let mockNotifications: Notifications = {
+const mockNotifications: Notifications = {
   // skipping links
   content: [
     {
@@ -66,11 +66,11 @@ export const createNotificationsSlice: StateCreator<
 
     try {
       // TODO: we can leverage searchTerm param later
-      // or the "srot" param for pagination
-      let urlQuery = `?page=${page}&size=${rowsPerPage}`;
-      if (stateParam && stateParam !== 'ALL') {
-        urlQuery += `&state=${stateParam}`;
-      }
+      // or the "sort" param for pagination
+      // let urlQuery = `?page=${page}&size=${rowsPerPage}`;
+      // if (stateParam && stateParam !== 'ALL') {
+      //   urlQuery += `&state=${stateParam}`;
+      // }
 
       // eslint-disable-next-line no-alert
       console.info('Using mock notifications...');
@@ -107,7 +107,7 @@ export const createNotificationsSlice: StateCreator<
       //   method: 'DELETE',
       // });
 
-      // mock: TODO: remove
+      // mock: TODO: remove, use the above
       mockNotifications.content = mockNotifications.content.filter(
         n => n.id !== id,
       );

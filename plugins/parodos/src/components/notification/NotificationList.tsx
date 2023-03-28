@@ -150,7 +150,7 @@ export const NotificationList: React.FC = () => {
         <Grid item>
           {loading && <Progress />}
 
-          {(notifications || []).map((notification) => (
+          {(notifications || []).map(notification => (
             <ParodosAccordion square key={notification.id}>
               <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
