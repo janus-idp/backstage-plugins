@@ -13,5 +13,12 @@ export interface Config {
      * @visibility frontend
      */
     defaultNamespace?: string;
+
+    /**
+     * The URL of the restServer
+     *
+     * @visibility frontend
+     */
+    restServerUrl: string;
   };
 }

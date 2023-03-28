@@ -1,6 +1,7 @@
 const WORKSPACE_ENDPOINT = `apis/workspace.devfile.io/v1alpha2/namespaces`;
 
 export const createWorkspace = async (
+  restServerUrl: string,
   link: string,
   token: string,
   namespace: string,
@@ -48,7 +49,7 @@ export const createWorkspace = async (
   };
 
   const response = await fetch(
-    `https://${link}/${WORKSPACE_ENDPOINT}/${namespace}/devworkspaces`,
+    `${restServerUrl}?url=https://${link}/${WORKSPACE_ENDPOINT}/${namespace}/devworkspaces`,
     {
       method: 'POST',
       headers: {
@@ -66,13 +67,14 @@ export const createWorkspace = async (
 };
 
 export const getWorkspace = async (
+  restServerUrl: string,
   link: string,
   token: string,
   name: string,
   namespace: string,
 ) => {
   const response = await fetch(
-    `https://${link}/${WORKSPACE_ENDPOINT}/${namespace}/devworkspaces/${name}`,
+    `${restServerUrl}?url=https://${link}/${WORKSPACE_ENDPOINT}/${namespace}/devworkspaces/${name}`,
     {
       method: 'GET',
       headers: {
@@ -84,13 +86,20 @@ export const getWorkspace = async (
   return [data.status.devworkspaceId, data.status.phase];
 };
 
-export const getNamespaces = async (link: string, token: string) => {
-  const response = await fetch(`https://${link}/api/v1/namespaces`, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${token}`,
+export const getNamespaces = async (
+  restServerUrl: string,
+  link: string,
+  token: string,
+) => {
+  const response = await fetch(
+    `${restServerUrl}?url=https://${link}/api/v1/namespaces`,
+    {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     },
-  });
+  );
   const data = await response.json();
   if (response.status !== 200) {
     return [];
