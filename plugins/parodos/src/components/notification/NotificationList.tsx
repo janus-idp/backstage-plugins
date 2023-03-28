@@ -138,6 +138,7 @@ export const NotificationList: React.FC = () => {
         <Grid item xs={3}>
           <Select
             onChange={onFilterNotifications}
+            selected={notificationFilter}
             label="Filter by"
             items={[
               { label: 'All', value: 'ALL' },
