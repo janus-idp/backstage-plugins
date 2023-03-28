@@ -43,13 +43,18 @@ export interface ProjectsSlice {
 }
 
 export type NotificationState = 'ALL' | 'UNREAD' | 'ARCHIVED';
-
+export type NotificationOperation = 'READ' | 'ARCHIVE';
 export interface NotificationsSlice {
   notifications: NotificationContent[];
   fetchNotifications(params: {
     state: NotificationState;
     page: number;
     rowsPerPage: number;
+  }): Promise<void>;
+  deleteNotification(params: { id: string }): Promise<void>;
+  setNotificationState(params: {
+    id: string;
+    newState: NotificationOperation;
   }): Promise<void>;
   notificationsLoading: boolean;
   notificationsError: Error | undefined;

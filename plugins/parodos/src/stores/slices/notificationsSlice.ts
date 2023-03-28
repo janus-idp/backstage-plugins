@@ -1,10 +1,11 @@
 import type { StateCreator } from 'zustand';
-import type { NotificationsSlice, State, StateMiddleware } from '../types';
 import { unstable_batchedUpdates } from 'react-dom';
+import type { NotificationsSlice, State, StateMiddleware } from '../types';
 import { Notifications } from '../../models/notification';
+import * as urls from '../../urls';
 
 // TODO: remove following
-const mockNotifications: Notifications = {
+let mockNotifications: Notifications = {
   // skipping links
   content: [
     {
@@ -81,7 +82,7 @@ export const createNotificationsSlice: StateCreator<
       //   `${get().baseUrl}${urls.Notifications}${urlQuery}`,
       // );
 
-      // const notifications = await response.json();
+      // const notifications = (await response.json() ) || [];
       // console.log('--- notifications: ', notifications);
 
       set(state => {
@@ -91,9 +92,45 @@ export const createNotificationsSlice: StateCreator<
         });
       });
     } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('Error fetching notifications', e);
+      set(state => {
+        state.notifications = [];
+        state.notificationsError = e as Error;
+      });
+    }
+  },
+  async deleteNotification({ id }) {
+    try {
+      // TODO: Uncomment once backend is ready:
+      // await fetch(`${get().baseUrl}${urls.Notifications}/${id}`, {
+      //   method: 'DELETE',
+      // });
+
+      // mock: TODO: remove
+      mockNotifications.content = mockNotifications.content.filter(
+        n => n.id !== id,
+      );
+    } catch (e) {
       set(state => {
         // eslint-disable-next-line no-console
         console.error('Error fetching notifications', e);
+        state.notificationsError = e as Error;
+      });
+    }
+  },
+  async setNotificationState({ id, newState }) {
+    try {
+      await fetch(
+        `${get().baseUrl}${urls.Notifications}/${id}?operation=${newState}`,
+        {
+          method: 'PUT',
+        },
+      );
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('Error setting notification "', id, '" to: ', newState, e);
+      set(state => {
         state.notificationsError = e as Error;
       });
     }

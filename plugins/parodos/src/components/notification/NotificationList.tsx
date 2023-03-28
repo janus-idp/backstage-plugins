@@ -15,10 +15,11 @@ import { grey } from '@material-ui/core/colors';
 import { Progress, Select, SelectedItems } from '@backstage/core-components';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-import { NotificationState } from '../../stores/types';
+import { NotificationOperation, NotificationState } from '../../stores/types';
 import { useStore } from '../../stores/workflowStore/workflowStore';
 import { getHumanReadableDate } from '../converters';
 import { NotificationContent } from '../../models/notification';
+import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 
 const ParodosAccordion = withStyles({
   root: {
@@ -44,6 +45,8 @@ const ParodosAccordion = withStyles({
 export const NotificationList: React.FC = () => {
   const notifications = useStore(state => state.notifications);
   const fetchNotifications = useStore(state => state.fetchNotifications);
+  const deleteNotification = useStore(state => state.deleteNotification);
+  const setNotificationState = useStore(state => state.setNotificationState);
   const loading = useStore(state => state.notificationsLoading);
 
   const [notificationFilter, setNotificationFilter] =
@@ -52,12 +55,18 @@ export const NotificationList: React.FC = () => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
+  const errorApi = useApi(errorApiRef);
+
   const handleChangePage = (
     _event: React.MouseEvent<HTMLButtonElement> | null,
     newPage: number,
   ) => {
     setPage(newPage);
   };
+
+  useEffect(() => {
+    fetchNotifications({ state: notificationFilter, page, rowsPerPage });
+  }, [notificationFilter, page, rowsPerPage, fetchNotifications]);
 
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -70,18 +79,57 @@ export const NotificationList: React.FC = () => {
     setNotificationFilter(arg as NotificationState);
   };
 
-  useEffect(() => {
-    fetchNotifications({ state: notificationFilter, page, rowsPerPage });
-  }, [notificationFilter, page, rowsPerPage, fetchNotifications]);
-
   const getOnDelete =
     (
       notification: NotificationContent,
     ): React.MouseEventHandler<HTMLButtonElement> =>
     e => {
       e.stopPropagation();
-      // eslint-disable-next-line no-alert
-      console.log('--- TODO: implement onDelete, notification: ', notification);
+      const doItAsync = async () => {
+        try {
+          await deleteNotification(notification);
+          await fetchNotifications({
+            state: notificationFilter,
+            page,
+            rowsPerPage,
+          });
+        } catch (e) {
+          errorApi.post(
+            new Error(
+              `Failed to delete notification: ${JSON.stringify(notification)}`,
+            ),
+          );
+        }
+      };
+      doItAsync();
+    };
+
+  const getSetNotificationState =
+    (
+      notification: NotificationContent,
+      newState: NotificationOperation,
+    ): React.MouseEventHandler<HTMLButtonElement> =>
+    e => {
+      e.stopPropagation();
+      const doItAsync = async () => {
+        try {
+          await setNotificationState({ id: notification.id, newState });
+          await fetchNotifications({
+            state: notificationFilter,
+            page,
+            rowsPerPage,
+          });
+        } catch (e) {
+          errorApi.post(
+            new Error(
+              `Failed to set notification to "${newState}": ${JSON.stringify(
+                notification,
+              )}`,
+            ),
+          );
+        }
+      };
+      doItAsync();
     };
 
   return (
@@ -101,7 +149,7 @@ export const NotificationList: React.FC = () => {
         <Grid item>
           {loading && <Progress />}
 
-          {notifications.map((notification, idx) => (
+          {(notifications || []).map((notification, idx) => (
             <ParodosAccordion square key={idx}>
               <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
@@ -109,7 +157,7 @@ export const NotificationList: React.FC = () => {
                 id={`panel1bh-header-${notification.id}`}
               >
                 <Grid container direction="row" alignItems="center" spacing={2}>
-                  <Grid item xs={6}>
+                  <Grid item xs={5}>
                     <Typography variant="body2">
                       {notification.subject}
                     </Typography>
@@ -126,7 +174,7 @@ export const NotificationList: React.FC = () => {
                       ))}
                     </Typography>
                   </Grid>
-                  <Grid item xs={2}>
+                  <Grid item xs={3}>
                     <ButtonGroup>
                       <Button
                         variant="outlined"
@@ -134,7 +182,21 @@ export const NotificationList: React.FC = () => {
                       >
                         Delete
                       </Button>
-                      <Button variant="outlined">Button</Button>
+                      <Button
+                        variant="outlined"
+                        onClick={getSetNotificationState(
+                          notification,
+                          'ARCHIVE',
+                        )}
+                      >
+                        Archive
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        onClick={getSetNotificationState(notification, 'READ')}
+                      >
+                        Read
+                      </Button>
                     </ButtonGroup>
                   </Grid>
                 </Grid>
@@ -166,7 +228,7 @@ export const NotificationList: React.FC = () => {
         <Grid container direction="row" justifyContent="center">
           <TablePagination
             component="div"
-            count={notifications.length}
+            count={notifications?.length || 0}
             page={page}
             onPageChange={handleChangePage}
             rowsPerPage={rowsPerPage}
