@@ -150,8 +150,8 @@ export const NotificationList: React.FC = () => {
         <Grid item>
           {loading && <Progress />}
 
-          {(notifications || []).map((notification, idx) => (
-            <ParodosAccordion square key={idx}>
+          {(notifications || []).map((notification) => (
+            <ParodosAccordion square key={notification.id}>
               <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
                 aria-controls="panel1bh-content"
@@ -169,11 +169,14 @@ export const NotificationList: React.FC = () => {
                     </Typography>
                   </Grid>
                   <Grid item xs={2}>
-                    <Typography variant="body2">
-                      {(notification.tags || []).map(tag => (
-                        <Chip label={tag} size="small" variant="outlined" />
-                      ))}
-                    </Typography>
+                    {(notification.tags || []).map((tag, idx) => (
+                      <Chip
+                        key={idx}
+                        label={tag}
+                        size="small"
+                        variant="outlined"
+                      />
+                    ))}
                   </Grid>
                   <Grid item xs={3}>
                     <ButtonGroup>
