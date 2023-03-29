@@ -32,7 +32,7 @@
     "@semantic-release/github": "8.0.7",
     "@spotify/prettier-config": "14.1.5",
     "concurrently": "7.6.0",
-    "conventional-changelog-conventionalcommits": "^5.0.0",
+    "conventional-changelog-conventionalcommits": "5.0.0",
     "lerna": "6.5.1",
     "multi-semantic-release": "3.0.1",
     "node-gyp": "9.3.1",
