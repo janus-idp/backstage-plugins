@@ -1,25 +1,22 @@
 import { ConfigApi } from '@backstage/core-plugin-api';
 import { ErrorResponseBody } from '@backstage/errors';
-import { ClusterDetails } from '@janus-idp/backstage-plugin-ocm-common';
+import { Cluster } from '@janus-idp/backstage-plugin-ocm-common';
 
-const clusterApiFetchCall = (
-  configApi: ConfigApi,
-  params: string,
-): Promise<any> => {
+const clusterApiFetchCall = async (configApi: ConfigApi, params?: string) => {
   const backendUrl = configApi.getString('backend.baseUrl');
-  const jsonResponse = fetch(`${backendUrl}/api/ocm/status${params}`).then(r =>
-    r.json(),
+  const jsonResponse = await fetch(
+    `${backendUrl}/api/ocm/status${params || ''}`,
   );
-  return jsonResponse;
+  return jsonResponse.json();
 };
 
 export const getClusters = async (
   configApi: ConfigApi,
-): Promise<ClusterDetails[] | ErrorResponseBody> =>
-  clusterApiFetchCall(configApi, '');
+): Promise<Cluster[] | ErrorResponseBody> => clusterApiFetchCall(configApi);
 
 export const getClusterByName = async (
   configApi: ConfigApi,
+  providerId: string,
   name: string,
-): Promise<ClusterDetails | ErrorResponseBody> =>
-  clusterApiFetchCall(configApi, `/${name}`);
+): Promise<Cluster | ErrorResponseBody> =>
+  clusterApiFetchCall(configApi, `/${providerId}/${name}`);

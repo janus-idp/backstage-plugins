@@ -5,10 +5,18 @@
  * @packageDocumentation
  */
 
+export type ClusterStatus = {
+  available: boolean;
+  reason?: string;
+};
+
+export type ClusterBase = {
+  name: string;
+};
+
 export type ClusterDetails = {
   consoleUrl?: string;
   kubernetesVersion?: string;
-  name?: string;
   oauthUrl?: string;
   openshiftId?: string;
   openshiftVersion?: string;
@@ -29,10 +37,11 @@ export type ClusterDetails = {
     version?: string;
     url?: string;
   };
-  status: {
-    available: boolean;
-    reason: string;
-  };
+  status: ClusterStatus;
 };
 
+export type Cluster = ClusterBase & ClusterDetails;
+export type ClusterOverview = ClusterBase & { status: ClusterStatus };
+
 export const ANNOTATION_CLUSTER_ID = 'janus-idp.io/ocm-cluster-id';
+export const ANNOTATION_PROVIDER_ID = 'janus-idp.io/ocm-provider-id';

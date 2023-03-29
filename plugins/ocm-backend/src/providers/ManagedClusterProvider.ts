@@ -29,45 +29,56 @@ import {
 import { CustomObjectsApi } from '@kubernetes/client-node';
 import {
   getManagedCluster,
-  getManagedClusters,
+  listManagedClusters,
   hubApiClient,
 } from '../helpers/kubernetes';
 import { CONSOLE_CLAIM, HUB_CLUSTER_NAME_IN_OCM } from '../constants';
-import { getClaim } from '../helpers/parser';
-import { getHubClusterName } from '../helpers/config';
-import { ANNOTATION_CLUSTER_ID } from '@janus-idp/backstage-plugin-ocm-common';
+import { getClaim, translateOCMToResource } from '../helpers/parser';
+import { readOcmConfigs } from '../helpers/config';
+import {
+  ANNOTATION_PROVIDER_ID,
+  ANNOTATION_CLUSTER_ID,
+} from '@janus-idp/backstage-plugin-ocm-common';
 
 /**
  * Provides OpenShift cluster resource entities from Open Cluster Management.
  */
 export class ManagedClusterProvider implements EntityProvider {
   protected readonly client: CustomObjectsApi;
-  protected readonly hubName: string;
+  protected readonly hubResourceName: string;
+  protected readonly id: string;
   protected readonly logger: winston.Logger;
   protected connection?: EntityProviderConnection;
 
   protected constructor(
     client: CustomObjectsApi,
-    hubName: string,
+    hubResourceName: string,
+    id: string,
     options: { logger: winston.Logger },
   ) {
     this.client = client;
-    this.hubName = hubName;
+    this.hubResourceName = hubResourceName;
+    this.id = id;
     this.logger = options.logger;
   }
 
   static fromConfig(config: Config, options: { logger: winston.Logger }) {
-    const client = hubApiClient(config, options.logger);
-    const hubName = getHubClusterName(config);
-
-    return new ManagedClusterProvider(client, hubName, options);
+    return readOcmConfigs(config).map(provider => {
+      const client = hubApiClient(provider, options.logger);
+      return new ManagedClusterProvider(
+        client,
+        provider.hubResourceName,
+        provider.id,
+        options,
+      );
+    });
   }
   public async connect(connection: EntityProviderConnection): Promise<void> {
     this.connection = connection;
   }
 
   getProviderName(): string {
-    return 'ocm-managed-cluster';
+    return `ocm-managed-cluster:${this.id}`;
   }
 
   async run(): Promise<void> {
@@ -84,25 +95,28 @@ export class ManagedClusterProvider implements EntityProvider {
     );
 
     const resources: ResourceEntity[] = (
-      (await getManagedClusters(this.client)) as { items: Array<any> }
+      await listManagedClusters(this.client)
     ).items.map(i => {
+      const normalizedName = translateOCMToResource(
+        i.metadata!.name!,
+        this.hubResourceName,
+      );
+
       return {
         kind: 'Resource',
         apiVersion: 'backstage.io/v1beta1',
         metadata: {
-          name: i.metadata.name,
-          title: i.metadata?.labels?.name,
+          name: normalizedName,
           annotations: {
             /**
              * Can also be pulled from ManagedClusterInfo on .spec.masterEndpoint (details in discussion: https://github.com/janus-idp/backstage-plugins/pull/94#discussion_r1093228858)
              */
             [ANNOTATION_KUBERNETES_API_SERVER]:
               i.spec?.managedClusterClientConfigs?.[0]?.url,
-            [ANNOTATION_CLUSTER_ID]: i.metadata?.labels?.clusterID,
-            [ANNOTATION_LOCATION]: `${this.getProviderName()}:${this.hubName}`,
-            [ANNOTATION_ORIGIN_LOCATION]: `${this.getProviderName()}:${
-              this.hubName
-            }`,
+            [ANNOTATION_CLUSTER_ID]: i.metadata?.labels?.clusterID!,
+            [ANNOTATION_LOCATION]: this.getProviderName(),
+            [ANNOTATION_ORIGIN_LOCATION]: this.getProviderName(),
+            [ANNOTATION_PROVIDER_ID]: this.id,
           },
           links: [
             {
@@ -111,11 +125,14 @@ export class ManagedClusterProvider implements EntityProvider {
               icon: 'dashboard',
             },
             {
-              url: `${hubConsole}/multicloud/infrastructure/clusters/details/${i.metadata.name}/`,
+              url: `${hubConsole}/multicloud/infrastructure/clusters/details/${
+                i.metadata!.name
+              }/`,
               title: 'OCM Console',
             },
-            i.metadata?.labels?.clusterID && {
-              url: `https://console.redhat.com/openshift/details/s/${i.metadata.labels.clusterID}`,
+            {
+              url: `https://console.redhat.com/openshift/details/s/${i.metadata!
+                .labels!.clusterID!}`,
               title: 'OpenShift Cluster Manager',
             },
           ],
@@ -131,7 +148,7 @@ export class ManagedClusterProvider implements EntityProvider {
       type: 'full',
       entities: resources.map(entity => ({
         entity,
-        locationKey: 'ocm-managed-cluster',
+        locationKey: this.getProviderName(),
       })),
     });
   }

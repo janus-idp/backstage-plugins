@@ -17,11 +17,15 @@ describe('createRouter', () => {
     const router = await createRouter({
       logger: logger,
       config: new ConfigReader({
-        ocm: {
-          hub: {
-            name: 'hubCluster',
-            url: 'https://127.0.0.1:51010',
-            serviceAccountToken: 'TOKEN',
+        catalog: {
+          providers: {
+            ocm: {
+              foo: {
+                name: 'thisishub',
+                url: 'https://127.0.0.1:51010',
+                serviceAccountToken: 'TOKEN',
+              },
+            },
           },
         },
       }),
@@ -35,91 +39,8 @@ describe('createRouter', () => {
         .get('/apis/cluster.open-cluster-management.io/v1/managedclusters')
         .reply(200, {
           items: [
-            {
-              kind: 'ManagedCluster',
-              metadata: {
-                name: 'cluster1',
-              },
-              status: {
-                clusterClaims: [],
-                conditions: [
-                  {
-                    message: 'Managed cluster is available',
-                    status: 'True',
-                    type: 'ManagedClusterConditionAvailable',
-                  },
-                ],
-              },
-            },
-            {
-              kind: 'ManagedCluster',
-              metadata: {
-                name: 'cluster2',
-              },
-              status: {
-                clusterClaims: [],
-                conditions: [
-                  {
-                    message: 'Managed cluster is available',
-                    status: 'True',
-                    type: 'ManagedClusterConditionAvailable',
-                  },
-                ],
-              },
-            },
-          ],
-        })
-        .get(
-          '/apis/internal.open-cluster-management.io/v1beta1/managedclusterinfos',
-        )
-        .reply(200, {
-          items: [
-            {
-              kind: 'ManagedClusterInfo',
-              metadata: {
-                name: 'cluster1',
-              },
-              status: {
-                distributionInfo: {
-                  ocp: {
-                    availableUpdates: ['1.0.1', '1.0.2'],
-                    versionAvailableUpdates: [
-                      {
-                        url: 'http://exampleone.com',
-                        version: '1.0.1',
-                      },
-                      {
-                        url: 'http://exampletwo.com',
-                        version: '1.0.2',
-                      },
-                    ],
-                  },
-                },
-              },
-            },
-            {
-              kind: 'ManagedClusterInfo',
-              metadata: {
-                name: 'cluster2',
-              },
-              status: {
-                distributionInfo: {
-                  ocp: {
-                    availableUpdates: ['1.0.3', '1.0.4'],
-                    versionAvailableUpdates: [
-                      {
-                        url: 'http://examplethree.com',
-                        version: '1.0.3',
-                      },
-                      {
-                        url: 'http://examplefour.com',
-                        version: '1.0.4',
-                      },
-                    ],
-                  },
-                },
-              },
-            },
+            require(`${__dirname}/../fixtures/cluster.open-cluster-management.io/managedclusters/local-cluster.json`),
+            require(`${__dirname}/../fixtures/cluster.open-cluster-management.io/managedclusters/cluster1.json`),
           ],
         })
         .persist();
@@ -135,78 +56,40 @@ describe('createRouter', () => {
       expect(result.status).toBe(200);
       expect(result.body).toEqual([
         {
-          allocatableResources: {},
-          availableResources: {},
+          name: 'thisishub',
+          status: {
+            available: true,
+            reason: 'Managed cluster is available',
+          },
+        },
+        {
           name: 'cluster1',
           status: {
             available: true,
             reason: 'Managed cluster is available',
-          },
-          update: {
-            available: true,
-            version: '1.0.2',
-            url: 'http://exampletwo.com',
-          },
-        },
-        {
-          allocatableResources: {},
-          availableResources: {},
-          name: 'cluster2',
-          status: {
-            available: true,
-            reason: 'Managed cluster is available',
-          },
-          update: {
-            available: true,
-            version: '1.0.4',
-            url: 'http://examplefour.com',
           },
         },
       ]);
     });
   });
 
-  describe('GET /status/:clusterName', () => {
+  describe('GET /status/:hubName/:clusterName', () => {
     beforeAll(() => {
       nock('https://127.0.0.1:51010')
         .get(
           '/apis/cluster.open-cluster-management.io/v1/managedclusters/local-cluster',
         )
-        .reply(200, {
-          kind: 'ManagedCluster',
-          metadata: {
-            name: 'local-cluster',
-          },
-          status: {
-            clusterClaims: [],
-            conditions: [
-              {
-                message: 'Managed cluster is available',
-                status: 'True',
-                type: 'ManagedClusterConditionAvailable',
-              },
-            ],
-          },
-        })
+        .reply(
+          200,
+          require(`${__dirname}/../fixtures/cluster.open-cluster-management.io/managedclusters/local-cluster.json`),
+        )
         .get(
           '/apis/cluster.open-cluster-management.io/v1/managedclusters/cluster1',
         )
-        .reply(200, {
-          kind: 'ManagedCluster',
-          metadata: {
-            name: 'cluster1',
-          },
-          status: {
-            clusterClaims: [],
-            conditions: [
-              {
-                message: 'Managed cluster is available',
-                status: 'True',
-                type: 'ManagedClusterConditionAvailable',
-              },
-            ],
-          },
-        })
+        .reply(
+          200,
+          require(`${__dirname}/../fixtures/cluster.open-cluster-management.io/managedclusters/cluster1.json`),
+        )
         .get(
           '/apis/cluster.open-cluster-management.io/v1/managedclusters/non_existent_cluster',
         )
@@ -226,58 +109,19 @@ describe('createRouter', () => {
           code: 404,
         })
         .get(
-          '/apis/internal.open-cluster-management.io/v1beta1/managedclusterinfos',
+          '/apis/internal.open-cluster-management.io/v1beta1/namespaces/cluster1/managedclusterinfos/cluster1',
         )
-        .reply(200, {
-          items: [
-            {
-              kind: 'ManagedClusterInfo',
-              metadata: {
-                name: 'local-cluster',
-              },
-              status: {
-                distributionInfo: {
-                  ocp: {
-                    availableUpdates: ['1.0.1', '1.0.2'],
-                    versionAvailableUpdates: [
-                      {
-                        url: 'http://exampleone.com',
-                        version: '1.0.1',
-                      },
-                      {
-                        url: 'http://exampletwo.com',
-                        version: '1.0.2',
-                      },
-                    ],
-                  },
-                },
-              },
-            },
-            {
-              kind: 'ManagedClusterInfo',
-              metadata: {
-                name: 'cluster1',
-              },
-              status: {
-                distributionInfo: {
-                  ocp: {
-                    availableUpdates: ['1.0.3', '1.0.4'],
-                    versionAvailableUpdates: [
-                      {
-                        url: 'http://examplethree.com',
-                        version: '1.0.3',
-                      },
-                      {
-                        url: 'http://examplefour.com',
-                        version: '1.0.4',
-                      },
-                    ],
-                  },
-                },
-              },
-            },
-          ],
-        })
+        .reply(
+          200,
+          require(`${__dirname}/../fixtures/internal.open-cluster-management.io/managedclusterinfos/cluster1.json`),
+        )
+        .get(
+          '/apis/internal.open-cluster-management.io/v1beta1/namespaces/local-cluster/managedclusterinfos/local-cluster',
+        )
+        .reply(
+          200,
+          require(`${__dirname}/../fixtures/internal.open-cluster-management.io/managedclusterinfos/local-cluster.json`),
+        )
         .persist();
     });
 
@@ -286,45 +130,77 @@ describe('createRouter', () => {
     });
 
     it('should correctly parse a cluster', async () => {
-      const result = await request(app).get('/status/cluster1');
+      const result = await request(app).get('/status/foo/cluster1');
 
       expect(result.status).toBe(200);
       expect(result.body).toEqual({
-        allocatableResources: {},
-        availableResources: {},
+        allocatableResources: {
+          cpuCores: 1136.5,
+          memorySize: '7469511796Ki',
+          numberOfPods: 7750,
+        },
+        availableResources: {
+          cpuCores: 1152,
+          memorySize: '7505192052Ki',
+          numberOfPods: 7750,
+        },
+        consoleUrl: 'https://console-openshift-console.apps.cluster1.bar.baz',
+        kubernetesVersion: 'v1.22.3+fdba464',
         name: 'cluster1',
+        oauthUrl:
+          'https://oauth-openshift.apps.cluster1.bar.baz/oauth/token/implicit',
+        openshiftId: '5d448ae7-05f1-42cc-aacc-3122a8ad0184',
+        openshiftVersion: '4.9.21',
+        platform: 'BareMetal',
+        region: '',
         status: {
           available: true,
           reason: 'Managed cluster is available',
         },
         update: {
           available: true,
-          version: '1.0.4',
-          url: 'http://examplefour.com',
+          url: 'https://access.redhat.com/errata/RHSA-2023:0561',
+          version: '4.10.51',
         },
       });
     });
     it('should normalize the cluster name if the queried cluster is the hub', async () => {
-      const result = await request(app).get('/status/hubCluster');
+      const result = await request(app).get('/status/foo/thisishub');
 
       expect(result.status).toBe(200);
       expect(result.body).toEqual({
-        allocatableResources: {},
-        availableResources: {},
-        name: 'local-cluster',
+        allocatableResources: {
+          cpuCores: 94.5,
+          memorySize: '524485752Ki',
+          numberOfPods: 750,
+        },
+        availableResources: {
+          cpuCores: 96,
+          memorySize: '527938680Ki',
+          numberOfPods: 750,
+        },
+        consoleUrl: 'https://console-openshift-console.apps.foo.bar.baz',
+        kubernetesVersion: 'v1.23.5+012e945',
+        name: 'thisishub',
+        oauthUrl:
+          'https://oauth-openshift.apps.foo.bar.baz/oauth/token/implicit',
+        openshiftId: '91976abd-8b8e-47b9-82d3-e84793396ed7',
+        openshiftVersion: '4.10.26',
+        platform: 'BareMetal',
+        region: '',
         status: {
           available: true,
           reason: 'Managed cluster is available',
         },
         update: {
           available: true,
-          version: '1.0.2',
-          url: 'http://exampletwo.com',
+          url: 'https://access.redhat.com/errata/RHSA-2023:0561',
+          version: '4.10.51',
         },
       });
     });
     it('should correctly parse an error while querying for non existent cluster', async () => {
-      const result = await request(app).get('/status/non_existent_cluster');
+      const result = await request(app).get('/status/foo/non_existent_cluster');
 
       expect(result.status).toBe(404);
       expect(result.body).toEqual({
@@ -345,7 +221,7 @@ describe('createRouter', () => {
           },
           code: 404,
         },
-        request: { method: 'GET', url: '/status/non_existent_cluster' },
+        request: { method: 'GET', url: '/status/foo/non_existent_cluster' },
         response: { statusCode: 404 },
       });
     });

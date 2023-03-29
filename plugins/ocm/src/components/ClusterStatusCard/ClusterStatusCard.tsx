@@ -8,7 +8,7 @@ import {
 } from '@backstage/core-components';
 
 import { useCluster } from '../ClusterContext';
-import { ClusterDetails } from '@janus-idp/backstage-plugin-ocm-common';
+import { Cluster } from '@janus-idp/backstage-plugin-ocm-common';
 
 const getStatusElement = (data: any) => {
   if (!data) {
@@ -30,7 +30,7 @@ export const ClusterStatusCard = (): any => {
         <Typography variant="subtitle1">
           {loading
             ? 'Loading'
-            : (data as ClusterDetails)?.status?.reason || error?.message}
+            : (data as Cluster)?.status?.reason || error?.message}
         </Typography>
       </div>
     </InfoCard>

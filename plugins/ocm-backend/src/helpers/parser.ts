@@ -1,6 +1,10 @@
-import { CONSOLE_CLAIM } from '../constants';
-import { ClusterDetails } from '@janus-idp/backstage-plugin-ocm-common';
+import { CONSOLE_CLAIM, HUB_CLUSTER_NAME_IN_OCM } from '../constants';
+import {
+  ClusterDetails,
+  ClusterStatus,
+} from '@janus-idp/backstage-plugin-ocm-common';
 import { maxSatisfying } from 'semver';
+import { ClusterClaim, ManagedCluster, ManagedClusterInfo } from '../types';
 
 const convertCpus = (cpus: string | undefined): number | undefined => {
   if (!cpus) {
@@ -12,62 +16,58 @@ const convertCpus = (cpus: string | undefined): number | undefined => {
   return parseInt(cpus, 10);
 };
 
-export const parseResources = (resources: any | undefined): Object => ({
+export const parseResources = (
+  resources: Record<string, string>,
+): Record<string, string | number | undefined> => ({
   cpuCores: convertCpus(resources?.cpu),
   memorySize: resources?.memory,
   numberOfPods: parseInt(resources?.pods, 10) || undefined,
 });
 
-export const getClaim = (cluster: any, claimName: string): string =>
-  cluster.status.clusterClaims.find((value: any) => value.name === claimName)
-    ?.value;
+export const getClaim = (
+  cluster: { status?: { clusterClaims: ClusterClaim[] } },
+  claimName: string,
+): string =>
+  cluster.status?.clusterClaims.find(value => value.name === claimName)
+    ?.value || '';
 
-export const parseManagedCluster = (cluster: any): ClusterDetails => {
-  const available = cluster.status.conditions.find(
+export const parseClusterStatus = (mc: ManagedCluster): ClusterStatus => {
+  const available = mc.status?.conditions.find(
     (value: any) => value.type === 'ManagedClusterConditionAvailable',
   );
 
-  const status: ClusterDetails = {
-    name: cluster.metadata.name,
-    status: {
-      available: available.status.toLowerCase() === 'true',
-      reason: available.message,
-    },
-  };
-
-  const parsedClusterInfo = {
-    consoleUrl: getClaim(cluster, CONSOLE_CLAIM),
-    kubernetesVersion: getClaim(
-      cluster,
-      'kubeversion.open-cluster-management.io',
-    ),
-    oauthUrl: getClaim(cluster, 'oauthredirecturis.openshift.io'),
-    openshiftId:
-      cluster.metadata?.labels?.clusterID ||
-      getClaim(cluster, 'id.openshift.io'),
-    openshiftVersion:
-      cluster.metadata?.labels?.openshiftVersion ||
-      getClaim(cluster, 'version.openshift.io'),
-    platform: getClaim(cluster, 'platform.open-cluster-management.io'),
-    region: getClaim(cluster, 'region.open-cluster-management.io'),
-    allocatableResources: parseResources(cluster.status?.allocatable),
-    availableResources: parseResources(cluster.status?.capacity),
-  };
-
   return {
-    ...status,
-    ...parsedClusterInfo,
+    available: available?.status.toLowerCase() === 'true',
+    reason: available?.message,
   };
 };
 
-export const parseUpdateInfo = (clusterInfo: any) => {
+export const parseManagedCluster = (mc: ManagedCluster): ClusterDetails => ({
+  status: parseClusterStatus(mc),
+  consoleUrl: getClaim(mc, CONSOLE_CLAIM),
+  kubernetesVersion: getClaim(mc, 'kubeversion.open-cluster-management.io'),
+  oauthUrl: getClaim(mc, 'oauthredirecturis.openshift.io'),
+  openshiftId:
+    mc.metadata!.labels?.clusterID || getClaim(mc, 'id.openshift.io'),
+  openshiftVersion:
+    mc.metadata!.labels?.openshiftVersion ||
+    getClaim(mc, 'version.openshift.io'),
+  platform: getClaim(mc, 'platform.open-cluster-management.io'),
+  region: getClaim(mc, 'region.open-cluster-management.io'),
+  allocatableResources: parseResources(mc.status?.allocatable || {}),
+  availableResources: parseResources(mc.status?.capacity || {}),
+});
+
+export const parseUpdateInfo = (clusterInfo: ManagedClusterInfo) => {
   const { availableUpdates, versionAvailableUpdates } =
-    clusterInfo.status.distributionInfo.ocp;
-  /*
-   * We assume here that if availableUpdates is empty
-   * versionAvailableUpdates also has to be empty
-   */
-  if (!availableUpdates || availableUpdates.length === 0) {
+    clusterInfo.status?.distributionInfo.ocp || {};
+
+  if (
+    !availableUpdates ||
+    availableUpdates?.length === 0 ||
+    !versionAvailableUpdates ||
+    versionAvailableUpdates?.length === 0
+  ) {
     return {
       update: {
         available: false,
@@ -81,7 +81,18 @@ export const parseUpdateInfo = (clusterInfo: any) => {
     update: {
       available: true,
       version,
-      url: versionAvailableUpdates[availableUpdates.indexOf(version)].url,
+      url: versionAvailableUpdates[availableUpdates.indexOf(version as string)]
+        .url,
     },
   };
 };
+
+export const translateResourceToOCM = (
+  clusterName: string,
+  hubResourceName: string,
+) => (clusterName === hubResourceName ? HUB_CLUSTER_NAME_IN_OCM : clusterName);
+
+export const translateOCMToResource = (
+  clusterName: string,
+  hubResourceName: string,
+) => (clusterName === HUB_CLUSTER_NAME_IN_OCM ? hubResourceName : clusterName);

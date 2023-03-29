@@ -1,120 +1,55 @@
 import { ConfigReader } from '@backstage/config';
-import { createLogger, transports } from 'winston';
 import {
   getHubClusterFromKubernetesConfig,
-  getHubClusterFromConfig,
-  getHubClusterName,
   getHubClusterFromOcmConfig,
-  getConfigVariantPath,
+  deferToKubernetesPlugin,
 } from './config';
 
-const logger = createLogger({
-  transports: [new transports.Console({ silent: true })],
-});
-
-const createConfigParseResult = (data: object, prefix: string) => ({
-  data: data,
-  context: 'mock-config',
-  prefix: prefix,
-  fallback: undefined,
-  filteredKeys: undefined,
-  notifiedFilteredKeys: new Set(),
-});
-
-describe('getConfigVariantPath', () => {
-  it('should only get the hub config path if the cluster config is also present', () => {
+describe('deferToKubernetesPlugin', () => {
+  it('should use kubernetes plugin definition if both are present', () => {
     const config = new ConfigReader({
-      ocm: {
-        cluster: {},
-        hub: {},
-      },
+      kubernetesPluginRef: 'foo',
+      url: 'bar',
     });
 
-    const result = getConfigVariantPath(config);
+    const result = deferToKubernetesPlugin(config);
 
-    expect(result).toEqual('ocm.hub');
+    expect(result).toEqual(true);
   });
 
-  it('should get the cluster config path if its the only one configured', () => {
-    const config = new ConfigReader({
-      ocm: {
-        cluster: {},
+  it.each([
+    [
+      {
+        kubernetesPluginRef: 'foo',
       },
-    });
-
-    const result = getConfigVariantPath(config);
-
-    expect(result).toEqual('ocm');
-  });
-
-  it('should throw if neither cluster or hub are configured', () => {
-    const config = new ConfigReader({});
-
-    const result = () => getConfigVariantPath(config);
-
-    expect(result).toThrow(
-      "Neither hub or cluster configuration were specified at 'ocm.' config",
-    );
-  });
-});
-
-describe('getHubClusterName', () => {
-  it('should get the hub cluster name from ocm cluster config', () => {
-    const config = new ConfigReader({
-      ocm: {
-        cluster: 'cluster2',
+      true,
+    ],
+    [
+      {
+        kubernetesPluginRef: 'foo',
+        url: 'bar',
+        name: 'baz',
       },
-    });
-
-    const result = getHubClusterName(config);
-
-    expect(result).toBe('cluster2');
-  });
-
-  it('should get the hub cluster name from ocm hub config', () => {
-    const config = new ConfigReader({
-      ocm: {
-        hub: {
-          name: 'cluster2',
-        },
+      true,
+    ],
+    [
+      {
+        url: 'bar',
+        name: 'baz',
       },
-    });
+      false,
+    ],
+  ])('should return %s for %o', (input, expected) => {
+    const config = new ConfigReader(input);
+    const result = deferToKubernetesPlugin(config);
 
-    const result = getHubClusterName(config);
-
-    expect(result).toBe('cluster2');
-  });
-
-  it('should throw an error if neither hub or cluster are configured', () => {
-    const config = new ConfigReader({});
-
-    const result = () => getHubClusterName(config);
-
-    expect(result).toThrow(
-      "Neither hub or cluster configuration were specified at 'ocm.' config",
-    );
-  });
-
-  it('should throw an error if name is not configured', () => {
-    const config = new ConfigReader({
-      ocm: {
-        hub: {
-          url: 'http://example.com',
-        },
-      },
-    });
-
-    const result = () => getHubClusterName(config);
-
-    expect(result).toThrow(
-      "'ocm.hub.name' or 'ocm.cluster' must be specified in ocm config",
-    );
+    expect(result).toEqual(expected);
   });
 });
 
 describe('getHubClusterFromKubernetesConfig', () => {
   it('should get the correct hub cluster from multiple configured clusters', () => {
-    const config = new ConfigReader({
+    const globalConfig = new ConfigReader({
       kubernetes: {
         clusterLocatorMethods: [
           {
@@ -125,6 +60,8 @@ describe('getHubClusterFromKubernetesConfig', () => {
               },
               {
                 name: 'cluster2',
+                url: 'http://example.com',
+                authProvider: 'serviceAccount',
               },
               {
                 name: 'cluster3',
@@ -133,25 +70,51 @@ describe('getHubClusterFromKubernetesConfig', () => {
           },
         ],
       },
-      ocm: {
-        cluster: 'cluster2',
-      },
+    });
+    const ocmConfig = new ConfigReader({
+      kubernetesPluginRef: 'cluster2',
     });
 
-    const result = getHubClusterFromKubernetesConfig(config);
+    const result = getHubClusterFromKubernetesConfig(
+      'foo',
+      ocmConfig,
+      globalConfig,
+    );
 
-    expect(result).toEqual(
-      createConfigParseResult(
-        {
-          name: 'cluster2',
-        },
-        'kubernetes.clusterLocatorMethods[0].clusters[1]',
-      ),
+    expect(result.getString('name')).toEqual('cluster2');
+    expect(result.getString('url')).toEqual('http://example.com');
+  });
+
+  it('should throw if authProvider is not serviceAccount', () => {
+    const globalConfig = new ConfigReader({
+      kubernetes: {
+        clusterLocatorMethods: [
+          {
+            type: 'config',
+            clusters: [
+              {
+                name: 'cluster2',
+                url: 'http://example.com',
+                authProvider: 'oidc',
+              },
+            ],
+          },
+        ],
+      },
+    });
+    const ocmConfig = new ConfigReader({
+      kubernetesPluginRef: 'cluster2',
+    });
+
+    const result = () =>
+      getHubClusterFromKubernetesConfig('foo', ocmConfig, globalConfig);
+    expect(result).toThrow(
+      "Hub cluster catalog.providers.ocm.foo.kubernetesPluginRef=cluster2 has to authenticate via 'serviceAccount'",
     );
   });
 
   it('should throw an error when the hub cluster is not found in kubernetes config', () => {
-    const config = new ConfigReader({
+    const globalConfig = new ConfigReader({
       kubernetes: {
         clusterLocatorMethods: [
           {
@@ -164,18 +127,21 @@ describe('getHubClusterFromKubernetesConfig', () => {
           },
         ],
       },
-      ocm: {
-        cluster: 'cluster2',
-      },
+    });
+    const ocmConfig = new ConfigReader({
+      kubernetesPluginRef: 'cluster2',
     });
 
-    const result = () => getHubClusterFromKubernetesConfig(config);
+    const result = () =>
+      getHubClusterFromKubernetesConfig('foo', ocmConfig, globalConfig);
 
-    expect(result).toThrow('Hub cluster not defined in kubernetes config');
+    expect(result).toThrow(
+      'Hub cluster catalog.providers.ocm.foo.kubernetesPluginRef=cluster2 not defined in kubernetes in kubernetes.clusterLocatorMethods.clusters',
+    );
   });
 
   it('should throw an error when there are no cluster configured', () => {
-    const config = new ConfigReader({
+    const globalConfig = new ConfigReader({
       kubernetes: {
         clusterLocatorMethods: [
           {
@@ -183,30 +149,27 @@ describe('getHubClusterFromKubernetesConfig', () => {
           },
         ],
       },
-      ocm: {
-        cluster: {
-          name: 'cluster2',
-        },
-      },
+    });
+    const ocmConfig = new ConfigReader({
+      kubernetesPluginRef: 'cluster2',
     });
 
     const result = () => {
-      getHubClusterFromKubernetesConfig(config);
+      getHubClusterFromKubernetesConfig('foo', ocmConfig, globalConfig);
     };
 
-    expect(result).toThrow('Hub cluster not defined in kubernetes config');
+    expect(result).toThrow(
+      'Hub cluster catalog.providers.ocm.foo.kubernetesPluginRef=cluster2 not defined in kubernetes in kubernetes.clusterLocatorMethods.clusters',
+    );
   });
 
   it('should throw an error when there is no kubernetes config', () => {
-    const config = new ConfigReader({
-      ocm: {
-        cluster: {
-          name: 'cluster2',
-        },
-      },
+    const globalConfig = new ConfigReader({});
+    const ocmConfig = new ConfigReader({
+      kubernetesPluginRef: 'cluster2',
     });
-
-    const result = () => getHubClusterFromKubernetesConfig(config);
+    const result = () =>
+      getHubClusterFromKubernetesConfig('foo', ocmConfig, globalConfig);
 
     expect(result).toThrow(
       "Missing required config value at 'kubernetes.clusterLocatorMethods'",
@@ -214,7 +177,7 @@ describe('getHubClusterFromKubernetesConfig', () => {
   });
 
   it('should throw an error when there is no ocm cluster name configured', () => {
-    const config = new ConfigReader({
+    const globalConfig = new ConfigReader({
       kubernetes: {
         clusterLocatorMethods: [
           {
@@ -222,176 +185,56 @@ describe('getHubClusterFromKubernetesConfig', () => {
           },
         ],
       },
-      ocm: {
-        cluster: {
-          key: 'value',
-        },
+    });
+    const ocmConfig = new ConfigReader({
+      kubernetesPluginRef: {
+        key: 'value',
       },
     });
 
-    const result = () => getHubClusterFromKubernetesConfig(config);
+    const result = () =>
+      getHubClusterFromKubernetesConfig('foo', ocmConfig, globalConfig);
 
-    expect(result).toThrow('Hub cluster not defined in kubernetes config');
+    expect(result).toThrow(
+      "Invalid type in config for key 'kubernetesPluginRef' in 'mock-config', got object, wanted string",
+    );
   });
 });
 
 describe('getHubClusterFromOcmConfig', () => {
   it('should correctly return an ocm hub config', () => {
     const config = new ConfigReader({
-      ocm: {
-        hub: {
-          name: 'cluster2',
-          url: 'http://example.com',
-        },
-      },
+      name: 'cluster2',
+      url: 'http://example.com',
     });
 
-    const result = getHubClusterFromOcmConfig(config);
+    const result = getHubClusterFromOcmConfig('foo', config);
 
-    expect(result).toEqual(
-      createConfigParseResult(
-        {
-          name: 'cluster2',
-          url: 'http://example.com',
-        },
-        'ocm.hub',
-      ),
-    );
+    expect(result.getString('name')).toEqual('cluster2');
+    expect(result.getString('url')).toEqual('http://example.com');
   });
 
   it("should throw an error when url isn't specified in the hub config", () => {
     const config = new ConfigReader({
-      ocm: {
-        hub: {
-          name: 'cluster2',
-        },
-      },
+      name: 'cluster2',
     });
 
-    const result = () => getHubClusterFromOcmConfig(config);
+    const result = () => getHubClusterFromOcmConfig('foo', config);
 
     expect(result).toThrow(
-      "Hub cluster url must be specified in config at 'ocm.hub.url'",
+      `Value must be specified in config at 'catalog.providers.ocm.foo.url'`,
     );
   });
 
   it("should throw an error when name isn't specified in the hub config", () => {
     const config = new ConfigReader({
-      ocm: {
-        hub: {
-          url: 'http://example.com',
-        },
-      },
+      url: 'http://example.com',
     });
 
-    const result = () => getHubClusterFromOcmConfig(config);
+    const result = () => getHubClusterFromOcmConfig('foo', config);
 
     expect(result).toThrow(
-      "Hub cluster name must be specified in config at 'ocm.hub.name'",
-    );
-  });
-});
-
-describe('getHubClusterFromConfig', () => {
-  it('should parse only the hub config if the kubernetes config is also present', () => {
-    const config = new ConfigReader({
-      kubernetes: {
-        clusterLocatorMethods: [
-          {
-            type: 'config',
-            clusters: [
-              {
-                name: 'cluster1',
-              },
-            ],
-          },
-        ],
-      },
-      ocm: {
-        hub: {
-          url: 'https://example.com',
-          name: 'cluster2',
-        },
-      },
-    });
-
-    const result = getHubClusterFromConfig(config, logger);
-
-    expect(result).toEqual(
-      createConfigParseResult(
-        { url: 'https://example.com', name: 'cluster2' },
-        'ocm.hub',
-      ),
-    );
-  });
-
-  it('should parse the ocm cluster config and get the correct kubernetes cluster configuration', () => {
-    const config = new ConfigReader({
-      kubernetes: {
-        clusterLocatorMethods: [
-          {
-            type: 'config',
-            clusters: [
-              {
-                name: 'cluster1',
-              },
-              {
-                name: 'cluster2',
-              },
-            ],
-          },
-        ],
-      },
-      ocm: {
-        cluster: 'cluster1',
-      },
-    });
-
-    const result = getHubClusterFromConfig(config, logger);
-
-    expect(result).toEqual(
-      createConfigParseResult(
-        { name: 'cluster1' },
-        'kubernetes.clusterLocatorMethods[0].clusters[0]',
-      ),
-    );
-  });
-
-  it('should prefer the hub configuration over the cluster configuration', () => {
-    const config = new ConfigReader({
-      kubernetes: {
-        clusterLocatorMethods: [
-          {
-            type: 'config',
-            clusters: [
-              {
-                name: 'cluster3',
-              },
-              {
-                name: 'cluster2',
-              },
-            ],
-          },
-        ],
-      },
-      ocm: {
-        cluster: {
-          name: 'cluster3',
-        },
-        hub: {
-          url: 'https://example.com',
-          name: 'cluster1',
-        },
-      },
-    });
-
-    const result = getHubClusterFromConfig(config, logger);
-
-    expect(result).toEqual(
-      createConfigParseResult(
-        { url: 'https://example.com', name: 'cluster1' },
-        'ocm.hub',
-      ),
+      `Value must be specified in config at 'catalog.providers.ocm.foo.name'`,
     );
   });
 });

@@ -19,15 +19,21 @@ import { Config } from '@backstage/config';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
-import { HUB_CLUSTER_NAME_IN_OCM } from '../constants';
 import {
   getManagedCluster,
-  getManagedClusters,
-  getManagedClustersInfo,
+  listManagedClusters,
+  getManagedClusterInfo,
   hubApiClient,
 } from '../helpers/kubernetes';
-import { parseManagedCluster, parseUpdateInfo } from '../helpers/parser';
-import { getHubClusterName } from '../helpers/config';
+import {
+  parseClusterStatus,
+  parseManagedCluster,
+  parseUpdateInfo,
+  translateOCMToResource,
+  translateResourceToOCM,
+} from '../helpers/parser';
+import { readOcmConfigs } from '../helpers/config';
+import { Cluster } from '@janus-idp/backstage-plugin-ocm-common';
 
 export interface RouterOptions {
   logger: Logger;
@@ -40,52 +46,70 @@ export async function createRouter(
   const { logger } = options;
   const { config } = options;
 
-  const hubClusterName = getHubClusterName(config);
-  const api = hubApiClient(config, logger);
+  const clients = Object.fromEntries(
+    readOcmConfigs(config).map(provider => [
+      provider.id,
+      {
+        client: hubApiClient(provider, options.logger),
+        hubResourceName: provider.hubResourceName,
+      },
+    ]),
+  );
 
   const router = Router();
   router.use(express.json());
 
   router.get(
-    '/status/:clusterName',
-    ({ params: { clusterName } }, response) => {
-      logger.info(`Incoming status request for ${clusterName} cluster`);
+    '/status/:providerId/:clusterName',
+    async ({ params: { clusterName, providerId } }, response) => {
+      logger.debug(
+        `Incoming status request for ${clusterName} cluster on ${providerId} hub`,
+      );
 
-      const normalizedClusterName =
-        clusterName === hubClusterName ? HUB_CLUSTER_NAME_IN_OCM : clusterName;
-
-      return (
-        getManagedCluster(api, normalizedClusterName) as Promise<any>
-      ).then(async resp => {
-        response.send({
-          ...parseManagedCluster(resp),
-          ...parseUpdateInfo(
-            (await (getManagedClustersInfo(api) as Promise<any>)).items.find(
-              (clusterInfo: any) =>
-                clusterInfo.metadata.name === normalizedClusterName,
-            ),
-          ),
+      if (!clients.hasOwnProperty(providerId)) {
+        throw Object.assign(new Error('Hub not found'), {
+          statusCode: 404,
+          name: 'HubNotFound',
         });
-      });
+      }
+
+      const normalizedClusterName = translateResourceToOCM(
+        clusterName,
+        clients[providerId].hubResourceName,
+      );
+
+      const mc = await getManagedCluster(
+        clients[providerId].client,
+        normalizedClusterName,
+      );
+      const mci = await getManagedClusterInfo(
+        clients[providerId].client,
+        normalizedClusterName,
+      );
+
+      response.send({
+        name: clusterName,
+        ...parseManagedCluster(mc),
+        ...parseUpdateInfo(mci),
+      } as Cluster);
     },
   );
 
-  router.get('/status', (_, response) => {
-    logger.info(`Incoming status request for all clusters`);
+  router.get('/status', async (_, response) => {
+    logger.debug(`Incoming status request for all clusters`);
 
-    return (getManagedClusters(api) as Promise<any>).then(async resp => {
-      const clusterInfo = (await (getManagedClustersInfo(api) as Promise<any>))
-        .items;
+    const allClusters = await Promise.all(
+      Object.values(clients).map(async c => {
+        const mcs = await listManagedClusters(c.client);
 
-      response.send(
-        resp.items.map((clusterStatus: any, index: number) => {
-          return {
-            ...parseManagedCluster(clusterStatus),
-            ...parseUpdateInfo(clusterInfo[index]),
-          };
-        }),
-      );
-    });
+        return mcs.items.map(mc => ({
+          name: translateOCMToResource(mc.metadata!.name!, c.hubResourceName),
+          status: parseClusterStatus(mc),
+        }));
+      }),
+    );
+
+    return response.send(allClusters.flat());
   });
 
   router.use(errorHandler({ logClientErrors: true }));

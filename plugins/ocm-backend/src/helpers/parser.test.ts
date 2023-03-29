@@ -1,9 +1,12 @@
 import { ClusterDetails } from '@janus-idp/backstage-plugin-ocm-common';
+import { ManagedCluster, ManagedClusterInfo } from '../types';
 import {
   getClaim,
   parseManagedCluster,
   parseResources,
   parseUpdateInfo,
+  translateOCMToResource,
+  translateResourceToOCM,
 } from './parser';
 
 describe('getClaim', () => {
@@ -48,7 +51,7 @@ describe('getClaim', () => {
 
     const result = getClaim(cluster, 'claim2');
 
-    expect(result).toBeUndefined();
+    expect(result).toEqual('');
   });
 });
 
@@ -87,90 +90,29 @@ describe('parseResources', () => {
 
 describe('parseManagedCluster', () => {
   it('should parse a managed cluster to cluster details', () => {
-    const cluster = {
-      metadata: {
-        name: 'cluster1',
-        labels: {
-          clusterID: '24ee1f0a-c8ac-4833-83ac-dccec690825c',
-          openshiftVersion: '4.9.5',
-        },
-      },
-      status: {
-        allocatable: {
-          cpu: '94500m',
-          memory: '656645580Ki',
-          pods: '750',
-        },
-        capacity: {
-          cpu: '96',
-          memory: '660098508Ki',
-          pods: '750',
-        },
-        clusterClaims: [
-          {
-            name: 'version.openshift.io',
-            value: '4.9.5',
-          },
-          {
-            name: 'id.openshift.io',
-            value: '24ee1f0a-c8ac-4833-83ac-dccec690825c',
-          },
-          {
-            name: 'kubeversion.open-cluster-management.io',
-            value: 'v1.22.0-rc.0+a44d0f0',
-          },
-          {
-            name: 'platform.open-cluster-management.io',
-            value: 'BareMetal',
-          },
-          {
-            name: 'product.open-cluster-management.io',
-            value: 'OpenShift',
-          },
-          {
-            name: 'consoleurl.cluster.open-cluster-management.io',
-            value: 'https://console.cluster.1cloud',
-          },
-          {
-            name: 'region.open-cluster-management.io',
-            value: 'eu',
-          },
-          {
-            name: 'oauthredirecturis.openshift.io',
-            value: 'https://oauth.cluster1.cloud',
-          },
-        ],
-        conditions: [
-          {
-            message: 'Managed cluster is available',
-            status: 'True',
-            type: 'ManagedClusterConditionAvailable',
-          },
-        ],
-      },
-    };
+    const mc: ManagedCluster = require(`${__dirname}/../fixtures/cluster.open-cluster-management.io/managedclusters/cluster1.json`);
 
-    const result = parseManagedCluster(cluster);
+    const result = parseManagedCluster(mc);
 
     const expected: ClusterDetails = {
       allocatableResources: {
-        cpuCores: 94.5,
-        memorySize: '656645580Ki',
-        numberOfPods: 750,
+        cpuCores: 1136.5,
+        memorySize: '7469511796Ki',
+        numberOfPods: 7750,
       },
       availableResources: {
-        cpuCores: 96,
-        memorySize: '660098508Ki',
-        numberOfPods: 750,
+        cpuCores: 1152,
+        memorySize: '7505192052Ki',
+        numberOfPods: 7750,
       },
-      consoleUrl: 'https://console.cluster.1cloud',
-      kubernetesVersion: 'v1.22.0-rc.0+a44d0f0',
-      name: 'cluster1',
-      oauthUrl: 'https://oauth.cluster1.cloud',
-      openshiftId: '24ee1f0a-c8ac-4833-83ac-dccec690825c',
-      openshiftVersion: '4.9.5',
+      consoleUrl: 'https://console-openshift-console.apps.cluster1.bar.baz',
+      kubernetesVersion: 'v1.22.3+fdba464',
+      oauthUrl:
+        'https://oauth-openshift.apps.cluster1.bar.baz/oauth/token/implicit',
+      openshiftId: '5d448ae7-05f1-42cc-aacc-3122a8ad0184',
+      openshiftVersion: '4.9.21',
       platform: 'BareMetal',
-      region: 'eu',
+      region: '',
       status: {
         available: true,
         reason: 'Managed cluster is available',
@@ -181,30 +123,12 @@ describe('parseManagedCluster', () => {
   });
 
   it('should parse a managed cluster without labels to cluster details', () => {
-    const cluster = {
-      metadata: {},
-      status: {
-        clusterClaims: [
-          {
-            name: 'version.openshift.io',
-            value: '4.9.5',
-          },
-          {
-            name: 'id.openshift.io',
-            value: '24ee1f0a-c8ac-4833-83ac-dccec690825c',
-          },
-        ],
-        conditions: [
-          {
-            message: 'Managed cluster is available',
-            status: 'True',
-            type: 'ManagedClusterConditionAvailable',
-          },
-        ],
-      },
-    };
+    const mc: ManagedCluster = require(`${__dirname}/../fixtures/cluster.open-cluster-management.io/managedclusters/cluster1.json`);
+    mc.status!.allocatable = {};
+    mc.status!.capacity = {};
+    mc.metadata!.labels = {};
 
-    const result = parseManagedCluster(cluster);
+    const result = parseManagedCluster(mc);
 
     const expected: ClusterDetails = {
       allocatableResources: {
@@ -217,14 +141,14 @@ describe('parseManagedCluster', () => {
         memorySize: undefined,
         numberOfPods: undefined,
       },
-      consoleUrl: undefined,
-      kubernetesVersion: undefined,
-      name: undefined,
-      oauthUrl: undefined,
-      openshiftId: '24ee1f0a-c8ac-4833-83ac-dccec690825c',
-      openshiftVersion: '4.9.5',
-      platform: undefined,
-      region: undefined,
+      consoleUrl: 'https://console-openshift-console.apps.cluster1.bar.baz',
+      kubernetesVersion: 'v1.22.3+fdba464',
+      oauthUrl:
+        'https://oauth-openshift.apps.cluster1.bar.baz/oauth/token/implicit',
+      openshiftId: '5d448ae7-05f1-42cc-aacc-3122a8ad0184',
+      openshiftVersion: '4.9.21',
+      platform: 'BareMetal',
+      region: '',
       status: {
         available: true,
         reason: 'Managed cluster is available',
@@ -234,119 +158,52 @@ describe('parseManagedCluster', () => {
     expect(result).toStrictEqual(expected);
   });
 
-  it('should parse an unavaliable managed cluster to cluster details', () => {
-    const cluster = {
-      metadata: {},
-      status: {
-        clusterClaims: [],
-        conditions: [
-          {
-            message: 'Managed cluster is unavailable',
-            status: 'False',
-            type: 'ManagedClusterConditionAvailable',
-          },
-        ],
+  it('should parse an unavailable managed cluster to cluster details', () => {
+    const mc: ManagedCluster = require(`${__dirname}/../fixtures/cluster.open-cluster-management.io/managedclusters/cluster1.json`);
+    mc.status!.conditions = [
+      {
+        message: 'Managed cluster is unavailable',
+        status: 'False',
+        type: 'ManagedClusterConditionAvailable',
       },
+    ];
+
+    const result = parseManagedCluster(mc);
+
+    const expected = {
+      available: false,
+      reason: 'Managed cluster is unavailable',
     };
 
-    const result = parseManagedCluster(cluster);
-
-    const expected: ClusterDetails = {
-      allocatableResources: {
-        cpuCores: undefined,
-        memorySize: undefined,
-        numberOfPods: undefined,
-      },
-      availableResources: {
-        cpuCores: undefined,
-        memorySize: undefined,
-        numberOfPods: undefined,
-      },
-      consoleUrl: undefined,
-      kubernetesVersion: undefined,
-      name: undefined,
-      oauthUrl: undefined,
-      openshiftId: undefined,
-      openshiftVersion: undefined,
-      platform: undefined,
-      region: undefined,
-      status: {
-        available: false,
-        reason: 'Managed cluster is unavailable',
-      },
-    };
-
-    expect(result).toStrictEqual(expected);
+    expect(result.status).toStrictEqual(expected);
   });
 });
 
 describe('parseUpdateInfo', () => {
   it('should correctly parse update information from ClusterInfo', () => {
-    const clusterInfo = {
-      metadata: {},
-      status: {
-        distributionInfo: {
-          ocp: {
-            availableUpdates: ['1.0.1', '1.0.2', '1.0.3', '1.0.0'],
-            versionAvailableUpdates: [
-              {
-                url: 'http://exampleone.com',
-                version: '1.0.1',
-              },
-              {
-                url: 'http://exampletwo.com',
-                version: '1.0.2',
-              },
-              {
-                url: 'http://examplethree.com',
-                version: '1.0.3',
-              },
-              {
-                url: 'http://examplezero.com',
-                version: '1.0.0',
-              },
-            ],
-          },
-        },
-      },
-    };
+    const mci: ManagedClusterInfo = require(`${__dirname}/../fixtures/internal.open-cluster-management.io/managedclusterinfos/local-cluster.json`);
 
-    const result = parseUpdateInfo(clusterInfo);
+    const result = parseUpdateInfo(mci);
 
     expect(result).toEqual({
       update: {
         available: true,
-        version: '1.0.3',
-        url: 'http://examplethree.com',
+        version: '4.10.51',
+        url: 'https://access.redhat.com/errata/RHSA-2023:0561',
       },
     });
   });
 
   it('should correctly parse while there are no updates available with no arrays', () => {
-    const clusterInfo = {
-      metadata: {},
+    const mciOriginal: ManagedClusterInfo = require(`${__dirname}/../fixtures/internal.open-cluster-management.io/managedclusterinfos/local-cluster.json`);
+    const mci = {
+      ...mciOriginal,
       status: {
+        ...mciOriginal.status!,
         distributionInfo: {
-          ocp: {},
-        },
-      },
-    };
-
-    const result = parseUpdateInfo(clusterInfo);
-
-    expect(result).toEqual({
-      update: {
-        available: false,
-      },
-    });
-  });
-
-  it('should correctly parse while there are no updates available with empty arrays', () => {
-    const clusterInfo = {
-      metadata: {},
-      status: {
-        distributionInfo: {
+          ...mciOriginal.status!.distributionInfo,
           ocp: {
+            ...mciOriginal.status!.distributionInfo.ocp,
             availableUpdates: [],
             versionAvailableUpdates: [],
           },
@@ -354,7 +211,7 @@ describe('parseUpdateInfo', () => {
       },
     };
 
-    const result = parseUpdateInfo(clusterInfo);
+    const result = parseUpdateInfo(mci);
 
     expect(result).toEqual({
       update: {
@@ -363,32 +220,60 @@ describe('parseUpdateInfo', () => {
     });
   });
 
-  it('should correctly parse while there is only one update available', () => {
-    const clusterInfo = {
-      metadata: {},
+  it('should correctly parse when there is only one update available', () => {
+    const mciOriginal: ManagedClusterInfo = require(`${__dirname}/../fixtures/internal.open-cluster-management.io/managedclusterinfos/local-cluster.json`);
+    const mci = {
+      ...mciOriginal,
       status: {
+        ...mciOriginal.status!,
         distributionInfo: {
+          ...mciOriginal.status!.distributionInfo,
           ocp: {
-            availableUpdates: ['1.0.1'],
+            ...mciOriginal.status!.distributionInfo.ocp,
+            availableUpdates: [
+              mciOriginal.status!.distributionInfo.ocp.availableUpdates!.pop()!,
+            ],
             versionAvailableUpdates: [
-              {
-                url: 'http://exampleone.com',
-                version: '1.0.1',
-              },
+              mciOriginal.status!.distributionInfo.ocp.versionAvailableUpdates!.pop()!,
             ],
           },
         },
       },
     };
-
-    const result = parseUpdateInfo(clusterInfo);
+    const result = parseUpdateInfo(mci);
 
     expect(result).toEqual({
       update: {
         available: true,
-        version: '1.0.1',
-        url: 'http://exampleone.com',
+        version: '4.10.51',
+        url: 'https://access.redhat.com/errata/RHSA-2023:0561',
       },
     });
   });
+});
+
+describe('translateResourceToOCM', () => {
+  it.each([
+    ['thisishub', 'local-cluster'],
+    ['thisisNOThub', 'thisisNOThub'],
+  ])(
+    'translates hub cluster name to "local-cluster"',
+    (clusterName, expected) => {
+      const result = translateResourceToOCM(clusterName, 'thisishub');
+      expect(result).toBe(expected);
+    },
+  );
+});
+
+describe('translateOCMToResource', () => {
+  it.each([
+    ['local-cluster', 'thisishub'],
+    ['thisisNOThub', 'thisisNOThub'],
+  ])(
+    'translates hub cluster name to "local-cluster"',
+    (clusterName, expected) => {
+      const result = translateOCMToResource(clusterName, 'thisishub');
+      expect(result).toBe(expected);
+    },
+  );
 });
