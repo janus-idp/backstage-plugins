@@ -11,7 +11,7 @@ interface RequestParameters {
   visibility?: string;
 }
 
-interface TemplateActionParameters{
+interface TemplateActionParameters {
   baseUrl: string;
   token?: string;
   username?: string;
@@ -149,18 +149,20 @@ export const createSonarQubeProjectAction = () => {
       } = ctx.input;
 
       if (!token && (!username || !password)) {
-        throw new Error('"token" or "username" and "password" are required input parameters');
+        throw new Error(
+          '"token" or "username" and "password" are required input parameters',
+        );
       }
 
-      if(!baseUrl){
+      if (!baseUrl) {
         throw new Error('"baseUrl" is a required input parameter');
       }
 
-      if(!name){
+      if (!name) {
         throw new Error('"name" is a required input parameter');
       }
 
-      if(!key){
+      if (!key) {
         throw new Error('"key" is a required input parameter');
       }
 
@@ -219,7 +221,6 @@ export const createSonarQubeProjectAction = () => {
       }
 
       ctx.output('projectUrl', `${baseUrl}/dashboard?id=${key}`);
-      
     },
   });
 };

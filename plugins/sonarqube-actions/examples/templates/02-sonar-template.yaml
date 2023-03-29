@@ -2,7 +2,7 @@ apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
   name: create-sonar-project-template-02
-  title: Create a SonarQube project 
+  title: Create a SonarQube project
   description: Creates a new SonarQube project using oneOf subschema keyword
   links:
     - title: SonarQube
@@ -14,9 +14,9 @@ spec:
       properties:
         connection:
           type: object
-          title: "Connection Details"
+          title: 'Connection Details'
           required: ['baseUrl', 'auth']
-          description: "Please provide the SonarQube connection details. Note: A token or username and password combination is required."
+          description: 'Please provide the SonarQube connection details. Note: A token or username and password combination is required.'
           properties:
             baseUrl:
               title: Base URL
@@ -24,7 +24,7 @@ spec:
               description: SonarQube base URL
               ui:autofocus: true
             auth:
-              title: "Authentication Method"
+              title: 'Authentication Method'
               type: object
               description: Select an authentication method
               oneOf:
@@ -49,7 +49,7 @@ spec:
                       ui:widget: password
         project:
           type: object
-          title: "Project details"
+          title: 'Project details'
           required: ['name', 'key']
           properties:
             name:

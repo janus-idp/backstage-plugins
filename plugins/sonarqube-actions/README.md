@@ -14,66 +14,74 @@ The following actions are currently supported in this module:
 ## Getting started
 
 1. Install the action package in your Backstage project
-    ```bash
+   ```bash
    yarn workspace backend add @janus-idp/backstage-scaffolder-backend-module-sonarqube
    ```
 2. [Register](https://backstage.io/docs/features/software-templates/writing-custom-actions#registering-custom-actions) the SonarQube actions by modifying the `packages/backend/src/plugins/scaffolder.ts` file from your project with the following changes:
+
    ```ts
    import { CatalogClient } from '@backstage/catalog-client';
-   import { createBuiltinActions, createRouter } from '@backstage/plugin-scaffolder-backend';
-   import {ScmIntegrations} from '@backstage/integration'
+   import {
+     createBuiltinActions,
+     createRouter,
+   } from '@backstage/plugin-scaffolder-backend';
+   import { ScmIntegrations } from '@backstage/integration';
    import { Router } from 'express';
    import type { PluginEnvironment } from '../types';
    import { createSonarQubeProjectAction } from '@janus-idp/backstage-scaffolder-backend-module-sonarqube';
-   
+
    export default async function createPlugin(
-    env: PluginEnvironment,
+     env: PluginEnvironment,
    ): Promise<Router> {
-    const catalogClient = new CatalogClient({
-        discoveryApi: env.discovery,
-    });
-   
-    const integrations = ScmIntegrations.fromConfig(env.config)
-   
-    const builtInActions = createBuiltinActions({
-        integrations,
-        catalogClient,
-        config: env.config,
-        reader: env.reader
-    });
-   
-    const actions = [...builtInActions, createSonarQubeProjectAction()];
-   
-    return await createRouter({
-        actions,
-        logger: env.logger,
-        config: env.config,
-        database: env.database,
-        reader: env.reader,
-        catalogClient,
-        identity: env.identity,
-    });
+     const catalogClient = new CatalogClient({
+       discoveryApi: env.discovery,
+     });
+
+     const integrations = ScmIntegrations.fromConfig(env.config);
+
+     const builtInActions = createBuiltinActions({
+       integrations,
+       catalogClient,
+       config: env.config,
+       reader: env.reader,
+     });
+
+     const actions = [...builtInActions, createSonarQubeProjectAction()];
+
+     return await createRouter({
+       actions,
+       logger: env.logger,
+       config: env.config,
+       database: env.database,
+       reader: env.reader,
+       catalogClient,
+       identity: env.identity,
+     });
    }
    ```
+
 3. Add the SonarQube actions to your templates, see the [examples](./examples/templates) directory of this repository for complete usage examples
    ```yaml
-      action: sonarqube:create-project
-      id: 'create-sonar-project'
-      name: 'Create SonarQube Project'
-      input: 
-        baseUrl: 'https://sonarqube.com'
-        token: '4518a13e-093f-4b66-afac-46a1aece3149'
-        name: 'My SonarQube Project'
-        key: 'my-sonarqube-project'
-        branch: 'main'
-        visibility: 'public'
+   action: sonarqube:create-project
+   id: 'create-sonar-project'
+   name: 'Create SonarQube Project'
+   input:
+     baseUrl: 'https://sonarqube.com'
+     token: '4518a13e-093f-4b66-afac-46a1aece3149'
+     name: 'My SonarQube Project'
+     key: 'my-sonarqube-project'
+     branch: 'main'
+     visibility: 'public'
    ```
+
 ## Usage
+
 ### Action: sonarqube:create-project
 
 #### Input:
+
 | Parameter Name |  Type  | Required | Description                                                                                                              | Example               |
-|----------------|:------:|:--------:|--------------------------------------------------------------------------------------------------------------------------|-----------------------|
+| -------------- | :----: | :------: | ------------------------------------------------------------------------------------------------------------------------ | --------------------- |
 | baseUrl        | string |   Yes    | SonarQube Instance base URL                                                                                              | http://sonar.acme.org |
 | name           | string |   Yes    | Name of the project to be created in SonarQube                                                                           | My Project            |
 | key            | string |   Yes    | Key of the project to be created in SonarQube                                                                            | my-project            |
@@ -83,17 +91,16 @@ The following actions are currently supported in this module:
 | username       | string |    No    | SonarQube username                                                                                                       |                       |
 | password       | string |    No    | SonarQube password                                                                                                       |                       |
 
-   > **Warning**
-   > 
-   > Either the `token` or `username` and `password` input combination are required. 
-   > If the three of them are provided, the `token` will take precedence
-
-
+> **Warning**
+>
+> Either the `token` or `username` and `password` input combination are required.
+> If the three of them are provided, the `token` will take precedence
 
 #### Output:
+
 | Name       |  Type  | Description                                  |
-|------------|:------:|----------------------------------------------|
-| projectUrl | string | SonarQube project URL created by this action |             |
+| ---------- | :----: | -------------------------------------------- | --- |
+| projectUrl | string | SonarQube project URL created by this action |     |
 
 ## Development
 
@@ -103,22 +110,22 @@ The following actions are currently supported in this module:
    ```
 2. [Register](#getting-started) the SonarQube actions in your Backstage project
 3. **Optional**: You can use the sample templates from this repository and add them as `locations` of your `app-config.yaml` file
+
    ```yaml
-   ...
-   
+
+   ---
    catalog:
-    locations:
-    - type: file
-      target: ../../plugins/sonarqube-actions/examples/templates/01-sonar-template.yaml
-      rules:
-        - allow: [Template]
-    - type: file
-      target: ../../plugins/sonarqube-actions/examples/templates/02-sonar-template.yaml
-      rules:
-        - allow: [Template]
-   
-   ...
+     locations:
+       - type: file
+         target: ../../plugins/sonarqube-actions/examples/templates/01-sonar-template.yaml
+         rules:
+           - allow: [Template]
+       - type: file
+         target: ../../plugins/sonarqube-actions/examples/templates/02-sonar-template.yaml
+         rules:
+           - allow: [Template]
    ```
+
 4. Run `yarn dev`
-5. If you don't have a SonarQube instance available for testing, you can use the official SonarQube [container image](https://hub.docker.com/_/sonarqube/) and run it with [Podman](https://podman.io/) or [Docker](https://docker.io/) or you can use the sample Docker compose file from the [documentation](https://docs.sonarqube.org/latest/setup-and-upgrade/install-the-server/#installing-sonarqube-from-the-docker-image) 
-5. :rocket: Start using the SonarQube actions in your templates
+5. If you don't have a SonarQube instance available for testing, you can use the official SonarQube [container image](https://hub.docker.com/_/sonarqube/) and run it with [Podman](https://podman.io/) or [Docker](https://docker.io/) or you can use the sample Docker compose file from the [documentation](https://docs.sonarqube.org/latest/setup-and-upgrade/install-the-server/#installing-sonarqube-from-the-docker-image)
+6. :rocket: Start using the SonarQube actions in your templates

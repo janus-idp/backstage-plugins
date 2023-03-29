@@ -1,1 +1,1 @@
-export {createSonarQubeProjectAction} from './createSonarQubeProject'
+export { createSonarQubeProjectAction } from './createSonarQubeProject';

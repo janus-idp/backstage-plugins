@@ -22,7 +22,7 @@ spec:
           description: SonarQube base URL
           ui:autofocus: true
         authParams:
-          title: "Authentication Method"
+          title: 'Authentication Method'
           type: object
           description: Select an authentication method
           oneOf:
