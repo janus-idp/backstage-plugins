@@ -75,7 +75,7 @@ export function getUiSchema(type: ParameterFormat) {
   }
 }
 
-function transformWorkToStep(work: WorkType, nestedSteps: Step[] = []) {
+function* transformWorkToStep(work: WorkType) {
   const title = taskDisplayName(work.name); // TODO: task label would be good here
 
   const schema: Record<string, any> = {
@@ -153,28 +153,31 @@ function transformWorkToStep(work: WorkType, nestedSteps: Step[] = []) {
     const childWorks = work.works ?? [];
 
     for (const [index, childWork] of childWorks.entries()) {
-      const children: Step[] = [];
+      let childStep: Step;
+      for (childStep of transformWorkToStep(childWork)) {
+        // We don't want to nest the recusive structure many levels deep
+        // so instead we flatten the structure and only allow one level of nesting
+        if (childWork.workType === 'WORKFLOW') {
+          yield childStep;
+          continue;
+        }
 
-      const childStep = transformWorkToStep(childWork, children);
+        const nextSchemaKey = `properties.${key}.properties.works.items[${index}]`;
+        const nextUiSchemaKey = `${key}.works.items[${index}]`;
 
-      // We don't want to nest the recusive structure many levels deep
-      // so instead we flatten the structure and only allow one level of nesting
-      if (childWork.workType === 'WORKFLOW') {
-        nestedSteps.push(childStep);
-        continue;
+        set(schema, nextSchemaKey, childStep.schema);
+
+        set(uiSchema, `${key}.works.['ui:hidden']`, true);
+        set(uiSchema, nextUiSchemaKey, childStep.uiSchema);
       }
-
-      const nextSchemaKey = `properties.${key}.properties.works.items[${index}]`;
-      const nextUiSchemaKey = `${key}.works.items[${index}]`;
-
-      set(schema, nextSchemaKey, childStep.schema);
-
-      set(uiSchema, `${key}.works.['ui:hidden']`, true);
-      set(uiSchema, nextUiSchemaKey, childStep.uiSchema);
     }
   }
 
-  return { schema, uiSchema, title, mergedSchema: schema, parent: undefined };
+  yield { schema, uiSchema, title, mergedSchema: schema, parent: undefined };
+}
+
+export function* getAllSteps(work: WorkType) {
+  yield* transformWorkToStep(work);
 }
 
 export function jsonSchemaFromWorkflowDefinition(
@@ -187,26 +190,22 @@ export function jsonSchemaFromWorkflowDefinition(
   const parameters = workflowDefinition.parameters ?? {};
 
   if (Object.keys(parameters).length > 0) {
-    const step = transformWorkToStep({
-      name: workflowDefinition.name,
-      parameters,
-    } as WorkType);
+    const masterStep = [
+      ...transformWorkToStep({
+        name: workflowDefinition.name,
+        parameters,
+      } as WorkType),
+    ][0];
 
-    result.steps.push(step);
+    result.steps.push(masterStep);
   }
 
   for (const work of workflowDefinition.works.filter(
     w =>
       Object.keys(w.parameters ?? {}).length > 0 || (w?.works ?? []).length > 0,
   )) {
-    const nestedSteps: Step[] = [];
-    const step = transformWorkToStep(work, nestedSteps);
-
-    result.steps.push(step);
-
-    for (const nestedStep of nestedSteps) {
-      nestedStep.parent = step;
-      result.steps.push(nestedStep);
+    for (const step of [...getAllSteps(work)].reverse()) {
+      result.steps.push(step);
     }
   }
 
