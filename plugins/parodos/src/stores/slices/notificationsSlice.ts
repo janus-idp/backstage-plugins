@@ -66,24 +66,22 @@ export const createNotificationsSlice: StateCreator<
 
     try {
       // TODO: we can leverage searchTerm param later
-      // or the "sort" param for pagination
-      // let urlQuery = `?page=${page}&size=${rowsPerPage}`;
-      // if (stateParam && stateParam !== 'ALL') {
-      //   urlQuery += `&state=${stateParam}`;
-      // }
+      let urlQuery = `?page=${page}&size=${rowsPerPage}&sort=NotificationMessage_createdOn,desc`;
+      if (stateParam && stateParam !== 'ALL') {
+        urlQuery += `&state=${stateParam}`;
+      }
 
-      // eslint-disable-next-line no-alert
-      console.info('Using mock notifications...');
-      const notifications = mockNotifications;
+      console.log('--- about to fetch: ', urlQuery);
+      const response = await fetch(
+        `${get().baseUrl}${urls.Notifications}${urlQuery}`,
+      );
 
-      // TODO: Uncomment once backend is ready:
-      // console.log('--- about to fetch');
-      // const response = await fetch(
-      //   `${get().baseUrl}${urls.Notifications}${urlQuery}`,
-      // );
+      const notifications = (await response.json()) || [];
+      console.log('--- notifications: ', notifications);
 
-      // const notifications = (await response.json() ) || [];
-      // console.log('--- notifications: ', notifications);
+      // // eslint-disable-next-line no-alert
+      // console.info('Using mock notifications...');
+      // const notifications = mockNotifications;
 
       set(state => {
         unstable_batchedUpdates(() => {
@@ -102,15 +100,14 @@ export const createNotificationsSlice: StateCreator<
   },
   async deleteNotification({ id }) {
     try {
-      // TODO: Uncomment once backend is ready:
-      // await fetch(`${get().baseUrl}${urls.Notifications}/${id}`, {
-      //   method: 'DELETE',
-      // });
+      await fetch(`${get().baseUrl}${urls.Notifications}/${id}`, {
+        method: 'DELETE',
+      });
 
       // mock: TODO: remove, use the above
-      mockNotifications.content = mockNotifications.content.filter(
-        n => n.id !== id,
-      );
+      // mockNotifications.content = mockNotifications.content.filter(
+      //   n => n.id !== id,
+      // );
     } catch (e) {
       set(state => {
         // eslint-disable-next-line no-console
