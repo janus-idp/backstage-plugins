@@ -112,7 +112,6 @@ The following actions are currently supported in this module:
 3. **Optional**: You can use the sample templates from this repository and add them as `locations` of your `app-config.yaml` file
 
    ```yaml
-
    ---
    catalog:
      locations:
