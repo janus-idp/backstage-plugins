@@ -1,3 +1,20 @@
+## @janus-idp/backstage-plugin-ocm-backend [2.0.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@1.4.1...@janus-idp/backstage-plugin-ocm-backend@2.0.0) (2023-03-29)
+
+
+### ⚠ BREAKING CHANGES
+
+* **ocm:** Relocate OCM config and support multiple hubs (#145)
+
+### Features
+
+* **ocm:** Relocate OCM config and support multiple hubs ([#145](https://github.com/janus-idp/backstage-plugins/issues/145)) ([1518235](https://github.com/janus-idp/backstage-plugins/commit/1518235833d37b03cbcb75e9148e75e76908a53a))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-ocm-common:** upgraded to 2.0.0
+
 ## @janus-idp/backstage-plugin-ocm-backend [1.4.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@1.4.0...@janus-idp/backstage-plugin-ocm-backend@1.4.1) (2023-03-06)
 
 
