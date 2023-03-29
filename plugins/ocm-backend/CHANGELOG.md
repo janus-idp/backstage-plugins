@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-ocm-backend [2.0.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@2.0.0...@janus-idp/backstage-plugin-ocm-backend@2.0.1) (2023-03-29)
+
+
+### Bug Fixes
+
+* **ocm-backend:** Improve error reporting and check for url ([#190](https://github.com/janus-idp/backstage-plugins/issues/190)) ([b2f559e](https://github.com/janus-idp/backstage-plugins/commit/b2f559ee40d1d8722d8c59967f05fcaed245ff0f))
+
 ## @janus-idp/backstage-plugin-ocm-backend [2.0.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@1.4.1...@janus-idp/backstage-plugin-ocm-backend@2.0.0) (2023-03-29)
 
 
