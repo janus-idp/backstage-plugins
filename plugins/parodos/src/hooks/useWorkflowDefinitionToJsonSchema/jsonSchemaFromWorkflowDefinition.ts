@@ -7,6 +7,8 @@ import type { FormSchema, Step } from '../../components/types';
 import set from 'lodash.set';
 import get from 'lodash.get';
 import { taskDisplayName } from '../../utils/string';
+import type { StrictRJSFSchema, UiSchema } from '@rjsf/utils';
+import { assert } from 'assert-ts';
 
 export function getJsonSchemaType(type: ParameterFormat) {
   switch (type) {
@@ -78,16 +80,16 @@ export function getUiSchema(type: ParameterFormat) {
 function* transformWorkToStep(work: WorkType) {
   const title = taskDisplayName(work.name); // TODO: task label would be good here
 
-  const schema: Record<string, any> = {
+  const schema: StrictRJSFSchema = {
     type: 'object',
     title,
     properties: {},
     required: [],
   };
 
-  const uiSchema: Record<string, any> = {};
+  const uiSchema: UiSchema = {};
 
-  schema.required.push(work.name);
+  schema.required?.push(work.name);
 
   set(schema, `properties.${work.name}`, {
     type: 'object',
@@ -140,6 +142,8 @@ function* transformWorkToStep(work: WorkType) {
   const works = work.works ?? [];
 
   if (works.length > 0) {
+    assert(!!schema.properties);
+
     const key = Object.keys(schema.properties)[0];
 
     set(schema, `properties.${key}.properties.works`, {
