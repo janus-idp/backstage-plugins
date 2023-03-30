@@ -3,8 +3,10 @@ import get from 'lodash.get';
 import { useNavigate } from 'react-router-dom';
 import useAsyncFn, { AsyncFnReturn } from 'react-use/lib/useAsyncFn';
 import { WorkflowDefinition } from '../../../models/workflowDefinitionSchema';
-import { WorkflowTask } from '../../../models/workflowTaskSchema';
-import { WorkflowExecuteResponseType } from '../../types';
+import {
+  WorkflowStatus,
+  WorkflowTask,
+} from '../../../models/workflowTaskSchema';
 
 interface UseStartWorkflow {
   workflowsUrl: string;
@@ -63,7 +65,7 @@ export function useStartWorkflow({
         throw new Error(`${data.status} - ${data.statusText}`);
       }
 
-      const response = (await data.json()) as WorkflowExecuteResponseType;
+      const response = (await data.json()) as WorkflowStatus;
       const executionId = response.workFlowExecutionId;
 
       navigate(`/parodos/onboarding/${executionId}/workflow-detail`, {

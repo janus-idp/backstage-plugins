@@ -5,6 +5,8 @@ const projectStatus = z.union([
   z.literal('on-boarded'),
 ]);
 
+export type ProjectStatus = z.infer<typeof projectStatus>;
+
 export const projectSchema = z.object({
   id: z.string(),
   name: z.string(),

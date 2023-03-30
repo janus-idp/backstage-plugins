@@ -10,7 +10,6 @@ import { Form } from '../Form/Form';
 import { ParodosPage } from '../ParodosPage';
 import { Typography, Button, makeStyles, Grid } from '@material-ui/core';
 import { useGetProjectAssessmentSchema } from './useGetProjectAssessmentSchema';
-import type { AssessmentStatusType } from '../types';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
 import { IChangeEvent } from '@rjsf/core-v5';
 import * as urls from '../../urls';
@@ -28,6 +27,8 @@ import { assert } from 'assert-ts';
 import { useStore } from '../../stores/workflowStore/workflowStore';
 import { ProjectPicker } from '../Form/extensions/ProjectPicker/ProjectPicker';
 import { taskDisplayName } from '../../utils/string';
+
+export type AssessmentStatusType = 'none' | 'inprogress' | 'complete';
 
 const useStyles = makeStyles(theme => ({
   fullHeight: {
