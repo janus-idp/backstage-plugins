@@ -24,8 +24,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          #token: ${{ secrets.GITHUB_TOKEN }}
-          token: ${{ secrets.PUSH_TO_PROTECTED_BRANCH_PARODOS }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          #token: ${{ secrets.PUSH_TO_PROTECTED_BRANCH_PARODOS }}
           fetch-depth: 0
 
       - name: Configuring git
