@@ -21,7 +21,7 @@ export const App = () => {
     }
 
     initialiseStore();
-  }, [backendUrl, fetchDefinitions, fetchProjects, setBaseUrl]);
+  }, [backendUrl, fetch, fetchDefinitions, fetchProjects, setBaseUrl]);
 
   return loading ? <Progress /> : <PluginRouter />;
 };

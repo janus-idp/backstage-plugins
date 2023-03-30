@@ -91,7 +91,7 @@ export const WorkFlowDetail = () => {
     }, 5000);
 
     return () => clearInterval(taskInterval);
-  }, [allTasks, executionId, workflowsUrl]);
+  }, [allTasks, executionId, fetch, workflowsUrl]);
 
   // update log of selected task regularly
   useEffect(() => {

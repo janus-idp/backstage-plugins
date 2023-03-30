@@ -1,3 +1,4 @@
+import { fetchApiRef, useApi } from '@backstage/core-plugin-api';
 import { IChangeEvent } from '@rjsf/core-v5';
 import { type StrictRJSFSchema } from '@rjsf/utils';
 import { assert } from 'assert-ts';
@@ -27,6 +28,7 @@ export function useStartWorkflow({
 }: UseStartWorkflow): AsyncFnReturn<
   ({ formData }: IChangeEvent) => Promise<void>
 > {
+  const { fetch } = useApi(fetchApiRef);
   const navigate = useNavigate();
 
   return useAsyncFn(
@@ -55,6 +57,16 @@ export function useStartWorkflow({
         state: { isNew: isNew, initTasks: tasks },
       });
     },
-    [workflow, projectId, workflowsUrl, navigate, isNew, tasks],
+    [
+      projectId,
+      workflow.name,
+      workflow.parameters,
+      workflow.works,
+      fetch,
+      workflowsUrl,
+      navigate,
+      isNew,
+      tasks,
+    ],
   );
 }

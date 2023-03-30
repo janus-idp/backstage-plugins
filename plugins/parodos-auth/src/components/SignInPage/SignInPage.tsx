@@ -7,7 +7,7 @@ import { type IChangeEvent } from '@rjsf/core-v5';
 import { CitiIcon } from '../icons/citi';
 import { Link } from 'react-router-dom';
 import { assert } from 'assert-ts';
-import { Buffer } from 'buffer';
+import { ParodosSignInIdentity } from './ParodosSigninIdentity';
 
 type ParodosSignInPageProps = SignInPageProps;
 
@@ -27,8 +27,8 @@ const useStyles = makeStyles(theme => ({
     },
     '& a': {
       textTransform: 'none',
-      fontWeight: 'normal'
-    }
+      fontWeight: 'normal',
+    },
   },
   grid: {
     [theme.breakpoints.up('lg')]: {
@@ -44,41 +44,23 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-
 export function SignInPage({ onSignInSuccess }: ParodosSignInPageProps) {
   const styles = useStyles();
-  
+
   // console.log(props)
-  
-  const submitHandler = useCallback(async (data: IChangeEvent<{userName: string, password: string}>, e: React.FormEvent<any>) => {
-    assert(!!data.formData);
-    const { formData: { userName, password } } = data;
-    
-    onSignInSuccess({
-      async getBackstageIdentity() {
-        return {
-          type: 'user',
-          userEntityRef: 'user:default/mock',
-          ownershipEntityRefs: ['user:default/mock'],
-        };
-      },
-      async getProfileInfo() {
-        return {
-          displayName: 'Mock',
-          email: 'mock@redhat.com',
-        };
-      },
-      async getCredentials() {
-        return {
-          token: Buffer.from(`${userName}:${password}`).toString('base64')
-        };
-      },
-      async signOut() {
-        return undefined;
-      },
-    });
-  }, []);
-  
+
+  const submitHandler = useCallback(
+    async (data: IChangeEvent<{ userName: string; password: string }>) => {
+      assert(!!data.formData);
+      const {
+        formData: { userName, password },
+      } = data;
+
+      onSignInSuccess(new ParodosSignInIdentity(userName, password));
+    },
+    [onSignInSuccess],
+  );
+
   return (
     <Page themeId="tool">
       <Content className={styles.container}>
@@ -87,18 +69,22 @@ export function SignInPage({ onSignInSuccess }: ParodosSignInPageProps) {
             <Paper elevation={4} className={styles.paper}>
               <CitiIcon style={{ fontSize: '5rem' }} />
               <h1>Parodos</h1>
-              <Typography paragraph>Please enter your SOEID and password to continue.</Typography>
+              <Typography paragraph>
+                Please enter your SOEID and password to continue.
+              </Typography>
               <Grid container justifyContent="center">
-              <Grid item xs={7}>
-              <LoginForm onSubmit={submitHandler}>
-                <Button type="submit" variant="contained" color="primary">
-                  SIGN IN
-                </Button>
-              </LoginForm>
-              </Grid>
+                <Grid item xs={7}>
+                  <LoginForm onSubmit={submitHandler}>
+                    <Button type="submit" variant="contained" color="primary">
+                      SIGN IN
+                    </Button>
+                  </LoginForm>
+                </Grid>
               </Grid>
               <Typography paragraph>
-              <Button component={Link} to="">Need help signing in?</Button>
+                <Button component={Link} to="">
+                  Need help signing in?
+                </Button>
               </Typography>
             </Paper>
           </Grid>

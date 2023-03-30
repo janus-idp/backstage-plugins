@@ -116,7 +116,7 @@ export function Workflow(): JSX.Element {
 
       setWorkflowOptions(options);
     },
-    [workflowsUrl],
+    [fetch, workflowsUrl],
   );
 
   const [{ error: startAssessmentError }, startAssessment] = useAsyncFn(
@@ -144,7 +144,7 @@ export function Workflow(): JSX.Element {
 
       addProject(newProject);
     },
-    [addProject, createWorkflow, projectsUrl],
+    [addProject, createWorkflow, fetch, projectsUrl],
   );
 
   const errorApi = useApi(errorApiRef);

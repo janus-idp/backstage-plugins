@@ -38,8 +38,8 @@ export const apis: AnyApiFactory[] = [
             config: configApi,
             header: {
               name: 'Authorization',
-              value: (token) => `Basic ${token}`
-            }
+              value: token => `Basic ${token}`,
+            },
           }),
         ],
       });
