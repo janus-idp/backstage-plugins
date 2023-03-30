@@ -77,4 +77,6 @@ The on-release GitHub action is trigerred, leading to publishing the new version
 
 To watch progress: https://github.com/parodos-dev/backstage-parodos/actions/workflows/on-release.yaml
 
+If the action is failing on expired token, they can be updated here: https://github.com/organizations/parodos-dev/settings/secrets/actions
+
 As a side-effect of the action, a PR bumping the plugin version is created. Do not forget to merge it: https://github.com/parodos-dev/backstage-parodos/pulls
