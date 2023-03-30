@@ -46,20 +46,17 @@ integrations:
     #   token: ${GHE_TOKEN}
 
 proxy:
-  ### Example for how to add a proxy endpoint for the frontend.
-  ### A typical reason to do this is to handle HTTPS and CORS for internal services.
-  # '/test':
-  #   target: 'https://example.com'
-  #   changeOrigin: true
   '/parodos':
     target: 'http://localhost:8080/api/v1'
     changeOrigin: true
     redirect: follow
     cache: 'no-cache'
+    allowedHeaders:
+      - Authorization
     headers:
       Content-Type: 'application/json'
       accept: 'application/json'
-      Authorization: ${PARODOS_AUTH_KEY}
+      # Authorization: ${PARODOS_AUTH_KEY}
 
 # Reference documentation http://backstage.io/docs/features/techdocs/configuration
 # Note: After experimenting with basic setup, use CI/CD to generate docs

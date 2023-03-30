@@ -1,3 +1,4 @@
+import { FetchApi } from '@backstage/core-plugin-api';
 import type { Project } from '../models/project';
 import type { WorkflowDefinition } from '../models/workflowDefinitionSchema';
 
@@ -23,14 +24,14 @@ export interface WorkflowSlice {
     filterBy: GetDefinitionFilter,
     value: string,
   ): WorkflowDefinition | undefined;
-  fetchDefinitions(): Promise<void>;
+  fetchDefinitions(fetch: FetchApi['fetch']): Promise<void>;
   workflowLoading: boolean;
   workflowError: unknown | undefined;
 }
 
 export interface ProjectsSlice {
   projects: Project[];
-  fetchProjects(): Promise<void>;
+  fetchProjects(fetch: FetchApi['fetch']): Promise<void>;
   hasProjects(): boolean;
   addProject(project: Project): void;
   projectsLoading: boolean;

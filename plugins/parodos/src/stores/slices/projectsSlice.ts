@@ -3,6 +3,7 @@ import type { ProjectsSlice, State, StateMiddleware } from '../types';
 import * as urls from '../../urls';
 import { unstable_batchedUpdates } from 'react-dom';
 import { type Project, projectSchema } from '../../models/project';
+import { FetchApi } from '@backstage/core-plugin-api';
 
 export const createProjectsSlice: StateCreator<
   State,
@@ -16,7 +17,7 @@ export const createProjectsSlice: StateCreator<
     return get().projects.length > 0;
   },
   projects: [],
-  async fetchProjects() {
+  async fetchProjects(fetch: FetchApi['fetch']) {
     set(state => {
       state.projectsLoading = true;
     });

@@ -65,10 +65,11 @@ export function SignInPage({ onSignInSuccess }: ParodosSignInPageProps) {
       async getProfileInfo() {
         return {
           displayName: 'Mock',
-          email: 'mock@app-platform.apple.com',
+          email: 'mock@redhat.com',
         };
       },
       async getCredentials() {
+        console.log('here')
         return {
           token: Buffer.from(`${userName}:${password}`).toString('base64')
         };
