@@ -43,6 +43,7 @@ export type NotificationState = 'ALL' | 'UNREAD' | 'ARCHIVED';
 export type NotificationOperation = 'READ' | 'ARCHIVE';
 export interface NotificationsSlice {
   notifications: NotificationContent[];
+  notificationsCount: number;
   fetchNotifications(params: {
     state: NotificationState;
     page: number;

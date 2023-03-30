@@ -59,6 +59,7 @@ export const createNotificationsSlice: StateCreator<
   notificationsLoading: true,
   notificationsError: undefined,
   notifications: [],
+  notificationsCount: 0,
   async fetchNotifications({ state: stateParam, page, rowsPerPage }) {
     set(state => {
       state.notificationsLoading = true;
@@ -76,20 +77,22 @@ export const createNotificationsSlice: StateCreator<
         `${get().baseUrl}${urls.Notifications}${urlQuery}`,
       );
 
-      const notifications = (await response.json()) || [];
+      const notifications = (await response.json()) || ({} as Notifications);
       console.log('--- notifications: ', notifications);
 
       // // eslint-disable-next-line no-alert
       // console.info('Using mock notifications...');
       // const notifications = mockNotifications;
-
+      const totalElements = notifications.page?.totalElements || 0;
       set(state => {
         unstable_batchedUpdates(() => {
           state.notifications =
             notifications.content ||
             /* Hack: response does not conform swagger, https://issues.redhat.com/browse/FLPATH-260 */
-            notifications['_embedded']['notificationrecords'];
+            notifications?.['_embedded']?.['notificationrecords'] ||
+            [];
           state.notificationsLoading = false;
+          state.notificationsCount = totalElements;
         });
       });
     } catch (e) {

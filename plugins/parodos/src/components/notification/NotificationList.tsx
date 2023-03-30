@@ -52,6 +52,7 @@ export const NotificationList: React.FC = () => {
   const fetchNotifications = useStore(state => state.fetchNotifications);
   const deleteNotification = useStore(state => state.deleteNotification);
   const setNotificationState = useStore(state => state.setNotificationState);
+  const notificationsCount = useStore(state => state.notificationsCount);
   const loading = useStore(state => state.notificationsLoading);
 
   const [notificationFilter, setNotificationFilter] =
@@ -239,7 +240,7 @@ export const NotificationList: React.FC = () => {
         <Grid container direction="row" justifyContent="center">
           <TablePagination
             component="div"
-            count={notifications?.length || 0}
+            count={notificationsCount || 0}
             page={page}
             onPageChange={handleChangePage}
             rowsPerPage={rowsPerPage}
