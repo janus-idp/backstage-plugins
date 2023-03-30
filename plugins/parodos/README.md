@@ -63,9 +63,11 @@ proxy:
 ```
 
 ## Release
+
 The project is published to the NPM JS Registry on release: https://www.npmjs.com/package/@parodos/plugin-parodos.
 
 To do a release:
+
 - go to the project release page: https://github.com/parodos-dev/backstage-parodos/releases
 - click **Create a new release**
 - as a tag, use format **vX.Y.Z** (mind the **v** prefix!)
