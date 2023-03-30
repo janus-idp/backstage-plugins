@@ -5,7 +5,7 @@ import {
   SupportButton,
 } from '@backstage/core-components';
 import { useEffect } from 'react';
-import { errorApiRef, useApi } from '@backstage/core-plugin-api';
+import { errorApiRef, fetchApiRef, useApi } from '@backstage/core-plugin-api';
 import { Form } from '../Form/Form';
 import { ParodosPage } from '../ParodosPage';
 import { Typography, Button, makeStyles, Grid } from '@material-ui/core';
@@ -63,6 +63,7 @@ export function Workflow(): JSX.Element {
   const addProject = useStore(state => state.addProject);
   const hasProjects = useStore(state => state.hasProjects());
   const [isNewProject, setIsNewProject] = useState(true);
+  const { fetch } = useApi(fetchApiRef);
 
   const [project, setProject] = useState<Project | undefined>();
   const [assessmentStatus, setAssessmentStatus] =

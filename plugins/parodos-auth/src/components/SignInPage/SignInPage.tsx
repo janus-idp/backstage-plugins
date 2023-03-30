@@ -69,7 +69,6 @@ export function SignInPage({ onSignInSuccess }: ParodosSignInPageProps) {
         };
       },
       async getCredentials() {
-        console.log('here')
         return {
           token: Buffer.from(`${userName}:${password}`).toString('base64')
         };
