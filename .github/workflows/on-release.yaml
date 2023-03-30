@@ -39,8 +39,8 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            // const new_version = '${{ github.ref_name }}'.slice(1);
-            const new_version = '0.0.0-test3';               
+            const new_version = '${{ github.ref_name }}'.slice(1);
+            // const new_version = '0.0.0-test3';               
             core.setOutput('new_version', new_version);
 
       - name: Check out the target branch
