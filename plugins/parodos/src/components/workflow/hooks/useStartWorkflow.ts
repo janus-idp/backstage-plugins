@@ -1,5 +1,6 @@
 import { IChangeEvent } from '@rjsf/core-v5';
-import get from 'lodash.get';
+import { type StrictRJSFSchema } from '@rjsf/utils';
+import { assert } from 'assert-ts';
 import { useNavigate } from 'react-router-dom';
 import useAsyncFn, { AsyncFnReturn } from 'react-use/lib/useAsyncFn';
 import { WorkflowDefinition } from '../../../models/workflowDefinitionSchema';
@@ -7,6 +8,7 @@ import {
   WorkflowStatus,
   WorkflowTask,
 } from '../../../models/workflowTaskSchema';
+import { getWorklfowsPayload } from './workflowsPayload';
 
 interface UseStartWorkflow {
   workflowsUrl: string;
@@ -28,33 +30,14 @@ export function useStartWorkflow({
   const navigate = useNavigate();
 
   return useAsyncFn(
-    async ({ formData }: IChangeEvent) => {
-      const payload = {
+    async ({ formData }: IChangeEvent<StrictRJSFSchema>) => {
+      assert(!!formData);
+
+      const payload = getWorklfowsPayload({
         projectId,
-        workFlowName: workflow.name,
-        arguments: Object.entries(workflow.parameters ?? {}).map(([key]) => {
-          const value = get(formData, `${workflow.name}.${key}`, null);
-
-          return {
-            key,
-            value,
-          };
-        }),
-        works: workflow.works.map(work => {
-          return {
-            workName: work.name,
-            // TODO: need some guidance about what to do with nested works
-            arguments: Object.entries(work.parameters ?? {}).map(([key]) => {
-              const value = get(formData, `${work.name}.${key}`, null);
-
-              return {
-                key,
-                value,
-              };
-            }),
-          };
-        }),
-      };
+        workflow,
+        schema: formData,
+      });
 
       const data = await fetch(workflowsUrl, {
         method: 'POST',
