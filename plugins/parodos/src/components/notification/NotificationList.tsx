@@ -83,6 +83,7 @@ export const NotificationList: React.FC = () => {
 
   const onFilterNotifications = (arg: SelectedItems) => {
     setNotificationFilter(arg as NotificationState);
+    setPage(0);
   };
 
   const getOnDelete =
