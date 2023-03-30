@@ -4,52 +4,6 @@ import type { NotificationsSlice, State, StateMiddleware } from '../types';
 import { Notifications } from '../../models/notification';
 import * as urls from '../../urls';
 
-// TODO: remove following
-const mockNotifications: Notifications = {
-  // skipping links
-  content: [
-    {
-      id: '1',
-      subject: 'My subject',
-      body: 'My body',
-      fromuser: 'myuser',
-      read: false,
-      createdOn: '2023-03-24T13:37:29.980+00:00',
-      messageType: 'my-type',
-      tags: ['my-tag'],
-      folder: 'my-folder',
-    },
-    {
-      id: '2',
-      subject: 'My subject 2',
-      body: 'My body 2',
-      fromuser: 'myuser',
-      read: false,
-      createdOn: '2023-03-24T13:37:29.980+00:00',
-      messageType: 'my-type2',
-      tags: ['my-tag', 'my-tag'],
-      folder: 'my-folder',
-    },
-    {
-      id: '3',
-      subject: 'My subject 3',
-      body: 'My body 3',
-      fromuser: 'myuser',
-      read: false,
-      createdOn: '2023-03-24T13:37:29.980+00:00',
-      messageType: 'my-type',
-      tags: [],
-      folder: 'my-folder',
-    },
-  ],
-  page: {
-    number: 0,
-    size: 10,
-    totalElements: 1,
-    totalPages: 1,
-  },
-};
-
 export const createNotificationsSlice: StateCreator<
   State,
   StateMiddleware,
@@ -72,30 +26,25 @@ export const createNotificationsSlice: StateCreator<
         urlQuery += `&state=${stateParam}`;
       }
 
-      console.log('--- about to fetch: ', urlQuery);
       const response = await fetch(
         `${get().baseUrl}${urls.Notifications}${urlQuery}`,
       );
 
       const notifications = (await response.json()) || ({} as Notifications);
-      console.log('--- notifications: ', notifications);
 
-      // // eslint-disable-next-line no-alert
-      // console.info('Using mock notifications...');
-      // const notifications = mockNotifications;
       const totalElements = notifications.page?.totalElements || 0;
       set(state => {
         unstable_batchedUpdates(() => {
           state.notifications =
             notifications.content ||
             /* Hack: response does not conform swagger, https://issues.redhat.com/browse/FLPATH-260 */
-            notifications?.['_embedded']?.['notificationrecords'] ||
+            notifications?._embedded?.notificationrecords ||
             [];
           state.notificationsLoading = false;
           state.notificationsCount = totalElements;
         });
       });
-    } catch (e) {
+    } catch (e: unknown) {
       // eslint-disable-next-line no-console
       console.error('Error fetching notifications', e);
       set(state => {
@@ -109,12 +58,7 @@ export const createNotificationsSlice: StateCreator<
       await fetch(`${get().baseUrl}${urls.Notifications}/${id}`, {
         method: 'DELETE',
       });
-
-      // mock: TODO: remove, use the above
-      // mockNotifications.content = mockNotifications.content.filter(
-      //   n => n.id !== id,
-      // );
-    } catch (e) {
+    } catch (e: unknown) {
       set(state => {
         // eslint-disable-next-line no-console
         console.error('Error fetching notifications', e);
@@ -130,7 +74,7 @@ export const createNotificationsSlice: StateCreator<
           method: 'PUT',
         },
       );
-    } catch (e) {
+    } catch (e: unknown) {
       // eslint-disable-next-line no-console
       console.error('Error setting notification "', id, '" to: ', newState, e);
       set(state => {

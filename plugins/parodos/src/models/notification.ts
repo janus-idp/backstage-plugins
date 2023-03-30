@@ -1,7 +1,5 @@
 import { z } from 'zod';
 
-const notificationState = z.union([z.literal('ARCHIVED'), z.literal('UNREAD')]);
-
 export const notificationLinkSchema = z.object({
   name: z.string(),
   title: z.string(),
@@ -24,11 +22,9 @@ export const notificationContentSchema = z.object({
   messageType: z.string(),
   tags: z.array(z.string()),
   folder: z.string(),
-  // not used: links: z.array(notificationLinkSchema),
 });
 
 export const notificationsSchema = z.object({
-  // links: z.array(notificationLinkSchema),
   content: z.array(notificationContentSchema),
   page: z.object({
     size: z.number(),

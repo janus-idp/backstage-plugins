@@ -100,7 +100,7 @@ export const NotificationList: React.FC = () => {
             page,
             rowsPerPage,
           });
-        } catch (e) {
+        } catch (_) {
           errorApi.post(
             new Error(
               `Failed to delete notification: ${JSON.stringify(notification)}`,
@@ -126,7 +126,7 @@ export const NotificationList: React.FC = () => {
             page,
             rowsPerPage,
           });
-        } catch (e) {
+        } catch (_) {
           errorApi.post(
             new Error(
               `Failed to set notification to "${newState}": ${JSON.stringify(
