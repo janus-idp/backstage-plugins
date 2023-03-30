@@ -17,6 +17,7 @@ You have to define the location of the `webterminal-proxy` in `app-config.yaml`:
 ```yaml
 webTerminal:
   webSocketUrl: "wss://example.com:3000"
+  restServerUrl: "https://example.com:3000/rest"
 ```
 
 Optionally, you can also define the default namespace for the terminal; otherwise, `openshift-terminal` will be used:
@@ -24,6 +25,7 @@ Optionally, you can also define the default namespace for the terminal; otherwis
 ```yaml
 webTerminal:
   webSocketUrl: "wss://example.com:3000"
+  restServerUrl: "https://example.com:3000/rest"
   defaultNamespace: "default"
 ```
 
