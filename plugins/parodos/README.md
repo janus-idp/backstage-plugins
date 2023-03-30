@@ -61,3 +61,20 @@ proxy:
     headers:
       Authorization: 'Basic dGVzdDp0ZXN0'
 ```
+
+## Release
+The project is published to the NPM JS Registry on release: https://www.npmjs.com/package/@parodos/plugin-parodos.
+
+To do a release:
+- go to the project release page: https://github.com/parodos-dev/backstage-parodos/releases
+- click **Create a new release**
+- as a tag, use format **vX.Y.Z** (mind the **v** prefix!)
+- as a title, use the same value as for the tag
+- let the release notes to be generated, adjust
+- click **Publish release**
+
+The on-release GitHub action is trigerred, leading to publishing the new version to the NPM registry.
+
+To watch progress: https://github.com/parodos-dev/backstage-parodos/actions/workflows/on-release.yaml
+
+As a side-effect of the action, a PR bumping the plugin version is created. Do not forget to merge it: https://github.com/parodos-dev/backstage-parodos/pulls
