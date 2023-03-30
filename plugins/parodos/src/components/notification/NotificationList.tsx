@@ -42,6 +42,11 @@ const ParodosAccordion = withStyles({
   expanded: {},
 })(Accordion);
 
+const isNotificationArchived = (notification: NotificationContent) =>
+  notification.folder === 'archive';
+const isNotificationRead = (notification: NotificationContent) =>
+  notification.read;
+
 export const NotificationList: React.FC = () => {
   const notifications = useStore(state => state.notifications);
   const fetchNotifications = useStore(state => state.fetchNotifications);
@@ -188,6 +193,7 @@ export const NotificationList: React.FC = () => {
                       </Button>
                       <Button
                         variant="outlined"
+                        disabled={isNotificationArchived(notification)}
                         onClick={getSetNotificationState(
                           notification,
                           'ARCHIVE',
@@ -197,6 +203,7 @@ export const NotificationList: React.FC = () => {
                       </Button>
                       <Button
                         variant="outlined"
+                        disabled={isNotificationRead(notification)}
                         onClick={getSetNotificationState(notification, 'READ')}
                       >
                         Read
@@ -212,6 +219,9 @@ export const NotificationList: React.FC = () => {
                   justifyContent="flex-start"
                   spacing={2}
                 >
+                  <Grid item xs={6}>
+                    {notification.body}
+                  </Grid>
                   <Grid item xs={2}>
                     {notification.fromuser}
                   </Grid>
@@ -220,9 +230,6 @@ export const NotificationList: React.FC = () => {
                   </Grid>
                   <Grid item xs={2}>
                     {notification.folder}
-                  </Grid>
-                  <Grid item xs={6}>
-                    {notification.body}
                   </Grid>
                 </Grid>
               </AccordionDetails>
