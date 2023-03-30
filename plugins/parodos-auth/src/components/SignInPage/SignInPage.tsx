@@ -7,6 +7,7 @@ import { type IChangeEvent } from '@rjsf/core-v5';
 import { CitiIcon } from '../icons/citi';
 import { Link } from 'react-router-dom';
 import { assert } from 'assert-ts';
+import { Buffer } from 'buffer';
 
 type ParodosSignInPageProps = SignInPageProps;
 
@@ -16,13 +17,13 @@ const useStyles = makeStyles(theme => ({
     placeItems: 'center',
     '& h1': {
       margin: 0,
-      marginBottom: theme.spacing(3),
+      marginBottom: theme.spacing(4),
       fontSize: '4rem',
       lineHeight: 1,
     },
     '& button': {
       marginTop: theme.spacing(3),
-      marginBottom: theme.spacing(3),
+      marginBottom: theme.spacing(1),
     },
     '& a': {
       textTransform: 'none',
@@ -35,10 +36,9 @@ const useStyles = makeStyles(theme => ({
     },
   },
   paper: {
-    paddingLeft: theme.spacing(5),
-    paddingRight: theme.spacing(5),
-    paddingTop: theme.spacing(3),
-    paddingBottom: theme.spacing(6),
+    paddingBottom: theme.spacing(3),
+    paddingLeft: theme.spacing(3),
+    paddingRight: theme.spacing(3),
     textAlign: 'center',
     color: '#000000',
   },
@@ -70,7 +70,7 @@ export function SignInPage({ onSignInSuccess }: ParodosSignInPageProps) {
       },
       async getCredentials() {
         return {
-          token: undefined,
+          token: Buffer.from(`${userName}:${password}`).toString('base64')
         };
       },
       async signOut() {
@@ -82,20 +82,26 @@ export function SignInPage({ onSignInSuccess }: ParodosSignInPageProps) {
   return (
     <Page themeId="tool">
       <Content className={styles.container}>
-        <Grid xs={10} md={6} lg={4} className={styles.grid}>
-          <Paper elevation={4} className={styles.paper}>
-            <CitiIcon style={{ fontSize: '5rem' }} />
-            <h1>Parodos</h1>
-            <Typography paragraph>Please enter your SOEID and password to continue</Typography>
-            <LoginForm onSubmit={submitHandler}>
-              <Button type="submit" variant="contained" color="primary">
-                SIGN IN
-              </Button>
-            </LoginForm>
-            <Typography paragraph>
-            <Button component={Link} to="">Need help signing in?</Button>
-            </Typography>
-          </Paper>
+        <Grid container justifyContent="center">
+          <Grid item xs={8} md={5} lg={4} xl={3} className={styles.grid}>
+            <Paper elevation={4} className={styles.paper}>
+              <CitiIcon style={{ fontSize: '5rem' }} />
+              <h1>Parodos</h1>
+              <Typography paragraph>Please enter your SOEID and password to continue.</Typography>
+              <Grid container justifyContent="center">
+              <Grid item xs={7}>
+              <LoginForm onSubmit={submitHandler}>
+                <Button type="submit" variant="contained" color="primary">
+                  SIGN IN
+                </Button>
+              </LoginForm>
+              </Grid>
+              </Grid>
+              <Typography paragraph>
+              <Button component={Link} to="">Need help signing in?</Button>
+              </Typography>
+            </Paper>
+          </Grid>
         </Grid>
       </Content>
     </Page>
