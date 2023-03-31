@@ -9,6 +9,7 @@ import { makeStyles } from '@material-ui/core';
 import { OutlinedBaseInputTemplate } from './widgets/TextAreaWidget';
 import type { JsonValue } from '@backstage/types';
 import { schema, uiSchema } from './rjsfSchema';
+import { UiSchema } from '@rjsf/utils';
 
 type FormProps = Pick<
   JsonFormProps,
@@ -60,7 +61,7 @@ export function LoginForm({
       templates={{
         BaseInputTemplate: OutlinedBaseInputTemplate as any,
       }}
-      uiSchema={uiSchema}
+      uiSchema={uiSchema as UiSchema}
       transformErrors={transformErrors}
     >
       {children}

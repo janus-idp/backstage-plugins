@@ -9,8 +9,8 @@ export class ParodosSignInIdentity implements IdentityApi {
   async getBackstageIdentity(): Promise<BackstageUserIdentity> {
     return {
       type: 'user',
-      userEntityRef: 'user:default/mock',
-      ownershipEntityRefs: ['user:default/mock'],
+      userEntityRef: `user:default/${this.userName}`,
+      ownershipEntityRefs: [`user:default/${this.userName}`],
     };
   }
   async getProfileInfo() {

@@ -1,15 +1,25 @@
-import { type SignInPageProps } from '@backstage/core-plugin-api';
+import {
+  configApiRef,
+  errorApiRef,
+  useApi,
+  type SignInPageProps,
+} from '@backstage/core-plugin-api';
 import { LoginForm } from '../LoginForm/LoginForm';
-import React, { useCallback } from 'react';
-import { Content, Page } from '@backstage/core-components';
+import React, { useCallback, useEffect } from 'react';
+import { Content, Page, Progress } from '@backstage/core-components';
 import { Button, Grid, makeStyles, Paper, Typography } from '@material-ui/core';
 import { type IChangeEvent } from '@rjsf/core-v5';
 import { CitiIcon } from '../icons/citi';
 import { Link } from 'react-router-dom';
 import { assert } from 'assert-ts';
 import { ParodosSignInIdentity } from './ParodosSigninIdentity';
+import useAsyncFn from 'react-use/lib/useAsyncFn';
+import type { User } from './types';
+import { getToken } from './getToken';
 
 type ParodosSignInPageProps = SignInPageProps;
+
+const LoginUrl = `/api/proxy/parodos/login`;
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -46,20 +56,50 @@ const useStyles = makeStyles(theme => ({
 
 export function SignInPage({ onSignInSuccess }: ParodosSignInPageProps) {
   const styles = useStyles();
+  const errorApi = useApi(errorApiRef);
+  const configApi = useApi(configApiRef);
+  const baseUrl = configApi.getString('backend.baseUrl');
 
-  // console.log(props)
+  const [{ error, loading }, login] = useAsyncFn(async (user: User) => {
+    const token = getToken(user);
+
+    return await fetch(`${baseUrl}${LoginUrl}`, {
+      headers: {
+        Authorization: `Basic ${token}`,
+      },
+    });
+  });
 
   const submitHandler = useCallback(
-    async (data: IChangeEvent<{ userName: string; password: string }>) => {
+    async (data: IChangeEvent<User>) => {
       assert(!!data.formData);
-      const {
-        formData: { userName, password },
-      } = data;
+      const { formData: user } = data;
 
-      onSignInSuccess(new ParodosSignInIdentity(userName, password));
+      const response = await login(user);
+
+      if (response.ok) {
+        onSignInSuccess(
+          new ParodosSignInIdentity(user.userName, user.password),
+        );
+      } else {
+        errorApi.post(new Error('Unauthorized'));
+      }
     },
-    [onSignInSuccess],
+    [errorApi, login, onSignInSuccess],
   );
+
+  useEffect(() => {
+    if (error) {
+      // eslint-disable-next-line no-console
+      console.error(error);
+
+      errorApi.post(new Error('Start workflow failed'));
+    }
+  }, [errorApi, error]);
+
+  if (loading) {
+    return <Progress />;
+  }
 
   return (
     <Page themeId="tool">
