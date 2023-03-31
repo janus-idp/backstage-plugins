@@ -5,14 +5,14 @@ import {
 } from '@backstage/core-plugin-api';
 import { TagsResponse } from '../types';
 
-const DEFAULT_PROXY_PATH = '/artifactory/api';
+const DEFAULT_PROXY_PATH = '/jfrog-artifactory/api';
 
 export interface ArtifactoryApiV1 {
   getTags(repo: string): Promise<TagsResponse>;
 }
 
 export const artifactoryApiRef = createApiRef<ArtifactoryApiV1>({
-  id: 'plugin.artifactory.service',
+  id: 'plugin.jfrog-artifactory.service',
 });
 
 export type Options = {
@@ -33,7 +33,7 @@ export class ArtifactoryApiClient implements ArtifactoryApiV1 {
 
   private async getBaseUrl() {
     const proxyPath =
-      this.configApi.getOptionalString('artifactory.proxyPath') ||
+      this.configApi.getOptionalString('jfrogArtifactory.proxyPath') ||
       DEFAULT_PROXY_PATH;
     return `${await this.discoveryApi.getBaseUrl('proxy')}${proxyPath}`;
   }

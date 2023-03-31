@@ -1,6 +1,6 @@
 import { Entity } from '@backstage/catalog-model';
 
-export const ARTIFACTORY_ANNOTATION_IMAGE_NAME = 'artifactory/image-name';
+export const ARTIFACTORY_ANNOTATION_IMAGE_NAME = 'jfrog-artifactory/image-name';
 
 export const useArtifactoryAppData = ({ entity }: { entity: Entity }) => {
   const imageName =

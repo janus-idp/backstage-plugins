@@ -1,5 +1,5 @@
 export {
-  artifactoryPlugin,
-  ArtifactoryPage,
-  isArtifactoryAvailable,
+  jfrogArtifactoryPlugin,
+  JfrogArtifactoryPage,
+  isJfrogArtifactoryAvailable,
 } from './plugin';

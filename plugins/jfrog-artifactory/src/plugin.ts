@@ -10,8 +10,8 @@ import { rootRouteRef } from './routes';
 import { ArtifactoryApiClient, artifactoryApiRef } from './api';
 import { ARTIFACTORY_ANNOTATION_IMAGE_NAME } from './components/useArtifactoryAppData';
 
-export const artifactoryPlugin = createPlugin({
-  id: 'artifactory',
+export const jfrogArtifactoryPlugin = createPlugin({
+  id: 'jfrog-artifactory',
   routes: {
     root: rootRouteRef,
   },
@@ -28,9 +28,9 @@ export const artifactoryPlugin = createPlugin({
   ],
 });
 
-export const ArtifactoryPage = artifactoryPlugin.provide(
+export const JfrogArtifactoryPage = jfrogArtifactoryPlugin.provide(
   createComponentExtension({
-    name: 'ArtifactoryPage',
+    name: 'JfrogArtifactoryPage',
     component: {
       lazy: () =>
         import('./components/ArtifactoryDashboardPage').then(
@@ -40,5 +40,5 @@ export const ArtifactoryPage = artifactoryPlugin.provide(
   }),
 );
 
-export const isArtifactoryAvailable = (entity: Entity) =>
+export const isJfrogArtifactoryAvailable = (entity: Entity) =>
   Boolean(entity?.metadata.annotations?.[ARTIFACTORY_ANNOTATION_IMAGE_NAME]);

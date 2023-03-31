@@ -1,5 +1,5 @@
 import { createRouteRef } from '@backstage/core-plugin-api';
 
 export const rootRouteRef = createRouteRef({
-  id: 'artifactory',
+  id: 'jfrog-artifactory',
 });
