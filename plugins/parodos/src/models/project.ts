@@ -11,10 +11,11 @@ export const projectSchema = z.object({
   id: z.string(),
   name: z.string(),
   description: z.string().nullable(),
-  createDate: z.string().transform(Date),
-  modifyDate: z.string().transform(Date),
+  createDate: z.coerce.date(),
+  modifyDate: z.coerce.date(),
   username: z.string().nullable(),
-  status: projectStatus.nullable().optional(),
+  // TODO: I hate this default and the API should be returing this
+  status: projectStatus.default('in-progress'),
 });
 
 export type Project = z.infer<typeof projectSchema>;

@@ -24,6 +24,7 @@ const mockMasterWorkFlow: WorkflowDefinition = {
       format: 'text',
     },
   },
+  // TODO: flesh out for better test
   works: [],
 };
 

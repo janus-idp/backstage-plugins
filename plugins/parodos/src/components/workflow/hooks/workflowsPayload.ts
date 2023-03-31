@@ -13,6 +13,7 @@ interface GetWorklfowsPayload {
 }
 
 type Works = WorkflowsPayload['works'];
+type Work = WorkflowsPayload['works'][number];
 
 export function walkWorks(
   works: WorkType[],
@@ -23,7 +24,7 @@ export function walkWorks(
   const result: Works = [];
 
   for (const [index, work] of works.entries()) {
-    const next: Works[0] = {
+    const next: Work = {
       workName: work.name,
       type: work.workType,
       arguments: Object.entries(work.parameters ?? {}).map(([key]) => {

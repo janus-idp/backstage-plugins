@@ -22,9 +22,7 @@ export const ProjectsTable: React.FC<{ projects: Project[] }> = ({
       ...project,
       createDate: getHumanReadableDate(project.createDate),
       modifyDate: getHumanReadableDate(project.modifyDate),
-      status: project.status
-        ? projectStatusDisplayName(project.status)
-        : 'In Progress',
+      status: projectStatusDisplayName(project.status),
     };
   });
 

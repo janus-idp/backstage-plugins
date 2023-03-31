@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon';
 
-export const getHumanReadableDate = (isoTime: string): string => {
-  return DateTime.fromISO(isoTime).toLocaleString(DateTime.DATETIME_MED);
+export const getHumanReadableDate = (date: Date): string => {
+  return DateTime.fromJSDate(date).toLocaleString(DateTime.DATETIME_SHORT);
 };

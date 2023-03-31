@@ -14,10 +14,10 @@ import { ProjectsTable } from './ProjectsTable';
 import { useStore } from '../../stores/workflowStore/workflowStore';
 import { ProjectStatus } from '../../models/project';
 
-type ProjectFilters = ProjectStatus | '';
+type ProjectFilters = ProjectStatus | 'all-projects';
 
 const projectFilterItems: { label: string; value: ProjectFilters }[] = [
-  { label: 'All Projects', value: '' },
+  { label: 'All Projects', value: 'all-projects' },
   { label: 'In Progress', value: 'in-progress' },
   { label: 'On Boarded', value: 'on-boarded' },
 ];
@@ -43,13 +43,14 @@ export const useStyles = makeStyles(theme => ({
 
 export const ProjectOverviewPage = (): JSX.Element => {
   const styles = useStyles();
-  const [projectFilter, setProjectFilter] = useState<ProjectFilters>('');
+  const [projectFilter, setProjectFilter] =
+    useState<ProjectFilters>('all-projects');
 
   const allProjects = useStore(state => state.projects);
   const loading = useStore(state => state.projectsLoading);
 
   const filteredProjects = useMemo(() => {
-    if (projectFilter === '') {
+    if (projectFilter === 'all-projects') {
       return allProjects;
     }
 
