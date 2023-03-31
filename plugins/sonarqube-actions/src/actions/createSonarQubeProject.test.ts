@@ -210,7 +210,7 @@ describe('sonarqube:create-project', () => {
           baseUrl: 'http://localhost:9090',
           token: '',
           username: '',
-          password: 'super-sEkRiT',
+          password: 'super-sEkRiT', // gitleaks:allow NOSONAR
           name: 'test-project',
           key: 'test-project',
           branch: '',
