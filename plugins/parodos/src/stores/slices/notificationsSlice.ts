@@ -37,7 +37,7 @@ export const createNotificationsSlice: StateCreator<
         unstable_batchedUpdates(() => {
           state.notifications =
             notifications.content ||
-            /* Hack: response does not conform swagger, https://issues.redhat.com/browse/FLPATH-260 */
+            /* Hack: response does not conform swagger, TODO: https://issues.redhat.com/browse/FLPATH-260 */
             notifications?._embedded?.notificationrecords ||
             [];
           state.notificationsLoading = false;

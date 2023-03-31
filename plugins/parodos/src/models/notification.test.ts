@@ -2,7 +2,7 @@ import { notificationsSchema } from './notification';
 
 describe('notification', () => {
   it('parses the notification response', () => {
-    // TODO: Update mock based on real data once the service can be executed
+    // Following data are based on swagger and not recent API response (TODO: https://issues.redhat.com/browse/FLPATH-260)
     const result = notificationsSchema.safeParse({
       links: [
         {
@@ -55,7 +55,6 @@ describe('notification', () => {
   });
 
   it('parses empty notification response', () => {
-    // TODO: Update mock based on real data once the service can be executed
     const result = notificationsSchema.safeParse({
       links: [],
       content: [],
