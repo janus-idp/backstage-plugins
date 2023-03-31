@@ -44,6 +44,7 @@
     "immer": "^9.0.19",
     "lodash.get": "^4.4.2",
     "lodash.set": "^4.3.2",
+    "luxon": "^3.2.1",
     "mobx": "^5.15.4",
     "mobx-react": "^6.2.0",
     "react-use": "^17.2.4",

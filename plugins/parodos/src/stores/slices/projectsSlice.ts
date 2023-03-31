@@ -2,6 +2,7 @@ import type { StateCreator } from 'zustand';
 import type { ProjectsSlice, State, StateMiddleware } from '../types';
 import * as urls from '../../urls';
 import { unstable_batchedUpdates } from 'react-dom';
+import { type Project, projectSchema } from '../../models/project';
 
 export const createProjectsSlice: StateCreator<
   State,
@@ -22,7 +23,9 @@ export const createProjectsSlice: StateCreator<
 
     try {
       const response = await fetch(`${get().baseUrl}${urls.Projects}`);
-      const projects = await response.json();
+      const projectsResponse = await response.json();
+
+      const projects = projectsResponse.map(projectSchema.parse) as Project[];
 
       set(state => {
         unstable_batchedUpdates(() => {

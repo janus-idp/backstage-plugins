@@ -10,11 +10,13 @@ import Add from '@material-ui/icons/Add';
 import { Card, CardContent, Grid, makeStyles } from '@material-ui/core';
 import { EmptyProjectsState } from './EmptyProjectsState';
 import { ParodosPage } from '../ParodosPage';
-import { ProjectStatusType } from '../types';
 import { ProjectsTable } from './ProjectsTable';
 import { useStore } from '../../stores/workflowStore/workflowStore';
+import { ProjectStatus } from '../../models/project';
 
-const projectFilterItems: { label: string; value: ProjectStatusType }[] = [
+type ProjectFilters = ProjectStatus | 'all-projects';
+
+const projectFilterItems: { label: string; value: ProjectFilters }[] = [
   { label: 'All Projects', value: 'all-projects' },
   { label: 'In Progress', value: 'in-progress' },
   { label: 'On Boarded', value: 'on-boarded' },
@@ -41,7 +43,8 @@ export const useStyles = makeStyles(theme => ({
 
 export const ProjectOverviewPage = (): JSX.Element => {
   const styles = useStyles();
-  const [projectFilter, setProjectFilter] = useState('all-projects');
+  const [projectFilter, setProjectFilter] =
+    useState<ProjectFilters>('all-projects');
 
   const allProjects = useStore(state => state.projects);
   const loading = useStore(state => state.projectsLoading);
@@ -55,7 +58,7 @@ export const ProjectOverviewPage = (): JSX.Element => {
   }, [allProjects, projectFilter]);
 
   const onFilterProjects = (selected: SelectedItems) => {
-    setProjectFilter(selected as ProjectStatusType);
+    setProjectFilter(selected as ProjectStatus);
   };
 
   let content: ReactElement | null = null;

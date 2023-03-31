@@ -1,10 +1,8 @@
 import React from 'react';
 import { Table, TableColumn } from '@backstage/core-components';
-import {
-  getHumanReadableDate,
-  HumanReadableProjectStatus,
-} from '../converters';
+import { getHumanReadableDate } from '../converters';
 import { Project } from '../../models/project';
+import { projectStatusDisplayName } from '../../utils/string';
 
 export const ProjectsTable: React.FC<{ projects: Project[] }> = ({
   projects,
@@ -24,9 +22,7 @@ export const ProjectsTable: React.FC<{ projects: Project[] }> = ({
       ...project,
       createDate: getHumanReadableDate(project.createDate),
       modifyDate: getHumanReadableDate(project.modifyDate),
-      status: project.status
-        ? HumanReadableProjectStatus[project.status]
-        : 'In Progress',
+      status: projectStatusDisplayName(project.status),
     };
   });
 
