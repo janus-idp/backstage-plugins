@@ -1,3 +1,10 @@
+## @janus-idp/backstage-scaffolder-backend-module-sonarqube [1.0.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-sonarqube@1.0.0...@janus-idp/backstage-scaffolder-backend-module-sonarqube@1.0.1) (2023-03-31)
+
+
+### Bug Fixes
+
+* **sonarqube:** Fix formatting issue in markdown table ([#224](https://github.com/janus-idp/backstage-plugins/issues/224)) ([1ceae7a](https://github.com/janus-idp/backstage-plugins/commit/1ceae7a1b538c784032ed1ffa82fb5523a3bbd5f)), closes [#223](https://github.com/janus-idp/backstage-plugins/issues/223)
+
 ## @janus-idp/backstage-scaffolder-backend-module-sonarqube 1.0.0 (2023-03-31)
 
 
