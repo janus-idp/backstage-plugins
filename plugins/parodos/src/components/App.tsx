@@ -3,6 +3,7 @@ import { useStore } from '../stores/workflowStore/workflowStore';
 import { useBackendUrl } from './api/useBackendUrl';
 import { PluginRouter } from './PluginRouter';
 import { Progress } from '@backstage/core-components';
+import { fetchApiRef, useApi } from '@backstage/core-plugin-api';
 
 export const App = () => {
   const backendUrl = useBackendUrl();
@@ -10,16 +11,17 @@ export const App = () => {
   const fetchProjects = useStore(state => state.fetchProjects);
   const fetchDefinitions = useStore(state => state.fetchDefinitions);
   const loading = useStore(state => state.loading());
+  const { fetch } = useApi(fetchApiRef);
 
   useEffect(() => {
     setBaseUrl(backendUrl);
 
     async function initialiseStore() {
-      await Promise.all([fetchProjects(), fetchDefinitions()]);
+      await Promise.all([fetchProjects(fetch), fetchDefinitions(fetch)]);
     }
 
     initialiseStore();
-  }, [backendUrl, fetchDefinitions, fetchProjects, setBaseUrl]);
+  }, [backendUrl, fetch, fetchDefinitions, fetchProjects, setBaseUrl]);
 
   return loading ? <Progress /> : <PluginRouter />;
 };

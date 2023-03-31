@@ -34,9 +34,13 @@ import { CatalogGraphPage } from '@backstage/plugin-catalog-graph';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
 import { ParodosPage } from '@parodos/plugin-parodos';
+import { ParodosSignInPage } from '@parodos/plugin-parodos-auth';
 
 const app = createApp({
   apis,
+  components: {
+    SignInPage: ParodosSignInPage,
+  },
   bindRoutes({ bind }) {
     bind(catalogPlugin.externalRoutes, {
       createComponent: scaffolderPlugin.routes.root,
@@ -93,6 +97,7 @@ const routes = (
     <Route path="/settings" element={<UserSettingsPage />} />
     <Route path="/catalog-graph" element={<CatalogGraphPage />} />
     <Route path="/parodos" element={<ParodosPage />} />
+    <Route path="/parodos-auth" element={ParodosSignInPage} />
   </FlatRoutes>
 );
 

@@ -7,6 +7,7 @@ import {
 } from '../types';
 import * as urls from '../../urls';
 import { unstable_batchedUpdates } from 'react-dom';
+import { FetchApi } from '@backstage/core-plugin-api';
 
 export const createWorkflowSlice: StateCreator<
   State,
@@ -24,7 +25,7 @@ export const createWorkflowSlice: StateCreator<
 
     return workflowDefinition;
   },
-  async fetchDefinitions() {
+  async fetchDefinitions(fetch: FetchApi['fetch']) {
     set(state => {
       state.workflowLoading = true;
     });

@@ -17,6 +17,7 @@ import {
   WorkStatus,
 } from '../../../models/workflowTaskSchema';
 import { useStore } from '../../../stores/workflowStore/workflowStore';
+import { fetchApiRef, useApi } from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles(_theme => ({
   container: {
@@ -48,6 +49,7 @@ export const WorkFlowDetail = () => {
   const [countlog, setCountlog] = useState<number>(0);
   const workflowsUrl = useStore(store => store.getApiUrl(urls.Workflows));
   const styles = useStyles();
+  const { fetch } = useApi(fetchApiRef);
 
   const getSelectedTaskLog = React.useCallback(
     (templog: string) => {
@@ -89,7 +91,7 @@ export const WorkFlowDetail = () => {
     }, 5000);
 
     return () => clearInterval(taskInterval);
-  }, [allTasks, executionId, workflowsUrl]);
+  }, [allTasks, executionId, fetch, workflowsUrl]);
 
   // update log of selected task regularly
   useEffect(() => {
