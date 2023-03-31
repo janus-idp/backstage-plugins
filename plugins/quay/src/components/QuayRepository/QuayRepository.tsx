@@ -75,7 +75,7 @@ export function QuayRepository(props: RepositoryProps) {
         emptyContent={
           <div className={classes.empty}>
             No data was added yet,&nbsp;
-            <Link to="http://backstage.io/">learn how to add data</Link>.
+            <Link to="https://backstage.io/">learn how to add data</Link>.
           </div>
         }
       />
