@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-quay [1.1.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.1.1...@janus-idp/backstage-plugin-quay@1.1.2) (2023-03-31)
+
+
+### Bug Fixes
+
+* **quay:** change http link to https ([#217](https://github.com/janus-idp/backstage-plugins/issues/217)) ([dca6a5a](https://github.com/janus-idp/backstage-plugins/commit/dca6a5a174b86ce63d5aa93465526537e4be6bfa))
+
 ## @janus-idp/backstage-plugin-quay [1.1.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.1.0...@janus-idp/backstage-plugin-quay@1.1.1) (2023-03-06)
 
 
