@@ -3,6 +3,8 @@ import {
   type IdentityApi,
 } from '@backstage/core-plugin-api';
 
+export const SessionStorageKey = 'parados_plugin';
+
 export class ParodosSignInIdentity implements IdentityApi {
   constructor(private userName: string, private password: string) {}
 
@@ -15,18 +17,25 @@ export class ParodosSignInIdentity implements IdentityApi {
   }
   async getProfileInfo() {
     return {
-      displayName: 'Mock',
-      email: 'mock@redhat.com',
+      displayName: this.userName,
+      email: `${this.userName}@redhat.com`,
     };
   }
+
   async getCredentials() {
-    return {
-      token: Buffer.from(`${this.userName}:${this.password}`).toString(
+    let token = sessionStorage.getItem(SessionStorageKey);
+
+    if (!token) {
+      token = Buffer.from(`${this.userName}:${this.password}`).toString(
         'base64',
-      ),
+      );
+      sessionStorage.setItem(SessionStorageKey, token);
+    }
+    return {
+      token,
     };
   }
   async signOut() {
-    return undefined;
+    sessionStorage.clear();
   }
 }

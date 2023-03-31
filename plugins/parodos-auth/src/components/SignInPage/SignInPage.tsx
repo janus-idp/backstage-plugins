@@ -5,7 +5,7 @@ import {
   type SignInPageProps,
 } from '@backstage/core-plugin-api';
 import { LoginForm } from '../LoginForm/LoginForm';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Content, Page, Progress } from '@backstage/core-components';
 import { Button, Grid, makeStyles, Paper, Typography } from '@material-ui/core';
 import { type IChangeEvent } from '@rjsf/core-v5';
@@ -16,6 +16,7 @@ import { ParodosSignInIdentity } from './ParodosSigninIdentity';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
 import type { User } from './types';
 import { getToken } from './getToken';
+import { SessionStorageKey } from './ParodosSigninIdentity';
 
 type ParodosSignInPageProps = SignInPageProps;
 
@@ -59,6 +60,25 @@ export function SignInPage({ onSignInSuccess }: ParodosSignInPageProps) {
   const errorApi = useApi(errorApiRef);
   const configApi = useApi(configApiRef);
   const baseUrl = configApi.getString('backend.baseUrl');
+  const [checkingToken, setTokenCheck] = useState(true);
+
+  useEffect(() => {
+    const token = sessionStorage.getItem(SessionStorageKey);
+    // TODO: this is all temporary until basic auth is removed
+    if (token) {
+      try {
+        const [userName, password] = Buffer.from(token, 'base64')
+          .toString('binary')
+          .split(':');
+
+        onSignInSuccess(new ParodosSignInIdentity(userName, password));
+      } catch {
+        setTokenCheck(false);
+      }
+    } else {
+      setTokenCheck(false);
+    }
+  }, [onSignInSuccess]);
 
   const [{ error, loading }, login] = useAsyncFn(async (user: User) => {
     const token = getToken(user);
@@ -97,7 +117,7 @@ export function SignInPage({ onSignInSuccess }: ParodosSignInPageProps) {
     }
   }, [errorApi, error]);
 
-  if (loading) {
+  if (loading || checkingToken) {
     return <Progress />;
   }
 

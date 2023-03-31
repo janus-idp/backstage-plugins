@@ -57,16 +57,6 @@ export function useStartWorkflow({
         state: { isNew: isNew, initTasks: tasks },
       });
     },
-    [
-      projectId,
-      workflow.name,
-      workflow.parameters,
-      workflow.works,
-      fetch,
-      workflowsUrl,
-      navigate,
-      isNew,
-      tasks,
-    ],
+    [projectId, workflow, fetch, workflowsUrl, navigate, isNew, tasks],
   );
 }
