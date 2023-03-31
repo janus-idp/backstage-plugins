@@ -99,8 +99,8 @@ The following actions are currently supported in this module:
 #### Output:
 
 | Name       |  Type  | Description                                  |
-| ---------- | :----: | -------------------------------------------- | --- |
-| projectUrl | string | SonarQube project URL created by this action |     |
+| ---------- | :----: | -------------------------------------------- |
+| projectUrl | string | SonarQube project URL created by this action |
 
 ## Development
 
