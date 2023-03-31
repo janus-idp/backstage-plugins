@@ -28,8 +28,8 @@
     "yaml": "^2.2.1"
   },
   "devDependencies": {
-    "@backstage/backend-common": "^0.18.0",
-    "@backstage/cli": "^0.22.1"
+    "@backstage/backend-common": "0.18.3",
+    "@backstage/cli": "0.22.1"
   },
   "files": [
     "dist"
