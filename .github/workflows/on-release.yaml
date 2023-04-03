@@ -52,17 +52,6 @@ jobs:
           #git tag -f -a ${{ github.ref_name }} -m '${{ github.ref_name }}'
           #git push origin ${{ github.ref_name }} --force
 
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v4
-        with:
-          token: ${{ secrets.PUSH_TO_PROTECTED_BRANCH_PARODOS }}
-          base: main
-          commit-message: 'Bump version to ${{ steps.new-version.outputs.new_version }}'
-          title: 'Bump version to ${{ steps.new-version.outputs.new_version }}'
-          body: >
-            This PR is auto-generated
-          branch: 'release/${{ steps.new-version.outputs.new_version }}'
-
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
@@ -87,3 +76,14 @@ jobs:
         run: |
           cd plugins/parodos
           yarn publish --no-git-tag-version
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v4
+        with:
+          token: ${{ secrets.PUSH_TO_PROTECTED_BRANCH_PARODOS }}
+          base: main
+          commit-message: 'Bump version to ${{ steps.new-version.outputs.new_version }}'
+          title: 'Bump version to ${{ steps.new-version.outputs.new_version }}'
+          body: >
+            This PR is auto-generated
+          branch: 'release/${{ steps.new-version.outputs.new_version }}'
