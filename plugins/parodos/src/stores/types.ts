@@ -45,12 +45,17 @@ export interface NotificationsSlice {
   notifications: NotificationContent[];
   notificationsCount: number;
   fetchNotifications(params: {
+    fetch: FetchApi['fetch'];
     state: NotificationState;
     page: number;
     rowsPerPage: number;
   }): Promise<void>;
-  deleteNotification(params: { id: string }): Promise<void>;
+  deleteNotification(params: {
+    fetch: FetchApi['fetch'];
+    id: string;
+  }): Promise<void>;
   setNotificationState(params: {
+    fetch: FetchApi['fetch'];
     id: string;
     newState: NotificationOperation;
   }): Promise<void>;

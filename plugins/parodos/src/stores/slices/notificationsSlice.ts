@@ -14,7 +14,7 @@ export const createNotificationsSlice: StateCreator<
   notificationsError: undefined,
   notifications: [],
   notificationsCount: 0,
-  async fetchNotifications({ state: stateParam, page, rowsPerPage }) {
+  async fetchNotifications({ state: stateParam, page, rowsPerPage, fetch }) {
     set(state => {
       state.notificationsLoading = true;
     });
@@ -53,7 +53,7 @@ export const createNotificationsSlice: StateCreator<
       });
     }
   },
-  async deleteNotification({ id }) {
+  async deleteNotification({ id, fetch }) {
     try {
       await fetch(`${get().baseUrl}${urls.Notifications}/${id}`, {
         method: 'DELETE',
@@ -66,7 +66,7 @@ export const createNotificationsSlice: StateCreator<
       });
     }
   },
-  async setNotificationState({ id, newState }) {
+  async setNotificationState({ id, newState, fetch }) {
     try {
       await fetch(
         `${get().baseUrl}${urls.Notifications}/${id}?operation=${newState}`,

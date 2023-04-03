@@ -19,7 +19,7 @@ import { NotificationOperation, NotificationState } from '../../stores/types';
 import { useStore } from '../../stores/workflowStore/workflowStore';
 import { getHumanReadableDate } from '../converters';
 import { NotificationContent } from '../../models/notification';
-import { errorApiRef, useApi } from '@backstage/core-plugin-api';
+import { errorApiRef, fetchApiRef, useApi } from '@backstage/core-plugin-api';
 
 const ParodosAccordion = withStyles({
   root: {
@@ -54,6 +54,7 @@ export const NotificationList: React.FC = () => {
   const setNotificationState = useStore(state => state.setNotificationState);
   const notificationsCount = useStore(state => state.notificationsCount);
   const loading = useStore(state => state.notificationsLoading);
+  const { fetch } = useApi(fetchApiRef);
 
   const [notificationFilter, setNotificationFilter] =
     useState<NotificationState>('ALL');
@@ -71,8 +72,8 @@ export const NotificationList: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchNotifications({ state: notificationFilter, page, rowsPerPage });
-  }, [notificationFilter, page, rowsPerPage, fetchNotifications]);
+    fetchNotifications({ state: notificationFilter, page, rowsPerPage, fetch });
+  }, [fetch, notificationFilter, page, rowsPerPage, fetchNotifications]);
 
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -93,8 +94,9 @@ export const NotificationList: React.FC = () => {
     async e => {
       e.stopPropagation();
       try {
-        await deleteNotification(notification);
+        await deleteNotification({ fetch, id: notification.id });
         await fetchNotifications({
+          fetch,
           state: notificationFilter,
           page,
           rowsPerPage,
@@ -116,8 +118,9 @@ export const NotificationList: React.FC = () => {
     async e => {
       e.stopPropagation();
       try {
-        await setNotificationState({ id: notification.id, newState });
+        await setNotificationState({ fetch, id: notification.id, newState });
         await fetchNotifications({
+          fetch,
           state: notificationFilter,
           page,
           rowsPerPage,
