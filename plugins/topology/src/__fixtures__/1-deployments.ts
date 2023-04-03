@@ -1703,7 +1703,7 @@ export const mockKubernetesResponse = {
           metadata: {
             creationTimestamp: null,
             labels: {
-              app: 'name',
+              app: 'hello-world',
               'backstage.io/kubernetes-id': 'backstage',
             },
           },
@@ -1878,6 +1878,44 @@ export const mockKubernetesResponse = {
         ],
         selector: {
           app: 'name',
+        },
+        clusterIP: '10.110.148.168',
+        clusterIPs: ['10.110.148.168'],
+        type: 'NodePort',
+        sessionAffinity: 'None',
+        externalTrafficPolicy: 'Cluster',
+        ipFamilies: ['IPv4'],
+        ipFamilyPolicy: 'SingleStack',
+        internalTrafficPolicy: 'Cluster',
+      },
+      status: {
+        loadBalancer: {},
+      },
+    },
+    {
+      kind: 'Service',
+      apiVersion: 'v1',
+      metadata: {
+        name: 'hello-world-2',
+        namespace: 'test-app',
+        uid: 'e5112e42-d7d5-476b-a2fd-ba10e722e2f2',
+        resourceVersion: '325221',
+        creationTimestamp: '2023-03-01T08:13:39Z',
+        labels: {
+          'backstage.io/kubernetes-id': 'backstage',
+        },
+      },
+      spec: {
+        ports: [
+          {
+            protocol: 'TCP',
+            port: 8080,
+            targetPort: 8080,
+            nodePort: 30497,
+          },
+        ],
+        selector: {
+          app: 'hello-world',
         },
         clusterIP: '10.110.148.168',
         clusterIPs: ['10.110.148.168'],

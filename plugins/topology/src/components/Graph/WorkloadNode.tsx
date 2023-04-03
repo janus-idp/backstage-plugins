@@ -58,7 +58,7 @@ type InnerWorkloadNodeProps = {
 } & Partial<WithSelectionProps & WithDragNodeProps>;
 
 const InnerWorkloadNode: React.FC<InnerWorkloadNodeProps> = observer(
-  ({ element, ...rest }) => {
+  ({ element, onSelect, ...rest }) => {
     const data = element.getData();
     const { width, height } = element.getDimensions();
     const workloadData = data.data;
@@ -71,6 +71,12 @@ const InnerWorkloadNode: React.FC<InnerWorkloadNodeProps> = observer(
     const controller = useVisualizationController();
     const detailsLevel = controller.getGraph().getDetailsLevel();
     const showDetails = hover || detailsLevel !== ScaleDetailsLevel.low;
+    const onNodeSelect = (e: React.MouseEvent) => {
+      const params = new URLSearchParams(window.location.search);
+      params.set('selectedId', element.getId());
+      history.replaceState(null, '', `?${params.toString()}`);
+      if (onSelect) onSelect(e);
+    };
 
     const urlDecorator = React.useMemo(() => {
       if (!workloadData?.url) {
@@ -103,6 +109,7 @@ const InnerWorkloadNode: React.FC<InnerWorkloadNodeProps> = observer(
             !showDetails ? getAggregateStatus(donutStatus) : undefined
           }
           attachments={showDetails && urlDecorator}
+          onSelect={onNodeSelect}
           {...rest}
         >
           {donutStatus && showDetails ? (

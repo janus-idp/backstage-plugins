@@ -1,4 +1,5 @@
 import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
+import { V1Service } from '@kubernetes/client-node';
 import { INSTANCE_LABEL } from '../const';
 import { ModelsPlural, resourceModels } from '../models';
 import { PodRCData } from '../types/pods';
@@ -69,6 +70,8 @@ export const createTopologyNodeData = (
   defaultIcon: string,
   url?: string | null,
   podsData?: PodRCData,
+  services?: V1Service[],
+  ingressesData?: any,
 ): TopologyDataObject => {
   const dcUID = resource.metadata?.uid;
   const deploymentsLabels = resource.metadata?.labels ?? {};
@@ -86,6 +89,8 @@ export const createTopologyNodeData = (
       builderImage: defaultIcon,
       url,
       podsData,
+      services,
+      ingressesData,
     },
   };
 };

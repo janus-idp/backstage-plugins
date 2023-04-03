@@ -4,3 +4,11 @@
   flex-direction: column;
   overflow: hidden;
 }
+
+.topology-text-muted {
+  color: var(--pf-global--Color--200);
+}
+
+.pf-topology-side-bar-resizable {
+  flex: 1 1 0;
+}

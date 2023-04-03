@@ -74,3 +74,59 @@ export const resourceModels: { [key: string]: GroupVersionKind } = {
   [ModelsPlural.jobs]: JobGVK,
   [ModelsPlural.statefulsets]: StatefulSetGVK,
 };
+
+export const DeploymentModel = {
+  ...DeploymentGVK,
+  label: 'Deployment',
+  labelKey: 'Deployment',
+  plural: 'deployments',
+  abbr: 'D',
+  namespaced: true,
+  propagationPolicy: 'Foreground',
+  id: 'deployment',
+  labelPlural: 'Deployments',
+  labelPluralKey: 'Deployments',
+};
+
+export const PodModel = {
+  ...PodGVK,
+  label: 'Pod',
+  labelKey: 'Pod',
+  plural: 'pods',
+  abbr: 'P',
+  namespaced: true,
+  id: 'pod',
+  labelPlural: 'Pods',
+  labelPluralKey: 'Pods',
+};
+
+export const ServiceModel = {
+  ...ServiceGVK,
+  label: 'Service',
+  labelKey: 'Service',
+  plural: 'services',
+  abbr: 'S',
+  namespaced: true,
+  id: 'service',
+  labelPlural: 'Services',
+  labelPluralKey: 'Services',
+};
+
+export const IngressModel = {
+  ...IngressesGVK,
+  label: 'Ingress',
+  labelKey: 'Ingress',
+  labelPlural: 'Ingresses',
+  labelPluralKey: 'Ingresses',
+  plural: 'ingresses',
+  abbr: 'I',
+  namespaced: true,
+  id: 'ingress',
+};
+
+export const models = {
+  [DeploymentModel.kind]: DeploymentModel,
+  [PodModel.kind]: PodModel,
+  [ServiceModel.kind]: ServiceModel,
+  [IngressModel.kind]: IngressModel,
+};

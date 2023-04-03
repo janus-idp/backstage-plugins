@@ -3,7 +3,9 @@ import { TYPE_APPLICATION_GROUP, TYPE_WORKLOAD } from '../const';
 import { K8sWorkloadResource, K8sResponseData } from '../types/types';
 import {
   createOverviewItemForType,
+  getIngressesDataForResourceServices,
   getIngressURLForResource,
+  getServicesForResource,
 } from '../utils/resource-utils';
 import {
   createTopologyNodeData,
@@ -18,6 +20,7 @@ import {
   WorkloadModelProps,
 } from '../utils/transform-utils';
 import { getPodsDataForResource } from '../utils/pod-resource-utils';
+import { V1Service } from '@kubernetes/client-node';
 
 export const getBaseTopologyDataModel = (resources: K8sResponseData): Model => {
   const baseDataModel: Model = {
@@ -42,6 +45,11 @@ export const getBaseTopologyDataModel = (resources: K8sResponseData): Model => {
             'default image',
             getIngressURLForResource(resources, resource),
             getPodsDataForResource(resource, resources),
+            getServicesForResource(
+              resource,
+              resources.services?.data as V1Service[],
+            ),
+            getIngressesDataForResourceServices(resources, resource),
           );
           typedDataModel.nodes?.push(
             getTopologyNodeItem(

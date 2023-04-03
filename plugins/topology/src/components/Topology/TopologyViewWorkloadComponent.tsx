@@ -15,6 +15,7 @@ import TopologyToolbar from './TopologyToolbar';
 import { K8sResourcesContext } from '../../hooks/K8sResourcesContext';
 import TopologyErrorPanel from './TopologyErrorPanel';
 import { ClusterErrors } from '../../types/types';
+import { useSideBar } from '../../hooks/useSideBar';
 
 import './TopologyToolbar.css';
 
@@ -31,6 +32,7 @@ const TopologyViewWorkloadComponent: React.FC<
   const { loaded, dataModel } = useWorkloadsWatcher();
   const { clusters, selectedClusterErrors, responseError } =
     React.useContext(K8sResourcesContext);
+  const [sideBar, sideBarOpen] = useSideBar(selectedIds, controller);
 
   const allErrors: ClusterErrors = [
     ...(responseError ? [{ message: responseError }] : []),
@@ -78,6 +80,10 @@ const TopologyViewWorkloadComponent: React.FC<
             )
           }
           viewToolbar={useToolbar && <TopologyToolbar />}
+          sideBar={sideBar}
+          sideBarResizable
+          sideBarOpen={sideBarOpen}
+          minSideBarSize="400px"
         >
           {loaded && dataModel?.nodes?.length === 0 ? (
             <TopologyEmptyState />
