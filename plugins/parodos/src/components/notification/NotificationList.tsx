@@ -90,25 +90,22 @@ export const NotificationList: React.FC = () => {
     (
       notification: NotificationContent,
     ): React.MouseEventHandler<HTMLButtonElement> =>
-    e => {
+    async e => {
       e.stopPropagation();
-      const doItAsync = async () => {
-        try {
-          await deleteNotification(notification);
-          await fetchNotifications({
-            state: notificationFilter,
-            page,
-            rowsPerPage,
-          });
-        } catch (_) {
-          errorApi.post(
-            new Error(
-              `Failed to delete notification: ${JSON.stringify(notification)}`,
-            ),
-          );
-        }
-      };
-      doItAsync();
+      try {
+        await deleteNotification(notification);
+        await fetchNotifications({
+          state: notificationFilter,
+          page,
+          rowsPerPage,
+        });
+      } catch (_) {
+        errorApi.post(
+          new Error(
+            `Failed to delete notification: ${JSON.stringify(notification)}`,
+          ),
+        );
+      }
     };
 
   const getSetNotificationState =
@@ -116,27 +113,24 @@ export const NotificationList: React.FC = () => {
       notification: NotificationContent,
       newState: NotificationOperation,
     ): React.MouseEventHandler<HTMLButtonElement> =>
-    e => {
+    async e => {
       e.stopPropagation();
-      const doItAsync = async () => {
-        try {
-          await setNotificationState({ id: notification.id, newState });
-          await fetchNotifications({
-            state: notificationFilter,
-            page,
-            rowsPerPage,
-          });
-        } catch (_) {
-          errorApi.post(
-            new Error(
-              `Failed to set notification to "${newState}": ${JSON.stringify(
-                notification,
-              )}`,
-            ),
-          );
-        }
-      };
-      doItAsync();
+      try {
+        await setNotificationState({ id: notification.id, newState });
+        await fetchNotifications({
+          state: notificationFilter,
+          page,
+          rowsPerPage,
+        });
+      } catch (_) {
+        errorApi.post(
+          new Error(
+            `Failed to set notification to "${newState}": ${JSON.stringify(
+              notification,
+            )}`,
+          ),
+        );
+      }
     };
 
   return (
