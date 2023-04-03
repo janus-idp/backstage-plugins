@@ -5,6 +5,7 @@ import { createProjectsSlice } from '../slices/projectsSlice';
 import { State } from '../types';
 import { createUISlice } from '../slices/uiSlice';
 import { createWorkflowSlice } from '../slices/workflowSlice';
+import { createNotificationsSlice } from '../slices/notificationsSlice';
 
 export const useStore = create<State>()(
   devtools(
@@ -12,6 +13,7 @@ export const useStore = create<State>()(
       ...createUISlice(...args),
       ...createProjectsSlice(...args),
       ...createWorkflowSlice(...args),
+      ...createNotificationsSlice(...args),
     })),
   ),
 );

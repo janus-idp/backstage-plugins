@@ -48,19 +48,20 @@ const routes = (
   headers:
     Content-Type: 'application/json'
     accept: 'application/json'
-    Authorization: ${PARODOS_AUTH_KEY}
+
+'/parodos-notifications':
+  target: 'http://localhost:8081/api/v1'
+  changeOrigin: true
+  redirect: follow
+  cache: 'no-cache'
+  headers:
+    Content-Type: 'application/json'
+    accept: 'application/json'
 ```
 
 ## Local development
 
-For local development set the `PARODOS_AUTH_KEY` environment variable to 'Basic dGVzdDp0ZXN0'. This token is base64 encoded string containing `test:test`. You can also use `PARODOS_AUTH_KEY="Basic dGVzdDp0ZXN0" yarn dev` to start development environment with the test token. You can also create an `app-config.local.yaml` file with the following content to automatically include the token.
-
-```yaml
-proxy:
-  '/parodos':
-    headers:
-      Authorization: 'Basic dGVzdDp0ZXN0'
-```
+For local development, the application username is `test`, password `test`.
 
 ## Release
 
