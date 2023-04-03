@@ -18,7 +18,7 @@ export const notificationContentSchema = z.object({
   body: z.string(),
   fromuser: z.string(),
   read: z.boolean(),
-  createdOn: z.string().transform(Date),
+  createdOn: z.coerce.date(),
   messageType: z.string(),
   tags: z.array(z.string()),
   folder: z.string(),
