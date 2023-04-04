@@ -33,6 +33,8 @@ import { FlatRoutes } from '@backstage/core-app-api';
 import { CatalogGraphPage } from '@backstage/plugin-catalog-graph';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
+import { ParodosPage } from '@janus-idp/backstage-plugin-parodos';
+import { ParodosSignInPage } from '@janus-idp/backstage-plugin-parodos-auth';
 
 const app = createApp({
   apis,

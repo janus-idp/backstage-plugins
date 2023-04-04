@@ -1,5 +1,5 @@
 {
-  "name": "@parodos/plugin-parodos",
+  "name": "@janus-idp/backstage-plugin-parodos",
   "version": "0.4.5",
   "main": "src/index.ts",
   "types": "src/index.ts",
