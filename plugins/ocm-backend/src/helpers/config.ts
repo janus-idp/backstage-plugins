@@ -71,7 +71,7 @@ export const getHubClusterFromConfig = (
     ? getHubClusterFromKubernetesConfig(id, config, globalConfig)
     : getHubClusterFromOcmConfig(id, config);
 
-  const url = config.getString('url');
+  const url = hub.getString('url');
   if (!isValidUrl(url)) {
     throw new Error(`"${url}" is not a valid url`);
   }

@@ -3,6 +3,7 @@ import {
   getHubClusterFromKubernetesConfig,
   getHubClusterFromOcmConfig,
   deferToKubernetesPlugin,
+  getHubClusterFromConfig,
 } from './config';
 
 describe('deferToKubernetesPlugin', () => {
@@ -236,5 +237,121 @@ describe('getHubClusterFromOcmConfig', () => {
     expect(result).toThrow(
       `Value must be specified in config at 'catalog.providers.ocm.foo.name'`,
     );
+  });
+});
+
+describe('getHubClusterFromConfig', () => {
+  it('should correctly parse the ocm hub from the ocm config', () => {
+    const ocmConfig = {
+      name: 'foo',
+      url: 'http://example.com',
+    };
+
+    const config = new ConfigReader(ocmConfig);
+    const globalConfig = new ConfigReader({
+      catalog: {
+        providers: {
+          ocm: {
+            env: ocmConfig,
+          },
+        },
+      },
+    });
+
+    const result = getHubClusterFromConfig('env', config, globalConfig);
+
+    expect(result.hubResourceName).toEqual('foo');
+    expect(result.url).toEqual('http://example.com');
+  });
+
+  it('should correctly parse the ocm hub from the config while using kubernetes ref', () => {
+    const ocmConfig = {
+      kubernetesPluginRef: 'cluster1',
+    };
+    const globalConfig = new ConfigReader({
+      kubernetes: {
+        clusterLocatorMethods: [
+          {
+            type: 'config',
+            clusters: [
+              {
+                name: 'cluster1',
+                url: 'http://example.com',
+                authProvider: 'serviceAccount',
+              },
+            ],
+          },
+        ],
+      },
+      catalog: {
+        providers: {
+          ocm: {
+            env: ocmConfig,
+          },
+        },
+      },
+    });
+    const config = new ConfigReader(ocmConfig);
+
+    const result = getHubClusterFromConfig('env', config, globalConfig);
+
+    expect(result.hubResourceName).toEqual('cluster1');
+    expect(result.url).toEqual('http://example.com');
+  });
+
+  it('should throw an error if the url is not valid while using kubernetes ref', () => {
+    const ocmConfig = {
+      kubernetesPluginRef: 'cluster1',
+    };
+    const globalConfig = new ConfigReader({
+      kubernetes: {
+        clusterLocatorMethods: [
+          {
+            type: 'config',
+            clusters: [
+              {
+                name: 'cluster1',
+                url: 'bar',
+                authProvider: 'serviceAccount',
+              },
+            ],
+          },
+        ],
+      },
+      catalog: {
+        providers: {
+          ocm: {
+            env: ocmConfig,
+          },
+        },
+      },
+    });
+    const config = new ConfigReader(ocmConfig);
+
+    const result = () => getHubClusterFromConfig('env', config, globalConfig);
+
+    expect(result).toThrow('"bar" is not a valid url');
+  });
+
+  it('should throw an error if the url is not valid while using ocm config', () => {
+    const ocmConfig = {
+      name: 'foo',
+      url: 'bar',
+    };
+
+    const config = new ConfigReader(ocmConfig);
+    const globalConfig = new ConfigReader({
+      catalog: {
+        providers: {
+          ocm: {
+            env: ocmConfig,
+          },
+        },
+      },
+    });
+
+    const result = () => getHubClusterFromConfig('env', config, globalConfig);
+
+    expect(result).toThrow('"bar" is not a valid url');
   });
 });
