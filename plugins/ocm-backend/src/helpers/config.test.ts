@@ -245,6 +245,7 @@ describe('getHubClusterFromConfig', () => {
     const ocmConfig = {
       name: 'foo',
       url: 'http://example.com',
+      owner: 'bar',
     };
 
     const config = new ConfigReader(ocmConfig);
@@ -262,11 +263,13 @@ describe('getHubClusterFromConfig', () => {
 
     expect(result.hubResourceName).toEqual('foo');
     expect(result.url).toEqual('http://example.com');
+    expect(result.owner).toEqual('bar');
   });
 
   it('should correctly parse the ocm hub from the config while using kubernetes ref', () => {
     const ocmConfig = {
       kubernetesPluginRef: 'cluster1',
+      owner: 'foo',
     };
     const globalConfig = new ConfigReader({
       kubernetes: {
@@ -297,6 +300,29 @@ describe('getHubClusterFromConfig', () => {
 
     expect(result.hubResourceName).toEqual('cluster1');
     expect(result.url).toEqual('http://example.com');
+    expect(result.owner).toEqual('foo');
+  });
+
+  it('should throw an error if the url is not valid while using ocm config', () => {
+    const ocmConfig = {
+      name: 'foo',
+      url: 'bar',
+    };
+
+    const config = new ConfigReader(ocmConfig);
+    const globalConfig = new ConfigReader({
+      catalog: {
+        providers: {
+          ocm: {
+            env: ocmConfig,
+          },
+        },
+      },
+    });
+
+    const result = () => getHubClusterFromConfig('env', config, globalConfig);
+
+    expect(result).toThrow('"bar" is not a valid url');
   });
 
   it('should throw an error if the url is not valid while using kubernetes ref', () => {
@@ -333,10 +359,10 @@ describe('getHubClusterFromConfig', () => {
     expect(result).toThrow('"bar" is not a valid url');
   });
 
-  it('should throw an error if the url is not valid while using ocm config', () => {
+  it('should fallback to the default owner if no owner is configured', () => {
     const ocmConfig = {
       name: 'foo',
-      url: 'bar',
+      url: 'http://example.com',
     };
 
     const config = new ConfigReader(ocmConfig);
@@ -350,8 +376,8 @@ describe('getHubClusterFromConfig', () => {
       },
     });
 
-    const result = () => getHubClusterFromConfig('env', config, globalConfig);
+    const result = getHubClusterFromConfig('env', config, globalConfig);
 
-    expect(result).toThrow('"bar" is not a valid url');
+    expect(result.owner).toEqual('unknown');
   });
 });
