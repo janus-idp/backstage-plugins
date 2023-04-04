@@ -94,6 +94,8 @@ const routes = (
     </Route>
     <Route path="/settings" element={<UserSettingsPage />} />
     <Route path="/catalog-graph" element={<CatalogGraphPage />} />
+    <Route path="/parodos" element={<ParodosPage />} />
+    <Route path="/parodos-auth" element={ParodosSignInPage} />
   </FlatRoutes>
 );
 
