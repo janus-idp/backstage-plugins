@@ -38,6 +38,9 @@ import { ParodosSignInPage } from '@janus-idp/backstage-plugin-parodos-auth';
 
 const app = createApp({
   apis,
+  components: {
+    SignInPage: ParodosSignInPage,
+  },
   bindRoutes({ bind }) {
     bind(catalogPlugin.externalRoutes, {
       createComponent: scaffolderPlugin.routes.root,
