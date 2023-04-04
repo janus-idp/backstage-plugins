@@ -1,19 +1,20 @@
 import {
   createApiFactory,
-  createComponentExtension,
   createPlugin,
   discoveryApiRef,
   configApiRef,
+  createRoutableExtension,
 } from '@backstage/core-plugin-api';
-import { Entity } from '@backstage/catalog-model';
-import { rootRouteRef } from './routes';
+import { tagRouteRef, rootRouteRef } from './routes';
 import { QuayApiClient, quayApiRef } from './api';
-import { QUAY_ANNOTATION_REPOSITORY } from './components/useQuayAppData';
+import { QUAY_ANNOTATION_REPOSITORY } from './hooks';
+import { Entity } from '@backstage/catalog-model';
 
 export const quayPlugin = createPlugin({
   id: 'quay',
   routes: {
     root: rootRouteRef,
+    tag: tagRouteRef,
   },
   apis: [
     createApiFactory({
@@ -29,12 +30,10 @@ export const quayPlugin = createPlugin({
 });
 
 export const QuayPage = quayPlugin.provide(
-  createComponentExtension({
+  createRoutableExtension({
     name: 'QuayPage',
-    component: {
-      lazy: () =>
-        import('./components/QuayDashboardPage').then(m => m.QuayDashboardPage),
-    },
+    component: () => import('./components/Router').then(m => m.Router),
+    mountPoint: rootRouteRef,
   }),
 );
 

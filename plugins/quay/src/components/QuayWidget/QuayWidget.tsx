@@ -5,7 +5,7 @@ import { Card, CardHeader } from '@material-ui/core';
 import React from 'react';
 import { isQuayAvailable } from '../../plugin';
 import { QuayRepository } from '../QuayRepository';
-import { QUAY_ANNOTATION_REPOSITORY, useQuayAppData } from '../useQuayAppData';
+import { QUAY_ANNOTATION_REPOSITORY, useQuayAppData } from '../../hooks';
 
 const Widget = ({ entity }: { entity: Entity }) => {
   const { repositorySlug } = useQuayAppData({ entity });

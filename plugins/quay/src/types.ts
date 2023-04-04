@@ -15,6 +15,7 @@ export interface Tag {
   end_ts?: number;
   manifest_list?: ManifestList;
   expiration?: string;
+  // securityDetails: SecurityDetailsResponse;
 }
 
 export interface LabelsResponse {
@@ -53,8 +54,8 @@ export interface Platform {
 }
 
 export interface SecurityDetailsResponse {
-  status: string;
-  data: Data;
+  status: 'unsupported' | 'unscanned' | 'scanning' | 'scanned';
+  data: Data | null;
 }
 export interface Data {
   Layer: Layer;
@@ -136,4 +137,9 @@ export interface LayerByDigest {
   author: string | null;
   blob_digest: string;
   created_datetime: string;
+}
+
+export interface VulnerabilityListItem extends Vulnerability {
+  PackageName: string;
+  CurrentVersion: string;
 }
