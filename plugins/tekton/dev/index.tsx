@@ -9,7 +9,7 @@ import {
 } from '@backstage/plugin-kubernetes';
 import { TestApiProvider } from '@backstage/test-utils';
 import { mockKubernetesPlrResponse } from '../src/__fixtures__/1-pipelinesData';
-import { tektonPlugin, TektonPage } from '../src/plugin';
+import { tektonPlugin, TektonPage, LatestPipelineRun } from '../src/plugin';
 
 const mockEntity: Entity = {
   apiVersion: 'backstage.io/v1alpha1',
@@ -19,6 +19,7 @@ const mockEntity: Entity = {
     description: 'backstage.io',
     annotations: {
       'backstage.io/kubernetes-id': 'backstage',
+      'janus-idp.io/tekton-enabled': 'true',
     },
   },
   spec: {
@@ -113,6 +114,24 @@ createDevApp()
     ),
     title: 'Tekton Page',
     path: '/tekton',
+  })
+  .addPage({
+    element: (
+      <TestApiProvider
+        apis={[
+          [
+            kubernetesApiRef,
+            new MockKubernetesClient(mockKubernetesPlrResponse),
+          ],
+        ]}
+      >
+        <EntityProvider entity={mockEntity}>
+          <LatestPipelineRun />
+        </EntityProvider>
+      </TestApiProvider>
+    ),
+    title: 'PipelineRun Visualization',
+    path: '/pipelinerun-vis',
   })
   .addPage({
     element: (
