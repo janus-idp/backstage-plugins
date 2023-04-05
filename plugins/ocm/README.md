@@ -168,6 +168,17 @@ This plugin is made up of 2 packages:
      }
    ```
 
+6. (Optional) The default owner for the cluster entities in the catalog for a specific env can additionally be configured. The configuration follows the [upstream string references documentation](https://backstage.io/docs/features/software-catalog/references/#string-references). For example to set `foo` as the owner for clusters from `env` in the catalog use:
+
+   ```yaml
+   # app-config.yaml
+   catalog:
+     providers:
+       ocm:
+         env:
+           owner: user:foo
+   ```
+
 ### Setup `@janus-idp/backstage-plugin-ocm`
 
 Install the frontend plugin:

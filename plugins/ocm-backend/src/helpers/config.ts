@@ -4,6 +4,7 @@ import { OcmConfig } from '../types';
 const KUBERNETES_PLUGIN_CONFIG = 'kubernetes.clusterLocatorMethods';
 const OCM_PREFIX = 'catalog.providers.ocm';
 const KUBERNETES_PLUGIN_KEY = 'kubernetesPluginRef';
+const OWNER_KEY = 'owner';
 
 const isValidUrl = (url: string): boolean => {
   try {
@@ -83,6 +84,7 @@ export const getHubClusterFromConfig = (
     serviceAccountToken: hub.getOptionalString('serviceAccountToken'),
     skipTLSVerify: hub.getOptionalBoolean('skipTLSVerify') || false,
     caData: hub.getOptionalString('caData'),
+    owner: config.getOptionalString(OWNER_KEY) || 'unknown',
   };
 };
 

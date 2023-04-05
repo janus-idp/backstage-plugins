@@ -7,6 +7,7 @@ export type OcmConfig = {
   serviceAccountToken?: string;
   skipTLSVerify?: boolean;
   caData?: string;
+  owner: string;
 };
 
 export interface ClusterClaim {
