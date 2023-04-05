@@ -39,6 +39,8 @@ const routes = (
 
 1. Add `/parodos` endpoint to the proxy config in `app-config.yaml`.
 
+Adapt following based on the Parodos services deployment.
+
 ```yaml
 '/parodos':
   target: 'http://localhost:8080/api/v1'
@@ -61,25 +63,19 @@ const routes = (
 
 ## Local development
 
-For local development, the application username is `test`, password `test`.
+For local development, the [@janus-idp/backstage-plugin-parodos-auth](../parodos-auth/README.md) can be used for Basic authentication. 
+The application username is `test`, password `test` there.
 
-## Release
+In addition, the [Parodos services](https://github.com/parodos-dev/parodos) need to be running. Please refer instructions there, but as a short-cut:
 
-The project is published to the NPM JS Registry on release: https://www.npmjs.com/package/@parodos/plugin-parodos.
+```
+git clone https://github.com/parodos-dev/parodos.git
+cd parodos
+mvn clean install
+cd ./workflow-examples
 
-To do a release:
+./start_workflow_service.sh &
+./start_notification_service.sh &
+```
 
-- go to the project release page: https://github.com/parodos-dev/backstage-parodos/releases
-- click **Create a new release**
-- as a tag, use format **vX.Y.Z** (mind the **v** prefix!)
-- as a title, use the same value as for the tag
-- let the release notes to be generated, adjust
-- click **Publish release**
-
-The on-release GitHub action is triggered, leading to publishing the new version to the NPM registry.
-
-To watch progress: https://github.com/parodos-dev/backstage-parodos/actions/workflows/on-release.yaml
-
-If the action is failing on an expired token, it can be updated here: https://github.com/organizations/parodos-dev/settings/secrets/actions
-
-As a side-effect of the action, a PR bumping the plugin version is created. Do not forget to merge it: https://github.com/parodos-dev/backstage-parodos/pulls
+By doing that, you should end-up with two services running at `http://localhost:8080` and `http://localhost:8081`.
