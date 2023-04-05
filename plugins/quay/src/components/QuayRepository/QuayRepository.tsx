@@ -1,12 +1,15 @@
 import React from 'react';
 import { Link, Progress, Table } from '@backstage/core-components';
 import { columns, useStyles } from './tableHeading';
-import { useTags } from '../../hooks';
+import { useRepository, useTags } from '../../hooks';
 
-export function QuayRepository(props: RepositoryProps) {
+type QuayRepositoryProps = Record<never, any>;
+
+export function QuayRepository(_props: QuayRepositoryProps) {
+  const { repository, organization } = useRepository();
   const classes = useStyles();
-  const title = `Quay repository: ${props.organization}/${props.repository}`;
-  const { loading, data } = useTags(props.organization, props.repository);
+  const title = `Quay repository: ${organization}/${repository}`;
+  const { loading, data } = useTags(organization, repository);
 
   if (loading) {
     return <Progress />;
@@ -28,14 +31,4 @@ export function QuayRepository(props: RepositoryProps) {
       />
     </div>
   );
-}
-
-QuayRepository.defaultProps = {
-  title: 'Docker Images',
-};
-interface RepositoryProps {
-  widget: boolean;
-  organization: string;
-  repository: string;
-  title: string;
 }

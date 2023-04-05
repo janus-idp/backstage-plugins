@@ -1,21 +1,21 @@
-import { Table, TableColumn } from '@backstage/core-components';
+import { TableColumn, Link, Table } from '@backstage/core-components';
 import React from 'react';
-import {
-  Layer,
-  Vulnerability,
-  VulnerabilityListItem,
-  VulnerabilitySeverity,
-} from '../../types';
-import Link from '@material-ui/icons/Link';
-import Warning from '@material-ui/icons/Warning';
-import { getSeverityColor } from '../../lib/utils';
+import { Layer, Vulnerability, VulnerabilityListItem } from '../../types';
+import LinkIcon from '@material-ui/icons/Link';
+import WarningIcon from '@material-ui/icons/Warning';
+import KeyboardBackspaceIcon from '@material-ui/icons/KeyboardBackspace';
+import { SEVERITY_COLORS } from '../../lib/utils';
+import { TableContainer, TableHead, makeStyles } from '@material-ui/core';
+import type { RouteFunc } from '@backstage/core-plugin-api';
 
 type QuayTagDetailsProps = {
   layer: Layer;
+  digest: string;
+  rootLink: RouteFunc<undefined>;
 };
 
 // from: https://github.com/quay/quay/blob/f1d85588157eababc3cbf789002c5db521dbd616/web/src/routes/TagDetails/SecurityReport/SecurityReportTable.tsx#L43
-const getVulnerabilityLink = (link: string) => link.split(' ')[0] as string;
+const getVulnerabilityLink = (link: string) => link.split(' ')[0];
 
 const columns: TableColumn[] = [
   {
@@ -23,21 +23,15 @@ const columns: TableColumn[] = [
     field: 'name',
     render: (rowData: any): React.ReactNode => {
       const row = rowData as Vulnerability;
-      // eslint-disable-next-line no-console
-      console.log('row', row);
       return (
-        <>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
           {row.Name}
           {row.Link.trim().length > 0 ? (
-            <a
-              href={getVulnerabilityLink(row.Link)}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Link style={{ marginLeft: '5px' }} />
-            </a>
+            <Link to={getVulnerabilityLink(row.Link)}>
+              <LinkIcon style={{ marginLeft: '0.5rem' }} />
+            </Link>
           ) : null}
-        </>
+        </div>
       );
     },
   },
@@ -46,13 +40,16 @@ const columns: TableColumn[] = [
     field: 'Severity',
     render: (rowData: any): React.ReactNode => {
       const row = rowData as Vulnerability;
-      const severity = row.Severity as VulnerabilitySeverity;
       return (
-        <>
-          {/* TODO: figure out a way for the warning icon to have color */}
-          <Warning htmlColor={getSeverityColor(severity)} />
-          <span>{severity}</span>
-        </>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <WarningIcon
+            htmlColor={SEVERITY_COLORS[row.Severity]}
+            style={{
+              marginRight: '0.5rem',
+            }}
+          />
+          <span>{row.Severity}</span>
+        </div>
       );
     },
   },
@@ -86,9 +83,28 @@ const columns: TableColumn[] = [
   },
 ];
 
+const useStyles = makeStyles({
+  link: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+  linkText: {
+    marginLeft: '0.5rem',
+    fontSize: '1.1rem',
+  },
+  tableHead: {
+    display: 'flex',
+    alignItems: 'center',
+    marginBottom: '1rem',
+  },
+});
+
 export const QuayTagDetails: React.FC<QuayTagDetailsProps> = ({
   layer,
+  rootLink,
+  digest,
 }: QuayTagDetailsProps) => {
+  const classes = useStyles();
   const vulnerabilities = layer.Features.filter(
     feat => typeof feat.Vulnerabilities !== 'undefined',
   )
@@ -108,7 +124,19 @@ export const QuayTagDetails: React.FC<QuayTagDetailsProps> = ({
     .flat();
 
   return (
-    <Table title="Vulnerabilities" data={vulnerabilities} columns={columns} />
+    <TableContainer>
+      <TableHead className={classes.tableHead}>
+        <Link to={rootLink()} className={classes.link}>
+          <KeyboardBackspaceIcon />
+          <span className={classes.linkText}>Back to repository</span>
+        </Link>
+      </TableHead>
+      <Table
+        title={`Vulnerabilities for ${digest.substring(0, 17)}`}
+        data={vulnerabilities}
+        columns={columns}
+      />
+    </TableContainer>
   );
 };
 

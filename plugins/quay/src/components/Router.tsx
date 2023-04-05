@@ -1,8 +1,8 @@
 import { Entity } from '@backstage/catalog-model';
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import { QuayDashboardPage } from './QuayDashboardPage';
 import { QuayTagPage } from './QuayTagPage';
+import { QuayRepository } from './QuayRepository';
 import { QUAY_ANNOTATION_REPOSITORY } from '../hooks';
 import { tagRouteRef } from '../routes';
 /** *
@@ -14,13 +14,9 @@ export const isQuayAvailable = (entity: Entity) =>
  *
  * @public
  */
-export const Router = () => {
-  // eslint-disable-next-line no-console
-  console.log('attempting to render router');
-  return (
-    <Routes>
-      <Route path="/" element={<QuayDashboardPage />} />
-      <Route path={tagRouteRef.path} element={<QuayTagPage />} />
-    </Routes>
-  );
-};
+export const Router = () => (
+  <Routes>
+    <Route path="/" element={<QuayRepository />} />
+    <Route path={tagRouteRef.path} element={<QuayTagPage />} />
+  </Routes>
+);

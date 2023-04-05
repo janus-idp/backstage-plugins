@@ -1,13 +1,11 @@
-/* eslint-disable no-console */
 import { Entity } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import { Box, Chip, makeStyles } from '@material-ui/core';
 import React, { useMemo } from 'react';
-import { useQuayStore } from './state';
 import { useAsync } from 'react-use';
 import { quayApiRef } from '../api';
 import { formatDate, formatSize } from '../lib/utils';
-import { Tag } from '../types';
+import { Layer, Tag } from '../types';
 import { useEntity } from '@backstage/plugin-catalog-react';
 
 const useLocalStyles = makeStyles({
@@ -22,12 +20,12 @@ const useLocalStyles = makeStyles({
 });
 
 export const useTags = (organization: string, repository: string) => {
-  // eslint-disable-next-line no-console
   const quayClient = useApi(quayApiRef);
-  const { repoTags, setRepoTags, setTagManifestLayers, tagManifestLayers } =
-    useQuayStore();
+  const [tags, setTags] = React.useState<Tag[]>([]);
+  const [tagManifestLayers, setTagManifestLayers] = React.useState<
+    Record<string, Layer>
+  >({});
   const localClasses = useLocalStyles();
-  const repoKey = `${organization}/${repository}`;
 
   const fetchSecurityDetails = async (tag: Tag) => {
     const securityDetails = await quayClient.getSecurityDetails(
@@ -39,35 +37,28 @@ export const useTags = (organization: string, repository: string) => {
   };
 
   const { loading } = useAsync(async () => {
-    // eslint-disable-next-line no-console
     const tagsResponse = await quayClient.getTags(organization, repository);
     Promise.all(
       tagsResponse.tags.map(async tag => {
         const securityDetails = await fetchSecurityDetails(tag);
-        if (!securityDetails.data) {
+        const securityData = securityDetails.data;
+        if (!securityData) {
           return;
         }
-        setTagManifestLayers(tag.manifest_digest, securityDetails.data.Layer);
+        setTagManifestLayers(prevState => ({
+          ...prevState,
+          [tag.manifest_digest]: securityData.Layer,
+        }));
       }),
     );
-    if (tagsResponse.page === 1) {
-      setRepoTags(organization, repository, tagsResponse.tags);
-    } else {
-      const mergedTags = [...repoTags[repoKey], ...tagsResponse.tags];
-      setRepoTags(organization, repository, mergedTags);
-    }
+    setTags(prevTags => [...prevTags, ...tagsResponse.tags]);
     return tagsResponse;
   });
 
   const data = useMemo(() => {
-    if (!repoTags[repoKey]) {
-      return [];
-    }
-    return Object.values(repoTags[repoKey])?.map(tag => {
+    return Object.values(tags)?.map(tag => {
       const hashFunc = tag.manifest_digest.substring(0, 6);
       const shortHash = tag.manifest_digest.substring(7, 19);
-      // console.log('tag.securityDetails', tag.securityDetails);
-      console.log('tag', tag);
       return {
         name: tag.name,
         last_modified: formatDate(tag.last_modified),
@@ -88,7 +79,7 @@ export const useTags = (organization: string, repository: string) => {
         // manifest_list: tag.manifest_list,
       };
     });
-  }, [repoTags, repoKey, localClasses, tagManifestLayers]);
+  }, [tags, tagManifestLayers, localClasses.chip]);
 
   return { loading, data };
 };

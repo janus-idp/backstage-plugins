@@ -1,14 +1,15 @@
 import React from 'react';
 import { useRepository, useTagDetails } from '../../hooks';
-import { useParams } from 'react-router';
+import { useParams } from 'react-router-dom';
 import { QuayTagDetails } from '../QuayTagDetails';
-import { ErrorPanel } from '@backstage/core-components';
-// import { QuayTagDetails } from '../QuayTagDetails';
+import { ErrorPanel, Progress } from '@backstage/core-components';
+import { useRouteRef } from '@backstage/core-plugin-api';
+import { rootRouteRef } from '../../routes';
 
 type QuayTagPageProps = Record<never, string>;
 
-// TODO: replace useAsync with tanstack query
 export const QuayTagPage: React.FC<QuayTagPageProps> = () => {
+  const rootLink = useRouteRef(rootRouteRef);
   const { repository, organization } = useRepository();
   const { digest } = useParams();
   if (!digest) {
@@ -16,13 +17,19 @@ export const QuayTagPage: React.FC<QuayTagPageProps> = () => {
   }
   const { loading, value } = useTagDetails(organization, repository, digest);
   if (loading) {
-    return <div>loading...</div>;
+    return <Progress variant="query" />;
   }
   if (!value || !value.data) {
     return <ErrorPanel error={new Error('no digest')} />;
   }
 
-  return <QuayTagDetails layer={value.data.Layer} />;
+  return (
+    <QuayTagDetails
+      rootLink={rootLink}
+      layer={value.data.Layer}
+      digest={digest}
+    />
+  );
 };
 
 export default QuayTagPage;

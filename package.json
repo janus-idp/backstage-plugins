@@ -14,7 +14,9 @@
     "clean": "backstage-cli repo clean",
     "test": "backstage-cli repo test --passWithNoTests --coverage",
     "lint": "backstage-cli repo lint",
+    "lint:fix": "backstage-cli repo lint --fix",
     "prettier:check": "prettier --check .",
+    "prettier:fix": "prettier --write .",
     "new": "backstage-cli new --scope @janus-idp",
     "release": "multi-semantic-release"
   },

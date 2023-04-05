@@ -15,7 +15,6 @@ export interface Tag {
   end_ts?: number;
   manifest_list?: ManifestList;
   expiration?: string;
-  // securityDetails: SecurityDetailsResponse;
 }
 
 export interface LabelsResponse {

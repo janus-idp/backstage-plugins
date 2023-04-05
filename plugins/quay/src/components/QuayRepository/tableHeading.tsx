@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import React from 'react';
 import { Link, TableColumn } from '@backstage/core-components';
 import makeStyles from '@material-ui/core/styles/makeStyles';
