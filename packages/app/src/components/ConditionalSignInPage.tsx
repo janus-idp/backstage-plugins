@@ -8,6 +8,8 @@ import { ParodosSignInPage } from '@janus-idp/backstage-plugin-parodos-auth';
 
 /*
   For the development and testing purposes, we have a separate authentication flow for different plugins.
+
+  For production environment, this is expected not to be used.
 */
 const ConditionalSignInPage = ({ onSignInSuccess }: SignInPageProps) => {
   const isParodos = window.location.pathname.startsWith('/parodos');
