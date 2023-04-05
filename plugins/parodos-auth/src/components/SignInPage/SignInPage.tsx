@@ -9,7 +9,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Content, Page, Progress } from '@backstage/core-components';
 import { Button, Grid, makeStyles, Paper, Typography } from '@material-ui/core';
 import { type IChangeEvent } from '@rjsf/core-v5';
-import { CitiIcon } from '../icons/citi';
 import { Link } from 'react-router-dom';
 import { assert } from 'assert-ts';
 import { ParodosSignInIdentity } from './ParodosSigninIdentity';
@@ -17,6 +16,7 @@ import useAsyncFn from 'react-use/lib/useAsyncFn';
 import type { User } from './types';
 import { getToken } from './getToken';
 import { SessionStorageKey } from './ParodosSigninIdentity';
+import { BrandIcon } from '../icons/BrandIcon';
 
 type ParodosSignInPageProps = SignInPageProps;
 
@@ -127,7 +127,7 @@ export function SignInPage({ onSignInSuccess }: ParodosSignInPageProps) {
         <Grid container justifyContent="center">
           <Grid item xs={8} md={5} lg={4} xl={3} className={styles.grid}>
             <Paper elevation={4} className={styles.paper}>
-              <CitiIcon style={{ fontSize: '5rem' }} />
+              <BrandIcon style={{ fontSize: '5rem' }} />
               <h1>Parodos</h1>
               <Typography paragraph>
                 Please enter your SOEID and password to continue.
