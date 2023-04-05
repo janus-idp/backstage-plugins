@@ -33,10 +33,23 @@ class MockKubernetesClient implements KubernetesApi {
 
   constructor(fixtureData: { [resourceType: string]: any[] }) {
     this.resources = Object.entries(fixtureData).flatMap(
-      ([type, resources]) => ({
-        type: type.toLocaleLowerCase('en-US'),
-        resources,
-      }),
+      ([type, resources]) => {
+        if (type === 'pipelineruns' && resources[0]?.kind === 'PipelineRun') {
+          return {
+            type: 'customresources',
+            resources,
+          };
+        } else if (type === 'taskruns' && resources[0]?.kind === 'TaskRun') {
+          return {
+            type: 'customresources',
+            resources,
+          };
+        }
+        return {
+          type: type.toLocaleLowerCase('en-US'),
+          resources,
+        };
+      },
     );
   }
   async getWorkloadsByEntity(_request: any): Promise<any> {
