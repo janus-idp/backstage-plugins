@@ -10,13 +10,14 @@ import { CustomObjectsApi, KubeConfig } from '@kubernetes/client-node';
 import nock from 'nock';
 import { OcmConfig } from '../types';
 
+const FIXTURES_DIR = `${__dirname}/../../__fixtures__`;
 const logger = createLogger({
   transports: [new transports.Console({ silent: true })],
 });
 
 describe('hubApiClient', () => {
   it('should use the default config if there is no service account token configured', () => {
-    process.env.KUBECONFIG = `${__dirname}/../fixtures/kubeconfig.yaml`;
+    process.env.KUBECONFIG = `${FIXTURES_DIR}/kubeconfig.yaml`;
     const clusterConfig = {
       id: 'foo',
       hubResourceName: 'cluster1',
@@ -69,8 +70,8 @@ describe('getManagedClusters', () => {
       .reply(200, {
         body: {
           items: [
-            require(`${__dirname}/../fixtures/cluster.open-cluster-management.io/managedclusters/cluster1.json`),
-            require(`${__dirname}/../fixtures/cluster.open-cluster-management.io/managedclusters/local-cluster.json`),
+            require(`${FIXTURES_DIR}/cluster.open-cluster-management.io/managedclusters/cluster1.json`),
+            require(`${FIXTURES_DIR}/cluster.open-cluster-management.io/managedclusters/local-cluster.json`),
           ],
         },
       });
@@ -88,14 +89,14 @@ describe('getManagedCluster', () => {
         '/apis/cluster.open-cluster-management.io/v1/managedclusters/cluster1',
       )
       .reply(200, {
-        body: require(`${__dirname}/../fixtures/cluster.open-cluster-management.io/managedclusters/cluster1.json`),
+        body: require(`${FIXTURES_DIR}/cluster.open-cluster-management.io/managedclusters/cluster1.json`),
       });
     nock(kubeConfig.clusters[0].server)
       .get(
         '/apis/cluster.open-cluster-management.io/v1/managedclusters/local-cluster',
       )
       .reply(200, {
-        body: require(`${__dirname}/../fixtures/cluster.open-cluster-management.io/managedclusters/local-cluster.json`),
+        body: require(`${FIXTURES_DIR}/cluster.open-cluster-management.io/managedclusters/local-cluster.json`),
       });
 
     const result: any = await getManagedCluster(getApi(), 'cluster1');
@@ -137,7 +138,7 @@ describe('getManagedClusterInfo', () => {
         '/apis/internal.open-cluster-management.io/v1beta1/namespaces/local-cluster/managedclusterinfos/local-cluster',
       )
       .reply(200, {
-        body: require(`${__dirname}/../fixtures/internal.open-cluster-management.io/managedclusterinfos/local-cluster.json`),
+        body: require(`${FIXTURES_DIR}/internal.open-cluster-management.io/managedclusterinfos/local-cluster.json`),
       });
 
     const result: any = await getManagedClusterInfo(getApi(), 'local-cluster');
