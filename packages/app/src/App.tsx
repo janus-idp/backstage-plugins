@@ -22,11 +22,6 @@ import {
 import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
 import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
 import { UserSettingsPage } from '@backstage/plugin-user-settings';
-import { apis } from './apis';
-import { entityPage } from './components/catalog/EntityPage';
-import { searchPage } from './components/search/SearchPage';
-import { Root } from './components/Root';
-
 import { AlertDisplay, OAuthRequestDialog } from '@backstage/core-components';
 import { createApp } from '@backstage/app-defaults';
 import { FlatRoutes } from '@backstage/core-app-api';
@@ -36,10 +31,16 @@ import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/
 import { ParodosPage } from '@janus-idp/backstage-plugin-parodos';
 import { ParodosSignInPage } from '@janus-idp/backstage-plugin-parodos-auth';
 
+import { apis } from './apis';
+import { entityPage } from './components/catalog/EntityPage';
+import { searchPage } from './components/search/SearchPage';
+import { Root } from './components/Root';
+import ConditionalSignInPage from './components/ConditionalSignInPage';
+
 const app = createApp({
   apis,
   components: {
-    SignInPage: ParodosSignInPage,
+    SignInPage: ConditionalSignInPage,
   },
   bindRoutes({ bind }) {
     bind(catalogPlugin.externalRoutes, {

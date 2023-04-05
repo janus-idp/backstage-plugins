@@ -3,11 +3,14 @@ import type { Project } from '../models/project';
 import type { WorkflowDefinition } from '../models/workflowDefinitionSchema';
 import type { NotificationContent } from '../models/notification';
 
+export type ParodosError = Error & {
+  status?: number;
+};
 export interface UISlice {
   baseUrl: string | undefined;
   setBaseUrl(url: string): void;
   loading(): boolean;
-  error(): unknown | undefined;
+  error(): ParodosError | undefined;
   getApiUrl(url: string): string;
 }
 
@@ -27,7 +30,7 @@ export interface WorkflowSlice {
   ): WorkflowDefinition | undefined;
   fetchDefinitions(fetch: FetchApi['fetch']): Promise<void>;
   workflowLoading: boolean;
-  workflowError: unknown | undefined;
+  workflowError?: ParodosError;
 }
 
 export interface ProjectsSlice {
@@ -36,7 +39,7 @@ export interface ProjectsSlice {
   hasProjects(): boolean;
   addProject(project: Project): void;
   projectsLoading: boolean;
-  projectsError: Error | undefined;
+  projectsError?: ParodosError;
 }
 
 export type NotificationState = 'ALL' | 'UNREAD' | 'ARCHIVED';
@@ -60,7 +63,7 @@ export interface NotificationsSlice {
     newState: NotificationOperation;
   }): Promise<void>;
   notificationsLoading: boolean;
-  notificationsError: Error | undefined;
+  notificationsError?: ParodosError;
 }
 
 export type StateMiddleware = [

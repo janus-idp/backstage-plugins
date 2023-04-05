@@ -3,6 +3,7 @@ import { unstable_batchedUpdates } from 'react-dom';
 import type { NotificationsSlice, State, StateMiddleware } from '../types';
 import { Notifications } from '../../models/notification';
 import * as urls from '../../urls';
+import { checkFetchError } from './checkFetchError';
 
 export const createNotificationsSlice: StateCreator<
   State,
@@ -29,10 +30,11 @@ export const createNotificationsSlice: StateCreator<
       const response = await fetch(
         `${get().baseUrl}${urls.Notifications}${urlQuery}`,
       );
+      checkFetchError(response);
 
       const notifications = (await response.json()) || ({} as Notifications);
-
       const totalElements = notifications.page?.totalElements || 0;
+
       set(state => {
         unstable_batchedUpdates(() => {
           state.notifications =
@@ -50,6 +52,10 @@ export const createNotificationsSlice: StateCreator<
       set(state => {
         state.notifications = [];
         state.notificationsError = e as Error;
+      });
+    } finally {
+      set(state => {
+        state.notificationsLoading = false;
       });
     }
   },

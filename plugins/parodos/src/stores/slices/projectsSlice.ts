@@ -1,9 +1,10 @@
 import type { StateCreator } from 'zustand';
-import type { ProjectsSlice, State, StateMiddleware } from '../types';
-import * as urls from '../../urls';
 import { unstable_batchedUpdates } from 'react-dom';
-import { type Project, projectSchema } from '../../models/project';
 import { FetchApi } from '@backstage/core-plugin-api';
+import type { ParodosError, ProjectsSlice, State, StateMiddleware } from '../types';
+import { type Project, projectSchema } from '../../models/project';
+import * as urls from '../../urls';
+import { checkFetchError } from './checkFetchError';
 
 export const createProjectsSlice: StateCreator<
   State,
@@ -24,8 +25,9 @@ export const createProjectsSlice: StateCreator<
 
     try {
       const response = await fetch(`${get().baseUrl}${urls.Projects}`);
-      const projectsResponse = await response.json();
+      checkFetchError(response);
 
+      const projectsResponse = await response.json();
       const projects = projectsResponse.map(projectSchema.parse) as Project[];
 
       set(state => {
@@ -38,7 +40,11 @@ export const createProjectsSlice: StateCreator<
       // eslint-disable-next-line no-console
       console.error('fetchProjects error: ', e);
       set(state => {
-        state.projectsError = e as Error;
+        state.projectsError = e as ParodosError;
+      });
+    } finally {
+      set(state => {
+        state.projectsLoading = false;
       });
     }
   },

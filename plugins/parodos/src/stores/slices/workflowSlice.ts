@@ -4,10 +4,12 @@ import {
   type WorkflowSlice,
   type State,
   predicates,
+  ParodosError,
 } from '../types';
 import * as urls from '../../urls';
 import { unstable_batchedUpdates } from 'react-dom';
 import { FetchApi } from '@backstage/core-plugin-api';
+import { checkFetchError } from './checkFetchError';
 
 export const createWorkflowSlice: StateCreator<
   State,
@@ -34,6 +36,8 @@ export const createWorkflowSlice: StateCreator<
       const response = await fetch(
         `${get().baseUrl}${urls.WorkflowDefinitions}`,
       );
+      checkFetchError(response);
+
       const definitions = await response.json();
 
       set(state => {
@@ -46,7 +50,11 @@ export const createWorkflowSlice: StateCreator<
       // eslint-disable-next-line no-console
       console.error('fetchDefinitions error: ', e);
       set(state => {
-        state.workflowError = e;
+        state.workflowError = e as ParodosError;
+      });
+    } finally {
+      set(state => {
+        state.workflowLoading = false;
       });
     }
   },

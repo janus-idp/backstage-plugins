@@ -20,6 +20,6 @@ export const createUISlice: StateCreator<
     return get().projectsLoading || get().workflowLoading;
   },
   error() {
-    return get().workflowError ?? get().projectsError;
+    return get().workflowError ?? get().projectsError ?? get().notificationsError;
   },
 });
