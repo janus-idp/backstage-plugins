@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-ocm [2.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm@2.0.0...@janus-idp/backstage-plugin-ocm@2.1.0) (2023-04-05)
+
+
+### Features
+
+* **ocm:** Add a default owner configuration field ([#157](https://github.com/janus-idp/backstage-plugins/issues/157)) ([dbf5c9b](https://github.com/janus-idp/backstage-plugins/commit/dbf5c9b86f2173cb404e263556e1831d9a143a9c))
+
 ## @janus-idp/backstage-plugin-ocm [2.0.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm@1.2.0...@janus-idp/backstage-plugin-ocm@2.0.0) (2023-03-29)
 
 
