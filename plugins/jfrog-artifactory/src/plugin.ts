@@ -41,4 +41,6 @@ export const JfrogArtifactoryPage = jfrogArtifactoryPlugin.provide(
 );
 
 export const isJfrogArtifactoryAvailable = (entity: Entity) =>
-  Boolean(entity?.metadata.annotations?.[JFROG_ARTIFACTORY_ANNOTATION_IMAGE_NAME]);
+  Boolean(
+    entity?.metadata.annotations?.[JFROG_ARTIFACTORY_ANNOTATION_IMAGE_NAME],
+  );
