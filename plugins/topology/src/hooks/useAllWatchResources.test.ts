@@ -9,6 +9,10 @@ const watchedResources = [
   ModelsPlural.pods,
   ModelsPlural.services,
   ModelsPlural.replicasets,
+  ModelsPlural.daemonsets,
+  ModelsPlural.statefulsets,
+  ModelsPlural.jobs,
+  ModelsPlural.cronjobs,
 ];
 
 describe('useAllWatchResources', () => {
@@ -32,8 +36,11 @@ describe('useAllWatchResources', () => {
     const { result } = renderHook(() =>
       useAllWatchResources(watchedResources, k8sObjectsResponse, 0),
     );
-    expect(result.current?.pods?.data).toHaveLength(2);
+    expect(result.current?.pods?.data).toHaveLength(8);
     expect(result.current?.deployments?.data).toHaveLength(0);
+    expect(result.current?.statefulsets?.data).toHaveLength(2);
+    expect(result.current?.cronjobs?.data).toHaveLength(1);
+    expect(result.current?.jobs?.data).toHaveLength(2);
   });
 
   it('should return watchResourcesData as empty if resources are present but it is not in in watchedResources', () => {
@@ -64,7 +71,7 @@ describe('useAllWatchResources', () => {
       error: '',
     } as KubernetesObjects;
     rerender();
-    expect(result.current?.pods?.data).toHaveLength(2);
+    expect(result.current?.pods?.data).toHaveLength(8);
     expect(result.current?.deployments?.data).toHaveLength(0);
   });
 });

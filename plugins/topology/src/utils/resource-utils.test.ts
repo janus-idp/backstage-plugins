@@ -105,7 +105,7 @@ describe('ResourceUtils:: ingress', () => {
 
   it('should not return services for resource if no associated services found', () => {
     const servicesData = getServicesForResource(
-      mockKubernetesResponse.deployments[1] as any,
+      mockKubernetesResponse.deployments[2] as any,
       mockKubernetesResponse.services as any,
     );
     expect(servicesData).toHaveLength(0);
@@ -159,7 +159,7 @@ describe('ResourceUtils:: ingress', () => {
     expect(ingressData).toBeNull();
   });
 
-  it('should return URL for provides resource', () => {
+  it('should return URL for provided resource', () => {
     const url = getIngressURLForResource(
       mockK8sResourcesData.watchResourcesData as any,
       mockKubernetesResponse.deployments[0] as any,
@@ -167,10 +167,10 @@ describe('ResourceUtils:: ingress', () => {
     expect(url).toEqual('http://hello-world-app.info/');
   });
 
-  it('should not return URL for provides resource', () => {
+  it('should not return URL for provided resource', () => {
     const url = getIngressURLForResource(
       mockK8sResourcesData.watchResourcesData as any,
-      mockKubernetesResponse.deployments[1] as any,
+      mockKubernetesResponse.deployments[2] as any,
     );
     expect(url).toBeUndefined();
   });

@@ -12,6 +12,10 @@ import {
 export const WORKLOAD_TYPES: string[] = [
   ModelsPlural.deployments,
   ModelsPlural.pods,
+  ModelsPlural.cronjobs,
+  ModelsPlural.jobs,
+  ModelsPlural.statefulsets,
+  ModelsPlural.daemonsets,
 ];
 
 const apiVersionForWorkloadType = (type: string) => {

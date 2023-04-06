@@ -38,11 +38,11 @@ export const kubernetesObject = {
         },
         {
           type: 'jobs',
-          resources: [],
+          resources: mockKubernetesResponse.jobs,
         },
         {
           type: 'cronjobs',
-          resources: [],
+          resources: mockKubernetesResponse.cronJobs,
         },
         {
           type: 'ingresses',
@@ -50,7 +50,7 @@ export const kubernetesObject = {
         },
         {
           type: 'statefulsets',
-          resources: [],
+          resources: mockKubernetesResponse.statefulsets,
         },
         {
           type: 'daemonsets',

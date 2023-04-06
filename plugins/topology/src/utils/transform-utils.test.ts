@@ -4,11 +4,11 @@ import { getTopologyEdgeItems } from './transform-utils';
 describe('data-transformer', () => {
   it('should return edges for provided resource and workload resources if exists', () => {
     const mockDeploymentData = {
-      ...mockKubernetesResponse.deployments[0],
+      ...mockKubernetesResponse.deployments[1],
       metadata: {
-        ...mockKubernetesResponse.deployments[0].metadata,
+        ...mockKubernetesResponse.deployments[1].metadata,
         annotations: {
-          ...mockKubernetesResponse.deployments[0].metadata.annotations,
+          ...mockKubernetesResponse.deployments[1].metadata.annotations,
           'app.openshift.io/connects-to': JSON.stringify([
             {
               apiVersion: 'apps/v1',
@@ -21,7 +21,7 @@ describe('data-transformer', () => {
     };
     const mockWorkloadResourcesData = [
       mockDeploymentData,
-      mockKubernetesResponse.deployments[1],
+      mockKubernetesResponse.deployments[2],
     ];
     const edgeItems = getTopologyEdgeItems(
       mockDeploymentData as any,

@@ -1,6 +1,13 @@
-import { V1Deployment, V1Pod, V1ReplicaSet } from '@kubernetes/client-node';
+import {
+  V1CronJob,
+  V1DaemonSet,
+  V1Deployment,
+  V1Pod,
+  V1ReplicaSet,
+  V1StatefulSet,
+} from '@kubernetes/client-node';
 import { AllPodStatus } from '../components/Pods/pod';
-import { ReplicaSetGVK } from '../models';
+import { ReplicaSetGVK, StatefulSetGVK } from '../models';
 import { PodControllerOverviewItem, PodRCData } from '../types/pods';
 import {
   GroupVersionKind,
@@ -232,23 +239,109 @@ const getReplicaSetsForResource = (
   );
 };
 
-const getPodsForDeployment = (
+const getActiveStatefulSets = (
+  ss: V1StatefulSet,
+  resources: K8sResponseData,
+) => {
+  if (!resources?.statefulsets?.data?.length) {
+    return [];
+  }
+  const ownedRS = resources.statefulsets.data.filter(
+    f => f.metadata?.name === ss?.metadata?.name,
+  ) as V1StatefulSet[];
+  return ownedRS.filter(rs => rs?.status?.replicas);
+};
+
+export const getStatefulSetsResource = (
+  statefulSet: V1StatefulSet,
+  resources: K8sResponseData,
+) => {
+  const activeStatefulSets = getActiveStatefulSets(statefulSet, resources);
+  return activeStatefulSets.map(pss =>
+    getIdledStatus(
+      toResourceItem(
+        pss as V1StatefulSet,
+        StatefulSetGVK,
+        resources,
+      ) as PodControllerOverviewItem,
+      statefulSet,
+    ),
+  );
+};
+
+export const getPodsForDeployment = (
   deployment: V1Deployment,
   resources: K8sResponseData,
 ): PodRCData => {
-  const obj = {
-    ...deployment,
-  };
-  const replicaSets = getReplicaSetsForResource(obj, resources);
+  const replicaSets = getReplicaSetsForResource(deployment, resources);
   const [current, previous] = replicaSets;
   const isRollingOut = !!current && !!previous;
 
   return {
-    obj,
+    obj: deployment,
     current: current as PodControllerOverviewItem,
     previous: previous as PodControllerOverviewItem,
     isRollingOut,
     pods: [...(current?.pods || []), ...(previous?.pods || [])] as V1Pod[],
+  };
+};
+
+export const getPodsForStatefulSet = (
+  statefulSet: V1StatefulSet,
+  resources: K8sResponseData,
+): PodRCData => {
+  const statefulSets = getStatefulSetsResource(statefulSet, resources);
+  const [current, previous] = statefulSets;
+  const isRollingOut = !!current && !!previous;
+
+  return {
+    obj: statefulSet,
+    current: current as PodControllerOverviewItem,
+    previous: previous as PodControllerOverviewItem,
+    isRollingOut,
+    pods: [...(current?.pods || []), ...(previous?.pods || [])] as V1Pod[],
+  };
+};
+
+export const getJobsForCronJob = (
+  cronJobUid: string,
+  resources: K8sResponseData,
+) => {
+  if (!resources?.jobs?.data?.length || resources?.jobs?.data?.length === 0) {
+    return [];
+  }
+  return resources.jobs.data.filter(job =>
+    job.metadata?.ownerReferences?.find(ref => ref.uid === cronJobUid),
+  );
+};
+
+export const getPodsForCronJob = (
+  cronJob: V1CronJob,
+  resources: K8sResponseData,
+): PodRCData => {
+  const jobs = getJobsForCronJob(cronJob?.metadata?.uid as string, resources);
+  return {
+    obj: cronJob,
+    current: undefined,
+    previous: undefined,
+    isRollingOut: undefined,
+    pods: jobs?.reduce((acc: V1Pod[], job) => {
+      acc.push(...getPodsForResource(job, resources));
+      return acc;
+    }, []),
+  };
+};
+
+export const getPodsForDaemonSet = (
+  daemonSet: V1DaemonSet,
+  resources: K8sResponseData,
+): PodRCData => {
+  return {
+    obj: daemonSet,
+    current: undefined,
+    previous: undefined,
+    isRollingOut: undefined,
+    pods: getPodsForResource(daemonSet, resources),
   };
 };
 
@@ -263,6 +356,12 @@ export const getPodsDataForResource = (
   switch (kind) {
     case 'Deployment':
       return getPodsForDeployment(resource as V1Deployment, resources);
+    case 'StatefulSet':
+      return getPodsForStatefulSet(resource as V1StatefulSet, resources);
+    case 'DaemonSet':
+      return getPodsForDaemonSet(resource as V1DaemonSet, resources);
+    case 'CronJob':
+      return getPodsForCronJob(resource as V1CronJob, resources);
     case 'Pod':
       return {
         obj: resource,
