@@ -28,19 +28,19 @@ This plugin will show you information about your container images within Jfrog A
    ```ts
    // packages/app/src/components/catalog/EntityPage.tsx
    import {
-     ArtifactoryPage,
-     isArtifactoryAvailable,
+     JfrogArtifactoryPage,
+     isJfrogArtifactoryAvailable,
    } from '@janus-idp/backstage-plugin-jfrog-artifactory';
 
    const serviceEntityPage = (
      <EntityPageLayout>
        // ...
        <EntityLayout.Route
-         if={isArtifactoryAvailable}
+         if={isJfrogArtifactoryAvailable}
          path="/jfrog-artifactory"
          title="Jfrog Artifactory"
        >
-         <ArtifactoryPage />
+         <JfrogArtifactoryPage />
        </EntityLayout.Route>
      </EntityPageLayout>
    );

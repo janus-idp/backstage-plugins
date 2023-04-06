@@ -1,6 +1,6 @@
 import { jfrogArtifactoryPlugin } from './plugin';
 
-describe('artifactory', () => {
+describe('jfrog artifactory', () => {
   it('should export plugin', () => {
     expect(jfrogArtifactoryPlugin).toBeDefined();
   });

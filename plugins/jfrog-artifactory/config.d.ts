@@ -1,8 +1,8 @@
 export interface Config {
-  /** Configurations for the Artifactory plugin */
+  /** Configurations for the Jfrog Artifactory plugin */
   jfrogArtifactory?: {
     /**
-     * The base url of the Artifactory instance.
+     * The base url of the Jfrog Artifactory instance.
      * @visibility frontend
      */
     proxyPath?: string;

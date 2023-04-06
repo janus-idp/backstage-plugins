@@ -7,11 +7,11 @@ import { TagsResponse } from '../types';
 
 const DEFAULT_PROXY_PATH = '/jfrog-artifactory/api';
 
-export interface ArtifactoryApiV1 {
+export interface JfrogArtifactoryApiV1 {
   getTags(repo: string): Promise<TagsResponse>;
 }
 
-export const artifactoryApiRef = createApiRef<ArtifactoryApiV1>({
+export const jfrogArtifactoryApiRef = createApiRef<JfrogArtifactoryApiV1>({
   id: 'plugin.jfrog-artifactory.service',
 });
 
@@ -20,7 +20,7 @@ export type Options = {
   configApi: ConfigApi;
 };
 
-export class ArtifactoryApiClient implements ArtifactoryApiV1 {
+export class JfrogArtifactoryApiClient implements JfrogArtifactoryApiV1 {
   // @ts-ignore
   private readonly discoveryApi: DiscoveryApi;
 
