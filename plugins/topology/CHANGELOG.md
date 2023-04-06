@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-topology [1.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.2.5...@janus-idp/backstage-plugin-topology@1.3.0) (2023-04-06)
+
+
+### Features
+
+* **topology:** added visualization of SS, DS, CJ and Jobs in the topology view ([#193](https://github.com/janus-idp/backstage-plugins/issues/193)) ([badb026](https://github.com/janus-idp/backstage-plugins/commit/badb0269de9f1886da783b0aa5daeafab9b2318c))
+
 ## @janus-idp/backstage-plugin-topology [1.2.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.2.4...@janus-idp/backstage-plugin-topology@1.2.5) (2023-03-24)
 
 
