@@ -203,7 +203,9 @@ export function jsonSchemaFromWorkflowDefinition(
 
   for (const work of workflowDefinition.works.filter(
     w =>
-      Object.keys(w.parameters ?? {}).length > 0 || (w?.works ?? []).length > 0,
+      worksWithParameter(w) &&
+      (Object.keys(w.parameters ?? {}).length > 0 ||
+        (w?.works ?? []).length > 0),
   )) {
     for (const step of [...getAllSteps(work)].reverse()) {
       result.steps.push(step);
@@ -211,4 +213,15 @@ export function jsonSchemaFromWorkflowDefinition(
   }
 
   return result;
+}
+
+function worksWithParameter(work: WorkType): boolean {
+  if ((work.works ?? []).length === 0) {
+    return Object.keys(work.parameters ?? {}).length > 0;
+  }
+
+  for (const subWork of work.works ?? [])
+    if (worksWithParameter(subWork)) return true;
+
+  return false;
 }

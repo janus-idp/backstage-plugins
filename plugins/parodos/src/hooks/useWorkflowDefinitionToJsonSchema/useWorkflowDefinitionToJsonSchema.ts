@@ -13,7 +13,5 @@ export function useWorkflowDefinitionToJsonSchema(
 
   const raw = workflowDefinitionSchema.parse(definition);
 
-  const formSchema = jsonSchemaFromWorkflowDefinition(raw);
-
-  return formSchema;
+  return jsonSchemaFromWorkflowDefinition(raw);
 }

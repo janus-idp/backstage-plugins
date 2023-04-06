@@ -7,7 +7,7 @@ import {
 import { errorApiRef, fetchApiRef, useApi } from '@backstage/core-plugin-api';
 import { Form } from '../Form/Form';
 import { ParodosPage } from '../ParodosPage';
-import { Typography, Button, makeStyles, Grid } from '@material-ui/core';
+import { Button, Grid, makeStyles, Typography } from '@material-ui/core';
 import { useGetProjectAssessmentSchema } from './useGetProjectAssessmentSchema';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
 import { IChangeEvent } from '@rjsf/core-v5';
@@ -78,13 +78,33 @@ export function Workflow(): JSX.Element {
   });
 
   const [{ error: createWorkflowError }, createWorkflow] = useAsyncFn(
-    async ({ workflowProject }: { workflowProject: Project }) => {
+    async ({
+      workflowProject,
+      formData,
+    }: {
+      workflowProject: Project;
+      formData: ProjectsPayload;
+    }) => {
+      // TODO:  task here should be dynamic based on assessment workflow definition
       const workFlowResponse = await fetch(workflowsUrl, {
         method: 'POST',
         body: JSON.stringify({
           projectId: workflowProject.id,
           workFlowName: ASSESSMENT_WORKFLOW,
-          works: [],
+          works: [
+            {
+              type: 'TASK',
+              workName: 'onboardingAssessmentTask',
+              arguments: Object.entries(formData.onboardingAssessmentTask).map(
+                ([key, value]) => {
+                  return {
+                    key: key,
+                    value: JSON.stringify(value ?? ''),
+                  };
+                },
+              ),
+            },
+          ],
         }),
       });
 
@@ -139,7 +159,7 @@ export function Workflow(): JSX.Element {
 
       setProject(newProject);
 
-      await createWorkflow({ workflowProject: newProject });
+      await createWorkflow({ workflowProject: newProject, formData });
 
       addProject(newProject);
     },
@@ -171,7 +191,10 @@ export function Workflow(): JSX.Element {
       }
 
       if (nextIsNewProject === false && isProject(selectedProject)) {
-        await createWorkflow({ workflowProject: selectedProject });
+        await createWorkflow({
+          workflowProject: selectedProject,
+          formData: e.formData,
+        });
       }
     },
     [createWorkflow, isNewProject],

@@ -22,15 +22,16 @@ export function walkWorks(
   prefix: string = '',
 ): Works {
   const result: Works = [];
-
   for (const [index, work] of works.entries()) {
     const next: Work = {
       workName: work.name,
       type: work.workType,
-      arguments: Object.entries(work.parameters ?? {}).map(([key]) => {
+      arguments: Object.keys(work.parameters ?? {}).map(key => {
         const value = get(
           formData,
-          `${prefix}.works[${index}]${work.name}.${key}`,
+          `${prefix === '' ? prefix : `${prefix}.works[${index}]`}${
+            work.name
+          }.${key}`,
           null,
         );
 
@@ -42,7 +43,7 @@ export function walkWorks(
     };
 
     if (work.workType === 'WORKFLOW' && work.works) {
-      next.works = walkWorks(work.works, formData, work.name);
+      next.works = walkWorks(work.works, formData, `${work.name}`);
     }
 
     result.push(next);
