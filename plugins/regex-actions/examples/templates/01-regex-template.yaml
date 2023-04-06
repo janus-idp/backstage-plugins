@@ -1,0 +1,124 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: documentation-template
+  title: Create a techdocs sample
+  description: Create a techdocs sample
+  tags:
+    - documentation
+    - techdocs
+spec:
+  owner: janus-authors
+  system: janus-idp
+  type: service
+
+  parameters:
+    - title: Provide information about the existing component
+      required:
+        - componentName
+      properties:
+        componentName:
+          title: Component Name
+          type: string
+          description: Attach the techdocs to an existing component
+          ui:field: EntityPicker
+          ui:options:
+            catalogFilter:
+              kind:
+                - Component
+    - title: Provide information about the new component
+      required:
+        - owner
+        - system
+      properties:
+        owner:
+          title: Owner
+          type: string
+          ui:field: EntityPicker
+          ui:options:
+            catalogFilter:
+              kind:
+                - Group
+                - User
+        system:
+          title: System
+          type: string
+          ui:field: EntityPicker
+          ui:options:
+            catalogFilter:
+              kind:
+                - System
+
+  steps:
+    - id: regexValues
+      name: Regex Values
+      action: regex:replace
+      input:
+        regExps:
+          - pattern: ^(\S+:)?(default\/)?(\S+)$
+            # component:default/<entity-name> -> <entity-name>
+            # component:<entity-name> -> <entity-name>
+            # <entity-name> -> <entity-name>
+            replacement: $3
+            values:
+              - key: system
+                value: ${{ parameters.system }}
+              - key: componentName
+                value: ${{ parameters.componentName }}
+
+    - id: sourceCodeTemplate
+      name: Generating the Source Code Component
+      action: fetch:template
+      input:
+        url: ./skeleton
+        copyWithoutTemplating:
+          - .github/workflows/
+        values:
+          githubOrg: ${{ steps.regexReplace.output.values.system }}
+          repoName: ${{ steps.regexReplace.output.values.componentName }}-techdocs
+          owner: ${{ parameters.owner }}
+          system: ${{ parameters.system }}
+          applicationType: documentation
+          description: Contains the techdocs for ${{ steps.regexReplace.output.values.componentName }}
+
+    - id: catalogTemplate
+      name: Generating the Catalog Info Component
+      action: fetch:template
+      input:
+        url: ../../scaffolder-skeletons/catalog-info-skeleton/
+        values:
+          # Gitops specific values
+          partOf: ${{ parameters.componentName }}
+
+          githubOrg: ${{ steps.regexReplace.output.values.system }}
+          repoName: ${{ steps.regexReplace.output.values.componentName }}-techdocs
+          owner: ${{ parameters.owner }}
+          system: ${{ parameters.system }}
+          applicationType: documentation
+          description: Contains the techdocs for ${{ steps.regexReplace.output.values.componentName }}
+
+          regex: ${{ steps.regexReplace.output.values }}
+
+    - id: publish
+      name: Publishing to the Source Code Repository
+      action: publish:github
+      input:
+        allowedHosts: ['github.com']
+        description: Contains the techdocs for ${{ steps.regexReplace.output.values.componentName }}
+        repoUrl: github.com?owner=${{ steps.regexReplace.output.values.system }}&repo=${{ steps.regexReplace.output.values.componentName }}-techdocs
+        defaultBranch: main
+
+    - id: register
+      name: Registering the Catalog Info Component
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
+        catalogInfoPath: /catalog-info.yaml
+
+  output:
+    links:
+      - title: Open the Source Code Repository
+        url: ${{ steps.publish.output.remoteUrl }}
+      - title: Open the Catalog Info Component
+        icon: catalog
+        entityRef: ${{ steps.register.output.entityRef }}
