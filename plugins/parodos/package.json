@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@backstage/core-components": "^0.12.4",
-    "@backstage/core-plugin-api": "^1.4.0",
+    "@backstage/core-plugin-api": "1.3.0",
     "@backstage/theme": "^0.2.17",
     "@backstage/types": "^1.0.2",
     "@emotion/react": "^11.10.6",
@@ -57,10 +57,10 @@
     "react-router-dom": "^6.8.1"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.22.2",
-    "@backstage/core-app-api": "^1.5.0",
-    "@backstage/dev-utils": "^1.0.12",
-    "@backstage/test-utils": "^1.2.5",
+    "@backstage/cli": "^0.22.1",
+    "@backstage/core-app-api": "1.4.0",
+    "@backstage/dev-utils": "1.0.11",
+    "@backstage/test-utils": "1.2.4",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^12.1.3",
     "@testing-library/user-event": "^14.0.0",
