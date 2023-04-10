@@ -34,8 +34,8 @@ const TopologySideBarBody: React.FC<{ node: BaseNode }> = ({ node }) => {
     <div>
       <div className="topology-side-bar-tabs">
         <Tabs value={value} onChange={handleChange} indicatorColor="primary">
-          <Tab label="Details" />
-          <Tab label="Resources" />
+          <Tab label="Details" className="tab-button" />
+          <Tab label="Resources" className="tab-button" />
         </Tabs>
         <Divider />
       </div>

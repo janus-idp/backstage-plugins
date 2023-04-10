@@ -44,12 +44,17 @@ export const getBaseTopologyDataModel = (resources: K8sResponseData): Model => {
             TYPE_WORKLOAD,
             'default image',
             getIngressURLForResource(resources, resource),
-            getPodsDataForResource(resource, resources),
-            getServicesForResource(
-              resource,
-              resources.services?.data as V1Service[],
-            ),
-            getIngressesDataForResourceServices(resources, resource),
+            {
+              podsData: getPodsDataForResource(resource, resources),
+              services: getServicesForResource(
+                resource,
+                resources.services?.data as V1Service[],
+              ),
+              ingressesData: getIngressesDataForResourceServices(
+                resources,
+                resource,
+              ),
+            },
           );
           typedDataModel.nodes?.push(
             getTopologyNodeItem(

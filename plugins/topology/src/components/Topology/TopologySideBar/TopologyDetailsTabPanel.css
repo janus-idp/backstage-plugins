@@ -9,10 +9,6 @@
   min-width: 200px;
 }
 
-.topology-workload-details .no-owner {
-  color: var(--pf-global--Color--200);
-}
-
 .topology-side-bar-pod-ring {
   width: 100%;
 }

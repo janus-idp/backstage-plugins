@@ -4,11 +4,23 @@ import './TopologySideBarDetailsItem.css';
 
 const TopologySideBarDetailsItem: React.FC<{
   label: string;
-}> = ({ label, children }) => {
+  emptyText?: string;
+}> = ({ label, children, emptyText }) => {
   return (
     <div className="topology-side-bar-details-item">
       <dt>{label}</dt>
-      <dd>{children}</dd>
+      <dd>
+        {children ? (
+          children
+        ) : (
+          <span
+            className="topology-text-muted"
+            data-testid="detail-item-empty-state"
+          >
+            {emptyText}
+          </span>
+        )}
+      </dd>
     </div>
   );
 };

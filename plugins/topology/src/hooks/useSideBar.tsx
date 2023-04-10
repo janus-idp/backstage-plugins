@@ -1,14 +1,20 @@
 import * as React from 'react';
-import { BaseNode, Controller } from '@patternfly/react-topology';
+import { BaseNode } from '@patternfly/react-topology';
 import { TYPE_WORKLOAD } from '../const';
 import TopologySideBar from '../components/Topology/TopologySideBar/TopologySideBar';
 
 export const useSideBar = (
   selectedIds: string[],
-  controller: Controller,
-): [React.ReactNode, boolean] => {
+): [
+  React.ReactNode,
+  boolean,
+  string,
+  React.Dispatch<React.SetStateAction<boolean>>,
+  React.Dispatch<React.SetStateAction<BaseNode | null>>,
+] => {
   const { search } = window.location;
   const [sideBarOpen, setSideBarOpen] = React.useState<boolean>(false);
+  const [selectedNode, setSelectedNode] = React.useState<BaseNode | null>(null);
 
   const params = React.useMemo(() => new URLSearchParams(search), [search]);
 
@@ -31,19 +37,6 @@ export const useSideBar = (
     return '';
   }, [params, removeSelectedIdParam, selectedIds]);
 
-  const selectedNode: BaseNode | null = React.useMemo(() => {
-    if (selectedId) return controller.getElementById(selectedId) as BaseNode;
-    return null;
-  }, [controller, selectedId]);
-
-  React.useEffect(() => {
-    if (selectedNode && selectedNode.getType() === TYPE_WORKLOAD)
-      setSideBarOpen(true);
-    else {
-      setSideBarOpen(false);
-    }
-  }, [params, selectedNode]);
-
   const sideBar = selectedNode && selectedNode.getType() === TYPE_WORKLOAD && (
     <TopologySideBar
       onClose={() => {
@@ -54,5 +47,5 @@ export const useSideBar = (
     />
   );
 
-  return [sideBar, sideBarOpen];
+  return [sideBar, sideBarOpen, selectedId, setSideBarOpen, setSelectedNode];
 };

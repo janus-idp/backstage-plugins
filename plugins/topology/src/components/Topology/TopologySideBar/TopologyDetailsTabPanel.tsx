@@ -9,11 +9,11 @@ import PodSet from '../../Pods/PodSet';
 import TopologySideBarDetailsItem from './TopologySideBarDetailsItem';
 import { DeploymentModel } from '../../../models';
 import TopologyDeploymentDetails from './TopologyDeploymentDetails';
-import { V1Deployment } from '@kubernetes/client-node';
+import { V1Deployment, V1OwnerReference } from '@kubernetes/client-node';
 import { BaseNode } from '@patternfly/react-topology';
+import TopologyResourceLabels from './TopologyResourceLabels';
 
 import './TopologyDetailsTabPanel.css';
-import TopologyResourceLabels from './TopologyResourceLabels';
 
 const TopologyDetailsTabPanel: React.FC<{ node: BaseNode }> = ({ node }) => {
   const { width, height } = node.getDimensions();
@@ -21,12 +21,12 @@ const TopologyDetailsTabPanel: React.FC<{ node: BaseNode }> = ({ node }) => {
   const resource = data.resource;
   const resourceKind = resource.kind;
   const size = Math.min(width, height);
-  const donutStatus = data?.data?.podsData;
+  const donutStatus = data.data?.podsData;
   const cx = width / 2;
   const cy = height / 2;
 
   return (
-    <div className="topology-details-tab">
+    <div className="topology-details-tab" data-testid="details-tab">
       {donutStatus && (
         <Split className="topology-side-bar-pod-ring">
           <SplitItem>
@@ -45,41 +45,48 @@ const TopologyDetailsTabPanel: React.FC<{ node: BaseNode }> = ({ node }) => {
       <div className="topology-workload-details">
         <dl>
           <TopologySideBarDetailsItem label="Name">
-            {data?.name}
+            {resource.metadata?.name}
           </TopologySideBarDetailsItem>
           <TopologySideBarDetailsItem label="Namespace">
             {resource.metadata?.namespace}
           </TopologySideBarDetailsItem>
-          {resource.metadata.labels ? (
-            <TopologySideBarDetailsItem label="Labels">
-              <TopologyResourceLabels labels={resource.metadata.labels} />
-            </TopologySideBarDetailsItem>
-          ) : null}
-          {resource.metadata.annotations ? (
-            <TopologySideBarDetailsItem label="Annotations">
-              <TopologyResourceLabels labels={resource.metadata.annotations} />
-            </TopologySideBarDetailsItem>
-          ) : null}
+          <TopologySideBarDetailsItem label="Labels" emptyText="No labels">
+            {resource.metadata?.labels && (
+              <TopologyResourceLabels
+                labels={resource.metadata.labels}
+                dataTest="label-list"
+              />
+            )}
+          </TopologySideBarDetailsItem>
+          <TopologySideBarDetailsItem
+            label="Annotations"
+            emptyText="No annotations"
+          >
+            {resource.metadata?.annotations && (
+              <TopologyResourceLabels
+                labels={resource.metadata.annotations}
+                dataTest="annotation-list"
+              />
+            )}
+          </TopologySideBarDetailsItem>
           <TopologySideBarDetailsItem label="Created at">
             <Timestamp
-              date={resource?.metadata?.creationTimestamp}
+              date={resource.metadata?.creationTimestamp}
               dateFormat={TimestampFormat.medium}
               timeFormat={TimestampFormat.short}
             />
           </TopologySideBarDetailsItem>
-          <TopologySideBarDetailsItem label="Owner">
-            {resource.metadata?.ownerReferences ? (
-              <ul>
+          <TopologySideBarDetailsItem label="Owner" emptyText="No owner">
+            {resource.metadata?.ownerReferences && (
+              <ul data-testid="owner-list">
                 <div>
-                  {(Object.keys(resource.metadata.ownerReferences) ?? []).map(
-                    (o: any) => (
-                      <li>{o.name}</li>
+                  {(resource.metadata.ownerReferences ?? []).map(
+                    (o: V1OwnerReference) => (
+                      <li key={o.uid}>{o.name}</li>
                     ),
                   )}
                 </div>
               </ul>
-            ) : (
-              <span className="no-owner">No owner</span>
             )}
           </TopologySideBarDetailsItem>
         </dl>

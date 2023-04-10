@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Typography } from '@material-ui/core';
 import { Split, SplitItem, Stack, StackItem } from '@patternfly/react-core';
-import { models } from '../../../models';
+import { resourceModels } from '../../../models';
 import { K8sWorkloadResource } from '../../../types/types';
 
 import './TopologySideBarHeading.css';
@@ -15,9 +15,9 @@ const TopologySideBarHeading: React.FC<{ resource: K8sWorkloadResource }> = ({
     <Stack className="topology-side-bar-heading">
       <StackItem>
         <Split className="topology-side-bar-heading-label">
-          {models[resourceKind] && (
+          {resourceModels[resourceKind] && (
             <SplitItem style={{ marginRight: 'var(--pf-global--spacer--sm)' }}>
-              <span className="badge">{`${models[resourceKind].abbr}`}</span>
+              <span className="badge">{`${resourceModels[resourceKind].abbr}`}</span>
             </SplitItem>
           )}
           <SplitItem>
@@ -25,7 +25,7 @@ const TopologySideBarHeading: React.FC<{ resource: K8sWorkloadResource }> = ({
           </SplitItem>
         </Split>
       </StackItem>
-      {!models[resourceKind] && (
+      {!resourceModels[resourceKind] && (
         <StackItem>
           <Typography color="textSecondary" variant="body1">
             {resourceKind}

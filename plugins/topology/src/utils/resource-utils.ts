@@ -17,6 +17,7 @@ import {
 } from '../types/types';
 import { WORKLOAD_TYPES } from './topology-utils';
 import { LabelSelector } from './label-selector';
+import { IngressesData } from '../types/ingresses';
 
 const validPod = (pod: V1Pod) => {
   const owners = pod?.metadata?.ownerReferences;
@@ -123,7 +124,7 @@ const validUrl = (url?: string | null) =>
 export const getIngressesDataForResourceServices = (
   resources: K8sResponseData,
   resource: K8sWorkloadResource,
-) => {
+): IngressesData => {
   const services = getServicesForResource(
     resource,
     resources.services?.data as V1Service[],
@@ -132,7 +133,7 @@ export const getIngressesDataForResourceServices = (
 
   const ingressesData = (
     (resources.ingresses?.data as V1Ingress[]) ?? []
-  ).reduce((acc, ingress) => {
+  ).reduce((acc: IngressesData, ingress: V1Ingress) => {
     const rules = ingress.spec?.rules?.filter(rule => {
       return rule.http?.paths?.some(path => {
         return (
@@ -152,7 +153,7 @@ export const getIngressesDataForResourceServices = (
       });
     }
     return acc;
-  }, [] as { ingress: V1Ingress; url: string | undefined }[]);
+  }, []);
 
   return ingressesData;
 };

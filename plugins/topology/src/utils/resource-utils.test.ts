@@ -26,7 +26,7 @@ describe('ResourceUtils:: ingress', () => {
   it('should return no ingresses for associated service name for no match', () => {
     const ingressesData = getIngressesDataForResourceServices(
       mockK8sResourcesData.watchResourcesData as any,
-      mockKubernetesResponse.deployments[1] as any,
+      mockKubernetesResponse.deployments[2] as any,
     );
     expect(ingressesData).toEqual([]);
   });

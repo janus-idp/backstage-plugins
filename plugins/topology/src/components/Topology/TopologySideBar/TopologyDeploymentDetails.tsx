@@ -8,7 +8,10 @@ const TopologyDeploymentDetails: React.FC<{ resource: V1Deployment }> = ({
   resource,
 }) => {
   return (
-    <div className="topology-deployment-details">
+    <div
+      className="topology-deployment-details"
+      data-testid="deployment-details"
+    >
       <TopologySideBarDetailsItem label="Status">
         {resource.status?.availableReplicas ===
         resource.status?.updatedReplicas ? (

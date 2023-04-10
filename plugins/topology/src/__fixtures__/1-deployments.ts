@@ -1685,6 +1685,7 @@ export const mockKubernetesResponse = {
         uid: '17094219-d12e-431c-bb3f-ee0876f11b04',
         resourceVersion: '42259',
         generation: 1,
+        ownerReferences: [{ name: 'app', uid: 1 }],
         labels: {
           'backstage.io/kubernetes-id': 'backstage',
         },
@@ -1703,7 +1704,7 @@ export const mockKubernetesResponse = {
           metadata: {
             creationTimestamp: null,
             labels: {
-              app: 'hello-world',
+              app: 'name',
               'backstage.io/kubernetes-id': 'backstage',
             },
           },

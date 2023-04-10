@@ -63,7 +63,7 @@ export enum ModelsPlural {
   statefulsets = 'statefulsets',
 }
 
-export const resourceModels: { [key: string]: GroupVersionKind } = {
+export const resourceGVKs: { [key: string]: GroupVersionKind } = {
   [ModelsPlural.deployments]: DeploymentGVK,
   [ModelsPlural.pods]: PodGVK,
   [ModelsPlural.replicasets]: ReplicaSetGVK,
@@ -77,56 +77,59 @@ export const resourceModels: { [key: string]: GroupVersionKind } = {
 
 export const DeploymentModel = {
   ...DeploymentGVK,
-  label: 'Deployment',
-  labelKey: 'Deployment',
-  plural: 'deployments',
   abbr: 'D',
-  namespaced: true,
-  propagationPolicy: 'Foreground',
-  id: 'deployment',
   labelPlural: 'Deployments',
-  labelPluralKey: 'Deployments',
 };
 
 export const PodModel = {
   ...PodGVK,
-  label: 'Pod',
-  labelKey: 'Pod',
-  plural: 'pods',
   abbr: 'P',
-  namespaced: true,
-  id: 'pod',
   labelPlural: 'Pods',
-  labelPluralKey: 'Pods',
 };
 
 export const ServiceModel = {
   ...ServiceGVK,
-  label: 'Service',
-  labelKey: 'Service',
-  plural: 'services',
   abbr: 'S',
-  namespaced: true,
-  id: 'service',
   labelPlural: 'Services',
-  labelPluralKey: 'Services',
 };
 
 export const IngressModel = {
   ...IngressesGVK,
-  label: 'Ingress',
-  labelKey: 'Ingress',
   labelPlural: 'Ingresses',
-  labelPluralKey: 'Ingresses',
-  plural: 'ingresses',
   abbr: 'I',
-  namespaced: true,
-  id: 'ingress',
 };
 
-export const models = {
+export const DaemonSetModel = {
+  ...DaemonSetGVK,
+  abbr: 'DS',
+  labelPlural: 'DaemonSets',
+};
+
+export const StatefulSetModel = {
+  ...StatefulSetGVK,
+  abbr: 'SS',
+  labelPlural: 'StatefulSets',
+};
+
+export const CronJobModel = {
+  ...CronJobGVK,
+  abbr: 'CJ',
+  labelPlural: 'CronJobs',
+};
+
+export const JobModel = {
+  ...JobGVK,
+  abbr: 'J',
+  labelPlural: 'Jobs',
+};
+
+export const resourceModels = {
   [DeploymentModel.kind]: DeploymentModel,
   [PodModel.kind]: PodModel,
   [ServiceModel.kind]: ServiceModel,
   [IngressModel.kind]: IngressModel,
+  [StatefulSetModel.kind]: StatefulSetModel,
+  [DaemonSetModel.kind]: DaemonSetModel,
+  [CronJobModel.kind]: CronJobModel,
+  [JobModel.kind]: JobModel,
 };

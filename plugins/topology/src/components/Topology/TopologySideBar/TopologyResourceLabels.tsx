@@ -5,11 +5,12 @@ import './TopologyResourceLabels.css';
 
 const TopologyResourceLabels: React.FC<{
   labels: { [key: string]: string };
-}> = ({ labels }) => {
+  dataTest?: string;
+}> = ({ labels, dataTest }) => {
   return (
-    <ul className="topology-resource-labels-list">
-      {(Object.keys(labels ?? {}) ?? []).map((key: string, index) => (
-        <li key={index}>
+    <ul className="topology-resource-labels-list" data-testid={dataTest}>
+      {Object.keys(labels ?? {}).map((key: string) => (
+        <li key={key}>
           <Label className="topology-resource-labels-list-item" color="blue">
             <span className="pf-c-label__content">
               <span className="label-key">{key}</span>
