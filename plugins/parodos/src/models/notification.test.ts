@@ -7,7 +7,7 @@ describe('notification', () => {
       links: [
         {
           rel: 'myrel',
-          href: 'http://link.to/something',
+          href: 'https://link.to/something',
           hreflang: 'en',
           media: 'text/html',
           title: 'My title',
@@ -31,7 +31,7 @@ describe('notification', () => {
           links: [
             {
               rel: 'myrel2',
-              href: 'http://link.to/something/foo',
+              href: 'https://link.to/something/foo',
               hreflang: 'cz',
               media: 'text/html',
               title: 'My next title',

@@ -30,7 +30,7 @@ const mockMasterWorkFlow: WorkflowDefinition = {
 
 const mockFormData = {
   masterWorkFlow: {
-    projectUrl: 'http://g.com',
+    projectUrl: 'https://g.com',
     workloadId: 'dfds',
   },
 };
@@ -47,7 +47,7 @@ describe('works payload', () => {
       projectId: '10',
       workFlowName: 'masterWorkFlow',
       arguments: [
-        { key: 'projectUrl', value: 'http://g.com' },
+        { key: 'projectUrl', value: 'https://g.com' },
         { key: 'workloadId', value: 'dfds' },
       ],
       works: [],
