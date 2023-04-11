@@ -7,9 +7,9 @@ export function BrandIcon(props: SvgIconProps): JSX.Element {
       <g
         id="Concept-1---Approved"
         stroke="none"
-        stroke-width="1"
+        strokeWidth="1"
         fill="none"
-        fill-rule="evenodd"
+        fillRule="evenodd"
       >
         <g id="Welcome" transform="translate(-32.000000, -34.000000)">
           <g
