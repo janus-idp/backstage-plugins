@@ -1,7 +1,12 @@
 import type { StateCreator } from 'zustand';
 import { unstable_batchedUpdates } from 'react-dom';
 import { FetchApi } from '@backstage/core-plugin-api';
-import type { ParodosError, ProjectsSlice, State, StateMiddleware } from '../types';
+import type {
+  ParodosError,
+  ProjectsSlice,
+  State,
+  StateMiddleware,
+} from '../types';
 import { type Project, projectSchema } from '../../models/project';
 import * as urls from '../../urls';
 import { checkFetchError } from './checkFetchError';

@@ -9,7 +9,6 @@ import { makeStyles } from '@material-ui/core';
 import { OutlinedBaseInputTemplate } from './widgets/TextAreaWidget';
 import type { JsonValue } from '@backstage/types';
 import { schema, uiSchema } from './rjsfSchema';
-import { UiSchema } from '@rjsf/utils';
 
 type FormProps = Pick<
   JsonFormProps,

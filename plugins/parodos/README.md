@@ -63,7 +63,7 @@ Adapt following based on the Parodos services deployment.
 
 ## Local development
 
-For local development, the [@janus-idp/backstage-plugin-parodos-auth](../parodos-auth/README.md) can be used for Basic authentication. 
+For local development, the [@janus-idp/backstage-plugin-parodos-auth](../parodos-auth/README.md) can be used for Basic authentication.
 The application username is `test`, password `test` there.
 
 In addition, the [Parodos services](https://github.com/parodos-dev/parodos) need to be running. Please refer instructions there, but as a short-cut:
