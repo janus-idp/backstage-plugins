@@ -4,6 +4,7 @@ import { Form as JsonForm } from './RJSF';
 import {
   type FormProps as JsonFormProps,
   type IChangeEvent,
+  default as CoreForm,
 } from '@rjsf/core-v5';
 import type { FormSchema } from '../types';
 import { JsonValue } from '@backstage/types';
@@ -17,7 +18,6 @@ import {
 import { FluidObjectFieldTemplate } from '../layouts/FluidObjectFieldTemplate';
 import { OutlinedBaseInputTemplate } from './widgets/TextAreaWidget';
 import ArrayFieldTemplate from './Templates/ArrayFieldTemplate';
-import { default as CoreForm } from '@rjsf/core-v5';
 import { useStyles } from './styles';
 
 type FormProps = Pick<
@@ -136,8 +136,8 @@ export function Form({
         orientation="horizontal"
         className={styles.stepper}
       >
-        {formSchema.steps.map((step, index) => (
-          <Step key={index}>
+        {formSchema.steps.map(step => (
+          <Step key={step.title}>
             {hideTitle === false && (
               <StepLabel className={styles.stepLabel}>{step.title}</StepLabel>
             )}

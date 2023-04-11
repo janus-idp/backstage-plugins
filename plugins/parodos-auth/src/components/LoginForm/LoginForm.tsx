@@ -61,7 +61,7 @@ export function LoginForm({
       templates={{
         BaseInputTemplate: OutlinedBaseInputTemplate as any,
       }}
-      uiSchema={uiSchema as UiSchema}
+      uiSchema={uiSchema}
       transformErrors={transformErrors}
     >
       {children}

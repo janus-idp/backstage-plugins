@@ -1,14 +1,13 @@
 import React, { useCallback, useEffect, useMemo, type FC } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Content, HeaderTabs, Page } from '@backstage/core-components';
-import { useLocation } from 'react-router-dom';
+import { identityApiRef, useApi } from '@backstage/core-plugin-api';
 import { PageHeader } from '../PageHeader';
 import type { PropsFromComponent } from '../types';
-import { useNavigate } from 'react-router-dom';
 import { tabLabelCreator } from './TabLabel';
 import { navigationMap, pluginRoutePrefix } from './navigationMap';
 import { useStore } from '../../stores/workflowStore/workflowStore';
 import { ErrorMessage } from '../errors/ErrorMessage';
-import { identityApiRef, useApi } from '@backstage/core-plugin-api';
 
 // Unfortunately backstage do not export the props type for <Content />
 type ContentProps = PropsFromComponent<typeof Content>;

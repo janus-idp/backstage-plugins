@@ -1,10 +1,9 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import {
   ContentHeader,
   InfoCard,
   SupportButton,
 } from '@backstage/core-components';
-import { useEffect } from 'react';
 import { errorApiRef, fetchApiRef, useApi } from '@backstage/core-plugin-api';
 import { Form } from '../Form/Form';
 import { ParodosPage } from '../ParodosPage';

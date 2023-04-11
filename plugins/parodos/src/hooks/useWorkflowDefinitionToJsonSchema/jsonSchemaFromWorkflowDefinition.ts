@@ -12,11 +12,6 @@ import { assert } from 'assert-ts';
 
 export function getJsonSchemaType(type: ParameterFormat) {
   switch (type) {
-    case 'password':
-    case 'text':
-      return {
-        type: 'string',
-      };
     case 'number':
       return {
         type: 'number',
@@ -41,6 +36,8 @@ export function getJsonSchemaType(type: ParameterFormat) {
         type: 'boolean',
       };
     }
+    case 'password':
+    case 'text':
     default:
       return {
         type: 'string',

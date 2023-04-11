@@ -11,11 +11,13 @@ import { Button, Grid, makeStyles, Paper, Typography } from '@material-ui/core';
 import { type IChangeEvent } from '@rjsf/core-v5';
 import { Link } from 'react-router-dom';
 import { assert } from 'assert-ts';
-import { ParodosSignInIdentity } from './ParodosSigninIdentity';
+import {
+  ParodosSignInIdentity,
+  SessionStorageKey,
+} from './ParodosSigninIdentity';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
 import type { User } from './types';
 import { getToken } from './getToken';
-import { SessionStorageKey } from './ParodosSigninIdentity';
 import { BrandIcon } from '../icons/BrandIcon';
 
 type ParodosSignInPageProps = SignInPageProps;
