@@ -78,18 +78,21 @@ export const WorkFlowDetail = () => {
 
     const updateWorkflowExecutionState = async () => {
       const data = await fetch(`${workflowsUrl}/${executionId}/status`);
-
-      // TODO: so far failing, should be fixed by https://issues.redhat.com/browse/FLPATH-184
       const response = (await data.json()) as WorkflowStatus;
 
       return response.works;
     };
-    const taskInterval = setInterval(() => {
+
+    const updateWorksFromApi = () => {
       updateWorkflowExecutionState().then(fetchedTasks => {
         updateWorks(fetchedTasks);
       });
-    }, 5000);
+    };
 
+    const taskInterval = setInterval(() => {
+      updateWorksFromApi();
+    }, 5000);
+    updateWorksFromApi();
     return () => clearInterval(taskInterval);
   }, [allTasks, executionId, fetch, workflowsUrl]);
 

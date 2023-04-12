@@ -99,7 +99,7 @@ export function Workflow(): JSX.Element {
                 ([key, value]) => {
                   return {
                     key: key,
-                    value: JSON.stringify(value ?? ''),
+                    value: value,
                   };
                 },
               ),
