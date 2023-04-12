@@ -50,10 +50,16 @@
     "@testing-library/user-event": "^14.0.0",
     "@types/node": "*",
     "cross-fetch": "^3.1.5",
+    "jest-canvas-mock": "^2.5.0",
     "msw": "^0.47.0"
   },
   "files": [
     "dist",
     "schema.d.ts"
-  ]
+  ],
+  "jest": {
+    "setupFiles": [
+      "jest-canvas-mock"
+    ]
+  }
 }
