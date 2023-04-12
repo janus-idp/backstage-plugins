@@ -6,7 +6,6 @@ import { createRouter, RouterOptions } from '../src/service/router';
 
 export interface ServerOptions {
   port: number;
-  enableCors: boolean;
   logger: Logger;
 }
 
@@ -31,12 +30,12 @@ export async function startStandaloneServer(
       },
     },
   });
-  const routerOptions: RouterOptions = {
-    logger: logger,
-    config: config,
-  };
+  const routerOptions: RouterOptions = { logger, config };
   const service = createServiceBuilder(module)
     .setPort(options.port)
+    .enableCors({
+      origin: '*',
+    })
     .addRouter('/api/ocm', await createRouter(routerOptions));
 
   return await service.start().catch(err => {
