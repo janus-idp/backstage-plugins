@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-ocm-backend [2.1.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@2.1.0...@janus-idp/backstage-plugin-ocm-backend@2.1.1) (2023-04-13)
+
+
+### Bug Fixes
+
+* **ocm-backend:** Handle a case when the error is a string ([#245](https://github.com/janus-idp/backstage-plugins/issues/245)) ([917d7d3](https://github.com/janus-idp/backstage-plugins/commit/917d7d39647f35f0e313dd12e8f4629afe89336d))
+
 ## @janus-idp/backstage-plugin-ocm-backend [2.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@2.0.2...@janus-idp/backstage-plugin-ocm-backend@2.1.0) (2023-04-05)
 
 
