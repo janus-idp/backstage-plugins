@@ -65,13 +65,13 @@ The following actions are currently supported in this plugin:
 
 ### Action : regex:replace
 
-| Parameter Name            |  Type  | Required | Description                                                                                                              |
-| ------------------------- | :----: | :------: | ------------------------------------------------------------------------------------------------------------------------ |
-| `regExps[].pattern`       | string |   Yes    | The regex pattern to match the value like in `String.prototype.replace()`                                                |
-| `regExps[].flags`         | string |   No     | The flags for the regex, possible values are: `g`, `m`, `i`, `y`, `u`, `s`, `d`                                          |
-| `regExps[].replacement`   | string |   Yes    | The replacement value for the regex like in `String.prototype.replace()`                                                 |
-| `regExps[].values[].key`  | string |   Yes    | The key to access the regex value                                                                                        |
-| `regExps[].values[].value`| string |   Yes    | The input value of the regex                                                                                             |
+| Parameter Name             |  Type  | Required | Description                                                                     |
+| -------------------------- | :----: | :------: | ------------------------------------------------------------------------------- |
+| `regExps[].pattern`        | string |   Yes    | The regex pattern to match the value like in `String.prototype.replace()`       |
+| `regExps[].flags`          | string |    No    | The flags for the regex, possible values are: `g`, `m`, `i`, `y`, `u`, `s`, `d` |
+| `regExps[].replacement`    | string |   Yes    | The replacement value for the regex like in `String.prototype.replace()`        |
+| `regExps[].values[].key`   | string |   Yes    | The key to access the regex value                                               |
+| `regExps[].values[].value` | string |   Yes    | The input value of the regex                                                    |
 
 > **Warning**
 >
@@ -81,6 +81,6 @@ The following actions are currently supported in this plugin:
 
 #### Output
 
-| Name           |  Type  | Description                                                                                         |
-| ----------     | :----: | --------------------------------------------------------------------------------------------------- |
-| `values.<key>` | string | A new string, with one, some, or all matches of the pattern replaced by the specified replacement.  |
+| Name           |  Type  | Description                                                                                        |
+| -------------- | :----: | -------------------------------------------------------------------------------------------------- |
+| `values.<key>` | string | A new string, with one, some, or all matches of the pattern replaced by the specified replacement. |
