@@ -4,7 +4,7 @@ import { useAsync } from 'react-use';
 import { Link, Progress, Table } from '@backstage/core-components';
 import { columns, useStyles } from './tableHeading';
 import { Edge } from '../../types';
-import { artifactoryApiRef } from '../../api';
+import { jfrogArtifactoryApiRef } from '../../api';
 import { formatDate, formatSize } from '../utils';
 import { Box, Chip, makeStyles } from '@material-ui/core';
 
@@ -19,15 +19,15 @@ const useLocalStyles = makeStyles({
   },
 });
 
-export function ArtifactoryRepository(props: RepositoryProps) {
-  const artifactoryClient = useApi(artifactoryApiRef);
+export function JfrogArtifactoryRepository(props: RepositoryProps) {
+  const jfrogArtifactoryClient = useApi(jfrogArtifactoryApiRef);
   const classes = useStyles();
   const localClasses = useLocalStyles();
   const [edges, setEdges] = useState<Edge[]>([]);
-  const title = `Artifactory repository: ${props.image}`;
+  const title = `Jfrog Artifactory repository: ${props.image}`;
 
   const { loading } = useAsync(async () => {
-    const tagsResponse = await artifactoryClient.getTags(props.image);
+    const tagsResponse = await jfrogArtifactoryClient.getTags(props.image);
 
     setEdges(tagsResponse.data.versions.edges);
 
@@ -69,7 +69,7 @@ export function ArtifactoryRepository(props: RepositoryProps) {
         emptyContent={
           <div className={classes.empty}>
             No data was added yet,&nbsp;
-            <Link to="http://backstage.io/">learn how to add data</Link>.
+            <Link to="https://backstage.io/">learn how to add data</Link>.
           </div>
         }
       />
@@ -77,7 +77,7 @@ export function ArtifactoryRepository(props: RepositoryProps) {
   );
 }
 
-ArtifactoryRepository.defaultProps = {
+JfrogArtifactoryRepository.defaultProps = {
   title: 'Docker Images',
 };
 interface RepositoryProps {

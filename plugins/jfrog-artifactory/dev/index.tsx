@@ -1,11 +1,11 @@
 import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
-import { artifactoryPlugin, ArtifactoryPage } from '../src/plugin';
+import { jfrogArtifactoryPlugin, JfrogArtifactoryPage } from '../src/plugin';
 
 createDevApp()
-  .registerPlugin(artifactoryPlugin)
+  .registerPlugin(jfrogArtifactoryPlugin)
   .addPage({
-    element: <ArtifactoryPage />,
+    element: <JfrogArtifactoryPage />,
     title: 'Root Page',
     path: '/artifactory',
   })

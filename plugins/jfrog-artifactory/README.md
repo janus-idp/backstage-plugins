@@ -1,13 +1,13 @@
-# Artifactory plugin for Backstage
+# Jfrog Artifactory plugin for Backstage
 
-This plugin will show you information about your container images within Artifactory registry
+This plugin will show you information about your container images within Jfrog Artifactory registry
 
 ## Getting started
 
 1. Install the plugin
 
    ```bash
-   yarn workspace app add @janus-idp/backstage-plugin-artifactory
+   yarn workspace app add @janus-idp/backstage-plugin-jfrog-artifactory
    ```
 
 2. Set the proxy to desired Artifactory server
@@ -15,7 +15,7 @@ This plugin will show you information about your container images within Artifac
    ```yaml
    # app-config.yaml
    proxy:
-     '/artifactory/api':
+     '/jfrog-artifactory/api':
        target: 'http://<hostname>:8082'
        headers:
          # Authorization: 'Bearer <YOUR TOKEN>'
@@ -28,19 +28,19 @@ This plugin will show you information about your container images within Artifac
    ```ts
    // packages/app/src/components/catalog/EntityPage.tsx
    import {
-     ArtifactoryPage,
-     isArtifactoryAvailable,
-   } from '@janus-idp/backstage-plugin-artifactory';
+     JfrogArtifactoryPage,
+     isJfrogArtifactoryAvailable,
+   } from '@janus-idp/backstage-plugin-jfrog-artifactory';
 
    const serviceEntityPage = (
      <EntityPageLayout>
        // ...
        <EntityLayout.Route
-         if={isArtifactoryAvailable}
-         path="/artifactory"
-         title="Artifactory"
+         if={isJfrogArtifactoryAvailable}
+         path="/jfrog-artifactory"
+         title="Jfrog Artifactory"
        >
-         <ArtifactoryPage />
+         <JfrogArtifactoryPage />
        </EntityLayout.Route>
      </EntityPageLayout>
    );
@@ -51,7 +51,7 @@ This plugin will show you information about your container images within Artifac
    ```yaml
    metadata:
      annotations:
-       'artifactory/image-name': `<IMAGE-NAME>',
+       'jfrog-artifactory/image-name': `<IMAGE-NAME>',
    ```
 
 ## Development
@@ -63,5 +63,5 @@ yarn start-backend
 ```
 
 ```
-yarn workspace @janus-idp/backstage-plugin-artifactory run start
+yarn workspace @janus-idp/backstage-plugin-jfrog-artifactory run start
 ```

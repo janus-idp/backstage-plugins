@@ -1,1 +1,0 @@
-export { ArtifactoryRepository } from './ArtifactoryRepository';
