@@ -45,7 +45,7 @@
     "@backstage/theme": "^0.2.16",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
-    "@janus-idp/backstage-plugin-parodos": "^0.4.5",
+    "@janus-idp/backstage-plugin-parodos": "^0.4.7",
     "@janus-idp/backstage-plugin-parodos-auth": "^0.1.0",
     "history": "^5.0.0",
     "react": "^17.0.2",
