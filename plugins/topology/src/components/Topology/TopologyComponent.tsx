@@ -1,9 +1,5 @@
 import React from 'react';
-import '@patternfly/patternfly/patternfly-charts-theme-dark.css';
-import '@patternfly/react-core/dist/styles/base.css';
 import { useTheme } from '@material-ui/core/styles';
-import '@patternfly/patternfly/patternfly-theme-dark.css';
-import '@patternfly/patternfly/utilities/Accessibility/accessibility.css';
 import { TopologyWorkloadView } from './TopologyWorkloadView';
 import { ModelsPlural } from '../../models';
 import { K8sResourcesContext } from '../../hooks/K8sResourcesContext';
