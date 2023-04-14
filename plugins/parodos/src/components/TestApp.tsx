@@ -1,3 +1,5 @@
+// To be used in tests only.
+// eslint-disable-file no-extraneous-dependencies
 import React from 'react';
 import {
   MockConfigApi,
@@ -16,6 +18,7 @@ const TestAppStore: React.FC = ({ children }) => {
   return <>{children}</>;
 };
 
+// To be used in tests only.
 export const TestApp: React.FC = ({ children }) => {
   const mockConfig = new MockConfigApi({
     backend: { baseUrl: MOCK_BASE_URL },
