@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-topology [1.3.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.3.0...@janus-idp/backstage-plugin-topology@1.3.1) (2023-04-14)
+
+
+### Bug Fixes
+
+* **topology:** moves base styles to plugin form component ([#252](https://github.com/janus-idp/backstage-plugins/issues/252)) ([860ee5e](https://github.com/janus-idp/backstage-plugins/commit/860ee5e684f2483c9b22e8bdc1633edb1742c154))
+
 ## @janus-idp/backstage-plugin-topology [1.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.2.5...@janus-idp/backstage-plugin-topology@1.3.0) (2023-04-06)
 
 
