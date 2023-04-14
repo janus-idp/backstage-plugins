@@ -5,12 +5,11 @@ import { PluginRouter } from './PluginRouter';
 import { Progress } from '@backstage/core-components';
 import { fetchApiRef, useApi } from '@backstage/core-plugin-api';
 
-export const App = () => {
+export const useInitializeStore = () => {
   const backendUrl = useBackendUrl();
   const setBaseUrl = useStore(state => state.setBaseUrl);
   const fetchProjects = useStore(state => state.fetchProjects);
   const fetchDefinitions = useStore(state => state.fetchDefinitions);
-  const loading = useStore(state => state.loading());
   const { fetch } = useApi(fetchApiRef);
 
   useEffect(() => {
@@ -24,6 +23,11 @@ export const App = () => {
 
     initialiseStore();
   }, [backendUrl, fetch, fetchDefinitions, fetchProjects, setBaseUrl]);
+};
+
+export const App = () => {
+  useInitializeStore();
+  const loading = useStore(state => state.loading());
 
   return loading ? <Progress /> : <PluginRouter />;
 };
