@@ -34,12 +34,21 @@ export function useGetProjectAssessmentSchema({
   if (newProject) {
     cloned.works[0].parameters.newProject = { ...newProjectChoice };
 
-    cloned.works[0].parameters.Name = {
+    // TODO: The Name and Description are temporarily hardcoded till https://issues.redhat.com/browse/FLPATH-233 is fixed
+    cloned.works[0].parameters.name = {
       description: 'New Project',
       required: true,
       format: 'text',
       type: 'string',
     };
+    cloned.works[0].parameters.description = {
+      description: 'Description',
+      required: false,
+      format: 'text',
+      type: 'string',
+    };
+    delete cloned.works[0].parameters.INPUT;
+    // End of hardcoding
   } else {
     cloned.works[0].parameters = {};
 

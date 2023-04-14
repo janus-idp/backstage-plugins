@@ -46,7 +46,8 @@ const useStyles = makeStyles(theme => ({
 
 interface ProjectsPayload {
   onboardingAssessmentTask: {
-    Name?: string;
+    name?: string;
+    description?: string;
     newProject: boolean;
     project?: Project;
   };
@@ -146,9 +147,7 @@ export function Workflow(): JSX.Element {
 
       const newProjectResponse = await fetch(projectsUrl, {
         method: 'POST',
-        body: JSON.stringify({
-          name: formData.onboardingAssessmentTask.Name,
-        }),
+        body: JSON.stringify(formData.onboardingAssessmentTask),
       });
 
       if (!newProjectResponse.ok) {
