@@ -9,7 +9,7 @@ export const ProjectsTable: React.FC<{ projects: Project[] }> = ({
 }) => {
   // TODO: additional fields tracked here: https://issues.redhat.com/browse/FLPATH-131
   const columns: TableColumn[] = [
-    { title: 'Name', field: 'name' },
+    { title: 'Name', field: 'name', id: 'column-project-name' },
     { title: 'User', field: 'username' },
     { title: 'Status', field: 'status' },
     { title: 'Description', field: 'description' },
