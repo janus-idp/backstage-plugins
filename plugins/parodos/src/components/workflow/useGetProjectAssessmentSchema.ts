@@ -70,7 +70,8 @@ export function useGetProjectAssessmentSchema({
 
   set(formSchema, `steps[0].uiSchema.onboardingAssessmentTask.['ui:order']`, [
     'newProject',
-    'Name',
+    'name',
+    'description',
     '*',
   ]);
 

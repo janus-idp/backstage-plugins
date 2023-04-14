@@ -96,14 +96,17 @@ export function Workflow(): JSX.Element {
             {
               type: 'TASK',
               workName: 'onboardingAssessmentTask',
-              arguments: Object.entries(formData.onboardingAssessmentTask).map(
-                ([key, value]) => {
+              arguments: Object.entries(formData.onboardingAssessmentTask)
+                .filter(([_, value]) =>
+                  /* Especially to filter-out 'project', the API expects it via 'projectId' above */
+                  ['string', 'boolean'].includes(typeof value),
+                )
+                .map(([key, value]) => {
                   return {
                     key: key,
                     value: value,
                   };
-                },
-              ),
+                }),
             },
           ],
         }),
