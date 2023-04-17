@@ -14,6 +14,8 @@ const parameterFormat = z.union([
   z.literal('number'),
   z.literal('url'),
   z.literal('boolean'),
+  z.literal('select'),
+  z.literal('multi-select'),
 ]);
 
 const processingType = z.union([
@@ -31,6 +33,7 @@ export const workFlowTaskParameterTypeSchema = z.object({
   default: z.any().optional(),
   field: z.string().optional(),
   disabled: z.boolean().default(false).optional(),
+  enum: z.array(z.string()).nullable().optional(),
 });
 
 export const baseWorkSchema = z.object({

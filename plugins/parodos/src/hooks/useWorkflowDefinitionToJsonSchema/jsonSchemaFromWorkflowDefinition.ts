@@ -10,7 +10,7 @@ import { taskDisplayName } from '../../utils/string';
 import type { StrictRJSFSchema, UiSchema } from '@rjsf/utils';
 import { assert } from 'assert-ts';
 
-export function getJsonSchemaType(type: ParameterFormat) {
+export function getJsonSchemaType(type: ParameterFormat, options: string[]) {
   switch (type) {
     case 'number':
       return {
@@ -34,6 +34,22 @@ export function getJsonSchemaType(type: ParameterFormat) {
     case 'boolean': {
       return {
         type: 'boolean',
+      };
+    }
+    case 'select': {
+      return {
+        type: 'string',
+        enum: options,
+      };
+    }
+    case 'multi-select': {
+      return {
+        type: 'array',
+        uniqueItems: true,
+        items: {
+          type: 'string',
+          enum: options,
+        },
       };
     }
     case 'password':
@@ -109,13 +125,14 @@ function* transformWorkToStep(work: WorkType) {
       field,
       minLength,
       maxLength,
+      enum: options,
     },
   ] of Object.entries(work.parameters ?? {})) {
     const propertiesPath = `properties.${work.name}.properties.${key}`;
 
     set(schema, propertiesPath, {
       title: `${key}`,
-      ...getJsonSchemaType(format ?? (type as ParameterFormat)),
+      ...getJsonSchemaType(format ?? (type as ParameterFormat), options ?? []),
       ...{ default: fieldDefault },
       minLength,
       maxLength,

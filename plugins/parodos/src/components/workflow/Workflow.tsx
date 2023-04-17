@@ -17,7 +17,7 @@ import {
   workflowSchema,
 } from '../../models/workflow';
 import { type Project, projectSchema } from '../../models/project';
-import { ASSESSMENT_WORKFLOW } from './constants';
+import { ASSESSMENT_WORKFLOW, ASSESSMENT_WORKFLOW_TASK } from './constants';
 import {
   WorkflowOptionsList,
   type WorkflowOptionsListItem,
@@ -45,7 +45,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 interface ProjectsPayload {
-  onboardingAssessmentTask: {
+  [ASSESSMENT_WORKFLOW_TASK]: {
     name?: string;
     description?: string;
     newProject: boolean;
@@ -95,8 +95,8 @@ export function Workflow(): JSX.Element {
           works: [
             {
               type: 'TASK',
-              workName: 'onboardingAssessmentTask',
-              arguments: Object.entries(formData.onboardingAssessmentTask)
+              workName: ASSESSMENT_WORKFLOW_TASK,
+              arguments: Object.entries(formData[ASSESSMENT_WORKFLOW_TASK])
                 .filter(([_, value]) =>
                   /* Especially to filter-out 'project', the API expects it via 'projectId' above */
                   ['string', 'boolean'].includes(typeof value),
@@ -150,7 +150,7 @@ export function Workflow(): JSX.Element {
 
       const newProjectResponse = await fetch(projectsUrl, {
         method: 'POST',
-        body: JSON.stringify(formData.onboardingAssessmentTask),
+        body: JSON.stringify(formData[ASSESSMENT_WORKFLOW_TASK]),
       });
 
       if (!newProjectResponse.ok) {
@@ -180,12 +180,12 @@ export function Workflow(): JSX.Element {
 
   const changeHandler = useCallback(
     async (e: IChangeEvent<ProjectsPayload>) => {
-      if (!e.formData?.onboardingAssessmentTask) {
+      if (!e.formData?.[ASSESSMENT_WORKFLOW_TASK]) {
         return;
       }
 
       const { newProject: nextIsNewProject, project: selectedProject } =
-        e.formData.onboardingAssessmentTask;
+        e.formData[ASSESSMENT_WORKFLOW_TASK];
 
       if (nextIsNewProject !== isNewProject) {
         setProject(undefined);
