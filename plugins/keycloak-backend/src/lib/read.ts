@@ -92,7 +92,7 @@ export const readKeycloakRealm = async (
   users: UserEntity[];
   groups: GroupEntity[];
 }> => {
-  const kUsers = await client.users.find({ realm: config.realm });
+  const kUsers = await client.users.find({ realm: config.realm, max: -1 });
 
   const rawKGroups = await client.groups.find({ realm: config.realm });
   const flatKGroups = rawKGroups.reduce(
