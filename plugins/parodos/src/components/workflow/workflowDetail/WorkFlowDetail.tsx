@@ -18,6 +18,7 @@ import {
 } from '../../../models/workflowTaskSchema';
 import { useStore } from '../../../stores/workflowStore/workflowStore';
 import { fetchApiRef, useApi } from '@backstage/core-plugin-api';
+import { Project } from '../../../models/project';
 
 const useStyles = makeStyles(_theme => ({
   container: {
@@ -40,14 +41,17 @@ const useStyles = makeStyles(_theme => ({
 }));
 
 export const WorkFlowDetail = () => {
-  const { executionId } = useParams();
+  const { projectId, executionId } = useParams();
   const { state } = useLocation();
   const { isNew, initTasks } = state;
   const [selectedTask, setSelectedTask] = useState<string | null>('');
+  const [workflowName, setWorkflowName] = useState<string>('');
   const [allTasks, setAllTasks] = useState<WorkflowTask[]>(initTasks);
   const [log, setLog] = useState<string>(``);
   const [countlog, setCountlog] = useState<number>(0);
   const workflowsUrl = useStore(store => store.getApiUrl(urls.Workflows));
+  const projects = useStore(store => store.projects);
+  const [project, setProject] = useState<Project>();
   const styles = useStyles();
   const { fetch } = useApi(fetchApiRef);
 
@@ -58,6 +62,12 @@ export const WorkFlowDetail = () => {
     },
     [selectedTask],
   );
+
+  // get project name
+  useEffect(() => {
+    const prj = projects.find(p => p.id === projectId);
+    if (prj) setProject(prj);
+  }, [projectId, projects]);
 
   // update task state regularly
   useEffect(() => {
@@ -76,17 +86,14 @@ export const WorkFlowDetail = () => {
       if (needUpdate) setAllTasks(tasks);
     };
 
-    const updateWorkflowExecutionState = async () => {
+    const updateWorksFromApi = async () => {
       const data = await fetch(`${workflowsUrl}/${executionId}/status`);
       const response = (await data.json()) as WorkflowStatus;
 
-      return response.works;
-    };
+      setWorkflowName(response.workFlowName);
+      updateWorks(response.works);
 
-    const updateWorksFromApi = () => {
-      updateWorkflowExecutionState().then(fetchedTasks => {
-        updateWorks(fetchedTasks);
-      });
+      return response.works;
     };
 
     const taskInterval = setInterval(() => {
@@ -128,7 +135,8 @@ export const WorkFlowDetail = () => {
         <SupportButton title="Need help?">Lorem Ipsum</SupportButton>
       </ContentHeader>
       <Typography paragraph>
-        You are onboarding: org-name/new-project. Execution Id is {executionId}
+        You are onboarding <strong>{project?.name || '...'}</strong> project,
+        running workflow "{workflowName}" (execution ID: {executionId})
       </Typography>
 
       <Box className={styles.detailContainer}>

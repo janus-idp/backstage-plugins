@@ -53,9 +53,12 @@ export function useStartWorkflow({
       const response = (await data.json()) as WorkflowStatus;
       const executionId = response.workFlowExecutionId;
 
-      navigate(`/parodos/onboarding/${executionId}/workflow-detail`, {
-        state: { isNew: isNew, initTasks: tasks },
-      });
+      navigate(
+        `/parodos/onboarding/${projectId}/${executionId}/workflow-detail`,
+        {
+          state: { isNew: isNew, initTasks: tasks },
+        },
+      );
     },
     [projectId, workflow, fetch, workflowsUrl, navigate, isNew, tasks],
   );

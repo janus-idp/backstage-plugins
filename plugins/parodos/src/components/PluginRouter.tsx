@@ -17,7 +17,7 @@ export const PluginRouter = () => (
       element={<Onboarding isNew />}
     />
     <Route
-      path="/onboarding/:executionId/workflow-detail"
+      path="/onboarding/:projectId/:executionId/workflow-detail"
       element={<WorkFlowDetail />}
     />
   </Routes>
