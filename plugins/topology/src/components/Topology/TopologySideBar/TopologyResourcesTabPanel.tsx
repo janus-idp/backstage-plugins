@@ -5,6 +5,7 @@ import { BaseNode } from '@patternfly/react-topology';
 import { IngressModel, PodModel, ServiceModel } from '../../../models';
 import { IngressData } from '../../../types/ingresses';
 import TopologyResourcesTabPanelItem from './TopologyResourcesTabPaneltem';
+import IngressRules from './IngressRules';
 
 const TopologyResourcesTabPanel: React.FC<{ node: BaseNode }> = ({ node }) => {
   const nodeData = node.getData()?.data;
@@ -77,6 +78,9 @@ const TopologyResourcesTabPanel: React.FC<{ node: BaseNode }> = ({ node }) => {
                     {ingressData.url}
                   </a>
                 </>
+              )}
+              {ingressData.ingress.spec?.rules?.length && (
+                <IngressRules ingress={ingressData.ingress} />
               )}
             </li>
           ))}
