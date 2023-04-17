@@ -1,0 +1,24 @@
+.topology-side-bar-heading {
+  padding: 30px 0 20px 24px;
+}
+
+.topology-side-bar-heading-label {
+  align-items: baseline;
+}
+
+.topology-side-bar-heading-label .badge {
+  font-size: 17px;
+  font-weight: bold;
+  border-radius: 20px;
+  color: var(--pf-global--palette--white);
+  display: inline-block;
+  flex-shrink: 0;
+  line-height: 16px;
+  margin-right: 4px;
+  min-width: 18px;
+  padding: 1px 4px;
+  text-align: center;
+  white-space: nowrap;
+  background-color: #004080;
+  width: 100%;
+}

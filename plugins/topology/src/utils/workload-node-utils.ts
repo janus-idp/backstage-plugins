@@ -9,7 +9,7 @@ import {
   DeploymentStrategy,
   podColor,
 } from '../components/Pods/pod';
-import { resourceModels } from '../models';
+import { resourceGVKs } from '../models';
 import { PodControllerOverviewItem, PodRCData } from '../types/pods';
 import { ResKindAbbrColor } from '../types/topology-types';
 import { GroupVersionKind, K8sWorkloadResource } from '../types/types';
@@ -207,7 +207,7 @@ const kindToAbbr = (kind: string): string =>
   (kind.replace(/[^A-Z]/g, '') || kind.toUpperCase()).slice(0, 4);
 
 const getAssociatedModel = (kind: string): GroupVersionKind | undefined => {
-  const resourcesModelsList = Object.values(resourceModels);
+  const resourcesModelsList = Object.values(resourceGVKs);
   return resourcesModelsList.find(resModel => resModel.kind === kind);
 };
 

@@ -1,5 +1,6 @@
 import * as React from 'react';
 import {
+  BaseNode,
   SelectionEventListener,
   SELECTION_EVENT,
   TopologyView,
@@ -15,6 +16,8 @@ import TopologyToolbar from './TopologyToolbar';
 import { K8sResourcesContext } from '../../hooks/K8sResourcesContext';
 import TopologyErrorPanel from './TopologyErrorPanel';
 import { ClusterErrors } from '../../types/types';
+import { useSideBar } from '../../hooks/useSideBar';
+import { TYPE_WORKLOAD } from '../../const';
 
 import './TopologyToolbar.css';
 
@@ -31,6 +34,8 @@ const TopologyViewWorkloadComponent: React.FC<
   const { loaded, dataModel } = useWorkloadsWatcher();
   const { clusters, selectedClusterErrors, responseError } =
     React.useContext(K8sResourcesContext);
+  const [sideBar, sideBarOpen, selectedId, setSideBarOpen, setSelectedNode] =
+    useSideBar(selectedIds);
 
   const allErrors: ClusterErrors = [
     ...(responseError ? [{ message: responseError }] : []),
@@ -50,6 +55,27 @@ const TopologyViewWorkloadComponent: React.FC<
       controller.fromModel(model, false);
     }
   }, [layout, loaded, dataModel, controller]);
+
+  React.useEffect(() => {
+    if (loaded && dataModel) {
+      const selectedNode: BaseNode | null = selectedId
+        ? (controller.getElementById(selectedId) as BaseNode)
+        : null;
+      setSelectedNode(selectedNode);
+      if (selectedNode && selectedNode.getType() === TYPE_WORKLOAD)
+        setSideBarOpen(true);
+      else {
+        setSideBarOpen(false);
+      }
+    }
+  }, [
+    controller,
+    dataModel,
+    loaded,
+    selectedId,
+    setSelectedNode,
+    setSideBarOpen,
+  ]);
 
   useEventListener<SelectionEventListener>(SELECTION_EVENT, ids => {
     setSelectedIds(ids);
@@ -78,6 +104,10 @@ const TopologyViewWorkloadComponent: React.FC<
             )
           }
           viewToolbar={useToolbar && <TopologyToolbar />}
+          sideBar={sideBar}
+          sideBarResizable
+          sideBarOpen={sideBarOpen}
+          minSideBarSize="400px"
         >
           {loaded && dataModel?.nodes?.length === 0 ? (
             <TopologyEmptyState />

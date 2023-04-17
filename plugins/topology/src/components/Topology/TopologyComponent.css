@@ -4,3 +4,7 @@
   flex-direction: column;
   overflow: hidden;
 }
+
+.topology-text-muted {
+  color: var(--pf-global--Color--200);
+}
