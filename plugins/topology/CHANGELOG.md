@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-topology [1.4.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.3.1...@janus-idp/backstage-plugin-topology@1.4.0) (2023-04-17)
+
+
+### Features
+
+* **topology:** Add topology workload node sidebar ([#226](https://github.com/janus-idp/backstage-plugins/issues/226)) ([9b87752](https://github.com/janus-idp/backstage-plugins/commit/9b877524475b65ff6095a2203e5c9da7e7a7f666))
+
 ## @janus-idp/backstage-plugin-topology [1.3.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.3.0...@janus-idp/backstage-plugin-topology@1.3.1) (2023-04-14)
 
 
