@@ -1,0 +1,24 @@
+.bs-tkn-horizontal-stacked-bars {
+  --bar-gap: 3px;
+  display: block;
+  height: 100%;
+  overflow: hidden;
+  width: 100%;
+}
+.bs-tkn-horizontal-stacked-bars.is-inline {
+  display: inline-block;
+}
+.bs-tkn-horizontal-stacked-bars__bars {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  outline: none;
+  width: calc(100% + var(--bar-gap));
+}
+.bs-tkn-horizontal-stacked-bars__data-bar {
+  --bar-gap-neg: calc(var(--bar-gap) * -1);
+  box-shadow: inset var(--bar-gap-neg) 0 0
+    var(--pf-global--BackgroundColor--100);
+  height: 100%;
+  transition: flex-grow 300ms linear;
+}
