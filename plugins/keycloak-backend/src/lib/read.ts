@@ -94,7 +94,7 @@ export const readKeycloakRealm = async (
 }> => {
   const kUsers = await client.users.find({ realm: config.realm, max: -1 });
 
-  const rawKGroups = await client.groups.find({ realm: config.realm });
+  const rawKGroups = await client.groups.find({ realm: config.realm, max: -1 });
   const flatKGroups = rawKGroups.reduce(
     (acc, g) => [...acc, ...traverseGroups(g)],
     [] as GroupRepresentationWithParent[],
