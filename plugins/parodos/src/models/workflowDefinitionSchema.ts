@@ -33,7 +33,7 @@ export const workFlowTaskParameterTypeSchema = z.object({
   default: z.any().optional(),
   field: z.string().optional(),
   disabled: z.boolean().default(false).optional(),
-  enum: z.array(z.string()).nullable().optional(),
+  enum: z.array(z.string()).optional(),
 });
 
 export const baseWorkSchema = z.object({
