@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-topology [1.5.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.4.2...@janus-idp/backstage-plugin-topology@1.5.0) (2023-04-18)
+
+
+### Features
+
+* **topology:** Show ingress rules in sidebar ([#256](https://github.com/janus-idp/backstage-plugins/issues/256)) ([22a565c](https://github.com/janus-idp/backstage-plugins/commit/22a565cea15b0b222cf246189b4e04621ea275f3))
+
 ## @janus-idp/backstage-plugin-topology [1.4.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.4.1...@janus-idp/backstage-plugin-topology@1.4.2) (2023-04-18)
 
 
