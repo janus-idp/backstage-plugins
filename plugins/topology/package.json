@@ -39,7 +39,7 @@
     "@patternfly/react-icons": "^4.93.6",
     "@patternfly/react-styles": "^4.92.6",
     "@patternfly/react-tokens": "4.94.6",
-    "@patternfly/react-topology": "4.91.27",
+    "@patternfly/react-topology": "4.93.4",
     "classnames": "2.x",
     "lodash": "^4.17.19",
     "react-router-dom": "^6.3.0",
