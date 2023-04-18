@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-topology [1.4.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.4.1...@janus-idp/backstage-plugin-topology@1.4.2) (2023-04-18)
+
+
+### Bug Fixes
+
+* **topology:** updates pf react-topology to standalone release ([#261](https://github.com/janus-idp/backstage-plugins/issues/261)) ([90c78e9](https://github.com/janus-idp/backstage-plugins/commit/90c78e9abdad6f72cd9fad7e41736bbe6324c203))
+
 ## @janus-idp/backstage-plugin-topology [1.4.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.4.0...@janus-idp/backstage-plugin-topology@1.4.1) (2023-04-18)
 
 
