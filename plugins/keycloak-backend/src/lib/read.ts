@@ -17,9 +17,15 @@
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import { KeycloakProviderConfig } from './config';
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
-import { KEYCLOAK_ID_ANNOTATION, KEYCLOAK_REALM_ANNOTATION } from './constants';
-import GroupRepresentation from '@keycloak/keycloak-admin-client/lib/defs/groupRepresentation';
-import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
+import {
+  KEYCLOAK_ID_ANNOTATION,
+  KEYCLOAK_REALM_ANNOTATION,
+  KEYCLOAK_ENTITY_QUERY_SIZE,
+} from './constants';
+import { Users } from '@keycloak/keycloak-admin-client/lib/resources/users';
+import { Groups } from '@keycloak/keycloak-admin-client/lib/resources/groups';
+import type GroupRepresentation from '@keycloak/keycloak-admin-client/lib/defs/groupRepresentation';
+import type UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
 
 interface GroupRepresentationWithParent extends GroupRepresentation {
   parent?: string;
@@ -85,6 +91,35 @@ export function* traverseGroups(
   }
 }
 
+export async function getEntities<T extends Users | Groups>(
+  entities: T,
+  config: KeycloakProviderConfig,
+): Promise<Awaited<ReturnType<T['find']>>> {
+  const rawEntityCount = await entities.count({ realm: config.realm });
+  const entityCount =
+    typeof rawEntityCount === 'number' ? rawEntityCount : rawEntityCount.count;
+
+  // pageCount starts at 0, so we need to subtract 1
+  const pageCount = Math.ceil(entityCount / KEYCLOAK_ENTITY_QUERY_SIZE) - 1;
+
+  // The next line acts like range in python
+  const entityPromises = Array.from(
+    { length: pageCount },
+    (_, i) =>
+      entities.find({
+        realm: config.realm,
+        max: KEYCLOAK_ENTITY_QUERY_SIZE,
+        first: i * KEYCLOAK_ENTITY_QUERY_SIZE,
+      }) as ReturnType<T['find']>,
+  );
+
+  const entityResults = (await Promise.all(entityPromises)).flat() as Awaited<
+    ReturnType<T['find']>
+  >;
+
+  return entityResults;
+}
+
 export const readKeycloakRealm = async (
   client: KeycloakAdminClient,
   config: KeycloakProviderConfig,
@@ -92,13 +127,13 @@ export const readKeycloakRealm = async (
   users: UserEntity[];
   groups: GroupEntity[];
 }> => {
-  const kUsers = await client.users.find({ realm: config.realm, max: -1 });
+  const kUsers = await getEntities(client.users, config);
 
-  const rawKGroups = await client.groups.find({ realm: config.realm, max: -1 });
-  const flatKGroups = rawKGroups.reduce(
-    (acc, g) => [...acc, ...traverseGroups(g)],
-    [] as GroupRepresentationWithParent[],
-  );
+  const rawKGroups = await getEntities(client.groups, config);
+  const flatKGroups = rawKGroups.reduce((acc, g) => {
+    const newAcc = acc.concat(...traverseGroups(g));
+    return newAcc;
+  }, [] as GroupRepresentationWithParent[]);
   const kGroups = await Promise.all(
     flatKGroups.map(async g => {
       g.members = (
