@@ -72,11 +72,17 @@ export const parseUser = (
   spec: {
     profile: {
       email: user.email,
-      displayName: [user.firstName, user.lastName].filter(Boolean).join(' '),
+      displayName:
+        user.firstName || user.lastName
+          ? `${user.firstName} ${user.lastName}`
+          : user.username,
     },
-    memberOf: groups
-      .filter(g => g.members?.includes(user.username!))
-      .map(g => g.name!),
+    memberOf: groups.reduce((acc, g) => {
+      if (g.members?.includes(user.username!)) {
+        acc.push(g.name!);
+      }
+      return acc;
+    }, [] as string[]),
   },
 });
 
@@ -94,12 +100,13 @@ export function* traverseGroups(
 export async function getEntities<T extends Users | Groups>(
   entities: T,
   config: KeycloakProviderConfig,
+  entityQuerySize: number = KEYCLOAK_ENTITY_QUERY_SIZE,
 ): Promise<Awaited<ReturnType<T['find']>>> {
   const rawEntityCount = await entities.count({ realm: config.realm });
   const entityCount =
     typeof rawEntityCount === 'number' ? rawEntityCount : rawEntityCount.count;
 
-  const pageCount = Math.ceil(entityCount / KEYCLOAK_ENTITY_QUERY_SIZE);
+  const pageCount = Math.ceil(entityCount / entityQuerySize);
 
   // The next line acts like range in python
   const entityPromises = Array.from(
@@ -107,8 +114,8 @@ export async function getEntities<T extends Users | Groups>(
     (_, i) =>
       entities.find({
         realm: config.realm,
-        max: KEYCLOAK_ENTITY_QUERY_SIZE,
-        first: i * KEYCLOAK_ENTITY_QUERY_SIZE,
+        max: entityQuerySize,
+        first: i * entityQuerySize,
       }) as ReturnType<T['find']>,
   );
 
@@ -122,13 +129,25 @@ export async function getEntities<T extends Users | Groups>(
 export const readKeycloakRealm = async (
   client: KeycloakAdminClient,
   config: KeycloakProviderConfig,
+  options?: {
+    userQuerySize?: number;
+    groupQuerySize?: number;
+  },
 ): Promise<{
   users: UserEntity[];
   groups: GroupEntity[];
 }> => {
-  const kUsers = await getEntities(client.users, config);
+  const kUsers = await getEntities(
+    client.users,
+    config,
+    options?.userQuerySize,
+  );
 
-  const rawKGroups = await getEntities(client.groups, config);
+  const rawKGroups = await getEntities(
+    client.groups,
+    config,
+    options?.groupQuerySize,
+  );
   const flatKGroups = rawKGroups.reduce((acc, g) => {
     const newAcc = acc.concat(...traverseGroups(g));
     return newAcc;
