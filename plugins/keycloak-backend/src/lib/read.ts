@@ -99,8 +99,7 @@ export async function getEntities<T extends Users | Groups>(
   const entityCount =
     typeof rawEntityCount === 'number' ? rawEntityCount : rawEntityCount.count;
 
-  // pageCount starts at 0, so we need to subtract 1
-  const pageCount = Math.ceil(entityCount / KEYCLOAK_ENTITY_QUERY_SIZE) - 1;
+  const pageCount = Math.ceil(entityCount / KEYCLOAK_ENTITY_QUERY_SIZE);
 
   // The next line acts like range in python
   const entityPromises = Array.from(
