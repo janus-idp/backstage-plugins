@@ -41,6 +41,7 @@
     "@patternfly/react-tokens": "4.94.6",
     "@patternfly/react-topology": "4.93.4",
     "classnames": "2.x",
+    "js-yaml": "^4.1.0",
     "lodash": "^4.17.19",
     "react-router-dom": "^6.3.0",
     "react-use": "^17.2.4"
