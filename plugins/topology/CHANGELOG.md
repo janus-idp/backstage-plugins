@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-topology [1.4.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.4.0...@janus-idp/backstage-plugin-topology@1.4.1) (2023-04-18)
+
+
+### Bug Fixes
+
+* **topology:** Get selected-node if data-model available ([#258](https://github.com/janus-idp/backstage-plugins/issues/258)) ([d54b798](https://github.com/janus-idp/backstage-plugins/commit/d54b7985640262ac2603a09b1b42dbf406f05287))
+
 ## @janus-idp/backstage-plugin-topology [1.4.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.3.1...@janus-idp/backstage-plugin-topology@1.4.0) (2023-04-17)
 
 
