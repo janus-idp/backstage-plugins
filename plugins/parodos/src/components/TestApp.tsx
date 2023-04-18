@@ -1,6 +1,6 @@
 // To be used in tests only.
-// eslint-disable-file no-extraneous-dependencies
 import React from 'react';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import {
   MockConfigApi,
   MockFetchApi,
@@ -26,7 +26,7 @@ export const TestApp: React.FC = ({ children }) => {
   const mockFetch = new MockFetchApi({
     baseImplementation: (
       input: RequestInfo | URL,
-      init?: RequestInit,
+      // init?: RequestInit,
     ): Promise<Response> => {
       // TODO: The test case should pass the mocks as props to the component
       if (input === `${MOCK_BASE_URL}/${MOCK_CONTEXT_URL}/projects`) {
