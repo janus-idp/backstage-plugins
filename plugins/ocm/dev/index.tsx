@@ -55,7 +55,11 @@ const clusterEntityPage = (name: string): JSX.Element => (
   </EntityProvider>
 );
 
-const clusters = [clusterEntity('foo'), clusterEntity('cluster1')];
+const clusters = [
+  clusterEntity('foo'),
+  clusterEntity('cluster1'),
+  clusterEntity('offline-cluster'),
+];
 
 createDevApp()
   .registerApi({
@@ -102,5 +106,9 @@ createDevApp()
   .addPage({
     path: '/catalog/resource/default/cluster1',
     element: clusterEntityPage('cluster1'),
+  })
+  .addPage({
+    path: '/catalog/resource/default/offline-cluster',
+    element: clusterEntityPage('offline-cluster'),
   })
   .render();
