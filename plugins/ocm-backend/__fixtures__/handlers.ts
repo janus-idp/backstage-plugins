@@ -12,6 +12,7 @@ export const handlers = [
           items: [
             require(`${__dirname}/cluster.open-cluster-management.io/managedclusters/local-cluster.json`),
             require(`${__dirname}/cluster.open-cluster-management.io/managedclusters/cluster1.json`),
+            require(`${__dirname}/cluster.open-cluster-management.io/managedclusters/offline-cluster.json`),
           ],
         }),
       );
@@ -35,6 +36,17 @@ export const handlers = [
         ctx.status(200),
         ctx.json(
           require(`${__dirname}/cluster.open-cluster-management.io/managedclusters/cluster1.json`),
+        ),
+      );
+    },
+  ),
+  rest.get(
+    `${LOCAL_ADDR}/apis/cluster.open-cluster-management.io/v1/managedclusters/offline-cluster`,
+    (_, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.json(
+          require(`${__dirname}/cluster.open-cluster-management.io/managedclusters/offline-cluster.json`),
         ),
       );
     },
@@ -68,6 +80,17 @@ export const handlers = [
         ctx.status(200),
         ctx.json(
           require(`${__dirname}/internal.open-cluster-management.io/managedclusterinfos/local-cluster.json`),
+        ),
+      );
+    },
+  ),
+  rest.get(
+    `${LOCAL_ADDR}/apis/internal.open-cluster-management.io/v1beta1/namespaces/offline-cluster/managedclusterinfos/offline-cluster`,
+    (_, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.json(
+          require(`${__dirname}/internal.open-cluster-management.io/managedclusterinfos/offline-cluster.json`),
         ),
       );
     },

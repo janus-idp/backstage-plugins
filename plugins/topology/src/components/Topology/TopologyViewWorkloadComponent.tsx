@@ -57,7 +57,7 @@ const TopologyViewWorkloadComponent: React.FC<
   }, [layout, loaded, dataModel, controller]);
 
   React.useEffect(() => {
-    if (loaded && dataModel) {
+    if (dataModel) {
       const selectedNode: BaseNode | null = selectedId
         ? (controller.getElementById(selectedId) as BaseNode)
         : null;
@@ -68,14 +68,7 @@ const TopologyViewWorkloadComponent: React.FC<
         setSideBarOpen(false);
       }
     }
-  }, [
-    controller,
-    dataModel,
-    loaded,
-    selectedId,
-    setSelectedNode,
-    setSideBarOpen,
-  ]);
+  }, [controller, dataModel, selectedId, setSelectedNode, setSideBarOpen]);
 
   useEventListener<SelectionEventListener>(SELECTION_EVENT, ids => {
     setSelectedIds(ids);

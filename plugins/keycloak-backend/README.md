@@ -40,60 +40,94 @@ The following table describes the parameters that can configured under `keycloak
 
 ## Installation
 
-The package must be installed into the backend of Backstage. When not integrating with a published package, the repository must be cloned locally and added to Backstage as shown below:
+1. The package must be installed into the backend of Backstage. When not integrating with a published package, the repository must be cloned locally and added to Backstage as shown below:
 
-```shell
-# From your Backstage root directory
-yarn add --cwd packages/backend @janus-idp/backstage-plugin-keycloak-backend
-```
+   ```shell
+   # From your Backstage root directory
+   yarn add --cwd packages/backend @janus-idp/backstage-plugin-keycloak-backend
+   ```
 
-Next add the basic configuration to `app-config.yaml`:
+2. Next add the basic configuration to `app-config.yaml`:
 
-```yaml
-catalog:
-  providers:
-    keycloakOrg:
-      default:
-        baseUrl: https://<keycloak_host>/auth
-        loginRealm: ${KEYCLOAK_REALM}
-        realm: ${KEYCLOAK_REALM}
-        clientId: ${KEYCLOAK_CLIENTID}
-        clientSecret: ${KEYCLOAK_CLIENTSECRET}
-```
+   ```yaml
+   # app-config.yaml
+   catalog:
+     providers:
+       keycloakOrg:
+         default:
+           baseUrl: https://<keycloak_host>/auth
+           loginRealm: ${KEYCLOAK_REALM}
+           realm: ${KEYCLOAK_REALM}
+           clientId: ${KEYCLOAK_CLIENTID}
+           clientSecret: ${KEYCLOAK_CLIENTSECRET}
+   ```
 
-Optionally, you can override the default parameters by adding the basic configuration to `app-config.yaml`.
+3. Register the plugin in the `packages/backend/src/plugins/catalog.ts` file. The schedule can also be configured during this step. However there are possible ways of configuration:
 
-```yaml
-keycloak:
-  userQuerySize: 500
-  groupQuerySize: 250
-```
+   1. Configure the schedule inside the `app-config.yaml` file
 
-Finally, register the plugin in the `packages/backend/src/plugins/catalog.ts` file.
+      ```yaml
+      # app-config.yaml
+      catalog:
+        providers:
+          keycloakOrg:
+            default:
+              ...
+              schedule: # optional; same options as in TaskScheduleDefinition
+                # supports cron, ISO duration, "human duration" as used in code
+                frequency: { minutes: 1 }
+                # supports ISO duration, "human duration" as used in code
+                timeout: { minutes: 1 }
+                initialDelay: { seconds: 15 }
+      ```
 
-```javascript
- // packages/backend/src/plugins/catalog.ts
-import { KeycloakOrgEntityProvider } from '@janus-idp/backstage-plugin-keycloak-backend';
+      and and then use the configured scheduler
 
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  const builder = await CatalogBuilder.create(env);
+      ```diff
+      // packages/backend/src/plugins/catalog.ts
+      + import { KeycloakOrgEntityProvider } from '@janus-idp/backstage-plugin-keycloak-backend';
 
-  builder.addEntityProvider(
-    KeycloakOrgEntityProvider.fromConfig(env.config, {
-      id: 'development',
-      logger: env.logger,
-      userQuerySize: env.config.getOptionalNumber('keycloak.userQuerySize'),
-      groupQuerySize: env.config.getOptionalNumber('keycloak.groupQuerySize'),
-      schedule: env.scheduler.createScheduledTaskRunner({
-        frequency: { hours: 1 },
-        timeout: { minutes: 50 },
-        initialDelay: { seconds: 15 }
-      }),
-    }),
-  );
-```
+        export default async function createPlugin(
+          env: PluginEnvironment,
+        ): Promise<Router> {
+          const builder = await CatalogBuilder.create(env);
+
+      +   builder.addEntityProvider(
+      +     KeycloakOrgEntityProvider.fromConfig(env.config, {
+      +       id: 'development',
+      +       logger: env.logger,
+      +       scheduler: env.scheduler,
+      +     }),
+      +   )
+        ...
+        }
+      ```
+
+   2. Add a schedule directly inside the `packages/backend/src/plugins/catalog.ts` file:
+
+      ```diff
+      // packages/backend/src/plugins/catalog.ts
+      + import { KeycloakOrgEntityProvider } from '@janus-idp/backstage-plugin-keycloak-backend';
+
+        export default async function createPlugin(
+          env: PluginEnvironment,
+        ): Promise<Router> {
+          const builder = await CatalogBuilder.create(env);
+
+      +   builder.addEntityProvider(
+      +     KeycloakOrgEntityProvider.fromConfig(env.config, {
+      +       id: 'development',
+      +       logger: env.logger,
+      +       schedule: env.scheduler.createScheduledTaskRunner({
+      +         frequency: { minutes: 1 },
+      +         timeout: { minutes: 1 },
+      +         initialDelay: { seconds: 15 }
+      +       }),
+      +     }),
+      +   )
+        ...
+        }
+      ```
 
 ## Limitations
 
