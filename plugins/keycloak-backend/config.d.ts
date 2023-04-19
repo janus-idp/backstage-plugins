@@ -1,3 +1,5 @@
+import { TaskScheduleDefinitionConfig } from '@backstage/backend-tasks';
+
 interface KeycloakOrg {
   /**
    * Location of the Keycloak instance
@@ -35,9 +37,10 @@ export interface Config {
   catalog?: {
     providers?: {
       keycloakOrg?: {
-        [key: string]:
+        [key: string]: (
           | Omit<KeycloakOrg, 'username' | 'password'>
-          | Omit<KeycloakOrg, 'clientId' | 'clientSecret'>;
+          | Omit<KeycloakOrg, 'clientId' | 'clientSecret'>
+        ) & { scheduler: TaskScheduleDefinitionConfig };
       };
     };
   };

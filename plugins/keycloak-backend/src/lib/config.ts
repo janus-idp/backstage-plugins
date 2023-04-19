@@ -119,8 +119,10 @@ export const readProviderConfigs = (
       throw new Error(`username must be provided when password is defined.`);
     }
 
-    const schedule = config.has('schedule')
-      ? readTaskScheduleDefinitionFromConfig(config.getConfig('schedule'))
+    const schedule = providerConfigInstance.has('schedule')
+      ? readTaskScheduleDefinitionFromConfig(
+          providerConfigInstance.getConfig('schedule'),
+        )
       : undefined;
 
     return {
