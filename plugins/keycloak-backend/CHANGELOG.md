@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-keycloak-backend [1.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-keycloak-backend@1.0.4...@janus-idp/backstage-plugin-keycloak-backend@1.1.0) (2023-04-19)
+
+
+### Features
+
+* **keycloak:** Add missing config schema ([#141](https://github.com/janus-idp/backstage-plugins/issues/141)) ([e7f30ea](https://github.com/janus-idp/backstage-plugins/commit/e7f30eaf0a3c2f8ebcd78668342dc51bb8130a5b))
+
 ## @janus-idp/backstage-plugin-keycloak-backend [1.0.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-keycloak-backend@1.0.3...@janus-idp/backstage-plugin-keycloak-backend@1.0.4) (2023-03-06)
 
 
