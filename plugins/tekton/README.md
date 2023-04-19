@@ -1,12 +1,12 @@
 # Tekton plugin for Backstage
 
-Tekton plugin helps with visualizing the workloads such as Deployment, Replicaset, and Pods powering any service on the Kubernetes cluster.
+The Tekton plugin helps with visualizing the workloads such as Deployment, Replicaset, and Pods powering any service on the Kubernetes cluster.
 
 ## Prerequisites
 
-1. Install and configure Kubernetes plugin by following the [installation](https://backstage.io/docs/features/kubernetes/installation) and [configuration](https://backstage.io/docs/features/kubernetes/configuration) guides.
+1. Install and configure the Kubernetes plugin by following the [installation](https://backstage.io/docs/features/kubernetes/installation) and [configuration](https://backstage.io/docs/features/kubernetes/configuration) guides.
 
-2. Add the following `customResources` in [app-config.yaml](https://backstage.io/docs/features/kubernetes/configuration#configuring-kubernetes-clusters) file:
+2. Add the following `customResources` component in the [app-config.yaml](https://backstage.io/docs/features/kubernetes/configuration#configuring-kubernetes-clusters) file:
    ```yaml
     kubernetes:
       ...
@@ -18,8 +18,9 @@ Tekton plugin helps with visualizing the workloads such as Deployment, Replicase
           apiVersion: 'v1beta1'
           plural: 'taskruns'
    ```
-3. Kubernetes plugin is configured and able to connect to the cluster using a `ServiceAccount`.
-4. The `ClusterRole` must be granted for custom resources (pipelineruns and taskruns) to `ServiceAccount` accessing the cluster. [ClusterRole](https://backstage.io/docs/features/kubernetes/configuration#role-based-access-control) is already granted if you have the Backstage Kubernetes Plugin configured.
+3. The Kubernetes plugin is configured and able to connect to the cluster using a `ServiceAccount`.
+4. The `ClusterRole` must be granted for custom resources (pipelineruns and taskruns) to `ServiceAccount` accessing the cluster. If you have the Backstage Kubernetes Plugin configured, the [ClusterRole](https://backstage.io/docs/features/kubernetes/configuration#role-based-access-control) is already granted.
+   You can use the following code to grant the `ClusterRole` for custom resources:
 
    ```yaml
    ---
@@ -40,7 +41,7 @@ Tekton plugin helps with visualizing the workloads such as Deployment, Replicase
 
    ```
 
-5. To get the resources from a k8s cluster, add the following annotations to the entity's `catalog-info.yaml`:
+5. To get the resources from a Kubernetes cluster, add the following annotations to the entity's `catalog-info.yaml`:
 
    ```yaml
    annotations:
@@ -48,14 +49,23 @@ Tekton plugin helps with visualizing the workloads such as Deployment, Replicase
      backstage.io/kubernetes-namespace: <RESOURCE_NS>
    ```
 
-   The k8s plugin identifies if the provided entity contains k8s resources and from which namespace the plugin receives the resources based on the previous annotations.
+   The Kubernetes plugin identifies if the provided entity contains Kubernetes resources and from which namespace the plugin receives the resources based on the previous annotations.
 
-6. A custom label selector can also be added which is used by Backstage to find the resources. The label selector takes precedence over the ID annotation.
+6. You can also add a custom label selector, which Backstage uses to find the resources. The label selector takes precedence over the ID annotation.
    `'backstage.io/kubernetes-label-selector': 'app=my-app,component=front-end`
-7. For k8s plugin to get the desired entity's k8s resources, the following label must be added to the resources(if label selector is used then the labels mentioned in that must be present on the resource):
+7. You must add the following label to the resources so that the Kubernetes plugin gets the Kubernetes resources from the requested entity:
+
    ```yaml
    'backstage.io/kubernetes-id': <BACKSTAGE_ENTITY_NAME>`
    ```
+
+   ***
+
+   **NOTE**
+
+   When using the label selector, the mentioned labels must be present on the resource.
+
+   ***
 
 ## Using Tekton plugin
 
@@ -83,7 +93,7 @@ Tekton plugin helps with visualizing the workloads such as Deployment, Replicase
 
 ## Development
 
-In [Backstage plugin terminology](https://backstage.io/docs/local-dev/cli-build-system#package-roles), the Tekton plugin is `frontend-plugin`. You can start a live dev session from the repository root using following command:
+In [Backstage plugin terminology](https://backstage.io/docs/local-dev/cli-build-system#package-roles), the Tekton plugin is `frontend-plugin`. You can start a live development session from the repository root using the following command:
 
 ```
 yarn workspace @janus-idp/backstage-plugin-tekton run start
