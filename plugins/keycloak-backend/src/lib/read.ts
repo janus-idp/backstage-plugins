@@ -29,50 +29,99 @@ interface GroupRepresentationWithParent extends GroupRepresentation {
 export const parseGroup = (
   keycloakGroup: GroupRepresentationWithParent,
   realm: string,
-): GroupEntity => ({
-  apiVersion: 'backstage.io/v1beta1',
-  kind: 'Group',
-  metadata: {
-    name: keycloakGroup.name!,
-    annotations: {
-      [KEYCLOAK_ID_ANNOTATION]: keycloakGroup.id!,
-      [KEYCLOAK_REALM_ANNOTATION]: realm,
+): GroupEntity => {
+  if (!keycloakGroup.id) {
+    throw new Error(`Group id is required: ${JSON.stringify(keycloakGroup)}`);
+  }
+
+  if (!keycloakGroup.name) {
+    throw new Error(`Group name is required for group id: ${keycloakGroup.id}`);
+  }
+
+  return {
+    apiVersion: 'backstage.io/v1beta1',
+    kind: 'Group',
+    metadata: {
+      name: keycloakGroup.name,
+      annotations: {
+        [KEYCLOAK_ID_ANNOTATION]: keycloakGroup.id,
+        [KEYCLOAK_REALM_ANNOTATION]: realm,
+      },
     },
-  },
-  spec: {
-    type: 'group',
-    profile: {
-      displayName: keycloakGroup.name!,
+    spec: {
+      type: 'group',
+      profile: {
+        displayName: keycloakGroup.name,
+      },
+      children:
+        keycloakGroup.subGroups?.reduce((acc, g) => {
+          if (!g.name) {
+            throw new Error(`Group name is required: ${JSON.stringify(g)}`);
+          }
+
+          acc.push(g.name);
+          return acc;
+        }, [] as string[]) || [],
+      parent: keycloakGroup?.parent,
+      members: keycloakGroup.members,
     },
-    children: keycloakGroup.subGroups?.map(g => g.name!) || [],
-    parent: keycloakGroup?.parent,
-    members: keycloakGroup.members,
-  },
-});
+  };
+};
+
 export const parseUser = (
   user: UserRepresentation,
   realm: string,
   groups: GroupRepresentationWithParent[],
-): UserEntity => ({
-  apiVersion: 'backstage.io/v1beta1',
-  kind: 'User',
-  metadata: {
-    name: user.username!,
-    annotations: {
-      [KEYCLOAK_ID_ANNOTATION]: user.id!,
-      [KEYCLOAK_REALM_ANNOTATION]: realm,
+): UserEntity => {
+  if (!user.id) {
+    throw new Error(`User id is required: ${JSON.stringify(user)}`);
+  }
+
+  if (!user.username) {
+    throw new Error(`User username is required for user id: ${user.id}`);
+  }
+
+  return {
+    apiVersion: 'backstage.io/v1beta1',
+    kind: 'User',
+    metadata: {
+      name: user.username,
+      annotations: {
+        [KEYCLOAK_ID_ANNOTATION]: user.id,
+        [KEYCLOAK_REALM_ANNOTATION]: realm,
+      },
     },
-  },
-  spec: {
-    profile: {
-      email: user.email,
-      displayName: [user.firstName, user.lastName].filter(Boolean).join(' '),
+    spec: {
+      profile: {
+        email: user.email,
+        displayName:
+          [user.firstName, user.lastName].reduce((str, word) => {
+            if (!word) {
+              return str;
+            }
+
+            const trimmed = word.trim();
+            if (trimmed.length === 0) {
+              return str;
+            }
+
+            return str ? `${str} ${word.trim()}` : word.trim();
+          }) || user.username,
+      },
+      memberOf: groups.reduce((acc, g) => {
+        // user.username is always defined
+        if (g.members?.includes(user.username!)) {
+          if (!g.name) {
+            throw new Error(`Group name is required: ${JSON.stringify(g)}`);
+          }
+
+          acc.push(g.name);
+        }
+        return acc;
+      }, [] as string[]),
     },
-    memberOf: groups
-      .filter(g => g.members?.includes(user.username!))
-      .map(g => g.name!),
-  },
-});
+  };
+};
 
 // eslint-disable-next-line consistent-return
 export function* traverseGroups(
