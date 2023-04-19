@@ -93,7 +93,7 @@ The Tekton plugin helps with visualizing the workloads such as Deployment, Repli
 
 ## Development
 
-In [Backstage plugin terminology](https://backstage.io/docs/local-dev/cli-build-system#package-roles), the Tekton plugin is `frontend-plugin`. You can start a live development session from the repository root using the following command:
+In [Backstage plugin terminology](https://backstage.io/docs/local-dev/cli-build-system#package-roles), the Tekton plugin is a frontend plugin. You can start a live development session from the repository root using the following command:
 
 ```
 yarn workspace @janus-idp/backstage-plugin-tekton run start
