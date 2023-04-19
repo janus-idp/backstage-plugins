@@ -15,28 +15,23 @@ Communication between Backstage and Keycloak is facilitated through the Keycloak
 
 The following table describes the parameters that can configured under `catalog.providers.keycloakOrg.<ENVIRONMENT_NAME>` in the `app-config.yaml` file to enable the plugin:
 
-| Name           | Description                                                                                                                             | Default Value | Required                                             |
-| -------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ------------- | ---------------------------------------------------- |
-| `baseUrl`      | Location of the Keycloak server, such as `https://localhost:8443/auth`. Note: newer versions of Keycloak omit the `/auth` context path. | ""            | Yes                                                  |
-| `realm`        | Realm to synchronize                                                                                                                    | `master`      | No                                                   |
-| `loginRealm`   | Realm used to authenticate against                                                                                                      | `master`      | No                                                   |
-| `username`     | Username to authenticate as                                                                                                             | ""            | Yes if using password based authentication           |
-| `password`     | Password to authenticate as                                                                                                             | ""            | Yes if using password based authentication           |
-| `clientId`     | Client Id to authenticate with                                                                                                          | ""            | Yes if using client credentials based authentication |
-| `clientSecret` | Client Secret to authenticate with                                                                                                      | ""            | Yes if using client credentials based authentication |
+| Name             | Description                                                                                                                             | Default Value | Required                                             |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ------------- | ---------------------------------------------------- |
+| `baseUrl`        | Location of the Keycloak server, such as `https://localhost:8443/auth`. Note: newer versions of Keycloak omit the `/auth` context path. | ""            | Yes                                                  |
+| `realm`          | Realm to synchronize                                                                                                                    | `master`      | No                                                   |
+| `loginRealm`     | Realm used to authenticate against                                                                                                      | `master`      | No                                                   |
+| `username`       | Username to authenticate as                                                                                                             | ""            | Yes if using password based authentication           |
+| `password`       | Password to authenticate as                                                                                                             | ""            | Yes if using password based authentication           |
+| `clientId`       | Client Id to authenticate with                                                                                                          | ""            | Yes if using client credentials based authentication |
+| `clientSecret`   | Client Secret to authenticate with                                                                                                      | ""            | Yes if using client credentials based authentication |
+| `userQuerySize`  | The number of users to query at a time.                                                                                                 | `100`         | No                                                   |
+| `groupQuerySize` | The number of groups to query at a time.                                                                                                | `100`         | No                                                   |
 
 When using client credentials, the access type must be set to `confidential` and service accounts must be enabled. The following roles are required to be added from the `realm-management` client role:
 
 - query-groups
 - query-users
 - view-users
-
-The following table describes the parameters that can configured under `keycloak` in the `app-config.yaml` file to override the default parameters:
-
-| Name             | Description                              | Default Value | Required |
-| ---------------- | ---------------------------------------- | ------------- | -------- |
-| `userQuerySize`  | The number of users to query at a time.  | `100`         | No       |
-| `groupQuerySize` | The number of groups to query at a time. | `100`         | No       |
 
 ## Installation
 
@@ -83,51 +78,64 @@ The following table describes the parameters that can configured under `keycloak
 
       and and then use the configured scheduler
 
-      ```diff
+      ```ts
       // packages/backend/src/plugins/catalog.ts
-      + import { KeycloakOrgEntityProvider } from '@janus-idp/backstage-plugin-keycloak-backend';
+      import { KeycloakOrgEntityProvider } from '@janus-idp/backstage-plugin-keycloak-backend';
 
-        export default async function createPlugin(
-          env: PluginEnvironment,
-        ): Promise<Router> {
-          const builder = await CatalogBuilder.create(env);
+      export default async function createPlugin(
+        env: PluginEnvironment,
+      ): Promise<Router> {
+        const builder = await CatalogBuilder.create(env);
 
-      +   builder.addEntityProvider(
-      +     KeycloakOrgEntityProvider.fromConfig(env.config, {
-      +       id: 'development',
-      +       logger: env.logger,
-      +       scheduler: env.scheduler,
-      +     }),
-      +   )
+        builder.addEntityProvider(
+          KeycloakOrgEntityProvider.fromConfig(env.config, {
+            id: 'development',
+            logger: env.logger,
+            scheduler: env.scheduler,
+          }),
+        )
         ...
-        }
+      }
       ```
 
    2. Add a schedule directly inside the `packages/backend/src/plugins/catalog.ts` file:
 
-      ```diff
+      ```ts
       // packages/backend/src/plugins/catalog.ts
-      + import { KeycloakOrgEntityProvider } from '@janus-idp/backstage-plugin-keycloak-backend';
+      import { KeycloakOrgEntityProvider } from '@janus-idp/backstage-plugin-keycloak-backend';
 
-        export default async function createPlugin(
-          env: PluginEnvironment,
-        ): Promise<Router> {
-          const builder = await CatalogBuilder.create(env);
+      export default async function createPlugin(
+        env: PluginEnvironment,
+      ): Promise<Router> {
+        const builder = await CatalogBuilder.create(env);
 
-      +   builder.addEntityProvider(
-      +     KeycloakOrgEntityProvider.fromConfig(env.config, {
-      +       id: 'development',
-      +       logger: env.logger,
-      +       schedule: env.scheduler.createScheduledTaskRunner({
-      +         frequency: { minutes: 1 },
-      +         timeout: { minutes: 1 },
-      +         initialDelay: { seconds: 15 }
-      +       }),
-      +     }),
-      +   )
+        builder.addEntityProvider(
+          KeycloakOrgEntityProvider.fromConfig(env.config, {
+            id: 'development',
+            logger: env.logger,
+            schedule: env.scheduler.createScheduledTaskRunner({
+              frequency: { minutes: 1 },
+              timeout: { minutes: 1 },
+              initialDelay: { seconds: 15 }
+            }),
+          }),
+        )
         ...
-        }
+      }
       ```
+
+4. Optionally override the default Keycloak query parameters. Configure the parameters inside the `app-config.yaml` file:
+
+   ```yaml
+   # app-config.yaml
+   catalog:
+     providers:
+       keycloakOrg:
+         default:
+           ...
+           userQuerySize: 500 # Optional
+           groupQuerySize: 250 # Optional
+   ```
 
 ## Limitations
 

@@ -89,24 +89,6 @@ export interface KeycloakOrgEntityProviderOptions {
    * The function that transforms a group entry in LDAP to an entity.
    */
   groupTransformer?: GroupTransformer;
-
-  /**
-   * The number of users to query at a time.
-   * @defaultValue 100
-   * @remarks
-   * This is a performance optimization to avoid querying too many users at once.
-   * @see https://www.keycloak.org/docs-api/11.0/rest-api/index.html#_users_resource
-   */
-  userQuerySize?: number;
-
-  /**
-   * The number of groups to query at a time.
-   * @defaultValue 100
-   * @remarks
-   * This is a performance optimization to avoid querying too many groups at once.
-   * @see https://www.keycloak.org/docs-api/11.0/rest-api/index.html#_groups_resource
-   */
-  groupQuerySize?: number;
 }
 
 // Makes sure that emitted entities have a proper location
@@ -158,8 +140,6 @@ export class KeycloakOrgEntityProvider implements EntityProvider {
         id: providerConfig.id,
         provider: providerConfig,
         logger: options.logger,
-        userQuerySize: options.userQuerySize,
-        groupQuerySize: options.groupQuerySize,
       });
 
       if (taskRunner !== 'manual') {
@@ -177,8 +157,6 @@ export class KeycloakOrgEntityProvider implements EntityProvider {
       logger: Logger;
       userTransformer?: UserTransformer;
       groupTransformer?: GroupTransformer;
-      userQuerySize?: number;
-      groupQuerySize?: number;
     },
   ) {}
 
@@ -229,8 +207,8 @@ export class KeycloakOrgEntityProvider implements EntityProvider {
     await kcAdminClient.auth(credentials);
 
     const { users, groups } = await readKeycloakRealm(kcAdminClient, provider, {
-      userQuerySize: this.options.userQuerySize,
-      groupQuerySize: this.options.groupQuerySize,
+      userQuerySize: provider.userQuerySize,
+      groupQuerySize: provider.groupQuerySize,
     });
 
     const { markCommitComplete } = markReadComplete({ users, groups });
