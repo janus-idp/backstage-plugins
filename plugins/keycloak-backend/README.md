@@ -13,7 +13,7 @@ The following capabilities are included within this plugin:
 
 Communication between Backstage and Keycloak is facilitated through the Keycloak API. Support is available for using username/password or client credentials.
 
-The following table describes the parameters that can configured under `catalog.providers.keycloakOrg.default` in the `app-config.yaml` file to enable the plugin:
+The following table describes the parameters that can configured under `catalog.providers.keycloakOrg.<ENVIRONMENT_NAME>` in the `app-config.yaml` file to enable the plugin:
 
 | Name           | Description                                                                                                                             | Default Value | Required                                             |
 | -------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ------------- | ---------------------------------------------------- |
