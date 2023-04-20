@@ -68,6 +68,13 @@ describe('createRouter', () => {
             reason: 'Managed cluster is available',
           },
         },
+        {
+          name: 'offline-cluster',
+          status: {
+            available: false,
+            reason: 'Managed cluster is unavailable',
+          },
+        },
       ]);
     });
   });
