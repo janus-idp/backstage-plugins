@@ -15,12 +15,12 @@ import { CircularProgress, Grid, makeStyles } from '@material-ui/core';
 import { catalogApiRef, EntityRefLink } from '@backstage/plugin-catalog-react';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
 import useDebounce from 'react-use/lib/useDebounce';
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
-import { getClusters } from '../../helpers/apiClient';
 import { HomePageCompanyLogo } from '@backstage/plugin-home';
 import { ErrorResponseBody } from '@backstage/errors';
 import { ClusterOverview } from '@janus-idp/backstage-plugin-ocm-common';
+import { OcmApiRef } from '../../api';
 
 interface clusterEntity {
   status: boolean;
@@ -67,7 +67,7 @@ const useCatalogStyles = makeStyles({
 
 const CatalogClusters = () => {
   const catalogApi = useApi(catalogApiRef);
-  const configApi = useApi(configApiRef);
+  const ocmApi = useApi(OcmApiRef);
   const classes = useCatalogStyles();
 
   const [clusterEntities, setClusterEntities] = useState<clusterEntity[]>([]);
@@ -77,7 +77,7 @@ const CatalogClusters = () => {
         filter: { kind: 'Resource', 'spec.type': 'kubernetes-cluster' },
       });
 
-      const clusters = await getClusters(configApi);
+      const clusters = await ocmApi.getClusters();
 
       if ('error' in clusters) {
         throw new Error((clusters as ErrorResponseBody).error.message);
