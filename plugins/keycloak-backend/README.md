@@ -78,50 +78,50 @@ When using client credentials, the access type must be set to `confidential` and
 
       and and then use the configured scheduler
 
-      ```ts
+      ```diff
       // packages/backend/src/plugins/catalog.ts
-      import { KeycloakOrgEntityProvider } from '@janus-idp/backstage-plugin-keycloak-backend';
+      + import { KeycloakOrgEntityProvider } from '@janus-idp/backstage-plugin-keycloak-backend';
 
-      export default async function createPlugin(
-        env: PluginEnvironment,
-      ): Promise<Router> {
-        const builder = await CatalogBuilder.create(env);
+        export default async function createPlugin(
+          env: PluginEnvironment,
+        ): Promise<Router> {
+          const builder = await CatalogBuilder.create(env);
 
-        builder.addEntityProvider(
-          KeycloakOrgEntityProvider.fromConfig(env.config, {
-            id: 'development',
-            logger: env.logger,
-            scheduler: env.scheduler,
-          }),
-        )
+      +   builder.addEntityProvider(
+      +     KeycloakOrgEntityProvider.fromConfig(env.config, {
+      +       id: 'development',
+      +       logger: env.logger,
+      +       scheduler: env.scheduler,
+      +     }),
+      +   )
         ...
-      }
+        }
       ```
 
    2. Add a schedule directly inside the `packages/backend/src/plugins/catalog.ts` file:
 
-      ```ts
+      ```diff
       // packages/backend/src/plugins/catalog.ts
-      import { KeycloakOrgEntityProvider } from '@janus-idp/backstage-plugin-keycloak-backend';
+      + import { KeycloakOrgEntityProvider } from '@janus-idp/backstage-plugin-keycloak-backend';
 
-      export default async function createPlugin(
-        env: PluginEnvironment,
-      ): Promise<Router> {
-        const builder = await CatalogBuilder.create(env);
+        export default async function createPlugin(
+          env: PluginEnvironment,
+        ): Promise<Router> {
+          const builder = await CatalogBuilder.create(env);
 
-        builder.addEntityProvider(
-          KeycloakOrgEntityProvider.fromConfig(env.config, {
-            id: 'development',
-            logger: env.logger,
-            schedule: env.scheduler.createScheduledTaskRunner({
-              frequency: { minutes: 1 },
-              timeout: { minutes: 1 },
-              initialDelay: { seconds: 15 }
-            }),
-          }),
-        )
+      +   builder.addEntityProvider(
+      +     KeycloakOrgEntityProvider.fromConfig(env.config, {
+      +       id: 'development',
+      +       logger: env.logger,
+      +       schedule: env.scheduler.createScheduledTaskRunner({
+      +         frequency: { minutes: 1 },
+      +         timeout: { minutes: 1 },
+      +         initialDelay: { seconds: 15 }
+      +       }),
+      +     }),
+      +   )
         ...
-      }
+        }
       ```
 
 4. Optionally override the default Keycloak query parameters. Configure the parameters inside the `app-config.yaml` file:
