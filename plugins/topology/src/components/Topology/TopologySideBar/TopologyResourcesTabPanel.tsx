@@ -2,8 +2,11 @@ import * as React from 'react';
 import { V1Pod, V1Service, V1ServicePort } from '@kubernetes/client-node';
 import { LongArrowAltRightIcon } from '@patternfly/react-icons';
 import { BaseNode } from '@patternfly/react-topology';
+import ResourceStatus from '../../../common/components/ResourceStatus';
+import Status from '../../../common/components/Status';
 import { IngressModel, PodModel, ServiceModel } from '../../../models';
 import { IngressData } from '../../../types/ingresses';
+import ResourceName from '../../../common/components/ResourceName';
 import TopologyResourcesTabPanelItem from './TopologyResourcesTabPaneltem';
 import IngressRules from './IngressRules';
 
@@ -18,8 +21,21 @@ const TopologyResourcesTabPanel: React.FC<{ node: BaseNode }> = ({ node }) => {
         {nodeData?.podsData?.pods?.length &&
           nodeData.podsData.pods.map((pod: V1Pod) => (
             <li className="item" key={pod.metadata?.uid}>
-              <span style={{ flex: '1' }}>{pod.metadata?.name}</span>
-              <span style={{ flex: '1' }}>{pod.status?.phase}</span>
+              <span style={{ flex: '1' }}>
+                <ResourceName
+                  name={pod.metadata?.name ?? ''}
+                  kind={pod.kind ?? ''}
+                />
+              </span>
+              <span style={{ flex: '1' }}>
+                {' '}
+                <ResourceStatus
+                  additionalClassNames="hidden-xs"
+                  noStatusBackground
+                >
+                  <Status status={pod.status?.phase ?? ''} />
+                </ResourceStatus>
+              </span>
             </li>
           ))}
       </TopologyResourcesTabPanelItem>
@@ -34,7 +50,12 @@ const TopologyResourcesTabPanel: React.FC<{ node: BaseNode }> = ({ node }) => {
               style={{ flexDirection: 'column' }}
               key={service.metadata?.uid}
             >
-              <span>{service.metadata?.name}</span>
+              <span>
+                <ResourceName
+                  name={service.metadata?.name ?? ''}
+                  kind={service.kind ?? ''}
+                />
+              </span>
               <ul>
                 {(service.spec?.ports ?? []).map(
                   ({ name, port, protocol, targetPort }: V1ServicePort) => (
@@ -66,7 +87,12 @@ const TopologyResourcesTabPanel: React.FC<{ node: BaseNode }> = ({ node }) => {
               style={{ flexDirection: 'column' }}
               key={ingressData.ingress.metadata?.uid}
             >
-              <span>{ingressData.ingress.metadata?.name}</span>
+              <span>
+                <ResourceName
+                  name={ingressData.ingress.metadata?.name ?? ''}
+                  kind={ingressData.ingress.kind ?? ''}
+                />
+              </span>
               {ingressData.url && (
                 <>
                   <span className="topology-text-muted">Location:</span>

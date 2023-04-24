@@ -9,10 +9,10 @@ import {
   DeploymentStrategy,
   podColor,
 } from '../components/Pods/pod';
-import { resourceGVKs } from '../models';
+import { resourceModels } from '../models';
 import { PodControllerOverviewItem, PodRCData } from '../types/pods';
 import { ResKindAbbrColor } from '../types/topology-types';
-import { GroupVersionKind, K8sWorkloadResource } from '../types/types';
+import { Model, K8sWorkloadResource } from '../types/types';
 
 export const podStatus = Object.keys(podColor);
 
@@ -206,16 +206,15 @@ export const getPodData = (
 const kindToAbbr = (kind: string): string =>
   (kind.replace(/[^A-Z]/g, '') || kind.toUpperCase()).slice(0, 4);
 
-const getAssociatedModel = (kind: string): GroupVersionKind | undefined => {
-  const resourcesModelsList = Object.values(resourceGVKs);
+const getAssociatedModel = (kind: string): Model | undefined => {
+  const resourcesModelsList = Object.values(resourceModels);
   return resourcesModelsList.find(resModel => resModel.kind === kind);
 };
 
-export const getKindStringAndAbbreviation = (
-  kind: string,
-): ResKindAbbrColor => {
+export const getKindAbbrColor = (kind: string): ResKindAbbrColor => {
   const kindObj = getAssociatedModel(kind);
   const kindStr = kindObj?.kind ?? kind;
-  const kindAbbr = kindToAbbr(kindStr);
-  return { kindStr, kindAbbr };
+  const kindAbbr = kindObj?.abbr ?? kindToAbbr(kindStr);
+  const kindColor = kindObj?.color;
+  return { kindStr, kindAbbr, kindColor };
 };

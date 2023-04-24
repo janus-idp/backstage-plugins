@@ -1,4 +1,4 @@
-import { GroupVersionKind } from './types/types';
+import { GroupVersionKind, Model } from './types/types';
 
 export const ReplicaSetGVK: GroupVersionKind = {
   apiVersion: 'v1',
@@ -75,52 +75,57 @@ export const resourceGVKs: { [key: string]: GroupVersionKind } = {
   [ModelsPlural.statefulsets]: StatefulSetGVK,
 };
 
-export const DeploymentModel = {
+export const DeploymentModel: Model = {
   ...DeploymentGVK,
   abbr: 'D',
   labelPlural: 'Deployments',
+  color: '#004080',
 };
 
-export const PodModel = {
+export const PodModel: Model = {
   ...PodGVK,
   abbr: 'P',
   labelPlural: 'Pods',
+  color: '#009596',
 };
 
-export const ServiceModel = {
+export const ServiceModel: Model = {
   ...ServiceGVK,
   abbr: 'S',
   labelPlural: 'Services',
+  color: '#6ca100',
 };
 
-export const IngressModel = {
+export const IngressModel: Model = {
   ...IngressesGVK,
   labelPlural: 'Ingresses',
   abbr: 'I',
 };
 
-export const DaemonSetModel = {
+export const DaemonSetModel: Model = {
   ...DaemonSetGVK,
   abbr: 'DS',
   labelPlural: 'DaemonSets',
+  color: '#004080',
 };
 
-export const StatefulSetModel = {
+export const StatefulSetModel: Model = {
   ...StatefulSetGVK,
   abbr: 'SS',
   labelPlural: 'StatefulSets',
 };
 
-export const CronJobModel = {
+export const CronJobModel: Model = {
   ...CronJobGVK,
   abbr: 'CJ',
   labelPlural: 'CronJobs',
 };
 
-export const JobModel = {
+export const JobModel: Model = {
   ...JobGVK,
   abbr: 'J',
   labelPlural: 'Jobs',
+  color: '#004080',
 };
 
 export const resourceModels = {

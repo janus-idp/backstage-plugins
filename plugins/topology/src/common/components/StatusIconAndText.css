@@ -1,0 +1,33 @@
+.bs-topology-icon-and-text {
+  align-items: baseline;
+  display: flex;
+  font-weight: 400;
+}
+
+.bs-topology-icon-and-text .pf-c-label__icon {
+  display: block;
+}
+
+.bs-topology-icon-and-text__icon {
+  flex-shrink: 0;
+  margin-right: 5px;
+}
+
+.bs-topology-icon-and-text--lg {
+  display: block;
+}
+
+.bs-topology-icon-and-text--lg .bs-topology-icon-and-text__icon {
+  font-size: 1.2rem;
+  margin-right: 1rem;
+}
+
+.bs-topology-dashboard-icon {
+  font-size: 1.2rem;
+}
+
+.bs-topology-icon-flex-child {
+  flex: 0 0 auto;
+  position: relative;
+  top: 0.125em;
+}
