@@ -24,6 +24,10 @@ This plugin will show you information about your container images within Quay re
        changeOrigin: true
        # Change to "false" in case of using self hosted quay instance with a self-signed certificate
        secure: true
+
+   quay:
+     # The UI url for Quay, used to generate the link to Quay
+     uiUrl: 'https://quay.io'
    ```
 
 3. Enable additional tab on the entity view page
