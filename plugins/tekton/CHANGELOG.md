@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-tekton [1.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.1.1...@janus-idp/backstage-plugin-tekton@1.2.0) (2023-04-25)
+
+
+### Features
+
+* **tekton:** add latest pipelineRun visualization ([#242](https://github.com/janus-idp/backstage-plugins/issues/242)) ([87f7f5c](https://github.com/janus-idp/backstage-plugins/commit/87f7f5c3753c100dfd50fe8e6359e22651cfb3ae))
+
 ## @janus-idp/backstage-plugin-tekton [1.1.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.1.0...@janus-idp/backstage-plugin-tekton@1.1.1) (2023-04-19)
 
 
