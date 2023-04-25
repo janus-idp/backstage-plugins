@@ -9,7 +9,7 @@ import {
 } from '@backstage/plugin-kubernetes';
 import { TestApiProvider } from '@backstage/test-utils';
 import { mockKubernetesPlrResponse } from '../src/__fixtures__/1-pipelinesData';
-import { tektonPlugin, TektonPage } from '../src/plugin';
+import { tektonPlugin, TektonPage, LatestPipelineRun } from '../src/plugin';
 
 const mockEntity: Entity = {
   apiVersion: 'backstage.io/v1alpha1',
@@ -19,6 +19,7 @@ const mockEntity: Entity = {
     description: 'backstage.io',
     annotations: {
       'backstage.io/kubernetes-id': 'backstage',
+      'janus-idp.io/tekton-enabled': 'true',
     },
   },
   spec: {
@@ -33,10 +34,23 @@ class MockKubernetesClient implements KubernetesApi {
 
   constructor(fixtureData: { [resourceType: string]: any[] }) {
     this.resources = Object.entries(fixtureData).flatMap(
-      ([type, resources]) => ({
-        type: type.toLocaleLowerCase('en-US'),
-        resources,
-      }),
+      ([type, resources]) => {
+        if (type === 'pipelineruns' && resources[0]?.kind === 'PipelineRun') {
+          return {
+            type: 'customresources',
+            resources,
+          };
+        } else if (type === 'taskruns' && resources[0]?.kind === 'TaskRun') {
+          return {
+            type: 'customresources',
+            resources,
+          };
+        }
+        return {
+          type: type.toLocaleLowerCase('en-US'),
+          resources,
+        };
+      },
     );
   }
   async getWorkloadsByEntity(_request: any): Promise<any> {
@@ -100,6 +114,24 @@ createDevApp()
     ),
     title: 'Tekton Page',
     path: '/tekton',
+  })
+  .addPage({
+    element: (
+      <TestApiProvider
+        apis={[
+          [
+            kubernetesApiRef,
+            new MockKubernetesClient(mockKubernetesPlrResponse),
+          ],
+        ]}
+      >
+        <EntityProvider entity={mockEntity}>
+          <LatestPipelineRun />
+        </EntityProvider>
+      </TestApiProvider>
+    ),
+    title: 'PipelineRun Visualization',
+    path: '/pipelinerun-vis',
   })
   .addPage({
     element: (

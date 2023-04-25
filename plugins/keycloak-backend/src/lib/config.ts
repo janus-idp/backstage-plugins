@@ -74,6 +74,24 @@ export type KeycloakProviderConfig = {
    * Schedule configuration for refresh tasks.
    */
   schedule?: TaskScheduleDefinition;
+
+  /**
+   * The number of users to query at a time.
+   * @defaultValue 100
+   * @remarks
+   * This is a performance optimization to avoid querying too many users at once.
+   * @see https://www.keycloak.org/docs-api/11.0/rest-api/index.html#_users_resource
+   */
+  userQuerySize?: number;
+
+  /**
+   * The number of groups to query at a time.
+   * @defaultValue 100
+   * @remarks
+   * This is a performance optimization to avoid querying too many groups at once.
+   * @see https://www.keycloak.org/docs-api/11.0/rest-api/index.html#_groups_resource
+   */
+  groupQuerySize?: number;
 };
 
 export const readProviderConfigs = (
@@ -98,6 +116,10 @@ export const readProviderConfigs = (
     const clientId = providerConfigInstance.getOptionalString('clientId');
     const clientSecret =
       providerConfigInstance.getOptionalString('clientSecret');
+    const userQuerySize =
+      providerConfigInstance.getOptionalNumber('userQuerySize');
+    const groupQuerySize =
+      providerConfigInstance.getOptionalNumber('groupQuerySize');
 
     if (clientId && !clientSecret) {
       throw new Error(
@@ -119,8 +141,10 @@ export const readProviderConfigs = (
       throw new Error(`username must be provided when password is defined.`);
     }
 
-    const schedule = config.has('schedule')
-      ? readTaskScheduleDefinitionFromConfig(config.getConfig('schedule'))
+    const schedule = providerConfigInstance.has('schedule')
+      ? readTaskScheduleDefinitionFromConfig(
+          providerConfigInstance.getConfig('schedule'),
+        )
       : undefined;
 
     return {
@@ -133,6 +157,8 @@ export const readProviderConfigs = (
       clientId,
       clientSecret,
       schedule,
+      userQuerySize,
+      groupQuerySize,
     };
   });
 };

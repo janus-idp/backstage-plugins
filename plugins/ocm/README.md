@@ -316,8 +316,9 @@ Entity component showing allocatable resources on the cluster. References [`.sta
 
 ## Development
 
-Your plugin has been added to the example app in this repository, meaning you'll be able to access it by running `yarn start` in the root directory, and then navigating to [/ocm](http://localhost:3000/ocm).
+If your plugin has been installed to the example app in this repository, you'll be able to access it by running `yarn start` in the root directory, and then navigating to [/ocm](http://localhost:3000/ocm). To start a development setup in isolation with a faster startup and hot reloads
 
-You can also serve the plugin in isolation by running `yarn start` in the plugin directory.
-This method of serving the plugin provides quicker iteration speed and a faster startup and hot reloads.
-It is only meant for local development, and the setup for it can be found inside the [/dev](./dev) directory.
+1. First run the `ocm-backend` plugin in the `plugins/ocm-backend` directory by running `yarn start`.
+2. Then run the `ocm` frontend plugin in the `plugins/ocm` directory by running `yarn start`.
+
+This only meant for local development, and the setup for it can be found inside the [/dev](./dev) directories of the individual plugins.

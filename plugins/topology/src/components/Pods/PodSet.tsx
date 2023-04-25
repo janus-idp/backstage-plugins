@@ -14,6 +14,7 @@ type PodSetProps = {
   showPodCount?: boolean;
   x?: number;
   y?: number;
+  standalone?: boolean;
 };
 
 type InnerPodStatusRadius = {
@@ -65,6 +66,7 @@ const PodSet: React.FC<PodSetProps> = React.memo(function PodSet({
   x = 0,
   y = 0,
   showPodCount,
+  standalone,
 }) {
   const { podStatusOuterRadius, podStatusInnerRadius, podStatusStrokeWidth } =
     calculateRadius(size);
@@ -92,6 +94,7 @@ const PodSet: React.FC<PodSetProps> = React.memo(function PodSet({
         subTitle={showPodCount ? subTitle : undefined}
         title={showPodCount ? title : undefined}
         titleComponent={showPodCount ? titleComponent : undefined}
+        standalone={standalone}
       />
       {inProgressDeploymentData && (
         <PodStatus

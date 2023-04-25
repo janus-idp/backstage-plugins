@@ -62,13 +62,19 @@ const kubeApiResponseHandler = <T extends Object>(
     .catch(r => {
       if (!r.body) {
         throw Object.assign(new Error(r.message), {
-          // If there is no body, there is not status code, default to 500
+          // If there is no body, there is no status code, default to 500
           statusCode: 500,
           name: r.message,
         });
+      } else if (typeof r.body === 'string') {
+        throw Object.assign(new Error(r.body), {
+          statusCode: r.body.code || r.statusCode,
+          name: r.body,
+        });
       }
       throw Object.assign(new Error(r.body.reason), {
-        statusCode: r.body.code,
+        // Name and statusCode are required by the backstage error handler
+        statusCode: r.body.code || r.statusCode,
         name: r.body.reason,
         ...r.body,
       });

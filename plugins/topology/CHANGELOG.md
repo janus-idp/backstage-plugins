@@ -1,3 +1,38 @@
+## @janus-idp/backstage-plugin-topology [1.5.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.4.2...@janus-idp/backstage-plugin-topology@1.5.0) (2023-04-18)
+
+
+### Features
+
+* **topology:** Show ingress rules in sidebar ([#256](https://github.com/janus-idp/backstage-plugins/issues/256)) ([22a565c](https://github.com/janus-idp/backstage-plugins/commit/22a565cea15b0b222cf246189b4e04621ea275f3))
+
+## @janus-idp/backstage-plugin-topology [1.4.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.4.1...@janus-idp/backstage-plugin-topology@1.4.2) (2023-04-18)
+
+
+### Bug Fixes
+
+* **topology:** updates pf react-topology to standalone release ([#261](https://github.com/janus-idp/backstage-plugins/issues/261)) ([90c78e9](https://github.com/janus-idp/backstage-plugins/commit/90c78e9abdad6f72cd9fad7e41736bbe6324c203))
+
+## @janus-idp/backstage-plugin-topology [1.4.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.4.0...@janus-idp/backstage-plugin-topology@1.4.1) (2023-04-18)
+
+
+### Bug Fixes
+
+* **topology:** Get selected-node if data-model available ([#258](https://github.com/janus-idp/backstage-plugins/issues/258)) ([d54b798](https://github.com/janus-idp/backstage-plugins/commit/d54b7985640262ac2603a09b1b42dbf406f05287))
+
+## @janus-idp/backstage-plugin-topology [1.4.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.3.1...@janus-idp/backstage-plugin-topology@1.4.0) (2023-04-17)
+
+
+### Features
+
+* **topology:** Add topology workload node sidebar ([#226](https://github.com/janus-idp/backstage-plugins/issues/226)) ([9b87752](https://github.com/janus-idp/backstage-plugins/commit/9b877524475b65ff6095a2203e5c9da7e7a7f666))
+
+## @janus-idp/backstage-plugin-topology [1.3.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.3.0...@janus-idp/backstage-plugin-topology@1.3.1) (2023-04-14)
+
+
+### Bug Fixes
+
+* **topology:** moves base styles to plugin form component ([#252](https://github.com/janus-idp/backstage-plugins/issues/252)) ([860ee5e](https://github.com/janus-idp/backstage-plugins/commit/860ee5e684f2483c9b22e8bdc1633edb1742c154))
+
 ## @janus-idp/backstage-plugin-topology [1.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.2.5...@janus-idp/backstage-plugin-topology@1.3.0) (2023-04-06)
 
 

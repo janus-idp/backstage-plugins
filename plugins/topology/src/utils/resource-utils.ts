@@ -17,6 +17,7 @@ import {
 } from '../types/types';
 import { WORKLOAD_TYPES } from './topology-utils';
 import { LabelSelector } from './label-selector';
+import { IngressesData } from '../types/ingresses';
 
 const validPod = (pod: V1Pod) => {
   const owners = pod?.metadata?.ownerReferences;
@@ -58,30 +59,6 @@ export const createOverviewItemForType = (
   }
 };
 
-export const getIngressesRulesForServices = (
-  serviceNames: string[],
-  ingresses: V1Ingress[],
-): IngressRule[] => {
-  if (!serviceNames?.length || !ingresses?.length) {
-    return [];
-  }
-  const ingressRules = ingresses.reduce((acc, ingress) => {
-    const rules = ingress.spec?.rules?.filter(rule => {
-      return rule.http?.paths?.some(path => {
-        return (
-          path.backend?.service?.name &&
-          serviceNames.includes(path.backend?.service?.name)
-        );
-      });
-    });
-    if (rules?.length) {
-      acc.push({ schema: ingress.spec?.tls ? 'https' : 'http', rules });
-    }
-    return acc;
-  }, [] as IngressRule[]);
-  return ingressRules;
-};
-
 const getPodTemplate = (
   resource: K8sWorkloadResource,
 ): V1PodTemplate | undefined => {
@@ -118,12 +95,14 @@ export const getServicesForResource = (
   });
 };
 
-export const getIngressWebURL = (ingressRule: IngressRule): string | null => {
+export const getIngressWebURL = (
+  ingressRule: IngressRule,
+): string | undefined => {
   const schema = ingressRule.schema;
   const { host, http } = ingressRule.rules?.[0] || {};
   if (!host || host.includes('*')) {
     // return if host doesn't exist or is a wildcard
-    return null;
+    return undefined;
   }
   let url = `${schema}://${host}`;
   if (http?.paths && http.paths.length > 0) {
@@ -133,17 +112,51 @@ export const getIngressWebURL = (ingressRule: IngressRule): string | null => {
 };
 
 export const getIngressesURL = (
-  ingressRules: IngressRule[] = [],
-): string | null => {
-  const [rule] = ingressRules;
-  if (rule) {
-    return getIngressWebURL(rule);
-  }
-  return null;
+  ingressesData: any = [],
+): string | undefined => {
+  const [ingressData] = ingressesData;
+  return ingressData?.url;
 };
 
 const validUrl = (url?: string | null) =>
   url?.startsWith('http://') || url?.startsWith('https://');
+
+export const getIngressesDataForResourceServices = (
+  resources: K8sResponseData,
+  resource: K8sWorkloadResource,
+): IngressesData => {
+  const services = getServicesForResource(
+    resource,
+    resources.services?.data as V1Service[],
+  );
+  const servicesNames = services.map((s: V1Service) => s.metadata?.name ?? '');
+
+  const ingressesData = (
+    (resources.ingresses?.data as V1Ingress[]) ?? []
+  ).reduce((acc: IngressesData, ingress: V1Ingress) => {
+    const rules = ingress.spec?.rules?.filter(rule => {
+      return rule.http?.paths?.some(path => {
+        return (
+          path.backend?.service?.name &&
+          servicesNames.includes(path.backend.service.name)
+        );
+      });
+    });
+    if (rules?.length) {
+      const ingressURL = getIngressWebURL({
+        schema: ingress.spec?.tls ? 'https' : 'http',
+        rules,
+      });
+      acc.push({
+        ingress,
+        url: validUrl(ingressURL) ? ingressURL : undefined,
+      });
+    }
+    return acc;
+  }, []);
+
+  return ingressesData;
+};
 
 export const getIngressURLForResource = (
   resources: K8sResponseData,
@@ -152,15 +165,10 @@ export const getIngressURLForResource = (
   if (!resources.ingresses?.data) {
     return undefined;
   }
-  const services = getServicesForResource(
+  const ingressesData = getIngressesDataForResourceServices(
+    resources,
     resource,
-    resources.services?.data as V1Service[],
   );
-  const servicesNames = services.map((s: V1Service) => s.metadata?.name ?? '');
-  const ingressRules = getIngressesRulesForServices(
-    servicesNames,
-    resources.ingresses.data as V1Ingress[],
-  );
-  const ingressURL = getIngressesURL(ingressRules) || undefined;
-  return validUrl(ingressURL) ? ingressURL : undefined;
+
+  return getIngressesURL(ingressesData);
 };

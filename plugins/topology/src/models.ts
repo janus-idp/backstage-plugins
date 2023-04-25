@@ -63,7 +63,7 @@ export enum ModelsPlural {
   statefulsets = 'statefulsets',
 }
 
-export const resourceModels: { [key: string]: GroupVersionKind } = {
+export const resourceGVKs: { [key: string]: GroupVersionKind } = {
   [ModelsPlural.deployments]: DeploymentGVK,
   [ModelsPlural.pods]: PodGVK,
   [ModelsPlural.replicasets]: ReplicaSetGVK,
@@ -73,4 +73,63 @@ export const resourceModels: { [key: string]: GroupVersionKind } = {
   [ModelsPlural.cronjobs]: CronJobGVK,
   [ModelsPlural.jobs]: JobGVK,
   [ModelsPlural.statefulsets]: StatefulSetGVK,
+};
+
+export const DeploymentModel = {
+  ...DeploymentGVK,
+  abbr: 'D',
+  labelPlural: 'Deployments',
+};
+
+export const PodModel = {
+  ...PodGVK,
+  abbr: 'P',
+  labelPlural: 'Pods',
+};
+
+export const ServiceModel = {
+  ...ServiceGVK,
+  abbr: 'S',
+  labelPlural: 'Services',
+};
+
+export const IngressModel = {
+  ...IngressesGVK,
+  labelPlural: 'Ingresses',
+  abbr: 'I',
+};
+
+export const DaemonSetModel = {
+  ...DaemonSetGVK,
+  abbr: 'DS',
+  labelPlural: 'DaemonSets',
+};
+
+export const StatefulSetModel = {
+  ...StatefulSetGVK,
+  abbr: 'SS',
+  labelPlural: 'StatefulSets',
+};
+
+export const CronJobModel = {
+  ...CronJobGVK,
+  abbr: 'CJ',
+  labelPlural: 'CronJobs',
+};
+
+export const JobModel = {
+  ...JobGVK,
+  abbr: 'J',
+  labelPlural: 'Jobs',
+};
+
+export const resourceModels = {
+  [DeploymentModel.kind]: DeploymentModel,
+  [PodModel.kind]: PodModel,
+  [ServiceModel.kind]: ServiceModel,
+  [IngressModel.kind]: IngressModel,
+  [StatefulSetModel.kind]: StatefulSetModel,
+  [DaemonSetModel.kind]: DaemonSetModel,
+  [CronJobModel.kind]: CronJobModel,
+  [JobModel.kind]: JobModel,
 };

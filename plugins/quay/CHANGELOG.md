@@ -1,3 +1,11 @@
+## @janus-idp/backstage-plugin-quay [1.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.1.2...@janus-idp/backstage-plugin-quay@1.2.0) (2023-04-25)
+
+
+### Features
+
+* **quay:** add quay link to repository ([#207](https://github.com/janus-idp/backstage-plugins/issues/207)) ([eb44446](https://github.com/janus-idp/backstage-plugins/commit/eb44446edff67a9a5877846fd1a797acde8d24c9))
+* **quay:** add quay security details ([#240](https://github.com/janus-idp/backstage-plugins/issues/240)) ([c163943](https://github.com/janus-idp/backstage-plugins/commit/c16394371436e78ba7e41dba2c502864cc235ec7))
+
 ## @janus-idp/backstage-plugin-quay [1.1.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.1.1...@janus-idp/backstage-plugin-quay@1.1.2) (2023-03-31)
 
 

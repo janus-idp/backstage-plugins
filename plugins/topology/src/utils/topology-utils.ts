@@ -1,6 +1,8 @@
 import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
+import { V1Service } from '@kubernetes/client-node';
 import { INSTANCE_LABEL } from '../const';
-import { ModelsPlural, resourceModels } from '../models';
+import { ModelsPlural, resourceGVKs } from '../models';
+import { IngressesData } from '../types/ingresses';
 import { PodRCData } from '../types/pods';
 import { OverviewItem, TopologyDataObject } from '../types/topology-types';
 import {
@@ -19,13 +21,13 @@ export const WORKLOAD_TYPES: string[] = [
 ];
 
 const apiVersionForWorkloadType = (type: string) => {
-  return resourceModels[type]?.apiGroup
-    ? `${resourceModels[type].apiGroup}/${resourceModels[type].apiVersion}`
-    : resourceModels[type]?.apiVersion;
+  return resourceGVKs[type]?.apiGroup
+    ? `${resourceGVKs[type].apiGroup}/${resourceGVKs[type].apiVersion}`
+    : resourceGVKs[type]?.apiVersion;
 };
 
 const workloadKind = (type: string) => {
-  return resourceModels[type].kind;
+  return resourceGVKs[type].kind;
 };
 
 export const getClusters = (k8sObjects: ObjectsByEntityResponse) => {
@@ -47,7 +49,7 @@ export const getK8sResources = (
       ...acc,
       [res.type]: {
         data:
-          (resourceModels[res.type] &&
+          (resourceGVKs[res.type] &&
             res.resources.map((rval: K8sWorkloadResource) => ({
               ...rval,
               kind: workloadKind(res.type),
@@ -68,7 +70,11 @@ export const createTopologyNodeData = (
   type: string,
   defaultIcon: string,
   url?: string | null,
-  podsData?: PodRCData,
+  resourcesData?: {
+    podsData?: PodRCData;
+    services?: V1Service[];
+    ingressesData?: IngressesData;
+  },
 ): TopologyDataObject => {
   const dcUID = resource.metadata?.uid;
   const deploymentsLabels = resource.metadata?.labels ?? {};
@@ -85,7 +91,7 @@ export const createTopologyNodeData = (
       kind: resource?.kind,
       builderImage: defaultIcon,
       url,
-      podsData,
+      ...resourcesData,
     },
   };
 };

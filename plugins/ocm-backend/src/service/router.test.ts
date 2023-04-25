@@ -1,11 +1,25 @@
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
-import nock from 'nock';
 import request from 'supertest';
 import { createLogger, transports } from 'winston';
 import { createRouter } from './router';
+import { setupServer } from 'msw/node';
+import { handlers } from '../../__fixtures__/handlers';
 
-const FIXTURES_DIR = `${__dirname}/../../__fixtures__`;
+const server = setupServer(...handlers);
+
+beforeAll(() =>
+  server.listen({
+    /*
+     *  This is required so that msw doesn't throw
+     *  warnings when the express app is requesting an endpoint
+     */
+    onUnhandledRequest: 'bypass',
+  }),
+);
+afterEach(() => server.restoreHandlers());
+afterAll(() => server.close());
+
 const logger = createLogger({
   transports: [new transports.Console({ silent: true })],
 });
@@ -23,7 +37,7 @@ describe('createRouter', () => {
             ocm: {
               foo: {
                 name: 'thisishub',
-                url: 'https://127.0.0.1:51010',
+                url: 'http://localhost:5000',
                 serviceAccountToken: 'TOKEN',
               },
             },
@@ -35,22 +49,6 @@ describe('createRouter', () => {
   });
 
   describe('GET /status', () => {
-    beforeAll(() => {
-      nock('https://127.0.0.1:51010')
-        .get('/apis/cluster.open-cluster-management.io/v1/managedclusters')
-        .reply(200, {
-          items: [
-            require(`${FIXTURES_DIR}/cluster.open-cluster-management.io/managedclusters/local-cluster.json`),
-            require(`${FIXTURES_DIR}/cluster.open-cluster-management.io/managedclusters/cluster1.json`),
-          ],
-        })
-        .persist();
-    });
-
-    afterAll(() => {
-      nock.cleanAll();
-    });
-
     it('should get all clusters', async () => {
       const result = await request(app).get('/status');
 
@@ -70,55 +68,18 @@ describe('createRouter', () => {
             reason: 'Managed cluster is available',
           },
         },
+        {
+          name: 'offline-cluster',
+          status: {
+            available: false,
+            reason: 'Managed cluster is unavailable',
+          },
+        },
       ]);
     });
   });
 
   describe('GET /status/:hubName/:clusterName', () => {
-    beforeAll(() => {
-      nock('https://127.0.0.1:51010')
-        .get(
-          '/apis/cluster.open-cluster-management.io/v1/managedclusters/local-cluster',
-        )
-        .reply(
-          200,
-          require(`${FIXTURES_DIR}/cluster.open-cluster-management.io/managedclusters/local-cluster.json`),
-        )
-        .get(
-          '/apis/cluster.open-cluster-management.io/v1/managedclusters/cluster1',
-        )
-        .reply(
-          200,
-          require(`${FIXTURES_DIR}/cluster.open-cluster-management.io/managedclusters/cluster1.json`),
-        )
-        .get(
-          '/apis/cluster.open-cluster-management.io/v1/managedclusters/non_existent_cluster',
-        )
-        .reply(
-          404,
-          require(`${FIXTURES_DIR}/cluster.open-cluster-management.io/managedclusters/non_existent_cluster.json`),
-        )
-        .get(
-          '/apis/internal.open-cluster-management.io/v1beta1/namespaces/cluster1/managedclusterinfos/cluster1',
-        )
-        .reply(
-          200,
-          require(`${FIXTURES_DIR}/internal.open-cluster-management.io/managedclusterinfos/cluster1.json`),
-        )
-        .get(
-          '/apis/internal.open-cluster-management.io/v1beta1/namespaces/local-cluster/managedclusterinfos/local-cluster',
-        )
-        .reply(
-          200,
-          require(`${FIXTURES_DIR}/internal.open-cluster-management.io/managedclusterinfos/local-cluster.json`),
-        )
-        .persist();
-    });
-
-    afterAll(() => {
-      nock.cleanAll();
-    });
-
     it('should correctly parse a cluster', async () => {
       const result = await request(app).get('/status/foo/cluster1');
 

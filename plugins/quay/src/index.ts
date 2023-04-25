@@ -1,1 +1,2 @@
-export { quayPlugin, QuayPage, isQuayAvailable } from './plugin';
+export { quayPlugin, QuayPage } from './plugin';
+export { isQuayAvailable } from './components/Router';

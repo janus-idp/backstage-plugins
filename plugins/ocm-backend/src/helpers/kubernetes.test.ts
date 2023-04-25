@@ -7,8 +7,15 @@ import {
 import { createLogger } from 'winston';
 import transports from 'winston/lib/winston/transports';
 import { CustomObjectsApi, KubeConfig } from '@kubernetes/client-node';
-import nock from 'nock';
 import { OcmConfig } from '../types';
+import { setupServer } from 'msw/node';
+import { handlers } from '../../__fixtures__/handlers';
+
+const server = setupServer(...handlers);
+
+beforeAll(() => server.listen());
+afterEach(() => server.restoreHandlers());
+afterAll(() => server.close());
 
 const FIXTURES_DIR = `${__dirname}/../../__fixtures__`;
 const logger = createLogger({
@@ -51,7 +58,7 @@ describe('hubApiClient', () => {
 });
 
 const kubeConfig = {
-  clusters: [{ name: 'cluster', server: 'https://127.0.0.1:51010' }],
+  clusters: [{ name: 'cluster', server: 'http://localhost:5000' }],
   users: [{ name: 'user', password: 'password' }],
   contexts: [{ name: 'currentContext', cluster: 'cluster', user: 'user' }],
   currentContext: 'currentContext',
@@ -65,66 +72,24 @@ const getApi = () => {
 
 describe('getManagedClusters', () => {
   it('should return some clusters', async () => {
-    nock(kubeConfig.clusters[0].server)
-      .get('/apis/cluster.open-cluster-management.io/v1/managedclusters')
-      .reply(200, {
-        body: {
-          items: [
-            require(`${FIXTURES_DIR}/cluster.open-cluster-management.io/managedclusters/cluster1.json`),
-            require(`${FIXTURES_DIR}/cluster.open-cluster-management.io/managedclusters/local-cluster.json`),
-          ],
-        },
-      });
-
     const result: any = await listManagedClusters(getApi());
-    expect(result.body.items[0].metadata.name).toBe('cluster1');
-    expect(result.body.items[1].metadata.name).toBe('local-cluster');
+    expect(result.items[0].metadata.name).toBe('local-cluster');
+    expect(result.items[1].metadata.name).toBe('cluster1');
   });
 });
 
 describe('getManagedCluster', () => {
   it('should return the correct cluster', async () => {
-    nock(kubeConfig.clusters[0].server)
-      .get(
-        '/apis/cluster.open-cluster-management.io/v1/managedclusters/cluster1',
-      )
-      .reply(200, {
-        body: require(`${FIXTURES_DIR}/cluster.open-cluster-management.io/managedclusters/cluster1.json`),
-      });
-    nock(kubeConfig.clusters[0].server)
-      .get(
-        '/apis/cluster.open-cluster-management.io/v1/managedclusters/local-cluster',
-      )
-      .reply(200, {
-        body: require(`${FIXTURES_DIR}/cluster.open-cluster-management.io/managedclusters/local-cluster.json`),
-      });
-
     const result: any = await getManagedCluster(getApi(), 'cluster1');
 
-    expect(result.body.metadata.name).toBe('cluster1');
+    expect(result.metadata.name).toBe('cluster1');
   });
 
   it('should return an error object when cluster is not found', async () => {
-    const errorResponse = {
-      kind: 'Status',
-      apiVersion: 'v1',
-      metadata: {},
-      status: 'Failure',
-      message:
-        'managedclusters.cluster.open-cluster-management.io "wrong_cluster" not found',
-      reason: 'NotFound',
-      code: 404,
-    };
-
-    nock(kubeConfig.clusters[0].server)
-      .get(
-        '/apis/cluster.open-cluster-management.io/v1/managedclusters/wrong_cluster',
-      )
-      .reply(404, errorResponse);
-
-    const result = await getManagedCluster(getApi(), 'wrong_cluster').catch(
-      r => r,
-    );
+    const result = await getManagedCluster(
+      getApi(),
+      'non_existent_cluster',
+    ).catch(r => r);
 
     expect(result.statusCode).toBe(404);
     expect(result.name).toBe('NotFound');
@@ -133,15 +98,7 @@ describe('getManagedCluster', () => {
 
 describe('getManagedClusterInfo', () => {
   it('should return cluster', async () => {
-    nock(kubeConfig.clusters[0].server)
-      .get(
-        '/apis/internal.open-cluster-management.io/v1beta1/namespaces/local-cluster/managedclusterinfos/local-cluster',
-      )
-      .reply(200, {
-        body: require(`${FIXTURES_DIR}/internal.open-cluster-management.io/managedclusterinfos/local-cluster.json`),
-      });
-
     const result: any = await getManagedClusterInfo(getApi(), 'local-cluster');
-    expect(result.body.metadata.name).toBe('local-cluster');
+    expect(result.metadata.name).toBe('local-cluster');
   });
 });

@@ -47,9 +47,15 @@ This plugin will help with visualizing the workloads like Deployment, Replicaset
      backstage.io/kubernetes-id: <BACKSTAGE_ENTITY_NAME>
      backstage.io/kubernetes-namespace: <RESOURCE_NS>
    ```
-6. A custom label selector can also be added which will then be used by Backstage to find the resources. The label selector takes precedence over the id annotation.
+6. To view the latest PipelineRun visualization in the CI/CD tab of the application, add the below annotation.
+   ```yaml
+   annotations:
+     ...
+     janus-idp.io/tekton-enabled : 'true'
+   ```
+7. A custom label selector can also be added which will then be used by Backstage to find the resources. The label selector takes precedence over the id annotation.
    `'backstage.io/kubernetes-label-selector': 'app=my-app,component=front-end`
-7. For k8s plugin to get the desired entity's k8s resources the following label should be added to the resources(if label selector is used then the labels mentioned in that should be present on the resource):
+8. For k8s plugin to get the desired entity's k8s resources the following label should be added to the resources(if label selector is used then the labels mentioned in that should be present on the resource):
    ```yaml
    'backstage.io/kubernetes-id': <BACKSTAGE_ENTITY_NAME>`
    ```
@@ -75,6 +81,22 @@ This plugin will help with visualizing the workloads like Deployment, Replicaset
          <TektonPage />
        </EntityLayout.Route>
      </EntityPageLayout>
+   );
+   ```
+
+3. Enable latest PipelineRun visualization in the CI/CD tab on the entity view page
+
+   ```ts
+   // packages/app/src/components/catalog/EntityPage.tsx
+   import { LatestPipelineRun, isTektonCIAvailable } from '@janus-idp/backstage-plugin-tekton';
+
+   const cicdContent = (
+     <EntitySwitch>>
+       // ...
+      <EntitySwitch.Case if={isTektonCIAvailable}>
+        <LatestPipelineRun />
+      </EntitySwitch.Case>
+     </EntitySwitch>
    );
    ```
 
