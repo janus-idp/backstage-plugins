@@ -31,6 +31,24 @@ interface KeycloakOrg {
    * @visibility secret
    */
   clientSecret: string;
+
+  /**
+   * The number of users to query at a time.
+   * @defaultValue 100
+   * @remarks
+   * This is a performance optimization to avoid querying too many users at once.
+   * @see https://www.keycloak.org/docs-api/11.0/rest-api/index.html#_users_resource
+   */
+  userQuerySize?: number;
+
+  /**
+   * The number of groups to query at a time.
+   * @defaultValue 100
+   * @remarks
+   * This is a performance optimization to avoid querying too many groups at once.
+   * @see https://www.keycloak.org/docs-api/11.0/rest-api/index.html#_groups_resource
+   */
+  groupQuerySize?: number;
 }
 
 export interface Config {

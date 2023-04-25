@@ -13,17 +13,19 @@ The following capabilities are included within this plugin:
 
 Communication between Backstage and Keycloak is facilitated through the Keycloak API. Support is available for using username/password or client credentials.
 
-The following table describes the parameters that can configured in the `app-config.yaml` file to enable the plugin:
+The following table describes the parameters that can configured under `catalog.providers.keycloakOrg.<ENVIRONMENT_NAME>` in the `app-config.yaml` file to enable the plugin:
 
-| Name           | Description                                                                                                                             | Default Value | Required                                             |
-| -------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ------------- | ---------------------------------------------------- |
-| `baseUrl`      | Location of the Keycloak server, such as `https://localhost:8443/auth`. Note: newer versions of Keycloak omit the `/auth` context path. | ""            | Yes                                                  |
-| `realm`        | Realm to synchronize                                                                                                                    | `master`      | No                                                   |
-| `loginRealm`   | Realm used to authenticate against                                                                                                      | `master`      | No                                                   |
-| `username`     | Username to authenticate as                                                                                                             | ""            | Yes if using password based authentication           |
-| `password`     | Password to authenticate as                                                                                                             | ""            | Yes if using password based authentication           |
-| `clientId`     | Client Id to authenticate with                                                                                                          | ""            | Yes if using client credentials based authentication |
-| `clientSecret` | Client Secret to authenticate with                                                                                                      | ""            | Yes if using client credentials based authentication |
+| Name             | Description                                                                                                                             | Default Value | Required                                             |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ------------- | ---------------------------------------------------- |
+| `baseUrl`        | Location of the Keycloak server, such as `https://localhost:8443/auth`. Note: newer versions of Keycloak omit the `/auth` context path. | ""            | Yes                                                  |
+| `realm`          | Realm to synchronize                                                                                                                    | `master`      | No                                                   |
+| `loginRealm`     | Realm used to authenticate against                                                                                                      | `master`      | No                                                   |
+| `username`       | Username to authenticate as                                                                                                             | ""            | Yes if using password based authentication           |
+| `password`       | Password to authenticate as                                                                                                             | ""            | Yes if using password based authentication           |
+| `clientId`       | Client Id to authenticate with                                                                                                          | ""            | Yes if using client credentials based authentication |
+| `clientSecret`   | Client Secret to authenticate with                                                                                                      | ""            | Yes if using client credentials based authentication |
+| `userQuerySize`  | The number of users to query at a time.                                                                                                 | `100`         | No                                                   |
+| `groupQuerySize` | The number of groups to query at a time.                                                                                                | `100`         | No                                                   |
 
 When using client credentials, the access type must be set to `confidential` and service accounts must be enabled. The following roles are required to be added from the `realm-management` client role:
 
@@ -122,9 +124,22 @@ When using client credentials, the access type must be set to `confidential` and
         }
       ```
 
+4. Optionally override the default Keycloak query parameters. Configure the parameters inside the `app-config.yaml` file:
+
+   ```yaml
+   # app-config.yaml
+   catalog:
+     providers:
+       keycloakOrg:
+         default:
+           ...
+           userQuerySize: 500 # Optional
+           groupQuerySize: 250 # Optional
+   ```
+
 ## Limitations
 
-If you have selfsigned/corporate certificate issues, the temporary solution (and not recommended) is to set the following environment variable before starting Backstage:
+If you have self-signed/corporate certificate issues, the temporary solution (and not recommended) is to set the following environment variable before starting Backstage:
 
 `NODE_TLS_REJECT_UNAUTHORIZED=0`
 
@@ -134,14 +149,14 @@ After configuring the plugin as described in the previous sections the plugin
 will import users and groups when started and on a regular basis. Once
 the first import is complete you can list the users from the catalog page
 by select `User`:
-![](./images/users.jpg)
+![catalog-list](./images/users.jpg)
 
 You will then see the list of users:
-![](./images/user-list.jpg)
+![user-list](./images/user-list.jpg)
 
 Selecting one of those users will show the information imported from Keycloak:
-![](./images/user2.jpg)
+![user-profile](./images/user2.jpg)
 
 Similarly you can select `Group`, view the list and then select/view the information imported from
 Keycloak for a group:
-![](./images/group1.jpg)
+![group-profile](./images/group1.jpg)
