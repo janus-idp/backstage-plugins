@@ -83,6 +83,7 @@ export const NamespacePickerDialog = ({
           <form onSubmit={handleSubmit} className={classes.container}>
             <FormControl>
               <Select
+                data-testid="namespace-picker"
                 name="namespace"
                 inputRef={namespaceRef}
                 onChange={handleChange}

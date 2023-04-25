@@ -160,7 +160,9 @@ export const TerminalComponent = () => {
   }
 
   if (websocketRunning) {
-    return <div className={classes.term} ref={termRef} />;
+    return (
+      <div data-testid="terminal" className={classes.term} ref={termRef} />
+    );
   }
 
   return (
@@ -168,13 +170,19 @@ export const TerminalComponent = () => {
       <InfoCard title="Web Terminal" noPadding>
         <form onSubmit={handleSubmit} className={classes.formDisplay}>
           <TextField
+            data-testid="token-input"
             label="Token"
             type="password"
             variant="outlined"
             inputRef={tokenRef}
             required
           />
-          <Button type="submit" color="primary" variant="contained">
+          <Button
+            data-testid="submit-token-button"
+            type="submit"
+            color="primary"
+            variant="contained"
+          >
             Submit
           </Button>
         </form>
