@@ -2,6 +2,7 @@ import { V1ObjectMeta } from '@kubernetes/client-node';
 import {
   Condition,
   PipelineSpec,
+  PipelineTask,
   TektonResultsRun,
   TektonTaskSpec,
 } from './pipeline';
@@ -103,4 +104,18 @@ export type PipelineRunKind = {
     status?: string;
   };
   status?: PipelineRunStatus;
+};
+
+export type PipelineTaskWithStatus = PipelineTask & {
+  status: {
+    reason: string;
+    completionTime?: string;
+    conditions: Condition[];
+    podName?: string;
+    startTime?: string;
+    steps?: PLRTaskRunStep[];
+    taskSpec?: TektonTaskSpec;
+    taskResults?: { name: string; value: string }[];
+    duration?: string;
+  };
 };
