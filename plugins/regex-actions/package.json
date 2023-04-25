@@ -1,5 +1,5 @@
 {
-  "name": "@janus-idp/backstage-plugin-regex-actions",
+  "name": "@janus-idp/backstage-scaffolder-backend-module-regex",
   "description": "The regex custom actions",
   "version": "1.0.0",
   "main": "src/index.ts",
@@ -11,7 +11,7 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "backend-plugin"
+    "role": "backend-plugin-module"
   },
   "scripts": {
     "start": "backstage-cli package start",
@@ -35,5 +35,12 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "repository": "github:janus-idp/backstage-plugins",
+  "keywords": [
+    "backstage",
+    "backend-plugin-module"
+  ],
+  "homepage": "https://janus-idp.io/",
+  "bugs": "https://github.com/janus-idp/backstage-plugins/issues"
 }
