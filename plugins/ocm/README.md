@@ -1,13 +1,25 @@
 # Open Cluster Management plugin for Backstage
 
-The Open Cluster Management (OCM) plugin integrates your Backstage instance with the `MultiClusterHub` and `MultiCluster` engines of Open Cluster Management.
+The Open Cluster Management (OCM) plugin integrates your Backstage instance with the `MultiClusterHub` and `MultiCluster` engines of OCM.
+
+## Capabilities
+
+The OCM plugin has the following capabilities:
+
+- All clusters represented as `ManagedCluster` in `MultiClusterHub` or MCE are discovered and imported into the Backstage catalog, such as:
+  - Entity is defined as `kind: Resource` with `spec.type` set to `kubernetes-cluster`.
+  - Links to the OpenShift Container Platform (OCP) console, OCM console, and OpenShift Cluster Manager are provided in `metadata.links`.
+- Shows real-time data from OCM on the Resource entity page, including:
+  - Cluster current status (up or down)
+  - Cluster details (console link, OCP, and Kubernetes version)
+  - Details about available compute resources on the cluster
 
 ## Prerequisites
 
 - OCM is deployed and configured on a Kubernetes cluster.
 - [Kubernetes plugin for Backstage](https://backstage.io/docs/features/kubernetes/overview) is installed.
-- Kubernetes plugin is configured and able to connect to the Hub cluster for OCM using a `ServiceAccount`. The cluster is accessed using Backstage backend, therefore, the cluster requires a permanent connection with constant RBAC scope.
-- The `ClusterRole` must be granted to `ServiceAccount` accessing the Hub cluster as follows:
+- Kubernetes plugin is configured and can connect to the hub cluster for OCM using a `ServiceAccount`. The cluster is accessed using Backstage backend, therefore, the cluster requires a permanent connection with constant RBAC scope.
+- A `ClusterRole` must be granted to `ServiceAccount` accessing the hub cluster as follows:
   ```yaml
   kind: ClusterRole
   apiVersion: rbac.authorization.k8s.io/v1
@@ -31,18 +43,6 @@ The Open Cluster Management (OCM) plugin integrates your Backstage instance with
         - watch
         - list
   ```
-
-## Capabilities
-
-The OCM plugin has the following capabilities:
-
-- All clusters represented as `ManagedCluster` in `MultiClusterHub` or MCE are discovered and imported into the Backstage catalog, such as:
-  - Entity is defined as `kind: Resource` with `spec.type` set to `kubernetes-cluster`.
-  - Links to the OCP console, OCM console, and OpenShift Cluster Manager are provided in `metadata.links`.
-- Shows real-time data from OCM on the Resource entity page including:
-  - Cluster current status (up or down)
-  - Cluster details (console link, OCP, and Kubernetes version)
-  - Details about available compute resources on the cluster
 
 ## Using the OCM plugin
 
@@ -145,7 +145,7 @@ If you are interested in Resource discovery and do not want any of the frontend 
      }
    ```
 
-5. Import the cluster `Resource` entity provider into `catalog` plugin in `packages/backend/src/plugins/catalog.ts`file:
+5. Import the cluster `Resource` entity provider into the `catalog` plugin in the `packages/backend/src/plugins/catalog.ts`file:
 
    ```diff
      ...
@@ -314,9 +314,9 @@ yarn workspace app add @janus-idp/backstage-plugin-ocm
 
 ## Development
 
-If you have installed the OCM plugin to the example application in the repository, then run `yarn start` command to access the plugin in the root directory and then navigate to [/ocm](http://localhost:3000/ocm).
+If you have installed the OCM plugin to the example application in the repository, run the `yarn start` command to access the plugin in the root directory and then navigate to [/ocm](http://localhost:3000/ocm).
 
-To start a development setup in isolation with a faster setup and hot reloads, follow the following steps:
+To start a development setup in isolation with a faster setup and hot reloads, complete the following steps:
 
 1. Run the `ocm-backend` plugin in the `plugins/ocm-backend` directory by executing the following command:
 
