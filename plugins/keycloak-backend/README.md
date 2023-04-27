@@ -1,17 +1,17 @@
 # Keycloak Backend Plugin for Backstage
 
-The Keycloak backend plugin integrates Keycloak into the Backstage.
+The Keycloak backend plugin integrates Keycloak into Backstage.
 
 ## Capabilities
 
 The Keycloak backend plugin has the following capabilities:
 
 - Synchronization of Keycloak users in a realm
-- Synchronization of Keycloak groups in a realm and their users
+- Synchronization of Keycloak groups and their users in a realm
 
 ## Configuration
 
-The communication between the Backstage and Keycloak is enabled using Keycloak API. The support is available for using username/password or client credentials.
+Communication between Backstage and Keycloak is enabled by using the Keycloak API. Username/password or client credentials are supported authentication methods.
 
 The following table describes the parameters that you can configure in the `app-config.yaml` file to enable the plugin:
 
@@ -40,7 +40,7 @@ When using client credentials, the access type must be set to `confidential` and
    yarn add --cwd packages/backend @janus-idp/backstage-plugin-keycloak-backend
    ```
 
-2. Add the following configuration to `app-config.yaml` file:
+2. Add the following configuration to the `app-config.yaml` file:
 
    ```yaml
    # app-config.yaml
@@ -124,7 +124,7 @@ When using client credentials, the access type must be set to `confidential` and
 
 ## Limitations
 
-If you have self-signed/corporate certificate issues, the temporary solution is to set the following environment variable before starting Backstage:
+If you have self-signed or corporate certificate issues, you can set the following environment variable before starting Backstage:
 
 `NODE_TLS_REJECT_UNAUTHORIZED=0`
 
@@ -132,21 +132,22 @@ If you have self-signed/corporate certificate issues, the temporary solution is 
 
 **NOTE**
 
-The temporary solution of setting environment variable is not recommended.
+The solution of setting the environment variable is not recommended.
 
 ---
 
 ### View imported users and groups in Backstage
 
-After configuring the plugin as described in the previous sections the plugin imports the users and groups on a regular basis when started. Once the first import is complete, select `User` to list the users from the catalog page:
+After configuring the plugin successfully, the plugin imports the users and groups each time when started.
+
+After the first import is complete, you can select `User` to list the users from the catalog page:
 ![](./images/users.jpg)
 
 You can see the list of users on the page:
 ![](./images/user-list.jpg)
 
-When you select a user, you can see the information imported from the Keycloak:
+When you select a user, you can see the information imported from Keycloak:
 ![](./images/user2.jpg)
 
-Similarly, you can select a `Group`, view the list, and select or view the information imported from the
-Keycloak for a group:
+You can also select a `Group`, view the list, and select or view the information imported from Keycloak for a group:
 ![](./images/group1.jpg)
