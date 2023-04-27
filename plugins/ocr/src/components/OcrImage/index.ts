@@ -1,0 +1,1 @@
+export { OcrImage } from './OcrImage';
