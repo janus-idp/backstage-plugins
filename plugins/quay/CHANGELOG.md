@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-quay [1.2.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.2.0...@janus-idp/backstage-plugin-quay@1.2.1) (2023-04-27)
+
+
+### Bug Fixes
+
+* **quay:** indicate when a layer has no security vulnerabilities detected ([#298](https://github.com/janus-idp/backstage-plugins/issues/298)) ([1285e10](https://github.com/janus-idp/backstage-plugins/commit/1285e102d875696781a2d45f60c61408405896ba))
+
 ## @janus-idp/backstage-plugin-quay [1.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.1.2...@janus-idp/backstage-plugin-quay@1.2.0) (2023-04-25)
 
 
