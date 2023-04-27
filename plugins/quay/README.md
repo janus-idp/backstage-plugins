@@ -52,9 +52,9 @@ The Quay plugin displays the information about your container images within the 
 
 ## Development
 
-In [Backstage plugin terminology](https://backstage.io/docs/local-dev/cli-build-system#package-roles), the Quay plugin is a frontend plugin. However, it requires backend proxy to be available at all times. Therefore, you need to run a backend instance in the development environment as well.
+In [Backstage plugin terminology](https://backstage.io/docs/local-dev/cli-build-system#package-roles), the Quay plugin is a frontend plugin. However, it requires a backend proxy to be available at all times. Therefore, you need to run a backend instance in the development environment as well.
 
-You can run the following commands concurrently to start a live development session from the repository root:
+You can run the following commands concurrently from the root repository to start a live development session:
 
 ```
 yarn start-backend
