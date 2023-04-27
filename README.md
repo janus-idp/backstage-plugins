@@ -1,5 +1,5 @@
 # Backstage Plugins by Janus-IDP
-
+ 
 Backstage is a single-page application composed of a set of plugins. This folder holds numerous plugins that are managed by this project.
 
 For more information about the plugin ecosystem, see the documentation here:
