@@ -44,7 +44,7 @@ const DASH = '-';
  * <Status status='Warning' />
  * ```
  */
-const Status: React.FC<StatusProps> = ({
+export const Status: React.FC<StatusProps> = ({
   status,
   title,
   iconOnly,

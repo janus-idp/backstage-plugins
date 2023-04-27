@@ -74,7 +74,7 @@ const getLatestRunNotBasedOnCreationTimestamp = (
   return temp;
 };
 
-export const getLatestRun = (
+export const getLatestPipelineRun = (
   runs: PipelineRunKind[],
   field: string,
 ): PipelineRunKind | null => {
@@ -144,7 +144,7 @@ export const appendPipelineRunStatus = (
   const tasks =
     (isFinallyTasks
       ? pipelineRun.status?.pipelineSpec?.finally
-      : pipelineRun.status?.pipelineSpec.tasks) || [];
+      : pipelineRun.status?.pipelineSpec?.tasks) || [];
 
   return tasks?.map(task => {
     if (!pipelineRun.status) {

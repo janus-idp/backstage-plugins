@@ -2,7 +2,7 @@ import * as React from 'react';
 import { TektonResourcesContext } from '../../hooks/TektonResourcesContext';
 import { Select, SelectedItems } from '@backstage/core-components';
 
-const ClusterSelector: React.FC = () => {
+export const ClusterSelector: React.FC = () => {
   const {
     clusters: k8sClusters,
     selectedCluster,

@@ -1,55 +1,85 @@
 import React from 'react';
 import { isEmpty } from 'lodash';
-import { Split, SplitItem, Alert } from '@patternfly/react-core';
+import { Split, SplitItem } from '@patternfly/react-core';
 import { Typography } from '@material-ui/core';
-import ResourceStatus from '../common/ResourceStatus';
-import Status from '../common/Status';
+import { EmptyState, InfoCard, Progress } from '@backstage/core-components';
+import { ResourceStatus, Status } from '../common';
 import { pipelineRunStatus } from '../../utils/pipeline-filter-reducer';
 import { PipelineLayout } from './PipelineLayout';
 import { useDarkTheme } from '../../hooks/useDarkTheme';
-import { TaskRunKind } from '../../types/taskRun';
-import { PipelineRunKind } from '../../types/pipelineRun';
 import { getGraphDataModel } from '../../utils/pipeline-topology-utils';
 import { PipelineRunModel } from '../../models';
+import { TektonResourcesContext } from '../../hooks/TektonResourcesContext';
+import { getLatestPipelineRun } from '../../utils/pipelineRun-utils';
+import { ErrorPanel, ClusterSelector } from '../common';
+import { ClusterErrors } from '../../types/types';
 
 import './PipelineVisualization.css';
 
-type PipelineVisualizationProps = {
-  pipelineRun: PipelineRunKind | null;
-  taskRuns: TaskRunKind[];
-};
+const WrapperInfoCard = ({
+  children,
+  allErrors,
+}: {
+  children: React.ReactNode;
+  allErrors?: ClusterErrors;
+}) => (
+  <>
+    {allErrors && allErrors.length > 0 && <ErrorPanel allErrors={allErrors} />}
+    <InfoCard title="Latest Pipeline Run" subheader={<ClusterSelector />}>
+      {children}
+    </InfoCard>
+  </>
+);
 
-export const PipelineVisualization: React.FC<PipelineVisualizationProps> = ({
-  pipelineRun,
-  taskRuns,
-}) => {
+export const PipelineVisualization: React.FC = () => {
   useDarkTheme();
+  const { loaded, responseError, watchResourcesData, selectedClusterErrors } =
+    React.useContext(TektonResourcesContext);
 
-  if (!pipelineRun || isEmpty(pipelineRun)) {
+  const allErrors: ClusterErrors = [
+    ...(responseError ? [{ message: responseError }] : []),
+    ...(selectedClusterErrors ?? []),
+  ];
+  const latestPipelineRun = React.useMemo(
+    () =>
+      getLatestPipelineRun(
+        watchResourcesData?.pipelineruns?.data ?? [],
+        'creationTimestamp',
+      ),
+    [watchResourcesData],
+  );
+
+  if (!loaded)
     return (
-      <Alert
-        data-testid="no-pipelinerun-alert"
-        variant="info"
-        isInline
-        title="No PipelineRun to visualize."
-      />
+      <div data-testid="tekton-progress">
+        <Progress />
+      </div>
+    );
+
+  if (
+    loaded &&
+    (!responseError || responseError?.length === 0) &&
+    (!latestPipelineRun || isEmpty(latestPipelineRun))
+  ) {
+    return (
+      <WrapperInfoCard allErrors={allErrors}>
+        <EmptyState
+          missing="data"
+          description="No Pipeline Run to visualize"
+          title={''}
+        />
+      </WrapperInfoCard>
     );
   }
 
-  const model = getGraphDataModel(pipelineRun, taskRuns);
-  if (!model || (model.nodes.length === 0 && model.edges.length === 0)) {
-    return (
-      <Alert
-        data-testid="no-tasks-alert"
-        variant="info"
-        isInline
-        title="This PipelineRun has no tasks to visualize."
-      />
-    );
-  }
+  const model = getGraphDataModel(
+    latestPipelineRun ?? undefined,
+    watchResourcesData?.taskrun?.data ?? [],
+  );
+
   return (
-    <>
-      {pipelineRun?.metadata?.name && (
+    <WrapperInfoCard allErrors={allErrors}>
+      {latestPipelineRun?.metadata?.name && (
         <Split className="bs-tkn-pipeline-visualization__label">
           <SplitItem style={{ marginRight: 'var(--pf-global--spacer--sm)' }}>
             <span
@@ -61,20 +91,26 @@ export const PipelineVisualization: React.FC<PipelineVisualizationProps> = ({
           </SplitItem>
           <SplitItem>
             <Typography variant="h6">
-              {pipelineRun.metadata.name}
+              {latestPipelineRun.metadata.name}
               <ResourceStatus additionalClassNames="hidden-xs">
-                <Status status={pipelineRunStatus(pipelineRun) ?? ''} />
+                <Status status={pipelineRunStatus(latestPipelineRun) ?? ''} />
               </ResourceStatus>
             </Typography>
           </SplitItem>
         </Split>
       )}
-      <div
-        data-testid="pipeline-visualization"
-        className="bs-tkn-pipeline-visualization__layout"
-      >
-        <PipelineLayout model={model} />
-      </div>
-    </>
+      {!model || (model.nodes.length === 0 && model.edges.length === 0) ? (
+        <div data-testid="pipeline-no-tasks">
+          This Pipeline Run has no tasks to visualize
+        </div>
+      ) : (
+        <div
+          data-testid="pipeline-visualization"
+          className="bs-tkn-pipeline-visualization__layout"
+        >
+          <PipelineLayout model={model} />
+        </div>
+      )}
+    </WrapperInfoCard>
   );
 };

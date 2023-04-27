@@ -4,7 +4,7 @@ import { useEntity } from '@backstage/plugin-catalog-react';
 import { Typography } from '@material-ui/core';
 import { ClusterError, ClusterErrors } from '../../types/types';
 
-const TektonErrorPanel: React.FC<{ allErrors: ClusterErrors }> = ({
+export const ErrorPanel: React.FC<{ allErrors: ClusterErrors }> = ({
   allErrors,
 }) => {
   const {
@@ -13,7 +13,7 @@ const TektonErrorPanel: React.FC<{ allErrors: ClusterErrors }> = ({
     },
   } = useEntity();
   return (
-    <div className="tekton-warning-panel" style={{ marginBottom: '16px' }}>
+    <div className="warning-panel" style={{ marginBottom: '16px' }}>
       <WarningPanel
         title="There was a problem retrieving Kubernetes objects"
         message={`There was a problem retrieving some Kubernetes resources for the entity: ${entityName}. This could mean that the Error Reporting card is not completely accurate.`}
@@ -38,4 +38,4 @@ const TektonErrorPanel: React.FC<{ allErrors: ClusterErrors }> = ({
   );
 };
 
-export default TektonErrorPanel;
+export default ErrorPanel;

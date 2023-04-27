@@ -1,20 +1,16 @@
 import React from 'react';
-import { InfoCard, Progress } from '@backstage/core-components';
-import { useLatestPipelineRun } from '../../hooks/useLatestPipelineRun';
 import { PipelineVisualization } from './PipelineVisualization';
+import { TektonResourcesContext } from '../../hooks/TektonResourcesContext';
+import { ModelsPlural } from '../../models';
+import { useTektonObjectsResponse } from '../../hooks/useTektonObjectsResponse';
 
 export const LatestPipelineRunVisualization = () => {
-  const [pipelineResources, loaded] = useLatestPipelineRun();
+  const watchedResources = [ModelsPlural.pipelineruns, ModelsPlural.taskruns];
+  const tektonResourcesContextData = useTektonObjectsResponse(watchedResources);
 
-  if (!loaded) {
-    return <Progress />;
-  }
   return (
-    <InfoCard title="Latest Pipeline Run">
-      <PipelineVisualization
-        pipelineRun={pipelineResources.pipelineRun}
-        taskRuns={pipelineResources.taskRuns}
-      />
-    </InfoCard>
+    <TektonResourcesContext.Provider value={tektonResourcesContextData}>
+      <PipelineVisualization />
+    </TektonResourcesContext.Provider>
   );
 };
