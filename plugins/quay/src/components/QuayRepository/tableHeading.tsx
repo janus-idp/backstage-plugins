@@ -19,9 +19,10 @@ const vulnerabilitySummary = (layer?: Layer): string => {
     });
   });
 
-  return Object.entries(summary)
+  const scanResults = Object.entries(summary)
     .map(([severity, count]) => `${severity}: ${count}`)
     .join(', ');
+  return scanResults.trim() !== '' ? scanResults : 'Passed';
 };
 
 export const columns: TableColumn[] = [
@@ -44,6 +45,7 @@ export const columns: TableColumn[] = [
       const retStr = vulnerabilitySummary(rowData.securityDetails as Layer);
       return <Link to={`tag/${tagManifest}`}>{retStr}</Link>;
     },
+    id: 'securityScan',
   },
   {
     title: 'Size',
