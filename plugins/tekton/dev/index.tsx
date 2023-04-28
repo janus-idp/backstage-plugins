@@ -126,7 +126,7 @@ createDevApp()
         ]}
       >
         <EntityProvider entity={mockEntity}>
-          <LatestPipelineRun />
+          <LatestPipelineRun url="/tekton" linkTekton />
         </EntityProvider>
       </TestApiProvider>
     ),

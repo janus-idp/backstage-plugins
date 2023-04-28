@@ -1,5 +1,4 @@
 import { RawFetchError } from '@backstage/plugin-kubernetes-common';
-import { cloneDeep } from 'lodash';
 import { PipelineRunKind } from '../types/pipelineRun';
 import { mockKubernetesPlrResponse } from '../__fixtures__/1-pipelinesData';
 import { kubernetesObjects } from '../__fixtures__/kubernetesObject';
@@ -12,7 +11,6 @@ import {
   getDuration,
   calculateDuration,
   pipelineRunDuration,
-  getTektonResourcesFromClusters,
 } from './tekton-utils';
 
 describe('tekton-utils', () => {
@@ -213,24 +211,5 @@ describe('tekton-utils', () => {
     const duration = pipelineRunDuration(mockPipelineRun);
     expect(duration).not.toBeNull();
     expect(duration).toBe('-');
-  });
-});
-
-describe('getTektonResourcesFromClusters', () => {
-  it('should return the tekton resources', () => {
-    const k8sObjects = cloneDeep(kubernetesObjects);
-    let resources = getTektonResourcesFromClusters(k8sObjects);
-    expect(resources).toEqual({
-      pipelineRuns: mockKubernetesPlrResponse.pipelineruns,
-      taskRuns: [],
-    });
-
-    k8sObjects.items[0].resources[1].resources =
-      mockKubernetesPlrResponse.taskruns;
-    resources = getTektonResourcesFromClusters(k8sObjects);
-    expect(resources).toEqual({
-      pipelineRuns: mockKubernetesPlrResponse.pipelineruns,
-      taskRuns: mockKubernetesPlrResponse.taskruns,
-    });
   });
 });

@@ -97,7 +97,7 @@ The Tekton plugin helps with visualizing the `PipelineRun` resources available o
    );
    ```
 
-3. Enable latest PipelineRun visualization in the CI/CD tab on the entity view page
+3. Enable latest PipelineRun visualization in the CI/CD tab on the entity view page. The `linkTekton` prop is optional and takes boolen value, if not specified or set to `true`, then the `GO TO TEKTON` is shown.
 
    ```ts
    // packages/app/src/components/catalog/EntityPage.tsx
@@ -107,7 +107,7 @@ The Tekton plugin helps with visualizing the `PipelineRun` resources available o
      <EntitySwitch>>
        // ...
       <EntitySwitch.Case if={isTektonCIAvailable}>
-        <LatestPipelineRun />
+        <LatestPipelineRun linkTekton />
       </EntitySwitch.Case>
      </EntitySwitch>
    );

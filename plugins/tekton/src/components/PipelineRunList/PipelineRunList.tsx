@@ -5,9 +5,8 @@ import PipelineRunHeader from './PipelineRunHeader';
 import PipelineRunRow from './PipelineRunRow';
 import { Table } from '../Table/Table';
 import { TektonResourcesContext } from '../../hooks/TektonResourcesContext';
-import TektonErrorPanel from '../Tekton/TektonErrorPanel';
+import { ErrorPanel, ClusterSelector } from '../common';
 import { ClusterErrors } from '../../types/types';
-import ClusterSelector from '../common/ClusterSelector';
 
 const WrapperInfoCard = ({
   children,
@@ -17,9 +16,7 @@ const WrapperInfoCard = ({
   allErrors?: any;
 }) => (
   <>
-    {allErrors && allErrors.length > 0 && (
-      <TektonErrorPanel allErrors={allErrors} />
-    )}
+    {allErrors && allErrors.length > 0 && <ErrorPanel allErrors={allErrors} />}
     <InfoCard title="Pipeline Runs" subheader={<ClusterSelector />}>
       {children}
     </InfoCard>

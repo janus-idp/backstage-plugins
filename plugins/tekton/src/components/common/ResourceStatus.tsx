@@ -24,7 +24,7 @@ type ResourceStatusProps = {
  * )
  * ```
  */
-const ResourceStatus: React.FC<ResourceStatusProps> = ({
+export const ResourceStatus: React.FC<ResourceStatusProps> = ({
   additionalClassNames,
   badgeAlt,
   children,
@@ -45,5 +45,3 @@ const ResourceStatus: React.FC<ResourceStatusProps> = ({
     </span>
   );
 };
-
-export default ResourceStatus;

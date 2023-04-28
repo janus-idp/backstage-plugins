@@ -17,11 +17,6 @@ import {
   pipelineRunStatus,
 } from './pipeline-filter-reducer';
 
-type TektonResources = {
-  pipelineRuns: PipelineRunKind[];
-  taskRuns: TaskRunKind[];
-};
-
 export const getClusters = (k8sObjects: ObjectsByEntityResponse) => {
   const clusters: string[] = k8sObjects.items.map(
     (item: ClusterObjects) => item.cluster.name,
@@ -230,35 +225,3 @@ export const pipelineRunDuration = (run: PipelineRunKind): string => {
   }
   return calculateDuration(startTime, completionTime, true);
 };
-
-export const getTektonResourcesFromClusters = (
-  k8sObjects: ObjectsByEntityResponse,
-) =>
-  k8sObjects.items?.reduce(
-    (acc: TektonResources, cluster: ClusterObjects) => {
-      const pipelineResources = cluster.resources.filter(
-        res => res.type === 'customresources',
-      );
-      let pipelineRuns: PipelineRunKind[] = [];
-      let taskRuns: TaskRunKind[] = [];
-      pipelineResources.forEach(res => {
-        pipelineRuns = [
-          ...pipelineRuns,
-          ...res.resources.filter(r => r.kind === 'PipelineRun'),
-        ];
-      });
-      pipelineResources.forEach(res => {
-        taskRuns = [
-          ...taskRuns,
-          ...res.resources.filter(r => r.kind === 'TaskRun'),
-        ];
-      });
-      // eslint-disable-next-line no-param-reassign
-      acc = {
-        pipelineRuns: [...acc.pipelineRuns, ...pipelineRuns],
-        taskRuns: [...acc.taskRuns, ...taskRuns],
-      };
-      return acc;
-    },
-    { pipelineRuns: [], taskRuns: [] },
-  );
