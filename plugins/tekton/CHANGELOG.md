@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-tekton [1.4.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.3.0...@janus-idp/backstage-plugin-tekton@1.4.0) (2023-04-28)
+
+
+### Features
+
+* **tekton:** add cluster selector in the pipeline vis card ([#308](https://github.com/janus-idp/backstage-plugins/issues/308)) ([e321ba9](https://github.com/janus-idp/backstage-plugins/commit/e321ba9a18a8e72af86abe1df7d8ea47d429e3a5))
+
 ## @janus-idp/backstage-plugin-tekton [1.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.2.0...@janus-idp/backstage-plugin-tekton@1.3.0) (2023-04-28)
 
 
