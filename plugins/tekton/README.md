@@ -48,9 +48,10 @@ The Tekton plugin helps with visualizing the `PipelineRun` resources available o
      backstage.io/kubernetes-id: <BACKSTAGE_ENTITY_NAME>
      backstage.io/kubernetes-namespace: <RESOURCE_NS>
    ```
+
    The Kubernetes plugin identifies if the provided entity contains Kubernetes resources and from which namespace the plugin receives the resources based on the previous annotations.
-   
-6. Add the following annotation to  entity's `catalog-info.yaml` file to view the latest `PipelineRun` visualization in the CI/CD tab of the application:
+
+6. Add the following annotation to entity's `catalog-info.yaml` file to view the latest `PipelineRun` visualization in the CI/CD tab of the application:
    ```yaml
    annotations:
      ...
@@ -59,6 +60,7 @@ The Tekton plugin helps with visualizing the `PipelineRun` resources available o
 7. You can also add a custom label selector, which Backstage uses to find the resources. The label selector takes precedence over the ID annotation.
    `'backstage.io/kubernetes-label-selector': 'app=my-app,component=front-end`
 8. You must add the following label to the resources so that the Kubernetes plugin gets the Kubernetes resources from the requested entity:
+
    ```yaml
    'backstage.io/kubernetes-id': <BACKSTAGE_ENTITY_NAME>`
    ```
