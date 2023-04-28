@@ -7,6 +7,5 @@ export const AcrDashboardPage = () => {
   const { entity } = useEntity();
   const { imageName } = useAcrAppData({ entity });
 
-
   return <AzureContainerRegistry image={imageName} widget={false} />;
 };

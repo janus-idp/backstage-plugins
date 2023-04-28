@@ -27,7 +27,9 @@ export function AzureContainerRegistry(props: RepositoryProps) {
   const title = `Azure Container Registry Repository: ${props.image}`;
 
   const { loading } = useAsync(async () => {
-    const tagsResponse = await AzureContainerRegistryClient.getTags(props.image);
+    const tagsResponse = await AzureContainerRegistryClient.getTags(
+      props.image,
+    );
 
     setTags(tagsResponse.tags);
 
@@ -49,7 +51,7 @@ export function AzureContainerRegistry(props: RepositoryProps) {
           <Chip label="sha256" className={localClasses.chip} />
           {shortHash}
         </Box>
-      )
+      ),
     };
   });
 
