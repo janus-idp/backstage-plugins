@@ -206,7 +206,10 @@ export class KeycloakOrgEntityProvider implements EntityProvider {
 
     await kcAdminClient.auth(credentials);
 
-    const { users, groups } = await readKeycloakRealm(kcAdminClient, provider);
+    const { users, groups } = await readKeycloakRealm(kcAdminClient, provider, {
+      userQuerySize: provider.userQuerySize,
+      groupQuerySize: provider.groupQuerySize,
+    });
 
     const { markCommitComplete } = markReadComplete({ users, groups });
 

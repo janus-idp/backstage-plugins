@@ -1,4 +1,4 @@
-import { useQuayAppData } from './useQuayAppData';
+import { useQuayAppData } from '../hooks';
 import { Entity } from '@backstage/catalog-model';
 
 describe('useQuayAppData', () => {

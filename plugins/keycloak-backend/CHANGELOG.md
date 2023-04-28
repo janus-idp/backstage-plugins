@@ -1,3 +1,17 @@
+## @janus-idp/backstage-plugin-keycloak-backend [1.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-keycloak-backend@1.2.0...@janus-idp/backstage-plugin-keycloak-backend@1.3.0) (2023-04-25)
+
+
+### Features
+
+* **keycloak:** add support for user and group pagination ([#259](https://github.com/janus-idp/backstage-plugins/issues/259)) ([b6e8a49](https://github.com/janus-idp/backstage-plugins/commit/b6e8a49497c068cb7bd5623bb3d810a5f0323e1a))
+
+## @janus-idp/backstage-plugin-keycloak-backend [1.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-keycloak-backend@1.1.0...@janus-idp/backstage-plugin-keycloak-backend@1.2.0) (2023-04-20)
+
+
+### Features
+
+* **keycloak:** Add support for scheduler in config file ([#247](https://github.com/janus-idp/backstage-plugins/issues/247)) ([dcf345f](https://github.com/janus-idp/backstage-plugins/commit/dcf345f8f0ca27f85cb4bf158a1d223cb706bb60))
+
 ## @janus-idp/backstage-plugin-keycloak-backend [1.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-keycloak-backend@1.0.4...@janus-idp/backstage-plugin-keycloak-backend@1.1.0) (2023-04-19)
 
 
