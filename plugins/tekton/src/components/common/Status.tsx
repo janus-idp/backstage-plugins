@@ -127,5 +127,3 @@ export const Status: React.FC<StatusProps> = ({
       return <>{status || DASH}</>;
   }
 };
-
-export default Status;

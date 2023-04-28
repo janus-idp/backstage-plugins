@@ -84,7 +84,7 @@ This plugin will help with visualizing the workloads like Deployment, Replicaset
    );
    ```
 
-3. Enable latest PipelineRun visualization in the CI/CD tab on the entity view page
+3. Enable latest PipelineRun visualization in the CI/CD tab on the entity view page. The `linkTekton` prop is optional and takes boolen value, if not specified or set to `true`, then the `GO TO TEKTON` is shown.
 
    ```ts
    // packages/app/src/components/catalog/EntityPage.tsx
@@ -94,7 +94,7 @@ This plugin will help with visualizing the workloads like Deployment, Replicaset
      <EntitySwitch>>
        // ...
       <EntitySwitch.Case if={isTektonCIAvailable}>
-        <LatestPipelineRun />
+        <LatestPipelineRun linkTekton />
       </EntitySwitch.Case>
      </EntitySwitch>
    );

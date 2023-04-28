@@ -45,5 +45,3 @@ export const ResourceStatus: React.FC<ResourceStatusProps> = ({
     </span>
   );
 };
-
-export default ResourceStatus;

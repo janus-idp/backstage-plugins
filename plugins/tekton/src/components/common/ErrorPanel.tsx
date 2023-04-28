@@ -37,5 +37,3 @@ export const ErrorPanel: React.FC<{ allErrors: ClusterErrors }> = ({
     </div>
   );
 };
-
-export default ErrorPanel;

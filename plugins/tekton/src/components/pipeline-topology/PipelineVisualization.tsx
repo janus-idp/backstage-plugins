@@ -1,9 +1,15 @@
 import React from 'react';
 import { isEmpty } from 'lodash';
+import { useEntity } from '@backstage/plugin-catalog-react';
 import { Split, SplitItem } from '@patternfly/react-core';
 import { Typography } from '@material-ui/core';
-import { EmptyState, InfoCard, Progress } from '@backstage/core-components';
-import { ResourceStatus, Status } from '../common';
+import {
+  BottomLinkProps,
+  EmptyState,
+  InfoCard,
+  Progress,
+} from '@backstage/core-components';
+import { ResourceStatus, Status, ErrorPanel, ClusterSelector } from '../common';
 import { pipelineRunStatus } from '../../utils/pipeline-filter-reducer';
 import { PipelineLayout } from './PipelineLayout';
 import { useDarkTheme } from '../../hooks/useDarkTheme';
@@ -11,31 +17,45 @@ import { getGraphDataModel } from '../../utils/pipeline-topology-utils';
 import { PipelineRunModel } from '../../models';
 import { TektonResourcesContext } from '../../hooks/TektonResourcesContext';
 import { getLatestPipelineRun } from '../../utils/pipelineRun-utils';
-import { ErrorPanel, ClusterSelector } from '../common';
 import { ClusterErrors } from '../../types/types';
 
 import './PipelineVisualization.css';
 
+type PipelineVisualizationProps = {
+  linkTekton?: boolean;
+  url?: string;
+};
+
 const WrapperInfoCard = ({
   children,
   allErrors,
+  footerLink,
 }: {
   children: React.ReactNode;
   allErrors?: ClusterErrors;
+  footerLink?: BottomLinkProps;
 }) => (
   <>
     {allErrors && allErrors.length > 0 && <ErrorPanel allErrors={allErrors} />}
-    <InfoCard title="Latest Pipeline Run" subheader={<ClusterSelector />}>
+    <InfoCard
+      title="Latest Pipeline Run"
+      subheader={<ClusterSelector />}
+      deepLink={footerLink}
+    >
       {children}
     </InfoCard>
   </>
 );
 
-export const PipelineVisualization: React.FC = () => {
+export const PipelineVisualization: React.FC<PipelineVisualizationProps> = ({
+  linkTekton = true,
+  url,
+}) => {
   useDarkTheme();
   const { loaded, responseError, watchResourcesData, selectedClusterErrors } =
     React.useContext(TektonResourcesContext);
 
+  const { entity } = useEntity();
   const allErrors: ClusterErrors = [
     ...(responseError ? [{ message: responseError }] : []),
     ...(selectedClusterErrors ?? []),
@@ -66,7 +86,7 @@ export const PipelineVisualization: React.FC = () => {
         <EmptyState
           missing="data"
           description="No Pipeline Run to visualize"
-          title={''}
+          title=""
         />
       </WrapperInfoCard>
     );
@@ -78,7 +98,19 @@ export const PipelineVisualization: React.FC = () => {
   );
 
   return (
-    <WrapperInfoCard allErrors={allErrors}>
+    <WrapperInfoCard
+      allErrors={allErrors}
+      footerLink={
+        linkTekton
+          ? {
+              link: url
+                ? url
+                : `/catalog/default/component/${entity.metadata.name}/tekton`,
+              title: 'GO TO TEKTON',
+            }
+          : undefined
+      }
+    >
       {latestPipelineRun?.metadata?.name && (
         <Split className="bs-tkn-pipeline-visualization__label">
           <SplitItem style={{ marginRight: 'var(--pf-global--spacer--sm)' }}>

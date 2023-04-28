@@ -17,11 +17,6 @@ import {
   pipelineRunStatus,
 } from './pipeline-filter-reducer';
 
-type TektonResources = {
-  pipelineRuns: PipelineRunKind[];
-  taskRuns: TaskRunKind[];
-};
-
 export const getClusters = (k8sObjects: ObjectsByEntityResponse) => {
   const clusters: string[] = k8sObjects.items.map(
     (item: ClusterObjects) => item.cluster.name,

@@ -1,25 +1,21 @@
 import React from 'react';
-import { rest } from 'msw';
-import { setupServer } from 'msw/node';
 import { render, screen } from '@testing-library/react';
-import { setupRequestMockHandlers } from '@backstage/test-utils';
 import { PipelineVisualization } from './PipelineVisualization';
 import { mockKubernetesPlrResponse } from '../../__fixtures__/1-pipelinesData';
 import { TektonResourcesContext } from '../../hooks/TektonResourcesContext';
 
+jest.mock('@backstage/plugin-catalog-react', () => ({
+  useEntity: () => ({
+    entity: {
+      metadata: {
+        name: 'test',
+      },
+    },
+  }),
+}));
+
 describe('PipelineVisualization', () => {
-  const server = setupServer();
-  // Enable sane handlers for network requests
-  setupRequestMockHandlers(server);
-
-  // setup mock response
-  beforeEach(() => {
-    server.use(
-      rest.get('/*', (_, res, ctx) => res(ctx.status(200), ctx.json({}))),
-    );
-  });
-
-  it('should render the pipeline visualization when pipelineRun exists', async () => {
+  it('should render the pipeline run visualization when pipelineRun exists', async () => {
     const mockContextData = {
       watchResourcesData: {
         pipelineruns: {
@@ -37,7 +33,7 @@ describe('PipelineVisualization', () => {
     };
     const { queryByTestId } = render(
       <TektonResourcesContext.Provider value={mockContextData}>
-        <PipelineVisualization />
+        <PipelineVisualization linkTekton={false} />
       </TektonResourcesContext.Provider>,
     );
     expect(
@@ -98,7 +94,7 @@ describe('PipelineVisualization', () => {
 
     const { queryByTestId } = render(
       <TektonResourcesContext.Provider value={mockContextData}>
-        <PipelineVisualization />
+        <PipelineVisualization linkTekton={false} />
       </TektonResourcesContext.Provider>,
     );
     expect(

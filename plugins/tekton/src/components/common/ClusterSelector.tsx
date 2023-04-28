@@ -33,8 +33,7 @@ export const ClusterSelector: React.FC = () => {
       items={clusterOptions}
       selected={clusterSelected}
       margin="dense"
+      native
     />
   );
 };
-
-export default ClusterSelector;
