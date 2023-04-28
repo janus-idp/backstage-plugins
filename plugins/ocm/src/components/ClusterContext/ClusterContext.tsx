@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from 'react';
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
 import useDebounce from 'react-use/lib/useDebounce';
@@ -7,8 +7,8 @@ import {
   ANNOTATION_PROVIDER_ID,
   Cluster,
 } from '@janus-idp/backstage-plugin-ocm-common';
-import { getClusterByName } from '../../helpers/apiClient';
 import { ErrorResponseBody } from '@backstage/errors';
+import { OcmApiRef } from '../../api';
 
 type ClusterContextType = {
   data: Cluster | null;
@@ -22,13 +22,12 @@ const ClusterContext = createContext<ClusterContextType>(
 
 export const ClusterContextProvider = (props: any) => {
   const { entity } = useEntity();
-  const configApi = useApi(configApiRef);
+  const ocmApi = useApi(OcmApiRef);
   const [cluster, setCluster] = useState({} as Cluster | ErrorResponseBody);
   const [{ loading, error: asyncError }, refresh] = useAsyncFn(
     async () => {
       const providerId = entity.metadata.annotations![ANNOTATION_PROVIDER_ID];
-      const cl = await getClusterByName(
-        configApi,
+      const cl = await ocmApi.getClusterByName(
         providerId,
         entity.metadata.name,
       );

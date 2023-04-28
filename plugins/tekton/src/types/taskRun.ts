@@ -4,6 +4,8 @@ import {
   V1PersistentVolumeClaimTemplate,
   V1Secret,
 } from '@kubernetes/client-node';
+import { RunStatus } from '@patternfly/react-topology';
+import { ComputedStatus, TerminatedReasons } from './computedStatus';
 import {
   Condition,
   PipelineTaskParam,
@@ -13,6 +15,29 @@ import {
   TektonTaskSpec,
 } from './pipeline';
 import { PLRTaskRunStep } from './pipelineRun';
+
+export type StepStatus = {
+  duration: string | null | undefined;
+  name: string;
+  status: RunStatus;
+};
+
+export type TaskStatusStep = {
+  name: string;
+  running?: { startedAt: string };
+  terminated?: {
+    finishedAt: string;
+    reason: TerminatedReasons;
+    startedAt: string;
+  };
+  waiting?: {};
+};
+
+export type TaskStatus = {
+  reason: ComputedStatus;
+  duration?: string;
+  steps?: TaskStatusStep[];
+};
 
 export type VolumeTypePVC = {
   claimName: string;

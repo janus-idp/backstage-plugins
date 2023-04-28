@@ -23,3 +23,14 @@ export const TektonPage = tektonPlugin.provide(
     mountPoint: rootRouteRef,
   }),
 );
+
+export const LatestPipelineRun = tektonPlugin.provide(
+  createRoutableExtension({
+    name: 'LatestPipelineRun',
+    component: () =>
+      import('./components/PipelineVisualizationRouter').then(
+        m => m.PipelineVisualizationRouter,
+      ),
+    mountPoint: rootRouteRef,
+  }),
+);

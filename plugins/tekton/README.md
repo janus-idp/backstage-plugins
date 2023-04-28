@@ -48,13 +48,17 @@ The Tekton plugin helps with visualizing the `PipelineRun` resources available o
      backstage.io/kubernetes-id: <BACKSTAGE_ENTITY_NAME>
      backstage.io/kubernetes-namespace: <RESOURCE_NS>
    ```
-
    The Kubernetes plugin identifies if the provided entity contains Kubernetes resources and from which namespace the plugin receives the resources based on the previous annotations.
-
-6. You can also add a custom label selector, which Backstage uses to find the resources. The label selector takes precedence over the ID annotation.
+   
+6. Add the following annotation to  entity's `catalog-info.yaml` file to view the latest `PipelineRun` visualization in the CI/CD tab of the application:
+   ```yaml
+   annotations:
+     ...
+     janus-idp.io/tekton-enabled : 'true'
+   ```
+7. You can also add a custom label selector, which Backstage uses to find the resources. The label selector takes precedence over the ID annotation.
    `'backstage.io/kubernetes-label-selector': 'app=my-app,component=front-end`
-7. You must add the following label to the resources so that the Kubernetes plugin gets the Kubernetes resources from the requested entity:
-
+8. You must add the following label to the resources so that the Kubernetes plugin gets the Kubernetes resources from the requested entity:
    ```yaml
    'backstage.io/kubernetes-id': <BACKSTAGE_ENTITY_NAME>`
    ```
@@ -88,6 +92,22 @@ The Tekton plugin helps with visualizing the `PipelineRun` resources available o
          <TektonPage />
        </EntityLayout.Route>
      </EntityPageLayout>
+   );
+   ```
+
+3. Enable latest PipelineRun visualization in the CI/CD tab on the entity view page
+
+   ```ts
+   // packages/app/src/components/catalog/EntityPage.tsx
+   import { LatestPipelineRun, isTektonCIAvailable } from '@janus-idp/backstage-plugin-tekton';
+
+   const cicdContent = (
+     <EntitySwitch>>
+       // ...
+      <EntitySwitch.Case if={isTektonCIAvailable}>
+        <LatestPipelineRun />
+      </EntitySwitch.Case>
+     </EntitySwitch>
    );
    ```
 

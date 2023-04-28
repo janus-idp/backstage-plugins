@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-ocm [2.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm@2.1.0...@janus-idp/backstage-plugin-ocm@2.2.0) (2023-04-20)
+
+
+### Features
+
+* **ocm:** Migrate ocm frontend plugin to the backstage utility API ([#266](https://github.com/janus-idp/backstage-plugins/issues/266)) ([30cb98c](https://github.com/janus-idp/backstage-plugins/commit/30cb98c7b87e8ff07a0fb447e1d4717aea7bb37d))
+
 ## @janus-idp/backstage-plugin-ocm [2.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm@2.0.0...@janus-idp/backstage-plugin-ocm@2.1.0) (2023-04-05)
 
 

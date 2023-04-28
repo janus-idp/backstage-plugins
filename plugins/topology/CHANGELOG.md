@@ -1,3 +1,17 @@
+## @janus-idp/backstage-plugin-topology [1.5.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.4.2...@janus-idp/backstage-plugin-topology@1.5.0) (2023-04-18)
+
+
+### Features
+
+* **topology:** Show ingress rules in sidebar ([#256](https://github.com/janus-idp/backstage-plugins/issues/256)) ([22a565c](https://github.com/janus-idp/backstage-plugins/commit/22a565cea15b0b222cf246189b4e04621ea275f3))
+
+## @janus-idp/backstage-plugin-topology [1.4.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.4.1...@janus-idp/backstage-plugin-topology@1.4.2) (2023-04-18)
+
+
+### Bug Fixes
+
+* **topology:** updates pf react-topology to standalone release ([#261](https://github.com/janus-idp/backstage-plugins/issues/261)) ([90c78e9](https://github.com/janus-idp/backstage-plugins/commit/90c78e9abdad6f72cd9fad7e41736bbe6324c203))
+
 ## @janus-idp/backstage-plugin-topology [1.4.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.4.0...@janus-idp/backstage-plugin-topology@1.4.1) (2023-04-18)
 
 

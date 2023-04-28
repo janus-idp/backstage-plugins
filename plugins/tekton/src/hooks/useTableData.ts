@@ -4,18 +4,18 @@ import { SortByDirection } from '@patternfly/react-table';
 
 type UseTableDataProps<D = any> = {
   propData: D[];
-  defaultSortField?: string;
-  defaultSortOrder?: SortByDirection;
+  sortField?: string;
+  sortOrder?: SortByDirection;
 };
 
 export const useTableData = ({
   propData,
-  defaultSortField = 'metadata.name',
-  defaultSortOrder = SortByDirection.asc,
+  sortField = 'metadata.name',
+  sortOrder = SortByDirection.asc,
 }: UseTableDataProps) => {
   return React.useMemo(() => {
     const getSortValue = (resource: any) => {
-      const val = get(resource, defaultSortField);
+      const val = get(resource, sortField);
       return val ?? '';
     };
 
@@ -28,10 +28,10 @@ export const useTableData = ({
           ? aValue - bValue
           : `${aValue}`.localeCompare(`${bValue}`);
       if (result !== 0) {
-        return defaultSortOrder === SortByDirection.asc ? result : result * -1;
+        return sortOrder === SortByDirection.asc ? result : result * -1;
       }
       return 0;
     });
-    return { data: propData };
-  }, [propData, defaultSortField, defaultSortOrder]);
+    return { data: propData, sortField, sortOrder };
+  }, [propData, sortField, sortOrder]);
 };

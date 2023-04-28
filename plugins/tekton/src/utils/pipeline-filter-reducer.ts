@@ -2,7 +2,7 @@ import {
   ComputedStatus,
   SucceedConditionReason,
 } from '../types/computedStatus';
-import { PipelineRunKind } from '../types/pipelineRun';
+import { PipelineRunKind, PipelineTaskWithStatus } from '../types/pipelineRun';
 import { TaskRunKind } from '../types/taskRun';
 
 const getSucceededStatus = (status: string): ComputedStatus => {
@@ -15,7 +15,7 @@ const getSucceededStatus = (status: string): ComputedStatus => {
 };
 
 export const pipelineRunStatus = (
-  pipelineRun: PipelineRunKind | TaskRunKind,
+  pipelineRun: PipelineRunKind | TaskRunKind | PipelineTaskWithStatus,
 ) => {
   const conditions = pipelineRun?.status?.conditions || [];
   if (conditions.length === 0) return null;
@@ -24,6 +24,7 @@ export const pipelineRunStatus = (
   const cancelledCondition = conditions.find(
     (c: any) => c.reason === 'Cancelled',
   );
+  const failedCondition = conditions.find((c: any) => c.reason === 'Failed');
 
   if (
     [
@@ -32,7 +33,8 @@ export const pipelineRunStatus = (
     ].includes(
       (pipelineRun as PipelineRunKind)?.spec?.status as SucceedConditionReason,
     ) &&
-    !cancelledCondition
+    !cancelledCondition &&
+    !failedCondition
   ) {
     return ComputedStatus.Cancelling;
   }

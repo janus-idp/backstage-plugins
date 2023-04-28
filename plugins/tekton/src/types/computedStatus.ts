@@ -1,3 +1,7 @@
+export enum TerminatedReasons {
+  Completed = 'Completed',
+}
+
 export enum ComputedStatus {
   Cancelling = 'Cancelling',
   Succeeded = 'Succeeded',

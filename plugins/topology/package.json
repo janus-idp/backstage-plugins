@@ -1,6 +1,6 @@
 {
   "name": "@janus-idp/backstage-plugin-topology",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -35,12 +35,13 @@
     "@material-ui/lab": "^4.0.0-alpha.45",
     "@patternfly/patternfly": "4.224.2",
     "@patternfly/react-charts": "6.94.18",
-    "@patternfly/react-core": "4.276.6",
+    "@patternfly/react-core": "4.276.8",
     "@patternfly/react-icons": "^4.93.6",
     "@patternfly/react-styles": "^4.92.6",
     "@patternfly/react-tokens": "4.94.6",
     "@patternfly/react-topology": "4.93.4",
     "classnames": "2.x",
+    "js-yaml": "^4.1.0",
     "lodash": "^4.17.19",
     "react-router-dom": "^6.3.0",
     "react-use": "^17.2.4"

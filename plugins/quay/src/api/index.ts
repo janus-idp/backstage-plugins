@@ -72,7 +72,7 @@ export class QuayApiClient implements QuayApiV1 {
 
   private encodeGetParams(params: Record<string, any>) {
     return Object.keys(params)
-      .filter(key => params[key] !== undefined)
+      .filter(key => typeof params[key] !== 'undefined')
       .map(
         k =>
           `${encodeURIComponent(k)}=${encodeURIComponent(params[k] as string)}`,
@@ -80,13 +80,20 @@ export class QuayApiClient implements QuayApiV1 {
       .join('&');
   }
 
-  async getTags(org: string, repo: string, page?: number, limit?: number) {
+  async getTags(
+    org: string,
+    repo: string,
+    page?: number,
+    limit?: number,
+    specifcTag?: string,
+  ) {
     const proxyUrl = await this.getBaseUrl();
 
     const params = this.encodeGetParams({
       limit,
       page,
       onlyActiveTags: true,
+      specifcTag,
     });
 
     return (await this.fetcher(
