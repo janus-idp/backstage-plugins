@@ -1,6 +1,6 @@
 # Tekton plugin for Backstage
 
-The Tekton plugin helps with visualizing the workloads such as Deployment, Replicaset, and Pods powering any service on the Kubernetes cluster.
+The Tekton plugin helps with visualizing the `PipelineRun` resources available on the Kubernetes cluster.
 
 ## Prerequisites
 
