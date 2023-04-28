@@ -11,16 +11,19 @@ export interface AzureContainerRegistryApiV1 {
   getTags(repo: string): Promise<TagsResponse>;
 }
 
-export const AzureContainerRegistryApiRef = createApiRef<AzureContainerRegistryApiV1>({
-  id: 'plugin.acr.service',
-});
+export const AzureContainerRegistryApiRef =
+  createApiRef<AzureContainerRegistryApiV1>({
+    id: 'plugin.acr.service',
+  });
 
 export type Options = {
   discoveryApi: DiscoveryApi;
   configApi: ConfigApi;
 };
 
-export class AzureContainerRegistryApiClient implements AzureContainerRegistryApiV1 {
+export class AzureContainerRegistryApiClient
+  implements AzureContainerRegistryApiV1
+{
   // @ts-ignore
   private readonly discoveryApi: DiscoveryApi;
   private readonly configApi: ConfigApi;
@@ -28,13 +31,11 @@ export class AzureContainerRegistryApiClient implements AzureContainerRegistryAp
   constructor(options: Options) {
     this.discoveryApi = options.discoveryApi;
     this.configApi = options.configApi;
-
   }
 
   private async getBaseUrl() {
     const proxyPath =
-      this.configApi.getOptionalString('acr.proxyPath') ||
-      DEFAULT_PROXY_PATH;
+      this.configApi.getOptionalString('acr.proxyPath') || DEFAULT_PROXY_PATH;
     return `${await this.discoveryApi.getBaseUrl('proxy')}${proxyPath}`;
   }
 
@@ -54,8 +55,6 @@ export class AzureContainerRegistryApiClient implements AzureContainerRegistryAp
   async getTags(repo: string) {
     const proxyUrl = await this.getBaseUrl();
 
-    return (await this.fetcher(
-      `${proxyUrl}/${repo}/_tags`
-    )) as TagsResponse;
+    return (await this.fetcher(`${proxyUrl}/${repo}/_tags`)) as TagsResponse;
   }
 }

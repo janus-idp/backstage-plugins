@@ -1,7 +1,7 @@
 export interface TagsResponse {
   imageName: string;
   registry: string;
-  tags: Tag[]
+  tags: Tag[];
 }
 
 export interface Tag {

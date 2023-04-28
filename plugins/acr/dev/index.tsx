@@ -7,6 +7,6 @@ createDevApp()
   .addPage({
     element: <AcrPage />,
     title: 'Root Page',
-    path: '/acr'
+    path: '/acr',
   })
   .render();

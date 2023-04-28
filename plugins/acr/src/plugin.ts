@@ -7,7 +7,10 @@ import {
 } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { rootRouteRef } from './routes';
-import { AzureContainerRegistryApiClient, AzureContainerRegistryApiRef } from './api';
+import {
+  AzureContainerRegistryApiClient,
+  AzureContainerRegistryApiRef,
+} from './api';
 import { AZURE_CONTAINER_REGISTRY_ANNOTATION_IMAGE_NAME } from './consts';
 
 export const acrPlugin = createPlugin({
@@ -33,14 +36,14 @@ export const AcrPage = acrPlugin.provide(
     name: 'AzureContainerRegistryPage',
     component: {
       lazy: () =>
-        import('./components/AcrDashboardPage').then(
-          m => m.AcrDashboardPage,
-        ),
+        import('./components/AcrDashboardPage').then(m => m.AcrDashboardPage),
     },
   }),
 );
 
 export const isAcrAvailable = (entity: Entity) =>
   Boolean(
-    entity?.metadata.annotations?.[AZURE_CONTAINER_REGISTRY_ANNOTATION_IMAGE_NAME],
+    entity?.metadata.annotations?.[
+      AZURE_CONTAINER_REGISTRY_ANNOTATION_IMAGE_NAME
+    ],
   );
