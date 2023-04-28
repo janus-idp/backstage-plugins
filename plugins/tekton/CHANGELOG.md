@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-tekton [1.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.2.0...@janus-idp/backstage-plugin-tekton@1.3.0) (2023-04-28)
+
+
+### Features
+
+* **tekton:** tekton pipeline run list sort ([#253](https://github.com/janus-idp/backstage-plugins/issues/253)) ([356f637](https://github.com/janus-idp/backstage-plugins/commit/356f637d183eaa58e27be383db5834167f13c058))
+
 ## @janus-idp/backstage-plugin-tekton [1.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.1.1...@janus-idp/backstage-plugin-tekton@1.2.0) (2023-04-25)
 
 
