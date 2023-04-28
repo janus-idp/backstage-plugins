@@ -2,16 +2,17 @@ import * as React from 'react';
 import { render } from '@testing-library/react';
 import PipelineRunList from './PipelineRunList';
 import { TektonResourcesContext } from '../../hooks/TektonResourcesContext';
+import { mockKubernetesPlrResponse } from '../../__fixtures__/1-pipelinesData';
 
 describe('PipelineRunList', () => {
-  it('should render PipelineRunList', () => {
+  it('should render PipelineRunList if available', () => {
     const mockContextData = {
       watchResourcesData: {
         pipelineruns: {
-          data: [],
+          data: mockKubernetesPlrResponse.pipelineruns,
         },
         taskruns: {
-          data: [],
+          data: mockKubernetesPlrResponse.taskruns,
         },
       },
       loaded: true,
@@ -21,12 +22,12 @@ describe('PipelineRunList', () => {
       setSelectedCluster: () => {},
     };
 
-    const { getByText } = render(
+    const { queryByText } = render(
       <TektonResourcesContext.Provider value={mockContextData}>
         <PipelineRunList />
       </TektonResourcesContext.Provider>,
     );
-    expect(getByText(/List of Pipeline Runs/i)).not.toBeNull();
+    expect(queryByText(/No Pipeline Runs found/i)).toBeNull();
   });
 
   it('should render loading if data has not been loaded', () => {

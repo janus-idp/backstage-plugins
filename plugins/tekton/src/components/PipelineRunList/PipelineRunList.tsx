@@ -1,21 +1,39 @@
 import * as React from 'react';
-import { InfoCard, Progress } from '@backstage/core-components';
+import { EmptyState, InfoCard, Progress } from '@backstage/core-components';
+import { SortByDirection } from '@patternfly/react-table';
 import PipelineRunHeader from './PipelineRunHeader';
 import PipelineRunRow from './PipelineRunRow';
 import { Table } from '../Table/Table';
 import { TektonResourcesContext } from '../../hooks/TektonResourcesContext';
-import { SortByDirection } from '@patternfly/react-table';
+import TektonErrorPanel from '../Tekton/TektonErrorPanel';
+import { ClusterErrors } from '../../types/types';
+import ClusterSelector from '../common/ClusterSelector';
 
-const WrapperInfoCard = ({ children }: { children: React.ReactNode }) => (
-  <InfoCard title="Pipeline Runs" subheader="List of Pipeline Runs">
-    {children}
-  </InfoCard>
+const WrapperInfoCard = ({
+  children,
+  allErrors,
+}: {
+  children: React.ReactNode;
+  allErrors?: any;
+}) => (
+  <>
+    {allErrors && allErrors.length > 0 && (
+      <TektonErrorPanel allErrors={allErrors} />
+    )}
+    <InfoCard title="Pipeline Runs" subheader={<ClusterSelector />}>
+      {children}
+    </InfoCard>
+  </>
 );
 
 const PipelineRunList: React.FC = () => {
-  const { loaded, responseError, watchResourcesData } = React.useContext(
-    TektonResourcesContext,
-  );
+  const { loaded, responseError, watchResourcesData, selectedClusterErrors } =
+    React.useContext(TektonResourcesContext);
+
+  const allErrors: ClusterErrors = [
+    ...(responseError ? [{ message: responseError }] : []),
+    ...(selectedClusterErrors ?? []),
+  ];
 
   if (!loaded && !responseError)
     return (
@@ -30,14 +48,14 @@ const PipelineRunList: React.FC = () => {
     !watchResourcesData?.pipelineruns?.data?.length
   ) {
     return (
-      <WrapperInfoCard>
-        <div>No Pipeline Runs found</div>
+      <WrapperInfoCard allErrors={allErrors}>
+        <EmptyState missing="data" title="No Pipeline Runs found" />
       </WrapperInfoCard>
     );
   }
 
   return (
-    <WrapperInfoCard>
+    <WrapperInfoCard allErrors={allErrors}>
       <div style={{ overflow: 'scroll' }}>
         <Table
           data={watchResourcesData?.pipelineruns?.data || []}

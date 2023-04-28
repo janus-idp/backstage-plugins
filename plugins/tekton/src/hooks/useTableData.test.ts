@@ -45,7 +45,7 @@ describe('useTableData', () => {
     const { result } = renderHook(() =>
       useTableData({
         propData: mockData,
-        defaultSortField: 'status.startTime',
+        sortField: 'status.startTime',
       }),
     );
     expect(result.current.data).toHaveLength(2);
@@ -57,8 +57,8 @@ describe('useTableData', () => {
     const { result } = renderHook(() =>
       useTableData({
         propData: mockData,
-        defaultSortField: 'status.startTime',
-        defaultSortOrder: SortByDirection.desc,
+        sortField: 'status.startTime',
+        sortOrder: SortByDirection.desc,
       }),
     );
     expect(result.current.data).toHaveLength(2);
