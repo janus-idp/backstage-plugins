@@ -4,13 +4,13 @@ This plugin will show you information about your container images within Azure C
 
 ## Getting started
 
-1. Install the plugin
+### 1. Install the plugin
 
    ```bash
    yarn workspace app add @janus-idp/plugin-acr
    ```
 
-2. Set the proxy to desired Azure Container Registry server
+### 2. Set the proxy to desired Azure Container Registry server
 
    ```yaml
    # app-config.yaml
@@ -24,12 +24,12 @@ This plugin will show you information about your container images within Azure C
        # Change to "false" in case of using self hosted artifactory instance with a self-signed certificate
        secure: true
    ```
-3. Authorization.
-Basic Authorization: Go to your Azure Container Registry portal, and go to the `Access Keys` tab. Get the `username` and the `password` of the `Admin User`, and use this [tool](https://www.debugbear.com/basic-auth-header-generator) to covert them into a token, and make it as the `ACR_AUTH_TOKEN` in environment variables. 
+### 3. Authorization.
+   Basic Authorization: Go to your Azure Container Registry portal, and go to the `Access Keys` tab. Get the `username` and the `password` of the `Admin User`, and use this [tool](https://www.debugbear.com/basic-auth-header-generator) to covert them into a token, and make it as the `ACR_AUTH_TOKEN` in      environment variables. 
 
-OAuth2: You can following the [link](https://learn.microsoft.com/en-us/azure/container-registry/container-registry-authentication?tabs=azure-cli) to get access token, and make it as `ACR_AUTH_TOKEN`.
+   OAuth2: You can following the [link](https://learn.microsoft.com/en-us/azure/container-registry/container-registry-authentication?tabs=azure-cli) to get the bearer access token, and make it as `ACR_AUTH_TOKEN`.
 
-3. Enable additional tab on the entity view page
+### 4. Enable additional tab on the entity view page
 
    ```ts
    // packages/app/src/components/catalog/EntityPage.tsx
@@ -53,7 +53,7 @@ OAuth2: You can following the [link](https://learn.microsoft.com/en-us/azure/con
    );
    ```
 
-4. Annotate your entity with
+### 5. Annotate your entity with
 
    ```yaml
    metadata:
