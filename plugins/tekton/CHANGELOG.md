@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-tekton [1.4.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.4.0...@janus-idp/backstage-plugin-tekton@1.4.1) (2023-05-02)
+
+
+### Bug Fixes
+
+* **tekton:** fix task node status ([#320](https://github.com/janus-idp/backstage-plugins/issues/320)) ([22b0b1e](https://github.com/janus-idp/backstage-plugins/commit/22b0b1ece1b0da5e3ac49949b6ac57dd116f564b))
+
 ## @janus-idp/backstage-plugin-tekton [1.4.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.3.0...@janus-idp/backstage-plugin-tekton@1.4.0) (2023-04-28)
 
 
