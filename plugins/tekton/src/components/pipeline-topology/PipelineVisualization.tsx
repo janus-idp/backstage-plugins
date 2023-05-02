@@ -94,7 +94,7 @@ export const PipelineVisualization: React.FC<PipelineVisualizationProps> = ({
 
   const model = getGraphDataModel(
     latestPipelineRun ?? undefined,
-    watchResourcesData?.taskrun?.data ?? [],
+    watchResourcesData?.taskruns?.data ?? [],
   );
 
   return (
