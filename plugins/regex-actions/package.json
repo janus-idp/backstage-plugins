@@ -28,8 +28,8 @@
     "zod": "^3.21.4"
   },
   "devDependencies": {
-    "@backstage/backend-common": "0.18.3",
-    "@backstage/cli": "0.22.1",
+    "@backstage/backend-common": "0.18.4",
+    "@backstage/cli": "0.22.6",
     "@types/mock-fs": "4.13.1",
     "mock-fs": "5.2.0"
   },
