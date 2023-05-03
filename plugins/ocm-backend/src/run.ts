@@ -17,7 +17,7 @@
 import { getRootLogger } from '@backstage/backend-common';
 import { handlers } from '../__fixtures__/handlers';
 import { startStandaloneServer } from '../dev';
-// eslint-disable-next-line import/no-extraneous-dependencies
+// eslint-disable-next-line @backstage/no-undeclared-imports
 import { setupServer } from 'msw/node';
 
 const logger = getRootLogger();

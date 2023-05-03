@@ -41,7 +41,6 @@
     "@patternfly/react-table": "4.113.0",
     "@patternfly/react-tokens": "4.94.6",
     "@patternfly/react-topology": "4.93.5",
-    "react-router-dom": "^6.3.0",
     "dagre": "0.8.5",
     "react-measure": "2.5.2",
     "@patternfly/react-virtualized-extension": "4.88.115",
@@ -52,7 +51,8 @@
     "react-virtualized": "9.22.5"
   },
   "peerDependencies": {
-    "react": "^16.13.1 || ^17.0.0"
+    "react": "^16.13.1 || ^17.0.0",
+    "react-router-dom": "^6.3.0"
   },
   "devDependencies": {
     "@backstage/cli": "0.22.6",
