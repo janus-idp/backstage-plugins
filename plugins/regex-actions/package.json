@@ -23,7 +23,7 @@
     "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
-    "@backstage/plugin-scaffolder-node": "^0.1.1",
+    "@backstage/plugin-scaffolder-node": "^0.1.2",
     "yaml": "^2.2.1",
     "zod": "^3.21.4"
   },
