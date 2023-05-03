@@ -6,15 +6,12 @@
     "node": "16 || 18"
   },
   "scripts": {
-    "dev": "concurrently \"yarn start\" \"yarn start-backend\"",
-    "start": "yarn workspace app start",
-    "start-backend": "yarn workspace backend start",
-    "build": "backstage-cli repo build",
+    "start": "turbo run start",
+    "build": "turbo run build",
     "tsc": "tsc",
-    "clean": "backstage-cli repo clean",
-    "test": "backstage-cli repo test --passWithNoTests --coverage",
-    "lint": "backstage-cli repo lint",
-    "lint:fix": "backstage-cli repo lint --fix",
+    "clean": "turbo run clean",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
     "prettier:check": "prettier --check .",
     "prettier:fix": "prettier --write .",
     "new": "backstage-cli new --scope @janus-idp",
@@ -22,8 +19,7 @@
   },
   "workspaces": {
     "packages": [
-      "packages/*",
-      "plugins/*"
+      "packages/*"
     ]
   },
   "devDependencies": {
@@ -33,12 +29,10 @@
     "@semantic-release/git": "10.0.1",
     "@semantic-release/github": "8.0.7",
     "@spotify/prettier-config": "14.1.5",
-    "concurrently": "8.0.1",
     "conventional-changelog-conventionalcommits": "5.0.0",
-    "lerna": "6.5.1",
     "multi-semantic-release": "3.0.1",
-    "node-gyp": "9.3.1",
     "prettier": "2.8.8",
+    "turbo": "^1.9.3",
     "typescript": "5.0.2"
   },
   "resolutions": {
