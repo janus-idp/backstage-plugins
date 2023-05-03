@@ -1,0 +1,1 @@
+export { OcirImagesTable } from './OcirImagesTable';

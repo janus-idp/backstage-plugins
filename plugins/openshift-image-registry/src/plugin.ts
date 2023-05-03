@@ -10,12 +10,13 @@ import {
   openshiftImageRegistryApiRef,
 } from './api';
 
-import { rootRouteRef } from './routes';
+import { imageTagRouteRef, rootRouteRef } from './routes';
 
 export const openshiftImageRegistryPlugin = createPlugin({
   id: 'openshift-image-registry',
   routes: {
     root: rootRouteRef,
+    tag: imageTagRouteRef,
   },
   apis: [
     createApiFactory({

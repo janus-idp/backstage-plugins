@@ -8,7 +8,8 @@ const DEFAULT_PROXY_PATH = '/openshift-image-registry/api';
 
 export interface OpenshiftImageRegistryApiV1 {
   getImageStreams(ns: string): Promise<any>;
-  getImageStreamTags(imageStream: any): Promise<any>;
+  getImageStream(ns: string, imageName: string): Promise<any>;
+  getImageStreamTags(ns: string, imageName: string): Promise<any>;
   getNamespaces(): Promise<any>;
 }
 
@@ -68,9 +69,15 @@ export class OpenshiftImageRegistryApiClient
     ).items as any[];
   }
 
-  async getImageStreamTags(imageStream: any) {
-    const ns = imageStream.metadata.namespace;
-    const name = imageStream.metadata.name;
+  async getImageStream(ns: string, imageName: string) {
+    const proxyUrl = await this.getBaseUrl();
+    return await this.fetcher(
+      `${proxyUrl}/apis/image.openshift.io/v1/namespaces/${ns}/imagestreams/${imageName}`,
+    );
+  }
+
+  async getImageStreamTags(ns: string, imageName: string) {
+    const imageStream = await this.getImageStream(ns, imageName);
     const allTags = imageStream.status.tags.map((tag: any) => tag.tag);
 
     const proxyUrl = await this.getBaseUrl();
@@ -79,7 +86,7 @@ export class OpenshiftImageRegistryApiClient
       allTags.map(
         async (tag: any) =>
           await this.fetcher(
-            `${proxyUrl}/apis/image.openshift.io/v1/namespaces/${ns}/imagestreamtags/${name}:${tag}`,
+            `${proxyUrl}/apis/image.openshift.io/v1/namespaces/${ns}/imagestreamtags/${imageName}:${tag}`,
           ),
       ),
     );

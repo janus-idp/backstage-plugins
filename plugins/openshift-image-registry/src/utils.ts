@@ -1,3 +1,7 @@
+import { makeStyles } from '@material-ui/core';
+
+const byteUnits = ['B', 'kB', 'MB', 'GB', 'TB'];
+
 export function getUserTimeZone(): string {
   return new Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
 }
@@ -14,3 +18,27 @@ export function formatDate(date: string | number): string {
     dateStyle: 'medium',
   });
 }
+
+function calculateUnit(sizeInBytes: number): number {
+  return Math.floor(Math.log(sizeInBytes) / Math.log(1024));
+}
+
+export function formatSize(sizeInBytes: number): string {
+  if (!sizeInBytes) {
+    // null or undefined
+    return 'N/A';
+  }
+
+  const unitIndex = calculateUnit(sizeInBytes);
+  return `${Number((sizeInBytes / Math.pow(1024, unitIndex)).toFixed(2))} ${
+    byteUnits[unitIndex]
+  }`;
+}
+
+export const useStyles = makeStyles(theme => ({
+  empty: {
+    padding: theme.spacing(2),
+    display: 'flex',
+    justifyContent: 'center',
+  },
+}));
