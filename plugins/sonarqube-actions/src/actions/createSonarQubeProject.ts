@@ -11,7 +11,7 @@ interface RequestParameters {
   visibility?: string;
 }
 
-interface TemplateActionParameters {
+type TemplateActionParameters = {
   baseUrl: string;
   token?: string;
   username?: string;
@@ -20,7 +20,7 @@ interface TemplateActionParameters {
   key: string;
   branch?: string;
   visibility?: string;
-}
+};
 
 const examples = [
   {

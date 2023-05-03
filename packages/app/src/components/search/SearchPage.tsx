@@ -10,7 +10,6 @@ import { TechDocsSearchResultListItem } from '@backstage/plugin-techdocs';
 
 import { SearchType } from '@backstage/plugin-search';
 import {
-  DefaultResultListItem,
   SearchBar,
   SearchFilter,
   SearchResult,
