@@ -1,6 +1,6 @@
 import { getVoidLogger } from '@backstage/backend-common';
 import mockFs from 'mock-fs';
-import { createReplaceAction, SchemaInput } from './replace';
+import { createReplaceAction } from './replace';
 import { Writable } from 'stream';
 import os from 'os';
 
@@ -39,7 +39,7 @@ describe('regex:replace', () => {
   });
 
   it('should complete a simple regex', async () => {
-    const input: SchemaInput = {
+    const input = {
       regExps: [
         {
           pattern: '^(\\S+).*$',
@@ -69,7 +69,7 @@ describe('regex:replace', () => {
     const value =
       'The quick brown fox jumps over the lazy dog. If the dog reacted, was it really lazy?';
 
-    const input: SchemaInput = {
+    const input = {
       regExps: [
         {
           pattern: 'dog',
@@ -112,7 +112,7 @@ describe('regex:replace', () => {
     const value =
       'The quick brown fox jumps over the lazy dog. If the dog reacted, was it really lazy?';
 
-    const input: SchemaInput = {
+    const input = {
       regExps: [
         {
           pattern: 'dog',
@@ -153,7 +153,7 @@ describe('regex:replace', () => {
   });
 
   it('should throw an error with duplicate keys', async () => {
-    const input: SchemaInput = {
+    const input = {
       regExps: [
         {
           pattern: '^(\\S+).*$',

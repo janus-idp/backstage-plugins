@@ -1,4 +1,4 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
+// eslint-disable-next-line @backstage/no-undeclared-imports
 import { rest } from 'msw';
 import { UrlPatternDiscovery } from '@backstage/core-app-api';
 import { QuayApiClient, QuayApiV1 } from './index';
