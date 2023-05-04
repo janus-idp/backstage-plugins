@@ -29,8 +29,8 @@ runs:
 
     - name: Run lint
       shell: bash
-      run: turbo lint --filter=${{ inputs.args }}
+      run: yarn lint --filter=${{ inputs.args }}
 
     - name: Run tests
       shell: bash
-      run: turbo test --filter=${{ inputs.args }}
+      run: yarn test --filter=${{ inputs.args }}

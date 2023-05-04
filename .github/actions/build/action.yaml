@@ -25,4 +25,4 @@ runs:
 
     - name: Build all packages
       shell: bash
-      run: turbo build --filter=${{ inputs.args }}
+      run: yarn build --filter=${{ inputs.args }}
