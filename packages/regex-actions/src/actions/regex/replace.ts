@@ -24,7 +24,8 @@ const schemaInput = z.object({
           'The regex pattern to match the value like in String.prototype.replace()',
         ),
       flags: z
-        .set(
+        .array(
+          // FIXME: changed from z.set() because that breaks zod-to-json-schema parser in unknown way.
           z.enum(['g', 'm', 'i', 'y', 'u', 's', 'd'], {
             invalid_type_error:
               'Invalid flag, possible values are: g, m, i, y, u, s, d',
@@ -46,8 +47,6 @@ const schemaInput = z.object({
     }),
   ),
 });
-
-export type SchemaInput = z.infer<typeof schemaInput>;
 
 const exampleValue =
   'The quick brown fox jumps over the lazy dog. If the dog reacted, was it really lazy?';
@@ -163,11 +162,11 @@ export const createReplaceAction = () => {
       'Replaces strings that match a regular expression pattern with a specified replacement string',
     examples,
     schema: {
-      input: schemaInput as any,
+      input: schemaInput,
     },
 
     async handler(ctx) {
-      const input = ctx.input as SchemaInput;
+      const input = ctx.input;
 
       const values = {} as Record<string, string>;
 
@@ -177,7 +176,10 @@ export const createReplaceAction = () => {
         replacement,
         values: valuesInput,
       } of input.regExps) {
-        const flags = flagsInput ? Array.from(flagsInput).join('') : '';
+        // FIXME: remove `new Set()` when the `z.set()` issue is fixed
+        const flags = flagsInput
+          ? Array.from(new Set(flagsInput)).join('')
+          : '';
         const regex = new RegExp(pattern, flags);
 
         for (const { key, value } of valuesInput) {

@@ -6,7 +6,7 @@
     "node": "16 || 18"
   },
   "scripts": {
-    "start": "turbo run start",
+    "start": "turbo run start --concurrency 15",
     "build": "turbo run build",
     "tsc": "tsc",
     "clean": "turbo run clean",
@@ -23,17 +23,17 @@
     ]
   },
   "devDependencies": {
-    "@backstage/cli": "0.22.1",
+    "@backstage/cli": "^0.22.6",
     "@semantic-release/changelog": "6.0.3",
     "@semantic-release/exec": "6.0.3",
     "@semantic-release/git": "10.0.1",
     "@semantic-release/github": "8.0.7",
-    "@spotify/prettier-config": "14.1.5",
+    "@spotify/prettier-config": "14.1.6",
     "conventional-changelog-conventionalcommits": "5.0.0",
-    "multi-semantic-release": "3.0.1",
+    "multi-semantic-release": "3.0.2",
     "prettier": "2.8.8",
     "turbo": "^1.9.3",
-    "typescript": "5.0.2"
+    "typescript": "5.0.4"
   },
   "resolutions": {
     "@types/react": "^17",
