@@ -3,7 +3,8 @@
   "pipeline": {
     "start": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "dependsOn": ["^build"]
     },
     "build": {
       "outputs": ["dist/**"]
@@ -12,7 +13,8 @@
       "cache": false
     },
     "test": {
-      "outputs": ["coverage/**"]
+      "outputs": ["coverage/**"],
+      "dependsOn": ["^build"]
     },
     "lint": {}
   },
