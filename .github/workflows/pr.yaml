@@ -15,7 +15,7 @@ jobs:
       - name: Test
         uses: ./.github/actions/test
         with:
-          args: --since origin/main
+          args: '[HEAD^1]'
 
   build:
     name: Build all packages
@@ -29,4 +29,4 @@ jobs:
       - name: Build
         uses: ./.github/actions/build
         with:
-          args: --since origin/main
+          args: '[HEAD^1]'

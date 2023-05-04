@@ -3,7 +3,7 @@ description: Build all packages
 inputs:
   args:
     description: Backstage CLI repo build arguments
-    default: --all
+    default: '@janus-idp/*'
 runs:
   using: 'composite'
   steps:
@@ -23,10 +23,6 @@ runs:
       shell: bash
       run: yarn --prefer-offline --frozen-lockfile
 
-    - name: Compile all packages
-      shell: bash
-      run: yarn tsc
-
     - name: Build all packages
       shell: bash
-      run: yarn build ${{ inputs.args }}
+      run: turbo build --filter=${{ inputs.args }}
