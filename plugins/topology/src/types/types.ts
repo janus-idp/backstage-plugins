@@ -16,6 +16,12 @@ export type GroupVersionKind = {
   apiGroup?: string;
 };
 
+export type Model = GroupVersionKind & {
+  abbr: string;
+  labelPlural: string;
+  color?: string;
+};
+
 export type K8sWorkloadResource =
   | V1Deployment
   | V1Pod

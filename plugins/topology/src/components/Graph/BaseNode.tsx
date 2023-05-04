@@ -1,4 +1,5 @@
 import * as React from 'react';
+import classNames from 'classnames';
 import {
   BadgeLocation,
   DEFAULT_LAYER,
@@ -14,7 +15,9 @@ import {
   WithSelectionProps,
   useHover,
 } from '@patternfly/react-topology';
-import { getKindStringAndAbbreviation } from '../../utils/workload-node-utils';
+import { getKindAbbrColor } from '../../utils/workload-node-utils';
+
+import './BaseNode.css';
 
 type BaseNodeProps = {
   className?: string;
@@ -63,7 +66,13 @@ const BaseNode: React.FC<BaseNodeProps> = ({
 
   const detailsLevel = element.getController().getGraph().getDetailsLevel();
   const showDetails = hover || detailsLevel !== ScaleDetailsLevel.low;
-  const kindData = kind && getKindStringAndAbbreviation(kind);
+  const kindData = kind && getKindAbbrColor(kind);
+  const badgeClassName = kindData
+    ? classNames(
+        'bs-topology-base-node-resource-icon',
+        `bs-topology-base-node-resource-icon-${kindData.kindStr.toLowerCase()}`,
+      )
+    : '';
 
   return (
     <Layer id={hover ? TOP_LAYER : DEFAULT_LAYER}>
@@ -72,13 +81,15 @@ const BaseNode: React.FC<BaseNodeProps> = ({
         data-test-id={element.getLabel()}
       >
         <DefaultNode
+          className={classNames('bs-topology-base-node', className)}
           element={element}
           showLabel={showDetails}
           scaleNode={hover && detailsLevel !== ScaleDetailsLevel.high}
           badge={kindData && kindData.kindAbbr}
           badgeColor={kindData && kindData.kindColor}
+          badgeTextColor="var(--pf-global--palette--white)"
           showStatusBackground={!showDetails}
-          className={className}
+          badgeClassName={badgeClassName}
           {...rest}
         >
           <g data-test-id="base-node-handler">
