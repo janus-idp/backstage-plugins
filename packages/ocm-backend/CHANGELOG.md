@@ -1,3 +1,18 @@
+## @janus-idp/backstage-plugin-ocm-backend [2.1.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@2.1.1...@janus-idp/backstage-plugin-ocm-backend@2.1.2) (2023-05-04)
+
+
+### Other changes
+
+* **deps:** update all non-major dependencies ([#127](https://github.com/janus-idp/backstage-plugins/issues/127)) ([a9d359f](https://github.com/janus-idp/backstage-plugins/commit/a9d359f01448d1b9b4b4d3d9b087052fb6ff16b3))
+* **ocm-backend:** Migrate tests from nock to msw ([#268](https://github.com/janus-idp/backstage-plugins/issues/268)) ([560d855](https://github.com/janus-idp/backstage-plugins/commit/560d8551a5d50dee413dc97cbadfde5c9ec85aae))
+* **ocm:** fix typo in testsuite ([#278](https://github.com/janus-idp/backstage-plugins/issues/278)) ([92455e4](https://github.com/janus-idp/backstage-plugins/commit/92455e451e4a4c6d36b29bde4dd1f747572e71c4))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-ocm-common:** upgraded to 2.0.1
+
 ## @janus-idp/backstage-plugin-ocm-backend [2.1.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@2.1.0...@janus-idp/backstage-plugin-ocm-backend@2.1.1) (2023-04-13)
 
 
