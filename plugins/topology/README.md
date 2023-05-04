@@ -1,46 +1,60 @@
 # Topology plugin for Backstage
 
-The Topology plugin helps with visualizing the workloads such as Deployment, Replicaset, and Pods powering any service on the Kubernetes cluster.
+The Topology plugin visualizes the workloads such as Deployment, Replicaset, and Pods powering any service on the Kubernetes cluster.
 
 ## Prerequisites
 
-1. Install and configure the Kubernetes plugin by following the [installation](https://backstage.io/docs/features/kubernetes/installation) and [configuration](https://backstage.io/docs/features/kubernetes/configuration) guides.
-2. The Kubernetes plugin is configured and able to connect to the cluster using a `ServiceAccount`.
-3. The [`ClusterRole`](https://backstage.io/docs/features/kubernetes/configuration#role-based-access-control) must be granted to `ServiceAccount` accessing the cluster. If you have the Backstage Kubernetes plugin configured, then the `ClusterRole` is already granted.
-4. To receive the resources from a Kubernetes cluster, add the following annotations to the entity's `catalog-info.yaml` file:
+- The Kubernetes plugins including `@backstage/plugin-kubernetes` and `@backstage/plugin-kubernetes-backend` are installed and configured by following the [installation](https://backstage.io/docs/features/kubernetes/installation) and [configuration](https://backstage.io/docs/features/kubernetes/configuration) guides.
+- The Kubernetes plugin is configured and connects to the cluster using a `ServiceAccount`.
+- The [`ClusterRole`](https://backstage.io/docs/features/kubernetes/configuration#role-based-access-control) must be granted to `ServiceAccount` accessing the cluster. If you have the Backstage Kubernetes plugin configured, then the `ClusterRole` is already granted.
+- The following annotation is added to the entity's `catalog-info.yaml` file to identify whether an entitiy contains the Kubernetes resources:
+  ```yaml
+  annotations:
+  backstage.io/kubernetes-id: <BACKSTAGE_ENTITY_NAME>
+  ```
+  You can also add the `backstage.io/kubernetes-namespace` annotation to identify the Kubernetes resources using the defined namespace.
+  ```yaml
+  annotations:
+    backstage.io/kubernetes-namespace: <RESOURCE_NS>
+  ```
+- A custom label selector is added, which Backstage uses to find the Kubernetes resources. The label selector takes precedence over the ID annotations.
 
-   ```yaml
-   annotations:
-     backstage.io/kubernetes-id: <BACKSTAGE_ENTITY_NAME>
-     backstage.io/kubernetes-namespace: <RESOURCE_NS>
-   ```
+  `'backstage.io/kubernetes-label-selector': 'app=my-app,component=front-end`
 
-   The Kubernetes plugin identifies if the provided entity contains Kubernetes resources and from which namespace the plugin receives the resources based on the previous annotations.
+  ```yaml
+  annotations:
+  ---
+  backstage.io/kubernetes-label-selector: 'app=my-app,component=front-end'
+  ```
 
-5. You can also add a custom label selector, which Backstage uses to find the resources. The label selector takes precedence over the ID annotation.
-   `'backstage.io/kubernetes-label-selector': 'app=my-app,component=front-end`
-6. You must add the following label to the resources so that the Kubernetes plugin gets the Kubernetes resources from the requested entity:
+- The following label is added to the resources so that the Kubernetes plugin gets the Kubernetes resources from the requested entity:
 
-   ```yaml
-   'backstage.io/kubernetes-id': <BACKSTAGE_ENTITY_NAME>`
-   ```
+  ```yaml
+  labels:
+  ---
+  backstage.io/kubernetes-id: <BACKSTAGE_ENTITY_NAME>`
+  ```
 
-   ***
+  ***
 
-   **NOTE**
+  **NOTE**
 
-   When using the label selector, the mentioned labels must be present on the resource.
+  When using the label selector, the mentioned labels must be present on the resource.
 
-   ***
+  ***
 
-7. The workload resources such as Deployments and Pods are displayed in a visual group based on the following label:
-   ```yaml
-   'app.kubernetes.io/part-of': <GROUP_NAME>
-   ```
-8. The workload resources such as Deployment or Pod are displayed with a visual connector based on the following annotations:
-   ```yaml
-   'app.openshift.io/connects-to': '[{"apiVersion": <RESOURCE_APIVERSION>,"kind": <RESOURCE_KIND>,"name": <RESOURCE_NAME>}]'
-   ```
+- The following label is added to display the workload resources such as Deployments and Pods in a visual group:
+  ```yaml
+  labels:
+  ---
+  app.kubernetes.io/part-of: <GROUP_NAME>
+  ```
+- The following annotation is added to display the workload resources such as Deployments and Pods with a visual connector:
+  ```yaml
+  annotations:
+  ---
+  app.openshift.io/connects-to: '[{"apiVersion": <RESOURCE_APIVERSION>,"kind": <RESOURCE_KIND>,"name": <RESOURCE_NAME>}]'
+  ```
 
 ## Using Topology plugin
 
@@ -50,7 +64,7 @@ The Topology plugin helps with visualizing the workloads such as Deployment, Rep
    yarn workspace app add @janus-idp/backstage-plugin-topology
    ```
 
-2. Enable additional tab on the entity view page:
+2. Enable **Topology** tab on the entity view page:
 
    ```ts
    // packages/app/src/components/catalog/EntityPage.tsx
