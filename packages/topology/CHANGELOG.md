@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-topology [1.5.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.5.0...@janus-idp/backstage-plugin-topology@1.5.1) (2023-05-04)
+
+
+### Bug Fixes
+
+* **topology:** Fix topology sidepanel css ([#289](https://github.com/janus-idp/backstage-plugins/issues/289)) ([37c6d2e](https://github.com/janus-idp/backstage-plugins/commit/37c6d2e89b744c2435bde8c6f58cb7b03e5f8e84))
+
 ## @janus-idp/backstage-plugin-topology [1.5.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.4.2...@janus-idp/backstage-plugin-topology@1.5.0) (2023-04-18)
 
 
@@ -116,4 +123,3 @@
 ### Features
 
 * **topology:** Initial release ([66889b7](https://github.com/janus-idp/backstage-plugins/commit/66889b79933bb3e7f491bbc4b6d6cadf9f965999))
-

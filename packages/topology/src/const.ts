@@ -18,3 +18,5 @@ export const TYPE_WORKLOAD = 'workload';
 export const TYPE_APPLICATION_GROUP = 'part-of';
 export const TYPE_CONNECTS_TO = 'connects-to';
 export const INSTANCE_LABEL = 'app.kubernetes.io/instance';
+
+export const MEMO: { [key: string]: any } = {};
