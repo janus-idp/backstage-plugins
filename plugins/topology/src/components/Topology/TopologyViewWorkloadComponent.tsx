@@ -8,7 +8,7 @@ import {
   useVisualizationController,
   VisualizationSurface,
 } from '@patternfly/react-topology';
-import { Progress } from '@backstage/core-components';
+import { InfoCard, Progress } from '@backstage/core-components';
 import { TopologyEmptyState } from './TopologyEmptyState';
 import { useWorkloadsWatcher } from '../../hooks/useWorkloadWatcher';
 import { TopologyControlBar } from './TopologyControlBar';
@@ -86,29 +86,31 @@ const TopologyViewWorkloadComponent: React.FC<
       {allErrors && allErrors.length > 0 && (
         <TopologyErrorPanel allErrors={allErrors} />
       )}
-      {clusters.length < 1 ? (
-        <TopologyEmptyState />
-      ) : (
-        <TopologyView
-          controlBar={
-            loaded &&
-            dataModel?.nodes?.length > 0 && (
-              <TopologyControlBar controller={controller} />
-            )
-          }
-          viewToolbar={useToolbar && <TopologyToolbar />}
-          sideBar={sideBar}
-          sideBarResizable
-          sideBarOpen={sideBarOpen}
-          minSideBarSize="400px"
-        >
-          {loaded && dataModel?.nodes?.length === 0 ? (
-            <TopologyEmptyState />
-          ) : (
-            <VisualizationSurface state={{ selectedIds }} />
-          )}
-        </TopologyView>
-      )}
+      <InfoCard className="bs-topology-wrapper" divider={false}>
+        {clusters.length < 1 ? (
+          <TopologyEmptyState />
+        ) : (
+          <TopologyView
+            controlBar={
+              loaded &&
+              dataModel?.nodes?.length > 0 && (
+                <TopologyControlBar controller={controller} />
+              )
+            }
+            viewToolbar={useToolbar && <TopologyToolbar />}
+            sideBar={sideBar}
+            sideBarResizable
+            sideBarOpen={sideBarOpen}
+            minSideBarSize="400px"
+          >
+            {loaded && dataModel?.nodes?.length === 0 ? (
+              <TopologyEmptyState />
+            ) : (
+              <VisualizationSurface state={{ selectedIds }} />
+            )}
+          </TopologyView>
+        )}
+      </InfoCard>
     </>
   );
 };
