@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-topology [1.5.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.5.2...@janus-idp/backstage-plugin-topology@1.5.3) (2023-05-05)
+
+
+### Bug Fixes
+
+* **topology:** adds wrapper to topology view for consistent border ([#326](https://github.com/janus-idp/backstage-plugins/issues/326)) ([51a5a0d](https://github.com/janus-idp/backstage-plugins/commit/51a5a0dc2216517785e1ef0cf397bc05cd8a6a98))
+
 ## @janus-idp/backstage-plugin-topology [1.5.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.5.1...@janus-idp/backstage-plugin-topology@1.5.2) (2023-05-04)
 
 
