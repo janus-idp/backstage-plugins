@@ -14,23 +14,25 @@
  * limitations under the License.
  */
 
-import { findPaths } from '@backstage/cli-common';
-import * as path from 'path';
+import { RepositoryFile } from '../types';
 
-/* eslint-disable-next-line no-restricted-syntax */
-const { targetRoot, ownDir } = findPaths(__dirname);
+/**
+ * A single file in a GitLab repository.
+ */
+export class GitlabFile implements RepositoryFile {
+  readonly #path: string;
+  readonly #content: string;
 
-export const APP_CONFIG_FILE = path.join(targetRoot, 'app-config.local.yaml');
-export const DISCOVERED_ENTITIES_FILE = path.join(
-  targetRoot,
-  'examples',
-  'discovered-entities.yaml',
-);
-export const PATCH_FOLDER = path.join(
-  ownDir,
-  'src',
-  'commands',
-  'onboard',
-  'auth',
-  'patches',
-);
+  constructor(path: string, content: string) {
+    this.#path = path;
+    this.#content = content;
+  }
+
+  get path(): string {
+    return this.#path;
+  }
+
+  async text(): Promise<string> {
+    return this.#content;
+  }
+}

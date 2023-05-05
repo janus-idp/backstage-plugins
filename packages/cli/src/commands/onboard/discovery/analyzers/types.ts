@@ -14,23 +14,24 @@
  * limitations under the License.
  */
 
-import { findPaths } from '@backstage/cli-common';
-import * as path from 'path';
+import { Entity } from '@backstage/catalog-model';
+import { Repository } from '../providers/types';
 
-/* eslint-disable-next-line no-restricted-syntax */
-const { targetRoot, ownDir } = findPaths(__dirname);
+export type AnalysisOutput = {
+  type: 'entity';
+  path: string;
+  entity: Entity;
+};
 
-export const APP_CONFIG_FILE = path.join(targetRoot, 'app-config.local.yaml');
-export const DISCOVERED_ENTITIES_FILE = path.join(
-  targetRoot,
-  'examples',
-  'discovered-entities.yaml',
-);
-export const PATCH_FOLDER = path.join(
-  ownDir,
-  'src',
-  'commands',
-  'onboard',
-  'auth',
-  'patches',
-);
+export interface AnalysisOutputs {
+  produce(output: AnalysisOutput): void;
+  list(): AnalysisOutput[];
+}
+
+export interface Analyzer {
+  name(): string;
+  analyzeRepository(options: {
+    repository: Repository;
+    output: AnalysisOutputs;
+  }): Promise<void>;
+}
