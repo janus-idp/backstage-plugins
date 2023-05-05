@@ -18,8 +18,7 @@ The OCM plugin has the following capabilities:
 
 - OCM is deployed and configured on a Kubernetes cluster.
 - [Kubernetes plugin for Backstage](https://backstage.io/docs/features/kubernetes/overview) is installed.
-- Kubernetes plugin is configured and can connect to the hub cluster for OCM using a `ServiceAccount`. The cluster is accessed using Backstage backend, therefore, the cluster requires a permanent connection with constant RBAC scope.
-- A `ClusterRole` must be granted to `ServiceAccount` accessing the hub cluster as follows:
+- A `ClusterRole` is granted to `ServiceAccount` accessing the hub cluster as follows:
   ```yaml
   kind: ClusterRole
   apiVersion: rbac.authorization.k8s.io/v1
@@ -84,7 +83,7 @@ If you are interested in Resource discovery and do not want any of the frontend 
              caData: # Base64-encoded CA bundle in PEM format
      ```
 
-   - You can bind the hub configuration to the Kubernetes configuration by providing the name of the hub as follows:
+   - If the Backstage Kubernetes plugin is installed and configured to connect to the hub cluster, then you can bind the both hub and Kubernetes configuration by providing the name of the hub in the `app-config.yaml` as follows:
 
      ```yaml
      # app-config.yaml
@@ -104,7 +103,9 @@ If you are interested in Resource discovery and do not want any of the frontend 
              kubernetesPluginRef: <cluster-name> # Match the cluster name in kubernetes plugin config
      ```
 
-     This is useful when you already use a Kubernetes plugin in your Backstage instance. Also, the hub cluster must be connected using `ServiceAccount`.
+     Ensure that the Backstage uses a `ServiceAccount` token and the required permissions are granted as mentioned previously.
+
+     This is useful when you already use a Kubernetes plugin in your Backstage instance. Also, the hub cluster must be connected using the `ServiceAccount`.
 
      For more information about the configuration, see [Backstage Kubernetes plugin](https://backstage.io/docs/features/kubernetes/configuration#configuring-kubernetes-clusters) documentation.
 
@@ -145,7 +146,7 @@ If you are interested in Resource discovery and do not want any of the frontend 
      }
    ```
 
-5. Import the cluster `Resource` entity provider into the `catalog` plugin in the `packages/backend/src/plugins/catalog.ts`file:
+5. Import the cluster `Resource` entity provider into the `catalog` plugin in the `packages/backend/src/plugins/catalog.ts` file:
 
    ```diff
      ...
@@ -195,9 +196,9 @@ If you are interested in Resource discovery and do not want any of the frontend 
 
 1. Install the OCM frontend plugin using the following command:
 
-```sh
-yarn workspace app add @janus-idp/backstage-plugin-ocm
-```
+   ```sh
+   yarn workspace app add @janus-idp/backstage-plugin-ocm
+   ```
 
 2. Select the components that you want to use, such as:
 
@@ -326,4 +327,4 @@ To start a development setup in isolation with a faster setup and hot reloads, c
 
    `yarn start`
 
-The previous steps are meant for local development, and you can find the setup inside the [/dev](./dev) directories of the individual plugins.
+The previous steps are meant for local development and you can find the setup inside the [/dev](./dev) directories of the individual plugins.
