@@ -1,13 +1,12 @@
-import * as React from 'react';
 import { Badge } from '@patternfly/react-core';
 import classNames from 'classnames';
+import * as React from 'react';
 
 import './ResourceStatus.css';
 
 type ResourceStatusProps = {
   additionalClassNames?: string;
   badgeAlt?: boolean;
-  children: React.ReactNode;
 };
 
 /**
@@ -24,11 +23,11 @@ type ResourceStatusProps = {
  * )
  * ```
  */
-export const ResourceStatus: React.FC<ResourceStatusProps> = ({
+export const ResourceStatus = ({
   additionalClassNames,
   badgeAlt,
   children,
-}) => {
+}: React.PropsWithChildren<ResourceStatusProps>) => {
   return (
     <span
       className={classNames('bs-tkn-resource-status', additionalClassNames)}

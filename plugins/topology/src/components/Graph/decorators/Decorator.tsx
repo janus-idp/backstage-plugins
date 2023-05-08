@@ -23,7 +23,7 @@ const Decorator = ({
   ariaLabel,
   external,
   ...rest
-}: DecoratorTypes) => {
+}: React.PropsWithChildren<DecoratorTypes>) => {
   const decorator = (
     <PfDecorator
       x={x}

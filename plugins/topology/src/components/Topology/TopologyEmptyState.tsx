@@ -1,4 +1,3 @@
-import * as React from 'react';
 import {
   EmptyState,
   EmptyStateIcon,
@@ -6,8 +5,9 @@ import {
   Title,
 } from '@patternfly/react-core';
 import { TopologyIcon } from '@patternfly/react-icons';
+import * as React from 'react';
 
-export const TopologyEmptyState: React.FC = () => {
+export const TopologyEmptyState = () => {
   return (
     <EmptyState
       variant={EmptyStateVariant.full}

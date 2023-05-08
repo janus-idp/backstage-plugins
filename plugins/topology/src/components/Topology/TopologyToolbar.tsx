@@ -1,14 +1,14 @@
-import * as React from 'react';
 import {
-  ToolbarItem,
   Select,
   SelectOption,
-  SelectVariant,
   SelectOptionObject,
+  SelectVariant,
+  ToolbarItem,
 } from '@patternfly/react-core';
+import * as React from 'react';
 import { K8sResourcesContext } from '../../hooks/K8sResourcesContext';
 
-const TopologyToolbar: React.FC = () => {
+const TopologyToolbar = () => {
   const { clusters: k8sClusters, setSelectedCluster: setClusterContext } =
     React.useContext(K8sResourcesContext);
   const clusterOptions = k8sClusters.map(cluster => ({

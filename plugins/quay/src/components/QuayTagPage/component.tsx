@@ -1,14 +1,12 @@
-import React from 'react';
-import { useRepository, useTagDetails } from '../../hooks';
-import { useParams } from 'react-router-dom';
-import { QuayTagDetails } from '../QuayTagDetails';
 import { ErrorPanel, Progress } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
+import React from 'react';
+import { useParams } from 'react-router-dom';
+import { useRepository, useTagDetails } from '../../hooks';
 import { rootRouteRef } from '../../routes';
+import { QuayTagDetails } from '../QuayTagDetails';
 
-type QuayTagPageProps = Record<never, string>;
-
-export const QuayTagPage: React.FC<QuayTagPageProps> = () => {
+export const QuayTagPage = () => {
   const rootLink = useRouteRef(rootRouteRef);
   const { repository, organization } = useRepository();
   const { digest } = useParams();

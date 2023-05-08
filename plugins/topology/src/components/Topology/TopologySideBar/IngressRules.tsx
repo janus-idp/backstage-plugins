@@ -1,9 +1,11 @@
-import * as React from 'react';
 import { CodeSnippet } from '@backstage/core-components';
 import { V1Ingress } from '@kubernetes/client-node';
 import jsYaml from 'js-yaml';
+import * as React from 'react';
 
-const IngressRules: React.FC<{ ingress: V1Ingress }> = ({ ingress }) => {
+type IngressRulesProps = { ingress: V1Ingress };
+
+const IngressRules = ({ ingress }: IngressRulesProps) => {
   return <CodeSnippet text={jsYaml.dump(ingress.spec)} language="yaml" />;
 };
 

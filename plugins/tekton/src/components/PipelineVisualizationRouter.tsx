@@ -1,7 +1,7 @@
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
 import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
+import React from 'react';
+import { Route, Routes } from 'react-router-dom';
 import { TEKTON_CI_ANNOTATION } from '../consts/tekton-const';
 import { LatestPipelineRunVisualization } from './pipeline-topology';
 
@@ -15,9 +15,10 @@ type PipelineVisualizationRouterProps = {
 };
 
 /** @public */
-export const PipelineVisualizationRouter: React.FC<
-  PipelineVisualizationRouterProps
-> = ({ linkTekton, url }) => {
+export const PipelineVisualizationRouter = ({
+  linkTekton,
+  url,
+}: PipelineVisualizationRouterProps) => {
   const { entity } = useEntity();
   if (isTektonCIAvailable(entity)) {
     return (

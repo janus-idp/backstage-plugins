@@ -1,12 +1,17 @@
-import * as React from 'react';
 import { Label } from '@patternfly/react-core';
+import * as React from 'react';
 
 import './TopologyResourceLabels.css';
 
-const TopologyResourceLabels: React.FC<{
+type TopologyResourceLabelsProps = {
   labels: { [key: string]: string };
   dataTest?: string;
-}> = ({ labels, dataTest }) => {
+};
+
+const TopologyResourceLabels = ({
+  labels,
+  dataTest,
+}: TopologyResourceLabelsProps) => {
   return (
     <ul className="topology-resource-labels-list" data-testid={dataTest}>
       {Object.keys(labels ?? {}).map((key: string) => (

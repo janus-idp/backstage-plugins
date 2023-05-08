@@ -1,18 +1,17 @@
+import { Divider, Tab, Tabs } from '@material-ui/core';
+import { BaseNode } from '@patternfly/react-topology';
 import * as React from 'react';
-import { Tabs, Tab, Divider } from '@material-ui/core';
 import TopologyDetailsTabPanel from './TopologyDetailsTabPanel';
 import TopologyResourcesTabPanel from './TopologyResourcesTabPanel';
-import { BaseNode } from '@patternfly/react-topology';
 
 import './TopologySideBarBody.css';
 
 interface TabPanelProps {
-  children?: React.ReactNode;
   index: number;
   value: number;
 }
 
-const TabPanel = (props: TabPanelProps) => {
+const TabPanel = (props: React.PropsWithChildren<TabPanelProps>) => {
   const { children, value, index } = props;
 
   return (
@@ -24,7 +23,9 @@ const TabPanel = (props: TabPanelProps) => {
   );
 };
 
-const TopologySideBarBody: React.FC<{ node: BaseNode }> = ({ node }) => {
+type TopologySideBarBodyProps = { node: BaseNode };
+
+const TopologySideBarBody = ({ node }: TopologySideBarBodyProps) => {
   const [value, setValue] = React.useState(0);
   const handleChange = (_event: React.ChangeEvent<{}>, newValue: number) => {
     setValue(newValue);

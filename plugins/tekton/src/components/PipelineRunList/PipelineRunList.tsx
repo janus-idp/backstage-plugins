@@ -1,20 +1,21 @@
-import * as React from 'react';
 import { EmptyState, InfoCard, Progress } from '@backstage/core-components';
 import { SortByDirection } from '@patternfly/react-table';
+import * as React from 'react';
+import { TektonResourcesContext } from '../../hooks/TektonResourcesContext';
+import { ClusterErrors } from '../../types/types';
+import { Table } from '../Table/Table';
+import { ClusterSelector, ErrorPanel } from '../common';
 import PipelineRunHeader from './PipelineRunHeader';
 import PipelineRunRow from './PipelineRunRow';
-import { Table } from '../Table/Table';
-import { TektonResourcesContext } from '../../hooks/TektonResourcesContext';
-import { ErrorPanel, ClusterSelector } from '../common';
-import { ClusterErrors } from '../../types/types';
+
+type WrapperInfoCardProps = {
+  allErrors?: ClusterErrors;
+};
 
 const WrapperInfoCard = ({
   children,
   allErrors,
-}: {
-  children: React.ReactNode;
-  allErrors?: any;
-}) => (
+}: React.PropsWithChildren<WrapperInfoCardProps>) => (
   <>
     {allErrors && allErrors.length > 0 && <ErrorPanel allErrors={allErrors} />}
     <InfoCard title="Pipeline Runs" subheader={<ClusterSelector />}>
@@ -23,7 +24,7 @@ const WrapperInfoCard = ({
   </>
 );
 
-const PipelineRunList: React.FC = () => {
+const PipelineRunList = () => {
   const { loaded, responseError, watchResourcesData, selectedClusterErrors } =
     React.useContext(TektonResourcesContext);
 

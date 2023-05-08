@@ -1,19 +1,19 @@
-import * as React from 'react';
-import { findIndex } from 'lodash';
 import {
-  Table as PfTable,
-  TableHeader,
-  TableGridBreakpoint,
   OnSelect,
+  Table as PfTable,
+  TableGridBreakpoint,
+  TableHeader,
 } from '@patternfly/react-table';
 import {
   AutoSizer,
   WindowScroller,
 } from '@patternfly/react-virtualized-extension';
 import { Scroll } from '@patternfly/react-virtualized-extension/dist/esm/components/Virtualized/types';
-import { VirtualBody } from './VirtualBody';
+import { findIndex } from 'lodash';
+import * as React from 'react';
 import { useTableData } from '../../hooks/useTableData';
 import { WithScrollContainer } from '../../utils/WithScrollContainer';
+import { VirtualBody } from './VirtualBody';
 
 type HeaderFunc = () => any[];
 
@@ -31,7 +31,7 @@ type TableProps<D = any, C = any> = Partial<D> & {
   onSelect?: OnSelect;
 };
 
-export const Table: React.FC<TableProps> = ({
+export const Table = ({
   header,
   Row,
   customData,
@@ -44,7 +44,7 @@ export const Table: React.FC<TableProps> = ({
   scrollElement,
   gridBreakPoint = TableGridBreakpoint.none,
   onSelect,
-}) => {
+}: TableProps) => {
   const [sortBy, setSortBy] = React.useState({});
   const [currentSortField, setCurrentSortField] =
     React.useState(defaultSortField);

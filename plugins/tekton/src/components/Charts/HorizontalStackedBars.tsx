@@ -1,5 +1,5 @@
-import * as React from 'react';
 import classNames from 'classnames';
+import * as React from 'react';
 
 import './HorizontalStackedBars.css';
 
@@ -17,13 +17,13 @@ type HorizontalStackedBarsProps = {
   width?: number | string;
 };
 
-const HorizontalStackedBars: React.FC<HorizontalStackedBarsProps> = ({
+const HorizontalStackedBars = ({
   barGap,
   height,
   inline,
   values,
   width,
-}) => {
+}: HorizontalStackedBarsProps) => {
   return (
     <div
       className={classNames('bs-tkn-horizontal-stacked-bars', {

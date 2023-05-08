@@ -1,5 +1,3 @@
-import * as React from 'react';
-import classNames from 'classnames';
 import {
   AngleDoubleRightIcon,
   CheckCircleIcon,
@@ -8,8 +6,10 @@ import {
   HourglassHalfIcon,
   SyncAltIcon,
 } from '@patternfly/react-icons';
-import { YellowExclamationTriangleIcon } from './icons';
+import classNames from 'classnames';
+import * as React from 'react';
 import { ComputedStatus } from '../../types/computedStatus';
+import { YellowExclamationTriangleIcon } from './icons';
 
 interface StatusIconProps {
   status: string;
@@ -18,11 +18,11 @@ interface StatusIconProps {
   disableSpin?: boolean;
 }
 
-export const StatusIcon: React.FC<StatusIconProps> = ({
+export const StatusIcon = ({
   status,
   disableSpin,
   ...props
-}) => {
+}: StatusIconProps) => {
   switch (status) {
     case ComputedStatus['In Progress']:
     case ComputedStatus.Running:
@@ -48,7 +48,7 @@ export const StatusIcon: React.FC<StatusIconProps> = ({
       return <HourglassHalfIcon {...props} />;
 
     case ComputedStatus.Cancelled:
-      return <YellowExclamationTriangleIcon {...props} />;
+      return <YellowExclamationTriangleIcon />;
 
     case ComputedStatus.Skipped:
       return <AngleDoubleRightIcon {...props} />;

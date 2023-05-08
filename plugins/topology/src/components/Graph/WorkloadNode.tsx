@@ -1,4 +1,3 @@
-import * as React from 'react';
 import {
   getDefaultShapeDecoratorCenter,
   GraphElement,
@@ -13,10 +12,11 @@ import {
   WithDragNodeProps,
   WithSelectionProps,
 } from '@patternfly/react-topology';
-import BaseNode from './BaseNode';
-import PodSet, { podSetInnerRadius } from '../Pods/PodSet';
-import { AllPodStatus } from '../Pods/pod';
+import * as React from 'react';
 import { calculateRadius, getPodStatus } from '../../utils/workload-node-utils';
+import { AllPodStatus } from '../Pods/pod';
+import PodSet, { podSetInnerRadius } from '../Pods/PodSet';
+import BaseNode from './BaseNode';
 import { UrlDecorator } from './decorators/UrlDecorator';
 
 import './WorkloadNode.css';
@@ -57,8 +57,8 @@ type InnerWorkloadNodeProps = {
   element: Node;
 } & Partial<WithSelectionProps & WithDragNodeProps>;
 
-const InnerWorkloadNode: React.FC<InnerWorkloadNodeProps> = observer(
-  ({ element, onSelect, ...rest }) => {
+const InnerWorkloadNode = observer(
+  ({ element, onSelect, ...rest }: InnerWorkloadNodeProps) => {
     const data = element.getData();
     const { width, height } = element.getDimensions();
     const workloadData = data.data;
@@ -125,7 +125,7 @@ type WorkloadNodeProps = {
   element?: GraphElement;
 } & Partial<WithSelectionProps & WithDragNodeProps>;
 
-const WorkloadNode: React.FC<WorkloadNodeProps> = ({ element, ...rest }) =>
+const WorkloadNode = ({ element, ...rest }: WorkloadNodeProps) =>
   !element || !isNode(element) ? null : (
     <InnerWorkloadNode element={element} {...rest} />
   );

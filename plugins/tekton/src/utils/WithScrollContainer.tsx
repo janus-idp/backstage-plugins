@@ -25,9 +25,7 @@ export const getParentScrollableElement = (node: HTMLElement) => {
   return undefined;
 };
 
-export const WithScrollContainer: React.FC<WithScrollContainerProps> = ({
-  children,
-}) => {
+export const WithScrollContainer = ({ children }: WithScrollContainerProps) => {
   const [scrollContainer, setScrollContainer] = React.useState<HTMLElement>();
   const ref = React.useCallback(node => {
     if (node) {

@@ -1,12 +1,12 @@
-import * as React from 'react';
 import { WarningPanel } from '@backstage/core-components';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { Typography } from '@material-ui/core';
+import * as React from 'react';
 import { ClusterError, ClusterErrors } from '../../types/types';
 
-export const ErrorPanel: React.FC<{ allErrors: ClusterErrors }> = ({
-  allErrors,
-}) => {
+type ErrorPanelProps = { allErrors: ClusterErrors };
+
+export const ErrorPanel = ({ allErrors }: ErrorPanelProps) => {
   const {
     entity: {
       metadata: { name: entityName },

@@ -1,17 +1,18 @@
 import React from 'react';
-import { PipelineVisualization } from './PipelineVisualization';
 import { TektonResourcesContext } from '../../hooks/TektonResourcesContext';
-import { ModelsPlural } from '../../models';
 import { useTektonObjectsResponse } from '../../hooks/useTektonObjectsResponse';
+import { ModelsPlural } from '../../models';
+import { PipelineVisualization } from './PipelineVisualization';
 
 type LatestPipelineRunVisualizationProps = {
   linkTekton?: boolean;
   url?: string;
 };
 
-export const LatestPipelineRunVisualization: React.FC<
-  LatestPipelineRunVisualizationProps
-> = ({ linkTekton, url }) => {
+export const LatestPipelineRunVisualization = ({
+  linkTekton,
+  url,
+}: LatestPipelineRunVisualizationProps) => {
   const watchedResources = [ModelsPlural.pipelineruns, ModelsPlural.taskruns];
   const tektonResourcesContextData = useTektonObjectsResponse(watchedResources);
 
