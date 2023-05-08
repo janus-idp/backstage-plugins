@@ -1,15 +1,15 @@
 # Open Cluster Management plugin for Backstage
 
-This plugin integrates your Backstage instance with Open Cluster Management.
+The Open Cluster Management (OCM) plugin integrates your Backstage instance with OCM.
 
-This is just a part of the plugin, for documentation please refer to [`@janus-idp/backstage-plugin-ocm` documentation](https://github.com/janus-idp/backstage-plugins/tree/main/plugins/ocm).
+For more information about OCM plugin, see the [Open Cluster Management plugin documentation](https://github.com/janus-idp/backstage-plugins/tree/main/plugins/ocm) on GitHub.
 
 ## Development setup
 
-In order to run a development setup use
+You can run a development setup using the following command:
 
 ```sh
 yarn start
 ```
 
-in this location. This will mock the kubernetes api to provide 2 clusters. A cluster `foo` which is the hub and another cluster `cluster1`. An error response is also mocked for the cluster name `non_existent_cluster`.
+When you run the previous command, the Kubernetes API is mocked to provide two clusters: `foo` (works as the hub) and `cluster1`. Also, an error response is mocked for non-existent clusters.
