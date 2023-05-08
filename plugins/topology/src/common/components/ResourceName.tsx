@@ -1,8 +1,8 @@
-import * as React from 'react';
 import classNames from 'classnames';
-import { kindToAbbr } from '../utils/getResources';
-import { resourceModels } from '../../models';
+import * as React from 'react';
 import { MEMO } from '../../const';
+import { resourceModels } from '../../models';
+import { kindToAbbr } from '../utils/getResources';
 
 import './ResourceName.css';
 
@@ -11,10 +11,7 @@ export type ResourceIconProps = {
   kind: string;
 };
 
-export const ResourceIcon: React.FunctionComponent<ResourceIconProps> = ({
-  className,
-  kind,
-}) => {
+export const ResourceIcon = ({ className, kind }: ResourceIconProps) => {
   // if no kind, return null so an empty icon isn't rendered
   if (!kind) {
     return null;
@@ -51,11 +48,7 @@ export type ResourceNameProps = {
   large?: boolean;
 };
 
-export const ResourceName: React.FunctionComponent<ResourceNameProps> = ({
-  kind,
-  name,
-  large,
-}) => (
+export const ResourceName = ({ kind, name, large }: ResourceNameProps) => (
   <span className="bs-topology-resource-item">
     <ResourceIcon
       kind={kind}

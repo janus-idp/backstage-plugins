@@ -1,4 +1,3 @@
-import * as React from 'react';
 import {
   DefaultGroup,
   GraphElement,
@@ -9,15 +8,13 @@ import {
   WithDragNodeProps,
   WithSelectionProps,
 } from '@patternfly/react-topology';
+import * as React from 'react';
 
 type GroupNodeProps = {
   element?: GraphElement;
 } & Partial<WithSelectionProps & WithDragNodeProps>;
 
-const GroupNode: React.FunctionComponent<GroupNodeProps> = ({
-  element,
-  ...rest
-}) => {
+const GroupNode = ({ element, ...rest }: GroupNodeProps) => {
   const detailsLevel = useDetailsLevel();
 
   if (!element || !isNode(element)) {
