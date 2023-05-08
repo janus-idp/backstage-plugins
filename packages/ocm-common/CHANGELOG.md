@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-ocm-common [2.0.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-common@2.0.1...@janus-idp/backstage-plugin-ocm-common@2.0.2) (2023-05-08)
+
+
+### Documentation
+
+* review for OCM plugin ([#291](https://github.com/janus-idp/backstage-plugins/issues/291)) ([9316baf](https://github.com/janus-idp/backstage-plugins/commit/9316bafd954f2c6986baa620ea13a74dcb558b29))
+
 ## @janus-idp/backstage-plugin-ocm-common [2.0.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-common@2.0.0...@janus-idp/backstage-plugin-ocm-common@2.0.1) (2023-05-04)
 
 
