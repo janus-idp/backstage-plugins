@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-topology [1.5.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.5.3...@janus-idp/backstage-plugin-topology@1.5.4) (2023-05-08)
+
+
+### Documentation
+
+* review for Topology plugin ([#269](https://github.com/janus-idp/backstage-plugins/issues/269)) ([10f0910](https://github.com/janus-idp/backstage-plugins/commit/10f0910ddab0b826b7d968bd569ab0442caef1ed))
+
 ## @janus-idp/backstage-plugin-topology [1.5.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.5.2...@janus-idp/backstage-plugin-topology@1.5.3) (2023-05-05)
 
 
