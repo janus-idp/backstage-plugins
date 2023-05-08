@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import * as React from 'react';
+import React from 'react';
 import { UrlDecorator } from './UrlDecorator';
 
 // mock Decorator

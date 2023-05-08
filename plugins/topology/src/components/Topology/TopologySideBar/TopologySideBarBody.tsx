@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { Tabs, Tab, Divider } from '@material-ui/core';
 import TopologyDetailsTabPanel from './TopologyDetailsTabPanel';
 import TopologyResourcesTabPanel from './TopologyResourcesTabPanel';
