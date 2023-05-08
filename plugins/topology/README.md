@@ -19,8 +19,6 @@ The Topology plugin visualizes the workloads such as Deployment, Replicaset, and
   ```
 - A custom label selector is added, which Backstage uses to find the Kubernetes resources. The label selector takes precedence over the ID annotations.
 
-  `'backstage.io/kubernetes-label-selector': 'app=my-app,component=front-end`
-
   ```yaml
   annotations:
   ---
@@ -55,6 +53,7 @@ The Topology plugin visualizes the workloads such as Deployment, Replicaset, and
   ---
   app.openshift.io/connects-to: '[{"apiVersion": <RESOURCE_APIVERSION>,"kind": <RESOURCE_KIND>,"name": <RESOURCE_NAME>}]'
   ```
+  For more information about the labels and annotations, see [Guidelines for labels and annotations for OpenShift applications](https://github.com/redhat-developer/app-labels/blob/master/labels-annotation-for-openshift.adoc).
 
 ## Using Topology plugin
 
