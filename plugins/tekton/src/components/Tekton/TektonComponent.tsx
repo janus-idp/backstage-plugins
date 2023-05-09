@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { ModelsPlural } from '../../models';
 import { useTektonObjectsResponse } from '../../hooks/useTektonObjectsResponse';
 import { TektonResourcesContext } from '../../hooks/TektonResourcesContext';

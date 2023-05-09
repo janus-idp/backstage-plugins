@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { BaseNode } from '@patternfly/react-topology';
 import { TYPE_WORKLOAD } from '../const';
 import TopologySideBar from '../components/Topology/TopologySideBar/TopologySideBar';

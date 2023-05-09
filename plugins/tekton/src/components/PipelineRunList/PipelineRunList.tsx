@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { EmptyState, InfoCard, Progress } from '@backstage/core-components';
 import { SortByDirection } from '@patternfly/react-table';
 import PipelineRunHeader from './PipelineRunHeader';

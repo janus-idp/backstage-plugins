@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { V1Pod, V1Service, V1ServicePort } from '@kubernetes/client-node';
 import { LongArrowAltRightIcon } from '@patternfly/react-icons';
 import { BaseNode } from '@patternfly/react-topology';
