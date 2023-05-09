@@ -8,7 +8,7 @@ import {
   WithDragNodeProps,
   WithSelectionProps,
 } from '@patternfly/react-topology';
-import * as React from 'react';
+import React from 'react';
 
 type GroupNodeProps = {
   element?: GraphElement;

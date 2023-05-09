@@ -10,7 +10,7 @@ import {
 } from '@patternfly/react-virtualized-extension';
 import { Scroll } from '@patternfly/react-virtualized-extension/dist/esm/components/Virtualized/types';
 import { findIndex } from 'lodash';
-import * as React from 'react';
+import React from 'react';
 import { useTableData } from '../../hooks/useTableData';
 import { WithScrollContainer } from '../../utils/WithScrollContainer';
 import { VirtualBody } from './VirtualBody';

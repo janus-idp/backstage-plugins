@@ -5,7 +5,7 @@ import {
   defaultControlButtonsOptions,
   TopologyControlBar as PfTopologyControlBar,
 } from '@patternfly/react-topology';
-import * as React from 'react';
+import React from 'react';
 
 type TopologyControlBarProps = {
   controller: Controller;

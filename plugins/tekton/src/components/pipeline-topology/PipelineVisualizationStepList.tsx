@@ -1,6 +1,6 @@
 import { RunStatus } from '@patternfly/react-topology';
 import classNames from 'classnames';
-import * as React from 'react';
+import React from 'react';
 import { StepStatus } from '../../types/taskRun';
 import { getRunStatusColor } from '../../utils/tekton-status';
 import { StatusIcon } from '../common';

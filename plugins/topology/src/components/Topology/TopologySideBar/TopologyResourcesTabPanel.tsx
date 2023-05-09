@@ -1,7 +1,7 @@
 import { V1Pod, V1Service, V1ServicePort } from '@kubernetes/client-node';
 import { LongArrowAltRightIcon } from '@patternfly/react-icons';
 import { BaseNode } from '@patternfly/react-topology';
-import * as React from 'react';
+import React from 'react';
 import ResourceName from '../../../common/components/ResourceName';
 import ResourceStatus from '../../../common/components/ResourceStatus';
 import Status from '../../../common/components/Status';

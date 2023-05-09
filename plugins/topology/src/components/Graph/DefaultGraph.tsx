@@ -7,7 +7,7 @@ import {
   isGraph,
   observer,
 } from '@patternfly/react-topology';
-import * as React from 'react';
+import React from 'react';
 
 type DefaultGraphProps = {
   element?: GraphElement;

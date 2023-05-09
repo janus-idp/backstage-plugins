@@ -4,7 +4,7 @@ import {
   isEdge,
   WithSelectionProps,
 } from '@patternfly/react-topology';
-import * as React from 'react';
+import React from 'react';
 // eslint-disable-next-line @backstage/no-undeclared-imports
 import { observer } from 'mobx-react';
 

@@ -8,7 +8,7 @@ import {
   useEventListener,
   useVisualizationController,
 } from '@patternfly/react-topology';
-import * as React from 'react';
+import React from 'react';
 import { TYPE_WORKLOAD } from '../../const';
 import { K8sResourcesContext } from '../../hooks/K8sResourcesContext';
 import { useSideBar } from '../../hooks/useSideBar';

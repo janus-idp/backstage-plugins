@@ -6,7 +6,7 @@ import {
   TimestampFormat,
 } from '@patternfly/react-core';
 import { BaseNode } from '@patternfly/react-topology';
-import * as React from 'react';
+import React from 'react';
 import { DeploymentModel } from '../../../models';
 import PodSet from '../../Pods/PodSet';
 import TopologyDeploymentDetails from './TopologyDeploymentDetails';

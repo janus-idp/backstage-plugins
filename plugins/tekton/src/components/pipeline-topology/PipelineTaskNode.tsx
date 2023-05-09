@@ -1,3 +1,5 @@
+import React from 'react';
+// eslint-disable-next-line @backstage/no-undeclared-imports
 import { Tooltip } from '@patternfly/react-core';
 import {
   DEFAULT_LAYER,
@@ -15,7 +17,6 @@ import {
   useDetailsLevel,
   useHover,
 } from '@patternfly/react-topology';
-import * as React from 'react';
 // eslint-disable-next-line @backstage/no-undeclared-imports
 import { observer } from 'mobx-react';
 import { NodeType } from '../../consts/pipeline-topology-const';

@@ -4,7 +4,7 @@ import {
   SyncAltIcon,
   UnknownIcon,
 } from '@patternfly/react-icons';
-import * as React from 'react';
+import React from 'react';
 import StatusIconAndText from './StatusIconAndText';
 import { GreenCheckCircleIcon, RedExclamationCircleIcon } from './icons';
 

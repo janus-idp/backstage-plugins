@@ -7,7 +7,7 @@ import {
   SyncAltIcon,
 } from '@patternfly/react-icons';
 import classNames from 'classnames';
-import * as React from 'react';
+import React from 'react';
 import { ComputedStatus } from '../../types/computedStatus';
 import { YellowExclamationTriangleIcon } from './icons';
 

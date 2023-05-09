@@ -12,7 +12,7 @@ import {
   WithDragNodeProps,
   WithSelectionProps,
 } from '@patternfly/react-topology';
-import * as React from 'react';
+import React from 'react';
 import { calculateRadius, getPodStatus } from '../../utils/workload-node-utils';
 import { AllPodStatus } from '../Pods/pod';
 import PodSet, { podSetInnerRadius } from '../Pods/PodSet';

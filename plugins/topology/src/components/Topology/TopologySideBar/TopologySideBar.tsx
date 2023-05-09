@@ -2,7 +2,7 @@ import {
   BaseNode,
   TopologySideBar as PFTopologySideBar,
 } from '@patternfly/react-topology';
-import * as React from 'react';
+import React from 'react';
 import TopologySideBarContent from './TopologySideBarContent';
 
 import './TopologySideBar.css';

@@ -14,7 +14,7 @@ import {
   useHover,
 } from '@patternfly/react-topology';
 import classNames from 'classnames';
-import * as React from 'react';
+import React from 'react';
 import { getKindAbbrColor } from '../../utils/workload-node-utils';
 
 import './BaseNode.css';

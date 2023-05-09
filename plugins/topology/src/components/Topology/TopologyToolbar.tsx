@@ -5,7 +5,7 @@ import {
   SelectVariant,
   ToolbarItem,
 } from '@patternfly/react-core';
-import * as React from 'react';
+import React from 'react';
 import { K8sResourcesContext } from '../../hooks/K8sResourcesContext';
 
 const TopologyToolbar = () => {

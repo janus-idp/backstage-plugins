@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { PipelineRunKind } from '../../types/pipelineRun';
 import { PipelineBars } from '../Charts/PipelineBars';
 

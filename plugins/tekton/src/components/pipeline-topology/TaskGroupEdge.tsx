@@ -1,5 +1,5 @@
 import { Edge, TaskEdge } from '@patternfly/react-topology';
-import * as React from 'react';
+import React from 'react';
 // eslint-disable-next-line @backstage/no-undeclared-imports
 import { observer } from 'mobx-react';
 import { GROUPED_PIPELINE_NODE_SEPARATION_HORIZONTAL } from '../../consts/pipeline-topology-const';

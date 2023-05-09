@@ -1,5 +1,5 @@
 import { V1Deployment } from '@kubernetes/client-node';
-import * as React from 'react';
+import React from 'react';
 import TopologySideBarDetailsItem from './TopologySideBarDetailsItem';
 
 import './TopologyDeploymentDetails.css';
