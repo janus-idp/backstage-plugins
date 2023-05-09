@@ -1,0 +1,1 @@
+export { KialiComponent } from './KialiComponent';
