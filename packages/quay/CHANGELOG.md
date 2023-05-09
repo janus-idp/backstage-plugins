@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-quay [1.2.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.2.3...@janus-idp/backstage-plugin-quay@1.2.4) (2023-05-09)
+
+
+### Bug Fixes
+
+* **plugins:** remove React.FC types ([#335](https://github.com/janus-idp/backstage-plugins/issues/335)) ([f3d40af](https://github.com/janus-idp/backstage-plugins/commit/f3d40af9c6e55e5699ed78d07ae6617e25b33c18))
+
 ## @janus-idp/backstage-plugin-quay [1.2.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.2.2...@janus-idp/backstage-plugin-quay@1.2.3) (2023-05-09)
 
 

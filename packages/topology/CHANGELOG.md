@@ -1,3 +1,16 @@
+## @janus-idp/backstage-plugin-topology [1.5.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.5.4...@janus-idp/backstage-plugin-topology@1.5.5) (2023-05-09)
+
+
+### Bug Fixes
+
+* **plugins:** remove React.FC types ([#335](https://github.com/janus-idp/backstage-plugins/issues/335)) ([f3d40af](https://github.com/janus-idp/backstage-plugins/commit/f3d40af9c6e55e5699ed78d07ae6617e25b33c18))
+
+
+### Other changes
+
+* **deps:** update all non-major dependencies ([#333](https://github.com/janus-idp/backstage-plugins/issues/333)) ([dce0ea4](https://github.com/janus-idp/backstage-plugins/commit/dce0ea4a9b9f517bd864d39f0b364c68e6a2e143))
+* **plugins:** remove react namespace import ([#336](https://github.com/janus-idp/backstage-plugins/issues/336)) ([01ab4aa](https://github.com/janus-idp/backstage-plugins/commit/01ab4aaf9c88c58c955903372b556f33e2e6461e))
+
 ## @janus-idp/backstage-plugin-topology [1.5.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.5.3...@janus-idp/backstage-plugin-topology@1.5.4) (2023-05-08)
 
 
