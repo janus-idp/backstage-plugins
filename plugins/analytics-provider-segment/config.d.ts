@@ -20,7 +20,6 @@ export interface Config {
     // context of the monorepo is too strict. Ideally, this would be marked as
     // required.
     analytics?: {
-      
       segment: {
         /**
          * The Segment write key.
@@ -34,6 +33,12 @@ export interface Config {
          * @visibility frontend
          */
         testMode: boolean;
+
+        /**
+         * Prevents IP address to be sent as when set to true. Defaults to false
+         * @visbility frontend
+         */
+        maskIP: boolean;
       };
     };
   };

@@ -24,13 +24,13 @@ jest.mock('@segment/analytics-next', () => {
   return {
     AnalyticsBrowser: function constructor() {
       return {
-          identify: mockIdentify,
-          page: mockPage,
-          track: mockTrack,
-          load: mockLoad
-        };
+        identify: mockIdentify,
+        page: mockPage,
+        track: mockTrack,
+        load: mockLoad,
+      };
     },
-  }
+  };
 });
 
 describe('SegmentAnalytics', () => {
@@ -42,7 +42,9 @@ describe('SegmentAnalytics', () => {
   };
   const writeKey = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
   const basicValidConfig = new ConfigReader({
-    app: { analytics: { segment: { writeKey, testMode: false } } },
+    app: {
+      analytics: { segment: { writeKey, testMode: false, maskIP: true } },
+    },
   });
 
   describe('fromConfig', () => {
