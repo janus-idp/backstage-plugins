@@ -1,7 +1,7 @@
-import React from 'react';
-import { CellMeasurerCache, CellMeasurer } from 'react-virtualized';
 import { VirtualTableBody } from '@patternfly/react-virtualized-extension';
 import { Scroll } from '@patternfly/react-virtualized-extension/dist/esm/components/Virtualized/types';
+import React from 'react';
+import { CellMeasurer, CellMeasurerCache } from 'react-virtualized';
 import { MeasuredCellParent } from 'react-virtualized/dist/es/CellMeasurer';
 import { TableRow } from './TableRow';
 
@@ -32,7 +32,7 @@ export const RowMemo = React.memo<
   RowFunctionArgs & { Row: React.FC<RowFunctionArgs> }
 >(({ Row, ...props }) => <Row {...props} />);
 
-export const VirtualBody: React.FC<VirtualBodyProps> = props => {
+export const VirtualBody = (props: VirtualBodyProps) => {
   const {
     customData,
     Row,

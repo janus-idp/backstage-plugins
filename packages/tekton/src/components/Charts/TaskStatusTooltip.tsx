@@ -8,9 +8,7 @@ interface TaskStatusToolTipProps {
   taskStatus: TaskStatus;
 }
 
-const TaskStatusToolTip: React.FC<TaskStatusToolTipProps> = ({
-  taskStatus,
-}) => {
+const TaskStatusToolTip = ({ taskStatus }: TaskStatusToolTipProps) => {
   return (
     <div className="bs-tkn-task-status-tooltip">
       {Object.keys(ComputedStatus).map(status => {

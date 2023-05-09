@@ -1,29 +1,30 @@
 import React from 'react';
 // eslint-disable-next-line @backstage/no-undeclared-imports
-import { observer } from 'mobx-react';
 import { Tooltip } from '@patternfly/react-core';
 import {
   DEFAULT_LAYER,
   DEFAULT_WHEN_OFFSET,
+  GraphElement,
   Layer,
   Node,
+  RunStatus,
   ScaleDetailsLevel,
-  TaskNode,
   TOP_LAYER,
-  useDetailsLevel,
-  useHover,
+  TaskNode,
   WhenDecorator,
   WithContextMenuProps,
   WithSelectionProps,
-  GraphElement,
-  RunStatus,
+  useDetailsLevel,
+  useHover,
 } from '@patternfly/react-topology';
+// eslint-disable-next-line @backstage/no-undeclared-imports
+import { observer } from 'mobx-react';
+import { NodeType } from '../../consts/pipeline-topology-const';
 import { PipelineTaskWithStatus } from '../../types/pipelineRun';
 import { StepStatus } from '../../types/taskRun';
+import { createStepStatus } from '../../utils/pipeline-step-utils';
 import { getTaskStatus } from '../../utils/pipelineRun-utils';
 import { PipelineVisualizationStepList } from './PipelineVisualizationStepList';
-import { createStepStatus } from '../../utils/pipeline-step-utils';
-import { NodeType } from '../../consts/pipeline-topology-const';
 
 import './PipelineTaskNode.css';
 
@@ -33,12 +34,12 @@ type PipelineTaskNodeProps = {
   WithSelectionProps &
   GraphElement;
 
-const PipelineTaskNode: React.FunctionComponent<PipelineTaskNodeProps> = ({
+const PipelineTaskNode = ({
   element,
   onContextMenu,
   contextMenuOpen,
   ...rest
-}) => {
+}: PipelineTaskNodeProps) => {
   const data = element.getData();
   const [hover, hoverRef] = useHover();
   const detailsLevel = useDetailsLevel();

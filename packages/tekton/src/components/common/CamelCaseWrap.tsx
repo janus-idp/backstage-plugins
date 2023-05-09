@@ -2,7 +2,7 @@ import React from 'react';
 
 const MEMO: { [key: string]: any } = {};
 
-const CamelCaseWrap: React.FC<CamelCaseWrapProps> = ({ value, dataTest }) => {
+const CamelCaseWrap = ({ value, dataTest }: CamelCaseWrapProps) => {
   if (!value) {
     return '-';
   }

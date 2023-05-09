@@ -1,12 +1,12 @@
 import React from 'react';
-import PodStatus from './PodStatus';
+import { PodRCData } from '../../types/pods';
+import { usePodRingLabel } from '../../utils/pod-ring-utils';
 import {
   calculateRadius,
   getPodData,
   podDataInProgress,
 } from '../../utils/workload-node-utils';
-import { usePodRingLabel } from '../../utils/pod-ring-utils';
-import { PodRCData } from '../../types/pods';
+import PodStatus from './PodStatus';
 
 type PodSetProps = {
   size: number;
@@ -60,14 +60,14 @@ export const podSetInnerRadius = (size: number, data?: PodRCData) => {
   return radius - innerStrokeWidth - podStatusInset;
 };
 
-const PodSet: React.FC<PodSetProps> = React.memo(function PodSet({
+const PodSet = React.memo(function PodSet({
   size,
   data,
   x = 0,
   y = 0,
   showPodCount,
   standalone,
-}) {
+}: PodSetProps) {
   const { podStatusOuterRadius, podStatusInnerRadius, podStatusStrokeWidth } =
     calculateRadius(size);
   const { innerPodStatusOuterRadius, innerPodStatusInnerRadius } =

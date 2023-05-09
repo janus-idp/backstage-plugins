@@ -7,7 +7,7 @@ type CamelCaseWrapProps = {
   dataTest?: string;
 };
 
-const CamelCaseWrap: React.FC<CamelCaseWrapProps> = ({ value, dataTest }) => {
+const CamelCaseWrap = ({ value, dataTest }: CamelCaseWrapProps) => {
   if (!value) {
     return '-';
   }

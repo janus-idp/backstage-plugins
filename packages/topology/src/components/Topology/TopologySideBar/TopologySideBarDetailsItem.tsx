@@ -2,10 +2,16 @@ import React from 'react';
 
 import './TopologySideBarDetailsItem.css';
 
-const TopologySideBarDetailsItem: React.FC<{
+type TopologySideBarDetailsItemProps = {
   label: string;
   emptyText?: string;
-}> = ({ label, children, emptyText }) => {
+};
+
+const TopologySideBarDetailsItem = ({
+  label,
+  children,
+  emptyText,
+}: React.PropsWithChildren<TopologySideBarDetailsItemProps>) => {
   return (
     <div className="topology-side-bar-details-item">
       <dt>{label}</dt>

@@ -1,16 +1,15 @@
-import React from 'react';
 import {
   BanIcon,
   HourglassHalfIcon,
   SyncAltIcon,
   UnknownIcon,
 } from '@patternfly/react-icons';
+import React from 'react';
 import StatusIconAndText from './StatusIconAndText';
 import { GreenCheckCircleIcon, RedExclamationCircleIcon } from './icons';
 
 type StatusProps = {
   status: string;
-  children?: React.ReactNode;
 };
 
 const DASH = '-';
@@ -18,13 +17,12 @@ const DASH = '-';
 /**
  * Component for displaying a status message
  * @param {string} status - type of status to be displayed
- * * @param {ReactNode} [children] - (optional) children for the component
  * @example
  * ```tsx
  * <Status status='Warning' />
  * ```
  */
-const Status: React.FC<StatusProps> = ({ status, children }) => {
+const Status = ({ status }: StatusProps) => {
   const statusProps = {
     title: status,
   };
@@ -46,9 +44,10 @@ const Status: React.FC<StatusProps> = ({ status, children }) => {
     case 'Failed':
     case 'ImagePullBackOff':
       return (
-        <StatusIconAndText {...statusProps} icon={<RedExclamationCircleIcon />}>
-          {children}
-        </StatusIconAndText>
+        <StatusIconAndText
+          {...statusProps}
+          icon={<RedExclamationCircleIcon />}
+        />
       );
 
     case 'Succeeded':

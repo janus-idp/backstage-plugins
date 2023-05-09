@@ -1,8 +1,8 @@
+import { Select, SelectedItems } from '@backstage/core-components';
 import React from 'react';
 import { TektonResourcesContext } from '../../hooks/TektonResourcesContext';
-import { Select, SelectedItems } from '@backstage/core-components';
 
-export const ClusterSelector: React.FC = () => {
+export const ClusterSelector = () => {
   const {
     clusters: k8sClusters,
     selectedCluster,

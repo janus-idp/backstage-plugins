@@ -1,36 +1,36 @@
+import '@patternfly/react-styles/css/components/Topology/topology-components.css';
+import {
+  Controller,
+  EdgeModel,
+  GRAPH_LAYOUT_END_EVENT,
+  GRAPH_POSITION_CHANGE_EVENT,
+  GraphModel,
+  Node,
+  NodeModel,
+  Rect,
+  TopologyControlBar,
+  TopologyView,
+  Visualization,
+  VisualizationProvider,
+  VisualizationSurface,
+  action,
+  createTopologyControlButtons,
+  defaultControlButtonsOptions,
+} from '@patternfly/react-topology';
 import React from 'react';
 import Measure from 'react-measure';
 import {
-  Visualization,
-  VisualizationProvider,
-  TopologyView,
-  VisualizationSurface,
-  GRAPH_LAYOUT_END_EVENT,
-  action,
-  GRAPH_POSITION_CHANGE_EVENT,
-  GraphModel,
-  EdgeModel,
-  defaultControlButtonsOptions,
-  createTopologyControlButtons,
-  TopologyControlBar,
-  Controller,
-  NodeModel,
-  Node,
-  Rect,
-} from '@patternfly/react-topology';
-import '@patternfly/react-styles/css/components/Topology/topology-components.css';
+  DROP_SHADOW_SPACING,
+  GRAPH_MIN_WIDTH,
+  NODE_HEIGHT,
+  PipelineLayout as PipelineLayoutTypes,
+  TOOLBAR_HEIGHT,
+} from '../../consts/pipeline-topology-const';
 import { PipelineMixedNodeModel } from '../../types/pipeline-topology-types';
+import { getLayoutData } from '../../utils/pipeline-topology-utils';
 import pipelineComponentFactory, {
   layoutFactory,
 } from './pipelineComponentFactory';
-import { getLayoutData } from '../../utils/pipeline-topology-utils';
-import {
-  PipelineLayout as PipelineLayoutTypes,
-  DROP_SHADOW_SPACING,
-  NODE_HEIGHT,
-  TOOLBAR_HEIGHT,
-  GRAPH_MIN_WIDTH,
-} from '../../consts/pipeline-topology-const';
 
 type PipelineLayoutProps = {
   model: {
@@ -40,7 +40,7 @@ type PipelineLayoutProps = {
   };
 };
 
-export const PipelineLayout: React.FC<PipelineLayoutProps> = ({ model }) => {
+export const PipelineLayout = ({ model }: PipelineLayoutProps) => {
   const [vis, setVis] = React.useState<Controller | null>(null);
   const [width, setWidth] = React.useState<number>(0);
   const [maxSize, setMaxSize] = React.useState<{

@@ -1,15 +1,15 @@
-import React from 'react';
 import { Typography } from '@material-ui/core';
 import { Split, SplitItem, Stack, StackItem } from '@patternfly/react-core';
+import React from 'react';
 import ResourceName from '../../../common/components/ResourceName';
 import { resourceModels } from '../../../models';
 import { K8sWorkloadResource } from '../../../types/types';
 
 import './TopologySideBarHeading.css';
 
-const TopologySideBarHeading: React.FC<{ resource: K8sWorkloadResource }> = ({
-  resource,
-}) => {
+type TopologySideBarHeadingProps = { resource: K8sWorkloadResource };
+
+const TopologySideBarHeading = ({ resource }: TopologySideBarHeadingProps) => {
   const resourceName = resource.metadata?.name;
   const resourceKind = resource.kind ?? '';
   return (

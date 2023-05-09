@@ -1,21 +1,21 @@
-import React from 'react';
 import { Tooltip } from '@patternfly/react-core';
-import HorizontalStackedBars from './HorizontalStackedBars';
-import TaskStatusToolTip from './TaskStatusTooltip';
+import React from 'react';
+import { TektonResourcesContext } from '../../hooks/TektonResourcesContext';
 import { ComputedStatus, TaskStatus } from '../../types/computedStatus';
+import { PipelineRunKind } from '../../types/pipelineRun';
 import { getRunStatusColor } from '../../utils/tekton-status';
 import {
   getTaskRunsForPipelineRun,
   getTaskStatus,
 } from '../../utils/tekton-utils';
-import { PipelineRunKind } from '../../types/pipelineRun';
-import { TektonResourcesContext } from '../../hooks/TektonResourcesContext';
+import HorizontalStackedBars from './HorizontalStackedBars';
+import TaskStatusToolTip from './TaskStatusTooltip';
 
 export interface PipelineBarProps {
   pipelinerun: PipelineRunKind;
 }
 
-export const PipelineBars: React.FC<PipelineBarProps> = ({ pipelinerun }) => {
+export const PipelineBars = ({ pipelinerun }: PipelineBarProps) => {
   const { watchResourcesData } = React.useContext(TektonResourcesContext);
   const taskRuns = watchResourcesData?.taskruns?.data || [];
   const plrTasks = getTaskRunsForPipelineRun(pipelinerun, taskRuns);
