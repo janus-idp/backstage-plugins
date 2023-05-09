@@ -1,16 +1,20 @@
-import React from 'react';
 import { V1Pod, V1Service, V1ServicePort } from '@kubernetes/client-node';
 import { LongArrowAltRightIcon } from '@patternfly/react-icons';
 import { BaseNode } from '@patternfly/react-topology';
+import React from 'react';
+import ResourceName from '../../../common/components/ResourceName';
 import ResourceStatus from '../../../common/components/ResourceStatus';
 import Status from '../../../common/components/Status';
 import { IngressModel, PodModel, ServiceModel } from '../../../models';
 import { IngressData } from '../../../types/ingresses';
-import ResourceName from '../../../common/components/ResourceName';
-import TopologyResourcesTabPanelItem from './TopologyResourcesTabPaneltem';
 import IngressRules from './IngressRules';
+import TopologyResourcesTabPanelItem from './TopologyResourcesTabPaneltem';
 
-const TopologyResourcesTabPanel: React.FC<{ node: BaseNode }> = ({ node }) => {
+type TopologyResourcesTabPanelProps = { node: BaseNode };
+
+const TopologyResourcesTabPanel = ({
+  node,
+}: TopologyResourcesTabPanelProps) => {
   const nodeData = node.getData()?.data;
   return (
     <div data-testid="resources-tab">

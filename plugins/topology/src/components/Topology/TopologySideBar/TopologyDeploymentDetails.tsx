@@ -1,12 +1,14 @@
-import React from 'react';
 import { V1Deployment } from '@kubernetes/client-node';
+import React from 'react';
 import TopologySideBarDetailsItem from './TopologySideBarDetailsItem';
 
 import './TopologyDeploymentDetails.css';
 
-const TopologyDeploymentDetails: React.FC<{ resource: V1Deployment }> = ({
+type TopologyDeploymentDetailsProps = { resource: V1Deployment };
+
+const TopologyDeploymentDetails = ({
   resource,
-}) => {
+}: TopologyDeploymentDetailsProps) => {
   return (
     <div
       className="topology-deployment-details"

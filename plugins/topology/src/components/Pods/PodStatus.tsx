@@ -1,15 +1,15 @@
-import React from 'react';
 import { ChartDonut } from '@patternfly/react-charts';
 import { Tooltip } from '@patternfly/react-core';
 import * as _ from 'lodash';
+import React from 'react';
+import { useForceUpdate } from '../../hooks/useForceUpdate';
+import { getSize } from '../../utils/pod-ring-utils';
 import {
   calculateRadius,
-  podStatus,
   getPodStatus,
+  podStatus,
 } from '../../utils/workload-node-utils';
-import { getSize } from '../../utils/pod-ring-utils';
 import { AllPodStatus, podColor } from './pod';
-import { useForceUpdate } from '../../hooks/useForceUpdate';
 
 import './PodStatus.css';
 
@@ -47,7 +47,7 @@ const podStatusIsNumeric = (podStatusValue: string) => {
   );
 };
 
-const PodStatus: React.FC<PodStatusProps> = ({
+const PodStatus = ({
   innerRadius = podStatusInnerRadius,
   outerRadius = podStatusOuterRadius,
   x,
@@ -60,7 +60,7 @@ const PodStatus: React.FC<PodStatusProps> = ({
   titleComponent,
   subTitleComponent,
   data,
-}) => {
+}: PodStatusProps) => {
   const [updateOnEnd, setUpdateOnEnd] = React.useState<boolean>(false);
   const forceUpdate = useForceUpdate();
   const prevVData = React.useRef<PodData[] | null>(null);

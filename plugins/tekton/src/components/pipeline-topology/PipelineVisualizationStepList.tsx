@@ -1,9 +1,9 @@
-import React from 'react';
-import classNames from 'classnames';
 import { RunStatus } from '@patternfly/react-topology';
-import { StatusIcon } from '../common';
+import classNames from 'classnames';
+import React from 'react';
 import { StepStatus } from '../../types/taskRun';
 import { getRunStatusColor } from '../../utils/tekton-status';
+import { StatusIcon } from '../common';
 
 import './PipelineVisualizationStepList.css';
 
@@ -19,9 +19,9 @@ type TooltipColoredStatusIconProps = {
   status: RunStatus;
 };
 
-const TooltipColoredStatusIcon: React.FC<TooltipColoredStatusIconProps> = ({
+const TooltipColoredStatusIcon = ({
   status,
-}) => {
+}: TooltipColoredStatusIconProps) => {
   const size = 18;
   const sharedProps = {
     height: size,
@@ -51,9 +51,13 @@ const TooltipColoredStatusIcon: React.FC<TooltipColoredStatusIconProps> = ({
   return icon;
 };
 
-export const PipelineVisualizationStepList: React.FC<
-  PipelineVisualizationStepListProps
-> = ({ isSpecOverview, taskName, steps, isFinallyTask, hideHeader }) => {
+export const PipelineVisualizationStepList = ({
+  isSpecOverview,
+  taskName,
+  steps,
+  isFinallyTask,
+  hideHeader,
+}: PipelineVisualizationStepListProps) => {
   return (
     <div className="bs-tkn-pipeline-visualization-step-list">
       {!hideHeader && (

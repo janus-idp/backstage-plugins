@@ -6,9 +6,9 @@ export interface LinkedPipelineRunTaskStatusProps {
   pipelineRun: PipelineRunKind;
 }
 
-const LinkedPipelineRunTaskStatus: React.FC<
-  LinkedPipelineRunTaskStatusProps
-> = ({ pipelineRun }) => {
+const LinkedPipelineRunTaskStatus = ({
+  pipelineRun,
+}: LinkedPipelineRunTaskStatusProps) => {
   return (
     <PipelineBars key={pipelineRun.metadata?.name} pipelinerun={pipelineRun} />
   );

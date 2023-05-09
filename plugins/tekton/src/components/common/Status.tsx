@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   BanIcon,
   ClipboardListIcon,
@@ -8,6 +7,7 @@ import {
   SyncAltIcon,
   UnknownIcon,
 } from '@patternfly/react-icons';
+import React from 'react';
 import StatusIconAndText from './StatusIconAndText';
 import {
   GreenCheckCircleIcon,
@@ -25,7 +25,6 @@ export type StatusComponentProps = {
 
 export type StatusProps = StatusComponentProps & {
   status: string;
-  children?: React.ReactNode;
 };
 
 const DASH = '-';
@@ -44,13 +43,13 @@ const DASH = '-';
  * <Status status='Warning' />
  * ```
  */
-export const Status: React.FC<StatusProps> = ({
+export const Status = ({
   status,
   title,
   iconOnly,
   noTooltip,
   className,
-}) => {
+}: React.PropsWithChildren<StatusProps>) => {
   const statusProps = {
     title: title || status,
     iconOnly,

@@ -1,23 +1,23 @@
-import React from 'react';
-import { isEmpty } from 'lodash';
-import { useEntity } from '@backstage/plugin-catalog-react';
-import { Split, SplitItem } from '@patternfly/react-core';
-import { Typography } from '@material-ui/core';
 import {
   BottomLinkProps,
   EmptyState,
   InfoCard,
   Progress,
 } from '@backstage/core-components';
-import { ResourceStatus, Status, ErrorPanel, ClusterSelector } from '../common';
-import { pipelineRunStatus } from '../../utils/pipeline-filter-reducer';
-import { PipelineLayout } from './PipelineLayout';
-import { useDarkTheme } from '../../hooks/useDarkTheme';
-import { getGraphDataModel } from '../../utils/pipeline-topology-utils';
-import { PipelineRunModel } from '../../models';
+import { useEntity } from '@backstage/plugin-catalog-react';
+import { Typography } from '@material-ui/core';
+import { Split, SplitItem } from '@patternfly/react-core';
+import { isEmpty } from 'lodash';
+import React from 'react';
 import { TektonResourcesContext } from '../../hooks/TektonResourcesContext';
-import { getLatestPipelineRun } from '../../utils/pipelineRun-utils';
+import { useDarkTheme } from '../../hooks/useDarkTheme';
+import { PipelineRunModel } from '../../models';
 import { ClusterErrors } from '../../types/types';
+import { pipelineRunStatus } from '../../utils/pipeline-filter-reducer';
+import { getGraphDataModel } from '../../utils/pipeline-topology-utils';
+import { getLatestPipelineRun } from '../../utils/pipelineRun-utils';
+import { ClusterSelector, ErrorPanel, ResourceStatus, Status } from '../common';
+import { PipelineLayout } from './PipelineLayout';
 
 import './PipelineVisualization.css';
 
@@ -26,15 +26,16 @@ type PipelineVisualizationProps = {
   url?: string;
 };
 
+type WrapperInfoCardProps = {
+  allErrors?: ClusterErrors;
+  footerLink?: BottomLinkProps;
+};
+
 const WrapperInfoCard = ({
   children,
   allErrors,
   footerLink,
-}: {
-  children: React.ReactNode;
-  allErrors?: ClusterErrors;
-  footerLink?: BottomLinkProps;
-}) => (
+}: React.PropsWithChildren<WrapperInfoCardProps>) => (
   <>
     {allErrors && allErrors.length > 0 && <ErrorPanel allErrors={allErrors} />}
     <InfoCard
@@ -47,10 +48,10 @@ const WrapperInfoCard = ({
   </>
 );
 
-export const PipelineVisualization: React.FC<PipelineVisualizationProps> = ({
+export const PipelineVisualization = ({
   linkTekton = true,
   url,
-}) => {
+}: PipelineVisualizationProps) => {
   useDarkTheme();
   const { loaded, responseError, watchResourcesData, selectedClusterErrors } =
     React.useContext(TektonResourcesContext);

@@ -1,5 +1,3 @@
-import React from 'react';
-import classNames from 'classnames';
 import {
   BadgeLocation,
   DEFAULT_LAYER,
@@ -7,14 +5,16 @@ import {
   Layer,
   Node,
   NodeStatus,
-  observer,
   ScaleDetailsLevel,
   TOP_LAYER,
-  useCombineRefs,
   WithDragNodeProps,
   WithSelectionProps,
+  observer,
+  useCombineRefs,
   useHover,
 } from '@patternfly/react-topology';
+import classNames from 'classnames';
+import React from 'react';
 import { getKindAbbrColor } from '../../utils/workload-node-utils';
 
 import './BaseNode.css';
@@ -32,7 +32,6 @@ type BaseNodeProps = {
   badgeBorderColor?: string;
   badgeClassName?: string;
   badgeLocation?: BadgeLocation;
-  children?: React.ReactNode;
   attachments?: React.ReactNode;
   element: Node;
   hoverRef?: (node: Element) => () => void;
@@ -43,7 +42,7 @@ type BaseNodeProps = {
 } & Partial<WithSelectionProps> &
   Partial<WithDragNodeProps>;
 
-const BaseNode: React.FC<BaseNodeProps> = ({
+const BaseNode = ({
   className,
   innerRadius = 10,
   icon,
@@ -53,7 +52,7 @@ const BaseNode: React.FC<BaseNodeProps> = ({
   children,
   alertVariant,
   ...rest
-}) => {
+}: React.PropsWithChildren<BaseNodeProps>) => {
   const [hover, internalHoverRef] = useHover();
   const nodeHoverRefs = useCombineRefs(
     internalHoverRef,

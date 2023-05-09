@@ -1,5 +1,5 @@
-import React from 'react';
 import classNames from 'classnames';
+import React from 'react';
 import CamelCaseWrap from './CamelCaseWrap';
 
 import './StatusIconAndText.css';
@@ -19,10 +19,7 @@ const DASH = '-';
  * <StatusIconAndText icon={renderIcon} />
  * ```
  */
-const StatusIconAndText: React.FC<StatusIconAndTextProps> = ({
-  icon,
-  title,
-}) => {
+const StatusIconAndText = ({ icon, title }: StatusIconAndTextProps) => {
   if (!title) {
     return <>{DASH}</>;
   }

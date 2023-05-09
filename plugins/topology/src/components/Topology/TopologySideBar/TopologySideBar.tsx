@@ -1,8 +1,8 @@
-import React from 'react';
 import {
   BaseNode,
   TopologySideBar as PFTopologySideBar,
 } from '@patternfly/react-topology';
+import React from 'react';
 import TopologySideBarContent from './TopologySideBarContent';
 
 import './TopologySideBar.css';
@@ -12,7 +12,7 @@ type TopologySideBarProps = {
   onClose: () => void;
 };
 
-const TopologySideBar: React.FC<TopologySideBarProps> = ({ onClose, node }) => {
+const TopologySideBar = ({ onClose, node }: TopologySideBarProps) => {
   return (
     <PFTopologySideBar resizable onClose={onClose}>
       <div className="pf-topology-side-bar__body">

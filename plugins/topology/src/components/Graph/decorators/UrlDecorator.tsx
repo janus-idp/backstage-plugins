@@ -1,6 +1,6 @@
-import React from 'react';
 import { Tooltip, TooltipPosition } from '@patternfly/react-core';
 import { ExternalLinkAltIcon } from '@patternfly/react-icons';
+import React from 'react';
 import Decorator from './Decorator';
 
 interface DefaultDecoratorProps {
@@ -10,12 +10,7 @@ interface DefaultDecoratorProps {
   y: number;
 }
 
-export const UrlDecorator: React.FC<DefaultDecoratorProps> = ({
-  url,
-  radius,
-  x,
-  y,
-}) => {
+export const UrlDecorator = ({ url, radius, x, y }: DefaultDecoratorProps) => {
   if (!url) {
     return null;
   }

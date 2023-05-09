@@ -2,10 +2,16 @@ import React from 'react';
 
 import './TopologyResourcesTabPanelItem.css';
 
-const TopologyResourcesTabPanelItem: React.FC<{
+type TopologyResourcesTabPanelItemProps = {
   resourceLabel: string;
   dataTest?: string;
-}> = ({ resourceLabel, children, dataTest }) => {
+};
+
+const TopologyResourcesTabPanelItem = ({
+  resourceLabel,
+  children,
+  dataTest,
+}: React.PropsWithChildren<TopologyResourcesTabPanelItemProps>) => {
   const emptyState = (
     <span className="topology-text-muted">{`No ${resourceLabel} found for this resource.`}</span>
   );

@@ -1,23 +1,23 @@
-import React from 'react';
+import { InfoCard, Progress } from '@backstage/core-components';
 import {
   BaseNode,
-  SelectionEventListener,
   SELECTION_EVENT,
+  SelectionEventListener,
   TopologyView,
+  VisualizationSurface,
   useEventListener,
   useVisualizationController,
-  VisualizationSurface,
 } from '@patternfly/react-topology';
-import { InfoCard, Progress } from '@backstage/core-components';
-import { TopologyEmptyState } from './TopologyEmptyState';
-import { useWorkloadsWatcher } from '../../hooks/useWorkloadWatcher';
-import { TopologyControlBar } from './TopologyControlBar';
-import TopologyToolbar from './TopologyToolbar';
-import { K8sResourcesContext } from '../../hooks/K8sResourcesContext';
-import TopologyErrorPanel from './TopologyErrorPanel';
-import { ClusterErrors } from '../../types/types';
-import { useSideBar } from '../../hooks/useSideBar';
+import React from 'react';
 import { TYPE_WORKLOAD } from '../../const';
+import { K8sResourcesContext } from '../../hooks/K8sResourcesContext';
+import { useSideBar } from '../../hooks/useSideBar';
+import { useWorkloadsWatcher } from '../../hooks/useWorkloadWatcher';
+import { ClusterErrors } from '../../types/types';
+import { TopologyControlBar } from './TopologyControlBar';
+import { TopologyEmptyState } from './TopologyEmptyState';
+import TopologyErrorPanel from './TopologyErrorPanel';
+import TopologyToolbar from './TopologyToolbar';
 
 import './TopologyToolbar.css';
 
@@ -25,9 +25,9 @@ type TopologyViewWorkloadComponentProps = {
   useToolbar?: boolean;
 };
 
-const TopologyViewWorkloadComponent: React.FC<
-  TopologyViewWorkloadComponentProps
-> = ({ useToolbar = false }) => {
+const TopologyViewWorkloadComponent = ({
+  useToolbar = false,
+}: TopologyViewWorkloadComponentProps) => {
   const [selectedIds, setSelectedIds] = React.useState<string[]>([]);
   const controller = useVisualizationController();
   const layout = 'ColaNoForce';

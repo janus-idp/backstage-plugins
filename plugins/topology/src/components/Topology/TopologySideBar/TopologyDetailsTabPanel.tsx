@@ -1,21 +1,23 @@
-import React from 'react';
+import { V1Deployment, V1OwnerReference } from '@kubernetes/client-node';
 import {
   Split,
   SplitItem,
   Timestamp,
   TimestampFormat,
 } from '@patternfly/react-core';
-import PodSet from '../../Pods/PodSet';
-import TopologySideBarDetailsItem from './TopologySideBarDetailsItem';
-import { DeploymentModel } from '../../../models';
-import TopologyDeploymentDetails from './TopologyDeploymentDetails';
-import { V1Deployment, V1OwnerReference } from '@kubernetes/client-node';
 import { BaseNode } from '@patternfly/react-topology';
+import React from 'react';
+import { DeploymentModel } from '../../../models';
+import PodSet from '../../Pods/PodSet';
+import TopologyDeploymentDetails from './TopologyDeploymentDetails';
 import TopologyResourceLabels from './TopologyResourceLabels';
+import TopologySideBarDetailsItem from './TopologySideBarDetailsItem';
 
 import './TopologyDetailsTabPanel.css';
 
-const TopologyDetailsTabPanel: React.FC<{ node: BaseNode }> = ({ node }) => {
+type TopologyDetailsTabPanelProps = { node: BaseNode };
+
+const TopologyDetailsTabPanel = ({ node }: TopologyDetailsTabPanelProps) => {
   const { width, height } = node.getDimensions();
   const data = node.getData();
   const resource = data.resource;
