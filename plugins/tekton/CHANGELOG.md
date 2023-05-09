@@ -1,3 +1,11 @@
+## @janus-idp/backstage-plugin-tekton [1.4.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.4.2...@janus-idp/backstage-plugin-tekton@1.4.3) (2023-05-09)
+
+
+### Other changes
+
+* **deps:** update all non-major dependencies ([#333](https://github.com/janus-idp/backstage-plugins/issues/333)) ([dce0ea4](https://github.com/janus-idp/backstage-plugins/commit/dce0ea4a9b9f517bd864d39f0b364c68e6a2e143))
+* **plugins:** remove react namespace import ([#336](https://github.com/janus-idp/backstage-plugins/issues/336)) ([01ab4aa](https://github.com/janus-idp/backstage-plugins/commit/01ab4aaf9c88c58c955903372b556f33e2e6461e))
+
 ## @janus-idp/backstage-plugin-tekton [1.4.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.4.1...@janus-idp/backstage-plugin-tekton@1.4.2) (2023-05-04)
 
 
