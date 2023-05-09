@@ -6,6 +6,7 @@
     "node": "16 || 18"
   },
   "scripts": {
+    "preinstall": "npx only-allow yarn",
     "dev": "concurrently \"yarn start\" \"yarn start-backend\"",
     "start": "yarn workspace app start",
     "start-backend": "yarn workspace backend start",
@@ -18,7 +19,8 @@
     "prettier:check": "prettier --check .",
     "prettier:fix": "prettier --write .",
     "new": "backstage-cli new --scope @janus-idp",
-    "release": "multi-semantic-release"
+    "release": "multi-semantic-release",
+    "prepare": "husky install"
   },
   "workspaces": {
     "packages": [
@@ -39,7 +41,8 @@
     "multi-semantic-release": "3.0.2",
     "node-gyp": "9.3.1",
     "prettier": "2.8.8",
-    "typescript": "5.0.4"
+    "typescript": "5.0.4",
+    "husky": "8.0.3"
   },
   "resolutions": {
     "@types/react": "^17",
