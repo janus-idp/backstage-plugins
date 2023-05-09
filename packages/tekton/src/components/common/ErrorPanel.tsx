@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { WarningPanel } from '@backstage/core-components';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { Typography } from '@material-ui/core';

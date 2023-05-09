@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { TektonResourcesContext } from '../../hooks/TektonResourcesContext';
 import { Select, SelectedItems } from '@backstage/core-components';
 

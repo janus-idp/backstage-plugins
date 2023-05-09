@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { ChartLabel } from '@patternfly/react-charts';
 import classNames from 'classnames';
 import { V1DaemonSet, V1Deployment, V1Pod } from '@kubernetes/client-node';

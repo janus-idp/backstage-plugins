@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { useDebounceCallback } from './debounce';
 import { updateTopologyDataModel } from '../data-transforms/updateTopologyDataModel';
 import { useDeepCompareMemoize } from './useDeepCompareMemoize';

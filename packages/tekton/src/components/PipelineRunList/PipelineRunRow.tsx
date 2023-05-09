@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { Timestamp } from '@patternfly/react-core';
 import { tableColumnClasses } from './pipelinerun-table';
 import LinkedPipelineRunTaskStatus from './LinkedPipelineRunTaskStatus';
