@@ -15,6 +15,7 @@
  */
 import { ConfigReader } from '@backstage/config';
 import { SegmentAnalytics } from './Segment';
+import { IdentityApi } from '@backstage/core-plugin-api';
 
 const mockIdentify = jest.fn();
 const mockPage = jest.fn();
@@ -43,8 +44,12 @@ describe('SegmentAnalytics', () => {
   const writeKey = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
   const basicValidConfig = new ConfigReader({
     app: {
-      analytics: { segment: { writeKey, testMode: false, maskIP: true } },
+      analytics: { segment: { writeKey, testMode: false, maskIP: false } },
     },
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   describe('fromConfig', () => {
@@ -62,6 +67,12 @@ describe('SegmentAnalytics', () => {
   });
 
   describe('integration', () => {
+    const maskedIPConfig = new ConfigReader({
+      app: {
+        analytics: { segment: { writeKey, testMode: false, maskIP: true } },
+      },
+    });
+
     it('track identify calls', async () => {
       const api = SegmentAnalytics.fromConfig(basicValidConfig);
       await api.captureEvent({
@@ -71,6 +82,27 @@ describe('SegmentAnalytics', () => {
       });
 
       expect(mockIdentify).toHaveBeenCalledTimes(1);
+      expect(mockIdentify).toHaveBeenCalledWith(
+        /* hashed id */ '6a646f65',
+        {},
+        {},
+      );
+    });
+
+    it('track identify with maskedIP', async () => {
+      const api = SegmentAnalytics.fromConfig(maskedIPConfig);
+      await api.captureEvent({
+        action: 'identify',
+        subject: 'jdoe',
+        context,
+      });
+
+      expect(mockIdentify).toHaveBeenCalledTimes(1);
+      expect(mockIdentify).toHaveBeenCalledWith(
+        /* hashed id */ '6a646f65',
+        {},
+        { ip: '0.0.0.0' },
+      );
     });
 
     it('tracks basic pageview', async () => {
@@ -82,6 +114,20 @@ describe('SegmentAnalytics', () => {
       });
 
       expect(mockPage).toHaveBeenCalledTimes(1);
+      expect(mockPage).toHaveBeenCalledWith(context.pluginId, '/', context, {});
+    });
+
+    it('tracks pageview with maskedIP', async () => {
+      const api = SegmentAnalytics.fromConfig(maskedIPConfig);
+      await api.captureEvent({
+        action: 'navigate',
+        subject: '/',
+        context,
+      });
+      expect(mockPage).toHaveBeenCalledTimes(1);
+      expect(mockPage).toHaveBeenCalledWith(context.pluginId, '/', context, {
+        ip: '0.0.0.0',
+      });
     });
 
     it('tracks basic event', async () => {
@@ -98,6 +144,63 @@ describe('SegmentAnalytics', () => {
       });
 
       expect(mockTrack).toHaveBeenCalledTimes(1);
+      expect(mockTrack).toHaveBeenCalledWith(
+        expectedAction,
+        {
+          subject: expectedLabel,
+          context: context,
+          attributes: undefined,
+        },
+        {},
+      );
+    });
+
+    it('tracks event with MaskedIP', async () => {
+      const api = SegmentAnalytics.fromConfig(maskedIPConfig);
+
+      const expectedAction = 'click';
+      const expectedLabel = 'on something';
+      const expectedValue = 42;
+      await api.captureEvent({
+        action: expectedAction,
+        subject: expectedLabel,
+        value: expectedValue,
+        context,
+      });
+
+      expect(mockTrack).toHaveBeenCalledTimes(1);
+      expect(mockTrack).toHaveBeenCalledWith(
+        expectedAction,
+        {
+          subject: expectedLabel,
+          context: context,
+          attributes: undefined,
+        },
+        { ip: '0.0.0.0' },
+      );
+    });
+  });
+
+  describe('identityApi', () => {
+    const identityApi = {
+      getBackstageIdentity: jest.fn().mockResolvedValue({
+        userEntityRef: 'User:default/someone',
+      }),
+    } as unknown as IdentityApi;
+    it('track identify calls', async () => {
+      const api = SegmentAnalytics.fromConfig(basicValidConfig, identityApi);
+      await api.captureEvent({
+        action: 'identify',
+        subject: 'jdoe',
+        context,
+      });
+
+      expect(mockIdentify).toHaveBeenCalledTimes(1);
+      expect(mockIdentify).toHaveBeenCalledWith(
+        /* hashed id */ '557365723a64656661756c742f736f6d656f6e65',
+        {},
+        {},
+      );
     });
   });
 });
