@@ -1,4 +1,4 @@
-# Keycloak Backend Plugin for Backstage
+# Keycloak backend plugin for Backstage
 
 The Keycloak backend plugin integrates Keycloak into Backstage.
 
@@ -9,7 +9,23 @@ The Keycloak backend plugin has the following capabilities:
 - Synchronization of Keycloak users in a realm
 - Synchronization of Keycloak groups and their users in a realm
 
-## Configuration
+# Table of contents
+
+1. [For administrators](#for-administrators)
+
+   a. [Configuration](#configuration)
+
+   b. [Installation](#installation)
+
+   c. [Limitations](#limitations)
+
+1. [For users](for-users)
+
+   a. [Imported users and groups in Backstage with Keycloak plugin](#imported-users-and-groups-in-backstage-with-keycloak-plugin)
+
+## For administrators
+
+### Configuration
 
 Communication between Backstage and Keycloak is enabled by using the Keycloak API. Username/password or client credentials are supported authentication methods.
 
@@ -33,7 +49,7 @@ When using client credentials, the access type must be set to `confidential` and
 - `query-users`
 - `view-users`
 
-## Installation
+### Installation
 
 1. Install the Backstage package into the backend. When not integrating with a published package, clone the repository locally and add the Backstage as follows:
 
@@ -137,7 +153,7 @@ When using client credentials, the access type must be set to `confidential` and
            groupQuerySize: 250 # Optional
    ```
 
-## Limitations
+### Limitations
 
 If you have self-signed or corporate certificate issues, you can set the following environment variable before starting Backstage:
 
@@ -151,7 +167,9 @@ The solution of setting the environment variable is not recommended.
 
 ---
 
-### View imported users and groups in Backstage
+## For users
+
+### Imported users and groups in Backstage with Keycloak plugin
 
 After configuring the plugin successfully, the plugin imports the users and groups each time when started.
 
