@@ -1,1 +1,0 @@
-export { OcirImagesComponent } from './OcirImagesComponent';

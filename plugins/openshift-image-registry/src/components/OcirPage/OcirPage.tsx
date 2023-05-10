@@ -1,10 +1,12 @@
 import React from 'react';
-import { Header, Page } from '@backstage/core-components';
-import { OcirImagesComponent } from '../OcirImagesComponent';
+import { Content, Header, Page } from '@backstage/core-components';
+import { OcirImagesView } from '../OcirImages/OcirImagesView';
 
 export const OcirPage = () => (
-  <Page themeId="tool">
+  <Page themeId="home">
     <Header title="Image Registry" />
-    <OcirImagesComponent />
+    <Content>
+      <OcirImagesView />
+    </Content>
   </Page>
 );

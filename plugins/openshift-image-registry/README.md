@@ -1,6 +1,6 @@
 # Openshift Image Registry plugin for Backstage
 
-This plugin will show you all images and its tags in internal registry of openshift
+This plugin will show you all ImageStreams in an Openshift cluster
 
 ## Getting started
 
@@ -10,20 +10,19 @@ This plugin will show you all images and its tags in internal registry of opensh
    yarn workspace app add @janus-idp/backstage-plugin-openshift-image-registry
    ```
 
-2. Set the proxy to desired Openshift instance server
+2. Set the proxy to desired Openshift cluster in the `app-config.yaml` file as follows:
 
    ```yaml
    # app-config.yaml
    proxy:
      '/openshift-image-registry/api':
-     target: <URL where KCP is running>
+     target: <URL where k8s control plane for openshift cluster is running>
      headers:
        X-Requested-With: 'XMLHttpRequest'
-       # Uncomment the following line to access a private Quay Repository using a token
        Authorization: Bearer <TOKEN>
      changeOrigin: true
-     # Change to "false" in case of using self hosted quay instance with a self-signed certificate
-     secure: false
+     # Change to "false" in case of using self hosted openshift cluster with a self-signed certificate
+     secure: true
    ```
 
 3. Enable additional sidebar-item on the app sidebar
