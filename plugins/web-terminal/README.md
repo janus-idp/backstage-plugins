@@ -16,24 +16,24 @@ You have to define the location of the `webterminal-proxy` in `app-config.yaml`:
 
 ```yaml
 webTerminal:
-  webSocketUrl: "wss://example.com:3000"
-  restServerUrl: "https://example.com:3000/rest"
+  webSocketUrl: 'wss://example.com:3000'
+  restServerUrl: 'https://example.com:3000/rest'
 ```
 
 Optionally, you can also define the default namespace for the terminal; otherwise, `openshift-terminal` will be used:
 
 ```yaml
 webTerminal:
-  webSocketUrl: "wss://example.com:3000"
-  restServerUrl: "https://example.com:3000/rest"
-  defaultNamespace: "default"
+  webSocketUrl: 'wss://example.com:3000'
+  restServerUrl: 'https://example.com:3000/rest'
+  defaultNamespace: 'default'
 ```
 
 Next, you can include the `WebTerminal` component in your catalog resource page within the entity context:
 
 ```typescript
 <Grid item>
-    <WebTerminal />
+  <WebTerminal />
 </Grid>
 ```
 
