@@ -37,9 +37,17 @@ export const OcirImageSearchBar = ({
 
   const searchByName = () => {
     const filteredImageStreams = imageStreams
-      ? imageStreams.filter((imgSt: ImageStreamMetadata) =>
-          imgSt.name.includes(search),
-        )
+      ? imageStreams.filter((imgSt: ImageStreamMetadata) => {
+          const s = search.toUpperCase();
+          const { name, description = '', tags } = imgSt;
+          const n = name.toUpperCase();
+          const d = description.toUpperCase();
+          return (
+            n.includes(s) ||
+            d.includes(s) ||
+            !!tags.find(t => t.toUpperCase().includes(s))
+          );
+        })
       : undefined;
     setImageStreams(filteredImageStreams);
   };
@@ -58,7 +66,7 @@ export const OcirImageSearchBar = ({
         <Input
           aria-label="search"
           className={classes.input}
-          placeholder="Search by Name"
+          placeholder="Search"
           autoComplete="off"
           onChange={event => setSearch(event.target.value)}
           value={search}
