@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-openshift-image-registry [1.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-openshift-image-registry@1.0.1...@janus-idp/backstage-plugin-openshift-image-registry@1.1.0) (2023-05-11)
+
+
+### Features
+
+* **openshift-image-registry:** enable search by description and tags ([#346](https://github.com/janus-idp/backstage-plugins/issues/346)) ([96d0f55](https://github.com/janus-idp/backstage-plugins/commit/96d0f55e93392c69ce4542d4db2fef5030db4937))
+
 ## @janus-idp/backstage-plugin-openshift-image-registry [1.0.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-openshift-image-registry@1.0.0...@janus-idp/backstage-plugin-openshift-image-registry@1.0.1) (2023-05-11)
 
 
