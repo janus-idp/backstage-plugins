@@ -58,7 +58,8 @@ export const NamespacePickerDialog = ({
     setLoading(true);
     onInit()
       .then(setNamespaces)
-      .then(() => setLoading(false));
+      .then(() => setLoading(false))
+      .catch(() => setLoading(false));
   }, [onInit]);
 
   return (
