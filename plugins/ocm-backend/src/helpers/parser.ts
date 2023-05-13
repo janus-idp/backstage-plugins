@@ -91,7 +91,7 @@ export const parseUpdateInfo = (clusterInfo: ManagedClusterInfo) => {
 export const parseNodeStatus = (clusterInfo: ManagedClusterInfo) =>
   clusterInfo.status?.nodeList.map(node => {
     if (node.conditions.length !== 1) {
-      throw new Error('More node conditions then one');
+      throw new Error('Found more node conditions then one');
     }
     const condition = node.conditions[0];
     return {

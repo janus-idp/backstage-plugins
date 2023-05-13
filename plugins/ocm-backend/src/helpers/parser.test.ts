@@ -3,6 +3,7 @@ import { ManagedCluster, ManagedClusterInfo } from '../types';
 import {
   getClaim,
   parseManagedCluster,
+  parseNodeStatus,
   parseResources,
   parseUpdateInfo,
   translateOCMToResource,
@@ -251,6 +252,80 @@ describe('parseUpdateInfo', () => {
         url: 'https://access.redhat.com/errata/RHSA-2023:0561',
       },
     });
+  });
+});
+
+describe('parseNodeStatus', () => {
+  it('should correctly parse a node list', () => {
+    const mciOriginal: ManagedClusterInfo = require(`${FIXTURES_DIR}/internal.open-cluster-management.io/managedclusterinfos/local-cluster.json`);
+    const mci = {
+      ...mciOriginal,
+      status: {
+        ...mciOriginal.status!,
+        nodeList: [...(mciOriginal.status?.nodeList || [])],
+      },
+    };
+
+    const result = parseNodeStatus(mci);
+
+    expect(result).toEqual([
+      { status: 'True', type: 'Ready' },
+      { status: 'True', type: 'Ready' },
+      { status: 'True', type: 'Ready' },
+    ]);
+  });
+
+  it('should should return an empty array if no nodes are present', () => {
+    const mciOriginal: ManagedClusterInfo = require(`${FIXTURES_DIR}/internal.open-cluster-management.io/managedclusterinfos/local-cluster.json`);
+    const mci = {
+      ...mciOriginal,
+      status: {
+        ...mciOriginal.status!,
+        nodeList: [],
+      },
+    };
+
+    const result = parseNodeStatus(mci);
+
+    expect(result).toEqual([]);
+  });
+
+  it('should should throw an error if there are more conditions in a node', () => {
+    const mciOriginal: ManagedClusterInfo = require(`${FIXTURES_DIR}/internal.open-cluster-management.io/managedclusterinfos/local-cluster.json`);
+    const mci = {
+      ...mciOriginal,
+      status: {
+        ...mciOriginal.status!,
+        nodeList: [
+          {
+            capacity: {
+              cpu: '32',
+              memory: '131959088Ki',
+              socket: '2',
+            },
+            conditions: [
+              {
+                status: 'True',
+                type: 'Ready',
+              },
+              {
+                status: 'False',
+                type: 'NotReady',
+              },
+            ],
+            labels: {
+              'node-role.kubernetes.io/master': '',
+              'node-role.kubernetes.io/worker': '',
+            },
+            name: 'os-ctrl-0.curator.massopen.cloud',
+          },
+        ],
+      },
+    };
+
+    const result = () => parseNodeStatus(mci);
+
+    expect(result).toThrow('Found more node conditions then one');
   });
 });
 
