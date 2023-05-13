@@ -24,16 +24,22 @@ import {
   listManagedClusters,
   getManagedClusterInfo,
   hubApiClient,
+  listManagedClusterInfos,
 } from '../helpers/kubernetes';
 import {
+  getClaim,
   parseClusterStatus,
   parseManagedCluster,
+  parseNodeStatus,
   parseUpdateInfo,
   translateOCMToResource,
   translateResourceToOCM,
 } from '../helpers/parser';
 import { readOcmConfigs } from '../helpers/config';
-import { Cluster } from '@janus-idp/backstage-plugin-ocm-common';
+import {
+  Cluster,
+  ClusterOverview,
+} from '@janus-idp/backstage-plugin-ocm-common';
 
 export interface RouterOptions {
   logger: Logger;
@@ -101,11 +107,24 @@ export async function createRouter(
     const allClusters = await Promise.all(
       Object.values(clients).map(async c => {
         const mcs = await listManagedClusters(c.client);
+        const mcis = await listManagedClusterInfos(c.client);
 
-        return mcs.items.map(mc => ({
-          name: translateOCMToResource(mc.metadata!.name!, c.hubResourceName),
-          status: parseClusterStatus(mc),
-        }));
+        return mcs.items.map(
+          (mc, index) =>
+            ({
+              name: translateOCMToResource(
+                mc.metadata!.name!,
+                c.hubResourceName,
+              ),
+              status: parseClusterStatus(mc),
+              platform: getClaim(mc, 'platform.open-cluster-management.io'),
+              openshiftVersion:
+                mc.metadata!.labels?.openshiftVersion ||
+                getClaim(mc, 'version.openshift.io'),
+              nodes: parseNodeStatus(mcis.items[index]),
+              ...parseUpdateInfo(mcis.items[index]),
+            } as ClusterOverview),
+        );
       }),
     );
 

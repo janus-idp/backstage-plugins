@@ -1,6 +1,7 @@
 import { CONSOLE_CLAIM, HUB_CLUSTER_NAME_IN_OCM } from '../constants';
 import {
   ClusterDetails,
+  ClusterNodesStatus,
   ClusterStatus,
 } from '@janus-idp/backstage-plugin-ocm-common';
 import { maxSatisfying } from 'semver';
@@ -86,6 +87,18 @@ export const parseUpdateInfo = (clusterInfo: ManagedClusterInfo) => {
     },
   };
 };
+
+export const parseNodeStatus = (clusterInfo: ManagedClusterInfo) =>
+  clusterInfo.status?.nodeList.map(node => {
+    if (node.conditions.length !== 1) {
+      throw new Error('More node conditions then one');
+    }
+    const condition = node.conditions[0];
+    return {
+      status: condition.status,
+      type: condition.type,
+    } as ClusterNodesStatus;
+  });
 
 export const translateResourceToOCM = (
   clusterName: string,
