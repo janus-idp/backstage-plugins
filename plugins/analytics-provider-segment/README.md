@@ -9,7 +9,7 @@ This plugin contains no other functionality.
 ## Installation
 
 1. Install the plugin package in your Backstage app:
-   `cd packages/app && yarn add @janus-idp/plugin-analytics-provider-segment"`
+   `cd packages/app && yarn add @janus-idp/backstage-plugin-analytics-provider-segment"`
 2. Wire up the API implementation to your App:
 
 ```tsx
