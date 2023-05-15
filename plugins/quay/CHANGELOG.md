@@ -1,3 +1,5 @@
+## @janus-idp/backstage-plugin-quay [1.2.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.2.5...@janus-idp/backstage-plugin-quay@1.2.6) (2023-05-15)
+
 ## @janus-idp/backstage-plugin-quay [1.2.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.2.4...@janus-idp/backstage-plugin-quay@1.2.5) (2023-05-11)
 
 
