@@ -9,15 +9,16 @@ This plugin contains no other functionality.
 ## Installation
 
 1. Install the plugin package in your Backstage app:
-   `cd packages/app && yarn add @janus-idp/backstage-plugin-analytics-provider-segment"`
+   `yarn add --cwd packages/app @janus-idp/backstage-plugin-analytics-provider-segment`
 2. Wire up the API implementation to your App:
 
 ```tsx
 // packages/app/src/apis.ts
-import { analyticsApiRef, configApiRef } from '@backstage/core-plugin-api';
-import { SegmentAnalytics } from '@janus-idp/plugin-analytics-module-segment';
+import { analyticsApiRef, configApiRef, identityApiRef, } from '@backstage/core-plugin-api';
+import { SegmentAnalytics } from '@janus-idp/backstage-plugin-analytics-provider-segment';
 
 export const apis: AnyApiFactory[] = [
+   // Other APIs...
   // Instantiate and register the GA Analytics API Implementation.
   createApiFactory({
     api: analyticsApiRef,
