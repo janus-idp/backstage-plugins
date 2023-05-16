@@ -8,7 +8,7 @@
     },
     "build": {
       "outputs": ["dist/**"],
-      "dependsOn": ["//#tsc"]
+      "dependsOn": ["//#tsc", "^build"]
     },
     "clean": {
       "cache": false
