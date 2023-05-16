@@ -40,7 +40,7 @@ app:
   analytics:
     segment:
       writeKey: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-      maskIP: true # prevents IP adresses to be sent if true
+      maskIP: true # prevents IP addresses to be sent if true
 ```
 
 ### Debugging and Testing
