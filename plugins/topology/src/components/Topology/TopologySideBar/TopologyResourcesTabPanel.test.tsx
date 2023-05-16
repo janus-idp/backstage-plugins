@@ -3,6 +3,8 @@ import { render } from '@testing-library/react';
 import {
   workloadNode,
   workloadNode2,
+  workloadNode3,
+  workloadNode4,
 } from '../../../__fixtures__/workloadNodeData';
 import { BaseNode } from '@patternfly/react-topology';
 import TopologyResourcesTabPanel from './TopologyResourcesTabPanel';
@@ -40,5 +42,21 @@ describe('TopologyResourcesTabPanel', () => {
     expect(queryByTestId('ingress-list')).not.toBeNull();
     rerender(<TopologyResourcesTabPanel node={workloadNode2 as BaseNode} />);
     getByText(/no ingresses found for this resource/i);
+  });
+
+  it('Should show jobs section only for cron-job', () => {
+    const { queryByTestId } = render(
+      <TopologyResourcesTabPanel node={workloadNode as BaseNode} />,
+    );
+    expect(queryByTestId('job-list')).toBeNull();
+  });
+
+  it('Should show jobs if available for cron-job and empty state otherwise', () => {
+    const { queryByTestId, getByText, rerender } = render(
+      <TopologyResourcesTabPanel node={workloadNode3 as BaseNode} />,
+    );
+    expect(queryByTestId('job-list')).not.toBeNull();
+    rerender(<TopologyResourcesTabPanel node={workloadNode4 as BaseNode} />);
+    getByText(/no jobs found for this resource/i);
   });
 });
