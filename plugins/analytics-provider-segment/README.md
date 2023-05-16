@@ -14,11 +14,15 @@ This plugin contains no other functionality.
 
 ```tsx
 // packages/app/src/apis.ts
-import { analyticsApiRef, configApiRef, identityApiRef, } from '@backstage/core-plugin-api';
+import {
+  analyticsApiRef,
+  configApiRef,
+  identityApiRef,
+} from '@backstage/core-plugin-api';
 import { SegmentAnalytics } from '@janus-idp/backstage-plugin-analytics-provider-segment';
 
 export const apis: AnyApiFactory[] = [
-   // Other APIs...
+  // Other APIs...
   // Instantiate and register the GA Analytics API Implementation.
   createApiFactory({
     api: analyticsApiRef,
