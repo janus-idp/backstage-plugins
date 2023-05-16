@@ -9,21 +9,22 @@ This plugin contains no other functionality.
 ## Installation
 
 1. Install the plugin package in your Backstage app:
-   `cd packages/app && yarn add @janus-idp/backstage-plugin-analytics-provider-segment"`
+   `yarn add --cwd packages/app @janus-idp/backstage-plugin-analytics-provider-segment`
 2. Wire up the API implementation to your App:
 
 ```tsx
 // packages/app/src/apis.ts
-import { analyticsApiRef, configApiRef } from '@backstage/core-plugin-api';
-import { SegmentAnalytics } from '@janus-idp/plugin-analytics-module-segment';
+import { analyticsApiRef, configApiRef, identityApiRef, } from '@backstage/core-plugin-api';
+import { SegmentAnalytics } from '@janus-idp/backstage-plugin-analytics-provider-segment';
 
 export const apis: AnyApiFactory[] = [
+   // Other APIs...
   // Instantiate and register the GA Analytics API Implementation.
   createApiFactory({
     api: analyticsApiRef,
     deps: { configApi: configApiRef, identityApi: identityApiRef },
-    factory: ({ configApi, identitApi }) =>
-      SegmentAnalytics.fromConfig(configApi, identitApi),
+    factory: ({ configApi, identityApi }) =>
+      SegmentAnalytics.fromConfig(configApi, identityApi),
   }),
 ];
 ```
@@ -39,7 +40,7 @@ app:
   analytics:
     segment:
       writeKey: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-      maskIP: true # prevents IP adresses to be sent if true
+      maskIP: true # prevents IP addresses from being sent if true
 ```
 
 ### Debugging and Testing
@@ -51,7 +52,7 @@ to turn off reporting to Analytics. You can do so like this:
 app:
   analytics:
     segment:
-      testMode: true # Prevents data being sent to Segment
+      testMode: true # prevents data from being sent if true
 ```
 
 You might commonly set the above in an `app-config.local.yaml` file, which is
