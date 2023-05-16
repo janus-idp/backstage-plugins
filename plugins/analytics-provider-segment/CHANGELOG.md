@@ -1,3 +1,16 @@
+## @janus-idp/backstage-plugin-analytics-provider-segment [1.0.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-analytics-provider-segment@1.0.0...@janus-idp/backstage-plugin-analytics-provider-segment@1.0.1) (2023-05-16)
+
+
+### Bug Fixes
+
+* **segment:** fixes the config for optional parameters ([#363](https://github.com/janus-idp/backstage-plugins/issues/363)) ([4857f5d](https://github.com/janus-idp/backstage-plugins/commit/4857f5d6f0b028e32e492f07e5d033381b467386))
+
+
+### Documentation
+
+* fix segment README ([#364](https://github.com/janus-idp/backstage-plugins/issues/364)) ([9f6ed93](https://github.com/janus-idp/backstage-plugins/commit/9f6ed9303297977864f0a3624552c454a1af64dd))
+* update Segment README.md ([#362](https://github.com/janus-idp/backstage-plugins/issues/362)) ([a75d30a](https://github.com/janus-idp/backstage-plugins/commit/a75d30a376a03b44f17cb7b410c30b3817581c43))
+
 ## @janus-idp/backstage-plugin-analytics-provider-segment 1.0.0 (2023-05-15)
 
 
