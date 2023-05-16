@@ -40,7 +40,7 @@ app:
   analytics:
     segment:
       writeKey: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-      maskIP: true # prevents IP addresses to be sent if true
+      maskIP: true # prevents IP addresses from being sent if true
 ```
 
 ### Debugging and Testing
@@ -52,7 +52,7 @@ to turn off reporting to Analytics. You can do so like this:
 app:
   analytics:
     segment:
-      testMode: true # Prevents data being sent to Segment
+      testMode: true # prevents data from being sent if true
 ```
 
 You might commonly set the above in an `app-config.local.yaml` file, which is
