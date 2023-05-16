@@ -165,11 +165,11 @@ export const getTaskStatusOfPLR = (
     }
   } else if (
     pipelinerun?.status?.conditions?.[0]?.status === 'False' ||
-    pipelinerun?.spec.status === SucceedConditionReason.PipelineRunCancelled
+    pipelinerun?.spec?.status === SucceedConditionReason.PipelineRunCancelled
   ) {
     taskStatus[ComputedStatus.Cancelled] = totalTasks;
   } else if (
-    pipelinerun?.spec.status === SucceedConditionReason.PipelineRunPending
+    pipelinerun?.spec?.status === SucceedConditionReason.PipelineRunPending
   ) {
     taskStatus[ComputedStatus.Pending] += totalTasks;
   } else {
