@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-analytics-provider-segment [1.0.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-analytics-provider-segment@1.0.1...@janus-idp/backstage-plugin-analytics-provider-segment@1.0.2) (2023-05-17)
+
+
+### Bug Fixes
+
+* **deps:** update all non-major dependencies ([#358](https://github.com/janus-idp/backstage-plugins/issues/358)) ([086a9ed](https://github.com/janus-idp/backstage-plugins/commit/086a9ed839f3a6dd1460f0f87b71453a7ed62ea3))
+
 ## @janus-idp/backstage-plugin-analytics-provider-segment [1.0.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-analytics-provider-segment@1.0.0...@janus-idp/backstage-plugin-analytics-provider-segment@1.0.1) (2023-05-16)
 
 
