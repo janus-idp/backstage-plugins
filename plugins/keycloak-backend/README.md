@@ -12,10 +12,15 @@ The Keycloak backend plugin has the following capabilities:
 ## Table of contents
 
 1. [For administrators](#for-administrators)
+
    a. [Configuration](#configuration)
+
    b. [Installation](#installation)
+
    c. [Limitations](#limitations)
+
 2. [For users](#for-users)
+
    a. [Imported users and groups in Backstage with Keycloak plugin](#imported-users-and-groups-in-backstage-with-keycloak-plugin)
 
 ## For administrators

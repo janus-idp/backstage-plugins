@@ -17,7 +17,7 @@ The OCM plugin has the following capabilities:
 ## Prerequisites
 
 - OCM is deployed and configured on a Kubernetes cluster.
-- [Kubernetes plugin for Backstage](https://backstage.io/docs/features/kubernetes/overview) is installed.
+- [Kubernetes plugin for Backstage](https://backstage.io/docs/features/kubernetes) is installed.
 - A `ClusterRole` is granted to `ServiceAccount` accessing the hub cluster as follows:
 
   ```yaml
