@@ -1,0 +1,21 @@
+name: Pull request website
+
+on:
+  pull_request:
+    paths:
+      - '**/README.md'
+
+jobs:
+  build-website:
+    name: Build website
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          repository: janus-idp/janus-idp.github.io
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Build
+        uses: ./.github/actions/build-website
