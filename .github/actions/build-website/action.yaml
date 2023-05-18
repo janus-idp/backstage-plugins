@@ -6,15 +6,13 @@ runs:
     - uses: pnpm/action-setup@v2
       name: Install pnpm
       id: pnpm-install
-      working-directory: website
       with:
         version: 8.4.0
 
     - name: Setup Node.js
       uses: actions/setup-node@v3
-      working-directory: website
       with:
-        node-version-file: '.nvmrc'
+        node-version-file: './website/.nvmrc'
         cache: 'pnpm'
 
     - name: Install dependencies
