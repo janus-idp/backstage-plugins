@@ -18,10 +18,8 @@ runs:
 
     - name: Install dependencies
       shell: bash
-      working-directory: website
       run: pnpm install --prefer-offline --frozen-lockfile
 
     - name: Run Build
       shell: bash
-      working-directory: website
       run: pnpm run build --filter=website

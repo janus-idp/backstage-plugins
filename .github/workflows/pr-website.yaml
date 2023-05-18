@@ -10,19 +10,12 @@ jobs:
     name: Build website
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout janus-idp/backstage-plugins
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          path: plugins
-
-      - name: Checkout janus-idp/janus-idp.github.io
+      - name: Checkout
         uses: actions/checkout@v3
         with:
           repository: janus-idp/janus-idp.github.io
           persist-credentials: false
           fetch-depth: 0
-          path: website
 
       - name: Build
-        uses: ./plugins/.github/actions/build-website
+        uses: ./.github/actions/build-website
