@@ -9,18 +9,13 @@ The Keycloak backend plugin has the following capabilities:
 - Synchronization of Keycloak users in a realm
 - Synchronization of Keycloak groups and their users in a realm
 
-# Table of contents
+## Table of contents
 
 1. [For administrators](#for-administrators)
-
    a. [Configuration](#configuration)
-
    b. [Installation](#installation)
-
    c. [Limitations](#limitations)
-
-1. [For users](for-users)
-
+2. [For users](#for-users)
    a. [Imported users and groups in Backstage with Keycloak plugin](#imported-users-and-groups-in-backstage-with-keycloak-plugin)
 
 ## For administrators
@@ -53,15 +48,13 @@ When using client credentials, the access type must be set to `confidential` and
 
 1. Install the Backstage package into the backend. When not integrating with a published package, clone the repository locally and add the Backstage as follows:
 
-   ```shell
-   # From your Backstage root directory
-   yarn add --cwd packages/backend @janus-idp/backstage-plugin-keycloak-backend
+   ```console
+   yarn workspace backend add @janus-idp/backstage-plugin-keycloak-backend
    ```
 
 2. Add the following configuration to the `app-config.yaml` file:
 
-   ```yaml
-   # app-config.yaml
+   ```yaml title="app-config.yaml"
    catalog:
      providers:
        keycloakOrg:
@@ -77,80 +70,94 @@ When using client credentials, the access type must be set to `confidential` and
 
    - Configure a schedule inside the `app-config.yaml` file:
 
-     ```yaml
-     # app-config.yaml
+     ```yaml title="app-config.yaml"
      catalog:
        providers:
          keycloakOrg:
            default:
-             ...
+             # ...
+             # highlight-add-start
              schedule: # optional; same options as in TaskScheduleDefinition
                # supports cron, ISO duration, "human duration" as used in code
                frequency: { minutes: 1 }
                # supports ISO duration, "human duration" as used in code
                timeout: { minutes: 1 }
                initialDelay: { seconds: 15 }
+               # highlight-add-end
      ```
 
-     Use the configured scheduler as follows:
+     Use the configured scheduler inside the `packages/backend/src/plugins/catalog.ts` as follows:
 
-     ```diff
-     // packages/backend/src/plugins/catalog.ts
-     + import { KeycloakOrgEntityProvider } from '@janus-idp/backstage-plugin-keycloak-backend';
+     ```ts title="packages/backend/src/plugins/catalog.ts"
+     /* highlight-add-start */
+     import { KeycloakOrgEntityProvider } from '@janus-idp/backstage-plugin-keycloak-backend';
+     /* highlight-add-end */
 
-       export default async function createPlugin(
-         env: PluginEnvironment,
-       ): Promise<Router> {
-         const builder = await CatalogBuilder.create(env);
+     export default async function createPlugin(
+       env: PluginEnvironment,
+     ): Promise<Router> {
+       const builder = await CatalogBuilder.create(env);
 
-     +   builder.addEntityProvider(
-     +     KeycloakOrgEntityProvider.fromConfig(env.config, {
-     +       id: 'development',
-     +       logger: env.logger,
-     +       scheduler: env.scheduler,
-     +     }),
-     +   )
-       ...
-       }
+       /* ... other processors and/or providers ... */
+       /* highlight-add-start */
+       builder.addEntityProvider(
+         KeycloakOrgEntityProvider.fromConfig(env.config, {
+           id: 'development',
+           logger: env.logger,
+           scheduler: env.scheduler,
+         }),
+       );
+       /* highlight-add-end */
+
+       const { processingEngine, router } = await builder.build();
+       await processingEngine.start();
+       return router;
+     }
      ```
 
    - Add a schedule directly inside the `packages/backend/src/plugins/catalog.ts` file as follows:
 
-     ```diff
-     // packages/backend/src/plugins/catalog.ts
+     ```ts title="packages/backend/src/plugins/catalog.ts"
      + import { KeycloakOrgEntityProvider } from '@janus-idp/backstage-plugin-keycloak-backend';
 
-       export default async function createPlugin(
-         env: PluginEnvironment,
-       ): Promise<Router> {
-         const builder = await CatalogBuilder.create(env);
+     export default async function createPlugin(
+       env: PluginEnvironment,
+     ): Promise<Router> {
+       const builder = await CatalogBuilder.create(env);
 
-     +   builder.addEntityProvider(
-     +     KeycloakOrgEntityProvider.fromConfig(env.config, {
-     +       id: 'development',
-     +       logger: env.logger,
-     +       schedule: env.scheduler.createScheduledTaskRunner({
-     +         frequency: { minutes: 1 },
-     +         timeout: { minutes: 1 },
-     +         initialDelay: { seconds: 15 }
-     +       }),
-     +     }),
-     +   )
-       ...
-       }
+       /* ... other processors and/or providers ... */
+       builder.addEntityProvider(
+         KeycloakOrgEntityProvider.fromConfig(env.config, {
+           id: 'development',
+           logger: env.logger,
+           /* highlight-add-start */
+           schedule: env.scheduler.createScheduledTaskRunner({
+             frequency: { minutes: 1 },
+             timeout: { minutes: 1 },
+             initialDelay: { seconds: 15 }
+           }),
+           /* highlight-add-end */
+         }),
+       )
+
+       const { processingEngine, router } = await builder.build();
+       await processingEngine.start();
+       return router;
+     }
      ```
 
 4. Optionally override the default Keycloak query parameters. Configure the parameters inside the `app-config.yaml` file:
 
-   ```yaml
-   # app-config.yaml
+   ```yaml title="app-config.yaml"
    catalog:
      providers:
        keycloakOrg:
          default:
-           ...
+           # ...
+           # highlight-add-start
            userQuerySize: 500 # Optional
            groupQuerySize: 250 # Optional
+           # highlight-add-end
    ```
 
 ### Limitations
@@ -162,7 +169,6 @@ If you have self-signed or corporate certificate issues, you can set the followi
 ---
 
 **NOTE**
-
 The solution of setting the environment variable is not recommended.
 
 ---

@@ -6,14 +6,13 @@ The Quay plugin displays the information about your container images within the 
 
 1. Install the Quay plugin using the following command:
 
-   ```bash
+   ```console
    yarn workspace app add @janus-idp/backstage-plugin-quay
    ```
 
 2. Set the proxy to the desired Quay server in the `app-config.yaml` file as follows:
 
-   ```yaml
-   # app-config.yaml
+   ```yaml title="app-config.yaml"
    proxy:
      '/quay/api':
        target: 'https://quay.io'
@@ -30,15 +29,16 @@ The Quay plugin displays the information about your container images within the 
      uiUrl: 'https://quay.io'
    ```
 
-3. Enable an additional tab on the entity view page:
+3. Enable an additional tab on the entity view page in `packages/app/src/components/catalog/EntityPage.tsx`:
 
-   ```ts
-   // packages/app/src/components/catalog/EntityPage.tsx
+   ```tsx title="packages/app/src/components/catalog/EntityPage.tsx"
+   /* highlight-add-next-line */
    import { QuayPage, isQuayAvailable } from '@janus-idp/backstage-plugin-quay';
 
    const serviceEntityPage = (
      <EntityPageLayout>
-       // ...
+       {/* ... */}
+       {/* highlight-add-next-line */}
        <EntityLayout.Route if={isQuayAvailable} path="/quay" title="Quay">
          <QuayPage />
        </EntityLayout.Route>
@@ -48,7 +48,7 @@ The Quay plugin displays the information about your container images within the 
 
 4. Annotate your entity with the following annotations:
 
-   ```yaml
+   ```yaml title="catalog-info.yaml"
    metadata:
      annotations:
        'quay.io/repository-slug': `<ORGANIZATION>/<REPOSITORY>',
@@ -60,10 +60,10 @@ In [Backstage plugin terminology](https://backstage.io/docs/local-dev/cli-build-
 
 You can run the following commands concurrently from the root repository to start a live development session:
 
-```
+```console
 yarn start-backend
 ```
 
-```
+```console
 yarn workspace @janus-idp/backstage-plugin-quay run start
 ```

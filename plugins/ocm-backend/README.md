@@ -8,7 +8,7 @@ For more information about OCM plugin, see the [Open Cluster Management plugin d
 
 You can run a development setup using the following command:
 
-```sh
+```console
 yarn start
 ```
 

@@ -4,7 +4,7 @@ Backstage is a single-page application composed of a set of plugins. This folder
 
 For more information about the plugin ecosystem, see the documentation here:
 
-> https://backstage.io/docs/plugins/
+> <https://backstage.io/docs/plugins/>
 
 You can also see the [Plugin Marketplace](https://backstage.io/plugins) for other open source plugins you can add to your Backstage instance.
 
@@ -18,7 +18,7 @@ You can also use this process if you have an idea for a good plugin but you hope
 
 Run the following command to start a new plugin and follow the instructions:
 
-```sh
+```console
 yarn new
 ```
 

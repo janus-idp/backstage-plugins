@@ -9,42 +9,50 @@ This plugin contains no other functionality.
 ## Installation
 
 1. Install the plugin package in your Backstage app:
-   `yarn add --cwd packages/app @janus-idp/backstage-plugin-analytics-provider-segment`
-2. Wire up the API implementation to your App:
 
-```tsx
-// packages/app/src/apis.ts
-import {
-  analyticsApiRef,
-  configApiRef,
-  identityApiRef,
-} from '@backstage/core-plugin-api';
-import { SegmentAnalytics } from '@janus-idp/backstage-plugin-analytics-provider-segment';
+   ```console
+   yarn workspace app add @janus-idp/backstage-plugin-analytics-provider-segment
+   ```
 
-export const apis: AnyApiFactory[] = [
-  // Other APIs...
-  // Instantiate and register the GA Analytics API Implementation.
-  createApiFactory({
-    api: analyticsApiRef,
-    deps: { configApi: configApiRef, identityApi: identityApiRef },
-    factory: ({ configApi, identityApi }) =>
-      SegmentAnalytics.fromConfig(configApi, identityApi),
-  }),
-];
-```
+2. Wire up the API implementation to your App in `packages/app/src/apis.ts`:
+
+   ```tsx title="packages/app/src/apis.ts"
+   /* highlight-add-start */
+   import {
+     analyticsApiRef,
+     configApiRef,
+     identityApiRef,
+   } from '@backstage/core-plugin-api';
+   import { SegmentAnalytics } from '@janus-idp/backstage-plugin-analytics-provider-segment';
+   /* highlight-add-end */
+
+   export const apis: AnyApiFactory[] = [
+     // Other APIs...
+     // Instantiate and register the GA Analytics API Implementation.
+     /* highlight-add-start */
+     createApiFactory({
+       api: analyticsApiRef,
+       deps: { configApi: configApiRef, identityApi: identityApiRef },
+       factory: ({ configApi, identityApi }) =>
+         SegmentAnalytics.fromConfig(configApi, identityApi),
+     }),
+     /* highlight-add-end */
+   ];
+   ```
 
 3. Configure the plugin in your `app-config.yaml`:
 
 The following is the minimum configuration required to start sending analytics
 events to Segment. All that's needed is your Segment Write Key
 
-```yaml
-# app-config.yaml
+```yaml title="app-config.yaml"
 app:
   analytics:
     segment:
+      # highlight-start
       writeKey: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
       maskIP: true # prevents IP addresses from being sent if true
+      # highlight-end
 ```
 
 ### Debugging and Testing
@@ -52,10 +60,11 @@ app:
 In pre-production environments, you may wish to set additional configurations
 to turn off reporting to Analytics. You can do so like this:
 
-```yaml
+```yaml title="app-config.yaml"
 app:
   analytics:
     segment:
+      # highlight-next-line
       testMode: true # prevents data from being sent if true
 ```
 
@@ -77,5 +86,5 @@ make and test changes is to do the following:
 7. Open the web console to see events fire when you navigate or when you
    interact with instrumented components.
 
-Code for the isolated version of the plugin can be found inside the [/dev](./dev)
+Code for the isolated version of the plugin can be found inside the `./dev`
 directory. Changes to the plugin are hot-reloaded.

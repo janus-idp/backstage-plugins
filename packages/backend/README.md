@@ -14,7 +14,7 @@ app. Until then, feel free to experiment here!
 
 To run the example backend, first go to the project root and run
 
-```bash
+```console
 yarn install
 ```
 
@@ -22,7 +22,7 @@ You should only need to do this once.
 
 After that, go to the `packages/backend` directory and run
 
-```bash
+```console
 yarn start
 ```
 
