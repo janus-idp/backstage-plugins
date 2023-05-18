@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-topology [1.5.9](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.5.8...@janus-idp/backstage-plugin-topology@1.5.9) (2023-05-17)
+
+
+### Bug Fixes
+
+* **deps:** update all non-major dependencies ([#358](https://github.com/janus-idp/backstage-plugins/issues/358)) ([086a9ed](https://github.com/janus-idp/backstage-plugins/commit/086a9ed839f3a6dd1460f0f87b71453a7ed62ea3))
+
 ## @janus-idp/backstage-plugin-topology [1.5.8](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.5.7...@janus-idp/backstage-plugin-topology@1.5.8) (2023-05-15)
 
 ## @janus-idp/backstage-plugin-topology [1.5.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.5.6...@janus-idp/backstage-plugin-topology@1.5.7) (2023-05-15)

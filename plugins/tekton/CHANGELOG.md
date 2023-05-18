@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-tekton [1.4.8](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.4.7...@janus-idp/backstage-plugin-tekton@1.4.8) (2023-05-17)
+
+
+### Bug Fixes
+
+* **deps:** update all non-major dependencies ([#358](https://github.com/janus-idp/backstage-plugins/issues/358)) ([086a9ed](https://github.com/janus-idp/backstage-plugins/commit/086a9ed839f3a6dd1460f0f87b71453a7ed62ea3))
+
 ## @janus-idp/backstage-plugin-tekton [1.4.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.4.6...@janus-idp/backstage-plugin-tekton@1.4.7) (2023-05-15)
 
 ## @janus-idp/backstage-plugin-tekton [1.4.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.4.5...@janus-idp/backstage-plugin-tekton@1.4.6) (2023-05-15)
