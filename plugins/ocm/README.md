@@ -19,6 +19,7 @@ The OCM plugin has the following capabilities:
 - OCM is deployed and configured on a Kubernetes cluster.
 - [Kubernetes plugin for Backstage](https://backstage.io/docs/features/kubernetes/overview) is installed.
 - A `ClusterRole` is granted to `ServiceAccount` accessing the hub cluster as follows:
+
   ```yaml
   kind: ClusterRole
   apiVersion: rbac.authorization.k8s.io/v1
@@ -53,7 +54,6 @@ The OCM plugin is composed of two packages, including:
 ---
 
 **NOTE**
-
 If you are interested in Resource discovery and do not want any of the frontend components, then you can install and configure the `@janus-idp/backstage-plugin-ocm-backend` package only.
 
 ---
@@ -62,7 +62,7 @@ If you are interested in Resource discovery and do not want any of the frontend 
 
 1. Install the OCM backend plugin using the following command:
 
-   ```sh
+   ```console
    yarn workspace backend add @janus-idp/backstage-plugin-ocm-backend
    ```
 
@@ -70,8 +70,7 @@ If you are interested in Resource discovery and do not want any of the frontend 
 
    - The OCM configuration provides the information about your hub. To use the OCM configuration, add the following code to your `app-config.yaml` file:
 
-     ```yaml
-     # app-config.yaml
+     ```yaml title="app-config.yaml"
      catalog:
        providers:
          ocm:
@@ -85,21 +84,22 @@ If you are interested in Resource discovery and do not want any of the frontend 
 
    - If the Backstage Kubernetes plugin is installed and configured to connect to the hub cluster, then you can bind the both hub and Kubernetes configuration by providing the name of the hub in the `app-config.yaml` as follows:
 
-     ```yaml
-     # app-config.yaml
+     ```yaml title="app-config.yaml"
      kubernetes:
        serviceLocatorMethod:
-         type: "multiTenant"
+         type: 'multiTenant'
        clusterLocatorMethods:
-         - type: "config"
+         - type: 'config'
            clusters:
+             # highlight-next-line
              - name: <cluster-name>
-             ...
+             # ...
 
      catalog:
        providers:
          ocm:
            env: # Key is reflected as provider ID. Defines and claims plugin instance ownership of entities
+             # highlight-next-line
              kubernetesPluginRef: <cluster-name> # Match the cluster name in kubernetes plugin config
      ```
 
@@ -111,7 +111,7 @@ If you are interested in Resource discovery and do not want any of the frontend 
 
 3. Create a new plugin instance in `packages/backend/src/plugins/ocm.ts` file as follows:
 
-   ```ts
+   ```ts title="packages/backend/src/plugins/ocm.ts"
    import { createRouter } from '@janus-idp/backstage-plugin-ocm-backend';
    import { Router } from 'express';
    import { PluginEnvironment } from '../types';
@@ -128,65 +128,74 @@ If you are interested in Resource discovery and do not want any of the frontend 
 
 4. Import and plug the new instance into `packages/backend/src/index.ts` file:
 
-   ```diff
-     ...
-   + import ocm from './plugins/ocm';
-     ...
+   ```ts title="packages/backend/src/index.ts"
+   /* highlight-add-next-line */
+   import ocm from './plugins/ocm';
 
-     async function main() {
-       ...
-       const createEnv = makeCreateEnv(config);
-       ...
-   +   const ocmEnv = useHotMemoize(module, () => createEnv('ocm'));
-       ...
-       const apiRouter = Router();
-       ...
-   +   apiRouter.use('/ocm', await ocm(ocmEnv));
-       ...
-     }
+   async function main() {
+     // ...
+     const createEnv = makeCreateEnv(config);
+     // ...
+     /* highlight-add-next-line */
+     const ocmEnv = useHotMemoize(module, () => createEnv('ocm'));
+     // ...
+     const apiRouter = Router();
+     // ...
+     /* highlight-add-next-line */
+     apiRouter.use('/ocm', await ocm(ocmEnv));
+     // ...
+   }
    ```
 
 5. Import the cluster `Resource` entity provider into the `catalog` plugin in the `packages/backend/src/plugins/catalog.ts` file:
 
-   ```diff
-     ...
-   + import { ManagedClusterProvider } from '@janus-idp/backstage-plugin-ocm-backend';
-     ...
-     export default async function createPlugin(
-       env: PluginEnvironment,
-     ): Promise<Router> {
-       const builder = await CatalogBuilder.create(env);
-       ...
-   +   const ocm = ManagedClusterProvider.fromConfig(env.config, {
-   +     logger: env.logger,
-   +   });
-   +   builder.addEntityProvider(ocm);
-       ...
-       const { processingEngine, router } = await builder.build();
-       await processingEngine.start();
-       ...
-   +   await Promise.all(
-   +     ocm.map(
-   +       o => env.scheduler.scheduleTask({
-   +         id: `run_ocm_refresh_${o.getProviderName()}`,
-   +         fn: async () => { await o.run() },
-   +         frequency: { minutes: 30 },
-   +         timeout: { minutes: 10 },
-   +       })
-   +     )
-   +   );
-       return router;
-     }
+   ```ts title="packages/backend/src/plugins/catalog.ts"
+   /* highlight-add-next-line */
+   import { ManagedClusterProvider } from '@janus-idp/backstage-plugin-ocm-backend';
+
+   export default async function createPlugin(
+     env: PluginEnvironment,
+   ): Promise<Router> {
+     const builder = await CatalogBuilder.create(env);
+     // ...
+     /* highlight-add-start */
+     const ocm = ManagedClusterProvider.fromConfig(env.config, {
+       logger: env.logger,
+     });
+     builder.addEntityProvider(ocm);
+     /* highlight-add-end */
+     // ...
+
+     const { processingEngine, router } = await builder.build();
+     await processingEngine.start();
+     // ...
+     /* highlight-add-start */
+     await Promise.all(
+       ocm.map(o =>
+         env.scheduler.scheduleTask({
+           id: `run_ocm_refresh_${o.getProviderName()}`,
+           fn: async () => {
+             await o.run();
+           },
+           frequency: { minutes: 30 },
+           timeout: { minutes: 10 },
+         }),
+       ),
+     );
+     /* highlight-add-end */
+
+     return router;
+   }
    ```
 
-6. Optional: Configure the default owner for the cluster entities in the catalog for a specific environment. For example, use the following code to set `foo` as the owner for clusters from `env` in the catalog:
+6. Optional: Configure the default owner for the cluster entities in the catalog for a specific environment. For example, use the following code to set `foo` as the owner for clusters from `env` in the `app-config.yaml` catalog section:
 
-   ```yaml
-   # app-config.yaml
+   ```yaml title="app-config.yaml"
    catalog:
      providers:
        ocm:
          env:
+           # highlight-next-line
            owner: user:foo
    ```
 
@@ -196,7 +205,7 @@ If you are interested in Resource discovery and do not want any of the frontend 
 
 1. Install the OCM frontend plugin using the following command:
 
-   ```sh
+   ```console
    yarn workspace app add @janus-idp/backstage-plugin-ocm
    ```
 
@@ -204,43 +213,53 @@ If you are interested in Resource discovery and do not want any of the frontend 
 
    - `OcmPage`: This is a standalone page or dashboard displaying all clusters as tiles. You can add `OcmPage` to `packages/app/src/App.tsx` file as follows:
 
-     ```diff
-     + import { OcmPage } from '@janus-idp/backstage-plugin-ocm';
+     ```tsx title="packages/app/src/App.tsx"
+     /* highlight-add-next-line */
+     import { OcmPage } from '@janus-idp/backstage-plugin-ocm';
 
-       const routes = (
-         <FlatRoutes>
-           ...
-     +     <Route path="/ocm" element={<OcmPage logo={<Logo />} />} />
-           ...
-         </FlatRoutes>
-       );
+     const routes = (
+       <FlatRoutes>
+         {/* ... */}
+         {/* highlight-add-next-line */}
+         <Route path="/ocm" element={<OcmPage logo={<Logo />} />} />
+       </FlatRoutes>
+     );
      ```
 
      You can also update navigation in `packages/app/src/components/Root/Root.tsx` as follows:
 
-     ```diff
-     + import StorageIcon from '@material-ui/icons/Storage';
-       ...
-       export const Root = ({ children }: PropsWithChildren<{}>) => (
-         <SidebarPage>
-           <Sidebar>
-             <SidebarGroup label="Menu" icon={<MenuIcon />}>
-               ...
-     +         <SidebarItem icon={StorageIcon} to="ocm" text="Clusters" />
-               ...
+     ```tsx title="packages/app/src/components/Root/Root.tsx"
+     /* highlight-add-next-line */
+     import StorageIcon from '@material-ui/icons/Storage';
+
+     export const Root = ({ children }: PropsWithChildren<{}>) => (
+       <SidebarPage>
+         <Sidebar>
+           <SidebarGroup label="Menu" icon={<MenuIcon />}>
+             {/* ... */}
+             {/* highlight-add-next-line */}
+             <SidebarItem icon={StorageIcon} to="ocm" text="Clusters" />
            </SidebarGroup>
-           ...
-           </Sidebar>
-           {children}
-         </SidebarPage>
-       );
+           {/* ... */}
+         </Sidebar>
+         {children}
+       </SidebarPage>
+     );
      ```
 
-   - `ClusterContextProvider`: This component is a React context provided for OCM data, which is related to the current entity. The `ClusterContextProvider` component is used to display any data on the React components mentioned in the following code:
+   - `ClusterContextProvider`: This component is a React context provided for OCM data, which is related to the current entity. The `ClusterContextProvider` component is used to display any data on the React components mentioned in `packages/app/src/components/catalog/EntityPage.tsx`:
 
-     ```diff
-     + import { ClusterContextProvider } from '@janus-idp/backstage-plugin-ocm';
-       ...
+     ```tsx title="packages/app/src/components/catalog/EntityPage.tsx"
+     /* highlight-add-start */
+     import {
+       ClusterAllocatableResourceCard,
+       ClusterAvailableResourceCard,
+       ClusterContextProvider,
+       ClusterInfoCard,
+       ClusterStatusCard,
+     } from '@janus-idp/backstage-plugin-ocm';
+     /* highlight-add-end */
+
      const isType = (types: string | string[]) => (entity: Entity) => {
        if (!entity?.spec?.type) {
          return false;
@@ -250,81 +269,76 @@ If you are interested in Resource discovery and do not want any of the frontend 
          : types.includes(entity.spec.type as string);
      };
 
-     + const resourcePage = {
-         ...
-     +           <EntitySwitch.Case if={e => e?.spec?.type === "kubernetes-cluster"}>
-     +             <ClusterContextProvider>
-                     ... // OCM plugin components goes here
-     +             </ClusterContextProvider>
-     +           </EntitySwitch.Case>
-         ...
-     + }
-       ...
-       export const entityPage = (
-         <EntitySwitch>
-           ...
-     +     <EntitySwitch.Case if={isKind('resource')} children={resourcePage} />
-           ...
-         </EntitySwitch>
-       );
+     export const resourcePage = (
+       <EntityLayout>
+         {/* ... */}
+         {/* highlight-add-start */}
+         <EntityLayout.Route path="/status" title="status">
+           <EntitySwitch>
+             <EntitySwitch.Case if={isType('kubernetes-cluster')}>
+               <ClusterContextProvider>
+                 <Grid container>
+                   <Grid container item direction="column" xs={3}>
+                     <Grid item>
+                       <ClusterStatusCard />
+                     </Grid>
 
+                     <Grid item>
+                       <ClusterAllocatableResourceCard />
+                     </Grid>
 
+                     <Grid item>
+                       <ClusterAvailableResourceCard />
+                     </Grid>
+                   </Grid>
+
+                   <Grid item xs>
+                     <ClusterInfoCard />
+                   </Grid>
+                 </Grid>
+               </ClusterContextProvider>
+             </EntitySwitch.Case>
+           </EntitySwitch>
+         </EntityLayout.Route>
+         {/* highlight-add-end */}
+       </EntityLayout>
+     );
+
+     export const entityPage = (
+       <EntitySwitch>
+         {/* ... */}
+         {/* highlight-add-next-line */}
+         <EntitySwitch.Case if={isKind('resource')} children={resourcePage} />
+       </EntitySwitch>
+     );
      ```
 
-     In the previous code, you can place the context provider into your `Resource` entity renderer, which is usually available in `packages/app/src/components/catalog/EntityPage.tsx` or in an imported component.
+     In the previous codeblock, you can place the context provider into your `Resource` entity renderer, which is usually available in `packages/app/src/components/catalog/EntityPage.tsx` or in an imported component.
 
-   - `ClusterStatusCard`: This is an entity component displaying availability status of a cluster as an overview card:
+   - `<ClusterStatusCard />`: This is an entity component displaying availability status of a cluster as an overview card:
 
-     ```diff
-       <ClusterContextProvider>
-         ...
-     +   <ClusterStatusCard />
-         ...
-       </ClusterContextProvider>
-     ```
+   - `<ClusterInfoCard />`: This is an entity component displaying details of a cluster in a table:
 
-   - `ClusterInfoCard`: This is an entity component displaying details of a cluster in a table:
+   - `<ClusterAvailableResourceCard />`: This is an entity component displaying the available resources on a cluster. For example, see [`.status.capacity`](https://open-cluster-management.io/concepts/managedcluster/#cluster-heartbeats-and-status) of the `ManagedCluster` resource.
 
-     ```diff
-       <ClusterContextProvider>
-         ...
-     +   <ClusterInfoCard />
-         ...
-       </ClusterContextProvider>
-     ```
-
-   - `ClusterAvailableResourceCard`: This is an entity component displaying the available resources on a cluster. For example, see [`.status.capacity`](https://open-cluster-management.io/concepts/managedcluster/#cluster-heartbeats-and-status) of the `ManagedCluster` resource.
-
-     ```diff
-       <ClusterContextProvider>
-         ...
-     +   <ClusterAvailableResourceCard />
-         ...
-       </ClusterContextProvider>
-     ```
-
-   - `ClusterAllocatableResourceCard`: This is an entity component displaying allocatable resources on a cluster. For example, see [`.status.allocatable`](https://open-cluster-management.io/concepts/managedcluster/#cluster-heartbeats-and-status) of the `ManagedCluster` resource.
-
-     ```diff
-       <ClusterContextProvider>
-         ...
-     +   <ClusterAllocatableResourceCard />
-         ...
-       </ClusterContextProvider>
-     ```
+   - `<ClusterAllocatableResourceCard />`: This is an entity component displaying allocatable resources on a cluster. For example, see [`.status.allocatable`](https://open-cluster-management.io/concepts/managedcluster/#cluster-heartbeats-and-status) of the `ManagedCluster` resource.
 
 ## Development
 
-If you have installed the OCM plugin to the example application in the repository, run the `yarn start` command to access the plugin in the root directory and then navigate to [/ocm](http://localhost:3000/ocm).
+If you have installed the OCM plugin to the example application in the repository, run the `yarn start` command to access the plugin in the root directory and then navigate to `http://localhost:3000/ocm`.
 
 To start a development setup in isolation with a faster setup and hot reloads, complete the following steps:
 
 1. Run the `ocm-backend` plugin in the `plugins/ocm-backend` directory by executing the following command:
 
-   `yarn start`
+   ```console
+   yarn start
+   ```
 
 2. Run the `ocm` frontend plugin in the `plugins/ocm` directory using the following command:
 
-   `yarn start`
+   ```console
+   yarn start
+   ```
 
-The previous steps are meant for local development and you can find the setup inside the [/dev](./dev) directories of the individual plugins.
+The previous steps are meant for local development and you can find the setup inside the `./dev` directories of the individual plugins.
