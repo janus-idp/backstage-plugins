@@ -3,6 +3,7 @@ import { renderHook } from '@testing-library/react-hooks';
 import { KubernetesObjects } from '@backstage/plugin-kubernetes';
 import { kubernetesObject } from '../__fixtures__/kubernetesObject';
 import { ModelsPlural } from '../models';
+import { customResourceRoute } from '../__fixtures__/1-deployments';
 
 const watchedResources = [
   ModelsPlural.deployments,
@@ -73,5 +74,39 @@ describe('useAllWatchResources', () => {
     rerender();
     expect(result.current?.pods?.data).toHaveLength(8);
     expect(result.current?.deployments?.data).toHaveLength(0);
+  });
+
+  it('should return routes in watchResourcesData if resources are present', () => {
+    const mockK8sObject = {
+      ...kubernetesObject,
+      items: [
+        {
+          ...kubernetesObject.items[0],
+          resources: [
+            ...kubernetesObject.items[0].resources,
+            {
+              type: 'customresources',
+              resources: [customResourceRoute],
+            },
+          ],
+        },
+      ],
+    };
+    const k8sObjectsResponse = {
+      kubernetesObjects: mockK8sObject,
+      loading: false,
+      error: '',
+    } as KubernetesObjects;
+
+    const watchedResources2 = [...watchedResources, ModelsPlural.routes];
+    const { result } = renderHook(() =>
+      useAllWatchResources(watchedResources2, k8sObjectsResponse, 0),
+    );
+    expect(result.current?.pods?.data).toHaveLength(8);
+    expect(result.current?.deployments?.data).toHaveLength(0);
+    expect(result.current?.statefulsets?.data).toHaveLength(2);
+    expect(result.current?.cronjobs?.data).toHaveLength(1);
+    expect(result.current?.jobs?.data).toHaveLength(2);
+    expect(result.current?.routes?.data).toHaveLength(1);
   });
 });

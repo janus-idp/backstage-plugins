@@ -4,9 +4,10 @@ import { K8sWorkloadResource, K8sResponseData } from '../types/types';
 import {
   createOverviewItemForType,
   getIngressesDataForResourceServices,
-  getIngressURLForResource,
   getJobsDataForResource,
+  getUrlForResource,
   getServicesForResource,
+  getRoutesDataForResourceServices,
 } from '../utils/resource-utils';
 import {
   createTopologyNodeData,
@@ -45,7 +46,7 @@ export const getBaseTopologyDataModel = (resources: K8sResponseData): Model => {
             item,
             TYPE_WORKLOAD,
             'default image',
-            getIngressURLForResource(resources, resource),
+            getUrlForResource(resources, resource),
             {
               podsData: getPodsDataForResource(resource, resources),
               services: getServicesForResource(
@@ -56,6 +57,7 @@ export const getBaseTopologyDataModel = (resources: K8sResponseData): Model => {
                 resources,
                 resource,
               ),
+              routesData: getRoutesDataForResourceServices(resources, resource),
               ...(resource.kind === CronJobModel.kind
                 ? {
                     jobsData: getJobsDataForResource(resources, resource),

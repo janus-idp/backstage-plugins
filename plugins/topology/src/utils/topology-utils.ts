@@ -1,7 +1,7 @@
 import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
 import { V1Service } from '@kubernetes/client-node';
 import { INSTANCE_LABEL } from '../const';
-import { ModelsPlural, resourceGVKs } from '../models';
+import { ModelsPlural, resourceGVKs, resourceModels } from '../models';
 import { IngressesData } from '../types/ingresses';
 import { PodRCData } from '../types/pods';
 import { OverviewItem, TopologyDataObject } from '../types/topology-types';
@@ -11,6 +11,7 @@ import {
   ClusterErrors,
 } from '../types/types';
 import { JobsData } from '../types/jobs';
+import { RoutesData } from '../types/route';
 
 export const WORKLOAD_TYPES: string[] = [
   ModelsPlural.deployments,
@@ -41,24 +42,53 @@ export const getClusters = (k8sObjects: ObjectsByEntityResponse) => {
   return { clusters, errors };
 };
 
+export const getCustomResourceKind = (resource: any): string => {
+  if (resource.kind) {
+    return resource.kind;
+  }
+
+  if (resource.spec.host && resource.status.ingress) {
+    return 'Route';
+  }
+  return '';
+};
+
 export const getK8sResources = (
   cluster: number,
   k8sObjects: ObjectsByEntityResponse,
 ) =>
   k8sObjects.items?.[cluster]?.resources?.reduce(
-    (acc: K8sResponseData, res: any) => ({
-      ...acc,
-      [res.type]: {
-        data:
-          (resourceGVKs[res.type] &&
-            res.resources.map((rval: K8sWorkloadResource) => ({
-              ...rval,
-              kind: workloadKind(res.type),
-              apiVersion: apiVersionForWorkloadType(res.type),
-            }))) ??
-          [],
-      },
-    }),
+    (acc: K8sResponseData, res: any) => {
+      if (res.type === 'customresources' && res.resources.length > 0) {
+        const customResKind = getCustomResourceKind(res.resources[0]);
+        const customResKnownModel = resourceModels[customResKind];
+        return customResKnownModel?.plural
+          ? {
+              ...acc,
+              [customResKnownModel.plural]: {
+                data: res.resources.map((rval: K8sWorkloadResource) => ({
+                  ...rval,
+                  kind: customResKind,
+                  apiVersion: apiVersionForWorkloadType(customResKind),
+                })),
+              },
+            }
+          : acc;
+      }
+      return {
+        ...acc,
+        [res.type]: {
+          data:
+            (resourceGVKs[res.type] &&
+              res.resources.map((rval: K8sWorkloadResource) => ({
+                ...rval,
+                kind: workloadKind(res.type),
+                apiVersion: apiVersionForWorkloadType(res.type),
+              }))) ??
+            [],
+        },
+      };
+    },
     {},
   );
 
@@ -76,6 +106,7 @@ export const createTopologyNodeData = (
     services?: V1Service[];
     ingressesData?: IngressesData;
     jobsData?: JobsData;
+    routesData?: RoutesData;
   },
 ): TopologyDataObject => {
   const dcUID = resource.metadata?.uid;

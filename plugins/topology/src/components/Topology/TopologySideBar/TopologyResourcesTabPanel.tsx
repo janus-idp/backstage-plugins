@@ -1,23 +1,22 @@
+import React from 'react';
 import { V1Pod, V1Service, V1ServicePort } from '@kubernetes/client-node';
 import { LongArrowAltRightIcon } from '@patternfly/react-icons';
 import { BaseNode } from '@patternfly/react-topology';
-import React from 'react';
 import ResourceName from '../../../common/components/ResourceName';
 import ResourceStatus from '../../../common/components/ResourceStatus';
 import Status from '../../../common/components/Status';
 import {
   CronJobModel,
-  IngressModel,
   JobModel,
   PodModel,
   ServiceModel,
 } from '../../../models';
-import { IngressData } from '../../../types/ingresses';
-import IngressRules from './IngressRules';
 import TopologyResourcesTabPanelItem from './TopologyResourcesTabPaneltem';
 import { JobData } from '../../../types/jobs';
 import PodStatus from '../../Pods/PodStatus';
 import { ChartLabel } from '@patternfly/react-charts';
+import RouteListSidebar from './Resources/RouteListSidebar';
+import IngressListSidebar from './Resources/IngressListSidebar';
 
 import './TopologyResourcesTabPanel.css';
 
@@ -29,6 +28,23 @@ const TopologyResourcesTabPanel = ({
   const data = node.getData();
   const nodeData = data?.data;
   const resource = data?.resource;
+  const showIngressRoute = () => {
+    const { ingressesData, routesData } = nodeData;
+    const hasIngressData = ingressesData?.length > 0;
+    const hasRoutesData = routesData?.length > 0;
+    if (hasIngressData && hasRoutesData) {
+      return (
+        <>
+          <RouteListSidebar routesData={routesData} />
+          <IngressListSidebar ingressesData={ingressesData} />
+        </>
+      );
+    } else if (hasRoutesData && !hasIngressData) {
+      return <RouteListSidebar routesData={routesData} />;
+    }
+
+    return <IngressListSidebar ingressesData={ingressesData} />;
+  };
   return (
     <div data-testid="resources-tab">
       <TopologyResourcesTabPanelItem
@@ -127,41 +143,7 @@ const TopologyResourcesTabPanel = ({
             </li>
           ))}
       </TopologyResourcesTabPanelItem>
-      <TopologyResourcesTabPanelItem
-        resourceLabel={IngressModel.labelPlural}
-        dataTest="ingress-list"
-      >
-        {nodeData?.ingressesData?.length &&
-          nodeData.ingressesData.map((ingressData: IngressData) => (
-            <li
-              className="item"
-              style={{ flexDirection: 'column' }}
-              key={ingressData.ingress.metadata?.uid}
-            >
-              <span>
-                <ResourceName
-                  name={ingressData.ingress.metadata?.name ?? ''}
-                  kind={ingressData.ingress.kind ?? ''}
-                />
-              </span>
-              {ingressData.url && (
-                <>
-                  <span className="topology-text-muted">Location:</span>
-                  <a
-                    href={ingressData.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {ingressData.url}
-                  </a>
-                </>
-              )}
-              {ingressData.ingress.spec?.rules?.length && (
-                <IngressRules ingress={ingressData.ingress} />
-              )}
-            </li>
-          ))}
-      </TopologyResourcesTabPanelItem>
+      {showIngressRoute()}
     </div>
   );
 };
