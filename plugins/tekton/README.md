@@ -40,7 +40,7 @@ The Tekton plugin enables you to visualize the `PipelineRun` resources available
   You can use the following code to grant the `ClusterRole` for custom resources:
 
   ```yaml
-  ---
+  ...
     apiVersion: rbac.authorization.k8s.io/v1
     kind: ClusterRole
     metadata:
@@ -81,16 +81,14 @@ The Tekton plugin enables you to visualize the `PipelineRun` resources available
 - A custom label selector is added, which Backstage uses to find the Kubernetes resources. The label selector takes precedence over the ID annotations.
 
   ```yaml
-  annotations:
-  ---
+  annotations: ...
   backstage.io/kubernetes-label-selector: 'app=my-app,component=front-end'
   ```
 
 - The following label is added to the resources so that the Kubernetes plugin gets the Kubernetes resources from the requested entity:
 
   ```yaml
-  labels:
-  ---
+  labels: ...
   backstage.io/kubernetes-id: <BACKSTAGE_ENTITY_NAME>`
   ```
 
