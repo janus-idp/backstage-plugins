@@ -4,15 +4,17 @@ The Tekton plugin enables you to visualize the `PipelineRun` resources available
 
 # Table of contents
 
-1. [For administrators](#for-administrators)
-
-   a. [Installation](#installation)
-
-   b. [Development](#development)
-
-1. [For users](#for-users)
-
-   a. [Using the Tekton plugin in Backstage](#using-the-tekton-plugin-in-backstage)
+- [Tekton plugin for Backstage](#tekton-plugin-for-backstage)
+- [Table of contents](#table-of-contents)
+  - [For administrators](#for-administrators)
+    - [Installation](#installation)
+      - [Prerequisites](#prerequisites)
+      - [Procedure](#procedure)
+    - [Development](#development)
+  - [For users](#for-users)
+    - [Using the Tekton plugin in Backstage](#using-the-tekton-plugin-in-backstage)
+      - [Prerequisites](#prerequisites-1)
+      - [Procedure](#procedure-1)
 
 ## For administrators
 
