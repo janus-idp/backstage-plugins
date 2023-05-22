@@ -12,7 +12,7 @@ The Quay plugin displays the information about your container images within the 
 
 1. [For users](#for-users)
 
-   a. [Using the Quay plugin in Backstage](#using-quay-plugin-in-backstage)
+   a. [Using the Quay plugin in Backstage](#using-the-quay-plugin-in-backstage)
 
 ## For administrators
 
