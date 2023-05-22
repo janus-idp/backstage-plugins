@@ -14,39 +14,22 @@ The following actions are currently supported in this plugin:
 
 1. Install the action package in your Backstage project
 
-   ```bash
+   ```console
    yarn workspace backend add @janus-idp/backstage-plugin-regex-actions
    ```
 
 2. [Register](https://backstage.io/docs/features/software-templates/writing-custom-actions#registering-custom-actions) the regex actions by modifying the `packages/backend/src/plugins/scaffolder.ts` file from your project with the following changes:
 
-   ```ts
-   import { CatalogClient } from '@backstage/catalog-client';
-   import {
-     createBuiltinActions,
-     createRouter,
-   } from '@backstage/plugin-scaffolder-backend';
-   import { ScmIntegrations } from '@backstage/integration';
-   import { Router } from 'express';
-   import type { PluginEnvironment } from '../types';
+   ```ts title="packages/backend/src/plugins/scaffolder.ts"
+   /* highlight-add-next-line */
    import { createReplaceAction } from '@janus-idp/backstage-plugin-regex-actions';
 
    export default async function createPlugin(
      env: PluginEnvironment,
    ): Promise<Router> {
-     const catalogClient = new CatalogClient({
-       discoveryApi: env.discovery,
-     });
+     // ...
 
-     const integrations = ScmIntegrations.fromConfig(env.config);
-
-     const builtInActions = createBuiltinActions({
-       integrations,
-       catalogClient,
-       config: env.config,
-       reader: env.reader,
-     });
-
+     /* highlight-add-next-line */
      const actions = [...builtInActions, createReplaceAction()];
 
      return await createRouter({

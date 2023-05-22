@@ -6,7 +6,7 @@ This is a plugin for synchronizing 3scale content into [Backstage.io](https://ba
 
 1. Install the plugin
 
-   ```sh
+   ```console
    yarn workspace backend add @janus-idp/backstage-plugin-3scale-backend
    ```
 
@@ -14,9 +14,7 @@ This is a plugin for synchronizing 3scale content into [Backstage.io](https://ba
 
 3scale Backstage provider allows configuration of one or many providers using the `app-config.yaml` configuration file of Backstage. Use a `threeScaleApiEntity` marker to start configuring them.
 
-```yaml
-# app-config.yaml
-
+```yaml title="app-config.yaml"
 catalog:
   providers:
     threeScaleApiEntity:
@@ -32,24 +30,29 @@ catalog:
 
 Once you've done that, you'll also need to add the segment below to `packages/backend/src/plugins/catalog.ts`:
 
-```ts
-/* packages/backend/src/plugins/catalog.ts */
+```ts title="packages/backend/src/plugins/catalog.ts"
+/* highlight-add-next-line */
+import { ThreeScaleApiEntityProvider } from '@janus-idp/backstage-plugin-3scale-backend';
 
-import { ThreeScaleApiEntityProvider } from '@fmenesesg/threescale-backstage-provider';
-
-[...]
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
   const builder = await CatalogBuilder.create(env);
 
-  /** ... other processors and/or providers ... */
+  /* ... other processors and/or providers ... */
+  /* highlight-add-start */
   builder.addEntityProvider(
     ThreeScaleApiEntityProvider.fromConfig(env.config, {
       logger: env.logger,
-      scheduler: env.scheduler
+      scheduler: env.scheduler,
     }),
   );
+  /* highlight-add-end */
 
   const { processingEngine, router } = await builder.build();
-[...]
+  await processingEngine.start();
+  return router;
+}
 ```
 
 ## Troubleshoot

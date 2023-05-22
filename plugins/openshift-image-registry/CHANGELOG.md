@@ -1,3 +1,17 @@
+## @janus-idp/backstage-plugin-openshift-image-registry [1.1.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-openshift-image-registry@1.1.3...@janus-idp/backstage-plugin-openshift-image-registry@1.1.4) (2023-05-18)
+
+
+### Documentation
+
+* update plugin READMEs ([#373](https://github.com/janus-idp/backstage-plugins/issues/373)) ([478560e](https://github.com/janus-idp/backstage-plugins/commit/478560e38cceaa40d976bccf4785956ed58b5221))
+
+## @janus-idp/backstage-plugin-openshift-image-registry [1.1.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-openshift-image-registry@1.1.2...@janus-idp/backstage-plugin-openshift-image-registry@1.1.3) (2023-05-17)
+
+
+### Bug Fixes
+
+* **deps:** update all non-major dependencies ([#358](https://github.com/janus-idp/backstage-plugins/issues/358)) ([086a9ed](https://github.com/janus-idp/backstage-plugins/commit/086a9ed839f3a6dd1460f0f87b71453a7ed62ea3))
+
 ## @janus-idp/backstage-plugin-openshift-image-registry [1.1.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-openshift-image-registry@1.1.1...@janus-idp/backstage-plugin-openshift-image-registry@1.1.2) (2023-05-15)
 
 ## @janus-idp/backstage-plugin-openshift-image-registry [1.1.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-openshift-image-registry@1.1.0...@janus-idp/backstage-plugin-openshift-image-registry@1.1.1) (2023-05-15)

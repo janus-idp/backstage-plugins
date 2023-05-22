@@ -6,14 +6,13 @@ This plugin will show you information about your container images within Jfrog A
 
 1. Install the plugin
 
-   ```bash
+   ```console
    yarn workspace app add @janus-idp/backstage-plugin-jfrog-artifactory
    ```
 
-2. Set the proxy to desired Artifactory server
+2. Set the proxy to desired Artifactory server in `app-config.yaml`
 
-   ```yaml
-   # app-config.yaml
+   ```yaml title="app-config.yaml"
    proxy:
      '/jfrog-artifactory/api':
        target: 'http://<hostname>:8082'
@@ -23,18 +22,20 @@ This plugin will show you information about your container images within Jfrog A
        secure: true
    ```
 
-3. Enable additional tab on the entity view page
+3. Enable additional tab on the entity view page in `packages/app/src/components/catalog/EntityPage.tsx`
 
-   ```ts
-   // packages/app/src/components/catalog/EntityPage.tsx
+   ```ts title="packages/app/src/components/catalog/EntityPage.tsx"
+   /* highlight-add-start */
    import {
      JfrogArtifactoryPage,
      isJfrogArtifactoryAvailable,
    } from '@janus-idp/backstage-plugin-jfrog-artifactory';
+   /* highlight-add-end */
 
    const serviceEntityPage = (
      <EntityPageLayout>
        // ...
+       {/* highlight-add-start */}
        <EntityLayout.Route
          if={isJfrogArtifactoryAvailable}
          path="/jfrog-artifactory"
@@ -42,13 +43,14 @@ This plugin will show you information about your container images within Jfrog A
        >
          <JfrogArtifactoryPage />
        </EntityLayout.Route>
+       {/* highlight-add-end */}
      </EntityPageLayout>
    );
    ```
 
 4. Annotate your entity with
 
-   ```yaml
+   ```yaml title="catalog-info.yaml"
    metadata:
      annotations:
        'jfrog-artifactory/image-name': `<IMAGE-NAME>',
@@ -58,10 +60,10 @@ This plugin will show you information about your container images within Jfrog A
 
 In [Backstage plugin terminology](https://backstage.io/docs/local-dev/cli-build-system#package-roles), this is a `frontend-plugin`. However it requires backend proxy to be available at all times. Development environment therefore requires you to run a backend instance as well. You can start a live dev session from the repository root using following commands concurrently:
 
-```
+```console
 yarn start-backend
 ```
 
-```
+```console
 yarn workspace @janus-idp/backstage-plugin-jfrog-artifactory run start
 ```

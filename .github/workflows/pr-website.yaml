@@ -1,0 +1,38 @@
+name: Pull request website
+
+# Do not abstract the build step into a separate workflow file, as it will run into pathname issues
+
+on:
+  pull_request:
+    paths:
+      - '**/README.md'
+
+jobs:
+  build-website:
+    name: Build website
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          repository: janus-idp/janus-idp.github.io
+          persist-credentials: false
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v2
+        name: Install pnpm
+        id: pnpm-install
+        with:
+          version: 8.4.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --prefer-offline --frozen-lockfile
+
+      - name: Run Build
+        run: pnpm run build --filter=website
