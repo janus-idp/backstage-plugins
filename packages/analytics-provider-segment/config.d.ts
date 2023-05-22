@@ -32,13 +32,13 @@ export interface Config {
          * to false.
          * @visibility frontend
          */
-        testMode: boolean;
+        testMode?: boolean;
 
         /**
          * Prevents IP address to be sent as when set to true. Defaults to false
          * @visbility frontend
          */
-        maskIP: boolean;
+        maskIP?: boolean;
       };
     };
   };

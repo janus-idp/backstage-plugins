@@ -1,36 +1,54 @@
 # Topology plugin for Backstage
 
-The Topology plugin visualizes the workloads such as Deployment, Replicaset, and Pods powering any service on the Kubernetes cluster.
+The Topology plugin enables you to visualize the workloads such as Deployment, Job, Daemonset, Statefulset, CronJob, and Pods powering any service on the Kubernetes cluster.
 
-## Prerequisites
+# Table of contents
+
+1. [For administrators](#for-administrators)
+
+   a. [Installation](#installation)
+
+   b. [Development](#development)
+
+1. [For users](#for-users)
+
+   a. [Using the Topology plugin in Backstage](#using-the-topology-plugin-in-backstage)
+
+## For administrators
+
+### Installation
+
+#### Prerequisites
 
 - The Kubernetes plugins including `@backstage/plugin-kubernetes` and `@backstage/plugin-kubernetes-backend` are installed and configured by following the [installation](https://backstage.io/docs/features/kubernetes/installation) and [configuration](https://backstage.io/docs/features/kubernetes/configuration) guides.
 - The Kubernetes plugin is configured and connects to the cluster using a `ServiceAccount`.
 - The [`ClusterRole`](https://backstage.io/docs/features/kubernetes/configuration#role-based-access-control) must be granted to `ServiceAccount` accessing the cluster. If you have the Backstage Kubernetes plugin configured, then the `ClusterRole` is already granted.
 - The following annotation is added to the entity's `catalog-info.yaml` file to identify whether an entitiy contains the Kubernetes resources:
-  ```yaml
+
+  ```yaml title="catalog-info.yaml"
   annotations:
   backstage.io/kubernetes-id: <BACKSTAGE_ENTITY_NAME>
   ```
+
   You can also add the `backstage.io/kubernetes-namespace` annotation to identify the Kubernetes resources using the defined namespace.
-  ```yaml
+
+  ```yaml title="catalog-info.yaml"
   annotations:
     backstage.io/kubernetes-namespace: <RESOURCE_NS>
   ```
+
 - A custom label selector is added, which Backstage uses to find the Kubernetes resources. The label selector takes precedence over the ID annotations.
 
-  ```yaml
+  ```yaml title="catalog-info.yaml"
   annotations:
-  ---
-  backstage.io/kubernetes-label-selector: 'app=my-app,component=front-end'
+    backstage.io/kubernetes-label-selector: 'app=my-app,component=front-end'
   ```
 
 - The following label is added to the resources so that the Kubernetes plugin gets the Kubernetes resources from the requested entity:
 
-  ```yaml
+  ```yaml title="catalog-info.yaml"
   labels:
-  ---
-  backstage.io/kubernetes-id: <BACKSTAGE_ENTITY_NAME>`
+    backstage.io/kubernetes-id: <BACKSTAGE_ENTITY_NAME>`
   ```
 
   ***
@@ -42,47 +60,81 @@ The Topology plugin visualizes the workloads such as Deployment, Replicaset, and
   ***
 
 - The following label is added to display the workload resources such as Deployments and Pods in a visual group:
-  ```yaml
+
+  ```yaml title="catalog-info.yaml"
   labels:
-  ---
-  app.kubernetes.io/part-of: <GROUP_NAME>
+    app.kubernetes.io/part-of: <GROUP_NAME>
   ```
+
 - The following annotation is added to display the workload resources such as Deployments and Pods with a visual connector:
-  ```yaml
+
+  ```yaml title="catalog-info.yaml"
   annotations:
-  ---
-  app.openshift.io/connects-to: '[{"apiVersion": <RESOURCE_APIVERSION>,"kind": <RESOURCE_KIND>,"name": <RESOURCE_NAME>}]'
+    app.openshift.io/connects-to: '[{"apiVersion": <RESOURCE_APIVERSION>,"kind": <RESOURCE_KIND>,"name": <RESOURCE_NAME>}]'
   ```
+
   For more information about the labels and annotations, see [Guidelines for labels and annotations for OpenShift applications](https://github.com/redhat-developer/app-labels/blob/master/labels-annotation-for-openshift.adoc).
 
-## Using Topology plugin
+#### Procedure
 
 1. Install the Topology plugin using the following command:
 
-   ```bash
+   ```console
    yarn workspace app add @janus-idp/backstage-plugin-topology
    ```
 
-2. Enable **Topology** tab on the entity view page:
+2. Enable **Topology** tab in `packages/app/src/components/catalog/EntityPage.tsx`:
 
-   ```ts
-   // packages/app/src/components/catalog/EntityPage.tsx
+   ```tsx title="packages/app/src/components/catalog/EntityPage.tsx"
+   /* highlight-add-next-line */
    import { TopologyPage } from '@janus-idp/backstage-plugin-topology';
 
    const serviceEntityPage = (
      <EntityPageLayout>
-       // ...
+       {/* ... */}
+       {/* highlight-add-start */}
        <EntityLayout.Route path="/topology" title="Topology">
          <TopologyPage />
        </EntityLayout.Route>
+       {/* highlight-add-end */}
      </EntityPageLayout>
    );
    ```
 
-## Development
+### Development
 
-In [Backstage plugin terminology](https://backstage.io/docs/local-dev/cli-build-system#package-roles), the Topology plugin is a frontend plugin. You can start a live development session from the repository root using the following command:
+In [Backstage plugin terminology](https://backstage.io/docs/local-dev/cli-build-system#package-roles), the Topology plugin is a front-end plugin. You can start a live development session from the repository root using the following command:
 
-```
+```console
 yarn workspace @janus-idp/backstage-plugin-topology run start
 ```
+
+## For users
+
+### Using the Topology plugin in Backstage
+
+Topology is a front-end plugin that enables you to view the workloads as nodes that power any service on the Kubernetes cluster.
+
+#### Prerequisites
+
+- Your Backstage application is installed and running.
+- You have installed the Topology plugin. For installation process, see [Installation](#installation).
+
+#### Procedure
+
+1. Open your Backstage application and select a component from the **Catalog** page.
+1. Go to the **TOPOLOGY** tab and you can view the workloads such as Deployments, Pods as nodes.
+
+   ![topology-tab](./images/topology-tab-user1.png)
+
+1. Select a node and a pop-up appears on the right-side, which contains two tabs: **Details** and **Resources**.
+
+   The **Details** and **Resources** tab contain the associated information and resources of the node.
+
+   ![topology-tab-details](./images/topology-tab-user2.png)
+
+1. Click on the **Open URL** button on the top of a node.
+
+   ![topology-tab-open-url](./images/topology-tab-user3.png)
+
+   When you click on the open URL button, it allows you to access the associated **Ingresses** and runs your application in a new tab.
