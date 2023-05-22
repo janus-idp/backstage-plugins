@@ -40,7 +40,7 @@ The Tekton plugin enables you to visualize the `PipelineRun` resources available
   You can use the following code to grant the `ClusterRole` for custom resources:
 
   ```yaml
-  ...
+    ...
     apiVersion: rbac.authorization.k8s.io/v1
     kind: ClusterRole
     metadata:
