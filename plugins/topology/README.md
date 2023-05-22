@@ -1,8 +1,24 @@
 # Topology plugin for Backstage
 
-The Topology plugin visualizes the workloads such as Deployment, Replicaset, and Pods powering any service on the Kubernetes cluster.
+The Topology plugin enables you to visualize the workloads such as Deployment, Replicaset, and Pods powering any service on the Kubernetes cluster.
 
-## Prerequisites
+# Table of contents
+
+1. [For administrators](#for-administrators)
+
+   a. [Installation](#installation)
+
+   b. [Development](#development)
+
+1. [For users](#for-users)
+
+   a. [Using the Topology plugin in Backstage](using-the-topology-plugin-in-backstage)
+
+## For administrators
+
+### Installation
+
+#### Prerequisites
 
 - The Kubernetes plugins including `@backstage/plugin-kubernetes` and `@backstage/plugin-kubernetes-backend` are installed and configured by following the [installation](https://backstage.io/docs/features/kubernetes/installation) and [configuration](https://backstage.io/docs/features/kubernetes/configuration) guides.
 - The Kubernetes plugin is configured and connects to the cluster using a `ServiceAccount`.
@@ -59,7 +75,7 @@ The Topology plugin visualizes the workloads such as Deployment, Replicaset, and
 
   For more information about the labels and annotations, see [Guidelines for labels and annotations for OpenShift applications](https://github.com/redhat-developer/app-labels/blob/master/labels-annotation-for-openshift.adoc).
 
-## Using Topology plugin
+#### Procedure
 
 1. Install the Topology plugin using the following command:
 
@@ -85,10 +101,40 @@ The Topology plugin visualizes the workloads such as Deployment, Replicaset, and
    );
    ```
 
-## Development
+### Development
 
-In [Backstage plugin terminology](https://backstage.io/docs/local-dev/cli-build-system#package-roles), the Topology plugin is a frontend plugin. You can start a live development session from the repository root using the following command:
+In [Backstage plugin terminology](https://backstage.io/docs/local-dev/cli-build-system#package-roles), the Topology plugin is a front-end plugin. You can start a live development session from the repository root using the following command:
 
 ```console
 yarn workspace @janus-idp/backstage-plugin-topology run start
 ```
+
+## For users
+
+### Using the Topology plugin in Backstage
+
+Topology is a front-end plugin that enables you to view the workloads as nodes that power any service on the Kubernetes cluster.
+
+#### Prerequisites
+
+- Your Backstage application is installed and running.
+- You have installed the Topology plugin. For installation process, see [Installation](#installation).
+
+#### Procedure
+
+1. Open your Backstage application and select a component from the **Catalog** page.
+1. Go to the **TOPOLOGY** tab and you can view the workloads such as Deployments, Pods as nodes.
+
+   ![topology-tab](./images/topology-tab-user1.png)
+
+1. Select a node and a pop-up appears on the right-side, which contains two tabs: **Details** and **Resources**.
+
+   The **Details** and **Resources** tab contain the associated information and resources of the node.
+
+   ![topology-tab-details](./images/topology-tab-user2.png)
+
+1. Click on the **Open URL** button on the top of a node.
+
+   ![topology-tab-open-url](./images/topology-tab-user3.png)
+
+   When you click on the open URL button, it allows you to access the associated **Ingresses** and runs your application in a new tab.
