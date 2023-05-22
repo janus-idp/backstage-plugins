@@ -78,7 +78,7 @@ The Tekton plugin enables you to visualize the `PipelineRun` resources available
     ...
     janus-idp.io/tekton-enabled : 'true'
   ```
-- A custom label selector is added, which Backstage uses to find the Kubernetes resources. The label selector takes precedence over the ID annotations.
+- A custom label selector can be added, which Backstage uses to find the Kubernetes resources. The label selector takes precedence over the ID annotations.
 
   ```yaml
   annotations: ...
