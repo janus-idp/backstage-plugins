@@ -12,8 +12,7 @@ The Tekton plugin enables you to visualize the `PipelineRun` resources available
 
 1. [For users](#for-users)
 
-   a. [Using Tekton plugin in Backstage](#using-tekton-plugin-in-backstage)
-
+   a. [Using the Tekton plugin in Backstage](#using-the-tekton-plugin-in-backstage)
 
 ## For administrators
 
@@ -86,6 +85,7 @@ The Tekton plugin enables you to visualize the `PipelineRun` resources available
   ---
   backstage.io/kubernetes-label-selector: 'app=my-app,component=front-end'
   ```
+
 - The following label is added to the resources so that the Kubernetes plugin gets the Kubernetes resources from the requested entity:
 
   ```yaml
@@ -102,13 +102,14 @@ The Tekton plugin enables you to visualize the `PipelineRun` resources available
 
   ***
 
-### Procedure
+#### Procedure
 
 1. Install the Tekton plugin using the following command:
 
    ```console
    yarn workspace app add @janus-idp/backstage-plugin-tekton
    ```
+
 2. Enable the **TEKTON** tab on the entity view page using the `packages/app/src/components/catalog/EntityPage.tsx` file:
 
    ```tsx title="packages/app/src/components/catalog/EntityPage.tsx"
@@ -126,6 +127,7 @@ The Tekton plugin enables you to visualize the `PipelineRun` resources available
      </EntityPageLayout>
    );
    ```
+
 3. Enable latest PipelineRun visualization in the **CI/CD** tab on the entity view page. The `linkTekton` prop is optional and takes boolen value, if not specified or set to `true`, then the **GO TO TEKTON** option is displayed.
 
    ```tsx title="packages/app/src/components/catalog/EntityPage.tsx"
@@ -154,7 +156,7 @@ yarn workspace @janus-idp/backstage-plugin-tekton run start
 
 ## For users
 
-### Using Tekton plugin in Backstage
+### Using the Tekton plugin in Backstage
 
 Tekton is a front-end plugin that enables you to view the `PipelineRun` resources.
 
