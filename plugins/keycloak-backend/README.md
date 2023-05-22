@@ -19,7 +19,7 @@ The Keycloak backend plugin has the following capabilities:
 
    c. [Limitations](#limitations)
 
-2. [For users](#for-users)
+1. [For users](#for-users)
 
    a. [Imported users and groups in Backstage with Keycloak plugin](#imported-users-and-groups-in-backstage-with-keycloak-plugin)
 
