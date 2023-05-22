@@ -12,7 +12,7 @@ The Topology plugin enables you to visualize the workloads such as Deployment, J
 
 1. [For users](#for-users)
 
-   a. [Using the Topology plugin in Backstage](using-the-topology-plugin-in-backstage)
+   a. [Using the Topology plugin in Backstage](#using-the-topology-plugin-in-backstage)
 
 ## For administrators
 
