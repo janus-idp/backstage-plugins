@@ -32,11 +32,11 @@
     "@semantic-release/github": "8.0.7",
     "@spotify/prettier-config": "14.1.6",
     "conventional-changelog-conventionalcommits": "5.0.0",
+    "husky": "8.0.3",
     "multi-semantic-release": "3.0.2",
     "prettier": "2.8.8",
-    "turbo": "^1.9.3",
-    "typescript": "5.0.4",
-    "husky": "8.0.3"
+    "turbo": "^1.9.8",
+    "typescript": "5.0.4"
   },
   "resolutions": {
     "@types/react": "^17",
