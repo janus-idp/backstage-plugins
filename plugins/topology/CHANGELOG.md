@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-topology [1.5.11](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.5.10...@janus-idp/backstage-plugin-topology@1.5.11) (2023-05-22)
+
+
+### Documentation
+
+* **Topology:** updates user docs ([#381](https://github.com/janus-idp/backstage-plugins/issues/381)) ([417964a](https://github.com/janus-idp/backstage-plugins/commit/417964a65ad65dfdef4d705a7fa598574e1409fd))
+
 ## @janus-idp/backstage-plugin-topology [1.5.10](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.5.9...@janus-idp/backstage-plugin-topology@1.5.10) (2023-05-18)
 
 
