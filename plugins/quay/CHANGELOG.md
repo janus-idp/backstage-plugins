@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-quay [1.2.10](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.2.9...@janus-idp/backstage-plugin-quay@1.2.10) (2023-05-22)
+
+
+### Documentation
+
+* **Quay:** update user doc ([#353](https://github.com/janus-idp/backstage-plugins/issues/353)) ([f8d143f](https://github.com/janus-idp/backstage-plugins/commit/f8d143f243db069e8877f6b8a053790fabe078cf))
+
 ## @janus-idp/backstage-plugin-quay [1.2.9](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.2.8...@janus-idp/backstage-plugin-quay@1.2.9) (2023-05-18)
 
 
