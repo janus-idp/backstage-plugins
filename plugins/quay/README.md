@@ -12,7 +12,7 @@ The Quay plugin displays the information about your container images within the 
 
 1. [For users](#for-users)
 
-   a. [Using Quay plugin in Backstage](#using-quay-plugin-in-backstage)
+   a. [Using the Quay plugin in Backstage](#using-quay-plugin-in-backstage)
 
 ## For administrators
 
@@ -70,7 +70,7 @@ The Quay plugin displays the information about your container images within the 
 
 ### Development
 
-In [Backstage plugin terminology](https://backstage.io/docs/local-dev/cli-build-system#package-roles), the Quay plugin is a frontend plugin. However, it requires a backend proxy to be available at all times. Therefore, you need to run a backend instance in the development environment as well.
+In [Backstage plugin terminology](https://backstage.io/docs/local-dev/cli-build-system#package-roles), the Quay plugin is a front-end plugin. However, it requires a backend proxy to be available at all times. Therefore, you need to run a backend instance in the development environment as well.
 
 You can run the following commands concurrently from the root repository to start a live development session:
 
@@ -84,16 +84,14 @@ yarn workspace @janus-idp/backstage-plugin-quay run start
 
 ## For users
 
-### Using Quay plugin in Backstage
+### Using the Quay plugin in Backstage
 
-Quay is a frontend plugin that enables you to view the information about the container images.
+Quay is a front-end plugin that enables you to view the information about the container images.
 
 #### Prerequisites
 
 - Your Backstage application is installed and running.
-- You have installed the Quay plugin.
-
-  For installation process, see [Installation](#installation).
+- You have installed the Quay plugin. For installation process, see [Installation](#installation).
 
 #### Procedure
 
@@ -112,4 +110,4 @@ Quay is a frontend plugin that enables you to view the information about the con
 
    ![quay-tab-vulnerabilities](./images/quay-plugin-backstage3.png)
 
-   The advisory link redirects to the Red Hat Security Advisory page containing detailed information about the advisory, including the solution.
+   The advisory link redirects to the Red Hat Security Advisory page that contains detailed information about the advisory, including the solution.
