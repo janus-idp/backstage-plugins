@@ -1,6 +1,6 @@
 # Topology plugin for Backstage
 
-The Topology plugin enables you to visualize the workloads such as Deployment, Replicaset, and Pods powering any service on the Kubernetes cluster.
+The Topology plugin enables you to visualize the workloads such as Deployment, Job, Daemonset, Statefulset, CronJob, and Pods powering any service on the Kubernetes cluster.
 
 # Table of contents
 
