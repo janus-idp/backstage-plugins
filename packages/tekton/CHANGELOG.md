@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-tekton [1.4.10](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.4.9...@janus-idp/backstage-plugin-tekton@1.4.10) (2023-05-22)
+
+
+### Documentation
+
+* **tekton:** add user docs ([#365](https://github.com/janus-idp/backstage-plugins/issues/365)) ([4dc7e1a](https://github.com/janus-idp/backstage-plugins/commit/4dc7e1a2a81676642a24905d720967cfb78f4194))
+
 ## @janus-idp/backstage-plugin-tekton [1.4.9](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.4.8...@janus-idp/backstage-plugin-tekton@1.4.9) (2023-05-18)
 
 
