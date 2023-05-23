@@ -1,16 +1,31 @@
 # Tekton plugin for Backstage
 
-The Tekton plugin helps with visualizing the `PipelineRun` resources available on the Kubernetes cluster.
+The Tekton plugin enables you to visualize the `PipelineRun` resources available on the Kubernetes cluster.
 
-## Prerequisites
+# Table of contents
 
-1. Install and configure the Kubernetes plugin by following the [installation](https://backstage.io/docs/features/kubernetes/installation) and [configuration](https://backstage.io/docs/features/kubernetes/configuration) guides.
+1. [For administrators](#for-administrators)
 
-2. Add the following `customResources` component in the [app-config.yaml](https://backstage.io/docs/features/kubernetes/configuration#configuring-kubernetes-clusters) file:
+   a. [Installation](#installation)
 
-   ```yaml title="app-config.yaml"
+   b. [Development](#development)
+
+1. [For users](#for-users)
+
+   a. [Using the Tekton plugin in Backstage](#using-the-tekton-plugin-in-backstage)
+
+## For administrators
+
+### Installation
+
+#### Prerequisites
+
+- The Kubernetes plugins including `@backstage/plugin-kubernetes` and `@backstage/plugin-kubernetes-backend` are installed and configured by following the [installation](https://backstage.io/docs/features/kubernetes/installation) and [configuration](https://backstage.io/docs/features/kubernetes/configuration) guides.
+
+- The following `customResources` component is added in the [`app-config.yaml`](https://backstage.io/docs/features/kubernetes/configuration#configuring-kubernetes-clusters) file:
+  ```yaml
    kubernetes:
-     # ...
+     ...
      customResources:
        - group: 'tekton.dev'
          apiVersion: 'v1beta1'
@@ -18,64 +33,85 @@ The Tekton plugin helps with visualizing the `PipelineRun` resources available o
        - group: 'tekton.dev'
          apiVersion: 'v1beta1'
          plural: 'taskruns'
-   ```
+  ```
+- The Kubernetes plugin is configured and connects to the cluster using a `ServiceAccount`.
+- The [`ClusterRole`](https://backstage.io/docs/features/kubernetes/configuration#role-based-access-control) must be granted for custom resources (PipelineRuns and TaskRuns) to `ServiceAccount` accessing the cluster. If you have the Backstage Kubernetes Plugin configured, then the `ClusterRole` is already granted.
 
-3. The Kubernetes plugin is configured and able to connect to the cluster using a `ServiceAccount`.
-4. The `ClusterRole` must be granted for custom resources (pipelineruns and taskruns) to `ServiceAccount` accessing the cluster. If you have the Backstage Kubernetes Plugin configured, the [ClusterRole](https://backstage.io/docs/features/kubernetes/configuration#role-based-access-control) is already granted.
-   You can use the following code to grant the `ClusterRole` for custom resources:
+  You can use the following code to grant the `ClusterRole` for custom resources:
 
-   ```yaml
-   apiVersion: rbac.authorization.k8s.io/v1
-   kind: ClusterRole
-   metadata:
-     name: backstage-read-only
-   rules:
-     # ...
-     - apiGroups:
-         - tekton.dev
-       resources:
-         - pipelineruns
-         - taskruns
-       verbs:
-         - get
-         - list
-   ```
+  ```yaml
+    ...
+    apiVersion: rbac.authorization.k8s.io/v1
+    kind: ClusterRole
+    metadata:
+      name: backstage-read-only
+    rules:
+      ...
+      - apiGroups:
+          - tekton.dev
+        resources:
+          - pipelineruns
+          - taskruns
+        verbs:
+          - get
+          - list
 
-5. To get the resources from a Kubernetes cluster, add the following annotations to the entity's `catalog-info.yaml`:
+  ```
 
-   ```yaml title="catalog-info.yaml"
-   annotations:
-     backstage.io/kubernetes-id: <BACKSTAGE_ENTITY_NAME>
-     backstage.io/kubernetes-namespace: <RESOURCE_NS>
-   ```
+- The following annotation is added to the entity's `catalog-info.yaml` file to identify whether an entitiy contains the Kubernetes resources:
 
-   The Kubernetes plugin identifies if the provided entity contains Kubernetes resources and from which namespace the plugin receives the resources based on the previous annotations.
+  ```yaml
+  annotations:
+    ...
 
-6. Add the following annotation to entity's `catalog-info.yaml` file to view the latest `PipelineRun` visualization in the CI/CD tab of the application:
+    backstage.io/kubernetes-id: <BACKSTAGE_ENTITY_NAME>
+  ```
 
-   ```yaml title="catalog-info.yaml"
-   annotations:
-     # ...
-     janus-idp.io/tekton-enabled: 'true'
-   ```
+  You can also add the `backstage.io/kubernetes-namespace` annotation to identify the Kubernetes resources using the defined namespace.
 
-7. You can also add a custom label selector, which Backstage uses to find the resources. The label selector takes precedence over the ID annotation.
-   `'backstage.io/kubernetes-label-selector': 'app=my-app,component=front-end`
-8. You must add the following label to the resources so that the Kubernetes plugin gets the Kubernetes resources from the requested entity:
+  ```yaml
+  annotations:
+    ...
 
-   ```yaml title="catalog-info.yaml"
-   'backstage.io/kubernetes-id': <BACKSTAGE_ENTITY_NAME>`
-   ```
+    backstage.io/kubernetes-namespace: <RESOURCE_NS>
+  ```
 
-   ***
+- The following annotation is added to the `catalog-info.yaml` file of entity to view the latest `PipelineRun` in the CI/CD tab of the application:
 
-   **NOTE**
+  ```yaml
+  annotations:
+    ...
 
-   When using the label selector, the mentioned labels must be present on the resource.
+    janus-idp.io/tekton-enabled : 'true'
+  ```
 
-   ***
+- A custom label selector can be added, which Backstage uses to find the Kubernetes resources. The label selector takes precedence over the ID annotations.
 
-## Using Tekton plugin
+  ```yaml
+  annotations:
+    ...
+
+    backstage.io/kubernetes-label-selector: 'app=my-app,component=front-end'
+  ```
+
+- The following label is added to the resources so that the Kubernetes plugin gets the Kubernetes resources from the requested entity:
+
+  ```yaml
+  labels:
+    ...
+
+    backstage.io/kubernetes-id: <BACKSTAGE_ENTITY_NAME>`
+  ```
+
+  ***
+
+  **NOTE**
+
+  When using the label selector, the mentioned labels must be present on the resource.
+
+  ***
+
+#### Procedure
 
 1. Install the Tekton plugin using the following command:
 
@@ -83,7 +119,7 @@ The Tekton plugin helps with visualizing the `PipelineRun` resources available o
    yarn workspace app add @janus-idp/backstage-plugin-tekton
    ```
 
-2. Enable additional tab on the entity view page in `packages/app/src/components/catalog/EntityPage.tsx`:
+2. Enable the **TEKTON** tab on the entity view page using the `packages/app/src/components/catalog/EntityPage.tsx` file:
 
    ```tsx title="packages/app/src/components/catalog/EntityPage.tsx"
    /* highlight-add-next-line */
@@ -101,7 +137,7 @@ The Tekton plugin helps with visualizing the `PipelineRun` resources available o
    );
    ```
 
-3. Enable latest PipelineRun visualization in the CI/CD tab in `packages/app/src/components/catalog/EntityPage.tsx`. The `linkTekton` prop is optional and takes boolean value, if not specified or set to `true`, then the `GO TO TEKTON` is shown.
+3. Enable latest PipelineRun visualization in the **CI/CD** tab on the entity view page. The `linkTekton` property is optional and takes boolean value, if not specified or set to `true`, then the **GO TO TEKTON** option is displayed.
 
    ```tsx title="packages/app/src/components/catalog/EntityPage.tsx"
    /* highlight-add-next-line */
@@ -119,10 +155,38 @@ The Tekton plugin helps with visualizing the `PipelineRun` resources available o
    );
    ```
 
-## Development
+### Development
 
-In [Backstage plugin terminology](https://backstage.io/docs/local-dev/cli-build-system#package-roles), the Tekton plugin is a frontend plugin. You can start a live development session from the repository root using the following command:
+In [Backstage plugin terminology](https://backstage.io/docs/local-dev/cli-build-system#package-roles), the Tekton plugin is a front-end plugin. You can start a live development session from the repository root using the following command:
 
 ```console
 yarn workspace @janus-idp/backstage-plugin-tekton run start
 ```
+
+## For users
+
+### Using the Tekton plugin in Backstage
+
+Tekton is a front-end plugin that enables you to view the `PipelineRun` resources.
+
+#### Prerequisites
+
+- Your Backstage application is installed and running.
+- You have installed the Tekton plugin. For the installation process, see [Installation](#installation).
+
+#### Procedure
+
+1. Open your Backstage application and select a component from the **Catalog** page.
+1. Go to the **CI/CD** tab.
+
+   The **CI/CD** tab displays the latest `PipelineRun` resources associated to a Kubernetes cluster. The resources include tasks to complete. When you hover the mouse pointer on a task card, you can view the steps to complete that particular task.
+
+   ![ci-cd-tab-tekton](./images/tekton-plugin-user1.png)
+
+   There is also a **GO TO TEKTON** option at the bottom, which redirects you to the **TEKTON** tab.
+
+1. Click **GO TO TEKTON** or select the **TEKTON** tab in the entity view page.
+
+   The **TEKTON** tab contains the list of pipeline runs related to a cluster. The list contains pipeline run details, such as **NAME**, **STATUS**, **TASK STATUS**, **STARTED**, and **DURATION**.
+
+   ![tekton-tab](./images/tekton-plugin-user2.png)
