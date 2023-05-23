@@ -14,7 +14,35 @@ The OCM plugin has the following capabilities:
   - Cluster details (console link, OCP, and Kubernetes version)
   - Details about available compute resources on the cluster
 
-## Prerequisites
+# Table of contents
+
+1. [For administrators](#for-administrators)
+
+   a. [Installation](#installation)
+
+   b. [Development](#development)
+
+1. [For users](#for-users)
+
+   a. [Using the OCM plugin in Backstage](#using-the-ocm-plugin-in-backstage)
+
+## For administrators
+
+### Installation
+
+The OCM plugin is composed of two packages, including:
+
+- `@janus-idp/backstage-plugin-ocm-backend` package connects the Backstage server to OCM.
+- `@janus-idp/backstage-plugin-ocm` package contains frontend components and requires `*-backend` to be present and to set up.
+
+---
+
+**NOTE**
+If you are interested in Resource discovery and do not want any of the front-end components, then you can install and configure the `@janus-idp/backstage-plugin-ocm-backend` package only.
+
+---
+
+#### Prerequisites
 
 - OCM is deployed and configured on a Kubernetes cluster.
 - [Kubernetes plugin for Backstage](https://backstage.io/docs/features/kubernetes) is installed.
@@ -44,21 +72,7 @@ The OCM plugin has the following capabilities:
         - list
   ```
 
-## Using the OCM plugin
-
-The OCM plugin is composed of two packages, including:
-
-- `@janus-idp/backstage-plugin-ocm-backend` package connects the Backstage server to OCM.
-- `@janus-idp/backstage-plugin-ocm` package contains frontend components and requires `*-backend` to be present and to set up.
-
----
-
-**NOTE**
-If you are interested in Resource discovery and do not want any of the frontend components, then you can install and configure the `@janus-idp/backstage-plugin-ocm-backend` package only.
-
----
-
-### Set up `@janus-idp/backstage-plugin-ocm-backend` package
+#### Setting up the `@janus-idp/backstage-plugin-ocm-backend` package
 
 1. Install the OCM backend plugin using the following command:
 
@@ -226,7 +240,7 @@ If you are interested in Resource discovery and do not want any of the frontend 
 
    For more information about the default owner configuration, see [upstream string references documentation](https://backstage.io/docs/features/software-catalog/references/#string-references).
 
-### Set up `@janus-idp/backstage-plugin-ocm` package
+#### Setting up the `@janus-idp/backstage-plugin-ocm` package
 
 1. Install the OCM frontend plugin using the following command:
 
@@ -348,7 +362,7 @@ If you are interested in Resource discovery and do not want any of the frontend 
 
    - `<ClusterAllocatableResourceCard />`: This is an entity component displaying allocatable resources on a cluster. For example, see [`.status.allocatable`](https://open-cluster-management.io/concepts/managedcluster/#cluster-heartbeats-and-status) of the `ManagedCluster` resource.
 
-## Development
+### Development
 
 If you have installed the OCM plugin to the example application in the repository, run the `yarn start` command to access the plugin in the root directory and then navigate to `http://localhost:3000/ocm`.
 
@@ -367,3 +381,36 @@ To start a development setup in isolation with a faster setup and hot reloads, c
    ```
 
 The previous steps are meant for local development and you can find the setup inside the `./dev` directories of the individual plugins.
+
+## For users
+
+### Using the OCM plugin in Backstage
+
+The OCM plugin integrates your Backstage instance with multi-cluster engines and displays real-time data from OCM.
+
+#### Prerequisites
+
+- Your Backstage application is installed and running.
+- You have installed the OCM plugin. For the installation process, see [Installation](#installation).
+
+#### Procedure
+
+1. Open your Backstage application.
+1. Click the **Clusters** tab from the left-side panel to view the **Managed Clusters** page.
+
+   The **Managed Clusters** page displays the list of clusters with additional information, such as status, infrastructure provider, associated OpenShift version, and available nodes.
+
+   ![ocm-plugin-ui](./images/ocm-plugin-user1.png)
+
+   You can also upgrade the OpenShift version for a cluster using the **Upgrade available** option in the **VERSION** column.
+
+1. Select a cluster from the **Managed Clusters** to view the related cluster information.
+
+   You are redirected to the cluster-specific page, which consists of:
+
+   - **Cluster Information**, such as name, status, accessed Kubernetes version, associated OpenShift ID and version, and accessed platform.
+   - **Available** cluster capacity, including CPU cores, memory size, and number of pods.
+   - **Related Links**, which enable you to access different consoles directly, such as OpenShift Console, OCM Console, and OpenShift Cluster Manager Console.
+   - **Relations** card, which displays the visual representation of the cluster and associated dependencies.
+
+     ![ocm-plugin-ui](./images/ocm-plugin-user2.png)
