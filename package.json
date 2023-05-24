@@ -17,6 +17,8 @@
     "clean": "turbo run clean",
     "test": "turbo run test",
     "lint": "turbo run lint",
+		"clean:modules": "git clean -xdf node_modules",
+    "lint:fix": "backstage-cli repo lint --fix",
     "prettier:check": "prettier --check .",
     "prettier:fix": "prettier --write .",
     "new": "backstage-cli new --scope @janus-idp",
