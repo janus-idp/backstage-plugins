@@ -12,11 +12,9 @@ import { Entity } from '@backstage/catalog-model';
 import { CatalogEntityPage } from '@backstage/plugin-catalog';
 import { Grid } from '@material-ui/core';
 import {
-  ClusterAllocatableResourceCard,
   ClusterAvailableResourceCard,
   ClusterContextProvider,
   ClusterInfoCard,
-  ClusterStatusCard,
 } from '../src';
 
 const clusterEntity = (name: string): Entity => ({
@@ -35,20 +33,12 @@ const clusterEntity = (name: string): Entity => ({
 const clusterEntityPage = (name: string): JSX.Element => (
   <EntityProvider entity={clusterEntity(name)}>
     <ClusterContextProvider>
-      <Grid container>
-        <Grid container item direction="column" xs={3}>
-          <Grid item>
-            <ClusterStatusCard />
-          </Grid>
-          <Grid item>
-            <ClusterAllocatableResourceCard />
-          </Grid>
-          <Grid item>
-            <ClusterAvailableResourceCard />
-          </Grid>
-        </Grid>
-        <Grid item xs>
+      <Grid container direction="column" xs={6}>
+        <Grid item>
           <ClusterInfoCard />
+        </Grid>
+        <Grid item>
+          <ClusterAvailableResourceCard />
         </Grid>
       </Grid>
     </ClusterContextProvider>
