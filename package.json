@@ -7,8 +7,10 @@
   },
   "scripts": {
     "preinstall": "npx only-allow yarn",
-    "start": "turbo run start --concurrency 15",
-    "build": "turbo run build",
+    "start:backstage": "turbo run start --filter=...{./packages/*}",
+    "start:plugins": "turbo run start --filter=...{./plugins/*} --concurrency 15",
+    "build:backstage": "turbo run build --filter=...{./packages/*}",
+    "build:plugins": "turbo run build --filter=...{./plugins/*}",
     "tsc": "tsc",
     "clean": "turbo run clean",
     "test": "turbo run test",
@@ -21,11 +23,12 @@
   },
   "workspaces": {
     "packages": [
-      "packages/*"
+      "packages/*",
+      "plugins/*"
     ]
   },
   "devDependencies": {
-    "@backstage/cli": "0.22.6",
+    "@backstage/cli": "^0.22.7",
     "@semantic-release/changelog": "6.0.3",
     "@semantic-release/exec": "6.0.3",
     "@semantic-release/git": "10.0.1",
@@ -35,12 +38,12 @@
     "husky": "8.0.3",
     "multi-semantic-release": "3.0.2",
     "prettier": "2.8.8",
-    "turbo": "^1.9.8",
+    "turbo": "^1.9.9",
     "typescript": "5.0.4"
   },
   "resolutions": {
-    "@types/react": "^17",
-    "@types/react-dom": "^17"
+    "@types/react": "^17.0.2",
+    "@types/react-dom": "^17.0.2"
   },
   "prettier": "@spotify/prettier-config",
   "lint-staged": {

@@ -6,6 +6,14 @@
       "persistent": true,
       "dependsOn": ["^build"]
     },
+    "app#start": {
+      "cache": false,
+      "persistent": true
+    },
+    "backend#start": {
+      "cache": false,
+      "persistent": true
+    },
     "build": {
       "outputs": ["dist/**"],
       "dependsOn": ["//#tsc", "^build"]
