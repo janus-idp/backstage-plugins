@@ -29,18 +29,20 @@ type PipelineVisualizationProps = {
 type WrapperInfoCardProps = {
   allErrors?: ClusterErrors;
   footerLink?: BottomLinkProps;
+  showClusterSelector?: boolean;
 };
 
 const WrapperInfoCard = ({
   children,
   allErrors,
   footerLink,
+  showClusterSelector = true,
 }: React.PropsWithChildren<WrapperInfoCardProps>) => (
   <>
     {allErrors && allErrors.length > 0 && <ErrorPanel allErrors={allErrors} />}
     <InfoCard
       title="Latest Pipeline Run"
-      subheader={<ClusterSelector />}
+      {...(showClusterSelector && { subheader: <ClusterSelector /> })}
       deepLink={footerLink}
     >
       {children}
@@ -53,8 +55,13 @@ export const PipelineVisualization = ({
   url,
 }: PipelineVisualizationProps) => {
   useDarkTheme();
-  const { loaded, responseError, watchResourcesData, selectedClusterErrors } =
-    React.useContext(TektonResourcesContext);
+  const {
+    loaded,
+    responseError,
+    watchResourcesData,
+    selectedClusterErrors,
+    clusters,
+  } = React.useContext(TektonResourcesContext);
 
   const { entity } = useEntity();
   const allErrors: ClusterErrors = [
@@ -77,13 +84,12 @@ export const PipelineVisualization = ({
       </div>
     );
 
-  if (
-    loaded &&
-    (!responseError || responseError?.length === 0) &&
-    (!latestPipelineRun || isEmpty(latestPipelineRun))
-  ) {
+  if (loaded && (responseError || isEmpty(latestPipelineRun))) {
     return (
-      <WrapperInfoCard allErrors={allErrors}>
+      <WrapperInfoCard
+        allErrors={allErrors}
+        showClusterSelector={clusters.length > 0}
+      >
         <EmptyState
           missing="data"
           description="No Pipeline Run to visualize"

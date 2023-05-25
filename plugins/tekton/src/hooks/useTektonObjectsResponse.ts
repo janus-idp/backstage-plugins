@@ -44,6 +44,7 @@ export const useTektonObjectsResponse = (
         setLoaded(true);
         setPipelinesData(resData);
       } else if (errorData && mounted.current) {
+        setLoaded(true);
         setErrorState(errorData);
       }
     },
