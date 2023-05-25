@@ -18,11 +18,13 @@
 
 ## @janus-idp/backstage-plugin-openshift-image-registry [1.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-openshift-image-registry@1.0.1...@janus-idp/backstage-plugin-openshift-image-registry@1.1.0) (2023-05-11)
 
+
 ### Features
 
 * **openshift-image-registry:** enable search by description and tags ([#346](https://github.com/janus-idp/backstage-plugins/issues/346)) ([96d0f55](https://github.com/janus-idp/backstage-plugins/commit/96d0f55e93392c69ce4542d4db2fef5030db4937))
 
 ## @janus-idp/backstage-plugin-openshift-image-registry [1.0.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-openshift-image-registry@1.0.0...@janus-idp/backstage-plugin-openshift-image-registry@1.0.1) (2023-05-11)
+
 
 ### Bug Fixes
 
@@ -30,10 +32,12 @@
 
 ## @janus-idp/backstage-plugin-openshift-image-registry 1.0.0 (2023-05-10)
 
+
 ### Features
 
 * **openshift-image-registry:** remove private from package.json ([#341](https://github.com/janus-idp/backstage-plugins/issues/341)) ([639a48b](https://github.com/janus-idp/backstage-plugins/commit/639a48be7e0a02c531f992d7e742819e8d7718f8))
 * **openshift-image-registry:** show all image-streams in openshift cluster ([#334](https://github.com/janus-idp/backstage-plugins/issues/334)) ([d52557e](https://github.com/janus-idp/backstage-plugins/commit/d52557eb99f71987e994bb3893f07f2c44807478))
+
 
 ### Other changes
 
