@@ -98,9 +98,9 @@ const InnerWorkloadNode = observer(
     }, [workloadData?.url, element, decoratorRadius]);
 
     return (
-      <g className="tp-workload-node">
+      <g className="bs-topology-workload-node">
         <BaseNode
-          className="tp-workload-node"
+          className="bs-topology-workload-node"
           hoverRef={hoverRef as (node: Element) => () => void}
           innerRadius={podSetInnerRadius(size, donutStatus)}
           kind={workloadData?.kind}
