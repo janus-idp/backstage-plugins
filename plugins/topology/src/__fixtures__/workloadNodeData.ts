@@ -707,6 +707,398 @@ export const workloadNodeData = {
   height: 104,
 };
 
+export const cronJobWorkloadNodeData = {
+  data: {
+    resource: {
+      metadata: {
+        name: 'example-cj',
+        namespace: 'div',
+        uid: '9afc9c71-3870-4185-9725-ffe16b574575',
+        resourceVersion: '378313',
+        generation: 1,
+        creationTimestamp: '2023-05-23T11:20:26Z',
+        labels: {
+          'backstage.io/kubernetes-id': 'nationalparks-py',
+        },
+      },
+      spec: {
+        schedule: '* * * * *',
+        concurrencyPolicy: 'Allow',
+        suspend: false,
+        jobTemplate: {
+          metadata: {
+            creationTimestamp: null,
+          },
+          spec: {
+            template: {
+              metadata: {
+                creationTimestamp: null,
+                labels: {
+                  'backstage.io/kubernetes-id': 'nationalparks-py',
+                },
+              },
+              spec: {
+                containers: [
+                  {
+                    name: 'hello',
+                    image: 'busybox',
+                    args: [
+                      '/bin/sh',
+                      '-c',
+                      'date; echo Hello from the Kubernetes cluster',
+                    ],
+                    resources: {},
+                    terminationMessagePath: '/dev/termination-log',
+                    terminationMessagePolicy: 'File',
+                    imagePullPolicy: 'Always',
+                  },
+                ],
+                restartPolicy: 'OnFailure',
+                terminationGracePeriodSeconds: 30,
+                dnsPolicy: 'ClusterFirst',
+                securityContext: {},
+                schedulerName: 'default-scheduler',
+              },
+            },
+          },
+        },
+        successfulJobsHistoryLimit: 3,
+        failedJobsHistoryLimit: 1,
+      },
+      status: {
+        lastScheduleTime: '2023-05-23T11:23:00Z',
+        lastSuccessfulTime: '2023-05-23T11:23:06Z',
+      },
+      kind: 'CronJob',
+      apiVersion: 'batch/v1',
+    },
+    data: {
+      jobsData: [
+        {
+          job: {
+            metadata: {
+              name: 'example-cj-28080681',
+              namespace: 'div',
+              uid: 'a758623e-6ddd-4858-acd8-efa18b336c25',
+              resourceVersion: '376354',
+              generation: 1,
+              creationTimestamp: '2023-05-23T11:21:00Z',
+              labels: {
+                'backstage.io/kubernetes-id': 'nationalparks-py',
+                'controller-uid': 'a758623e-6ddd-4858-acd8-efa18b336c25',
+                'job-name': 'example-cj-28080681',
+              },
+              annotations: {
+                'batch.kubernetes.io/job-tracking': '',
+              },
+              ownerReferences: [
+                {
+                  apiVersion: 'batch/v1',
+                  kind: 'CronJob',
+                  name: 'example-cj',
+                  uid: '9afc9c71-3870-4185-9725-ffe16b574575',
+                  controller: true,
+                  blockOwnerDeletion: true,
+                },
+              ],
+            },
+            spec: {
+              parallelism: 1,
+              completions: 1,
+              backoffLimit: 6,
+              selector: {
+                matchLabels: {
+                  'controller-uid': 'a758623e-6ddd-4858-acd8-efa18b336c25',
+                },
+              },
+              template: {
+                metadata: {
+                  creationTimestamp: null,
+                  labels: {
+                    'backstage.io/kubernetes-id': 'nationalparks-py',
+                    'controller-uid': 'a758623e-6ddd-4858-acd8-efa18b336c25',
+                    'job-name': 'example-cj-28080681',
+                  },
+                },
+                spec: {
+                  containers: [
+                    {
+                      name: 'hello',
+                      image: 'busybox',
+                      args: [
+                        '/bin/sh',
+                        '-c',
+                        'date; echo Hello from the Kubernetes cluster',
+                      ],
+                      resources: {},
+                      terminationMessagePath: '/dev/termination-log',
+                      terminationMessagePolicy: 'File',
+                      imagePullPolicy: 'Always',
+                    },
+                  ],
+                  restartPolicy: 'OnFailure',
+                  terminationGracePeriodSeconds: 30,
+                  dnsPolicy: 'ClusterFirst',
+                  securityContext: {},
+                  schedulerName: 'default-scheduler',
+                },
+              },
+              completionMode: 'NonIndexed',
+              suspend: false,
+            },
+            status: {
+              conditions: [
+                {
+                  type: 'Complete',
+                  status: 'True',
+                  lastProbeTime: '2023-05-23T11:21:09Z',
+                  lastTransitionTime: '2023-05-23T11:21:09Z',
+                },
+              ],
+              startTime: '2023-05-23T11:21:00Z',
+              completionTime: '2023-05-23T11:21:09Z',
+              succeeded: 1,
+              uncountedTerminatedPods: {},
+              ready: 0,
+            },
+            kind: 'Job',
+            apiVersion: 'batch/v1',
+          },
+          podsData: {
+            pods: [
+              {
+                metadata: {
+                  name: 'example-cj-28080681-clstf',
+                  generateName: 'example-cj-28080681-',
+                  namespace: 'div',
+                  uid: '63fa5640-9a7e-4d85-8ab0-a83d1b11c925',
+                  resourceVersion: '376353',
+                  creationTimestamp: '2023-05-23T11:21:00Z',
+                  labels: {
+                    'backstage.io/kubernetes-id': 'nationalparks-py',
+                    'controller-uid': 'a758623e-6ddd-4858-acd8-efa18b336c25',
+                    'job-name': 'example-cj-28080681',
+                  },
+                  annotations: {
+                    'k8s.ovn.org/pod-networks':
+                      '{"default":{"ip_addresses":["10.129.2.93/23"],"mac_address":"0a:58:0a:81:02:5d","gateway_ips":["10.129.2.1"],"ip_address":"10.129.2.93/23","gateway_ip":"10.129.2.1"}}',
+                    'k8s.v1.cni.cncf.io/network-status':
+                      '[{\n    "name": "ovn-kubernetes",\n    "interface": "eth0",\n    "ips": [\n        "10.129.2.93"\n    ],\n    "mac": "0a:58:0a:81:02:5d",\n    "default": true,\n    "dns": {}\n}]',
+                    'openshift.io/scc': 'restricted-v2',
+                    'seccomp.security.alpha.kubernetes.io/pod':
+                      'runtime/default',
+                  },
+                  ownerReferences: [
+                    {
+                      apiVersion: 'batch/v1',
+                      kind: 'Job',
+                      name: 'example-cj-28080681',
+                      uid: 'a758623e-6ddd-4858-acd8-efa18b336c25',
+                      controller: true,
+                      blockOwnerDeletion: true,
+                    },
+                  ],
+                },
+                spec: {
+                  volumes: [
+                    {
+                      name: 'kube-api-access-rzlcq',
+                      projected: {
+                        sources: [
+                          {
+                            serviceAccountToken: {
+                              expirationSeconds: 3607,
+                              path: 'token',
+                            },
+                          },
+                          {
+                            configMap: {
+                              name: 'kube-root-ca.crt',
+                              items: [
+                                {
+                                  key: 'ca.crt',
+                                  path: 'ca.crt',
+                                },
+                              ],
+                            },
+                          },
+                          {
+                            downwardAPI: {
+                              items: [
+                                {
+                                  path: 'namespace',
+                                  fieldRef: {
+                                    apiVersion: 'v1',
+                                    fieldPath: 'metadata.namespace',
+                                  },
+                                },
+                              ],
+                            },
+                          },
+                          {
+                            configMap: {
+                              name: 'openshift-service-ca.crt',
+                              items: [
+                                {
+                                  key: 'service-ca.crt',
+                                  path: 'service-ca.crt',
+                                },
+                              ],
+                            },
+                          },
+                        ],
+                        defaultMode: 420,
+                      },
+                    },
+                  ],
+                  containers: [
+                    {
+                      name: 'hello',
+                      image: 'busybox',
+                      args: [
+                        '/bin/sh',
+                        '-c',
+                        'date; echo Hello from the Kubernetes cluster',
+                      ],
+                      resources: {},
+                      volumeMounts: [
+                        {
+                          name: 'kube-api-access-rzlcq',
+                          readOnly: true,
+                          mountPath:
+                            '/var/run/secrets/kubernetes.io/serviceaccount',
+                        },
+                      ],
+                      terminationMessagePath: '/dev/termination-log',
+                      terminationMessagePolicy: 'File',
+                      imagePullPolicy: 'Always',
+                      securityContext: {
+                        capabilities: {
+                          drop: ['ALL'],
+                        },
+                        runAsUser: 1000850000,
+                        runAsNonRoot: true,
+                        allowPrivilegeEscalation: false,
+                      },
+                    },
+                  ],
+                  restartPolicy: 'OnFailure',
+                  terminationGracePeriodSeconds: 30,
+                  dnsPolicy: 'ClusterFirst',
+                  serviceAccountName: 'default',
+                  serviceAccount: 'default',
+                  nodeName: 'ip-10-0-142-122.sa-east-1.compute.internal',
+                  securityContext: {
+                    seLinuxOptions: {
+                      level: 's0:c29,c19',
+                    },
+                    fsGroup: 1000850000,
+                    seccompProfile: {
+                      type: 'RuntimeDefault',
+                    },
+                  },
+                  imagePullSecrets: [
+                    {
+                      name: 'default-dockercfg-ngnwr',
+                    },
+                  ],
+                  schedulerName: 'default-scheduler',
+                  tolerations: [
+                    {
+                      key: 'node.kubernetes.io/not-ready',
+                      operator: 'Exists',
+                      effect: 'NoExecute',
+                      tolerationSeconds: 300,
+                    },
+                    {
+                      key: 'node.kubernetes.io/unreachable',
+                      operator: 'Exists',
+                      effect: 'NoExecute',
+                      tolerationSeconds: 300,
+                    },
+                  ],
+                  priority: 0,
+                  enableServiceLinks: true,
+                  preemptionPolicy: 'PreemptLowerPriority',
+                },
+                status: {
+                  phase: 'Succeeded',
+                  conditions: [
+                    {
+                      type: 'Initialized',
+                      status: 'True',
+                      lastProbeTime: null,
+                      lastTransitionTime: '2023-05-23T11:21:00Z',
+                      reason: 'PodCompleted',
+                    },
+                    {
+                      type: 'Ready',
+                      status: 'False',
+                      lastProbeTime: null,
+                      lastTransitionTime: '2023-05-23T11:21:00Z',
+                      reason: 'PodCompleted',
+                    },
+                    {
+                      type: 'ContainersReady',
+                      status: 'False',
+                      lastProbeTime: null,
+                      lastTransitionTime: '2023-05-23T11:21:00Z',
+                      reason: 'PodCompleted',
+                    },
+                    {
+                      type: 'PodScheduled',
+                      status: 'True',
+                      lastProbeTime: null,
+                      lastTransitionTime: '2023-05-23T11:21:00Z',
+                    },
+                  ],
+                  hostIP: '10.0.142.122',
+                  podIP: '10.129.2.93',
+                  podIPs: [
+                    {
+                      ip: '10.129.2.93',
+                    },
+                  ],
+                  startTime: '2023-05-23T11:21:00Z',
+                  containerStatuses: [
+                    {
+                      name: 'hello',
+                      state: {
+                        terminated: {
+                          exitCode: 0,
+                          reason: 'Completed',
+                          startedAt: '2023-05-23T11:21:05Z',
+                          finishedAt: '2023-05-23T11:21:05Z',
+                          containerID:
+                            'cri-o://db5fc2a895837eaa71cf4fdfc23602f9e5190140b9a7b6d30b6b8d781e99c53e',
+                        },
+                      },
+                      lastState: {},
+                      ready: false,
+                      restartCount: 0,
+                      image: 'docker.io/library/busybox:latest',
+                      imageID:
+                        'docker.io/library/busybox@sha256:560af6915bfc8d7630e50e212e08242d37b63bd5c1ccf9bd4acccf116e262d5b',
+                      containerID:
+                        'cri-o://db5fc2a895837eaa71cf4fdfc23602f9e5190140b9a7b6d30b6b8d781e99c53e',
+                      started: false,
+                    },
+                  ],
+                  qosClass: 'BestEffort',
+                },
+                kind: 'Pod',
+                apiVersion: 'v1',
+              },
+            ],
+          },
+        },
+      ],
+    },
+  },
+  width: 104,
+  height: 104,
+};
+
 export const workloadNode = {
   getDimensions: () => ({
     width: workloadNodeData.width,
@@ -721,4 +1113,23 @@ export const workloadNode2 = {
     height: workloadNodeData.height,
   }),
   getData: () => ({ resource: {}, data: {} }),
+};
+
+export const workloadNode3 = {
+  getDimensions: () => ({
+    width: cronJobWorkloadNodeData.width,
+    height: cronJobWorkloadNodeData.height,
+  }),
+  getData: () => cronJobWorkloadNodeData.data,
+};
+
+export const workloadNode4 = {
+  getDimensions: () => ({
+    width: cronJobWorkloadNodeData.width,
+    height: cronJobWorkloadNodeData.height,
+  }),
+  getData: () => ({
+    resource: cronJobWorkloadNodeData.data.resource,
+    data: {},
+  }),
 };

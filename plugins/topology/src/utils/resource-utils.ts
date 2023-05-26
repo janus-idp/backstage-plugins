@@ -18,6 +18,11 @@ import {
 import { WORKLOAD_TYPES } from './topology-utils';
 import { LabelSelector } from './label-selector';
 import { IngressesData } from '../types/ingresses';
+import {
+  getJobsForCronJob,
+  getPodsDataForResource,
+} from './pod-resource-utils';
+import { JobsData } from '../types/jobs';
 
 const validPod = (pod: V1Pod) => {
   const owners = pod?.metadata?.ownerReferences;
@@ -171,4 +176,23 @@ export const getIngressURLForResource = (
   );
 
   return getIngressesURL(ingressesData);
+};
+
+export const getJobsDataForResource = (
+  resources: K8sResponseData,
+  resource: K8sWorkloadResource,
+): JobsData => {
+  if (!resources.jobs?.data?.length) {
+    return [];
+  }
+
+  const resourceJobs = getJobsForCronJob(
+    resource.metadata?.uid ?? '',
+    resources,
+  ) as V1Job[];
+
+  return resourceJobs.map((job: V1Job) => ({
+    job,
+    podsData: getPodsDataForResource(job, resources),
+  }));
 };
