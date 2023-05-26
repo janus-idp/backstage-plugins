@@ -29,6 +29,12 @@ If you are interested in Resource discovery and do not want any of the frontend 
 
 ---
 
+<<<<<<< HEAD
+
+=======
+
+> > > > > > > origin/docs-update
+
 ## Capabilities
 
 The OCM plugin has the following capabilities:
