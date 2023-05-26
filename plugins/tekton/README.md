@@ -2,17 +2,17 @@
 
 The Tekton plugin enables you to visualize the `PipelineRun` resources available on the Kubernetes cluster.
 
-# Table of contents
+## Table of Contents
 
-1. [For administrators](#for-administrators)
-
-   a. [Installation](#installation)
-
-   b. [Development](#development)
-
-1. [For users](#for-users)
-
-   a. [Using the Tekton plugin in Backstage](#using-the-tekton-plugin-in-backstage)
+- [For administrators](#for-administrators)
+  - [Installation](#installation)
+    - [Prerequisites](#prerequisites)
+    - [Installation and Configuration Procedure](#installation-and-configuration-procedure)
+  - [Development Setup](#development-setup)
+- [For users](#for-users)
+  - [Using the Tekton plugin in Backstage](#using-the-tekton-plugin-in-backstage)
+    - [Usage Prerequisites](#usage-prerequisites)
+    - [Usage Procedure](#usage-procedure)
 
 ## For administrators
 
@@ -111,7 +111,7 @@ The Tekton plugin enables you to visualize the `PipelineRun` resources available
 
   ***
 
-#### Procedure
+#### Installation and Configuration Procedure
 
 1. Install the Tekton plugin using the following command:
 
@@ -155,7 +155,7 @@ The Tekton plugin enables you to visualize the `PipelineRun` resources available
    );
    ```
 
-### Development
+### Development Setup
 
 In [Backstage plugin terminology](https://backstage.io/docs/local-dev/cli-build-system#package-roles), the Tekton plugin is a front-end plugin. You can start a live development session from the repository root using the following command:
 
@@ -169,15 +169,16 @@ yarn workspace @janus-idp/backstage-plugin-tekton run start
 
 Tekton is a front-end plugin that enables you to view the `PipelineRun` resources.
 
-#### Prerequisites
+#### Usage Prerequisites
 
 - Your Backstage application is installed and running.
 - You have installed the Tekton plugin. For the installation process, see [Installation](#installation).
 
-#### Procedure
+#### Usage Procedure
 
 1. Open your Backstage application and select a component from the **Catalog** page.
-1. Go to the **CI/CD** tab.
+
+2. Go to the **CI/CD** tab.
 
    The **CI/CD** tab displays the latest `PipelineRun` resources associated to a Kubernetes cluster. The resources include tasks to complete. When you hover the mouse pointer on a task card, you can view the steps to complete that particular task.
 
@@ -185,7 +186,7 @@ Tekton is a front-end plugin that enables you to view the `PipelineRun` resource
 
    There is also a **GO TO TEKTON** option at the bottom, which redirects you to the **TEKTON** tab.
 
-1. Click **GO TO TEKTON** or select the **TEKTON** tab in the entity view page.
+3. Click **GO TO TEKTON** or select the **TEKTON** tab in the entity view page.
 
    The **TEKTON** tab contains the list of pipeline runs related to a cluster. The list contains pipeline run details, such as **NAME**, **STATUS**, **TASK STATUS**, **STARTED**, and **DURATION**.
 

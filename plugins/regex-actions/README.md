@@ -6,17 +6,26 @@ The following actions are currently supported in this plugin:
 
 - [String replacement](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace)
 
+## Table of Contents
+
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Usage](#usage)
+
 ## Prerequisites
 
 - A [Backstage](https://backstage.io/docs/getting-started/) project
 
-## Getting started
+## Installation
 
 1. Install the action package in your Backstage project
 
    ```console
    yarn workspace backend add @janus-idp/backstage-plugin-regex-actions
    ```
+
+## Configuration
 
 2. [Register](https://backstage.io/docs/features/software-templates/writing-custom-actions#registering-custom-actions) the regex actions by modifying the `packages/backend/src/plugins/scaffolder.ts` file from your project with the following changes:
 
