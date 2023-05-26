@@ -5,17 +5,30 @@ import React from 'react';
 import ResourceName from '../../../common/components/ResourceName';
 import ResourceStatus from '../../../common/components/ResourceStatus';
 import Status from '../../../common/components/Status';
-import { IngressModel, PodModel, ServiceModel } from '../../../models';
+import {
+  CronJobModel,
+  IngressModel,
+  JobModel,
+  PodModel,
+  ServiceModel,
+} from '../../../models';
 import { IngressData } from '../../../types/ingresses';
 import IngressRules from './IngressRules';
 import TopologyResourcesTabPanelItem from './TopologyResourcesTabPaneltem';
+import { JobData } from '../../../types/jobs';
+import PodStatus from '../../Pods/PodStatus';
+import { ChartLabel } from '@patternfly/react-charts';
+
+import './TopologyResourcesTabPanel.css';
 
 type TopologyResourcesTabPanelProps = { node: BaseNode };
 
 const TopologyResourcesTabPanel = ({
   node,
 }: TopologyResourcesTabPanelProps) => {
-  const nodeData = node.getData()?.data;
+  const data = node.getData();
+  const nodeData = data?.data;
+  const resource = data?.resource;
   return (
     <div data-testid="resources-tab">
       <TopologyResourcesTabPanelItem
@@ -43,6 +56,40 @@ const TopologyResourcesTabPanel = ({
             </li>
           ))}
       </TopologyResourcesTabPanelItem>
+      {resource.kind === CronJobModel.kind ? (
+        <TopologyResourcesTabPanelItem
+          resourceLabel={JobModel.labelPlural}
+          dataTest="job-list"
+        >
+          {nodeData?.jobsData?.length &&
+            nodeData.jobsData.map((jobData: JobData) => (
+              <li
+                className="item"
+                key={jobData.job.metadata?.uid}
+                style={{ alignItems: 'center' }}
+              >
+                <span style={{ flex: '1' }}>
+                  <ResourceName
+                    name={jobData.job.metadata?.name ?? ''}
+                    kind={jobData.job.kind ?? ''}
+                  />
+                </span>
+                <span className="bs-topology-job-pod-ring">
+                  <PodStatus
+                    standalone
+                    data={jobData.podsData.pods}
+                    size={25}
+                    innerRadius={8}
+                    outerRadius={12}
+                    title={`${jobData.podsData.pods.length}`}
+                    titleComponent={<ChartLabel style={{ fontSize: '10px' }} />}
+                    showTooltip={false}
+                  />
+                </span>
+              </li>
+            ))}
+        </TopologyResourcesTabPanelItem>
+      ) : null}
       <TopologyResourcesTabPanelItem
         resourceLabel={ServiceModel.labelPlural}
         dataTest="service-list"

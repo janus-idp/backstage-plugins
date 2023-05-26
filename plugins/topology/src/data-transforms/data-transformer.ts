@@ -5,6 +5,7 @@ import {
   createOverviewItemForType,
   getIngressesDataForResourceServices,
   getIngressURLForResource,
+  getJobsDataForResource,
   getServicesForResource,
 } from '../utils/resource-utils';
 import {
@@ -21,6 +22,7 @@ import {
 } from '../utils/transform-utils';
 import { getPodsDataForResource } from '../utils/pod-resource-utils';
 import { V1Service } from '@kubernetes/client-node';
+import { CronJobModel } from '../models';
 
 export const getBaseTopologyDataModel = (resources: K8sResponseData): Model => {
   const baseDataModel: Model = {
@@ -54,6 +56,11 @@ export const getBaseTopologyDataModel = (resources: K8sResponseData): Model => {
                 resources,
                 resource,
               ),
+              ...(resource.kind === CronJobModel.kind
+                ? {
+                    jobsData: getJobsDataForResource(resources, resource),
+                  }
+                : {}),
             },
           );
           typedDataModel.nodes?.push(

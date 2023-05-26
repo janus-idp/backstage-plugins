@@ -10,6 +10,7 @@ import {
   K8sResponseData,
   ClusterErrors,
 } from '../types/types';
+import { JobsData } from '../types/jobs';
 
 export const WORKLOAD_TYPES: string[] = [
   ModelsPlural.deployments,
@@ -74,6 +75,7 @@ export const createTopologyNodeData = (
     podsData?: PodRCData;
     services?: V1Service[];
     ingressesData?: IngressesData;
+    jobsData?: JobsData;
   },
 ): TopologyDataObject => {
   const dcUID = resource.metadata?.uid;
