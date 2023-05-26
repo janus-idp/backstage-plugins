@@ -3,6 +3,7 @@
 This plugin will show you information about your container images within Jfrog Artifactory registry
 
 ## Table of Contents
+
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [Development Setup](#development-setup)

@@ -6,7 +6,7 @@ The Topology plugin enables you to visualize the workloads such as Deployment, J
 
 - [For administrators](#for-administrators)
   - [Installation](#installation)
-    - [Prerequisites](#prerequisites) 
+    - [Prerequisites](#prerequisites)
     - [Installation and Configuration Procedure](#installation-and-configuration-procedure)
   - [Development Setup](#development-setup)
 - [For users](#for-users)
