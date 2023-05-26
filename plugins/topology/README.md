@@ -2,17 +2,17 @@
 
 The Topology plugin enables you to visualize the workloads such as Deployment, Job, Daemonset, Statefulset, CronJob, and Pods powering any service on the Kubernetes cluster.
 
-# Table of contents
+## Table of Contents
 
-1. [For administrators](#for-administrators)
-
-   a. [Installation](#installation)
-
-   b. [Development](#development)
-
-1. [For users](#for-users)
-
-   a. [Using the Topology plugin in Backstage](#using-the-topology-plugin-in-backstage)
+- [For administrators](#for-administrators)
+  - [Installation](#installation)
+    - [Prerequisites](#prerequisites) 
+    - [Installation and Configuration Procedure](#installation-and-configuration-procedure)
+  - [Development Setup](#development-setup)
+- [For users](#for-users)
+  - [Using the Topology plugin in Backstage](#using-the-topology-plugin-in-backstage)
+    - [Usage Prerequisites](#usage-prerequisites)
+    - [Usage Procedure](#usage-procedure)
 
 ## For administrators
 
@@ -75,7 +75,7 @@ The Topology plugin enables you to visualize the workloads such as Deployment, J
 
   For more information about the labels and annotations, see [Guidelines for labels and annotations for OpenShift applications](https://github.com/redhat-developer/app-labels/blob/master/labels-annotation-for-openshift.adoc).
 
-#### Procedure
+#### Installation and Configuration Procedure
 
 1. Install the Topology plugin using the following command:
 
@@ -101,7 +101,7 @@ The Topology plugin enables you to visualize the workloads such as Deployment, J
    );
    ```
 
-### Development
+### Development Setup
 
 In [Backstage plugin terminology](https://backstage.io/docs/local-dev/cli-build-system#package-roles), the Topology plugin is a front-end plugin. You can start a live development session from the repository root using the following command:
 
@@ -115,12 +115,12 @@ yarn workspace @janus-idp/backstage-plugin-topology run start
 
 Topology is a front-end plugin that enables you to view the workloads as nodes that power any service on the Kubernetes cluster.
 
-#### Prerequisites
+#### Usage Prerequisites
 
 - Your Backstage application is installed and running.
 - You have installed the Topology plugin. For installation process, see [Installation](#installation).
 
-#### Procedure
+#### Usage Procedure
 
 1. Open your Backstage application and select a component from the **Catalog** page.
 1. Go to the **TOPOLOGY** tab and you can view the workloads such as Deployments, Pods as nodes.

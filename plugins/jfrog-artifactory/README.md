@@ -2,7 +2,12 @@
 
 This plugin will show you information about your container images within Jfrog Artifactory registry
 
-## Getting started
+## Table of Contents
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Development Setup](#development-setup)
+
+## Installation
 
 1. Install the plugin
 
@@ -10,7 +15,9 @@ This plugin will show you information about your container images within Jfrog A
    yarn workspace app add @janus-idp/backstage-plugin-jfrog-artifactory
    ```
 
-2. Set the proxy to desired Artifactory server in `app-config.yaml`
+## Configuration
+
+1. Set the proxy to desired Artifactory server in `app-config.yaml`
 
    ```yaml title="app-config.yaml"
    proxy:
@@ -22,7 +29,7 @@ This plugin will show you information about your container images within Jfrog A
        secure: true
    ```
 
-3. Enable additional tab on the entity view page in `packages/app/src/components/catalog/EntityPage.tsx`
+2. Enable additional tab on the entity view page in `packages/app/src/components/catalog/EntityPage.tsx`
 
    ```ts title="packages/app/src/components/catalog/EntityPage.tsx"
    /* highlight-add-start */
@@ -48,7 +55,7 @@ This plugin will show you information about your container images within Jfrog A
    );
    ```
 
-4. Annotate your entity with
+3. Annotate your entity with
 
    ```yaml title="catalog-info.yaml"
    metadata:
@@ -56,7 +63,7 @@ This plugin will show you information about your container images within Jfrog A
        'jfrog-artifactory/image-name': `<IMAGE-NAME>',
    ```
 
-## Development
+## Development Setup
 
 In [Backstage plugin terminology](https://backstage.io/docs/local-dev/cli-build-system#package-roles), this is a `frontend-plugin`. However it requires backend proxy to be available at all times. Development environment therefore requires you to run a backend instance as well. You can start a live dev session from the repository root using following commands concurrently:
 
