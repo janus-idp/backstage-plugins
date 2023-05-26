@@ -161,10 +161,6 @@ When using client credentials, the access type must be set to `confidential` and
 - `query-users`
 - `view-users`
 
-# <<<<<<< HEAD
-
-> > > > > > > origin/docs-update
-
 ### Limitations
 
 If you have self-signed or corporate certificate issues, you can set the following environment variable before starting Backstage:
