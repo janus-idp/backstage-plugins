@@ -20,7 +20,7 @@ The Open Cluster Management (OCM) plugin integrates your Backstage instance with
 The OCM plugin is composed of two packages, including:
 
 - The `@janus-idp/backstage-plugin-ocm-backend` package which connects the Backstage server to OCM.
-- The @janus-idp/backstage-plugin-ocm package, which contains frontend components and requires the *-backend package to be present and properly set up. For detailed instructions on setting up the backend, refer to the [Backend Setup](#set-up-the-ocm-backend-package) section.
+- The @janus-idp/backstage-plugin-ocm package, which contains frontend components and requires the \*-backend package to be present and properly set up. For detailed instructions on setting up the backend, refer to the [Backend Setup](#set-up-the-ocm-backend-package) section.
 
 ---
 
@@ -28,6 +28,7 @@ The OCM plugin is composed of two packages, including:
 If you are interested in Resource discovery and do not want any of the frontend components, then you can install and configure the `@janus-idp/backstage-plugin-ocm-backend` package only.
 
 ---
+
 ## Capabilities
 
 The OCM plugin has the following capabilities:
@@ -39,7 +40,6 @@ The OCM plugin has the following capabilities:
   - Cluster current status (up or down)
   - Cluster details (console link, OCP, and Kubernetes version)
   - Details about available compute resources on the cluster
-
 
 ## Prerequisites
 

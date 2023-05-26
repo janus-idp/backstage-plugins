@@ -19,8 +19,6 @@ The Keycloak backend plugin has the following capabilities:
 - Synchronization of Keycloak users in a realm
 - Synchronization of Keycloak groups and their users in a realm
 
-
-
 ## For administrators
 
 ### Installation
@@ -162,7 +160,6 @@ When using client credentials, the access type must be set to `confidential` and
 - `query-groups`
 - `query-users`
 - `view-users`
-
 
 ### Limitations
 
