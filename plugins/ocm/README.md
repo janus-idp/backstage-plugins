@@ -2,6 +2,32 @@
 
 The Open Cluster Management (OCM) plugin integrates your Backstage instance with the `MultiClusterHub` and `MultiCluster` engines of OCM.
 
+## Table of Contents
+
+- [Using the OCM plugin](#using-the-ocm-plugin)
+- [Capabilities](#capabilities)
+- [Prerequisites](#prerequisites)
+  - [Backend Setup](#set-up-the-ocm-backend-package)
+    - [Backend Installation](#backend-installation)
+    - [Backend Configuration](#backend-configuration)
+  - [Frontend Setup](#set-up-the-ocm-frontend-package)
+    - [Frontend Installation](#frontend-installation)
+  - [Frontend Configuration](#frontend-configuration)
+- [Development Setup](#development-setup)
+
+## Using the OCM plugin
+
+The OCM plugin is composed of two packages, including:
+
+- The `@janus-idp/backstage-plugin-ocm-backend` package which connects the Backstage server to OCM.
+- The @janus-idp/backstage-plugin-ocm package, which contains frontend components and requires the *-backend package to be present and properly set up. For detailed instructions on setting up the backend, refer to the [Backend Setup](#set-up-the-ocm-backend-package) section.
+
+---
+
+**NOTE**
+If you are interested in Resource discovery and do not want any of the frontend components, then you can install and configure the `@janus-idp/backstage-plugin-ocm-backend` package only.
+
+---
 ## Capabilities
 
 The OCM plugin has the following capabilities:
@@ -13,6 +39,7 @@ The OCM plugin has the following capabilities:
   - Cluster current status (up or down)
   - Cluster details (console link, OCP, and Kubernetes version)
   - Details about available compute resources on the cluster
+
 
 ## Prerequisites
 
@@ -44,21 +71,9 @@ The OCM plugin has the following capabilities:
         - list
   ```
 
-## Using the OCM plugin
+### Set up the OCM backend package
 
-The OCM plugin is composed of two packages, including:
-
-- `@janus-idp/backstage-plugin-ocm-backend` package connects the Backstage server to OCM.
-- `@janus-idp/backstage-plugin-ocm` package contains frontend components and requires `*-backend` to be present and to set up.
-
----
-
-**NOTE**
-If you are interested in Resource discovery and do not want any of the frontend components, then you can install and configure the `@janus-idp/backstage-plugin-ocm-backend` package only.
-
----
-
-### Set up `@janus-idp/backstage-plugin-ocm-backend` package
+#### Backend Installation
 
 1. Install the OCM backend plugin using the following command:
 
@@ -66,7 +81,9 @@ If you are interested in Resource discovery and do not want any of the frontend 
    yarn workspace backend add @janus-idp/backstage-plugin-ocm-backend
    ```
 
-2. Configure the OCM backend plugin using one of the following configurations:
+#### Backend Configuration
+
+1. Configure the OCM backend plugin using one of the following configurations:
 
    - The OCM configuration provides the information about your hub. To use the OCM configuration, add the following code to your `app-config.yaml` file:
 
@@ -109,7 +126,7 @@ If you are interested in Resource discovery and do not want any of the frontend 
 
      For more information about the configuration, see [Backstage Kubernetes plugin](https://backstage.io/docs/features/kubernetes/configuration#configuring-kubernetes-clusters) documentation.
 
-3. Create a new plugin instance in `packages/backend/src/plugins/ocm.ts` file as follows:
+2. Create a new plugin instance in `packages/backend/src/plugins/ocm.ts` file as follows:
 
    ```ts title="packages/backend/src/plugins/ocm.ts"
    import { createRouter } from '@janus-idp/backstage-plugin-ocm-backend';
@@ -126,7 +143,7 @@ If you are interested in Resource discovery and do not want any of the frontend 
    }
    ```
 
-4. Import and plug the new instance into `packages/backend/src/index.ts` file:
+3. Import and plug the new instance into `packages/backend/src/index.ts` file:
 
    ```ts title="packages/backend/src/index.ts"
    /* highlight-add-next-line */
@@ -147,7 +164,7 @@ If you are interested in Resource discovery and do not want any of the frontend 
    }
    ```
 
-5. Import the cluster `Resource` entity provider into the `catalog` plugin in the `packages/backend/src/plugins/catalog.ts` file:
+4. Import the cluster `Resource` entity provider into the `catalog` plugin in the `packages/backend/src/plugins/catalog.ts` file:
 
    ```ts title="packages/backend/src/plugins/catalog.ts"
    /* highlight-add-next-line */
@@ -188,7 +205,7 @@ If you are interested in Resource discovery and do not want any of the frontend 
    }
    ```
 
-6. Optional: Configure the default owner for the cluster entities in the catalog for a specific environment. For example, use the following code to set `foo` as the owner for clusters from `env` in the `app-config.yaml` catalog section:
+5. Optional: Configure the default owner for the cluster entities in the catalog for a specific environment. For example, use the following code to set `foo` as the owner for clusters from `env` in the `app-config.yaml` catalog section:
 
    ```yaml title="app-config.yaml"
    catalog:
@@ -201,7 +218,9 @@ If you are interested in Resource discovery and do not want any of the frontend 
 
    For more information about the default owner configuration, see [upstream string references documentation](https://backstage.io/docs/features/software-catalog/references/#string-references).
 
-### Set up `@janus-idp/backstage-plugin-ocm` package
+### Set up the OCM frontend package
+
+#### Frontend Installation
 
 1. Install the OCM frontend plugin using the following command:
 
@@ -209,7 +228,9 @@ If you are interested in Resource discovery and do not want any of the frontend 
    yarn workspace app add @janus-idp/backstage-plugin-ocm
    ```
 
-2. Select the components that you want to use, such as:
+### Frontend Configuration
+
+1. Select the components that you want to use, such as:
 
    - `OcmPage`: This is a standalone page or dashboard displaying all clusters as tiles. You can add `OcmPage` to `packages/app/src/App.tsx` file as follows:
 
@@ -323,7 +344,7 @@ If you are interested in Resource discovery and do not want any of the frontend 
 
    - `<ClusterAllocatableResourceCard />`: This is an entity component displaying allocatable resources on a cluster. For example, see [`.status.allocatable`](https://open-cluster-management.io/concepts/managedcluster/#cluster-heartbeats-and-status) of the `ManagedCluster` resource.
 
-## Development
+## Development Setup
 
 If you have installed the OCM plugin to the example application in the repository, run the `yarn start` command to access the plugin in the root directory and then navigate to `http://localhost:3000/ocm`.
 
