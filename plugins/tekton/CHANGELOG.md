@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-tekton [1.4.11](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.4.10...@janus-idp/backstage-plugin-tekton@1.4.11) (2023-05-29)
+
+
+### Bug Fixes
+
+* **tekton:** handles unnecessary rerenders on tekton ([#391](https://github.com/janus-idp/backstage-plugins/issues/391)) ([86c1700](https://github.com/janus-idp/backstage-plugins/commit/86c1700a89db238dda0efca23ada72c94a2ee72b))
+
 ## @janus-idp/backstage-plugin-tekton [1.4.10](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.4.9...@janus-idp/backstage-plugin-tekton@1.4.10) (2023-05-22)
 
 
