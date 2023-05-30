@@ -51,6 +51,7 @@ export const useTektonObjectsResponse = (
           return resData;
         });
       } else if (errorData && mounted.current) {
+        setLoaded(true);
         setErrorState(errorData);
       }
     },

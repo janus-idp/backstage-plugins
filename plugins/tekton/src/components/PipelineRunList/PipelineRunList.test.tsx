@@ -4,6 +4,16 @@ import PipelineRunList from './PipelineRunList';
 import { TektonResourcesContext } from '../../hooks/TektonResourcesContext';
 import { mockKubernetesPlrResponse } from '../../__fixtures__/1-pipelinesData';
 
+jest.mock('@backstage/plugin-catalog-react', () => ({
+  useEntity: () => ({
+    entity: {
+      metadata: {
+        name: 'test',
+      },
+    },
+  }),
+}));
+
 describe('PipelineRunList', () => {
   it('should render PipelineRunList if available', () => {
     const mockContextData = {
@@ -71,5 +81,59 @@ describe('PipelineRunList', () => {
       </TektonResourcesContext.Provider>,
     );
     expect(getByText(/No Pipeline Runs found/i)).not.toBeNull();
+  });
+
+  it('should show empty state with no cluster selector if there are error in fetching resources and no clusters', () => {
+    const mockContextData = {
+      watchResourcesData: {
+        pipelineruns: {
+          data: [],
+        },
+        taskruns: {
+          data: [],
+        },
+      },
+      loaded: true,
+      responseError:
+        'getaddrinfo ENOTFOUND api.rhoms-4.13-052404.dev.openshiftappsvc.org',
+      selectedClusterErrors: [],
+      clusters: [],
+      setSelectedCluster: () => {},
+    };
+
+    const { getByText, queryByText } = render(
+      <TektonResourcesContext.Provider value={mockContextData}>
+        <PipelineRunList />
+      </TektonResourcesContext.Provider>,
+    );
+    getByText(/No Pipeline Runs found/i);
+    expect(queryByText(/Cluster/)).toBeNull();
+  });
+
+  it('should show empty state with cluster selector if there are error in fetching resources and cluster(s) are fetched', () => {
+    const mockContextData = {
+      watchResourcesData: {
+        pipelineruns: {
+          data: [],
+        },
+        taskruns: {
+          data: [],
+        },
+      },
+      loaded: true,
+      responseError:
+        'getaddrinfo ENOTFOUND api.rhoms-4.13-052404.dev.openshiftappsvc.org',
+      selectedClusterErrors: [{ message: '403 - forbidden' }],
+      clusters: ['ocp'],
+      setSelectedCluster: () => {},
+    };
+
+    const { getByText, queryByText } = render(
+      <TektonResourcesContext.Provider value={mockContextData}>
+        <PipelineRunList />
+      </TektonResourcesContext.Provider>,
+    );
+    getByText(/No Pipeline Runs found/i);
+    expect(queryByText(/Cluster/)).not.toBeNull();
   });
 });
