@@ -103,4 +103,56 @@ describe('PipelineVisualization', () => {
 
     expect(queryByTestId('pipeline-no-tasks')).not.toBeNull();
   });
+
+  it('should show empty state with no cluster selector when there is response error and no clusters are fetched', async () => {
+    const mockContextData = {
+      watchResourcesData: {
+        pipelineruns: {
+          data: [],
+        },
+        taskruns: {
+          data: [],
+        },
+      },
+      loaded: true,
+      responseError:
+        'getaddrinfo ENOTFOUND api.rhoms-4.13-052404.dev.openshiftappsvc.org',
+      selectedClusterErrors: [],
+      clusters: [],
+      setSelectedCluster: () => {},
+    };
+    const { queryByText } = render(
+      <TektonResourcesContext.Provider value={mockContextData}>
+        <PipelineVisualization />
+      </TektonResourcesContext.Provider>,
+    );
+    expect(queryByText(/No Pipeline Run to visualize/i)).not.toBeNull();
+    expect(queryByText(/Cluster/)).toBeNull();
+  });
+
+  it('should show empty state with cluster selector when there is response error and clusters are fetched', async () => {
+    const mockContextData = {
+      watchResourcesData: {
+        pipelineruns: {
+          data: [],
+        },
+        taskruns: {
+          data: [],
+        },
+      },
+      loaded: true,
+      responseError:
+        'getaddrinfo ENOTFOUND api.rhoms-4.13-052404.dev.openshiftappsvc.org',
+      selectedClusterErrors: [{ message: '403 - forbidden' }],
+      clusters: ['OCP'],
+      setSelectedCluster: () => {},
+    };
+    const { queryByText } = render(
+      <TektonResourcesContext.Provider value={mockContextData}>
+        <PipelineVisualization />
+      </TektonResourcesContext.Provider>,
+    );
+    expect(queryByText(/No Pipeline Run to visualize/i)).not.toBeNull();
+    expect(queryByText(/Cluster/)).not.toBeNull();
+  });
 });

@@ -1,10 +1,12 @@
 import React from 'react';
+import { isEqual } from 'lodash';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { useKubernetesObjects } from '@backstage/plugin-kubernetes';
 import { TektonResourcesContextData, TektonResponseData } from '../types/types';
 import { useAllWatchResources } from './useAllWatchResources';
 import { useResourcesClusters } from './useResourcesClusters';
 import { useDebounceCallback } from './debounce';
+import { useDeepCompareMemoize } from './useDeepCompareMemoize';
 
 export const useTektonObjectsResponse = (
   watchedResource: string[],
@@ -42,8 +44,14 @@ export const useTektonObjectsResponse = (
     (resData, isLoading, errorData) => {
       if (!isLoading && !errorData && mounted.current) {
         setLoaded(true);
-        setPipelinesData(resData);
+        setPipelinesData(prevPipelinesData => {
+          if (isEqual(prevPipelinesData, resData)) {
+            return prevPipelinesData;
+          }
+          return resData;
+        });
       } else if (errorData && mounted.current) {
+        setLoaded(true);
         setErrorState(errorData);
       }
     },
@@ -56,7 +64,7 @@ export const useTektonObjectsResponse = (
     debouncedUpdateResources(watchResourcesData, loading, error);
   }, [debouncedUpdateResources, watchResourcesData, loading, error]);
 
-  return {
+  return useDeepCompareMemoize({
     watchResourcesData: pipelinesData,
     loaded,
     responseError: errorState,
@@ -64,5 +72,5 @@ export const useTektonObjectsResponse = (
     clusters,
     selectedCluster,
     setSelectedCluster,
-  };
+  });
 };

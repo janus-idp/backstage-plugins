@@ -1,3 +1,4 @@
+import React from 'react';
 import { InfoCard, Progress } from '@backstage/core-components';
 import {
   BaseNode,
@@ -8,7 +9,6 @@ import {
   useEventListener,
   useVisualizationController,
 } from '@patternfly/react-topology';
-import React from 'react';
 import { TYPE_WORKLOAD } from '../../const';
 import { K8sResourcesContext } from '../../hooks/K8sResourcesContext';
 import { useSideBar } from '../../hooks/useSideBar';
@@ -28,14 +28,19 @@ type TopologyViewWorkloadComponentProps = {
 const TopologyViewWorkloadComponent = ({
   useToolbar = false,
 }: TopologyViewWorkloadComponentProps) => {
-  const [selectedIds, setSelectedIds] = React.useState<string[]>([]);
   const controller = useVisualizationController();
   const layout = 'ColaNoForce';
   const { loaded, dataModel } = useWorkloadsWatcher();
   const { clusters, selectedClusterErrors, responseError } =
     React.useContext(K8sResourcesContext);
-  const [sideBar, sideBarOpen, selectedId, setSideBarOpen, setSelectedNode] =
-    useSideBar(selectedIds);
+  const [
+    sideBar,
+    sideBarOpen,
+    selectedId,
+    setSideBarOpen,
+    setSelectedNode,
+    removeSelectedIdParam,
+  ] = useSideBar();
 
   const allErrors: ClusterErrors = [
     ...(responseError ? [{ message: responseError }] : []),
@@ -70,8 +75,13 @@ const TopologyViewWorkloadComponent = ({
     }
   }, [controller, dataModel, selectedId, setSelectedNode, setSideBarOpen]);
 
-  useEventListener<SelectionEventListener>(SELECTION_EVENT, ids => {
-    setSelectedIds(ids);
+  useEventListener<SelectionEventListener>(SELECTION_EVENT, (ids: string[]) => {
+    const id = ids[0] ? ids[0] : '';
+    const selNode = controller.getElementById(id) as BaseNode;
+    setSelectedNode(selNode);
+    if (!id || selNode.getType() !== TYPE_WORKLOAD) {
+      removeSelectedIdParam();
+    }
   });
 
   if (!loaded)
@@ -106,7 +116,7 @@ const TopologyViewWorkloadComponent = ({
             {loaded && dataModel?.nodes?.length === 0 ? (
               <TopologyEmptyState />
             ) : (
-              <VisualizationSurface state={{ selectedIds }} />
+              <VisualizationSurface state={{ selectedIds: [selectedId] }} />
             )}
           </TopologyView>
         )}

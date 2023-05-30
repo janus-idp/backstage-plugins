@@ -2190,7 +2190,6 @@ export const mockKubernetesResponse = {
       status: {},
     },
   ],
-
   daemonSets: [
     {
       metadata: {
