@@ -40,6 +40,7 @@ import {
   Cluster,
   ClusterOverview,
 } from '@janus-idp/backstage-plugin-ocm-common';
+import { ManagedClusterInfo } from '../types';
 
 export interface RouterOptions {
   logger: Logger;
@@ -109,22 +110,23 @@ export async function createRouter(
         const mcs = await listManagedClusters(c.client);
         const mcis = await listManagedClusterInfos(c.client);
 
-        return mcs.items.map(
-          (mc, index) =>
-            ({
-              name: translateOCMToResource(
-                mc.metadata!.name!,
-                c.hubResourceName,
-              ),
-              status: parseClusterStatus(mc),
-              platform: getClaim(mc, 'platform.open-cluster-management.io'),
-              openshiftVersion:
-                mc.metadata!.labels?.openshiftVersion ||
-                getClaim(mc, 'version.openshift.io'),
-              nodes: parseNodeStatus(mcis.items[index]),
-              ...parseUpdateInfo(mcis.items[index]),
-            } as ClusterOverview),
-        );
+        return mcs.items.map(mc => {
+          const mci =
+            mcis.items.find(
+              info => info.metadata?.name === mc.metadata!.name,
+            ) || ({} as ManagedClusterInfo);
+
+          return {
+            name: translateOCMToResource(mc.metadata!.name!, c.hubResourceName),
+            status: parseClusterStatus(mc),
+            platform: getClaim(mc, 'platform.open-cluster-management.io'),
+            openshiftVersion:
+              mc.metadata!.labels?.openshiftVersion ||
+              getClaim(mc, 'version.openshift.io'),
+            nodes: parseNodeStatus(mci),
+            ...parseUpdateInfo(mci),
+          } as ClusterOverview;
+        });
       }),
     );
 
