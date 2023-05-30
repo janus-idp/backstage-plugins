@@ -1,3 +1,5 @@
+## @janus-idp/backstage-plugin-tekton [1.4.13](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.4.12...@janus-idp/backstage-plugin-tekton@1.4.13) (2023-05-30)
+
 ## @janus-idp/backstage-plugin-tekton [1.4.12](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.4.11...@janus-idp/backstage-plugin-tekton@1.4.12) (2023-05-30)
 
 
