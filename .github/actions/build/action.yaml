@@ -7,17 +7,14 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Read Node.js version
-      id: node_version
-      uses: juliangruber/read-file-action@v1
-      with:
-        path: ./.nvmrc
-
     - name: Setup Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '${{ steps.node_version.outputs.content }}'
+        node-version-file: '.nvmrc'
         cache: 'yarn'
+
+    - name: Setup local Turbo cache
+      uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
     - name: Install dependencies
       shell: bash
