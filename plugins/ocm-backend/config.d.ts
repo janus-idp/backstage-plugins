@@ -1,3 +1,5 @@
+import { TaskScheduleDefinitionConfig } from '@backstage/backend-tasks';
+
 interface KubernetesPluginRef {
   /**
    * Match the cluster name in kubernetes plugin config
@@ -41,6 +43,7 @@ export interface Config {
            * Owner reference to created cluster entities in the catalog
            */
           owner?: string;
+          schedule?: TaskScheduleDefinitionConfig;
         };
       };
     };

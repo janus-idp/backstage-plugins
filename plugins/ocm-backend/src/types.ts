@@ -1,4 +1,5 @@
 import { KubernetesObject, V1PodCondition } from '@kubernetes/client-node';
+import { TaskScheduleDefinition } from '@backstage/backend-tasks';
 
 export type OcmConfig = {
   id: string;
@@ -8,6 +9,7 @@ export type OcmConfig = {
   skipTLSVerify?: boolean;
   caData?: string;
   owner: string;
+  schedule?: TaskScheduleDefinition;
 };
 
 export interface ClusterClaim {

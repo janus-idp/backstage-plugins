@@ -147,46 +147,71 @@ If you are interested in Resource discovery and do not want any of the frontend 
    }
    ```
 
-5. Import the cluster `Resource` entity provider into the `catalog` plugin in the `packages/backend/src/plugins/catalog.ts` file:
+5. Import the cluster `Resource` entity provider into the `catalog` plugin in the `packages/backend/src/plugins/catalog.ts` file. The scheduler also needs to be configured. Two configurations are possible here:
 
-   ```ts title="packages/backend/src/plugins/catalog.ts"
-   /* highlight-add-next-line */
-   import { ManagedClusterProvider } from '@janus-idp/backstage-plugin-ocm-backend';
+   1. Configure the scheduler inside the `app-config.yaml`:
 
-   export default async function createPlugin(
-     env: PluginEnvironment,
-   ): Promise<Router> {
-     const builder = await CatalogBuilder.create(env);
-     // ...
-     /* highlight-add-start */
-     const ocm = ManagedClusterProvider.fromConfig(env.config, {
-       logger: env.logger,
-     });
-     builder.addEntityProvider(ocm);
-     /* highlight-add-end */
-     // ...
+      ```yaml title="app-config.yaml"
+      catalog:
+        providers:
+          ocm:
+            env:
+              # ...
+              # highlight-add-start
+              schedule: # optional; same options as in TaskScheduleDefinition
+                # supports cron, ISO duration, "human duration" as used in code
+                frequency: { minutes: 1 }
+                # supports ISO duration, "human duration" as used in code
+                timeout: { minutes: 1 }
+              # highlight-add-end
+      ```
 
-     const { processingEngine, router } = await builder.build();
-     await processingEngine.start();
-     // ...
-     /* highlight-add-start */
-     await Promise.all(
-       ocm.map(o =>
-         env.scheduler.scheduleTask({
-           id: `run_ocm_refresh_${o.getProviderName()}`,
-           fn: async () => {
-             await o.run();
-           },
-           frequency: { minutes: 30 },
-           timeout: { minutes: 10 },
-         }),
-       ),
-     );
-     /* highlight-add-end */
+      and and then use the configured scheduler
 
-     return router;
-   }
-   ```
+      ```ts title="packages/backend/src/index.ts"
+      /* highlight-add-next-line */
+      import { ManagedClusterProvider } from '@janus-idp/backstage-plugin-ocm-backend';
+
+      export default async function createPlugin(
+        env: PluginEnvironment,
+      ): Promise<Router> {
+        const builder = await CatalogBuilder.create(env);
+        // ...
+        /* highlight-add-start */
+        const ocm = ManagedClusterProvider.fromConfig(env.config, {
+          logger: env.logger,
+          scheduler: env.scheduler,
+        });
+        builder.addEntityProvider(ocm);
+        /* highlight-add-start */
+        // ...
+      }
+      ```
+
+   2. Add a schedule directly inside the `packages/backend/src/plugins/catalog.ts` file:
+
+      ```ts title="packages/backend/src/index.ts"
+      /* highlight-add-next-line */
+      import { ManagedClusterProvider } from '@janus-idp/backstage-plugin-ocm-backend';
+
+      export default async function createPlugin(
+        env: PluginEnvironment,
+      ): Promise<Router> {
+        const builder = await CatalogBuilder.create(env);
+        // ...
+        /* highlight-add-start */
+        const ocm = ManagedClusterProvider.fromConfig(env.config, {
+          logger: env.logger,
+          schedule: env.scheduler.createScheduledTaskRunner({
+            frequency: { minutes: 1 },
+            timeout: { minutes: 1 },
+          }),
+        });
+        builder.addEntityProvider(ocm);
+        /* highlight-add-start */
+        // ...
+      }
+      ```
 
 6. Optional: Configure the default owner for the cluster entities in the catalog for a specific environment. For example, use the following code to set `foo` as the owner for clusters from `env` in the `app-config.yaml` catalog section:
 
