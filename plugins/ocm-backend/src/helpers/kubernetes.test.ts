@@ -3,6 +3,7 @@ import {
   getManagedCluster,
   listManagedClusters,
   getManagedClusterInfo,
+  listManagedClusterInfos,
 } from './kubernetes';
 import { createLogger } from 'winston';
 import transports from 'winston/lib/winston/transports';
@@ -100,5 +101,13 @@ describe('getManagedClusterInfo', () => {
   it('should return cluster', async () => {
     const result: any = await getManagedClusterInfo(getApi(), 'local-cluster');
     expect(result.metadata.name).toBe('local-cluster');
+  });
+});
+
+describe('getManagedClusterInfos', () => {
+  it('should return some cluster infos', async () => {
+    const result: any = await listManagedClusterInfos(getApi());
+    expect(result.items[0].metadata.name).toBe('local-cluster');
+    expect(result.items[1].metadata.name).toBe('cluster1');
   });
 });
