@@ -14,23 +14,16 @@
  * limitations under the License.
  */
 
-import { findPaths } from '@backstage/cli-common';
-import * as path from 'path';
+import { AnalysisOutput, AnalysisOutputs } from './types';
 
-/* eslint-disable-next-line no-restricted-syntax */
-const { targetRoot, ownDir } = findPaths(__dirname);
+export class DefaultAnalysisOutputs implements AnalysisOutputs {
+  readonly #outputs = new Map<string, AnalysisOutput>();
 
-export const APP_CONFIG_FILE = path.join(targetRoot, 'app-config.local.yaml');
-export const DISCOVERED_ENTITIES_FILE = path.join(
-  targetRoot,
-  'examples',
-  'discovered-entities.yaml',
-);
-export const PATCH_FOLDER = path.join(
-  ownDir,
-  'src',
-  'commands',
-  'onboard',
-  'auth',
-  'patches',
-);
+  produce(output: AnalysisOutput) {
+    this.#outputs.set(output.entity.metadata.name, output);
+  }
+
+  list() {
+    return Array.from(this.#outputs).map(([_, output]) => output);
+  }
+}
