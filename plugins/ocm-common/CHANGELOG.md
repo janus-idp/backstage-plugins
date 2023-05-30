@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-ocm-common [2.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-common@2.0.3...@janus-idp/backstage-plugin-ocm-common@2.1.0) (2023-05-30)
+
+
+### Features
+
+* **ocm-backend:** add additional information to status endpoint ([#352](https://github.com/janus-idp/backstage-plugins/issues/352)) ([887015d](https://github.com/janus-idp/backstage-plugins/commit/887015d18e665b1795e8c28e6fcc4f24aa7f3257))
+
 ## @janus-idp/backstage-plugin-ocm-common [2.0.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-common@2.0.2...@janus-idp/backstage-plugin-ocm-common@2.0.3) (2023-05-30)
 
 ## @janus-idp/backstage-plugin-ocm-common [2.0.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-common@2.0.1...@janus-idp/backstage-plugin-ocm-common@2.0.2) (2023-05-08)
