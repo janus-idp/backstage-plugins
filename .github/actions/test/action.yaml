@@ -3,7 +3,7 @@ description: Test Node.js package
 inputs:
   args:
     description: Backstage CLI repo build arguments
-    default: ''
+    default: '@janus-idp/*'
 runs:
   using: 'composite'
   steps:
@@ -23,14 +23,14 @@ runs:
       shell: bash
       run: yarn --prefer-offline --frozen-lockfile
 
-    - name: Run lint
-      shell: bash
-      run: yarn lint ${{ inputs.args }}
-
     - name: Run prettier
       shell: bash
       run: yarn prettier:check
 
+    - name: Run lint
+      shell: bash
+      run: yarn lint --filter=${{ inputs.args }}
+
     - name: Run tests
       shell: bash
-      run: yarn test
+      run: yarn test --filter=${{ inputs.args }}

@@ -16,7 +16,7 @@
     "start": "backstage-cli package start",
     "build": "backstage-cli package build",
     "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
+    "test": "backstage-cli package test --passWithNoTests --coverage",
     "clean": "backstage-cli package clean",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack"
@@ -43,7 +43,9 @@
     "@testing-library/user-event": "14.4.3",
     "@types/node": "18.16.12",
     "msw": "0.49.3",
-    "cross-fetch": "3.1.6"
+    "cross-fetch": "3.1.6",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
   },
   "files": [
     "dist",
