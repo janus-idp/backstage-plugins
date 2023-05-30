@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-topology [1.6.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.6.0...@janus-idp/backstage-plugin-topology@1.6.1) (2023-05-30)
+
+
+### Bug Fixes
+
+* **topology:** close workload sidepanel on outside-click ([#399](https://github.com/janus-idp/backstage-plugins/issues/399)) ([e870b6f](https://github.com/janus-idp/backstage-plugins/commit/e870b6f1bdca7b1fd9823560bb5f66ffbaff0033))
+
 ## @janus-idp/backstage-plugin-topology [1.6.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.5.11...@janus-idp/backstage-plugin-topology@1.6.0) (2023-05-26)
 
 
