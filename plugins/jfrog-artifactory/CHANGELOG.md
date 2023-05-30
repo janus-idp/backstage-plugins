@@ -1,3 +1,5 @@
+## @janus-idp/backstage-plugin-jfrog-artifactory [1.0.8](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-jfrog-artifactory@1.0.7...@janus-idp/backstage-plugin-jfrog-artifactory@1.0.8) (2023-05-30)
+
 ## @janus-idp/backstage-plugin-jfrog-artifactory [1.0.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-jfrog-artifactory@1.0.6...@janus-idp/backstage-plugin-jfrog-artifactory@1.0.7) (2023-05-18)
 
 
