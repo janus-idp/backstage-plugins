@@ -1,3 +1,5 @@
+## @janus-idp/backstage-plugin-topology [1.6.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.6.2...@janus-idp/backstage-plugin-topology@1.6.3) (2023-05-30)
+
 ## @janus-idp/backstage-plugin-topology [1.6.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.6.1...@janus-idp/backstage-plugin-topology@1.6.2) (2023-05-30)
 
 ## @janus-idp/backstage-plugin-topology [1.6.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.6.0...@janus-idp/backstage-plugin-topology@1.6.1) (2023-05-30)
