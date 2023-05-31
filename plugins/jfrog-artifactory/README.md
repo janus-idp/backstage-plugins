@@ -62,4 +62,3 @@ This plugin will show you information about your container images within Jfrog A
      annotations:
        'jfrog-artifactory/image-name': `<IMAGE-NAME>',
    ```
-
