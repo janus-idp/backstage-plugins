@@ -9,7 +9,9 @@ import {
   translateOCMToResource,
   translateResourceToOCM,
 } from './parser';
+import { getVoidLogger } from '@backstage/backend-common';
 
+const voidLogger = getVoidLogger();
 const FIXTURES_DIR = `${__dirname}/../../__fixtures__`;
 
 describe('getClaim', () => {
@@ -266,7 +268,7 @@ describe('parseNodeStatus', () => {
       },
     };
 
-    const result = parseNodeStatus(mci);
+    const result = parseNodeStatus(mci, voidLogger);
 
     expect(result).toEqual([
       { status: 'True', type: 'Ready' },
@@ -281,11 +283,11 @@ describe('parseNodeStatus', () => {
       ...mciOriginal,
       status: {
         ...mciOriginal.status!,
-        nodeList: [],
+        nodeList: undefined,
       },
     };
 
-    const result = parseNodeStatus(mci);
+    const result = parseNodeStatus(mci, voidLogger);
 
     expect(result).toEqual([]);
   });
@@ -323,7 +325,7 @@ describe('parseNodeStatus', () => {
       },
     };
 
-    const result = () => parseNodeStatus(mci);
+    const result = () => parseNodeStatus(mci, voidLogger);
 
     expect(result).toThrow('Found more node conditions then one');
   });

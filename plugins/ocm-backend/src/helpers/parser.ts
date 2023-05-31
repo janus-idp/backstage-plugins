@@ -6,6 +6,7 @@ import {
 } from '@janus-idp/backstage-plugin-ocm-common';
 import { maxSatisfying } from 'semver';
 import { ClusterClaim, ManagedCluster, ManagedClusterInfo } from '../types';
+import { Logger } from 'winston';
 
 const convertCpus = (cpus: string | undefined): number | undefined => {
   if (!cpus) {
@@ -88,8 +89,16 @@ export const parseUpdateInfo = (clusterInfo: ManagedClusterInfo) => {
   };
 };
 
-export const parseNodeStatus = (clusterInfo: ManagedClusterInfo) =>
-  clusterInfo.status?.nodeList.map(node => {
+export const parseNodeStatus = (
+  clusterInfo: ManagedClusterInfo,
+  logger: Logger,
+) => {
+  const nodeList = clusterInfo.status?.nodeList;
+  if (!nodeList) {
+    logger.warn(`No nodes found for cluster "${clusterInfo.metadata!.name}" `);
+    return [];
+  }
+  return nodeList.map(node => {
     if (node.conditions.length !== 1) {
       throw new Error('Found more node conditions then one');
     }
@@ -99,7 +108,7 @@ export const parseNodeStatus = (clusterInfo: ManagedClusterInfo) =>
       type: condition.type,
     } as ClusterNodesStatus;
   });
-
+};
 export const translateResourceToOCM = (
   clusterName: string,
   hubResourceName: string,

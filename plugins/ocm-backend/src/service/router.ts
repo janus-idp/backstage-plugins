@@ -123,7 +123,7 @@ export async function createRouter(
             openshiftVersion:
               mc.metadata!.labels?.openshiftVersion ||
               getClaim(mc, 'version.openshift.io'),
-            nodes: parseNodeStatus(mci),
+            nodes: parseNodeStatus(mci, logger),
             ...parseUpdateInfo(mci),
           } as ClusterOverview;
         });
