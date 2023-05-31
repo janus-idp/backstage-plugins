@@ -1,7 +1,10 @@
+import React from 'react';
+
 import { WarningPanel } from '@backstage/core-components';
 import { useEntity } from '@backstage/plugin-catalog-react';
+
 import { Typography } from '@material-ui/core';
-import React from 'react';
+
 import { ClusterError, ClusterErrors } from '../../types/types';
 
 type ErrorPanelProps = { allErrors: ClusterErrors };

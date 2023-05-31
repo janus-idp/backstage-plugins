@@ -1,7 +1,8 @@
 import { Model } from '@patternfly/react-topology';
-import { baseDataModelGetter } from './data-transformer';
+
 import { K8sResponseData } from '../types/types';
 import { getWorkloadResources } from '../utils/topology-utils';
+import { baseDataModelGetter } from './data-transformer';
 
 export const updateTopologyDataModel = (
   resources: K8sResponseData,

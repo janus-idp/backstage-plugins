@@ -1,12 +1,15 @@
 import React from 'react';
-import { isEqual } from 'lodash';
+
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { useKubernetesObjects } from '@backstage/plugin-kubernetes';
+
+import { isEqual } from 'lodash';
+
 import { TektonResourcesContextData, TektonResponseData } from '../types/types';
-import { useAllWatchResources } from './useAllWatchResources';
-import { useResourcesClusters } from './useResourcesClusters';
 import { useDebounceCallback } from './debounce';
+import { useAllWatchResources } from './useAllWatchResources';
 import { useDeepCompareMemoize } from './useDeepCompareMemoize';
+import { useResourcesClusters } from './useResourcesClusters';
 
 export const useTektonObjectsResponse = (
   watchedResource: string[],

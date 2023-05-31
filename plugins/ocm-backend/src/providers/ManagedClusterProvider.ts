@@ -14,32 +14,35 @@
  * limitations under the License.
  */
 
-import { ResourceEntity } from '@backstage/catalog-model';
-import * as winston from 'winston';
+import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
+import {
+  ANNOTATION_KUBERNETES_API_SERVER,
+  ANNOTATION_LOCATION,
+  ANNOTATION_ORIGIN_LOCATION,
+  ResourceEntity,
+} from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
-import {
-  ANNOTATION_ORIGIN_LOCATION,
-  ANNOTATION_LOCATION,
-  ANNOTATION_KUBERNETES_API_SERVER,
-} from '@backstage/catalog-model';
+
 import { CustomObjectsApi } from '@kubernetes/client-node';
+import * as winston from 'winston';
+
 import {
-  getManagedCluster,
-  listManagedClusters,
-  hubApiClient,
-} from '../helpers/kubernetes';
+  ANNOTATION_CLUSTER_ID,
+  ANNOTATION_PROVIDER_ID,
+} from '@janus-idp/backstage-plugin-ocm-common';
+
 import { CONSOLE_CLAIM, HUB_CLUSTER_NAME_IN_OCM } from '../constants';
-import { getClaim, translateOCMToResource } from '../helpers/parser';
 import { readOcmConfigs } from '../helpers/config';
 import {
-  ANNOTATION_PROVIDER_ID,
-  ANNOTATION_CLUSTER_ID,
-} from '@janus-idp/backstage-plugin-ocm-common';
-import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
+  getManagedCluster,
+  hubApiClient,
+  listManagedClusters,
+} from '../helpers/kubernetes';
+import { getClaim, translateOCMToResource } from '../helpers/parser';
 
 /**
  * Provides OpenShift cluster resource entities from Open Cluster Management.

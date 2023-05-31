@@ -1,4 +1,5 @@
 import { TableColumn } from '@backstage/core-components';
+
 import makeStyles from '@material-ui/core/styles/makeStyles';
 
 export const columns: TableColumn[] = [

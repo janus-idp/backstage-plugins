@@ -1,16 +1,18 @@
 import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
 import {
-  Entity,
-  ApiEntity,
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
+  ApiEntity,
+  Entity,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-backend';
+
 import { Logger } from 'winston';
+
 import {
   getProxyConfig,
   listApiDocs,
@@ -23,7 +25,6 @@ import {
   ServiceElement,
   Services,
 } from '../clients/types';
-
 import { readThreeScaleApiEntityConfigs } from './config';
 import { ThreeScaleConfig } from './types';
 

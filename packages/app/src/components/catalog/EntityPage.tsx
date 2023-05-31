@@ -1,5 +1,16 @@
 import React from 'react';
-import { Button, Grid } from '@material-ui/core';
+
+import {
+  RELATION_API_CONSUMED_BY,
+  RELATION_API_PROVIDED_BY,
+  RELATION_CONSUMES_API,
+  RELATION_DEPENDENCY_OF,
+  RELATION_DEPENDS_ON,
+  RELATION_HAS_PART,
+  RELATION_PART_OF,
+  RELATION_PROVIDES_API,
+} from '@backstage/catalog-model';
+import { EmptyState } from '@backstage/core-components';
 import {
   EntityApiDefinitionCard,
   EntityConsumedApisCard,
@@ -18,43 +29,33 @@ import {
   EntityHasSystemsCard,
   EntityLayout,
   EntityLinksCard,
-  EntitySwitch,
   EntityOrphanWarning,
   EntityProcessingErrorsPanel,
+  EntitySwitch,
+  hasCatalogProcessingErrors,
   isComponentType,
   isKind,
-  hasCatalogProcessingErrors,
   isOrphan,
 } from '@backstage/plugin-catalog';
-import {
-  isGithubActionsAvailable,
-  EntityGithubActionsContent,
-} from '@backstage/plugin-github-actions';
-import {
-  EntityUserProfileCard,
-  EntityGroupProfileCard,
-  EntityMembersListCard,
-  EntityOwnershipCard,
-} from '@backstage/plugin-org';
-import { EntityTechdocsContent } from '@backstage/plugin-techdocs';
-import { EmptyState } from '@backstage/core-components';
 import {
   Direction,
   EntityCatalogGraphCard,
 } from '@backstage/plugin-catalog-graph';
 import {
-  RELATION_API_CONSUMED_BY,
-  RELATION_API_PROVIDED_BY,
-  RELATION_CONSUMES_API,
-  RELATION_DEPENDENCY_OF,
-  RELATION_DEPENDS_ON,
-  RELATION_HAS_PART,
-  RELATION_PART_OF,
-  RELATION_PROVIDES_API,
-} from '@backstage/catalog-model';
-
-import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
+  EntityGithubActionsContent,
+  isGithubActionsAvailable,
+} from '@backstage/plugin-github-actions';
+import {
+  EntityGroupProfileCard,
+  EntityMembersListCard,
+  EntityOwnershipCard,
+  EntityUserProfileCard,
+} from '@backstage/plugin-org';
+import { EntityTechdocsContent } from '@backstage/plugin-techdocs';
 import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
+import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
+
+import { Button, Grid } from '@material-ui/core';
 
 const techdocsContent = (
   <EntityTechdocsContent>

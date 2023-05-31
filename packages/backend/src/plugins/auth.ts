@@ -1,9 +1,11 @@
 import {
   createRouter,
-  providers,
   defaultAuthProviderFactories,
+  providers,
 } from '@backstage/plugin-auth-backend';
+
 import { Router } from 'express';
+
 import { PluginEnvironment } from '../types';
 
 export default async function createPlugin(

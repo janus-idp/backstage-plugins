@@ -16,15 +16,23 @@
 
 import { errorHandler } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
+
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
+
+import {
+  Cluster,
+  ClusterOverview,
+} from '@janus-idp/backstage-plugin-ocm-common';
+
+import { readOcmConfigs } from '../helpers/config';
 import {
   getManagedCluster,
-  listManagedClusters,
   getManagedClusterInfo,
   hubApiClient,
   listManagedClusterInfos,
+  listManagedClusters,
 } from '../helpers/kubernetes';
 import {
   getClaim,
@@ -35,11 +43,6 @@ import {
   translateOCMToResource,
   translateResourceToOCM,
 } from '../helpers/parser';
-import { readOcmConfigs } from '../helpers/config';
-import {
-  Cluster,
-  ClusterOverview,
-} from '@janus-idp/backstage-plugin-ocm-common';
 import { ManagedClusterInfo } from '../types';
 
 export interface RouterOptions {

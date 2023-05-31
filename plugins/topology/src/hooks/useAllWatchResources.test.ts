@@ -1,9 +1,11 @@
-import { useAllWatchResources } from './useAllWatchResources';
-import { renderHook } from '@testing-library/react-hooks';
 import { KubernetesObjects } from '@backstage/plugin-kubernetes';
+
+import { renderHook } from '@testing-library/react-hooks';
+
+import { customResourceRoute } from '../__fixtures__/1-deployments';
 import { kubernetesObject } from '../__fixtures__/kubernetesObject';
 import { ModelsPlural } from '../models';
-import { customResourceRoute } from '../__fixtures__/1-deployments';
+import { useAllWatchResources } from './useAllWatchResources';
 
 const watchedResources = [
   ModelsPlural.deployments,

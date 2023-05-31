@@ -1,8 +1,9 @@
 import {
+  V1ContainerStatus,
   V1Deployment,
   V1Pod,
-  V1ContainerStatus,
 } from '@kubernetes/client-node';
+
 import {
   AllPodStatus,
   DeploymentPhase,
@@ -12,7 +13,7 @@ import {
 import { resourceModels } from '../models';
 import { PodControllerOverviewItem, PodRCData } from '../types/pods';
 import { ResKindAbbrColor } from '../types/topology-types';
-import { Model, K8sWorkloadResource } from '../types/types';
+import { K8sWorkloadResource, Model } from '../types/types';
 
 export const podStatus = Object.keys(podColor);
 

@@ -1,7 +1,9 @@
-import { renderHook } from '@testing-library/react-hooks';
 import { KubernetesObjects } from '@backstage/plugin-kubernetes';
-import { useResourcesClusters } from './useResourcesClusters';
+
+import { renderHook } from '@testing-library/react-hooks';
+
 import { kubernetesObjects } from '../__fixtures__/kubernetesObject';
+import { useResourcesClusters } from './useResourcesClusters';
 
 describe('useResourcesClusters', () => {
   it('should return clusters and errors as empty if no resources found', () => {

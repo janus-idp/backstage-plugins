@@ -1,5 +1,6 @@
 import { readTaskScheduleDefinitionFromConfig } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
+
 import { ThreeScaleConfig } from './types';
 
 export function readThreeScaleApiEntityConfigs(

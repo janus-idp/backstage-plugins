@@ -6,13 +6,14 @@ import {
   V1ReplicaSet,
   V1StatefulSet,
 } from '@kubernetes/client-node';
+
 import { AllPodStatus } from '../components/Pods/pod';
 import { ReplicaSetGVK, StatefulSetGVK } from '../models';
 import { PodControllerOverviewItem, PodRCData } from '../types/pods';
 import {
   GroupVersionKind,
-  K8sWorkloadResource,
   K8sResponseData,
+  K8sWorkloadResource,
 } from '../types/types';
 
 // List of container status waiting reason values that we should call out as errors in project status rows.

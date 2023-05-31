@@ -1,18 +1,7 @@
 import React, { PropsWithChildren } from 'react';
-import { makeStyles } from '@material-ui/core';
-import HomeIcon from '@material-ui/icons/Home';
-import ExtensionIcon from '@material-ui/icons/Extension';
-import MapIcon from '@material-ui/icons/MyLocation';
-import LibraryBooks from '@material-ui/icons/LibraryBooks';
-import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
-import LogoFull from './LogoFull';
-import LogoIcon from './LogoIcon';
+
 import {
-  Settings as SidebarSettings,
-  UserSettingsSignInAvatar,
-} from '@backstage/plugin-user-settings';
-import { SidebarSearchModal } from '@backstage/plugin-search';
-import {
+  Link,
   Sidebar,
   sidebarConfig,
   SidebarDivider,
@@ -22,10 +11,24 @@ import {
   SidebarScrollWrapper,
   SidebarSpace,
   useSidebarOpenState,
-  Link,
 } from '@backstage/core-components';
+import { SidebarSearchModal } from '@backstage/plugin-search';
+import {
+  Settings as SidebarSettings,
+  UserSettingsSignInAvatar,
+} from '@backstage/plugin-user-settings';
+
+import { makeStyles } from '@material-ui/core';
+import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
+import ExtensionIcon from '@material-ui/icons/Extension';
+import HomeIcon from '@material-ui/icons/Home';
+import LibraryBooks from '@material-ui/icons/LibraryBooks';
 import MenuIcon from '@material-ui/icons/Menu';
+import MapIcon from '@material-ui/icons/MyLocation';
 import SearchIcon from '@material-ui/icons/Search';
+
+import LogoFull from './LogoFull';
+import LogoIcon from './LogoIcon';
 
 const useSidebarLogoStyles = makeStyles({
   root: {

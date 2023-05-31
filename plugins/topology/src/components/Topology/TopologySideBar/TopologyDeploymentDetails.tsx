@@ -1,5 +1,7 @@
 import React from 'react';
+
 import { V1Deployment } from '@kubernetes/client-node';
+
 import TopologySideBarDetailsItem from './TopologySideBarDetailsItem';
 import TopologyWorkloadDetails from './TopologyWorkloadDetails';
 

@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
-import { KeycloakProviderConfig } from './config';
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
-import {
-  KEYCLOAK_ID_ANNOTATION,
-  KEYCLOAK_REALM_ANNOTATION,
-  KEYCLOAK_ENTITY_QUERY_SIZE,
-} from './constants';
-import { Users } from '@keycloak/keycloak-admin-client/lib/resources/users';
-import { Groups } from '@keycloak/keycloak-admin-client/lib/resources/groups';
+
+import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import type GroupRepresentation from '@keycloak/keycloak-admin-client/lib/defs/groupRepresentation';
 import type UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
+import { Groups } from '@keycloak/keycloak-admin-client/lib/resources/groups';
+import { Users } from '@keycloak/keycloak-admin-client/lib/resources/users';
+
+import { KeycloakProviderConfig } from './config';
+import {
+  KEYCLOAK_ENTITY_QUERY_SIZE,
+  KEYCLOAK_ID_ANNOTATION,
+  KEYCLOAK_REALM_ANNOTATION,
+} from './constants';
 
 interface GroupRepresentationWithParent extends GroupRepresentation {
   parent?: string;

@@ -1,7 +1,10 @@
 import { createServiceBuilder } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
-import { Server } from 'http';
+
 import { Logger } from 'winston';
+
+import { Server } from 'http';
+
 import { createRouter, RouterOptions } from '../src/service/router';
 
 export interface ServerOptions {

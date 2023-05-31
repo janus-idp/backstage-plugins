@@ -4,6 +4,7 @@ import {
   RunStatus,
   WhenStatus,
 } from '@patternfly/react-topology';
+
 import { AddNodeDirection, NodeType } from '../consts/pipeline-topology-const';
 import { PipelineTask } from './pipeline';
 import { PipelineRunKind } from './pipelineRun';

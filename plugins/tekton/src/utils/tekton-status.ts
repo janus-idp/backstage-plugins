@@ -4,6 +4,7 @@ import { chart_color_blue_100 as pendingColor } from '@patternfly/react-tokens/d
 import { chart_color_blue_300 as runningColor } from '@patternfly/react-tokens/dist/js/chart_color_blue_300';
 import { chart_color_green_400 as successColor } from '@patternfly/react-tokens/dist/js/chart_color_green_400';
 import { global_danger_color_100 as failureColor } from '@patternfly/react-tokens/dist/js/global_danger_color_100';
+
 import { ComputedStatus, StatusMessage } from '../types/computedStatus';
 
 export const getRunStatusColor = (status: string): StatusMessage => {

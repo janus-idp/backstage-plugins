@@ -18,14 +18,17 @@ The following actions are currently supported in this module:
 
    ```ts
    import { CatalogClient } from '@backstage/catalog-client';
+   import { ScmIntegrations } from '@backstage/integration';
    import {
      createBuiltinActions,
      createRouter,
    } from '@backstage/plugin-scaffolder-backend';
-   import { ScmIntegrations } from '@backstage/integration';
+
    import { Router } from 'express';
-   import type { PluginEnvironment } from '../types';
+
    import { createKubernetesNamespaceAction } from '@janus-idp/backstage-scaffolder-backend-module-kubernetes';
+
+   import type { PluginEnvironment } from '../types';
 
    export default async function createPlugin(
      env: PluginEnvironment,

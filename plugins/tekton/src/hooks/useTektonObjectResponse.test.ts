@@ -1,9 +1,11 @@
 import { useKubernetesObjects } from '@backstage/plugin-kubernetes';
+
 import { waitFor } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
-import { ModelsPlural } from '../models';
+
 import { mockKubernetesPlrResponse } from '../__fixtures__/1-pipelinesData';
 import { kubernetesObjects } from '../__fixtures__/kubernetesObject';
+import { ModelsPlural } from '../models';
 import { useTektonObjectsResponse } from './useTektonObjectsResponse';
 
 const watchedResources = [ModelsPlural.pipelineruns, ModelsPlural.taskruns];

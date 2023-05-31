@@ -1,12 +1,15 @@
-import { useApi } from '@backstage/core-plugin-api';
 import React, { useState } from 'react';
 import { useAsync } from 'react-use';
+
 import { Link, Progress, Table } from '@backstage/core-components';
-import { columns, useStyles } from './tableHeading';
-import { Edge } from '../../types';
-import { jfrogArtifactoryApiRef } from '../../api';
-import { formatDate, formatSize } from '../utils';
+import { useApi } from '@backstage/core-plugin-api';
+
 import { Box, Chip, makeStyles } from '@material-ui/core';
+
+import { jfrogArtifactoryApiRef } from '../../api';
+import { Edge } from '../../types';
+import { formatDate, formatSize } from '../utils';
+import { columns, useStyles } from './tableHeading';
 
 const useLocalStyles = makeStyles({
   chip: {

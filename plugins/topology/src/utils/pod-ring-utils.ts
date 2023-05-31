@@ -1,11 +1,13 @@
 import React from 'react';
+
+import { V1DaemonSet, V1Deployment, V1Pod } from '@kubernetes/client-node';
 import { ChartLabel } from '@patternfly/react-charts';
 import classNames from 'classnames';
-import { V1DaemonSet, V1Deployment, V1Pod } from '@kubernetes/client-node';
-import { getPodStatus } from './workload-node-utils';
+
 import { AllPodStatus } from '../components/Pods/pod';
-import { K8sWorkloadResource } from '../types/types';
 import { CronJobGVK, DaemonSetGVK, JobGVK, PodGVK } from '../models';
+import { K8sWorkloadResource } from '../types/types';
+import { getPodStatus } from './workload-node-utils';
 
 const getTitleComponent = (
   longTitle: boolean = false,

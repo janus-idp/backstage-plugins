@@ -1,55 +1,56 @@
-import { flatten, uniq, minBy } from 'lodash';
-import * as dagre from 'dagre';
 import {
-  getSpacerNodes,
-  getEdgesFromNodes,
-  WhenStatus,
-  RunStatus,
-  ModelKind,
-  GraphModel,
   EdgeModel,
+  getEdgesFromNodes,
+  getSpacerNodes,
+  GraphModel,
+  ModelKind,
+  RunStatus,
+  WhenStatus,
 } from '@patternfly/react-topology';
-import {
-  NODE_HEIGHT,
-  NodeType,
-  NODE_WIDTH,
-  AddNodeDirection,
-  PipelineLayout,
-  DAGRE_BUILDER_PROPS,
-  DAGRE_VIEWER_PROPS,
-  FINALLY_NODE_PADDING,
-  FINALLY_NODE_VERTICAL_SPACING,
-  WHEN_EXPRESSION_SPACING,
-  DAGRE_VIEWER_SPACED_PROPS,
-  DAGRE_BUILDER_SPACED_PROPS,
-  NODE_PADDING,
-  DEFAULT_NODE_ICON_WIDTH,
-  DEFAULT_FINALLLY_GROUP_PADDING,
-  DEFAULT_NODE_HEIGHT,
-  DEFAULT_BADGE_WIDTH,
-  REGEX_EXTRACT_DEPS,
-} from '../consts/pipeline-topology-const';
+import * as dagre from 'dagre';
+import { flatten, minBy, uniq } from 'lodash';
+
 import { DAG, Vertex } from '../components/pipeline-topology/dag';
 import {
-  PipelineEdgeModel,
+  AddNodeDirection,
+  DAGRE_BUILDER_PROPS,
+  DAGRE_BUILDER_SPACED_PROPS,
+  DAGRE_VIEWER_PROPS,
+  DAGRE_VIEWER_SPACED_PROPS,
+  DEFAULT_BADGE_WIDTH,
+  DEFAULT_FINALLLY_GROUP_PADDING,
+  DEFAULT_NODE_HEIGHT,
+  DEFAULT_NODE_ICON_WIDTH,
+  FINALLY_NODE_PADDING,
+  FINALLY_NODE_VERTICAL_SPACING,
+  NODE_HEIGHT,
+  NODE_PADDING,
+  NODE_WIDTH,
+  NodeType,
+  PipelineLayout,
+  REGEX_EXTRACT_DEPS,
+  WHEN_EXPRESSION_SPACING,
+} from '../consts/pipeline-topology-const';
+import { ComputedStatus } from '../types/computedStatus';
+import { PipelineTask, PipelineTaskParam } from '../types/pipeline';
+import {
+  BuilderNodeModelData,
+  CheckTaskErrorMessage,
+  FinallyNodeModel,
+  LoadingNodeModel,
   NodeCreator,
   NodeCreatorSetup,
+  PipelineEdgeModel,
+  PipelineMixedNodeModel,
+  PipelineRunAfterNodeModelData,
+  PipelineTaskNodeModel,
   SpacerNodeModelData,
   TaskListNodeModelData,
   TaskNodeModelData,
-  PipelineMixedNodeModel,
-  PipelineTaskNodeModel,
-  BuilderNodeModelData,
-  PipelineRunAfterNodeModelData,
-  FinallyNodeModel,
-  LoadingNodeModel,
-  CheckTaskErrorMessage,
 } from '../types/pipeline-topology-types';
-import { appendPipelineRunStatus, getPLRTaskRuns } from './pipelineRun-utils';
 import { PipelineRunKind, PipelineTaskWithStatus } from '../types/pipelineRun';
-import { PipelineTask, PipelineTaskParam } from '../types/pipeline';
-import { ComputedStatus } from '../types/computedStatus';
 import { TaskRunKind } from '../types/taskRun';
+import { appendPipelineRunStatus, getPLRTaskRuns } from './pipelineRun-utils';
 
 const createGenericNode: NodeCreatorSetup =
   (type, width?, height?) => (name, data) => ({

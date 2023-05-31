@@ -1,5 +1,7 @@
 import * as React from 'react';
+
 import { V1Job } from '@kubernetes/client-node';
+
 import TopologySideBarDetailsItem from './TopologySideBarDetailsItem';
 import TopologyWorkloadDetails from './TopologyWorkloadDetails';
 

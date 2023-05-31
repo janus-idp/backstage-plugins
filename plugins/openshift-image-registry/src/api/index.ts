@@ -1,7 +1,7 @@
 import {
-  DiscoveryApi,
   ConfigApi,
   createApiRef,
+  DiscoveryApi,
 } from '@backstage/core-plugin-api';
 
 const DEFAULT_PROXY_PATH = '/openshift-image-registry/api';

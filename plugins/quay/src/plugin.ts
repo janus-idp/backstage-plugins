@@ -1,14 +1,15 @@
+import { Entity } from '@backstage/catalog-model';
 import {
+  configApiRef,
   createApiFactory,
   createPlugin,
-  discoveryApiRef,
-  configApiRef,
   createRoutableExtension,
+  discoveryApiRef,
 } from '@backstage/core-plugin-api';
-import { tagRouteRef, rootRouteRef } from './routes';
+
 import { QuayApiClient, quayApiRef } from './api';
 import { QUAY_ANNOTATION_REPOSITORY } from './hooks';
-import { Entity } from '@backstage/catalog-model';
+import { rootRouteRef, tagRouteRef } from './routes';
 
 export const quayPlugin = createPlugin({
   id: 'quay',

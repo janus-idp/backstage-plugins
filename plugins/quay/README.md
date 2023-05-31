@@ -47,7 +47,7 @@ The Quay plugin displays the information about your container images within the 
 
    ```tsx title="packages/app/src/components/catalog/EntityPage.tsx"
    /* highlight-add-next-line */
-   import { QuayPage, isQuayAvailable } from '@janus-idp/backstage-plugin-quay';
+   import { isQuayAvailable, QuayPage } from '@janus-idp/backstage-plugin-quay';
 
    const serviceEntityPage = (
      <EntityPageLayout>

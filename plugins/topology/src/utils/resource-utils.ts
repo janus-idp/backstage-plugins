@@ -9,21 +9,22 @@ import {
   V1Service,
   V1StatefulSet,
 } from '@kubernetes/client-node';
+
+import { IngressesData } from '../types/ingresses';
+import { JobsData } from '../types/jobs';
+import { RouteIngress, RouteKind, RoutesData } from '../types/route';
 import { OverviewItem } from '../types/topology-types';
 import {
   IngressRule,
   K8sResponseData,
   K8sWorkloadResource,
 } from '../types/types';
-import { WORKLOAD_TYPES } from './topology-utils';
 import { LabelSelector } from './label-selector';
-import { IngressesData } from '../types/ingresses';
 import {
   getJobsForCronJob,
   getPodsDataForResource,
 } from './pod-resource-utils';
-import { JobsData } from '../types/jobs';
-import { RouteIngress, RouteKind, RoutesData } from '../types/route';
+import { WORKLOAD_TYPES } from './topology-utils';
 
 const validPod = (pod: V1Pod) => {
   const owners = pod?.metadata?.ownerReferences;

@@ -1,7 +1,9 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
 import { Link, MemoryRouter } from 'react-router-dom';
+
 import { Decorator as PfDecorator } from '@patternfly/react-topology';
+import { render, screen } from '@testing-library/react';
+
 import Decorator from './Decorator';
 
 jest.mock('@patternfly/react-topology', () => ({

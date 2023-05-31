@@ -1,7 +1,9 @@
 import { useKubernetesObjects } from '@backstage/plugin-kubernetes';
+
 import { renderHook } from '@testing-library/react-hooks';
-import { kubernetesObject } from '../__fixtures__/kubernetesObject';
+
 import { watchResourcesData } from '../__fixtures__/k8sResourcesContextData';
+import { kubernetesObject } from '../__fixtures__/kubernetesObject';
 import { ModelsPlural } from '../models';
 import { useK8sObjectsResponse } from './useK8sObjectsResponse';
 

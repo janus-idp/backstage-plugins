@@ -1,6 +1,8 @@
 import { CatalogClient } from '@backstage/catalog-client';
 import { createRouter } from '@backstage/plugin-scaffolder-backend';
+
 import { Router } from 'express';
+
 import type { PluginEnvironment } from '../types';
 
 export default async function createPlugin(

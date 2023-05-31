@@ -1,3 +1,5 @@
+import React from 'react';
+
 import {
   BottomLinkProps,
   EmptyState,
@@ -5,10 +7,11 @@ import {
   Progress,
 } from '@backstage/core-components';
 import { useEntity } from '@backstage/plugin-catalog-react';
+
 import { Typography } from '@material-ui/core';
 import { Split, SplitItem } from '@patternfly/react-core';
 import { isEmpty } from 'lodash';
-import React from 'react';
+
 import { TektonResourcesContext } from '../../hooks/TektonResourcesContext';
 import { useDarkTheme } from '../../hooks/useDarkTheme';
 import { PipelineRunModel } from '../../models';

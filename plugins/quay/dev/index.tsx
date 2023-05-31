@@ -1,8 +1,10 @@
 import React from 'react';
+
 import { Entity } from '@backstage/catalog-model';
-import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { createDevApp } from '@backstage/dev-utils';
-import { quayPlugin, QuayPage } from '../src/plugin';
+import { EntityProvider } from '@backstage/plugin-catalog-react';
+
+import { QuayPage, quayPlugin } from '../src/plugin';
 
 const mockEntity: Entity = {
   apiVersion: 'backstage.io/v1alpha1',

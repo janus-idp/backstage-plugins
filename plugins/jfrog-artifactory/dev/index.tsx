@@ -1,6 +1,8 @@
 import React from 'react';
+
 import { createDevApp } from '@backstage/dev-utils';
-import { jfrogArtifactoryPlugin, JfrogArtifactoryPage } from '../src/plugin';
+
+import { JfrogArtifactoryPage, jfrogArtifactoryPlugin } from '../src/plugin';
 
 createDevApp()
   .registerPlugin(jfrogArtifactoryPlugin)

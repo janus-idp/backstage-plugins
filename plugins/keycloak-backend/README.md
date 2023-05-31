@@ -96,6 +96,7 @@ When using client credentials, the access type must be set to `confidential` and
      ```ts title="packages/backend/src/plugins/catalog.ts"
      /* highlight-add-start */
      import { KeycloakOrgEntityProvider } from '@janus-idp/backstage-plugin-keycloak-backend';
+
      /* highlight-add-end */
 
      export default async function createPlugin(

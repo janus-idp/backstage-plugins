@@ -1,10 +1,13 @@
-import { EmptyState, InfoCard, Progress } from '@backstage/core-components';
-import { SortByDirection } from '@patternfly/react-table';
 import React from 'react';
+
+import { EmptyState, InfoCard, Progress } from '@backstage/core-components';
+
+import { SortByDirection } from '@patternfly/react-table';
+
 import { TektonResourcesContext } from '../../hooks/TektonResourcesContext';
 import { ClusterErrors } from '../../types/types';
-import { Table } from '../Table/Table';
 import { ClusterSelector, ErrorPanel } from '../common';
+import { Table } from '../Table/Table';
 import PipelineRunHeader from './PipelineRunHeader';
 import PipelineRunRow from './PipelineRunRow';
 

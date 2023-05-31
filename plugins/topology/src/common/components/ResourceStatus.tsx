@@ -1,6 +1,7 @@
+import React from 'react';
+
 import { Badge } from '@patternfly/react-core';
 import classNames from 'classnames';
-import React from 'react';
 
 import './ResourceStatus.css';
 

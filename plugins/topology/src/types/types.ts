@@ -1,13 +1,13 @@
 import {
+  V1CronJob,
+  V1DaemonSet,
   V1Deployment,
   V1IngressRule,
+  V1Job,
   V1Pod,
   V1ReplicaSet,
   V1Service,
   V1StatefulSet,
-  V1DaemonSet,
-  V1Job,
-  V1CronJob,
 } from '@kubernetes/client-node';
 
 export type GroupVersionKind = {

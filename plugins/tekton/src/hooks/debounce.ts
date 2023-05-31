@@ -1,5 +1,7 @@
 import React from 'react';
+
 import { debounce } from 'lodash';
+
 import { useDeepCompareMemoize } from './useDeepCompareMemoize';
 
 interface Cancelable {

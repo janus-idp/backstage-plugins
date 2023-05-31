@@ -1,5 +1,6 @@
-import { renderHook } from '@testing-library/react-hooks';
 import { useTheme } from '@material-ui/core/styles';
+import { renderHook } from '@testing-library/react-hooks';
+
 import { useDarkTheme } from './useDarkTheme';
 
 jest.mock('@material-ui/core/styles', () => ({

@@ -1,6 +1,7 @@
-import { Config } from '@backstage/config';
-import { OcmConfig } from '../types';
 import { readTaskScheduleDefinitionFromConfig } from '@backstage/backend-tasks';
+import { Config } from '@backstage/config';
+
+import { OcmConfig } from '../types';
 
 const KUBERNETES_PLUGIN_CONFIG = 'kubernetes.clusterLocatorMethods';
 const OCM_PREFIX = 'catalog.providers.ocm';

@@ -1,6 +1,7 @@
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
-import { z } from 'zod';
+
 import yaml from 'yaml';
+import { z } from 'zod';
 
 const schemaInput = z.object({
   regExps: z.array(

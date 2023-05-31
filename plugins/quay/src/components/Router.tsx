@@ -1,10 +1,13 @@
-import { Entity } from '@backstage/catalog-model';
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import { QuayTagPage } from './QuayTagPage';
-import { QuayRepository } from './QuayRepository';
+import { Route, Routes } from 'react-router-dom';
+
+import { Entity } from '@backstage/catalog-model';
+
 import { QUAY_ANNOTATION_REPOSITORY } from '../hooks';
 import { tagRouteRef } from '../routes';
+import { QuayRepository } from './QuayRepository';
+import { QuayTagPage } from './QuayTagPage';
+
 /** *
  * @public
  */

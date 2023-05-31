@@ -1,13 +1,14 @@
 import {
-  DiscoveryApi,
   ConfigApi,
   createApiRef,
+  DiscoveryApi,
 } from '@backstage/core-plugin-api';
+
 import {
-  TagsResponse,
   LabelsResponse,
   ManifestByDigestResponse,
   SecurityDetailsResponse,
+  TagsResponse,
 } from '../types';
 
 const DEFAULT_PROXY_PATH = '/quay/api';

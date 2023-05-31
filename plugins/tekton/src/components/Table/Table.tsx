@@ -1,3 +1,5 @@
+import React from 'react';
+
 import {
   OnSelect,
   Table as PfTable,
@@ -10,7 +12,7 @@ import {
 } from '@patternfly/react-virtualized-extension';
 import { Scroll } from '@patternfly/react-virtualized-extension/dist/esm/components/Virtualized/types';
 import { findIndex } from 'lodash';
-import React from 'react';
+
 import { useTableData } from '../../hooks/useTableData';
 import { WithScrollContainer } from '../../utils/WithScrollContainer';
 import { VirtualBody } from './VirtualBody';

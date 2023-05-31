@@ -1,18 +1,23 @@
-import { Button, makeStyles, TextField } from '@material-ui/core';
 import React, { useCallback, useRef } from 'react';
-import { Terminal } from 'xterm';
-import { FitAddon } from 'xterm-addon-fit';
-import { AttachAddon } from 'xterm-addon-attach';
+
 import { InfoCard, Progress } from '@backstage/core-components';
-import { useApi, configApiRef } from '@backstage/core-plugin-api';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { useEntity } from '@backstage/plugin-catalog-react';
+
+import { Button, makeStyles, TextField } from '@material-ui/core';
+import { Terminal } from 'xterm';
+import { AttachAddon } from 'xterm-addon-attach';
+import { FitAddon } from 'xterm-addon-fit';
+
 import {
   createWorkspace,
   getDefaultNamespace,
   getNamespaces,
   getWorkspace,
 } from './utils';
+
 import './static/xterm.css';
+
 import { NamespacePickerDialog } from '../NamespacePickerDialog';
 
 const useStyles = makeStyles({

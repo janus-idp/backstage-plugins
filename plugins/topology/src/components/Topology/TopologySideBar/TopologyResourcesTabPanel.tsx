@@ -1,7 +1,10 @@
 import React from 'react';
+
 import { V1Pod, V1Service, V1ServicePort } from '@kubernetes/client-node';
+import { ChartLabel } from '@patternfly/react-charts';
 import { LongArrowAltRightIcon } from '@patternfly/react-icons';
 import { BaseNode } from '@patternfly/react-topology';
+
 import ResourceName from '../../../common/components/ResourceName';
 import ResourceStatus from '../../../common/components/ResourceStatus';
 import Status from '../../../common/components/Status';
@@ -11,12 +14,11 @@ import {
   PodModel,
   ServiceModel,
 } from '../../../models';
-import TopologyResourcesTabPanelItem from './TopologyResourcesTabPaneltem';
 import { JobData } from '../../../types/jobs';
 import PodStatus from '../../Pods/PodStatus';
-import { ChartLabel } from '@patternfly/react-charts';
-import RouteListSidebar from './Resources/RouteListSidebar';
 import IngressListSidebar from './Resources/IngressListSidebar';
+import RouteListSidebar from './Resources/RouteListSidebar';
+import TopologyResourcesTabPanelItem from './TopologyResourcesTabPaneltem';
 
 import './TopologyResourcesTabPanel.css';
 
