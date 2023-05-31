@@ -1,3 +1,5 @@
+## @janus-idp/backstage-scaffolder-backend-module-kubernetes [1.0.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-kubernetes@1.0.0...@janus-idp/backstage-scaffolder-backend-module-kubernetes@1.0.1) (2023-05-31)
+
 ## @janus-idp/backstage-scaffolder-backend-module-kubernetes 1.0.0 (2023-05-31)
 
 
