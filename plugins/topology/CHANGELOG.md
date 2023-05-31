@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-topology [1.7.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.6.3...@janus-idp/backstage-plugin-topology@1.7.0) (2023-05-31)
+
+
+### Features
+
+* **topology:** visualize Route resource in decorator and sidebar for supported workloads ([#378](https://github.com/janus-idp/backstage-plugins/issues/378)) ([1a489b3](https://github.com/janus-idp/backstage-plugins/commit/1a489b328a10f79fc136ff47a55d9081a4f2856d))
+
 ## @janus-idp/backstage-plugin-topology [1.6.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.6.2...@janus-idp/backstage-plugin-topology@1.6.3) (2023-05-30)
 
 ## @janus-idp/backstage-plugin-topology [1.6.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.6.1...@janus-idp/backstage-plugin-topology@1.6.2) (2023-05-30)
