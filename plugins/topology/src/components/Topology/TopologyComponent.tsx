@@ -37,6 +37,8 @@ export const TopologyComponent = () => {
     ModelsPlural.cronjobs,
     ModelsPlural.jobs,
     ModelsPlural.routes,
+    ModelsPlural.pipelines,
+    ModelsPlural.pipelineruns,
   ];
 
   const k8sResourcesContextData = useK8sObjectsResponse(watchedResources);

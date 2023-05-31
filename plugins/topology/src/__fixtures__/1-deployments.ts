@@ -1654,6 +1654,7 @@ export const mockKubernetesResponse = {
         generation: 1,
         labels: {
           'backstage.io/kubernetes-id': 'backstage',
+          'app.kubernetes.io/instance': 'test-deployment',
         },
         annotations: {
           'deployment.kubernetes.io/revision': '1',
@@ -1743,6 +1744,7 @@ export const mockKubernetesResponse = {
         ownerReferences: [{ name: 'app', uid: 1 }],
         labels: {
           'backstage.io/kubernetes-id': 'backstage',
+          'app.kubernetes.io/instance': 'hello-world',
         },
         annotations: {
           'deployment.kubernetes.io/revision': '1',
@@ -1832,6 +1834,7 @@ export const mockKubernetesResponse = {
         creationTimestamp: new Date('2023-02-15T09:00:36Z'),
         labels: {
           'backstage.io/kubernetes-id': 'backstage',
+          'app.kubernetes.io/instance': 'hello-world-45',
         },
         annotations: {
           'deployment.kubernetes.io/revision': '1',

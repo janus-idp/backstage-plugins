@@ -16,6 +16,7 @@ import {
 } from '../../../models';
 import { JobData } from '../../../types/jobs';
 import PodStatus from '../../Pods/PodStatus';
+import PLRlist from './PLRlist';
 import IngressListSidebar from './Resources/IngressListSidebar';
 import RouteListSidebar from './Resources/RouteListSidebar';
 import TopologyResourcesTabPanelItem from './TopologyResourcesTabPaneltem';
@@ -30,6 +31,8 @@ const TopologyResourcesTabPanel = ({
   const data = node.getData();
   const nodeData = data?.data;
   const resource = data?.resource;
+  const pipelines = nodeData?.pipelinesData?.pipelines;
+  const pipelineRuns = nodeData?.pipelinesData?.pipelineRuns;
   const showIngressRoute = () => {
     const { ingressesData, routesData } = nodeData;
     const hasIngressData = ingressesData?.length > 0;
@@ -74,6 +77,9 @@ const TopologyResourcesTabPanel = ({
             </li>
           ))}
       </TopologyResourcesTabPanelItem>
+      {pipelines?.length > 0 ? (
+        <PLRlist pipelines={pipelines} pipelineRuns={pipelineRuns} />
+      ) : null}
       {resource.kind === CronJobModel.kind ? (
         <TopologyResourcesTabPanelItem
           resourceLabel={JobModel.labelPlural}
@@ -129,12 +135,14 @@ const TopologyResourcesTabPanel = ({
                 {(service.spec?.ports ?? []).map(
                   ({ name, port, protocol, targetPort }: V1ServicePort) => (
                     <li key={name || `${port}-${protocol}`}>
-                      <span className="topology-text-muted">Service port:</span>{' '}
+                      <span className="bs-topology-text-muted">
+                        Service port:
+                      </span>{' '}
                       {name || `${port}-${protocol}`}
                       &nbsp;
                       <LongArrowAltRightIcon />
                       &nbsp;
-                      <span className="topology-text-muted">
+                      <span className="bs-topology-text-muted">
                         Pod port:
                       </span>{' '}
                       {targetPort}

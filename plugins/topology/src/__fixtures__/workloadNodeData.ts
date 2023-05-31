@@ -1,3 +1,5 @@
+import { mockPipeline, mockPipelineRun } from './tektonResources';
+
 export const workloadNodeData = {
   data: {
     resource: {
@@ -1160,6 +1162,20 @@ export const cronJobWorkloadNodeData = {
   height: 104,
 };
 
+export const tektonWorkloadNodeData = {
+  ...workloadNodeData,
+  data: {
+    ...workloadNodeData.data,
+    data: {
+      ...workloadNodeData.data.data,
+      pipelinesData: {
+        pipelines: [mockPipeline],
+        pipelineRuns: [mockPipelineRun],
+      },
+    },
+  },
+};
+
 export const workloadNode = {
   getDimensions: () => ({
     width: workloadNodeData.width,
@@ -1193,4 +1209,12 @@ export const workloadNode4 = {
     resource: cronJobWorkloadNodeData.data.resource,
     data: {},
   }),
+};
+
+export const workloadNodeWtknRes = {
+  getDimensions: () => ({
+    width: workloadNodeData.width,
+    height: workloadNodeData.height,
+  }),
+  getData: () => tektonWorkloadNodeData.data,
 };
