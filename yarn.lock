@@ -2381,7 +2381,7 @@
     winston "^3.2.1"
     winston-transport "^4.5.0"
 
-"@backstage/backend-common@0.18.5", "@backstage/backend-common@^0.18.0", "@backstage/backend-common@^0.18.5":
+"@backstage/backend-common@0.18.5", "@backstage/backend-common@^0.18.5":
   version "0.18.5"
   resolved "https://registry.yarnpkg.com/@backstage/backend-common/-/backend-common-0.18.5.tgz#d9c84396414c1df13df3892a9cb9e5b193ab5381"
   integrity sha512-zVSNH5loujEr8AMnah7mZkBK9xS7CXmssiS6lGht627+rwwwHgegHuutkjqe/0MDJRd/of+ScDIbrbI7vxiszA==
@@ -2523,7 +2523,7 @@
     semver "^7.3.2"
     zod "^3.21.4"
 
-"@backstage/cli@0.22.7", "@backstage/cli@^0.22.1", "@backstage/cli@^0.22.7":
+"@backstage/cli@0.22.7", "@backstage/cli@^0.22.7":
   version "0.22.7"
   resolved "https://registry.yarnpkg.com/@backstage/cli/-/cli-0.22.7.tgz#777fb9be41c541b404567b1460356398888b13ae"
   integrity sha512-+lhTVNMIuN2C1tiasTRydoO9F9QYQwXJT87eQODvRzw590oi4cyD51BaZYdXy4w8pcaOUn1Vcs52pb5JGKwdfQ==
@@ -17221,7 +17221,7 @@ msw@0.49.3:
     type-fest "^2.19.0"
     yargs "^17.3.1"
 
-msw@1.2.1, msw@^1.2.1:
+msw@1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/msw/-/msw-1.2.1.tgz#9dd347583eeba5e5c7f33b54be5600a899dc61bd"
   integrity sha512-bF7qWJQSmKn6bwGYVPXOxhexTCGD5oJSZg8yt8IBClxvo3Dx/1W0zqE1nX9BSWmzRsCKWfeGWcB/vpqV6aclpw==
