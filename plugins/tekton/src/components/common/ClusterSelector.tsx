@@ -1,8 +1,22 @@
-import { Select, SelectedItems } from '@backstage/core-components';
 import React from 'react';
+import { Select, SelectedItems } from '@backstage/core-components';
+import { BackstageTheme } from '@backstage/theme';
+import { makeStyles, Typography } from '@material-ui/core';
 import { TektonResourcesContext } from '../../hooks/TektonResourcesContext';
 
+import './ClusterSelector.css';
+
+const useStyles = makeStyles<BackstageTheme>(theme => ({
+  label: {
+    color: theme.palette.text.primary,
+    fontSize: '1rem',
+    paddingRight: '10px',
+    fontWeight: 'bold',
+  },
+}));
+
 export const ClusterSelector = () => {
+  const classes = useStyles();
   const {
     clusters: k8sClusters,
     selectedCluster,
@@ -27,13 +41,16 @@ export const ClusterSelector = () => {
     setClusterSelected(arg);
   };
   return (
-    <Select
-      onChange={onClusterChange}
-      label="Cluster"
-      items={clusterOptions}
-      selected={clusterSelected}
-      margin="dense"
-      native
-    />
+    <div className="bs-tkn-cluster-selector">
+      <Typography className={classes.label}>Cluster</Typography>
+      <Select
+        onChange={onClusterChange}
+        label=""
+        items={clusterOptions}
+        selected={clusterSelected}
+        margin="dense"
+        native
+      />
+    </div>
   );
 };

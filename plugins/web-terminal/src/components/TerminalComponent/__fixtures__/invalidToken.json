@@ -1,0 +1,13 @@
+{
+  "kind": "Status",
+  "apiVersion": "v1",
+  "metadata": {},
+  "status": "Failure",
+  "message": "devworkspaces.workspace.devfile.io is forbidden: User \"dummy-user\" cannot create resource \"devworkspaces\" in API group \"workspace.devfile.io\" in the namespace \"openshift-terminal\"",
+  "reason": "Forbidden",
+  "details": {
+    "group": "workspace.devfile.io",
+    "kind": "devworkspaces"
+  },
+  "code": 403
+}

@@ -68,4 +68,23 @@ describe('useTektonObjectResponse', () => {
       expect(result.current.selectedCluster).toEqual(1);
     });
   });
+
+  it('should return responseError with loaded if unable to fetch data', async () => {
+    mockUseKubernetesObjects.mockReturnValue({
+      error:
+        'getaddrinfo ENOTFOUND api.rhoms-4.13-052404.dev.openshiftappsvc.org',
+    });
+    const { result } = renderHook(() =>
+      useTektonObjectsResponse(watchedResources),
+    );
+    await waitFor(() => {
+      expect(result.current.watchResourcesData).toBeUndefined();
+      expect(result.current.clusters).toEqual([]);
+      expect(result.current.selectedClusterErrors).toEqual([]);
+      expect(result.current.loaded).toEqual(true);
+      expect(result.current.responseError).toEqual(
+        'getaddrinfo ENOTFOUND api.rhoms-4.13-052404.dev.openshiftappsvc.org',
+      );
+    });
+  });
 });

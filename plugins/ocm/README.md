@@ -7,10 +7,10 @@ The Open Cluster Management (OCM) plugin integrates your Backstage instance with
 - [Using the OCM plugin](#using-the-ocm-plugin)
 - [Capabilities](#capabilities)
 - [Prerequisites](#prerequisites)
-  - [Backend Setup](#set-up-the-ocm-backend-package)
+  - [Backend Setup](#setting-up-the-ocm-backend-package)
     - [Backend Installation](#backend-installation)
     - [Backend Configuration](#backend-configuration)
-  - [Frontend Setup](#set-up-the-ocm-frontend-package)
+  - [Frontend Setup](#setting-up-the-ocm-frontend-package)
     - [Frontend Installation](#frontend-installation)
   - [Frontend Configuration](#frontend-configuration)
 - [Development Setup](#development-setup)
@@ -41,7 +41,35 @@ The OCM plugin has the following capabilities:
   - Cluster details (console link, OCP, and Kubernetes version)
   - Details about available compute resources on the cluster
 
-## Prerequisites
+# Table of contents
+
+1. [For administrators](#for-administrators)
+
+   a. [Installation](#installation)
+
+   b. [Development](#development)
+
+1. [For users](#for-users)
+
+   a. [Using the OCM plugin in Backstage](#using-the-ocm-plugin-in-backstage)
+
+## For administrators
+
+### Installation
+
+The OCM plugin is composed of two packages, including:
+
+- `@janus-idp/backstage-plugin-ocm-backend` package connects the Backstage server to OCM.
+- `@janus-idp/backstage-plugin-ocm` package contains frontend components and requires `*-backend` to be present and to set up.
+
+---
+
+**NOTE**
+If you are interested in Resource discovery and do not want any of the front-end components, then you can install and configure the `@janus-idp/backstage-plugin-ocm-backend` package only.
+
+---
+
+#### Prerequisites
 
 - OCM is deployed and configured on a Kubernetes cluster.
 - [Kubernetes plugin for Backstage](https://backstage.io/docs/features/kubernetes) is installed.
@@ -71,7 +99,7 @@ The OCM plugin has the following capabilities:
         - list
   ```
 
-### Set up the OCM backend package
+### Setting up the OCM backend package
 
 #### Backend Installation
 
@@ -164,46 +192,71 @@ The OCM plugin has the following capabilities:
    }
    ```
 
-4. Import the cluster `Resource` entity provider into the `catalog` plugin in the `packages/backend/src/plugins/catalog.ts` file:
+4. Import the cluster `Resource` entity provider into the `catalog` plugin in the `packages/backend/src/plugins/catalog.ts` file. The scheduler also needs to be configured. Two configurations are possible here:
 
-   ```ts title="packages/backend/src/plugins/catalog.ts"
-   /* highlight-add-next-line */
-   import { ManagedClusterProvider } from '@janus-idp/backstage-plugin-ocm-backend';
+   1. Configure the scheduler inside the `app-config.yaml`:
 
-   export default async function createPlugin(
-     env: PluginEnvironment,
-   ): Promise<Router> {
-     const builder = await CatalogBuilder.create(env);
-     // ...
-     /* highlight-add-start */
-     const ocm = ManagedClusterProvider.fromConfig(env.config, {
-       logger: env.logger,
-     });
-     builder.addEntityProvider(ocm);
-     /* highlight-add-end */
-     // ...
+      ```yaml title="app-config.yaml"
+      catalog:
+        providers:
+          ocm:
+            env:
+              # ...
+              # highlight-add-start
+              schedule: # optional; same options as in TaskScheduleDefinition
+                # supports cron, ISO duration, "human duration" as used in code
+                frequency: { minutes: 1 }
+                # supports ISO duration, "human duration" as used in code
+                timeout: { minutes: 1 }
+              # highlight-add-end
+      ```
 
-     const { processingEngine, router } = await builder.build();
-     await processingEngine.start();
-     // ...
-     /* highlight-add-start */
-     await Promise.all(
-       ocm.map(o =>
-         env.scheduler.scheduleTask({
-           id: `run_ocm_refresh_${o.getProviderName()}`,
-           fn: async () => {
-             await o.run();
-           },
-           frequency: { minutes: 30 },
-           timeout: { minutes: 10 },
-         }),
-       ),
-     );
-     /* highlight-add-end */
+      and and then use the configured scheduler
 
-     return router;
-   }
-   ```
+      ```ts title="packages/backend/src/index.ts"
+      /* highlight-add-next-line */
+      import { ManagedClusterProvider } from '@janus-idp/backstage-plugin-ocm-backend';
+
+      export default async function createPlugin(
+        env: PluginEnvironment,
+      ): Promise<Router> {
+        const builder = await CatalogBuilder.create(env);
+        // ...
+        /* highlight-add-start */
+        const ocm = ManagedClusterProvider.fromConfig(env.config, {
+          logger: env.logger,
+          scheduler: env.scheduler,
+        });
+        builder.addEntityProvider(ocm);
+        /* highlight-add-start */
+        // ...
+      }
+      ```
+
+   2. Add a schedule directly inside the `packages/backend/src/plugins/catalog.ts` file:
+
+      ```ts title="packages/backend/src/index.ts"
+      /* highlight-add-next-line */
+      import { ManagedClusterProvider } from '@janus-idp/backstage-plugin-ocm-backend';
+
+      export default async function createPlugin(
+        env: PluginEnvironment,
+      ): Promise<Router> {
+        const builder = await CatalogBuilder.create(env);
+        // ...
+        /* highlight-add-start */
+        const ocm = ManagedClusterProvider.fromConfig(env.config, {
+          logger: env.logger,
+          schedule: env.scheduler.createScheduledTaskRunner({
+            frequency: { minutes: 1 },
+            timeout: { minutes: 1 },
+          }),
+        });
+        builder.addEntityProvider(ocm);
+        /* highlight-add-start */
+        // ...
+      }
+      ```
 
 5. Optional: Configure the default owner for the cluster entities in the catalog for a specific environment. For example, use the following code to set `foo` as the owner for clusters from `env` in the `app-config.yaml` catalog section:
 
@@ -218,7 +271,7 @@ The OCM plugin has the following capabilities:
 
    For more information about the default owner configuration, see [upstream string references documentation](https://backstage.io/docs/features/software-catalog/references/#string-references).
 
-### Set up the OCM frontend package
+### Setting up the OCM frontend package
 
 #### Frontend Installation
 
@@ -363,3 +416,36 @@ To start a development setup in isolation with a faster setup and hot reloads, c
    ```
 
 The previous steps are meant for local development and you can find the setup inside the `./dev` directories of the individual plugins.
+
+## For users
+
+### Using the OCM plugin in Backstage
+
+The OCM plugin integrates your Backstage instance with multi-cluster engines and displays real-time data from OCM.
+
+#### Prerequisites
+
+- Your Backstage application is installed and running.
+- You have installed the OCM plugin. For the installation process, see [Installation](#installation).
+
+#### Procedure
+
+1. Open your Backstage application.
+1. Click the **Clusters** tab from the left-side panel to view the **Managed Clusters** page.
+
+   The **Managed Clusters** page displays the list of clusters with additional information, such as status, infrastructure provider, associated OpenShift version, and available nodes.
+
+   ![ocm-plugin-ui](./images/ocm-plugin-user1.png)
+
+   You can also upgrade the OpenShift version for a cluster using the **Upgrade available** option in the **VERSION** column.
+
+1. Select a cluster from the **Managed Clusters** to view the related cluster information.
+
+   You are redirected to the cluster-specific page, which consists of:
+
+   - **Cluster Information**, such as name, status, accessed Kubernetes version, associated OpenShift ID and version, and accessed platform.
+   - **Available** cluster capacity, including CPU cores, memory size, and number of pods.
+   - **Related Links**, which enable you to access different consoles directly, such as OpenShift Console, OCM Console, and OpenShift Cluster Manager Console.
+   - **Relations** card, which displays the visual representation of the cluster and associated dependencies.
+
+     ![ocm-plugin-ui](./images/ocm-plugin-user2.png)

@@ -3,30 +3,23 @@ description: Build all packages
 inputs:
   args:
     description: Backstage CLI repo build arguments
-    default: --all
+    default: '@janus-idp/*'
 runs:
   using: 'composite'
   steps:
-    - name: Read Node.js version
-      id: node_version
-      uses: juliangruber/read-file-action@v1
-      with:
-        path: ./.nvmrc
-
     - name: Setup Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '${{ steps.node_version.outputs.content }}'
+        node-version-file: '.nvmrc'
         cache: 'yarn'
+
+    - name: Setup local Turbo cache
+      uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
     - name: Install dependencies
       shell: bash
       run: yarn --prefer-offline --frozen-lockfile
 
-    - name: Compile all packages
-      shell: bash
-      run: yarn tsc
-
     - name: Build all packages
       shell: bash
-      run: yarn build ${{ inputs.args }}
+      run: yarn build --filter=${{ inputs.args }}

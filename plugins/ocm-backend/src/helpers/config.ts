@@ -1,5 +1,6 @@
 import { Config } from '@backstage/config';
 import { OcmConfig } from '../types';
+import { readTaskScheduleDefinitionFromConfig } from '@backstage/backend-tasks';
 
 const KUBERNETES_PLUGIN_CONFIG = 'kubernetes.clusterLocatorMethods';
 const OCM_PREFIX = 'catalog.providers.ocm';
@@ -85,6 +86,9 @@ export const getHubClusterFromConfig = (
     skipTLSVerify: hub.getOptionalBoolean('skipTLSVerify') || false,
     caData: hub.getOptionalString('caData'),
     owner: config.getOptionalString(OWNER_KEY) || 'unknown',
+    schedule: config.has('schedule')
+      ? readTaskScheduleDefinitionFromConfig(config.getConfig('schedule'))
+      : undefined,
   };
 };
 

@@ -1,3 +1,28 @@
+## @janus-idp/backstage-plugin-tekton [1.5.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.4.14...@janus-idp/backstage-plugin-tekton@1.5.0) (2023-05-31)
+
+
+### Features
+
+* **tekton:** show cluster label before the select dropdown ([#345](https://github.com/janus-idp/backstage-plugins/issues/345)) ([582586e](https://github.com/janus-idp/backstage-plugins/commit/582586eca35af76fa931ace6d823e74dd4012215))
+
+## @janus-idp/backstage-plugin-tekton [1.4.14](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.4.13...@janus-idp/backstage-plugin-tekton@1.4.14) (2023-05-30)
+
+## @janus-idp/backstage-plugin-tekton [1.4.13](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.4.12...@janus-idp/backstage-plugin-tekton@1.4.13) (2023-05-30)
+
+## @janus-idp/backstage-plugin-tekton [1.4.12](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.4.11...@janus-idp/backstage-plugin-tekton@1.4.12) (2023-05-30)
+
+
+### Bug Fixes
+
+* **tekton:** in case of bad configuration show empty state for tekton plugin and no cluster selector ([#390](https://github.com/janus-idp/backstage-plugins/issues/390)) ([83e47df](https://github.com/janus-idp/backstage-plugins/commit/83e47df6247cf9dccc0842eec1380b37e58bea47))
+
+## @janus-idp/backstage-plugin-tekton [1.4.11](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.4.10...@janus-idp/backstage-plugin-tekton@1.4.11) (2023-05-29)
+
+
+### Bug Fixes
+
+* **tekton:** handles unnecessary rerenders on tekton ([#391](https://github.com/janus-idp/backstage-plugins/issues/391)) ([86c1700](https://github.com/janus-idp/backstage-plugins/commit/86c1700a89db238dda0efca23ada72c94a2ee72b))
+
 ## @janus-idp/backstage-plugin-tekton [1.4.10](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.4.9...@janus-idp/backstage-plugin-tekton@1.4.10) (2023-05-22)
 
 

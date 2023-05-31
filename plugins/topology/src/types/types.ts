@@ -20,6 +20,7 @@ export type Model = GroupVersionKind & {
   abbr: string;
   labelPlural: string;
   color?: string;
+  plural?: string;
 };
 
 export type K8sWorkloadResource =

@@ -23,6 +23,37 @@ The Topology plugin enables you to visualize the workloads such as Deployment, J
 - The Kubernetes plugins including `@backstage/plugin-kubernetes` and `@backstage/plugin-kubernetes-backend` are installed and configured by following the [installation](https://backstage.io/docs/features/kubernetes/installation) and [configuration](https://backstage.io/docs/features/kubernetes/configuration) guides.
 - The Kubernetes plugin is configured and connects to the cluster using a `ServiceAccount`.
 - The [`ClusterRole`](https://backstage.io/docs/features/kubernetes/configuration#role-based-access-control) must be granted to `ServiceAccount` accessing the cluster. If you have the Backstage Kubernetes plugin configured, then the `ClusterRole` is already granted.
+- The following must be added in`customResources` component in the [`app-config.yaml`](https://backstage.io/docs/features/kubernetes/configuration#configuring-kubernetes-clusters) file to view the OpenShift route:
+
+  ```yaml
+   kubernetes:
+     ...
+     customResources:
+       - group: 'route.openshift.io'
+         apiVersion: 'v1'
+         plural: 'routes'
+  ```
+
+  Also, ensure that the route is granted a [`ClusterRole`](https://backstage.io/docs/features/kubernetes/configuration#role-based-access-control). You can use the following code to grant the `ClusterRole` to the route :
+
+  ```yaml
+    ...
+    apiVersion: rbac.authorization.k8s.io/v1
+    kind: ClusterRole
+    metadata:
+      name: backstage-read-only
+    rules:
+      ...
+      - apiGroups:
+          - route.openshift.io
+        resources:
+          - routes
+        verbs:
+          - get
+          - list
+
+  ```
+
 - The following annotation is added to the entity's `catalog-info.yaml` file to identify whether an entitiy contains the Kubernetes resources:
 
   ```yaml title="catalog-info.yaml"

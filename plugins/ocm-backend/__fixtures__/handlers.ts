@@ -19,6 +19,21 @@ export const handlers = [
     },
   ),
   rest.get(
+    `${LOCAL_ADDR}/apis/internal.open-cluster-management.io/v1beta1/managedclusterinfos`,
+    (_, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.json({
+          items: [
+            require(`${__dirname}/internal.open-cluster-management.io/managedclusterinfos/local-cluster.json`),
+            require(`${__dirname}/internal.open-cluster-management.io/managedclusterinfos/cluster1.json`),
+            require(`${__dirname}/internal.open-cluster-management.io/managedclusterinfos/offline-cluster.json`),
+          ],
+        }),
+      );
+    },
+  ),
+  rest.get(
     `${LOCAL_ADDR}/apis/cluster.open-cluster-management.io/v1/managedclusters/local-cluster`,
     (_, res, ctx) => {
       return res(

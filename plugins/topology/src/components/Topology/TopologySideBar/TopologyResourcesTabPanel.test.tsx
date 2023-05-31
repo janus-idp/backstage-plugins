@@ -59,4 +59,30 @@ describe('TopologyResourcesTabPanel', () => {
     rerender(<TopologyResourcesTabPanel node={workloadNode4 as BaseNode} />);
     getByText(/no jobs found for this resource/i);
   });
+
+  it('Should show routes only if available otherwise should not show it', () => {
+    const { queryByTestId, rerender } = render(
+      <TopologyResourcesTabPanel node={workloadNode as BaseNode} />,
+    );
+    expect(queryByTestId('routes-list')).not.toBeNull();
+    rerender(<TopologyResourcesTabPanel node={workloadNode2 as BaseNode} />);
+    expect(queryByTestId('routes-list')).toBeNull();
+  });
+
+  it('Should show routes and ingresses both if available', () => {
+    const { queryByTestId } = render(
+      <TopologyResourcesTabPanel node={workloadNode as BaseNode} />,
+    );
+    expect(queryByTestId('routes-list')).not.toBeNull();
+    expect(queryByTestId('ingress-list')).not.toBeNull();
+  });
+
+  it('Should show empty state for ingresses if none of routes and ingresses are associated', () => {
+    const { queryByTestId, getByText } = render(
+      <TopologyResourcesTabPanel node={workloadNode2 as BaseNode} />,
+    );
+    expect(queryByTestId('routes-list')).toBeNull();
+    expect(queryByTestId('ingress-list')).not.toBeNull();
+    getByText(/no ingresses found for this resource/i);
+  });
 });

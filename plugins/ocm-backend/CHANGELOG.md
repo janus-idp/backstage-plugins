@@ -1,3 +1,49 @@
+## @janus-idp/backstage-plugin-ocm-backend [3.0.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@3.0.1...@janus-idp/backstage-plugin-ocm-backend@3.0.2) (2023-05-31)
+
+
+### Bug Fixes
+
+* **ocm:** hide logo when not provided ([#410](https://github.com/janus-idp/backstage-plugins/issues/410)) ([3cdccc1](https://github.com/janus-idp/backstage-plugins/commit/3cdccc10a6209f55d36db29b429c168797d64760))
+
+## @janus-idp/backstage-plugin-ocm-backend [3.0.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@3.0.0...@janus-idp/backstage-plugin-ocm-backend@3.0.1) (2023-05-31)
+
+
+### Bug Fixes
+
+* **ocm:** handle missing nodeList properly ([#404](https://github.com/janus-idp/backstage-plugins/issues/404)) ([ae771b0](https://github.com/janus-idp/backstage-plugins/commit/ae771b00ea5055a29256d0b94056ea5ac8d6740d))
+
+## @janus-idp/backstage-plugin-ocm-backend [3.0.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@2.1.5...@janus-idp/backstage-plugin-ocm-backend@3.0.0) (2023-05-30)
+
+
+### ⚠ BREAKING CHANGES
+
+* **ocm-backend:** The scheduler for the entity provider is now
+configurable by changing the `app-config.yaml` or by changing code in
+`catalog.ts`. The old configuration for entity provider in `catalog.ts`
+is no longer valid.
+
+Signed-off-by: SamoKopecky <skopecky@redhat.com>
+Signed-off-by: Tomas Coufal <tcoufal@redhat.com>
+
+### Features
+
+* **ocm-backend:** add a scheduler configuration option ([#246](https://github.com/janus-idp/backstage-plugins/issues/246)) ([5157185](https://github.com/janus-idp/backstage-plugins/commit/5157185679950b4952f8602dc05f48146d1ad186))
+* **ocm-backend:** add additional information to status endpoint ([#352](https://github.com/janus-idp/backstage-plugins/issues/352)) ([887015d](https://github.com/janus-idp/backstage-plugins/commit/887015d18e665b1795e8c28e6fcc4f24aa7f3257))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-ocm-common:** upgraded to 2.1.0
+
+## @janus-idp/backstage-plugin-ocm-backend [2.1.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@2.1.4...@janus-idp/backstage-plugin-ocm-backend@2.1.5) (2023-05-30)
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-ocm-common:** upgraded to 2.0.3
+
 ## @janus-idp/backstage-plugin-ocm-backend [2.1.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@2.1.3...@janus-idp/backstage-plugin-ocm-backend@2.1.4) (2023-05-18)
 
 

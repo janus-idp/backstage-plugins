@@ -1,0 +1,79 @@
+{
+  "apiVersion": "workspace.devfile.io/v1alpha2",
+  "kind": "DevWorkspace",
+  "metadata": {
+    "annotations": {
+      "controller.devfile.io/devworkspace-source": "web-terminal",
+      "controller.devfile.io/restricted-access": "true"
+    },
+    "creationTimestamp": "1970-02-03T00:00:00Z",
+    "generateName": "web-terminal-",
+    "generation": 1,
+    "labels": {
+      "console.openshift.io/terminal": "true",
+      "controller.devfile.io/creator": "56124a8a-d1fb-11ed-afa1-024200020002"
+    },
+    "managedFields": [
+      {
+        "apiVersion": "workspace.devfile.io/v1alpha2",
+        "fieldsType": "FieldsV1",
+        "fieldsV1": {
+          "f:metadata": {
+            "f:annotations": {
+              ".": {},
+              "f:controller.devfile.io/devworkspace-source": {},
+              "f:controller.devfile.io/restricted-access": {}
+            },
+            "f:generateName": {},
+            "f:labels": {
+              ".": {},
+              "f:console.openshift.io/terminal": {}
+            }
+          },
+          "f:spec": {
+            ".": {},
+            "f:routingClass": {},
+            "f:started": {},
+            "f:template": {
+              ".": {},
+              "f:components": {}
+            }
+          }
+        },
+        "manager": "Go-http-client",
+        "operation": "Update",
+        "time": "1970-02-03T00:00:00Z"
+      }
+    ],
+    "name": "web-terminal-c5e12",
+    "namespace": "openshift-terminal",
+    "resourceVersion": "26178785796",
+    "uid": "56124a8a-d1fb-11ed-afa1-024200020002"
+  },
+  "spec": {
+    "routingClass": "web-terminal",
+    "started": true,
+    "template": {
+      "components": [
+        {
+          "name": "web-terminal-tooling",
+          "plugin": {
+            "kubernetes": {
+              "name": "web-terminal-tooling",
+              "namespace": "openshift-operators"
+            }
+          }
+        },
+        {
+          "name": "web-terminal-exec",
+          "plugin": {
+            "kubernetes": {
+              "name": "web-terminal-exec",
+              "namespace": "openshift-operators"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

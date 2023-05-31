@@ -1,0 +1,23 @@
+{
+  "kind": "NamespaceList",
+  "apiVersion": "v1",
+  "metadata": {
+    "resourceVersion": "26178785796"
+  },
+  "items": [
+    {
+      "metadata": {
+        "name": "acme-operator",
+        "uid": "56124a8a-d1fb-11ed-afa1-024200020002",
+        "resourceVersion": "26178785796",
+        "creationTimestamp": "1970-02-03T00:00:00Z"
+      },
+      "spec": {
+        "finalizers": ["kubernetes"]
+      },
+      "status": {
+        "phase": "Active"
+      }
+    }
+  ]
+}

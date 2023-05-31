@@ -77,8 +77,9 @@ const TopologyViewWorkloadComponent = ({
 
   useEventListener<SelectionEventListener>(SELECTION_EVENT, (ids: string[]) => {
     const id = ids[0] ? ids[0] : '';
-    setSelectedNode(controller.getElementById(id) as BaseNode);
-    if (!id) {
+    const selNode = controller.getElementById(id) as BaseNode;
+    setSelectedNode(selNode);
+    if (!id || selNode.getType() !== TYPE_WORKLOAD) {
       removeSelectedIdParam();
     }
   });
