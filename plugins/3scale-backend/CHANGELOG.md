@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-3scale-backend [1.0.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-3scale-backend@1.0.3...@janus-idp/backstage-plugin-3scale-backend@1.0.4) (2023-05-31)
+
+
+### Bug Fixes
+
+* **3scale:** don't expose token and use correct config ([#388](https://github.com/janus-idp/backstage-plugins/issues/388)) ([d0700da](https://github.com/janus-idp/backstage-plugins/commit/d0700da7a3ba8ce79ba0de230326df7ce735edb2))
+
 ## @janus-idp/backstage-plugin-3scale-backend [1.0.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-3scale-backend@1.0.2...@janus-idp/backstage-plugin-3scale-backend@1.0.3) (2023-05-30)
 
 ## @janus-idp/backstage-plugin-3scale-backend [1.0.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-3scale-backend@1.0.1...@janus-idp/backstage-plugin-3scale-backend@1.0.2) (2023-05-18)
