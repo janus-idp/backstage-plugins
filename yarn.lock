@@ -3323,7 +3323,7 @@
     "@backstage/plugin-permission-common" "^0.7.5"
     "@backstage/types" "^1.0.2"
 
-"@backstage/plugin-scaffolder-node@^0.1.3":
+"@backstage/plugin-scaffolder-node@^0.1.1", "@backstage/plugin-scaffolder-node@^0.1.3":
   version "0.1.3"
   resolved "https://registry.yarnpkg.com/@backstage/plugin-scaffolder-node/-/plugin-scaffolder-node-0.1.3.tgz#40e514c78e11d694361a7d56474cedac7453269a"
   integrity sha512-EtUBxcK8y+9utOx+ZGElVdydxtGvTumX0DoAMXYSeyWqyGum7WRqgKBcbxXq6oOGFdopFQIOEYu8sgR9eEfjFQ==
