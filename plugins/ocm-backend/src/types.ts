@@ -49,7 +49,7 @@ export interface ManagedClusterInfo extends KubernetesObject {
     masterEndpoint: string;
   };
   status?: {
-    nodeList: {
+    nodeList?: {
       capacity: {
         cpu: string;
         memory: string;

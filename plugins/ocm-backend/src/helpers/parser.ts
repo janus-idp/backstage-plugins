@@ -89,7 +89,7 @@ export const parseUpdateInfo = (clusterInfo: ManagedClusterInfo) => {
 };
 
 export const parseNodeStatus = (clusterInfo: ManagedClusterInfo) =>
-  clusterInfo.status?.nodeList.map(node => {
+  clusterInfo.status?.nodeList?.map(node => {
     if (node.conditions.length !== 1) {
       throw new Error('Found more node conditions then one');
     }
@@ -98,7 +98,7 @@ export const parseNodeStatus = (clusterInfo: ManagedClusterInfo) =>
       status: condition.status,
       type: condition.type,
     } as ClusterNodesStatus;
-  });
+  }) || [];
 
 export const translateResourceToOCM = (
   clusterName: string,
