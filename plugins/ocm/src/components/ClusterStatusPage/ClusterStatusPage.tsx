@@ -206,7 +206,7 @@ export const ClusterStatusPage = ({ logo }: { logo?: React.ReactNode }) => {
         <Header title="Your Managed Clusters" />
         <Content>
           <Grid container justifyContent="center" spacing={6}>
-            <HomePageCompanyLogo className={container} logo={logo} />
+            {logo && <HomePageCompanyLogo className={container} logo={logo} />}
             <Grid container item xs={12} justifyContent="center">
               <CatalogClusters />
             </Grid>
