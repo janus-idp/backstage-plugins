@@ -275,7 +275,7 @@ describe('parseNodeStatus', () => {
     ]);
   });
 
-  it('should should return an empty array if nodes are empty', () => {
+  it('should return an empty array if nodes are empty', () => {
     const mciOriginal: ManagedClusterInfo = require(`${FIXTURES_DIR}/internal.open-cluster-management.io/managedclusterinfos/local-cluster.json`);
     const mci = {
       ...mciOriginal,
@@ -290,7 +290,7 @@ describe('parseNodeStatus', () => {
     expect(result).toEqual([]);
   });
 
-  it('should should return an empty array if nodes are not present', () => {
+  it('should return an empty array if nodes are not present', () => {
     const mciOriginal: ManagedClusterInfo = require(`${FIXTURES_DIR}/internal.open-cluster-management.io/managedclusterinfos/local-cluster.json`);
     const mci = {
       ...mciOriginal,
@@ -305,7 +305,7 @@ describe('parseNodeStatus', () => {
     expect(result).toEqual([]);
   });
 
-  it('should should throw an error if there are more conditions in a node', () => {
+  it('should throw an error if there are more conditions in a node', () => {
     const mciOriginal: ManagedClusterInfo = require(`${FIXTURES_DIR}/internal.open-cluster-management.io/managedclusterinfos/local-cluster.json`);
     const mci = {
       ...mciOriginal,
