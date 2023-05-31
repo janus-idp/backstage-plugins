@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-ocm-backend [3.0.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@3.0.1...@janus-idp/backstage-plugin-ocm-backend@3.0.2) (2023-05-31)
+
+
+### Bug Fixes
+
+* **ocm:** hide logo when not provided ([#410](https://github.com/janus-idp/backstage-plugins/issues/410)) ([3cdccc1](https://github.com/janus-idp/backstage-plugins/commit/3cdccc10a6209f55d36db29b429c168797d64760))
+
 ## @janus-idp/backstage-plugin-ocm-backend [3.0.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@3.0.0...@janus-idp/backstage-plugin-ocm-backend@3.0.1) (2023-05-31)
 
 
