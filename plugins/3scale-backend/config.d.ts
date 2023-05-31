@@ -2,8 +2,8 @@ import { TaskScheduleDefinitionConfig } from '@backstage/backend-tasks';
 
 interface ThreeScaleConfig {
   baseUrl: string;
-  serviceAccount: string;
-  serviceAccountCredentials: string;
+  /** @visibility secret */
+  accessToken: string;
   systemLabel?: string;
   ownerLabel?: string;
   addLabels?: boolean;
