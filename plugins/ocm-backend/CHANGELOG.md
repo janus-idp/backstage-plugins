@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-ocm-backend [3.0.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@3.0.0...@janus-idp/backstage-plugin-ocm-backend@3.0.1) (2023-05-31)
+
+
+### Bug Fixes
+
+* **ocm:** handle missing nodeList properly ([#404](https://github.com/janus-idp/backstage-plugins/issues/404)) ([ae771b0](https://github.com/janus-idp/backstage-plugins/commit/ae771b00ea5055a29256d0b94056ea5ac8d6740d))
+
 ## @janus-idp/backstage-plugin-ocm-backend [3.0.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@2.1.5...@janus-idp/backstage-plugin-ocm-backend@3.0.0) (2023-05-30)
 
 
