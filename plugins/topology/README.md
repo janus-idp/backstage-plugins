@@ -8,7 +8,6 @@ The Topology plugin enables you to visualize the workloads such as Deployment, J
   - [Installation](#installation)
     - [Prerequisites](#prerequisites)
     - [Installation and Configuration Procedure](#installation-and-configuration-procedure)
-  - [Development Setup](#development-setup)
 - [For users](#for-users)
   - [Using the Topology plugin in Backstage](#using-the-topology-plugin-in-backstage)
     - [Usage Prerequisites](#usage-prerequisites)
@@ -131,14 +130,6 @@ The Topology plugin enables you to visualize the workloads such as Deployment, J
      </EntityPageLayout>
    );
    ```
-
-### Development Setup
-
-In [Backstage plugin terminology](https://backstage.io/docs/local-dev/cli-build-system#package-roles), the Topology plugin is a front-end plugin. You can start a live development session from the repository root using the following command:
-
-```console
-yarn workspace @janus-idp/backstage-plugin-topology run start
-```
 
 ## For users
 

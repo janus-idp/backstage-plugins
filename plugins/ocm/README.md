@@ -6,21 +6,24 @@ The Open Cluster Management (OCM) plugin integrates your Backstage instance with
 
 - [Using the OCM plugin](#using-the-ocm-plugin)
 - [Capabilities](#capabilities)
-- [Prerequisites](#prerequisites)
+- [For administrators](#for-administrators)
+  - [Installation](#installation)
+  - [Prerequisites](#prerequisites)
   - [Backend Setup](#setting-up-the-ocm-backend-package)
     - [Backend Installation](#backend-installation)
     - [Backend Configuration](#backend-configuration)
   - [Frontend Setup](#setting-up-the-ocm-frontend-package)
     - [Frontend Installation](#frontend-installation)
-  - [Frontend Configuration](#frontend-configuration)
-- [Development Setup](#development-setup)
+    - [Frontend Configuration](#frontend-configuration)
+- [For users](#for-users)
+  - [Using the OCM plugin in Backstage](#using-the-ocm-plugin-in-backstage)
 
 ## Using the OCM plugin
 
 The OCM plugin is composed of two packages, including:
 
 - The `@janus-idp/backstage-plugin-ocm-backend` package which connects the Backstage server to OCM.
-- The @janus-idp/backstage-plugin-ocm package, which contains frontend components and requires the \*-backend package to be present and properly set up. For detailed instructions on setting up the backend, refer to the [Backend Setup](#set-up-the-ocm-backend-package) section.
+- The @janus-idp/backstage-plugin-ocm package, which contains frontend components and requires the \*-backend package to be present and properly set up. For detailed instructions on setting up the backend, refer to the [Backend Setup](#setting-up-the-ocm-backend-package) section.
 
 ---
 
@@ -41,26 +44,14 @@ The OCM plugin has the following capabilities:
   - Cluster details (console link, OCP, and Kubernetes version)
   - Details about available compute resources on the cluster
 
-# Table of contents
-
-1. [For administrators](#for-administrators)
-
-   a. [Installation](#installation)
-
-   b. [Development](#development)
-
-1. [For users](#for-users)
-
-   a. [Using the OCM plugin in Backstage](#using-the-ocm-plugin-in-backstage)
-
 ## For administrators
 
 ### Installation
 
 The OCM plugin is composed of two packages, including:
 
-- `@janus-idp/backstage-plugin-ocm-backend` package connects the Backstage server to OCM.
-- `@janus-idp/backstage-plugin-ocm` package contains frontend components and requires `*-backend` to be present and to set up.
+- `@janus-idp/backstage-plugin-ocm-backend` package connects the Backstage server to OCM. For setup process, see [Backend Setup](#setting-up-the-ocm-backend-package)
+- `@janus-idp/backstage-plugin-ocm` package contains frontend components and requires `*-backend` to be present and to set up. For setup process, see [Frontend Setup](#setting-up-the-ocm-frontend-package)
 
 ---
 
@@ -69,7 +60,7 @@ If you are interested in Resource discovery and do not want any of the front-end
 
 ---
 
-#### Prerequisites
+### Prerequisites
 
 - OCM is deployed and configured on a Kubernetes cluster.
 - [Kubernetes plugin for Backstage](https://backstage.io/docs/features/kubernetes) is installed.
@@ -397,38 +388,18 @@ If you are interested in Resource discovery and do not want any of the front-end
 
    - `<ClusterAllocatableResourceCard />`: This is an entity component displaying allocatable resources on a cluster. For example, see [`.status.allocatable`](https://open-cluster-management.io/concepts/managedcluster/#cluster-heartbeats-and-status) of the `ManagedCluster` resource.
 
-## Development Setup
-
-If you have installed the OCM plugin to the example application in the repository, run the `yarn start` command to access the plugin in the root directory and then navigate to `http://localhost:3000/ocm`.
-
-To start a development setup in isolation with a faster setup and hot reloads, complete the following steps:
-
-1. Run the `ocm-backend` plugin in the `plugins/ocm-backend` directory by executing the following command:
-
-   ```console
-   yarn start
-   ```
-
-2. Run the `ocm` frontend plugin in the `plugins/ocm` directory using the following command:
-
-   ```console
-   yarn start
-   ```
-
-The previous steps are meant for local development and you can find the setup inside the `./dev` directories of the individual plugins.
-
 ## For users
 
 ### Using the OCM plugin in Backstage
 
 The OCM plugin integrates your Backstage instance with multi-cluster engines and displays real-time data from OCM.
 
-#### Prerequisites
+#### Usage Prerequisites
 
 - Your Backstage application is installed and running.
 - You have installed the OCM plugin. For the installation process, see [Installation](#installation).
 
-#### Procedure
+#### Usage Procedure
 
 1. Open your Backstage application.
 1. Click the **Clusters** tab from the left-side panel to view the **Managed Clusters** page.

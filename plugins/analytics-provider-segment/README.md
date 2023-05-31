@@ -22,7 +22,7 @@ This plugin contains no other functionality.
 
 ## Configuration
 
-2. Wire up the API implementation to your App in `packages/app/src/apis.ts`:
+1. Wire up the API implementation to your App in `packages/app/src/apis.ts`:
 
    ```tsx title="packages/app/src/apis.ts"
    /* highlight-add-start */
@@ -48,7 +48,7 @@ This plugin contains no other functionality.
    ];
    ```
 
-3. Configure the plugin in your `app-config.yaml`:
+2. Configure the plugin in your `app-config.yaml`:
 
 The following is the minimum configuration required to start sending analytics
 events to Segment. All that's needed is your Segment Write Key

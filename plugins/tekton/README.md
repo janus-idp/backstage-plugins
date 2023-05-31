@@ -8,7 +8,6 @@ The Tekton plugin enables you to visualize the `PipelineRun` resources available
   - [Installation](#installation)
     - [Prerequisites](#prerequisites)
     - [Installation and Configuration Procedure](#installation-and-configuration-procedure)
-  - [Development Setup](#development-setup)
 - [For users](#for-users)
   - [Using the Tekton plugin in Backstage](#using-the-tekton-plugin-in-backstage)
     - [Usage Prerequisites](#usage-prerequisites)
@@ -154,14 +153,6 @@ The Tekton plugin enables you to visualize the `PipelineRun` resources available
      </EntitySwitch>
    );
    ```
-
-### Development Setup
-
-In [Backstage plugin terminology](https://backstage.io/docs/local-dev/cli-build-system#package-roles), the Tekton plugin is a front-end plugin. You can start a live development session from the repository root using the following command:
-
-```console
-yarn workspace @janus-idp/backstage-plugin-tekton run start
-```
 
 ## For users
 

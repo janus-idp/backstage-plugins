@@ -7,7 +7,6 @@ The Quay plugin displays the information about your container images within the 
 - [For administrators](#for-administrators)
   - [Installation](#installation)
   - [Configuration](#configuration)
-  - [Development Setup](#development-setup)
 - [For users](#for-users)
   - [Using the Quay plugin in Backstage](#using-the-quay-plugin-in-backstage)
 
@@ -66,20 +65,6 @@ The Quay plugin displays the information about your container images within the 
      annotations:
        'quay.io/repository-slug': `<ORGANIZATION>/<REPOSITORY>',
    ```
-
-### Development Setup
-
-In [Backstage plugin terminology](https://backstage.io/docs/local-dev/cli-build-system#package-roles), the Quay plugin is a front-end plugin. However, it requires a backend proxy to be available at all times. Therefore, you need to run a backend instance in the development environment as well.
-
-You can run the following commands concurrently from the root repository to start a live development session:
-
-```console
-yarn start-backend
-```
-
-```console
-yarn workspace @janus-idp/backstage-plugin-quay run start
-```
 
 ## For users
 

@@ -6,7 +6,13 @@ The following actions are currently supported in this module:
 
 - Create a kubernetes namespace
 
-## Getting started
+## Table of Contents
+
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Usage](#usage)
+
+## Installation
 
 1. Install the action package in your Backstage project
 
@@ -14,7 +20,9 @@ The following actions are currently supported in this module:
    yarn workspace backend add @janus-idp/backstage-scaffolder-backend-module-kubernetes
    ```
 
-2. [Register](https://backstage.io/docs/features/software-templates/writing-custom-actions#registering-custom-actions) the Kubenretes actions by modifying the `packages/backend/src/plugins/scaffolder.ts` file from your project with the following changes:
+## Configuration
+
+1. [Register](https://backstage.io/docs/features/software-templates/writing-custom-actions#registering-custom-actions) the Kubenretes actions by modifying the `packages/backend/src/plugins/scaffolder.ts` file from your project with the following changes:
 
    ```ts
    import { CatalogClient } from '@backstage/catalog-client';
@@ -60,13 +68,13 @@ The following actions are currently supported in this module:
    }
    ```
 
-3. **Optional**: If you are doing the previous step for the first time, you also have to install the `@backstage/integration` package
+2. **Optional**: If you are doing the previous step for the first time, you also have to install the `@backstage/integration` package
 
    ```bash
    yarn workspace backend add @backstage/integration
    ```
 
-4. Add the Kubernetes actions to your templates, see the [example](./examples/templates/01-kubernetes-template.yaml) file in this repository for complete usage examples
+3. Add the Kubernetes actions to your templates, see the [example](./examples/templates/01-kubernetes-template.yaml) file in this repository for complete usage examples
 
    ```yaml
    action: kubernetes:create-namespace
@@ -98,28 +106,3 @@ The following actions are currently supported in this module:
 #### Output
 
 This action doesn't have any outputs.
-
-## Development
-
-1. Add the local package dependency to the Backstage instance
-
-   ```shell
-   yarn workspace backend add file:./plugins/kubernetes-actions
-   ```
-
-2. [Register](#getting-started) the Kubernetes actions in your Backstage project
-3. **Optional**: You can use the sample template from this repository and add it as `locations` in your `app-config.yaml` file
-
-   ```yaml
-   ---
-   catalog:
-     locations:
-       - type: file
-         target: ../../plugins/kubernetes-actions/examples/templates/01-kubernetes-template.yaml
-         rules:
-           - allow: [Template]
-   ```
-
-4. Run `yarn dev`
-5. Make sure you have an available kubernetes cluster
-6. Start using the Kubernetes actions in your templates
