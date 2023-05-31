@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-tekton [1.5.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.4.14...@janus-idp/backstage-plugin-tekton@1.5.0) (2023-05-31)
+
+
+### Features
+
+* **tekton:** show cluster label before the select dropdown ([#345](https://github.com/janus-idp/backstage-plugins/issues/345)) ([582586e](https://github.com/janus-idp/backstage-plugins/commit/582586eca35af76fa931ace6d823e74dd4012215))
+
 ## @janus-idp/backstage-plugin-tekton [1.4.14](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.4.13...@janus-idp/backstage-plugin-tekton@1.4.14) (2023-05-30)
 
 ## @janus-idp/backstage-plugin-tekton [1.4.13](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.4.12...@janus-idp/backstage-plugin-tekton@1.4.13) (2023-05-30)
