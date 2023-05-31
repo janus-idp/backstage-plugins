@@ -51,6 +51,12 @@ export const CronJobGVK: GroupVersionKind = {
   kind: 'CronJob',
 };
 
+export const RouteGVK: GroupVersionKind = {
+  apiVersion: 'v1',
+  apiGroup: 'route.openshift.io',
+  kind: 'Route',
+};
+
 export enum ModelsPlural {
   deployments = 'deployments',
   pods = 'pods',
@@ -61,6 +67,7 @@ export enum ModelsPlural {
   daemonsets = 'daemonsets',
   cronjobs = 'cronjobs',
   statefulsets = 'statefulsets',
+  routes = 'routes',
 }
 
 export const resourceGVKs: { [key: string]: GroupVersionKind } = {
@@ -73,6 +80,7 @@ export const resourceGVKs: { [key: string]: GroupVersionKind } = {
   [ModelsPlural.cronjobs]: CronJobGVK,
   [ModelsPlural.jobs]: JobGVK,
   [ModelsPlural.statefulsets]: StatefulSetGVK,
+  [ModelsPlural.routes]: RouteGVK,
 };
 
 export const DeploymentModel: Model = {
@@ -128,6 +136,14 @@ export const JobModel: Model = {
   color: '#004080',
 };
 
+export const RouteModel: Model = {
+  ...RouteGVK,
+  abbr: 'RT',
+  labelPlural: 'Routes',
+  plural: 'routes',
+  color: '#2b9af3',
+};
+
 export const resourceModels = {
   [DeploymentModel.kind]: DeploymentModel,
   [PodModel.kind]: PodModel,
@@ -137,4 +153,5 @@ export const resourceModels = {
   [DaemonSetModel.kind]: DaemonSetModel,
   [CronJobModel.kind]: CronJobModel,
   [JobModel.kind]: JobModel,
+  [RouteModel.kind]: RouteModel,
 };

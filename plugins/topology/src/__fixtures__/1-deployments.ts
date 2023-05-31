@@ -1,3 +1,58 @@
+export const customResourceRoute = {
+  metadata: {
+    name: 'hello-minikube2',
+    namespace: 'jai-test',
+    uid: '17c0f520-3878-4834-96a1-b19854f0d06f',
+    resourceVersion: '174049',
+    creationTimestamp: '2023-05-22T08:14:25Z',
+    labels: {
+      app: 'hello-minikube2',
+      'app.kubernetes.io/component': 'hello-minikube2',
+      'app.kubernetes.io/instance': 'hello-minikube2',
+      'app.kubernetes.io/name': 'hello-minikube2',
+      'app.openshift.io/runtime': 'nodejs',
+      'app.openshift.io/runtime-version': '16-ubi8',
+      'backstage.io/kubernetes-id': 'backstage',
+    },
+    annotations: {
+      'openshift.io/host.generated': 'true',
+    },
+  },
+  spec: {
+    host: 'nodejs-ex-git-jai-test.apps.viraj-22-05-2023-0.devcluster.openshift.com',
+    to: {
+      kind: 'Service',
+      name: 'hello-world',
+      weight: 100,
+    },
+    port: {
+      targetPort: '8080-tcp',
+    },
+    tls: {
+      termination: 'edge',
+      insecureEdgeTerminationPolicy: 'Redirect',
+    },
+    wildcardPolicy: 'None',
+  },
+  status: {
+    ingress: [
+      {
+        host: 'nodejs-ex-git-jai-test.apps.viraj-22-05-2023-0.devcluster.openshift.com',
+        routerName: 'default',
+        conditions: [
+          {
+            type: 'Admitted',
+            status: 'True',
+            lastTransitionTime: '2023-05-22T08:14:25Z',
+          },
+        ],
+        wildcardPolicy: 'None',
+        routerCanonicalHostname:
+          'router-default.apps.viraj-22-05-2023-0.devcluster.openshift.com',
+      },
+    ],
+  },
+};
 export const mockKubernetesResponse = {
   pods: [
     {
@@ -1985,6 +2040,12 @@ export const mockKubernetesResponse = {
       },
     },
   ],
+  routes: [
+    {
+      ...customResourceRoute,
+      kind: 'Route',
+    },
+  ],
   statefulsets: [
     {
       apiVersion: 'apps/v1',
@@ -2279,6 +2340,9 @@ export const mockK8sResourcesData = {
     },
     ingresses: {
       data: mockKubernetesResponse.ingresses,
+    },
+    routes: {
+      data: mockKubernetesResponse.routes,
     },
   },
 };

@@ -660,7 +660,7 @@ export const workloadNodeData = {
               uid: 'a2ea87d9-6ab5-4c4c-883f-cb8eb0d6f272',
               resourceVersion: '345759',
               generation: 2,
-              creationTimestamp: '2023-02-13T15:00:22Z',
+              creationTimestamp: new Date('2023-02-13T15:00:22Z'),
               labels: {
                 'backstage.io/kubernetes-id': 'nationalparks-py',
               },
@@ -699,6 +699,67 @@ export const workloadNodeData = {
             apiVersion: 'networking.k8s.io/v1',
           },
           url: 'http://div/minikube',
+        },
+      ],
+      routesData: [
+        {
+          route: {
+            metadata: {
+              name: 'hello-minikube2',
+              namespace: 'jai-test',
+              uid: '17c0f520-3878-4834-96a1-b19854f0d06f',
+              resourceVersion: '174049',
+              creationTimestamp: '2023-05-22T08:14:25Z',
+              labels: {
+                app: 'hello-minikube2',
+                'app.kubernetes.io/component': 'hello-minikube2',
+                'app.kubernetes.io/instance': 'hello-minikube2',
+                'app.kubernetes.io/name': 'hello-minikube2',
+                'app.openshift.io/runtime': 'nodejs',
+                'app.openshift.io/runtime-version': '16-ubi8',
+                'backstage.io/kubernetes-id': 'backstage',
+              },
+              annotations: {
+                'openshift.io/host.generated': 'true',
+              },
+            },
+            spec: {
+              host: 'nodejs-ex-git-jai-test.apps.viraj-22-05-2023-0.devcluster.openshift.com',
+              to: {
+                kind: 'Service',
+                name: 'hello-minikube2',
+                weight: 100,
+              },
+              port: {
+                targetPort: '8080-tcp',
+              },
+              tls: {
+                termination: 'edge',
+                insecureEdgeTerminationPolicy: 'Redirect',
+              },
+              wildcardPolicy: 'None',
+            },
+            status: {
+              ingress: [
+                {
+                  host: 'nodejs-ex-git-jai-test.apps.viraj-22-05-2023-0.devcluster.openshift.com',
+                  routerName: 'default',
+                  conditions: [
+                    {
+                      type: 'Admitted',
+                      status: 'True',
+                      lastTransitionTime: '2023-05-22T08:14:25Z',
+                    },
+                  ],
+                  wildcardPolicy: 'None',
+                  routerCanonicalHostname:
+                    'router-default.apps.viraj-22-05-2023-0.devcluster.openshift.com',
+                },
+              ],
+            },
+            kind: 'Route',
+          },
+          url: 'https://nodejs-ex-git-jai-test.apps.viraj-22-05-2023-0.devcluster.openshift.com',
         },
       ],
     },

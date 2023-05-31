@@ -23,6 +23,7 @@ import {
   getPodsDataForResource,
 } from './pod-resource-utils';
 import { JobsData } from '../types/jobs';
+import { RouteIngress, RouteKind, RoutesData } from '../types/route';
 
 const validPod = (pod: V1Pod) => {
   const owners = pod?.metadata?.ownerReferences;
@@ -195,4 +196,94 @@ export const getJobsDataForResource = (
     job,
     podsData: getPodsDataForResource(job, resources),
   }));
+};
+
+const getRouteHost = (
+  route: RouteKind,
+  onlyAdmitted: boolean,
+): string | undefined => {
+  let oldestAdmittedIngress: any;
+  let oldestTransitionTime: string;
+
+  route.status?.ingress.forEach((ingress: RouteIngress) => {
+    const admittedCondition = ingress.conditions?.find(
+      condition => condition.type === 'Admitted' && condition.status === 'True',
+    );
+    if (
+      admittedCondition?.lastTransitionTime &&
+      (!oldestTransitionTime ||
+        oldestTransitionTime > admittedCondition.lastTransitionTime)
+    ) {
+      oldestAdmittedIngress = ingress;
+      oldestTransitionTime = admittedCondition.lastTransitionTime;
+    }
+  });
+
+  if (oldestAdmittedIngress) {
+    return oldestAdmittedIngress.host;
+  }
+
+  return onlyAdmitted ? undefined : route.spec?.host;
+};
+
+export const getRouteWebURL = (route: RouteKind): string => {
+  const scheme = route?.spec?.tls?.termination ? 'https' : 'http';
+  let url = `${scheme}://${getRouteHost(route, false)}`;
+  if (route.spec?.path) {
+    url += route.spec.path;
+  }
+  return url;
+};
+
+export const getRoutesDataForResourceServices = (
+  resources: K8sResponseData,
+  resource: K8sWorkloadResource,
+): RoutesData => {
+  const services = getServicesForResource(
+    resource,
+    resources.services?.data as V1Service[],
+  );
+  const servicesNames = services.map((s: V1Service) => s.metadata?.name ?? '');
+  const routes = (resources.routes?.data as RouteKind[]) ?? [];
+  if (!servicesNames?.length || !routes?.length) {
+    return [];
+  }
+
+  const routesData: RoutesData = routes.reduce(
+    (acc: RoutesData, route: RouteKind) => {
+      if (route.spec?.to?.name && servicesNames.includes(route.spec.to.name)) {
+        acc.push({
+          route,
+          url: getRouteWebURL(route),
+        });
+      }
+      return acc;
+    },
+    [] as RoutesData,
+  );
+
+  return routesData;
+};
+
+export const getRoutesURLforResource = (
+  resources: K8sResponseData,
+  resource: K8sWorkloadResource,
+): string | undefined => {
+  if (!resources.routes?.data) {
+    return undefined;
+  }
+
+  const routesData = getRoutesDataForResourceServices(resources, resource);
+
+  return getIngressesURL(routesData);
+};
+
+export const getUrlForResource = (
+  resources: K8sResponseData,
+  resource: K8sWorkloadResource,
+): string | undefined => {
+  return (
+    getRoutesURLforResource(resources, resource) ||
+    getIngressURLForResource(resources, resource)
+  );
 };
