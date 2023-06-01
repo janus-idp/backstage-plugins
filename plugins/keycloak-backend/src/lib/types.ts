@@ -24,15 +24,11 @@ import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRep
  *
  * @public
  */
-export type UserTransformer = (
-  user: UserRepresentation,
-) => Promise<UserEntity | undefined>;
+export type UserTransformer = (user: UserRepresentation) => Promise<UserEntity | undefined>;
 
 /**
  * Customize the ingested Group entity
  *
  * @public
  */
-export type GroupTransformer = (
-  user: GroupRepresentation,
-) => Promise<GroupEntity | undefined>;
+export type GroupTransformer = (user: GroupRepresentation) => Promise<GroupEntity | undefined>;

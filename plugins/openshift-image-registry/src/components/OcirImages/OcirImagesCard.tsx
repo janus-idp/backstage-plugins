@@ -1,10 +1,6 @@
 import React from 'react';
 
-import {
-  ItemCardHeader,
-  LinkButton,
-  MarkdownContent,
-} from '@backstage/core-components';
+import { ItemCardHeader, LinkButton, MarkdownContent } from '@backstage/core-components';
 import { BackstageTheme } from '@backstage/theme';
 
 import {
@@ -20,7 +16,7 @@ import {
 
 import { ImageStreamMetadata } from '../../types';
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
+const useStyles = makeStyles<BackstageTheme>((theme) => ({
   label: {
     color: theme.palette.text.secondary,
     textTransform: 'uppercase',
@@ -42,10 +38,7 @@ type OcirImagesCardProps = {
   openSidebar: (imageStream: ImageStreamMetadata) => void;
 };
 
-export const OcirImagesCard = ({
-  imageStream,
-  openSidebar,
-}: OcirImagesCardProps) => {
+export const OcirImagesCard = ({ imageStream, openSidebar }: OcirImagesCardProps) => {
   const classes = useStyles();
 
   return (
@@ -73,16 +66,10 @@ export const OcirImagesCard = ({
           <Typography variant="body2" className={classes.label}>
             Last Modified
           </Typography>
-          <span className={classes.description}>
-            {imageStream.last_modified || 'N/A'}
-          </span>
+          <span className={classes.description}>{imageStream.last_modified || 'N/A'}</span>
         </Box>
         <Box>
-          <Typography
-            variant="body2"
-            className={classes.label}
-            style={{ marginBottom: '4px' }}
-          >
+          <Typography variant="body2" className={classes.label} style={{ marginBottom: '4px' }}>
             Tags
           </Typography>
           {imageStream.tags?.length
@@ -93,11 +80,7 @@ export const OcirImagesCard = ({
         </Box>
       </CardContent>
       <CardActions>
-        <LinkButton
-          color="primary"
-          to=""
-          onClick={() => openSidebar(imageStream)}
-        >
+        <LinkButton color="primary" to="" onClick={() => openSidebar(imageStream)}>
           Open
         </LinkButton>
       </CardActions>

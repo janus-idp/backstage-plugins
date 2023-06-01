@@ -1,7 +1,4 @@
-import {
-  mockK8sResourcesData,
-  mockKubernetesResponse,
-} from '../__fixtures__/1-deployments';
+import { mockK8sResourcesData, mockKubernetesResponse } from '../__fixtures__/1-deployments';
 import { RouteKind } from '../types/route';
 import {
   getIngressesDataForResourceServices,
@@ -44,19 +41,13 @@ describe('ResourceUtils:: ingress', () => {
   });
 
   it('should not return services for associated resource if no services exits', () => {
-    const servicesData = getServicesForResource(
-      mockKubernetesResponse.deployments[0] as any,
-      [],
-    );
+    const servicesData = getServicesForResource(mockKubernetesResponse.deployments[0] as any, []);
     expect(servicesData).toHaveLength(0);
     expect(servicesData).toEqual([]);
   });
 
   it('should not return services for invalid resource', () => {
-    const servicesData = getServicesForResource(
-      {} as any,
-      mockKubernetesResponse.services as any,
-    );
+    const servicesData = getServicesForResource({} as any, mockKubernetesResponse.services as any);
     expect(servicesData).toHaveLength(0);
     expect(servicesData).toEqual([]);
   });

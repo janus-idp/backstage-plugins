@@ -26,14 +26,7 @@ const Decorator = ({
   ...rest
 }: React.PropsWithChildren<DecoratorTypes>) => {
   const decorator = (
-    <PfDecorator
-      x={x}
-      y={y}
-      radius={radius}
-      className="tp-decorator"
-      showBackground
-      {...rest}
-    />
+    <PfDecorator x={x} y={y} radius={radius} className="tp-decorator" showBackground {...rest} />
   );
 
   if (href) {
@@ -43,7 +36,7 @@ const Decorator = ({
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        onClick={e => {
+        onClick={(e) => {
           e.stopPropagation();
         }}
         role="button"
@@ -52,12 +45,7 @@ const Decorator = ({
         {decorator}
       </a>
     ) : (
-      <Link
-        className="tp-decorator__link"
-        to={href}
-        role="button"
-        aria-label={ariaLabel}
-      >
+      <Link className="tp-decorator__link" to={href} role="button" aria-label={ariaLabel}>
         {decorator}
       </Link>
     );

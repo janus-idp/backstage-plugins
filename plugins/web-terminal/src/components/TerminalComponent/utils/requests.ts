@@ -86,20 +86,13 @@ export const getWorkspace = async (
   return [data.status.devworkspaceId, data.status.phase];
 };
 
-export const getNamespaces = async (
-  restServerUrl: string,
-  link: string,
-  token: string,
-) => {
-  const response = await fetch(
-    `${restServerUrl}?url=https://${link}/api/v1/namespaces`,
-    {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+export const getNamespaces = async (restServerUrl: string, link: string, token: string) => {
+  const response = await fetch(`${restServerUrl}?url=https://${link}/api/v1/namespaces`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
     },
-  );
+  });
   const data = await response.json();
   if (response.status !== 200) {
     return [];

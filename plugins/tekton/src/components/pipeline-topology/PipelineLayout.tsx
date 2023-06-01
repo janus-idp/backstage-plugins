@@ -31,9 +31,7 @@ import {
 } from '../../consts/pipeline-topology-const';
 import { PipelineMixedNodeModel } from '../../types/pipeline-topology-types';
 import { getLayoutData } from '../../utils/pipeline-topology-utils';
-import pipelineComponentFactory, {
-  layoutFactory,
-} from './pipelineComponentFactory';
+import pipelineComponentFactory, { layoutFactory } from './pipelineComponentFactory';
 
 type PipelineLayoutProps = {
   model: {
@@ -55,10 +53,8 @@ export const PipelineLayout = ({ model }: PipelineLayoutProps) => {
   const layout: PipelineLayoutTypes = model.graph.layout as PipelineLayoutTypes;
 
   const onLayoutUpdate = React.useCallback(
-    nodes => {
-      const nodeBounds = nodes.map((node: Node<NodeModel, any>) =>
-        node.getBounds(),
-      );
+    (nodes) => {
+      const nodeBounds = nodes.map((node: Node<NodeModel, any>) => node.getBounds());
       const maxWidth = Math.floor(
         nodeBounds
           .map((bounds: Rect) => bounds.width)
@@ -88,10 +84,8 @@ export const PipelineLayout = ({ model }: PipelineLayoutProps) => {
         horizontalMargin = getLayoutData(layout)?.marginx || 0;
         verticalMargin = getLayoutData(layout)?.marginy || 0;
       }
-      const finallyTaskHeight =
-        maxObject.y + maxHeight + DROP_SHADOW_SPACING + verticalMargin * 2;
-      const regularTaskHeight =
-        maxY + NODE_HEIGHT + DROP_SHADOW_SPACING + verticalMargin * 2;
+      const finallyTaskHeight = maxObject.y + maxHeight + DROP_SHADOW_SPACING + verticalMargin * 2;
+      const regularTaskHeight = maxY + NODE_HEIGHT + DROP_SHADOW_SPACING + verticalMargin * 2;
 
       setMaxSize({
         height: Math.max(finallyTaskHeight, regularTaskHeight) + TOOLBAR_HEIGHT,
@@ -177,7 +171,7 @@ export const PipelineLayout = ({ model }: PipelineLayoutProps) => {
   return (
     <Measure
       bounds
-      onResize={contentRect => {
+      onResize={(contentRect) => {
         setWidth(contentRect.bounds?.width ?? 0);
       }}
     >

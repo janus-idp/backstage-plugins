@@ -56,9 +56,7 @@ describe('SegmentAnalytics', () => {
   describe('fromConfig', () => {
     it('throws when missing writeKey', () => {
       const config = new ConfigReader({ app: { analytics: { segment: {} } } });
-      expect(() => SegmentAnalytics.fromConfig(config)).toThrow(
-        /Missing required config value/,
-      );
+      expect(() => SegmentAnalytics.fromConfig(config)).toThrow(/Missing required config value/);
     });
 
     it('returns implementation', () => {
@@ -83,11 +81,7 @@ describe('SegmentAnalytics', () => {
       });
 
       expect(mockIdentify).toHaveBeenCalledTimes(1);
-      expect(mockIdentify).toHaveBeenCalledWith(
-        /* hashed id */ '6a646f65',
-        {},
-        {},
-      );
+      expect(mockIdentify).toHaveBeenCalledWith(/* hashed id */ '6a646f65', {}, {});
     });
 
     it('track identify with maskedIP', async () => {
@@ -99,11 +93,7 @@ describe('SegmentAnalytics', () => {
       });
 
       expect(mockIdentify).toHaveBeenCalledTimes(1);
-      expect(mockIdentify).toHaveBeenCalledWith(
-        /* hashed id */ '6a646f65',
-        {},
-        { ip: '0.0.0.0' },
-      );
+      expect(mockIdentify).toHaveBeenCalledWith(/* hashed id */ '6a646f65', {}, { ip: '0.0.0.0' });
     });
 
     it('tracks basic pageview', async () => {

@@ -20,9 +20,7 @@ export const useWorkloadsWatcher = (): {
       if (!loading) {
         setLoaded(true);
         if (!responseError) {
-          const dataModelRes = await updateTopologyDataModel(
-            watchResourcesData,
-          );
+          const dataModelRes = await updateTopologyDataModel(watchResourcesData);
           if (dataModelRes.model) {
             setDataModel(dataModelRes.model);
           }

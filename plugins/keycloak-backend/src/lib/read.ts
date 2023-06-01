@@ -52,7 +52,7 @@ export const parseGroup = (
     profile: {
       displayName: keycloakGroup.name!,
     },
-    children: keycloakGroup.subGroups?.map(g => g.name!) || [],
+    children: keycloakGroup.subGroups?.map((g) => g.name!) || [],
     parent: keycloakGroup?.parent,
     members: keycloakGroup.members,
   },
@@ -76,9 +76,7 @@ export const parseUser = (
       email: user.email,
       displayName: [user.firstName, user.lastName].filter(Boolean).join(' '),
     },
-    memberOf: groups
-      .filter(g => g.members?.includes(user.username!))
-      .map(g => g.name!),
+    memberOf: groups.filter((g) => g.members?.includes(user.username!)).map((g) => g.name!),
   },
 });
 
@@ -99,8 +97,7 @@ export async function getEntities<T extends Users | Groups>(
   entityQuerySize: number = KEYCLOAK_ENTITY_QUERY_SIZE,
 ): Promise<Awaited<ReturnType<T['find']>>> {
   const rawEntityCount = await entities.count({ realm: config.realm });
-  const entityCount =
-    typeof rawEntityCount === 'number' ? rawEntityCount : rawEntityCount.count;
+  const entityCount = typeof rawEntityCount === 'number' ? rawEntityCount : rawEntityCount.count;
 
   const pageCount = Math.ceil(entityCount / entityQuerySize);
 
@@ -133,35 +130,27 @@ export const readKeycloakRealm = async (
   users: UserEntity[];
   groups: GroupEntity[];
 }> => {
-  const kUsers = await getEntities(
-    client.users,
-    config,
-    options?.userQuerySize,
-  );
+  const kUsers = await getEntities(client.users, config, options?.userQuerySize);
 
-  const rawKGroups = await getEntities(
-    client.groups,
-    config,
-    options?.groupQuerySize,
-  );
+  const rawKGroups = await getEntities(client.groups, config, options?.groupQuerySize);
   const flatKGroups = rawKGroups.reduce((acc, g) => {
     const newAcc = acc.concat(...traverseGroups(g));
     return newAcc;
   }, [] as GroupRepresentationWithParent[]);
   const kGroups = await Promise.all(
-    flatKGroups.map(async g => {
+    flatKGroups.map(async (g) => {
       g.members = (
         await client.groups.listMembers({
           id: g.id!,
           realm: config.realm,
         })
-      ).map(m => m.username!);
+      ).map((m) => m.username!);
       return g;
     }),
   );
 
-  const users = kUsers.map(u => parseUser(u, config.realm, kGroups));
-  const groups = kGroups.map(g => parseGroup(g, config.realm));
+  const users = kUsers.map((u) => parseUser(u, config.realm, kGroups));
+  const groups = kGroups.map((g) => parseGroup(g, config.realm));
 
   return { users, groups };
 };

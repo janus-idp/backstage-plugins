@@ -1,18 +1,11 @@
 import React from 'react';
 
-import {
-  StatusAborted,
-  StatusError,
-  StatusOK,
-} from '@backstage/core-components';
+import { StatusAborted, StatusError, StatusOK } from '@backstage/core-components';
 
 import { Button, Grid, makeStyles, Tooltip } from '@material-ui/core';
 import { ArrowCircleUpIcon } from '@patternfly/react-icons';
 
-import {
-  ClusterStatus,
-  ClusterUpdate,
-} from '@janus-idp/backstage-plugin-ocm-common';
+import { ClusterStatus, ClusterUpdate } from '@janus-idp/backstage-plugin-ocm-common';
 
 const useStyles = makeStyles({
   button: {
@@ -48,11 +41,7 @@ export const Status = ({ status }: { status: ClusterStatus }) => {
   );
 };
 
-export const Update = ({
-  data,
-}: {
-  data: { version: string; update: ClusterUpdate };
-}) => {
+export const Update = ({ data }: { data: { version: string; update: ClusterUpdate } }) => {
   const classes = useStyles();
   return (
     <>

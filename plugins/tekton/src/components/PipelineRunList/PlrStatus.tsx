@@ -18,15 +18,11 @@ const getPlrStatusIcon = (plrStatus1: string) => {
     case 'Succeeded':
       return <CheckCircleIcon className="bs-tkn-icons__green-check-icon" />;
     case 'Failed':
-      return (
-        <ExclamationCircleIcon className="bs-tkn-icons__red-exclamation-icon" />
-      );
+      return <ExclamationCircleIcon className="bs-tkn-icons__red-exclamation-icon" />;
     case 'Running':
       return <SyncAltIcon />;
     case 'Cancelled':
-      return (
-        <ExclamationTriangleIcon className="bs-tkn-icons__yellow-exclamation-icon" />
-      );
+      return <ExclamationTriangleIcon className="bs-tkn-icons__yellow-exclamation-icon" />;
     case 'Pending':
       return <PendingIcon />;
     default:

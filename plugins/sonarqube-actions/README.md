@@ -25,9 +25,7 @@ The following actions are currently supported in this module:
    /* highlight-add-next-line */
    import { createSonarQubeProjectAction } from '@janus-idp/backstage-scaffolder-backend-module-sonarqube';
 
-   export default async function createPlugin(
-     env: PluginEnvironment,
-   ): Promise<Router> {
+   export default async function createPlugin(env: PluginEnvironment): Promise<Router> {
      // ...
 
      /* highlight-add-next-line */

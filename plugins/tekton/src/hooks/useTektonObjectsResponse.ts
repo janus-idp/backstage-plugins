@@ -11,17 +11,13 @@ import { useAllWatchResources } from './useAllWatchResources';
 import { useDeepCompareMemoize } from './useDeepCompareMemoize';
 import { useResourcesClusters } from './useResourcesClusters';
 
-export const useTektonObjectsResponse = (
-  watchedResource: string[],
-): TektonResourcesContextData => {
+export const useTektonObjectsResponse = (watchedResource: string[]): TektonResourcesContextData => {
   const { entity } = useEntity();
   const { kubernetesObjects, loading, error } = useKubernetesObjects(entity);
   const [selectedCluster, setSelectedCluster] = React.useState<number>(0);
   const [loaded, setLoaded] = React.useState<boolean>(false);
   const [errorState, setErrorState] = React.useState<string>();
-  const [pipelinesData, setPipelinesData] = React.useState<
-    TektonResponseData | undefined
-  >();
+  const [pipelinesData, setPipelinesData] = React.useState<TektonResponseData | undefined>();
 
   const mounted = React.useRef(false);
 
@@ -47,7 +43,7 @@ export const useTektonObjectsResponse = (
     (resData, isLoading, errorData) => {
       if (!isLoading && !errorData && mounted.current) {
         setLoaded(true);
-        setPipelinesData(prevPipelinesData => {
+        setPipelinesData((prevPipelinesData) => {
           if (isEqual(prevPipelinesData, resData)) {
             return prevPipelinesData;
           }

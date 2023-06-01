@@ -23,7 +23,5 @@ export const ClusterInfoCard = () => {
     ['openshiftVersion', 'OpenShift version'],
     ['platform', 'Platform'],
   ]);
-  return (
-    <TableCardFromData data={data} title="Cluster Info" nameMap={nameMap} />
-  );
+  return <TableCardFromData data={data} title="Cluster Info" nameMap={nameMap} />;
 };

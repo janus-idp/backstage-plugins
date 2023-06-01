@@ -5,9 +5,7 @@ import { Router } from 'express';
 
 import type { PluginEnvironment } from '../types';
 
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
+export default async function createPlugin(env: PluginEnvironment): Promise<Router> {
   const catalogClient = new CatalogClient({
     discoveryApi: env.discovery,
   });

@@ -132,9 +132,7 @@ If you are interested in Resource discovery and do not want any of the front-end
 
    import { PluginEnvironment } from '../types';
 
-   export default async function createPlugin(
-     env: PluginEnvironment,
-   ): Promise<Router> {
+   export default async function createPlugin(env: PluginEnvironment): Promise<Router> {
      return await createRouter({
        logger: env.logger,
        config: env.config,
@@ -188,9 +186,7 @@ If you are interested in Resource discovery and do not want any of the front-end
       /* highlight-add-next-line */
       import { ManagedClusterProvider } from '@janus-idp/backstage-plugin-ocm-backend';
 
-      export default async function createPlugin(
-        env: PluginEnvironment,
-      ): Promise<Router> {
+      export default async function createPlugin(env: PluginEnvironment): Promise<Router> {
         const builder = await CatalogBuilder.create(env);
         // ...
         /* highlight-add-start */
@@ -210,9 +206,7 @@ If you are interested in Resource discovery and do not want any of the front-end
       /* highlight-add-next-line */
       import { ManagedClusterProvider } from '@janus-idp/backstage-plugin-ocm-backend';
 
-      export default async function createPlugin(
-        env: PluginEnvironment,
-      ): Promise<Router> {
+      export default async function createPlugin(env: PluginEnvironment): Promise<Router> {
         const builder = await CatalogBuilder.create(env);
         // ...
         /* highlight-add-start */

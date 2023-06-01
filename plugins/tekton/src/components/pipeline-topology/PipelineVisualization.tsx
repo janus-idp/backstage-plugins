@@ -1,11 +1,6 @@
 import React from 'react';
 
-import {
-  BottomLinkProps,
-  EmptyState,
-  InfoCard,
-  Progress,
-} from '@backstage/core-components';
+import { BottomLinkProps, EmptyState, InfoCard, Progress } from '@backstage/core-components';
 import { useEntity } from '@backstage/plugin-catalog-react';
 
 import { Typography } from '@material-ui/core';
@@ -53,18 +48,10 @@ const WrapperInfoCard = ({
   </>
 );
 
-export const PipelineVisualization = ({
-  linkTekton = true,
-  url,
-}: PipelineVisualizationProps) => {
+export const PipelineVisualization = ({ linkTekton = true, url }: PipelineVisualizationProps) => {
   useDarkTheme();
-  const {
-    loaded,
-    responseError,
-    watchResourcesData,
-    selectedClusterErrors,
-    clusters,
-  } = React.useContext(TektonResourcesContext);
+  const { loaded, responseError, watchResourcesData, selectedClusterErrors, clusters } =
+    React.useContext(TektonResourcesContext);
 
   const { entity } = useEntity();
   const allErrors: ClusterErrors = [
@@ -72,11 +59,7 @@ export const PipelineVisualization = ({
     ...(selectedClusterErrors ?? []),
   ];
   const latestPipelineRun = React.useMemo(
-    () =>
-      getLatestPipelineRun(
-        watchResourcesData?.pipelineruns?.data ?? [],
-        'creationTimestamp',
-      ),
+    () => getLatestPipelineRun(watchResourcesData?.pipelineruns?.data ?? [], 'creationTimestamp'),
     [watchResourcesData],
   );
 
@@ -89,15 +72,8 @@ export const PipelineVisualization = ({
 
   if (loaded && (responseError || isEmpty(latestPipelineRun))) {
     return (
-      <WrapperInfoCard
-        allErrors={allErrors}
-        showClusterSelector={clusters.length > 0}
-      >
-        <EmptyState
-          missing="data"
-          description="No Pipeline Run to visualize"
-          title=""
-        />
+      <WrapperInfoCard allErrors={allErrors} showClusterSelector={clusters.length > 0}>
+        <EmptyState missing="data" description="No Pipeline Run to visualize" title="" />
       </WrapperInfoCard>
     );
   }
@@ -113,9 +89,7 @@ export const PipelineVisualization = ({
       footerLink={
         linkTekton
           ? {
-              link: url
-                ? url
-                : `/catalog/default/component/${entity.metadata.name}/tekton`,
+              link: url ? url : `/catalog/default/component/${entity.metadata.name}/tekton`,
               title: 'GO TO TEKTON',
             }
           : undefined
@@ -124,10 +98,7 @@ export const PipelineVisualization = ({
       {latestPipelineRun?.metadata?.name && (
         <Split className="bs-tkn-pipeline-visualization__label">
           <SplitItem style={{ marginRight: 'var(--pf-global--spacer--sm)' }}>
-            <span
-              className="badge"
-              style={{ backgroundColor: PipelineRunModel.color }}
-            >
+            <span className="badge" style={{ backgroundColor: PipelineRunModel.color }}>
               {PipelineRunModel.abbr}
             </span>
           </SplitItem>
@@ -142,14 +113,9 @@ export const PipelineVisualization = ({
         </Split>
       )}
       {!model || (model.nodes.length === 0 && model.edges.length === 0) ? (
-        <div data-testid="pipeline-no-tasks">
-          This Pipeline Run has no tasks to visualize
-        </div>
+        <div data-testid="pipeline-no-tasks">This Pipeline Run has no tasks to visualize</div>
       ) : (
-        <div
-          data-testid="pipeline-visualization"
-          className="bs-tkn-pipeline-visualization__layout"
-        >
+        <div data-testid="pipeline-visualization" className="bs-tkn-pipeline-visualization__layout">
           <PipelineLayout model={model} />
         </div>
       )}

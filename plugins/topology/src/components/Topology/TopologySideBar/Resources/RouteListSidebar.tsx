@@ -7,10 +7,7 @@ import TopologyResourcesTabPanelItem from '../TopologyResourcesTabPaneltem';
 
 const RouteListSidebar = ({ routesData }: { routesData: RouteData[] }) => {
   return (
-    <TopologyResourcesTabPanelItem
-      resourceLabel={RouteModel.labelPlural}
-      dataTest="routes-list"
-    >
+    <TopologyResourcesTabPanelItem resourceLabel={RouteModel.labelPlural} dataTest="routes-list">
       {routesData?.length > 0 &&
         routesData.map((routeData: RouteData) => (
           <li
@@ -27,11 +24,7 @@ const RouteListSidebar = ({ routesData }: { routesData: RouteData[] }) => {
             {routeData.url && (
               <>
                 <span className="topology-text-muted">Location:</span>
-                <a
-                  href={routeData.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+                <a href={routeData.url} target="_blank" rel="noopener noreferrer">
                   {routeData.url}
                 </a>
               </>

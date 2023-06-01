@@ -9,10 +9,7 @@ type TopologyResourceLabelsProps = {
   dataTest?: string;
 };
 
-const TopologyResourceLabels = ({
-  labels,
-  dataTest,
-}: TopologyResourceLabelsProps) => {
+const TopologyResourceLabels = ({ labels, dataTest }: TopologyResourceLabelsProps) => {
   return (
     <ul className="topology-resource-labels-list" data-testid={dataTest}>
       {Object.keys(labels ?? {}).map((key: string) => (

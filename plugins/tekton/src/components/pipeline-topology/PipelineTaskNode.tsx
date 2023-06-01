@@ -48,14 +48,11 @@ const PipelineTaskNode = ({
   const isFinallyTask = element.getType() === NodeType.FINALLY_NODE;
 
   const computedTask: PipelineTaskWithStatus = data.task;
-  const stepList =
-    computedTask?.status?.steps || computedTask?.taskSpec?.steps || [];
+  const stepList = computedTask?.status?.steps || computedTask?.taskSpec?.steps || [];
 
   const taskStatus = getTaskStatus(data.pipelineRun, data.task);
 
-  const stepStatusList: StepStatus[] = stepList.map(step =>
-    createStepStatus(step, taskStatus),
-  );
+  const stepStatusList: StepStatus[] = stepList.map((step) => createStepStatus(step, taskStatus));
   const succeededStepsCount = stepStatusList.filter(
     ({ status }) => status === RunStatus.Succeeded,
   ).length;
@@ -67,7 +64,7 @@ const PipelineTaskNode = ({
 
   const passedData = React.useMemo(() => {
     const newData = { ...data };
-    Object.keys(newData).forEach(key => {
+    Object.keys(newData).forEach((key) => {
       if (newData[key] === undefined) {
         delete newData[key];
       }
@@ -94,9 +91,7 @@ const PipelineTaskNode = ({
       element={element}
       onContextMenu={data.showContextMenu ? onContextMenu : undefined}
       contextMenuOpen={contextMenuOpen}
-      scaleNode={
-        (hover || contextMenuOpen) && detailsLevel !== ScaleDetailsLevel.high
-      }
+      scaleNode={(hover || contextMenuOpen) && detailsLevel !== ScaleDetailsLevel.high}
       hideDetailsAtMedium
       {...passedData}
       {...rest}

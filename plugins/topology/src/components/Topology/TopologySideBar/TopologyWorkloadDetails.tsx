@@ -20,16 +20,10 @@ const TopologyWorkloadDetails: React.FC<{
       </TopologySideBarDetailsItem>
       <TopologySideBarDetailsItem label="Labels" emptyText="No labels">
         {resource.metadata?.labels && (
-          <TopologyResourceLabels
-            labels={resource.metadata.labels}
-            dataTest="label-list"
-          />
+          <TopologyResourceLabels labels={resource.metadata.labels} dataTest="label-list" />
         )}
       </TopologySideBarDetailsItem>
-      <TopologySideBarDetailsItem
-        label="Annotations"
-        emptyText="No annotations"
-      >
+      <TopologySideBarDetailsItem label="Annotations" emptyText="No annotations">
         {resource.metadata?.annotations && (
           <TopologyResourceLabels
             labels={resource.metadata.annotations}
@@ -49,11 +43,9 @@ const TopologyWorkloadDetails: React.FC<{
         {resource.metadata?.ownerReferences && (
           <ul data-testid="owner-list">
             <div>
-              {(resource.metadata.ownerReferences ?? []).map(
-                (o: V1OwnerReference) => (
-                  <li key={o.uid}>{o.name}</li>
-                ),
-              )}
+              {(resource.metadata.ownerReferences ?? []).map((o: V1OwnerReference) => (
+                <li key={o.uid}>{o.name}</li>
+              ))}
             </div>
           </ul>
         )}

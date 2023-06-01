@@ -94,43 +94,31 @@ export type KeycloakProviderConfig = {
   groupQuerySize?: number;
 };
 
-export const readProviderConfigs = (
-  config: Config,
-): KeycloakProviderConfig[] => {
-  const providersConfig = config.getOptionalConfig(
-    'catalog.providers.keycloakOrg',
-  );
+export const readProviderConfigs = (config: Config): KeycloakProviderConfig[] => {
+  const providersConfig = config.getOptionalConfig('catalog.providers.keycloakOrg');
   if (!providersConfig) {
     return [];
   }
 
-  return providersConfig.keys().map(id => {
+  return providersConfig.keys().map((id) => {
     const providerConfigInstance = providersConfig.getConfig(id);
 
     const baseUrl = providerConfigInstance.getString('baseUrl');
     const realm = providerConfigInstance.getOptionalString('realm') ?? 'master';
-    const loginRealm =
-      providerConfigInstance.getOptionalString('loginRealm') ?? 'master';
+    const loginRealm = providerConfigInstance.getOptionalString('loginRealm') ?? 'master';
     const username = providerConfigInstance.getOptionalString('username');
     const password = providerConfigInstance.getOptionalString('password');
     const clientId = providerConfigInstance.getOptionalString('clientId');
-    const clientSecret =
-      providerConfigInstance.getOptionalString('clientSecret');
-    const userQuerySize =
-      providerConfigInstance.getOptionalNumber('userQuerySize');
-    const groupQuerySize =
-      providerConfigInstance.getOptionalNumber('groupQuerySize');
+    const clientSecret = providerConfigInstance.getOptionalString('clientSecret');
+    const userQuerySize = providerConfigInstance.getOptionalNumber('userQuerySize');
+    const groupQuerySize = providerConfigInstance.getOptionalNumber('groupQuerySize');
 
     if (clientId && !clientSecret) {
-      throw new Error(
-        `clientSecret must be provided when clientId is defined.`,
-      );
+      throw new Error(`clientSecret must be provided when clientId is defined.`);
     }
 
     if (clientSecret && !clientId) {
-      throw new Error(
-        `clientId must be provided when clientSecret is defined.`,
-      );
+      throw new Error(`clientId must be provided when clientSecret is defined.`);
     }
 
     if (username && !password) {
@@ -142,9 +130,7 @@ export const readProviderConfigs = (
     }
 
     const schedule = providerConfigInstance.has('schedule')
-      ? readTaskScheduleDefinitionFromConfig(
-          providerConfigInstance.getConfig('schedule'),
-        )
+      ? readTaskScheduleDefinitionFromConfig(providerConfigInstance.getConfig('schedule'))
       : undefined;
 
     return {

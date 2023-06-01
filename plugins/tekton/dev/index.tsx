@@ -35,25 +35,23 @@ class MockKubernetesClient implements KubernetesApi {
   readonly resources;
 
   constructor(fixtureData: { [resourceType: string]: any[] }) {
-    this.resources = Object.entries(fixtureData).flatMap(
-      ([type, resources]) => {
-        if (type === 'pipelineruns' && resources[0]?.kind === 'PipelineRun') {
-          return {
-            type: 'customresources',
-            resources,
-          };
-        } else if (type === 'taskruns' && resources[0]?.kind === 'TaskRun') {
-          return {
-            type: 'customresources',
-            resources,
-          };
-        }
+    this.resources = Object.entries(fixtureData).flatMap(([type, resources]) => {
+      if (type === 'pipelineruns' && resources[0]?.kind === 'PipelineRun') {
         return {
-          type: type.toLocaleLowerCase('en-US'),
+          type: 'customresources',
           resources,
         };
-      },
-    );
+      } else if (type === 'taskruns' && resources[0]?.kind === 'TaskRun') {
+        return {
+          type: 'customresources',
+          resources,
+        };
+      }
+      return {
+        type: type.toLocaleLowerCase('en-US'),
+        resources,
+      };
+    });
   }
   async getWorkloadsByEntity(_request: any): Promise<any> {
     return {
@@ -112,12 +110,7 @@ createDevApp()
   .addPage({
     element: (
       <TestApiProvider
-        apis={[
-          [
-            kubernetesApiRef,
-            new MockKubernetesClient(mockKubernetesPlrResponse),
-          ],
-        ]}
+        apis={[[kubernetesApiRef, new MockKubernetesClient(mockKubernetesPlrResponse)]]}
       >
         <EntityProvider entity={mockEntity}>
           <TektonPage />
@@ -130,12 +123,7 @@ createDevApp()
   .addPage({
     element: (
       <TestApiProvider
-        apis={[
-          [
-            kubernetesApiRef,
-            new MockKubernetesClient(mockKubernetesPlrResponse),
-          ],
-        ]}
+        apis={[[kubernetesApiRef, new MockKubernetesClient(mockKubernetesPlrResponse)]]}
       >
         <EntityProvider entity={mockEntity}>
           <LatestPipelineRun url="/tekton" linkTekton />
@@ -148,12 +136,7 @@ createDevApp()
   .addPage({
     element: (
       <TestApiProvider
-        apis={[
-          [
-            kubernetesApiRef,
-            new MockKubernetesClient(mockKubernetesPlrResponse),
-          ],
-        ]}
+        apis={[[kubernetesApiRef, new MockKubernetesClient(mockKubernetesPlrResponse)]]}
       >
         <EntityProvider entity={mockEntity}>
           <EntityKubernetesContent />

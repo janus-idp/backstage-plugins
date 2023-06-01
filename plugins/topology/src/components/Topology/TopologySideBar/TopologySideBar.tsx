@@ -1,9 +1,6 @@
 import React from 'react';
 
-import {
-  BaseNode,
-  TopologySideBar as PFTopologySideBar,
-} from '@patternfly/react-topology';
+import { BaseNode, TopologySideBar as PFTopologySideBar } from '@patternfly/react-topology';
 
 import TopologySideBarContent from './TopologySideBarContent';
 

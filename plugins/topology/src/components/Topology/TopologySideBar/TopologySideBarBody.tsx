@@ -18,9 +18,7 @@ const TabPanel = (props: React.PropsWithChildren<TabPanelProps>) => {
 
   return (
     <div role="tabpanel" hidden={value !== index}>
-      {value === index && (
-        <div className="topology-side-bar-tab-panel">{children}</div>
-      )}
+      {value === index && <div className="topology-side-bar-tab-panel">{children}</div>}
     </div>
   );
 };

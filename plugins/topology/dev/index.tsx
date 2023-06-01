@@ -34,12 +34,10 @@ class MockKubernetesClient implements KubernetesApi {
   readonly resources;
 
   constructor(fixtureData: { [resourceType: string]: any[] }) {
-    this.resources = Object.entries(fixtureData).flatMap(
-      ([type, resources]) => ({
-        type: type.toLocaleLowerCase('en-US'),
-        resources,
-      }),
-    );
+    this.resources = Object.entries(fixtureData).flatMap(([type, resources]) => ({
+      type: type.toLocaleLowerCase('en-US'),
+      resources,
+    }));
   }
   async getWorkloadsByEntity(_request: any): Promise<any> {
     return {
@@ -98,9 +96,7 @@ createDevApp()
   .addPage({
     element: (
       <TestApiProvider
-        apis={[
-          [kubernetesApiRef, new MockKubernetesClient(mockKubernetesResponse)],
-        ]}
+        apis={[[kubernetesApiRef, new MockKubernetesClient(mockKubernetesResponse)]]}
       >
         <EntityProvider entity={mockEntity}>
           <div style={{ height: '100vh' }}>
@@ -115,9 +111,7 @@ createDevApp()
   .addPage({
     element: (
       <TestApiProvider
-        apis={[
-          [kubernetesApiRef, new MockKubernetesClient(mockKubernetesResponse)],
-        ]}
+        apis={[[kubernetesApiRef, new MockKubernetesClient(mockKubernetesResponse)]]}
       >
         <EntityProvider entity={mockEntity}>
           <EntityKubernetesContent />

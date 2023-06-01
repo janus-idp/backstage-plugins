@@ -52,9 +52,7 @@ describe('useAllWatchResources', () => {
       loading: false,
       error: '',
     } as KubernetesObjects;
-    const { result } = renderHook(() =>
-      useAllWatchResources([], k8sObjectsResponse, 0),
-    );
+    const { result } = renderHook(() => useAllWatchResources([], k8sObjectsResponse, 0));
     expect(result.current).toEqual({});
   });
 

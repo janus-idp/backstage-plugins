@@ -6,11 +6,7 @@ import * as _ from 'lodash';
 
 import { useForceUpdate } from '../../hooks/useForceUpdate';
 import { getSize } from '../../utils/pod-ring-utils';
-import {
-  calculateRadius,
-  getPodStatus,
-  podStatus,
-} from '../../utils/workload-node-utils';
+import { calculateRadius, getPodStatus, podStatus } from '../../utils/workload-node-utils';
 import { AllPodStatus, podColor } from './pod';
 
 import './PodStatus.css';
@@ -70,7 +66,7 @@ const PodStatus = ({
   const vData = React.useMemo(() => {
     const updateVData: PodData[] = podStatus.map((pod: any) => ({
       x: pod,
-      y: _.sumBy(data, d => +(getPodStatus(d) === pod)) || 0,
+      y: _.sumBy(data, (d) => +(getPodStatus(d) === pod)) || 0,
     }));
 
     if (_.isEmpty(data)) {
@@ -81,12 +77,8 @@ const PodStatus = ({
       );
     }
 
-    const prevDataPoints = getSize(
-      prevVData?.current?.filter(nextData => nextData.y !== 0),
-    );
-    const dataPoints = getSize(
-      updateVData?.filter(nextData => nextData.y !== 0),
-    );
+    const prevDataPoints = getSize(prevVData?.current?.filter((nextData) => nextData.y !== 0));
+    const dataPoints = getSize(updateVData?.filter((nextData) => nextData.y !== 0));
     setUpdateOnEnd(dataPoints === 1 && prevDataPoints > 1);
 
     if (!_.isEqual(prevVData.current, updateVData)) {
@@ -96,9 +88,7 @@ const PodStatus = ({
     return prevVData.current;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
-  const truncTitle = title
-    ? _.truncate(title, { length: MAX_POD_TITLE_LENGTH })
-    : undefined;
+  const truncTitle = title ? _.truncate(title, { length: MAX_POD_TITLE_LENGTH }) : undefined;
   const truncSubTitle = subTitle
     ? _.truncate(subTitle, { length: MAX_POD_TITLE_LENGTH })
     : undefined;
@@ -113,9 +103,7 @@ const PodStatus = ({
         standalone={standalone}
         innerRadius={innerRadius}
         radius={outerRadius}
-        groupComponent={
-          x && y ? <g transform={`translate(${x}, ${y})`} /> : undefined
-        }
+        groupComponent={x && y ? <g transform={`translate(${x}, ${y})`} /> : undefined}
         data={vData as any[] | undefined}
         height={size}
         width={size}
@@ -161,7 +149,7 @@ const PodStatus = ({
   if (showTooltip) {
     const tipContent = (
       <div className="tp-pod-status-tooltip">
-        {vData.map(d => {
+        {vData.map((d) => {
           return d.y > 0 ? (
             <div key={d.x} className="tp-pod-status-tooltip__content">
               <span

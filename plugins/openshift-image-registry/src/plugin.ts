@@ -6,10 +6,7 @@ import {
   discoveryApiRef,
 } from '@backstage/core-plugin-api';
 
-import {
-  OpenshiftImageRegistryApiClient,
-  openshiftImageRegistryApiRef,
-} from './api';
+import { OpenshiftImageRegistryApiClient, openshiftImageRegistryApiRef } from './api';
 import { rootRouteRef } from './routes';
 
 export const openshiftImageRegistryPlugin = createPlugin({
@@ -33,7 +30,7 @@ export const openshiftImageRegistryPlugin = createPlugin({
 export const OpenshiftImageRegistryPage = openshiftImageRegistryPlugin.provide(
   createRoutableExtension({
     name: 'OpenshiftImageRegistryPage',
-    component: () => import('./components/OcirPage').then(m => m.OcirPage),
+    component: () => import('./components/OcirPage').then((m) => m.OcirPage),
     mountPoint: rootRouteRef,
   }),
 );

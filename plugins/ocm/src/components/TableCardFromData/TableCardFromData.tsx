@@ -5,10 +5,7 @@ import { Link, Table } from '@backstage/core-components';
 import { Card, CardContent, CardHeader } from '@material-ui/core';
 
 const convertToGibibytes = (kibibytes: string): string => {
-  const sizeInKibibytes = parseInt(
-    kibibytes.substring(0, kibibytes.length - 2),
-    10,
-  );
+  const sizeInKibibytes = parseInt(kibibytes.substring(0, kibibytes.length - 2), 10);
   return `${(sizeInKibibytes / 2 ** 20).toFixed(0)} Gi`;
 };
 
@@ -36,7 +33,7 @@ export const TableCardFromData = ({
   const entries = Object.entries(data);
 
   nameMap.forEach((_, key) => {
-    const entry = entries.find(e => e[0] === key)!;
+    const entry = entries.find((e) => e[0] === key)!;
     // If key of the map doesn't have an prop in the cluster object, continue
     if (entry === undefined) {
       return;

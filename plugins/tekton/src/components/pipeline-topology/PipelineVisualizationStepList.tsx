@@ -21,9 +21,7 @@ type TooltipColoredStatusIconProps = {
   status: RunStatus;
 };
 
-const TooltipColoredStatusIcon = ({
-  status,
-}: TooltipColoredStatusIconProps) => {
+const TooltipColoredStatusIcon = ({ status }: TooltipColoredStatusIconProps) => {
   const size = 18;
   const sharedProps = {
     height: size,
@@ -63,25 +61,17 @@ export const PipelineVisualizationStepList = ({
   return (
     <div className="bs-tkn-pipeline-visualization-step-list">
       {!hideHeader && (
-        <div className="bs-tkn-pipeline-visualization-step-list__task-name">
-          {taskName}
-        </div>
+        <div className="bs-tkn-pipeline-visualization-step-list__task-name">{taskName}</div>
       )}
       {isFinallyTask && (
-        <div className="bs-tkn-pipeline-visualization-step-list__task-type">
-          Finally task
-        </div>
+        <div className="bs-tkn-pipeline-visualization-step-list__task-type">Finally task</div>
       )}
       {steps?.map(({ duration, name, status }) => {
         return (
           <div
-            className={classNames(
-              'bs-tkn-pipeline-visualization-step-list__step',
-              {
-                'bs-tkn-pipeline-visualization-step-list__step--task-run':
-                  !isSpecOverview,
-              },
-            )}
+            className={classNames('bs-tkn-pipeline-visualization-step-list__step', {
+              'bs-tkn-pipeline-visualization-step-list__step--task-run': !isSpecOverview,
+            })}
             key={name}
           >
             {!isSpecOverview ? (
@@ -89,17 +79,11 @@ export const PipelineVisualizationStepList = ({
                 <TooltipColoredStatusIcon status={status} />
               </div>
             ) : (
-              <span className="bs-tkn-pipeline-visualization-step-list__bullet">
-                &bull;
-              </span>
+              <span className="bs-tkn-pipeline-visualization-step-list__bullet">&bull;</span>
             )}
-            <div className="bs-tkn-pipeline-visualization-step-list__name">
-              {name}
-            </div>
+            <div className="bs-tkn-pipeline-visualization-step-list__name">{name}</div>
             {!isSpecOverview && (
-              <div className="bs-tkn-pipeline-visualization-step-list__duration">
-                {duration}
-              </div>
+              <div className="bs-tkn-pipeline-visualization-step-list__duration">{duration}</div>
             )}
           </div>
         );

@@ -1,9 +1,6 @@
 import { V1Pod } from '@kubernetes/client-node';
 import { Model, NodeModel } from '@patternfly/react-topology';
-import {
-  Node,
-  TopologyQuadrant,
-} from '@patternfly/react-topology/dist/esm/types';
+import { Node, TopologyQuadrant } from '@patternfly/react-topology/dist/esm/types';
 
 import { K8sWorkloadResource } from './types';
 
@@ -11,10 +8,7 @@ export type OverviewItem<T = K8sWorkloadResource> = {
   obj: T;
 };
 
-export type TopologyDataModelDepicted = (
-  resource: K8sWorkloadResource,
-  model: Model,
-) => boolean;
+export type TopologyDataModelDepicted = (resource: K8sWorkloadResource, model: Model) => boolean;
 
 export interface OdcNodeModel extends NodeModel {
   resource?: K8sWorkloadResource;

@@ -13,16 +13,13 @@ import { K8sResourcesContext } from '../../hooks/K8sResourcesContext';
 const TopologyToolbar = () => {
   const { clusters: k8sClusters, setSelectedCluster: setClusterContext } =
     React.useContext(K8sResourcesContext);
-  const clusterOptions = k8sClusters.map(cluster => ({
+  const clusterOptions = k8sClusters.map((cluster) => ({
     value: cluster,
     disabled: false,
   }));
-  const [clusterFilterIsExpanded, setClusterFilterIsExpanded] =
-    React.useState<boolean>(false);
+  const [clusterFilterIsExpanded, setClusterFilterIsExpanded] = React.useState<boolean>(false);
 
-  const [clusterSelected, setClusterSelected] = React.useState<
-    string | SelectOptionObject
-  >();
+  const [clusterSelected, setClusterSelected] = React.useState<string | SelectOptionObject>();
 
   const onClusterFilterToggle = (isClusterFilterExpanded: boolean) => {
     setClusterFilterIsExpanded(isClusterFilterExpanded);
@@ -32,7 +29,7 @@ const TopologyToolbar = () => {
     _e: React.ChangeEvent | React.MouseEvent,
     selection: string | SelectOptionObject,
   ) => {
-    const index = k8sClusters.findIndex(cluster => cluster === selection);
+    const index = k8sClusters.findIndex((cluster) => cluster === selection);
     setClusterContext(index);
     setClusterSelected(selection);
     setClusterFilterIsExpanded(false);
@@ -54,11 +51,7 @@ const TopologyToolbar = () => {
           aria-labelledby="select-cluster"
         >
           {clusterOptions.map((option, index) => (
-            <SelectOption
-              isDisabled={option.disabled}
-              key={index}
-              value={option.value}
-            />
+            <SelectOption isDisabled={option.disabled} key={index} value={option.value} />
           ))}
         </Select>
       </ToolbarItem>

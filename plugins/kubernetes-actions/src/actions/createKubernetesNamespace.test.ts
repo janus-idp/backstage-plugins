@@ -165,9 +165,7 @@ describe('kubernetes:create-namespace', () => {
           token: 'TOKEN',
         },
       });
-    }).rejects.toThrow(
-      "Cluster reference and url can't be specified at the same time",
-    );
+    }).rejects.toThrow("Cluster reference and url can't be specified at the same time");
   });
 
   it('should correctly parse a http error', async () => {
@@ -180,9 +178,7 @@ describe('kubernetes:create-namespace', () => {
           token: 'TOKEN',
         },
       });
-    }).rejects.toThrow(
-      'Failed to create kubernetes namespace, 401 -- Unauthorized',
-    );
+    }).rejects.toThrow('Failed to create kubernetes namespace, 401 -- Unauthorized');
   });
 
   it('should throw an error while using an invalid api url', async () => {

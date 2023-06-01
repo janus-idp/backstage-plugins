@@ -6,10 +6,7 @@ const getMatchingStepDuration = (matchingStep?: TaskStatusStep) => {
   if (!matchingStep) return '';
 
   if (matchingStep.terminated) {
-    return calculateDuration(
-      matchingStep.terminated.startedAt,
-      matchingStep.terminated.finishedAt,
-    );
+    return calculateDuration(matchingStep.terminated.startedAt, matchingStep.terminated.finishedAt);
   }
 
   if (matchingStep.running) {
@@ -24,19 +21,14 @@ const getMatchingStep = (
   status: TaskStatus,
 ): TaskStatusStep | undefined => {
   const statusSteps: TaskStatusStep[] = status.steps || [];
-  return statusSteps.find(statusStep => {
+  return statusSteps.find((statusStep) => {
     // In rare occasions the status step name is prefixed with `step-`
     // This is likely a bug but this workaround will be temporary as it's investigated separately
-    return (
-      statusStep.name === step.name || statusStep.name === `step-${step.name}`
-    );
+    return statusStep.name === step.name || statusStep.name === `step-${step.name}`;
   });
 };
 
-export const createStepStatus = (
-  step: { name: string },
-  status: TaskStatus,
-): StepStatus => {
+export const createStepStatus = (step: { name: string }, status: TaskStatus): StepStatus => {
   let stepRunStatus = ComputedStatus.PipelineNotStarted;
   let duration = null;
 
@@ -64,8 +56,7 @@ export const createStepStatus = (
     // Not in progress, just use the run status reason
     stepRunStatus = status.reason;
 
-    duration =
-      getMatchingStepDuration(getMatchingStep(step, status)) || status.duration;
+    duration = getMatchingStepDuration(getMatchingStep(step, status)) || status.duration;
   }
 
   return {

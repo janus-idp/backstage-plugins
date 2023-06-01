@@ -23,13 +23,7 @@ export const QuayTagPage = () => {
     return <ErrorPanel error={new Error('no digest')} />;
   }
 
-  return (
-    <QuayTagDetails
-      rootLink={rootLink}
-      layer={value.data.Layer}
-      digest={digest}
-    />
-  );
+  return <QuayTagDetails rootLink={rootLink} layer={value.data.Layer} digest={digest} />;
 };
 
 export default QuayTagPage;

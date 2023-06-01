@@ -14,7 +14,7 @@ import Search from '@material-ui/icons/Search';
 
 import { ImageStreamMetadata } from '../../types';
 
-const useStyles = makeStyles(_theme => ({
+const useStyles = makeStyles((_theme) => ({
   searchToolbar: {
     paddingLeft: 0,
     paddingRight: 0,
@@ -24,15 +24,10 @@ const useStyles = makeStyles(_theme => ({
 
 type OcirImageSearchBarProps = {
   imageStreams: ImageStreamMetadata[];
-  setImageStreams: React.Dispatch<
-    React.SetStateAction<ImageStreamMetadata[] | undefined>
-  >;
+  setImageStreams: React.Dispatch<React.SetStateAction<ImageStreamMetadata[] | undefined>>;
 };
 
-export const OcirImageSearchBar = ({
-  imageStreams,
-  setImageStreams,
-}: OcirImageSearchBarProps) => {
+export const OcirImageSearchBar = ({ imageStreams, setImageStreams }: OcirImageSearchBarProps) => {
   const classes = useStyles();
 
   const [search, setSearch] = React.useState<string>('');
@@ -44,11 +39,7 @@ export const OcirImageSearchBar = ({
           const { name, description = '', tags } = imgSt;
           const n = name.toUpperCase();
           const d = description.toUpperCase();
-          return (
-            n.includes(s) ||
-            d.includes(s) ||
-            !!tags.find(t => t.toUpperCase().includes(s))
-          );
+          return n.includes(s) || d.includes(s) || !!tags.find((t) => t.toUpperCase().includes(s));
         })
       : undefined;
     setImageStreams(filteredImageStreams);
@@ -70,7 +61,7 @@ export const OcirImageSearchBar = ({
           className={classes.input}
           placeholder="Search"
           autoComplete="off"
-          onChange={event => setSearch(event.target.value)}
+          onChange={(event) => setSearch(event.target.value)}
           value={search}
           startAdornment={
             <InputAdornment position="start">

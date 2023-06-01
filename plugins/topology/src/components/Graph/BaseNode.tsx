@@ -56,10 +56,7 @@ const BaseNode = ({
   ...rest
 }: React.PropsWithChildren<BaseNodeProps>) => {
   const [hover, internalHoverRef] = useHover();
-  const nodeHoverRefs = useCombineRefs(
-    internalHoverRef,
-    hoverRef as React.Ref<Element>,
-  );
+  const nodeHoverRefs = useCombineRefs(internalHoverRef, hoverRef as React.Ref<Element>);
   const { width, height } = element.getDimensions();
   const cx = width / 2;
   const cy = height / 2;
@@ -77,10 +74,7 @@ const BaseNode = ({
 
   return (
     <Layer id={hover ? TOP_LAYER : DEFAULT_LAYER}>
-      <g
-        ref={nodeHoverRefs as React.LegacyRef<SVGGElement>}
-        data-test-id={element.getLabel()}
-      >
+      <g ref={nodeHoverRefs as React.LegacyRef<SVGGElement>} data-test-id={element.getLabel()}>
         <DefaultNode
           className={classNames('bs-topology-base-node', className)}
           element={element}

@@ -17,11 +17,7 @@ export const updateTopologyDataModel = (
     edges: [],
   };
 
-  const fullModel = baseDataModelGetter(
-    topologyModel,
-    resources,
-    workloadResources,
-  );
+  const fullModel = baseDataModelGetter(topologyModel, resources, workloadResources);
 
   return Promise.resolve({ loaded: true, loadError: '', model: fullModel });
 };

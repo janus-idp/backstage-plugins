@@ -19,14 +19,7 @@ export const UrlDecorator = ({ url, radius, x, y }: DefaultDecoratorProps) => {
   const label = 'Open URL';
   return (
     <Tooltip key="route" content={label} position={TooltipPosition.right}>
-      <Decorator
-        x={x}
-        y={y}
-        radius={radius}
-        href={url}
-        external
-        ariaLabel={label}
-      >
+      <Decorator x={x} y={y} radius={radius} href={url} external ariaLabel={label}>
         <g transform={`translate(-${radius / 2}, -${radius / 2})`}>
           <ExternalLinkAltIcon style={{ fontSize: radius }} title={label} />
         </g>

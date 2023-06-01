@@ -20,11 +20,7 @@ interface StatusIconProps {
   disableSpin?: boolean;
 }
 
-export const StatusIcon = ({
-  status,
-  disableSpin,
-  ...props
-}: StatusIconProps) => {
+export const StatusIcon = ({ status, disableSpin, ...props }: StatusIconProps) => {
   switch (status) {
     case ComputedStatus['In Progress']:
     case ComputedStatus.Running:
@@ -33,8 +29,7 @@ export const StatusIcon = ({
           {...props}
           style={{ color: 'var(--pf-global--palette--white)' }}
           className={classNames({
-            'pf-topology-pipelines__pill-status pf-m-running pf-m-spin':
-              !disableSpin,
+            'pf-topology-pipelines__pill-status pf-m-running pf-m-spin': !disableSpin,
           })}
         />
       );

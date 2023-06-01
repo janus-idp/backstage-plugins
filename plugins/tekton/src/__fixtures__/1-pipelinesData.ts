@@ -192,8 +192,7 @@ export const mockKubernetesPlrResponse = {
               'image-registry.openshift-image-registry.svc:5000/jai-test/ruby-ex-git@sha256:ade428dd4cb303a2ab9f1e0d5a6a86d6c035655d14f989e856f11bf3baef9bf2',
             imageID:
               'image-registry.openshift-image-registry.svc:5000/jai-test/ruby-ex-git@sha256:ade428dd4cb303a2ab9f1e0d5a6a86d6c035655d14f989e856f11bf3baef9bf2',
-            containerID:
-              'cri-o://85af7fd408b95c3800ea83349541f10bf888903d0a1e19378489724b9a718607',
+            containerID: 'cri-o://85af7fd408b95c3800ea83349541f10bf888903d0a1e19378489724b9a718607',
             started: true,
           },
         ],
@@ -242,8 +241,7 @@ export const mockKubernetesPlrResponse = {
           },
           {
             name: 'IMAGE_NAME',
-            value:
-              'image-registry.openshift-image-registry.svc:5000/jai-test/ruby-ex-git',
+            value: 'image-registry.openshift-image-registry.svc:5000/jai-test/ruby-ex-git',
           },
           {
             name: 'PATH_CONTEXT',
@@ -308,8 +306,7 @@ export const mockKubernetesPlrResponse = {
               name: 'GIT_REVISION',
             },
             {
-              default:
-                'image-registry.openshift-image-registry.svc:5000/jai-test/ruby-ex-git',
+              default: 'image-registry.openshift-image-registry.svc:5000/jai-test/ruby-ex-git',
               name: 'IMAGE_NAME',
             },
             {
@@ -358,8 +355,7 @@ export const mockKubernetesPlrResponse = {
               params: [
                 {
                   name: 'IMAGE',
-                  value:
-                    'image-registry.openshift-image-registry.svc:5000/jai-test/ruby-ex-git',
+                  value: 'image-registry.openshift-image-registry.svc:5000/jai-test/ruby-ex-git',
                 },
                 {
                   name: 'TLSVERIFY',
@@ -460,8 +456,7 @@ export const mockKubernetesPlrResponse = {
                 {
                   name: 'IMAGE_DIGEST',
                   type: 'string',
-                  value:
-                    'sha256:14e0715ec241926c081124345cd45d325a44d914261cfd642b3b0969a49ffe02',
+                  value: 'sha256:14e0715ec241926c081124345cd45d325a44d914261cfd642b3b0969a49ffe02',
                 },
               ],
               taskSpec: {
@@ -485,8 +480,7 @@ export const mockKubernetesPlrResponse = {
                     name: 'TLSVERIFY',
                   },
                   {
-                    description:
-                      'Location of the repo where image has to be pushed',
+                    description: 'Location of the repo where image has to be pushed',
                     name: 'IMAGE',
                   },
                   {
@@ -502,8 +496,7 @@ export const mockKubernetesPlrResponse = {
                   },
                   {
                     default: [],
-                    description:
-                      'Environment variables to set during _build-time_.',
+                    description: 'Environment variables to set during _build-time_.',
                     name: 'ENV_VARS',
                   },
                 ],
@@ -646,8 +639,7 @@ export const mockKubernetesPlrResponse = {
                         value: '/tekton/home',
                       },
                     ],
-                    image:
-                      'image-registry.openshift-image-registry.svc:5000/openshift/cli:latest',
+                    image: 'image-registry.openshift-image-registry.svc:5000/openshift/cli:latest',
                     name: 'oc',
                     resources: {},
                     script: 'echo hi',
@@ -729,14 +721,12 @@ export const mockKubernetesPlrResponse = {
                   },
                   {
                     default: '',
-                    description:
-                      'Revision to checkout. (branch, tag, sha, ref, etc...)',
+                    description: 'Revision to checkout. (branch, tag, sha, ref, etc...)',
                     name: 'revision',
                   },
                   {
                     default: '',
-                    description:
-                      'Refspec to fetch before checking out revision.',
+                    description: 'Refspec to fetch before checking out revision.',
                     name: 'refspec',
                   },
                   {
@@ -804,27 +794,23 @@ export const mockKubernetesPlrResponse = {
                   {
                     default:
                       'registry.redhat.io/openshift-pipelines/pipelines-git-init-rhel8@sha256:6c3980b3d28c8fb92b17466f5654d5f484ab893f1673ec8f29e49c0d03f8aca9',
-                    description:
-                      'The image providing the git-init binary that this Task runs.',
+                    description: 'The image providing the git-init binary that this Task runs.',
                     name: 'gitInitImage',
                   },
                   {
                     default: '/tekton/home',
-                    description:
-                      "Absolute path to the user's home directory.\n",
+                    description: "Absolute path to the user's home directory.\n",
                     name: 'userHome',
                   },
                 ],
                 results: [
                   {
-                    description:
-                      'The precise commit SHA that was fetched by this Task.',
+                    description: 'The precise commit SHA that was fetched by this Task.',
                     name: 'commit',
                     type: 'string',
                   },
                   {
-                    description:
-                      'The precise URL that was fetched by this Task.',
+                    description: 'The precise URL that was fetched by this Task.',
                     name: 'url',
                     type: 'string',
                   },
@@ -1267,8 +1253,7 @@ export const mockKubernetesPlrResponse = {
                     "Buildah task builds source into a container image and then pushes it to a container registry.\nBuildah Task builds source into a container image using Project Atomic's Buildah build tool.It uses Buildah's support for building from Dockerfiles, using its buildah bud command.This command executes the directives in the Dockerfile to assemble a container image, then pushes that image to a container registry.",
                   params: [
                     {
-                      description:
-                        'Reference of the image buildah will produce.',
+                      description: 'Reference of the image buildah will produce.',
                       name: 'IMAGE',
                       type: 'string',
                     },
@@ -1306,8 +1291,7 @@ export const mockKubernetesPlrResponse = {
                     },
                     {
                       default: 'oci',
-                      description:
-                        'The format of the built container, oci or docker',
+                      description: 'The format of the built container, oci or docker',
                       name: 'FORMAT',
                       type: 'string',
                     },
@@ -1339,8 +1323,7 @@ export const mockKubernetesPlrResponse = {
                       type: 'string',
                     },
                     {
-                      description:
-                        'Image repository where the built image would be pushed to',
+                      description: 'Image repository where the built image would be pushed to',
                       name: 'IMAGE_URL',
                       type: 'string',
                     },
@@ -1430,15 +1413,13 @@ export const mockKubernetesPlrResponse = {
                     },
                     {
                       default: '',
-                      description:
-                        'Revision to checkout. (branch, tag, sha, ref, etc...)',
+                      description: 'Revision to checkout. (branch, tag, sha, ref, etc...)',
                       name: 'revision',
                       type: 'string',
                     },
                     {
                       default: '',
-                      description:
-                        'Refspec to fetch before checking out revision.',
+                      description: 'Refspec to fetch before checking out revision.',
                       name: 'refspec',
                       type: 'string',
                     },
@@ -1518,29 +1499,25 @@ export const mockKubernetesPlrResponse = {
                     {
                       default:
                         'registry.redhat.io/openshift-pipelines/pipelines-git-init-rhel8@sha256:6c3980b3d28c8fb92b17466f5654d5f484ab893f1673ec8f29e49c0d03f8aca9',
-                      description:
-                        'The image providing the git-init binary that this Task runs.',
+                      description: 'The image providing the git-init binary that this Task runs.',
                       name: 'gitInitImage',
                       type: 'string',
                     },
                     {
                       default: '/tekton/home',
-                      description:
-                        "Absolute path to the user's home directory.\n",
+                      description: "Absolute path to the user's home directory.\n",
                       name: 'userHome',
                       type: 'string',
                     },
                   ],
                   results: [
                     {
-                      description:
-                        'The precise commit SHA that was fetched by this Task.',
+                      description: 'The precise commit SHA that was fetched by this Task.',
                       name: 'commit',
                       type: 'string',
                     },
                     {
-                      description:
-                        'The precise URL that was fetched by this Task.',
+                      description: 'The precise URL that was fetched by this Task.',
                       name: 'url',
                       type: 'string',
                     },
@@ -1703,8 +1680,7 @@ export const mockKubernetesPlrResponse = {
                   },
                 ],
                 taskSpec: {
-                  description:
-                    'This task performs operations on Tekton resources using tkn',
+                  description: 'This task performs operations on Tekton resources using tkn',
                   params: [
                     {
                       default:
@@ -1896,8 +1872,7 @@ export const mockKubernetesPlrResponse = {
           {
             name: 'IMAGE_DIGEST',
             type: 'string',
-            value:
-              'sha256:14e0715ec241926c081124345cd45d325a44d914261cfd642b3b0969a49ffe02',
+            value: 'sha256:14e0715ec241926c081124345cd45d325a44d914261cfd642b3b0969a49ffe02',
           },
         ],
         taskSpec: {
@@ -2126,8 +2101,7 @@ export const mockKubernetesPlrResponse = {
           },
         ],
         taskSpec: {
-          description:
-            'This task performs operations on Tekton resources using tkn',
+          description: 'This task performs operations on Tekton resources using tkn',
           params: [
             {
               default:
@@ -2350,8 +2324,7 @@ export const mockKubernetesPlrResponse = {
             },
             {
               default: '',
-              description:
-                'Revision to checkout. (branch, tag, sha, ref, etc...)',
+              description: 'Revision to checkout. (branch, tag, sha, ref, etc...)',
               name: 'revision',
               type: 'string',
             },
@@ -2369,8 +2342,7 @@ export const mockKubernetesPlrResponse = {
             },
             {
               default: '1',
-              description:
-                'Perform a shallow clone, fetching only the most recent N commits.',
+              description: 'Perform a shallow clone, fetching only the most recent N commits.',
               name: 'depth',
               type: 'string',
             },
@@ -2390,8 +2362,7 @@ export const mockKubernetesPlrResponse = {
             },
             {
               default: '',
-              description:
-                'Subdirectory inside the `output` Workspace to clone the repo into.',
+              description: 'Subdirectory inside the `output` Workspace to clone the repo into.',
               name: 'subdirectory',
               type: 'string',
             },
@@ -2429,16 +2400,14 @@ export const mockKubernetesPlrResponse = {
             },
             {
               default: 'true',
-              description:
-                "Log the commands that are executed during `git-clone`'s operation.",
+              description: "Log the commands that are executed during `git-clone`'s operation.",
               name: 'verbose',
               type: 'string',
             },
             {
               default:
                 'registry.redhat.io/openshift-pipelines/pipelines-git-init-rhel8@sha256:6c3980b3d28c8fb92b17466f5654d5f484ab893f1673ec8f29e49c0d03f8aca9',
-              description:
-                'The image providing the git-init binary that this Task runs.',
+              description: 'The image providing the git-init binary that this Task runs.',
               name: 'gitInitImage',
               type: 'string',
             },
@@ -2451,8 +2420,7 @@ export const mockKubernetesPlrResponse = {
           ],
           results: [
             {
-              description:
-                'The precise commit SHA that was fetched by this Task.',
+              description: 'The precise commit SHA that was fetched by this Task.',
               name: 'commit',
               type: 'string',
             },
@@ -2562,8 +2530,7 @@ export const mockKubernetesPlrResponse = {
           ],
           workspaces: [
             {
-              description:
-                'The git repo will be cloned onto the volume backing this Workspace.',
+              description: 'The git repo will be cloned onto the volume backing this Workspace.',
               name: 'output',
             },
             {
@@ -2775,15 +2742,13 @@ export const mockKubernetesPlrResponse = {
             },
             {
               default: '',
-              description:
-                'Extra parameters passed for the build command when building images.',
+              description: 'Extra parameters passed for the build command when building images.',
               name: 'BUILD_EXTRA_ARGS',
               type: 'string',
             },
             {
               default: '',
-              description:
-                'Extra parameters passed for the push command when pushing images.',
+              description: 'Extra parameters passed for the push command when pushing images.',
               name: 'PUSH_EXTRA_ARGS',
               type: 'string',
             },
@@ -2801,8 +2766,7 @@ export const mockKubernetesPlrResponse = {
               type: 'string',
             },
             {
-              description:
-                'Image repository where the built image would be pushed to',
+              description: 'Image repository where the built image would be pushed to',
               name: 'IMAGE_URL',
               type: 'string',
             },

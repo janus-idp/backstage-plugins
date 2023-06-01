@@ -1,4 +1,1 @@
-export {
-  openshiftImageRegistryPlugin,
-  OpenshiftImageRegistryPage,
-} from './plugin';
+export { openshiftImageRegistryPlugin, OpenshiftImageRegistryPage } from './plugin';

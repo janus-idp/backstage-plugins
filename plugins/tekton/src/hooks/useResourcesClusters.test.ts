@@ -11,9 +11,7 @@ describe('useResourcesClusters', () => {
       loading: true,
       error: '',
     };
-    const { result } = renderHook(() =>
-      useResourcesClusters(k8sObjectsResponse),
-    );
+    const { result } = renderHook(() => useResourcesClusters(k8sObjectsResponse));
     expect(result.current.clusters).toEqual([]);
     expect(result.current.errors).toEqual([]);
   });
@@ -24,9 +22,7 @@ describe('useResourcesClusters', () => {
       loading: false,
       error: '',
     } as KubernetesObjects;
-    const { result, rerender } = renderHook(() =>
-      useResourcesClusters(k8sObjectsResponse),
-    );
+    const { result, rerender } = renderHook(() => useResourcesClusters(k8sObjectsResponse));
     expect(result.current.clusters).toEqual(['minikube', 'ocp']);
     expect(result.current.errors).toEqual([[], []]);
 
@@ -34,9 +30,7 @@ describe('useResourcesClusters', () => {
       items: [
         {
           ...kubernetesObjects.items[0],
-          errors: [
-            { errorType: 'FETCH_ERROR', message: 'Couldnt fetch resources' },
-          ],
+          errors: [{ errorType: 'FETCH_ERROR', message: 'Couldnt fetch resources' }],
         },
       ],
     };

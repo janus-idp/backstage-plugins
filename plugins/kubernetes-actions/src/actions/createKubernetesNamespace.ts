@@ -1,16 +1,8 @@
 import { CatalogClient } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
-import {
-  ActionContext,
-  createTemplateAction,
-} from '@backstage/plugin-scaffolder-node';
+import { ActionContext, createTemplateAction } from '@backstage/plugin-scaffolder-node';
 
-import {
-  CoreV1Api,
-  HttpError,
-  KubeConfig,
-  V1Namespace,
-} from '@kubernetes/client-node';
+import { CoreV1Api, HttpError, KubeConfig, V1Namespace } from '@kubernetes/client-node';
 
 const KUBERNETES_API_URL_ANNOTATION = 'kubernetes.io/api-server';
 const KUBERNETES_CLUSTER_TYPE = 'kubernetes-cluster';
@@ -42,9 +34,7 @@ const getUrlFromClusterRef = async (
 ): Promise<string> => {
   const isResource = clusterRef.startsWith('resource:');
   if (!isResource) {
-    ctx.logger.warn(
-      'Cluster reference in the wrong format, attempting to fix it',
-    );
+    ctx.logger.warn('Cluster reference in the wrong format, attempting to fix it');
   }
   const catalogEntity: Entity | undefined = await catalogClient.getEntityByRef(
     isResource ? clusterRef : `resource:${clusterRef}`,
@@ -55,12 +45,9 @@ const getUrlFromClusterRef = async (
   if (catalogEntity.spec?.type !== KUBERNETES_CLUSTER_TYPE) {
     ctx.logger.warn(`Resource is not of ${KUBERNETES_CLUSTER_TYPE} type`);
   }
-  const apiUrl =
-    catalogEntity.metadata?.annotations?.[KUBERNETES_API_URL_ANNOTATION];
+  const apiUrl = catalogEntity.metadata?.annotations?.[KUBERNETES_API_URL_ANNOTATION];
   if (!apiUrl) {
-    throw new Error(
-      `Cluster resource is missing ${KUBERNETES_API_URL_ANNOTATION} annotation`,
-    );
+    throw new Error(`Cluster resource is missing ${KUBERNETES_API_URL_ANNOTATION} annotation`);
   }
   return apiUrl;
 };
@@ -98,8 +85,7 @@ export function createKubernetesNamespaceAction(catalogClient: CatalogClient) {
           },
           url: {
             title: 'Url',
-            description:
-              'Url of the kubernetes API, will be used if clusterRef is not provided',
+            description: 'Url of the kubernetes API, will be used if clusterRef is not provided',
             type: 'string',
           },
           token: {
@@ -122,8 +108,7 @@ export function createKubernetesNamespaceAction(catalogClient: CatalogClient) {
       },
     },
     async handler(ctx) {
-      const { namespace, clusterRef, token, url, skipTLSVerify, caData } =
-        ctx.input;
+      const { namespace, clusterRef, token, url, skipTLSVerify, caData } = ctx.input;
       const kubeConfig = new KubeConfig();
       const name = 'backstage';
       const cluster = {
@@ -135,9 +120,7 @@ export function createKubernetesNamespaceAction(catalogClient: CatalogClient) {
       };
 
       if (clusterRef && url) {
-        throw new Error(
-          "Cluster reference and url can't be specified at the same time",
-        );
+        throw new Error("Cluster reference and url can't be specified at the same time");
       }
 
       if (!clusterRef && !url) {
@@ -145,11 +128,7 @@ export function createKubernetesNamespaceAction(catalogClient: CatalogClient) {
       }
 
       if (clusterRef) {
-        cluster.server = await getUrlFromClusterRef(
-          ctx,
-          catalogClient,
-          clusterRef,
-        );
+        cluster.server = await getUrlFromClusterRef(ctx, catalogClient, clusterRef);
       } else {
         validateUrl(url);
         cluster.server = url!;
@@ -178,9 +157,7 @@ export function createKubernetesNamespaceAction(catalogClient: CatalogClient) {
         const errorBody = e.body as HttpErrorBody;
         const statusCode = errorBody?.code || e.statusCode;
         const message = errorBody?.message || e.message;
-        throw new Error(
-          `Failed to create kubernetes namespace, ${statusCode} -- ${message}`,
-        );
+        throw new Error(`Failed to create kubernetes namespace, ${statusCode} -- ${message}`);
       });
     },
   });

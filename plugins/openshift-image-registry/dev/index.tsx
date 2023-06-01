@@ -2,10 +2,7 @@ import React from 'react';
 
 import { createDevApp } from '@backstage/dev-utils';
 
-import {
-  OpenshiftImageRegistryPage,
-  openshiftImageRegistryPlugin,
-} from '../src/plugin';
+import { OpenshiftImageRegistryPage, openshiftImageRegistryPlugin } from '../src/plugin';
 
 createDevApp()
   .registerPlugin(openshiftImageRegistryPlugin)

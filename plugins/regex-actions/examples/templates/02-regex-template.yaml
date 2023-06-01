@@ -23,8 +23,7 @@ steps:
           replacement: monkey
           values:
             - key: eg1
-              value:
-                The quick brown fox jumps over the lazy dog. If the dog reacted, was
+              value: The quick brown fox jumps over the lazy dog. If the dog reacted, was
                 it really lazy?
         - pattern: Dog
           replacement: ferret
@@ -32,8 +31,7 @@ steps:
             - i
           values:
             - key: eg2
-              value:
-                The quick brown fox jumps over the lazy dog. If the dog reacted, was
+              value: The quick brown fox jumps over the lazy dog. If the dog reacted, was
                 it really lazy?
 ---
 steps:
@@ -48,8 +46,7 @@ steps:
             - g
           values:
             - key: eg1
-              value:
-                The quick brown fox jumps over the lazy dog. If the dog reacted, was
+              value: The quick brown fox jumps over the lazy dog. If the dog reacted, was
                 it really lazy?
         - pattern: Dog
           replacement: ferret
@@ -57,6 +54,5 @@ steps:
             - gi
           values:
             - key: eg2
-              value:
-                The quick brown fox jumps over the lazy dog. If the dog reacted, was
+              value: The quick brown fox jumps over the lazy dog. If the dog reacted, was
                 it really lazy?

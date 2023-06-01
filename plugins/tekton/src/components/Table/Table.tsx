@@ -6,10 +6,7 @@ import {
   TableGridBreakpoint,
   TableHeader,
 } from '@patternfly/react-table';
-import {
-  AutoSizer,
-  WindowScroller,
-} from '@patternfly/react-virtualized-extension';
+import { AutoSizer, WindowScroller } from '@patternfly/react-virtualized-extension';
 import { Scroll } from '@patternfly/react-virtualized-extension/dist/esm/components/Virtualized/types';
 import { findIndex } from 'lodash';
 
@@ -48,10 +45,8 @@ export const Table = ({
   onSelect,
 }: TableProps) => {
   const [sortBy, setSortBy] = React.useState({});
-  const [currentSortField, setCurrentSortField] =
-    React.useState(defaultSortField);
-  const [currentSortOrder, setCurrentSortOrder] =
-    React.useState(defaultSortOrder);
+  const [currentSortField, setCurrentSortField] = React.useState(defaultSortField);
+  const [currentSortOrder, setCurrentSortOrder] = React.useState(defaultSortOrder);
 
   const { data } = useTableData({
     propData,
@@ -60,8 +55,7 @@ export const Table = ({
   });
   const columns = header();
   const ariaRowCount = data && data.length;
-  const scrollNode =
-    typeof scrollElement === 'function' ? scrollElement() : scrollElement;
+  const scrollNode = typeof scrollElement === 'function' ? scrollElement() : scrollElement;
   const columnShift = onSelect ? 1 : 0;
 
   React.useEffect(() => {
@@ -94,12 +88,7 @@ export const Table = ({
     (event, index, direction) => {
       event.preventDefault();
       const sortColumn = columns[index - columnShift];
-      applySort(
-        sortColumn.sortField,
-        sortColumn.sortFunc,
-        direction,
-        sortColumn.title,
-      );
+      applySort(sortColumn.sortField, sortColumn.sortFunc, direction, sortColumn.title);
       setSortBy({
         index,
         direction,

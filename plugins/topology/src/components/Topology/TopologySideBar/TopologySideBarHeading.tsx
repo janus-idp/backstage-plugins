@@ -20,11 +20,7 @@ const TopologySideBarHeading = ({ resource }: TopologySideBarHeadingProps) => {
         <Split className="topology-side-bar-heading-label">
           {resourceModels[resourceKind] ? (
             <SplitItem style={{ marginRight: 'var(--pf-global--spacer--sm)' }}>
-              <ResourceName
-                kind={resourceKind}
-                name={resourceName ?? ''}
-                large
-              />
+              <ResourceName kind={resourceKind} name={resourceName ?? ''} large />
             </SplitItem>
           ) : (
             <SplitItem>

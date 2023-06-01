@@ -1,18 +1,11 @@
-import {
-  CustomObjectsApi,
-  KubeConfig,
-  KubernetesListObject,
-} from '@kubernetes/client-node';
+import { CustomObjectsApi, KubeConfig, KubernetesListObject } from '@kubernetes/client-node';
 import { Logger } from 'winston';
 
 import http from 'http';
 
 import { ManagedCluster, ManagedClusterInfo, OcmConfig } from '../types';
 
-export const hubApiClient = (
-  clusterConfig: OcmConfig,
-  logger: Logger,
-): CustomObjectsApi => {
+export const hubApiClient = (clusterConfig: OcmConfig, logger: Logger): CustomObjectsApi => {
   const kubeConfig = new KubeConfig();
 
   if (!clusterConfig.serviceAccountToken) {
@@ -58,10 +51,10 @@ const kubeApiResponseHandler = <T extends Object>(
   }>,
 ) => {
   return call
-    .then(r => {
+    .then((r) => {
       return r.body as T;
     })
-    .catch(r => {
+    .catch((r) => {
       if (!r.body) {
         throw Object.assign(new Error(r.message), {
           // If there is no body, there is no status code, default to 500
@@ -85,22 +78,13 @@ const kubeApiResponseHandler = <T extends Object>(
 
 export const getManagedCluster = (api: CustomObjectsApi, name: string) => {
   return kubeApiResponseHandler<ManagedCluster>(
-    api.getClusterCustomObject(
-      'cluster.open-cluster-management.io',
-      'v1',
-      'managedclusters',
-      name,
-    ),
+    api.getClusterCustomObject('cluster.open-cluster-management.io', 'v1', 'managedclusters', name),
   );
 };
 
 export const listManagedClusters = (api: CustomObjectsApi) => {
   return kubeApiResponseHandler<KubernetesListObject<ManagedCluster>>(
-    api.listClusterCustomObject(
-      'cluster.open-cluster-management.io',
-      'v1',
-      'managedclusters',
-    ),
+    api.listClusterCustomObject('cluster.open-cluster-management.io', 'v1', 'managedclusters'),
   );
 };
 

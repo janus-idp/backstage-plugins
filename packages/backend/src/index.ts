@@ -104,14 +104,14 @@ async function main() {
     .addRouter('/api', apiRouter)
     .addRouter('', await app(appEnv));
 
-  await service.start().catch(err => {
+  await service.start().catch((err) => {
     console.log(err);
     process.exit(1);
   });
 }
 
 module.hot?.accept();
-main().catch(error => {
+main().catch((error) => {
   console.error('Backend failed to start up', error);
   process.exit(1);
 });

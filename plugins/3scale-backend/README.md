@@ -34,9 +34,7 @@ Once you've done that, you'll also need to add the segment below to `packages/ba
 /* highlight-add-next-line */
 import { ThreeScaleApiEntityProvider } from '@janus-idp/backstage-plugin-3scale-backend';
 
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
+export default async function createPlugin(env: PluginEnvironment): Promise<Router> {
   const builder = await CatalogBuilder.create(env);
 
   /* ... other processors and/or providers ... */

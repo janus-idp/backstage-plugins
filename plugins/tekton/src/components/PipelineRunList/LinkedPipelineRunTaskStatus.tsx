@@ -7,12 +7,8 @@ export interface LinkedPipelineRunTaskStatusProps {
   pipelineRun: PipelineRunKind;
 }
 
-const LinkedPipelineRunTaskStatus = ({
-  pipelineRun,
-}: LinkedPipelineRunTaskStatusProps) => {
-  return (
-    <PipelineBars key={pipelineRun.metadata?.name} pipelinerun={pipelineRun} />
-  );
+const LinkedPipelineRunTaskStatus = ({ pipelineRun }: LinkedPipelineRunTaskStatusProps) => {
+  return <PipelineBars key={pipelineRun.metadata?.name} pipelinerun={pipelineRun} />;
 };
 
 export default LinkedPipelineRunTaskStatus;

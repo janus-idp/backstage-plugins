@@ -42,11 +42,7 @@ const getFailedPods = (pods: any[]): number => {
   }
 
   return pods.reduce((acc, currValue) => {
-    if (
-      [AllPodStatus.CrashLoopBackOff, AllPodStatus.Failed].includes(
-        getPodStatus(currValue),
-      )
-    ) {
+    if ([AllPodStatus.CrashLoopBackOff, AllPodStatus.Failed].includes(getPodStatus(currValue))) {
       return acc + 1;
     }
     return acc;
@@ -92,11 +88,7 @@ const getTitleAndSubtitle = (
   };
 };
 
-const podRingLabel = (
-  obj: K8sWorkloadResource,
-  ownerKind: string,
-  pods: V1Pod[],
-) => {
+const podRingLabel = (obj: K8sWorkloadResource, ownerKind: string, pods: V1Pod[]) => {
   let currentPodCount = 0;
   let desiredPodCount;
   let isPending;
@@ -112,16 +104,10 @@ const podRingLabel = (
   const failedPodCount = getFailedPods(pods);
   switch (ownerKind) {
     case DaemonSetGVK.kind:
-      currentPodCount =
-        ((obj as V1DaemonSet).status?.currentNumberScheduled || 0) +
-        failedPodCount;
+      currentPodCount = ((obj as V1DaemonSet).status?.currentNumberScheduled || 0) + failedPodCount;
       desiredPodCount = (obj as V1DaemonSet).status?.desiredNumberScheduled;
       isPending = isPendingPods(pods, currentPodCount, desiredPodCount);
-      titleData = getTitleAndSubtitle(
-        isPending,
-        currentPodCount,
-        desiredPodCount,
-      );
+      titleData = getTitleAndSubtitle(isPending, currentPodCount, desiredPodCount);
       podRingLabelData.title = titleData.title as string;
       podRingLabelData.subTitle = titleData.subTitle;
       podRingLabelData.longSubtitle = titleData.longSubtitle;
@@ -136,15 +122,10 @@ const podRingLabel = (
       podRingLabelData.subTitle = podKindString(currentPodCount);
       break;
     default:
-      currentPodCount =
-        ((obj as V1Deployment)?.status?.readyReplicas || 0) + failedPodCount;
+      currentPodCount = ((obj as V1Deployment)?.status?.readyReplicas || 0) + failedPodCount;
       desiredPodCount = (obj as V1Deployment)?.spec?.replicas;
       isPending = isPendingPods(pods, currentPodCount, desiredPodCount);
-      titleData = getTitleAndSubtitle(
-        isPending,
-        currentPodCount,
-        desiredPodCount,
-      );
+      titleData = getTitleAndSubtitle(isPending, currentPodCount, desiredPodCount);
       podRingLabelData.title = titleData.title as string;
       podRingLabelData.subTitle = titleData.subTitle;
       podRingLabelData.longTitle = titleData.longTitle;
@@ -155,14 +136,9 @@ const podRingLabel = (
   return podRingLabelData;
 };
 
-export const usePodRingLabel = (
-  obj: K8sWorkloadResource,
-  ownerKind: string,
-  pods: V1Pod[],
-) => {
+export const usePodRingLabel = (obj: K8sWorkloadResource, ownerKind: string, pods: V1Pod[]) => {
   const podRingLabelData = podRingLabel(obj, ownerKind, pods);
-  const { title, subTitle, longTitle, longSubtitle, reversed } =
-    podRingLabelData;
+  const { title, subTitle, longTitle, longSubtitle, reversed } = podRingLabelData;
 
   return React.useMemo(
     () => ({

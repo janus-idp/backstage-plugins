@@ -30,9 +30,7 @@ export const ResourceStatus = ({
   children,
 }: React.PropsWithChildren<ResourceStatusProps>) => {
   return (
-    <span
-      className={classNames('bs-tkn-resource-status', additionalClassNames)}
-    >
+    <span className={classNames('bs-tkn-resource-status', additionalClassNames)}>
       <Badge
         className={classNames('bs-tkn-resource-status__badge', {
           'bs-tkn-resource-status__badge--alt': badgeAlt,

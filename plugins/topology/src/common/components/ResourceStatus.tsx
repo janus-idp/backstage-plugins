@@ -32,12 +32,7 @@ const ResourceStatus = ({
   noStatusBackground,
 }: React.PropsWithChildren<ResourceStatusProps>) => {
   return (
-    <span
-      className={classNames(
-        'bs-topology-resource-status',
-        additionalClassNames,
-      )}
-    >
+    <span className={classNames('bs-topology-resource-status', additionalClassNames)}>
       <Badge
         className={classNames('bs-topology-resource-status__badge', {
           'bs-topology-resource-status__badge--alt': badgeAlt,

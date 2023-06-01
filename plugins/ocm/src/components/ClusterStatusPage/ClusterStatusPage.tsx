@@ -22,10 +22,7 @@ import { SearchContextProvider } from '@backstage/plugin-search-react';
 
 import { Chip, CircularProgress, Grid, makeStyles } from '@material-ui/core';
 
-import {
-  ClusterNodesStatus,
-  ClusterOverview,
-} from '@janus-idp/backstage-plugin-ocm-common';
+import { ClusterNodesStatus, ClusterOverview } from '@janus-idp/backstage-plugin-ocm-common';
 
 import { OcmApiRef } from '../../api';
 import { Status, Update } from '../common';
@@ -41,7 +38,7 @@ const useStylesTwo = makeStyles({
   },
 });
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   container: {
     margin: theme.spacing(5, 0),
     '& > svg': {
@@ -51,13 +48,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const NodeChip = ({
-  count,
-  indicator,
-}: {
-  count: number;
-  indicator: ReactElement;
-}) => (
+const NodeChip = ({ count, indicator }: { count: number; indicator: ReactElement }) => (
   <>
     {count > 0 ? (
       <>
@@ -78,11 +69,9 @@ const NodeChip = ({
 );
 
 const NodeChips = ({ nodes }: { nodes: ClusterNodesStatus[] }) => {
-  const readyChipsNodes = nodes.filter(node => node.status === 'True').length;
+  const readyChipsNodes = nodes.filter((node) => node.status === 'True').length;
   // TODO: Check if not ready correctly
-  const notReadyNodesCount = nodes.filter(
-    node => node.status === 'False',
-  ).length;
+  const notReadyNodesCount = nodes.filter((node) => node.status === 'False').length;
 
   if (nodes.length === 0) {
     return <>-</>;
@@ -119,9 +108,9 @@ const CatalogClusters = () => {
       }
 
       setClusterEntities(
-        clusterResourceEntities.items.map(entity => {
+        clusterResourceEntities.items.map((entity) => {
           const cluster = (clusters as ClusterOverview[]).find(
-            cd => cd.name === entity.metadata.name,
+            (cd) => cd.name === entity.metadata.name,
           );
           return {
             cluster: cluster!,
@@ -147,11 +136,9 @@ const CatalogClusters = () => {
     return <CircularProgress />;
   }
 
-  const data = clusterEntities.map(ce => {
+  const data = clusterEntities.map((ce) => {
     return {
-      name: (
-        <EntityRefLink entityRef={ce.entity}>{ce.cluster.name}</EntityRefLink>
-      ),
+      name: <EntityRefLink entityRef={ce.entity}>{ce.cluster.name}</EntityRefLink>,
       status: <Status status={ce.cluster.status} />,
       infrastructure: ce.cluster.platform,
       version: (

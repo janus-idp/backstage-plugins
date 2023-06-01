@@ -111,8 +111,7 @@ describe('parseManagedCluster', () => {
       },
       consoleUrl: 'https://console-openshift-console.apps.cluster1.bar.baz',
       kubernetesVersion: 'v1.22.3+fdba464',
-      oauthUrl:
-        'https://oauth-openshift.apps.cluster1.bar.baz/oauth/token/implicit',
+      oauthUrl: 'https://oauth-openshift.apps.cluster1.bar.baz/oauth/token/implicit',
       openshiftId: '5d448ae7-05f1-42cc-aacc-3122a8ad0184',
       openshiftVersion: '4.9.21',
       platform: 'BareMetal',
@@ -147,8 +146,7 @@ describe('parseManagedCluster', () => {
       },
       consoleUrl: 'https://console-openshift-console.apps.cluster1.bar.baz',
       kubernetesVersion: 'v1.22.3+fdba464',
-      oauthUrl:
-        'https://oauth-openshift.apps.cluster1.bar.baz/oauth/token/implicit',
+      oauthUrl: 'https://oauth-openshift.apps.cluster1.bar.baz/oauth/token/implicit',
       openshiftId: '5d448ae7-05f1-42cc-aacc-3122a8ad0184',
       openshiftVersion: '4.9.21',
       platform: 'BareMetal',
@@ -234,9 +232,7 @@ describe('parseUpdateInfo', () => {
           ...mciOriginal.status!.distributionInfo,
           ocp: {
             ...mciOriginal.status!.distributionInfo.ocp,
-            availableUpdates: [
-              mciOriginal.status!.distributionInfo.ocp.availableUpdates!.pop()!,
-            ],
+            availableUpdates: [mciOriginal.status!.distributionInfo.ocp.availableUpdates!.pop()!],
             versionAvailableUpdates: [
               mciOriginal.status!.distributionInfo.ocp.versionAvailableUpdates!.pop()!,
             ],
@@ -349,24 +345,18 @@ describe('translateResourceToOCM', () => {
   it.each([
     ['thisishub', 'local-cluster'],
     ['thisisNOThub', 'thisisNOThub'],
-  ])(
-    'translates hub cluster name to "local-cluster"',
-    (clusterName, expected) => {
-      const result = translateResourceToOCM(clusterName, 'thisishub');
-      expect(result).toBe(expected);
-    },
-  );
+  ])('translates hub cluster name to "local-cluster"', (clusterName, expected) => {
+    const result = translateResourceToOCM(clusterName, 'thisishub');
+    expect(result).toBe(expected);
+  });
 });
 
 describe('translateOCMToResource', () => {
   it.each([
     ['local-cluster', 'thisishub'],
     ['thisisNOThub', 'thisisNOThub'],
-  ])(
-    'translates hub cluster name to "local-cluster"',
-    (clusterName, expected) => {
-      const result = translateOCMToResource(clusterName, 'thisishub');
-      expect(result).toBe(expected);
-    },
-  );
+  ])('translates hub cluster name to "local-cluster"', (clusterName, expected) => {
+    const result = translateOCMToResource(clusterName, 'thisishub');
+    expect(result).toBe(expected);
+  });
 });

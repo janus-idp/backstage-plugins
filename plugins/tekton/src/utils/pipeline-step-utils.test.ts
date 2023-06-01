@@ -6,8 +6,8 @@ import { getTaskStatus } from './pipelineRun-utils';
 
 describe('createStepStatus', () => {
   it('should return the task step status', () => {
-    let computedTask = mockKubernetesPlrResponse.pipelineruns[0].status
-      .pipelineSpec.tasks[0] as PipelineTaskWithStatus;
+    let computedTask = mockKubernetesPlrResponse.pipelineruns[0].status.pipelineSpec
+      .tasks[0] as PipelineTaskWithStatus;
     computedTask = {
       ...computedTask,
       status: {
@@ -64,8 +64,7 @@ describe('createStepStatus', () => {
                   value: '/tekton/home',
                 },
               ],
-              image:
-                'image-registry.openshift-image-registry.svc:5000/openshift/cli:latest',
+              image: 'image-registry.openshift-image-registry.svc:5000/openshift/cli:latest',
               name: 'oc',
               resources: {},
               script: '',
@@ -104,10 +103,7 @@ describe('createStepStatus', () => {
   });
 
   it('should return proper status values when step and status objects have missing properties', () => {
-    const stepStatus = createStepStatus(
-      { name: '' },
-      { reason: ComputedStatus.Other },
-    );
+    const stepStatus = createStepStatus({ name: '' }, { reason: ComputedStatus.Other });
     expect(stepStatus).toEqual({
       duration: undefined,
       name: '',

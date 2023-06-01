@@ -19,10 +19,7 @@ The following actions are currently supported in this module:
    ```ts
    import { CatalogClient } from '@backstage/catalog-client';
    import { ScmIntegrations } from '@backstage/integration';
-   import {
-     createBuiltinActions,
-     createRouter,
-   } from '@backstage/plugin-scaffolder-backend';
+   import { createBuiltinActions, createRouter } from '@backstage/plugin-scaffolder-backend';
 
    import { Router } from 'express';
 
@@ -30,9 +27,7 @@ The following actions are currently supported in this module:
 
    import type { PluginEnvironment } from '../types';
 
-   export default async function createPlugin(
-     env: PluginEnvironment,
-   ): Promise<Router> {
+   export default async function createPlugin(env: PluginEnvironment): Promise<Router> {
      const catalogClient = new CatalogClient({
        discoveryApi: env.discovery,
      });
@@ -46,10 +41,7 @@ The following actions are currently supported in this module:
        reader: env.reader,
      });
 
-     const actions = [
-       ...builtInActions,
-       createKubernetesNamespaceAction(catalogClient),
-     ];
+     const actions = [...builtInActions, createKubernetesNamespaceAction(catalogClient)];
 
      return await createRouter({
        actions,

@@ -88,10 +88,7 @@ describe('getManagedCluster', () => {
   });
 
   it('should return an error object when cluster is not found', async () => {
-    const result = await getManagedCluster(
-      getApi(),
-      'non_existent_cluster',
-    ).catch(r => r);
+    const result = await getManagedCluster(getApi(), 'non_existent_cluster').catch((r) => r);
 
     expect(result.statusCode).toBe(404);
     expect(result.name).toBe('NotFound');

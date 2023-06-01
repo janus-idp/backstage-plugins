@@ -70,9 +70,7 @@ export const NamespacePickerDialog = ({
 
       {loading && (
         <DialogContent>
-          <DialogContentText>
-            Please wait while we fetch the list of namespaces
-          </DialogContentText>
+          <DialogContentText>Please wait while we fetch the list of namespaces</DialogContentText>
           <Progress />
         </DialogContent>
       )}
@@ -80,8 +78,8 @@ export const NamespacePickerDialog = ({
       {!loading && (
         <DialogContent>
           <DialogContentText>
-            Unable to create devworkspace resource in {previousNamespace}{' '}
-            namespace, please choose a different one
+            Unable to create devworkspace resource in {previousNamespace} namespace, please choose a
+            different one
           </DialogContentText>
           <form onSubmit={handleSubmit} className={classes.container}>
             <FormControl>
@@ -97,7 +95,7 @@ export const NamespacePickerDialog = ({
                 <MenuItem value="" disabled>
                   Select a namespace
                 </MenuItem>
-                {namespaces.map(namespace => {
+                {namespaces.map((namespace) => {
                   return (
                     <MenuItem key={namespace} value={namespace}>
                       {namespace}

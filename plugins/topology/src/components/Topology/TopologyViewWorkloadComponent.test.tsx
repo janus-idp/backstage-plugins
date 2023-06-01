@@ -57,9 +57,7 @@ describe('TopologyViewWorkloadComponent', () => {
       dataModel: { nodes: [{}] },
     });
     const { getByText } = render(
-      <K8sResourcesContext.Provider
-        value={{ clusters: ['ocp'], setSelectedCluster: () => {} }}
-      >
+      <K8sResourcesContext.Provider value={{ clusters: ['ocp'], setSelectedCluster: () => {} }}>
         <TopologyViewWorkloadComponent />
       </K8sResourcesContext.Provider>,
     );

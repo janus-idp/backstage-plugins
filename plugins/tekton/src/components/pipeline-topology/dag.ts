@@ -105,26 +105,21 @@ export class DAG {
     toNode.dependancyNames.push(source);
   }
 
-  addEdges(
-    name: string,
-    data: any,
-    before: string | string[],
-    after: string | string[],
-  ): void {
+  addEdges(name: string, data: any, before: string | string[], after: string | string[]): void {
     this.map(name, data);
 
     if (before) {
       if (typeof before === 'string') {
         this.addEdge(name, before);
       } else {
-        before.forEach(b => this.addEdge(name, b));
+        before.forEach((b) => this.addEdge(name, b));
       }
     }
     if (after) {
       if (typeof after === 'string') {
         this.addEdge(after, name);
       } else {
-        after.forEach(a => this.addEdge(a, name));
+        after.forEach((a) => this.addEdge(a, name));
       }
     }
   }

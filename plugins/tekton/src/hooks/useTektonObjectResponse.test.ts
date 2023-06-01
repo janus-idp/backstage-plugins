@@ -39,9 +39,7 @@ describe('useTektonObjectResponse', () => {
       loading: false,
       error: '',
     });
-    const { result, rerender } = renderHook(() =>
-      useTektonObjectsResponse(watchedResources),
-    );
+    const { result, rerender } = renderHook(() => useTektonObjectsResponse(watchedResources));
     rerender();
     await waitFor(() => {
       expect(result.current.watchResourcesData).toEqual(watchResourcesData);
@@ -56,9 +54,7 @@ describe('useTektonObjectResponse', () => {
       loading: false,
       error: '',
     });
-    const { result } = renderHook(() =>
-      useTektonObjectsResponse(watchedResources),
-    );
+    const { result } = renderHook(() => useTektonObjectsResponse(watchedResources));
     expect(result.current.selectedCluster).toEqual(0);
     act(() => {
       result.current.setSelectedCluster(1);
@@ -73,12 +69,9 @@ describe('useTektonObjectResponse', () => {
 
   it('should return responseError with loaded if unable to fetch data', async () => {
     mockUseKubernetesObjects.mockReturnValue({
-      error:
-        'getaddrinfo ENOTFOUND api.rhoms-4.13-052404.dev.openshiftappsvc.org',
+      error: 'getaddrinfo ENOTFOUND api.rhoms-4.13-052404.dev.openshiftappsvc.org',
     });
-    const { result } = renderHook(() =>
-      useTektonObjectsResponse(watchedResources),
-    );
+    const { result } = renderHook(() => useTektonObjectsResponse(watchedResources));
     await waitFor(() => {
       expect(result.current.watchResourcesData).toBeUndefined();
       expect(result.current.clusters).toEqual([]);

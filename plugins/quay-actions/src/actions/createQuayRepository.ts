@@ -54,7 +54,7 @@ const isValueValid = (
   }
   throw new Error(
     `For the "${valueName}" parameter "${value}" is not a valid option,` +
-      ` available options are: ${valueOpts.map(v => v || 'none').join(', ')}`,
+      ` available options are: ${valueOpts.map((v) => v || 'none').join(', ')}`,
   );
 };
 
@@ -74,8 +74,7 @@ export function createQuayRepositoryAction() {
           },
           visibility: {
             title: 'Visibility setting',
-            description:
-              'Visibility setting for the created repository, either public or private',
+            description: 'Visibility setting for the created repository, either public or private',
             type: 'string',
           },
           description: {
@@ -90,8 +89,7 @@ export function createQuayRepositoryAction() {
           },
           baseUrl: {
             title: 'Base URL',
-            description:
-              'URL of your quay instance, set to "https://quay.io" by default',
+            description: 'URL of your quay instance, set to "https://quay.io" by default',
             type: 'string',
           },
           namespace: {
@@ -120,15 +118,10 @@ export function createQuayRepositoryAction() {
       },
     },
     async handler(ctx) {
-      const { token, name, visibility, namespace, description, repoKind } =
-        ctx.input;
+      const { token, name, visibility, namespace, description, repoKind } = ctx.input;
       const baseUrl = getUrl(ctx.input.baseUrl);
       isValueValid(visibility, 'visibility', ['public', 'private']);
-      isValueValid(repoKind, 'repository kind', [
-        'application',
-        'image',
-        undefined,
-      ]);
+      isValueValid(repoKind, 'repository kind', ['application', 'image', undefined]);
 
       const params: RequestBody = {
         description,
@@ -154,16 +147,11 @@ export function createQuayRepositoryAction() {
         const errorStatus = errorBody.status || response.status;
         // Some error responses don't have the structure defined in ResponseErrorBody
         const errorMsg = errorBody.detail || (errorBody as any).error;
-        throw new Error(
-          `Failed to create Quay repository, ${errorStatus} -- ${errorMsg}`,
-        );
+        throw new Error(`Failed to create Quay repository, ${errorStatus} -- ${errorMsg}`);
       }
 
       const body = (await response.json()) as ResponseBody;
-      ctx.output(
-        'repositoryUrl',
-        `${baseUrl}/repository/${body.namespace}/${body.name}`,
-      );
+      ctx.output('repositoryUrl', `${baseUrl}/repository/${body.namespace}/${body.name}`);
     },
   });
 }

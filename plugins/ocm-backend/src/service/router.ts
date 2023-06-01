@@ -21,10 +21,7 @@ import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 
-import {
-  Cluster,
-  ClusterOverview,
-} from '@janus-idp/backstage-plugin-ocm-common';
+import { Cluster, ClusterOverview } from '@janus-idp/backstage-plugin-ocm-common';
 
 import { readOcmConfigs } from '../helpers/config';
 import {
@@ -50,14 +47,12 @@ export interface RouterOptions {
   config: Config;
 }
 
-export async function createRouter(
-  options: RouterOptions,
-): Promise<express.Router> {
+export async function createRouter(options: RouterOptions): Promise<express.Router> {
   const { logger } = options;
   const { config } = options;
 
   const clients = Object.fromEntries(
-    readOcmConfigs(config).map(provider => [
+    readOcmConfigs(config).map((provider) => [
       provider.id,
       {
         client: hubApiClient(provider, options.logger),
@@ -72,9 +67,7 @@ export async function createRouter(
   router.get(
     '/status/:providerId/:clusterName',
     async ({ params: { clusterName, providerId } }, response) => {
-      logger.debug(
-        `Incoming status request for ${clusterName} cluster on ${providerId} hub`,
-      );
+      logger.debug(`Incoming status request for ${clusterName} cluster on ${providerId} hub`);
 
       if (!clients.hasOwnProperty(providerId)) {
         throw Object.assign(new Error('Hub not found'), {
@@ -88,14 +81,8 @@ export async function createRouter(
         clients[providerId].hubResourceName,
       );
 
-      const mc = await getManagedCluster(
-        clients[providerId].client,
-        normalizedClusterName,
-      );
-      const mci = await getManagedClusterInfo(
-        clients[providerId].client,
-        normalizedClusterName,
-      );
+      const mc = await getManagedCluster(clients[providerId].client, normalizedClusterName);
+      const mci = await getManagedClusterInfo(clients[providerId].client, normalizedClusterName);
 
       response.send({
         name: clusterName,
@@ -109,23 +96,21 @@ export async function createRouter(
     logger.debug(`Incoming status request for all clusters`);
 
     const allClusters = await Promise.all(
-      Object.values(clients).map(async c => {
+      Object.values(clients).map(async (c) => {
         const mcs = await listManagedClusters(c.client);
         const mcis = await listManagedClusterInfos(c.client);
 
-        return mcs.items.map(mc => {
+        return mcs.items.map((mc) => {
           const mci =
-            mcis.items.find(
-              info => info.metadata?.name === mc.metadata!.name,
-            ) || ({} as ManagedClusterInfo);
+            mcis.items.find((info) => info.metadata?.name === mc.metadata!.name) ||
+            ({} as ManagedClusterInfo);
 
           return {
             name: translateOCMToResource(mc.metadata!.name!, c.hubResourceName),
             status: parseClusterStatus(mc),
             platform: getClaim(mc, 'platform.open-cluster-management.io'),
             openshiftVersion:
-              mc.metadata!.labels?.openshiftVersion ||
-              getClaim(mc, 'version.openshift.io'),
+              mc.metadata!.labels?.openshiftVersion || getClaim(mc, 'version.openshift.io'),
             nodes: parseNodeStatus(mci),
             ...parseUpdateInfo(mci),
           } as ClusterOverview;

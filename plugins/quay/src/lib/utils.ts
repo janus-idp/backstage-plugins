@@ -67,7 +67,5 @@ export function formatSize(sizeInBytes: number): string {
   }
 
   const unitIndex = calculateUnit(sizeInBytes);
-  return `${Number((sizeInBytes / Math.pow(1024, unitIndex)).toFixed(2))} ${
-    byteUnits[unitIndex]
-  }`;
+  return `${Number((sizeInBytes / Math.pow(1024, unitIndex)).toFixed(2))} ${byteUnits[unitIndex]}`;
 }

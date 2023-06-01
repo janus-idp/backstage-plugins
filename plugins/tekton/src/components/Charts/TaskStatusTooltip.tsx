@@ -12,7 +12,7 @@ interface TaskStatusToolTipProps {
 const TaskStatusToolTip = ({ taskStatus }: TaskStatusToolTipProps) => {
   return (
     <div className="bs-tkn-task-status-tooltip">
-      {Object.keys(ComputedStatus).map(status => {
+      {Object.keys(ComputedStatus).map((status) => {
         const { message, pftoken } = getRunStatusColor(status);
         return taskStatus[status as keyof TaskStatus] ? (
           <React.Fragment key={status}>

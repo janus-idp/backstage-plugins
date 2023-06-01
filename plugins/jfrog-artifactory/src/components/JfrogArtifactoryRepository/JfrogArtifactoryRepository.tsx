@@ -43,7 +43,7 @@ export function JfrogArtifactoryRepository(props: RepositoryProps) {
 
   const data = edges?.map((edge: Edge) => {
     const shortHash = edge.node.files
-      .find(manifest => manifest.name === 'manifest.json')
+      .find((manifest) => manifest.name === 'manifest.json')
       ?.sha256.substring(0, 12);
     return {
       name: edge.node.name,
@@ -58,7 +58,7 @@ export function JfrogArtifactoryRepository(props: RepositoryProps) {
       repositories:
         `${edge.node.repos.length}` +
         ' | ' +
-        `${edge.node.repos.map(repo => repo.name).join('| ')}`,
+        `${edge.node.repos.map((repo) => repo.name).join('| ')}`,
     };
   });
 

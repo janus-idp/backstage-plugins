@@ -99,9 +99,7 @@ When using client credentials, the access type must be set to `confidential` and
 
      /* highlight-add-end */
 
-     export default async function createPlugin(
-       env: PluginEnvironment,
-     ): Promise<Router> {
+     export default async function createPlugin(env: PluginEnvironment): Promise<Router> {
        const builder = await CatalogBuilder.create(env);
 
        /* ... other processors and/or providers ... */

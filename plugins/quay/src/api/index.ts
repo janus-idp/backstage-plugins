@@ -1,8 +1,4 @@
-import {
-  ConfigApi,
-  createApiRef,
-  DiscoveryApi,
-} from '@backstage/core-plugin-api';
+import { ConfigApi, createApiRef, DiscoveryApi } from '@backstage/core-plugin-api';
 
 import {
   LabelsResponse,
@@ -14,23 +10,10 @@ import {
 const DEFAULT_PROXY_PATH = '/quay/api';
 
 export interface QuayApiV1 {
-  getTags(
-    org: string,
-    repo: string,
-    page?: number,
-    limit?: number,
-  ): Promise<TagsResponse>;
+  getTags(org: string, repo: string, page?: number, limit?: number): Promise<TagsResponse>;
   getLabels(org: string, repo: string, digest: string): Promise<LabelsResponse>;
-  getManifestByDigest(
-    org: string,
-    repo: string,
-    digest: string,
-  ): Promise<ManifestByDigestResponse>;
-  getSecurityDetails(
-    org: string,
-    repo: string,
-    digest: string,
-  ): Promise<SecurityDetailsResponse>;
+  getManifestByDigest(org: string, repo: string, digest: string): Promise<ManifestByDigestResponse>;
+  getSecurityDetails(org: string, repo: string, digest: string): Promise<SecurityDetailsResponse>;
 }
 
 export const quayApiRef = createApiRef<QuayApiV1>({
@@ -54,8 +37,7 @@ export class QuayApiClient implements QuayApiV1 {
   }
 
   private async getBaseUrl() {
-    const proxyPath =
-      this.configApi.getOptionalString('quay.proxyPath') || DEFAULT_PROXY_PATH;
+    const proxyPath = this.configApi.getOptionalString('quay.proxyPath') || DEFAULT_PROXY_PATH;
     return `${await this.discoveryApi.getBaseUrl('proxy')}${proxyPath}`;
   }
 
@@ -64,30 +46,19 @@ export class QuayApiClient implements QuayApiV1 {
       headers: { 'Content-Type': 'application/json' },
     });
     if (!response.ok) {
-      throw new Error(
-        `failed to fetch data, status ${response.status}: ${response.statusText}`,
-      );
+      throw new Error(`failed to fetch data, status ${response.status}: ${response.statusText}`);
     }
     return await response.json();
   }
 
   private encodeGetParams(params: Record<string, any>) {
     return Object.keys(params)
-      .filter(key => typeof params[key] !== 'undefined')
-      .map(
-        k =>
-          `${encodeURIComponent(k)}=${encodeURIComponent(params[k] as string)}`,
-      )
+      .filter((key) => typeof params[key] !== 'undefined')
+      .map((k) => `${encodeURIComponent(k)}=${encodeURIComponent(params[k] as string)}`)
       .join('&');
   }
 
-  async getTags(
-    org: string,
-    repo: string,
-    page?: number,
-    limit?: number,
-    specifcTag?: string,
-  ) {
+  async getTags(org: string, repo: string, page?: number, limit?: number, specifcTag?: string) {
     const proxyUrl = await this.getBaseUrl();
 
     const params = this.encodeGetParams({

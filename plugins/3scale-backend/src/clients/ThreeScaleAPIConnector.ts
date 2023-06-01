@@ -8,7 +8,7 @@ export function listServices(
 ): Promise<Services> {
   return fetch(
     `${baseUrl}/admin/api/services.json?access_token=${access_token}&page=${page}&size=${size}`,
-  ).then(response => {
+  ).then((response) => {
     if (!response.ok) {
       throw new Error(response.statusText);
     }
@@ -16,18 +16,15 @@ export function listServices(
   });
 }
 
-export function listApiDocs(
-  baseUrl: string,
-  access_token: string,
-): Promise<APIDocs> {
-  return fetch(
-    `${baseUrl}/admin/api/active_docs.json?access_token=${access_token}`,
-  ).then(response => {
-    if (!response.ok) {
-      throw new Error(response.statusText);
-    }
-    return response.json() as Promise<APIDocs>;
-  });
+export function listApiDocs(baseUrl: string, access_token: string): Promise<APIDocs> {
+  return fetch(`${baseUrl}/admin/api/active_docs.json?access_token=${access_token}`).then(
+    (response) => {
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      }
+      return response.json() as Promise<APIDocs>;
+    },
+  );
 }
 
 export function getProxyConfig(
@@ -37,7 +34,7 @@ export function getProxyConfig(
 ): Promise<Proxy> {
   return fetch(
     `${baseUrl}/admin/api/services/${service_id}/proxy.json?access_token=${access_token}`,
-  ).then(response => {
+  ).then((response) => {
     if (!response.ok) {
       throw new Error(response.statusText);
     }

@@ -30,9 +30,9 @@ export type VirtualBodyProps<D = any, C = any> = {
   };
 };
 
-export const RowMemo = React.memo<
-  RowFunctionArgs & { Row: React.FC<RowFunctionArgs> }
->(({ Row, ...props }) => <Row {...props} />);
+export const RowMemo = React.memo<RowFunctionArgs & { Row: React.FC<RowFunctionArgs> }>(
+  ({ Row, ...props }) => <Row {...props} />,
+);
 
 export const VirtualBody = (props: VirtualBodyProps) => {
   const {
@@ -51,8 +51,7 @@ export const VirtualBody = (props: VirtualBodyProps) => {
   const cellMeasurementCache = new CellMeasurerCache({
     fixedWidth: true,
     minHeight: 44,
-    keyMapper: (rowIndex: any) =>
-      props.data?.[rowIndex]?.metadata?.uid || rowIndex,
+    keyMapper: (rowIndex: any) => props.data?.[rowIndex]?.metadata?.uid || rowIndex,
   });
 
   const rowRenderer = ({
@@ -88,13 +87,7 @@ export const VirtualBody = (props: VirtualBodyProps) => {
         parent={parent}
         rowIndex={index}
       >
-        <TableRow
-          {...rowProps}
-          id={rowId}
-          index={index}
-          trKey={key}
-          style={style}
-        >
+        <TableRow {...rowProps} id={rowId} index={index} trKey={key} style={style}>
           <RowMemo Row={Row} {...rowArgs} />
         </TableRow>
       </CellMeasurer>

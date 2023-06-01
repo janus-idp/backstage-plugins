@@ -15,16 +15,9 @@
  */
 
 import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
-import {
-  ANNOTATION_LOCATION,
-  ANNOTATION_ORIGIN_LOCATION,
-  Entity,
-} from '@backstage/catalog-model';
+import { ANNOTATION_LOCATION, ANNOTATION_ORIGIN_LOCATION, Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import {
-  EntityProvider,
-  EntityProviderConnection,
-} from '@backstage/plugin-catalog-backend';
+import { EntityProvider, EntityProviderConnection } from '@backstage/plugin-catalog-backend';
 
 import KcAdminClient from '@keycloak/keycloak-admin-client';
 import type { Credentials } from '@keycloak/keycloak-admin-client/lib/utils/auth';
@@ -92,11 +85,7 @@ export interface KeycloakOrgEntityProviderOptions {
 }
 
 // Makes sure that emitted entities have a proper location
-export const withLocations = (
-  baseUrl: string,
-  realm: string,
-  entity: Entity,
-): Entity => {
+export const withLocations = (baseUrl: string, realm: string, entity: Entity): Entity => {
   const kind = entity.kind === 'Group' ? 'groups' : 'users';
   const location = `url:${baseUrl}/admin/realms/${realm}/${kind}/${entity.metadata.annotations?.[KEYCLOAK_ID_ANNOTATION]}`;
   return merge(
@@ -125,7 +114,7 @@ export class KeycloakOrgEntityProvider implements EntityProvider {
     configRoot: Config,
     options: KeycloakOrgEntityProviderOptions,
   ): KeycloakOrgEntityProvider[] {
-    return readProviderConfigs(configRoot).map(providerConfig => {
+    return readProviderConfigs(configRoot).map((providerConfig) => {
       if (!options.schedule && !providerConfig.schedule) {
         throw new Error(
           `No schedule provided neither via code nor config for MicrosoftGraphOrgEntityProvider:${providerConfig.id}.`,
@@ -133,8 +122,7 @@ export class KeycloakOrgEntityProvider implements EntityProvider {
       }
 
       const taskRunner =
-        options.schedule ??
-        options.scheduler!.createScheduledTaskRunner(providerConfig.schedule!);
+        options.schedule ?? options.scheduler!.createScheduledTaskRunner(providerConfig.schedule!);
 
       const provider = new KeycloakOrgEntityProvider({
         id: providerConfig.id,
@@ -215,7 +203,7 @@ export class KeycloakOrgEntityProvider implements EntityProvider {
 
     await this.connection.applyMutation({
       type: 'full',
-      entities: [...users, ...groups].map(entity => ({
+      entities: [...users, ...groups].map((entity) => ({
         locationKey: `keycloak-org-provider:${this.options.id}`,
         entity: withLocations(provider.baseUrl, provider.realm, entity),
       })),

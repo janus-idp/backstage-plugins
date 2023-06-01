@@ -46,7 +46,7 @@ export class LabelSelector {
         );
         _.forEach(
           selector.matchExpressions,
-          expression => {
+          (expression) => {
             this.addConjunct(
               expression.key,
               this._OPERATOR_MAP[expression.operator],
@@ -180,7 +180,7 @@ export class LabelSelector {
       // label selector as covering any other label selector
       return false;
     }
-    return _.every(this._conjuncts, conjunct => {
+    return _.every(this._conjuncts, (conjunct) => {
       // Return true immediately if we find an exact match for operator/key/values
       if (selector.hasConjunct(conjunct)) {
         return true;
@@ -198,29 +198,22 @@ export class LabelSelector {
           return false;
         case 'in':
           // In (A,B,C) covers In (A,B) AND In (B,C)
-          const inConjuncts = selector.findConjunctsMatching(
-            'in',
-            conjunct.key,
-          );
+          const inConjuncts = selector.findConjunctsMatching('in', conjunct.key);
           if (_.isEmpty(inConjuncts)) {
             return false;
           }
-          return _.every(inConjuncts, inConjunct => {
+          return _.every(inConjuncts, (inConjunct) => {
             return (
-              inConjunct.values.length ===
-              _.intersection(inConjunct.values, conjunct.values).length
+              inConjunct.values.length === _.intersection(inConjunct.values, conjunct.values).length
             );
           });
         case 'not in':
           // NotIn (A,B) covers NotIn (A,B,C) AND NotIn (A,B,D)
-          const notInConjuncts = selector.findConjunctsMatching(
-            'not in',
-            conjunct.key,
-          );
+          const notInConjuncts = selector.findConjunctsMatching('not in', conjunct.key);
           if (_.isEmpty(notInConjuncts)) {
             return false;
           }
-          return _.every(notInConjuncts, notInConjunct => {
+          return _.every(notInConjuncts, (notInConjunct) => {
             return (
               conjunct.values.length ===
               _.intersection(notInConjunct.values, conjunct.values).length

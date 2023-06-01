@@ -1,8 +1,4 @@
-import {
-  V1ContainerStatus,
-  V1Deployment,
-  V1Pod,
-} from '@kubernetes/client-node';
+import { V1ContainerStatus, V1Deployment, V1Pod } from '@kubernetes/client-node';
 
 import {
   AllPodStatus,
@@ -18,29 +14,22 @@ import { K8sWorkloadResource, Model } from '../types/types';
 export const podStatus = Object.keys(podColor);
 
 const isContainerFailedFilter = (containerStatus: V1ContainerStatus) => {
-  return (
-    containerStatus.state?.terminated &&
-    containerStatus.state.terminated.exitCode !== 0
-  );
+  return containerStatus.state?.terminated && containerStatus.state.terminated.exitCode !== 0;
 };
 
 const isContainerLoopingFilter = (containerStatus: V1ContainerStatus) => {
   return (
-    containerStatus.state?.waiting &&
-    containerStatus.state.waiting.reason === 'CrashLoopBackOff'
+    containerStatus.state?.waiting && containerStatus.state.waiting.reason === 'CrashLoopBackOff'
   );
 };
 
-const isContainerImagePullBackOffFilter = (
-  containerStatus: V1ContainerStatus,
-) =>
-  containerStatus.state?.waiting &&
-  containerStatus.state.waiting.reason === 'ImagePullBackOff';
+const isContainerImagePullBackOffFilter = (containerStatus: V1ContainerStatus) =>
+  containerStatus.state?.waiting && containerStatus.state.waiting.reason === 'ImagePullBackOff';
 
 const numContainersReadyFilter = (pod: V1Pod) => {
   const containerStatuses = pod.status?.containerStatuses;
   let numReady = 0;
-  containerStatuses?.forEach(status => {
+  containerStatuses?.forEach((status) => {
     if (status.ready) {
       numReady++;
     }
@@ -59,12 +48,9 @@ const isReady = (pod: V1Pod) => {
 const podWarnings = (pod: V1Pod) => {
   const phase = pod.status?.phase;
   const containerStatuses = pod.status?.containerStatuses;
-  if (
-    (phase === AllPodStatus.Running || phase === AllPodStatus.Pending) &&
-    containerStatuses
-  ) {
+  if ((phase === AllPodStatus.Running || phase === AllPodStatus.Pending) && containerStatuses) {
     return containerStatuses
-      .map(containerStatus => {
+      .map((containerStatus) => {
         if (!containerStatus.state) {
           return null;
         }
@@ -83,7 +69,7 @@ const podWarnings = (pod: V1Pod) => {
         }
         return null;
       })
-      .filter(x => x);
+      .filter((x) => x);
   }
   return null;
 };
@@ -147,8 +133,7 @@ export const podDataInProgress = (
   const strategy = (dc as V1Deployment)?.spec?.strategy?.type;
   return (
     current?.phase !== DeploymentPhase.complete &&
-    (strategy === DeploymentStrategy.recreate ||
-      strategy === DeploymentStrategy.rolling) &&
+    (strategy === DeploymentStrategy.recreate || strategy === DeploymentStrategy.rolling) &&
     isRollingOut
   );
 };
@@ -159,8 +144,7 @@ export const getPodData = (
   inProgressDeploymentData: V1Pod[] | null;
   completedDeploymentData: V1Pod[];
 } => {
-  const strategy =
-    (podRCData.obj as V1Deployment)?.spec?.strategy?.type || null;
+  const strategy = (podRCData.obj as V1Deployment)?.spec?.strategy?.type || null;
   const currentDeploymentphase = podRCData.current && podRCData.current.phase;
   const currentPods = podRCData.current && podRCData.current.pods;
   const previousPods = podRCData.previous && podRCData.previous.pods;
@@ -209,7 +193,7 @@ const kindToAbbr = (kind: string): string =>
 
 const getAssociatedModel = (kind: string): Model | undefined => {
   const resourcesModelsList = Object.values(resourceModels);
-  return resourcesModelsList.find(resModel => resModel.kind === kind);
+  return resourcesModelsList.find((resModel) => resModel.kind === kind);
 };
 
 export const getKindAbbrColor = (kind: string): ResKindAbbrColor => {

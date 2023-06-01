@@ -1,9 +1,6 @@
 import React from 'react';
 
-import {
-  Visualization,
-  VisualizationProvider,
-} from '@patternfly/react-topology';
+import { Visualization, VisualizationProvider } from '@patternfly/react-topology';
 
 import TopologyComponentFactory from '../Graph/TopologyComponentFactory';
 import defaultLayoutFactory from '../layouts/defaultLayoutFactory';

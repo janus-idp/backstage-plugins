@@ -52,57 +52,52 @@ import { PipelineRunKind, PipelineTaskWithStatus } from '../types/pipelineRun';
 import { TaskRunKind } from '../types/taskRun';
 import { appendPipelineRunStatus, getPLRTaskRuns } from './pipelineRun-utils';
 
-const createGenericNode: NodeCreatorSetup =
-  (type, width?, height?) => (name, data) => ({
-    id: name,
-    label: data?.label || name,
-    runAfterTasks: data?.runAfterTasks || [],
-    ...(data && { data }),
-    height: height ?? NODE_HEIGHT,
-    width: width ?? NODE_WIDTH,
-    type,
-  });
+const createGenericNode: NodeCreatorSetup = (type, width?, height?) => (name, data) => ({
+  id: name,
+  label: data?.label || name,
+  runAfterTasks: data?.runAfterTasks || [],
+  ...(data && { data }),
+  height: height ?? NODE_HEIGHT,
+  width: width ?? NODE_WIDTH,
+  type,
+});
 
 const getMaxFinallyNode = (finallyTaskList: PipelineTaskWithStatus[]) => {
-  const sortedFinallyTaskList = [...finallyTaskList].sort(
-    (a, b) => b.name.length - a.name.length,
-  );
+  const sortedFinallyTaskList = [...finallyTaskList].sort((a, b) => b.name.length - a.name.length);
   return sortedFinallyTaskList[0]?.name || '';
 };
 
 // Node variations
-export const createTaskNode: NodeCreator<TaskNodeModelData> = createGenericNode(
-  NodeType.TASK_NODE,
+export const createTaskNode: NodeCreator<TaskNodeModelData> = createGenericNode(NodeType.TASK_NODE);
+export const createSpacerNode: NodeCreator<SpacerNodeModelData> = createGenericNode(
+  NodeType.SPACER_NODE,
+  0,
 );
-export const createSpacerNode: NodeCreator<SpacerNodeModelData> =
-  createGenericNode(NodeType.SPACER_NODE, 0);
-export const createTaskListNode: NodeCreator<TaskListNodeModelData> =
-  createGenericNode(NodeType.TASK_LIST_NODE);
-export const createInvalidTaskListNode: NodeCreator<TaskListNodeModelData> =
-  createGenericNode(NodeType.INVALID_TASK_LIST_NODE);
-export const createBuilderNode: NodeCreator<BuilderNodeModelData> =
-  createGenericNode(NodeType.BUILDER_NODE);
+export const createTaskListNode: NodeCreator<TaskListNodeModelData> = createGenericNode(
+  NodeType.TASK_LIST_NODE,
+);
+export const createInvalidTaskListNode: NodeCreator<TaskListNodeModelData> = createGenericNode(
+  NodeType.INVALID_TASK_LIST_NODE,
+);
+export const createBuilderNode: NodeCreator<BuilderNodeModelData> = createGenericNode(
+  NodeType.BUILDER_NODE,
+);
 
-export const createFinallyNode = (
-  height: number,
-): NodeCreator<FinallyNodeModel> =>
+export const createFinallyNode = (height: number): NodeCreator<FinallyNodeModel> =>
   createGenericNode(
     NodeType.FINALLY_NODE,
     NODE_WIDTH + WHEN_EXPRESSION_SPACING + FINALLY_NODE_PADDING * 2,
     height,
   );
 
-export const createLoadingNode: NodeCreator<LoadingNodeModel> =
-  createGenericNode(NodeType.LOADING_NODE);
+export const createLoadingNode: NodeCreator<LoadingNodeModel> = createGenericNode(
+  NodeType.LOADING_NODE,
+);
 
-const createPipelineTaskNode = (
-  type: NodeType,
-  data: PipelineRunAfterNodeModelData,
-) => createGenericNode(type, data.width, data.height)(data.id ?? '', data);
+const createPipelineTaskNode = (type: NodeType, data: PipelineRunAfterNodeModelData) =>
+  createGenericNode(type, data.width, data.height)(data.id ?? '', data);
 
-export const getNodeCreator = (
-  type: NodeType,
-): NodeCreator<PipelineRunAfterNodeModelData> => {
+export const getNodeCreator = (type: NodeType): NodeCreator<PipelineRunAfterNodeModelData> => {
   switch (type) {
     case NodeType.TASK_LIST_NODE:
       return createTaskListNode as NodeCreator<PipelineRunAfterNodeModelData>;
@@ -176,10 +171,10 @@ export const handleParallelToParallelNodes = (
     // All nodes in each array share their runAfters
     const { runAfter } = p2p[0];
 
-    const names: string[] = p2p.map(p2pData => p2pData.node.id);
+    const names: string[] = p2p.map((p2pData) => p2pData.node.id);
     const parallelSpacerName = `parallel-${names.join('-')}`;
 
-    names.forEach(p2pNodeId => {
+    names.forEach((p2pNodeId) => {
       if (!Array.isArray(newRunAfterNodeMap[p2pNodeId])) {
         newRunAfterNodeMap[p2pNodeId] = [];
       }
@@ -197,7 +192,7 @@ export const handleParallelToParallelNodes = (
   });
 
   // Update all impacted nodes to point at the spacer node as the spacer points at their original runAfters
-  nodes.forEach(node => {
+  nodes.forEach((node) => {
     const newRunAfters: string[] | undefined = newRunAfterNodeMap[node.id];
     if (newRunAfters && newRunAfters.length > 0) {
       const {
@@ -205,8 +200,7 @@ export const handleParallelToParallelNodes = (
         type,
       } = node;
 
-      const createNode: NodeCreator<PipelineRunAfterNodeModelData> =
-        getNodeCreator(type);
+      const createNode: NodeCreator<PipelineRunAfterNodeModelData> = getNodeCreator(type);
 
       // Recreate the node with the new runAfter pointing to the spacer node
       newNodes.push(
@@ -231,7 +225,7 @@ export const tasksToNodes = (
   taskList: PipelineTask[],
   pipelineRun?: PipelineRunKind,
 ): PipelineMixedNodeModel[] => {
-  const nodeList: PipelineTaskNodeModel[] = taskList.map(task =>
+  const nodeList: PipelineTaskNodeModel[] = taskList.map((task) =>
     createTaskNode(task.name, {
       task,
       pipelineRun,
@@ -263,11 +257,9 @@ export const tasksToBuilderNodes = (
   });
 };
 
-export const getBuilderEdgesFromNodes = (
-  nodes: PipelineMixedNodeModel[],
-): PipelineEdgeModel[] =>
+export const getBuilderEdgesFromNodes = (nodes: PipelineMixedNodeModel[]): PipelineEdgeModel[] =>
   flatten(
-    nodes.map(node => {
+    nodes.map((node) => {
       const {
         data: {
           task: { name: target, runAfter = [] },
@@ -283,12 +275,9 @@ export const getBuilderEdgesFromNodes = (
         target,
       }));
     }),
-  ).filter(edgeList => !!edgeList);
+  ).filter((edgeList) => !!edgeList);
 
-export const getFinallyTaskHeight = (
-  allTasksLength: number,
-  disableBuilder: boolean,
-): number => {
+export const getFinallyTaskHeight = (allTasksLength: number, disableBuilder: boolean): number => {
   return (
     allTasksLength * NODE_HEIGHT +
     (allTasksLength - 1) * FINALLY_NODE_VERTICAL_SPACING +
@@ -298,15 +287,11 @@ export const getFinallyTaskHeight = (
 };
 
 export const getFinallyTaskWidth = (allTasksLength: number): number => {
-  const whenExpressionSpacing =
-    allTasksLength > 0 ? WHEN_EXPRESSION_SPACING : 0;
+  const whenExpressionSpacing = allTasksLength > 0 ? WHEN_EXPRESSION_SPACING : 0;
   return NODE_WIDTH + FINALLY_NODE_PADDING * 2 + whenExpressionSpacing;
 };
 
-export const getTextWidth = (
-  text: string,
-  font: string = '0.8rem RedHatText',
-): number => {
+export const getTextWidth = (text: string, font: string = '0.8rem RedHatText'): number => {
   if (!text || text.length === 0) {
     return 0;
   }
@@ -320,9 +305,7 @@ export const getTextWidth = (
   return width;
 };
 
-export const extractDepsFromContextVariables = (
-  contextVariable: string | null | undefined,
-) => {
+export const extractDepsFromContextVariables = (contextVariable: string | null | undefined) => {
   let matches;
   const deps: string[] = [];
   if (!contextVariable) {
@@ -343,17 +326,13 @@ export const extractDepsFromContextVariables = (
   return deps;
 };
 
-export const getSpacerNode = (
-  node: PipelineMixedNodeModel,
-): PipelineMixedNodeModel => ({
+export const getSpacerNode = (node: PipelineMixedNodeModel): PipelineMixedNodeModel => ({
   ...node,
   height: 1,
   width: 1,
 });
 
-export const getWhenStatus = (
-  status: ComputedStatus,
-): WhenStatus | undefined => {
+export const getWhenStatus = (status: ComputedStatus): WhenStatus | undefined => {
   switch (status) {
     case ComputedStatus.Succeeded:
     case ComputedStatus.Failed:
@@ -367,9 +346,7 @@ export const getWhenStatus = (
   }
 };
 
-export const getTaskWhenStatus = (
-  task: PipelineTaskWithStatus,
-): WhenStatus | undefined => {
+export const getTaskWhenStatus = (task: PipelineTaskWithStatus): WhenStatus | undefined => {
   if (!task.when) {
     return undefined;
   }
@@ -381,15 +358,11 @@ const getDepsFromContextVariables = (task: PipelineTask) => {
   if (task.params) {
     task.params.forEach((p: PipelineTaskParam) => {
       if (Array.isArray(p.value)) {
-        p.value.forEach(paramValue => {
-          depsFromContextVariables.push(
-            ...extractDepsFromContextVariables(paramValue),
-          );
+        p.value.forEach((paramValue) => {
+          depsFromContextVariables.push(...extractDepsFromContextVariables(paramValue));
         });
       } else {
-        depsFromContextVariables.push(
-          ...extractDepsFromContextVariables(p.value),
-        );
+        depsFromContextVariables.push(...extractDepsFromContextVariables(p.value));
       }
     });
   }
@@ -397,9 +370,7 @@ const getDepsFromContextVariables = (task: PipelineTask) => {
     task.when.forEach(({ input, values }) => {
       depsFromContextVariables.push(...extractDepsFromContextVariables(input));
       values.forEach((whenValue: string) => {
-        depsFromContextVariables.push(
-          ...extractDepsFromContextVariables(whenValue),
-        );
+        depsFromContextVariables.push(...extractDepsFromContextVariables(whenValue));
       });
     });
   }
@@ -412,23 +383,20 @@ const getRunAfterTasks = (task: PipelineTask, dag: DAG, vertex: Vertex) => {
 
   const dependancies = uniq([...vertex.dependancyNames]);
   if (dependancies) {
-    dependancies.forEach(dep => {
+    dependancies.forEach((dep) => {
       const depObj = dag.vertices.get(dep) as Vertex;
-      if (
-        depObj.level - vertex.level <= 1 ||
-        vertex.data.runAfter?.includes(depObj.name)
-      ) {
+      if (depObj.level - vertex.level <= 1 || vertex.data.runAfter?.includes(depObj.name)) {
         runAfterTasks.push(dep);
       }
     });
   }
   if (depsFromContextVariables.length > 0) {
-    const v = depsFromContextVariables.map(d => {
+    const v = depsFromContextVariables.map((d) => {
       return dag.vertices.get(d) as Vertex;
     });
     const minLevelDep = minBy(v, (d: Vertex) => d.level) as Vertex;
-    const nearestDeps = v.filter(v1 => v1.level === minLevelDep.level);
-    nearestDeps.forEach(nd => {
+    const nearestDeps = v.filter((v1) => v1.level === minLevelDep.level);
+    nearestDeps.forEach((nd) => {
       if (nd.level - vertex.level <= 1 || vertex.dependancyNames.length === 0) {
         runAfterTasks.push(nd.name);
       }
@@ -464,20 +432,14 @@ export const getGraphDataModel = (
     if (!maxWidthForLevel[v.level]) {
       maxWidthForLevel[v.level] = getTextWidth(v.name);
     } else {
-      maxWidthForLevel[v.level] = Math.max(
-        maxWidthForLevel[v.level],
-        getTextWidth(v.name),
-      );
+      maxWidthForLevel[v.level] = Math.max(maxWidthForLevel[v.level], getTextWidth(v.name));
     }
   });
   dag.topologicalSort((vertex: Vertex) => {
     const task = vertex.data as PipelineTask;
     const runAfterTasks = getRunAfterTasks(task, dag, vertex);
-    const badgePadding =
-      Object.keys(pipelineRun.spec)?.length > 0 ? DEFAULT_BADGE_WIDTH : 0;
-    const isTaskSkipped = pipelineRun?.status?.skippedTasks?.some(
-      t => t.name === task.name,
-    );
+    const badgePadding = Object.keys(pipelineRun.spec)?.length > 0 ? DEFAULT_BADGE_WIDTH : 0;
+    const isTaskSkipped = pipelineRun?.status?.skippedTasks?.some((t) => t.name === task.name);
     nodes.push(
       createPipelineTaskNode(NodeType.TASK_NODE, {
         id: vertex.name,
@@ -496,16 +458,10 @@ export const getGraphDataModel = (
     );
   });
 
-  const finallyTaskList = appendPipelineRunStatus(
-    pipelineRun,
-    plrTaskRuns,
-    true,
-  );
+  const finallyTaskList = appendPipelineRunStatus(pipelineRun, plrTaskRuns, true);
 
-  const finallyNodes = finallyTaskList.map(fTask => {
-    const isTaskSkipped = pipelineRun?.status?.skippedTasks?.some(
-      t => t.name === fTask.name,
-    );
+  const finallyNodes = finallyTaskList.map((fTask) => {
+    const isTaskSkipped = pipelineRun?.status?.skippedTasks?.some((t) => t.name === fTask.name);
 
     return createPipelineTaskNode(NodeType.FINALLY_NODE, {
       id: fTask.name,
@@ -516,9 +472,7 @@ export const getGraphDataModel = (
         DEFAULT_FINALLLY_GROUP_PADDING * 2,
       height: DEFAULT_NODE_HEIGHT,
       runAfterTasks: [],
-      status: isTaskSkipped
-        ? RunStatus.Skipped
-        : (fTask.status?.reason as RunStatus),
+      status: isTaskSkipped ? RunStatus.Skipped : (fTask.status?.reason as RunStatus),
       whenStatus: getTaskWhenStatus(fTask),
       task: fTask,
       pipelineRun,
@@ -530,7 +484,7 @@ export const getGraphDataModel = (
         {
           id: 'finally-group-id',
           type: NodeType.FINALLY_GROUP,
-          children: finallyNodes.map(n => n.id),
+          children: finallyNodes.map((n) => n.id),
           group: true,
           style: { padding: DEFAULT_FINALLLY_GROUP_PADDING },
         },
@@ -558,19 +512,12 @@ export const getGraphDataModel = (
       layout: PipelineLayout.DAGRE_VIEWER,
       scaleExtent: [0.5, 1],
     },
-    nodes: [
-      ...nodes,
-      ...spacerNodes,
-      ...finallyNodes,
-      ...finallyGroup,
-    ] as PipelineMixedNodeModel[],
+    nodes: [...nodes, ...spacerNodes, ...finallyNodes, ...finallyGroup] as PipelineMixedNodeModel[],
     edges,
   };
 };
 
-export const getLayoutData = (
-  layout: PipelineLayout,
-): dagre.GraphLabel | null => {
+export const getLayoutData = (layout: PipelineLayout): dagre.GraphLabel | null => {
   switch (layout) {
     case PipelineLayout.DAGRE_BUILDER:
       return DAGRE_BUILDER_PROPS;

@@ -96,8 +96,7 @@ describe('PipelineRunList', () => {
         },
       },
       loaded: true,
-      responseError:
-        'getaddrinfo ENOTFOUND api.rhoms-4.13-052404.dev.openshiftappsvc.org',
+      responseError: 'getaddrinfo ENOTFOUND api.rhoms-4.13-052404.dev.openshiftappsvc.org',
       selectedClusterErrors: [],
       clusters: [],
       setSelectedCluster: () => {},
@@ -123,8 +122,7 @@ describe('PipelineRunList', () => {
         },
       },
       loaded: true,
-      responseError:
-        'getaddrinfo ENOTFOUND api.rhoms-4.13-052404.dev.openshiftappsvc.org',
+      responseError: 'getaddrinfo ENOTFOUND api.rhoms-4.13-052404.dev.openshiftappsvc.org',
       selectedClusterErrors: [{ message: '403 - forbidden' }],
       clusters: ['ocp'],
       setSelectedCluster: () => {},

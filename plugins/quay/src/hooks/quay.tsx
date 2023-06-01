@@ -25,9 +25,7 @@ const useLocalStyles = makeStyles({
 export const useTags = (organization: string, repository: string) => {
   const quayClient = useApi(quayApiRef);
   const [tags, setTags] = React.useState<Tag[]>([]);
-  const [tagManifestLayers, setTagManifestLayers] = React.useState<
-    Record<string, Layer>
-  >({});
+  const [tagManifestLayers, setTagManifestLayers] = React.useState<Record<string, Layer>>({});
   const localClasses = useLocalStyles();
 
   const fetchSecurityDetails = async (tag: Tag) => {
@@ -42,24 +40,24 @@ export const useTags = (organization: string, repository: string) => {
   const { loading } = useAsync(async () => {
     const tagsResponse = await quayClient.getTags(organization, repository);
     Promise.all(
-      tagsResponse.tags.map(async tag => {
+      tagsResponse.tags.map(async (tag) => {
         const securityDetails = await fetchSecurityDetails(tag);
         const securityData = securityDetails.data;
         if (!securityData) {
           return;
         }
-        setTagManifestLayers(prevState => ({
+        setTagManifestLayers((prevState) => ({
           ...prevState,
           [tag.manifest_digest]: securityData.Layer,
         }));
       }),
     );
-    setTags(prevTags => [...prevTags, ...tagsResponse.tags]);
+    setTags((prevTags) => [...prevTags, ...tagsResponse.tags]);
     return tagsResponse;
   });
 
   const data = useMemo(() => {
-    return Object.values(tags)?.map(tag => {
+    return Object.values(tags)?.map((tag) => {
       const hashFunc = tag.manifest_digest.substring(0, 6);
       const shortHash = tag.manifest_digest.substring(7, 19);
       return {
@@ -90,8 +88,7 @@ export const useTags = (organization: string, repository: string) => {
 export const QUAY_ANNOTATION_REPOSITORY = 'quay.io/repository-slug';
 
 export const useQuayAppData = ({ entity }: { entity: Entity }) => {
-  const repositorySlug =
-    entity?.metadata.annotations?.[QUAY_ANNOTATION_REPOSITORY] ?? '';
+  const repositorySlug = entity?.metadata.annotations?.[QUAY_ANNOTATION_REPOSITORY] ?? '';
 
   if (!repositorySlug) {
     throw new Error("'Quay' annotations are missing");
@@ -115,11 +112,7 @@ export const useRepository = () => {
 export const useTagDetails = (org: string, repo: string, digest: string) => {
   const quayClient = useApi(quayApiRef);
   const result = useAsync(async () => {
-    const manifestLayer = await quayClient.getSecurityDetails(
-      org,
-      repo,
-      digest,
-    );
+    const manifestLayer = await quayClient.getSecurityDetails(org, repo, digest);
     return manifestLayer;
   });
   return result;

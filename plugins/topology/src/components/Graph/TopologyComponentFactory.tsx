@@ -9,11 +9,7 @@ import {
   withSelection,
 } from '@patternfly/react-topology';
 
-import {
-  TYPE_APPLICATION_GROUP,
-  TYPE_CONNECTS_TO,
-  TYPE_WORKLOAD,
-} from '../../const';
+import { TYPE_APPLICATION_GROUP, TYPE_CONNECTS_TO, TYPE_WORKLOAD } from '../../const';
 import DefaultGraph from './DefaultGraph';
 import EdgeConnect from './EdgeConnect';
 import GroupNode from './GroupNode';

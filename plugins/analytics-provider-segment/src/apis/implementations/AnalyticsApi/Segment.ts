@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 import { Config } from '@backstage/config';
-import {
-  AnalyticsApi,
-  AnalyticsEvent,
-  IdentityApi,
-} from '@backstage/core-plugin-api';
+import { AnalyticsApi, AnalyticsEvent, IdentityApi } from '@backstage/core-plugin-api';
 
 import { AnalyticsBrowser } from '@segment/analytics-next';
 
@@ -51,13 +47,9 @@ export class SegmentAnalytics implements AnalyticsApi {
    * Instantiate a fully configured Segment API implementation.
    */
   static fromConfig(config: Config, identityApi?: IdentityApi) {
-    const testMode =
-      config.getOptionalBoolean('app.analytics.segment.testMode') ?? false;
-    const writeKey = testMode
-      ? ''
-      : config.getString('app.analytics.segment.writeKey');
-    const maskIP =
-      config.getOptionalBoolean('app.analytics.segment.maskIP') ?? false;
+    const testMode = config.getOptionalBoolean('app.analytics.segment.testMode') ?? false;
+    const writeKey = testMode ? '' : config.getString('app.analytics.segment.writeKey');
+    const maskIP = config.getOptionalBoolean('app.analytics.segment.maskIP') ?? false;
 
     return new SegmentAnalytics(
       {
@@ -92,12 +84,7 @@ export class SegmentAnalytics implements AnalyticsApi {
 
     // Track page views.
     if (action === 'navigate') {
-      await this.analytics.page(
-        context.pluginId,
-        subject,
-        context,
-        analyticsOpts,
-      );
+      await this.analytics.page(context.pluginId, subject, context, analyticsOpts);
       return;
     }
 
@@ -119,11 +106,8 @@ export class SegmentAnalytics implements AnalyticsApi {
 
   private async hash(value: string): Promise<string> {
     if (!value) return value;
-    const digest = await window.crypto.subtle.digest(
-      'sha-256',
-      new TextEncoder().encode(value),
-    );
+    const digest = await window.crypto.subtle.digest('sha-256', new TextEncoder().encode(value));
     const hashArray = Array.from(new Uint8Array(digest));
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
   }
 }

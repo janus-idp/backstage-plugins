@@ -66,9 +66,7 @@ describe('dag', () => {
 
       dag.addEdges('task3', { id: 'task3' }, runBefore, runAfter);
 
-      expect(dag?.printGraph())?.toEqual(
-        'task1 --> task2 --> task3 --> task4 --> task5',
-      );
+      expect(dag?.printGraph())?.toEqual('task1 --> task2 --> task3 --> task4 --> task5');
     });
 
     it('should throw an error if there is any cycle detected', () => {
@@ -81,9 +79,9 @@ describe('dag', () => {
       const runAfter = ['task1', 'task2'];
       const runBefore = ['task1'];
 
-      expect(() =>
-        dag.addEdges('task3', { id: 'task3' }, runBefore, runAfter),
-      ).toThrow('cycle detected: task3 --> task1 --> task3');
+      expect(() => dag.addEdges('task3', { id: 'task3' }, runBefore, runAfter)).toThrow(
+        'cycle detected: task3 --> task1 --> task3',
+      );
     });
   });
 

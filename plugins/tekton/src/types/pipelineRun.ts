@@ -55,9 +55,7 @@ export type PipelineRunReferenceResource = {
     name: string;
   };
 };
-export type PipelineRunResource =
-  | PipelineRunReferenceResource
-  | PipelineRunEmbeddedResource;
+export type PipelineRunResource = PipelineRunReferenceResource | PipelineRunEmbeddedResource;
 
 export type PLRTaskRunData = {
   pipelineTaskName: string;

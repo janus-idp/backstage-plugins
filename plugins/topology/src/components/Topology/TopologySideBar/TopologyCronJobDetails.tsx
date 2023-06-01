@@ -6,9 +6,7 @@ import { Timestamp, TimestampFormat } from '@patternfly/react-core';
 import TopologySideBarDetailsItem from './TopologySideBarDetailsItem';
 import TopologyWorkloadDetails from './TopologyWorkloadDetails';
 
-const TopologyCronJobDetails: React.FC<{ resource: V1CronJob }> = ({
-  resource,
-}) => {
+const TopologyCronJobDetails: React.FC<{ resource: V1CronJob }> = ({ resource }) => {
   return (
     <TopologyWorkloadDetails resource={resource}>
       <TopologySideBarDetailsItem label="Schedule">
@@ -17,10 +15,7 @@ const TopologyCronJobDetails: React.FC<{ resource: V1CronJob }> = ({
       <TopologySideBarDetailsItem label="Concurrency policy">
         {resource.spec?.concurrencyPolicy}
       </TopologySideBarDetailsItem>
-      <TopologySideBarDetailsItem
-        label="Starting deadline seconds"
-        emptyText="Not configured"
-      >
+      <TopologySideBarDetailsItem label="Starting deadline seconds" emptyText="Not configured">
         {resource.spec?.startingDeadlineSeconds &&
           (resource.spec.startingDeadlineSeconds > 1
             ? `${resource.spec.startingDeadlineSeconds} seconds`

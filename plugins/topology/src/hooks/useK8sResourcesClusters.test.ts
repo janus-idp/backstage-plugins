@@ -12,9 +12,7 @@ describe('useAllWatchResources', () => {
       loading: true,
       error: '',
     };
-    const { result } = renderHook(() =>
-      useK8sResourcesClusters(k8sObjectsResponse),
-    );
+    const { result } = renderHook(() => useK8sResourcesClusters(k8sObjectsResponse));
     expect(result.current.clusters).toEqual([]);
     expect(result.current.errors).toEqual([]);
   });
@@ -25,9 +23,7 @@ describe('useAllWatchResources', () => {
       loading: false,
       error: '',
     } as KubernetesObjects;
-    const { result, rerender } = renderHook(() =>
-      useK8sResourcesClusters(k8sObjectsResponse),
-    );
+    const { result, rerender } = renderHook(() => useK8sResourcesClusters(k8sObjectsResponse));
     expect(result.current.clusters).toEqual(['minikube']);
     expect(result.current.errors).toEqual([[]]);
 

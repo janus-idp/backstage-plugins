@@ -1,11 +1,6 @@
 import * as React from 'react';
 
-import {
-  V1CronJob,
-  V1DaemonSet,
-  V1Deployment,
-  V1Job,
-} from '@kubernetes/client-node';
+import { V1CronJob, V1DaemonSet, V1Deployment, V1Job } from '@kubernetes/client-node';
 import { Split, SplitItem } from '@patternfly/react-core';
 import { BaseNode } from '@patternfly/react-topology';
 
@@ -41,9 +36,7 @@ const TopologyDetailsTabPanel = ({ node }: TopologyDetailsTabPanelProps) => {
   const getWorkloadDetails = () => {
     switch (resourceKind) {
       case DeploymentModel.kind:
-        return (
-          <TopologyDeploymentDetails resource={resource as V1Deployment} />
-        );
+        return <TopologyDeploymentDetails resource={resource as V1Deployment} />;
       case DaemonSetModel.kind:
         return <TopologyDaemonSetDetails resource={resource as V1DaemonSet} />;
       case CronJobModel.kind:
@@ -62,14 +55,7 @@ const TopologyDetailsTabPanel = ({ node }: TopologyDetailsTabPanelProps) => {
       {donutStatus && (
         <Split className="topology-side-bar-pod-ring">
           <SplitItem>
-            <PodSet
-              size={size}
-              x={cx}
-              y={cy}
-              data={donutStatus}
-              showPodCount
-              standalone
-            />
+            <PodSet size={size} x={cx} y={cy} data={donutStatus} showPodCount standalone />
           </SplitItem>
           <SplitItem isFilled />
         </Split>

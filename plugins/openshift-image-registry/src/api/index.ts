@@ -1,8 +1,4 @@
-import {
-  ConfigApi,
-  createApiRef,
-  DiscoveryApi,
-} from '@backstage/core-plugin-api';
+import { ConfigApi, createApiRef, DiscoveryApi } from '@backstage/core-plugin-api';
 
 const DEFAULT_PROXY_PATH = '/openshift-image-registry/api';
 
@@ -15,19 +11,16 @@ export interface OpenshiftImageRegistryApiV1 {
   getNamespaces(): Promise<any>;
 }
 
-export const openshiftImageRegistryApiRef =
-  createApiRef<OpenshiftImageRegistryApiV1>({
-    id: 'plugin.openshift-image-registry.service',
-  });
+export const openshiftImageRegistryApiRef = createApiRef<OpenshiftImageRegistryApiV1>({
+  id: 'plugin.openshift-image-registry.service',
+});
 
 export type Options = {
   discoveryApi: DiscoveryApi;
   configApi: ConfigApi;
 };
 
-export class OpenshiftImageRegistryApiClient
-  implements OpenshiftImageRegistryApiV1
-{
+export class OpenshiftImageRegistryApiClient implements OpenshiftImageRegistryApiV1 {
   // @ts-ignore
   private readonly discoveryApi: DiscoveryApi;
 
@@ -40,8 +33,7 @@ export class OpenshiftImageRegistryApiClient
 
   private async getBaseUrl() {
     const proxyPath =
-      this.configApi.getOptionalString('openshiftImageRegistry.proxyPath') ||
-      DEFAULT_PROXY_PATH;
+      this.configApi.getOptionalString('openshiftImageRegistry.proxyPath') || DEFAULT_PROXY_PATH;
     return `${await this.discoveryApi.getBaseUrl('proxy')}${proxyPath}`;
   }
 
@@ -50,9 +42,7 @@ export class OpenshiftImageRegistryApiClient
       headers: { 'Content-Type': 'application/json' },
     });
     if (!response.ok) {
-      throw new Error(
-        `failed to fetch data, status ${response.status}: ${response.statusText}`,
-      );
+      throw new Error(`failed to fetch data, status ${response.status}: ${response.statusText}`);
     }
     return await response.json();
   }
@@ -65,17 +55,14 @@ export class OpenshiftImageRegistryApiClient
   async getImageStreams(ns: string) {
     const proxyUrl = await this.getBaseUrl();
     return (
-      await this.fetcher(
-        `${proxyUrl}/apis/image.openshift.io/v1/namespaces/${ns}/imagestreams`,
-      )
+      await this.fetcher(`${proxyUrl}/apis/image.openshift.io/v1/namespaces/${ns}/imagestreams`)
     ).items as any[];
   }
 
   async getAllImageStreams() {
     const proxyUrl = await this.getBaseUrl();
-    return (
-      await this.fetcher(`${proxyUrl}/apis/image.openshift.io/v1/imagestreams`)
-    ).items as any[];
+    return (await this.fetcher(`${proxyUrl}/apis/image.openshift.io/v1/imagestreams`))
+      .items as any[];
   }
 
   async getImageStream(ns: string, imageName: string) {

@@ -11,57 +11,36 @@ const LOCAL_ADDR = 'https://localhost:5050/quay/api/';
 const handlers = [
   rest.get(`${LOCAL_ADDR}api/v1/repository/foo/bar/tag/`, (req, res, ctx) => {
     if (req.url.searchParams.get('limit') === '1') {
-      return res(
-        ctx.status(200),
-        ctx.json(require(`${__dirname}/fixtures/tags/foo_limit.json`)),
-      );
+      return res(ctx.status(200), ctx.json(require(`${__dirname}/fixtures/tags/foo_limit.json`)));
     } else if (req.url.searchParams.get('page') === '2') {
-      return res(
-        ctx.status(200),
-        ctx.json(require(`${__dirname}/fixtures/tags/foo_page2.json`)),
-      );
+      return res(ctx.status(200), ctx.json(require(`${__dirname}/fixtures/tags/foo_page2.json`)));
     }
 
-    return res(
-      ctx.status(200),
-      ctx.json(require(`${__dirname}/fixtures/tags/foo_page1.json`)),
-    );
+    return res(ctx.status(200), ctx.json(require(`${__dirname}/fixtures/tags/foo_page1.json`)));
   }),
 
   rest.get(`${LOCAL_ADDR}api/v1/repository/not/found/tag/`, (_, res, ctx) => {
-    return res(
-      ctx.status(404),
-      ctx.json(require(`${__dirname}/fixtures/tags/not_found.json`)),
-    );
+    return res(ctx.status(404), ctx.json(require(`${__dirname}/fixtures/tags/not_found.json`)));
   }),
 
   rest.get(
     `${LOCAL_ADDR}api/v1/repository/foo/bar/manifest/sha256:e766248d812bcdadc1ee293b564af1f2517dd6c0327eefab2411e4f11e980d54`,
     (_, res, ctx) => {
-      return res(
-        ctx.status(200),
-        ctx.json(require(`${__dirname}/fixtures/manifests/foo.json`)),
-      );
+      return res(ctx.status(200), ctx.json(require(`${__dirname}/fixtures/manifests/foo.json`)));
     },
   ),
 
   rest.get(
     `${LOCAL_ADDR}api/v1/repository/foo/bar/manifest/sha256:e461dc54b4e2469bb7f5bf85a4b7445c175548ba9d56c3f617dd25bc3adf3752`,
     (_, res, ctx) => {
-      return res(
-        ctx.status(200),
-        ctx.json(require(`${__dirname}/fixtures/manifests/bar.json`)),
-      );
+      return res(ctx.status(200), ctx.json(require(`${__dirname}/fixtures/manifests/bar.json`)));
     },
   ),
 
   rest.get(
     `${LOCAL_ADDR}api/v1/repository/foo/bar/manifest/sha256:e766248d812bcdadc1ee293b564af1f2517dd6c0327eefab2411e4f11e980d54/labels`,
     (_, res, ctx) => {
-      return res(
-        ctx.status(200),
-        ctx.json(require(`${__dirname}/fixtures/labels/foo.json`)),
-      );
+      return res(ctx.status(200), ctx.json(require(`${__dirname}/fixtures/labels/foo.json`)));
     },
   ),
 
@@ -121,9 +100,7 @@ describe('QuayApiClient', () => {
 
     const result = await quayApi.getTags('foo', 'bar');
 
-    expect(result).toEqual(
-      require(`${__dirname}/fixtures/tags/foo_page1.json`),
-    );
+    expect(result).toEqual(require(`${__dirname}/fixtures/tags/foo_page1.json`));
   });
 
   it('should throw an error when the response is not ok', async () => {
@@ -136,35 +113,25 @@ describe('QuayApiClient', () => {
     it('should correctly get tags without optional arguments', async () => {
       const result = await quayApi.getTags('foo', 'bar');
 
-      expect(result).toEqual(
-        require(`${__dirname}/fixtures/tags/foo_page1.json`),
-      );
+      expect(result).toEqual(require(`${__dirname}/fixtures/tags/foo_page1.json`));
     });
 
     it('should correctly get tags with a limit', async () => {
       const result = await quayApi.getTags('foo', 'bar', undefined, 1);
 
-      expect(result).toEqual(
-        require(`${__dirname}/fixtures/tags/foo_limit.json`),
-      );
+      expect(result).toEqual(require(`${__dirname}/fixtures/tags/foo_limit.json`));
     });
     it('should correctly get tags with a page number', async () => {
       const result = await quayApi.getTags('foo', 'bar', 2);
 
-      expect(result).toEqual(
-        require(`${__dirname}/fixtures/tags/foo_page2.json`),
-      );
+      expect(result).toEqual(require(`${__dirname}/fixtures/tags/foo_page2.json`));
     });
   });
 
   describe('getManifestByDigest', () => {
     it('should correctly get the manifest using its digest', async () => {
       const manifest = require(`${__dirname}/fixtures/manifests/foo.json`);
-      const result = await quayApi.getManifestByDigest(
-        'foo',
-        'bar',
-        manifest.digest,
-      );
+      const result = await quayApi.getManifestByDigest('foo', 'bar', manifest.digest);
 
       expect(result).toEqual(manifest);
     });
@@ -182,14 +149,8 @@ describe('QuayApiClient', () => {
   describe('getSecurityDetails', () => {
     it('should correctly get secuity details using the manifest digest', async () => {
       const manifest = require(`${__dirname}/fixtures/manifests/bar.json`);
-      const result = await quayApi.getSecurityDetails(
-        'foo',
-        'bar',
-        manifest.digest,
-      );
-      expect(result).toEqual(
-        require(`${__dirname}/fixtures/securityDetail/foo.json`),
-      );
+      const result = await quayApi.getSecurityDetails('foo', 'bar', manifest.digest);
+      expect(result).toEqual(require(`${__dirname}/fixtures/securityDetail/foo.json`));
     });
   });
 });

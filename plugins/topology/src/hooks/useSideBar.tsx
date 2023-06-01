@@ -23,11 +23,7 @@ export const useSideBar = (): [
   const removeSelectedIdParam = React.useCallback(() => {
     params.delete('selectedId');
     const url = new URL(window.location.href);
-    history.replaceState(
-      null,
-      '',
-      `${url.pathname}${params.toString()}${url.hash}`,
-    );
+    history.replaceState(null, '', `${url.pathname}${params.toString()}${url.hash}`);
   }, [params]);
 
   const sideBar = selectedNode && selectedNode.getType() === TYPE_WORKLOAD && (
@@ -40,12 +36,5 @@ export const useSideBar = (): [
     />
   );
 
-  return [
-    sideBar,
-    sideBarOpen,
-    selectedId,
-    setSideBarOpen,
-    setSelectedNode,
-    removeSelectedIdParam,
-  ];
+  return [sideBar, sideBarOpen, selectedId, setSideBarOpen, setSelectedNode, removeSelectedIdParam];
 };

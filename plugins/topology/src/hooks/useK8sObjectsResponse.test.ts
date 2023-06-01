@@ -37,9 +37,7 @@ describe('useK8sObjectsResponse', () => {
       loading: false,
       error: '',
     });
-    const { result } = renderHook(() =>
-      useK8sObjectsResponse(watchedResources),
-    );
+    const { result } = renderHook(() => useK8sObjectsResponse(watchedResources));
     expect(result.current.watchResourcesData).toEqual(watchResourcesData);
     expect(result.current.clusters).toEqual(['minikube']);
     expect(result.current.selectedClusterErrors).toEqual([]);

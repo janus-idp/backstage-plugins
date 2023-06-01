@@ -175,11 +175,7 @@ describe('sonarqube:create-project', () => {
           visibility: '',
         },
       }),
-    ).rejects.toThrow(
-      Error(
-        '"token" or "username" and "password" are required input parameters',
-      ),
-    );
+    ).rejects.toThrow(Error('"token" or "username" and "password" are required input parameters'));
   });
 
   it('should throw a required input validation error on missing password', async () => {
@@ -197,11 +193,7 @@ describe('sonarqube:create-project', () => {
           visibility: '',
         },
       }),
-    ).rejects.toThrow(
-      Error(
-        '"token" or "username" and "password" are required input parameters',
-      ),
-    );
+    ).rejects.toThrow(Error('"token" or "username" and "password" are required input parameters'));
   });
 
   it('should throw a required input validation error on missing username', async () => {
@@ -219,10 +211,6 @@ describe('sonarqube:create-project', () => {
           visibility: '',
         },
       }),
-    ).rejects.toThrow(
-      Error(
-        '"token" or "username" and "password" are required input parameters',
-      ),
-    );
+    ).rejects.toThrow(Error('"token" or "username" and "password" are required input parameters'));
   });
 });

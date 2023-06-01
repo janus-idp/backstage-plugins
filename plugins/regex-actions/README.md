@@ -24,9 +24,7 @@ The following actions are currently supported in this plugin:
    /* highlight-add-next-line */
    import { createReplaceAction } from '@janus-idp/backstage-plugin-regex-actions';
 
-   export default async function createPlugin(
-     env: PluginEnvironment,
-   ): Promise<Router> {
+   export default async function createPlugin(env: PluginEnvironment): Promise<Router> {
      // ...
 
      /* highlight-add-next-line */

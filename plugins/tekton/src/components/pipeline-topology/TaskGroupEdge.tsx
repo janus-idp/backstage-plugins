@@ -11,10 +11,7 @@ interface TaskEdgeProps {
 }
 
 const TaskGroupEdge = (props: TaskEdgeProps) => (
-  <TaskEdge
-    nodeSeparation={GROUPED_PIPELINE_NODE_SEPARATION_HORIZONTAL}
-    {...props}
-  />
+  <TaskEdge nodeSeparation={GROUPED_PIPELINE_NODE_SEPARATION_HORIZONTAL} {...props} />
 );
 
 export default observer(TaskGroupEdge);

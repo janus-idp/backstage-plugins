@@ -1,36 +1,21 @@
-import {
-  ClusterObjects,
-  ObjectsByEntityResponse,
-} from '@backstage/plugin-kubernetes-common';
+import { ClusterObjects, ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
 
 import { pluralize } from '@patternfly/react-core';
 
 import { PipelineRunGVK, TaskRunGVK } from '../models';
-import {
-  ComputedStatus,
-  SucceedConditionReason,
-  TaskStatus,
-} from '../types/computedStatus';
+import { ComputedStatus, SucceedConditionReason, TaskStatus } from '../types/computedStatus';
 import { PipelineRunKind } from '../types/pipelineRun';
 import { TaskRunKind } from '../types/taskRun';
 import { ClusterErrors, TektonResponseData } from '../types/types';
-import {
-  pipelineRunFilterReducer,
-  pipelineRunStatus,
-} from './pipeline-filter-reducer';
+import { pipelineRunFilterReducer, pipelineRunStatus } from './pipeline-filter-reducer';
 
 export const getClusters = (k8sObjects: ObjectsByEntityResponse) => {
-  const clusters: string[] = k8sObjects.items.map(
-    (item: ClusterObjects) => item.cluster.name,
-  );
-  const errors: ClusterErrors[] = k8sObjects.items.map(
-    (item: ClusterObjects) => item.errors,
-  );
+  const clusters: string[] = k8sObjects.items.map((item: ClusterObjects) => item.cluster.name);
+  const errors: ClusterErrors[] = k8sObjects.items.map((item: ClusterObjects) => item.errors);
   return { clusters, errors };
 };
 
-const isTektonResource = (kind: string) =>
-  [PipelineRunGVK.kind, TaskRunGVK.kind].includes(kind);
+const isTektonResource = (kind: string) => [PipelineRunGVK.kind, TaskRunGVK.kind].includes(kind);
 
 const getResourceType = (kind: string) => {
   switch (kind) {
@@ -43,38 +28,31 @@ const getResourceType = (kind: string) => {
   }
 };
 
-export const getTektonResources = (
-  cluster: number,
-  k8sObjects: ObjectsByEntityResponse,
-) =>
-  k8sObjects.items?.[cluster]?.resources?.reduce(
-    (acc: TektonResponseData, res: any) => {
-      if (
-        res.type !== 'customresources' ||
-        (res.type === 'customresources' && res.resources.length === 0)
-      ) {
-        return acc;
-      }
-      const customResKind = res.resources[0].kind;
-      return {
-        ...acc,
-        ...(isTektonResource(customResKind) && {
-          [getResourceType(customResKind)]: {
-            data: res.resources,
-          },
-        }),
-      };
-    },
-    {},
-  );
+export const getTektonResources = (cluster: number, k8sObjects: ObjectsByEntityResponse) =>
+  k8sObjects.items?.[cluster]?.resources?.reduce((acc: TektonResponseData, res: any) => {
+    if (
+      res.type !== 'customresources' ||
+      (res.type === 'customresources' && res.resources.length === 0)
+    ) {
+      return acc;
+    }
+    const customResKind = res.resources[0].kind;
+    return {
+      ...acc,
+      ...(isTektonResource(customResKind) && {
+        [getResourceType(customResKind)]: {
+          data: res.resources,
+        },
+      }),
+    };
+  }, {});
 
 export const totalPipelineRunTasks = (pipelinerun: PipelineRunKind): number => {
   if (!pipelinerun?.status?.pipelineSpec) {
     return 0;
   }
   const totalTasks = (pipelinerun.status.pipelineSpec?.tasks || []).length;
-  const finallyTasks =
-    (pipelinerun.status.pipelineSpec?.finally || []).length ?? 0;
+  const finallyTasks = (pipelinerun.status.pipelineSpec?.finally || []).length ?? 0;
   return totalTasks + finallyTasks;
 };
 
@@ -82,18 +60,12 @@ export const getTaskRunsForPipelineRun = (
   pipelinerun: PipelineRunKind,
   taskRuns: TaskRunKind[],
 ): TaskRunKind[] => {
-  const associatedTaskRuns = taskRuns.reduce(
-    (acc: TaskRunKind[], taskRun: TaskRunKind) => {
-      if (
-        taskRun?.metadata?.ownerReferences?.[0]?.name ===
-        pipelinerun?.metadata?.name
-      ) {
-        acc.push(taskRun);
-      }
-      return acc;
-    },
-    [],
-  );
+  const associatedTaskRuns = taskRuns.reduce((acc: TaskRunKind[], taskRun: TaskRunKind) => {
+    if (taskRun?.metadata?.ownerReferences?.[0]?.name === pipelinerun?.metadata?.name) {
+      acc.push(taskRun);
+    }
+    return acc;
+  }, []);
 
   return associatedTaskRuns;
 };
@@ -136,10 +108,7 @@ export const updateTaskStatus = (
   };
 };
 
-export const getTaskStatus = (
-  pipelinerun: PipelineRunKind,
-  taskRuns: TaskRunKind[],
-) => {
+export const getTaskStatus = (pipelinerun: PipelineRunKind, taskRuns: TaskRunKind[]) => {
   const totalTasks = totalPipelineRunTasks(pipelinerun);
   const plrTaskLength = taskRuns.length;
   const skippedTaskLength = pipelinerun?.status?.skippedTasks?.length || 0;
@@ -151,9 +120,7 @@ export const getTaskStatus = (
     const pipelineRunIsCancelled =
       pipelineRunFilterReducer(pipelinerun) === ComputedStatus.Cancelled;
     const unhandledTasks =
-      totalTasks >= plrTaskLength
-        ? totalTasks - plrTaskLength - skippedTaskLength
-        : totalTasks;
+      totalTasks >= plrTaskLength ? totalTasks - plrTaskLength - skippedTaskLength : totalTasks;
 
     if (pipelineRunHasFailure || pipelineRunIsCancelled) {
       taskStatus[ComputedStatus.Cancelled] += unhandledTasks;
@@ -165,9 +132,7 @@ export const getTaskStatus = (
     pipelinerun?.spec.status === SucceedConditionReason.PipelineRunCancelled
   ) {
     taskStatus[ComputedStatus.Cancelled] = totalTasks;
-  } else if (
-    pipelinerun?.spec.status === SucceedConditionReason.PipelineRunPending
-  ) {
+  } else if (pipelinerun?.spec.status === SucceedConditionReason.PipelineRunPending) {
     taskStatus[ComputedStatus.Pending] += totalTasks;
   } else {
     taskStatus[ComputedStatus.PipelineNotStarted]++;
@@ -206,11 +171,7 @@ export const getDuration = (seconds: number, long?: boolean): string => {
   return duration.trim();
 };
 
-export const calculateDuration = (
-  startTime: string,
-  endTime?: string,
-  long?: boolean,
-) => {
+export const calculateDuration = (startTime: string, endTime?: string, long?: boolean) => {
   const start = new Date(startTime).getTime();
   const end = endTime ? new Date(endTime).getTime() : new Date().getTime();
   const durationInSeconds = (end - start) / 1000;

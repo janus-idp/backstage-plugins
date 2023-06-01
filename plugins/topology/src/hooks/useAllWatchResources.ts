@@ -15,25 +15,19 @@ export const useAllWatchResources = (
 
   useEffect(() => {
     if (!loading && kubernetesObjects && !error) {
-      const k8sResources: K8sResponseData = getK8sResources(
-        cluster,
-        kubernetesObjects,
-      );
+      const k8sResources: K8sResponseData = getK8sResources(cluster, kubernetesObjects);
       if (k8sResources) {
         setResources(k8sResources);
       }
     }
   }, [loading, kubernetesObjects, error, cluster]);
 
-  const watchResourcesData = watchedResource.reduce(
-    (acc: K8sResponseData, resKind) => {
-      if (resources[resKind]) {
-        acc[resKind] = resources[resKind];
-      }
-      return acc;
-    },
-    {},
-  );
+  const watchResourcesData = watchedResource.reduce((acc: K8sResponseData, resKind) => {
+    if (resources[resKind]) {
+      acc[resKind] = resources[resKind];
+    }
+    return acc;
+  }, {});
 
   return watchResourcesData;
 };

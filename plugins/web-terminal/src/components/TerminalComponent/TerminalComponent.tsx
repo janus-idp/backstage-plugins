@@ -9,12 +9,7 @@ import { Terminal } from 'xterm';
 import { AttachAddon } from 'xterm-addon-attach';
 import { FitAddon } from 'xterm-addon-fit';
 
-import {
-  createWorkspace,
-  getDefaultNamespace,
-  getNamespaces,
-  getWorkspace,
-} from './utils';
+import { createWorkspace, getDefaultNamespace, getNamespaces, getWorkspace } from './utils';
 
 import './static/xterm.css';
 
@@ -48,14 +43,13 @@ export const TerminalComponent = () => {
   const [loading, setLoading] = React.useState(false);
   const [displayModal, setDisplayModal] = React.useState(false);
   const [token, setToken] = React.useState<string | undefined>(undefined);
-  const [namespace, setNamespace] = React.useState<string | undefined>(
-    defaultNamespace,
-  );
+  const [namespace, setNamespace] = React.useState<string | undefined>(defaultNamespace);
 
   const { entity } = useEntity();
-  const cluster = entity.metadata.annotations?.[
-    'kubernetes.io/api-server'
-  ]?.replace(/(https?:\/\/)/, '');
+  const cluster = entity.metadata.annotations?.['kubernetes.io/api-server']?.replace(
+    /(https?:\/\/)/,
+    '',
+  );
   const classes = useStyles();
   const tokenRef = React.useRef<HTMLInputElement>(null);
   const termRef = React.useRef(null);
@@ -91,19 +85,10 @@ export const TerminalComponent = () => {
     setDisplayModal(false);
   };
 
-  const setupPod = async (
-    link: string,
-    usedToken: string,
-    usedNamespace: string,
-  ) => {
+  const setupPod = async (link: string, usedToken: string, usedNamespace: string) => {
     let terminalID;
     try {
-      terminalID = await createWorkspace(
-        restServerUrl,
-        link,
-        usedToken,
-        usedNamespace,
-      );
+      terminalID = await createWorkspace(restServerUrl, link, usedToken, usedNamespace);
     } catch (error) {
       return undefined;
     }
@@ -129,7 +114,7 @@ export const TerminalComponent = () => {
     }
     const setupPodCurrent = setupPodRef.current;
     setLoading(true);
-    setupPodCurrent(cluster, token, namespace!).then(names => {
+    setupPodCurrent(cluster, token, namespace!).then((names) => {
       if (!names) {
         setDisplayModal(true);
         setLoading(false);
@@ -143,14 +128,10 @@ export const TerminalComponent = () => {
         'terminal.k8s.io',
         `base64url.bearer.authorization.k8s.io.${encodeURIComponent(token)}`,
         `base64url.console.link.k8s.io.${encodeURIComponent(cluster)}`,
-        `base64url.workspace.id.k8s.io.${encodeURIComponent(
-          names.workspaceID,
-        )}`,
+        `base64url.workspace.id.k8s.io.${encodeURIComponent(names.workspaceID)}`,
         `base64url.namespace.k8s.io.${encodeURIComponent(namespace!)}`,
         `base64url.terminal.id.k8s.io.${encodeURIComponent(names.terminalID)}`,
-        `base64url.terminal.size.k8s.io.${encodeURIComponent(
-          `${terminal.cols}x${terminal.rows}`,
-        )}`,
+        `base64url.terminal.size.k8s.io.${encodeURIComponent(`${terminal.cols}x${terminal.rows}`)}`,
       ]);
       ws.onopen = () => {
         terminal.clear();
@@ -165,9 +146,7 @@ export const TerminalComponent = () => {
   }
 
   if (websocketRunning) {
-    return (
-      <div data-testid="terminal" className={classes.term} ref={termRef} />
-    );
+    return <div data-testid="terminal" className={classes.term} ref={termRef} />;
   }
 
   return (

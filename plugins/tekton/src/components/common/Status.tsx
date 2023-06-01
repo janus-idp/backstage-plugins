@@ -60,19 +60,13 @@ export const Status = ({
   };
   switch (status) {
     case 'New':
-      return (
-        <StatusIconAndText {...statusProps} icon={<HourglassStartIcon />} />
-      );
+      return <StatusIconAndText {...statusProps} icon={<HourglassStartIcon />} />;
 
     case 'Pending':
-      return (
-        <StatusIconAndText {...statusProps} icon={<HourglassHalfIcon />} />
-      );
+      return <StatusIconAndText {...statusProps} icon={<HourglassHalfIcon />} />;
 
     case 'Planning':
-      return (
-        <StatusIconAndText {...statusProps} icon={<ClipboardListIcon />} />
-      );
+      return <StatusIconAndText {...statusProps} icon={<ClipboardListIcon />} />;
 
     case 'In Progress':
     case 'Installing':
@@ -96,27 +90,15 @@ export const Status = ({
 
     case 'Warning':
     case 'RequiresApproval':
-      return (
-        <StatusIconAndText
-          {...statusProps}
-          icon={<YellowExclamationTriangleIcon />}
-        />
-      );
+      return <StatusIconAndText {...statusProps} icon={<YellowExclamationTriangleIcon />} />;
 
     case 'Error':
     case 'Failed':
-      return (
-        <StatusIconAndText
-          {...statusProps}
-          icon={<RedExclamationCircleIcon />}
-        />
-      );
+      return <StatusIconAndText {...statusProps} icon={<RedExclamationCircleIcon />} />;
 
     case 'Completed':
     case 'Succeeded':
-      return (
-        <StatusIconAndText {...statusProps} icon={<GreenCheckCircleIcon />} />
-      );
+      return <StatusIconAndText {...statusProps} icon={<GreenCheckCircleIcon />} />;
 
     case 'Unknown':
       return <StatusIconAndText {...statusProps} icon={<UnknownIcon />} />;

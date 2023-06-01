@@ -6,10 +6,7 @@ import { useApi } from '@backstage/core-plugin-api';
 import { ErrorResponseBody } from '@backstage/errors';
 import { useEntity } from '@backstage/plugin-catalog-react';
 
-import {
-  ANNOTATION_PROVIDER_ID,
-  Cluster,
-} from '@janus-idp/backstage-plugin-ocm-common';
+import { ANNOTATION_PROVIDER_ID, Cluster } from '@janus-idp/backstage-plugin-ocm-common';
 
 import { OcmApiRef } from '../../api';
 
@@ -19,9 +16,7 @@ type ClusterContextType = {
   error: Error | null;
 };
 
-const ClusterContext = createContext<ClusterContextType>(
-  {} as ClusterContextType,
-);
+const ClusterContext = createContext<ClusterContextType>({} as ClusterContextType);
 
 export const ClusterContextProvider = (props: any) => {
   const { entity } = useEntity();
@@ -30,10 +25,7 @@ export const ClusterContextProvider = (props: any) => {
   const [{ loading, error: asyncError }, refresh] = useAsyncFn(
     async () => {
       const providerId = entity.metadata.annotations![ANNOTATION_PROVIDER_ID];
-      const cl = await ocmApi.getClusterByName(
-        providerId,
-        entity.metadata.name,
-      );
+      const cl = await ocmApi.getClusterByName(providerId, entity.metadata.name);
       setCluster(cl);
     },
     [],

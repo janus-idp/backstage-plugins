@@ -35,8 +35,8 @@ export const getHubClusterFromKubernetesConfig = (
 
   const hub = globalConfig
     .getConfigArray(KUBERNETES_PLUGIN_CONFIG)
-    .flatMap(method => method.getOptionalConfigArray('clusters') || [])
-    .find(cluster => cluster.getString('name') === name);
+    .flatMap((method) => method.getOptionalConfigArray('clusters') || [])
+    .find((cluster) => cluster.getString('name') === name);
   if (!hub) {
     throw new Error(
       `${_logTemplate} not defined in kubernetes in ${KUBERNETES_PLUGIN_CONFIG}.clusters`,
@@ -49,17 +49,12 @@ export const getHubClusterFromKubernetesConfig = (
   return hub;
 };
 
-export const getHubClusterFromOcmConfig = (
-  id: string,
-  config: Config,
-): Config => {
+export const getHubClusterFromOcmConfig = (id: string, config: Config): Config => {
   // Check if required values are valid
   const requiredValues = ['name', 'url'];
-  requiredValues.forEach(key => {
+  requiredValues.forEach((key) => {
     if (!config.has(key)) {
-      throw new Error(
-        `Value must be specified in config at '${OCM_PREFIX}.${id}.${key}'`,
-      );
+      throw new Error(`Value must be specified in config at '${OCM_PREFIX}.${id}.${key}'`);
     }
   });
   return config;
@@ -102,5 +97,5 @@ export const readOcmConfigs = (config: Config): OcmConfig[] => {
 
   return ocmConfigs
     .keys()
-    .map(id => getHubClusterFromConfig(id, ocmConfigs.getConfig(id), config));
+    .map((id) => getHubClusterFromConfig(id, ocmConfigs.getConfig(id), config));
 };

@@ -37,10 +37,7 @@ import {
   isKind,
   isOrphan,
 } from '@backstage/plugin-catalog';
-import {
-  Direction,
-  EntityCatalogGraphCard,
-} from '@backstage/plugin-catalog-graph';
+import { Direction, EntityCatalogGraphCard } from '@backstage/plugin-catalog-graph';
 import {
   EntityGithubActionsContent,
   isGithubActionsAvailable,
@@ -217,13 +214,9 @@ const defaultEntityPage = (
 
 const componentPage = (
   <EntitySwitch>
-    <EntitySwitch.Case if={isComponentType('service')}>
-      {serviceEntityPage}
-    </EntitySwitch.Case>
+    <EntitySwitch.Case if={isComponentType('service')}>{serviceEntityPage}</EntitySwitch.Case>
 
-    <EntitySwitch.Case if={isComponentType('website')}>
-      {websiteEntityPage}
-    </EntitySwitch.Case>
+    <EntitySwitch.Case if={isComponentType('website')}>{websiteEntityPage}</EntitySwitch.Case>
 
     <EntitySwitch.Case>{defaultEntityPage}</EntitySwitch.Case>
   </EntitySwitch>

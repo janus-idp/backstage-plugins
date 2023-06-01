@@ -27,9 +27,7 @@ export const PipelineVisualizationRouter = ({
       <Routes>
         <Route
           path="/"
-          element={
-            <LatestPipelineRunVisualization linkTekton={linkTekton} url={url} />
-          }
+          element={<LatestPipelineRunVisualization linkTekton={linkTekton} url={url} />}
         />
       </Routes>
     );

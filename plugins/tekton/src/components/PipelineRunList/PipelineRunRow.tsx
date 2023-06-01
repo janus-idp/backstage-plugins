@@ -18,11 +18,7 @@ const PipelineRunRow = ({ obj }: { obj: PipelineRunKind }) => {
     <>
       <td className={tableColumnClasses[0]} role="gridcell">
         {obj?.metadata?.name ? (
-          <ResourceBadge
-            color={tektonGroupColor.value}
-            abbr="PLR"
-            name={obj.metadata.name}
-          />
+          <ResourceBadge color={tektonGroupColor.value} abbr="PLR" name={obj.metadata.name} />
         ) : (
           '-'
         )}
@@ -34,11 +30,7 @@ const PipelineRunRow = ({ obj }: { obj: PipelineRunKind }) => {
         <LinkedPipelineRunTaskStatus pipelineRun={obj} />
       </td>
       <td className={tableColumnClasses[3]} role="gridcell">
-        {startTime ? (
-          <Timestamp className="bs-tkn-timestamp" date={startTime} />
-        ) : (
-          '-'
-        )}
+        {startTime ? <Timestamp className="bs-tkn-timestamp" date={startTime} /> : '-'}
       </td>
       <td className={tableColumnClasses[4]} role="gridcell">
         {pipelineRunDuration(obj)}

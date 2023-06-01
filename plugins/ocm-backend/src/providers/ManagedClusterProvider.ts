@@ -22,10 +22,7 @@ import {
   ResourceEntity,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import {
-  EntityProvider,
-  EntityProviderConnection,
-} from '@backstage/plugin-catalog-node';
+import { EntityProvider, EntityProviderConnection } from '@backstage/plugin-catalog-node';
 
 import { CustomObjectsApi } from '@kubernetes/client-node';
 import * as winston from 'winston';
@@ -37,11 +34,7 @@ import {
 
 import { CONSOLE_CLAIM, HUB_CLUSTER_NAME_IN_OCM } from '../constants';
 import { readOcmConfigs } from '../helpers/config';
-import {
-  getManagedCluster,
-  hubApiClient,
-  listManagedClusters,
-} from '../helpers/kubernetes';
+import { getManagedCluster, hubApiClient, listManagedClusters } from '../helpers/kubernetes';
 import { getClaim, translateOCMToResource } from '../helpers/parser';
 
 /**
@@ -80,11 +73,10 @@ export class ManagedClusterProvider implements EntityProvider {
       scheduler?: PluginTaskScheduler;
     },
   ) {
-    return readOcmConfigs(config).map(provider => {
+    return readOcmConfigs(config).map((provider) => {
       const client = hubApiClient(provider, options.logger);
       const taskRunner =
-        options.schedule ||
-        options.scheduler!.createScheduledTaskRunner(provider.schedule!);
+        options.schedule || options.scheduler!.createScheduledTaskRunner(provider.schedule!);
 
       if (!options.schedule && !provider.schedule) {
         throw new Error(
@@ -131,21 +123,14 @@ export class ManagedClusterProvider implements EntityProvider {
       throw new Error('Not initialized');
     }
 
-    this.logger.info(
-      `Providing OpenShift cluster resources from Open Cluster Management`,
-    );
+    this.logger.info(`Providing OpenShift cluster resources from Open Cluster Management`);
     const hubConsole = getClaim(
       await getManagedCluster(this.client, HUB_CLUSTER_NAME_IN_OCM),
       CONSOLE_CLAIM,
     );
 
-    const resources: ResourceEntity[] = (
-      await listManagedClusters(this.client)
-    ).items.map(i => {
-      const normalizedName = translateOCMToResource(
-        i.metadata!.name!,
-        this.hubResourceName,
-      );
+    const resources: ResourceEntity[] = (await listManagedClusters(this.client)).items.map((i) => {
+      const normalizedName = translateOCMToResource(i.metadata!.name!, this.hubResourceName);
 
       return {
         kind: 'Resource',
@@ -156,8 +141,7 @@ export class ManagedClusterProvider implements EntityProvider {
             /**
              * Can also be pulled from ManagedClusterInfo on .spec.masterEndpoint (details in discussion: https://github.com/janus-idp/backstage-plugins/pull/94#discussion_r1093228858)
              */
-            [ANNOTATION_KUBERNETES_API_SERVER]:
-              i.spec?.managedClusterClientConfigs?.[0]?.url,
+            [ANNOTATION_KUBERNETES_API_SERVER]: i.spec?.managedClusterClientConfigs?.[0]?.url,
             [ANNOTATION_CLUSTER_ID]: i.metadata?.labels?.clusterID!,
             [ANNOTATION_LOCATION]: this.getProviderName(),
             [ANNOTATION_ORIGIN_LOCATION]: this.getProviderName(),
@@ -170,14 +154,12 @@ export class ManagedClusterProvider implements EntityProvider {
               icon: 'dashboard',
             },
             {
-              url: `${hubConsole}/multicloud/infrastructure/clusters/details/${
-                i.metadata!.name
-              }/`,
+              url: `${hubConsole}/multicloud/infrastructure/clusters/details/${i.metadata!.name}/`,
               title: 'OCM Console',
             },
             {
-              url: `https://console.redhat.com/openshift/details/s/${i.metadata!
-                .labels!.clusterID!}`,
+              url: `https://console.redhat.com/openshift/details/s/${i.metadata!.labels!
+                .clusterID!}`,
               title: 'OpenShift Cluster Manager',
             },
           ],
@@ -191,7 +173,7 @@ export class ManagedClusterProvider implements EntityProvider {
 
     await this.connection.applyMutation({
       type: 'full',
-      entities: resources.map(entity => ({
+      entities: resources.map((entity) => ({
         entity,
         locationKey: this.getProviderName(),
       })),

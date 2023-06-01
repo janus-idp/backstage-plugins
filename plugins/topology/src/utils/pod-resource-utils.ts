@@ -10,11 +10,7 @@ import {
 import { AllPodStatus } from '../components/Pods/pod';
 import { ReplicaSetGVK, StatefulSetGVK } from '../models';
 import { PodControllerOverviewItem, PodRCData } from '../types/pods';
-import {
-  GroupVersionKind,
-  K8sResponseData,
-  K8sWorkloadResource,
-} from '../types/types';
+import { GroupVersionKind, K8sResponseData, K8sWorkloadResource } from '../types/types';
 
 // List of container status waiting reason values that we should call out as errors in project status rows.
 const CONTAINER_WAITING_STATE_ERROR_REASONS = [
@@ -33,14 +29,10 @@ const getAnnotation = (obj: K8sWorkloadResource, annotation: string) => {
 };
 
 const isIdled = (deployment: K8sWorkloadResource): boolean => {
-  return !!deployment.metadata?.annotations?.[
-    'idling.alpha.openshift.io/idled-at'
-  ];
+  return !!deployment.metadata?.annotations?.['idling.alpha.openshift.io/idled-at'];
 };
 
-export const getDeploymentRevision = (
-  obj: K8sWorkloadResource,
-): number | null => {
+export const getDeploymentRevision = (obj: K8sWorkloadResource): number | null => {
   const revisionAnnotation = getAnnotation(obj, DEPLOYMENT_REVISION_ANNOTATION);
   const revision = revisionAnnotation && parseInt(revisionAnnotation, 10);
   return revision && Number.isFinite(revision) ? revision : null;
@@ -54,26 +46,18 @@ const getOwnedResources = <T extends K8sWorkloadResource>(
   if (!uid || !resources) {
     return [];
   }
-  return resources.filter(res => {
+  return resources.filter((res) => {
     const ownerReferences = res.metadata?.ownerReferences;
-    return ownerReferences?.some(
-      or => or.uid === uid && or.controller === true,
-    );
+    return ownerReferences?.some((or) => or.uid === uid && or.controller === true);
   });
 };
 
-const getActiveReplicaSets = (
-  deployment: K8sWorkloadResource,
-  resources: K8sResponseData,
-) => {
+const getActiveReplicaSets = (deployment: K8sWorkloadResource, resources: K8sResponseData) => {
   const { replicasets } = resources;
   const currentRevision = getDeploymentRevision(deployment);
-  const ownedRS = getOwnedResources(
-    deployment,
-    replicasets?.data,
-  ) as V1ReplicaSet[];
+  const ownedRS = getOwnedResources(deployment, replicasets?.data) as V1ReplicaSet[];
   return ownedRS.filter(
-    rs => rs?.status?.replicas || getDeploymentRevision(rs) === currentRevision,
+    (rs) => rs?.status?.replicas || getDeploymentRevision(rs) === currentRevision,
   );
 };
 
@@ -112,16 +96,11 @@ const sortByRevision = (
   return replicators?.sort(compare);
 };
 
-const sortReplicaSetsByRevision = (
-  replicaSets: V1ReplicaSet[],
-): V1ReplicaSet[] => {
+const sortReplicaSetsByRevision = (replicaSets: V1ReplicaSet[]): V1ReplicaSet[] => {
   return sortByRevision(replicaSets, getDeploymentRevision);
 };
 
-const getPodsForResource = (
-  resource: K8sWorkloadResource,
-  resources: K8sResponseData,
-): V1Pod[] => {
+const getPodsForResource = (resource: K8sWorkloadResource, resources: K8sResponseData): V1Pod[] => {
   const { pods } = resources;
   return getOwnedResources(resource, pods?.data as V1Pod[]);
 };
@@ -139,18 +118,13 @@ const podAlertKey = (
 const getPodAlerts = (pod: V1Pod) => {
   const alerts = {} as { [key: string]: any };
   const statuses = [
-    ...(pod?.status?.initContainerStatuses
-      ? pod.status.initContainerStatuses
-      : []),
+    ...(pod?.status?.initContainerStatuses ? pod.status.initContainerStatuses : []),
     ...(pod?.status?.containerStatuses ? pod.status.containerStatuses : []),
   ];
-  statuses.forEach(status => {
+  statuses.forEach((status) => {
     const { name, state } = status;
     const waitingReason = state?.waiting?.reason;
-    if (
-      waitingReason &&
-      CONTAINER_WAITING_STATE_ERROR_REASONS.includes(waitingReason)
-    ) {
+    if (waitingReason && CONTAINER_WAITING_STATE_ERROR_REASONS.includes(waitingReason)) {
       const key = podAlertKey(waitingReason, pod, name);
       const message = state.waiting?.message || waitingReason;
       alerts[key] = { severity: 'error', message };
@@ -159,11 +133,7 @@ const getPodAlerts = (pod: V1Pod) => {
   const podStatusConditions = pod?.status?.conditions || [];
   podStatusConditions.forEach((condition: any) => {
     const { type, status, reason, message } = condition;
-    if (
-      type === 'PodScheduled' &&
-      status === 'False' &&
-      reason === 'Unschedulable'
-    ) {
+    if (type === 'PodScheduled' && status === 'False' && reason === 'Unschedulable') {
       const key = podAlertKey(reason, pod);
       alerts[key] = {
         severity: 'error',
@@ -184,11 +154,7 @@ const combinePodAlerts = (pods: V1Pod[]) =>
     {},
   );
 
-const toResourceItem = (
-  rs: V1ReplicaSet,
-  gvk: GroupVersionKind,
-  resources: K8sResponseData,
-) => {
+const toResourceItem = (rs: V1ReplicaSet, gvk: GroupVersionKind, resources: K8sResponseData) => {
   const obj = {
     ...rs,
     apiVersion: apiVersionForModel(gvk),
@@ -205,10 +171,7 @@ const toResourceItem = (
   };
 };
 
-const getIdledStatus = (
-  rc: PodControllerOverviewItem,
-  dc: K8sWorkloadResource,
-) => {
+const getIdledStatus = (rc: PodControllerOverviewItem, dc: K8sWorkloadResource) => {
   const { pods } = rc;
   if (pods && !pods.length && isIdled(dc)) {
     return {
@@ -226,10 +189,7 @@ const getIdledStatus = (
   return rc;
 };
 
-const getReplicaSetsForResource = (
-  deployment: K8sWorkloadResource,
-  resources: K8sResponseData,
-) => {
+const getReplicaSetsForResource = (deployment: K8sWorkloadResource, resources: K8sResponseData) => {
   const replicaSets = getActiveReplicaSets(deployment, resources);
   const sortReplicaSets = sortReplicaSetsByRevision(replicaSets);
   return sortReplicaSets.map((rs: V1ReplicaSet) =>
@@ -240,31 +200,21 @@ const getReplicaSetsForResource = (
   );
 };
 
-const getActiveStatefulSets = (
-  ss: V1StatefulSet,
-  resources: K8sResponseData,
-) => {
+const getActiveStatefulSets = (ss: V1StatefulSet, resources: K8sResponseData) => {
   if (!resources?.statefulsets?.data?.length) {
     return [];
   }
   const ownedRS = resources.statefulsets.data.filter(
-    f => f.metadata?.name === ss?.metadata?.name,
+    (f) => f.metadata?.name === ss?.metadata?.name,
   ) as V1StatefulSet[];
-  return ownedRS.filter(rs => rs?.status?.replicas);
+  return ownedRS.filter((rs) => rs?.status?.replicas);
 };
 
-export const getStatefulSetsResource = (
-  statefulSet: V1StatefulSet,
-  resources: K8sResponseData,
-) => {
+export const getStatefulSetsResource = (statefulSet: V1StatefulSet, resources: K8sResponseData) => {
   const activeStatefulSets = getActiveStatefulSets(statefulSet, resources);
-  return activeStatefulSets.map(pss =>
+  return activeStatefulSets.map((pss) =>
     getIdledStatus(
-      toResourceItem(
-        pss as V1StatefulSet,
-        StatefulSetGVK,
-        resources,
-      ) as PodControllerOverviewItem,
+      toResourceItem(pss as V1StatefulSet, StatefulSetGVK, resources) as PodControllerOverviewItem,
       statefulSet,
     ),
   );
@@ -304,22 +254,16 @@ export const getPodsForStatefulSet = (
   };
 };
 
-export const getJobsForCronJob = (
-  cronJobUid: string,
-  resources: K8sResponseData,
-) => {
+export const getJobsForCronJob = (cronJobUid: string, resources: K8sResponseData) => {
   if (!resources?.jobs?.data?.length || resources?.jobs?.data?.length === 0) {
     return [];
   }
-  return resources.jobs.data.filter(job =>
-    job.metadata?.ownerReferences?.find(ref => ref.uid === cronJobUid),
+  return resources.jobs.data.filter((job) =>
+    job.metadata?.ownerReferences?.find((ref) => ref.uid === cronJobUid),
   );
 };
 
-export const getPodsForCronJob = (
-  cronJob: V1CronJob,
-  resources: K8sResponseData,
-): PodRCData => {
+export const getPodsForCronJob = (cronJob: V1CronJob, resources: K8sResponseData): PodRCData => {
   const jobs = getJobsForCronJob(cronJob?.metadata?.uid as string, resources);
   return {
     obj: cronJob,

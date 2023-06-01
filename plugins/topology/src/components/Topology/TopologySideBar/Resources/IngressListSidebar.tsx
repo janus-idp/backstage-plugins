@@ -6,16 +6,9 @@ import { IngressData } from '../../../../types/ingresses';
 import TopologyResourcesTabPanelItem from '../TopologyResourcesTabPaneltem';
 import IngressRules from './IngressRules';
 
-const IngressListSidebar = ({
-  ingressesData,
-}: {
-  ingressesData: IngressData[];
-}) => {
+const IngressListSidebar = ({ ingressesData }: { ingressesData: IngressData[] }) => {
   return (
-    <TopologyResourcesTabPanelItem
-      resourceLabel={IngressModel.labelPlural}
-      dataTest="ingress-list"
-    >
+    <TopologyResourcesTabPanelItem resourceLabel={IngressModel.labelPlural} dataTest="ingress-list">
       {ingressesData?.length > 0 &&
         ingressesData.map((ingressData: IngressData) => (
           <li
@@ -32,11 +25,7 @@ const IngressListSidebar = ({
             {ingressData.url && (
               <>
                 <span className="topology-text-muted">Location:</span>
-                <a
-                  href={ingressData.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+                <a href={ingressData.url} target="_blank" rel="noopener noreferrer">
                   {ingressData.url}
                 </a>
               </>

@@ -13,9 +13,7 @@ import TopologyResourcesTabPanel from './TopologyResourcesTabPanel';
 
 describe('TopologyResourcesTabPanel', () => {
   it('Should render workload resources', () => {
-    const { queryByTestId } = render(
-      <TopologyResourcesTabPanel node={workloadNode as BaseNode} />,
-    );
+    const { queryByTestId } = render(<TopologyResourcesTabPanel node={workloadNode as BaseNode} />);
     expect(queryByTestId('resources-tab')).not.toBeNull();
   });
 
@@ -47,9 +45,7 @@ describe('TopologyResourcesTabPanel', () => {
   });
 
   it('Should show jobs section only for cron-job', () => {
-    const { queryByTestId } = render(
-      <TopologyResourcesTabPanel node={workloadNode as BaseNode} />,
-    );
+    const { queryByTestId } = render(<TopologyResourcesTabPanel node={workloadNode as BaseNode} />);
     expect(queryByTestId('job-list')).toBeNull();
   });
 
@@ -72,9 +68,7 @@ describe('TopologyResourcesTabPanel', () => {
   });
 
   it('Should show routes and ingresses both if available', () => {
-    const { queryByTestId } = render(
-      <TopologyResourcesTabPanel node={workloadNode as BaseNode} />,
-    );
+    const { queryByTestId } = render(<TopologyResourcesTabPanel node={workloadNode as BaseNode} />);
     expect(queryByTestId('routes-list')).not.toBeNull();
     expect(queryByTestId('ingress-list')).not.toBeNull();
   });

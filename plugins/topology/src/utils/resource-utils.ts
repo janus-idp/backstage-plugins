@@ -14,30 +14,21 @@ import { IngressesData } from '../types/ingresses';
 import { JobsData } from '../types/jobs';
 import { RouteIngress, RouteKind, RoutesData } from '../types/route';
 import { OverviewItem } from '../types/topology-types';
-import {
-  IngressRule,
-  K8sResponseData,
-  K8sWorkloadResource,
-} from '../types/types';
+import { IngressRule, K8sResponseData, K8sWorkloadResource } from '../types/types';
 import { LabelSelector } from './label-selector';
-import {
-  getJobsForCronJob,
-  getPodsDataForResource,
-} from './pod-resource-utils';
+import { getJobsForCronJob, getPodsDataForResource } from './pod-resource-utils';
 import { WORKLOAD_TYPES } from './topology-utils';
 
 const validPod = (pod: V1Pod) => {
   const owners = pod?.metadata?.ownerReferences;
   const phase = pod?.status?.phase;
   return (
-    (!owners || Object.keys(owners).length === 0) &&
-    phase !== 'Succeeded' &&
-    phase !== 'Failed'
+    (!owners || Object.keys(owners).length === 0) && phase !== 'Succeeded' && phase !== 'Failed'
   );
 };
 
 const isStandaloneJob = (job: K8sWorkloadResource) =>
-  !job.metadata?.ownerReferences?.find(owner => owner.kind === 'CronJob');
+  !job.metadata?.ownerReferences?.find((owner) => owner.kind === 'CronJob');
 
 export const createOverviewItemForType = (
   type: string,
@@ -66,9 +57,7 @@ export const createOverviewItemForType = (
   }
 };
 
-const getPodTemplate = (
-  resource: K8sWorkloadResource,
-): V1PodTemplate | undefined => {
+const getPodTemplate = (resource: K8sWorkloadResource): V1PodTemplate | undefined => {
   switch (resource.kind) {
     case 'Pod':
       return resource as V1PodTemplate;
@@ -102,9 +91,7 @@ export const getServicesForResource = (
   });
 };
 
-export const getIngressWebURL = (
-  ingressRule: IngressRule,
-): string | undefined => {
+export const getIngressWebURL = (ingressRule: IngressRule): string | undefined => {
   const schema = ingressRule.schema;
   const { host, http } = ingressRule.rules?.[0] || {};
   if (!host || host.includes('*')) {
@@ -118,49 +105,41 @@ export const getIngressWebURL = (
   return url;
 };
 
-export const getIngressesURL = (
-  ingressesData: any = [],
-): string | undefined => {
+export const getIngressesURL = (ingressesData: any = []): string | undefined => {
   const [ingressData] = ingressesData;
   return ingressData?.url;
 };
 
-const validUrl = (url?: string | null) =>
-  url?.startsWith('http://') || url?.startsWith('https://');
+const validUrl = (url?: string | null) => url?.startsWith('http://') || url?.startsWith('https://');
 
 export const getIngressesDataForResourceServices = (
   resources: K8sResponseData,
   resource: K8sWorkloadResource,
 ): IngressesData => {
-  const services = getServicesForResource(
-    resource,
-    resources.services?.data as V1Service[],
-  );
+  const services = getServicesForResource(resource, resources.services?.data as V1Service[]);
   const servicesNames = services.map((s: V1Service) => s.metadata?.name ?? '');
 
-  const ingressesData = (
-    (resources.ingresses?.data as V1Ingress[]) ?? []
-  ).reduce((acc: IngressesData, ingress: V1Ingress) => {
-    const rules = ingress.spec?.rules?.filter(rule => {
-      return rule.http?.paths?.some(path => {
-        return (
-          path.backend?.service?.name &&
-          servicesNames.includes(path.backend.service.name)
-        );
+  const ingressesData = ((resources.ingresses?.data as V1Ingress[]) ?? []).reduce(
+    (acc: IngressesData, ingress: V1Ingress) => {
+      const rules = ingress.spec?.rules?.filter((rule) => {
+        return rule.http?.paths?.some((path) => {
+          return path.backend?.service?.name && servicesNames.includes(path.backend.service.name);
+        });
       });
-    });
-    if (rules?.length) {
-      const ingressURL = getIngressWebURL({
-        schema: ingress.spec?.tls ? 'https' : 'http',
-        rules,
-      });
-      acc.push({
-        ingress,
-        url: validUrl(ingressURL) ? ingressURL : undefined,
-      });
-    }
-    return acc;
-  }, []);
+      if (rules?.length) {
+        const ingressURL = getIngressWebURL({
+          schema: ingress.spec?.tls ? 'https' : 'http',
+          rules,
+        });
+        acc.push({
+          ingress,
+          url: validUrl(ingressURL) ? ingressURL : undefined,
+        });
+      }
+      return acc;
+    },
+    [],
+  );
 
   return ingressesData;
 };
@@ -172,10 +151,7 @@ export const getIngressURLForResource = (
   if (!resources.ingresses?.data) {
     return undefined;
   }
-  const ingressesData = getIngressesDataForResourceServices(
-    resources,
-    resource,
-  );
+  const ingressesData = getIngressesDataForResourceServices(resources, resource);
 
   return getIngressesURL(ingressesData);
 };
@@ -188,10 +164,7 @@ export const getJobsDataForResource = (
     return [];
   }
 
-  const resourceJobs = getJobsForCronJob(
-    resource.metadata?.uid ?? '',
-    resources,
-  ) as V1Job[];
+  const resourceJobs = getJobsForCronJob(resource.metadata?.uid ?? '', resources) as V1Job[];
 
   return resourceJobs.map((job: V1Job) => ({
     job,
@@ -199,21 +172,17 @@ export const getJobsDataForResource = (
   }));
 };
 
-const getRouteHost = (
-  route: RouteKind,
-  onlyAdmitted: boolean,
-): string | undefined => {
+const getRouteHost = (route: RouteKind, onlyAdmitted: boolean): string | undefined => {
   let oldestAdmittedIngress: any;
   let oldestTransitionTime: string;
 
   route.status?.ingress.forEach((ingress: RouteIngress) => {
     const admittedCondition = ingress.conditions?.find(
-      condition => condition.type === 'Admitted' && condition.status === 'True',
+      (condition) => condition.type === 'Admitted' && condition.status === 'True',
     );
     if (
       admittedCondition?.lastTransitionTime &&
-      (!oldestTransitionTime ||
-        oldestTransitionTime > admittedCondition.lastTransitionTime)
+      (!oldestTransitionTime || oldestTransitionTime > admittedCondition.lastTransitionTime)
     ) {
       oldestAdmittedIngress = ingress;
       oldestTransitionTime = admittedCondition.lastTransitionTime;
@@ -240,28 +209,22 @@ export const getRoutesDataForResourceServices = (
   resources: K8sResponseData,
   resource: K8sWorkloadResource,
 ): RoutesData => {
-  const services = getServicesForResource(
-    resource,
-    resources.services?.data as V1Service[],
-  );
+  const services = getServicesForResource(resource, resources.services?.data as V1Service[]);
   const servicesNames = services.map((s: V1Service) => s.metadata?.name ?? '');
   const routes = (resources.routes?.data as RouteKind[]) ?? [];
   if (!servicesNames?.length || !routes?.length) {
     return [];
   }
 
-  const routesData: RoutesData = routes.reduce(
-    (acc: RoutesData, route: RouteKind) => {
-      if (route.spec?.to?.name && servicesNames.includes(route.spec.to.name)) {
-        acc.push({
-          route,
-          url: getRouteWebURL(route),
-        });
-      }
-      return acc;
-    },
-    [] as RoutesData,
-  );
+  const routesData: RoutesData = routes.reduce((acc: RoutesData, route: RouteKind) => {
+    if (route.spec?.to?.name && servicesNames.includes(route.spec.to.name)) {
+      acc.push({
+        route,
+        url: getRouteWebURL(route),
+      });
+    }
+    return acc;
+  }, [] as RoutesData);
 
   return routesData;
 };
@@ -284,7 +247,6 @@ export const getUrlForResource = (
   resource: K8sWorkloadResource,
 ): string | undefined => {
   return (
-    getRoutesURLforResource(resources, resource) ||
-    getIngressURLForResource(resources, resource)
+    getRoutesURLforResource(resources, resource) || getIngressURLForResource(resources, resource)
   );
 };

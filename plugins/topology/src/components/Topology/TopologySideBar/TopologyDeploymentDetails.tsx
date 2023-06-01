@@ -7,16 +7,13 @@ import TopologyWorkloadDetails from './TopologyWorkloadDetails';
 
 type TopologyDeploymentDetailsProps = { resource: V1Deployment };
 
-const TopologyDeploymentDetails = ({
-  resource,
-}: TopologyDeploymentDetailsProps) => {
+const TopologyDeploymentDetails = ({ resource }: TopologyDeploymentDetailsProps) => {
   return (
     <>
       <div className="topology-workload-details">
         <TopologyWorkloadDetails resource={resource}>
           <TopologySideBarDetailsItem label="Status">
-            {resource.status?.availableReplicas ===
-            resource.status?.updatedReplicas ? (
+            {resource.status?.availableReplicas === resource.status?.updatedReplicas ? (
               'Active'
             ) : (
               <div>Updating</div>
@@ -24,10 +21,7 @@ const TopologyDeploymentDetails = ({
           </TopologySideBarDetailsItem>
         </TopologyWorkloadDetails>
       </div>
-      <div
-        className="topology-workload-details"
-        data-testid="deployment-details"
-      >
+      <div className="topology-workload-details" data-testid="deployment-details">
         <TopologySideBarDetailsItem label="Update strategy">
           {resource.spec?.strategy?.type}
         </TopologySideBarDetailsItem>
@@ -37,9 +31,9 @@ const TopologyDeploymentDetails = ({
           } pod`}
         </TopologySideBarDetailsItem>
         <TopologySideBarDetailsItem label="Max surge">
-          {`${
-            resource.spec?.strategy?.rollingUpdate?.maxSurge ?? 1
-          } greater than ${resource.spec?.replicas} pod`}
+          {`${resource.spec?.strategy?.rollingUpdate?.maxSurge ?? 1} greater than ${
+            resource.spec?.replicas
+          } pod`}
         </TopologySideBarDetailsItem>
         <TopologySideBarDetailsItem label="Progress deadline seconds">
           {resource.spec?.progressDeadlineSeconds

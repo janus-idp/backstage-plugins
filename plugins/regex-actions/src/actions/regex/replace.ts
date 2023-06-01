@@ -12,33 +12,25 @@ const schemaInput = z.object({
           // You should not parse a regex (regular language) with a regex (regular language),
           // you actually need a context free grammar to parse a regex (regular language).
           // Hence, we are using a string comparison here.
-          value =>
-            !(
-              value.charAt(0) === '/' && value.charAt(value.length - 1) === '/'
-            ),
+          (value) => !(value.charAt(0) === '/' && value.charAt(value.length - 1) === '/'),
           {
             message:
               'The RegExp constructor cannot take a string pattern with a leading and trailing forward slash.',
           },
         )
-        .describe(
-          'The regex pattern to match the value like in String.prototype.replace()',
-        ),
+        .describe('The regex pattern to match the value like in String.prototype.replace()'),
       flags: z
         .array(
           // FIXME: changed from z.set() because that breaks zod-to-json-schema parser in unknown way.
           z.enum(['g', 'm', 'i', 'y', 'u', 's', 'd'], {
-            invalid_type_error:
-              'Invalid flag, possible values are: g, m, i, y, u, s, d',
+            invalid_type_error: 'Invalid flag, possible values are: g, m, i, y, u, s, d',
           }),
         )
         .optional()
         .describe('The flags for the regex'),
       replacement: z
         .string()
-        .describe(
-          'The replacement value for the regex like in String.prototype.replace()',
-        ),
+        .describe('The replacement value for the regex like in String.prototype.replace()'),
       values: z.array(
         z.object({
           key: z.string().describe('The key to access the regex value'),
@@ -178,18 +170,14 @@ export const createReplaceAction = () => {
         values: valuesInput,
       } of input.regExps) {
         // FIXME: remove `new Set()` when the `z.set()` issue is fixed
-        const flags = flagsInput
-          ? Array.from(new Set(flagsInput)).join('')
-          : '';
+        const flags = flagsInput ? Array.from(new Set(flagsInput)).join('') : '';
         const regex = new RegExp(pattern, flags);
 
         for (const { key, value } of valuesInput) {
           const match = value.replace(regex, replacement);
 
           if (values.hasOwnProperty(key)) {
-            throw new Error(
-              `The key '${key}' is used more than once in the input.`,
-            );
+            throw new Error(`The key '${key}' is used more than once in the input.`);
           }
 
           values[key] = match;

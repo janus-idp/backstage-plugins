@@ -98,13 +98,9 @@ export const DAGRE_BUILDER_PROPS: dagre.GraphLabel = {
 
 export const DAGRE_BUILDER_SPACED_PROPS: dagre.GraphLabel = {
   ...DAGRE_BUILDER_PROPS,
-  ranksep:
-    NODE_SEPARATION_HORIZONTAL +
-    WHEN_EXPRESSION_SPACING +
-    BUILDER_NODE_ADD_RADIUS * 2,
+  ranksep: NODE_SEPARATION_HORIZONTAL + WHEN_EXPRESSION_SPACING + BUILDER_NODE_ADD_RADIUS * 2,
 };
 
 export const GROUPED_PIPELINE_NODE_SEPARATION_HORIZONTAL = 200;
 
-export const REGEX_EXTRACT_DEPS =
-  /(?:\$\(tasks\.)([a-z0-9_-]+)(?:.results)(?:[.^\w]+\))/g;
+export const REGEX_EXTRACT_DEPS = /(?:\$\(tasks\.)([a-z0-9_-]+)(?:.results)(?:[.^\w]+\))/g;

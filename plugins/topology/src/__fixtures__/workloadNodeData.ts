@@ -75,8 +75,7 @@ export const workloadNodeData = {
             lastUpdateTime: '2023-03-23T13:14:51Z',
             lastTransitionTime: '2023-02-13T14:49:49Z',
             reason: 'NewReplicaSetAvailable',
-            message:
-              'ReplicaSet "hello-minikube2-848cf77669" has successfully progressed.',
+            message: 'ReplicaSet "hello-minikube2-848cf77669" has successfully progressed.',
           },
           {
             type: 'Available',
@@ -170,8 +169,7 @@ export const workloadNodeData = {
                 lastUpdateTime: '2023-03-23T13:14:51Z',
                 lastTransitionTime: '2023-02-13T14:49:49Z',
                 reason: 'NewReplicaSetAvailable',
-                message:
-                  'ReplicaSet "hello-minikube2-848cf77669" has successfully progressed.',
+                message: 'ReplicaSet "hello-minikube2-848cf77669" has successfully progressed.',
               },
               {
                 type: 'Available',
@@ -339,8 +337,7 @@ export const workloadNodeData = {
                       {
                         name: 'kube-api-access-lb9mh',
                         readOnly: true,
-                        mountPath:
-                          '/var/run/secrets/kubernetes.io/serviceaccount',
+                        mountPath: '/var/run/secrets/kubernetes.io/serviceaccount',
                       },
                     ],
                     terminationMessagePath: '/dev/termination-log',
@@ -513,8 +510,7 @@ export const workloadNodeData = {
                     {
                       name: 'kube-api-access-lb9mh',
                       readOnly: true,
-                      mountPath:
-                        '/var/run/secrets/kubernetes.io/serviceaccount',
+                      mountPath: '/var/run/secrets/kubernetes.io/serviceaccount',
                     },
                   ],
                   terminationMessagePath: '/dev/termination-log',
@@ -803,11 +799,7 @@ export const cronJobWorkloadNodeData = {
                   {
                     name: 'hello',
                     image: 'busybox',
-                    args: [
-                      '/bin/sh',
-                      '-c',
-                      'date; echo Hello from the Kubernetes cluster',
-                    ],
+                    args: ['/bin/sh', '-c', 'date; echo Hello from the Kubernetes cluster'],
                     resources: {},
                     terminationMessagePath: '/dev/termination-log',
                     terminationMessagePolicy: 'File',
@@ -886,11 +878,7 @@ export const cronJobWorkloadNodeData = {
                     {
                       name: 'hello',
                       image: 'busybox',
-                      args: [
-                        '/bin/sh',
-                        '-c',
-                        'date; echo Hello from the Kubernetes cluster',
-                      ],
+                      args: ['/bin/sh', '-c', 'date; echo Hello from the Kubernetes cluster'],
                       resources: {},
                       terminationMessagePath: '/dev/termination-log',
                       terminationMessagePolicy: 'File',
@@ -946,8 +934,7 @@ export const cronJobWorkloadNodeData = {
                     'k8s.v1.cni.cncf.io/network-status':
                       '[{\n    "name": "ovn-kubernetes",\n    "interface": "eth0",\n    "ips": [\n        "10.129.2.93"\n    ],\n    "mac": "0a:58:0a:81:02:5d",\n    "default": true,\n    "dns": {}\n}]',
                     'openshift.io/scc': 'restricted-v2',
-                    'seccomp.security.alpha.kubernetes.io/pod':
-                      'runtime/default',
+                    'seccomp.security.alpha.kubernetes.io/pod': 'runtime/default',
                   },
                   ownerReferences: [
                     {
@@ -1016,18 +1003,13 @@ export const cronJobWorkloadNodeData = {
                     {
                       name: 'hello',
                       image: 'busybox',
-                      args: [
-                        '/bin/sh',
-                        '-c',
-                        'date; echo Hello from the Kubernetes cluster',
-                      ],
+                      args: ['/bin/sh', '-c', 'date; echo Hello from the Kubernetes cluster'],
                       resources: {},
                       volumeMounts: [
                         {
                           name: 'kube-api-access-rzlcq',
                           readOnly: true,
-                          mountPath:
-                            '/var/run/secrets/kubernetes.io/serviceaccount',
+                          mountPath: '/var/run/secrets/kubernetes.io/serviceaccount',
                         },
                       ],
                       terminationMessagePath: '/dev/termination-log',

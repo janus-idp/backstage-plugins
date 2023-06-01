@@ -4,20 +4,12 @@ import { Entity } from '@backstage/catalog-model';
 import { createApiFactory } from '@backstage/core-plugin-api';
 import { createDevApp } from '@backstage/dev-utils';
 import { CatalogEntityPage } from '@backstage/plugin-catalog';
-import {
-  CatalogApi,
-  catalogApiRef,
-  EntityProvider,
-} from '@backstage/plugin-catalog-react';
+import { CatalogApi, catalogApiRef, EntityProvider } from '@backstage/plugin-catalog-react';
 import { SearchApi, searchApiRef } from '@backstage/plugin-search-react';
 
 import { Grid } from '@material-ui/core';
 
-import {
-  ClusterAvailableResourceCard,
-  ClusterContextProvider,
-  ClusterInfoCard,
-} from '../src';
+import { ClusterAvailableResourceCard, ClusterContextProvider, ClusterInfoCard } from '../src';
 import { OcmPage, ocmPlugin } from '../src/plugin';
 
 const clusterEntity = (name: string): Entity => ({
@@ -66,7 +58,7 @@ createDevApp()
           };
         },
         async getEntityByRef(ref: string) {
-          return clusters.find(e => e.metadata.name === ref);
+          return clusters.find((e) => e.metadata.name === ref);
         },
       } as CatalogApi),
   })

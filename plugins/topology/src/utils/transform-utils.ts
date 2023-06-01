@@ -1,9 +1,4 @@
-import {
-  EdgeModel,
-  Model,
-  NodeModel,
-  NodeShape,
-} from '@patternfly/react-topology';
+import { EdgeModel, Model, NodeModel, NodeShape } from '@patternfly/react-topology';
 
 import {
   GROUP_HEIGHT,
@@ -67,9 +62,7 @@ export const getTopologyNodeItem = (
 /**
  * create groups data for graph
  */
-export const getTopologyGroupItems = (
-  workload: K8sWorkloadResource,
-): NodeModel | null => {
+export const getTopologyGroupItems = (workload: K8sWorkloadResource): NodeModel | null => {
   const groupName = workload.metadata?.labels?.['app.kubernetes.io/part-of'];
   if (!groupName) {
     return null;
@@ -92,10 +85,7 @@ export const getTopologyGroupItems = (
   };
 };
 
-const mergeGroupData = (
-  newGroup: NodeModel,
-  existingGroup: NodeModel,
-): void => {
+const mergeGroupData = (newGroup: NodeModel, existingGroup: NodeModel): void => {
   if (!existingGroup.data?.groupResources && !newGroup.data?.groupResources) {
     return;
   }
@@ -112,27 +102,22 @@ const mergeGroupData = (
   }
 };
 
-export const mergeGroup = (
-  newGroup: NodeModel,
-  existingGroups: NodeModel[],
-): void => {
+export const mergeGroup = (newGroup: NodeModel, existingGroups: NodeModel[]): void => {
   if (!newGroup) {
     return;
   }
 
   // Remove any children from the new group that already belong to another group
   newGroup.children = newGroup.children?.filter(
-    c => !existingGroups?.find(g => g.children?.includes(c)),
+    (c) => !existingGroups?.find((g) => g.children?.includes(c)),
   );
 
   // find and add the groups
-  const existingGroup = existingGroups.find(
-    g => g.group && g.id === newGroup.id,
-  );
+  const existingGroup = existingGroups.find((g) => g.group && g.id === newGroup.id);
   if (!existingGroup) {
     existingGroups.push(newGroup);
   } else {
-    newGroup.children?.forEach(id => {
+    newGroup.children?.forEach((id) => {
       if (!existingGroup.children?.includes(id)) {
         existingGroup.children?.push(id);
       }
@@ -141,14 +126,11 @@ export const mergeGroup = (
   }
 };
 
-const mergeGroups = (
-  newGroups: NodeModel[],
-  existingGroups: NodeModel[],
-): void => {
+const mergeGroups = (newGroups: NodeModel[], existingGroups: NodeModel[]): void => {
   if (!newGroups || !newGroups.length) {
     return;
   }
-  newGroups.forEach(newGroup => {
+  newGroups.forEach((newGroup) => {
     mergeGroup(newGroup, existingGroups);
   });
 };
@@ -164,32 +146,27 @@ export const addToTopologyDataModel = (
   if (newModel?.nodes && graphModel.nodes) {
     graphModel.nodes.push(
       ...newModel.nodes.filter(
-        n =>
+        (n) =>
           !n.group &&
-          !graphModel.nodes?.find(existing => {
+          !graphModel.nodes?.find((existing) => {
             if (n.id === existing.id) {
               return true;
             }
             const { resource } = n as OdcNodeModel;
             return (
-              !resource ||
-              !!dataModelDepicters.find(depicter =>
-                depicter(resource, graphModel),
-              )
+              !resource || !!dataModelDepicters.find((depicter) => depicter(resource, graphModel))
             );
           }),
       ),
     );
     mergeGroups(
-      newModel.nodes.filter(n => n.group),
+      newModel.nodes.filter((n) => n.group),
       graphModel.nodes,
     );
   }
 };
 
-const edgesFromAnnotations = (
-  annotations: any,
-): (string | ConnectsToData)[] => {
+const edgesFromAnnotations = (annotations: any): (string | ConnectsToData)[] => {
   let edges: (string | ConnectsToData)[] = [];
   const CONNECTS_TO_ANNOTATION = 'app.openshift.io/connects-to';
   if (annotations?.[CONNECTS_TO_ANNOTATION]) {
@@ -198,9 +175,7 @@ const edgesFromAnnotations = (
     } catch (e) {
       // connects-to annotation should hold a JSON string value but failed to parse
       // treat value as a comma separated list of strings
-      edges = annotations[CONNECTS_TO_ANNOTATION].split(',').map((v: any) =>
-        v.trim(),
-      );
+      edges = annotations[CONNECTS_TO_ANNOTATION].split(',').map((v: any) => v.trim());
     }
   }
 
@@ -217,43 +192,35 @@ export const getTopologyEdgeItems = (
   const annotations = workload.metadata?.annotations;
   const edges: EdgeModel[] = [];
 
-  edgesFromAnnotations(annotations)?.forEach(
-    (edge: string | ConnectsToData) => {
-      // handles multiple edges
-      const resData = resources?.find(deployment => {
-        let name;
-        if (typeof edge === 'string') {
-          name =
-            deployment.metadata?.labels?.[INSTANCE_LABEL] ??
-            deployment.metadata?.name;
-          return name === edge;
-        }
-        name = deployment.metadata?.name;
-        const {
-          apiVersion: edgeApiVersion,
-          kind: edgeKind,
-          name: edgeName,
-        } = edge;
-        const { kind, apiVersion } = deployment;
-        let edgeExists = name === edgeName && kind === edgeKind;
-        if (apiVersion) {
-          edgeExists = edgeExists && apiVersion === edgeApiVersion;
-        }
-        return edgeExists;
-      });
-      const targetNode = resData?.metadata?.uid;
-      const uid = workload.metadata?.uid;
-      if (targetNode) {
-        edges.push({
-          id: `${uid}_${targetNode}`,
-          type: TYPE_CONNECTS_TO,
-          label: 'Visual connector',
-          source: uid,
-          target: targetNode,
-        });
+  edgesFromAnnotations(annotations)?.forEach((edge: string | ConnectsToData) => {
+    // handles multiple edges
+    const resData = resources?.find((deployment) => {
+      let name;
+      if (typeof edge === 'string') {
+        name = deployment.metadata?.labels?.[INSTANCE_LABEL] ?? deployment.metadata?.name;
+        return name === edge;
       }
-    },
-  );
+      name = deployment.metadata?.name;
+      const { apiVersion: edgeApiVersion, kind: edgeKind, name: edgeName } = edge;
+      const { kind, apiVersion } = deployment;
+      let edgeExists = name === edgeName && kind === edgeKind;
+      if (apiVersion) {
+        edgeExists = edgeExists && apiVersion === edgeApiVersion;
+      }
+      return edgeExists;
+    });
+    const targetNode = resData?.metadata?.uid;
+    const uid = workload.metadata?.uid;
+    if (targetNode) {
+      edges.push({
+        id: `${uid}_${targetNode}`,
+        type: TYPE_CONNECTS_TO,
+        label: 'Visual connector',
+        source: uid,
+        target: targetNode,
+      });
+    }
+  });
 
   return edges;
 };

@@ -77,11 +77,7 @@ describe('getHubClusterFromKubernetesConfig', () => {
       kubernetesPluginRef: 'cluster2',
     });
 
-    const result = getHubClusterFromKubernetesConfig(
-      'foo',
-      ocmConfig,
-      globalConfig,
-    );
+    const result = getHubClusterFromKubernetesConfig('foo', ocmConfig, globalConfig);
 
     expect(result.getString('name')).toEqual('cluster2');
     expect(result.getString('url')).toEqual('http://example.com');
@@ -108,8 +104,7 @@ describe('getHubClusterFromKubernetesConfig', () => {
       kubernetesPluginRef: 'cluster2',
     });
 
-    const result = () =>
-      getHubClusterFromKubernetesConfig('foo', ocmConfig, globalConfig);
+    const result = () => getHubClusterFromKubernetesConfig('foo', ocmConfig, globalConfig);
     expect(result).toThrow(
       "Hub cluster catalog.providers.ocm.foo.kubernetesPluginRef=cluster2 has to authenticate via 'serviceAccount'",
     );
@@ -134,8 +129,7 @@ describe('getHubClusterFromKubernetesConfig', () => {
       kubernetesPluginRef: 'cluster2',
     });
 
-    const result = () =>
-      getHubClusterFromKubernetesConfig('foo', ocmConfig, globalConfig);
+    const result = () => getHubClusterFromKubernetesConfig('foo', ocmConfig, globalConfig);
 
     expect(result).toThrow(
       'Hub cluster catalog.providers.ocm.foo.kubernetesPluginRef=cluster2 not defined in kubernetes in kubernetes.clusterLocatorMethods.clusters',
@@ -170,12 +164,9 @@ describe('getHubClusterFromKubernetesConfig', () => {
     const ocmConfig = new ConfigReader({
       kubernetesPluginRef: 'cluster2',
     });
-    const result = () =>
-      getHubClusterFromKubernetesConfig('foo', ocmConfig, globalConfig);
+    const result = () => getHubClusterFromKubernetesConfig('foo', ocmConfig, globalConfig);
 
-    expect(result).toThrow(
-      "Missing required config value at 'kubernetes.clusterLocatorMethods'",
-    );
+    expect(result).toThrow("Missing required config value at 'kubernetes.clusterLocatorMethods'");
   });
 
   it('should throw an error when there is no ocm cluster name configured', () => {
@@ -194,8 +185,7 @@ describe('getHubClusterFromKubernetesConfig', () => {
       },
     });
 
-    const result = () =>
-      getHubClusterFromKubernetesConfig('foo', ocmConfig, globalConfig);
+    const result = () => getHubClusterFromKubernetesConfig('foo', ocmConfig, globalConfig);
 
     expect(result).toThrow(
       "Invalid type in config for key 'kubernetesPluginRef' in 'mock-config', got object, wanted string",
@@ -223,9 +213,7 @@ describe('getHubClusterFromOcmConfig', () => {
 
     const result = () => getHubClusterFromOcmConfig('foo', config);
 
-    expect(result).toThrow(
-      `Value must be specified in config at 'catalog.providers.ocm.foo.url'`,
-    );
+    expect(result).toThrow(`Value must be specified in config at 'catalog.providers.ocm.foo.url'`);
   });
 
   it("should throw an error when name isn't specified in the hub config", () => {
@@ -235,9 +223,7 @@ describe('getHubClusterFromOcmConfig', () => {
 
     const result = () => getHubClusterFromOcmConfig('foo', config);
 
-    expect(result).toThrow(
-      `Value must be specified in config at 'catalog.providers.ocm.foo.name'`,
-    );
+    expect(result).toThrow(`Value must be specified in config at 'catalog.providers.ocm.foo.name'`);
   });
 });
 

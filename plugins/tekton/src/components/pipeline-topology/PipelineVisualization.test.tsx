@@ -85,23 +85,18 @@ describe('PipelineVisualization', () => {
       clusters: [],
       setSelectedCluster: () => {},
     };
-    mockContextData.watchResourcesData.pipelineruns.data[1].status.pipelineSpec =
-      {
-        ...mockContextData.watchResourcesData.pipelineruns.data[1].status
-          .pipelineSpec,
-        tasks: [],
-      };
-    mockContextData.watchResourcesData.pipelineruns.data[1].status.pipelineSpec.finally =
-      [];
+    mockContextData.watchResourcesData.pipelineruns.data[1].status.pipelineSpec = {
+      ...mockContextData.watchResourcesData.pipelineruns.data[1].status.pipelineSpec,
+      tasks: [],
+    };
+    mockContextData.watchResourcesData.pipelineruns.data[1].status.pipelineSpec.finally = [];
 
     const { queryByTestId } = render(
       <TektonResourcesContext.Provider value={mockContextData}>
         <PipelineVisualization linkTekton={false} />
       </TektonResourcesContext.Provider>,
     );
-    expect(
-      screen.getByText('This Pipeline Run has no tasks to visualize'),
-    ).toBeInTheDocument();
+    expect(screen.getByText('This Pipeline Run has no tasks to visualize')).toBeInTheDocument();
 
     expect(queryByTestId('pipeline-no-tasks')).not.toBeNull();
   });
@@ -117,8 +112,7 @@ describe('PipelineVisualization', () => {
         },
       },
       loaded: true,
-      responseError:
-        'getaddrinfo ENOTFOUND api.rhoms-4.13-052404.dev.openshiftappsvc.org',
+      responseError: 'getaddrinfo ENOTFOUND api.rhoms-4.13-052404.dev.openshiftappsvc.org',
       selectedClusterErrors: [],
       clusters: [],
       setSelectedCluster: () => {},
@@ -143,8 +137,7 @@ describe('PipelineVisualization', () => {
         },
       },
       loaded: true,
-      responseError:
-        'getaddrinfo ENOTFOUND api.rhoms-4.13-052404.dev.openshiftappsvc.org',
+      responseError: 'getaddrinfo ENOTFOUND api.rhoms-4.13-052404.dev.openshiftappsvc.org',
       selectedClusterErrors: [{ message: '403 - forbidden' }],
       clusters: ['OCP'],
       setSelectedCluster: () => {},

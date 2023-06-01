@@ -23,11 +23,7 @@ const GroupNode = ({ element, ...rest }: GroupNodeProps) => {
   }
 
   return (
-    <DefaultGroup
-      element={element}
-      showLabel={detailsLevel === ScaleDetailsLevel.high}
-      {...rest}
-    />
+    <DefaultGroup element={element} showLabel={detailsLevel === ScaleDetailsLevel.high} {...rest} />
   );
 };
 

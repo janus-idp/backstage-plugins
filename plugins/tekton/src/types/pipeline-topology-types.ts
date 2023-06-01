@@ -1,9 +1,4 @@
-import {
-  EdgeModel,
-  NodeModel,
-  RunStatus,
-  WhenStatus,
-} from '@patternfly/react-topology';
+import { EdgeModel, NodeModel, RunStatus, WhenStatus } from '@patternfly/react-topology';
 
 import { AddNodeDirection, NodeType } from '../consts/pipeline-topology-const';
 import { PipelineTask } from './pipeline';
@@ -119,17 +114,13 @@ type PipelineNodeModel<D extends PipelineRunAfterNodeModelData> = NodeModel & {
   data: D;
   type: NodeType;
 };
-export type PipelineMixedNodeModel =
-  PipelineNodeModel<PipelineRunAfterNodeModelData>;
+export type PipelineMixedNodeModel = PipelineNodeModel<PipelineRunAfterNodeModelData>;
 export type PipelineTaskNodeModel = PipelineNodeModel<TaskNodeModelData>;
-export type PipelineBuilderTaskNodeModel =
-  PipelineNodeModel<BuilderNodeModelData>;
-export type PipelineTaskListNodeModel =
-  PipelineNodeModel<TaskListNodeModelData>;
+export type PipelineBuilderTaskNodeModel = PipelineNodeModel<BuilderNodeModelData>;
+export type PipelineTaskListNodeModel = PipelineNodeModel<TaskListNodeModelData>;
 export type PipelineTaskLoadingNodeModel = PipelineNodeModel<LoadingNodeModel>;
 export type PipelineFinallyNodeModel = PipelineNodeModel<FinallyNodeModel>;
-export type PipelineBuilderFinallyNodeModel =
-  PipelineNodeModel<BuilderFinallyNodeModel>;
+export type PipelineBuilderFinallyNodeModel = PipelineNodeModel<BuilderFinallyNodeModel>;
 
 export type PipelineEdgeModel = EdgeModel;
 

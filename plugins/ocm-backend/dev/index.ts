@@ -12,9 +12,7 @@ export interface ServerOptions {
   logger: Logger;
 }
 
-export async function startStandaloneServer(
-  options: ServerOptions,
-): Promise<Server> {
+export async function startStandaloneServer(options: ServerOptions): Promise<Server> {
   const logger = options.logger.child({
     service: 'ocm-backend',
   });
@@ -41,7 +39,7 @@ export async function startStandaloneServer(
     })
     .addRouter('/api/ocm', await createRouter(routerOptions));
 
-  return await service.start().catch(err => {
+  return await service.start().catch((err) => {
     logger.error(err);
     process.exit(1);
   });

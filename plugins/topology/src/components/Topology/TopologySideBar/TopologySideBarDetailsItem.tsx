@@ -19,10 +19,7 @@ const TopologySideBarDetailsItem = ({
         {children ? (
           children
         ) : (
-          <span
-            className="topology-text-muted"
-            data-testid="detail-item-empty-state"
-          >
+          <span className="topology-text-muted" data-testid="detail-item-empty-state">
             {emptyText}
           </span>
         )}

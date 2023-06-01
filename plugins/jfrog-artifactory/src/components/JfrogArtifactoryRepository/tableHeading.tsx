@@ -31,7 +31,7 @@ export const columns: TableColumn[] = [
   },
 ];
 
-export const useStyles = makeStyles(theme => ({
+export const useStyles = makeStyles((theme) => ({
   empty: {
     padding: theme.spacing(2),
     display: 'flex',

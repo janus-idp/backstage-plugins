@@ -26,11 +26,7 @@ export type ColoredIconProps = {
  * <GreenCheckCircleIcon title="Healthy" />
  * ```
  */
-export const GreenCheckCircleIcon = ({
-  className,
-  title,
-  size,
-}: ColoredIconProps) => (
+export const GreenCheckCircleIcon = ({ className, title, size }: ColoredIconProps) => (
   <CheckCircleIcon
     data-test="success-icon"
     size={size}
@@ -49,11 +45,7 @@ export const GreenCheckCircleIcon = ({
  * <RedExclamationCircleIcon title="Failed" />
  * ```
  */
-export const RedExclamationCircleIcon = ({
-  className,
-  title,
-  size,
-}: ColoredIconProps) => (
+export const RedExclamationCircleIcon = ({ className, title, size }: ColoredIconProps) => (
   <ExclamationCircleIcon
     size={size}
     className={classNames('icons__red-exclamation-icon', className)}
@@ -71,11 +63,7 @@ export const RedExclamationCircleIcon = ({
  * <YellowExclamationTriangleIcon title="Warning" />
  * ```
  */
-export const YellowExclamationTriangleIcon = ({
-  className,
-  title,
-  size,
-}: ColoredIconProps) => (
+export const YellowExclamationTriangleIcon = ({ className, title, size }: ColoredIconProps) => (
   <ExclamationTriangleIcon
     size={size}
     className={classNames('icons__yellow-exclamation-icon', className)}
@@ -94,8 +82,5 @@ export const YellowExclamationTriangleIcon = ({
  * ```
  */
 export const BlueInfoCircleIcon = ({ className, title }: ColoredIconProps) => (
-  <InfoCircleIcon
-    className={classNames('icons__blue-info-icon', className)}
-    title={title}
-  />
+  <InfoCircleIcon className={classNames('icons__blue-info-icon', className)} title={title} />
 );

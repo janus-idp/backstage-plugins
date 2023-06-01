@@ -18,11 +18,7 @@ This plugin contains no other functionality.
 
    ```tsx title="packages/app/src/apis.ts"
    /* highlight-add-start */
-   import {
-     analyticsApiRef,
-     configApiRef,
-     identityApiRef,
-   } from '@backstage/core-plugin-api';
+   import { analyticsApiRef, configApiRef, identityApiRef } from '@backstage/core-plugin-api';
 
    import { SegmentAnalytics } from '@janus-idp/backstage-plugin-analytics-provider-segment';
 
@@ -35,8 +31,7 @@ This plugin contains no other functionality.
      createApiFactory({
        api: analyticsApiRef,
        deps: { configApi: configApiRef, identityApi: identityApiRef },
-       factory: ({ configApi, identityApi }) =>
-         SegmentAnalytics.fromConfig(configApi, identityApi),
+       factory: ({ configApi, identityApi }) => SegmentAnalytics.fromConfig(configApi, identityApi),
      }),
      /* highlight-add-end */
    ];

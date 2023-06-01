@@ -1,11 +1,6 @@
 import React from 'react';
 
-import {
-  BanIcon,
-  HourglassHalfIcon,
-  SyncAltIcon,
-  UnknownIcon,
-} from '@patternfly/react-icons';
+import { BanIcon, HourglassHalfIcon, SyncAltIcon, UnknownIcon } from '@patternfly/react-icons';
 
 import { GreenCheckCircleIcon, RedExclamationCircleIcon } from './icons';
 import StatusIconAndText from './StatusIconAndText';
@@ -30,9 +25,7 @@ const Status = ({ status }: StatusProps) => {
   };
   switch (status) {
     case 'Pending':
-      return (
-        <StatusIconAndText {...statusProps} icon={<HourglassHalfIcon />} />
-      );
+      return <StatusIconAndText {...statusProps} icon={<HourglassHalfIcon />} />;
 
     case 'Running':
       return <StatusIconAndText {...statusProps} icon={<SyncAltIcon />} />;
@@ -45,17 +38,10 @@ const Status = ({ status }: StatusProps) => {
     case 'ErrImagePull':
     case 'Failed':
     case 'ImagePullBackOff':
-      return (
-        <StatusIconAndText
-          {...statusProps}
-          icon={<RedExclamationCircleIcon />}
-        />
-      );
+      return <StatusIconAndText {...statusProps} icon={<RedExclamationCircleIcon />} />;
 
     case 'Succeeded':
-      return (
-        <StatusIconAndText {...statusProps} icon={<GreenCheckCircleIcon />} />
-      );
+      return <StatusIconAndText {...statusProps} icon={<GreenCheckCircleIcon />} />;
 
     case 'Unknown':
       return <StatusIconAndText {...statusProps} icon={<UnknownIcon />} />;

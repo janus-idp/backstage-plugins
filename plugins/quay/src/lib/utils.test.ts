@@ -48,9 +48,7 @@ describe('formatDate', () => {
   });
 
   it('should correctly format a date', () => {
-    const date = formatDate('Tue, 14 Feb 2023 17:15:55 +0100').normalize(
-      'NFKC',
-    );
+    const date = formatDate('Tue, 14 Feb 2023 17:15:55 +0100').normalize('NFKC');
 
     expect(date).toBe('Feb 14, 2023, 4:15 PM');
   });

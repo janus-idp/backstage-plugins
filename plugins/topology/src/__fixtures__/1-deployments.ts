@@ -47,8 +47,7 @@ export const customResourceRoute = {
           },
         ],
         wildcardPolicy: 'None',
-        routerCanonicalHostname:
-          'router-default.apps.viraj-22-05-2023-0.devcluster.openshift.com',
+        routerCanonicalHostname: 'router-default.apps.viraj-22-05-2023-0.devcluster.openshift.com',
       },
     ],
   },
@@ -1725,8 +1724,7 @@ export const mockKubernetesResponse = {
             type: 'Progressing',
             status: 'True',
             reason: 'NewReplicaSetAvailable',
-            message:
-              'ReplicaSet "hello-world-bfb8bb77" has successfully progressed.',
+            message: 'ReplicaSet "hello-world-bfb8bb77" has successfully progressed.',
           },
         ],
       },
@@ -1814,8 +1812,7 @@ export const mockKubernetesResponse = {
             type: 'Progressing',
             status: 'True',
             reason: 'NewReplicaSetAvailable',
-            message:
-              'ReplicaSet "hello-world-bfb8bb77" has successfully progressed.',
+            message: 'ReplicaSet "hello-world-bfb8bb77" has successfully progressed.',
           },
         ],
       },
@@ -1902,8 +1899,7 @@ export const mockKubernetesResponse = {
             type: 'Progressing',
             status: 'True',
             reason: 'NewReplicaSetAvailable',
-            message:
-              'ReplicaSet "hello-world-45-bfb8bb77" has successfully progressed.',
+            message: 'ReplicaSet "hello-world-45-bfb8bb77" has successfully progressed.',
           },
         ],
       },
@@ -2114,8 +2110,7 @@ export const mockKubernetesResponse = {
             terminationGracePeriodSeconds: 10,
             containers: {
               name: 'httpd',
-              image:
-                'image-registry.openshift-image-registry.svc:5000/openshift/httpd:latest',
+              image: 'image-registry.openshift-image-registry.svc:5000/openshift/httpd:latest',
               ports: [{ containerPort: 8080, name: 'web' }],
               volumeMounts: [{ name: 'www', mountPath: '/var/www/html' }],
             },

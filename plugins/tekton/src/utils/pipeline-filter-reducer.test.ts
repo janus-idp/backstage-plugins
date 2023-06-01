@@ -64,9 +64,7 @@ const mockPipelineRuns: TaskRunKind[] = [
   {
     spec: {},
     status: {
-      conditions: [
-        { type: 'Succeeded', status: 'Unknown', reason: 'StoppedRunFinally' },
-      ],
+      conditions: [{ type: 'Succeeded', status: 'Unknown', reason: 'StoppedRunFinally' }],
       podName: 'test-pod',
       startTime: '',
     },
@@ -74,9 +72,7 @@ const mockPipelineRuns: TaskRunKind[] = [
   {
     spec: {},
     status: {
-      conditions: [
-        { type: 'Succeeded', status: 'Unknown', reason: 'CancelledRunFinally' },
-      ],
+      conditions: [{ type: 'Succeeded', status: 'Unknown', reason: 'CancelledRunFinally' }],
       podName: 'test-pod',
       startTime: '',
     },
@@ -84,9 +80,7 @@ const mockPipelineRuns: TaskRunKind[] = [
   {
     spec: {},
     status: {
-      conditions: [
-        { type: 'Succeeded', status: 'Unknown', reason: 'TaskRunCancelled' },
-      ],
+      conditions: [{ type: 'Succeeded', status: 'Unknown', reason: 'TaskRunCancelled' }],
       podName: 'test-pod',
       startTime: '',
     },
@@ -97,9 +91,7 @@ const mockPipelineRunReasons: TaskRunKind[] = [
   {
     spec: {},
     status: {
-      conditions: [
-        { type: 'Succeeded', status: 'Unknown', reason: 'PipelineRunStopping' },
-      ],
+      conditions: [{ type: 'Succeeded', status: 'Unknown', reason: 'PipelineRunStopping' }],
       podName: 'test-pod',
       startTime: '',
     },
@@ -107,9 +99,7 @@ const mockPipelineRunReasons: TaskRunKind[] = [
   {
     spec: {},
     status: {
-      conditions: [
-        { type: 'Succeeded', status: 'Unknown', reason: 'TaskRunStopping' },
-      ],
+      conditions: [{ type: 'Succeeded', status: 'Unknown', reason: 'TaskRunStopping' }],
       podName: 'test-pod',
       startTime: '',
     },

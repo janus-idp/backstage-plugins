@@ -27,8 +27,7 @@ export const ocmPlugin = createPlugin({
 export const OcmPage = ocmPlugin.provide(
   createRoutableExtension({
     name: 'OcmPage',
-    component: () =>
-      import('./components/ClusterStatusPage').then(m => m.ClusterStatusPage),
+    component: () => import('./components/ClusterStatusPage').then((m) => m.ClusterStatusPage),
     mountPoint: rootRouteRef,
   }),
 );

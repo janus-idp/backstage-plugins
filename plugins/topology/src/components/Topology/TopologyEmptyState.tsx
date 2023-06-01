@@ -1,11 +1,6 @@
 import React from 'react';
 
-import {
-  EmptyState,
-  EmptyStateIcon,
-  EmptyStateVariant,
-  Title,
-} from '@patternfly/react-core';
+import { EmptyState, EmptyStateIcon, EmptyStateVariant, Title } from '@patternfly/react-core';
 import { TopologyIcon } from '@patternfly/react-icons';
 
 export const TopologyEmptyState = () => {

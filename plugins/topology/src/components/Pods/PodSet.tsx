@@ -2,11 +2,7 @@ import React from 'react';
 
 import { PodRCData } from '../../types/pods';
 import { usePodRingLabel } from '../../utils/pod-ring-utils';
-import {
-  calculateRadius,
-  getPodData,
-  podDataInProgress,
-} from '../../utils/workload-node-utils';
+import { calculateRadius, getPodData, podDataInProgress } from '../../utils/workload-node-utils';
 import PodStatus from './PodStatus';
 
 type PodSetProps = {
@@ -29,10 +25,8 @@ const calculateInnerPodStatusRadius = (
 ): InnerPodStatusRadius => {
   const innerPodStatusWidth = outerPodStatusWidth * 0.6;
   const spaceBwOuterAndInnerPodStatus = 3;
-  const innerPodStatusOuterRadius =
-    outerPodStatusInnerRadius - spaceBwOuterAndInnerPodStatus;
-  const innerPodStatusInnerRadius =
-    innerPodStatusOuterRadius - innerPodStatusWidth;
+  const innerPodStatusOuterRadius = outerPodStatusInnerRadius - spaceBwOuterAndInnerPodStatus;
+  const innerPodStatusInnerRadius = innerPodStatusOuterRadius - innerPodStatusWidth;
 
   return { innerPodStatusOuterRadius, innerPodStatusInnerRadius };
 };
@@ -55,8 +49,7 @@ export const podSetInnerRadius = (size: number, data?: PodRCData) => {
     radius = innerPodStatusInnerRadius;
   }
 
-  const { podStatusStrokeWidth: innerStrokeWidth, podStatusInset } =
-    calculateRadius(radius * 2);
+  const { podStatusStrokeWidth: innerStrokeWidth, podStatusInset } = calculateRadius(radius * 2);
 
   return radius - innerStrokeWidth - podStatusInset;
 };
@@ -71,17 +64,14 @@ const PodSet = React.memo(function PodSet({
 }: PodSetProps) {
   const { podStatusOuterRadius, podStatusInnerRadius, podStatusStrokeWidth } =
     calculateRadius(size);
-  const { innerPodStatusOuterRadius, innerPodStatusInnerRadius } =
-    calculateInnerPodStatusRadius(podStatusInnerRadius, podStatusStrokeWidth);
-  const { inProgressDeploymentData, completedDeploymentData } =
-    getPodData(data);
+  const { innerPodStatusOuterRadius, innerPodStatusInnerRadius } = calculateInnerPodStatusRadius(
+    podStatusInnerRadius,
+    podStatusStrokeWidth,
+  );
+  const { inProgressDeploymentData, completedDeploymentData } = getPodData(data);
   const obj = data.current?.obj || data.obj;
   const ownerKind = obj?.kind;
-  const { title, subTitle, titleComponent } = usePodRingLabel(
-    obj,
-    ownerKind,
-    data?.pods,
-  );
+  const { title, subTitle, titleComponent } = usePodRingLabel(obj, ownerKind, data?.pods);
   return (
     <>
       <PodStatus

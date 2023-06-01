@@ -8,12 +8,7 @@ import { BaseNode } from '@patternfly/react-topology';
 import ResourceName from '../../../common/components/ResourceName';
 import ResourceStatus from '../../../common/components/ResourceStatus';
 import Status from '../../../common/components/Status';
-import {
-  CronJobModel,
-  JobModel,
-  PodModel,
-  ServiceModel,
-} from '../../../models';
+import { CronJobModel, JobModel, PodModel, ServiceModel } from '../../../models';
 import { JobData } from '../../../types/jobs';
 import PodStatus from '../../Pods/PodStatus';
 import IngressListSidebar from './Resources/IngressListSidebar';
@@ -24,9 +19,7 @@ import './TopologyResourcesTabPanel.css';
 
 type TopologyResourcesTabPanelProps = { node: BaseNode };
 
-const TopologyResourcesTabPanel = ({
-  node,
-}: TopologyResourcesTabPanelProps) => {
+const TopologyResourcesTabPanel = ({ node }: TopologyResourcesTabPanelProps) => {
   const data = node.getData();
   const nodeData = data?.data;
   const resource = data?.resource;
@@ -49,25 +42,16 @@ const TopologyResourcesTabPanel = ({
   };
   return (
     <div data-testid="resources-tab">
-      <TopologyResourcesTabPanelItem
-        resourceLabel={PodModel.labelPlural}
-        dataTest="pod-list"
-      >
+      <TopologyResourcesTabPanelItem resourceLabel={PodModel.labelPlural} dataTest="pod-list">
         {nodeData?.podsData?.pods?.length &&
           nodeData.podsData.pods.map((pod: V1Pod) => (
             <li className="item" key={pod.metadata?.uid}>
               <span style={{ flex: '1' }}>
-                <ResourceName
-                  name={pod.metadata?.name ?? ''}
-                  kind={pod.kind ?? ''}
-                />
+                <ResourceName name={pod.metadata?.name ?? ''} kind={pod.kind ?? ''} />
               </span>
               <span style={{ flex: '1' }}>
                 {' '}
-                <ResourceStatus
-                  additionalClassNames="hidden-xs"
-                  noStatusBackground
-                >
+                <ResourceStatus additionalClassNames="hidden-xs" noStatusBackground>
                   <Status status={pod.status?.phase ?? ''} />
                 </ResourceStatus>
               </span>
@@ -75,17 +59,10 @@ const TopologyResourcesTabPanel = ({
           ))}
       </TopologyResourcesTabPanelItem>
       {resource.kind === CronJobModel.kind ? (
-        <TopologyResourcesTabPanelItem
-          resourceLabel={JobModel.labelPlural}
-          dataTest="job-list"
-        >
+        <TopologyResourcesTabPanelItem resourceLabel={JobModel.labelPlural} dataTest="job-list">
           {nodeData?.jobsData?.length &&
             nodeData.jobsData.map((jobData: JobData) => (
-              <li
-                className="item"
-                key={jobData.job.metadata?.uid}
-                style={{ alignItems: 'center' }}
-              >
+              <li className="item" key={jobData.job.metadata?.uid} style={{ alignItems: 'center' }}>
                 <span style={{ flex: '1' }}>
                   <ResourceName
                     name={jobData.job.metadata?.name ?? ''}
@@ -114,16 +91,9 @@ const TopologyResourcesTabPanel = ({
       >
         {nodeData?.services?.length &&
           nodeData.services.map((service: V1Service) => (
-            <li
-              className="item"
-              style={{ flexDirection: 'column' }}
-              key={service.metadata?.uid}
-            >
+            <li className="item" style={{ flexDirection: 'column' }} key={service.metadata?.uid}>
               <span>
-                <ResourceName
-                  name={service.metadata?.name ?? ''}
-                  kind={service.kind ?? ''}
-                />
+                <ResourceName name={service.metadata?.name ?? ''} kind={service.kind ?? ''} />
               </span>
               <ul>
                 {(service.spec?.ports ?? []).map(
@@ -134,10 +104,7 @@ const TopologyResourcesTabPanel = ({
                       &nbsp;
                       <LongArrowAltRightIcon />
                       &nbsp;
-                      <span className="topology-text-muted">
-                        Pod port:
-                      </span>{' '}
-                      {targetPort}
+                      <span className="topology-text-muted">Pod port:</span> {targetPort}
                     </li>
                   ),
                 )}

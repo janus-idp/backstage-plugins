@@ -6,25 +6,12 @@ import {
   Entity,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import {
-  EntityProvider,
-  EntityProviderConnection,
-} from '@backstage/plugin-catalog-backend';
+import { EntityProvider, EntityProviderConnection } from '@backstage/plugin-catalog-backend';
 
 import { Logger } from 'winston';
 
-import {
-  getProxyConfig,
-  listApiDocs,
-  listServices,
-} from '../clients/ThreeScaleAPIConnector';
-import {
-  APIDocElement,
-  APIDocs,
-  Proxy,
-  ServiceElement,
-  Services,
-} from '../clients/types';
+import { getProxyConfig, listApiDocs, listServices } from '../clients/ThreeScaleAPIConnector';
+import { APIDocElement, APIDocs, Proxy, ServiceElement, Services } from '../clients/types';
 import { readThreeScaleApiEntityConfigs } from './config';
 import { ThreeScaleConfig } from './types';
 
@@ -51,7 +38,7 @@ export class ThreeScaleApiEntityProvider implements EntityProvider {
       throw new Error('Either schedule or scheduler must be provided.');
     }
 
-    return providerConfigs.map(providerConfig => {
+    return providerConfigs.map((providerConfig) => {
       if (!options.schedule && !providerConfig.schedule) {
         throw new Error(
           `No schedule provided neither via code nor config for ThreeScaleApiEntityProvider:${providerConfig.id}.`,
@@ -59,22 +46,13 @@ export class ThreeScaleApiEntityProvider implements EntityProvider {
       }
 
       const taskRunner =
-        options.schedule ??
-        options.scheduler!.createScheduledTaskRunner(providerConfig.schedule!);
+        options.schedule ?? options.scheduler!.createScheduledTaskRunner(providerConfig.schedule!);
 
-      return new ThreeScaleApiEntityProvider(
-        providerConfig,
-        options.logger,
-        taskRunner,
-      );
+      return new ThreeScaleApiEntityProvider(providerConfig, options.logger, taskRunner);
     });
   }
 
-  private constructor(
-    config: ThreeScaleConfig,
-    logger: Logger,
-    taskRunner: TaskRunner,
-  ) {
+  private constructor(config: ThreeScaleConfig, logger: Logger, taskRunner: TaskRunner) {
     this.env = config.id;
     this.baseUrl = config.baseUrl;
     this.accessToken = config.accessToken;
@@ -136,34 +114,23 @@ export class ThreeScaleApiEntityProvider implements EntityProvider {
         this.logger.debug(`Find service ${service.service.name}`);
 
         // Trying to find the API Doc for the service and validate if api doc was assigned to an API.
-        const apiDoc = apiDocs.api_docs.find(obj => {
+        const apiDoc = apiDocs.api_docs.find((obj) => {
           if (obj.api_doc.service_id !== undefined) {
             return obj.api_doc.service_id === service.service.id;
           }
           return false;
         });
 
-        const proxy = await getProxyConfig(
-          this.baseUrl,
-          this.accessToken,
-          service.service.id,
-        );
+        const proxy = await getProxyConfig(this.baseUrl, this.accessToken, service.service.id);
         if (apiDoc !== undefined) {
           this.logger.info(apiDoc);
-          const apiEntity: ApiEntity = this.buildApiEntityFromService(
-            service,
-            apiDoc,
-            proxy,
-          );
+          const apiEntity: ApiEntity = this.buildApiEntityFromService(service, apiDoc, proxy);
           entities.push(apiEntity);
           this.logger.debug(`Discovered ApiEntity ${service.service.name}`);
         }
       }
 
-      if (
-        services.services.length <
-        ThreeScaleApiEntityProvider.SERVICES_FETCH_SIZE
-      ) {
+      if (services.services.length < ThreeScaleApiEntityProvider.SERVICES_FETCH_SIZE) {
         fetchServices = false;
       }
       page++;
@@ -173,7 +140,7 @@ export class ThreeScaleApiEntityProvider implements EntityProvider {
 
     await this.connection.applyMutation({
       type: 'full',
-      entities: entities.map(entity => ({
+      entities: entities.map((entity) => ({
         entity,
         locationKey: this.getProviderName(),
       })),
@@ -199,8 +166,7 @@ export class ThreeScaleApiEntityProvider implements EntityProvider {
         },
         //  TODO: add tenant name
         name: `${service.service.system_name}`,
-        description:
-          spec.info.description || `Version: ${service.service.description}`,
+        description: spec.info.description || `Version: ${service.service.description}`,
         //  TODO: add labels
         //  labels: this.getApiEntityLabels(service),
         links: [

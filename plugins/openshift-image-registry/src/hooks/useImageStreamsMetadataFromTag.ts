@@ -9,9 +9,7 @@ import { formatSize } from '../utils';
 
 export const useImageStreamsMetadataFromTag = (imageStreams: ImageStream[]) => {
   const client = useApi(openshiftImageRegistryApiRef);
-  const [imageStreamsData, setImageStreamsData] = useState<
-    ImageStreamMetadata[]
-  >([]);
+  const [imageStreamsData, setImageStreamsData] = useState<ImageStreamMetadata[]>([]);
 
   const { loading } = useAsync(async () => {
     const imgStsData = imageStreams?.length
@@ -26,13 +24,10 @@ export const useImageStreamsMetadataFromTag = (imageStreams: ImageStream[]) => {
               return {
                 ...imst,
                 description:
-                  tag.image.dockerImageMetadata?.Config?.Labels?.[
-                    'io.k8s.description'
-                  ] ||
+                  tag.image.dockerImageMetadata?.Config?.Labels?.['io.k8s.description'] ||
                   tag.image.dockerImageMetadata?.Config?.description ||
                   '',
-                version:
-                  tag.image.dockerImageMetadata?.Config?.Labels?.version || '',
+                version: tag.image.dockerImageMetadata?.Config?.Labels?.version || '',
                 size: formatSize(tag.image.dockerImageMetadata?.Size) || '',
               };
             } catch {

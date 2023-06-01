@@ -34,16 +34,9 @@ const TopologyViewWorkloadComponent = ({
   const controller = useVisualizationController();
   const layout = 'ColaNoForce';
   const { loaded, dataModel } = useWorkloadsWatcher();
-  const { clusters, selectedClusterErrors, responseError } =
-    React.useContext(K8sResourcesContext);
-  const [
-    sideBar,
-    sideBarOpen,
-    selectedId,
-    setSideBarOpen,
-    setSelectedNode,
-    removeSelectedIdParam,
-  ] = useSideBar();
+  const { clusters, selectedClusterErrors, responseError } = React.useContext(K8sResourcesContext);
+  const [sideBar, sideBarOpen, selectedId, setSideBarOpen, setSelectedNode, removeSelectedIdParam] =
+    useSideBar();
 
   const allErrors: ClusterErrors = [
     ...(responseError ? [{ message: responseError }] : []),
@@ -70,8 +63,7 @@ const TopologyViewWorkloadComponent = ({
         ? (controller.getElementById(selectedId) as BaseNode)
         : null;
       setSelectedNode(selectedNode);
-      if (selectedNode && selectedNode.getType() === TYPE_WORKLOAD)
-        setSideBarOpen(true);
+      if (selectedNode && selectedNode.getType() === TYPE_WORKLOAD) setSideBarOpen(true);
       else {
         setSideBarOpen(false);
       }
@@ -96,9 +88,7 @@ const TopologyViewWorkloadComponent = ({
 
   return (
     <>
-      {allErrors && allErrors.length > 0 && (
-        <TopologyErrorPanel allErrors={allErrors} />
-      )}
+      {allErrors && allErrors.length > 0 && <TopologyErrorPanel allErrors={allErrors} />}
       <InfoCard className="bs-topology-wrapper" divider={false}>
         {clusters.length < 1 ? (
           <TopologyEmptyState />
@@ -106,9 +96,7 @@ const TopologyViewWorkloadComponent = ({
           <TopologyView
             controlBar={
               loaded &&
-              dataModel?.nodes?.length > 0 && (
-                <TopologyControlBar controller={controller} />
-              )
+              dataModel?.nodes?.length > 0 && <TopologyControlBar controller={controller} />
             }
             viewToolbar={useToolbar && <TopologyToolbar />}
             sideBar={sideBar}

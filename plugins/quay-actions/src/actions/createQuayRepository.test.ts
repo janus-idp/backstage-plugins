@@ -75,18 +75,15 @@ describe('quay:create-repository', () => {
       },
     });
 
-    expect(fetchMock).toHaveBeenCalledWith(
-      'https://quay.io/api/v1/repository',
-      {
-        body: '{"description":"bar","repository":"foo","visibility":"public"}',
-        headers: {
-          Accept: 'application/json',
-          Authorization: 'Bearer TOKEN',
-          'Content-Type': 'application/json',
-        },
-        method: 'POST',
+    expect(fetchMock).toHaveBeenCalledWith('https://quay.io/api/v1/repository', {
+      body: '{"description":"bar","repository":"foo","visibility":"public"}',
+      headers: {
+        Accept: 'application/json',
+        Authorization: 'Bearer TOKEN',
+        'Content-Type': 'application/json',
       },
-    );
+      method: 'POST',
+    });
   });
 
   it('should handle and format errors correctly', async () => {
@@ -118,9 +115,7 @@ describe('quay:create-repository', () => {
           description: 'bar',
         },
       });
-    }).rejects.toThrow(
-      'Failed to create Quay repository, 400 -- Repository already exists',
-    );
+    }).rejects.toThrow('Failed to create Quay repository, 400 -- Repository already exists');
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
@@ -161,15 +156,12 @@ describe('quay:create-repository', () => {
         'For the "repository kind" parameter "baz" is not a valid option, available options are: application, image, none',
       name: 'repoKind',
     },
-  ])(
-    'should throw an error on invalid $name input',
-    async ({ input, error }) => {
-      await expect(async () => {
-        await action.handler({
-          ...mockContext,
-          input,
-        });
-      }).rejects.toThrow(error);
-    },
-  );
+  ])('should throw an error on invalid $name input', async ({ input, error }) => {
+    await expect(async () => {
+      await action.handler({
+        ...mockContext,
+        input,
+      });
+    }).rejects.toThrow(error);
+  });
 });

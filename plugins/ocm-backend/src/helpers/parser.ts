@@ -30,9 +30,7 @@ export const parseResources = (
 export const getClaim = (
   cluster: { status?: { clusterClaims: ClusterClaim[] } },
   claimName: string,
-): string =>
-  cluster.status?.clusterClaims.find(value => value.name === claimName)
-    ?.value || '';
+): string => cluster.status?.clusterClaims.find((value) => value.name === claimName)?.value || '';
 
 export const parseClusterStatus = (mc: ManagedCluster): ClusterStatus => {
   const available = mc.status?.conditions.find(
@@ -50,11 +48,8 @@ export const parseManagedCluster = (mc: ManagedCluster): ClusterDetails => ({
   consoleUrl: getClaim(mc, CONSOLE_CLAIM),
   kubernetesVersion: getClaim(mc, 'kubeversion.open-cluster-management.io'),
   oauthUrl: getClaim(mc, 'oauthredirecturis.openshift.io'),
-  openshiftId:
-    mc.metadata!.labels?.clusterID || getClaim(mc, 'id.openshift.io'),
-  openshiftVersion:
-    mc.metadata!.labels?.openshiftVersion ||
-    getClaim(mc, 'version.openshift.io'),
+  openshiftId: mc.metadata!.labels?.clusterID || getClaim(mc, 'id.openshift.io'),
+  openshiftVersion: mc.metadata!.labels?.openshiftVersion || getClaim(mc, 'version.openshift.io'),
   platform: getClaim(mc, 'platform.open-cluster-management.io'),
   region: getClaim(mc, 'region.open-cluster-management.io'),
   allocatableResources: parseResources(mc.status?.allocatable || {}),
@@ -84,14 +79,13 @@ export const parseUpdateInfo = (clusterInfo: ManagedClusterInfo) => {
     update: {
       available: true,
       version,
-      url: versionAvailableUpdates[availableUpdates.indexOf(version as string)]
-        .url,
+      url: versionAvailableUpdates[availableUpdates.indexOf(version as string)].url,
     },
   };
 };
 
 export const parseNodeStatus = (clusterInfo: ManagedClusterInfo) =>
-  clusterInfo.status?.nodeList?.map(node => {
+  clusterInfo.status?.nodeList?.map((node) => {
     if (node.conditions.length !== 1) {
       throw new Error('Found more node conditions then one');
     }
@@ -102,12 +96,8 @@ export const parseNodeStatus = (clusterInfo: ManagedClusterInfo) =>
     } as ClusterNodesStatus;
   }) || [];
 
-export const translateResourceToOCM = (
-  clusterName: string,
-  hubResourceName: string,
-) => (clusterName === hubResourceName ? HUB_CLUSTER_NAME_IN_OCM : clusterName);
+export const translateResourceToOCM = (clusterName: string, hubResourceName: string) =>
+  clusterName === hubResourceName ? HUB_CLUSTER_NAME_IN_OCM : clusterName;
 
-export const translateOCMToResource = (
-  clusterName: string,
-  hubResourceName: string,
-) => (clusterName === HUB_CLUSTER_NAME_IN_OCM ? hubResourceName : clusterName);
+export const translateOCMToResource = (clusterName: string, hubResourceName: string) =>
+  clusterName === HUB_CLUSTER_NAME_IN_OCM ? hubResourceName : clusterName;

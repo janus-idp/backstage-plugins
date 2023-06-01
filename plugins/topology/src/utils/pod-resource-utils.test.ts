@@ -1,9 +1,4 @@
-import {
-  V1CronJob,
-  V1DaemonSet,
-  V1Deployment,
-  V1StatefulSet,
-} from '@kubernetes/client-node';
+import { V1CronJob, V1DaemonSet, V1Deployment, V1StatefulSet } from '@kubernetes/client-node';
 
 import { mockKubernetesResponse } from '../__fixtures__/1-deployments';
 import {
@@ -129,10 +124,7 @@ describe('PodResourceUtils', () => {
     expect(podRCData.pods).toHaveLength(0);
 
     mockResources = { jobs: { loaded: false, loadError: 'error', data: [] } };
-    podRCData = getPodsForCronJob(
-      mockKubernetesResponse.cronJobs[0] as V1CronJob,
-      mockResources,
-    );
+    podRCData = getPodsForCronJob(mockKubernetesResponse.cronJobs[0] as V1CronJob, mockResources);
     expect(podRCData.pods).toHaveLength(0);
   });
 });

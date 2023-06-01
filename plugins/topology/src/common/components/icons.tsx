@@ -1,9 +1,6 @@
 import React from 'react';
 
-import {
-  CheckCircleIcon,
-  ExclamationCircleIcon,
-} from '@patternfly/react-icons';
+import { CheckCircleIcon, ExclamationCircleIcon } from '@patternfly/react-icons';
 import classNames from 'classnames';
 
 import './icons.css';
@@ -14,11 +11,7 @@ export type ColoredIconProps = {
   size?: 'sm' | 'md' | 'lg' | 'xl';
 };
 
-export const GreenCheckCircleIcon = ({
-  className,
-  title,
-  size,
-}: ColoredIconProps) => (
+export const GreenCheckCircleIcon = ({ className, title, size }: ColoredIconProps) => (
   <CheckCircleIcon
     data-test="success-icon"
     size={size}
@@ -27,11 +20,7 @@ export const GreenCheckCircleIcon = ({
   />
 );
 
-export const RedExclamationCircleIcon = ({
-  className,
-  title,
-  size,
-}: ColoredIconProps) => (
+export const RedExclamationCircleIcon = ({ className, title, size }: ColoredIconProps) => (
   <ExclamationCircleIcon
     size={size}
     className={classNames('bs-topology-icons__red-exclamation-icon', className)}

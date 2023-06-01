@@ -19,10 +19,7 @@ describe('data-transformer', () => {
         },
       },
     };
-    const mockWorkloadResourcesData = [
-      mockDeploymentData,
-      mockKubernetesResponse.deployments[2],
-    ];
+    const mockWorkloadResourcesData = [mockDeploymentData, mockKubernetesResponse.deployments[2]];
     const edgeItems = getTopologyEdgeItems(
       mockDeploymentData as any,
       mockWorkloadResourcesData as any,

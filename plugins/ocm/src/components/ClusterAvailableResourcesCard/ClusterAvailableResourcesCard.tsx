@@ -19,11 +19,5 @@ export const ClusterAvailableResourceCard = (): any => {
     ['memorySize', 'Memory size'],
     ['numberOfPods', 'Number of pods'],
   ]);
-  return (
-    <TableCardFromData
-      data={data.availableResources}
-      title="Available"
-      nameMap={nameMap}
-    />
-  );
+  return <TableCardFromData data={data.availableResources} title="Available" nameMap={nameMap} />;
 };

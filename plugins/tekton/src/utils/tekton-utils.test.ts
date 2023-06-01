@@ -35,9 +35,7 @@ describe('tekton-utils', () => {
     };
     const { clusters, errors } = getClusters(k8sObjects);
     expect(clusters).toEqual(['cluster1']);
-    expect(errors).toEqual([
-      [{ errorType: 'FETCH_ERROR', message: 'Could not fetch resources' }],
-    ]);
+    expect(errors).toEqual([[{ errorType: 'FETCH_ERROR', message: 'Could not fetch resources' }]]);
   });
 
   it('getTektonResources should return the tekton resources if exists', () => {
@@ -55,17 +53,14 @@ describe('tekton-utils', () => {
   });
 
   it('totalPipelineRunTasks should return the total number of tasks in a pipeline run', () => {
-    const totalTasks = totalPipelineRunTasks(
-      mockKubernetesPlrResponse.pipelineruns[0],
-    );
+    const totalTasks = totalPipelineRunTasks(mockKubernetesPlrResponse.pipelineruns[0]);
     expect(totalTasks).toEqual(3);
   });
 
   it('updateTaskStatus should return the updated task status', () => {
-    const updatedTaskStatus = updateTaskStatus(
-      mockKubernetesPlrResponse.pipelineruns[0],
-      [mockKubernetesPlrResponse.taskruns[0]],
-    );
+    const updatedTaskStatus = updateTaskStatus(mockKubernetesPlrResponse.pipelineruns[0], [
+      mockKubernetesPlrResponse.taskruns[0],
+    ]);
     expect(updatedTaskStatus).toEqual({
       PipelineNotStarted: 0,
       Pending: 0,
@@ -97,10 +92,9 @@ describe('tekton-utils', () => {
   });
 
   it('getTaskStatus should return the updated task status', () => {
-    const updatedTaskStatus = getTaskStatus(
-      mockKubernetesPlrResponse.pipelineruns[0],
-      [mockKubernetesPlrResponse.taskruns[0]],
-    );
+    const updatedTaskStatus = getTaskStatus(mockKubernetesPlrResponse.pipelineruns[0], [
+      mockKubernetesPlrResponse.taskruns[0],
+    ]);
     expect(updatedTaskStatus).toEqual({
       PipelineNotStarted: 0,
       Pending: 2,
@@ -142,48 +136,27 @@ describe('tekton-utils', () => {
     expect(getDuration(60, true)).toBe('1 minute');
 
     expect(getDuration(3600 + 2 * 60 + 3, false)).toBe('1h 2m 3s');
-    expect(getDuration(3600 + 2 * 60 + 3, true)).toBe(
-      '1 hour 2 minutes 3 seconds',
-    );
+    expect(getDuration(3600 + 2 * 60 + 3, true)).toBe('1 hour 2 minutes 3 seconds');
 
     expect(getDuration(48 * 3600 + 1, false)).toBe('48h 1s');
     expect(getDuration(48 * 3600 + 1, true)).toBe('48 hours 1 second');
   });
 
   it('should return definite duration', () => {
-    let duration = calculateDuration(
-      '2020-05-22T11:57:53Z',
-      '2020-05-22T11:57:57Z',
-    );
+    let duration = calculateDuration('2020-05-22T11:57:53Z', '2020-05-22T11:57:57Z');
     expect(duration).toEqual('4s');
-    duration = calculateDuration(
-      '2020-05-22T11:57:53Z',
-      '2020-05-22T11:57:57Z',
-      true,
-    );
+    duration = calculateDuration('2020-05-22T11:57:53Z', '2020-05-22T11:57:57Z', true);
     expect(duration).toEqual('4 seconds');
-    duration = calculateDuration(
-      '2020-05-22T11:57:53Z',
-      '2020-05-22T12:02:20Z',
-    );
+    duration = calculateDuration('2020-05-22T11:57:53Z', '2020-05-22T12:02:20Z');
     expect(duration).toBe('4m 27s');
-    duration = calculateDuration(
-      '2020-05-22T11:57:53Z',
-      '2020-05-22T12:02:20Z',
-      true,
-    );
+    duration = calculateDuration('2020-05-22T11:57:53Z', '2020-05-22T12:02:20Z', true);
     expect(duration).toBe('4 minutes 27 seconds');
-    duration = calculateDuration(
-      '2020-05-22T10:57:53Z',
-      '2020-05-22T12:57:57Z',
-    );
+    duration = calculateDuration('2020-05-22T10:57:53Z', '2020-05-22T12:57:57Z');
     expect(duration).toBe('2h 4s');
   });
 
   it('should return expect duration for PipelineRun', () => {
-    const duration = pipelineRunDuration(
-      mockKubernetesPlrResponse.pipelineruns[0],
-    );
+    const duration = pipelineRunDuration(mockKubernetesPlrResponse.pipelineruns[0]);
     expect(duration).not.toBeNull();
     expect(duration).toBe('2 minutes 9 seconds');
   });

@@ -17,7 +17,7 @@ import Close from '@material-ui/icons/Close';
 
 import { ImageStreamMetadata } from '../../types';
 
-const useDrawerStyles = makeStyles<BackstageTheme>(theme =>
+const useDrawerStyles = makeStyles<BackstageTheme>((theme) =>
   createStyles({
     paper: {
       width: '40%',
@@ -27,7 +27,7 @@ const useDrawerStyles = makeStyles<BackstageTheme>(theme =>
   }),
 );
 
-const useDrawerContentStyles = makeStyles<BackstageTheme>(theme =>
+const useDrawerContentStyles = makeStyles<BackstageTheme>((theme) =>
   createStyles({
     header: {
       display: 'flex',
@@ -61,11 +61,7 @@ type OcirImageSidebarProps = {
   imageStream: ImageStreamMetadata;
 };
 
-export const OcirImageSidebar = ({
-  isOpen,
-  toggleDrawer,
-  imageStream,
-}: OcirImageSidebarProps) => {
+export const OcirImageSidebar = ({ isOpen, toggleDrawer, imageStream }: OcirImageSidebarProps) => {
   const classes = useDrawerStyles();
   const contentClasses = useDrawerContentStyles();
   return (
@@ -103,25 +99,19 @@ export const OcirImageSidebar = ({
             <Typography variant="body2" className={contentClasses.label}>
               Last Modified
             </Typography>
-            <span className={contentClasses.description}>
-              {imageStream.last_modified || 'N/A'}
-            </span>
+            <span className={contentClasses.description}>{imageStream.last_modified || 'N/A'}</span>
           </Box>
           <Box>
             <Typography variant="body2" className={contentClasses.label}>
               Version
             </Typography>
-            <span className={contentClasses.description}>
-              {imageStream.version || 'N/A'}
-            </span>
+            <span className={contentClasses.description}>{imageStream.version || 'N/A'}</span>
           </Box>
           <Box>
             <Typography variant="body2" className={contentClasses.label}>
               Size
             </Typography>
-            <span className={contentClasses.description}>
-              {imageStream.size || 'N/A'}
-            </span>
+            <span className={contentClasses.description}>{imageStream.size || 'N/A'}</span>
           </Box>
           <Box>
             <Typography

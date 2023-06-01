@@ -1,8 +1,4 @@
-import {
-  ConfigApi,
-  createApiRef,
-  DiscoveryApi,
-} from '@backstage/core-plugin-api';
+import { ConfigApi, createApiRef, DiscoveryApi } from '@backstage/core-plugin-api';
 
 import { TagsResponse } from '../types';
 
@@ -34,8 +30,7 @@ export class JfrogArtifactoryApiClient implements JfrogArtifactoryApiV1 {
 
   private async getBaseUrl() {
     const proxyPath =
-      this.configApi.getOptionalString('jfrogArtifactory.proxyPath') ||
-      DEFAULT_PROXY_PATH;
+      this.configApi.getOptionalString('jfrogArtifactory.proxyPath') || DEFAULT_PROXY_PATH;
     return `${await this.discoveryApi.getBaseUrl('proxy')}${proxyPath}`;
   }
 
@@ -46,9 +41,7 @@ export class JfrogArtifactoryApiClient implements JfrogArtifactoryApiV1 {
       body: query,
     });
     if (!response.ok) {
-      throw new Error(
-        `failed to fetch data, status ${response.status}: ${response.statusText}`,
-      );
+      throw new Error(`failed to fetch data, status ${response.status}: ${response.statusText}`);
     }
     return await response.json();
   }

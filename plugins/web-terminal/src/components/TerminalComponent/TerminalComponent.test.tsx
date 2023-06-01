@@ -2,11 +2,7 @@ import React from 'react';
 
 import { configApiRef } from '@backstage/core-plugin-api';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
-import {
-  MockConfigApi,
-  setupRequestMockHandlers,
-  TestApiProvider,
-} from '@backstage/test-utils';
+import { MockConfigApi, setupRequestMockHandlers, TestApiProvider } from '@backstage/test-utils';
 import { lightTheme } from '@backstage/theme';
 
 import { ThemeProvider } from '@material-ui/core';
@@ -55,15 +51,9 @@ describe('TerminalComponent', () => {
         const url = req.url.searchParams.get('url');
         switch (url) {
           case NAMESPACES_URL:
-            return res(
-              ctx.status(200),
-              ctx.json(require('./__fixtures__/getNamespaces.json')),
-            );
+            return res(ctx.status(200), ctx.json(require('./__fixtures__/getNamespaces.json')));
           case CREATED_WORKSPACE_URL:
-            return res(
-              ctx.status(200),
-              ctx.json(require('./__fixtures__/getWorkspace.json')),
-            );
+            return res(ctx.status(200), ctx.json(require('./__fixtures__/getWorkspace.json')));
           default:
             return res(ctx.status(404), ctx.json({}));
         }
@@ -72,14 +62,8 @@ describe('TerminalComponent', () => {
         const url = req.url.searchParams.get('url');
         switch (url) {
           case WORKSPACES_URL:
-            if (
-              req.headers.get('Authorization') ===
-              `Bearer ${NOT_VALID_PERMISSIONS_TOKEN}`
-            ) {
-              return res(
-                ctx.status(403),
-                ctx.json(require('./__fixtures__/invalidToken.json')),
-              );
+            if (req.headers.get('Authorization') === `Bearer ${NOT_VALID_PERMISSIONS_TOKEN}`) {
+              return res(ctx.status(403), ctx.json(require('./__fixtures__/invalidToken.json')));
             }
             return res(
               ctx.delay(800),
@@ -117,9 +101,7 @@ describe('TerminalComponent', () => {
         </TestApiProvider>
       </ThemeProvider>,
     );
-    const inputField = rendered
-      .getByTestId('token-input')
-      .querySelector('input');
+    const inputField = rendered.getByTestId('token-input').querySelector('input');
     if (!inputField) {
       throw new Error('Input field not found');
     }
@@ -127,9 +109,7 @@ describe('TerminalComponent', () => {
     expect(inputField.value).toBe(VALID_TOKEN);
     const submit = rendered.getByTestId('submit-token-button');
     fireEvent.click(submit);
-    await waitFor(() =>
-      expect(rendered.getByTestId('progress')).toBeInTheDocument(),
-    );
+    await waitFor(() => expect(rendered.getByTestId('progress')).toBeInTheDocument());
   });
 
   it('should render popup on token without valid permissions', async () => {
@@ -142,9 +122,7 @@ describe('TerminalComponent', () => {
         </TestApiProvider>
       </ThemeProvider>,
     );
-    const inputField = rendered
-      .getByTestId('token-input')
-      .querySelector('input');
+    const inputField = rendered.getByTestId('token-input').querySelector('input');
     if (!inputField) {
       throw new Error('Input field not found');
     }
@@ -154,15 +132,13 @@ describe('TerminalComponent', () => {
     expect(inputField.value).toBe(NOT_VALID_PERMISSIONS_TOKEN);
     const submit = rendered.getByTestId('submit-token-button');
     fireEvent.click(submit);
-    await waitFor(() =>
-      expect(rendered.getByTestId('namespace-picker')).toBeInTheDocument(),
-    );
+    await waitFor(() => expect(rendered.getByTestId('namespace-picker')).toBeInTheDocument());
   });
 
   it('should display terminal window', async () => {
     Object.defineProperty(window, 'matchMedia', {
       writable: true,
-      value: jest.fn().mockImplementation(query => ({
+      value: jest.fn().mockImplementation((query) => ({
         matches: false,
         media: query,
         onchange: null,
@@ -179,9 +155,7 @@ describe('TerminalComponent', () => {
         </TestApiProvider>
       </ThemeProvider>,
     );
-    const inputField = rendered
-      .getByTestId('token-input')
-      .querySelector('input');
+    const inputField = rendered.getByTestId('token-input').querySelector('input');
     if (!inputField) {
       throw new Error('Input field not found');
     }
@@ -189,8 +163,6 @@ describe('TerminalComponent', () => {
     expect(inputField.value).toBe(VALID_TOKEN);
     const submit = rendered.getByTestId('submit-token-button');
     fireEvent.click(submit);
-    await waitFor(() =>
-      expect(rendered.getByTestId('terminal')).toBeInTheDocument(),
-    );
+    await waitFor(() => expect(rendered.getByTestId('terminal')).toBeInTheDocument());
   });
 });

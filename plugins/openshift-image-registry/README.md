@@ -36,12 +36,8 @@ This plugin will show you all ImageStreams in an Openshift cluster
          <SidebarGroup label="Menu" icon={<MenuIcon />}>
            {/* ... */}
            {/* highlight-add-start */}
-           <SidebarItem
-             icon={ExtensionIcon}
-             to="openshift-image-registry"
-             text="Image Registry"
-           />
-           ;{/* highlight-add-end */}
+           <SidebarItem icon={ExtensionIcon} to="openshift-image-registry" text="Image Registry" />;
+           {/* highlight-add-end */}
          </SidebarGroup>
          {/* ... */}
        </Sidebar>
@@ -60,10 +56,7 @@ This plugin will show you all ImageStreams in an Openshift cluster
      <FlatRoutes>
        {/* ... */}
        {/* highlight-add-start */}
-       <Route
-         path="/openshift-image-registry"
-         element={<OpenshiftImageRegistryPage />}
-       />
+       <Route path="/openshift-image-registry" element={<OpenshiftImageRegistryPage />} />
        {/* highlight-add-end */}
      </FlatRoutes>
    );

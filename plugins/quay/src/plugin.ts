@@ -24,8 +24,7 @@ export const quayPlugin = createPlugin({
         discoveryApi: discoveryApiRef,
         configApi: configApiRef,
       },
-      factory: ({ discoveryApi, configApi }) =>
-        new QuayApiClient({ discoveryApi, configApi }),
+      factory: ({ discoveryApi, configApi }) => new QuayApiClient({ discoveryApi, configApi }),
     }),
   ],
 });
@@ -33,7 +32,7 @@ export const quayPlugin = createPlugin({
 export const QuayPage = quayPlugin.provide(
   createRoutableExtension({
     name: 'QuayPage',
-    component: () => import('./components/Router').then(m => m.Router),
+    component: () => import('./components/Router').then((m) => m.Router),
     mountPoint: rootRouteRef,
   }),
 );

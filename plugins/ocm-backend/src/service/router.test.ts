@@ -195,8 +195,7 @@ describe('createRouter', () => {
         consoleUrl: 'https://console-openshift-console.apps.cluster1.bar.baz',
         kubernetesVersion: 'v1.22.3+fdba464',
         name: 'cluster1',
-        oauthUrl:
-          'https://oauth-openshift.apps.cluster1.bar.baz/oauth/token/implicit',
+        oauthUrl: 'https://oauth-openshift.apps.cluster1.bar.baz/oauth/token/implicit',
         openshiftId: '5d448ae7-05f1-42cc-aacc-3122a8ad0184',
         openshiftVersion: '4.9.21',
         platform: 'BareMetal',
@@ -230,8 +229,7 @@ describe('createRouter', () => {
         consoleUrl: 'https://console-openshift-console.apps.foo.bar.baz',
         kubernetesVersion: 'v1.23.5+012e945',
         name: 'thisishub',
-        oauthUrl:
-          'https://oauth-openshift.apps.foo.bar.baz/oauth/token/implicit',
+        oauthUrl: 'https://oauth-openshift.apps.foo.bar.baz/oauth/token/implicit',
         openshiftId: '91976abd-8b8e-47b9-82d3-e84793396ed7',
         openshiftVersion: '4.10.26',
         platform: 'BareMetal',

@@ -6,10 +6,7 @@ import { TektonResourcesContext } from '../../hooks/TektonResourcesContext';
 import { ComputedStatus, TaskStatus } from '../../types/computedStatus';
 import { PipelineRunKind } from '../../types/pipelineRun';
 import { getRunStatusColor } from '../../utils/tekton-status';
-import {
-  getTaskRunsForPipelineRun,
-  getTaskStatus,
-} from '../../utils/tekton-utils';
+import { getTaskRunsForPipelineRun, getTaskStatus } from '../../utils/tekton-utils';
 import HorizontalStackedBars from './HorizontalStackedBars';
 import TaskStatusToolTip from './TaskStatusTooltip';
 
@@ -27,15 +24,12 @@ export const PipelineBars = ({ pipelinerun }: PipelineBarProps) => {
       <HorizontalStackedBars
         height="1em"
         inline
-        values={Object.keys(ComputedStatus).map(status => ({
-          color: getRunStatusColor(
-            ComputedStatus[status as keyof typeof ComputedStatus],
-          ).pftoken.value,
+        values={Object.keys(ComputedStatus).map((status) => ({
+          color: getRunStatusColor(ComputedStatus[status as keyof typeof ComputedStatus]).pftoken
+            .value,
           name: status,
           size: taskStatus[
-            ComputedStatus[
-              status as keyof typeof ComputedStatus
-            ] as keyof TaskStatus
+            ComputedStatus[status as keyof typeof ComputedStatus] as keyof TaskStatus
           ],
         }))}
       />

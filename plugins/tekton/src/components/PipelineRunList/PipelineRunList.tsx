@@ -33,13 +33,8 @@ const WrapperInfoCard = ({
 );
 
 const PipelineRunList = () => {
-  const {
-    loaded,
-    responseError,
-    watchResourcesData,
-    selectedClusterErrors,
-    clusters,
-  } = React.useContext(TektonResourcesContext);
+  const { loaded, responseError, watchResourcesData, selectedClusterErrors, clusters } =
+    React.useContext(TektonResourcesContext);
 
   const allErrors: ClusterErrors = [
     ...(responseError ? [{ message: responseError }] : []),
@@ -55,14 +50,10 @@ const PipelineRunList = () => {
 
   if (
     loaded &&
-    ((!responseError && !watchResourcesData?.pipelineruns?.data?.length) ||
-      responseError)
+    ((!responseError && !watchResourcesData?.pipelineruns?.data?.length) || responseError)
   ) {
     return (
-      <WrapperInfoCard
-        allErrors={allErrors}
-        showClusterSelector={clusters.length > 0}
-      >
+      <WrapperInfoCard allErrors={allErrors} showClusterSelector={clusters.length > 0}>
         <EmptyState missing="data" title="No Pipeline Runs found" />
       </WrapperInfoCard>
     );

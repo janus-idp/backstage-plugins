@@ -52,10 +52,7 @@ export type ResourceNameProps = {
 
 export const ResourceName = ({ kind, name, large }: ResourceNameProps) => (
   <span className="bs-topology-resource-item">
-    <ResourceIcon
-      kind={kind}
-      className={large ? 'bs-topology-resource-icon--lg' : ''}
-    />{' '}
+    <ResourceIcon kind={kind} className={large ? 'bs-topology-resource-icon--lg' : ''} />{' '}
     <span
       className={
         large

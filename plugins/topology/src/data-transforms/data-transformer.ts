@@ -13,10 +13,7 @@ import {
   getServicesForResource,
   getUrlForResource,
 } from '../utils/resource-utils';
-import {
-  createTopologyNodeData,
-  WORKLOAD_TYPES,
-} from '../utils/topology-utils';
+import { createTopologyNodeData, WORKLOAD_TYPES } from '../utils/topology-utils';
 import {
   addToTopologyDataModel,
   getTopologyEdgeItems,
@@ -50,14 +47,8 @@ export const getBaseTopologyDataModel = (resources: K8sResponseData): Model => {
             getUrlForResource(resources, resource),
             {
               podsData: getPodsDataForResource(resource, resources),
-              services: getServicesForResource(
-                resource,
-                resources.services?.data as V1Service[],
-              ),
-              ingressesData: getIngressesDataForResourceServices(
-                resources,
-                resource,
-              ),
+              services: getServicesForResource(resource, resources.services?.data as V1Service[]),
+              ingressesData: getIngressesDataForResourceServices(resources, resource),
               routesData: getRoutesDataForResourceServices(resources, resource),
               ...(resource.kind === CronJobModel.kind
                 ? {
@@ -67,12 +58,7 @@ export const getBaseTopologyDataModel = (resources: K8sResponseData): Model => {
             },
           );
           typedDataModel.nodes?.push(
-            getTopologyNodeItem(
-              resource,
-              TYPE_WORKLOAD,
-              data,
-              WorkloadModelProps,
-            ),
+            getTopologyNodeItem(resource, TYPE_WORKLOAD, data, WorkloadModelProps),
           );
           mergeGroup(
             getTopologyGroupItems(resource) as NodeModel,
@@ -88,31 +74,23 @@ export const getBaseTopologyDataModel = (resources: K8sResponseData): Model => {
 };
 
 const updateAppGroupChildren = (model: Model) => {
-  model.nodes?.forEach(n => {
+  model.nodes?.forEach((n) => {
     if (n.type === TYPE_APPLICATION_GROUP) {
       // Filter out any children removed by depicters
-      n.children = n.children?.filter(id =>
-        model.nodes?.find(child => child.id === id),
-      );
-      n.data.groupResources =
-        n.children?.map(id => model.nodes?.find(c => id === c.id)) ?? [];
+      n.children = n.children?.filter((id) => model.nodes?.find((child) => child.id === id));
+      n.data.groupResources = n.children?.map((id) => model.nodes?.find((c) => id === c.id)) ?? [];
     }
   });
 
   // Remove any empty groups
   model.nodes = model.nodes?.filter(
-    n =>
-      n.type !== TYPE_APPLICATION_GROUP ||
-      (n.children?.length && n.children?.length > 0),
+    (n) => n.type !== TYPE_APPLICATION_GROUP || (n.children?.length && n.children?.length > 0),
   );
 };
 
-const createVisualConnectors = (
-  model: Model,
-  workloadResources: K8sWorkloadResource[],
-) => {
+const createVisualConnectors = (model: Model, workloadResources: K8sWorkloadResource[]) => {
   // Create all visual connectors
-  workloadResources.forEach(dc => {
+  workloadResources.forEach((dc) => {
     model.edges?.push(...getTopologyEdgeItems(dc, workloadResources));
   });
 };

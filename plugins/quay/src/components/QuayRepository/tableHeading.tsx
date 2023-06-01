@@ -12,8 +12,8 @@ const vulnerabilitySummary = (layer?: Layer): string => {
   }
   const summary: Record<string, number> = {};
 
-  layer.Features.forEach(feature => {
-    feature.Vulnerabilities?.forEach(vulnerability => {
+  layer.Features.forEach((feature) => {
+    feature.Vulnerabilities?.forEach((vulnerability) => {
       const { Severity } = vulnerability;
       if (!summary[Severity]) {
         summary[Severity] = 0;
@@ -68,7 +68,7 @@ export const columns: TableColumn[] = [
   },
 ];
 
-export const useStyles = makeStyles(theme => ({
+export const useStyles = makeStyles((theme) => ({
   empty: {
     padding: theme.spacing(2),
     display: 'flex',

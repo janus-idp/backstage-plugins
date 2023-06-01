@@ -5,9 +5,7 @@ import { KubernetesObjects } from '@backstage/plugin-kubernetes';
 import { ClusterErrors } from '../types/types';
 import { getClusters } from '../utils/topology-utils';
 
-export const useK8sResourcesClusters = (
-  k8sObjectsResponse: KubernetesObjects,
-) => {
+export const useK8sResourcesClusters = (k8sObjectsResponse: KubernetesObjects) => {
   const { kubernetesObjects, loading, error } = k8sObjectsResponse;
   const [clusters, setClusters] = useState<{
     clusters: string[];

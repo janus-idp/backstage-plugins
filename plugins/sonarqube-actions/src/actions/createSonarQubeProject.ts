@@ -26,8 +26,7 @@ type TemplateActionParameters = {
 
 const examples = [
   {
-    description:
-      'Create a new SonarQube project using all the input parameters',
+    description: 'Create a new SonarQube project using all the input parameters',
     example: yaml.stringify({
       steps: [
         {
@@ -47,8 +46,7 @@ const examples = [
     }),
   },
   {
-    description:
-      'Create a new SonarQube project using only required parameters',
+    description: 'Create a new SonarQube project using only required parameters',
     example: yaml.stringify({
       steps: [
         {
@@ -80,14 +78,12 @@ export const createSonarQubeProjectAction = () => {
           baseUrl: {
             type: 'string',
             title: 'Base URL',
-            description:
-              'SonarQube server base URL. Example: "https://sonar-server.com"',
+            description: 'SonarQube server base URL. Example: "https://sonar-server.com"',
           },
           name: {
             type: 'string',
             title: 'Name',
-            description:
-              'Name of the project to be created in SonarQube. Example: "My Project"',
+            description: 'Name of the project to be created in SonarQube. Example: "My Project"',
           },
           key: {
             type: 'string',
@@ -139,21 +135,10 @@ export const createSonarQubeProjectAction = () => {
       },
     },
     async handler(ctx) {
-      const {
-        baseUrl,
-        token,
-        username,
-        password,
-        name,
-        key,
-        branch,
-        visibility,
-      } = ctx.input;
+      const { baseUrl, token, username, password, name, key, branch, visibility } = ctx.input;
 
       if (!token && (!username || !password)) {
-        throw new Error(
-          '"token" or "username" and "password" are required input parameters',
-        );
+        throw new Error('"token" or "username" and "password" are required input parameters');
       }
 
       if (!baseUrl) {
@@ -183,9 +168,7 @@ export const createSonarQubeProjectAction = () => {
 
       const queryString = querystring.stringify({ ...requestParams });
 
-      const encodedURI = encodeURI(
-        `${baseUrl}/api/projects/create?${queryString}`,
-      );
+      const encodedURI = encodeURI(`${baseUrl}/api/projects/create?${queryString}`);
 
       let authString;
       if (token) {
@@ -207,8 +190,7 @@ export const createSonarQubeProjectAction = () => {
       if (!response.ok) {
         let errorMessage: string = response.statusText;
         if (response.status === 401) {
-          errorMessage =
-            'Unauthorized, please use a valid token or username and password';
+          errorMessage = 'Unauthorized, please use a valid token or username and password';
         } else {
           if (!response.statusText) {
             const responseBody = await response.json();

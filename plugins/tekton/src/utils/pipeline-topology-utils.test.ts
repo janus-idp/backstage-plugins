@@ -39,12 +39,8 @@ describe('extractDepsFromContextVariables', () => {
   });
 
   it('should return empty array if the context variable string does not contain results', () => {
-    expect(extractDepsFromContextVariables('$(context.pipeline.name)')).toEqual(
-      [],
-    );
-    expect(
-      extractDepsFromContextVariables('$(context.pipelinerun.name)'),
-    ).toEqual([]);
+    expect(extractDepsFromContextVariables('$(context.pipeline.name)')).toEqual([]);
+    expect(extractDepsFromContextVariables('$(context.pipelinerun.name)')).toEqual([]);
   });
 
   it('should return a task name if the context variable string contains results', () => {
@@ -53,24 +49,16 @@ describe('extractDepsFromContextVariables', () => {
   });
 
   it('should return a list of task names if the context variable string contains multiple results', () => {
-    const contextVariable =
-      '$(tasks.task1.results.sum)  $(tasks.task2.results.sum)';
+    const contextVariable = '$(tasks.task1.results.sum)  $(tasks.task2.results.sum)';
 
-    expect(extractDepsFromContextVariables(contextVariable)).toEqual([
-      'task1',
-      'task2',
-    ]);
+    expect(extractDepsFromContextVariables(contextVariable)).toEqual(['task1', 'task2']);
   });
 });
 
 describe('getTaskWhenStatus:', () => {
-  const [task1] =
-    mockKubernetesPlrResponse.pipelineruns[0].status.pipelineSpec.tasks;
+  const [task1] = mockKubernetesPlrResponse.pipelineruns[0].status.pipelineSpec.tasks;
 
-  const taskWithStatus = (
-    reason: RunStatus = RunStatus.Succeeded,
-    when?: boolean,
-  ) => {
+  const taskWithStatus = (reason: RunStatus = RunStatus.Succeeded, when?: boolean) => {
     return {
       ...task1,
       ...(when && {
@@ -125,8 +113,8 @@ describe('getGraphDataModel', () => {
       mockKubernetesPlrResponse.pipelineruns[1],
       mockKubernetesPlrResponse.taskruns,
     );
-    const finallyGroup = model?.nodes.filter(n => n.type === 'finally-group');
-    const finallyNodes = model?.nodes.filter(n => n.type === 'finally-node');
+    const finallyGroup = model?.nodes.filter((n) => n.type === 'finally-group');
+    const finallyNodes = model?.nodes.filter((n) => n.type === 'finally-node');
 
     expect(finallyGroup).toHaveLength(1);
     expect(finallyNodes).toHaveLength(1);
