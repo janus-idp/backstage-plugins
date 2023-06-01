@@ -1,5 +1,7 @@
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
+
 import yaml from 'yaml';
+
 import querystring from 'querystring';
 
 const id = 'sonarqube:create-project';

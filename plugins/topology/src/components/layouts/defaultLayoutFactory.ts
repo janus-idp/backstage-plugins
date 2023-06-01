@@ -1,8 +1,8 @@
 import {
+  ColaLayout,
   Graph,
   Layout,
   LayoutFactory,
-  ColaLayout,
 } from '@patternfly/react-topology';
 
 const defaultLayoutFactory: LayoutFactory = (

@@ -1,9 +1,11 @@
 import * as React from 'react';
+
 import { V1OwnerReference } from '@kubernetes/client-node';
 import { Timestamp, TimestampFormat } from '@patternfly/react-core';
+
+import { K8sWorkloadResource } from '../../../types/types';
 import TopologyResourceLabels from './TopologyResourceLabels';
 import TopologySideBarDetailsItem from './TopologySideBarDetailsItem';
-import { K8sWorkloadResource } from '../../../types/types';
 
 const TopologyWorkloadDetails: React.FC<{
   resource: K8sWorkloadResource;

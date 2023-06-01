@@ -1,6 +1,13 @@
 import '@patternfly/react-styles/css/components/Topology/topology-components.css';
+
+import React from 'react';
+import Measure from 'react-measure';
+
 import {
+  action,
   Controller,
+  createTopologyControlButtons,
+  defaultControlButtonsOptions,
   EdgeModel,
   GRAPH_LAYOUT_END_EVENT,
   GRAPH_POSITION_CHANGE_EVENT,
@@ -13,12 +20,8 @@ import {
   Visualization,
   VisualizationProvider,
   VisualizationSurface,
-  action,
-  createTopologyControlButtons,
-  defaultControlButtonsOptions,
 } from '@patternfly/react-topology';
-import React from 'react';
-import Measure from 'react-measure';
+
 import {
   DROP_SHADOW_SPACING,
   GRAPH_MIN_WIDTH,

@@ -1,17 +1,19 @@
 import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
+
 import { V1Service } from '@kubernetes/client-node';
+
 import { INSTANCE_LABEL } from '../const';
 import { ModelsPlural, resourceGVKs, resourceModels } from '../models';
 import { IngressesData } from '../types/ingresses';
+import { JobsData } from '../types/jobs';
 import { PodRCData } from '../types/pods';
+import { RoutesData } from '../types/route';
 import { OverviewItem, TopologyDataObject } from '../types/topology-types';
 import {
-  K8sWorkloadResource,
-  K8sResponseData,
   ClusterErrors,
+  K8sResponseData,
+  K8sWorkloadResource,
 } from '../types/types';
-import { JobsData } from '../types/jobs';
-import { RoutesData } from '../types/route';
 
 export const WORKLOAD_TYPES: string[] = [
   ModelsPlural.deployments,

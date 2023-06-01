@@ -1,5 +1,6 @@
 import { ConfigApi, createApiRef } from '@backstage/core-plugin-api';
 import { ErrorResponseBody } from '@backstage/errors';
+
 import { Cluster } from '@janus-idp/backstage-plugin-ocm-common';
 
 export interface OcmApiV1 {

@@ -1,8 +1,9 @@
 import React from 'react';
+
+import ResourceName from '../../../../common/components/ResourceName';
+import { IngressModel } from '../../../../models';
 import { IngressData } from '../../../../types/ingresses';
 import TopologyResourcesTabPanelItem from '../TopologyResourcesTabPaneltem';
-import { IngressModel } from '../../../../models';
-import ResourceName from '../../../../common/components/ResourceName';
 import IngressRules from './IngressRules';
 
 const IngressListSidebar = ({

@@ -1,5 +1,6 @@
-import { useQuayAppData } from '../hooks';
 import { Entity } from '@backstage/catalog-model';
+
+import { useQuayAppData } from '../hooks';
 
 describe('useQuayAppData', () => {
   it('should correctly get the repository flag from the entity', () => {

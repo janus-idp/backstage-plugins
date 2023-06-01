@@ -1,4 +1,6 @@
 import React from 'react';
+import useDebounce from 'react-use/lib/useDebounce';
+
 import {
   FormControl,
   IconButton,
@@ -9,7 +11,7 @@ import {
 } from '@material-ui/core';
 import Clear from '@material-ui/icons/Clear';
 import Search from '@material-ui/icons/Search';
-import useDebounce from 'react-use/lib/useDebounce';
+
 import { ImageStreamMetadata } from '../../types';
 
 const useStyles = makeStyles(_theme => ({

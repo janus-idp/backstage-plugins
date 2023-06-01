@@ -1,3 +1,5 @@
+import React from 'react';
+
 import {
   DefaultGroup,
   GraphElement,
@@ -8,7 +10,6 @@ import {
   WithDragNodeProps,
   WithSelectionProps,
 } from '@patternfly/react-topology';
-import React from 'react';
 
 type GroupNodeProps = {
   element?: GraphElement;

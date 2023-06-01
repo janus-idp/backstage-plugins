@@ -1,9 +1,11 @@
 import React from 'react';
+
 import { EmptyState, ItemCardGrid } from '@backstage/core-components';
-import { OcirImageSidebar } from './OcirImageSidebar';
-import { OcirImageSearchBar } from './OcirImageSearchBar';
-import { OcirImagesCard } from './OcirImagesCard';
+
 import { ImageStreamMetadata } from '../../types';
+import { OcirImagesCard } from './OcirImagesCard';
+import { OcirImageSearchBar } from './OcirImageSearchBar';
+import { OcirImageSidebar } from './OcirImageSidebar';
 
 type OcirImagesCardsProps = {
   imageStreams: ImageStreamMetadata[];

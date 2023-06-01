@@ -23,7 +23,9 @@ This plugin contains no other functionality.
      configApiRef,
      identityApiRef,
    } from '@backstage/core-plugin-api';
+
    import { SegmentAnalytics } from '@janus-idp/backstage-plugin-analytics-provider-segment';
+
    /* highlight-add-end */
 
    export const apis: AnyApiFactory[] = [

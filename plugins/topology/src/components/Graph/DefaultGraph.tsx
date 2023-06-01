@@ -1,13 +1,14 @@
+import React from 'react';
+
 import {
   Graph,
   GraphComponent,
   GraphElement,
-  WithPanZoomProps,
-  WithSelectionProps,
   isGraph,
   observer,
+  WithPanZoomProps,
+  WithSelectionProps,
 } from '@patternfly/react-topology';
-import React from 'react';
 
 type DefaultGraphProps = {
   element?: GraphElement;

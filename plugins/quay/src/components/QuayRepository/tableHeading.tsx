@@ -1,6 +1,9 @@
 import React from 'react';
+
 import { Link, TableColumn } from '@backstage/core-components';
+
 import makeStyles from '@material-ui/core/styles/makeStyles';
+
 import type { Layer } from '../../types';
 
 const vulnerabilitySummary = (layer?: Layer): string => {

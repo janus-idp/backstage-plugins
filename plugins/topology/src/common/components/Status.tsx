@@ -1,12 +1,14 @@
+import React from 'react';
+
 import {
   BanIcon,
   HourglassHalfIcon,
   SyncAltIcon,
   UnknownIcon,
 } from '@patternfly/react-icons';
-import React from 'react';
-import StatusIconAndText from './StatusIconAndText';
+
 import { GreenCheckCircleIcon, RedExclamationCircleIcon } from './icons';
+import StatusIconAndText from './StatusIconAndText';
 
 type StatusProps = {
   status: string;

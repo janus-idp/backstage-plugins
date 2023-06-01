@@ -1,4 +1,5 @@
 import { V1Pod } from '@kubernetes/client-node';
+
 import { K8sWorkloadResource } from './types';
 
 export type OverviewItemAlerts = {

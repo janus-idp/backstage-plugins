@@ -5,11 +5,11 @@ import {
   createRoutableExtension,
   discoveryApiRef,
 } from '@backstage/core-plugin-api';
+
 import {
   OpenshiftImageRegistryApiClient,
   openshiftImageRegistryApiRef,
 } from './api';
-
 import { rootRouteRef } from './routes';
 
 export const openshiftImageRegistryPlugin = createPlugin({

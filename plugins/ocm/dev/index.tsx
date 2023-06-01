@@ -1,21 +1,24 @@
 import React from 'react';
+
+import { Entity } from '@backstage/catalog-model';
+import { createApiFactory } from '@backstage/core-plugin-api';
 import { createDevApp } from '@backstage/dev-utils';
-import { ocmPlugin, OcmPage } from '../src/plugin';
+import { CatalogEntityPage } from '@backstage/plugin-catalog';
 import {
   CatalogApi,
-  EntityProvider,
   catalogApiRef,
+  EntityProvider,
 } from '@backstage/plugin-catalog-react';
-import { createApiFactory } from '@backstage/core-plugin-api';
 import { SearchApi, searchApiRef } from '@backstage/plugin-search-react';
-import { Entity } from '@backstage/catalog-model';
-import { CatalogEntityPage } from '@backstage/plugin-catalog';
+
 import { Grid } from '@material-ui/core';
+
 import {
   ClusterAvailableResourceCard,
   ClusterContextProvider,
   ClusterInfoCard,
 } from '../src';
+import { OcmPage, ocmPlugin } from '../src/plugin';
 
 const clusterEntity = (name: string): Entity => ({
   apiVersion: 'backstage.io/v1beta1',

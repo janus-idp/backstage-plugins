@@ -1,4 +1,5 @@
 import { chart_color_green_400 as tektonGroupColor } from '@patternfly/react-tokens/dist/js/chart_color_green_400';
+
 import { GroupVersionKind } from './types/types';
 
 const color = tektonGroupColor.value;

@@ -1,20 +1,23 @@
 import React from 'react';
+
 import {
   ItemCardHeader,
-  MarkdownContent,
   LinkButton,
+  MarkdownContent,
 } from '@backstage/core-components';
 import { BackstageTheme } from '@backstage/theme';
+
 import {
-  Card,
-  CardMedia,
-  CardContent,
   Box,
-  Typography,
-  Chip,
+  Card,
   CardActions,
+  CardContent,
+  CardMedia,
+  Chip,
   makeStyles,
+  Typography,
 } from '@material-ui/core';
+
 import { ImageStreamMetadata } from '../../types';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({

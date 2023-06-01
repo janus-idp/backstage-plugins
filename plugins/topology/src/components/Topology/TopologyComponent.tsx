@@ -1,9 +1,11 @@
 import React from 'react';
+
 import { useTheme } from '@material-ui/core/styles';
-import { TopologyWorkloadView } from './TopologyWorkloadView';
-import { ModelsPlural } from '../../models';
+
 import { K8sResourcesContext } from '../../hooks/K8sResourcesContext';
 import { useK8sObjectsResponse } from '../../hooks/useK8sObjectsResponse';
+import { ModelsPlural } from '../../models';
+import { TopologyWorkloadView } from './TopologyWorkloadView';
 
 import './TopologyComponent.css';
 

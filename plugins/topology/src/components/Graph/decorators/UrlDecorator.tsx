@@ -1,6 +1,8 @@
+import React from 'react';
+
 import { Tooltip, TooltipPosition } from '@patternfly/react-core';
 import { ExternalLinkAltIcon } from '@patternfly/react-icons';
-import React from 'react';
+
 import Decorator from './Decorator';
 
 interface DefaultDecoratorProps {

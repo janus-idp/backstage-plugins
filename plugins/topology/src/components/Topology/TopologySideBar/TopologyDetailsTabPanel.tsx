@@ -1,6 +1,14 @@
 import * as React from 'react';
+
+import {
+  V1CronJob,
+  V1DaemonSet,
+  V1Deployment,
+  V1Job,
+} from '@kubernetes/client-node';
 import { Split, SplitItem } from '@patternfly/react-core';
-import PodSet from '../../Pods/PodSet';
+import { BaseNode } from '@patternfly/react-topology';
+
 import {
   CronJobModel,
   DaemonSetModel,
@@ -9,18 +17,12 @@ import {
   PodModel,
   StatefulSetModel,
 } from '../../../models';
-import TopologyDeploymentDetails from './TopologyDeploymentDetails';
-import {
-  V1CronJob,
-  V1DaemonSet,
-  V1Deployment,
-  V1Job,
-} from '@kubernetes/client-node';
-import { BaseNode } from '@patternfly/react-topology';
-import TopologyDaemonSetDetails from './TopologyDaemonSetDetails';
-import TopologyWorkloadDetails from './TopologyWorkloadDetails';
+import PodSet from '../../Pods/PodSet';
 import TopologyCronJobDetails from './TopologyCronJobDetails';
+import TopologyDaemonSetDetails from './TopologyDaemonSetDetails';
+import TopologyDeploymentDetails from './TopologyDeploymentDetails';
 import TopologyJobDetails from './TopologyJobDetails';
+import TopologyWorkloadDetails from './TopologyWorkloadDetails';
 
 import './TopologyDetailsTabPanel.css';
 

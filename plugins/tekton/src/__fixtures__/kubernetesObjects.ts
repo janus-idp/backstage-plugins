@@ -1,4 +1,5 @@
 import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
+
 import { mockKubernetesPlrResponse } from './1-pipelinesData';
 
 export const kubernetesObjects: ObjectsByEntityResponse = {

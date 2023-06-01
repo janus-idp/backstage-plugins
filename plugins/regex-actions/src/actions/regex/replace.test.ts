@@ -1,8 +1,11 @@
 import { getVoidLogger } from '@backstage/backend-common';
+
 import mockFs from 'mock-fs';
-import { createReplaceAction } from './replace';
-import { Writable } from 'stream';
+
 import os from 'os';
+import { Writable } from 'stream';
+
+import { createReplaceAction } from './replace';
 
 // When calling the action handler in a mock environment
 // the schema (zod) validation does not get called for some reason.

@@ -1,15 +1,17 @@
 import React from 'react';
-import { EntityProvider } from '@backstage/plugin-catalog-react';
+
 import { Entity } from '@backstage/catalog-model';
 import { createDevApp } from '@backstage/dev-utils';
-import { topologyPlugin, TopologyPage } from '../src/plugin';
+import { EntityProvider } from '@backstage/plugin-catalog-react';
 import {
   EntityKubernetesContent,
   KubernetesApi,
   kubernetesApiRef,
 } from '@backstage/plugin-kubernetes';
 import { TestApiProvider } from '@backstage/test-utils';
+
 import { mockKubernetesResponse } from '../src/__fixtures__/1-deployments';
+import { TopologyPage, topologyPlugin } from '../src/plugin';
 
 const mockEntity: Entity = {
   apiVersion: 'backstage.io/v1alpha1',

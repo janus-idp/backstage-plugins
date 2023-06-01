@@ -1,11 +1,13 @@
+import { getVoidLogger } from '@backstage/backend-common';
+
 import os from 'os';
+import { PassThrough } from 'stream';
+
 import {
+  createQuayRepositoryAction,
   ResponseBody,
   ResponseErrorBody,
-  createQuayRepositoryAction,
 } from './createQuayRepository';
-import { getVoidLogger } from '@backstage/backend-common';
-import { PassThrough } from 'stream';
 
 describe('quay:create-repository', () => {
   const action = createQuayRepositoryAction();

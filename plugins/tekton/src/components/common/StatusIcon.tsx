@@ -1,3 +1,5 @@
+import React from 'react';
+
 import {
   AngleDoubleRightIcon,
   CheckCircleIcon,
@@ -7,7 +9,7 @@ import {
   SyncAltIcon,
 } from '@patternfly/react-icons';
 import classNames from 'classnames';
-import React from 'react';
+
 import { ComputedStatus } from '../../types/computedStatus';
 import { YellowExclamationTriangleIcon } from './icons';
 

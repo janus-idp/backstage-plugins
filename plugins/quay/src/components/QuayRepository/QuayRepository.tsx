@@ -1,8 +1,10 @@
 import React from 'react';
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
+
 import { Link, Progress, Table } from '@backstage/core-components';
-import { columns, useStyles } from './tableHeading';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
+
 import { useRepository, useTags } from '../../hooks';
+import { columns, useStyles } from './tableHeading';
 
 type QuayRepositoryProps = Record<never, any>;
 

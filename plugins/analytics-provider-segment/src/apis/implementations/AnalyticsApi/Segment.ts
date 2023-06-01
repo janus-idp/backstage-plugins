@@ -19,6 +19,7 @@ import {
   AnalyticsEvent,
   IdentityApi,
 } from '@backstage/core-plugin-api';
+
 import { AnalyticsBrowser } from '@segment/analytics-next';
 
 /**

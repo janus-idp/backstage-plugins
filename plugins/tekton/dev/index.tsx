@@ -1,15 +1,17 @@
 import React from 'react';
-import { EntityProvider } from '@backstage/plugin-catalog-react';
+
 import { Entity } from '@backstage/catalog-model';
 import { createDevApp } from '@backstage/dev-utils';
+import { EntityProvider } from '@backstage/plugin-catalog-react';
 import {
   EntityKubernetesContent,
   KubernetesApi,
   kubernetesApiRef,
 } from '@backstage/plugin-kubernetes';
 import { TestApiProvider } from '@backstage/test-utils';
+
 import { mockKubernetesPlrResponse } from '../src/__fixtures__/1-pipelinesData';
-import { tektonPlugin, TektonPage, LatestPipelineRun } from '../src/plugin';
+import { LatestPipelineRun, TektonPage, tektonPlugin } from '../src/plugin';
 
 const mockEntity: Entity = {
   apiVersion: 'backstage.io/v1alpha1',

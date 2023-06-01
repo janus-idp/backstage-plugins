@@ -1,10 +1,11 @@
+import React from 'react';
+
 import {
   DefaultEdge,
   GraphElement,
   isEdge,
   WithSelectionProps,
 } from '@patternfly/react-topology';
-import React from 'react';
 // eslint-disable-next-line @backstage/no-undeclared-imports
 import { observer } from 'mobx-react';
 

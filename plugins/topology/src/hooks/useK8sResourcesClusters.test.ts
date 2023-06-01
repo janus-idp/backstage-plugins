@@ -1,5 +1,7 @@
-import { renderHook } from '@testing-library/react-hooks';
 import { KubernetesObjects } from '@backstage/plugin-kubernetes';
+
+import { renderHook } from '@testing-library/react-hooks';
+
 import { kubernetesObject } from '../__fixtures__/kubernetesObject';
 import { kubernetesObjectsWithError } from '../__fixtures__/kubernetesObjectWithError';
 import { useK8sResourcesClusters } from './useK8sResourcesClusters';

@@ -1,16 +1,18 @@
+import React, { useEffect } from 'react';
+
 import { Progress } from '@backstage/core-components';
+
 import {
+  Button,
   Dialog,
-  DialogTitle,
   DialogContent,
   DialogContentText,
+  DialogTitle,
   FormControl,
-  Select,
-  MenuItem,
   makeStyles,
-  Button,
+  MenuItem,
+  Select,
 } from '@material-ui/core';
-import React, { useEffect } from 'react';
 
 const useStyles = makeStyles({
   container: {

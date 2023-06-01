@@ -1,8 +1,10 @@
 // eslint-disable-next-line @backstage/no-undeclared-imports
-import { rest } from 'msw';
 import { UrlPatternDiscovery } from '@backstage/core-app-api';
-import { QuayApiClient, QuayApiV1 } from './index';
+
+import { rest } from 'msw';
 import { setupServer } from 'msw/node';
+
+import { QuayApiClient, QuayApiV1 } from './index';
 
 const LOCAL_ADDR = 'https://localhost:5050/quay/api/';
 

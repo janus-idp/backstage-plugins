@@ -1,6 +1,7 @@
 import React from 'react';
-import { get } from 'lodash';
+
 import { SortByDirection } from '@patternfly/react-table';
+import { get } from 'lodash';
 
 type UseTableDataProps<D = any> = {
   propData: D[];

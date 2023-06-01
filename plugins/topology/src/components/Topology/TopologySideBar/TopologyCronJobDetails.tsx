@@ -1,8 +1,10 @@
 import * as React from 'react';
+
 import { V1CronJob } from '@kubernetes/client-node';
+import { Timestamp, TimestampFormat } from '@patternfly/react-core';
+
 import TopologySideBarDetailsItem from './TopologySideBarDetailsItem';
 import TopologyWorkloadDetails from './TopologyWorkloadDetails';
-import { Timestamp, TimestampFormat } from '@patternfly/react-core';
 
 const TopologyCronJobDetails: React.FC<{ resource: V1CronJob }> = ({
   resource,

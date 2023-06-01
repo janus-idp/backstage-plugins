@@ -1,5 +1,7 @@
-import { Tooltip } from '@patternfly/react-core';
 import React from 'react';
+
+import { Tooltip } from '@patternfly/react-core';
+
 import { TektonResourcesContext } from '../../hooks/TektonResourcesContext';
 import { ComputedStatus, TaskStatus } from '../../types/computedStatus';
 import { PipelineRunKind } from '../../types/pipelineRun';

@@ -1,5 +1,7 @@
-import classNames from 'classnames';
 import React from 'react';
+
+import classNames from 'classnames';
+
 import { MEMO } from '../../const';
 import { resourceModels } from '../../models';
 import { kindToAbbr } from '../utils/getResources';

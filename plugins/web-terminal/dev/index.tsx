@@ -1,6 +1,8 @@
 import React from 'react';
+
 import { createDevApp } from '@backstage/dev-utils';
-import { webTerminalPlugin, WebTerminal } from '../src/plugin';
+
+import { WebTerminal, webTerminalPlugin } from '../src/plugin';
 
 createDevApp()
   .registerPlugin(webTerminalPlugin)

@@ -1,21 +1,23 @@
 import React from 'react';
+
 import {
-  GraphElement,
   ComponentFactory,
-  ModelKind,
-  SpacerNode,
-  DefaultTaskGroup,
-  withPanZoom,
-  GraphComponent,
-  TaskEdge,
   DagreLayout,
-  LayoutFactory,
+  DefaultTaskGroup,
   Graph,
+  GraphComponent,
+  GraphElement,
+  LayoutFactory,
+  ModelKind,
   PipelineDagreLayout,
+  SpacerNode,
+  TaskEdge,
+  withPanZoom,
 } from '@patternfly/react-topology';
+
 import { NodeType, PipelineLayout } from '../../consts/pipeline-topology-const';
-import PipelineTaskNode from './PipelineTaskNode';
 import { getLayoutData } from '../../utils/pipeline-topology-utils';
+import PipelineTaskNode from './PipelineTaskNode';
 import TaskGroupEdge from './TaskGroupEdge';
 
 const GROUPED_EDGE_TYPE = 'GROUPED_EDGE';

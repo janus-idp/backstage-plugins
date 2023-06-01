@@ -4,6 +4,7 @@ import {
   NodeModel,
   NodeShape,
 } from '@patternfly/react-topology';
+
 import {
   GROUP_HEIGHT,
   GROUP_PADDING,

@@ -1,4 +1,5 @@
 import React from 'react';
+
 // eslint-disable-next-line @backstage/no-undeclared-imports
 import { Tooltip } from '@patternfly/react-core';
 import {
@@ -9,16 +10,17 @@ import {
   Node,
   RunStatus,
   ScaleDetailsLevel,
-  TOP_LAYER,
   TaskNode,
+  TOP_LAYER,
+  useDetailsLevel,
+  useHover,
   WhenDecorator,
   WithContextMenuProps,
   WithSelectionProps,
-  useDetailsLevel,
-  useHover,
 } from '@patternfly/react-topology';
 // eslint-disable-next-line @backstage/no-undeclared-imports
 import { observer } from 'mobx-react';
+
 import { NodeType } from '../../consts/pipeline-topology-const';
 import { PipelineTaskWithStatus } from '../../types/pipelineRun';
 import { StepStatus } from '../../types/taskRun';

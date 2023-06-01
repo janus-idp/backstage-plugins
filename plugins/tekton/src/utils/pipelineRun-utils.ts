@@ -1,14 +1,15 @@
-import { get, find, isFinite, each, trim, isEmpty, cloneDeep } from 'lodash';
+import { cloneDeep, each, find, get, isEmpty, isFinite, trim } from 'lodash';
+
 import {
   ComputedStatus,
   SucceedConditionReason,
 } from '../types/computedStatus';
+import { PipelineTask } from '../types/pipeline';
 import {
   PipelineRunKind,
   PipelineTaskWithStatus,
   PLRTaskRuns,
 } from '../types/pipelineRun';
-import { PipelineTask } from '../types/pipeline';
 import { TaskRunKind, TaskStatus } from '../types/taskRun';
 import { pipelineRunStatus } from './pipeline-filter-reducer';
 

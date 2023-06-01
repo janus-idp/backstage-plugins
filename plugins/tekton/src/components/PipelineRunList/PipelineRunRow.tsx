@@ -1,12 +1,14 @@
 import React from 'react';
+
 import { Timestamp } from '@patternfly/react-core';
-import { tableColumnClasses } from './pipelinerun-table';
-import LinkedPipelineRunTaskStatus from './LinkedPipelineRunTaskStatus';
-import { pipelineRunDuration } from '../../utils/tekton-utils';
-import { PipelineRunKind } from '../../types/pipelineRun';
 import { chart_color_green_400 as tektonGroupColor } from '@patternfly/react-tokens/dist/js/chart_color_green_400';
-import ResourceBadge from './ResourceBadge';
+
+import { PipelineRunKind } from '../../types/pipelineRun';
+import { pipelineRunDuration } from '../../utils/tekton-utils';
+import LinkedPipelineRunTaskStatus from './LinkedPipelineRunTaskStatus';
+import { tableColumnClasses } from './pipelinerun-table';
 import PlrStatus from './PlrStatus';
+import ResourceBadge from './ResourceBadge';
 
 import './PipelineRunRow.css';
 

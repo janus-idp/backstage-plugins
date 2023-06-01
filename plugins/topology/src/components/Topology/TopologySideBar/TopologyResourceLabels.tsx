@@ -1,5 +1,6 @@
-import { Label } from '@patternfly/react-core';
 import React from 'react';
+
+import { Label } from '@patternfly/react-core';
 
 import './TopologyResourceLabels.css';
 

@@ -1,15 +1,18 @@
 import React from 'react';
+
 import {
   StatusAborted,
   StatusError,
   StatusOK,
 } from '@backstage/core-components';
+
+import { Button, Grid, makeStyles, Tooltip } from '@material-ui/core';
+import { ArrowCircleUpIcon } from '@patternfly/react-icons';
+
 import {
   ClusterStatus,
   ClusterUpdate,
 } from '@janus-idp/backstage-plugin-ocm-common';
-import { Button, Grid, makeStyles, Tooltip } from '@material-ui/core';
-import { ArrowCircleUpIcon } from '@patternfly/react-icons';
 
 const useStyles = makeStyles({
   button: {

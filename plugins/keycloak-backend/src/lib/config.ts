@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { Config } from '@backstage/config';
 import {
   readTaskScheduleDefinitionFromConfig,
   TaskScheduleDefinition,
 } from '@backstage/backend-tasks';
+import { Config } from '@backstage/config';
 
 /**
  * The configuration parameters for a single Keycloak provider.

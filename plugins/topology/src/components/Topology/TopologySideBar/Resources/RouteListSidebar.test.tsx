@@ -1,8 +1,10 @@
 import React from 'react';
+
 import { render } from '@testing-library/react';
-import RouteListSidebar from './RouteListSidebar';
+
 import { workloadNodeData } from '../../../../__fixtures__/workloadNodeData';
 import { RouteData } from '../../../../types/route';
+import RouteListSidebar from './RouteListSidebar';
 
 describe('RouteListSidebar', () => {
   it('should render host URL, Route if exists', () => {
