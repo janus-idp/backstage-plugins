@@ -31,7 +31,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "0.22.7",
-    "@ianvs/prettier-plugin-sort-imports": "^4.0.1",
+    "@ianvs/prettier-plugin-sort-imports": "4.0.1",
     "@semantic-release/changelog": "6.0.3",
     "@semantic-release/exec": "6.0.3",
     "@semantic-release/git": "10.0.1",
