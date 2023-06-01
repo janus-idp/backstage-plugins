@@ -6,13 +6,6 @@ The following actions are currently supported in this plugin:
 
 - [String replacement](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace)
 
-## Table of Contents
-
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Usage](#usage)
-
 ## Prerequisites
 
 - A [Backstage](https://backstage.io/docs/getting-started/) project

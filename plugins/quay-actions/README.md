@@ -6,12 +6,6 @@ The following actions are currently supported in this module:
 
 - Create a Quay repository
 
-## Table of Contents
-
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Usage](#usage)
-
 ## Installation
 
 1. Install the action package in your Backstage project

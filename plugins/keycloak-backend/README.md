@@ -2,16 +2,6 @@
 
 The Keycloak backend plugin integrates Keycloak into Backstage.
 
-## Table of Contents
-
-- [Capabilities](#capabilities)
-- [For administrators](#for-administrators)
-  - [Installation](#installation)
-  - [Configuration](#configuration)
-  - [Limitations](#limitations)
-- [For users](#for-users)
-  - [Imported users and groups in Backstage with Keycloak plugin](#imported-users-and-groups-in-backstage-with-keycloak-plugin)
-
 ## Capabilities
 
 The Keycloak backend plugin has the following capabilities:

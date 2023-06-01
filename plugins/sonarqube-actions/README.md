@@ -6,13 +6,6 @@ The following actions are currently supported in this module:
 
 - Create a SonarQube [project](https://docs.sonarqube.org/latest/user-guide/project-page/)
 
-## Table of Contents
-
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Usage](#usage)
-
 ## Prerequisites
 
 - A [Backstage](https://backstage.io/docs/getting-started/) project

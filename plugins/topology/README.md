@@ -2,17 +2,6 @@
 
 The Topology plugin enables you to visualize the workloads such as Deployment, Job, Daemonset, Statefulset, CronJob, and Pods powering any service on the Kubernetes cluster.
 
-## Table of Contents
-
-- [For administrators](#for-administrators)
-  - [Installation](#installation)
-    - [Prerequisites](#prerequisites)
-    - [Installation and Configuration Procedure](#installation-and-configuration-procedure)
-- [For users](#for-users)
-  - [Using the Topology plugin in Backstage](#using-the-topology-plugin-in-backstage)
-    - [Usage Prerequisites](#usage-prerequisites)
-    - [Usage Procedure](#usage-procedure)
-
 ## For administrators
 
 ### Installation

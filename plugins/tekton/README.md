@@ -2,17 +2,6 @@
 
 The Tekton plugin enables you to visualize the `PipelineRun` resources available on the Kubernetes cluster.
 
-## Table of Contents
-
-- [For administrators](#for-administrators)
-  - [Installation](#installation)
-    - [Prerequisites](#prerequisites)
-    - [Installation and Configuration Procedure](#installation-and-configuration-procedure)
-- [For users](#for-users)
-  - [Using the Tekton plugin in Backstage](#using-the-tekton-plugin-in-backstage)
-    - [Usage Prerequisites](#usage-prerequisites)
-    - [Usage Procedure](#usage-procedure)
-
 ## For administrators
 
 ### Installation

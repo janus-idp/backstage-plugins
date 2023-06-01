@@ -6,12 +6,6 @@ Segment as your users navigate and use your Backstage instance.
 
 This plugin contains no other functionality.
 
-## Table of Contents
-
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Debugging and Testing](#debugging-and-testing)
-
 ## Installation
 
 1. Install the plugin package in your Backstage app:

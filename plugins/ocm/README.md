@@ -2,36 +2,6 @@
 
 The Open Cluster Management (OCM) plugin integrates your Backstage instance with the `MultiClusterHub` and `MultiCluster` engines of OCM.
 
-## Table of Contents
-
-- [Using the OCM plugin](#using-the-ocm-plugin)
-- [Capabilities](#capabilities)
-- [For administrators](#for-administrators)
-  - [Installation](#installation)
-  - [Prerequisites](#prerequisites)
-  - [Backend Setup](#setting-up-the-ocm-backend-package)
-    - [Backend Installation](#backend-installation)
-    - [Backend Configuration](#backend-configuration)
-  - [Frontend Setup](#setting-up-the-ocm-frontend-package)
-    - [Frontend Installation](#frontend-installation)
-    - [Frontend Configuration](#frontend-configuration)
-- [For users](#for-users)
-  - [Using the OCM plugin in Backstage](#using-the-ocm-plugin-in-backstage)
-
-## Using the OCM plugin
-
-The OCM plugin is composed of two packages, including:
-
-- The `@janus-idp/backstage-plugin-ocm-backend` package which connects the Backstage server to OCM.
-- The @janus-idp/backstage-plugin-ocm package, which contains frontend components and requires the \*-backend package to be present and properly set up. For detailed instructions on setting up the backend, refer to the [Backend Setup](#setting-up-the-ocm-backend-package) section.
-
----
-
-**NOTE**
-If you are interested in Resource discovery and do not want any of the frontend components, then you can install and configure the `@janus-idp/backstage-plugin-ocm-backend` package only.
-
----
-
 ## Capabilities
 
 The OCM plugin has the following capabilities:
@@ -51,9 +21,7 @@ The OCM plugin has the following capabilities:
 The OCM plugin is composed of two packages, including:
 
 - `@janus-idp/backstage-plugin-ocm-backend` package connects the Backstage server to OCM. For setup process, see [Backend Setup](#setting-up-the-ocm-backend-package)
-- `@janus-idp/backstage-plugin-ocm` package contains frontend components and requires `*-backend` to be present and to set up. For setup process, see [Frontend Setup](#setting-up-the-ocm-frontend-package)
-
----
+- The `@janus-idp/backstage-plugin-ocm` package, which contains frontend components requires the `\*-backend` package to be present and properly set up. For detailed instructions on setting up the backend, refer to the [Backend Setup](#setting-up-the-ocm-backend-package) section.
 
 **NOTE**
 If you are interested in Resource discovery and do not want any of the front-end components, then you can install and configure the `@janus-idp/backstage-plugin-ocm-backend` package only.

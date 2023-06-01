@@ -2,12 +2,6 @@
 
 This is a plugin for synchronizing 3scale content into [Backstage.io](https://backstage.io/) catalog.
 
-## Table of Contents
-
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Troubleshooting](#troubleshooting)
-
 ## Installation
 
 1. Install the plugin

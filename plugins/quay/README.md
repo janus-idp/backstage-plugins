@@ -2,14 +2,6 @@
 
 The Quay plugin displays the information about your container images within the Quay registry in your Backstage application.
 
-## Table of Contents
-
-- [For administrators](#for-administrators)
-  - [Installation](#installation)
-  - [Configuration](#configuration)
-- [For users](#for-users)
-  - [Using the Quay plugin in Backstage](#using-the-quay-plugin-in-backstage)
-
 ## For administrators
 
 ### Installation

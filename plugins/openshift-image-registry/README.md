@@ -2,11 +2,6 @@
 
 This plugin will show you all ImageStreams in an Openshift cluster
 
-## Table of Contents
-
-- [Installation](#installation)
-- [Configuration](#configuration)
-
 ## Installation
 
 1. Install the plugin
