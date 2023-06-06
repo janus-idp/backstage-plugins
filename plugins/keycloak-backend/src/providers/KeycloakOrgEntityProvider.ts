@@ -215,7 +215,23 @@ export class KeycloakOrgEntityProvider implements EntityProvider {
 
     await this.connection.applyMutation({
       type: 'full',
-      entities: [...users, ...groups].map(entity => ({
+      entities: [
+        ...users.map(obj => {
+          const existingUsernames = users.map(user => user.metadata.name);
+          let counter = 1;
+          const name = obj.metadata.name
+            .replace(/[^a-zA-Z0-9@-]/g, '-')
+            .replace(/@/g, '');
+          let username = name;
+
+          while (existingUsernames.includes(username)) {
+            username = `${name}-${counter}`;
+            counter++;
+          }
+          return { ...obj, metadata: { ...obj.metadata, name: username } };
+        }),
+        ...groups,
+      ].map(entity => ({
         locationKey: `keycloak-org-provider:${this.options.id}`,
         entity: withLocations(provider.baseUrl, provider.realm, entity),
       })),
