@@ -16,7 +16,7 @@ describe('UrlDecorator', () => {
   });
 
   it('should render decorator if ingress is mapped', () => {
-    render(<UrlDecorator url="http://hello-world" radius={0} x={0} y={0} />);
+    render(<UrlDecorator url="http://hello-world" radius={0} x={0} y={0} />); // NOSONAR
     expect(screen.queryByText('Decorator')).toBeInTheDocument();
   });
 });

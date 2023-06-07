@@ -46,12 +46,12 @@ describe('hubApiClient', () => {
       id: 'foo',
       hubResourceName: 'cluster1',
       serviceAccountToken: 'TOKEN',
-      url: 'http://cluster.com',
+      url: 'http://cluster.com', // NOSONAR
     } as OcmConfig;
 
     const result = hubApiClient(clusterConfig, logger);
 
-    expect(result.basePath).toBe('http://cluster.com');
+    expect(result.basePath).toBe('http://cluster.com'); // NOSONAR
     // These fields aren't on the type but are there
     const auth = (result as any).authentications.default;
     expect(auth.clusters[0].name).toBe('cluster1');
@@ -61,7 +61,7 @@ describe('hubApiClient', () => {
 
 const kubeConfig = {
   clusters: [{ name: 'cluster', server: 'http://localhost:5000' }],
-  users: [{ name: 'user', password: 'password' }],
+  users: [{ name: 'user', password: 'password' }], // NOSONAR
   contexts: [{ name: 'currentContext', cluster: 'cluster', user: 'user' }],
   currentContext: 'currentContext',
 };

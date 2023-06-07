@@ -195,7 +195,7 @@ const toResourceItem = (
     kind: `${gvk.kind}`,
   };
   const podData = getPodsForResource(rs, resources);
-  const pods = podData && podData;
+  const pods = podData;
   const alerts = combinePodAlerts(pods);
   return {
     alerts,

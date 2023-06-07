@@ -21,7 +21,7 @@ describe('ResourceUtils:: ingress', () => {
     expect(ingressesData).toEqual([
       {
         ingress: mockKubernetesResponse.ingresses[0],
-        url: 'http://hello-world-app.info/',
+        url: 'http://hello-world-app.info/', // NOSONAR
       },
     ]);
   });
@@ -76,7 +76,7 @@ describe('ResourceUtils:: ingress', () => {
       rules: mockKubernetesResponse.ingresses[0].spec.rules,
     };
     const ingressData = getIngressWebURL(mockIngressRule as any);
-    expect(ingressData).toEqual('http://hello-world-app.info/');
+    expect(ingressData).toEqual('http://hello-world-app.info/'); // NOSONAR
   });
 
   it('should not return URL for provided ingress if host does not exist', () => {
@@ -122,7 +122,7 @@ describe('ResourceUtils:: ingress', () => {
       mockK8sResourcesData.watchResourcesData as any,
       mockKubernetesResponse.deployments[0] as any,
     );
-    expect(url).toEqual('http://hello-world-app.info/');
+    expect(url).toEqual('http://hello-world-app.info/'); // NOSONAR
   });
 
   it('should not return URL for provided resource', () => {

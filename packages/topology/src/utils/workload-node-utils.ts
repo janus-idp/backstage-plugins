@@ -132,7 +132,7 @@ export const calculateRadius = (size: number) => {
 
 const getScalingUp = (dc: K8sWorkloadResource) => {
   return {
-    ...(dc.metadata && dc.metadata),
+    ...dc.metadata,
     status: {
       phase: AllPodStatus.ScalingUp,
     },
