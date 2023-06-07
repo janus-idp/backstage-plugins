@@ -1,22 +1,26 @@
 import { TableColumn } from '@backstage/core-components';
-
 import makeStyles from '@material-ui/core/styles/makeStyles';
 
 export const columns: TableColumn[] = [
   {
-    title: 'Version',
-    field: 'name',
+    title: 'Repos',
+    field: 'repos',
     type: 'string',
     highlight: true,
   },
   {
-    title: 'Repositories',
-    field: 'repositories',
+    title: 'Version Repository',
+    field: 'repository',
     type: 'string',
   },
   {
-    title: 'Manifest',
-    field: 'manifest_digest',
+    title: 'Version',
+    field: 'name',
+    type: 'string',
+  },
+  {
+    title: 'Downloads',
+    field: 'downloads',
     type: 'string',
   },
   {
@@ -27,6 +31,31 @@ export const columns: TableColumn[] = [
   {
     title: 'Size',
     field: 'size',
+    type: 'string',
+  },
+  {
+    title: 'Vulnerabilities (High)',
+    field: 'vulnerabilities_high',
+    type: 'numeric',
+  },
+  {
+    title: 'Vulnerabilities (Medium)',
+    field: 'vulnerabilities_medium',
+    type: 'numeric',
+  },
+  {
+    title: 'Vulnerabilities (Low)',
+    field: 'vulnerabilities_low',
+    type: 'numeric',
+  },
+  {
+    title: 'Vulnerabilities (Info)',
+    field: 'vulnerabilities_info',
+    type: 'numeric',
+  },
+  {
+    title: 'Package Type',
+    field: 'package_type',
     type: 'string',
   },
 ];

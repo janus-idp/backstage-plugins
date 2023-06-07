@@ -1,15 +1,14 @@
 import {
+  DiscoveryApi,
   ConfigApi,
   createApiRef,
-  DiscoveryApi,
 } from '@backstage/core-plugin-api';
-
-import { TagsResponse } from '../types';
+import { PackageResponse } from '../types';
 
 const DEFAULT_PROXY_PATH = '/jfrog-artifactory/api';
 
 export interface JfrogArtifactoryApiV1 {
-  getTags(repo: string): Promise<TagsResponse>;
+  getArtifact(repo: string): Promise<PackageResponse>;
 }
 
 export const jfrogArtifactoryApiRef = createApiRef<JfrogArtifactoryApiV1>({
@@ -53,20 +52,17 @@ export class JfrogArtifactoryApiClient implements JfrogArtifactoryApiV1 {
     return await response.json();
   }
 
-  async getTags(repo: string) {
+  async getArtifact(repo: string) {
     const proxyUrl = await this.getBaseUrl();
-    const tagQuery = {
+    const packageQuery = {
       query:
-        'query ($filter: VersionFilter!, $first: Int, $orderBy: VersionOrder) { versions (filter: $filter, first: $first, orderBy: $orderBy) { edges { node { name, created, modified, package { id }, repos { name, type, leadFilePath }, licenses { name, source }, size, stats { downloadCount }, vulnerabilities { critical, high, medium, low, info, unknown, skipped }, files { name, lead, size, md5, sha1, sha256, mimeType } } } } }',
+        'query ($filter: PackageFilter!, $orderBy: PackageOrder) { packages (filter: $filter, orderBy: $orderBy) { edges { node { name, description, created, versions { name, size, repos { name }, package { packageType }, vulnerabilities { high, medium, low, info, unknown, skipped }, stats { downloadCount } } } } } }',
       variables: {
         filter: {
-          packageId: `docker://${repo}`,
-          name: '*',
-          ignorePreRelease: false,
+          name: `*${repo}`,
         },
-        first: 100,
         orderBy: {
-          field: 'NAME_SEMVER',
+          field: 'NAME',
           direction: 'DESC',
         },
       },
@@ -74,7 +70,7 @@ export class JfrogArtifactoryApiClient implements JfrogArtifactoryApiV1 {
 
     return (await this.fetcher(
       `${proxyUrl}/metadata/api/v1/query`,
-      JSON.stringify(tagQuery),
-    )) as TagsResponse;
+      JSON.stringify(packageQuery),
+    )) as PackageResponse;
   }
 }

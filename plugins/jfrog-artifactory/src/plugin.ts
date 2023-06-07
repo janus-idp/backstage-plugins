@@ -7,7 +7,7 @@ import {
   discoveryApiRef,
 } from '@backstage/core-plugin-api';
 
-import { JfrogArtifactoryApiClient, jfrogArtifactoryApiRef } from './api';
+import { JfrogArtifactoryApiClient, jfrogArtifactoryApiRef } from './api/artifactoryApi';
 import { JFROG_ARTIFACTORY_ANNOTATION_IMAGE_NAME } from './components/useJfrogArtifactoryAppData';
 import { rootRouteRef } from './routes';
 
