@@ -3,8 +3,8 @@ import { ConfigReader } from '@backstage/config';
 
 import {
   BASIC_VALID_CONFIG,
-  client,
   connection,
+  KeycloakAdminClientMock,
 } from '../../__fixtures__/helpers';
 import { KeycloakOrgEntityProvider } from './KeycloakOrgEntityProvider';
 
@@ -12,7 +12,7 @@ jest.mock('@keycloak/keycloak-admin-client', () => {
   const actual = jest.requireActual('@keycloak/keycloak-admin-client');
   return {
     ...actual,
-    default: jest.fn().mockImplementation(() => client),
+    default: KeycloakAdminClientMock,
   };
 });
 
@@ -26,6 +26,20 @@ describe('KeycloakOrgEntityProvider', () => {
     });
 
     expect(result).toEqual([]);
+  });
+
+  it('should not run without a valid schedule', () => {
+    const config = new ConfigReader(BASIC_VALID_CONFIG);
+    const id = 'development';
+
+    expect(() =>
+      KeycloakOrgEntityProvider.fromConfig(config, {
+        id,
+        logger: getVoidLogger(),
+      }),
+    ).toThrow(
+      'No schedule provided neither via code nor config for MicrosoftGraphOrgEntityProvider:default.',
+    );
   });
 
   it('should return a single provider if one is configured', () => {
@@ -97,32 +111,30 @@ describe('KeycloakOrgEntityProvider', () => {
     });
   });
 
-  // TODO: We need to remock the '@keycloak/keycloak-admin-client' module to test this
-  // eslint-disable-next-line jest/no-commented-out-tests
-  // it('should read with grantType password', async () => {
-  //   const config = new ConfigReader({
-  //     catalog: {
-  //       providers: {
-  //         keycloakOrg: {
-  //           default: {
-  //             baseUrl: 'http://localhost:8080/auth',
-  //             username: 'myusername',
-  //             password: 'mypassword',
-  //           },
-  //         },
-  //       },
-  //     },
-  //   });
+  it('should read with grantType password', async () => {
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          keycloakOrg: {
+            default: {
+              baseUrl: 'http://localhost:8080/auth',
+              username: 'myusername',
+              password: 'mypassword',
+            },
+          },
+        },
+      },
+    });
 
-  //   const keycloak = KeycloakOrgEntityProvider.fromConfig(config, {
-  //     id: 'development',
-  //     logger: getVoidLogger(),
-  //     schedule: 'manual',
-  //   });
+    const keycloak = KeycloakOrgEntityProvider.fromConfig(config, {
+      id: 'development',
+      logger: getVoidLogger(),
+      schedule: 'manual',
+    });
 
-  //   await keycloak.forEach(async k => {
-  //     await k.connect(connection);
-  //     await expect(k.read()).resolves.toBeUndefined();
-  //   });
-  // });
+    await keycloak.forEach(async k => {
+      await k.connect(connection);
+      await expect(k.read()).resolves.toBeUndefined();
+    });
+  });
 });

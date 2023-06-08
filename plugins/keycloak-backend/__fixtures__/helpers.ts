@@ -1,7 +1,5 @@
 import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
 
-import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
-
 import { groupMembers, groups, users } from './data';
 
 export const BASIC_VALID_CONFIG = {
@@ -16,13 +14,17 @@ export const BASIC_VALID_CONFIG = {
   },
 } as const;
 
-export const client = {
-  auth: jest.fn().mockResolvedValue({}),
-  users: {
+export class KeycloakAdminClientMock {
+  public constructor() {
+    return;
+  }
+
+  users = {
     find: jest.fn().mockResolvedValue(users),
     count: jest.fn().mockResolvedValue(users.length),
-  },
-  groups: {
+  };
+
+  groups = {
     find: jest.fn().mockResolvedValue(groups),
     count: jest.fn().mockResolvedValue(groups.length),
     listMembers: jest
@@ -31,8 +33,10 @@ export const client = {
       .mockResolvedValueOnce(groupMembers[1])
       .mockResolvedValueOnce(groupMembers[2])
       .mockResolvedValueOnce(groupMembers[3]),
-  },
-} as unknown as KeycloakAdminClient;
+  };
+
+  auth = jest.fn().mockResolvedValue({});
+}
 
 export const connection = {
   applyMutation: jest.fn(),
