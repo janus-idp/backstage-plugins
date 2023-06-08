@@ -1,4 +1,4 @@
-# Development Setup
+# Setting up the development environment for OCM backend plugin
 
 You can run a development setup using the following command:
 

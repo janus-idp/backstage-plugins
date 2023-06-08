@@ -12,39 +12,39 @@ The following actions are currently supported in this plugin:
 
 ## Installation
 
-1. Install the action package in your Backstage project
+Run the following command to install the action package in your Backstage project:
 
-   ```console
-   yarn workspace backend add @janus-idp/backstage-plugin-regex-actions
-   ```
+```console
+yarn workspace backend add @janus-idp/backstage-plugin-regex-actions
+```
 
 ## Configuration
 
-2. [Register](https://backstage.io/docs/features/software-templates/writing-custom-actions#registering-custom-actions) the regex actions by modifying the `packages/backend/src/plugins/scaffolder.ts` file from your project with the following changes:
+[Register](https://backstage.io/docs/features/software-templates/writing-custom-actions#registering-custom-actions) the regex actions by modifying the `packages/backend/src/plugins/scaffolder.ts` file from your project with the following changes:
 
-   ```ts title="packages/backend/src/plugins/scaffolder.ts"
-   /* highlight-add-next-line */
-   import { createReplaceAction } from '@janus-idp/backstage-plugin-regex-actions';
+```ts title="packages/backend/src/plugins/scaffolder.ts"
+/* highlight-add-next-line */
+import { createReplaceAction } from '@janus-idp/backstage-plugin-regex-actions';
 
-   export default async function createPlugin(
-     env: PluginEnvironment,
-   ): Promise<Router> {
-     // ...
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  // ...
 
-     /* highlight-add-next-line */
-     const actions = [...builtInActions, createReplaceAction()];
+  /* highlight-add-next-line */
+  const actions = [...builtInActions, createReplaceAction()];
 
-     return await createRouter({
-       actions,
-       logger: env.logger,
-       config: env.config,
-       database: env.database,
-       reader: env.reader,
-       catalogClient,
-       identity: env.identity,
-     });
-   }
-   ```
+  return await createRouter({
+    actions,
+    logger: env.logger,
+    config: env.config,
+    database: env.database,
+    reader: env.reader,
+    catalogClient,
+    identity: env.identity,
+  });
+}
+```
 
 ## Usage
 

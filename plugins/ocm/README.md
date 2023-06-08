@@ -28,7 +28,7 @@ If you are interested in Resource discovery and do not want any of the front-end
 
 ---
 
-### Prerequisites
+#### Prerequisites
 
 - OCM is deployed and configured on a Kubernetes cluster.
 - [Kubernetes plugin for Backstage](https://backstage.io/docs/features/kubernetes) is installed.
@@ -58,17 +58,13 @@ If you are interested in Resource discovery and do not want any of the front-end
         - list
   ```
 
-### Setting up the OCM backend package
-
-#### Backend Installation
+#### Setting up the OCM backend package
 
 1. Install the OCM backend plugin using the following command:
 
    ```console
    yarn workspace backend add @janus-idp/backstage-plugin-ocm-backend
    ```
-
-#### Backend Configuration
 
 1. Configure the OCM backend plugin using one of the following configurations:
 
@@ -113,7 +109,7 @@ If you are interested in Resource discovery and do not want any of the front-end
 
      For more information about the configuration, see [Backstage Kubernetes plugin](https://backstage.io/docs/features/kubernetes/configuration#configuring-kubernetes-clusters) documentation.
 
-2. Create a new plugin instance in `packages/backend/src/plugins/ocm.ts` file as follows:
+1. Create a new plugin instance in `packages/backend/src/plugins/ocm.ts` file as follows:
 
    ```ts title="packages/backend/src/plugins/ocm.ts"
    import { createRouter } from '@janus-idp/backstage-plugin-ocm-backend';
@@ -130,7 +126,7 @@ If you are interested in Resource discovery and do not want any of the front-end
    }
    ```
 
-3. Import and plug the new instance into `packages/backend/src/index.ts` file:
+1. Import and plug the new instance into `packages/backend/src/index.ts` file:
 
    ```ts title="packages/backend/src/index.ts"
    /* highlight-add-next-line */
@@ -151,7 +147,7 @@ If you are interested in Resource discovery and do not want any of the front-end
    }
    ```
 
-4. Import the cluster `Resource` entity provider into the `catalog` plugin in the `packages/backend/src/plugins/catalog.ts` file. The scheduler also needs to be configured. Two configurations are possible here:
+1. Import the cluster `Resource` entity provider into the `catalog` plugin in the `packages/backend/src/plugins/catalog.ts` file. The scheduler also needs to be configured. Two configurations are possible here:
 
    1. Configure the scheduler inside the `app-config.yaml`:
 
@@ -217,7 +213,7 @@ If you are interested in Resource discovery and do not want any of the front-end
       }
       ```
 
-5. Optional: Configure the default owner for the cluster entities in the catalog for a specific environment. For example, use the following code to set `foo` as the owner for clusters from `env` in the `app-config.yaml` catalog section:
+1. Optional: Configure the default owner for the cluster entities in the catalog for a specific environment. For example, use the following code to set `foo` as the owner for clusters from `env` in the `app-config.yaml` catalog section:
 
    ```yaml title="app-config.yaml"
    catalog:
@@ -230,17 +226,13 @@ If you are interested in Resource discovery and do not want any of the front-end
 
    For more information about the default owner configuration, see [upstream string references documentation](https://backstage.io/docs/features/software-catalog/references/#string-references).
 
-### Setting up the OCM frontend package
-
-#### Frontend Installation
+#### Setting up the OCM frontend package
 
 1. Install the OCM frontend plugin using the following command:
 
    ```console
    yarn workspace app add @janus-idp/backstage-plugin-ocm
    ```
-
-### Frontend Configuration
 
 1. Select the components that you want to use, such as:
 
@@ -367,7 +359,7 @@ The OCM plugin integrates your Backstage instance with multi-cluster engines and
 - Your Backstage application is installed and running.
 - You have installed the OCM plugin. For the installation process, see [Installation](#installation).
 
-#### Usage Procedure
+#### Procedure
 
 1. Open your Backstage application.
 1. Click the **Clusters** tab from the left-side panel to view the **Managed Clusters** page.

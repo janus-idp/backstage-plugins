@@ -94,7 +94,7 @@ The Topology plugin enables you to visualize the workloads such as Deployment, J
 
   For more information about the labels and annotations, see [Guidelines for labels and annotations for OpenShift applications](https://github.com/redhat-developer/app-labels/blob/master/labels-annotation-for-openshift.adoc).
 
-#### Installation and Configuration Procedure
+#### Procedure
 
 1. Install the Topology plugin using the following command:
 

@@ -13,11 +13,11 @@ The Keycloak backend plugin has the following capabilities:
 
 ### Installation
 
-1. Install the Backstage package into the backend. When not integrating with a published package, clone the repository locally and add the Backstage as follows:
+Install the Backstage package into the backend. When not integrating with a published package, clone the repository locally and add the Backstage as follows:
 
-   ```console
-   yarn workspace backend add @janus-idp/backstage-plugin-keycloak-backend
-   ```
+```console
+yarn workspace backend add @janus-idp/backstage-plugin-keycloak-backend
+```
 
 ### Configuration
 

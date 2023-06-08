@@ -1,4 +1,4 @@
-# Development Setup
+# Setting up the development environment for OCM plugin
 
 If you have installed the OCM plugin to the example application in the repository, run the `yarn start` command to access the plugin in the root directory and then navigate to `http://localhost:3000/ocm`.
 

@@ -8,11 +8,11 @@ The following actions are currently supported in this module:
 
 ## Installation
 
-1. Install the action package in your Backstage project
+Run the following command to install the action package in your Backstage project
 
-   ```bash
-   yarn workspace backend add @janus-idp/backstage-scaffolder-backend-module-quay
-   ```
+```bash
+yarn workspace backend add @janus-idp/backstage-scaffolder-backend-module-quay
+```
 
 ## Configuration
 

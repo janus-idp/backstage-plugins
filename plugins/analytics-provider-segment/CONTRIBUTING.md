@@ -1,4 +1,4 @@
-# Development Setup
+# Setting up the development environment for Analytics Provider Segment plugin
 
 If you would like to contribute improvements to this plugin, the easiest way to
 make and test changes is to do the following:

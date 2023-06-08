@@ -1,4 +1,4 @@
-# Development Setup
+# Setting up the development environment for Kubernetes action
 
 1. Add the local package dependency to the Backstage instance
 

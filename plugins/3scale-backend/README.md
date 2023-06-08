@@ -4,11 +4,11 @@ This is a plugin for synchronizing 3scale content into [Backstage.io](https://ba
 
 ## Installation
 
-1. Install the plugin
+Run the following command to install the 3scale Backstage provider plugin:
 
-   ```console
-   yarn workspace backend add @janus-idp/backstage-plugin-3scale-backend
-   ```
+```console
+yarn workspace backend add @janus-idp/backstage-plugin-3scale-backend
+```
 
 ## Configuration
 

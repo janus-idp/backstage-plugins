@@ -4,11 +4,11 @@ This plugin will show you all ImageStreams in an Openshift cluster
 
 ## Installation
 
-1. Install the plugin
+Run the following command to install the OpenShift Image Registry plugin:
 
-   ```console
-   yarn workspace app add @janus-idp/backstage-plugin-openshift-image-registry
-   ```
+```console
+yarn workspace app add @janus-idp/backstage-plugin-openshift-image-registry
+```
 
 ## Configuration
 

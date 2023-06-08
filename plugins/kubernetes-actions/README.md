@@ -8,11 +8,11 @@ The following actions are currently supported in this module:
 
 ## Installation
 
-1. Install the action package in your Backstage project
+Run the following command to install the action package in your Backstage project
 
-   ```bash
-   yarn workspace backend add @janus-idp/backstage-scaffolder-backend-module-kubernetes
-   ```
+```bash
+yarn workspace backend add @janus-idp/backstage-scaffolder-backend-module-kubernetes
+```
 
 ## Configuration
 
@@ -94,7 +94,7 @@ The following actions are currently supported in this module:
 | clusterRef     | string  |    No    | Cluster resource entity reference from the catalog  | bar                               |
 | url            | string  |    No    | API url of the kubernetes cluster                   | <https://api.foo.redhat.com:6443> |
 | token          | string  |    No    | Kubernetes API bearer token used for authentication |                                   |
-| skipTLSVerify  | boolean |    No    | If true, ceritificate verification is skipped       | false                             |
+| skipTLSVerify  | boolean |    No    | If true, certificate verification is skipped        | false                             |
 | caData         | string  |    No    | Base64 encoded certificate data                     |                                   |
 
 #### Output

@@ -4,11 +4,11 @@ This plugin will show you information about your container images within Jfrog A
 
 ## Installation
 
-1. Install the plugin
+Run the following command to install the Jfrog Artifactory plugin:
 
-   ```console
-   yarn workspace app add @janus-idp/backstage-plugin-jfrog-artifactory
-   ```
+```console
+yarn workspace app add @janus-idp/backstage-plugin-jfrog-artifactory
+```
 
 ## Configuration
 
