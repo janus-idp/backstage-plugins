@@ -105,7 +105,7 @@ describe('KeycloakOrgEntityProvider', () => {
       schedule: 'manual',
     });
 
-    await keycloak.forEach(async k => {
+    keycloak.forEach(async k => {
       await k.connect(connection);
       await expect(k.read()).resolves.toBeUndefined();
     });
@@ -132,7 +132,7 @@ describe('KeycloakOrgEntityProvider', () => {
       schedule: 'manual',
     });
 
-    await keycloak.forEach(async k => {
+    keycloak.forEach(async k => {
       await k.connect(connection);
       await expect(k.read()).resolves.toBeUndefined();
     });
