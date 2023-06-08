@@ -1,29 +1,6 @@
-import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
-
-import {
-  groupMembers as testGroupMembers,
-  groups as testGroups,
-  users as testUsers,
-} from '../../__fixtures__/data';
+import { client } from '../../__fixtures__/helpers';
 import { KeycloakProviderConfig } from './config';
 import { readKeycloakRealm } from './read';
-
-const client = {
-  users: {
-    find: jest.fn().mockResolvedValue(testUsers),
-    count: jest.fn().mockResolvedValue(testUsers.length),
-  },
-  groups: {
-    find: jest.fn().mockResolvedValue(testGroups),
-    count: jest.fn().mockResolvedValue(testGroups.length),
-    listMembers: jest
-      .fn()
-      .mockResolvedValueOnce(testGroupMembers[0])
-      .mockResolvedValueOnce(testGroupMembers[1])
-      .mockResolvedValueOnce(testGroupMembers[2])
-      .mockResolvedValueOnce(testGroupMembers[3]),
-  },
-} as unknown as KeycloakAdminClient;
 
 const config = {
   realm: 'myrealm',

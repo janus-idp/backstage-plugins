@@ -2,27 +2,8 @@ import { ConfigReader } from '@backstage/config';
 
 import deepmerge from 'deepmerge';
 
+import { BASIC_VALID_CONFIG } from '../../__fixtures__/helpers';
 import { readProviderConfigs } from './config';
-
-// jest
-//   .spyOn(backendTasks, 'readTaskScheduleDefinitionFromConfig')
-//   .mockReturnValue({
-//     frequency: { hours: 1 },
-//     timeout: { minutes: 50 },
-//     initialDelay: { seconds: 15 },
-//   } as backendTasks.TaskScheduleDefinition);
-
-const BASIC_VALID_CONFIG = {
-  catalog: {
-    providers: {
-      keycloakOrg: {
-        default: {
-          baseUrl: 'http://localhost:8080/auth',
-        },
-      },
-    },
-  },
-} as const;
 
 describe('readProviderConfigs', () => {
   it('should return an empty array if no providers are configured', () => {
