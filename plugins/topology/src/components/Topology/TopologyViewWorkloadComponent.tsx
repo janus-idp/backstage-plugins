@@ -1,14 +1,17 @@
 import React from 'react';
+
 import { InfoCard, Progress } from '@backstage/core-components';
+
 import {
   BaseNode,
   SELECTION_EVENT,
   SelectionEventListener,
   TopologyView,
-  VisualizationSurface,
   useEventListener,
   useVisualizationController,
+  VisualizationSurface,
 } from '@patternfly/react-topology';
+
 import { TYPE_WORKLOAD } from '../../const';
 import { K8sResourcesContext } from '../../hooks/K8sResourcesContext';
 import { useSideBar } from '../../hooks/useSideBar';

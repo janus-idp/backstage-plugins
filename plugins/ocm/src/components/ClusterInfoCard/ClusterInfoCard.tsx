@@ -1,8 +1,8 @@
 import React from 'react';
-import { useCluster } from '../ClusterContext';
-import { TableCardFromData } from '../TableCardFromData';
 
+import { useCluster } from '../ClusterContext';
 import { Status, Update } from '../common';
+import { TableCardFromData } from '../TableCardFromData';
 
 export const ClusterInfoCard = () => {
   const { data } = useCluster();

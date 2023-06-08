@@ -31,23 +31,23 @@
   },
   "devDependencies": {
     "@backstage/cli": "0.22.7",
+    "@ianvs/prettier-plugin-sort-imports": "4.0.1",
     "@semantic-release/changelog": "6.0.3",
     "@semantic-release/exec": "6.0.3",
     "@semantic-release/git": "10.0.1",
-    "@semantic-release/github": "8.1.0",
+    "@semantic-release/github": "9.0.2",
     "@spotify/prettier-config": "15.0.0",
     "conventional-changelog-conventionalcommits": "5.0.0",
     "husky": "8.0.3",
     "multi-semantic-release": "3.0.2",
     "prettier": "2.8.8",
-    "turbo": "1.9.9",
+    "turbo": "1.10.0",
     "typescript": "5.0.4"
   },
   "resolutions": {
     "@types/react": "^17.0.2",
     "@types/react-dom": "^17.0.2"
   },
-  "prettier": "@spotify/prettier-config",
   "lint-staged": {
     "*.{js,jsx,ts,tsx,mjs,cjs}": [
       "eslint --fix",

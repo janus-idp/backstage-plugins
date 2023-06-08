@@ -1,12 +1,15 @@
-import { Entity } from '@backstage/catalog-model';
-import { useApi } from '@backstage/core-plugin-api';
-import { Box, Chip, makeStyles } from '@material-ui/core';
 import React, { useMemo } from 'react';
 import { useAsync } from 'react-use';
+
+import { Entity } from '@backstage/catalog-model';
+import { useApi } from '@backstage/core-plugin-api';
+import { useEntity } from '@backstage/plugin-catalog-react';
+
+import { Box, Chip, makeStyles } from '@material-ui/core';
+
 import { quayApiRef } from '../api';
 import { formatDate, formatSize } from '../lib/utils';
 import { Layer, Tag } from '../types';
-import { useEntity } from '@backstage/plugin-catalog-react';
 
 const useLocalStyles = makeStyles({
   chip: {

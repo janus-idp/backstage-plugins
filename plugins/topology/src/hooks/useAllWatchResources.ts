@@ -1,5 +1,7 @@
+import { useEffect, useState } from 'react';
+
 import { KubernetesObjects } from '@backstage/plugin-kubernetes';
-import { useState, useEffect } from 'react';
+
 import { K8sResponseData } from '../types/types';
 import { getK8sResources } from '../utils/topology-utils';
 

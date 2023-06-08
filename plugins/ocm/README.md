@@ -112,8 +112,10 @@ If you are interested in Resource discovery and do not want any of the front-end
 1. Create a new plugin instance in `packages/backend/src/plugins/ocm.ts` file as follows:
 
    ```ts title="packages/backend/src/plugins/ocm.ts"
-   import { createRouter } from '@janus-idp/backstage-plugin-ocm-backend';
    import { Router } from 'express';
+
+   import { createRouter } from '@janus-idp/backstage-plugin-ocm-backend';
+
    import { PluginEnvironment } from '../types';
 
    export default async function createPlugin(
@@ -283,6 +285,7 @@ If you are interested in Resource discovery and do not want any of the front-end
        ClusterInfoCard,
        ClusterStatusCard,
      } from '@janus-idp/backstage-plugin-ocm';
+
      /* highlight-add-end */
 
      const isType = (types: string | string[]) => (entity: Entity) => {

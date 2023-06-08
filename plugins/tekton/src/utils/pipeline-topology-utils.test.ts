@@ -1,11 +1,12 @@
 import { RunStatus, WhenStatus } from '@patternfly/react-topology';
-import { PipelineRunKind } from '../types/pipelineRun';
+
 import { mockKubernetesPlrResponse } from '../__fixtures__/1-pipelinesData';
+import { PipelineRunKind } from '../types/pipelineRun';
 import {
-  getGraphDataModel,
+  extractDepsFromContextVariables,
   getFinallyTaskHeight,
   getFinallyTaskWidth,
-  extractDepsFromContextVariables,
+  getGraphDataModel,
   getTaskWhenStatus,
 } from './pipeline-topology-utils';
 

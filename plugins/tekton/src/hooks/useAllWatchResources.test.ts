@@ -1,7 +1,9 @@
 import { KubernetesObjects } from '@backstage/plugin-kubernetes';
+
 import { renderHook } from '@testing-library/react-hooks';
-import { ModelsPlural } from '../models';
+
 import { kubernetesObjects } from '../__fixtures__/kubernetesObject';
+import { ModelsPlural } from '../models';
 import { useAllWatchResources } from './useAllWatchResources';
 
 const watchedResources = [ModelsPlural.pipelineruns, ModelsPlural.taskruns];

@@ -4,6 +4,7 @@ import {
   Node,
   TopologyQuadrant,
 } from '@patternfly/react-topology/dist/esm/types';
+
 import { K8sWorkloadResource } from './types';
 
 export type OverviewItem<T = K8sWorkloadResource> = {

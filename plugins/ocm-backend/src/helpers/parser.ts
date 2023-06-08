@@ -1,10 +1,12 @@
-import { CONSOLE_CLAIM, HUB_CLUSTER_NAME_IN_OCM } from '../constants';
+import { maxSatisfying } from 'semver';
+
 import {
   ClusterDetails,
   ClusterNodesStatus,
   ClusterStatus,
 } from '@janus-idp/backstage-plugin-ocm-common';
-import { maxSatisfying } from 'semver';
+
+import { CONSOLE_CLAIM, HUB_CLUSTER_NAME_IN_OCM } from '../constants';
 import { ClusterClaim, ManagedCluster, ManagedClusterInfo } from '../types';
 
 const convertCpus = (cpus: string | undefined): number | undefined => {

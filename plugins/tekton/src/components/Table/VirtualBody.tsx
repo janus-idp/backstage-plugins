@@ -1,8 +1,10 @@
-import { VirtualTableBody } from '@patternfly/react-virtualized-extension';
-import { Scroll } from '@patternfly/react-virtualized-extension/dist/esm/components/Virtualized/types';
 import React from 'react';
 import { CellMeasurer, CellMeasurerCache } from 'react-virtualized';
 import { MeasuredCellParent } from 'react-virtualized/dist/es/CellMeasurer';
+
+import { VirtualTableBody } from '@patternfly/react-virtualized-extension';
+import { Scroll } from '@patternfly/react-virtualized-extension/dist/esm/components/Virtualized/types';
+
 import { TableRow } from './TableRow';
 
 import './VirtualBody.css';

@@ -5,8 +5,10 @@ import {
   Preparers,
   Publisher,
 } from '@backstage/plugin-techdocs-backend';
+
 import Docker from 'dockerode';
 import { Router } from 'express';
+
 import { PluginEnvironment } from '../types';
 
 export default async function createPlugin(

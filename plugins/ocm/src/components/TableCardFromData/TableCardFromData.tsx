@@ -1,6 +1,8 @@
 import React from 'react';
-import { Card, CardContent, CardHeader } from '@material-ui/core';
+
 import { Link, Table } from '@backstage/core-components';
+
+import { Card, CardContent, CardHeader } from '@material-ui/core';
 
 const convertToGibibytes = (kibibytes: string): string => {
   const sizeInKibibytes = parseInt(

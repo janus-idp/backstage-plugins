@@ -1,8 +1,10 @@
 import React from 'react';
+
 import { render } from '@testing-library/react';
+
+import { K8sResourcesContext } from '../../hooks/K8sResourcesContext';
 import { useWorkloadsWatcher } from '../../hooks/useWorkloadWatcher';
 import TopologyViewWorkloadComponent from './TopologyViewWorkloadComponent';
-import { K8sResourcesContext } from '../../hooks/K8sResourcesContext';
 
 jest.mock('../../hooks/useWorkloadWatcher', () => ({
   useWorkloadsWatcher: jest.fn(),

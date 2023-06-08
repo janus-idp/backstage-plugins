@@ -60,6 +60,7 @@ yarn workspace backend add @janus-idp/backstage-plugin-keycloak-backend
      ```ts title="packages/backend/src/plugins/catalog.ts"
      /* highlight-add-start */
      import { KeycloakOrgEntityProvider } from '@janus-idp/backstage-plugin-keycloak-backend';
+
      /* highlight-add-end */
 
      export default async function createPlugin(

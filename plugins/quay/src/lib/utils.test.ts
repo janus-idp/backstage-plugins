@@ -1,5 +1,5 @@
 import { VulnerabilitySeverity } from '../types';
-import { formatSize, formatDate, SEVERITY_COLORS } from './utils';
+import { formatDate, formatSize, SEVERITY_COLORS } from './utils';
 
 describe('SEVERITY_COLORS', () => {
   it('should return the correct hex color code', () => {

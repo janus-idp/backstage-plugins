@@ -1,8 +1,10 @@
 import React from 'react';
+
 import { render, screen } from '@testing-library/react';
-import { PipelineVisualization } from './PipelineVisualization';
+
 import { mockKubernetesPlrResponse } from '../../__fixtures__/1-pipelinesData';
 import { TektonResourcesContext } from '../../hooks/TektonResourcesContext';
+import { PipelineVisualization } from './PipelineVisualization';
 
 jest.mock('@backstage/plugin-catalog-react', () => ({
   useEntity: () => ({

@@ -1,17 +1,20 @@
+import React from 'react';
+
 import { configApiRef } from '@backstage/core-plugin-api';
+import { EntityProvider } from '@backstage/plugin-catalog-react';
 import {
   MockConfigApi,
   setupRequestMockHandlers,
   TestApiProvider,
 } from '@backstage/test-utils';
-import { setupServer } from 'msw/node';
-import { rest } from 'msw';
-import { ThemeProvider } from '@material-ui/core';
-import React from 'react';
-import { EntityProvider } from '@backstage/plugin-catalog-react';
-import { TerminalComponent } from './TerminalComponent';
-import { fireEvent, render, waitFor } from '@testing-library/react';
 import { lightTheme } from '@backstage/theme';
+
+import { ThemeProvider } from '@material-ui/core';
+import { fireEvent, render, waitFor } from '@testing-library/react';
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
+
+import { TerminalComponent } from './TerminalComponent';
 
 const DOMAIN_URL = 'mock-domain.com/webterminal';
 const API_URL = 'https://api.cluster.com';

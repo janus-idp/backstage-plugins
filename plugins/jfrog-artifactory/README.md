@@ -29,9 +29,10 @@ yarn workspace app add @janus-idp/backstage-plugin-jfrog-artifactory
    ```ts title="packages/app/src/components/catalog/EntityPage.tsx"
    /* highlight-add-start */
    import {
-     JfrogArtifactoryPage,
      isJfrogArtifactoryAvailable,
+     JfrogArtifactoryPage,
    } from '@janus-idp/backstage-plugin-jfrog-artifactory';
+
    /* highlight-add-end */
 
    const serviceEntityPage = (

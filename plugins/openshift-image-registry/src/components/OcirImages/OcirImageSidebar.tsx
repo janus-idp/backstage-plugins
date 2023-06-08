@@ -1,17 +1,20 @@
 import React from 'react';
+
+import { CopyTextButton, MarkdownContent } from '@backstage/core-components';
+import { BackstageTheme } from '@backstage/theme';
+
 import {
   Box,
   Chip,
+  createStyles,
   Drawer,
   IconButton,
   Input,
-  Typography,
-  createStyles,
   makeStyles,
+  Typography,
 } from '@material-ui/core';
 import Close from '@material-ui/icons/Close';
-import { CopyTextButton, MarkdownContent } from '@backstage/core-components';
-import { BackstageTheme } from '@backstage/theme';
+
 import { ImageStreamMetadata } from '../../types';
 
 const useDrawerStyles = makeStyles<BackstageTheme>(theme =>

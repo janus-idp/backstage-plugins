@@ -1,5 +1,6 @@
-import { KubernetesObject, V1PodCondition } from '@kubernetes/client-node';
 import { TaskScheduleDefinition } from '@backstage/backend-tasks';
+
+import { KubernetesObject, V1PodCondition } from '@kubernetes/client-node';
 
 export type OcmConfig = {
   id: string;

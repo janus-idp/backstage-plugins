@@ -1,4 +1,5 @@
 import { ClusterDetails } from '@janus-idp/backstage-plugin-ocm-common';
+
 import { ManagedCluster, ManagedClusterInfo } from '../types';
 import {
   getClaim,

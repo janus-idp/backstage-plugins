@@ -1,7 +1,9 @@
-import { ErrorPanel, Progress } from '@backstage/core-components';
-import { useRouteRef } from '@backstage/core-plugin-api';
 import React from 'react';
 import { useParams } from 'react-router-dom';
+
+import { ErrorPanel, Progress } from '@backstage/core-components';
+import { useRouteRef } from '@backstage/core-plugin-api';
+
 import { useRepository, useTagDetails } from '../../hooks';
 import { rootRouteRef } from '../../routes';
 import { QuayTagDetails } from '../QuayTagDetails';

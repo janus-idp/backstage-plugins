@@ -1,3 +1,5 @@
+import React from 'react';
+
 import {
   CheckCircleIcon,
   ExclamationCircleIcon,
@@ -5,7 +7,7 @@ import {
   PendingIcon,
   SyncAltIcon,
 } from '@patternfly/react-icons';
-import React from 'react';
+
 import { PipelineRunKind } from '../../types/pipelineRun';
 import { pipelineRunFilterReducer } from '../../utils/pipeline-filter-reducer';
 

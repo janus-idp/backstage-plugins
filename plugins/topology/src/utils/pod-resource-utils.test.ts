@@ -1,16 +1,17 @@
 import {
+  V1CronJob,
+  V1DaemonSet,
   V1Deployment,
   V1StatefulSet,
-  V1DaemonSet,
-  V1CronJob,
 } from '@kubernetes/client-node';
+
 import { mockKubernetesResponse } from '../__fixtures__/1-deployments';
 import {
-  getPodsForStatefulSet,
-  getPodsForDaemonSet,
-  getPodsForCronJob,
   getDeploymentRevision,
+  getPodsForCronJob,
+  getPodsForDaemonSet,
   getPodsForDeployment,
+  getPodsForStatefulSet,
 } from './pod-resource-utils';
 
 describe('PodResourceUtils', () => {

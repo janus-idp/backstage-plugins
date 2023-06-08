@@ -15,30 +15,30 @@
  */
 
 import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
-import { Config } from '@backstage/config';
-import KcAdminClient from '@keycloak/keycloak-admin-client';
-import type { Credentials } from '@keycloak/keycloak-admin-client/lib/utils/auth';
-import * as uuid from 'uuid';
-import { merge } from 'lodash';
-import { KEYCLOAK_ID_ANNOTATION } from '../lib';
 import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
   Entity,
 } from '@backstage/catalog-model';
-
+import { Config } from '@backstage/config';
 import {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-backend';
+
+import KcAdminClient from '@keycloak/keycloak-admin-client';
+import type { Credentials } from '@keycloak/keycloak-admin-client/lib/utils/auth';
+import { merge } from 'lodash';
+import * as uuid from 'uuid';
+import { Logger } from 'winston';
+
 import {
   GroupTransformer,
-  UserTransformer,
+  KEYCLOAK_ID_ANNOTATION,
   KeycloakProviderConfig,
+  UserTransformer,
 } from '../lib';
 import { readProviderConfigs } from '../lib/config';
-
-import { Logger } from 'winston';
 import { readKeycloakRealm } from '../lib/read';
 
 /**

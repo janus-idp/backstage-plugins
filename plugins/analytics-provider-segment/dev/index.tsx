@@ -15,7 +15,9 @@
  */
 
 import React from 'react';
+
 import { createDevApp } from '@backstage/dev-utils';
+
 import { analyticsModuleSegment } from '../src';
 import { Playground } from './Playground';
 

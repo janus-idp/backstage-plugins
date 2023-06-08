@@ -1,8 +1,10 @@
 import React from 'react';
+
 import { render } from '@testing-library/react';
-import IngressListSidebar from './IngressListSidebar';
+
 import { workloadNodeData } from '../../../../__fixtures__/workloadNodeData';
 import { IngressData } from '../../../../types/ingresses';
+import IngressListSidebar from './IngressListSidebar';
 
 describe('IngressListSidebar', () => {
   it('should render ingress if exists', () => {

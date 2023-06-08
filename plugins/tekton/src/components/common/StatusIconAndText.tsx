@@ -1,5 +1,7 @@
-import classNames from 'classnames';
 import React from 'react';
+
+import classNames from 'classnames';
+
 import CamelCaseWrap from './CamelCaseWrap';
 
 import './StatusIconAndText.css';

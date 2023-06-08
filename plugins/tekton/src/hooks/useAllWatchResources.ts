@@ -1,5 +1,7 @@
+import { useEffect, useMemo, useState } from 'react';
+
 import { KubernetesObjects } from '@backstage/plugin-kubernetes';
-import { useState, useEffect, useMemo } from 'react';
+
 import { TektonResponseData } from '../types/types';
 import { getTektonResources } from '../utils/tekton-utils';
 import { useDeepCompareMemoize } from './useDeepCompareMemoize';

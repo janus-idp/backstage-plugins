@@ -1,4 +1,5 @@
 import { sortable } from '@patternfly/react-table';
+
 import { tableColumnClasses } from './pipelinerun-table';
 
 const PipelineRunHeader = () => {

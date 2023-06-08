@@ -1,7 +1,9 @@
 import React from 'react';
-import { render } from '@testing-library/react';
-import { TopologyComponent } from './TopologyComponent';
+
 import { useTheme } from '@material-ui/core';
+import { render } from '@testing-library/react';
+
+import { TopologyComponent } from './TopologyComponent';
 
 jest.mock('../../hooks/useK8sObjectsResponse', () => ({
   useK8sObjectsResponse: () => ({

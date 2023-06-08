@@ -1,11 +1,14 @@
+import { getVoidLogger } from '@backstage/backend-common';
+import { CatalogClient } from '@backstage/catalog-client';
+
+import { V1Namespace } from '@kubernetes/client-node';
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
+
 import os from 'os';
 import { PassThrough } from 'stream';
+
 import { createKubernetesNamespaceAction } from './createKubernetesNamespace';
-import { getVoidLogger } from '@backstage/backend-common';
-import { setupServer } from 'msw/node';
-import { rest } from 'msw';
-import { V1Namespace } from '@kubernetes/client-node';
-import { CatalogClient } from '@backstage/catalog-client';
 
 const LOCAL_ADDR = 'http://localhost:5000';
 const FIXTURES_DIR = `${__dirname}/../../__fixtures__/cluster-entities`;

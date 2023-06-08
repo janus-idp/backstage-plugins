@@ -1,10 +1,12 @@
 import React from 'react';
+
 import {
   Visualization,
   VisualizationProvider,
 } from '@patternfly/react-topology';
-import defaultLayoutFactory from '../layouts/defaultLayoutFactory';
+
 import TopologyComponentFactory from '../Graph/TopologyComponentFactory';
+import defaultLayoutFactory from '../layouts/defaultLayoutFactory';
 import TopologyViewWorkloadComponent from './TopologyViewWorkloadComponent';
 
 export const TopologyWorkloadView = React.memo(() => {

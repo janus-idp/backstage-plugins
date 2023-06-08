@@ -1,3 +1,5 @@
+import React from 'react';
+
 import {
   CheckCircleIcon,
   ExclamationCircleIcon,
@@ -5,7 +7,6 @@ import {
   InfoCircleIcon,
 } from '@patternfly/react-icons';
 import classNames from 'classnames';
-import React from 'react';
 
 import './icons.css';
 

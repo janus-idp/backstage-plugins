@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { Split, SplitItem } from '@patternfly/react-core';
 
 import './ResourceBadge.css';

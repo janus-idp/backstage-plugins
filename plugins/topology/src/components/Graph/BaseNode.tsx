@@ -1,3 +1,5 @@
+import React from 'react';
+
 import {
   BadgeLocation,
   DEFAULT_LAYER,
@@ -5,16 +7,16 @@ import {
   Layer,
   Node,
   NodeStatus,
+  observer,
   ScaleDetailsLevel,
   TOP_LAYER,
-  WithDragNodeProps,
-  WithSelectionProps,
-  observer,
   useCombineRefs,
   useHover,
+  WithDragNodeProps,
+  WithSelectionProps,
 } from '@patternfly/react-topology';
 import classNames from 'classnames';
-import React from 'react';
+
 import { getKindAbbrColor } from '../../utils/workload-node-utils';
 
 import './BaseNode.css';

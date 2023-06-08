@@ -1,3 +1,5 @@
+import React from 'react';
+
 import {
   getDefaultShapeDecoratorCenter,
   GraphElement,
@@ -12,7 +14,7 @@ import {
   WithDragNodeProps,
   WithSelectionProps,
 } from '@patternfly/react-topology';
-import React from 'react';
+
 import { calculateRadius, getPodStatus } from '../../utils/workload-node-utils';
 import { AllPodStatus } from '../Pods/pod';
 import PodSet, { podSetInnerRadius } from '../Pods/PodSet';

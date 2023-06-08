@@ -1,7 +1,9 @@
-import os from 'os';
-import { createSonarQubeProjectAction } from './createSonarQubeProject';
 import { getVoidLogger } from '@backstage/backend-common';
+
+import os from 'os';
 import { PassThrough } from 'stream';
+
+import { createSonarQubeProjectAction } from './createSonarQubeProject';
 
 describe('sonarqube:create-project', () => {
   const action = createSonarQubeProjectAction();

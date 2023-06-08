@@ -1,6 +1,7 @@
-import { Decorator as PfDecorator } from '@patternfly/react-topology';
 import React from 'react';
 import { Link } from 'react-router-dom';
+
+import { Decorator as PfDecorator } from '@patternfly/react-topology';
 
 import './Decorator.css';
 

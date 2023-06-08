@@ -1,7 +1,9 @@
+import React from 'react';
+
 import { ChartDonut } from '@patternfly/react-charts';
 import { Tooltip } from '@patternfly/react-core';
 import * as _ from 'lodash';
-import React from 'react';
+
 import { useForceUpdate } from '../../hooks/useForceUpdate';
 import { getSize } from '../../utils/pod-ring-utils';
 import {

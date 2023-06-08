@@ -1,7 +1,10 @@
 import React from 'react';
+
 import { Select, SelectedItems } from '@backstage/core-components';
 import { BackstageTheme } from '@backstage/theme';
+
 import { makeStyles, Typography } from '@material-ui/core';
+
 import { TektonResourcesContext } from '../../hooks/TektonResourcesContext';
 
 import './ClusterSelector.css';

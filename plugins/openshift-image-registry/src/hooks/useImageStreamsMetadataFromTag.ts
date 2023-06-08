@@ -1,9 +1,11 @@
 import { useState } from 'react';
-import { useApi } from '@backstage/core-plugin-api';
 import { useAsync } from 'react-use';
+
+import { useApi } from '@backstage/core-plugin-api';
+
 import { openshiftImageRegistryApiRef } from '../api';
-import { formatSize } from '../utils';
 import { ImageStream, ImageStreamMetadata } from '../types';
+import { formatSize } from '../utils';
 
 export const useImageStreamsMetadataFromTag = (imageStreams: ImageStream[]) => {
   const client = useApi(openshiftImageRegistryApiRef);

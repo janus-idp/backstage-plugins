@@ -1,11 +1,12 @@
 import { cloneDeep, forIn } from 'lodash';
+
+import { mockKubernetesPlrResponse } from '../__fixtures__/1-pipelinesData';
 import {
   ComputedStatus,
   SucceedConditionReason,
 } from '../types/computedStatus';
 import { PLRTaskRuns } from '../types/pipelineRun';
 import { TaskRunKind } from '../types/taskRun';
-import { mockKubernetesPlrResponse } from '../__fixtures__/1-pipelinesData';
 import {
   appendPipelineRunStatus,
   calculateDuration,

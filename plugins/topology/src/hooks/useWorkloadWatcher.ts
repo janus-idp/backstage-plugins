@@ -1,9 +1,11 @@
 import React from 'react';
-import { useDebounceCallback } from './debounce';
-import { updateTopologyDataModel } from '../data-transforms/updateTopologyDataModel';
-import { useDeepCompareMemoize } from './useDeepCompareMemoize';
+
 import { Model } from '@patternfly/react-topology';
+
+import { updateTopologyDataModel } from '../data-transforms/updateTopologyDataModel';
+import { useDebounceCallback } from './debounce';
 import { K8sResourcesContext } from './K8sResourcesContext';
+import { useDeepCompareMemoize } from './useDeepCompareMemoize';
 
 export const useWorkloadsWatcher = (): {
   loaded: boolean;

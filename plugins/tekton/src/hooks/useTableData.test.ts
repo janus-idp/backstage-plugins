@@ -1,7 +1,8 @@
-import { renderHook } from '@testing-library/react-hooks';
-import { useTableData } from './useTableData';
-import { mockKubernetesPlrResponse } from '../__fixtures__/1-pipelinesData';
 import { SortByDirection } from '@patternfly/react-table';
+import { renderHook } from '@testing-library/react-hooks';
+
+import { mockKubernetesPlrResponse } from '../__fixtures__/1-pipelinesData';
+import { useTableData } from './useTableData';
 
 const mockData = [
   mockKubernetesPlrResponse.pipelineruns[0],

@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 import { ConfigReader } from '@backstage/config';
-import { SegmentAnalytics } from './Segment';
 import { IdentityApi } from '@backstage/core-plugin-api';
+
+import { SegmentAnalytics } from './Segment';
 
 const mockIdentify = jest.fn();
 const mockPage = jest.fn();

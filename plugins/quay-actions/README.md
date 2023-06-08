@@ -20,14 +20,17 @@ yarn workspace backend add @janus-idp/backstage-scaffolder-backend-module-quay
 
    ```ts
    import { CatalogClient } from '@backstage/catalog-client';
+   import { ScmIntegrations } from '@backstage/integration';
    import {
      createBuiltinActions,
      createRouter,
    } from '@backstage/plugin-scaffolder-backend';
-   import { ScmIntegrations } from '@backstage/integration';
+
    import { Router } from 'express';
-   import type { PluginEnvironment } from '../types';
+
    import { createQuayRepositoryAction } from '@janus-idp/backstage-scaffolder-backend-module-quay';
+
+   import type { PluginEnvironment } from '../types';
 
    export default async function createPlugin(
      env: PluginEnvironment,

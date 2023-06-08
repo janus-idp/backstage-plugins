@@ -5,8 +5,8 @@ import {
   createRoutableExtension,
 } from '@backstage/core-plugin-api';
 
-import { rootRouteRef } from './routes';
 import { OcmApiClient, OcmApiRef } from './api';
+import { rootRouteRef } from './routes';
 
 export const ocmPlugin = createPlugin({
   id: 'ocm',

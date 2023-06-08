@@ -1,9 +1,10 @@
 import { ConfigReader } from '@backstage/config';
+
 import {
-  getHubClusterFromKubernetesConfig,
-  getHubClusterFromOcmConfig,
   deferToKubernetesPlugin,
   getHubClusterFromConfig,
+  getHubClusterFromKubernetesConfig,
+  getHubClusterFromOcmConfig,
 } from './config';
 
 describe('deferToKubernetesPlugin', () => {

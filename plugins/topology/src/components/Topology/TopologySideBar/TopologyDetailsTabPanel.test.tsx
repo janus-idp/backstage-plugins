@@ -1,11 +1,13 @@
 import React from 'react';
+
+import { BaseNode } from '@patternfly/react-topology';
 import { render } from '@testing-library/react';
+
 import {
   workloadNode,
   workloadNode2,
 } from '../../../__fixtures__/workloadNodeData';
 import TopologyDetailsTabPanel from './TopologyDetailsTabPanel';
-import { BaseNode } from '@patternfly/react-topology';
 
 describe('TopologyDetailsTabPanel', () => {
   it('Should render workload node details', () => {

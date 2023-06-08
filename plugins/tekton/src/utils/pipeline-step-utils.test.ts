@@ -1,6 +1,6 @@
-import { ComputedStatus } from '../types/computedStatus';
-import { PipelineTaskWithStatus, PipelineRunKind } from '../types/pipelineRun';
 import { mockKubernetesPlrResponse } from '../__fixtures__/1-pipelinesData';
+import { ComputedStatus } from '../types/computedStatus';
+import { PipelineRunKind, PipelineTaskWithStatus } from '../types/pipelineRun';
 import { createStepStatus } from './pipeline-step-utils';
 import { getTaskStatus } from './pipelineRun-utils';
 

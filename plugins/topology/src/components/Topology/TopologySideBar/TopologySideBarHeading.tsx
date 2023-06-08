@@ -1,6 +1,8 @@
+import React from 'react';
+
 import { Typography } from '@material-ui/core';
 import { Split, SplitItem, Stack, StackItem } from '@patternfly/react-core';
-import React from 'react';
+
 import ResourceName from '../../../common/components/ResourceName';
 import { resourceModels } from '../../../models';
 import { K8sWorkloadResource } from '../../../types/types';

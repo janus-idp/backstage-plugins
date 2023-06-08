@@ -15,6 +15,7 @@
  */
 
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
+
 import GroupRepresentation from '@keycloak/keycloak-admin-client/lib/defs/groupRepresentation';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
 

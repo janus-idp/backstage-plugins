@@ -1,3 +1,5 @@
+import React from 'react';
+
 import {
   BanIcon,
   ClipboardListIcon,
@@ -7,13 +9,13 @@ import {
   SyncAltIcon,
   UnknownIcon,
 } from '@patternfly/react-icons';
-import React from 'react';
-import StatusIconAndText from './StatusIconAndText';
+
 import {
   GreenCheckCircleIcon,
   RedExclamationCircleIcon,
   YellowExclamationTriangleIcon,
 } from './icons';
+import StatusIconAndText from './StatusIconAndText';
 
 export type StatusComponentProps = {
   title?: string;

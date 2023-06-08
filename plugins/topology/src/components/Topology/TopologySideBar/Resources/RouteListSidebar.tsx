@@ -1,8 +1,9 @@
 import React from 'react';
-import TopologyResourcesTabPanelItem from '../TopologyResourcesTabPaneltem';
-import { RouteData } from '../../../../types/route';
-import { RouteModel } from '../../../../models';
+
 import ResourceName from '../../../../common/components/ResourceName';
+import { RouteModel } from '../../../../models';
+import { RouteData } from '../../../../types/route';
+import TopologyResourcesTabPanelItem from '../TopologyResourcesTabPaneltem';
 
 const RouteListSidebar = ({ routesData }: { routesData: RouteData[] }) => {
   return (

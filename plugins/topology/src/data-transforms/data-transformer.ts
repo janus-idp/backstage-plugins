@@ -1,13 +1,17 @@
+import { V1Service } from '@kubernetes/client-node';
 import { Model, NodeModel } from '@patternfly/react-topology';
+
 import { TYPE_APPLICATION_GROUP, TYPE_WORKLOAD } from '../const';
-import { K8sWorkloadResource, K8sResponseData } from '../types/types';
+import { CronJobModel } from '../models';
+import { K8sResponseData, K8sWorkloadResource } from '../types/types';
+import { getPodsDataForResource } from '../utils/pod-resource-utils';
 import {
   createOverviewItemForType,
   getIngressesDataForResourceServices,
   getJobsDataForResource,
-  getUrlForResource,
-  getServicesForResource,
   getRoutesDataForResourceServices,
+  getServicesForResource,
+  getUrlForResource,
 } from '../utils/resource-utils';
 import {
   createTopologyNodeData,
@@ -21,9 +25,6 @@ import {
   mergeGroup,
   WorkloadModelProps,
 } from '../utils/transform-utils';
-import { getPodsDataForResource } from '../utils/pod-resource-utils';
-import { V1Service } from '@kubernetes/client-node';
-import { CronJobModel } from '../models';
 
 export const getBaseTopologyDataModel = (resources: K8sResponseData): Model => {
   const baseDataModel: Model = {

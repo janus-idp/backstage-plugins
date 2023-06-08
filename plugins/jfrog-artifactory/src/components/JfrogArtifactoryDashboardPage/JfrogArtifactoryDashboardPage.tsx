@@ -1,5 +1,7 @@
-import { useEntity } from '@backstage/plugin-catalog-react';
 import React from 'react';
+
+import { useEntity } from '@backstage/plugin-catalog-react';
+
 import { JfrogArtifactoryRepository } from '../JfrogArtifactoryRepository';
 import { useJfrogArtifactoryAppData } from '../useJfrogArtifactoryAppData';
 
