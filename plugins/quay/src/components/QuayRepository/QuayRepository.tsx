@@ -27,18 +27,22 @@ export function QuayRepository(_props: QuayRepositoryProps) {
   const { loading, data } = useTags(organization, repository);
 
   if (loading) {
-    return <Progress />;
+    return (
+      <div data-testid="quay-repo-progress">
+        <Progress />
+      </div>
+    );
   }
 
   return (
-    <div style={{ border: '1px solid #ddd' }}>
+    <div data-testid="quay-repo-table" style={{ border: '1px solid #ddd' }}>
       <Table
         title={title}
         options={{ paging: true, padding: 'dense' }}
         data={data}
         columns={columns}
         emptyContent={
-          <div className={classes.empty}>
+          <div data-testid="quay-repo-table-empty" className={classes.empty}>
             No data was added yet,&nbsp;
             <Link to="https://backstage.io/">learn how to add data</Link>.
           </div>
