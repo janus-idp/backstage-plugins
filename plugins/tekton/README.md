@@ -149,12 +149,12 @@ The Tekton plugin enables you to visualize the `PipelineRun` resources available
 
 Tekton is a front-end plugin that enables you to view the `PipelineRun` resources.
 
-#### Usage Prerequisites
+#### Prerequisites
 
 - Your Backstage application is installed and running.
 - You have installed the Tekton plugin. For the installation process, see [Installation](#setting-up-the-tekton-plugin).
 
-#### Usage Procedure
+#### Procedure
 
 1. Open your Backstage application and select a component from the **Catalog** page.
 

@@ -357,7 +357,7 @@ If you are interested in Resource discovery and do not want any of the front-end
 
 The OCM plugin integrates your Backstage instance with multi-cluster engines and displays real-time data from OCM.
 
-#### Usage Prerequisites
+#### Prerequisites
 
 - Your Backstage application is installed and running.
 - You have installed the OCM plugin. For the installation process, see [Installation](#installation).

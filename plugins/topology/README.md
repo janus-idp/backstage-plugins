@@ -126,12 +126,12 @@ The Topology plugin enables you to visualize the workloads such as Deployment, J
 
 Topology is a front-end plugin that enables you to view the workloads as nodes that power any service on the Kubernetes cluster.
 
-#### Usage Prerequisites
+#### Prerequisites
 
 - Your Backstage application is installed and running.
 - You have installed the Topology plugin. For installation process, see [Installation](#installation).
 
-#### Usage Procedure
+#### Procedure
 
 1. Open your Backstage application and select a component from the **Catalog** page.
 1. Go to the **TOPOLOGY** tab and you can view the workloads such as Deployments, Pods as nodes.
