@@ -17,7 +17,11 @@ export const QuayTagPage = () => {
   }
   const { loading, value } = useTagDetails(organization, repository, digest);
   if (loading) {
-    return <Progress variant="query" />;
+    return (
+      <div data-testid="quay-tag-page-progress">
+        <Progress variant="query" />
+      </div>
+    );
   }
   if (!value || !value.data) {
     return <ErrorPanel error={new Error('no digest')} />;
