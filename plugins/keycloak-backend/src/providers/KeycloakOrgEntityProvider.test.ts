@@ -68,7 +68,7 @@ describe('KeycloakOrgEntityProvider', () => {
     ]);
   });
 
-  it('should connect', () => {
+  it('should connect', async () => {
     const config = new ConfigReader(BASIC_VALID_CONFIG);
 
     const keycloak = KeycloakOrgEntityProvider.fromConfig(config, {
@@ -77,9 +77,10 @@ describe('KeycloakOrgEntityProvider', () => {
       schedule: 'manual',
     });
 
-    const result = keycloak.map(async k => await k.connect(connection));
-
-    expect(result).toHaveLength(1);
+    const result = await Promise.all(
+      keycloak.map(async k => await k.connect(connection)),
+    );
+    expect(result).toEqual([undefined]);
   });
 
   it('should not read without a connection', async () => {
@@ -91,9 +92,9 @@ describe('KeycloakOrgEntityProvider', () => {
       schedule: 'manual',
     });
 
-    keycloak.forEach(
-      async k => await expect(k.read()).rejects.toThrow(`Not initialized`),
-    );
+    for await (const k of keycloak) {
+      await expect(() => k.read()).rejects.toThrow('Not initialized');
+    }
   });
 
   it('should read with grantType client_credential', async () => {
@@ -105,10 +106,10 @@ describe('KeycloakOrgEntityProvider', () => {
       schedule: 'manual',
     });
 
-    keycloak.forEach(async k => {
+    for await (const k of keycloak) {
       await k.connect(connection);
       await expect(k.read()).resolves.toBeUndefined();
-    });
+    }
   });
 
   it('should read with grantType password', async () => {
@@ -132,9 +133,9 @@ describe('KeycloakOrgEntityProvider', () => {
       schedule: 'manual',
     });
 
-    keycloak.forEach(async k => {
+    for await (const k of keycloak) {
       await k.connect(connection);
       await expect(k.read()).resolves.toBeUndefined();
-    });
+    }
   });
 });

@@ -4,9 +4,11 @@ import { KeycloakAdminClientMock } from '../../__fixtures__/helpers';
 import { KeycloakProviderConfig } from './config';
 import { readKeycloakRealm } from './read';
 
-const config = {
+const config: KeycloakProviderConfig = {
   realm: 'myrealm',
-} as unknown as KeycloakProviderConfig;
+  id: 'mock_id',
+  baseUrl: 'http://mock-url',
+};
 
 describe('readKeycloakRealm', () => {
   it('should return the correct number of users and groups', async () => {
