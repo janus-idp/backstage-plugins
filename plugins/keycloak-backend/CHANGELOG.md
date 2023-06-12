@@ -1,3 +1,11 @@
+## @janus-idp/backstage-plugin-keycloak-backend [1.3.8](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-keycloak-backend@1.3.7...@janus-idp/backstage-plugin-keycloak-backend@1.3.8) (2023-06-12)
+
+
+### Other changes
+
+* **keycloak:** add tests ([#437](https://github.com/janus-idp/backstage-plugins/issues/437)) ([1872d7c](https://github.com/janus-idp/backstage-plugins/commit/1872d7c997cb372d4a2501c472698b660a025e49))
+* reorder imports via prettier ([#419](https://github.com/janus-idp/backstage-plugins/issues/419)) ([17f1e6a](https://github.com/janus-idp/backstage-plugins/commit/17f1e6a689bd793a619ec5e42e5cdda0998f78a5))
+
 ## @janus-idp/backstage-plugin-keycloak-backend [1.3.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-keycloak-backend@1.3.6...@janus-idp/backstage-plugin-keycloak-backend@1.3.7) (2023-05-30)
 
 ## @janus-idp/backstage-plugin-keycloak-backend [1.3.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-keycloak-backend@1.3.5...@janus-idp/backstage-plugin-keycloak-backend@1.3.6) (2023-05-30)
