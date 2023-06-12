@@ -8,11 +8,20 @@ import {
   UnknownIcon,
 } from '@patternfly/react-icons';
 
-import { GreenCheckCircleIcon, RedExclamationCircleIcon } from './icons';
-import StatusIconAndText from './StatusIconAndText';
+import { StatusIconAndText } from '@janus-idp/shared-react';
 
-type StatusProps = {
-  status?: string;
+import { GreenCheckCircleIcon, RedExclamationCircleIcon } from './icons';
+
+export type StatusComponentProps = {
+  title?: string;
+  iconOnly?: boolean;
+  noTooltip?: boolean;
+  className?: string;
+  popoverTitle?: string;
+};
+
+type StatusProps = StatusComponentProps & {
+  status: string | null;
 };
 
 const DASH = '-';
@@ -25,9 +34,11 @@ const DASH = '-';
  * <Status status='Warning' />
  * ```
  */
-const Status = ({ status }: StatusProps) => {
+const Status = ({ status, noTooltip, iconOnly }: StatusProps) => {
   const statusProps = {
-    title: status,
+    title: status ?? '',
+    iconOnly,
+    noTooltip,
   };
   switch (status) {
     case 'Pending':

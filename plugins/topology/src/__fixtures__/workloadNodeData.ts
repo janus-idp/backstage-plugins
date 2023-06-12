@@ -1,4 +1,4 @@
-import { mockPipeline, mockPipelineRun } from './tektonResources';
+import { mockTektonResources } from './1-tektonResources';
 
 export const workloadNodeData = {
   data: {
@@ -1169,8 +1169,8 @@ export const tektonWorkloadNodeData = {
     data: {
       ...workloadNodeData.data.data,
       pipelinesData: {
-        pipelines: [mockPipeline],
-        pipelineRuns: [mockPipelineRun],
+        pipelines: mockTektonResources.pipelines,
+        pipelineRuns: mockTektonResources.pipelineruns,
       },
     },
   },

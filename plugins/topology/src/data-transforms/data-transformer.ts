@@ -4,7 +4,7 @@ import { Model, NodeModel } from '@patternfly/react-topology';
 import { TYPE_APPLICATION_GROUP, TYPE_WORKLOAD } from '../const';
 import { CronJobModel } from '../models';
 import { K8sResponseData, K8sWorkloadResource } from '../types/types';
-import { getPipelinesAndPipelineRunsForResource } from '../utils/pipeline-utils';
+import { getPipelinesDataForResource } from '../utils/pipeline-utils';
 import { getPodsDataForResource } from '../utils/pod-resource-utils';
 import {
   createOverviewItemForType,
@@ -65,10 +65,7 @@ export const getBaseTopologyDataModel = (resources: K8sResponseData): Model => {
                     jobsData: getJobsDataForResource(resources, resource),
                   }
                 : {}),
-              pipelinesData: getPipelinesAndPipelineRunsForResource(
-                resource,
-                resources,
-              ),
+              pipelinesData: getPipelinesDataForResource(resources, resource),
             },
           );
           typedDataModel.nodes?.push(

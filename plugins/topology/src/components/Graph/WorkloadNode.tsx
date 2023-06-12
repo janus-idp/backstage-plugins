@@ -1,7 +1,6 @@
 import React from 'react';
 
 import {
-  getDefaultShapeDecoratorCenter,
   GraphElement,
   isNode,
   Node,
@@ -15,10 +14,14 @@ import {
   WithSelectionProps,
 } from '@patternfly/react-topology';
 
+import { PipelinesData } from '../../types/pipeline';
+import { TopologyDecorator } from '../../types/topology-types';
 import { calculateRadius, getPodStatus } from '../../utils/workload-node-utils';
 import { AllPodStatus } from '../Pods/pod';
 import PodSet, { podSetInnerRadius } from '../Pods/PodSet';
 import BaseNode from './BaseNode';
+import { getNodeDecorators } from './decorators/getNodeDecorators';
+import { PipelineRunDecorator } from './decorators/PipelineRunDecorator';
 import { UrlDecorator } from './decorators/UrlDecorator';
 
 import './WorkloadNode.css';
@@ -67,7 +70,7 @@ const InnerWorkloadNode = observer(
     const donutStatus = workloadData.podsData;
     const [hover, hoverRef] = useHover();
     const size = Math.min(width, height);
-    const { decoratorRadius } = calculateRadius(size);
+    const { radius, decoratorRadius } = calculateRadius(size);
     const cx = width / 2;
     const cy = height / 2;
     const controller = useVisualizationController();
@@ -80,24 +83,67 @@ const InnerWorkloadNode = observer(
       if (onSelect) onSelect(e);
     };
 
-    const urlDecorator = React.useMemo(() => {
-      if (!workloadData?.url) {
+    const urlDecorator = (
+      nodeElement: Node,
+      urlDecoratorRadius: number,
+      x: number,
+      y: number,
+    ) => {
+      const url = nodeElement.getData().data?.url;
+
+      if (!url) {
         return null;
       }
-      const { x, y } = getDefaultShapeDecoratorCenter(
-        TopologyQuadrant.upperRight,
-        element,
-      );
-      const offset = decoratorRadius * 0.4;
+
       return (
         <UrlDecorator
           url={workloadData.url}
-          radius={decoratorRadius}
-          x={x + offset}
-          y={y - offset}
+          radius={urlDecoratorRadius}
+          x={x}
+          y={y}
         />
       );
-    }, [workloadData?.url, element, decoratorRadius]);
+    };
+
+    const pipelineRunStatusDecorator = (
+      nodeElement: Node,
+      pipelineDecoratorRadius: number,
+      x: number,
+      y: number,
+    ) => {
+      const pipelinesData: PipelinesData =
+        nodeElement.getData().data?.pipelinesData;
+      if (
+        !pipelinesData?.pipelineRuns ||
+        pipelinesData.pipelineRuns.length === 0
+      ) {
+        return null;
+      }
+      return (
+        <PipelineRunDecorator
+          key={nodeElement.getId()}
+          pipelinesData={pipelinesData}
+          radius={pipelineDecoratorRadius}
+          x={x}
+          y={y}
+        />
+      );
+    };
+
+    const decorators: TopologyDecorator[] = [
+      {
+        quadrant: TopologyQuadrant.lowerLeft,
+        decorator: pipelineRunStatusDecorator,
+      },
+      {
+        quadrant: TopologyQuadrant.upperRight,
+        decorator: urlDecorator,
+      },
+    ];
+
+    const nodeDecorators = showDetails
+      ? getNodeDecorators(element, decorators, cx, cy, radius, decoratorRadius)
+      : null;
 
     return (
       <g className="bs-topology-workload-node">
@@ -110,7 +156,7 @@ const InnerWorkloadNode = observer(
           nodeStatus={
             !showDetails ? getAggregateStatus(donutStatus) : undefined
           }
-          attachments={showDetails && urlDecorator}
+          attachments={nodeDecorators}
           onSelect={onNodeSelect}
           {...rest}
         >

@@ -43,15 +43,9 @@ export type TopologyDecoratorGetter = (
   radius: number,
   centerX: number,
   centerY: number,
-) => React.ReactElement;
+) => React.ReactElement | null;
 
 export type TopologyDecorator = {
-  id: string;
-  priority: number;
   quadrant: TopologyQuadrant;
   decorator: TopologyDecoratorGetter;
-};
-
-export type GraphData = {
-  decorators?: { [key: string]: TopologyDecorator[] };
 };

@@ -2,15 +2,12 @@ import React from 'react';
 
 import { render } from '@testing-library/react';
 
-import {
-  mockPipeline,
-  mockPipelineRun,
-} from '../../../__fixtures__/tektonResources';
+import { mockTektonResources } from '../../../__fixtures__/1-tektonResources';
 import PLRlist from './PLRlist';
 
 describe('PLRlist', () => {
   it('shows the workload pipeline', () => {
-    const pipelines = [mockPipeline];
+    const pipelines = mockTektonResources.pipelines;
     const { getByText } = render(
       <PLRlist pipelines={pipelines} pipelineRuns={[]} />,
     );
@@ -23,11 +20,11 @@ describe('PLRlist', () => {
 
   it('renders the list of pipeline runs', () => {
     const pipelineRuns: any[] = [
-      mockPipelineRun,
+      ...mockTektonResources.pipelineruns,
       {
-        ...mockPipelineRun,
+        ...mockTektonResources.pipelineruns[0],
         metadata: {
-          ...mockPipelineRun.metadata,
+          ...mockTektonResources.pipelineruns[0].metadata,
           name: 'nationalparks-py2-9591xb',
           uid: '974e5124-c6b4-49c1-8960-d64740f47020',
         },

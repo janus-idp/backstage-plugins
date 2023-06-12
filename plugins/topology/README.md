@@ -42,7 +42,7 @@ The Topology plugin enables you to visualize the workloads such as Deployment, J
 
   ```
 
-- The following code must be added in`customResources` component in the [`app-config.yaml`](https://backstage.io/docs/features/kubernetes/configuration#configuring-kubernetes-clusters) file to view the Tekton PipelineRuns list in side panel:
+- The following code must be added in`customResources` component in the [`app-config.yaml`](https://backstage.io/docs/features/kubernetes/configuration#configuring-kubernetes-clusters) file to view the Tekton PipelineRuns list in the side panel and to view the latest PipelineRun status in the Topology node decorator:
 
   ```yaml
    kubernetes:
@@ -54,9 +54,12 @@ The Topology plugin enables you to visualize the workloads such as Deployment, J
        - group: 'tekton.dev'
          apiVersion: 'v1beta1'
          plural: 'pipelineruns'
+       - group: 'tekton.dev'
+         apiVersion: 'v1beta1'
+         plural: 'taskruns'
   ```
 
-  Also, ensure that the Pipeline and PipelineRun are granted a [`ClusterRole`](https://backstage.io/docs/features/kubernetes/configuration#role-based-access-control). You can use the following code to grant the `ClusterRole` to Pipeline and PipelineRun:
+  Also, ensure that the Pipeline, PipelineRun, and TaskRun are granted a [`ClusterRole`](https://backstage.io/docs/features/kubernetes/configuration#role-based-access-control). You can use the following code to grant the `ClusterRole` to Pipeline, PipelineRun, and TaskRun:
 
   ```yaml
     ...
@@ -71,6 +74,7 @@ The Topology plugin enables you to visualize the workloads such as Deployment, J
         resources:
           - pipelines
           - pipelineruns
+          - taskruns
         verbs:
           - get
           - list

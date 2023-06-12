@@ -6,7 +6,7 @@ import { INSTANCE_LABEL } from '../const';
 import { ModelsPlural, resourceGVKs, resourceModels } from '../models';
 import { IngressesData } from '../types/ingresses';
 import { JobsData } from '../types/jobs';
-import { PipelinesData } from '../types/pipelineRun';
+import { PipelinesData } from '../types/pipeline';
 import { PodRCData } from '../types/pods';
 import { RoutesData } from '../types/route';
 import { OverviewItem, TopologyDataObject } from '../types/topology-types';
@@ -110,7 +110,7 @@ export const createTopologyNodeData = (
     ingressesData?: IngressesData;
     jobsData?: JobsData;
     routesData?: RoutesData;
-    pipelinesData?: PipelinesData;
+    pipelinesData?: PipelinesData | null;
   },
 ): TopologyDataObject => {
   const dcUID = resource.metadata?.uid;
