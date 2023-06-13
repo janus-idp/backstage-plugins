@@ -7,9 +7,9 @@
   },
   "scripts": {
     "preinstall": "npx only-allow yarn",
-    "start": "turbo run start --concurrency 15",
+    "start": "turbo run start",
     "start:backstage": "turbo run start --filter=...{./packages/*}",
-    "start:plugins": "turbo run start --filter=...{./plugins/*} --concurrency 15",
+    "start:plugins": "turbo run start --filter=...{./plugins/*}",
     "build": "turbo run build",
     "build:backstage": "turbo run build --filter=...{./packages/*}",
     "build:plugins": "turbo run build --filter=...{./plugins/*}",

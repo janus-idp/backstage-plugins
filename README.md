@@ -16,7 +16,7 @@ You can also use this process if you have an idea for a good plugin but you hope
 
 ## Create a new plugin
 
-Run the following command to start a new plugin and follow the instructions:
+Run the following command to create a new plugin and follow the instructions:
 
 ```console
 yarn new
@@ -29,11 +29,11 @@ yarn new
 Backstage's support for standalone plugin development is very limited (especially for backend plugins), therefore we include a minimal test instance within this repository.
 
 1. Install the plugin via `yarn workspace [app|backend] add @janus-idp/<PLUGIN_NAME>@*` (`@*` at the end ensures the package is always linked to the local package in the `plugins` folder)
-2. Run `yarn start`
+2. Run `yarn start:backstage`
 
 ### Developing a frontend plugin
 
-In case your plugin supports standalone mode, you can use `yarn start` command in your plugin directory directly and you don't have to install the plugin as mentioned above.
+In case your plugin supports standalone mode, you can use `yarn start --filter=<PLUGIN_NAME>` command in your plugin directory directly and you don't have to install the plugin as mentioned above.
 
 ### Plugin specific config file
 
@@ -84,3 +84,14 @@ Semantic Release does following:
 4. Creates a git tag `<package-name>@<version>` pointing to the new release
 5. Creates a new GitHub release for each package
 6. Publishes the new version to the NPM registry
+
+## Common issues
+
+- Error:
+
+  ```log
+  ERROR run failed: error preparing engine: Invalid persistent task configuration:
+  You have <x - number> persistent tasks but `turbo` is configured for concurrency of 10. Set --concurrency to at least <x - number>
+  ```
+
+  Solution: You need to run `yarn start` with a [filter](https://turbo.build/repo/docs/core-concepts/monorepos/filtering). e.g. `yarn start --filter=<PLUGIN_NAME>`
