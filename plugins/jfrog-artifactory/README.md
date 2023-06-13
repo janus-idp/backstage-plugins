@@ -15,7 +15,7 @@ This plugin will show you information about your container images within Jfrog A
    ```yaml title="app-config.yaml"
    proxy:
      '/jfrog-artifactory/api':
-       target: 'http://<hostname>:8082'
+       target: 'http://<hostname>:8082' # or https://<customer>.jfrog.io
        headers:
          # Authorization: 'Bearer <YOUR TOKEN>'
        # Change to "false" in case of using self hosted artifactory instance with a self-signed certificate
