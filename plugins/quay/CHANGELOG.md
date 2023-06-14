@@ -1,3 +1,16 @@
+## @janus-idp/backstage-plugin-quay [1.2.13](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.2.12...@janus-idp/backstage-plugin-quay@1.2.13) (2023-06-14)
+
+
+### Other changes
+
+* **quay:** add unit tests for quay plugin ([#441](https://github.com/janus-idp/backstage-plugins/issues/441)) ([e9d7ed5](https://github.com/janus-idp/backstage-plugins/commit/e9d7ed54b7da5e8246993e586ea1b5379f757322))
+* reorder imports via prettier ([#419](https://github.com/janus-idp/backstage-plugins/issues/419)) ([17f1e6a](https://github.com/janus-idp/backstage-plugins/commit/17f1e6a689bd793a619ec5e42e5cdda0998f78a5))
+
+
+### Documentation
+
+* update plugin README formatting ([#396](https://github.com/janus-idp/backstage-plugins/issues/396)) ([9b39056](https://github.com/janus-idp/backstage-plugins/commit/9b39056f6c66e9a6a0a5d0c4059420dff66db263)), closes [#295](https://github.com/janus-idp/backstage-plugins/issues/295) [#369](https://github.com/janus-idp/backstage-plugins/issues/369) [#295](https://github.com/janus-idp/backstage-plugins/issues/295) [#369](https://github.com/janus-idp/backstage-plugins/issues/369)
+
 ## @janus-idp/backstage-plugin-quay [1.2.12](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.2.11...@janus-idp/backstage-plugin-quay@1.2.12) (2023-05-30)
 
 ## @janus-idp/backstage-plugin-quay [1.2.11](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.2.10...@janus-idp/backstage-plugin-quay@1.2.11) (2023-05-30)
