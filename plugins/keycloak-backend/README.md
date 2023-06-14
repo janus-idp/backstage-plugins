@@ -35,7 +35,7 @@ yarn workspace backend add @janus-idp/backstage-plugin-keycloak-backend
            clientSecret: ${KEYCLOAK_CLIENTSECRET}
    ```
 
-2. Register the plugin in the `packages/backend/src/plugins/catalog.ts` file. You can also configure a schedule in this step. However there are possible ways of configuration, such as:
+2. Register the plugin in the `packages/backend/src/plugins/catalog.ts` file. You can also configure a schedule in this step. However, there are possible ways of configuration, such as:
 
    - Configure a schedule inside the `app-config.yaml` file:
 
@@ -116,7 +116,7 @@ yarn workspace backend add @janus-idp/backstage-plugin-keycloak-backend
      }
      ```
 
-3. Optionally override the default Keycloak query parameters. Configure the parameters inside the `app-config.yaml` file:
+3. Optional: override the default Keycloak query parameters. Configure the parameters inside the `app-config.yaml` file:
 
    ```yaml title="app-config.yaml"
    catalog:
@@ -167,18 +167,22 @@ The solution of setting the environment variable is not recommended.
 
 ## For users
 
-### Imported users and groups in Backstage with Keycloak plugin
+### Imported users and groups in Backstage using Keycloak plugin
 
 After configuring the plugin successfully, the plugin imports the users and groups each time when started.
 
-After the first import is complete, you can select `User` to list the users from the catalog page:
+After the first import is complete, you can select **User** to list the users from the catalog page:
+
 ![catalog-list](./images/users.jpg)
 
 You can see the list of users on the page:
+
 ![user-list](./images/user-list.jpg)
 
 When you select a user, you can see the information imported from Keycloak:
+
 ![user-profile](./images/user2.jpg)
 
-You can also select a `Group`, view the list, and select or view the information imported from Keycloak for a group:
+You can also select a group, view the list, and select or view the information imported from Keycloak for a group:
+
 ![group-profile](./images/group1.jpg)
