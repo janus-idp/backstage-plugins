@@ -15,6 +15,11 @@
  */
 
 import { errorHandler } from '@backstage/backend-common';
+import {
+  coreServices,
+  createBackendPlugin,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 
 import express from 'express';
@@ -45,29 +50,19 @@ import {
 } from '../helpers/parser';
 import { ManagedClusterInfo } from '../types';
 
-export interface RouterOptions {
-  logger: Logger;
-  config: Config;
-}
-
-export async function createRouter(
-  options: RouterOptions,
-): Promise<express.Router> {
-  const { logger } = options;
-  const { config } = options;
+const buildRouter = (config: Config, logger: Logger | LoggerService) => {
+  const router = Router();
+  router.use(express.json());
 
   const clients = Object.fromEntries(
     readOcmConfigs(config).map(provider => [
       provider.id,
       {
-        client: hubApiClient(provider, options.logger),
+        client: hubApiClient(provider, logger),
         hubResourceName: provider.hubResourceName,
       },
     ]),
   );
-
-  const router = Router();
-  router.use(express.json());
 
   router.get(
     '/status/:providerId/:clusterName',
@@ -137,6 +132,35 @@ export async function createRouter(
   });
 
   router.use(errorHandler({ logClientErrors: true }));
-
   return router;
+};
+
+export interface RouterOptions {
+  logger: Logger;
+  config: Config;
 }
+
+export async function createRouter(
+  options: RouterOptions,
+): Promise<express.Router> {
+  const { logger } = options;
+  const { config } = options;
+
+  return buildRouter(config, logger);
+}
+
+export const ocmPlugin = createBackendPlugin({
+  pluginId: 'ocm',
+  register(env) {
+    env.registerInit({
+      deps: {
+        logger: coreServices.logger,
+        config: coreServices.config,
+        http: coreServices.httpRouter,
+      },
+      async init({ config, logger, http }) {
+        http.use(buildRouter(config, logger));
+      },
+    });
+  },
+});
