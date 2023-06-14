@@ -1,0 +1,33 @@
+name: Test
+description: Test Node.js package
+inputs:
+  args:
+    description: Backstage CLI repo build arguments
+    default: '@janus-idp/*'
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version-file: '.nvmrc'
+        cache: 'yarn'
+
+    - name: Setup local Turbo cache
+      uses: dtinth/setup-github-actions-caching-for-turbo@v1
+
+    - name: Install dependencies
+      shell: bash
+      run: yarn --prefer-offline --frozen-lockfile
+
+    - name: Run prettier
+      shell: bash
+      run: yarn prettier:check
+
+    - name: Run lint
+      shell: bash
+      run: yarn lint --filter=${{ inputs.args }}
+
+    - name: Run tests
+      shell: bash
+      run: yarn test --filter=${{ inputs.args }}

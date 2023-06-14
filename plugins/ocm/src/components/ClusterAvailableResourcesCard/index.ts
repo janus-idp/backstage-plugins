@@ -1,0 +1,1 @@
+export { ClusterAvailableResourceCard } from './ClusterAvailableResourcesCard';

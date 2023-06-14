@@ -1,0 +1,15 @@
+.tp-decorator {
+  color: var(--pf-global--Color--200);
+  transition: color 0.2s ease;
+  outline: none;
+}
+.tp-decorator__link:hover {
+  text-decoration: none;
+}
+.tp-decorator__bg {
+  fill: var(--pf-global--BackgroundColor--light-100);
+}
+.tp-decorator:hover,
+.tp-decorator:active {
+  color: var(--pf-global--link--Color--hover);
+}

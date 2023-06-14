@@ -1,0 +1,10 @@
+.bs-tkn-task-status-tooltip {
+  display: inline-grid;
+  grid-gap: var(--pf-global--spacer--sm);
+  text-align: left;
+  grid-template-columns: 1rem auto;
+}
+.bs-tkn-task-status-tooltip__legend {
+  height: 1rem;
+  width: 1rem;
+}

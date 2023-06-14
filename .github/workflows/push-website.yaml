@@ -1,0 +1,56 @@
+name: Push website
+
+# Do not abstract the build step into a separate workflow file, as it will run into pathname issues
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '**/README.md'
+
+concurrency:
+  group: push-website
+  cancel-in-progress: true
+
+jobs:
+  build-website:
+    name: Build website
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          repository: janus-idp/janus-idp.github.io
+          persist-credentials: false
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v2
+        name: Install pnpm
+        id: pnpm-install
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --prefer-offline --frozen-lockfile
+
+      - name: Run Build
+        run: pnpm run build --filter=website
+
+  dispatch-website:
+    name: Dispatch website
+    needs:
+      - build-website
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository Dispatch
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ secrets.PAT }}
+          repository: janus-idp/janus-idp.github.io
+          event-type: deploy-website
+          client-payload: '{"github": ${{ toJson(github) }}}'

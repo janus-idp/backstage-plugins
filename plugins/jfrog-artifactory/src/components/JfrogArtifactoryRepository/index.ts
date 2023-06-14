@@ -1,0 +1,1 @@
+export { JfrogArtifactoryRepository } from './JfrogArtifactoryRepository';

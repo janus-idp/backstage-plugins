@@ -1,0 +1,142 @@
+{
+  "name": "root",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": "16 || 18"
+  },
+  "scripts": {
+    "preinstall": "npx only-allow yarn",
+    "start": "turbo run start",
+    "start:backstage": "turbo run start --filter=...{./packages/*}",
+    "start:plugins": "turbo run start --filter=...{./plugins/*}",
+    "build": "turbo run build",
+    "build:backstage": "turbo run build --filter=...{./packages/*}",
+    "build:plugins": "turbo run build --filter=...{./plugins/*}",
+    "tsc": "tsc",
+    "clean": "turbo run clean",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "prettier:check": "prettier --check .",
+    "prettier:fix": "prettier --write .",
+    "new": "backstage-cli new --scope @janus-idp",
+    "release": "multi-semantic-release",
+    "prepare": "husky install"
+  },
+  "workspaces": {
+    "packages": [
+      "packages/*",
+      "plugins/*"
+    ]
+  },
+  "devDependencies": {
+    "@backstage/cli": "0.22.7",
+    "@ianvs/prettier-plugin-sort-imports": "4.0.1",
+    "@semantic-release/changelog": "6.0.3",
+    "@semantic-release/exec": "6.0.3",
+    "@semantic-release/git": "10.0.1",
+    "@semantic-release/github": "9.0.2",
+    "@spotify/prettier-config": "15.0.0",
+    "conventional-changelog-conventionalcommits": "5.0.0",
+    "husky": "8.0.3",
+    "multi-semantic-release": "3.0.2",
+    "prettier": "2.8.8",
+    "turbo": "1.10.0",
+    "typescript": "5.0.4"
+  },
+  "resolutions": {
+    "@types/react": "^17.0.2",
+    "@types/react-dom": "^17.0.2"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,mjs,cjs}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md}": [
+      "prettier --write"
+    ]
+  },
+  "release": {
+    "branches": "main",
+    "plugins": [
+      [
+        "@semantic-release/commit-analyzer",
+        {
+          "preset": "conventionalcommits",
+          "releaseRules": [
+            {
+              "type": "docs",
+              "release": "patch"
+            },
+            {
+              "type": "refactor",
+              "release": "patch"
+            },
+            {
+              "type": "perf",
+              "release": "minor"
+            },
+            {
+              "scope": "no-release",
+              "release": false
+            },
+            {
+              "type": "chore",
+              "scope": "deps",
+              "release": "patch"
+            }
+          ]
+        }
+      ],
+      [
+        "@semantic-release/release-notes-generator",
+        {
+          "preset": "conventionalcommits",
+          "presetConfig": {
+            "types": [
+              {
+                "type": "feat",
+                "section": "Features"
+              },
+              {
+                "type": "fix",
+                "section": "Bug Fixes"
+              },
+              {
+                "type": "docs",
+                "section": "Documentation"
+              },
+              {
+                "type": "style",
+                "section": "Other changes"
+              },
+              {
+                "type": "refactor",
+                "section": "Other changes"
+              },
+              {
+                "type": "perf",
+                "section": "Other changes"
+              },
+              {
+                "type": "test",
+                "section": "Other changes"
+              }
+            ]
+          }
+        }
+      ],
+      "@semantic-release/changelog",
+      "@semantic-release/npm",
+      "@semantic-release/git",
+      [
+        "@semantic-release/github",
+        {
+          "successComment": false,
+          "releasedLabels": false
+        }
+      ]
+    ]
+  }
+}

@@ -1,0 +1,165 @@
+{
+  "apiVersion": "workspace.devfile.io/v1alpha2",
+  "kind": "DevWorkspace",
+  "metadata": {
+    "annotations": {
+      "controller.devfile.io/devworkspace-source": "web-terminal",
+      "controller.devfile.io/restricted-access": "true"
+    },
+    "creationTimestamp": "1970-02-03T00:00:00Z",
+    "finalizers": ["rbac.controller.devfile.io"],
+    "generateName": "web-terminal-",
+    "generation": 1,
+    "labels": {
+      "console.openshift.io/terminal": "true",
+      "controller.devfile.io/creator": "56124a8a-d1fb-11ed-afa1-024200020002"
+    },
+    "managedFields": [
+      {
+        "apiVersion": "workspace.devfile.io/v1alpha2",
+        "fieldsType": "FieldsV1",
+        "fieldsV1": {
+          "f:metadata": {
+            "f:annotations": {
+              ".": {},
+              "f:controller.devfile.io/devworkspace-source": {},
+              "f:controller.devfile.io/restricted-access": {}
+            },
+            "f:generateName": {},
+            "f:labels": {
+              ".": {},
+              "f:console.openshift.io/terminal": {}
+            }
+          },
+          "f:spec": {
+            ".": {},
+            "f:routingClass": {},
+            "f:started": {},
+            "f:template": {
+              ".": {},
+              "f:components": {}
+            }
+          }
+        },
+        "manager": "Go-http-client",
+        "operation": "Update",
+        "time": "1970-02-03T00:00:00Z"
+      },
+      {
+        "apiVersion": "workspace.devfile.io/v1alpha2",
+        "fieldsType": "FieldsV1",
+        "fieldsV1": {
+          "f:metadata": {
+            "f:finalizers": {
+              ".": {},
+              "v:\"rbac.controller.devfile.io\"": {}
+            }
+          },
+          "f:status": {
+            ".": {},
+            "f:devworkspaceId": {},
+            "f:phase": {}
+          }
+        },
+        "manager": "devworkspace-controller",
+        "operation": "Update",
+        "time": "1970-02-03T00:00:00Z"
+      },
+      {
+        "apiVersion": "workspace.devfile.io/v1alpha2",
+        "fieldsType": "FieldsV1",
+        "fieldsV1": {
+          "f:status": {
+            "f:conditions": {},
+            "f:mainUrl": {},
+            "f:message": {}
+          }
+        },
+        "manager": "devworkspace-controller",
+        "operation": "Update",
+        "subresource": "status",
+        "time": "1970-02-03T00:00:00Z"
+      }
+    ],
+    "name": "web-terminal-kk5rf",
+    "namespace": "web-terminal-service-catalog",
+    "resourceVersion": "26178785796",
+    "uid": "56124a8a-d1fb-11ed-afa1-024200020002"
+  },
+  "spec": {
+    "routingClass": "web-terminal",
+    "started": true,
+    "template": {
+      "components": [
+        {
+          "name": "web-terminal-tooling",
+          "plugin": {
+            "kubernetes": {
+              "name": "web-terminal-tooling",
+              "namespace": "openshift-operators"
+            }
+          }
+        },
+        {
+          "name": "web-terminal-exec",
+          "plugin": {
+            "kubernetes": {
+              "name": "web-terminal-exec",
+              "namespace": "openshift-operators"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "status": {
+    "conditions": [
+      {
+        "lastTransitionTime": "1970-02-03T00:00:00Z",
+        "message": "DevWorkspace is starting",
+        "status": "True",
+        "type": "Started"
+      },
+      {
+        "lastTransitionTime": "1970-02-03T00:00:00Z",
+        "message": "Resolved plugins and parents from DevWorkspace",
+        "status": "True",
+        "type": "DevWorkspaceResolved"
+      },
+      {
+        "lastTransitionTime": "1970-02-03T00:00:00Z",
+        "message": "Storage ready",
+        "status": "True",
+        "type": "StorageReady"
+      },
+      {
+        "lastTransitionTime": "1970-02-03T00:00:00Z",
+        "message": "Networking ready",
+        "status": "True",
+        "type": "RoutingReady"
+      },
+      {
+        "lastTransitionTime": "1970-02-03T00:00:00Z",
+        "message": "DevWorkspace serviceaccount ready",
+        "status": "True",
+        "type": "ServiceAccountReady"
+      },
+      {
+        "lastTransitionTime": "1970-02-03T00:00:00Z",
+        "message": "DevWorkspace secrets ready",
+        "status": "True",
+        "type": "PullSecretsReady"
+      },
+      {
+        "lastTransitionTime": "1970-02-03T00:00:00Z",
+        "message": "Waiting for workspace deployment",
+        "status": "False",
+        "type": "DeploymentReady"
+      }
+    ],
+    "devworkspaceId": "workspacee6298823a2ccc918",
+    "mainUrl": "https://workspacee6298823a2ccc918-mock-domain.com.svc:4444",
+    "message": "Waiting for workspace deployment",
+    "phase": "Running"
+  }
+}

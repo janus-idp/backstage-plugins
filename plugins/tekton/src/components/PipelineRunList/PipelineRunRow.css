@@ -1,0 +1,5 @@
+.bs-tkn-timestamp {
+  color: var(--pf-c-table--cell--Color);
+  font-size: var(--pf-c-table--cell--FontSize);
+  font-weight: var(--pf-c-table--cell--FontWeight);
+}

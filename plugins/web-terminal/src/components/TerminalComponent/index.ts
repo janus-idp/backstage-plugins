@@ -1,0 +1,1 @@
+export { TerminalComponent } from './TerminalComponent';
