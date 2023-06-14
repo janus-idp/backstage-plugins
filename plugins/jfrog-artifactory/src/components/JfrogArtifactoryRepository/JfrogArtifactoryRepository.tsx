@@ -47,6 +47,10 @@ export function JfrogArtifactoryRepository(props: RepositoryProps) {
         ),
         size: displayValue(formatSize(Number(version.size)), 'N/A'),
         downloads: displayValue(version.stats.downloadCount, 0),
+        vulnerabilities_critical: displayValue(
+          version.vulnerabilities?.critical,
+          0,
+        ),
         vulnerabilities_high: displayValue(version.vulnerabilities?.high, 0),
         vulnerabilities_medium: displayValue(
           version.vulnerabilities?.medium,

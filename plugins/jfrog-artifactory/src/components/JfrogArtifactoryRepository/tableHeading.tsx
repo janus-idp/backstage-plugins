@@ -34,6 +34,11 @@ export const columns: TableColumn[] = [
     type: 'string',
   },
   {
+    title: 'Vulnerabilities (Critical)',
+    field: 'vulnerabilities_critical',
+    type: 'numeric',
+  },
+  {
     title: 'Vulnerabilities (High)',
     field: 'vulnerabilities_high',
     type: 'numeric',

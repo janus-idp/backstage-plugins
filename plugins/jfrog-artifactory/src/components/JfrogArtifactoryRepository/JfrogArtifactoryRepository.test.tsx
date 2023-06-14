@@ -18,6 +18,7 @@ const mockPackageEdge: PackageEdge = {
         size: '1000',
         repos: [{ name: 'Test repo' }],
         vulnerabilities: {
+          critical: 0,
           high: 1,
           medium: 0,
           low: 0,
