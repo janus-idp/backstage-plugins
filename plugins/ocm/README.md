@@ -11,6 +11,7 @@ The OCM plugin has the following capabilities:
   - Links to the OpenShift Container Platform (OCP) console, OCM console, and OpenShift Cluster Manager are provided in `metadata.links`.
 - Shows real-time data from OCM on the Resource entity page, including:
   - Cluster current status (up or down)
+  - Cluster nodes status (up or down)
   - Cluster details (console link, OCP, and Kubernetes version)
   - Details about available compute resources on the cluster
 
@@ -279,11 +280,9 @@ If you are interested in Resource discovery and do not want any of the front-end
      ```tsx title="packages/app/src/components/catalog/EntityPage.tsx"
      /* highlight-add-start */
      import {
-       ClusterAllocatableResourceCard,
        ClusterAvailableResourceCard,
        ClusterContextProvider,
        ClusterInfoCard,
-       ClusterStatusCard,
      } from '@janus-idp/backstage-plugin-ocm';
 
      /* highlight-add-end */
@@ -305,23 +304,12 @@ If you are interested in Resource discovery and do not want any of the front-end
            <EntitySwitch>
              <EntitySwitch.Case if={isType('kubernetes-cluster')}>
                <ClusterContextProvider>
-                 <Grid container>
-                   <Grid container item direction="column" xs={3}>
-                     <Grid item>
-                       <ClusterStatusCard />
-                     </Grid>
-
-                     <Grid item>
-                       <ClusterAllocatableResourceCard />
-                     </Grid>
-
-                     <Grid item>
-                       <ClusterAvailableResourceCard />
-                     </Grid>
-                   </Grid>
-
-                   <Grid item xs>
+                 <Grid container direction="column" xs={6}>
+                   <Grid item>
                      <ClusterInfoCard />
+                   </Grid>
+                   <Grid item>
+                     <ClusterAvailableResourceCard />
                    </Grid>
                  </Grid>
                </ClusterContextProvider>
@@ -343,13 +331,9 @@ If you are interested in Resource discovery and do not want any of the front-end
 
      In the previous codeblock, you can place the context provider into your `Resource` entity renderer, which is usually available in `packages/app/src/components/catalog/EntityPage.tsx` or in an imported component.
 
-   - `<ClusterStatusCard />`: This is an entity component displaying availability status of a cluster as an overview card:
-
    - `<ClusterInfoCard />`: This is an entity component displaying details of a cluster in a table:
 
    - `<ClusterAvailableResourceCard />`: This is an entity component displaying the available resources on a cluster. For example, see [`.status.capacity`](https://open-cluster-management.io/concepts/managedcluster/#cluster-heartbeats-and-status) of the `ManagedCluster` resource.
-
-   - `<ClusterAllocatableResourceCard />`: This is an entity component displaying allocatable resources on a cluster. For example, see [`.status.allocatable`](https://open-cluster-management.io/concepts/managedcluster/#cluster-heartbeats-and-status) of the `ManagedCluster` resource.
 
 ## For users
 
