@@ -11,15 +11,17 @@ The following actions are currently supported in this module:
 - A [Backstage](https://backstage.io/docs/getting-started/) project
 - A [SonarQube](https://docs.sonarqube.org/latest/) instance
 
-## Getting started
+## Installation
 
-1. Install the action package in your Backstage project
+Run the following command to install the action package in your Backstage project:
 
-   ```console
-   yarn workspace backend add @janus-idp/backstage-scaffolder-backend-module-sonarqube
-   ```
+```console
+yarn workspace backend add @janus-idp/backstage-scaffolder-backend-module-sonarqube
+```
 
-2. [Register](https://backstage.io/docs/features/software-templates/writing-custom-actions#registering-custom-actions) the SonarQube actions by modifying the `packages/backend/src/plugins/scaffolder.ts` file from your project with the following changes:
+## Configuration
+
+1. [Register](https://backstage.io/docs/features/software-templates/writing-custom-actions#registering-custom-actions) the SonarQube actions by modifying the `packages/backend/src/plugins/scaffolder.ts` file from your project with the following changes:
 
    ```ts
    /* highlight-add-next-line */
@@ -45,7 +47,7 @@ The following actions are currently supported in this module:
    }
    ```
 
-3. Add the SonarQube actions to your templates, see the [examples](./examples/templates) directory of this repository for complete usage examples
+2. Add the SonarQube actions to your templates, see the [examples](./examples/templates) directory of this repository for complete usage examples
 
    ```yaml
    action: sonarqube:create-project
@@ -87,31 +89,3 @@ The following actions are currently supported in this module:
 | Name       |  Type  | Description                                  |
 | ---------- | :----: | -------------------------------------------- |
 | projectUrl | string | SonarQube project URL created by this action |
-
-## Development
-
-1. Add the local package dependency to the Backstage instance
-
-   ```console
-   yarn workspace backend add file:./plugins/sonarqube-actions
-   ```
-
-2. [Register](#getting-started) the SonarQube actions in your Backstage project
-3. **Optional**: You can use the sample templates from this repository and add them as `locations` of your `app-config.yaml` file
-
-   ```yaml title="app-config.yaml"
-   catalog:
-     locations:
-       - type: file
-         target: ../../plugins/sonarqube-actions/examples/templates/01-sonar-template.yaml
-         rules:
-           - allow: [Template]
-       - type: file
-         target: ../../plugins/sonarqube-actions/examples/templates/02-sonar-template.yaml
-         rules:
-           - allow: [Template]
-   ```
-
-4. Run `yarn dev`
-5. If you don't have a SonarQube instance available for testing, you can use the official SonarQube [container image](https://hub.docker.com/_/sonarqube/) and run it with [Podman](https://podman.io/) or [Docker](https://docker.io/) or you can use the sample Docker compose file from the [documentation](https://docs.sonarqube.org/latest/setup-and-upgrade/install-the-server/#installing-sonarqube-from-the-docker-image)
-6. :rocket: Start using the SonarQube actions in your templates

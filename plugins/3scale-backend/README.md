@@ -2,15 +2,15 @@
 
 This is a plugin for synchronizing 3scale content into [Backstage.io](https://backstage.io/) catalog.
 
-## Install
+## Installation
 
-1. Install the plugin
+Run the following command to install the 3scale Backstage provider plugin:
 
-   ```console
-   yarn workspace backend add @janus-idp/backstage-plugin-3scale-backend
-   ```
+```console
+yarn workspace backend add @janus-idp/backstage-plugin-3scale-backend
+```
 
-## Configure
+## Configuration
 
 3scale Backstage provider allows configuration of one or many providers using the `app-config.yaml` configuration file of Backstage. Use a `threeScaleApiEntity` marker to start configuring them.
 
@@ -55,7 +55,7 @@ export default async function createPlugin(
 }
 ```
 
-## Troubleshoot
+## Troubleshooting
 
 After having started your Backstage app, you should see some lines like those below in logs:
 

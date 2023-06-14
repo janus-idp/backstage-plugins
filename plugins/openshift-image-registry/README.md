@@ -2,15 +2,17 @@
 
 This plugin will show you all ImageStreams in an Openshift cluster
 
-## Getting started
+## Installation
 
-1. Install the plugin
+Run the following command to install the OpenShift Image Registry plugin:
 
-   ```console
-   yarn workspace app add @janus-idp/backstage-plugin-openshift-image-registry
-   ```
+```console
+yarn workspace app add @janus-idp/backstage-plugin-openshift-image-registry
+```
 
-2. Set the proxy to desired Openshift cluster in the `app-config.yaml` file as follows:
+## Configuration
+
+1. Set the proxy to desired Openshift cluster in the `app-config.yaml` file as follows:
 
    ```yaml title="app-config.yaml"
    proxy:
@@ -24,7 +26,7 @@ This plugin will show you all ImageStreams in an Openshift cluster
      secure: true
    ```
 
-3. Enable additional sidebar-item on the app sidebar in `packages/app/src/components/Root/Root.tsx`
+2. Enable additional sidebar-item on the app sidebar in `packages/app/src/components/Root/Root.tsx`
 
    ```tsx title="packages/app/src/components/Root/Root.tsx"
    /* highlight-add-next-line */
@@ -50,7 +52,7 @@ This plugin will show you all ImageStreams in an Openshift cluster
    );
    ```
 
-4. Add the Openshift Image Registry Page in `packages/app/src/App.tsx`
+3. Add the Openshift Image Registry Page in `packages/app/src/App.tsx`
 
    ```tsx title="packages/app/src/App.tsx"
    /* highlight-add-next-line */

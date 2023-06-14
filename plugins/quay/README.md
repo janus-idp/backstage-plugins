@@ -2,18 +2,6 @@
 
 The Quay plugin displays the information about your container images within the Quay registry in your Backstage application.
 
-# Table of contents
-
-1. [For administrators](#for-administrators)
-
-   a. [Installation](#installation)
-
-   b. [Development](#development)
-
-1. [For users](#for-users)
-
-   a. [Using the Quay plugin in Backstage](#using-the-quay-plugin-in-backstage)
-
 ## For administrators
 
 ### Installation
@@ -24,7 +12,9 @@ The Quay plugin displays the information about your container images within the 
    yarn workspace app add @janus-idp/backstage-plugin-quay
    ```
 
-2. Set the proxy to the desired Quay server in the `app-config.yaml` file as follows:
+### Configuration
+
+1. Set the proxy to the desired Quay server in the `app-config.yaml` file as follows:
 
    ```yaml title="app-config.yaml"
    proxy:
@@ -43,7 +33,7 @@ The Quay plugin displays the information about your container images within the 
      uiUrl: 'https://quay.io'
    ```
 
-3. Enable an additional tab on the entity view page in `packages/app/src/components/catalog/EntityPage.tsx`:
+2. Enable an additional tab on the entity view page in `packages/app/src/components/catalog/EntityPage.tsx`:
 
    ```tsx title="packages/app/src/components/catalog/EntityPage.tsx"
    /* highlight-add-next-line */
@@ -60,27 +50,13 @@ The Quay plugin displays the information about your container images within the 
    );
    ```
 
-4. Annotate your entity with the following annotations:
+3. Annotate your entity with the following annotations:
 
    ```yaml title="catalog-info.yaml"
    metadata:
      annotations:
        'quay.io/repository-slug': `<ORGANIZATION>/<REPOSITORY>',
    ```
-
-### Development
-
-In [Backstage plugin terminology](https://backstage.io/docs/local-dev/cli-build-system#package-roles), the Quay plugin is a front-end plugin. However, it requires a backend proxy to be available at all times. Therefore, you need to run a backend instance in the development environment as well.
-
-You can run the following commands concurrently from the root repository to start a live development session:
-
-```console
-yarn start-backend
-```
-
-```console
-yarn workspace @janus-idp/backstage-plugin-quay run start
-```
 
 ## For users
 

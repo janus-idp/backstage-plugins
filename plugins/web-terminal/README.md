@@ -3,7 +3,7 @@
 This plugin provides a frontend for [`webterminal proxy`](https://github.com/janus-idp/webterminal-proxy). Users first enter their user token from the cluster, and then the plugin setups environment. Once it is set up, it connects to `webterminal-proxy`, which finishes setups and passes data between the frontend plugin and pod.
 This plugin uses [`xterm.js`](http://xtermjs.org/) to simulate a regular terminal.
 
-## Requirements
+## Prerequisites
 
 Before we can install this plugin, we need to fulfill the following requirements:
 
@@ -36,7 +36,3 @@ Next, you can include the `WebTerminal` component in your catalog resource page 
   <WebTerminal />
 </Grid>
 ```
-
-## Development
-
-You can access the development page of the plugin by running `yarn start` on the address `http://localhost:3000/web-terminal`.

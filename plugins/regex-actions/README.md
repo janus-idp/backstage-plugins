@@ -10,39 +10,41 @@ The following actions are currently supported in this plugin:
 
 - A [Backstage](https://backstage.io/docs/getting-started/) project
 
-## Getting started
+## Installation
 
-1. Install the action package in your Backstage project
+Run the following command to install the action package in your Backstage project:
 
-   ```console
-   yarn workspace backend add @janus-idp/backstage-plugin-regex-actions
-   ```
+```console
+yarn workspace backend add @janus-idp/backstage-plugin-regex-actions
+```
 
-2. [Register](https://backstage.io/docs/features/software-templates/writing-custom-actions#registering-custom-actions) the regex actions by modifying the `packages/backend/src/plugins/scaffolder.ts` file from your project with the following changes:
+## Configuration
 
-   ```ts title="packages/backend/src/plugins/scaffolder.ts"
-   /* highlight-add-next-line */
-   import { createReplaceAction } from '@janus-idp/backstage-plugin-regex-actions';
+[Register](https://backstage.io/docs/features/software-templates/writing-custom-actions#registering-custom-actions) the regex actions by modifying the `packages/backend/src/plugins/scaffolder.ts` file from your project with the following changes:
 
-   export default async function createPlugin(
-     env: PluginEnvironment,
-   ): Promise<Router> {
-     // ...
+```ts title="packages/backend/src/plugins/scaffolder.ts"
+/* highlight-add-next-line */
+import { createReplaceAction } from '@janus-idp/backstage-plugin-regex-actions';
 
-     /* highlight-add-next-line */
-     const actions = [...builtInActions, createReplaceAction()];
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  // ...
 
-     return await createRouter({
-       actions,
-       logger: env.logger,
-       config: env.config,
-       database: env.database,
-       reader: env.reader,
-       catalogClient,
-       identity: env.identity,
-     });
-   }
-   ```
+  /* highlight-add-next-line */
+  const actions = [...builtInActions, createReplaceAction()];
+
+  return await createRouter({
+    actions,
+    logger: env.logger,
+    config: env.config,
+    database: env.database,
+    reader: env.reader,
+    catalogClient,
+    identity: env.identity,
+  });
+}
+```
 
 ## Usage
 

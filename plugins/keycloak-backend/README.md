@@ -9,55 +9,19 @@ The Keycloak backend plugin has the following capabilities:
 - Synchronization of Keycloak users in a realm
 - Synchronization of Keycloak groups and their users in a realm
 
-## Table of contents
-
-1. [For administrators](#for-administrators)
-
-   a. [Configuration](#configuration)
-
-   b. [Installation](#installation)
-
-   c. [Limitations](#limitations)
-
-1. [For users](#for-users)
-
-   a. [Imported users and groups in Backstage with Keycloak plugin](#imported-users-and-groups-in-backstage-with-keycloak-plugin)
-
 ## For administrators
-
-### Configuration
-
-Communication between Backstage and Keycloak is enabled by using the Keycloak API. Username/password or client credentials are supported authentication methods.
-
-The following table describes the parameters that you can configure to enable the plugin under `catalog.providers.keycloakOrg.<ENVIRONMENT_NAME>` object in the `app-config.yaml` file:
-
-| Name             | Description                                                                                                                                     | Default Value | Required                                             |
-| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | ---------------------------------------------------- |
-| `baseUrl`        | Location of the Keycloak server, such as `https://localhost:8443/auth`. Note that the newer versions of Keycloak omit the `/auth` context path. | ""            | Yes                                                  |
-| `realm`          | Realm to synchronize                                                                                                                            | `master`      | No                                                   |
-| `loginRealm`     | Realm used to authenticate                                                                                                                      | `master`      | No                                                   |
-| `username`       | Username to authenticate                                                                                                                        | ""            | Yes if using password based authentication           |
-| `password`       | Password to authenticate                                                                                                                        | ""            | Yes if using password based authentication           |
-| `clientId`       | Client ID to authenticate                                                                                                                       | ""            | Yes if using client credentials based authentication |
-| `clientSecret`   | Client Secret to authenticate                                                                                                                   | ""            | Yes if using client credentials based authentication |
-| `userQuerySize`  | Number of users to query at a time                                                                                                              | `100`         | No                                                   |
-| `groupQuerySize` | Number of groups to query at a time                                                                                                             | `100`         | No                                                   |
-
-When using client credentials, the access type must be set to `confidential` and service accounts must be enabled. You must add the following roles from the `realm-management` client role:
-
-- `query-groups`
-- `query-users`
-- `view-users`
 
 ### Installation
 
-1. Install the Backstage package into the backend. When not integrating with a published package, clone the repository locally and add the Backstage as follows:
+Install the Backstage package into the backend. When not integrating with a published package, clone the repository locally and add the Backstage as follows:
 
-   ```console
-   yarn workspace backend add @janus-idp/backstage-plugin-keycloak-backend
-   ```
+```console
+yarn workspace backend add @janus-idp/backstage-plugin-keycloak-backend
+```
 
-2. Add the following configuration to the `app-config.yaml` file:
+### Configuration
+
+1. Add the following configuration to the `app-config.yaml` file:
 
    ```yaml title="app-config.yaml"
    catalog:
@@ -71,7 +35,7 @@ When using client credentials, the access type must be set to `confidential` and
            clientSecret: ${KEYCLOAK_CLIENTSECRET}
    ```
 
-3. Register the plugin in the `packages/backend/src/plugins/catalog.ts` file. You can also configure a schedule in this step. However there are possible ways of configuration, such as:
+2. Register the plugin in the `packages/backend/src/plugins/catalog.ts` file. You can also configure a schedule in this step. However there are possible ways of configuration, such as:
 
    - Configure a schedule inside the `app-config.yaml` file:
 
@@ -152,7 +116,7 @@ When using client credentials, the access type must be set to `confidential` and
      }
      ```
 
-4. Optionally override the default Keycloak query parameters. Configure the parameters inside the `app-config.yaml` file:
+3. Optionally override the default Keycloak query parameters. Configure the parameters inside the `app-config.yaml` file:
 
    ```yaml title="app-config.yaml"
    catalog:
@@ -165,6 +129,28 @@ When using client credentials, the access type must be set to `confidential` and
            groupQuerySize: 250 # Optional
            # highlight-add-end
    ```
+
+Communication between Backstage and Keycloak is enabled by using the Keycloak API. Username/password or client credentials are supported authentication methods.
+
+The following table describes the parameters that you can configure to enable the plugin under `catalog.providers.keycloakOrg.<ENVIRONMENT_NAME>` object in the `app-config.yaml` file:
+
+| Name             | Description                                                                                                                                     | Default Value | Required                                             |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | ---------------------------------------------------- |
+| `baseUrl`        | Location of the Keycloak server, such as `https://localhost:8443/auth`. Note that the newer versions of Keycloak omit the `/auth` context path. | ""            | Yes                                                  |
+| `realm`          | Realm to synchronize                                                                                                                            | `master`      | No                                                   |
+| `loginRealm`     | Realm used to authenticate                                                                                                                      | `master`      | No                                                   |
+| `username`       | Username to authenticate                                                                                                                        | ""            | Yes if using password based authentication           |
+| `password`       | Password to authenticate                                                                                                                        | ""            | Yes if using password based authentication           |
+| `clientId`       | Client ID to authenticate                                                                                                                       | ""            | Yes if using client credentials based authentication |
+| `clientSecret`   | Client Secret to authenticate                                                                                                                   | ""            | Yes if using client credentials based authentication |
+| `userQuerySize`  | Number of users to query at a time                                                                                                              | `100`         | No                                                   |
+| `groupQuerySize` | Number of groups to query at a time                                                                                                             | `100`         | No                                                   |
+
+When using client credentials, the access type must be set to `confidential` and service accounts must be enabled. You must add the following roles from the `realm-management` client role:
+
+- `query-groups`
+- `query-users`
+- `view-users`
 
 ### Limitations
 

@@ -2,18 +2,6 @@
 
 The Topology plugin enables you to visualize the workloads such as Deployment, Job, Daemonset, Statefulset, CronJob, and Pods powering any service on the Kubernetes cluster.
 
-# Table of contents
-
-1. [For administrators](#for-administrators)
-
-   a. [Installation](#installation)
-
-   b. [Development](#development)
-
-1. [For users](#for-users)
-
-   a. [Using the Topology plugin in Backstage](#using-the-topology-plugin-in-backstage)
-
 ## For administrators
 
 ### Installation
@@ -131,14 +119,6 @@ The Topology plugin enables you to visualize the workloads such as Deployment, J
      </EntityPageLayout>
    );
    ```
-
-### Development
-
-In [Backstage plugin terminology](https://backstage.io/docs/local-dev/cli-build-system#package-roles), the Topology plugin is a front-end plugin. You can start a live development session from the repository root using the following command:
-
-```console
-yarn workspace @janus-idp/backstage-plugin-topology run start
-```
 
 ## For users
 
