@@ -1,3 +1,16 @@
+## @janus-idp/backstage-plugin-ocm [3.0.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm@3.0.1...@janus-idp/backstage-plugin-ocm@3.0.2) (2023-06-14)
+
+
+### Other changes
+
+* reorder imports via prettier ([#419](https://github.com/janus-idp/backstage-plugins/issues/419)) ([17f1e6a](https://github.com/janus-idp/backstage-plugins/commit/17f1e6a689bd793a619ec5e42e5cdda0998f78a5))
+
+
+### Documentation
+
+* **ocm:** update the readme with removed frontend components ([#455](https://github.com/janus-idp/backstage-plugins/issues/455)) ([8bfdf36](https://github.com/janus-idp/backstage-plugins/commit/8bfdf363bb6cf715c4cd9ceb0ec096e21948a5e7))
+* update plugin README formatting ([#396](https://github.com/janus-idp/backstage-plugins/issues/396)) ([9b39056](https://github.com/janus-idp/backstage-plugins/commit/9b39056f6c66e9a6a0a5d0c4059420dff66db263)), closes [#295](https://github.com/janus-idp/backstage-plugins/issues/295) [#369](https://github.com/janus-idp/backstage-plugins/issues/369) [#295](https://github.com/janus-idp/backstage-plugins/issues/295) [#369](https://github.com/janus-idp/backstage-plugins/issues/369)
+
 ## @janus-idp/backstage-plugin-ocm [3.0.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm@3.0.0...@janus-idp/backstage-plugin-ocm@3.0.1) (2023-05-31)
 
 
