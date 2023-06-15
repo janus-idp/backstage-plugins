@@ -2,17 +2,23 @@
   "extends": [
     "config:js-lib",
     ":gitSignOff",
+    ":rebaseStalePrs",
     "group:allNonMajor",
     "group:linters",
-    "group:semantic-releaseMonorepo"
+    "group:test"
   ],
+  "labels": ["kind/dependency upgrade"],
   "npm": {
-    "stabilityDays": 1
+    "minimumReleaseAge": "1 day"
   },
   "packageRules": [
     {
       "matchManagers": ["github-actions"],
       "groupName": "GitHub Actions"
+    },
+    {
+      "matchPackagePatterns": ["^@backstage/"],
+      "groupName": ["Core Backstage packages"]
     }
   ]
 }
