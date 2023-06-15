@@ -1,0 +1,30 @@
+.bs-shared-icon-and-text {
+  align-items: baseline;
+  display: flex;
+  font-weight: 400;
+  font-size: 14px;
+}
+
+.bs-shared-icon-and-text__icon {
+  flex-shrink: 0;
+  margin-right: 5px;
+}
+
+.bs-shared-icon-and-text--lg {
+  display: block;
+}
+
+.bs-shared-icon-and-text--lg .bs-shared-icon-and-text__icon {
+  font-size: 1.2rem;
+  margin-right: 1rem;
+}
+
+.bs-shared-dashboard-icon {
+  font-size: 1.2rem;
+}
+
+.bs-shared-icon-flex-child {
+  flex: 0 0 auto;
+  position: relative;
+  top: 0.125em;
+}
