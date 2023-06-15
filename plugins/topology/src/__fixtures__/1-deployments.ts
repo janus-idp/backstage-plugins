@@ -123,7 +123,7 @@ export const mockKubernetesResponse = {
         ],
         containers: [
           {
-            name: 'container',
+            name: 'container-hello',
             image: 'openshift/hello-openshift',
             ports: [
               {

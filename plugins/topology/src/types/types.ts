@@ -58,6 +58,7 @@ export type K8sResourcesContextData = {
   selectedClusterErrors?: ClusterErrors;
   clusters: string[];
   setSelectedCluster: React.Dispatch<React.SetStateAction<number>>;
+  selectedCluster?: number;
 };
 
 export type TektonResponseData = {
