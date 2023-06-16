@@ -129,7 +129,7 @@ Topology is a front-end plugin that enables you to view the workloads as nodes t
 #### Prerequisites
 
 - Your Backstage application is installed and running.
-- You have installed the Topology plugin. For installation process, see [Installation](#installation).
+- You have installed the Topology plugin. For the installation process, see [Installation](#installation).
 
 #### Procedure
 
@@ -138,7 +138,7 @@ Topology is a front-end plugin that enables you to view the workloads as nodes t
 
    ![topology-tab](./images/topology-tab-user1.png)
 
-1. Select a node and a pop-up appears on the right-side, which contains two tabs: **Details** and **Resources**.
+1. Select a node and a pop-up appears on the right side, which contains two tabs: **Details** and **Resources**.
 
    The **Details** and **Resources** tab contain the associated information and resources of the node.
 
