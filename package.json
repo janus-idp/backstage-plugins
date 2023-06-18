@@ -37,7 +37,7 @@
     "@semantic-release/git": "10.0.1",
     "@semantic-release/github": "9.0.2",
     "@spotify/prettier-config": "15.0.0",
-    "conventional-changelog-conventionalcommits": "5.0.0",
+    "conventional-changelog-conventionalcommits": "6.1.0",
     "husky": "8.0.3",
     "multi-semantic-release": "3.0.2",
     "prettier": "2.8.8",
