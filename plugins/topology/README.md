@@ -42,7 +42,7 @@ The Topology plugin enables you to visualize the workloads such as Deployment, J
 
   ```
 
-- The following annotation is added to the entity's `catalog-info.yaml` file to identify whether an entitiy contains the Kubernetes resources:
+- The following annotation is added to the entity's `catalog-info.yaml` file to identify whether an entity contains the Kubernetes resources:
 
   ```yaml title="catalog-info.yaml"
   annotations:
@@ -102,7 +102,7 @@ The Topology plugin enables you to visualize the workloads such as Deployment, J
    yarn workspace app add @janus-idp/backstage-plugin-topology
    ```
 
-2. Enable **Topology** tab in `packages/app/src/components/catalog/EntityPage.tsx`:
+2. Enable **TOPOLOGY** tab in `packages/app/src/components/catalog/EntityPage.tsx`:
 
    ```tsx title="packages/app/src/components/catalog/EntityPage.tsx"
    /* highlight-add-next-line */
