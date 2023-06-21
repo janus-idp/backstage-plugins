@@ -42,7 +42,7 @@ The Topology plugin enables you to visualize the workloads such as Deployment, J
 
   ```
 
-- The following annotation is added to the entity's `catalog-info.yaml` file to identify whether an entitiy contains the Kubernetes resources:
+- The following annotation is added to the entity's `catalog-info.yaml` file to identify whether an entity contains the Kubernetes resources:
 
   ```yaml title="catalog-info.yaml"
   annotations:
@@ -102,7 +102,7 @@ The Topology plugin enables you to visualize the workloads such as Deployment, J
    yarn workspace app add @janus-idp/backstage-plugin-topology
    ```
 
-2. Enable **Topology** tab in `packages/app/src/components/catalog/EntityPage.tsx`:
+2. Enable **TOPOLOGY** tab in `packages/app/src/components/catalog/EntityPage.tsx`:
 
    ```tsx title="packages/app/src/components/catalog/EntityPage.tsx"
    /* highlight-add-next-line */
@@ -129,7 +129,7 @@ Topology is a front-end plugin that enables you to view the workloads as nodes t
 #### Prerequisites
 
 - Your Backstage application is installed and running.
-- You have installed the Topology plugin. For installation process, see [Installation](#installation).
+- You have installed the Topology plugin. For the installation process, see [Installation](#installation).
 
 #### Procedure
 
@@ -138,7 +138,7 @@ Topology is a front-end plugin that enables you to view the workloads as nodes t
 
    ![topology-tab](./images/topology-tab-user1.png)
 
-1. Select a node and a pop-up appears on the right-side, which contains two tabs: **Details** and **Resources**.
+1. Select a node and a pop-up appears on the right side, which contains two tabs: **Details** and **Resources**.
 
    The **Details** and **Resources** tab contain the associated information and resources of the node.
 
