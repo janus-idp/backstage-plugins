@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-3scale-backend [1.0.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-3scale-backend@1.0.5...@janus-idp/backstage-plugin-3scale-backend@1.0.6) (2023-06-21)
+
+
+### Documentation
+
+* **3scale:** adding admin section in readme ([#473](https://github.com/janus-idp/backstage-plugins/issues/473)) ([423d7a9](https://github.com/janus-idp/backstage-plugins/commit/423d7a9c0a08ff97e4189e443d276790de3d84d3))
+
 ## @janus-idp/backstage-plugin-3scale-backend [1.0.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-3scale-backend@1.0.4...@janus-idp/backstage-plugin-3scale-backend@1.0.5) (2023-06-14)
 
 
