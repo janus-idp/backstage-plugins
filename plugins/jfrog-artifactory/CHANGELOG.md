@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-jfrog-artifactory [1.0.11](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-jfrog-artifactory@1.0.10...@janus-idp/backstage-plugin-jfrog-artifactory@1.0.11) (2023-06-21)
+
+
+### Documentation
+
+* **jfrog:** adding admin sections in readme ([#474](https://github.com/janus-idp/backstage-plugins/issues/474)) ([36ba737](https://github.com/janus-idp/backstage-plugins/commit/36ba73717f5d7ae52968a1213d792a1f6a78bc1e))
+
 ## @janus-idp/backstage-plugin-jfrog-artifactory [1.0.10](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-jfrog-artifactory@1.0.9...@janus-idp/backstage-plugin-jfrog-artifactory@1.0.10) (2023-06-14)
 
 
