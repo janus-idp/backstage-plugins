@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-topology [1.7.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.7.1...@janus-idp/backstage-plugin-topology@1.7.2) (2023-06-21)
+
+
+### Documentation
+
+* **topology:** fixes to topology readme ([#468](https://github.com/janus-idp/backstage-plugins/issues/468)) ([b94f1ae](https://github.com/janus-idp/backstage-plugins/commit/b94f1ae0b241636ab9a6b74c063a4e31dc8016ed))
+
 ## @janus-idp/backstage-plugin-topology [1.7.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.7.0...@janus-idp/backstage-plugin-topology@1.7.1) (2023-06-14)
 
 
