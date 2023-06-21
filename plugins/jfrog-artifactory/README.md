@@ -1,8 +1,10 @@
 # Jfrog Artifactory plugin for Backstage
 
-This plugin will show you information about your container images within Jfrog Artifactory registry
+The Jfrog Artifactory plugin displays information about your container images within the Jfrog Artifactory registry.
 
-## Installation
+## For administrators
+
+### Installation
 
 Run the following command to install the Jfrog Artifactory plugin:
 
@@ -10,9 +12,11 @@ Run the following command to install the Jfrog Artifactory plugin:
 yarn workspace app add @janus-idp/backstage-plugin-jfrog-artifactory
 ```
 
-## Configuration
+### Configuration
 
-1. Set the proxy to desired Artifactory server in `app-config.yaml`
+**Procedure**
+
+1. Set the proxy to desired Artifactory server in the `app-config.yaml` file as follows:
 
    ```yaml title="app-config.yaml"
    proxy:
@@ -24,7 +28,7 @@ yarn workspace app add @janus-idp/backstage-plugin-jfrog-artifactory
        secure: true
    ```
 
-2. Enable additional tab on the entity view page in `packages/app/src/components/catalog/EntityPage.tsx`
+2. Enable the **Jfrog Artifactory** tab on the entity view page in `packages/app/src/components/catalog/EntityPage.tsx`:
 
    ```ts title="packages/app/src/components/catalog/EntityPage.tsx"
    /* highlight-add-start */
@@ -51,7 +55,7 @@ yarn workspace app add @janus-idp/backstage-plugin-jfrog-artifactory
    );
    ```
 
-3. Annotate your entity with
+3. Annotate your entity with the following annotations:
 
    ```yaml title="catalog-info.yaml"
    metadata:
