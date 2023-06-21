@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-keycloak-backend [1.3.10](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-keycloak-backend@1.3.9...@janus-idp/backstage-plugin-keycloak-backend@1.3.10) (2023-06-21)
+
+
+### Documentation
+
+* **keycloak:** fixes in readme file ([#454](https://github.com/janus-idp/backstage-plugins/issues/454)) ([eeb1333](https://github.com/janus-idp/backstage-plugins/commit/eeb133359cd39e2abefffccd60c5d0355e05995d))
+
 ## @janus-idp/backstage-plugin-keycloak-backend [1.3.9](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-keycloak-backend@1.3.8...@janus-idp/backstage-plugin-keycloak-backend@1.3.9) (2023-06-14)
 
 
