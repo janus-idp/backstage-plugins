@@ -1,4 +1,4 @@
-import { EntityProviderConnection } from '@backstage/plugin-catalog-backend';
+import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 
 import { groupMembers, groups, users } from './data';
 

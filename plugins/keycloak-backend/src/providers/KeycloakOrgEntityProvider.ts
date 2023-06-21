@@ -24,7 +24,7 @@ import { Config } from '@backstage/config';
 import {
   EntityProvider,
   EntityProviderConnection,
-} from '@backstage/plugin-catalog-backend';
+} from '@backstage/plugin-catalog-node';
 
 import KcAdminClient from '@keycloak/keycloak-admin-client';
 import type { Credentials } from '@keycloak/keycloak-admin-client/lib/utils/auth';
