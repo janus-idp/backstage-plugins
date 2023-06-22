@@ -1,9 +1,15 @@
+import * as React from 'react';
+
 import { TableColumn } from '@backstage/core-components';
+
 import makeStyles from '@material-ui/core/styles/makeStyles';
+
+import { TagRow } from '../../types';
+import { ManifestDigestChip } from './ManifestDigestChip';
 
 export const columns: TableColumn[] = [
   {
-    title: 'Version',
+    title: 'Tag',
     field: 'name',
     type: 'string',
     highlight: true,
@@ -14,14 +20,19 @@ export const columns: TableColumn[] = [
     type: 'date',
   },
   {
-    title: 'Modified',
+    title: 'Last Modified',
     field: 'lastModified',
     type: 'date',
   },
   {
     title: 'Manifest',
-    field: 'manifest_digest',
+    field: 'manifestDigest',
     type: 'string',
+    render: (row): React.ReactNode => {
+      const hashFunc = (row as TagRow)?.manifestDigest?.substring(0, 6);
+      const shortHash = (row as TagRow)?.manifestDigest?.substring(7, 19);
+      return <ManifestDigestChip label={hashFunc} hash={shortHash} />;
+    },
   },
 ];
 

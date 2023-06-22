@@ -1,12 +1,50 @@
 import React from 'react';
+
 import { createDevApp } from '@backstage/dev-utils';
-import { acrPlugin, AcrPage } from '../src/plugin';
+import { EntityProvider } from '@backstage/plugin-catalog-react';
+import { TestApiProvider } from '@backstage/test-utils';
+
+import { mockAcrTagsData } from '../src/__fixtures__/acrTagsObject';
+import { mockEntity } from '../src/__fixtures__/mockEntity';
+import {
+  AzureContainerRegistryApiRef,
+  AzureContainerRegistryApiV1,
+} from '../src/api';
+import { AcrPage, acrPlugin } from '../src/plugin';
+import { TagsResponse } from '../src/types';
+
+class MockAzureContainerRegistryApiClient
+  implements AzureContainerRegistryApiV1
+{
+  readonly resources;
+
+  constructor(fixtureData: any) {
+    this.resources = fixtureData;
+  }
+
+  async getTags(_repo: any): Promise<TagsResponse> {
+    return this.resources;
+  }
+}
 
 createDevApp()
   .registerPlugin(acrPlugin)
   .addPage({
-    element: <AcrPage />,
-    title: 'Root Page',
+    element: (
+      <TestApiProvider
+        apis={[
+          [
+            AzureContainerRegistryApiRef,
+            new MockAzureContainerRegistryApiClient(mockAcrTagsData),
+          ],
+        ]}
+      >
+        <EntityProvider entity={mockEntity}>
+          <AcrPage />
+        </EntityProvider>
+      </TestApiProvider>
+    ),
+    title: 'ACR',
     path: '/acr',
   })
   .render();

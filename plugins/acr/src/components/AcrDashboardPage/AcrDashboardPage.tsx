@@ -1,11 +1,10 @@
-import { useEntity } from '@backstage/plugin-catalog-react';
 import React from 'react';
+
 import { AzureContainerRegistry } from '../AzureContainerRegistry';
 import { useAcrAppData } from '../useAcrAppData';
 
 export const AcrDashboardPage = () => {
-  const { entity } = useEntity();
-  const { imageName } = useAcrAppData({ entity });
+  const { imageName } = useAcrAppData();
 
-  return <AzureContainerRegistry image={imageName} widget={false} />;
+  return <AzureContainerRegistry image={imageName} />;
 };

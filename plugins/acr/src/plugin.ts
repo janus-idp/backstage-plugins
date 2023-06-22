@@ -1,17 +1,18 @@
+import { Entity } from '@backstage/catalog-model';
 import {
+  configApiRef,
   createApiFactory,
   createComponentExtension,
   createPlugin,
   discoveryApiRef,
-  configApiRef,
 } from '@backstage/core-plugin-api';
-import { Entity } from '@backstage/catalog-model';
-import { rootRouteRef } from './routes';
+
 import {
   AzureContainerRegistryApiClient,
   AzureContainerRegistryApiRef,
 } from './api';
 import { AZURE_CONTAINER_REGISTRY_ANNOTATION_IMAGE_NAME } from './consts';
+import { rootRouteRef } from './routes';
 
 export const acrPlugin = createPlugin({
   id: 'acr',

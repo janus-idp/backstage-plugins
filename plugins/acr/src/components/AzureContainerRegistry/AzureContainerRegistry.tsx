@@ -1,83 +1,62 @@
-import { useApi } from '@backstage/core-plugin-api';
-import React, { useState } from 'react';
+import React from 'react';
 import { useAsync } from 'react-use';
-import { Link, Progress, Table } from '@backstage/core-components';
-import { columns, useStyles } from './tableHeading';
-import { Tag } from '../../types';
+
+import { Progress, Table } from '@backstage/core-components';
+import { useApi } from '@backstage/core-plugin-api';
+
 import { AzureContainerRegistryApiRef } from '../../api';
+import { Tag, TagRow } from '../../types';
 import { formatDate } from '../utils';
-import { Box, Chip, makeStyles } from '@material-ui/core';
+import { ErrorReport } from './ErrorReport';
+import { columns, useStyles } from './tableHeading';
 
-const useLocalStyles = makeStyles({
-  chip: {
-    margin: 0,
-    marginRight: '.2em',
-    height: '1.5em',
-    '& > span': {
-      padding: '.3em',
-    },
-  },
-});
+type AzureContainerRegistryProps = {
+  image: string;
+};
 
-export function AzureContainerRegistry(props: RepositoryProps) {
+export const AzureContainerRegistry = ({
+  image,
+}: AzureContainerRegistryProps) => {
   const AzureContainerRegistryClient = useApi(AzureContainerRegistryApiRef);
   const classes = useStyles();
-  const localClasses = useLocalStyles();
-  const [tags, setTags] = useState<Tag[]>([]);
-  const title = `Azure Container Registry Repository: ${props.image}`;
-
-  const { loading } = useAsync(async () => {
-    const tagsResponse = await AzureContainerRegistryClient.getTags(
-      props.image,
-    );
-
-    setTags(tagsResponse.tags);
-
-    return tagsResponse;
-  });
+  const title = `Azure Container Registry Repository: ${image}`;
+  const { loading, value, error } = useAsync(() =>
+    AzureContainerRegistryClient.getTags(image),
+  );
 
   if (loading) {
-    return <Progress />;
+    return (
+      <div data-testid="acr-repository-loading">
+        <Progress />
+      </div>
+    );
   }
 
-  const data = tags?.map((tag: Tag) => {
-    const shortHash = tag.digest.substring(0, 12);
+  if (!loading && error) {
+    return (
+      <ErrorReport title="Could not fetch data." errorText={error.toString()} />
+    );
+  }
+
+  const data: TagRow[] = (value?.tags || []).map((tag: Tag) => {
     return {
       name: tag.name,
       createdTime: formatDate(tag.createdTime),
       lastModified: formatDate(tag.lastUpdateTime),
-      manifest_digest: (
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <Chip label="sha256" className={localClasses.chip} />
-          {shortHash}
-        </Box>
-      ),
+      manifestDigest: tag.digest,
+      id: tag.name,
     };
   });
 
   return (
-    <div style={{ border: '1px solid #ddd' }}>
+    <div data-testid="acr-repository-view" style={{ border: '1px solid #ddd' }}>
       <Table
         title={title}
-        options={{ paging: false, padding: 'dense' }}
+        options={{ paging: true, padding: 'dense' }}
         data={data}
         columns={columns}
-        emptyContent={
-          <div className={classes.empty}>
-            No data was added yet,&nbsp;
-            <Link to="https://backstage.io/">learn how to add data</Link>.
-          </div>
-        }
+        emptyContent={<div className={classes.empty}>No data found.</div>}
       />
     </div>
   );
-}
-
-AzureContainerRegistry.defaultProps = {
-  title: 'Docker Images',
 };
-interface RepositoryProps {
-  widget: boolean;
-  image: string;
-  title: string;
-}

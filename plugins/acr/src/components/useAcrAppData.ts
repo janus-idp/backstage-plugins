@@ -1,9 +1,11 @@
-import { Entity } from '@backstage/catalog-model';
+import { useEntity } from '@backstage/plugin-catalog-react';
+
 import { AZURE_CONTAINER_REGISTRY_ANNOTATION_IMAGE_NAME } from '../consts';
 
-export const useAcrAppData = ({ entity }: { entity: Entity }) => {
+export const useAcrAppData = () => {
+  const { entity } = useEntity();
   const imageName =
-    entity?.metadata.annotations?.[
+    entity?.metadata?.annotations?.[
       AZURE_CONTAINER_REGISTRY_ANNOTATION_IMAGE_NAME
     ] ?? '';
 

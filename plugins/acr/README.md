@@ -2,15 +2,17 @@
 
 This plugin will show you information about your container images within Azure Container Registry
 
-## Getting started
+### Installation
 
-### 1. Install the plugin
+1. Install the Azure Container Registry plugin using the following command:
 
 ```bash
-yarn workspace app add @janus-idp/plugin-acr
+yarn workspace app add @janus-idp/backstage-plugin-acr
 ```
 
-### 2. Set the proxy to desired Azure Container Registry server
+### 2. Configuration
+
+1. Set the proxy to the desired Azure Container Registry server in the `app-config.yaml` file as follows:
 
 ```yaml
 # app-config.yaml
@@ -25,17 +27,17 @@ proxy:
     secure: true
 ```
 
-### 3. Authorization.
+2. Authorization:
 
 Basic Authorization: Go to your Azure Container Registry portal, and go to the `Access Keys` tab. Get the `username` and the `password` of the `Admin User`, and use this [tool](https://www.debugbear.com/basic-auth-header-generator) to covert them into a token, and make it as the `ACR_AUTH_TOKEN` in environment variables.
 
 OAuth2: You can following the [link](https://learn.microsoft.com/en-us/azure/container-registry/container-registry-authentication?tabs=azure-cli) to get the bearer access token, and make it as `ACR_AUTH_TOKEN`.
 
-### 4. Enable additional tab on the entity view page
+3. Enable an additional tab on the entity view page in `packages/app/src/components/catalog/EntityPage.tsx`:
 
 ```ts
 // packages/app/src/components/catalog/EntityPage.tsx
-import { AcrPage, isAcrAvailable } from '@janus-idp/plugin-acr';
+import { AcrPage, isAcrAvailable } from '@janus-idp/backstage-plugin-acr';
 
 const websiteEntityPage = (
   <EntityPageLayout>
@@ -55,7 +57,7 @@ const websiteEntityPage = (
 );
 ```
 
-### 5. Annotate your entity with
+4. Annotate your entity with the following annotations:
 
 ```yaml
 metadata:
@@ -65,14 +67,8 @@ metadata:
 
 ## Development
 
-In [Backstage plugin terminology](https://backstage.io/docs/local-dev/cli-build-system#package-roles), this is a `frontend-plugin`. However it requires backend proxy to be available at all times. Development environment therefore requires you to run a backend instance as well. You can start a live dev session from the repository root using following commands concurrently:
+In [Backstage plugin terminology](https://backstage.io/docs/local-dev/cli-build-system#package-roles), this is a `frontend-plugin`. You can start a live dev session from the repository root using following commands:
 
 ```
-yarn start-backend
-```
-
-Go to the root repository and run:
-
-```
-yarn start
+yarn workspace @janus-idp/backstage-plugin-acr run start
 ```
