@@ -1,0 +1,4 @@
+
+
+p, user:default/guest, catalog-entity, read, deny
+p, user:default/guest, catalog.entity.create, deny
