@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-jfrog-artifactory [1.0.12](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-jfrog-artifactory@1.0.11...@janus-idp/backstage-plugin-jfrog-artifactory@1.0.12) (2023-06-26)
+
+
+### Documentation
+
+* **jfrog:** be explicit about JFrog SaaS target URI ([#451](https://github.com/janus-idp/backstage-plugins/issues/451)) ([2ca2d7a](https://github.com/janus-idp/backstage-plugins/commit/2ca2d7afe18a4f5d858e5a43c908228ef828792e))
+
 ## @janus-idp/backstage-plugin-jfrog-artifactory [1.0.11](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-jfrog-artifactory@1.0.10...@janus-idp/backstage-plugin-jfrog-artifactory@1.0.11) (2023-06-21)
 
 
