@@ -8,7 +8,7 @@ import { PipelineRunKind } from '../../types/pipelineRun';
 import { getRunStatusColor } from '../../utils/tekton-status';
 import {
   getTaskRunsForPipelineRun,
-  getTaskStatus,
+  getTaskStatusOfPLR,
 } from '../../utils/tekton-utils';
 import HorizontalStackedBars from './HorizontalStackedBars';
 import TaskStatusToolTip from './TaskStatusTooltip';
@@ -21,7 +21,7 @@ export const PipelineBars = ({ pipelinerun }: PipelineBarProps) => {
   const { watchResourcesData } = React.useContext(TektonResourcesContext);
   const taskRuns = watchResourcesData?.taskruns?.data || [];
   const plrTasks = getTaskRunsForPipelineRun(pipelinerun, taskRuns);
-  const taskStatus = getTaskStatus(pipelinerun, plrTasks);
+  const taskStatus = getTaskStatusOfPLR(pipelinerun, plrTasks);
   return (
     <Tooltip content={<TaskStatusToolTip taskStatus={taskStatus} />}>
       <HorizontalStackedBars

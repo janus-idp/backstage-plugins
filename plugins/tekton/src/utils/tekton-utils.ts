@@ -102,6 +102,7 @@ export const updateTaskStatus = (
   pipelinerun: PipelineRunKind,
   taskRuns: TaskRunKind[],
 ): TaskStatus => {
+  const plrTasks = getTaskRunsForPipelineRun(pipelinerun, taskRuns);
   const skippedTaskLength = pipelinerun?.status?.skippedTasks?.length || 0;
   const taskStatus: TaskStatus = {
     PipelineNotStarted: 0,
@@ -112,11 +113,12 @@ export const updateTaskStatus = (
     Cancelled: 0,
     Skipped: skippedTaskLength,
   };
-  if (!pipelinerun?.status?.taskRuns) {
+
+  if (plrTasks.length === 0) {
     return taskStatus;
   }
 
-  taskRuns.forEach((taskRun: TaskRunKind) => {
+  plrTasks.forEach((taskRun: TaskRunKind) => {
     const status = taskRun && pipelineRunFilterReducer(taskRun);
     if (status === 'Succeeded') {
       taskStatus[ComputedStatus.Succeeded]++;
@@ -136,17 +138,18 @@ export const updateTaskStatus = (
   };
 };
 
-export const getTaskStatus = (
+export const getTaskStatusOfPLR = (
   pipelinerun: PipelineRunKind,
   taskRuns: TaskRunKind[],
 ) => {
   const totalTasks = totalPipelineRunTasks(pipelinerun);
-  const plrTaskLength = taskRuns.length;
+  const plrTasks = getTaskRunsForPipelineRun(pipelinerun, taskRuns);
+  const plrTaskLength = plrTasks.length;
   const skippedTaskLength = pipelinerun?.status?.skippedTasks?.length || 0;
 
-  const taskStatus: TaskStatus = updateTaskStatus(pipelinerun, taskRuns);
+  const taskStatus: TaskStatus = updateTaskStatus(pipelinerun, plrTasks);
 
-  if (pipelinerun?.status?.taskRuns) {
+  if (plrTasks?.length > 0) {
     const pipelineRunHasFailure = taskStatus[ComputedStatus.Failed] > 0;
     const pipelineRunIsCancelled =
       pipelineRunFilterReducer(pipelinerun) === ComputedStatus.Cancelled;
