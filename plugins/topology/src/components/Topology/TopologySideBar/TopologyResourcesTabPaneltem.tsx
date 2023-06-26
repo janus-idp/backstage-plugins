@@ -13,7 +13,7 @@ const TopologyResourcesTabPanelItem = ({
   dataTest,
 }: React.PropsWithChildren<TopologyResourcesTabPanelItemProps>) => {
   const emptyState = (
-    <span className="topology-text-muted">{`No ${resourceLabel} found for this resource.`}</span>
+    <span className="bs-topology-text-muted">{`No ${resourceLabel} found for this resource.`}</span>
   );
   return (
     <>

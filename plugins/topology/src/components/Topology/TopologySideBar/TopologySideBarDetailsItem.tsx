@@ -20,7 +20,7 @@ const TopologySideBarDetailsItem = ({
           children
         ) : (
           <span
-            className="topology-text-muted"
+            className="bs-topology-text-muted"
             data-testid="detail-item-empty-state"
           >
             {emptyText}

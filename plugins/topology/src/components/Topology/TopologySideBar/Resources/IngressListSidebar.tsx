@@ -31,7 +31,7 @@ const IngressListSidebar = ({
             </span>
             {ingressData.url && (
               <>
-                <span className="topology-text-muted">Location:</span>
+                <span className="bs-topology-text-muted">Location:</span>
                 <a
                   href={ingressData.url}
                   target="_blank"

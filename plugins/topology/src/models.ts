@@ -1,3 +1,5 @@
+import { chart_color_green_400 as tektonGroupColor } from '@patternfly/react-tokens/dist/js/chart_color_green_400';
+
 import { GroupVersionKind, Model } from './types/types';
 
 export const ReplicaSetGVK: GroupVersionKind = {
@@ -57,6 +59,18 @@ export const RouteGVK: GroupVersionKind = {
   kind: 'Route',
 };
 
+export const PipelineGVK: GroupVersionKind = {
+  apiVersion: 'v1beta1',
+  apiGroup: 'tekton.dev',
+  kind: 'Pipeline',
+};
+
+export const PipelineRunGVK: GroupVersionKind = {
+  apiVersion: 'v1beta1',
+  apiGroup: 'tekton.dev',
+  kind: 'PipelineRun',
+};
+
 export enum ModelsPlural {
   deployments = 'deployments',
   pods = 'pods',
@@ -68,6 +82,8 @@ export enum ModelsPlural {
   cronjobs = 'cronjobs',
   statefulsets = 'statefulsets',
   routes = 'routes',
+  pipelines = 'pipelines',
+  pipelineruns = 'pipelineruns',
 }
 
 export const resourceGVKs: { [key: string]: GroupVersionKind } = {
@@ -81,6 +97,8 @@ export const resourceGVKs: { [key: string]: GroupVersionKind } = {
   [ModelsPlural.jobs]: JobGVK,
   [ModelsPlural.statefulsets]: StatefulSetGVK,
   [ModelsPlural.routes]: RouteGVK,
+  [ModelsPlural.pipelines]: PipelineGVK,
+  [ModelsPlural.pipelineruns]: PipelineRunGVK,
 };
 
 export const DeploymentModel: Model = {
@@ -144,6 +162,24 @@ export const RouteModel: Model = {
   color: '#2b9af3',
 };
 
+const color = tektonGroupColor.value;
+
+export const PipelineRunModel: Model = {
+  ...PipelineRunGVK,
+  abbr: 'PLR',
+  labelPlural: 'PipelineRuns',
+  plural: 'pipelineruns',
+  color,
+};
+
+export const PipelineModel: Model = {
+  ...PipelineGVK,
+  abbr: 'PL',
+  labelPlural: 'Pipelines',
+  plural: 'pipelines',
+  color,
+};
+
 export const resourceModels = {
   [DeploymentModel.kind]: DeploymentModel,
   [PodModel.kind]: PodModel,
@@ -154,4 +190,6 @@ export const resourceModels = {
   [CronJobModel.kind]: CronJobModel,
   [JobModel.kind]: JobModel,
   [RouteModel.kind]: RouteModel,
+  [PipelineModel.kind]: PipelineModel,
+  [PipelineRunModel.kind]: PipelineRunModel,
 };

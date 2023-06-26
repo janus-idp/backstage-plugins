@@ -3,6 +3,7 @@ import React from 'react';
 import {
   BanIcon,
   HourglassHalfIcon,
+  NotStartedIcon,
   SyncAltIcon,
   UnknownIcon,
 } from '@patternfly/react-icons';
@@ -11,7 +12,7 @@ import { GreenCheckCircleIcon, RedExclamationCircleIcon } from './icons';
 import StatusIconAndText from './StatusIconAndText';
 
 type StatusProps = {
-  status: string;
+  status?: string;
 };
 
 const DASH = '-';
@@ -35,10 +36,13 @@ const Status = ({ status }: StatusProps) => {
       );
 
     case 'Running':
+    case 'In Progress':
       return <StatusIconAndText {...statusProps} icon={<SyncAltIcon />} />;
 
     case 'Not Ready':
+    case 'Cancelled':
     case 'Terminating':
+    case 'Cancelling':
       return <StatusIconAndText {...statusProps} icon={<BanIcon />} />;
 
     case 'CrashLoopBackOff':
@@ -56,6 +60,9 @@ const Status = ({ status }: StatusProps) => {
       return (
         <StatusIconAndText {...statusProps} icon={<GreenCheckCircleIcon />} />
       );
+
+    case 'PipelineNotStarted':
+      return <StatusIconAndText {...statusProps} icon={<NotStartedIcon />} />;
 
     case 'Unknown':
       return <StatusIconAndText {...statusProps} icon={<UnknownIcon />} />;

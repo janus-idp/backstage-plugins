@@ -8,6 +8,7 @@ import {
   workloadNode2,
   workloadNode3,
   workloadNode4,
+  workloadNodeWtknRes,
 } from '../../../__fixtures__/workloadNodeData';
 import TopologyResourcesTabPanel from './TopologyResourcesTabPanel';
 
@@ -86,5 +87,19 @@ describe('TopologyResourcesTabPanel', () => {
     expect(queryByTestId('routes-list')).toBeNull();
     expect(queryByTestId('ingress-list')).not.toBeNull();
     getByText(/no ingresses found for this resource/i);
+  });
+
+  it('Should show PipelineRuns in sidepanel', () => {
+    const { queryByTestId } = render(
+      <TopologyResourcesTabPanel node={workloadNodeWtknRes as BaseNode} />,
+    );
+    expect(queryByTestId('plr-list')).not.toBeNull();
+  });
+
+  it('Should not show PipelineRuns in sidepanel if pipelinesData is not available', () => {
+    const { queryByTestId } = render(
+      <TopologyResourcesTabPanel node={workloadNode as BaseNode} />,
+    );
+    expect(queryByTestId('plr-list')).toBeNull();
   });
 });

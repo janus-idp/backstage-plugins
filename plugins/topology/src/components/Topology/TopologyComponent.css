@@ -4,6 +4,6 @@
   flex-direction: column;
 }
 
-.topology-text-muted {
+.bs-topology-text-muted {
   color: var(--pf-global--Color--200);
 }

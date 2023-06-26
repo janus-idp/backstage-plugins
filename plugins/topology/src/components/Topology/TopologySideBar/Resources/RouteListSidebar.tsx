@@ -26,7 +26,7 @@ const RouteListSidebar = ({ routesData }: { routesData: RouteData[] }) => {
             </span>
             {routeData.url && (
               <>
-                <span className="topology-text-muted">Location:</span>
+                <span className="bs-topology-text-muted">Location:</span>
                 <a
                   href={routeData.url}
                   target="_blank"
