@@ -7,7 +7,7 @@ import {
   calculateDuration,
   getClusters,
   getDuration,
-  getTaskStatus,
+  getTaskStatusOfPLR,
   getTektonResources,
   pipelineRunDuration,
   totalPipelineRunTasks,
@@ -77,13 +77,13 @@ describe('tekton-utils', () => {
     });
   });
 
-  it('updateTaskStatus should return the updated task status if none exists', () => {
+  it('updateTaskStatus should return the updated task status if no taskrun exist', () => {
     const mockPipelineRun = {
       ...kubernetesObjects.items[0].resources[0].resources[0],
       status: {},
     };
     const updatedTaskStatus = updateTaskStatus(mockPipelineRun, [
-      mockKubernetesPlrResponse.taskruns[0],
+      mockKubernetesPlrResponse.taskruns[1],
     ]);
     expect(updatedTaskStatus).toEqual({
       PipelineNotStarted: 0,
@@ -96,8 +96,8 @@ describe('tekton-utils', () => {
     });
   });
 
-  it('getTaskStatus should return the updated task status', () => {
-    const updatedTaskStatus = getTaskStatus(
+  it('getTaskStatusOfPLR should return the updated task status', () => {
+    const updatedTaskStatus = getTaskStatusOfPLR(
       mockKubernetesPlrResponse.pipelineruns[0],
       [mockKubernetesPlrResponse.taskruns[0]],
     );
@@ -112,13 +112,13 @@ describe('tekton-utils', () => {
     });
   });
 
-  it('getTaskStatus should return the updated task status if none exists', () => {
+  it('getTaskStatusOfPLR should return the updated task status if no taskrun exist', () => {
     const mockPipelineRun = {
       ...kubernetesObjects.items[0].resources[0].resources[0],
       status: {},
     };
-    const updatedTaskStatus = getTaskStatus(mockPipelineRun, [
-      mockKubernetesPlrResponse.taskruns[0],
+    const updatedTaskStatus = getTaskStatusOfPLR(mockPipelineRun, [
+      mockKubernetesPlrResponse.taskruns[1],
     ]);
     expect(updatedTaskStatus).toEqual({
       PipelineNotStarted: 1,
