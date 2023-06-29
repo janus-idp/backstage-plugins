@@ -31,7 +31,6 @@ export class JfrogArtifactoryApiClient implements JfrogArtifactoryApiV1 {
 
   private readonly identityApi: IdentityApi;
 
-
   constructor(options: Options) {
     this.discoveryApi = options.discoveryApi;
     this.configApi = options.configApi;
@@ -48,9 +47,9 @@ export class JfrogArtifactoryApiClient implements JfrogArtifactoryApiV1 {
   private async fetcher(url: string, query: string) {
     const credentials = await this.identityApi.getCredentials();
     const response = await fetch(url, {
-      headers: { 
+      headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${credentials.token!!}`
+        Authorization: `Bearer ${credentials.token!!}`,
       },
       method: 'POST',
       body: query,

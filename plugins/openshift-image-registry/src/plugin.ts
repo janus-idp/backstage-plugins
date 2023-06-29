@@ -24,10 +24,14 @@ export const openshiftImageRegistryPlugin = createPlugin({
       deps: {
         discoveryApi: discoveryApiRef,
         configApi: configApiRef,
-        identityApi: identityApiRef
+        identityApi: identityApiRef,
       },
       factory: ({ discoveryApi, configApi, identityApi }) =>
-        new OpenshiftImageRegistryApiClient({ discoveryApi, configApi, identityApi }),
+        new OpenshiftImageRegistryApiClient({
+          discoveryApi,
+          configApi,
+          identityApi,
+        }),
     }),
   ],
 });

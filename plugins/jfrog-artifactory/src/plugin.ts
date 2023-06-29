@@ -23,7 +23,7 @@ export const jfrogArtifactoryPlugin = createPlugin({
       deps: {
         discoveryApi: discoveryApiRef,
         configApi: configApiRef,
-        identityApi: identityApiRef
+        identityApi: identityApiRef,
       },
       factory: ({ discoveryApi, configApi, identityApi }) =>
         new JfrogArtifactoryApiClient({ discoveryApi, configApi, identityApi }),

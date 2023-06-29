@@ -67,9 +67,9 @@ export class QuayApiClient implements QuayApiV1 {
   private async fetcher(url: string) {
     const credentials = await this.identityApi.getCredentials();
     const response = await fetch(url, {
-      headers: { 
+      headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${credentials.token!!}`
+        Authorization: `Bearer ${credentials.token!!}`,
       },
     });
     if (!response.ok) {
