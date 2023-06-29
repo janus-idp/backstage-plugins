@@ -2,6 +2,7 @@ import {
   ConfigApi,
   createApiRef,
   DiscoveryApi,
+  IdentityApi,
 } from '@backstage/core-plugin-api';
 
 const DEFAULT_PROXY_PATH = '/openshift-image-registry/api';
@@ -23,6 +24,7 @@ export const openshiftImageRegistryApiRef =
 export type Options = {
   discoveryApi: DiscoveryApi;
   configApi: ConfigApi;
+  identityApi: IdentityApi;
 };
 
 export class OpenshiftImageRegistryApiClient
@@ -33,9 +35,13 @@ export class OpenshiftImageRegistryApiClient
 
   private readonly configApi: ConfigApi;
 
+  private readonly identityApi: IdentityApi;
+
+
   constructor(options: Options) {
     this.discoveryApi = options.discoveryApi;
     this.configApi = options.configApi;
+    this.identityApi = options.identityApi;
   }
 
   private async getBaseUrl() {
@@ -46,8 +52,12 @@ export class OpenshiftImageRegistryApiClient
   }
 
   private async fetcher(url: string) {
+    const credentials = await this.identityApi.getCredentials();
     const response = await fetch(url, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${credentials.token!!}`
+      },
     });
     if (!response.ok) {
       throw new Error(
