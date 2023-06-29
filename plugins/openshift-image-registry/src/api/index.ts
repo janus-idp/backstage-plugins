@@ -51,11 +51,11 @@ export class OpenshiftImageRegistryApiClient
   }
 
   private async fetcher(url: string) {
-    const credentials = await this.identityApi.getCredentials();
+    const {token: idToken} = await this.identityApi.getCredentials();
     const response = await fetch(url, {
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${credentials.token!!}`,
+        ...( idToken && {'Authorization': `Bearer ${idToken}`})
       },
     });
     if (!response.ok) {
