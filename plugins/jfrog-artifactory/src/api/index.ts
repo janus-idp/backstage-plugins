@@ -2,6 +2,7 @@ import {
   ConfigApi,
   createApiRef,
   DiscoveryApi,
+  IdentityApi,
 } from '@backstage/core-plugin-api';
 
 import { TagsResponse } from '../types';
@@ -19,6 +20,7 @@ export const jfrogArtifactoryApiRef = createApiRef<JfrogArtifactoryApiV1>({
 export type Options = {
   discoveryApi: DiscoveryApi;
   configApi: ConfigApi;
+  identityApi: IdentityApi;
 };
 
 export class JfrogArtifactoryApiClient implements JfrogArtifactoryApiV1 {
@@ -27,9 +29,13 @@ export class JfrogArtifactoryApiClient implements JfrogArtifactoryApiV1 {
 
   private readonly configApi: ConfigApi;
 
+  private readonly identityApi: IdentityApi;
+
+
   constructor(options: Options) {
     this.discoveryApi = options.discoveryApi;
     this.configApi = options.configApi;
+    this.identityApi = options.identityApi;
   }
 
   private async getBaseUrl() {
@@ -40,8 +46,12 @@ export class JfrogArtifactoryApiClient implements JfrogArtifactoryApiV1 {
   }
 
   private async fetcher(url: string, query: string) {
+    const credentials = await this.identityApi.getCredentials();
     const response = await fetch(url, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${credentials.token!!}`
+      },
       method: 'POST',
       body: query,
     });
