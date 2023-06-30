@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-tekton [1.5.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.5.1...@janus-idp/backstage-plugin-tekton@1.5.2) (2023-06-30)
+
+
+### Bug Fixes
+
+* **tekton:** fix pipelinerun task status info ([#491](https://github.com/janus-idp/backstage-plugins/issues/491)) ([191ba44](https://github.com/janus-idp/backstage-plugins/commit/191ba44fd3e5c7e092a5b0231325427300383a0e))
+
 ## @janus-idp/backstage-plugin-tekton [1.5.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.5.0...@janus-idp/backstage-plugin-tekton@1.5.1) (2023-06-14)
 
 
