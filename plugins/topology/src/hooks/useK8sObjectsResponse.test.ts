@@ -1,6 +1,6 @@
 import { useKubernetesObjects } from '@backstage/plugin-kubernetes';
 
-import { renderHook } from '@testing-library/react-hooks';
+import { act, renderHook } from '@testing-library/react-hooks';
 
 import { watchResourcesData } from '../__fixtures__/k8sResourcesContextData';
 import { kubernetesObject } from '../__fixtures__/kubernetesObject';
@@ -43,5 +43,62 @@ describe('useK8sObjectsResponse', () => {
     expect(result.current.watchResourcesData).toEqual(watchResourcesData);
     expect(result.current.clusters).toEqual(['minikube']);
     expect(result.current.selectedClusterErrors).toEqual([]);
+  });
+
+  it('should return k8sResourcesContextData with empty clusters if it does not exist', () => {
+    mockUseKubernetesObjects.mockReturnValue({
+      kubernetesObjects: { items: [] },
+      loading: false,
+      error: '',
+    });
+    const { result } = renderHook(() =>
+      useK8sObjectsResponse(watchedResources),
+    );
+    expect(result.current.watchResourcesData).toEqual({});
+    expect(result.current.clusters).toEqual([]);
+    expect(result.current.selectedClusterErrors).toEqual([]);
+  });
+
+  it('should return k8sResourcesContextData with 2 clusters', () => {
+    mockUseKubernetesObjects.mockReturnValue({
+      kubernetesObjects: {
+        items: [{ cluster: { name: 'OCP' } }, kubernetesObject.items[0]],
+      },
+      loading: false,
+      error: '',
+    });
+    const { result } = renderHook(() =>
+      useK8sObjectsResponse(watchedResources),
+    );
+    expect(result.current.watchResourcesData).toEqual({});
+    expect(result.current.clusters).toEqual(['OCP', 'minikube']);
+    expect(result.current.selectedClusterErrors).toEqual([]);
+    expect(result.current.selectedCluster).toEqual(0);
+  });
+
+  it('should return k8sResourcesContextData with 2 clusters and update selectedCluster', () => {
+    mockUseKubernetesObjects.mockReturnValue({
+      kubernetesObjects: {
+        items: [{ cluster: { name: 'OCP' } }, kubernetesObject.items[0]],
+      },
+      loading: false,
+      error: '',
+    });
+    const { result } = renderHook(() =>
+      useK8sObjectsResponse(watchedResources),
+    );
+    expect(result.current.watchResourcesData).toEqual({});
+    expect(result.current.clusters).toEqual(['OCP', 'minikube']);
+    expect(result.current.selectedClusterErrors).toEqual([]);
+    expect(result.current.selectedCluster).toEqual(0);
+
+    act(() => {
+      result.current.setSelectedCluster(1);
+    });
+
+    expect(result.current.watchResourcesData).toEqual(watchResourcesData);
+    expect(result.current.clusters).toEqual(['OCP', 'minikube']);
+    expect(result.current.selectedClusterErrors).toEqual([]);
+    expect(result.current.selectedCluster).toEqual(1);
   });
 });

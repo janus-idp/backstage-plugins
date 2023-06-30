@@ -30,5 +30,6 @@ export const useK8sObjectsResponse = (
     selectedClusterErrors: clusterErrors?.[selectedCluster] ?? [],
     clusters,
     setSelectedCluster,
+    selectedCluster,
   };
 };

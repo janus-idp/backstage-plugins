@@ -17,6 +17,7 @@ import {
 import { JobData } from '../../../types/jobs';
 import PodStatus from '../../Pods/PodStatus';
 import PLRlist from './PLRlist';
+import { PodLogsDialog } from './PodLogs/PodLogsDialog';
 import IngressListSidebar from './Resources/IngressListSidebar';
 import RouteListSidebar from './Resources/RouteListSidebar';
 import TopologyResourcesTabPanelItem from './TopologyResourcesTabPaneltem';
@@ -50,6 +51,7 @@ const TopologyResourcesTabPanel = ({
 
     return <IngressListSidebar ingressesData={ingressesData} />;
   };
+
   return (
     <div data-testid="resources-tab">
       <TopologyResourcesTabPanelItem
@@ -73,6 +75,9 @@ const TopologyResourcesTabPanel = ({
                 >
                   <Status status={pod.status?.phase ?? ''} />
                 </ResourceStatus>
+              </span>
+              <span style={{ flex: '1' }}>
+                <PodLogsDialog podData={pod} />
               </span>
             </li>
           ))}
