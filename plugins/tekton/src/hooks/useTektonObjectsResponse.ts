@@ -1,4 +1,5 @@
 import React from 'react';
+import { useParams } from 'react-router-dom';
 
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { useKubernetesObjects } from '@backstage/plugin-kubernetes';
@@ -15,6 +16,7 @@ export const useTektonObjectsResponse = (
   watchedResource: string[],
 ): TektonResourcesContextData => {
   const { entity } = useEntity();
+  const { clusterName } = useParams();
   const { kubernetesObjects, loading, error } = useKubernetesObjects(entity);
   const [selectedCluster, setSelectedCluster] = React.useState<number>(0);
   const [loaded, setLoaded] = React.useState<boolean>(false);
@@ -42,6 +44,18 @@ export const useTektonObjectsResponse = (
     loading,
     error,
   });
+
+  React.useEffect(() => {
+    if (
+      clusterName &&
+      clusters?.length > 0 &&
+      clusters.indexOf(clusterName) > 0
+    ) {
+      setSelectedCluster(clusters.indexOf(clusterName));
+    } else {
+      setSelectedCluster(0);
+    }
+  }, [clusters, clusterName]);
 
   const updateResults = React.useCallback(
     (resData, isLoading, errorData) => {

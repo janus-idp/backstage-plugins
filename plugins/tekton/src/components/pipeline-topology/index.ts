@@ -1,2 +1,2 @@
 export { PipelineVisualization } from './PipelineVisualization';
-export { LatestPipelineRunVisualization } from './LatestPipelineRunVisualization';
+export { PipelineRunVisualization } from './PipelineRunVisualization';

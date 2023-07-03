@@ -1,1 +1,0 @@
-export { TektonComponent } from './TektonComponent';

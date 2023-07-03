@@ -5,7 +5,7 @@ import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
 
 import { TEKTON_CI_ANNOTATION } from '../consts/tekton-const';
-import { LatestPipelineRunVisualization } from './pipeline-topology';
+import { PipelineRunVisualization } from './pipeline-topology';
 
 /** @public */
 export const isTektonCIAvailable = (entity: Entity): boolean =>
@@ -28,7 +28,7 @@ export const PipelineVisualizationRouter = ({
         <Route
           path="/"
           element={
-            <LatestPipelineRunVisualization linkTekton={linkTekton} url={url} />
+            <PipelineRunVisualization linkTekton={linkTekton} url={url} />
           }
         />
       </Routes>

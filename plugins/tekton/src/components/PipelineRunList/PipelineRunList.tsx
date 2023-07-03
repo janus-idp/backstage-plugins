@@ -1,11 +1,8 @@
 import React from 'react';
 
-import {
-  EmptyState,
-  InfoCard,
-  Progress,
-  Table,
-} from '@backstage/core-components';
+import { InfoCard, Progress, Table } from '@backstage/core-components';
+
+import { makeStyles } from '@material-ui/core';
 
 import { TektonResourcesContext } from '../../hooks/TektonResourcesContext';
 import { ClusterErrors } from '../../types/types';
@@ -17,6 +14,14 @@ type WrapperInfoCardProps = {
   showClusterSelector?: boolean;
 };
 
+export const useStyles = makeStyles(theme => ({
+  empty: {
+    padding: theme.spacing(2),
+    display: 'flex',
+    justifyContent: 'center',
+  },
+}));
+
 const WrapperInfoCard = ({
   children,
   allErrors,
@@ -24,10 +29,7 @@ const WrapperInfoCard = ({
 }: React.PropsWithChildren<WrapperInfoCardProps>) => (
   <>
     {allErrors && allErrors.length > 0 && <ErrorPanel allErrors={allErrors} />}
-    <InfoCard
-      title="Pipeline Runs"
-      {...(showClusterSelector && { subheader: <ClusterSelector /> })}
-    >
+    <InfoCard {...(showClusterSelector && { title: <ClusterSelector /> })}>
       {children}
     </InfoCard>
   </>
@@ -41,6 +43,7 @@ const PipelineRunList = () => {
     selectedClusterErrors,
     clusters,
   } = React.useContext(TektonResourcesContext);
+  const classes = useStyles();
 
   const allErrors: ClusterErrors = [
     ...(responseError ? [{ message: responseError }] : []),
@@ -54,31 +57,26 @@ const PipelineRunList = () => {
       </div>
     );
 
-  if (
-    loaded &&
-    ((!responseError && !watchResourcesData?.pipelineruns?.data?.length) ||
-      responseError)
-  ) {
-    return (
-      <WrapperInfoCard
-        allErrors={allErrors}
-        showClusterSelector={clusters.length > 0}
-      >
-        <EmptyState missing="data" title="No Pipeline Runs found" />
-      </WrapperInfoCard>
-    );
-  }
   const pipelineRunsData = watchResourcesData?.pipelineruns?.data?.map(d => ({
     ...d,
     id: d.metadata.uid,
   }));
 
   return (
-    <WrapperInfoCard allErrors={allErrors}>
+    <WrapperInfoCard
+      allErrors={allErrors}
+      showClusterSelector={clusters.length > 0}
+    >
       <Table
+        title="Pipeline Runs"
         options={{ paging: true, search: false, padding: 'dense' }}
         data={pipelineRunsData || []}
         columns={PipelineRunHeader}
+        emptyContent={
+          <div data-testid="no-pipeline-runs" className={classes.empty}>
+            No Pipeline Runs found
+          </div>
+        }
       />
     </WrapperInfoCard>
   );
