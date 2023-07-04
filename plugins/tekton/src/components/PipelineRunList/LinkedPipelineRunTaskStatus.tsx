@@ -10,9 +10,9 @@ export interface LinkedPipelineRunTaskStatusProps {
 const LinkedPipelineRunTaskStatus = ({
   pipelineRun,
 }: LinkedPipelineRunTaskStatusProps) => {
-  return (
-    <PipelineBars key={pipelineRun.metadata?.name} pipelinerun={pipelineRun} />
-  );
+  return pipelineRun?.metadata?.name ? (
+    <PipelineBars key={pipelineRun.metadata.name} pipelinerun={pipelineRun} />
+  ) : null;
 };
 
 export default LinkedPipelineRunTaskStatus;
