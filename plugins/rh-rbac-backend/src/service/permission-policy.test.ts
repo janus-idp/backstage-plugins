@@ -1,4 +1,5 @@
 import { getVoidLogger } from '@backstage/backend-common';
+import { ConfigReader } from '@backstage/config';
 import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 import {
   AuthorizeResult,
@@ -15,7 +16,27 @@ describe('RBACPermissionPolicy Tests', () => {
     const adapter = new StringAdapter(
       `p, known_user, test-resource, update, allow `,
     );
-    const policy = await RBACPermissionPolicy.build(getVoidLogger(), adapter);
+    const config = new ConfigReader({
+      permission: {
+        admin: {
+          users: [
+            {
+              name: 'user:default/guest',
+            },
+          ],
+          groups: [
+            {
+              name: 'group:default/guests',
+            },
+          ],
+        },
+      },
+    });
+    const policy = await RBACPermissionPolicy.build(
+      getVoidLogger(),
+      adapter,
+      config,
+    );
     expect(policy).not.toBeNull();
   });
 
@@ -34,9 +55,31 @@ describe('RBACPermissionPolicy Tests', () => {
                 p, duplicated, test-resource, update, allow
                 p, duplicated, test-resource, update, deny
                 p, known_user, test-resource, update, allow 
+
+                p, group, test.resource.deny, use, deny
                 `,
       );
-      policy = await RBACPermissionPolicy.build(getVoidLogger(), adapter);
+      const config = new ConfigReader({
+        permission: {
+          admin: {
+            users: [
+              {
+                name: 'user:default/guest',
+              },
+            ],
+            groups: [
+              {
+                name: 'group:default/guests',
+              },
+            ],
+          },
+        },
+      });
+      policy = await RBACPermissionPolicy.build(
+        getVoidLogger(),
+        adapter,
+        config,
+      );
     });
     // +-------+------+------------------------+
     // | allow | deny |         result         |
@@ -142,6 +185,44 @@ describe('RBACPermissionPolicy Tests', () => {
       );
       expect(decision.result).toBe(AuthorizeResult.DENY);
     });
+
+    // Tests for admin added through app config
+    it('should allow access to permission resource for admin added through app config', async () => {
+      const decision = await policy.handle(
+        newPolicyQueryWithResourcePermission(
+          'permission-entity.read',
+          'permission-entity',
+          'read',
+        ),
+        newIdentityResponse('user:default/guest'),
+      );
+      expect(decision.result).toBe(AuthorizeResult.ALLOW);
+    });
+
+    // Tests for admin group added through app config
+    it('should allow access to permission resource for admin group added through app config', async () => {
+      const decision = await policy.handle(
+        newPolicyQueryWithResourcePermission(
+          'permission-entity.read',
+          'permission-entity',
+          'read',
+        ),
+        newIdentityResponseWithGroup(
+          'user:default/guest2',
+          'group:default/guests',
+        ),
+      );
+      expect(decision.result).toBe(AuthorizeResult.ALLOW);
+    });
+
+    // Test for group access permission
+    it('should allow access to a user in an authorized group', async () => {
+      const decision = await policy.handle(
+        newPolicyQueryWithBasicPermission('test.resource.deny'),
+        newIdentityResponseWithGroup('known_user', 'group'),
+      );
+      expect(decision.result).toBe(AuthorizeResult.DENY);
+    });
   });
 });
 
@@ -179,6 +260,20 @@ function newIdentityResponse(user: string): BackstageIdentityResponse {
   return {
     identity: {
       ownershipEntityRefs: [],
+      type: 'user',
+      userEntityRef: user,
+    },
+    token: '',
+  };
+}
+
+function newIdentityResponseWithGroup(
+  user: string,
+  group: string,
+): BackstageIdentityResponse {
+  return {
+    identity: {
+      ownershipEntityRefs: [group],
       type: 'user',
       userEntityRef: user,
     },

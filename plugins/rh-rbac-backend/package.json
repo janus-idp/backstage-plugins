@@ -17,7 +17,7 @@
     "start": "backstage-cli package start",
     "build": "backstage-cli package build",
     "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
+    "test": "backstage-cli package test --passWithNoTests --coverage",
     "clean": "backstage-cli package clean",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack"
@@ -25,6 +25,7 @@
   "dependencies": {
     "@backstage/backend-common": "^0.18.4",
     "@backstage/config": "^1.0.7",
+    "@backstage/core-plugin-api": "^1.5.2",
     "@backstage/plugin-auth-node": "^0.2.14",
     "@backstage/plugin-permission-backend": "^0.5.20",
     "@backstage/plugin-permission-common": "^0.7.5",

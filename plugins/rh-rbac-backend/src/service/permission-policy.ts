@@ -1,4 +1,9 @@
-import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
+import { Config } from '@backstage/config';
+import { ConfigApi } from '@backstage/core-plugin-api';
+import {
+  BackstageIdentityResponse,
+  BackstageUserIdentity,
+} from '@backstage/plugin-auth-node';
 import {
   AuthorizeResult,
   isResourcePermission,
@@ -26,14 +31,41 @@ e = some(where (p.eft == allow)) && !some(where (p.eft == deny))
 m = r.sub == p.sub && r.obj == p.obj && r.act == p.act
 `;
 
+const useAdmins = (admins: Config[], enf: Enforcer) => {
+  admins.flatMap(async localConfig => {
+    const name = localConfig.getString('name');
+    const adminPermission = [name, 'permission-entity', 'read', 'allow'];
+    await enf.addPolicy(...adminPermission);
+  });
+};
+
 export class RBACPermissionPolicy implements PermissionPolicy {
   private readonly enforcer: Enforcer;
   private readonly logger: Logger;
 
-  public static async build(logger: Logger, policyAdapter: Adapter) {
+  public static async build(
+    logger: Logger,
+    policyAdapter: Adapter,
+    configApi: ConfigApi,
+  ) {
     const theModel = newModelFromString(MODEL);
 
+    const adminUsers = configApi.getOptionalConfigArray(
+      'permission.admin.users',
+    );
+    const adminGroups = configApi.getOptionalConfigArray(
+      'permission.admin.groups',
+    );
     const enf = await newEnforcer(theModel, policyAdapter);
+
+    if (adminUsers) {
+      useAdmins(adminUsers, enf);
+    }
+
+    if (adminGroups) {
+      useAdmins(adminGroups, enf);
+    }
+
     return new RBACPermissionPolicy(enf, logger);
   }
 
@@ -57,14 +89,14 @@ export class RBACPermissionPolicy implements PermissionPolicy {
       const action = request.permission.attributes.action ?? 'use';
 
       if (isResourcePermission(request.permission)) {
-        status = await this.enforcer.enforce(
-          user?.identity.userEntityRef,
+        status = await this.isAuthorized(
+          user?.identity,
           request.permission.resourceType,
           action,
         );
       } else {
-        status = await this.enforcer.enforce(
-          user?.identity.userEntityRef,
+        status = await this.isAuthorized(
+          user?.identity,
           request.permission.name,
           action,
         );
@@ -84,4 +116,32 @@ export class RBACPermissionPolicy implements PermissionPolicy {
       });
     }
   }
+
+  private isAuthorized = async (
+    identity: BackstageUserIdentity | undefined,
+    resourceType: string,
+    action: string,
+  ) => {
+    let status;
+
+    // Check if the group has access first
+    const ownerStatus = await Promise.all(
+      identity?.ownershipEntityRefs.map(async entityRef => {
+        return await this.enforcer.enforce(entityRef, resourceType, action);
+      }) || [],
+    );
+
+    status = ownerStatus.includes(true);
+
+    // Check if the user has access
+    if (!status) {
+      status = await this.enforcer.enforce(
+        identity?.userEntityRef,
+        resourceType,
+        action,
+      );
+    }
+
+    return status;
+  };
 }
