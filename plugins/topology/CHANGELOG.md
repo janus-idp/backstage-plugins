@@ -1,3 +1,17 @@
+## @janus-idp/backstage-plugin-topology [1.9.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.8.0...@janus-idp/backstage-plugin-topology@1.9.0) (2023-06-30)
+
+
+### Features
+
+* **topology:** support for logviewer for pods based on container ([#464](https://github.com/janus-idp/backstage-plugins/issues/464)) ([cf2af63](https://github.com/janus-idp/backstage-plugins/commit/cf2af637b2e98e0e0e8d9c16ce40bb04021d4a91))
+
+## @janus-idp/backstage-plugin-topology [1.8.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.7.2...@janus-idp/backstage-plugin-topology@1.8.0) (2023-06-26)
+
+
+### Features
+
+* **topology:** show pipeline-runs list in sidepanel ([#403](https://github.com/janus-idp/backstage-plugins/issues/403)) ([b0d805a](https://github.com/janus-idp/backstage-plugins/commit/b0d805a259c03316eb94a80a42a57b93a97b4083))
+
 ## @janus-idp/backstage-plugin-topology [1.7.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.7.1...@janus-idp/backstage-plugin-topology@1.7.2) (2023-06-21)
 
 

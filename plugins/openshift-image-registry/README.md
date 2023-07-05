@@ -1,4 +1,4 @@
-# Openshift Image Registry plugin for Backstage
+# OpenShift Image Registry plugin for Backstage
 
 The OpenShift Image Registry plugin displays all ImageStreams in an Openshift cluster.
 
@@ -14,17 +14,17 @@ yarn workspace app add @janus-idp/backstage-plugin-openshift-image-registry
 
 ### Configuration
 
-1. Set the proxy to desired Openshift cluster in the `app-config.yaml` file as follows:
+1. Set the proxy to desired OpenShift cluster in the `app-config.yaml` file as follows:
 
    ```yaml title="app-config.yaml"
    proxy:
      '/openshift-image-registry/api':
-     target: <URL where k8s control plane for openshift cluster is running>
+     target: <URL where k8s control plane for OpenShift cluster is running>
      headers:
        X-Requested-With: 'XMLHttpRequest'
        Authorization: Bearer <TOKEN>
      changeOrigin: true
-     # Change to "false" in case of using self hosted openshift cluster with a self-signed certificate
+     # Change to "false" in case of using self hosted OpenShift cluster with a self-signed certificate
      secure: true
    ```
 

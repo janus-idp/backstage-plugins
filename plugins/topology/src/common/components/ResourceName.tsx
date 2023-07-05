@@ -19,7 +19,7 @@ export const ResourceIcon = ({ className, kind }: ResourceIconProps) => {
     return null;
   }
   const kindObj = resourceModels[kind];
-  const kindStr = kindObj?.kind;
+  const kindStr = kindObj?.kind || kind;
   const memoKey = className ? `${kind}/${className}` : kind;
   if (MEMO[memoKey]) {
     return MEMO[memoKey];

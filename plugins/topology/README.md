@@ -42,7 +42,42 @@ The Topology plugin enables you to visualize the workloads such as Deployment, J
 
   ```
 
-- The following annotation is added to the entity's `catalog-info.yaml` file to identify whether an entity contains the Kubernetes resources:
+- The following code must be added in`customResources` component in the [`app-config.yaml`](https://backstage.io/docs/features/kubernetes/configuration#configuring-kubernetes-clusters) file to view the Tekton PipelineRuns list in side panel:
+
+  ```yaml
+   kubernetes:
+     ...
+     customResources:
+       - group: 'tekton.dev'
+         apiVersion: 'v1beta1'
+         plural: 'pipelines'
+       - group: 'tekton.dev'
+         apiVersion: 'v1beta1'
+         plural: 'pipelineruns'
+  ```
+
+  Also, ensure that the Pipeline and PipelineRun are granted a [`ClusterRole`](https://backstage.io/docs/features/kubernetes/configuration#role-based-access-control). You can use the following code to grant the `ClusterRole` to Pipeline and PipelineRun:
+
+  ```yaml
+    ...
+    apiVersion: rbac.authorization.k8s.io/v1
+    kind: ClusterRole
+    metadata:
+      name: backstage-read-only
+    rules:
+      ...
+      - apiGroups:
+          - tekton.dev
+        resources:
+          - pipelines
+          - pipelineruns
+        verbs:
+          - get
+          - list
+
+  ```
+
+- The following annotation is added to the entity's `catalog-info.yaml` file to identify whether an entitiy contains the Kubernetes resources:
 
   ```yaml title="catalog-info.yaml"
   annotations:
