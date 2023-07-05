@@ -19,6 +19,7 @@ import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-
 
 import { FileAdapter } from 'casbin';
 import { Router } from 'express';
+import TypeORMAdapter from 'typeorm-adapter';
 import { Logger } from 'winston';
 
 import {
@@ -36,26 +37,39 @@ export class PolicyBuilder {
     identity: IdentityApi;
     permissions: PermissionEvaluator;
   }): Promise<Router> {
-    // TODO: Replace with a DB adapter.
-    const fileAdapter = new FileAdapter(
-      resolvePackagePath(
-        '@janus-idp/plugin-rh-rbac-backend',
-        './model/rbac-policy.csv',
-      ),
+    let adapter;
+    const databaseEnabled = env.config.getOptionalBoolean(
+      'permission.database.enabled',
     );
 
     const permissions = env.permissions;
+
+    // Database adapter work
+    if (databaseEnabled) {
+      const databaseConfig = env.config.getOptionalConfig('backend.database');
+      adapter = await TypeORMAdapter.newAdapter({
+        type: 'postgres',
+        host: databaseConfig?.getString('connection.host'),
+        port: databaseConfig?.getNumber('connection.port'),
+        username: databaseConfig?.getString('connection.user'),
+        password: databaseConfig?.getString('connection.password'),
+        database: env.config.getOptionalString('permission.database.name'),
+      });
+    } else {
+      adapter = new FileAdapter(
+        resolvePackagePath(
+          '@janus-idp/plugin-rh-rbac-backend',
+          './model/rbac-policy.csv',
+        ),
+      );
+    }
 
     const options: RouterOptions = {
       config: env.config,
       logger: env.logger,
       discovery: env.discovery,
       identity: env.identity,
-      policy: await RBACPermissionPolicy.build(
-        env.logger,
-        fileAdapter,
-        env.config,
-      ),
+      policy: await RBACPermissionPolicy.build(env.logger, adapter, env.config),
     };
 
     const router = await createRouter(options);

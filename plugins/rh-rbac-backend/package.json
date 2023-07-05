@@ -36,6 +36,7 @@
     "express-promise-router": "^4.1.0",
     "node-fetch": "^2.6.7",
     "winston": "^3.2.1",
+    "typeorm-adapter": "^1.5.3",
     "yn": "^4.0.0"
   },
   "devDependencies": {
