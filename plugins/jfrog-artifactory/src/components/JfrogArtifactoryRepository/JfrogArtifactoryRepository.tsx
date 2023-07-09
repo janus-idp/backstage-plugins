@@ -34,9 +34,17 @@ export function JfrogArtifactoryRepository(props: RepositoryProps) {
 
   const data = packageEdges?.flatMap((packageEdge: PackageEdge) => {
     return packageEdge.node.versions.map(version => {
-      // Map repos to a string of repo names
       const reposString =
         version.repos?.map(repo => repo.name).join(', ') || 'N/A';
+      const vulnerabilities = [
+        version.vulnerabilities?.critical,
+        version.vulnerabilities?.high,
+        version.vulnerabilities?.medium,
+        version.vulnerabilities?.low,
+        version.vulnerabilities?.info,
+        version.vulnerabilities?.unknown,
+        version.vulnerabilities?.skipped,
+      ].reduce((total, current) => (total || 0) + (current || 0), 0);
 
       return {
         repository: displayValue(packageEdge.node.name, 'N/A'),
@@ -47,27 +55,9 @@ export function JfrogArtifactoryRepository(props: RepositoryProps) {
         ),
         size: displayValue(formatSize(Number(version.size)), 'N/A'),
         downloads: displayValue(version.stats.downloadCount, 0),
-        vulnerabilities_critical: displayValue(
-          version.vulnerabilities?.critical,
-          0,
-        ),
-        vulnerabilities_high: displayValue(version.vulnerabilities?.high, 0),
-        vulnerabilities_medium: displayValue(
-          version.vulnerabilities?.medium,
-          0,
-        ),
-        vulnerabilities_low: displayValue(version.vulnerabilities?.low, 0),
-        vulnerabilities_info: displayValue(version.vulnerabilities?.info, 0),
-        vulnerabilities_unknown: displayValue(
-          version.vulnerabilities?.unknown,
-          0,
-        ),
-        vulnerabilities_skipped: displayValue(
-          version.vulnerabilities?.skipped,
-          0,
-        ),
-        repos: reposString, // Adding the repos field
+        repos: reposString,
         package_type: displayValue(version.package?.packageType, 'N/A'),
+        vulnerabilities,
       };
     });
   });

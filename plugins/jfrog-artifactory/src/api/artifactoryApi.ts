@@ -55,8 +55,39 @@ export class JfrogArtifactoryApiClient implements JfrogArtifactoryApiV1 {
   async getArtifact(repo: string) {
     const proxyUrl = await this.getBaseUrl();
     const packageQuery = {
-      query:
-        'query ($filter: PackageFilter!, $orderBy: PackageOrder) { packages (filter: $filter, orderBy: $orderBy) { edges { node { name, description, created, versions { name, size, repos { name }, package { packageType }, vulnerabilities { critical, high, medium, low, info, unknown, skipped }, stats { downloadCount } } } } } }',
+      query: `query ($filter: PackageFilter!, $orderBy: PackageOrder) {
+        packages(filter: $filter, orderBy: $orderBy) {
+          edges {
+            node {
+              name,
+              description,
+              created,
+              versions {
+                name,
+                size,
+                repos {
+                  name
+                },
+                package {
+                  packageType
+                },
+                vulnerabilities {
+                  critical,
+                  high,
+                  medium,
+                  low,
+                  info,
+                  unknown,
+                  skipped
+                },
+                stats {
+                  downloadCount
+                }
+              }
+            }
+          }
+        }
+      }`,
       variables: {
         filter: {
           name: `*${repo}`,

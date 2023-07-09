@@ -1,9 +1,20 @@
 import { TableColumn } from '@backstage/core-components';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 
+const vulnerabilityTotal = (rowData: any): number => {
+  const fields = [
+    'vulnerabilities_critical',
+    'vulnerabilities_high',
+    'vulnerabilities_medium',
+    'vulnerabilities_low',
+    'vulnerabilities_info',
+  ];
+  return fields.reduce((total, field) => total + (rowData[field] || 0), 0);
+};
+
 export const columns: TableColumn[] = [
   {
-    title: 'Repos',
+    title: 'Repository',
     field: 'repos',
     type: 'string',
     highlight: true,
@@ -34,29 +45,11 @@ export const columns: TableColumn[] = [
     type: 'string',
   },
   {
-    title: 'Vulnerabilities (Critical)',
-    field: 'vulnerabilities_critical',
+    title: 'Vulnerabilities',
+    field: 'vulnerabilities',
+    render: (rowData: any) => vulnerabilityTotal(rowData).toString(),
     type: 'numeric',
-  },
-  {
-    title: 'Vulnerabilities (High)',
-    field: 'vulnerabilities_high',
-    type: 'numeric',
-  },
-  {
-    title: 'Vulnerabilities (Medium)',
-    field: 'vulnerabilities_medium',
-    type: 'numeric',
-  },
-  {
-    title: 'Vulnerabilities (Low)',
-    field: 'vulnerabilities_low',
-    type: 'numeric',
-  },
-  {
-    title: 'Vulnerabilities (Info)',
-    field: 'vulnerabilities_info',
-    type: 'numeric',
+    id: 'vulnerabilities',
   },
   {
     title: 'Package Type',
