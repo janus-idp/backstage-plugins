@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-openshift-image-registry [1.1.8](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-openshift-image-registry@1.1.7...@janus-idp/backstage-plugin-openshift-image-registry@1.1.8) (2023-07-10)
+
+
+### Documentation
+
+* **openshift image registry:** added admin sections in readme ([#479](https://github.com/janus-idp/backstage-plugins/issues/479)) ([afbcd84](https://github.com/janus-idp/backstage-plugins/commit/afbcd84ebf0e7997b72a85c5c29fe597987dee35))
+
 ## @janus-idp/backstage-plugin-openshift-image-registry [1.1.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-openshift-image-registry@1.1.6...@janus-idp/backstage-plugin-openshift-image-registry@1.1.7) (2023-06-14)
 
 
