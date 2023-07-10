@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-tekton [1.6.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.5.2...@janus-idp/backstage-plugin-tekton@1.6.0) (2023-07-10)
+
+
+### Features
+
+* **tekton:** create paginated table using Backstage core components ([#503](https://github.com/janus-idp/backstage-plugins/issues/503)) ([5cc47c1](https://github.com/janus-idp/backstage-plugins/commit/5cc47c1a346a4f006adf88ad15c942be5151b913))
+
 ## @janus-idp/backstage-plugin-tekton [1.5.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.5.1...@janus-idp/backstage-plugin-tekton@1.5.2) (2023-06-30)
 
 
