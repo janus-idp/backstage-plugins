@@ -34,8 +34,10 @@ m = r.sub == p.sub && r.obj == p.obj && r.act == p.act
 const useAdmins = (admins: Config[], enf: Enforcer) => {
   admins.flatMap(async localConfig => {
     const name = localConfig.getString('name');
-    const adminPermission = [name, 'permission-entity', 'read', 'allow'];
-    await enf.addPolicy(...adminPermission);
+    const adminReadPermission = [name, 'policy-entity', 'read', 'allow'];
+    await enf.addPolicy(...adminReadPermission);
+    const adminCreatePermission = [name, 'policy-entity', 'create', 'allow'];
+    await enf.addPolicy(...adminCreatePermission);
   });
 };
 
@@ -51,19 +53,12 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     const theModel = newModelFromString(MODEL);
 
     const adminUsers = configApi.getOptionalConfigArray(
-      'permission.admin.users',
-    );
-    const adminGroups = configApi.getOptionalConfigArray(
-      'permission.admin.groups',
+      'permission.rbac.admin.users',
     );
     const enf = await newEnforcer(theModel, policyAdapter);
 
     if (adminUsers) {
       useAdmins(adminUsers, enf);
-    }
-
-    if (adminGroups) {
-      useAdmins(adminGroups, enf);
     }
 
     return new RBACPermissionPolicy(enf, logger);

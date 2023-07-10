@@ -3,66 +3,67 @@ import {
   ResourcePermission,
 } from '@backstage/plugin-permission-common';
 
-export const RESOURCE_TYPE_PERMISSION_ENTITY = 'permission-entity';
+export const RESOURCE_TYPE_POLICY_ENTITY = 'policy-entity';
 
 /**
  * Convenience type for permission entity
  */
-export type PermissionEntityPermission = ResourcePermission<
-  typeof RESOURCE_TYPE_PERMISSION_ENTITY
+export type PolicyEntityPermission = ResourcePermission<
+  typeof RESOURCE_TYPE_POLICY_ENTITY
 >;
 
 /**
  * This permission is used to authorize actions that involve reading
  * permission policies.
  */
-export const permissionEntityReadPermission = createPermission({
-  name: 'permission.entity.read',
+export const policyEntityReadPermission = createPermission({
+  name: 'policy.entity.read',
   attributes: {
     action: 'read',
   },
-  resourceType: RESOURCE_TYPE_PERMISSION_ENTITY,
+  resourceType: RESOURCE_TYPE_POLICY_ENTITY,
 });
 
 /**
  * This permission is used to authorize the creation of new permission policies.
  */
-export const permissionEntityCreatePermission = createPermission({
-  name: 'permission.entity.create',
+export const policyEntityCreatePermission = createPermission({
+  name: 'policy.entity.create',
   attributes: {
     action: 'create',
   },
+  resourceType: RESOURCE_TYPE_POLICY_ENTITY,
 });
 
 /**
  * This permission is used to authorize actions that involve removing permission
  * policies.
  */
-export const permissionEntityDeletePermission = createPermission({
-  name: 'permission.entity.delete',
+export const policyEntityDeletePermission = createPermission({
+  name: 'policy.entity.delete',
   attributes: {
     action: 'delete',
   },
-  resourceType: RESOURCE_TYPE_PERMISSION_ENTITY,
+  resourceType: RESOURCE_TYPE_POLICY_ENTITY,
 });
 
 /**
  * This permission is used to authorize refreshing permission policies
  */
-export const permissionEntityRefreshPermission = createPermission({
-  name: 'permission.entity.refresh',
+export const policyEntityRefreshPermission = createPermission({
+  name: 'policy.entity.refresh',
   attributes: {
     action: 'update',
   },
-  resourceType: RESOURCE_TYPE_PERMISSION_ENTITY,
+  resourceType: RESOURCE_TYPE_POLICY_ENTITY,
 });
 
 /**
  * List of all permissions on permission polices.
  */
-export const permissionEntityPermissions = [
-  permissionEntityReadPermission,
-  permissionEntityCreatePermission,
-  permissionEntityDeletePermission,
-  permissionEntityRefreshPermission,
+export const policyEntityPermissions = [
+  policyEntityReadPermission,
+  policyEntityCreatePermission,
+  policyEntityDeletePermission,
+  policyEntityRefreshPermission,
 ];

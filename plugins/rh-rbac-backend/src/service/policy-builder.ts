@@ -22,9 +22,9 @@ import { Router } from 'express';
 import { Logger } from 'winston';
 
 import {
-  permissionEntityPermissions,
-  permissionEntityReadPermission,
-  RESOURCE_TYPE_PERMISSION_ENTITY,
+  policyEntityPermissions,
+  policyEntityReadPermission,
+  RESOURCE_TYPE_POLICY_ENTITY,
 } from '../permissions';
 import { RBACPermissionPolicy } from './permission-policy';
 
@@ -60,12 +60,12 @@ export class PolicyBuilder {
 
     const router = await createRouter(options);
 
-    const permissionsIntergrationRouter = createPermissionIntegrationRouter({
-      resourceType: RESOURCE_TYPE_PERMISSION_ENTITY,
-      permissions: permissionEntityPermissions,
+    const permissionsIntegrationRouter = createPermissionIntegrationRouter({
+      resourceType: RESOURCE_TYPE_POLICY_ENTITY,
+      permissions: policyEntityPermissions,
     });
 
-    router.use(permissionsIntergrationRouter);
+    router.use(permissionsIntegrationRouter);
 
     router.get('/', async (request, response) => {
       const token = getBearerTokenFromAuthorizationHeader(
@@ -74,7 +74,7 @@ export class PolicyBuilder {
 
       const decision = (
         await permissions.authorizeConditional(
-          [{ permission: permissionEntityReadPermission }],
+          [{ permission: policyEntityReadPermission }],
           {
             token,
           },

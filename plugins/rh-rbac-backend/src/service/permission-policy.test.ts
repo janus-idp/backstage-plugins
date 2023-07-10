@@ -16,22 +16,7 @@ describe('RBACPermissionPolicy Tests', () => {
     const adapter = new StringAdapter(
       `p, known_user, test-resource, update, allow `,
     );
-    const config = new ConfigReader({
-      permission: {
-        admin: {
-          users: [
-            {
-              name: 'user:default/guest',
-            },
-          ],
-          groups: [
-            {
-              name: 'group:default/guests',
-            },
-          ],
-        },
-      },
-    });
+    const config = newConfigReader();
     const policy = await RBACPermissionPolicy.build(
       getVoidLogger(),
       adapter,
@@ -59,22 +44,7 @@ describe('RBACPermissionPolicy Tests', () => {
                 p, group, test.resource.deny, use, deny
                 `,
       );
-      const config = new ConfigReader({
-        permission: {
-          admin: {
-            users: [
-              {
-                name: 'user:default/guest',
-              },
-            ],
-            groups: [
-              {
-                name: 'group:default/guests',
-              },
-            ],
-          },
-        },
-      });
+      const config = newConfigReader();
       policy = await RBACPermissionPolicy.build(
         getVoidLogger(),
         adapter,
@@ -190,8 +160,8 @@ describe('RBACPermissionPolicy Tests', () => {
     it('should allow access to permission resource for admin added through app config', async () => {
       const decision = await policy.handle(
         newPolicyQueryWithResourcePermission(
-          'permission-entity.read',
-          'permission-entity',
+          'policy-entity.read',
+          'policy-entity',
           'read',
         ),
         newIdentityResponse('user:default/guest'),
@@ -203,8 +173,8 @@ describe('RBACPermissionPolicy Tests', () => {
     it('should allow access to permission resource for admin group added through app config', async () => {
       const decision = await policy.handle(
         newPolicyQueryWithResourcePermission(
-          'permission-entity.read',
-          'permission-entity',
+          'policy-entity.read',
+          'policy-entity',
           'read',
         ),
         newIdentityResponseWithGroup(
@@ -279,4 +249,23 @@ function newIdentityResponseWithGroup(
     },
     token: '',
   };
+}
+
+function newConfigReader(): ConfigReader {
+  return new ConfigReader({
+    permission: {
+      rbac: {
+        admin: {
+          users: [
+            {
+              name: 'user:default/guest',
+            },
+            {
+              name: 'group:default/guests',
+            },
+          ],
+        },
+      },
+    },
+  });
 }
