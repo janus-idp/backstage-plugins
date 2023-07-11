@@ -28,3 +28,5 @@ export type TektonResourcesContextData = {
   selectedCluster?: number;
   setSelectedCluster: React.Dispatch<React.SetStateAction<number>>;
 };
+
+export type Order = 'asc' | 'desc';

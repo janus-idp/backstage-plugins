@@ -1,12 +1,13 @@
 import { RawFetchError } from '@backstage/plugin-kubernetes-common';
 
-import { PipelineRunKind, updateTaskStatus } from '@janus-idp/shared-react';
+import { PipelineRunKind } from '@janus-idp/shared-react';
 
 import { mockKubernetesPlrResponse } from '../__fixtures__/1-pipelinesData';
 import { kubernetesObjects } from '../__fixtures__/kubernetesObject';
 import {
   calculateDuration,
   getClusters,
+  getComparator,
   getDuration,
   getTaskStatusOfPLR,
   getTektonResources,
@@ -46,6 +47,9 @@ describe('tekton-utils', () => {
       pipelineruns: {
         data: mockKubernetesPlrResponse.pipelineruns,
       },
+      pods: {
+        data: mockKubernetesPlrResponse.pods,
+      },
     });
   });
 
@@ -59,41 +63,6 @@ describe('tekton-utils', () => {
       mockKubernetesPlrResponse.pipelineruns[0],
     );
     expect(totalTasks).toEqual(3);
-  });
-
-  it('updateTaskStatus should return the updated task status', () => {
-    const updatedTaskStatus = updateTaskStatus(
-      mockKubernetesPlrResponse.pipelineruns[0],
-      [mockKubernetesPlrResponse.taskruns[0]],
-    );
-    expect(updatedTaskStatus).toEqual({
-      PipelineNotStarted: 0,
-      Pending: 0,
-      Running: 1,
-      Succeeded: 0,
-      Failed: 0,
-      Cancelled: 0,
-      Skipped: 0,
-    });
-  });
-
-  it('updateTaskStatus should return the updated task status if no taskrun exist', () => {
-    const mockPipelineRun = {
-      ...kubernetesObjects.items[0].resources[0].resources[0],
-      status: {},
-    };
-    const updatedTaskStatus = updateTaskStatus(mockPipelineRun, [
-      mockKubernetesPlrResponse.taskruns[1],
-    ]);
-    expect(updatedTaskStatus).toEqual({
-      PipelineNotStarted: 0,
-      Pending: 0,
-      Running: 0,
-      Succeeded: 0,
-      Failed: 0,
-      Cancelled: 0,
-      Skipped: 0,
-    });
   });
 
   it('getTaskStatusOfPLR should return the updated task status', () => {
@@ -212,5 +181,27 @@ describe('tekton-utils', () => {
     const duration = pipelineRunDuration(mockPipelineRun);
     expect(duration).not.toBeNull();
     expect(duration).toBe('-');
+  });
+
+  it('should be able to sort pipelineRunsData in ascending order based on pipelinerun name', () => {
+    const mockPipelineRuns: PipelineRunKind[] = [
+      ...mockKubernetesPlrResponse.pipelineruns,
+    ];
+
+    const sortedData: PipelineRunKind[] = Array.from(mockPipelineRuns).sort(
+      getComparator('asc', 'metadata.name'),
+    );
+    expect(sortedData[0].metadata?.name).toBe('pipeline-test-wbvtlk');
+  });
+
+  it('should be able to sort pipelineRunsData in ascending order based on pipelinerun start time', () => {
+    const mockPipelineRuns: PipelineRunKind[] = [
+      ...mockKubernetesPlrResponse.pipelineruns,
+    ];
+
+    const sortedData: PipelineRunKind[] = Array.from(mockPipelineRuns).sort(
+      getComparator('asc', 'status.startTime'),
+    );
+    expect(sortedData[0].metadata?.name).toBe('ruby-ex-git-xf45fo');
   });
 });

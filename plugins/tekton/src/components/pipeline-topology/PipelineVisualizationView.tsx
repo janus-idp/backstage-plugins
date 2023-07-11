@@ -9,7 +9,6 @@ import { isEmpty } from 'lodash';
 
 import { TektonResourcesContext } from '../../hooks/TektonResourcesContext';
 import { rootRouteRef } from '../../routes';
-import { ClusterErrors } from '../../types/types';
 import { getPipelineRun } from '../../utils/pipelineRun-utils';
 import WrapperInfoCard from '../common/WrapperInfoCard';
 import { PipelineVisualization } from './PipelineVisualization';
@@ -41,13 +40,10 @@ export const PipelineVisualizationView = ({
 }: PipelineVisualizationViewProps) => {
   const classes = useStyles();
   const rootLink = useRouteRef(rootRouteRef);
-  const { loaded, responseError, watchResourcesData, selectedClusterErrors } =
-    React.useContext(TektonResourcesContext);
+  const { loaded, responseError, watchResourcesData } = React.useContext(
+    TektonResourcesContext,
+  );
 
-  const allErrors: ClusterErrors = [
-    ...(responseError ? [{ message: responseError }] : []),
-    ...(selectedClusterErrors ?? []),
-  ];
   const pipelineRunResource = React.useMemo(
     () =>
       getPipelineRun(watchResourcesData?.pipelineruns?.data ?? [], pipelineRun),
@@ -62,11 +58,7 @@ export const PipelineVisualizationView = ({
     );
 
   const pipelineRunViz = (
-    <WrapperInfoCard
-      allErrors={allErrors}
-      title="Pipeline Run"
-      showClusterSelector={false}
-    >
+    <WrapperInfoCard title="Pipeline Run" showClusterSelector={false}>
       {loaded && (responseError || isEmpty(pipelineRunResource)) ? (
         <EmptyState
           missing="data"

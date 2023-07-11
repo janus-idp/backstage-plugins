@@ -37,7 +37,6 @@
     "@patternfly/react-charts": "6.94.19",
     "@patternfly/react-core": "4.276.8",
     "@patternfly/react-icons": "^4.93.3",
-    "@patternfly/react-styles": "^4.92.6",
     "@patternfly/react-topology": "4.93.6",
     "@janus-idp/shared-react": "1.1.1",
     "dagre": "0.8.5",

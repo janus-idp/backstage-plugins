@@ -10,10 +10,8 @@ import { getTaskStatus } from './pipelineRun-utils';
 
 describe('createStepStatus', () => {
   it('should return the task step status', () => {
-    let computedTask = mockKubernetesPlrResponse.pipelineruns[0].status
-      .pipelineSpec.tasks[0] as PipelineTaskWithStatus;
-    computedTask = {
-      ...computedTask,
+    const computedTask: PipelineTaskWithStatus = {
+      ...mockKubernetesPlrResponse.pipelineruns[0].status.pipelineSpec.tasks[0],
       status: {
         completionTime: '2023-04-12T10:20:18Z',
         conditions: [
@@ -46,20 +44,7 @@ describe('createStepStatus', () => {
         taskSpec: {
           description:
             'This task runs commands against the cluster provided by user and if not provided then where the Task is being executed.\nOpenShift is a Kubernetes distribution from Red Hat which provides oc, the OpenShift CLI that complements kubectl for simplifying deployment and configuration applications on OpenShift.',
-          params: [
-            {
-              default: 'oc help',
-              description: 'The OpenShift CLI arguments to run',
-              name: 'SCRIPT',
-              type: 'string',
-            },
-            {
-              default: 'latest',
-              description: 'The OpenShift Version to use',
-              name: 'VERSION',
-              type: 'string',
-            },
-          ],
+          params: [],
           steps: [
             {
               env: [
@@ -75,20 +60,7 @@ describe('createStepStatus', () => {
               script: '',
             },
           ],
-          workspaces: [
-            {
-              description:
-                'The workspace which contains kubernetes manifests which we want to apply on the cluster.',
-              name: 'manifest-dir',
-              optional: true,
-            },
-            {
-              description:
-                'The workspace which contains the the kubeconfig file if in case we want to run the oc command on another cluster.',
-              name: 'kubeconfig-dir',
-              optional: true,
-            },
-          ],
+          workspaces: [],
         },
         duration: '7s',
         reason: 'Succeeded',

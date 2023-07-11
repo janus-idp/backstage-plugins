@@ -1,8 +1,5 @@
-import { cloneDeep, forIn } from 'lodash';
-
 import {
   ComputedStatus,
-  PLRTaskRuns,
   SucceedConditionReason,
   TaskRunKind,
 } from '@janus-idp/shared-react';
@@ -13,14 +10,12 @@ import { appendPipelineRunStatus, getPLRTaskRuns } from './pipelineRun-utils';
 describe('pipelineRun-utils', () => {
   it('should append Pending status if a taskrun status reason is missing', () => {
     const pipelineRun = mockKubernetesPlrResponse.pipelineruns[0];
-    const pipelineRunWithoutStatus = cloneDeep(pipelineRun);
+    const pipelineRunWithoutStatus = { ...pipelineRun };
     const plrTaskRuns = getPLRTaskRuns(
       mockKubernetesPlrResponse.taskruns,
       mockKubernetesPlrResponse.pipelineruns[0].metadata.name,
     );
-    forIn(pipelineRunWithoutStatus.status.taskRuns, (taskRun: PLRTaskRuns) => {
-      delete taskRun.status;
-    });
+
     const taskList = appendPipelineRunStatus(
       pipelineRunWithoutStatus,
       plrTaskRuns,
@@ -46,7 +41,7 @@ describe('pipelineRun-utils', () => {
   });
 
   it('should append pipelineRun pending status for all the tasks if taskruns are not present and pipelinerun status is PipelineRunPending', () => {
-    const pipelineRun = cloneDeep(mockKubernetesPlrResponse.pipelineruns[0]);
+    const pipelineRun = { ...mockKubernetesPlrResponse.pipelineruns[0] };
     pipelineRun.status.conditions[0] = {
       ...pipelineRun.status.conditions[0],
       reason: SucceedConditionReason.PipelineRunPending,
@@ -58,7 +53,7 @@ describe('pipelineRun-utils', () => {
   });
 
   it('should append pipelineRun cancelled status for all the tasks if taskruns are not present and pipelinerun status is PipelineRunCancelled', () => {
-    const pipelineRun = cloneDeep(mockKubernetesPlrResponse.pipelineruns[0]);
+    const pipelineRun = { ...mockKubernetesPlrResponse.pipelineruns[0] };
     pipelineRun.status.conditions[0] = {
       ...pipelineRun.status.conditions[0],
       reason: SucceedConditionReason.PipelineRunCancelled,
@@ -70,7 +65,7 @@ describe('pipelineRun-utils', () => {
   });
 
   it('should append status to only pipeline tasks if isFinallyTasks is false', () => {
-    const pipelineRun = cloneDeep(mockKubernetesPlrResponse.pipelineruns[1]);
+    const pipelineRun = { ...mockKubernetesPlrResponse.pipelineruns[1] };
     const plrTaskRuns = getPLRTaskRuns(
       mockKubernetesPlrResponse.taskruns,
       pipelineRun.metadata.name,
@@ -80,7 +75,7 @@ describe('pipelineRun-utils', () => {
   });
 
   it('should append status to only finally tasks if isFinallyTasks is true', () => {
-    const pipelineRun = cloneDeep(mockKubernetesPlrResponse.pipelineruns[1]);
+    const pipelineRun = { ...mockKubernetesPlrResponse.pipelineruns[1] };
     const plrTaskRuns = getPLRTaskRuns(
       mockKubernetesPlrResponse.taskruns,
       pipelineRun.metadata.name,
@@ -90,7 +85,7 @@ describe('pipelineRun-utils', () => {
   });
 
   it('should return empty array if there are no finally tasks but isFinallyTasks is true', () => {
-    const pipelineRun = cloneDeep(mockKubernetesPlrResponse.pipelineruns[0]);
+    const pipelineRun = { ...mockKubernetesPlrResponse.pipelineruns[0] };
     const plrTaskRuns = getPLRTaskRuns(
       mockKubernetesPlrResponse.taskruns as TaskRunKind[],
       pipelineRun.metadata.name,

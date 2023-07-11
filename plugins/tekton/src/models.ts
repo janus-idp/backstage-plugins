@@ -21,6 +21,7 @@ export const TaskRunGVK: GroupVersionKind = {
 export enum ModelsPlural {
   pipelineruns = 'pipelineruns',
   taskruns = 'taskruns',
+  pods = 'pods',
 }
 
 export const tektonResourceModels: { [key: string]: GroupVersionKind } = {

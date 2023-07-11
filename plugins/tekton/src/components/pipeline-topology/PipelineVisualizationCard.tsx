@@ -5,9 +5,10 @@ import { useEntity } from '@backstage/plugin-catalog-react';
 
 import { isEmpty } from 'lodash';
 
+import { getLatestPipelineRun } from '@janus-idp/shared-react';
+
 import { TektonResourcesContext } from '../../hooks/TektonResourcesContext';
 import { ClusterErrors } from '../../types/types';
-import { getLatestPipelineRun } from '../../utils/pipelineRun-utils';
 import WrapperInfoCard from '../common/WrapperInfoCard';
 import { PipelineVisualization } from './PipelineVisualization';
 

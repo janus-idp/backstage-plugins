@@ -5,10 +5,13 @@ import {
   WhenStatus,
 } from '@patternfly/react-topology';
 
-import { PipelineRunKind, TaskRunKind } from '@janus-idp/shared-react';
+import {
+  PipelineRunKind,
+  PipelineTask,
+  TaskRunKind,
+} from '@janus-idp/shared-react';
 
 import { AddNodeDirection, NodeType } from '../consts/pipeline-topology-const';
-import { PipelineTask } from './pipeline';
 
 // Builder Callbacks
 export type NewTaskListNodeCallback = (direction: AddNodeDirection) => void;
