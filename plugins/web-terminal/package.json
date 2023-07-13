@@ -50,7 +50,7 @@
     "@types/node": "20.2.5",
     "cross-fetch": "3.1.6",
     "jest-canvas-mock": "2.5.1",
-    "msw": "0.49.3"
+    "msw": "1.2.2"
   },
   "files": [
     "dist",
