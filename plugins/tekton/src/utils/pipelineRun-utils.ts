@@ -97,6 +97,16 @@ export const getLatestPipelineRun = (
   return null;
 };
 
+export const getPipelineRun = (
+  runs: PipelineRunKind[],
+  name: string,
+): PipelineRunKind | null => {
+  if (runs?.length > 0 && name) {
+    return runs.find(run => run?.metadata?.name === name) ?? null;
+  }
+  return null;
+};
+
 const getStatusReason = (reason: string | undefined) => {
   switch (reason) {
     case SucceedConditionReason.PipelineRunCancelled:

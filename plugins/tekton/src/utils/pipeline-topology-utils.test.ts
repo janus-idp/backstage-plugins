@@ -9,6 +9,7 @@ import {
   getGraphDataModel,
   getTaskWhenStatus,
 } from './pipeline-topology-utils';
+import { getPipelineRun } from './pipelineRun-utils';
 
 describe('getFinallyTaskHeight', () => {
   it('expect to return dynamic height for finally task based on tasks length and builder options', () => {
@@ -28,6 +29,23 @@ describe('getFinallyTaskWidth', () => {
   it('expect to return smaller width if nodes are not present in finally section', () => {
     const numberOfTasks = 0;
     expect(getFinallyTaskWidth(numberOfTasks)).toBe(180);
+  });
+});
+
+describe('getPipelineRun', () => {
+  it('should return the required pipeline run resource', () => {
+    expect(
+      getPipelineRun(
+        mockKubernetesPlrResponse.pipelineruns,
+        'pipeline-test-wbvtlk',
+      ),
+    ).toEqual(mockKubernetesPlrResponse.pipelineruns[1]);
+  });
+
+  it('should return null if pipeline run doesnot exist', () => {
+    expect(
+      getPipelineRun(mockKubernetesPlrResponse.pipelineruns, 'bnb'),
+    ).toEqual(null);
   });
 });
 

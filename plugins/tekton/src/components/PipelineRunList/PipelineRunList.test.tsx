@@ -1,4 +1,5 @@
 import React from 'react';
+import { BrowserRouter } from 'react-router-dom';
 
 import { render } from '@testing-library/react';
 
@@ -36,7 +37,9 @@ describe('PipelineRunList', () => {
 
     const { queryByText } = render(
       <TektonResourcesContext.Provider value={mockContextData}>
-        <PipelineRunList />
+        <BrowserRouter>
+          <PipelineRunList />
+        </BrowserRouter>
       </TektonResourcesContext.Provider>,
     );
     expect(queryByText(/No Pipeline Runs found/i)).toBeNull();
