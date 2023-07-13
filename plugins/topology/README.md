@@ -77,6 +77,8 @@ The Topology plugin enables you to visualize the workloads such as Deployment, J
 
   ```
 
+  > Tip: You can use our [prepared manifest for a read-only `ClusterRole`](https://raw.githubusercontent.com/janus-idp/backstage-plugins/main/plugins/topology/manifests/clusterrole.yaml), providing both Kubernetes plugin andd Topology plugin access.
+
 - The following annotation is added to the entity's `catalog-info.yaml` file to identify whether an entitiy contains the Kubernetes resources:
 
   ```yaml title="catalog-info.yaml"

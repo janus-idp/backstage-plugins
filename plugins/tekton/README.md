@@ -46,6 +46,8 @@ The Tekton plugin enables you to visualize the `PipelineRun` resources available
 
   ```
 
+  > Tip: You can use our [prepared manifest for a read-only `ClusterRole`](https://raw.githubusercontent.com/janus-idp/backstage-plugins/main/plugins/tekton/manifests/clusterrole.yaml), providing both Kubernetes plugin andd Tekton plugin access.
+
 - The following annotation is added to the entity's `catalog-info.yaml` file to identify whether an entity contains the Kubernetes resources:
 
   ```yaml
