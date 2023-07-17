@@ -131,9 +131,18 @@ async function main() {
 catalog:
   providers:
     kiali:
-      url: http://localhost:4000
-      accessToken: 'sha256~yNUgr3pVf_K_fApUTWjLOuqPYHOftCd_zAKSAz27A4E'
+      url: ${KIALI_ENDPOINT} # Required
+      strategy: ${KIALI_AUTH_STRATEGY} # Required
+      skipTLSVerify: true # Optional
+      caData: ${KIALI_CONFIG_CA_DATA} # Optional
+      caFile: '' # local path to CA file
+      accessToken: ${KIALI_SERVICE_ACCOUNT_TOKEN} # Optional
 ```
+
+Authentication methods:
+
+- anonymous [Read docs about this authentication in kiali.io](https://kiali.io/docs/configuration/authentication/anonymous/)
+- token [Read docs about this authentication in kiali.io](https://kiali.io/docs/configuration/authentication/token/)
 
 ## For users
 
