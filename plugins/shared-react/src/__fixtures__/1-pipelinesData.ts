@@ -45,7 +45,36 @@ export const mockPLRResponseData = {
         ],
         pipelineSpec: {
           params: [],
-          tasks: [],
+          tasks: [
+            {
+              name: 'fetch-repository',
+              params: [],
+              taskRef: {
+                kind: 'ClusterTask',
+                name: 'git-clone',
+              },
+              workspaces: [],
+            },
+            {
+              name: 'build',
+              params: [],
+              runAfter: ['fetch-repository'],
+              taskRef: {
+                kind: 'ClusterTask',
+                name: 's2i-ruby',
+              },
+              workspaces: [],
+            },
+            {
+              name: 'deploy',
+              params: [],
+              runAfter: ['build'],
+              taskRef: {
+                kind: 'ClusterTask',
+                name: 'openshift-client',
+              },
+            },
+          ],
           workspaces: [],
         },
         startTime: '2023-03-30T07:03:04Z',
@@ -167,7 +196,7 @@ export const mockPLRResponseData = {
             lastTransitionTime: '2023-03-30T07:04:55Z',
             message: 'All Steps have completed executing',
             reason: 'Succeeded',
-            status: 'Unknown',
+            status: 'True',
             type: 'Succeeded',
           },
         ],
@@ -304,7 +333,7 @@ export const mockPLRResponseData = {
             lastTransitionTime: '2023-04-11T06:48:56Z',
             message: 'All Steps have completed executing',
             reason: 'Succeeded',
-            status: 'True',
+            status: 'Unknown',
             type: 'Succeeded',
           },
         ],
