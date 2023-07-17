@@ -8,7 +8,7 @@ import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
 import { createRouter } from './service/router';
 
 /**
- * This is the backend plugin that provides the Kubernetes integration.
+ * This is the backend plugin that provides the Kiali integration.
  * @alpha
  */
 export const kialiPlugin = createBackendPlugin({
@@ -21,13 +21,12 @@ export const kialiPlugin = createBackendPlugin({
         config: coreServices.config,
         catalogApi: catalogServiceRef,
       },
-      async init({ http, logger, config, catalogApi }) {
+      async init({ http, logger, config }) {
         const winstonLogger = loggerToWinstonLogger(logger);
         // TODO: expose all of the customization & extension points of the builder here
         const router = await createRouter({
           logger: winstonLogger,
           config,
-          catalog: catalogApi,
         });
         http.use(router);
       },

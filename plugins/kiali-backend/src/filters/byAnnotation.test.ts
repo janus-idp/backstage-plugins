@@ -1,17 +1,11 @@
-import request from 'supertest';
-
-import {
-  KUBERNETES_ANNOTATION,
-  KUBERNETES_LABEL_SELECTOR,
-  KUBERNETES_NAMESPACE,
-  Namespace,
-} from '@janus-idp/backstage-plugin-kiali-common';
+import { Namespace } from '@janus-idp/backstage-plugin-kiali-common';
 
 import { exportedForTesting } from './byAnnotation';
 
 const namespaceMock: Namespace[] = [
   {
     name: 'bookinfo',
+    cluster: 'kubernetes',
     labels: {
       app: 'bookinfo',
       version: 'v1',
@@ -19,9 +13,11 @@ const namespaceMock: Namespace[] = [
   },
   {
     name: 'travel-agency',
+    cluster: 'kubernetes',
   },
   {
     name: 'travel-control',
+    cluster: 'kubernetes',
   },
 ];
 

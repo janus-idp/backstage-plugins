@@ -35,6 +35,7 @@ export const IstioStatusList = (props: Props) => {
     return ['core', 'addon'].map((group: string) =>
       // @ts-expect-error
       groups[group]().map(status => (
+        // @ts-expect-error
         <IstioComponentStatus
           key={`status-${group}-${status.name}`}
           componentStatus={status}

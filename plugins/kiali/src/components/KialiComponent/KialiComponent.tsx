@@ -2,9 +2,18 @@ import React from 'react';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
 import useDebounce from 'react-use/lib/useDebounce';
 
-import { CardTab, Content, Page, TabbedCard } from '@backstage/core-components';
+import {
+  CardTab,
+  CodeSnippet,
+  Content,
+  Page,
+  TabbedCard,
+  WarningPanel,
+} from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import { useEntity } from '@backstage/plugin-catalog-react';
+
+import { CircularProgress } from '@material-ui/core';
 
 import {
   DefaultKialiConfig,
@@ -42,12 +51,27 @@ export const KialiComponent = () => {
     { loading: true },
   );
   useDebounce(refresh, 10);
+  if (errors.length > 0) {
+    const message = errors
+      .map(
+        e =>
+          `Error ${e.errorType.toString()}, Code: ${e.statusCode} fetching ${
+            e.resourcePath
+          } :  ${e.message}`,
+      )
+      .join('\n');
+    return (
+      <WarningPanel severity="error" title="Could not fetch info from Kiali.">
+        <CodeSnippet language="text" text={message} />
+      </WarningPanel>
+    );
+  }
 
   return (
     <Page themeId="tool">
       <Content>
         {loading ? (
-          <>Hello</>
+          <CircularProgress />
         ) : (
           <TabbedCard title="Kiali">
             {/* 

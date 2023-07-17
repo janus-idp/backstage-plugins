@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
 import useDebounce from 'react-use/lib/useDebounce';
 
-import { Entity } from '@backstage/catalog-model';
 import { CodeSnippet, WarningPanel } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import { useEntity } from '@backstage/plugin-catalog-react';
@@ -40,8 +39,6 @@ declare const directionTypes: {
 export type DirectionType = keyof typeof directionTypes;
 
 type OverviewProps = {
-  entity: Entity;
-  refreshIntervalMs?: number;
   kialiConfig: KialiConfigT;
 };
 
