@@ -1,0 +1,50 @@
+{
+  "travels": {
+    "workloadStatuses": [
+      {
+        "name": "travels",
+        "desiredReplicas": 1,
+        "currentReplicas": 1,
+        "availableReplicas": 1,
+        "syncedProxies": 1
+      }
+    ],
+    "requests": {
+      "inbound": { "http": { "200": 0.7965811965811965 } },
+      "outbound": { "http": { "200": 0.26666666666666666 } },
+      "healthAnnotations": {}
+    }
+  },
+  "viaggi": {
+    "workloadStatuses": [
+      {
+        "name": "viaggi",
+        "desiredReplicas": 1,
+        "currentReplicas": 1,
+        "availableReplicas": 1,
+        "syncedProxies": 1
+      }
+    ],
+    "requests": {
+      "inbound": {},
+      "outbound": { "http": { "200": 0.26666666666666666 } },
+      "healthAnnotations": {}
+    }
+  },
+  "voyages": {
+    "workloadStatuses": [
+      {
+        "name": "voyages",
+        "desiredReplicas": 1,
+        "currentReplicas": 1,
+        "availableReplicas": 1,
+        "syncedProxies": 1
+      }
+    ],
+    "requests": {
+      "inbound": {},
+      "outbound": { "http": { "200": 0.2632478632478632 } },
+      "healthAnnotations": {}
+    }
+  }
+}

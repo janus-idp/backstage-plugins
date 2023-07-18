@@ -1,0 +1,15 @@
+{
+  "grpc_received": null,
+  "grpc_sent": null,
+  "request_count": null,
+  "request_duration_millis": null,
+  "request_error_count": null,
+  "request_size": null,
+  "request_throughput": null,
+  "response_size": null,
+  "response_throughput": null,
+  "tcp_closed": null,
+  "tcp_opened": null,
+  "tcp_received": null,
+  "tcp_sent": null
+}

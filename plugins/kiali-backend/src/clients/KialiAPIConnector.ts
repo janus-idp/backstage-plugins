@@ -145,9 +145,6 @@ export class KialiApiImpl implements KialiApi {
         namespaces,
         query.annotation,
       );
-
-      this.logger.info(`NS => ${JSON.stringify(allNamespaces)}`);
-
       // Query Options for metrics
       const direction = query.direction;
       const duration = query.duration || defaultMetricsDuration;
@@ -279,8 +276,6 @@ export class KialiApiImpl implements KialiApi {
         allNamespaces.forEach((n, index) => {
           allNamespaces[index].validations = nsValidations[n.cluster][n.name];
         });
-
-        this.logger.info(`NS => ${JSON.stringify(allNamespaces)}`);
 
         result.namespaces = allNamespaces;
         return {
