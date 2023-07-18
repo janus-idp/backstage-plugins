@@ -48,10 +48,10 @@ export const policyEntityDeletePermission = createPermission({
 });
 
 /**
- * This permission is used to authorize refreshing permission policies
+ * This permission is used to authorize updating permission policies
  */
-export const policyEntityRefreshPermission = createPermission({
-  name: 'policy.entity.refresh',
+export const policyEntityUpdatePermission = createPermission({
+  name: 'policy.entity.update',
   attributes: {
     action: 'update',
   },
@@ -65,5 +65,5 @@ export const policyEntityPermissions = [
   policyEntityReadPermission,
   policyEntityCreatePermission,
   policyEntityDeletePermission,
-  policyEntityRefreshPermission,
+  policyEntityUpdatePermission,
 ];
