@@ -136,7 +136,7 @@ catalog:
       skipTLSVerify: true # Optional
       caData: ${KIALI_CONFIG_CA_DATA} # Optional
       caFile: '' # local path to CA file
-      accessToken: ${KIALI_SERVICE_ACCOUNT_TOKEN} # Optional
+      serviceAccountToken: ${KIALI_SERVICE_ACCOUNT_TOKEN} # Optional
 ```
 
 Authentication methods:
