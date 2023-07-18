@@ -1,0 +1,12 @@
+[
+  {
+    "secretName": "istio-ca-secret",
+    "secretNamespace": "istio-system",
+    "dnsNames": null,
+    "issuer": "O=cluster.local",
+    "notBefore": "2023-07-10T10:43:24Z",
+    "notAfter": "2033-07-07T10:43:24Z",
+    "error": "",
+    "accessible": true
+  }
+]
