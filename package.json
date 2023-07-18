@@ -31,7 +31,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "0.22.7",
-    "@ianvs/prettier-plugin-sort-imports": "4.0.1",
+    "@ianvs/prettier-plugin-sort-imports": "4.1.0",
     "@semantic-release/changelog": "6.0.3",
     "@semantic-release/exec": "6.0.3",
     "@semantic-release/git": "10.0.1",
@@ -40,7 +40,7 @@
     "conventional-changelog-conventionalcommits": "6.1.0",
     "husky": "8.0.3",
     "multi-semantic-release": "3.0.2",
-    "prettier": "2.8.8",
+    "prettier": "3.0.0",
     "turbo": "1.10.0",
     "typescript": "5.0.4"
   },

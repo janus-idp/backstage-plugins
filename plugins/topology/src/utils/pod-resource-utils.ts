@@ -311,8 +311,8 @@ export const getJobsForCronJob = (
   if (!resources?.jobs?.data?.length || resources?.jobs?.data?.length === 0) {
     return [];
   }
-  return resources.jobs.data.filter(job =>
-    job.metadata?.ownerReferences?.find(ref => ref.uid === cronJobUid),
+  return resources.jobs.data.filter(
+    job => job.metadata?.ownerReferences?.find(ref => ref.uid === cronJobUid),
   );
 };
 
