@@ -32,9 +32,9 @@ const TopologyDeploymentDetails = ({
           {resource.spec?.strategy?.type}
         </TopologySideBarDetailsItem>
         <TopologySideBarDetailsItem label="Max unavailable">
-          {`${resource.spec?.strategy?.rollingUpdate?.maxUnavailable ?? 1} of ${
-            resource.spec?.replicas
-          } pod`}
+          {`${
+            resource.spec?.strategy?.rollingUpdate?.maxUnavailable ?? 1
+          } of ${resource.spec?.replicas} pod`}
         </TopologySideBarDetailsItem>
         <TopologySideBarDetailsItem label="Max surge">
           {`${

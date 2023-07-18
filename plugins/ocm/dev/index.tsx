@@ -68,7 +68,7 @@ createDevApp()
         async getEntityByRef(ref: string) {
           return clusters.find(e => e.metadata.name === ref);
         },
-      } as CatalogApi),
+      }) as CatalogApi,
   })
   .registerApi(
     createApiFactory({
@@ -79,7 +79,7 @@ createDevApp()
           async query() {
             return new Promise(() => {});
           },
-        } as SearchApi),
+        }) as SearchApi,
     }),
   )
   .registerPlugin(ocmPlugin)
