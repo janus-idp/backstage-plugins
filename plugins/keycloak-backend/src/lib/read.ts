@@ -28,59 +28,77 @@ import {
   KEYCLOAK_ID_ANNOTATION,
   KEYCLOAK_REALM_ANNOTATION,
 } from './constants';
+import { noopGroupTransformer, noopUserTransformer } from './transformers';
+import {
+  GroupRepresentationWithParent,
+  GroupRepresentationWithParentAndEntity,
+  GroupTransformer,
+  UserRepresentationWithEntity,
+  UserTransformer,
+} from './types';
 
-interface GroupRepresentationWithParent extends GroupRepresentation {
-  parent?: string;
-  members?: string[];
-}
-
-export const parseGroup = (
+export const parseGroup = async (
   keycloakGroup: GroupRepresentationWithParent,
   realm: string,
-): GroupEntity => ({
-  apiVersion: 'backstage.io/v1beta1',
-  kind: 'Group',
-  metadata: {
-    name: keycloakGroup.name!,
-    annotations: {
-      [KEYCLOAK_ID_ANNOTATION]: keycloakGroup.id!,
-      [KEYCLOAK_REALM_ANNOTATION]: realm,
+  groupTransformer?: GroupTransformer,
+): Promise<GroupEntity | undefined> => {
+  const transformer = groupTransformer || noopGroupTransformer;
+  const entity: GroupEntity = {
+    apiVersion: 'backstage.io/v1beta1',
+    kind: 'Group',
+    metadata: {
+      name: keycloakGroup.name!,
+      annotations: {
+        [KEYCLOAK_ID_ANNOTATION]: keycloakGroup.id!,
+        [KEYCLOAK_REALM_ANNOTATION]: realm,
+      },
     },
-  },
-  spec: {
-    type: 'group',
-    profile: {
-      displayName: keycloakGroup.name!,
+    spec: {
+      type: 'group',
+      profile: {
+        displayName: keycloakGroup.name!,
+      },
+      // children, parent and members are updated again after all group and user transformers applied.
+      children: keycloakGroup.subGroups?.map(g => g.name!) || [],
+      parent: keycloakGroup.parent,
+      members: keycloakGroup.members,
     },
-    children: keycloakGroup.subGroups?.map(g => g.name!) || [],
-    parent: keycloakGroup?.parent,
-    members: keycloakGroup.members,
-  },
-});
-export const parseUser = (
+  };
+
+  return await transformer(entity, keycloakGroup, realm);
+};
+
+export const parseUser = async (
   user: UserRepresentation,
   realm: string,
-  groups: GroupRepresentationWithParent[],
-): UserEntity => ({
-  apiVersion: 'backstage.io/v1beta1',
-  kind: 'User',
-  metadata: {
-    name: user.username!,
-    annotations: {
-      [KEYCLOAK_ID_ANNOTATION]: user.id!,
-      [KEYCLOAK_REALM_ANNOTATION]: realm,
+  keycloakGroups: GroupRepresentationWithParentAndEntity[],
+
+  userTransformer?: UserTransformer,
+): Promise<UserEntity | undefined> => {
+  const transformer = userTransformer || noopUserTransformer;
+  const entity: UserEntity = {
+    apiVersion: 'backstage.io/v1beta1',
+    kind: 'User',
+    metadata: {
+      name: user.username!,
+      annotations: {
+        [KEYCLOAK_ID_ANNOTATION]: user.id!,
+        [KEYCLOAK_REALM_ANNOTATION]: realm,
+      },
     },
-  },
-  spec: {
-    profile: {
-      email: user.email,
-      displayName: [user.firstName, user.lastName].filter(Boolean).join(' '),
+    spec: {
+      profile: {
+        email: user.email,
+        displayName: [user.firstName, user.lastName].filter(Boolean).join(' '),
+      },
+      memberOf: keycloakGroups
+        .filter(g => g.members?.includes(user.username!))
+        .map(g => g.entity.metadata.name),
     },
-    memberOf: groups
-      .filter(g => g.members?.includes(user.username!))
-      .map(g => g.name!),
-  },
-});
+  };
+
+  return await transformer(entity, user, realm, keycloakGroups);
+};
 
 // eslint-disable-next-line consistent-return
 export function* traverseGroups(
@@ -128,6 +146,8 @@ export const readKeycloakRealm = async (
   options?: {
     userQuerySize?: number;
     groupQuerySize?: number;
+    userTransformer?: UserTransformer;
+    groupTransformer?: GroupTransformer;
   },
 ): Promise<{
   users: UserEntity[];
@@ -160,8 +180,58 @@ export const readKeycloakRealm = async (
     }),
   );
 
-  const users = kUsers.map(u => parseUser(u, config.realm, kGroups));
-  const groups = kGroups.map(g => parseGroup(g, config.realm));
+  const parsedGroups = await kGroups.reduce(
+    async (promise, g) => {
+      const partial = await promise;
+      const entity = await parseGroup(
+        g,
+        config.realm,
+        options?.groupTransformer,
+      );
+      if (entity) {
+        const group = {
+          ...g,
+          entity,
+        } as GroupRepresentationWithParentAndEntity;
+        partial.push(group);
+      }
+      return partial;
+    },
+    Promise.resolve([] as GroupRepresentationWithParentAndEntity[]),
+  );
 
-  return { users, groups };
+  const parsedUsers = await kUsers.reduce(
+    async (promise, u) => {
+      const partial = await promise;
+      const entity = await parseUser(
+        u,
+        config.realm,
+        parsedGroups,
+        options?.userTransformer,
+      );
+      if (entity) {
+        const user = { ...u, entity } as UserRepresentationWithEntity;
+        partial.push(user);
+      }
+      return partial;
+    },
+    Promise.resolve([] as UserRepresentationWithEntity[]),
+  );
+
+  const groups = parsedGroups.map(g => {
+    const entity = g.entity;
+    entity.spec.members =
+      g.entity.spec.members?.map(
+        m => parsedUsers.find(p => p.username === m)?.entity.metadata.name!,
+      ) || [];
+    entity.spec.children =
+      g.entity.spec.children?.map(
+        c => parsedGroups.find(p => p.name === c)?.entity.metadata.name!,
+      ) || [];
+    entity.spec.parent = parsedGroups.find(p => p.name === entity.spec.parent)
+      ?.entity.metadata.name;
+    return entity;
+  });
+
+  return { users: parsedUsers.map(u => u.entity), groups };
 };

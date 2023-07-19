@@ -130,6 +130,65 @@ yarn workspace backend add @janus-idp/backstage-plugin-keycloak-backend
            # highlight-add-end
    ```
 
+4. Optional: provide a transformer function for user/group to mutate the entity before their ingestion into catalog. Extend `packages/backend/src/plugins/catalog.ts` with custom `userTransformer` and `groupTransformer` functions:
+
+   ```ts title="packages/backend/src/plugins/catalog.ts"
+   /* highlight-add-start */
+   import {
+     GroupTransformer,
+     UserTransformer,
+   } from '@janus-idp/backstage-plugin-keycloak-backend';
+
+   /* highlight-add-end */
+
+   /* highlight-add-start */
+   // Suffix user entity name with realm name
+   const userTransformer: UserTransformer = async (
+     entity,
+     user,
+     realm,
+     groups,
+   ) => {
+     entity.metadata.name = `${entity.metadata.name}_${realm}`;
+     return entity;
+   };
+   /* highlight-add-end */
+
+   export default async function createPlugin(
+     env: PluginEnvironment,
+   ): Promise<Router> {
+     const builder = await CatalogBuilder.create(env);
+
+     /* ... other processors and/or providers ... */
+     builder.addEntityProvider(
+       KeycloakOrgEntityProvider.fromConfig(env.config, {
+         id: 'development',
+         logger: env.logger,
+         /* highlight-add-start */
+         userTransformer,
+         /* highlight-add-end */
+       }),
+     );
+
+     const { processingEngine, router } = await builder.build();
+     await processingEngine.start();
+     return router;
+   }
+   ```
+
+   `userTransformer` is an async function that is expected to resolve to `UserEntity` object or `undefined` (if you want to reject the entity) and accepts following parameters:
+
+   - `entity`: The output of the default parser
+   - `user`: Keycloak user representation
+   - `realm`: Realm name
+   - `groups`: Data about available groups
+
+   `groupTransformer` is an async function that is expected to resolve to `GroupEntity` object or `undefined` (if you want to reject the entity) and accepts following parameters:
+
+   - `entity`: The output of the default parser
+   - `group`: Keycloak group representation
+   - `realm`: Realm name
+
 Communication between Backstage and Keycloak is enabled by using the Keycloak API. Username/password or client credentials are supported authentication methods.
 
 The following table describes the parameters that you can configure to enable the plugin under `catalog.providers.keycloakOrg.<ENVIRONMENT_NAME>` object in the `app-config.yaml` file:
