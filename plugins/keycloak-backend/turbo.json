@@ -1,0 +1,13 @@
+{
+  "extends": ["//"],
+  "pipeline": {
+    "start:plugin": {
+      "cache": false,
+      "persistent": true
+    },
+    "start:keycloak": {
+      "cache": false,
+      "persistent": true
+    }
+  }
+}
