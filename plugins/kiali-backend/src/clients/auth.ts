@@ -1,26 +1,22 @@
 import moment from 'moment';
-import fetch, { Response } from 'node-fetch';
-import { Logger } from 'winston';
 
 import { config, KialiDetails } from '@janus-idp/backstage-plugin-kiali-common';
 
-type Authentication = {
+export type Session = {
   expiresOn: string;
   username: string;
 };
 
-const MILLISECONDS = 1000;
-const AUTH_KIALI_TOKEN = 'kiali-token-aes';
+export const MILLISECONDS = 1000;
+export const AUTH_KIALI_TOKEN = 'kiali-token-aes';
 export class KialiAuthentication {
-  protected session: Authentication;
+  protected session: Session;
   protected cookie: string;
   private KialiDetails: KialiDetails;
-  private readonly logger: Logger;
   private readonly sessionSeconds: number;
 
-  constructor(KD: KialiDetails, log: Logger) {
+  constructor(KD: KialiDetails) {
     this.KialiDetails = KD;
-    this.logger = log;
     this.sessionSeconds = KD.sessionTime
       ? KD.sessionTime * MILLISECONDS
       : config.session.timeOutforWarningUser;
@@ -36,34 +32,25 @@ export class KialiAuthentication {
     return this.cookie;
   };
 
-  setSession = (session: Authentication) => {
+  setSession = (session: Session) => {
     this.session = session;
   };
 
-  checkSession = () => {
-    if (this.timeLeft() < this.sessionSeconds) {
-      this.extendSession();
-    }
+  checkIfExtendSession = () => {
+    return this.timeLeft() < this.sessionSeconds;
   };
 
-  setKialiCookie = (response: Response) => {
-    const rawCookie = response.headers.get('set-cookie') || '';
+  setKialiCookie = (rawCookie: string) => {
     if (rawCookie !== '') {
       const kCookie = rawCookie
         .split(';')
-        .filter(n => n.split('=')[0] === AUTH_KIALI_TOKEN);
-      this.cookie = kCookie.length > 0 ? kCookie[0] : '';
+        .filter(n => n.split('=')[0].trim() === AUTH_KIALI_TOKEN);
+      this.cookie = kCookie.length > 0 ? kCookie[0].trim() : '';
     } else {
       this.cookie = '';
     }
   };
 
-  private extendSession() {
-    fetch('').then(resp => {
-      this.logger.info(`Extend session ${resp}`);
-      // this.session.expiresOn = resp.expiresOn
-    });
-  }
   private timeLeft = (): number => {
     const expiresOn = moment(this.session!.expiresOn);
 
@@ -81,6 +68,6 @@ export class KialiAuthentication {
     if (this.cookie === '') {
       return true;
     }
-    return moment(this.session!.expiresOn).diff(moment()) > 0;
+    return moment(this.session!.expiresOn).diff(moment()) <= 0;
   };
 }

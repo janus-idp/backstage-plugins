@@ -34,6 +34,10 @@ export interface Config {
          * @visibility secret
          */
         caFile?: string;
+        /**
+         * Time in seconds that session is enabled, defaults to 1 minute.
+         */
+        sessionTime?: number;
       };
     };
   };

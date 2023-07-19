@@ -36,7 +36,7 @@ export class KialiFetcher {
   constructor(KD: KialiDetails, log: Logger) {
     this.KialiDetails = KD;
     this.logger = log;
-    this.kialiAuth = new KialiAuthentication(KD, log);
+    this.kialiAuth = new KialiAuthentication(KD);
   }
 
   getSession = () => {
@@ -59,14 +59,32 @@ export class KialiFetcher {
           const session = await auth.json();
           this.logger.debug(`Logged username ${session.username}`);
           this.kialiAuth.setSession(session);
-          this.kialiAuth.setKialiCookie(auth);
+          this.kialiAuth.setKialiCookie(auth.headers.get('set-cookie') || '');
         }
         return auth;
       }
 
       return Promise.reject(new Error('No service account token for Kiali'));
     }
-    this.logger.info(`not need relogin`);
+    // Check if need extend session
+    if (this.kialiAuth.checkIfExtendSession()) {
+      this.logger.debug(
+        `Query to ${
+          new URL(config.api.urls.authenticate, this.KialiDetails.url).href
+        } to extend session`,
+      );
+      const auth = await this.fetchResource(
+        new URL(config.api.urls.authenticate, this.KialiDetails.url).href,
+        this.getRequestInit(),
+      );
+      if (auth.ok) {
+        const session = await auth.json();
+        this.logger.debug(`Extended session for username ${session.username}`);
+        this.kialiAuth.setSession(session);
+      }
+      return auth;
+    }
+    this.logger.debug(`Not need relogin`);
     return Promise.resolve(new Response('No need login'));
   }
   async fetchResource(
