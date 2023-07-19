@@ -60,7 +60,7 @@ const TopologyViewWorkloadComponent = ({
         },
         ...dataModel,
       };
-      controller.fromModel(model, false);
+      controller.fromModel(model, true);
     }
   }, [layout, loaded, dataModel, controller]);
 
