@@ -1,0 +1,22 @@
+export interface Config {
+  permission: {
+    rbac: {
+      /**
+       * Optional configuration for admins, can declare individual users and / or groups
+       * @visibility frontend
+       */
+      admin?: {
+        /**
+         * The list of users and / or groups with admin access
+         * @visibility frontend
+         */
+        users?: Array<{
+          /**
+           * @visibility frontend
+           */
+          name: string;
+        }>;
+      };
+    };
+  };
+}
