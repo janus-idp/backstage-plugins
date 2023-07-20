@@ -13,6 +13,7 @@ import https from 'https';
 
 import { KialiAuthentication } from './auth';
 
+const TIMEOUT_FETCH = 8000;
 const statusCodeToErrorType = (statusCode: number): KialiErrorTypes => {
   switch (statusCode) {
     case 400:
@@ -23,6 +24,10 @@ const statusCodeToErrorType = (statusCode: number): KialiErrorTypes => {
       return 'NOT_FOUND';
     case 500:
       return 'SYSTEM_ERROR';
+    case 503:
+      return 'SERVICE_UNAVAILABLE';
+    case 504:
+      return 'GATEWAY_TIME_OUT';
     default:
       return 'UNKNOWN_ERROR';
   }
@@ -115,7 +120,7 @@ export class KialiFetcher {
     const resourcePath = new URL(res.url).pathname;
     const message = await res.text();
     this.logger.warn(
-      `Received ${res.status} status when fetching "${resourcePath}" in "Kiali"; body=[${message}]`,
+      `Received ${res.status} status when fetching "${this.KialiDetails.url}${resourcePath}" in "Kiali"; body=[${message}]`,
     );
     return {
       errorType: statusCodeToErrorType(res.status),
@@ -126,7 +131,7 @@ export class KialiFetcher {
   }
 
   private getRequestInit = (auth: boolean = false): RequestInit => {
-    const requestInit: RequestInit = {};
+    const requestInit: RequestInit = { timeout: TIMEOUT_FETCH };
     if (auth) {
       const params = new URLSearchParams();
       params.append('token', this.KialiDetails.serviceAccountToken || '');

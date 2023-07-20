@@ -89,22 +89,22 @@ export class KialiApiImpl implements KialiApi {
         } as FetchResponseWrapper;
       }
       if (!serverConfig.ok) {
-        this.kialiFetcher
+        await this.kialiFetcher
           .handleUnsuccessfulResponse(serverConfig)
           .then(err => errors.push(err));
       }
       if (!meshTls.ok) {
-        this.kialiFetcher
+        await this.kialiFetcher
           .handleUnsuccessfulResponse(meshTls)
           .then(err => errors.push(err));
       }
       if (!status.ok) {
-        this.kialiFetcher
+        await this.kialiFetcher
           .handleUnsuccessfulResponse(status)
           .then(err => errors.push(err));
       }
       if (!istioCerts.ok) {
-        this.kialiFetcher
+        await this.kialiFetcher
           .handleUnsuccessfulResponse(istioCerts)
           .then(err => errors.push(err));
       }
@@ -124,8 +124,6 @@ export class KialiApiImpl implements KialiApi {
       response: this.kialiconfig,
     } as FetchResponseWrapper;
   }
-
-  assing = () => {};
 
   async fetchOverviewNamespaces(
     query: OverviewQuery,
@@ -285,27 +283,27 @@ export class KialiApiImpl implements KialiApi {
         } as FetchResponseWrapper;
       }
       if (!canaryUpgrade.ok) {
-        this.kialiFetcher
+        await this.kialiFetcher
           .handleUnsuccessfulResponse(canaryUpgrade)
           .then(err => errors.push(err));
       }
       if (!istioStatus.ok) {
-        this.kialiFetcher
+        await this.kialiFetcher
           .handleUnsuccessfulResponse(istioStatus)
           .then(err => errors.push(err));
       }
       if (!outboundTrafficPolicyMode.ok) {
-        this.kialiFetcher
+        await this.kialiFetcher
           .handleUnsuccessfulResponse(outboundTrafficPolicyMode)
           .then(err => errors.push(err));
       }
       if (!istiodResourceThresholds.ok) {
-        this.kialiFetcher
+        await this.kialiFetcher
           .handleUnsuccessfulResponse(istiodResourceThresholds)
           .then(err => errors.push(err));
       }
       if (!fetchNsValidations.ok) {
-        this.kialiFetcher
+        await this.kialiFetcher
           .handleUnsuccessfulResponse(fetchNsValidations)
           .then(err => errors.push(err));
       }

@@ -129,7 +129,7 @@ export const Overview = (props: OverviewProps) => {
   const [{ loading }, refresh] = useAsyncFn(
     async () => {
       // Check if the config is loaded
-      fetchInfo();
+      await fetchInfo();
     },
     [duration, overviewType, direction],
     { loading: true },

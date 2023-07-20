@@ -13,6 +13,8 @@ export type KialiErrorTypes =
   | 'NOT_FOUND'
   | 'SYSTEM_ERROR'
   | 'UNKNOWN_ERROR'
+  | 'SERVICE_UNAVAILABLE'
+  | 'GATEWAY_TIME_OUT'
   | 'FETCH_ERROR';
 
 export type NsMetrics = { [key: string]: Metric[] };
