@@ -5,6 +5,7 @@ import { useTheme } from '@material-ui/core/styles';
 import { K8sResourcesContext } from '../../hooks/K8sResourcesContext';
 import { useK8sObjectsResponse } from '../../hooks/useK8sObjectsResponse';
 import { ModelsPlural } from '../../models';
+import { ModelsPlural as TektonModels } from '../../pipeline-models';
 import { TopologyWorkloadView } from './TopologyWorkloadView';
 
 import './TopologyComponent.css';
@@ -37,8 +38,9 @@ export const TopologyComponent = () => {
     ModelsPlural.cronjobs,
     ModelsPlural.jobs,
     ModelsPlural.routes,
-    ModelsPlural.pipelines,
-    ModelsPlural.pipelineruns,
+    TektonModels.taskruns,
+    TektonModels.pipelineruns,
+    TektonModels.pipelines,
   ];
 
   const k8sResourcesContextData = useK8sObjectsResponse(watchedResources);

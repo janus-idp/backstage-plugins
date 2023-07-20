@@ -1,7 +1,8 @@
 import React from 'react';
 
+import { PipelineRunKind } from '@janus-idp/shared-react';
+
 import { fromNow } from '../../../common/utils/datetime';
-import { PipelineRunKind } from '../../../types/pipelineRun';
 
 type PLRlastUpdatedProps = { plr: PipelineRunKind };
 

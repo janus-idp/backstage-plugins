@@ -1,12 +1,15 @@
 import React from 'react';
 
+import {
+  PipelineKind,
+  PipelineRunKind,
+  pipelineRunStatus,
+} from '@janus-idp/shared-react';
+
 import ResourceName from '../../../common/components/ResourceName';
 import ResourceStatus from '../../../common/components/ResourceStatus';
 import Status from '../../../common/components/Status';
-import { PipelineRunModel } from '../../../models';
-import { PipelineKind } from '../../../types/pipeline';
-import { PipelineRunKind } from '../../../types/pipelineRun';
-import { pipelineRunStatus } from '../../../utils/pipeline-utils';
+import { PipelineRunModel } from '../../../pipeline-models';
 import PLRlastUpdated from './PLRlastUpdated';
 import TopologyResourcesTabPanelItem from './TopologyResourcesTabPaneltem';
 
