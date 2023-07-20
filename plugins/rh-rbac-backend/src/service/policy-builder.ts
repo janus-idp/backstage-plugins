@@ -1,6 +1,6 @@
 import {
+  PluginDatabaseManager,
   PluginEndpointDiscovery,
-  resolvePackagePath,
 } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import {
@@ -17,9 +17,7 @@ import {
 } from '@backstage/plugin-permission-common';
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 
-import { FileAdapter } from 'casbin';
 import { Router } from 'express';
-import TypeORMAdapter from 'typeorm-adapter';
 import { Logger } from 'winston';
 
 import {
@@ -27,6 +25,7 @@ import {
   policyEntityReadPermission,
   RESOURCE_TYPE_POLICY_ENTITY,
 } from '../permissions';
+import { CasbinAdapterFactory } from './casbin-adapter-factory';
 import { RBACPermissionPolicy } from './permission-policy';
 
 export class PolicyBuilder {
@@ -36,33 +35,13 @@ export class PolicyBuilder {
     discovery: PluginEndpointDiscovery;
     identity: IdentityApi;
     permissions: PermissionEvaluator;
+    database: PluginDatabaseManager;
   }): Promise<Router> {
-    let adapter;
-    const databaseEnabled = env.config.getOptionalBoolean(
-      'permission.database.enabled',
-    );
-
     const permissions = env.permissions;
-
-    // Database adapter work
-    if (databaseEnabled) {
-      const databaseConfig = env.config.getOptionalConfig('backend.database');
-      adapter = await TypeORMAdapter.newAdapter({
-        type: 'postgres',
-        host: databaseConfig?.getString('connection.host'),
-        port: databaseConfig?.getNumber('connection.port'),
-        username: databaseConfig?.getString('connection.user'),
-        password: databaseConfig?.getString('connection.password'),
-        database: env.config.getOptionalString('permission.database.name'),
-      });
-    } else {
-      adapter = new FileAdapter(
-        resolvePackagePath(
-          '@janus-idp/plugin-rh-rbac-backend',
-          './model/rbac-policy.csv',
-        ),
-      );
-    }
+    const adapter = await new CasbinAdapterFactory(
+      env.config,
+      env.database,
+    ).createAdapter();
 
     const options: RouterOptions = {
       config: env.config,
