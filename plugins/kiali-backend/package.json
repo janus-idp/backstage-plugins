@@ -21,6 +21,7 @@
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack"
   },
+  "configSchema": "config.d.ts",
   "dependencies": {
     "@backstage/backend-common": "^0.18.0",
     "@backstage/backend-plugin-api": "^0.5.3",
@@ -46,6 +47,7 @@
     "supertest": "6.3.3"
   },
   "files": [
-    "dist"
+    "dist",
+    "config.d.ts"
   ]
 }

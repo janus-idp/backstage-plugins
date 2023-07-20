@@ -1,4 +1,4 @@
-# @janus-idp/plugin-kiali-common
+# Kiali Common plugin for Kiali Plugin
 
 Welcome to the common package for the kiali plugin!
 

@@ -1,8 +1,17 @@
-# kiali
+# Kiali plugin for Backstage
 
-Welcome to the kiali plugin!
-
+The Kiali Plugin
 This plugin exposes information about your entity-specific ServiceMesh objects.
+
+## Capabilities
+
+The Kiali plugin has the following capabilities:
+
+- Overview
+  - Metrics by namespace
+  - Health by namespace
+  - Canary info
+  - Istio Config warnings
 
 ## For administrators
 
@@ -93,6 +102,7 @@ This plugin exposes information about your entity-specific ServiceMesh objects.
 3. Create a file called `kiali.ts` inside `packages/backend/src/plugins/` and add the following:
 
 ```ts
+/* highlight-add-start */
 import { Router } from 'express';
 
 import { createRouter } from '@janus-idp/plugin-kiali-backend';
@@ -107,6 +117,7 @@ export default async function createPlugin(
     config: env.config,
   });
 }
+/* highlight-add-end */
 ```
 
 4. import the plugin to `packages/backend/src/index.ts`. There are three lines of code you'll need to add, and they should be added near similar code in your existing Backstage backend.
@@ -130,13 +141,23 @@ async function main() {
 ```yaml
 catalog:
   providers:
+    # highlight-add-start
     kiali:
-      url: ${KIALI_ENDPOINT} # Required
-      strategy: ${KIALI_AUTH_STRATEGY} # Required
-      skipTLSVerify: true # Optional
-      caData: ${KIALI_CONFIG_CA_DATA} # Optional
-      caFile: '' # local path to CA file
-      serviceAccountToken: ${KIALI_SERVICE_ACCOUNT_TOKEN} # Optional
+      # Required. Kiali endpoint
+      url: ${KIALI_ENDPOINT}
+      # Required. Kiali authentication. Supported anonymous and token
+      strategy: ${KIALI_AUTH_STRATEGY}
+      # Optional. Required by token authentication
+      serviceAccountToken: ${KIALI_SERVICE_ACCOUNT_TOKEN}
+      # Optional. defaults false
+      skipTLSVerify: true
+      # Optional
+      caData: ${KIALI_CONFIG_CA_DATA}
+      # Optional. Local path to CA file
+      caFile: ''
+      # Optional. Time in seconds that session is enabled, defaults to 1 minute.
+      sessionTime: 60
+      # highlight-add-end
 ```
 
 Authentication methods:
@@ -144,22 +165,29 @@ Authentication methods:
 - anonymous [Read docs about this authentication in kiali.io](https://kiali.io/docs/configuration/authentication/anonymous/)
 - token [Read docs about this authentication in kiali.io](https://kiali.io/docs/configuration/authentication/token/)
 
+The following table describes the parameters that you can configure to enable the plugin under `catalog.providers.keycloakOrg.<ENVIRONMENT_NAME>` object in the `app-config.yaml` file:
+
+| Name                  | Description                                                                                                          | Default Value | Required                                |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------- | ------------- | --------------------------------------- |
+| `url`                 | Location of the kIALI server, such as `https://localhost:4000`                                                       | ""            | Yes                                     |
+| `strategy`            | Authentication strategy. [Methods](https://kiali.io/docs/configuration/authentication/)                              | `anonymous`   | Yes                                     |
+| `serviceAccountToken` | Service Account Token which is used for querying data from Kiali                                                     | ""            | Yes if using token based authentication |
+| `skipTLSVerify`       | Skip TLS certificate verification presented by the API server                                                        | false         | No                                      |
+| `caData`              | Base64-encoded certificate authority bundle in PEM format                                                            | ""            | No                                      |
+| `caFile`              | Filesystem path (on the host where the Backstage process is running) to a certificate authority bundle in PEM format | ""            | No                                      |
+| `sessionTime`         | Time in seconds that session is enabled                                                                              | 60            | No                                      |
+
 ## For users
-
-### Using the Kiali plugin in Backstage
-
-Kiali is a front-end/back-end plugin that enables you to view your `ServiceMesh` in backstage.
-
-#### Prerequisites
-
-- Your Backstage application is installed and running.
-- You have installed the Kiali plugin. For the installation process, see [Installation](#setting-up-the-kiali-plugin).
-
-#### Procedure
 
 1. Open your Backstage application and select a component from the **Catalog** page.
 
-2. Go to the **Kiali** tab.
+![catalog-list](./images/catalog-list.png)
+
+2. Check that you entity has the annotations.
+
+![entity](./images/entity.png)
+
+3. Go to the **Kiali** tab.
 
    The **Kiali** tab displays the Overview view associated to a Servicemesh.
 

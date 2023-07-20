@@ -85,9 +85,18 @@ export const Overview = (props: OverviewProps) => {
           const ovData = response.response as OverviewData;
           const ns = ovData.namespaces;
           try {
-            ns.forEach((n, i) => {
-              ns[i] = calculateHealth(config!.server, ovType, n, dur);
-            });
+            if (ns.length > 0) {
+              ns.forEach((n, i) => {
+                ns[i] = calculateHealth(config!.server, ovType, n, dur);
+              });
+            } else {
+              const newWarnings = warnings;
+              newWarnings.push({
+                errorType: 'SYSTEM_ERROR',
+                message: `No namespaces for Health`,
+              });
+              setWarnings(newWarnings);
+            }
           } catch (e) {
             const newWarnings = warnings;
             newWarnings.push({
@@ -108,7 +117,12 @@ export const Overview = (props: OverviewProps) => {
         }
       })
       .catch(e => {
-        throw new Error(e);
+        const newWarnings = warnings;
+        newWarnings.push({
+          errorType: 'SYSTEM_ERROR',
+          message: `Error calculating Health : ${e}`,
+        });
+        setWarnings(newWarnings);
       });
   };
 
@@ -147,6 +161,7 @@ export const Overview = (props: OverviewProps) => {
     ovType: OverviewType = overviewType,
     dir: DirectionType = direction,
   ) => {
+    setWarnings([]);
     fetchInfo(props.kialiConfig, dur, ovType, dir);
     setDuration(dur);
     setOverviewType(ovType);
