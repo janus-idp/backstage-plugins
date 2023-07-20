@@ -2,7 +2,8 @@ import {
   configApiRef,
   createApiFactory,
   createPlugin,
-  createRoutableExtension, identityApiRef,
+  createRoutableExtension,
+  identityApiRef,
 } from '@backstage/core-plugin-api';
 
 import { OcmApiClient, OcmApiRef } from './api';
@@ -20,7 +21,8 @@ export const ocmPlugin = createPlugin({
         configApi: configApiRef,
         identityApi: identityApiRef,
       },
-      factory: ({ configApi, identityApi }) => new OcmApiClient({ configApi, identityApi }),
+      factory: ({ configApi, identityApi }) =>
+        new OcmApiClient({ configApi, identityApi }),
     }),
   ],
 });

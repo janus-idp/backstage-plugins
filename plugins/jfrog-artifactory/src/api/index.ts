@@ -45,11 +45,11 @@ export class JfrogArtifactoryApiClient implements JfrogArtifactoryApiV1 {
   }
 
   private async fetcher(url: string, query: string) {
-    const {token: idToken} = await this.identityApi.getCredentials();
+    const { token: idToken } = await this.identityApi.getCredentials();
     const response = await fetch(url, {
       headers: {
         'Content-Type': 'application/json',
-        ...( idToken && {'Authorization': `Bearer ${idToken}`})
+        ...(idToken && { Authorization: `Bearer ${idToken}` }),
       },
       method: 'POST',
       body: query,

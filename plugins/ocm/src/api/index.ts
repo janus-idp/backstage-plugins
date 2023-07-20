@@ -1,4 +1,8 @@
-import {ConfigApi, createApiRef, IdentityApi} from '@backstage/core-plugin-api';
+import {
+  ConfigApi,
+  createApiRef,
+  IdentityApi,
+} from '@backstage/core-plugin-api';
 import { ErrorResponseBody } from '@backstage/errors';
 
 import { Cluster } from '@janus-idp/backstage-plugin-ocm-common';
@@ -30,14 +34,15 @@ export class OcmApiClient implements OcmApiV1 {
   }
 
   private async clusterApiFetchCall(params?: string): Promise<any> {
-    const {token: idToken} = await this.identityApi.getCredentials();
+    const { token: idToken } = await this.identityApi.getCredentials();
     const backendUrl = this.configApi.getString('backend.baseUrl');
     const jsonResponse = await fetch(
-      `${backendUrl}/api/ocm/status${params || ''}`, {
+      `${backendUrl}/api/ocm/status${params || ''}`,
+      {
         headers: {
-          ...( idToken && {'Authorization': `Bearer ${idToken}`})
+          ...(idToken && { Authorization: `Bearer ${idToken}` }),
         },
-      }
+      },
     );
     return jsonResponse.json();
   }
