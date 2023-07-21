@@ -14,6 +14,7 @@ import {
   TaskRunKind,
   TaskStatusTypes,
 } from '../../types';
+import { getTaskRunsForPipelineRun } from './taskRun-utils';
 
 export const getRunStatusColor = (status: string): StatusMessage => {
   switch (status) {
@@ -170,6 +171,7 @@ export const updateTaskStatus = (
   taskRuns: TaskRunKind[],
 ): TaskStatusTypes => {
   const skippedTaskLength = pipelinerun?.status?.skippedTasks?.length || 0;
+  const PLRTaskRuns = getTaskRunsForPipelineRun(pipelinerun, taskRuns);
   const taskStatus: TaskStatusTypes = {
     PipelineNotStarted: 0,
     Pending: 0,
@@ -180,11 +182,11 @@ export const updateTaskStatus = (
     Skipped: skippedTaskLength,
   };
 
-  if (taskRuns.length === 0) {
+  if (PLRTaskRuns.length === 0) {
     return taskStatus;
   }
 
-  taskRuns.forEach((taskRun: TaskRunKind) => {
+  PLRTaskRuns.forEach((taskRun: TaskRunKind) => {
     const status = taskRun && pipelineRunFilterReducer(taskRun);
     if (status === 'Succeeded') {
       taskStatus[ComputedStatus.Succeeded]++;

@@ -4,6 +4,7 @@
   height: 100%;
   overflow: hidden;
   width: 100%;
+  cursor: pointer;
 }
 .bs-shared-horizontal-stacked-bars.is-inline {
   display: inline-block;
