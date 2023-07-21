@@ -111,10 +111,12 @@ export const createTopologyNodeData = (
     jobsData?: JobsData;
     routesData?: RoutesData;
     pipelinesData?: PipelinesData | null;
+    cheCluster?: any;
   },
 ): TopologyDataObject => {
   const dcUID = resource.metadata?.uid;
   const deploymentsLabels = resource.metadata?.labels ?? {};
+  const resAnnotations = resource.metadata?.annotations;
 
   return {
     id: dcUID as string,
@@ -128,6 +130,9 @@ export const createTopologyNodeData = (
       kind: resource?.kind,
       builderImage: defaultIcon,
       url,
+      editURL: resAnnotations?.['app.openshift.io/edit-url'],
+      vcsURI: resAnnotations?.['app.openshift.io/vcs-uri'],
+      vcsRef: resAnnotations?.['app.openshift.io/vcs-ref'],
       ...resourcesData,
     },
   };

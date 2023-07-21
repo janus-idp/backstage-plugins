@@ -75,3 +75,10 @@ rules:
     verbs:
       - get
       - list
+  - apiGroups:
+      - org.eclipse.che
+    resources:
+      - checlusters
+    verbs:
+      - get
+      - list

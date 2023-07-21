@@ -66,6 +66,12 @@ export const RouteGVK: GroupVersionKind = {
   kind: 'Route',
 };
 
+export const CheClusterGVK: GroupVersionKind = {
+  apiVersion: 'v2',
+  apiGroup: 'org.eclipse.che',
+  kind: 'CheCluster',
+};
+
 export enum ModelsPlural {
   deployments = 'deployments',
   pods = 'pods',
@@ -79,6 +85,7 @@ export enum ModelsPlural {
   routes = 'routes',
   pipelines = 'pipelines',
   pipelineruns = 'pipelineruns',
+  checlusters = 'checlusters',
 }
 
 export const resourceGVKs: { [key: string]: GroupVersionKind } = {
@@ -95,6 +102,7 @@ export const resourceGVKs: { [key: string]: GroupVersionKind } = {
   [PipelineModelsPlural.pipelineruns]: PipelineRunGVK,
   [PipelineModelsPlural.pipelines]: PipelineGVK,
   [PipelineModelsPlural.taskruns]: TaskRunGVK,
+  [ModelsPlural.checlusters]: CheClusterGVK,
 };
 
 export const DeploymentModel: Model = {
@@ -158,6 +166,13 @@ export const RouteModel: Model = {
   color: '#2b9af3',
 };
 
+export const CheClusterModel: Model = {
+  ...CheClusterGVK,
+  abbr: 'CC',
+  labelPlural: 'CheClusters',
+  plural: 'checlusters',
+};
+
 export const resourceModels = {
   [DeploymentModel.kind]: DeploymentModel,
   [PodModel.kind]: PodModel,
@@ -171,4 +186,5 @@ export const resourceModels = {
   [PipelineModel.kind]: PipelineModel,
   [PipelineRunModel.kind]: PipelineRunModel,
   [TaskRunModel.kind]: TaskRunModel,
+  [CheClusterModel.kind]: CheClusterModel,
 };

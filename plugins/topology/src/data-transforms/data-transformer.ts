@@ -8,6 +8,7 @@ import { getPipelinesDataForResource } from '../utils/pipeline-utils';
 import { getPodsDataForResource } from '../utils/pod-resource-utils';
 import {
   createOverviewItemForType,
+  getCheCluster,
   getIngressesDataForResourceServices,
   getJobsDataForResource,
   getRoutesDataForResourceServices,
@@ -66,6 +67,7 @@ export const getBaseTopologyDataModel = (resources: K8sResponseData): Model => {
                   }
                 : {}),
               pipelinesData: getPipelinesDataForResource(resources, resource),
+              cheCluster: getCheCluster(resources),
             },
           );
           typedDataModel.nodes?.push(
