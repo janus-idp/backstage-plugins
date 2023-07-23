@@ -6,7 +6,8 @@ import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import express from 'express';
 import request from 'supertest';
 
-import { policyEntityReadPermission } from '../permissions';
+import { policyEntityReadPermission } from '@janus-idp/plugin-rh-rbac-common';
+
 import { PolicyBuilder } from './policy-builder';
 
 jest.mock('@backstage/plugin-auth-node', () => ({

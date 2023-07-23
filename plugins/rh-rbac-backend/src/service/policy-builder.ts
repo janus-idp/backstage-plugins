@@ -37,8 +37,10 @@ import {
   policyEntityPermissions,
   policyEntityReadPermission,
   policyEntityUpdatePermission,
+  PolicyMetadata,
   RESOURCE_TYPE_POLICY_ENTITY,
-} from '../permissions';
+} from '@janus-idp/plugin-rh-rbac-common';
+
 import { CasbinAdapterFactory } from './casbin-adapter-factory';
 import { MODEL } from './permission-model';
 import { RBACPermissionPolicy } from './permission-policy';
@@ -342,15 +344,3 @@ function transformPolicyToArray(policy: PolicyMetadata) {
     policy.effect!,
   ];
 }
-
-export type PolicyMetadata = {
-  entityReference: string | undefined;
-  permission: string | undefined;
-  policy: string | undefined;
-  effect: string | undefined;
-};
-
-export type UpdatePolicyMetadata = {
-  oldPolicy: PolicyMetadata;
-  newPolicy: PolicyMetadata;
-};
