@@ -2792,7 +2792,7 @@
     cross-fetch "^3.1.5"
     serialize-error "^8.0.1"
 
-"@backstage/errors@^1.2.0":
+"@backstage/errors@^1.2.1":
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/@backstage/errors/-/errors-1.2.1.tgz#07e794c5c48488bade6df7759c3d8f3124594199"
   integrity sha512-h/sMf/scTmlImVHToXTHatb1jRR1BRkdbFxRC3APNg/16TlnVgmgyNzrkYFm/hFyDHqrdyfhU+bs9l6+LNjD3w==
