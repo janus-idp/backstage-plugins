@@ -7,8 +7,9 @@ import {
 } from '@backstage/plugin-permission-common';
 import { PolicyQuery } from '@backstage/plugin-permission-node';
 
-import { StringAdapter } from 'casbin';
+import { newEnforcer, newModelFromString, StringAdapter } from 'casbin';
 
+import { MODEL } from './permission-model';
 import { RBACPermissionPolicy } from './permission-policy';
 
 describe('RBACPermissionPolicy Tests', () => {
@@ -16,11 +17,13 @@ describe('RBACPermissionPolicy Tests', () => {
     const adapter = new StringAdapter(
       `p, known_user, test-resource, update, allow `,
     );
+    const theModel = newModelFromString(MODEL);
+    const enf = await newEnforcer(theModel, adapter);
     const config = newConfigReader();
     const policy = await RBACPermissionPolicy.build(
       getVoidLogger(),
-      adapter,
       config,
+      enf,
     );
     expect(policy).not.toBeNull();
   });
@@ -44,12 +47,10 @@ describe('RBACPermissionPolicy Tests', () => {
                 p, group, test.resource.deny, use, deny
                 `,
       );
+      const theModel = newModelFromString(MODEL);
+      const enf = await newEnforcer(theModel, adapter);
       const config = newConfigReader();
-      policy = await RBACPermissionPolicy.build(
-        getVoidLogger(),
-        adapter,
-        config,
-      );
+      policy = await RBACPermissionPolicy.build(getVoidLogger(), config, enf);
     });
     // +-------+------+------------------------+
     // | allow | deny |         result         |

@@ -27,6 +27,7 @@ const useAdmins = (admins: Config[], enf: Enforcer) => {
     }
 
     const adminCreatePermission = [name, 'policy-entity', 'create', 'allow'];
+
     if (!(await enf.hasPolicy(...adminCreatePermission))) {
       await enf.addPolicy(...adminCreatePermission);
     }
