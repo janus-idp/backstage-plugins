@@ -127,7 +127,7 @@ export class PolicyBuilder {
       }
 
       const policies = await enforcer.getPolicy();
-      response.json(policies);
+      response.json(transformPolicyArray(...policies));
     });
 
     router.get('/policy/:namespace/:id', async (request, response) => {
@@ -142,7 +142,7 @@ export class PolicyBuilder {
       const entityRef = getEntityReference(request);
       const policy = await enforcer.getFilteredPolicy(0, entityRef);
       if (!(policy.length === 0)) {
-        response.json(policy);
+        response.json(transformPolicyArray(...policy));
       } else {
         throw new NotFoundError(); // 404
       }
@@ -180,9 +180,8 @@ export class PolicyBuilder {
       const isRemoved = await enforcer.removePolicy(...policyPermission);
       if (!isRemoved) {
         throw new ServiceUnavailableError(); // 500
-      } else {
-        response.status(204).end();
       }
+      response.status(204).end();
     });
 
     router.post('/policy', async (request, response) => {
@@ -194,26 +193,21 @@ export class PolicyBuilder {
         throw new NotAllowedError(); // 403
       }
 
-      const policy: PolicyMetadata = request.body;
-      const err = validatePolicy(policy);
+      const policyRaw: PolicyMetadata = request.body;
+      const err = validatePolicy(policyRaw);
       if (err) {
         throw new InputError( // 400
           `Invalid policy definition. Cause: ${err.message}`,
         );
       }
 
-      const policyPermission = [
-        policy.entityReference!,
-        policy.permission!,
-        policy.policy!,
-        policy.effect!,
-      ];
+      const policy = transformPolicyToArray(policyRaw);
 
-      if (await enforcer.hasPolicy(...policyPermission)) {
+      if (await enforcer.hasPolicy(...policy)) {
         throw new ConflictError(); // 409
       }
 
-      const isAdded = await enforcer.addPolicy(...policyPermission);
+      const isAdded = await enforcer.addPolicy(...policy);
       if (!isAdded) {
         throw new ServiceUnavailableError(); // 500
       }
@@ -229,22 +223,22 @@ export class PolicyBuilder {
         throw new NotAllowedError(); // 403
       }
 
-      const oldPolicy = req.body.oldPolicy;
-      if (!oldPolicy) {
+      const oldPolicyRaw = req.body.oldPolicy;
+      if (!oldPolicyRaw) {
         throw new InputError(`'oldPolicy' object must be present`); // 400
       }
-      const newPolicy = req.body.newPolicy;
-      if (!newPolicy) {
+      const newPolicyRaw = req.body.newPolicy;
+      if (!newPolicyRaw) {
         throw new InputError(`'newPolicy' object must be present`); // 400
       }
 
-      let err = validatePolicy(oldPolicy);
+      let err = validatePolicy(oldPolicyRaw);
       if (err) {
         throw new InputError( // 400
           `Invalid old policy object. Cause: ${err.message}`,
         );
       }
-      err = validatePolicy(newPolicy);
+      err = validatePolicy(newPolicyRaw);
       if (err) {
         throw new InputError( // 400
           `Invalid new policy object. Cause: ${err.message}`,
@@ -255,35 +249,25 @@ export class PolicyBuilder {
       // that we would like to support it.
       // todo: handle situation, when oldPolicyPermission is equal newPolicyPermission.
 
-      const oldPolicyPermission = [
-        oldPolicy.entityReference!,
-        oldPolicy.permission!,
-        oldPolicy.policy!,
-        oldPolicy.effect!,
-      ];
-      const newPolicyPermission = [
-        newPolicy.entityReference!,
-        newPolicy.permission!,
-        newPolicy.policy!,
-        newPolicy.effect!,
-      ];
+      const oldPolicy = transformPolicyToArray(oldPolicyRaw);
+      const newPolicy = transformPolicyToArray(newPolicyRaw);
 
-      if (await enforcer.hasPolicy(...newPolicyPermission)) {
+      if (await enforcer.hasPolicy(...newPolicy)) {
         throw new ConflictError(); // 409
       }
 
-      if (!(await enforcer.hasPolicy(...oldPolicyPermission))) {
+      if (!(await enforcer.hasPolicy(...oldPolicy))) {
         throw new NotFoundError(); // 404
       }
 
       // enforcer.updatePolicy(oldPolicyPermission, newPolicyPermission) was not implemented
       // for ORMTypeAdapter.
       // So, let's compensate this combination delete + create.
-      const isRemoved = await enforcer.removePolicy(...oldPolicyPermission);
+      const isRemoved = await enforcer.removePolicy(...oldPolicy);
       if (!isRemoved) {
         throw new ServiceUnavailableError(); // 500
       }
-      const isAdded = await enforcer.addPolicy(...newPolicyPermission);
+      const isAdded = await enforcer.addPolicy(...newPolicy);
       if (!isAdded) {
         throw new ServiceUnavailableError(); // 500
       }
@@ -341,6 +325,22 @@ function validatePolicy(policy: PolicyMetadata): Error | undefined {
   }
 
   return undefined;
+}
+
+function transformPolicyArray(...policies: string[][]): PolicyMetadata[] {
+  return policies.map((p: string[]) => {
+    const [entityReference, permission, policy, effect] = p;
+    return { entityReference, permission, policy, effect };
+  });
+}
+
+function transformPolicyToArray(policy: PolicyMetadata) {
+  return [
+    policy.entityReference!,
+    policy.permission!,
+    policy.policy!,
+    policy.effect!,
+  ];
 }
 
 export type PolicyMetadata = {
