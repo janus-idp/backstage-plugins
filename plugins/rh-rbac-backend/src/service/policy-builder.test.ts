@@ -1,5 +1,4 @@
-// import { getVoidLogger } from '@backstage/backend-common';
-import { getVoidLogger } from '@backstage/backend-common';
+import { errorHandler, getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
@@ -73,6 +72,7 @@ describe('PolicyBuilder', () => {
       database: mockDatabaseManager,
     });
     app = express().use(router);
+    app.use(errorHandler());
     jest.clearAllMocks();
   });
 
@@ -98,8 +98,11 @@ describe('PolicyBuilder', () => {
         [{ permission: policyEntityReadPermission }],
         { token: 'token' },
       );
-      expect(result.status).toBe(403);
-      expect(result.body).toEqual({ status: 'Unauthorized' });
+      expect(result.statusCode).toBe(403);
+      expect(result.body.error).toEqual({
+        name: 'NotAllowedError',
+        message: '',
+      });
     });
   });
 });
