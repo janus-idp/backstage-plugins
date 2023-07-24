@@ -1,25 +1,29 @@
 ---
-name: Bug report
-about: Create a report to help us improve
-labels: kind/bug
+name: Bug Report
+about: If something isn't working
+labels: ['kind/bug', 'status/triage']
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+### Describe the Bug?
 
-**To Reproduce**
-Steps to reproduce the behavior:
+Provide a clear and concise description of the bug.
 
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+### What are the steps to reproduce this issue?
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+1. …
+2. …
+3. …
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+### Expected Behavior
 
-**Additional context**
-Add any other context about the problem here.
+What do you think should have happened?
+
+### Actual Behavior
+
+What actually happened? Please provide screenshots if applicable.
+
+### Additional information
+
+- Which devices are affected? ie Desktop, Table, Phone
+- Which browsers are affected? ie Chrome, Firefox, Safari, Edge
+- Which version are you using? (We only support the last 2 major versions.)

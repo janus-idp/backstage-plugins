@@ -1,17 +1,11 @@
 ---
-name: Report vulnerability
-about: There's a security problem that requires our immediate attention
-labels: kind/security
+name: Security
+about: Report a security vulnerability/incident
+labels: ['kind/security', 'status/triage', 'priority/critical']
 ---
 
-**Describe how is our service vulnerable**
-A clear and concise description of what the problem is.
+### What is the issue?
 
-**Describe the solution you'd like**
-A clear and concise description of what you want to happen.
+### Is there a CVE Mitre link?
 
-**Describe alternatives you've considered**
-A clear and concise description of any alternative solutions or features you've considered.
-
-**Additional context**
-Add any other context or screenshots about the feature request here.
+### What is the mitigation if known?

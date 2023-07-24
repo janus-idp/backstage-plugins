@@ -1,17 +1,25 @@
 ---
-name: Feature request
+name: Feature Request
 about: Suggest an idea for this project
-labels: kind/feature
+labels: ['kind/feature', 'status/triage']
 ---
 
-**Is your feature request related to a problem? Please describe.**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+### Acceptance criteria
 
-**Describe the solution you'd like**
-A clear and concise description of what you want to happen.
+What are you trying to do, need? What are the acceptance criteria?
 
-**Describe alternatives you've considered**
-A clear and concise description of any alternative solutions or features you've considered.
+### Who will have access:
 
-**Additional context**
-Add any other context or screenshots about the feature request here.
+_Put an `x` in the boxes that apply_
+
+- [ ] Authenticated user
+- [ ] Unauthenticated user/Guest
+- [ ] System Admin only
+
+### UI/UX
+
+Figma links if needed
+
+### Api documentation/information
+
+OpenAPI link if needed
