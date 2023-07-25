@@ -37,6 +37,7 @@
     "@semantic-release/exec": "6.0.3",
     "@semantic-release/git": "10.0.1",
     "@semantic-release/github": "9.0.4",
+    "@semrel-extra/npm": "1.2.2",
     "@spotify/prettier-config": "15.0.0",
     "conventional-changelog-conventionalcommits": "6.1.0",
     "husky": "8.0.3",
@@ -129,7 +130,7 @@
         }
       ],
       "@semantic-release/changelog",
-      "@semantic-release/npm",
+      "@semrel-extra/npm",
       "@semantic-release/git",
       [
         "@semantic-release/github",
