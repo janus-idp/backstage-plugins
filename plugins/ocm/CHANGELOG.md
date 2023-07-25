@@ -1,3 +1,16 @@
+## @janus-idp/backstage-plugin-ocm [3.0.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm@3.0.2...@janus-idp/backstage-plugin-ocm@3.0.3) (2023-07-25)
+
+
+### Other changes
+
+* **ocm:** add unit tests for ocm plugin ([#449](https://github.com/janus-idp/backstage-plugins/issues/449)) ([0fbe7fa](https://github.com/janus-idp/backstage-plugins/commit/0fbe7fa59973e49e8a96f62fab5112aeccecc98e))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-ocm-common:** upgraded to 2.1.1
+
 ## @janus-idp/backstage-plugin-ocm [3.0.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm@3.0.1...@janus-idp/backstage-plugin-ocm@3.0.2) (2023-06-14)
 
 
