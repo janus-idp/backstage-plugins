@@ -29,15 +29,16 @@ import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-
 import { newEnforcer, newModelFromString } from 'casbin';
 import { Router } from 'express';
 import { Request } from 'express-serve-static-core';
+import { isEqual } from 'lodash';
 import { Logger } from 'winston';
 
 import {
+  EntityReferencedPolicy,
   policyEntityCreatePermission,
   policyEntityDeletePermission,
   policyEntityPermissions,
   policyEntityReadPermission,
   policyEntityUpdatePermission,
-  PolicyMetadata,
   RESOURCE_TYPE_POLICY_ENTITY,
 } from '@janus-idp/plugin-rh-rbac-common';
 
@@ -160,9 +161,12 @@ export class PolicyBuilder {
       }
 
       const entityRef = getEntityReference(request);
+      let err = validateEntityReference(entityRef);
+      if (err) {
+        throw new InputError(`Invalid url: ${err.message}`); // 400
+      }
 
-      // todo check validation one more time....
-      const err = validatePolicyQueries(request);
+      err = validatePolicyQueries(request);
       if (err) {
         throw new InputError( // 400
           `Invalid policy definition. Cause: ${err.message}`,
@@ -195,7 +199,7 @@ export class PolicyBuilder {
         throw new NotAllowedError(); // 403
       }
 
-      const policyRaw: PolicyMetadata = request.body;
+      const policyRaw: EntityReferencedPolicy = request.body;
       const err = validatePolicy(policyRaw);
       if (err) {
         throw new InputError( // 400
@@ -216,7 +220,7 @@ export class PolicyBuilder {
       response.status(201).end();
     });
 
-    router.put('/policy', async (req, resp) => {
+    router.put('/policy/:namespace/:id', async (req, resp) => {
       const decision = await authorize(env.identity, req, permissions, {
         permission: policyEntityUpdatePermission,
       });
@@ -224,6 +228,8 @@ export class PolicyBuilder {
       if (decision.result === AuthorizeResult.DENY) {
         throw new NotAllowedError(); // 403
       }
+
+      const entityRef = getEntityReference(req);
 
       const oldPolicyRaw = req.body.oldPolicy;
       if (!oldPolicyRaw) {
@@ -234,12 +240,14 @@ export class PolicyBuilder {
         throw new InputError(`'newPolicy' object must be present`); // 400
       }
 
+      oldPolicyRaw.entityReference = entityRef;
       let err = validatePolicy(oldPolicyRaw);
       if (err) {
         throw new InputError( // 400
           `Invalid old policy object. Cause: ${err.message}`,
         );
       }
+      newPolicyRaw.entityReference = entityRef;
       err = validatePolicy(newPolicyRaw);
       if (err) {
         throw new InputError( // 400
@@ -247,14 +255,14 @@ export class PolicyBuilder {
         );
       }
 
-      // todo: don't allow to change entityReference. That's policy transition, not sure
-      // that we would like to support it.
-      // todo: handle situation, when oldPolicyPermission is equal newPolicyPermission.
-
       const oldPolicy = transformPolicyToArray(oldPolicyRaw);
       const newPolicy = transformPolicyToArray(newPolicyRaw);
 
       if (await enforcer.hasPolicy(...newPolicy)) {
+        if (isEqual(oldPolicy, newPolicy)) {
+          resp.status(204).end();
+          return;
+        }
         throw new ConflictError(); // 409
       }
 
@@ -269,6 +277,7 @@ export class PolicyBuilder {
       if (!isRemoved) {
         throw new ServiceUnavailableError(); // 500
       }
+
       const isAdded = await enforcer.addPolicy(...newPolicy);
       if (!isAdded) {
         throw new ServiceUnavailableError(); // 500
@@ -302,41 +311,50 @@ function validatePolicyQueries(request: Request): Error | undefined {
   return undefined;
 }
 
-function validatePolicy(policy: PolicyMetadata): Error | undefined {
-  if (!policy.entityReference) {
-    throw new Error(`'entityReference' must not be empty`);
-  }
-
-  try {
-    parseEntityRef(policy.entityReference!);
-  } catch (error) {
-    return error as Error;
+function validatePolicy(policy: EntityReferencedPolicy): Error | undefined {
+  const err = validateEntityReference(policy.entityReference);
+  if (err) {
+    return err;
   }
 
   if (!policy.permission) {
-    throw new Error(`'permission' field must not be empty`);
+    return new Error(`'permission' field must not be empty`);
   }
 
   if (!policy.policy) {
-    throw new Error(`'policy' field must not be empty`);
+    return new Error(`'policy' field must not be empty`);
   }
 
   if (!policy.effect) {
     // todo check if effect should be 'allow' or 'deny'
-    throw new Error(`'effect' field must not be empty`);
+    return new Error(`'effect' field must not be empty`);
   }
 
   return undefined;
 }
 
-function transformPolicyArray(...policies: string[][]): PolicyMetadata[] {
+function validateEntityReference(entityRef?: string): Error | undefined {
+  if (!entityRef) {
+    return new Error(`'entityReference' must not be empty`);
+  }
+  try {
+    parseEntityRef(entityRef);
+  } catch (error) {
+    return error as Error;
+  }
+  return undefined;
+}
+
+function transformPolicyArray(
+  ...policies: string[][]
+): EntityReferencedPolicy[] {
   return policies.map((p: string[]) => {
     const [entityReference, permission, policy, effect] = p;
     return { entityReference, permission, policy, effect };
   });
 }
 
-function transformPolicyToArray(policy: PolicyMetadata) {
+function transformPolicyToArray(policy: EntityReferencedPolicy) {
   return [
     policy.entityReference!,
     policy.permission!,

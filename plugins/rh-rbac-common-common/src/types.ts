@@ -1,11 +1,14 @@
-export type PolicyMetadata = {
-  entityReference: string | undefined;
-  permission: string | undefined;
-  policy: string | undefined;
-  effect: string | undefined;
+export type Policy = {
+  permission?: string;
+  policy?: string;
+  effect?: string;
 };
 
-export type UpdatePolicyMetadata = {
-  oldPolicy: PolicyMetadata;
-  newPolicy: PolicyMetadata;
+export type EntityReferencedPolicy = Policy & {
+  entityReference?: string;
+};
+
+export type UpdatePolicy = {
+  oldPolicy: Policy;
+  newPolicy: Policy;
 };
