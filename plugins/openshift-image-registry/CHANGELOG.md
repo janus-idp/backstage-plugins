@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-openshift-image-registry [1.1.10](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-openshift-image-registry@1.1.9...@janus-idp/backstage-plugin-openshift-image-registry@1.1.10) (2023-07-25)
+
+
+### Bug Fixes
+
+* **plugins:** add bearer token to request headers when sending requests, authmiddleware issue ([#498](https://github.com/janus-idp/backstage-plugins/issues/498)) ([86881c3](https://github.com/janus-idp/backstage-plugins/commit/86881c37321d1b446f15ff59b2fcb8ebc8500786))
+
 ## @janus-idp/backstage-plugin-openshift-image-registry [1.1.9](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-openshift-image-registry@1.1.8...@janus-idp/backstage-plugin-openshift-image-registry@1.1.9) (2023-07-25)
 
 ## @janus-idp/backstage-plugin-openshift-image-registry [1.1.8](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-openshift-image-registry@1.1.7...@janus-idp/backstage-plugin-openshift-image-registry@1.1.8) (2023-07-10)
