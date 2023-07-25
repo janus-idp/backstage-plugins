@@ -1,3 +1,5 @@
+## @janus-idp/backstage-plugin-keycloak-backend [1.3.11](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-keycloak-backend@1.3.10...@janus-idp/backstage-plugin-keycloak-backend@1.3.11) (2023-07-25)
+
 ## @janus-idp/backstage-plugin-keycloak-backend [1.3.10](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-keycloak-backend@1.3.9...@janus-idp/backstage-plugin-keycloak-backend@1.3.10) (2023-06-21)
 
 
