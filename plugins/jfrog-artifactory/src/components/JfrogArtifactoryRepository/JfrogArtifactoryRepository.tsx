@@ -1,69 +1,72 @@
+import { useApi } from '@backstage/core-plugin-api';
 import React, { useState } from 'react';
 import { useAsync } from 'react-use';
-
 import { Link, Progress, Table } from '@backstage/core-components';
-import { useApi } from '@backstage/core-plugin-api';
-
-import { Box, Chip, makeStyles } from '@material-ui/core';
-
-import { jfrogArtifactoryApiRef } from '../../api';
-import { Edge } from '../../types';
-import { formatDate, formatSize } from '../utils';
 import { columns, useStyles } from './tableHeading';
 
-const useLocalStyles = makeStyles({
-  chip: {
-    margin: 0,
-    marginRight: '.2em',
-    height: '1.5em',
-    '& > span': {
-      padding: '.3em',
-    },
-  },
-});
+import { formatDate, formatSize } from '../utils';
+import { PackageEdge } from '../../types';
+import { jfrogArtifactoryApiRef } from '../../api/artifactoryApi';
 
 export function JfrogArtifactoryRepository(props: RepositoryProps) {
   const jfrogArtifactoryClient = useApi(jfrogArtifactoryApiRef);
   const classes = useStyles();
-  const localClasses = useLocalStyles();
-  const [edges, setEdges] = useState<Edge[]>([]);
-  const title = `Jfrog Artifactory repository: ${props.image}`;
+  const [packageEdges, setPackageEdges] = useState<PackageEdge[]>([]);
+  const title = `Jfrog Artifactory: ${props.artifact}`;
 
   const { loading } = useAsync(async () => {
-    const tagsResponse = await jfrogArtifactoryClient.getTags(props.image);
+    const artifactResponse = await jfrogArtifactoryClient.getArtifact(
+      props.artifact,
+    );
 
-    setEdges(tagsResponse.data.versions.edges);
+    setPackageEdges(artifactResponse.data.packages.edges);
 
-    return tagsResponse;
+    return artifactResponse;
   });
 
   if (loading) {
     return <Progress />;
   }
 
-  const data = edges?.map((edge: Edge) => {
-    const shortHash = edge.node.files
-      .find(manifest => manifest.name === 'manifest.json')
-      ?.sha256.substring(0, 12);
-    return {
-      name: edge.node.name,
-      last_modified: formatDate(edge.node.modified),
-      size: formatSize(Number(edge.node.size)),
-      manifest_digest: (
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <Chip label="sha256" className={localClasses.chip} />
-          {shortHash}
-        </Box>
-      ),
-      repositories:
-        `${edge.node.repos.length}` +
-        ' | ' +
-        `${edge.node.repos.map(repo => repo.name).join('| ')}`,
-    };
+  function displayValue<T>(value: T | undefined, defaultValue: T): T {
+    return value !== undefined ? value : defaultValue;
+  }
+
+  const data = packageEdges?.flatMap((packageEdge: PackageEdge) => {
+    return packageEdge.node.versions.map(version => {
+      const reposString =
+        version.repos?.map(repo => repo.name).join(', ') || 'N/A';
+      const vulnerabilities = [
+        version.vulnerabilities?.critical,
+        version.vulnerabilities?.high,
+        version.vulnerabilities?.medium,
+        version.vulnerabilities?.low,
+        version.vulnerabilities?.info,
+        version.vulnerabilities?.unknown,
+        version.vulnerabilities?.skipped,
+      ].reduce((total, current) => (total || 0) + (current || 0), 0);
+
+      return {
+        repository: displayValue(packageEdge.node.name, 'N/A'),
+        name: displayValue(version.name, 'N/A'),
+        last_modified: displayValue(
+          formatDate(packageEdge.node.created),
+          'N/A',
+        ),
+        size: displayValue(formatSize(Number(version.size)), 'N/A'),
+        downloads: displayValue(version.stats.downloadCount, 0),
+        repos: reposString,
+        package_type: displayValue(version.package?.packageType, 'N/A'),
+        vulnerabilities,
+      };
+    });
   });
 
   return (
-    <div style={{ border: '1px solid #ddd' }}>
+    <div
+      style={{ border: '1px solid #ddd' }}
+      data-testid="jfrog-artifactory-repository"
+    >
       <Table
         title={title}
         options={{ paging: true, padding: 'dense' }}
@@ -81,10 +84,11 @@ export function JfrogArtifactoryRepository(props: RepositoryProps) {
 }
 
 JfrogArtifactoryRepository.defaultProps = {
-  title: 'Docker Images',
+  title: 'Artifacts',
 };
+
 interface RepositoryProps {
   widget: boolean;
-  image: string;
+  artifact: string;
   title: string;
 }

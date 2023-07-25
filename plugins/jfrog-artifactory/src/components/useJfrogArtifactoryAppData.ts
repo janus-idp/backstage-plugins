@@ -1,15 +1,15 @@
 import { Entity } from '@backstage/catalog-model';
 
-export const JFROG_ARTIFACTORY_ANNOTATION_IMAGE_NAME =
-  'jfrog-artifactory/image-name';
+export const JFROG_ARTIFACTORY_ANNOTATION_PACKAGE_NAME =
+  'jfrog-artifactory/package-name';
 
 export const useJfrogArtifactoryAppData = ({ entity }: { entity: Entity }) => {
-  const imageName =
-    entity?.metadata.annotations?.[JFROG_ARTIFACTORY_ANNOTATION_IMAGE_NAME] ??
+  const packageName =
+    entity?.metadata.annotations?.[JFROG_ARTIFACTORY_ANNOTATION_PACKAGE_NAME] ??
     '';
 
-  if (!imageName) {
+  if (!packageName) {
     throw new Error("'Jfrog Artifactory' annotations are missing");
   }
-  return { imageName };
+  return { packageName };
 };
