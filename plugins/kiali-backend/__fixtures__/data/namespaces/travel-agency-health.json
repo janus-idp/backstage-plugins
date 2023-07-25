@@ -1,0 +1,110 @@
+{
+  "cars": {
+    "workloadStatuses": [
+      {
+        "name": "cars-v1",
+        "desiredReplicas": 1,
+        "currentReplicas": 1,
+        "availableReplicas": 1,
+        "syncedProxies": 1
+      }
+    ],
+    "requests": {
+      "inbound": { "http": { "200": 0.26666666666666666 } },
+      "outbound": { "http": { "200": 0.26666666666666666 } },
+      "healthAnnotations": {}
+    }
+  },
+  "discounts": {
+    "workloadStatuses": [
+      {
+        "name": "discounts-v1",
+        "desiredReplicas": 1,
+        "currentReplicas": 1,
+        "availableReplicas": 1,
+        "syncedProxies": 1
+      }
+    ],
+    "requests": {
+      "inbound": { "http": { "200": 1.3333333333333333 } },
+      "outbound": {},
+      "healthAnnotations": {}
+    }
+  },
+  "flights": {
+    "workloadStatuses": [
+      {
+        "name": "flights-v1",
+        "desiredReplicas": 1,
+        "currentReplicas": 1,
+        "availableReplicas": 1,
+        "syncedProxies": 1
+      }
+    ],
+    "requests": {
+      "inbound": { "http": { "200": 0.26666666666666666 } },
+      "outbound": { "http": { "200": 0.26666666666666666 } },
+      "healthAnnotations": {}
+    }
+  },
+  "hotels": {
+    "workloadStatuses": [
+      {
+        "name": "hotels-v1",
+        "desiredReplicas": 1,
+        "currentReplicas": 1,
+        "availableReplicas": 1,
+        "syncedProxies": 1
+      }
+    ],
+    "requests": {
+      "inbound": { "http": { "200": 0.7999999999999999 } },
+      "outbound": { "http": { "200": 0.39999999999999997 } },
+      "healthAnnotations": {}
+    }
+  },
+  "insurances": {
+    "workloadStatuses": [
+      {
+        "name": "insurances-v1",
+        "desiredReplicas": 1,
+        "currentReplicas": 1,
+        "availableReplicas": 1,
+        "syncedProxies": 1
+      }
+    ],
+    "requests": {
+      "inbound": { "http": { "200": 0.39658119658119656 } },
+      "outbound": { "http": { "200": 0.39658119658119656 } },
+      "healthAnnotations": {}
+    }
+  },
+  "mysqldb": {
+    "workloadStatuses": [
+      {
+        "name": "mysqldb-v1",
+        "desiredReplicas": 1,
+        "currentReplicas": 1,
+        "availableReplicas": 1,
+        "syncedProxies": 1
+      }
+    ],
+    "requests": { "inbound": {}, "outbound": {}, "healthAnnotations": {} }
+  },
+  "travels": {
+    "workloadStatuses": [
+      {
+        "name": "travels-v1",
+        "desiredReplicas": 1,
+        "currentReplicas": 1,
+        "availableReplicas": 1,
+        "syncedProxies": 1
+      }
+    ],
+    "requests": {
+      "inbound": { "http": { "200": 0.7965611411095852 } },
+      "outbound": { "http": { "200": 1.986324786324786 } },
+      "healthAnnotations": {}
+    }
+  }
+}

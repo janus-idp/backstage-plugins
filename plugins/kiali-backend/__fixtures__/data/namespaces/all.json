@@ -1,0 +1,84 @@
+[
+  {
+    "name": "default",
+    "cluster": "Kubernetes",
+    "labels": { "kubernetes.io/metadata.name": "default" },
+    "annotations": {}
+  },
+  {
+    "name": "hostpath-provisioner",
+    "cluster": "Kubernetes",
+    "labels": {
+      "kubernetes.io/metadata.name": "hostpath-provisioner",
+      "pod-security.kubernetes.io/audit": "privileged",
+      "pod-security.kubernetes.io/audit-version": "v1.24",
+      "pod-security.kubernetes.io/warn": "privileged",
+      "pod-security.kubernetes.io/warn-version": "v1.24"
+    },
+    "annotations": {}
+  },
+  {
+    "name": "istio-system",
+    "cluster": "Kubernetes",
+    "labels": {
+      "kubernetes.io/metadata.name": "istio-system",
+      "pod-security.kubernetes.io/audit": "baseline",
+      "pod-security.kubernetes.io/audit-version": "v1.24",
+      "pod-security.kubernetes.io/warn": "baseline",
+      "pod-security.kubernetes.io/warn-version": "v1.24",
+      "topology.istio.io/network": ""
+    },
+    "annotations": {}
+  },
+  {
+    "name": "kiali",
+    "cluster": "Kubernetes",
+    "labels": {
+      "kubernetes.io/metadata.name": "kiali",
+      "pod-security.kubernetes.io/audit": "restricted",
+      "pod-security.kubernetes.io/audit-version": "v1.24",
+      "pod-security.kubernetes.io/warn": "restricted",
+      "pod-security.kubernetes.io/warn-version": "v1.24"
+    },
+    "annotations": {}
+  },
+  {
+    "name": "travel-agency",
+    "cluster": "Kubernetes",
+    "labels": {
+      "istio-injection": "enabled",
+      "kubernetes.io/metadata.name": "travel-agency",
+      "pod-security.kubernetes.io/audit": "privileged",
+      "pod-security.kubernetes.io/audit-version": "v1.24",
+      "pod-security.kubernetes.io/warn": "privileged",
+      "pod-security.kubernetes.io/warn-version": "v1.24"
+    },
+    "annotations": {}
+  },
+  {
+    "name": "travel-control",
+    "cluster": "Kubernetes",
+    "labels": {
+      "istio-injection": "enabled",
+      "kubernetes.io/metadata.name": "travel-control",
+      "pod-security.kubernetes.io/audit": "privileged",
+      "pod-security.kubernetes.io/audit-version": "v1.24",
+      "pod-security.kubernetes.io/warn": "privileged",
+      "pod-security.kubernetes.io/warn-version": "v1.24"
+    },
+    "annotations": {}
+  },
+  {
+    "name": "travel-portal",
+    "cluster": "Kubernetes",
+    "labels": {
+      "istio-injection": "enabled",
+      "kubernetes.io/metadata.name": "travel-portal",
+      "pod-security.kubernetes.io/audit": "privileged",
+      "pod-security.kubernetes.io/audit-version": "v1.24",
+      "pod-security.kubernetes.io/warn": "privileged",
+      "pod-security.kubernetes.io/warn-version": "v1.24"
+    },
+    "annotations": {}
+  }
+]

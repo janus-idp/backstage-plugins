@@ -1,0 +1,7 @@
+{
+  "Kubernetes": {
+    "travel-agency": { "errors": 0, "objectCount": 0, "warnings": 0 },
+    "travel-control": { "errors": 0, "objectCount": 0, "warnings": 0 },
+    "travel-portal": { "errors": 0, "objectCount": 0, "warnings": 0 }
+  }
+}
