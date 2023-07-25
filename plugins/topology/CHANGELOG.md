@@ -1,3 +1,22 @@
+## @janus-idp/backstage-plugin-topology [1.10.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.9.0...@janus-idp/backstage-plugin-topology@1.10.0) (2023-07-25)
+
+
+### Features
+
+* **shared-react:** update shared plugin ([#532](https://github.com/janus-idp/backstage-plugins/issues/532)) ([88ec74e](https://github.com/janus-idp/backstage-plugins/commit/88ec74e704c185785329d12f129bd8e1590ac1c8))
+* **topology:** show pipeline decorator on topology node ([#447](https://github.com/janus-idp/backstage-plugins/issues/447)) ([f983c47](https://github.com/janus-idp/backstage-plugins/commit/f983c47d8d82433fe188c59d8d1569c1be30a7db))
+
+
+### Bug Fixes
+
+* **topology:** fix topology node tooltip position ([#538](https://github.com/janus-idp/backstage-plugins/issues/538)) ([07e9086](https://github.com/janus-idp/backstage-plugins/commit/07e90862ac8d5dc58e4730fbadc57109071c35c5))
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 1.1.0
+
 ## @janus-idp/backstage-plugin-topology [1.9.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.8.0...@janus-idp/backstage-plugin-topology@1.9.0) (2023-06-30)
 
 
