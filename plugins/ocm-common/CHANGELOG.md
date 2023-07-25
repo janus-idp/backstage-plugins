@@ -1,3 +1,5 @@
+## @janus-idp/backstage-plugin-ocm-common [2.1.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-common@2.1.0...@janus-idp/backstage-plugin-ocm-common@2.1.1) (2023-07-25)
+
 ## @janus-idp/backstage-plugin-ocm-common [2.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-common@2.0.3...@janus-idp/backstage-plugin-ocm-common@2.1.0) (2023-05-30)
 
 
