@@ -29,10 +29,10 @@ export class KeycloakAdminClientMock {
     count: jest.fn().mockResolvedValue(groups.length),
     listMembers: jest
       .fn()
-      .mockResolvedValueOnce(groupMembers[0])
-      .mockResolvedValueOnce(groupMembers[1])
-      .mockResolvedValueOnce(groupMembers[2])
-      .mockResolvedValueOnce(groupMembers[3]),
+      .mockResolvedValueOnce(groupMembers[0].map(username => ({ username })))
+      .mockResolvedValueOnce(groupMembers[1].map(username => ({ username })))
+      .mockResolvedValueOnce(groupMembers[2].map(username => ({ username })))
+      .mockResolvedValueOnce(groupMembers[3].map(username => ({ username }))),
   };
 
   auth = jest.fn().mockResolvedValue({});

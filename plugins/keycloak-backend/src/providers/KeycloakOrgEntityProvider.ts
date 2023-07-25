@@ -140,6 +140,8 @@ export class KeycloakOrgEntityProvider implements EntityProvider {
         id: providerConfig.id,
         provider: providerConfig,
         logger: options.logger,
+        userTransformer: options.userTransformer,
+        groupTransformer: options.groupTransformer,
       });
 
       if (taskRunner !== 'manual') {
@@ -209,6 +211,8 @@ export class KeycloakOrgEntityProvider implements EntityProvider {
     const { users, groups } = await readKeycloakRealm(kcAdminClient, provider, {
       userQuerySize: provider.userQuerySize,
       groupQuerySize: provider.groupQuerySize,
+      userTransformer: this.options.userTransformer,
+      groupTransformer: this.options.groupTransformer,
     });
 
     const { markCommitComplete } = markReadComplete({ users, groups });

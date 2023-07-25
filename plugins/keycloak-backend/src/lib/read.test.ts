@@ -1,8 +1,13 @@
 import KcAdminClient from '@keycloak/keycloak-admin-client';
 
+import {
+  groups as groupsFixture,
+  users as usersFixture,
+} from '../../__fixtures__/data';
 import { KeycloakAdminClientMock } from '../../__fixtures__/helpers';
 import { KeycloakProviderConfig } from './config';
-import { readKeycloakRealm } from './read';
+import { parseGroup, parseUser, readKeycloakRealm } from './read';
+import { GroupTransformer, UserTransformer } from './types';
 
 const config: KeycloakProviderConfig = {
   realm: 'myrealm',
@@ -17,5 +22,101 @@ describe('readKeycloakRealm', () => {
 
     expect(users).toHaveLength(3);
     expect(groups).toHaveLength(4);
+  });
+
+  it('should propagate transformer changes to entities', async () => {
+    const groupTransformer: GroupTransformer = async (entity, _g, _r) => {
+      entity.metadata.name = `${entity.metadata.name}_foo`;
+      return entity;
+    };
+    const userTransformer: UserTransformer = async (e, _u, _r, _g) => {
+      e.metadata.name = `${e.metadata.name}_bar`;
+      return e;
+    };
+
+    const client = new KeycloakAdminClientMock() as unknown as KcAdminClient;
+    const { users, groups } = await readKeycloakRealm(client, config, {
+      userTransformer,
+      groupTransformer,
+    });
+
+    expect(groups[0].metadata.name).toBe('biggroup_foo');
+    expect(groups[0].spec.children).toEqual(['subgroup_foo']);
+    expect(groups[0].spec.members).toEqual(['jamesdoe_bar']);
+    expect(groups[1].spec.parent).toBe('biggroup_foo');
+    expect(users[0].metadata.name).toBe('jamesdoe_bar');
+    expect(users[0].spec.memberOf).toEqual(['biggroup_foo', 'testgroup_foo']);
+  });
+});
+
+describe('parseGroup', () => {
+  it('should parse a group', async () => {
+    const entity = await parseGroup(groupsFixture[0], 'test');
+
+    expect(entity).toEqual({
+      apiVersion: 'backstage.io/v1beta1',
+      kind: 'Group',
+      metadata: {
+        annotations: {
+          'keycloak.org/id': '9cf51b5d-e066-4ed8-940c-dc6da77f81a5',
+          'keycloak.org/realm': 'test',
+        },
+        name: 'biggroup',
+      },
+      spec: {
+        children: ['subgroup'],
+        members: ['jamesdoe'],
+        parent: undefined,
+        profile: {
+          displayName: 'biggroup',
+        },
+        type: 'group',
+      },
+    });
+  });
+
+  it('should parse a group with a transformer', async () => {
+    const transformer: GroupTransformer = async (e, _g, r) => {
+      e.metadata.name = `${e.metadata.name}_${r}`;
+      return e;
+    };
+    const entity = await parseGroup(groupsFixture[0], 'test', transformer);
+
+    expect(entity!.metadata.name).toEqual('biggroup_test');
+  });
+});
+
+describe('parseUser', () => {
+  it('should parse an user', async () => {
+    const entity = await parseUser(usersFixture[0], 'test', []);
+
+    expect(entity).toEqual({
+      apiVersion: 'backstage.io/v1beta1',
+      kind: 'User',
+      metadata: {
+        annotations: {
+          'keycloak.org/id': '59efec15-a00b-4700-8833-5f4cdecc1132',
+          'keycloak.org/realm': 'test',
+        },
+        name: 'jamesdoe',
+      },
+      spec: {
+        memberOf: [],
+        profile: {
+          displayName: '',
+          email: 'jamesdoe@gmail.com',
+        },
+      },
+    });
+  });
+
+  it('should parse an user with transformer', async () => {
+    const transformer: UserTransformer = async (e, _u, r, _g) => {
+      e.metadata.name = `${e.metadata.name}_${r}`;
+      return e;
+    };
+    const entity = await parseUser(usersFixture[0], 'test', [], transformer);
+
+    expect(entity!.metadata.name).toEqual('jamesdoe_test');
   });
 });
