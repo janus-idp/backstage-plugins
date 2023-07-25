@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-jfrog-artifactory [1.0.14](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-jfrog-artifactory@1.0.13...@janus-idp/backstage-plugin-jfrog-artifactory@1.0.14) (2023-07-25)
+
+
+### Bug Fixes
+
+* **plugins:** add bearer token to request headers when sending requests, authmiddleware issue ([#498](https://github.com/janus-idp/backstage-plugins/issues/498)) ([86881c3](https://github.com/janus-idp/backstage-plugins/commit/86881c37321d1b446f15ff59b2fcb8ebc8500786))
+
 ## @janus-idp/backstage-plugin-jfrog-artifactory [1.0.13](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-jfrog-artifactory@1.0.12...@janus-idp/backstage-plugin-jfrog-artifactory@1.0.13) (2023-07-25)
 
 ## @janus-idp/backstage-plugin-jfrog-artifactory [1.0.12](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-jfrog-artifactory@1.0.11...@janus-idp/backstage-plugin-jfrog-artifactory@1.0.12) (2023-06-26)
