@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-tekton [1.7.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.6.0...@janus-idp/backstage-plugin-tekton@1.7.0) (2023-07-25)
+
+
+### Features
+
+* **tekton:** view pipelinerun visualization on click of pipelinerun ([#506](https://github.com/janus-idp/backstage-plugins/issues/506)) ([092d2bd](https://github.com/janus-idp/backstage-plugins/commit/092d2bd55d69171f9d3c290c9346c7d13dafcf97))
+
 ## @janus-idp/backstage-plugin-tekton [1.6.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.5.2...@janus-idp/backstage-plugin-tekton@1.6.0) (2023-07-10)
 
 
