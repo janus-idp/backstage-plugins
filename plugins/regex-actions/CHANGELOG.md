@@ -1,3 +1,5 @@
+## @janus-idp/backstage-scaffolder-backend-module-regex [1.0.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-regex@1.0.4...@janus-idp/backstage-scaffolder-backend-module-regex@1.0.5) (2023-07-25)
+
 ## @janus-idp/backstage-scaffolder-backend-module-regex [1.0.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-regex@1.0.3...@janus-idp/backstage-scaffolder-backend-module-regex@1.0.4) (2023-06-14)
 
 
