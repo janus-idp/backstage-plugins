@@ -30,6 +30,7 @@ import { newEnforcer, newModelFromString } from 'casbin';
 import { Router } from 'express';
 import { Request } from 'express-serve-static-core';
 import { isEqual } from 'lodash';
+import { ParsedQs } from 'qs';
 import { Logger } from 'winston';
 
 import {
@@ -119,9 +120,8 @@ export class PolicyBuilder {
       response.send({ status: 'Authorized' });
     });
 
-    // todo: add filter query
-    router.get('/policies', async (request, response) => {
-      const decision = await authorize(env.identity, request, permissions, {
+    router.get('/policies', async (req, response) => {
+      const decision = await authorize(env.identity, req, permissions, {
         permission: policyEntityReadPermission,
       });
 
@@ -129,7 +129,19 @@ export class PolicyBuilder {
         throw new NotAllowedError(); // 403
       }
 
-      const policies = await enforcer.getPolicy();
+      let policies: string[][];
+      if (isPolicyFilterEnabled(req)) {
+        const entityRef = getFirstQuery(req.query.entityRef);
+        const permission = getFirstQuery(req.query.permission);
+        const policy = getFirstQuery(req.query.policy);
+        const effect = getFirstQuery(req.query.effect);
+
+        const filter: string[] = [entityRef, permission, policy, effect];
+        policies = await enforcer.getFilteredPolicy(0, ...filter);
+      } else {
+        policies = await enforcer.getPolicy();
+      }
+
       response.json(transformPolicyArray(...policies));
     });
 
@@ -173,9 +185,9 @@ export class PolicyBuilder {
         );
       }
 
-      const permission = request.query.permission!.toString();
-      const policy = request.query.policy!.toString();
-      const effect = request.query.effect!.toString();
+      const permission = getFirstQuery(request.query.permission!);
+      const policy = getFirstQuery(request.query.policy!);
+      const effect = getFirstQuery(request.query.effect!);
 
       const policyPermission = [entityRef, permission, policy, effect];
 
@@ -361,4 +373,33 @@ function transformPolicyToArray(policy: EntityReferencedPolicy) {
     policy.policy!,
     policy.effect!,
   ];
+}
+
+function getFirstQuery(
+  queryValue: string | string[] | ParsedQs | ParsedQs[] | undefined,
+): string {
+  if (!queryValue) {
+    return '';
+  }
+  if (Array.isArray(queryValue)) {
+    if (typeof queryValue[0] === 'string') {
+      // return queryValue[0]
+      return queryValue.toString();
+    }
+    throw new InputError(`This api doesn't support nested query`);
+  }
+
+  if (typeof queryValue === 'string') {
+    return queryValue;
+  }
+  throw new InputError(`This api doesn't support nested query`);
+}
+
+function isPolicyFilterEnabled(req: Request): boolean {
+  return (
+    !!req.query.entityRef ||
+    !!req.query.permission ||
+    !!req.query.policy ||
+    !!req.query.effect
+  );
 }

@@ -39,6 +39,7 @@
     "express-promise-router": "^4.1.0",
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.7",
+    "qs": "^6.11.2",
     "typeorm-adapter": "^1.5.4",
     "winston": "^3.2.1",
     "yn": "^4.0.0"
