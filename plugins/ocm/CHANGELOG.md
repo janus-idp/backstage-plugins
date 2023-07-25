@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-ocm [3.0.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm@3.0.3...@janus-idp/backstage-plugin-ocm@3.0.4) (2023-07-25)
+
+
+### Bug Fixes
+
+* **plugins:** add bearer token to request headers when sending requests, authmiddleware issue ([#498](https://github.com/janus-idp/backstage-plugins/issues/498)) ([86881c3](https://github.com/janus-idp/backstage-plugins/commit/86881c37321d1b446f15ff59b2fcb8ebc8500786))
+
 ## @janus-idp/backstage-plugin-ocm [3.0.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm@3.0.2...@janus-idp/backstage-plugin-ocm@3.0.3) (2023-07-25)
 
 
