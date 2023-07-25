@@ -5,6 +5,7 @@ import {
   createComponentExtension,
   createPlugin,
   discoveryApiRef,
+  identityApiRef,
 } from '@backstage/core-plugin-api';
 
 import { JfrogArtifactoryApiClient, jfrogArtifactoryApiRef } from './api';
@@ -22,9 +23,10 @@ export const jfrogArtifactoryPlugin = createPlugin({
       deps: {
         discoveryApi: discoveryApiRef,
         configApi: configApiRef,
+        identityApi: identityApiRef,
       },
-      factory: ({ discoveryApi, configApi }) =>
-        new JfrogArtifactoryApiClient({ discoveryApi, configApi }),
+      factory: ({ discoveryApi, configApi, identityApi }) =>
+        new JfrogArtifactoryApiClient({ discoveryApi, configApi, identityApi }),
     }),
   ],
 });

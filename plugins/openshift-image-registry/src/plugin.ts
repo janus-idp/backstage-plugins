@@ -4,6 +4,7 @@ import {
   createPlugin,
   createRoutableExtension,
   discoveryApiRef,
+  identityApiRef,
 } from '@backstage/core-plugin-api';
 
 import {
@@ -23,9 +24,14 @@ export const openshiftImageRegistryPlugin = createPlugin({
       deps: {
         discoveryApi: discoveryApiRef,
         configApi: configApiRef,
+        identityApi: identityApiRef,
       },
-      factory: ({ discoveryApi, configApi }) =>
-        new OpenshiftImageRegistryApiClient({ discoveryApi, configApi }),
+      factory: ({ discoveryApi, configApi, identityApi }) =>
+        new OpenshiftImageRegistryApiClient({
+          discoveryApi,
+          configApi,
+          identityApi,
+        }),
     }),
   ],
 });

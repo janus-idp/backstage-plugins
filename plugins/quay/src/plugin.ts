@@ -5,6 +5,7 @@ import {
   createPlugin,
   createRoutableExtension,
   discoveryApiRef,
+  identityApiRef,
 } from '@backstage/core-plugin-api';
 
 import { QuayApiClient, quayApiRef } from './api';
@@ -23,9 +24,10 @@ export const quayPlugin = createPlugin({
       deps: {
         discoveryApi: discoveryApiRef,
         configApi: configApiRef,
+        identityApi: identityApiRef,
       },
-      factory: ({ discoveryApi, configApi }) =>
-        new QuayApiClient({ discoveryApi, configApi }),
+      factory: ({ discoveryApi, configApi, identityApi }) =>
+        new QuayApiClient({ discoveryApi, configApi, identityApi }),
     }),
   ],
 });
