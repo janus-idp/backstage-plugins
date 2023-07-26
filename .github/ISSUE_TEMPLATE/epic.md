@@ -1,7 +1,7 @@
 ---
 name: Epic
 about: Create an epic
-labels: kind/epic
+labels: [kind/epic, status/triage]
 ---
 
 **Goal**
