@@ -63,13 +63,13 @@ export const Overview = (props: OverviewProps) => {
   const [errors, setErrors] = React.useState<KialiFetchError[]>([]);
   const [warnings, setWarnings] = React.useState<KialiFetchError[]>([]);
 
-  const fetchInfo = (
+  const fetchInfo = async (
     config: KialiConfigT = props.kialiConfig,
     dur: number = duration,
     ovType: OverviewType = overviewType,
     dir: DirectionType = direction,
   ) => {
-    kialiClient
+    await kialiClient
       .get(KialiEndpoints.getOverview, {
         duration: dur,
         overviewType: ovType,
@@ -79,7 +79,7 @@ export const Overview = (props: OverviewProps) => {
         if (response.errors.length > 0) {
           setErrors(response.errors);
         } else {
-          if (response.warnings.length > 0) {
+          if (response.warnings) {
             setWarnings(response.warnings);
           }
           const ovData = response.response as OverviewData;
@@ -187,31 +187,36 @@ export const Overview = (props: OverviewProps) => {
           />
         </WarningPanel>
       )}
-      <OverviewToolbar
-        refresh={() => handleToolbar(duration, overviewType, direction)}
-        duration={duration}
-        setDuration={e => handleToolbar(e, overviewType, direction)}
-        overviewType={overviewType}
-        setOverviewType={e => handleToolbar(duration, e, direction)}
-        direction={direction}
-        setDirection={e => handleToolbar(duration, overviewType, e)}
-      />
-      <Grid container direction="column">
-        {namespaces.map((ns, _) => (
-          <OverviewCard
-            canaryStatus={canaryStatus}
-            canaryUpgrade={canaryUpgrade}
-            direction={direction}
+      {namespaces.length > 0 && (
+        <>
+          <OverviewToolbar
+            refresh={() => handleToolbar(duration, overviewType, direction)}
             duration={duration}
-            ns={ns}
-            outboundTrafficPolicy={outboundTrafficPolicy}
-            kialiConfig={props.kialiConfig}
-            type={overviewType}
-            istiodResourceThresholds={istiodResourceThresholds}
-            istioStatus={componentStatus}
+            setDuration={e => handleToolbar(e, overviewType, direction)}
+            overviewType={overviewType}
+            setOverviewType={e => handleToolbar(duration, e, direction)}
+            direction={direction}
+            setDirection={e => handleToolbar(duration, overviewType, e)}
           />
-        ))}
-      </Grid>
+          <Grid container direction="column">
+            {namespaces.map((ns, _) => (
+              <OverviewCard
+                key={`${ns.cluster}_${ns.name}`}
+                canaryStatus={canaryStatus}
+                canaryUpgrade={canaryUpgrade}
+                direction={direction}
+                duration={duration}
+                ns={ns}
+                outboundTrafficPolicy={outboundTrafficPolicy}
+                kialiConfig={props.kialiConfig}
+                type={overviewType}
+                istiodResourceThresholds={istiodResourceThresholds}
+                istioStatus={componentStatus}
+              />
+            ))}
+          </Grid>
+        </>
+      )}
     </>
   );
 };

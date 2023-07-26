@@ -32,10 +32,10 @@
     "@backstage/plugin-auth-node": "^0.2.16",
     "@backstage/plugin-catalog-node": "^1.4.0",
     "@janus-idp/backstage-plugin-kiali-common": "1.0.0",
+    "axios": "^1.4.0",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "moment": "^2.29.4",
-    "node-fetch": "^2.6.7",
     "winston": "^3.2.1",
     "yn": "^5.0.0"
   },

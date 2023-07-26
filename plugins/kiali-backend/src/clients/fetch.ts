@@ -1,37 +1,19 @@
-import fetch, { RequestInit, Response } from 'node-fetch';
+import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import { Logger } from 'winston';
 
 import {
   config,
+  FetchResponseWrapper,
   KialiDetails,
-  KialiErrorTypes,
   KialiFetchError,
 } from '@janus-idp/backstage-plugin-kiali-common';
 
 import fs from 'fs';
 import https from 'https';
 
-import { KialiAuthentication } from './auth';
+import { KialiAuthentication, Session } from './auth';
 
 const TIMEOUT_FETCH = 8000;
-const statusCodeToErrorType = (statusCode: number): KialiErrorTypes => {
-  switch (statusCode) {
-    case 400:
-      return 'BAD_REQUEST';
-    case 401:
-      return 'UNAUTHORIZED_ERROR';
-    case 404:
-      return 'NOT_FOUND';
-    case 500:
-      return 'SYSTEM_ERROR';
-    case 503:
-      return 'SERVICE_UNAVAILABLE';
-    case 504:
-      return 'GATEWAY_TIME_OUT';
-    default:
-      return 'UNKNOWN_ERROR';
-  }
-};
 
 export class KialiFetcher {
   private readonly logger: Logger;
@@ -48,62 +30,87 @@ export class KialiFetcher {
     return this.kialiAuth.getSession();
   };
 
-  async checkSession(): Promise<Response> {
+  newRequest = async <P>(endpoint: string, auth: boolean = false) => {
+    return axios.request<P>(this.getRequestInit(endpoint, auth));
+  };
+
+  async checkSession(): Promise<FetchResponseWrapper> {
+    const response: FetchResponseWrapper = {
+      errors: [],
+      warnings: [],
+    };
+    /*
+     * Check if the actual cookie/session is valid
+     */
     if (this.kialiAuth.shouldRelogin()) {
+      /*
+       * Verify that SA token is in the config file
+       */
       if (this.KialiDetails.serviceAccountToken) {
         this.logger.debug(
           `Query to ${
             new URL(config.api.urls.authenticate, this.KialiDetails.url).href
           }`,
         );
-        const auth = await fetch(
-          new URL(config.api.urls.authenticate, this.KialiDetails.url).href,
-          this.getRequestInit(true),
-        );
-        if (auth.ok) {
-          const session = await auth.json();
-          this.logger.debug(`Logged username ${session.username}`);
-          this.kialiAuth.setSession(session);
-          this.kialiAuth.setKialiCookie(auth.headers.get('set-cookie') || '');
-        }
-        return auth;
+        const params = new URLSearchParams();
+        params.append('token', this.KialiDetails.serviceAccountToken || '');
+        await axios
+          .request<Session>(
+            this.getRequestInit(config.api.urls.authenticate, true),
+          )
+          .then(resp => {
+            const session = resp.data;
+            /*
+             * Store the session and cookie
+             */
+            this.logger.debug(`Logged username ${session.username}`);
+            this.kialiAuth.setSession(session);
+            this.kialiAuth.setKialiCookie(
+              resp.headers['set-cookie']?.join(';') || '',
+            );
+          })
+          .catch(err =>
+            response.errors.push(this.handleUnsuccessfulResponse(err)),
+          );
+      } else {
+        response.errors.push({
+          errorType: 'NOT_FOUND',
+          message: 'No service account token for Kiali',
+        });
       }
-
-      return Promise.reject(new Error('No service account token for Kiali'));
+      return response;
     }
-    // Check if need extend session
+    /*
+     * Check if we need to extend the session
+     */
     if (this.kialiAuth.checkIfExtendSession()) {
       this.logger.debug(
         `Query to ${
           new URL(config.api.urls.authenticate, this.KialiDetails.url).href
         } to extend session`,
       );
-      const auth = await this.fetchResource(
-        new URL(config.api.urls.authenticate, this.KialiDetails.url).href,
-        this.getRequestInit(),
-      );
-      if (auth.ok) {
-        const session = await auth.json();
-        this.logger.debug(`Extended session for username ${session.username}`);
-        this.kialiAuth.setSession(session);
-      }
-      return auth;
+      await axios
+        .request<Session>(this.getRequestInit(config.api.urls.authenticate))
+        .then(resp => {
+          const session = resp.data;
+          /*
+           * Extend the session and store it
+           */
+          this.logger.debug(
+            `Extended session for username ${session.username}`,
+          );
+          this.kialiAuth.setSession(session);
+          return {};
+        })
+        .catch(err =>
+          response.errors.push(this.handleUnsuccessfulResponse(err)),
+        );
     }
+    /*
+     * Login again is not needed
+     */
     this.logger.debug(`Not need relogin`);
-    return Promise.resolve(new Response('No need login'));
-  }
-  async fetchResource(
-    endpoint: string,
-    request: RequestInit = this.getRequestInit(),
-  ): Promise<Response> {
-    const auth = await this.checkSession();
-    if (auth.ok) {
-      this.logger.info(
-        `Query to ${new URL(endpoint, this.KialiDetails.url).href}`,
-      );
-      return fetch(new URL(endpoint, this.KialiDetails.url).href, request);
-    }
-    return auth;
+    return response;
   }
 
   private bufferFromFileOrString(file?: string, data?: string): Buffer | null {
@@ -116,29 +123,35 @@ export class KialiFetcher {
     return null;
   }
 
-  async handleUnsuccessfulResponse(res: Response): Promise<KialiFetchError> {
-    const resourcePath = new URL(res.url).pathname;
-    const message = await res.text();
+  handleUnsuccessfulResponse(res: AxiosError): KialiFetchError {
+    const message = res.message;
     this.logger.warn(
-      `Received ${res.status} status when fetching "${this.KialiDetails.url}${resourcePath}" in "Kiali"; body=[${message}]`,
+      `Received ${res.status} ${res.code && `status (${res.code}) `} ${
+        res.config?.url && `when fetching "${res.config?.url}" in "Kiali"; `
+      }body=[${message}]`,
     );
+
     return {
-      errorType: statusCodeToErrorType(res.status),
-      message: message,
+      errorType: res.code || 'UNKNOWN_ERROR',
+      message,
       statusCode: res.status,
-      resourcePath,
+      resourcePath: res.config?.url || '',
     };
   }
 
-  private getRequestInit = (auth: boolean = false): RequestInit => {
-    const requestInit: RequestInit = { timeout: TIMEOUT_FETCH };
+  private getRequestInit = (
+    endpoint: string,
+    auth: boolean = false,
+  ): AxiosRequestConfig => {
+    const requestInit: AxiosRequestConfig = { timeout: TIMEOUT_FETCH };
     if (auth) {
       const params = new URLSearchParams();
       params.append('token', this.KialiDetails.serviceAccountToken || '');
       requestInit.headers = config.login.headers;
+      requestInit.data = params;
       requestInit.method = 'post';
-      requestInit.body = params;
     } else {
+      requestInit.method = 'get';
       requestInit.headers = {
         ...config.login.headers,
         cookie: this.kialiAuth.getCookie(),
@@ -147,8 +160,10 @@ export class KialiFetcher {
       };
     }
 
+    requestInit.url = new URL(endpoint, this.KialiDetails.url).href;
+
     if (this.KialiDetails.skipTLSVerify) {
-      requestInit.agent = new https.Agent({
+      requestInit.httpsAgent = new https.Agent({
         rejectUnauthorized: false,
         ca:
           this.bufferFromFileOrString(
