@@ -81,13 +81,68 @@ The Topology plugin enables you to visualize the workloads such as Deployment, J
 
   ```
 
+- The following configuration must be added in`customResources` component in the [`app-config.yaml`](https://backstage.io/docs/features/kubernetes/configuration#configuring-kubernetes-clusters) file to view the edit code decorator:
+
+  ```yaml
+   kubernetes:
+     ...
+     customResources:
+        - group: 'org.eclipse.che'
+          apiVersion: 'v2'
+          plural: 'checlusters'
+  ```
+
+  Also, ensure that the `CheCluster` is granted a [`ClusterRole`](https://backstage.io/docs/features/kubernetes/configuration#role-based-access-control) as shown in the following example code:
+
+  ```yaml
+    ...
+    apiVersion: rbac.authorization.k8s.io/v1
+    kind: ClusterRole
+    metadata:
+      name: backstage-read-only
+    rules:
+      ...
+      - apiGroups:
+          - org.eclipse.che
+        resources:
+          - checlusters
+        verbs:
+          - get
+          - list
+
+  ```
+
+- The following annotations are added to workload resources, such as Deployments to navigate to the Git repository of the associated application using the edit code decorator:
+
+  ```yaml title="deployment.yaml"
+    ...
+    labels:
+      app.openshift.io/vcs-uri: <GIT_REPO_URL>
+  ```
+
+  You can also add the following annotation to navigate to a specific branch:
+
+  ```yaml title="deployment.yaml"
+      ...
+      labels:
+        app.openshift.io/vcs-ref: <GIT_REPO_BRANCH>
+  ```
+
+  > Note: If Red Hat OpenShift Dev Spaces is [installed and configured](https://access.redhat.com/documentation/en-us/red_hat_openshift_dev_spaces/3.7/html/administration_guide/installing-devspaces) and Git URL annotations are also present on the workload YAML file, then clicking on the edit code decorator redirects you to the Red Hat OpenShift Dev Spaces instance.
+
+  > Note: When you deploy the application using the OCP Git import flows, then you do not need to add the labels as import flows add the labels to the workload YAML file. Otherwise, you need to add the labels manually to the workload YAML file.
+
+  The labels are not similar to `backstage.io/edit-url` annotations as it points to the catalog entity metadata source file and is applied to Backstage catalog entity metadata YAML file, but not Kubernetes resources.
+
+  > Tip: You can also add the `app.openshift.io/edit-url` annotation with the edit URL that you want to access using the decorator.
+
   > Tip: You can use our [prepared manifest for a read-only `ClusterRole`](https://raw.githubusercontent.com/janus-idp/backstage-plugins/main/plugins/topology/manifests/clusterrole.yaml), providing both Kubernetes plugin andd Topology plugin access.
 
 - The following annotation is added to the entity's `catalog-info.yaml` file to identify whether an entitiy contains the Kubernetes resources:
 
   ```yaml title="catalog-info.yaml"
   annotations:
-  backstage.io/kubernetes-id: <BACKSTAGE_ENTITY_NAME>
+    backstage.io/kubernetes-id: <BACKSTAGE_ENTITY_NAME>
   ```
 
   You can also add the `backstage.io/kubernetes-namespace` annotation to identify the Kubernetes resources using the defined namespace.
@@ -96,6 +151,10 @@ The Topology plugin enables you to visualize the workloads such as Deployment, J
   annotations:
     backstage.io/kubernetes-namespace: <RESOURCE_NS>
   ```
+
+  > The Red Hat OpenShift Dev Spaces instance is not accessible using the edit code decorator if the `backstage.io/kubernetes-namespace` annotation is added to the `catalog-info.yaml` file.
+
+  To retrieve the instance URL, CheCluster CR is required. The instance URL is not retrieved if the namespace annotation value is different from `openshift-devspaces` as CheCluster CR is created in `openshift-devspaces` namespace.
 
 - A custom label selector is added, which Backstage uses to find the Kubernetes resources. The label selector takes precedence over the ID annotations.
 

@@ -288,3 +288,8 @@ export const getUrlForResource = (
     getIngressURLForResource(resources, resource)
   );
 };
+
+export const getCheCluster = (resources: K8sResponseData) =>
+  resources.checlusters?.data?.find(
+    cc => cc.metadata?.namespace === 'openshift-devspaces',
+  );

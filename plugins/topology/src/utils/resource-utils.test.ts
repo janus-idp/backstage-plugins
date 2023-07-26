@@ -4,6 +4,7 @@ import {
 } from '../__fixtures__/1-deployments';
 import { RouteKind } from '../types/route';
 import {
+  getCheCluster,
   getIngressesDataForResourceServices,
   getIngressURLForResource,
   getIngressWebURL,
@@ -161,5 +162,14 @@ describe('ResourceUtils:: Routes', () => {
     expect(URL).toEqual(
       'https://nodejs-ex-git-jai-test.apps.viraj-22-05-2023-0.devcluster.openshift.com',
     );
+  });
+});
+
+describe('ResourceUtils:: CheCluster', () => {
+  it('should return cheCluster from openshift-devspaces ns', () => {
+    const cheCluster = getCheCluster({
+      checlusters: { data: mockKubernetesResponse.checlusters },
+    } as any);
+    expect(cheCluster).toEqual(mockKubernetesResponse.checlusters[0]);
   });
 });

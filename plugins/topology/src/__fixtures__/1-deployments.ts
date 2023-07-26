@@ -2323,6 +2323,170 @@ export const mockKubernetesResponse = {
       apiVersion: 'apps/v1',
     },
   ],
+  checlusters: [
+    {
+      apiVersion: 'org.eclipse.che/v2',
+      kind: 'CheCluster',
+      metadata: {
+        annotations: {
+          'che.eclipse.org/checluster-defaults-cleanup':
+            '{"containers.resources":"true","spec.components.dashboard.headerMessage":"true","spec.components.pluginRegistry.openVSXURL":"true","spec.devEnvironments.defaultComponents":"true","spec.devEnvironments.defaultEditor":"true","spec.devEnvironments.disableContainerBuildCapabilities":"true"}',
+        },
+        resourceVersion: '305114',
+        name: 'devspaces',
+        uid: '53a9bc1e-6383-4800-90a5-6af8aabbf592',
+        creationTimestamp: '2023-07-18T11:25:10Z',
+        generation: 1,
+        namespace: 'openshift-devspaces',
+        labels: {
+          'backstage.io/kubernetes-id': 'nationalparks-py',
+        },
+      },
+      spec: {
+        components: {
+          cheServer: {
+            debug: false,
+            logLevel: 'INFO',
+          },
+          dashboard: {},
+          database: {
+            externalDb: false,
+          },
+          devWorkspace: {},
+          devfileRegistry: {},
+          imagePuller: {
+            enable: false,
+            spec: {},
+          },
+          metrics: {
+            enable: true,
+          },
+          pluginRegistry: {},
+        },
+        containerRegistry: {},
+        devEnvironments: {
+          containerBuildConfiguration: {
+            openShiftSecurityContextConstraint: 'container-build',
+          },
+          defaultNamespace: {
+            autoProvision: true,
+            template: '<username>-devspaces',
+          },
+          maxNumberOfWorkspacesPerUser: -1,
+          secondsOfInactivityBeforeIdling: 1800,
+          secondsOfRunBeforeIdling: -1,
+          startTimeoutSeconds: 300,
+          storage: {
+            pvcStrategy: 'per-user',
+          },
+        },
+        gitServices: {},
+        networking: {
+          auth: {
+            gateway: {
+              configLabels: {
+                app: 'che',
+                component: 'che-gateway-config',
+              },
+            },
+          },
+        },
+      },
+      status: {
+        chePhase: 'Active',
+        cheURL:
+          'https://devspaces.apps.rhoms-4.14-071804.dev.openshiftappsvc.org',
+        cheVersion: '3.7.0',
+        devfileRegistryURL:
+          'https://devspaces.apps.rhoms-4.14-071804.dev.openshiftappsvc.org/devfile-registry',
+        gatewayPhase: 'Established',
+        pluginRegistryURL:
+          'https://devspaces.apps.rhoms-4.14-071804.dev.openshiftappsvc.org/plugin-registry/v3',
+        workspaceBaseDomain: 'apps.rhoms-4.14-071804.dev.openshiftappsvc.org',
+      },
+    },
+    {
+      apiVersion: 'org.eclipse.che/v2',
+      kind: 'CheCluster',
+      metadata: {
+        annotations: {
+          'che.eclipse.org/checluster-defaults-cleanup':
+            '{"containers.resources":"true","spec.components.dashboard.headerMessage":"true","spec.components.pluginRegistry.openVSXURL":"true","spec.devEnvironments.defaultComponents":"true","spec.devEnvironments.defaultEditor":"true","spec.devEnvironments.disableContainerBuildCapabilities":"true"}',
+        },
+        resourceVersion: '305114',
+        name: 'devspaces2',
+        uid: '53a9bc1e-6383-4800-90a5-6af8aabbf592',
+        creationTimestamp: '2023-07-18T11:25:10Z',
+        generation: 1,
+        namespace: 'default',
+        labels: {
+          'backstage.io/kubernetes-id': 'nationalparks-py',
+        },
+      },
+      spec: {
+        components: {
+          cheServer: {
+            debug: false,
+            logLevel: 'INFO',
+          },
+          dashboard: {},
+          database: {
+            externalDb: false,
+          },
+          devWorkspace: {},
+          devfileRegistry: {},
+          imagePuller: {
+            enable: false,
+            spec: {},
+          },
+          metrics: {
+            enable: true,
+          },
+          pluginRegistry: {},
+        },
+        containerRegistry: {},
+        devEnvironments: {
+          containerBuildConfiguration: {
+            openShiftSecurityContextConstraint: 'container-build',
+          },
+          defaultNamespace: {
+            autoProvision: true,
+            template: '<username>-devspaces',
+          },
+          maxNumberOfWorkspacesPerUser: -1,
+          secondsOfInactivityBeforeIdling: 1800,
+          secondsOfRunBeforeIdling: -1,
+          startTimeoutSeconds: 300,
+          storage: {
+            pvcStrategy: 'per-user',
+          },
+        },
+        gitServices: {},
+        networking: {
+          auth: {
+            gateway: {
+              configLabels: {
+                app: 'che',
+                component: 'che-gateway-config',
+              },
+            },
+          },
+        },
+      },
+      status: {
+        chePhase: 'Active',
+        cheURL:
+          'https://devspaces.apps.rhoms-4.14-071804.dev.openshiftappsvc.org',
+        cheVersion: '3.7.0',
+        devfileRegistryURL:
+          'https://devspaces.apps.rhoms-4.14-071804.dev.openshiftappsvc.org/devfile-registry',
+        gatewayPhase: 'Established',
+        pluginRegistryURL:
+          'https://devspaces.apps.rhoms-4.14-071804.dev.openshiftappsvc.org/plugin-registry/v3',
+        workspaceBaseDomain: 'apps.rhoms-4.14-071804.dev.openshiftappsvc.org',
+      },
+    },
+  ],
 };
 
 export const mockK8sResourcesData = {

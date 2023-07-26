@@ -20,6 +20,7 @@ import { calculateRadius, getPodStatus } from '../../utils/workload-node-utils';
 import { AllPodStatus } from '../Pods/pod';
 import PodSet, { podSetInnerRadius } from '../Pods/PodSet';
 import BaseNode from './BaseNode';
+import EditDecorator from './decorators/EditDecorator';
 import { getNodeDecorators } from './decorators/getNodeDecorators';
 import { PipelineRunDecorator } from './decorators/PipelineRunDecorator';
 import { UrlDecorator } from './decorators/UrlDecorator';
@@ -97,8 +98,30 @@ const InnerWorkloadNode = observer(
 
       return (
         <UrlDecorator
+          key={`url-${nodeElement.getId()}`}
           url={workloadData.url}
           radius={urlDecoratorRadius}
+          x={x}
+          y={y}
+        />
+      );
+    };
+
+    const editDecorator = (
+      nodeElement: Node,
+      editDecoratorRadius: number,
+      x: number,
+      y: number,
+    ) => {
+      const { editURL, vcsURI } = nodeElement.getData().data;
+      if (!editURL && !vcsURI) {
+        return null;
+      }
+      return (
+        <EditDecorator
+          key={`edit-${nodeElement.getId()}`}
+          element={nodeElement}
+          radius={editDecoratorRadius}
           x={x}
           y={y}
         />
@@ -121,7 +144,7 @@ const InnerWorkloadNode = observer(
       }
       return (
         <PipelineRunDecorator
-          key={nodeElement.getId()}
+          key={`plr-${nodeElement.getId()}`}
           pipelinesData={pipelinesData}
           radius={pipelineDecoratorRadius}
           x={x}
@@ -138,6 +161,10 @@ const InnerWorkloadNode = observer(
       {
         quadrant: TopologyQuadrant.upperRight,
         decorator: urlDecorator,
+      },
+      {
+        quadrant: TopologyQuadrant.lowerRight,
+        decorator: editDecorator,
       },
     ];
 
