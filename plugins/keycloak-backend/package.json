@@ -14,7 +14,9 @@
     "role": "backend-plugin"
   },
   "scripts": {
-    "start": "backstage-cli package start",
+    "start": "open http://localhost:8080/admin/master/console/#/janus-realm && open http://localhost:7007/catalog/entities && turbo run start:plugin start:keycloak",
+    "start:plugin": "backstage-cli package start",
+    "start:keycloak": "podman run -p 8080:8080 -e 'KEYCLOAK_ADMIN=admin' -e 'KEYCLOAK_ADMIN_PASSWORD=admin' -v ./__fixtures__/keycloak-realm.json:/opt/keycloak/data/import/keycloak-realm.json quay.io/keycloak/keycloak:22.0.1 start-dev --import-realm",
     "build": "backstage-cli package build",
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test --passWithNoTests --coverage",
@@ -34,11 +36,17 @@
     "winston": "^3.2.1"
   },
   "devDependencies": {
+    "@backstage/backend-app-api": "^0.4.5",
     "@backstage/cli": "0.22.9",
+    "@backstage/plugin-auth-node": "^0.2.16",
+    "@backstage/plugin-catalog-backend": "^1.11.0",
+    "@backstage/plugin-permission-common": "^0.7.7",
+    "@backstage/plugin-permission-node": "^0.7.10",
     "@types/lodash": "4.14.195",
     "@types/supertest": "2.0.12",
     "@types/uuid": "9.0.1",
     "deepmerge": "4.3.1",
+    "express": "^4.18.2",
     "msw": "1.2.1",
     "supertest": "6.3.3"
   },

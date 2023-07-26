@@ -3,12 +3,12 @@
   "pipeline": {
     "start": {
       "cache": false,
-      "persistent": true,
-      "dependsOn": ["^build"]
+      "persistent": true
     },
     "app#start": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "dependsOn": ["^build"]
     },
     "backend#start": {
       "cache": false,
