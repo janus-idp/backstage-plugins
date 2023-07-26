@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-topology [1.11.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.10.0...@janus-idp/backstage-plugin-topology@1.11.0) (2023-07-26)
+
+
+### Features
+
+* **topology:** add edit code node decorator ([#535](https://github.com/janus-idp/backstage-plugins/issues/535)) ([8b5893a](https://github.com/janus-idp/backstage-plugins/commit/8b5893a62a2b23274666d5a7f26ad6e3978741b1))
+
 ## @janus-idp/backstage-plugin-topology [1.10.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.9.0...@janus-idp/backstage-plugin-topology@1.10.0) (2023-07-25)
 
 
