@@ -36,12 +36,14 @@
     "express-promise-router": "^4.1.0",
     "node-fetch": "^2.6.7",
     "winston": "^3.2.1",
-    "typeorm-adapter": "^1.5.3",
+    "typeorm-adapter": "^1.5.4",
     "yn": "^4.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "^0.22.6",
     "@types/supertest": "2.0.12",
+    "knex": "^2.5.1",
+    "knex-mock-client": "^2.0.0",
     "msw": "^1.0.0",
     "supertest": "^6.2.4"
   },

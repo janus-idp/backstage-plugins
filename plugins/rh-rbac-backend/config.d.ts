@@ -28,10 +28,6 @@ export interface Config {
        * @visibility frontend
        */
       enabled: boolean;
-      /**
-       * Name of the database
-       */
-      name: string;
     };
   };
 }

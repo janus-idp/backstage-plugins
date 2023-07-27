@@ -1,4 +1,5 @@
 import {
+  PluginDatabaseManager,
   PluginEndpointDiscovery,
   resolvePackagePath,
 } from '@backstage/backend-common';
@@ -19,7 +20,6 @@ import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-
 
 import { FileAdapter } from 'casbin';
 import { Router } from 'express';
-import TypeORMAdapter from 'typeorm-adapter';
 import { Logger } from 'winston';
 
 import {
@@ -27,6 +27,7 @@ import {
   policyEntityReadPermission,
   RESOURCE_TYPE_POLICY_ENTITY,
 } from '../permissions';
+import { CasbinAdapterFactory } from './casbin-adapter-factory';
 import { RBACPermissionPolicy } from './permission-policy';
 
 export class PolicyBuilder {
@@ -36,6 +37,7 @@ export class PolicyBuilder {
     discovery: PluginEndpointDiscovery;
     identity: IdentityApi;
     permissions: PermissionEvaluator;
+    database: PluginDatabaseManager;
   }): Promise<Router> {
     let adapter;
     const databaseEnabled = env.config.getOptionalBoolean(
@@ -46,15 +48,10 @@ export class PolicyBuilder {
 
     // Database adapter work
     if (databaseEnabled) {
-      const databaseConfig = env.config.getOptionalConfig('backend.database');
-      adapter = await TypeORMAdapter.newAdapter({
-        type: 'postgres',
-        host: databaseConfig?.getString('connection.host'),
-        port: databaseConfig?.getNumber('connection.port'),
-        username: databaseConfig?.getString('connection.user'),
-        password: databaseConfig?.getString('connection.password'),
-        database: env.config.getOptionalString('permission.database.name'),
-      });
+      adapter = await new CasbinAdapterFactory(
+        env.config,
+        env.database,
+      ).createAdapter();
     } else {
       adapter = new FileAdapter(
         resolvePackagePath(
