@@ -46,7 +46,7 @@ export const ResourceIcon = ({ className, kind }: ResourceIconProps) => {
 
 export type ResourceNameProps = {
   kind: string;
-  name: string;
+  name: React.ReactNode;
   large?: boolean;
 };
 

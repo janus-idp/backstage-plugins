@@ -14,6 +14,8 @@ export const GROUP_PADDING = [
   DEFAULT_GROUP_PAD,
 ];
 
+export const MAXSHOWRESCOUNT = 3;
+
 export const TYPE_WORKLOAD = 'workload';
 export const TYPE_APPLICATION_GROUP = 'part-of';
 export const TYPE_CONNECTS_TO = 'connects-to';

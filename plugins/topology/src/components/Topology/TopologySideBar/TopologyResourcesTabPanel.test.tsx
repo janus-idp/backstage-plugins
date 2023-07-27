@@ -8,7 +8,9 @@ import {
   workloadNode2,
   workloadNode3,
   workloadNode4,
+  workloadNode5,
   workloadNodeWtknRes,
+  workloadNodeWtknRes2,
 } from '../../../__fixtures__/workloadNodeData';
 import TopologyResourcesTabPanel from './TopologyResourcesTabPanel';
 
@@ -27,6 +29,17 @@ describe('TopologyResourcesTabPanel', () => {
     expect(queryByTestId('pod-list')).not.toBeNull();
     rerender(<TopologyResourcesTabPanel node={workloadNode2 as BaseNode} />);
     getByText(/no pods found for this resource/i);
+  });
+
+  it('Should show latest 3 pods if more than 3 are available', () => {
+    const { queryByTestId, rerender } = render(
+      <TopologyResourcesTabPanel node={workloadNode as BaseNode} />,
+    );
+    expect(queryByTestId('pod-list')).not.toBeNull();
+    expect(queryByTestId('res-show-count')).toBeNull();
+    rerender(<TopologyResourcesTabPanel node={workloadNode5 as BaseNode} />);
+    expect(queryByTestId('pod-list')).not.toBeNull();
+    expect(queryByTestId('res-show-count')).not.toBeNull();
   });
 
   it('Should show services if available and empty state otherwise', () => {
@@ -94,6 +107,20 @@ describe('TopologyResourcesTabPanel', () => {
       <TopologyResourcesTabPanel node={workloadNodeWtknRes as BaseNode} />,
     );
     expect(queryByTestId('plr-list')).not.toBeNull();
+  });
+
+  it('Should show only 3 latest PipelineRuns if more are available in sidepanel', () => {
+    const { queryByTestId, rerender } = render(
+      <TopologyResourcesTabPanel node={workloadNodeWtknRes as BaseNode} />,
+    );
+    expect(queryByTestId('plr-list')).not.toBeNull();
+    expect(queryByTestId('res-show-count')).toBeNull();
+
+    rerender(
+      <TopologyResourcesTabPanel node={workloadNodeWtknRes2 as BaseNode} />,
+    );
+    expect(queryByTestId('plr-list')).not.toBeNull();
+    expect(queryByTestId('res-show-count')).not.toBeNull();
   });
 
   it('Should not show PipelineRuns in sidepanel if pipelinesData is not available', () => {

@@ -26,6 +26,16 @@ import {
 } from './pod-resource-utils';
 import { WORKLOAD_TYPES } from './topology-utils';
 
+export const byCreationTime = (left: any, right: any): number => {
+  const leftCreationTime = new Date(
+    left?.metadata?.creationTimestamp || Date.now(),
+  );
+  const rightCreationTime = new Date(
+    right?.metadata?.creationTimestamp || Date.now(),
+  );
+  return rightCreationTime.getTime() - leftCreationTime.getTime();
+};
+
 const validPod = (pod: V1Pod) => {
   const owners = pod?.metadata?.ownerReferences;
   const phase = pod?.status?.phase;

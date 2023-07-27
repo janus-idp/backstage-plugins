@@ -458,7 +458,7 @@ export const mockTektonResources = {
         namespace: 'deb-test',
         resourceVersion: '117337',
         uid: '0a091bbf-3813-48d3-a6ce-fc43644a9b24',
-        creationTimestamp: new Date('2023-04-11T12:31:56Z'),
+        creationTimestamp: new Date('2023-03-30T07:04:04Z'),
       },
       spec: {
         pipelineRef: {
