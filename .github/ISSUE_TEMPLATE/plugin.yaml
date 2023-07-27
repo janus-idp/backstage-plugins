@@ -1,7 +1,7 @@
 name: 🔌 Plugin
 description: 'Submit a proposal for a new Plugin'
 title: '🔌 Plugin: '
-labels: [plugin]
+labels: [plugin, status/triage]
 body:
   - type: markdown
     attributes:

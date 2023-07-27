@@ -1,7 +1,7 @@
 ---
 name: Bug report
-about: Create a report to help us improve
-labels: kind/bug
+about: Create a bug report to help us improve
+labels: [kind/bug, status/triage]
 ---
 
 **Describe the bug**

@@ -1,7 +1,7 @@
 ---
 name: Report vulnerability
 about: There's a security problem that requires our immediate attention
-labels: kind/security
+labels: [kind/security, status/triage]
 ---
 
 **Describe how is our service vulnerable**
