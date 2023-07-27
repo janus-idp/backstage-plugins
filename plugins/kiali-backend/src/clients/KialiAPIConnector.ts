@@ -1,22 +1,30 @@
-import { Response } from 'node-fetch';
 import { Logger } from 'winston';
 
 import {
+  CanaryUpgradeStatus,
+  CertsInfo,
+  ComponentStatus,
+  ComputedServerConfig,
   computePrometheusRateParams,
   config,
   defaultMetricsDuration,
   defaultServerConfig,
   Direction,
-  FetchResponse,
   FetchResponseWrapper,
-  FetchResult,
+  HealthNamespace,
+  IstiodResourceThresholds,
   IstioMetricsOptions,
   KialiConfigT,
   KialiDetails,
-  KialiFetchError,
+  Namespace,
   NamespaceInfo,
+  NsMetrics,
   nsWideMTLSStatus,
+  OutboundTrafficPolicy,
   OverviewData,
+  StatusState,
+  TLSStatus,
+  ValidationStatus,
 } from '@janus-idp/backstage-plugin-kiali-common';
 
 import { filterNsByAnnotation } from '../filters/byAnnotation';
@@ -59,264 +67,270 @@ export class KialiApiImpl implements KialiApi {
     );
   };
 
+  private queryOptions = (query: OverviewQuery): IstioMetricsOptions => {
+    const direction = query.direction;
+    const duration = query.duration || defaultMetricsDuration;
+    const globalScrapeInterval = 15;
+    const rateParams = computePrometheusRateParams(
+      duration,
+      globalScrapeInterval,
+      10,
+    );
+    return {
+      filters: ['request_count', 'request_error_count'],
+      duration: duration,
+      step: rateParams.step,
+      rateInterval: rateParams.rateInterval,
+      direction: (direction as Direction) || 'inbound',
+      reporter: direction === 'inbound' ? 'destination' : 'source',
+    };
+  };
+
   async fetchConfig(): Promise<FetchResponseWrapper> {
-    const auth = await this.kialiFetcher.checkSession();
-    const errors: KialiFetchError[] = [];
-    const warnings: KialiFetchError[] = [];
-    this.logger.debug(`Authentication: ${auth.ok}`);
-    if (auth.ok) {
+    let response: FetchResponseWrapper = { errors: [], warnings: [] };
+    await this.kialiFetcher.checkSession().then(resp => {
+      response = resp;
+      return response;
+    });
+    if (response.errors.length === 0) {
       this.logger.info(
         `Authenticated user ${this.kialiFetcher.getSession().username}`,
       );
       this.logger.debug(`Fetching configuration`);
-      const [serverConfig, meshTls, status, istioCerts] = await Promise.all([
-        this.kialiFetcher.fetchResource(config.api.urls.serverConfig),
-        this.kialiFetcher.fetchResource(config.api.urls.meshTls()),
-        this.kialiFetcher.fetchResource(config.api.urls.status),
-        this.kialiFetcher.fetchResource(config.api.urls.istioCertsInfo()),
+      await Promise.all([
+        this.kialiFetcher
+          .newRequest<ComputedServerConfig>(config.api.urls.serverConfig)
+          .then(resp => {
+            this.kialiconfig.server = resp.data;
+            return this.kialiconfig;
+          })
+          .catch(err =>
+            response.errors.push(
+              this.kialiFetcher.handleUnsuccessfulResponse(err),
+            ),
+          ),
+        this.kialiFetcher
+          .newRequest<TLSStatus>(config.api.urls.meshTls())
+          .then(resp => {
+            this.kialiconfig.meshTLSStatus = resp.data;
+            return this.kialiconfig;
+          })
+          .catch(err =>
+            response.errors.push(
+              this.kialiFetcher.handleUnsuccessfulResponse(err),
+            ),
+          ),
+        this.kialiFetcher
+          .newRequest<StatusState>(config.api.urls.status)
+          .then(resp => {
+            this.kialiconfig.status = resp.data;
+            return this.kialiconfig;
+          })
+          .catch(err =>
+            response.errors.push(
+              this.kialiFetcher.handleUnsuccessfulResponse(err),
+            ),
+          ),
+        this.kialiFetcher
+          .newRequest<CertsInfo[]>(config.api.urls.istioCertsInfo())
+          .then(resp => {
+            this.kialiconfig.istioCerts = resp.data;
+            return this.kialiconfig;
+          })
+          .catch(err =>
+            response.errors.push(
+              this.kialiFetcher.handleUnsuccessfulResponse(err),
+            ),
+          ),
       ]);
-
-      if (serverConfig.ok && meshTls.ok && status.ok && istioCerts.ok) {
-        this.kialiconfig.server = await serverConfig.json();
-        this.kialiconfig.meshTLSStatus = await meshTls.json();
-        this.kialiconfig.status = await status.json();
-        this.kialiconfig.istioCerts = await istioCerts.json();
-        this.kialiconfig.username = this.kialiFetcher.getSession().username;
-        return {
-          errors,
-          warnings,
-          response: this.kialiconfig,
-        } as FetchResponseWrapper;
-      }
-      if (!serverConfig.ok) {
-        await this.kialiFetcher
-          .handleUnsuccessfulResponse(serverConfig)
-          .then(err => errors.push(err));
-      }
-      if (!meshTls.ok) {
-        await this.kialiFetcher
-          .handleUnsuccessfulResponse(meshTls)
-          .then(err => errors.push(err));
-      }
-      if (!status.ok) {
-        await this.kialiFetcher
-          .handleUnsuccessfulResponse(status)
-          .then(err => errors.push(err));
-      }
-      if (!istioCerts.ok) {
-        await this.kialiFetcher
-          .handleUnsuccessfulResponse(istioCerts)
-          .then(err => errors.push(err));
-      }
-      return {
-        errors,
-        warnings,
-        response: this.kialiconfig,
-      } as FetchResponseWrapper;
+      this.kialiconfig.username = this.kialiFetcher.getSession().username;
+      response.response = this.kialiconfig;
     }
-
-    await this.kialiFetcher
-      .handleUnsuccessfulResponse(auth)
-      .then(err => errors.push(err));
-    return {
-      errors,
-      warnings,
-      response: this.kialiconfig,
-    } as FetchResponseWrapper;
+    return response;
   }
 
   async fetchOverviewNamespaces(
     query: OverviewQuery,
   ): Promise<FetchResponseWrapper> {
     this.logger.debug(`Fetching namespaces`);
-    const errors: KialiFetchError[] = [];
-    const warnings: KialiFetchError[] = [];
-    const result: OverviewData = {
-      namespaces: [],
-    };
-    const getNamespaces = await this.kialiFetcher.fetchResource(
-      config.api.urls.namespaces,
-    );
-    if (getNamespaces.ok) {
-      const namespaces = await getNamespaces.json();
-      const allNamespaces: NamespaceInfo[] = filterNsByAnnotation(
-        namespaces,
-        query.annotation,
-      );
-      // Query Options for metrics
-      const direction = query.direction;
-      const duration = query.duration || defaultMetricsDuration;
-      const globalScrapeInterval = 15;
-      const meshStatus = 'MTLS_NOT_ENABLED';
-      const overviewType = query.overviewType;
-      const queryTime = undefined;
-      const rateParams = computePrometheusRateParams(
-        duration,
-        globalScrapeInterval,
-        10,
-      );
-      const options: IstioMetricsOptions = {
-        filters: ['request_count', 'request_error_count'],
-        duration: duration,
-        step: rateParams.step,
-        rateInterval: rateParams.rateInterval,
-        direction: (direction as Direction) || 'inbound',
-        reporter: direction === 'inbound' ? 'destination' : 'source',
-      };
+    let response: FetchResponseWrapper = { errors: [], warnings: [] };
+    await this.kialiFetcher.checkSession().then(resp => {
+      response = resp;
+      return response;
+    });
+    if (response.errors.length === 0) {
+      let namespaces: Namespace[] = [];
 
-      const [
-        canaryUpgrade,
-        istioStatus,
-        outboundTrafficPolicyMode,
-        istiodResourceThresholds,
-        fetchNsValidations,
-      ] = await Promise.all([
-        this.kialiFetcher.fetchResource(config.api.urls.canaryUpgradeStatus()),
-        this.kialiFetcher.fetchResource(config.api.urls.istioStatus()),
-        this.kialiFetcher.fetchResource(
-          config.api.urls.outboundTrafficPolicyMode(),
-        ),
-        this.kialiFetcher.fetchResource(
-          config.api.urls.istiodResourceThresholds(),
-        ),
-        this.kialiFetcher.fetchResource(
-          `${config.api.urls.configValidations()}?namespaces=${allNamespaces
-            .map(n => n.name)
-            .join(',')}`,
-        ),
-        allNamespaces.map(ns =>
+      await this.kialiFetcher
+        .newRequest<Namespace[]>(config.api.urls.namespaces)
+        .then(resp => {
+          namespaces = resp.data;
+          return namespaces;
+        })
+        .catch(err =>
+          response.errors.push(
+            this.kialiFetcher.handleUnsuccessfulResponse(err),
+          ),
+        );
+
+      if (response.errors.length === 0) {
+        const filteredNamespaces: NamespaceInfo[] = filterNsByAnnotation(
+          namespaces,
+          query.annotation,
+        );
+
+        const result: OverviewData = {
+          namespaces: [],
+        };
+
+        const meshStatus = 'MTLS_NOT_ENABLED';
+        const duration = query.duration || defaultMetricsDuration;
+        const overviewType = query.overviewType;
+        const queryTime = undefined;
+        const options = this.queryOptions(query);
+
+        await Promise.all([
           this.kialiFetcher
-            .fetchResource(config.api.urls.namespaceTls(ns.name))
-            .then(
-              (r: Response): Promise<FetchResult> =>
-                r.ok
-                  ? r.json().then(tlsNs => {
-                      ns.tlsStatus = {
-                        status: nsWideMTLSStatus(tlsNs.status, meshStatus),
-                        autoMTLSEnabled: tlsNs.autoMTLSEnabled,
-                        minTLS: tlsNs.minTLS,
-                      };
-                      return tlsNs;
-                    })
-                  : this.kialiFetcher
-                      .handleUnsuccessfulResponse(r)
-                      .then(err => warnings.push(err)),
-            ),
-        ),
-        allNamespaces.map(ns =>
-          this.kialiFetcher
-            .fetchResource(
-              `${config.api.urls.namespaceMetrics(ns.name)}${this.queryMetrics(
-                options,
-              )}`,
+            .newRequest<CanaryUpgradeStatus>(
+              config.api.urls.canaryUpgradeStatus(),
             )
-            .then(
-              (r: Response): Promise<FetchResult> =>
-                r.ok
-                  ? r.json().then((metricsNs): FetchResponse => {
-                      ns.metrics = metricsNs.request_count;
-                      ns.errorMetrics = metricsNs.request_error_count;
-                      if (ns.name === this.kialiconfig.server.istioNamespace) {
-                        ns.controlPlaneMetrics = {
-                          istiod_proxy_time:
-                            metricsNs.pilot_proxy_convergence_time,
-                          istiod_cpu: metricsNs.process_cpu_seconds_total,
-                          istiod_mem: metricsNs.process_virtual_memory_bytes,
-                        };
-                      }
-                      return ns;
-                    })
-                  : this.kialiFetcher
-                      .handleUnsuccessfulResponse(r)
-                      .then(err => warnings.push(err)),
+            .then(resp => {
+              result.canaryUpgrade = resp.data;
+              return result;
+            })
+            .catch(err =>
+              response.errors.push(
+                this.kialiFetcher.handleUnsuccessfulResponse(err),
+              ),
             ),
-        ),
-        allNamespaces.map(ns =>
           this.kialiFetcher
-            .fetchResource(
-              `${config.api.urls.namespaceHealth(
-                ns.name,
-              )}?type=${overviewType}&rateInterval=${duration}s${
-                queryTime ? `&queryTime=${queryTime}` : ''
-              }`,
-            )
-            .then(
-              (r: Response): Promise<FetchResult> =>
-                r.ok
-                  ? r.json().then(health => {
-                      ns.nsHealth = health;
-                      return health;
-                    })
-                  : this.kialiFetcher
-                      .handleUnsuccessfulResponse(r)
-                      .then(err => warnings.push(err)),
+            .newRequest<ComponentStatus[]>(config.api.urls.istioStatus())
+            .then(resp => {
+              result.istioStatus = resp.data;
+              return result;
+            })
+            .catch(err =>
+              response.errors.push(
+                this.kialiFetcher.handleUnsuccessfulResponse(err),
+              ),
             ),
-        ),
-      ]);
-
-      // handle Multiple fetchs
-      await Promise.all([]);
-
-      if (
-        canaryUpgrade.ok &&
-        istioStatus.ok &&
-        outboundTrafficPolicyMode.ok &&
-        istiodResourceThresholds.ok &&
-        fetchNsValidations.ok
-      ) {
-        result.canaryUpgrade = await canaryUpgrade.json();
-        result.istioStatus = await istioStatus.json();
-        result.outboundTraffic = await outboundTrafficPolicyMode.json();
-        result.istiodResourceThresholds = await istiodResourceThresholds.json();
-
-        // Validations
-        const nsValidations = await fetchNsValidations.json();
-        allNamespaces.forEach((n, index) => {
-          allNamespaces[index].validations = nsValidations[n.cluster][n.name];
-        });
-
-        result.namespaces = allNamespaces;
-        return {
-          errors,
-          warnings,
-          response: result,
-        } as FetchResponseWrapper;
+          this.kialiFetcher
+            .newRequest<OutboundTrafficPolicy>(
+              config.api.urls.outboundTrafficPolicyMode(),
+            )
+            .then(resp => {
+              result.outboundTraffic = resp.data;
+              return result;
+            })
+            .catch(err =>
+              response.errors.push(
+                this.kialiFetcher.handleUnsuccessfulResponse(err),
+              ),
+            ),
+          this.kialiFetcher
+            .newRequest<IstiodResourceThresholds>(
+              config.api.urls.istiodResourceThresholds(),
+            )
+            .then(resp => {
+              result.istiodResourceThresholds = resp.data;
+              return result;
+            })
+            .catch(err =>
+              response.errors.push(
+                this.kialiFetcher.handleUnsuccessfulResponse(err),
+              ),
+            ),
+          this.kialiFetcher
+            .newRequest<{ [key: string]: { [key: string]: ValidationStatus } }>(
+              `${config.api.urls.configValidations()}?namespaces=${filteredNamespaces
+                .map(n => n.name)
+                .join(',')}`,
+            )
+            .then(resp => {
+              const nsValidations = resp.data;
+              filteredNamespaces.forEach((n, index) => {
+                filteredNamespaces[index].validations =
+                  nsValidations[n.cluster][n.name];
+              });
+            })
+            .catch(err =>
+              response.errors.push(
+                this.kialiFetcher.handleUnsuccessfulResponse(err),
+              ),
+            ),
+          filteredNamespaces.map(ns =>
+            this.kialiFetcher
+              .newRequest<TLSStatus>(config.api.urls.namespaceTls(ns.name))
+              .then(resp => {
+                const tlsNs: TLSStatus = resp.data;
+                ns.tlsStatus = {
+                  status: nsWideMTLSStatus(tlsNs.status, meshStatus),
+                  autoMTLSEnabled: tlsNs.autoMTLSEnabled,
+                  minTLS: tlsNs.minTLS,
+                };
+                return tlsNs;
+              })
+              .catch(
+                err =>
+                  response.errors?.push(
+                    this.kialiFetcher.handleUnsuccessfulResponse(err),
+                  ),
+              ),
+          ),
+          filteredNamespaces.map(ns =>
+            this.kialiFetcher
+              .newRequest<NsMetrics>(
+                `${config.api.urls.namespaceMetrics(
+                  ns.name,
+                )}${this.queryMetrics(options)}`,
+              )
+              .then(resp => {
+                const metricsNs: NsMetrics = resp.data;
+                ns.metrics = metricsNs.request_count;
+                ns.errorMetrics = metricsNs.request_error_count;
+                if (ns.name === this.kialiconfig.server.istioNamespace) {
+                  ns.controlPlaneMetrics = {
+                    istiod_proxy_time: metricsNs.pilot_proxy_convergence_time,
+                    istiod_cpu: metricsNs.process_cpu_seconds_total,
+                    istiod_mem: metricsNs.process_virtual_memory_bytes,
+                  };
+                }
+                return ns;
+              })
+              .catch(
+                err =>
+                  response.errors?.push(
+                    this.kialiFetcher.handleUnsuccessfulResponse(err),
+                  ),
+              ),
+          ),
+          filteredNamespaces.map(ns =>
+            this.kialiFetcher
+              .newRequest<HealthNamespace>(
+                `${config.api.urls.namespaceHealth(
+                  ns.name,
+                )}?type=${overviewType}&rateInterval=${duration}s${
+                  queryTime ? `&queryTime=${queryTime}` : ''
+                }`,
+              )
+              .then(resp => {
+                const health: HealthNamespace = resp.data;
+                ns.nsHealth = health;
+                return ns;
+              })
+              .catch(
+                err =>
+                  response.errors?.push(
+                    this.kialiFetcher.handleUnsuccessfulResponse(err),
+                  ),
+              ),
+          ),
+        ]);
+        result.namespaces = filteredNamespaces;
+        response.response = result;
       }
-      if (!canaryUpgrade.ok) {
-        await this.kialiFetcher
-          .handleUnsuccessfulResponse(canaryUpgrade)
-          .then(err => errors.push(err));
-      }
-      if (!istioStatus.ok) {
-        await this.kialiFetcher
-          .handleUnsuccessfulResponse(istioStatus)
-          .then(err => errors.push(err));
-      }
-      if (!outboundTrafficPolicyMode.ok) {
-        await this.kialiFetcher
-          .handleUnsuccessfulResponse(outboundTrafficPolicyMode)
-          .then(err => errors.push(err));
-      }
-      if (!istiodResourceThresholds.ok) {
-        await this.kialiFetcher
-          .handleUnsuccessfulResponse(istiodResourceThresholds)
-          .then(err => errors.push(err));
-      }
-      if (!fetchNsValidations.ok) {
-        await this.kialiFetcher
-          .handleUnsuccessfulResponse(fetchNsValidations)
-          .then(err => errors.push(err));
-      }
-
-      return {
-        errors,
-        warnings,
-        response: {},
-      } as FetchResponseWrapper;
     }
-    return {
-      errors: errors,
-      response: {},
-    } as FetchResponseWrapper;
+
+    return response;
   }
 }

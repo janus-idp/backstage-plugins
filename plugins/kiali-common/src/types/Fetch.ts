@@ -2,22 +2,14 @@ import {
   ControlPlaneMetricsMap,
   KialiConfigT,
   Metric,
+  NamespaceHealth,
   NamespaceInfo,
   OverviewData,
   TLSStatus,
 } from '../';
 
-export type KialiErrorTypes =
-  | 'BAD_REQUEST'
-  | 'UNAUTHORIZED_ERROR'
-  | 'NOT_FOUND'
-  | 'SYSTEM_ERROR'
-  | 'UNKNOWN_ERROR'
-  | 'SERVICE_UNAVAILABLE'
-  | 'GATEWAY_TIME_OUT'
-  | 'FETCH_ERROR';
-
 export type NsMetrics = { [key: string]: Metric[] };
+export type HealthNamespace = { [key: string]: NamespaceHealth };
 
 export type FetchResponse =
   | KialiConfigT
@@ -25,10 +17,11 @@ export type FetchResponse =
   | NamespaceInfo
   | TLSStatus
   | NsMetrics
-  | ControlPlaneMetricsMap;
+  | ControlPlaneMetricsMap
+  | HealthNamespace;
 
 export interface StatusError {
-  errorType: KialiErrorTypes;
+  errorType: string;
   message?: string;
   resourcePath?: string;
   statusCode?: number;
@@ -39,7 +32,7 @@ export type KialiFetchError = StatusError;
 export interface FetchResponseWrapper {
   errors: KialiFetchError[];
   warnings: KialiFetchError[];
-  response: FetchResponse;
+  response?: FetchResponse;
 }
 
 export type FetchResult = FetchResponse | KialiFetchError | number;

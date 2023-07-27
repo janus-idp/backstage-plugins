@@ -89,7 +89,11 @@ export const OverviewCard = (props: OverviewCardProps) => {
   );
   const isIstioNs = props.ns.name === props.kialiConfig.server.istioNamespace;
   return (
-    <Grid item zeroMinWidth key={`kiali_nscard_${props.ns.name}`}>
+    <Grid
+      item
+      zeroMinWidth
+      key={`kiali_nscard_${props.ns.cluster}_${props.ns.name}`}
+    >
       <Card>
         <OverviewCardHeader {...props} />
         <CardContent>

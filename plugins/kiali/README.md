@@ -194,3 +194,7 @@ The following table describes the parameters that you can configure to enable th
    ![overview-tab](./images/overview_tab.png)
 
    There is also a **Go To Kiali Graph** option at the bottom of each card, which redirects you to the **Graph in the Kiali Standalone**.
+
+## Development
+
+To develop/contribute in kiali plugin follow [these instructions](./DEVELOPMENT.md)
