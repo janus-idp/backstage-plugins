@@ -81,6 +81,69 @@ export const toVCLine = (
   return buildVCLine(toVCDatapoints(dps, name), { name: name, color: color });
 };
 
+const calculateDatapoints = (item: [Metric, Metric]): Datapoint[] => {
+  const datapoints: Datapoint[] = [];
+  const minDatapointsLength =
+    item[0].datapoints.length < item[1].datapoints.length
+      ? item[0].datapoints.length
+      : item[1].datapoints.length;
+  for (let j = 0, sourceIdx = 0, destIdx = 0; j < minDatapointsLength; j++) {
+    if (item[0].datapoints[sourceIdx][0] !== item[1].datapoints[destIdx][0]) {
+      // Usually, all series have the same samples at same timestamps (i.e. series are time synced or synced on the x axis).
+      // There are rare cases when there are some additional samples usually at the beginning or end of some series.
+      // If this happens, let's skip these additional samples, to have properly x-axis synced values.
+      if (item[0].datapoints[sourceIdx][0] < item[1].datapoints[destIdx][0]) {
+        sourceIdx++;
+      } else {
+        destIdx++;
+      }
+      continue;
+    }
+
+    datapoints.push([
+      item[0].datapoints[sourceIdx][0],
+      item[0].datapoints[sourceIdx][1],
+      item[1].datapoints[destIdx][1],
+    ]);
+    sourceIdx++;
+    destIdx++;
+  }
+
+  return datapoints;
+};
+
+const buildResult = (
+  pairedMetrics: { [key: string]: [Metric?, Metric?] },
+  unit: string,
+  colors: string[],
+  xAxis: XAxisType = 'time',
+) => {
+  return Object.values(pairedMetrics).map((twoLines, i) => {
+    const color = colors[i % colors.length];
+
+    let datapoints: Datapoint[] = [];
+    let name: string = '';
+    if (twoLines[0] !== undefined && twoLines[1] !== undefined) {
+      name = twoLines[0].name;
+      datapoints = calculateDatapoints(twoLines as [Metric, Metric]);
+    } else if (twoLines[0] !== undefined) {
+      // Assign zero value to "y0" to denote "no data" for the destination reporter
+      name = twoLines[0].name;
+      datapoints = twoLines[0].datapoints.map(d => [d[0], d[1], 0]);
+    } else if (twoLines[1] !== undefined) {
+      // Assign zero value to "y" to denote "no data" for the source reporter
+      name = twoLines[1].name;
+      datapoints = twoLines[1].datapoints.map(d => [d[0], 0, d[1]]);
+    }
+
+    const dps =
+      xAxis === 'time'
+        ? toVCDatapoints(datapoints, name)
+        : toVCSinglePoint(datapoints, name);
+    return buildVCLine(dps, { name: name, unit: unit, color: color });
+  });
+};
+
 export const toVCLines = (
   metrics: Metric[],
   unit: string,
@@ -107,66 +170,7 @@ export const toVCLines = (
 
       pairedMetrics[labelsStr][reporter === 'source' ? 0 : 1] = metric;
     });
-
-    return Object.values(pairedMetrics).map((twoLines, i) => {
-      const color = colors[i % colors.length];
-
-      let datapoints: Datapoint[] = [];
-      let name: string = '';
-      if (twoLines[0] !== undefined && twoLines[1] !== undefined) {
-        name = twoLines[0].name;
-        const minDatapointsLength =
-          twoLines[0].datapoints.length < twoLines[1].datapoints.length
-            ? twoLines[0].datapoints.length
-            : twoLines[1].datapoints.length;
-
-        for (
-          let j = 0, sourceIdx = 0, destIdx = 0;
-          j < minDatapointsLength;
-          j++
-        ) {
-          if (
-            twoLines[0].datapoints[sourceIdx][0] !==
-            twoLines[1].datapoints[destIdx][0]
-          ) {
-            // Usually, all series have the same samples at same timestamps (i.e. series are time synced or synced on the x axis).
-            // There are rare cases when there are some additional samples usually at the beginning or end of some series.
-            // If this happens, let's skip these additional samples, to have properly x-axis synced values.
-            if (
-              twoLines[0].datapoints[sourceIdx][0] <
-              twoLines[1].datapoints[destIdx][0]
-            ) {
-              sourceIdx++;
-            } else {
-              destIdx++;
-            }
-            continue;
-          }
-
-          datapoints.push([
-            twoLines[0].datapoints[sourceIdx][0],
-            twoLines[0].datapoints[sourceIdx][1],
-            twoLines[1].datapoints[destIdx][1],
-          ]);
-          sourceIdx++;
-          destIdx++;
-        }
-      } else if (twoLines[0] !== undefined) {
-        // Assign zero value to "y0" to denote "no data" for the destination reporter
-        name = twoLines[0].name;
-        datapoints = twoLines[0].datapoints.map(d => [d[0], d[1], 0]);
-      } else if (twoLines[1] !== undefined) {
-        // Assign zero value to "y" to denote "no data" for the source reporter
-        name = twoLines[1].name;
-        datapoints = twoLines[1].datapoints.map(d => [d[0], 0, d[1]]);
-      }
-
-      const dps =
-        xAxis === 'time'
-          ? toVCDatapoints(datapoints, name)
-          : toVCSinglePoint(datapoints, name);
-      return buildVCLine(dps, { name: name, unit: unit, color: color });
-    });
+    return buildResult(pairedMetrics, unit, colors, xAxis);
   }
 
   return metrics.map((line, i) => {

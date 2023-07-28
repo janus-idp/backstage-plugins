@@ -59,7 +59,7 @@ export class RateHealth extends HealthAnnotation {
 
   private convertRegex = (str: string, code: boolean = false): RegExp => {
     if (code) {
-      return new RegExp(str.replace(/x|X/g, '\\d'));
+      return new RegExp(str.replace(/[xX]/g, '\\d'));
     }
     return new RegExp(str);
   };
@@ -76,6 +76,6 @@ export class RateHealth extends HealthAnnotation {
     }
     const degraded = Number(splits[1]);
     const failure = Number(splits[2]);
-    return degraded > failure ? true : false;
+    return degraded > failure;
   };
 }

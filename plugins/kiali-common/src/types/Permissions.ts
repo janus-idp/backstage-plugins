@@ -10,18 +10,14 @@ export function canCreate(
   serverConfig: ComputedServerConfig,
   privs?: ResourcePermissions,
 ) {
-  return (
-    privs !== undefined && privs.create && !serverConfig.deployment.viewOnlyMode
-  );
+  return privs?.create && !serverConfig.deployment.viewOnlyMode;
 }
 
 export function canUpdate(
   serverConfig: ComputedServerConfig,
   privs?: ResourcePermissions,
 ) {
-  return (
-    privs !== undefined && privs.update && !serverConfig.deployment.viewOnlyMode
-  );
+  return privs?.update && !serverConfig.deployment.viewOnlyMode;
 }
 
 export function canDelete(

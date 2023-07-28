@@ -105,7 +105,7 @@ The Kiali plugin has the following capabilities:
 /* highlight-add-start */
 import { Router } from 'express';
 
-import { createRouter } from '@janus-idp/plugin-kiali-backend';
+import { createRouter } from '@janus-idp/backstage-plugin-kiali-backend';
 
 import { PluginEnvironment } from '../types';
 

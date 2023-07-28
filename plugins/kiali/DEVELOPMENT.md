@@ -7,7 +7,7 @@
    - Add to packages/app/package.json
 
    ```yaml title="packages/app/pacakge.json"
-   '@janus-idp/backstage-plugin-kiali': 'link:../../plugins/kiali'
+   "@janus-idp/backstage-plugin-kiali": "link:../../plugins/kiali",
    ```
 
    - Add to packages/backend/package.json
@@ -54,7 +54,7 @@
 /* highlight-add-start */
 import { Router } from 'express';
 
-import { createRouter } from '@janus-idp/plugin-kiali-backend';
+import { createRouter } from '@janus-idp/backstage-plugin-kiali-backend';
 
 import { PluginEnvironment } from '../types';
 

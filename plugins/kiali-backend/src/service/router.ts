@@ -5,7 +5,6 @@ import express from 'express';
 import { Logger } from 'winston';
 
 import {
-  DurationInSeconds,
   KUBERNETES_ANNOTATION,
   KUBERNETES_LABEL_SELECTOR,
   KUBERNETES_NAMESPACE,
@@ -23,7 +22,7 @@ export type OverviewQuery = {
   ns?: string;
   nss?: string[];
   overviewType?: string;
-  duration?: DurationInSeconds;
+  duration?: number;
   direction?: string;
   annotation?: { [key: string]: string };
 };

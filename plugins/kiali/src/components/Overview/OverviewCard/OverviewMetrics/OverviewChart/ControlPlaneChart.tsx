@@ -5,7 +5,6 @@ import { Card, CardContent, Grid, Tooltip } from '@material-ui/core';
 import {
   ComputedServerConfig,
   Datapoint,
-  DurationInSeconds,
   getName,
   IstiodResourceThresholds,
   Metric,
@@ -24,7 +23,7 @@ type ControlPlaneCharts = {
   pilotLatency?: Metric[];
   istiodMemory?: Metric[];
   istiodCpu?: Metric[];
-  duration: DurationInSeconds;
+  duration: number;
   istiodResourceThresholds?: IstiodResourceThresholds;
   config: ComputedServerConfig;
 };

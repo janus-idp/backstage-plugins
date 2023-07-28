@@ -118,17 +118,12 @@ export const dicIstioType = {
 };
 
 export function validationKey(name: string, namespace?: string): string {
-  return `${name}${namespace !== undefined ? `.${namespace}` : ''}`;
+  const ns = namespace ? `.${namespace}` : '';
+  return `${name}${ns}`;
 }
 
-const includeName = (name: string, names: string[]) => {
-  for (let i = 0; i < names.length; i++) {
-    if (name.includes(names[i])) {
-      return true;
-    }
-  }
-  return false;
-};
+const includeName = (name: string, names: string[]) =>
+  names.filter(n => name.includes(n)).length > 0;
 
 export const filterByName = (
   unfiltered: IstioConfigList,
@@ -189,6 +184,34 @@ export const filterByName = (
   };
 };
 
+const filterValidation: {
+  [key: string]: (item: IstioConfigItem) => boolean | undefined;
+} = {
+  filterByValid: (item: IstioConfigItem) => item.validation?.valid,
+  filterByNotValid: (item: IstioConfigItem) =>
+    item.validation && !item.validation.valid,
+  filterByNotValidated: (item: IstioConfigItem) => !item.validation,
+  filterByWarning: (item: IstioConfigItem) =>
+    item.validation &&
+    item.validation.checks.filter(i => i.severity === 'warning').length > 0,
+};
+
+export const filterConfigValidations = (
+  items: IstioConfigItem[],
+  validations: { [key: string]: boolean },
+): IstioConfigItem[] => {
+  const filtered: IstioConfigItem[] = [];
+  const valids = Object.keys(validations).filter(k => validations[k]);
+  items.forEach(i => {
+    valids.forEach(valid => {
+      if (filterValidation[valid](i)) {
+        filtered.push(i);
+      }
+    });
+  });
+  return filtered;
+};
+
 export const filterByConfigValidation = (
   unfiltered: IstioConfigItem[],
   configFilters: string[],
@@ -196,8 +219,6 @@ export const filterByConfigValidation = (
   if (configFilters && configFilters.length === 0) {
     return unfiltered;
   }
-  const filtered: IstioConfigItem[] = [];
-
   const filterByValid = configFilters.indexOf('Valid') > -1;
   const filterByNotValid = configFilters.indexOf('Not Valid') > -1;
   const filterByNotValidated = configFilters.indexOf('Not Validated') > -1;
@@ -210,26 +231,12 @@ export const filterByConfigValidation = (
   ) {
     return unfiltered;
   }
-
-  unfiltered.forEach(item => {
-    if (filterByValid && item.validation && item.validation.valid) {
-      filtered.push(item);
-    }
-    if (filterByNotValid && item.validation && !item.validation.valid) {
-      filtered.push(item);
-    }
-    if (filterByNotValidated && !item.validation) {
-      filtered.push(item);
-    }
-    if (
-      filterByWarning &&
-      item.validation &&
-      item.validation.checks.filter(i => i.severity === 'warning').length > 0
-    ) {
-      filtered.push(item);
-    }
+  return filterConfigValidations(unfiltered, {
+    filterByValid,
+    filterByNotValid,
+    filterByNotValidated,
+    filterByWarning,
   });
-  return filtered;
 };
 
 export const toIstioItems = (
@@ -300,7 +307,7 @@ export const vsToIstioItems = (
 ): IstioConfigItem[] => {
   const istioItems: IstioConfigItem[] = [];
   const hasValidations = (vKey: string) =>
-    validations.virtualservice && validations.virtualservice[vKey];
+    validations.virtualservice[vKey] || false;
 
   const typeNameProto = dicIstioType.virtualservices; // ex. serviceEntries -> ServiceEntry
   const typeName = typeNameProto.toLowerCase(); // ex. ServiceEntry -> serviceentry
@@ -332,7 +339,7 @@ export const drToIstioItems = (
 ): IstioConfigItem[] => {
   const istioItems: IstioConfigItem[] = [];
   const hasValidations = (vKey: string) =>
-    validations.destinationrule && validations.destinationrule[vKey];
+    validations.destinationrule[vKey] || false;
 
   const typeNameProto = dicIstioType.destinationrules; // ex. serviceEntries -> ServiceEntry
   const typeName = typeNameProto.toLowerCase(); // ex. ServiceEntry -> serviceentry
@@ -364,8 +371,7 @@ export const gwToIstioItems = (
   validations: Validations,
 ): IstioConfigItem[] => {
   const istioItems: IstioConfigItem[] = [];
-  const hasValidations = (vKey: string) =>
-    validations.gateway && validations.gateway[vKey];
+  const hasValidations = (vKey: string) => validations.gateway[vKey] || false;
   const vsGateways = new Set();
 
   const typeNameProto = dicIstioType.gateways; // ex. serviceEntries -> ServiceEntry
@@ -411,7 +417,7 @@ export const k8sGwToIstioItems = (
 ): IstioConfigItem[] => {
   const istioItems: IstioConfigItem[] = [];
   const hasValidations = (vKey: string) =>
-    validations.k8sgateway && validations.k8sgateway[vKey];
+    validations.k8sgateway[vKey] || false;
   const k8sGateways = new Set();
 
   const typeNameProto = dicIstioType.k8sgateways; // ex. serviceEntries -> ServiceEntry
@@ -456,7 +462,7 @@ export const seToIstioItems = (
 ): IstioConfigItem[] => {
   const istioItems: IstioConfigItem[] = [];
   const hasValidations = (vKey: string) =>
-    validations.serviceentry && validations.serviceentry[vKey];
+    validations.serviceentry[vKey] || false;
 
   const typeNameProto = dicIstioType.serviceentries; // ex. serviceEntries -> ServiceEntry
   const typeName = typeNameProto.toLowerCase(); // ex. ServiceEntry -> serviceentry
@@ -488,7 +494,7 @@ export const k8sHTTPRouteToIstioItems = (
 ): IstioConfigItem[] => {
   const istioItems: IstioConfigItem[] = [];
   const hasValidations = (vKey: string) =>
-    validations.k8shttproute && validations.k8shttproute[vKey];
+    validations.k8shttproute[vKey] || false;
 
   const typeNameProto = dicIstioType.k8shttproutes; // ex. serviceEntries -> ServiceEntry
   const typeName = typeNameProto.toLowerCase(); // ex. ServiceEntry -> serviceentry

@@ -4,7 +4,6 @@ import {
   ComputedServerConfig,
   ControlPlaneMetricsMap,
   DirectionType,
-  DurationInSeconds,
   IstiodResourceThresholds,
   Metric,
 } from '@janus-idp/backstage-plugin-kiali-common';
@@ -17,7 +16,7 @@ type OverviewChartProps = {
   errorMetrics?: Metric[];
   controlPlaneMetrics?: ControlPlaneMetricsMap;
   istiodResourceThresholds?: IstiodResourceThresholds;
-  duration: DurationInSeconds;
+  duration: number;
   direction: DirectionType;
   config: ComputedServerConfig;
   isIstioNamespace?: boolean;

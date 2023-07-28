@@ -1,4 +1,4 @@
-import { LabelDisplayName, Metric, PromLabel } from './';
+import { Metric } from './';
 
 export interface DashboardModel {
   title: string;
@@ -27,8 +27,8 @@ export interface ChartModel {
 }
 
 export interface AggregationModel {
-  label: PromLabel;
-  displayName: LabelDisplayName;
+  label: string;
+  displayName: string;
   singleSelection: boolean;
 }
 

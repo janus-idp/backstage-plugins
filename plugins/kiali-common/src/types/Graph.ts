@@ -1,9 +1,4 @@
-import {
-  DurationInSeconds,
-  HealthAnnotationType,
-  Namespace,
-  TimeInSeconds,
-} from './';
+import { HealthAnnotationType, Namespace } from './';
 
 export interface Layout {
   name: string;
@@ -24,12 +19,12 @@ export enum Protocol {
 
 export interface SummaryPanelPropType {
   data: SummaryData;
-  duration: DurationInSeconds;
+  duration: number;
   graphType: GraphType;
   injectServiceNodes: boolean;
   kiosk: string;
   namespaces: Namespace[];
-  queryTime: TimeInSeconds;
+  queryTime: number;
   rateInterval: string;
   step: number;
   trafficRates: TrafficRate[];

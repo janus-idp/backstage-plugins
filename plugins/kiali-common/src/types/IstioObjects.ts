@@ -1,4 +1,4 @@
-import { ProxyStatus, TimeInSeconds } from './';
+import { ProxyStatus } from './';
 import { KIALI_RELATED_LABEL, KIALI_WIZARD_LABEL } from './IstioWizards';
 
 // Common types
@@ -236,7 +236,7 @@ export type LogEntry = {
   message: string;
   severity: string;
   timestamp: string;
-  timestampUnix: TimeInSeconds;
+  timestampUnix: number;
 };
 
 export interface PodLogs {

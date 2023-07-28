@@ -23,7 +23,6 @@ export const kialiPlugin = createBackendPlugin({
       },
       async init({ http, logger, config }) {
         const winstonLogger = loggerToWinstonLogger(logger);
-        // TODO: expose all of the customization & extension points of the builder here
         const router = await createRouter({
           logger: winstonLogger,
           config,
