@@ -10,12 +10,17 @@ import { ContainerScope } from './types';
 
 type PodLogsProps = {
   podScope: ContainerScope;
+  setLogText: React.Dispatch<React.SetStateAction<string>>;
 };
 
-export const PodLogs = ({ podScope }: PodLogsProps) => {
+export const PodLogs = ({ podScope, setLogText }: PodLogsProps) => {
   const { value, error, loading } = usePodLogs({
     podScope: podScope,
   });
+
+  React.useEffect(() => {
+    if (!loading && value !== undefined) setLogText(value.text);
+  }, [loading, setLogText, value]);
 
   return (
     <>
