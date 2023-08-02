@@ -16,7 +16,7 @@
     },
     "build": {
       "outputs": ["dist/**"],
-      "dependsOn": ["//#tsc", "^build"]
+      "dependsOn": ["pretsc", "//#tsc", "^build"]
     },
     "clean": {
       "cache": false
@@ -28,7 +28,8 @@
     "lint": {},
     "//#tsc": {
       "outputs": ["dist-types/**"]
-    }
+    },
+    "pretsc": {}
   },
   "globalDependencies": ["tsconfig.json"]
 }
