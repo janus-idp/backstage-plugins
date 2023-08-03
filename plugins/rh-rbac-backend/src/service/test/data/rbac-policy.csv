@@ -1,0 +1,4 @@
+
+
+p, user:default/guest, catalog-entity, read, allow
+p, user:default/guest, catalog.entity.create, use, allow
