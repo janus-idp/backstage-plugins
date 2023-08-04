@@ -16,6 +16,7 @@ import {
   ServiceModel,
 } from '../../../models';
 import { JobData } from '../../../types/jobs';
+import { podPhase } from '../../../utils/pod-resource-utils';
 import { byCreationTime } from '../../../utils/resource-utils';
 import PodStatus from '../../Pods/PodStatus';
 import PLRlist from './PLRlist';
@@ -70,7 +71,11 @@ const TopologyResourcesTabPanel = ({
             .sort(byCreationTime)
             .slice(0, MAXSHOWRESCOUNT)
             .map((pod: V1Pod) => (
-              <li className="item" key={pod.metadata?.uid}>
+              <li
+                style={{ gap: '10px' }}
+                className="item"
+                key={pod.metadata?.uid}
+              >
                 <span style={{ flex: '1' }}>
                   <ResourceName
                     name={pod.metadata?.name ?? ''}
@@ -83,7 +88,7 @@ const TopologyResourcesTabPanel = ({
                     additionalClassNames="hidden-xs"
                     noStatusBackground
                   >
-                    <Status status={pod.status?.phase ?? ''} />
+                    <Status status={podPhase(pod)} />
                   </ResourceStatus>
                 </span>
                 <span style={{ flex: '1' }}>

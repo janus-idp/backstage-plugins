@@ -52,3 +52,5 @@ export enum DeploymentPhase {
   failed = 'Failed',
   cancelled = 'Cancelled',
 }
+
+export type PodPhase = string | null;
