@@ -1,49 +1,16 @@
 import { cloneDeep, forIn } from 'lodash';
 
-import { mockKubernetesPlrResponse } from '../__fixtures__/1-pipelinesData';
 import {
   ComputedStatus,
+  PLRTaskRuns,
   SucceedConditionReason,
-} from '../types/computedStatus';
-import { PLRTaskRuns } from '../types/pipelineRun';
-import { TaskRunKind } from '../types/taskRun';
-import {
-  appendPipelineRunStatus,
-  calculateDuration,
-  getPLRTaskRuns,
-} from './pipelineRun-utils';
+  TaskRunKind,
+} from '@janus-idp/shared-react';
+
+import { mockKubernetesPlrResponse } from '../__fixtures__/1-pipelinesData';
+import { appendPipelineRunStatus, getPLRTaskRuns } from './pipelineRun-utils';
 
 describe('pipelineRun-utils', () => {
-  it('should return definite duration', () => {
-    let duration = calculateDuration(
-      '2020-05-22T11:57:53Z',
-      '2020-05-22T11:57:57Z',
-    );
-    expect(duration).toEqual('4s');
-    duration = calculateDuration(
-      '2020-05-22T11:57:53Z',
-      '2020-05-22T11:57:57Z',
-      true,
-    );
-    expect(duration).toEqual('4 second');
-    duration = calculateDuration(
-      '2020-05-22T11:57:53Z',
-      '2020-05-22T12:02:20Z',
-    );
-    expect(duration).toBe('4m 27s');
-    duration = calculateDuration(
-      '2020-05-22T11:57:53Z',
-      '2020-05-22T12:02:20Z',
-      true,
-    );
-    expect(duration).toBe('4 minute 27 second');
-    duration = calculateDuration(
-      '2020-05-22T10:57:53Z',
-      '2020-05-22T12:57:57Z',
-    );
-    expect(duration).toBe('2h 4s');
-  });
-
   it('should append Pending status if a taskrun status reason is missing', () => {
     const pipelineRun = mockKubernetesPlrResponse.pipelineruns[0];
     const pipelineRunWithoutStatus = cloneDeep(pipelineRun);

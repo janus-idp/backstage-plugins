@@ -1,6 +1,7 @@
 import React from 'react';
 
-import { PipelineRunKind } from '../../types/pipelineRun';
+import { PipelineRunKind } from '@janus-idp/shared-react';
+
 import { PipelineBars } from '../Charts/PipelineBars';
 
 export interface LinkedPipelineRunTaskStatusProps {

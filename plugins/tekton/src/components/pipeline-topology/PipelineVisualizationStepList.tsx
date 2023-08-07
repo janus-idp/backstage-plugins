@@ -3,8 +3,9 @@ import React from 'react';
 import { RunStatus } from '@patternfly/react-topology';
 import classNames from 'classnames';
 
+import { getRunStatusColor } from '@janus-idp/shared-react';
+
 import { StepStatus } from '../../types/taskRun';
-import { getRunStatusColor } from '../../utils/tekton-status';
 import { StatusIcon } from '../common';
 
 import './PipelineVisualizationStepList.css';
@@ -36,7 +37,7 @@ const TooltipColoredStatusIcon = ({
     // Succeeded and Failed icons have transparent centers shapes - in tooltips, this becomes an undesired black
     // This will simply wrap the icon and place a white backdrop
     return (
-      <div style={{ color: getRunStatusColor(status).pftoken.value }}>
+      <div style={{ color: getRunStatusColor(status).color }}>
         <svg {...sharedProps}>
           <circle
             className="bs-tkn-pipeline-visualization-step-list__icon-backdrop"

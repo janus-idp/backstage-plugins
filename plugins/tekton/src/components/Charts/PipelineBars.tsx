@@ -2,14 +2,16 @@ import React from 'react';
 
 import { Tooltip } from '@patternfly/react-core';
 
-import { TektonResourcesContext } from '../../hooks/TektonResourcesContext';
-import { ComputedStatus, TaskStatus } from '../../types/computedStatus';
-import { PipelineRunKind } from '../../types/pipelineRun';
-import { getRunStatusColor } from '../../utils/tekton-status';
 import {
+  ComputedStatus,
+  getRunStatusColor,
   getTaskRunsForPipelineRun,
-  getTaskStatusOfPLR,
-} from '../../utils/tekton-utils';
+  PipelineRunKind,
+  TaskStatusTypes,
+} from '@janus-idp/shared-react';
+
+import { TektonResourcesContext } from '../../hooks/TektonResourcesContext';
+import { getTaskStatusOfPLR } from '../../utils/tekton-utils';
 import HorizontalStackedBars from './HorizontalStackedBars';
 import TaskStatusToolTip from './TaskStatusTooltip';
 
@@ -30,12 +32,12 @@ export const PipelineBars = ({ pipelinerun }: PipelineBarProps) => {
         values={Object.keys(ComputedStatus).map(status => ({
           color: getRunStatusColor(
             ComputedStatus[status as keyof typeof ComputedStatus],
-          ).pftoken.value,
+          ).color,
           name: status,
           size: taskStatus[
             ComputedStatus[
               status as keyof typeof ComputedStatus
-            ] as keyof TaskStatus
+            ] as keyof TaskStatusTypes
           ],
         }))}
       />

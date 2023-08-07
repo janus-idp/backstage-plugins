@@ -10,12 +10,13 @@ import {
   UnknownIcon,
 } from '@patternfly/react-icons';
 
+import { StatusIconAndText } from '@janus-idp/shared-react';
+
 import {
   GreenCheckCircleIcon,
   RedExclamationCircleIcon,
   YellowExclamationTriangleIcon,
 } from './icons';
-import StatusIconAndText from './StatusIconAndText';
 
 export type StatusComponentProps = {
   title?: string;

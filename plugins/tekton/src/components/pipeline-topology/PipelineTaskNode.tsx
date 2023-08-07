@@ -21,8 +21,9 @@ import {
 // eslint-disable-next-line @backstage/no-undeclared-imports
 import { observer } from 'mobx-react';
 
+import { PipelineTaskWithStatus } from '@janus-idp/shared-react';
+
 import { NodeType } from '../../consts/pipeline-topology-const';
-import { PipelineTaskWithStatus } from '../../types/pipelineRun';
 import { StepStatus } from '../../types/taskRun';
 import { createStepStatus } from '../../utils/pipeline-step-utils';
 import { getTaskStatus } from '../../utils/pipelineRun-utils';

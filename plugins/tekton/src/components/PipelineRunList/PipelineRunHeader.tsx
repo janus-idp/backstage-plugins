@@ -3,10 +3,11 @@ import React from 'react';
 import { Link, TableColumn } from '@backstage/core-components';
 
 import { Timestamp } from '@patternfly/react-core';
-import { chart_color_green_400 as tektonGroupColor } from '@patternfly/react-tokens/dist/js/chart_color_green_400';
+
+import { PipelineRunKind } from '@janus-idp/shared-react';
 
 import { TektonResourcesContext } from '../../hooks/TektonResourcesContext';
-import { PipelineRunKind } from '../../types/pipelineRun';
+import { tektonGroupColor } from '../../types/types';
 import { pipelineRunDuration } from '../../utils/tekton-utils';
 import LinkedPipelineRunTaskStatus from './LinkedPipelineRunTaskStatus';
 import PlrStatus from './PlrStatus';
@@ -28,11 +29,7 @@ const PipelineRunName = ({ row }: { row: any }) => {
           clusters[selectedCluster as number]
         }/pipelineRun/${name}`}
       >
-        <ResourceBadge
-          color={tektonGroupColor.value}
-          abbr="PLR"
-          name={name || ''}
-        />
+        <ResourceBadge color={tektonGroupColor} abbr="PLR" name={name || ''} />
       </Link>
     </div>
   );

@@ -5,14 +5,17 @@ import {
 
 import { pluralize } from '@patternfly/react-core';
 
-import { PipelineRunGVK, TaskRunGVK } from '../models';
 import {
   ComputedStatus,
+  getTaskRunsForPipelineRun,
+  PipelineRunKind,
   SucceedConditionReason,
-  TaskStatus,
-} from '../types/computedStatus';
-import { PipelineRunKind } from '../types/pipelineRun';
-import { TaskRunKind } from '../types/taskRun';
+  TaskRunKind,
+  TaskStatusTypes,
+  updateTaskStatus,
+} from '@janus-idp/shared-react';
+
+import { PipelineRunGVK, TaskRunGVK } from '../models';
 import { ClusterErrors, TektonResponseData } from '../types/types';
 import {
   pipelineRunFilterReducer,
@@ -78,66 +81,6 @@ export const totalPipelineRunTasks = (pipelinerun: PipelineRunKind): number => {
   return totalTasks + finallyTasks;
 };
 
-export const getTaskRunsForPipelineRun = (
-  pipelinerun: PipelineRunKind,
-  taskRuns: TaskRunKind[],
-): TaskRunKind[] => {
-  const associatedTaskRuns = taskRuns.reduce(
-    (acc: TaskRunKind[], taskRun: TaskRunKind) => {
-      if (
-        taskRun?.metadata?.ownerReferences?.[0]?.name ===
-        pipelinerun?.metadata?.name
-      ) {
-        acc.push(taskRun);
-      }
-      return acc;
-    },
-    [],
-  );
-
-  return associatedTaskRuns;
-};
-
-export const updateTaskStatus = (
-  pipelinerun: PipelineRunKind,
-  taskRuns: TaskRunKind[],
-): TaskStatus => {
-  const plrTasks = getTaskRunsForPipelineRun(pipelinerun, taskRuns);
-  const skippedTaskLength = pipelinerun?.status?.skippedTasks?.length || 0;
-  const taskStatus: TaskStatus = {
-    PipelineNotStarted: 0,
-    Pending: 0,
-    Running: 0,
-    Succeeded: 0,
-    Failed: 0,
-    Cancelled: 0,
-    Skipped: skippedTaskLength,
-  };
-
-  if (plrTasks.length === 0) {
-    return taskStatus;
-  }
-
-  plrTasks.forEach((taskRun: TaskRunKind) => {
-    const status = taskRun && pipelineRunFilterReducer(taskRun);
-    if (status === 'Succeeded') {
-      taskStatus[ComputedStatus.Succeeded]++;
-    } else if (status === 'Running') {
-      taskStatus[ComputedStatus.Running]++;
-    } else if (status === 'Failed') {
-      taskStatus[ComputedStatus.Failed]++;
-    } else if (status === 'Cancelled') {
-      taskStatus[ComputedStatus.Cancelled]++;
-    } else {
-      taskStatus[ComputedStatus.Pending]++;
-    }
-  });
-
-  return {
-    ...taskStatus,
-  };
-};
-
 export const getTaskStatusOfPLR = (
   pipelinerun: PipelineRunKind,
   taskRuns: TaskRunKind[],
@@ -147,7 +90,7 @@ export const getTaskStatusOfPLR = (
   const plrTaskLength = plrTasks.length;
   const skippedTaskLength = pipelinerun?.status?.skippedTasks?.length || 0;
 
-  const taskStatus: TaskStatus = updateTaskStatus(pipelinerun, plrTasks);
+  const taskStatus: TaskStatusTypes = updateTaskStatus(pipelinerun, plrTasks);
 
   if (plrTasks?.length > 0) {
     const pipelineRunHasFailure = taskStatus[ComputedStatus.Failed] > 0;

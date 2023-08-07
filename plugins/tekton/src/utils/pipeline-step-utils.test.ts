@@ -1,6 +1,10 @@
+import {
+  ComputedStatus,
+  PipelineRunKind,
+  PipelineTaskWithStatus,
+} from '@janus-idp/shared-react';
+
 import { mockKubernetesPlrResponse } from '../__fixtures__/1-pipelinesData';
-import { ComputedStatus } from '../types/computedStatus';
-import { PipelineRunKind, PipelineTaskWithStatus } from '../types/pipelineRun';
 import { createStepStatus } from './pipeline-step-utils';
 import { getTaskStatus } from './pipelineRun-utils';
 

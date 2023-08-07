@@ -1,3 +1,5 @@
+export const tektonGroupColor = '#38812f';
+
 export type GroupVersionKind = {
   kind: string;
   apiVersion: string;

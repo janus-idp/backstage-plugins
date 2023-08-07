@@ -1,5 +1,5 @@
-/* eslint-disable jest/no-identical-title */
-import { TaskRunKind } from '../types/taskRun';
+import { TaskRunKind } from '@janus-idp/shared-react';
+
 import { pipelineRunStatus } from './pipeline-filter-reducer';
 
 const mockPipelineRuns: TaskRunKind[] = [
@@ -194,8 +194,10 @@ describe('Check PipelineRun Status | Filter Reducer applied to the following:', 
     expect(reducerOutput).toBe('Succeeded');
   });
   it('Pipelinerun with first element of condition array with type as "Succeeded" & status as "Unknown"', () => {
-    const reducerOutput = pipelineRunStatus(mockPipelineRuns[5]);
+    let reducerOutput = pipelineRunStatus(mockPipelineRuns[5]);
     expect(reducerOutput).toBe('Running');
+    reducerOutput = pipelineRunStatus(mockPipelineRuns[8]);
+    expect(reducerOutput).toBe('Cancelled');
   });
   it('Pipelinerun with first element of condition array with type as "Succeeded" & status as "Unknown" & reason as "StoppedRunFinally"', () => {
     const reducerOutput = pipelineRunStatus(mockPipelineRuns[6]);
@@ -203,10 +205,6 @@ describe('Check PipelineRun Status | Filter Reducer applied to the following:', 
   });
   it('Pipelinerun with first element of condition array with type as "Succeeded" & status as "Unknown" & reason as "CancelledRunFinally"', () => {
     const reducerOutput = pipelineRunStatus(mockPipelineRuns[7]);
-    expect(reducerOutput).toBe('Cancelled');
-  });
-  it('Pipelinerun with first element of condition array with type as "Succeeded" & status as "Unknown"', () => {
-    const reducerOutput = pipelineRunStatus(mockPipelineRuns[8]);
     expect(reducerOutput).toBe('Cancelled');
   });
   it('Pipelinerun with first element of condition array with type as "Succeeded" & Failing condition', () => {

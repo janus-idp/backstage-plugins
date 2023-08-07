@@ -1,8 +1,4 @@
-import { chart_color_green_400 as tektonGroupColor } from '@patternfly/react-tokens/dist/js/chart_color_green_400';
-
-import { GroupVersionKind } from './types/types';
-
-const color = tektonGroupColor.value;
+import { GroupVersionKind, tektonGroupColor } from './types/types';
 
 export const PipelineRunGVK: GroupVersionKind = {
   apiVersion: 'v1beta1',
@@ -13,7 +9,7 @@ export const PipelineRunGVK: GroupVersionKind = {
 export const PipelineRunModel = {
   ...PipelineRunGVK,
   abbr: 'PLR',
-  color,
+  color: tektonGroupColor,
 };
 
 export const TaskRunGVK: GroupVersionKind = {
