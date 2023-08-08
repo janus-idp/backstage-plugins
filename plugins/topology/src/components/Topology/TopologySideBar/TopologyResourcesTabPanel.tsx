@@ -8,6 +8,7 @@ import { BaseNode } from '@patternfly/react-topology';
 import ResourceName from '../../../common/components/ResourceName';
 import ResourceStatus from '../../../common/components/ResourceStatus';
 import Status from '../../../common/components/Status';
+import { MAXSHOWRESCOUNT } from '../../../const';
 import {
   CronJobModel,
   JobModel,
@@ -15,6 +16,7 @@ import {
   ServiceModel,
 } from '../../../models';
 import { JobData } from '../../../types/jobs';
+import { byCreationTime } from '../../../utils/resource-utils';
 import PodStatus from '../../Pods/PodStatus';
 import PLRlist from './PLRlist';
 import { PodLogsDialog } from './PodLogs/PodLogsDialog';
@@ -56,31 +58,39 @@ const TopologyResourcesTabPanel = ({
     <div data-testid="resources-tab">
       <TopologyResourcesTabPanelItem
         resourceLabel={PodModel.labelPlural}
+        showResCount={
+          nodeData?.podsData?.pods?.length > MAXSHOWRESCOUNT
+            ? MAXSHOWRESCOUNT
+            : undefined
+        }
         dataTest="pod-list"
       >
         {nodeData?.podsData?.pods?.length &&
-          nodeData.podsData.pods.map((pod: V1Pod) => (
-            <li className="item" key={pod.metadata?.uid}>
-              <span style={{ flex: '1' }}>
-                <ResourceName
-                  name={pod.metadata?.name ?? ''}
-                  kind={pod.kind ?? ''}
-                />
-              </span>
-              <span style={{ flex: '1' }}>
-                {' '}
-                <ResourceStatus
-                  additionalClassNames="hidden-xs"
-                  noStatusBackground
-                >
-                  <Status status={pod.status?.phase ?? ''} />
-                </ResourceStatus>
-              </span>
-              <span style={{ flex: '1' }}>
-                <PodLogsDialog podData={pod} />
-              </span>
-            </li>
-          ))}
+          nodeData.podsData.pods
+            .sort(byCreationTime)
+            .slice(0, MAXSHOWRESCOUNT)
+            .map((pod: V1Pod) => (
+              <li className="item" key={pod.metadata?.uid}>
+                <span style={{ flex: '1' }}>
+                  <ResourceName
+                    name={pod.metadata?.name ?? ''}
+                    kind={pod.kind ?? ''}
+                  />
+                </span>
+                <span style={{ flex: '1' }}>
+                  {' '}
+                  <ResourceStatus
+                    additionalClassNames="hidden-xs"
+                    noStatusBackground
+                  >
+                    <Status status={pod.status?.phase ?? ''} />
+                  </ResourceStatus>
+                </span>
+                <span style={{ flex: '1' }}>
+                  <PodLogsDialog podData={pod} />
+                </span>
+              </li>
+            ))}
       </TopologyResourcesTabPanelItem>
       {pipelines?.length > 0 ? (
         <PLRlist pipelines={pipelines} pipelineRuns={pipelineRuns} />

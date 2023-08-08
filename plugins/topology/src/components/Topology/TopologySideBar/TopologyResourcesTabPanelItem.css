@@ -1,14 +1,17 @@
-.topology-resources-tab-item-title {
-  font-size: 18px;
-  font-weight: bold;
+.bs-topology-resources-tab-item-title {
   margin: 30px 0 10px;
 }
 
-.topology-resources-tab-item-list {
+.bs-topology-resources-tab-item-label {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.bs-topology-resources-tab-item-list {
   font-size: 14px;
 }
 
-.topology-resources-tab-item-list .item {
+.bs-topology-resources-tab-item-list .item {
   display: flex;
   padding: 10px 15px;
   margin-bottom: -1px;
@@ -16,7 +19,7 @@
   border: 1px solid var(--pf-global--BorderColor--100);
 }
 
-.topology-resources-tab-item-list .item a {
+.bs-topology-resources-tab-item-list .item a {
   font-weight: var(--pf-global--link--FontWeight);
   color: var(--pf-global--link--Color);
   text-decoration: var(--pf-global--link--TextDecoration);
