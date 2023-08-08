@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-topology [1.12.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.11.0...@janus-idp/backstage-plugin-topology@1.12.0) (2023-08-08)
+
+
+### Features
+
+* **topology:** show only latest 3 pods/plrs in node sidebar ([#577](https://github.com/janus-idp/backstage-plugins/issues/577)) ([2a56f8e](https://github.com/janus-idp/backstage-plugins/commit/2a56f8e98f615201cb95fa8f6ccf1724d6e5778c))
+
 ## @janus-idp/backstage-plugin-topology [1.11.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.10.0...@janus-idp/backstage-plugin-topology@1.11.0) (2023-07-26)
 
 
