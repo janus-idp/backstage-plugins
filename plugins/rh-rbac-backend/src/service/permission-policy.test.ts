@@ -9,6 +9,8 @@ import { PolicyQuery } from '@backstage/plugin-permission-node';
 
 import { StringAdapter } from 'casbin';
 
+import { resolve } from 'path';
+
 import { RBACPermissionPolicy } from './permission-policy';
 
 describe('RBACPermissionPolicy Tests', () => {
@@ -23,6 +25,63 @@ describe('RBACPermissionPolicy Tests', () => {
       config,
     );
     expect(policy).not.toBeNull();
+  });
+
+  describe('Policy checks from csv file', () => {
+    let policy: RBACPermissionPolicy;
+
+    beforeEach(async () => {
+      const adapter = new StringAdapter(
+        `
+                p, known_user, test.resource.deny, use, allow
+        `,
+      );
+      const csvPermFile = resolve(__dirname, './test/data/rbac-policy.csv');
+      const config = new ConfigReader({
+        permission: {
+          rbac: {
+            'policies-csv-file': csvPermFile,
+          },
+        },
+      });
+
+      policy = await RBACPermissionPolicy.build(
+        getVoidLogger(),
+        adapter,
+        config,
+      );
+    });
+
+    // case1
+    it('should allow read access to resource permission for user from csv file', async () => {
+      const decision = await policy.handle(
+        newPolicyQueryWithResourcePermission(
+          'catalog.entity.read',
+          'catalog-entity',
+          'read',
+        ),
+        newIdentityResponse('user:default/guest'),
+      );
+      expect(decision.result).toBe(AuthorizeResult.ALLOW);
+    });
+
+    // case2
+    it('should allow create access to resource permission for user from csv file', async () => {
+      const decision = await policy.handle(
+        newPolicyQueryWithBasicPermission('catalog.entity.create'),
+        newIdentityResponse('user:default/guest'),
+      );
+      expect(decision.result).toBe(AuthorizeResult.ALLOW);
+    });
+
+    // case3
+    it('should allow deny access to resource permission for known_user', async () => {
+      const decision = await policy.handle(
+        newPolicyQueryWithBasicPermission('test.resource.deny'),
+        newIdentityResponse('known_user'),
+      );
+      expect(decision.result).toBe(AuthorizeResult.ALLOW);
+    });
   });
 
   describe('Policy checks', () => {
