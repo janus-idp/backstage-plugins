@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-topology [1.13.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.12.0...@janus-idp/backstage-plugin-topology@1.13.0) (2023-08-09)
+
+
+### Features
+
+* **topology:** add download pod logs functionality ([#616](https://github.com/janus-idp/backstage-plugins/issues/616)) ([63ae6f4](https://github.com/janus-idp/backstage-plugins/commit/63ae6f495d8c4739082ffae188094a8321ef7496))
+
 ## @janus-idp/backstage-plugin-topology [1.12.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.11.0...@janus-idp/backstage-plugin-topology@1.12.0) (2023-08-08)
 
 
