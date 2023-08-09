@@ -1,8 +1,9 @@
 import { RawFetchError } from '@backstage/plugin-kubernetes-common';
 
+import { PipelineRunKind, updateTaskStatus } from '@janus-idp/shared-react';
+
 import { mockKubernetesPlrResponse } from '../__fixtures__/1-pipelinesData';
 import { kubernetesObjects } from '../__fixtures__/kubernetesObject';
-import { PipelineRunKind } from '../types/pipelineRun';
 import {
   calculateDuration,
   getClusters,
@@ -11,7 +12,6 @@ import {
   getTektonResources,
   pipelineRunDuration,
   totalPipelineRunTasks,
-  updateTaskStatus,
 } from './tekton-utils';
 
 describe('tekton-utils', () => {

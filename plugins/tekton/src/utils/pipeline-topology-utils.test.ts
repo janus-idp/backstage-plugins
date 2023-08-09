@@ -1,7 +1,8 @@
 import { RunStatus, WhenStatus } from '@patternfly/react-topology';
 
+import { PipelineRunKind } from '@janus-idp/shared-react';
+
 import { mockKubernetesPlrResponse } from '../__fixtures__/1-pipelinesData';
-import { PipelineRunKind } from '../types/pipelineRun';
 import {
   extractDepsFromContextVariables,
   getFinallyTaskHeight,

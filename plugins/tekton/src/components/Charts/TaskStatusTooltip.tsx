@@ -1,30 +1,33 @@
 import React from 'react';
 
-import { ComputedStatus, TaskStatus } from '../../types/computedStatus';
-import { getRunStatusColor } from '../../utils/tekton-status';
+import {
+  ComputedStatus,
+  getRunStatusColor,
+  TaskStatusTypes,
+} from '@janus-idp/shared-react';
 
 import './TaskStatusTooltip.css';
 
 interface TaskStatusToolTipProps {
-  taskStatus: TaskStatus;
+  taskStatus: TaskStatusTypes;
 }
 
 const TaskStatusToolTip = ({ taskStatus }: TaskStatusToolTipProps) => {
   return (
     <div className="bs-tkn-task-status-tooltip">
       {Object.keys(ComputedStatus).map(status => {
-        const { message, pftoken } = getRunStatusColor(status);
-        return taskStatus[status as keyof TaskStatus] ? (
+        const { message, color } = getRunStatusColor(status);
+        return taskStatus[status as keyof TaskStatusTypes] ? (
           <React.Fragment key={status}>
             <div
               className="bs-tkn-task-status-tooltip__legend"
-              style={{ background: pftoken.value }}
+              style={{ background: color }}
             />
             <div>
               {status === ComputedStatus.PipelineNotStarted ||
               status === ComputedStatus.FailedToStart
                 ? message
-                : `${taskStatus[status as keyof TaskStatus]} ${message}`}
+                : `${taskStatus[status as keyof TaskStatusTypes]} ${message}`}
             </div>
           </React.Fragment>
         ) : null;

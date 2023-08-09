@@ -1,9 +1,10 @@
 import {
   ComputedStatus,
+  PipelineRunKind,
+  PipelineTaskWithStatus,
   SucceedConditionReason,
-} from '../types/computedStatus';
-import { PipelineRunKind, PipelineTaskWithStatus } from '../types/pipelineRun';
-import { TaskRunKind } from '../types/taskRun';
+  TaskRunKind,
+} from '@janus-idp/shared-react';
 
 const getSucceededStatus = (status: string): ComputedStatus => {
   if (status === 'True') {

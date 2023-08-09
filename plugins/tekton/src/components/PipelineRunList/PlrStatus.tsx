@@ -8,7 +8,8 @@ import {
   SyncAltIcon,
 } from '@patternfly/react-icons';
 
-import { PipelineRunKind } from '../../types/pipelineRun';
+import { PipelineRunKind } from '@janus-idp/shared-react';
+
 import { pipelineRunFilterReducer } from '../../utils/pipeline-filter-reducer';
 
 import './PlrStatus.css';

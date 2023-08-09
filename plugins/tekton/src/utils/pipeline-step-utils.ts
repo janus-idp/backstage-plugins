@@ -1,6 +1,7 @@
-import { ComputedStatus, TerminatedReasons } from '../types/computedStatus';
+import { ComputedStatus, TerminatedReasons } from '@janus-idp/shared-react';
+
 import { StepStatus, TaskStatus, TaskStatusStep } from '../types/taskRun';
-import { calculateDuration } from './pipelineRun-utils';
+import { calculateDuration } from './tekton-utils';
 
 const getMatchingStepDuration = (matchingStep?: TaskStatusStep) => {
   if (!matchingStep) return '';

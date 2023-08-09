@@ -10,6 +10,13 @@ import {
 import * as dagre from 'dagre';
 import { flatten, minBy, uniq } from 'lodash';
 
+import {
+  ComputedStatus,
+  PipelineRunKind,
+  PipelineTaskWithStatus,
+  TaskRunKind,
+} from '@janus-idp/shared-react';
+
 import { DAG, Vertex } from '../components/pipeline-topology/dag';
 import {
   AddNodeDirection,
@@ -31,7 +38,6 @@ import {
   REGEX_EXTRACT_DEPS,
   WHEN_EXPRESSION_SPACING,
 } from '../consts/pipeline-topology-const';
-import { ComputedStatus } from '../types/computedStatus';
 import { PipelineTask, PipelineTaskParam } from '../types/pipeline';
 import {
   BuilderNodeModelData,
@@ -48,8 +54,6 @@ import {
   TaskListNodeModelData,
   TaskNodeModelData,
 } from '../types/pipeline-topology-types';
-import { PipelineRunKind, PipelineTaskWithStatus } from '../types/pipelineRun';
-import { TaskRunKind } from '../types/taskRun';
 import { appendPipelineRunStatus, getPLRTaskRuns } from './pipelineRun-utils';
 
 const createGenericNode: NodeCreatorSetup =
