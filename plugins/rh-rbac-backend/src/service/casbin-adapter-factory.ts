@@ -8,7 +8,7 @@ import { resolve } from 'path';
 
 const DEFAULT_SQLITE3_STORAGE_FILE_NAME = 'rh-rbac-backend.sqlite';
 
-export class CasbinAdapterFactory {
+export class CasbinDBAdapterFactory {
   public constructor(
     private readonly config: ConfigApi,
     private readonly databaseManager: PluginDatabaseManager,

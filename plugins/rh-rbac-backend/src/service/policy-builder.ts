@@ -27,7 +27,7 @@ import {
   policyEntityReadPermission,
   RESOURCE_TYPE_POLICY_ENTITY,
 } from '../permissions';
-import { CasbinAdapterFactory } from './casbin-adapter-factory';
+import { CasbinDBAdapterFactory } from './casbin-adapter-factory';
 import { RBACPermissionPolicy } from './permission-policy';
 
 export class PolicyBuilder {
@@ -41,14 +41,14 @@ export class PolicyBuilder {
   }): Promise<Router> {
     let adapter;
     const databaseEnabled = env.config.getOptionalBoolean(
-      'permission.database.enabled',
+      'permission.rbac.database.enabled',
     );
 
     const permissions = env.permissions;
 
     // Database adapter work
     if (databaseEnabled) {
-      adapter = await new CasbinAdapterFactory(
+      adapter = await new CasbinDBAdapterFactory(
         env.config,
         env.database,
       ).createAdapter();

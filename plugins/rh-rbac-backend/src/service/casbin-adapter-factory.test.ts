@@ -4,7 +4,7 @@ import * as Knex from 'knex';
 import { MockClient } from 'knex-mock-client';
 import TypeORMAdapter from 'typeorm-adapter';
 
-import { CasbinAdapterFactory } from './casbin-adapter-factory';
+import { CasbinDBAdapterFactory } from './casbin-adapter-factory';
 
 jest.mock('typeorm-adapter', () => {
   return {
@@ -35,7 +35,7 @@ describe('CasbinAdapterFactory', () => {
         },
       },
     });
-    const adapterFactory = new CasbinAdapterFactory(
+    const adapterFactory = new CasbinDBAdapterFactory(
       config,
       mockDatabaseManager,
     );
@@ -71,7 +71,7 @@ describe('CasbinAdapterFactory', () => {
         },
       },
     });
-    const factory = new CasbinAdapterFactory(config, mockDatabaseManager);
+    const factory = new CasbinDBAdapterFactory(config, mockDatabaseManager);
     const adapter = await factory.createAdapter();
     expect(adapter).not.toBeNull();
     expect(newAdapterMock).toHaveBeenCalled();
@@ -90,7 +90,7 @@ describe('CasbinAdapterFactory', () => {
         },
       },
     });
-    const adapterFactory = new CasbinAdapterFactory(
+    const adapterFactory = new CasbinDBAdapterFactory(
       config,
       mockDatabaseManager,
     );
