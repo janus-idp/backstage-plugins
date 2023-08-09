@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-tekton [1.7.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.7.0...@janus-idp/backstage-plugin-tekton@1.7.1) (2023-08-09)
+
+
+### Bug Fixes
+
+* **tekton:** use shared-react package ([#623](https://github.com/janus-idp/backstage-plugins/issues/623)) ([57672c0](https://github.com/janus-idp/backstage-plugins/commit/57672c0d7f5549360e2cef19421648f3fea1f332))
+
 ## @janus-idp/backstage-plugin-tekton [1.7.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.6.0...@janus-idp/backstage-plugin-tekton@1.7.0) (2023-07-25)
 
 
