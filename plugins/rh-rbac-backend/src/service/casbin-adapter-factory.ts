@@ -36,11 +36,9 @@ export class CasbinDBAdapterFactory {
       let storage;
       if (typeof databaseConfig?.get('connection')?.valueOf() === 'string') {
         storage = databaseConfig?.getString('connection');
-      } else {
-        if (databaseConfig?.has('connection.directory')) {
-          const storageDir = databaseConfig?.getString('connection.directory');
-          storage = resolve(storageDir, DEFAULT_SQLITE3_STORAGE_FILE_NAME);
-        }
+      } else if (databaseConfig?.has('connection.directory')) {
+        const storageDir = databaseConfig?.getString('connection.directory');
+        storage = resolve(storageDir, DEFAULT_SQLITE3_STORAGE_FILE_NAME);
       }
 
       adapter = await TypeORMAdapter.newAdapter({

@@ -58,6 +58,7 @@ describe('CasbinAdapterFactory', () => {
         return db;
       }),
     };
+    process.env.TEST = 'test';
     const config = new ConfigReader({
       backend: {
         database: {
@@ -66,7 +67,7 @@ describe('CasbinAdapterFactory', () => {
             host: 'localhost',
             port: '5432',
             user: 'postgresUser',
-            password: 'test',
+            password: process.env.TEST,
           },
         },
       },

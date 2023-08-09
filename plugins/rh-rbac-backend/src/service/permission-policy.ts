@@ -14,7 +14,13 @@ import {
   PolicyQuery,
 } from '@backstage/plugin-permission-node';
 
-import { Adapter, Enforcer, newEnforcer, newModelFromString } from 'casbin';
+import {
+  Adapter,
+  Enforcer,
+  FileAdapter,
+  newEnforcer,
+  newModelFromString,
+} from 'casbin';
 import { Logger } from 'winston';
 
 const MODEL = `
@@ -35,10 +41,30 @@ const useAdmins = (admins: Config[], enf: Enforcer) => {
   admins.flatMap(async localConfig => {
     const name = localConfig.getString('name');
     const adminReadPermission = [name, 'policy-entity', 'read', 'allow'];
-    await enf.addPolicy(...adminReadPermission);
+    if (!(await enf.hasPolicy(...adminReadPermission))) {
+      await enf.addPolicy(...adminReadPermission);
+    }
     const adminCreatePermission = [name, 'policy-entity', 'create', 'allow'];
-    await enf.addPolicy(...adminCreatePermission);
+    if (!(await enf.hasPolicy(...adminCreatePermission))) {
+      await enf.addPolicy(...adminCreatePermission);
+    }
   });
+};
+
+const addPredefinedPolicies = async (
+  preDefinedPoliciesFile: string,
+  enf: Enforcer,
+) => {
+  const fileEnf = await newEnforcer(
+    newModelFromString(MODEL),
+    new FileAdapter(preDefinedPoliciesFile),
+  );
+  const policies = await fileEnf.getPolicy();
+  for (const policy of policies) {
+    if (!(await enf.hasPolicy(...policy))) {
+      await enf.addPolicy(...policy);
+    }
+  }
 };
 
 export class RBACPermissionPolicy implements PermissionPolicy {
@@ -50,14 +76,21 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     policyAdapter: Adapter,
     configApi: ConfigApi,
   ) {
-    const theModel = newModelFromString(MODEL);
-
     const adminUsers = configApi.getOptionalConfigArray(
       'permission.rbac.admin.users',
     );
-    const enf = await newEnforcer(theModel, policyAdapter);
+
+    const enf = await newEnforcer(newModelFromString(MODEL), policyAdapter);
     await enf.loadPolicy();
     await enf.enableAutoSave(true);
+
+    const policiesFile = configApi.getOptionalString(
+      'permission.rbac.policies-csv-file',
+    );
+
+    if (policiesFile) {
+      await addPredefinedPolicies(policiesFile, enf);
+    }
 
     if (adminUsers) {
       useAdmins(adminUsers, enf);
