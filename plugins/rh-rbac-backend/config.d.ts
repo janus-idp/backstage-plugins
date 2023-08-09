@@ -17,6 +17,17 @@ export interface Config {
           name: string;
         }>;
       };
+      /**
+       * Optional configuration for database
+       * @visibility frontend
+       */
+      database?: {
+        /**
+         * Whether or not a database will be used
+         * @visibility frontend
+         */
+        enabled: boolean;
+      };
     };
   };
 }

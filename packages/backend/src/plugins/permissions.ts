@@ -13,5 +13,6 @@ export default async function createPlugin(
     discovery: env.discovery,
     identity: env.identity,
     permissions: env.permissions,
+    database: env.database,
   });
 }

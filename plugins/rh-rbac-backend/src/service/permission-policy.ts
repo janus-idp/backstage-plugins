@@ -56,6 +56,8 @@ export class RBACPermissionPolicy implements PermissionPolicy {
       'permission.rbac.admin.users',
     );
     const enf = await newEnforcer(theModel, policyAdapter);
+    await enf.loadPolicy();
+    await enf.enableAutoSave(true);
 
     if (adminUsers) {
       useAdmins(adminUsers, enf);
