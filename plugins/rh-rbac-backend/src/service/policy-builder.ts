@@ -1,4 +1,5 @@
 import {
+  PluginDatabaseManager,
   PluginEndpointDiscovery,
   resolvePackagePath,
 } from '@backstage/backend-common';
@@ -26,6 +27,7 @@ import {
   policyEntityReadPermission,
   RESOURCE_TYPE_POLICY_ENTITY,
 } from '../permissions';
+import { CasbinDBAdapterFactory } from './casbin-adapter-factory';
 import { RBACPermissionPolicy } from './permission-policy';
 
 export class PolicyBuilder {
@@ -35,27 +37,36 @@ export class PolicyBuilder {
     discovery: PluginEndpointDiscovery;
     identity: IdentityApi;
     permissions: PermissionEvaluator;
+    database: PluginDatabaseManager;
   }): Promise<Router> {
-    // TODO: Replace with a DB adapter.
-    const fileAdapter = new FileAdapter(
-      resolvePackagePath(
-        '@janus-idp/plugin-rh-rbac-backend',
-        './model/rbac-policy.csv',
-      ),
+    let adapter;
+    const databaseEnabled = env.config.getOptionalBoolean(
+      'permission.rbac.database.enabled',
     );
 
     const permissions = env.permissions;
+
+    // Database adapter work
+    if (databaseEnabled) {
+      adapter = await new CasbinDBAdapterFactory(
+        env.config,
+        env.database,
+      ).createAdapter();
+    } else {
+      adapter = new FileAdapter(
+        resolvePackagePath(
+          '@janus-idp/plugin-rh-rbac-backend',
+          './model/rbac-policy.csv',
+        ),
+      );
+    }
 
     const options: RouterOptions = {
       config: env.config,
       logger: env.logger,
       discovery: env.discovery,
       identity: env.identity,
-      policy: await RBACPermissionPolicy.build(
-        env.logger,
-        fileAdapter,
-        env.config,
-      ),
+      policy: await RBACPermissionPolicy.build(env.logger, adapter, env.config),
     };
 
     const router = await createRouter(options);

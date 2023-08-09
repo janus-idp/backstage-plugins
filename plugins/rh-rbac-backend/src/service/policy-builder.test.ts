@@ -45,9 +45,23 @@ describe('PolicyBuilder', () => {
     })),
   };
 
+  const mockDatabaseManager = {
+    getClient: jest.fn().mockImplementation(),
+  };
+
   beforeEach(async () => {
     const router = await PolicyBuilder.build({
-      config: new ConfigReader({ permission: { enabled: true } }),
+      config: new ConfigReader({
+        backend: {
+          database: {
+            client: 'better-sqlite3',
+            connection: ':memory:',
+          },
+        },
+        permission: {
+          enabled: true,
+        },
+      }),
       logger: getVoidLogger(),
       discovery: {
         getBaseUrl: jest.fn(),
@@ -55,6 +69,7 @@ describe('PolicyBuilder', () => {
       },
       identity: mockIdentityClient,
       permissions: mockPermissionEvaluator,
+      database: mockDatabaseManager,
     });
     app = express().use(router);
     jest.clearAllMocks();
