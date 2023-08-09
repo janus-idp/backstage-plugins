@@ -29,7 +29,9 @@ describe('PodLogs', () => {
       loading: false,
       value: 'log data...',
     });
-    const { queryByTestId } = render(<PodLogs podScope={podScopeData} />);
+    const { queryByTestId } = render(
+      <PodLogs podScope={podScopeData} setLogText={() => {}} />,
+    );
     expect(queryByTestId('pod-log-banner')).not.toBeInTheDocument();
     expect(queryByTestId('log-viewer')).toBeInTheDocument();
   });
@@ -42,7 +44,9 @@ describe('PodLogs', () => {
       clusterName: 'OCP',
     };
     (usePodLogs as jest.Mock).mockReturnValue({ loading: true });
-    const { queryByTestId } = render(<PodLogs podScope={podScopeData} />);
+    const { queryByTestId } = render(
+      <PodLogs podScope={podScopeData} setLogText={() => {}} />,
+    );
     expect(queryByTestId('pod-log-banner')).not.toBeInTheDocument();
     expect(queryByTestId('log-viewer')).not.toBeInTheDocument();
     expect(queryByTestId('logs-skeleton')).toBeInTheDocument();
@@ -59,7 +63,9 @@ describe('PodLogs', () => {
       loading: false,
       error: { message: 'some crash!!' },
     });
-    const { queryByTestId } = render(<PodLogs podScope={podScopeData} />);
+    const { queryByTestId } = render(
+      <PodLogs podScope={podScopeData} setLogText={() => {}} />,
+    );
     expect(queryByTestId('pod-log-banner')).toBeInTheDocument();
     expect(queryByTestId('log-viewer')).not.toBeInTheDocument();
     expect(queryByTestId('logs-skeleton')).not.toBeInTheDocument();
