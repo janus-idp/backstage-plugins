@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-topology [1.13.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.13.2...@janus-idp/backstage-plugin-topology@1.13.3) (2023-08-10)
+
+
+### Bug Fixes
+
+* **topology:** fix pod status info in topology side panel ([#620](https://github.com/janus-idp/backstage-plugins/issues/620)) ([c4c428c](https://github.com/janus-idp/backstage-plugins/commit/c4c428c44d9fec1fdfb5fe1dd5205c3abc6b5cd1))
+
 ## @janus-idp/backstage-plugin-topology [1.13.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.13.1...@janus-idp/backstage-plugin-topology@1.13.2) (2023-08-10)
 
 ## @janus-idp/backstage-plugin-topology [1.13.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.13.0...@janus-idp/backstage-plugin-topology@1.13.1) (2023-08-10)
