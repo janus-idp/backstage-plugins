@@ -48,20 +48,20 @@ export const layoutFactory: LayoutFactory = (type: string, graph: Graph) => {
 const pipelineComponentFactory: ComponentFactory = (
   kind: ModelKind,
   type: string,
-): React.ComponentType<{ element: GraphElement }> | any => {
+): React.ComponentType<{ element: GraphElement }> | undefined => {
   if (kind === ModelKind.graph) {
     return withPanZoom()(GraphComponent) as React.ComponentType<{
       element: GraphElement;
     }>;
   }
   if (kind === ModelKind.edge) {
-    return TaskEdge;
+    return TaskEdge as React.ComponentType<{ element: GraphElement }>;
   }
   if (kind === ModelKind.node) {
     switch (type) {
       case NodeType.TASK_NODE:
       case NodeType.FINALLY_NODE:
-        return PipelineTaskNode;
+        return PipelineTaskNode as React.ComponentType<any>;
       case 'task-group':
       case NodeType.FINALLY_GROUP:
         return DefaultTaskGroup as React.ComponentType<{
@@ -78,7 +78,7 @@ const pipelineComponentFactory: ComponentFactory = (
         return undefined;
     }
   }
-  return null;
+  return undefined;
 };
 
 export default pipelineComponentFactory;

@@ -6,10 +6,13 @@ import { useKubernetesObjects } from '@backstage/plugin-kubernetes';
 
 import { isEqual } from 'lodash';
 
+import {
+  useDebounceCallback,
+  useDeepCompareMemoize,
+} from '@janus-idp/shared-react';
+
 import { TektonResourcesContextData, TektonResponseData } from '../types/types';
-import { useDebounceCallback } from './debounce';
 import { useAllWatchResources } from './useAllWatchResources';
-import { useDeepCompareMemoize } from './useDeepCompareMemoize';
 import { useResourcesClusters } from './useResourcesClusters';
 
 export const useTektonObjectsResponse = (

@@ -3,11 +3,14 @@ import React from 'react';
 import { Typography } from '@material-ui/core';
 import { Split, SplitItem } from '@patternfly/react-core';
 
-import { PipelineRunKind, TaskRunKind } from '@janus-idp/shared-react';
+import {
+  PipelineRunKind,
+  pipelineRunStatus,
+  TaskRunKind,
+} from '@janus-idp/shared-react';
 
 import { useDarkTheme } from '../../hooks/useDarkTheme';
 import { PipelineRunModel } from '../../models';
-import { pipelineRunStatus } from '../../utils/pipeline-filter-reducer';
 import { getGraphDataModel } from '../../utils/pipeline-topology-utils';
 import { ResourceStatus, Status } from '../common';
 import { PipelineLayout } from './PipelineLayout';

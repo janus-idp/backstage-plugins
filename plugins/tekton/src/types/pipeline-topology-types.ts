@@ -64,8 +64,6 @@ export type FinallyNodeData = {
 
 export type PipelineBuilderTaskBase = { name: string; runAfter?: string[] };
 
-export type PipelineBuilderListTask = PipelineBuilderTaskBase;
-
 export type PipelineBuilderLoadingTask = PipelineBuilderTaskBase & {
   isFinallyTask: boolean;
   resource: TaskRunKind;
@@ -111,7 +109,6 @@ export type BuilderNodeModelData = PipelineRunAfterNodeModelData & {
   onAddNode: NewTaskListNodeCallback;
   onNodeSelection: NodeSelectionCallback;
 };
-export type SpacerNodeModelData = PipelineRunAfterNodeModelData;
 export type TaskNodeModelData = PipelineRunAfterNodeModelData & {
   task: PipelineTask;
   pipelineRun?: PipelineRunKind;

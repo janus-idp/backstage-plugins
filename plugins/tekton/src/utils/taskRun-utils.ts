@@ -1,7 +1,10 @@
-import { ComputedStatus, TaskRunKind } from '@janus-idp/shared-react';
+import {
+  ComputedStatus,
+  pipelineRunFilterReducer,
+  TaskRunKind,
+} from '@janus-idp/shared-react';
 
 import { TEKTON_PIPELINE_TASK } from '../consts/tekton-const';
-import { pipelineRunFilterReducer } from './pipeline-filter-reducer';
 
 export type TaskStep = {
   id: string;
