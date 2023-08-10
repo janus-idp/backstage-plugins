@@ -31,6 +31,7 @@ export const HorizontalStackedBars = ({
 }: HorizontalStackedBarsProps) => (
   <div
     id={`horizontal-stacked-bars-${id}`}
+    data-testid={`horizontal-stacked-bars-${id}`}
     className={classNames('bs-shared-horizontal-stacked-bars', {
       'is-inline': inline,
     })}

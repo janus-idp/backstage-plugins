@@ -4,6 +4,9 @@ export const getTaskRunsForPipelineRun = (
   pipelinerun: PipelineRunKind | null,
   taskRuns: TaskRunKind[],
 ): TaskRunKind[] => {
+  if (!taskRuns || taskRuns.length === 0) {
+    return [];
+  }
   const associatedTaskRuns = taskRuns.reduce(
     (acc: TaskRunKind[], taskRun: TaskRunKind) => {
       if (
