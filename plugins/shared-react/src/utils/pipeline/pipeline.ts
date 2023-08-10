@@ -14,7 +14,7 @@ import {
   TaskRunKind,
   TaskStatusTypes,
 } from '../../types';
-import { getTaskRunsForPipelineRun } from './taskRun-utils';
+import { getTaskRunsForPipelineRun } from './task-run';
 
 export const getRunStatusColor = (status: string): StatusMessage => {
   switch (status) {
