@@ -1,3 +1,4 @@
+export * from './Auth';
 export * from './CertsInfo';
 export * from './Common';
 export * from './Config';

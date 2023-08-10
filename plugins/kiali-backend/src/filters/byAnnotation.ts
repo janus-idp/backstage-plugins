@@ -1,8 +1,11 @@
+import { Entity } from '@backstage/catalog-model';
+
 import {
   KUBERNETES_ANNOTATION,
   KUBERNETES_LABEL_SELECTOR,
   KUBERNETES_NAMESPACE,
   Namespace,
+  NamespaceInfo,
 } from '@janus-idp/backstage-plugin-kiali-common';
 
 const filterById = (ns: Namespace[], value: string): Namespace[] => {
@@ -23,33 +26,38 @@ const filterBySelector = (ns: Namespace[], value: string): Namespace[] => {
   );
 };
 
-const filterByNs = (ns: Namespace[], value: string): Namespace[] => {
+const filterByNs = (ns: Namespace[], value: string): NamespaceInfo[] => {
   const values = value.split(',');
   return ns.filter(n => values.includes(n.name));
 };
 
 export const filterNsByAnnotation = (
   ns: Namespace[],
-  annotation?: { [key: string]: string },
+  entity: Entity,
 ): Namespace[] => {
-  if (!annotation) {
-    return ns;
+  const annotations = entity.metadata.annotations;
+  if (!annotations) {
+    return [];
   }
+
   let nsFilter = ns;
-  nsFilter = annotation[KUBERNETES_ANNOTATION]
+  nsFilter = annotations[KUBERNETES_ANNOTATION]
     ? filterById(
         nsFilter,
-        decodeURIComponent(annotation[KUBERNETES_ANNOTATION]),
+        decodeURIComponent(annotations[KUBERNETES_ANNOTATION]),
       )
     : nsFilter;
-  nsFilter = annotation[KUBERNETES_LABEL_SELECTOR]
+  nsFilter = annotations[KUBERNETES_LABEL_SELECTOR]
     ? filterBySelector(
         nsFilter,
-        decodeURIComponent(annotation[KUBERNETES_LABEL_SELECTOR]),
+        decodeURIComponent(annotations[KUBERNETES_LABEL_SELECTOR]),
       )
     : nsFilter;
-  nsFilter = annotation[KUBERNETES_NAMESPACE]
-    ? filterByNs(nsFilter, decodeURIComponent(annotation[KUBERNETES_NAMESPACE]))
+  nsFilter = annotations[KUBERNETES_NAMESPACE]
+    ? filterByNs(
+        nsFilter,
+        decodeURIComponent(annotations[KUBERNETES_NAMESPACE]),
+      )
     : nsFilter;
   return nsFilter;
 };

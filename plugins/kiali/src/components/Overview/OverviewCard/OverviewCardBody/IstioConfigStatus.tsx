@@ -29,16 +29,16 @@ type IstioConfigStatusProps = {
   kialiConsole: string;
 };
 
-const getIcon = (severity: ValidationTypes) => {
+const getIcon = (severity: ValidationTypes, props?: any) => {
   switch (severity) {
     case ValidationTypes.Error:
-      return createIcon(ErrorIcon);
+      return createIcon(ErrorIcon, props);
     case ValidationTypes.Warning:
-      return createIcon(WarningIcon);
+      return createIcon(WarningIcon, props);
     case ValidationTypes.Info:
-      return createIcon(InfoIcon);
+      return createIcon(InfoIcon, props);
     default:
-      return createIcon(OkIcon);
+      return createIcon(OkIcon, props);
   }
 };
 
@@ -121,7 +121,7 @@ export const IstioConfigStatus = (props: IstioConfigStatusProps) => {
     <Link to={linkIstioValidations}>
       <Tooltip title={tooltipContent(validations)} placement="right">
         {validations.objectCount > 0 ? (
-          getIcon(severity)
+          getIcon(severity, { fontSize: 'inherit' })
         ) : (
           <div style={{ display: 'inline-block', marginLeft: '5px' }}>N/A</div>
         )}

@@ -3,6 +3,7 @@ import {
   createPlugin,
   createRoutableExtension,
   discoveryApiRef,
+  identityApiRef,
 } from '@backstage/core-plugin-api';
 
 import { KialiApiClient, kialiApiRef } from './api';
@@ -19,8 +20,10 @@ export const kialiPlugin = createPlugin({
       api: kialiApiRef,
       deps: {
         discoveryApi: discoveryApiRef,
+        identityApi: identityApiRef,
       },
-      factory: ({ discoveryApi }) => new KialiApiClient(discoveryApi),
+      factory: ({ discoveryApi, identityApi }) =>
+        new KialiApiClient({ discoveryApi, identityApi }),
     }),
   ],
 });
