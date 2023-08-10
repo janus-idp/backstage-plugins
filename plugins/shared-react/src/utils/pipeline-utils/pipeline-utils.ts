@@ -182,7 +182,7 @@ export const updateTaskStatus = (
     Skipped: skippedTaskLength,
   };
 
-  if (PLRTaskRuns.length === 0) {
+  if (!PLRTaskRuns || PLRTaskRuns.length === 0) {
     return taskStatus;
   }
 
