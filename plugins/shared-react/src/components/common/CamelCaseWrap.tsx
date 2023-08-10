@@ -21,7 +21,7 @@ export const CamelCaseWrap = ({ value, dataTest }: CamelCaseWrapProps) => {
   const rendered = (
     <span data-test={dataTest}>
       {words?.map((word, i) => (
-        <React.Fragment key={i}>
+        <React.Fragment key={word}>
           {word}
           {i !== words.length - 1 && <wbr />}
         </React.Fragment>
