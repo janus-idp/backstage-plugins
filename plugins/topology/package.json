@@ -61,7 +61,7 @@
     "@testing-library/react": "12.1.5",
     "@testing-library/react-hooks": "8.0.1",
     "@testing-library/user-event": "14.4.3",
-    "@types/file-saver": "^2.0.5",
+    "@types/file-saver": "2.0.5",
     "@types/git-url-parse": "9.0.1",
     "@types/node": "18.16.16",
     "cross-fetch": "4.0.0",
