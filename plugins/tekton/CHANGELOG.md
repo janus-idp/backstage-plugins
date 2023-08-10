@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-tekton [1.8.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.7.2...@janus-idp/backstage-plugin-tekton@1.8.0) (2023-08-10)
+
+
+### Features
+
+* **tekton:** visualize pipelinerun logs ([#553](https://github.com/janus-idp/backstage-plugins/issues/553)) ([540a105](https://github.com/janus-idp/backstage-plugins/commit/540a105287ee557de724f44389e9c571405d0a3d))
+
 ## @janus-idp/backstage-plugin-tekton [1.7.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.7.1...@janus-idp/backstage-plugin-tekton@1.7.2) (2023-08-10)
 
 
