@@ -3,15 +3,22 @@ import { cloneDeep, each, find, get, isEmpty, isFinite, trim } from 'lodash';
 import {
   ComputedStatus,
   PipelineRunKind,
+  PipelineTask,
   PipelineTaskWithStatus,
   PLRTaskRuns,
   SucceedConditionReason,
   TaskRunKind,
 } from '@janus-idp/shared-react';
 
-import { PipelineTask } from '../types/pipeline';
+import {
+  TEKTON_PIPELINE_RUN,
+  TEKTON_PIPELINE_TASK,
+} from '../consts/tekton-const';
 import { TaskStatus } from '../types/taskRun';
-import { pipelineRunStatus } from './pipeline-filter-reducer';
+import {
+  pipelineRunFilterReducer,
+  pipelineRunStatus,
+} from './pipeline-filter-reducer';
 
 // Conversions between units and milliseconds
 const s = 1000;
@@ -42,59 +49,6 @@ export const taskConditions = {
     !!task?.resources?.inputs?.[0].from,
   hasRunAfterDependency: (task: PipelineTask): boolean =>
     !!task?.runAfter && task?.runAfter?.length > 0,
-};
-
-const getLatestRunBasedOnCreationTimestamp = (
-  runs: PipelineRunKind[],
-  latestRun: PipelineRunKind,
-) => {
-  let temp = cloneDeep(latestRun);
-  for (let i = 1; i < runs.length; i++) {
-    temp =
-      new Date(runs?.[i]?.metadata?.creationTimestamp ?? '') >
-      new Date(latestRun?.metadata?.creationTimestamp ?? '')
-        ? runs[i]
-        : temp;
-  }
-  return temp;
-};
-
-const getLatestRunNotBasedOnCreationTimestamp = (
-  runs: PipelineRunKind[],
-  latestRun: PipelineRunKind,
-  field: 'completionTime' | 'startTime',
-) => {
-  let temp = cloneDeep(latestRun);
-  for (let i = 1; i < runs.length; i++) {
-    temp =
-      new Date(runs?.[i]?.status?.[field] ?? '') >
-      new Date(latestRun?.status?.[field] ?? '')
-        ? runs[i]
-        : temp;
-  }
-  return temp;
-};
-
-export const getLatestPipelineRun = (
-  runs: PipelineRunKind[],
-  field: string,
-): PipelineRunKind | null => {
-  if (runs?.length > 0 && field) {
-    let latestRun = runs[0];
-    if (field === 'creationTimestamp') {
-      latestRun = getLatestRunBasedOnCreationTimestamp(runs, latestRun);
-    } else if (field === 'startTime' || field === 'completionTime') {
-      latestRun = getLatestRunNotBasedOnCreationTimestamp(
-        runs,
-        latestRun,
-        field,
-      );
-    } else {
-      latestRun = runs[runs.length - 1];
-    }
-    return latestRun;
-  }
-  return null;
 };
 
 export const getPipelineRun = (
@@ -186,13 +140,12 @@ export const getPLRTaskRuns = (
   pipelineRun: string | undefined,
 ): PLRTaskRuns => {
   const filteredTaskRuns = taskRuns.filter(
-    tr => tr?.metadata?.labels?.['tekton.dev/pipelineRun'] === pipelineRun,
+    tr => tr?.metadata?.labels?.[TEKTON_PIPELINE_RUN] === pipelineRun,
   );
   return filteredTaskRuns.reduce((acc: any, taskRun: TaskRunKind) => {
     const temp = {
       [`${taskRun?.metadata?.name}`]: {
-        pipelineTaskName:
-          taskRun?.metadata?.labels?.['tekton.dev/pipelineTask'],
+        pipelineTaskName: taskRun?.metadata?.labels?.[TEKTON_PIPELINE_TASK],
         status: taskRun?.status,
       },
     };
@@ -200,13 +153,6 @@ export const getPLRTaskRuns = (
     acc = { ...acc, ...temp };
     return acc;
   }, {});
-};
-
-export const pipelineRunFilterReducer = (
-  pipelineRun: PipelineRunKind,
-): ComputedStatus => {
-  const status = pipelineRunStatus(pipelineRun);
-  return status || ComputedStatus.Other;
 };
 
 export const getTaskStatus = (

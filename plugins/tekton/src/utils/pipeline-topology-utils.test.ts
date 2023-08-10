@@ -1,37 +1,12 @@
 import { RunStatus, WhenStatus } from '@patternfly/react-topology';
 
-import { PipelineRunKind } from '@janus-idp/shared-react';
-
 import { mockKubernetesPlrResponse } from '../__fixtures__/1-pipelinesData';
 import {
   extractDepsFromContextVariables,
-  getFinallyTaskHeight,
-  getFinallyTaskWidth,
   getGraphDataModel,
   getTaskWhenStatus,
 } from './pipeline-topology-utils';
 import { getPipelineRun } from './pipelineRun-utils';
-
-describe('getFinallyTaskHeight', () => {
-  it('expect to return dynamic height for finally task based on tasks length and builder options', () => {
-    const numberOfTasks = 5;
-    const disableBuilder = true;
-    expect(getFinallyTaskHeight(numberOfTasks, disableBuilder)).toBe(290);
-    expect(getFinallyTaskHeight(numberOfTasks, !disableBuilder)).toBe(340);
-  });
-});
-
-describe('getFinallyTaskWidth', () => {
-  it('expect to return larger width if any nodes present in finally section', () => {
-    const numberOfTasks = 5;
-    expect(getFinallyTaskWidth(numberOfTasks)).toBe(205);
-  });
-
-  it('expect to return smaller width if nodes are not present in finally section', () => {
-    const numberOfTasks = 0;
-    expect(getFinallyTaskWidth(numberOfTasks)).toBe(180);
-  });
-});
 
 describe('getPipelineRun', () => {
   it('should return the required pipeline run resource', () => {
@@ -131,7 +106,7 @@ describe('getGraphDataModel', () => {
 
   it('should return graph, nodes and edges for valid pipelineRun', () => {
     const model = getGraphDataModel(
-      mockKubernetesPlrResponse.pipelineruns[0] as PipelineRunKind,
+      mockKubernetesPlrResponse.pipelineruns[0],
       mockKubernetesPlrResponse.taskruns,
     );
     expect(model?.graph).toBeDefined();

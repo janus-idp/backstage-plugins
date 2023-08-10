@@ -4,6 +4,7 @@ import {
 } from '@backstage/plugin-kubernetes-common';
 
 import { pluralize } from '@patternfly/react-core';
+import { get } from 'lodash';
 
 import {
   ComputedStatus,
@@ -16,7 +17,7 @@ import {
 } from '@janus-idp/shared-react';
 
 import { PipelineRunGVK, TaskRunGVK } from '../models';
-import { ClusterErrors, TektonResponseData } from '../types/types';
+import { ClusterErrors, Order, TektonResponseData } from '../types/types';
 import {
   pipelineRunFilterReducer,
   pipelineRunStatus,
@@ -52,6 +53,12 @@ export const getTektonResources = (
 ) =>
   k8sObjects.items?.[cluster]?.resources?.reduce(
     (acc: TektonResponseData, res: any) => {
+      if (res.type === 'pods') {
+        return {
+          ...acc,
+          pods: { data: res.resources },
+        };
+      }
       if (
         res.type !== 'customresources' ||
         (res.type === 'customresources' && res.resources.length === 0)
@@ -87,7 +94,7 @@ export const getTaskStatusOfPLR = (
 ) => {
   const totalTasks = totalPipelineRunTasks(pipelinerun);
   const plrTasks = getTaskRunsForPipelineRun(pipelinerun, taskRuns);
-  const plrTaskLength = plrTasks.length;
+  const plrTaskLength = plrTasks?.length;
   const skippedTaskLength = pipelinerun?.status?.skippedTasks?.length || 0;
 
   const taskStatus: TaskStatusTypes = updateTaskStatus(pipelinerun, plrTasks);
@@ -152,6 +159,28 @@ export const getDuration = (seconds: number, long?: boolean): string => {
   return duration.trim();
 };
 
+export const descendingComparator = (
+  a: PipelineRunKind,
+  b: PipelineRunKind,
+  orderBy: string,
+) => {
+  if (get(b, orderBy) < get(a, orderBy)) {
+    return -1;
+  }
+  if (get(b, orderBy) > get(a, orderBy)) {
+    return 1;
+  }
+  return 0;
+};
+
+export const getComparator =
+  (order: Order, orderBy: string) =>
+  (a: PipelineRunKind, b: PipelineRunKind) => {
+    return order === 'desc'
+      ? descendingComparator(a, b, orderBy)
+      : -descendingComparator(a, b, orderBy);
+  };
+
 export const calculateDuration = (
   startTime: string,
   endTime?: string,
@@ -164,8 +193,11 @@ export const calculateDuration = (
 };
 
 export const pipelineRunDuration = (run: PipelineRunKind): string => {
-  const startTime = run?.status?.startTime;
-  const completionTime = run?.status?.completionTime;
+  if (!run || Object.keys(run).length === 0) {
+    return '-';
+  }
+  const startTime = run.status?.startTime;
+  const completionTime = run.status?.completionTime;
 
   // Duration cannot be computed if start time is missing or a completed/failed pipeline/task has no end time
   if (!startTime || (!completionTime && pipelineRunStatus(run) !== 'Running')) {

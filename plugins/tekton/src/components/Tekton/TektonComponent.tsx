@@ -9,7 +9,11 @@ import PipelineRunList from '../PipelineRunList/PipelineRunList';
 export const TektonComponent = () => {
   useDarkTheme();
 
-  const watchedResources = [ModelsPlural.pipelineruns, ModelsPlural.taskruns];
+  const watchedResources = [
+    ModelsPlural.pipelineruns,
+    ModelsPlural.taskruns,
+    ModelsPlural.pods,
+  ];
   const tektonResourcesContextData = useTektonObjectsResponse(watchedResources);
 
   return (

@@ -19,7 +19,11 @@ export const PipelineRunVisualization = ({
 }: PipelineRunVisualizationProps) => {
   const { pipelineRunName } = useParams();
   useDarkTheme();
-  const watchedResources = [ModelsPlural.pipelineruns, ModelsPlural.taskruns];
+  const watchedResources = [
+    ModelsPlural.pipelineruns,
+    ModelsPlural.taskruns,
+    ModelsPlural.pods,
+  ];
   const tektonResourcesContextData = useTektonObjectsResponse(watchedResources);
 
   return (
