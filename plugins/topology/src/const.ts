@@ -22,3 +22,14 @@ export const TYPE_CONNECTS_TO = 'connects-to';
 export const INSTANCE_LABEL = 'app.kubernetes.io/instance';
 
 export const MEMO: { [key: string]: any } = {};
+
+export const SHOW_POD_COUNT_FILTER_ID = 'show-pod-count';
+
+export const TOPOLOGY_FILTERS = [
+  {
+    id: SHOW_POD_COUNT_FILTER_ID,
+    label: 'Pod count',
+    value: false,
+    disabled: false,
+  },
+];

@@ -15,6 +15,7 @@ import {
   K8sResponseData,
   K8sWorkloadResource,
 } from '../types/types';
+import { getImageForIconClass } from './icons';
 
 export const WORKLOAD_TYPES: string[] = [
   ModelsPlural.deployments,
@@ -118,6 +119,15 @@ export const createTopologyNodeData = (
   const deploymentsLabels = resource.metadata?.labels ?? {};
   const resAnnotations = resource.metadata?.annotations;
 
+  const builderImageIcon =
+    getImageForIconClass(
+      `icon-${deploymentsLabels['app.openshift.io/runtime']}`,
+    ) ||
+    getImageForIconClass(
+      `icon-${deploymentsLabels['app.kubernetes.io/name']}`,
+    ) ||
+    getImageForIconClass(defaultIcon);
+
   return {
     id: dcUID as string,
     name: resource?.metadata?.name || deploymentsLabels[INSTANCE_LABEL],
@@ -128,7 +138,7 @@ export const createTopologyNodeData = (
     },
     data: {
       kind: resource?.kind,
-      builderImage: defaultIcon,
+      builderImage: builderImageIcon,
       url,
       editURL: resAnnotations?.['app.openshift.io/edit-url'],
       vcsURI: resAnnotations?.['app.openshift.io/vcs-uri'],
