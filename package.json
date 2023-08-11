@@ -13,7 +13,7 @@
     "build": "turbo run build",
     "build:backstage": "turbo run build --filter=...{./packages/*}",
     "build:plugins": "turbo run build --filter=...{./plugins/*}",
-    "tsc": "tsc",
+    "tsc": "turbo run tsc",
     "clean": "turbo run clean",
     "test": "turbo run test",
     "lint": "turbo run lint",

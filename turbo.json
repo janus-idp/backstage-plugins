@@ -5,30 +5,22 @@
       "cache": false,
       "persistent": true
     },
-    "app#start": {
-      "cache": false,
-      "persistent": true,
-      "dependsOn": ["^build"]
-    },
-    "backend#start": {
-      "cache": false,
-      "persistent": true
-    },
     "build": {
       "outputs": ["dist/**"],
-      "dependsOn": ["//#tsc", "^build"]
+      "dependsOn": ["tsc", "^build"]
     },
     "clean": {
       "cache": false
     },
     "test": {
       "outputs": ["coverage/**"],
-      "dependsOn": ["^build"]
+      "dependsOn": ["build"]
     },
     "lint": {},
-    "//#tsc": {
-      "outputs": ["dist-types/**"]
+    "tsc": {
+      "outputs": ["../../dist-types/**"],
+      "dependsOn": ["^tsc"]
     }
   },
-  "globalDependencies": ["tsconfig.json"]
+  "globalDependencies": ["prettierrc.js"]
 }

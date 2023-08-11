@@ -8,6 +8,10 @@
     "start:keycloak": {
       "cache": false,
       "persistent": true
+    },
+    "tsc": {
+      "outputs": ["../../dist-types/plugins/keycloak-backend/**"],
+      "dependsOn": ["^tsc"]
     }
   }
 }

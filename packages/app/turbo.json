@@ -1,0 +1,14 @@
+{
+  "extends": ["//"],
+  "pipeline": {
+    "start": {
+      "cache": false,
+      "persistent": true,
+      "dependsOn": ["^build"]
+    },
+    "tsc": {
+      "outputs": ["../../dist-types/packages/app/**"],
+      "dependsOn": ["^tsc"]
+    }
+  }
+}
