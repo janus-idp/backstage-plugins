@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-topology [1.14.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.13.3...@janus-idp/backstage-plugin-topology@1.14.0) (2023-08-11)
+
+
+### Features
+
+* **topology:** add runtime icon to topology node ([#615](https://github.com/janus-idp/backstage-plugins/issues/615)) ([dc3769b](https://github.com/janus-idp/backstage-plugins/commit/dc3769b9e88ac2187c38ae29ab0863f5a8463621))
+
 ## @janus-idp/backstage-plugin-topology [1.13.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.13.2...@janus-idp/backstage-plugin-topology@1.13.3) (2023-08-10)
 
 
