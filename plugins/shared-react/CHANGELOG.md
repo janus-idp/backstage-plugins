@@ -1,3 +1,10 @@
+## @janus-idp/shared-react [1.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/shared-react@1.1.1...@janus-idp/shared-react@1.2.0) (2023-08-11)
+
+
+### Features
+
+* **shared-react:** add date and unit conversion utils ([#633](https://github.com/janus-idp/backstage-plugins/issues/633)) ([269195f](https://github.com/janus-idp/backstage-plugins/commit/269195f18d6230b7bde114bb4e45d2e8421be378))
+
 ## @janus-idp/shared-react [1.1.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/shared-react@1.1.0...@janus-idp/shared-react@1.1.1) (2023-08-10)
 
 
