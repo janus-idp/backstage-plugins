@@ -1,5 +1,5 @@
 import { mockPLRResponseData } from '../../__fixtures__/1-pipelinesData';
-import { getTaskRunsForPipelineRun } from './taskRun-utils';
+import { getTaskRunsForPipelineRun } from './task-run';
 
 describe('getTaskRunsForPipelineRun should return taskruns for a pipelinerun', () => {
   it('should return empty array if pipelinerun is null', () => {

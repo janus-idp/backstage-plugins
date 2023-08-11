@@ -6,7 +6,7 @@ import {
   getTaskStatus,
   totalPipelineRunTasks,
   updateTaskStatus,
-} from './pipeline-utils';
+} from './pipeline';
 
 describe('getRunStatusColor should handle ComputedStatus values', () => {
   it('should expect all but PipelineNotStarted to produce a non-default result', () => {
