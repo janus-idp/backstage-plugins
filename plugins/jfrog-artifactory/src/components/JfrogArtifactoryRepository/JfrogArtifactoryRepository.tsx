@@ -6,9 +6,10 @@ import { useApi } from '@backstage/core-plugin-api';
 
 import { Box, Chip, makeStyles } from '@material-ui/core';
 
+import { formatByteSize, formatDate } from '@janus-idp/shared-react';
+
 import { jfrogArtifactoryApiRef } from '../../api';
 import { Edge } from '../../types';
-import { formatDate, formatSize } from '../utils';
 import { columns, useStyles } from './tableHeading';
 
 const useLocalStyles = makeStyles({
@@ -48,7 +49,7 @@ export function JfrogArtifactoryRepository(props: RepositoryProps) {
     return {
       name: edge.node.name,
       last_modified: formatDate(edge.node.modified),
-      size: formatSize(Number(edge.node.size)),
+      size: formatByteSize(Number(edge.node.size)),
       manifest_digest: (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Chip label="sha256" className={localClasses.chip} />

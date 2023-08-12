@@ -5,6 +5,12 @@ const math = create({ createUnitDependencies, unitDependencies });
 // https://mathjs.org/docs/datatypes/units.html#prefixes
 const UNITS = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'] as const;
 
+/**
+ * Returns a given size in bytes formated to the closest to power of 1024
+ *
+ * @param sizeInBytes - The given size in bytes
+ * @return Formated bytes in powers of 1024
+ */
 export function formatByteSize(sizeInBytes: number | undefined): string {
   if (!sizeInBytes) {
     return 'N/A';
