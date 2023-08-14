@@ -90,6 +90,13 @@ export async function startStandaloneServer(
 
   logger.info('Starting application server...');
   const config = new ConfigReader({
+    backend: {
+      baseUrl: 'http://localhost:7007',
+      database: {
+        client: 'better-sqlite3',
+        connection: ':memory:',
+      },
+    },
     catalog: {
       providers: {
         ocm: {
