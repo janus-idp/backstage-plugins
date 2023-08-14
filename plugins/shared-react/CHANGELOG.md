@@ -1,3 +1,10 @@
+## @janus-idp/shared-react [1.2.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/shared-react@1.2.0...@janus-idp/shared-react@1.2.1) (2023-08-14)
+
+
+### Bug Fixes
+
+* **shared-react:** fix code smells ([#631](https://github.com/janus-idp/backstage-plugins/issues/631)) ([903443c](https://github.com/janus-idp/backstage-plugins/commit/903443c20f41a245a1a370818df60a4d255e6b0f))
+
 ## @janus-idp/shared-react [1.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/shared-react@1.1.1...@janus-idp/shared-react@1.2.0) (2023-08-11)
 
 
