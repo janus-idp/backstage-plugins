@@ -9,6 +9,7 @@ import {
 import {
   ComputedStatus,
   PipelineRunKind,
+  PipelineTaskWithStatus,
   StatusMessage,
   SucceedConditionReason,
   TaskRunKind,
@@ -105,7 +106,7 @@ const getSucceededStatus = (status: string): ComputedStatus => {
 };
 
 export const pipelineRunStatus = (
-  pipelineRun: PipelineRunKind | TaskRunKind | null,
+  pipelineRun: PipelineRunKind | TaskRunKind | PipelineTaskWithStatus | null,
 ) => {
   const conditions = pipelineRun?.status?.conditions || [];
   if (conditions.length === 0) return null;
