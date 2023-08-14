@@ -1,3 +1,16 @@
+## @janus-idp/backstage-plugin-topology [1.15.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.14.3...@janus-idp/backstage-plugin-topology@1.15.0) (2023-08-14)
+
+
+### Features
+
+* **ts:** transpile each plugin separately ([#634](https://github.com/janus-idp/backstage-plugins/issues/634)) ([b94c4dc](https://github.com/janus-idp/backstage-plugins/commit/b94c4dc50ada328e5ce1bed5fb7c76f64607e1ee))
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 1.3.0
+
 ## @janus-idp/backstage-plugin-topology [1.14.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.14.2...@janus-idp/backstage-plugin-topology@1.14.3) (2023-08-14)
 
 

@@ -1,3 +1,10 @@
+## @janus-idp/shared-react [1.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/shared-react@1.2.2...@janus-idp/shared-react@1.3.0) (2023-08-14)
+
+
+### Features
+
+* **ts:** transpile each plugin separately ([#634](https://github.com/janus-idp/backstage-plugins/issues/634)) ([b94c4dc](https://github.com/janus-idp/backstage-plugins/commit/b94c4dc50ada328e5ce1bed5fb7c76f64607e1ee))
+
 ## @janus-idp/shared-react [1.2.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/shared-react@1.2.1...@janus-idp/shared-react@1.2.2) (2023-08-14)
 
 
