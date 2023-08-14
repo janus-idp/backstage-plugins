@@ -45,7 +45,7 @@ export const useNexusRepositoryManagerAppData = ({
 
   let title: string | undefined;
   NEXUS_REPOSITORY_MANAGER_CONFIG_ANNOTATIONS.forEach(v => {
-    switch (v.annotation) {
+    switch (v.annotation /* NOSONAR - use switch for exhaustive check */) {
       case 'nexus-repository-manager/config.title':
         title = entity?.metadata.annotations?.[v.annotation];
         break;

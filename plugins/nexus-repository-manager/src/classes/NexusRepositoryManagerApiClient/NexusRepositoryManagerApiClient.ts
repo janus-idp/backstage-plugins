@@ -61,7 +61,7 @@ export class NexusRepositoryManagerApiClient
     const proxyPath =
       this.configApi.getOptionalString(
         NEXUS_REPOSITORY_MANAGER_CONFIG.proxyPath,
-      ) || DEFAULT_PROXY_PATH;
+      ) ?? DEFAULT_PROXY_PATH;
     return `${await this.discoveryApi.getBaseUrl('proxy')}${proxyPath}`;
   }
 
@@ -97,7 +97,7 @@ export class NexusRepositoryManagerApiClient
       return null;
     }
 
-    const path = url.match(/\/(repository\/.*)/)?.at(1);
+    const path = /\/(repository\/.*)/.exec(url)?.at(1);
 
     return (await this.fetcher(`${proxyUrl}/${path}`)) as RawAsset;
   }
