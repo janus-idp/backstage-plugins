@@ -18,6 +18,7 @@
     "start:plugin": "backstage-cli package start",
     "start:keycloak": "podman run -p 8080:8080 -e 'KEYCLOAK_ADMIN=admin' -e 'KEYCLOAK_ADMIN_PASSWORD=admin' -v ./__fixtures__/keycloak-realm.json:/opt/keycloak/data/import/keycloak-realm.json quay.io/keycloak/keycloak:22.0.1 start-dev --import-realm",
     "build": "backstage-cli package build",
+    "tsc": "tsc",
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test --passWithNoTests --coverage",
     "clean": "backstage-cli package clean",
