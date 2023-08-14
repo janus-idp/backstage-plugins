@@ -28,7 +28,7 @@
     "@backstage/core-components": "^0.13.3",
     "@backstage/core-plugin-api": "^1.5.3",
     "@backstage/plugin-catalog-react": "^1.8.0",
-    "@janus-idp/shared-react": "*",
+    "@janus-idp/shared-react": "^1.3.0",
     "@backstage/theme": "^0.4.1",
     "@material-ui/core": "^4.9.13",
     "@material-ui/icons": "^4.9.1",
