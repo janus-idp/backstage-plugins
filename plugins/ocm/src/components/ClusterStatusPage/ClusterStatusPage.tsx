@@ -15,7 +15,6 @@ import {
   WarningPanel,
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
-import { ErrorResponseBody } from '@backstage/errors';
 import { catalogApiRef, EntityRefLink } from '@backstage/plugin-catalog-react';
 import { HomePageCompanyLogo } from '@backstage/plugin-home';
 import { SearchContextProvider } from '@backstage/plugin-search-react';
@@ -30,7 +29,7 @@ import {
 import { OcmApiRef } from '../../api';
 import { Status, Update } from '../common';
 
-interface clusterEntity {
+interface ClusterEntity {
   cluster: ClusterOverview;
   entity: Entity;
 }
@@ -105,7 +104,7 @@ const CatalogClusters = () => {
   const ocmApi = useApi(OcmApiRef);
   const classes = useStylesTwo();
 
-  const [clusterEntities, setClusterEntities] = useState<clusterEntity[]>([]);
+  const [clusterEntities, setClusterEntities] = useState<ClusterEntity[]>([]);
   const [{ loading, error }, refresh] = useAsyncFn(
     async () => {
       const clusterResourceEntities = await catalogApi.getEntities({
@@ -115,7 +114,7 @@ const CatalogClusters = () => {
       const clusters = await ocmApi.getClusters();
 
       if ('error' in clusters) {
-        throw new Error((clusters as ErrorResponseBody).error.message);
+        throw new Error(clusters.error.message);
       }
 
       setClusterEntities(

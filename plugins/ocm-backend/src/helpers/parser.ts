@@ -13,7 +13,7 @@ const convertCpus = (cpus: string | undefined): number | undefined => {
   if (!cpus) {
     return undefined;
   }
-  if (cpus.slice(-1) === 'm') {
+  if (cpus.endsWith('m')) {
     return parseInt(cpus.slice(0, cpus.length - 1), 10) / 1000;
   }
   return parseInt(cpus, 10);

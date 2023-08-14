@@ -16,7 +16,6 @@
 
 import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
 import {
-  ANNOTATION_KUBERNETES_API_SERVER,
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
   ResourceEntity,
@@ -26,6 +25,7 @@ import {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
+import { ANNOTATION_KUBERNETES_API_SERVER } from '@backstage/plugin-kubernetes-common';
 
 import { CustomObjectsApi } from '@kubernetes/client-node';
 import * as winston from 'winston';
@@ -83,7 +83,7 @@ export class ManagedClusterProvider implements EntityProvider {
     return readOcmConfigs(config).map(provider => {
       const client = hubApiClient(provider, options.logger);
       const taskRunner =
-        options.schedule ||
+        options.schedule ??
         options.scheduler!.createScheduledTaskRunner(provider.schedule!);
 
       if (!options.schedule && !provider.schedule) {
@@ -176,8 +176,9 @@ export class ManagedClusterProvider implements EntityProvider {
               title: 'OCM Console',
             },
             {
-              url: `https://console.redhat.com/openshift/details/s/${i.metadata!
-                .labels!.clusterID!}`,
+              url: `https://console.redhat.com/openshift/details/s/${
+                i.metadata!.labels!.clusterID
+              }`,
               title: 'OpenShift Cluster Manager',
             },
           ],
