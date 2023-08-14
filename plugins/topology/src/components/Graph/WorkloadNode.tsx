@@ -14,6 +14,8 @@ import {
   WithSelectionProps,
 } from '@patternfly/react-topology';
 
+import { SHOW_POD_COUNT_FILTER_ID } from '../../const';
+import { FilterContext } from '../../hooks/FilterContext';
 import { PipelinesData } from '../../types/pipeline';
 import { TopologyDecorator } from '../../types/topology-types';
 import { calculateRadius, getPodStatus } from '../../utils/workload-node-utils';
@@ -70,6 +72,7 @@ const InnerWorkloadNode = observer(
     const workloadData = data.data;
     const donutStatus = workloadData.podsData;
     const [hover, hoverRef] = useHover();
+    const { filters } = React.useContext(FilterContext);
     const size = Math.min(width, height);
     const { radius, decoratorRadius } = calculateRadius(size);
     const cx = width / 2;
@@ -172,6 +175,11 @@ const InnerWorkloadNode = observer(
       ? getNodeDecorators(element, decorators, cx, cy, radius, decoratorRadius)
       : null;
 
+    const iconImageUrl = workloadData.builderImage;
+
+    const showPodCount = filters?.find(f => f.id === SHOW_POD_COUNT_FILTER_ID)
+      ?.value;
+
     return (
       <g className="bs-topology-workload-node">
         <BaseNode
@@ -183,12 +191,19 @@ const InnerWorkloadNode = observer(
           nodeStatus={
             !showDetails ? getAggregateStatus(donutStatus) : undefined
           }
+          icon={!showPodCount && iconImageUrl}
           attachments={nodeDecorators}
           onSelect={onNodeSelect}
           {...rest}
         >
           {donutStatus && showDetails ? (
-            <PodSet size={size} x={cx} y={cy} data={donutStatus} showPodCount />
+            <PodSet
+              size={size}
+              x={cx}
+              y={cy}
+              data={donutStatus}
+              showPodCount={showPodCount}
+            />
           ) : null}
         </BaseNode>
       </g>

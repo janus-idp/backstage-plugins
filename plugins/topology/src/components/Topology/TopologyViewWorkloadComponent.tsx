@@ -94,6 +94,8 @@ const TopologyViewWorkloadComponent = ({
       </div>
     );
 
+  const isDataModelEmpty = loaded && dataModel?.nodes?.length === 0;
+
   return (
     <>
       {allErrors && allErrors.length > 0 && (
@@ -105,12 +107,13 @@ const TopologyViewWorkloadComponent = ({
         ) : (
           <TopologyView
             controlBar={
-              loaded &&
-              dataModel?.nodes?.length > 0 && (
+              !isDataModelEmpty && (
                 <TopologyControlBar controller={controller} />
               )
             }
-            viewToolbar={useToolbar && <TopologyToolbar />}
+            viewToolbar={
+              useToolbar && <TopologyToolbar showFilters={!isDataModelEmpty} />
+            }
             sideBar={sideBar}
             sideBarResizable
             sideBarOpen={sideBarOpen}

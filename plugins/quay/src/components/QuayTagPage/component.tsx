@@ -23,7 +23,7 @@ export const QuayTagPage = () => {
       </div>
     );
   }
-  if (!value || !value.data) {
+  if (!value?.data) {
     return <ErrorPanel error={new Error('no digest')} />;
   }
 

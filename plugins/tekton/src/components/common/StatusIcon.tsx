@@ -10,7 +10,8 @@ import {
 } from '@patternfly/react-icons';
 import classNames from 'classnames';
 
-import { ComputedStatus } from '../../types/computedStatus';
+import { ComputedStatus } from '@janus-idp/shared-react';
+
 import { YellowExclamationTriangleIcon } from './icons';
 
 interface StatusIconProps {

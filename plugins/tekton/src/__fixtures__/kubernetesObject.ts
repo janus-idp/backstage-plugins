@@ -11,6 +11,10 @@ export const kubernetesObjects: ObjectsByEntityResponse = {
       podMetrics: [],
       resources: [
         {
+          type: 'pods',
+          resources: mockKubernetesPlrResponse.pods as any,
+        },
+        {
           type: 'customresources',
           resources: mockKubernetesPlrResponse.pipelineruns,
         },

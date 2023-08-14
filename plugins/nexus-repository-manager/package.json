@@ -14,8 +14,9 @@
   },
   "scripts": {
     "start": "backstage-cli package start",
-    "pretsc": "openapi --input ./nexus-swagger.json --output ./src/generated --useUnionTypes --useOptions",
+    "generate": "openapi --input ./nexus-swagger.json --output ./src/generated --useUnionTypes --useOptions",
     "build": "backstage-cli package build",
+    "tsc": "tsc",
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test --passWithNoTests --coverage",
     "clean": "backstage-cli package clean",

@@ -7,16 +7,7 @@ import {
 import { INSTANCE_LABEL } from '../const';
 import { PipelinesData } from '../types/pipeline';
 import { K8sResponseData, K8sWorkloadResource } from '../types/types';
-
-const byCreationTime = (left: any, right: any): number => {
-  const leftCreationTime = new Date(
-    left?.metadata?.creationTimestamp || Date.now(),
-  );
-  const rightCreationTime = new Date(
-    right?.metadata?.creationTimestamp || Date.now(),
-  );
-  return rightCreationTime.getTime() - leftCreationTime.getTime();
-};
+import { byCreationTime } from './resource-utils';
 
 export const getPipelineRunsForPipeline = (
   pipeline: PipelineKind,

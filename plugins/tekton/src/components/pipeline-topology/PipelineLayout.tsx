@@ -1,5 +1,3 @@
-import '@patternfly/react-styles/css/components/Topology/topology-components.css';
-
 import React from 'react';
 import Measure from 'react-measure';
 

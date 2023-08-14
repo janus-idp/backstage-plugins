@@ -20,6 +20,7 @@ import ResourceName from '../../../../common/components/ResourceName';
 import { K8sResourcesContext } from '../../../../hooks/K8sResourcesContext';
 import { ContainerSelector } from './ContainerSelector';
 import { PodLogs } from './PodLogs';
+import PodLogsDownload from './PodLogsDownload';
 import { ContainerScope } from './types';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -46,6 +47,7 @@ export const PodLogsDialog = ({ podData }: PodLogsDialogProps) => {
   const { clusters, selectedCluster } = React.useContext(K8sResourcesContext);
   const classes = useStyles();
   const [open, setOpen] = useState<boolean>(false);
+  const [logText, setLogText] = useState<string>('');
 
   const curCluster =
     (clusters.length > 0 && clusters[selectedCluster || 0]) || '';
@@ -110,11 +112,15 @@ export const PodLogsDialog = ({ podData }: PodLogsDialogProps) => {
               onContainerChange={onContainerChange}
               containerSelected={containerSelected}
             />
+            <PodLogsDownload
+              logText={logText}
+              fileName={`${podName}-${containerSelected}`}
+            />
           </Box>
         </DialogTitle>
         <DialogContent>
           <ErrorBoundary>
-            <PodLogs podScope={podScope} />
+            <PodLogs podScope={podScope} setLogText={setLogText} />
           </ErrorBoundary>
         </DialogContent>
       </Dialog>

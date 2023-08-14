@@ -1,3 +1,5 @@
+export const tektonGroupColor = '#38812f';
+
 export type GroupVersionKind = {
   kind: string;
   apiVersion: string;
@@ -26,3 +28,5 @@ export type TektonResourcesContextData = {
   selectedCluster?: number;
   setSelectedCluster: React.Dispatch<React.SetStateAction<number>>;
 };
+
+export type Order = 'asc' | 'desc';

@@ -1,3 +1,49 @@
+## @janus-idp/backstage-plugin-tekton [1.8.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.8.2...@janus-idp/backstage-plugin-tekton@1.8.3) (2023-08-14)
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 1.2.2
+
+## @janus-idp/backstage-plugin-tekton [1.8.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.8.1...@janus-idp/backstage-plugin-tekton@1.8.2) (2023-08-14)
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 1.2.1
+
+## @janus-idp/backstage-plugin-tekton [1.8.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.8.0...@janus-idp/backstage-plugin-tekton@1.8.1) (2023-08-11)
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 1.2.0
+
+## @janus-idp/backstage-plugin-tekton [1.8.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.7.2...@janus-idp/backstage-plugin-tekton@1.8.0) (2023-08-10)
+
+
+### Features
+
+* **tekton:** visualize pipelinerun logs ([#553](https://github.com/janus-idp/backstage-plugins/issues/553)) ([540a105](https://github.com/janus-idp/backstage-plugins/commit/540a105287ee557de724f44389e9c571405d0a3d))
+
+## @janus-idp/backstage-plugin-tekton [1.7.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.7.1...@janus-idp/backstage-plugin-tekton@1.7.2) (2023-08-10)
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 1.1.1
+
+## @janus-idp/backstage-plugin-tekton [1.7.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.7.0...@janus-idp/backstage-plugin-tekton@1.7.1) (2023-08-09)
+
+
+### Bug Fixes
+
+* **tekton:** use shared-react package ([#623](https://github.com/janus-idp/backstage-plugins/issues/623)) ([57672c0](https://github.com/janus-idp/backstage-plugins/commit/57672c0d7f5549360e2cef19421648f3fea1f332))
+
 ## @janus-idp/backstage-plugin-tekton [1.7.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.6.0...@janus-idp/backstage-plugin-tekton@1.7.0) (2023-07-25)
 
 

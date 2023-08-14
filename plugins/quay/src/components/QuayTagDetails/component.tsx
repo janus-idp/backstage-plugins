@@ -114,6 +114,7 @@ export const QuayTagDetails = ({
     .map(feature => {
       // TS doesn't seem to register this list as never being undefined from the above filter
       // so we cast it into the list
+      // NOSONAR - irrelevant as per above comment
       return (feature.Vulnerabilities as Vulnerability[]).map(
         (v: Vulnerability): VulnerabilityListItem => {
           return {

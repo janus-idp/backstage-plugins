@@ -9,6 +9,7 @@ import {
 import ResourceName from '../../../common/components/ResourceName';
 import ResourceStatus from '../../../common/components/ResourceStatus';
 import Status from '../../../common/components/Status';
+import { MAXSHOWRESCOUNT } from '../../../const';
 import { PipelineRunModel } from '../../../pipeline-models';
 import PLRlastUpdated from './PLRlastUpdated';
 import TopologyResourcesTabPanelItem from './TopologyResourcesTabPaneltem';
@@ -24,6 +25,9 @@ const PLRlist = ({ pipelines, pipelineRuns }: PLRlistProps) => {
   return (
     <TopologyResourcesTabPanelItem
       resourceLabel={PipelineRunModel.labelPlural}
+      showResCount={
+        pipelineRuns.length > MAXSHOWRESCOUNT ? MAXSHOWRESCOUNT : undefined
+      }
       dataTest="plr-list"
     >
       {pipelines.map((pl: PipelineKind) => (
@@ -34,15 +38,22 @@ const PLRlist = ({ pipelines, pipelineRuns }: PLRlistProps) => {
         </li>
       ))}
       {pipelineRuns.length > 0 ? (
-        pipelineRuns.map((plr: PipelineRunKind) => (
+        pipelineRuns.slice(0, MAXSHOWRESCOUNT).map((plr: PipelineRunKind) => (
           <li
             className="item"
             style={{ alignItems: 'baseline' }}
             key={plr.metadata?.uid}
           >
-            <span className="bs-topology-pipelinerun" style={{ flex: '1' }}>
-              <ResourceName name={plr.metadata?.name ?? ''} kind="" />
-              <PLRlastUpdated plr={plr} />
+            <span style={{ flex: '1' }}>
+              <ResourceName
+                name={
+                  <span className="bs-topology-pipelinerun">
+                    {plr.metadata?.name ?? ''}
+                    <PLRlastUpdated plr={plr} />
+                  </span>
+                }
+                kind={plr.kind ?? ''}
+              />
             </span>
             <span style={{ flex: '1' }}>
               <ResourceStatus

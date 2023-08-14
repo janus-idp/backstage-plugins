@@ -128,6 +128,22 @@ The Topology plugin enables you to visualize the workloads such as Deployment, J
         app.openshift.io/vcs-ref: <GIT_REPO_BRANCH>
   ```
 
+- The following label is added to workload resources, such as Deployments to display runtime icon in the topology nodes:
+
+  ```yaml title="deployment.yaml"
+    ...
+    labels:
+      app.openshift.io/runtime: <RUNTIME_NAME>
+  ```
+
+  As another option, you can include the following label to display the runtime icon:
+
+  ```yaml title="deployment.yaml"
+    ...
+    labels:
+      app.kubernetes.io/name: <RUNTIME_NAME>
+  ```
+
   > Note: If Red Hat OpenShift Dev Spaces is [installed and configured](https://access.redhat.com/documentation/en-us/red_hat_openshift_dev_spaces/3.7/html/administration_guide/installing-devspaces) and Git URL annotations are also present on the workload YAML file, then clicking on the edit code decorator redirects you to the Red Hat OpenShift Dev Spaces instance.
 
   > Note: When you deploy the application using the OCP Git import flows, then you do not need to add the labels as import flows add the labels to the workload YAML file. Otherwise, you need to add the labels manually to the workload YAML file.

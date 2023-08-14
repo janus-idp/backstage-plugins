@@ -2,7 +2,9 @@ import React from 'react';
 
 import { useTheme } from '@material-ui/core/styles';
 
+import { FilterContext } from '../../hooks/FilterContext';
 import { K8sResourcesContext } from '../../hooks/K8sResourcesContext';
+import { useFilterContextValues } from '../../hooks/useFilterContextValues';
 import { useK8sObjectsResponse } from '../../hooks/useK8sObjectsResponse';
 import { ModelsPlural } from '../../models';
 import { ModelsPlural as TektonModels } from '../../pipeline-models';
@@ -45,12 +47,15 @@ export const TopologyComponent = () => {
   ];
 
   const k8sResourcesContextData = useK8sObjectsResponse(watchedResources);
+  const filterContextData = useFilterContextValues();
 
   return (
     <K8sResourcesContext.Provider value={k8sResourcesContextData}>
-      <div className="pf-ri__topology">
-        <TopologyWorkloadView />
-      </div>
+      <FilterContext.Provider value={filterContextData}>
+        <div className="pf-ri__topology">
+          <TopologyWorkloadView />
+        </div>
+      </FilterContext.Provider>
     </K8sResourcesContext.Provider>
   );
 };

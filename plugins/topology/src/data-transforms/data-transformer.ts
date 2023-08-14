@@ -48,7 +48,7 @@ export const getBaseTopologyDataModel = (resources: K8sResponseData): Model => {
             resource,
             item,
             TYPE_WORKLOAD,
-            'default image',
+            '',
             getUrlForResource(resources, resource),
             {
               podsData: getPodsDataForResource(resource, resources),

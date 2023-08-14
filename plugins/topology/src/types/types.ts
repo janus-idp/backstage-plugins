@@ -64,3 +64,19 @@ export type K8sResourcesContextData = {
 export type TektonResponseData = {
   [key: string]: { data: any[] };
 };
+
+export type TopologyDisplayOption = {
+  id: string;
+  label: string;
+  value: boolean;
+};
+
+export type DisplayFilters = TopologyDisplayOption[];
+export type SetAppliedTopologyFilters = (
+  filters: TopologyDisplayOption[],
+) => void;
+
+export type FilterContextType = {
+  filters?: DisplayFilters;
+  setAppliedTopologyFilters?: SetAppliedTopologyFilters;
+};
