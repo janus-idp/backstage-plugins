@@ -13,5 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { analyticsModuleSegment } from './plugin';
 export * from './apis/implementations/AnalyticsApi';
