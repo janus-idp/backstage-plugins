@@ -1,3 +1,10 @@
+## @janus-idp/shared-react [1.2.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/shared-react@1.2.1...@janus-idp/shared-react@1.2.2) (2023-08-14)
+
+
+### Bug Fixes
+
+* **shared-react:** export hooks ([#637](https://github.com/janus-idp/backstage-plugins/issues/637)) ([d378a8f](https://github.com/janus-idp/backstage-plugins/commit/d378a8f79a9a5ad25c12aad51d5849d6bc3b4bec))
+
 ## @janus-idp/shared-react [1.2.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/shared-react@1.2.0...@janus-idp/shared-react@1.2.1) (2023-08-14)
 
 
