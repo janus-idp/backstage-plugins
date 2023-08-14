@@ -93,7 +93,7 @@ export const getPodStatus = (pod: V1Pod): AllPodStatus => {
     return AllPodStatus.Terminating;
   }
   const warnings = podWarnings(pod);
-  if (warnings !== null && warnings.length) {
+  if (warnings?.length) {
     if (warnings.includes(AllPodStatus.CrashLoopBackOff)) {
       return AllPodStatus.CrashLoopBackOff;
     }
@@ -132,7 +132,7 @@ export const calculateRadius = (size: number) => {
 
 const getScalingUp = (dc: K8sWorkloadResource) => {
   return {
-    ...(dc.metadata && dc.metadata),
+    ...(dc.metadata || {}),
     status: {
       phase: AllPodStatus.ScalingUp,
     },
@@ -161,9 +161,9 @@ export const getPodData = (
 } => {
   const strategy =
     (podRCData.obj as V1Deployment)?.spec?.strategy?.type || null;
-  const currentDeploymentphase = podRCData.current && podRCData.current.phase;
-  const currentPods = podRCData.current && podRCData.current.pods;
-  const previousPods = podRCData.previous && podRCData.previous.pods;
+  const currentDeploymentphase = podRCData.current?.phase;
+  const currentPods = podRCData.current?.pods || [];
+  const previousPods = podRCData.previous?.pods || [];
   // DaemonSets and StatefulSets
   if (!strategy)
     return {
@@ -187,8 +187,8 @@ export const getPodData = (
     podRCData.isRollingOut
   ) {
     return {
-      inProgressDeploymentData: currentPods as V1Pod[],
-      completedDeploymentData: previousPods as V1Pod[],
+      inProgressDeploymentData: currentPods,
+      completedDeploymentData: previousPods,
     };
   }
   // if build is not finished show `Scaling Up` on pod phase
