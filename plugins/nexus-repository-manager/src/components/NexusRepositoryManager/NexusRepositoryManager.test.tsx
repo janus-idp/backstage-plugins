@@ -89,7 +89,7 @@ describe('NexusRepositoryManager', () => {
                 lastModified: '2023-07-27T21:34:40.249+00:00',
                 lastDownloaded: '2023-08-07T17:47:19.273+00:00',
                 uploader: 'admin',
-                uploaderIp: '172.17.0.1',
+                uploaderIp: '0.0.0.0',
                 fileSize: 1586,
               },
             ],
