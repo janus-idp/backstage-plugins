@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-keycloak-backend [1.5.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-keycloak-backend@1.4.1...@janus-idp/backstage-plugin-keycloak-backend@1.5.0) (2023-08-14)
+
+
+### Features
+
+* **ts:** transpile each plugin separately ([#634](https://github.com/janus-idp/backstage-plugins/issues/634)) ([b94c4dc](https://github.com/janus-idp/backstage-plugins/commit/b94c4dc50ada328e5ce1bed5fb7c76f64607e1ee))
+
 ## @janus-idp/backstage-plugin-keycloak-backend [1.4.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-keycloak-backend@1.4.0...@janus-idp/backstage-plugin-keycloak-backend@1.4.1) (2023-07-26)
 
 ## @janus-idp/backstage-plugin-keycloak-backend [1.4.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-keycloak-backend@1.3.11...@janus-idp/backstage-plugin-keycloak-backend@1.4.0) (2023-07-25)
