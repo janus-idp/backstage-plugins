@@ -7,11 +7,12 @@ import {
 } from '@backstage/plugin-permission-common';
 import { PolicyQuery } from '@backstage/plugin-permission-node';
 
-import { StringAdapter } from 'casbin';
+import { newEnforcer, newModelFromString, StringAdapter } from 'casbin';
 
 import { resolve } from 'path';
 
 import { RBACPermissionPolicy } from './permission-policy';
+import { MODEL } from './policy-builder';
 
 describe('RBACPermissionPolicy Tests', () => {
   it('should build', async () => {
@@ -19,10 +20,12 @@ describe('RBACPermissionPolicy Tests', () => {
       `p, known_user, test-resource, update, allow `,
     );
     const config = newConfigReader();
+    const theModel = newModelFromString(MODEL);
+    const enf = await newEnforcer(theModel, adapter);
     const policy = await RBACPermissionPolicy.build(
       getVoidLogger(),
-      adapter,
       config,
+      enf,
     );
     expect(policy).not.toBeNull();
   });
@@ -44,12 +47,9 @@ describe('RBACPermissionPolicy Tests', () => {
           },
         },
       });
-
-      policy = await RBACPermissionPolicy.build(
-        getVoidLogger(),
-        adapter,
-        config,
-      );
+      const theModel = newModelFromString(MODEL);
+      const enf = await newEnforcer(theModel, adapter);
+      policy = await RBACPermissionPolicy.build(getVoidLogger(), config, enf);
     });
 
     // case1
@@ -104,11 +104,9 @@ describe('RBACPermissionPolicy Tests', () => {
                 `,
       );
       const config = newConfigReader();
-      policy = await RBACPermissionPolicy.build(
-        getVoidLogger(),
-        adapter,
-        config,
-      );
+      const theModel = newModelFromString(MODEL);
+      const enf = await newEnforcer(theModel, adapter);
+      policy = await RBACPermissionPolicy.build(getVoidLogger(), config, enf);
     });
     // +-------+------+------------------------+
     // | allow | deny |         result         |

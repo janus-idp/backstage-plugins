@@ -14,28 +14,10 @@ import {
   PolicyQuery,
 } from '@backstage/plugin-permission-node';
 
-import {
-  Adapter,
-  Enforcer,
-  FileAdapter,
-  newEnforcer,
-  newModelFromString,
-} from 'casbin';
+import { Enforcer, FileAdapter, newEnforcer, newModelFromString } from 'casbin';
 import { Logger } from 'winston';
 
-const MODEL = `
-[request_definition]
-r = sub, obj, act
-
-[policy_definition]
-p = sub, obj, act, eft
-
-[policy_effect]
-e = some(where (p.eft == allow)) && !some(where (p.eft == deny))
-
-[matchers]
-m = r.sub == p.sub && r.obj == p.obj && r.act == p.act
-`;
+import { MODEL } from './policy-builder';
 
 const useAdmins = (admins: Config[], enf: Enforcer) => {
   admins.flatMap(async localConfig => {
@@ -47,6 +29,16 @@ const useAdmins = (admins: Config[], enf: Enforcer) => {
     const adminCreatePermission = [name, 'policy-entity', 'create', 'allow'];
     if (!(await enf.hasPolicy(...adminCreatePermission))) {
       await enf.addPolicy(...adminCreatePermission);
+    }
+
+    const adminDeletePermission = [name, 'policy-entity', 'delete', 'allow'];
+    if (!(await enf.hasPolicy(...adminDeletePermission))) {
+      await enf.addPolicy(...adminDeletePermission);
+    }
+
+    const adminUpdatePermission = [name, 'policy-entity', 'update', 'allow'];
+    if (!(await enf.hasPolicy(...adminUpdatePermission))) {
+      await enf.addPolicy(...adminUpdatePermission);
     }
   });
 };
@@ -73,16 +65,12 @@ export class RBACPermissionPolicy implements PermissionPolicy {
 
   public static async build(
     logger: Logger,
-    policyAdapter: Adapter,
     configApi: ConfigApi,
+    enf: Enforcer,
   ) {
     const adminUsers = configApi.getOptionalConfigArray(
       'permission.rbac.admin.users',
     );
-
-    const enf = await newEnforcer(newModelFromString(MODEL), policyAdapter);
-    await enf.loadPolicy();
-    await enf.enableAutoSave(true);
 
     const policiesFile = configApi.getOptionalString(
       'permission.rbac.policies-csv-file',
