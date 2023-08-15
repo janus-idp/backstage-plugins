@@ -18,11 +18,9 @@ import React from 'react';
 
 import { createDevApp } from '@backstage/dev-utils';
 
-import { analyticsModuleSegment } from '../src';
 import { Playground } from './Playground';
 
 createDevApp()
-  .registerPlugin(analyticsModuleSegment)
   .addPage({
     path: '/segment',
     title: 'Segment Playground',
