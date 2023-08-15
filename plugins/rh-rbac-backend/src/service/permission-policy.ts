@@ -17,7 +17,7 @@ import {
 import { Enforcer, FileAdapter, newEnforcer, newModelFromString } from 'casbin';
 import { Logger } from 'winston';
 
-import { MODEL } from './policy-builder';
+import { MODEL } from './permission-model';
 
 const useAdmins = (admins: Config[], enf: Enforcer) => {
   admins.flatMap(async localConfig => {
@@ -67,7 +67,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     logger: Logger,
     configApi: ConfigApi,
     enf: Enforcer,
-  ) {
+  ): Promise<RBACPermissionPolicy> {
     const adminUsers = configApi.getOptionalConfigArray(
       'permission.rbac.admin.users',
     );
