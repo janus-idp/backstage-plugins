@@ -126,74 +126,76 @@ export class PolicesServer {
       response.json(this.transformPolicyArray(...policies));
     });
 
-    router.get('/policy/:namespace/:id', async (request, response) => {
-      const decision = await this.authorize(
-        this.identity,
-        request,
-        this.permissions,
-        {
-          permission: policyEntityReadPermission,
-        },
-      );
-
-      if (decision.result === AuthorizeResult.DENY) {
-        throw new NotAllowedError(); // 403
-      }
-
-      const entityRef = this.getEntityReference(request);
-      const policy = await this.enforcer.getFilteredPolicy(0, entityRef);
-      if (policy.length !== 0) {
-        response.json(this.transformPolicyArray(...policy));
-      } else {
-        throw new NotFoundError(); // 404
-      }
-    });
-
-    router.delete('/policy/:namespace/:id', async (request, response) => {
-      const decision = await this.authorize(
-        this.identity,
-        request,
-        this.permissions,
-        {
-          permission: policyEntityDeletePermission,
-        },
-      );
-
-      if (decision.result === AuthorizeResult.DENY) {
-        throw new NotAllowedError(); // 403
-      }
-
-      const entityRef = this.getEntityReference(request);
-      let err = validateEntityReference(entityRef);
-      if (err) {
-        throw new InputError(`Invalid url: ${err.message}`); // 400
-      }
-
-      err = validatePolicyQueries(request);
-      if (err) {
-        throw new InputError( // 400
-          `Invalid policy definition. Cause: ${err.message}`,
+    router.get(
+      '/policies/:kind/:namespace/:name',
+      async (request, response) => {
+        const decision = await this.authorize(
+          this.identity,
+          request,
+          this.permissions,
+          {
+            permission: policyEntityReadPermission,
+          },
         );
-      }
 
-      const permission = this.getFirstQuery(request.query.permission!);
-      const policy = this.getFirstQuery(request.query.policy!);
-      const effect = this.getFirstQuery(request.query.effect!);
+        if (decision.result === AuthorizeResult.DENY) {
+          throw new NotAllowedError(); // 403
+        }
 
-      const policyPermission = [entityRef, permission, policy, effect];
+        const entityRef = this.getEntityReference(request);
+        const policy = await this.enforcer.getFilteredPolicy(0, entityRef);
+        if (policy.length !== 0) {
+          response.json(this.transformPolicyArray(...policy));
+        } else {
+          throw new NotFoundError(); // 404
+        }
+      },
+    );
 
-      if (!(await this.enforcer.hasPolicy(...policyPermission))) {
-        throw new NotFoundError(); // 404
-      }
+    router.delete(
+      '/policies/:kind/:namespace/:name',
+      async (request, response) => {
+        const decision = await this.authorize(
+          this.identity,
+          request,
+          this.permissions,
+          {
+            permission: policyEntityDeletePermission,
+          },
+        );
 
-      const isRemoved = await this.enforcer.removePolicy(...policyPermission);
-      if (!isRemoved) {
-        throw new ServiceUnavailableError(); // 500
-      }
-      response.status(204).end();
-    });
+        if (decision.result === AuthorizeResult.DENY) {
+          throw new NotAllowedError(); // 403
+        }
 
-    router.post('/policy', async (request, response) => {
+        const entityRef = this.getEntityReference(request);
+
+        const err = validatePolicyQueries(request);
+        if (err) {
+          throw new InputError( // 400
+            `Invalid policy definition. Cause: ${err.message}`,
+          );
+        }
+
+        const permission = this.getFirstQuery(request.query.permission!);
+        const policy = this.getFirstQuery(request.query.policy!);
+        const effect = this.getFirstQuery(request.query.effect!);
+
+        const policyPermission = [entityRef, permission, policy, effect];
+
+        if (!(await this.enforcer.hasPolicy(...policyPermission))) {
+          throw new NotFoundError(); // 404
+        }
+
+        const isRemoved = await this.enforcer.removePolicy(...policyPermission);
+        if (!isRemoved) {
+          throw new ServiceUnavailableError(); // 500
+        }
+        response.status(204).end();
+      },
+    );
+
+    router.post('/policies', async (request, response) => {
       const decision = await this.authorize(
         this.identity,
         request,
@@ -228,7 +230,7 @@ export class PolicesServer {
       response.status(201).end();
     });
 
-    router.put('/policy/:namespace/:id', async (req, resp) => {
+    router.put('/policies/:kind/:namespace/:name', async (req, resp) => {
       const decision = await this.authorize(
         this.identity,
         req,
@@ -303,8 +305,17 @@ export class PolicesServer {
   }
 
   getEntityReference(req: Request): string {
-    const str = req.params.namespace.concat('/');
-    return str + req.params.id;
+    const kind = req.params.kind;
+    const namespace = req.params.namespace;
+    const name = req.params.name;
+    const entityRef = `${kind}:${namespace}/${name}`;
+
+    const err = validateEntityReference(entityRef);
+    if (err) {
+      throw new InputError(err.message);
+    }
+
+    return entityRef;
   }
 
   transformPolicyArray(...policies: string[][]): EntityReferencedPolicy[] {

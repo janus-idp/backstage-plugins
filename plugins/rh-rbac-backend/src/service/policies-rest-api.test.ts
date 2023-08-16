@@ -56,7 +56,7 @@ jest.mock('casbin', () => {
   };
 });
 
-describe('REST-policies', () => {
+describe('REST policies api', () => {
   let app: express.Express;
 
   const mockedAuthorize = jest.fn().mockImplementation(async () => [
@@ -163,12 +163,12 @@ describe('REST-policies', () => {
     });
   });
 
-  describe('POST /policy', () => {
+  describe('POST /policies', () => {
     it('should return a status of Unauthorized', async () => {
       mockedAuthorizeConditional.mockImplementationOnce(async () => [
         { result: AuthorizeResult.DENY },
       ]);
-      const result = await request(app).post('/policy').send();
+      const result = await request(app).post('/policies').send();
 
       expect(mockedAuthorizeConditional).toHaveBeenCalledWith(
         [{ permission: policyEntityCreatePermission }],
@@ -182,7 +182,7 @@ describe('REST-policies', () => {
     });
 
     it('should not be created permission policy - req body is an empty', async () => {
-      const result = await request(app).post('/policy').send();
+      const result = await request(app).post('/policies').send();
 
       expect(result.statusCode).toBe(400);
       expect(result.body.error).toEqual({
@@ -191,22 +191,20 @@ describe('REST-policies', () => {
       });
     });
 
-    // todo add extra tests with invalid entity references...
-
     it('should not be created permission policy - entityReference is invalid', async () => {
       const result = await request(app)
-        .post('/policy')
+        .post('/policies')
         .send({ entityReference: 'user' });
 
       expect(result.statusCode).toBe(400);
       expect(result.body.error).toEqual({
         name: 'InputError',
-        message: `Invalid policy definition. Cause: entity reference 'user' does not match the required format [<kind>:][<namespace>/]<name>.`,
+        message: `Invalid policy definition. Cause: Entity reference "user" had missing or empty kind (e.g. did not start with "component:" or similar)`,
       });
     });
 
     it('should not be created permission policy - permission is an empty', async () => {
-      const result = await request(app).post('/policy').send({
+      const result = await request(app).post('/policies').send({
         entityReference: 'user:default/permission_admin',
       });
 
@@ -218,7 +216,7 @@ describe('REST-policies', () => {
     });
 
     it('should not be created permission policy - policy is an empty', async () => {
-      const result = await request(app).post('/policy').send({
+      const result = await request(app).post('/policies').send({
         entityReference: 'user:default/permission_admin',
         permission: 'policy-entity',
       });
@@ -231,7 +229,7 @@ describe('REST-policies', () => {
     });
 
     it('should not be created permission policy - effect is an empty', async () => {
-      const result = await request(app).post('/policy').send({
+      const result = await request(app).post('/policies').send({
         entityReference: 'user:default/permission_admin',
         permission: 'policy-entity',
         policy: 'read',
@@ -245,7 +243,7 @@ describe('REST-policies', () => {
     });
 
     it('should be created permission policy', async () => {
-      const result = await request(app).post('/policy').send({
+      const result = await request(app).post('/policies').send({
         entityReference: 'user:default/permission_admin',
         permission: 'policy-entity',
         policy: 'delete',
@@ -262,7 +260,7 @@ describe('REST-policies', () => {
           return true;
         });
 
-      const result = await request(app).post('/policy').send({
+      const result = await request(app).post('/policies').send({
         entityReference: 'user:default/permission_admin',
         permission: 'policy-entity',
         policy: 'delete',
@@ -279,7 +277,7 @@ describe('REST-policies', () => {
           return false;
         });
 
-      const result = await request(app).post('/policy').send({
+      const result = await request(app).post('/policies').send({
         entityReference: 'user:default/permission_admin',
         permission: 'policy-entity',
         policy: 'delete',
@@ -290,13 +288,13 @@ describe('REST-policies', () => {
     });
   });
 
-  describe('GET /policy/:namespace/:id', () => {
+  describe('GET /policies/:kind/:namespace/:name', () => {
     it('should return a status of Unauthorized', async () => {
       mockedAuthorizeConditional.mockImplementationOnce(async () => [
         { result: AuthorizeResult.DENY },
       ]);
       const result = await request(app)
-        .get('/policy/user:default/permission_admin')
+        .get('/policies/user/default/permission_admin')
         .send();
 
       expect(mockedAuthorizeConditional).toHaveBeenCalledWith(
@@ -312,7 +310,7 @@ describe('REST-policies', () => {
 
     it('should be returned permission policies by user reference', async () => {
       const result = await request(app)
-        .get('/policy/user:default/permission_admin')
+        .get('/policies/user/default/permission_admin')
         .send();
       expect(result.statusCode).toBe(200);
       expect(result.body).toEqual([
@@ -334,14 +332,14 @@ describe('REST-policies', () => {
         );
 
       const result = await request(app)
-        .get('/policy/user:default/permission_admin')
+        .get('/policies/user/default/permission_admin')
         .send();
       expect(result.statusCode).toBe(404);
       expect(result.body).toEqual({
         error: { message: '', name: 'NotFoundError' },
         request: {
           method: 'GET',
-          url: '/policy/user:default/permission_admin',
+          url: '/policies/user/default/permission_admin',
         },
         response: { statusCode: 404 },
       });
@@ -415,13 +413,13 @@ describe('REST-policies', () => {
     });
   });
 
-  describe('DELETE /policy/:namespace/:id', () => {
+  describe('DELETE /policies/:kind/:namespace/:name', () => {
     it('should return a status of Unauthorized', async () => {
       mockedAuthorizeConditional.mockImplementationOnce(async () => [
         { result: AuthorizeResult.DENY },
       ]);
       const result = await request(app)
-        .delete('/policy/user-default/permission_admin')
+        .delete('/policies/user/default/permission_admin')
         .send();
 
       expect(mockedAuthorizeConditional).toHaveBeenCalledWith(
@@ -434,21 +432,10 @@ describe('REST-policies', () => {
         message: '',
       });
     });
-    it('should fail to delete, because entity reference is invalid', async () => {
-      const result = await request(app)
-        .delete('/policy/user-default/permission_admin')
-        .send();
-
-      expect(result.statusCode).toEqual(400);
-      expect(result.body.error).toEqual({
-        name: 'InputError',
-        message: `Invalid url: entity reference 'user-default/permission_admin' does not match the required format [<kind>:][<namespace>/]<name>.`,
-      });
-    });
 
     it('should fail to delete, because permission query is absent', async () => {
       const result = await request(app)
-        .delete('/policy/user:default/permission_admin')
+        .delete('/policies/user/default/permission_admin')
         .send();
 
       expect(result.statusCode).toEqual(400);
@@ -461,7 +448,7 @@ describe('REST-policies', () => {
     it('should fail to delete, because policy query is absent', async () => {
       const result = await request(app)
         .delete(
-          '/policy/user:default/permission_admin?permission=policy-entity',
+          '/policies/user/default/permission_admin?permission=policy-entity',
         )
         .send();
 
@@ -475,7 +462,7 @@ describe('REST-policies', () => {
     it('should fail to delete, because effect query is absent', async () => {
       const result = await request(app)
         .delete(
-          '/policy/user:default/permission_admin?permission=policy-entity&policy=read',
+          '/policies/user/default/permission_admin?permission=policy-entity&policy=read',
         )
         .send();
 
@@ -495,7 +482,7 @@ describe('REST-policies', () => {
 
       const result = await request(app)
         .delete(
-          '/policy/user:default/permission_admin?permission=policy-entity&policy=read&effect=allow',
+          '/policies/user/default/permission_admin?permission=policy-entity&policy=read&effect=allow',
         )
         .send();
 
@@ -520,7 +507,7 @@ describe('REST-policies', () => {
 
       const result = await request(app)
         .delete(
-          '/policy/user:default/permission_admin?permission=policy-entity&policy=read&effect=allow',
+          '/policies/user/default/permission_admin?permission=policy-entity&policy=read&effect=allow',
         )
         .send();
 
@@ -545,7 +532,7 @@ describe('REST-policies', () => {
 
       const result = await request(app)
         .delete(
-          '/policy/user:default/permission_admin?permission=policy-entity&policy=read&effect=allow',
+          '/policies/user/default/permission_admin?permission=policy-entity&policy=read&effect=allow',
         )
         .send();
 
@@ -553,13 +540,13 @@ describe('REST-policies', () => {
     });
   });
 
-  describe('PUT /policy/:namespace/:id', () => {
+  describe('PUT /policies/:kind/:namespace/:name', () => {
     it('should return a status of Unauthorized', async () => {
       mockedAuthorizeConditional.mockImplementationOnce(async () => [
         { result: AuthorizeResult.DENY },
       ]);
       const result = await request(app)
-        .put('/policy/user-default/permission_admin')
+        .put('/policies/user/default/permission_admin')
         .send();
 
       expect(mockedAuthorizeConditional).toHaveBeenCalledWith(
@@ -575,7 +562,7 @@ describe('REST-policies', () => {
 
     it('should fail to update policy - old policy is absent', async () => {
       const result = await request(app)
-        .put('/policy/user:default/permission_admin')
+        .put('/policies/user/default/permission_admin')
         .send();
 
       expect(result.statusCode).toEqual(400);
@@ -587,7 +574,7 @@ describe('REST-policies', () => {
 
     it('should fail to update policy - new policy is absent', async () => {
       const result = await request(app)
-        .put('/policy/user:default/permission_admin')
+        .put('/policies/user/default/permission_admin')
         .send({ oldPolicy: {} });
 
       expect(result.statusCode).toEqual(400);
@@ -599,7 +586,7 @@ describe('REST-policies', () => {
 
     it('should fail to update policy - oldPolicy permission is absent', async () => {
       const result = await request(app)
-        .put('/policy/user:default/permission_admin')
+        .put('/policies/user/default/permission_admin')
         .send({ oldPolicy: {}, newPolicy: {} });
 
       expect(result.statusCode).toEqual(400);
@@ -611,7 +598,7 @@ describe('REST-policies', () => {
 
     it('should fail to update policy - oldPolicy policy is absent', async () => {
       const result = await request(app)
-        .put('/policy/user:default/permission_admin')
+        .put('/policies/user/default/permission_admin')
         .send({ oldPolicy: { permission: 'policy-entity' }, newPolicy: {} });
 
       expect(result.statusCode).toEqual(400);
@@ -623,7 +610,7 @@ describe('REST-policies', () => {
 
     it('should fail to update policy - oldPolicy effect is absent', async () => {
       const result = await request(app)
-        .put('/policy/user:default/permission_admin')
+        .put('/policies/user/default/permission_admin')
         .send({
           oldPolicy: { permission: 'policy-entity', policy: 'read' },
           newPolicy: {},
@@ -638,7 +625,7 @@ describe('REST-policies', () => {
 
     it('should fail to update policy - newPolicy permission is absent', async () => {
       const result = await request(app)
-        .put('/policy/user:default/permission_admin')
+        .put('/policies/user/default/permission_admin')
         .send({
           oldPolicy: {
             permission: 'policy-entity',
@@ -657,7 +644,7 @@ describe('REST-policies', () => {
 
     it('should fail to update policy - newPolicy policy is absent', async () => {
       const result = await request(app)
-        .put('/policy/user:default/permission_admin')
+        .put('/policies/user/default/permission_admin')
         .send({
           oldPolicy: {
             permission: 'policy-entity',
@@ -676,7 +663,7 @@ describe('REST-policies', () => {
 
     it('should fail to update policy - newPolicy effect is absent', async () => {
       const result = await request(app)
-        .put('/policy/user:default/permission_admin')
+        .put('/policies/user/default/permission_admin')
         .send({
           oldPolicy: {
             permission: 'policy-entity',
@@ -695,7 +682,7 @@ describe('REST-policies', () => {
 
     it('should fail to update policy - newPolicy effect has invalid value', async () => {
       const result = await request(app)
-        .put('/policy/user:default/permission_admin')
+        .put('/policies/user/default/permission_admin')
         .send({
           oldPolicy: {
             permission: 'policy-entity',
@@ -714,7 +701,7 @@ describe('REST-policies', () => {
 
     it('should fail to update policy - old policy not found', async () => {
       const result = await request(app)
-        .put('/policy/user:default/permission_admin')
+        .put('/policies/user/default/permission_admin')
         .send({
           oldPolicy: {
             permission: 'policy-entity',
@@ -742,7 +729,7 @@ describe('REST-policies', () => {
           return true;
         });
       const result = await request(app)
-        .put('/policy/user:default/permission_admin')
+        .put('/policies/user/default/permission_admin')
         .send({
           oldPolicy: {
             permission: 'policy-entity',
@@ -770,7 +757,7 @@ describe('REST-policies', () => {
           return true;
         });
       const result = await request(app)
-        .put('/policy/user:default/permission_admin')
+        .put('/policies/user/default/permission_admin')
         .send({
           oldPolicy: {
             permission: 'policy-entity',
@@ -803,7 +790,7 @@ describe('REST-policies', () => {
         });
 
       const result = await request(app)
-        .put('/policy/user:default/permission_admin')
+        .put('/policies/user/default/permission_admin')
         .send({
           oldPolicy: {
             permission: 'policy-entity',
@@ -845,7 +832,7 @@ describe('REST-policies', () => {
         });
 
       const result = await request(app)
-        .put('/policy/user:default/permission_admin')
+        .put('/policies/user/default/permission_admin')
         .send({
           oldPolicy: {
             permission: 'policy-entity',
@@ -887,7 +874,7 @@ describe('REST-policies', () => {
         });
 
       const result = await request(app)
-        .put('/policy/user:default/permission_admin')
+        .put('/policies/user/default/permission_admin')
         .send({
           oldPolicy: {
             permission: 'policy-entity',

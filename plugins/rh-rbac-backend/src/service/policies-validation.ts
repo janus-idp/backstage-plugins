@@ -1,3 +1,4 @@
+import { CompoundEntityRef, parseEntityRef } from '@backstage/catalog-model';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 import { Request } from 'express-serve-static-core';
@@ -46,10 +47,17 @@ export function validateEntityReference(entityRef?: string): Error | undefined {
     return new Error(`'entityReference' must not be empty`);
   }
 
-  const regex = /^(.+):(.+)\/(.+)$/u;
-  if (!regex.test(entityRef)) {
+  let entityRefCompound: CompoundEntityRef;
+  try {
+    entityRefCompound = parseEntityRef(entityRef);
+  } catch (err) {
+    return err as Error;
+  }
+
+  const entityRefFull = `${entityRefCompound.kind}:${entityRefCompound.namespace}/${entityRefCompound.name}`;
+  if (entityRefFull !== entityRef) {
     return new Error(
-      `entity reference '${entityRef}' does not match the required format [<kind>:][<namespace>/]<name>.`,
+      `entity reference '${entityRef}' does not match the required format [<kind>:][<namespace>/]<name>. Provide, please, full entity reference.`,
     );
   }
 

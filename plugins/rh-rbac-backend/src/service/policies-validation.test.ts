@@ -91,17 +91,71 @@ describe('rest data validation', () => {
 
     it('should return an error when entity reference is not full or invalid', () => {
       const invalidOrUnsupportedEntityRefs = [
-        'admin',
-        'admin:default',
-        'admin/guest',
-        'admin/guest/somewhere',
+        {
+          ref: 'admin',
+          expectedError: `Entity reference "admin" had missing or empty kind (e.g. did not start with "component:" or similar)`,
+        },
+        {
+          ref: 'admin:default',
+          expectedError: `entity reference 'admin:default' does not match the required format [<kind>:][<namespace>/]<name>. Provide, please, full entity reference.`,
+        },
+        {
+          ref: 'admin/guest',
+          expectedError: `Entity reference "admin/guest" had missing or empty kind (e.g. did not start with "component:" or similar)`,
+        },
+        {
+          ref: 'admin/guest/somewhere',
+          expectedError: `Entity reference "admin/guest/somewhere" had missing or empty kind (e.g. did not start with "component:" or similar)`,
+        },
+        {
+          ref: ':default/admin',
+          expectedError: `Entity reference ":default/admin" was not on the form [<kind>:][<namespace>/]<name>`,
+        },
+        {
+          ref: 'user:/admin',
+          expectedError: `Entity reference "user:/admin" was not on the form [<kind>:][<namespace>/]<name>`,
+        },
+        {
+          ref: 'user:default/',
+          expectedError: `Entity reference "user:default/" was not on the form [<kind>:][<namespace>/]<name>`,
+        },
+        {
+          ref: 'user:/',
+          expectedError: `Entity reference "user:/" was not on the form [<kind>:][<namespace>/]<name>`,
+        },
+        {
+          ref: ':default/',
+          expectedError: `Entity reference ":default/" was not on the form [<kind>:][<namespace>/]<name>`,
+        },
+        {
+          ref: ':/guest',
+          expectedError: `Entity reference ":/guest" was not on the form [<kind>:][<namespace>/]<name>`,
+        },
+        {
+          ref: ':/',
+          expectedError: `Entity reference ":/" was not on the form [<kind>:][<namespace>/]<name>`,
+        },
+        {
+          ref: '/admin',
+          expectedError: `Entity reference "/admin" was not on the form [<kind>:][<namespace>/]<name>`,
+        },
+        {
+          ref: 'user/',
+          expectedError: `Entity reference "user/" was not on the form [<kind>:][<namespace>/]<name>`,
+        },
+        {
+          ref: ':default',
+          expectedError: `Entity reference ":default" was not on the form [<kind>:][<namespace>/]<name>`,
+        },
+        {
+          ref: 'user:',
+          expectedError: `Entity reference "user:" was not on the form [<kind>:][<namespace>/]<name>`,
+        },
       ];
       for (const entityRef of invalidOrUnsupportedEntityRefs) {
-        const err = validateEntityReference(entityRef);
+        const err = validateEntityReference(entityRef.ref);
         expect(err).toBeTruthy();
-        expect(err?.message).toEqual(
-          `entity reference '${entityRef}' does not match the required format [<kind>:][<namespace>/]<name>.`,
-        );
+        expect(err?.message).toEqual(entityRef.expectedError);
       }
     });
 
