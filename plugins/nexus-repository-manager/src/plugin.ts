@@ -14,8 +14,8 @@ import {
 } from './annotations';
 import {
   NexusRepositoryManagerApiClient,
-  nexusRepositoryManagerApiRef,
-} from './classes';
+  NexusRepositoryManagerApiRef,
+} from './api';
 import { rootRouteRef } from './routes';
 
 export const nexusRepositoryManagerPlugin = createPlugin({
@@ -25,7 +25,7 @@ export const nexusRepositoryManagerPlugin = createPlugin({
   },
   apis: [
     createApiFactory({
-      api: nexusRepositoryManagerApiRef,
+      api: NexusRepositoryManagerApiRef,
       deps: {
         discoveryApi: discoveryApiRef,
         configApi: configApiRef,

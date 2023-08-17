@@ -9,7 +9,7 @@ import { Box, Chip, makeStyles } from '@material-ui/core';
 
 import { formatByteSize, formatDate } from '@janus-idp/shared-react';
 
-import { nexusRepositoryManagerApiRef } from '../../classes';
+import { NexusRepositoryManagerApiRef } from '../../api';
 import { useNexusRepositoryManagerAppData } from '../../hooks';
 import { getFileSize, getSha256 } from '../../utils';
 import { COLUMNS } from './columns';
@@ -31,7 +31,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export function NexusRepositoryManager() {
-  const nexusClient = useApi(nexusRepositoryManagerApiRef);
+  const nexusClient = useApi(NexusRepositoryManagerApiRef);
   const { entity } = useEntity();
   const { ANNOTATIONS } = nexusClient.getAnnotations();
 
@@ -98,7 +98,10 @@ export function NexusRepositoryManager() {
             data-testid="nexus-repository-manager-empty-table"
           >
             No data was added yet,&nbsp;
-            <Link to="https://backstage.io/">learn how to add data</Link>.
+            <Link to="https://github.com/janus-idp/backstage-plugins/blob/main/plugins/nexus-repository-manager/README.md">
+              learn how to add data
+            </Link>
+            .
           </div>
         }
       />

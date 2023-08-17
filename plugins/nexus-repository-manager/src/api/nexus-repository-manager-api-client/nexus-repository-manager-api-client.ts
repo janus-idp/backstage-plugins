@@ -33,7 +33,7 @@ export type NexusRepositoryManagerApiV1 = {
   getAnnotations(): { ANNOTATIONS: Readonly<Annotation[]> };
 };
 
-export const nexusRepositoryManagerApiRef =
+export const NexusRepositoryManagerApiRef =
   createApiRef<NexusRepositoryManagerApiV1>({
     id: 'plugin.nexus-repository-manager.service',
   });

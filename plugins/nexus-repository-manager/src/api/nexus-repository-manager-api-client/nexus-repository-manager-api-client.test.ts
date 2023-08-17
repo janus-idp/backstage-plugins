@@ -1,69 +1,15 @@
 import { UrlPatternDiscovery } from '@backstage/core-app-api';
-import { type ConfigApi, type IdentityApi } from '@backstage/core-plugin-api';
+import { type IdentityApi } from '@backstage/core-plugin-api';
 
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 
+import { ConfigApiMock } from '../../__fixtures__/mocks';
 import {
   NEXUS_REPOSITORY_MANAGER_ANNOTATIONS,
   NEXUS_REPOSITORY_MANAGER_EXPERIMENTAL_ANNOTATIONS,
 } from '../../annotations';
-import { NexusRepositoryManagerApiClient } from './NexusRepositoryManagerApiClient';
-
-type MockArgs<T> = Partial<{
-  [K in keyof T]: ReturnType<(typeof jest)['fn']>;
-}>;
-
-class ConfigApiMock implements ConfigApi {
-  public subscribe;
-  public has;
-  public keys;
-  public get;
-  public getOptional;
-  public getConfig;
-  public getOptionalConfig;
-  public getConfigArray;
-  public getOptionalConfigArray;
-  public getNumber;
-  public getOptionalNumber;
-  public getBoolean;
-  public getOptionalBoolean;
-  public getString;
-  public getOptionalString;
-  public getStringArray;
-  public getOptionalStringArray;
-
-  public constructor(args?: MockArgs<ConfigApi>) {
-    this.subscribe = jest.fn();
-    this.has = jest.fn();
-    this.keys = jest.fn();
-    this.get = jest.fn();
-    this.getOptional = jest.fn();
-    this.getConfig = jest.fn();
-    this.getOptionalConfig = jest.fn();
-    this.getConfigArray = jest.fn();
-    this.getOptionalConfigArray = jest.fn();
-    this.getNumber = jest.fn();
-    this.getOptionalNumber = jest.fn();
-    this.getBoolean = jest.fn();
-    this.getOptionalBoolean = jest.fn();
-    this.getString = jest.fn();
-    this.getOptionalString = jest.fn();
-    this.getStringArray = jest.fn();
-    this.getOptionalStringArray = jest.fn();
-
-    (
-      Object.entries(args ?? {}) as [
-        keyof MockArgs<ConfigApi>,
-        MockArgs<ConfigApi>[keyof MockArgs<ConfigApi>],
-      ][]
-    ).forEach(([key, value]) => {
-      if (value) {
-        this[key] = value;
-      }
-    });
-  }
-}
+import { NexusRepositoryManagerApiClient } from './nexus-repository-manager-api-client';
 
 const LOCAL_ADDR = 'https://localhost:7007/nexus-repository-manager';
 
@@ -73,7 +19,7 @@ const handlers = [
       return res(
         ctx.status(200),
         ctx.json(
-          require(`${__dirname}/__fixtures__/service/rest/v1/search/docker/imageName/${req.url.searchParams.get(
+          require(`${__dirname}/../../__fixtures__/service/rest/v1/search/docker/imageName/${req.url.searchParams.get(
             'docker.imageName',
           )}/index.json`),
         ),
@@ -84,7 +30,7 @@ const handlers = [
       return res(
         ctx.status(200),
         ctx.json(
-          require(`${__dirname}/__fixtures__/service/rest/v1/search/docker/imageTag/${req.url.searchParams.get(
+          require(`${__dirname}/../../__fixtures__/service/rest/v1/search/docker/imageTag/${req.url.searchParams.get(
             'docker.imageTag',
           )}/index.json`),
         ),
@@ -94,7 +40,7 @@ const handlers = [
     return res(
       ctx.status(404),
       ctx.json(
-        require(`${__dirname}/__fixtures__/service/rest/v1/search/404.json`),
+        require(`${__dirname}/../../__fixtures__/service/rest/v1/search/404.json`),
       ),
     );
   }),
@@ -105,7 +51,7 @@ const handlers = [
       return res(
         ctx.status(200),
         ctx.json(
-          require(`${__dirname}/__fixtures__/repository/docker/v2/janus-idp/backstage-showcase/manifests/latest.json`),
+          require(`${__dirname}/../../__fixtures__/repository/docker/v2/janus-idp/backstage-showcase/manifests/latest.json`),
         ),
       );
     },
@@ -117,7 +63,7 @@ const handlers = [
       return res(
         ctx.status(200),
         ctx.json(
-          require(`${__dirname}/__fixtures__/repository/docker/v2/janus-idp/backstage-showcase/manifests/sha-33dfe6b.json`),
+          require(`${__dirname}/../../__fixtures__/repository/docker/v2/janus-idp/backstage-showcase/manifests/sha-33dfe6b.json`),
         ),
       );
     },
@@ -129,7 +75,7 @@ const handlers = [
       return res(
         ctx.status(200),
         ctx.json(
-          require(`${__dirname}/__fixtures__/repository/docker/v2/janus-idp/backstage-showcase/manifests/sha-de3dbf1.json`),
+          require(`${__dirname}/../../__fixtures__/repository/docker/v2/janus-idp/backstage-showcase/manifests/sha-de3dbf1.json`),
         ),
       );
     },
@@ -163,7 +109,9 @@ describe('NexusRepositoryManagerApiClient', () => {
       dockerImageName: 'janus-idp/backstage-showcase',
     });
 
-    expect(components).toEqual(require('./__fixtures__/components/all.json'));
+    expect(components).toEqual(
+      require('./../../__fixtures__/components/all.json'),
+    );
   });
 
   it('should throw an error when the response is not ok', async () => {
@@ -180,7 +128,9 @@ describe('NexusRepositoryManagerApiClient', () => {
         dockerImageName: 'janus-idp/backstage-showcase',
       });
 
-      expect(components).toEqual(require('./__fixtures__/components/all.json'));
+      expect(components).toEqual(
+        require('./../../__fixtures__/components/all.json'),
+      );
     });
 
     it('should return components using dockerImageTag', async () => {
@@ -189,7 +139,7 @@ describe('NexusRepositoryManagerApiClient', () => {
       });
 
       expect(components).toEqual(
-        require('./__fixtures__/components/latest.json'),
+        require('./../../__fixtures__/components/latest.json'),
       );
     });
   });

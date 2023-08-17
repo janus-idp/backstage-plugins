@@ -51,7 +51,7 @@ The Nexus Repository Manager plugin displays the information about your build ar
    ```tsx title="packages/app/src/components/catalog/EntityPage.tsx"
    /* highlight-add-next-line */
    import {
-     isNexusRepositoryAvailable,
+     isNexusRepositoryManagerAvailable,
      NexusRepositoryManagerPage,
    } from '@janus-idp/backstage-plugin-nexus-repository-manager';
 
