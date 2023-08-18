@@ -4,6 +4,7 @@ import {
 } from '@backstage/plugin-permission-common';
 
 export const RESOURCE_TYPE_POLICY_ENTITY = 'policy-entity';
+export const RESOURCE_TYPE_PLUGIN_POLICY_ENTITY = 'plugin-policy-entity';
 
 /**
  * Convenience type for permission entity
@@ -11,6 +12,18 @@ export const RESOURCE_TYPE_POLICY_ENTITY = 'policy-entity';
 export type PolicyEntityPermission = ResourcePermission<
   typeof RESOURCE_TYPE_POLICY_ENTITY
 >;
+
+/**
+ * This permission is used to authorize actions that involve reading
+ * permission policies.
+ */
+export const pluginPolicyEntityReadPermission = createPermission({
+  name: 'policy.entity.plugin.read',
+  attributes: {
+    action: 'read',
+  },
+  resourceType: RESOURCE_TYPE_PLUGIN_POLICY_ENTITY,
+});
 
 /**
  * This permission is used to authorize actions that involve reading
@@ -62,6 +75,7 @@ export const policyEntityUpdatePermission = createPermission({
  * List of all permissions on permission polices.
  */
 export const policyEntityPermissions = [
+  pluginPolicyEntityReadPermission,
   policyEntityReadPermission,
   policyEntityCreatePermission,
   policyEntityDeletePermission,

@@ -2,6 +2,7 @@ import {
   PluginDatabaseManager,
   PluginEndpointDiscovery,
   resolvePackagePath,
+  UrlReaders,
 } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import { IdentityApi } from '@backstage/plugin-auth-node';
@@ -15,6 +16,7 @@ import { Logger } from 'winston';
 import { CasbinDBAdapterFactory } from './casbin-adapter-factory';
 import { MODEL } from './permission-model';
 import { RBACPermissionPolicy } from './permission-policy';
+import { PluginEndpointProvider } from './plugin-endpoints';
 import { PolicesServer } from './policies-rest-api';
 
 export class PolicyBuilder {
@@ -25,6 +27,8 @@ export class PolicyBuilder {
     identity: IdentityApi;
     permissions: PermissionEvaluator;
     database: PluginDatabaseManager;
+    urlReader: UrlReaders;
+    pluginEndpointProvider: PluginEndpointProvider;
   }): Promise<Router> {
     let adapter;
     const databaseEnabled = env.config.getOptionalBoolean(
@@ -63,6 +67,10 @@ export class PolicyBuilder {
       env.permissions,
       options,
       enf,
+      env.config,
+      env.logger,
+      env.discovery,
+      env.pluginEndpointProvider,
     );
     return server.serve();
   }

@@ -18,6 +18,25 @@ import {
 import { RBACPermissionPolicy } from './permission-policy';
 import { PolicesServer } from './policies-rest-api';
 
+const mockUrlReaderService = {
+  readUrl: jest.fn().mockImplementation(() => {}),
+  readTree: jest.fn().mockImplementation(() => {}),
+  search: jest.fn().mockImplementation(async () => {
+    return Promise.resolve({
+      files: [],
+      etag: '',
+    });
+  }),
+};
+
+jest.mock('@backstage/backend-common', () => {
+  const actualBackendCommon = jest.requireActual('@backstage/backend-common');
+  actualBackendCommon.UrlReaders = {
+    default: jest.fn(() => mockUrlReaderService),
+  };
+  return actualBackendCommon;
+});
+
 jest.mock('@backstage/plugin-auth-node', () => ({
   getBearerTokenFromAuthorizationHeader: () => 'token',
 }));
@@ -106,14 +125,21 @@ describe('REST policies api', () => {
       },
     });
     const logger = getVoidLogger();
+    const mockDiscovery = {
+      getBaseUrl: jest.fn().mockImplementation(async () => {
+        return Promise.resolve('http://localhost:7007/api/permission');
+      }),
+      getExternalBaseUrl: jest.fn(),
+    };
+
+    const mockPluginEndpointProvider = {
+      get: jest.fn().mockImplementation(),
+    };
 
     const options: RouterOptions = {
       config: config,
       logger,
-      discovery: {
-        getBaseUrl: jest.fn(),
-        getExternalBaseUrl: jest.fn(),
-      },
+      discovery: mockDiscovery,
       identity: mockIdentityClient,
       policy: await RBACPermissionPolicy.build(
         logger,
@@ -126,6 +152,10 @@ describe('REST policies api', () => {
       mockPermissionEvaluator,
       options,
       mockEnforcer as Enforcer,
+      config,
+      logger,
+      mockDiscovery,
+      mockPluginEndpointProvider,
     );
     const router = await server.serve();
     app = express().use(router);

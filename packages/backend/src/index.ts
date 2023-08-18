@@ -25,6 +25,8 @@ import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 
 import Router from 'express-promise-router';
 
+import { PluginEndpointCollector } from '@janus-idp/plugin-rh-rbac-backend';
+
 import app from './plugins/app';
 import auth from './plugins/auth';
 import catalog from './plugins/catalog';
@@ -91,13 +93,14 @@ async function main() {
   const permissionEnv = useHotMemoize(module, () => createEnv('permission'));
 
   const apiRouter = Router();
-  apiRouter.use('/catalog', await catalog(catalogEnv));
-  apiRouter.use('/scaffolder', await scaffolder(scaffolderEnv));
-  apiRouter.use('/auth', await auth(authEnv));
-  apiRouter.use('/techdocs', await techdocs(techdocsEnv));
-  apiRouter.use('/proxy', await proxy(proxyEnv));
-  apiRouter.use('/search', await search(searchEnv));
-  apiRouter.use('/permission', await permission(permissionEnv));
+  const pec = new PluginEndpointCollector();
+  apiRouter.use(pec.add('/catalog'), await catalog(catalogEnv));
+  apiRouter.use(pec.add('/scaffolder'), await scaffolder(scaffolderEnv));
+  apiRouter.use(pec.add('/auth'), await auth(authEnv));
+  apiRouter.use(pec.add('/techdocs'), await techdocs(techdocsEnv));
+  apiRouter.use(pec.add('/proxy'), await proxy(proxyEnv));
+  apiRouter.use(pec.add('/search'), await search(searchEnv));
+  apiRouter.use(pec.add('/permission'), await permission(permissionEnv, pec));
 
   // Add backends ABOVE this line; this 404 handler is the catch-all fallback
   apiRouter.use(notFoundHandler());
