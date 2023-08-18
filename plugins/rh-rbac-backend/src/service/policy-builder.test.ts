@@ -100,6 +100,10 @@ describe('PolicyBuilder', () => {
     getClient: jest.fn().mockImplementation(),
   };
 
+  const mockUrlReaders = {
+    create: jest.fn().mockImplementation(),
+  };
+
   const mockDiscovery = {
     getBaseUrl: jest.fn(),
     getExternalBaseUrl: jest.fn(),
@@ -127,6 +131,7 @@ describe('PolicyBuilder', () => {
       identity: mockIdentityClient,
       permissions: mockPermissionEvaluator,
       database: mockDatabaseManager,
+      urlReader: mockUrlReaders,
     });
 
     expect(FileAdapter).toHaveBeenCalled();
@@ -163,6 +168,7 @@ describe('PolicyBuilder', () => {
       identity: mockIdentityClient,
       permissions: mockPermissionEvaluator,
       database: mockDatabaseManager,
+      urlReader: mockUrlReaders,
     });
     expect(CasbinDBAdapterFactory).toHaveBeenCalled();
     expect(mockEnforcer.loadPolicy).toHaveBeenCalled();

@@ -14,5 +14,6 @@ export default async function createPlugin(
     identity: env.identity,
     permissions: env.permissions,
     database: env.database,
+    urlReader: env.reader,
   });
 }

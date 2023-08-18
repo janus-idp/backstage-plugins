@@ -1,6 +1,14 @@
-import { errorHandler, getVoidLogger } from '@backstage/backend-common';
+import {
+  errorHandler,
+  getVoidLogger,
+  ReadUrlResponse,
+} from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
-import { InputError } from '@backstage/errors';
+import {
+  InputError,
+  NotFoundError,
+  ServiceUnavailableError,
+} from '@backstage/errors';
 import { RouterOptions } from '@backstage/plugin-permission-backend';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
@@ -9,6 +17,7 @@ import express from 'express';
 import request from 'supertest';
 
 import {
+  pluginPolicyEntityReadPermission,
   policyEntityCreatePermission,
   policyEntityDeletePermission,
   policyEntityReadPermission,
@@ -16,7 +25,45 @@ import {
 } from '@janus-idp/plugin-rh-rbac-common';
 
 import { RBACPermissionPolicy } from './permission-policy';
+import { PluginEndpointCollector } from './plugin-endpoints';
 import { PolicesServer } from './policies-rest-api';
+
+const pluginEndpointCollectorMock = {
+  get: jest.fn().mockImplementation(async () => {
+    return Promise.resolve([
+      'https://locahost:7007/api/catalog',
+      'https://locahost:7007/api/permission',
+    ]);
+  }),
+  permissionFactory: jest.fn().mockImplementation(),
+};
+
+jest.mock('./plugin-endpoints', () => {
+  return {
+    PluginEndpointCollector: jest.fn((): Partial<PluginEndpointCollector> => {
+      return pluginEndpointCollectorMock;
+    }),
+  };
+});
+
+const mockUrlReaderService = {
+  readUrl: jest.fn().mockImplementation(() => {}),
+  readTree: jest.fn().mockImplementation(() => {}),
+  search: jest.fn().mockImplementation(async () => {
+    return Promise.resolve({
+      files: [],
+      etag: '',
+    });
+  }),
+};
+
+jest.mock('@backstage/backend-common', () => {
+  const actualBackendCommon = jest.requireActual('@backstage/backend-common');
+  actualBackendCommon.UrlReaders = {
+    default: jest.fn(() => mockUrlReaderService),
+  };
+  return actualBackendCommon;
+});
 
 jest.mock('@backstage/plugin-auth-node', () => ({
   getBearerTokenFromAuthorizationHeader: () => 'token',
@@ -106,14 +153,17 @@ describe('REST policies api', () => {
       },
     });
     const logger = getVoidLogger();
+    const mockDiscovery = {
+      getBaseUrl: jest.fn().mockImplementation(async () => {
+        return Promise.resolve('https://localhost:7007/api/permission');
+      }),
+      getExternalBaseUrl: jest.fn(),
+    };
 
     const options: RouterOptions = {
       config: config,
       logger,
-      discovery: {
-        getBaseUrl: jest.fn(),
-        getExternalBaseUrl: jest.fn(),
-      },
+      discovery: mockDiscovery,
       identity: mockIdentityClient,
       policy: await RBACPermissionPolicy.build(
         logger,
@@ -126,6 +176,9 @@ describe('REST policies api', () => {
       mockPermissionEvaluator,
       options,
       mockEnforcer as Enforcer,
+      config,
+      logger,
+      mockDiscovery,
     );
     const router = await server.serve();
     app = express().use(router);
@@ -924,6 +977,102 @@ describe('REST policies api', () => {
           server.getFirstQuery(queryValue);
         }).toThrow(InputError);
       });
+    });
+  });
+
+  describe('list plugin permission', () => {
+    it('should return list plugins permission', async () => {
+      const bufferMock = {
+        toString: jest.fn().mockImplementation(),
+      };
+      bufferMock.toString
+        .mockReturnValueOnce(
+          '{"permissions":[{"type":"resource","name":"catalog.entity.read","attributes":{"action":"read"},"resourceType":"catalog-entity"}]}',
+        )
+        .mockReturnValue(
+          '{"permissions":[{"type":"resource","name":"policy.entity.read","attributes":{"action":"read"},"resourceType":"policy-entity"}]}',
+        );
+
+      const mockReadUrlResponse: ReadUrlResponse = {
+        buffer: jest.fn().mockImplementation(async () => {
+          return Promise.resolve(bufferMock as any as Buffer);
+        }),
+      };
+
+      mockUrlReaderService.readUrl.mockReturnValue(mockReadUrlResponse);
+
+      const result = await request(app).get('/plugins/policies').send();
+      expect(result.statusCode).toEqual(200);
+      expect(result.body).toEqual([
+        { permission: 'catalog-entity', policy: 'read' },
+        { permission: 'policy-entity', policy: 'read' },
+      ]);
+    });
+  });
+
+  it('should skip endpoint which returned 404', async () => {
+    const bufferMock = {
+      toString: jest.fn().mockImplementation(),
+    };
+
+    bufferMock.toString.mockReturnValueOnce(
+      '{"permissions":[{"type":"resource","name":"policy.entity.read","attributes":{"action":"read"},"resourceType":"policy-entity"}]}',
+    );
+
+    const mockReadUrlResponse: ReadUrlResponse = {
+      buffer: jest.fn().mockImplementation(async () => {
+        return Promise.resolve(bufferMock as any as Buffer);
+      }),
+    };
+
+    mockUrlReaderService.readUrl
+      .mockRejectedValueOnce(new NotFoundError())
+      .mockReturnValue(mockReadUrlResponse);
+
+    const result = await request(app).get('/plugins/policies').send();
+    expect(result.statusCode).toEqual(200);
+    expect(result.body).toEqual([
+      { permission: 'policy-entity', policy: 'read' },
+    ]);
+  });
+
+  it('should return 500 if one of the endpoints fails with an error 500', async () => {
+    const bufferMock = {
+      toString: jest.fn().mockImplementation(),
+    };
+
+    bufferMock.toString.mockReturnValueOnce(
+      '{"permissions":[{"type":"resource","name":"policy.entity.read","attributes":{"action":"read"},"resourceType":"policy-entity"}]}',
+    );
+
+    const mockReadUrlResponse: ReadUrlResponse = {
+      buffer: jest.fn().mockImplementation(async () => {
+        return Promise.resolve(bufferMock as any as Buffer);
+      }),
+    };
+
+    mockUrlReaderService.readUrl
+      .mockRejectedValueOnce(new ServiceUnavailableError())
+      .mockReturnValue(mockReadUrlResponse);
+
+    const result = await request(app).get('/plugins/policies').send();
+    expect(result.statusCode).toEqual(500);
+  });
+
+  it('should return a status of Unauthorized', async () => {
+    mockedAuthorizeConditional.mockImplementationOnce(async () => [
+      { result: AuthorizeResult.DENY },
+    ]);
+    const result = await request(app).get('/plugins/policies').send();
+
+    expect(mockedAuthorizeConditional).toHaveBeenCalledWith(
+      [{ permission: pluginPolicyEntityReadPermission }],
+      { token: 'token' },
+    );
+    expect(result.statusCode).toBe(403);
+    expect(result.body.error).toEqual({
+      name: 'NotAllowedError',
+      message: '',
     });
   });
 });

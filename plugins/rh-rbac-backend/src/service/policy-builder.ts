@@ -2,6 +2,7 @@ import {
   PluginDatabaseManager,
   PluginEndpointDiscovery,
   resolvePackagePath,
+  UrlReaders,
 } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import { IdentityApi } from '@backstage/plugin-auth-node';
@@ -25,6 +26,7 @@ export class PolicyBuilder {
     identity: IdentityApi;
     permissions: PermissionEvaluator;
     database: PluginDatabaseManager;
+    urlReader: UrlReaders;
   }): Promise<Router> {
     let adapter;
     const databaseEnabled = env.config.getOptionalBoolean(
@@ -63,6 +65,9 @@ export class PolicyBuilder {
       env.permissions,
       options,
       enf,
+      env.config,
+      env.logger,
+      env.discovery,
     );
     return server.serve();
   }
