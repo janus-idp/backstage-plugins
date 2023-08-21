@@ -39,15 +39,18 @@ export class AapResourceEntityProvider implements EntityProvider {
     const providerConfigs = readAapApiEntityConfigs(configRoot);
 
     return providerConfigs.map(providerConfig => {
-      if (!options.schedule && !providerConfig.schedule) {
+      let taskRunner;
+      if (options.schedule) {
+        taskRunner = options.schedule;
+      } else if (options.scheduler && providerConfig.schedule) {
+        taskRunner = options.scheduler.createScheduledTaskRunner(
+          providerConfig.schedule,
+        );
+      } else {
         throw new Error(
           `No schedule provided neither via code nor config for AapResourceEntityProvider:${providerConfig.id}.`,
         );
       }
-
-      const taskRunner =
-        options.schedule ??
-        options.scheduler!.createScheduledTaskRunner(providerConfig.schedule!);
 
       return new AapResourceEntityProvider(
         providerConfig,
