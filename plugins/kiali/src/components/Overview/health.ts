@@ -1,7 +1,6 @@
 import {
   ComputedServerConfig,
   DEGRADED,
-  DurationInSeconds,
   FAILURE,
   HEALTHY,
   NamespaceInfo,
@@ -25,7 +24,7 @@ const generateHealth = (
   serverConfig: ComputedServerConfig,
   type: OverviewType,
   namespace: NamespaceInfo,
-  duration: DurationInSeconds,
+  duration: number,
 ): NamespaceAppHealth | NamespaceServiceHealth | NamespaceWorkloadHealth => {
   const ret:
     | NamespaceAppHealth
@@ -51,7 +50,7 @@ export const calculateHealth = (
   serverConfig: ComputedServerConfig,
   type: OverviewType,
   ns: NamespaceInfo,
-  duration: DurationInSeconds,
+  duration: number,
 ): NamespaceInfo => {
   const nsInfo = ns;
   const healths = generateHealth(serverConfig, type, ns, duration);

@@ -45,7 +45,7 @@ export const addLegendEvent = (events: VCEvent[], item: EventItem): void => {
         {
           childName: [item.serieID[0]],
           target: 'data',
-          mutation: props => item.onClick!(props),
+          mutation: props => (item.onClick ? props : {}),
         },
         {
           childName: [item.serieID[0]],
@@ -63,7 +63,7 @@ export const addLegendEvent = (events: VCEvent[], item: EventItem): void => {
           childName: item.serieID,
           target: 'data',
           eventKey: 'all',
-          mutation: props => item.onMouseOver!(props),
+          mutation: props => (item.onMouseOver ? props : {}),
         },
       ];
     };

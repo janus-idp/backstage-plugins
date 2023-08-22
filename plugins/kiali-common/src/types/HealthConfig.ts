@@ -1,12 +1,12 @@
 import { HealthConfig, RegexConfig } from './';
 
-const allMatch = new RegExp('.*');
+const allMatch = /'.*'/;
 
 /* Replace x|X by the regular expression
    Example: 4XX or 5XX to 4\d\d 5\d\d
 */
 const replaceXCode = (value: string): string => {
-  return value.replace(/x|X/g, '\\d');
+  return value.replace(/[xX]/g, '\\d');
 };
 
 /*

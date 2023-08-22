@@ -3,7 +3,6 @@ import { createApiRef, DiscoveryApi } from '@backstage/core-plugin-api';
 
 import {
   DirectionType,
-  DurationInSeconds,
   FetchResponseWrapper,
   KUBERNETES_ANNOTATION,
   KUBERNETES_LABEL_SELECTOR,
@@ -27,7 +26,7 @@ type Query = {
   ns?: string;
   nss?: string[];
   overviewType?: string;
-  duration?: DurationInSeconds;
+  duration?: number;
   direction?: DirectionType;
 };
 
@@ -57,7 +56,7 @@ export class KialiApiClient implements KialiApi {
   };
 
   private addParam = (key: string, query: URLSearchParams) => {
-    const value = this.entity!.metadata!.annotations![key];
+    const value = this.entity?.metadata.annotations![key];
     if (value) {
       query.append(encodeURIComponent(key), encodeURIComponent(value));
     }
@@ -65,7 +64,7 @@ export class KialiApiClient implements KialiApi {
 
   private getQuery = (q?: Query): string => {
     const queryString = new URLSearchParams();
-    if (this.entity!.metadata.annotations) {
+    if (this.entity?.metadata.annotations) {
       this.addParam(KUBERNETES_ANNOTATION, queryString);
       this.addParam(KUBERNETES_LABEL_SELECTOR, queryString);
       this.addParam(KUBERNETES_NAMESPACE, queryString);

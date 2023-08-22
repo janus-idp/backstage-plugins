@@ -226,8 +226,7 @@ export abstract class Health {
   }
 
   getTrafficStatus(): HealthItem | undefined {
-    for (let i = 0; i < this.health.items.length; i++) {
-      const item = this.health.items[i];
+    for (const item of this.health.items) {
       if (item.title.startsWith(TRAFFICSTATUS)) {
         return item;
       }
@@ -236,8 +235,7 @@ export abstract class Health {
   }
 
   getWorkloadStatus(): HealthItem | undefined {
-    for (let i = 0; i < this.health.items.length; i++) {
-      const item = this.health.items[i];
+    for (const item of this.health.items) {
       if (item.title.startsWith(POD_STATUS)) {
         return item;
       }

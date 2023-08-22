@@ -24,7 +24,7 @@ export const OverviewStatus = (props: OverviewStatusProps) => {
       <strong>{props.status.name}</strong>
       {items.map((app, idx) => {
         return (
-          <div data-test={`${props.id}-${app}`} key={`${props.id}-${idx}`}>
+          <div data-test={`${props.id}-${app}`} key={`${app}-${idx}`}>
             <span style={{ marginRight: '10px' }}>
               {createHealthIcon(props.status)}
             </span>{' '}

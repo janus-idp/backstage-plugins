@@ -67,7 +67,7 @@ export class SparklineChart extends React.Component<Props, State> {
   }
 
   private handleResize = () => {
-    if (this.containerRef && this.containerRef.current) {
+    if (this.containerRef?.current) {
       this.setState({ width: this.containerRef.current.clientWidth });
     }
   };

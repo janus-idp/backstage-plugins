@@ -3,7 +3,6 @@ import React from 'react';
 import {
   ComputedServerConfig,
   DirectionType,
-  DurationInSeconds,
   getName,
   Metric,
   RichDataPoint,
@@ -19,7 +18,7 @@ import './Charts.css';
 type DataPlaneChartProps = {
   metrics?: Metric[];
   errorMetrics?: Metric[];
-  duration: DurationInSeconds;
+  duration: number;
   direction: DirectionType;
   config: ComputedServerConfig;
   width?: string;

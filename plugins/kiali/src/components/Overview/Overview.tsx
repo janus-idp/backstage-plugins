@@ -79,15 +79,13 @@ export const Overview = (props: OverviewProps) => {
         if (response.errors.length > 0) {
           setErrors(response.errors);
         } else {
-          if (response.warnings) {
-            setWarnings(response.warnings);
-          }
+          setWarnings(response.warnings);
           const ovData = response.response as OverviewData;
           const ns = ovData.namespaces;
           try {
             if (ns.length > 0) {
               ns.forEach((n, i) => {
-                ns[i] = calculateHealth(config!.server, ovType, n, dur);
+                ns[i] = calculateHealth(config.server, ovType, n, dur);
               });
             } else {
               const newWarnings = warnings;

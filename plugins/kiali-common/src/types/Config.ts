@@ -1,4 +1,3 @@
-import { DurationInSeconds } from './Common';
 import { parseHealthConfig } from './HealthConfig';
 
 export type KialiDetails = {
@@ -157,8 +156,8 @@ export interface ServerConfig {
   kialiFeatureFlags: KialiFeatureFlags;
   logLevel: string;
   prometheus: {
-    globalScrapeInterval?: DurationInSeconds;
-    storageTsdbRetention?: DurationInSeconds;
+    globalScrapeInterval?: number;
+    storageTsdbRetention?: number;
   };
 }
 
@@ -255,7 +254,7 @@ export const computeValidDurations = (cfg: ComputedServerConfig) => {
   const scrapeInterval = cfg.prometheus.globalScrapeInterval;
   let filtered = durationsTuples.filter(
     d =>
-      (!tsdbRetention || d[0] <= tsdbRetention!) &&
+      (!tsdbRetention || d[0] <= tsdbRetention) &&
       (!scrapeInterval || d[0] >= scrapeInterval * 2),
   );
   // Make sure we keep at least one item, even if it's silly

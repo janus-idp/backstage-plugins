@@ -61,7 +61,7 @@ export class KialiApiImpl implements KialiApi {
   private queryMetrics = (options: IstioMetricsOptions) => {
     const filters = options.filters?.map(f => `filters[]=${f}`).join('&');
     return (
-      `?${filters ? filters : ''}&duration=${options.duration}` +
+      `?${filters || ''}&duration=${options.duration}` +
       `&step=${options.step}&rateInterval=${options.rateInterval}` +
       `&direction=${options.direction}&reporter=${options.reporter}`
     );
