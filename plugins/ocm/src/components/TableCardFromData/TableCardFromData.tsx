@@ -14,9 +14,9 @@ const convertToGibibytes = (kibibytes: string): string => {
 
 const valueFormatter = (value: any): any => {
   if (typeof value === 'string') {
-    if (value.slice(-2) === 'Ki') {
+    if (value.endsWith('Ki')) {
       return convertToGibibytes(value);
-    } else if (value.slice(0, 4) === 'http') {
+    } else if (value.startsWith('http')) {
       return <Link to={value}>{value}</Link>;
     }
   }

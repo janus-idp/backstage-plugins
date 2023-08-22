@@ -53,8 +53,7 @@ export interface RouterOptions {
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { logger } = options;
-  const { config } = options;
+  const { logger, config } = options;
 
   const clients = Object.fromEntries(
     readOcmConfigs(config).map(provider => [

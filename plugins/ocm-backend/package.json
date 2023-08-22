@@ -30,6 +30,7 @@
     "@backstage/catalog-model": "^1.4.1",
     "@backstage/config": "^1.0.8",
     "@backstage/plugin-catalog-node": "^1.4.0",
+    "@backstage/plugin-kubernetes-common": "^0.6.5",
     "@janus-idp/backstage-plugin-ocm-common": "2.2.0",
     "@kubernetes/client-node": "^0.18.0",
     "express": "^4.17.1",

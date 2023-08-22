@@ -1,8 +1,7 @@
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement } from 'react';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
 import useDebounce from 'react-use/lib/useDebounce';
 
-import { Entity } from '@backstage/catalog-model';
 import {
   CodeSnippet,
   Content,
@@ -15,7 +14,6 @@ import {
   WarningPanel,
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
-import { ErrorResponseBody } from '@backstage/errors';
 import { catalogApiRef, EntityRefLink } from '@backstage/plugin-catalog-react';
 import { HomePageCompanyLogo } from '@backstage/plugin-home';
 import { SearchContextProvider } from '@backstage/plugin-search-react';
@@ -29,11 +27,6 @@ import {
 
 import { OcmApiRef } from '../../api';
 import { Status, Update } from '../common';
-
-interface clusterEntity {
-  cluster: ClusterOverview;
-  entity: Entity;
-}
 
 const useStylesTwo = makeStyles({
   container: {
@@ -105,8 +98,7 @@ const CatalogClusters = () => {
   const ocmApi = useApi(OcmApiRef);
   const classes = useStylesTwo();
 
-  const [clusterEntities, setClusterEntities] = useState<clusterEntity[]>([]);
-  const [{ loading, error }, refresh] = useAsyncFn(
+  const [{ value: clusterEntities, loading, error }, refresh] = useAsyncFn(
     async () => {
       const clusterResourceEntities = await catalogApi.getEntities({
         filter: { kind: 'Resource', 'spec.type': 'kubernetes-cluster' },
@@ -115,11 +107,11 @@ const CatalogClusters = () => {
       const clusters = await ocmApi.getClusters();
 
       if ('error' in clusters) {
-        throw new Error((clusters as ErrorResponseBody).error.message);
+        throw new Error(clusters.error.message);
       }
 
-      setClusterEntities(
-        clusterResourceEntities.items.map(entity => {
+      const clusterEntityMappings = clusterResourceEntities.items.map(
+        entity => {
           const cluster = (clusters as ClusterOverview[]).find(
             cd => cd.name === entity.metadata.name,
           );
@@ -127,8 +119,9 @@ const CatalogClusters = () => {
             cluster: cluster!,
             entity: entity,
           };
-        }),
+        },
       );
+      return clusterEntityMappings;
     },
     [catalogApi],
     { loading: true },
@@ -147,24 +140,28 @@ const CatalogClusters = () => {
     return <CircularProgress />;
   }
 
-  const data = clusterEntities.map(ce => {
-    return {
-      name: (
-        <EntityRefLink entityRef={ce.entity}>{ce.cluster.name}</EntityRefLink>
-      ),
-      status: <Status status={ce.cluster.status} />,
-      infrastructure: ce.cluster.platform,
-      version: (
-        <Update
-          data={{
-            version: ce.cluster.openshiftVersion,
-            update: ce.cluster.update,
-          }}
-        />
-      ),
-      nodes: <NodeChips nodes={ce.cluster.nodes} />,
-    };
-  });
+  const data = clusterEntities
+    ? clusterEntities.map(ce => {
+        return {
+          name: (
+            <EntityRefLink entityRef={ce.entity}>
+              {ce.cluster.name}
+            </EntityRefLink>
+          ),
+          status: <Status status={ce.cluster.status} />,
+          infrastructure: ce.cluster.platform,
+          version: (
+            <Update
+              data={{
+                version: ce.cluster.openshiftVersion,
+                update: ce.cluster.update,
+              }}
+            />
+          ),
+          nodes: <NodeChips nodes={ce.cluster.nodes} />,
+        };
+      })
+    : [];
 
   return (
     <div className={classes.container}>
