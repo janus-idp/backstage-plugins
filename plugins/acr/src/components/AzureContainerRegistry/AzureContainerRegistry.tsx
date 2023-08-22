@@ -4,9 +4,10 @@ import { useAsync } from 'react-use';
 import { Progress, Table } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
+import { formatDate } from '@janus-idp/shared-react';
+
 import { AzureContainerRegistryApiRef } from '../../api';
 import { Tag, TagRow } from '../../types';
-import { formatDate } from '../utils';
 import { ErrorReport } from './ErrorReport';
 import { columns, useStyles } from './tableHeading';
 

@@ -1,9 +1,16 @@
 import { format } from 'date-fns';
 
-export function formatDate(date: string | undefined) {
-  if (!date) {
+/**
+ * Returns the given date as a formated Date.
+ *
+ * @param date - The given date in seconds
+ * @return The date formatted to en-US locale, otherwise return 'N/A'
+ */
+export function formatDate(date: string | number | Date | undefined): string {
+  if (!date || date === -1) {
     return 'N/A';
   }
 
-  return format(new Date(date), 'LLL d, yyyy, h:mm a');
+  const adjustedDate = typeof date === 'number' ? date * 1000 : date;
+  return format(new Date(adjustedDate), 'LLL d, yyyy, h:mm a');
 }

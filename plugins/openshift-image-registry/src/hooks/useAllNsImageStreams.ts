@@ -3,9 +3,10 @@ import { useAsync } from 'react-use';
 
 import { useApi } from '@backstage/core-plugin-api';
 
+import { formatDate } from '@janus-idp/shared-react';
+
 import { openshiftImageRegistryApiRef } from '../api';
 import { ImageStream } from '../types';
-import { formatDate } from '../utils';
 
 export const useAllNsImageStreams = () => {
   const client = useApi(openshiftImageRegistryApiRef);

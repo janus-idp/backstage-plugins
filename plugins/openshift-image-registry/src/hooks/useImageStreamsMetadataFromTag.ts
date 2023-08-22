@@ -3,9 +3,10 @@ import { useAsync } from 'react-use';
 
 import { useApi } from '@backstage/core-plugin-api';
 
+import { formatByteSize } from '@janus-idp/shared-react';
+
 import { openshiftImageRegistryApiRef } from '../api';
 import { ImageStream, ImageStreamMetadata } from '../types';
-import { formatSize } from '../utils';
 
 export const useImageStreamsMetadataFromTag = (imageStreams: ImageStream[]) => {
   const client = useApi(openshiftImageRegistryApiRef);
@@ -33,7 +34,7 @@ export const useImageStreamsMetadataFromTag = (imageStreams: ImageStream[]) => {
                   '',
                 version:
                   tag.image.dockerImageMetadata?.Config?.Labels?.version || '',
-                size: formatSize(tag.image.dockerImageMetadata?.Size) || '',
+                size: formatByteSize(tag.image.dockerImageMetadata?.Size) || '',
               };
             } catch {
               return imst;
