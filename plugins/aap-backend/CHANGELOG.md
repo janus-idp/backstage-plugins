@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-aap-backend [1.1.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-aap-backend@1.1.0...@janus-idp/backstage-plugin-aap-backend@1.1.1) (2023-08-22)
+
+
+### Bug Fixes
+
+* **aap:** fixes codesmells for aap plugin ([#653](https://github.com/janus-idp/backstage-plugins/issues/653)) ([0a9dc6b](https://github.com/janus-idp/backstage-plugins/commit/0a9dc6b0a71e04722790b8478ece23f895ba086a))
+
 ## @janus-idp/backstage-plugin-aap-backend [1.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-aap-backend@1.0.0...@janus-idp/backstage-plugin-aap-backend@1.1.0) (2023-08-14)
 
 
