@@ -29,12 +29,12 @@
     "@backstage/errors": "^1.2.1",
     "@backstage/plugin-catalog-react": "^1.8.0",
     "@backstage/theme": "^0.4.1",
-    "@janus-idp/backstage-plugin-kiali-common": "1.2.1",
+    "@janus-idp/backstage-plugin-kiali-common": "link:../kiali-common",
     "@material-ui/core": "^4.9.13",
     "@material-ui/icons": "^4.11.3",
     "@material-ui/lab": "^4.0.0-alpha.45",
-    "@patternfly/patternfly": "4.224.2",
-    "@patternfly/react-charts": "6.94.18",
+    "@patternfly/patternfly": "5.0.2",
+    "@patternfly/react-charts": "7.0.0",
     "react-use": "^17.2.4"
   },
   "peerDependencies": {
