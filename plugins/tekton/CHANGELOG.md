@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-tekton [1.9.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.9.0...@janus-idp/backstage-plugin-tekton@1.9.1) (2023-08-22)
+
+
+### Bug Fixes
+
+* **tekton:** fix code smells ([#632](https://github.com/janus-idp/backstage-plugins/issues/632)) ([2ad13da](https://github.com/janus-idp/backstage-plugins/commit/2ad13dac8ae27959d74d45c91da01c95e7b80e20))
+
 ## @janus-idp/backstage-plugin-tekton [1.9.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.8.3...@janus-idp/backstage-plugin-tekton@1.9.0) (2023-08-14)
 
 
