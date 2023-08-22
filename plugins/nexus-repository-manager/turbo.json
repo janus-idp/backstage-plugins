@@ -1,0 +1,12 @@
+{
+  "extends": ["//"],
+  "pipeline": {
+    "tsc": {
+      "outputs": ["../../dist-types/plugins/nexus-repository-manager/**"],
+      "dependsOn": ["^tsc", "generate"]
+    },
+    "generate": {
+      "outputs": ["src/generated/**"]
+    }
+  }
+}
