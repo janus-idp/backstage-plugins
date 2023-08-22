@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-keycloak-backend [1.5.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-keycloak-backend@1.5.0...@janus-idp/backstage-plugin-keycloak-backend@1.5.1) (2023-08-22)
+
+
+### Bug Fixes
+
+* **keycloak:** fix config loader issue on backstage v1.17 ([#650](https://github.com/janus-idp/backstage-plugins/issues/650)) ([1799a1f](https://github.com/janus-idp/backstage-plugins/commit/1799a1f65fd2c1a9b8cf95fa0aca8b6debebba7b))
+
 ## @janus-idp/backstage-plugin-keycloak-backend [1.5.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-keycloak-backend@1.4.1...@janus-idp/backstage-plugin-keycloak-backend@1.5.0) (2023-08-14)
 
 
