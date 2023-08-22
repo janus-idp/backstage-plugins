@@ -2,9 +2,10 @@ import { useEffect, useMemo, useState } from 'react';
 
 import { KubernetesObjects } from '@backstage/plugin-kubernetes';
 
+import { useDeepCompareMemoize } from '@janus-idp/shared-react';
+
 import { TektonResponseData } from '../types/types';
 import { getTektonResources } from '../utils/tekton-utils';
-import { useDeepCompareMemoize } from './useDeepCompareMemoize';
 
 export const useAllWatchResources = (
   k8sObjectsResponse: KubernetesObjects,

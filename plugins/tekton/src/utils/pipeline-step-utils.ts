@@ -41,7 +41,7 @@ export const createStepStatus = (
   let stepRunStatus = ComputedStatus.PipelineNotStarted;
   let duration = null;
 
-  if (!status || !status.reason) {
+  if (!status?.reason) {
     stepRunStatus = ComputedStatus.Cancelled;
   } else if (status.reason === ComputedStatus['In Progress']) {
     // In progress, try to get granular statuses

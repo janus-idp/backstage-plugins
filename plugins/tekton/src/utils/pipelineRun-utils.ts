@@ -2,7 +2,9 @@ import { cloneDeep, each, find, get, isEmpty, isFinite, trim } from 'lodash';
 
 import {
   ComputedStatus,
+  pipelineRunFilterReducer,
   PipelineRunKind,
+  pipelineRunStatus,
   PipelineTask,
   PipelineTaskWithStatus,
   PLRTaskRuns,
@@ -15,10 +17,6 @@ import {
   TEKTON_PIPELINE_TASK,
 } from '../consts/tekton-const';
 import { TaskStatus } from '../types/taskRun';
-import {
-  pipelineRunFilterReducer,
-  pipelineRunStatus,
-} from './pipeline-filter-reducer';
 
 // Conversions between units and milliseconds
 const s = 1000;
@@ -93,7 +91,7 @@ const appendTaskStatus = (mTask: PipelineTaskWithStatus) => {
       ...mTask,
       status: { reason: ComputedStatus.Pending, conditions: [] },
     };
-  } else if (mTask.status && mTask.status.conditions) {
+  } else if (mTask.status?.conditions) {
     task.status.reason = pipelineRunStatus(mTask) || ComputedStatus.Pending;
   } else if (mTask.status && !mTask.status.reason) {
     task.status.reason = ComputedStatus.Pending;

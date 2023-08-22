@@ -60,9 +60,9 @@ export const PipelineVisualizationCard = ({
       footerLink={
         linkTekton
           ? {
-              link: url
-                ? url
-                : `/catalog/default/component/${entity.metadata.name}/tekton`,
+              link:
+                url ||
+                `/catalog/default/component/${entity.metadata.name}/tekton`,
               title: 'GO TO TEKTON',
             }
           : undefined
