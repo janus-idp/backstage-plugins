@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-keycloak-backend [1.5.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-keycloak-backend@1.5.1...@janus-idp/backstage-plugin-keycloak-backend@1.5.2) (2023-08-23)
+
+
+### Bug Fixes
+
+* **config types:** inline types in config.d.ts ([#664](https://github.com/janus-idp/backstage-plugins/issues/664)) ([ae1aea1](https://github.com/janus-idp/backstage-plugins/commit/ae1aea1f4890c0034d1c2602223d59463c61206b))
+
 ## @janus-idp/backstage-plugin-keycloak-backend [1.5.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-keycloak-backend@1.5.0...@janus-idp/backstage-plugin-keycloak-backend@1.5.1) (2023-08-22)
 
 
