@@ -172,7 +172,7 @@ Tekton is a front-end plugin that enables you to view the `PipelineRun` resource
 
 1. Go to the **CI/CD** tab.
 
-   The **CI/CD** tab displays the latest `PipelineRun` resources associated to a Kubernetes cluster. The resources include tasks to complete. When you hover the mouse pointer on a task card, you can view the steps to complete that particular task.
+   The **CI/CD** tab displays the latest `PipelineRun` resources associated with a Kubernetes cluster. The resources include tasks to complete. When you hover the mouse pointer on a task card, you can view the steps to complete that particular task.
 
    ![ci-cd-tab-tekton](./images/tekton-plugin-user1.png)
 
