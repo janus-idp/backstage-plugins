@@ -137,7 +137,7 @@ The Tekton plugin enables you to visualize the `PipelineRun` resources available
    );
    ```
 
-1. Enable the latest PipelineRun visualization in the **CI/CD** tab on the entity view page. The `linkTekton` property is optional and takes boolean value, if not specified or set to `true`, then the **GO TO TEKTON** option is displayed.
+1. Enable the latest PipelineRun visualization in the **CI/CD** tab on the entity view page. The `linkTekton` property is optional and takes a boolean value, if not specified or set to `true`, then the **GO TO TEKTON** option is displayed.
 
    ```tsx title="packages/app/src/components/catalog/EntityPage.tsx"
    /* highlight-add-next-line */
@@ -182,5 +182,5 @@ Tekton is a front-end plugin that enables you to view the `PipelineRun` resource
 
    The **TEKTON** tab contains the list of pipeline runs related to a cluster. The list contains pipeline run details, such as **NAME**, **STATUS**, **TASK STATUS**, **STARTED**, and **DURATION**.
    
-   ![tekton-tab](./images/tekton-plugin-user2.png)
+   ![usertekton-tab](./images/tekton-plugin-user2.png)
 
