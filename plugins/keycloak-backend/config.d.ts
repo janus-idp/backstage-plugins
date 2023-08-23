@@ -36,36 +36,37 @@ export interface Config {
            * @see https://www.keycloak.org/docs-api/11.0/rest-api/index.html#_groups_resource
            */
           groupQuerySize?: number;
-        } & { scheduler: TaskScheduleDefinitionConfig } & (
-            | {
-                /**
-                 * KeycloakClientCredentials
-                 */
-                /**
-                 * Keycloak credentials. Use together with "password".
-                 */
-                username: string;
-                /**
-                 * Keycloak credentials. Use together with "username".
-                 * @visibility secret
-                 */
-                password: string;
-              }
-            | {
-                /**
-                 * KeycloakClientCredentials
-                 */
-                /**
-                 * Keycloak credentials. Use together with "clientSecret".
-                 */
-                clientId: string;
-                /**
-                 * Keycloak credentials. Use together with "clientId".
-                 * @visibility secret
-                 */
-                clientSecret: string;
-              }
-          );
+          schedule?: TaskScheduleDefinitionConfig;
+        } & (
+          | {
+              /**
+               * KeycloakClientCredentials
+               */
+              /**
+               * Keycloak credentials. Use together with "password".
+               */
+              username: string;
+              /**
+               * Keycloak credentials. Use together with "username".
+               * @visibility secret
+               */
+              password: string;
+            }
+          | {
+              /**
+               * KeycloakClientCredentials
+               */
+              /**
+               * Keycloak credentials. Use together with "clientSecret".
+               */
+              clientId: string;
+              /**
+               * Keycloak credentials. Use together with "clientId".
+               * @visibility secret
+               */
+              clientSecret: string;
+            }
+        );
       };
     };
   };
