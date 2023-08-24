@@ -44,7 +44,7 @@ The Nexus Repository Manager plugin displays the information about your build ar
      experimentalAnnotations: true
    ```
 
-   Replace the `isNexusRepositoryAvailable` import with `isNexusRepositoryManagerExperimentalAvailable` when adding the `<NexusRepositoryManagerPage />` component.
+   Replace the `isNexusRepositoryManagerAvailable` import with `isNexusRepositoryManagerExperimentalAvailable` when adding the `<NexusRepositoryManagerPage />` component.
 
 4. Enable an additional tab on the entity view page in `packages/app/src/components/catalog/EntityPage.tsx`:
 
@@ -60,7 +60,7 @@ The Nexus Repository Manager plugin displays the information about your build ar
        {/* ... */}
        {/* highlight-add-next-line */}
        <EntityLayout.Route
-         if={isNexusRepositoryAvailable}
+         if={isNexusRepositoryManagerAvailable}
          path="/build-artifacts"
          title="Build Artifacts"
        >
