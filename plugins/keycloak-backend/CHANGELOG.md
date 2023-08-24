@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-keycloak-backend [1.5.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-keycloak-backend@1.5.2...@janus-idp/backstage-plugin-keycloak-backend@1.5.3) (2023-08-24)
+
+
+### Bug Fixes
+
+* **keycloak:** fix schedule type in config.d.ts ([#665](https://github.com/janus-idp/backstage-plugins/issues/665)) ([4403ac3](https://github.com/janus-idp/backstage-plugins/commit/4403ac378c424f869a57b7bd3f9dcbd80d3d37bf))
+
 ## @janus-idp/backstage-plugin-keycloak-backend [1.5.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-keycloak-backend@1.5.1...@janus-idp/backstage-plugin-keycloak-backend@1.5.2) (2023-08-23)
 
 
