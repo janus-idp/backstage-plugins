@@ -11,7 +11,7 @@ The Topology plugin enables you to visualize the workloads such as Deployment, J
 - The Kubernetes plugins including `@backstage/plugin-kubernetes` and `@backstage/plugin-kubernetes-backend` are installed and configured by following the [installation](https://backstage.io/docs/features/kubernetes/installation) and [configuration](https://backstage.io/docs/features/kubernetes/configuration) guides.
 - The Kubernetes plugin is configured and connects to the cluster using a `ServiceAccount`.
 - The [`ClusterRole`](https://backstage.io/docs/features/kubernetes/configuration#role-based-access-control) must be granted to `ServiceAccount` accessing the cluster. If you have the Backstage Kubernetes plugin configured, then the `ClusterRole` is already granted.
-- The following must be added in`customResources` component in the [`app-config.yaml`](https://backstage.io/docs/features/kubernetes/configuration#configuring-kubernetes-clusters) file to view the OpenShift route:
+- The following must be added in`customResources` component in the [`app-config.yaml`](https://backstage.io/docs/features/kubernetes/configuration#configuring-kubernetes-clusters) file to view the OpenShift route as well:
 
   ```yaml
    kubernetes:
@@ -40,6 +40,25 @@ The Topology plugin enables you to visualize the workloads such as Deployment, J
           - get
           - list
 
+  ```
+
+- The following permission must be granted to the [`ClusterRole`](https://backstage.io/docs/features/kubernetes/configuration#role-based-access-control) to be able to view the pod logs:
+
+  ```yaml
+  apiVersion: rbac.authorization.k8s.io/v1
+  kind: ClusterRole
+  metadata:
+    name: backstage-read-only
+  rules:
+    - apiGroups:
+        - ''
+      resources:
+        - pods
+        - pods/log
+      verbs:
+        - get
+        - list
+        - watch
   ```
 
 - The following code must be added in`customResources` component in the [`app-config.yaml`](https://backstage.io/docs/features/kubernetes/configuration#configuring-kubernetes-clusters) file to view the Tekton PipelineRuns list in the side panel and to view the latest PipelineRun status in the Topology node decorator:

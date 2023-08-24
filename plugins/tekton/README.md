@@ -23,9 +23,11 @@ The Tekton plugin enables you to visualize the `PipelineRun` resources available
          plural: 'taskruns'
   ```
 - The Kubernetes plugin is configured and connects to the cluster using a `ServiceAccount`.
-- The [`ClusterRole`](https://backstage.io/docs/features/kubernetes/configuration#role-based-access-control) must be granted for custom resources (PipelineRuns and TaskRuns) to `ServiceAccount` accessing the cluster. If you have the Backstage Kubernetes Plugin configured, then the `ClusterRole` is already granted.
+- The [`ClusterRole`](https://backstage.io/docs/features/kubernetes/configuration#role-based-access-control) must be granted for custom resources (PipelineRuns and TaskRuns) to `ServiceAccount` accessing the cluster.
+- To be able to view the pod logs, you will need to the grant permissions for `pods/log`
+- If you have the Backstage Kubernetes Plugin configured, then the `ClusterRole` is already granted.
 
-  You can use the following code to grant the `ClusterRole` for custom resources:
+  You can use the following code to grant the `ClusterRole` for custom resources and pod logs:
 
   ```yaml
     ...
@@ -34,6 +36,14 @@ The Tekton plugin enables you to visualize the `PipelineRun` resources available
     metadata:
       name: backstage-read-only
     rules:
+      - apiGroups:
+          - ""
+        resources:
+          - pods/log
+        verbs:
+          - get
+          - list
+          - watch
       ...
       - apiGroups:
           - tekton.dev
@@ -46,7 +56,7 @@ The Tekton plugin enables you to visualize the `PipelineRun` resources available
 
   ```
 
-  > Tip: You can use our [prepared manifest for a read-only `ClusterRole`](https://raw.githubusercontent.com/janus-idp/backstage-plugins/main/plugins/tekton/manifests/clusterrole.yaml), providing both Kubernetes plugin andd Tekton plugin access.
+  > Tip: You can use our [prepared manifest for a read-only `ClusterRole`](https://raw.githubusercontent.com/janus-idp/backstage-plugins/main/plugins/tekton/manifests/clusterrole.yaml), providing both Kubernetes plugin and Tekton plugin access.
 
 - The following annotation is added to the entity's `catalog-info.yaml` file to identify whether an entity contains the Kubernetes resources:
 
