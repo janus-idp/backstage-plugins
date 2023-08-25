@@ -14,18 +14,17 @@ The Topology plugin enables you to visualize the workloads such as Deployment, J
 - The following must be added in`customResources` component in the [`app-config.yaml`](https://backstage.io/docs/features/kubernetes/configuration#configuring-kubernetes-clusters) file to view the OpenShift route as well:
 
   ```yaml
-   kubernetes:
-     ...
-     customResources:
-       - group: 'route.openshift.io'
-         apiVersion: 'v1'
-         plural: 'routes'
+    kubernetes:
+      ...
+      customResources:
+        - group: 'route.openshift.io'
+          apiVersion: 'v1'
+          plural: 'routes'
   ```
 
   Also, ensure that the route is granted a [`ClusterRole`](https://backstage.io/docs/features/kubernetes/configuration#role-based-access-control). You can use the following code to grant the `ClusterRole` to the route :
 
   ```yaml
-    ...
     apiVersion: rbac.authorization.k8s.io/v1
     kind: ClusterRole
     metadata:
@@ -45,37 +44,38 @@ The Topology plugin enables you to visualize the workloads such as Deployment, J
 - The following permission must be granted to the [`ClusterRole`](https://backstage.io/docs/features/kubernetes/configuration#role-based-access-control) to be able to view the pod logs:
 
   ```yaml
-  apiVersion: rbac.authorization.k8s.io/v1
-  kind: ClusterRole
-  metadata:
-    name: backstage-read-only
-  rules:
-    - apiGroups:
-        - ''
-      resources:
-        - pods
-        - pods/log
-      verbs:
-        - get
-        - list
-        - watch
+    apiVersion: rbac.authorization.k8s.io/v1
+    kind: ClusterRole
+    metadata:
+      name: backstage-read-only
+    rules:
+      ...
+      - apiGroups:
+          - ''
+        resources:
+          - pods
+          - pods/log
+        verbs:
+          - get
+          - list
+          - watch
   ```
 
 - The following code must be added in`customResources` component in the [`app-config.yaml`](https://backstage.io/docs/features/kubernetes/configuration#configuring-kubernetes-clusters) file to view the Tekton PipelineRuns list in the side panel and to view the latest PipelineRun status in the Topology node decorator:
 
   ```yaml
-   kubernetes:
-     ...
-     customResources:
-       - group: 'tekton.dev'
-         apiVersion: 'v1beta1'
-         plural: 'pipelines'
-       - group: 'tekton.dev'
-         apiVersion: 'v1beta1'
-         plural: 'pipelineruns'
-       - group: 'tekton.dev'
-         apiVersion: 'v1beta1'
-         plural: 'taskruns'
+    kubernetes:
+      ...
+      customResources:
+        - group: 'tekton.dev'
+          apiVersion: 'v1beta1'
+          plural: 'pipelines'
+        - group: 'tekton.dev'
+          apiVersion: 'v1beta1'
+          plural: 'pipelineruns'
+        - group: 'tekton.dev'
+          apiVersion: 'v1beta1'
+          plural: 'taskruns'
   ```
 
   Also, ensure that the Pipeline, PipelineRun, and TaskRun are granted a [`ClusterRole`](https://backstage.io/docs/features/kubernetes/configuration#role-based-access-control). You can use the following code to grant the `ClusterRole` to Pipeline, PipelineRun, and TaskRun:
@@ -103,9 +103,9 @@ The Topology plugin enables you to visualize the workloads such as Deployment, J
 - The following configuration must be added in`customResources` component in the [`app-config.yaml`](https://backstage.io/docs/features/kubernetes/configuration#configuring-kubernetes-clusters) file to view the edit code decorator:
 
   ```yaml
-   kubernetes:
-     ...
-     customResources:
+    kubernetes:
+      ...
+      customResources:
         - group: 'org.eclipse.che'
           apiVersion: 'v2'
           plural: 'checlusters'
@@ -134,34 +134,61 @@ The Topology plugin enables you to visualize the workloads such as Deployment, J
 - The following annotations are added to workload resources, such as Deployments to navigate to the Git repository of the associated application using the edit code decorator:
 
   ```yaml title="deployment.yaml"
-    ...
-    labels:
-      app.openshift.io/vcs-uri: <GIT_REPO_URL>
+  annotations:
+    app.openshift.io/vcs-uri: <GIT_REPO_URL>
   ```
 
   You can also add the following annotation to navigate to a specific branch:
 
   ```yaml title="deployment.yaml"
-      ...
-      labels:
-        app.openshift.io/vcs-ref: <GIT_REPO_BRANCH>
+  annotations:
+    app.openshift.io/vcs-ref: <GIT_REPO_BRANCH>
   ```
 
 - The following label is added to workload resources, such as Deployments to display runtime icon in the topology nodes:
 
   ```yaml title="deployment.yaml"
-    ...
-    labels:
-      app.openshift.io/runtime: <RUNTIME_NAME>
+  labels:
+    app.openshift.io/runtime: <RUNTIME_NAME>
   ```
 
   As another option, you can include the following label to display the runtime icon:
 
   ```yaml title="deployment.yaml"
-    ...
-    labels:
-      app.kubernetes.io/name: <RUNTIME_NAME>
+  labels:
+    app.kubernetes.io/name: <RUNTIME_NAME>
   ```
+
+  Currently supported values of `<RUNTIME_NAME>`:
+
+  - django
+  - dotnet
+  - drupal
+  - go-gopher
+  - golang
+  - grails
+  - jboss
+  - jruby
+  - js
+  - nginx
+  - nodejs
+  - openjdk
+  - perl
+  - phalcon
+  - php
+  - python
+  - quarkus
+  - rails
+  - redis
+  - rh-spring-boot
+  - rust
+  - java
+  - rh-openjdk
+  - ruby
+  - spring
+  - spring-boot
+
+  Any other values would result in no icons being rendered for the node.
 
   > Note: If Red Hat OpenShift Dev Spaces is [installed and configured](https://access.redhat.com/documentation/en-us/red_hat_openshift_dev_spaces/3.7/html/administration_guide/installing-devspaces) and Git URL annotations are also present on the workload YAML file, then clicking on the edit code decorator redirects you to the Red Hat OpenShift Dev Spaces instance.
 
