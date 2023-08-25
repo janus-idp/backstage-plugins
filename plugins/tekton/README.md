@@ -184,7 +184,7 @@ Tekton is a front-end plugin that enables you to view the `PipelineRun` resource
 
    ![tekton-tab](./images/tekton-plugin-user2.png)
 
-1. Select a PipelineRun to view the related resources with a Kubernetes cluster.
+1. Click a PipelineRun name in the list to view the PipelineRun visualization.
 
    ![pipelinerun-view](./images/tekton-plugin-user3.png)
 
