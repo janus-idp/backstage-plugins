@@ -9,5 +9,5 @@ export const JfrogArtifactoryDashboardPage = () => {
   const { entity } = useEntity();
   const { imageName } = useJfrogArtifactoryAppData({ entity });
 
-  return <JfrogArtifactoryRepository image={imageName} widget={false} />;
+  return <JfrogArtifactoryRepository image={imageName} />;
 };
