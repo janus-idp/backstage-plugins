@@ -182,4 +182,10 @@ Tekton is a front-end plugin that enables you to view the `PipelineRun` resource
 
    The **TEKTON** tab contains the list of pipeline runs related to a cluster. The list contains pipeline run details, such as **NAME**, **STATUS**, **TASK STATUS**, **STARTED**, and **DURATION**.
 
-   ![usertekton-tab](./images/tekton-plugin-user2.png)
+   ![tekton-tab](./images/tekton-plugin-user2.png)
+
+1. Select a PipelineRun to view the related resources with a Kubernetes cluster.
+
+   ![pipelinerun-view](./images/tekton-plugin-user3.png)
+
+   To go back to the PipelineRun list, you can click the **Back to PipelineRun list** option.
