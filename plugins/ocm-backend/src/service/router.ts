@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { errorHandler } from '@backstage/backend-common';
+import { errorHandler, loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   coreServices,
   createBackendPlugin,
@@ -50,7 +50,7 @@ import {
 } from '../helpers/parser';
 import { ManagedClusterInfo } from '../types';
 
-const buildRouter = (config: Config, logger: Logger | LoggerService) => {
+const buildRouter = (config: Config, logger: Logger) => {
   const router = Router();
   router.use(express.json());
 
@@ -159,7 +159,7 @@ export const ocmPlugin = createBackendPlugin({
         http: coreServices.httpRouter,
       },
       async init({ config, logger, http }) {
-        http.use(buildRouter(config, logger));
+        http.use(buildRouter(config, loggerToWinstonLogger(logger)));
       },
     });
   },

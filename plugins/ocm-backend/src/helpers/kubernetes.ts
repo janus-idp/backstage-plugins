@@ -1,5 +1,3 @@
-import { LoggerService } from '@backstage/backend-plugin-api';
-
 import {
   CustomObjectsApi,
   KubeConfig,
@@ -13,7 +11,7 @@ import { ManagedCluster, ManagedClusterInfo, OcmConfig } from '../types';
 
 export const hubApiClient = (
   clusterConfig: OcmConfig,
-  logger: Logger | LoggerService,
+  logger: Logger,
 ): CustomObjectsApi => {
   const kubeConfig = new KubeConfig();
 
