@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { ContentHeader } from '@backstage/core-components';
+import { ContentHeader, Select } from '@backstage/core-components';
 
 import { Chip, Drawer, IconButton, Tooltip } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
@@ -10,6 +10,7 @@ import StorageRounded from '@material-ui/icons/StorageRounded';
 import {
   KialiConfigT,
   KialiInfo,
+  Namespace,
 } from '@janus-idp/backstage-plugin-kiali-common';
 
 import { getHomeCluster } from '../../../helper';
@@ -29,57 +30,71 @@ export const KialiHeader = (props: {
   title: string;
   kialiStatus: KialiInfo;
   config: KialiConfigT;
+  namespaces: Namespace[];
+  namespacesFiltered: string[];
+  setNamespaceFilter: (ns: string[]) => void;
 }) => {
   const [isOpen, toggleDrawer] = React.useState<boolean>(false);
   const kialiHomeCluster = getHomeCluster(props.config.server);
   const classes = useDrawerStyles();
+
   return (
-    <ContentHeader title={props.title}>
-      {props.config.username && (
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-          }}
-        >
-          <span style={{ margin: '10px' }}>
-            <b>User : </b>
-            {props.config.username}
-          </span>
-        </div>
-      )}
-      {kialiHomeCluster && (
-        <Tooltip
-          title={<div>Kiali home cluster: {kialiHomeCluster?.name}</div>}
-        >
-          <Chip icon={<StorageRounded />} label={kialiHomeCluster?.name} />
+    <>
+      <ContentHeader title={props.title}>
+        {props.config.username && (
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}
+          >
+            <span style={{ margin: '10px' }}>
+              <b>User : </b>
+              {props.config.username}
+            </span>
+          </div>
+        )}
+        {kialiHomeCluster && (
+          <Tooltip
+            title={<div>Kiali home cluster: {kialiHomeCluster?.name}</div>}
+          >
+            <Chip icon={<StorageRounded />} label={kialiHomeCluster?.name} />
+          </Tooltip>
+        )}
+        <Tooltip title="Show Kiali information">
+          <IconButton
+            aria-label="info"
+            onClick={() => toggleDrawer(true)}
+            style={{ marginTop: '-10px' }}
+          >
+            <Info />
+          </IconButton>
         </Tooltip>
-      )}
-      <Tooltip title="Show Kiali information">
-        <IconButton
-          aria-label="info"
-          onClick={() => toggleDrawer(true)}
-          style={{ marginTop: '-10px' }}
+        <Drawer
+          classes={{
+            paper: classes.paper,
+          }}
+          variant="persistent"
+          anchor="right"
+          open={isOpen}
+          onClose={() => toggleDrawer(false)}
         >
-          <Info />
-        </IconButton>
-      </Tooltip>
-      <Drawer
-        classes={{
-          paper: classes.paper,
-        }}
-        variant="persistent"
-        anchor="right"
-        open={isOpen}
-        onClose={() => toggleDrawer(false)}
-      >
-        <StatusContent
-          toggleDrawer={toggleDrawer}
-          kialiStatus={props.kialiStatus}
-          config={props.config}
-        />
-      </Drawer>
-    </ContentHeader>
+          <StatusContent
+            toggleDrawer={toggleDrawer}
+            kialiStatus={props.kialiStatus}
+            config={props.config}
+          />
+        </Drawer>
+      </ContentHeader>
+      <Select
+        label="Namespaces Selected"
+        placeholder="Select namespaces"
+        items={props.namespaces.map(ns => ({ label: ns.name, value: ns.name }))}
+        selected={props.namespacesFiltered}
+        multiple
+        onChange={value => props.setNamespaceFilter(value as string[])}
+      />
+    </>
   );
 };

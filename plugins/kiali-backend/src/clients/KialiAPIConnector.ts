@@ -190,6 +190,28 @@ export class KialiApiImpl implements KialiApi {
     return response;
   }
 
+  async fetchNamespaces(entity: Entity): Promise<FetchResponseWrapper> {
+    const result: FetchResponseWrapper = {
+      errors: [],
+      warnings: [],
+    };
+
+    await this.kialiFetcher.checkSession().then(resp => {
+      result.errors = resp.errors;
+      result.warnings = resp.warnings;
+      return result;
+    });
+    if (result.errors.length === 0) {
+      await this.handlePromise<Namespace[]>(
+        result,
+        config.api.urls.namespaces,
+        resp => (result.response = filterNsByAnnotation(resp.data, entity)),
+      );
+    }
+
+    return result;
+  }
+
   handlePromise<T>(
     result: FetchResponseWrapper,
     endpoint: string,
