@@ -2,16 +2,6 @@
 
 ## Setup
 
-### Launch script and see what happen
-
-There is a script in [scripts/setupDev.sh](./scripts/setupDev.sh) to make the Dev setup automatically.
-
-_Note: This is a script it could fail if there are changes in the main code_
-
-Before commit remember not add the `package.json` in plugins or execute this script to change the link to the latest version [scripts/cleanPluginsPackage.sh](./scripts/cleanPluginsPackage.sh)
-
-### Do it manually
-
 1. Add libraries to packages/app and packages/backend:
 
    - Add to packages/app/package.json
