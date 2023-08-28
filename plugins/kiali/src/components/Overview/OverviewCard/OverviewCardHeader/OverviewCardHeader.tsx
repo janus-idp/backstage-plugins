@@ -16,6 +16,7 @@ type OverviewCardHeaderProps = {
   canaryUpgrade?: boolean;
   canaryStatus?: CanaryUpgradeStatus;
   istioStatus?: ComponentStatus[];
+  istioAPIEnabled?: boolean;
   kialiConfig: KialiConfigT;
 };
 
@@ -72,15 +73,13 @@ const getTitleHeader = (
 };
 
 export const OverviewCardHeader = (props: OverviewCardHeaderProps) => {
-  const istioAPIEnabled =
-    props.kialiConfig.status!.istioEnvironment.istioAPIEnabled;
   return (
     <CardHeader
       title={getTitleHeader(
         props.ns,
         props.ns.name === props.kialiConfig.server.istioNamespace,
         props.istioStatus,
-        istioAPIEnabled,
+        props.istioAPIEnabled,
         props.canaryUpgrade,
         props.canaryStatus,
       )}
