@@ -6,7 +6,6 @@ import {
   ComputedServerConfig,
   defaultServerConfig,
   MILLISECONDS,
-  StatusState,
   TLSStatus,
   UNIT_TIME,
 } from '../types';
@@ -14,7 +13,6 @@ import {
 export type KialiConfigT = {
   meshTLSStatus?: TLSStatus;
   server: ComputedServerConfig;
-  status?: StatusState;
   istioCerts?: CertsInfo[];
   kialiConsole: string;
   username: string;

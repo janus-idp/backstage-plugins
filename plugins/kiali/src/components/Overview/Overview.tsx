@@ -14,6 +14,7 @@ import {
   IstiodResourceThresholds,
   KialiConfigT,
   KialiFetchError,
+  KialiInfo,
   NamespaceInfo,
   OutboundTrafficPolicy,
   OverviewData,
@@ -21,7 +22,6 @@ import {
 } from '@janus-idp/backstage-plugin-kiali-common';
 
 import { kialiApiRef } from '../../api';
-import { KialiEndpoints } from '../../api/apiClient';
 import { calculateHealth } from './health';
 import { OverviewCard } from './OverviewCard';
 import { OverviewToolbar } from './OverviewToolbar';
@@ -40,6 +40,7 @@ export type DirectionType = keyof typeof directionTypes;
 
 type OverviewProps = {
   kialiConfig: KialiConfigT;
+  kialiStatus: KialiInfo;
 };
 
 export const Overview = (props: OverviewProps) => {
@@ -70,11 +71,7 @@ export const Overview = (props: OverviewProps) => {
     dir: DirectionType = direction,
   ) => {
     await kialiClient
-      .get(KialiEndpoints.getOverview, {
-        duration: dur,
-        overviewType: ovType,
-        direction: dir,
-      })
+      .getOverview(ovType, dur, dir)
       .then(response => {
         if (response.errors.length > 0) {
           setErrors(response.errors);
@@ -208,6 +205,9 @@ export const Overview = (props: OverviewProps) => {
                 outboundTrafficPolicy={outboundTrafficPolicy}
                 kialiConfig={props.kialiConfig}
                 type={overviewType}
+                istioAPIEnabled={
+                  props.kialiStatus.status.istioEnvironment.istioAPIEnabled
+                }
                 istiodResourceThresholds={istiodResourceThresholds}
                 istioStatus={componentStatus}
               />

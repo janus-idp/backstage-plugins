@@ -1,18 +1,25 @@
 import {
+  AuthInfo,
   ControlPlaneMetricsMap,
   KialiConfigT,
   Metric,
   NamespaceHealth,
   NamespaceInfo,
   OverviewData,
+  StatusState,
   TLSStatus,
 } from '../';
 
 export type NsMetrics = { [key: string]: Metric[] };
 export type HealthNamespace = { [key: string]: NamespaceHealth };
 
+export interface KialiInfo {
+  status: StatusState;
+  auth: AuthInfo;
+}
 export type FetchResponse =
   | KialiConfigT
+  | KialiInfo
   | OverviewData
   | NamespaceInfo
   | TLSStatus

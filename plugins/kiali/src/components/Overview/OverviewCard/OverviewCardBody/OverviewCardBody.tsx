@@ -63,8 +63,6 @@ const render_labels = (labels: { [key: string]: string } | undefined) => {
 };
 
 export const OverviewCardBody = (props: OverviewCardBodyProps) => {
-  const istioAPIEnabled =
-    props.kialiConfig.status!.istioEnvironment.istioAPIEnabled;
   const isIstioNs = props.kialiConfig.server.istioNamespace === props.ns.name;
   return (
     <Grid container spacing={0} direction="column">
@@ -79,7 +77,7 @@ export const OverviewCardBody = (props: OverviewCardBodyProps) => {
               <NamespaceMTLSStatus status={props.ns.tlsStatus.status} />
             </span>
           )}
-          {istioAPIEnabled && (
+          {props.istioAPIEnabled && (
             <IstioConfigStatus
               ns={props.ns}
               kialiConsole={props.kialiConfig.kialiConsole}

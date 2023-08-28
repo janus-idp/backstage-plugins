@@ -16,7 +16,7 @@ Before commit remember not add the `package.json` in plugins or execute this scr
 
    - Add to packages/app/package.json
 
-   ```yaml title="packages/app/pacakge.json"
+   ```yaml title="packages/app/package.json"
    "@janus-idp/backstage-plugin-kiali": "link:../../plugins/kiali",
    ```
 
@@ -28,7 +28,7 @@ Before commit remember not add the `package.json` in plugins or execute this scr
 
    - Add to packages/backend/package.json
 
-   ```yaml title="packages/app/pacakge.json"
+   ```yaml title="packages/backend/package.json"
    '@janus-idp/backstage-plugin-kiali-backend': 'link:../../plugins/kiali-backend'
    ```
 
@@ -86,6 +86,8 @@ Before commit remember not add the `package.json` in plugins or execute this scr
 
 ```ts
 /* highlight-add-start */
+import { CatalogClient } from '@backstage/catalog-client';
+
 import { Router } from 'express';
 
 import { createRouter } from '@janus-idp/backstage-plugin-kiali-backend';
@@ -95,8 +97,10 @@ import { PluginEnvironment } from '../types';
 export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
+  const catalogApi = new CatalogClient({ discoveryApi: env.discovery });
   return await createRouter({
     logger: env.logger,
+    catalogApi,
     config: env.config,
   });
 }

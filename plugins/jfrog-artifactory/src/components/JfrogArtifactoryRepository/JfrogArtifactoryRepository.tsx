@@ -23,15 +23,15 @@ const useLocalStyles = makeStyles({
   },
 });
 
-export function JfrogArtifactoryRepository(props: RepositoryProps) {
+export function JfrogArtifactoryRepository({ image }: RepositoryProps) {
   const jfrogArtifactoryClient = useApi(jfrogArtifactoryApiRef);
   const classes = useStyles();
   const localClasses = useLocalStyles();
   const [edges, setEdges] = useState<Edge[]>([]);
-  const title = `Jfrog Artifactory repository: ${props.image}`;
+  const titleprop = `Jfrog Artifactory repository: ${image}`;
 
   const { loading } = useAsync(async () => {
-    const tagsResponse = await jfrogArtifactoryClient.getTags(props.image);
+    const tagsResponse = await jfrogArtifactoryClient.getTags(image);
 
     setEdges(tagsResponse.data.versions.edges);
 
@@ -66,7 +66,7 @@ export function JfrogArtifactoryRepository(props: RepositoryProps) {
   return (
     <div style={{ border: '1px solid #ddd' }}>
       <Table
-        title={title}
+        title={titleprop}
         options={{ paging: true, padding: 'dense' }}
         data={data}
         columns={columns}
@@ -81,11 +81,6 @@ export function JfrogArtifactoryRepository(props: RepositoryProps) {
   );
 }
 
-JfrogArtifactoryRepository.defaultProps = {
-  title: 'Docker Images',
-};
 interface RepositoryProps {
-  widget: boolean;
   image: string;
-  title: string;
 }
