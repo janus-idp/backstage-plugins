@@ -216,7 +216,7 @@ The Topology plugin enables you to visualize the workloads such as Deployment, J
 
   > The Red Hat OpenShift Dev Spaces instance is not accessible using the edit code decorator if the `backstage.io/kubernetes-namespace` annotation is added to the `catalog-info.yaml` file.
 
-  To retrieve the instance URL, CheCluster CR is required. The instance URL is not retrieved if the namespace annotation value is different from `openshift-devspaces` as CheCluster CR is created in `openshift-devspaces` namespace.
+  To retrieve the instance URL, CheCluster Custom Resource (CR) is required. The instance URL is not retrieved if the namespace annotation value is different from `openshift-devspaces` as CheCluster CR is created in `openshift-devspaces` namespace.
 
 - A custom label selector is added, which Backstage uses to find the Kubernetes resources. The label selector takes precedence over the ID annotations.
 
