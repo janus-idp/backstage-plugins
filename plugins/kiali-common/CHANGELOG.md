@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-kiali-common [1.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali-common@1.2.1...@janus-idp/backstage-plugin-kiali-common@1.3.0) (2023-08-28)
+
+
+### Features
+
+* **kiali:** show kiali information in header ([#630](https://github.com/janus-idp/backstage-plugins/issues/630)) ([b9a83b3](https://github.com/janus-idp/backstage-plugins/commit/b9a83b332ec518e60a9780961fdce070eda02d02))
+
 ## @janus-idp/backstage-plugin-kiali-common [1.2.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali-common@1.2.0...@janus-idp/backstage-plugin-kiali-common@1.2.1) (2023-08-22)
 
 
