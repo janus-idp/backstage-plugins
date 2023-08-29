@@ -197,4 +197,30 @@ describe('kubernetes:create-namespace', () => {
       });
     }).rejects.toThrow('"bar" is an invalid url');
   });
+
+  it('should throw if empty string is provided as api url', async () => {
+    await expect(async () => {
+      await action.handler({
+        ...mockContext,
+        input: {
+          namespace: 'foo',
+          token: 'TOKEN',
+          url: '',
+        },
+      });
+    }).rejects.toThrow('Cluster reference or url are required');
+  });
+
+  it('should throw if undefined is provided as api url', async () => {
+    await expect(async () => {
+      await action.handler({
+        ...mockContext,
+        input: {
+          namespace: 'foo',
+          token: 'TOKEN',
+          url: undefined,
+        },
+      });
+    }).rejects.toThrow('Cluster reference or url are required');
+  });
 });
