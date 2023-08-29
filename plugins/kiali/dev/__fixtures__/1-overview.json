@@ -1,0 +1,333 @@
+{
+  "namespaces": [
+    {
+      "name": "bookinfo",
+      "cluster": "Kubernetes",
+      "isAmbient": false,
+      "labels": {
+        "istio-injection": "enabled",
+        "kubernetes.io/metadata.name": "bookinfo",
+        "pod-security.kubernetes.io/audit": "privileged",
+        "pod-security.kubernetes.io/audit-version": "v1.24",
+        "pod-security.kubernetes.io/warn": "privileged",
+        "pod-security.kubernetes.io/warn-version": "v1.24"
+      },
+      "annotations": {
+        "openshift.io/description": "",
+        "openshift.io/display-name": "",
+        "openshift.io/requester": "kubeadmin",
+        "openshift.io/sa.scc.mcs": "s0:c26,c10",
+        "openshift.io/sa.scc.supplemental-groups": "1000670000/10000",
+        "openshift.io/sa.scc.uid-range": "1000670000/10000"
+      },
+      "tlsStatus": {
+        "status": "MTLS_NOT_ENABLED",
+        "autoMTLSEnabled": true,
+        "minTLS": ""
+      },
+      "validations": { "errors": 0, "objectCount": 2, "warnings": 0 },
+      "metrics": [
+        {
+          "labels": {},
+          "datapoints": [
+            [1693301460, "3.644444444444444"],
+            [1693301520, "3.866711113086507"],
+            [1693301580, "3.822222222222222"],
+            [1693301640, "3.666666666666666"],
+            [1693301700, "3.555347210480139"],
+            [1693301760, "3.733333333333333"],
+            [1693301820, "3.7110933341234214"],
+            [1693301880, "3.488888888888888"],
+            [1693301940, "3.6889170389137043"],
+            [1693302000, "3.6888888888888887"],
+            [1693302060, "3.688644504182928"]
+          ],
+          "name": "request_count"
+        }
+      ],
+      "errorMetrics": [
+        {
+          "labels": {},
+          "datapoints": [
+            [1693301460, "0"],
+            [1693301520, "0"],
+            [1693301580, "0"],
+            [1693301640, "0"],
+            [1693301700, "0"],
+            [1693301760, "0"],
+            [1693301820, "0"],
+            [1693301880, "0"],
+            [1693301940, "0.02222222222222222"],
+            [1693302000, "0"],
+            [1693302060, "0"]
+          ],
+          "name": "request_error_count"
+        }
+      ],
+      "nsHealth": {
+        "details": {
+          "workloadStatuses": [
+            {
+              "name": "details-v1",
+              "desiredReplicas": 1,
+              "currentReplicas": 1,
+              "availableReplicas": 1,
+              "syncedProxies": 1
+            }
+          ],
+          "requests": {
+            "inbound": { "http": { "200": 0.9999999999999999 } },
+            "outbound": {},
+            "healthAnnotations": {}
+          }
+        },
+        "kiali-traffic-generator": {
+          "workloadStatuses": [
+            {
+              "name": "kiali-traffic-generator",
+              "desiredReplicas": 1,
+              "currentReplicas": 1,
+              "availableReplicas": 1,
+              "syncedProxies": 1
+            }
+          ],
+          "requests": { "inbound": {}, "outbound": {}, "healthAnnotations": {} }
+        },
+        "productpage": {
+          "workloadStatuses": [
+            {
+              "name": "productpage-v1",
+              "desiredReplicas": 1,
+              "currentReplicas": 1,
+              "availableReplicas": 1,
+              "syncedProxies": 1
+            }
+          ],
+          "requests": {
+            "inbound": { "http": { "200": 0.9999999999999999 } },
+            "outbound": { "http": { "200": 2 } },
+            "healthAnnotations": {}
+          }
+        },
+        "ratings": {
+          "workloadStatuses": [
+            {
+              "name": "ratings-v1",
+              "desiredReplicas": 1,
+              "currentReplicas": 1,
+              "availableReplicas": 1,
+              "syncedProxies": 1
+            }
+          ],
+          "requests": {
+            "inbound": {
+              "http": {
+                "200": 0.6615384615384614,
+                "503": 0.0017094017094017092
+              }
+            },
+            "outbound": {},
+            "healthAnnotations": {}
+          }
+        },
+        "reviews": {
+          "workloadStatuses": [
+            {
+              "name": "reviews-v1",
+              "desiredReplicas": 1,
+              "currentReplicas": 1,
+              "availableReplicas": 1,
+              "syncedProxies": 1
+            },
+            {
+              "name": "reviews-v2",
+              "desiredReplicas": 1,
+              "currentReplicas": 1,
+              "availableReplicas": 1,
+              "syncedProxies": 1
+            },
+            {
+              "name": "reviews-v3",
+              "desiredReplicas": 1,
+              "currentReplicas": 1,
+              "availableReplicas": 1,
+              "syncedProxies": 1
+            }
+          ],
+          "requests": {
+            "inbound": { "http": { "200": 1.0017094017094017 } },
+            "outbound": { "http": { "200": 0.6615384615384614 } },
+            "healthAnnotations": {}
+          }
+        }
+      }
+    },
+    {
+      "name": "istio-system",
+      "cluster": "Kubernetes",
+      "isAmbient": false,
+      "labels": {
+        "kubernetes.io/metadata.name": "istio-system",
+        "pod-security.kubernetes.io/audit": "baseline",
+        "pod-security.kubernetes.io/audit-version": "v1.24",
+        "pod-security.kubernetes.io/warn": "baseline",
+        "pod-security.kubernetes.io/warn-version": "v1.24",
+        "topology.istio.io/network": ""
+      },
+      "annotations": {
+        "openshift.io/description": "",
+        "openshift.io/display-name": "",
+        "openshift.io/requester": "kubeadmin",
+        "openshift.io/sa.scc.mcs": "s0:c26,c0",
+        "openshift.io/sa.scc.supplemental-groups": "1000650000/10000",
+        "openshift.io/sa.scc.uid-range": "1000650000/10000"
+      },
+      "tlsStatus": {
+        "status": "MTLS_NOT_ENABLED",
+        "autoMTLSEnabled": true,
+        "minTLS": ""
+      },
+      "validations": { "errors": 0, "objectCount": 0, "warnings": 0 },
+      "nsHealth": {
+        "grafana": {
+          "workloadStatuses": [
+            {
+              "name": "grafana",
+              "desiredReplicas": 1,
+              "currentReplicas": 1,
+              "availableReplicas": 1,
+              "syncedProxies": -1
+            }
+          ],
+          "requests": { "inbound": {}, "outbound": {}, "healthAnnotations": {} }
+        },
+        "istio-egressgateway": {
+          "workloadStatuses": [
+            {
+              "name": "istio-egressgateway",
+              "desiredReplicas": 1,
+              "currentReplicas": 1,
+              "availableReplicas": 1,
+              "syncedProxies": -1
+            }
+          ],
+          "requests": { "inbound": {}, "outbound": {}, "healthAnnotations": {} }
+        },
+        "istio-ingressgateway": {
+          "workloadStatuses": [
+            {
+              "name": "istio-ingressgateway",
+              "desiredReplicas": 1,
+              "currentReplicas": 1,
+              "availableReplicas": 1,
+              "syncedProxies": -1
+            }
+          ],
+          "requests": { "inbound": {}, "outbound": {}, "healthAnnotations": {} }
+        },
+        "istiod": {
+          "workloadStatuses": [
+            {
+              "name": "istiod",
+              "desiredReplicas": 1,
+              "currentReplicas": 1,
+              "availableReplicas": 1,
+              "syncedProxies": -1
+            }
+          ],
+          "requests": { "inbound": {}, "outbound": {}, "healthAnnotations": {} }
+        },
+        "jaeger": {
+          "workloadStatuses": [
+            {
+              "name": "jaeger",
+              "desiredReplicas": 1,
+              "currentReplicas": 1,
+              "availableReplicas": 1,
+              "syncedProxies": -1
+            }
+          ],
+          "requests": { "inbound": {}, "outbound": {}, "healthAnnotations": {} }
+        },
+        "kiali": {
+          "workloadStatuses": [
+            {
+              "name": "kiali",
+              "desiredReplicas": 1,
+              "currentReplicas": 1,
+              "availableReplicas": 1,
+              "syncedProxies": -1
+            }
+          ],
+          "requests": { "inbound": {}, "outbound": {}, "healthAnnotations": {} }
+        },
+        "prometheus": {
+          "workloadStatuses": [
+            {
+              "name": "prometheus",
+              "desiredReplicas": 1,
+              "currentReplicas": 1,
+              "availableReplicas": 1,
+              "syncedProxies": -1
+            }
+          ],
+          "requests": { "inbound": {}, "outbound": {}, "healthAnnotations": {} }
+        }
+      },
+      "metrics": null,
+      "errorMetrics": null,
+      "controlPlaneMetrics": {
+        "istiod_proxy_time": [
+          {
+            "labels": {},
+            "datapoints": [
+              [1693301460, "NaN"],
+              [1693301520, "NaN"],
+              [1693301580, "NaN"],
+              [1693301640, "NaN"],
+              [1693301700, "NaN"],
+              [1693301760, "NaN"],
+              [1693301820, "NaN"],
+              [1693301880, "NaN"],
+              [1693301940, "NaN"],
+              [1693302000, "NaN"],
+              [1693302060, "NaN"]
+            ],
+            "stat": "avg",
+            "name": "pilot_proxy_convergence_time"
+          }
+        ],
+        "istiod_cpu": [
+          {
+            "labels": {},
+            "datapoints": [
+              [1693301460, "0.0011111111111110873"],
+              [1693301520, "0.0013333333333333047"],
+              [1693301580, "0.0011111111111111267"],
+              [1693301640, "0.0013333333333333441"],
+              [1693301700, "0.004444444444444428"],
+              [1693301760, "0.0013333333333333047"],
+              [1693301820, "0.0013333333333333047"],
+              [1693301880, "0.0013333333333333047"],
+              [1693301940, "0.0008888888888888698"],
+              [1693302000, "0.0015555555555555618"],
+              [1693302060, "0.0011107902161597918"]
+            ],
+            "name": "process_cpu_seconds_total"
+          }
+        ]
+      }
+    }
+  ],
+  "istiodResourceThresholds": { "memory": 0, "cpu": 0 },
+  "outboundTraffic": { "mode": "ALLOW_ANY" },
+  "canaryUpgrade": {
+    "currentVersion": "",
+    "upgradeVersion": "",
+    "migratedNamespaces": [],
+    "pendingNamespaces": []
+  },
+  "istioStatus": [
+    { "name": "istiod-69744664c5-wtv8x", "status": "Healthy", "is_core": true }
+  ]
+}

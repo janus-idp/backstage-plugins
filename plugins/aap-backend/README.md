@@ -1,6 +1,6 @@
 # AAP Backstage provider
 
-The AAP Backstage provider plugin synchronizes the AAP content into the [Backstage](https://backstage.io/) catalog.
+The AAP Backstage provider plugin synchronizes the AAP job templates and workflow job templates into the [Backstage](https://backstage.io/) catalog.
 
 ## For administrators
 

@@ -31,9 +31,15 @@ import { handleMultipleMessage } from '../../helper';
 import { Overview } from '../Overview';
 import { KialiHeader } from './Header';
 
+const getPathPage = () => {
+  const pathname = window.location.pathname.split('/').pop() || 'overview';
+  return pathname === 'kiali' ? 'overview' : pathname;
+};
+
 export const KialiComponent = () => {
   const kialiClient = useApi(kialiApiRef);
   kialiClient.setEntity(useEntity().entity);
+  const [kialiTab, setKialiTab] = React.useState<string>(getPathPage());
   const [kialiConfig, setKialiConfig] =
     React.useState<KialiConfigT>(DefaultKialiConfig);
   const [kialiStatus, setKialiStatus] = React.useState<KialiInfo>({
@@ -111,15 +117,14 @@ export const KialiComponent = () => {
         )}
         {kialiConfig.kialiConsole !== '' && (
           <>
-            <TabbedCard>
+            <TabbedCard
+              value={kialiTab}
+              onChange={(_, v) => setKialiTab(v as string)}
+            >
               {/* 
                 // @ts-ignore */}
-              <CardTab label="Overview">
-                <Overview
-                  kialiConfig={kialiConfig}
-                  kialiStatus={kialiStatus}
-                  namespacesFiltered={namespacesFiltered}
-                />
+              <CardTab value="overview" label="Overview">
+                <Overview kialiConfig={kialiConfig} kialiStatus={kialiStatus} namespacesFiltered={namespacesFiltered}/>
               </CardTab>
             </TabbedCard>
           </>
