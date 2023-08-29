@@ -1,6 +1,14 @@
 # Development environment
 
-## Setup
+## Minimal Setup
+
+1. Go to plugins/kiali
+
+2. Execute yarn start
+
+3. Go to `http://localhost:3000/kiali`
+
+## Full Setup
 
 1. Add libraries to packages/app and packages/backend:
 
