@@ -159,7 +159,7 @@ The Topology plugin enables you to visualize the workloads such as Deployment, J
     app.kubernetes.io/name: <RUNTIME_NAME>
   ```
 
-  Currently supported values of `<RUNTIME_NAME>`:
+  Supported values of `<RUNTIME_NAME>` include:
 
   - django
   - dotnet
@@ -188,7 +188,7 @@ The Topology plugin enables you to visualize the workloads such as Deployment, J
   - spring
   - spring-boot
 
-  Any other values would result in no icons being rendered for the node.
+  Other values result in icons not being rendered for the node.
 
   > Note: If Red Hat OpenShift Dev Spaces is [installed and configured](https://access.redhat.com/documentation/en-us/red_hat_openshift_dev_spaces/3.7/html/administration_guide/installing-devspaces) and Git URL annotations are also present on the workload YAML file, then clicking on the edit code decorator redirects you to the Red Hat OpenShift Dev Spaces instance.
 
