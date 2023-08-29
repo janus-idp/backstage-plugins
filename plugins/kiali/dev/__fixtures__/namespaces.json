@@ -1,1 +1,44 @@
-[{"name":"bookinfo","cluster":"Kubernetes","isAmbient":false,"labels":{"istio-injection":"enabled","kubernetes.io/metadata.name":"bookinfo","pod-security.kubernetes.io/audit":"privileged","pod-security.kubernetes.io/audit-version":"v1.24","pod-security.kubernetes.io/warn":"privileged","pod-security.kubernetes.io/warn-version":"v1.24"},"annotations":{"openshift.io/description":"","openshift.io/display-name":"","openshift.io/requester":"kubeadmin","openshift.io/sa.scc.mcs":"s0:c26,c10","openshift.io/sa.scc.supplemental-groups":"1000670000/10000","openshift.io/sa.scc.uid-range":"1000670000/10000"}},{"name":"istio-system","cluster":"Kubernetes","isAmbient":false,"labels":{"kubernetes.io/metadata.name":"istio-system","pod-security.kubernetes.io/audit":"baseline","pod-security.kubernetes.io/audit-version":"v1.24","pod-security.kubernetes.io/warn":"baseline","pod-security.kubernetes.io/warn-version":"v1.24","topology.istio.io/network":""},"annotations":{"openshift.io/description":"","openshift.io/display-name":"","openshift.io/requester":"kubeadmin","openshift.io/sa.scc.mcs":"s0:c26,c0","openshift.io/sa.scc.supplemental-groups":"1000650000/10000","openshift.io/sa.scc.uid-range":"1000650000/10000"}}]
+[
+  {
+    "name": "bookinfo",
+    "cluster": "Kubernetes",
+    "isAmbient": false,
+    "labels": {
+      "istio-injection": "enabled",
+      "kubernetes.io/metadata.name": "bookinfo",
+      "pod-security.kubernetes.io/audit": "privileged",
+      "pod-security.kubernetes.io/audit-version": "v1.24",
+      "pod-security.kubernetes.io/warn": "privileged",
+      "pod-security.kubernetes.io/warn-version": "v1.24"
+    },
+    "annotations": {
+      "openshift.io/description": "",
+      "openshift.io/display-name": "",
+      "openshift.io/requester": "kubeadmin",
+      "openshift.io/sa.scc.mcs": "s0:c26,c10",
+      "openshift.io/sa.scc.supplemental-groups": "1000670000/10000",
+      "openshift.io/sa.scc.uid-range": "1000670000/10000"
+    }
+  },
+  {
+    "name": "istio-system",
+    "cluster": "Kubernetes",
+    "isAmbient": false,
+    "labels": {
+      "kubernetes.io/metadata.name": "istio-system",
+      "pod-security.kubernetes.io/audit": "baseline",
+      "pod-security.kubernetes.io/audit-version": "v1.24",
+      "pod-security.kubernetes.io/warn": "baseline",
+      "pod-security.kubernetes.io/warn-version": "v1.24",
+      "topology.istio.io/network": ""
+    },
+    "annotations": {
+      "openshift.io/description": "",
+      "openshift.io/display-name": "",
+      "openshift.io/requester": "kubeadmin",
+      "openshift.io/sa.scc.mcs": "s0:c26,c0",
+      "openshift.io/sa.scc.supplemental-groups": "1000650000/10000",
+      "openshift.io/sa.scc.uid-range": "1000650000/10000"
+    }
+  }
+]

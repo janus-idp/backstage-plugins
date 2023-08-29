@@ -124,7 +124,11 @@ export const KialiComponent = () => {
               {/* 
                 // @ts-ignore */}
               <CardTab value="overview" label="Overview">
-                <Overview kialiConfig={kialiConfig} kialiStatus={kialiStatus} namespacesFiltered={namespacesFiltered}/>
+                <Overview
+                  kialiConfig={kialiConfig}
+                  kialiStatus={kialiStatus}
+                  namespacesFiltered={namespacesFiltered}
+                />
               </CardTab>
             </TabbedCard>
           </>
