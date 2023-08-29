@@ -10,10 +10,22 @@
    "@janus-idp/backstage-plugin-kiali": "link:../../plugins/kiali",
    ```
 
+   or launch
+
+   ```bash
+   yarn workspace add @janus-idp/backstage-plugin-kiali@*
+   ```
+
    - Add to packages/backend/package.json
 
    ```yaml title="packages/backend/package.json"
    '@janus-idp/backstage-plugin-kiali-backend': 'link:../../plugins/kiali-backend'
+   ```
+
+   or launch
+
+   ```bash
+   yarn workspace backend @janus-idp/backstage-plugin-kiali-backend@*
    ```
 
 2. If you are going to modify `kiali-common` then you need to link this too.
@@ -21,13 +33,25 @@
    - Replace in plugin/kiali/package.json
 
    ```yaml title="plugin/kiali/package.json"
-   "@janus-idp/backstage-plugin-kiali-common": "link:../plugins/kiali-common",
+   "@janus-idp/backstage-plugin-kiali-common": "link:../kiali-common",
+   ```
+
+   or launch
+
+   ```bash
+   yarn upgrade @janus-idp/backstage-plugin-kiali-common@link:../kiali-common
    ```
 
    - Replace in plugin/kiali-backend/package.json
 
    ```yaml title="plugin/kiali-backend/package.json"
-   "@janus-idp/backstage-plugin-kiali-common": "link:../plugins/kiali-common",
+   "@janus-idp/backstage-plugin-kiali-common": "link:../kiali-common",
+   ```
+
+   or launch
+
+   ```bash
+   yarn upgrade @janus-idp/backstage-plugin-kiali-common@link:../kiali-common
    ```
 
 3. Enable the **Kiali** tab on the entity view page using the `packages/app/src/components/catalog/EntityPage.tsx` file:
