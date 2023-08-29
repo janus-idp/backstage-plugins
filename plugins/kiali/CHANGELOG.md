@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-kiali [1.3.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.3.0...@janus-idp/backstage-plugin-kiali@1.3.1) (2023-08-29)
+
+
+### Bug Fixes
+
+* **kiali:** upgrade patternfly ([#673](https://github.com/janus-idp/backstage-plugins/issues/673)) ([6e5702f](https://github.com/janus-idp/backstage-plugins/commit/6e5702f196c2fbf8de888ca5083241a58548469e))
+
 ## @janus-idp/backstage-plugin-kiali [1.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.2.1...@janus-idp/backstage-plugin-kiali@1.3.0) (2023-08-28)
 
 
