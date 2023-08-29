@@ -3,7 +3,10 @@ import { TaskRunner } from '@backstage/backend-tasks';
 import { ConfigReader } from '@backstage/config';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 
-import { listJobTemplates } from '../clients/AapResourceConnector';
+import {
+  listJobTemplates,
+  listWorkflowJobTemplates,
+} from '../clients/AapResourceConnector';
 import { AapResourceEntityProvider } from './AapResourceEntityProvider';
 
 const BASIC_VALID_CONFIG = {
@@ -39,11 +42,13 @@ const connection = {
 jest.mock('../clients/AapResourceConnector', () => ({
   ...jest.requireActual('../clients/AapResourceConnector'),
   listJobTemplates: jest.fn().mockReturnValue({}),
+  listWorkflowJobTemplates: jest.fn().mockReturnValue({}),
 }));
 
 describe('AapResourceEntityProvider', () => {
   beforeEach(() => {
     (listJobTemplates as jest.Mock).mockClear();
+    (listWorkflowJobTemplates as jest.Mock).mockClear();
   });
 
   it('should return an empty array if no providers are configured', () => {
@@ -118,14 +123,53 @@ describe('AapResourceEntityProvider', () => {
   });
 
   it('should connect and run should resolves', async () => {
-    (listJobTemplates as jest.Mock).mockReturnValue([
-      {
-        url: 'https://aap.com',
-        name: 'demoJobTemplate',
-        description: 'test description',
-        type: 'job_template',
-      },
-    ]);
+    (listJobTemplates as jest.Mock).mockReturnValue(
+      Promise.resolve([
+        {
+          url: 'https://aap.com',
+          name: 'demoJobTemplate',
+          description: 'test description',
+          type: 'job_template',
+        },
+      ]),
+    );
+    (listWorkflowJobTemplates as jest.Mock).mockReturnValue(
+      Promise.resolve([
+        {
+          url: 'https://aap.worfkllow.com',
+          name: 'demoWorkflowJobTemplate',
+          description: 'test workflow description',
+          type: 'workflow_job_template',
+        },
+      ]),
+    );
+    const config = new ConfigReader(BASIC_VALID_CONFIG_2);
+
+    const aap = AapResourceEntityProvider.fromConfig(config, {
+      logger: getVoidLogger(),
+      schedule: { run: jest.fn() } as TaskRunner,
+    });
+
+    for await (const k of aap) {
+      await k.connect(connection);
+      await expect(k.run()).resolves.toBeUndefined();
+    }
+  });
+
+  it('should connect and run should resolves even if one api call fails', async () => {
+    (listJobTemplates as jest.Mock).mockReturnValue(
+      Promise.reject(new Error('404')),
+    );
+    (listWorkflowJobTemplates as jest.Mock).mockReturnValue(
+      Promise.resolve([
+        {
+          url: 'https://aap.worfkllow.com',
+          name: 'demoWorkflowJobTemplate',
+          description: 'test workflow description',
+          type: 'workflow_job_template',
+        },
+      ]),
+    );
     const config = new ConfigReader(BASIC_VALID_CONFIG_2);
 
     const aap = AapResourceEntityProvider.fromConfig(config, {
