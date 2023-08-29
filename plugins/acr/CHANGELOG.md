@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-acr [1.1.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-acr@1.1.0...@janus-idp/backstage-plugin-acr@1.1.1) (2023-08-28)
+
+
+### Documentation
+
+* acr plugin documentation ([#683](https://github.com/janus-idp/backstage-plugins/issues/683)) ([0073471](https://github.com/janus-idp/backstage-plugins/commit/0073471d6d7b07c1cdf53fd9dd949b740bea12db))
+
 ## @janus-idp/backstage-plugin-acr [1.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-acr@1.0.0...@janus-idp/backstage-plugin-acr@1.1.0) (2023-08-14)
 
 

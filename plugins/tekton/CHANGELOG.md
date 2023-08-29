@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-tekton [1.9.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.9.2...@janus-idp/backstage-plugin-tekton@1.9.3) (2023-08-28)
+
+
+### Documentation
+
+* **tekton:** updated images ([#606](https://github.com/janus-idp/backstage-plugins/issues/606)) ([b138c64](https://github.com/janus-idp/backstage-plugins/commit/b138c64b5476216eac38a5553b05751e3df736f1))
+
 ## @janus-idp/backstage-plugin-tekton [1.9.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.9.1...@janus-idp/backstage-plugin-tekton@1.9.2) (2023-08-24)
 
 

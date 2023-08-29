@@ -1,3 +1,5 @@
+import { HostDiscovery } from '@backstage/backend-common';
+import { CatalogClient } from '@backstage/catalog-client';
 import { ConfigReader } from '@backstage/config';
 
 import express from 'express';
@@ -15,6 +17,9 @@ const server = setupServer(...handlers);
 
 const kialiURL = 'https://localhost:4000';
 const MockConfig = {
+  backend: {
+    baseUrl: 'http://localhost:7007',
+  },
   catalog: {
     providers: {
       kiali: {
@@ -45,13 +50,16 @@ describe('createRouter', () => {
   beforeAll(async () => {
     const mockConfig = new ConfigReader(MockConfig, 'kiali');
     const kiali = readKialiConfigs(mockConfig);
+    const mockCatalog = new CatalogClient({
+      discoveryApi: HostDiscovery.fromConfig(mockConfig),
+    });
     const logger = createLogger({
       transports: [new transports.Console({ silent: true })],
     });
     const kialiAPI = new KialiApiImpl({ logger, kiali });
     app = express();
     app.use(express.json());
-    const router = makeRouter(logger, kialiAPI);
+    const router = makeRouter(logger, kialiAPI, mockCatalog);
     app.use('/', router);
   });
 
@@ -59,10 +67,10 @@ describe('createRouter', () => {
     jest.resetAllMocks();
   });
 
-  describe('GET /config', () => {
+  describe('POST /config', () => {
     it('returns config', async () => {
       const response = await request(app)
-        .get('/config')
+        .post('/config')
         .set('Content-Type', 'application/json');
 
       expect(response.status).toEqual(200);
@@ -242,41 +250,6 @@ describe('createRouter', () => {
             minTLS: 'N/A',
           },
           username: 'anonymous',
-          status: {
-            status: {
-              'Kiali commit hash': '72a2496cb4ed1545457a68e34fe3e81409b1611d',
-              'Kiali container version': 'v1.71.0-SNAPSHOT',
-              'Kiali state': 'running',
-              'Kiali version': 'v1.71.0-SNAPSHOT',
-              'Mesh name': 'Istio',
-              'Mesh version': '1.17.1',
-            },
-            externalServices: [
-              {
-                name: 'Istio',
-                version: '1.17.1',
-              },
-              {
-                name: 'Prometheus',
-                version: '2.34.0',
-              },
-              {
-                name: 'Kubernetes',
-                version: 'v1.26.3+b404935',
-              },
-              {
-                name: 'Grafana',
-              },
-              {
-                name: 'Jaeger',
-              },
-            ],
-            warningMessages: [],
-            istioEnvironment: {
-              isMaistra: false,
-              istioAPIEnabled: true,
-            },
-          },
           istioCerts: [
             {
               secretName: 'istio-ca-secret',

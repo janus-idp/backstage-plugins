@@ -17,7 +17,7 @@ export const Colors = {
   warning: 'rgb(255, 152, 0)',
 };
 export type ComponentIcon = {
-  props: { [key: string]: string };
+  props: { [key: string]: any };
   icon: SvgIconComponent;
 };
 

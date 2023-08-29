@@ -1,74 +1,100 @@
 # Azure Container Registry plugin for Backstage
 
-This plugin will show you information about your container images within Azure Container Registry
+The Azure Container Registry (ACR) plugin displays information about your container images available in the Azure Container Registry.
 
-### Installation
+## For administrators
 
-1. Install the Azure Container Registry plugin using the following command:
+### Installing and configuring the ACR plugin
 
-```bash
-yarn workspace app add @janus-idp/backstage-plugin-acr
-```
+1. Run the following command to install the ACR plugin:
 
-### 2. Configuration
+   ```bash
+   yarn workspace app add @janus-idp/backstage-plugin-acr
+   ```
 
-1. Set the proxy to the desired Azure Container Registry server in the `app-config.yaml` file as follows:
+1. Set the proxy to the desired ACR server in the `app-config.yaml` file as follows:
 
-```yaml
-# app-config.yaml
-proxy:
-  '/acr/api':
-    target: 'https://mycontainerregistry.azurecr.io/acr/v1/'
-    changeOrigin: true
-    headers:
-      # If you use Bearer Token for authorization, please replace the 'Basic' with 'Bearer' in the following line.
-      Authorization: 'Basic ${ACR_AUTH_TOKEN}'
-    # Change to "false" in case of using self hosted artifactory instance with a self-signed certificate
-    secure: true
-```
+   ```yaml
+   # app-config.yaml
+   proxy:
+     '/acr/api':
+       target: 'https://mycontainerregistry.azurecr.io/acr/v1/'
+       changeOrigin: true
+       headers:
+         # If you use Bearer Token for authorization, please replace the 'Basic' with 'Bearer' in the following line.
+         Authorization: 'Basic ${ACR_AUTH_TOKEN}'
+       # Change to "false" in case of using self hosted artifactory instance with a self-signed certificate
+       secure: true
+   ```
 
-2. Authorization:
+1. Set the authorization using one of the following options:
 
-Basic Authorization: Go to your Azure Container Registry portal, and go to the `Access Keys` tab. Get the `username` and the `password` of the `Admin User`, and use this [tool](https://www.debugbear.com/basic-auth-header-generator) to covert them into a token, and make it as the `ACR_AUTH_TOKEN` in environment variables.
+   - Basic authorization:
 
-OAuth2: You can following the [link](https://learn.microsoft.com/en-us/azure/container-registry/container-registry-authentication?tabs=azure-cli) to get the bearer access token, and make it as `ACR_AUTH_TOKEN`.
+     - Navigate to the ACR portal and go to the **Access Keys** tab.
+     - Retrieve the username and password of the Admin user and use the Basic Auth Header Generator tool to convert the credentials into a token.
+     - Set the generated token as `ACR_AUTH_TOKEN` in environment variables.
 
-3. Enable an additional tab on the entity view page in `packages/app/src/components/catalog/EntityPage.tsx`:
+   - OAuth2:
+     - Generate bearer access token using the process described in Authenticate with an Azure Container Registry.
+     - Set the generated token as `ACR_AUTH_TOKEN` in environment variables.
 
-```ts
-// packages/app/src/components/catalog/EntityPage.tsx
-import { AcrPage, isAcrAvailable } from '@janus-idp/backstage-plugin-acr';
+1. Enable an additional tab on the entity view page using the `packages/app/src/components/catalog/EntityPage.tsx` file as follows:
 
-const websiteEntityPage = (
-  <EntityPageLayout>
-    // ...
-    <EntityLayout.Route path="/acr" title="ACR">
-      <Grid container spacing={3} alignItems="stretch">
-        <EntitySwitch>
-          <EntitySwitch.Case if={e => Boolean(isAcrAvailable(e))}>
-            <Grid item sm={12}>
-              <AcrPage />
-            </Grid>
-          </EntitySwitch.Case>
-        </EntitySwitch>
-      </Grid>
-    </EntityLayout.Route>
-  </EntityPageLayout>
-);
-```
+   ```ts
+   // packages/app/src/components/catalog/EntityPage.tsx
+   import { AcrPage, isAcrAvailable } from '@janus-idp/backstage-plugin-acr';
 
-4. Annotate your entity with the following annotations:
+   const websiteEntityPage = (
+     <EntityPageLayout>
+       // ...
+       <EntityLayout.Route path="/acr" title="ACR">
+         <Grid container spacing={3} alignItems="stretch">
+           <EntitySwitch>
+             <EntitySwitch.Case if={e => Boolean(isAcrAvailable(e))}>
+               <Grid item sm={12}>
+                 <AcrPage />
+               </Grid>
+             </EntitySwitch.Case>
+           </EntitySwitch>
+         </Grid>
+       </EntityLayout.Route>
+     </EntityPageLayout>
+   );
+   ```
 
-```yaml
-metadata:
-  annotations:
-    'azure-container-registry/repository-name': `<REPOSITORY-NAME>',
-```
+1. Annotate your entity using the following annotations:
+   ```yaml
+   metadata:
+     annotations:
+       'azure-container-registry/repository-name': `<REPOSITORY-NAME>',
+   ```
 
-## Development
+### Development
 
-In [Backstage plugin terminology](https://backstage.io/docs/local-dev/cli-build-system#package-roles), this is a `frontend-plugin`. You can start a live dev session from the repository root using following commands:
+The ACR plugin is a front-end plugin. You can use the following command to start the live development session from your root repository:
 
 ```
 yarn workspace @janus-idp/backstage-plugin-acr run start
 ```
+
+## For users
+
+### Using the ACR plugin in Backstage
+
+ACR is a front-end plugin that enables you to view information about the container images from your Azure Container Registry in Backstage.
+
+#### Prerequisites
+
+- Your Backstage application is installed and running.
+- You have installed the ACR plugin. For installation instructions, see [Installing and configuring the ACR plugin](#installing-and-configuring-the-acr-plugin).
+
+#### Procedure
+
+1. Open your Backstage application and select a component from the Catalog page.
+
+1. Go to the **ACR** tab.
+
+   ![acr-tab](./images/acr-plugin-user1.png)
+
+   The **ACR** tab in the Backstage UI contains a list of container images and related information, such as **TAG**, **CREATED**, **LAST MODIFIED**, and **MANIFEST**.

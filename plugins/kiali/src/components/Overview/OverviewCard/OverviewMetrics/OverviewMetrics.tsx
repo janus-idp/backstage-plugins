@@ -32,12 +32,9 @@ type OverviewMetricsProps = {
 };
 
 export const OverviewMetrics = (props: OverviewMetricsProps) => {
-  const istioAPIEnabled =
-    props.kialiConfig.status!.istioEnvironment.istioAPIEnabled;
-
   return (
     <Grid container>
-      {props.isIstioNs && istioAPIEnabled ? (
+      {props.isIstioNs && props.istioAPIEnabled ? (
         <Grid item md={12}>
           <Grid container>
             {props.canaryUpgrade && props.canaryStatus && (
