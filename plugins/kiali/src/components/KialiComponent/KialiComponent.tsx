@@ -22,6 +22,7 @@ import {
   KialiConfigT,
   KialiFetchError,
   KialiInfo,
+  Namespace,
   setServerConfig,
 } from '@janus-idp/backstage-plugin-kiali-common';
 
@@ -45,7 +46,36 @@ export const KialiComponent = () => {
     status: INITIAL_STATUS_STATE,
     auth: { sessionInfo: {}, strategy: AuthStrategy.anonymous },
   });
+  const [namespacesFiltered, setNamespacesFiltered] = React.useState<string[]>(
+    [],
+  );
+  const [namespaces, setNamespaces] = React.useState<Namespace[]>([]);
   const [errors, setErrors] = React.useState<KialiFetchError[]>([]);
+
+  const fetchConfig = async () => {
+    let config = kialiConfig;
+    if (config.kialiConsole === '') {
+      await kialiClient.getConfig().then(resp => {
+        if (resp.errors.length > 0) {
+          setErrors(resp.errors);
+        }
+        config = resp.response as KialiConfigT;
+        config.server = setServerConfig(kialiConfig?.server, config.server);
+        setKialiConfig(config);
+      });
+    }
+  };
+
+  const fetchNamespaces = async () => {
+    await kialiClient.getNamespaces().then(resp => {
+      if (resp.errors.length > 0) {
+        setErrors(resp.errors);
+      }
+      setNamespaces(resp.response as Namespace[]);
+      setNamespacesFiltered((resp.response as Namespace[]).map(ns => ns.name));
+    });
+  };
+
   const [{ loading }, refresh] = useAsyncFn(
     async () => {
       await kialiClient.getInfo().then(response => {
@@ -53,20 +83,8 @@ export const KialiComponent = () => {
           setErrors(response.errors);
         } else {
           setKialiStatus(response.response as KialiInfo);
-          let config = kialiConfig;
-          if (config.kialiConsole === '') {
-            kialiClient.getConfig().then(resp => {
-              if (resp.errors.length > 0) {
-                setErrors(resp.errors);
-              }
-              config = resp.response as KialiConfigT;
-              config.server = setServerConfig(
-                kialiConfig?.server,
-                config.server,
-              );
-              setKialiConfig(config);
-            });
-          }
+          fetchConfig();
+          fetchNamespaces();
         }
       }); // Check if the config is loaded
     },
@@ -85,6 +103,9 @@ export const KialiComponent = () => {
           title="Kiali"
           kialiStatus={kialiStatus}
           config={kialiConfig}
+          namespaces={namespaces}
+          setNamespaceFilter={setNamespacesFiltered}
+          namespacesFiltered={namespacesFiltered}
         />
         {errors.length > 0 && (
           <WarningPanel
@@ -102,8 +123,12 @@ export const KialiComponent = () => {
             >
               {/* 
                 // @ts-ignore */}
-              <CardTab value="overview" label="Overview" selected={false}>
-                <Overview kialiConfig={kialiConfig} kialiStatus={kialiStatus} />
+              <CardTab value="overview" label="Overview">
+                <Overview
+                  kialiConfig={kialiConfig}
+                  kialiStatus={kialiStatus}
+                  namespacesFiltered={namespacesFiltered}
+                />
               </CardTab>
             </TabbedCard>
           </>

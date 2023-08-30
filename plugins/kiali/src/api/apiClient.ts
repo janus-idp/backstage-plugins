@@ -19,6 +19,7 @@ export interface KialiApi {
     duration: number,
     direction: DirectionType,
   ): Promise<FetchResponseWrapper>;
+  getNamespaces(): Promise<FetchResponseWrapper>;
   setEntity(entity: Entity): void;
 }
 
@@ -30,6 +31,7 @@ export const KialiEndpoints = {
   getInfo: 'info',
   getOverview: 'overview',
   getConfig: 'config',
+  getNamespaces: 'namespaces',
 };
 
 /**
@@ -72,6 +74,13 @@ export class KialiApiClient implements KialiApi {
 
   async getInfo(): Promise<FetchResponseWrapper> {
     return this.getAPI(KialiEndpoints.getInfo, {});
+  }
+
+  async getNamespaces(): Promise<FetchResponseWrapper> {
+    const requestBody = {
+      entityRef: this.entity ? stringifyEntityRef(this.entity) : '',
+    };
+    return this.getAPI(KialiEndpoints.getNamespaces, requestBody);
   }
 
   async getConfig(): Promise<FetchResponseWrapper> {

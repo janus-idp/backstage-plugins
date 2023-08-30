@@ -14,6 +14,7 @@ import { KialiApi, kialiApiRef } from '../src/api';
 import { KialiPage, kialiPlugin } from '../src/plugin';
 import overviewJson from './__fixtures__/1-overview.json';
 import configJson from './__fixtures__/config.json';
+import namespacesJson from './__fixtures__/namespaces.json';
 import statusJson from './__fixtures__/status.json';
 
 const mockEntity: Entity = {
@@ -37,15 +38,18 @@ class MockKialiClient implements KialiApi {
   readonly resource: FetchResponse;
   readonly status: FetchResponse;
   readonly config: FetchResponse;
+  readonly namespaces: FetchResponse;
 
   constructor(
     fixtureData: any,
     status: any = statusJson,
     config: any = configJson,
+    namespaces: any = namespacesJson,
   ) {
     this.resource = fixtureData;
     this.status = status;
     this.config = config;
+    this.namespaces = namespaces;
   }
 
   setEntity(_: Entity): void {}
@@ -55,6 +59,14 @@ class MockKialiClient implements KialiApi {
       errors: [],
       warnings: [],
       response: this.config,
+    };
+  }
+
+  async getNamespaces(): Promise<FetchResponseWrapper> {
+    return {
+      errors: [],
+      warnings: [],
+      response: this.namespaces,
     };
   }
 
