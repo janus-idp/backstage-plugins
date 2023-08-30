@@ -18,7 +18,6 @@ import { createPlugin } from '@backstage/core-plugin-api';
 /**
  *
  * @public Importing and including this plugin in an app has no effect.
- * This will be removed in a future release.
  */
 export const analyticsModuleSegment = createPlugin({
   id: 'analytics-provider-segment',
