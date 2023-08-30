@@ -1,3 +1,10 @@
+## @janus-idp/backstage-scaffolder-backend-module-kubernetes [1.1.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-kubernetes@1.1.0...@janus-idp/backstage-scaffolder-backend-module-kubernetes@1.1.1) (2023-08-30)
+
+
+### Bug Fixes
+
+* **kubernetes-actions:** fix code smells ([#686](https://github.com/janus-idp/backstage-plugins/issues/686)) ([ea58682](https://github.com/janus-idp/backstage-plugins/commit/ea5868235af3d1e7163ecc5f7c81b91cb08fcd43))
+
 ## @janus-idp/backstage-scaffolder-backend-module-kubernetes [1.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-kubernetes@1.0.4...@janus-idp/backstage-scaffolder-backend-module-kubernetes@1.1.0) (2023-08-14)
 
 
