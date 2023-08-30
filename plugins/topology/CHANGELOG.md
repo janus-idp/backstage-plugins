@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-topology [1.15.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.15.2...@janus-idp/backstage-plugin-topology@1.15.3) (2023-08-30)
+
+
+### Bug Fixes
+
+* **topology:** fix code smells ([#671](https://github.com/janus-idp/backstage-plugins/issues/671)) ([9743d86](https://github.com/janus-idp/backstage-plugins/commit/9743d86a76e9155e39769b61adcbe25d35b58f00))
+
 ## @janus-idp/backstage-plugin-topology [1.15.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.15.1...@janus-idp/backstage-plugin-topology@1.15.2) (2023-08-29)
 
 
