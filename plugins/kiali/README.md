@@ -140,7 +140,17 @@ async function main() {
   apiRouter.use('/kiali', await kiali(kialiEnv));
 ```
 
-5. Configure you `app-config.yaml` with kiali configuration
+#### Setting up the Kiali backend package using the new backend system
+
+The Kiali plugin supports integration with the [new backend system](https://backstage.io/docs/backend-system/).
+
+```ts
+import { kialiPlugin } from '@janus-idp/backstage-plugin-kiali-backend';
+
+backend.add(kialiPlugin());
+```
+
+1. Configure you `app-config.yaml` with kiali configuration
 
 ```yaml
 catalog:

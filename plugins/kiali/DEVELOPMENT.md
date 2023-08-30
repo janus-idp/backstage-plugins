@@ -21,7 +21,7 @@
    or launch
 
    ```bash
-   yarn workspace add @janus-idp/backstage-plugin-kiali@*
+   yarn workspace app add @janus-idp/backstage-plugin-kiali@*
    ```
 
    - Add to packages/backend/package.json
@@ -33,7 +33,7 @@
    or launch
 
    ```bash
-   yarn workspace backend @janus-idp/backstage-plugin-kiali-backend@*
+   yarn workspace backend add @janus-idp/backstage-plugin-kiali-backend@*
    ```
 
 2. If you are going to modify `kiali-common` then you need to link this too.

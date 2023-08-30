@@ -1,5 +1,9 @@
-import { errorHandler } from '@backstage/backend-common';
-import { CatalogApi } from '@backstage/catalog-client';
+import { errorHandler, loggerToWinstonLogger } from '@backstage/backend-common';
+import {
+  coreServices,
+  createBackendPlugin,
+} from '@backstage/backend-plugin-api';
+import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
 import {
   CompoundEntityRef,
   parseEntityRef,
@@ -116,3 +120,24 @@ export async function createRouter(
 
   return makeRouter(logger, kialiAPI, catalogApi);
 }
+
+export const kialiPlugin = createBackendPlugin({
+  pluginId: 'kiali',
+  register(env) {
+    env.registerInit({
+      deps: {
+        loggerBs: coreServices.logger,
+        config: coreServices.config,
+        http: coreServices.httpRouter,
+        discovery: coreServices.discovery,
+      },
+      async init({ config, discovery, loggerBs, http }) {
+        const catalogApi = new CatalogClient({ discoveryApi: discovery });
+        const kiali = readKialiConfigs(config);
+        const logger = loggerToWinstonLogger(loggerBs);
+        const kialiAPI = new KialiApiImpl({ logger, kiali });
+        http.use(makeRouter(logger, kialiAPI, catalogApi));
+      },
+    });
+  },
+});
