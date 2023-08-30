@@ -41,14 +41,14 @@ describe('PodResourceUtils', () => {
     expect(getDeploymentRevision(deployment)).toBe(1);
   });
 
-  it('should return null if annotations are not present', () => {
+  it('should return undefined if annotations are not present', () => {
     const deployment = {
       metadata: {
         annotations: {},
       },
     };
-    expect(getDeploymentRevision(deployment)).toBe(null);
-    expect(getDeploymentRevision({})).toBe(null);
+    expect(getDeploymentRevision(deployment)).toBe(undefined);
+    expect(getDeploymentRevision({})).toBe(undefined);
   });
 
   it('should return pods for a given Deployment', () => {
