@@ -41,7 +41,7 @@
     "@patternfly/react-icons": "^4.93.6",
     "@patternfly/react-styles": "^4.92.6",
     "@patternfly/react-tokens": "4.94.6",
-    "@patternfly/react-topology": "4.93.6",
+    "@patternfly/react-topology": "5.0.0",
     "classnames": "2.x",
     "file-saver": "^2.0.5",
     "git-url-parse": "^13.1.0",
