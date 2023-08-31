@@ -1,6 +1,5 @@
 # Ansible Automation Platform Backstage provider plugin
 
-
 The Ansible Automation Platform (AAP) Backstage provider plugin synchronizes the AAP content including job templates into the [Backstage](https://backstage.io/) catalog.
 
 ## For administrators
