@@ -1,21 +1,72 @@
-// import { getVoidLogger } from '@backstage/backend-common';
 import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
-import express from 'express';
-import request from 'supertest';
+import { Adapter, Enforcer, FileAdapter } from 'casbin';
+import { Router } from 'express';
 
-import { policyEntityReadPermission } from '../permissions';
+import { CasbinDBAdapterFactory } from './casbin-adapter-factory';
+import { RBACPermissionPolicy } from './permission-policy';
+import { PolicesServer as PoliciesServer } from './policies-rest-api';
 import { PolicyBuilder } from './policy-builder';
 
-jest.mock('@backstage/plugin-auth-node', () => ({
-  getBearerTokenFromAuthorizationHeader: () => 'token',
-}));
+const mockEnforcer: Partial<Enforcer> = {
+  loadPolicy: jest.fn().mockImplementation(async () => {}),
+  enableAutoSave: jest.fn().mockImplementation((_enable: boolean) => {}),
+};
+
+jest.mock('casbin', () => {
+  const actualCasbin = jest.requireActual('casbin');
+  return {
+    ...actualCasbin,
+    newEnforcer: jest.fn((): Promise<Partial<Enforcer>> => {
+      return Promise.resolve(mockEnforcer);
+    }),
+    FileAdapter: jest.fn((): Adapter => {
+      return {} as Adapter;
+    }),
+  };
+});
+
+const mockDataBaseAdapterFactory: Partial<CasbinDBAdapterFactory> = {
+  createAdapter: jest.fn((): Promise<Adapter> => {
+    return Promise.resolve({} as Adapter);
+  }),
+};
+
+jest.mock('./casbin-adapter-factory', () => {
+  return {
+    CasbinDBAdapterFactory: jest.fn((): Partial<CasbinDBAdapterFactory> => {
+      return mockDataBaseAdapterFactory;
+    }),
+  };
+});
+
+const mockRouter: Router = {} as Router;
+const mockPoliciesServer: Partial<PoliciesServer> = {
+  serve: jest.fn().mockImplementation(async () => {
+    return mockRouter;
+  }),
+};
+jest.mock('./policies-rest-api', () => {
+  return {
+    PolicesServer: jest.fn().mockImplementation(() => {
+      return mockPoliciesServer;
+    }),
+  };
+});
+
+jest.mock('./permission-policy', () => {
+  return {
+    RBACPermissionPolicy: {
+      build: jest.fn((): Promise<RBACPermissionPolicy> => {
+        return Promise.resolve({} as RBACPermissionPolicy);
+      }),
+    },
+  };
+});
 
 describe('PolicyBuilder', () => {
-  let app: express.Express;
-
   const mockedAuthorize = jest.fn().mockImplementation(async () => [
     {
       result: AuthorizeResult.ALLOW,
@@ -49,7 +100,16 @@ describe('PolicyBuilder', () => {
     getClient: jest.fn().mockImplementation(),
   };
 
+  const mockDiscovery = {
+    getBaseUrl: jest.fn(),
+    getExternalBaseUrl: jest.fn(),
+  };
+
   beforeEach(async () => {
+    jest.clearAllMocks();
+  });
+
+  it('should build policy server with file adapter', async () => {
     const router = await PolicyBuilder.build({
       config: new ConfigReader({
         backend: {
@@ -63,42 +123,55 @@ describe('PolicyBuilder', () => {
         },
       }),
       logger: getVoidLogger(),
-      discovery: {
-        getBaseUrl: jest.fn(),
-        getExternalBaseUrl: jest.fn(),
-      },
+      discovery: mockDiscovery,
       identity: mockIdentityClient,
       permissions: mockPermissionEvaluator,
       database: mockDatabaseManager,
     });
-    app = express().use(router);
-    jest.clearAllMocks();
+
+    expect(FileAdapter).toHaveBeenCalled();
+    expect(mockEnforcer.loadPolicy).toHaveBeenCalled();
+    expect(mockEnforcer.enableAutoSave).toHaveBeenCalled();
+    expect(RBACPermissionPolicy.build).toHaveBeenCalled();
+
+    expect(PoliciesServer).toHaveBeenCalled();
+    expect(mockPoliciesServer.serve).toHaveBeenCalled();
+    expect(router).toBeTruthy();
+    expect(router).toBe(mockRouter);
   });
 
-  it('should build', () => {
-    expect(app).toBeTruthy();
-  });
-
-  describe('GET /', () => {
-    it('should return a status of Authorized', async () => {
-      const result = await request(app).get('/').send();
-
-      expect(result.status).toBe(200);
-      expect(result.body).toEqual({ status: 'Authorized' });
+  it('should build policy server with database adapter', async () => {
+    const router = await PolicyBuilder.build({
+      config: new ConfigReader({
+        backend: {
+          database: {
+            client: 'better-sqlite3',
+            connection: ':memory:',
+          },
+        },
+        permission: {
+          enabled: true,
+          rbac: {
+            database: {
+              enabled: true,
+            },
+          },
+        },
+      }),
+      logger: getVoidLogger(),
+      discovery: mockDiscovery,
+      identity: mockIdentityClient,
+      permissions: mockPermissionEvaluator,
+      database: mockDatabaseManager,
     });
+    expect(CasbinDBAdapterFactory).toHaveBeenCalled();
+    expect(mockEnforcer.loadPolicy).toHaveBeenCalled();
+    expect(mockEnforcer.enableAutoSave).toHaveBeenCalled();
+    expect(RBACPermissionPolicy.build).toHaveBeenCalled();
 
-    it('should return a status of Unauthorized', async () => {
-      mockedAuthorizeConditional.mockImplementationOnce(async () => [
-        { result: AuthorizeResult.DENY },
-      ]);
-      const result = await request(app).get('/').send();
-
-      expect(mockedAuthorizeConditional).toHaveBeenCalledWith(
-        [{ permission: policyEntityReadPermission }],
-        { token: 'token' },
-      );
-      expect(result.status).toBe(403);
-      expect(result.body).toEqual({ status: 'Unauthorized' });
-    });
+    expect(PoliciesServer).toHaveBeenCalled();
+    expect(mockPoliciesServer.serve).toHaveBeenCalled();
+    expect(router).toBeTruthy();
+    expect(router).toBe(mockRouter);
   });
 });
