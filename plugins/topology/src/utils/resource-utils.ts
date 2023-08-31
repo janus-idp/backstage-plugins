@@ -60,18 +60,18 @@ export const createOverviewItemForType = (
     case 'jobs':
       return isStandaloneJob(resource)
         ? {
-            obj: resource as K8sWorkloadResource,
+            obj: resource,
           }
         : undefined;
     case 'pods':
       return validPod(resource as V1Pod)
         ? {
-            obj: resource as K8sWorkloadResource,
+            obj: resource,
           }
         : undefined;
     default:
       return {
-        obj: resource as K8sWorkloadResource,
+        obj: resource,
       };
   }
 };

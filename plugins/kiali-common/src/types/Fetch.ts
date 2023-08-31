@@ -3,6 +3,7 @@ import {
   ControlPlaneMetricsMap,
   KialiConfigT,
   Metric,
+  Namespace,
   NamespaceHealth,
   NamespaceInfo,
   OverviewData,
@@ -25,7 +26,8 @@ export type FetchResponse =
   | TLSStatus
   | NsMetrics
   | ControlPlaneMetricsMap
-  | HealthNamespace;
+  | HealthNamespace
+  | Namespace[];
 
 export interface StatusError {
   errorType: string;

@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-aap-backend [1.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-aap-backend@1.1.2...@janus-idp/backstage-plugin-aap-backend@1.2.0) (2023-08-29)
+
+
+### Features
+
+* **aap:** support workflow job templates in catalog provider ([#674](https://github.com/janus-idp/backstage-plugins/issues/674)) ([c90bc30](https://github.com/janus-idp/backstage-plugins/commit/c90bc306da4617a336b44711943b2d51a2bdda12))
+
 ## @janus-idp/backstage-plugin-aap-backend [1.1.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-aap-backend@1.1.1...@janus-idp/backstage-plugin-aap-backend@1.1.2) (2023-08-23)
 
 

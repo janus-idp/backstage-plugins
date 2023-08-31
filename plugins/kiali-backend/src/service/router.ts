@@ -84,6 +84,13 @@ export const makeRouter = (
     res.json(response);
   });
 
+  router.post('/namespaces', async (req, res) => {
+    const entity = await getEntityByReq(req);
+    logger.debug('Call to Namespaces');
+    const response = await kialiAPI.fetchNamespaces(entity);
+    res.json(response);
+  });
+
   router.post('/overview', async (req, res) => {
     const entity = await getEntityByReq(req);
     const query: OverviewQuery = {

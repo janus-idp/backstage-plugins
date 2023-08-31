@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-kiali-common [1.4.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali-common@1.3.0...@janus-idp/backstage-plugin-kiali-common@1.4.0) (2023-08-30)
+
+
+### Features
+
+* **kiali:** add namespace selector ([#675](https://github.com/janus-idp/backstage-plugins/issues/675)) ([e3cfc26](https://github.com/janus-idp/backstage-plugins/commit/e3cfc26bdf550916da3ee801601196d8614471b5))
+
 ## @janus-idp/backstage-plugin-kiali-common [1.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali-common@1.2.1...@janus-idp/backstage-plugin-kiali-common@1.3.0) (2023-08-28)
 
 

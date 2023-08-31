@@ -13,7 +13,10 @@ import {
 
 import { Logger } from 'winston';
 
-import { listJobTemplates } from '../clients/AapResourceConnector';
+import {
+  listJobTemplates,
+  listWorkflowJobTemplates,
+} from '../clients/AapResourceConnector';
 import { JobTemplate } from '../clients/types';
 import { readAapApiEntityConfigs } from './config';
 import { AapConfig } from './types';
@@ -111,12 +114,22 @@ export class AapResourceEntityProvider implements EntityProvider {
 
     const entities: Entity[] = [];
 
-    const jobTemplates = await listJobTemplates(
-      this.baseUrl,
-      this.authorization,
-    );
+    const templatesData = await Promise.allSettled([
+      listJobTemplates(this.baseUrl, this.authorization),
+      listWorkflowJobTemplates(this.baseUrl, this.authorization),
+    ]);
 
-    for (const template of jobTemplates) {
+    const templates: JobTemplate[] = [];
+
+    templatesData.forEach(results => {
+      if (results.status === 'fulfilled') {
+        templates.push(...results.value);
+      } else if (results.status === 'rejected') {
+        console.error('Failed to fetch AAP job templates', results.reason);
+      }
+    });
+
+    for (const template of templates) {
       const resourceEntity: ResourceEntity =
         this.buildApiEntityFromJobTemplate(template);
       entities.push(resourceEntity);
@@ -135,10 +148,12 @@ export class AapResourceEntityProvider implements EntityProvider {
   }
 
   private buildApiEntityFromJobTemplate(template: JobTemplate): ResourceEntity {
-    const templateDetailsUrl = `${this.baseUrl}/#/templates/job_template/${template.id}/details`;
+    const templateDetailsUrl = `${this.baseUrl}/#/templates/${template.type}/${template.id}/details`;
     const jobTemplateTransformedName = `${template.name.replace(/ /g, '_')}-${
       template.summary_fields?.organization?.name || template.id
     }-${this.env}`;
+    // format template type i.e job_template to job template
+    const templateType = template.type.split('_')?.join(' ');
 
     return {
       kind: 'Resource',
@@ -157,12 +172,12 @@ export class AapResourceEntityProvider implements EntityProvider {
           },
           {
             url: `${templateDetailsUrl}`,
-            title: 'Job Template Details',
+            title: 'Template Details',
           },
         ],
       },
       spec: {
-        type: `${template.type}`,
+        type: `${templateType}`,
         owner: `${this.owner}`,
         ...(this.system && { system: `${this.system}` }),
       },

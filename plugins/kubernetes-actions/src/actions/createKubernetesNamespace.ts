@@ -65,10 +65,10 @@ const getUrlFromClusterRef = async (
   return apiUrl;
 };
 
-const validateUrl = (url: string | undefined) => {
+const validateUrl = (url: string | undefined = '') => {
   try {
     // eslint-disable-next-line no-new
-    new URL(url!);
+    new URL(url);
   } catch (error) {
     throw new Error(`"${url}" is an invalid url`);
   }

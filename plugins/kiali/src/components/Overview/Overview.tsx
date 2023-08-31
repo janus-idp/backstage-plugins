@@ -41,6 +41,7 @@ export type DirectionType = keyof typeof directionTypes;
 type OverviewProps = {
   kialiConfig: KialiConfigT;
   kialiStatus: KialiInfo;
+  namespacesFiltered: string[];
 };
 
 export const Overview = (props: OverviewProps) => {
@@ -194,24 +195,27 @@ export const Overview = (props: OverviewProps) => {
             setDirection={e => handleToolbar(duration, overviewType, e)}
           />
           <Grid container direction="column">
-            {namespaces.map((ns, _) => (
-              <OverviewCard
-                key={`${ns.cluster}_${ns.name}`}
-                canaryStatus={canaryStatus}
-                canaryUpgrade={canaryUpgrade}
-                direction={direction}
-                duration={duration}
-                ns={ns}
-                outboundTrafficPolicy={outboundTrafficPolicy}
-                kialiConfig={props.kialiConfig}
-                type={overviewType}
-                istioAPIEnabled={
-                  props.kialiStatus.status.istioEnvironment.istioAPIEnabled
-                }
-                istiodResourceThresholds={istiodResourceThresholds}
-                istioStatus={componentStatus}
-              />
-            ))}
+            {namespaces.map(
+              (ns, _) =>
+                props.namespacesFiltered.indexOf(ns.name) > -1 && (
+                  <OverviewCard
+                    key={`${ns.cluster}_${ns.name}`}
+                    canaryStatus={canaryStatus}
+                    canaryUpgrade={canaryUpgrade}
+                    direction={direction}
+                    duration={duration}
+                    ns={ns}
+                    outboundTrafficPolicy={outboundTrafficPolicy}
+                    kialiConfig={props.kialiConfig}
+                    type={overviewType}
+                    istioAPIEnabled={
+                      props.kialiStatus.status.istioEnvironment.istioAPIEnabled
+                    }
+                    istiodResourceThresholds={istiodResourceThresholds}
+                    istioStatus={componentStatus}
+                  />
+                ),
+            )}
           </Grid>
         </>
       )}
