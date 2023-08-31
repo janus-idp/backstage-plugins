@@ -19,9 +19,11 @@ const handlers = [
       return res(
         ctx.status(200),
         ctx.json(
-          require(`${__dirname}/../../__fixtures__/service/rest/v1/search/docker/imageName/${req.url.searchParams.get(
-            'docker.imageName',
-          )}/index.json`),
+          require(
+            `${__dirname}/../../__fixtures__/service/rest/v1/search/docker/imageName/${req.url.searchParams.get(
+              'docker.imageName',
+            )}/index.json`,
+          ),
         ),
       );
     }
@@ -30,9 +32,11 @@ const handlers = [
       return res(
         ctx.status(200),
         ctx.json(
-          require(`${__dirname}/../../__fixtures__/service/rest/v1/search/docker/imageTag/${req.url.searchParams.get(
-            'docker.imageTag',
-          )}/index.json`),
+          require(
+            `${__dirname}/../../__fixtures__/service/rest/v1/search/docker/imageTag/${req.url.searchParams.get(
+              'docker.imageTag',
+            )}/index.json`,
+          ),
         ),
       );
     }
@@ -40,7 +44,9 @@ const handlers = [
     return res(
       ctx.status(404),
       ctx.json(
-        require(`${__dirname}/../../__fixtures__/service/rest/v1/search/404.json`),
+        require(
+          `${__dirname}/../../__fixtures__/service/rest/v1/search/404.json`,
+        ),
       ),
     );
   }),
@@ -51,7 +57,9 @@ const handlers = [
       return res(
         ctx.status(200),
         ctx.json(
-          require(`${__dirname}/../../__fixtures__/repository/docker/v2/janus-idp/backstage-showcase/manifests/latest.json`),
+          require(
+            `${__dirname}/../../__fixtures__/repository/docker/v2/janus-idp/backstage-showcase/manifests/latest.json`,
+          ),
         ),
       );
     },
@@ -63,7 +71,9 @@ const handlers = [
       return res(
         ctx.status(200),
         ctx.json(
-          require(`${__dirname}/../../__fixtures__/repository/docker/v2/janus-idp/backstage-showcase/manifests/sha-33dfe6b.json`),
+          require(
+            `${__dirname}/../../__fixtures__/repository/docker/v2/janus-idp/backstage-showcase/manifests/sha-33dfe6b.json`,
+          ),
         ),
       );
     },
@@ -75,7 +85,9 @@ const handlers = [
       return res(
         ctx.status(200),
         ctx.json(
-          require(`${__dirname}/../../__fixtures__/repository/docker/v2/janus-idp/backstage-showcase/manifests/sha-de3dbf1.json`),
+          require(
+            `${__dirname}/../../__fixtures__/repository/docker/v2/janus-idp/backstage-showcase/manifests/sha-de3dbf1.json`,
+          ),
         ),
       );
     },

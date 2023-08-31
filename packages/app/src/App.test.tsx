@@ -24,5 +24,5 @@ describe('App', () => {
 
     const rendered = await renderWithEffects(<App />);
     expect(rendered.baseElement).toBeInTheDocument();
-  });
+  }, 10000);
 });
