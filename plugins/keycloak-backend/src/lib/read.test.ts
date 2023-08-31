@@ -103,11 +103,22 @@ describe('parseUser', () => {
       spec: {
         memberOf: [],
         profile: {
-          displayName: '',
           email: 'jamesdoe@gmail.com',
         },
       },
     });
+  });
+
+  it('should parse an user with displayName', async () => {
+    const entity = await parseUser(usersFixture[2], 'test', []);
+
+    expect(entity?.spec.profile?.displayName).toEqual('John Doe');
+  });
+
+  it('should parse an user without displayName', async () => {
+    const entity = await parseUser(usersFixture[0], 'test', []);
+
+    expect(entity?.spec.profile?.displayName).toBeUndefined();
   });
 
   it('should parse an user with transformer', async () => {
