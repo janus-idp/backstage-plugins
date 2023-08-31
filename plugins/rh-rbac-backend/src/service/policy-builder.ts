@@ -4,31 +4,18 @@ import {
   resolvePackagePath,
 } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
-import {
-  getBearerTokenFromAuthorizationHeader,
-  IdentityApi,
-} from '@backstage/plugin-auth-node';
-import {
-  createRouter,
-  RouterOptions,
-} from '@backstage/plugin-permission-backend';
-import {
-  AuthorizeResult,
-  PermissionEvaluator,
-} from '@backstage/plugin-permission-common';
-import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
+import { IdentityApi } from '@backstage/plugin-auth-node';
+import { RouterOptions } from '@backstage/plugin-permission-backend';
+import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 
-import { FileAdapter } from 'casbin';
+import { FileAdapter, newEnforcer, newModelFromString } from 'casbin';
 import { Router } from 'express';
 import { Logger } from 'winston';
 
-import {
-  policyEntityPermissions,
-  policyEntityReadPermission,
-  RESOURCE_TYPE_POLICY_ENTITY,
-} from '../permissions';
 import { CasbinDBAdapterFactory } from './casbin-adapter-factory';
+import { MODEL } from './permission-model';
 import { RBACPermissionPolicy } from './permission-policy';
+import { PolicesServer } from './policies-rest-api';
 
 export class PolicyBuilder {
   public static async build(env: {
@@ -43,8 +30,6 @@ export class PolicyBuilder {
     const databaseEnabled = env.config.getOptionalBoolean(
       'permission.rbac.database.enabled',
     );
-
-    const permissions = env.permissions;
 
     // Database adapter work
     if (databaseEnabled) {
@@ -61,45 +46,24 @@ export class PolicyBuilder {
       );
     }
 
+    const enf = await newEnforcer(newModelFromString(MODEL), adapter);
+    await enf.loadPolicy();
+    await enf.enableAutoSave(true);
+
     const options: RouterOptions = {
       config: env.config,
       logger: env.logger,
       discovery: env.discovery,
       identity: env.identity,
-      policy: await RBACPermissionPolicy.build(env.logger, adapter, env.config),
+      policy: await RBACPermissionPolicy.build(env.logger, env.config, enf),
     };
 
-    const router = await createRouter(options);
-
-    const permissionsIntegrationRouter = createPermissionIntegrationRouter({
-      resourceType: RESOURCE_TYPE_POLICY_ENTITY,
-      permissions: policyEntityPermissions,
-    });
-
-    router.use(permissionsIntegrationRouter);
-
-    router.get('/', async (request, response) => {
-      const token = getBearerTokenFromAuthorizationHeader(
-        request.header('authorization'),
-      );
-
-      const decision = (
-        await permissions.authorizeConditional(
-          [{ permission: policyEntityReadPermission }],
-          {
-            token,
-          },
-        )
-      )[0];
-
-      if (decision.result === AuthorizeResult.DENY) {
-        response.status(403);
-        response.send({ status: 'Unauthorized' });
-      } else {
-        response.send({ status: 'Authorized' });
-      }
-    });
-
-    return router;
+    const server = new PolicesServer(
+      env.identity,
+      env.permissions,
+      options,
+      enf,
+    );
+    return server.serve();
   }
 }
