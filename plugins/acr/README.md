@@ -32,7 +32,7 @@ The Azure Container Registry (ACR) plugin displays information about your contai
     - Basic authorization:
 
       - Navigate to the ACR portal and go to the **Access Keys** tab.
-      - Retrieve the username and password of the Admin user and use the Basic Auth Header Generator tool to convert the credentials into a token.
+      - Retrieve the username and password of the Admin user and use the [Basic Auth Header Generator tool](https://www.debugbear.com/basic-auth-header-generator) or run `echo printf '<username>:<password>' | base64` in a terminal to convert the credentials into a basic token.
       - Set the generated token as `ACR_AUTH_TOKEN` in environment variables.
 
     - OAuth2: - Generate bearer access token using the process described in Authenticate with an Azure Container Registry.
@@ -44,7 +44,7 @@ The Azure Container Registry (ACR) plugin displays information about your contai
         --header 'Authorization: Basic <basic_token>'
         ```
 
-      - Set the generated token as `ACR_AUTH_TOKEN` in environment variables.
+      - Set the generated token as `ACR_AUTH_TOKEN` in environment variables. Make sure to replace the `Basic` in the `app-config.yaml` with `Bearer`
 
 1.  Enable an additional tab on the entity view page using the `packages/app/src/components/catalog/EntityPage.tsx` file as follows:
 
