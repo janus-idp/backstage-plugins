@@ -1,6 +1,6 @@
 # Ansible Automation Platform Backstage provider plugin
 
-The Ansible Automation Platform (AAP) Backstage provider plugin synchronizes the AAP content including job templates into the [Backstage](https://backstage.io/) catalog.
+The Ansible Automation Platform (AAP) Backstage provider plugin synchronizes the accessible templates including job templates and workflow job templates from AAP into the [Backstage](https://backstage.io/) catalog.
 
 ## For administrators
 
@@ -107,9 +107,9 @@ When you start your Backstage application, you can see the following log lines:
 
 ## For users
 
-### Accessing job templates from Ansible Automation Platform in Backstage
+### Accessing templates from Ansible Automation Platform in Backstage
 
-Once the AAP Backstage provider plugin is configured successfully, it synchronizes the job templates from AAP and displays them in the Backstage Catalog page as Resources.
+Once the AAP Backstage provider plugin is configured successfully, it synchronizes the templates including job templates and workflow job templates from AAP and displays them on the Backstage Catalog page as Resources.
 
 #### Prerequisites
 
@@ -119,21 +119,21 @@ Once the AAP Backstage provider plugin is configured successfully, it synchroniz
 #### Procedure
 
 1. Open your Backstage application and Go to the **Catalog** page.
-1. Select **Resource** from the **Kind** drop-down and **job_template** from the **Type** drop-down on the left side of the page.
+1. Select **Resource** from the **Kind** drop-down and **job template** or **workflow job template** from the **Type** drop-down on the left side of the page.
 
    ![aap-backend-plugin-backstage](./images/aap-backend-plugin-user1.png)
 
-   A list of all the available job templates from AAP appears on the page.
+   A list of all the available templates from AAP appears on the page.
 
-   **NOTE**: The imported job templates from AAP in Backstage follow the `{jobTemplateName}-{orgName}-{envNameInConfig}` naming syntax without white spaces. For example, in the Demo_Job_Template-Default-Stage, Demo_Job_Template is `jobTemplateName`, Default is `orgName`, and Stage is `envNameInConfig`.
+   **NOTE**: The imported templates from AAP in Backstage follow the `{jobTemplateName}-{orgName}-{envNameInConfig}` naming syntax without white spaces. For example, in the Demo_Job_Template-Default-Stage, Demo_Job_Template is `jobTemplateName`, Default is `orgName`, and Stage is `envNameInConfig`.
 
-1. Select a job template from the list.
+1. Select a template from the list.
 
    The **OVERVIEW** tab appears containing different cards, such as:
 
-   - **About**: Provides detailed information about the job template.
-   - **Relations**: Displays the visual representation of the job template and associated aspects.
-   - **Links**: Contains links to the AAP dashboard and the details page of the job template.
+   - **About**: Provides detailed information about the template.
+   - **Relations**: Displays the visual representation of the template and associated aspects.
+   - **Links**: Contains links to the AAP dashboard and the details page of the template.
    - **Has subcomponents**: Displays a list of associated subcomponents.
 
      ![aap-backend-plugin-backstage-details](./images/aap-backend-plugin-user2.png)
