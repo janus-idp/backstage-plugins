@@ -7,5 +7,5 @@ yarn start-backend
 ```
 
 ```console
-yarn workspace @janus-idp/backstage-plugin-jfrog-artifactory run start
+yarn run start --filter=@janus-idp/backstage-plugin-jfrog-artifactory
 ```

@@ -5,9 +5,9 @@ In [Backstage plugin terminology](https://backstage.io/docs/local-dev/cli-build-
 You can run the following commands concurrently from the root repository to start a live development session:
 
 ```console
-yarn start-backend
+yarn run start --filter=backend
 ```
 
 ```console
-yarn workspace @janus-idp/backstage-plugin-quay run start
+yarn run start --filter=@janus-idp/backstage-plugin-quay
 ```

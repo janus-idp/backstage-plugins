@@ -2,11 +2,9 @@
 
 ## Minimal Setup
 
-1. Go to plugins/kiali
+1. From the project root directory, run `yarn run start --filter=@janus-idp/backstage-plugin-kiali`
 
-2. Execute yarn start
-
-3. Go to `http://localhost:3000/kiali`
+2. Go to `http://localhost:3000/kiali`
 
 ## Full Setup
 

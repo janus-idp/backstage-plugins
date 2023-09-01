@@ -7,7 +7,7 @@
 You can run a development setup using the following command:
 
 ```console
-yarn start
+yarn run start --filter=@janus-idp/backstage-plugin-keycloak-backend
 ```
 
 This will provision a new Keycloak instance locally via podman and import realm [`janus-realm`](./__fixtures__/keycloak-realm.json). This realm contains 1 group and 0 users (Keycloak currently doesn't support user export/import).

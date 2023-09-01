@@ -4,16 +4,16 @@ If you have installed the OCM plugin to the example application in the repositor
 
 To start a development setup in isolation with a faster setup and hot reloads, complete the following steps:
 
-1. Run the `ocm-backend` plugin in the `plugins/ocm-backend` directory by executing the following command:
+1. Run the `ocm-backend` plugin in the `plugins/ocm-backend` directory by executing the following command from the project root directory:
 
    ```console
-   yarn start
+   yarn run start --filter=@janus-idp/backstage-plugin-ocm-backend
    ```
 
-2. Run the `ocm` frontend plugin in the `plugins/ocm` directory using the following command:
+2. Run the `ocm` frontend plugin in the `plugins/ocm` directory using the following command from the project root directory:
 
    ```console
-   yarn start
+   yarn run start --filter=@janus-idp/backstage-plugin-ocm
    ```
 
 The previous steps are meant for local development and you can find the setup inside the `./dev` directories of the individual plugins.

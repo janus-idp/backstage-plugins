@@ -6,77 +6,76 @@ The Azure Container Registry (ACR) plugin displays information about your contai
 
 ### Installing and configuring the ACR plugin
 
-1. Run the following command to install the ACR plugin:
+1.  Run the following command to install the ACR plugin:
 
-   ```bash
-   yarn workspace app add @janus-idp/backstage-plugin-acr
-   ```
+    ```bash
+    yarn workspace app add @janus-idp/backstage-plugin-acr
+    ```
 
-1. Set the proxy to the desired ACR server in the `app-config.yaml` file as follows:
+1.  Set the proxy to the desired ACR server in the `app-config.yaml` file as follows:
 
-   ```yaml
-   # app-config.yaml
-   proxy:
-     '/acr/api':
-       target: 'https://mycontainerregistry.azurecr.io/acr/v1/'
-       changeOrigin: true
-       headers:
-         # If you use Bearer Token for authorization, please replace the 'Basic' with 'Bearer' in the following line.
-         Authorization: 'Basic ${ACR_AUTH_TOKEN}'
-       # Change to "false" in case of using self hosted artifactory instance with a self-signed certificate
-       secure: true
-   ```
+    ```yaml
+    # app-config.yaml
+    proxy:
+      '/acr/api':
+        target: 'https://mycontainerregistry.azurecr.io/acr/v1/'
+        changeOrigin: true
+        headers:
+          # If you use Bearer Token for authorization, please replace the 'Basic' with 'Bearer' in the following line.
+          Authorization: 'Basic ${ACR_AUTH_TOKEN}'
+        # Change to "false" in case of using self hosted artifactory instance with a self-signed certificate
+        secure: true
+    ```
 
-1. Set the authorization using one of the following options:
+1.  Set the authorization using one of the following options:
 
-   - Basic authorization:
+    - Basic authorization:
 
-     - Navigate to the ACR portal and go to the **Access Keys** tab.
-     - Retrieve the username and password of the Admin user and use the Basic Auth Header Generator tool to convert the credentials into a token.
-     - Set the generated token as `ACR_AUTH_TOKEN` in environment variables.
+      - Navigate to the ACR portal and go to the **Access Keys** tab.
+      - Retrieve the username and password of the Admin user and use the Basic Auth Header Generator tool to convert the credentials into a token.
+      - Set the generated token as `ACR_AUTH_TOKEN` in environment variables.
 
-   - OAuth2:
-     - Generate bearer access token using the process described in Authenticate with an Azure Container Registry.
-     - Set the generated token as `ACR_AUTH_TOKEN` in environment variables.
+    - OAuth2: - Generate bearer access token using the process described in Authenticate with an Azure Container Registry.
 
-1. Enable an additional tab on the entity view page using the `packages/app/src/components/catalog/EntityPage.tsx` file as follows:
+      - One method is to generate a bearer token using your basic authorization token, i.e.
 
-   ```ts
-   // packages/app/src/components/catalog/EntityPage.tsx
-   import { AcrPage, isAcrAvailable } from '@janus-idp/backstage-plugin-acr';
+        ```bash
+                curl --location 'https://<yourregistry>.azurecr.io/oauth2/token?scope=repository%3A*%3A*&service=<yourregistry>.azurecr.io' \
+        --header 'Authorization: Basic <basic_token>'
+        ```
 
-   const websiteEntityPage = (
-     <EntityPageLayout>
-       // ...
-       <EntityLayout.Route path="/acr" title="ACR">
-         <Grid container spacing={3} alignItems="stretch">
-           <EntitySwitch>
-             <EntitySwitch.Case if={e => Boolean(isAcrAvailable(e))}>
-               <Grid item sm={12}>
-                 <AcrPage />
-               </Grid>
-             </EntitySwitch.Case>
-           </EntitySwitch>
-         </Grid>
-       </EntityLayout.Route>
-     </EntityPageLayout>
-   );
-   ```
+      - Set the generated token as `ACR_AUTH_TOKEN` in environment variables.
 
-1. Annotate your entity using the following annotations:
-   ```yaml
-   metadata:
-     annotations:
-       'azure-container-registry/repository-name': `<REPOSITORY-NAME>',
-   ```
+1.  Enable an additional tab on the entity view page using the `packages/app/src/components/catalog/EntityPage.tsx` file as follows:
 
-### Development
+    ```ts
+    // packages/app/src/components/catalog/EntityPage.tsx
+    import { AcrPage, isAcrAvailable } from '@janus-idp/backstage-plugin-acr';
 
-The ACR plugin is a front-end plugin. You can use the following command to start the live development session from your root repository:
+    const websiteEntityPage = (
+      <EntityPageLayout>
+        // ...
+        <EntityLayout.Route path="/acr" title="ACR">
+          <Grid container spacing={3} alignItems="stretch">
+            <EntitySwitch>
+              <EntitySwitch.Case if={e => Boolean(isAcrAvailable(e))}>
+                <Grid item sm={12}>
+                  <AcrPage />
+                </Grid>
+              </EntitySwitch.Case>
+            </EntitySwitch>
+          </Grid>
+        </EntityLayout.Route>
+      </EntityPageLayout>
+    );
+    ```
 
-```
-yarn workspace @janus-idp/backstage-plugin-acr run start
-```
+1.  Annotate your entity using the following annotations:
+    ```yaml
+    metadata:
+      annotations:
+        'azure-container-registry/repository-name': `<REPOSITORY-NAME>',
+    ```
 
 ## For users
 
