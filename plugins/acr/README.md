@@ -41,13 +41,16 @@ The Azure Container Registry (ACR) plugin displays information about your contai
 
 1. Enable an additional tab on the entity view page using the `packages/app/src/components/catalog/EntityPage.tsx` file as follows:
 
-   ```ts
-   // packages/app/src/components/catalog/EntityPage.tsx
+   ```tsx title="packages/app/src/components/catalog/EntityPage.tsx"
+   /* highlight-add-start */
    import { AcrPage, isAcrAvailable } from '@janus-idp/backstage-plugin-acr';
 
-   const websiteEntityPage = (
+   /* highlight-add-end */
+
+   const serviceEntityPage = (
      <EntityPageLayout>
        // ...
+       {/* highlight-add-start */}
        <EntityLayout.Route path="/acr" title="ACR">
          <Grid container spacing={3} alignItems="stretch">
            <EntitySwitch>
@@ -59,6 +62,7 @@ The Azure Container Registry (ACR) plugin displays information about your contai
            </EntitySwitch>
          </Grid>
        </EntityLayout.Route>
+       {/* highlight-add-end */}
      </EntityPageLayout>
    );
    ```
