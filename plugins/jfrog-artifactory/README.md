@@ -60,5 +60,5 @@ yarn workspace app add @janus-idp/backstage-plugin-jfrog-artifactory
    ```yaml title="catalog-info.yaml"
    metadata:
      annotations:
-       'jfrog-artifactory/image-name': `<IMAGE-NAME>',
+       'jfrog-artifactory/image-name': '<IMAGE-NAME>'
    ```

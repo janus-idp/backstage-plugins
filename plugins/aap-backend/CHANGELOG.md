@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-aap-backend [1.2.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-aap-backend@1.2.0...@janus-idp/backstage-plugin-aap-backend@1.2.1) (2023-09-05)
+
+
+### Documentation
+
+* **aap:** aap backend plugin documentation ([#690](https://github.com/janus-idp/backstage-plugins/issues/690)) ([66bbb32](https://github.com/janus-idp/backstage-plugins/commit/66bbb327ce03077bad751dfd2ff1ce53a7f846c6))
+
 ## @janus-idp/backstage-plugin-aap-backend [1.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-aap-backend@1.1.2...@janus-idp/backstage-plugin-aap-backend@1.2.0) (2023-08-29)
 
 

@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-acr [1.1.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-acr@1.1.1...@janus-idp/backstage-plugin-acr@1.1.2) (2023-09-05)
+
+
+### Documentation
+
+* **acr:** updated serviceEntityPage in README ([#701](https://github.com/janus-idp/backstage-plugins/issues/701)) ([fe172f6](https://github.com/janus-idp/backstage-plugins/commit/fe172f6c086b281b177d6859d3b06dc772097428))
+
 ## @janus-idp/backstage-plugin-acr [1.1.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-acr@1.1.0...@janus-idp/backstage-plugin-acr@1.1.1) (2023-08-28)
 
 
