@@ -1,5 +1,5 @@
 {
-  "name": "@backstage/plugin-circleci",
+  "name": "@janus-idp/backstage-plugin-circleci",
   "description": "A Backstage plugin that integrates towards Circle CI",
   "version": "0.3.24-next.1",
   "main": "src/index.ts",
