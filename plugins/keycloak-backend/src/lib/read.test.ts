@@ -6,7 +6,13 @@ import {
 } from '../../__fixtures__/data';
 import { KeycloakAdminClientMock } from '../../__fixtures__/helpers';
 import { KeycloakProviderConfig } from './config';
-import { parseGroup, parseUser, readKeycloakRealm } from './read';
+import {
+  getEntities,
+  parseGroup,
+  parseUser,
+  readKeycloakRealm,
+  traverseGroups,
+} from './read';
 import { GroupTransformer, UserTransformer } from './types';
 
 const config: KeycloakProviderConfig = {
@@ -118,5 +124,42 @@ describe('parseUser', () => {
     const entity = await parseUser(usersFixture[0], 'test', [], transformer);
 
     expect(entity!.metadata.name).toEqual('jamesdoe_test');
+  });
+});
+
+describe('getEntities', () => {
+  it('should fetch all users', async () => {
+    const client = new KeycloakAdminClientMock() as unknown as KcAdminClient;
+
+    const users = await getEntities(client.users, {
+      id: '',
+      baseUrl: '',
+      realm: '',
+    });
+
+    expect(users).toHaveLength(3);
+  });
+  it('should fetch all users with pagination', async () => {
+    const client = new KeycloakAdminClientMock() as unknown as KcAdminClient;
+
+    await getEntities(
+      client.users,
+      {
+        id: '',
+        baseUrl: '',
+        realm: '',
+      },
+      1,
+    );
+
+    expect(client.users.find).toHaveBeenCalledTimes(3);
+  });
+});
+
+describe('traverseGroups', () => {
+  it('should traverse groups', async () => {
+    const groups = [...traverseGroups(groupsFixture[0])];
+
+    expect(groups).toHaveLength(2);
   });
 });
