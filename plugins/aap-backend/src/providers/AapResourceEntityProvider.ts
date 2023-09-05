@@ -152,8 +152,6 @@ export class AapResourceEntityProvider implements EntityProvider {
     const jobTemplateTransformedName = `${template.name.replace(/ /g, '_')}-${
       template.summary_fields?.organization?.name || template.id
     }-${this.env}`;
-    // format template type i.e job_template to job template
-    const templateType = template.type.split('_')?.join(' ');
 
     return {
       kind: 'Resource',
@@ -164,6 +162,7 @@ export class AapResourceEntityProvider implements EntityProvider {
           [ANNOTATION_ORIGIN_LOCATION]: this.getProviderName(),
         },
         name: `${jobTemplateTransformedName}`,
+        title: `${template.name}`,
         description: `${template.description}`,
         links: [
           {
@@ -177,7 +176,7 @@ export class AapResourceEntityProvider implements EntityProvider {
         ],
       },
       spec: {
-        type: `${templateType}`,
+        type: `${template.type}`,
         owner: `${this.owner}`,
         ...(this.system && { system: `${this.system}` }),
       },
