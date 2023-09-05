@@ -17,6 +17,10 @@ export function getFileSize({
       return acc;
     }
 
+    if (rawAsset.schemaVersion === 1) {
+      return acc;
+    }
+
     const layerSize = rawAsset.layers.reduce((layerAcc, layer) => {
       return layerAcc + layer.size;
     }, 0);

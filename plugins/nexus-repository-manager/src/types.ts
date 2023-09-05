@@ -9,20 +9,41 @@ export type Annotation = {
   query?: (str: string) => SearchServiceQuery;
 };
 
-export type RawAsset = {
-  schemaVersion: number;
-  mediaType: string;
-  config: Config;
-  layers: Layer[];
+export type RawAsset = RawAssetSchema1 | RawAssetSchema2;
+
+// https://docs.docker.com/registry/spec/manifest-v2-1/
+export type RawAssetSchema1 = {
+  schemaVersion: 1;
+  name: string;
+  tag: string;
+  architecture: string;
+  fsLayers: LayerSchema1[];
+  history: HistorySchema1[];
 };
 
-export type Config = {
+export type LayerSchema1 = {
+  blobSum: string;
+};
+
+export type HistorySchema1 = {
+  v1Compatibility: string;
+};
+
+// https://docs.docker.com/registry/spec/manifest-v2-2/
+export type RawAssetSchema2 = {
+  schemaVersion: 2;
+  mediaType: 'application/vnd.docker.distribution.manifest.v2+json';
+  config: ConfigSchema2;
+  layers: LayerSchema2[];
+};
+
+export type ConfigSchema2 = {
   mediaType: string;
   size: number;
   digest: string;
 };
 
-export type Layer = {
+export type LayerSchema2 = {
   mediaType: string;
   size: number;
   digest: string;
