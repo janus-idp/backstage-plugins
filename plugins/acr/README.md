@@ -75,11 +75,11 @@ The Azure Container Registry (ACR) plugin displays information about your contai
 
 1.  Annotate your entity using the following annotations:
 
-```yaml
-metadata:
-  annotations:
-    'azure-container-registry/repository-name': `<REPOSITORY-NAME>',
-```
+    ```yaml
+    metadata:
+      annotations:
+        'azure-container-registry/repository-name': `<REPOSITORY-NAME>',
+    ```
 
 ## For users
 
@@ -98,6 +98,6 @@ ACR is a front-end plugin that enables you to view information about the contain
 
 1. Go to the **ACR** tab.
 
-![acr-tab](./images/acr-plugin-user1.png)
+   ![acr-tab](./images/acr-plugin-user1.png)
 
-The **ACR** tab in the Backstage UI contains a list of container images and related information, such as **TAG**, **CREATED**, **LAST MODIFIED**, and **MANIFEST**.
+   The **ACR** tab in the Backstage UI contains a list of container images and related information, such as **TAG**, **CREATED**, **LAST MODIFIED**, and **MANIFEST**.
