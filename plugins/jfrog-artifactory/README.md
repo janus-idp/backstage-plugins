@@ -14,7 +14,7 @@ The Jfrog Artifactory plugin displays information about your container images wi
    yarn workspace app add @janus-idp/backstage-plugin-jfrog-artifactory
    ```
 
-1. Set the proxy to desired Artifactory server in the `app-config.yaml` file as follows:
+1. Set the proxy to the desired Artifactory server in the `app-config.yaml` file as follows:
 
    ```yaml title="app-config.yaml"
    proxy:
