@@ -32,12 +32,19 @@ The Azure Container Registry (ACR) plugin displays information about your contai
    - Basic authorization:
 
      - Navigate to the ACR portal and go to the **Access Keys** tab.
-     - Retrieve the username and password of the Admin user and use the Basic Auth Header Generator tool to convert the credentials into a token.
+     - Retrieve the username and password of the Admin user and use the [Basic Auth Header Generator tool](https://www.debugbear.com/basic-auth-header-generator) or run `echo printf '<username>:<password>' | base64` in a terminal to convert the credentials into a basic token.
      - Set the generated token as `ACR_AUTH_TOKEN` in environment variables.
 
-   - OAuth2:
-     - Generate bearer access token using the process described in Authenticate with an Azure Container Registry.
-     - Set the generated token as `ACR_AUTH_TOKEN` in environment variables.
+   - OAuth2: - Generate bearer access token using the process described in Authenticate with an Azure Container Registry.
+
+     - One method is to generate a bearer token using your basic authorization token, i.e.
+
+       ```bash
+               curl --location 'https://<yourregistry>.azurecr.io/oauth2/token?scope=repository%3A*%3A*&service=<yourregistry>.azurecr.io' \
+       --header 'Authorization: Basic <basic_token>'
+       ```
+
+     - Set the generated token as `ACR_AUTH_TOKEN` in environment variables. Make sure to replace the `Basic` in the `app-config.yaml` with `Bearer`
 
 1. Enable an additional tab on the entity view page using the `packages/app/src/components/catalog/EntityPage.tsx` file as follows:
 
@@ -68,19 +75,12 @@ The Azure Container Registry (ACR) plugin displays information about your contai
    ```
 
 1. Annotate your entity using the following annotations:
+
    ```yaml
    metadata:
      annotations:
        'azure-container-registry/repository-name': `<REPOSITORY-NAME>',
    ```
-
-### Development
-
-The ACR plugin is a front-end plugin. You can use the following command to start the live development session from your root repository:
-
-```
-yarn workspace @janus-idp/backstage-plugin-acr run start
-```
 
 ## For users
 
