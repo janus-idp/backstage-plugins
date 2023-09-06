@@ -1,18 +1,16 @@
 # Nexus Repository Manager plugin for Backstage
 
-The Nexus Repository Manager plugin displays the information about your build artifacts within the Nexus Repository Manager in your Backstage application.
+The Nexus Repository Manager plugin displays the information about your build artifacts that are available in the Nexus Repository Manager in your Backstage application.
 
 ## For administrators
 
-### Installation
+### Installation and configuration
 
 1. Install the Nexus Repository Manager plugin using the following command:
 
    ```console
    yarn workspace app add @janus-idp/backstage-plugin-nexus-repository-manager
    ```
-
-### Configuration
 
 1. Set the proxy to the desired Nexus Repository Manager server in the `app-config.yaml` file as follows:
 
@@ -29,7 +27,7 @@ The Nexus Repository Manager plugin displays the information about your build ar
        secure: true
    ```
 
-2. Optional: Change the base url of Nexus Repository Manager proxy.
+1. Optional: Change the base URL of Nexus Repository Manager proxy as follows:
 
    ```yaml title="app-config.yaml"
    nexusRepositoryManager:
@@ -37,7 +35,7 @@ The Nexus Repository Manager plugin displays the information about your build ar
      proxyPath: /custom-path
    ```
 
-3. Optional: Enable experimental annotations. Note, these have not been thoroughly tested.
+1. Optional: Enable experimental annotations:
 
    ```yaml title="app-config.yaml"
    nexusRepositoryManager:
@@ -46,7 +44,9 @@ The Nexus Repository Manager plugin displays the information about your build ar
 
    Replace the `isNexusRepositoryManagerAvailable` import with `isNexusRepositoryManagerExperimentalAvailable` when adding the `<NexusRepositoryManagerPage />` component.
 
-4. Enable an additional tab on the entity view page in `packages/app/src/components/catalog/EntityPage.tsx`:
+   **NOTE**: The annotations mentioned in this step are not thoroughly tested.
+
+1. Enable an additional tab on the entity view page in `packages/app/src/components/catalog/EntityPage.tsx`:
 
    ```tsx title="packages/app/src/components/catalog/EntityPage.tsx"
    /* highlight-add-next-line */
@@ -70,7 +70,7 @@ The Nexus Repository Manager plugin displays the information about your build ar
    );
    ```
 
-5. Annotate your entity with any of the following annotations:
+1. Annotate your entity with any of the following annotations:
 
    ```yaml title="catalog-info.yaml"
    metadata:
@@ -80,7 +80,7 @@ The Nexus Repository Manager plugin displays the information about your build ar
        nexus-repository-manager/docker.image-name: `<ORGANIZATION>/<REPOSITORY>`,
    ```
 
-   More annotations can be found [here](./ANNOTATIONS.md).
+   For more information about annotations, see the [annotation file](./ANNOTATIONS.md).
 
 ## For users
 
@@ -91,13 +91,13 @@ The Nexus Repository Manager is a front-end plugin that enables you to view the 
 #### Prerequisites
 
 - Your Backstage application is installed and running.
-- You have installed the Nexus Repository Manager plugin. For installation process, see [Installation](#installation).
+- You have installed the Nexus Repository Manager plugin. For the installation process, see [Installation and configuration](#installation-and-configuration).
 
 #### Procedure
 
 1. Open your Backstage application and select a component from the **Catalog** page.
-2. Go to the **Build Artifacts** tab.
+2. Go to the **BUILD ARTIFACTS** tab.
 
-   The **Image Registry** tab in the Backstage UI contains a list of build artifacts and related information, such as **VERSION**, **REPOSITORY**, **Repository Type**, **MANIFEST**, **MODIFIED**, and **SIZE**.
+   The **BUILD ARTIFACTS** tab contains a list of build artifacts and related information, such as **VERSION**, **REPOSITORY**, **REPOSITORY TYPE**, **MANIFEST**, **MODIFIED**, and **SIZE**.
 
    ![nexus-repository-manager-tab](./images/nexus-repository-manager.png)
