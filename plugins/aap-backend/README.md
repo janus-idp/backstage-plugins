@@ -125,8 +125,6 @@ Once the AAP Backstage provider plugin is configured successfully, it synchroniz
 
    A list of all the available templates from AAP appears on the page.
 
-   **NOTE**: The imported templates from AAP in Backstage follow the `{jobTemplateName}-{orgName}-{envNameInConfig}` naming syntax without white spaces. For example, in the Demo_Job_Template-Default-Stage, Demo_Job_Template is `jobTemplateName`, Default is `orgName`, and Stage is `envNameInConfig`.
-
 1. Select a template from the list.
 
    The **OVERVIEW** tab appears containing different cards, such as:
