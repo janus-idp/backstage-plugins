@@ -34,7 +34,7 @@ export const PipelineVisualization = ({
     <>
       {pipelineRun?.metadata?.name && (
         <Split className="bs-tkn-pipeline-visualization__label">
-          <SplitItem style={{ marginRight: 'var(--pf-global--spacer--sm)' }}>
+          <SplitItem style={{ marginRight: 'var(--pf-v5-global--spacer--sm)' }}>
             <span
               className="badge"
               style={{ backgroundColor: PipelineRunModel.color }}

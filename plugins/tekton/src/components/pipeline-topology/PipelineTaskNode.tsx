@@ -54,6 +54,8 @@ const PipelineTaskNode = ({
     TektonResourcesContext,
   );
   const data = element.getData();
+  const triggerRef = React.useRef<SVGGElement | null>(null);
+
   const pipelineRun = data.pipelineRun;
   const [hover, hoverRef] = useHover();
   const detailsLevel = useDetailsLevel();
@@ -170,8 +172,9 @@ const PipelineTaskNode = ({
               isFinallyTask={isFinallyTask}
             />
           }
+          triggerRef={triggerRef}
         >
-          {taskNode}
+          <g ref={triggerRef}>{taskNode}</g>
         </Tooltip>
       </g>
     </Layer>

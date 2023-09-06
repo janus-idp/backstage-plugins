@@ -19,9 +19,9 @@
 }
 
 .bs-topology-resource-icon {
-  background-color: var(--pf-global--palette--blue-300);
+  background-color: var(--pf-v5-global--palette--blue-300);
   border-radius: 20px;
-  color: var(--pf-global--palette--white);
+  color: var(--pf-v5-global--palette--white);
   display: inline-block;
   flex-shrink: 0;
   font-size: 14px;

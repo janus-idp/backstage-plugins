@@ -13,7 +13,7 @@ import { TopologyWorkloadView } from './TopologyWorkloadView';
 import './TopologyComponent.css';
 
 const THEME_DARK = 'dark';
-const THEME_DARK_CLASS = 'pf-theme-dark';
+const THEME_DARK_CLASS = 'pf-v5-theme-dark';
 
 export const TopologyComponent = () => {
   const {
