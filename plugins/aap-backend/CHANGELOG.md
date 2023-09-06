@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-aap-backend [1.2.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-aap-backend@1.2.1...@janus-idp/backstage-plugin-aap-backend@1.2.2) (2023-09-06)
+
+
+### Bug Fixes
+
+* **aap:** show template name and type as it is without formatting ([#710](https://github.com/janus-idp/backstage-plugins/issues/710)) ([35f9645](https://github.com/janus-idp/backstage-plugins/commit/35f96450211e8f54873a2f81aa5bae77f93ab0ef))
+
 ## @janus-idp/backstage-plugin-aap-backend [1.2.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-aap-backend@1.2.0...@janus-idp/backstage-plugin-aap-backend@1.2.1) (2023-09-05)
 
 
