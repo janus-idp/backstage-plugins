@@ -1,7 +1,7 @@
 import { getFileSize } from './get-file-size';
 
 describe('getFileSize', () => {
-  it('should return the correct file size', () => {
+  it('should return the correct file size for manifest 2, schema 2', () => {
     const component = {
       assets: [
         {

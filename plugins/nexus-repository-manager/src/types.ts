@@ -11,7 +11,7 @@ export type Annotation = {
 
 export type RawAsset = RawAssetSchema1 | RawAssetSchema2;
 
-// https://docs.docker.com/registry/spec/manifest-v2-1/
+/** @see {@link https://docs.docker.com/registry/spec/manifest-v2-1/|Image Manifest Version 2, Schema 1} */
 export type RawAssetSchema1 = {
   schemaVersion: 1;
   name: string;
@@ -29,7 +29,7 @@ export type HistorySchema1 = {
   v1Compatibility: string;
 };
 
-// https://docs.docker.com/registry/spec/manifest-v2-2/
+/** @see {@link https://docs.docker.com/registry/spec/manifest-v2-2/|Image Manifest Version 2, Schema 2} */
 export type RawAssetSchema2 = {
   schemaVersion: 2;
   mediaType: 'application/vnd.docker.distribution.manifest.v2+json';
