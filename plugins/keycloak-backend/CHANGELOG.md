@@ -1,3 +1,15 @@
+## @janus-idp/backstage-plugin-keycloak-backend [1.5.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-keycloak-backend@1.5.3...@janus-idp/backstage-plugin-keycloak-backend@1.5.4) (2023-09-07)
+
+
+### Bug Fixes
+
+* **keycloak:** fix keycloak user displayname ([#693](https://github.com/janus-idp/backstage-plugins/issues/693)) ([dfef9a3](https://github.com/janus-idp/backstage-plugins/commit/dfef9a3a0adb4ea2b966746da2d041d40b6aea73))
+
+
+### Other changes
+
+* **keycloak:** add pagination/traversal test cases ([#697](https://github.com/janus-idp/backstage-plugins/issues/697)) ([b2ab403](https://github.com/janus-idp/backstage-plugins/commit/b2ab403d45f43e929d477e008f560c9777ce0f8c))
+
 ## @janus-idp/backstage-plugin-keycloak-backend [1.5.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-keycloak-backend@1.5.2...@janus-idp/backstage-plugin-keycloak-backend@1.5.3) (2023-08-24)
 
 
