@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-acr [1.1.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-acr@1.1.2...@janus-idp/backstage-plugin-acr@1.1.3) (2023-09-07)
+
+
+### Documentation
+
+* **acr:** update acr README.md to show how to create bearer/basic tokens ([#717](https://github.com/janus-idp/backstage-plugins/issues/717)) ([ebb0333](https://github.com/janus-idp/backstage-plugins/commit/ebb0333fbf6ab2a0572bdb2e1ad3b27cfe5c6e1b))
+
 ## @janus-idp/backstage-plugin-acr [1.1.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-acr@1.1.1...@janus-idp/backstage-plugin-acr@1.1.2) (2023-09-05)
 
 
