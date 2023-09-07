@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-nexus-repository-manager [1.0.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-nexus-repository-manager@1.0.3...@janus-idp/backstage-plugin-nexus-repository-manager@1.0.4) (2023-09-07)
+
+
+### Documentation
+
+* **nexus:** update nexus CONTRIBUTING.md and turbo to ensure generate command is ran ([#718](https://github.com/janus-idp/backstage-plugins/issues/718)) ([19f2f01](https://github.com/janus-idp/backstage-plugins/commit/19f2f018deafa3a521ce8826a26736b15275a9a1))
+
 ## @janus-idp/backstage-plugin-nexus-repository-manager [1.0.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-nexus-repository-manager@1.0.2...@janus-idp/backstage-plugin-nexus-repository-manager@1.0.3) (2023-09-06)
 
 
