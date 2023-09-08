@@ -6089,10 +6089,15 @@
     tippy.js "5.1.2"
     tslib "^2.0.0"
 
-"@patternfly/react-icons@^4.93.3", "@patternfly/react-icons@^4.93.6":
+"@patternfly/react-icons@^4.93.6":
   version "4.93.6"
   resolved "https://registry.yarnpkg.com/@patternfly/react-icons/-/react-icons-4.93.6.tgz#4aff18724afa30157e3ffd6a6414951dbb39dcb3"
   integrity sha512-ZrXegc/81oiuTIeWvoHb3nG/eZODbB4rYmekBEsrbiysyO7m/sUFoi/RLvgFINrRoh6YCJqL5fj06Jg6d7jX1g==
+
+"@patternfly/react-icons@^5.0.0":
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/@patternfly/react-icons/-/react-icons-5.0.1.tgz#bb4c8054a843b98b83a0eaa8bd8634bb39d6cea8"
+  integrity sha512-MduetDRzve3eRlKAioM/UxmVuPyFccdeBWAKhbN4SBn7RaZWS7kO7/xZzNkpeT5pqQIeAACvz3uiV2/3uAf38w==
 
 "@patternfly/react-styles@^4.92.6":
   version "4.92.6"
