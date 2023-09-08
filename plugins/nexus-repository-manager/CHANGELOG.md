@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-nexus-repository-manager [1.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-nexus-repository-manager@1.0.4...@janus-idp/backstage-plugin-nexus-repository-manager@1.1.0) (2023-09-08)
+
+
+### Features
+
+* **nexus:** support docker manifest 2 schema 1 ([#713](https://github.com/janus-idp/backstage-plugins/issues/713)) ([e7168cb](https://github.com/janus-idp/backstage-plugins/commit/e7168cb5635f29bb704489e350954949f624cbf2))
+
 ## @janus-idp/backstage-plugin-nexus-repository-manager [1.0.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-nexus-repository-manager@1.0.3...@janus-idp/backstage-plugin-nexus-repository-manager@1.0.4) (2023-09-07)
 
 
