@@ -130,6 +130,10 @@ describe('NexusRepositoryManagerApiClient', () => {
     });
   });
 
+  afterEach(() => {
+    server.events.removeAllListeners();
+  });
+
   it('should use the default proxy path', async () => {
     const { components } = await nexusApi.getComponents({
       dockerImageName: 'janus-idp/backstage-showcase',
@@ -159,15 +163,37 @@ describe('NexusRepositoryManagerApiClient', () => {
       );
     });
 
-    it('should get manifest 2 schema 2 if available', async () => {
-      // This is testing that when searching for a docker image, the
-      // accept header is set to schema 2. It assumes the test server is
-      // configured to return schema 2 for this image tag, conditional on that header being set.
+    it('sets headers requesting manifest 2 schema 2', async () => {
+      server.events.on('request:start', req => {
+        let expectedAcceptHeader = 'application/json';
+        if (req.url.pathname.includes('/manifests')) {
+          expectedAcceptHeader =
+            'application/vnd.docker.distribution.manifest.v2+json, application/vnd.docker.distribution.manifest.v1+json;q=0.9, */*;q=0.8';
+        }
+
+        expect(req.headers.get('accept')).toEqual(expectedAcceptHeader);
+      });
+
       const { components } = await nexusApi.getComponents({
         dockerImageTag: 'sha-de3dbf1',
       });
 
       expect(components[0]?.rawAssets[0]?.schemaVersion).toEqual(2);
+    });
+
+    it('should not set special headers for non-docker GETs', async () => {
+      server.events.on('request:start', req => {
+        expect(req.headers.get('accept')).not.toContain(
+          'application/vnd.docker',
+        );
+      });
+
+      // Catching 404 is temporary until there are fixtures for maven.
+      await expect(
+        nexusApi.getComponents({
+          mavenGroupId: 'com.example',
+        }),
+      ).rejects.toThrow('Not Found');
     });
 
     it('should return components using dockerImageTag', async () => {
