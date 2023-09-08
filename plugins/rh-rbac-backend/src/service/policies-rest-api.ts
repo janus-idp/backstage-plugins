@@ -34,7 +34,6 @@ import { Logger } from 'winston';
 
 import {
   EntityReferencedPolicy,
-  pluginPolicyEntityReadPermission,
   Policy,
   policyEntityCreatePermission,
   policyEntityDeletePermission,
@@ -122,7 +121,7 @@ export class PolicesServer {
         req,
         this.permissions,
         {
-          permission: pluginPolicyEntityReadPermission,
+          permission: policyEntityReadPermission,
         },
       );
 

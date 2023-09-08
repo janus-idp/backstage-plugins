@@ -17,18 +17,6 @@ export type PolicyEntityPermission = ResourcePermission<
  * This permission is used to authorize actions that involve reading
  * permission policies.
  */
-export const pluginPolicyEntityReadPermission = createPermission({
-  name: 'policy.entity.plugin.read',
-  attributes: {
-    action: 'read',
-  },
-  resourceType: RESOURCE_TYPE_PLUGIN_POLICY_ENTITY,
-});
-
-/**
- * This permission is used to authorize actions that involve reading
- * permission policies.
- */
 export const policyEntityReadPermission = createPermission({
   name: 'policy.entity.read',
   attributes: {
@@ -75,7 +63,6 @@ export const policyEntityUpdatePermission = createPermission({
  * List of all permissions on permission polices.
  */
 export const policyEntityPermissions = [
-  pluginPolicyEntityReadPermission,
   policyEntityReadPermission,
   policyEntityCreatePermission,
   policyEntityDeletePermission,

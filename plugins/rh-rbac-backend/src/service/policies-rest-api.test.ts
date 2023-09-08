@@ -17,7 +17,6 @@ import express from 'express';
 import request from 'supertest';
 
 import {
-  pluginPolicyEntityReadPermission,
   policyEntityCreatePermission,
   policyEntityDeletePermission,
   policyEntityReadPermission,
@@ -1066,7 +1065,7 @@ describe('REST policies api', () => {
     const result = await request(app).get('/plugins/policies').send();
 
     expect(mockedAuthorizeConditional).toHaveBeenCalledWith(
-      [{ permission: pluginPolicyEntityReadPermission }],
+      [{ permission: policyEntityReadPermission }],
       { token: 'token' },
     );
     expect(result.statusCode).toBe(403);
