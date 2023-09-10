@@ -84,7 +84,7 @@ describe('RBACPermissionPolicy Tests', () => {
     });
   });
 
-  describe('Policy checks', () => {
+  describe('Policy checks for users', () => {
     let policy: RBACPermissionPolicy;
 
     beforeEach(async () => {
@@ -251,6 +251,114 @@ describe('RBACPermissionPolicy Tests', () => {
       expect(decision.result).toBe(AuthorizeResult.DENY);
     });
   });
+});
+
+describe('Policy checks for users and groups', () => {
+  let policy: RBACPermissionPolicy;
+
+  beforeEach(async () => {
+    const adapter = new StringAdapter(
+      `
+      # group allow
+      p, data_admin, test.resource, read, deny
+
+      g, alice, data_admin
+      p, alice, test.resource, read, allow
+
+      g, akira, data_admin
+
+      g, antey, data_admin
+      p, antey, test.resource, read, deny
+
+      # group deny
+      p, data_read_admin, test.resource, read, allow
+
+      g, julia, data_read_admin
+      p, tom, test.resource, read, allow
+
+      g, mike, data_read_admin
+
+      g, tom, data_read_admin
+      p, tom, test.resource, read, deny
+      `,
+    );
+    const config = newConfigReader();
+    const theModel = newModelFromString(MODEL);
+    const enf = await newEnforcer(theModel, adapter);
+    policy = await RBACPermissionPolicy.build(getVoidLogger(), config, enf);
+  });
+
+  // Group permission is higher then user permission
+  // This behavior can be changed with another `policy_effect` in the model.
+  // Also it can be customized using casbin function.
+  // +-------+-------+--------------------+
+  // | Group | User |         result      |
+  // +-------+----------------------------+
+  // | N     | Y    | deny                | 1
+  // | N     | -    | deny                | 2
+  // | N     | N    | deny                | 3
+  // |------------------------------------|
+  // | Y     | Y    | allow               | 4
+  // | Y     | -    | allow               | 5
+  // | Y     | N    | deny                | 6
+
+  // Basic permissions
+
+  // case1
+  it('should deny access to basic permission for user Alice with "allow" read action, when her group "deny" this action', async () => {
+    const decision = await policy.handle(
+      newPolicyQueryWithBasicPermission('test.resource', 'read'),
+      newIdentityResponse('alice'),
+    );
+    expect(decision.result).toBe(AuthorizeResult.DENY);
+  });
+
+  // case2
+  it('should deny access to basic permission for user Akira without("-") read action definition, when his group "deny" this action', async () => {
+    const decision = await policy.handle(
+      newPolicyQueryWithBasicPermission('test.resource', 'read'),
+      newIdentityResponse('akira'),
+    );
+    expect(decision.result).toBe(AuthorizeResult.DENY);
+  });
+
+  // case3
+  it('should deny access to basic permission for user Antey with "deny" read action definition, when his group "deny" this action', async () => {
+    const decision = await policy.handle(
+      newPolicyQueryWithBasicPermission('test.resource', 'read'),
+      newIdentityResponse('antey'),
+    );
+    expect(decision.result).toBe(AuthorizeResult.DENY);
+  });
+
+  // case4
+  it('should allow access to basic permission for user Julia with "allow" read action, when her group "allow" this action', async () => {
+    const decision = await policy.handle(
+      newPolicyQueryWithBasicPermission('test.resource', 'read'),
+      newIdentityResponse('julia'),
+    );
+    expect(decision.result).toBe(AuthorizeResult.ALLOW);
+  });
+
+  // case5
+  it('should allow access to basic permission for user Mike without("-") read action definition, when his group "allow" this action', async () => {
+    const decision = await policy.handle(
+      newPolicyQueryWithBasicPermission('test.resource', 'read'),
+      newIdentityResponse('mike'),
+    );
+    expect(decision.result).toBe(AuthorizeResult.ALLOW);
+  });
+
+  // case6
+  it('should allow access to basic permission for user Tom with "deny" read action definition, when his group "allow" this action', async () => {
+    const decision = await policy.handle(
+      newPolicyQueryWithBasicPermission('test.resource', 'read'),
+      newIdentityResponse('tom'),
+    );
+    expect(decision.result).toBe(AuthorizeResult.DENY);
+  });
+  // Basic permissions
+  // todo
 });
 
 function newPolicyQueryWithBasicPermission(

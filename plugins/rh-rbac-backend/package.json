@@ -26,6 +26,7 @@
   "dependencies": {
     "@backstage/backend-common": "^0.19.1",
     "@backstage/catalog-model": "^1.4.1",
+    "@backstage/catalog-client": "^1.4.1",
     "@backstage/config": "^1.0.8",
     "@backstage/core-plugin-api": "^1.5.3",
     "@backstage/errors": "^1.2.1",

@@ -1,3 +1,4 @@
+import { CatalogClient } from '@backstage/catalog-client';
 import {
   ConflictError,
   InputError,
@@ -45,6 +46,7 @@ export class PolicesServer {
   constructor(
     private readonly identity: IdentityApi,
     private readonly permissions: PermissionEvaluator,
+    private readonly catalogClient: CatalogClient,
     private readonly options: RouterOptions,
     private readonly enforcer: Enforcer,
   ) {}
@@ -125,31 +127,40 @@ export class PolicesServer {
       response.json(this.transformPolicyArray(...policies));
     });
 
-    router.get(
-      '/policies/:kind/:namespace/:name',
-      async (request, response) => {
-        const decision = await this.authorize(
-          this.identity,
-          request,
-          this.permissions,
-          {
-            permission: policyEntityReadPermission,
-          },
+    router.get('/policies/:kind/:namespace/:name', async (req, response) => {
+      const decision = await this.authorize(
+        this.identity,
+        req,
+        this.permissions,
+        {
+          permission: policyEntityReadPermission,
+        },
+      );
+
+      if (decision.result === AuthorizeResult.DENY) {
+        throw new NotAllowedError(); // 403
+      }
+
+      const entityRef = this.getEntityReference(req);
+      if (req.params.kind !== 'user' && req.params.kind !== 'group') {
+        throw new InputError(
+          `Unsupported kind ${req.params.kind}. API supports only "user", "group" kinds`,
         );
+      }
+      try {
+        await this.catalogClient.getEntityByRef(entityRef);
+      } catch (e) {
+        console.log(e);
+        throw e;
+      }
 
-        if (decision.result === AuthorizeResult.DENY) {
-          throw new NotAllowedError(); // 403
-        }
-
-        const entityRef = this.getEntityReference(request);
-        const policy = await this.enforcer.getFilteredPolicy(0, entityRef);
-        if (policy.length !== 0) {
-          response.json(this.transformPolicyArray(...policy));
-        } else {
-          throw new NotFoundError(); // 404
-        }
-      },
-    );
+      const policy = await this.enforcer.getFilteredPolicy(0, entityRef);
+      if (policy.length !== 0) {
+        response.json(this.transformPolicyArray(...policy));
+      } else {
+        throw new NotFoundError(); // 404
+      }
+    });
 
     router.delete(
       '/policies/:kind/:namespace/:name',
@@ -244,6 +255,12 @@ export class PolicesServer {
       }
 
       const entityRef = this.getEntityReference(req);
+
+      if (req.params.kind !== 'user' && req.params.kind !== 'group') {
+        throw new InputError(
+          `Unsupported kind ${req.params.kind}. API supports only "user", "group" kinds`,
+        );
+      }
 
       const oldPolicyRaw = req.body.oldPolicy;
       if (!oldPolicyRaw) {
