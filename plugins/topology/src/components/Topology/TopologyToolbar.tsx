@@ -1,12 +1,12 @@
 import React from 'react';
 
+import { ToolbarItem } from '@patternfly/react-core';
 import {
   Select,
   SelectOption,
   SelectOptionObject,
   SelectVariant,
-  ToolbarItem,
-} from '@patternfly/react-core';
+} from '@patternfly/react-core/deprecated';
 
 import { FilterContext } from '../../hooks/FilterContext';
 import { K8sResourcesContext } from '../../hooks/K8sResourcesContext';
@@ -83,7 +83,9 @@ const TopologyToolbar = ({ showFilters }: TopologyToolbarProps) => {
         <Select
           variant={SelectVariant.single}
           aria-label="Select Cluster"
-          onToggle={onClusterFilterToggle}
+          onToggle={(_event, isClusterFilterExpanded: boolean) =>
+            onClusterFilterToggle(isClusterFilterExpanded)
+          }
           onSelect={onClusterChange}
           selections={clusterSelected}
           isOpen={clusterFilterIsExpanded}
@@ -102,7 +104,9 @@ const TopologyToolbar = ({ showFilters }: TopologyToolbarProps) => {
         <Select
           variant={SelectVariant.checkbox}
           aria-label="Display options"
-          onToggle={onDisplayOptionsToggle}
+          onToggle={(_event, isDisplayOptionsExpanded: boolean) =>
+            onDisplayOptionsToggle(isDisplayOptionsExpanded)
+          }
           onSelect={(event, value) => onDisplayOptionChange(event, value)}
           isOpen={displayOptionsIsExpanded}
           aria-labelledby="display-options"

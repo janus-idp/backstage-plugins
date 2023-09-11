@@ -15,12 +15,12 @@
   display: flex;
   padding: 10px 15px;
   margin-bottom: -1px;
-  background-color: var(--pf-global--BackgroundColor--100);
-  border: 1px solid var(--pf-global--BorderColor--100);
+  background-color: var(--pf-v5-global--BackgroundColor--100);
+  border: 1px solid var(--pf-v5-global--BorderColor--100);
 }
 
 .bs-topology-resources-tab-item-list .item a {
-  font-weight: var(--pf-global--link--FontWeight);
-  color: var(--pf-global--link--Color);
-  text-decoration: var(--pf-global--link--TextDecoration);
+  font-weight: var(--pf-v5-global--link--FontWeight);
+  color: var(--pf-v5-global--link--Color);
+  text-decoration: var(--pf-v5-global--link--TextDecoration);
 }

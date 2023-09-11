@@ -1,8 +1,4 @@
-import React from 'react';
-
 import {
-  ComponentFactory,
-  GraphElement,
   ModelKind,
   withDragNode,
   withPanZoom,
@@ -19,10 +15,7 @@ import EdgeConnect from './EdgeConnect';
 import GroupNode from './GroupNode';
 import WorkloadNode from './WorkloadNode';
 
-const TopologyComponentFactory: ComponentFactory = (
-  kind: ModelKind,
-  type: string,
-): React.ComponentType<{ element: GraphElement }> | undefined => {
+const TopologyComponentFactory = (kind: ModelKind, type: string) => {
   if (kind === ModelKind.graph) {
     return withPanZoom()(withSelection()(DefaultGraph));
   }

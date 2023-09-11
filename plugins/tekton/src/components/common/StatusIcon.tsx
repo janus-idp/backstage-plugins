@@ -32,7 +32,7 @@ export const StatusIcon = ({
       return (
         <SyncAltIcon
           {...props}
-          style={{ color: 'var(--pf-global--palette--white)' }}
+          style={{ color: 'var(--pf-v5-global--palette--white)' }}
           className={classNames({
             'pf-topology-pipelines__pill-status pf-m-running pf-m-spin':
               !disableSpin,

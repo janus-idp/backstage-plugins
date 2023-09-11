@@ -1,9 +1,9 @@
-.pf-c-toolbar {
+.pf-v5-c-toolbar {
   padding-bottom: 0px;
 }
 
-.pf-c-toolbar__content-section {
-  padding: var(--pf-global--spacer--sm) 0 0 0;
+.pf-v5-c-toolbar__content-section {
+  padding: var(--pf-v5-global--spacer--sm) 0 0 0;
 }
 
 .bs-topology-wrapper {
