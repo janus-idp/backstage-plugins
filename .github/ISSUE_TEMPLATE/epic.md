@@ -1,20 +1,25 @@
 ---
 name: Epic
-about: Create an epic
-labels: [kind/epic, status/triage]
+about: A long-lived, PM-driven feature request. Must include a checklist of items that must be completed
+labels: ['kind/epic', 'status/triage']
 ---
 
-**Goal**
-A clear and concise description of the goal of this epic.
+## Goal
 
-**What problem does this solve? Please describe.**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+## Acceptance criteria
 
-**Use cases**
-A clear and concise description of persona and associated use cases that need to be supported.
+- [ ] tdb
 
-**Acceptance criteria**
-A clear and concise list of acceptance criteria, noting what will be delivered as part of this epic. This will help identify associated testing, documentation and support needs.
+## Requirements
+
+- [ ] Test plan
+- [ ] Documentation
+
+## Issues in Epic
+
+- [ ] tbd
+
+## Notes
 
 **Additional context**
-Add any other context or screenshots about the feature request here.
+Add any other context or screenshots about the epic here.
