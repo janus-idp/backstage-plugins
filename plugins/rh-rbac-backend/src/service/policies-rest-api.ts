@@ -1,4 +1,3 @@
-import { CatalogClient } from '@backstage/catalog-client';
 import {
   ConflictError,
   InputError,
@@ -46,7 +45,6 @@ export class PolicesServer {
   constructor(
     private readonly identity: IdentityApi,
     private readonly permissions: PermissionEvaluator,
-    private readonly catalogClient: CatalogClient,
     private readonly options: RouterOptions,
     private readonly enforcer: Enforcer,
   ) {}
@@ -142,17 +140,6 @@ export class PolicesServer {
       }
 
       const entityRef = this.getEntityReference(req);
-      if (req.params.kind !== 'user' && req.params.kind !== 'group') {
-        throw new InputError(
-          `Unsupported kind ${req.params.kind}. API supports only "user", "group" kinds`,
-        );
-      }
-      try {
-        await this.catalogClient.getEntityByRef(entityRef);
-      } catch (e) {
-        console.log(e);
-        throw e;
-      }
 
       const policy = await this.enforcer.getFilteredPolicy(0, entityRef);
       if (policy.length !== 0) {
@@ -255,12 +242,6 @@ export class PolicesServer {
       }
 
       const entityRef = this.getEntityReference(req);
-
-      if (req.params.kind !== 'user' && req.params.kind !== 'group') {
-        throw new InputError(
-          `Unsupported kind ${req.params.kind}. API supports only "user", "group" kinds`,
-        );
-      }
 
       const oldPolicyRaw = req.body.oldPolicy;
       if (!oldPolicyRaw) {

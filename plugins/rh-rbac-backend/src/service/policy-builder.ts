@@ -3,6 +3,7 @@ import {
   PluginEndpointDiscovery,
   resolvePackagePath,
 } from '@backstage/backend-common';
+import { CatalogClient } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { RouterOptions } from '@backstage/plugin-permission-backend';
@@ -50,12 +51,19 @@ export class PolicyBuilder {
     await enf.loadPolicy();
     await enf.enableAutoSave(true);
 
+    const catalogClient = new CatalogClient({ discoveryApi: env.discovery });
+
     const options: RouterOptions = {
       config: env.config,
       logger: env.logger,
       discovery: env.discovery,
       identity: env.identity,
-      policy: await RBACPermissionPolicy.build(env.logger, env.config, enf),
+      policy: await RBACPermissionPolicy.build(
+        env.logger,
+        env.config,
+        catalogClient,
+        enf,
+      ),
     };
 
     const server = new PolicesServer(

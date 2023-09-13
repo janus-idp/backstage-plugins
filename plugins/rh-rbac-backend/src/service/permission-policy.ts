@@ -1,3 +1,4 @@
+import { CatalogClient } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { ConfigApi } from '@backstage/core-plugin-api';
 import {
@@ -17,6 +18,8 @@ import {
 import { Enforcer, FileAdapter, newEnforcer, newModelFromString } from 'casbin';
 import { Logger } from 'winston';
 
+import { GroupCasbinEnforcerFactory } from './group-collector/group-enforcer';
+import { GroupInfoCollector } from './group-collector/group-info-catalog';
 import { MODEL } from './permission-model';
 
 const useAdmins = (admins: Config[], enf: Enforcer) => {
@@ -62,10 +65,12 @@ const addPredefinedPolicies = async (
 export class RBACPermissionPolicy implements PermissionPolicy {
   private readonly enforcer: Enforcer;
   private readonly logger: Logger;
+  private readonly catalogClient: CatalogClient;
 
   public static async build(
     logger: Logger,
     configApi: ConfigApi,
+    catalogClient: CatalogClient,
     enf: Enforcer,
   ): Promise<RBACPermissionPolicy> {
     const adminUsers = configApi.getOptionalConfigArray(
@@ -84,20 +89,25 @@ export class RBACPermissionPolicy implements PermissionPolicy {
       useAdmins(adminUsers, enf);
     }
 
-    return new RBACPermissionPolicy(enf, logger);
+    return new RBACPermissionPolicy(enf, logger, catalogClient);
   }
 
-  private constructor(enforcer: Enforcer, logger: Logger) {
+  private constructor(
+    enforcer: Enforcer,
+    logger: Logger,
+    catalogClient: CatalogClient,
+  ) {
     this.enforcer = enforcer;
     this.logger = logger;
+    this.catalogClient = catalogClient;
   }
 
   async handle(
     request: PolicyQuery,
-    user?: BackstageIdentityResponse | undefined,
+    identityResp?: BackstageIdentityResponse | undefined,
   ): Promise<PolicyDecision> {
     this.logger.info(
-      `Policy check for ${user?.identity.userEntityRef} for permission ${request.permission.name}`,
+      `Policy check for ${identityResp?.identity.userEntityRef} for permission ${request.permission.name}`,
     );
     try {
       let status = false;
@@ -108,13 +118,13 @@ export class RBACPermissionPolicy implements PermissionPolicy {
 
       if (isResourcePermission(request.permission)) {
         status = await this.isAuthorized(
-          user?.identity,
+          identityResp?.identity,
           request.permission.resourceType,
           action,
         );
       } else {
         status = await this.isAuthorized(
-          user?.identity,
+          identityResp?.identity,
           request.permission.name,
           action,
         );
@@ -122,7 +132,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
 
       const result = status ? AuthorizeResult.ALLOW : AuthorizeResult.DENY;
       this.logger.info(
-        `${user?.identity.userEntityRef} is ${result} for permission ${request.permission.name}`,
+        `${identityResp?.identity.userEntityRef} is ${result} for permission ${request.permission.name}`,
       );
       return Promise.resolve({
         result: result,
@@ -139,27 +149,28 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     identity: BackstageUserIdentity | undefined,
     resourceType: string,
     action: string,
-  ) => {
-    let status;
-
-    // Check if the group has access first
-    const ownerStatus = await Promise.all(
-      identity?.ownershipEntityRefs.map(async entityRef => {
-        return await this.enforcer.enforce(entityRef, resourceType, action);
-      }) || [],
-    );
-
-    status = ownerStatus.includes(true);
-
-    // Check if the user has access
-    if (!status) {
-      status = await this.enforcer.enforce(
-        identity?.userEntityRef,
-        resourceType,
-        action,
-      );
+  ): Promise<boolean> => {
+    if (!identity) {
+      // Allow access for backend plugins
+      return true;
     }
 
-    return status;
+    const entityRef = identity.userEntityRef;
+    const user = await this.catalogClient.getEntityByRef(entityRef);
+    if (!user) {
+      // it shouldn't happen, but any way
+      return false;
+    }
+
+    const groupCollector = new GroupInfoCollector(this.catalogClient);
+    const groups = await groupCollector.getAncestorGroups([entityRef]);
+
+    const gEnf = await new GroupCasbinEnforcerFactory().build(
+      this.enforcer,
+      user,
+      groups,
+      [entityRef, resourceType, action, 'allow'],
+    );
+    return await gEnf.enforce(entityRef, resourceType, action);
   };
 }

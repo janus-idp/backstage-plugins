@@ -2940,6 +2940,15 @@
     testcontainers "^8.1.2"
     uuid "^8.0.0"
 
+"@backstage/catalog-client@^1.4.1", "@backstage/catalog-client@^1.4.4":
+  version "1.4.4"
+  resolved "https://registry.yarnpkg.com/@backstage/catalog-client/-/catalog-client-1.4.4.tgz#cb8be20a7365917dbf10db148a3306e500f33f5b"
+  integrity sha512-biYtZtXcdnuc3FV5hp6+8epklLeVknWOtY54ASxky+SJCsadBZ/tpU58KxW4pD92uPSVGiE7gaSBvvOaisyz0Q==
+  dependencies:
+    "@backstage/catalog-model" "^1.4.2"
+    "@backstage/errors" "^1.2.2"
+    cross-fetch "^3.1.5"
+
 "@backstage/catalog-client@^1.4.2", "@backstage/catalog-client@^1.4.3":
   version "1.4.3"
   resolved "https://registry.yarnpkg.com/@backstage/catalog-client/-/catalog-client-1.4.3.tgz#e7631dcae97a7620b1532666a12e92be092a9f34"
@@ -2947,15 +2956,6 @@
   dependencies:
     "@backstage/catalog-model" "^1.4.1"
     "@backstage/errors" "^1.2.1"
-    cross-fetch "^3.1.5"
-
-"@backstage/catalog-client@^1.4.4":
-  version "1.4.4"
-  resolved "https://registry.yarnpkg.com/@backstage/catalog-client/-/catalog-client-1.4.4.tgz#cb8be20a7365917dbf10db148a3306e500f33f5b"
-  integrity sha512-biYtZtXcdnuc3FV5hp6+8epklLeVknWOtY54ASxky+SJCsadBZ/tpU58KxW4pD92uPSVGiE7gaSBvvOaisyz0Q==
-  dependencies:
-    "@backstage/catalog-model" "^1.4.2"
-    "@backstage/errors" "^1.2.2"
     cross-fetch "^3.1.5"
 
 "@backstage/catalog-model@1.4.1", "@backstage/catalog-model@^1.4.1":
