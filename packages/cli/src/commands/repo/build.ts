@@ -14,19 +14,22 @@
  * limitations under the License.
  */
 
-import chalk from 'chalk';
-import { Command, OptionValues } from 'commander';
-import { relative as relativePath } from 'path';
-import { buildPackages, getOutputsForRole } from '../../lib/builder';
-import { paths } from '../../lib/paths';
 import {
-  PackageGraph,
   BackstagePackage,
+  PackageGraph,
   PackageRoles,
 } from '@backstage/cli-node';
+
+import chalk from 'chalk';
+import { Command, OptionValues } from 'commander';
+
+import { relative as relativePath } from 'path';
+
+import { buildPackages, getOutputsForRole } from '../../lib/builder';
 import { runParallelWorkers } from '../../lib/parallel';
-import { buildFrontend } from '../build/buildFrontend';
+import { paths } from '../../lib/paths';
 import { buildBackend } from '../build/buildBackend';
+import { buildFrontend } from '../build/buildFrontend';
 
 function createScriptOptionsParser(anyCmd: Command, commandPath: string[]) {
   // Regardless of what command instance is passed in we want to find

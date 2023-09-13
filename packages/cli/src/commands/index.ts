@@ -15,7 +15,9 @@
  */
 
 import { assertError } from '@backstage/errors';
+
 import { Command } from 'commander';
+
 import { exitWithError } from '../lib/errors';
 
 const configOption = [

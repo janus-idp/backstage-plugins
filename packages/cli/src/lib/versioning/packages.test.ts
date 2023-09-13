@@ -15,11 +15,13 @@
  */
 
 import mockFs from 'mock-fs';
+
 import path from 'path';
+
+import { NotFoundError } from '../errors';
 import * as runObj from '../run';
 import * as yarn from '../yarn';
 import { fetchPackageInfo, mapDependencies } from './packages';
-import { NotFoundError } from '../errors';
 
 jest.mock('../run', () => {
   return {

@@ -15,6 +15,7 @@
  */
 
 import webpack from 'webpack';
+
 import { createBackendConfig } from './config';
 import { resolveBundlingPaths } from './paths';
 import { BackendServeOptions } from './types';

@@ -1,4 +1,4 @@
-# @backstage/cli
+# @janus-idp/cli
 
 This package provides a CLI for developing Backstage plugins and apps.
 
@@ -7,12 +7,12 @@ This package provides a CLI for developing Backstage plugins and apps.
 Install the package via Yarn:
 
 ```sh
-yarn add @backstage/cli
+yarn add @janus-idp/cli
 ```
 
 ## Development
 
-For local development the cli can be used directly, even from other packages in this repo. The `bin/backstage-cli` entrypoint contains a switch that will load the implementation from the `src` directory when executed inside this repo.
+For local development the cli can be used directly, even from other packages in this repo. The `bin/janus-cli` entrypoint contains a switch that will load the implementation from the `src` directory when executed inside this repo.
 
 To run the cli in watch mode, use `yarn start <args>`. For example `yarn start lint --help`.
 

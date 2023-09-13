@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
+import { PackageGraph } from '@backstage/cli-node';
+import { AppConfig, ConfigReader } from '@backstage/config';
 import {
   ConfigTarget,
   loadConfig,
   loadConfigSchema,
 } from '@backstage/config-loader';
-import { AppConfig, ConfigReader } from '@backstage/config';
+
+import { getPackages } from '@manypkg/get-packages';
+
 import { paths } from './paths';
 import { isValidUrl } from './urls';
-import { getPackages } from '@manypkg/get-packages';
-import { PackageGraph } from '@backstage/cli-node';
 
 type Options = {
   args: string[];
@@ -54,7 +56,7 @@ export async function loadCliConfig(options: Options) {
       localPackageNames = Array.from(
         graph.collectPackageNames([options.fromPackage], node => {
           // Workaround for Backstage main repo only, since the CLI has some artificial devDependencies
-          if (node.name === '@backstage/cli') {
+          if (node.name === '@janus-idp/cli') {
             return undefined;
           }
           return node.localDependencies.keys();

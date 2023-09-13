@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
 import chalk from 'chalk';
+import fs from 'fs-extra';
+
 import { relative as relativePath, resolve as resolvePath } from 'path';
+
+import { runWorkerThreads } from '../parallel';
 import { paths } from '../paths';
 import { buildTypeDefinitionsWorker } from './buildTypeDefinitionsWorker';
-import { runWorkerThreads } from '../parallel';
 
 // These message types are ignored since we want to avoid duplicating the logic of
 // handling them correctly, and we already have the API Reports warning about them.

@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
 import chalk from 'chalk';
-import { resolve as resolvePath, relative as relativePath } from 'path';
+import fs from 'fs-extra';
+
+import { relative as relativePath, resolve as resolvePath } from 'path';
+
 import { paths } from '../../../paths';
 import { Task, templatingTask } from '../../../tasks';
-import { Lockfile } from '../../../versioning';
 import { createPackageVersionProvider } from '../../../version';
+import { Lockfile } from '../../../versioning';
 import { CreateContext } from '../../types';
 
 export async function executePluginPackageTemplate(

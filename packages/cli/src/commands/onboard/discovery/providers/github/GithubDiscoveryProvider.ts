@@ -20,12 +20,14 @@ import {
   GithubCredentialsProvider,
   ScmIntegrations,
 } from '@backstage/integration';
+
 import { graphql } from '@octokit/graphql';
 import {
-  Repository as GraphqlRepository,
   Query as GraphqlQuery,
+  Repository as GraphqlRepository,
 } from '@octokit/graphql-schema';
 import parseGitUrl from 'git-url-parse';
+
 import { Provider, Repository } from '../types';
 import { GithubRepository } from './GithubRepository';
 

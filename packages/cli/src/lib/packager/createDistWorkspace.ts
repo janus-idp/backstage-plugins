@@ -14,18 +14,24 @@
  * limitations under the License.
  */
 
+import {
+  PackageGraph,
+  PackageGraphNode,
+  PackageRoles,
+} from '@backstage/cli-node';
+
 import chalk from 'chalk';
 import fs from 'fs-extra';
+import partition from 'lodash/partition';
+import tar, { CreateOptions, FileOptions } from 'tar';
+
+import { tmpdir } from 'os';
 import {
   join as joinPath,
-  resolve as resolvePath,
   relative as relativePath,
+  resolve as resolvePath,
 } from 'path';
-import { tmpdir } from 'os';
-import tar, { CreateOptions, FileOptions } from 'tar';
-import partition from 'lodash/partition';
-import { paths } from '../paths';
-import { run } from '../run';
+
 import {
   dependencies as cliDependencies,
   devDependencies as cliDevDependencies,
@@ -36,13 +42,10 @@ import {
   getOutputsForRole,
   Output,
 } from '../builder';
-import { productionPack } from './productionPack';
-import {
-  PackageRoles,
-  PackageGraph,
-  PackageGraphNode,
-} from '@backstage/cli-node';
 import { runParallelWorkers } from '../parallel';
+import { paths } from '../paths';
+import { run } from '../run';
+import { productionPack } from './productionPack';
 
 // These packages aren't safe to pack in parallel since the CLI depends on them
 const UNSAFE_PACKAGES = [

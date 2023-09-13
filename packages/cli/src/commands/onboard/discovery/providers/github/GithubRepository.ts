@@ -16,9 +16,10 @@
 
 import { graphql } from '@octokit/graphql';
 import {
-  Repository as GraphqlRepository,
   Blob as GraphqlBlob,
+  Repository as GraphqlRepository,
 } from '@octokit/graphql-schema';
+
 import { Repository, RepositoryFile } from '../types';
 import { GithubFile } from './GithubFile';
 

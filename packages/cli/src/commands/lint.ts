@@ -15,8 +15,9 @@
  */
 
 import { OptionValues } from 'commander';
-import { paths } from '../lib/paths';
 import { ESLint } from 'eslint';
+
+import { paths } from '../lib/paths';
 
 export default async (directories: string[], opts: OptionValues) => {
   const eslint = new ESLint({

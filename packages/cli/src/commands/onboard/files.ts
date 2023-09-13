@@ -15,6 +15,7 @@
  */
 
 import { findPaths } from '@backstage/cli-common';
+
 import * as path from 'path';
 
 /* eslint-disable-next-line no-restricted-syntax */

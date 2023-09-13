@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-import { JsonObject } from '@backstage/types';
+import openBrowser from 'react-dev-utils/openBrowser';
+
 import { mergeConfigSchemas } from '@backstage/config-loader';
+import { JsonObject } from '@backstage/types';
+
 import { OptionValues } from 'commander';
 import { JSONSchema7 as JSONSchema } from 'json-schema';
-import openBrowser from 'react-dev-utils/openBrowser';
+
 import { loadCliConfig } from '../../lib/config';
 
 const DOCS_URL = 'https://config.backstage.io';

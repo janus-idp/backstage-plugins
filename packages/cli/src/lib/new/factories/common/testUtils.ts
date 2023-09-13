@@ -16,8 +16,9 @@
 
 /* eslint-disable no-control-regex */
 
-import { WriteStream } from 'tty';
 import { resolve as resolvePath } from 'path';
+import { WriteStream } from 'tty';
+
 import { paths } from '../../../paths';
 
 export function mockPaths(options: {

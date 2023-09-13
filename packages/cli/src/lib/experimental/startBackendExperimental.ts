@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-import { BackendServeOptions } from '../bundler/types';
-import type { ChildProcess } from 'child_process';
-import { fileURLToPath } from 'url';
-import { isAbsolute as isAbsolutePath } from 'path';
 import { FSWatcher, watch } from 'chokidar';
+import spawn from 'cross-spawn';
+import debounce from 'lodash/debounce';
+
+import type { ChildProcess } from 'child_process';
+import { isAbsolute as isAbsolutePath } from 'path';
+import { fileURLToPath } from 'url';
+
+import { BackendServeOptions } from '../bundler/types';
+import { paths } from '../paths';
 import { IpcServer } from './IpcServer';
 import { ServerDataStore } from './ServerDataStore';
-import debounce from 'lodash/debounce';
-import spawn from 'cross-spawn';
-import { paths } from '../paths';
 
 const loaderArgs = [
   '--require',

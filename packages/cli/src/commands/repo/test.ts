@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-import os from 'os';
-import { Command, OptionValues } from 'commander';
 import { PackageGraph } from '@backstage/cli-node';
+
+import { Command, OptionValues } from 'commander';
+
+import os from 'os';
+
 import { paths } from '../../lib/paths';
 import { runCheck } from '../../lib/run';
 

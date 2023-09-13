@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-import { OptionValues } from 'commander';
-import { buildPackage, Output } from '../../lib/builder';
-import { findRoleFromCommand } from '../../lib/role';
 import { PackageRoles } from '@backstage/cli-node';
+
+import { OptionValues } from 'commander';
+
+import { buildPackage, Output } from '../../lib/builder';
 import { paths } from '../../lib/paths';
-import { buildFrontend } from './buildFrontend';
-import { buildBackend } from './buildBackend';
+import { findRoleFromCommand } from '../../lib/role';
 import { isValidUrl } from '../../lib/urls';
+import { buildBackend } from './buildBackend';
+import { buildFrontend } from './buildFrontend';
 
 export async function command(opts: OptionValues): Promise<void> {
   const role = await findRoleFromCommand(opts);

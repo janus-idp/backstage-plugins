@@ -15,10 +15,12 @@
  */
 
 import fs from 'fs-extra';
+
 import { resolve as resolvePath } from 'path';
+
 import { buildBundle } from '../../lib/bundler';
-import { getEnvironmentParallelism } from '../../lib/parallel';
 import { loadCliConfig } from '../../lib/config';
+import { getEnvironmentParallelism } from '../../lib/parallel';
 
 interface BuildAppOptions {
   targetDir: string;

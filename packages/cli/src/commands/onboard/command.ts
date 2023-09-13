@@ -16,10 +16,11 @@
 
 import chalk from 'chalk';
 import inquirer from 'inquirer';
+
 import { Task } from '../../lib/tasks';
 import { auth } from './auth';
-import { integrations } from './integrations';
 import { discover } from './discovery';
+import { integrations } from './integrations';
 
 export async function command(): Promise<void> {
   const answers = await inquirer.prompt<{

@@ -14,22 +14,25 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
-import mockFs from 'mock-fs';
-import { Command } from 'commander';
-import { resolve as resolvePath } from 'path';
-import { paths } from '../../lib/paths';
-import * as runObj from '../../lib/run';
-import bump, { bumpBackstageJsonVersion, createVersionFinder } from './bump';
+import { NotFoundError } from '@backstage/errors';
 import {
   setupRequestMockHandlers,
   withLogCollector,
 } from '@backstage/test-utils';
-import { YarnInfoInspectData } from '../../lib/versioning/packages';
-import { setupServer } from 'msw/node';
+
+import { Command } from 'commander';
+import fs from 'fs-extra';
+import mockFs from 'mock-fs';
 import { rest } from 'msw';
-import { NotFoundError } from '@backstage/errors';
+import { setupServer } from 'msw/node';
+
+import { resolve as resolvePath } from 'path';
+
+import { paths } from '../../lib/paths';
+import * as runObj from '../../lib/run';
 import { Lockfile } from '../../lib/versioning/Lockfile';
+import { YarnInfoInspectData } from '../../lib/versioning/packages';
+import bump, { bumpBackstageJsonVersion, createVersionFinder } from './bump';
 
 // Remove log coloring to simplify log matching
 jest.mock('chalk', () => ({

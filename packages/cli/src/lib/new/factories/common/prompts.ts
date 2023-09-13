@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { Prompt } from '../../types';
 import { parseOwnerIds } from '../../../codeowners';
+import { Prompt } from '../../types';
 
 export function pluginIdPrompt(): Prompt<{ id: string }> {
   return {

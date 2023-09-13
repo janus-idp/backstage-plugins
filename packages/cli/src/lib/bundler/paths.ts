@@ -15,7 +15,9 @@
  */
 
 import fs from 'fs-extra';
+
 import { resolve as resolvePath } from 'path';
+
 import { paths } from '../paths';
 
 export type BundlingPathsOptions = {

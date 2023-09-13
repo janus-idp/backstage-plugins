@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
+import { assertError, ForwardedError } from '@backstage/errors';
+
 import {
-  SpawnOptions,
-  spawn,
   ChildProcess,
   execFile as execFileCb,
+  spawn,
+  SpawnOptions,
 } from 'child_process';
-import { ExitCodeError } from './errors';
 import { promisify } from 'util';
+
+import { ExitCodeError } from './errors';
 import { LogFunc } from './logging';
-import { assertError, ForwardedError } from '@backstage/errors';
 
 export const execFile = promisify(execFileCb);
 

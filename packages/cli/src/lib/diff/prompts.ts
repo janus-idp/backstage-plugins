@@ -16,6 +16,7 @@
 
 import chalk from 'chalk';
 import inquirer from 'inquirer';
+
 import { PromptFunc } from './types';
 
 export const inquirerPromptFunc: PromptFunc = async msg => {

@@ -15,6 +15,7 @@
  */
 
 import { OptionValues } from 'commander';
+
 import { run } from '../../lib/run';
 
 export default async (opts: OptionValues) => {

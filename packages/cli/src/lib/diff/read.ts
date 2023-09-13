@@ -15,16 +15,18 @@
  */
 
 import fs from 'fs-extra';
-import {
-  dirname,
-  resolve as resolvePath,
-  relative as relativePath,
-} from 'path';
 import handlebars from 'handlebars';
 import recursiveReadDir from 'recursive-readdir';
+
+import {
+  dirname,
+  relative as relativePath,
+  resolve as resolvePath,
+} from 'path';
+
+import { createPackageVersionProvider } from '../../lib/version';
 import { paths } from '../paths';
 import { FileDiff } from './types';
-import { createPackageVersionProvider } from '../../lib/version';
 
 export type TemplatedFile = {
   path: string;

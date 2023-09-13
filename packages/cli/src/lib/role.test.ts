@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import mockFs from 'mock-fs';
 import { Command } from 'commander';
+import mockFs from 'mock-fs';
+
 import { findRoleFromCommand } from './role';
 
 describe('findRoleFromCommand', () => {

@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-import { version as cliVersion } from '../../package.json';
-import os from 'os';
-import { runPlain } from '../lib/run';
-import { paths } from '../lib/paths';
-import { Lockfile } from '../lib/versioning';
 import fs from 'fs-extra';
+
+import os from 'os';
+
+import { version as cliVersion } from '../../package.json';
+import { paths } from '../lib/paths';
+import { runPlain } from '../lib/run';
+import { Lockfile } from '../lib/versioning';
 
 export default async () => {
   await new Promise(async () => {

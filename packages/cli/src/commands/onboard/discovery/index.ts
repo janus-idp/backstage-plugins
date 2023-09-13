@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
-import yaml from 'yaml';
-import inquirer from 'inquirer';
 import chalk from 'chalk';
+import fs from 'fs-extra';
+import inquirer from 'inquirer';
+import yaml from 'yaml';
+
 import { loadCliConfig } from '../../../lib/config';
+import { Task } from '../../../lib/tasks';
+import { GitHubAnswers, GitLabAnswers } from '../auth';
 import { updateConfigFile } from '../config';
 import { APP_CONFIG_FILE, DISCOVERED_ENTITIES_FILE } from '../files';
-import { Discovery } from './Discovery';
 import { BasicRepositoryAnalyzer } from './analyzers/BasicRepositoryAnalyzer';
 import { PackageJsonAnalyzer } from './analyzers/PackageJsonAnalyzer';
+import { Discovery } from './Discovery';
 import { GithubDiscoveryProvider } from './providers/github/GithubDiscoveryProvider';
 import { GitlabDiscoveryProvider } from './providers/gitlab/GitlabDiscoveryProvider';
-import { GitHubAnswers, GitLabAnswers } from '../auth';
-import { Task } from '../../../lib/tasks';
 
 export async function discover(providerInfo?: {
   provider: string;

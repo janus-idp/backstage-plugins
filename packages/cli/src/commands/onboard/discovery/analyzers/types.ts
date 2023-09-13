@@ -15,6 +15,7 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
+
 import { Repository } from '../providers/types';
 
 export type AnalysisOutput = {

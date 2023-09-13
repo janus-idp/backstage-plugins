@@ -16,10 +16,12 @@
 
 import fs from 'fs-extra';
 import mockFs from 'mock-fs';
+
 import { sep } from 'path';
-import { createMockOutputStream, mockPaths } from './testUtils';
+
 import { CreateContext } from '../../types';
 import { executePluginPackageTemplate } from './tasks';
+import { createMockOutputStream, mockPaths } from './testUtils';
 
 mockPaths({
   ownDir: '/own',

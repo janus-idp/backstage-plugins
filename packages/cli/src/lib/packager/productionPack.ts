@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
+import { BackstagePackageJson } from '@backstage/cli-node';
+
 import fs from 'fs-extra';
 import npmPackList from 'npm-packlist';
-import { resolve as resolvePath, posix as posixPath } from 'path';
-import { BackstagePackageJson } from '@backstage/cli-node';
+
+import { posix as posixPath, resolve as resolvePath } from 'path';
+
 import { readEntryPoints } from '../entryPoints';
 
 const PKG_PATH = 'package.json';

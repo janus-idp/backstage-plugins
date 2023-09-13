@@ -14,20 +14,23 @@
  * limitations under the License.
  */
 
-import yn from 'yn';
-import fs from 'fs-extra';
-import { resolve as resolvePath } from 'path';
-import webpack from 'webpack';
 import {
   measureFileSizesBeforeBuild,
   printFileSizesAfterBuild,
 } from 'react-dev-utils/FileSizeReporter';
 import formatWebpackMessages from 'react-dev-utils/formatWebpackMessages';
-import { createConfig, resolveBaseUrl } from './config';
-import { BuildOptions } from './types';
-import { resolveBundlingPaths } from './paths';
+
 import chalk from 'chalk';
+import fs from 'fs-extra';
+import webpack from 'webpack';
+import yn from 'yn';
+
+import { resolve as resolvePath } from 'path';
+
+import { createConfig, resolveBaseUrl } from './config';
 import { createDetectedModulesEntryPoint } from './packageDetection';
+import { resolveBundlingPaths } from './paths';
+import { BuildOptions } from './types';
 
 // TODO(Rugvip): Limits from CRA, we might want to tweak these though.
 const WARN_AFTER_BUNDLE_GZIP_SIZE = 512 * 1024;

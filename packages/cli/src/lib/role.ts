@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
+import { PackageRole, PackageRoles } from '@backstage/cli-node';
+
 import { OptionValues } from 'commander';
+import fs from 'fs-extra';
+
 import { paths } from './paths';
-import { PackageRoles, PackageRole } from '@backstage/cli-node';
 
 export async function findRoleFromCommand(
   opts: OptionValues,

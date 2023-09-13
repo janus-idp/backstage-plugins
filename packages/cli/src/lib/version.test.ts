@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import mockFs from 'mock-fs';
-import { packageVersions, createPackageVersionProvider } from './version';
-import { Lockfile } from './versioning';
 import corePluginApiPkg from '@backstage/core-plugin-api/package.json';
+
+import mockFs from 'mock-fs';
+
+import { createPackageVersionProvider, packageVersions } from './version';
+import { Lockfile } from './versioning';
 
 describe('createPackageVersionProvider', () => {
   afterEach(() => {

@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { YarnInfoInspectData } from '../../lib/versioning';
 import { JsonObject } from '@backstage/types';
+
+import { YarnInfoInspectData } from '../../lib/versioning';
 
 /**
  * TODO: possible types

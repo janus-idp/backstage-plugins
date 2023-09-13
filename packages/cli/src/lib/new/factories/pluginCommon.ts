@@ -15,10 +15,11 @@
  */
 
 import chalk from 'chalk';
-import { paths } from '../../paths';
+
 import { addCodeownersEntry, getCodeownersFilePath } from '../../codeowners';
-import { createFactory, CreateContext } from '../types';
+import { paths } from '../../paths';
 import { Task } from '../../tasks';
+import { CreateContext, createFactory } from '../types';
 import { ownerPrompt, pluginIdPrompt } from './common/prompts';
 import { executePluginPackageTemplate } from './common/tasks';
 

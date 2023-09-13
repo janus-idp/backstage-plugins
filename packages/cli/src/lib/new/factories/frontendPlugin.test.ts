@@ -16,7 +16,9 @@
 
 import fs from 'fs-extra';
 import mockFs from 'mock-fs';
-import { sep, resolve as resolvePath } from 'path';
+
+import { resolve as resolvePath, sep } from 'path';
+
 import { paths } from '../../paths';
 import { Task } from '../../tasks';
 import { FactoryRegistry } from '../FactoryRegistry';

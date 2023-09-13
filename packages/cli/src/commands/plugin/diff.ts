@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
 import { OptionValues } from 'commander';
+import fs from 'fs-extra';
+
 import {
   diffTemplateFiles,
-  handlers,
   handleAllFiles,
+  handlers,
   inquirerPromptFunc,
   makeCheckPromptFunc,
   yesPromptFunc,

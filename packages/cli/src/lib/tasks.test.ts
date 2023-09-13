@@ -16,7 +16,9 @@
 
 import fs from 'fs-extra';
 import mockFs from 'mock-fs';
+
 import { resolve as resolvePath } from 'path';
+
 import { templatingTask } from './tasks';
 
 describe('templatingTask', () => {

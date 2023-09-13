@@ -14,16 +14,19 @@
  * limitations under the License.
  */
 
+import { PackageRoles } from '@backstage/cli-node';
+
+import chalk from 'chalk';
 import fs from 'fs-extra';
 import { rollup, RollupOptions } from 'rollup';
-import chalk from 'chalk';
+
 import { relative as relativePath, resolve as resolvePath } from 'path';
+
+import { runParallelWorkers } from '../parallel';
 import { paths } from '../paths';
+import { buildTypeDefinitions } from './buildTypeDefinitions';
 import { makeRollupConfigs } from './config';
 import { BuildOptions, Output } from './types';
-import { buildTypeDefinitions } from './buildTypeDefinitions';
-import { PackageRoles } from '@backstage/cli-node';
-import { runParallelWorkers } from '../parallel';
 
 export function formatErrorMessage(error: any) {
   let msg = '';

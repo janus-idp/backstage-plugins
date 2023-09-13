@@ -15,8 +15,9 @@
  */
 
 import fetch from 'node-fetch';
-import { GitlabFile } from './GitlabFile';
+
 import { Repository, RepositoryFile } from '../types';
+import { GitlabFile } from './GitlabFile';
 
 export type ProjectResponse = {
   id: string;

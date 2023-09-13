@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
 import chalk from 'chalk';
-import sortBy from 'lodash/sortBy';
+import fs from 'fs-extra';
 import groupBy from 'lodash/groupBy';
+import sortBy from 'lodash/sortBy';
+
 import { paths } from '../../../lib/paths';
 import { run } from '../../../lib/run';
-import { Step, createStepDefinition } from '../types';
+import { createStepDefinition, Step } from '../types';
 
 type Data = {
   dependencies: Array<{

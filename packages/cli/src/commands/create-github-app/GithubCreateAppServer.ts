@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import crypto from 'crypto';
 import openBrowser from 'react-dev-utils/openBrowser';
+
 import { request } from '@octokit/request';
 import express, { Express, Request, Response } from 'express';
+
+import crypto from 'crypto';
 
 const FORM_PAGE = `
 <html>

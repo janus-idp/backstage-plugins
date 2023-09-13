@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-import {
-  Step,
-  PackageWithInstallRecipe,
-  PeerPluginDependencies,
-} from './types';
-import { fetchPackageInfo } from '../../lib/versioning';
-import { NotFoundError } from '../../lib/errors';
-import * as stepDefinitionMap from './steps';
 import { OptionValues } from 'commander';
 import fs from 'fs-extra';
+
+import { NotFoundError } from '../../lib/errors';
+import { fetchPackageInfo } from '../../lib/versioning';
+import * as stepDefinitionMap from './steps';
+import {
+  PackageWithInstallRecipe,
+  PeerPluginDependencies,
+  Step,
+} from './types';
 
 const stepDefinitions = Object.values(stepDefinitionMap);
 

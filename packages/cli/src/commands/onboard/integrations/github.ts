@@ -16,10 +16,11 @@
 
 import chalk from 'chalk';
 import inquirer from 'inquirer';
+
 import { Task } from '../../../lib/tasks';
+import { GitHubAnswers } from '../auth';
 import { updateConfigFile } from '../config';
 import { APP_CONFIG_FILE } from '../files';
-import { GitHubAnswers } from '../auth';
 
 type Answers = {
   hasEnterprise: boolean;

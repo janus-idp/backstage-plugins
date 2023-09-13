@@ -18,6 +18,7 @@ import { OAuthApp } from '@octokit/oauth-app';
 import chalk from 'chalk';
 import * as fs from 'fs-extra';
 import inquirer from 'inquirer';
+
 import { Task } from '../../../../lib/tasks';
 import { updateConfigFile } from '../../config';
 import { APP_CONFIG_FILE, PATCH_FOLDER } from '../../files';

@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+import { PackageGraph, PackageRole, PackageRoles } from '@backstage/cli-node';
+
 import fs from 'fs-extra';
+
 import { resolve as resolvePath } from 'path';
-import { PackageGraph, PackageRoles, PackageRole } from '@backstage/cli-node';
 
 const configArgPattern = /--config[=\s][^\s$]+/;
 

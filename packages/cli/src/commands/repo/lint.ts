@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
+import { BackstagePackageJson, PackageGraph } from '@backstage/cli-node';
+
 import chalk from 'chalk';
 import { OptionValues } from 'commander';
+
 import { relative as relativePath } from 'path';
-import { PackageGraph, BackstagePackageJson } from '@backstage/cli-node';
-import { paths } from '../../lib/paths';
+
 import { runWorkerQueueThreads } from '../../lib/parallel';
+import { paths } from '../../lib/paths';
 
 function depCount(pkg: BackstagePackageJson) {
   const deps = pkg.dependencies ? Object.keys(pkg.dependencies).length : 0;

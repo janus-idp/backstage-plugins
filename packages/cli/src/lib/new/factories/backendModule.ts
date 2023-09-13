@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
 import chalk from 'chalk';
+import fs from 'fs-extra';
 import camelCase from 'lodash/camelCase';
-import { paths } from '../../paths';
+
 import { addCodeownersEntry, getCodeownersFilePath } from '../../codeowners';
-import { createFactory, CreateContext } from '../types';
+import { paths } from '../../paths';
 import { addPackageDependency, Task } from '../../tasks';
+import { CreateContext, createFactory } from '../types';
 import {
   moduleIdIdPrompt,
   ownerPrompt,

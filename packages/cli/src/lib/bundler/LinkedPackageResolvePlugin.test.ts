@@ -16,6 +16,7 @@
 
 import * as os from 'os';
 import * as path from 'path';
+
 import { LinkedPackageResolvePlugin } from './LinkedPackageResolvePlugin';
 
 describe('LinkedPackageResolvePlugin', () => {

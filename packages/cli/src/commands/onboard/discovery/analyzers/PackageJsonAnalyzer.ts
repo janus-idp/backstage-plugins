@@ -18,9 +18,11 @@ import {
   ANNOTATION_SOURCE_LOCATION,
   ComponentEntity,
 } from '@backstage/catalog-model';
+
 import z from 'zod';
-import { AnalysisOutputs, Analyzer } from './types';
+
 import { Repository, RepositoryFile } from '../providers/types';
+import { AnalysisOutputs, Analyzer } from './types';
 
 export class PackageJsonAnalyzer implements Analyzer {
   name(): string {

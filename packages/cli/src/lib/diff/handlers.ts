@@ -16,8 +16,10 @@
 
 import chalk from 'chalk';
 import { diffLines } from 'diff';
-import { sep, posix } from 'path';
-import { FileDiff, PromptFunc, FileHandler, WriteFileFunc } from './types';
+
+import { posix, sep } from 'path';
+
+import { FileDiff, FileHandler, PromptFunc, WriteFileFunc } from './types';
 
 function sortObjectKeys(obj: Record<string, unknown>) {
   const sortedKeys = Object.keys(obj).sort();

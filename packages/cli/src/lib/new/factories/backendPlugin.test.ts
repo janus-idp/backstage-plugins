@@ -16,12 +16,14 @@
 
 import fs from 'fs-extra';
 import mockFs from 'mock-fs';
-import { sep, resolve as resolvePath } from 'path';
+
+import { resolve as resolvePath, sep } from 'path';
+
 import { paths } from '../../paths';
 import { Task } from '../../tasks';
 import { FactoryRegistry } from '../FactoryRegistry';
-import { createMockOutputStream, mockPaths } from './common/testUtils';
 import { backendPlugin } from './backendPlugin';
+import { createMockOutputStream, mockPaths } from './common/testUtils';
 
 describe('backendPlugin factory', () => {
   beforeEach(() => {

@@ -15,9 +15,10 @@
  */
 
 import os from 'os';
+
 import {
-  parseParallelismOption,
   getEnvironmentParallelism,
+  parseParallelismOption,
   runParallelWorkers,
   runWorkerQueueThreads,
   runWorkerThreads,

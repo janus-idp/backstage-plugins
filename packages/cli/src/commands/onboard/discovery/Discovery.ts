@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-import chalk from 'chalk';
 import { Entity } from '@backstage/catalog-model';
+
+import chalk from 'chalk';
+
+import { Task } from '../../../lib/tasks';
+import { DefaultAnalysisOutputs } from './analyzers/DefaultAnalysisOutputs';
 import { Analyzer } from './analyzers/types';
 import { Provider } from './providers/types';
-import { DefaultAnalysisOutputs } from './analyzers/DefaultAnalysisOutputs';
-import { Task } from '../../../lib/tasks';
 
 export class Discovery {
   readonly #providers: Provider[] = [];

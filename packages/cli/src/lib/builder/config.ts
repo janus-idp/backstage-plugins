@@ -14,25 +14,27 @@
  * limitations under the License.
  */
 
+import { BackstagePackageJson } from '@backstage/cli-node';
+
+import commonjs from '@rollup/plugin-commonjs';
+import json from '@rollup/plugin-json';
+import resolve from '@rollup/plugin-node-resolve';
+import yaml from '@rollup/plugin-yaml';
+import svgr from '@svgr/rollup';
 import chalk from 'chalk';
 import fs from 'fs-extra';
-import { relative as relativePath, resolve as resolvePath } from 'path';
-import commonjs from '@rollup/plugin-commonjs';
-import resolve from '@rollup/plugin-node-resolve';
-import postcss from 'rollup-plugin-postcss';
-import esbuild from 'rollup-plugin-esbuild';
-import svgr from '@svgr/rollup';
+import { OutputOptions, RollupOptions, RollupWarning } from 'rollup';
 import dts from 'rollup-plugin-dts';
-import json from '@rollup/plugin-json';
-import yaml from '@rollup/plugin-yaml';
-import { RollupOptions, OutputOptions, RollupWarning } from 'rollup';
+import esbuild from 'rollup-plugin-esbuild';
+import postcss from 'rollup-plugin-postcss';
 
+import { relative as relativePath, resolve as resolvePath } from 'path';
+
+import { readEntryPoints } from '../entryPoints';
+import { paths } from '../paths';
+import { svgrTemplate } from '../svgrTemplate';
 import { forwardFileImports } from './plugins';
 import { BuildOptions, Output } from './types';
-import { paths } from '../paths';
-import { BackstagePackageJson } from '@backstage/cli-node';
-import { svgrTemplate } from '../svgrTemplate';
-import { readEntryPoints } from '../entryPoints';
 
 const SCRIPT_EXTS = ['.js', '.jsx', '.ts', '.tsx'];
 

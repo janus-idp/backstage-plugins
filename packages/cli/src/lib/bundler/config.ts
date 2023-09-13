@@ -14,30 +14,34 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
-import { resolve as resolvePath, posix as posixPath } from 'path';
-import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
-import HtmlWebpackPlugin from 'html-webpack-plugin';
 import ModuleScopePlugin from 'react-dev-utils/ModuleScopePlugin';
+
+import { isChildPath } from '@backstage/cli-common';
+import { BackstagePackage } from '@backstage/cli-node';
+import { Config } from '@backstage/config';
+
+import { getPackages } from '@manypkg/get-packages';
+import ESLintPlugin from 'eslint-webpack-plugin';
+import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
+import fs from 'fs-extra';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+import pickBy from 'lodash/pickBy';
 import { RunScriptWebpackPlugin } from 'run-script-webpack-plugin';
 import webpack, { ProvidePlugin } from 'webpack';
 import nodeExternals from 'webpack-node-externals';
-import { isChildPath } from '@backstage/cli-common';
-import { getPackages } from '@manypkg/get-packages';
+import yn from 'yn';
+
+import { posix as posixPath, resolve as resolvePath } from 'path';
+
+import { paths as cliPaths } from '../../lib/paths';
+import { version } from '../../lib/version';
+import { readEntryPoints } from '../entryPoints';
+import { runPlain } from '../run';
+import { LinkedPackageResolvePlugin } from './LinkedPackageResolvePlugin';
 import { optimization } from './optimization';
-import { Config } from '@backstage/config';
 import { BundlingPaths } from './paths';
 import { transforms } from './transforms';
-import { LinkedPackageResolvePlugin } from './LinkedPackageResolvePlugin';
-import { BundlingOptions, BackendBundlingOptions } from './types';
-import { version } from '../../lib/version';
-import { paths as cliPaths } from '../../lib/paths';
-import { BackstagePackage } from '@backstage/cli-node';
-import { runPlain } from '../run';
-import ESLintPlugin from 'eslint-webpack-plugin';
-import pickBy from 'lodash/pickBy';
-import yn from 'yn';
-import { readEntryPoints } from '../entryPoints';
+import { BackendBundlingOptions, BundlingOptions } from './types';
 
 const BUILD_CACHE_ENV_VAR = 'BACKSTAGE_CLI_EXPERIMENTAL_BUILD_CACHE';
 

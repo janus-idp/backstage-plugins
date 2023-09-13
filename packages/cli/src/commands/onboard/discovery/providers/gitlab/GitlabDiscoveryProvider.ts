@@ -20,7 +20,9 @@ import {
   GitlabCredentialsProvider,
   ScmIntegrations,
 } from '@backstage/integration';
+
 import fetch from 'node-fetch';
+
 import { Provider } from '../types';
 import { GitlabProject, ProjectResponse } from './GitlabProject';
 

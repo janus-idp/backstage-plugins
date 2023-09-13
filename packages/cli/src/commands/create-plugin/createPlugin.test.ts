@@ -15,8 +15,10 @@
  */
 
 import fs from 'fs-extra';
-import path from 'path';
 import mockFs from 'mock-fs';
+
+import path from 'path';
+
 import { movePlugin } from './createPlugin';
 
 const id = 'testPluginMock';

@@ -15,6 +15,7 @@
  */
 
 import { serializeError } from '@backstage/errors';
+
 import { ChildProcess } from 'child_process';
 
 interface RequestMeta {

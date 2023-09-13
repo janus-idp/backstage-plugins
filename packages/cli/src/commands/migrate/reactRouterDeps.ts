@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
-import { resolve as resolvePath } from 'path';
 import { PackageGraph, PackageRoles } from '@backstage/cli-node';
+
+import fs from 'fs-extra';
+
+import { resolve as resolvePath } from 'path';
 
 const REACT_ROUTER_DEPS = ['react-router', 'react-router-dom'];
 const REACT_ROUTER_RANGE = '6.0.0-beta.0 || ^6.3.0';

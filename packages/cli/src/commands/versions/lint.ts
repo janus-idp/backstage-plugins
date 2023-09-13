@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-import { OptionValues } from 'commander';
-import { Lockfile } from '../../lib/versioning';
-import { paths } from '../../lib/paths';
-import partition from 'lodash/partition';
 import { PackageGraph } from '@backstage/cli-node';
+
+import { OptionValues } from 'commander';
+import partition from 'lodash/partition';
+
+import { paths } from '../../lib/paths';
+import { Lockfile } from '../../lib/versioning';
 
 // Packages that we try to avoid duplicates for
 const INCLUDED = [/^@backstage\//];

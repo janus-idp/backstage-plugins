@@ -15,9 +15,10 @@
  */
 
 import fs from 'fs-extra';
-import { paths } from '../../lib/paths';
+
 import { serveBackend } from '../../lib/bundler';
 import { startBackendExperimental } from '../../lib/experimental/startBackendExperimental';
+import { paths } from '../../lib/paths';
 
 interface StartBackendOptions {
   checksEnabled: boolean;

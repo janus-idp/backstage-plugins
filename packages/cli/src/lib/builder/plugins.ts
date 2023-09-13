@@ -15,13 +15,14 @@
  */
 
 import fs from 'fs-extra';
+import { InputOptions, OutputChunk, Plugin } from 'rollup';
+import { createFilter } from 'rollup-pluginutils';
+
 import {
   dirname,
-  resolve as resolvePath,
   relative as relativePath,
+  resolve as resolvePath,
 } from 'path';
-import { createFilter } from 'rollup-pluginutils';
-import { Plugin, InputOptions, OutputChunk } from 'rollup';
 
 type ForwardFileImportsOptions = {
   include: Array<string | RegExp> | string | RegExp | null;

@@ -15,6 +15,7 @@
  */
 
 import { ExternalOption } from 'rollup';
+
 import { makeRollupConfigs } from './config';
 import { Output } from './types';
 

@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
+import { BackstagePackage } from '@backstage/cli-node';
+
+import { stringify as legacyStringifyLockfile } from '@yarnpkg/lockfile';
+import { parseSyml, stringifySyml } from '@yarnpkg/parsers';
 import fs from 'fs-extra';
 import semver from 'semver';
-import { parseSyml, stringifySyml } from '@yarnpkg/parsers';
-import { stringify as legacyStringifyLockfile } from '@yarnpkg/lockfile';
-import { BackstagePackage } from '@backstage/cli-node';
 
 const ENTRY_PATTERN = /^((?:@[^/]+\/)?[^@/]+)@(.+)$/;
 

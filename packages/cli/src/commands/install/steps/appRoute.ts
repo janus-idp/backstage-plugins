@@ -15,8 +15,9 @@
  */
 
 import fs from 'fs-extra';
+
 import { paths } from '../../../lib/paths';
-import { Step, createStepDefinition } from '../types';
+import { createStepDefinition, Step } from '../types';
 
 type Data = {
   path: string;

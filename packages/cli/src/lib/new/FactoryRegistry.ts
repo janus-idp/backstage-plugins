@@ -16,9 +16,10 @@
 
 import chalk from 'chalk';
 import inquirer, { Answers } from 'inquirer';
-import { AnyFactory, Prompt } from './types';
-import * as factories from './factories';
 import partition from 'lodash/partition';
+
+import * as factories from './factories';
+import { AnyFactory, Prompt } from './types';
 
 function applyPromptMessageTransforms<T extends Answers>(
   prompt: Prompt<T>,

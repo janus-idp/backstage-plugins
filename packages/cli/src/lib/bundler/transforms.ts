@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import { ModuleOptions, WebpackPluginInstance } from 'webpack';
-import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import { svgrTemplate } from '../svgrTemplate';
 import ReactRefreshPlugin from '@pmmmwh/react-refresh-webpack-plugin';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import { ModuleOptions, WebpackPluginInstance } from 'webpack';
+
+import { svgrTemplate } from '../svgrTemplate';
 
 type Transforms = {
   loaders: ModuleOptions['rules'];

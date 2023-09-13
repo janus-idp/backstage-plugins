@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-import * as fs from 'fs-extra';
-import * as path from 'path';
-import * as differ from 'diff';
-import { PATCH_FOLDER } from '../files';
 import { findPaths } from '@backstage/cli-common';
+
+import * as differ from 'diff';
+import * as fs from 'fs-extra';
+
+import * as path from 'path';
+
+import { PATCH_FOLDER } from '../files';
 
 /* eslint-disable-next-line no-restricted-syntax */
 const { targetRoot } = findPaths(__dirname);

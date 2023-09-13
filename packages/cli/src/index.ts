@@ -20,11 +20,12 @@
  * @packageDocumentation
  */
 
-import { program } from 'commander';
 import chalk from 'chalk';
+import { program } from 'commander';
+
+import { registerCommands } from './commands';
 import { exitWithError } from './lib/errors';
 import { version } from './lib/version';
-import { registerCommands } from './commands';
 
 const main = (argv: string[]) => {
   program.name('backstage-cli').version(version);

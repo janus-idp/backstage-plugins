@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import os from 'os';
 import { ErrorLike } from '@backstage/errors';
+
+import os from 'os';
 import { Worker } from 'worker_threads';
 
 const defaultParallelism = Math.ceil(os.cpus().length / 2);

@@ -15,8 +15,9 @@
  */
 
 import { AppConfig, Config } from '@backstage/config';
-import { BundlingPathsOptions } from './paths';
 import { ConfigSchema } from '@backstage/config-loader';
+
+import { BundlingPathsOptions } from './paths';
 
 export type BundlingOptions = {
   checksEnabled: boolean;

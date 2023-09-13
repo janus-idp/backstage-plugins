@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-import os from 'os';
-import fs from 'fs-extra';
-import { join as joinPath } from 'path';
-import { OptionValues } from 'commander';
-import { FactoryRegistry } from '../../lib/new/FactoryRegistry';
 import { isMonoRepo } from '@backstage/cli-node';
-import { paths } from '../../lib/paths';
 import { assertError } from '@backstage/errors';
+
+import { OptionValues } from 'commander';
+import fs from 'fs-extra';
+
+import os from 'os';
+import { join as joinPath } from 'path';
+
+import { FactoryRegistry } from '../../lib/new/FactoryRegistry';
+import { paths } from '../../lib/paths';
 import { Task } from '../../lib/tasks';
 
 function parseOptions(optionStrings: string[]): Record<string, string> {

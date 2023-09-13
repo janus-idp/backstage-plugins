@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
+import { assertError } from '@backstage/errors';
+
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import handlebars from 'handlebars';
 import ora from 'ora';
-import { promisify } from 'util';
-import { basename, dirname } from 'path';
 import recursive from 'recursive-readdir';
+
 import { exec as execCb } from 'child_process';
-import { assertError } from '@backstage/errors';
+import { basename, dirname } from 'path';
+import { promisify } from 'util';
 
 const exec = promisify(execCb);
 

@@ -16,9 +16,12 @@
 
 import { BackstagePackageJson } from '@backstage/cli-node';
 import { Config } from '@backstage/config';
+
 import chokidar from 'chokidar';
 import fs from 'fs-extra';
+
 import { join as joinPath, resolve as resolvePath } from 'path';
+
 import { paths as cliPaths } from '../paths';
 
 const DETECTED_MODULES_MODULE_NAME = '__backstage-autodetected-plugins__';
@@ -61,10 +64,9 @@ async function detectPackages(
 
   return Object.keys(pkg.dependencies ?? {})
     .flatMap(depName => {
-      const depPackageJson: BackstagePackageJson = require(require.resolve(
-        `${depName}/package.json`,
-        { paths: [targetPath] },
-      ));
+      const depPackageJson: BackstagePackageJson = require(
+        require.resolve(`${depName}/package.json`, { paths: [targetPath] }),
+      );
       if (
         ['frontend-plugin', 'frontend-plugin-module'].includes(
           depPackageJson.backstage?.role ?? '',

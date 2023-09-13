@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { extname } from 'path';
 import { BackstagePackageJson } from '@backstage/cli-node';
+
+import { extname } from 'path';
 
 export interface EntryPoint {
   mount: string;

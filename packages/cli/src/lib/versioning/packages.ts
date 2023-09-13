@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import minimatch from 'minimatch';
 import { getPackages } from '@manypkg/get-packages';
+import minimatch from 'minimatch';
+
 import { NotFoundError } from '../errors';
-import { detectYarnVersion } from '../yarn';
 import { execFile } from '../run';
+import { detectYarnVersion } from '../yarn';
 
 const DEP_TYPES = [
   'dependencies',

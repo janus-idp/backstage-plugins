@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
+import openBrowser from 'react-dev-utils/openBrowser';
+
 import { PackageGraph } from '@backstage/cli-node';
 import { AppConfig } from '@backstage/config';
+
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import uniq from 'lodash/uniq';
-import openBrowser from 'react-dev-utils/openBrowser';
 import webpack from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
 

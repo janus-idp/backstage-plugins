@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import os from 'os';
 import fs from 'fs-extra';
-import { resolve as resolvePath } from 'path';
 import tar, { CreateOptions } from 'tar';
+
+import os from 'os';
+import { resolve as resolvePath } from 'path';
+
+import { buildPackage, Output } from '../../lib/builder';
 import { createDistWorkspace } from '../../lib/packager';
 import { getEnvironmentParallelism } from '../../lib/parallel';
-import { buildPackage, Output } from '../../lib/builder';
 
 const BUNDLE_FILE = 'bundle.tar.gz';
 const SKELETON_FILE = 'skeleton.tar.gz';

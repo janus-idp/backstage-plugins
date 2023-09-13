@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
+import openBrowser from 'react-dev-utils/openBrowser';
+
 import chalk from 'chalk';
+import fs from 'fs-extra';
+import inquirer, { Answers, Question } from 'inquirer';
+import fetch from 'node-fetch';
 import { stringify as stringifyYaml } from 'yaml';
-import inquirer, { Question, Answers } from 'inquirer';
+
 import { paths } from '../../lib/paths';
 import { GithubCreateAppServer } from './GithubCreateAppServer';
-import fetch from 'node-fetch';
-import openBrowser from 'react-dev-utils/openBrowser';
+
 // This is an experimental command that at this point does not support GitHub Enterprise
 // due to lacking support for creating apps from manifests.
 // https://docs.github.com/en/free-pro-team@latest/developers/apps/creating-a-github-app-from-a-manifest

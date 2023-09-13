@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import { resolve as resolvePath } from 'path';
-import { WebpackPluginInstance } from 'webpack';
 import { isChildPath } from '@backstage/cli-common';
+
 import { Package } from '@manypkg/get-packages';
+import { WebpackPluginInstance } from 'webpack';
+
+import { resolve as resolvePath } from 'path';
 
 // Enables proper resolution of packages when linking in external packages.
 // Without this the packages would depend on dependencies in the node_modules

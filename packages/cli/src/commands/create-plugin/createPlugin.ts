@@ -14,26 +14,29 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
-import { promisify } from 'util';
+import { assertError } from '@backstage/errors';
+
 import chalk from 'chalk';
+import { OptionValues } from 'commander';
+import fs from 'fs-extra';
 import inquirer, { Answers, Question } from 'inquirer';
-import { exec as execCb } from 'child_process';
-import { resolve as resolvePath, join as joinPath } from 'path';
 import camelCase from 'lodash/camelCase';
 import upperFirst from 'lodash/upperFirst';
+
+import { exec as execCb } from 'child_process';
 import os from 'os';
-import { OptionValues } from 'commander';
-import { assertError } from '@backstage/errors';
+import { join as joinPath, resolve as resolvePath } from 'path';
+import { promisify } from 'util';
+
 import {
-  parseOwnerIds,
   addCodeownersEntry,
   getCodeownersFilePath,
+  parseOwnerIds,
 } from '../../lib/codeowners';
 import { paths } from '../../lib/paths';
 import { Task, templatingTask } from '../../lib/tasks';
-import { Lockfile } from '../../lib/versioning';
 import { createPackageVersionProvider } from '../../lib/version';
+import { Lockfile } from '../../lib/versioning';
 
 const exec = promisify(execCb);
 
@@ -53,10 +56,13 @@ async function checkExists(destination: string) {
 const sortObjectByKeys = (obj: { [name in string]: string }) => {
   return Object.keys(obj)
     .sort()
-    .reduce((result, key: string) => {
-      result[key] = obj[key];
-      return result;
-    }, {} as { [name in string]: string });
+    .reduce(
+      (result, key: string) => {
+        result[key] = obj[key];
+        return result;
+      },
+      {} as { [name in string]: string },
+    );
 };
 
 export const capitalize = (str: string): string =>

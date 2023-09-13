@@ -15,8 +15,9 @@
  */
 
 import { ComponentEntity } from '@backstage/catalog-model';
-import { AnalysisOutputs, Analyzer } from './types';
+
 import { Repository } from '../providers/types';
+import { AnalysisOutputs, Analyzer } from './types';
 
 /**
  * Naive analyzer that produces a single entity that represents the repository

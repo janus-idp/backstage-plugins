@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Step, createStepDefinition } from '../types';
+import { createStepDefinition, Step } from '../types';
 
 type Data = {
   message: string;

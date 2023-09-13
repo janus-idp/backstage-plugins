@@ -14,31 +14,36 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
-import chalk from 'chalk';
-import ora from 'ora';
-import semver from 'semver';
-import minimatch from 'minimatch';
-import { OptionValues } from 'commander';
-import { isError, NotFoundError } from '@backstage/errors';
-import { resolve as resolvePath } from 'path';
-import { run } from '../../lib/run';
-import { paths } from '../../lib/paths';
-import {
-  mapDependencies,
-  fetchPackageInfo,
-  Lockfile,
-  YarnInfoInspectData,
-} from '../../lib/versioning';
-import { forbiddenDuplicatesFilter } from './lint';
 import { BACKSTAGE_JSON } from '@backstage/cli-common';
-import { runParallelWorkers } from '../../lib/parallel';
+import { isError, NotFoundError } from '@backstage/errors';
 import {
   getManifestByReleaseLine,
   getManifestByVersion,
   ReleaseManifest,
 } from '@backstage/release-manifests';
+
+import chalk from 'chalk';
+import { OptionValues } from 'commander';
+import fs from 'fs-extra';
+import minimatch from 'minimatch';
+import ora from 'ora';
+import semver from 'semver';
+
+import { resolve as resolvePath } from 'path';
+
+import { runParallelWorkers } from '../../lib/parallel';
+import { paths } from '../../lib/paths';
+import { run } from '../../lib/run';
+import {
+  fetchPackageInfo,
+  Lockfile,
+  mapDependencies,
+  YarnInfoInspectData,
+} from '../../lib/versioning';
+import { forbiddenDuplicatesFilter } from './lint';
+
 import 'global-agent/bootstrap';
+
 import { PackageGraph } from '@backstage/cli-node';
 
 const DEP_TYPES = [

@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-import chalk from 'chalk';
-import { ESLint } from 'eslint';
-import { OptionValues } from 'commander';
-import { join as joinPath, relative as relativePath } from 'path';
 import { PackageGraph } from '@backstage/cli-node';
+
+import chalk from 'chalk';
+import { OptionValues } from 'commander';
+import { ESLint } from 'eslint';
+
+import { join as joinPath, relative as relativePath } from 'path';
+
 import { paths } from '../../lib/paths';
 
 export async function command(opts: OptionValues) {
