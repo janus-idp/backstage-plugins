@@ -1,3 +1,42 @@
+## @janus-idp/backstage-plugin-kiali-backend [1.4.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali-backend@1.3.0...@janus-idp/backstage-plugin-kiali-backend@1.4.0) (2023-08-30)
+
+
+### Features
+
+* **kiali:** add namespace selector ([#675](https://github.com/janus-idp/backstage-plugins/issues/675)) ([e3cfc26](https://github.com/janus-idp/backstage-plugins/commit/e3cfc26bdf550916da3ee801601196d8614471b5))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-kiali-common:** upgraded to 1.4.0
+
+## @janus-idp/backstage-plugin-kiali-backend [1.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali-backend@1.2.1...@janus-idp/backstage-plugin-kiali-backend@1.3.0) (2023-08-28)
+
+
+### Features
+
+* **kiali:** show kiali information in header ([#630](https://github.com/janus-idp/backstage-plugins/issues/630)) ([b9a83b3](https://github.com/janus-idp/backstage-plugins/commit/b9a83b332ec518e60a9780961fdce070eda02d02))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-kiali-common:** upgraded to 1.3.0
+
+## @janus-idp/backstage-plugin-kiali-backend [1.2.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali-backend@1.2.0...@janus-idp/backstage-plugin-kiali-backend@1.2.1) (2023-08-22)
+
+
+### Bug Fixes
+
+* **kiali:** fix code smells ([#607](https://github.com/janus-idp/backstage-plugins/issues/607)) ([ef2eecf](https://github.com/janus-idp/backstage-plugins/commit/ef2eecfa71e2a60b4442ce3105a526b3332eaa1b))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-kiali-common:** upgraded to 1.2.1
+
 ## @janus-idp/backstage-plugin-kiali-backend [1.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali-backend@1.1.0...@janus-idp/backstage-plugin-kiali-backend@1.2.0) (2023-08-14)
 
 

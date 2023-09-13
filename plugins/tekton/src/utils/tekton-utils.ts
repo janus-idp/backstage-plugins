@@ -9,7 +9,9 @@ import { get } from 'lodash';
 import {
   ComputedStatus,
   getTaskRunsForPipelineRun,
+  pipelineRunFilterReducer,
   PipelineRunKind,
+  pipelineRunStatus,
   SucceedConditionReason,
   TaskRunKind,
   TaskStatusTypes,
@@ -18,10 +20,6 @@ import {
 
 import { PipelineRunGVK, TaskRunGVK } from '../models';
 import { ClusterErrors, Order, TektonResponseData } from '../types/types';
-import {
-  pipelineRunFilterReducer,
-  pipelineRunStatus,
-} from './pipeline-filter-reducer';
 
 export const getClusters = (k8sObjects: ObjectsByEntityResponse) => {
   const clusters: string[] = k8sObjects.items.map(

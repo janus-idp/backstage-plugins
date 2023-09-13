@@ -1,3 +1,19 @@
+## @janus-idp/backstage-plugin-ocm-backend [3.2.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@3.2.0...@janus-idp/backstage-plugin-ocm-backend@3.2.1) (2023-08-31)
+
+## @janus-idp/backstage-plugin-ocm-backend [3.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@3.1.1...@janus-idp/backstage-plugin-ocm-backend@3.2.0) (2023-08-28)
+
+
+### Features
+
+* **ocm-backend:** add support for new backend system ([#682](https://github.com/janus-idp/backstage-plugins/issues/682)) ([a28b14d](https://github.com/janus-idp/backstage-plugins/commit/a28b14dcb540cd37ee08fc59448d0967b1edbc1d))
+
+## @janus-idp/backstage-plugin-ocm-backend [3.1.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@3.1.0...@janus-idp/backstage-plugin-ocm-backend@3.1.1) (2023-08-23)
+
+
+### Bug Fixes
+
+* **config types:** inline types in config.d.ts ([#664](https://github.com/janus-idp/backstage-plugins/issues/664)) ([ae1aea1](https://github.com/janus-idp/backstage-plugins/commit/ae1aea1f4890c0034d1c2602223d59463c61206b))
+
 ## @janus-idp/backstage-plugin-ocm-backend [3.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@3.0.4...@janus-idp/backstage-plugin-ocm-backend@3.1.0) (2023-08-14)
 
 

@@ -18,11 +18,11 @@ export const emptyRate = (): Rate => {
 };
 
 export const DEFAULTCONF = {
-  http: new RegExp('^[4|5]\\d\\d$'),
-  grpc: new RegExp('^[1-9]$|^1[0-6]$'),
+  http: /^[4|5]\\d\\d$/,
+  grpc: /^[1-9]$|^1[0-6]$/,
 };
 
-export const requestsErrorRateCode = (requests: RequestType): number => {
+const calculateRate = (requests: RequestType): Rate => {
   const rate: Rate = emptyRate();
   for (const [protocol, req] of Object.entries(requests)) {
     for (const [code, value] of Object.entries(req)) {
@@ -35,6 +35,10 @@ export const requestsErrorRateCode = (requests: RequestType): number => {
       }
     }
   }
+  return rate;
+};
+export const requestsErrorRateCode = (requests: RequestType): number => {
+  const rate: Rate = calculateRate(requests);
   return rate.requestRate === 0
     ? -1
     : (rate.errorRate / rate.requestRate) * 100;
@@ -98,7 +102,7 @@ export const getRateHealthConfig = (
   if (configCache[key]) {
     return configCache[key];
   }
-  if (serverConfig.healthConfig && serverConfig.healthConfig.rate) {
+  if (serverConfig.healthConfig?.rate) {
     for (const rate of serverConfig.healthConfig.rate) {
       if (
         checkExpr(rate.namespace, ns) &&
@@ -137,30 +141,36 @@ export const transformEdgeResponses = (
   return result;
 };
 
+const updateRequestRateRateForTolerance = (
+  tol: RequestTolerance,
+  protocol: string,
+  req: { [key: string]: number },
+) => {
+  for (const [code, value] of Object.entries(req)) {
+    if (!Object.keys(tol.requests).includes(protocol)) {
+      tol.requests[protocol] = emptyRate();
+    }
+    (tol.requests[protocol] as Rate).requestRate += value;
+    if (checkExpr(tol.tolerance.code, code)) {
+      (tol.requests[protocol] as Rate).errorRate += value;
+    }
+  }
+};
 export const generateRateForTolerance = (
   tol: RequestTolerance,
   requests: { [key: string]: { [key: string]: number } },
 ) => {
   for (const [protocol, req] of Object.entries(requests)) {
-    if (checkExpr(tol!.tolerance!.protocol, protocol)) {
-      for (const [code, value] of Object.entries(req)) {
-        if (!Object.keys(tol.requests).includes(protocol)) {
-          tol.requests[protocol] = emptyRate();
-        }
-        (tol.requests[protocol] as Rate).requestRate += Number(value);
-        if (checkExpr(tol!.tolerance!.code, code)) {
-          (tol.requests[protocol] as Rate).errorRate += Number(value);
-        }
-      }
+    if (checkExpr(tol.tolerance.protocol, protocol)) {
+      updateRequestRateRateForTolerance(tol, protocol, req);
     }
     if (Object.keys(tol.requests).includes(protocol)) {
-      if ((tol.requests[protocol] as Rate).requestRate === 0) {
-        (tol.requests[protocol] as Rate).errorRatio = -1;
-      } else {
-        (tol.requests[protocol] as Rate).errorRatio =
-          (tol.requests[protocol] as Rate).errorRate /
+      const requestRateZero =
+        (tol.requests[protocol] as Rate).requestRate === 0;
+      (tol.requests[protocol] as Rate).errorRatio = requestRateZero
+        ? -1
+        : (tol.requests[protocol] as Rate).errorRate /
           (tol.requests[protocol] as Rate).requestRate;
-      }
     }
   }
 };
@@ -169,6 +179,22 @@ export const generateRateForTolerance = (
   Calculate the RequestToleranceGraph for a requests and a configuration
   Return the calculation in the object RequestToleranceGraph
 */
+
+const updateRequestRateRateForGraphTolerance = (
+  tol: RequestTolerance,
+  protocol: string,
+  req: { [key: string]: number },
+) => {
+  // Loop by the status code and rate for each code
+  for (const [code, value] of Object.entries(req)) {
+    // If code match the regular expression in the configuration then sum the rate
+    if (checkExpr(tol.tolerance.code, code)) {
+      tol.requests[protocol] = tol.requests[protocol]
+        ? (tol.requests[protocol] as number) + value
+        : value;
+    }
+  }
+};
 
 export const generateRateForGraphTolerance = (
   tol: RequestTolerance,
@@ -179,16 +205,8 @@ export const generateRateForGraphTolerance = (
     // For each requests type {<protocol:string> : { <code: string>: <rate: number> } }
     for (const [protocol, req] of Object.entries(requests)) {
       // Check if protocol configuration match the protocol request
-      if (checkExpr(tol!.tolerance!.protocol, protocol)) {
-        // Loop by the status code and rate for each code
-        for (const [code, value] of Object.entries(req)) {
-          // If code match the regular expression in the configuration then sum the rate
-          if (checkExpr(tol!.tolerance!.code, code)) {
-            tol.requests[protocol] = tol.requests[protocol]
-              ? (tol.requests[protocol] as number) + value
-              : value;
-          }
-        }
+      if (checkExpr(tol.tolerance.protocol, protocol)) {
+        updateRequestRateRateForGraphTolerance(tol, protocol, req);
       }
     }
   }

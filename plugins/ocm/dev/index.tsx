@@ -33,7 +33,7 @@ const clusterEntity = (name: string): Entity => ({
   },
 });
 
-const clusterEntityPage = (name: string): JSX.Element => (
+const clusterEntityPage = (name: string): React.JSX.Element => (
   <EntityProvider entity={clusterEntity(name)}>
     <ClusterContextProvider>
       <Grid container direction="column" xs={6}>

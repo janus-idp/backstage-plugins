@@ -52,7 +52,7 @@ export class KialiAuthentication {
   };
 
   private timeLeft = (): number => {
-    const expiresOn = moment(this.session!.expiresOn);
+    const expiresOn = moment(this.session.expiresOn);
 
     if (expiresOn <= moment()) {
       return -1;
@@ -68,6 +68,6 @@ export class KialiAuthentication {
     if (this.cookie === '') {
       return true;
     }
-    return moment(this.session!.expiresOn).diff(moment()) <= 0;
+    return moment(this.session.expiresOn).diff(moment()) <= 0;
   };
 }

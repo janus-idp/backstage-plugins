@@ -23,9 +23,11 @@ The Tekton plugin enables you to visualize the `PipelineRun` resources available
          plural: 'taskruns'
   ```
 - The Kubernetes plugin is configured and connects to the cluster using a `ServiceAccount`.
-- The [`ClusterRole`](https://backstage.io/docs/features/kubernetes/configuration#role-based-access-control) must be granted for custom resources (PipelineRuns and TaskRuns) to `ServiceAccount` accessing the cluster. If you have the Backstage Kubernetes Plugin configured, then the `ClusterRole` is already granted.
+- The [`ClusterRole`](https://backstage.io/docs/features/kubernetes/configuration#role-based-access-control) must be granted for custom resources (PipelineRuns and TaskRuns) to `ServiceAccount` accessing the cluster.
+- To view the pod logs, you have granted permissions for `pods/log`.
+- If you have the Backstage Kubernetes Plugin configured, then the `ClusterRole` is already granted.
 
-  You can use the following code to grant the `ClusterRole` for custom resources:
+  You can use the following code to grant the `ClusterRole` for custom resources and pod logs:
 
   ```yaml
     ...
@@ -34,6 +36,14 @@ The Tekton plugin enables you to visualize the `PipelineRun` resources available
     metadata:
       name: backstage-read-only
     rules:
+      - apiGroups:
+          - ""
+        resources:
+          - pods/log
+        verbs:
+          - get
+          - list
+          - watch
       ...
       - apiGroups:
           - tekton.dev
@@ -46,7 +56,7 @@ The Tekton plugin enables you to visualize the `PipelineRun` resources available
 
   ```
 
-  > Tip: You can use our [prepared manifest for a read-only `ClusterRole`](https://raw.githubusercontent.com/janus-idp/backstage-plugins/main/plugins/tekton/manifests/clusterrole.yaml), providing both Kubernetes plugin andd Tekton plugin access.
+  > Tip: You can use the [prepared manifest for a read-only `ClusterRole`](https://raw.githubusercontent.com/janus-idp/backstage-plugins/main/plugins/tekton/manifests/clusterrole.yaml), which provides access for both Kubernetes plugin and Tekton plugin.
 
 - The following annotation is added to the entity's `catalog-info.yaml` file to identify whether an entity contains the Kubernetes resources:
 
@@ -127,7 +137,7 @@ The Tekton plugin enables you to visualize the `PipelineRun` resources available
    );
    ```
 
-1. Enable latest PipelineRun visualization in the **CI/CD** tab on the entity view page. The `linkTekton` property is optional and takes boolean value, if not specified or set to `true`, then the **GO TO TEKTON** option is displayed.
+1. Enable the latest PipelineRun visualization in the **CI/CD** tab on the entity view page. The `linkTekton` property is optional and takes a boolean value, if not specified or set to `true`, then the **GO TO TEKTON** option is displayed.
 
    ```tsx title="packages/app/src/components/catalog/EntityPage.tsx"
    /* highlight-add-next-line */
@@ -162,14 +172,20 @@ Tekton is a front-end plugin that enables you to view the `PipelineRun` resource
 
 1. Go to the **CI/CD** tab.
 
-   The **CI/CD** tab displays the latest `PipelineRun` resources associated to a Kubernetes cluster. The resources include tasks to complete. When you hover the mouse pointer on a task card, you can view the steps to complete that particular task.
+   The **CI/CD** tab displays the latest `PipelineRun` resources associated with a Kubernetes cluster. The resources include tasks to complete. When you hover the mouse pointer on a task card, you can view the steps to complete that particular task.
 
    ![ci-cd-tab-tekton](./images/tekton-plugin-user1.png)
 
    There is also a **GO TO TEKTON** option at the bottom, which redirects you to the **TEKTON** tab.
 
-1. Click **GO TO TEKTON** or select the **TEKTON** tab in the entity view page.
+1. Click **GO TO TEKTON** or select the **TEKTON** tab on the entity view page.
 
    The **TEKTON** tab contains the list of pipeline runs related to a cluster. The list contains pipeline run details, such as **NAME**, **STATUS**, **TASK STATUS**, **STARTED**, and **DURATION**.
 
    ![tekton-tab](./images/tekton-plugin-user2.png)
+
+1. Click a PipelineRun name in the list to view the PipelineRun visualization.
+
+   ![pipelinerun-view](./images/tekton-plugin-user3.png)
+
+   To go back to the PipelineRun list, you can click the **Back to PipelineRun list** option.

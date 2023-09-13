@@ -28,6 +28,7 @@ const EditDecorator: React.FC<DefaultDecoratorProps> = ({
   const cheURL = getCheDecoratorData(cheCluster);
   const cheEnabled = !!cheURL;
   const editUrl = editURL || getEditURL(vcsURI, vcsRef, cheURL);
+  const decoratorRef = React.useRef<SVGGElement | null>(null);
   const repoIcon = (
     <RouteDecoratorIcon
       routeURL={editUrl}
@@ -40,20 +41,27 @@ const EditDecorator: React.FC<DefaultDecoratorProps> = ({
     return null;
   }
   const label = 'Edit source code';
+
   return (
-    <Tooltip content={label} position={TooltipPosition.right}>
-      <Decorator
-        x={x}
-        y={y}
-        radius={radius}
-        href={editUrl}
-        external
-        ariaLabel={label}
-      >
-        <g transform={`translate(-${radius / 2}, -${radius / 2})`}>
-          {repoIcon}
-        </g>
-      </Decorator>
+    <Tooltip
+      content={label}
+      position={TooltipPosition.right}
+      triggerRef={decoratorRef}
+    >
+      <g ref={decoratorRef}>
+        <Decorator
+          x={x}
+          y={y}
+          radius={radius}
+          href={editUrl}
+          external
+          ariaLabel={label}
+        >
+          <g transform={`translate(-${radius / 2}, -${radius / 2})`}>
+            {repoIcon}
+          </g>
+        </Decorator>
+      </g>
     </Tooltip>
   );
 };

@@ -24,6 +24,8 @@ export const PipelineRunDecorator = ({
   x: number;
   y: number;
 }) => {
+  const decoratorRef = React.useRef<SVGGElement | null>(null);
+
   const latestPipelineRun = getLatestPipelineRun(
     pipelinesData.pipelineRuns,
     'creationTimestamp',
@@ -57,8 +59,9 @@ export const PipelineRunDecorator = ({
       id="pipeline-run-decorator"
       content={tooltipContent}
       position={TooltipPosition.left}
+      triggerRef={decoratorRef}
     >
-      {decoratorContent}
+      <g ref={decoratorRef}>{decoratorContent}</g>
     </Tooltip>
   );
 };

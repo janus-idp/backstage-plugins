@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-analytics-provider-segment [1.1.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-analytics-provider-segment@1.1.0...@janus-idp/backstage-plugin-analytics-provider-segment@1.1.1) (2023-08-23)
+
+
+### Bug Fixes
+
+* **config types:** inline types in config.d.ts ([#664](https://github.com/janus-idp/backstage-plugins/issues/664)) ([ae1aea1](https://github.com/janus-idp/backstage-plugins/commit/ae1aea1f4890c0034d1c2602223d59463c61206b))
+
 ## @janus-idp/backstage-plugin-analytics-provider-segment [1.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-analytics-provider-segment@1.0.7...@janus-idp/backstage-plugin-analytics-provider-segment@1.1.0) (2023-08-14)
 
 

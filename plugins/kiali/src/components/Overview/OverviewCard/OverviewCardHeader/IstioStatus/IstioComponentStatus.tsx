@@ -49,7 +49,7 @@ export const IstioComponentStatus = (props: Props) => {
     const comp = props.componentStatus;
 
     return [
-      <li>
+      <li key={props.componentStatus.name}>
         <Grid container>
           <Grid item>
             {renderIcon(

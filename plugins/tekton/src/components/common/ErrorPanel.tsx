@@ -23,12 +23,15 @@ export const ErrorPanel = ({ allErrors }: ErrorPanelProps) => {
       >
         <div>
           Errors:
-          {allErrors.map((err: ClusterError, index) => {
+          {allErrors.map((err: ClusterError, _index) => {
             const errMessage = err.message
               ? `${err.message}`
               : `Error fetching Kubernetes resource: '${err.resourcePath}', error: ${err.errorType}, status code: ${err.statusCode}`;
             return (
-              <Typography variant="body2" key={index}>
+              <Typography
+                variant="body2"
+                key={`${err.resourcePath}-${err.statusCode}`}
+              >
                 {err.errorType === 'FETCH_ERROR'
                   ? `Error communicating with Kubernetes: ${err.errorType}, message: ${err.message}`
                   : errMessage}

@@ -187,12 +187,7 @@ export const createSonarQubeProjectAction = () => {
         `${baseUrl}/api/projects/create?${queryString}`,
       );
 
-      let authString;
-      if (token) {
-        authString = `${token}:`;
-      } else {
-        authString = `${username}:${password}`;
-      }
+      const authString = token ? `${token}:` : `${username}:${password}`;
 
       const encodedAuthString = Buffer.from(authString).toString('base64');
 
@@ -209,12 +204,10 @@ export const createSonarQubeProjectAction = () => {
         if (response.status === 401) {
           errorMessage =
             'Unauthorized, please use a valid token or username and password';
-        } else {
-          if (!response.statusText) {
-            const responseBody = await response.json();
-            const errorList = responseBody.errors;
-            errorMessage = errorList[0].msg;
-          }
+        } else if (!response.statusText) {
+          const responseBody = await response.json();
+          const errorList = responseBody.errors;
+          errorMessage = errorList[0].msg;
         }
 
         throw new Error(

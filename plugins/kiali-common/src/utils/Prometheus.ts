@@ -1,5 +1,3 @@
-import { DurationInSeconds } from '../types';
-
 // The step needs to minimally cover 2 datapoints to get any sort of average. So 2*scrape is the bare
 // minimum.  We set rateInterval=step which basically gives us the rate() of each disjoint set.
 // (note, another approach could be to set rateInterval=step+scrape, the overlap could produce some
@@ -14,10 +12,10 @@ export interface PrometheusRateParams {
 }
 
 export const computePrometheusRateParams = (
-  duration: DurationInSeconds,
+  duration: number,
   globalScrapeInterval?: number,
   dataPoints?: number,
-  scrapeInterval?: DurationInSeconds,
+  scrapeInterval?: number,
 ): PrometheusRateParams => {
   let actualDataPoints = dataPoints || defaultDataPoints;
   if (actualDataPoints < minDataPoints) {

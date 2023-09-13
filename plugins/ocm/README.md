@@ -229,6 +229,16 @@ If you are interested in Resource discovery and do not want any of the front-end
 
    For more information about the default owner configuration, see [upstream string references documentation](https://backstage.io/docs/features/software-catalog/references/#string-references).
 
+#### Setting up the OCM backend package using the new backend system
+
+The OCM plugin supports integration with the [new backend system](https://backstage.io/docs/backend-system/). In order to install the plugin follow the first 2 configuration steps described [here](#setting-up-the-ocm-backend-package). Then add the following lines to the `packages/backend/src/index.ts` file.
+
+```ts
+import { ocmPlugin } from '@janus-idp/backstage-plugin-ocm-backend';
+
+backend.add(ocmPlugin());
+```
+
 #### Setting up the OCM frontend package
 
 1. Install the OCM frontend plugin using the following command:

@@ -14,6 +14,7 @@ import {
   IstiodResourceThresholds,
   KialiConfigT,
   KialiFetchError,
+  KialiInfo,
   NamespaceInfo,
   OutboundTrafficPolicy,
   OverviewData,
@@ -21,7 +22,6 @@ import {
 } from '@janus-idp/backstage-plugin-kiali-common';
 
 import { kialiApiRef } from '../../api';
-import { KialiEndpoints } from '../../api/apiClient';
 import { calculateHealth } from './health';
 import { OverviewCard } from './OverviewCard';
 import { OverviewToolbar } from './OverviewToolbar';
@@ -40,6 +40,8 @@ export type DirectionType = keyof typeof directionTypes;
 
 type OverviewProps = {
   kialiConfig: KialiConfigT;
+  kialiStatus: KialiInfo;
+  namespacesFiltered: string[];
 };
 
 export const Overview = (props: OverviewProps) => {
@@ -70,24 +72,18 @@ export const Overview = (props: OverviewProps) => {
     dir: DirectionType = direction,
   ) => {
     await kialiClient
-      .get(KialiEndpoints.getOverview, {
-        duration: dur,
-        overviewType: ovType,
-        direction: dir,
-      })
+      .getOverview(ovType, dur, dir)
       .then(response => {
         if (response.errors.length > 0) {
           setErrors(response.errors);
         } else {
-          if (response.warnings) {
-            setWarnings(response.warnings);
-          }
+          setWarnings(response.warnings);
           const ovData = response.response as OverviewData;
           const ns = ovData.namespaces;
           try {
             if (ns.length > 0) {
               ns.forEach((n, i) => {
-                ns[i] = calculateHealth(config!.server, ovType, n, dur);
+                ns[i] = calculateHealth(config.server, ovType, n, dur);
               });
             } else {
               const newWarnings = warnings;
@@ -199,21 +195,27 @@ export const Overview = (props: OverviewProps) => {
             setDirection={e => handleToolbar(duration, overviewType, e)}
           />
           <Grid container direction="column">
-            {namespaces.map((ns, _) => (
-              <OverviewCard
-                key={`${ns.cluster}_${ns.name}`}
-                canaryStatus={canaryStatus}
-                canaryUpgrade={canaryUpgrade}
-                direction={direction}
-                duration={duration}
-                ns={ns}
-                outboundTrafficPolicy={outboundTrafficPolicy}
-                kialiConfig={props.kialiConfig}
-                type={overviewType}
-                istiodResourceThresholds={istiodResourceThresholds}
-                istioStatus={componentStatus}
-              />
-            ))}
+            {namespaces.map(
+              (ns, _) =>
+                props.namespacesFiltered.indexOf(ns.name) > -1 && (
+                  <OverviewCard
+                    key={`${ns.cluster}_${ns.name}`}
+                    canaryStatus={canaryStatus}
+                    canaryUpgrade={canaryUpgrade}
+                    direction={direction}
+                    duration={duration}
+                    ns={ns}
+                    outboundTrafficPolicy={outboundTrafficPolicy}
+                    kialiConfig={props.kialiConfig}
+                    type={overviewType}
+                    istioAPIEnabled={
+                      props.kialiStatus.status.istioEnvironment.istioAPIEnabled
+                    }
+                    istiodResourceThresholds={istiodResourceThresholds}
+                    istioStatus={componentStatus}
+                  />
+                ),
+            )}
           </Grid>
         </>
       )}

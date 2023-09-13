@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { Icon } from '@patternfly/react-core';
 import {
   CheckCircleIcon,
   ExclamationCircleIcon,
@@ -31,12 +32,13 @@ export const GreenCheckCircleIcon = ({
   title,
   size,
 }: ColoredIconProps) => (
-  <CheckCircleIcon
-    data-test="success-icon"
+  <Icon
     size={size}
-    className={classNames('icons__green-check-icon', className)}
     title={title}
-  />
+    className={classNames('icons__green-check-icon', className)}
+  >
+    <CheckCircleIcon data-test="success-icon" />
+  </Icon>
 );
 
 /**
@@ -54,11 +56,13 @@ export const RedExclamationCircleIcon = ({
   title,
   size,
 }: ColoredIconProps) => (
-  <ExclamationCircleIcon
+  <Icon
     size={size}
     className={classNames('icons__red-exclamation-icon', className)}
     title={title}
-  />
+  >
+    <ExclamationCircleIcon />
+  </Icon>
 );
 
 /**
@@ -76,11 +80,13 @@ export const YellowExclamationTriangleIcon = ({
   title,
   size,
 }: ColoredIconProps) => (
-  <ExclamationTriangleIcon
+  <Icon
     size={size}
     className={classNames('icons__yellow-exclamation-icon', className)}
     title={title}
-  />
+  >
+    <ExclamationTriangleIcon />
+  </Icon>
 );
 
 /**
@@ -94,8 +100,10 @@ export const YellowExclamationTriangleIcon = ({
  * ```
  */
 export const BlueInfoCircleIcon = ({ className, title }: ColoredIconProps) => (
-  <InfoCircleIcon
+  <Icon
     className={classNames('icons__blue-info-icon', className)}
     title={title}
-  />
+  >
+    <InfoCircleIcon />
+  </Icon>
 );

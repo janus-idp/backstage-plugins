@@ -2,9 +2,10 @@ import { useEffect, useState } from 'react';
 
 import { KubernetesObjects } from '@backstage/plugin-kubernetes';
 
+import { useDeepCompareMemoize } from '@janus-idp/shared-react';
+
 import { ClusterErrors } from '../types/types';
 import { getClusters } from '../utils/tekton-utils';
-import { useDeepCompareMemoize } from './useDeepCompareMemoize';
 
 export const useResourcesClusters = (k8sObjectsResponse: KubernetesObjects) => {
   const { kubernetesObjects, loading, error } = k8sObjectsResponse;

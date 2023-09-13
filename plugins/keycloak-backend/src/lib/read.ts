@@ -89,7 +89,13 @@ export const parseUser = async (
     spec: {
       profile: {
         email: user.email,
-        displayName: [user.firstName, user.lastName].filter(Boolean).join(' '),
+        ...(user.firstName || user.lastName
+          ? {
+              displayName: [user.firstName, user.lastName]
+                .filter(Boolean)
+                .join(' '),
+            }
+          : {}),
       },
       memberOf: keycloakGroups
         .filter(g => g.members?.includes(user.username!))

@@ -123,19 +123,24 @@ export class KialiFetcher {
     return null;
   }
 
-  handleUnsuccessfulResponse(res: AxiosError): KialiFetchError {
+  handleUnsuccessfulResponse(
+    res: AxiosError,
+    endpoint?: string,
+  ): KialiFetchError {
     const message = res.message;
+    const codeMessage = res.code ? `status (${res.code}) ` : '';
+    const url = endpoint || res.config?.url || '';
+    const urlMessage = url ? `when fetching "${url}" in "Kiali";` : '';
+    this.logger.warn(`Error response axios: ${JSON.stringify(res)}`);
     this.logger.warn(
-      `Received ${res.status} ${res.code && `status (${res.code}) `} ${
-        res.config?.url && `when fetching "${res.config?.url}" in "Kiali"; `
-      }body=[${message}]`,
+      `Received ${res.status} ${codeMessage} ${urlMessage} body=[${message}]`,
     );
 
     return {
       errorType: res.code || 'UNKNOWN_ERROR',
       message,
       statusCode: res.status,
-      resourcePath: res.config?.url || '',
+      resourcePath: url,
     };
   }
 

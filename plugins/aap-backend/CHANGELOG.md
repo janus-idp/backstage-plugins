@@ -1,3 +1,38 @@
+## @janus-idp/backstage-plugin-aap-backend [1.2.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-aap-backend@1.2.1...@janus-idp/backstage-plugin-aap-backend@1.2.2) (2023-09-06)
+
+
+### Bug Fixes
+
+* **aap:** show template name and type as it is without formatting ([#710](https://github.com/janus-idp/backstage-plugins/issues/710)) ([35f9645](https://github.com/janus-idp/backstage-plugins/commit/35f96450211e8f54873a2f81aa5bae77f93ab0ef))
+
+## @janus-idp/backstage-plugin-aap-backend [1.2.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-aap-backend@1.2.0...@janus-idp/backstage-plugin-aap-backend@1.2.1) (2023-09-05)
+
+
+### Documentation
+
+* **aap:** aap backend plugin documentation ([#690](https://github.com/janus-idp/backstage-plugins/issues/690)) ([66bbb32](https://github.com/janus-idp/backstage-plugins/commit/66bbb327ce03077bad751dfd2ff1ce53a7f846c6))
+
+## @janus-idp/backstage-plugin-aap-backend [1.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-aap-backend@1.1.2...@janus-idp/backstage-plugin-aap-backend@1.2.0) (2023-08-29)
+
+
+### Features
+
+* **aap:** support workflow job templates in catalog provider ([#674](https://github.com/janus-idp/backstage-plugins/issues/674)) ([c90bc30](https://github.com/janus-idp/backstage-plugins/commit/c90bc306da4617a336b44711943b2d51a2bdda12))
+
+## @janus-idp/backstage-plugin-aap-backend [1.1.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-aap-backend@1.1.1...@janus-idp/backstage-plugin-aap-backend@1.1.2) (2023-08-23)
+
+
+### Bug Fixes
+
+* **config types:** inline types in config.d.ts ([#664](https://github.com/janus-idp/backstage-plugins/issues/664)) ([ae1aea1](https://github.com/janus-idp/backstage-plugins/commit/ae1aea1f4890c0034d1c2602223d59463c61206b))
+
+## @janus-idp/backstage-plugin-aap-backend [1.1.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-aap-backend@1.1.0...@janus-idp/backstage-plugin-aap-backend@1.1.1) (2023-08-22)
+
+
+### Bug Fixes
+
+* **aap:** fixes codesmells for aap plugin ([#653](https://github.com/janus-idp/backstage-plugins/issues/653)) ([0a9dc6b](https://github.com/janus-idp/backstage-plugins/commit/0a9dc6b0a71e04722790b8478ece23f895ba086a))
+
 ## @janus-idp/backstage-plugin-aap-backend [1.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-aap-backend@1.0.0...@janus-idp/backstage-plugin-aap-backend@1.1.0) (2023-08-14)
 
 

@@ -19,7 +19,6 @@ const yMargin = 8;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const canvasContext: any = document.createElement('canvas').getContext('2d');
-// TODO: safe way to get this programmatically?
 canvasContext.font = '14px overpass';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -33,22 +32,21 @@ const CustomLabel = (props: any) => {
 
   return (
     <>
-      {props.activePoints &&
-        props.activePoints
-          .filter((pt: any) => pt.color && !pt.hideLabel)
-          .map((pt: any, idx: number) => {
-            const symbol = pt.symbol || 'square';
-            return (
-              <ChartPoint
-                key={`item-${idx}`}
-                style={{ fill: pt.color, type: symbol }}
-                x={x}
-                y={startY + dy * idx}
-                symbol={symbol}
-                size={5.5}
-              />
-            );
-          })}
+      {props.activePoints
+        ?.filter((pt: any) => pt.color && !pt.hideLabel)
+        .map((pt: any, idx: number) => {
+          const symbol = pt.symbol || 'square';
+          return (
+            <ChartPoint
+              key={`item-${pt.color}-${pt.hideLabel}`}
+              style={{ fill: pt.color, type: symbol }}
+              x={x}
+              y={startY + dy * idx}
+              symbol={symbol}
+              size={5.5}
+            />
+          );
+        })}
       <ChartLabel {...props} text={textsWithHead} />
     </>
   );

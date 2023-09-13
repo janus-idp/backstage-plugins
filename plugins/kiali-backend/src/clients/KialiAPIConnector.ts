@@ -1,6 +1,11 @@
+import { Entity } from '@backstage/catalog-model';
+
+import { AxiosResponse } from 'axios';
 import { Logger } from 'winston';
 
 import {
+  AuthInfo,
+  AuthStrategy,
   CanaryUpgradeStatus,
   CertsInfo,
   ComponentStatus,
@@ -12,12 +17,13 @@ import {
   Direction,
   FetchResponseWrapper,
   HealthNamespace,
+  INITIAL_STATUS_STATE,
   IstiodResourceThresholds,
   IstioMetricsOptions,
   KialiConfigT,
   KialiDetails,
+  KialiInfo,
   Namespace,
-  NamespaceInfo,
   NsMetrics,
   nsWideMTLSStatus,
   OutboundTrafficPolicy,
@@ -38,17 +44,22 @@ export type Options = {
 
 export interface KialiApi {
   fetchConfig(): Promise<FetchResponseWrapper>;
-  fetchOverviewNamespaces(query: OverviewQuery): Promise<FetchResponseWrapper>;
+  fetchOverviewNamespaces(
+    entity: Entity,
+    query: OverviewQuery,
+  ): Promise<FetchResponseWrapper>;
 }
 
 export class KialiApiImpl implements KialiApi {
   private readonly logger: Logger;
+  private kialiDetails: KialiDetails;
   private kialiconfig: KialiConfigT;
   private kialiFetcher: KialiFetcher;
 
   constructor(options: Options) {
     options.logger.debug(`creating kiali client with url=${options.kiali.url}`);
     this.logger = options.logger;
+    this.kialiDetails = options.kiali;
     this.kialiFetcher = new KialiFetcher(options.kiali, options.logger);
     this.kialiconfig = {
       server: defaultServerConfig,
@@ -61,7 +72,7 @@ export class KialiApiImpl implements KialiApi {
   private queryMetrics = (options: IstioMetricsOptions) => {
     const filters = options.filters?.map(f => `filters[]=${f}`).join('&');
     return (
-      `?${filters ? filters : ''}&duration=${options.duration}` +
+      `?${filters || ''}&duration=${options.duration}` +
       `&step=${options.step}&rateInterval=${options.rateInterval}` +
       `&direction=${options.direction}&reporter=${options.reporter}`
     );
@@ -85,6 +96,47 @@ export class KialiApiImpl implements KialiApi {
       reporter: direction === 'inbound' ? 'destination' : 'source',
     };
   };
+
+  async fetchInfo(): Promise<FetchResponseWrapper> {
+    const response: FetchResponseWrapper = { errors: [], warnings: [] };
+    const info: KialiInfo = {
+      status: INITIAL_STATUS_STATE,
+      auth: { sessionInfo: {}, strategy: AuthStrategy.anonymous },
+    };
+    await Promise.all([
+      this.kialiFetcher
+        .newRequest<StatusState>('api')
+        .then(resp => {
+          info.status = resp.data;
+          return info;
+        })
+        .catch(err =>
+          response.errors.push(
+            this.kialiFetcher.handleUnsuccessfulResponse(err),
+          ),
+        ),
+      this.kialiFetcher
+        .newRequest<AuthInfo>(config.api.urls.authInfo)
+        .then(resp => {
+          info.auth = resp.data;
+          // Check if strategy is the same
+          if (this.kialiDetails.strategy !== info.auth.strategy) {
+            response.errors.push({
+              errorType: 'Bad configuration',
+              message: `Strategy in app-config is ${this.kialiDetails.strategy} and kiali server is configured for ${info.auth.strategy}`,
+            });
+          }
+          return info;
+        })
+        .catch(err =>
+          response.errors.push(
+            this.kialiFetcher.handleUnsuccessfulResponse(err),
+          ),
+        ),
+    ]);
+    response.response = info;
+    return response;
+  }
 
   async fetchConfig(): Promise<FetchResponseWrapper> {
     let response: FetchResponseWrapper = { errors: [], warnings: [] };
@@ -121,17 +173,6 @@ export class KialiApiImpl implements KialiApi {
             ),
           ),
         this.kialiFetcher
-          .newRequest<StatusState>(config.api.urls.status)
-          .then(resp => {
-            this.kialiconfig.status = resp.data;
-            return this.kialiconfig;
-          })
-          .catch(err =>
-            response.errors.push(
-              this.kialiFetcher.handleUnsuccessfulResponse(err),
-            ),
-          ),
-        this.kialiFetcher
           .newRequest<CertsInfo[]>(config.api.urls.istioCertsInfo())
           .then(resp => {
             this.kialiconfig.istioCerts = resp.data;
@@ -149,40 +190,72 @@ export class KialiApiImpl implements KialiApi {
     return response;
   }
 
+  async fetchNamespaces(entity: Entity): Promise<FetchResponseWrapper> {
+    const result: FetchResponseWrapper = {
+      errors: [],
+      warnings: [],
+    };
+
+    await this.kialiFetcher.checkSession().then(resp => {
+      result.errors = resp.errors;
+      result.warnings = resp.warnings;
+      return result;
+    });
+    if (result.errors.length === 0) {
+      await this.handlePromise<Namespace[]>(
+        result,
+        config.api.urls.namespaces,
+        resp => (result.response = filterNsByAnnotation(resp.data, entity)),
+      );
+    }
+
+    return result;
+  }
+
+  handlePromise<T>(
+    result: FetchResponseWrapper,
+    endpoint: string,
+    handlerThen: (resp: AxiosResponse<T>) => void,
+    handlerError?: (err: any) => void,
+  ): Promise<number | void | T> {
+    return this.kialiFetcher
+      .newRequest<T>(endpoint)
+      .then(resp => handlerThen(resp))
+      .catch(err =>
+        handlerError
+          ? handlerError(err)
+          : result.errors.push(
+              this.kialiFetcher.handleUnsuccessfulResponse(err, endpoint),
+            ),
+      );
+  }
+
   async fetchOverviewNamespaces(
+    entity: Entity,
     query: OverviewQuery,
   ): Promise<FetchResponseWrapper> {
     this.logger.debug(`Fetching namespaces`);
-    let response: FetchResponseWrapper = { errors: [], warnings: [] };
+    const result: FetchResponseWrapper = {
+      errors: [],
+      warnings: [],
+    };
+
+    const response: OverviewData = {
+      namespaces: [],
+    };
     await this.kialiFetcher.checkSession().then(resp => {
-      response = resp;
-      return response;
+      result.errors = resp.errors;
+      result.warnings = resp.warnings;
+      return result;
     });
-    if (response.errors.length === 0) {
-      let namespaces: Namespace[] = [];
+    if (result.errors.length === 0) {
+      await this.handlePromise<Namespace[]>(
+        result,
+        config.api.urls.namespaces,
+        resp => (response.namespaces = filterNsByAnnotation(resp.data, entity)),
+      );
 
-      await this.kialiFetcher
-        .newRequest<Namespace[]>(config.api.urls.namespaces)
-        .then(resp => {
-          namespaces = resp.data;
-          return namespaces;
-        })
-        .catch(err =>
-          response.errors.push(
-            this.kialiFetcher.handleUnsuccessfulResponse(err),
-          ),
-        );
-
-      if (response.errors.length === 0) {
-        const filteredNamespaces: NamespaceInfo[] = filterNsByAnnotation(
-          namespaces,
-          query.annotation,
-        );
-
-        const result: OverviewData = {
-          namespaces: [],
-        };
-
+      if (result.errors.length === 0) {
         const meshStatus = 'MTLS_NOT_ENABLED';
         const duration = query.duration || defaultMetricsDuration;
         const overviewType = query.overviewType;
@@ -190,101 +263,59 @@ export class KialiApiImpl implements KialiApi {
         const options = this.queryOptions(query);
 
         await Promise.all([
-          this.kialiFetcher
-            .newRequest<CanaryUpgradeStatus>(
-              config.api.urls.canaryUpgradeStatus(),
-            )
-            .then(resp => {
-              result.canaryUpgrade = resp.data;
-              return result;
-            })
-            .catch(err =>
-              response.errors.push(
-                this.kialiFetcher.handleUnsuccessfulResponse(err),
-              ),
-            ),
-          this.kialiFetcher
-            .newRequest<ComponentStatus[]>(config.api.urls.istioStatus())
-            .then(resp => {
-              result.istioStatus = resp.data;
-              return result;
-            })
-            .catch(err =>
-              response.errors.push(
-                this.kialiFetcher.handleUnsuccessfulResponse(err),
-              ),
-            ),
-          this.kialiFetcher
-            .newRequest<OutboundTrafficPolicy>(
-              config.api.urls.outboundTrafficPolicyMode(),
-            )
-            .then(resp => {
-              result.outboundTraffic = resp.data;
-              return result;
-            })
-            .catch(err =>
-              response.errors.push(
-                this.kialiFetcher.handleUnsuccessfulResponse(err),
-              ),
-            ),
-          this.kialiFetcher
-            .newRequest<IstiodResourceThresholds>(
-              config.api.urls.istiodResourceThresholds(),
-            )
-            .then(resp => {
-              result.istiodResourceThresholds = resp.data;
-              return result;
-            })
-            .catch(err =>
-              response.errors.push(
-                this.kialiFetcher.handleUnsuccessfulResponse(err),
-              ),
-            ),
-          this.kialiFetcher
-            .newRequest<{ [key: string]: { [key: string]: ValidationStatus } }>(
-              `${config.api.urls.configValidations()}?namespaces=${filteredNamespaces
-                .map(n => n.name)
-                .join(',')}`,
-            )
-            .then(resp => {
-              const nsValidations = resp.data;
-              filteredNamespaces.forEach((n, index) => {
-                filteredNamespaces[index].validations =
-                  nsValidations[n.cluster][n.name];
-              });
-            })
-            .catch(err =>
-              response.errors.push(
-                this.kialiFetcher.handleUnsuccessfulResponse(err),
-              ),
-            ),
-          filteredNamespaces.map(ns =>
-            this.kialiFetcher
-              .newRequest<TLSStatus>(config.api.urls.namespaceTls(ns.name))
-              .then(resp => {
-                const tlsNs: TLSStatus = resp.data;
-                ns.tlsStatus = {
-                  status: nsWideMTLSStatus(tlsNs.status, meshStatus),
-                  autoMTLSEnabled: tlsNs.autoMTLSEnabled,
-                  minTLS: tlsNs.minTLS,
-                };
-                return tlsNs;
-              })
-              .catch(
-                err =>
-                  response.errors?.push(
-                    this.kialiFetcher.handleUnsuccessfulResponse(err),
-                  ),
+          this.handlePromise<CanaryUpgradeStatus>(
+            result,
+            config.api.urls.canaryUpgradeStatus(),
+            resp => (response.canaryUpgrade = resp.data),
+          ),
+          this.handlePromise<ComponentStatus[]>(
+            result,
+            config.api.urls.istioStatus(),
+            resp => (response.istioStatus = resp.data),
+          ),
+          this.handlePromise<OutboundTrafficPolicy>(
+            result,
+            config.api.urls.outboundTrafficPolicyMode(),
+            resp => (response.outboundTraffic = resp.data),
+          ),
+          this.handlePromise<IstiodResourceThresholds>(
+            result,
+            config.api.urls.istiodResourceThresholds(),
+            resp => (response.istiodResourceThresholds = resp.data),
+          ),
+          this.handlePromise<{
+            [key: string]: { [key: string]: ValidationStatus };
+          }>(
+            result,
+            `${config.api.urls.configValidations()}?namespaces=${response.namespaces
+              .map(n => n.name)
+              .join(',')}`,
+            resp =>
+              response.namespaces.forEach(
+                (n, index) =>
+                  (response.namespaces[index].validations =
+                    resp.data[n.cluster][n.name]),
               ),
           ),
-          filteredNamespaces.map(ns =>
-            this.kialiFetcher
-              .newRequest<NsMetrics>(
-                `${config.api.urls.namespaceMetrics(
-                  ns.name,
-                )}${this.queryMetrics(options)}`,
-              )
-              .then(resp => {
+          response.namespaces.map(ns =>
+            this.handlePromise<TLSStatus>(
+              result,
+              config.api.urls.namespaceTls(ns.name),
+              resp =>
+                (ns.tlsStatus = {
+                  status: nsWideMTLSStatus(resp.data.status, meshStatus),
+                  autoMTLSEnabled: resp.data.autoMTLSEnabled,
+                  minTLS: resp.data.minTLS,
+                }),
+            ),
+          ),
+          response.namespaces.map(ns =>
+            this.handlePromise<NsMetrics>(
+              result,
+              `${config.api.urls.namespaceMetrics(ns.name)}${this.queryMetrics(
+                options,
+              )}`,
+              resp => {
                 const metricsNs: NsMetrics = resp.data;
                 ns.metrics = metricsNs.request_count;
                 ns.errorMetrics = metricsNs.request_error_count;
@@ -295,42 +326,25 @@ export class KialiApiImpl implements KialiApi {
                     istiod_mem: metricsNs.process_virtual_memory_bytes,
                   };
                 }
-                return ns;
-              })
-              .catch(
-                err =>
-                  response.errors?.push(
-                    this.kialiFetcher.handleUnsuccessfulResponse(err),
-                  ),
-              ),
+              },
+            ),
           ),
-          filteredNamespaces.map(ns =>
-            this.kialiFetcher
-              .newRequest<HealthNamespace>(
-                `${config.api.urls.namespaceHealth(
-                  ns.name,
-                )}?type=${overviewType}&rateInterval=${duration}s${
-                  queryTime ? `&queryTime=${queryTime}` : ''
-                }`,
-              )
-              .then(resp => {
-                const health: HealthNamespace = resp.data;
-                ns.nsHealth = health;
-                return ns;
-              })
-              .catch(
-                err =>
-                  response.errors?.push(
-                    this.kialiFetcher.handleUnsuccessfulResponse(err),
-                  ),
-              ),
+          response.namespaces.map(ns =>
+            this.handlePromise<HealthNamespace>(
+              result,
+              `${config.api.urls.namespaceHealth(
+                ns.name,
+              )}?type=${overviewType}&rateInterval=${duration}s${
+                queryTime ? `&queryTime=${queryTime}` : ''
+              }`,
+              resp => (ns.nsHealth = resp.data),
+            ),
           ),
         ]);
-        result.namespaces = filteredNamespaces;
-        response.response = result;
       }
+      result.response = response;
     }
 
-    return response;
+    return result;
   }
 }

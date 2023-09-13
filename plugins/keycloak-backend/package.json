@@ -1,6 +1,6 @@
 {
   "name": "@janus-idp/backstage-plugin-keycloak-backend",
-  "version": "1.5.0",
+  "version": "1.5.4",
   "description": "A Backend backend plugin for Keycloak",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -14,9 +14,9 @@
     "role": "backend-plugin"
   },
   "scripts": {
-    "start": "open http://localhost:8080/admin/master/console/#/janus-realm && open http://localhost:7007/catalog/entities && turbo run start:plugin start:keycloak",
+    "start": "opener http://localhost:8080/admin/master/console/#/janus-realm && opener http://localhost:7007/catalog/entities && turbo run start:plugin start:keycloak",
     "start:plugin": "backstage-cli package start",
-    "start:keycloak": "podman run -p 8080:8080 -e 'KEYCLOAK_ADMIN=admin' -e 'KEYCLOAK_ADMIN_PASSWORD=admin' -v ./__fixtures__/keycloak-realm.json:/opt/keycloak/data/import/keycloak-realm.json quay.io/keycloak/keycloak:22.0.1 start-dev --import-realm",
+    "start:keycloak": "podman run -p 8080:8080 -e 'KEYCLOAK_ADMIN=admin' -e 'KEYCLOAK_ADMIN_PASSWORD=admin' -v ./__fixtures__/keycloak-realm.json:/opt/keycloak/data/import/keycloak-realm.json$([[ $OSTYPE = linux* ]] && echo ':z') quay.io/keycloak/keycloak:22.0.1 start-dev --import-realm",
     "build": "backstage-cli package build",
     "tsc": "tsc",
     "lint": "backstage-cli package lint",
@@ -49,6 +49,7 @@
     "deepmerge": "4.3.1",
     "express": "4.18.2",
     "msw": "1.2.1",
+    "opener": "1.5.2",
     "supertest": "6.3.3"
   },
   "files": [

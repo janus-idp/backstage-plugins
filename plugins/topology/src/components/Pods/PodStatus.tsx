@@ -66,6 +66,7 @@ const PodStatus = ({
   const [updateOnEnd, setUpdateOnEnd] = React.useState<boolean>(false);
   const forceUpdate = useForceUpdate();
   const prevVData = React.useRef<PodData[] | null>(null);
+  const chartTriggerRef = React.useRef<SVGGElement | null>(null);
 
   const vData = React.useMemo(() => {
     const updateVData: PodData[] = podStatus.map((pod: any) => ({
@@ -179,7 +180,11 @@ const PodStatus = ({
         })}
       </div>
     );
-    return <Tooltip content={tipContent}>{chartDonut}</Tooltip>;
+    return (
+      <Tooltip content={tipContent} triggerRef={chartTriggerRef}>
+        <g ref={chartTriggerRef}>{chartDonut}</g>
+      </Tooltip>
+    );
   }
   return chartDonut;
 };

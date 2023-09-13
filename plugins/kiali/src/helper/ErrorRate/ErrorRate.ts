@@ -93,7 +93,7 @@ export const calculateStatus = (
   for (const reqTol of Object.values(requestTolerances)) {
     for (const [protocol, rate] of Object.entries(reqTol.requests)) {
       const tolerance =
-        reqTol.tolerance && checkExpr(reqTol!.tolerance!.protocol, protocol)
+        reqTol.tolerance && checkExpr(reqTol.tolerance!.protocol, protocol)
           ? reqTol.tolerance
           : undefined;
       // Calculate the status for the tolerance provided

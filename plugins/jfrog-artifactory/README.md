@@ -4,19 +4,17 @@ The Jfrog Artifactory plugin displays information about your container images wi
 
 ## For administrators
 
-### Installation
+### Installation and configuration
 
-Run the following command to install the Jfrog Artifactory plugin:
+#### Procedure
 
-```console
-yarn workspace app add @janus-idp/backstage-plugin-jfrog-artifactory
-```
+1. Run the following command to install the Jfrog Artifactory plugin:
 
-### Configuration
+   ```console
+   yarn workspace app add @janus-idp/backstage-plugin-jfrog-artifactory
+   ```
 
-**Procedure**
-
-1. Set the proxy to desired Artifactory server in the `app-config.yaml` file as follows:
+1. Set the proxy to the desired Artifactory server in the `app-config.yaml` file as follows:
 
    ```yaml title="app-config.yaml"
    proxy:
@@ -28,7 +26,7 @@ yarn workspace app add @janus-idp/backstage-plugin-jfrog-artifactory
        secure: true
    ```
 
-2. Enable the **Jfrog Artifactory** tab on the entity view page in `packages/app/src/components/catalog/EntityPage.tsx`:
+1. Enable the **JFROG ARTIFACTORY** tab on the entity view page in `packages/app/src/components/catalog/EntityPage.tsx`:
 
    ```ts title="packages/app/src/components/catalog/EntityPage.tsx"
    /* highlight-add-start */
@@ -55,10 +53,31 @@ yarn workspace app add @janus-idp/backstage-plugin-jfrog-artifactory
    );
    ```
 
-3. Annotate your entity with the following annotations:
+1. Annotate your entity with the following annotations:
 
    ```yaml title="catalog-info.yaml"
    metadata:
      annotations:
-       'jfrog-artifactory/image-name': `<IMAGE-NAME>',
+       'jfrog-artifactory/image-name': '<IMAGE-NAME>'
    ```
+
+## For users
+
+### Using the Jfrog Artifactory plugin in Backstage
+
+Jfrog Artifactory is a front-end plugin that enables you to view the information about the container images that are available in your Jfrog Artifactory registry.
+
+#### Prerequisites
+
+- Your Backstage application is installed and running.
+- You have installed the Jfrog Artifactory plugin. For installation and configuration steps, see [Installation and configuration](#installation-and-configuration).
+
+#### Procedure
+
+1. Open your Backstage application and select a component from the **Catalog** page.
+
+1. Go to the **JFROG ARTIFACTORY** tab.
+
+   ![jfrog-tab](./images/jfrog-plugin-user1.png)
+
+   The **JFROG ARTIFACTORY** tab contains a list of container images and related information, such as **VERSION**, **REPOSITORIES**, **MANIFEST**, **MODIFIED**, and **SIZE**.

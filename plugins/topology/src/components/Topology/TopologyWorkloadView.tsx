@@ -1,6 +1,7 @@
 import React from 'react';
 
 import {
+  ComponentFactory,
   Visualization,
   VisualizationProvider,
 } from '@patternfly/react-topology';
@@ -12,7 +13,9 @@ import TopologyViewWorkloadComponent from './TopologyViewWorkloadComponent';
 export const TopologyWorkloadView = React.memo(() => {
   const controller = new Visualization();
   controller.registerLayoutFactory(defaultLayoutFactory);
-  controller.registerComponentFactory(TopologyComponentFactory);
+  controller.registerComponentFactory(
+    TopologyComponentFactory as ComponentFactory,
+  );
 
   return (
     <VisualizationProvider controller={controller}>

@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { Icon } from '@patternfly/react-core';
 import {
   CheckCircleIcon,
   ExclamationCircleIcon,
@@ -19,12 +20,13 @@ export const GreenCheckCircleIcon = ({
   title,
   size,
 }: ColoredIconProps) => (
-  <CheckCircleIcon
-    data-test="success-icon"
+  <Icon
     size={size}
-    className={classNames('bs-topology-icons__green-check-icon', className)}
     title={title}
-  />
+    className={classNames('bs-topology-icons__green-check-icon', className)}
+  >
+    <CheckCircleIcon data-test="success-icon" />
+  </Icon>
 );
 
 export const RedExclamationCircleIcon = ({
@@ -32,9 +34,11 @@ export const RedExclamationCircleIcon = ({
   title,
   size,
 }: ColoredIconProps) => (
-  <ExclamationCircleIcon
+  <Icon
     size={size}
-    className={classNames('bs-topology-icons__red-exclamation-icon', className)}
     title={title}
-  />
+    className={classNames('bs-topology-icons__red-exclamation-icon', className)}
+  >
+    <ExclamationCircleIcon />
+  </Icon>
 );

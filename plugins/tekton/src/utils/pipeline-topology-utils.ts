@@ -47,7 +47,6 @@ import {
   PipelineEdgeModel,
   PipelineMixedNodeModel,
   PipelineRunAfterNodeModelData,
-  SpacerNodeModelData,
   TaskListNodeModelData,
   TaskNodeModelData,
 } from '../types/pipeline-topology-types';
@@ -75,7 +74,7 @@ const getMaxFinallyNode = (finallyTaskList: PipelineTaskWithStatus[]) => {
 export const createTaskNode: NodeCreator<TaskNodeModelData> = createGenericNode(
   NodeType.TASK_NODE,
 );
-export const createSpacerNode: NodeCreator<SpacerNodeModelData> =
+export const createSpacerNode: NodeCreator<PipelineRunAfterNodeModelData> =
   createGenericNode(NodeType.SPACER_NODE, 0);
 export const createTaskListNode: NodeCreator<TaskListNodeModelData> =
   createGenericNode(NodeType.TASK_LIST_NODE);

@@ -1,8 +1,4 @@
-export type TimeInMilliseconds = number;
-export type TimeInSeconds = number;
-export type IntervalInMilliseconds = number;
-export type DurationInSeconds = number;
-export const defaultMetricsDuration: DurationInSeconds = 600;
+export const defaultMetricsDuration: number = 600;
 
 // cluster name to denote the cluster where Kiali is deployed
 export const HomeClusterName = '';
