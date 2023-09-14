@@ -1,6 +1,6 @@
 ---
 name: Epic
-about: A long-lived, PM-driven feature request. Must include a checklist of items that must be completed
+about: A long-lived feature request consisting of a collection is related issues. Must include a checklist of items that must be completed. If you are not sure if this is an epic, open an enhancement request.
 labels: ['kind/epic', 'status/triage']
 ---
 

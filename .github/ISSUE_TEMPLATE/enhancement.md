@@ -8,4 +8,4 @@ labels: ['kind/enhancement', 'status/triage']
 
 ### What is the current behavior?
 
-### What is the new behavior?
+### What will the new behavior be?
