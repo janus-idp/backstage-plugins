@@ -200,7 +200,7 @@ export const mockKubernetesResponse = {
         startTime: '2023-02-15T09:00:37Z',
         containerStatuses: [
           {
-            name: 'container',
+            name: 'container-hello',
             state: {
               running: {
                 startedAt: '2023-02-15T09:00:43Z',
@@ -208,7 +208,7 @@ export const mockKubernetesResponse = {
             },
             lastState: {},
             ready: true,
-            restartCount: 0,
+            restartCount: 1,
             image: 'openshift/hello-openshift:latest',
             imageID:
               'docker-pullable://openshift/hello-openshift@sha256:aaea76ff622d2f8bcb32e538e7b3cd0ef6d291953f3e7c9f556c1ba5baf47e2e',
