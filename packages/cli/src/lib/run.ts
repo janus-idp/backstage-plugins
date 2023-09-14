@@ -56,6 +56,8 @@ export async function run(
     stderrLogFunc ? 'pipe' : 'inherit',
   ] as ('inherit' | 'pipe')[];
 
+  // the new shell runs controlled command and script is not run at application runtime
+  // NOSONAR
   const child = spawn(name, args, {
     stdio,
     shell: true,
