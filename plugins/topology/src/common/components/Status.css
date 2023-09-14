@@ -1,7 +1,7 @@
-.bs-topology-icons__green-check-icon {
+.bs-topology-status__green-check-icon {
   fill: var(--pf-v5-global--palette--green-500) !important;
 }
 
-.bs-topology-icons__red-exclamation-icon {
+.bs-topology-status__red-exclamation-icon {
   fill: var(--pf-v5-global--danger-color--100) !important;
 }
