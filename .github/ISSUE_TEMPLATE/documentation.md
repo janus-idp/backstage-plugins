@@ -8,4 +8,4 @@ labels: ['kind/documentation', 'status/triage']
 
 ### What is the current documentation?
 
-### What is the new documentation?
+### What would you like to be added/updated in the documentation?
