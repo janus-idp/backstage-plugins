@@ -1,15 +1,15 @@
-.icons__green-check-icon {
+.bs-tkn-status__green-check-icon {
   fill: var(--pf-v5-global--palette--green-500) !important;
 }
-
-.icons__red-exclamation-icon {
+.bs-tkn-status__red-exclamation-icon {
   fill: var(--pf-v5-global--danger-color--100) !important;
 }
-
-.icons__yellow-exclamation-icon {
+.bs-tkn-status__yellow-exclamation-icon {
   fill: var(--pf-v5-global--warning-color--100) !important;
 }
-
-.icons__blue-info-icon {
+.bs-tkn-status__blue-info-icon {
   fill: var(--pf-v5-global--palette--blue-300) !important;
+}
+.bs-tkn-status__alt-icon {
+  color: var(--pf-v5-global--palette--white);
 }
