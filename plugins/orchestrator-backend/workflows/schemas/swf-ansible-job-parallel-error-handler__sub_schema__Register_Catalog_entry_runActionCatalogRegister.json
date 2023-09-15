@@ -1,0 +1,14 @@
+{
+  "$id": "classpath:/schemas/swf-ansible-job-parallel-error-handler__sub_schema__Register_Catalog_entry_runActionCatalogRegister.json",
+  "title": "swf-ansible-job-parallel-error-handler: Register Catalog entry > runActionCatalogRegister",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "repoContentsUrl": {
+      "title": "Repository Contents URL",
+      "description": "An absolute URL pointing to the root of a repository directory tree",
+      "type": "string"
+    }
+  },
+  "required": ["repoContentsUrl"]
+}

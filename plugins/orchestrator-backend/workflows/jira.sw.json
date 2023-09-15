@@ -1,0 +1,68 @@
+{
+  "id": "jira",
+  "version": "1.0",
+  "specVersion": "0.8",
+  "name": "[WF] Jira",
+  "description": "[WF] Jira issue",
+  "functions": [
+    {
+      "name": "jiraCreateIssue",
+      "operation": "specs/jira-openapi.json#createIssue"
+    }
+  ],
+  "events": [
+    {
+      "name": "callbackEvent",
+      "type": "jira_webhook_callback",
+      "source": "jira"
+    }
+  ],
+  "errors": [
+    {
+      "name": "Error on Action",
+      "code": "java.lang.RuntimeException"
+    }
+  ],
+  "start": "Create Repository on Github",
+  "states": [
+    {
+      "name": "Create Repository on Github",
+      "type": "callback",
+      "action": {
+        "name": "callbackAction",
+        "functionRef": {
+          "refName": "jiraCreateIssue",
+          "arguments": {
+            "input": "test",
+            "fields": {
+              "assignee": {
+                "name": ".jiraAssignee"
+              },
+              "description": "Order entry fails when selecting supplier",
+              "issuetype": {
+                "name": "Task"
+              },
+              "labels": ["bugfix", "\"workflowId=\" + $WORKFLOW.instanceId"],
+              "project": {
+                "key": ".jiraProjectKey"
+              },
+              "reporter": {
+                "name": ".jiraReporter"
+              },
+              "summary": "Main order flow broken"
+            }
+          }
+        }
+      },
+      "eventRef": "callbackEvent",
+      "transition": "Register Catalog entry"
+    },
+    {
+      "name": "Register Catalog entry",
+      "type": "inject",
+      "data": {},
+      "end": true
+    }
+  ],
+  "dataInputSchema": "schemas/jira__main_schema.json"
+}

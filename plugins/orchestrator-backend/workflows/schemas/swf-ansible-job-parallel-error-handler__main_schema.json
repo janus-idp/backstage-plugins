@@ -1,0 +1,24 @@
+{
+  "$id": "classpath:/schemas/swf-ansible-job-parallel-error-handler__main_schema.json",
+  "title": "swf-ansible-job-parallel-error-handler: Data Input Schema",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "swf-ansible-job-parallel-error-handler__sub_schema__Code_generation_Generating_the_Ansible_Job_component_Run_Template_Fetch_Action_runActionTemplateFetch.json": {
+      "$ref": "swf-ansible-job-parallel-error-handler__sub_schema__Code_generation_Generating_the_Ansible_Job_component_Run_Template_Fetch_Action_runActionTemplateFetch.json",
+      "type": "object"
+    },
+    "swf-ansible-job-parallel-error-handler__sub_schema__Code_generation_Generating_the_Catalog_Info_Component_runActionTemplateFetch.json": {
+      "$ref": "swf-ansible-job-parallel-error-handler__sub_schema__Code_generation_Generating_the_Catalog_Info_Component_runActionTemplateFetch.json",
+      "type": "object"
+    },
+    "swf-ansible-job-parallel-error-handler__sub_schema__Publish_to_GitHub_runActionGitHubRepoPush.json": {
+      "$ref": "swf-ansible-job-parallel-error-handler__sub_schema__Publish_to_GitHub_runActionGitHubRepoPush.json",
+      "type": "object"
+    },
+    "swf-ansible-job-parallel-error-handler__sub_schema__Register_Catalog_entry_runActionCatalogRegister.json": {
+      "$ref": "swf-ansible-job-parallel-error-handler__sub_schema__Register_Catalog_entry_runActionCatalogRegister.json",
+      "type": "object"
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "$id": "classpath:/schemas/quarkus-backend-workflow__main_schema.json",
+  "title": "quarkus-backend-workflow: Data Input Schema",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "quarkus-backend-workflow__sub_schema__Generating_the_Source_Code_Component_Fetch_Template_Action_Source_Code_runActionTemplateFetch.json": {
+      "$ref": "quarkus-backend-workflow__sub_schema__Generating_the_Source_Code_Component_Fetch_Template_Action_Source_Code_runActionTemplateFetch.json",
+      "type": "object"
+    },
+    "quarkus-backend-workflow__sub_schema__Generating_the_Catalog_Info_Component_Fetch_Template_Action_Catalog_Info_runActionTemplateFetch.json": {
+      "$ref": "quarkus-backend-workflow__sub_schema__Generating_the_Catalog_Info_Component_Fetch_Template_Action_Catalog_Info_runActionTemplateFetch.json",
+      "type": "object"
+    },
+    "quarkus-backend-workflow__sub_schema__Publishing_to_the_Source_Code_Repository_Publish_Github_Action_runActionPublishGithub.json": {
+      "$ref": "quarkus-backend-workflow__sub_schema__Publishing_to_the_Source_Code_Repository_Publish_Github_Action_runActionPublishGithub.json",
+      "type": "object"
+    },
+    "quarkus-backend-workflow__sub_schema__Additional_input_data.json": {
+      "$ref": "quarkus-backend-workflow__sub_schema__Additional_input_data.json",
+      "type": "object"
+    }
+  }
+}

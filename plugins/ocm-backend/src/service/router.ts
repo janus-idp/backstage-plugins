@@ -154,7 +154,7 @@ export const ocmPlugin = createBackendPlugin({
     env.registerInit({
       deps: {
         logger: coreServices.logger,
-        config: coreServices.config,
+        config: coreServices.rootConfig,
         http: coreServices.httpRouter,
       },
       async init({ config, logger, http }) {

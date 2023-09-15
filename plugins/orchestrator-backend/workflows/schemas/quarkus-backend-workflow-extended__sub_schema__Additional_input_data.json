@@ -1,0 +1,23 @@
+{
+  "$id": "classpath:/schemas/quarkus-backend-workflow-extended__sub_schema__Additional_input_data.json",
+  "title": "quarkus-backend-workflow-extended: Additional input data",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "githubOrg": {
+      "title": "githubOrg",
+      "type": "string",
+      "description": "Extracted from the Workflow definition"
+    },
+    "imageBuilder": {
+      "title": "imageBuilder",
+      "type": "string",
+      "description": "Extracted from the Workflow definition"
+    },
+    "imageRepository": {
+      "title": "imageRepository",
+      "type": "string",
+      "description": "Extracted from the Workflow definition"
+    }
+  }
+}

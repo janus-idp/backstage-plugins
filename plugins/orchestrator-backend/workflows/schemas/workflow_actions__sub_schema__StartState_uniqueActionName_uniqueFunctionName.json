@@ -1,0 +1,13 @@
+{
+  "$id": "classpath:/schemas/workflow_actions__sub_schema__StartState_uniqueActionName_uniqueFunctionName.json",
+  "title": "workflow_actions: StartState > uniqueActionName > uniqueFunctionName",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "entityRef": {
+      "type": "string",
+      "description": "Entity reference of the entity to get"
+    }
+  },
+  "required": ["entityRef"]
+}

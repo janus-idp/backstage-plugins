@@ -1,0 +1,12 @@
+{
+  "$id": "classpath:/schemas/jira__main_schema.json",
+  "title": "jira: Data Input Schema",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "jira__sub_schema__Additional_input_data.json": {
+      "$ref": "jira__sub_schema__Additional_input_data.json",
+      "type": "object"
+    }
+  }
+}

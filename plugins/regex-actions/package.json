@@ -24,12 +24,12 @@
     "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
-    "@backstage/plugin-scaffolder-node": "^0.1.5",
+    "@backstage/plugin-scaffolder-node": "^0.2.2",
     "yaml": "^2.2.1",
     "zod": "^3.21.4"
   },
   "devDependencies": {
-    "@backstage/backend-common": "0.19.1",
+    "@backstage/backend-common": "0.19.4",
     "@backstage/cli": "0.22.9",
     "@types/mock-fs": "4.13.1",
     "mock-fs": "5.2.0"

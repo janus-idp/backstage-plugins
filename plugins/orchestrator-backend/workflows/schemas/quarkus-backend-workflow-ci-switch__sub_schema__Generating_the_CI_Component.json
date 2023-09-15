@@ -1,0 +1,50 @@
+{
+  "$id": "classpath:/schemas/quarkus-backend-workflow-ci-switch__sub_schema__Generating_the_CI_Component.json",
+  "title": "quarkus-backend-workflow-ci-switch: Generating the CI Component",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "oneOf": [
+    {
+      "title": "Generating the CI Component - GitHub",
+      "type": "object",
+      "properties": {
+        "Generating the CI Component - GitHub": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": ["Generating the CI Component - GitHub"]
+    },
+    {
+      "title": "Generating the CI Component - Tekton",
+      "type": "object",
+      "properties": {
+        "Generating the CI Component - Tekton": {
+          "type": "boolean",
+          "default": true
+        },
+        "namespace": {
+          "title": "namespace",
+          "description": "Extracted from https://github.com/janus-idp/software-templates/tree/main/skeletons/tekton",
+          "type": "string"
+        },
+        "imageBuilder": {
+          "title": "imageBuilder",
+          "description": "Extracted from https://github.com/janus-idp/software-templates/tree/main/skeletons/tekton",
+          "type": "string"
+        },
+        "imageRepository": {
+          "title": "imageRepository",
+          "description": "Extracted from https://github.com/janus-idp/software-templates/tree/main/skeletons/tekton",
+          "type": "string"
+        }
+      },
+      "required": [
+        "Generating the CI Component - Tekton",
+        "namespace",
+        "imageBuilder",
+        "imageRepository"
+      ]
+    }
+  ]
+}

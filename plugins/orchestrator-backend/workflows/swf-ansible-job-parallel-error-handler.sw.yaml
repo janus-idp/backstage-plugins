@@ -1,0 +1,107 @@
+id: swf-ansible-job-parallel-error-handler
+version: '1.0'
+specVersion: '0.8'
+name: '[WF] Ansible Job - Parallel/Error'
+description: '[WF] Launch an Ansible Job within Ansible Automation Platform - Error Handling'
+dataInputSchema: schemas/swf-ansible-job-parallel-error-handler__main_schema.json
+errors:
+  - name: workitemError
+    code: org.kie.kogito.process.workitem.WorkItemExecutionException
+functions:
+  - name: runActionTemplateFetch
+    operation: specs/actions-openapi.json#fetch:template
+  - name: runActionGitHubRepoPush
+    operation: specs/actions-openapi.json#github:repo:push
+  - name: runActionCatalogRegister
+    operation: specs/actions-openapi.json#catalog:register
+  - name: runDebugLog
+    operation: specs/actions-openapi.json#debug:log
+start: Code generation
+states:
+  - name: Code generation
+    type: parallel
+    branches:
+      - name: Generating the Ansible Job component
+        actions:
+          - name: Run Template Fetch Action
+            functionRef:
+              refName: runActionTemplateFetch
+              arguments:
+                id: $WORKFLOW.instanceId
+                url: >-
+                  https://github.com/manstis/janus-software-templates/tree/main/scaffolder-templates/ansible-job/skeleton
+                targetPath: argo/ansibleJobs/
+                values:
+                  component_id: ${.component_id}
+                  jobTemplate: ${.jobTemplate}
+                  name: ${.component_id}
+                  namespace: ${.namespace}
+                  connection_secret: ${.connection_secret}
+      - name: Generating the Catalog Info Component
+        actions:
+          - functionRef:
+              refName: runActionTemplateFetch
+              arguments:
+                id: $WORKFLOW.instanceId
+                url: >-
+                  https://github.com/manstis/janus-software-templates/tree/main/scaffolder-skeletons/catalog-info-skeleton/
+                values:
+                  githubOrg: ${.githubOrg}
+                  repoName: ${.repoName}
+                  owner: ${.owner}
+                  applicationType: api
+                  system: system:default/podcast
+                  description: ${.description}
+    transition: Publish to GitHub
+  - name: Publish to GitHub
+    type: operation
+    actionMode: sequential
+    actions:
+      - functionRef:
+          refName: runActionGitHubRepoPush
+          arguments:
+            id: $WORKFLOW.instanceId
+            repoUrl: ${.repoUrl}
+            defaultBranch: ${.defaultBranch}
+            protectDefaultBranch: false
+            protectEnforceAdmins: false
+        actionDataFilter:
+          results: .
+    onErrors:
+      - errorRef: workitemError
+        transition: Publish to GitHub::Failure
+    transition: Register Catalog entry
+  - name: Register Catalog entry
+    type: operation
+    actionMode: sequential
+    actions:
+      - functionRef:
+          refName: runActionCatalogRegister
+          arguments:
+            id: $WORKFLOW.instanceId
+            repoContentsUrl: ${.repoContentsUrl}
+            catalogInfoPath: /catalog-info.yaml
+        actionDataFilter:
+          toStateData: .actionResult
+    end: true
+  - name: Publish to GitHub::Failure
+    type: operation
+    actionMode: sequential
+    compensatedBy: Publish to GitHub::Failure::Compensation
+    actions:
+      - functionRef:
+          refName: runDebugLog
+          arguments:
+            message: Failed to publish to GitHub check the logs.
+    end:
+      compensate: true
+  - name: Publish to GitHub::Failure::Compensation
+    type: operation
+    actionMode: sequential
+    usedForCompensation: true
+    actions:
+      - functionRef:
+          refName: runDebugLog
+          arguments:
+            message: Do something to compensate for the failure.
+    end: true

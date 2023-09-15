@@ -1,0 +1,29 @@
+{
+  "$id": "classpath:/schemas/quarkus-backend-workflow__sub_schema__Generating_the_Catalog_Info_Component_Fetch_Template_Action_Catalog_Info_runActionTemplateFetch.json",
+  "title": "quarkus-backend-workflow: Generating the Catalog Info Component > Fetch Template Action - Catalog Info > runActionTemplateFetch",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "owner": {
+      "title": "owner",
+      "description": "Extracted from https://github.com/janus-idp/software-templates/tree/main/skeletons/catalog-info",
+      "type": "string"
+    },
+    "system": {
+      "title": "system",
+      "description": "Extracted from https://github.com/janus-idp/software-templates/tree/main/skeletons/catalog-info",
+      "type": "string"
+    },
+    "namespace": {
+      "title": "namespace",
+      "description": "Extracted from https://github.com/janus-idp/software-templates/tree/main/skeletons/catalog-info",
+      "type": "string"
+    },
+    "ci": {
+      "title": "ci",
+      "description": "Extracted from https://github.com/janus-idp/software-templates/tree/main/skeletons/catalog-info",
+      "type": "string"
+    }
+  },
+  "required": ["owner", "system", "namespace", "ci"]
+}

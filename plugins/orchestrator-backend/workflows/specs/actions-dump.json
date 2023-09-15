@@ -1,0 +1,2071 @@
+[
+  {
+    "id": "fetch:plain",
+    "description": "Downloads content and places it in the workspace, or optionally in a subdirectory specified by the `targetPath` input option.",
+    "schema": {
+      "input": {
+        "type": "object",
+        "required": ["url"],
+        "properties": {
+          "url": {
+            "title": "Fetch URL",
+            "description": "Relative path or absolute URL pointing to the directory tree to fetch",
+            "type": "string"
+          },
+          "targetPath": {
+            "title": "Target Path",
+            "description": "Target path within the working directory to download the contents to.",
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "fetch:plain:file",
+    "description": "Downloads single file and places it in the workspace.",
+    "schema": {
+      "input": {
+        "type": "object",
+        "required": ["url", "targetPath"],
+        "properties": {
+          "url": {
+            "title": "Fetch URL",
+            "description": "Relative path or absolute URL pointing to the single file to fetch.",
+            "type": "string"
+          },
+          "targetPath": {
+            "title": "Target Path",
+            "description": "Target path within the working directory to download the file as.",
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "fetch:template",
+    "description": "Downloads a skeleton, templates variables into file and directory names and content, and places the result in the workspace, or optionally in a subdirectory specified by the `targetPath` input option.",
+    "schema": {
+      "input": {
+        "type": "object",
+        "required": ["url"],
+        "properties": {
+          "url": {
+            "title": "Fetch URL",
+            "description": "Relative path or absolute URL pointing to the directory tree to fetch",
+            "type": "string"
+          },
+          "targetPath": {
+            "title": "Target Path",
+            "description": "Target path within the working directory to download the contents to. Defaults to the working directory root.",
+            "type": "string"
+          },
+          "values": {
+            "title": "Template Values",
+            "description": "Values to pass on to the templating engine",
+            "type": "object"
+          },
+          "copyWithoutRender": {
+            "title": "[Deprecated] Copy Without Render",
+            "description": "An array of glob patterns. Any files or directories which match are copied without being processed as templates.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "copyWithoutTemplating": {
+            "title": "Copy Without Templating",
+            "description": "An array of glob patterns. Contents of matched files or directories are copied without being processed, but paths are subject to rendering.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "cookiecutterCompat": {
+            "title": "Cookiecutter compatibility mode",
+            "description": "Enable features to maximise compatibility with templates built for fetch:cookiecutter",
+            "type": "boolean"
+          },
+          "templateFileExtension": {
+            "title": "Template File Extension",
+            "description": "If set, only files with the given extension will be templated. If set to `true`, the default extension `.njk` is used.",
+            "type": ["string", "boolean"]
+          },
+          "replace": {
+            "title": "Replace files",
+            "description": "If set, replace files in targetPath instead of skipping existing ones.",
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "publish:gerrit",
+    "description": "Initializes a git repository of the content in the workspace, and publishes it to Gerrit.",
+    "schema": {
+      "input": {
+        "type": "object",
+        "required": ["repoUrl"],
+        "properties": {
+          "repoUrl": {
+            "title": "Repository Location",
+            "type": "string"
+          },
+          "description": {
+            "title": "Repository Description",
+            "type": "string"
+          },
+          "defaultBranch": {
+            "title": "Default Branch",
+            "type": "string",
+            "description": "Sets the default branch on the repository. The default value is 'master'"
+          },
+          "gitCommitMessage": {
+            "title": "Git Commit Message",
+            "type": "string",
+            "description": "Sets the commit message on the repository. The default value is 'initial commit'"
+          },
+          "gitAuthorName": {
+            "title": "Default Author Name",
+            "type": "string",
+            "description": "Sets the default author name for the commit. The default value is 'Scaffolder'"
+          },
+          "gitAuthorEmail": {
+            "title": "Default Author Email",
+            "type": "string",
+            "description": "Sets the default author email for the commit."
+          },
+          "sourcePath": {
+            "title": "Source Path",
+            "type": "string",
+            "description": "Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the repository."
+          }
+        }
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "remoteUrl": {
+            "title": "A URL to the repository with the provider",
+            "type": "string"
+          },
+          "repoContentsUrl": {
+            "title": "A URL to the root of the repository",
+            "type": "string"
+          },
+          "commitHash": {
+            "title": "The git commit hash of the initial commit",
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "publish:gerrit:review",
+    "description": "Creates a new Gerrit review.",
+    "schema": {
+      "input": {
+        "type": "object",
+        "required": ["repoUrl", "gitCommitMessage"],
+        "properties": {
+          "repoUrl": {
+            "title": "Repository Location",
+            "type": "string"
+          },
+          "branch": {
+            "title": "Repository branch",
+            "type": "string",
+            "description": "Branch of the repository the review will be created on"
+          },
+          "sourcePath": {
+            "type": "string",
+            "title": "Working Subdirectory",
+            "description": "Subdirectory of working directory containing the repository"
+          },
+          "gitCommitMessage": {
+            "title": "Git Commit Message",
+            "type": "string",
+            "description": "Sets the commit message on the repository."
+          },
+          "gitAuthorName": {
+            "title": "Default Author Name",
+            "type": "string",
+            "description": "Sets the default author name for the commit. The default value is 'Scaffolder'"
+          },
+          "gitAuthorEmail": {
+            "title": "Default Author Email",
+            "type": "string",
+            "description": "Sets the default author email for the commit."
+          }
+        }
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "reviewUrl": {
+            "title": "A URL to the review",
+            "type": "string"
+          },
+          "repoContentsUrl": {
+            "title": "A URL to the root of the repository",
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "publish:github",
+    "description": "Initializes a git repository of contents in workspace and publishes it to GitHub.",
+    "schema": {
+      "input": {
+        "type": "object",
+        "required": ["repoUrl"],
+        "properties": {
+          "repoUrl": {
+            "title": "Repository Location",
+            "description": "Accepts the format 'github.com?repo=reponame&owner=owner' where 'reponame' is the new repository name and 'owner' is an organization or username",
+            "type": "string"
+          },
+          "description": {
+            "title": "Repository Description",
+            "type": "string"
+          },
+          "homepage": {
+            "title": "Repository Homepage",
+            "type": "string"
+          },
+          "access": {
+            "title": "Repository Access",
+            "description": "Sets an admin collaborator on the repository. Can either be a user reference different from 'owner' in 'repoUrl' or team reference, eg. 'org/team-name'",
+            "type": "string"
+          },
+          "bypassPullRequestAllowances": {
+            "title": "Bypass pull request requirements",
+            "description": "Allow specific users, teams, or apps to bypass pull request requirements.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "apps": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "users": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "teams": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "requiredApprovingReviewCount": {
+            "title": "Required approving review count",
+            "type": "number",
+            "description": "Specify the number of reviewers required to approve pull requests. Use a number between 1 and 6 or 0 to not require reviewers. Defaults to 1."
+          },
+          "restrictions": {
+            "title": "Restrict who can push to the protected branch",
+            "description": "Restrict who can push to the protected branch. User, app, and team restrictions are only available for organization-owned repositories.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "apps": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "users": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "teams": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "requireCodeOwnerReviews": {
+            "title": "Require CODEOWNER Reviews?",
+            "description": "Require an approved review in PR including files with a designated Code Owner",
+            "type": "boolean"
+          },
+          "dismissStaleReviews": {
+            "title": "Dismiss Stale Reviews",
+            "description": "New reviewable commits pushed to a matching branch will dismiss pull request review approvals.",
+            "type": "boolean"
+          },
+          "requiredStatusCheckContexts": {
+            "title": "Required Status Check Contexts",
+            "description": "The list of status checks to require in order to merge into this branch",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "requireBranchesToBeUpToDate": {
+            "title": "Require Branches To Be Up To Date?",
+            "description": "Require branches to be up to date before merging. The default value is 'true'",
+            "type": "boolean"
+          },
+          "requiredConversationResolution": {
+            "title": "Required Conversation Resolution",
+            "description": "Requires all conversations on code to be resolved before a pull request can be merged into this branch",
+            "type": "boolean"
+          },
+          "repoVisibility": {
+            "title": "Repository Visibility",
+            "type": "string",
+            "enum": ["private", "public", "internal"]
+          },
+          "defaultBranch": {
+            "title": "Default Branch",
+            "type": "string",
+            "description": "Sets the default branch on the repository. The default value is 'master'"
+          },
+          "protectDefaultBranch": {
+            "title": "Protect Default Branch",
+            "type": "boolean",
+            "description": "Protect the default branch after creating the repository. The default value is 'true'"
+          },
+          "protectEnforceAdmins": {
+            "title": "Enforce Admins On Protected Branches",
+            "type": "boolean",
+            "description": "Enforce admins to adhere to default branch protection. The default value is 'true'"
+          },
+          "deleteBranchOnMerge": {
+            "title": "Delete Branch On Merge",
+            "type": "boolean",
+            "description": "Delete the branch after merging the PR. The default value is 'false'"
+          },
+          "gitCommitMessage": {
+            "title": "Git Commit Message",
+            "type": "string",
+            "description": "Sets the commit message on the repository. The default value is 'initial commit'"
+          },
+          "gitAuthorName": {
+            "title": "Default Author Name",
+            "type": "string",
+            "description": "Sets the default author name for the commit. The default value is 'Scaffolder'"
+          },
+          "gitAuthorEmail": {
+            "title": "Default Author Email",
+            "type": "string",
+            "description": "Sets the default author email for the commit."
+          },
+          "allowMergeCommit": {
+            "title": "Allow Merge Commits",
+            "type": "boolean",
+            "description": "Allow merge commits. The default value is 'true'"
+          },
+          "allowSquashMerge": {
+            "title": "Allow Squash Merges",
+            "type": "boolean",
+            "description": "Allow squash merges. The default value is 'true'"
+          },
+          "squashMergeCommitTitle": {
+            "title": "Default squash merge commit title",
+            "enum": ["PR_TITLE", "COMMIT_OR_PR_TITLE"],
+            "description": "Sets the default value for a squash merge commit title. The default value is 'COMMIT_OR_PR_TITLE'"
+          },
+          "squashMergeCommitMessage": {
+            "title": "Default squash merge commit message",
+            "enum": ["PR_BODY", "COMMIT_MESSAGES", "BLANK"],
+            "description": "Sets the default value for a squash merge commit message. The default value is 'COMMIT_MESSAGES'"
+          },
+          "allowRebaseMerge": {
+            "title": "Allow Rebase Merges",
+            "type": "boolean",
+            "description": "Allow rebase merges. The default value is 'true'"
+          },
+          "allowAutoMerge": {
+            "title": "Allow Auto Merges",
+            "type": "boolean",
+            "description": "Allow individual PRs to merge automatically when all merge requirements are met. The default value is 'false'"
+          },
+          "sourcePath": {
+            "title": "Source Path",
+            "description": "Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the repository.",
+            "type": "string"
+          },
+          "collaborators": {
+            "title": "Collaborators",
+            "description": "Provide additional users or teams with permissions",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["access"],
+              "properties": {
+                "access": {
+                  "type": "string",
+                  "description": "The type of access for the user"
+                },
+                "user": {
+                  "type": "string",
+                  "description": "The name of the user that will be added as a collaborator"
+                },
+                "team": {
+                  "type": "string",
+                  "description": "The name of the team that will be added as a collaborator"
+                }
+              },
+              "oneOf": [
+                {
+                  "required": ["user"]
+                },
+                {
+                  "required": ["team"]
+                }
+              ]
+            }
+          },
+          "hasProjects": {
+            "title": "Enable projects",
+            "type": "boolean",
+            "description": "Enable projects for the repository. The default value is 'true' unless the organization has disabled repository projects"
+          },
+          "hasWiki": {
+            "title": "Enable the wiki",
+            "type": "boolean",
+            "description": "Enable the wiki for the repository. The default value is 'true'"
+          },
+          "hasIssues": {
+            "title": "Enable issues",
+            "type": "boolean",
+            "description": "Enable issues for the repository. The default value is 'true'"
+          },
+          "token": {
+            "title": "Authentication Token",
+            "type": "string",
+            "description": "The token to use for authorization to GitHub"
+          },
+          "topics": {
+            "title": "Topics",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "repoVariables": {
+            "title": "Repository Variables",
+            "description": "Variables attached to the repository",
+            "type": "object"
+          },
+          "secrets": {
+            "title": "Repository Secrets",
+            "description": "Secrets attached to the repository",
+            "type": "object"
+          },
+          "requiredCommitSigning": {
+            "title": "Require commit signing",
+            "type": "boolean",
+            "description": "Require commit signing so that you must sign commits on this branch."
+          }
+        }
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "remoteUrl": {
+            "title": "A URL to the repository with the provider",
+            "type": "string"
+          },
+          "repoContentsUrl": {
+            "title": "A URL to the root of the repository",
+            "type": "string"
+          },
+          "commitHash": {
+            "title": "The git commit hash of the initial commit",
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "publish:github:pull-request",
+    "schema": {
+      "input": {
+        "required": ["repoUrl", "title", "description", "branchName"],
+        "type": "object",
+        "properties": {
+          "repoUrl": {
+            "title": "Repository Location",
+            "description": "Accepts the format 'github.com?repo=reponame&owner=owner' where 'reponame' is the repository name and 'owner' is an organization or username",
+            "type": "string"
+          },
+          "branchName": {
+            "type": "string",
+            "title": "Branch Name",
+            "description": "The name for the branch"
+          },
+          "targetBranchName": {
+            "type": "string",
+            "title": "Target Branch Name",
+            "description": "The target branch name of the merge request"
+          },
+          "title": {
+            "type": "string",
+            "title": "Pull Request Name",
+            "description": "The name for the pull request"
+          },
+          "description": {
+            "type": "string",
+            "title": "Pull Request Description",
+            "description": "The description of the pull request"
+          },
+          "draft": {
+            "type": "boolean",
+            "title": "Create as Draft",
+            "description": "Create a draft pull request"
+          },
+          "sourcePath": {
+            "type": "string",
+            "title": "Working Subdirectory",
+            "description": "Subdirectory of working directory to copy changes from"
+          },
+          "targetPath": {
+            "type": "string",
+            "title": "Repository Subdirectory",
+            "description": "Subdirectory of repository to apply changes to"
+          },
+          "token": {
+            "title": "Authentication Token",
+            "type": "string",
+            "description": "The token to use for authorization to GitHub"
+          },
+          "reviewers": {
+            "title": "Pull Request Reviewers",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "The users that will be added as reviewers to the pull request"
+          },
+          "teamReviewers": {
+            "title": "Pull Request Team Reviewers",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "The teams that will be added as reviewers to the pull request"
+          },
+          "commitMessage": {
+            "type": "string",
+            "title": "Commit Message",
+            "description": "The commit message for the pull request commit"
+          }
+        }
+      },
+      "output": {
+        "required": ["remoteUrl"],
+        "type": "object",
+        "properties": {
+          "targetBranchName": {
+            "title": "Target branch name of the merge request",
+            "type": "string"
+          },
+          "remoteUrl": {
+            "type": "string",
+            "title": "Pull Request URL",
+            "description": "Link to the pull request in Github"
+          },
+          "pullRequestNumber": {
+            "type": "number",
+            "title": "Pull Request Number",
+            "description": "The pull request number"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "publish:gitlab",
+    "description": "Initializes a git repository of the content in the workspace, and publishes it to GitLab.",
+    "schema": {
+      "input": {
+        "type": "object",
+        "required": ["repoUrl"],
+        "properties": {
+          "repoUrl": {
+            "title": "Repository Location",
+            "type": "string",
+            "description": "Accepts the format 'gitlab.com?repo=project_name&owner=group_name' where 'project_name' is the repository name and 'group_name' is a group or username"
+          },
+          "repoVisibility": {
+            "title": "Repository Visibility",
+            "type": "string",
+            "enum": ["private", "public", "internal"]
+          },
+          "defaultBranch": {
+            "title": "Default Branch",
+            "type": "string",
+            "description": "Sets the default branch on the repository. The default value is 'master'"
+          },
+          "gitCommitMessage": {
+            "title": "Git Commit Message",
+            "type": "string",
+            "description": "Sets the commit message on the repository. The default value is 'initial commit'"
+          },
+          "gitAuthorName": {
+            "title": "Default Author Name",
+            "type": "string",
+            "description": "Sets the default author name for the commit. The default value is 'Scaffolder'"
+          },
+          "gitAuthorEmail": {
+            "title": "Default Author Email",
+            "type": "string",
+            "description": "Sets the default author email for the commit."
+          },
+          "sourcePath": {
+            "title": "Source Path",
+            "description": "Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the repository.",
+            "type": "string"
+          },
+          "token": {
+            "title": "Authentication Token",
+            "type": "string",
+            "description": "The token to use for authorization to GitLab"
+          },
+          "setUserAsOwner": {
+            "title": "Set User As Owner",
+            "type": "boolean",
+            "description": "Set the token user as owner of the newly created repository. Requires a token authorized to do the edit in the integration configuration for the matching host"
+          },
+          "topics": {
+            "title": "Topic labels",
+            "description": "Topic labels to apply on the repository.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "remoteUrl": {
+            "title": "A URL to the repository with the provider",
+            "type": "string"
+          },
+          "repoContentsUrl": {
+            "title": "A URL to the root of the repository",
+            "type": "string"
+          },
+          "projectId": {
+            "title": "The ID of the project",
+            "type": "string"
+          },
+          "commitHash": {
+            "title": "The git commit hash of the initial commit",
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "publish:gitlab:merge-request",
+    "schema": {
+      "input": {
+        "required": ["repoUrl", "branchName"],
+        "type": "object",
+        "properties": {
+          "repoUrl": {
+            "type": "string",
+            "title": "Repository Location",
+            "description": "Accepts the format 'gitlab.com?repo=project_name&owner=group_name' where 'project_name' is the repository name and 'group_name' is a group or username"
+          },
+          "projectid": {
+            "type": "string",
+            "title": "projectid",
+            "description": "Project ID/Name(slug) of the Gitlab Project"
+          },
+          "title": {
+            "type": "string",
+            "title": "Merge Request Name",
+            "description": "The name for the merge request"
+          },
+          "description": {
+            "type": "string",
+            "title": "Merge Request Description",
+            "description": "The description of the merge request"
+          },
+          "branchName": {
+            "type": "string",
+            "title": "Source Branch Name",
+            "description": "The source branch name of the merge request"
+          },
+          "targetBranchName": {
+            "type": "string",
+            "title": "Target Branch Name",
+            "description": "The target branch name of the merge request"
+          },
+          "sourcePath": {
+            "type": "string",
+            "title": "Working Subdirectory",
+            "description": "Subdirectory of working directory to copy changes from"
+          },
+          "targetPath": {
+            "type": "string",
+            "title": "Repository Subdirectory",
+            "description": "Subdirectory of repository to apply changes to"
+          },
+          "token": {
+            "title": "Authentication Token",
+            "type": "string",
+            "description": "The token to use for authorization to GitLab"
+          },
+          "commitAction": {
+            "title": "Commit action",
+            "type": "string",
+            "enum": ["create", "update", "delete"],
+            "description": "The action to be used for git commit. Defaults to create."
+          },
+          "removeSourceBranch": {
+            "title": "Delete source branch",
+            "type": "boolean",
+            "description": "Option to delete source branch once the MR has been merged. Default: false"
+          },
+          "assignee": {
+            "title": "Merge Request Assignee",
+            "type": "string",
+            "description": "User this merge request will be assigned to"
+          }
+        }
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "targetBranchName": {
+            "title": "Target branch name of the merge request",
+            "type": "string"
+          },
+          "projectid": {
+            "title": "Gitlab Project id/Name(slug)",
+            "type": "string"
+          },
+          "projectPath": {
+            "title": "Gitlab Project path",
+            "type": "string"
+          },
+          "mergeRequestUrl": {
+            "title": "MergeRequest(MR) URL",
+            "type": "string",
+            "description": "Link to the merge request in GitLab"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "publish:bitbucket",
+    "description": "Initializes a git repository of the content in the workspace, and publishes it to Bitbucket.",
+    "schema": {
+      "input": {
+        "type": "object",
+        "required": ["repoUrl"],
+        "properties": {
+          "repoUrl": {
+            "title": "Repository Location",
+            "type": "string"
+          },
+          "description": {
+            "title": "Repository Description",
+            "type": "string"
+          },
+          "repoVisibility": {
+            "title": "Repository Visibility",
+            "type": "string",
+            "enum": ["private", "public"]
+          },
+          "defaultBranch": {
+            "title": "Default Branch",
+            "type": "string",
+            "description": "Sets the default branch on the repository. The default value is 'master'"
+          },
+          "sourcePath": {
+            "title": "Source Path",
+            "description": "Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the repository.",
+            "type": "string"
+          },
+          "enableLFS": {
+            "title": "Enable LFS?",
+            "description": "Enable LFS for the repository. Only available for hosted Bitbucket.",
+            "type": "boolean"
+          },
+          "token": {
+            "title": "Authentication Token",
+            "type": "string",
+            "description": "The token to use for authorization to BitBucket"
+          },
+          "gitCommitMessage": {
+            "title": "Git Commit Message",
+            "type": "string",
+            "description": "Sets the commit message on the repository. The default value is 'initial commit'"
+          },
+          "gitAuthorName": {
+            "title": "Default Author Name",
+            "type": "string",
+            "description": "Sets the default author name for the commit. The default value is 'Scaffolder'"
+          },
+          "gitAuthorEmail": {
+            "title": "Default Author Email",
+            "type": "string",
+            "description": "Sets the default author email for the commit."
+          }
+        }
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "remoteUrl": {
+            "title": "A URL to the repository with the provider",
+            "type": "string"
+          },
+          "repoContentsUrl": {
+            "title": "A URL to the root of the repository",
+            "type": "string"
+          },
+          "commitHash": {
+            "title": "The git commit hash of the initial commit",
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "publish:bitbucketCloud",
+    "description": "Initializes a git repository of the content in the workspace, and publishes it to Bitbucket Cloud.",
+    "schema": {
+      "input": {
+        "type": "object",
+        "required": ["repoUrl"],
+        "properties": {
+          "repoUrl": {
+            "title": "Repository Location",
+            "type": "string"
+          },
+          "description": {
+            "title": "Repository Description",
+            "type": "string"
+          },
+          "repoVisibility": {
+            "title": "Repository Visibility",
+            "type": "string",
+            "enum": ["private", "public"]
+          },
+          "defaultBranch": {
+            "title": "Default Branch",
+            "type": "string",
+            "description": "Sets the default branch on the repository. The default value is 'master'"
+          },
+          "sourcePath": {
+            "title": "Source Path",
+            "description": "Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the repository.",
+            "type": "string"
+          },
+          "token": {
+            "title": "Authentication Token",
+            "type": "string",
+            "description": "The token to use for authorization to BitBucket Cloud"
+          }
+        }
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "remoteUrl": {
+            "title": "A URL to the repository with the provider",
+            "type": "string"
+          },
+          "repoContentsUrl": {
+            "title": "A URL to the root of the repository",
+            "type": "string"
+          },
+          "commitHash": {
+            "title": "The git commit hash of the initial commit",
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "publish:bitbucketServer",
+    "description": "Initializes a git repository of the content in the workspace, and publishes it to Bitbucket Server.",
+    "schema": {
+      "input": {
+        "type": "object",
+        "required": ["repoUrl"],
+        "properties": {
+          "repoUrl": {
+            "title": "Repository Location",
+            "type": "string"
+          },
+          "description": {
+            "title": "Repository Description",
+            "type": "string"
+          },
+          "repoVisibility": {
+            "title": "Repository Visibility",
+            "type": "string",
+            "enum": ["private", "public"]
+          },
+          "defaultBranch": {
+            "title": "Default Branch",
+            "type": "string",
+            "description": "Sets the default branch on the repository. The default value is 'master'"
+          },
+          "sourcePath": {
+            "title": "Source Path",
+            "description": "Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the repository.",
+            "type": "string"
+          },
+          "enableLFS": {
+            "title": "Enable LFS?",
+            "description": "Enable LFS for the repository.",
+            "type": "boolean"
+          },
+          "token": {
+            "title": "Authentication Token",
+            "type": "string",
+            "description": "The token to use for authorization to BitBucket Server"
+          },
+          "gitCommitMessage": {
+            "title": "Git Commit Message",
+            "type": "string",
+            "description": "Sets the commit message on the repository. The default value is 'initial commit'"
+          },
+          "gitAuthorName": {
+            "title": "Author Name",
+            "type": "string",
+            "description": "Sets the author name for the commit. The default value is 'Scaffolder'"
+          },
+          "gitAuthorEmail": {
+            "title": "Author Email",
+            "type": "string",
+            "description": "Sets the author email for the commit."
+          }
+        }
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "remoteUrl": {
+            "title": "A URL to the repository with the provider",
+            "type": "string"
+          },
+          "repoContentsUrl": {
+            "title": "A URL to the root of the repository",
+            "type": "string"
+          },
+          "commitHash": {
+            "title": "The git commit hash of the initial commit",
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "publish:azure",
+    "description": "Initializes a git repository of the content in the workspace, and publishes it to Azure.",
+    "schema": {
+      "input": {
+        "type": "object",
+        "required": ["repoUrl"],
+        "properties": {
+          "repoUrl": {
+            "title": "Repository Location",
+            "type": "string"
+          },
+          "description": {
+            "title": "Repository Description",
+            "type": "string"
+          },
+          "defaultBranch": {
+            "title": "Default Branch",
+            "type": "string",
+            "description": "Sets the default branch on the repository. The default value is 'master'"
+          },
+          "gitCommitMessage": {
+            "title": "Git Commit Message",
+            "type": "string",
+            "description": "Sets the commit message on the repository. The default value is 'initial commit'"
+          },
+          "gitAuthorName": {
+            "title": "Default Author Name",
+            "type": "string",
+            "description": "Sets the default author name for the commit. The default value is 'Scaffolder'"
+          },
+          "gitAuthorEmail": {
+            "title": "Default Author Email",
+            "type": "string",
+            "description": "Sets the default author email for the commit."
+          },
+          "sourcePath": {
+            "title": "Source Path",
+            "description": "Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the repository.",
+            "type": "string"
+          },
+          "token": {
+            "title": "Authentication Token",
+            "type": "string",
+            "description": "The token to use for authorization to Azure"
+          }
+        }
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "remoteUrl": {
+            "title": "A URL to the repository with the provider",
+            "type": "string"
+          },
+          "repoContentsUrl": {
+            "title": "A URL to the root of the repository",
+            "type": "string"
+          },
+          "repositoryId": {
+            "title": "The Id of the created repository",
+            "type": "string"
+          },
+          "commitHash": {
+            "title": "The git commit hash of the initial commit",
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "debug:log",
+    "description": "Writes a message into the log or lists all files in the workspace.",
+    "examples": [
+      {
+        "description": "Write a debug message",
+        "example": "steps:\n  - action: debug:log\n    id: write-debug-line\n    name: Write \"Hello Backstage!\" log line\n    input:\n      message: Hello Backstage!\n"
+      },
+      {
+        "description": "List the workspace directory",
+        "example": "steps:\n  - action: debug:log\n    id: write-workspace-directory\n    name: List the workspace directory\n    input:\n      listWorkspace: true\n"
+      }
+    ],
+    "schema": {
+      "input": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "title": "Message to output.",
+            "type": "string"
+          },
+          "listWorkspace": {
+            "title": "List all files in the workspace, if true.",
+            "type": "boolean"
+          },
+          "extra": {
+            "title": "Extra info"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "debug:wait",
+    "description": "Waits for a certain period of time.",
+    "examples": [
+      {
+        "description": "Waiting for 5 seconds",
+        "example": "steps:\n  - action: debug:wait\n    id: wait-5sec\n    name: Waiting for 5 seconds\n    input:\n      seconds: 5\n"
+      },
+      {
+        "description": "Waiting for 5 minutes",
+        "example": "steps:\n  - action: debug:wait\n    id: wait-5min\n    name: Waiting for 5 minutes\n    input:\n      minutes: 5\n"
+      }
+    ],
+    "schema": {
+      "input": {
+        "type": "object",
+        "properties": {
+          "minutes": {
+            "title": "Waiting period in minutes.",
+            "type": "number"
+          },
+          "seconds": {
+            "title": "Waiting period in seconds.",
+            "type": "number"
+          },
+          "milliseconds": {
+            "title": "Waiting period in milliseconds.",
+            "type": "number"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "catalog:register",
+    "description": "Registers entities from a catalog descriptor file in the workspace into the software catalog.",
+    "examples": [
+      {
+        "description": "Register with the catalog",
+        "example": "steps:\n  - action: catalog:register\n    id: register-with-catalog\n    name: Register with the catalog\n    input:\n      catalogInfoUrl: http://github.com/backstage/backstage/blob/master/catalog-info.yaml\n"
+      }
+    ],
+    "schema": {
+      "input": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": ["catalogInfoUrl"],
+            "properties": {
+              "catalogInfoUrl": {
+                "title": "Catalog Info URL",
+                "description": "An absolute URL pointing to the catalog info file location",
+                "type": "string"
+              },
+              "optional": {
+                "title": "Optional",
+                "description": "Permit the registered location to optionally exist. Default: false",
+                "type": "boolean"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": ["repoContentsUrl"],
+            "properties": {
+              "repoContentsUrl": {
+                "title": "Repository Contents URL",
+                "description": "An absolute URL pointing to the root of a repository directory tree",
+                "type": "string"
+              },
+              "catalogInfoPath": {
+                "title": "Fetch URL",
+                "description": "A relative path from the repo root pointing to the catalog info file, defaults to /catalog-info.yaml",
+                "type": "string"
+              },
+              "optional": {
+                "title": "Optional",
+                "description": "Permit the registered location to optionally exist. Default: false",
+                "type": "boolean"
+              }
+            }
+          }
+        ]
+      },
+      "output": {
+        "type": "object",
+        "required": ["catalogInfoUrl"],
+        "properties": {
+          "entityRef": {
+            "type": "string"
+          },
+          "catalogInfoUrl": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "catalog:fetch",
+    "description": "Returns entity or entities from the catalog by entity reference(s)",
+    "examples": [
+      {
+        "description": "Fetch entity by reference",
+        "example": "steps:\n  - action: catalog:fetch\n    id: fetch\n    name: Fetch catalog entity\n    input:\n      entityRef: component:default/name\n"
+      },
+      {
+        "description": "Fetch multiple entities by referencse",
+        "example": "steps:\n  - action: catalog:fetch\n    id: fetchMultiple\n    name: Fetch catalog entities\n    input:\n      entityRefs:\n        - component:default/name\n"
+      }
+    ],
+    "schema": {
+      "input": {
+        "type": "object",
+        "properties": {
+          "entityRef": {
+            "type": "string",
+            "description": "Entity reference of the entity to get"
+          },
+          "entityRefs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Entity references of the entities to get"
+          },
+          "optional": {
+            "type": "boolean",
+            "description": "Allow the entity or entities to optionally exist. Default: false"
+          },
+          "defaultKind": {
+            "type": "string",
+            "description": "The default kind"
+          },
+          "defaultNamespace": {
+            "type": "string",
+            "description": "The default namespace"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "entity": {
+            "description": "Object containing same values used in the Entity schema. Only when used with `entityRef` parameter."
+          },
+          "entities": {
+            "type": "array"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    }
+  },
+  {
+    "id": "catalog:write",
+    "description": "Writes the catalog-info.yaml for your template",
+    "examples": [
+      {
+        "description": "Write a catalog yaml file",
+        "example": "steps:\n  - action: catalog:write\n    id: create-catalog-info-file\n    name: Create catalog file\n    input:\n      entity:\n        apiVersion: backstage.io/v1alpha1\n        kind: Component\n        metadata:\n          name: test\n          annotations: {}\n        spec:\n          type: service\n          lifecycle: production\n          owner: default/owner\n"
+      }
+    ],
+    "schema": {
+      "input": {
+        "type": "object",
+        "properties": {
+          "filePath": {
+            "type": "string",
+            "description": "Defaults to catalog-info.yaml"
+          },
+          "entity": {
+            "type": "object",
+            "additionalProperties": {},
+            "description": "You can provide the same values used in the Entity schema."
+          }
+        },
+        "required": ["entity"],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      }
+    }
+  },
+  {
+    "id": "fs:delete",
+    "description": "Deletes files and directories from the workspace",
+    "schema": {
+      "input": {
+        "required": ["files"],
+        "type": "object",
+        "properties": {
+          "files": {
+            "title": "Files",
+            "description": "A list of files and directories that will be deleted",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "fs:rename",
+    "description": "Renames files and directories within the workspace",
+    "schema": {
+      "input": {
+        "required": ["files"],
+        "type": "object",
+        "properties": {
+          "files": {
+            "title": "Files",
+            "description": "A list of file and directory names that will be renamed",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["from", "to"],
+              "properties": {
+                "from": {
+                  "type": "string",
+                  "title": "The source location of the file to be renamed"
+                },
+                "to": {
+                  "type": "string",
+                  "title": "The destination of the new file"
+                },
+                "overwrite": {
+                  "type": "boolean",
+                  "title": "Overwrite existing file or directory, default is false"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "github:actions:dispatch",
+    "description": "Dispatches a GitHub Action workflow for a given branch or tag",
+    "schema": {
+      "input": {
+        "type": "object",
+        "required": ["repoUrl", "workflowId", "branchOrTagName"],
+        "properties": {
+          "repoUrl": {
+            "title": "Repository Location",
+            "description": "Accepts the format 'github.com?repo=reponame&owner=owner' where 'reponame' is the new repository name and 'owner' is an organization or username",
+            "type": "string"
+          },
+          "workflowId": {
+            "title": "Workflow ID",
+            "description": "The GitHub Action Workflow filename",
+            "type": "string"
+          },
+          "branchOrTagName": {
+            "title": "Branch or Tag name",
+            "description": "The git branch or tag name used to dispatch the workflow",
+            "type": "string"
+          },
+          "workflowInputs": {
+            "title": "Workflow Inputs",
+            "description": "Inputs keys and values to send to GitHub Action configured on the workflow file. The maximum number of properties is 10. ",
+            "type": "object"
+          },
+          "token": {
+            "title": "Authentication Token",
+            "type": "string",
+            "description": "The GITHUB_TOKEN to use for authorization to GitHub"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "github:webhook",
+    "description": "Creates webhook for a repository on GitHub.",
+    "schema": {
+      "input": {
+        "type": "object",
+        "required": ["repoUrl", "webhookUrl"],
+        "properties": {
+          "repoUrl": {
+            "title": "Repository Location",
+            "description": "Accepts the format 'github.com?repo=reponame&owner=owner' where 'reponame' is the new repository name and 'owner' is an organization or username",
+            "type": "string"
+          },
+          "webhookUrl": {
+            "title": "Webhook URL",
+            "description": "The URL to which the payloads will be delivered",
+            "type": "string"
+          },
+          "webhookSecret": {
+            "title": "Webhook Secret",
+            "description": "Webhook secret value. The default can be provided internally in action creation",
+            "type": "string"
+          },
+          "events": {
+            "title": "Triggering Events",
+            "description": "Determines what events the hook is triggered for. Default: push",
+            "type": "array",
+            "oneOf": [
+              {
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "branch_protection_rule",
+                    "check_run",
+                    "check_suite",
+                    "code_scanning_alert",
+                    "commit_comment",
+                    "create",
+                    "delete",
+                    "dependabot_alert",
+                    "deploy_key",
+                    "deployment",
+                    "deployment_status",
+                    "discussion",
+                    "discussion_comment",
+                    "fork",
+                    "github_app_authorization",
+                    "gollum",
+                    "installation",
+                    "installation_repositories",
+                    "installation_target",
+                    "issue_comment",
+                    "issues",
+                    "label",
+                    "marketplace_purchase",
+                    "member",
+                    "membership",
+                    "merge_group",
+                    "meta",
+                    "milestone",
+                    "org_block",
+                    "organization",
+                    "package",
+                    "page_build",
+                    "ping",
+                    "project",
+                    "project_card",
+                    "project_column",
+                    "projects_v2_item",
+                    "public",
+                    "pull_request",
+                    "pull_request_review",
+                    "pull_request_review_comment",
+                    "pull_request_review_thread",
+                    "push",
+                    "registry_package",
+                    "release",
+                    "repository",
+                    "repository_dispatch",
+                    "repository_import",
+                    "repository_vulnerability_alert",
+                    "secret_scanning_alert",
+                    "security_advisory",
+                    "sponsorship",
+                    "star",
+                    "status",
+                    "team",
+                    "team_add",
+                    "watch",
+                    "workflow_dispatch",
+                    "workflow_job",
+                    "workflow_run"
+                  ]
+                }
+              },
+              {
+                "items": {
+                  "type": "string",
+                  "const": "*"
+                }
+              }
+            ]
+          },
+          "active": {
+            "title": "Active",
+            "type": "boolean",
+            "description": "Determines if notifications are sent when the webhook is triggered. Default: true"
+          },
+          "contentType": {
+            "title": "Content Type",
+            "type": "string",
+            "enum": ["form", "json"],
+            "description": "The media type used to serialize the payloads. The default is 'form'"
+          },
+          "insecureSsl": {
+            "title": "Insecure SSL",
+            "type": "boolean",
+            "description": "Determines whether the SSL certificate of the host for url will be verified when delivering payloads. Default 'false'"
+          },
+          "token": {
+            "title": "Authentication Token",
+            "type": "string",
+            "description": "The GITHUB_TOKEN to use for authorization to GitHub"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "github:issues:label",
+    "description": "Adds labels to a pull request or issue on GitHub.",
+    "schema": {
+      "input": {
+        "type": "object",
+        "required": ["repoUrl", "number", "labels"],
+        "properties": {
+          "repoUrl": {
+            "title": "Repository Location",
+            "description": "Accepts the format 'github.com?repo=reponame&owner=owner' where 'reponame' is the repository name and 'owner' is an organization or username",
+            "type": "string"
+          },
+          "number": {
+            "title": "Pull Request or issue number",
+            "description": "The pull request or issue number to add labels to",
+            "type": "number"
+          },
+          "labels": {
+            "title": "Labels",
+            "description": "The labels to add to the pull request or issue",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "token": {
+            "title": "Authentication Token",
+            "type": "string",
+            "description": "The GITHUB_TOKEN to use for authorization to GitHub"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "github:repo:create",
+    "description": "Creates a GitHub repository.",
+    "schema": {
+      "input": {
+        "type": "object",
+        "required": ["repoUrl"],
+        "properties": {
+          "repoUrl": {
+            "title": "Repository Location",
+            "description": "Accepts the format 'github.com?repo=reponame&owner=owner' where 'reponame' is the new repository name and 'owner' is an organization or username",
+            "type": "string"
+          },
+          "description": {
+            "title": "Repository Description",
+            "type": "string"
+          },
+          "homepage": {
+            "title": "Repository Homepage",
+            "type": "string"
+          },
+          "access": {
+            "title": "Repository Access",
+            "description": "Sets an admin collaborator on the repository. Can either be a user reference different from 'owner' in 'repoUrl' or team reference, eg. 'org/team-name'",
+            "type": "string"
+          },
+          "requireCodeOwnerReviews": {
+            "title": "Require CODEOWNER Reviews?",
+            "description": "Require an approved review in PR including files with a designated Code Owner",
+            "type": "boolean"
+          },
+          "bypassPullRequestAllowances": {
+            "title": "Bypass pull request requirements",
+            "description": "Allow specific users, teams, or apps to bypass pull request requirements.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "apps": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "users": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "teams": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "requiredApprovingReviewCount": {
+            "title": "Required approving review count",
+            "type": "number",
+            "description": "Specify the number of reviewers required to approve pull requests. Use a number between 1 and 6 or 0 to not require reviewers. Defaults to 1."
+          },
+          "restrictions": {
+            "title": "Restrict who can push to the protected branch",
+            "description": "Restrict who can push to the protected branch. User, app, and team restrictions are only available for organization-owned repositories.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "apps": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "users": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "teams": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "requiredStatusCheckContexts": {
+            "title": "Required Status Check Contexts",
+            "description": "The list of status checks to require in order to merge into this branch",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "requireBranchesToBeUpToDate": {
+            "title": "Require Branches To Be Up To Date?",
+            "description": "Require branches to be up to date before merging. The default value is 'true'",
+            "type": "boolean"
+          },
+          "requiredConversationResolution": {
+            "title": "Required Conversation Resolution",
+            "description": "Requires all conversations on code to be resolved before a pull request can be merged into this branch",
+            "type": "boolean"
+          },
+          "repoVisibility": {
+            "title": "Repository Visibility",
+            "type": "string",
+            "enum": ["private", "public", "internal"]
+          },
+          "deleteBranchOnMerge": {
+            "title": "Delete Branch On Merge",
+            "type": "boolean",
+            "description": "Delete the branch after merging the PR. The default value is 'false'"
+          },
+          "allowMergeCommit": {
+            "title": "Allow Merge Commits",
+            "type": "boolean",
+            "description": "Allow merge commits. The default value is 'true'"
+          },
+          "allowSquashMerge": {
+            "title": "Allow Squash Merges",
+            "type": "boolean",
+            "description": "Allow squash merges. The default value is 'true'"
+          },
+          "squashMergeCommitTitle": {
+            "title": "Default squash merge commit title",
+            "enum": ["PR_TITLE", "COMMIT_OR_PR_TITLE"],
+            "description": "Sets the default value for a squash merge commit title. The default value is 'COMMIT_OR_PR_TITLE'"
+          },
+          "squashMergeCommitMessage": {
+            "title": "Default squash merge commit message",
+            "enum": ["PR_BODY", "COMMIT_MESSAGES", "BLANK"],
+            "description": "Sets the default value for a squash merge commit message. The default value is 'COMMIT_MESSAGES'"
+          },
+          "allowRebaseMerge": {
+            "title": "Allow Rebase Merges",
+            "type": "boolean",
+            "description": "Allow rebase merges. The default value is 'true'"
+          },
+          "allowAutoMerge": {
+            "title": "Allow Auto Merges",
+            "type": "boolean",
+            "description": "Allow individual PRs to merge automatically when all merge requirements are met. The default value is 'false'"
+          },
+          "collaborators": {
+            "title": "Collaborators",
+            "description": "Provide additional users or teams with permissions",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["access"],
+              "properties": {
+                "access": {
+                  "type": "string",
+                  "description": "The type of access for the user"
+                },
+                "user": {
+                  "type": "string",
+                  "description": "The name of the user that will be added as a collaborator"
+                },
+                "team": {
+                  "type": "string",
+                  "description": "The name of the team that will be added as a collaborator"
+                }
+              },
+              "oneOf": [
+                {
+                  "required": ["user"]
+                },
+                {
+                  "required": ["team"]
+                }
+              ]
+            }
+          },
+          "hasProjects": {
+            "title": "Enable projects",
+            "type": "boolean",
+            "description": "Enable projects for the repository. The default value is 'true' unless the organization has disabled repository projects"
+          },
+          "hasWiki": {
+            "title": "Enable the wiki",
+            "type": "boolean",
+            "description": "Enable the wiki for the repository. The default value is 'true'"
+          },
+          "hasIssues": {
+            "title": "Enable issues",
+            "type": "boolean",
+            "description": "Enable issues for the repository. The default value is 'true'"
+          },
+          "token": {
+            "title": "Authentication Token",
+            "type": "string",
+            "description": "The token to use for authorization to GitHub"
+          },
+          "topics": {
+            "title": "Topics",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "repoVariables": {
+            "title": "Repository Variables",
+            "description": "Variables attached to the repository",
+            "type": "object"
+          },
+          "secrets": {
+            "title": "Repository Secrets",
+            "description": "Secrets attached to the repository",
+            "type": "object"
+          },
+          "requiredCommitSigning": {
+            "title": "Require commit signing",
+            "type": "boolean",
+            "description": "Require commit signing so that you must sign commits on this branch."
+          }
+        }
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "remoteUrl": {
+            "title": "A URL to the repository with the provider",
+            "type": "string"
+          },
+          "repoContentsUrl": {
+            "title": "A URL to the root of the repository",
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "github:repo:push",
+    "description": "Initializes a git repository of contents in workspace and publishes it to GitHub.",
+    "schema": {
+      "input": {
+        "type": "object",
+        "required": ["repoUrl"],
+        "properties": {
+          "repoUrl": {
+            "title": "Repository Location",
+            "description": "Accepts the format 'github.com?repo=reponame&owner=owner' where 'reponame' is the new repository name and 'owner' is an organization or username",
+            "type": "string"
+          },
+          "requireCodeOwnerReviews": {
+            "title": "Require CODEOWNER Reviews?",
+            "description": "Require an approved review in PR including files with a designated Code Owner",
+            "type": "boolean"
+          },
+          "dismissStaleReviews": {
+            "title": "Dismiss Stale Reviews",
+            "description": "New reviewable commits pushed to a matching branch will dismiss pull request review approvals.",
+            "type": "boolean"
+          },
+          "requiredStatusCheckContexts": {
+            "title": "Required Status Check Contexts",
+            "description": "The list of status checks to require in order to merge into this branch",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "bypassPullRequestAllowances": {
+            "title": "Bypass pull request requirements",
+            "description": "Allow specific users, teams, or apps to bypass pull request requirements.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "apps": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "users": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "teams": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "requiredApprovingReviewCount": {
+            "title": "Required approving review count",
+            "type": "number",
+            "description": "Specify the number of reviewers required to approve pull requests. Use a number between 1 and 6 or 0 to not require reviewers. Defaults to 1."
+          },
+          "restrictions": {
+            "title": "Restrict who can push to the protected branch",
+            "description": "Restrict who can push to the protected branch. User, app, and team restrictions are only available for organization-owned repositories.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "apps": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "users": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "teams": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "requireBranchesToBeUpToDate": {
+            "title": "Require Branches To Be Up To Date?",
+            "description": "Require branches to be up to date before merging. The default value is 'true'",
+            "type": "boolean"
+          },
+          "requiredConversationResolution": {
+            "title": "Required Conversation Resolution",
+            "description": "Requires all conversations on code to be resolved before a pull request can be merged into this branch",
+            "type": "boolean"
+          },
+          "defaultBranch": {
+            "title": "Default Branch",
+            "type": "string",
+            "description": "Sets the default branch on the repository. The default value is 'master'"
+          },
+          "protectDefaultBranch": {
+            "title": "Protect Default Branch",
+            "type": "boolean",
+            "description": "Protect the default branch after creating the repository. The default value is 'true'"
+          },
+          "protectEnforceAdmins": {
+            "title": "Enforce Admins On Protected Branches",
+            "type": "boolean",
+            "description": "Enforce admins to adhere to default branch protection. The default value is 'true'"
+          },
+          "gitCommitMessage": {
+            "title": "Git Commit Message",
+            "type": "string",
+            "description": "Sets the commit message on the repository. The default value is 'initial commit'"
+          },
+          "gitAuthorName": {
+            "title": "Default Author Name",
+            "type": "string",
+            "description": "Sets the default author name for the commit. The default value is 'Scaffolder'"
+          },
+          "gitAuthorEmail": {
+            "title": "Default Author Email",
+            "type": "string",
+            "description": "Sets the default author email for the commit."
+          },
+          "sourcePath": {
+            "title": "Source Path",
+            "description": "Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the repository.",
+            "type": "string"
+          },
+          "token": {
+            "title": "Authentication Token",
+            "type": "string",
+            "description": "The token to use for authorization to GitHub"
+          },
+          "requiredCommitSigning": {
+            "title": "Require commit signing",
+            "type": "boolean",
+            "description": "Require commit signing so that you must sign commits on this branch."
+          }
+        }
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "remoteUrl": {
+            "title": "A URL to the repository with the provider",
+            "type": "string"
+          },
+          "repoContentsUrl": {
+            "title": "A URL to the root of the repository",
+            "type": "string"
+          },
+          "commitHash": {
+            "title": "The git commit hash of the initial commit",
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "github:environment:create",
+    "description": "Creates Deployment Environments",
+    "schema": {
+      "input": {
+        "type": "object",
+        "required": ["repoUrl", "name"],
+        "properties": {
+          "repoUrl": {
+            "title": "Repository Location",
+            "description": "Accepts the format 'github.com?repo=reponame&owner=owner' where 'reponame' is the new repository name and 'owner' is an organization or username",
+            "type": "string"
+          },
+          "name": {
+            "title": "Environment Name",
+            "description": "Name of the deployment environment to create",
+            "type": "string"
+          },
+          "deploymentBranchPolicy": {
+            "title": "Deployment Branch Policy",
+            "description": "The type of deployment branch policy for this environment. To allow all branches to deploy, set to null.",
+            "type": "object",
+            "required": ["protected_branches", "custom_branch_policies"],
+            "properties": {
+              "protected_branches": {
+                "title": "Protected Branches",
+                "description": "Whether only branches with branch protection rules can deploy to this environment. If protected_branches is true, custom_branch_policies must be false; if protected_branches is false, custom_branch_policies must be true.",
+                "type": "boolean"
+              },
+              "custom_branch_policies": {
+                "title": "Custom Branch Policies",
+                "description": "Whether only branches that match the specified name patterns can deploy to this environment. If custom_branch_policies is true, protected_branches must be false; if custom_branch_policies is false, protected_branches must be true.",
+                "type": "boolean"
+              }
+            }
+          },
+          "customBranchPolicyNames": {
+            "title": "Custom Branch Policy Name",
+            "description": "The name pattern that branches must match in order to deploy to the environment.\n\n            Wildcard characters will not match /. For example, to match branches that begin with release/ and contain an additional single slash, use release/*/*. For more information about pattern matching syntax, see the Ruby File.fnmatch documentation.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "environmentVariables": {
+            "title": "Environment Variables",
+            "description": "Environment variables attached to the deployment environment",
+            "type": "object"
+          },
+          "secrets": {
+            "title": "Deployment Secrets",
+            "description": "Secrets attached to the deployment environment",
+            "type": "object"
+          },
+          "token": {
+            "title": "Authentication Token",
+            "type": "string",
+            "description": "The token to use for authorization to GitHub"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "github:deployKey:create",
+    "description": "Creates and stores Deploy Keys",
+    "schema": {
+      "input": {
+        "type": "object",
+        "required": ["repoUrl", "publicKey", "privateKey", "deployKeyName"],
+        "properties": {
+          "repoUrl": {
+            "title": "Repository Location",
+            "description": "Accepts the format 'github.com?repo=reponame&owner=owner' where 'reponame' is the new repository name and 'owner' is an organization or username",
+            "type": "string"
+          },
+          "publicKey": {
+            "title": "SSH Public Key",
+            "description": "Generated from ssh-keygen.  Begins with 'ssh-rsa', 'ecdsa-sha2-nistp256', 'ecdsa-sha2-nistp384', 'ecdsa-sha2-nistp521', 'ssh-ed25519', 'sk-ecdsa-sha2-nistp256@openssh.com', or 'sk-ssh-ed25519@openssh.com'.",
+            "type": "string"
+          },
+          "privateKey": {
+            "title": "SSH Private Key",
+            "description": "SSH Private Key generated from ssh-keygen",
+            "type": "string"
+          },
+          "deployKeyName": {
+            "title": "Deploy Key Name",
+            "description": "Name of the Deploy Key",
+            "type": "string"
+          },
+          "privateKeySecretName": {
+            "title": "Private Key GitHub Secret Name",
+            "description": "Name of the GitHub Secret to store the private key related to the Deploy Key.  Defaults to: 'KEY_NAME_PRIVATE_KEY' where 'KEY_NAME' is the name of the Deploy Key",
+            "type": "string"
+          },
+          "token": {
+            "title": "Authentication Token",
+            "type": "string",
+            "description": "The token to use for authorization to GitHub"
+          }
+        }
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "privateKeySecretName": {
+            "title": "The GitHub Action Repo Secret Name for the Private Key",
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  {
+    "id": "confluence:transform:markdown",
+    "schema": {
+      "input": {
+        "properties": {
+          "confluenceUrls": {
+            "type": "array",
+            "title": "Confluence URL",
+            "description": "Paste your Confluence url. Ensure it follows this format: https://{confluence+base+url}/display/{spacekey}/{page+title} or https://{confluence+base+url}/spaces/{spacekey}/pages/1234567/{page+title} for Confluence Cloud",
+            "items": {
+              "type": "string",
+              "default": "Confluence URL"
+            }
+          },
+          "repoUrl": {
+            "type": "string",
+            "title": "GitHub Repo Url",
+            "description": "mkdocs.yml file location inside the github repo you want to store the document"
+          }
+        }
+      }
+    }
+  }
+]

@@ -1,0 +1,1 @@
+export { NextScaffolderTemplateCard } from './NextScaffolderTemplateCard';

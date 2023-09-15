@@ -1,0 +1,29 @@
+{
+  "$id": "classpath:/schemas/swf-ansible-job-long__sub_schema__Generating_the_Catalog_Info_Component_runActionTemplateFetch.json",
+  "title": "swf-ansible-job-long: Generating the Catalog Info Component > runActionTemplateFetch",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "githubOrg": {
+      "title": "githubOrg",
+      "description": "Extracted from https://github.com/manstis/janus-software-templates/tree/main/scaffolder-skeletons/catalog-info-skeleton/",
+      "type": "string"
+    },
+    "repoName": {
+      "title": "repoName",
+      "description": "Extracted from https://github.com/manstis/janus-software-templates/tree/main/scaffolder-skeletons/catalog-info-skeleton/",
+      "type": "string"
+    },
+    "owner": {
+      "title": "owner",
+      "description": "Extracted from https://github.com/manstis/janus-software-templates/tree/main/scaffolder-skeletons/catalog-info-skeleton/",
+      "type": "string"
+    },
+    "description": {
+      "title": "description",
+      "description": "Extracted from https://github.com/manstis/janus-software-templates/tree/main/scaffolder-skeletons/catalog-info-skeleton/",
+      "type": "string"
+    }
+  },
+  "required": ["githubOrg", "repoName", "owner", "description"]
+}

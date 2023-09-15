@@ -1,0 +1,79 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Workflow Actions for BS API",
+    "description": "Workflow Actions BS API",
+    "version": "0.0.1"
+  },
+  "servers": [
+    {
+      "url": "http://host.docker.internal:7007/api/swf"
+    }
+  ],
+  "paths": {
+    "/actions/catalog:fetch": {
+      "post": {
+        "operationId": "catalog:fetch",
+        "parameters": [],
+        "requestBody": {
+          "description": "Input parameters for the action in BS",
+          "required": true,
+          "content": {
+            "application/json;charset=utf-8": {
+              "schema": {
+                "$ref": "#/components/schemas/catalogFetch"
+              }
+            }
+          }
+        },
+        "responses": {
+          "default": {
+            "description": "catalog:fetch action response",
+            "content": {
+              "application/json;charset=utf-8": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "catalogFetch": {
+        "title": "catalog:fetch",
+        "type": "object",
+        "properties": {
+          "entityRef": {
+            "type": "string",
+            "description": "Entity reference of the entity to get"
+          },
+          "entityRefs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Entity references of the entities to get"
+          },
+          "optional": {
+            "type": "boolean",
+            "description": "Allow the entity or entities to optionally exist. Default: false"
+          },
+          "defaultKind": {
+            "type": "string",
+            "description": "The default kind"
+          },
+          "defaultNamespace": {
+            "type": "string",
+            "description": "The default namespace"
+          }
+        },
+        "required": ["entityRef"],
+        "additionalProperties": false
+      }
+    }
+  }
+}

@@ -49,3 +49,6 @@ site
 
 # turbo
 .turbo
+
+# idea
+.idea
