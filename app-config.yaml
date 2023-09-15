@@ -112,3 +112,16 @@ catalog:
     #   target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/acme-corp.yaml
     #   rules:
     #     - allow: [User, Group]
+swf:
+  baseUrl: http://localhost
+  port: 8899
+  workflowService:
+    path: ../../plugins/orchestrator-backend/workflows
+    container: quay.io/kiegroup/kogito-swf-devmode-nightly:main-2023-08-30
+    persistence:
+      path: /home/kogito/persistence
+    jira:
+      host: ${JIRA_HOST}
+      bearerToken: ${JIRA_BEARER_TOKEN}
+  editor:
+    path: https://start.kubesmarts.org

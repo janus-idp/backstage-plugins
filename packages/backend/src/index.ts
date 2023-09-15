@@ -11,6 +11,7 @@ import {
   createServiceBuilder,
   DatabaseManager,
   getRootLogger,
+  HostDiscovery,
   loadBackendConfig,
   notFoundHandler,
   ServerTokenManager,
@@ -19,8 +20,10 @@ import {
   useHotMemoize,
 } from '@backstage/backend-common';
 import { TaskScheduler } from '@backstage/backend-tasks';
+import { CatalogClient } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
+import { DefaultEventBroker } from '@backstage/plugin-events-backend';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 
 import Router from 'express-promise-router';
@@ -28,6 +31,7 @@ import Router from 'express-promise-router';
 import app from './plugins/app';
 import auth from './plugins/auth';
 import catalog from './plugins/catalog';
+import orchestrator from './plugins/orchestrator';
 import proxy from './plugins/proxy';
 import scaffolder from './plugins/scaffolder';
 import search from './plugins/search';
@@ -42,6 +46,9 @@ function makeCreateEnv(config: Config) {
   const databaseManager = DatabaseManager.fromConfig(config, { logger: root });
   const tokenManager = ServerTokenManager.noop();
   const taskScheduler = TaskScheduler.fromConfig(config);
+  const catalogApi = new CatalogClient({
+    discoveryApi: HostDiscovery.fromConfig(config),
+  });
 
   const identity = DefaultIdentityClient.create({
     discovery,
@@ -50,6 +57,8 @@ function makeCreateEnv(config: Config) {
     discovery,
     tokenManager,
   });
+
+  const eventBroker = new DefaultEventBroker(root.child({ type: 'plugin' }));
 
   root.info(`Created UrlReader ${reader}`);
 
@@ -69,6 +78,8 @@ function makeCreateEnv(config: Config) {
       scheduler,
       permissions,
       identity,
+      eventBroker,
+      catalogApi,
     };
   };
 }
@@ -87,6 +98,7 @@ async function main() {
   const techdocsEnv = useHotMemoize(module, () => createEnv('techdocs'));
   const searchEnv = useHotMemoize(module, () => createEnv('search'));
   const appEnv = useHotMemoize(module, () => createEnv('app'));
+  const orchestratorEnv = useHotMemoize(module, () => createEnv('swf'));
 
   const apiRouter = Router();
   apiRouter.use('/catalog', await catalog(catalogEnv));
@@ -95,6 +107,7 @@ async function main() {
   apiRouter.use('/techdocs', await techdocs(techdocsEnv));
   apiRouter.use('/proxy', await proxy(proxyEnv));
   apiRouter.use('/search', await search(searchEnv));
+  apiRouter.use('/swf', await orchestrator(orchestratorEnv));
 
   // Add backends ABOVE this line; this 404 handler is the catch-all fallback
   apiRouter.use(notFoundHandler());
