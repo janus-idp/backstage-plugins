@@ -34,7 +34,7 @@ const DOCKER_MANIFEST_HEADERS = {
     'application/vnd.docker.distribution.manifest.v1+json;q=0.9',
     '*/*;q=0.8',
   ].join(', '),
-};
+} as const satisfies HeadersInit;
 
 export type NexusRepositoryManagerApiV1 = {
   getComponents(query: SearchServiceQuery): Promise<{
