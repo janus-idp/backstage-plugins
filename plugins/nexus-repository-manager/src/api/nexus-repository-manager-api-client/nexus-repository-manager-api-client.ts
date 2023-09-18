@@ -36,6 +36,15 @@ const DOCKER_MANIFEST_HEADERS = {
   ].join(', '),
 } as const satisfies HeadersInit;
 
+function getAdditionalHeaders(format?: string): HeadersInit {
+  switch (format /* NOSONAR - use switch for expandability */) {
+    case 'docker':
+      return DOCKER_MANIFEST_HEADERS;
+    default:
+      return {};
+  }
+}
+
 export type NexusRepositoryManagerApiV1 = {
   getComponents(query: SearchServiceQuery): Promise<{
     components: {
@@ -124,13 +133,12 @@ export class NexusRepositoryManagerApiClient
   }
 
   private async getRawAssets(component: ComponentXO) {
+    const additionalHeaders = getAdditionalHeaders(component.format);
+
     const assets = await Promise.all(
       component.assets?.map(
         async asset =>
-          await this.getRawAsset(
-            asset.downloadUrl,
-            component.format === 'docker' ? DOCKER_MANIFEST_HEADERS : {},
-          ),
+          await this.getRawAsset(asset.downloadUrl, additionalHeaders),
         // Create a dummy promise to avoid Promise.all() from failing
       ) ?? [new Promise<null>(() => null)],
     );
