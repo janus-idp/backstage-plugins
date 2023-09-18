@@ -132,7 +132,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
 
       const result = status ? AuthorizeResult.ALLOW : AuthorizeResult.DENY;
       this.logger.info(
-        `${identityResp?.identity.userEntityRef} is ${result} for permission ${request.permission.name}`,
+        `${identityResp?.identity.userEntityRef} is ${result} for permission ${request.permission.name} and action ${action}`,
       );
       return Promise.resolve({
         result: result,
@@ -169,8 +169,9 @@ export class RBACPermissionPolicy implements PermissionPolicy {
       this.enforcer,
       user,
       groups,
-      [entityRef, resourceType, action, 'allow'],
+      [entityRef, resourceType, action],
     );
+
     return await gEnf.enforce(entityRef, resourceType, action);
   };
 }

@@ -350,7 +350,7 @@ describe('Policy checks for users and groups', () => {
   });
 
   // case6
-  it('should allow access to basic permission for user Tom with "deny" read action definition, when his group "allow" this action', async () => {
+  it('should deny access to basic permission for user Tom with "deny" read action definition, when his group "allow" this action', async () => {
     const decision = await policy.handle(
       newPolicyQueryWithBasicPermission('test.resource', 'read'),
       newIdentityResponse('tom'),
