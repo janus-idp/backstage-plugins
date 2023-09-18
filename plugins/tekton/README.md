@@ -76,13 +76,13 @@ The Tekton plugin enables you to visualize the `PipelineRun` resources available
     backstage.io/kubernetes-namespace: <RESOURCE_NS>
   ```
 
-- The following annotation is added to the `catalog-info.yaml` file of entity to view the latest `PipelineRun` in the CI/CD tab of the application:
+- The following annotation is added to the `catalog-info.yaml` file of the entity to enable the Tekton related features in Backstage. The value of the annotation identifies the name of the Backstage entity:
 
   ```yaml
   annotations:
     ...
 
-    janus-idp.io/tekton-enabled : 'true'
+    janus-idp.io/tekton : <BACKSTAGE_ENTITY_NAME>
   ```
 
 - A custom label selector can be added, which Backstage uses to find the Kubernetes resources. The label selector takes precedence over the ID annotations.
@@ -123,13 +123,20 @@ The Tekton plugin enables you to visualize the `PipelineRun` resources available
 
    ```tsx title="packages/app/src/components/catalog/EntityPage.tsx"
    /* highlight-add-next-line */
-   import { TektonPage } from '@janus-idp/backstage-plugin-tekton';
+   import {
+     isTektonCIAvailable,
+     TektonPage,
+   } from '@janus-idp/backstage-plugin-tekton';
 
    const serviceEntityPage = (
      <EntityPageLayout>
        {/* ... */}
        {/* highlight-add-start */}
-       <EntityLayout.Route path="/tekton" title="Tekton">
+       <EntityLayout.Route
+         if={isTektonCIAvailable}
+         path="/tekton"
+         title="Tekton"
+       >
          <TektonPage />
        </EntityLayout.Route>
        {/* highlight-add-end */}

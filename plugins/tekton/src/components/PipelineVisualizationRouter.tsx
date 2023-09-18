@@ -9,7 +9,7 @@ import { PipelineRunVisualization } from './pipeline-topology';
 
 /** @public */
 export const isTektonCIAvailable = (entity: Entity): boolean =>
-  entity.metadata.annotations?.[TEKTON_CI_ANNOTATION] === 'true';
+  Boolean(entity.metadata.annotations?.[TEKTON_CI_ANNOTATION]);
 
 type PipelineVisualizationRouterProps = {
   linkTekton?: boolean;
