@@ -26,34 +26,33 @@ export class GroupCasbinEnforcerFactory {
       true,
     );
 
+    await this.buildGroupHierarchy(groupEnf, groups, user);
+
+    await this.copyPermissionPolicy(
+      permissionPolicy,
+      enforcer,
+      groupEnf,
+      groups,
+    );
+
+    return groupEnf;
+  }
+
+  private async buildGroupHierarchy(
+    groupEnf: Enforcer,
+    groups: Entity[],
+    user: Entity,
+  ) {
     // todo: make it configurable
     const rm = new DefaultRoleManager(10);
     groupEnf.setRoleManager(rm);
     groupEnf.enableAutoBuildRoleLinks(false);
     await groupEnf.buildRoleLinks();
 
-    for (const effect of [AuthorizeResult.DENY, AuthorizeResult.ALLOW]) {
-      const policy = [...permissionPolicy, effect.toLocaleLowerCase()];
-
-      // copy user permission policy
-      if (await enforcer.hasPolicy(...policy)) {
-        await groupEnf.addPolicy(...policy);
-      }
-
-      const rule = policy.slice(1);
-      for (const group of groups) {
-        // copy group permission policy to group enforcer
-        const groupRef = `group:default/${group.metadata.name}`;
-        if (await enforcer.hasPolicy(groupRef, ...rule)) {
-          await groupEnf.addPolicy(groupRef, ...rule);
-        }
-      }
-    }
-
     for (const group of groups) {
       // add group inheritance information to the role manager
       if (group.spec && group.spec.parent) {
-        const groupRef = `group:default/${group.metadata.name}`;
+        const groupRef = `group:default/${group.metadata.name.toLocaleLowerCase()}`;
         const parentGroup = group.spec.parent.toString() || '';
         const parentGroupRef = `group:default/${parentGroup}`;
 
@@ -61,7 +60,7 @@ export class GroupCasbinEnforcerFactory {
       }
     }
 
-    const userRef = permissionPolicy[0];
+    const userRef = `user:default/${user.metadata.name.toLocaleLowerCase()}`;
     // add information about user group membership to group enforcer
     if (user.spec && user.spec.memberOf) {
       const memberOfGroups = user.spec.memberOf as JsonArray; // todo: check if it is required array
@@ -70,7 +69,30 @@ export class GroupCasbinEnforcerFactory {
         await rm.addLink(userRef, groupRef);
       }
     }
+  }
 
-    return groupEnf;
+  private async copyPermissionPolicy(
+    permissionPolicy: string[],
+    enforcer: Enforcer,
+    groupEnf: Enforcer,
+    groups: Entity[],
+  ) {
+    for (const effect of [AuthorizeResult.DENY, AuthorizeResult.ALLOW]) {
+      const policy = [...permissionPolicy, effect.toLocaleLowerCase()];
+
+      // copy user permission policy
+      if (await enforcer.hasPolicy(...policy)) {
+        await groupEnf.addPolicy(...policy);
+      }
+
+      const rule = policy.slice(1); // make copy policy without first element - username
+      for (const group of groups) {
+        // copy group permission policy to group enforcer
+        const groupRef = `group:default/${group.metadata.name.toLocaleLowerCase()}`;
+        if (await enforcer.hasPolicy(groupRef, ...rule)) {
+          await groupEnf.addPolicy(groupRef, ...rule);
+        }
+      }
+    }
   }
 }
