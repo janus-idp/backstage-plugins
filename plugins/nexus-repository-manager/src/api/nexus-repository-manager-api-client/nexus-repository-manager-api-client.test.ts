@@ -81,9 +81,8 @@ const handlers = [
     },
   ),
 
-  // Conditionally returns manifest v2 schema 1/2, depending
-  // on the accept header, to simulate a server that supports
-  // both schemas.
+  // Conditionally returns manifest v2 schema 1/2, depending on the accept
+  // header, to simulate a server that supports both schemas.
   rest.get(
     `${LOCAL_ADDR}/repository/docker/v2/janus-idp/backstage-showcase/manifests/sha-de3dbf1`,
     (req, res, ctx) => {
