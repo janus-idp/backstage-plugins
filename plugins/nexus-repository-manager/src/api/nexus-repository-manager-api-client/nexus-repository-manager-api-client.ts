@@ -87,18 +87,19 @@ export class NexusRepositoryManagerApiClient
     return await SearchService.search(query);
   }
 
-  private async fetcher(
-    url: string,
-    additionalHeaders: Record<string, string> = {},
-  ) {
+  private async fetcher(url: string, additionalHeaders: HeadersInit = {}) {
     const { token: idToken } = await this.identityApi.getCredentials();
-    const response = await fetch(url, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...additionalHeaders,
-        ...(idToken && { Authorization: `Bearer ${idToken}` }),
-      },
-    });
+
+    const headers = new Headers(additionalHeaders);
+    if (!headers.has('Accept')) {
+      headers.set('Accept', 'application/json');
+    }
+
+    if (idToken) {
+      headers.set('Authorization', `Bearer ${idToken}`);
+    }
+
+    const response = await fetch(url, { headers });
     if (!response.ok) {
       throw new Error(
         `failed to fetch data, status ${response.status}: ${response.statusText}`,
@@ -107,10 +108,7 @@ export class NexusRepositoryManagerApiClient
     return await response.json();
   }
 
-  private async getRawAsset(
-    url?: string,
-    additionalHeaders: Record<string, string> = {},
-  ) {
+  private async getRawAsset(url?: string, additionalHeaders: HeadersInit = {}) {
     const proxyUrl = await this.getBaseUrl();
 
     if (!url) {
