@@ -3,6 +3,7 @@ import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { JsonArray } from '@backstage/types';
 
 import {
+  DefaultRoleManager,
   Enforcer,
   newEnforcer,
   newModelFromString,
@@ -25,17 +26,23 @@ export class GroupCasbinEnforcerFactory {
       true,
     );
 
+    // todo: make it configurable
+    const rm = new DefaultRoleManager(10);
+    groupEnf.setRoleManager(rm);
+    groupEnf.enableAutoBuildRoleLinks(false);
+    await groupEnf.buildRoleLinks();
+
     for (const effect of [AuthorizeResult.DENY, AuthorizeResult.ALLOW]) {
       const policy = [...permissionPolicy, effect.toLocaleLowerCase()];
 
-      // add user permission
+      // copy user permission policy
       if (await enforcer.hasPolicy(...policy)) {
         await groupEnf.addPolicy(...policy);
       }
 
       const rule = policy.slice(1);
       for (const group of groups) {
-        // add group permission policies to group enforcer
+        // copy group permission policy to group enforcer
         const groupRef = `group:default/${group.metadata.name}`;
         if (await enforcer.hasPolicy(groupRef, ...rule)) {
           await groupEnf.addPolicy(groupRef, ...rule);
@@ -44,13 +51,13 @@ export class GroupCasbinEnforcerFactory {
     }
 
     for (const group of groups) {
-      // add group inheritance information to group enforcer
+      // add group inheritance information to the role manager
       if (group.spec && group.spec.parent) {
         const groupRef = `group:default/${group.metadata.name}`;
         const parentGroup = group.spec.parent.toString() || '';
         const parentGroupRef = `group:default/${parentGroup}`;
 
-        await groupEnf.addGroupingPolicy(groupRef, parentGroupRef);
+        await rm.addLink(groupRef, parentGroupRef);
       }
     }
 
@@ -60,7 +67,7 @@ export class GroupCasbinEnforcerFactory {
       const memberOfGroups = user.spec.memberOf as JsonArray; // todo: check if it is required array
       for (const group of memberOfGroups) {
         const groupRef = `group:default/${group}`;
-        await groupEnf.addGroupingPolicy(userRef, groupRef);
+        await rm.addLink(userRef, groupRef);
       }
     }
 
