@@ -27,11 +27,15 @@ import fs from 'fs-extra';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import pickBy from 'lodash/pickBy';
 import { RunScriptWebpackPlugin } from 'run-script-webpack-plugin';
-import webpack, { ProvidePlugin } from 'webpack';
+import webpack, { container, ProvidePlugin } from 'webpack';
 import nodeExternals from 'webpack-node-externals';
 import yn from 'yn';
 
-import { posix as posixPath, resolve as resolvePath } from 'path';
+import {
+  join as joinPath,
+  posix as posixPath,
+  resolve as resolvePath,
+} from 'path';
 
 import { paths as cliPaths } from '../../lib/paths';
 import { version } from '../../lib/version';
@@ -40,8 +44,17 @@ import { runPlain } from '../run';
 import { LinkedPackageResolvePlugin } from './LinkedPackageResolvePlugin';
 import { optimization } from './optimization';
 import { BundlingPaths } from './paths';
+import { sharedModules } from './scalprumConfig';
 import { transforms } from './transforms';
 import { BackendBundlingOptions, BundlingOptions } from './types';
+
+const { ModuleFederationPlugin } = container;
+
+const scalprumPlugin = new ModuleFederationPlugin({
+  name: 'backstageHost',
+  filename: 'backstageHost.[fullhash].js',
+  shared: [sharedModules],
+});
 
 const BUILD_CACHE_ENV_VAR = 'BACKSTAGE_CLI_EXPERIMENTAL_BUILD_CACHE';
 
@@ -142,6 +155,8 @@ export async function createConfig(
     }),
   );
 
+  plugins.push(scalprumPlugin);
+
   // These files are required by the transpiled code when using React Refresh.
   // They need to be excluded to the module scope plugin which ensures that files
   // that exist in the package are required.
@@ -156,6 +171,11 @@ export async function createConfig(
   const withCache = yn(process.env[BUILD_CACHE_ENV_VAR], { default: false });
 
   return {
+    cache: {
+      type: 'filesystem',
+      allowCollectingMemory: true,
+      cacheDirectory: joinPath(process.cwd(), '.webpack-cache'),
+    },
     mode: isDev ? 'development' : 'production',
     profile: false,
     optimization: optimization(options),
@@ -167,6 +187,16 @@ export async function createConfig(
     context: paths.targetPath,
     entry: [...(options.additionalEntryPoints ?? []), paths.targetEntry],
     resolve: {
+      alias: {
+        '@backstage/frontend-app-api/src': joinPath(
+          process.cwd(),
+          'src',
+          'overrides',
+          '@backstage',
+          'frontend-app-api',
+          'src',
+        ),
+      },
       extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx', '.json', '.wasm'],
       mainFields: ['browser', 'module', 'main'],
       fallback: {

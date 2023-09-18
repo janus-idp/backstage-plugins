@@ -41,6 +41,7 @@
     "@backstage/integration": "1.6.2",
     "@backstage/release-manifests": "0.0.9",
     "@backstage/types": "1.1.0",
+    "@openshift/dynamic-plugin-sdk-webpack": "^3.0.0",
     "@esbuild-kit/cjs-loader": "2.4.1",
     "@esbuild-kit/esm-loader": "2.5.5",
     "@manypkg/get-packages": "1.1.3",

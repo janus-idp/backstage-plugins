@@ -24,6 +24,7 @@ import { relative as relativePath, resolve as resolvePath } from 'path';
 
 import { runParallelWorkers } from '../parallel';
 import { paths } from '../paths';
+import { buildScalprumPlugin } from './buildScalprumPlugin';
 import { buildTypeDefinitions } from './buildTypeDefinitions';
 import { makeRollupConfigs } from './config';
 import { BuildOptions, Output } from './types';
@@ -117,6 +118,26 @@ export const buildPackage = async (options: BuildOptions) => {
 
   if (options.outputs.has(Output.types) && options.useApiExtractor) {
     buildTasks.push(buildTypeDefinitions());
+  }
+
+  const { name, version, scalprum } = await fs.readJson(
+    paths.resolveTarget('package.json'),
+  );
+  if (scalprum) {
+    await fs.remove(paths.resolveTarget('dist-scalprum'));
+
+    buildTasks.push(
+      buildScalprumPlugin({
+        writeStats: false,
+        configPaths: [],
+        targetDir: paths.targetDir,
+        pluginMetadata: {
+          ...scalprum,
+          version,
+        },
+        fromPackage: name,
+      }),
+    );
   }
 
   await Promise.all(buildTasks);
