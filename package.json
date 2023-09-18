@@ -32,7 +32,7 @@
     ],
     "nohoist": [
       "@janus-idp/backstage-plugin-orchestrator",
-      "@janus-idp/backstage-plugin-orchestrator/@kie-tools/**"
+      "@janus-idp/backstage-plugin-orchestrator/@kie-tools/**/!(react|react-dom)"
     ]
   },
   "devDependencies": {
