@@ -309,8 +309,6 @@ backend.add(ocmPlugin());
        ClusterInfoCard,
      } from '@janus-idp/backstage-plugin-ocm';
 
-     /* highlight-add-end */
-
      const isType = (types: string | string[]) => (entity: Entity) => {
        if (!entity?.spec?.type) {
          return false;
@@ -319,6 +317,7 @@ backend.add(ocmPlugin());
          ? entity?.spec?.type === types
          : types.includes(entity.spec.type as string);
      };
+     /* highlight-add-end */
 
      export const resourcePage = (
        <EntityLayout>
