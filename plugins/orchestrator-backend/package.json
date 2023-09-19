@@ -22,7 +22,8 @@
     "workflows"
   ],
   "files": [
-    "dist"
+    "dist",
+    "workflows"
   ],
   "scripts": {
     "start": "backstage-cli package start",
