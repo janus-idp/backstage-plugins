@@ -1,5 +1,3 @@
-import { resolvePackagePath } from '@backstage/backend-common';
-
 import fs from 'fs-extra';
 
 import {
@@ -13,7 +11,7 @@ import {
   toWorkflowString,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
-import { extname, join } from 'path';
+import { extname, join, resolve } from 'path';
 
 import { DataInputSchemaService } from './DataInputSchemaService';
 import { OpenApiService } from './OpenApiService';
@@ -21,21 +19,22 @@ import { OpenApiService } from './OpenApiService';
 export class WorkflowService {
   private openApiService: OpenApiService;
   private dataInputSchemaService: DataInputSchemaService;
-  private readonly resourcesPath = `workflows`;
+  private kogitoResourcesPath: string;
 
   constructor(
     openApiService: OpenApiService,
     dataInputSchemaService: DataInputSchemaService,
+    kogitoResourcesPath: string,
   ) {
     this.openApiService = openApiService;
     this.dataInputSchemaService = dataInputSchemaService;
+    this.kogitoResourcesPath = kogitoResourcesPath;
   }
 
   async saveWorkflowDefinition(item: SwfItem): Promise<SwfItem> {
     const workflowFormat = extractWorkflowFormatFromUri(item.uri);
-    const definitionsPath = resolvePackagePath(
-      `@janus-idp/backstage-plugin-orchestrator-backend`,
-      `${this.resourcesPath}/${item.definition.id}.sw.${workflowFormat}`,
+    const definitionsPath = this.resolveRosourcePath(
+      `${item.definition.id}.sw.${workflowFormat}`,
     );
     const dataInputSchemaPath = await this.saveDataInputSchema(item);
     if (dataInputSchemaPath) {
@@ -82,10 +81,7 @@ export class WorkflowService {
   }
 
   async saveOpenApi(): Promise<void> {
-    const path = resolvePackagePath(
-      `@janus-idp/backstage-plugin-orchestrator-backend`,
-      `${this.resourcesPath}/${actions_open_api_file_path}`,
-    );
+    const path = this.resolveRosourcePath(actions_open_api_file_path);
     const openApi = await this.openApiService.generateOpenApi();
     if (!openApi) {
       return;
@@ -127,9 +123,8 @@ export class WorkflowService {
     ];
 
     const saveSchemaPromises = schemaFiles.map(schemaFile => {
-      const path = resolvePackagePath(
-        `@janus-idp/backstage-plugin-orchestrator-backend`,
-        join(this.resourcesPath, schemas_folder, schemaFile.fileName),
+      const path = this.resolveRosourcePath(
+        join(schemas_folder, schemaFile.fileName),
       );
       return this.saveFile(path, schemaFile.jsonSchema);
     });
@@ -140,10 +135,7 @@ export class WorkflowService {
   }
 
   async deleteWorkflowDefinitionById(uri: string): Promise<void> {
-    const definitionsPath = resolvePackagePath(
-      `@janus-idp/backstage-plugin-orchestrator-backend`,
-      `${this.resourcesPath}/${uri}`,
-    );
+    const definitionsPath = this.resolveRosourcePath(uri);
     await fs.rm(definitionsPath, { force: true });
   }
 
@@ -151,14 +143,15 @@ export class WorkflowService {
     const specs: SwfSpecFile[] = [];
     // We can list all spec files from FS but let's keep it simple for now
     for (const relativePath of spec_files) {
-      const path = resolvePackagePath(
-        `@janus-idp/backstage-plugin-orchestrator-backend`,
-        `${this.resourcesPath}/${relativePath}`,
-      );
+      const path = this.resolveRosourcePath(relativePath);
       const buffer = await fs.readFile(path);
       const content = JSON.parse(buffer.toString('utf8'));
       specs.push({ path, content });
     }
     return specs;
+  }
+
+  private resolveRosourcePath(relativePath: string): string {
+    return resolve(join(this.kogitoResourcesPath, relativePath));
   }
 }

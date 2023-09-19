@@ -95,7 +95,11 @@ export async function createRouter(
     `${kogitoBaseUrl}:${kogitoPort}`,
   );
   const jiraService = new JiraService(logger, cloudEventService);
-  const openApiService = new OpenApiService(logger, discovery);
+  const openApiService = new OpenApiService(
+    logger,
+    discovery,
+    kogitoResourcesPath,
+  );
   const dataInputSchemaService = new DataInputSchemaService(
     logger,
     githubToken,
@@ -104,6 +108,7 @@ export async function createRouter(
   const workflowService = new WorkflowService(
     openApiService,
     dataInputSchemaService,
+    kogitoResourcesPath,
   );
 
   const scaffolderService: ScaffolderService = new ScaffolderService(

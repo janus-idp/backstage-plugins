@@ -1,16 +1,23 @@
-import { resolvePackagePath } from '@backstage/backend-common';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 
 import fs from 'fs-extra';
 import { Logger } from 'winston';
 
+import { join, resolve } from 'path';
+
 export class OpenApiService {
   logger: Logger;
   discovery: DiscoveryApi;
+  kogitoResourcesPath: string;
 
-  constructor(logger: Logger, discovery: DiscoveryApi) {
+  constructor(
+    logger: Logger,
+    discovery: DiscoveryApi,
+    kogitoResourcesPath: string,
+  ) {
     this.logger = logger;
     this.discovery = discovery;
+    this.kogitoResourcesPath = kogitoResourcesPath;
   }
 
   private async fetchScaffolderActions(): Promise<any> {
@@ -21,11 +28,10 @@ export class OpenApiService {
   }
 
   private async openApiTemplate(): Promise<any> {
-    const path = resolvePackagePath(
-      `@janus-idp/backstage-plugin-orchestrator-backend`,
-      `src/service/openapi-template.json`,
+    const openApiTemplate = this.resolveRosourcePath(
+      join('templates', 'openapi-template.json'),
     );
-    return fs.readFile(path).then(buffer => {
+    return fs.readFile(openApiTemplate).then(buffer => {
       return JSON.parse(buffer.toString('utf8'));
     });
   }
@@ -141,5 +147,9 @@ export class OpenApiService {
 
   private generateSchemaName(actionId: string): string {
     return actionId?.replaceAll(':', '_') ?? actionId;
+  }
+
+  private resolveRosourcePath(relativePath: string): string {
+    return resolve(join(this.kogitoResourcesPath, relativePath));
   }
 }
