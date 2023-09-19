@@ -15,6 +15,8 @@
 name: Publish Backend Plugin Manager
 
 on:
+  push:
+
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -80,6 +82,20 @@ jobs:
           COMMIT_VERSION: ${{ steps.get_package_version.outputs.PACKAGE_VERSION }}
           LAST_PUSHED_VERSION: ${{ steps.get_last_pushed_version.outputs.LAST_PUSHED_VERSION }}
         run: |
+          #
+          # The new version to push to NPMS is calculated as follows:
+          #            
+          #   upstream version: 0.0.0, already pushed version: none => new version: 0.0.1-janus.0
+          #   upstream version: 0.0.0, already pushed version: 0.0.1-janus.0 => new version: 0.0.1-janus.1
+          #   upstream version: 0.0.1-next.0, already pushed version: 0.0.1-janus.1 => new version: 0.0.1-janus.2
+          #   upstream version: 0.0.1-next.1, already pushed version: 0.0.1-janus.2 => new version: 0.0.1-janus.3
+          #   upstream version: 0.0.1, already pushed version: 0.0.1-janus.3 => new version: 0.0.2-janus.0
+          #   upstream version: 0.0.2-next.0, already pushed version: 0.0.2-janus.0 => new version: 0.0.2-janus.1
+          #   etc ...
+          #
+
+          # Parse the semantic version of the upstream `backend-plugin-manager`
+
           COMMIT_MAJOR=$(echo $COMMIT_VERSION | cut -d. -f1)
           COMMIT_MINOR=$(echo $COMMIT_VERSION | cut -d. -f2)
           COMMIT_PATCH=$(echo $COMMIT_VERSION | cut -d. -f3 | cut -d- -f1)
@@ -90,11 +106,19 @@ jobs:
               COMMIT_PRERELEASE=$(echo $COMMIT_VERSION | cut -d- -f2)
           fi
 
+          # If there is a pre-release part, then the effective last released version is the previous one
+
           if [ -n "$COMMIT_PRERELEASE" ]; then
               COMMIT_PATCH=$((COMMIT_PATCH-1))
           fi
 
+          # The PATCH part of the version pushed to NPMJS will always contain a pre-release part
+          # => increment it
+
           PATCH=$((COMMIT_PATCH+1))
+
+          # If the last pushed version is not empty, set it to a default value, and then parse it
+
           if [ -z "$LAST_PUSHED_VERSION" ]; then
               LAST_PUSHED_VERSION=$COMMIT_MAJOR.$COMMIT_MINOR.$PATCH-janus.0
           fi
@@ -104,6 +128,10 @@ jobs:
           LAST_PUSHED_PATCH=$(echo $LAST_PUSHED_VERSION | cut -d. -f3 | cut -d- -f1)
           LAST_PUSHED_PRERELEASE_WITHOUT_NUMBER=$(echo $LAST_PUSHED_VERSION | cut -d- -f2 | cut -d. -f1)
           LAST_PUSHED_PRERELEASE_NUMBER=$(echo $LAST_PUSHED_VERSION | cut -d- -f2 | cut -d. -f2)
+
+          # if base version (without pre-release part) is the same for upstream package and pushed NPM package,
+          # then just increment the pre-release number, 
+          # otherwise, use the base version of the upstream package, and reset the `.janus.` pre-release number to 0.
 
           if [ "$COMMIT_MAJOR.$COMMIT_MINOR.$PATCH" == "$LAST_PUSHED_MAJOR.$LAST_PUSHED_MINOR.$LAST_PUSHED_PATCH" ]; then
               PRERELEASE="janus.$((LAST_PUSHED_PRERELEASE_NUMBER+1))"
