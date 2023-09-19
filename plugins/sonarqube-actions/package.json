@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "@backstage/plugin-scaffolder-node": "^0.1.5",
-    "yaml": "^2.2.1"
+    "yaml": "^2.2.2"
   },
   "devDependencies": {
     "@backstage/backend-common": "0.19.1",
