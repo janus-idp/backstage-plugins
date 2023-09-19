@@ -1,0 +1,291 @@
+{
+  "name": "@janus-idp/cli",
+  "description": "CLI for developing Backstage plugins and apps",
+  "version": "0.0.1",
+  "publishConfig": {
+    "access": "public"
+  },
+  "backstage": {
+    "role": "cli"
+  },
+  "homepage": "https://janus-idp.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/janus-idp/backstage-plugins",
+    "directory": "packages/cli"
+  },
+  "keywords": [
+    "backstage"
+  ],
+  "license": "Apache-2.0",
+  "main": "dist/index.cjs.js",
+  "scripts": {
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "tsc": "true",
+    "test": "backstage-cli package test",
+    "clean": "backstage-cli package clean",
+    "start": "nodemon --"
+  },
+  "bin": {
+    "janus-cli": "bin/janus-cli"
+  },
+  "dependencies": {
+    "@backstage/catalog-model": "1.4.1",
+    "@backstage/cli-common": "0.1.12",
+    "@backstage/cli-node": "0.1.3",
+    "@backstage/config": "1.0.8",
+    "@backstage/config-loader": "1.4.0",
+    "@backstage/errors": "1.2.1",
+    "@backstage/eslint-plugin": "0.1.3",
+    "@backstage/integration": "1.6.2",
+    "@backstage/release-manifests": "0.0.9",
+    "@backstage/types": "1.1.0",
+    "@esbuild-kit/cjs-loader": "2.4.1",
+    "@esbuild-kit/esm-loader": "2.5.5",
+    "@manypkg/get-packages": "1.1.3",
+    "@octokit/graphql": "5.0.0",
+    "@octokit/graphql-schema": "13.7.0",
+    "@octokit/oauth-app": "4.2.0",
+    "@octokit/request": "6.0.0",
+    "@pmmmwh/react-refresh-webpack-plugin": "0.5.7",
+    "@rollup/plugin-commonjs": "23.0.0",
+    "@rollup/plugin-json": "5.0.0",
+    "@rollup/plugin-node-resolve": "13.0.6",
+    "@rollup/plugin-yaml": "4.0.0",
+    "@spotify/eslint-config-base": "14.0.0",
+    "@spotify/eslint-config-react": "14.0.0",
+    "@spotify/eslint-config-typescript": "14.0.0",
+    "@sucrase/webpack-loader": "2.0.0",
+    "@svgr/core": "6.5.x",
+    "@svgr/plugin-jsx": "6.5.x",
+    "@svgr/plugin-svgo": "6.5.x",
+    "@svgr/rollup": "6.5.x",
+    "@svgr/webpack": "6.5.x",
+    "@swc/core": "1.3.46",
+    "@swc/helpers": "0.5.0",
+    "@swc/jest": "0.2.22",
+    "@types/jest": "29.0.0",
+    "@types/webpack-env": "1.15.2",
+    "@typescript-eslint/eslint-plugin": "5.9.0",
+    "@typescript-eslint/parser": "5.9.0",
+    "@yarnpkg/lockfile": "1.1.0",
+    "@yarnpkg/parsers": "3.0.0-rc.4",
+    "bfj": "7.0.2",
+    "buffer": "6.0.3",
+    "chalk": "4.0.0",
+    "chokidar": "3.3.1",
+    "commander": "9.1.0",
+    "cross-fetch": "3.1.5",
+    "cross-spawn": "7.0.3",
+    "css-loader": "6.5.1",
+    "diff": "5.0.0",
+    "esbuild": "0.19.0",
+    "esbuild-loader": "2.18.0",
+    "eslint": "8.6.0",
+    "eslint-config-prettier": "8.3.0",
+    "eslint-formatter-friendly": "7.0.0",
+    "eslint-plugin-deprecation": "1.3.2",
+    "eslint-plugin-import": "2.25.4",
+    "eslint-plugin-jest": "27.0.0",
+    "eslint-plugin-jsx-a11y": "6.5.1",
+    "eslint-plugin-react": "7.28.0",
+    "eslint-plugin-react-hooks": "4.3.0",
+    "eslint-webpack-plugin": "3.1.1",
+    "express": "4.17.1",
+    "fork-ts-checker-webpack-plugin": "7.0.0-alpha.8",
+    "fs-extra": "10.1.0",
+    "git-url-parse": "13.0.0",
+    "glob": "7.1.7",
+    "global-agent": "3.0.0",
+    "handlebars": "4.7.3",
+    "html-webpack-plugin": "5.3.1",
+    "inquirer": "8.2.0",
+    "jest": "29.0.2",
+    "jest-css-modules": "2.1.0",
+    "jest-environment-jsdom": "29.0.2",
+    "jest-runtime": "29.0.2",
+    "json-schema": "0.4.0",
+    "lodash": "4.17.21",
+    "mini-css-extract-plugin": "2.4.2",
+    "minimatch": "5.1.1",
+    "node-fetch": "2.6.7",
+    "node-libs-browser": "2.2.1",
+    "npm-packlist": "5.0.0",
+    "ora": "5.3.0",
+    "postcss": "8.1.0",
+    "process": "0.11.10",
+    "react-dev-utils": "12.0.0-next.60",
+    "react-refresh": "0.14.0",
+    "recursive-readdir": "2.2.2",
+    "replace-in-file": "6.0.0",
+    "rollup": "2.60.2",
+    "rollup-plugin-dts": "4.0.1",
+    "rollup-plugin-esbuild": "4.7.2",
+    "rollup-plugin-postcss": "4.0.0",
+    "rollup-pluginutils": "2.8.2",
+    "run-script-webpack-plugin": "0.2.0",
+    "semver": "7.5.3",
+    "style-loader": "3.3.1",
+    "sucrase": "3.20.2",
+    "swc-loader": "0.2.3",
+    "tar": "6.1.12",
+    "terser-webpack-plugin": "5.1.3",
+    "util": "0.12.3",
+    "webpack": "5.70.0",
+    "webpack-dev-server": "4.7.3",
+    "webpack-node-externals": "3.0.0",
+    "yaml": "2.0.0",
+    "yml-loader": "2.1.0",
+    "yn": "4.0.0",
+    "zod": "3.21.4"
+  },
+  "devDependencies": {
+    "@backstage/backend-common": "0.19.4",
+    "@backstage/backend-plugin-api": "0.6.2",
+    "@backstage/backend-test-utils": "0.2.2",
+    "@backstage/cli": "0.22.9",
+    "@backstage/core-app-api": "1.9.1",
+    "@backstage/core-components": "0.13.4",
+    "@backstage/core-plugin-api": "1.5.3",
+    "@backstage/dev-utils": "1.0.20",
+    "@backstage/plugin-scaffolder-backend": "1.16.5",
+    "@backstage/test-utils": "1.4.2",
+    "@backstage/theme": "0.4.1",
+    "@types/cross-spawn": "6.0.2",
+    "@types/diff": "5.0.0",
+    "@types/express": "4.17.6",
+    "@types/fs-extra": "9.0.1",
+    "@types/http-proxy": "1.17.4",
+    "@types/inquirer": "8.1.3",
+    "@types/minimatch": "5.1.2",
+    "@types/mock-fs": "4.13.0",
+    "@types/node": "16.11.26",
+    "@types/npm-packlist": "3.0.0",
+    "@types/recursive-readdir": "2.2.0",
+    "@types/rollup-plugin-peer-deps-external": "2.2.0",
+    "@types/rollup-plugin-postcss": "3.1.4",
+    "@types/svgo": "2.6.2",
+    "@types/tar": "6.1.1",
+    "@types/terser-webpack-plugin": "5.0.4",
+    "@types/yarnpkg__lockfile": "1.1.4",
+    "del": "7.0.0",
+    "mock-fs": "5.2.0",
+    "msw": "1.0.0",
+    "nodemon": "3.0.1",
+    "ts-node": "10.0.0",
+    "type-fest": "2.19.0"
+  },
+  "peerDependencies": {
+    "@microsoft/api-extractor": "7.21.2"
+  },
+  "peerDependenciesMeta": {
+    "@microsoft/api-extractor": {
+      "optional": true
+    }
+  },
+  "files": [
+    "asset-types",
+    "templates",
+    "config",
+    "bin",
+    "dist/**/*.js"
+  ],
+  "nodemonConfig": {
+    "watch": "./src",
+    "exec": "bin/janus-cli",
+    "ext": "ts"
+  },
+  "configSchema": {
+    "$schema": "https://backstage.io/schema/config-v1",
+    "title": "@janus-idp/cli",
+    "type": "object",
+    "properties": {
+      "app": {
+        "type": "object",
+        "properties": {
+          "baseUrl": {
+            "type": "string",
+            "visibility": "frontend"
+          },
+          "title": {
+            "type": "string",
+            "visibility": "frontend"
+          },
+          "datadogRum": {
+            "type": "object",
+            "description": "Datadog RUM events configuration",
+            "properties": {
+              "env": {
+                "type": "string",
+                "visibility": "frontend",
+                "description": "Environment for Datadog RUM events"
+              },
+              "clientToken": {
+                "type": "string",
+                "visibility": "frontend",
+                "description": "clientToken for Datadog RUM events"
+              },
+              "applicationId": {
+                "type": "string",
+                "visibility": "frontend",
+                "description": "applicationId for Datadog RUM events"
+              },
+              "site": {
+                "type": "string",
+                "visibility": "frontend",
+                "description": "site for Datadog RUM events"
+              }
+            },
+            "required": [
+              "clientToken",
+              "applicationId"
+            ]
+          },
+          "listen": {
+            "type": "object",
+            "description": "Listening configuration for local development",
+            "properties": {
+              "host": {
+                "type": "string",
+                "visibility": "frontend",
+                "description": "The host that the frontend should be bound to. Only used for local development."
+              },
+              "port": {
+                "type": "number",
+                "visibility": "frontend",
+                "description": "The port that the frontend should be bound to. Only used for local development."
+              }
+            }
+          },
+          "https": {
+            "type": "object",
+            "description": "Only used for local development. The https object is passed to webpack in order to enable using https on localhost.",
+            "properties": {
+              "certificate": {
+                "type": "object",
+                "description": "Parent object containing certificate and the private key",
+                "required": [
+                  "key",
+                  "cert"
+                ],
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "visibility": "secret",
+                    "description": "Https Certificate private key. Use $file to load in a file"
+                  },
+                  "cert": {
+                    "type": "string",
+                    "visibility": "secret",
+                    "description": "Https Certificate. Use $file to load in a file"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -34,6 +34,7 @@
   "devDependencies": {
     "@backstage/cli": "0.22.9",
     "@ianvs/prettier-plugin-sort-imports": "4.1.0",
+    "@janus-idp/cli": "*",
     "@semantic-release/changelog": "6.0.3",
     "@semantic-release/exec": "6.0.3",
     "@semantic-release/git": "10.0.1",
@@ -42,6 +43,7 @@
     "@spotify/prettier-config": "15.0.0",
     "conventional-changelog-conventionalcommits": "7.0.2",
     "husky": "8.0.3",
+    "eslint-plugin-jest": "27.0.0",
     "lint-staged": "14.0.1",
     "multi-semantic-release": "3.0.2",
     "prettier": "3.0.3",
