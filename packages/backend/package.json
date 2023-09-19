@@ -34,12 +34,12 @@
     "@backstage/plugin-search-backend-module-pg": "^0.5.8",
     "@backstage/plugin-search-backend-node": "^1.2.3",
     "@backstage/plugin-techdocs-backend": "^1.6.4",
-    "better-sqlite3": "^8.0.0",
-    "dockerode": "^3.3.1",
-    "express": "^4.17.1",
-    "express-promise-router": "^4.1.0",
-    "pg": "^8.3.0",
-    "winston": "^3.2.1"
+    "better-sqlite3": "8.4.0",
+    "dockerode": "3.3.5",
+    "express": "4.18.2",
+    "express-promise-router": "4.1.1",
+    "pg": "8.11.0",
+    "winston": "3.9.0"
   },
   "devDependencies": {
     "@backstage/cli": "0.22.9",
