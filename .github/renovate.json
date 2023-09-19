@@ -1,5 +1,6 @@
 {
   "extends": [
+    "config:recommended",
     ":gitSignOff",
     ":rebaseStalePrs",
     "group:allNonMajor",
@@ -21,11 +22,11 @@
     },
     {
       "matchFileNames": ["packages/**"],
-      "extends": ["config:js-app"]
+      "extends": [":pinAllExceptPeerDependencies"]
     },
     {
       "matchFileNames": ["plugins/**"],
-      "extends": ["config:js-lib"]
+      "extends": [":pinOnlyDevDependencies"]
     }
   ]
 }
