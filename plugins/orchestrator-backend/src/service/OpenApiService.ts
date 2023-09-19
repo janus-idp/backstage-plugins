@@ -1,9 +1,8 @@
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 
-import fs from 'fs-extra';
 import { Logger } from 'winston';
 
-import { join, resolve } from 'path';
+import openApiTemplate from './openapi-template.json';
 
 export class OpenApiService {
   logger: Logger;
@@ -27,17 +26,8 @@ export class OpenApiService {
     });
   }
 
-  private async openApiTemplate(): Promise<any> {
-    const openApiTemplate = this.resolveRosourcePath(
-      join('templates', 'openapi-template.json'),
-    );
-    return fs.readFile(openApiTemplate).then(buffer => {
-      return JSON.parse(buffer.toString('utf8'));
-    });
-  }
-
   async generateOpenApi(): Promise<any> {
-    const template = await this.openApiTemplate();
+    const template = { ...openApiTemplate };
     return this.fetchScaffolderActions()
       .then(actions => {
         template.paths = this.mapPaths(actions);
@@ -147,9 +137,5 @@ export class OpenApiService {
 
   private generateSchemaName(actionId: string): string {
     return actionId?.replaceAll(':', '_') ?? actionId;
-  }
-
-  private resolveRosourcePath(relativePath: string): string {
-    return resolve(join(this.kogitoResourcesPath, relativePath));
   }
 }
