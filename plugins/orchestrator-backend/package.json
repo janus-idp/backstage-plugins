@@ -24,21 +24,6 @@
   "files": [
     "dist"
   ],
-  "exports": {
-    ".": "./src/index.ts",
-    "./alpha": "./src/alpha.ts",
-    "./package.json": "./package.json"
-  },
-  "typesVersions": {
-    "*": {
-      "alpha": [
-        "src/alpha.ts"
-      ],
-      "package.json": [
-        "package.json"
-      ]
-    }
-  },
   "scripts": {
     "start": "backstage-cli package start",
     "build": "backstage-cli package build",
