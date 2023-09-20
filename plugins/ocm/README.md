@@ -33,7 +33,7 @@ If you are interested in Resource discovery and do not want any of the front-end
 
 - OCM is deployed and configured on a Kubernetes cluster.
 - [Kubernetes plugin for Backstage](https://backstage.io/docs/features/kubernetes) is installed and configured (Optional)
-- A `ClusterRole` is granted to a `ServiceAccount` with access to the hub cluster as follows:
+- On the target Hub clusters please create a `ServiceAccount` and grant it the following `ClusterRole`:
 
   ```yaml
   kind: ClusterRole
@@ -83,9 +83,9 @@ If you are interested in Resource discovery and do not want any of the front-end
              caData: # Base64-encoded CA bundle in PEM format (Optional)
      ```
 
-     - To ensure the cluster resources are properly ingested into the catalog, the value provided to the `name` field must only contain alphanumeric characters and `-_.`, as well as contain at most 62 characters. (Should satisfy the following regex `^[a-zA-Z0-9-_.]{1,62}$`)
+     - To ensure the Hub clusters are properly ingested into the catalog, the value provided to the `name` field must comply with the backstage entity name format [requirements](https://backstage.io/docs/features/software-catalog/descriptor-format/#name-required)
 
-   - Alternatively, If the Backstage Kubernetes plugin is installed and configured to connect to the hub cluster, then you can bind the both hub and Kubernetes configuration by providing the name of the hub in the `app-config.yaml` as follows:
+   - Alternatively, If the Backstage Kubernetes plugin is installed and configured to connect to the Hub cluster, then you can bind the both hub and Kubernetes configuration by providing the name of the Hub in the `app-config.yaml` as follows:
 
      ```yaml title="app-config.yaml"
      kubernetes:
@@ -114,7 +114,7 @@ If you are interested in Resource discovery and do not want any of the front-end
              # highlight-add-end
      ```
 
-     - If the `kubernetesPluginRef` is provided, then it will take precedence over the configurations in the ocm providers
+     - If the `kubernetesPluginRef` is provided, then it will take precedence over any other configuration for that OCM provider
      - Please ensure that `<cluster-name>` follows the same requirements as the `name` field in the OCM configuration.
      - Note: It is not necessary to have the kubernetes plugin installed, since only the kubernetes configuration is required if `kubernetesPluginRef` is used
 
@@ -237,6 +237,7 @@ If you are interested in Resource discovery and do not want any of the front-end
      providers:
        ocm:
          env:
+           # ...
            # highlight-next-line
            owner: user:foo
    ```
