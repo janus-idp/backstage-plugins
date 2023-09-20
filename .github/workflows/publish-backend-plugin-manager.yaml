@@ -1,0 +1,183 @@
+# Copyright 2023 Janus Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: Publish Backend Plugin Manager
+
+on:
+  push:
+    paths:
+      - '.github/workflows/publish-backend-plugin-manager.yaml'
+
+  schedule:
+    - cron: '20 * * * *' # every hour at 20 minutes
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+env:
+  SCOPE: '@janus-idp'
+
+jobs:
+  build:
+    # build the backend plugin manager in the backstage/backstage GitHub repository
+    # and publish it to the NPMJS repository @janus-idp organization,
+    # with changed scope and version
+    name: Publish Backend Plugin Manager
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          repository: backstage/backstage
+          ref: master
+          # fetch all history, but only for the master branch
+          fetch-depth: 2147483647
+          fetch-tags: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 18
+          cache: 'yarn'
+
+      - name: Get sha of the latest backend-plugin-manager commit
+        id: get_commit_sha
+        run: |
+          echo "COMMIT_ID=$(git rev-list --max-count=1 HEAD -- packages/backend-plugin-manager)" >> "$GITHUB_OUTPUT"
+          echo "GH Output: " && cat $GITHUB_OUTPUT
+
+      - name: Test if commit is already published
+        id: test_commit_already_published
+        env:
+          COMMIT_ID: ${{ steps.get_commit_sha.outputs.COMMIT_ID }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          echo //registry.npmjs.org/:_authToken=${NPM_TOKEN} > .npmrc
+          if [ "_$(npm dist-tag ls $SCOPE/backend-plugin-manager | grep -e ^$COMMIT_ID || echo '')" != "_" ]; then ALREADY_PUSHED="true"; else ALREADY_PUSHED="false"; fi
+          echo "ALREADY_PUSHED=$ALREADY_PUSHED" >> "$GITHUB_OUTPUT"
+          echo "GH Output: " && cat $GITHUB_OUTPUT
+
+      - name: Get the version of the backend-plugin-manager package
+        id: get_package_version
+        run: |
+          echo "PACKAGE_VERSION=$(node -p "require('./packages/backend-plugin-manager/package.json').version")" >> "$GITHUB_OUTPUT"
+          echo "GH Output: " && cat $GITHUB_OUTPUT
+
+      - name: Get the last version of the backend-plugin-manager package pushed to the NPMJS repository
+        id: get_last_pushed_version
+        run: |
+          echo "LAST_PUSHED_VERSION=$(npm view $SCOPE/backend-plugin-manager version)" >> "$GITHUB_OUTPUT"
+          echo "GH Output: " && cat $GITHUB_OUTPUT
+
+      - name: Get new version to push
+        id: get_new_version_to_push
+        if: steps.test_commit_already_published.outputs.ALREADY_PUSHED == 'false'
+        env:
+          COMMIT_VERSION: ${{ steps.get_package_version.outputs.PACKAGE_VERSION }}
+          LAST_PUSHED_VERSION: ${{ steps.get_last_pushed_version.outputs.LAST_PUSHED_VERSION }}
+        run: |
+          #
+          # The new version to push to NPMS is calculated as follows:
+          #            
+          #   upstream version: 0.0.0, already pushed version: none => new version: 0.0.1-janus.0
+          #   upstream version: 0.0.0, already pushed version: 0.0.1-janus.0 => new version: 0.0.1-janus.1
+          #   upstream version: 0.0.1-next.0, already pushed version: 0.0.1-janus.1 => new version: 0.0.1-janus.2
+          #   upstream version: 0.0.1-next.1, already pushed version: 0.0.1-janus.2 => new version: 0.0.1-janus.3
+          #   upstream version: 0.0.1, already pushed version: 0.0.1-janus.3 => new version: 0.0.2-janus.0
+          #   upstream version: 0.0.2-next.0, already pushed version: 0.0.2-janus.0 => new version: 0.0.2-janus.1
+          #   etc ...
+          #
+
+          # Parse the semantic version of the upstream `backend-plugin-manager`
+
+          COMMIT_MAJOR=$(echo $COMMIT_VERSION | cut -d. -f1)
+          COMMIT_MINOR=$(echo $COMMIT_VERSION | cut -d. -f2)
+          COMMIT_PATCH=$(echo $COMMIT_VERSION | cut -d. -f3 | cut -d- -f1)
+
+          if [ "$COMMIT_MAJOR.$COMMIT_MINOR.$COMMIT_PATCH" == "$COMMIT_VERSION" ]; then
+              COMMIT_PRERELEASE=""
+          else
+              COMMIT_PRERELEASE=$(echo $COMMIT_VERSION | cut -d- -f2)
+          fi
+
+          # If there is a pre-release part, then the effective last released version is the previous one
+
+          if [ -n "$COMMIT_PRERELEASE" ]; then
+              COMMIT_PATCH=$((COMMIT_PATCH-1))
+          fi
+
+          # The PATCH part of the version pushed to NPMJS will always contain a pre-release part
+          # => increment it
+
+          PATCH=$((COMMIT_PATCH+1))
+
+          # If the last pushed version is not empty, set it to a default value, and then parse it
+
+          if [ -z "$LAST_PUSHED_VERSION" ]; then
+              LAST_PUSHED_VERSION=$COMMIT_MAJOR.$COMMIT_MINOR.$PATCH-janus.0
+          fi
+
+          LAST_PUSHED_MAJOR=$(echo $LAST_PUSHED_VERSION | cut -d. -f1)
+          LAST_PUSHED_MINOR=$(echo $LAST_PUSHED_VERSION | cut -d. -f2)
+          LAST_PUSHED_PATCH=$(echo $LAST_PUSHED_VERSION | cut -d. -f3 | cut -d- -f1)
+          LAST_PUSHED_PRERELEASE_WITHOUT_NUMBER=$(echo $LAST_PUSHED_VERSION | cut -d- -f2 | cut -d. -f1)
+          LAST_PUSHED_PRERELEASE_NUMBER=$(echo $LAST_PUSHED_VERSION | cut -d- -f2 | cut -d. -f2)
+
+          # if base version (without pre-release part) is the same for upstream package and pushed NPM package,
+          # then just increment the pre-release number, 
+          # otherwise, use the base version of the upstream package, and reset the `.janus.` pre-release number to 0.
+
+          if [ "$COMMIT_MAJOR.$COMMIT_MINOR.$PATCH" == "$LAST_PUSHED_MAJOR.$LAST_PUSHED_MINOR.$LAST_PUSHED_PATCH" ]; then
+              PRERELEASE="janus.$((LAST_PUSHED_PRERELEASE_NUMBER+1))"
+          else
+              PRERELEASE="janus.0"
+          fi
+          echo "VERSION=$COMMIT_MAJOR.$COMMIT_MINOR.$PATCH-$PRERELEASE" >> "$GITHUB_OUTPUT"
+          echo "GH Output: " && cat $GITHUB_OUTPUT
+
+      - name: Update BackendPluginManager package.json with changed scope and version, and make it public
+        if: steps.test_commit_already_published.outputs.ALREADY_PUSHED == 'false'
+        env:
+          VERSION: ${{ steps.get_new_version_to_push.outputs.VERSION }}
+        run: |
+          sed -i "s/\"version\": \".*\"/\"version\": \"$VERSION\"/" packages/backend-plugin-manager/package.json
+          sed -i "s/\"name\": \"@backstage\/backend-plugin-manager\"/\"name\": \"$SCOPE\/backend-plugin-manager\"/" packages/backend-plugin-manager/package.json
+          sed -i "s/\"private\": true/\"private\": false/" packages/backend-plugin-manager/package.json
+          echo "Package.JSON:" && cat packages/backend-plugin-manager/package.json
+
+      - name: Install Dependencies
+        env:
+          YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
+        if: steps.test_commit_already_published.outputs.ALREADY_PUSHED == 'false'
+        run: yarn install
+
+      - name: Build the backend-plugin-manager package
+        if: steps.test_commit_already_published.outputs.ALREADY_PUSHED == 'false'
+        env:
+          NODE_OPTIONS: '--max-old-space-size=4096'
+        run: |
+          yarn tsc
+          yarn workspace $SCOPE/backend-plugin-manager build
+
+      - name: Publish to NPM with the tag as the commit sha
+        if: steps.test_commit_already_published.outputs.ALREADY_PUSHED == 'false'
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          COMMIT_ID: ${{ steps.get_commit_sha.outputs.COMMIT_ID }}
+          VERSION: ${{ steps.get_new_version_to_push.outputs.VERSION }}
+        run: |
+          yarn config set 'npmAuthToken' "$NPM_TOKEN"
+          yarn workspace $SCOPE/backend-plugin-manager npm publish --access public --tag latest
+          yarn npm tag add $SCOPE/backend-plugin-manager@$VERSION $COMMIT_ID
