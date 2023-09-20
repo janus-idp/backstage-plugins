@@ -112,10 +112,10 @@ catalog:
     #   target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/acme-corp.yaml
     #   rules:
     #     - allow: [User, Group]
-swf:
+orchestrator:
   baseUrl: http://localhost
   port: 8899
-  workflowService:
+  sonataFlowService:
     path: ../../plugins/orchestrator-backend/workflows
     container: quay.io/kiegroup/kogito-swf-devmode-nightly:main-2023-08-30
     persistence:

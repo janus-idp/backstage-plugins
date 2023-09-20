@@ -2,13 +2,13 @@ import React from 'react';
 
 import { createDevApp } from '@backstage/dev-utils';
 
-import { SWFPage, swfPlugin } from '../src/plugin';
+import { OrchestratorPage, orchestratorPlugin } from '../src';
 
 createDevApp()
-  .registerPlugin(swfPlugin)
+  .registerPlugin(orchestratorPlugin)
   .addPage({
-    element: <SWFPage />,
+    element: <OrchestratorPage />,
     title: 'Root Page',
-    path: '/swf',
+    path: '/orchestrator',
   })
   .render();

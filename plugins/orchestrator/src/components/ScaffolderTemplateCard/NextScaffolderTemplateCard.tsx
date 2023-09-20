@@ -26,7 +26,7 @@ export const NextScaffolderTemplateCard = (props: TemplateCardProps) => {
         return;
       }
 
-      navigate(executeWorkflowLink({ swfId: template.metadata.name }));
+      navigate(executeWorkflowLink({ workflowId: template.metadata.name }));
     },
     [executeWorkflowLink, navigate, onSelected],
   );

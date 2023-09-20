@@ -98,7 +98,9 @@ async function main() {
   const techdocsEnv = useHotMemoize(module, () => createEnv('techdocs'));
   const searchEnv = useHotMemoize(module, () => createEnv('search'));
   const appEnv = useHotMemoize(module, () => createEnv('app'));
-  const orchestratorEnv = useHotMemoize(module, () => createEnv('swf'));
+  const orchestratorEnv = useHotMemoize(module, () =>
+    createEnv('orchestrator'),
+  );
 
   const apiRouter = Router();
   apiRouter.use('/catalog', await catalog(catalogEnv));
@@ -107,7 +109,7 @@ async function main() {
   apiRouter.use('/techdocs', await techdocs(techdocsEnv));
   apiRouter.use('/proxy', await proxy(proxyEnv));
   apiRouter.use('/search', await search(searchEnv));
-  apiRouter.use('/swf', await orchestrator(orchestratorEnv));
+  apiRouter.use('/orchestrator', await orchestrator(orchestratorEnv));
 
   // Add backends ABOVE this line; this 404 handler is the catch-all fallback
   apiRouter.use(notFoundHandler());

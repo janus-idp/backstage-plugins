@@ -5,29 +5,29 @@ import {
   discoveryApiRef,
 } from '@backstage/core-plugin-api';
 
-import { swfApiRef, SwfClient } from './api';
-import { rootRouteRef } from './routes';
+import { orchestratorApiRef, OrchestratorClient } from './api';
+import { orchestratorRootRouteRef } from './routes';
 
-export const swfPlugin = createPlugin({
-  id: 'swf',
+export const orchestratorPlugin = createPlugin({
+  id: 'orchestrator',
   apis: [
     createApiFactory({
-      api: swfApiRef,
+      api: orchestratorApiRef,
       deps: { discoveryApi: discoveryApiRef },
       factory({ discoveryApi }) {
-        return new SwfClient({ discoveryApi });
+        return new OrchestratorClient({ discoveryApi });
       },
     }),
   ],
   routes: {
-    root: rootRouteRef,
+    root: orchestratorRootRouteRef,
   },
 });
 
-export const SWFPage = swfPlugin.provide(
+export const OrchestratorPage = orchestratorPlugin.provide(
   createRoutableExtension({
-    name: 'SWFPage',
+    name: 'OrchestratorPage',
     component: () => import('./components/Router').then(m => m.Router),
-    mountPoint: rootRouteRef,
+    mountPoint: orchestratorRootRouteRef,
   }),
 );

@@ -15,8 +15,8 @@ import { OpenAPIV3 } from 'openapi-types';
 import { Logger } from 'winston';
 
 import {
-  SwfDefinition,
   WorkflowDataInputSchema,
+  WorkflowDefinition,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 type OpenApiSchemaProperties = {
@@ -99,10 +99,10 @@ export class DataInputSchemaService {
   }
 
   public async generate(args: {
-    swfDefinition: SwfDefinition;
+    definition: WorkflowDefinition;
     openApi: OpenAPIV3.Document;
   }): Promise<ComposedJsonSchema | null> {
-    const workflow = args.swfDefinition as Specification.Workflow;
+    const workflow = args.definition as Specification.Workflow;
 
     if (!workflow.states.length) {
       this.logger.info(`No state found on workflow. Skipping...`);
@@ -1008,9 +1008,10 @@ export class DataInputSchemaService {
 
   public async resolveDataInputSchema(args: {
     openApi: OpenAPIV3.Document;
-    swfId: string;
+    workflowId: string;
   }): Promise<WorkflowDataInputSchema | undefined> {
-    const requestBody = args.openApi.paths[`/${args.swfId}`]?.post?.requestBody;
+    const requestBody =
+      args.openApi.paths[`/${args.workflowId}`]?.post?.requestBody;
     if (!requestBody) {
       return undefined;
     }
@@ -1026,7 +1027,7 @@ export class DataInputSchemaService {
     }
 
     const referencedSchemas = this.findReferencedSchemas({
-      swfId: args.swfId,
+      workflowId: args.workflowId,
       openApi: args.openApi,
       schema: mainSchema as OpenAPIV3.SchemaObject,
     });
@@ -1073,7 +1074,7 @@ export class DataInputSchemaService {
   }
 
   private findReferencedSchemas(args: {
-    swfId: string;
+    workflowId: string;
     openApi: OpenAPIV3.Document;
     schema: JSONSchema4;
   }): JSONSchema4[] {
@@ -1095,7 +1096,9 @@ export class DataInputSchemaService {
       if (referencedSchema) {
         schemas.push({
           ...referencedSchema,
-          title: referencedSchema.title!.replace(`${args.swfId}:`, '').trim(),
+          title: referencedSchema
+            .title!.replace(`${args.workflowId}:`, '')
+            .trim(),
         });
       }
     }

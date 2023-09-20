@@ -23,9 +23,12 @@ import {
   WorkflowFormat,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
-import { swfApiRef } from '../../api';
-import { createWorkflowRouteRef, definitionsRouteRef } from '../../routes';
-import { BaseWorkflowPage } from '../BaseWorkflowPage/BaseWorkflowPage';
+import { orchestratorApiRef } from '../../api';
+import {
+  createWorkflowRouteRef,
+  workflowDefinitionsRouteRef,
+} from '../../routes';
+import { BaseOrchestratorPage } from '../BaseOrchestratorPage/BaseOrchestratorPage';
 
 type FormData = {
   url: string;
@@ -35,7 +38,7 @@ export const NewWorkflowViewerPage = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const errorApi = useApi(errorApiRef);
-  const swfApi = useApi(swfApiRef);
+  const orchestratorApi = useApi(orchestratorApiRef);
   const createWorkflowLink = useRouteRef(createWorkflowRouteRef);
 
   const defaultValues: FormData = {
@@ -49,7 +52,7 @@ export const NewWorkflowViewerPage = () => {
   const { errors } = formState;
 
   const navigate = useNavigate();
-  const definitionLink = useRouteRef(definitionsRouteRef);
+  const definitionLink = useRouteRef(workflowDefinitionsRouteRef);
 
   const handleResult = useCallback(
     async ({ url }: FormData) => {
@@ -57,7 +60,7 @@ export const NewWorkflowViewerPage = () => {
         return;
       }
       try {
-        const result = await swfApi.createWorkflowDefinition(url);
+        const result = await orchestratorApi.createWorkflowDefinition(url);
 
         if (!result?.definition.id) {
           errorApi.post(new Error('error importing workflow'));
@@ -65,7 +68,7 @@ export const NewWorkflowViewerPage = () => {
           const workflowFormat = result.uri.endsWith('.json') ? 'json' : 'yaml';
           navigate(
             definitionLink({
-              swfId: result.definition.id,
+              workflowId: result.definition.id,
               format: workflowFormat,
             }),
           );
@@ -74,7 +77,7 @@ export const NewWorkflowViewerPage = () => {
         errorApi.post(new Error(e));
       }
     },
-    [swfApi, errorApi, navigate, definitionLink],
+    [orchestratorApi, errorApi, navigate, definitionLink],
   );
 
   const newWorkflow = useCallback(
@@ -184,10 +187,10 @@ export const NewWorkflowViewerPage = () => {
   ];
 
   return (
-    <BaseWorkflowPage>
+    <BaseOrchestratorPage>
       <Grid container spacing={2}>
         {isMobile ? contentItems : contentItems.reverse()}
       </Grid>
-    </BaseWorkflowPage>
+    </BaseOrchestratorPage>
   );
 };

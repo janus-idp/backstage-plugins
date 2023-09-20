@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "http://host.docker.internal:7007/api/swf"
+      "url": "http://host.docker.internal:7007/api/orchestrator"
     }
   ],
   "paths": {

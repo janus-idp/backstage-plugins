@@ -13,18 +13,18 @@ export type OmitRecursively<T extends any, K extends PropertyKey> = Omit<
   K
 >;
 
-export type SwfDefinition = OmitRecursively<
+export type WorkflowDefinition = OmitRecursively<
   Specification.Workflow,
   'normalize'
 >;
 
-export interface SwfItem {
+export interface WorkflowItem {
   uri: string;
-  definition: SwfDefinition;
+  definition: WorkflowDefinition;
 }
 
-export type SwfListResult = {
-  items: SwfItem[];
+export type WorkflowListResult = {
+  items: WorkflowItem[];
   totalCount: number;
   offset: number;
   limit: number;
@@ -37,7 +37,7 @@ export interface WorkflowSample {
   url: string;
 }
 
-export interface SwfSpecFile {
+export interface WorkflowSpecFile {
   path: string;
   content: OpenAPIV3.Document;
 }
@@ -51,7 +51,7 @@ export type WorkflowDataInputSchema = JSONSchema4 & {
 };
 
 export interface WorkflowDataInputSchemaResponse {
-  swfItem: SwfItem;
+  workflowItem: WorkflowItem;
   schema: WorkflowDataInputSchema;
 }
 

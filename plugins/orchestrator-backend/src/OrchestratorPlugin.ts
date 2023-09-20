@@ -6,10 +6,10 @@ import {
 import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
 import { DefaultEventBroker } from '@backstage/plugin-events-backend';
 
-import { createRouter } from './service/router';
+import { createRouter } from './service';
 
 export const orchestratorPlugin = createBackendPlugin({
-  pluginId: 'swf',
+  pluginId: 'orchestrator',
   register(env) {
     env.registerInit({
       deps: {

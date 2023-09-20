@@ -14,12 +14,12 @@ import { Logger } from 'winston';
 import {
   fromWorkflowSource,
   Job,
+  orchestrator_service_ready_topic,
   ProcessInstance,
-  swf_service_ready_topic,
-  SwfDefinition,
-  SwfItem,
-  SwfListResult,
   WorkflowDataInputSchemaResponse,
+  WorkflowDefinition,
+  WorkflowItem,
+  WorkflowListResult,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { exec, ExecException } from 'child_process';
@@ -60,23 +60,28 @@ export async function createRouter(
     response.json({ status: 'ok' });
   });
 
-  const kogitoBaseUrl =
-    config.getOptionalString('swf.baseUrl') ?? 'http://localhost';
-  const kogitoPort = config.getOptionalNumber('swf.port') ?? 8899;
+  const sonataFlowBaseUrl =
+    config.getOptionalString('orchestrator.baseUrl') ?? 'http://localhost';
+  const sonataFlowPort = config.getOptionalNumber('orchestrator.port') ?? 8899;
   logger.info(
-    `Using kogito Serverless Workflow Url of: ${kogitoBaseUrl}:${kogitoPort}`,
+    `Using SonataFlow Url of: ${sonataFlowBaseUrl}:${sonataFlowPort}`,
   );
-  const kogitoResourcesPath = config.getString('swf.workflowService.path');
-  const kogitoServiceContainer = config.getString(
-    'swf.workflowService.container',
+  const sonataFlowResourcesPath = config.getString(
+    'orchestrator.sonataFlowService.path',
   );
-  const kogitoPersistencePath = config.getString(
-    'swf.workflowService.persistence.path',
+  const sonataFlowServiceContainer = config.getString(
+    'orchestrator.sonataFlowService.container',
+  );
+  const sonataFlowPersistencePath = config.getString(
+    'orchestrator.sonataFlowService.persistence.path',
   );
   const jiraHost =
-    config.getOptionalString('swf.workflowService.jira.host') ?? 'localhost';
+    config.getOptionalString('orchestrator.sonataFlowService.jira.host') ??
+    'localhost';
   const jiraBearerToken =
-    config.getOptionalString('swf.workflowService.jira.bearerToken') ?? '';
+    config.getOptionalString(
+      'orchestrator.sonataFlowService.jira.bearerToken',
+    ) ?? '';
 
   const githubConfigs = readGithubIntegrationConfigs(
     config.getOptionalConfigArray('integrations.github') ?? [],
@@ -92,14 +97,10 @@ export async function createRouter(
 
   const cloudEventService = new CloudEventService(
     logger,
-    `${kogitoBaseUrl}:${kogitoPort}`,
+    `${sonataFlowBaseUrl}:${sonataFlowPort}`,
   );
   const jiraService = new JiraService(logger, cloudEventService);
-  const openApiService = new OpenApiService(
-    logger,
-    discovery,
-    kogitoResourcesPath,
-  );
+  const openApiService = new OpenApiService(logger, discovery);
   const dataInputSchemaService = new DataInputSchemaService(
     logger,
     githubToken,
@@ -108,7 +109,7 @@ export async function createRouter(
   const workflowService = new WorkflowService(
     openApiService,
     dataInputSchemaService,
-    kogitoResourcesPath,
+    sonataFlowResourcesPath,
   );
 
   const scaffolderService: ScaffolderService = new ScaffolderService(
@@ -120,8 +121,8 @@ export async function createRouter(
 
   setupInternalRoutes(
     router,
-    kogitoBaseUrl,
-    kogitoPort,
+    sonataFlowBaseUrl,
+    sonataFlowPort,
     workflowService,
     openApiService,
     dataInputSchemaService,
@@ -129,19 +130,19 @@ export async function createRouter(
   );
   setupExternalRoutes(router, discovery, scaffolderService);
 
-  await setupKogitoService(
-    kogitoBaseUrl,
-    kogitoPort,
-    kogitoResourcesPath,
-    kogitoServiceContainer,
-    kogitoPersistencePath,
+  await setupSonataflowService(
+    sonataFlowBaseUrl,
+    sonataFlowPort,
+    sonataFlowResourcesPath,
+    sonataFlowServiceContainer,
+    sonataFlowPersistencePath,
     jiraHost,
     jiraBearerToken,
     logger,
   );
 
   await eventBroker.publish({
-    topic: swf_service_ready_topic,
+    topic: orchestrator_service_ready_topic,
     eventPayload: {},
   });
 
@@ -149,22 +150,22 @@ export async function createRouter(
   return router;
 }
 
-// ==================================================
-// Internal Backstage API calls to delegate to Kogito
-// ==================================================
+// ======================================================
+// Internal Backstage API calls to delegate to SonataFlow
+// ======================================================
 function setupInternalRoutes(
   router: express.Router,
-  kogitoBaseUrl: string,
-  kogitoPort: number,
+  sonataFlowBaseUrl: string,
+  sonataFlowPort: number,
   workflowService: WorkflowService,
   openApiService: OpenApiService,
   dataInputSchemaService: DataInputSchemaService,
   jiraService: JiraService,
 ) {
-  const fetchWorkflowUri = async (swfId: string): Promise<string> => {
+  const fetchWorkflowUri = async (workflowId: string): Promise<string> => {
     const uriResponse = await executeWithRetry(() =>
       fetch(
-        `${kogitoBaseUrl}:${kogitoPort}/management/processes/${swfId}/sources`,
+        `${sonataFlowBaseUrl}:${sonataFlowPort}/management/processes/${workflowId}/sources`,
       ),
     );
 
@@ -174,11 +175,11 @@ function setupInternalRoutes(
   };
 
   const fetchWorkflowDefinition = async (
-    swfId: string,
-  ): Promise<SwfDefinition> => {
+    workflowId: string,
+  ): Promise<WorkflowDefinition> => {
     const sourceResponse = await executeWithRetry(() =>
       fetch(
-        `${kogitoBaseUrl}:${kogitoPort}/management/processes/${swfId}/source`,
+        `${sonataFlowBaseUrl}:${sonataFlowPort}/management/processes/${workflowId}/source`,
       ),
     );
 
@@ -188,37 +189,37 @@ function setupInternalRoutes(
 
   const fetchOpenApi = async (): Promise<OpenAPIV3.Document> => {
     const svcOpenApiResponse = await executeWithRetry(() =>
-      fetch(`${kogitoBaseUrl}:${kogitoPort}/q/openapi.json`),
+      fetch(`${sonataFlowBaseUrl}:${sonataFlowPort}/q/openapi.json`),
     );
     return await svcOpenApiResponse.json();
   };
 
-  router.get('/items', async (_, res) => {
+  router.get('/workflows', async (_, res) => {
     const svcResponse = await executeWithRetry(() =>
-      fetch(`${kogitoBaseUrl}:${kogitoPort}/management/processes`),
+      fetch(`${sonataFlowBaseUrl}:${sonataFlowPort}/management/processes`),
     );
     const ids = await svcResponse.json();
-    const items: SwfItem[] = await Promise.all(
+    const items: WorkflowItem[] = await Promise.all(
       ids?.map(
-        async (swfId: String) =>
+        async (workflowId: String) =>
           await fetch(
-            `${kogitoBaseUrl}:${kogitoPort}/management/processes/${swfId}`,
+            `${sonataFlowBaseUrl}:${sonataFlowPort}/management/processes/${workflowId}`,
           )
-            .then((swfResponse: Response) => swfResponse.json())
-            .then(async (definition: SwfDefinition) => {
+            .then((response: Response) => response.json())
+            .then(async (definition: WorkflowDefinition) => {
               const uri = await fetchWorkflowUri(definition.id);
-              const swfItem: SwfItem = {
+              const workflowItem: WorkflowItem = {
                 uri,
                 definition: {
                   ...definition,
                   description: definition.description ?? definition.name,
                 },
               };
-              return swfItem;
+              return workflowItem;
             }),
       ),
     );
-    const result: SwfListResult = {
+    const result: WorkflowListResult = {
       items: items ? items : [],
       limit: 0,
       offset: 0,
@@ -227,13 +228,13 @@ function setupInternalRoutes(
     res.status(200).json(result);
   });
 
-  router.get('/items/:swfId', async (req, res) => {
+  router.get('/workflows/:workflowId', async (req, res) => {
     const {
-      params: { swfId },
+      params: { workflowId },
     } = req;
 
-    const definition = await fetchWorkflowDefinition(swfId);
-    const uri = await fetchWorkflowUri(swfId);
+    const definition = await fetchWorkflowDefinition(workflowId);
+    const uri = await fetchWorkflowUri(workflowId);
 
     res.status(200).json({
       uri,
@@ -241,16 +242,19 @@ function setupInternalRoutes(
     });
   });
 
-  router.post('/execute/:swfId', async (req, res) => {
+  router.post('/workflows/:workflowId/execute', async (req, res) => {
     const {
-      params: { swfId },
+      params: { workflowId },
     } = req;
-    const swfData = req.body;
-    const svcResponse = await fetch(`${kogitoBaseUrl}:${kogitoPort}/${swfId}`, {
-      method: 'POST',
-      body: JSON.stringify(swfData),
-      headers: { 'content-type': 'application/json' },
-    });
+    const inputData = req.body;
+    const svcResponse = await fetch(
+      `${sonataFlowBaseUrl}:${sonataFlowPort}/${workflowId}`,
+      {
+        method: 'POST',
+        body: JSON.stringify(inputData),
+        headers: { 'content-type': 'application/json' },
+      },
+    );
     const json = await svcResponse.json();
     if (!json.id) {
       res.status(svcResponse.status).send();
@@ -263,7 +267,7 @@ function setupInternalRoutes(
     const graphQlQuery =
       '{ ProcessInstances (where: {processId: {isNull: false} } ) { id, processName, processId, state, start, lastUpdate, end, nodes { id }, variables, parentProcessInstance {id, processName, businessKey} } }';
     const svcResponse = await executeWithRetry(() =>
-      fetch(`${kogitoBaseUrl}:${kogitoPort}/graphql`, {
+      fetch(`${sonataFlowBaseUrl}:${sonataFlowPort}/graphql`, {
         method: 'POST',
         body: JSON.stringify({ query: graphQlQuery }),
         headers: { 'content-type': 'application/json' },
@@ -281,7 +285,7 @@ function setupInternalRoutes(
     } = req;
     const graphQlQuery = `{ ProcessInstances (where: { id: {equal: "${instanceId}" } } ) { id, processName, processId, state, start, lastUpdate, end, nodes { id, nodeId, definitionId, type, name, enter, exit }, variables, parentProcessInstance {id, processName, businessKey}, error { nodeDefinitionId, message} } }`;
     const svcResponse = await executeWithRetry(() =>
-      fetch(`${kogitoBaseUrl}:${kogitoPort}/graphql`, {
+      fetch(`${sonataFlowBaseUrl}:${sonataFlowPort}/graphql`, {
         method: 'POST',
         body: JSON.stringify({ query: graphQlQuery }),
         headers: { 'content-type': 'application/json' },
@@ -300,7 +304,7 @@ function setupInternalRoutes(
     } = req;
     const graphQlQuery = `{ Jobs (where: { processInstanceId: { equal: "${instanceId}" } }) { id, processId, processInstanceId, rootProcessId, status, expirationTime, priority, callbackEndpoint, repeatInterval, repeatLimit, scheduledId, retries, lastUpdate, endpoint, nodeInstanceId, executionCounter } }`;
     const svcResponse = await executeWithRetry(() =>
-      fetch(`${kogitoBaseUrl}:${kogitoPort}/graphql`, {
+      fetch(`${sonataFlowBaseUrl}:${sonataFlowPort}/graphql`, {
         method: 'POST',
         body: JSON.stringify({ query: graphQlQuery }),
         headers: { 'content-type': 'application/json' },
@@ -311,21 +315,21 @@ function setupInternalRoutes(
     res.status(200).json(jobs);
   });
 
-  router.get('/items/:swfId/schema', async (req, res) => {
+  router.get('/workflows/:workflowId/schema', async (req, res) => {
     const {
-      params: { swfId },
+      params: { workflowId },
     } = req;
 
-    const definition = await fetchWorkflowDefinition(swfId);
-    const uri = await fetchWorkflowUri(swfId);
+    const definition = await fetchWorkflowDefinition(workflowId);
+    const uri = await fetchWorkflowUri(workflowId);
 
-    const swfItem: SwfItem = { uri, definition };
+    const workflowItem: WorkflowItem = { uri, definition };
 
     const openApi = await fetchOpenApi();
     const workflowDataInputSchema =
       await dataInputSchemaService.resolveDataInputSchema({
         openApi,
-        swfId,
+        workflowId,
       });
 
     if (!workflowDataInputSchema) {
@@ -334,29 +338,29 @@ function setupInternalRoutes(
     }
 
     const response: WorkflowDataInputSchemaResponse = {
-      swfItem,
+      workflowItem: workflowItem,
       schema: workflowDataInputSchema,
     };
 
     res.status(200).json(response);
   });
 
-  router.delete('/workflows/:swfId', async (req, res) => {
-    const swfId = req.params.swfId;
-    const uri = await fetchWorkflowUri(swfId);
+  router.delete('/workflows/:workflowId', async (req, res) => {
+    const workflowId = req.params.workflowId;
+    const uri = await fetchWorkflowUri(workflowId);
     await workflowService.deleteWorkflowDefinitionById(uri);
     res.status(201).send();
   });
 
   router.post('/workflows', async (req, res) => {
     const uri = req.query.uri as string;
-    const swfItem = uri?.startsWith('http')
+    const workflowItem = uri?.startsWith('http')
       ? await workflowService.saveWorkflowDefinitionFromUrl(uri)
       : await workflowService.saveWorkflowDefinition({
           uri,
           definition: fromWorkflowSource(req.body),
         });
-    res.status(201).json(swfItem).send();
+    res.status(201).json(workflowItem).send();
   });
 
   router.get('/actions/schema', async (_, res) => {
@@ -381,9 +385,9 @@ function setupInternalRoutes(
   });
 }
 
-// ==================================================
-// External Kogito API calls to delegate to Backstage
-// ==================================================
+// ======================================================
+// External SonataFlow API calls to delegate to Backstage
+// ======================================================
 function setupExternalRoutes(
   router: express.Router,
   discovery: DiscoveryApi,
@@ -409,21 +413,21 @@ function setupExternalRoutes(
   });
 }
 
-// =========================================
-// Spawn a process to run the Kogito service
-// =========================================
-async function setupKogitoService(
-  kogitoBaseUrl: string,
-  kogitoPort: number,
-  kogitoResourcesPath: string,
-  kogitoServiceContainer: string,
-  kogitoPersistencePath: string,
+// =============================================
+// Spawn a process to run the SonataFlow service
+// =============================================
+async function setupSonataflowService(
+  sonataFlowBaseUrl: string,
+  sonataFlowPort: number,
+  sonataFlowResourcesPath: string,
+  sonataFlowServiceContainer: string,
+  sonataFlowPersistencePath: string,
   jiraHost: string,
   jiraBearerToken: string,
   logger: Logger,
 ) {
-  const kogitoResourcesAbsPath = resolve(`${kogitoResourcesPath}`);
-  const launcher = `docker run --add-host jira.test:${jiraHost} --add-host host.docker.internal:host-gateway --rm -p ${kogitoPort}:8080 -v ${kogitoResourcesAbsPath}:/home/kogito/serverless-workflow-project/src/main/resources -e KOGITO.CODEGEN.PROCESS.FAILONERROR=false -e QUARKUS_EMBEDDED_POSTGRESQL_DATA_DIR=${kogitoPersistencePath} -e QUARKUS_REST_CLIENT_JIRA_OPENAPI_JSON_URL=http://jira.test:8080 -e JIRABEARERTOKEN=${jiraBearerToken} ${kogitoServiceContainer}`;
+  const sonataFlowResourcesAbsPath = resolve(`${sonataFlowResourcesPath}`);
+  const launcher = `docker run --add-host jira.test:${jiraHost} --add-host host.docker.internal:host-gateway --rm -p ${sonataFlowPort}:8080 -v ${sonataFlowResourcesAbsPath}:/home/kogito/serverless-workflow-project/src/main/resources -e KOGITO.CODEGEN.PROCESS.FAILONERROR=false -e QUARKUS_EMBEDDED_POSTGRESQL_DATA_DIR=${sonataFlowPersistencePath} -e QUARKUS_REST_CLIENT_JIRA_OPENAPI_JSON_URL=http://jira.test:8080 -e JIRABEARERTOKEN=${jiraBearerToken} ${sonataFlowServiceContainer}`;
   exec(
     launcher,
     (error: ExecException | null, stdout: string, stderr: string) => {
@@ -444,11 +448,11 @@ async function setupKogitoService(
   // We need to ensure the service is running!
   try {
     await executeWithRetry(() =>
-      fetch(`${kogitoBaseUrl}:${kogitoPort}/q/health`),
+      fetch(`${sonataFlowBaseUrl}:${sonataFlowPort}/q/health`),
     );
   } catch (e) {
     logger.error(
-      'Kogito failed to start. Serverless Workflow Templates could not be loaded.',
+      'SonataFlow failed to start. Workflow definitions could not be loaded.',
     );
   }
 }

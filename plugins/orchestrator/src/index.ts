@@ -1,13 +1,13 @@
-export { swfPlugin, SWFPage } from './plugin';
-export { SwfClient } from './api/SwfClient';
-export { SWFDialog } from './components/SWFDialog';
-export { EditorViewKind } from './components/SWFEditor';
+export { orchestratorPlugin, OrchestratorPage } from './plugin';
+export { OrchestratorClient } from './api/OrchestratorClient';
+export { WorkflowDialog } from './components/WorkflowDialog';
+export { EditorViewKind } from './components/WorkflowEditor';
 export { NextScaffolderTemplateCard } from './components/ScaffolderTemplateCard';
-export type { SwfClientOptions } from './api/SwfClient';
-export { swfApiRef } from './api';
+export type { OrchestratorClientOptions } from './api/OrchestratorClient';
+export { orchestratorApiRef } from './api';
 export {
-  swfInstanceRouteRef,
-  swfInstancesRouteRef,
+  workflowInstanceRouteRef,
+  workflowInstancesRouteRef,
   newWorkflowRef,
   createWorkflowRouteRef,
 } from './routes';

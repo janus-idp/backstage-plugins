@@ -1,1 +1,0 @@
-export { SWFDefinitionsListComponent } from './SWFDefinitionsListComponent';

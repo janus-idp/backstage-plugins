@@ -1,0 +1,19 @@
+{
+  "$id": "classpath:/schemas/orchestrator-ansible-job__sub_schema__Publish_to_GitHub_runActionGitHubRepoPush.json",
+  "title": "orchestrator-ansible-job: Publish to GitHub > runActionGitHubRepoPush",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "repoUrl": {
+      "title": "Repository Location",
+      "description": "Accepts the format 'github.com?repo=reponame&owner=owner' where 'reponame' is the new repository name and 'owner' is an organization or username",
+      "type": "string"
+    },
+    "defaultBranch": {
+      "title": "Default Branch",
+      "type": "string",
+      "description": "Sets the default branch on the repository. The default value is 'master'"
+    }
+  },
+  "required": ["repoUrl", "defaultBranch"]
+}

@@ -2,10 +2,10 @@ export interface Config {
   /**
    * Configuration for the Orchestrator plugin.
    */
-  swf: {
+  orchestrator: {
     baseUrl: string;
     port: string;
-    workflowService: {
+    sonataFlowService: {
       path: string;
       container: string;
       owner?: string;

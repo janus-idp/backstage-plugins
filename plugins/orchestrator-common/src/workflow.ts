@@ -1,16 +1,16 @@
 import { Specification } from '@severlessworkflow/sdk-typescript';
 import { dump } from 'js-yaml';
 
-import { SwfDefinition, WorkflowFormat } from './types';
+import { WorkflowDefinition, WorkflowFormat } from './types';
 
-export function fromWorkflowSource(content: string): SwfDefinition {
+export function fromWorkflowSource(content: string): WorkflowDefinition {
   const parsed = Specification.Workflow.fromSource(content);
   const workflow = parsed.sourceModel ?? parsed;
   return removeProperty(workflow, 'normalize');
 }
 
 export function toWorkflowString(
-  definition: SwfDefinition,
+  definition: WorkflowDefinition,
   format: WorkflowFormat,
 ): string {
   switch (format) {
@@ -23,11 +23,11 @@ export function toWorkflowString(
   }
 }
 
-export function toWorkflowJson(definition: SwfDefinition): string {
+export function toWorkflowJson(definition: WorkflowDefinition): string {
   return JSON.stringify(definition, null, 2);
 }
 
-export function toWorkflowYaml(definition: SwfDefinition): string {
+export function toWorkflowYaml(definition: WorkflowDefinition): string {
   return dump(definition);
 }
 

@@ -1,8 +1,8 @@
-import { SwfDefinition, WorkflowSample } from './types';
+import { WorkflowDefinition, WorkflowSample } from './types';
 
-export const swf_service_ready_topic = 'kogito-swf-service-ready';
+export const orchestrator_service_ready_topic = 'orchestrator-service-ready';
 
-export const empty_definition: SwfDefinition = {
+export const empty_definition: WorkflowDefinition = {
   id: 'workflow_unique_identifier',
   version: '0.1',
   specVersion: '0.8',

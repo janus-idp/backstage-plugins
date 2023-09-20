@@ -4,22 +4,22 @@ import { JsonValue } from '@backstage/types';
 import {
   Job,
   ProcessInstance,
-  SwfItem,
-  SwfListResult,
-  SwfSpecFile,
   WorkflowDataInputSchemaResponse,
   WorkflowExecutionResponse,
+  WorkflowItem,
+  WorkflowListResult,
+  WorkflowSpecFile,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
-export interface SwfApi {
+export interface OrchestratorApi {
   executeWorkflow(args: {
-    swfId: string;
+    workflowId: string;
     parameters: Record<string, JsonValue>;
   }): Promise<WorkflowExecutionResponse>;
 
-  getSwf(swfId: string): Promise<SwfItem>;
+  getWorkflow(workflowId: string): Promise<WorkflowItem>;
 
-  listSwfs(): Promise<SwfListResult>;
+  listWorkflows(): Promise<WorkflowListResult>;
 
   getInstances(): Promise<ProcessInstance[]>;
 
@@ -28,16 +28,19 @@ export interface SwfApi {
   getInstanceJobs(instanceId: string): Promise<Job[]>;
 
   getWorkflowDataInputSchema(
-    swfId: string,
+    workflowId: string,
   ): Promise<WorkflowDataInputSchemaResponse>;
 
-  createWorkflowDefinition(uri: string, content?: string): Promise<SwfItem>;
+  createWorkflowDefinition(
+    uri: string,
+    content?: string,
+  ): Promise<WorkflowItem>;
 
-  deleteWorkflowDefinition(swfId: string): Promise<any>;
+  deleteWorkflowDefinition(workflowId: string): Promise<any>;
 
-  getSpecs(): Promise<SwfSpecFile[]>;
+  getSpecs(): Promise<WorkflowSpecFile[]>;
 }
 
-export const swfApiRef = createApiRef<SwfApi>({
-  id: 'plugin.swf.api',
+export const orchestratorApiRef = createApiRef<OrchestratorApi>({
+  id: 'plugin.orchestrator.api',
 });

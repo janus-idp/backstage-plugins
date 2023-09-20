@@ -5,7 +5,7 @@
     "description": "Workflow Actions BS API",
     "version": "0.0.1"
   },
-  "servers": [{ "url": "http://host.docker.internal:7007/api/swf" }],
+  "servers": [{ "url": "http://host.docker.internal:7007/api/orchestrator" }],
   "paths": {
     "/actions/fetch:plain": {
       "post": {

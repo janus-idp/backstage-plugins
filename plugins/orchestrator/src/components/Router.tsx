@@ -3,39 +3,45 @@ import { Route, Routes } from 'react-router-dom';
 
 import {
   createWorkflowRouteRef,
-  definitionsRouteRef,
   editWorkflowRouteRef,
   executeWorkflowRouteRef,
   newWorkflowRef,
-  swfInstanceRouteRef,
-  swfInstancesRouteRef,
+  workflowDefinitionsRouteRef,
+  workflowInstanceRouteRef,
+  workflowInstancesRouteRef,
 } from '../routes';
-import { CreateSWFPage } from './CreateSWFPage';
+import { CreateWorkflowPage } from './CreateWorkflowPage';
 import { ExecuteWorkflowPage } from './ExecuteWorkflowPage';
 import { NewWorkflowViewerPage } from './NewWorkflowViewerPage';
-import { SWFDefinitionViewerPage } from './SWFDefinitionViewerPage';
-import { SWFInstancesViewerPage } from './SWFInstancesViewerPage';
-import { SWFPage } from './SWFPage';
+import { OrchestratorPage } from './OrchestratorPage';
+import { WorkflowDefinitionViewerPage } from './WorkflowDefinitionViewerPage';
+import { WorkflowInstancesViewerPage } from './WorkflownstancesViewerPage';
 
 export const Router = () => {
   return (
     <Routes>
-      <Route path="/" element={<SWFPage />} />
+      <Route path="/" element={<OrchestratorPage />} />
       <Route
-        path={definitionsRouteRef.path}
-        element={<SWFDefinitionViewerPage />}
+        path={workflowDefinitionsRouteRef.path}
+        element={<WorkflowDefinitionViewerPage />}
       />
       <Route
-        path={swfInstancesRouteRef.path}
-        element={<SWFInstancesViewerPage />}
+        path={workflowInstancesRouteRef.path}
+        element={<WorkflowInstancesViewerPage />}
       />
       <Route
-        path={swfInstanceRouteRef.path}
-        element={<SWFInstancesViewerPage />}
+        path={workflowInstanceRouteRef.path}
+        element={<WorkflowInstancesViewerPage />}
       />
       <Route path={newWorkflowRef.path} element={<NewWorkflowViewerPage />} />
-      <Route path={createWorkflowRouteRef.path} element={<CreateSWFPage />} />
-      <Route path={editWorkflowRouteRef.path} element={<CreateSWFPage />} />
+      <Route
+        path={createWorkflowRouteRef.path}
+        element={<CreateWorkflowPage />}
+      />
+      <Route
+        path={editWorkflowRouteRef.path}
+        element={<CreateWorkflowPage />}
+      />
       <Route
         path={executeWorkflowRouteRef.path}
         element={<ExecuteWorkflowPage />}

@@ -1,47 +1,47 @@
 import { createRouteRef, createSubRouteRef } from '@backstage/core-plugin-api';
 
-export const rootRouteRef = createRouteRef({
-  id: 'swf',
+export const orchestratorRootRouteRef = createRouteRef({
+  id: 'orchestrator',
 });
 
-export const definitionsRouteRef = createSubRouteRef({
-  id: 'swf/items',
-  parent: rootRouteRef,
-  path: '/items/:format/:swfId',
+export const workflowDefinitionsRouteRef = createSubRouteRef({
+  id: 'orchestrator/workflows',
+  parent: orchestratorRootRouteRef,
+  path: '/workflows/:format/:workflowId',
 });
 
-export const swfInstancesRouteRef = createSubRouteRef({
-  id: 'swf/instance',
-  parent: rootRouteRef,
+export const workflowInstancesRouteRef = createSubRouteRef({
+  id: 'orchestrator/instances',
+  parent: orchestratorRootRouteRef,
   path: '/instances',
 });
 
-export const swfInstanceRouteRef = createSubRouteRef({
-  id: 'swf/instance',
-  parent: rootRouteRef,
+export const workflowInstanceRouteRef = createSubRouteRef({
+  id: 'orchestrator/instances',
+  parent: orchestratorRootRouteRef,
   path: '/instances/:instanceId',
 });
 
 export const newWorkflowRef = createSubRouteRef({
-  id: 'swf/workflows/new',
-  parent: rootRouteRef,
+  id: 'orchestrator/workflows/new',
+  parent: orchestratorRootRouteRef,
   path: '/workflows/new',
 });
 
 export const createWorkflowRouteRef = createSubRouteRef({
-  id: 'swf/workflows/create',
-  parent: rootRouteRef,
-  path: '/workflows/create/:format',
+  id: 'orchestrator/workflows/new/authoring',
+  parent: orchestratorRootRouteRef,
+  path: '/workflows/new/:format',
 });
 
 export const editWorkflowRouteRef = createSubRouteRef({
-  id: 'swf/workflows/edit',
-  parent: rootRouteRef,
-  path: '/workflows/edit/:format/:swfId',
+  id: 'orchestrator/workflows/edit',
+  parent: orchestratorRootRouteRef,
+  path: '/workflows/edit/:format/:workflowId',
 });
 
 export const executeWorkflowRouteRef = createSubRouteRef({
-  id: 'swf/workflows/execute',
-  parent: rootRouteRef,
-  path: '/workflows/execute/:swfId',
+  id: 'orchestrator/workflows/execute',
+  parent: orchestratorRootRouteRef,
+  path: '/workflows/:workflowId/execute',
 });

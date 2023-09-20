@@ -1,0 +1,24 @@
+{
+  "$id": "classpath:/schemas/orchestrator-ansible-job-long__sub_schema__Generating_the_Catalog_Info_Component_Catalog_template_action_runActionTemplateFetch.json",
+  "title": "orchestrator-ansible-job-long: Generating the Catalog Info Component > Catalog template action > runActionTemplateFetch",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "repoName": {
+      "title": "repoName",
+      "description": "Extracted from https://github.com/janus-idp/software-templates/tree/main/skeletons/catalog-info",
+      "type": "string"
+    },
+    "owner": {
+      "title": "owner",
+      "description": "Extracted from https://github.com/janus-idp/software-templates/tree/main/skeletons/catalog-info",
+      "type": "string"
+    },
+    "description": {
+      "title": "description",
+      "description": "Extracted from https://github.com/janus-idp/software-templates/tree/main/skeletons/catalog-info",
+      "type": "string"
+    }
+  },
+  "required": ["repoName", "owner", "description"]
+}

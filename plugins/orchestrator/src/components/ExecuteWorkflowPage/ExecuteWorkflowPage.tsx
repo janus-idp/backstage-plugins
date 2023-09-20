@@ -19,12 +19,15 @@ import {
   WorkflowDataInputSchemaResponse,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
-import { swfApiRef } from '../../api';
-import { executeWorkflowRouteRef, swfInstanceRouteRef } from '../../routes';
-import { BaseWorkflowPage } from '../BaseWorkflowPage/BaseWorkflowPage';
-import { SWFDialog } from '../SWFDialog';
-import { EditorViewKind } from '../SWFEditor';
-import { WorkflowSupportButton } from '../WorkflowSupportButton/WorkflowSupportButton';
+import { orchestratorApiRef } from '../../api';
+import {
+  executeWorkflowRouteRef,
+  workflowInstanceRouteRef,
+} from '../../routes';
+import { BaseOrchestratorPage } from '../BaseOrchestratorPage/BaseOrchestratorPage';
+import { OrchestratorSupportButton } from '../OrchestratorSupportButton/OrchestratorSupportButton';
+import { WorkflowDialog } from '../WorkflowDialog';
+import { EditorViewKind } from '../WorkflowEditor';
 import { TitleFieldTemplate } from './TitleFieldTemplate';
 
 const WrappedForm = withTheme(require('@rjsf/material-ui-v5').Theme);
@@ -34,8 +37,8 @@ interface ExecuteWorkflowPageProps {
 }
 
 export const ExecuteWorkflowPage = (props: ExecuteWorkflowPageProps) => {
-  const swfApi = useApi(swfApiRef);
-  const { swfId } = useRouteRefParams(executeWorkflowRouteRef);
+  const orchestratorApi = useApi(orchestratorApiRef);
+  const { workflowId } = useRouteRefParams(executeWorkflowRouteRef);
   const [loading, setLoading] = useState(false);
   const [schemaResponse, setSchemaResponse] =
     useState<WorkflowDataInputSchemaResponse>();
@@ -43,19 +46,19 @@ export const ExecuteWorkflowPage = (props: ExecuteWorkflowPageProps) => {
   const [formState, setFormState] = useState(props.initialState);
 
   const navigate = useNavigate();
-  const instanceLink = useRouteRef(swfInstanceRouteRef);
+  const instanceLink = useRouteRef(workflowInstanceRouteRef);
 
   useEffect(() => {
     setLoading(true);
-    swfApi
-      .getWorkflowDataInputSchema(swfId)
+    orchestratorApi
+      .getWorkflowDataInputSchema(workflowId)
       .then(response => {
         setSchemaResponse(response);
       })
       .finally(() => {
         setLoading(false);
       });
-  }, [swfApi, swfId]);
+  }, [orchestratorApi, workflowId]);
 
   const onExecute = useCallback(async () => {
     if (!formState) {
@@ -71,11 +74,14 @@ export const ExecuteWorkflowPage = (props: ExecuteWorkflowPageProps) => {
     }
 
     setLoading(true);
-    const response = await swfApi.executeWorkflow({ swfId, parameters });
+    const response = await orchestratorApi.executeWorkflow({
+      workflowId,
+      parameters,
+    });
     setLoading(false);
 
     navigate(instanceLink({ instanceId: response.id }));
-  }, [formState, instanceLink, navigate, swfApi, swfId]);
+  }, [formState, instanceLink, navigate, orchestratorApi, workflowId]);
 
   const onFormChanged = useCallback(
     e => setFormState(current => ({ ...current, ...e.formData })),
@@ -83,15 +89,15 @@ export const ExecuteWorkflowPage = (props: ExecuteWorkflowPageProps) => {
   );
 
   return (
-    <BaseWorkflowPage>
+    <BaseOrchestratorPage>
       <ContentHeader title="Execute">
-        <WorkflowSupportButton />
+        <OrchestratorSupportButton />
       </ContentHeader>
       {loading && <Progress />}
       {schemaResponse && (
         <InfoCard
-          title={schemaResponse.swfItem.definition.name ?? swfId}
-          subheader={schemaResponse.swfItem.definition.description}
+          title={schemaResponse.workflowItem.definition.name ?? workflowId}
+          subheader={schemaResponse.workflowItem.definition.description}
           action={
             <>
               <Button
@@ -102,12 +108,12 @@ export const ExecuteWorkflowPage = (props: ExecuteWorkflowPageProps) => {
               >
                 View {workflow_title}
               </Button>
-              <SWFDialog
+              <WorkflowDialog
                 kind={EditorViewKind.EXTENDED_DIAGRAM_VIEWER}
-                swfId={swfId}
+                workflowId={workflowId}
                 title={
-                  schemaResponse.swfItem.definition.name ??
-                  schemaResponse.swfItem.definition.id
+                  schemaResponse.workflowItem.definition.name ??
+                  schemaResponse.workflowItem.definition.id
                 }
                 open={workflowDialogOpen}
                 close={() => setWorkflowDialogOpen(false)}
@@ -135,6 +141,6 @@ export const ExecuteWorkflowPage = (props: ExecuteWorkflowPageProps) => {
           )}
         </InfoCard>
       )}
-    </BaseWorkflowPage>
+    </BaseOrchestratorPage>
   );
 };

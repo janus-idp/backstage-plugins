@@ -8,7 +8,7 @@ import { Logger } from 'winston';
 
 import { Server } from 'http';
 
-import { createRouter } from '../src/service/router';
+import { createRouter } from '../src';
 
 export interface ServerOptions {
   port: number;
@@ -37,7 +37,7 @@ export async function startStandaloneServer(
 
   let service = createServiceBuilder(module)
     .setPort(options.port)
-    .addRouter('/swf', router);
+    .addRouter('/orchestrator', router);
   if (options.enableCors) {
     service = service.enableCors({ origin: 'http://localhost:3000' });
   }

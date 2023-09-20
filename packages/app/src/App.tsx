@@ -30,7 +30,7 @@ import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
 import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
 import { UserSettingsPage } from '@backstage/plugin-user-settings';
 
-import { SWFPage } from '@janus-idp/backstage-plugin-orchestrator';
+import { OrchestratorPage } from '@janus-idp/backstage-plugin-orchestrator';
 
 import { apis } from './apis';
 import { entityPage } from './components/catalog/EntityPage';
@@ -97,7 +97,7 @@ const routes = (
     </Route>
     <Route path="/settings" element={<UserSettingsPage />} />
     <Route path="/catalog-graph" element={<CatalogGraphPage />} />
-    <Route path="/swf" element={<SWFPage />} />
+    <Route path="/orchestrator" element={<OrchestratorPage />} />
   </FlatRoutes>
 );
 

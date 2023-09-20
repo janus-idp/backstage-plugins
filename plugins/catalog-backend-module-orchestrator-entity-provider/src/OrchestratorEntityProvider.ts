@@ -18,9 +18,9 @@ import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { Logger } from 'winston';
 
 import {
-  swf_service_ready_topic,
-  SwfItem,
+  orchestrator_service_ready_topic,
   workflow_type,
+  WorkflowItem,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 export class OrchestratorEntityProvider
@@ -34,8 +34,8 @@ export class OrchestratorEntityProvider
   private readonly owner: string;
   private readonly environment: string;
 
-  private readonly kogitoServiceUrl: string;
-  private readonly swfPluginUrl: string;
+  private readonly sonataFlowServiceUrl: string;
+  private readonly orchestratorPluginUrl: string;
 
   static async fromConfig(args: {
     config: Config;
@@ -43,38 +43,40 @@ export class OrchestratorEntityProvider
     scheduler: PluginTaskScheduler;
     discovery: DiscoveryApi;
   }): Promise<OrchestratorEntityProvider> {
-    const kogitoBaseUrl = args.config.getString('swf.baseUrl');
-    const kogitoPort = args.config.getNumber('swf.port');
+    const sonataFlowBaseUrl = args.config.getString('orchestrator.baseUrl');
+    const sonataFlowPort = args.config.getNumber('orchestrator.port');
     const owner =
-      args.config.getOptionalString('swf.workflowService.owner') ??
+      args.config.getOptionalString('orchestrator.sonataFlowService.owner') ??
       'infrastructure';
     const environment =
-      args.config.getOptionalString('swf.workflowService.environment') ??
-      'development';
+      args.config.getOptionalString(
+        'orchestrator.sonataFlowService.environment',
+      ) ?? 'development';
 
-    const swfPluginUrl = await args.discovery.getBaseUrl('swf');
-    const kogitoServiceUrl = `${kogitoBaseUrl}:${kogitoPort}`;
+    const orchestratorPluginUrl =
+      await args.discovery.getBaseUrl('orchestrator');
+    const sonataFlowServiceUrl = `${sonataFlowBaseUrl}:${sonataFlowPort}`;
 
     return new OrchestratorEntityProvider({
-      kogitoServiceUrl,
-      swfPluginUrl,
+      sonataFlowServiceUrl,
+      orchestratorPluginUrl,
       scheduler: args.scheduler,
       logger: args.logger,
       owner,
-      environment: environment,
+      environment,
     });
   }
 
   constructor(args: {
-    kogitoServiceUrl: string;
-    swfPluginUrl: string;
+    sonataFlowServiceUrl: string;
+    orchestratorPluginUrl: string;
     scheduler: PluginTaskScheduler;
     logger: Logger;
     owner: string;
     environment: string;
   }) {
-    this.kogitoServiceUrl = args.kogitoServiceUrl;
-    this.swfPluginUrl = args.swfPluginUrl;
+    this.sonataFlowServiceUrl = args.sonataFlowServiceUrl;
+    this.orchestratorPluginUrl = args.orchestratorPluginUrl;
     this.scheduler = args.scheduler;
     this.owner = args.owner;
     this.logger = args.logger;
@@ -86,7 +88,7 @@ export class OrchestratorEntityProvider
   }
 
   supportsEventTopics(): string[] {
-    return [swf_service_ready_topic];
+    return [orchestrator_service_ready_topic];
   }
 
   async connect(connection: EntityProviderConnection): Promise<void> {
@@ -103,7 +105,7 @@ export class OrchestratorEntityProvider
   }
 
   async onEvent(params: EventParams): Promise<void> {
-    if (params.topic !== swf_service_ready_topic) {
+    if (params.topic !== orchestrator_service_ready_topic) {
       return;
     }
     await this.run();
@@ -117,9 +119,11 @@ export class OrchestratorEntityProvider
     this.logger.info('Retrieving workflow definitions');
 
     try {
-      const svcResponse = await fetch(`${this.swfPluginUrl}/items`);
+      const svcResponse = await fetch(
+        `${this.orchestratorPluginUrl}/workflows`,
+      );
       const json = await svcResponse.json();
-      const items = json.items as SwfItem[];
+      const items = json.items as WorkflowItem[];
 
       const entities: Entity[] = items?.length
         ? this.workflowToTemplateEntities(items)
@@ -138,7 +142,7 @@ export class OrchestratorEntityProvider
   }
 
   private workflowToTemplateEntities(
-    items: SwfItem[],
+    items: WorkflowItem[],
   ): TemplateEntityV1beta3[] {
     return items.map(i => {
       const sanitizedId = i.definition.id.replace(/ /g, '_');
@@ -151,10 +155,10 @@ export class OrchestratorEntityProvider
           description: i.definition.description,
           tags: [workflow_type],
           annotations: {
-            [ANNOTATION_LOCATION]: `url:${this.kogitoServiceUrl}`,
-            [ANNOTATION_ORIGIN_LOCATION]: `url:${this.kogitoServiceUrl}`,
-            [ANNOTATION_SOURCE_LOCATION]: `url:${this.kogitoServiceUrl}/management/processes/${sanitizedId}/source`,
-            [ANNOTATION_VIEW_URL]: `${this.kogitoServiceUrl}/management/processes/${sanitizedId}/source`,
+            [ANNOTATION_LOCATION]: `url:${this.sonataFlowServiceUrl}`,
+            [ANNOTATION_ORIGIN_LOCATION]: `url:${this.sonataFlowServiceUrl}`,
+            [ANNOTATION_SOURCE_LOCATION]: `url:${this.sonataFlowServiceUrl}/management/processes/${sanitizedId}/source`,
+            [ANNOTATION_VIEW_URL]: `${this.sonataFlowServiceUrl}/management/processes/${sanitizedId}/source`,
           },
         },
         spec: {

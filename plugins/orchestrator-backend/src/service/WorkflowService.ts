@@ -6,9 +6,9 @@ import {
   fromWorkflowSource,
   schemas_folder,
   spec_files,
-  SwfItem,
-  SwfSpecFile,
   toWorkflowString,
+  WorkflowItem,
+  WorkflowSpecFile,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { extname, join, resolve } from 'path';
@@ -19,19 +19,19 @@ import { OpenApiService } from './OpenApiService';
 export class WorkflowService {
   private openApiService: OpenApiService;
   private dataInputSchemaService: DataInputSchemaService;
-  private kogitoResourcesPath: string;
+  private sonataFlowResourcesPath: string;
 
   constructor(
     openApiService: OpenApiService,
     dataInputSchemaService: DataInputSchemaService,
-    kogitoResourcesPath: string,
+    sonataFlowResourcesPath: string,
   ) {
     this.openApiService = openApiService;
     this.dataInputSchemaService = dataInputSchemaService;
-    this.kogitoResourcesPath = kogitoResourcesPath;
+    this.sonataFlowResourcesPath = sonataFlowResourcesPath;
   }
 
-  async saveWorkflowDefinition(item: SwfItem): Promise<SwfItem> {
+  async saveWorkflowDefinition(item: WorkflowItem): Promise<WorkflowItem> {
     const workflowFormat = extractWorkflowFormatFromUri(item.uri);
     const definitionsPath = this.resolveRosourcePath(
       `${item.definition.id}.sw.${workflowFormat}`,
@@ -62,13 +62,13 @@ export class WorkflowService {
     await fs.writeFile(path, contentToSave, 'utf8');
   }
 
-  async saveWorkflowDefinitionFromUrl(url: string): Promise<SwfItem> {
+  async saveWorkflowDefinitionFromUrl(url: string): Promise<WorkflowItem> {
     const workflow = await this.fetchWorkflowDefinitionFromUrl(url);
     await this.saveWorkflowDefinition(workflow);
     return workflow;
   }
 
-  async fetchWorkflowDefinitionFromUrl(url: string): Promise<SwfItem> {
+  async fetchWorkflowDefinitionFromUrl(url: string): Promise<WorkflowItem> {
     const response = await fetch(url);
     const content = await response.text();
     const definition = fromWorkflowSource(content);
@@ -89,10 +89,12 @@ export class WorkflowService {
     await this.saveFile(path, openApi);
   }
 
-  async saveDataInputSchema(swfItem: SwfItem): Promise<string | undefined> {
+  async saveDataInputSchema(
+    workflowItem: WorkflowItem,
+  ): Promise<string | undefined> {
     const openApi = await this.openApiService.generateOpenApi();
     const dataInputSchema = await this.dataInputSchemaService.generate({
-      swfDefinition: swfItem.definition,
+      definition: workflowItem.definition,
       openApi,
     });
 
@@ -139,8 +141,8 @@ export class WorkflowService {
     await fs.rm(definitionsPath, { force: true });
   }
 
-  async listStoredSpecs(): Promise<SwfSpecFile[]> {
-    const specs: SwfSpecFile[] = [];
+  async listStoredSpecs(): Promise<WorkflowSpecFile[]> {
+    const specs: WorkflowSpecFile[] = [];
     // We can list all spec files from FS but let's keep it simple for now
     for (const relativePath of spec_files) {
       const path = this.resolveRosourcePath(relativePath);
@@ -152,6 +154,6 @@ export class WorkflowService {
   }
 
   private resolveRosourcePath(relativePath: string): string {
-    return resolve(join(this.kogitoResourcesPath, relativePath));
+    return resolve(join(this.sonataFlowResourcesPath, relativePath));
   }
 }
