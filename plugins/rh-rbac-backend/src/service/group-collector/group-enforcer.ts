@@ -1,9 +1,7 @@
 import { Entity } from '@backstage/catalog-model';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
-import { JsonArray } from '@backstage/types';
 
 import {
-  DefaultRoleManager,
   Enforcer,
   newEnforcer,
   newModelFromString,
@@ -11,13 +9,15 @@ import {
 } from 'casbin';
 
 import { MODEL } from '../permission-model';
+import { BackstageRoleManager } from '../role-manager';
+import { GroupInfoCollector } from './group-info-catalog';
 
 export class GroupCasbinEnforcerFactory {
   async build(
     enforcer: Enforcer,
-    user: Entity,
     groups: Entity[],
     permissionPolicy: string[],
+    groupInfo: GroupInfoCollector,
   ): Promise<Enforcer> {
     const groupEnf = await newEnforcer();
     await groupEnf.initWithModelAndAdapter(
@@ -26,7 +26,10 @@ export class GroupCasbinEnforcerFactory {
       true,
     );
 
-    await this.buildGroupHierarchy(groupEnf, groups, user);
+    const rm = new BackstageRoleManager(groupInfo);
+    groupEnf.setRoleManager(rm);
+    groupEnf.enableAutoBuildRoleLinks(false);
+    await groupEnf.buildRoleLinks();
 
     await this.copyPermissionPolicy(
       permissionPolicy,
@@ -36,39 +39,6 @@ export class GroupCasbinEnforcerFactory {
     );
 
     return groupEnf;
-  }
-
-  private async buildGroupHierarchy(
-    groupEnf: Enforcer,
-    groups: Entity[],
-    user: Entity,
-  ) {
-    // todo: make it configurable
-    const rm = new DefaultRoleManager(10);
-    groupEnf.setRoleManager(rm);
-    groupEnf.enableAutoBuildRoleLinks(false);
-    await groupEnf.buildRoleLinks();
-
-    for (const group of groups) {
-      // add group inheritance information to the role manager
-      if (group.spec && group.spec.parent) {
-        const groupRef = `group:default/${group.metadata.name.toLocaleLowerCase()}`;
-        const parentGroup = group.spec.parent.toString() || '';
-        const parentGroupRef = `group:default/${parentGroup}`;
-
-        await rm.addLink(groupRef, parentGroupRef);
-      }
-    }
-
-    const userRef = `user:default/${user.metadata.name.toLocaleLowerCase()}`;
-    // add information about user group membership to group enforcer
-    if (user.spec && user.spec.memberOf) {
-      const memberOfGroups = user.spec.memberOf as JsonArray; // todo: check if it is required array
-      for (const group of memberOfGroups) {
-        const groupRef = `group:default/${group}`;
-        await rm.addLink(userRef, groupRef);
-      }
-    }
   }
 
   private async copyPermissionPolicy(

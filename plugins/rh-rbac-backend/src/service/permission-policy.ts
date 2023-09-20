@@ -156,20 +156,15 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     }
 
     const entityRef = identity.userEntityRef;
-    const user = await this.catalogClient.getEntityByRef(entityRef);
-    if (!user) {
-      // it shouldn't happen, but any way
-      return false;
-    }
 
     const groupCollector = new GroupInfoCollector(this.catalogClient);
     const groups = await groupCollector.getAncestorGroups([entityRef]);
 
     const gEnf = await new GroupCasbinEnforcerFactory().build(
       this.enforcer,
-      user,
       groups,
       [entityRef, resourceType, action],
+      groupCollector,
     );
 
     return await gEnf.enforce(entityRef, resourceType, action);

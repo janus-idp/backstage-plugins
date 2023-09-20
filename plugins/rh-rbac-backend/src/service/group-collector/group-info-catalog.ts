@@ -52,4 +52,17 @@ export class GroupInfoCollector {
 
     return groups;
   }
+
+  async getGroupUsers(groupRef: string): Promise<Entity[]> {
+    const { items } = await this.catalogClient.getEntities({
+      filter: {
+        kind: 'User',
+        ['relations.memberOf']: groupRef,
+      },
+      // Save traffic with only required information for us
+      fields: ['metadata.name'],
+    });
+
+    return items;
+  }
 }
