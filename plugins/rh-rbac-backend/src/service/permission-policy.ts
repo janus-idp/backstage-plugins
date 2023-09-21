@@ -18,9 +18,9 @@ import {
 import { Enforcer, FileAdapter, newEnforcer, newModelFromString } from 'casbin';
 import { Logger } from 'winston';
 
-import { GroupCasbinEnforcerFactory } from './group-collector/group-enforcer';
-import { GroupInfoCollector } from './group-collector/group-info-catalog';
+import { GroupInfoCollector } from './group-info-catalog';
 import { MODEL } from './permission-model';
+import { BackstageRoleManager } from './role-manager';
 
 const useAdmins = (admins: Config[], enf: Enforcer) => {
   admins.flatMap(async localConfig => {
@@ -158,15 +158,12 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     const entityRef = identity.userEntityRef;
 
     const groupCollector = new GroupInfoCollector(this.catalogClient);
-    const groups = await groupCollector.getAncestorGroups([entityRef]);
 
-    const gEnf = await new GroupCasbinEnforcerFactory().build(
-      this.enforcer,
-      groups,
-      [entityRef, resourceType, action],
-      groupCollector,
-    );
+    const rm = new BackstageRoleManager(groupCollector);
+    this.enforcer.setRoleManager(rm);
+    this.enforcer.enableAutoBuildRoleLinks(false);
+    await this.enforcer.buildRoleLinks();
 
-    return await gEnf.enforce(entityRef, resourceType, action);
+    return await this.enforcer.enforce(entityRef, resourceType, action);
   };
 }

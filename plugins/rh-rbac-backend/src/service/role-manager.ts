@@ -1,6 +1,6 @@
 import { RoleManager } from 'casbin';
 
-import { GroupInfoCollector } from './group-collector/group-info-catalog';
+import { GroupInfoCollector } from './group-info-catalog';
 
 export class BackstageRoleManager implements RoleManager {
   constructor(private readonly groupInfo: GroupInfoCollector) {}
