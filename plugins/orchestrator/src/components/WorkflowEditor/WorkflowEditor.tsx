@@ -45,6 +45,7 @@ import { parseApiContent } from '@kie-tools/serverless-workflow-service-catalog/
 import { Diagnostic, DiagnosticSeverity } from 'vscode-languageserver-types';
 
 import {
+  default_editor_path,
   empty_definition,
   extractWorkflowFormatFromUri,
   ProcessInstance,
@@ -99,7 +100,9 @@ const RefForwardingWorkflowEditor: ForwardRefRenderFunction<
 > = (props, forwardedRef) => {
   const orchestratorApi = useApi(orchestratorApiRef);
   const configApi = useApi(configApiRef);
-  const contextPath = configApi.getString('orchestrator.editor.path');
+  const contextPath =
+    configApi.getOptionalString('orchestrator.editor.path') ??
+    default_editor_path;
   const { workflowId, kind, format } = props;
   const { editor, editorRef } = useEditorRef();
   const [embeddedFile, setEmbeddedFile] = useState<EmbeddedEditorFile>();

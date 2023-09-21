@@ -18,6 +18,8 @@ import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { Logger } from 'winston';
 
 import {
+  default_catalog_environment,
+  default_catalog_owner,
   orchestrator_service_ready_topic,
   workflow_type,
   WorkflowItem,
@@ -43,15 +45,18 @@ export class OrchestratorEntityProvider
     scheduler: PluginTaskScheduler;
     discovery: DiscoveryApi;
   }): Promise<OrchestratorEntityProvider> {
-    const sonataFlowBaseUrl = args.config.getString('orchestrator.baseUrl');
-    const sonataFlowPort = args.config.getNumber('orchestrator.port');
+    const sonataFlowBaseUrl = args.config.getString(
+      'orchestrator.sonataFlowService.baseUrl',
+    );
+    const sonataFlowPort = args.config.getNumber(
+      'orchestrator.sonataFlowService.port',
+    );
     const owner =
-      args.config.getOptionalString('orchestrator.sonataFlowService.owner') ??
-      'infrastructure';
+      args.config.getOptionalString('orchestrator.catalog.owner') ??
+      default_catalog_owner;
     const environment =
-      args.config.getOptionalString(
-        'orchestrator.sonataFlowService.environment',
-      ) ?? 'development';
+      args.config.getOptionalString('orchestrator.catalog.environment') ??
+      default_catalog_environment;
 
     const orchestratorPluginUrl =
       await args.discovery.getBaseUrl('orchestrator');

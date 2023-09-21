@@ -59,3 +59,11 @@ export const workflow_yaml_sample: WorkflowSample = {
   id: 'yamlgreet',
   url: 'https://raw.githubusercontent.com/kiegroup/kogito-examples/stable/serverless-workflow-examples/serverless-workflow-greeting-quarkus/src/main/resources/yamlgreet.sw.yml',
 };
+
+// Default values for the orchestrator plugin configuration
+export const default_sonataflow_container_image =
+  'quay.io/kiegroup/kogito-swf-devmode-nightly:main-2023-08-30';
+export const default_sonataflow_persistance_path = '/home/kogito/persistence';
+export const default_catalog_owner = 'infrastructure';
+export const default_catalog_environment = 'development';
+export const default_editor_path = 'https://start.kubesmarts.org';

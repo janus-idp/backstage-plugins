@@ -12,10 +12,13 @@ import { OpenAPIV3 } from 'openapi-types';
 import { Logger } from 'winston';
 
 import {
+  default_sonataflow_container_image,
+  default_sonataflow_persistance_path,
   fromWorkflowSource,
   Job,
   orchestrator_service_ready_topic,
   ProcessInstance,
+  WorkflowDataInputSchema,
   WorkflowDataInputSchemaResponse,
   WorkflowDefinition,
   WorkflowItem,
@@ -41,6 +44,11 @@ export interface RouterOptions {
   urlReader: UrlReader;
 }
 
+interface JiraConfig {
+  host: string;
+  bearerToken: string;
+}
+
 function delay(time: number) {
   return new Promise(r => setTimeout(r, time));
 }
@@ -60,28 +68,38 @@ export async function createRouter(
     response.json({ status: 'ok' });
   });
 
-  const sonataFlowBaseUrl =
-    config.getOptionalString('orchestrator.baseUrl') ?? 'http://localhost';
-  const sonataFlowPort = config.getOptionalNumber('orchestrator.port') ?? 8899;
+  const sonataFlowBaseUrl = config.getString(
+    'orchestrator.sonataFlowService.baseUrl',
+  );
+  const sonataFlowPort = config.getNumber(
+    'orchestrator.sonataFlowService.port',
+  );
   logger.info(
     `Using SonataFlow Url of: ${sonataFlowBaseUrl}:${sonataFlowPort}`,
   );
   const sonataFlowResourcesPath = config.getString(
     'orchestrator.sonataFlowService.path',
   );
-  const sonataFlowServiceContainer = config.getString(
-    'orchestrator.sonataFlowService.container',
-  );
-  const sonataFlowPersistencePath = config.getString(
-    'orchestrator.sonataFlowService.persistence.path',
-  );
-  const jiraHost =
-    config.getOptionalString('orchestrator.sonataFlowService.jira.host') ??
-    'localhost';
-  const jiraBearerToken =
+  const sonataFlowServiceContainer =
+    config.getOptionalString('orchestrator.sonataFlowService.container') ??
+    default_sonataflow_container_image;
+  const sonataFlowPersistencePath =
     config.getOptionalString(
-      'orchestrator.sonataFlowService.jira.bearerToken',
-    ) ?? '';
+      'orchestrator.sonataFlowService.persistence.path',
+    ) ?? default_sonataflow_persistance_path;
+
+  const jiraHost = config.getOptionalString('orchestrator.jira.host');
+  const jiraBearerToken = config.getOptionalString(
+    'orchestrator.jira.bearerToken',
+  );
+
+  let jiraConfig: JiraConfig | undefined = undefined;
+  if (jiraHost && jiraBearerToken) {
+    jiraConfig = {
+      host: jiraHost,
+      bearerToken: jiraBearerToken,
+    };
+  }
 
   const githubConfigs = readGithubIntegrationConfigs(
     config.getOptionalConfigArray('integrations.github') ?? [],
@@ -136,9 +154,8 @@ export async function createRouter(
     sonataFlowResourcesPath,
     sonataFlowServiceContainer,
     sonataFlowPersistencePath,
-    jiraHost,
-    jiraBearerToken,
     logger,
+    jiraConfig,
   );
 
   await eventBroker.publish({
@@ -325,21 +342,27 @@ function setupInternalRoutes(
 
     const workflowItem: WorkflowItem = { uri, definition };
 
-    const openApi = await fetchOpenApi();
-    const workflowDataInputSchema =
-      await dataInputSchemaService.resolveDataInputSchema({
-        openApi,
-        workflowId,
-      });
+    let schema: WorkflowDataInputSchema | undefined = undefined;
 
-    if (!workflowDataInputSchema) {
-      res.status(404).send();
-      return;
+    if (definition.dataInputSchema) {
+      const openApi = await fetchOpenApi();
+      const workflowDataInputSchema =
+        await dataInputSchemaService.resolveDataInputSchema({
+          openApi,
+          workflowId,
+        });
+
+      if (!workflowDataInputSchema) {
+        res.status(404).send();
+        return;
+      }
+
+      schema = workflowDataInputSchema;
     }
 
     const response: WorkflowDataInputSchemaResponse = {
       workflowItem: workflowItem,
-      schema: workflowDataInputSchema,
+      schema,
     };
 
     res.status(200).json(response);
@@ -422,14 +445,29 @@ async function setupSonataflowService(
   sonataFlowResourcesPath: string,
   sonataFlowServiceContainer: string,
   sonataFlowPersistencePath: string,
-  jiraHost: string,
-  jiraBearerToken: string,
   logger: Logger,
+  jiraConfig?: JiraConfig,
 ) {
   const sonataFlowResourcesAbsPath = resolve(`${sonataFlowResourcesPath}`);
-  const launcher = `docker run --add-host jira.test:${jiraHost} --add-host host.docker.internal:host-gateway --rm -p ${sonataFlowPort}:8080 -v ${sonataFlowResourcesAbsPath}:/home/kogito/serverless-workflow-project/src/main/resources -e KOGITO.CODEGEN.PROCESS.FAILONERROR=false -e QUARKUS_EMBEDDED_POSTGRESQL_DATA_DIR=${sonataFlowPersistencePath} -e QUARKUS_REST_CLIENT_JIRA_OPENAPI_JSON_URL=http://jira.test:8080 -e JIRABEARERTOKEN=${jiraBearerToken} ${sonataFlowServiceContainer}`;
+  const launcher = ['docker run --add-host host.docker.internal:host-gateway'];
+  if (jiraConfig) {
+    launcher.push(`--add-host jira.test:${jiraConfig.host}`);
+  }
+  launcher.push(
+    `--rm -p ${sonataFlowPort}:8080 -v ${sonataFlowResourcesAbsPath}:/home/kogito/serverless-workflow-project/src/main/resources -e KOGITO.CODEGEN.PROCESS.FAILONERROR=false -e QUARKUS_EMBEDDED_POSTGRESQL_DATA_DIR=${sonataFlowPersistencePath}`,
+  );
+  if (jiraConfig) {
+    launcher.push(
+      `-e QUARKUS_REST_CLIENT_JIRA_OPENAPI_JSON_URL=http://jira.test:8080 -e JIRABEARERTOKEN=${jiraConfig.bearerToken}`,
+    );
+  }
+  launcher.push(sonataFlowServiceContainer);
+
+  const launcherCmd = launcher.join(' ');
+  logger.info(`Launching SonataFlow with: ${launcherCmd}`);
+
   exec(
-    launcher,
+    launcherCmd,
     (error: ExecException | null, stdout: string, stderr: string) => {
       if (error) {
         console.error(`error: ${error.message}`);

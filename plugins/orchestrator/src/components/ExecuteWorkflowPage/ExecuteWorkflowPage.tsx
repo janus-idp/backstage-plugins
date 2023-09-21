@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { ContentHeader, InfoCard, Progress } from '@backstage/core-components';
@@ -9,7 +9,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { JsonValue } from '@backstage/types';
 
-import { Button, Typography } from '@material-ui/core';
+import { Button, Grid, Typography } from '@material-ui/core';
 import { withTheme } from '@rjsf/core-v5';
 import validator from '@rjsf/validator-ajv8';
 import { JSONSchema7 } from 'json-schema';
@@ -61,15 +61,13 @@ export const ExecuteWorkflowPage = (props: ExecuteWorkflowPageProps) => {
   }, [orchestratorApi, workflowId]);
 
   const onExecute = useCallback(async () => {
-    if (!formState) {
-      return;
-    }
-
     const parameters: Record<string, JsonValue> = {};
-    for (const key in formState) {
-      if (formState.hasOwnProperty(key)) {
-        const property = formState[key];
-        Object.assign(parameters, property);
+    if (schemaResponse?.schema && formState) {
+      for (const key in formState) {
+        if (formState.hasOwnProperty(key)) {
+          const property = formState[key];
+          Object.assign(parameters, property);
+        }
       }
     }
 
@@ -81,11 +79,27 @@ export const ExecuteWorkflowPage = (props: ExecuteWorkflowPageProps) => {
     setLoading(false);
 
     navigate(instanceLink({ instanceId: response.id }));
-  }, [formState, instanceLink, navigate, orchestratorApi, workflowId]);
+  }, [
+    formState,
+    instanceLink,
+    navigate,
+    orchestratorApi,
+    schemaResponse,
+    workflowId,
+  ]);
 
   const onFormChanged = useCallback(
     e => setFormState(current => ({ ...current, ...e.formData })),
     [setFormState],
+  );
+
+  const executeButton = useMemo(
+    () => (
+      <Button variant="contained" color="primary" onClick={onExecute}>
+        Execute
+      </Button>
+    ),
+    [onExecute],
   );
 
   return (
@@ -121,7 +135,7 @@ export const ExecuteWorkflowPage = (props: ExecuteWorkflowPageProps) => {
             </>
           }
         >
-          {schemaResponse ? (
+          {schemaResponse?.schema ? (
             <WrappedForm
               schema={schemaResponse.schema as JSONSchema7}
               validator={validator}
@@ -132,12 +146,17 @@ export const ExecuteWorkflowPage = (props: ExecuteWorkflowPageProps) => {
               formContext={{ formData: formState }}
               templates={{ TitleFieldTemplate }}
             >
-              <Button variant="contained" color="primary" type="submit">
-                Execute
-              </Button>
+              {executeButton}
             </WrappedForm>
           ) : (
-            <Typography>No input schema</Typography>
+            <Grid container spacing={2} direction="column">
+              <Grid item>
+                <Typography>
+                  No data input schema found for this workflow
+                </Typography>
+              </Grid>
+              <Grid item>{executeButton}</Grid>
+            </Grid>
           )}
         </InfoCard>
       )}

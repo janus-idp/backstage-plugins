@@ -1,6 +1,6 @@
 {
   "name": "@janus-idp/backstage-plugin-orchestrator",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "license": "Apache-2.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -44,7 +44,7 @@
     "@backstage/plugin-scaffolder-react": "^1.5.1",
     "@backstage/theme": "^0.4.1",
     "@backstage/types": "^1.1.0",
-    "@janus-idp/backstage-plugin-orchestrator-common": "0.0.0",
+    "@janus-idp/backstage-plugin-orchestrator-common": "0.0.1",
     "@kie-tools-core/editor": "^0.31.0",
     "@kie-tools-core/envelope-bus": "^0.31.0",
     "@kie-tools-core/notifications": "^0.31.0",

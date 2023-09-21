@@ -25,7 +25,6 @@ import HomeIcon from '@material-ui/icons/Home';
 import LibraryBooks from '@material-ui/icons/LibraryBooks';
 import MenuIcon from '@material-ui/icons/Menu';
 import MapIcon from '@material-ui/icons/MyLocation';
-import WorkflowIcon from '@material-ui/icons/Receipt';
 import SearchIcon from '@material-ui/icons/Search';
 
 import LogoFull from './LogoFull';
@@ -73,7 +72,6 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
         <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />
         <SidebarItem icon={LibraryBooks} to="docs" text="Docs" />
         <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
-        <SidebarItem icon={WorkflowIcon} to="orchestrator" text="Workflows" />
         {/* End global nav */}
         <SidebarDivider />
         <SidebarScrollWrapper>

@@ -26,6 +26,8 @@
     "@backstage/plugin-auth-backend": "^0.18.5",
     "@backstage/plugin-auth-node": "^0.2.16",
     "@backstage/plugin-catalog-backend": "^1.12.4",
+    "@backstage/plugin-events-backend": "^0.2.11",
+    "@backstage/plugin-events-node": "^0.2.11",
     "@backstage/plugin-permission-common": "^0.7.7",
     "@backstage/plugin-permission-node": "^0.7.13",
     "@backstage/plugin-proxy-backend": "^0.3.2",
@@ -39,11 +41,7 @@
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "pg": "^8.3.0",
-    "winston": "^3.2.1",
-    "@backstage/plugin-events-backend": "^0.2.11",
-    "@backstage/plugin-events-node": "^0.2.11",
-    "@janus-idp/backstage-plugin-orchestrator-backend": "^0.0.0",
-    "@janus-idp/backstage-plugin-orchestrator-common": "^0.0.0"
+    "winston": "^3.2.1"
   },
   "devDependencies": {
     "@backstage/cli": "0.22.9",

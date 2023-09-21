@@ -52,7 +52,7 @@ export type WorkflowDataInputSchema = JSONSchema4 & {
 
 export interface WorkflowDataInputSchemaResponse {
   workflowItem: WorkflowItem;
-  schema: WorkflowDataInputSchema;
+  schema: WorkflowDataInputSchema | undefined;
 }
 
 export interface WorkflowExecutionResponse {
