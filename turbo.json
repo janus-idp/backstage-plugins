@@ -17,6 +17,8 @@
       "dependsOn": ["build"]
     },
     "lint": {},
+    "lint:fix": {},
+    "prettier:fix": {},
     "tsc": {
       "outputs": ["../../dist-types/**"],
       "dependsOn": ["^tsc"]

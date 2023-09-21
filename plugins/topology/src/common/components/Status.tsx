@@ -2,6 +2,8 @@ import React from 'react';
 
 import {
   BanIcon,
+  CheckCircleIcon,
+  ExclamationCircleIcon,
   HourglassHalfIcon,
   NotStartedIcon,
   SyncAltIcon,
@@ -10,7 +12,7 @@ import {
 
 import { StatusIconAndText } from '@janus-idp/shared-react';
 
-import { GreenCheckCircleIcon, RedExclamationCircleIcon } from './icons';
+import './Status.css';
 
 export type StatusComponentProps = {
   title?: string;
@@ -63,13 +65,20 @@ const Status = ({ status, noTooltip, iconOnly }: StatusProps) => {
       return (
         <StatusIconAndText
           {...statusProps}
-          icon={<RedExclamationCircleIcon />}
+          icon={
+            <ExclamationCircleIcon className="bs-topology-status__red-exclamation-icon" />
+          }
         />
       );
 
     case 'Succeeded':
       return (
-        <StatusIconAndText {...statusProps} icon={<GreenCheckCircleIcon />} />
+        <StatusIconAndText
+          {...statusProps}
+          icon={
+            <CheckCircleIcon className="bs-topology-status__green-check-icon" />
+          }
+        />
       );
 
     case 'PipelineNotStarted':

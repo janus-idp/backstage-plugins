@@ -14,6 +14,16 @@ If you start developing a plugin that you aim to release as open source, we sugg
 
 You can also use this process if you have an idea for a good plugin but you hope that someone else will pick up the work.
 
+## First run
+
+The Backstage has multiple dependencies. To pass through their installation, make sure to follow the [isolated-vm](https://github.com/laverdet/isolated-vm#requirements) requirements.
+
+Next, run the following command to install dependencies:
+
+```console
+yarn install
+```
+
 ## Create a new plugin
 
 Run the following command to create a new plugin and follow the instructions:

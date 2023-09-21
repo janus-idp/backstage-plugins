@@ -17,6 +17,7 @@
     "clean": "turbo run clean",
     "test": "turbo run test",
     "lint": "turbo run lint",
+    "lint:fix": "turbo run lint -- --fix",
     "lint-staged": "lint-staged",
     "prettier:check": "prettier --ignore-unknown --check .",
     "prettier:fix": "prettier --ignore-unknown --write .",
@@ -38,6 +39,7 @@
   "devDependencies": {
     "@backstage/cli": "0.22.9",
     "@ianvs/prettier-plugin-sort-imports": "4.1.0",
+    "@janus-idp/cli": "*",
     "@semantic-release/changelog": "6.0.3",
     "@semantic-release/exec": "6.0.3",
     "@semantic-release/git": "10.0.1",
@@ -46,6 +48,7 @@
     "@spotify/prettier-config": "15.0.0",
     "conventional-changelog-conventionalcommits": "7.0.2",
     "husky": "8.0.3",
+    "eslint-plugin-jest": "27.4.0",
     "lint-staged": "14.0.1",
     "multi-semantic-release": "3.0.2",
     "prettier": "3.0.3",
@@ -57,8 +60,8 @@
     "@types/react-dom": "^17.0.2"
   },
   "lint-staged": {
-    "*": "yarn run prettier:fix",
-    "*.{js,jsx,ts,tsx,mjs,cjs}": "yarn run lint -- -- --fix"
+    "*": "turbo run prettier:fix --",
+    "*.{js,jsx,ts,tsx,mjs,cjs}": "turbo run lint:fix --"
   },
   "release": {
     "branches": "main",

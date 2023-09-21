@@ -23,6 +23,28 @@ const NEXUS_REPOSITORY_MANAGER_CONFIG = {
   experimentalAnnotations: 'nexusRepositoryManager.experimentalAnnotations',
 } as const;
 
+/**
+ * Indicates that we want manifest v2 schema 2 if possible. It's faster
+ * for supporting servers to return and contains size information.
+ * @see @link{https://docs.docker.com/registry/spec/manifest-v2-2/#backward-compatibility|Backward compatibility}
+ */
+const DOCKER_MANIFEST_HEADERS = {
+  Accept: [
+    'application/vnd.docker.distribution.manifest.v2+json',
+    'application/vnd.docker.distribution.manifest.v1+json;q=0.9',
+    '*/*;q=0.8',
+  ].join(', '),
+} as const satisfies HeadersInit;
+
+function getAdditionalHeaders(format?: string): HeadersInit {
+  switch (format /* NOSONAR - use switch for expandability */) {
+    case 'docker':
+      return DOCKER_MANIFEST_HEADERS;
+    default:
+      return {};
+  }
+}
+
 export type NexusRepositoryManagerApiV1 = {
   getComponents(query: SearchServiceQuery): Promise<{
     components: {
@@ -74,14 +96,19 @@ export class NexusRepositoryManagerApiClient
     return await SearchService.search(query);
   }
 
-  private async fetcher(url: string) {
+  private async fetcher(url: string, additionalHeaders: HeadersInit = {}) {
     const { token: idToken } = await this.identityApi.getCredentials();
-    const response = await fetch(url, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(idToken && { Authorization: `Bearer ${idToken}` }),
-      },
-    });
+
+    const headers = new Headers(additionalHeaders);
+    if (!headers.has('Accept')) {
+      headers.set('Accept', 'application/json');
+    }
+
+    if (idToken) {
+      headers.set('Authorization', `Bearer ${idToken}`);
+    }
+
+    const response = await fetch(url, { headers });
     if (!response.ok) {
       throw new Error(
         `failed to fetch data, status ${response.status}: ${response.statusText}`,
@@ -90,7 +117,7 @@ export class NexusRepositoryManagerApiClient
     return await response.json();
   }
 
-  private async getRawAsset(url?: string) {
+  private async getRawAsset(url?: string, additionalHeaders: HeadersInit = {}) {
     const proxyUrl = await this.getBaseUrl();
 
     if (!url) {
@@ -99,13 +126,19 @@ export class NexusRepositoryManagerApiClient
 
     const path = /\/(repository\/.*)/.exec(url)?.at(1);
 
-    return (await this.fetcher(`${proxyUrl}/${path}`)) as RawAsset;
+    return (await this.fetcher(
+      `${proxyUrl}/${path}`,
+      additionalHeaders,
+    )) as RawAsset;
   }
 
   private async getRawAssets(component: ComponentXO) {
+    const additionalHeaders = getAdditionalHeaders(component.format);
+
     const assets = await Promise.all(
       component.assets?.map(
-        async asset => await this.getRawAsset(asset.downloadUrl),
+        async asset =>
+          await this.getRawAsset(asset.downloadUrl, additionalHeaders),
         // Create a dummy promise to avoid Promise.all() from failing
       ) ?? [new Promise<null>(() => null)],
     );

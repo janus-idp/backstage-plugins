@@ -1,6 +1,6 @@
 {
   "extends": [
-    "config:js-lib",
+    "config:recommended",
     ":gitSignOff",
     ":rebaseStalePrs",
     "group:allNonMajor",
@@ -19,6 +19,14 @@
     {
       "matchPackagePatterns": ["^@backstage/"],
       "groupName": ["Core Backstage packages"]
+    },
+    {
+      "matchFileNames": ["packages/**"],
+      "extends": [":pinAllExceptPeerDependencies"]
+    },
+    {
+      "matchFileNames": ["plugins/**"],
+      "extends": [":pinOnlyDevDependencies"]
     }
   ]
 }
