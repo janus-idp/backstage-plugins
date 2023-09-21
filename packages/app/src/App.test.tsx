@@ -2,6 +2,8 @@ import React from 'react';
 
 import { renderWithEffects } from '@backstage/test-utils';
 
+import { waitFor } from '@testing-library/react';
+
 import App from './App';
 
 describe('App', () => {
@@ -23,6 +25,6 @@ describe('App', () => {
     };
 
     const rendered = await renderWithEffects(<App />);
-    expect(rendered.baseElement).toBeInTheDocument();
-  }, 10000);
+    await waitFor(async () => expect(rendered.baseElement).toBeInTheDocument());
+  });
 });
