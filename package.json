@@ -17,6 +17,7 @@
     "clean": "turbo run clean",
     "test": "turbo run test",
     "lint": "turbo run lint",
+    "lint:fix": "turbo run lint -- --fix",
     "lint-staged": "lint-staged",
     "prettier:check": "prettier --ignore-unknown --check .",
     "prettier:fix": "prettier --ignore-unknown --write .",
@@ -55,8 +56,8 @@
     "@types/react-dom": "^17.0.2"
   },
   "lint-staged": {
-    "*": "yarn run prettier:fix",
-    "*.{js,jsx,ts,tsx,mjs,cjs}": "yarn run lint -- -- --fix"
+    "*": "turbo run prettier:fix --",
+    "*.{js,jsx,ts,tsx,mjs,cjs}": "turbo run lint:fix --"
   },
   "release": {
     "branches": "main",
