@@ -3,7 +3,6 @@ import {
   InputError,
   NotAllowedError,
   NotFoundError,
-  ServiceUnavailableError,
 } from '@backstage/errors';
 import {
   getBearerTokenFromAuthorizationHeader,
@@ -189,7 +188,7 @@ export class PolicesServer {
 
         const isRemoved = await this.enforcer.removePolicy(...policyPermission);
         if (!isRemoved) {
-          throw new ServiceUnavailableError(); // 500
+          throw new Error('Unexpected error'); // 500
         }
         response.status(204).end();
       },
@@ -225,7 +224,7 @@ export class PolicesServer {
 
       const isAdded = await this.enforcer.addPolicy(...policy);
       if (!isAdded) {
-        throw new ServiceUnavailableError(); // 500
+        throw new Error('Unexpected error'); // 500
       }
       response.status(201).end();
     });
@@ -290,12 +289,12 @@ export class PolicesServer {
       // So, let's compensate this combination delete + create.
       const isRemoved = await this.enforcer.removePolicy(...oldPolicy);
       if (!isRemoved) {
-        throw new ServiceUnavailableError(); // 500
+        throw new Error('Unexpected error'); // 500
       }
 
       const isAdded = await this.enforcer.addPolicy(...newPolicy);
       if (!isAdded) {
-        throw new ServiceUnavailableError(); // 500
+        throw new Error('Unexpected error');
       }
 
       resp.status(200).end();

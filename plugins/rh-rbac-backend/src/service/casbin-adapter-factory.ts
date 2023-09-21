@@ -1,7 +1,6 @@
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { ConfigApi } from '@backstage/core-plugin-api';
 
-import { Adapter } from 'casbin';
 import TypeORMAdapter from 'typeorm-adapter';
 
 import { resolve } from 'path';
@@ -14,7 +13,7 @@ export class CasbinDBAdapterFactory {
     private readonly databaseManager: PluginDatabaseManager,
   ) {}
 
-  public async createAdapter(): Promise<Adapter> {
+  public async createAdapter(): Promise<TypeORMAdapter> {
     const databaseConfig = this.config.getOptionalConfig('backend.database');
     const client = databaseConfig?.getOptionalString('client');
 
