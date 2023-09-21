@@ -513,8 +513,8 @@ describe('REST policies api', () => {
 
       expect(result.statusCode).toEqual(500);
       expect(result.body.error).toEqual({
-        name: 'ServiceUnavailableError',
-        message: '',
+        name: 'Error',
+        message: 'Unexpected error',
       });
     });
 
@@ -806,8 +806,8 @@ describe('REST policies api', () => {
 
       expect(result.statusCode).toEqual(500);
       expect(result.body.error).toEqual({
-        name: 'ServiceUnavailableError',
-        message: '',
+        name: 'Error',
+        message: 'Unexpected error',
       });
     });
 
@@ -848,8 +848,8 @@ describe('REST policies api', () => {
 
       expect(result.statusCode).toEqual(500);
       expect(result.body.error).toEqual({
-        name: 'ServiceUnavailableError',
-        message: '',
+        name: 'Error',
+        message: 'Unexpected error',
       });
     });
 

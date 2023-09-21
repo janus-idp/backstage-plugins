@@ -4,6 +4,7 @@ import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 import { Adapter, Enforcer, FileAdapter } from 'casbin';
 import { Router } from 'express';
+import TypeORMAdapter from 'typeorm-adapter';
 
 import { CasbinDBAdapterFactory } from './casbin-adapter-factory';
 import { RBACPermissionPolicy } from './permission-policy';
@@ -29,8 +30,8 @@ jest.mock('casbin', () => {
 });
 
 const mockDataBaseAdapterFactory: Partial<CasbinDBAdapterFactory> = {
-  createAdapter: jest.fn((): Promise<Adapter> => {
-    return Promise.resolve({} as Adapter);
+  createAdapter: jest.fn((): Promise<TypeORMAdapter> => {
+    return Promise.resolve({} as TypeORMAdapter);
   }),
 };
 
