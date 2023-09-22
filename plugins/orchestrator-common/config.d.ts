@@ -2,7 +2,7 @@ export interface Config {
   /**
    * Configuration for the Orchestrator plugin.
    */
-  orchestrator: {
+  orchestrator?: {
     sonataFlowService: {
       /**
        * Base URL of the Sonata Flow service.
