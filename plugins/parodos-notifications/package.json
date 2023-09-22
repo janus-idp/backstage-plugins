@@ -1,5 +1,5 @@
 {
-  "name": "@janus-idp/plugin-parodos-notifications",
+  "name": "@janus-idp/backstage-plugin-parodos-notifications",
   "version": "0.1.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -47,5 +47,12 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "repository": "github:janus-idp/backstage-plugins",
+  "keywords": [
+    "backstage",
+    "plugin"
+  ],
+  "homepage": "https://janus-idp.io/",
+  "bugs": "https://github.com/janus-idp/backstage-plugins/issues"
 }
