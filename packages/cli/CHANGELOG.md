@@ -1,3 +1,11 @@
+## @janus-idp/cli [1.0.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.0.0...@janus-idp/cli@1.0.1) (2023-09-22)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @rollup/plugin-json to v6 ([#766](https://github.com/janus-idp/backstage-plugins/issues/766)) ([2fe869f](https://github.com/janus-idp/backstage-plugins/commit/2fe869f3d4503fc70ca7d1bcb748d385d3e653a0))
+* **deps:** update dependency @spotify/eslint-config-base to v15 ([#774](https://github.com/janus-idp/backstage-plugins/issues/774)) ([04a0ae1](https://github.com/janus-idp/backstage-plugins/commit/04a0ae19db78fa904a15a36684a0e2abec2373a6))
+
 ## @janus-idp/cli 1.0.0 (2023-09-22)
 
 
