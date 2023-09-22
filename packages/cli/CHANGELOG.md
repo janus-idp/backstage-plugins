@@ -1,3 +1,10 @@
+## @janus-idp/cli [1.0.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.0.2...@janus-idp/cli@1.0.3) (2023-09-22)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @spotify/eslint-config-typescript to v15 ([#790](https://github.com/janus-idp/backstage-plugins/issues/790)) ([9ecaaa3](https://github.com/janus-idp/backstage-plugins/commit/9ecaaa34624652436838b3df963d91605973b964))
+
 ## @janus-idp/cli [1.0.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.0.1...@janus-idp/cli@1.0.2) (2023-09-22)
 
 
