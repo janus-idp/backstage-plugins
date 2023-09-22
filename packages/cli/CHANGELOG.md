@@ -1,3 +1,20 @@
+## @janus-idp/cli 1.0.0 (2023-09-22)
+
+
+### Features
+
+* fork `@backstage/cli` into a new `@janus-idp/cli` ([#729](https://github.com/janus-idp/backstage-plugins/issues/729)) ([e0e8355](https://github.com/janus-idp/backstage-plugins/commit/e0e835590294512ad2eee5b7c9d93a045131dc9e)), closes [#15274](https://github.com/janus-idp/backstage-plugins/issues/15274) [#18439](https://github.com/janus-idp/backstage-plugins/issues/18439)
+
+
+### Bug Fixes
+
+* **deps:** pin dependencies ([#745](https://github.com/janus-idp/backstage-plugins/issues/745)) ([69bd6a9](https://github.com/janus-idp/backstage-plugins/commit/69bd6a9a078ac66f9934799eb6189c8022157445))
+* **deps:** update dependency @rollup/plugin-node-resolve to v15 ([#767](https://github.com/janus-idp/backstage-plugins/issues/767)) ([8d9696c](https://github.com/janus-idp/backstage-plugins/commit/8d9696cd663c2e7bc54f32f64113a45c3a67aa5b))
+* **deps:** update dependency handlebars to v4.7.7 [security] ([#753](https://github.com/janus-idp/backstage-plugins/issues/753)) ([52a195e](https://github.com/janus-idp/backstage-plugins/commit/52a195e0c2160bb6fc18d40daaee1ec1f05d666d))
+* **deps:** update dependency postcss to v8.2.13 [security] ([#755](https://github.com/janus-idp/backstage-plugins/issues/755)) ([37fc85f](https://github.com/janus-idp/backstage-plugins/commit/37fc85fd37a064c20f19f2b7825bc0e7b0dc28a5))
+* **deps:** update dependency yaml to v2.2.2 [security] ([#757](https://github.com/janus-idp/backstage-plugins/issues/757)) ([b3c719c](https://github.com/janus-idp/backstage-plugins/commit/b3c719ca3d0a43ee3eb5b88313d4278e624beaff))
+* **deps:** update linters ([#746](https://github.com/janus-idp/backstage-plugins/issues/746)) ([bf06a66](https://github.com/janus-idp/backstage-plugins/commit/bf06a66b1c7bd3225a5767e619652bad90030083))
+
 # @backstage/cli
 
 ## 0.22.13-next.3
