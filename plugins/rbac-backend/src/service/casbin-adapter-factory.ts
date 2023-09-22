@@ -5,7 +5,7 @@ import TypeORMAdapter from 'typeorm-adapter';
 
 import { resolve } from 'path';
 
-const DEFAULT_SQLITE3_STORAGE_FILE_NAME = 'rh-rbac-backend.sqlite';
+const DEFAULT_SQLITE3_STORAGE_FILE_NAME = 'rbac-backend.sqlite';
 
 export class CasbinDBAdapterFactory {
   public constructor(

@@ -40,7 +40,7 @@ export class PolicyBuilder {
     } else {
       adapter = new FileAdapter(
         resolvePackagePath(
-          '@janus-idp/plugin-rh-rbac-backend',
+          '@janus-idp/backstage-plugin-rbac-backend',
           './model/rbac-policy.csv',
         ),
       );

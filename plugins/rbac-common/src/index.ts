@@ -1,5 +1,5 @@
 /**
- * Common functionalities for the rh-rbac plugin.
+ * Common functionalities for the rbac plugin.
  *
  * @packageDocumentation
  */
