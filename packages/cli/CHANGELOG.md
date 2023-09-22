@@ -1,3 +1,10 @@
+## @janus-idp/cli [1.0.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.0.1...@janus-idp/cli@1.0.2) (2023-09-22)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @rollup/plugin-commonjs to v25 ([#765](https://github.com/janus-idp/backstage-plugins/issues/765)) ([615ff44](https://github.com/janus-idp/backstage-plugins/commit/615ff443b2c47421de083caa97171021b7775aa0))
+
 ## @janus-idp/cli [1.0.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.0.0...@janus-idp/cli@1.0.1) (2023-09-22)
 
 
