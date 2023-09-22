@@ -19,6 +19,8 @@ import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
 
 import { ScalprumProvider } from '@scalprum/react-core';
 
+import { ParodosNotificationsPage } from '@janus-idp/plugin-parodos-notifications';
+
 import { apis } from './apis';
 import { entityPage } from './components/catalog/EntityPage';
 import { Root } from './components/Root';
@@ -66,6 +68,10 @@ export const AppBase = () => {
               {searchPage}
             </Route>
             <Route path="/catalog-graph" element={<CatalogGraphPage />} />
+            <Route
+              path="/parodos-notifications"
+              element={<ParodosNotificationsPage />}
+            />
             {dynamicRoutes.map(({ Component, path, ...props }) => (
               <Route
                 key={path}
