@@ -57,7 +57,7 @@
     "@spotify/eslint-config-react": "15.0.0",
     "@spotify/eslint-config-typescript": "15.0.0",
     "@sucrase/webpack-loader": "2.0.0",
-    "@svgr/core": "6.5.1",
+    "@svgr/core": "8.1.0",
     "@svgr/plugin-jsx": "6.5.1",
     "@svgr/plugin-svgo": "6.5.1",
     "@svgr/rollup": "6.5.1",
