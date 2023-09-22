@@ -1,0 +1,10 @@
+{
+  "extends": "@backstage/cli/config/tsconfig.json",
+  "include": ["src"],
+  "exclude": ["node_modules", "templates"],
+  "compilerOptions": {
+    "outDir": "../../dist-types/packages/cli",
+    "rootDir": ".",
+    "useUnknownInCatchVariables": false
+  }
+}

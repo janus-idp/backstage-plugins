@@ -65,6 +65,8 @@ const handlers = [
     },
   ),
 
+  // Always returns manifest v2 schema 1, regardless of the accept header, to
+  // simulate a server that does not support schema 2.
   rest.get(
     `${LOCAL_ADDR}/repository/docker/v2/janus-idp/backstage-showcase/manifests/sha-33dfe6b`,
     (_, res, ctx) => {
@@ -72,21 +74,32 @@ const handlers = [
         ctx.status(200),
         ctx.json(
           require(
-            `${__dirname}/../../__fixtures__/repository/docker/v2/janus-idp/backstage-showcase/manifests/sha-33dfe6b.json`,
+            `${__dirname}/../../__fixtures__/repository/docker/v2/janus-idp/backstage-showcase/manifests/sha-33dfe6b-schema1.json`,
           ),
         ),
       );
     },
   ),
 
+  // Conditionally returns manifest v2 schema 1/2, depending on the accept
+  // header, to simulate a server that supports both schemas.
   rest.get(
     `${LOCAL_ADDR}/repository/docker/v2/janus-idp/backstage-showcase/manifests/sha-de3dbf1`,
-    (_, res, ctx) => {
+    (req, res, ctx) => {
+      let fixtureName = 'sha-de3dbf1-schema1.json';
+      if (
+        req.headers
+          .get('accept')
+          ?.includes('application/vnd.docker.distribution.manifest.v2+json')
+      ) {
+        fixtureName = 'sha-de3dbf1-schema2.json';
+      }
+
       return res(
         ctx.status(200),
         ctx.json(
           require(
-            `${__dirname}/../../__fixtures__/repository/docker/v2/janus-idp/backstage-showcase/manifests/sha-de3dbf1.json`,
+            `${__dirname}/../../__fixtures__/repository/docker/v2/janus-idp/backstage-showcase/manifests/${fixtureName}`,
           ),
         ),
       );
@@ -116,6 +129,10 @@ describe('NexusRepositoryManagerApiClient', () => {
     });
   });
 
+  afterEach(() => {
+    server.events.removeAllListeners();
+  });
+
   it('should use the default proxy path', async () => {
     const { components } = await nexusApi.getComponents({
       dockerImageName: 'janus-idp/backstage-showcase',
@@ -143,6 +160,39 @@ describe('NexusRepositoryManagerApiClient', () => {
       expect(components).toEqual(
         require('./../../__fixtures__/components/all.json'),
       );
+    });
+
+    it('sets headers requesting manifest 2 schema 2', async () => {
+      server.events.on('request:start', req => {
+        let expectedAcceptHeader = 'application/json';
+        if (req.url.pathname.includes('/manifests')) {
+          expectedAcceptHeader =
+            'application/vnd.docker.distribution.manifest.v2+json, application/vnd.docker.distribution.manifest.v1+json;q=0.9, */*;q=0.8';
+        }
+
+        expect(req.headers.get('accept')).toEqual(expectedAcceptHeader);
+      });
+
+      const { components } = await nexusApi.getComponents({
+        dockerImageTag: 'sha-de3dbf1',
+      });
+
+      expect(components[0]?.rawAssets[0]?.schemaVersion).toEqual(2);
+    });
+
+    it('should not set special headers for non-docker GETs', async () => {
+      server.events.on('request:start', req => {
+        expect(req.headers.get('accept')).not.toContain(
+          'application/vnd.docker',
+        );
+      });
+
+      // Catching 404 is temporary until there are fixtures for maven.
+      await expect(
+        nexusApi.getComponents({
+          mavenGroupId: 'com.example',
+        }),
+      ).rejects.toThrow('Not Found');
     });
 
     it('should return components using dockerImageTag', async () => {

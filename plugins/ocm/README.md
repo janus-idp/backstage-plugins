@@ -32,8 +32,8 @@ If you are interested in Resource discovery and do not want any of the front-end
 #### Prerequisites
 
 - OCM is deployed and configured on a Kubernetes cluster.
-- [Kubernetes plugin for Backstage](https://backstage.io/docs/features/kubernetes) is installed.
-- A `ClusterRole` is granted to `ServiceAccount` accessing the hub cluster as follows:
+- [Kubernetes plugin for Backstage](https://backstage.io/docs/features/kubernetes) is installed and configured (Optional)
+- On the target Hub clusters please create a `ServiceAccount` and grant it the following `ClusterRole`:
 
   ```yaml
   kind: ClusterRole
@@ -77,13 +77,15 @@ If you are interested in Resource discovery and do not want any of the front-end
          ocm:
            env: # Key is reflected as provider ID. Defines and claims plugin instance ownership of entities
              name: # Name that the hub cluster will assume in Backstage Catalog (in OCM this is always local-cluster which can be confusing)
-             url: # Url of the hub cluster API endpoint
+             url: # URL of the hub cluster API endpoint
              serviceAccountToken: # Token used for querying data from the hub
-             skipTLSVerify: # Skip TLS certificate verification, defaults to false
-             caData: # Base64-encoded CA bundle in PEM format
+             skipTLSVerify: # Skip TLS certificate verification, defaults to false (Optional)
+             caData: # Base64-encoded CA bundle in PEM format (Optional)
      ```
 
-   - If the Backstage Kubernetes plugin is installed and configured to connect to the hub cluster, then you can bind the both hub and Kubernetes configuration by providing the name of the hub in the `app-config.yaml` as follows:
+     - To ensure the Hub clusters are properly ingested into the catalog, the value provided to the `name` field must comply with the backstage entity name format [requirements](https://backstage.io/docs/features/software-catalog/descriptor-format/#name-required)
+
+   - Alternatively, If the Backstage Kubernetes plugin is installed and configured to connect to the Hub cluster, then you can bind the both hub and Kubernetes configuration by providing the name of the Hub in the `app-config.yaml` as follows:
 
      ```yaml title="app-config.yaml"
      kubernetes:
@@ -92,17 +94,29 @@ If you are interested in Resource discovery and do not want any of the front-end
        clusterLocatorMethods:
          - type: 'config'
            clusters:
-             # highlight-next-line
+             # highlight-add-start
              - name: <cluster-name>
-             # ...
+               # Other cluster configurations
+               url: <cluster-api-url>
+               serviceAccountToken: <token>
+               skipTLSVerify: # Skip TLS certificate verification, defaults to false (Optional)
+               caData: # Base64-encoded CA bundle in PEM format (Optional)
+             # highlight-add-end
 
      catalog:
        providers:
          ocm:
            env: # Key is reflected as provider ID. Defines and claims plugin instance ownership of entities
-             # highlight-next-line
+             # highlight-add-start
              kubernetesPluginRef: <cluster-name> # Match the cluster name in kubernetes plugin config
+             # The remaining OCM configurations are ignored if kubernetesPluginRef is provided (with exception of schedule and owner)
+             # ... Other OCM Configurations
+             # highlight-add-end
      ```
+
+     - If the `kubernetesPluginRef` is provided, then it will take precedence over any other configuration for that OCM provider
+     - Please ensure that `<cluster-name>` follows the same requirements as the `name` field in the OCM configuration.
+     - Note: It is not necessary to have the kubernetes plugin installed, since only the kubernetes configuration is required if `kubernetesPluginRef` is used
 
      Ensure that the Backstage uses a `ServiceAccount` token and the required permissions are granted as mentioned previously.
 
@@ -129,7 +143,7 @@ If you are interested in Resource discovery and do not want any of the front-end
    }
    ```
 
-1. Import and plug the new instance into `packages/backend/src/index.ts` file:
+1. Import and plug the new instance into the `packages/backend/src/index.ts` file:
 
    ```ts title="packages/backend/src/index.ts"
    /* highlight-add-next-line */
@@ -169,7 +183,7 @@ If you are interested in Resource discovery and do not want any of the front-end
               # highlight-add-end
       ```
 
-      and and then use the configured scheduler
+      and then use the configured scheduler in the `packages/backend/src/index.ts`:
 
       ```ts title="packages/backend/src/index.ts"
       /* highlight-add-next-line */
@@ -191,9 +205,9 @@ If you are interested in Resource discovery and do not want any of the front-end
       }
       ```
 
-   2. Add a schedule directly inside the `packages/backend/src/plugins/catalog.ts` file:
+   1. Add a schedule directly inside the `packages/backend/src/plugins/catalog.ts` file:
 
-      ```ts title="packages/backend/src/index.ts"
+      ```ts title="packages/backend/src/plugins/catalog.ts"
       /* highlight-add-next-line */
       import { ManagedClusterProvider } from '@janus-idp/backstage-plugin-ocm-backend';
 
@@ -223,6 +237,7 @@ If you are interested in Resource discovery and do not want any of the front-end
      providers:
        ocm:
          env:
+           # ...
            # highlight-next-line
            owner: user:foo
    ```
@@ -295,8 +310,6 @@ backend.add(ocmPlugin());
        ClusterInfoCard,
      } from '@janus-idp/backstage-plugin-ocm';
 
-     /* highlight-add-end */
-
      const isType = (types: string | string[]) => (entity: Entity) => {
        if (!entity?.spec?.type) {
          return false;
@@ -305,6 +318,7 @@ backend.add(ocmPlugin());
          ? entity?.spec?.type === types
          : types.includes(entity.spec.type as string);
      };
+     /* highlight-add-end */
 
      export const resourcePage = (
        <EntityLayout>
