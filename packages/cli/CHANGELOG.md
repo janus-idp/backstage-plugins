@@ -1,3 +1,11 @@
+## @janus-idp/cli [1.0.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.0.4...@janus-idp/cli@1.0.5) (2023-09-22)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @svgr/plugin-jsx to v8 ([#792](https://github.com/janus-idp/backstage-plugins/issues/792)) ([467560c](https://github.com/janus-idp/backstage-plugins/commit/467560c6cecc173fe7949a12014be9fde0e21d3a))
+* **deps:** update dependency @svgr/rollup to v8 ([#795](https://github.com/janus-idp/backstage-plugins/issues/795)) ([111aa57](https://github.com/janus-idp/backstage-plugins/commit/111aa574ea6d6c2574c07240383feebe92a6fc90))
+
 ## @janus-idp/cli [1.0.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.0.3...@janus-idp/cli@1.0.4) (2023-09-22)
 
 
