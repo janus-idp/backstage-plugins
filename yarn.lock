@@ -7694,12 +7694,12 @@
     is-reference "1.2.1"
     magic-string "^0.27.0"
 
-"@rollup/plugin-json@5.0.0":
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/@rollup/plugin-json/-/plugin-json-5.0.0.tgz#1e3e18302637760353c83a41d1f3c4e760afb20d"
-  integrity sha512-LsWDA5wJs/ggzakVuKQhZo7HPRcQZgBa3jWIVxQSFxaRToUGNi8ZBh3+k/gQ+1eInVYJgn4WBRCUkmoDrmmGzw==
+"@rollup/plugin-json@6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@rollup/plugin-json/-/plugin-json-6.0.0.tgz#199fea6670fd4dfb1f4932250569b14719db234a"
+  integrity sha512-i/4C5Jrdr1XUarRhVu27EEwjt4GObltD7c+MkCIpO2QIbojw8MUs+CCTqOphQi3Qtg1FLmYt+l+6YeoIf51J7w==
   dependencies:
-    "@rollup/pluginutils" "^4.2.1"
+    "@rollup/pluginutils" "^5.0.1"
 
 "@rollup/plugin-json@^5.0.0":
   version "5.0.2"
