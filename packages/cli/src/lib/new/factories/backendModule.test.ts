@@ -77,7 +77,7 @@ describe('backendModule factory', () => {
 
     expect(output).toEqual([
       '',
-      'Creating backend module backstage-plugin-test-backend-module-tester-two',
+      'Creating backend module @janus-idp/backstage-plugin-test-backend-module-tester-two',
       'Checking Prerequisites:',
       `availability  plugins${sep}test-backend-module-tester-two`,
       'creating      temp dir',
@@ -85,6 +85,8 @@ describe('backendModule factory', () => {
       'copying       .eslintrc.js',
       'templating    README.md.hbs',
       'templating    package.json.hbs',
+      'templating    tsconfig.json.hbs',
+      'templating    turbo.json.hbs',
       'templating    index.ts.hbs',
       'templating    module.ts.hbs',
       'Installing:',
@@ -96,7 +98,7 @@ describe('backendModule factory', () => {
       fs.readJson('/root/packages/backend/package.json'),
     ).resolves.toEqual({
       dependencies: {
-        'backstage-plugin-test-backend-module-tester-two': '^1.0.0',
+        '@janus-idp/backstage-plugin-test-backend-module-tester-two': '^1.0.0',
       },
     });
     const moduleFile = await fs.readFile(

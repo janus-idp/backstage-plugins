@@ -89,7 +89,7 @@ describe('frontendPlugin factory', () => {
 
     expect(output).toEqual([
       '',
-      'Creating frontend plugin backstage-plugin-test',
+      'Creating frontend plugin @janus-idp/backstage-plugin-test',
       'Checking Prerequisites:',
       `availability  plugins${sep}test`,
       'creating      temp dir',
@@ -97,6 +97,8 @@ describe('frontendPlugin factory', () => {
       'copying       .eslintrc.js',
       'templating    README.md.hbs',
       'templating    package.json.hbs',
+      'templating    tsconfig.json.hbs',
+      'templating    turbo.json.hbs',
       'templating    index.tsx.hbs',
       'templating    index.ts.hbs',
       'templating    plugin.test.ts.hbs',
@@ -119,14 +121,14 @@ describe('frontendPlugin factory', () => {
       fs.readJson('/root/packages/app/package.json'),
     ).resolves.toEqual({
       dependencies: {
-        'backstage-plugin-test': '^1.0.0',
+        '@janus-idp/backstage-plugin-test': '^1.0.0',
       },
     });
 
     await expect(fs.readFile('/root/packages/app/src/App.tsx', 'utf8')).resolves
       .toBe(`
 import { createApp } from '@backstage/app-defaults';
-import { TestPage } from 'backstage-plugin-test';
+import { TestPage } from '@janus-idp/backstage-plugin-test';
 
 const router = (
   <FlatRoutes>
@@ -176,7 +178,6 @@ const router = (
     jest.spyOn(Task, 'forCommand').mockResolvedValue();
 
     await frontendPlugin.create(options, {
-      scope: 'internal',
       private: true,
       isMonoRepo: true,
       defaultVersion: '1.0.0',
@@ -188,14 +189,14 @@ const router = (
       fs.readJson('/root/packages/app/package.json'),
     ).resolves.toEqual({
       dependencies: {
-        '@internal/plugin-test': '^1.0.0',
+        '@janus-idp/backstage-plugin-test': '^1.0.0',
       },
     });
 
     await expect(fs.readFile('/root/packages/app/src/App.tsx', 'utf8')).resolves
       .toBe(`
 import { createApp } from '@backstage/app-defaults';
-import { TestPage } from '@internal/plugin-test';
+import { TestPage } from '@janus-idp/backstage-plugin-test';
 
 const router = (
   <FlatRoutes>

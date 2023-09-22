@@ -76,7 +76,7 @@ describe('backendPlugin factory', () => {
 
     expect(output).toEqual([
       '',
-      'Creating backend plugin backstage-plugin-test-backend',
+      'Creating backend plugin @janus-idp/backstage-plugin-test-backend',
       'Checking Prerequisites:',
       `availability  plugins${sep}test-backend`,
       'creating      temp dir',
@@ -84,6 +84,8 @@ describe('backendPlugin factory', () => {
       'copying       .eslintrc.js',
       'templating    README.md.hbs',
       'templating    package.json.hbs',
+      'templating    tsconfig.json.hbs',
+      'templating    turbo.json.hbs',
       'copying       index.ts',
       'templating    run.ts.hbs',
       'copying       setupTests.ts',
@@ -99,7 +101,7 @@ describe('backendPlugin factory', () => {
       fs.readJson('/root/packages/backend/package.json'),
     ).resolves.toEqual({
       dependencies: {
-        'backstage-plugin-test-backend': '^1.0.0',
+        '@janus-idp/backstage-plugin-test-backend': '^1.0.0',
       },
     });
     const standaloneServerFile = await fs.readFile(

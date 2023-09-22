@@ -85,14 +85,14 @@ export function createPackageVersionProvider(lockfile?: Lockfile) {
     const highestRange = validRanges?.slice(-1)[0];
 
     if (highestRange?.range) {
-      return highestRange?.range;
+      return highestRange?.range.replace(/^\^/, '');
     }
     if (packageVersion) {
-      return `^${packageVersion}`;
+      return packageVersion.replace(/^\^/, '');
     }
     if (semver.parse(versionHint)?.prerelease.length) {
       return versionHint!;
     }
-    return versionHint?.match(/^[\d\.]+$/) ? `^${versionHint}` : versionHint!;
+    return versionHint!.replace(/^\^/, '');
   };
 }

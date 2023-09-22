@@ -29,7 +29,7 @@
     "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
-    "@backstage/plugin-scaffolder-backend": "{{versionQuery '@backstage/plugin-scaffolder-backend'}}"
+    "@backstage/plugin-scaffolder-backend": "^{{versionQuery '@backstage/plugin-scaffolder-backend'}}"
   },
   "devDependencies": {
     "@backstage/backend-common": "{{versionQuery '@backstage/backend-common'}}",
@@ -37,5 +37,15 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/janus-idp/backstage-plugins",
+    "directory": "plugins/{{id}}"
+  },
+  "keywords": [
+    "backstage",
+    "plugin"
+  ],
+  "homepage": "https://janus-idp.io/"
 }

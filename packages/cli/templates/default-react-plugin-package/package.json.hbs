@@ -30,8 +30,8 @@
     "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
-    "@backstage/core-plugin-api": "{{versionQuery '@backstage/core-plugin-api'}}",
-    "@material-ui/core": "{{versionQuery '@material-ui/core' '4.12.2'}}"
+    "@backstage/core-plugin-api": "^{{versionQuery '@backstage/core-plugin-api'}}",
+    "@material-ui/core": "^{{versionQuery '@material-ui/core' '4.12.2'}}"
   },
   "peerDependencies": {
     "react": "{{versionQuery 'react' '^16.13.1 || ^17.0.0'}}"
@@ -44,5 +44,16 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/janus-idp/backstage-plugins",
+    "directory": "plugins/{{id}}"
+  },
+  "keywords": [
+    "backstage",
+    "plugin"
+  ],
+  "homepage": "https://janus-idp.io/",
+  "bugs": "https://github.com/janus-idp/backstage-plugins/issues"
 }

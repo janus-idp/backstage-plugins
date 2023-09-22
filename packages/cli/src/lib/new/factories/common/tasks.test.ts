@@ -53,8 +53,8 @@ some-package@^1.1.0:
   {{/if}}
   "description": "testing",
   "dependencies": {
-    "some-package": "{{ versionQuery 'some-package' '1.3.0' }}",
-    "other-package": "{{ versionQuery 'other-package' '2.3.0' }}"
+    "some-package": "^{{ versionQuery 'some-package' '1.3.0' }}",
+    "other-package": "^{{ versionQuery 'other-package' '2.3.0' }}"
   }
 }
 `,
