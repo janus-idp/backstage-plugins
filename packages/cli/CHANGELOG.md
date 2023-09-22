@@ -1,3 +1,11 @@
+## @janus-idp/cli [1.0.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.0.3...@janus-idp/cli@1.0.4) (2023-09-22)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @spotify/eslint-config-react to v15 ([#789](https://github.com/janus-idp/backstage-plugins/issues/789)) ([1a3965a](https://github.com/janus-idp/backstage-plugins/commit/1a3965a07ad3edcd9c608d8530a1933cde6a89bb))
+* **deps:** update dependency @svgr/core to v8 ([#791](https://github.com/janus-idp/backstage-plugins/issues/791)) ([db2d09b](https://github.com/janus-idp/backstage-plugins/commit/db2d09b0daddab7ab675eff230e0123f14530ef0))
+
 ## @janus-idp/cli [1.0.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.0.2...@janus-idp/cli@1.0.3) (2023-09-22)
 
 
