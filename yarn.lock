@@ -3982,7 +3982,7 @@
     zen-observable "^0.10.0"
     zod "^3.21.4"
 
-"@backstage/plugin-scaffolder-backend@^1.15.1", "@backstage/plugin-scaffolder-backend@^1.16.5":
+"@backstage/plugin-scaffolder-backend@^1.15.1", "@backstage/plugin-scaffolder-backend@^1.17.0":
   version "1.17.0"
   resolved "https://registry.yarnpkg.com/@backstage/plugin-scaffolder-backend/-/plugin-scaffolder-backend-1.17.0.tgz#c0fe935e1e668882f57ac3bfd3c304ba20c1e560"
   integrity sha512-4VwJro2UxpciU+h8S7jKaFwke0DHGjP03lQVwngqbTBMQFI3vgWEtFR8nZ3SXmj3qc4uuyuJnplpJb3Nxetmew==

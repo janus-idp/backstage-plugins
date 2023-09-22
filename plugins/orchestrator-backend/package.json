@@ -45,7 +45,7 @@
     "@backstage/plugin-catalog-node": "^1.4.0",
     "@backstage/plugin-events-backend": "^0.2.11",
     "@backstage/plugin-events-node": "^0.2.11",
-    "@backstage/plugin-scaffolder-backend": "^1.16.5",
+    "@backstage/plugin-scaffolder-backend": "^1.17.0",
     "@backstage/plugin-scaffolder-node": "^0.2.2",
     "@backstage/types": "^1.1.0",
     "@janus-idp/backstage-plugin-orchestrator-common": "0.0.1",
