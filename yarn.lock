@@ -8215,10 +8215,10 @@
     "@smithy/util-buffer-from" "^1.0.2"
     tslib "^2.5.0"
 
-"@spotify/eslint-config-base@14.0.0":
-  version "14.0.0"
-  resolved "https://registry.yarnpkg.com/@spotify/eslint-config-base/-/eslint-config-base-14.0.0.tgz#6404e61be34fae0eb7cb5ef15c53b38df1a118f5"
-  integrity sha512-Ll+AvxqaYG3kre2wmTtJpfDNkJaOI2w+pu+GjhZAzZgjdgV4mDpLjbLXkSZa03lHA3Z2VhLH6C05GYvF3QWZUw==
+"@spotify/eslint-config-base@15.0.0":
+  version "15.0.0"
+  resolved "https://registry.yarnpkg.com/@spotify/eslint-config-base/-/eslint-config-base-15.0.0.tgz#fa8a003e656b1c14694528a487bb9e974e013e4d"
+  integrity sha512-7UA5QWbb8xk3Q1665BkRldzieI/Of7ONzjEXZpoyIjrfBDEmlXEDdCmOsv8Pt2aOuzHSTiykMzn7wNF5ymGL/A==
 
 "@spotify/eslint-config-base@^14.0.0":
   version "14.1.6"

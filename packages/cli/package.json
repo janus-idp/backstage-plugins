@@ -53,7 +53,7 @@
     "@rollup/plugin-json": "5.0.0",
     "@rollup/plugin-node-resolve": "15.2.1",
     "@rollup/plugin-yaml": "4.0.0",
-    "@spotify/eslint-config-base": "14.0.0",
+    "@spotify/eslint-config-base": "15.0.0",
     "@spotify/eslint-config-react": "14.0.0",
     "@spotify/eslint-config-typescript": "14.0.0",
     "@sucrase/webpack-loader": "2.0.0",
