@@ -1,5 +1,5 @@
 {
-  "name": "@janus-idp/plugin-rh-rbac-backend",
+  "name": "@janus-idp/backstage-plugin-rbac-backend",
   "version": "0.1.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -33,7 +33,7 @@
     "@backstage/plugin-permission-backend": "^0.5.20",
     "@backstage/plugin-permission-common": "^0.7.7",
     "@backstage/plugin-permission-node": "^0.7.10",
-    "@janus-idp/plugin-rh-rbac-common": "^0.1.0",
+    "@janus-idp/backstage-plugin-rbac-common": "^0.1.0",
     "casbin": "5.27.0",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",

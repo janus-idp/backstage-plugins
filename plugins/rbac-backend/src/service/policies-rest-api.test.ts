@@ -13,7 +13,7 @@ import {
   policyEntityDeletePermission,
   policyEntityReadPermission,
   policyEntityUpdatePermission,
-} from '@janus-idp/plugin-rh-rbac-common';
+} from '@janus-idp/backstage-plugin-rbac-common';
 
 import { RBACPermissionPolicy } from './permission-policy';
 import { PolicesServer } from './policies-rest-api';

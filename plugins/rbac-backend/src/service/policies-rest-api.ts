@@ -33,7 +33,7 @@ import {
   policyEntityReadPermission,
   policyEntityUpdatePermission,
   RESOURCE_TYPE_POLICY_ENTITY,
-} from '@janus-idp/plugin-rh-rbac-common';
+} from '@janus-idp/backstage-plugin-rbac-common';
 
 import {
   validateEntityReference,

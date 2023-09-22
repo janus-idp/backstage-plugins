@@ -3,7 +3,7 @@ import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 import { Request } from 'express-serve-static-core';
 
-import { EntityReferencedPolicy } from '@janus-idp/plugin-rh-rbac-common';
+import { EntityReferencedPolicy } from '@janus-idp/backstage-plugin-rbac-common';
 
 export function validatePolicy(
   policy: EntityReferencedPolicy,

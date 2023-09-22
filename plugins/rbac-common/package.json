@@ -1,6 +1,6 @@
 {
-  "name": "@janus-idp/plugin-rh-rbac-common",
-  "description": "Common functionalities for the rh-rbac-common plugin",
+  "name": "@janus-idp/backstage-plugin-rbac-common",
+  "description": "Common functionalities for the rbac-common plugin",
   "version": "0.1.0",
   "main": "src/index.ts",
   "types": "src/index.ts",

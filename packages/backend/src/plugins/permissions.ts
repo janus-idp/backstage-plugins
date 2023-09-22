@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import { PolicyBuilder } from '@janus-idp/plugin-rh-rbac-backend';
+import { PolicyBuilder } from '@janus-idp/backstage-plugin-rbac-backend';
 
 import { PluginEnvironment } from '../types';
 
