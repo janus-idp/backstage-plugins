@@ -16,7 +16,7 @@ export const ParodosNotificationsPage = parodosNotificationsPlugin.provide(
   createRoutableExtension({
     name: 'ParodosNotificationsPage',
     component: () =>
-      import('./components/ExampleComponent').then(m => m.ExampleComponent),
+      import('./components/ParodosPage').then(m => m.ParodosPage),
     mountPoint: rootRouteRef,
   }),
 );
