@@ -1,5 +1,7 @@
-import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
-import type { JsonObject } from '@backstage/types';
+import {
+  createTemplateAction,
+  type TemplateAction,
+} from '@backstage/plugin-scaffolder-node';
 
 import { z } from 'zod';
 
@@ -9,21 +11,30 @@ import { CreateActionOptions } from '../../../types';
 /**
  * Schema for the input to the `deleteRecord` action.
  *
- * @see https://docs.servicenow.com/bundle/vancouver-api-reference/page/integrate/inbound-rest/concept/c_TableAPI.html#title_table-DELETE
- *
- * @param {string} tableName - Name of the table in which to delete the record.
- * @param {string} sysId - Unique identifier of the record to delete.
- * @param {boolean} sysparmQueryNoDomain - True to access data across domains if authorized (default: false)
+ * @see {@link https://docs.servicenow.com/bundle/vancouver-api-reference/page/integrate/inbound-rest/concept/c_TableAPI.html#title_table-DELETE}
  */
 const schemaInput = z.object({
-  tableName: z.string().nonempty(),
-  sysId: z.string().nonempty(),
-  sysparmQueryNoDomain: z.boolean().optional(),
+  tableName: z
+    .string()
+    .nonempty()
+    .describe('Name of the table in which to delete the record.'),
+  sysId: z
+    .string()
+    .nonempty()
+    .describe('Unique identifier of the record to delete.'),
+  sysparmQueryNoDomain: z
+    .boolean()
+    .optional()
+    .describe(
+      'True to access data across domains if authorized (default: false)',
+    ),
 });
 
 const id = 'servicenow:now:table:deleteRecord';
 
-export const deleteRecordAction = (options: CreateActionOptions) => {
+export const deleteRecordAction = (
+  options: CreateActionOptions,
+): TemplateAction => {
   const { config } = options;
 
   return createTemplateAction({
@@ -42,11 +53,7 @@ export const deleteRecordAction = (options: CreateActionOptions) => {
       OpenAPI.USERNAME = config.getString('servicenow.username');
       OpenAPI.PASSWORD = config.getString('servicenow.password');
 
-      const { result } = (await DefaultService.deleteApiNowTable(input)) as {
-        result: JsonObject;
-      };
-
-      ctx.output('result', result);
+      await DefaultService.deleteApiNowTable(input);
     },
   });
 };

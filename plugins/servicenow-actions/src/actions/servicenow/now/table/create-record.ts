@@ -1,39 +1,70 @@
-import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
-import type { JsonObject } from '@backstage/types';
+import {
+  createTemplateAction,
+  type TemplateAction,
+} from '@backstage/plugin-scaffolder-node';
 
 import { z } from 'zod';
 
 import { DefaultService, OpenAPI } from '../../../../generated/now/table';
-import { CreateActionOptions } from '../../../types';
+import { CreateActionOptions, ServiceNowResponse } from '../../../types';
 
 /**
  * Schema for the input to the `createRecord` action.
  *
- * @see https://docs.servicenow.com/bundle/vancouver-api-reference/page/integrate/inbound-rest/concept/c_TableAPI.html#title_table-POST
- *
- * @param {string} tableName - Name of the table in which to save the record.
- * @param {JsonObject} requestBody - Field name and the associated value for each parameter to define in the specified record.
- * @param {string} sysparmDisplayValue - Return field display values (true), actual values (false), or both (all) (default: false)
- * @param {boolean} sysparmExcludeReferenceLink - True to exclude Table API links for reference fields (default: false)
- * @param {string[]} sysparmFields - A comma-separated list of fields to return in the response
- * @param {boolean} sysparmInputDisplayValue - Set field values using their display value (true) or actual value (false) (default: false)
- * @param {boolean} sysparmSuppressAutoSysField - True to suppress auto generation of system fields (default: false)
- * @param {string} sysparmView - Render the response according to the specified UI view (overridden by sysparm_fields)
+ * @see {@link https://docs.servicenow.com/bundle/vancouver-api-reference/page/integrate/inbound-rest/concept/c_TableAPI.html#title_table-POST}
  */
 const schemaInput = z.object({
-  tableName: z.string().nonempty(),
-  requestBody: z.custom<JsonObject>().optional(),
-  sysparmDisplayValue: z.enum(['true', 'false', 'all']).optional(),
-  sysparmExcludeReferenceLink: z.boolean().optional(),
-  sysparmFields: z.array(z.string().nonempty()).optional(),
-  sysparmInputDisplayValue: z.boolean().optional(),
-  sysparmSuppressAutoSysField: z.boolean().optional(),
-  sysparmView: z.string().optional(),
+  tableName: z
+    .string()
+    .nonempty()
+    .describe('Name of the table in which to save the record.'),
+  requestBody: z
+    .custom<Record<PropertyKey, unknown>>()
+    .optional()
+    .describe(
+      'Field name and the associated value for each parameter to define in the specified record.',
+    ),
+  sysparmDisplayValue: z
+    .enum(['true', 'false', 'all'])
+    .optional()
+    .describe(
+      'Return field display values (true), actual values (false), or both (all) (default: false)',
+    ),
+  sysparmExcludeReferenceLink: z
+    .boolean()
+    .optional()
+    .describe(
+      'True to exclude Table API links for reference fields (default: false)',
+    ),
+  sysparmFields: z
+    .array(z.string().nonempty())
+    .optional()
+    .describe('A comma-separated list of fields to return in the response'),
+  sysparmInputDisplayValue: z
+    .boolean()
+    .optional()
+    .describe(
+      'Set field values using their display value (true) or actual value (false) (default: false)',
+    ),
+  sysparmSuppressAutoSysField: z
+    .boolean()
+    .optional()
+    .describe(
+      'True to suppress auto generation of system fields (default: false)',
+    ),
+  sysparmView: z
+    .string()
+    .optional()
+    .describe(
+      'Render the response according to the specified UI view (overridden by sysparm_fields)',
+    ),
 });
 
 const id = 'servicenow:now:table:createRecord';
 
-export const createRecordAction = (options: CreateActionOptions) => {
+export const createRecordAction = (
+  options: CreateActionOptions,
+): TemplateAction => {
   const { config } = options;
 
   return createTemplateAction({
@@ -57,9 +88,7 @@ export const createRecordAction = (options: CreateActionOptions) => {
         ...input,
         // convert the array of fields to a comma-separated string
         sysparmFields: input.sysparmFields?.join(','),
-      })) as {
-        result: JsonObject;
-      };
+      })) as ServiceNowResponse;
 
       ctx.output('result', result);
     },
