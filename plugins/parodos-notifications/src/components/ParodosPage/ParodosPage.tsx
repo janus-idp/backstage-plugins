@@ -10,9 +10,9 @@ import { ParodosNotificationsTable } from '../ParodosNotificationsTable';
 
 export const ParodosPage = () => (
   <Page themeId="tool">
-    <Header title="Parodos" subtitle="TODO: Optional subtitle to be written"/>
+    {/* <Header title="Parodos" subtitle="TODO: Optional subtitle to be written"/> */}
     <Content>
-      <ContentHeader title="Notifications" />
+      <ContentHeader title="Parodos" />
       <Grid container spacing={3} direction="column">
         <Grid item>
           <ParodosNotificationsTable />

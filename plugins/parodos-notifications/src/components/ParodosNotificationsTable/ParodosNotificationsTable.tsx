@@ -8,7 +8,7 @@ import {
   TableColumn,
 } from '@backstage/core-components';
 
-import { makeStyles } from '@material-ui/core/styles';
+// import { makeStyles } from '@material-ui/core/styles';
 
 export const exampleData = {
   results: [
@@ -60,7 +60,7 @@ export const DenseTable = ({ notifications }: DenseTableProps) => {
 
   return (
     <Table
-      title="Parodos Notifications"
+      title="Notifications"
       options={{ search: false, paging: false }}
       columns={columns}
       data={data}
