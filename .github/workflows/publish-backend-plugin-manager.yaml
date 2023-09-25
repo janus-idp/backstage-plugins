@@ -46,14 +46,6 @@ jobs:
           fetch-depth: 2147483647
           fetch-tags: false
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        env:
-          FORCE_COLOR: 0
-        with:
-          node-version: 18
-          cache: 'yarn'
-
       - name: Get sha of the latest backend-plugin-manager commit
         id: get_commit_sha
         run: |
@@ -70,6 +62,15 @@ jobs:
           if [ "_$(npm dist-tag ls $SCOPE/backend-plugin-manager | grep -e ^$COMMIT_ID || echo '')" != "_" ]; then ALREADY_PUSHED="true"; else ALREADY_PUSHED="false"; fi
           echo "ALREADY_PUSHED=$ALREADY_PUSHED" >> "$GITHUB_OUTPUT"
           echo "GH Output: " && cat $GITHUB_OUTPUT
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        if: steps.test_commit_already_published.outputs.ALREADY_PUSHED == 'false'
+        env:
+          FORCE_COLOR: 0
+        with:
+          node-version: 18
+          cache: 'yarn'
 
       - name: Get the version of the backend-plugin-manager package
         id: get_package_version
