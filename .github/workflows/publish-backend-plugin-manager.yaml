@@ -63,6 +63,15 @@ jobs:
           echo "ALREADY_PUSHED=$ALREADY_PUSHED" >> "$GITHUB_OUTPUT"
           echo "GH Output: " && cat $GITHUB_OUTPUT
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        if: steps.test_commit_already_published.outputs.ALREADY_PUSHED == 'false'
+        env:
+          FORCE_COLOR: 0
+        with:
+          node-version: 18
+          cache: 'yarn'
+
       - name: Get the version of the backend-plugin-manager package
         id: get_package_version
         run: |
@@ -150,13 +159,6 @@ jobs:
           sed -i "s/\"name\": \"@backstage\/backend-plugin-manager\"/\"name\": \"$SCOPE\/backend-plugin-manager\"/" packages/backend-plugin-manager/package.json
           sed -i "s/\"private\": true/\"private\": false/" packages/backend-plugin-manager/package.json
           echo "Package.JSON:" && cat packages/backend-plugin-manager/package.json
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        if: steps.test_commit_already_published.outputs.ALREADY_PUSHED == 'false'
-        with:
-          node-version: 18
-          cache: 'yarn'
 
       - name: Install Dependencies
         env:

@@ -1,3 +1,33 @@
+## @janus-idp/cli [1.0.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.0.4...@janus-idp/cli@1.0.5) (2023-09-22)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @svgr/plugin-jsx to v8 ([#792](https://github.com/janus-idp/backstage-plugins/issues/792)) ([467560c](https://github.com/janus-idp/backstage-plugins/commit/467560c6cecc173fe7949a12014be9fde0e21d3a))
+* **deps:** update dependency @svgr/rollup to v8 ([#795](https://github.com/janus-idp/backstage-plugins/issues/795)) ([111aa57](https://github.com/janus-idp/backstage-plugins/commit/111aa574ea6d6c2574c07240383feebe92a6fc90))
+
+## @janus-idp/cli [1.0.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.0.3...@janus-idp/cli@1.0.4) (2023-09-22)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @spotify/eslint-config-react to v15 ([#789](https://github.com/janus-idp/backstage-plugins/issues/789)) ([1a3965a](https://github.com/janus-idp/backstage-plugins/commit/1a3965a07ad3edcd9c608d8530a1933cde6a89bb))
+* **deps:** update dependency @svgr/core to v8 ([#791](https://github.com/janus-idp/backstage-plugins/issues/791)) ([db2d09b](https://github.com/janus-idp/backstage-plugins/commit/db2d09b0daddab7ab675eff230e0123f14530ef0))
+
+## @janus-idp/cli [1.0.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.0.2...@janus-idp/cli@1.0.3) (2023-09-22)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @spotify/eslint-config-typescript to v15 ([#790](https://github.com/janus-idp/backstage-plugins/issues/790)) ([9ecaaa3](https://github.com/janus-idp/backstage-plugins/commit/9ecaaa34624652436838b3df963d91605973b964))
+
+## @janus-idp/cli [1.0.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.0.1...@janus-idp/cli@1.0.2) (2023-09-22)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @rollup/plugin-commonjs to v25 ([#765](https://github.com/janus-idp/backstage-plugins/issues/765)) ([615ff44](https://github.com/janus-idp/backstage-plugins/commit/615ff443b2c47421de083caa97171021b7775aa0))
+
 ## @janus-idp/cli [1.0.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.0.0...@janus-idp/cli@1.0.1) (2023-09-22)
 
 
