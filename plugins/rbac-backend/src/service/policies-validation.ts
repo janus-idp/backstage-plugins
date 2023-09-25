@@ -61,6 +61,12 @@ export function validateEntityReference(entityRef?: string): Error | undefined {
     );
   }
 
+  if (entityRefCompound.kind !== 'user' && entityRefCompound.kind !== 'group') {
+    return new Error(
+      `Unsupported kind ${entityRefCompound.kind}. List supported values ["user", "group"]`,
+    );
+  }
+
   return undefined;
 }
 

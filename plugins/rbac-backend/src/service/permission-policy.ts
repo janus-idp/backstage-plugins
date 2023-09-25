@@ -1,3 +1,4 @@
+import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { ConfigApi } from '@backstage/core-plugin-api';
 import {
@@ -18,6 +19,7 @@ import { Enforcer, FileAdapter, newEnforcer, newModelFromString } from 'casbin';
 import { Logger } from 'winston';
 
 import { MODEL } from './permission-model';
+import { BackstageRoleManager } from './role-manager';
 
 const useAdmins = (admins: Config[], enf: Enforcer) => {
   admins.flatMap(async localConfig => {
@@ -62,10 +64,12 @@ const addPredefinedPolicies = async (
 export class RBACPermissionPolicy implements PermissionPolicy {
   private readonly enforcer: Enforcer;
   private readonly logger: Logger;
+  private readonly catalogApi: CatalogApi;
 
   public static async build(
     logger: Logger,
     configApi: ConfigApi,
+    catalogClient: CatalogApi,
     enf: Enforcer,
   ): Promise<RBACPermissionPolicy> {
     const adminUsers = configApi.getOptionalConfigArray(
@@ -84,20 +88,25 @@ export class RBACPermissionPolicy implements PermissionPolicy {
       useAdmins(adminUsers, enf);
     }
 
-    return new RBACPermissionPolicy(enf, logger);
+    return new RBACPermissionPolicy(enf, logger, catalogClient);
   }
 
-  private constructor(enforcer: Enforcer, logger: Logger) {
+  private constructor(
+    enforcer: Enforcer,
+    logger: Logger,
+    catalogApi: CatalogApi,
+  ) {
     this.enforcer = enforcer;
     this.logger = logger;
+    this.catalogApi = catalogApi;
   }
 
   async handle(
     request: PolicyQuery,
-    user?: BackstageIdentityResponse | undefined,
+    identityResp?: BackstageIdentityResponse | undefined,
   ): Promise<PolicyDecision> {
     this.logger.info(
-      `Policy check for ${user?.identity.userEntityRef} for permission ${request.permission.name}`,
+      `Policy check for ${identityResp?.identity.userEntityRef} for permission ${request.permission.name}`,
     );
     try {
       let status = false;
@@ -108,13 +117,13 @@ export class RBACPermissionPolicy implements PermissionPolicy {
 
       if (isResourcePermission(request.permission)) {
         status = await this.isAuthorized(
-          user?.identity,
+          identityResp?.identity,
           request.permission.resourceType,
           action,
         );
       } else {
         status = await this.isAuthorized(
-          user?.identity,
+          identityResp?.identity,
           request.permission.name,
           action,
         );
@@ -122,7 +131,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
 
       const result = status ? AuthorizeResult.ALLOW : AuthorizeResult.DENY;
       this.logger.info(
-        `${user?.identity.userEntityRef} is ${result} for permission ${request.permission.name}`,
+        `${identityResp?.identity.userEntityRef} is ${result} for permission ${request.permission.name} and action ${action}`,
       );
       return Promise.resolve({
         result: result,
@@ -139,27 +148,19 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     identity: BackstageUserIdentity | undefined,
     resourceType: string,
     action: string,
-  ) => {
-    let status;
-
-    // Check if the group has access first
-    const ownerStatus = await Promise.all(
-      identity?.ownershipEntityRefs.map(async entityRef => {
-        return await this.enforcer.enforce(entityRef, resourceType, action);
-      }) || [],
-    );
-
-    status = ownerStatus.includes(true);
-
-    // Check if the user has access
-    if (!status) {
-      status = await this.enforcer.enforce(
-        identity?.userEntityRef,
-        resourceType,
-        action,
-      );
+  ): Promise<boolean> => {
+    if (!identity) {
+      // Allow access for backend plugins
+      return true;
     }
 
-    return status;
+    const entityRef = identity.userEntityRef;
+
+    const rm = new BackstageRoleManager(this.catalogApi);
+    this.enforcer.setRoleManager(rm);
+    this.enforcer.enableAutoBuildRoleLinks(false);
+    await this.enforcer.buildRoleLinks();
+
+    return await this.enforcer.enforce(entityRef, resourceType, action);
   };
 }

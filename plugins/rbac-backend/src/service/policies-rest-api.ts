@@ -125,31 +125,29 @@ export class PolicesServer {
       response.json(this.transformPolicyArray(...policies));
     });
 
-    router.get(
-      '/policies/:kind/:namespace/:name',
-      async (request, response) => {
-        const decision = await this.authorize(
-          this.identity,
-          request,
-          this.permissions,
-          {
-            permission: policyEntityReadPermission,
-          },
-        );
+    router.get('/policies/:kind/:namespace/:name', async (req, response) => {
+      const decision = await this.authorize(
+        this.identity,
+        req,
+        this.permissions,
+        {
+          permission: policyEntityReadPermission,
+        },
+      );
 
-        if (decision.result === AuthorizeResult.DENY) {
-          throw new NotAllowedError(); // 403
-        }
+      if (decision.result === AuthorizeResult.DENY) {
+        throw new NotAllowedError(); // 403
+      }
 
-        const entityRef = this.getEntityReference(request);
-        const policy = await this.enforcer.getFilteredPolicy(0, entityRef);
-        if (policy.length !== 0) {
-          response.json(this.transformPolicyArray(...policy));
-        } else {
-          throw new NotFoundError(); // 404
-        }
-      },
-    );
+      const entityRef = this.getEntityReference(req);
+
+      const policy = await this.enforcer.getFilteredPolicy(0, entityRef);
+      if (policy.length !== 0) {
+        response.json(this.transformPolicyArray(...policy));
+      } else {
+        throw new NotFoundError(); // 404
+      }
+    });
 
     router.delete(
       '/policies/:kind/:namespace/:name',

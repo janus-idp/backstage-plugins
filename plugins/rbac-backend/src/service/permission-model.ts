@@ -12,5 +12,5 @@ e = some(where (p.eft == allow)) && !some(where (p.eft == deny))
 g = _, _
 
 [matchers]
-m = r.sub == p.sub && r.obj == p.obj && r.act == p.act
+m = g(r.sub, p.sub) && r.obj == p.obj && r.act == p.act
 `;
