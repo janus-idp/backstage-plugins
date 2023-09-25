@@ -7,11 +7,12 @@ import { DefaultService, OpenAPI } from '../../../../generated/now/table';
 import { CreateActionOptions } from '../../../types';
 
 /**
- * Schema for the input to the `createRecord` action.
+ * Schema for the input to the `modifyRecord` action.
  *
- * @see https://docs.servicenow.com/bundle/vancouver-api-reference/page/integrate/inbound-rest/concept/c_TableAPI.html#title_table-POST
+ * @see https://docs.servicenow.com/bundle/vancouver-api-reference/page/integrate/inbound-rest/concept/c_TableAPI.html#title_table-PUT
  *
- * @param {string} tableName - Name of the table in which to save the record.
+ * @param {string} tableName - Name of the table in which to modify the record.
+ * @param {string} sysId - Unique identifier of the record to modify.
  * @param {JsonObject} requestBody - Field name and the associated value for each parameter to define in the specified record.
  * @param {string} sysparmDisplayValue - Return field display values (true), actual values (false), or both (all) (default: false)
  * @param {boolean} sysparmExcludeReferenceLink - True to exclude Table API links for reference fields (default: false)
@@ -19,9 +20,11 @@ import { CreateActionOptions } from '../../../types';
  * @param {boolean} sysparmInputDisplayValue - Set field values using their display value (true) or actual value (false) (default: false)
  * @param {boolean} sysparmSuppressAutoSysField - True to suppress auto generation of system fields (default: false)
  * @param {string} sysparmView - Render the response according to the specified UI view (overridden by sysparm_fields)
+ * @param {boolean} sysparmQueryNoDomain - True to access data across domains if authorized (default: false)
  */
 const schemaInput = z.object({
   tableName: z.string().nonempty(),
+  sysId: z.string().nonempty(),
   requestBody: z.custom<JsonObject>().optional(),
   sysparmDisplayValue: z.enum(['true', 'false', 'all']).optional(),
   sysparmExcludeReferenceLink: z.boolean().optional(),
@@ -29,17 +32,17 @@ const schemaInput = z.object({
   sysparmInputDisplayValue: z.boolean().optional(),
   sysparmSuppressAutoSysField: z.boolean().optional(),
   sysparmView: z.string().optional(),
+  sysparmQueryNoDomain: z.boolean().optional(),
 });
 
-const id = 'servicenow:now:table:createRecord';
+const id = 'servicenow:now:table:modifyRecord';
 
-export const createRecordAction = (options: CreateActionOptions) => {
+export const modifyRecordAction = (options: CreateActionOptions) => {
   const { config } = options;
 
   return createTemplateAction({
     id,
-    description:
-      'Inserts one record in the specified table. Multiple record insertion is not supported by this method.',
+    description: 'Updates the specified record with the request body.',
     schema: {
       input: schemaInput,
     },
@@ -53,9 +56,8 @@ export const createRecordAction = (options: CreateActionOptions) => {
       OpenAPI.USERNAME = config.getString('servicenow.username');
       OpenAPI.PASSWORD = config.getString('servicenow.password');
 
-      const { result } = (await DefaultService.postApiNowTable({
+      const { result } = (await DefaultService.putApiNowTable({
         ...input,
-        // convert the array of fields to a comma-separated string
         sysparmFields: input.sysparmFields?.join(','),
       })) as {
         result: JsonObject;
