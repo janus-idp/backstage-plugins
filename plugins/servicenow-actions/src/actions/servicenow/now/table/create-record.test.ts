@@ -18,7 +18,7 @@ const LOCAL_ADDR = 'https://dev12345.service-now.com' as const;
 const SERVICENOW_CONFIG = {
   baseUrl: LOCAL_ADDR,
   username: 'admin',
-  password: 'password',
+  password: 'password', // NOSONAR
 } as const;
 
 const handlers = [
@@ -61,7 +61,7 @@ describe('createRecord', () => {
     logger: getVoidLogger(),
     logStream: {
       write: jest.fn(),
-    } as jest.Mocked<Partial<Writable>> as jest.Mocked<Writable>,
+    } as unknown as jest.Mocked<Writable>,
     output: jest.fn(),
     createTemporaryDirectory: jest.fn().mockResolvedValue(mockTmpDir),
   };
@@ -120,7 +120,7 @@ describe('createRecord', () => {
     await expect(
       createRecordAction({
         config: new ConfigReader({
-          servicenow: { ...SERVICENOW_CONFIG, password: 'invalid-password' },
+          servicenow: { ...SERVICENOW_CONFIG, password: 'invalid-password' }, // NOSONAR
         }),
       }).handler(context),
     ).rejects.toThrow(res401.error.message);
