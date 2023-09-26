@@ -131,7 +131,7 @@ export class BackstageRoleManager implements RoleManager {
       if (groupRef === groupToSearch) {
         return item;
       }
-      if (item.spec && item.spec.parent) {
+      if (item.spec?.parent) {
         groupsRefs.add(groupRef);
       }
     }
