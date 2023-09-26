@@ -55,7 +55,7 @@ const handlers = [
 
 const server = setupServer(...handlers);
 
-describe('createRecord', () => {
+describe('retrieveRecord', () => {
   const action = retrieveRecordAction({
     config: new ConfigReader({
       servicenow: SERVICENOW_CONFIG,
@@ -88,7 +88,7 @@ describe('createRecord', () => {
 
   afterAll(() => server.close());
 
-  it('should delete a record', async () => {
+  it('should retrieve a record', async () => {
     const input = {
       tableName: 'incident',
       sysId: 'valid-sys-id',

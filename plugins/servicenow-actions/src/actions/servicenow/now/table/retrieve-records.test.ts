@@ -46,7 +46,7 @@ const handlers = [
 
 const server = setupServer(...handlers);
 
-describe('createRecord', () => {
+describe('retrieveRecords', () => {
   const action = retrieveRecordsAction({
     config: new ConfigReader({
       servicenow: SERVICENOW_CONFIG,
@@ -79,7 +79,7 @@ describe('createRecord', () => {
 
   afterAll(() => server.close());
 
-  it('should create a record', async () => {
+  it('should retrieve records', async () => {
     const input = {
       tableName: 'incident',
     };

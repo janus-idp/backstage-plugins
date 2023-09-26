@@ -54,7 +54,7 @@ const handlers = [
 
 const server = setupServer(...handlers);
 
-describe('createRecord', () => {
+describe('deleteRecord', () => {
   const action = deleteRecordAction({
     config: new ConfigReader({
       servicenow: SERVICENOW_CONFIG,
