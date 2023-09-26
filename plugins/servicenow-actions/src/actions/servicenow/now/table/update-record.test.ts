@@ -8,10 +8,11 @@ import { setupServer } from 'msw/node';
 import os from 'os';
 import { Writable } from 'stream';
 
-import { createRecordAction } from '.';
+import { updateRecordAction } from '.';
+import resSysId404 from './__fixtures__/{tableName}/{sys_id}/404.json';
+import res200 from './__fixtures__/{tableName}/{sys_id}/PATCH/200.json';
 import res401 from './__fixtures__/{tableName}/401.json';
-import res404 from './__fixtures__/{tableName}/404.json';
-import res201 from './__fixtures__/{tableName}/POST/201.json';
+import resTable404 from './__fixtures__/{tableName}/404.json';
 
 const LOCAL_ADDR = 'https://dev12345.service-now.com' as const;
 
@@ -22,32 +23,40 @@ const SERVICENOW_CONFIG = {
 } as const;
 
 const handlers = [
-  rest.post(`${LOCAL_ADDR}/api/now/table/:tableName`, (req, res, ctx) => {
-    const { tableName } = req.params;
+  rest.patch(
+    `${LOCAL_ADDR}/api/now/table/:tableName/:sys_id`,
+    (req, res, ctx) => {
+      const { tableName, sys_id } = req.params;
 
-    // Check if the Authorization header is set
-    if (
-      req.headers.get('Authorization') !==
-      `Basic ${btoa(
-        `${SERVICENOW_CONFIG.username}:${SERVICENOW_CONFIG.password}`,
-      )}`
-    ) {
-      return res(ctx.status(401), ctx.json(res401));
-    }
+      // Check if the Authorization header is set
+      if (
+        req.headers.get('Authorization') !==
+        `Basic ${btoa(
+          `${SERVICENOW_CONFIG.username}:${SERVICENOW_CONFIG.password}`,
+        )}`
+      ) {
+        return res(ctx.status(401), ctx.json(res401));
+      }
 
-    // Check if the table name is valid
-    if (tableName !== 'incident') {
-      return res(ctx.status(404), ctx.json(res404));
-    }
+      // Check if the table name is valid
+      if (tableName !== 'incident') {
+        return res(ctx.status(404), ctx.json(resTable404));
+      }
 
-    return res(ctx.status(201), ctx.json(res201));
-  }),
+      // Check if the sys_id is valid
+      if (sys_id !== 'valid-sys-id') {
+        return res(ctx.status(404), ctx.json(resSysId404));
+      }
+
+      return res(ctx.status(200), ctx.json(res200));
+    },
+  ),
 ];
 
 const server = setupServer(...handlers);
 
 describe('createRecord', () => {
-  const action = createRecordAction({
+  const action = updateRecordAction({
     config: new ConfigReader({
       servicenow: SERVICENOW_CONFIG,
     }),
@@ -79,9 +88,13 @@ describe('createRecord', () => {
 
   afterAll(() => server.close());
 
-  it('should create a record', async () => {
+  it('should delete a record', async () => {
     const input = {
       tableName: 'incident',
+      sysId: 'valid-sys-id',
+      requestBody: {
+        short_description: 'Test',
+      },
     };
 
     const context = {
@@ -91,12 +104,13 @@ describe('createRecord', () => {
 
     await action.handler(context);
 
-    expect(context.output).toHaveBeenLastCalledWith('result', res201.result);
+    expect(context.output).toHaveBeenLastCalledWith('result', res200?.result);
   });
 
   it('should throw an error if the table does not exist', async () => {
     const input = {
       tableName: 'invalid-table',
+      sysId: 'valid-sys-id',
     };
 
     const context = {
@@ -104,12 +118,31 @@ describe('createRecord', () => {
       input,
     };
 
-    await expect(action.handler(context)).rejects.toThrow(res404.error.message);
+    await expect(action.handler(context)).rejects.toThrow(
+      resTable404.error.message,
+    );
+  });
+
+  it('should throw an error if the sysId does not exist', async () => {
+    const input = {
+      tableName: 'incident',
+      sysId: 'invalid-sys-id',
+    };
+
+    const context = {
+      ...mockContext,
+      input,
+    };
+
+    await expect(action.handler(context)).rejects.toThrow(
+      resSysId404.error.message,
+    );
   });
 
   it('should throw an error if the user is not authenticated', async () => {
     const input = {
       tableName: 'incident',
+      valid: 'valid-sys-id',
     };
 
     const context = {
@@ -118,7 +151,7 @@ describe('createRecord', () => {
     };
 
     await expect(
-      createRecordAction({
+      updateRecordAction({
         config: new ConfigReader({
           servicenow: { ...SERVICENOW_CONFIG, password: 'invalid-password' },
         }),

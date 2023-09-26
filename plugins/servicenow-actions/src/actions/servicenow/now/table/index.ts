@@ -4,6 +4,8 @@ import {
   createRecordAction,
   deleteRecordAction,
   modifyRecordAction,
+  retrieveRecordAction,
+  retrieveRecordsAction,
   updateRecordAction,
 } from '.';
 import { CreateActionOptions } from '../../../types';
@@ -20,6 +22,8 @@ export function createTableActions(
     createRecordAction(options),
     deleteRecordAction(options),
     modifyRecordAction(options),
+    retrieveRecordAction(options),
+    retrieveRecordsAction(options),
     updateRecordAction(options),
   ] as TemplateAction[];
 }
@@ -27,4 +31,6 @@ export function createTableActions(
 export * from './create-record';
 export * from './delete-record';
 export * from './modify-record';
+export * from './retrieve-record';
+export * from './retrieve-records';
 export * from './update-record';

@@ -8,10 +8,10 @@ import { setupServer } from 'msw/node';
 import os from 'os';
 import { Writable } from 'stream';
 
-import { createRecordAction } from '.';
+import { retrieveRecordsAction } from '.';
 import res401 from './__fixtures__/{tableName}/401.json';
 import res404 from './__fixtures__/{tableName}/404.json';
-import res201 from './__fixtures__/{tableName}/POST/201.json';
+import res200 from './__fixtures__/{tableName}/GET/200.json';
 
 const LOCAL_ADDR = 'https://dev12345.service-now.com' as const;
 
@@ -22,7 +22,7 @@ const SERVICENOW_CONFIG = {
 } as const;
 
 const handlers = [
-  rest.post(`${LOCAL_ADDR}/api/now/table/:tableName`, (req, res, ctx) => {
+  rest.get(`${LOCAL_ADDR}/api/now/table/:tableName`, (req, res, ctx) => {
     const { tableName } = req.params;
 
     // Check if the Authorization header is set
@@ -40,14 +40,14 @@ const handlers = [
       return res(ctx.status(404), ctx.json(res404));
     }
 
-    return res(ctx.status(201), ctx.json(res201));
+    return res(ctx.status(200), ctx.json(res200));
   }),
 ];
 
 const server = setupServer(...handlers);
 
 describe('createRecord', () => {
-  const action = createRecordAction({
+  const action = retrieveRecordsAction({
     config: new ConfigReader({
       servicenow: SERVICENOW_CONFIG,
     }),
@@ -91,7 +91,7 @@ describe('createRecord', () => {
 
     await action.handler(context);
 
-    expect(context.output).toHaveBeenLastCalledWith('result', res201.result);
+    expect(context.output).toHaveBeenLastCalledWith('result', res200?.result);
   });
 
   it('should throw an error if the table does not exist', async () => {
@@ -118,7 +118,7 @@ describe('createRecord', () => {
     };
 
     await expect(
-      createRecordAction({
+      retrieveRecordsAction({
         config: new ConfigReader({
           servicenow: { ...SERVICENOW_CONFIG, password: 'invalid-password' },
         }),

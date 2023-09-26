@@ -13,21 +13,19 @@ import {
 import { CreateActionOptions, ServiceNowResponses } from '../../../types';
 
 /**
- * Schema for the input to the `createRecord` action.
+ * Schema for the input to the `retrieveRecord` action.
  *
- * @see {@link https://docs.servicenow.com/bundle/vancouver-api-reference/page/integrate/inbound-rest/concept/c_TableAPI.html#title_table-POST}
+ * @see {@link https://docs.servicenow.com/bundle/vancouver-api-reference/page/integrate/inbound-rest/concept/c_TableAPI.html#title_table-GET}
  */
 const schemaInput = z.object({
   tableName: z
     .string()
     .nonempty()
-    .describe('Name of the table in which to save the record'),
-  requestBody: z
-    .custom<Record<PropertyKey, unknown>>()
-    .optional()
-    .describe(
-      'Field name and the associated value for each parameter to define in the specified record',
-    ),
+    .describe('	Name of the table from which to retrieve the records'),
+  sysId: z
+    .string()
+    .nonempty()
+    .describe('Unique identifier of the record to retrieve'),
   sysparmDisplayValue: z
     .enum(['true', 'false', 'all'])
     .optional()
@@ -44,29 +42,23 @@ const schemaInput = z.object({
     .array(z.string().nonempty())
     .optional()
     .describe('A comma-separated list of fields to return in the response'),
-  sysparmInputDisplayValue: z
-    .boolean()
-    .optional()
-    .describe(
-      'Set field values using their display value (true) or actual value (false) (default: false)',
-    ),
-  sysparmSuppressAutoSysField: z
-    .boolean()
-    .optional()
-    .describe(
-      'True to suppress auto generation of system fields (default: false)',
-    ),
   sysparmView: z
     .string()
     .optional()
     .describe(
       'Render the response according to the specified UI view (overridden by sysparm_fields)',
     ),
+  sysparmQueryNoDomain: z
+    .boolean()
+    .optional()
+    .describe(
+      'True to access data across domains if authorized (default: false)',
+    ),
 });
 
-const id = 'servicenow:now:table:createRecord';
+const id = 'servicenow:now:table:retrieveRecord';
 
-export const createRecordAction = (
+export const retrieveRecordAction = (
   options: CreateActionOptions,
 ): TemplateAction => {
   const { config } = options;
@@ -74,7 +66,7 @@ export const createRecordAction = (
   return createTemplateAction({
     id,
     description:
-      'Inserts one record in the specified table. Multiple record insertion is not supported by this method',
+      'Retrieves the record identified by the specified sys_id from the specified table',
     schema: {
       input: schemaInput,
     },
@@ -88,18 +80,17 @@ export const createRecordAction = (
       OpenAPI.USERNAME = config.getString('servicenow.username');
       OpenAPI.PASSWORD = config.getString('servicenow.password');
 
-      let res: ServiceNowResponses['201'];
+      let res: ServiceNowResponses['200'];
       try {
-        res = (await DefaultService.postApiNowTable({
+        res = (await DefaultService.getApiNowTable1({
           ...input,
-          // convert the array of fields to a comma-separated string
           sysparmFields: input.sysparmFields?.join(','),
-        })) as ServiceNowResponses['201'];
+        })) as ServiceNowResponses['200'];
       } catch (error) {
         throw new Error((error as ApiError).body.error.message);
       }
 
-      ctx.output('result', res.result);
+      ctx.output('result', res?.result);
     },
   });
 };

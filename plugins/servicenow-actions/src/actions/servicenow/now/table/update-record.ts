@@ -5,8 +5,12 @@ import {
 
 import { z } from 'zod';
 
-import { DefaultService, OpenAPI } from '../../../../generated/now/table';
-import { CreateActionOptions, ServiceNowResponse } from '../../../types';
+import {
+  ApiError,
+  DefaultService,
+  OpenAPI,
+} from '../../../../generated/now/table';
+import { CreateActionOptions, ServiceNowResponses } from '../../../types';
 
 /**
  * Schema for the input to the `updateRecord` action.
@@ -17,16 +21,16 @@ const schemaInput = z.object({
   tableName: z
     .string()
     .nonempty()
-    .describe('Name of the table in which to update the record.'),
+    .describe('Name of the table in which to update the record'),
   sysId: z
     .string()
     .nonempty()
-    .describe('Unique identifier of the record to update.'),
+    .describe('Unique identifier of the record to update'),
   requestBody: z
     .custom<Record<PropertyKey, unknown>>()
     .optional()
     .describe(
-      'Field name and the associated value for each parameter to define in the specified record.',
+      'Field name and the associated value for each parameter to define in the specified record',
     ),
   sysparmDisplayValue: z
     .enum(['true', 'false', 'all'])
@@ -80,7 +84,7 @@ export const updateRecordAction = (
   return createTemplateAction({
     id,
     description:
-      'Updates the specified record with the name-value pairs included in the request body.',
+      'Updates the specified record with the name-value pairs included in the request body',
     schema: {
       input: schemaInput,
     },
@@ -94,12 +98,17 @@ export const updateRecordAction = (
       OpenAPI.USERNAME = config.getString('servicenow.username');
       OpenAPI.PASSWORD = config.getString('servicenow.password');
 
-      const { result } = (await DefaultService.patchApiNowTable({
-        ...input,
-        sysparmFields: input.sysparmFields?.join(','),
-      })) as ServiceNowResponse;
+      let res: ServiceNowResponses['200'];
+      try {
+        res = (await DefaultService.patchApiNowTable({
+          ...input,
+          sysparmFields: input.sysparmFields?.join(','),
+        })) as ServiceNowResponses['200'];
+      } catch (error) {
+        throw new Error((error as ApiError).body.error.message);
+      }
 
-      ctx.output('result', result);
+      ctx.output('result', res?.result);
     },
   });
 };

@@ -13,21 +13,19 @@ import {
 import { CreateActionOptions, ServiceNowResponses } from '../../../types';
 
 /**
- * Schema for the input to the `createRecord` action.
+ * Schema for the input to the `retrieveRecords` action.
  *
- * @see {@link https://docs.servicenow.com/bundle/vancouver-api-reference/page/integrate/inbound-rest/concept/c_TableAPI.html#title_table-POST}
+ * @see {@link https://docs.servicenow.com/bundle/vancouver-api-reference/page/integrate/inbound-rest/concept/c_TableAPI.html#title_table-GET}
  */
 const schemaInput = z.object({
   tableName: z
     .string()
     .nonempty()
-    .describe('Name of the table in which to save the record'),
-  requestBody: z
-    .custom<Record<PropertyKey, unknown>>()
+    .describe('	Name of the table from which to retrieve the records'),
+  sysparamQuery: z
+    .string()
     .optional()
-    .describe(
-      'Field name and the associated value for each parameter to define in the specified record',
-    ),
+    .describe('An encoded query string used to filter the results'),
   sysparmDisplayValue: z
     .enum(['true', 'false', 'all'])
     .optional()
@@ -40,21 +38,19 @@ const schemaInput = z.object({
     .describe(
       'True to exclude Table API links for reference fields (default: false)',
     ),
+  sysparmSuppressPaginationHeader: z
+    .boolean()
+    .optional()
+    .describe('True to suppress pagination header (default: false)'),
   sysparmFields: z
     .array(z.string().nonempty())
     .optional()
     .describe('A comma-separated list of fields to return in the response'),
-  sysparmInputDisplayValue: z
-    .boolean()
+  sysparmLimit: z
+    .number()
     .optional()
     .describe(
-      'Set field values using their display value (true) or actual value (false) (default: false)',
-    ),
-  sysparmSuppressAutoSysField: z
-    .boolean()
-    .optional()
-    .describe(
-      'True to suppress auto generation of system fields (default: false)',
+      'The maximum number of results returned per page (default: 10,000)',
     ),
   sysparmView: z
     .string()
@@ -62,19 +58,34 @@ const schemaInput = z.object({
     .describe(
       'Render the response according to the specified UI view (overridden by sysparm_fields)',
     ),
+  sysparmQueryCategory: z
+    .string()
+    .optional()
+    .describe(
+      'Name of the query category (read replica category) to use for queries',
+    ),
+  sysparmQueryNoDomain: z
+    .boolean()
+    .optional()
+    .describe(
+      'True to access data across domains if authorized (default: false)',
+    ),
+  sysparm_no_count: z
+    .boolean()
+    .optional()
+    .describe('Do not execute a select count(*) on table (default: false)'),
 });
 
-const id = 'servicenow:now:table:createRecord';
+const id = 'servicenow:now:table:retrieveRecords';
 
-export const createRecordAction = (
+export const retrieveRecordsAction = (
   options: CreateActionOptions,
 ): TemplateAction => {
   const { config } = options;
 
   return createTemplateAction({
     id,
-    description:
-      'Inserts one record in the specified table. Multiple record insertion is not supported by this method',
+    description: 'Retrieves multiple records for the specified table',
     schema: {
       input: schemaInput,
     },
@@ -88,18 +99,17 @@ export const createRecordAction = (
       OpenAPI.USERNAME = config.getString('servicenow.username');
       OpenAPI.PASSWORD = config.getString('servicenow.password');
 
-      let res: ServiceNowResponses['201'];
+      let res: ServiceNowResponses['200'];
       try {
-        res = (await DefaultService.postApiNowTable({
+        res = (await DefaultService.getApiNowTable({
           ...input,
-          // convert the array of fields to a comma-separated string
           sysparmFields: input.sysparmFields?.join(','),
-        })) as ServiceNowResponses['201'];
+        })) as ServiceNowResponses['200'];
       } catch (error) {
         throw new Error((error as ApiError).body.error.message);
       }
 
-      ctx.output('result', res.result);
+      ctx.output('result', res?.result);
     },
   });
 };

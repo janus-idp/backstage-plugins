@@ -5,7 +5,11 @@ import {
 
 import { z } from 'zod';
 
-import { DefaultService, OpenAPI } from '../../../../generated/now/table';
+import {
+  ApiError,
+  DefaultService,
+  OpenAPI,
+} from '../../../../generated/now/table';
 import { CreateActionOptions } from '../../../types';
 
 /**
@@ -17,11 +21,11 @@ const schemaInput = z.object({
   tableName: z
     .string()
     .nonempty()
-    .describe('Name of the table in which to delete the record.'),
+    .describe('Name of the table in which to delete the record'),
   sysId: z
     .string()
     .nonempty()
-    .describe('Unique identifier of the record to delete.'),
+    .describe('Unique identifier of the record to delete'),
   sysparmQueryNoDomain: z
     .boolean()
     .optional()
@@ -39,7 +43,7 @@ export const deleteRecordAction = (
 
   return createTemplateAction({
     id,
-    description: 'Deletes the specified record from the specified table.',
+    description: 'Deletes the specified record from the specified table',
     schema: {
       input: schemaInput,
     },
@@ -53,7 +57,11 @@ export const deleteRecordAction = (
       OpenAPI.USERNAME = config.getString('servicenow.username');
       OpenAPI.PASSWORD = config.getString('servicenow.password');
 
-      await DefaultService.deleteApiNowTable(input);
+      try {
+        await DefaultService.deleteApiNowTable(input);
+      } catch (error) {
+        throw new Error((error as ApiError).body.error.message);
+      }
     },
   });
 };
