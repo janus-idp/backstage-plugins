@@ -1,7 +1,7 @@
 import { CatalogApi } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 
-import { BackstageRoleManager } from './role-manager'; // Adjust the path as needed
+import { BackstageRoleManager } from './role-manager';
 
 describe('BackstageRoleManager', () => {
   const catalogApi: any = {
@@ -65,7 +65,7 @@ describe('BackstageRoleManager', () => {
       expect(result).toBe(false);
     });
 
-    // user:default/mike should not inherits from group:default/somegroup?
+    // user:default/mike should not inherits from group:default/somegroup
     //
     //     Hierarchy:
     //
@@ -86,7 +86,7 @@ describe('BackstageRoleManager', () => {
       expect(result).toBeFalsy();
     });
 
-    // user:default/mike should inherits from group:default/somegroup?
+    // user:default/mike should inherits from group:default/somegroup
     //
     //     Hierarchy:
     //
@@ -112,7 +112,7 @@ describe('BackstageRoleManager', () => {
       expect(result).toBeTruthy();
     });
 
-    // user:default/mike should not inherits from group:default/somegroup?
+    // user:default/mike should not inherits from group:default/somegroup
     //
     //     Hierarchy:
     //
@@ -138,7 +138,7 @@ describe('BackstageRoleManager', () => {
       expect(result).toBeFalsy();
     });
 
-    // user:default/mike should inherits from group:default/team-a?
+    // user:default/mike should inherits from group:default/team-a
     //
     //     Hierarchy:
     //
@@ -148,7 +148,7 @@ describe('BackstageRoleManager', () => {
     //       |
     // user:default/mike
     //
-    it('should return true for hasLink, when user:default/mike inherits from group:default/team-b', async () => {
+    it('should return true for hasLink, when user:default/mike inherits from group:default/team-a', async () => {
       const groupMock: Entity = {
         apiVersion: 'v1',
         kind: 'Group',
@@ -184,7 +184,7 @@ describe('BackstageRoleManager', () => {
 
       const result = await roleManager.hasLink(
         'user:default/mike',
-        'group:default/team-b',
+        'group:default/team-a',
       );
       expect(result).toBeTruthy();
     });
@@ -240,7 +240,7 @@ describe('BackstageRoleManager', () => {
       expect(result).toBeFalsy();
     });
 
-    // user:default/mike should inherits from group:default/team-a?
+    // user:default/mike should inherits from group:default/team-a
     //
     //     Hierarchy:
     //
@@ -250,7 +250,7 @@ describe('BackstageRoleManager', () => {
     //                |              |
     //                user:default/mike
     //
-    it('should return true for hasLink, when user:default/mike inherits from group:default/team-a', async () => {
+    it('should return true for hasLink, when user:default/mike inherits group tree with group:default/team-a', async () => {
       const groupCMock: Entity = {
         apiVersion: 'v1',
         kind: 'Group',
@@ -314,7 +314,7 @@ describe('BackstageRoleManager', () => {
       expect(result).toBeTruthy();
     });
 
-    // user:default/mike should inherits from group:default/team-a?
+    // user:default/mike should inherits from group:default/team-e
     //
     //     Hierarchy:
     //
