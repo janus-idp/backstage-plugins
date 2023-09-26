@@ -16,9 +16,10 @@ import fs from 'fs-extra';
 import { Logger } from 'winston';
 
 import { randomUUID } from 'crypto';
-import os from 'os';
 import path from 'path';
 import { PassThrough } from 'stream';
+
+import { getWorkingDirectory } from './Helper';
 
 export interface ActionExecutionContext {
   actionId: string;
@@ -67,14 +68,24 @@ export class ScaffolderService {
     );
     const tmpDirs: string[] = new Array<string>();
     const stepOutput: { [outputName: string]: JsonValue } = {};
-    const workingDirectory: string = await this.getWorkingDirectory(
-      this.config,
-      this.logger,
-    );
-    const workspacePath: string = path.join(
-      workingDirectory,
-      actionExecutionContext.instanceId ?? randomUUID(),
-    );
+
+    let workspacePath: string;
+    try {
+      const workingDirectory = await getWorkingDirectory(
+        this.config,
+        this.logger,
+      );
+      workspacePath = path.join(
+        workingDirectory,
+        actionExecutionContext.instanceId ?? randomUUID(),
+      );
+    } catch (err) {
+      this.logger.error(
+        `Error getutuing workingDirecotury to execute action ${actionExecutionContext.actionId}`,
+        err,
+      );
+      throw err;
+    }
     const mockContext: ActionContext<JsonObject> = {
       input: actionExecutionContext.input,
       workspacePath: workspacePath,
@@ -97,26 +108,5 @@ export class ScaffolderService {
     //   await fs.remove(tmpDir);
     // }
     return stepOutput;
-  }
-
-  async getWorkingDirectory(config: Config, logger: Logger): Promise<string> {
-    if (!config.has('backend.workingDirectory')) {
-      return os.tmpdir();
-    }
-
-    const workingDirectory = config.getString('backend.workingDirectory');
-    try {
-      // Check if working directory exists and is writable
-      await fs.access(workingDirectory, fs.constants.F_OK | fs.constants.W_OK);
-      logger.info(`using working directory: ${workingDirectory}`);
-    } catch (err: any) {
-      logger.error(
-        `working directory ${workingDirectory} ${
-          err.code === 'ENOENT' ? 'does not exist' : 'is not writable'
-        }`,
-      );
-      throw err;
-    }
-    return workingDirectory;
   }
 }

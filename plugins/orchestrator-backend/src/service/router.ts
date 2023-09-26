@@ -14,6 +14,7 @@ import { Logger } from 'winston';
 import {
   default_sonataflow_container_image,
   default_sonataflow_persistance_path,
+  default_workflows_path,
   fromWorkflowSource,
   Job,
   orchestrator_service_ready_topic,
@@ -26,7 +27,7 @@ import {
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { exec, ExecException } from 'child_process';
-import { resolve } from 'path';
+import { join, resolve } from 'path';
 
 import { CloudEventService } from './CloudEventService';
 import { DataInputSchemaService } from './DataInputSchemaService';
@@ -78,7 +79,7 @@ export async function createRouter(
     `Using SonataFlow Url of: ${sonataFlowBaseUrl}:${sonataFlowPort}`,
   );
   const sonataFlowResourcesPath = config.getString(
-    'orchestrator.sonataFlowService.path',
+    'orchestrator.sonataFlowService.workflowsSource.localPath',
   );
   const sonataFlowServiceContainer =
     config.getOptionalString('orchestrator.sonataFlowService.container') ??
@@ -128,6 +129,8 @@ export async function createRouter(
     openApiService,
     dataInputSchemaService,
     sonataFlowResourcesPath,
+    config,
+    logger,
   );
 
   const scaffolderService: ScaffolderService = new ScaffolderService(
@@ -147,6 +150,8 @@ export async function createRouter(
     jiraService,
   );
   setupExternalRoutes(router, discovery, scaffolderService);
+
+  await workflowService.reloadWorkflows();
 
   await setupSonataflowService(
     sonataFlowBaseUrl,
@@ -448,7 +453,9 @@ async function setupSonataflowService(
   logger: Logger,
   jiraConfig?: JiraConfig,
 ) {
-  const sonataFlowResourcesAbsPath = resolve(`${sonataFlowResourcesPath}`);
+  const sonataFlowResourcesAbsPath = resolve(
+    join(sonataFlowResourcesPath, default_workflows_path),
+  );
   const launcher = ['docker run --add-host host.docker.internal:host-gateway'];
   if (jiraConfig) {
     launcher.push(`--add-host jira.test:${jiraConfig.host}`);

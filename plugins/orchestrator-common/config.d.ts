@@ -14,11 +14,30 @@ export interface Config {
        * Example: 8080
        */
       port: string;
+
       /**
-       * Path to map workflow resources to SonataFlow service.
-       * Example: /home/orchestrator/workflows
+       * Workflows definitions source configurations
        */
-      path: string;
+      workflowsSource:
+        | {
+            /**
+             * Remote git repository where workflows definitions are stored
+             */
+            gitRepositoryUrl: string;
+            /**
+             * Path to map workflow resources to SonataFlow service.
+             * Example: /home/orchestrator/workflows
+             */
+            localPath: string;
+            /**
+             * Indicates to push changes to the gitRepository upon changes on workflows definition and resources
+             */
+            autoPush: boolean;
+          }
+        | {
+            localPath: string;
+          };
+
       /**
        * Container image name of the Sonata Flow service.
        * Default: quay.io/kiegroup/kogito-swf-devmode-nightly:main-2023-08-30

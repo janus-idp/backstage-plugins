@@ -67,3 +67,5 @@ export const default_sonataflow_persistance_path = '/home/kogito/persistence';
 export const default_catalog_owner = 'infrastructure';
 export const default_catalog_environment = 'development';
 export const default_editor_path = 'https://start.kubesmarts.org';
+
+export const default_workflows_path = 'workflows';
