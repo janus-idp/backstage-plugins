@@ -11,7 +11,8 @@ export default async function createPlugin(
 
   // The env contains a lot of goodies, but our router currently only
   // needs a logger
-  const dbClient: RouterOptions['dbClient'] = await env.database.getClient();
+  const dbClient =
+    (await env.database.getClient()) as unknown as RouterOptions['dbClient']; /* TODO: fix the type */
   return await createRouter({
     dbClient,
     logger: env.logger,

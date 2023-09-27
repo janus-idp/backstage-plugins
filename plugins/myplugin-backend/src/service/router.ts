@@ -7,7 +7,7 @@ import { Logger } from 'winston';
 
 export interface RouterOptions {
   logger: Logger;
-  dbClient: Knex<any, unknown[]>;
+  dbClient: Knex<any, any[]>;
 }
 
 export async function createRouter(
