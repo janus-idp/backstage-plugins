@@ -1,11 +1,14 @@
 import React from 'react';
-import { Grid } from '@material-ui/core';
+
 import {
-  Header,
-  Page,
   Content,
   ContentHeader,
+  // Header,
+  Page,
 } from '@backstage/core-components';
+
+import { Grid } from '@material-ui/core';
+
 import { ParodosNotificationsTable } from '../ParodosNotificationsTable';
 
 export const ParodosPage = () => (
