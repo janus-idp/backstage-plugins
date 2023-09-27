@@ -8,6 +8,7 @@ import { CatalogEntityPage, CatalogIndexPage } from '@backstage/plugin-catalog';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
 import { CatalogGraphPage } from '@backstage/plugin-catalog-graph';
 import { CatalogImportPage } from '@backstage/plugin-catalog-import';
+import { ParodosNotificationsPage } from '@backstage/plugin-parodos-notifications';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import { SearchPage } from '@backstage/plugin-search';
 import {
@@ -18,8 +19,6 @@ import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
 import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
 
 import { ScalprumProvider } from '@scalprum/react-core';
-
-import { ParodosNotificationsPage } from '@janus-idp/plugin-parodos-notifications';
 
 import { apis } from './apis';
 import { entityPage } from './components/catalog/EntityPage';
