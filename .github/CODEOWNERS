@@ -25,4 +25,6 @@ yarn.lock                    @janus-idp/maintainers-plugins
 /plugins/quay/               @janus-idp/maintainers-plugins @fmenesesg
 /plugins/topology/           @janus-idp/maintainers-plugins @debsmita1 @divyanshiGupta
 /plugins/tekton/             @janus-idp/maintainers-plugins @debsmita1 @divyanshiGupta
+/plugins/rbac-backend/       @janus-idp/maintainers-plugins @gorkem @AndrienkoAleksandr @PatAKnight
+/plugins/rbac-common/        @janus-idp/maintainers-plugins @gorkem @AndrienkoAleksandr @PatAKnight
 

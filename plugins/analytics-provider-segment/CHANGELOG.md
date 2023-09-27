@@ -1,3 +1,5 @@
+## @janus-idp/backstage-plugin-analytics-provider-segment [1.1.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-analytics-provider-segment@1.1.1...@janus-idp/backstage-plugin-analytics-provider-segment@1.1.2) (2023-09-22)
+
 ## @janus-idp/backstage-plugin-analytics-provider-segment [1.1.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-analytics-provider-segment@1.1.0...@janus-idp/backstage-plugin-analytics-provider-segment@1.1.1) (2023-08-23)
 
 

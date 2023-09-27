@@ -147,7 +147,7 @@ The Topology plugin enables you to visualize the workloads such as Deployment, J
 
   > Note: If Red Hat OpenShift Dev Spaces is [installed and configured](https://access.redhat.com/documentation/en-us/red_hat_openshift_dev_spaces/3.7/html/administration_guide/installing-devspaces) and git URL annotations are also added to the workload YAML file, then clicking on the edit code decorator redirects you to the Red Hat OpenShift Dev Spaces instance.
 
-  > Note: When you deploy the Backstage application using the OCP Git import flows, then you do not need to add the labels as import flows add the labels to the workload YAML file. Otherwise, you need to add the labels manually to the workload YAML file.
+  > Note: When you deploy your application using the OCP Git import flows, then you do not need to add the labels as import flows do that. Otherwise, you need to add the labels manually to the workload YAML file.
 
   The labels are not similar to `backstage.io/edit-url` annotations as it points to the catalog entity metadata source file and is applied to Backstage catalog entity metadata YAML file, but not Kubernetes resources.
 

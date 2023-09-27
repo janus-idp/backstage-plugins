@@ -1,3 +1,23 @@
+## @janus-idp/backstage-plugin-topology [1.15.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.15.5...@janus-idp/backstage-plugin-topology@1.15.6) (2023-09-22)
+
+
+### Bug Fixes
+
+* **topology:** checluster resource to have matching labels for catalog entity ([#730](https://github.com/janus-idp/backstage-plugins/issues/730)) ([4576f6d](https://github.com/janus-idp/backstage-plugins/commit/4576f6db7789bf6c2fc7f5dcbd7af7c8ffbe7bab))
+* **topology:** fix pipelinerun status icon color ([#732](https://github.com/janus-idp/backstage-plugins/issues/732)) ([55679af](https://github.com/janus-idp/backstage-plugins/commit/55679af65c891a2a872431266d2f49fe90682a4a))
+* **topology:** fixes crash on dev setup for k8s tab ([#723](https://github.com/janus-idp/backstage-plugins/issues/723)) ([8035098](https://github.com/janus-idp/backstage-plugins/commit/80350982621773efbe701614a29ed883030585b2))
+
+
+### Documentation
+
+* **topology:** updates topology readme ([#764](https://github.com/janus-idp/backstage-plugins/issues/764)) ([9f3a31c](https://github.com/janus-idp/backstage-plugins/commit/9f3a31c25996ba06a0d360b5fac559cb721ec109))
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 1.3.1
+
 ## @janus-idp/backstage-plugin-topology [1.15.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.15.4...@janus-idp/backstage-plugin-topology@1.15.5) (2023-09-11)
 
 ## @janus-idp/backstage-plugin-topology [1.15.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.15.3...@janus-idp/backstage-plugin-topology@1.15.4) (2023-08-31)

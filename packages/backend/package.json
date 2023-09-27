@@ -37,7 +37,7 @@
     "@backstage/plugin-search-backend-module-pg": "^0.5.8",
     "@backstage/plugin-search-backend-node": "^1.2.3",
     "@backstage/plugin-techdocs-backend": "^1.6.4",
-    "@janus-idp/plugin-rh-rbac-backend": "^0.1.0",
+    "@janus-idp/backstage-plugin-rbac-backend": "^0.1.0",
     "better-sqlite3": "8.4.0",
     "dockerode": "3.3.5",
     "express": "4.18.2",
