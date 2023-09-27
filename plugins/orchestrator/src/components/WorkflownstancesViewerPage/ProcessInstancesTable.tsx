@@ -92,7 +92,7 @@ export const ProcessInstancesTable = (props: ProcessInstancesTableProps) => {
       if (pid) {
         orchestratorApi.getInstance(pid).then(value => {
           setSelectedInstance(value);
-          navigate(instanceLink({ instanceId: pid }));
+          navigate(instanceLink({ instanceId: pid }), { replace: true });
         });
       }
     },

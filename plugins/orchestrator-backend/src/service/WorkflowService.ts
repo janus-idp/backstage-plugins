@@ -20,11 +20,12 @@ import { extname, join, resolve } from 'path';
 import { DataInputSchemaService } from './DataInputSchemaService';
 import { GitService } from './GitService';
 import { OpenApiService } from './OpenApiService';
+import { SonataFlowService } from './SonataFlowService';
 
 export class WorkflowService {
   private readonly openApiService: OpenApiService;
   private readonly dataInputSchemaService: DataInputSchemaService;
-  private readonly sonataFlowResourcesPath: string;
+  private readonly sonataFlowService: SonataFlowService;
   private readonly logger: Logger;
   private readonly githubService: GitService;
   private readonly repoURL: string;
@@ -32,13 +33,13 @@ export class WorkflowService {
   constructor(
     openApiService: OpenApiService,
     dataInputSchemaService: DataInputSchemaService,
-    sonataFlowResourcesPath: string,
+    sonataFlowService: SonataFlowService,
     config: Config,
     logger: Logger,
   ) {
     this.openApiService = openApiService;
     this.dataInputSchemaService = dataInputSchemaService;
-    this.sonataFlowResourcesPath = sonataFlowResourcesPath;
+    this.sonataFlowService = sonataFlowService;
     this.logger = logger;
     this.githubService = new GitService(logger, config);
     this.repoURL = config.getString(
@@ -64,7 +65,7 @@ export class WorkflowService {
 
     if (this.autoPush) {
       await this.githubService.push(
-        this.sonataFlowResourcesPath,
+        this.sonataFlowService.resourcesPath,
         `new workflow changes ${definitionsPath}`,
       );
     }
@@ -118,7 +119,7 @@ export class WorkflowService {
 
     if (this.autoPush) {
       await this.githubService.push(
-        this.sonataFlowResourcesPath,
+        this.sonataFlowService.resourcesPath,
         `new openapi changes ${path}`,
       );
     }
@@ -190,12 +191,16 @@ export class WorkflowService {
 
   private resolveResourcePath(relativePath: string): string {
     return resolve(
-      join(this.sonataFlowResourcesPath, default_workflows_path, relativePath),
+      join(
+        this.sonataFlowService.resourcesPath,
+        default_workflows_path,
+        relativePath,
+      ),
     );
   }
   async reloadWorkflows() {
     this.logger.info(`Reloading workflows from Git`);
-    const localPath = this.sonataFlowResourcesPath;
+    const localPath = this.sonataFlowService.resourcesPath;
     await fs.remove(localPath);
     await this.githubService.clone(this.repoURL, localPath);
   }

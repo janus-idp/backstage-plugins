@@ -6,7 +6,7 @@ import {
 import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
 import { DefaultEventBroker } from '@backstage/plugin-events-backend';
 
-import { createRouter } from './service';
+import { createRouter } from './routerWrapper';
 
 export const orchestratorPlugin = createBackendPlugin({
   pluginId: 'orchestrator',

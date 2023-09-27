@@ -28,3 +28,33 @@ export async function getWorkingDirectory(
   }
   return workingDirectory;
 }
+
+export async function executeWithRetry(
+  action: () => Promise<Response>,
+  maxErrors = 15,
+): Promise<Response> {
+  let response: Response;
+  let errorCount = 0;
+  // execute with retry
+  const backoff = 5000;
+  while (errorCount < maxErrors) {
+    try {
+      response = await action();
+      if (response.status >= 400) {
+        errorCount++;
+        // backoff
+        await delay(backoff);
+      } else {
+        return response;
+      }
+    } catch (e) {
+      errorCount++;
+      await delay(backoff);
+    }
+  }
+  throw new Error('Unable to execute query.');
+}
+
+export function delay(time: number) {
+  return new Promise(r => setTimeout(r, time));
+}

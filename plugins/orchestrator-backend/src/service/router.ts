@@ -1,64 +1,34 @@
-import { errorHandler, UrlReader } from '@backstage/backend-common';
-import { CatalogApi } from '@backstage/catalog-client';
-import { Config } from '@backstage/config';
+import { errorHandler } from '@backstage/backend-common';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
-import { readGithubIntegrationConfigs } from '@backstage/integration';
-import { EventBroker } from '@backstage/plugin-events-node';
+import { ScmIntegrations } from '@backstage/integration';
 import { JsonObject, JsonValue } from '@backstage/types';
 
 import express from 'express';
 import Router from 'express-promise-router';
-import { OpenAPIV3 } from 'openapi-types';
-import { Logger } from 'winston';
 
 import {
-  default_sonataflow_container_image,
-  default_sonataflow_persistance_path,
-  default_workflows_path,
   fromWorkflowSource,
-  Job,
   orchestrator_service_ready_topic,
-  ProcessInstance,
   WorkflowDataInputSchema,
   WorkflowDataInputSchemaResponse,
-  WorkflowDefinition,
   WorkflowItem,
   WorkflowListResult,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
-import { exec, ExecException } from 'child_process';
-import { join, resolve } from 'path';
-
+import { RouterArgs } from '../routerWrapper';
 import { CloudEventService } from './CloudEventService';
 import { DataInputSchemaService } from './DataInputSchemaService';
 import { JiraEvent, JiraService } from './JiraService';
 import { OpenApiService } from './OpenApiService';
 import { ScaffolderService } from './ScaffolderService';
+import { SonataFlowService } from './SonataFlowService';
 import { WorkflowService } from './WorkflowService';
 
-export interface RouterOptions {
-  eventBroker: EventBroker;
-  config: Config;
-  logger: Logger;
-  discovery: DiscoveryApi;
-  catalogApi: CatalogApi;
-  urlReader: UrlReader;
-}
-
-interface JiraConfig {
-  host: string;
-  bearerToken: string;
-}
-
-function delay(time: number) {
-  return new Promise(r => setTimeout(r, time));
-}
-
-export async function createRouter(
-  options: RouterOptions,
+export async function createBackendRouter(
+  args: RouterArgs & { sonataFlowService: SonataFlowService },
 ): Promise<express.Router> {
   const { eventBroker, config, logger, discovery, catalogApi, urlReader } =
-    options;
+    args;
 
   const router = Router();
   router.use(express.json());
@@ -69,44 +39,11 @@ export async function createRouter(
     response.json({ status: 'ok' });
   });
 
-  const sonataFlowBaseUrl = config.getString(
-    'orchestrator.sonataFlowService.baseUrl',
-  );
-  const sonataFlowPort = config.getNumber(
-    'orchestrator.sonataFlowService.port',
-  );
-  logger.info(
-    `Using SonataFlow Url of: ${sonataFlowBaseUrl}:${sonataFlowPort}`,
-  );
-  const sonataFlowResourcesPath = config.getString(
-    'orchestrator.sonataFlowService.workflowsSource.localPath',
-  );
-  const sonataFlowServiceContainer =
-    config.getOptionalString('orchestrator.sonataFlowService.container') ??
-    default_sonataflow_container_image;
-  const sonataFlowPersistencePath =
-    config.getOptionalString(
-      'orchestrator.sonataFlowService.persistence.path',
-    ) ?? default_sonataflow_persistance_path;
+  const githubIntegration = ScmIntegrations.fromConfig(config)
+    .github.list()
+    .pop();
 
-  const jiraHost = config.getOptionalString('orchestrator.jira.host');
-  const jiraBearerToken = config.getOptionalString(
-    'orchestrator.jira.bearerToken',
-  );
-
-  let jiraConfig: JiraConfig | undefined = undefined;
-  if (jiraHost && jiraBearerToken) {
-    jiraConfig = {
-      host: jiraHost,
-      bearerToken: jiraBearerToken,
-    };
-  }
-
-  const githubConfigs = readGithubIntegrationConfigs(
-    config.getOptionalConfigArray('integrations.github') ?? [],
-  );
-
-  const githubToken = githubConfigs[0]?.token;
+  const githubToken = githubIntegration?.config.token;
 
   if (!githubToken) {
     logger.warn(
@@ -116,7 +53,7 @@ export async function createRouter(
 
   const cloudEventService = new CloudEventService(
     logger,
-    `${sonataFlowBaseUrl}:${sonataFlowPort}`,
+    args.sonataFlowService.url,
   );
   const jiraService = new JiraService(logger, cloudEventService);
   const openApiService = new OpenApiService(logger, discovery);
@@ -128,7 +65,7 @@ export async function createRouter(
   const workflowService = new WorkflowService(
     openApiService,
     dataInputSchemaService,
-    sonataFlowResourcesPath,
+    args.sonataFlowService,
     config,
     logger,
   );
@@ -142,8 +79,7 @@ export async function createRouter(
 
   setupInternalRoutes(
     router,
-    sonataFlowBaseUrl,
-    sonataFlowPort,
+    args.sonataFlowService,
     workflowService,
     openApiService,
     dataInputSchemaService,
@@ -152,16 +88,6 @@ export async function createRouter(
   setupExternalRoutes(router, discovery, scaffolderService);
 
   await workflowService.reloadWorkflows();
-
-  await setupSonataflowService(
-    sonataFlowBaseUrl,
-    sonataFlowPort,
-    sonataFlowResourcesPath,
-    sonataFlowServiceContainer,
-    sonataFlowPersistencePath,
-    logger,
-    jiraConfig,
-  );
 
   await eventBroker.publish({
     topic: orchestrator_service_ready_topic,
@@ -177,75 +103,25 @@ export async function createRouter(
 // ======================================================
 function setupInternalRoutes(
   router: express.Router,
-  sonataFlowBaseUrl: string,
-  sonataFlowPort: number,
+  sonataFlowService: SonataFlowService,
   workflowService: WorkflowService,
   openApiService: OpenApiService,
   dataInputSchemaService: DataInputSchemaService,
   jiraService: JiraService,
 ) {
-  const fetchWorkflowUri = async (workflowId: string): Promise<string> => {
-    const uriResponse = await executeWithRetry(() =>
-      fetch(
-        `${sonataFlowBaseUrl}:${sonataFlowPort}/management/processes/${workflowId}/sources`,
-      ),
-    );
-
-    const json = await uriResponse.json();
-    // Assuming only one source in the list
-    return json[0].uri;
-  };
-
-  const fetchWorkflowDefinition = async (
-    workflowId: string,
-  ): Promise<WorkflowDefinition> => {
-    const sourceResponse = await executeWithRetry(() =>
-      fetch(
-        `${sonataFlowBaseUrl}:${sonataFlowPort}/management/processes/${workflowId}/source`,
-      ),
-    );
-
-    const source = await sourceResponse.text();
-    return fromWorkflowSource(source);
-  };
-
-  const fetchOpenApi = async (): Promise<OpenAPIV3.Document> => {
-    const svcOpenApiResponse = await executeWithRetry(() =>
-      fetch(`${sonataFlowBaseUrl}:${sonataFlowPort}/q/openapi.json`),
-    );
-    return await svcOpenApiResponse.json();
-  };
-
   router.get('/workflows', async (_, res) => {
-    const svcResponse = await executeWithRetry(() =>
-      fetch(`${sonataFlowBaseUrl}:${sonataFlowPort}/management/processes`),
-    );
-    const ids = await svcResponse.json();
-    const items: WorkflowItem[] = await Promise.all(
-      ids?.map(
-        async (workflowId: String) =>
-          await fetch(
-            `${sonataFlowBaseUrl}:${sonataFlowPort}/management/processes/${workflowId}`,
-          )
-            .then((response: Response) => response.json())
-            .then(async (definition: WorkflowDefinition) => {
-              const uri = await fetchWorkflowUri(definition.id);
-              const workflowItem: WorkflowItem = {
-                uri,
-                definition: {
-                  ...definition,
-                  description: definition.description ?? definition.name,
-                },
-              };
-              return workflowItem;
-            }),
-      ),
-    );
+    const definitions = await sonataFlowService.fetchWorkflows();
+
+    if (!definitions) {
+      res.status(500).send("Couldn't fetch workflows");
+      return;
+    }
+
     const result: WorkflowListResult = {
-      items: items ? items : [],
+      items: definitions,
       limit: 0,
       offset: 0,
-      totalCount: items ? items.length : 0,
+      totalCount: definitions?.length ?? 0,
     };
     res.status(200).json(result);
   });
@@ -255,8 +131,21 @@ function setupInternalRoutes(
       params: { workflowId },
     } = req;
 
-    const definition = await fetchWorkflowDefinition(workflowId);
-    const uri = await fetchWorkflowUri(workflowId);
+    const definition =
+      await sonataFlowService.fetchWorkflowDefinition(workflowId);
+
+    if (!definition) {
+      res
+        .status(500)
+        .send(`Couldn't fetch workflow definition for ${workflowId}`);
+      return;
+    }
+
+    const uri = await sonataFlowService.fetchWorkflowUri(workflowId);
+    if (!uri) {
+      res.status(500).send(`Couldn't fetch workflow uri for ${workflowId}`);
+      return;
+    }
 
     res.status(200).json({
       uri,
@@ -268,72 +157,57 @@ function setupInternalRoutes(
     const {
       params: { workflowId },
     } = req;
-    const inputData = req.body;
-    const svcResponse = await fetch(
-      `${sonataFlowBaseUrl}:${sonataFlowPort}/${workflowId}`,
-      {
-        method: 'POST',
-        body: JSON.stringify(inputData),
-        headers: { 'content-type': 'application/json' },
-      },
-    );
-    const json = await svcResponse.json();
-    if (!json.id) {
-      res.status(svcResponse.status).send();
+
+    const executionResponse = await sonataFlowService.executeWorkflow({
+      workflowId,
+      inputData: req.body,
+    });
+
+    if (!executionResponse) {
+      res.status(500).send(`Couldn't execute workflow ${workflowId}`);
       return;
     }
-    res.status(200).json(json);
+
+    res.status(200).json(executionResponse);
   });
 
   router.get('/instances', async (_, res) => {
-    const graphQlQuery =
-      '{ ProcessInstances (where: {processId: {isNull: false} } ) { id, processName, processId, state, start, lastUpdate, end, nodes { id }, variables, parentProcessInstance {id, processName, businessKey} } }';
-    const svcResponse = await executeWithRetry(() =>
-      fetch(`${sonataFlowBaseUrl}:${sonataFlowPort}/graphql`, {
-        method: 'POST',
-        body: JSON.stringify({ query: graphQlQuery }),
-        headers: { 'content-type': 'application/json' },
-      }),
-    );
-    const json = await svcResponse.json();
-    const processInstances: ProcessInstance[] = json.data
-      .ProcessInstances as ProcessInstance[];
-    res.status(200).json(processInstances);
+    const instances = await sonataFlowService.fetchProcessInstances();
+
+    if (!instances) {
+      res.status(500).send("Couldn't fetch process instances");
+      return;
+    }
+
+    res.status(200).json(instances);
   });
 
   router.get('/instances/:instanceId', async (req, res) => {
     const {
       params: { instanceId },
     } = req;
-    const graphQlQuery = `{ ProcessInstances (where: { id: {equal: "${instanceId}" } } ) { id, processName, processId, state, start, lastUpdate, end, nodes { id, nodeId, definitionId, type, name, enter, exit }, variables, parentProcessInstance {id, processName, businessKey}, error { nodeDefinitionId, message} } }`;
-    const svcResponse = await executeWithRetry(() =>
-      fetch(`${sonataFlowBaseUrl}:${sonataFlowPort}/graphql`, {
-        method: 'POST',
-        body: JSON.stringify({ query: graphQlQuery }),
-        headers: { 'content-type': 'application/json' },
-      }),
-    );
-    const json = await svcResponse.json();
-    const processInstances: ProcessInstance[] = json.data
-      .ProcessInstances as ProcessInstance[];
-    const processInstance: ProcessInstance = processInstances[0];
-    res.status(200).json(processInstance);
+    const instance = await sonataFlowService.fetchProcessInstance(instanceId);
+
+    if (!instance) {
+      res.status(500).send(`Couldn't fetch process instance ${instanceId}`);
+      return;
+    }
+
+    res.status(200).json(instance);
   });
 
   router.get('/instances/:instanceId/jobs', async (req, res) => {
     const {
       params: { instanceId },
     } = req;
-    const graphQlQuery = `{ Jobs (where: { processInstanceId: { equal: "${instanceId}" } }) { id, processId, processInstanceId, rootProcessId, status, expirationTime, priority, callbackEndpoint, repeatInterval, repeatLimit, scheduledId, retries, lastUpdate, endpoint, nodeInstanceId, executionCounter } }`;
-    const svcResponse = await executeWithRetry(() =>
-      fetch(`${sonataFlowBaseUrl}:${sonataFlowPort}/graphql`, {
-        method: 'POST',
-        body: JSON.stringify({ query: graphQlQuery }),
-        headers: { 'content-type': 'application/json' },
-      }),
-    );
-    const json = await svcResponse.json();
-    const jobs: Job[] = json.data.Jobs as Job[];
+
+    const jobs = await sonataFlowService.fetchProcessInstanceJobs(instanceId);
+
+    if (!jobs) {
+      res.status(500).send(`Couldn't fetch jobs for instance ${instanceId}`);
+      return;
+    }
+
     res.status(200).json(jobs);
   });
 
@@ -342,15 +216,33 @@ function setupInternalRoutes(
       params: { workflowId },
     } = req;
 
-    const definition = await fetchWorkflowDefinition(workflowId);
-    const uri = await fetchWorkflowUri(workflowId);
+    const definition =
+      await sonataFlowService.fetchWorkflowDefinition(workflowId);
+
+    if (!definition) {
+      res.status(500).send(`Couldn't fetch workflow definition ${workflowId}`);
+      return;
+    }
+
+    const uri = await sonataFlowService.fetchWorkflowUri(workflowId);
+
+    if (!uri) {
+      res.status(500).send(`Couldn't fetch workflow uri ${workflowId}`);
+      return;
+    }
 
     const workflowItem: WorkflowItem = { uri, definition };
 
     let schema: WorkflowDataInputSchema | undefined = undefined;
 
     if (definition.dataInputSchema) {
-      const openApi = await fetchOpenApi();
+      const openApi = await sonataFlowService.fetchOpenApi();
+
+      if (!openApi) {
+        res.status(500).send(`Couldn't fetch OpenAPI from SonataFlow service`);
+        return;
+      }
+
       const workflowDataInputSchema =
         await dataInputSchemaService.resolveDataInputSchema({
           openApi,
@@ -358,7 +250,11 @@ function setupInternalRoutes(
         });
 
       if (!workflowDataInputSchema) {
-        res.status(404).send();
+        res
+          .status(500)
+          .send(
+            `Couldn't resolve data input schema for workflow ${workflowId}`,
+          );
         return;
       }
 
@@ -375,7 +271,13 @@ function setupInternalRoutes(
 
   router.delete('/workflows/:workflowId', async (req, res) => {
     const workflowId = req.params.workflowId;
-    const uri = await fetchWorkflowUri(workflowId);
+    const uri = await sonataFlowService.fetchWorkflowUri(workflowId);
+
+    if (!uri) {
+      res.status(500).send(`Couldn't fetch workflow uri ${workflowId}`);
+      return;
+    }
+
     await workflowService.deleteWorkflowDefinitionById(uri);
     res.status(201).send();
   });
@@ -439,91 +341,4 @@ function setupExternalRoutes(
     });
     res.status(200).json(result);
   });
-}
-
-// =============================================
-// Spawn a process to run the SonataFlow service
-// =============================================
-async function setupSonataflowService(
-  sonataFlowBaseUrl: string,
-  sonataFlowPort: number,
-  sonataFlowResourcesPath: string,
-  sonataFlowServiceContainer: string,
-  sonataFlowPersistencePath: string,
-  logger: Logger,
-  jiraConfig?: JiraConfig,
-) {
-  const sonataFlowResourcesAbsPath = resolve(
-    join(sonataFlowResourcesPath, default_workflows_path),
-  );
-  const launcher = ['docker run --add-host host.docker.internal:host-gateway'];
-  if (jiraConfig) {
-    launcher.push(`--add-host jira.test:${jiraConfig.host}`);
-  }
-  launcher.push(
-    `--rm -p ${sonataFlowPort}:8080 -v ${sonataFlowResourcesAbsPath}:/home/kogito/serverless-workflow-project/src/main/resources -e KOGITO.CODEGEN.PROCESS.FAILONERROR=false -e QUARKUS_EMBEDDED_POSTGRESQL_DATA_DIR=${sonataFlowPersistencePath}`,
-  );
-  if (jiraConfig) {
-    launcher.push(
-      `-e QUARKUS_REST_CLIENT_JIRA_OPENAPI_JSON_URL=http://jira.test:8080 -e JIRABEARERTOKEN=${jiraConfig.bearerToken}`,
-    );
-  }
-  launcher.push(sonataFlowServiceContainer);
-
-  const launcherCmd = launcher.join(' ');
-  logger.info(`Launching SonataFlow with: ${launcherCmd}`);
-
-  exec(
-    launcherCmd,
-    (error: ExecException | null, stdout: string, stderr: string) => {
-      if (error) {
-        console.error(`error: ${error.message}`);
-        return;
-      }
-
-      if (stderr) {
-        console.error(`stderr: ${stderr}`);
-        return;
-      }
-
-      console.log(`stdout:\n${stdout}`);
-    },
-  );
-
-  // We need to ensure the service is running!
-  try {
-    await executeWithRetry(() =>
-      fetch(`${sonataFlowBaseUrl}:${sonataFlowPort}/q/health`),
-    );
-  } catch (e) {
-    logger.error(
-      'SonataFlow failed to start. Workflow definitions could not be loaded.',
-    );
-  }
-}
-
-async function executeWithRetry(
-  action: () => Promise<Response>,
-): Promise<Response> {
-  let response: Response;
-  let errorCount = 0;
-  // execute with retry
-  const backoff = 3000;
-  const maxErrors = 15;
-  while (errorCount < maxErrors) {
-    try {
-      response = await action();
-      if (response.status >= 400) {
-        errorCount++;
-        // backoff
-        await delay(backoff);
-      } else {
-        return response;
-      }
-    } catch (e) {
-      errorCount++;
-      await delay(backoff);
-    }
-  }
-  throw new Error('Unable to execute query.');
 }

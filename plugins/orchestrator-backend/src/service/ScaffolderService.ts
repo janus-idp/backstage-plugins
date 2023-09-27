@@ -81,7 +81,7 @@ export class ScaffolderService {
       );
     } catch (err) {
       this.logger.error(
-        `Error getutuing workingDirecotury to execute action ${actionExecutionContext.actionId}`,
+        `Error getting workingDirecotury to execute action ${actionExecutionContext.actionId}`,
         err,
       );
       throw err;

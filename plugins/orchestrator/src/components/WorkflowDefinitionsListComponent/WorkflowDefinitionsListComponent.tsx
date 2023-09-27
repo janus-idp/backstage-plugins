@@ -1,13 +1,7 @@
 import React, { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import useAsync from 'react-use/lib/useAsync';
 
-import {
-  Progress,
-  ResponseErrorPanel,
-  Table,
-  TableColumn,
-} from '@backstage/core-components';
+import { Table, TableColumn } from '@backstage/core-components';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 
 import DeleteForever from '@material-ui/icons/DeleteForever';
@@ -124,22 +118,4 @@ export const WorkflowsTable = ({ items }: WorkflowsTableProps) => {
       ]}
     />
   );
-};
-
-export const WorkflowDefinitionsListComponent = () => {
-  const orchestratorApi = useApi(orchestratorApiRef);
-  const { value, error, loading } = useAsync(async (): Promise<
-    WorkflowItem[]
-  > => {
-    const data = await orchestratorApi.listWorkflows();
-    return data.items;
-  }, []);
-
-  if (loading) {
-    return <Progress />;
-  } else if (error) {
-    return <ResponseErrorPanel error={error} />;
-  }
-
-  return <WorkflowsTable items={value ?? []} />;
 };

@@ -14,7 +14,12 @@ export interface Config {
        * Example: 8080
        */
       port: string;
-
+      /**
+       * Whether to start the Sonata Flow service automatically.
+       * If set to `false`, the plugin assumes that the SonataFlow service is already running on `baseUrl`:`port`.
+       * Default: false
+       */
+      autoStart?: boolean;
       /**
        * Workflows definitions source configurations
        */
