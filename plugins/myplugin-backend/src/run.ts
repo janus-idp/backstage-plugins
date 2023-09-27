@@ -1,5 +1,7 @@
 import { getRootLogger } from '@backstage/backend-common';
+
 import yn from 'yn';
+
 import { startStandaloneServer } from './service/standaloneServer';
 
 const port = process.env.PLUGIN_PORT ? Number(process.env.PLUGIN_PORT) : 7007;
