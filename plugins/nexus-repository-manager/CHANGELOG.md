@@ -1,3 +1,23 @@
+## @janus-idp/backstage-plugin-nexus-repository-manager [1.1.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-nexus-repository-manager@1.1.1...@janus-idp/backstage-plugin-nexus-repository-manager@1.1.2) (2023-09-26)
+
+
+### Bug Fixes
+
+* **Nexus:** jsdoc comment fixed ([#802](https://github.com/janus-idp/backstage-plugins/issues/802)) ([e07ef99](https://github.com/janus-idp/backstage-plugins/commit/e07ef99dcbf09cd05c52f35d7f9e86fe289a9823))
+
+## @janus-idp/backstage-plugin-nexus-repository-manager [1.1.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-nexus-repository-manager@1.1.0...@janus-idp/backstage-plugin-nexus-repository-manager@1.1.1) (2023-09-22)
+
+
+### Bug Fixes
+
+* **nexus:** set accept headers to prefer docker schema 2 v2 when available ([#719](https://github.com/janus-idp/backstage-plugins/issues/719)) ([29d9c89](https://github.com/janus-idp/backstage-plugins/commit/29d9c89c91b6f53b2f439de4b0e0c2e4defe34ee))
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 1.3.1
+
 ## @janus-idp/backstage-plugin-nexus-repository-manager [1.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-nexus-repository-manager@1.0.4...@janus-idp/backstage-plugin-nexus-repository-manager@1.1.0) (2023-09-08)
 
 

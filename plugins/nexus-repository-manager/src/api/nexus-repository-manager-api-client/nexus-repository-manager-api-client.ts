@@ -26,7 +26,7 @@ const NEXUS_REPOSITORY_MANAGER_CONFIG = {
 /**
  * Indicates that we want manifest v2 schema 2 if possible. It's faster
  * for supporting servers to return and contains size information.
- * @see @link{https://docs.docker.com/registry/spec/manifest-v2-2/#backward-compatibility|Backward compatibility}
+ * @see {@link https://docs.docker.com/registry/spec/manifest-v2-2/#backward-compatibility|Backward compatibility}
  */
 const DOCKER_MANIFEST_HEADERS = {
   Accept: [

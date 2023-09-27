@@ -18,7 +18,12 @@
     },
     "lint": {},
     "lint:fix": {},
-    "prettier:fix": {},
+    "prettier:fix": {
+      "cache": false
+    },
+    "//#prettier:fix": {
+      "cache": false
+    },
     "tsc": {
       "outputs": ["../../dist-types/**"],
       "dependsOn": ["^tsc"]

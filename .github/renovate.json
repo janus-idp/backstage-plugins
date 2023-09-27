@@ -18,7 +18,7 @@
     },
     {
       "matchPackagePatterns": ["^@backstage/"],
-      "groupName": ["Core Backstage packages"]
+      "groupName": "Core Backstage packages"
     },
     {
       "matchFileNames": ["packages/**"],
@@ -27,6 +27,14 @@
     {
       "matchFileNames": ["plugins/**"],
       "extends": [":pinOnlyDevDependencies"]
+    },
+    {
+      "matchPackagePatterns": [
+        "^@semantic-release/",
+        "^@semrel-extra/",
+        "^multi-semantic-release$"
+      ],
+      "groupName": "semantic-release monorepo"
     }
   ]
 }

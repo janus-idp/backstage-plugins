@@ -1,3 +1,58 @@
+## @janus-idp/cli [1.0.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.0.4...@janus-idp/cli@1.0.5) (2023-09-22)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @svgr/plugin-jsx to v8 ([#792](https://github.com/janus-idp/backstage-plugins/issues/792)) ([467560c](https://github.com/janus-idp/backstage-plugins/commit/467560c6cecc173fe7949a12014be9fde0e21d3a))
+* **deps:** update dependency @svgr/rollup to v8 ([#795](https://github.com/janus-idp/backstage-plugins/issues/795)) ([111aa57](https://github.com/janus-idp/backstage-plugins/commit/111aa574ea6d6c2574c07240383feebe92a6fc90))
+
+## @janus-idp/cli [1.0.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.0.3...@janus-idp/cli@1.0.4) (2023-09-22)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @spotify/eslint-config-react to v15 ([#789](https://github.com/janus-idp/backstage-plugins/issues/789)) ([1a3965a](https://github.com/janus-idp/backstage-plugins/commit/1a3965a07ad3edcd9c608d8530a1933cde6a89bb))
+* **deps:** update dependency @svgr/core to v8 ([#791](https://github.com/janus-idp/backstage-plugins/issues/791)) ([db2d09b](https://github.com/janus-idp/backstage-plugins/commit/db2d09b0daddab7ab675eff230e0123f14530ef0))
+
+## @janus-idp/cli [1.0.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.0.2...@janus-idp/cli@1.0.3) (2023-09-22)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @spotify/eslint-config-typescript to v15 ([#790](https://github.com/janus-idp/backstage-plugins/issues/790)) ([9ecaaa3](https://github.com/janus-idp/backstage-plugins/commit/9ecaaa34624652436838b3df963d91605973b964))
+
+## @janus-idp/cli [1.0.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.0.1...@janus-idp/cli@1.0.2) (2023-09-22)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @rollup/plugin-commonjs to v25 ([#765](https://github.com/janus-idp/backstage-plugins/issues/765)) ([615ff44](https://github.com/janus-idp/backstage-plugins/commit/615ff443b2c47421de083caa97171021b7775aa0))
+
+## @janus-idp/cli [1.0.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.0.0...@janus-idp/cli@1.0.1) (2023-09-22)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @rollup/plugin-json to v6 ([#766](https://github.com/janus-idp/backstage-plugins/issues/766)) ([2fe869f](https://github.com/janus-idp/backstage-plugins/commit/2fe869f3d4503fc70ca7d1bcb748d385d3e653a0))
+* **deps:** update dependency @spotify/eslint-config-base to v15 ([#774](https://github.com/janus-idp/backstage-plugins/issues/774)) ([04a0ae1](https://github.com/janus-idp/backstage-plugins/commit/04a0ae19db78fa904a15a36684a0e2abec2373a6))
+
+## @janus-idp/cli 1.0.0 (2023-09-22)
+
+
+### Features
+
+* fork `@backstage/cli` into a new `@janus-idp/cli` ([#729](https://github.com/janus-idp/backstage-plugins/issues/729)) ([e0e8355](https://github.com/janus-idp/backstage-plugins/commit/e0e835590294512ad2eee5b7c9d93a045131dc9e)), closes [#15274](https://github.com/janus-idp/backstage-plugins/issues/15274) [#18439](https://github.com/janus-idp/backstage-plugins/issues/18439)
+
+
+### Bug Fixes
+
+* **deps:** pin dependencies ([#745](https://github.com/janus-idp/backstage-plugins/issues/745)) ([69bd6a9](https://github.com/janus-idp/backstage-plugins/commit/69bd6a9a078ac66f9934799eb6189c8022157445))
+* **deps:** update dependency @rollup/plugin-node-resolve to v15 ([#767](https://github.com/janus-idp/backstage-plugins/issues/767)) ([8d9696c](https://github.com/janus-idp/backstage-plugins/commit/8d9696cd663c2e7bc54f32f64113a45c3a67aa5b))
+* **deps:** update dependency handlebars to v4.7.7 [security] ([#753](https://github.com/janus-idp/backstage-plugins/issues/753)) ([52a195e](https://github.com/janus-idp/backstage-plugins/commit/52a195e0c2160bb6fc18d40daaee1ec1f05d666d))
+* **deps:** update dependency postcss to v8.2.13 [security] ([#755](https://github.com/janus-idp/backstage-plugins/issues/755)) ([37fc85f](https://github.com/janus-idp/backstage-plugins/commit/37fc85fd37a064c20f19f2b7825bc0e7b0dc28a5))
+* **deps:** update dependency yaml to v2.2.2 [security] ([#757](https://github.com/janus-idp/backstage-plugins/issues/757)) ([b3c719c](https://github.com/janus-idp/backstage-plugins/commit/b3c719ca3d0a43ee3eb5b88313d4278e624beaff))
+* **deps:** update linters ([#746](https://github.com/janus-idp/backstage-plugins/issues/746)) ([bf06a66](https://github.com/janus-idp/backstage-plugins/commit/bf06a66b1c7bd3225a5767e619652bad90030083))
+
 # @backstage/cli
 
 ## 0.22.13-next.3
