@@ -1,5 +1,6 @@
-import { createRouter } from '@internal/plugin-myplugin-backend'
+import { createRouter, RouterOptions } from '@internal/plugin-myplugin-backend';
 import { Router } from 'express';
+
 import { PluginEnvironment } from '../types';
 
 export default async function createPlugin(
@@ -10,9 +11,9 @@ export default async function createPlugin(
 
   // The env contains a lot of goodies, but our router currently only
   // needs a logger
-  const db: Knex<any, unknown[]> = await env.database.getClient();
+  const dbClient: RouterOptions['dbClient'] = await env.database.getClient();
   return await createRouter({
-    db: db,
+    dbClient,
     logger: env.logger,
   });
 }

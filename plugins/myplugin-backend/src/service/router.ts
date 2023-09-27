@@ -1,17 +1,19 @@
 import { errorHandler } from '@backstage/backend-common';
+
 import express from 'express';
 import Router from 'express-promise-router';
+import { Knex } from 'knex';
 import { Logger } from 'winston';
 
 export interface RouterOptions {
-  db: Knex<any, unknown[]>;
   logger: Logger;
+  dbClient: Knex<any, unknown[]>;
 }
 
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { logger, db } = options;
+  const { logger, dbClient } = options;
 
   const router = Router();
   router.use(express.json());
@@ -22,25 +24,33 @@ export async function createRouter(
   });
 
   router.get('/notifications/count', async (_, response) => {
-    var msgcount = -1;
-    await db('messages').count('* as CNT').then(function(count) {
-      msgcount = count[0].CNT;
-    });
-    response.json({ status: 'ok' , count: msgcount});
+    let msgcount = -1;
+    await dbClient('messages')
+      .count('* as CNT')
+      .then(count => {
+        msgcount = (count[0]?.CNT as unknown as number) || -1;
+      });
+    response.json({ status: 'ok', count: msgcount });
   });
 
   router.post('/notifications', async (request, response) => {
-    var msgid = -1;
-    await db('messages').insert(request.body).returning('id').then(function (id) {
-      msgid = id;
-    });
-    response.json({ status: 'ok' , msgid: msgid});
-  })
+    let msgid = -1;
+    await dbClient('messages')
+      .insert(request.body)
+      .returning('id')
+      .then(id => {
+        // We should harden the type
+        msgid = id as unknown as number;
+      });
+    response.json({ status: 'ok', msgid: msgid });
+  });
   router.get('/notifications', async (_, response) => {
-    var messages = '{}';
-    await db('messages').select('*').then(function(body) {
-      messages = body;
-    });
+    let messages = '{}';
+    await dbClient('messages')
+      .select('*')
+      .then(body => {
+        messages = body as unknown as string;
+      });
     response.json(messages);
   });
 
