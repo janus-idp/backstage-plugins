@@ -1,6 +1,9 @@
+import { PluginEndpointDiscovery, UrlReaders } from '@backstage/backend-common';
+import { Config } from '@backstage/config';
 import {
   ConflictError,
   InputError,
+  isError,
   NotAllowedError,
   NotFoundError,
 } from '@backstage/errors';
@@ -15,6 +18,8 @@ import {
 import {
   AuthorizeResult,
   ConditionalPolicyDecision,
+  isResourcePermission,
+  Permission,
   PermissionEvaluator,
   PolicyDecision,
   QueryPermissionRequest,
@@ -26,8 +31,10 @@ import { Router } from 'express';
 import { Request } from 'express-serve-static-core';
 import { isEqual } from 'lodash';
 import { ParsedQs } from 'qs';
+import { Logger } from 'winston';
 
 import {
+  Policy,
   policyEntityCreatePermission,
   policyEntityDeletePermission,
   policyEntityPermissions,
@@ -39,6 +46,7 @@ import {
 } from '@janus-idp/backstage-plugin-rbac-common';
 
 import { ConditionalStorage } from '../database/conditional-storage';
+import { PluginEndpointCollector } from './plugin-endpoints';
 import {
   validateEntityReference,
   validatePolicy,
@@ -52,6 +60,9 @@ export class PolicesServer {
     private readonly permissions: PermissionEvaluator,
     private readonly options: RouterOptions,
     private readonly enforcer: Enforcer,
+    private readonly config: Config,
+    private readonly logger: Logger,
+    private readonly discovery: PluginEndpointDiscovery,
     private readonly conditionalStorage: ConditionalStorage,
   ) {}
 
@@ -467,6 +478,44 @@ export class PolicesServer {
         response.status(204).end();
       },
     );
+    const urlReader = UrlReaders.default({
+      config: this.config,
+      logger: this.logger,
+      factories: [PluginEndpointCollector.permissionFactory],
+    });
+
+    const pec = new PluginEndpointCollector(this.discovery);
+
+    router.get('/plugins/policies', async (req, response) => {
+      const decision = await this.authorize(
+        req, {
+          permission: policyEntityReadPermission,
+        },
+      );
+
+      if (decision.result === AuthorizeResult.DENY) {
+        throw new NotAllowedError(); // 403
+      }
+      const endpoints = await pec.get();
+      let perms: Permission[] = [];
+      for (const endpoint of endpoints) {
+        const wellKnownURL = `${endpoint}/.well-known/backstage/permissions/metadata`;
+        try {
+          const permResp = await urlReader.readUrl(wellKnownURL);
+          const permMetaDataRaw = (await permResp.buffer()).toString();
+          const permMetaData = JSON.parse(permMetaDataRaw);
+          if (permMetaData) {
+            perms = [...perms, ...permMetaData.permissions];
+          }
+        } catch (err) {
+          if (!isError(err) || err.name !== 'NotFoundError') {
+            throw err;
+          }
+        }
+      }
+
+      response.json(permissionsToCasbinPolicies(perms));
+    });
 
     router.get('/conditions', async (req, resp) => {
       const decision = await this.authorize(req, {
@@ -650,4 +699,16 @@ export class PolicesServer {
       !!request.query.effect
     );
   }
+}
+
+function permissionsToCasbinPolicies(permissions: Permission[]): Policy[] {
+  return permissions.map(permission => {
+    const policy: Policy = {
+      permission: isResourcePermission(permission)
+        ? permission.resourceType
+        : permission.name,
+      policy: permission.attributes.action || 'use',
+    };
+    return policy;
+  });
 }
