@@ -20,6 +20,11 @@ on:
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+    inputs:
+      git_ref:
+        description: Git reference for the upstream repository checkout
+        type: string
+        default: 'master'
 
 concurrency:
   group: ${{ github.workflow }}
@@ -37,12 +42,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Set GitHub Ref to checkout
+        id: get_checkout_ref
+        run: |
+          if [[ ${{ github.event_name == 'workflow_dispatch' }} == true ]]; then
+            GIT_REF=${{ inputs.git_ref }}
+          else
+            GIT_REF=master
+          fi
+          echo "GIT_REF=$GIT_REF" >> $GITHUB_ENV
+
       - name: Checkout
         uses: actions/checkout@v4
         with:
           repository: backstage/backstage
-          ref: master
-          # fetch all history, but only for the master branch
+          ref: ${{ steps.get_checkout_ref.outputs.GIT_REF }}
+          # fetch all history, but only for the current ref
           fetch-depth: 2147483647
           fetch-tags: false
 
