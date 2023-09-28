@@ -98,7 +98,7 @@ export function NexusRepositoryManager() {
             data-testid="nexus-repository-manager-empty-table"
           >
             No data was added yet,&nbsp;
-            <Link to="https://github.com/janus-idp/backstage-plugins/blob/main/plugins/nexus-repository-manager/README.md">
+            <Link to="https://github.com/janus-idp/backstage-plugins/blob/main/plugins/nexus-repository-manager/ANNOTATIONS.md">
               learn how to add data
             </Link>
             .
