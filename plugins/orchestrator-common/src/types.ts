@@ -2,13 +2,15 @@ import { Specification } from '@severlessworkflow/sdk-typescript';
 import { JSONSchema4 } from 'json-schema';
 import { OpenAPIV3 } from 'openapi-types';
 
+type Id<T> = { [P in keyof T]: T[P] };
+
 type OmitDistributive<T, K extends PropertyKey> = T extends any
   ? T extends object
     ? Id<OmitRecursively<T, K>>
     : T
   : never;
-type Id<T> = {} & { [P in keyof T]: T[P] };
-export type OmitRecursively<T extends any, K extends PropertyKey> = Omit<
+
+export type OmitRecursively<T, K extends PropertyKey> = Omit<
   { [P in keyof T]: OmitDistributive<T[P], K> },
   K
 >;

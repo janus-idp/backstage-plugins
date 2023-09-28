@@ -94,7 +94,7 @@ export class OpenApiService {
       const dfs = (object: any) => {
         if (
           !object ||
-          !(Object.prototype.toString.call(object) === '[object Object]')
+          Object.prototype.toString.call(object) !== '[object Object]'
         ) {
           return;
         }

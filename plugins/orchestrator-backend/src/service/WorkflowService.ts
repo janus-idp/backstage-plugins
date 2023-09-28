@@ -199,8 +199,18 @@ export class WorkflowService {
     );
   }
   async reloadWorkflows() {
-    this.logger.info(`Reloading workflows from Git`);
+    if (!this.repoURL) {
+      this.logger.info('No Git repository configured. Skipping reload.');
+      return;
+    }
+
+    this.logger.info('Reloading workflows from Git');
     const localPath = this.sonataFlowService.resourcesPath;
+    if (await fs.pathExists(localPath)) {
+      this.logger.info(`Path ${localPath} already exists. Skipping clone.`);
+      return;
+    }
+
     await fs.remove(localPath);
     await this.githubService.clone(this.repoURL, localPath);
   }

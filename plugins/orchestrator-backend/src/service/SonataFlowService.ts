@@ -15,7 +15,7 @@ import {
   WorkflowItem,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
-import { exec, ExecException } from 'child_process';
+import { spawn } from 'child_process';
 import { join, resolve } from 'path';
 
 import { executeWithRetry } from './Helper';
@@ -25,6 +25,11 @@ const SONATA_FLOW_RESOURCES_PATH =
 
 interface SonataFlowSource {
   uri: string;
+}
+
+interface LauncherCommand {
+  command: string;
+  args: string[];
 }
 
 interface SonataFlowConnectionConfig {
@@ -267,24 +272,28 @@ export class SonataFlowService {
 
   private launchSonataFlow(): void {
     const launcherCmd = this.createLauncherCommand();
-    this.logger.info(`Auto starting SonataFlow through: ${launcherCmd}`);
 
-    exec(
-      launcherCmd,
-      (error: ExecException | null, stdout: string, stderr: string) => {
-        if (error) {
-          this.logger.error(`error: ${error.message}`);
-          return;
-        }
-
-        if (stderr) {
-          this.logger.error(`stderr: ${stderr}`);
-          return;
-        }
-
-        this.logger.debug(`stdout:\n${stdout}`);
-      },
+    this.logger.info(
+      `Auto starting SonataFlow through: ${
+        launcherCmd.command
+      } ${launcherCmd.args.join(' ')}`,
     );
+
+    const process = spawn(launcherCmd.command, launcherCmd.args, {
+      shell: false,
+    });
+
+    process.on('close', code => {
+      this.logger.info(`SonataFlow process exited with code ${code}`);
+    });
+
+    process.on('exit', code => {
+      this.logger.info(`SonataFlow process exited with code ${code}`);
+    });
+
+    process.on('error', error => {
+      this.logger.error(`SonataFlow process error: ${error}`);
+    });
   }
 
   private async isSonataFlowUp(withRetry: boolean): Promise<boolean> {
@@ -306,37 +315,47 @@ export class SonataFlowService {
     return false;
   }
 
-  private createLauncherCommand(): string {
+  private createLauncherCommand(): LauncherCommand {
     const resourcesAbsPath = resolve(
       join(this.connection.resourcesPath, default_workflows_path),
     );
 
-    const launcher = [
-      'docker run --add-host host.docker.internal:host-gateway',
+    const launcherArgs = [
+      'run',
+      '--add-host',
+      'host.docker.internal:host-gateway',
     ];
 
     if (this.connection.jira) {
-      launcher.push(`--add-host jira.test:${this.connection.jira.host}`);
+      launcherArgs.push(`--add-host`, `jira.test:${this.connection.jira.host}`);
     }
 
-    launcher.push('--rm');
-    launcher.push(`-p ${this.connection.port}:8080`);
-    launcher.push(`-v ${resourcesAbsPath}:${SONATA_FLOW_RESOURCES_PATH}`);
-    launcher.push('-e KOGITO.CODEGEN.PROCESS.FAILONERROR=false');
-    launcher.push(
-      `-e QUARKUS_EMBEDDED_POSTGRESQL_DATA_DIR=${this.connection.persistencePath}`,
+    launcherArgs.push('--rm');
+    launcherArgs.push('-p', `${this.connection.port}:8080`);
+    launcherArgs.push(
+      '-v',
+      `${resourcesAbsPath}:${SONATA_FLOW_RESOURCES_PATH}`,
+    );
+    launcherArgs.push('-e', 'KOGITO.CODEGEN.PROCESS.FAILONERROR=false');
+    launcherArgs.push(
+      '-e',
+      `QUARKUS_EMBEDDED_POSTGRESQL_DATA_DIR=${this.connection.persistencePath}`,
     );
 
     if (this.connection.jira) {
-      launcher.push(
-        '-e QUARKUS_REST_CLIENT_JIRA_OPENAPI_JSON_URL=http://jira.test:8080 -e ',
+      launcherArgs.push(
+        '-e',
+        'QUARKUS_REST_CLIENT_JIRA_OPENAPI_JSON_URL=http://jira.test:8080 -e ',
       );
-      launcher.push(`JIRABEARERTOKEN=${this.connection.jira.bearerToken}`);
+      launcherArgs.push(`JIRABEARERTOKEN=${this.connection.jira.bearerToken}`);
     }
 
-    launcher.push(this.connection.containerImage);
+    launcherArgs.push(this.connection.containerImage);
 
-    return launcher.join(' ');
+    return {
+      command: 'docker',
+      args: launcherArgs,
+    };
   }
 
   private extractConnectionConfig(config: Config): SonataFlowConnectionConfig {

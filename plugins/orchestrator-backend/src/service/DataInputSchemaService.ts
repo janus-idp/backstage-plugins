@@ -951,13 +951,13 @@ export class DataInputSchemaService {
 
     function traverseValue(value: any, currentPath: string) {
       if (typeof value === 'string') {
-        const match = value.match(
-          /(^|\s|\{)\s*\.([a-zA-Z_][a-zA-Z0-9_]*)\s*([=!<>]+)/,
+        const match = RegExp(/(^|\s|\{)\s*\.([a-zA-Z_]\w*)\s*([=!<>]+)/).exec(
+          value,
         );
         addVariable({ variable: match?.[2], currentPath });
-        const dotMatch = value.match(
-          /(^|\s|\{)\s*\.(?![a-zA-Z_][a-zA-Z0-9_]*\.[a-zA-Z_][a-zA-Z0-9_]*)([a-zA-Z_][a-zA-Z0-9_]*)/,
-        );
+        const dotMatch = RegExp(
+          /(^|\s|\{)\s*\.(?![a-zA-Z_]\w*\.[a-zA-Z_]\w*)([a-zA-Z_]\w*)/,
+        ).exec(value);
         addVariable({ variable: dotMatch?.[2], currentPath });
       } else if (Array.isArray(value)) {
         value.forEach((item, index) => {

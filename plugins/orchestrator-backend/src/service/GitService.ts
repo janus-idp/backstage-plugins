@@ -29,7 +29,7 @@ export class GitService {
       username: 'x-access-token',
       password: githubIntegration?.config.token,
     });
-    this.authenticated = githubIntegration?.config.token ? true : false;
+    this.authenticated = !!githubIntegration?.config.token;
   }
 
   async clone(repoURL: string, localPath: string): Promise<void> {
