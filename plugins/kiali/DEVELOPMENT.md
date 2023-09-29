@@ -2,11 +2,13 @@
 
 ## Minimal Setup
 
-1. Go to plugins/kiali
+1. Run `yarn install` from the project root (For the first time setup)
 
-2. Execute yarn start
+2. Go to plugins/kiali
 
-3. Go to `http://localhost:3000/kiali`
+3. Execute `yarn start`
+
+4. Go to `http://localhost:3000/kiali`
 
 ## Full Setup
 
@@ -111,6 +113,11 @@ locations:
   - type: file
     target: ../../plugins/kiali/catalog-demo.yaml
 ```
+
+8. Run `yarn start:backstage` from the project root.
+9. After create a new component, the Kiali tab should be enabled:
+
+![catalog-list](./images/kiali-tab-backstage.png)
 
 ## Configure auth
 
