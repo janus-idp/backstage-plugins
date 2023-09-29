@@ -66,7 +66,6 @@ export class ScaffolderService {
     const action: TemplateAction = this.getAction(
       actionExecutionContext.actionId,
     );
-    const tmpDirs: string[] = new Array<string>();
     const stepOutput: { [outputName: string]: JsonValue } = {};
 
     let workspacePath: string;
@@ -91,22 +90,14 @@ export class ScaffolderService {
       workspacePath: workspacePath,
       logger: this.logger,
       logStream: this.streamLogger,
-      createTemporaryDirectory: async () => {
-        const tmpDir = await fs.mkdtemp(`${workspacePath}_step-${0}-`);
-        tmpDirs.push(tmpDir);
-        return tmpDir;
-      },
+      createTemporaryDirectory: async () =>
+        await fs.mkdtemp(`${workspacePath}_step-${0}-`),
       output(name: string, value: JsonValue) {
         stepOutput[name] = value;
       },
     };
     await action.handler(mockContext);
 
-    // TODO Not sure if we need these "long lived" for the duration of the whole Workflow
-    // Remove all temporary directories that were created when executing the action
-    // for (const tmpDir of tmpDirs) {
-    //   await fs.remove(tmpDir);
-    // }
     return stepOutput;
   }
 }

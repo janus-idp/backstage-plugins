@@ -124,7 +124,7 @@ export const ProcessTimeline = (props: ProcessTimelineProps) => {
   return (
     <InfoCard title="Timeline">
       <div>
-        {nodes.sort(compareNodes).map(node => {
+        {[...nodes].sort(compareNodes).map(node => {
           return <div key={node.id}>{renderNode(node)}</div>;
         })}
       </div>

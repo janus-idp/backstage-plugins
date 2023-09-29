@@ -189,7 +189,7 @@ export const NewWorkflowViewerPage = () => {
   return (
     <BaseOrchestratorPage>
       <Grid container spacing={2}>
-        {isMobile ? contentItems : contentItems.reverse()}
+        {isMobile ? contentItems : [...contentItems].reverse()}
       </Grid>
     </BaseOrchestratorPage>
   );

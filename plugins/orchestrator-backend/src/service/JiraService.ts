@@ -32,9 +32,7 @@ export interface IssueUpdated extends BaseIssueEvent {
   };
 }
 
-export type IssueEvent = IssueCommented | IssueUpdated;
-
-export type JiraEvent = IssueEvent;
+export type JiraEvent = IssueCommented | IssueUpdated;
 
 export class JiraService {
   constructor(

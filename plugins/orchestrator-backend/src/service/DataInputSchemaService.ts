@@ -517,12 +517,10 @@ export class DataInputSchemaService {
   private extractActionsFromState(
     state: WorkflowState,
   ): WorkflowActionDescriptor[] {
-    if (state.type === 'operation') {
+    if (state.type === 'operation' || state.type === 'foreach') {
       return this.extractActionsFromOperationState({ state });
     } else if (state.type === 'parallel') {
       return this.extractActionsFromParallelState({ state });
-    } else if (state.type === 'foreach') {
-      return this.extractActionsFromForeachState({ state });
     } else if (state.type === 'event') {
       return this.extractActionsFromEventState({ state });
     } else if (state.type === 'callback') {
@@ -572,7 +570,7 @@ export class DataInputSchemaService {
   }
 
   private extractActionsFromOperationState(args: {
-    state: Specification.Operationstate;
+    state: Specification.Operationstate | Specification.Foreachstate;
     functionRefName?: string;
   }): WorkflowActionDescriptor[] {
     if (!args.state.actions) {
@@ -642,38 +640,6 @@ export class DataInputSchemaService {
           }),
       )
       .flat();
-  }
-
-  private extractActionsFromForeachState(args: {
-    state: Specification.Foreachstate;
-    functionRefName?: string;
-  }): WorkflowActionDescriptor[] {
-    if (!args.state.actions) {
-      return [];
-    }
-    return args.state.actions
-      .filter(action => {
-        if (!action.functionRef || typeof action.functionRef === 'string') {
-          return false;
-        }
-        if (!args.functionRefName) {
-          return true;
-        }
-        return action.functionRef.refName === args.functionRefName;
-      })
-      .map<WorkflowActionDescriptor>((action, idx, arr) => {
-        const descriptor = this.buildActionDescriptor({
-          actionName: action.name,
-          stateName: args.state.name!,
-          functionRefName: (action.functionRef as Specification.Functionref)!
-            .refName,
-          actions: {
-            array: arr,
-            idx,
-          },
-        });
-        return { owner: args.state.name!, descriptor, action };
-      });
   }
 
   private extractActionsFromEventState(args: {
@@ -1038,9 +1004,11 @@ export class DataInputSchemaService {
       properties: {
         ...referencedSchemas.reduce(
           (obj, s) => {
-            obj![s.title!] = {
-              $ref: `#/components/schemas/${s.title!}`,
-            };
+            if (obj && s.title) {
+              obj[s.title] = {
+                $ref: `#/components/schemas/${s.title}`,
+              };
+            }
             return obj;
           },
           {} as WorkflowDataInputSchema['properties'],
@@ -1052,9 +1020,11 @@ export class DataInputSchemaService {
       ...compositionSchema,
       properties: referencedSchemas.reduce(
         (obj, s) => {
-          obj![s.title!] = {
-            $ref: `#/components/schemas/${s.title!}`,
-          };
+          if (obj) {
+            obj[s.title!] = {
+              $ref: `#/components/schemas/${s.title!}`,
+            };
+          }
           return obj;
         },
         {} as WorkflowDataInputSchema['properties'],
