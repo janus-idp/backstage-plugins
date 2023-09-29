@@ -103,7 +103,6 @@ For more information about the configuration options, including other optional p
        catalogApi: env.catalogApi,
        urlReader: env.reader,
      });
-    }
    }
    ```
 
