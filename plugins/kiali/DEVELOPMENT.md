@@ -83,6 +83,7 @@ async function main() {
 
 6. Configure you `app-config.local.yaml` with kiali configuration
 
+
 ```yaml
 catalog:
   providers:
