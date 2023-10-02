@@ -8,7 +8,7 @@
   "scripts": {
     "preinstall": "npx only-allow yarn",
     "start": "turbo run start",
-    "start:backstage": "turbo run start --filter=...{./packages/*}",
+    "start:backstage": "turbo run start --filter=...{./packages/app} --filter=...{./packages/backend}",
     "start:plugins": "turbo run start --filter=...{./plugins/*}",
     "build": "turbo run build",
     "build:backstage": "turbo run build --filter=...{./packages/*}",
@@ -39,7 +39,7 @@
     "@semantic-release/changelog": "6.0.3",
     "@semantic-release/exec": "6.0.3",
     "@semantic-release/git": "10.0.1",
-    "@semantic-release/github": "9.0.4",
+    "@semantic-release/github": "9.0.6",
     "@semrel-extra/npm": "1.2.2",
     "@spotify/prettier-config": "15.0.0",
     "conventional-changelog-conventionalcommits": "<7.0.0",

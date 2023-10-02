@@ -179,6 +179,7 @@ export const readKeycloakRealm = async (
       g.members = (
         await client.groups.listMembers({
           id: g.id!,
+          max: options?.userQuerySize,
           realm: config.realm,
         })
       ).map(m => m.username!);

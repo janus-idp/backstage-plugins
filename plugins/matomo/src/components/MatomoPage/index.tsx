@@ -1,0 +1,1 @@
+export { MatomoPage } from './MatomoPage';

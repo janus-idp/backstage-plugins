@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-nexus-repository-manager [1.1.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-nexus-repository-manager@1.1.1...@janus-idp/backstage-plugin-nexus-repository-manager@1.1.2) (2023-09-26)
+
+
+### Bug Fixes
+
+* **Nexus:** jsdoc comment fixed ([#802](https://github.com/janus-idp/backstage-plugins/issues/802)) ([e07ef99](https://github.com/janus-idp/backstage-plugins/commit/e07ef99dcbf09cd05c52f35d7f9e86fe289a9823))
+
 ## @janus-idp/backstage-plugin-nexus-repository-manager [1.1.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-nexus-repository-manager@1.1.0...@janus-idp/backstage-plugin-nexus-repository-manager@1.1.1) (2023-09-22)
 
 

@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-keycloak-backend [1.5.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-keycloak-backend@1.5.4...@janus-idp/backstage-plugin-keycloak-backend@1.5.5) (2023-09-28)
+
+
+### Bug Fixes
+
+* **keycloak:** respect fetch size for members ([#806](https://github.com/janus-idp/backstage-plugins/issues/806)) ([759fdb1](https://github.com/janus-idp/backstage-plugins/commit/759fdb199675930fa3a12b6cd8d121bc8e05b9f5))
+
 ## @janus-idp/backstage-plugin-keycloak-backend [1.5.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-keycloak-backend@1.5.3...@janus-idp/backstage-plugin-keycloak-backend@1.5.4) (2023-09-07)
 
 
