@@ -16,9 +16,11 @@ export async function startStandaloneServer(
   options: ServerOptions,
 ): Promise<Server> {
   const logger = options.logger.child({ service: 'myplugin-backend' });
+
   logger.debug('Starting application server...');
   const router = await createRouter({
     logger,
+    // TODO: get dbClient in standalone mode
   });
 
   let service = createServiceBuilder(module)

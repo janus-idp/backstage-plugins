@@ -7,7 +7,7 @@ import { Logger } from 'winston';
 
 export interface RouterOptions {
   logger: Logger;
-  dbClient: Knex<any, any[]>;
+  dbClient?: Knex<any, any[]>;
 }
 
 export async function createRouter(
@@ -17,6 +17,11 @@ export async function createRouter(
 
   const router = Router();
   router.use(express.json());
+
+  if (!dbClient) {
+    logger.error('Missing dbClient');
+    return router;
+  }
 
   router.get('/health', (_, response) => {
     logger.info('PONG!');
