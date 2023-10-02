@@ -5,12 +5,17 @@ import request from 'supertest';
 
 import { createRouter } from './router';
 
+const mockDatabaseManager = {
+  getClient: jest.fn().mockImplementation(),
+};
+
 describe('createRouter', () => {
   let app: express.Express;
 
   beforeAll(async () => {
     const router = await createRouter({
       logger: getVoidLogger(),
+      dbClient: mockDatabaseManager.getClient(),
     });
     app = express().use(router);
   });
