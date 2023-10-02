@@ -71,11 +71,8 @@ jobs:
 
       - name: Get sha of the latest backend-plugin-manager commit
         id: get_commit_sha
-        env:
-          GIT_REF: ${{ steps.get_checkout_ref.outputs.GIT_REF }}
         run: |
-          echo "GIT_REF=$GIT_REF"
-          if [[ "$GIT_REF" == "master" ]]; then
+          if [[ ${{ steps.get_checkout_ref.outputs.GIT_REF }} == "master" ]]; then
             echo "COMMIT_ID=$(git rev-list --max-count=1 HEAD -- packages/backend-plugin-manager)" >> "$GITHUB_OUTPUT"
           else
             echo "COMMIT_ID=$(git rev-list --max-count=1 HEAD)" >> "$GITHUB_OUTPUT"
