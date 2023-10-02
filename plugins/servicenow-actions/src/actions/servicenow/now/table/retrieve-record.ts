@@ -15,7 +15,7 @@ import { CreateActionOptions, ServiceNowResponses } from '../../../types';
 /**
  * Schema for the input to the `retrieveRecord` action.
  *
- * @see {@link https://docs.servicenow.com/bundle/vancouver-api-reference/page/integrate/inbound-rest/concept/c_TableAPI.html#title_table-GET}
+ * @see {@link https://docs.servicenow.com/bundle/vancouver-api-reference/page/integrate/inbound-rest/concept/c_TableAPI.html#title_table-GET-id}
  */
 const schemaInput = z.object({
   tableName: z
