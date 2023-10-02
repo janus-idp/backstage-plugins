@@ -3,6 +3,7 @@ import {
   type TemplateAction,
 } from '@backstage/plugin-scaffolder-node';
 
+import yaml from 'yaml';
 import { z } from 'zod';
 
 import {
@@ -15,7 +16,7 @@ import { CreateActionOptions, ServiceNowResponses } from '../../../types';
 /**
  * Schema for the input to the `modifyRecord` action.
  *
- * @see {@link https://docs.servicenow.com/bundle/vancouver-api-reference/page/integrate/inbound-rest/concept/c_TableAPI.html#title_table-PUT}
+ * @see {@link https://developer.servicenow.com/dev.do#!/reference/api/vancouver/rest/c_TableAPI}
  */
 const schemaInput = z.object({
   tableName: z
@@ -47,7 +48,7 @@ const schemaInput = z.object({
   sysparmFields: z
     .array(z.string().nonempty())
     .optional()
-    .describe('A comma-separated list of fields to return in the response'),
+    .describe('An array of fields to return in the response'),
   sysparmInputDisplayValue: z
     .boolean()
     .optional()
@@ -76,6 +77,28 @@ const schemaInput = z.object({
 
 const id = 'servicenow:now:table:modifyRecord';
 
+const examples = [
+  {
+    description: 'Modify a record in the incident table',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'modifyRecord',
+          action: id,
+          name: 'Modify Record',
+          input: {
+            tableName: 'incident',
+            sysId: '8e67d33b97d1b5108686b680f053af2b',
+            requestBody: {
+              short_description: 'Updated short description',
+            },
+          },
+        },
+      ],
+    }),
+  },
+];
+
 export const modifyRecordAction = (
   options: CreateActionOptions,
 ): TemplateAction => {
@@ -83,6 +106,7 @@ export const modifyRecordAction = (
 
   return createTemplateAction({
     id,
+    examples,
     description: 'Updates the specified record with the request body',
     schema: {
       input: schemaInput,

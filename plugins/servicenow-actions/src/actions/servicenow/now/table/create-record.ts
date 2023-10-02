@@ -3,6 +3,7 @@ import {
   type TemplateAction,
 } from '@backstage/plugin-scaffolder-node';
 
+import yaml from 'yaml';
 import { z } from 'zod';
 
 import {
@@ -15,7 +16,7 @@ import { CreateActionOptions, ServiceNowResponses } from '../../../types';
 /**
  * Schema for the input to the `createRecord` action.
  *
- * @see {@link https://docs.servicenow.com/bundle/vancouver-api-reference/page/integrate/inbound-rest/concept/c_TableAPI.html#title_table-POST}
+ * @see {@link https://developer.servicenow.com/dev.do#!/reference/api/vancouver/rest/c_TableAPI}
  */
 const schemaInput = z.object({
   tableName: z
@@ -43,7 +44,7 @@ const schemaInput = z.object({
   sysparmFields: z
     .array(z.string().nonempty())
     .optional()
-    .describe('A comma-separated list of fields to return in the response'),
+    .describe('An array of fields to return in the response'),
   sysparmInputDisplayValue: z
     .boolean()
     .optional()
@@ -66,6 +67,29 @@ const schemaInput = z.object({
 
 const id = 'servicenow:now:table:createRecord';
 
+const examples = [
+  {
+    description: 'Create a record in the incident table',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'createRecord',
+          action: id,
+          name: 'Create Record',
+          input: {
+            tableName: 'incident',
+            requestBody: {
+              short_description: 'Test incident',
+              description: 'This is a test incident',
+              severity: '3',
+            },
+          },
+        },
+      ],
+    }),
+  },
+];
+
 export const createRecordAction = (
   options: CreateActionOptions,
 ): TemplateAction => {
@@ -73,6 +97,7 @@ export const createRecordAction = (
 
   return createTemplateAction({
     id,
+    examples,
     description:
       'Inserts one record in the specified table. Multiple record insertion is not supported by this method',
     schema: {

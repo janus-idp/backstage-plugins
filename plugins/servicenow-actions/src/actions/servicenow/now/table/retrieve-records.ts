@@ -3,6 +3,7 @@ import {
   type TemplateAction,
 } from '@backstage/plugin-scaffolder-node';
 
+import yaml from 'yaml';
 import { z } from 'zod';
 
 import {
@@ -15,13 +16,13 @@ import { CreateActionOptions, ServiceNowResponses } from '../../../types';
 /**
  * Schema for the input to the `retrieveRecords` action.
  *
- * @see {@link https://docs.servicenow.com/bundle/vancouver-api-reference/page/integrate/inbound-rest/concept/c_TableAPI.html#title_table-GET}
+ * @see {@link https://developer.servicenow.com/dev.do#!/reference/api/vancouver/rest/c_TableAPI}
  */
 const schemaInput = z.object({
   tableName: z
     .string()
     .nonempty()
-    .describe('	Name of the table from which to retrieve the records'),
+    .describe('Name of the table from which to retrieve the records'),
   sysparamQuery: z
     .string()
     .optional()
@@ -45,7 +46,7 @@ const schemaInput = z.object({
   sysparmFields: z
     .array(z.string().nonempty())
     .optional()
-    .describe('A comma-separated list of fields to return in the response'),
+    .describe('An array of fields to return in the response'),
   sysparmLimit: z
     .number()
     .optional()
@@ -70,13 +71,31 @@ const schemaInput = z.object({
     .describe(
       'True to access data across domains if authorized (default: false)',
     ),
-  sysparm_no_count: z
+  sysparmNoCount: z
     .boolean()
     .optional()
     .describe('Do not execute a select count(*) on table (default: false)'),
 });
 
 const id = 'servicenow:now:table:retrieveRecords';
+
+const examples = [
+  {
+    description: 'Retrieve a record from the incident table',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'retrieveRecords',
+          action: id,
+          name: 'Retrieve Records',
+          input: {
+            tableName: 'incident',
+          },
+        },
+      ],
+    }),
+  },
+];
 
 export const retrieveRecordsAction = (
   options: CreateActionOptions,
@@ -85,6 +104,7 @@ export const retrieveRecordsAction = (
 
   return createTemplateAction({
     id,
+    examples,
     description: 'Retrieves multiple records for the specified table',
     schema: {
       input: schemaInput,

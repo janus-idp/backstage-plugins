@@ -3,6 +3,7 @@ import {
   type TemplateAction,
 } from '@backstage/plugin-scaffolder-node';
 
+import yaml from 'yaml';
 import { z } from 'zod';
 
 import {
@@ -15,7 +16,7 @@ import { CreateActionOptions } from '../../../types';
 /**
  * Schema for the input to the `deleteRecord` action.
  *
- * @see {@link https://docs.servicenow.com/bundle/vancouver-api-reference/page/integrate/inbound-rest/concept/c_TableAPI.html#title_table-DELETE}
+ * @see {@link https://developer.servicenow.com/dev.do#!/reference/api/vancouver/rest/c_TableAPI}
  */
 const schemaInput = z.object({
   tableName: z
@@ -36,6 +37,24 @@ const schemaInput = z.object({
 
 const id = 'servicenow:now:table:deleteRecord';
 
+const examples = [
+  {
+    description: 'Delete a record from the incident table',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'deleteRecord',
+          action: id,
+          input: {
+            tableName: 'incident',
+            sysId: '8e67d33b97d1b5108686b680f053af2b',
+          },
+        },
+      ],
+    }),
+  },
+];
+
 export const deleteRecordAction = (
   options: CreateActionOptions,
 ): TemplateAction => {
@@ -43,6 +62,7 @@ export const deleteRecordAction = (
 
   return createTemplateAction({
     id,
+    examples,
     description: 'Deletes the specified record from the specified table',
     schema: {
       input: schemaInput,
