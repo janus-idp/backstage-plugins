@@ -50,21 +50,33 @@ jobs:
           else
             GIT_REF=master
           fi
-          echo "GIT_REF=$GIT_REF" >> $GITHUB_ENV
+          echo "GIT_REF=$GIT_REF" >> $GITHUB_OUTPUT
 
-      - name: Checkout
+      - name: Checkout from master
+        if: steps.get_checkout_ref.outputs.GIT_REF == 'master'
         uses: actions/checkout@v4
         with:
           repository: backstage/backstage
-          ref: ${{ steps.get_checkout_ref.outputs.GIT_REF }}
+          ref: master
           # fetch all history, but only for the current ref
           fetch-depth: 2147483647
           fetch-tags: false
 
+      - name: Checkout from a git ref
+        if: steps.get_checkout_ref.outputs.GIT_REF != 'master'
+        uses: actions/checkout@v4
+        with:
+          repository: backstage/backstage
+          ref: '${{ steps.get_checkout_ref.outputs.GIT_REF }}'
+
       - name: Get sha of the latest backend-plugin-manager commit
         id: get_commit_sha
         run: |
-          echo "COMMIT_ID=$(git rev-list --max-count=1 HEAD -- packages/backend-plugin-manager)" >> "$GITHUB_OUTPUT"
+          if [[ ${{ steps.get_checkout_ref.outputs.GIT_REF }} == "master" ]]; then
+            echo "COMMIT_ID=$(git rev-list --max-count=1 HEAD -- packages/backend-plugin-manager)" >> "$GITHUB_OUTPUT"
+          else
+            echo "COMMIT_ID=$(git rev-list --max-count=1 HEAD)" >> "$GITHUB_OUTPUT"
+          fi
           echo "GH Output: " && cat $GITHUB_OUTPUT
 
       - name: Test if commit is already published
@@ -199,3 +211,15 @@ jobs:
           yarn config set 'npmAuthToken' "$NPM_TOKEN"
           yarn workspace $SCOPE/backend-plugin-manager npm publish --access public --tag latest
           yarn npm tag add $SCOPE/backend-plugin-manager@$VERSION $COMMIT_ID
+
+      - name: Tag the package with backstage release tag if is a release commit
+        if:
+          steps.test_commit_already_published.outputs.ALREADY_PUSHED == 'false' &&
+          startsWith(steps.get_checkout_ref.outputs.GIT_REF, 'v')
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GIT_REF: ${{ steps.get_checkout_ref.outputs.GIT_REF }}
+          VERSION: ${{ steps.get_new_version_to_push.outputs.VERSION }}
+        run: |
+          yarn config set 'npmAuthToken' "$NPM_TOKEN"
+          yarn npm tag add $SCOPE/backend-plugin-manager@$VERSION $GIT_REF
