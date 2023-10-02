@@ -5,7 +5,7 @@ import { SidebarGroup, SidebarItem } from '@backstage/core-components';
 import NotificationsIcon from '@material-ui/icons/Extension' /* TODO */;
 import ParodosIcon from '@material-ui/icons/Menu' /* TODO */;
 
-import { PARODOS_NOTIFICATIONS_ROUTE } from '../constrants';
+import { PARODOS_NOTIFICATIONS_ROUTE } from '../constants';
 
 export const ParodosSidebarGroup = () => (
   <SidebarGroup label="Parodos" icon={<ParodosIcon />}>
