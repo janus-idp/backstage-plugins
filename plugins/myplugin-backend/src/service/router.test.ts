@@ -1,12 +1,25 @@
 import { getVoidLogger } from '@backstage/backend-common';
 
 import express from 'express';
+import * as Knex from 'knex';
+import { MockClient } from 'knex-mock-client';
 import request from 'supertest';
 
 import { createRouter } from './router';
 
+const db = Knex.knex({ client: MockClient });
+db.client = {
+  config: {
+    connection: {
+      database: 'test-database',
+    },
+  },
+};
+
 const mockDatabaseManager = {
-  getClient: jest.fn().mockImplementation(),
+  getClient: jest.fn().mockImplementation(async (): Promise<Knex.Knex> => {
+    return db;
+  }),
 };
 
 describe('createRouter', () => {

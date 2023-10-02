@@ -37,6 +37,7 @@
   "devDependencies": {
     "@backstage/cli": "0.22.9",
     "@types/supertest": "2.0.12",
+    "knex-mock-client": "2.0.0",
     "supertest": "6.3.3",
     "msw": "1.2.2"
   },
