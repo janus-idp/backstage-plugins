@@ -4,7 +4,7 @@
 
 1. Run `yarn install` from the project root (For the first time setup)
 
-2. Go to plugins/kiali
+2. Go to `plugins/kiali`
 
 3. Execute `yarn start`
 
