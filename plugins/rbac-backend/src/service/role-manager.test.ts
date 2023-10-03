@@ -81,7 +81,13 @@ describe('BackstageRoleManager', () => {
           kind: 'Group',
           'relations.hasMember': ['user:default/mike'],
         },
-        fields: ['metadata.name', 'kind', 'metadata.namespace', 'spec.parent'],
+        fields: [
+          'metadata.name',
+          'kind',
+          'metadata.namespace',
+          'spec.parent',
+          'spec.children',
+        ],
       });
       expect(result).toBeFalsy();
     });

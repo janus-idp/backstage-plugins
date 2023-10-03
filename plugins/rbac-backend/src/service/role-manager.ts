@@ -1,9 +1,70 @@
 import { CatalogApi } from '@backstage/catalog-client';
-import { Entity, parseEntityRef } from '@backstage/catalog-model';
+import { parseEntityRef } from '@backstage/catalog-model';
 
+import { alg, Graph } from '@dagrejs/graphlib';
 import { RoleManager } from 'casbin';
 
 type FilterRelations = 'relations.hasMember' | 'relations.parentOf';
+
+// AncestorSearchMemo - should be used to build group hierarchy graph for User entity reference.
+// It supports search group entity reference link in the graph.
+// Also AncestorSearchMemo supports detection cycle dependencies between groups in the graph.
+//
+// Notice: this class should be used like cache object in the nearest feature.
+// This cache can be implemented with time expiration and it can be map: Map<userEntityRef, AncestorSearchMemo>.
+class AncestorSearchMemo {
+  private filterEntityRefs: Set<string>;
+
+  private graph: Graph;
+  private fr: FilterRelations;
+
+  constructor(userEntityRef: string) {
+    this.filterEntityRefs = new Set<string>([userEntityRef]);
+    this.graph = new Graph({ directed: true });
+    this.fr = 'relations.hasMember';
+  }
+
+  setFilterEntityRefs(entityRefs: Set<string>) {
+    this.filterEntityRefs = entityRefs;
+  }
+
+  getFilterEntityRefs(): Set<string> {
+    return this.filterEntityRefs;
+  }
+
+  setFilterRelations(fr: FilterRelations): void {
+    this.fr = fr;
+  }
+
+  getFilterRelations(): FilterRelations {
+    return this.fr;
+  }
+
+  isAcyclic(): boolean {
+    return alg.isAcyclic(this.graph);
+  }
+
+  findCycles(): string[][] {
+    return alg.findCycles(this.graph);
+  }
+
+  setEdge(parentEntityRef: string, childEntityRef: string) {
+    this.graph.setEdge(parentEntityRef, childEntityRef);
+  }
+
+  setNode(entityRef: string): void {
+    this.graph.setNode(entityRef);
+  }
+
+  hasEntityRef(groupRef: string): boolean {
+    console.log(`=== Edges: ${JSON.stringify(this.graph.edges())}`);
+    if (this.graph.edges().length === 0) {
+      console.log(`=== Nodes: ${JSON.stringify(this.graph.nodes())}`);
+    }
+
+    return this.graph.hasNode(groupRef);
+  }
+}
 
 export class BackstageRoleManager implements RoleManager {
   constructor(private readonly catalogApi: CatalogApi) {}
@@ -67,13 +128,22 @@ export class BackstageRoleManager implements RoleManager {
       return false;
     }
 
-    // optimization: don't make request if name2 is user...
-    const role = await this.findAncestorGroup(
-      [name1],
-      name2,
-      'relations.hasMember',
-    );
-    return !!role;
+    const memo = new AncestorSearchMemo(name1);
+    await this.findAncestorGroups(memo);
+    if (!memo.isAcyclic()) {
+      const cycles = memo.findCycles();
+      console.log(
+        `Detected cycle ${
+          cycles.length > 0 ? 'dependencies' : 'dependency'
+        } in the Group graph: ${JSON.stringify(
+          cycles,
+        )}. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for group: ${name2}`,
+      );
+      return false;
+    }
+    const result = memo.hasEntityRef(name2);
+    console.log(`======result is ${name1} ${name2} ${result}`);
+    return result;
   }
 
   /**
@@ -111,39 +181,51 @@ export class BackstageRoleManager implements RoleManager {
     // do nothing
   }
 
-  private async findAncestorGroup(
-    entityRefs: string[],
-    groupToSearch: string,
-    fr: FilterRelations,
-  ): Promise<Entity | undefined> {
+  private async findAncestorGroups(memo: AncestorSearchMemo): Promise<void> {
     const { items } = await this.catalogApi.getEntities({
       filter: {
         kind: 'Group',
-        [fr]: Array.from(entityRefs),
+        [memo.getFilterRelations()]: Array.from(memo.getFilterEntityRefs()),
       },
       // Save traffic with only required information for us
-      fields: ['metadata.name', 'kind', 'metadata.namespace', 'spec.parent'],
+      fields: [
+        'metadata.name',
+        'kind',
+        'metadata.namespace',
+        'spec.parent',
+        'spec.children',
+      ],
     });
+
+    console.log(
+      `=== filter: ${memo.getFilterRelations()} of ${Array.from(
+        memo.getFilterEntityRefs(),
+      )}, parents: ${JSON.stringify(items)}`,
+    );
 
     const groupsRefs = new Set<string>();
     for (const item of items) {
       const groupRef = `group:default/${item.metadata.name.toLocaleLowerCase()}`;
-      if (groupRef === groupToSearch) {
-        return item;
+
+      memo.setNode(groupRef);
+      for (const child of (item.spec?.children as string[]) ?? []) {
+        const childEntityRef = `group:default/${child.toLocaleLowerCase()}`;
+        if (memo.getFilterEntityRefs().has(childEntityRef)) {
+          console.log(`set Edge: ${groupRef} ${childEntityRef}`);
+          memo.setEdge(groupRef, childEntityRef);
+        }
       }
+
       if (item.spec?.parent) {
         groupsRefs.add(groupRef);
       }
     }
 
-    if (groupsRefs.size > 0) {
-      return await this.findAncestorGroup(
-        Array.from(groupsRefs),
-        groupToSearch,
-        'relations.parentOf',
-      );
+    if (groupsRefs.size > 0 && memo.isAcyclic()) {
+      memo.setFilterEntityRefs(groupsRefs);
+      memo.setFilterRelations('relations.parentOf');
+      console.log(`=== next iteration...`);
+      await this.findAncestorGroups(memo);
     }
-
-    return undefined;
   }
 }
