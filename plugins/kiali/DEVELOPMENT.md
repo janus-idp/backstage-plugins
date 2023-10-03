@@ -23,7 +23,7 @@
    - Add to packages/backend/package.json
 
    ```yaml title="packages/backend/package.json"
-   '@janus-idp/backstage-plugin-kiali-backend': 'link:../../plugins/kiali-backend'
+   "@janus-idp/backstage-plugin-kiali-backend": "link:../../plugins/kiali-backend",
    ```
 
 2. Enable the **Kiali** tab on the entity view page using the `packages/app/src/components/catalog/EntityPage.tsx` file:
