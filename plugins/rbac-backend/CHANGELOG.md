@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac-backend [1.0.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@1.0.1...@janus-idp/backstage-plugin-rbac-backend@1.0.2) (2023-10-04)
+
+
+### Bug Fixes
+
+* **rbac:** add models folder to package ([#823](https://github.com/janus-idp/backstage-plugins/issues/823)) ([e2bc66e](https://github.com/janus-idp/backstage-plugins/commit/e2bc66edac61a16ec92f75fb48c8ad459f24a23a))
+
 ## @janus-idp/backstage-plugin-rbac-backend [1.0.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@1.0.0...@janus-idp/backstage-plugin-rbac-backend@1.0.1) (2023-10-03)
 
 
