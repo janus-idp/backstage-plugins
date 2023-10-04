@@ -45,7 +45,8 @@ export class AapResourceEntityProvider implements EntityProvider {
       let taskRunner;
       if (options.schedule) {
         taskRunner = options.schedule;
-      } else if (options.scheduler && providerConfig.schedule) {
+      }
+      if (options.scheduler && providerConfig.schedule) {
         taskRunner = options.scheduler.createScheduledTaskRunner(
           providerConfig.schedule,
         );
