@@ -36,7 +36,7 @@ The AAP Backstage provider plugin allows the configuration of one or multiple pr
 
 1. Configure the scheduler using one of the following options:
 
-   - Add the following code to the `packages/backend/src/plugins/catalog.ts` file if the scheduler is configured inside the `app-config.yaml` file:
+   - If the scheduler is configured inside the `app-config.yaml` file, add the following code to the `packages/backend/src/plugins/catalog.ts` file:
 
      ```ts title="packages/backend/src/plugins/catalog.ts"
      /* highlight-add-next-line */
@@ -63,6 +63,14 @@ The AAP Backstage provider plugin allows the configuration of one or multiple pr
      }
      ```
 
+     ***
+
+     **NOTE**
+
+     If any changes to the schedule in the `app-config.yaml` are made, a restart of the backend is necessary to apply the changes.
+
+     ***
+
    - Add a schedule directly inside the `packages/backend/src/plugins/catalog.ts` file as follows:
 
      ```ts title="packages/backend/src/plugins/catalog.ts"
@@ -83,6 +91,39 @@ The AAP Backstage provider plugin allows the configuration of one or multiple pr
              frequency: { minutes: 1 },
              timeout: { minutes: 1 },
            }),
+         }),
+       );
+       /* highlight-add-end */
+
+       const { processingEngine, router } = await builder.build();
+       await processingEngine.start();
+       return router;
+     }
+     ```
+
+   - If both the `schedule` (hard-coded schedule) and `scheduler` (`app-config.yaml` schedule) option are provided in the `packages/backend/src/plugins/catalog.ts`, the `scheduler` option takes precedence.
+
+     - If the schedule inside the `app-config.yaml` is not configured, then the `schedule` option is used.
+
+     ```ts title="packages/backend/src/plugins/catalog.ts"
+     /* highlight-add-next-line */
+     import { AapResourceEntityProvider } from '@janus-idp/backstage-plugin-aap-backend';
+
+     export default async function createPlugin(
+       env: PluginEnvironment,
+     ): Promise<Router> {
+       const builder = await CatalogBuilder.create(env);
+
+       /* ... other processors and/or providers ... */
+       /* highlight-add-start */
+       builder.addEntityProvider(
+         AapResourceEntityProvider.fromConfig(env.config, {
+           logger: env.logger,
+           schedule: env.scheduler.createScheduledTaskRunner({
+             frequency: { minutes: 1 },
+             timeout: { minutes: 1 },
+           }),
+           scheduler: env.scheduler,
          }),
        );
        /* highlight-add-end */
