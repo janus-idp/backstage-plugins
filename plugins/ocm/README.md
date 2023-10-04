@@ -205,6 +205,14 @@ If you are interested in Resource discovery and do not want any of the front-end
       }
       ```
 
+      ***
+
+      **NOTE**
+
+      If any changes to the schedule in the `app-config.yaml` are made, a restart of the backend is necessary to apply the changes.
+
+      ***
+
    1. Add a schedule directly inside the `packages/backend/src/plugins/catalog.ts` file:
 
       ```ts title="packages/backend/src/plugins/catalog.ts"
@@ -229,6 +237,34 @@ If you are interested in Resource discovery and do not want any of the front-end
         // ...
       }
       ```
+
+   - If both the `schedule` (hard-coded schedule) and `scheduler` (`app-config.yaml` schedule) option are provided in the `packages/backend/src/plugins/catalog.ts`, the `scheduler` option takes precedence.
+
+     - If the schedule inside the `app-config.yaml` is not configured, then the `schedule` option is used.
+
+     ```ts title="packages/backend/src/plugins/catalog.ts"
+     /* highlight-add-next-line */
+     import { ManagedClusterProvider } from '@janus-idp/backstage-plugin-ocm-backend';
+
+     export default async function createPlugin(
+       env: PluginEnvironment,
+     ): Promise<Router> {
+       const builder = await CatalogBuilder.create(env);
+       // ...
+       /* highlight-add-start */
+       const ocm = ManagedClusterProvider.fromConfig(env.config, {
+         logger: env.logger,
+         schedule: env.scheduler.createScheduledTaskRunner({
+           frequency: { minutes: 1 },
+           timeout: { minutes: 1 },
+         }),
+         scheduler: env.scheduler,
+       });
+       builder.addEntityProvider(ocm);
+       /* highlight-add-start */
+       // ...
+     }
+     ```
 
 1. Optional: Configure the default owner for the cluster entities in the catalog for a specific environment. For example, use the following code to set `foo` as the owner for clusters from `env` in the `app-config.yaml` catalog section:
 
