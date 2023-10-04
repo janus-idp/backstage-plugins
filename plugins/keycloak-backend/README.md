@@ -55,7 +55,7 @@ yarn workspace backend add @janus-idp/backstage-plugin-keycloak-backend
                # highlight-add-end
      ```
 
-     Use the configured scheduler inside the `packages/backend/src/plugins/catalog.ts` as follows:
+     Then use the configured scheduler by adding the following to the `packages/backend/src/plugins/catalog.ts`:
 
      ```ts title="packages/backend/src/plugins/catalog.ts"
      /* highlight-add-start */
