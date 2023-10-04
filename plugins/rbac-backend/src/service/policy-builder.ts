@@ -30,7 +30,6 @@ export class PolicyBuilder {
     const databaseEnabled = env.config.getOptionalBoolean(
       'permission.rbac.database.enabled',
     );
-
     // Database adapter work
     if (databaseEnabled) {
       adapter = await new CasbinDBAdapterFactory(
@@ -48,7 +47,7 @@ export class PolicyBuilder {
 
     const enf = await newEnforcer(newModelFromString(MODEL), adapter);
     await enf.loadPolicy();
-    await enf.enableAutoSave(true);
+    enf.enableAutoSave(true);
 
     const options: RouterOptions = {
       config: env.config,
