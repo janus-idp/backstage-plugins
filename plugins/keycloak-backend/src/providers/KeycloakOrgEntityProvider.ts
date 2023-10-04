@@ -133,8 +133,9 @@ export class KeycloakOrgEntityProvider implements EntityProvider {
       }
 
       const taskRunner =
-        options.schedule ??
-        options.scheduler!.createScheduledTaskRunner(providerConfig.schedule!);
+        options.scheduler?.createScheduledTaskRunner(
+          providerConfig.schedule!,
+        ) ?? options.schedule!;
 
       const provider = new KeycloakOrgEntityProvider({
         id: providerConfig.id,
