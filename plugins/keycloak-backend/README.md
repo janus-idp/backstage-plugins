@@ -85,10 +85,21 @@ yarn workspace backend add @janus-idp/backstage-plugin-keycloak-backend
      }
      ```
 
+     ***
+
+     **NOTE**
+
+     If any changes to the schedule in the `app-config.yaml` are made, a restart of the backend is necessary to apply the changes.
+
+     ***
+
    - Add a schedule directly inside the `packages/backend/src/plugins/catalog.ts` file as follows:
 
      ```ts title="packages/backend/src/plugins/catalog.ts"
-     + import { KeycloakOrgEntityProvider } from '@janus-idp/backstage-plugin-keycloak-backend';
+     /* highlight-add-start */
+     import { KeycloakOrgEntityProvider } from '@janus-idp/backstage-plugin-keycloak-backend';
+
+     /* highlight-add-end */
 
      export default async function createPlugin(
        env: PluginEnvironment,
@@ -104,11 +115,48 @@ yarn workspace backend add @janus-idp/backstage-plugin-keycloak-backend
            schedule: env.scheduler.createScheduledTaskRunner({
              frequency: { minutes: 1 },
              timeout: { minutes: 1 },
-             initialDelay: { seconds: 15 }
+             initialDelay: { seconds: 15 },
            }),
            /* highlight-add-end */
          }),
-       )
+       );
+
+       const { processingEngine, router } = await builder.build();
+       await processingEngine.start();
+       return router;
+     }
+     ```
+
+   - If both the `schedule` (hard-coded schedule) and `scheduler` (`app-config.yaml` schedule) option are provided in the `packages/backend/src/plugins/catalog.ts`, the `scheduler` option takes precedence.
+
+     - If the schedule inside the `app-config.yaml` is not configured, then the `schedule` option is used.
+
+     ```ts title="packages/backend/src/plugins/catalog.ts"
+     /* highlight-add-start */
+     import { KeycloakOrgEntityProvider } from '@janus-idp/backstage-plugin-keycloak-backend';
+
+     /* highlight-add-end */
+
+     export default async function createPlugin(
+       env: PluginEnvironment,
+     ): Promise<Router> {
+       const builder = await CatalogBuilder.create(env);
+
+       /* ... other processors and/or providers ... */
+       builder.addEntityProvider(
+         KeycloakOrgEntityProvider.fromConfig(env.config, {
+           id: 'development',
+           logger: env.logger,
+           /* highlight-add-start */
+           schedule: env.scheduler.createScheduledTaskRunner({
+             frequency: { minutes: 1 },
+             timeout: { minutes: 1 },
+             initialDelay: { seconds: 15 },
+           }),
+           scheduler: env.scheduler,
+           /* highlight-add-end */
+         }),
+       );
 
        const { processingEngine, router } = await builder.build();
        await processingEngine.start();
