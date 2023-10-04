@@ -1,4 +1,4 @@
-# Regex actions for Backstage
+# ServiceNow actions for Backstage
 
 This plugin provides [Backstage](https://backstage.io/) template [actions](https://backstage.io/docs/features/software-templates/builtin-actions) for [ServiceNow](https://developer.servicenow.com/dev.do#!/reference/api/vancouver/rest).
 

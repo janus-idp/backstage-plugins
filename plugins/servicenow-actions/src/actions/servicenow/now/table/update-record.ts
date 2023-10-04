@@ -12,6 +12,7 @@ import {
   OpenAPI,
 } from '../../../../generated/now/table';
 import { CreateActionOptions, ServiceNowResponses } from '../../../types';
+import { updateOpenAPIConfig } from './helpers';
 
 /**
  * Schema for the input to the `updateRecord` action.
@@ -99,6 +100,12 @@ const examples = [
   },
 ];
 
+/**
+ * Creates an action handler that updates a record in the specified table.
+ *
+ * @param {CreateActionOptions} options - options to configure the action
+ * @returns {TemplateAction} an action handler
+ */
 export const updateRecordAction = (
   options: CreateActionOptions,
 ): TemplateAction => {
@@ -117,10 +124,7 @@ export const updateRecordAction = (
       // FIXME: remove the type assertion once backstage properly infers the type
       const input = ctx.input as z.infer<typeof schemaInput>;
 
-      // Set the base path and credentials for the OpenAPI client
-      OpenAPI.BASE = config.getString('servicenow.baseUrl');
-      OpenAPI.USERNAME = config.getString('servicenow.username');
-      OpenAPI.PASSWORD = config.getString('servicenow.password');
+      updateOpenAPIConfig(OpenAPI, config);
 
       let res: ServiceNowResponses['200'];
       try {
