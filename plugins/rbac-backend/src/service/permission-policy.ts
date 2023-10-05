@@ -156,7 +156,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
 
     const entityRef = identity.userEntityRef;
 
-    const rm = new BackstageRoleManager(this.catalogApi);
+    const rm = new BackstageRoleManager(this.catalogApi, this.logger);
     this.enforcer.setRoleManager(rm);
     this.enforcer.enableAutoBuildRoleLinks(false);
     await this.enforcer.buildRoleLinks();

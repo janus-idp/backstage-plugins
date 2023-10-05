@@ -3,6 +3,7 @@ import { parseEntityRef } from '@backstage/catalog-model';
 
 import { alg, Graph } from '@dagrejs/graphlib';
 import { RoleManager } from 'casbin';
+import { Logger } from 'winston';
 
 type FilterRelations = 'relations.hasMember' | 'relations.parentOf';
 
@@ -57,17 +58,24 @@ class AncestorSearchMemo {
   }
 
   hasEntityRef(groupRef: string): boolean {
-    console.log(`=== Edges: ${JSON.stringify(this.graph.edges())}`);
-    if (this.graph.edges().length === 0) {
-      console.log(`=== Nodes: ${JSON.stringify(this.graph.nodes())}`);
-    }
-
     return this.graph.hasNode(groupRef);
+  }
+
+  debugNodesAndEdges(log: Logger, userEntity: string): void {
+    log.debug(
+      `SubGraph edges: ${JSON.stringify(this.graph.edges())} for ${userEntity}`,
+    );
+    log.debug(
+      `SubGraph nodes: ${JSON.stringify(this.graph.nodes())} for ${userEntity}`,
+    );
   }
 }
 
 export class BackstageRoleManager implements RoleManager {
-  constructor(private readonly catalogApi: CatalogApi) {}
+  constructor(
+    private readonly catalogApi: CatalogApi,
+    private readonly log: Logger,
+  ) {}
 
   /**
    * clear clears all stored data and resets the role manager to the initial state.
@@ -130,20 +138,23 @@ export class BackstageRoleManager implements RoleManager {
 
     const memo = new AncestorSearchMemo(name1);
     await this.findAncestorGroups(memo);
+    memo.debugNodesAndEdges(this.log, name1);
     if (!memo.isAcyclic()) {
       const cycles = memo.findCycles();
-      console.log(
+
+      memo.hasEntityRef(name2);
+
+      this.log.warning(
         `Detected cycle ${
           cycles.length > 0 ? 'dependencies' : 'dependency'
         } in the Group graph: ${JSON.stringify(
           cycles,
         )}. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for group: ${name2}`,
       );
+
       return false;
     }
-    const result = memo.hasEntityRef(name2);
-    console.log(`======result is ${name1} ${name2} ${result}`);
-    return result;
+    return memo.hasEntityRef(name2);
   }
 
   /**
@@ -197,12 +208,6 @@ export class BackstageRoleManager implements RoleManager {
       ],
     });
 
-    console.log(
-      `=== filter: ${memo.getFilterRelations()} of ${Array.from(
-        memo.getFilterEntityRefs(),
-      )}, parents: ${JSON.stringify(items)}`,
-    );
-
     const groupsRefs = new Set<string>();
     for (const item of items) {
       const groupRef = `group:default/${item.metadata.name.toLocaleLowerCase()}`;
@@ -210,13 +215,19 @@ export class BackstageRoleManager implements RoleManager {
       memo.setNode(groupRef);
       for (const child of (item.spec?.children as string[]) ?? []) {
         const childEntityRef = `group:default/${child.toLocaleLowerCase()}`;
-        if (memo.getFilterEntityRefs().has(childEntityRef)) {
-          console.log(`set Edge: ${groupRef} ${childEntityRef}`);
+        if (
+          memo.getFilterEntityRefs().has(childEntityRef) ||
+          memo.getFilterRelations() === 'relations.hasMember'
+        ) {
           memo.setEdge(groupRef, childEntityRef);
         }
       }
 
       if (item.spec?.parent) {
+        const parentRef = `group:default/${(
+          item.spec?.parent as string
+        ).toLocaleLowerCase()}`;
+        memo.setEdge(parentRef, groupRef);
         groupsRefs.add(groupRef);
       }
     }
@@ -224,7 +235,6 @@ export class BackstageRoleManager implements RoleManager {
     if (groupsRefs.size > 0 && memo.isAcyclic()) {
       memo.setFilterEntityRefs(groupsRefs);
       memo.setFilterRelations('relations.parentOf');
-      console.log(`=== next iteration...`);
       await this.findAncestorGroups(memo);
     }
   }
