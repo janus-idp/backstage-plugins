@@ -60,15 +60,14 @@ export class ThreeScaleApiEntityProvider implements EntityProvider {
 
       let taskRunner;
 
-      if (options.schedule) {
-        // Use the provided schedule directly
-        taskRunner = options.schedule;
-      }
       if (options.scheduler && providerConfig.schedule) {
         // Create a scheduled task runner using the provided scheduler and schedule configuration
         taskRunner = options.scheduler.createScheduledTaskRunner(
           providerConfig.schedule,
         );
+      } else if (options.schedule) {
+        // Use the provided schedule directly
+        taskRunner = options.schedule;
       } else {
         // Handle the case where both options.schedule and options.scheduler are missing
         throw new Error('Neither schedule nor scheduler is provided.');
