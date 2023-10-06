@@ -13,7 +13,10 @@ import { PolicyBuilder } from './policy-builder';
 
 const mockEnforcer: Partial<Enforcer> = {
   loadPolicy: jest.fn().mockImplementation(async () => {}),
-  enableAutoSave: jest.fn().mockImplementation((_enable: boolean) => {}),
+  enableAutoSave: jest.fn().mockImplementation(() => {}),
+  setRoleManager: jest.fn().mockImplementation(() => {}),
+  enableAutoBuildRoleLinks: jest.fn().mockImplementation(() => {}),
+  buildRoleLinks: jest.fn().mockImplementation(() => {}),
 };
 
 jest.mock('casbin', () => {
