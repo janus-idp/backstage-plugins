@@ -72,7 +72,9 @@ function shouldIgnoreAsset(asset: AssetXO) {
     return false;
   }
 
-  if (!asset.maven2) return false;
+  if (!asset.maven2) {
+     return false;
+   }
   return (
     // Choosing not to care about the size of e.g. sources or javadoc
     asset.maven2.classifier || hasIgnoredExtension(asset)
@@ -217,7 +219,7 @@ export class NexusRepositoryManagerApiClient
               await this.proxiedDownloadUrl(asset),
               additionalHeaders,
             )
-          ).json() as any as RawAsset,
+          ).json() as Promise<RawAsset>,
         // Create a dummy promise to avoid Promise.all() from failing
       ) ?? [new Promise<null>(() => null)],
     );
@@ -248,10 +250,15 @@ export class NexusRepositoryManagerApiClient
         component: await this.addFileSizes(component),
         rawAssets: await this.getRawAssets(component),
       })),
-    ).then(values =>
-      values.filter(
-        v => v.component?.assets?.some(asset => !shouldIgnoreAsset(asset)),
-      ),
+    );
+    
+    const filteredValues = values.filter(
+      v => v.component?.assets?.some(asset => !shouldIgnoreAsset(asset)),
+    );
+    
+    return {
+      components: filteredValues,
+    };
     );
 
     return {

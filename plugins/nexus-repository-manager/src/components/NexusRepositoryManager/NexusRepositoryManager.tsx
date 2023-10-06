@@ -52,8 +52,12 @@ export function NexusRepositoryManager() {
         }
 
         const { classifier, extension } = asset.maven2;
-        if (extension === 'jar' && classifier) return classifier;
-        if (!hasIgnoredExtension(asset) && extension) return extension;
+        if (extension === 'jar' && classifier) {
+          return classifier;
+        }
+        if (!hasIgnoredExtension(asset) && extension) {
+          return extension;
+        }
         return [];
       }),
     );
