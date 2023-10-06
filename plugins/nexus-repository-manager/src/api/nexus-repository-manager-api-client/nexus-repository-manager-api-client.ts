@@ -67,14 +67,14 @@ function getAdditionalHeaders(format?: string): HeadersInit {
 }
 
 // Whether an asset has data we might want to fetch
-function shouldIgnoreAsset(asset: AssetXO) {
+function shouldFetchSize(asset: AssetXO) {
   if (asset.format !== 'maven2') {
     return false;
   }
 
   if (!asset.maven2) {
-     return false;
-   }
+    return false;
+  }
   return (
     // Choosing not to care about the size of e.g. sources or javadoc
     asset.maven2.classifier || hasIgnoredExtension(asset)
@@ -180,7 +180,7 @@ export class NexusRepositoryManagerApiClient
     const updatedAssets = await Promise.all(
       component.assets.map(async asset => {
         // Save a request if Nexus decides to return a size (unknown if possible)
-        if (asset.fileSize !== 0 || shouldIgnoreAsset(asset)) {
+        if (asset.fileSize !== 0 || shouldFetchSize(asset)) {
           return asset;
         }
 
@@ -245,24 +245,19 @@ export class NexusRepositoryManagerApiClient
 
     // TODO make resilient to individual errors
     // We're seeing intermittent 504s that stop the whole request
-    const value = await Promise.all(
+    const values = await Promise.all(
       components.map(async component => ({
         component: await this.addFileSizes(component),
         rawAssets: await this.getRawAssets(component),
       })),
     );
-    
+
     const filteredValues = values.filter(
-      v => v.component?.assets?.some(asset => !shouldIgnoreAsset(asset)),
-    );
-    
-    return {
-      components: filteredValues,
-    };
+      v => v.component?.assets?.some(asset => isPrimaryAsset(asset)),
     );
 
     return {
-      components: value,
+      components: filteredValues,
     };
   }
 

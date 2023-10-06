@@ -10,7 +10,7 @@ import { formatDate } from '@janus-idp/shared-react';
 import { hasIgnoredExtension, NexusRepositoryManagerApiRef } from '../../api';
 import { useNexusRepositoryManagerAppData } from '../../hooks';
 import { getFileSize, getHash } from '../../utils';
-import { ArtifactTable } from './ArtifactTable';
+import { ArtifactTable } from '../ArtifactTable';
 
 export function NexusRepositoryManager() {
   const nexusClient = useApi(NexusRepositoryManagerApiRef);
