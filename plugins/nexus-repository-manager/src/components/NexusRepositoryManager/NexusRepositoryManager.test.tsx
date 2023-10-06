@@ -94,7 +94,7 @@ describe('NexusRepositoryManager', () => {
               },
             ],
           },
-          rawAssets: [
+          dockerManifests: [
             {
               schemaVersion: 2,
               mediaType: 'application/vnd.docker.distribution.manifest.v2+json',

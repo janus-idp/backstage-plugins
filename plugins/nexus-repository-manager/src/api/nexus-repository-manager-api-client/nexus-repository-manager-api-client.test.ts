@@ -208,7 +208,7 @@ describe('NexusRepositoryManagerApiClient', () => {
         dockerImageTag: 'sha-de3dbf1',
       });
 
-      expect((components[0]?.rawAssets[0] as any)?.schemaVersion).toEqual(2);
+      expect(components[0]?.dockerManifests[0]?.schemaVersion).toEqual(2);
     });
 
     it('should not set special headers for non-docker GETs', async () => {

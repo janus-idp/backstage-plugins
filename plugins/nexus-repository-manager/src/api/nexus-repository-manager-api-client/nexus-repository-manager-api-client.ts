@@ -14,7 +14,7 @@ import type {
   Annotation,
   AssetXO,
   ComponentXO,
-  RawAsset,
+  DockerManifest,
   SearchServiceQuery,
 } from '../../types';
 import { isPrimaryAsset } from '../../utils';
@@ -66,7 +66,7 @@ export type NexusRepositoryManagerApiV1 = {
   getComponents(query: SearchServiceQuery): Promise<{
     components: {
       component: ComponentXO;
-      rawAssets: (RawAsset | null)[];
+      dockerManifests: (DockerManifest | null)[];
     }[];
   }>;
   getAnnotations(): { ANNOTATIONS: Readonly<Annotation[]> };
@@ -184,7 +184,7 @@ export class NexusRepositoryManagerApiClient
     };
   }
 
-  private async getRawAssets(component: ComponentXO) {
+  private async getdockerManifests(component: ComponentXO) {
     // We only need to fetch the actual assets (manifests) for docker
     if (component.format !== 'docker') {
       return [];
@@ -200,7 +200,7 @@ export class NexusRepositoryManagerApiClient
               await this.proxiedDownloadUrl(asset),
               additionalHeaders,
             )
-          ).json() as Promise<RawAsset>,
+          ).json() as Promise<DockerManifest>,
         // Create a dummy promise to avoid Promise.all() from failing
       ) ?? [new Promise<null>(() => null)],
     );
@@ -229,7 +229,7 @@ export class NexusRepositoryManagerApiClient
     const values = await Promise.all(
       components.map(async component => ({
         component: await this.addFileSizes(component),
-        rawAssets: await this.getRawAssets(component),
+        dockerManifests: await this.getdockerManifests(component),
       })),
     );
 

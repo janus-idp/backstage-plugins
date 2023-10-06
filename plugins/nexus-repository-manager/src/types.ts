@@ -16,7 +16,7 @@ export type AssetHash = {
   value: string;
 };
 
-export type RawAsset = DockerManifestSchema1 | DockerManifestSchema2;
+export type DockerManifest = DockerManifestSchema1 | DockerManifestSchema2;
 
 /**
  * OpenAPI spec doesn't include some optional fields, so we add them manually.
