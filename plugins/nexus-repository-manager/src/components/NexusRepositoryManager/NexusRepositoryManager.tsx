@@ -7,9 +7,9 @@ import { useEntity } from '@backstage/plugin-catalog-react';
 
 import { formatDate } from '@janus-idp/shared-react';
 
-import { hasIgnoredExtension, NexusRepositoryManagerApiRef } from '../../api';
+import { NexusRepositoryManagerApiRef } from '../../api';
 import { useNexusRepositoryManagerAppData } from '../../hooks';
-import { getFileSize, getHash } from '../../utils';
+import { getFileSize, getHash, isPrimaryAsset } from '../../utils';
 import { ArtifactTable } from '../ArtifactTable';
 
 export function NexusRepositoryManager() {
@@ -55,7 +55,7 @@ export function NexusRepositoryManager() {
         if (extension === 'jar' && classifier) {
           return classifier;
         }
-        if (!hasIgnoredExtension(asset) && extension) {
+        if (isPrimaryAsset(asset) && extension) {
           return extension;
         }
         return [];

@@ -17,6 +17,7 @@ import type {
   RawAsset,
   SearchServiceQuery,
 } from '../../types';
+import { isPrimaryAsset } from '../../utils';
 
 const DEFAULT_PROXY_PATH = '/nexus-repository-manager' as const;
 const NEXUS_REPOSITORY_MANAGER_CONFIG = {
@@ -36,26 +37,6 @@ const DOCKER_MANIFEST_HEADERS = {
     '*/*;q=0.8',
   ].join(', '),
 } as const satisfies HeadersInit;
-
-// Extensions we don't want to fetch extra data for
-const MAVEN_IGNORED_ASSET_EXTENSIONS = new Set<string>([
-  'pom',
-  'sha1',
-  'md5',
-  'sha256',
-]);
-
-export function hasIgnoredExtension(asset: AssetXO): boolean {
-  if (!asset.maven2) {
-    return false;
-  }
-  const { extension } = asset.maven2;
-  return (
-    // Extension can be `jar.md5` or `zip.sha1`, for example
-    extension !== undefined &&
-    MAVEN_IGNORED_ASSET_EXTENSIONS.has(extension.split('.').pop() ?? '')
-  );
-}
 
 function getAdditionalHeaders(format?: string): HeadersInit {
   switch (format /* NOSONAR - use switch for expandability */) {
@@ -77,7 +58,7 @@ function shouldFetchSize(asset: AssetXO) {
   }
   return (
     // Choosing not to care about the size of e.g. sources or javadoc
-    asset.maven2.classifier || hasIgnoredExtension(asset)
+    asset.maven2.classifier || !isPrimaryAsset(asset)
   );
 }
 

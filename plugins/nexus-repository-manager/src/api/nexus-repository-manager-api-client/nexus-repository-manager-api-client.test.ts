@@ -9,10 +9,7 @@ import {
   NEXUS_REPOSITORY_MANAGER_ANNOTATIONS,
   NEXUS_REPOSITORY_MANAGER_EXPERIMENTAL_ANNOTATIONS,
 } from '../../annotations';
-import {
-  hasIgnoredExtension,
-  NexusRepositoryManagerApiClient,
-} from './nexus-repository-manager-api-client';
+import { NexusRepositoryManagerApiClient } from './nexus-repository-manager-api-client';
 
 const LOCAL_ADDR = 'https://localhost:7007/nexus-repository-manager';
 
@@ -283,30 +280,5 @@ describe('NexusRepositoryManagerApiClient', () => {
         ...NEXUS_REPOSITORY_MANAGER_EXPERIMENTAL_ANNOTATIONS,
       ]);
     });
-  });
-});
-
-describe('hasIgnoredExtension', () => {
-  it.each(['pom', 'pom.sha1', 'jar.sha256', 'sha1'])(
-    'should return true for %s',
-    extension => {
-      expect(hasIgnoredExtension({ maven2: { extension } })).toBe(true);
-    },
-  );
-
-  it.each(['jar', 'zip', 'tar.gz', 'proto'])(
-    'should return false for %s',
-    extension => {
-      expect(hasIgnoredExtension({ maven2: { extension } })).toBe(false);
-    },
-  );
-
-  it('should return false for non-maven assets', () => {
-    expect(hasIgnoredExtension({ format: 'docker' })).toBe(false);
-  });
-
-  it('should return false for maven assets without an extension', () => {
-    expect(hasIgnoredExtension({ format: 'maven2' })).toBe(false);
-    expect(hasIgnoredExtension({ format: 'maven2', maven2: {} })).toBe(false);
   });
 });
