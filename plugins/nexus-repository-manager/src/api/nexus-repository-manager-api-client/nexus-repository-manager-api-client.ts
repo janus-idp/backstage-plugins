@@ -241,7 +241,7 @@ export class NexusRepositoryManagerApiClient
       components.push(...(res.items ?? []));
     } while (continuationToken);
 
-    // TODO make resiliant to individual errors
+    // TODO make resilient to individual errors
     // We're seeing intermittent 504s that stop the whole request
     const value = await Promise.all(
       components.map(async component => ({
