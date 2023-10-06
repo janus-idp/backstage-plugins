@@ -112,3 +112,12 @@ catalog:
     #   target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/acme-corp.yaml
     #   rules:
     #     - allow: [User, Group]
+orchestrator:
+  sonataFlowService:
+    baseUrl: http://localhost
+    port: 8899
+    autoStart: true
+    workflowsSource:
+      gitRepositoryUrl: https://github.com/tiagodolphine/backstage-orchestrator-workflows
+      localPath: /tmp/orchestrator/repository
+      autoPush: false
