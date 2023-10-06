@@ -47,7 +47,9 @@ export function NexusRepositoryManager() {
     // Artifact types that we want to display: either classifiers (e.g. javadoc) or extensions (e.g. zip)
     const assetVariants = new Set<string>(
       component.assets?.flatMap(asset => {
-        if (!asset.maven2) return [];
+        if (!asset.maven2) {
+          return [];
+        }
 
         const { classifier, extension } = asset.maven2;
         if (extension === 'jar' && classifier) return classifier;
