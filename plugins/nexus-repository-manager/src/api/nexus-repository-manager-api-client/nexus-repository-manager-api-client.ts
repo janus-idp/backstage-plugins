@@ -46,7 +46,9 @@ const MAVEN_IGNORED_ASSET_EXTENSIONS = new Set<string>([
 ]);
 
 export function hasIgnoredExtension(asset: AssetXO): boolean {
-  if (!asset.maven2) return false;
+  if (!asset.maven2) {
+    return false;
+  }
   const { extension } = asset.maven2;
   return (
     // Extension can be `jar.md5` or `zip.sha1`, for example
