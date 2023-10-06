@@ -1,5 +1,4 @@
 import { errorHandler, getVoidLogger } from '@backstage/backend-common';
-import { CatalogApi } from '@backstage/catalog-client';
 import { ConfigReader } from '@backstage/config';
 import { InputError } from '@backstage/errors';
 import { RouterOptions } from '@backstage/plugin-permission-backend';
@@ -56,22 +55,6 @@ jest.mock('casbin', () => {
     }),
   };
 });
-
-const catalogApi: CatalogApi = {
-  getEntityAncestors: jest.fn().mockImplementation(),
-  getLocationById: jest.fn().mockImplementation(),
-  getEntities: jest.fn().mockImplementation(),
-  getEntitiesByRefs: jest.fn().mockImplementation(),
-  queryEntities: jest.fn().mockImplementation(),
-  getEntityByRef: jest.fn().mockImplementation(),
-  refreshEntity: jest.fn().mockImplementation(),
-  getEntityFacets: jest.fn().mockImplementation(),
-  addLocation: jest.fn().mockImplementation(),
-  getLocationByRef: jest.fn().mockImplementation(),
-  removeLocationById: jest.fn().mockImplementation(),
-  removeEntityByUid: jest.fn().mockImplementation(),
-  validateEntity: jest.fn().mockImplementation(),
-};
 
 describe('REST policies api', () => {
   let app: express.Express;
@@ -135,7 +118,6 @@ describe('REST policies api', () => {
       policy: await RBACPermissionPolicy.build(
         logger,
         config,
-        catalogApi,
         mockEnforcer as Enforcer,
       ),
     };

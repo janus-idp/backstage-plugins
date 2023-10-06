@@ -13,7 +13,7 @@ describe('BackstageRoleManager', () => {
   };
 
   const loggerMock: any = {
-    warning: jest.fn().mockImplementation(),
+    warn: jest.fn().mockImplementation(),
     debug: jest.fn().mockImplementation(),
   };
 
@@ -192,14 +192,14 @@ describe('BackstageRoleManager', () => {
     //            |---------group:default/team-a---------|
     //            |                  |                   |
     // user:default/team-c group:default/team-b   group:default/team-d
-    //                                |
-    //                        user:default/mike
+    //            |                  |                   |
+    //   user:default/tom       user:default/mike    user:default:john
     //
     it('should return true for hasLink, when user:default/mike inherits from group:default/team-b', async () => {
       const groupAMock = createGroupEntity('team-a', undefined, [
         'team-b',
         'team-c',
-        'group-d',
+        'team-d',
       ]);
       const groupBMock = createGroupEntity('team-b', 'team-a', []);
       const groupCMock = createGroupEntity('team-c', 'team-a', []);
@@ -210,15 +210,22 @@ describe('BackstageRoleManager', () => {
         if (hasMember && hasMember[0] === 'user:default/mike') {
           return { items: [groupBMock] };
         }
+        if (hasMember && hasMember[0] === 'user:default/tom') {
+          return { items: [groupCMock] };
+        }
+        if (hasMember && hasMember[0] === 'user:default/john') {
+          return { items: [groupDMock] };
+        }
+
         const hasParent = arg.filter['relations.parentOf'];
         if (hasParent && hasParent[0] === 'group:default/team-b') {
           return { items: [groupAMock] };
         }
         if (hasParent && hasParent[0] === 'group:default/team-c') {
-          return { items: [groupCMock] };
+          return { items: [groupAMock] };
         }
         if (hasParent && hasParent[0] === 'group:default/team-d') {
-          return { items: [groupDMock] };
+          return { items: [groupAMock] };
         }
         return { items: [] };
       });
@@ -241,19 +248,17 @@ describe('BackstageRoleManager', () => {
     // user:default/mike
     //
     it('should return false for hasLink, when user:default/mike does not inherits from group:default/team-c', async () => {
-      const groupMock = createGroupEntity('team-b', 'team-a', []);
-      const groupParentMock = createGroupEntity('team-a', undefined, [
-        'team-b',
-      ]);
+      const groupBMock = createGroupEntity('team-b', 'team-a', []);
+      const groupAMock = createGroupEntity('team-a', undefined, ['team-b']);
 
       catalogApiMock.getEntities.mockImplementation((arg: any) => {
         const hasMember = arg.filter['relations.hasMember'];
         if (hasMember && hasMember[0] === 'user:default/mike') {
-          return { items: [groupMock] };
+          return { items: [groupBMock] };
         }
         const hasParent = arg.filter['relations.parentOf'];
         if (hasParent && hasParent[0] === 'group:default/team-b') {
-          return { items: [groupParentMock] };
+          return { items: [groupAMock] };
         }
         return { items: [] };
       });
@@ -355,17 +360,17 @@ describe('BackstageRoleManager', () => {
     // user:default/mike
     //
     it('should return false for hasLink, when user:default/mike inherits from group:default/team-a and group:default/team-b, but we have cycle dependency', async () => {
-      const groupMock = createGroupEntity('team-b', 'team-a', []);
-      const groupParentMock = createGroupEntity('team-a', 'team-b', ['team-b']);
+      const groupBMock = createGroupEntity('team-b', 'team-a', []);
+      const groupAMock = createGroupEntity('team-a', 'team-b', ['team-b']);
 
       catalogApiMock.getEntities.mockImplementation((arg: any) => {
         const hasMember = arg.filter['relations.hasMember'];
         if (hasMember && hasMember[0] === 'user:default/mike') {
-          return { items: [groupMock] };
+          return { items: [groupBMock] };
         }
         const hasParent = arg.filter['relations.parentOf'];
         if (hasParent && hasParent[0] === 'group:default/team-b') {
-          return { items: [groupParentMock] };
+          return { items: [groupAMock] };
         }
         return { items: [] };
       });
@@ -375,7 +380,7 @@ describe('BackstageRoleManager', () => {
         'group:default/team-b',
       );
       expect(result).toBeFalsy();
-      expect(loggerMock.warning).toHaveBeenCalledWith(
+      expect(loggerMock.warn).toHaveBeenCalledWith(
         'Detected cycle dependencies in the Group graph: [["group:default/team-a","group:default/team-b"]]. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for group: group:default/team-b',
       );
 
@@ -384,12 +389,12 @@ describe('BackstageRoleManager', () => {
         'group:default/team-a',
       );
       expect(result).toBeFalsy();
-      expect(loggerMock.warning).toHaveBeenCalledWith(
+      expect(loggerMock.warn).toHaveBeenCalledWith(
         'Detected cycle dependencies in the Group graph: [["group:default/team-a","group:default/team-b"]]. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for group: group:default/team-a',
       );
     });
 
-    // user:default/mike should inherits from group:default/team-b, group:default/team-a, group:default/team-c, but we have cycle dependency.
+    // user:default/mike should inherits from group:default/team-a, group:default/team-b, group:default/team-c, but we have cycle dependency.
     // So return false on call hasLink.
     //
     //     Hierarchy:
@@ -424,10 +429,19 @@ describe('BackstageRoleManager', () => {
 
       let result = await roleManager.hasLink(
         'user:default/mike',
+        'group:default/team-c',
+      );
+      expect(result).toBeFalsy();
+      expect(loggerMock.warn).toHaveBeenCalledWith(
+        'Detected cycle dependencies in the Group graph: [["group:default/team-a","group:default/team-b"]]. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for group: group:default/team-c',
+      );
+
+      result = await roleManager.hasLink(
+        'user:default/mike',
         'group:default/team-b',
       );
       expect(result).toBeFalsy();
-      expect(loggerMock.warning).toHaveBeenCalledWith(
+      expect(loggerMock.warn).toHaveBeenCalledWith(
         'Detected cycle dependencies in the Group graph: [["group:default/team-a","group:default/team-b"]]. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for group: group:default/team-b',
       );
 
@@ -436,7 +450,7 @@ describe('BackstageRoleManager', () => {
         'group:default/team-a',
       );
       expect(result).toBeFalsy();
-      expect(loggerMock.warning).toHaveBeenCalledWith(
+      expect(loggerMock.warn).toHaveBeenCalledWith(
         'Detected cycle dependencies in the Group graph: [["group:default/team-a","group:default/team-b"]]. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for group: group:default/team-a',
       );
     });
@@ -481,7 +495,7 @@ describe('BackstageRoleManager', () => {
         'group:default/team-a',
       );
       expect(result).toBeFalsy();
-      expect(loggerMock.warning).toHaveBeenCalledWith(
+      expect(loggerMock.warn).toHaveBeenCalledWith(
         'Detected cycle dependencies in the Group graph: [["group:default/team-a","group:default/team-c"]]. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for group: group:default/team-a',
       );
     });
@@ -546,7 +560,7 @@ describe('BackstageRoleManager', () => {
         'group:default/team-a',
       );
       expect(result).toBeFalsy();
-      expect(loggerMock.warning).toHaveBeenCalledWith(
+      expect(loggerMock.warn).toHaveBeenCalledWith(
         'Detected cycle dependencies in the Group graph: [["group:default/team-a","group:default/team-c"]]. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for group: group:default/team-a',
       );
 

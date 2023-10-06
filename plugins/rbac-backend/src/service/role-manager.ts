@@ -144,7 +144,7 @@ export class BackstageRoleManager implements RoleManager {
 
       memo.hasEntityRef(name2);
 
-      this.log.warning(
+      this.log.warn(
         `Detected cycle ${
           cycles.length > 0 ? 'dependencies' : 'dependency'
         } in the Group graph: ${JSON.stringify(

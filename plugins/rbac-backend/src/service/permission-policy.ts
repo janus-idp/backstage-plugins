@@ -1,4 +1,3 @@
-import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { ConfigApi } from '@backstage/core-plugin-api';
 import {
@@ -19,7 +18,6 @@ import { Enforcer, FileAdapter, newEnforcer, newModelFromString } from 'casbin';
 import { Logger } from 'winston';
 
 import { MODEL } from './permission-model';
-import { BackstageRoleManager } from './role-manager';
 
 const useAdmins = (admins: Config[], enf: Enforcer) => {
   admins.flatMap(async localConfig => {
@@ -64,12 +62,10 @@ const addPredefinedPolicies = async (
 export class RBACPermissionPolicy implements PermissionPolicy {
   private readonly enforcer: Enforcer;
   private readonly logger: Logger;
-  private readonly catalogApi: CatalogApi;
 
   public static async build(
     logger: Logger,
     configApi: ConfigApi,
-    catalogClient: CatalogApi,
     enf: Enforcer,
   ): Promise<RBACPermissionPolicy> {
     const adminUsers = configApi.getOptionalConfigArray(
@@ -88,17 +84,12 @@ export class RBACPermissionPolicy implements PermissionPolicy {
       useAdmins(adminUsers, enf);
     }
 
-    return new RBACPermissionPolicy(enf, logger, catalogClient);
+    return new RBACPermissionPolicy(enf, logger);
   }
 
-  private constructor(
-    enforcer: Enforcer,
-    logger: Logger,
-    catalogApi: CatalogApi,
-  ) {
+  private constructor(enforcer: Enforcer, logger: Logger) {
     this.enforcer = enforcer;
     this.logger = logger;
-    this.catalogApi = catalogApi;
   }
 
   async handle(
@@ -155,11 +146,6 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     }
 
     const entityRef = identity.userEntityRef;
-
-    const rm = new BackstageRoleManager(this.catalogApi, this.logger);
-    this.enforcer.setRoleManager(rm);
-    this.enforcer.enableAutoBuildRoleLinks(false);
-    await this.enforcer.buildRoleLinks();
 
     return await this.enforcer.enforce(entityRef, resourceType, action);
   };

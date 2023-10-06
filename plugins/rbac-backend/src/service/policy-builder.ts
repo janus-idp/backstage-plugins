@@ -17,6 +17,7 @@ import { CasbinDBAdapterFactory } from './casbin-adapter-factory';
 import { MODEL } from './permission-model';
 import { RBACPermissionPolicy } from './permission-policy';
 import { PolicesServer } from './policies-rest-api';
+import { BackstageRoleManager } from './role-manager';
 
 export class PolicyBuilder {
   public static async build(env: {
@@ -52,18 +53,17 @@ export class PolicyBuilder {
     await enf.enableAutoSave(true);
 
     const catalogClient = new CatalogClient({ discoveryApi: env.discovery });
+    const rm = new BackstageRoleManager(catalogClient, env.logger);
+    enf.setRoleManager(rm);
+    enf.enableAutoBuildRoleLinks(false);
+    await enf.buildRoleLinks();
 
     const options: RouterOptions = {
       config: env.config,
       logger: env.logger,
       discovery: env.discovery,
       identity: env.identity,
-      policy: await RBACPermissionPolicy.build(
-        env.logger,
-        env.config,
-        catalogClient,
-        enf,
-      ),
+      policy: await RBACPermissionPolicy.build(env.logger, env.config, enf),
     };
 
     const server = new PolicesServer(

@@ -8,12 +8,21 @@ import {
 } from '@backstage/plugin-permission-common';
 import { PolicyQuery } from '@backstage/plugin-permission-node';
 
-import { newEnforcer, newModelFromString, StringAdapter } from 'casbin';
+import {
+  Adapter,
+  Enforcer,
+  Model,
+  newEnforcer,
+  newModelFromString,
+  StringAdapter,
+} from 'casbin';
+import { Logger } from 'winston';
 
 import { resolve } from 'path';
 
 import { MODEL } from './permission-model';
 import { RBACPermissionPolicy } from './permission-policy';
+import { BackstageRoleManager } from './role-manager';
 
 const catalogApi = {
   getEntityAncestors: jest.fn().mockImplementation(),
@@ -31,6 +40,21 @@ const catalogApi = {
   validateEntity: jest.fn().mockImplementation(),
 };
 
+async function createEnforcer(
+  theModel: Model,
+  adapter: Adapter,
+  logger: Logger,
+): Promise<Enforcer> {
+  const enf = await newEnforcer(theModel, adapter);
+
+  const rm = new BackstageRoleManager(catalogApi, logger);
+  enf.setRoleManager(rm);
+  enf.enableAutoBuildRoleLinks(false);
+  await enf.buildRoleLinks();
+
+  return enf;
+}
+
 describe('RBACPermissionPolicy Tests', () => {
   it('should build', async () => {
     const adapter = new StringAdapter(
@@ -38,13 +62,11 @@ describe('RBACPermissionPolicy Tests', () => {
     );
     const config = newConfigReader();
     const theModel = newModelFromString(MODEL);
-    const enf = await newEnforcer(theModel, adapter);
-    const policy = await RBACPermissionPolicy.build(
-      getVoidLogger(),
-      config,
-      catalogApi,
-      enf,
-    );
+    const logger = getVoidLogger();
+    const enf = await createEnforcer(theModel, adapter, logger);
+
+    const policy = await RBACPermissionPolicy.build(logger, config, enf);
+
     expect(policy).not.toBeNull();
   });
 
@@ -66,13 +88,11 @@ describe('RBACPermissionPolicy Tests', () => {
         },
       });
       const theModel = newModelFromString(MODEL);
-      const enf = await newEnforcer(theModel, adapter);
-      policy = await RBACPermissionPolicy.build(
-        getVoidLogger(),
-        config,
-        catalogApi,
-        enf,
-      );
+      const logger = getVoidLogger();
+      const enf = await createEnforcer(theModel, adapter, logger);
+
+      policy = await RBACPermissionPolicy.build(logger, config, enf);
+
       catalogApi.getEntities.mockReturnValue({ items: [] });
     });
 
@@ -129,19 +149,11 @@ describe('RBACPermissionPolicy Tests', () => {
       );
       const config = newConfigReader();
       const theModel = newModelFromString(MODEL);
-      const enf = await newEnforcer(theModel, adapter);
-      policy = await RBACPermissionPolicy.build(
-        getVoidLogger(),
-        config,
-        catalogApi,
-        enf,
-      );
-      policy = await RBACPermissionPolicy.build(
-        getVoidLogger(),
-        config,
-        catalogApi,
-        enf,
-      );
+      const logger = getVoidLogger();
+      const enf = await createEnforcer(theModel, adapter, logger);
+
+      policy = await RBACPermissionPolicy.build(logger, config, enf);
+
       catalogApi.getEntities.mockReturnValue({ items: [] });
     });
     // +-------+------+------------------------+
@@ -343,13 +355,11 @@ describe('Policy checks for users and groups', () => {
     );
     const config = newConfigReader();
     const theModel = newModelFromString(MODEL);
-    const enf = await newEnforcer(theModel, adapter);
-    policy = await RBACPermissionPolicy.build(
-      getVoidLogger(),
-      config,
-      catalogApi,
-      enf,
-    );
+    const logger = getVoidLogger();
+    const enf = await createEnforcer(theModel, adapter, logger);
+
+    policy = await RBACPermissionPolicy.build(logger, config, enf);
+
     catalogApi.getEntities.mockReset();
   });
 
