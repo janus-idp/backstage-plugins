@@ -25,7 +25,7 @@ export const useNexusRepositoryManagerAppData = ({
 
       acc.repositories.push(repository);
       const query = v.query
-        ? Object.assign(acc.query, v.query(repository))
+        ? Object.assign(acc.query, v.query(repository), { sort: 'version' })
         : acc.query;
 
       return {
