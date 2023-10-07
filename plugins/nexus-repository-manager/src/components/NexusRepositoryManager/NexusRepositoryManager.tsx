@@ -63,6 +63,7 @@ export function NexusRepositoryManager() {
     );
 
     return {
+      id: component.id,
       version: component.version,
       // TODO should we include maven groupID
       artifact: component.name,

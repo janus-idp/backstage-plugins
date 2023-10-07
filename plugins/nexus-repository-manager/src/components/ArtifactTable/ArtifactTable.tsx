@@ -9,6 +9,7 @@ import { formatByteSize } from '@janus-idp/shared-react';
 import type { AssetHash } from '../../types';
 
 export type ArtifactRowData = {
+  id?: string;
   version?: string;
   artifact?: string;
   assetVariants: Set<string>;
@@ -90,13 +91,21 @@ export const ArtifactTable = ({
         </Box>
       ),
       customFilterAndSearch: (term, rowData) => {
-        if (!rowData.hash) return false;
+        if (!rowData.hash) {
+          return false;
+        }
         return rowData.hash.value.includes(term);
       },
       customSort: (a, b) => {
-        if (!a.hash) return -1;
-        if (!b.hash) return 1;
-        if (a.hash.value === b.hash.value) return 0;
+        if (!a.hash) {
+          return -1;
+        }
+        if (!b.hash) {
+          return 1;
+        }
+        if (a.hash.value === b.hash.value) {
+          return 0;
+        }
         return a.hash.value < b.hash.value ? -1 : 1;
       },
     },
