@@ -1,5 +1,4 @@
 import React from 'react';
-import useAsync from 'react-use/lib/useAsync';
 
 import {
   Progress,
@@ -7,10 +6,9 @@ import {
   Table,
   TableColumn,
 } from '@backstage/core-components';
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
 
-import { listNotifications } from '../../notificationsService';
-import { Notification } from '../../types';
+import { Notification, notificationsApiRef } from '../../api';
 
 // import { makeStyles } from '@material-ui/core/styles';
 
@@ -30,9 +28,9 @@ export const DenseTable = ({ notifications }: DenseTableProps) => {
   // const classes = useStyles();
 
   const columns: TableColumn[] = [
-    { title: 'ID', field: 'id' },
-    { title: 'Subject', field: 'subject' },
-    { title: 'Message', field: 'body' },
+    { title: 'ID', field: 'metadata.uuid' },
+    { title: 'Title', field: 'spec.title' },
+    { title: 'Message', field: 'spec.message' },
   ];
 
   const data = notifications.map(notification => {
@@ -52,19 +50,47 @@ export const DenseTable = ({ notifications }: DenseTableProps) => {
 };
 
 export const ParodosNotificationsTable = () => {
-  const config = useApi(configApiRef);
-  const backendUrl = config.getString('backend.baseUrl');
+  const notificationsApi = useApi(notificationsApiRef);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [error, setError] = React.useState<Error | undefined>(undefined);
+  const [notifications, setNotifications] = React.useState<Notification[]>([]);
 
-  const { value, loading, error } = useAsync(
-    async (): Promise<Notification[]> => listNotifications(backendUrl),
-    [backendUrl],
-  );
+  React.useEffect(() => {
+    const subscription = notificationsApi
+      .getNotifications(/* params */)
+      .subscribe({
+        next: (notification: Notification) => {
+          setIsLoading(false);
+          setNotifications(prevState => {
+            const newState = [...prevState];
+            const oldIndex = prevState.findIndex(
+              n => n.metadata.uuid === notification.metadata.uuid,
+            );
+            if (oldIndex >= 0) {
+              newState[oldIndex] = notification;
+            } else {
+              newState.push(notification);
+            }
+            return newState;
+          });
+        },
+        error: (err: any) => setError(err),
+        complete: () => {
+          // eslint-disable-next-line no-console
+          console.log('----- Complete ');
+        },
+      });
 
-  if (loading) {
-    return <Progress />;
-  } else if (error) {
+    return () => subscription.unsubscribe();
+  }, [notificationsApi]);
+
+  if (error) {
     return <ResponseErrorPanel error={error} />;
   }
 
-  return <DenseTable notifications={value || []} />;
+  if (isLoading) {
+    return <Progress />;
+  }
+
+  return <DenseTable notifications={notifications} />;
 };
