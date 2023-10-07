@@ -1,4 +1,4 @@
-import { Notification } from './types';
+import { Notification } from './api';
 
 export const listNotifications = async (
   backendUrl: string,
@@ -8,5 +8,26 @@ export const listNotifications = async (
   if (response.status !== 200 && response.status !== 201) {
     throw new Error(data.message);
   }
-  return data;
+
+  if (!Array.isArray(data)) {
+    throw new Error('Unexpected format of notifications received');
+  }
+
+  const notifications: Notification[] = data.map(received => ({
+    kind: 'Notification',
+    metadata: {
+      timestamp: new Date(0 /* TODO: missing in response */),
+      uuid: received.id,
+      // TODO: labels or other fields
+    },
+    spec: {
+      title: received.subject,
+      message: received.message,
+      actions: [
+        /* TODO */
+      ],
+    },
+  }));
+
+  return notifications;
 };
