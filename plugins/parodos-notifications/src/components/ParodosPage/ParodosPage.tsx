@@ -1,26 +1,25 @@
 import React from 'react';
 
-import {
-  Content,
-  ContentHeader,
-  // Header,
-  Page,
-} from '@backstage/core-components';
+import { Page, RoutedTabs } from '@backstage/core-components';
 
-import { Grid } from '@material-ui/core';
-
-import { ParodosNotificationsTable } from '../ParodosNotificationsTable';
+import { MonitoringNotifications } from '../MonitoringNotifications';
+import { PersonalNotifications } from '../PersonalNotifications';
 
 export const ParodosPage = () => (
   <Page themeId="tool">
-    {/* <Header title="Parodos" subtitle="TODO: Optional subtitle to be written"/> */}
-    <Content>
-      <ContentHeader title="Parodos" />
-      <Grid container spacing={3} direction="column">
-        <Grid item>
-          <ParodosNotificationsTable />
-        </Grid>
-      </Grid>
-    </Content>
+    <RoutedTabs
+      routes={[
+        {
+          path: 'personal',
+          title: 'Personal',
+          children: <PersonalNotifications />,
+        },
+        {
+          path: 'monitoring',
+          title: 'Monitoring',
+          children: <MonitoringNotifications />,
+        },
+      ]}
+    />
   </Page>
 );
