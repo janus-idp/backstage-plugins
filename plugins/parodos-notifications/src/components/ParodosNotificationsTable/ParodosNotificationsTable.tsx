@@ -8,6 +8,8 @@ import {
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
+import { Button } from '@material-ui/core';
+
 import { Notification, notificationsApiRef } from '../../api';
 
 // import { makeStyles } from '@material-ui/core/styles';
@@ -31,9 +33,29 @@ export const DenseTable = ({ notifications }: DenseTableProps) => {
     { title: 'ID', field: 'metadata.uuid' },
     { title: 'Title', field: 'spec.title' },
     { title: 'Message', field: 'spec.message' },
+    {
+      title: 'Actions',
+      render: (row: unknown): React.ReactNode => {
+        const data = row as Notification;
+        return (
+          <>
+            <Button
+              variant="outlined"
+              onClick={() => {
+                // eslint-disable-next-line no-console
+                console.log('-- TODO: markAsRead: ', data.metadata.uuid);
+              }}
+            >
+              Mark as read
+            </Button>
+          </>
+        );
+      },
+    },
   ];
 
   const data = notifications.map(notification => {
+    // TODO: additional mapping between the Notification type and the table
     return {
       ...notification,
     };
@@ -42,7 +64,7 @@ export const DenseTable = ({ notifications }: DenseTableProps) => {
   return (
     <Table
       title="Notifications"
-      options={{ search: false, paging: false }}
+      options={{ search: true, paging: true }}
       columns={columns}
       data={data}
     />
