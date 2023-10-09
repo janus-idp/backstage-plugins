@@ -5,7 +5,7 @@ import { Page, RoutedTabs } from '@backstage/core-components';
 import { MonitoringNotifications } from '../MonitoringNotifications';
 import { PersonalNotifications } from '../PersonalNotifications';
 
-export const ParodosPage = () => (
+export const NotificationsPage = () => (
   <Page themeId="tool">
     <RoutedTabs
       routes={[
