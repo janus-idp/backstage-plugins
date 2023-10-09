@@ -1,7 +1,6 @@
 import React from 'react';
 
 import {
-  Progress,
   ResponseErrorPanel,
   Table,
   TableColumn,
@@ -73,7 +72,7 @@ export const DenseTable = ({ notifications }: DenseTableProps) => {
 
 export const ParodosNotificationsTable = () => {
   const notificationsApi = useApi(notificationsApiRef);
-  const [isLoading, setIsLoading] = React.useState(true);
+  // const [isLoading, setIsLoading] = React.useState(true);
   const [error, setError] = React.useState<Error | undefined>(undefined);
   const [notifications, setNotifications] = React.useState<Notification[]>([]);
 
@@ -82,7 +81,7 @@ export const ParodosNotificationsTable = () => {
       .getNotifications(/* params */)
       .subscribe({
         next: (notification: Notification) => {
-          setIsLoading(false);
+          // setIsLoading(false);
           setNotifications(prevState => {
             const newState = [...prevState];
             const oldIndex = prevState.findIndex(
@@ -110,9 +109,9 @@ export const ParodosNotificationsTable = () => {
     return <ResponseErrorPanel error={error} />;
   }
 
-  if (isLoading) {
-    return <Progress />;
-  }
+  // if (isLoading) {
+  //   return <Progress />;
+  // }
 
   return <DenseTable notifications={notifications} />;
 };
