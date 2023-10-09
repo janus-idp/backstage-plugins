@@ -1,6 +1,6 @@
-# myplugin
+# Notifications
 
-Welcome to the myplugin backend plugin!
+Welcome to the Notifications backend plugin!
 
 ## Getting started
 
@@ -31,7 +31,7 @@ sudo systemctl enable --now postgresql.service
 yarn start:backstage
 ```
 
-A new DB will be created: backstage_plugin_myplugin
+A new DB will be created: backstage_plugin_notifications
 
 - Create a table for messages. In order to login to Postgres use these command:
 
@@ -43,7 +43,7 @@ psql
 In the psql prompt use these commands for creating the table:
 
 ```sql
-\c backstage_plugin_myplugin
+\c backstage_plugin_notifications
 create table messages (id SERIAL, subject VARCHAR(255), body TEXT);
 ```
 
@@ -54,7 +54,7 @@ create table messages (id SERIAL, subject VARCHAR(255), body TEXT);
 Request:
 
 ```bash
-curl -X POST http://localhost:7007/api/myplugin/notifications -H "Content-Type: application/json"  -d '{"subject": "my first message", "body": "I have nothing to talk about"}'
+curl -X POST http://localhost:7007/api/notifications/notifications -H "Content-Type: application/json"  -d '{"subject": "my first message", "body": "I have nothing to talk about"}'
 ```
 
 Response:
@@ -68,7 +68,7 @@ Response:
 Request:
 
 ```bash
-curl http://localhost:7007/api/myplugin/notifications
+curl http://localhost:7007/api/notifications/notifications
 ```
 
 Response:
@@ -93,7 +93,7 @@ Response:
 Request:
 
 ```bash
-curl http://localhost:7007/api/myplugin/notifications/count
+curl http://localhost:7007/api/notifications/notifications/count
 ```
 
 Response:
