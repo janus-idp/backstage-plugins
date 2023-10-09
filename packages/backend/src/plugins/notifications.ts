@@ -1,4 +1,7 @@
-import { createRouter, RouterOptions } from '@internal/plugin-myplugin-backend';
+import {
+  createRouter,
+  RouterOptions,
+} from '@internal/plugin-notifications-backend';
 import { Router } from 'express';
 
 import { PluginEnvironment } from '../types';

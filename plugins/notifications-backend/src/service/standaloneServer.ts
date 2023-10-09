@@ -15,7 +15,7 @@ export interface ServerOptions {
 export async function startStandaloneServer(
   options: ServerOptions,
 ): Promise<Server> {
-  const logger = options.logger.child({ service: 'myplugin-backend' });
+  const logger = options.logger.child({ service: 'notifications-backend' });
 
   logger.debug('Starting application server...');
   const router = await createRouter({
@@ -25,7 +25,7 @@ export async function startStandaloneServer(
 
   let service = createServiceBuilder(module)
     .setPort(options.port)
-    .addRouter('/myplugin', router);
+    .addRouter('/notifications', router);
   if (options.enableCors) {
     service = service.enableCors({ origin: 'http://localhost:3000' });
   }
