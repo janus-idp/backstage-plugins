@@ -19,10 +19,11 @@ const readNotifications = (
       subscriber.error(reason);
     })
     .then((notifications: Notification[] | void) => {
-      if (Array.isArray(notifications))
+      if (Array.isArray(notifications) && notifications.length > 0) {
         notifications.forEach(n => {
           subscriber.next(n);
         });
+      }
     });
 export class NotificationsApiImpl implements NotificationsApiV1 {
   // private readonly configApi: ConfigApi;
