@@ -9,8 +9,8 @@ import {
 import { NotificationsApiImpl, notificationsApiRef } from './api';
 import { rootRouteRef } from './routes';
 
-export const parodosNotificationsPlugin = createPlugin({
-  id: 'parodos-notifications',
+export const notificationsPlugin = createPlugin({
+  id: 'notifications',
   routes: {
     root: rootRouteRef,
   },
@@ -28,11 +28,11 @@ export const parodosNotificationsPlugin = createPlugin({
   ],
 });
 
-export const ParodosNotificationsPage = parodosNotificationsPlugin.provide(
+export const NotificationsPage = notificationsPlugin.provide(
   createRoutableExtension({
-    name: 'ParodosNotificationsPage',
+    name: 'NotificationsPage',
     component: () =>
-      import('./components/ParodosPage').then(m => m.ParodosPage),
+      import('./components/NotificationsPage').then(m => m.NotificationsPage),
     mountPoint: rootRouteRef,
   }),
 );

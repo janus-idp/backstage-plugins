@@ -70,7 +70,7 @@ export const DenseTable = ({ notifications }: DenseTableProps) => {
   );
 };
 
-export const ParodosNotificationsTable = () => {
+export const NotificationsTable = () => {
   const notificationsApi = useApi(notificationsApiRef);
   // const [isLoading, setIsLoading] = React.useState(true);
   const [error, setError] = React.useState<Error | undefined>(undefined);

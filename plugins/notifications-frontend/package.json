@@ -1,5 +1,5 @@
 {
-  "name": "@backstage/plugin-parodos-notifications",
+  "name": "@backstage/plugin-notifications-frontend",
   "version": "0.1.0",
   "main": "src/index.ts",
   "types": "src/index.ts",

@@ -2,7 +2,7 @@
   "extends": ["//"],
   "pipeline": {
     "tsc": {
-      "outputs": ["../../dist-types/plugins/parodos-notifications/**"],
+      "outputs": ["../../dist-types/plugins/notifications-frontend/**"],
       "dependsOn": ["^tsc"]
     }
   }
