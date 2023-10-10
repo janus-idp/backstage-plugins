@@ -68,8 +68,11 @@ export function NexusRepositoryManager() {
     return {
       id: component.id,
       version: component.version,
-      // TODO should we include maven groupID
-      artifact: component.name,
+      artifact:
+        // Include groupID for maven components
+        component.format === 'maven2' && component.group
+          ? `${component.group}:${component.name}`
+          : component.name,
       assetVariants: getAssetVariants(component),
       repositoryType: component.repository,
       hash: getHash(firstAsset),

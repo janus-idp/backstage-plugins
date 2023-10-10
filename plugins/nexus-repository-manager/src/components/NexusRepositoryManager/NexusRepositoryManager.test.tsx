@@ -164,6 +164,86 @@ describe('NexusRepositoryManager', () => {
     expect(queryByTestId('nexus-repository-manager-table')).not.toBeNull();
     expect(queryByTestId('nexus-repository-manager-empty-table')).toBeNull();
   });
+
+  it('should display groupID for maven components', () => {
+    (useAsync as jest.Mock).mockReturnValue({
+      loading: false,
+      value: [
+        {
+          component: {
+            assets: [
+              {
+                checksum: {
+                  md5: 'f425b239d1ba676c94e00b5cb6669cf3',
+                  sha1: 'a1b535139baaa29dad30c6df6ccfa217c5cf99db',
+                },
+                contentType: 'application/java-archive',
+                downloadUrl:
+                  'https://localhost:8081/repository/proxied-maven-central/com/example/will-halt/0.7.6/will-halt-0.7.6.jar',
+                fileSize: 1000000,
+                format: 'maven2',
+                id: 'cHJveGllZC1tYXZlbi1jZW50cmFsMjplZGJkNTJmMzM2NGU3NDg2MzIwOGE2YjgxZjZhNWZhMA',
+                lastDownloaded: undefined,
+                lastModified: '2019-04-17T03:31:58.000+00:00',
+                maven2: {
+                  artifactId: 'will-halt',
+                  extension: 'jar',
+                  groupId: 'com.example',
+                  version: '0.7.6',
+                },
+                path: 'com/example/will-halt/0.7.6/will-halt-0.7.6.jar',
+                repository: 'proxied-maven-central',
+                uploader: 'anonymous',
+                uploaderIp: '10.10.4.14',
+              },
+              {
+                checksum: {
+                  md5: 'ae074b24058b49b6b668f0639570b609',
+                  sha1: 'ca9b66d3cd47be4fbab4624f73f8346b97c210a2',
+                },
+                contentType: 'text/plain',
+                downloadUrl:
+                  'https://localhost:8081/repository/proxied-maven-central/com/example/will-halt/0.7.6/will-halt-0.7.6.jar.sha1',
+                fileSize: 0,
+                format: 'maven2',
+                id: 'cHJveGllZC1tYXZlbi1jZW50cmFsMjplZGJkNTJmMzM2NGU3NDg2MmI1Zjg1MmRlZDY5ZTRjNQ',
+                lastDownloaded: undefined,
+                lastModified: '2019-04-17T03:32:02.000+00:00',
+                maven2: {
+                  artifactId: 'will-halt',
+                  extension: 'jar.sha1',
+                  groupId: 'com.example',
+                  version: '0.7.6',
+                },
+                path: 'com/example/will-halt/0.7.6/will-halt-0.7.6.jar.sha1',
+                repository: 'proxied-maven-central',
+                uploader: 'anonymous',
+                uploaderIp: '10.10.4.14',
+              },
+            ],
+            format: 'maven2',
+            group: 'com.example',
+            id: 'cHJveGllZC1tYXZlbi1jZW50cmFsMjo4ZmI0MzBjOWRmMjA3MTBjMTYyOTA3ODhiNjQ1YjMxZg',
+            name: 'will-halt',
+            repository: 'proxied-maven-central',
+            tags: [],
+            version: '0.7.6',
+          },
+          dockerManifests: [],
+        },
+      ],
+    });
+    const { queryByTestId } = render(
+      <BrowserRouter>
+        <NexusRepositoryManager />
+      </BrowserRouter>,
+    );
+    expect(
+      queryByTestId('nexus-repository-manager-table')?.querySelectorAll(
+        'tbody tr',
+      )[0].textContent,
+    ).toContain('com.example');
+  });
 });
 
 describe('getAssetVariants', () => {
