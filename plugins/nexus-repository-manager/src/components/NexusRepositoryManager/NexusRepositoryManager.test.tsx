@@ -194,7 +194,7 @@ describe('NexusRepositoryManager', () => {
                 path: 'com/example/will-halt/0.7.6/will-halt-0.7.6.jar',
                 repository: 'proxied-maven-central',
                 uploader: 'anonymous',
-                uploaderIp: '10.10.4.14',
+                uploaderIp: '0.0.0.0',
               },
               {
                 checksum: {
@@ -218,7 +218,7 @@ describe('NexusRepositoryManager', () => {
                 path: 'com/example/will-halt/0.7.6/will-halt-0.7.6.jar.sha1',
                 repository: 'proxied-maven-central',
                 uploader: 'anonymous',
-                uploaderIp: '10.10.4.14',
+                uploaderIp: '0.0.0.0',
               },
             ],
             format: 'maven2',
@@ -272,7 +272,7 @@ describe('getAssetVariants', () => {
           path: 'com/example/will-halt/0.7.6/will-halt-0.7.6.jar',
           repository: 'proxied-maven-central',
           uploader: 'anonymous',
-          uploaderIp: '10.10.4.14',
+          uploaderIp: '0.0.0.0',
         },
         {
           checksum: {
@@ -296,7 +296,7 @@ describe('getAssetVariants', () => {
           path: 'com/example/will-halt/0.7.6/will-halt-0.7.6.jar.sha1',
           repository: 'proxied-maven-central',
           uploader: 'anonymous',
-          uploaderIp: '10.10.4.14',
+          uploaderIp: '0.0.0.0',
         },
         {
           checksum: {
@@ -320,7 +320,7 @@ describe('getAssetVariants', () => {
           path: 'com/example/will-halt/0.7.6/will-halt-0.7.6.pom',
           repository: 'proxied-maven-central',
           uploader: 'anonymous',
-          uploaderIp: '10.10.4.14',
+          uploaderIp: '0.0.0.0',
         },
         {
           checksum: {
@@ -344,7 +344,7 @@ describe('getAssetVariants', () => {
           path: 'com/example/will-halt/0.7.6/will-halt-0.7.6.pom.sha1',
           repository: 'proxied-maven-central',
           uploader: 'anonymous',
-          uploaderIp: '10.10.4.14',
+          uploaderIp: '0.0.0.0',
         },
       ],
       format: 'maven2',
@@ -385,7 +385,7 @@ describe('getAssetVariants', () => {
           path: 'com/example/will-halt/0.7.6/will-halt-0.7.6.jar',
           repository: 'proxied-maven-central',
           uploader: 'anonymous',
-          uploaderIp: '10.10.4.14',
+          uploaderIp: '0.0.0.0',
         },
         {
           checksum: {
@@ -410,7 +410,7 @@ describe('getAssetVariants', () => {
           path: 'com/example/will-halt/0.7.6/will-halt-0.7.6-sources.jar',
           repository: 'proxied-maven-central',
           uploader: 'anonymous',
-          uploaderIp: '10.10.4.14',
+          uploaderIp: '0.0.0.0',
         },
       ],
       format: 'maven2',
@@ -433,12 +433,12 @@ describe('getAssetVariants', () => {
       format: 'maven2',
       group: 'com.example',
       name: 'solve-world-hunger',
-      version: '1.0.14.1',
+      version: '0.0.0.0',
       assets: [
         {
           downloadUrl:
-            'http://localhost:8081/repository/maven-releases/com/example/solve-world-hunger/1.0.14.1/solve-world-hunger-1.0.14.1.pom',
-          path: 'com/example/solve-world-hunger/1.0.14.1/solve-world-hunger-1.0.14.1.pom',
+            'http://localhost:8081/repository/maven-releases/com/example/solve-world-hunger/0.0.0.0/solve-world-hunger-0.0.0.0.pom',
+          path: 'com/example/solve-world-hunger/0.0.0.0/solve-world-hunger-0.0.0.0.pom',
           id: 'bWF2ZW4tcmVsZWFzZXM6OWE1MzVmODc1ZDY5NWRjZDRkNjI0N2E1MGRkNGZhODg',
           repository: 'maven-releases',
           format: 'maven2',
@@ -450,19 +450,19 @@ describe('getAssetVariants', () => {
           lastModified: '2020-03-10T14:33:10.271+00:00',
           lastDownloaded: undefined,
           uploader: 'jenkins_ng',
-          uploaderIp: '10.25.6.112',
+          uploaderIp: '0.0.0.0',
           fileSize: 0,
           maven2: {
             extension: 'pom',
             groupId: 'com.example',
             artifactId: 'solve-world-hunger',
-            version: '1.0.14.1',
+            version: '0.0.0.0',
           },
         },
         {
           downloadUrl:
-            'http://localhost:8081/repository/maven-releases/com/example/solve-world-hunger/1.0.14.1/solve-world-hunger-1.0.14.1.pom.md5',
-          path: 'com/example/solve-world-hunger/1.0.14.1/solve-world-hunger-1.0.14.1.pom.md5',
+            'http://localhost:8081/repository/maven-releases/com/example/solve-world-hunger/0.0.0.0/solve-world-hunger-0.0.0.0.pom.md5',
+          path: 'com/example/solve-world-hunger/0.0.0.0/solve-world-hunger-0.0.0.0.pom.md5',
           id: 'bWF2ZW4tcmVsZWFzZXM6OWE1MzVmODc1ZDY5NWRjZGMzNzNkZWQzMzgyODhiY2U',
           repository: 'maven-releases',
           format: 'maven2',
@@ -474,19 +474,19 @@ describe('getAssetVariants', () => {
           lastModified: '2020-03-10T14:33:10.296+00:00',
           lastDownloaded: undefined,
           uploader: 'jenkins_ng',
-          uploaderIp: '10.25.6.112',
+          uploaderIp: '0.0.0.0',
           fileSize: 0,
           maven2: {
             extension: 'pom.md5',
             groupId: 'com.example',
             artifactId: 'solve-world-hunger',
-            version: '1.0.14.1',
+            version: '0.0.0.0',
           },
         },
         {
           downloadUrl:
-            'http://localhost:8081/repository/maven-releases/com/example/solve-world-hunger/1.0.14.1/solve-world-hunger-1.0.14.1.pom.sha1',
-          path: 'com/example/solve-world-hunger/1.0.14.1/solve-world-hunger-1.0.14.1.pom.sha1',
+            'http://localhost:8081/repository/maven-releases/com/example/solve-world-hunger/0.0.0.0/solve-world-hunger-0.0.0.0.pom.sha1',
+          path: 'com/example/solve-world-hunger/0.0.0.0/solve-world-hunger-0.0.0.0.pom.sha1',
           id: 'bWF2ZW4tcmVsZWFzZXM6OWE1MzVmODc1ZDY5NWRjZGFjNDAwZjViNTQ5YTIyODM',
           repository: 'maven-releases',
           format: 'maven2',
@@ -498,19 +498,19 @@ describe('getAssetVariants', () => {
           lastModified: '2020-03-10T14:33:10.284+00:00',
           lastDownloaded: undefined,
           uploader: 'jenkins_ng',
-          uploaderIp: '10.25.6.112',
+          uploaderIp: '0.0.0.0',
           fileSize: 0,
           maven2: {
             extension: 'pom.sha1',
             groupId: 'com.example',
             artifactId: 'solve-world-hunger',
-            version: '1.0.14.1',
+            version: '0.0.0.0',
           },
         },
         {
           downloadUrl:
-            'http://localhost:8081/repository/maven-releases/com/example/solve-world-hunger/1.0.14.1/solve-world-hunger-1.0.14.1.tar.gz',
-          path: 'com/example/solve-world-hunger/1.0.14.1/solve-world-hunger-1.0.14.1.tar.gz',
+            'http://localhost:8081/repository/maven-releases/com/example/solve-world-hunger/0.0.0.0/solve-world-hunger-0.0.0.0.tar.gz',
+          path: 'com/example/solve-world-hunger/0.0.0.0/solve-world-hunger-0.0.0.0.tar.gz',
           id: 'bWF2ZW4tcmVsZWFzZXM6OWE1MzVmODc1ZDY5NWRjZGQ3YTU3OGFmOTY4Yjc5NDg',
           repository: 'maven-releases',
           format: 'maven2',
@@ -522,19 +522,19 @@ describe('getAssetVariants', () => {
           lastModified: '2020-03-10T14:33:10.357+00:00',
           lastDownloaded: undefined,
           uploader: 'jenkins_ng',
-          uploaderIp: '10.25.6.112',
+          uploaderIp: '0.0.0.0',
           fileSize: 0,
           maven2: {
             extension: 'tar.gz',
             groupId: 'com.example',
             artifactId: 'solve-world-hunger',
-            version: '1.0.14.1',
+            version: '0.0.0.0',
           },
         },
         {
           downloadUrl:
-            'http://localhost:8081/repository/maven-releases/com/example/solve-world-hunger/1.0.14.1/solve-world-hunger-1.0.14.1.tar.gz.md5',
-          path: 'com/example/solve-world-hunger/1.0.14.1/solve-world-hunger-1.0.14.1.tar.gz.md5',
+            'http://localhost:8081/repository/maven-releases/com/example/solve-world-hunger/0.0.0.0/solve-world-hunger-0.0.0.0.tar.gz.md5',
+          path: 'com/example/solve-world-hunger/0.0.0.0/solve-world-hunger-0.0.0.0.tar.gz.md5',
           id: 'bWF2ZW4tcmVsZWFzZXM6OWE1MzVmODc1ZDY5NWRjZDY1MzhmNjMxNTY1MWI1Yzc',
           repository: 'maven-releases',
           format: 'maven2',
@@ -546,19 +546,19 @@ describe('getAssetVariants', () => {
           lastModified: '2020-03-10T14:33:10.379+00:00',
           lastDownloaded: undefined,
           uploader: 'jenkins_ng',
-          uploaderIp: '10.25.6.112',
+          uploaderIp: '0.0.0.0',
           fileSize: 0,
           maven2: {
             extension: 'tar.gz.md5',
             groupId: 'com.example',
             artifactId: 'solve-world-hunger',
-            version: '1.0.14.1',
+            version: '0.0.0.0',
           },
         },
         {
           downloadUrl:
-            'http://localhost:8081/repository/maven-releases/com/example/solve-world-hunger/1.0.14.1/solve-world-hunger-1.0.14.1.tar.gz.sha1',
-          path: 'com/example/solve-world-hunger/1.0.14.1/solve-world-hunger-1.0.14.1.tar.gz.sha1',
+            'http://localhost:8081/repository/maven-releases/com/example/solve-world-hunger/0.0.0.0/solve-world-hunger-0.0.0.0.tar.gz.sha1',
+          path: 'com/example/solve-world-hunger/0.0.0.0/solve-world-hunger-0.0.0.0.tar.gz.sha1',
           id: 'bWF2ZW4tcmVsZWFzZXM6OWE1MzVmODc1ZDY5NWRjZDI2MWQ5YTBkOTA0OGIzNzU',
           repository: 'maven-releases',
           format: 'maven2',
@@ -570,13 +570,13 @@ describe('getAssetVariants', () => {
           lastModified: '2020-03-10T14:33:10.368+00:00',
           lastDownloaded: undefined,
           uploader: 'jenkins_ng',
-          uploaderIp: '10.25.6.112',
+          uploaderIp: '0.0.0.0',
           fileSize: 0,
           maven2: {
             extension: 'tar.gz.sha1',
             groupId: 'com.example',
             artifactId: 'solve-world-hunger',
-            version: '1.0.14.1',
+            version: '0.0.0.0',
           },
         },
       ],

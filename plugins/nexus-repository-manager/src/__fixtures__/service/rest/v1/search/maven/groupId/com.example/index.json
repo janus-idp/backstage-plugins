@@ -22,7 +22,7 @@
           "lastModified": "2019-04-17T03:31:58.000+00:00",
           "lastDownloaded": null,
           "uploader": "anonymous",
-          "uploaderIp": "10.10.4.14",
+          "uploaderIp": "0.0.0.0",
           "fileSize": 0,
           "maven2": {
             "extension": "jar",
@@ -45,7 +45,7 @@
           "lastModified": "2019-04-17T03:32:02.000+00:00",
           "lastDownloaded": null,
           "uploader": "anonymous",
-          "uploaderIp": "10.10.4.14",
+          "uploaderIp": "0.0.0.0",
           "fileSize": 0,
           "maven2": {
             "extension": "jar.sha1",
@@ -68,7 +68,7 @@
           "lastModified": "2019-04-17T03:32:04.000+00:00",
           "lastDownloaded": null,
           "uploader": "anonymous",
-          "uploaderIp": "10.10.4.14",
+          "uploaderIp": "0.0.0.0",
           "fileSize": 0,
           "maven2": {
             "extension": "pom",
@@ -91,7 +91,7 @@
           "lastModified": "2019-04-17T03:32:17.000+00:00",
           "lastDownloaded": null,
           "uploader": "anonymous",
-          "uploaderIp": "10.10.4.14",
+          "uploaderIp": "0.0.0.0",
           "fileSize": 0,
           "maven2": {
             "extension": "pom.sha1",
@@ -125,7 +125,7 @@
           "lastModified": "2019-12-04T20:51:33.000+00:00",
           "lastDownloaded": null,
           "uploader": "anonymous",
-          "uploaderIp": "10.25.1.93",
+          "uploaderIp": "0.0.0.0",
           "fileSize": 0,
           "maven2": {
             "extension": "jar",
@@ -148,7 +148,7 @@
           "lastModified": "2019-12-04T20:51:33.000+00:00",
           "lastDownloaded": null,
           "uploader": "anonymous",
-          "uploaderIp": "10.25.1.93",
+          "uploaderIp": "0.0.0.0",
           "fileSize": 0,
           "maven2": {
             "extension": "jar.sha1",
@@ -171,7 +171,7 @@
           "lastModified": "2019-12-04T20:51:32.000+00:00",
           "lastDownloaded": null,
           "uploader": "anonymous",
-          "uploaderIp": "10.25.1.93",
+          "uploaderIp": "0.0.0.0",
           "fileSize": 0,
           "maven2": {
             "extension": "pom",
@@ -194,7 +194,7 @@
           "lastModified": "2019-12-04T20:51:32.000+00:00",
           "lastDownloaded": null,
           "uploader": "anonymous",
-          "uploaderIp": "10.25.1.93",
+          "uploaderIp": "0.0.0.0",
           "fileSize": 0,
           "maven2": {
             "extension": "pom.sha1",
@@ -217,7 +217,7 @@
           "lastModified": "2019-12-04T20:51:31.000+00:00",
           "lastDownloaded": null,
           "uploader": "anonymous",
-          "uploaderIp": "10.25.1.93",
+          "uploaderIp": "0.0.0.0",
           "fileSize": 0,
           "maven2": {
             "extension": "tar.gz",

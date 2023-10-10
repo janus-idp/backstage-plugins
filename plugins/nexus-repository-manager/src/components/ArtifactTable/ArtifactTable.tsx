@@ -68,7 +68,7 @@ export const ArtifactTable = ({
           >
             {/* sort/reverse for stable order, and so we get `jar +sources` */}
             {[...rowData.assetVariants]
-              .sort()
+              .sort((a, b) => a.localeCompare(b))
               .reverse()
               .map(variant => {
                 return (
