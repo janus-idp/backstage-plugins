@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac-backend [1.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@1.0.2...@janus-idp/backstage-plugin-rbac-backend@1.1.0) (2023-10-06)
+
+
+### Features
+
+* **rbac:** implement RBAC group support ([#803](https://github.com/janus-idp/backstage-plugins/issues/803)) ([4c72f5c](https://github.com/janus-idp/backstage-plugins/commit/4c72f5c23324ea2f7538b406d60730ea224ae758))
+
 ## @janus-idp/backstage-plugin-rbac-backend [1.0.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@1.0.1...@janus-idp/backstage-plugin-rbac-backend@1.0.2) (2023-10-04)
 
 
