@@ -47,7 +47,7 @@ make real calls against a Nexus instance, you'll want to do the following:
    status/diff commands are representative of your current work:
 
    ```shell
-   git update-index --assume-unchanged \
+   git update-index --skip-worktree \
        app-config.local.yaml \
        packages/app/package.json \
        packages/app/src/components/catalog/EntityPage.tsx \
