@@ -9,8 +9,29 @@ import { formatDate } from '@janus-idp/shared-react';
 
 import { NexusRepositoryManagerApiRef } from '../../api';
 import { useNexusRepositoryManagerAppData } from '../../hooks';
+import { ComponentXO } from '../../types';
 import { getFileSize, getHash, isPrimaryAsset } from '../../utils';
 import { ArtifactTable } from '../ArtifactTable';
+
+// Artifact types that we want to display: either classifiers (e.g. javadoc) or extensions (e.g. zip)
+export function getAssetVariants(component: ComponentXO) {
+  return new Set<string>(
+    component.assets?.flatMap(asset => {
+      if (!asset.maven2) {
+        return [];
+      }
+
+      const { classifier, extension } = asset.maven2;
+      if (extension === 'jar' && classifier) {
+        return `+${classifier}`;
+      }
+      if (isPrimaryAsset(asset) && extension) {
+        return extension;
+      }
+      return [];
+    }),
+  );
+}
 
 export function NexusRepositoryManager() {
   const nexusClient = useApi(NexusRepositoryManagerApiRef);
@@ -44,30 +65,12 @@ export function NexusRepositoryManager() {
     // this will probably need to change in the future,
     const firstAsset = component.assets?.at(0);
 
-    // Artifact types that we want to display: either classifiers (e.g. javadoc) or extensions (e.g. zip)
-    const assetVariants = new Set<string>(
-      component.assets?.flatMap(asset => {
-        if (!asset.maven2) {
-          return [];
-        }
-
-        const { classifier, extension } = asset.maven2;
-        if (extension === 'jar' && classifier) {
-          return classifier;
-        }
-        if (isPrimaryAsset(asset) && extension) {
-          return extension;
-        }
-        return [];
-      }),
-    );
-
     return {
       id: component.id,
       version: component.version,
       // TODO should we include maven groupID
       artifact: component.name,
-      assetVariants: assetVariants,
+      assetVariants: getAssetVariants(component),
       repositoryType: component.repository,
       hash: getHash(firstAsset),
       lastModified: formatDate(firstAsset?.lastModified),
