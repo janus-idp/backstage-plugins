@@ -103,7 +103,7 @@ yarn workspace backend add @janus-idp/backstage-plugin-3scale-backend
 
    - If both the `schedule` (hard-coded schedule) and `scheduler` (`app-config.yaml` schedule) option are provided in the `packages/backend/src/plugins/catalog.ts`, the `scheduler` option takes precedence.
 
-     - If the schedule inside the `app-config.yaml` is not configured, then the `schedule` option is used.
+     - If the schedule inside the `app-config.yaml` file is not configured, then the `schedule` option is used.
 
      ```ts title="packages/backend/src/plugins/catalog.ts"
      /* highlight-add-next-line */
