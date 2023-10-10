@@ -67,7 +67,7 @@ yarn workspace backend add @janus-idp/backstage-plugin-3scale-backend
 
      **NOTE**
 
-     If any changes to the schedule in the `app-config.yaml` are made, a restart of the backend is necessary to apply the changes.
+     If you have made any changes to the schedule in the `app-config.yaml` file, then restart to apply the changes.
 
      ***
 
