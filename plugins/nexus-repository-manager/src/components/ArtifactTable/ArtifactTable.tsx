@@ -66,11 +66,19 @@ export const ArtifactTable = ({
               marginTop: '0.2em',
             }}
           >
-            {[...rowData.assetVariants].map(variant => {
-              return (
-                <Chip label={variant} key={variant} className={classes.chip} />
-              );
-            })}
+            {/* sort/reverse for stable order, and so we get `jar +sources` */}
+            {[...rowData.assetVariants]
+              .sort()
+              .reverse()
+              .map(variant => {
+                return (
+                  <Chip
+                    label={variant}
+                    key={variant}
+                    className={classes.chip}
+                  />
+                );
+              })}
           </Box>
         </>
       ),

@@ -33,20 +33,40 @@ describe('ArtifactTable', () => {
     },
   ];
 
+  // Get the text at row[columnName]
+  function getCellText(table: HTMLElement, row: number, columnName: string) {
+    const header = table.querySelector(`thead tr`);
+    const columnIndex = Array.from(header!.children).findIndex(
+      el => el.textContent === columnName,
+    );
+    if (columnIndex === -1) {
+      throw new Error(`Column ${columnName} not found`);
+    }
+
+    const rowElement = table.querySelector(`tbody tr:nth-child(${row + 1})`);
+    const cell = rowElement!.children[columnIndex];
+    return cell.textContent;
+  }
+
   it('renders rows', async () => {
     await render(
       <ArtifactTable title="Nexus Artifacts" artifacts={sampleRows} />,
     );
 
-    expect(screen.getByText('1.0.0')).toBeInTheDocument();
-    expect(screen.getByText('test-variant')).toBeInTheDocument();
-    expect(screen.getByText('sha256')).toBeInTheDocument();
-    // Not full hash, just first 12 chars
-    expect(screen.getByText('sha256-test-')).toBeInTheDocument();
-    expect(screen.getByText('Sep 26, 2023, 10:35 PM')).toBeInTheDocument();
+    const table = screen.getAllByRole('table')[0];
 
-    expect(screen.getAllByText('test-artifact')).toHaveLength(2);
-    expect(screen.getAllByText('test-repo')).toHaveLength(2);
+    expect(getCellText(table, 0, 'Version')).toBe('1.0.0');
+    expect(getCellText(table, 0, 'Artifact')).toBe(
+      'test-artifact' + 'test-variant',
+    );
+    // Not full hash, just first 12 chars
+    expect(getCellText(table, 0, 'Checksum')).toBe('sha256' + 'sha256-test-');
+    expect(getCellText(table, 0, 'Repository Type')).toBe('test-repo');
+    expect(getCellText(table, 0, 'Size')).toBe('140 kB');
+    expect(getCellText(table, 0, 'Modified')).toBe('Sep 26, 2023, 10:35 PM');
+
+    // Check second row rendered
+    expect(getCellText(table, 1, 'Version')).toBe('1.0.1');
   });
 
   it('renders empty state', async () => {
@@ -60,6 +80,22 @@ describe('ArtifactTable', () => {
     expect(screen.getByText(/No data was added yet/)).toBeInTheDocument();
   });
 
+  it('renders variants in the right order', async () => {
+    const rowData = [
+      {
+        ...sampleRows[0],
+        assetVariants: new Set(['jar', '+sources', '+javadoc']),
+      },
+    ];
+
+    await render(<ArtifactTable title="Nexus Artifacts" artifacts={rowData} />);
+
+    const table = screen.getAllByRole('table')[0];
+    expect(getCellText(table, 0, 'Artifact')).toContain(
+      'jar' + '+sources' + '+javadoc',
+    );
+  });
+
   it('renders N/A for undefined hashes', async () => {
     const noHash = {
       ...sampleRows[0],
@@ -70,7 +106,8 @@ describe('ArtifactTable', () => {
       <ArtifactTable title="Nexus Artifacts" artifacts={[noHash]} />,
     );
 
-    expect(screen.getByText('N/A')).toBeInTheDocument();
+    const table = screen.getAllByRole('table')[0];
+    expect(getCellText(table, 0, 'Checksum')).toBe('N/A');
   });
 
   it('sorts by size correctly', async () => {
@@ -93,12 +130,10 @@ describe('ArtifactTable', () => {
     const header = screen.getByText('Size');
 
     await user.click(header);
-    let rows = table.querySelectorAll('tbody tr');
-    expect(rows[0]).toHaveTextContent('smaller');
+    expect(getCellText(table, 0, 'Version')).toBe('smaller');
 
     await user.click(header);
-    rows = table.querySelectorAll('tbody tr');
-    expect(rows[0]).toHaveTextContent('larger');
+    expect(getCellText(table, 0, 'Version')).toBe('larger');
   });
 
   it('sorts by checksum correctly', async () => {
@@ -140,18 +175,16 @@ describe('ArtifactTable', () => {
     const header = screen.getByText('Checksum');
 
     await user.click(header);
-    let rows = table.querySelectorAll('tbody tr');
-    expect(rows[0]).toHaveTextContent('unset');
-    expect(rows[1]).toHaveTextContent('smaller');
-    expect(rows[2]).toHaveTextContent('larger');
-    expect(rows[3]).toHaveTextContent('larger');
+    expect(getCellText(table, 0, 'Version')).toBe('unset');
+    expect(getCellText(table, 1, 'Version')).toBe('smaller');
+    expect(getCellText(table, 2, 'Version')).toContain('larger');
+    expect(getCellText(table, 3, 'Version')).toContain('larger');
 
     await user.click(header);
-    rows = table.querySelectorAll('tbody tr');
-    expect(rows[0]).toHaveTextContent('larger');
-    expect(rows[1]).toHaveTextContent('larger');
-    expect(rows[2]).toHaveTextContent('smaller');
-    expect(rows[3]).toHaveTextContent('unset');
+    expect(getCellText(table, 0, 'Version')).toContain('larger');
+    expect(getCellText(table, 1, 'Version')).toContain('larger');
+    expect(getCellText(table, 2, 'Version')).toBe('smaller');
+    expect(getCellText(table, 3, 'Version')).toBe('unset');
   });
 
   it('filters by checksum', async () => {
@@ -186,29 +219,29 @@ describe('ArtifactTable', () => {
 
     const user = userEvent.setup();
     const table = screen.getAllByRole('table')[0];
-    let rows;
 
     const filterInput = screen.getByPlaceholderText('Filter');
     await user.type(filterInput, '-hash');
     await waitFor(() => {
-      rows = table.querySelectorAll('tbody tr');
-      expect(rows[0]).toHaveTextContent('-hash');
-      expect(rows[1]).toHaveTextContent('-hash');
+      expect(getCellText(table, 0, 'Checksum')).toContain('-hash');
+      expect(getCellText(table, 1, 'Checksum')).toContain('-hash');
+      // This is how we check for empty rows
+      const rows = table.querySelectorAll('tbody tr');
       expect(rows[2].textContent).toBe('');
     });
 
     await user.clear(filterInput);
     await user.type(filterInput, 'something');
     await waitFor(() => {
-      rows = table.querySelectorAll('tbody tr');
-      expect(rows[0]).toHaveTextContent('something-');
+      expect(getCellText(table, 0, 'Checksum')).toContain('something-');
+      const rows = table.querySelectorAll('tbody tr');
       expect(rows[1].textContent).toBe('');
     });
 
     await user.clear(filterInput);
     await user.type(filterInput, 'nothing-that-exists');
     await waitFor(() => {
-      rows = table.querySelectorAll('tbody tr');
+      const rows = table.querySelectorAll('tbody tr');
       expect(rows[0].textContent).toBe('No records to display');
     });
   });
