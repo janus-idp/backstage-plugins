@@ -14,6 +14,7 @@ import {
 } from '@backstage/plugin-permission-backend';
 import {
   AuthorizeResult,
+  ConditionalPolicyDecision,
   PermissionEvaluator,
   QueryPermissionRequest,
 } from '@backstage/plugin-permission-common';
@@ -36,6 +37,7 @@ import {
   RoleBasedPolicy,
 } from '@janus-idp/backstage-plugin-rbac-common';
 
+import { ConditionalStorage } from './conditional-storage';
 import {
   validateEntityReference,
   validatePolicy,
@@ -49,6 +51,7 @@ export class PolicesServer {
     private readonly permissions: PermissionEvaluator,
     private readonly options: RouterOptions,
     private readonly enforcer: Enforcer,
+    private readonly conditionalStorage: ConditionalStorage,
   ) {}
 
   private async authorize(
@@ -198,6 +201,42 @@ export class PolicesServer {
         response.status(204).end();
       },
     );
+
+    // todo: return list condition. Also we need to have filter by pluginId and resource type.
+
+    router.post('/conditions', async (req, resp) => {
+      const conditionalPolicy: ConditionalPolicyDecision = req.body;
+      // TODO add validation.
+      const id =
+        await this.conditionalStorage.createCondition(conditionalPolicy);
+      console.log(`===${id}`);
+      resp.status(201).json({ id: id });
+    });
+
+    router.get('/conditions/:id', async (req, resp) => {
+      const id: number = parseInt(req.params.id, 10);
+      console.log(`=== Get condition: ${id}`);
+      const condition = await this.conditionalStorage.getCondition(id);
+      if (!condition) {
+        throw new NotFoundError();
+      }
+
+      resp.json(condition);
+    });
+
+    router.delete('/conditions/:id', async (req, resp) => {
+      const id: number = parseInt(req.params.id, 10);
+      console.log(`=== Delete condition: ${id}`);
+      await this.conditionalStorage.deleteCondition(id);
+      resp.status(204).end();
+    });
+
+    router.put('/conditions/:id', async (req, resp) => {
+      const id: number = parseInt(req.params.id, 10);
+      console.log(`=== Update condition: ${id}`);
+      await this.conditionalStorage.updateCondition(id);
+      resp.status(200).end();
+    });
 
     router.post('/policies', async (request, response) => {
       const decision = await this.authorize(

@@ -15,6 +15,7 @@ import { Router } from 'express';
 import { Logger } from 'winston';
 
 import { CasbinDBAdapterFactory } from './casbin-adapter-factory';
+import { ConditionalStorage } from './conditional-storage';
 import { MODEL } from './permission-model';
 import { RBACPermissionPolicy } from './permission-policy';
 import { PolicesServer } from './policies-rest-api';
@@ -63,12 +64,20 @@ export class PolicyBuilder {
     enf.enableAutoBuildRoleLinks(false);
     await enf.buildRoleLinks();
 
+    const conditionStorage = new ConditionalStorage(env.database);
+    await conditionStorage.init();
+
     const options: RouterOptions = {
       config: env.config,
       logger: env.logger,
       discovery: env.discovery,
       identity: env.identity,
-      policy: await RBACPermissionPolicy.build(env.logger, env.config, enf),
+      policy: await RBACPermissionPolicy.build(
+        env.logger,
+        env.config,
+        conditionStorage,
+        enf,
+      ),
     };
 
     const server = new PolicesServer(
@@ -76,6 +85,7 @@ export class PolicyBuilder {
       env.permissions,
       options,
       enf,
+      conditionStorage,
     );
     return server.serve();
   }
