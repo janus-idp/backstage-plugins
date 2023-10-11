@@ -101,13 +101,11 @@ export async function backend(
     include: mergeWithOutput,
     exclude: mergeWithOutput.length !== 0 ? undefined : /.*/,
   };
-  const moveToPeerDependencies: (string | RegExp)[] = [/@backstage\//];
 
-  if (opts.sharedPackage !== undefined) {
-    for (const sharedPkg of opts.sharedPackage as string[]) {
-      moveToPeerDependencies.push(sharedPkg);
-    }
-  }
+  const moveToPeerDependencies: (string | RegExp)[] = [
+    /@backstage\//,
+    ...(opts.sharedPackage || []),
+  ];
 
   const rollupConfigs = await makeRollupConfigs({
     outputs,
@@ -193,9 +191,7 @@ export async function backend(
         if (!Object.prototype.hasOwnProperty.call(dependenciesToAdd, dep)) {
           continue;
         }
-        if (pkgToCustomize.dependencies === undefined) {
-          pkgToCustomize.dependencies = {};
-        }
+        pkgToCustomize.dependencies ||= {};
         const existingVersion = pkgToCustomize.dependencies[dep];
         if (existingVersion === undefined) {
           pkgToCustomize.dependencies[dep] = dependenciesToAdd[dep];
@@ -243,9 +239,7 @@ export async function backend(
             if (test(dep, toMove)) {
               console.log(`Moving '${dep}' to peerDependencies`);
 
-              if (pkgToCustomize.peerDependencies === undefined) {
-                pkgToCustomize.peerDependencies = {};
-              }
+              pkgToCustomize.peerDependencies ||= {};
               pkgToCustomize.peerDependencies[dep] =
                 pkgToCustomize.dependencies[dep];
               delete pkgToCustomize.dependencies[dep];
@@ -268,10 +262,9 @@ export async function backend(
   }
 
   if (opts.install) {
-    let yarnInstall = 'yarn install';
-    if (yarnLockExists) {
-      yarnInstall += ' --frozen-lockfile';
-    }
+    const yarnInstall = `yarn install${
+      yarnLockExists ? ' --frozen-lockfile' : ''
+    }`;
 
     await Task.forCommand(yarnInstall, { cwd: target, optional: false });
     await fs.remove(paths.resolveTarget('dist-dynamic', '.yarn'));
