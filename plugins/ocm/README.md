@@ -166,7 +166,7 @@ If you are interested in Resource discovery and do not want any of the front-end
 
 1. Import the cluster `Resource` entity provider into the `catalog` plugin in the `packages/backend/src/plugins/catalog.ts` file. The scheduler also needs to be configured. Two configurations are possible here:
 
-   - **Method 1**: Configure the scheduler inside the `app-config.yaml`:
+   - **Method 1**: If the scheduler is configured inside the `app-config.yaml` via the schedule config key shown below:
 
      ```yaml title="app-config.yaml"
      catalog:
@@ -240,31 +240,7 @@ If you are interested in Resource discovery and do not want any of the front-end
 
    - If both the `schedule` (hard-coded schedule) and `scheduler` (`app-config.yaml` schedule) option are provided in the `packages/backend/src/plugins/catalog.ts`, the `scheduler` option takes precedence.
 
-     - If the schedule inside the `app-config.yaml` file is not configured, then the `schedule` option is used.
-
-     ```ts title="packages/backend/src/plugins/catalog.ts"
-     /* highlight-add-next-line */
-     import { ManagedClusterProvider } from '@janus-idp/backstage-plugin-ocm-backend';
-
-     export default async function createPlugin(
-       env: PluginEnvironment,
-     ): Promise<Router> {
-       const builder = await CatalogBuilder.create(env);
-       // ...
-       /* highlight-add-start */
-       const ocm = ManagedClusterProvider.fromConfig(env.config, {
-         logger: env.logger,
-         schedule: env.scheduler.createScheduledTaskRunner({
-           frequency: { minutes: 1 },
-           timeout: { minutes: 1 },
-         }),
-         scheduler: env.scheduler,
-       });
-       builder.addEntityProvider(ocm);
-       /* highlight-add-start */
-       // ...
-     }
-     ```
+     - If the schedule inside the `app-config.yaml` file is not configured while both the `schedule` and `scheduler` options are present, then the `schedule` option is used.
 
 1. Optional: Configure the default owner for the cluster entities in the catalog for a specific environment. For example, use the following code to set `foo` as the owner for clusters from `env` in the `app-config.yaml` catalog section:
 

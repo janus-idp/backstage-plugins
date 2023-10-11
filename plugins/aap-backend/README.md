@@ -36,7 +36,7 @@ The AAP Backstage provider plugin allows the configuration of one or multiple pr
 
 1. Configure the scheduler using one of the following options:
 
-   - **Method 1**: If the scheduler is configured inside the `app-config.yaml` file, you can use it by adding the following code to the `packages/backend/src/plugins/catalog.ts` file:
+   - **Method 1**: If the scheduler is configured inside the `app-config.yaml` via the schedule config key shown above, add the following code to `packages/backend/src/plugins/catalog.ts` file:
 
      ```ts title="packages/backend/src/plugins/catalog.ts"
      /* highlight-add-next-line */
@@ -103,36 +103,7 @@ The AAP Backstage provider plugin allows the configuration of one or multiple pr
 
    - If both the `schedule` (hard-coded schedule) and `scheduler` (`app-config.yaml` schedule) option are provided in the `packages/backend/src/plugins/catalog.ts`, the `scheduler` option takes precedence.
 
-     - If the schedule inside the `app-config.yaml` file is not configured, then the `schedule` option is used.
-
-     ```ts title="packages/backend/src/plugins/catalog.ts"
-     /* highlight-add-next-line */
-     import { AapResourceEntityProvider } from '@janus-idp/backstage-plugin-aap-backend';
-
-     export default async function createPlugin(
-       env: PluginEnvironment,
-     ): Promise<Router> {
-       const builder = await CatalogBuilder.create(env);
-
-       /* ... other processors and/or providers ... */
-       /* highlight-add-start */
-       builder.addEntityProvider(
-         AapResourceEntityProvider.fromConfig(env.config, {
-           logger: env.logger,
-           schedule: env.scheduler.createScheduledTaskRunner({
-             frequency: { minutes: 1 },
-             timeout: { minutes: 1 },
-           }),
-           scheduler: env.scheduler,
-         }),
-       );
-       /* highlight-add-end */
-
-       const { processingEngine, router } = await builder.build();
-       await processingEngine.start();
-       return router;
-     }
-     ```
+     - If the schedule inside the `app-config.yaml` file is not configured while both the `schedule` and `scheduler` options are present, then the `schedule` option is used.
 
 ### Troubleshooting
 

@@ -35,7 +35,7 @@ yarn workspace backend add @janus-idp/backstage-plugin-keycloak-backend
            clientSecret: ${KEYCLOAK_CLIENTSECRET}
    ```
 
-2. Register the plugin in the `packages/backend/src/plugins/catalog.ts` file. You can also configure a schedule in this step. However, there are possible ways of configuration, such as:
+1. Register the plugin in the `packages/backend/src/plugins/catalog.ts` file. You can also configure a schedule in this step. However, there are possible ways of configuration, such as:
 
    - Configure a schedule inside the `app-config.yaml` file:
 
@@ -129,42 +129,9 @@ yarn workspace backend add @janus-idp/backstage-plugin-keycloak-backend
 
    - If both the `schedule` (hard-coded schedule) and `scheduler` (`app-config.yaml` schedule) option are provided in the `packages/backend/src/plugins/catalog.ts`, the `scheduler` option takes precedence.
 
-     - If the schedule inside the `app-config.yaml` file is not configured, then the `schedule` option is used.
+     - If the schedule inside the `app-config.yaml` file is not configured while both the `schedule` and `scheduler` options are present, then the `schedule` option is used.
 
-     ```ts title="packages/backend/src/plugins/catalog.ts"
-     /* highlight-add-start */
-     import { KeycloakOrgEntityProvider } from '@janus-idp/backstage-plugin-keycloak-backend';
-
-     /* highlight-add-end */
-
-     export default async function createPlugin(
-       env: PluginEnvironment,
-     ): Promise<Router> {
-       const builder = await CatalogBuilder.create(env);
-
-       /* ... other processors and/or providers ... */
-       builder.addEntityProvider(
-         KeycloakOrgEntityProvider.fromConfig(env.config, {
-           id: 'development',
-           logger: env.logger,
-           /* highlight-add-start */
-           schedule: env.scheduler.createScheduledTaskRunner({
-             frequency: { minutes: 1 },
-             timeout: { minutes: 1 },
-             initialDelay: { seconds: 15 },
-           }),
-           scheduler: env.scheduler,
-           /* highlight-add-end */
-         }),
-       );
-
-       const { processingEngine, router } = await builder.build();
-       await processingEngine.start();
-       return router;
-     }
-     ```
-
-3. Optional: override the default Keycloak query parameters. Configure the parameters inside the `app-config.yaml` file:
+1. Optional: override the default Keycloak query parameters. Configure the parameters inside the `app-config.yaml` file:
 
    ```yaml title="app-config.yaml"
    catalog:
@@ -178,7 +145,7 @@ yarn workspace backend add @janus-idp/backstage-plugin-keycloak-backend
            # highlight-add-end
    ```
 
-4. Optional: provide a transformer function for user/group to mutate the entity before their ingestion into catalog. Extend `packages/backend/src/plugins/catalog.ts` with custom `userTransformer` and `groupTransformer` functions:
+1. Optional: provide a transformer function for user/group to mutate the entity before their ingestion into catalog. Extend `packages/backend/src/plugins/catalog.ts` with custom `userTransformer` and `groupTransformer` functions:
 
    ```ts title="packages/backend/src/plugins/catalog.ts"
    /* highlight-add-start */
