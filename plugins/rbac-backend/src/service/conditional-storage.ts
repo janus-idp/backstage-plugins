@@ -28,21 +28,24 @@ export class ConditionalStorage {
     const exists = await knex.schema.hasTable('policy-conditions');
 
     // todo: remove it, I need it only for dev purposes.
-    if (exists) {
-      await knex.schema.dropTable(CONDITIONAL_TABLE);
+    // if (exists) {
+    //   await knex.schema.dropTable(CONDITIONAL_TABLE);
+    // }
+
+    if (!exists) {
+      // todo: replace database creation with migration script.
+      await knex.schema.createTable(CONDITIONAL_TABLE, table => {
+        table.increments('id').primary();
+        table.string('result');
+        table.string('pluginId');
+        table.string('resourceType');
+        // Conditions is potentially long json
+        table.text('conditionsJson');
+        // Todo: think more and figure out:
+        // instead of `text` we can use `json` or `jsonb` type, but this approach has pluses and minuses
+        // table.json('conditions'); // or table.jsonb('conditions')
+      });
     }
-    // todo: replace database creation with migration script.
-    await knex.schema.createTable(CONDITIONAL_TABLE, table => {
-      table.increments('id').primary();
-      table.string('result');
-      table.string('pluginId');
-      table.string('resourceType');
-      // Conditions is potentially long json
-      table.text('conditionsJson');
-      // Todo: think more and figure out:
-      // instead of `text` we can use `json` or `jsonb` type, but this approach has pluses and minuses
-      // table.json('conditions'); // or table.jsonb('conditions')
-    });
 
     this.knex = knex;
   }
@@ -97,8 +100,21 @@ export class ConditionalStorage {
     await this.knex?.table(CONDITIONAL_TABLE).delete().whereIn('id', [id]);
   }
 
-  async updateCondition(_id: number): Promise<void> {
-    throw new Error('Method "updateCondition" is unimplemented');
+  async updateCondition(
+    id: number,
+    conditionalDecision: ConditionalPolicyDecision,
+  ): Promise<boolean> {
+    const conditionRaw = this.toDAO(conditionalDecision);
+    conditionRaw.id = id;
+    const result = await this.knex
+      ?.table(CONDITIONAL_TABLE)
+      .where('id', conditionRaw.id)
+      .update<ConditionalPolicyDecision>(conditionRaw)
+      .returning('id');
+    console.log(result);
+
+    // todo complete return value and use it.
+    return true;
   }
 
   private toDAO(

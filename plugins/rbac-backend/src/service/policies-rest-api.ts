@@ -201,43 +201,6 @@ export class PolicesServer {
         response.status(204).end();
       },
     );
-
-    // todo: return list condition. Also we need to have filter by pluginId and resource type.
-
-    router.post('/conditions', async (req, resp) => {
-      const conditionalPolicy: ConditionalPolicyDecision = req.body;
-      // TODO add validation.
-      const id =
-        await this.conditionalStorage.createCondition(conditionalPolicy);
-      console.log(`===${id}`);
-      resp.status(201).json({ id: id });
-    });
-
-    router.get('/conditions/:id', async (req, resp) => {
-      const id: number = parseInt(req.params.id, 10);
-      console.log(`=== Get condition: ${id}`);
-      const condition = await this.conditionalStorage.getCondition(id);
-      if (!condition) {
-        throw new NotFoundError();
-      }
-
-      resp.json(condition);
-    });
-
-    router.delete('/conditions/:id', async (req, resp) => {
-      const id: number = parseInt(req.params.id, 10);
-      console.log(`=== Delete condition: ${id}`);
-      await this.conditionalStorage.deleteCondition(id);
-      resp.status(204).end();
-    });
-
-    router.put('/conditions/:id', async (req, resp) => {
-      const id: number = parseInt(req.params.id, 10);
-      console.log(`=== Update condition: ${id}`);
-      await this.conditionalStorage.updateCondition(id);
-      resp.status(200).end();
-    });
-
     router.post('/policies', async (request, response) => {
       const decision = await this.authorize(
         this.identity,
@@ -558,6 +521,94 @@ export class PolicesServer {
         response.status(204).end();
       },
     );
+    // todo: implement GET list all conditions. Also we need to have filter by pluginId and resource type.
+
+    router.post('/conditions', async (req, resp) => {
+      const decision = await this.authorize(
+        this.identity,
+        req,
+        this.permissions,
+        {
+          permission: policyEntityCreatePermission,
+        },
+      );
+
+      if (decision.result === AuthorizeResult.DENY) {
+        throw new NotAllowedError(); // 403
+      }
+
+      const conditionalPolicy: ConditionalPolicyDecision = req.body;
+      // TODO add validation.
+      const id =
+        await this.conditionalStorage.createCondition(conditionalPolicy);
+
+      resp.status(201).json({ id: id });
+    });
+
+    router.get('/conditions/:id', async (req, resp) => {
+      const decision = await this.authorize(
+        this.identity,
+        req,
+        this.permissions,
+        {
+          permission: policyEntityReadPermission,
+        },
+      );
+
+      if (decision.result === AuthorizeResult.DENY) {
+        throw new NotAllowedError(); // 403
+      }
+
+      const id: number = parseInt(req.params.id, 10);
+
+      const condition = await this.conditionalStorage.getCondition(id);
+      if (!condition) {
+        throw new NotFoundError();
+      }
+
+      resp.json(condition);
+    });
+
+    router.delete('/conditions/:id', async (req, resp) => {
+      const decision = await this.authorize(
+        this.identity,
+        req,
+        this.permissions,
+        {
+          permission: policyEntityDeletePermission,
+        },
+      );
+
+      if (decision.result === AuthorizeResult.DENY) {
+        throw new NotAllowedError(); // 403
+      }
+
+      const id: number = parseInt(req.params.id, 10);
+
+      await this.conditionalStorage.deleteCondition(id);
+      resp.status(204).end();
+    });
+
+    router.put('/conditions/:id', async (req, resp) => {
+      const decision = await this.authorize(
+        this.identity,
+        req,
+        this.permissions,
+        {
+          permission: policyEntityUpdatePermission,
+        },
+      );
+
+      if (decision.result === AuthorizeResult.DENY) {
+        throw new NotAllowedError(); // 403
+      }
+
+      const id: number = parseInt(req.params.id, 10);
+      const conditionalPolicy: ConditionalPolicyDecision = req.body;
+
+      await this.conditionalStorage.updateCondition(id, conditionalPolicy);
+      resp.status(200).end();
+    });
 
     return router;
   }

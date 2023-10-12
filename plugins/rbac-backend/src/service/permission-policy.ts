@@ -135,28 +135,30 @@ export class RBACPermissionPolicy implements PermissionPolicy {
       const action = request.permission.attributes.action ?? 'use';
 
       if (isResourcePermission(request.permission)) {
-        const conditionalDecision = await this.conditionStorage.findCondition(
-          request.permission.resourceType,
-        );
-        if (conditionalDecision) {
-          console.log(`===Condition!!!!`);
-          return conditionalDecision;
-        }
-        console.log(
-          `===No condition. Resource type is ${request.permission.resourceType}`,
-        );
-      }
-
-      if (isResourcePermission(request.permission)) {
         status = await this.isAuthorized(
           identityResp?.identity,
           request.permission.resourceType,
           action,
         );
 
-        if (status) {
-          console.log('Condition should be here');
+        if (status && identityResp) {
+          const conditionalDecision = await this.conditionStorage.findCondition(
+            request.permission.resourceType,
+          );
+          console.log(
+            `But what about conditional decisions ? ${conditionalDecision}`,
+          );
+          if (conditionalDecision) {
+            console.log(
+              `===Return condition. ACCESS/DENY decision for specific resources will be done in the plugin side.`,
+            );
+            return conditionalDecision;
+          }
         }
+
+        console.log(
+          `===There is no condition. Resource type is ${request.permission.resourceType}`,
+        );
       } else {
         status = await this.isAuthorized(
           identityResp?.identity,
