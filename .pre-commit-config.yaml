@@ -1,5 +1,4 @@
 ---
-default_stages: [pre-commit]
 exclude: '^.github'
 repos:
   - repo: https://github.com/Lucas-C/pre-commit-hooks
