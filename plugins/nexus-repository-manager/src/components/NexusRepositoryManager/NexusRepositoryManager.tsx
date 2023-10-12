@@ -63,7 +63,7 @@ export function NexusRepositoryManager() {
     // theres only one asset per docker.image-name component
     // if we want to support multiple repository types
     // this will probably need to change in the future,
-    const firstAsset = component.assets?.at(0);
+    const firstAsset = component.assets?.find(isPrimaryAsset);
 
     return {
       id: component.id,
