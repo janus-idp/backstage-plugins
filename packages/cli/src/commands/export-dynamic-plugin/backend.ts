@@ -39,7 +39,7 @@ export async function backend(
 ): Promise<void> {
   if (!fs.existsSync(paths.resolveTarget('src', 'dynamic'))) {
     throw new Error(
-      `Package doesn't seem to support dynamic loading. It should have a ./src/dynamic folder, containing the dynamic loading entrypoints.`,
+      `Package doesn't seem to support dynamic loading. It should have a src/dynamic folder, containing the dynamic loading entrypoints.`,
     );
   }
 
@@ -86,7 +86,7 @@ export async function backend(
     for (const pkgToEmbed of opts.embedPackage as string[]) {
       if (pkg.dependencies === undefined || !(pkgToEmbed in pkg.dependencies)) {
         console.log(
-          `Embeded package '${pkgToEmbed}' is not part of direct dependencies.Are you sure you want to embed it ?`,
+          `Embeded package '${pkgToEmbed}' is not part of direct dependencies. Are you sure you want to embed it ?`,
         );
       }
       mergeWithOutput.push(pkgToEmbed);
@@ -172,7 +172,7 @@ export async function backend(
         }
 
         throw new Error(
-          `several incompatible versions ('${existingDependencyVersion}', '${newDependencyVersion}') of the same transitive dependency ('${dependencyName}') for embedded module ('${embeddedModule}')`,
+          `Several incompatible versions ('${existingDependencyVersion}', '${newDependencyVersion}') of the same transitive dependency ('${dependencyName}') for embedded module ('${embeddedModule}')`,
         );
       },
     }),
@@ -241,11 +241,11 @@ export async function backend(
             semver.satisfies(existingMinVersion, dependenciesToAdd[dep])
           ) {
             console.log(
-              `The version of a dependency ('${dep}') of an embedded module differs with main module dependencies: '${dependenciesToAdd[dep]}', '${existingVersion}': keeping it though since it is compatible`,
+              `The version of a dependency ('${dep}') of an embedded module differs from the main module's dependencies: '${dependenciesToAdd[dep]}', '${existingVersion}': keeping it as it is compatible`,
             );
           } else {
             throw new Error(
-              `The version of a dependency ('${dep}') of an embedded module conflicts with main module dependencies: '${dependenciesToAdd[dep]}', '${existingVersion}'`,
+              `The version of a dependency ('${dep}') of an embedded module conflicts with main module dependencies: '${dependenciesToAdd[dep]}', '${existingVersion}': cannot proceed!`,
             );
           }
         }
