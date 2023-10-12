@@ -22,7 +22,7 @@ export const kialiPlugin = createBackendPlugin({
       deps: {
         http: coreServices.httpRouter,
         logger: coreServices.logger,
-        config: coreServices.config,
+        config: coreServices.rootConfig,
         catalogApi: catalogServiceRef,
       },
       async init({ http, logger, config }) {

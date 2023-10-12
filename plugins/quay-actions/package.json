@@ -24,11 +24,11 @@
     "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
-    "@backstage/plugin-scaffolder-node": "^0.1.5"
+    "@backstage/plugin-scaffolder-node": "^0.2.6"
   },
   "devDependencies": {
-    "@backstage/backend-common": "0.19.1",
-    "@backstage/cli": "0.22.9"
+    "@backstage/backend-common": "0.19.8",
+    "@backstage/cli": "0.23.0"
   },
   "files": [
     "dist"
