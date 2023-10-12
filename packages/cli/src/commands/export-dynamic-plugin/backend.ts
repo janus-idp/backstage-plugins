@@ -102,10 +102,20 @@ export async function backend(
     exclude: mergeWithOutput.length !== 0 ? undefined : /.*/,
   };
 
-  const moveToPeerDependencies: (string | RegExp)[] = [
+  const stringOrRegexp = (s: string) =>
+    s.startsWith('/') && s.endsWith('/') ? new RegExp(s.slice(1, -1)) : s;
+
+  const moveToPeerDependencies = [
     /@backstage\//,
-    ...(opts.sharedPackage || []),
+    ...((opts.sharedPackage || []) as string[])
+      .filter(p => !p.startsWith('!'))
+      .map(stringOrRegexp),
   ];
+
+  const dontMoveToPeerDependencies = ((opts.sharedPackage || []) as string[])
+    .filter(p => p.startsWith('!'))
+    .map(p => p.slice(1))
+    .map(stringOrRegexp);
 
   const rollupConfigs = await makeRollupConfigs({
     outputs,
@@ -125,17 +135,45 @@ export async function backend(
   rollupConfig.plugins?.push(
     embedModules({
       filter: filter,
-      addDependency(embeddedModule, dependencyName, dependencyVersion) {
-        const existingVersion = dependenciesToAdd[dependencyName];
-        if (existingVersion === undefined) {
-          dependenciesToAdd[dependencyName] = dependencyVersion;
+      addDependency(embeddedModule, dependencyName, newDependencyVersion) {
+        const existingDependencyVersion = dependenciesToAdd[dependencyName];
+        if (existingDependencyVersion === undefined) {
+          dependenciesToAdd[dependencyName] = newDependencyVersion;
           return;
         }
-        if (existingVersion !== dependencyVersion) {
-          throw new Error(
-            `several versions ('${existingVersion}', '${dependencyVersion}') of the same transitive dependency ('${dependencyName}') for embedded module ('${embeddedModule}')`,
-          );
+
+        if (existingDependencyVersion === newDependencyVersion) {
+          return;
         }
+
+        const existingDependencyMinVersion = semver.minVersion(
+          existingDependencyVersion,
+        );
+        if (
+          existingDependencyMinVersion &&
+          semver.satisfies(existingDependencyMinVersion, newDependencyVersion)
+        ) {
+          console.log(
+            `Several compatible versions ('${existingDependencyVersion}', '${newDependencyVersion}') of the same transitive dependency ('${dependencyName}') for embedded module ('${embeddedModule}'): keeping '${existingDependencyVersion}'`,
+          );
+          return;
+        }
+
+        const newDependencyMinVersion = semver.minVersion(newDependencyVersion);
+        if (
+          newDependencyMinVersion &&
+          semver.satisfies(newDependencyMinVersion, existingDependencyVersion)
+        ) {
+          dependenciesToAdd[dependencyName] = newDependencyVersion;
+          console.log(
+            `Several compatible versions ('${existingDependencyVersion}', '${newDependencyVersion}') of the same transitive dependency ('${dependencyName}') for embedded module ('${embeddedModule}'): keeping '${newDependencyVersion}'`,
+          );
+          return;
+        }
+
+        throw new Error(
+          `several incompatible versions ('${existingDependencyVersion}', '${newDependencyVersion}') of the same transitive dependency ('${dependencyName}') for embedded module ('${embeddedModule}')`,
+        );
       },
     }),
   );
@@ -180,8 +218,6 @@ export async function backend(
 
       pkgToCustomize.name = `${pkgToCustomize.name}-dynamic`;
       (pkgToCustomize as any).bundleDependencies = true;
-      pkgToCustomize.scripts = undefined;
-      pkgToCustomize.types = undefined;
 
       pkgToCustomize.files = pkgToCustomize.files?.filter(
         f => !f.startsWith('dist-dynamic/'),
@@ -198,7 +234,16 @@ export async function backend(
           continue;
         }
         if (existingVersion !== dependenciesToAdd[dep]) {
-          if (!semver.satisfies(existingVersion, dependenciesToAdd[dep])) {
+          const existingMinVersion = semver.minVersion(existingVersion);
+
+          if (
+            existingMinVersion &&
+            semver.satisfies(existingMinVersion, dependenciesToAdd[dep])
+          ) {
+            console.log(
+              `The version of a dependency ('${dep}') of an embedded module differs with main module dependencies: '${dependenciesToAdd[dep]}', '${existingVersion}': keeping it though since it is compatible`,
+            );
+          } else {
             throw new Error(
               `The version of a dependency ('${dep}') of an embedded module conflicts with main module dependencies: '${dependenciesToAdd[dep]}', '${existingVersion}'`,
             );
@@ -223,32 +268,47 @@ export async function backend(
           ) {
             continue;
           }
-          let removed = false;
-          for (const toRemove of mergeWithOutput) {
-            if (test(dep, toRemove)) {
-              delete pkgToCustomize.dependencies[dep];
-              removed = true;
-              break;
-            }
-          }
-          if (removed) {
+
+          if (mergeWithOutput.some(merge => test(dep, merge))) {
+            delete pkgToCustomize.dependencies[dep];
             continue;
           }
 
-          for (const toMove of moveToPeerDependencies) {
-            if (test(dep, toMove)) {
-              console.log(`Moving '${dep}' to peerDependencies`);
+          if (
+            dontMoveToPeerDependencies.some(dontMove => test(dep, dontMove))
+          ) {
+            continue;
+          }
 
-              pkgToCustomize.peerDependencies ||= {};
-              pkgToCustomize.peerDependencies[dep] =
-                pkgToCustomize.dependencies[dep];
-              delete pkgToCustomize.dependencies[dep];
-              break;
-            }
+          if (moveToPeerDependencies.some(move => test(dep, move))) {
+            console.log(`Moving '${dep}' to peerDependencies`);
+
+            pkgToCustomize.peerDependencies ||= {};
+            pkgToCustomize.peerDependencies[dep] =
+              pkgToCustomize.dependencies[dep];
+            delete pkgToCustomize.dependencies[dep];
           }
         }
       }
-      pkgToCustomize.devDependencies = {};
+
+      // The following lines are a workaround for the fact that the @aws-sdk/util-utf8-browser package
+      // is not compatible with the NPM 9+, so that `npm pack` would not grab the Javascript files.
+      // This package has been deprecated in favor of @smithy/util-utf8.
+      //
+      // See https://github.com/aws/aws-sdk-js-v3/issues/5305.
+
+      const overrides = (pkgToCustomize as any).overrides || {};
+      (pkgToCustomize as any).overrides = {
+        ...overrides,
+        '@aws-sdk/util-utf8-browser': {
+          '@smithy/util-utf8': '^2.0.0',
+        },
+      };
+      const resolutions = (pkgToCustomize as any).resolutions || {};
+      (pkgToCustomize as any).resolutions = {
+        ...resolutions,
+        '@aws-sdk/util-utf8-browser': 'npm:@smithy/util-utf8@^2.0.0',
+      };
     },
   });
 
@@ -262,7 +322,7 @@ export async function backend(
   }
 
   if (opts.install) {
-    const yarnInstall = `yarn install${
+    const yarnInstall = `yarn install --production${
       yarnLockExists ? ' --frozen-lockfile' : ''
     }`;
 

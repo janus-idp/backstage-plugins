@@ -83,8 +83,8 @@ export function embedModules(options: EmbedModulesOptions): Plugin {
       const external: InputOptions['external'] = (id, importer, isResolved) => {
         // The piece that we're adding
         if (filter(id) && importer !== undefined) {
-          embedded.add(id);
-          if (isResolved) {
+          if (!embedded.has(id)) {
+            embedded.add(id);
             console.log(`Embedding module ${id}`);
           }
           return false;
