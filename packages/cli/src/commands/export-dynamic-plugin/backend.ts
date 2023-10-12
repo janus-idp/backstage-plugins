@@ -291,6 +291,16 @@ export async function backend(
         }
       }
 
+      // We remove devDependencies here since we want the dynamic plugin derived package
+      // to get only production dependencies, and no transitive dependencies, in both
+      // the node_modules sub-folder and yarn.lock file in `dist-dynamic`.
+      //
+      // And it happens that `yarn install --production` (yarn 1) doesn't completely
+      // remove devDependencies as needed.
+      //
+      // See https://github.com/yarnpkg/yarn/issues/6373#issuecomment-760068356
+      pkgToCustomize.devDependencies = {};
+
       // The following lines are a workaround for the fact that the @aws-sdk/util-utf8-browser package
       // is not compatible with the NPM 9+, so that `npm pack` would not grab the Javascript files.
       // This package has been deprecated in favor of @smithy/util-utf8.
