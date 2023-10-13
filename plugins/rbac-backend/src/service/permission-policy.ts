@@ -94,10 +94,10 @@ export class RBACPermissionPolicy implements PermissionPolicy {
 
   async handle(
     request: PolicyQuery,
-    user?: BackstageIdentityResponse | undefined,
+    identityResp?: BackstageIdentityResponse | undefined,
   ): Promise<PolicyDecision> {
     this.logger.info(
-      `Policy check for ${user?.identity.userEntityRef} for permission ${request.permission.name}`,
+      `Policy check for ${identityResp?.identity.userEntityRef} for permission ${request.permission.name}`,
     );
     try {
       let status = false;
@@ -108,13 +108,13 @@ export class RBACPermissionPolicy implements PermissionPolicy {
 
       if (isResourcePermission(request.permission)) {
         status = await this.isAuthorized(
-          user?.identity,
+          identityResp?.identity,
           request.permission.resourceType,
           action,
         );
       } else {
         status = await this.isAuthorized(
-          user?.identity,
+          identityResp?.identity,
           request.permission.name,
           action,
         );
@@ -122,7 +122,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
 
       const result = status ? AuthorizeResult.ALLOW : AuthorizeResult.DENY;
       this.logger.info(
-        `${user?.identity.userEntityRef} is ${result} for permission ${request.permission.name}`,
+        `${identityResp?.identity.userEntityRef} is ${result} for permission ${request.permission.name} and action ${action}`,
       );
       return Promise.resolve({
         result: result,
@@ -139,27 +139,14 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     identity: BackstageUserIdentity | undefined,
     resourceType: string,
     action: string,
-  ) => {
-    let status;
-
-    // Check if the group has access first
-    const ownerStatus = await Promise.all(
-      identity?.ownershipEntityRefs.map(async entityRef => {
-        return await this.enforcer.enforce(entityRef, resourceType, action);
-      }) || [],
-    );
-
-    status = ownerStatus.includes(true);
-
-    // Check if the user has access
-    if (!status) {
-      status = await this.enforcer.enforce(
-        identity?.userEntityRef,
-        resourceType,
-        action,
-      );
+  ): Promise<boolean> => {
+    if (!identity) {
+      // Allow access for backend plugins
+      return true;
     }
 
-    return status;
+    const entityRef = identity.userEntityRef;
+
+    return await this.enforcer.enforce(entityRef, resourceType, action);
   };
 }
