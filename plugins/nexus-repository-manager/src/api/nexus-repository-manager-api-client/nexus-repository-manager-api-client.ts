@@ -184,7 +184,7 @@ export class NexusRepositoryManagerApiClient
     };
   }
 
-  private async getdockerManifests(component: ComponentXO) {
+  private async getDockerManifests(component: ComponentXO) {
     // We only need to fetch the actual assets (manifests) for docker
     if (component.format !== 'docker') {
       return [];
@@ -229,7 +229,7 @@ export class NexusRepositoryManagerApiClient
     const values = await Promise.all(
       components.map(async component => ({
         component: await this.addFileSizes(component),
-        dockerManifests: await this.getdockerManifests(component),
+        dockerManifests: await this.getDockerManifests(component),
       })),
     );
 

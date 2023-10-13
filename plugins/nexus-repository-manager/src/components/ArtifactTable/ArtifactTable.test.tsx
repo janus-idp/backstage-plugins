@@ -5,6 +5,27 @@ import userEvent from '@testing-library/user-event';
 
 import { ArtifactRowData, ArtifactTable } from './ArtifactTable';
 
+// Get the text at row[columnName]
+function getCellText(table: HTMLElement, row: number, columnName: string) {
+  const header = table.querySelector(`thead tr`);
+  if (!header) {
+    throw new Error('No header found');
+  }
+  const columnIndex = Array.from(header.children).findIndex(
+    el => el.textContent === columnName,
+  );
+  if (columnIndex === -1) {
+    throw new Error(`Column ${columnName} not found`);
+  }
+
+  const rowElement = table.querySelector(`tbody tr:nth-child(${row + 1})`);
+  if (!rowElement) {
+    throw new Error(`Row ${row} not found`);
+  }
+  const cell = rowElement.children[columnIndex];
+  return cell.textContent;
+}
+
 describe('ArtifactTable', () => {
   const sampleRows: ArtifactRowData[] = [
     {
@@ -32,27 +53,6 @@ describe('ArtifactTable', () => {
       sizeBytes: 130000,
     },
   ];
-
-  // Get the text at row[columnName]
-  function getCellText(table: HTMLElement, row: number, columnName: string) {
-    const header = table.querySelector(`thead tr`);
-    if (!header) {
-      throw new Error('No header found');
-    }
-    const columnIndex = Array.from(header.children).findIndex(
-      el => el.textContent === columnName,
-    );
-    if (columnIndex === -1) {
-      throw new Error(`Column ${columnName} not found`);
-    }
-
-    const rowElement = table.querySelector(`tbody tr:nth-child(${row + 1})`);
-    if (!rowElement) {
-      throw new Error(`Row ${row} not found`);
-    }
-    const cell = rowElement.children[columnIndex];
-    return cell.textContent;
-  }
 
   it('renders rows', async () => {
     await render(
