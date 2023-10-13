@@ -82,16 +82,15 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
         icon={
           <ScalprumComponent
             scope="janus.dynamic-frontend-plugin"
-            module="./UserSettingsPageLegacy"
+            module="UserSettings"
             importName="UserSettingsSignInAvatar"
           />
         }
         to="/settings"
       >
-        BlaBla
         <ScalprumComponent
           scope="janus.dynamic-frontend-plugin"
-          module="./UserSettingsPageLegacy"
+          module="UserSettings"
           importName="Settings"
         />
       </SidebarGroup>

@@ -1,3 +1,2 @@
-import { TechRadarPage } from '@backstage/plugin-tech-radar';
-
-export default TechRadarPage;
+export * from '@backstage/plugin-tech-radar';
+export { default } from '@backstage/plugin-tech-radar';
