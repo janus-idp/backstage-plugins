@@ -72,6 +72,7 @@ describe('useNexusRepositoryManagerAppData', () => {
       title: 'janus-idp/backstage-showcase',
       query: {
         dockerImageName: 'janus-idp/backstage-showcase',
+        sort: 'version',
       },
     });
   });
@@ -99,6 +100,7 @@ describe('useNexusRepositoryManagerAppData', () => {
       query: {
         dockerImageName: 'janus-idp',
         dockerImageTag: 'latest',
+        sort: 'version',
       },
     });
   });
@@ -126,6 +128,7 @@ describe('useNexusRepositoryManagerAppData', () => {
       title: 'Custom Title',
       query: {
         dockerImageName: 'janus-idp/backstage-showcase',
+        sort: 'version',
       },
     });
   });

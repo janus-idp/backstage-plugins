@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-nexus-repository-manager [1.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-nexus-repository-manager@1.1.2...@janus-idp/backstage-plugin-nexus-repository-manager@1.2.0) (2023-10-13)
+
+
+### Features
+
+* **nexus:** sort artifacts by most recent first by default ([#829](https://github.com/janus-idp/backstage-plugins/issues/829)) ([01c28c2](https://github.com/janus-idp/backstage-plugins/commit/01c28c2907d6ae331536f1938e805b3f9b22b8a1))
+
 ## @janus-idp/backstage-plugin-nexus-repository-manager [1.1.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-nexus-repository-manager@1.1.1...@janus-idp/backstage-plugin-nexus-repository-manager@1.1.2) (2023-09-26)
 
 
