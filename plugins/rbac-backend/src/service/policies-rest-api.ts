@@ -522,6 +522,29 @@ export class PolicesServer {
       },
     );
     // todo: implement GET list all conditions. Also we need to have filter by pluginId and resource type.
+    router.get('/conditions', async (req, resp) => {
+      const decision = await this.authorize(
+        this.identity,
+        req,
+        this.permissions,
+        {
+          permission: policyEntityReadPermission,
+        },
+      );
+
+      if (decision.result === AuthorizeResult.DENY) {
+        throw new NotAllowedError(); // 403
+      }
+
+      const pluginId = this.getFirstQuery(req.query.pluginId);
+      const resourceType = this.getFirstQuery(req.query.resourceType);
+      const conditions = await this.conditionalStorage.getConditions(
+        pluginId,
+        resourceType,
+      );
+
+      resp.json(conditions);
+    });
 
     router.post('/conditions', async (req, resp) => {
       const decision = await this.authorize(

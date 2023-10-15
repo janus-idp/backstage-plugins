@@ -82,6 +82,27 @@ export class ConditionalStorage {
     return undefined;
   }
 
+  async getConditions(
+    pluginId: string,
+    resourceType: string,
+  ): Promise<ConditionalPolicyDecision[]> {
+    const daoRaws = await this.knex?.table(CONDITIONAL_TABLE).where(builder => {
+      if (pluginId) {
+        builder.where('pluginId', pluginId);
+      }
+      if (resourceType) {
+        builder.where('resourceType', resourceType);
+      }
+    });
+
+    let conditions: ConditionalPolicyDecision[] = [];
+    if (daoRaws) {
+      conditions = daoRaws.map(dao => this.daoToConditionalDecision(dao));
+    }
+
+    return conditions;
+  }
+
   async getCondition(
     id: number,
   ): Promise<ConditionalPolicyDecision | undefined> {
