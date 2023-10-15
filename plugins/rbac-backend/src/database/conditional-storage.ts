@@ -1,4 +1,7 @@
-import { PluginDatabaseManager } from '@backstage/backend-common';
+import {
+  PluginDatabaseManager,
+  resolvePackagePath,
+} from '@backstage/backend-common';
 import { InputError } from '@backstage/errors';
 import {
   AuthorizeResult,
@@ -8,6 +11,10 @@ import {
 import { Knex } from 'knex';
 
 const CONDITIONAL_TABLE = 'policy-conditions';
+const migrationsDir = resolvePackagePath(
+  '@janus-idp/backstage-plugin-rbac-backend', // Package name
+  'migrations', // Migrations directory
+);
 
 // dao
 interface ConditionalPolicyDecisionDAO {
@@ -18,68 +25,40 @@ interface ConditionalPolicyDecisionDAO {
   conditionsJson: string;
 }
 
-export class ConditionalStorage {
-  private knex?: Knex<any, any[]>;
+export interface ConditionalStorage {
+  getConditions(
+    pluginId: string,
+    resourceType: string,
+  ): Promise<ConditionalPolicyDecision[]>;
+  createCondition(
+    conditionalDecision: ConditionalPolicyDecision,
+  ): Promise<number>;
+  findCondition(
+    resourceType: string,
+  ): Promise<ConditionalPolicyDecision | undefined>;
+  getCondition(id: number): Promise<ConditionalPolicyDecision | undefined>;
+  deleteCondition(id: number): Promise<void>;
+  updateCondition(
+    id: number,
+    conditionalDecision: ConditionalPolicyDecision,
+  ): Promise<boolean>;
+}
 
-  public constructor(private readonly databaseManager: PluginDatabaseManager) {}
+export class DataBaseConditionalStorage implements ConditionalStorage {
+  public constructor(private readonly knex: Knex<any, any[]>) {}
 
-  async init(): Promise<void> {
-    const knex = await this.databaseManager.getClient();
-    const exists = await knex.schema.hasTable('policy-conditions');
+  static async create(
+    databaseManager: PluginDatabaseManager,
+  ): Promise<ConditionalStorage> {
+    const knex = await databaseManager.getClient();
 
-    // todo: remove it, I need it only for dev purposes.
-    // if (exists) {
-    //   await knex.schema.dropTable(CONDITIONAL_TABLE);
-    // }
-
-    if (!exists) {
-      // todo: replace database creation with migration script.
-      await knex.schema.createTable(CONDITIONAL_TABLE, table => {
-        table.increments('id').primary();
-        table.string('result');
-        table.string('pluginId');
-        table.string('resourceType');
-        // Conditions is potentially long json
-        table.text('conditionsJson');
-        // Todo: think more and figure out:
-        // instead of `text` we can use `json` or `jsonb` type, but this approach has pluses and minuses
-        // table.json('conditions'); // or table.jsonb('conditions')
+    if (!databaseManager.migrations?.skip) {
+      await knex.migrate.latest({
+        directory: migrationsDir,
       });
     }
 
-    this.knex = knex;
-  }
-
-  async createCondition(
-    conditionalDecision: ConditionalPolicyDecision,
-  ): Promise<number> {
-    const conditionRaw = this.toDAO(conditionalDecision);
-    const result = await this.knex
-      ?.table(CONDITIONAL_TABLE)
-      .insert<ConditionalPolicyDecision>(conditionRaw)
-      .returning('id');
-    if (result && result?.length > 0) {
-      return result[0].id;
-    }
-    // todo handle error better...
-    return -1;
-  }
-
-  // todo handle pluginId
-  async findCondition(
-    resourceType: string,
-    _pluginId?: string,
-  ): Promise<ConditionalPolicyDecision | undefined> {
-    const daoRaw = await this.knex
-      ?.table(CONDITIONAL_TABLE)
-      .where('resourceType', resourceType)
-      // todo handle few conditions...
-      .first();
-
-    if (daoRaw) {
-      return this.daoToConditionalDecision(daoRaw);
-    }
-    return undefined;
+    return new DataBaseConditionalStorage(knex);
   }
 
   async getConditions(
@@ -101,6 +80,36 @@ export class ConditionalStorage {
     }
 
     return conditions;
+  }
+
+  async createCondition(
+    conditionalDecision: ConditionalPolicyDecision,
+  ): Promise<number> {
+    const conditionRaw = this.toDAO(conditionalDecision);
+    const result = await this.knex
+      ?.table(CONDITIONAL_TABLE)
+      .insert<ConditionalPolicyDecision>(conditionRaw)
+      .returning('id');
+    if (result && result?.length > 0) {
+      return result[0].id;
+    }
+    // todo handle error better...
+    return -1;
+  }
+
+  async findCondition(
+    resourceType: string,
+  ): Promise<ConditionalPolicyDecision | undefined> {
+    const daoRaw = await this.knex
+      ?.table(CONDITIONAL_TABLE)
+      .where('resourceType', resourceType)
+      // todo handle few conditions...
+      .first();
+
+    if (daoRaw) {
+      return this.daoToConditionalDecision(daoRaw);
+    }
+    return undefined;
   }
 
   async getCondition(

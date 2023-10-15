@@ -2215,7 +2215,12 @@
     ajv "^8.10.0"
     lodash "^4.17.21"
 
-"@backstage/cli-common@^0.1.12", "@backstage/cli-common@^0.1.13":
+"@backstage/cli-common@^0.1.12":
+  version "0.1.12"
+  resolved "https://registry.yarnpkg.com/@backstage/cli-common/-/cli-common-0.1.12.tgz#8e1ea10da38554b9bc910e0da532b73af4669a2f"
+  integrity sha512-CoXAcIQprLAuk4gsJyqrZHRyZ5Mpfpr87lBzhSBWgriMTVgKH5bfMqZmGzm5TTZRlOIX09RLINp9e3kLkfO3Fg==
+
+"@backstage/cli-common@^0.1.13":
   version "0.1.13"
   resolved "https://registry.yarnpkg.com/@backstage/cli-common/-/cli-common-0.1.13.tgz#cbeda6a359ca4437fc782f0ac51bb957e8d49e73"
   integrity sha512-UMgNAIJSeEPSMkzxiWCP8aFR8APsG21XczDnzwHdL/41F7g2C+KA6UeQc/3tzbe8XQo+PxbNLpReZeKSSnSPSQ==

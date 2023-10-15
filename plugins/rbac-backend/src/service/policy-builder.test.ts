@@ -6,7 +6,7 @@ import { Adapter, Enforcer, FileAdapter } from 'casbin';
 import { Router } from 'express';
 import TypeORMAdapter from 'typeorm-adapter';
 
-import { CasbinDBAdapterFactory } from './casbin-adapter-factory';
+import { CasbinDBAdapterFactory } from '../database/casbin-adapter-factory';
 import { RBACPermissionPolicy } from './permission-policy';
 import { PolicesServer as PoliciesServer } from './policies-rest-api';
 import { PolicyBuilder } from './policy-builder';

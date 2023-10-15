@@ -17,7 +17,7 @@ import {
 import { Enforcer, FileAdapter, newEnforcer, newModelFromString } from 'casbin';
 import { Logger } from 'winston';
 
-import { ConditionalStorage } from './conditional-storage';
+import { ConditionalStorage } from '../database/conditional-storage';
 import { MODEL } from './permission-model';
 
 const useAdmins = async (admins: Config[], enf: Enforcer) => {

@@ -1,4 +1,5 @@
 import {
+  DatabaseManager,
   PluginDatabaseManager,
   PluginEndpointDiscovery,
   resolvePackagePath,
@@ -14,8 +15,8 @@ import { FileAdapter, newEnforcer, newModelFromString } from 'casbin';
 import { Router } from 'express';
 import { Logger } from 'winston';
 
-import { CasbinDBAdapterFactory } from './casbin-adapter-factory';
-import { ConditionalStorage } from './conditional-storage';
+import { CasbinDBAdapterFactory } from '../database/casbin-adapter-factory';
+import { DataBaseConditionalStorage } from '../database/conditional-storage';
 import { MODEL } from './permission-model';
 import { RBACPermissionPolicy } from './permission-policy';
 import { PolicesServer } from './policies-rest-api';
@@ -35,11 +36,15 @@ export class PolicyBuilder {
     const databaseEnabled = env.config.getOptionalBoolean(
       'permission.rbac.database.enabled',
     );
+
+    const databaseManager = await DatabaseManager.fromConfig(
+      env.config,
+    ).forPlugin('rbac');
     // Database adapter work
     if (databaseEnabled) {
       adapter = await new CasbinDBAdapterFactory(
         env.config,
-        env.database,
+        databaseManager,
       ).createAdapter();
     } else {
       adapter = new FileAdapter(
@@ -64,8 +69,8 @@ export class PolicyBuilder {
     enf.enableAutoBuildRoleLinks(false);
     await enf.buildRoleLinks();
 
-    const conditionStorage = new ConditionalStorage(env.database);
-    await conditionStorage.init();
+    const conditionStorage =
+      await DataBaseConditionalStorage.create(databaseManager);
 
     const options: RouterOptions = {
       config: env.config,
