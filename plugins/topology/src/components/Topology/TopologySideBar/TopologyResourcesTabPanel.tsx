@@ -70,32 +70,35 @@ const TopologyResourcesTabPanel = ({
           nodeData.podsData.pods
             .sort(byCreationTime)
             .slice(0, MAXSHOWRESCOUNT)
-            .map((pod: V1Pod) => (
-              <li
-                style={{ gap: '10px' }}
-                className="item"
-                key={pod.metadata?.uid}
-              >
-                <span style={{ flex: '1' }}>
-                  <ResourceName
-                    name={pod.metadata?.name ?? ''}
-                    kind={pod.kind ?? ''}
-                  />
-                </span>
-                <span style={{ flex: '1' }}>
-                  {' '}
-                  <ResourceStatus
-                    additionalClassNames="hidden-xs"
-                    noStatusBackground
-                  >
-                    <Status status={podPhase(pod)} />
-                  </ResourceStatus>
-                </span>
-                <span style={{ flex: '1' }}>
-                  <PodLogsDialog podData={pod} />
-                </span>
-              </li>
-            ))}
+            .map((pod: V1Pod) => {
+              const status = podPhase(pod);
+              return (
+                <li
+                  style={{ gap: '10px' }}
+                  className="item"
+                  key={pod.metadata?.uid}
+                >
+                  <span style={{ flex: '1' }}>
+                    <ResourceName
+                      name={pod.metadata?.name ?? ''}
+                      kind={pod.kind ?? ''}
+                    />
+                  </span>
+                  <span style={{ flex: '1' }}>
+                    {' '}
+                    <ResourceStatus
+                      additionalClassNames="hidden-xs"
+                      noStatusBackground
+                    >
+                      {status ? <Status status={status} /> : '-'}
+                    </ResourceStatus>
+                  </span>
+                  <span style={{ flex: '1' }}>
+                    <PodLogsDialog podData={pod} />
+                  </span>
+                </li>
+              );
+            })}
       </TopologyResourcesTabPanelItem>
       {pipelines?.length > 0 ? (
         <PLRlist pipelines={pipelines} pipelineRuns={pipelineRuns} />
