@@ -1,3 +1,14 @@
+## @janus-idp/backstage-plugin-tekton [2.0.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.9.6...@janus-idp/backstage-plugin-tekton@2.0.0) (2023-10-09)
+
+
+### ⚠ BREAKING CHANGES
+
+* **tekton:** enable tekton related features when the tekton annotation is present (#741)
+
+### Features
+
+* **tekton:** enable tekton related features when the tekton annotation is present ([#741](https://github.com/janus-idp/backstage-plugins/issues/741)) ([474d3f0](https://github.com/janus-idp/backstage-plugins/commit/474d3f01bb312a668bc8b39dc4c78f6f52b5cf87))
+
 ## @janus-idp/backstage-plugin-tekton [1.9.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.9.5...@janus-idp/backstage-plugin-tekton@1.9.6) (2023-09-22)
 
 

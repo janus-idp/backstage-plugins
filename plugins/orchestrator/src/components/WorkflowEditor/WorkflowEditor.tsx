@@ -35,8 +35,8 @@ import {
 import { useCancelableEffect } from '@kie-tools-core/react-hooks/dist/useCancelableEffect';
 import { ServerlessWorkflowCombinedEditorChannelApi } from '@kie-tools/serverless-workflow-combined-editor/dist/api';
 import { ServerlessWorkflowCombinedEditorEnvelopeApi } from '@kie-tools/serverless-workflow-combined-editor/dist/api/ServerlessWorkflowCombinedEditorEnvelopeApi';
-import { SwfCombinedEditorChannelApiImpl } from '@kie-tools/serverless-workflow-combined-editor/dist/impl/SwfCombinedEditorChannelApiImpl';
-import { SwfPreviewOptionsChannelApiImpl } from '@kie-tools/serverless-workflow-combined-editor/dist/impl/SwfPreviewOptionsChannelApiImpl';
+import { SwfCombinedEditorChannelApiImpl } from '@kie-tools/serverless-workflow-combined-editor/dist/channel/SwfCombinedEditorChannelApiImpl';
+import { SwfPreviewOptionsChannelApiImpl } from '@kie-tools/serverless-workflow-combined-editor/dist/channel/SwfPreviewOptionsChannelApiImpl';
 import {
   SwfCatalogSourceType,
   SwfServiceCatalogService,
@@ -279,12 +279,13 @@ const RefForwardingWorkflowEditor: ForwardRefRenderFunction<
         defaultWidth: kind === EditorViewKind.AUTHORING ? '50%' : '100%',
       });
 
-    return new SwfCombinedEditorChannelApiImpl(
+    return new SwfCombinedEditorChannelApiImpl({
       defaultApiImpl,
-      undefined,
-      workflowEditorLanguageServiceChannelApiImpl,
-      workflowEditorPreviewOptionsChannelApiImpl,
-    );
+      swfLanguageServiceChannelApiImpl:
+        workflowEditorLanguageServiceChannelApiImpl,
+      swfPreviewOptionsChannelApiImpl:
+        workflowEditorPreviewOptionsChannelApiImpl,
+    });
   }, [embeddedFile, languageService, stateControl, kind]);
 
   useEffect(() => {
