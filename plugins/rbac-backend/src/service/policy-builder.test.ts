@@ -38,7 +38,7 @@ const mockDataBaseAdapterFactory: Partial<CasbinDBAdapterFactory> = {
   }),
 };
 
-jest.mock('./casbin-adapter-factory', () => {
+jest.mock('../database/casbin-adapter-factory', () => {
   return {
     CasbinDBAdapterFactory: jest.fn((): Partial<CasbinDBAdapterFactory> => {
       return mockDataBaseAdapterFactory;
