@@ -7,12 +7,10 @@ import CamelCaseWrap from './CamelCaseWrap';
 import './StatusIconAndText.css';
 
 type StatusIconAndTextProps = {
-  title?: string;
+  title: string;
   iconOnly?: boolean;
-  noTooltip?: boolean;
   className?: string;
-  popoverTitle?: string;
-  icon?: React.ReactElement;
+  icon: React.ReactElement;
   spin?: boolean;
 };
 
@@ -23,28 +21,37 @@ export const StatusIconAndText = ({
   title,
   spin,
   iconOnly,
-  noTooltip,
   className,
-}: StatusIconAndTextProps) => {
+}: StatusIconAndTextProps): React.ReactElement => {
   if (!title) {
     return <>{DASH}</>;
+  }
+
+  if (iconOnly) {
+    return (
+      <>
+        {React.cloneElement(icon, {
+          'data-testid': `icon-only-${title}`,
+          className: icon.props.className,
+        })}
+      </>
+    );
   }
 
   return (
     <span
       className={classNames('bs-shared-icon-and-text', className)}
-      title={iconOnly && !noTooltip ? title : undefined}
+      data-testid={`icon-with-title-${title}`}
+      title={title}
     >
-      {icon &&
-        React.cloneElement(icon, {
-          className: classNames(
-            spin && 'fa-spin',
-            icon.props.className,
-            !iconOnly &&
-              'bs-shared-icon-and-text__icon bs-shared-icon-flex-child',
-          ),
-        })}
-      {!iconOnly && <CamelCaseWrap value={title} dataTest="status-text" />}
+      {React.cloneElement(icon, {
+        className: classNames(
+          spin && 'fa-spin',
+          icon.props.className,
+          'bs-shared-icon-and-text__icon bs-shared-icon-flex-child',
+        ),
+      })}
+      <CamelCaseWrap value={title} dataTest="status-text" />
     </span>
   );
 };

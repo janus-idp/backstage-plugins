@@ -37,7 +37,7 @@ export const PipelineRunDecorator = ({
   );
 
   const status = pipelineRunStatus(latestPipelineRun);
-  const statusIcon = <Status status={status} iconOnly noTooltip />;
+  const statusIcon = <Status status={status} iconOnly />;
 
   const ariaLabel = `PipelineRun status is ${status}`;
   const tooltipContent = (

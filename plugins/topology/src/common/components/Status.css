@@ -1,3 +1,7 @@
+.bs-topology-status {
+  vertical-align: 0 !important;
+}
+
 .bs-topology-status__green-check-icon {
   fill: var(--pf-v5-global--palette--green-500) !important;
 }

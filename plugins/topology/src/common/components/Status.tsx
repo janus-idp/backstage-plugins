@@ -9,21 +9,18 @@ import {
   SyncAltIcon,
   UnknownIcon,
 } from '@patternfly/react-icons';
+import classNames from 'classnames';
 
 import { StatusIconAndText } from '@janus-idp/shared-react';
 
 import './Status.css';
 
-export type StatusComponentProps = {
-  title?: string;
+export type StatusProps = {
   iconOnly?: boolean;
-  noTooltip?: boolean;
   className?: string;
-  popoverTitle?: string;
-};
-
-type StatusProps = StatusComponentProps & {
   status: string | null;
+  height?: number;
+  width?: number;
 };
 
 const DASH = '-';
@@ -36,27 +33,43 @@ const DASH = '-';
  * <Status status='Warning' />
  * ```
  */
-const Status = ({ status, noTooltip, iconOnly }: StatusProps) => {
+const Status = ({
+  status,
+  iconOnly,
+}: React.PropsWithChildren<StatusProps>): React.ReactElement => {
   const statusProps = {
     title: status ?? '',
     iconOnly,
-    noTooltip,
   };
+
   switch (status) {
     case 'Pending':
       return (
-        <StatusIconAndText {...statusProps} icon={<HourglassHalfIcon />} />
+        <StatusIconAndText
+          {...statusProps}
+          icon={<HourglassHalfIcon className="bs-topology-status" />}
+        />
       );
 
     case 'Running':
     case 'In Progress':
-      return <StatusIconAndText {...statusProps} icon={<SyncAltIcon />} />;
+      return (
+        <StatusIconAndText
+          {...statusProps}
+          icon={<SyncAltIcon className="bs-topology-status" />}
+        />
+      );
 
     case 'Not Ready':
     case 'Cancelled':
     case 'Terminating':
     case 'Cancelling':
-      return <StatusIconAndText {...statusProps} icon={<BanIcon />} />;
+      return (
+        <StatusIconAndText
+          {...statusProps}
+          icon={<BanIcon className="bs-topology-status" />}
+        />
+      );
 
     case 'CrashLoopBackOff':
     case 'ErrImagePull':
@@ -66,7 +79,12 @@ const Status = ({ status, noTooltip, iconOnly }: StatusProps) => {
         <StatusIconAndText
           {...statusProps}
           icon={
-            <ExclamationCircleIcon className="bs-topology-status__red-exclamation-icon" />
+            <ExclamationCircleIcon
+              className={classNames(
+                'bs-topology-status__red-exclamation-icon',
+                'bs-topology-status',
+              )}
+            />
           }
         />
       );
@@ -76,16 +94,31 @@ const Status = ({ status, noTooltip, iconOnly }: StatusProps) => {
         <StatusIconAndText
           {...statusProps}
           icon={
-            <CheckCircleIcon className="bs-topology-status__green-check-icon" />
+            <CheckCircleIcon
+              className={classNames(
+                'bs-topology-status__green-check-icon',
+                'bs-topology-status',
+              )}
+            />
           }
         />
       );
 
     case 'PipelineNotStarted':
-      return <StatusIconAndText {...statusProps} icon={<NotStartedIcon />} />;
+      return (
+        <StatusIconAndText
+          {...statusProps}
+          icon={<NotStartedIcon className="bs-topology-status" />}
+        />
+      );
 
     case 'Unknown':
-      return <StatusIconAndText {...statusProps} icon={<UnknownIcon />} />;
+      return (
+        <StatusIconAndText
+          {...statusProps}
+          icon={<UnknownIcon className="bs-topology-status" />}
+        />
+      );
 
     default:
       return <>{status || DASH}</>;
