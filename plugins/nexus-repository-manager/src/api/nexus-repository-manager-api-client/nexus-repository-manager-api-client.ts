@@ -12,10 +12,12 @@ import {
 import { OpenAPI, SearchService } from '../../generated';
 import type {
   Annotation,
+  AssetXO,
   ComponentXO,
-  RawAsset,
+  DockerManifest,
   SearchServiceQuery,
 } from '../../types';
+import { isPrimaryAsset } from '../../utils';
 
 const DEFAULT_PROXY_PATH = '/nexus-repository-manager' as const;
 const NEXUS_REPOSITORY_MANAGER_CONFIG = {
@@ -45,11 +47,26 @@ function getAdditionalHeaders(format?: string): HeadersInit {
   }
 }
 
+// Whether an asset has data we might want to fetch
+function shouldFetchSize(asset: AssetXO) {
+  if (asset.format !== 'maven2') {
+    return false;
+  }
+
+  if (!asset.maven2) {
+    return false;
+  }
+  return (
+    // Choosing not to care about the size of e.g. sources or javadoc
+    asset.maven2.classifier || !isPrimaryAsset(asset)
+  );
+}
+
 export type NexusRepositoryManagerApiV1 = {
   getComponents(query: SearchServiceQuery): Promise<{
     components: {
       component: ComponentXO;
-      rawAssets: (RawAsset | null)[];
+      dockerManifests: (DockerManifest | null)[];
     }[];
   }>;
   getAnnotations(): { ANNOTATIONS: Readonly<Annotation[]> };
@@ -72,6 +89,7 @@ export class NexusRepositoryManagerApiClient
   private readonly discoveryApi: DiscoveryApi;
   private readonly configApi: ConfigApi;
   private readonly identityApi: IdentityApi;
+  private baseUrl = '';
 
   constructor(options: NexusRepositoryManagerApiClientOptions) {
     this.discoveryApi = options.discoveryApi;
@@ -80,11 +98,21 @@ export class NexusRepositoryManagerApiClient
   }
 
   private async getBaseUrl() {
+    if (this.baseUrl) {
+      return this.baseUrl;
+    }
+
     const proxyPath =
       this.configApi.getOptionalString(
         NEXUS_REPOSITORY_MANAGER_CONFIG.proxyPath,
       ) ?? DEFAULT_PROXY_PATH;
-    return `${await this.discoveryApi.getBaseUrl('proxy')}${proxyPath}`;
+    this.baseUrl = `${await this.discoveryApi.getBaseUrl('proxy')}${proxyPath}`;
+    return this.baseUrl;
+  }
+
+  private async proxiedDownloadUrl(asset: AssetXO) {
+    const proxyUrl = await this.getBaseUrl();
+    return `${proxyUrl}/repository/${asset.repository}/${asset.path}`;
   }
 
   private async searchServiceFetcher(url: string, query: SearchServiceQuery) {
@@ -96,49 +124,83 @@ export class NexusRepositoryManagerApiClient
     return await SearchService.search(query);
   }
 
-  private async fetcher(url: string, additionalHeaders: HeadersInit = {}) {
+  private async fetcher(
+    url: string,
+    additionalHeaders: HeadersInit = {},
+    method: string = 'GET',
+  ) {
     const { token: idToken } = await this.identityApi.getCredentials();
 
     const headers = new Headers(additionalHeaders);
-    if (!headers.has('Accept')) {
-      headers.set('Accept', 'application/json');
-    }
 
     if (idToken) {
       headers.set('Authorization', `Bearer ${idToken}`);
     }
 
-    const response = await fetch(url, { headers });
+    const response = await fetch(url, { headers, method });
     if (!response.ok) {
       throw new Error(
         `failed to fetch data, status ${response.status}: ${response.statusText}`,
       );
     }
-    return await response.json();
+    return response;
   }
 
-  private async getRawAsset(url?: string, additionalHeaders: HeadersInit = {}) {
-    const proxyUrl = await this.getBaseUrl();
-
-    if (!url) {
-      return null;
+  /**
+   * Use HEAD requests to get the size of each asset we care about, as nexus
+   * doesn't return that information in the search API.
+   * Only supports maven for now.
+   */
+  private async addFileSizes(component: ComponentXO): Promise<ComponentXO> {
+    if (component.format !== 'maven2' || !component.assets) {
+      return component;
     }
 
-    const path = /\/(repository\/.*)/.exec(url)?.at(1);
+    const headers = getAdditionalHeaders(component.format);
 
-    return (await this.fetcher(
-      `${proxyUrl}/${path}`,
-      additionalHeaders,
-    )) as RawAsset;
+    const updatedAssets = await Promise.all(
+      component.assets.map(async asset => {
+        // Save a request if Nexus decides to return a size (unknown if possible)
+        if (asset.fileSize !== 0 || shouldFetchSize(asset)) {
+          return asset;
+        }
+
+        const response = await this.fetcher(
+          await this.proxiedDownloadUrl(asset),
+          headers,
+          'HEAD',
+        );
+
+        return {
+          ...asset,
+          fileSize: Number(response.headers.get('Content-Length')) || 0,
+        };
+      }),
+    );
+
+    return {
+      ...component,
+      assets: updatedAssets,
+    };
   }
 
-  private async getRawAssets(component: ComponentXO) {
+  private async getDockerManifests(component: ComponentXO) {
+    // We only need to fetch the actual assets (manifests) for docker
+    if (component.format !== 'docker') {
+      return [];
+    }
+
     const additionalHeaders = getAdditionalHeaders(component.format);
 
     const assets = await Promise.all(
       component.assets?.map(
         async asset =>
-          await this.getRawAsset(asset.downloadUrl, additionalHeaders),
+          (
+            await this.fetcher(
+              await this.proxiedDownloadUrl(asset),
+              additionalHeaders,
+            )
+          ).json() as Promise<DockerManifest>,
         // Create a dummy promise to avoid Promise.all() from failing
       ) ?? [new Promise<null>(() => null)],
     );
@@ -162,15 +224,21 @@ export class NexusRepositoryManagerApiClient
       components.push(...(res.items ?? []));
     } while (continuationToken);
 
-    const value = await Promise.all(
+    // TODO make resilient to individual errors
+    // We're seeing intermittent 504s that stop the whole request
+    const values = await Promise.all(
       components.map(async component => ({
-        component,
-        rawAssets: await this.getRawAssets(component),
+        component: await this.addFileSizes(component),
+        dockerManifests: await this.getDockerManifests(component),
       })),
     );
 
+    const filteredValues = values.filter(
+      v => v.component?.assets?.some(asset => isPrimaryAsset(asset)),
+    );
+
     return {
-      components: value,
+      components: filteredValues,
     };
   }
 

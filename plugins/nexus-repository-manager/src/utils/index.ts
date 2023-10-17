@@ -1,2 +1,3 @@
 export * from './get-file-size';
-export * from './get-sha256';
+export * from './get-hash';
+export * from './is-primary-asset';

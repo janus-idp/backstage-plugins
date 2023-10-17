@@ -27,7 +27,7 @@ repos:
         entry: yamllint --strict -c yamllint-config.yaml
 
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v2.7.1
+    rev: v3.0.3
     hooks:
       - id: prettier
         additional_dependencies:
