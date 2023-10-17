@@ -64,6 +64,7 @@ export const useTags = (organization: string, repository: string) => {
       const hashFunc = tag.manifest_digest.substring(0, 6);
       const shortHash = tag.manifest_digest.substring(7, 19);
       return {
+        id: `${tag.manifest_digest}-${tag.name}`,
         name: tag.name,
         last_modified: formatDate(tag.last_modified),
         size: formatByteSize(tag.size),
