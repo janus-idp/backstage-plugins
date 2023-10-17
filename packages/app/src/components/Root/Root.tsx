@@ -12,7 +12,7 @@ import {
   SidebarSpace,
   useSidebarOpenState,
 } from '@backstage/core-components';
-import { NotificationsSidebarGroup } from '@backstage/plugin-notifications-frontend';
+import { NotificationsSidebarItem } from '@backstage/plugin-notifications-frontend';
 import { SidebarSearchModal } from '@backstage/plugin-search';
 
 import { makeStyles } from '@material-ui/core';
@@ -77,7 +77,7 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
         </SidebarScrollWrapper>
       </SidebarGroup>
       <SidebarDivider />
-      <NotificationsSidebarGroup />
+      <NotificationsSidebarItem />
       <SidebarSpace />
       <SidebarDivider />
       <SidebarGroup
