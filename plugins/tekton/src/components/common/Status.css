@@ -11,5 +11,5 @@
   fill: var(--pf-v5-global--palette--blue-300) !important;
 }
 .bs-tkn-status__alt-icon {
-  color: var(--pf-v5-global--palette--white);
+  color: var(--pf-v5-global--palette--white) !important;
 }

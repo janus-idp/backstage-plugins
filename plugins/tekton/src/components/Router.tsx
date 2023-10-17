@@ -5,32 +5,19 @@ import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
 
 import { TEKTON_CI_ANNOTATION } from '../consts/tekton-const';
-import { PipelineRunVisualization } from './pipeline-topology';
+import { TektonCIComponent } from './Tekton/TektonCIComponent';
 
 /** @public */
 export const isTektonCIAvailable = (entity: Entity): boolean =>
   Boolean(entity.metadata.annotations?.[TEKTON_CI_ANNOTATION]);
 
-type PipelineVisualizationRouterProps = {
-  linkTekton?: boolean;
-  url?: string;
-};
-
 /** @public */
-export const PipelineVisualizationRouter = ({
-  linkTekton,
-  url,
-}: PipelineVisualizationRouterProps) => {
+export const Router = () => {
   const { entity } = useEntity();
   if (isTektonCIAvailable(entity)) {
     return (
       <Routes>
-        <Route
-          path="/"
-          element={
-            <PipelineRunVisualization linkTekton={linkTekton} url={url} />
-          }
-        />
+        <Route path="/" element={<TektonCIComponent />} />
       </Routes>
     );
   }

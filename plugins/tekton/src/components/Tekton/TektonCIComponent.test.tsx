@@ -2,7 +2,7 @@ import React from 'react';
 
 import { render } from '@testing-library/react';
 
-import { TektonComponent } from './TektonComponent';
+import { TektonCIComponent } from './TektonCIComponent';
 
 // mock useTektonObjectsResponse hook
 jest.mock('../../hooks/useTektonObjectsResponse', () => ({
@@ -25,7 +25,7 @@ jest.mock('../../hooks/useTektonObjectsResponse', () => ({
 
 describe('TektonComponent', () => {
   it('should render TektonComponent', () => {
-    const { getByText } = render(<TektonComponent />);
+    const { getByText } = render(<TektonCIComponent />);
     expect(getByText(/No Pipeline Runs found/i)).not.toBeNull();
   });
 });
