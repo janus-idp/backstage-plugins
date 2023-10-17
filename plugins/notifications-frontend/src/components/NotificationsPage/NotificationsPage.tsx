@@ -2,8 +2,8 @@ import React from 'react';
 
 import { Page, RoutedTabs } from '@backstage/core-components';
 
-import { MonitoringNotifications } from '../MonitoringNotifications';
 import { PersonalNotifications } from '../PersonalNotifications';
+import { SystemNotifications } from '../SystemNotifications';
 
 export const NotificationsPage = () => (
   <Page themeId="tool">
@@ -15,9 +15,9 @@ export const NotificationsPage = () => (
           children: <PersonalNotifications />,
         },
         {
-          path: 'monitoring',
-          title: 'Monitoring',
-          children: <MonitoringNotifications />,
+          path: 'updates',
+          title: 'Updates',
+          children: <SystemNotifications />,
         },
       ]}
     />
