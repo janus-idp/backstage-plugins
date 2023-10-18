@@ -22,7 +22,7 @@ import { updateOpenAPIConfig } from './helpers';
 const schemaInput = z.object({
   tableName: z
     .string()
-    .nonempty()
+    .min(1)
     .describe('Name of the table in which to save the record'),
   requestBody: z
     .custom<Record<PropertyKey, unknown>>()
@@ -43,7 +43,7 @@ const schemaInput = z.object({
       'True to exclude Table API links for reference fields (default: false)',
     ),
   sysparmFields: z
-    .array(z.string().nonempty())
+    .array(z.string().min(1))
     .optional()
     .describe('An array of fields to return in the response'),
   sysparmInputDisplayValue: z

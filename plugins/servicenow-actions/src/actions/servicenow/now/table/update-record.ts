@@ -22,11 +22,11 @@ import { updateOpenAPIConfig } from './helpers';
 const schemaInput = z.object({
   tableName: z
     .string()
-    .nonempty()
+    .min(1)
     .describe('Name of the table in which to update the record'),
   sysId: z
     .string()
-    .nonempty()
+    .min(1)
     .describe('Unique identifier of the record to update'),
   requestBody: z
     .custom<Record<PropertyKey, unknown>>()
@@ -47,7 +47,7 @@ const schemaInput = z.object({
       'True to exclude Table API links for reference fields (default: false)',
     ),
   sysparmFields: z
-    .array(z.string().nonempty())
+    .array(z.string().min(1))
     .optional()
     .describe('An array of fields to return in the response'),
   sysparmInputDisplayValue: z

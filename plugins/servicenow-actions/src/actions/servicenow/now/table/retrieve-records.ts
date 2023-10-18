@@ -22,7 +22,7 @@ import { updateOpenAPIConfig } from './helpers';
 const schemaInput = z.object({
   tableName: z
     .string()
-    .nonempty()
+    .min(1)
     .describe('Name of the table from which to retrieve the records'),
   sysparamQuery: z
     .string()
@@ -45,7 +45,7 @@ const schemaInput = z.object({
     .optional()
     .describe('True to suppress pagination header (default: false)'),
   sysparmFields: z
-    .array(z.string().nonempty())
+    .array(z.string().min(1))
     .optional()
     .describe('An array of fields to return in the response'),
   sysparmLimit: z

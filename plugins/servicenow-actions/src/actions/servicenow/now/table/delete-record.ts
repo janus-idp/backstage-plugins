@@ -22,11 +22,11 @@ import { updateOpenAPIConfig } from './helpers';
 const schemaInput = z.object({
   tableName: z
     .string()
-    .nonempty()
+    .min(1)
     .describe('Name of the table in which to delete the record'),
   sysId: z
     .string()
-    .nonempty()
+    .min(1)
     .describe('Unique identifier of the record to delete'),
   sysparmQueryNoDomain: z
     .boolean()

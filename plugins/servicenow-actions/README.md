@@ -53,6 +53,8 @@ export default async function createPlugin(
 
 ### Action : `servicenow:now:table:createRecord`
 
+#### Request Type: `POST`
+
 #### Input
 
 | Parameter Name                |              Type              | Required | Description                                                                                |
@@ -74,6 +76,8 @@ export default async function createPlugin(
 
 ### Action : `servicenow:now:table:deleteRecord`
 
+#### Request Type: `DELETE`
+
 #### Input
 
 | Parameter Name         |   Type    | Required | Description                                                       |
@@ -83,6 +87,8 @@ export default async function createPlugin(
 | `sysparmQueryNoDomain` | `boolean` |    No    | True to access data across domains if authorized (default: false) |
 
 ### Action : `servicenow:now:table:modifyRecord`
+
+#### Request Type: `PUT`
 
 #### Input
 
@@ -105,7 +111,31 @@ export default async function createPlugin(
 | -------- | :----------------------------: | -------------------------------- |
 | `result` | `Record<PropertyKey, unknown>` | The response body of the request |
 
+### Action : `servicenow:now:table:retrieveRecord`
+
+#### Request Type: `GET`
+
+#### Input
+
+| Parameter Name                |              Type              | Required | Description                                                                               |
+| ----------------------------- | :----------------------------: | :------: | ----------------------------------------------------------------------------------------- |
+| `tableName`                   |            `string`            |   Yes    | Name of the table from which to retrieve the record                                       |
+| `sysId`                       |            `string`            |   Yes    | Unique identifier of the record to retrieve                                               |
+| `sysparmDisplayValue`         | `enum("true", "false", "all")` |    No    | Return field display values (true), actual values (false), or both (all) (default: false) |
+| `sysparmExcludeReferenceLink` |           `boolean`            |    No    | True to exclude Table API links for reference fields (default: false)                     |
+| `sysparmFields`               |           `string[]`           |    No    | An array of fields to return in the response                                              |
+| `sysparmView`                 |            `string`            |    No    | Render the response according to the specified UI view (overridden by sysparm_fields)     |
+| `sysparmQueryNoDomain`        |           `boolean`            |    No    | True to access data across domains if authorized (default: false)                         |
+
+#### Output
+
+| Name     |              Type              | Description                      |
+| -------- | :----------------------------: | -------------------------------- |
+| `result` | `Record<PropertyKey, unknown>` | The response body of the request |
+
 ### Action : `servicenow:now:table:retrieveRecords`
+
+#### Request Type: `GET`
 
 #### Input
 
@@ -130,6 +160,8 @@ export default async function createPlugin(
 | `result` | `Record<PropertyKey, unknown>` | The response body of the request |
 
 ### Action : `servicenow:now:table:updateRecord`
+
+#### Request Type: `PATCH`
 
 #### Input
 
