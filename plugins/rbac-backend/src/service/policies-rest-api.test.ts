@@ -201,6 +201,13 @@ describe('REST policies api', () => {
         mockEnforcer as Enforcer,
       ),
     };
+
+    const backendPluginIDsProviderMock = {
+      getPluginIds: jest.fn().mockImplementation(() => {
+        return [];
+      }),
+    };
+
     server = new PolicesServer(
       mockIdentityClient,
       mockPermissionEvaluator,
@@ -210,6 +217,7 @@ describe('REST policies api', () => {
       logger,
       mockDiscovery,
       conditionalStorage,
+      backendPluginIDsProviderMock,
     );
     const router = await server.serve();
     app = express().use(router);

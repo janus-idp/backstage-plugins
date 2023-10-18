@@ -110,6 +110,12 @@ describe('PolicyBuilder', () => {
     authenticate: jest.fn().mockImplementation(),
   };
 
+  const backendPluginIDsProviderMock = {
+    getPluginIds: jest.fn().mockImplementation(() => {
+      return [];
+    }),
+  };
+
   beforeEach(async () => {
     jest.clearAllMocks();
   });
@@ -132,6 +138,7 @@ describe('PolicyBuilder', () => {
       identity: mockIdentityClient,
       permissions: mockPermissionEvaluator,
       tokenManager: tokenManagerMock,
+      pluginIdProvider: backendPluginIDsProviderMock,
     });
 
     expect(FileAdapter).toHaveBeenCalled();
@@ -168,6 +175,7 @@ describe('PolicyBuilder', () => {
       identity: mockIdentityClient,
       permissions: mockPermissionEvaluator,
       tokenManager: tokenManagerMock,
+      pluginIdProvider: backendPluginIDsProviderMock,
     });
     expect(CasbinDBAdapterFactory).toHaveBeenCalled();
     expect(mockEnforcer.loadPolicy).toHaveBeenCalled();

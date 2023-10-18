@@ -64,6 +64,7 @@ export class PolicesServer {
     private readonly logger: Logger,
     private readonly discovery: PluginEndpointDiscovery,
     private readonly conditionalStorage: ConditionalStorage,
+    private readonly pluginIdProvider: { getPluginIds: () => string[] },
   ) {}
 
   private async authorize(
@@ -484,7 +485,10 @@ export class PolicesServer {
       factories: [PluginEndpointCollector.permissionFactory],
     });
 
-    const pec = new PluginEndpointCollector(this.discovery);
+    const pec = new PluginEndpointCollector(
+      this.discovery,
+      this.pluginIdProvider,
+    );
 
     router.get('/plugins/policies', async (req, response) => {
       const decision = await this.authorize(

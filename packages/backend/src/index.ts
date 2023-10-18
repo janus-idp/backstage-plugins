@@ -97,7 +97,13 @@ async function main() {
   apiRouter.use('/techdocs', await techdocs(techdocsEnv));
   apiRouter.use('/proxy', await proxy(proxyEnv));
   apiRouter.use('/search', await search(searchEnv));
-  apiRouter.use('/permission', await permission(permissionEnv));
+  apiRouter.use(
+    '/permission',
+    await permission(permissionEnv, {
+      // return list static plugin which supports Backstage permissions.
+      getPluginIds: () => ['catalog', 'scaffolder', 'permission'],
+    }),
+  );
 
   // Add backends ABOVE this line; this 404 handler is the catch-all fallback
   apiRouter.use(notFoundHandler());

@@ -4,7 +4,6 @@ import {
 } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 
-import { BackendPluginIDsProvider } from './backend-plugin-ids-provider';
 import { PluginEndpointCollector } from './plugin-endpoints';
 
 const backendPluginIDsProviderMock = {
@@ -12,14 +11,6 @@ const backendPluginIDsProviderMock = {
     return [];
   }),
 };
-
-jest.mock('./backend-plugin-ids-provider', () => {
-  return {
-    BackendPluginIDsProvider: jest.fn((): Partial<BackendPluginIDsProvider> => {
-      return backendPluginIDsProviderMock;
-    }),
-  };
-});
 
 describe('plugin-endpoint', () => {
   const mockPluginEndpointDiscovery = {
@@ -33,6 +24,7 @@ describe('plugin-endpoint', () => {
     it('should return empty endpoints list', async () => {
       const pluginCollector = new PluginEndpointCollector(
         mockPluginEndpointDiscovery,
+        backendPluginIDsProviderMock,
       );
       const endPointList = await pluginCollector.get();
 
@@ -46,6 +38,7 @@ describe('plugin-endpoint', () => {
 
       const pluginCollector = new PluginEndpointCollector(
         mockPluginEndpointDiscovery,
+        backendPluginIDsProviderMock,
       );
       const endPointList = await pluginCollector.get();
 

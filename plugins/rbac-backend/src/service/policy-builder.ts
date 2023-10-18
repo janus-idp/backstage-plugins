@@ -29,6 +29,7 @@ export class PolicyBuilder {
     identity: IdentityApi;
     permissions: PermissionEvaluator;
     tokenManager: TokenManager;
+    pluginIdProvider: { getPluginIds: () => string[] };
   }): Promise<Router> {
     let adapter;
     const databaseEnabled = env.config.getOptionalBoolean(
@@ -92,6 +93,7 @@ export class PolicyBuilder {
       env.logger,
       env.discovery,
       conditionStorage,
+      env.pluginIdProvider,
     );
     return server.serve();
   }

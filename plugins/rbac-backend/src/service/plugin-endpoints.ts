@@ -4,13 +4,14 @@ import {
   ReaderFactory,
 } from '@backstage/backend-common';
 
-import { BackendPluginIDsProvider } from './backend-plugin-ids-provider';
-
 export class PluginEndpointCollector {
   private readonly pluginIds: string[];
 
-  constructor(private readonly discovery: PluginEndpointDiscovery) {
-    this.pluginIds = new BackendPluginIDsProvider().getPluginIds();
+  constructor(
+    private readonly discovery: PluginEndpointDiscovery,
+    private readonly pluginIdProvider: { getPluginIds: () => string[] },
+  ) {
+    this.pluginIds = this.pluginIdProvider.getPluginIds();
   }
 
   async get(): Promise<string[]> {
