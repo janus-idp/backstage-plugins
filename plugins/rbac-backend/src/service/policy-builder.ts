@@ -84,6 +84,18 @@ export class PolicyBuilder {
       ),
     };
 
+    const pluginIds = env.config.getOptionalStringArray(
+      'permission.rbac.pluginsWithPermission',
+    );
+    if (pluginIds) {
+      // use plugin ids from application configuration.
+      env.pluginIdProvider = {
+        getPluginIds: () => {
+          return pluginIds;
+        },
+      };
+    }
+
     const server = new PolicesServer(
       env.identity,
       env.permissions,
