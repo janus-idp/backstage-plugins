@@ -1123,14 +1123,7 @@ export class DataInputSchemaService {
 
     function traverseValue(value: any, currentPath: string) {
       if (typeof value === 'string') {
-        const match = RegExp(/(^|\s|\{)\s*\.([a-zA-Z_]\w*)\s*([=!<>]+)/).exec(
-          value,
-        );
-        addVariable({ variable: match?.[2], currentPath });
-        const dotMatch = RegExp(
-          /(^|\s|\{)\s*\.(?![a-zA-Z_]\w*\.[a-zA-Z_]\w*)([a-zA-Z_]\w*)/,
-        ).exec(value);
-        addVariable({ variable: dotMatch?.[2], currentPath });
+        handleValue(value, currentPath);
       } else if (Array.isArray(value)) {
         value.forEach((item, index) => {
           traverseValue(item, `${currentPath}[${index}]`);
@@ -1138,6 +1131,31 @@ export class DataInputSchemaService {
       } else if (typeof value === 'object') {
         traverseObject(value, currentPath);
       }
+    }
+
+    function handleValue(value: string, currentPath: string) {
+      const tokens = value.split(/\s|\${|}/);
+      let inTemplate = false;
+
+      tokens.forEach(token => {
+        if (inTemplate) {
+          if (token.endsWith('}')) {
+            inTemplate = false;
+          }
+          return;
+        }
+
+        if (token.startsWith('.')) {
+          const variable = token.slice(1).replace(/[=!<>]{0,50}$/, '');
+          if (variable && !variable.includes('.')) {
+            addVariable({ variable, currentPath });
+          }
+        }
+
+        if (token.startsWith('${')) {
+          inTemplate = true;
+        }
+      });
     }
 
     function addVariable(args: {
