@@ -2,7 +2,7 @@ import {
   PluginDatabaseManager,
   resolvePackagePath,
 } from '@backstage/backend-common';
-import { InputError } from '@backstage/errors';
+import { ConflictError, InputError, NotFoundError } from '@backstage/errors';
 import {
   AuthorizeResult,
   ConditionalPolicyDecision,
@@ -41,7 +41,7 @@ export interface ConditionalStorage {
   updateCondition(
     id: number,
     conditionalDecision: ConditionalPolicyDecision,
-  ): Promise<boolean>;
+  ): Promise<void>;
 }
 
 export class DataBaseConditionalStorage implements ConditionalStorage {
@@ -85,6 +85,15 @@ export class DataBaseConditionalStorage implements ConditionalStorage {
   async createCondition(
     conditionalDecision: ConditionalPolicyDecision,
   ): Promise<number> {
+    const condition = await this.findCondition(
+      conditionalDecision.resourceType,
+    );
+    if (condition) {
+      throw new ConflictError(
+        `A condition with resource type ${condition.resourceType} has already been stored`,
+      );
+    }
+
     const conditionRaw = this.toDAO(conditionalDecision);
     const result = await this.knex
       ?.table(CONDITIONAL_TABLE)
@@ -93,8 +102,8 @@ export class DataBaseConditionalStorage implements ConditionalStorage {
     if (result && result?.length > 0) {
       return result[0].id;
     }
-    // todo handle error better...
-    return -1;
+
+    throw new Error(`Failed to create the condition.`);
   }
 
   async findCondition(
@@ -103,7 +112,7 @@ export class DataBaseConditionalStorage implements ConditionalStorage {
     const daoRaw = await this.knex
       ?.table(CONDITIONAL_TABLE)
       .where('resourceType', resourceType)
-      // todo handle few conditions...
+      // condition with specified resource type should be unique.
       .first();
 
     if (daoRaw) {
@@ -127,13 +136,32 @@ export class DataBaseConditionalStorage implements ConditionalStorage {
   }
 
   async deleteCondition(id: number): Promise<void> {
+    const condition = await this.getCondition(id);
+    if (!condition) {
+      throw new NotFoundError(`Condition with id ${id} was not found`);
+    }
     await this.knex?.table(CONDITIONAL_TABLE).delete().whereIn('id', [id]);
   }
 
   async updateCondition(
     id: number,
     conditionalDecision: ConditionalPolicyDecision,
-  ): Promise<boolean> {
+  ): Promise<void> {
+    const condition = await this.getCondition(id);
+    if (!condition) {
+      throw new NotFoundError(`Condition with id ${id} was not found`);
+    }
+    if (condition.resourceType !== conditionalDecision.resourceType) {
+      const conflictedCond = await this.findCondition(
+        conditionalDecision.resourceType,
+      );
+      if (conflictedCond) {
+        throw new ConflictError(
+          `A condition with resource type ${condition.resourceType} has already been stored`,
+        );
+      }
+    }
+
     const conditionRaw = this.toDAO(conditionalDecision);
     conditionRaw.id = id;
     const result = await this.knex
@@ -141,10 +169,10 @@ export class DataBaseConditionalStorage implements ConditionalStorage {
       .where('id', conditionRaw.id)
       .update<ConditionalPolicyDecision>(conditionRaw)
       .returning('id');
-    console.log(result);
 
-    // todo complete return value and use it.
-    return true;
+    if (!result || result.length === 0) {
+      throw new Error(`Failed to update the condition with id: ${id}.`);
+    }
   }
 
   private toDAO(

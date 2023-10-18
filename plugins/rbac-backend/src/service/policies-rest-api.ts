@@ -583,6 +583,9 @@ export class PolicesServer {
       }
 
       const id: number = parseInt(req.params.id, 10);
+      if (isNaN(id)) {
+        throw new InputError('Id is not a valid number.');
+      }
 
       const condition = await this.conditionalStorage.getCondition(id);
       if (!condition) {
@@ -607,6 +610,9 @@ export class PolicesServer {
       }
 
       const id: number = parseInt(req.params.id, 10);
+      if (isNaN(id)) {
+        throw new InputError('Id is not a valid number.');
+      }
 
       await this.conditionalStorage.deleteCondition(id);
       resp.status(204).end();
@@ -627,6 +633,9 @@ export class PolicesServer {
       }
 
       const id: number = parseInt(req.params.id, 10);
+      if (isNaN(id)) {
+        throw new InputError('Id is not a valid number.');
+      }
       const conditionalPolicy: ConditionalPolicyDecision = req.body;
 
       await this.conditionalStorage.updateCondition(id, conditionalPolicy);
