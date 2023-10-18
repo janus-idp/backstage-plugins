@@ -1,7 +1,7 @@
 {
   "name": "@janus-idp/cli",
   "description": "CLI for developing Backstage plugins and apps",
-  "version": "1.0.5",
+  "version": "1.1.0",
   "publishConfig": {
     "access": "public"
   },
@@ -119,7 +119,7 @@
     "react-refresh": "0.14.0",
     "recursive-readdir": "2.2.2",
     "replace-in-file": "6.0.0",
-    "rollup": "2.60.2",
+    "rollup": "2.78.0",
     "rollup-plugin-dts": "4.0.1",
     "rollup-plugin-esbuild": "4.7.2",
     "rollup-plugin-postcss": "4.0.0",
@@ -161,7 +161,7 @@
     "@types/minimatch": "5.1.2",
     "@types/mock-fs": "4.13.1",
     "@types/node": "18.17.17",
-    "@types/npm-packlist": "7.0.0",
+    "@types/npm-packlist": "3.0.0",
     "@types/recursive-readdir": "2.2.0",
     "@types/rollup-plugin-peer-deps-external": "2.2.0",
     "@types/rollup-plugin-postcss": "3.1.4",

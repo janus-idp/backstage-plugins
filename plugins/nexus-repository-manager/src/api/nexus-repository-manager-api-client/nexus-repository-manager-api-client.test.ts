@@ -41,6 +41,19 @@ const handlers = [
       );
     }
 
+    if (req.url.searchParams.has('maven.groupId')) {
+      return res(
+        ctx.status(200),
+        ctx.json(
+          require(
+            `${__dirname}/../../__fixtures__/service/rest/v1/search/maven/groupId/${req.url.searchParams.get(
+              'maven.groupId',
+            )}/index.json`,
+          ),
+        ),
+      );
+    }
+
     return res(
       ctx.status(404),
       ctx.json(
@@ -49,6 +62,24 @@ const handlers = [
         ),
       ),
     );
+  }),
+
+  rest.head(/\/repository\/proxied-maven-central\//, (req, res, ctx) => {
+    const sizes = {
+      jar: '1000000',
+      'jar.sha1': '40',
+      pom: '200',
+      'pom.sha1': '44',
+      'tar.gz': '3000000',
+    };
+
+    for (const [extension, size] of Object.entries(sizes)) {
+      if (req.url.pathname.endsWith(extension)) {
+        return res(ctx.status(200), ctx.set('Content-Length', size));
+      }
+    }
+
+    return res(ctx.status(404));
   }),
 
   rest.get(
@@ -177,22 +208,19 @@ describe('NexusRepositoryManagerApiClient', () => {
         dockerImageTag: 'sha-de3dbf1',
       });
 
-      expect(components[0]?.rawAssets[0]?.schemaVersion).toEqual(2);
+      expect(components[0]?.dockerManifests[0]?.schemaVersion).toEqual(2);
     });
 
     it('should not set special headers for non-docker GETs', async () => {
       server.events.on('request:start', req => {
-        expect(req.headers.get('accept')).not.toContain(
+        expect(req.headers.get('accept') ?? '').not.toContain(
           'application/vnd.docker',
         );
       });
 
-      // Catching 404 is temporary until there are fixtures for maven.
-      await expect(
-        nexusApi.getComponents({
-          mavenGroupId: 'com.example',
-        }),
-      ).rejects.toThrow('Not Found');
+      await nexusApi.getComponents({
+        mavenGroupId: 'com.example',
+      });
     });
 
     it('should return components using dockerImageTag', async () => {
@@ -203,6 +231,29 @@ describe('NexusRepositoryManagerApiClient', () => {
       expect(components).toEqual(
         require('./../../__fixtures__/components/latest.json'),
       );
+    });
+
+    it('should return components using mavenGroupId', async () => {
+      const { components } = await nexusApi.getComponents({
+        mavenGroupId: 'com.example',
+      });
+
+      expect(components).toEqual(
+        require('./../../__fixtures__/components/maven.json'),
+      );
+    });
+
+    it('should not make requests for poms and hashes', async () => {
+      server.events.on('request:start', req => {
+        expect(req.url.pathname).not.toMatch(/pom$/);
+        expect(req.url.pathname).not.toMatch(/sha1$/);
+        expect(req.url.pathname).not.toMatch(/md5$/);
+        expect(req.url.pathname).not.toMatch(/sha256$/);
+      });
+
+      await nexusApi.getComponents({
+        mavenGroupId: 'com.example',
+      });
     });
   });
 

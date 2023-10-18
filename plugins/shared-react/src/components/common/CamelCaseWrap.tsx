@@ -19,7 +19,7 @@ export const CamelCaseWrap = ({ value, dataTest }: CamelCaseWrapProps) => {
   // Add word break points before capital letters (but keep consecutive capital letters together).
   const words = value.match(/[A-Z]+[^A-Z]*|[^A-Z]+/g);
   const rendered = (
-    <span data-test={dataTest}>
+    <span data-testid={dataTest}>
       {words?.map((word, i) => (
         <React.Fragment key={word}>
           {word}
