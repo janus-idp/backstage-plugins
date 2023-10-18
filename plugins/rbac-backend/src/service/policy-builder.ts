@@ -1,6 +1,5 @@
 import {
   DatabaseManager,
-  PluginDatabaseManager,
   PluginEndpointDiscovery,
   resolvePackagePath,
   TokenManager,
@@ -29,7 +28,6 @@ export class PolicyBuilder {
     discovery: PluginEndpointDiscovery;
     identity: IdentityApi;
     permissions: PermissionEvaluator;
-    database: PluginDatabaseManager;
     tokenManager: TokenManager;
   }): Promise<Router> {
     let adapter;
@@ -39,7 +37,7 @@ export class PolicyBuilder {
 
     const databaseManager = await DatabaseManager.fromConfig(
       env.config,
-    ).forPlugin('rbac');
+    ).forPlugin('permission');
     // Database adapter work
     if (databaseEnabled) {
       adapter = await new CasbinDBAdapterFactory(

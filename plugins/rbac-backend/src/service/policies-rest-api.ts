@@ -201,6 +201,7 @@ export class PolicesServer {
         response.status(204).end();
       },
     );
+
     router.post('/policies', async (request, response) => {
       const decision = await this.authorize(
         this.identity,

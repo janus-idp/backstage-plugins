@@ -15,7 +15,7 @@ exports.up = async function up(knex) {
     // table.json('conditions') or table.jsonb('conditions').
     // But let's start with text type.
     // Data type "text" can be unlimited by size for Postgres.
-    // Also postgres has a lot of build it features for this data type.
+    // Also postgres has a lot of build in features for this data type.
     table.text('conditionsJson');
   });
 };

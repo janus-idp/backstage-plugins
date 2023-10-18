@@ -100,10 +100,6 @@ describe('PolicyBuilder', () => {
     })),
   };
 
-  const mockDatabaseManager = {
-    getClient: jest.fn().mockImplementation(),
-  };
-
   const mockDiscovery = {
     getBaseUrl: jest.fn(),
     getExternalBaseUrl: jest.fn(),
@@ -135,7 +131,6 @@ describe('PolicyBuilder', () => {
       discovery: mockDiscovery,
       identity: mockIdentityClient,
       permissions: mockPermissionEvaluator,
-      database: mockDatabaseManager,
       tokenManager: tokenManagerMock,
     });
 
@@ -172,7 +167,6 @@ describe('PolicyBuilder', () => {
       discovery: mockDiscovery,
       identity: mockIdentityClient,
       permissions: mockPermissionEvaluator,
-      database: mockDatabaseManager,
       tokenManager: tokenManagerMock,
     });
     expect(CasbinDBAdapterFactory).toHaveBeenCalled();

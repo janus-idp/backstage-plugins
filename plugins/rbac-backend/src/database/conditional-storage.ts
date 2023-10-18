@@ -16,7 +16,6 @@ const migrationsDir = resolvePackagePath(
   'migrations', // Migrations directory
 );
 
-// dao
 interface ConditionalPolicyDecisionDAO {
   result: AuthorizeResult.CONDITIONAL;
   id?: number;

@@ -45,7 +45,7 @@ const tokenManagerMock = {
     return Promise.resolve({ token: 'some-token' });
   }),
   authenticate: jest.fn().mockImplementation(),
-}
+};
 
 const conditionalStorage = {
   getConditions: jest.fn().mockImplementation(),
