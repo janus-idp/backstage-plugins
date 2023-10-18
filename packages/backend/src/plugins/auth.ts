@@ -39,8 +39,9 @@ export default async function createPlugin(
       //   https://backstage.io/docs/auth/identity-resolver
       github: providers.github.create({
         signIn: {
-          resolver(_, ctx) {
-            const userRef = 'user:default/guest'; // Must be a full entity reference
+          resolver({ result }, ctx) {
+            const userRef = `user:default/${result.fullProfile.username}`; // Must be a full entity reference
+            // const userRef = "user:default/alice"; // Must be a full entity reference
             return ctx.issueToken({
               claims: {
                 sub: userRef, // The user's own identity

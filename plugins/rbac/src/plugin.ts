@@ -1,8 +1,11 @@
 import {
+  configApiRef,
+  createApiFactory,
   createPlugin,
   createRoutableExtension,
 } from '@backstage/core-plugin-api';
 
+import { rbacApiRef, RBACBackendClient } from './api/RBACBackendClient';
 import { rootRouteRef } from './routes';
 
 export const rbacPlugin = createPlugin({
@@ -10,6 +13,15 @@ export const rbacPlugin = createPlugin({
   routes: {
     root: rootRouteRef,
   },
+  apis: [
+    createApiFactory({
+      api: rbacApiRef,
+      deps: {
+        configApi: configApiRef,
+      },
+      factory: ({ configApi }) => new RBACBackendClient({ configApi }),
+    }),
+  ],
 });
 
 export const RbacPage = rbacPlugin.provide(

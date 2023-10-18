@@ -96,6 +96,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     request: PolicyQuery,
     identityResp?: BackstageIdentityResponse | undefined,
   ): Promise<PolicyDecision> {
+    console.log('!!!!!identityResp ', identityResp);
     this.logger.info(
       `Policy check for ${identityResp?.identity.userEntityRef} for permission ${request.permission.name}`,
     );

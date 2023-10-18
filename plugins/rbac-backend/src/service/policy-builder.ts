@@ -65,6 +65,7 @@ export class PolicyBuilder {
       policy: await RBACPermissionPolicy.build(env.logger, env.config, enf),
     };
 
+    console.log('!!!!!!!server ', env);
     const server = new PolicesServer(
       env.identity,
       env.permissions,

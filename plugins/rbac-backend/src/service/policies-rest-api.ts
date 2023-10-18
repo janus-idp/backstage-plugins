@@ -56,6 +56,8 @@ export class PolicesServer {
     permission: QueryPermissionRequest,
   ) {
     const user = await identity.getIdentity({ request });
+    console.log('!!!!permissions ', permission);
+    console.log('!!!!!!user ', identity);
     if (!user) {
       throw new NotAllowedError();
     }

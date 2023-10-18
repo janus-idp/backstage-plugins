@@ -1,0 +1,4 @@
+p, user:default/debsmita1, catalog-entity, read, allow
+p, user:default/debsmita1, policy-entity, create, allow
+p, user:default/debsmita1, catalog.entity.create, use, allow
+p, user:default/alice, catalog-entity, read, deny
