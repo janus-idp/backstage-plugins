@@ -4,7 +4,10 @@ import { useAsync } from 'react-use';
 
 import { render } from '@testing-library/react';
 
-import { NexusRepositoryManager } from './NexusRepositoryManager';
+import {
+  getAssetVariants,
+  NexusRepositoryManager,
+} from './NexusRepositoryManager';
 
 jest.mock('react-use', () => ({
   ...jest.requireActual('react-use'),
@@ -94,7 +97,7 @@ describe('NexusRepositoryManager', () => {
               },
             ],
           },
-          rawAssets: [
+          dockerManifests: [
             {
               schemaVersion: 2,
               mediaType: 'application/vnd.docker.distribution.manifest.v2+json',
@@ -160,5 +163,519 @@ describe('NexusRepositoryManager', () => {
     );
     expect(queryByTestId('nexus-repository-manager-table')).not.toBeNull();
     expect(queryByTestId('nexus-repository-manager-empty-table')).toBeNull();
+  });
+
+  it('should display groupID for maven components', () => {
+    (useAsync as jest.Mock).mockReturnValue({
+      loading: false,
+      value: [
+        {
+          component: {
+            assets: [
+              {
+                checksum: {
+                  md5: 'f425b239d1ba676c94e00b5cb6669cf3',
+                  sha1: 'a1b535139baaa29dad30c6df6ccfa217c5cf99db',
+                },
+                contentType: 'application/java-archive',
+                downloadUrl:
+                  'https://localhost:8081/repository/proxied-maven-central/com/example/will-halt/0.7.6/will-halt-0.7.6.jar',
+                fileSize: 1000000,
+                format: 'maven2',
+                id: 'cHJveGllZC1tYXZlbi1jZW50cmFsMjplZGJkNTJmMzM2NGU3NDg2MzIwOGE2YjgxZjZhNWZhMA',
+                lastDownloaded: undefined,
+                lastModified: '2019-04-17T03:31:58.000+00:00',
+                maven2: {
+                  artifactId: 'will-halt',
+                  extension: 'jar',
+                  groupId: 'com.example',
+                  version: '0.7.6',
+                },
+                path: 'com/example/will-halt/0.7.6/will-halt-0.7.6.jar',
+                repository: 'proxied-maven-central',
+                uploader: 'anonymous',
+                uploaderIp: '0.0.0.0',
+              },
+              {
+                checksum: {
+                  md5: 'ae074b24058b49b6b668f0639570b609',
+                  sha1: 'ca9b66d3cd47be4fbab4624f73f8346b97c210a2',
+                },
+                contentType: 'text/plain',
+                downloadUrl:
+                  'https://localhost:8081/repository/proxied-maven-central/com/example/will-halt/0.7.6/will-halt-0.7.6.jar.sha1',
+                fileSize: 0,
+                format: 'maven2',
+                id: 'cHJveGllZC1tYXZlbi1jZW50cmFsMjplZGJkNTJmMzM2NGU3NDg2MmI1Zjg1MmRlZDY5ZTRjNQ',
+                lastDownloaded: undefined,
+                lastModified: '2019-04-17T03:32:02.000+00:00',
+                maven2: {
+                  artifactId: 'will-halt',
+                  extension: 'jar.sha1',
+                  groupId: 'com.example',
+                  version: '0.7.6',
+                },
+                path: 'com/example/will-halt/0.7.6/will-halt-0.7.6.jar.sha1',
+                repository: 'proxied-maven-central',
+                uploader: 'anonymous',
+                uploaderIp: '0.0.0.0',
+              },
+            ],
+            format: 'maven2',
+            group: 'com.example',
+            id: 'cHJveGllZC1tYXZlbi1jZW50cmFsMjo4ZmI0MzBjOWRmMjA3MTBjMTYyOTA3ODhiNjQ1YjMxZg',
+            name: 'will-halt',
+            repository: 'proxied-maven-central',
+            tags: [],
+            version: '0.7.6',
+          },
+          dockerManifests: [],
+        },
+      ],
+    });
+    const { queryByTestId } = render(
+      <BrowserRouter>
+        <NexusRepositoryManager />
+      </BrowserRouter>,
+    );
+    expect(
+      queryByTestId('nexus-repository-manager-table')?.querySelectorAll(
+        'tbody tr',
+      )[0].textContent,
+    ).toContain('com.example');
+  });
+
+  it('should display the first primary asset, not the first asset by order', () => {
+    const component = {
+      assets: [
+        {
+          checksum: {
+            md5: 'ae074b24058b49b6b668f0639570b609',
+            sha1: 'ca9b66d3cd47be4fbab4624f73f8346b97c210a2',
+          },
+          contentType: 'text/plain',
+          downloadUrl:
+            'https://localhost:8081/repository/proxied-maven-central/com/example/will-halt/0.7.6/will-halt-0.7.6.jar.sha1',
+          fileSize: 0,
+          format: 'maven2',
+          id: 'cHJveGllZC1tYXZlbi1jZW50cmFsMjplZGJkNTJmMzM2NGU3NDg2MmI1Zjg1MmRlZDY5ZTRjNQ',
+          lastDownloaded: undefined,
+          lastModified: '2019-04-17T03:32:02.000+00:00',
+          maven2: {
+            artifactId: 'will-halt',
+            extension: 'jar.sha1',
+            groupId: 'com.example',
+            version: '0.7.6',
+          },
+          path: 'com/example/will-halt/0.7.6/will-halt-0.7.6.jar.sha1',
+          repository: 'proxied-maven-central',
+          uploader: 'anonymous',
+          uploaderIp: '0.0.0.0',
+        },
+        {
+          checksum: {
+            md5: 'f425b239d1ba676c94e00b5cb6669cf3',
+            sha1: 'a1b535139baaa29dad30c6df6ccfa217c5cf99db',
+          },
+          contentType: 'application/java-archive',
+          downloadUrl:
+            'https://localhost:8081/repository/proxied-maven-central/com/example/will-halt/0.7.6/will-halt-0.7.6.jar',
+          fileSize: 1000000,
+          format: 'maven2',
+          id: 'cHJveGllZC1tYXZlbi1jZW50cmFsMjplZGJkNTJmMzM2NGU3NDg2MzIwOGE2YjgxZjZhNWZhMA',
+          lastDownloaded: undefined,
+          lastModified: '2019-04-17T03:31:58.000+00:00',
+          maven2: {
+            artifactId: 'will-halt',
+            extension: 'jar',
+            groupId: 'com.example',
+            version: '0.7.6',
+          },
+          path: 'com/example/will-halt/0.7.6/will-halt-0.7.6.jar',
+          repository: 'proxied-maven-central',
+          uploader: 'anonymous',
+          uploaderIp: '0.0.0.0',
+        },
+      ],
+      format: 'maven2',
+      group: 'com.example',
+      id: 'cHJveGllZC1tYXZlbi1jZW50cmFsMjo4ZmI0MzBjOWRmMjA3MTBjMTYyOTA3ODhiNjQ1YjMxZg',
+      name: 'will-halt',
+      repository: 'proxied-maven-central',
+      tags: [],
+      version: '0.7.6',
+    };
+
+    (useAsync as jest.Mock).mockReturnValue({
+      loading: false,
+      value: [{ component: component, dockerManifests: [] }],
+    });
+
+    const { queryByTestId } = render(
+      <BrowserRouter>
+        <NexusRepositoryManager />
+      </BrowserRouter>,
+    );
+
+    // hash of the jar, which is second
+    const jarShortHash = 'a1b535139ba';
+    // verify it really is the second asset's hash (guard against refactors)
+    expect(component.assets[1].checksum.sha1).toContain(jarShortHash);
+    expect(
+      queryByTestId('nexus-repository-manager-table')?.querySelectorAll(
+        'tbody tr',
+      )[0].textContent,
+    ).toContain(jarShortHash);
+  });
+});
+
+describe('getAssetVariants', () => {
+  it('should include a jar for maven assets', () => {
+    const component = {
+      assets: [
+        {
+          checksum: {
+            md5: 'f425b239d1ba676c94e00b5cb6669cf3',
+            sha1: 'a1b535139baaa29dad30c6df6ccfa217c5cf99db',
+          },
+          contentType: 'application/java-archive',
+          downloadUrl:
+            'https://localhost:8081/repository/proxied-maven-central/com/example/will-halt/0.7.6/will-halt-0.7.6.jar',
+          fileSize: 1000000,
+          format: 'maven2',
+          id: 'cHJveGllZC1tYXZlbi1jZW50cmFsMjplZGJkNTJmMzM2NGU3NDg2MzIwOGE2YjgxZjZhNWZhMA',
+          lastDownloaded: undefined,
+          lastModified: '2019-04-17T03:31:58.000+00:00',
+          maven2: {
+            artifactId: 'will-halt',
+            extension: 'jar',
+            groupId: 'com.example',
+            version: '0.7.6',
+          },
+          path: 'com/example/will-halt/0.7.6/will-halt-0.7.6.jar',
+          repository: 'proxied-maven-central',
+          uploader: 'anonymous',
+          uploaderIp: '0.0.0.0',
+        },
+        {
+          checksum: {
+            md5: 'ae074b24058b49b6b668f0639570b609',
+            sha1: 'ca9b66d3cd47be4fbab4624f73f8346b97c210a2',
+          },
+          contentType: 'text/plain',
+          downloadUrl:
+            'https://localhost:8081/repository/proxied-maven-central/com/example/will-halt/0.7.6/will-halt-0.7.6.jar.sha1',
+          fileSize: 0,
+          format: 'maven2',
+          id: 'cHJveGllZC1tYXZlbi1jZW50cmFsMjplZGJkNTJmMzM2NGU3NDg2MmI1Zjg1MmRlZDY5ZTRjNQ',
+          lastDownloaded: undefined,
+          lastModified: '2019-04-17T03:32:02.000+00:00',
+          maven2: {
+            artifactId: 'will-halt',
+            extension: 'jar.sha1',
+            groupId: 'com.example',
+            version: '0.7.6',
+          },
+          path: 'com/example/will-halt/0.7.6/will-halt-0.7.6.jar.sha1',
+          repository: 'proxied-maven-central',
+          uploader: 'anonymous',
+          uploaderIp: '0.0.0.0',
+        },
+        {
+          checksum: {
+            md5: 'ab3ca44234f60c360586f6aef87c2f0b',
+            sha1: 'caac85acce2f2e4e467ac6395b403761238f8182',
+          },
+          contentType: 'application/xml',
+          downloadUrl:
+            'https://localhost:8081/repository/proxied-maven-central/com/example/will-halt/0.7.6/will-halt-0.7.6.pom',
+          fileSize: 0,
+          format: 'maven2',
+          id: 'cHJveGllZC1tYXZlbi1jZW50cmFsMjplZGJkNTJmMzM2NGU3NDg2YmRmMTcyMWFmYTIzNjI2NA',
+          lastDownloaded: undefined,
+          lastModified: '2019-04-17T03:32:04.000+00:00',
+          maven2: {
+            artifactId: 'will-halt',
+            extension: 'pom',
+            groupId: 'com.example',
+            version: '0.7.6',
+          },
+          path: 'com/example/will-halt/0.7.6/will-halt-0.7.6.pom',
+          repository: 'proxied-maven-central',
+          uploader: 'anonymous',
+          uploaderIp: '0.0.0.0',
+        },
+        {
+          checksum: {
+            md5: '3d9708e4b7ebe7ce5023cdb7521309a2',
+            sha1: '3e0427204b02e393b12c03818a36575c69caa631',
+          },
+          contentType: 'text/plain',
+          downloadUrl:
+            'https://localhost:8081/repository/proxied-maven-central/com/example/will-halt/0.7.6/will-halt-0.7.6.pom.sha1',
+          fileSize: 0,
+          format: 'maven2',
+          id: 'cHJveGllZC1tYXZlbi1jZW50cmFsMjplZGJkNTJmMzM2NGU3NDg2NmZmZjA2M2ExZThkOWE5Mw',
+          lastDownloaded: undefined,
+          lastModified: '2019-04-17T03:32:17.000+00:00',
+          maven2: {
+            artifactId: 'will-halt',
+            extension: 'pom.sha1',
+            groupId: 'com.example',
+            version: '0.7.6',
+          },
+          path: 'com/example/will-halt/0.7.6/will-halt-0.7.6.pom.sha1',
+          repository: 'proxied-maven-central',
+          uploader: 'anonymous',
+          uploaderIp: '0.0.0.0',
+        },
+      ],
+      format: 'maven2',
+      group: 'com.example',
+      id: 'cHJveGllZC1tYXZlbi1jZW50cmFsMjo4ZmI0MzBjOWRmMjA3MTBjMTYyOTA3ODhiNjQ1YjMxZg',
+      name: 'will-halt',
+      repository: 'proxied-maven-central',
+      tags: [],
+      version: '0.7.6',
+    };
+
+    const variants = getAssetVariants(component);
+    expect(variants).toEqual(new Set(['jar']));
+  });
+
+  it('should include classifiers for maven assets', () => {
+    const component = {
+      assets: [
+        {
+          checksum: {
+            md5: 'f425b239d1ba676c94e00b5cb6669cf3',
+            sha1: 'a1b535139baaa29dad30c6df6ccfa217c5cf99db',
+          },
+          contentType: 'application/java-archive',
+          downloadUrl:
+            'https://localhost:8081/repository/proxied-maven-central/com/example/will-halt/0.7.6/will-halt-0.7.6.jar',
+          fileSize: 1000000,
+          format: 'maven2',
+          id: 'cHJveGllZC1tYXZlbi1jZW50cmFsMjplZGJkNTJmMzM2NGU3NDg2MzIwOGE2YjgxZjZhNWZhMA',
+          lastDownloaded: undefined,
+          lastModified: '2019-04-17T03:31:58.000+00:00',
+          maven2: {
+            artifactId: 'will-halt',
+            extension: 'jar',
+            groupId: 'com.example',
+            version: '0.7.6',
+          },
+          path: 'com/example/will-halt/0.7.6/will-halt-0.7.6.jar',
+          repository: 'proxied-maven-central',
+          uploader: 'anonymous',
+          uploaderIp: '0.0.0.0',
+        },
+        {
+          checksum: {
+            md5: 'f425b239d1ba676c94e00b5cb6669cf3',
+            sha1: 'a1b535139baaa29dad30c6df6ccfa217c5cf99db',
+          },
+          contentType: 'application/java-archive',
+          downloadUrl:
+            'https://localhost:8081/repository/proxied-maven-central/com/example/will-halt/0.7.6/will-halt-0.7.6-sources.jar',
+          fileSize: 1000000,
+          format: 'maven2',
+          id: 'cHJveGllZC1tYXZlbi1jZW50cmFsMjplZGJkNTJmMzM2NGU3NDg2MzIwOGE2YjgxZjZhNWZhMA',
+          lastDownloaded: undefined,
+          lastModified: '2019-04-17T03:31:58.000+00:00',
+          maven2: {
+            artifactId: 'will-halt',
+            classifier: 'sources',
+            extension: 'jar',
+            groupId: 'com.example',
+            version: '0.7.6',
+          },
+          path: 'com/example/will-halt/0.7.6/will-halt-0.7.6-sources.jar',
+          repository: 'proxied-maven-central',
+          uploader: 'anonymous',
+          uploaderIp: '0.0.0.0',
+        },
+      ],
+      format: 'maven2',
+      group: 'com.example',
+      id: 'cHJveGllZC1tYXZlbi1jZW50cmFsMjo4ZmI0MzBjOWRmMjA3MTBjMTYyOTA3ODhiNjQ1YjMxZg',
+      name: 'will-halt',
+      repository: 'proxied-maven-central',
+      tags: [],
+      version: '0.7.6',
+    };
+
+    const variants = getAssetVariants(component);
+    expect(variants).toEqual(new Set(['jar', '+sources']));
+  });
+
+  it('should include extensions for maven assets', () => {
+    const component = {
+      id: 'bWF2ZW4tcmVsZWFzZXM6MTlkOGNmYTY2ZDA1YmU3ODY5MjViNjIwNjA2YWEwNDM',
+      repository: 'maven-releases',
+      format: 'maven2',
+      group: 'com.example',
+      name: 'solve-world-hunger',
+      version: '0.0.0.0',
+      assets: [
+        {
+          downloadUrl:
+            'http://localhost:8081/repository/maven-releases/com/example/solve-world-hunger/0.0.0.0/solve-world-hunger-0.0.0.0.pom',
+          path: 'com/example/solve-world-hunger/0.0.0.0/solve-world-hunger-0.0.0.0.pom',
+          id: 'bWF2ZW4tcmVsZWFzZXM6OWE1MzVmODc1ZDY5NWRjZDRkNjI0N2E1MGRkNGZhODg',
+          repository: 'maven-releases',
+          format: 'maven2',
+          checksum: {
+            sha1: 'd03067b393cc0439c072961db91102e0f2230d32',
+            md5: '27dbf99804566adc134d69ad554bc2c5',
+          },
+          contentType: 'application/xml',
+          lastModified: '2020-03-10T14:33:10.271+00:00',
+          lastDownloaded: undefined,
+          uploader: 'jenkins_ng',
+          uploaderIp: '0.0.0.0',
+          fileSize: 0,
+          maven2: {
+            extension: 'pom',
+            groupId: 'com.example',
+            artifactId: 'solve-world-hunger',
+            version: '0.0.0.0',
+          },
+        },
+        {
+          downloadUrl:
+            'http://localhost:8081/repository/maven-releases/com/example/solve-world-hunger/0.0.0.0/solve-world-hunger-0.0.0.0.pom.md5',
+          path: 'com/example/solve-world-hunger/0.0.0.0/solve-world-hunger-0.0.0.0.pom.md5',
+          id: 'bWF2ZW4tcmVsZWFzZXM6OWE1MzVmODc1ZDY5NWRjZGMzNzNkZWQzMzgyODhiY2U',
+          repository: 'maven-releases',
+          format: 'maven2',
+          checksum: {
+            sha1: '776e04e15cd61f5835944760357715e3ded14854',
+            md5: '84fdb3fb8d5889ca81dab7232c0cac82',
+          },
+          contentType: 'text/plain',
+          lastModified: '2020-03-10T14:33:10.296+00:00',
+          lastDownloaded: undefined,
+          uploader: 'jenkins_ng',
+          uploaderIp: '0.0.0.0',
+          fileSize: 0,
+          maven2: {
+            extension: 'pom.md5',
+            groupId: 'com.example',
+            artifactId: 'solve-world-hunger',
+            version: '0.0.0.0',
+          },
+        },
+        {
+          downloadUrl:
+            'http://localhost:8081/repository/maven-releases/com/example/solve-world-hunger/0.0.0.0/solve-world-hunger-0.0.0.0.pom.sha1',
+          path: 'com/example/solve-world-hunger/0.0.0.0/solve-world-hunger-0.0.0.0.pom.sha1',
+          id: 'bWF2ZW4tcmVsZWFzZXM6OWE1MzVmODc1ZDY5NWRjZGFjNDAwZjViNTQ5YTIyODM',
+          repository: 'maven-releases',
+          format: 'maven2',
+          checksum: {
+            sha1: '05ceb4188d56e4673fbc6565ba85f8b99ef12121',
+            md5: 'cec7cc1f0d83c8b46e0234443a40763d',
+          },
+          contentType: 'text/plain',
+          lastModified: '2020-03-10T14:33:10.284+00:00',
+          lastDownloaded: undefined,
+          uploader: 'jenkins_ng',
+          uploaderIp: '0.0.0.0',
+          fileSize: 0,
+          maven2: {
+            extension: 'pom.sha1',
+            groupId: 'com.example',
+            artifactId: 'solve-world-hunger',
+            version: '0.0.0.0',
+          },
+        },
+        {
+          downloadUrl:
+            'http://localhost:8081/repository/maven-releases/com/example/solve-world-hunger/0.0.0.0/solve-world-hunger-0.0.0.0.tar.gz',
+          path: 'com/example/solve-world-hunger/0.0.0.0/solve-world-hunger-0.0.0.0.tar.gz',
+          id: 'bWF2ZW4tcmVsZWFzZXM6OWE1MzVmODc1ZDY5NWRjZGQ3YTU3OGFmOTY4Yjc5NDg',
+          repository: 'maven-releases',
+          format: 'maven2',
+          checksum: {
+            sha1: '1252f7a1e6fa6127ed7278430639e4e0463ae47a',
+            md5: '49855e3e4020a6e3934e4af97238e721',
+          },
+          contentType: 'application/x-gzip',
+          lastModified: '2020-03-10T14:33:10.357+00:00',
+          lastDownloaded: undefined,
+          uploader: 'jenkins_ng',
+          uploaderIp: '0.0.0.0',
+          fileSize: 0,
+          maven2: {
+            extension: 'tar.gz',
+            groupId: 'com.example',
+            artifactId: 'solve-world-hunger',
+            version: '0.0.0.0',
+          },
+        },
+        {
+          downloadUrl:
+            'http://localhost:8081/repository/maven-releases/com/example/solve-world-hunger/0.0.0.0/solve-world-hunger-0.0.0.0.tar.gz.md5',
+          path: 'com/example/solve-world-hunger/0.0.0.0/solve-world-hunger-0.0.0.0.tar.gz.md5',
+          id: 'bWF2ZW4tcmVsZWFzZXM6OWE1MzVmODc1ZDY5NWRjZDY1MzhmNjMxNTY1MWI1Yzc',
+          repository: 'maven-releases',
+          format: 'maven2',
+          checksum: {
+            sha1: 'df488340cd8b14e49d8181a9b3d91ce05f1a0850',
+            md5: '008abe627f21602e4ee01a81cf25444e',
+          },
+          contentType: 'text/plain',
+          lastModified: '2020-03-10T14:33:10.379+00:00',
+          lastDownloaded: undefined,
+          uploader: 'jenkins_ng',
+          uploaderIp: '0.0.0.0',
+          fileSize: 0,
+          maven2: {
+            extension: 'tar.gz.md5',
+            groupId: 'com.example',
+            artifactId: 'solve-world-hunger',
+            version: '0.0.0.0',
+          },
+        },
+        {
+          downloadUrl:
+            'http://localhost:8081/repository/maven-releases/com/example/solve-world-hunger/0.0.0.0/solve-world-hunger-0.0.0.0.tar.gz.sha1',
+          path: 'com/example/solve-world-hunger/0.0.0.0/solve-world-hunger-0.0.0.0.tar.gz.sha1',
+          id: 'bWF2ZW4tcmVsZWFzZXM6OWE1MzVmODc1ZDY5NWRjZDI2MWQ5YTBkOTA0OGIzNzU',
+          repository: 'maven-releases',
+          format: 'maven2',
+          checksum: {
+            sha1: 'bb5176a4667ad1022bd172882d9d620365e13f6e',
+            md5: '16b12944d920acaee37f85e340a0203e',
+          },
+          contentType: 'text/plain',
+          lastModified: '2020-03-10T14:33:10.368+00:00',
+          lastDownloaded: undefined,
+          uploader: 'jenkins_ng',
+          uploaderIp: '0.0.0.0',
+          fileSize: 0,
+          maven2: {
+            extension: 'tar.gz.sha1',
+            groupId: 'com.example',
+            artifactId: 'solve-world-hunger',
+            version: '0.0.0.0',
+          },
+        },
+      ],
+      tags: [],
+    };
+
+    const variants = getAssetVariants(component);
+    expect(variants).toEqual(new Set(['tar.gz']));
+  });
+
+  it('should not show anything for docker (for now)', () => {
+    // If we support assetVariants for docker (e.g. manifest lists), we can
+    // add explicit tests here. For now we can re-use the fixture.
+    const allDocker = require('./../../__fixtures__/components/all.json');
+    allDocker.forEach((component: any) => {
+      expect(getAssetVariants(component)).toEqual(new Set());
+    });
   });
 });

@@ -12,7 +12,7 @@ describe('getFileSize', () => {
         },
       ],
     };
-    const rawAssets = [
+    const dockerManifests = [
       {
         schemaVersion: 2 as const,
         mediaType:
@@ -37,7 +37,7 @@ describe('getFileSize', () => {
       },
       null,
     ];
-    expect(getFileSize({ component, rawAssets })).toBe(54321);
+    expect(getFileSize({ component, dockerManifests })).toBe(54321);
   });
   it('should return the correct file size for manifest 2, schema 1', () => {
     const component = {
@@ -47,7 +47,7 @@ describe('getFileSize', () => {
         },
       ],
     };
-    const rawAssets = [
+    const dockerManifests = [
       {
         schemaVersion: 1 as const,
         name: '',
@@ -66,6 +66,6 @@ describe('getFileSize', () => {
       },
       null,
     ];
-    expect(getFileSize({ component, rawAssets })).toBe(111);
+    expect(getFileSize({ component, dockerManifests })).toBe(111);
   });
 });

@@ -13,21 +13,21 @@ import {
   PipelineRunKind,
 } from '@janus-idp/shared-react';
 
-import './PlrStatus.css';
+import '../common/Status.css';
 
 const getPlrStatusIcon = (plrStatus1: string) => {
   switch (plrStatus1) {
     case 'Succeeded':
-      return <CheckCircleIcon className="bs-tkn-icons__green-check-icon" />;
+      return <CheckCircleIcon className="bs-tkn-status__green-check-icon" />;
     case 'Failed':
       return (
-        <ExclamationCircleIcon className="bs-tkn-icons__red-exclamation-icon" />
+        <ExclamationCircleIcon className="bs-tkn-status__red-exclamation-icon" />
       );
     case 'Running':
       return <SyncAltIcon />;
     case 'Cancelled':
       return (
-        <ExclamationTriangleIcon className="bs-tkn-icons__yellow-exclamation-icon" />
+        <ExclamationTriangleIcon className="bs-tkn-status__yellow-exclamation-icon" />
       );
     case 'Pending':
       return <PendingIcon />;

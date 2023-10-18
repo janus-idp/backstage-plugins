@@ -27,7 +27,7 @@ if (!isLocal || process.env.BACKSTAGE_E2E_CLI_TEST) {
   require('ts-node').register({
     transpileOnly: true,
     /* eslint-disable-next-line no-restricted-syntax */
-    project: path.resolve(__dirname, '../../../tsconfig.json'),
+    project: path.resolve(__dirname, '../tsconfig.json'),
     compilerOptions: {
       module: 'CommonJS',
     },

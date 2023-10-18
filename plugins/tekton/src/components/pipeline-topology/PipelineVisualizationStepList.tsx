@@ -6,7 +6,7 @@ import classNames from 'classnames';
 import { getRunStatusColor } from '@janus-idp/shared-react';
 
 import { StepStatus } from '../../types/taskRun';
-import { StatusIcon } from '../common';
+import { Status, StatusProps } from '../common/Status';
 
 import './PipelineVisualizationStepList.css';
 
@@ -26,12 +26,14 @@ const TooltipColoredStatusIcon = ({
   status,
 }: TooltipColoredStatusIconProps) => {
   const size = 18;
-  const sharedProps = {
+  const sharedProps: StatusProps = {
+    status,
+    iconOnly: true,
     height: size,
     width: size,
   };
 
-  const icon = <StatusIcon status={status} {...sharedProps} />;
+  const icon = <Status {...sharedProps} spin />;
 
   if (status === RunStatus.Succeeded || status === RunStatus.Failed) {
     // Succeeded and Failed icons have transparent centers shapes - in tooltips, this becomes an undesired black

@@ -19,7 +19,7 @@ To run the cli in watch mode, use `yarn start <args>`. For example `yarn start l
 To try out the command locally, you can execute the following from the parent directory of this repo:
 
 ```bash
-./backstage/packages/cli/bin/backstage-cli --help
+./backstage/packages/cli/bin/janus-cli --help
 ```
 
 ## Documentation

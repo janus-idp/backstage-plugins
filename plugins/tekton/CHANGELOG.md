@@ -1,3 +1,16 @@
+## @janus-idp/backstage-plugin-tekton [2.0.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@2.0.0...@janus-idp/backstage-plugin-tekton@2.0.1) (2023-10-16)
+
+
+### Bug Fixes
+
+* **tekton:** fix pipelinerun status icon color ([#734](https://github.com/janus-idp/backstage-plugins/issues/734)) ([c800f98](https://github.com/janus-idp/backstage-plugins/commit/c800f987afc9a96bec93c13295d8fdb0c5964a93))
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 1.3.2
+
 ## @janus-idp/backstage-plugin-tekton [2.0.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@1.9.6...@janus-idp/backstage-plugin-tekton@2.0.0) (2023-10-09)
 
 

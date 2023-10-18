@@ -46,7 +46,7 @@ The Nexus Repository Manager plugin displays the information about your build ar
 
    **NOTE**: The annotations mentioned in this step are not thoroughly tested.
 
-1. Enable an additional tab on the entity view page in `packages/app/src/components/catalog/EntityPage.tsx`:
+1. Enable an additional tab on the service entity page in `packages/app/src/components/catalog/EntityPage.tsx`:
 
    ```tsx title="packages/app/src/components/catalog/EntityPage.tsx"
    /* highlight-add-next-line */
@@ -69,6 +69,8 @@ The Nexus Repository Manager plugin displays the information about your build ar
      </EntityPageLayout>
    );
    ```
+
+   You may also wish to add the route to other component types, such as `library`s.
 
 1. Annotate your entity with any of the following annotations:
 
