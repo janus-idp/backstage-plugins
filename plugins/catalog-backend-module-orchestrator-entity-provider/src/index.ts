@@ -1,1 +1,1 @@
-export { orchestratorModuleEntityProvider as default } from './module';
+export { orchestratorModuleEntityProvider } from './module';
