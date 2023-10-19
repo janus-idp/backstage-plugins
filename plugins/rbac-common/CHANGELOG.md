@@ -1,3 +1,5 @@
+## @janus-idp/backstage-plugin-rbac-common [1.0.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-common@1.0.0...@janus-idp/backstage-plugin-rbac-common@1.0.1) (2023-10-19)
+
 ## @janus-idp/backstage-plugin-rbac-common 1.0.0 (2023-09-29)
 
 
