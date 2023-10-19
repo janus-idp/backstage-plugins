@@ -138,7 +138,7 @@
     "yaml": "2.2.2",
     "yml-loader": "2.1.0",
     "yn": "4.0.0",
-    "zod": "3.21.4"
+    "zod": "3.22.3"
   },
   "devDependencies": {
     "@backstage/backend-common": "0.19.4",
