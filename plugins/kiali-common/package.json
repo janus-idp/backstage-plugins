@@ -24,14 +24,14 @@
     "postpack": "backstage-cli package postpack"
   },
   "devDependencies": {
-    "@backstage/cli": "0.22.9",
+    "@backstage/cli": "0.23.0",
     "supertest": "6.3.3"
   },
   "files": [
     "dist"
   ],
   "dependencies": {
-    "@backstage/config": "^1.0.8",
+    "@backstage/config": "^1.1.1",
     "deep-freeze": "^0.0.1"
   }
 }

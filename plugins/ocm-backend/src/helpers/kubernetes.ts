@@ -39,7 +39,6 @@ export const hubApiClient = (
       {
         server: clusterConfig.url,
         name: clusterConfig.hubResourceName,
-        serviceAccountToken: clusterConfig.serviceAccountToken,
         skipTLSVerify: clusterConfig.skipTLSVerify,
         caData: clusterConfig.caData,
       },

@@ -10,7 +10,6 @@ jest.mock('../../../../hooks/usePodLogs', () => ({
 }));
 
 jest.mock('@backstage/core-components', () => ({
-  ...jest.requireActual('@backstage/core-components'),
   LogViewer: () => <div data-testid="log-viewer">Log viewer</div>,
   DismissableBanner: () => (
     <div data-testid="pod-log-banner">Dismissable banner</div>

@@ -25,5 +25,6 @@ for file in $(find src/generated -name '*.ts'); do
   echo "Patching $file"
 
   # remove function optional chainging from the generated code
-  sed -i -E 's/(this.#\w*)\?\.\((.*)\)/if(\1) \1(\2)/g' $file
+  POSIXLY_CORRECT=1 sed -i.bak 's/\(this\.\#[[:alnum:]]*\)?\.(\(.*\))/if(\1) \1(\2)/g' $file
+  rm $file.bak
 done
