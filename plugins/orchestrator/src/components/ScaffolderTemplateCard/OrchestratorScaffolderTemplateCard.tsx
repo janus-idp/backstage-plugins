@@ -12,7 +12,9 @@ import { workflow_type } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { executeWorkflowRouteRef } from '../../routes';
 
-export const NextScaffolderTemplateCard = (props: TemplateCardProps) => {
+export const OrchestratorScaffolderTemplateCard = (
+  props: TemplateCardProps,
+) => {
   const { onSelected } = props;
   const navigate = useNavigate();
   const executeWorkflowLink = useRouteRef(executeWorkflowRouteRef);

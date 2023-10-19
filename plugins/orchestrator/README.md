@@ -106,6 +106,35 @@ For more information about the configuration options, including other optional p
    }
    ```
 
+1. Add the following code to `packages/backend/src/plugins/catalog.ts` file:
+
+   ```ts title="packages/backend/src/plugins/catalog.ts"
+   /* highlight-add-next-line */
+   import { OrchestratorEntityProvider } from '@janus-idp/backstage-plugin-orchestrator-backend';
+
+   export default async function createPlugin(
+     env: PluginEnvironment,
+   ): Promise<Router> {
+     const builder = await CatalogBuilder.create(env);
+
+     /* ... other processors and/or providers ... */
+     /* highlight-add-start */
+     builder.addEntityProvider(
+       await OrchestratorEntityProvider.fromConfig({
+         config: env.config,
+         logger: env.logger,
+         scheduler: env.scheduler,
+         discovery: env.discovery,
+       }),
+     );
+     /* highlight-add-end */
+
+     const { processingEngine, router } = await builder.build();
+     await processingEngine.start();
+     return router;
+   }
+   ```
+
 1. Import and plug the new instance into `packages/backend/src/index.ts` file:
 
    ```ts title="packages/backend/src/index.ts"
@@ -137,14 +166,32 @@ For more information about the configuration options, including other optional p
    yarn workspace app add @janus-idp/backstage-plugin-orchestrator
    ```
 
-1. Add a route to the `OrchestratorPage` to Backstage App (`packages/app/src/App.tsx`):
+1. Add a route to the `OrchestratorPage` and the customized template card component to Backstage App (`packages/app/src/App.tsx`):
 
    ```tsx title="packages/app/src/App.tsx"
    /* highlight-add-next-line */
-   import { OrchestratorPage } from '@janus-idp/backstage-plugin-orchestrator';
+   import {
+     OrchestratorPage,
+     OrchestratorScaffolderTemplateCard,
+   } from '@janus-idp/backstage-plugin-orchestrator';
 
    const routes = (
      <FlatRoutes>
+       {/* ... */}
+       {/* highlight-remove-next-line */}
+       <Route path="/create" element={<ScaffolderPage />} />
+       {/* highlight-add-start */}
+       <Route
+         path="/create"
+         element={
+           <ScaffolderPage
+             components={{
+               TemplateCardComponent: OrchestratorScaffolderTemplateCard,
+             }}
+           />
+         }
+       />
+       {/* highlight-add-end */}
        {/* ... */}
        {/* highlight-add-next-line */}
        <Route path="/orchestrator" element={<OrchestratorPage />} />
@@ -163,12 +210,13 @@ For more information about the configuration options, including other optional p
        <Sidebar>
          <SidebarGroup label="Menu" icon={<MenuIcon />}>
            {/* ... */}
-           {/* highlight-add-next-line */}
+           {/* highlight-add-start */}
            <SidebarItem
              icon={WorkflowIcon}
              to="orchestrator"
              text="Workflows"
            />
+           {/* highlight-add-end */}
          </SidebarGroup>
          {/* ... */}
        </Sidebar>
