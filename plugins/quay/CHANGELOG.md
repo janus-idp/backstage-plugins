@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-quay [1.3.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.3.3...@janus-idp/backstage-plugin-quay@1.3.4) (2023-10-20)
+
+
+### Bug Fixes
+
+* **quay:** add visual indicator to security scan when it is still loading ([#848](https://github.com/janus-idp/backstage-plugins/issues/848)) ([71ff2a8](https://github.com/janus-idp/backstage-plugins/commit/71ff2a87ede8094df5f03efaf55b2ca70bcc33e5))
+
 ## @janus-idp/backstage-plugin-quay [1.3.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.3.2...@janus-idp/backstage-plugin-quay@1.3.3) (2023-10-19)
 
 
