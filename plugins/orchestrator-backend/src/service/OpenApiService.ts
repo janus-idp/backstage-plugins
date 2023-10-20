@@ -78,6 +78,27 @@ export class OpenApiService {
     return paths;
   }
 
+  private deleteInvalidPropertiesDfs(object: any): void {
+    if (
+      !object ||
+      Object.prototype.toString.call(object) !== '[object Object]'
+    ) {
+      return;
+    }
+    Object.entries(object).forEach(([k, v]) => {
+      const invalidConstProperty = k === 'const' && v === '*';
+      const invalidTypeArray = k === 'type' && v === 'array' && !object.items;
+      if (invalidConstProperty) {
+        delete object[k];
+      } else if (invalidTypeArray) {
+        // invalid array type that does not contain items property fallback to string
+        object[k] = 'string';
+      } else {
+        this.deleteInvalidPropertiesDfs(object[k]);
+      }
+    });
+  }
+
   private mapSchemas(actions: any): any {
     const schemas: any = {};
 
@@ -90,29 +111,7 @@ export class OpenApiService {
       // removing invalid attribute
       delete input.$schema;
 
-      // dfs to find and handle invalid properties
-      const dfs = (object: any) => {
-        if (
-          !object ||
-          Object.prototype.toString.call(object) !== '[object Object]'
-        ) {
-          return;
-        }
-        Object.entries(object).forEach(([k, v]) => {
-          const invalidConstProperty = k === 'const' && v === '*';
-          const invalidTypeArray =
-            k === 'type' && v === 'array' && !object.items;
-          if (invalidConstProperty) {
-            delete object[k];
-          } else if (invalidTypeArray) {
-            // invalid array type that does not contain items property fallback to string
-            object[k] = 'string';
-          } else {
-            dfs(object[k]);
-          }
-        });
-      };
-      dfs(input);
+      this.deleteInvalidPropertiesDfs(input);
 
       if (input.properties) {
         Object.keys(input.properties).forEach(key => {

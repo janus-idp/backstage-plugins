@@ -1,1 +1,1 @@
-export { NextScaffolderTemplateCard } from './NextScaffolderTemplateCard';
+export { OrchestratorScaffolderTemplateCard } from './OrchestratorScaffolderTemplateCard';

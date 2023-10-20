@@ -1,3 +1,26 @@
+## @janus-idp/backstage-plugin-nexus-repository-manager [1.3.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-nexus-repository-manager@1.3.0...@janus-idp/backstage-plugin-nexus-repository-manager@1.3.1) (2023-10-19)
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 1.3.3
+
+## @janus-idp/backstage-plugin-nexus-repository-manager [1.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-nexus-repository-manager@1.2.1...@janus-idp/backstage-plugin-nexus-repository-manager@1.3.0) (2023-10-17)
+
+
+### Features
+
+* **nexus:** initial maven support ([#828](https://github.com/janus-idp/backstage-plugins/issues/828)) ([d54060b](https://github.com/janus-idp/backstage-plugins/commit/d54060be0e62f5945b5062bea7ed85b8a418731d)), closes [/stackoverflow.com/questions/13630849/git-difference-between-assume-unchanged-and-skip-worktree/13631525#13631525](https://github.com/janus-idp//stackoverflow.com/questions/13630849/git-difference-between-assume-unchanged-and-skip-worktree/13631525/issues/13631525)
+
+## @janus-idp/backstage-plugin-nexus-repository-manager [1.2.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-nexus-repository-manager@1.2.0...@janus-idp/backstage-plugin-nexus-repository-manager@1.2.1) (2023-10-16)
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 1.3.2
+
 ## @janus-idp/backstage-plugin-nexus-repository-manager [1.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-nexus-repository-manager@1.1.2...@janus-idp/backstage-plugin-nexus-repository-manager@1.2.0) (2023-10-13)
 
 

@@ -71,12 +71,23 @@ interface ComposedJsonSchema {
   actionSchemas: JsonSchemaFile[];
 }
 
+interface ScaffolderTemplate {
+  url: string;
+  values: string[];
+}
+
+interface WorkflowFunction {
+  operationId: string;
+  ref: Specification.Functionref;
+  schema: OpenAPIV3.SchemaObject;
+}
+
 const JSON_SCHEMA_VERSION = 'http://json-schema.org/draft-04/schema#';
 const FETCH_TEMPLATE_ACTION_OPERATION_ID = 'fetch:template';
 
 const Regex = {
-  VALUES_IN_SKELETON:
-    /\{\{[%-]?\s*values\.(\w+)\s*[%-]?}}|\{%-?\s*if\s*values\.(\w+)\s*(?:%-?})?/gi,
+  VALUES_IN_SKELETON: /\{\{[%-]?\s*values\.(\w+)\s*[%-]?}}/gi,
+  CONDITION_IN_SKELETON: /\{%-?\s*if\s*values\.(\w+)\s*(?:%-?})?/gi,
   GITHUB_URL:
     /^https:\/\/github\.com\/([^/]+)\/([^/]+)\/(?:tree|blob)\/([^/]+)\/(.+)$/,
   GITHUB_API_URL:
@@ -98,16 +109,54 @@ export class DataInputSchemaService {
     this.octokit = new Octokit({ auth: githubToken });
   }
 
+  private resolveObject<T>(obj: T | undefined): T {
+    return { ...(obj ?? {}) } as T;
+  }
+
+  private resolveAnyToArray<T>(value: any): T[] {
+    if (Array.isArray(value)) {
+      return this.resolveArray(value);
+    }
+    return [];
+  }
+
+  private resolveArray<T>(arr: T[] | undefined): T[] {
+    return [...(arr ?? [])] as T[];
+  }
+
+  private resolveObjectIfNotEmpty<T>(obj: T | undefined): T | undefined {
+    return Object.keys(obj ?? {}).length ? obj : undefined;
+  }
+
+  private resolveArrayIfNotEmpty<T>(arr: T[]): T[] | undefined {
+    return arr.length ? arr : undefined;
+  }
+
+  private resolveTransitionName(d: Transitiondatacondition): string {
+    return typeof d.transition === 'string'
+      ? d.transition
+      : d.transition.nextState;
+  }
+
+  private resolveSingleConditionalSchema(
+    conditionalActionSchemas: JsonSchemaFile[],
+  ): JsonSchemaFile | undefined {
+    if (
+      conditionalActionSchemas.length === 1 &&
+      this.resolveObjectIfNotEmpty(
+        conditionalActionSchemas[0].jsonSchema.properties,
+      )
+    ) {
+      return conditionalActionSchemas[0];
+    }
+    return undefined;
+  }
+
   public async generate(args: {
     definition: WorkflowDefinition;
     openApi: OpenAPIV3.Document;
   }): Promise<ComposedJsonSchema | null> {
     const workflow = args.definition as Specification.Workflow;
-
-    if (!workflow.states.length) {
-      this.logger.info(`No state found on workflow. Skipping...`);
-      return null;
-    }
 
     const actionSchemas: JsonSchemaFile[] = [];
     const workflowArgsMap = new Map<string, string>();
@@ -123,55 +172,34 @@ export class DataInputSchemaService {
 
       if (state.type === 'switch') {
         const dataConditions = (state as Databasedswitchstate).dataConditions;
-        if (!dataConditions?.length) {
-          continue;
-        }
 
         const conditionalStateNames = dataConditions
-          .filter(d => (d as Transitiondatacondition).transition)
-          .map(d => {
-            const transition = (d as Transitiondatacondition).transition;
-            if (typeof transition === 'string') {
-              return transition;
-            }
-            return transition.nextState;
-          });
+          ?.filter(d => (d as Transitiondatacondition).transition)
+          .map(d => this.resolveTransitionName(d as Transitiondatacondition));
 
         const conditionalStates = workflow.states.filter(s =>
           conditionalStateNames.includes(s.name!),
         );
 
-        const conditionalActionSchemas: JsonSchemaFile[] = [];
-        for (const conditionalState of conditionalStates) {
-          stateHandled.add(conditionalState.name!);
+        const { conditionalActionSchemas, conditionalStatesHandled } =
+          await this.extractConditionalSchemas({
+            workflow,
+            openApi: args.openApi,
+            conditionalStates,
+            workflowArgsMap,
+          });
 
-          for (const actionDescriptor of this.extractActionsFromState(
-            conditionalState,
-          )) {
-            const result = await this.extractSchemaFromState({
-              workflow: workflow,
-              openApi: args.openApi,
-              actionDescriptor,
-              workflowArgsMap,
-              isConditional: true,
-            });
-
-            if (!result) {
-              continue;
-            }
-
-            conditionalActionSchemas.push(result.actionSchema);
-          }
-        }
+        conditionalStatesHandled.forEach(s => stateHandled.add(s));
 
         if (conditionalActionSchemas.length <= 1) {
-          if (
-            conditionalActionSchemas.length &&
-            Object.keys(conditionalActionSchemas[0].jsonSchema.properties ?? {})
-              .length
-          ) {
-            actionSchemas.push(conditionalActionSchemas[0]);
+          const singleConditionalSchema = this.resolveSingleConditionalSchema(
+            conditionalActionSchemas,
+          );
+
+          if (singleConditionalSchema) {
+            actionSchemas.push(singleConditionalSchema);
           }
+
           continue;
         }
 
@@ -197,72 +225,34 @@ export class DataInputSchemaService {
           },
           required: [
             s.owner,
-            ...(s.jsonSchema.required
-              ? (s.jsonSchema.required as string[])
-              : []),
+            ...this.resolveAnyToArray<string>(s.jsonSchema.required),
           ],
         }));
 
         actionSchemas.push(oneOfSchema);
       } else {
-        for (const actionDescriptor of this.extractActionsFromState(state)) {
-          const result = await this.extractSchemaFromState({
-            workflow,
-            openApi: args.openApi,
-            actionDescriptor,
-            workflowArgsMap,
-            isConditional: false,
-          });
-
-          if (!result) {
-            continue;
-          }
-
-          const { actionSchema, argsMap } = result;
-
-          argsMap.forEach((v, k) => {
-            workflowArgsMap.set(k, v);
-          });
-
-          actionSchemas.push(actionSchema);
-        }
-      }
-    }
-
-    const workflowVariableSet = this.extractVariablesFromWorkflow(workflow);
-
-    if (!actionSchemas.length && !workflowVariableSet.size) {
-      return null;
-    }
-
-    if (workflowVariableSet.size) {
-      const additionalInputTitle = 'Additional input data';
-      const variableSetSchema = this.buildJsonSchemaSkeleton({
-        owner: 'Workflow',
-        workflowId: workflow.id,
-        title: additionalInputTitle,
-        filename: this.sanitizeText({
-          text: additionalInputTitle,
-          placeholder: '_',
-        }),
-      });
-
-      Array.from(workflowVariableSet)
-        .filter(v => !workflowArgsMap.get(v))
-        .forEach(item => {
-          variableSetSchema.jsonSchema.properties = {
-            ...(variableSetSchema.jsonSchema.properties ?? {}),
-            [item]: {
-              title: item,
-              type: 'string',
-              description: 'Extracted from the Workflow definition',
-            },
-          };
+        const actionSchemasFromState = await this.extractSchemasFromStates({
+          workflow: workflow,
+          openApi: args.openApi,
+          state,
+          workflowArgsMap,
         });
 
-      if (Object.keys(variableSetSchema.jsonSchema.properties ?? {}).length) {
-        actionSchemas.push(variableSetSchema);
+        actionSchemas.push(...actionSchemasFromState);
       }
+    }
+
+    const variableSetSchema = this.extractAdditionalSchemaFromWorkflow({
+      workflow,
+      workflowArgsMap,
+    });
+
+    if (variableSetSchema) {
+      actionSchemas.push(variableSetSchema);
+    }
+
+    if (!actionSchemas.length) {
+      return null;
     }
 
     const compositionSchema = this.buildJsonSchemaSkeleton({
@@ -272,7 +262,7 @@ export class DataInputSchemaService {
 
     actionSchemas.forEach(actionSchema => {
       compositionSchema.jsonSchema.properties = {
-        ...(compositionSchema.jsonSchema.properties ?? {}),
+        ...this.resolveObject(compositionSchema.jsonSchema.properties),
         [`${actionSchema.fileName}`]: {
           $ref: actionSchema.fileName,
           type: actionSchema.jsonSchema.type,
@@ -284,22 +274,209 @@ export class DataInputSchemaService {
     return { compositionSchema, actionSchemas };
   }
 
-  private async extractSchemaFromState(args: {
+  private extractAdditionalSchemaFromWorkflow(args: {
+    workflow: Specification.Workflow;
+    workflowArgsMap: Map<string, string>;
+  }): JsonSchemaFile | undefined {
+    const workflowVariableSet = this.extractVariablesFromWorkflow(
+      args.workflow,
+    );
+    if (!workflowVariableSet.size || !args.workflow.states.length) {
+      return undefined;
+    }
+
+    const additionalInputTitle = 'Additional input data';
+    const variableSetSchema = this.buildJsonSchemaSkeleton({
+      owner: 'Workflow',
+      workflowId: args.workflow.id,
+      title: additionalInputTitle,
+      filename: this.sanitizeText({
+        text: additionalInputTitle,
+        placeholder: '_',
+      }),
+    });
+
+    Array.from(workflowVariableSet)
+      .filter(v => !args.workflowArgsMap.get(v))
+      .forEach(item => {
+        variableSetSchema.jsonSchema.properties = {
+          ...this.resolveObject(variableSetSchema.jsonSchema.properties),
+          [item]: {
+            title: item,
+            type: 'string',
+            description: 'Extracted from the Workflow definition',
+          },
+        };
+      });
+
+    if (
+      !this.resolveObjectIfNotEmpty(variableSetSchema.jsonSchema.properties)
+    ) {
+      return undefined;
+    }
+
+    return variableSetSchema;
+  }
+
+  private async extractConditionalSchemas(args: {
     workflow: Specification.Workflow;
     openApi: OpenAPIV3.Document;
-    actionDescriptor: WorkflowActionDescriptor;
+    conditionalStates: WorkflowState[];
     workflowArgsMap: Map<string, string>;
+  }): Promise<{
+    conditionalActionSchemas: JsonSchemaFile[];
+    conditionalStatesHandled: Set<string>;
+  }> {
+    const conditionalActionSchemas: JsonSchemaFile[] = [];
+    const conditionalStatesHandled = new Set<string>();
+
+    for (const conditionalState of args.conditionalStates) {
+      conditionalStatesHandled.add(conditionalState.name!);
+
+      const conditionalSchemas = await this.extractConditionalSchemasFromState({
+        workflow: args.workflow,
+        openApi: args.openApi,
+        conditionalState,
+        workflowArgsMap: args.workflowArgsMap,
+      });
+
+      conditionalActionSchemas.push(...conditionalSchemas);
+    }
+
+    return { conditionalActionSchemas, conditionalStatesHandled };
+  }
+
+  private async extractConditionalSchemasFromState(args: {
+    workflow: Specification.Workflow;
+    openApi: OpenAPIV3.Document;
+    conditionalState: WorkflowState;
+    workflowArgsMap: Map<string, string>;
+  }): Promise<JsonSchemaFile[]> {
+    const schemas: JsonSchemaFile[] = [];
+
+    const actions = this.extractActionsFromState(args.conditionalState);
+
+    for (const actionDescriptor of actions) {
+      const result = await this.extractSchemaFromState({
+        workflow: args.workflow,
+        openApi: args.openApi,
+        actionDescriptor,
+        workflowArgsMap: args.workflowArgsMap,
+        isConditional: true,
+      });
+
+      if (!result) {
+        continue;
+      }
+
+      schemas.push(result.actionSchema);
+    }
+
+    return schemas;
+  }
+
+  private async extractTemplateFromSkeletonUrl(args: {
+    url: string;
     isConditional: boolean;
-  }): Promise<
-    { actionSchema: JsonSchemaFile; argsMap: Map<string, string> } | undefined
-  > {
+  }): Promise<ScaffolderTemplate | undefined> {
+    const githubPath = this.convertToGitHubApiUrl(args.url);
+    if (!githubPath) {
+      return undefined;
+    }
+
+    const skeletonValues =
+      await this.extractTemplateValuesFromSkeletonUrl(githubPath);
+
+    if (!skeletonValues && !args.isConditional) {
+      return undefined;
+    }
+
+    const fixedSkeletonUrl = `https://github.com/${githubPath.owner}/${githubPath.repo}/tree/${githubPath.ref}/${githubPath.path}`;
+    return {
+      values: skeletonValues,
+      url: fixedSkeletonUrl,
+    };
+  }
+
+  private async extractSchemasFromStates(args: {
+    workflow: Specification.Workflow;
+    openApi: OpenAPIV3.Document;
+    state: WorkflowState;
+    workflowArgsMap: Map<string, string>;
+  }): Promise<JsonSchemaFile[]> {
+    const schemas: JsonSchemaFile[] = [];
+    for (const actionDescriptor of this.extractActionsFromState(args.state)) {
+      const result = await this.extractSchemaFromState({
+        workflow: args.workflow,
+        openApi: args.openApi,
+        actionDescriptor,
+        workflowArgsMap: args.workflowArgsMap,
+        isConditional: false,
+      });
+
+      if (!result) {
+        continue;
+      }
+
+      const { actionSchema, argsMap } = result;
+
+      argsMap.forEach((v, k) => {
+        args.workflowArgsMap.set(k, v);
+      });
+
+      schemas.push(actionSchema);
+    }
+    return schemas;
+  }
+
+  private isValidTemplateAction(
+    workflowArgsToFilter: WorkflowFunctionArgs,
+  ): boolean {
+    return (
+      workflowArgsToFilter.url &&
+      workflowArgsToFilter.values &&
+      Object.keys(workflowArgsToFilter.values).length
+    );
+  }
+
+  private extractFilteredArgId(args: {
+    map: Map<string, string>;
+    key: string;
+    value: string;
+    description: string;
+  }): string | undefined {
+    if (args.map.has(args.key)) {
+      if (args.map.get(args.key) === args.value) {
+        return undefined;
+      }
+      return this.sanitizeText({
+        text: `${args.description} ${args.key}`,
+        placeholder: '_',
+      });
+    }
+    return args.key;
+  }
+
+  private extractWorkflowFunction(args: {
+    workflow: Specification.Workflow;
+    actionDescriptor: WorkflowActionDescriptor;
+    openApi: OpenAPIV3.Document;
+  }): WorkflowFunction | undefined {
     const functionRef = args.actionDescriptor.action
       .functionRef as Specification.Functionref;
+
+    if (!functionRef.arguments) {
+      this.logger.info(
+        `No arguments found for function ${functionRef.refName}. Skipping...`,
+      );
+      return undefined;
+    }
 
     const operationId = this.extractOperationIdByWorkflowFunctionName({
       workflow: args.workflow,
       functionName: functionRef.refName,
     });
+
     if (!operationId) {
       this.logger.info(
         `No operation id found for function ${functionRef.refName}. Skipping...`,
@@ -311,6 +488,7 @@ export class DataInputSchemaService {
       openApi: args.openApi,
       operationId,
     });
+
     if (!refSchema) {
       this.logger.info(
         `The schema associated with ${operationId} could not be found. Skipping...`,
@@ -318,69 +496,78 @@ export class DataInputSchemaService {
       return undefined;
     }
 
-    if (!functionRef.arguments) {
+    return {
+      operationId,
+      ref: functionRef,
+      schema: refSchema,
+    };
+  }
+
+  private async extractSchemaFromState(args: {
+    workflow: Specification.Workflow;
+    openApi: OpenAPIV3.Document;
+    actionDescriptor: WorkflowActionDescriptor;
+    workflowArgsMap: Map<string, string>;
+    isConditional: boolean;
+  }): Promise<
+    { actionSchema: JsonSchemaFile; argsMap: Map<string, string> } | undefined
+  > {
+    const wfFunction = this.extractWorkflowFunction({
+      workflow: args.workflow,
+      actionDescriptor: args.actionDescriptor,
+      openApi: args.openApi,
+    });
+    if (!wfFunction) {
       return undefined;
     }
 
-    const schemaPropsToFilter = { ...(refSchema.properties ?? {}) };
+    const schemaPropsToFilter = this.resolveObject(
+      wfFunction.schema.properties,
+    );
     const workflowArgsToFilter = {
-      ...functionRef.arguments,
+      ...wfFunction.ref.arguments,
     } as WorkflowFunctionArgs;
 
-    if (operationId === FETCH_TEMPLATE_ACTION_OPERATION_ID) {
-      if (
-        !workflowArgsToFilter.url ||
-        !workflowArgsToFilter.values ||
-        !Object.keys(workflowArgsToFilter.values).length
-      ) {
+    if (wfFunction.operationId === FETCH_TEMPLATE_ACTION_OPERATION_ID) {
+      if (!this.isValidTemplateAction(workflowArgsToFilter)) {
         return undefined;
       }
 
-      const githubPath = this.convertToGitHubApiUrl(workflowArgsToFilter.url);
-      if (!githubPath) {
-        return undefined;
-      }
+      const template = await this.extractTemplateFromSkeletonUrl({
+        url: workflowArgsToFilter.url,
+        isConditional: args.isConditional,
+      });
 
-      const skeletonValues =
-        await this.extractTemplateValuesFromSkeletonUrl(githubPath);
-
-      if (!skeletonValues && !args.isConditional) {
-        return undefined;
-      }
-
-      if (skeletonValues?.length) {
-        const skeletonUrl = `https://github.com/${githubPath.owner}/${githubPath.repo}/tree/${githubPath.ref}/${githubPath.path}`;
-
-        skeletonValues.forEach(v => {
-          schemaPropsToFilter[v] = {
-            title: v,
-            description: `Extracted from ${skeletonUrl}`,
-            type: 'string',
-          };
-          schemaPropsToFilter[this.snakeCaseToCamelCase(v)] = {
-            title: this.snakeCaseToCamelCase(v),
-            description: `Extracted from ${skeletonUrl}`,
-            type: 'string',
-          };
-          schemaPropsToFilter[this.camelCaseToSnakeCase(v)] = {
-            title: this.camelCaseToSnakeCase(v),
-            description: `Extracted from ${skeletonUrl}`,
-            type: 'string',
-          };
-        });
-      }
+      template?.values.forEach(v => {
+        schemaPropsToFilter[v] = {
+          title: v,
+          description: `Extracted from ${template.url}`,
+          type: 'string',
+        };
+        schemaPropsToFilter[this.snakeCaseToCamelCase(v)] = {
+          title: this.snakeCaseToCamelCase(v),
+          description: `Extracted from ${template.url}`,
+          type: 'string',
+        };
+        schemaPropsToFilter[this.camelCaseToSnakeCase(v)] = {
+          title: this.camelCaseToSnakeCase(v),
+          description: `Extracted from ${template.url}`,
+          type: 'string',
+        };
+      });
 
       Object.keys(workflowArgsToFilter.values).forEach(k => {
         workflowArgsToFilter[k] = workflowArgsToFilter.values[k];
       });
     }
 
-    if (refSchema.oneOf?.length) {
-      const oneOfSchema = (refSchema.oneOf as OpenAPIV3.SchemaObject[]).find(
-        item =>
-          Object.keys(workflowArgsToFilter).some(arg =>
-            Object.keys(item.properties!).includes(arg),
-          ),
+    if (wfFunction.schema.oneOf?.length) {
+      const oneOfSchema = (
+        wfFunction.schema.oneOf as OpenAPIV3.SchemaObject[]
+      ).find(item =>
+        Object.keys(workflowArgsToFilter).some(arg =>
+          Object.keys(item.properties!).includes(arg),
+        ),
       );
       if (!oneOfSchema?.properties) {
         return undefined;
@@ -405,17 +592,14 @@ export class DataInputSchemaService {
       if (!schemaPropsToFilter.hasOwnProperty(argKey)) {
         continue;
       }
-      let argId;
-      if (argsMap.has(argKey)) {
-        if (argsMap.get(argKey) === argValue) {
-          continue;
-        }
-        argId = this.sanitizeText({
-          text: `${args.actionDescriptor.descriptor} ${argKey}`,
-          placeholder: '_',
-        });
-      } else {
-        argId = argKey;
+      const argId = this.extractFilteredArgId({
+        map: argsMap,
+        key: argKey,
+        value: argValue,
+        description: args.actionDescriptor.descriptor,
+      });
+      if (!argId) {
+        continue;
       }
       argsMap.set(argId, argValue);
 
@@ -426,10 +610,8 @@ export class DataInputSchemaService {
     }
 
     const updatedSchema = {
-      properties: Object.keys(filteredProperties).length
-        ? { ...filteredProperties }
-        : undefined,
-      required: filteredRequired.length ? [...filteredRequired] : undefined,
+      properties: this.resolveObjectIfNotEmpty(filteredProperties),
+      required: this.resolveArrayIfNotEmpty(filteredRequired),
     };
 
     if (!updatedSchema.properties && !args.isConditional) {
@@ -880,8 +1062,17 @@ export class DataInputSchemaService {
   private async extractTemplateValuesFromGitHubFile(
     githubPath: GitHubPath,
   ): Promise<string[]> {
-    const matchesInPath = githubPath.path.matchAll(Regex.VALUES_IN_SKELETON);
-    const valuesInPath = Array.from(matchesInPath, match => match[1]);
+    const valueMatchesInPath = githubPath.path.matchAll(
+      Regex.VALUES_IN_SKELETON,
+    );
+    const conditionMatchesInPath = githubPath.path.matchAll(
+      Regex.CONDITION_IN_SKELETON,
+    );
+    const valuesInPath = Array.from(valueMatchesInPath, match => match[1]);
+    const conditionsInPath = Array.from(
+      conditionMatchesInPath,
+      match => match[1],
+    );
 
     try {
       const content = await this.octokit.repos.getContent({ ...githubPath });
@@ -892,12 +1083,27 @@ export class DataInputSchemaService {
       const fileContent = this.decoder.decode(
         new Uint8Array(Buffer.from(fileData.content, fileData.encoding)),
       );
-      const matchesInContent = fileContent.matchAll(Regex.VALUES_IN_SKELETON);
+      const valueMatchesInContent = fileContent.matchAll(
+        Regex.VALUES_IN_SKELETON,
+      );
+      const conditionMatchesInContent = fileContent.matchAll(
+        Regex.CONDITION_IN_SKELETON,
+      );
       const valuesInContent = Array.from(
-        matchesInContent,
+        valueMatchesInContent,
         match => match[1] || match[2],
       );
-      return [...valuesInPath, ...valuesInContent];
+      const conditionsInContent = Array.from(
+        conditionMatchesInContent,
+        match => match[1],
+      );
+
+      return [
+        ...valuesInPath,
+        ...conditionsInPath,
+        ...valuesInContent,
+        ...conditionsInContent,
+      ];
     } catch (e) {
       this.logger.error(e);
     }
@@ -917,14 +1123,7 @@ export class DataInputSchemaService {
 
     function traverseValue(value: any, currentPath: string) {
       if (typeof value === 'string') {
-        const match = RegExp(/(^|\s|\{)\s*\.([a-zA-Z_]\w*)\s*([=!<>]+)/).exec(
-          value,
-        );
-        addVariable({ variable: match?.[2], currentPath });
-        const dotMatch = RegExp(
-          /(^|\s|\{)\s*\.(?![a-zA-Z_]\w*\.[a-zA-Z_]\w*)([a-zA-Z_]\w*)/,
-        ).exec(value);
-        addVariable({ variable: dotMatch?.[2], currentPath });
+        handleValue(value, currentPath);
       } else if (Array.isArray(value)) {
         value.forEach((item, index) => {
           traverseValue(item, `${currentPath}[${index}]`);
@@ -932,6 +1131,31 @@ export class DataInputSchemaService {
       } else if (typeof value === 'object') {
         traverseObject(value, currentPath);
       }
+    }
+
+    function handleValue(value: string, currentPath: string) {
+      const tokens = value.split(/\s|\${|}/);
+      let inTemplate = false;
+
+      tokens.forEach(token => {
+        if (inTemplate) {
+          if (token.endsWith('}')) {
+            inTemplate = false;
+          }
+          return;
+        }
+
+        if (token.startsWith('.')) {
+          const variable = token.slice(1).replace(/[=!<>]{0,50}$/, '');
+          if (variable && !variable.includes('.')) {
+            addVariable({ variable, currentPath });
+          }
+        }
+
+        if (token.startsWith('${')) {
+          inTemplate = true;
+        }
+      });
     }
 
     function addVariable(args: {

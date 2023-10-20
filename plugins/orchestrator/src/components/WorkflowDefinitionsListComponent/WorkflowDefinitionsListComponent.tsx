@@ -96,22 +96,22 @@ export const WorkflowsTable = ({ items }: WorkflowsTableProps) => {
       data={data}
       actions={[
         {
-          icon: () => <PlayArrow />,
+          icon: PlayArrow,
           tooltip: 'Execute',
           onClick: (_, rowData) => doExecute(rowData as Row),
         },
         {
-          icon: () => <Pageview />,
+          icon: Pageview,
           tooltip: 'View',
           onClick: (_, rowData) => doView(rowData as Row),
         },
         {
-          icon: () => <Edit />,
+          icon: Edit,
           tooltip: 'Edit',
           onClick: (_, rowData) => doEdit(rowData as Row),
         },
         {
-          icon: () => <DeleteForever />,
+          icon: DeleteForever,
           tooltip: 'Delete',
           onClick: (_, rowData) => doDelete(rowData as Row),
         },

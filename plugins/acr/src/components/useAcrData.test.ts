@@ -6,7 +6,6 @@ import { mockEntity } from '../__fixtures__/mockEntity';
 import { useAcrAppData } from './useAcrAppData';
 
 jest.mock('@backstage/plugin-catalog-react', () => ({
-  ...jest.requireActual('@backstage/plugin-catalog-react'),
   useEntity: jest.fn().mockReturnValue({}),
 }));
 

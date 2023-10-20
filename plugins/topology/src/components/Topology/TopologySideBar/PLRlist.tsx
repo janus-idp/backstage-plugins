@@ -38,33 +38,36 @@ const PLRlist = ({ pipelines, pipelineRuns }: PLRlistProps) => {
         </li>
       ))}
       {pipelineRuns.length > 0 ? (
-        pipelineRuns.slice(0, MAXSHOWRESCOUNT).map((plr: PipelineRunKind) => (
-          <li
-            className="item"
-            style={{ alignItems: 'baseline' }}
-            key={plr.metadata?.uid}
-          >
-            <span style={{ flex: '1' }}>
-              <ResourceName
-                name={
-                  <span className="bs-topology-pipelinerun">
-                    {plr.metadata?.name ?? ''}
-                    <PLRlastUpdated plr={plr} />
-                  </span>
-                }
-                kind={plr.kind ?? ''}
-              />
-            </span>
-            <span style={{ flex: '1' }}>
-              <ResourceStatus
-                additionalClassNames="hidden-xs"
-                noStatusBackground
-              >
-                <Status status={pipelineRunStatus(plr)} />
-              </ResourceStatus>
-            </span>
-          </li>
-        ))
+        pipelineRuns.slice(0, MAXSHOWRESCOUNT).map((plr: PipelineRunKind) => {
+          const status = pipelineRunStatus(plr);
+          return (
+            <li
+              className="item"
+              style={{ alignItems: 'baseline' }}
+              key={plr.metadata?.uid}
+            >
+              <span style={{ flex: '1' }}>
+                <ResourceName
+                  name={
+                    <span className="bs-topology-pipelinerun">
+                      {plr.metadata?.name ?? ''}
+                      <PLRlastUpdated plr={plr} />
+                    </span>
+                  }
+                  kind={plr.kind ?? ''}
+                />
+              </span>
+              <span style={{ flex: '1' }}>
+                <ResourceStatus
+                  additionalClassNames="hidden-xs"
+                  noStatusBackground
+                >
+                  {status ? <Status status={status} /> : '-'}
+                </ResourceStatus>
+              </span>
+            </li>
+          );
+        })
       ) : (
         <li className="item bs-topology-text-muted">{`No ${PipelineRunModel.labelPlural} found`}</li>
       )}

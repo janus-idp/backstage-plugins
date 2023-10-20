@@ -1,32 +1,32 @@
-import { ComponentXO, RawAsset } from '../../types';
+import { ComponentXO, DockerManifest } from '../../types';
 
 export function getFileSize({
   component,
-  rawAssets,
+  dockerManifests,
 }: {
   component: ComponentXO;
-  rawAssets: (RawAsset | null)[];
+  dockerManifests: (DockerManifest | null)[];
 }) {
   const componentsSize =
     component.assets?.reduce((acc, asset) => {
       return acc + (asset.fileSize ?? 0);
     }, 0) ?? 0;
 
-  const rawAssetsSize = rawAssets.reduce((acc, rawAsset) => {
-    if (!rawAsset) {
+  const dockerManifestsSize = dockerManifests.reduce((acc, dockerManifest) => {
+    if (!dockerManifest) {
       return acc;
     }
 
-    if (rawAsset.schemaVersion === 1) {
+    if (dockerManifest.schemaVersion === 1) {
       return acc;
     }
 
-    const layerSize = rawAsset.layers.reduce((layerAcc, layer) => {
+    const layerSize = dockerManifest.layers.reduce((layerAcc, layer) => {
       return layerAcc + layer.size;
     }, 0);
 
-    return acc + rawAsset.config.size + layerSize;
+    return acc + dockerManifest.config.size + layerSize;
   }, 0);
 
-  return componentsSize + rawAssetsSize;
+  return componentsSize + dockerManifestsSize;
 }

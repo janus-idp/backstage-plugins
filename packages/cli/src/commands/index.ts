@@ -153,6 +153,34 @@ export function registerScriptCommand(program: Command) {
     .action(lazy(() => import('./build').then(m => m.command)));
 
   command
+    .command('export-dynamic-plugin')
+    .description(
+      'Build and export a plugin package to be loaded as a dynamic plugin. The repackaged dynamic plugin is exported inside a ./dist-dynamic sub-folder.',
+    )
+    .option('--minify', 'Minify the generated code (backend plugin only).')
+    .option(
+      '--embed-package [package-name...]',
+      'Optional list of packages that should be embedded inside the generated code of a backend dynamic plugin, removed from the plugin dependencies, while their direct dependencies will be hoisted to the dynamic plugin dependencies (backend plugin only).',
+    )
+    .option(
+      '--shared-package [package-name...]',
+      'Optional list of packages that should be considered shared by all dynamic plugins, and will be moved to peer dependencies of the dynamic plugin. The `@backstage` packages are by default considered shared dependencies.',
+    )
+    .option(
+      '--no-install',
+      'Do not run `yarn install` to fill the dynamic plugin `node_modules` folder (backend plugin only).',
+    )
+    .option(
+      '--clean',
+      'Remove the dynamic plugin output before exporting again.',
+    )
+    .option(
+      '--dev',
+      'Allow testing/debugging a backend plugin dynamic loading locally. This installs the dynamic plugin content (symlink) into the dynamic plugins root folder configured in the app config. This also creates a link from the dynamic plugin content to the plugin package `src` folder, to enable the use of source maps (backend plugin only).',
+    )
+    .action(lazy(() => import('./export-dynamic-plugin').then(m => m.command)));
+
+  command
     .command('lint [directories...]')
     .option(
       '--format <format>',

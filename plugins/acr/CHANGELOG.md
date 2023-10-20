@@ -1,3 +1,24 @@
+## @janus-idp/backstage-plugin-acr [1.1.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-acr@1.1.5...@janus-idp/backstage-plugin-acr@1.1.6) (2023-10-19)
+
+
+### Documentation
+
+* **acr:** updates README and  light theme image ([#847](https://github.com/janus-idp/backstage-plugins/issues/847)) ([5f933a5](https://github.com/janus-idp/backstage-plugins/commit/5f933a5618171051ae30f0c7d2e473df386d8944))
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 1.3.3
+
+## @janus-idp/backstage-plugin-acr [1.1.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-acr@1.1.4...@janus-idp/backstage-plugin-acr@1.1.5) (2023-10-16)
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 1.3.2
+
 ## @janus-idp/backstage-plugin-acr [1.1.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-acr@1.1.3...@janus-idp/backstage-plugin-acr@1.1.4) (2023-09-22)
 
 
