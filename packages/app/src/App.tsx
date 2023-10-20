@@ -30,7 +30,10 @@ import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
 import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
 import { UserSettingsPage } from '@backstage/plugin-user-settings';
 
-import { OrchestratorPage } from '@janus-idp/backstage-plugin-orchestrator';
+import {
+  OrchestratorPage,
+  OrchestratorScaffolderTemplateCard,
+} from '@janus-idp/backstage-plugin-orchestrator';
 
 import { apis } from './apis';
 import { entityPage } from './components/catalog/EntityPage';
@@ -78,7 +81,16 @@ const routes = (
         <ReportIssue />
       </TechDocsAddons>
     </Route>
-    <Route path="/create" element={<ScaffolderPage />} />
+    <Route
+      path="/create"
+      element={
+        <ScaffolderPage
+          components={{
+            TemplateCardComponent: OrchestratorScaffolderTemplateCard,
+          }}
+        />
+      }
+    />
     <Route path="/api-docs" element={<ApiExplorerPage />} />
     <Route
       path="/tech-radar"
