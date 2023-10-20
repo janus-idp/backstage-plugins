@@ -5,7 +5,9 @@
     ":rebaseStalePrs",
     "group:allNonMajor",
     "group:linters",
-    "group:test"
+    "group:test",
+    ":preserveSemverRanges",
+    ":pinOnlyDevDependencies"
   ],
   "labels": ["kind/dependency upgrade"],
   "npm": {
@@ -19,14 +21,6 @@
     {
       "matchPackagePatterns": ["^@backstage/"],
       "groupName": "Core Backstage packages"
-    },
-    {
-      "matchFileNames": ["packages/**"],
-      "extends": [":pinAllExceptPeerDependencies"]
-    },
-    {
-      "matchFileNames": ["plugins/**"],
-      "extends": [":pinOnlyDevDependencies"]
     },
     {
       "matchPackagePatterns": [

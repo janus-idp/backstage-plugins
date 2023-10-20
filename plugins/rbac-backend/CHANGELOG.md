@@ -1,3 +1,11 @@
+## @janus-idp/backstage-plugin-rbac-backend [1.1.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@1.1.0...@janus-idp/backstage-plugin-rbac-backend@1.1.1) (2023-10-19)
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-rbac-common:** upgraded to 1.0.1
+
 ## @janus-idp/backstage-plugin-rbac-backend [1.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@1.0.2...@janus-idp/backstage-plugin-rbac-backend@1.1.0) (2023-10-06)
 
 
