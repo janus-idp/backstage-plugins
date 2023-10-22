@@ -1,3 +1,4 @@
+import { TokenManager } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 
@@ -17,13 +18,20 @@ describe('BackstageRoleManager', () => {
     debug: jest.fn().mockImplementation(),
   };
 
-  const roleManager = new BackstageRoleManager(
-    catalogApiMock as CatalogApi,
-    loggerMock as Logger,
-  );
+  const tokenManagerMock = {
+    getToken: jest.fn().mockImplementation(async () => {
+      return Promise.resolve({ token: 'some-token' });
+    }),
+    authenticate: jest.fn().mockImplementation(),
+  };
 
+  let roleManager: BackstageRoleManager;
   beforeEach(() => {
-    jest.clearAllMocks();
+    roleManager = new BackstageRoleManager(
+      catalogApiMock as CatalogApi,
+      loggerMock as Logger,
+      tokenManagerMock as TokenManager,
+    );
   });
 
   describe('unimplemented methods', () => {
@@ -96,19 +104,22 @@ describe('BackstageRoleManager', () => {
         'user:default/mike',
         'group:default/somegroup',
       );
-      expect(catalogApiMock.getEntities).toHaveBeenCalledWith({
-        filter: {
-          kind: 'Group',
-          'relations.hasMember': ['user:default/mike'],
+      expect(catalogApiMock.getEntities).toHaveBeenCalledWith(
+        {
+          filter: {
+            kind: 'Group',
+            'relations.hasMember': ['user:default/mike'],
+          },
+          fields: [
+            'metadata.name',
+            'kind',
+            'metadata.namespace',
+            'spec.parent',
+            'spec.children',
+          ],
         },
-        fields: [
-          'metadata.name',
-          'kind',
-          'metadata.namespace',
-          'spec.parent',
-          'spec.children',
-        ],
-      });
+        { token: 'some-token' },
+      );
       expect(result).toBeFalsy();
     });
 

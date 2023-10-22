@@ -1,3 +1,4 @@
+import { TokenManager } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import { parseEntityRef } from '@backstage/catalog-model';
 
@@ -75,6 +76,7 @@ export class BackstageRoleManager implements RoleManager {
   constructor(
     private readonly catalogApi: CatalogApi,
     private readonly log: Logger,
+    private readonly tokenManager: TokenManager,
   ) {}
 
   /**
@@ -193,20 +195,24 @@ export class BackstageRoleManager implements RoleManager {
   }
 
   private async findAncestorGroups(memo: AncestorSearchMemo): Promise<void> {
-    const { items } = await this.catalogApi.getEntities({
-      filter: {
-        kind: 'Group',
-        [memo.getFilterRelations()]: Array.from(memo.getFilterEntityRefs()),
+    const { token } = await this.tokenManager.getToken();
+    const { items } = await this.catalogApi.getEntities(
+      {
+        filter: {
+          kind: 'Group',
+          [memo.getFilterRelations()]: Array.from(memo.getFilterEntityRefs()),
+        },
+        // Save traffic with only required information for us
+        fields: [
+          'metadata.name',
+          'kind',
+          'metadata.namespace',
+          'spec.parent',
+          'spec.children',
+        ],
       },
-      // Save traffic with only required information for us
-      fields: [
-        'metadata.name',
-        'kind',
-        'metadata.namespace',
-        'spec.parent',
-        'spec.children',
-      ],
-    });
+      { token },
+    );
 
     const groupsRefs = new Set<string>();
     for (const item of items) {
