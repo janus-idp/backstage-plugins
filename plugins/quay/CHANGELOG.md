@@ -1,3 +1,11 @@
+## @janus-idp/backstage-plugin-quay [1.4.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.4.0...@janus-idp/backstage-plugin-quay@1.4.1) (2023-10-23)
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.0.0
+
 ## @janus-idp/backstage-plugin-quay [1.4.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.3.4...@janus-idp/backstage-plugin-quay@1.4.0) (2023-10-23)
 
 
