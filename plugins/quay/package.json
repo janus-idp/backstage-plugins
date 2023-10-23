@@ -15,6 +15,7 @@
   "scripts": {
     "start": "backstage-cli package start",
     "build": "backstage-cli package build",
+    "export-dynamic": "janus-cli package export-dynamic-plugin",
     "tsc": "tsc",
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test --passWithNoTests --coverage",
@@ -57,6 +58,7 @@
   },
   "files": [
     "dist",
+    "dist-scalprum",
     "config.d.ts"
   ],
   "configSchema": "config.d.ts",
@@ -66,5 +68,11 @@
     "plugin"
   ],
   "homepage": "https://janus-idp.io/",
-  "bugs": "https://github.com/janus-idp/backstage-plugins/issues"
+  "bugs": "https://github.com/janus-idp/backstage-plugins/issues",
+  "scalprum": {
+    "name": "janus-idp.backstage-plugin-quay",
+    "exposedModules": {
+      "QuayPlugin": "./src/index.ts"
+    }
+  }
 }

@@ -43,7 +43,7 @@
     "qs": "^6.11.2",
     "typeorm-adapter": "^1.6.1",
     "winston": "^3.11.0",
-    "yn": "^5.0.0"
+    "yn": "^4.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "0.23.0",

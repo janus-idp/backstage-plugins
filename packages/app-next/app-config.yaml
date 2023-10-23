@@ -1,7 +1,0 @@
-app:
-  experimental:
-    packages: 'all'
-
-  extensions:
-    - dynamicPage: true
-    - userSettings: true
