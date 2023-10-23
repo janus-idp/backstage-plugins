@@ -6,7 +6,7 @@ import { useTektonObjectsResponse } from '../../hooks/useTektonObjectsResponse';
 import { ModelsPlural } from '../../models';
 import PipelineRunList from '../PipelineRunList/PipelineRunList';
 
-export const TektonComponent = () => {
+export const TektonCIComponent = () => {
   useDarkTheme();
 
   const watchedResources = [
