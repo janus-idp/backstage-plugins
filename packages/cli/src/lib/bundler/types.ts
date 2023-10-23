@@ -58,17 +58,3 @@ export type BuildOptions = BundlingPathsOptions & {
   fullConfig: Config;
   pluginMetadata?: PluginBuildMetadata;
 };
-
-export type BackendBundlingOptions = {
-  checksEnabled: boolean;
-  isDev: boolean;
-  parallelism?: number;
-  inspectEnabled: boolean;
-  inspectBrkEnabled: boolean;
-};
-
-export type BackendServeOptions = BundlingPathsOptions & {
-  checksEnabled: boolean;
-  inspectEnabled: boolean;
-  inspectBrkEnabled: boolean;
-};

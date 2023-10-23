@@ -14,14 +14,6 @@
  * limitations under the License.
  */
 
-import { PackageGraph } from '@backstage/cli-node';
-
-import { OptionValues } from 'commander';
-import partition from 'lodash/partition';
-
-import { paths } from '../../lib/paths';
-import { Lockfile } from '../../lib/versioning';
-
 // Packages that we try to avoid duplicates for
 const INCLUDED = [/^@backstage\//];
 
@@ -49,86 +41,3 @@ const ALLOW_DUPLICATES = [
 export const forbiddenDuplicatesFilter = (name: string) =>
   FORBID_DUPLICATES.some(pattern => pattern.test(name)) &&
   !ALLOW_DUPLICATES.some(pattern => pattern.test(name));
-
-export default async (cmd: OptionValues) => {
-  const fix = Boolean(cmd.fix);
-
-  let success = true;
-
-  const lockfilePath = paths.resolveTargetRoot('yarn.lock');
-  const lockfile = await Lockfile.load(lockfilePath);
-  const result = lockfile.analyze({
-    filter: includedFilter,
-    localPackages: PackageGraph.fromPackages(
-      await PackageGraph.listTargetPackages(),
-    ),
-  });
-
-  logArray(
-    result.invalidRanges,
-    "The following packages versions are invalid and can't be analyzed:",
-    e => `  ${e.name} @ ${e.range}`,
-  );
-
-  if (fix) {
-    lockfile.replaceVersions(result.newVersions);
-    await lockfile.save(lockfilePath);
-  } else {
-    const [newVersionsForbidden, newVersionsAllowed] = partition(
-      result.newVersions,
-      ({ name }) => forbiddenDuplicatesFilter(name),
-    );
-    if (newVersionsForbidden.length && !fix) {
-      success = false;
-    }
-
-    logArray(
-      newVersionsForbidden,
-      'The following packages must be deduplicated, this can be done automatically with --fix',
-      e =>
-        `  ${e.name} @ ${e.range} bumped from ${e.oldVersion} to ${e.newVersion}`,
-    );
-    logArray(
-      newVersionsAllowed,
-      'The following packages can be deduplicated, this can be done automatically with --fix',
-      e =>
-        `  ${e.name} @ ${e.range} bumped from ${e.oldVersion} to ${e.newVersion}`,
-    );
-  }
-
-  const [newRangesForbidden, newRangesAllowed] = partition(
-    result.newRanges,
-    ({ name }) => forbiddenDuplicatesFilter(name),
-  );
-  if (newRangesForbidden.length) {
-    success = false;
-  }
-
-  logArray(
-    newRangesForbidden,
-    'The following packages must be deduplicated by updating dependencies in package.json',
-    e => `  ${e.name} @ ${e.oldRange} should be changed to ${e.newRange}`,
-  );
-  logArray(
-    newRangesAllowed,
-    'The following packages can be deduplicated by updating dependencies in package.json',
-    e => `  ${e.name} @ ${e.oldRange} should be changed to ${e.newRange}`,
-  );
-
-  if (!success) {
-    throw new Error('Failed versioning check');
-  }
-};
-
-function logArray<T>(arr: T[], header: string, each: (item: T) => string) {
-  if (arr.length === 0) {
-    return;
-  }
-
-  console.log(header);
-  console.log();
-  for (const e of arr) {
-    console.log(each(e));
-  }
-  console.log();
-}

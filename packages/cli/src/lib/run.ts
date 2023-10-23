@@ -91,15 +91,6 @@ export async function runPlain(cmd: string, ...args: string[]) {
   }
 }
 
-export async function runCheck(cmd: string, ...args: string[]) {
-  try {
-    await execFile(cmd, args, { shell: true });
-    return true;
-  } catch (error) {
-    return false;
-  }
-}
-
 export async function waitForExit(
   child: ChildProcess & { exitCode: number | null },
   name?: string,
