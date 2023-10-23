@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-quay [1.4.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.3.4...@janus-idp/backstage-plugin-quay@1.4.0) (2023-10-23)
+
+
+### Features
+
+* **cli:** add frontend dynamic plugins base build config ([#747](https://github.com/janus-idp/backstage-plugins/issues/747)) ([91e06da](https://github.com/janus-idp/backstage-plugins/commit/91e06da8ab108c17fd2a6531f25e01c7a7350276)), closes [#831](https://github.com/janus-idp/backstage-plugins/issues/831)
+
 ## @janus-idp/backstage-plugin-quay [1.3.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.3.3...@janus-idp/backstage-plugin-quay@1.3.4) (2023-10-20)
 
 
