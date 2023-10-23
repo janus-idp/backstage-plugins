@@ -1,6 +1,6 @@
 # RBAC backend plugin for Backstage
 
-This plugin seamlessly integrates with the Backstage permission framework](https://backstage.io/docs/permissions/overview/) to empower you with robust role-based access control capabilities within your Backstage environment.
+This plugin seamlessly integrates with the [Backstage permission framework](https://backstage.io/docs/permissions/overview/) to empower you with robust role-based access control capabilities within your Backstage environment.
 
 The Backstage permission framework is a core component of the Backstage project, designed to provide meticulous control over resource and action access. Our RBAC plugin harnesses the power of this framework, allowing you to tailor access permissions without the need for coding. Instead, you can effortlessly manage your access policies through User interface embedded within Backstage or via the configuration files.
 
@@ -59,8 +59,12 @@ The RBAC plugin also allows you to import policies from an external file. These 
 Here's an example of an external permission policies configuration file named `rbac-policy.csv`:
 
 ```CSV
-p, user:default/bob, catalog-entity, read, deny
-p, user:default/alice, catalog.entity.create, use, deny
+p, role:default/team_a, catalog-entity, read, deny
+p, role:default/team_b, catalog.entity.create, use, deny
+
+g, user:default/bob, role:default/team_a
+
+g, group:default/team_b, role:default/team_b
 ```
 
 You can specify the path to this configuration file in your application configuration:

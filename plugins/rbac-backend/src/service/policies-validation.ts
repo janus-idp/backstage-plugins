@@ -3,11 +3,9 @@ import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 import { Request } from 'express-serve-static-core';
 
-import { EntityReferencedPolicy } from '@janus-idp/backstage-plugin-rbac-common';
+import { Role, RoleBasedPolicy } from '@janus-idp/backstage-plugin-rbac-common';
 
-export function validatePolicy(
-  policy: EntityReferencedPolicy,
-): Error | undefined {
+export function validatePolicy(policy: RoleBasedPolicy): Error | undefined {
   const err = validateEntityReference(policy.entityReference);
   if (err) {
     return err;
@@ -31,6 +29,18 @@ export function validatePolicy(
     );
   }
 
+  return undefined;
+}
+
+export function validateRole(role: Role): Error | undefined {
+  const err = validateEntityReference(role.roleName);
+  if (err) {
+    return err;
+  }
+
+  if (!role.roleMemberReferences) {
+    return new Error(`'roleMemberReferences' field must not be empty`);
+  }
   return undefined;
 }
 
@@ -61,26 +71,39 @@ export function validateEntityReference(entityRef?: string): Error | undefined {
     );
   }
 
-  if (entityRefCompound.kind !== 'user' && entityRefCompound.kind !== 'group') {
+  if (
+    entityRefCompound.kind !== 'user' &&
+    entityRefCompound.kind !== 'group' &&
+    entityRefCompound.kind !== 'role'
+  ) {
     return new Error(
-      `Unsupported kind ${entityRefCompound.kind}. List supported values ["user", "group"]`,
+      `Unsupported kind ${entityRefCompound.kind}. List supported values ["user", "group", "role"]`,
     );
   }
 
   return undefined;
 }
 
-export function validatePolicyQueries(request: Request): Error | undefined {
-  if (!request.query.permission) {
-    return new Error('specify "permission" query param.');
-  }
+export function validateQueries(
+  request: Request,
+  role: boolean,
+): Error | undefined {
+  if (role) {
+    if (!request.query.roleMemberReferences) {
+      return new Error('specify "roleMemberReferences" query param.');
+    }
+  } else {
+    if (!request.query.permission) {
+      return new Error('specify "permission" query param.');
+    }
 
-  if (!request.query.policy) {
-    return new Error('specify "policy" query param.');
-  }
+    if (!request.query.policy) {
+      return new Error('specify "policy" query param.');
+    }
 
-  if (!request.query.effect) {
-    return new Error('specify "effect" query param.');
+    if (!request.query.effect) {
+      return new Error('specify "effect" query param.');
+    }
   }
 
   return undefined;

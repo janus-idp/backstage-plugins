@@ -28,7 +28,17 @@ const mockEnforcer: Partial<Enforcer> = {
     .mockImplementation(async (..._param: string[]): Promise<boolean> => {
       return true;
     }),
+  addGroupingPolicies: jest
+    .fn()
+    .mockImplementation(async (..._param: string[]): Promise<boolean> => {
+      return true;
+    }),
   hasPolicy: jest
+    .fn()
+    .mockImplementation(async (..._param: string[]): Promise<boolean> => {
+      return false;
+    }),
+  hasGroupingPolicy: jest
     .fn()
     .mockImplementation(async (..._param: string[]): Promise<boolean> => {
       return false;
@@ -42,6 +52,13 @@ const mockEnforcer: Partial<Enforcer> = {
         return [
           ['user:default/permission_admin', 'policy-entity', 'create', 'allow'],
         ];
+      },
+    ),
+  getFilteredGroupingPolicy: jest
+    .fn()
+    .mockImplementation(
+      async (_fieldIndex: number, ..._fieldValues: string[]) => {
+        return [['user:default/permission_admin', 'role:default/rbac_admin']];
       },
     ),
 };
@@ -92,6 +109,11 @@ describe('REST policies api', () => {
 
   beforeEach(async () => {
     mockEnforcer.hasPolicy = jest
+      .fn()
+      .mockImplementation(async (..._param: string[]): Promise<boolean> => {
+        return false;
+      });
+    mockEnforcer.hasGroupingPolicy = jest
       .fn()
       .mockImplementation(async (..._param: string[]): Promise<boolean> => {
         return false;
@@ -889,6 +911,523 @@ describe('REST policies api', () => {
         });
 
       expect(result.statusCode).toEqual(200);
+    });
+  });
+
+  describe('GET /roles', () => {
+    it('should return a status of Unauthorized', async () => {
+      mockedAuthorizeConditional.mockImplementationOnce(async () => [
+        { result: AuthorizeResult.DENY },
+      ]);
+      const result = await request(app).get('/policies').send();
+
+      expect(mockedAuthorizeConditional).toHaveBeenCalledWith(
+        [{ permission: policyEntityReadPermission }],
+        { token: 'token' },
+      );
+      expect(result.statusCode).toBe(403);
+      expect(result.body.error).toEqual({
+        name: 'NotAllowedError',
+        message: '',
+      });
+    });
+
+    it('should be returned list all roles', async () => {
+      mockEnforcer.getGroupingPolicy = jest
+        .fn()
+        .mockImplementation(async () => {
+          return [
+            ['group:default/test', 'role:default/test'],
+            ['group:default/team_a', 'role:default/team_a'],
+          ];
+        });
+      const result = await request(app).get('/roles').send();
+      expect(result.statusCode).toBe(200);
+      expect(result.body).toEqual([
+        {
+          roleMemberReferences: ['group:default/test'],
+          roleName: 'role:default/test',
+        },
+        {
+          roleMemberReferences: ['group:default/team_a'],
+          roleName: 'role:default/team_a',
+        },
+      ]);
+    });
+  });
+
+  describe('GET /roles/:kind/:namespace/:name', () => {
+    it('should return a status of Unauthorized', async () => {
+      mockedAuthorizeConditional.mockImplementationOnce(async () => [
+        { result: AuthorizeResult.DENY },
+      ]);
+      const result = await request(app)
+        .get('/roles/role/default/rbac_admin')
+        .send();
+
+      expect(mockedAuthorizeConditional).toHaveBeenCalledWith(
+        [{ permission: policyEntityReadPermission }],
+        { token: 'token' },
+      );
+      expect(result.statusCode).toBe(403);
+      expect(result.body.error).toEqual({
+        name: 'NotAllowedError',
+        message: '',
+      });
+    });
+
+    it('should be returned roles by role reference', async () => {
+      const result = await request(app)
+        .get('/roles/role/default/rbac_admin')
+        .send();
+      expect(result.statusCode).toBe(200);
+      expect(result.body).toEqual([
+        {
+          roleMemberReferences: ['user:default/permission_admin'],
+          roleName: 'role:default/rbac_admin',
+        },
+      ]);
+    });
+    it('should be returned roles by role reference not found', async () => {
+      mockEnforcer.getFilteredGroupingPolicy = jest
+        .fn()
+        .mockImplementation(
+          async (_fieldIndex: number, ..._fieldValues: string[]) => {
+            return [];
+          },
+        );
+
+      const result = await request(app)
+        .get('/roles/role/default/rbac_admin')
+        .send();
+      expect(result.statusCode).toBe(404);
+      expect(result.body).toEqual({
+        error: { message: '', name: 'NotFoundError' },
+        request: {
+          method: 'GET',
+          url: '/roles/role/default/rbac_admin',
+        },
+        response: { statusCode: 404 },
+      });
+    });
+  });
+
+  describe('POST /roles', () => {
+    it('should return a status of Unauthorized', async () => {
+      mockedAuthorizeConditional.mockImplementationOnce(async () => [
+        { result: AuthorizeResult.DENY },
+      ]);
+      const result = await request(app).post('/roles').send();
+
+      expect(mockedAuthorizeConditional).toHaveBeenCalledWith(
+        [{ permission: policyEntityCreatePermission }],
+        { token: 'token' },
+      );
+      expect(result.statusCode).toBe(403);
+      expect(result.body.error).toEqual({
+        name: 'NotAllowedError',
+        message: '',
+      });
+    });
+
+    it('should not be created role - req body is an empty', async () => {
+      const result = await request(app).post('/roles').send();
+
+      expect(result.statusCode).toBe(400);
+      expect(result.body.error).toEqual({
+        name: 'InputError',
+        message: `Invalid role definition. Cause: 'entityReference' must not be empty`,
+      });
+    });
+
+    it('should not be created role - roleMemberReferences is invalid', async () => {
+      const result = await request(app)
+        .post('/roles')
+        .send({ roleMemberReferences: 'user' });
+
+      expect(result.statusCode).toBe(400);
+      expect(result.body.error).toEqual({
+        name: 'InputError',
+        message: `Invalid role definition. Cause: 'entityReference' must not be empty`,
+      });
+    });
+
+    it('should not be created role - roleName is empty', async () => {
+      const result = await request(app)
+        .post('/roles')
+        .send({
+          roleMemberReferences: ['user:default/permission_admin'],
+        });
+
+      expect(result.statusCode).toBe(400);
+      expect(result.body.error).toEqual({
+        name: 'InputError',
+        message: `Invalid role definition. Cause: 'entityReference' must not be empty`,
+      });
+    });
+
+    it('should be created role', async () => {
+      const result = await request(app)
+        .post('/roles')
+        .send({
+          roleMemberReferences: ['user:default/permission_admin'],
+          roleName: 'role:default/rbac_admin',
+        });
+
+      expect(result.statusCode).toBe(201);
+    });
+
+    it('should not be created role, because it is has been already present', async () => {
+      mockEnforcer.hasGroupingPolicy = jest
+        .fn()
+        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
+          return true;
+        });
+
+      const result = await request(app)
+        .post('/roles')
+        .send({
+          roleMemberReferences: ['user:default/permission_admin'],
+          roleName: 'role:default/rbac_admin',
+        });
+
+      expect(result.statusCode).toBe(409);
+    });
+
+    it('should not be created role caused some unexpected error', async () => {
+      mockEnforcer.addGroupingPolicies = jest
+        .fn()
+        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
+          return false;
+        });
+
+      const result = await request(app)
+        .post('/roles')
+        .send({
+          roleMemberReferences: ['user:default/permission_admin'],
+          roleName: 'role:default/rbac_admin',
+        });
+
+      expect(result.statusCode).toBe(500);
+    });
+  });
+
+  describe('PUT /roles/:kind/:namespace/:name', () => {
+    it('should return a status of Unauthorized', async () => {
+      mockedAuthorizeConditional.mockImplementationOnce(async () => [
+        { result: AuthorizeResult.DENY },
+      ]);
+      const result = await request(app)
+        .put('/roles/role/default/rbac_admin')
+        .send();
+
+      expect(mockedAuthorizeConditional).toHaveBeenCalledWith(
+        [{ permission: policyEntityUpdatePermission }],
+        { token: 'token' },
+      );
+      expect(result.statusCode).toBe(403);
+      expect(result.body.error).toEqual({
+        name: 'NotAllowedError',
+        message: '',
+      });
+    });
+
+    it('should fail to update role - old role is absent', async () => {
+      const result = await request(app)
+        .put('/roles/role/default/rbac_admin')
+        .send();
+
+      expect(result.statusCode).toEqual(400);
+      expect(result.body.error).toEqual({
+        name: 'InputError',
+        message: `'oldRole' object must be present`,
+      });
+    });
+
+    it('should fail to update role - new role is absent', async () => {
+      const result = await request(app)
+        .put('/roles/role/default/rbac_admin')
+        .send({ oldRole: {} });
+
+      expect(result.statusCode).toEqual(400);
+      expect(result.body.error).toEqual({
+        name: 'InputError',
+        message: `'newRole' object must be present`,
+      });
+    });
+
+    it('should fail to update role - oldRole entity is absent', async () => {
+      const result = await request(app)
+        .put('/roles/role/default/rbac_admin')
+        .send({ oldRole: {}, newRole: {} });
+
+      expect(result.statusCode).toEqual(400);
+      expect(result.body.error).toEqual({
+        name: 'InputError',
+        message: `Invalid old role object. Cause: 'roleMemberReferences' field must not be empty`,
+      });
+    });
+
+    it('should fail to update role - newRole entity is absent', async () => {
+      const result = await request(app)
+        .put('/roles/role/default/rbac_admin')
+        .send({
+          oldRole: { roleMemberReferences: ['user:default/permission_admin'] },
+          newRole: {},
+        });
+
+      expect(result.statusCode).toEqual(400);
+      expect(result.body.error).toEqual({
+        name: 'InputError',
+        message: `Invalid new role object. Cause: 'roleMemberReferences' field must not be empty`,
+      });
+    });
+
+    it('should fail to update role - old role not found', async () => {
+      const result = await request(app)
+        .put('/roles/role/default/rbac_admin')
+        .send({
+          oldRole: {
+            roleMemberReferences: ['user:default/permission_admin'],
+          },
+          newRole: {
+            roleMemberReferences: ['user:default/test'],
+          },
+        });
+
+      expect(result.statusCode).toEqual(404);
+      expect(result.body.error).toEqual({
+        name: 'NotFoundError',
+        message: '',
+      });
+    });
+
+    it('should fail to update role - newRole is already present', async () => {
+      mockEnforcer.hasGroupingPolicy = jest
+        .fn()
+        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
+          return true;
+        });
+      const result = await request(app)
+        .put('/roles/role/default/rbac_admin')
+        .send({
+          oldRole: {
+            roleMemberReferences: ['user:default/permission_admin'],
+          },
+          newRole: {
+            roleMemberReferences: ['user:default/test'],
+          },
+        });
+
+      expect(result.statusCode).toEqual(409);
+      expect(result.body.error).toEqual({
+        name: 'ConflictError',
+        message: '',
+      });
+    });
+
+    it('should nothing to update', async () => {
+      mockEnforcer.hasGroupingPolicy = jest
+        .fn()
+        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
+          return true;
+        });
+      const result = await request(app)
+        .put('/roles/role/default/rbac_admin')
+        .send({
+          oldRole: {
+            roleMemberReferences: ['user:default/permission_admin'],
+          },
+          newRole: {
+            roleMemberReferences: ['user:default/permission_admin'],
+          },
+        });
+
+      expect(result.statusCode).toEqual(204);
+    });
+
+    it('should fail to update role - unable to remove oldRole', async () => {
+      mockEnforcer.hasGroupingPolicy = jest
+        .fn()
+        .mockImplementation(async (...param: string[]): Promise<boolean> => {
+          if (param[0] === 'user:default/test') {
+            return false;
+          }
+          return true;
+        });
+      mockEnforcer.removeGroupingPolicies = jest
+        .fn()
+        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
+          return false;
+        });
+
+      const result = await request(app)
+        .put('/roles/role/default/rbac_admin')
+        .send({
+          oldRole: {
+            roleMemberReferences: ['user:default/permission_admin'],
+          },
+          newRole: {
+            roleMemberReferences: ['user:default/test'],
+          },
+        });
+
+      expect(result.statusCode).toEqual(500);
+      expect(result.body.error).toEqual({
+        name: 'Error',
+        message: 'Unexpected error',
+      });
+    });
+
+    it('should fail to update role - unable to add newRole', async () => {
+      mockEnforcer.hasGroupingPolicy = jest
+        .fn()
+        .mockImplementation(async (...param: string[]): Promise<boolean> => {
+          if (param[0] === 'user:default/test') {
+            return false;
+          }
+          return true;
+        });
+      mockEnforcer.removeGroupingPolicies = jest
+        .fn()
+        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
+          return true;
+        });
+      mockEnforcer.addGroupingPolicies = jest
+        .fn()
+        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
+          return false;
+        });
+
+      const result = await request(app)
+        .put('/roles/role/default/rbac_admin')
+        .send({
+          oldRole: {
+            roleMemberReferences: ['user:default/permission_admin'],
+          },
+          newRole: {
+            roleMemberReferences: ['user:default/test'],
+          },
+        });
+
+      expect(result.statusCode).toEqual(500);
+      expect(result.body.error).toEqual({
+        name: 'Error',
+        message: 'Unexpected error',
+      });
+    });
+
+    it('should update role', async () => {
+      mockEnforcer.hasGroupingPolicy = jest
+        .fn()
+        .mockImplementation(async (...param: string[]): Promise<boolean> => {
+          if (param[0] === 'user:default/test') {
+            return false;
+          }
+          return true;
+        });
+      mockEnforcer.removeGroupingPolicies = jest
+        .fn()
+        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
+          return true;
+        });
+      mockEnforcer.addGroupingPolicies = jest
+        .fn()
+        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
+          return true;
+        });
+
+      const result = await request(app)
+        .put('/roles/role/default/rbac_admin')
+        .send({
+          oldRole: {
+            roleMemberReferences: ['user:default/permission_admin'],
+          },
+          newRole: {
+            roleMemberReferences: ['user:default/test'],
+          },
+        });
+
+      expect(result.statusCode).toEqual(200);
+    });
+  });
+
+  describe('DELETE /roles/:kind/:namespace/:name', () => {
+    it('should return a status of Unauthorized', async () => {
+      mockedAuthorizeConditional.mockImplementationOnce(async () => [
+        { result: AuthorizeResult.DENY },
+      ]);
+      const result = await request(app)
+        .delete('/roles/role/default/rbac_admin')
+        .send();
+
+      expect(mockedAuthorizeConditional).toHaveBeenCalledWith(
+        [{ permission: policyEntityDeletePermission }],
+        { token: 'token' },
+      );
+      expect(result.statusCode).toBe(403);
+      expect(result.body.error).toEqual({
+        name: 'NotAllowedError',
+        message: '',
+      });
+    });
+
+    it('should fail to delete, because roleMemberReferences query is absent', async () => {
+      const result = await request(app)
+        .delete('/roles/role/default/rbac_admin')
+        .send();
+
+      expect(result.statusCode).toEqual(400);
+      expect(result.body.error).toEqual({
+        name: 'InputError',
+        message: `Invalid role definition. Cause: specify "roleMemberReferences" query param.`,
+      });
+    });
+
+    it('should fail to delete, because unexpected error', async () => {
+      mockEnforcer.hasGroupingPolicy = jest
+        .fn()
+        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
+          return true;
+        });
+      mockEnforcer.removeGroupingPolicy = jest
+        .fn()
+        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
+          return false;
+        });
+
+      const result = await request(app)
+        .delete(
+          '/roles/role/default/rbac_admin?roleMemberReferences=group:default/test',
+        )
+        .send();
+
+      expect(result.statusCode).toEqual(500);
+      expect(result.body.error).toEqual({
+        name: 'Error',
+        message: 'Unexpected error',
+      });
+    });
+
+    it('should delete policy', async () => {
+      mockEnforcer.hasGroupingPolicy = jest
+        .fn()
+        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
+          return true;
+        });
+      mockEnforcer.removeGroupingPolicy = jest
+        .fn()
+        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
+          return true;
+        });
+
+      const result = await request(app)
+        .delete(
+          '/roles/role/default/rbac_admin?roleMemberReferences=group:default/test',
+        )
+        .send();
+
+      expect(result.statusCode).toEqual(204);
     });
   });
 
