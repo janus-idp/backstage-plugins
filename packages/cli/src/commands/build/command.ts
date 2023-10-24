@@ -14,59 +14,32 @@
  * limitations under the License.
  */
 
-import { PackageRoles } from '@backstage/cli-node';
-
 import { OptionValues } from 'commander';
 
-import { buildPackage, Output } from '../../lib/builder';
 import { paths } from '../../lib/paths';
 import { findRoleFromCommand } from '../../lib/role';
 import { isValidUrl } from '../../lib/urls';
-import { buildBackend } from './buildBackend';
 import { buildFrontend } from './buildFrontend';
 
 export async function command(opts: OptionValues): Promise<void> {
   const role = await findRoleFromCommand(opts);
 
-  if (role === 'frontend' || role === 'backend') {
-    const configPaths = (opts.config as string[]).map(arg => {
-      if (isValidUrl(arg)) {
-        return arg;
-      }
-      return paths.resolveTarget(arg);
-    });
-
-    if (role === 'frontend') {
-      return buildFrontend({
-        targetDir: paths.targetDir,
-        configPaths,
-        writeStats: Boolean(opts.stats),
-      });
+  const configPaths = (opts.config as string[]).map(arg => {
+    if (isValidUrl(arg)) {
+      return arg;
     }
-    return buildBackend({
+    return paths.resolveTarget(arg);
+  });
+
+  if (role === 'frontend') {
+    return buildFrontend({
       targetDir: paths.targetDir,
       configPaths,
-      skipBuildDependencies: Boolean(opts.skipBuildDependencies),
+      writeStats: Boolean(opts.stats),
     });
   }
 
-  const roleInfo = PackageRoles.getRoleInfo(role);
-
-  const outputs = new Set<Output>();
-
-  if (roleInfo.output.includes('cjs')) {
-    outputs.add(Output.cjs);
-  }
-  if (roleInfo.output.includes('esm')) {
-    outputs.add(Output.esm);
-  }
-  if (roleInfo.output.includes('types')) {
-    outputs.add(Output.types);
-  }
-
-  return buildPackage({
-    outputs,
-    minify: Boolean(opts.minify),
-    useApiExtractor: Boolean(opts.experimentalTypeBuild),
-  });
+  throw new Error(
+    "Package role not supported, please use 'backstage-cli' instead",
+  );
 }

@@ -17,7 +17,6 @@
 import ModuleScopePlugin from 'react-dev-utils/ModuleScopePlugin';
 
 import { isChildPath } from '@backstage/cli-common';
-import { BackstagePackage } from '@backstage/cli-node';
 import { Config } from '@backstage/config';
 
 import { getPackages } from '@manypkg/get-packages';
@@ -26,27 +25,20 @@ import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import fs from 'fs-extra';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import pickBy from 'lodash/pickBy';
-import { RunScriptWebpackPlugin } from 'run-script-webpack-plugin';
 import webpack, { container, ProvidePlugin } from 'webpack';
-import nodeExternals from 'webpack-node-externals';
 import yn from 'yn';
 
-import {
-  join as joinPath,
-  posix as posixPath,
-  resolve as resolvePath,
-} from 'path';
+import { join as joinPath, resolve as resolvePath } from 'path';
 
 import { paths as cliPaths } from '../../lib/paths';
 import { version } from '../../lib/version';
-import { readEntryPoints } from '../entryPoints';
 import { runPlain } from '../run';
 import { LinkedPackageResolvePlugin } from './LinkedPackageResolvePlugin';
 import { optimization } from './optimization';
 import { BundlingPaths } from './paths';
 import { sharedModules } from './scalprumConfig';
 import { transforms } from './transforms';
-import { BackendBundlingOptions, BundlingOptions } from './types';
+import { BundlingOptions } from './types';
 
 const { ModuleFederationPlugin } = container;
 
@@ -255,145 +247,5 @@ export async function createConfig(
           },
         }
       : {}),
-  };
-}
-
-export async function createBackendConfig(
-  paths: BundlingPaths,
-  options: BackendBundlingOptions,
-): Promise<webpack.Configuration> {
-  const { checksEnabled, isDev } = options;
-
-  // Find all local monorepo packages and their node_modules, and mark them as external.
-  const { packages } = await getPackages(cliPaths.targetDir);
-  const localPackageEntryPoints = packages.flatMap(p => {
-    const entryPoints = readEntryPoints((p as BackstagePackage).packageJson);
-    return entryPoints.map(e => posixPath.join(p.packageJson.name, e.mount));
-  });
-  const moduleDirs = packages.map(p => resolvePath(p.dir, 'node_modules'));
-  // See frontend config
-  const externalPkgs = packages.filter(p => !isChildPath(paths.root, p.dir));
-
-  const { loaders } = transforms({ ...options, isBackend: true });
-
-  const runScriptNodeArgs = new Array<string>();
-  if (options.inspectEnabled) {
-    runScriptNodeArgs.push('--inspect');
-  } else if (options.inspectBrkEnabled) {
-    runScriptNodeArgs.push('--inspect-brk');
-  }
-
-  return {
-    mode: isDev ? 'development' : 'production',
-    profile: false,
-    ...(isDev
-      ? {
-          watch: true,
-          watchOptions: {
-            ignored: /node_modules\/(?!\@backstage)/,
-          },
-        }
-      : {}),
-    externals: [
-      nodeExternalsWithResolve({
-        modulesDir: paths.rootNodeModules,
-        additionalModuleDirs: moduleDirs,
-        allowlist: ['webpack/hot/poll?100', ...localPackageEntryPoints],
-      }),
-    ],
-    target: 'node' as const,
-    node: {
-      /* eslint-disable-next-line no-restricted-syntax */
-      __dirname: true,
-      __filename: true,
-      global: true,
-    },
-    bail: false,
-    performance: {
-      hints: false, // we check the gzip size instead
-    },
-    devtool: isDev ? 'eval-cheap-module-source-map' : 'source-map',
-    context: paths.targetPath,
-    entry: [
-      'webpack/hot/poll?100',
-      paths.targetRunFile ? paths.targetRunFile : paths.targetEntry,
-    ],
-    resolve: {
-      extensions: ['.ts', '.mjs', '.js', '.json'],
-      mainFields: ['main'],
-      modules: [paths.rootNodeModules, ...moduleDirs],
-      plugins: [
-        new LinkedPackageResolvePlugin(paths.rootNodeModules, externalPkgs),
-        new ModuleScopePlugin(
-          [paths.targetSrc, paths.targetDev],
-          [paths.targetPackageJson],
-        ),
-      ],
-    },
-    module: {
-      rules: loaders,
-    },
-    output: {
-      path: paths.targetDist,
-      filename: isDev ? '[name].js' : '[name].[hash:8].js',
-      chunkFilename: isDev
-        ? '[name].chunk.js'
-        : '[name].[chunkhash:8].chunk.js',
-      ...(isDev
-        ? {
-            devtoolModuleFilenameTemplate: (info: any) =>
-              `file:///${resolvePath(info.absoluteResourcePath).replace(
-                /\\/g,
-                '/',
-              )}`,
-          }
-        : {}),
-    },
-    plugins: [
-      new RunScriptWebpackPlugin({
-        name: 'main.js',
-        nodeArgs: runScriptNodeArgs.length > 0 ? runScriptNodeArgs : undefined,
-        args: process.argv.slice(3), // drop `node backstage-cli backend:dev`
-      }),
-      new webpack.HotModuleReplacementPlugin(),
-      ...(checksEnabled
-        ? [
-            new ForkTsCheckerWebpackPlugin({
-              typescript: { configFile: paths.targetTsConfig },
-            }),
-            new ESLintPlugin({
-              files: ['**/*.(ts|tsx|mts|cts|js|jsx|mjs|cjs)'],
-            }),
-          ]
-        : []),
-    ],
-  };
-}
-
-// This makes the module resolution happen from the context of each non-external module, rather
-// than the main entrypoint. This fixes a bug where dependencies would be resolved from the backend
-// package rather than each individual backend package and plugin.
-//
-// TODO(Rugvip): Feature suggestion/contribute this to webpack-externals
-function nodeExternalsWithResolve(
-  options: Parameters<typeof nodeExternals>[0],
-) {
-  let currentContext: string;
-  const externals = nodeExternals({
-    ...options,
-    importType(request) {
-      const resolved = require.resolve(request, {
-        paths: [currentContext],
-      });
-      return `commonjs ${resolved}`;
-    },
-  });
-
-  return (
-    { context, request }: { context?: string; request?: string },
-    callback: any,
-  ) => {
-    currentContext = context!;
-    return externals(context, request, callback);
   };
 }

@@ -48,14 +48,6 @@ export type PackageWithInstallRecipe = YarnInfoInspectData & {
   experimentalInstallationRecipe?: InstallationRecipe;
 };
 
-export type PeerPluginDependencies = Map<
-  string,
-  {
-    pkg: PackageWithInstallRecipe;
-    versionToInstall?: string;
-  }
->;
-
 export interface Step {
   run(): Promise<void>;
 }

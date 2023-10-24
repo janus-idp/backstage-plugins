@@ -42,7 +42,9 @@ describe('forwardFileImports', () => {
     const plugin = forwardFileImports({ include: /\.png$/ });
     const external = jest.fn((id: string) => id.endsWith('external'));
 
-    const options = (await plugin.options?.call(context, { external }))!;
+    const options = (await (plugin.options as any).call(context, {
+      external,
+    }))!;
     if (typeof options.external !== 'function') {
       throw new Error('options.external is not a function');
     }
@@ -73,7 +75,7 @@ describe('forwardFileImports', () => {
   it('should handle original external array', async () => {
     const plugin = forwardFileImports({ include: /\.png$/ });
 
-    const options = (await plugin.options?.call(context, {
+    const options = (await (plugin.options as any).call(context, {
       external: ['my-external'],
     }))!;
     if (typeof options.external !== 'function') {
@@ -106,7 +108,7 @@ describe('forwardFileImports', () => {
     it('should extract files', async () => {
       const plugin = forwardFileImports({ include: /\.png$/ });
 
-      const options = (await plugin.options?.call(context, {}))!;
+      const options = (await (plugin.options as any).call(context, {}))!;
       if (typeof options.external !== 'function') {
         throw new Error('options.external is not a function');
       }
@@ -121,7 +123,7 @@ describe('forwardFileImports', () => {
       const outPath = '/dev/dist/dir/my-image.png';
       await expect(fs.pathExists(outPath)).resolves.toBe(false);
 
-      await plugin.generateBundle?.call(
+      await (plugin.generateBundle as any).call(
         context,
         { dir: '/dev/dist' } as NormalizedOutputOptions,
         {
@@ -134,7 +136,7 @@ describe('forwardFileImports', () => {
       );
       await expect(fs.pathExists(outPath)).resolves.toBe(false);
 
-      await plugin.generateBundle?.call(
+      await (plugin.generateBundle as any).call(
         context,
         { dir: '/dev/dist' } as NormalizedOutputOptions,
         {
@@ -148,7 +150,7 @@ describe('forwardFileImports', () => {
       await expect(fs.pathExists(outPath)).resolves.toBe(false);
 
       // output chunk + isWrite -> generate files
-      await plugin.generateBundle?.call(
+      await (plugin.generateBundle as any).call(
         context,
         { dir: '/dev/dist' } as NormalizedOutputOptions,
         {
@@ -162,7 +164,7 @@ describe('forwardFileImports', () => {
       await expect(fs.pathExists(outPath)).resolves.toBe(true);
 
       // should not break when triggering another write
-      await plugin.generateBundle?.call(
+      await (plugin.generateBundle as any).call(
         context,
         { file: '/dev/dist/my-output.js' } as NormalizedOutputOptions,
         {

@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-import { PackageRoles } from '@backstage/cli-node';
-
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import { rollup, RollupOptions } from 'rollup';
 
-import { relative as relativePath, resolve as resolvePath } from 'path';
+import { relative as relativePath } from 'path';
 
-import { runParallelWorkers } from '../parallel';
 import { paths } from '../paths';
 import { buildTypeDefinitions } from './buildTypeDefinitions';
 import { makeRollupConfigs } from './config';
@@ -121,51 +118,3 @@ export const buildPackage = async (options: BuildOptions) => {
 
   await Promise.all(buildTasks);
 };
-
-export const buildPackages = async (options: BuildOptions[]) => {
-  if (options.some(opt => !opt.targetDir)) {
-    throw new Error('targetDir must be set for all build options');
-  }
-  const rollupConfigs = await Promise.all(options.map(makeRollupConfigs));
-
-  await Promise.all(
-    options.map(({ targetDir }) => fs.remove(resolvePath(targetDir!, 'dist'))),
-  );
-
-  const buildTasks = rollupConfigs.flat().map(opts => () => rollupBuild(opts));
-
-  const typeDefinitionTargetDirs = options
-    .filter(
-      ({ outputs, useApiExtractor }) =>
-        outputs.has(Output.types) && useApiExtractor,
-    )
-    .map(_ => _.targetDir!);
-
-  if (typeDefinitionTargetDirs.length > 0) {
-    // Make sure this one is started first
-    buildTasks.unshift(() => buildTypeDefinitions(typeDefinitionTargetDirs));
-  }
-
-  await runParallelWorkers({
-    items: buildTasks,
-    worker: async task => task(),
-  });
-};
-
-export function getOutputsForRole(role: string): Set<Output> {
-  const outputs = new Set<Output>();
-
-  for (const output of PackageRoles.getRoleInfo(role).output) {
-    if (output === 'cjs') {
-      outputs.add(Output.cjs);
-    }
-    if (output === 'esm') {
-      outputs.add(Output.esm);
-    }
-    if (output === 'types') {
-      outputs.add(Output.types);
-    }
-  }
-
-  return outputs;
-}
