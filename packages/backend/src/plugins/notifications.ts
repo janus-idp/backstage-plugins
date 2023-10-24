@@ -1,7 +1,6 @@
-import {
-  createRouter,
-  RouterOptions,
-} from '@internal/plugin-notifications-backend';
+import { CatalogClient } from '@backstage/catalog-client';
+
+import { createRouter } from '@internal/plugin-notifications-backend';
 import { Router } from 'express';
 
 import { PluginEnvironment } from '../types';
@@ -12,12 +11,11 @@ export default async function createPlugin(
   // Here is where you will add all of the required initialization code that
   // your backend plugin needs to be able to start!
 
-  // The env contains a lot of goodies, but our router currently only
-  // needs a logger
-  const dbClient =
-    (await env.database.getClient()) as unknown as RouterOptions['dbClient']; /* TODO: fix the type */
+  const catalogClient = new CatalogClient({ discoveryApi: env.discovery });
+  const dbConfig = env.config.getConfig('backend.database');
   return await createRouter({
-    dbClient,
     logger: env.logger,
+    dbConfig,
+    catalogClient,
   });
 }

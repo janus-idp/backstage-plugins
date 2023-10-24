@@ -25,21 +25,22 @@
   },
   "dependencies": {
     "@backstage/backend-common": "0.19.1",
+    "@backstage/catalog-client": "^1.4.5",
     "@backstage/config": "^1.0.8",
     "@types/express": "*",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "knex": "2.5.1",
-    "winston": "^3.2.1",
     "node-fetch": "^2.6.7",
+    "winston": "^3.2.1",
     "yn": "^4.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "0.22.9",
     "@types/supertest": "2.0.12",
     "knex-mock-client": "2.0.0",
-    "supertest": "6.3.3",
-    "msw": "1.2.2"
+    "msw": "1.2.2",
+    "supertest": "6.3.3"
   },
   "files": [
     "dist"
