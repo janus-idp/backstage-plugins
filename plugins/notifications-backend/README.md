@@ -33,20 +33,6 @@ yarn start:backstage
 
 A new DB will be created: backstage_plugin_notifications
 
-- Create a table for messages. In order to login to Postgres use these command:
-
-```bash
-sudo su - postgres
-psql
-```
-
-In the psql prompt use these commands for creating the table:
-
-```sql
-\c backstage_plugin_notifications
-create table messages (id SERIAL, subject VARCHAR(255), body TEXT);
-```
-
 ## REST API
 
 ### Posting a notification
