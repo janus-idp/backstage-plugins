@@ -112,3 +112,26 @@ catalog:
     #   target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/acme-corp.yaml
     #   rules:
     #     - allow: [User, Group]
+dynamicPlugins:
+  frontend:
+    janus.dynamic-frontend-plugin:
+      dynamicRoutes:
+        - path: '/settings'
+          importName: 'UserSettingsPage'
+          module: 'UserSettings'
+        - path: '/tech-radar'
+          width: 1500
+          height: 800
+          importName: 'TechRadarPage'
+          module: 'TechRadar'
+        - path: '/create'
+          importName: 'ScaffolderPage'
+          module: 'Scaffolder'
+      routeBindings:
+        - bindTarget: 'catalogPlugin.externalRoutes'
+          bindMap:
+            createComponent: 'remotePlugins.Scaffolder.scaffolderPlugin.routes.root'
+            viewTechDoc: 'techdocsPlugin.routes.docRoot'
+        - bindTarget: 'remotePlugins.Scaffolder.scaffolderPlugin.externalRoutes'
+          bindMap:
+            registerComponent: 'catalogImportPlugin.routes.importPage'

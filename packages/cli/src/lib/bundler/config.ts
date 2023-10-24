@@ -139,6 +139,7 @@ export async function createConfig(
   const buildInfo = await readBuildInfo();
   plugins.push(
     new webpack.DefinePlugin({
+      'process.env.HAS_REACT_DOM_CLIENT': false,
       'process.env.BUILD_INFO': JSON.stringify(buildInfo),
       'process.env.APP_CONFIG': webpack.DefinePlugin.runtimeValue(
         () => JSON.stringify(options.getFrontendAppConfigs()),

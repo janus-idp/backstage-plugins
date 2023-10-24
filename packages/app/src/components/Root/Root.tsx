@@ -13,10 +13,6 @@ import {
   useSidebarOpenState,
 } from '@backstage/core-components';
 import { SidebarSearchModal } from '@backstage/plugin-search';
-import {
-  Settings as SidebarSettings,
-  UserSettingsSignInAvatar,
-} from '@backstage/plugin-user-settings';
 
 import { makeStyles } from '@material-ui/core';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
@@ -26,6 +22,7 @@ import LibraryBooks from '@material-ui/icons/LibraryBooks';
 import MenuIcon from '@material-ui/icons/Menu';
 import MapIcon from '@material-ui/icons/MyLocation';
 import SearchIcon from '@material-ui/icons/Search';
+import { ScalprumComponent } from '@scalprum/react-core';
 
 import LogoFull from './LogoFull';
 import LogoIcon from './LogoIcon';
@@ -82,10 +79,20 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
       <SidebarDivider />
       <SidebarGroup
         label="Settings"
-        icon={<UserSettingsSignInAvatar />}
+        icon={
+          <ScalprumComponent
+            scope="janus.dynamic-frontend-plugin"
+            module="UserSettings"
+            importName="UserSettingsSignInAvatar"
+          />
+        }
         to="/settings"
       >
-        <SidebarSettings />
+        <ScalprumComponent
+          scope="janus.dynamic-frontend-plugin"
+          module="UserSettings"
+          importName="Settings"
+        />
       </SidebarGroup>
     </Sidebar>
     {children}
