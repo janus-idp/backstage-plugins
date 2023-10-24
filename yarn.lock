@@ -11729,18 +11729,7 @@ cardinal@^2.1.1:
     ansicolors "~0.3.2"
     redeyed "~2.1.0"
 
-casbin@5.27.0:
-  version "5.27.0"
-  resolved "https://registry.yarnpkg.com/casbin/-/casbin-5.27.0.tgz#a3639c5487701a17000fa80b20c18408a47b7b78"
-  integrity sha512-O0COjQ9Bq6f1dlPn4yvBFU8Yy9ZmJ+a5s85EOf8Fu1uz0uHmysG7+cnY9Ly4aDx0ExukglXKn45pg4lskExZZA==
-  dependencies:
-    await-lock "^2.0.1"
-    buffer "^6.0.3"
-    csv-parse "^5.3.5"
-    expression-eval "^5.0.0"
-    minimatch "^7.4.2"
-
-casbin@^5.27.0:
+casbin@^5.27.0, casbin@^5.27.1:
   version "5.27.1"
   resolved "https://registry.yarnpkg.com/casbin/-/casbin-5.27.1.tgz#ebebae1e0c555301c7e1ee83204863e9db0d3b1c"
   integrity sha512-nAbUyMfeVasZDZ39/OX+Y8AzpiAGvhYI58l/3BKuDZSnqC+Rpja/DmcHPt0wcUgJxfMkG/yo0dCmMhnSXZq49A==
