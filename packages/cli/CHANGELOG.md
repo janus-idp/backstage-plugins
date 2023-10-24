@@ -1,3 +1,10 @@
+## @janus-idp/cli [1.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.2.0...@janus-idp/cli@1.3.0) (2023-10-24)
+
+
+### Features
+
+* **dynamic-ui:** integrate scalprum with current backstage plugins ([#826](https://github.com/janus-idp/backstage-plugins/issues/826)) ([e1fb4ce](https://github.com/janus-idp/backstage-plugins/commit/e1fb4ceafc9e353c4d5b0ed9ba2407b3b0383c60))
+
 ## @janus-idp/cli [1.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.1.1...@janus-idp/cli@1.2.0) (2023-10-23)
 
 
