@@ -141,8 +141,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     action: string,
   ): Promise<boolean> => {
     if (!identity) {
-      // Allow access for backend plugins
-      return true;
+      return false;
     }
 
     const entityRef = identity.userEntityRef;

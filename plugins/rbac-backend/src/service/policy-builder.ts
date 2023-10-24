@@ -2,6 +2,7 @@ import {
   PluginDatabaseManager,
   PluginEndpointDiscovery,
   resolvePackagePath,
+  TokenManager,
 } from '@backstage/backend-common';
 import { CatalogClient } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
@@ -27,6 +28,7 @@ export class PolicyBuilder {
     identity: IdentityApi;
     permissions: PermissionEvaluator;
     database: PluginDatabaseManager;
+    tokenManager: TokenManager;
   }): Promise<Router> {
     let adapter;
     const databaseEnabled = env.config.getOptionalBoolean(
@@ -52,7 +54,11 @@ export class PolicyBuilder {
     enf.enableAutoSave(true);
 
     const catalogClient = new CatalogClient({ discoveryApi: env.discovery });
-    const rm = new BackstageRoleManager(catalogClient, env.logger);
+    const rm = new BackstageRoleManager(
+      catalogClient,
+      env.logger,
+      env.tokenManager,
+    );
     enf.setRoleManager(rm);
     enf.enableAutoBuildRoleLinks(false);
     await enf.buildRoleLinks();
