@@ -21,16 +21,22 @@ import { RBACPermissionPolicy } from './permission-policy';
 import { PolicesServer } from './policies-rest-api';
 import { BackstageRoleManager } from './role-manager';
 
+export interface PluginIdProvider {
+  getPluginIds: () => string[];
+}
+
 export class PolicyBuilder {
-  public static async build(env: {
-    config: Config;
-    logger: Logger;
-    discovery: PluginEndpointDiscovery;
-    identity: IdentityApi;
-    permissions: PermissionEvaluator;
-    tokenManager: TokenManager;
-    pluginIdProvider: { getPluginIds: () => string[] };
-  }): Promise<Router> {
+  public static async build(
+    env: {
+      config: Config;
+      logger: Logger;
+      discovery: PluginEndpointDiscovery;
+      identity: IdentityApi;
+      permissions: PermissionEvaluator;
+      tokenManager: TokenManager;
+    },
+    pluginIdProvider: PluginIdProvider = { getPluginIds: () => [] },
+  ): Promise<Router> {
     let adapter;
     const databaseEnabled = env.config.getOptionalBoolean(
       'permission.rbac.database.enabled',
@@ -84,15 +90,13 @@ export class PolicyBuilder {
       ),
     };
 
-    const pluginIds = env.config.getOptionalStringArray(
+    const pluginIdsConfig = env.config.getOptionalStringArray(
       'permission.rbac.pluginsWithPermission',
     );
-    if (pluginIds) {
-      // use plugin ids from application configuration.
-      env.pluginIdProvider = {
-        getPluginIds: () => {
-          return pluginIds;
-        },
+    if (pluginIdsConfig) {
+      const pluginIds = pluginIdProvider.getPluginIds();
+      pluginIdProvider.getPluginIds = () => {
+        return [...pluginIdsConfig, ...pluginIds];
       };
     }
 
@@ -105,7 +109,7 @@ export class PolicyBuilder {
       env.logger,
       env.discovery,
       conditionStorage,
-      env.pluginIdProvider,
+      pluginIdProvider,
     );
     return server.serve();
   }

@@ -1,9 +1,8 @@
-import { PluginEndpointDiscovery, UrlReaders } from '@backstage/backend-common';
+import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import {
   ConflictError,
   InputError,
-  isError,
   NotAllowedError,
   NotFoundError,
 } from '@backstage/errors';
@@ -18,8 +17,6 @@ import {
 import {
   AuthorizeResult,
   ConditionalPolicyDecision,
-  isResourcePermission,
-  Permission,
   PermissionEvaluator,
   PolicyDecision,
   QueryPermissionRequest,
@@ -34,7 +31,6 @@ import { ParsedQs } from 'qs';
 import { Logger } from 'winston';
 
 import {
-  Policy,
   policyEntityCreatePermission,
   policyEntityDeletePermission,
   policyEntityPermissions,
@@ -46,13 +42,14 @@ import {
 } from '@janus-idp/backstage-plugin-rbac-common';
 
 import { ConditionalStorage } from '../database/conditional-storage';
-import { PluginEndpointCollector } from './plugin-endpoints';
+import { PluginPermissionMetadataCollector } from './plugin-endpoints';
 import {
   validateEntityReference,
   validatePolicy,
   validateQueries,
   validateRole,
 } from './policies-validation';
+import { PluginIdProvider } from './policy-builder';
 
 export class PolicesServer {
   constructor(
@@ -64,7 +61,7 @@ export class PolicesServer {
     private readonly logger: Logger,
     private readonly discovery: PluginEndpointDiscovery,
     private readonly conditionalStorage: ConditionalStorage,
-    private readonly pluginIdProvider: { getPluginIds: () => string[] },
+    private readonly pluginIdProvider: PluginIdProvider,
   ) {}
 
   private async authorize(
@@ -93,6 +90,13 @@ export class PolicesServer {
       resourceType: RESOURCE_TYPE_POLICY_ENTITY,
       permissions: policyEntityPermissions,
     });
+
+    const pluginPermMetaData = new PluginPermissionMetadataCollector(
+      this.discovery,
+      this.pluginIdProvider,
+      this.config,
+      this.logger,
+    );
 
     router.use(permissionsIntegrationRouter);
 
@@ -479,46 +483,31 @@ export class PolicesServer {
         response.status(204).end();
       },
     );
-    const urlReader = UrlReaders.default({
-      config: this.config,
-      logger: this.logger,
-      factories: [PluginEndpointCollector.permissionFactory],
-    });
 
-    const pec = new PluginEndpointCollector(
-      this.discovery,
-      this.pluginIdProvider,
-    );
-
-    router.get('/plugins/policies', async (req, response) => {
-      const decision = await this.authorize(
-        req, {
-          permission: policyEntityReadPermission,
-        },
-      );
+    router.get('/plugins/policies', async (req, resp) => {
+      const decision = await this.authorize(req, {
+        permission: policyEntityReadPermission,
+      });
 
       if (decision.result === AuthorizeResult.DENY) {
         throw new NotAllowedError(); // 403
       }
-      const endpoints = await pec.get();
-      let perms: Permission[] = [];
-      for (const endpoint of endpoints) {
-        const wellKnownURL = `${endpoint}/.well-known/backstage/permissions/metadata`;
-        try {
-          const permResp = await urlReader.readUrl(wellKnownURL);
-          const permMetaDataRaw = (await permResp.buffer()).toString();
-          const permMetaData = JSON.parse(permMetaDataRaw);
-          if (permMetaData) {
-            perms = [...perms, ...permMetaData.permissions];
-          }
-        } catch (err) {
-          if (!isError(err) || err.name !== 'NotFoundError') {
-            throw err;
-          }
-        }
+
+      const policies = await pluginPermMetaData.getPluginPolicies();
+      resp.json(policies);
+    });
+
+    router.get('/plugins/condition-rules', async (req, resp) => {
+      const decision = await this.authorize(req, {
+        permission: policyEntityReadPermission,
+      });
+
+      if (decision.result === AuthorizeResult.DENY) {
+        throw new NotAllowedError(); // 403
       }
 
-      response.json(permissionsToCasbinPolicies(perms));
+      const rules = await pluginPermMetaData.getPluginConditionRules();
+      resp.json(rules);
     });
 
     router.get('/conditions', async (req, resp) => {
@@ -703,16 +692,4 @@ export class PolicesServer {
       !!request.query.effect
     );
   }
-}
-
-function permissionsToCasbinPolicies(permissions: Permission[]): Policy[] {
-  return permissions.map(permission => {
-    const policy: Policy = {
-      permission: isResourcePermission(permission)
-        ? permission.resourceType
-        : permission.name,
-      policy: permission.attributes.action || 'use',
-    };
-    return policy;
-  });
 }

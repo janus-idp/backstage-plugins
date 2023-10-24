@@ -121,25 +121,27 @@ describe('PolicyBuilder', () => {
   });
 
   it('should build policy server with file adapter', async () => {
-    const router = await PolicyBuilder.build({
-      config: new ConfigReader({
-        backend: {
-          database: {
-            client: 'better-sqlite3',
-            connection: ':memory:',
+    const router = await PolicyBuilder.build(
+      {
+        config: new ConfigReader({
+          backend: {
+            database: {
+              client: 'better-sqlite3',
+              connection: ':memory:',
+            },
           },
-        },
-        permission: {
-          enabled: true,
-        },
-      }),
-      logger: getVoidLogger(),
-      discovery: mockDiscovery,
-      identity: mockIdentityClient,
-      permissions: mockPermissionEvaluator,
-      tokenManager: tokenManagerMock,
-      pluginIdProvider: backendPluginIDsProviderMock,
-    });
+          permission: {
+            enabled: true,
+          },
+        }),
+        logger: getVoidLogger(),
+        discovery: mockDiscovery,
+        identity: mockIdentityClient,
+        permissions: mockPermissionEvaluator,
+        tokenManager: tokenManagerMock,
+      },
+      backendPluginIDsProviderMock,
+    );
 
     expect(FileAdapter).toHaveBeenCalled();
     expect(mockEnforcer.loadPolicy).toHaveBeenCalled();
@@ -153,30 +155,32 @@ describe('PolicyBuilder', () => {
   });
 
   it('should build policy server with database adapter', async () => {
-    const router = await PolicyBuilder.build({
-      config: new ConfigReader({
-        backend: {
-          database: {
-            client: 'better-sqlite3',
-            connection: ':memory:',
-          },
-        },
-        permission: {
-          enabled: true,
-          rbac: {
+    const router = await PolicyBuilder.build(
+      {
+        config: new ConfigReader({
+          backend: {
             database: {
-              enabled: true,
+              client: 'better-sqlite3',
+              connection: ':memory:',
             },
           },
-        },
-      }),
-      logger: getVoidLogger(),
-      discovery: mockDiscovery,
-      identity: mockIdentityClient,
-      permissions: mockPermissionEvaluator,
-      tokenManager: tokenManagerMock,
-      pluginIdProvider: backendPluginIDsProviderMock,
-    });
+          permission: {
+            enabled: true,
+            rbac: {
+              database: {
+                enabled: true,
+              },
+            },
+          },
+        }),
+        logger: getVoidLogger(),
+        discovery: mockDiscovery,
+        identity: mockIdentityClient,
+        permissions: mockPermissionEvaluator,
+        tokenManager: tokenManagerMock,
+      },
+      backendPluginIDsProviderMock,
+    );
     expect(CasbinDBAdapterFactory).toHaveBeenCalled();
     expect(mockEnforcer.loadPolicy).toHaveBeenCalled();
     expect(mockEnforcer.enableAutoSave).toHaveBeenCalled();
