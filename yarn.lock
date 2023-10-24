@@ -2499,7 +2499,7 @@
     zen-observable "^0.10.0"
     zod "^3.21.4"
 
-"@backstage/core-components@0.13.6", "@backstage/core-components@^0.13.3", "@backstage/core-components@^0.13.6", "@backstage/core-components@^0.13.6-next.1":
+"@backstage/core-components@0.13.6", "@backstage/core-components@^0.13.3", "@backstage/core-components@^0.13.6":
   version "0.13.6"
   resolved "https://registry.yarnpkg.com/@backstage/core-components/-/core-components-0.13.6.tgz#c34b9ec741c993db7a63634bc25b9d23e4939e6b"
   integrity sha512-jT1GYFjbBMEQXqGNdtUoL8Iuk1Q4ho1HC1WGv96C8gSjU8S3I9pK0DzVo5s2pAK2QuU+Lm4MFf8kP1mlmrPtEg==
@@ -2548,7 +2548,7 @@
     zen-observable "^0.10.0"
     zod "^3.21.4"
 
-"@backstage/core-plugin-api@1.7.0", "@backstage/core-plugin-api@^1.5.3", "@backstage/core-plugin-api@^1.6.0", "@backstage/core-plugin-api@^1.7.0", "@backstage/core-plugin-api@^1.7.0-next.0":
+"@backstage/core-plugin-api@1.7.0", "@backstage/core-plugin-api@^1.5.3", "@backstage/core-plugin-api@^1.6.0", "@backstage/core-plugin-api@^1.7.0":
   version "1.7.0"
   resolved "https://registry.yarnpkg.com/@backstage/core-plugin-api/-/core-plugin-api-1.7.0.tgz#652ec473aa22d8dede35c90159284c522667ffb5"
   integrity sha512-nbwcC1BoS0y4mcVzGXtv6/JWkMT/6hvA91zHHGYkQ8bc0Gs6bHz/0AoSBTP8Rou+Dxf12ZYftuGCMbeQLz5s3Q==
@@ -2612,18 +2612,6 @@
     "@material-ui/icons" "^4.11.3"
     "@types/react" "^16.13.1 || ^17.0.0"
     lodash "^4.17.21"
-
-"@backstage/frontend-plugin-api@^0.1.1-next.1":
-  version "0.1.1-next.1"
-  resolved "https://registry.yarnpkg.com/@backstage/frontend-plugin-api/-/frontend-plugin-api-0.1.1-next.1.tgz#26fd6ca8618d1314dda2188cb5a39f68e014eb38"
-  integrity sha512-fNLMB1gP7bOzsSQLLCW4Ow1dcjei3s/u72MmXKZKPwnS33g1uX1eJLPJj5jx4JPPJykXny4+VNb/54beN+mlhw==
-  dependencies:
-    "@backstage/core-plugin-api" "^1.7.0-next.0"
-    "@backstage/types" "^1.1.1"
-    "@types/react" "^16.13.1 || ^17.0.0"
-    lodash "^4.17.21"
-    zod "^3.21.4"
-    zod-to-json-schema "^3.21.4"
 
 "@backstage/frontend-plugin-api@^0.2.0":
   version "0.2.0"
@@ -3089,24 +3077,6 @@
     "@types/react" "^16.13.1 || ^17.0.0"
     git-url-parse "^13.0.0"
     luxon "^3.0.0"
-    react-use "^17.2.4"
-
-"@backstage/plugin-graphiql@0.2.55-next.1":
-  version "0.2.55-next.1"
-  resolved "https://registry.yarnpkg.com/@backstage/plugin-graphiql/-/plugin-graphiql-0.2.55-next.1.tgz#662962dd3acc8cf60fb9fdbed9dd0e19a436ed2a"
-  integrity sha512-96s57cbQ0DMMFPgdWH7jNzHVwg6q3ge3AkDCOQ8vV5FLGGiDJ8489PKXy4DMA7fJ4pcbqGowut/8X1xCTxAatQ==
-  dependencies:
-    "@backstage/core-components" "^0.13.6-next.1"
-    "@backstage/core-plugin-api" "^1.7.0-next.0"
-    "@backstage/frontend-plugin-api" "^0.1.1-next.1"
-    "@backstage/theme" "^0.4.2"
-    "@material-ui/core" "^4.12.2"
-    "@material-ui/icons" "^4.9.1"
-    "@material-ui/lab" "4.0.0-alpha.61"
-    "@types/react" "^16.13.1 || ^17.0.0"
-    graphiql "^1.5.12"
-    graphql "^16.0.0"
-    graphql-ws "^5.4.1"
     react-use "^17.2.4"
 
 "@backstage/plugin-graphiql@^0.2.55":
@@ -3676,7 +3646,7 @@
     qs "^6.9.4"
     react-use "^17.2.4"
 
-"@backstage/plugin-tech-radar@^0.6.6", "@backstage/plugin-tech-radar@^0.6.9", "@backstage/plugin-tech-radar@^0.6.9-next.1":
+"@backstage/plugin-tech-radar@^0.6.6", "@backstage/plugin-tech-radar@^0.6.9":
   version "0.6.9"
   resolved "https://registry.yarnpkg.com/@backstage/plugin-tech-radar/-/plugin-tech-radar-0.6.9.tgz#8f1c8f69da8578da87a0f8457d55e1b6fc3cf51c"
   integrity sha512-I70zmlQGHNFov7pRIjXYAKPfKobxxiavsZoVUlBbxVCqNrcS5+idF3eDc1Gc8WWVv/UtsxaNo2dfqCviszcLhw==
@@ -3898,7 +3868,7 @@
     i18next "^22.4.15"
     zen-observable "^0.10.0"
 
-"@backstage/theme@0.4.3", "@backstage/theme@^0.4.1", "@backstage/theme@^0.4.2", "@backstage/theme@^0.4.3":
+"@backstage/theme@0.4.3", "@backstage/theme@^0.4.1", "@backstage/theme@^0.4.3":
   version "0.4.3"
   resolved "https://registry.yarnpkg.com/@backstage/theme/-/theme-0.4.3.tgz#58901531da6b2d9b3058f532ee15c866a06ab9af"
   integrity sha512-hTAMVIueGmNm2WSR3ku6upi/kRDCcfuBZNE0ldfodhcghJq/rhC25A+5RE1cpmiGKdepBfOUAIvtR//itZaPOQ==

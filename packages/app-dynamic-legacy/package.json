@@ -18,9 +18,9 @@
     "start": "janus-cli package start",
     "build": "janus-cli package build",
     "tsc": "tsc",
-    "clean": "janus-cli package clean",
-    "test": "janus-cli package test --passWithNoTests --coverage",
-    "lint": "janus-cli package lint"
+    "clean": "backstage-cli package clean",
+    "test": "backstage-cli package test --passWithNoTests --coverage",
+    "lint": "backstage-cli package lint"
   },
   "dependencies": {
     "@backstage/app-defaults": "^1.4.1",

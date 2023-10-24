@@ -1,9 +1,9 @@
 {
   "extends": "@backstage/cli/config/tsconfig.json",
-  "include": ["src"],
+  "include": ["src", "dev", "migrations"],
   "exclude": ["node_modules"],
   "compilerOptions": {
-    "outDir": "../../dist-types/packages/app-dynamic-legacy",
+    "outDir": "../../dist-types/plugins/dynamic-frontend-plugin",
     "rootDir": "."
   }
 }
