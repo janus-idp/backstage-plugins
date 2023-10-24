@@ -8049,7 +8049,7 @@
     deepmerge "^4.2.2"
     svgo "^2.8.0"
 
-"@svgr/plugin-svgo@8.1.0":
+"@svgr/plugin-svgo@8.1.0", "@svgr/plugin-svgo@^8.0.0":
   version "8.1.0"
   resolved "https://registry.yarnpkg.com/@svgr/plugin-svgo/-/plugin-svgo-8.1.0.tgz#b115b7b967b564f89ac58feae89b88c3decd0f00"
   integrity sha512-Ywtl837OGO9pTLIN/onoWLmDQ4zFUycI1g76vuKGEz6evR/ZTJlJuz3G/fIkb6OVBJ2g0o6CGJzaEjfmEo3AHA==
