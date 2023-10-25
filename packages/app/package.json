@@ -15,7 +15,8 @@
     "role": "frontend"
   },
   "scripts": {
-    "start": "janus-cli package start",
+    "start": "yarn start:backstage",
+    "start:backstage": "janus-cli package start",
     "build": "janus-cli package build",
     "tsc": "tsc",
     "clean": "backstage-cli package clean",

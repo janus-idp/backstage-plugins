@@ -1,10 +1,9 @@
 {
   "extends": ["//"],
   "pipeline": {
-    "start": {
+    "start:backstage": {
       "cache": false,
-      "persistent": true,
-      "dependsOn": ["^build"]
+      "persistent": true
     },
     "tsc": {
       "outputs": ["../../dist-types/packages/app/**"],
