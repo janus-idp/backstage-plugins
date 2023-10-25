@@ -1,6 +1,11 @@
 {
   "extends": ["//"],
   "pipeline": {
+    "start:backstage": {
+      "cache": false,
+      "persistent": true,
+      "dependsOn": ["export-dynamic"]
+    },
     "tsc": {
       "outputs": ["../../dist-types/plugins/dynamic-frontend-plugin/**"],
       "dependsOn": ["^tsc"]
