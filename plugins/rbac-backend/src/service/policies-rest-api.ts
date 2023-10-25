@@ -522,7 +522,7 @@ export class PolicesServer {
         response.status(204).end();
       },
     );
-    // todo: implement GET list all conditions. Also we need to have filter by pluginId and resource type.
+
     router.get('/conditions', async (req, resp) => {
       const decision = await this.authorize(
         this.identity,
