@@ -110,10 +110,6 @@ class AncestorSearchMemo {
   }
 }
 
-function createRoleName(name: string) {
-  return `${name}`;
-}
-
 export class BackstageRoleManager implements RoleManager {
   private allRoles: Map<string, Role>;
   constructor(
@@ -141,11 +137,8 @@ export class BackstageRoleManager implements RoleManager {
     name2: string,
     ..._domain: string[]
   ): Promise<void> {
-    const roleName1 = createRoleName(name1);
-    const roleName2 = createRoleName(name2);
-
-    const role1 = this.getOrCreateRole(roleName1);
-    const role2 = this.getOrCreateRole(roleName2);
+    const role1 = this.getOrCreateRole(name1);
+    const role2 = this.getOrCreateRole(name2);
 
     role1.addRole(role2);
   }
@@ -160,11 +153,8 @@ export class BackstageRoleManager implements RoleManager {
     name2: string,
     ..._domain: string[]
   ): Promise<void> {
-    const roleName1 = createRoleName(name1);
-    const roleName2 = createRoleName(name2);
-
-    const role1 = this.getOrCreateRole(roleName1);
-    const role2 = this.getOrCreateRole(roleName2);
+    const role1 = this.getOrCreateRole(name1);
+    const role2 = this.getOrCreateRole(name2);
     role1.deleteRole(role2);
   }
 
@@ -188,21 +178,10 @@ export class BackstageRoleManager implements RoleManager {
       return true;
     }
 
-    // Create Temporary roles to compare
-    const tempRoleName = createRoleName(name1);
-    const tempRoleName2 = createRoleName(name2);
-
-    if (name1 === name2) {
-      return true;
-    }
-
-    const tempRole = this.getOrCreateRole(tempRoleName);
+    const tempRole = this.getOrCreateRole(name1);
 
     // Immediately check if the our temporary role has a link with the role that we are comparing it to
-    if (
-      this.parseEntityKind(name2) === 'role' &&
-      tempRole.hasRole(tempRoleName2, 1)
-    ) {
+    if (this.parseEntityKind(name2) === 'role' && tempRole.hasRole(name2, 1)) {
       return true;
     }
 
@@ -236,7 +215,7 @@ export class BackstageRoleManager implements RoleManager {
     // and if the group that is attached to the second name is apart of the graph
     if (!memo.hasEntityRef(name2) && this.parseEntityKind(name2) === 'role') {
       for (const [key, value] of this.allRoles.entries()) {
-        if (value.hasRole(tempRoleName2, 1) && memo.hasEntityRef(key)) {
+        if (value.hasRole(name2, 1) && memo.hasEntityRef(key)) {
           return true;
         }
       }

@@ -919,7 +919,7 @@ describe('REST policies api', () => {
       mockedAuthorizeConditional.mockImplementationOnce(async () => [
         { result: AuthorizeResult.DENY },
       ]);
-      const result = await request(app).get('/policies').send();
+      const result = await request(app).get('/roles').send();
 
       expect(mockedAuthorizeConditional).toHaveBeenCalledWith(
         [{ permission: policyEntityReadPermission }],
@@ -976,6 +976,17 @@ describe('REST policies api', () => {
       });
     });
 
+    it('should return an input error when kind is wrong', async () => {
+      const result = await request(app)
+        .get('/roles/test/default/rbac_admin')
+        .send();
+      expect(result.statusCode).toBe(400);
+      expect(result.body.error).toEqual({
+        name: 'InputError',
+        message: `Unsupported kind test. List supported values [\"user\", \"group\", \"role\"]`,
+      });
+    });
+
     it('should be returned roles by role reference', async () => {
       const result = await request(app)
         .get('/roles/role/default/rbac_admin')
@@ -988,6 +999,7 @@ describe('REST policies api', () => {
         },
       ]);
     });
+
     it('should be returned roles by role reference not found', async () => {
       mockEnforcer.getFilteredGroupingPolicy = jest
         .fn()
@@ -1036,19 +1048,47 @@ describe('REST policies api', () => {
       expect(result.statusCode).toBe(400);
       expect(result.body.error).toEqual({
         name: 'InputError',
-        message: `Invalid role definition. Cause: 'entityReference' must not be empty`,
+        message: `Invalid role definition. Cause: 'roleName' must not be empty`,
+      });
+    });
+
+    it('should not be created role - roleMemberReferences is missing', async () => {
+      const result = await request(app).post('/roles').send({
+        roleName: 'role:default/test',
+      });
+
+      expect(result.statusCode).toBe(400);
+      expect(result.body.error).toEqual({
+        name: 'InputError',
+        message: `Invalid role definition. Cause: 'roleMemberReferences' field must not be empty`,
+      });
+    });
+
+    it('should not be created role - roleMemberReferences is empty', async () => {
+      const result = await request(app).post('/roles').send({
+        roleMemberReferences: [],
+        roleName: 'role:default/test',
+      });
+
+      expect(result.statusCode).toBe(400);
+      expect(result.body.error).toEqual({
+        name: 'InputError',
+        message: `Invalid role definition. Cause: 'roleMemberReferences' field must not be empty`,
       });
     });
 
     it('should not be created role - roleMemberReferences is invalid', async () => {
       const result = await request(app)
         .post('/roles')
-        .send({ roleMemberReferences: 'user' });
+        .send({
+          roleMemberReferences: ['user'],
+          roleName: 'role:default/test',
+        });
 
       expect(result.statusCode).toBe(400);
       expect(result.body.error).toEqual({
         name: 'InputError',
-        message: `Invalid role definition. Cause: 'entityReference' must not be empty`,
+        message: `Invalid role definition. Cause: Entity reference "user" had missing or empty kind (e.g. did not start with "component:" or similar)`,
       });
     });
 
@@ -1062,7 +1102,7 @@ describe('REST policies api', () => {
       expect(result.statusCode).toBe(400);
       expect(result.body.error).toEqual({
         name: 'InputError',
-        message: `Invalid role definition. Cause: 'entityReference' must not be empty`,
+        message: `Invalid role definition. Cause: 'roleName' must not be empty`,
       });
     });
 
@@ -1350,6 +1390,80 @@ describe('REST policies api', () => {
 
       expect(result.statusCode).toEqual(200);
     });
+
+    it('should update role where newRole has multiple roles', async () => {
+      mockEnforcer.hasGroupingPolicy = jest
+        .fn()
+        .mockImplementation(async (...param: string[]): Promise<boolean> => {
+          if (
+            param[0] === 'user:default/test' ||
+            param[0] === 'user:default/test2'
+          ) {
+            return false;
+          }
+          return true;
+        });
+      mockEnforcer.removeGroupingPolicies = jest
+        .fn()
+        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
+          return true;
+        });
+      mockEnforcer.addGroupingPolicies = jest
+        .fn()
+        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
+          return true;
+        });
+
+      const result = await request(app)
+        .put('/roles/role/default/rbac_admin')
+        .send({
+          oldRole: {
+            roleMemberReferences: ['user:default/permission_admin'],
+          },
+          newRole: {
+            roleMemberReferences: ['user:default/test', 'user:default/test2'],
+          },
+        });
+
+      expect(result.statusCode).toEqual(200);
+    });
+
+    it('should update role where newRole has multiple roles with one being from oldRole', async () => {
+      mockEnforcer.hasGroupingPolicy = jest
+        .fn()
+        .mockImplementation(async (...param: string[]): Promise<boolean> => {
+          if (param[0] === 'user:default/test') {
+            return false;
+          }
+          return true;
+        });
+      mockEnforcer.removeGroupingPolicies = jest
+        .fn()
+        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
+          return true;
+        });
+      mockEnforcer.addGroupingPolicies = jest
+        .fn()
+        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
+          return true;
+        });
+
+      const result = await request(app)
+        .put('/roles/role/default/rbac_admin')
+        .send({
+          oldRole: {
+            roleMemberReferences: ['user:default/permission_admin'],
+          },
+          newRole: {
+            roleMemberReferences: [
+              'user:default/permission_admin',
+              'user:default/test',
+            ],
+          },
+        });
+
+      expect(result.statusCode).toEqual(200);
+    });
   });
 
   describe('DELETE /roles/:kind/:namespace/:name', () => {
@@ -1409,7 +1523,27 @@ describe('REST policies api', () => {
       });
     });
 
-    it('should delete policy', async () => {
+    it('should fail to delete, because not found error', async () => {
+      mockEnforcer.hasGroupingPolicy = jest
+        .fn()
+        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
+          return false;
+        });
+
+      const result = await request(app)
+        .delete(
+          '/roles/role/default/rbac_admin?roleMemberReferences=group:default/test',
+        )
+        .send();
+
+      expect(result.statusCode).toEqual(404);
+      expect(result.body.error).toEqual({
+        name: 'NotFoundError',
+        message: '',
+      });
+    });
+
+    it('should delete role', async () => {
       mockEnforcer.hasGroupingPolicy = jest
         .fn()
         .mockImplementation(async (..._param: string[]): Promise<boolean> => {

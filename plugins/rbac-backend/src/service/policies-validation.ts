@@ -33,13 +33,19 @@ export function validatePolicy(policy: RoleBasedPolicy): Error | undefined {
 }
 
 export function validateRole(role: Role): Error | undefined {
-  const err = validateEntityReference(role.roleName);
-  if (err) {
-    return err;
+  if (!role.roleName) {
+    return new Error(`'roleName' must not be empty`);
   }
 
-  if (!role.roleMemberReferences) {
+  if (!role.roleMemberReferences || role.roleMemberReferences.length === 0) {
     return new Error(`'roleMemberReferences' field must not be empty`);
+  }
+
+  for (const member of role.roleMemberReferences) {
+    const err = validateEntityReference(member);
+    if (err) {
+      return err;
+    }
   }
   return undefined;
 }

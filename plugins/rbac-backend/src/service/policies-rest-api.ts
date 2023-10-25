@@ -436,19 +436,20 @@ export class PolicesServer {
       const oldRole = this.transformRoleToArray(oldRoleRaw);
       const newRole = this.transformRoleToArray(newRoleRaw);
 
-      if (isEqual(oldRole, newRole)) {
-        response.status(204).end();
-        return;
-      }
-
       for (const role of newRole) {
         const hasRole = oldRole.some(element => {
           return isEqual(element, role);
         });
         // if the role is already part of old role and is a grouping policy we want to skip returning a conflict error
         // to allow for other roles to be checked and added
-        if ((await this.enforcer.hasGroupingPolicy(...role)) && !hasRole) {
-          throw new ConflictError(); // 409
+        if (await this.enforcer.hasGroupingPolicy(...role)) {
+          if (isEqual(oldRole, newRole)) {
+            response.status(204).end();
+            return;
+          }
+          if (!hasRole) {
+            throw new ConflictError(); // 409
+          }
         }
       }
 

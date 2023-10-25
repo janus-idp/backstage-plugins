@@ -137,7 +137,7 @@ describe('BackstageRoleManager', () => {
     //
     //     Hierarchy:
     //
-    // user:default/mike -> user without group
+    // user:default/mike -> user without role
     //
     it('should return false for hasLink when user without role', async () => {
       const result = await roleManager.hasLink(
@@ -241,9 +241,9 @@ describe('BackstageRoleManager', () => {
     //
     //     Hierarchy:
     //
-    // group:default/not-matched-group -> role:default/somerole
-    //         |
-    // user:default/mike
+    // group:default/not-matched-group           role:default/somerole
+    //         |                                       |
+    // user:default/mike                         group:default/somegroup
     //
     it('should return false for hasLink when user:default/mike does not inherits role:default/somerole', async () => {
       const entityMock = createGroupEntity('not-matched-group', undefined, []);
@@ -964,6 +964,7 @@ describe('BackstageRoleManager', () => {
         return { items: [] };
       });
       roleManager.addLink('group:default/team-a', 'role:default/team-a');
+      roleManager.addLink('group:default/team-c', 'role:default/team-c');
 
       const result = await roleManager.hasLink(
         'user:default/mike',
@@ -1106,7 +1107,7 @@ describe('BackstageRoleManager', () => {
 
       let result = await roleManager.hasLink(
         'user:default/mike',
-        'group:default/team-a',
+        'role:default/team-a',
       );
       expect(result).toBeFalsy();
       expect(loggerMock.warn).toHaveBeenCalledWith(
@@ -1115,7 +1116,7 @@ describe('BackstageRoleManager', () => {
 
       result = await roleManager.hasLink(
         'user:default/tom',
-        'group:default/team-b',
+        'role:default/team-b',
       );
       expect(result).toBeTruthy();
     });
