@@ -26,7 +26,7 @@ import { searchPage } from './components/search/SearchPage';
 import DynamicRoot from './DynamicRoot';
 import DynamicRootContext from './DynamicRoot/DynamicRootContext';
 
-const App = () => {
+export const AppBase = () => {
   const { AppProvider, AppRouter, dynamicRoutes } =
     useContext(DynamicRootContext);
   return (
@@ -106,7 +106,7 @@ const AppRoot = () => {
       }}
     >
       <DynamicRoot apis={apis}>
-        <App />
+        <AppBase />
       </DynamicRoot>
     </ScalprumProvider>
   );

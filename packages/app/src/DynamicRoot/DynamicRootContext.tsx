@@ -1,4 +1,4 @@
-import { createContext } from 'react';
+import React, { createContext } from 'react';
 
 import { ScalprumComponentProps } from '@scalprum/react-core';
 
@@ -20,12 +20,12 @@ export type DynamicRootContextValue = DynamicModuleEntry & {
   Component: React.ComponentType<any>;
 };
 const DynamicRootContext = createContext<{
-  AppRouter: React.ComponentType;
-  AppProvider: React.ComponentType;
+  AppRouter: React.ComponentType<React.PropsWithChildren<{}>>;
+  AppProvider: React.ComponentType<React.PropsWithChildren<{}>>;
   dynamicRoutes: DynamicRootContextValue[];
 }>({
-  AppProvider: () => null,
-  AppRouter: () => null,
+  AppProvider: ({ children }) => <>{children}</>,
+  AppRouter: ({ children }) => <>{children}</>,
   dynamicRoutes: [],
 });
 
