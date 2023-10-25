@@ -119,31 +119,6 @@ The Tekton plugin enables you to visualize the `PipelineRun` resources available
    yarn workspace app add @janus-idp/backstage-plugin-tekton
    ```
 
-1. Enable the **TEKTON** tab on the entity view page using the `packages/app/src/components/catalog/EntityPage.tsx` file:
-
-   ```tsx title="packages/app/src/components/catalog/EntityPage.tsx"
-   /* highlight-add-next-line */
-   import {
-     isTektonCIAvailable,
-     TektonPage,
-   } from '@janus-idp/backstage-plugin-tekton';
-
-   const serviceEntityPage = (
-     <EntityPageLayout>
-       {/* ... */}
-       {/* highlight-add-start */}
-       <EntityLayout.Route
-         if={isTektonCIAvailable}
-         path="/tekton"
-         title="Tekton"
-       >
-         <TektonPage />
-       </EntityLayout.Route>
-       {/* highlight-add-end */}
-     </EntityPageLayout>
-   );
-   ```
-
 1. Enable the PipelineRun list in the **CI/CD** tab on the entity view page.
 
    ```tsx title="packages/app/src/components/catalog/EntityPage.tsx"
