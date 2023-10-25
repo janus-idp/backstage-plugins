@@ -9,8 +9,8 @@ export type RoleBasedPolicy = Policy & {
 };
 
 export type Role = {
-  roleMemberReferences: string[];
-  roleName: string;
+  memberReferences: string[];
+  name: string;
 };
 
 export type UpdatePolicy = {

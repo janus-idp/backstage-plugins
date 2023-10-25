@@ -174,7 +174,7 @@ export class PolicesServer {
 
         const entityRef = this.getEntityReference(request);
 
-        const err = validateQueries(request, false);
+        const err = validateQueries(request);
         if (err) {
           throw new InputError( // 400
             `Invalid policy definition. Cause: ${err.message}`,
@@ -418,14 +418,14 @@ export class PolicesServer {
         throw new InputError(`'newRole' object must be present`); // 400
       }
 
-      oldRoleRaw.roleName = roleEntityRef;
+      oldRoleRaw.name = roleEntityRef;
       let err = validateRole(oldRoleRaw);
       if (err) {
         throw new InputError( // 400
           `Invalid old role object. Cause: ${err.message}`,
         );
       }
-      newRoleRaw.roleName = roleEntityRef;
+      newRoleRaw.name = roleEntityRef;
       err = validateRole(newRoleRaw);
       if (err) {
         throw new InputError( // 400
@@ -478,6 +478,7 @@ export class PolicesServer {
     router.delete(
       '/roles/:kind/:namespace/:name',
       async (request, response) => {
+        let roles = [];
         const decision = await this.authorize(
           this.identity,
           request,
@@ -490,25 +491,29 @@ export class PolicesServer {
         if (decision.result === AuthorizeResult.DENY) {
           throw new NotAllowedError(); // 403
         }
+
         const roleEntityRef = this.getEntityReference(request);
 
-        const err = validateQueries(request, true);
-        if (err) {
-          throw new InputError( // 400
-            `Invalid role definition. Cause: ${err.message}`,
+        if (request.query.memberReferences) {
+          const memberReferences = this.getFirstQuery(
+            request.query.memberReferences!,
+          );
+
+          roles.push([memberReferences, roleEntityRef]);
+        } else {
+          roles = await this.enforcer.getFilteredGroupingPolicy(
+            1,
+            roleEntityRef,
           );
         }
-        const roleMemberReferences = this.getFirstQuery(
-          request.query.roleMemberReferences!,
-        );
 
-        const role = [roleMemberReferences, roleEntityRef];
-
-        if (!(await this.enforcer.hasGroupingPolicy(...role))) {
-          throw new NotFoundError(); // 404
+        for (const role of roles) {
+          if (!(await this.enforcer.hasGroupingPolicy(...role))) {
+            throw new NotFoundError(); // 404
+          }
         }
 
-        const isRemoved = await this.enforcer.removeGroupingPolicy(...role);
+        const isRemoved = await this.enforcer.removeGroupingPolicies(roles);
         if (!isRemoved) {
           throw new Error('Unexpected error'); // 500
         }
@@ -553,7 +558,7 @@ export class PolicesServer {
 
     const result: Role[] = Object.entries(combinedRoles).map(
       ([role, value]) => {
-        return { roleMemberReferences: value, roleName: role };
+        return { memberReferences: value, name: role };
       },
     );
     return result;
@@ -570,8 +575,8 @@ export class PolicesServer {
 
   transformRoleToArray(role: Role): string[][] {
     const roles: string[][] = [];
-    for (const entity of role.roleMemberReferences) {
-      roles.push([entity, role.roleName]);
+    for (const entity of role.memberReferences) {
+      roles.push([entity, role.name]);
     }
     return roles;
   }

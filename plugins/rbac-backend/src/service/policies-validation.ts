@@ -33,15 +33,15 @@ export function validatePolicy(policy: RoleBasedPolicy): Error | undefined {
 }
 
 export function validateRole(role: Role): Error | undefined {
-  if (!role.roleName) {
-    return new Error(`'roleName' must not be empty`);
+  if (!role.name) {
+    return new Error(`'name' must not be empty`);
   }
 
-  if (!role.roleMemberReferences || role.roleMemberReferences.length === 0) {
-    return new Error(`'roleMemberReferences' field must not be empty`);
+  if (!role.memberReferences || role.memberReferences.length === 0) {
+    return new Error(`'memberReferences' field must not be empty`);
   }
 
-  for (const member of role.roleMemberReferences) {
+  for (const member of role.memberReferences) {
     const err = validateEntityReference(member);
     if (err) {
       return err;
@@ -90,26 +90,17 @@ export function validateEntityReference(entityRef?: string): Error | undefined {
   return undefined;
 }
 
-export function validateQueries(
-  request: Request,
-  role: boolean,
-): Error | undefined {
-  if (role) {
-    if (!request.query.roleMemberReferences) {
-      return new Error('specify "roleMemberReferences" query param.');
-    }
-  } else {
-    if (!request.query.permission) {
-      return new Error('specify "permission" query param.');
-    }
+export function validateQueries(request: Request): Error | undefined {
+  if (!request.query.permission) {
+    return new Error('specify "permission" query param.');
+  }
 
-    if (!request.query.policy) {
-      return new Error('specify "policy" query param.');
-    }
+  if (!request.query.policy) {
+    return new Error('specify "policy" query param.');
+  }
 
-    if (!request.query.effect) {
-      return new Error('specify "effect" query param.');
-    }
+  if (!request.query.effect) {
+    return new Error('specify "effect" query param.');
   }
 
   return undefined;

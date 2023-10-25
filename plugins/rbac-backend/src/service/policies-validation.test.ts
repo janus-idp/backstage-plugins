@@ -181,7 +181,7 @@ describe('rest data validation', () => {
   describe('validatePolicyQueries', () => {
     it('should return an error when "permission" query param is missing', () => {
       const request = { query: { policy: 'read', effect: 'allow' } } as any;
-      const err = validateQueries(request, false);
+      const err = validateQueries(request);
       expect(err).toBeTruthy();
       expect(err?.message).toEqual('specify "permission" query param.');
     });
@@ -190,7 +190,7 @@ describe('rest data validation', () => {
       const request = {
         query: { permission: 'user:default/guest', effect: 'allow' },
       } as any;
-      const err = validateQueries(request, false);
+      const err = validateQueries(request);
       expect(err).toBeTruthy();
       expect(err?.message).toEqual('specify "policy" query param.');
     });
@@ -199,7 +199,7 @@ describe('rest data validation', () => {
       const request = {
         query: { permission: 'user:default/guest', policy: 'read' },
       } as any;
-      const err = validateQueries(request, false);
+      const err = validateQueries(request);
       expect(err).toBeTruthy();
       expect(err?.message).toEqual('specify "effect" query param.');
     });
@@ -212,25 +212,25 @@ describe('rest data validation', () => {
           effect: 'allow',
         },
       } as any;
-      const err = validateQueries(request, false);
+      const err = validateQueries(request);
       expect(err).toBeUndefined();
     });
   });
 
   describe('validateRole', () => {
-    it('should return an error when "roleMemberReferences" query param is missing', () => {
-      const request = { roleName: 'role:default/user' } as any;
+    it('should return an error when "memberReferences" query param is missing', () => {
+      const request = { name: 'role:default/user' } as any;
       const err = validateRole(request);
       expect(err).toBeTruthy();
       expect(err?.message).toEqual(
-        `'roleMemberReferences' field must not be empty`,
+        `'memberReferences' field must not be empty`,
       );
     });
 
     it('should pass validation when all required query params are present', () => {
       const request = {
-        roleMemberReferences: ['user:default/guest'],
-        roleName: 'role:default/user',
+        memberReferences: ['user:default/guest'],
+        name: 'role:default/user',
       } as any;
       const err = validateRole(request);
       expect(err).toBeUndefined();

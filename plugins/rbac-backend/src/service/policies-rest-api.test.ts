@@ -945,12 +945,12 @@ describe('REST policies api', () => {
       expect(result.statusCode).toBe(200);
       expect(result.body).toEqual([
         {
-          roleMemberReferences: ['group:default/test'],
-          roleName: 'role:default/test',
+          memberReferences: ['group:default/test'],
+          name: 'role:default/test',
         },
         {
-          roleMemberReferences: ['group:default/team_a'],
-          roleName: 'role:default/team_a',
+          memberReferences: ['group:default/team_a'],
+          name: 'role:default/team_a',
         },
       ]);
     });
@@ -983,7 +983,7 @@ describe('REST policies api', () => {
       expect(result.statusCode).toBe(400);
       expect(result.body.error).toEqual({
         name: 'InputError',
-        message: `Unsupported kind test. List supported values [\"user\", \"group\", \"role\"]`,
+        message: `Unsupported kind test. List supported values ["user", "group", "role"]`,
       });
     });
 
@@ -994,8 +994,8 @@ describe('REST policies api', () => {
       expect(result.statusCode).toBe(200);
       expect(result.body).toEqual([
         {
-          roleMemberReferences: ['user:default/permission_admin'],
-          roleName: 'role:default/rbac_admin',
+          memberReferences: ['user:default/permission_admin'],
+          name: 'role:default/rbac_admin',
         },
       ]);
     });
@@ -1048,41 +1048,41 @@ describe('REST policies api', () => {
       expect(result.statusCode).toBe(400);
       expect(result.body.error).toEqual({
         name: 'InputError',
-        message: `Invalid role definition. Cause: 'roleName' must not be empty`,
+        message: `Invalid role definition. Cause: 'name' must not be empty`,
       });
     });
 
-    it('should not be created role - roleMemberReferences is missing', async () => {
+    it('should not be created role - memberReferences is missing', async () => {
       const result = await request(app).post('/roles').send({
-        roleName: 'role:default/test',
+        name: 'role:default/test',
       });
 
       expect(result.statusCode).toBe(400);
       expect(result.body.error).toEqual({
         name: 'InputError',
-        message: `Invalid role definition. Cause: 'roleMemberReferences' field must not be empty`,
+        message: `Invalid role definition. Cause: 'memberReferences' field must not be empty`,
       });
     });
 
-    it('should not be created role - roleMemberReferences is empty', async () => {
+    it('should not be created role - memberReferences is empty', async () => {
       const result = await request(app).post('/roles').send({
-        roleMemberReferences: [],
-        roleName: 'role:default/test',
+        memberReferences: [],
+        name: 'role:default/test',
       });
 
       expect(result.statusCode).toBe(400);
       expect(result.body.error).toEqual({
         name: 'InputError',
-        message: `Invalid role definition. Cause: 'roleMemberReferences' field must not be empty`,
+        message: `Invalid role definition. Cause: 'memberReferences' field must not be empty`,
       });
     });
 
-    it('should not be created role - roleMemberReferences is invalid', async () => {
+    it('should not be created role - memberReferences is invalid', async () => {
       const result = await request(app)
         .post('/roles')
         .send({
-          roleMemberReferences: ['user'],
-          roleName: 'role:default/test',
+          memberReferences: ['user'],
+          name: 'role:default/test',
         });
 
       expect(result.statusCode).toBe(400);
@@ -1092,17 +1092,17 @@ describe('REST policies api', () => {
       });
     });
 
-    it('should not be created role - roleName is empty', async () => {
+    it('should not be created role - name is empty', async () => {
       const result = await request(app)
         .post('/roles')
         .send({
-          roleMemberReferences: ['user:default/permission_admin'],
+          memberReferences: ['user:default/permission_admin'],
         });
 
       expect(result.statusCode).toBe(400);
       expect(result.body.error).toEqual({
         name: 'InputError',
-        message: `Invalid role definition. Cause: 'roleName' must not be empty`,
+        message: `Invalid role definition. Cause: 'name' must not be empty`,
       });
     });
 
@@ -1110,8 +1110,8 @@ describe('REST policies api', () => {
       const result = await request(app)
         .post('/roles')
         .send({
-          roleMemberReferences: ['user:default/permission_admin'],
-          roleName: 'role:default/rbac_admin',
+          memberReferences: ['user:default/permission_admin'],
+          name: 'role:default/rbac_admin',
         });
 
       expect(result.statusCode).toBe(201);
@@ -1127,8 +1127,8 @@ describe('REST policies api', () => {
       const result = await request(app)
         .post('/roles')
         .send({
-          roleMemberReferences: ['user:default/permission_admin'],
-          roleName: 'role:default/rbac_admin',
+          memberReferences: ['user:default/permission_admin'],
+          name: 'role:default/rbac_admin',
         });
 
       expect(result.statusCode).toBe(409);
@@ -1144,8 +1144,8 @@ describe('REST policies api', () => {
       const result = await request(app)
         .post('/roles')
         .send({
-          roleMemberReferences: ['user:default/permission_admin'],
-          roleName: 'role:default/rbac_admin',
+          memberReferences: ['user:default/permission_admin'],
+          name: 'role:default/rbac_admin',
         });
 
       expect(result.statusCode).toBe(500);
@@ -1204,7 +1204,7 @@ describe('REST policies api', () => {
       expect(result.statusCode).toEqual(400);
       expect(result.body.error).toEqual({
         name: 'InputError',
-        message: `Invalid old role object. Cause: 'roleMemberReferences' field must not be empty`,
+        message: `Invalid old role object. Cause: 'memberReferences' field must not be empty`,
       });
     });
 
@@ -1212,14 +1212,14 @@ describe('REST policies api', () => {
       const result = await request(app)
         .put('/roles/role/default/rbac_admin')
         .send({
-          oldRole: { roleMemberReferences: ['user:default/permission_admin'] },
+          oldRole: { memberReferences: ['user:default/permission_admin'] },
           newRole: {},
         });
 
       expect(result.statusCode).toEqual(400);
       expect(result.body.error).toEqual({
         name: 'InputError',
-        message: `Invalid new role object. Cause: 'roleMemberReferences' field must not be empty`,
+        message: `Invalid new role object. Cause: 'memberReferences' field must not be empty`,
       });
     });
 
@@ -1228,10 +1228,10 @@ describe('REST policies api', () => {
         .put('/roles/role/default/rbac_admin')
         .send({
           oldRole: {
-            roleMemberReferences: ['user:default/permission_admin'],
+            memberReferences: ['user:default/permission_admin'],
           },
           newRole: {
-            roleMemberReferences: ['user:default/test'],
+            memberReferences: ['user:default/test'],
           },
         });
 
@@ -1252,10 +1252,10 @@ describe('REST policies api', () => {
         .put('/roles/role/default/rbac_admin')
         .send({
           oldRole: {
-            roleMemberReferences: ['user:default/permission_admin'],
+            memberReferences: ['user:default/permission_admin'],
           },
           newRole: {
-            roleMemberReferences: ['user:default/test'],
+            memberReferences: ['user:default/test'],
           },
         });
 
@@ -1276,10 +1276,10 @@ describe('REST policies api', () => {
         .put('/roles/role/default/rbac_admin')
         .send({
           oldRole: {
-            roleMemberReferences: ['user:default/permission_admin'],
+            memberReferences: ['user:default/permission_admin'],
           },
           newRole: {
-            roleMemberReferences: ['user:default/permission_admin'],
+            memberReferences: ['user:default/permission_admin'],
           },
         });
 
@@ -1305,10 +1305,10 @@ describe('REST policies api', () => {
         .put('/roles/role/default/rbac_admin')
         .send({
           oldRole: {
-            roleMemberReferences: ['user:default/permission_admin'],
+            memberReferences: ['user:default/permission_admin'],
           },
           newRole: {
-            roleMemberReferences: ['user:default/test'],
+            memberReferences: ['user:default/test'],
           },
         });
 
@@ -1343,10 +1343,10 @@ describe('REST policies api', () => {
         .put('/roles/role/default/rbac_admin')
         .send({
           oldRole: {
-            roleMemberReferences: ['user:default/permission_admin'],
+            memberReferences: ['user:default/permission_admin'],
           },
           newRole: {
-            roleMemberReferences: ['user:default/test'],
+            memberReferences: ['user:default/test'],
           },
         });
 
@@ -1381,10 +1381,10 @@ describe('REST policies api', () => {
         .put('/roles/role/default/rbac_admin')
         .send({
           oldRole: {
-            roleMemberReferences: ['user:default/permission_admin'],
+            memberReferences: ['user:default/permission_admin'],
           },
           newRole: {
-            roleMemberReferences: ['user:default/test'],
+            memberReferences: ['user:default/test'],
           },
         });
 
@@ -1418,10 +1418,10 @@ describe('REST policies api', () => {
         .put('/roles/role/default/rbac_admin')
         .send({
           oldRole: {
-            roleMemberReferences: ['user:default/permission_admin'],
+            memberReferences: ['user:default/permission_admin'],
           },
           newRole: {
-            roleMemberReferences: ['user:default/test', 'user:default/test2'],
+            memberReferences: ['user:default/test', 'user:default/test2'],
           },
         });
 
@@ -1452,10 +1452,10 @@ describe('REST policies api', () => {
         .put('/roles/role/default/rbac_admin')
         .send({
           oldRole: {
-            roleMemberReferences: ['user:default/permission_admin'],
+            memberReferences: ['user:default/permission_admin'],
           },
           newRole: {
-            roleMemberReferences: [
+            memberReferences: [
               'user:default/permission_admin',
               'user:default/test',
             ],
@@ -1486,25 +1486,13 @@ describe('REST policies api', () => {
       });
     });
 
-    it('should fail to delete, because roleMemberReferences query is absent', async () => {
-      const result = await request(app)
-        .delete('/roles/role/default/rbac_admin')
-        .send();
-
-      expect(result.statusCode).toEqual(400);
-      expect(result.body.error).toEqual({
-        name: 'InputError',
-        message: `Invalid role definition. Cause: specify "roleMemberReferences" query param.`,
-      });
-    });
-
     it('should fail to delete, because unexpected error', async () => {
       mockEnforcer.hasGroupingPolicy = jest
         .fn()
         .mockImplementation(async (..._param: string[]): Promise<boolean> => {
           return true;
         });
-      mockEnforcer.removeGroupingPolicy = jest
+      mockEnforcer.removeGroupingPolicies = jest
         .fn()
         .mockImplementation(async (..._param: string[]): Promise<boolean> => {
           return false;
@@ -1512,7 +1500,7 @@ describe('REST policies api', () => {
 
       const result = await request(app)
         .delete(
-          '/roles/role/default/rbac_admin?roleMemberReferences=group:default/test',
+          '/roles/role/default/rbac_admin?memberReferences=group:default/test',
         )
         .send();
 
@@ -1532,7 +1520,7 @@ describe('REST policies api', () => {
 
       const result = await request(app)
         .delete(
-          '/roles/role/default/rbac_admin?roleMemberReferences=group:default/test',
+          '/roles/role/default/rbac_admin?memberReferences=group:default/test',
         )
         .send();
 
@@ -1543,13 +1531,13 @@ describe('REST policies api', () => {
       });
     });
 
-    it('should delete role', async () => {
+    it('should delete a user / group from a role', async () => {
       mockEnforcer.hasGroupingPolicy = jest
         .fn()
         .mockImplementation(async (..._param: string[]): Promise<boolean> => {
           return true;
         });
-      mockEnforcer.removeGroupingPolicy = jest
+      mockEnforcer.removeGroupingPolicies = jest
         .fn()
         .mockImplementation(async (..._param: string[]): Promise<boolean> => {
           return true;
@@ -1557,8 +1545,27 @@ describe('REST policies api', () => {
 
       const result = await request(app)
         .delete(
-          '/roles/role/default/rbac_admin?roleMemberReferences=group:default/test',
+          '/roles/role/default/rbac_admin?memberReferences=group:default/test',
         )
+        .send();
+
+      expect(result.statusCode).toEqual(204);
+    });
+
+    it('should delete a role', async () => {
+      mockEnforcer.hasGroupingPolicy = jest
+        .fn()
+        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
+          return true;
+        });
+      mockEnforcer.removeGroupingPolicies = jest
+        .fn()
+        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
+          return true;
+        });
+
+      const result = await request(app)
+        .delete('/roles/role/default/rbac_admin')
         .send();
 
       expect(result.statusCode).toEqual(204);
