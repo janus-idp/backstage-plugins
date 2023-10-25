@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-kiali [1.5.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.5.3...@janus-idp/backstage-plugin-kiali@1.5.4) (2023-10-25)
+
+
+### Bug Fixes
+
+* **kiali:** use prevState callback ([#874](https://github.com/janus-idp/backstage-plugins/issues/874)) ([13a01f7](https://github.com/janus-idp/backstage-plugins/commit/13a01f79be812fe74f71f474152c7e8fe0f4fe90))
+
 ## @janus-idp/backstage-plugin-kiali [1.5.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.5.2...@janus-idp/backstage-plugin-kiali@1.5.3) (2023-10-19)
 
 
