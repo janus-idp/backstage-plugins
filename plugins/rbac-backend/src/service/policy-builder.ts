@@ -94,9 +94,12 @@ export class PolicyBuilder {
       'permission.rbac.pluginsWithPermission',
     );
     if (pluginIdsConfig) {
-      const pluginIds = pluginIdProvider.getPluginIds();
+      const pluginIds = new Set([
+        ...pluginIdsConfig,
+        ...pluginIdProvider.getPluginIds(),
+      ]);
       pluginIdProvider.getPluginIds = () => {
-        return [...pluginIdsConfig, ...pluginIds];
+        return [...pluginIds];
       };
     }
 
