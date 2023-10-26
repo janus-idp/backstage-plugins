@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-tekton [3.0.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.0.0...@janus-idp/backstage-plugin-tekton@3.0.1) (2023-10-26)
+
+
+### Bug Fixes
+
+* **tekton:** update README and cleanup ([#881](https://github.com/janus-idp/backstage-plugins/issues/881)) ([c495515](https://github.com/janus-idp/backstage-plugins/commit/c495515bc146dfb9e2b64ec8df50d2e5fe01a6c7))
+
 ## @janus-idp/backstage-plugin-tekton [3.0.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@2.0.2...@janus-idp/backstage-plugin-tekton@3.0.0) (2023-10-23)
 
 
