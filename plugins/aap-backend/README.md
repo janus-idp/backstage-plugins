@@ -101,9 +101,13 @@ The AAP Backstage provider plugin allows the configuration of one or multiple pr
      }
      ```
 
-   - If both the `schedule` (hard-coded schedule) and `scheduler` (`app-config.yaml` schedule) option are provided in the `packages/backend/src/plugins/catalog.ts`, the `scheduler` option takes precedence.
+   ***
 
-     - If the schedule inside the `app-config.yaml` file is not configured while both the `schedule` and `scheduler` options are present, then the `schedule` option is used.
+   **NOTE**
+
+   If both the `schedule` (hard-coded schedule) and `scheduler` (`app-config.yaml` schedule) option are provided in the `packages/backend/src/plugins/catalog.ts`, the `scheduler` option takes precedence. However, if the schedule inside the `app-config.yaml` file is not configured, then the `schedule` option is used.
+
+   ***
 
 ### Troubleshooting
 

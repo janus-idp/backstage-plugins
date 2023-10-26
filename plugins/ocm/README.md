@@ -238,9 +238,13 @@ If you are interested in Resource discovery and do not want any of the front-end
      }
      ```
 
-   - If both the `schedule` (hard-coded schedule) and `scheduler` (`app-config.yaml` schedule) option are provided in the `packages/backend/src/plugins/catalog.ts`, the `scheduler` option takes precedence.
+   ***
 
-     - If the schedule inside the `app-config.yaml` file is not configured while both the `schedule` and `scheduler` options are present, then the `schedule` option is used.
+   **NOTE**
+
+   If both the `schedule` (hard-coded schedule) and `scheduler` (`app-config.yaml` schedule) option are provided in the `packages/backend/src/plugins/catalog.ts`, the `scheduler` option takes precedence. However, if the schedule inside the `app-config.yaml` file is not configured, then the `schedule` option is used.
+
+   ***
 
 1. Optional: Configure the default owner for the cluster entities in the catalog for a specific environment. For example, use the following code to set `foo` as the owner for clusters from `env` in the `app-config.yaml` catalog section:
 

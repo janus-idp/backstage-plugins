@@ -37,99 +37,103 @@ yarn workspace backend add @janus-idp/backstage-plugin-keycloak-backend
 
 1. Register the plugin in the `packages/backend/src/plugins/catalog.ts` file. You can also configure a schedule in this step. However, there are possible ways of configuration, such as:
 
-   - Configure a schedule inside the `app-config.yaml` file:
+   1. Configure a schedule inside the `app-config.yaml` file:
 
-     ```yaml title="app-config.yaml"
-     catalog:
-       providers:
-         keycloakOrg:
-           default:
-             # ...
-             # highlight-add-start
-             schedule: # optional; same options as in TaskScheduleDefinition
-               # supports cron, ISO duration, "human duration" as used in code
-               frequency: { minutes: 1 }
-               # supports ISO duration, "human duration" as used in code
-               timeout: { minutes: 1 }
-               initialDelay: { seconds: 15 }
-               # highlight-add-end
-     ```
+      ```yaml title="app-config.yaml"
+      catalog:
+        providers:
+          keycloakOrg:
+            default:
+              # ...
+              # highlight-add-start
+              schedule: # optional; same options as in TaskScheduleDefinition
+                # supports cron, ISO duration, "human duration" as used in code
+                frequency: { minutes: 1 }
+                # supports ISO duration, "human duration" as used in code
+                timeout: { minutes: 1 }
+                initialDelay: { seconds: 15 }
+                # highlight-add-end
+      ```
 
-     Then use the configured scheduler by adding the following to the `packages/backend/src/plugins/catalog.ts`:
+      Then use the configured scheduler by adding the following to the `packages/backend/src/plugins/catalog.ts`:
 
-     ```ts title="packages/backend/src/plugins/catalog.ts"
-     /* highlight-add-start */
-     import { KeycloakOrgEntityProvider } from '@janus-idp/backstage-plugin-keycloak-backend';
+      ```ts title="packages/backend/src/plugins/catalog.ts"
+      /* highlight-add-start */
+      import { KeycloakOrgEntityProvider } from '@janus-idp/backstage-plugin-keycloak-backend';
 
-     /* highlight-add-end */
+      /* highlight-add-end */
 
-     export default async function createPlugin(
-       env: PluginEnvironment,
-     ): Promise<Router> {
-       const builder = await CatalogBuilder.create(env);
+      export default async function createPlugin(
+        env: PluginEnvironment,
+      ): Promise<Router> {
+        const builder = await CatalogBuilder.create(env);
 
-       /* ... other processors and/or providers ... */
-       /* highlight-add-start */
-       builder.addEntityProvider(
-         KeycloakOrgEntityProvider.fromConfig(env.config, {
-           id: 'development',
-           logger: env.logger,
-           scheduler: env.scheduler,
-         }),
-       );
-       /* highlight-add-end */
+        /* ... other processors and/or providers ... */
+        /* highlight-add-start */
+        builder.addEntityProvider(
+          KeycloakOrgEntityProvider.fromConfig(env.config, {
+            id: 'development',
+            logger: env.logger,
+            scheduler: env.scheduler,
+          }),
+        );
+        /* highlight-add-end */
 
-       const { processingEngine, router } = await builder.build();
-       await processingEngine.start();
-       return router;
-     }
-     ```
+        const { processingEngine, router } = await builder.build();
+        await processingEngine.start();
+        return router;
+      }
+      ```
 
-     ***
+      ***
 
-     **NOTE**
+      **NOTE**
 
-     If you have made any changes to the schedule in the `app-config.yaml` file, then restart to apply the changes.
+      If you have made any changes to the schedule in the `app-config.yaml` file, then restart to apply the changes.
 
-     ***
+      ***
 
-   - Add a schedule directly inside the `packages/backend/src/plugins/catalog.ts` file as follows:
+   1. Add a schedule directly inside the `packages/backend/src/plugins/catalog.ts` file as follows:
 
-     ```ts title="packages/backend/src/plugins/catalog.ts"
-     /* highlight-add-start */
-     import { KeycloakOrgEntityProvider } from '@janus-idp/backstage-plugin-keycloak-backend';
+      ```ts title="packages/backend/src/plugins/catalog.ts"
+      /* highlight-add-start */
+      import { KeycloakOrgEntityProvider } from '@janus-idp/backstage-plugin-keycloak-backend';
 
-     /* highlight-add-end */
+      /* highlight-add-end */
 
-     export default async function createPlugin(
-       env: PluginEnvironment,
-     ): Promise<Router> {
-       const builder = await CatalogBuilder.create(env);
+      export default async function createPlugin(
+        env: PluginEnvironment,
+      ): Promise<Router> {
+        const builder = await CatalogBuilder.create(env);
 
-       /* ... other processors and/or providers ... */
-       builder.addEntityProvider(
-         KeycloakOrgEntityProvider.fromConfig(env.config, {
-           id: 'development',
-           logger: env.logger,
-           /* highlight-add-start */
-           schedule: env.scheduler.createScheduledTaskRunner({
-             frequency: { minutes: 1 },
-             timeout: { minutes: 1 },
-             initialDelay: { seconds: 15 },
-           }),
-           /* highlight-add-end */
-         }),
-       );
+        /* ... other processors and/or providers ... */
+        builder.addEntityProvider(
+          KeycloakOrgEntityProvider.fromConfig(env.config, {
+            id: 'development',
+            logger: env.logger,
+            /* highlight-add-start */
+            schedule: env.scheduler.createScheduledTaskRunner({
+              frequency: { minutes: 1 },
+              timeout: { minutes: 1 },
+              initialDelay: { seconds: 15 },
+            }),
+            /* highlight-add-end */
+          }),
+        );
 
-       const { processingEngine, router } = await builder.build();
-       await processingEngine.start();
-       return router;
-     }
-     ```
+        const { processingEngine, router } = await builder.build();
+        await processingEngine.start();
+        return router;
+      }
+      ```
 
-   - If both the `schedule` (hard-coded schedule) and `scheduler` (`app-config.yaml` schedule) option are provided in the `packages/backend/src/plugins/catalog.ts`, the `scheduler` option takes precedence.
+   ***
 
-     - If the schedule inside the `app-config.yaml` file is not configured while both the `schedule` and `scheduler` options are present, then the `schedule` option is used.
+   **NOTE**
+
+   If both the `schedule` (hard-coded schedule) and `scheduler` (`app-config.yaml` schedule) option are provided in the `packages/backend/src/plugins/catalog.ts`, the `scheduler` option takes precedence. However, if the schedule inside the `app-config.yaml` file is not configured, then the `schedule` option is used.
+
+   ***
 
 1. Optional: override the default Keycloak query parameters. Configure the parameters inside the `app-config.yaml` file:
 
