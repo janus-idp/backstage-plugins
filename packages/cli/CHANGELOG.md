@@ -1,3 +1,33 @@
+## @janus-idp/cli [1.3.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.3.0...@janus-idp/cli@1.3.1) (2023-10-26)
+
+
+### Bug Fixes
+
+* **cli:** share core-app-api package ([#885](https://github.com/janus-idp/backstage-plugins/issues/885)) ([09db33c](https://github.com/janus-idp/backstage-plugins/commit/09db33ce4113ccb484a167dab8d9fe47d6185c09))
+
+## @janus-idp/cli [1.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.2.0...@janus-idp/cli@1.3.0) (2023-10-24)
+
+
+### Features
+
+* **dynamic-ui:** integrate scalprum with current backstage plugins ([#826](https://github.com/janus-idp/backstage-plugins/issues/826)) ([e1fb4ce](https://github.com/janus-idp/backstage-plugins/commit/e1fb4ceafc9e353c4d5b0ed9ba2407b3b0383c60))
+
+## @janus-idp/cli [1.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.1.1...@janus-idp/cli@1.2.0) (2023-10-23)
+
+
+### Features
+
+* **cli:** add frontend dynamic plugins base build config ([#747](https://github.com/janus-idp/backstage-plugins/issues/747)) ([91e06da](https://github.com/janus-idp/backstage-plugins/commit/91e06da8ab108c17fd2a6531f25e01c7a7350276)), closes [#831](https://github.com/janus-idp/backstage-plugins/issues/831)
+
+## @janus-idp/cli [1.1.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.1.0...@janus-idp/cli@1.1.1) (2023-10-19)
+
+## @janus-idp/cli [1.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.0.5...@janus-idp/cli@1.1.0) (2023-10-17)
+
+
+### Features
+
+* add the `export-dynamic-plugin` command, with an implementation for the backend case ([#819](https://github.com/janus-idp/backstage-plugins/issues/819)) ([f873a94](https://github.com/janus-idp/backstage-plugins/commit/f873a94072d17f3bad15b0552b0ef12c285c2ea3))
+
 ## @janus-idp/cli [1.0.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.0.4...@janus-idp/cli@1.0.5) (2023-09-22)
 
 

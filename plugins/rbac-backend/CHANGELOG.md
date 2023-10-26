@@ -1,3 +1,25 @@
+## @janus-idp/backstage-plugin-rbac-backend [1.2.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@1.2.0...@janus-idp/backstage-plugin-rbac-backend@1.2.1) (2023-10-24)
+
+
+### Bug Fixes
+
+* **rbac:** use token manager for catalog requests ([#866](https://github.com/janus-idp/backstage-plugins/issues/866)) ([8ad3480](https://github.com/janus-idp/backstage-plugins/commit/8ad348029cec4eabf605c7065e76a5305be3cac8))
+
+## @janus-idp/backstage-plugin-rbac-backend [1.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@1.1.1...@janus-idp/backstage-plugin-rbac-backend@1.2.0) (2023-10-23)
+
+
+### Features
+
+* **cli:** add frontend dynamic plugins base build config ([#747](https://github.com/janus-idp/backstage-plugins/issues/747)) ([91e06da](https://github.com/janus-idp/backstage-plugins/commit/91e06da8ab108c17fd2a6531f25e01c7a7350276)), closes [#831](https://github.com/janus-idp/backstage-plugins/issues/831)
+
+## @janus-idp/backstage-plugin-rbac-backend [1.1.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@1.1.0...@janus-idp/backstage-plugin-rbac-backend@1.1.1) (2023-10-19)
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-rbac-common:** upgraded to 1.0.1
+
 ## @janus-idp/backstage-plugin-rbac-backend [1.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@1.0.2...@janus-idp/backstage-plugin-rbac-backend@1.1.0) (2023-10-06)
 
 

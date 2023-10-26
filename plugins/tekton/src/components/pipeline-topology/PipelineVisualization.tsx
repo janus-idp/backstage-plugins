@@ -1,18 +1,9 @@
 import React from 'react';
 
-import { Typography } from '@material-ui/core';
-import { Split, SplitItem } from '@patternfly/react-core';
-
-import {
-  PipelineRunKind,
-  pipelineRunStatus,
-  TaskRunKind,
-} from '@janus-idp/shared-react';
+import { PipelineRunKind, TaskRunKind } from '@janus-idp/shared-react';
 
 import { useDarkTheme } from '../../hooks/useDarkTheme';
-import { PipelineRunModel } from '../../models';
 import { getGraphDataModel } from '../../utils/pipeline-topology-utils';
-import { ResourceStatus, Status } from '../common';
 import { PipelineLayout } from './PipelineLayout';
 
 import './PipelineVisualization.css';
@@ -32,26 +23,6 @@ export const PipelineVisualization = ({
 
   return (
     <>
-      {pipelineRun?.metadata?.name && (
-        <Split className="bs-tkn-pipeline-visualization__label">
-          <SplitItem style={{ marginRight: 'var(--pf-v5-global--spacer--sm)' }}>
-            <span
-              className="badge"
-              style={{ backgroundColor: PipelineRunModel.color }}
-            >
-              {PipelineRunModel.abbr}
-            </span>
-          </SplitItem>
-          <SplitItem>
-            <Typography variant="h6">
-              {pipelineRun.metadata.name}
-              <ResourceStatus additionalClassNames="hidden-xs">
-                <Status status={pipelineRunStatus(pipelineRun) ?? ''} />
-              </ResourceStatus>
-            </Typography>
-          </SplitItem>
-        </Split>
-      )}
       {!model || (model.nodes.length === 0 && model.edges.length === 0) ? (
         <div data-testid="pipeline-no-tasks">
           This Pipeline Run has no tasks to visualize

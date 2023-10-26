@@ -15,19 +15,27 @@ import {
   Typography,
 } from '@material-ui/core';
 
-import { PipelineRunKind } from '@janus-idp/shared-react';
+import {
+  computedStatus,
+  PipelineRunKind,
+  pipelineRunStatus,
+} from '@janus-idp/shared-react';
 
 import { TektonResourcesContext } from '../../hooks/TektonResourcesContext';
 import { ClusterErrors, Order } from '../../types/types';
 import { getComparator } from '../../utils/tekton-utils';
 import { ClusterSelector, ErrorPanel } from '../common';
+import { StatusSelector } from '../common/StatusSelector';
+import { TableExpandCollapse } from '../common/TableExpandCollapse';
 import { PipelineRunColumnHeader } from './PipelineRunColumnHeader';
+import { PipelineRunListSearchBar } from './PipelineRunListSearchBar';
 import { PipelineRunTableBody } from './PipelineRunTableBody';
 import { EnhancedTableHead } from './PipelineTableHeader';
 
 type WrapperInfoCardProps = {
   allErrors?: ClusterErrors;
   showClusterSelector?: boolean;
+  titleClassName?: string;
 };
 
 const useStyles = makeStyles(theme => ({
@@ -40,16 +48,37 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     justifyContent: 'center',
   },
+  title: {
+    display: 'flex',
+    gap: '20px',
+    alignItems: 'center',
+  },
+  footer: {
+    '&:nth-of-type(odd)': {
+      backgroundColor: `${theme.palette.background.paper}`,
+    },
+  },
 }));
 
 const WrapperInfoCard = ({
   children,
   allErrors,
   showClusterSelector = true,
+  titleClassName,
 }: React.PropsWithChildren<WrapperInfoCardProps>) => (
   <>
     {allErrors && allErrors.length > 0 && <ErrorPanel allErrors={allErrors} />}
-    <InfoCard {...(showClusterSelector && { title: <ClusterSelector /> })}>
+    <InfoCard
+      {...(showClusterSelector && {
+        title: (
+          <div className={titleClassName}>
+            <ClusterSelector />
+            <StatusSelector />
+            <TableExpandCollapse />
+          </div>
+        ),
+      })}
+    >
       {children}
     </InfoCard>
   </>
@@ -62,17 +91,36 @@ const PipelineRunList = () => {
     watchResourcesData,
     selectedClusterErrors,
     clusters,
+    selectedStatus,
   } = React.useContext(TektonResourcesContext);
   const [order, setOrder] = React.useState<Order>('desc');
   const [orderBy, setOrderBy] = React.useState<string>('status.startTime');
   const [orderById, setOrderById] = React.useState<string>('startTime'); // 2 columns have the same field
   const [page, setPage] = React.useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = React.useState<number>(5);
+  const [filteredPipelineRuns, setFilteredPipelineRuns] = React.useState<
+    PipelineRunKind[] | undefined
+  >();
 
-  const pipelineRunsData = watchResourcesData?.pipelineruns?.data?.map(d => ({
+  const totalPlrs = watchResourcesData?.pipelineruns?.data?.map(d => ({
     ...d,
     id: d.metadata.uid,
   }));
+
+  const pipelineRunsData = React.useMemo(
+    () =>
+      selectedStatus === computedStatus.All
+        ? totalPlrs
+        : // eslint-disable-next-line consistent-return
+          totalPlrs?.filter(plr => {
+            if (pipelineRunStatus(plr) === selectedStatus) {
+              return plr;
+            }
+          }),
+    [selectedStatus, totalPlrs],
+  );
+
+  const pipelineRuns = filteredPipelineRuns || pipelineRunsData;
 
   const handleRequestSort = (
     _event: React.MouseEvent<unknown>,
@@ -99,18 +147,18 @@ const PipelineRunList = () => {
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
     page > 0
-      ? Math.max(0, (1 + page) * rowsPerPage - (pipelineRunsData?.length ?? 0))
+      ? Math.max(0, (1 + page) * rowsPerPage - (pipelineRuns?.length ?? 0))
       : 0;
 
   const visibleRows = React.useMemo(
     () =>
-      pipelineRunsData
+      pipelineRuns
         ?.sort(getComparator(order, orderBy))
         .slice(
           page * rowsPerPage,
           page * rowsPerPage + rowsPerPage,
         ) as PipelineRunKind[],
-    [order, orderBy, page, rowsPerPage, pipelineRunsData],
+    [order, orderBy, page, rowsPerPage, pipelineRuns],
   );
   const classes = useStyles();
 
@@ -130,6 +178,7 @@ const PipelineRunList = () => {
     <WrapperInfoCard
       allErrors={allErrors}
       showClusterSelector={clusters.length > 0}
+      titleClassName={classes.title}
     >
       <Box>
         <Paper>
@@ -137,6 +186,10 @@ const PipelineRunList = () => {
             <Typography variant="h5" component="h2">
               Pipeline Runs
             </Typography>
+            <PipelineRunListSearchBar
+              pipelineRuns={pipelineRunsData}
+              onSearch={setFilteredPipelineRuns}
+            />
           </Toolbar>
           <Table
             aria-labelledby="Pipeline Runs"
@@ -161,14 +214,14 @@ const PipelineRunList = () => {
                     <TableCell colSpan={PipelineRunColumnHeader.length} />
                   </TableRow>
                 )}
-                <TableRow>
+                <TableRow className={classes.footer}>
                   <TablePagination
                     rowsPerPageOptions={[
                       { value: 5, label: '5 rows' },
                       { value: 10, label: '10 rows' },
                       { value: 25, label: '25 rows' },
                     ]}
-                    count={pipelineRunsData?.length ?? 0}
+                    count={pipelineRuns?.length ?? 0}
                     rowsPerPage={rowsPerPage}
                     page={page}
                     onPageChange={handleChangePage}

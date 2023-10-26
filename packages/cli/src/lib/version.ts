@@ -55,7 +55,6 @@ export function findVersion() {
 }
 
 export const version = findVersion();
-export const isDev = fs.pathExistsSync(paths.resolveOwn('src'));
 
 export function createPackageVersionProvider(lockfile?: Lockfile) {
   return (name: string, versionHint?: string): string => {

@@ -32,6 +32,7 @@ const SCRIPT_EXTS = ['.js', '.jsx', '.ts', '.tsx'];
 interface ProductionPackOptions {
   packageDir: string;
   targetDir?: string;
+  customizeManifest?: (pkg: BackstagePackageJson) => undefined | void;
 }
 
 export async function productionPack(options: ProductionPackOptions) {
@@ -79,6 +80,10 @@ export async function productionPack(options: ProductionPackOptions) {
     delete pkg.optionalDependencies;
   }
 
+  if (options.customizeManifest !== undefined) {
+    options.customizeManifest(pkg);
+  }
+
   if (targetDir) {
     // Lists all dist files, respecting .npmignore, files field in package.json, etc.
     const filePaths = await npmPackList({
@@ -110,36 +115,6 @@ export async function productionPack(options: ProductionPackOptions) {
   }
   if (writeCompatibilityEntryPoints) {
     await writeCompatibilityEntryPoints(targetDir ?? packageDir);
-  }
-}
-
-// Reverts the changes made by productionPack when called without a targetDir.
-export async function revertProductionPack(packageDir: string) {
-  // postpack isn't called by yarn right now, so it needs to be called manually
-  try {
-    await fs.move(PKG_BACKUP_PATH, PKG_PATH, { overwrite: true });
-
-    // Check if we're shipping types for other release stages, clean up in that case
-    const pkg = await fs.readJson(PKG_PATH);
-    if (pkg.publishConfig?.alphaTypes) {
-      await fs.remove(resolvePath(packageDir, 'alpha'));
-    }
-    if (pkg.publishConfig?.betaTypes) {
-      await fs.remove(resolvePath(packageDir, 'beta'));
-    }
-
-    // Remove any extra entrypoint backwards compatibility directories
-    const entryPoints = readEntryPoints(pkg);
-    for (const entryPoint of entryPoints) {
-      if (entryPoint.mount !== '.' && SCRIPT_EXTS.includes(entryPoint.ext)) {
-        await fs.remove(resolvePath(packageDir, entryPoint.name));
-      }
-    }
-  } catch (error) {
-    console.warn(
-      `Failed to restore package.json, ${error}. ` +
-        'Your package will be fine but you may have ended up with some garbage in the repo.',
-    );
   }
 }
 

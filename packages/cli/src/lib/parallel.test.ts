@@ -19,8 +19,6 @@ import os from 'os';
 import {
   getEnvironmentParallelism,
   parseParallelismOption,
-  runParallelWorkers,
-  runWorkerQueueThreads,
   runWorkerThreads,
 } from './parallel';
 
@@ -63,116 +61,6 @@ describe('getEnvironmentParallelism', () => {
 
     delete process.env.BACKSTAGE_CLI_BUILD_PARALLEL;
     expect(getEnvironmentParallelism()).toBe(defaultParallelism);
-  });
-});
-
-describe('runParallelWorkers', () => {
-  it('executes work in parallel', async () => {
-    const started = new Array<number>();
-    const done = new Array<number>();
-    const waiting = new Array<() => void>();
-
-    const work = runParallelWorkers({
-      items: [0, 1, 2, 3, 4],
-      parallelismSetting: 4,
-      parallelismFactor: 0.5, // 2 at a time
-      worker: async item => {
-        started.push(item);
-        await new Promise<void>(resolve => {
-          waiting[item] = resolve;
-        });
-        done.push(item);
-      },
-    });
-
-    await new Promise(resolve => setTimeout(resolve));
-    expect(started).toEqual([0, 1]);
-    expect(done).toEqual([]);
-    waiting[0]();
-
-    await new Promise(resolve => setTimeout(resolve));
-    expect(started).toEqual([0, 1, 2]);
-    expect(done).toEqual([0]);
-    waiting[1]();
-    waiting[2]();
-
-    await new Promise(resolve => setTimeout(resolve));
-    expect(started).toEqual([0, 1, 2, 3, 4]);
-    expect(done).toEqual([0, 1, 2]);
-    waiting[3]();
-    waiting[4]();
-
-    await work;
-    expect(done).toEqual([0, 1, 2, 3, 4]);
-  });
-
-  it('executes work sequentially', async () => {
-    const started = new Array<number>();
-    const done = new Array<number>();
-    const waiting = new Array<() => void>();
-
-    const work = runParallelWorkers({
-      items: [0, 1, 2, 3, 4],
-      parallelismFactor: 0, // 1 at a time
-      worker: async item => {
-        started.push(item);
-        await new Promise<void>(resolve => {
-          waiting[item] = resolve;
-        });
-        done.push(item);
-      },
-    });
-
-    await new Promise(resolve => setTimeout(resolve));
-    expect(started).toEqual([0]);
-    expect(done).toEqual([]);
-    waiting[0]();
-
-    await new Promise(resolve => setTimeout(resolve));
-    expect(started).toEqual([0, 1]);
-    expect(done).toEqual([0]);
-    waiting[1]();
-
-    await new Promise(resolve => setTimeout(resolve));
-    expect(started).toEqual([0, 1, 2]);
-    waiting[2]();
-
-    await new Promise(resolve => setTimeout(resolve));
-    expect(started).toEqual([0, 1, 2, 3]);
-    waiting[3]();
-
-    await new Promise(resolve => setTimeout(resolve));
-    expect(started).toEqual([0, 1, 2, 3, 4]);
-    waiting[4]();
-
-    await work;
-    expect(done).toEqual([0, 1, 2, 3, 4]);
-  });
-});
-
-describe('runWorkerQueueThreads', () => {
-  it('should execute work in parallel', async () => {
-    const sharedData = new SharedArrayBuffer(10);
-    const sharedView = new Uint8Array(sharedData);
-
-    const results = await runWorkerQueueThreads({
-      threadCount: 4,
-      workerData: sharedData,
-      items: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-      workerFactory: data => {
-        const view = new Uint8Array(data);
-
-        return async (i: number) => {
-          view[i] = 10 + i;
-          return 20 + i;
-        };
-      },
-    });
-
-    expect(Array.from(sharedView)).toEqual([
-      10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
-    ]);
-    expect(results).toEqual([20, 21, 22, 23, 24, 25, 26, 27, 28, 29]);
   });
 });
 

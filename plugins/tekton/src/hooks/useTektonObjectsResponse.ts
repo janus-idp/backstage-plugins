@@ -7,6 +7,7 @@ import { useKubernetesObjects } from '@backstage/plugin-kubernetes';
 import { isEqual } from 'lodash';
 
 import {
+  computedStatus,
   useDebounceCallback,
   useDeepCompareMemoize,
 } from '@janus-idp/shared-react';
@@ -22,6 +23,10 @@ export const useTektonObjectsResponse = (
   const { clusterName } = useParams();
   const { kubernetesObjects, loading, error } = useKubernetesObjects(entity);
   const [selectedCluster, setSelectedCluster] = React.useState<number>(0);
+  const [selectedStatus, setSelectedStatus] = React.useState<string>(
+    computedStatus.All,
+  );
+  const [isExpanded, setIsExpanded] = React.useState<boolean>(false);
   const [loaded, setLoaded] = React.useState<boolean>(false);
   const [errorState, setErrorState] = React.useState<string>();
   const [pipelinesData, setPipelinesData] = React.useState<
@@ -92,5 +97,9 @@ export const useTektonObjectsResponse = (
     clusters,
     selectedCluster,
     setSelectedCluster,
+    selectedStatus,
+    setSelectedStatus,
+    isExpanded,
+    setIsExpanded,
   });
 };

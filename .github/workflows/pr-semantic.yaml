@@ -31,6 +31,7 @@ jobs:
             refactor
             perf
             test
+            revert
           requireScope: false
           subjectPattern: ^(?![A-Z]).+$
           subjectPatternError: |

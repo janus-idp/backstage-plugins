@@ -109,6 +109,11 @@ describe('PolicyBuilder', () => {
     getExternalBaseUrl: jest.fn(),
   };
 
+  const tokenManagerMock = {
+    getToken: jest.fn().mockImplementation(),
+    authenticate: jest.fn().mockImplementation(),
+  };
+
   beforeEach(async () => {
     jest.clearAllMocks();
   });
@@ -131,6 +136,7 @@ describe('PolicyBuilder', () => {
       identity: mockIdentityClient,
       permissions: mockPermissionEvaluator,
       database: mockDatabaseManager,
+      tokenManager: tokenManagerMock,
     });
 
     expect(FileAdapter).toHaveBeenCalled();
@@ -167,6 +173,7 @@ describe('PolicyBuilder', () => {
       identity: mockIdentityClient,
       permissions: mockPermissionEvaluator,
       database: mockDatabaseManager,
+      tokenManager: tokenManagerMock,
     });
     expect(CasbinDBAdapterFactory).toHaveBeenCalled();
     expect(mockEnforcer.loadPolicy).toHaveBeenCalled();

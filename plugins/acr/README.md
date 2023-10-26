@@ -58,16 +58,12 @@ The Azure Container Registry (ACR) plugin displays information about your contai
      <EntityPageLayout>
        // ...
        {/* highlight-add-start */}
-       <EntityLayout.Route path="/acr" title="ACR">
-         <Grid container spacing={3} alignItems="stretch">
-           <EntitySwitch>
-             <EntitySwitch.Case if={e => Boolean(isAcrAvailable(e))}>
-               <Grid item sm={12}>
-                 <AcrPage />
-               </Grid>
-             </EntitySwitch.Case>
-           </EntitySwitch>
-         </Grid>
+       <EntityLayout.Route
+         if={e => Boolean(isAcrAvailable(e))}
+         path="/acr"
+         title="ACR"
+       >
+         <AcrPage />
        </EntityLayout.Route>
        {/* highlight-add-end */}
      </EntityPageLayout>

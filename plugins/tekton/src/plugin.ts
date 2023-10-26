@@ -6,35 +6,17 @@ import '@patternfly/patternfly/utilities/Accessibility/accessibility.css';
 import {
   createComponentExtension,
   createPlugin,
-  createRoutableExtension,
 } from '@backstage/core-plugin-api';
-
-import { pipelineRunRouteRef, rootRouteRef } from './routes';
 
 export const tektonPlugin = createPlugin({
   id: 'tekton',
-  routes: {
-    root: rootRouteRef,
-    pipelineRun: pipelineRunRouteRef,
-  },
 });
 
-export const TektonPage = tektonPlugin.provide(
-  createRoutableExtension({
-    name: 'TektonPage',
-    component: () => import('./components/Tekton/Router').then(m => m.Router),
-    mountPoint: rootRouteRef,
-  }),
-);
-
-export const LatestPipelineRun = tektonPlugin.provide(
+export const TektonCI = tektonPlugin.provide(
   createComponentExtension({
-    name: 'LatestPipelineRun',
+    name: 'TektonCI',
     component: {
-      lazy: () =>
-        import('./components/PipelineVisualizationRouter').then(
-          m => m.PipelineVisualizationRouter,
-        ),
+      lazy: () => import('./components/Router').then(m => m.Router),
     },
   }),
 );

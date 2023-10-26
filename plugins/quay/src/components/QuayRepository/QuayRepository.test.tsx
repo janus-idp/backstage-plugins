@@ -6,6 +6,11 @@ import { render } from '@testing-library/react';
 import { useTags } from '../../hooks';
 import { QuayRepository } from './QuayRepository';
 
+jest.mock('react-use', () => ({
+  ...jest.requireActual('react-use'),
+  useAsync: jest.fn().mockReturnValue({ loading: true }),
+}));
+
 jest.mock('@backstage/core-plugin-api', () => ({
   ...jest.requireActual('@backstage/core-plugin-api'),
   useApi: jest
@@ -67,5 +72,28 @@ describe('QuayRepository', () => {
     expect(queryByTestId('quay-repo-table-empty')).toBeNull();
     expect(queryByText(/Quay repository/i)).toBeInTheDocument();
     expect(queryByText(/No data was added yet/i)).not.toBeInTheDocument();
+  });
+
+  it('should show table if loaded and data is present but shows progress if security scan is not loaded', () => {
+    (useTags as jest.Mock).mockReturnValue({
+      loading: false,
+      data: [
+        {
+          name: 'latest',
+          manifest_digest: undefined,
+          size: null,
+          last_modified: 'Wed, 15 Mar 2023 18:22:18 -0000',
+        },
+      ],
+    });
+    const { queryByTestId, queryByText } = render(
+      <BrowserRouter>
+        <QuayRepository />
+      </BrowserRouter>,
+    );
+    expect(queryByTestId('quay-repo-table')).not.toBeNull();
+    expect(queryByTestId('quay-repo-table-empty')).toBeNull();
+    expect(queryByText(/Quay repository/i)).toBeInTheDocument();
+    expect(queryByTestId('quay-repo-security-scan-progress')).not.toBeNull();
   });
 });

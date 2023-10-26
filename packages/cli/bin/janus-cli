@@ -24,10 +24,16 @@ const isLocal = require('fs').existsSync(path.resolve(__dirname, '../src'));
 if (!isLocal || process.env.BACKSTAGE_E2E_CLI_TEST) {
   require('..');
 } else {
+  /**
+   *  TODO: Figure out of we need to find `project` path leading to a local plugin
+   * tsconfig.json.
+   * This will become relevant once we start migration plugins to the Janus cli that have
+   * different tsconfig.json specifications.
+   *  */
   require('ts-node').register({
     transpileOnly: true,
     /* eslint-disable-next-line no-restricted-syntax */
-    project: path.resolve(__dirname, '../../../tsconfig.json'),
+    project: path.resolve(__dirname, '../tsconfig.json'),
     compilerOptions: {
       module: 'CommonJS',
     },

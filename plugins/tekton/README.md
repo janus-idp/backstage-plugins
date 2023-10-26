@@ -119,43 +119,18 @@ The Tekton plugin enables you to visualize the `PipelineRun` resources available
    yarn workspace app add @janus-idp/backstage-plugin-tekton
    ```
 
-1. Enable the **TEKTON** tab on the entity view page using the `packages/app/src/components/catalog/EntityPage.tsx` file:
+1. Enable the PipelineRun list in the **CI/CD** tab on the entity view page.
 
    ```tsx title="packages/app/src/components/catalog/EntityPage.tsx"
    /* highlight-add-next-line */
-   import {
-     isTektonCIAvailable,
-     TektonPage,
-   } from '@janus-idp/backstage-plugin-tekton';
-
-   const serviceEntityPage = (
-     <EntityPageLayout>
-       {/* ... */}
-       {/* highlight-add-start */}
-       <EntityLayout.Route
-         if={isTektonCIAvailable}
-         path="/tekton"
-         title="Tekton"
-       >
-         <TektonPage />
-       </EntityLayout.Route>
-       {/* highlight-add-end */}
-     </EntityPageLayout>
-   );
-   ```
-
-1. Enable the latest PipelineRun visualization in the **CI/CD** tab on the entity view page. The `linkTekton` property is optional and takes a boolean value, if not specified or set to `true`, then the **GO TO TEKTON** option is displayed.
-
-   ```tsx title="packages/app/src/components/catalog/EntityPage.tsx"
-   /* highlight-add-next-line */
-   import { LatestPipelineRun, isTektonCIAvailable } from '@janus-idp/backstage-plugin-tekton';
+   import { TektonCI, isTektonCIAvailable } from '@janus-idp/backstage-plugin-tekton';
 
    const cicdContent = (
      <EntitySwitch>>
        {/* ... */}
        {/* highlight-add-start */}
        <EntitySwitch.Case if={isTektonCIAvailable}>
-         <LatestPipelineRun linkTekton />
+         <TektonCI />
        </EntitySwitch.Case>
        {/* highlight-add-end */}
      </EntitySwitch>
@@ -179,20 +154,10 @@ Tekton is a front-end plugin that enables you to view the `PipelineRun` resource
 
 1. Go to the **CI/CD** tab.
 
-   The **CI/CD** tab displays the latest `PipelineRun` resources associated with a Kubernetes cluster. The resources include tasks to complete. When you hover the mouse pointer on a task card, you can view the steps to complete that particular task.
+   The **CI/CD** tab displays the list of PipelineRun resources associated with a Kubernetes cluster. The list contains pipeline run details, such as **NAME**, **STATUS**, **TASK STATUS**, **STARTED**, and **DURATION**.
 
-   ![ci-cd-tab-tekton](./images/tekton-plugin-user1.png)
+   ![ci-cd-tab-tekton](./images/tekton-plugin-user4.png)
 
-   There is also a **GO TO TEKTON** option at the bottom, which redirects you to the **TEKTON** tab.
+1. Click on expand row button besides PipelineRun name in the list to view the PipelineRun visualization. The pipeline run resource include tasks to complete. When you hover the mouse pointer on a task card, you can view the steps to complete that particular task.
 
-1. Click **GO TO TEKTON** or select the **TEKTON** tab on the entity view page.
-
-   The **TEKTON** tab contains the list of pipeline runs related to a cluster. The list contains pipeline run details, such as **NAME**, **STATUS**, **TASK STATUS**, **STARTED**, and **DURATION**.
-
-   ![tekton-tab](./images/tekton-plugin-user2.png)
-
-1. Click a PipelineRun name in the list to view the PipelineRun visualization.
-
-   ![pipelinerun-view](./images/tekton-plugin-user3.png)
-
-   To go back to the PipelineRun list, you can click the **Back to PipelineRun list** option.
+   ![pipelinerun-view](./images/tekton-plugin-user5.png)

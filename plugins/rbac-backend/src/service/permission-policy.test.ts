@@ -1,4 +1,4 @@
-import { getVoidLogger } from '@backstage/backend-common';
+import { getVoidLogger, TokenManager } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
@@ -40,14 +40,22 @@ const catalogApi = {
   validateEntity: jest.fn().mockImplementation(),
 };
 
+const tokenManagerMock = {
+  getToken: jest.fn().mockImplementation(async () => {
+    return Promise.resolve({ token: 'some-token' });
+  }),
+  authenticate: jest.fn().mockImplementation(),
+};
+
 async function createEnforcer(
   theModel: Model,
   adapter: Adapter,
   logger: Logger,
+  tokenManager: TokenManager,
 ): Promise<Enforcer> {
   const enf = await newEnforcer(theModel, adapter);
 
-  const rm = new BackstageRoleManager(catalogApi, logger);
+  const rm = new BackstageRoleManager(catalogApi, logger, tokenManager);
   enf.setRoleManager(rm);
   enf.enableAutoBuildRoleLinks(false);
   await enf.buildRoleLinks();
@@ -63,7 +71,12 @@ describe('RBACPermissionPolicy Tests', () => {
     const config = newConfigReader();
     const theModel = newModelFromString(MODEL);
     const logger = getVoidLogger();
-    const enf = await createEnforcer(theModel, adapter, logger);
+    const enf = await createEnforcer(
+      theModel,
+      adapter,
+      logger,
+      tokenManagerMock,
+    );
 
     const policy = await RBACPermissionPolicy.build(logger, config, enf);
 
@@ -89,7 +102,12 @@ describe('RBACPermissionPolicy Tests', () => {
       });
       const theModel = newModelFromString(MODEL);
       const logger = getVoidLogger();
-      const enf = await createEnforcer(theModel, adapter, logger);
+      const enf = await createEnforcer(
+        theModel,
+        adapter,
+        logger,
+        tokenManagerMock,
+      );
 
       policy = await RBACPermissionPolicy.build(logger, config, enf);
 
@@ -150,7 +168,12 @@ describe('RBACPermissionPolicy Tests', () => {
       const config = newConfigReader();
       const theModel = newModelFromString(MODEL);
       const logger = getVoidLogger();
-      const enf = await createEnforcer(theModel, adapter, logger);
+      const enf = await createEnforcer(
+        theModel,
+        adapter,
+        logger,
+        tokenManagerMock,
+      );
 
       policy = await RBACPermissionPolicy.build(logger, config, enf);
 
@@ -356,7 +379,12 @@ describe('Policy checks for users and groups', () => {
     const config = newConfigReader();
     const theModel = newModelFromString(MODEL);
     const logger = getVoidLogger();
-    const enf = await createEnforcer(theModel, adapter, logger);
+    const enf = await createEnforcer(
+      theModel,
+      adapter,
+      logger,
+      tokenManagerMock,
+    );
 
     policy = await RBACPermissionPolicy.build(logger, config, enf);
 
