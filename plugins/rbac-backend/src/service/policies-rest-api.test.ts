@@ -157,7 +157,6 @@ describe('REST policies api', () => {
       ),
     };
     server = new PolicesServer(
-      mockIdentityClient,
       mockPermissionEvaluator,
       options,
       mockEnforcer as Enforcer,

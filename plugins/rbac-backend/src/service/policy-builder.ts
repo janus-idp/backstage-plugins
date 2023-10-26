@@ -83,13 +83,7 @@ export class PolicyBuilder {
       ),
     };
 
-    const server = new PolicesServer(
-      env.identity,
-      env.permissions,
-      options,
-      enf,
-      conditionStorage,
-    );
+    const server = new PolicesServer(env.permissions, options, enf, conditionStorage);
     return server.serve();
   }
 }
