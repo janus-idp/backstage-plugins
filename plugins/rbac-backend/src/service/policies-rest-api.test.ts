@@ -1048,7 +1048,7 @@ describe('REST policies api', () => {
       expect(result.statusCode).toBe(400);
       expect(result.body.error).toEqual({
         name: 'InputError',
-        message: `Invalid role definition. Cause: 'name' must not be empty`,
+        message: `Invalid role definition. Cause: 'name' field must not be empty`,
       });
     });
 
@@ -1102,7 +1102,7 @@ describe('REST policies api', () => {
       expect(result.statusCode).toBe(400);
       expect(result.body.error).toEqual({
         name: 'InputError',
-        message: `Invalid role definition. Cause: 'name' must not be empty`,
+        message: `Invalid role definition. Cause: 'name' field must not be empty`,
       });
     });
 
@@ -1219,7 +1219,7 @@ describe('REST policies api', () => {
       expect(result.statusCode).toEqual(400);
       expect(result.body.error).toEqual({
         name: 'InputError',
-        message: `Invalid new role object. Cause: 'memberReferences' field must not be empty`,
+        message: `Invalid new role object. Cause: 'name' field must not be empty`,
       });
     });
 
@@ -1232,6 +1232,7 @@ describe('REST policies api', () => {
           },
           newRole: {
             memberReferences: ['user:default/test'],
+            name: 'role/default/rbac_admin',
           },
         });
 
@@ -1256,6 +1257,7 @@ describe('REST policies api', () => {
           },
           newRole: {
             memberReferences: ['user:default/test'],
+            name: 'role:default/rbac_admin',
           },
         });
 
@@ -1280,6 +1282,7 @@ describe('REST policies api', () => {
           },
           newRole: {
             memberReferences: ['user:default/permission_admin'],
+            name: 'role:default/rbac_admin',
           },
         });
 
@@ -1309,6 +1312,7 @@ describe('REST policies api', () => {
           },
           newRole: {
             memberReferences: ['user:default/test'],
+            name: 'role:default/rbac_admin',
           },
         });
 
@@ -1347,6 +1351,7 @@ describe('REST policies api', () => {
           },
           newRole: {
             memberReferences: ['user:default/test'],
+            name: 'role:default/rbac_admin',
           },
         });
 
@@ -1385,6 +1390,7 @@ describe('REST policies api', () => {
           },
           newRole: {
             memberReferences: ['user:default/test'],
+            name: 'role:default/rbac_admin',
           },
         });
 
@@ -1422,6 +1428,7 @@ describe('REST policies api', () => {
           },
           newRole: {
             memberReferences: ['user:default/test', 'user:default/test2'],
+            name: 'role:default/rbac_admin',
           },
         });
 
@@ -1459,6 +1466,42 @@ describe('REST policies api', () => {
               'user:default/permission_admin',
               'user:default/test',
             ],
+            name: 'role:default/rbac_admin',
+          },
+        });
+
+      expect(result.statusCode).toEqual(200);
+    });
+
+    it('should update role name', async () => {
+      mockEnforcer.hasGroupingPolicy = jest
+        .fn()
+        .mockImplementation(async (...param: string[]): Promise<boolean> => {
+          if (param[0] === 'user:default/test') {
+            return false;
+          }
+          return true;
+        });
+      mockEnforcer.removeGroupingPolicies = jest
+        .fn()
+        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
+          return true;
+        });
+      mockEnforcer.addGroupingPolicies = jest
+        .fn()
+        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
+          return true;
+        });
+
+      const result = await request(app)
+        .put('/roles/role/default/rbac_admin')
+        .send({
+          oldRole: {
+            memberReferences: ['user:default/permission_admin'],
+          },
+          newRole: {
+            memberReferences: ['user:default/test'],
+            name: 'role:default/test',
           },
         });
 

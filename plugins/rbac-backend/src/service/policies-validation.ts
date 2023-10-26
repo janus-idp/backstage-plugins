@@ -34,7 +34,7 @@ export function validatePolicy(policy: RoleBasedPolicy): Error | undefined {
 
 export function validateRole(role: Role): Error | undefined {
   if (!role.name) {
-    return new Error(`'name' must not be empty`);
+    return new Error(`'name' field must not be empty`);
   }
 
   if (!role.memberReferences || role.memberReferences.length === 0) {

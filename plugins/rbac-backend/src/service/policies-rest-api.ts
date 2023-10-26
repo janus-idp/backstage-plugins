@@ -425,7 +425,6 @@ export class PolicesServer {
           `Invalid old role object. Cause: ${err.message}`,
         );
       }
-      newRoleRaw.name = roleEntityRef;
       err = validateRole(newRoleRaw);
       if (err) {
         throw new InputError( // 400
