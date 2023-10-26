@@ -8,13 +8,8 @@ import {
   createPlugin,
 } from '@backstage/core-plugin-api';
 
-import { rootRouteRef } from './routes';
-
 export const tektonPlugin = createPlugin({
   id: 'tekton',
-  routes: {
-    root: rootRouteRef,
-  },
 });
 
 export const TektonCI = tektonPlugin.provide(
