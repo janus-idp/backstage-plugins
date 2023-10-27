@@ -26,19 +26,21 @@ import { isEqual } from 'lodash';
 import { ParsedQs } from 'qs';
 
 import {
-  EntityReferencedPolicy,
   policyEntityCreatePermission,
   policyEntityDeletePermission,
   policyEntityPermissions,
   policyEntityReadPermission,
   policyEntityUpdatePermission,
   RESOURCE_TYPE_POLICY_ENTITY,
+  Role,
+  RoleBasedPolicy,
 } from '@janus-idp/backstage-plugin-rbac-common';
 
 import {
   validateEntityReference,
   validatePolicy,
-  validatePolicyQueries,
+  validateQueries,
+  validateRole,
 } from './policies-validation';
 
 export class PolicesServer {
@@ -95,10 +97,12 @@ export class PolicesServer {
       response.send({ status: 'Authorized' });
     });
 
-    router.get('/policies', async (req, response) => {
+    // Policy CRUD
+
+    router.get('/policies', async (request, response) => {
       const decision = await this.authorize(
         this.identity,
-        req,
+        request,
         this.permissions,
         {
           permission: policyEntityReadPermission,
@@ -110,11 +114,11 @@ export class PolicesServer {
       }
 
       let policies: string[][];
-      if (this.isPolicyFilterEnabled(req)) {
-        const entityRef = this.getFirstQuery(req.query.entityRef);
-        const permission = this.getFirstQuery(req.query.permission);
-        const policy = this.getFirstQuery(req.query.policy);
-        const effect = this.getFirstQuery(req.query.effect);
+      if (this.isPolicyFilterEnabled(request)) {
+        const entityRef = this.getFirstQuery(request.query.entityRef);
+        const permission = this.getFirstQuery(request.query.permission);
+        const policy = this.getFirstQuery(request.query.policy);
+        const effect = this.getFirstQuery(request.query.effect);
 
         const filter: string[] = [entityRef, permission, policy, effect];
         policies = await this.enforcer.getFilteredPolicy(0, ...filter);
@@ -125,29 +129,32 @@ export class PolicesServer {
       response.json(this.transformPolicyArray(...policies));
     });
 
-    router.get('/policies/:kind/:namespace/:name', async (req, response) => {
-      const decision = await this.authorize(
-        this.identity,
-        req,
-        this.permissions,
-        {
-          permission: policyEntityReadPermission,
-        },
-      );
+    router.get(
+      '/policies/:kind/:namespace/:name',
+      async (request, response) => {
+        const decision = await this.authorize(
+          this.identity,
+          request,
+          this.permissions,
+          {
+            permission: policyEntityReadPermission,
+          },
+        );
 
-      if (decision.result === AuthorizeResult.DENY) {
-        throw new NotAllowedError(); // 403
-      }
+        if (decision.result === AuthorizeResult.DENY) {
+          throw new NotAllowedError(); // 403
+        }
 
-      const entityRef = this.getEntityReference(req);
+        const entityRef = this.getEntityReference(request);
 
-      const policy = await this.enforcer.getFilteredPolicy(0, entityRef);
-      if (policy.length !== 0) {
-        response.json(this.transformPolicyArray(...policy));
-      } else {
-        throw new NotFoundError(); // 404
-      }
-    });
+        const policy = await this.enforcer.getFilteredPolicy(0, entityRef);
+        if (policy.length !== 0) {
+          response.json(this.transformPolicyArray(...policy));
+        } else {
+          throw new NotFoundError(); // 404
+        }
+      },
+    );
 
     router.delete(
       '/policies/:kind/:namespace/:name',
@@ -167,7 +174,7 @@ export class PolicesServer {
 
         const entityRef = this.getEntityReference(request);
 
-        const err = validatePolicyQueries(request);
+        const err = validateQueries(request);
         if (err) {
           throw new InputError( // 400
             `Invalid policy definition. Cause: ${err.message}`,
@@ -206,7 +213,7 @@ export class PolicesServer {
         throw new NotAllowedError(); // 403
       }
 
-      const policyRaw: EntityReferencedPolicy = request.body;
+      const policyRaw: RoleBasedPolicy = request.body;
       const err = validatePolicy(policyRaw);
       if (err) {
         throw new InputError( // 400
@@ -227,10 +234,169 @@ export class PolicesServer {
       response.status(201).end();
     });
 
-    router.put('/policies/:kind/:namespace/:name', async (req, resp) => {
+    router.put(
+      '/policies/:kind/:namespace/:name',
+      async (request, response) => {
+        const decision = await this.authorize(
+          this.identity,
+          request,
+          this.permissions,
+          {
+            permission: policyEntityUpdatePermission,
+          },
+        );
+
+        if (decision.result === AuthorizeResult.DENY) {
+          throw new NotAllowedError(); // 403
+        }
+
+        const entityRef = this.getEntityReference(request);
+
+        const oldPolicyRaw = request.body.oldPolicy;
+        if (!oldPolicyRaw) {
+          throw new InputError(`'oldPolicy' object must be present`); // 400
+        }
+        const newPolicyRaw = request.body.newPolicy;
+        if (!newPolicyRaw) {
+          throw new InputError(`'newPolicy' object must be present`); // 400
+        }
+
+        oldPolicyRaw.entityReference = entityRef;
+        let err = validatePolicy(oldPolicyRaw);
+        if (err) {
+          throw new InputError( // 400
+            `Invalid old policy object. Cause: ${err.message}`,
+          );
+        }
+        newPolicyRaw.entityReference = entityRef;
+        err = validatePolicy(newPolicyRaw);
+        if (err) {
+          throw new InputError( // 400
+            `Invalid new policy object. Cause: ${err.message}`,
+          );
+        }
+
+        const oldPolicy = this.transformPolicyToArray(oldPolicyRaw);
+        const newPolicy = this.transformPolicyToArray(newPolicyRaw);
+
+        if (await this.enforcer.hasPolicy(...newPolicy)) {
+          if (isEqual(oldPolicy, newPolicy)) {
+            response.status(204).end();
+            return;
+          }
+          throw new ConflictError(); // 409
+        }
+
+        if (!(await this.enforcer.hasPolicy(...oldPolicy))) {
+          throw new NotFoundError(); // 404
+        }
+
+        // enforcer.updatePolicy(oldPolicyPermission, newPolicyPermission) was not implemented
+        // for ORMTypeAdapter.
+        // So, let's compensate this combination delete + create.
+        const isRemoved = await this.enforcer.removePolicy(...oldPolicy);
+        if (!isRemoved) {
+          throw new Error('Unexpected error'); // 500
+        }
+
+        const isAdded = await this.enforcer.addPolicy(...newPolicy);
+        if (!isAdded) {
+          throw new Error('Unexpected error');
+        }
+
+        response.status(200).end();
+      },
+    );
+
+    // Role CRUD
+
+    router.get('/roles', async (request, response) => {
       const decision = await this.authorize(
         this.identity,
-        req,
+        request,
+        this.permissions,
+        {
+          permission: policyEntityReadPermission,
+        },
+      );
+
+      if (decision.result === AuthorizeResult.DENY) {
+        throw new NotAllowedError(); // 403
+      }
+
+      const roles = await this.enforcer.getGroupingPolicy();
+
+      response.json(this.transformRoleArray(...roles));
+    });
+
+    router.get('/roles/:kind/:namespace/:name', async (request, response) => {
+      const decision = await this.authorize(
+        this.identity,
+        request,
+        this.permissions,
+        {
+          permission: policyEntityReadPermission,
+        },
+      );
+
+      if (decision.result === AuthorizeResult.DENY) {
+        throw new NotAllowedError(); // 403
+      }
+      const roleEntityRef = this.getEntityReference(request);
+
+      const role = await this.enforcer.getFilteredGroupingPolicy(
+        1,
+        roleEntityRef,
+      );
+
+      if (role.length !== 0) {
+        response.json(this.transformRoleArray(...role));
+      } else {
+        throw new NotFoundError(); // 404
+      }
+    });
+
+    router.post('/roles', async (request, response) => {
+      const decision = await this.authorize(
+        this.identity,
+        request,
+        this.permissions,
+        {
+          permission: policyEntityCreatePermission,
+        },
+      );
+
+      if (decision.result === AuthorizeResult.DENY) {
+        throw new NotAllowedError(); // 403
+      }
+      const roleRaw: Role = request.body;
+      const err = validateRole(roleRaw);
+      if (err) {
+        throw new InputError( // 400
+          `Invalid role definition. Cause: ${err.message}`,
+        );
+      }
+
+      const roles = this.transformRoleToArray(roleRaw);
+
+      for (const role in roles) {
+        if (await this.enforcer.hasGroupingPolicy(...role)) {
+          throw new ConflictError(); // 409
+        }
+      }
+
+      const isAdded = await this.enforcer.addGroupingPolicies(roles);
+
+      if (!isAdded) {
+        throw new Error('Unexpected error'); // 500
+      }
+      response.status(201).end();
+    });
+
+    router.put('/roles/:kind/:namespace/:name', async (request, response) => {
+      const decision = await this.authorize(
+        this.identity,
+        request,
         this.permissions,
         {
           permission: policyEntityUpdatePermission,
@@ -240,71 +406,127 @@ export class PolicesServer {
       if (decision.result === AuthorizeResult.DENY) {
         throw new NotAllowedError(); // 403
       }
+      const roleEntityRef = this.getEntityReference(request);
 
-      const entityRef = this.getEntityReference(req);
+      const oldRoleRaw = request.body.oldRole;
 
-      const oldPolicyRaw = req.body.oldPolicy;
-      if (!oldPolicyRaw) {
-        throw new InputError(`'oldPolicy' object must be present`); // 400
+      if (!oldRoleRaw) {
+        throw new InputError(`'oldRole' object must be present`); // 400
       }
-      const newPolicyRaw = req.body.newPolicy;
-      if (!newPolicyRaw) {
-        throw new InputError(`'newPolicy' object must be present`); // 400
+      const newRoleRaw = request.body.newRole;
+      if (!newRoleRaw) {
+        throw new InputError(`'newRole' object must be present`); // 400
       }
 
-      oldPolicyRaw.entityReference = entityRef;
-      let err = validatePolicy(oldPolicyRaw);
+      oldRoleRaw.name = roleEntityRef;
+      let err = validateRole(oldRoleRaw);
       if (err) {
         throw new InputError( // 400
-          `Invalid old policy object. Cause: ${err.message}`,
+          `Invalid old role object. Cause: ${err.message}`,
         );
       }
-      newPolicyRaw.entityReference = entityRef;
-      err = validatePolicy(newPolicyRaw);
+      err = validateRole(newRoleRaw);
       if (err) {
         throw new InputError( // 400
-          `Invalid new policy object. Cause: ${err.message}`,
+          `Invalid new role object. Cause: ${err.message}`,
         );
       }
 
-      const oldPolicy = this.transformPolicyToArray(oldPolicyRaw);
-      const newPolicy = this.transformPolicyToArray(newPolicyRaw);
+      const oldRole = this.transformRoleToArray(oldRoleRaw);
+      const newRole = this.transformRoleToArray(newRoleRaw);
 
-      if (await this.enforcer.hasPolicy(...newPolicy)) {
-        if (isEqual(oldPolicy, newPolicy)) {
-          resp.status(204).end();
-          return;
+      for (const role of newRole) {
+        const hasRole = oldRole.some(element => {
+          return isEqual(element, role);
+        });
+        // if the role is already part of old role and is a grouping policy we want to skip returning a conflict error
+        // to allow for other roles to be checked and added
+        if (await this.enforcer.hasGroupingPolicy(...role)) {
+          if (isEqual(oldRole, newRole)) {
+            response.status(204).end();
+            return;
+          }
+          if (!hasRole) {
+            throw new ConflictError(); // 409
+          }
         }
-        throw new ConflictError(); // 409
       }
 
-      if (!(await this.enforcer.hasPolicy(...oldPolicy))) {
-        throw new NotFoundError(); // 404
+      for (const role of oldRole) {
+        if (!(await this.enforcer.hasGroupingPolicy(...role))) {
+          throw new NotFoundError(); // 404
+        }
       }
 
-      // enforcer.updatePolicy(oldPolicyPermission, newPolicyPermission) was not implemented
+      // enforcer.updateGroupingPolicy(oldRole, newRole) was not implemented
       // for ORMTypeAdapter.
       // So, let's compensate this combination delete + create.
-      const isRemoved = await this.enforcer.removePolicy(...oldPolicy);
+      const isRemoved = await this.enforcer.removeGroupingPolicies(oldRole);
       if (!isRemoved) {
         throw new Error('Unexpected error'); // 500
       }
 
-      const isAdded = await this.enforcer.addPolicy(...newPolicy);
+      const isAdded = await this.enforcer.addGroupingPolicies(newRole);
       if (!isAdded) {
         throw new Error('Unexpected error');
       }
 
-      resp.status(200).end();
+      response.status(200).end();
     });
+
+    router.delete(
+      '/roles/:kind/:namespace/:name',
+      async (request, response) => {
+        let roles = [];
+        const decision = await this.authorize(
+          this.identity,
+          request,
+          this.permissions,
+          {
+            permission: policyEntityDeletePermission,
+          },
+        );
+
+        if (decision.result === AuthorizeResult.DENY) {
+          throw new NotAllowedError(); // 403
+        }
+
+        const roleEntityRef = this.getEntityReference(request);
+
+        if (request.query.memberReferences) {
+          const memberReferences = this.getFirstQuery(
+            request.query.memberReferences!,
+          );
+
+          roles.push([memberReferences, roleEntityRef]);
+        } else {
+          roles = await this.enforcer.getFilteredGroupingPolicy(
+            1,
+            roleEntityRef,
+          );
+        }
+
+        for (const role of roles) {
+          if (!(await this.enforcer.hasGroupingPolicy(...role))) {
+            throw new NotFoundError(); // 404
+          }
+        }
+
+        const isRemoved = await this.enforcer.removeGroupingPolicies(roles);
+        if (!isRemoved) {
+          throw new Error('Unexpected error'); // 500
+        }
+        response.status(204).end();
+      },
+    );
 
     return router;
   }
 
-  getEntityReference(req: Request): string {
-    const kind = req.params.kind;
-    const namespace = req.params.namespace;
-    const name = req.params.name;
+  getEntityReference(request: Request): string {
+    const kind = request.params.kind;
+    const namespace = request.params.namespace;
+    const name = request.params.name;
     const entityRef = `${kind}:${namespace}/${name}`;
 
     const err = validateEntityReference(entityRef);
@@ -315,20 +537,47 @@ export class PolicesServer {
     return entityRef;
   }
 
-  transformPolicyArray(...policies: string[][]): EntityReferencedPolicy[] {
+  transformPolicyArray(...policies: string[][]): RoleBasedPolicy[] {
     return policies.map((p: string[]) => {
       const [entityReference, permission, policy, effect] = p;
       return { entityReference, permission, policy, effect };
     });
   }
 
-  transformPolicyToArray(policy: EntityReferencedPolicy): string[] {
+  transformRoleArray(...roles: string[][]): Role[] {
+    const combinedRoles: { [key: string]: string[] } = {};
+
+    roles.forEach(([value, role]) => {
+      if (combinedRoles.hasOwnProperty(role)) {
+        combinedRoles[role].push(value);
+      } else {
+        combinedRoles[role] = [value];
+      }
+    });
+
+    const result: Role[] = Object.entries(combinedRoles).map(
+      ([role, value]) => {
+        return { memberReferences: value, name: role };
+      },
+    );
+    return result;
+  }
+
+  transformPolicyToArray(policy: RoleBasedPolicy): string[] {
     return [
       policy.entityReference!,
       policy.permission!,
       policy.policy!,
       policy.effect!,
     ];
+  }
+
+  transformRoleToArray(role: Role): string[][] {
+    const roles: string[][] = [];
+    for (const entity of role.memberReferences) {
+      roles.push([entity, role.name]);
+    }
+    return roles;
   }
 
   getFirstQuery(
@@ -350,12 +599,12 @@ export class PolicesServer {
     throw new InputError(`This api doesn't support nested query`);
   }
 
-  isPolicyFilterEnabled(req: Request): boolean {
+  isPolicyFilterEnabled(request: Request): boolean {
     return (
-      !!req.query.entityRef ||
-      !!req.query.permission ||
-      !!req.query.policy ||
-      !!req.query.effect
+      !!request.query.entityRef ||
+      !!request.query.permission ||
+      !!request.query.policy ||
+      !!request.query.effect
     );
   }
 }

@@ -19,28 +19,48 @@ import { Logger } from 'winston';
 
 import { MODEL } from './permission-model';
 
-const useAdmins = (admins: Config[], enf: Enforcer) => {
+const useAdmins = async (admins: Config[], enf: Enforcer) => {
+  const adminRoleName = 'role:default/rbac_admin';
   admins.flatMap(async localConfig => {
     const name = localConfig.getString('name');
-    const adminReadPermission = [name, 'policy-entity', 'read', 'allow'];
-    if (!(await enf.hasPolicy(...adminReadPermission))) {
-      await enf.addPolicy(...adminReadPermission);
-    }
-    const adminCreatePermission = [name, 'policy-entity', 'create', 'allow'];
-    if (!(await enf.hasPolicy(...adminCreatePermission))) {
-      await enf.addPolicy(...adminCreatePermission);
-    }
-
-    const adminDeletePermission = [name, 'policy-entity', 'delete', 'allow'];
-    if (!(await enf.hasPolicy(...adminDeletePermission))) {
-      await enf.addPolicy(...adminDeletePermission);
-    }
-
-    const adminUpdatePermission = [name, 'policy-entity', 'update', 'allow'];
-    if (!(await enf.hasPolicy(...adminUpdatePermission))) {
-      await enf.addPolicy(...adminUpdatePermission);
+    const adminRole = [name, adminRoleName];
+    if (!(await enf.hasGroupingPolicy(...adminRole))) {
+      await enf.addGroupingPolicy(...adminRole);
     }
   });
+  const adminReadPermission = [adminRoleName, 'policy-entity', 'read', 'allow'];
+  if (!(await enf.hasPolicy(...adminReadPermission))) {
+    await enf.addPolicy(...adminReadPermission);
+  }
+  const adminCreatePermission = [
+    adminRoleName,
+    'policy-entity',
+    'create',
+    'allow',
+  ];
+  if (!(await enf.hasPolicy(...adminCreatePermission))) {
+    await enf.addPolicy(...adminCreatePermission);
+  }
+
+  const adminDeletePermission = [
+    adminRoleName,
+    'policy-entity',
+    'delete',
+    'allow',
+  ];
+  if (!(await enf.hasPolicy(...adminDeletePermission))) {
+    await enf.addPolicy(...adminDeletePermission);
+  }
+
+  const adminUpdatePermission = [
+    adminRoleName,
+    'policy-entity',
+    'update',
+    'allow',
+  ];
+  if (!(await enf.hasPolicy(...adminUpdatePermission))) {
+    await enf.addPolicy(...adminUpdatePermission);
+  }
 };
 
 const addPredefinedPolicies = async (
