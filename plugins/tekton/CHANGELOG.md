@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-tekton [3.0.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.0.1...@janus-idp/backstage-plugin-tekton@3.0.2) (2023-10-27)
+
+
+### Bug Fixes
+
+* **tekton:** handle flaky cluster error gracefully ([#887](https://github.com/janus-idp/backstage-plugins/issues/887)) ([10ed80e](https://github.com/janus-idp/backstage-plugins/commit/10ed80e4882d473eaee8319a9b1643b14f99a203))
+
 ## @janus-idp/backstage-plugin-tekton [3.0.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.0.0...@janus-idp/backstage-plugin-tekton@3.0.1) (2023-10-26)
 
 
