@@ -33,7 +33,7 @@
     "@material-ui/icons": "^4.11.3",
     "@material-ui/lab": "^4.0.0-alpha.45",
     "@tanstack/react-query": "^4.36.1",
-    "axios": "^1.5.1",
+    "axios": "^1.6.0",
     "react-use": "^17.4.0",
     "recharts": "^2.9.0"
   },
