@@ -1,3 +1,21 @@
+## @janus-idp/backstage-plugin-rbac-backend [1.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@1.2.1...@janus-idp/backstage-plugin-rbac-backend@1.3.0) (2023-10-27)
+
+
+### Features
+
+* **rbac:** implement the concept of roles in rbac ([#867](https://github.com/janus-idp/backstage-plugins/issues/867)) ([4d878a2](https://github.com/janus-idp/backstage-plugins/commit/4d878a29babd86bd7896d69e6b2b63392b6e6cc8))
+
+
+### Bug Fixes
+
+* **rbac:** add models folder and config.d.ts to package ([#891](https://github.com/janus-idp/backstage-plugins/issues/891)) ([406c147](https://github.com/janus-idp/backstage-plugins/commit/406c14703110018c702834482d32fdd4f8a36cef))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-rbac-common:** upgraded to 1.1.0
+
 ## @janus-idp/backstage-plugin-rbac-backend [1.2.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@1.2.0...@janus-idp/backstage-plugin-rbac-backend@1.2.1) (2023-10-24)
 
 
