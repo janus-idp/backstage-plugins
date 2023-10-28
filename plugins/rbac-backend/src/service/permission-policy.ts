@@ -18,6 +18,7 @@ import { Enforcer, FileAdapter, newEnforcer, newModelFromString } from 'casbin';
 import { Logger } from 'winston';
 
 import { MODEL } from './permission-model';
+import { validateEntityReference } from './policies-validation';
 
 const useAdmins = async (admins: Config[], enf: Enforcer) => {
   const adminRoleName = 'role:default/rbac_admin';
@@ -63,7 +64,7 @@ const useAdmins = async (admins: Config[], enf: Enforcer) => {
   }
 };
 
-const addPredefinedPolicies = async (
+const addPredefinedPoliciesAndGroupPolicies = async (
   preDefinedPoliciesFile: string,
   enf: Enforcer,
 ) => {
@@ -73,8 +74,33 @@ const addPredefinedPolicies = async (
   );
   const policies = await fileEnf.getPolicy();
   for (const policy of policies) {
+    const err = validateEntityReference(policy[0]);
+    if (err) {
+      throw new Error(
+        `Failed to validate policy from file ${preDefinedPoliciesFile}. Cause: ${err.message}`,
+      );
+    }
+
     if (!(await enf.hasPolicy(...policy))) {
       await enf.addPolicy(...policy);
+    }
+  }
+  const groupPolicies = await fileEnf.getGroupingPolicy();
+  for (const groupPolicy of groupPolicies) {
+    let err = validateEntityReference(groupPolicy[0]);
+    if (err) {
+      throw new Error(
+        `Failed to validate group policy from file ${preDefinedPoliciesFile}. Cause: ${err.message}`,
+      );
+    }
+    err = validateEntityReference(groupPolicy[1]);
+    if (err) {
+      throw new Error(
+        `Failed to validate group policy from file ${preDefinedPoliciesFile}. Cause: ${err.message}`,
+      );
+    }
+    if (!(await enf.hasGroupingPolicy(...groupPolicy))) {
+      await enf.addGroupingPolicy(...groupPolicy);
     }
   }
 };
@@ -97,7 +123,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     );
 
     if (policiesFile) {
-      await addPredefinedPolicies(policiesFile, enf);
+      await addPredefinedPoliciesAndGroupPolicies(policiesFile, enf);
     }
 
     if (adminUsers) {
