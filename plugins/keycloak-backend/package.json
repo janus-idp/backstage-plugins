@@ -31,7 +31,7 @@
     "@backstage/catalog-model": "^1.4.3",
     "@backstage/config": "^1.1.1",
     "@backstage/plugin-catalog-node": "^1.4.7",
-    "@keycloak/keycloak-admin-client": "<19.0.0",
+    "@keycloak/keycloak-admin-client": "21.1.0",
     "lodash": "^4.17.21",
     "uuid": "^9.0.1",
     "winston": "^3.11.0"
