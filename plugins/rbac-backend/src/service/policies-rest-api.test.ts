@@ -1723,6 +1723,7 @@ describe('REST policies api', () => {
         const result = await request(app).get('/conditions').send();
         expect(result.statusCode).toBe(200);
         expect(result.body).toEqual(conditions);
+        expect(mockIdentityClient.getIdentity).toHaveBeenCalledTimes(0);
       });
 
       it('should be returned condition decision by pluginId', async () => {
@@ -1837,6 +1838,7 @@ describe('REST policies api', () => {
         const result = await request(app).delete('/conditions/1').send();
 
         expect(result.statusCode).toEqual(204);
+        expect(mockIdentityClient.getIdentity).toHaveBeenCalledTimes(1);
       });
 
       it('should fail to delete condition decision by id', async () => {
@@ -1909,6 +1911,7 @@ describe('REST policies api', () => {
         const result = await request(app).get('/conditions/1').send();
         expect(result.statusCode).toBe(200);
         expect(result.body).toEqual(condition);
+        expect(mockIdentityClient.getIdentity).toHaveBeenCalledTimes(0);
       });
 
       it('should return return 404', async () => {
@@ -1972,6 +1975,7 @@ describe('REST policies api', () => {
 
         expect(result.statusCode).toBe(201);
         expect(result.body).toEqual({ id: 1 });
+        expect(mockIdentityClient.getIdentity).toHaveBeenCalledTimes(1);
       });
     });
 
@@ -2030,6 +2034,7 @@ describe('REST policies api', () => {
           1,
           conditionDecision,
         );
+        expect(mockIdentityClient.getIdentity).toHaveBeenCalledTimes(1);
       });
     });
   });

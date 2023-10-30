@@ -88,7 +88,7 @@ export class PolicyBuilder {
       env.permissions,
       options,
       enf,
-      conditionStorage
+      conditionStorage,
     );
     return server.serve();
   }

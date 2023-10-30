@@ -469,14 +469,9 @@ export class PolicesServer {
     );
 
     router.get('/conditions', async (req, resp) => {
-      const decision = await this.authorize(
-        this.identity,
-        req,
-        this.permissions,
-        {
-          permission: policyEntityReadPermission,
-        },
-      );
+      const decision = await this.authorize(req, {
+        permission: policyEntityReadPermission,
+      });
 
       if (decision.result === AuthorizeResult.DENY) {
         throw new NotAllowedError(); // 403
@@ -493,14 +488,9 @@ export class PolicesServer {
     });
 
     router.post('/conditions', async (req, resp) => {
-      const decision = await this.authorize(
-        this.identity,
-        req,
-        this.permissions,
-        {
-          permission: policyEntityCreatePermission,
-        },
-      );
+      const decision = await this.authorize(req, {
+        permission: policyEntityCreatePermission,
+      });
 
       if (decision.result === AuthorizeResult.DENY) {
         throw new NotAllowedError(); // 403
@@ -515,14 +505,9 @@ export class PolicesServer {
     });
 
     router.get('/conditions/:id', async (req, resp) => {
-      const decision = await this.authorize(
-        this.identity,
-        req,
-        this.permissions,
-        {
-          permission: policyEntityReadPermission,
-        },
-      );
+      const decision = await this.authorize(req, {
+        permission: policyEntityReadPermission,
+      });
 
       if (decision.result === AuthorizeResult.DENY) {
         throw new NotAllowedError(); // 403
@@ -542,14 +527,9 @@ export class PolicesServer {
     });
 
     router.delete('/conditions/:id', async (req, resp) => {
-      const decision = await this.authorize(
-        this.identity,
-        req,
-        this.permissions,
-        {
-          permission: policyEntityDeletePermission,
-        },
-      );
+      const decision = await this.authorize(req, {
+        permission: policyEntityDeletePermission,
+      });
 
       if (decision.result === AuthorizeResult.DENY) {
         throw new NotAllowedError(); // 403
@@ -565,14 +545,9 @@ export class PolicesServer {
     });
 
     router.put('/conditions/:id', async (req, resp) => {
-      const decision = await this.authorize(
-        this.identity,
-        req,
-        this.permissions,
-        {
-          permission: policyEntityUpdatePermission,
-        },
-      );
+      const decision = await this.authorize(req, {
+        permission: policyEntityUpdatePermission,
+      });
 
       if (decision.result === AuthorizeResult.DENY) {
         throw new NotAllowedError(); // 403
