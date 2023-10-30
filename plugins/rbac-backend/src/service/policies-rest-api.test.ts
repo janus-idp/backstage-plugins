@@ -157,6 +157,7 @@ describe('REST policies api', () => {
       ),
     };
     server = new PolicesServer(
+      mockIdentityClient,
       mockPermissionEvaluator,
       options,
       mockEnforcer as Enforcer,
@@ -178,6 +179,7 @@ describe('REST policies api', () => {
 
       expect(result.status).toBe(200);
       expect(result.body).toEqual({ status: 'Authorized' });
+      expect(mockIdentityClient.getIdentity).toHaveBeenCalledTimes(0);
     });
 
     it('should return a status of Unauthorized', async () => {
@@ -286,6 +288,7 @@ describe('REST policies api', () => {
       });
 
       expect(result.statusCode).toBe(201);
+      expect(mockIdentityClient.getIdentity).toHaveBeenCalledTimes(1);
     });
 
     it('should not be created permission policy, because it is has been already present', async () => {
@@ -356,6 +359,7 @@ describe('REST policies api', () => {
           effect: 'allow',
         },
       ]);
+      expect(mockIdentityClient.getIdentity).toHaveBeenCalledTimes(0);
     });
     it('should be returned policies by user reference not found', async () => {
       mockEnforcer.getFilteredPolicy = jest
@@ -422,6 +426,7 @@ describe('REST policies api', () => {
           effect: 'allow',
         },
       ]);
+      expect(mockIdentityClient.getIdentity).toHaveBeenCalledTimes(0);
     });
     it('should be returned list filtered policies', async () => {
       mockEnforcer.getFilteredPolicy = jest
@@ -572,6 +577,7 @@ describe('REST policies api', () => {
         .send();
 
       expect(result.statusCode).toEqual(204);
+      expect(mockIdentityClient.getIdentity).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -924,6 +930,7 @@ describe('REST policies api', () => {
         });
 
       expect(result.statusCode).toEqual(200);
+      expect(mockIdentityClient.getIdentity).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -1011,6 +1018,7 @@ describe('REST policies api', () => {
           name: 'role:default/rbac_admin',
         },
       ]);
+      expect(mockIdentityClient.getIdentity).toHaveBeenCalledTimes(0);
     });
 
     it('should be returned roles by role reference not found', async () => {
@@ -1128,6 +1136,7 @@ describe('REST policies api', () => {
         });
 
       expect(result.statusCode).toBe(201);
+      expect(mockIdentityClient.getIdentity).toHaveBeenCalledTimes(1);
     });
 
     it('should not be created role, because it is has been already present', async () => {
@@ -1408,6 +1417,7 @@ describe('REST policies api', () => {
         });
 
       expect(result.statusCode).toEqual(200);
+      expect(mockIdentityClient.getIdentity).toHaveBeenCalledTimes(1);
     });
 
     it('should update role where newRole has multiple roles', async () => {
@@ -1606,6 +1616,7 @@ describe('REST policies api', () => {
         .send();
 
       expect(result.statusCode).toEqual(204);
+      expect(mockIdentityClient.getIdentity).toHaveBeenCalledTimes(1);
     });
 
     it('should delete a role', async () => {
