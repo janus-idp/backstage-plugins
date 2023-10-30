@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac-backend [1.5.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@1.4.0...@janus-idp/backstage-plugin-rbac-backend@1.5.0) (2023-10-30)
+
+
+### Features
+
+* **rbac:** implement conditional policies feature. ([#833](https://github.com/janus-idp/backstage-plugins/issues/833)) ([3c0675b](https://github.com/janus-idp/backstage-plugins/commit/3c0675ba6ebf91274848981fa1e6eab9e4a1e659))
+
 ## @janus-idp/backstage-plugin-rbac-backend [1.4.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@1.3.0...@janus-idp/backstage-plugin-rbac-backend@1.4.0) (2023-10-30)
 
 
