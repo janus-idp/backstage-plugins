@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac-backend [1.5.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@1.5.0...@janus-idp/backstage-plugin-rbac-backend@1.5.1) (2023-10-30)
+
+
+### Bug Fixes
+
+* **rbac:** fix service to service requests for RBAC CRUD ([#886](https://github.com/janus-idp/backstage-plugins/issues/886)) ([0b72d73](https://github.com/janus-idp/backstage-plugins/commit/0b72d7373dddc3f4d8c5076ca3800745bf619d85))
+
 ## @janus-idp/backstage-plugin-rbac-backend [1.5.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@1.4.0...@janus-idp/backstage-plugin-rbac-backend@1.5.0) (2023-10-30)
 
 
