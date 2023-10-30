@@ -144,6 +144,32 @@ describe('RBACPermissionPolicy Tests', () => {
       );
       expect(decision.result).toBe(AuthorizeResult.ALLOW);
     });
+
+    // case1 with role
+    it('should allow update access to resource permission for user from csv file', async () => {
+      const decision = await policy.handle(
+        newPolicyQueryWithResourcePermission(
+          'catalog.entity.read',
+          'catalog-entity',
+          'update',
+        ),
+        newIdentityResponse('user:default/guest'),
+      );
+      expect(decision.result).toBe(AuthorizeResult.ALLOW);
+    });
+
+    // case2 with role
+    it('should allow update access to resource permission for role from csv file', async () => {
+      const decision = await policy.handle(
+        newPolicyQueryWithResourcePermission(
+          'catalog.entity.read',
+          'catalog-entity',
+          'update',
+        ),
+        newIdentityResponse('role:default/catalog-writer'),
+      );
+      expect(decision.result).toBe(AuthorizeResult.ALLOW);
+    });
   });
 
   describe('Policy checks for users', () => {
