@@ -1,5 +1,5 @@
 import {
-  PluginDatabaseManager,
+  DatabaseManager,
   PluginEndpointDiscovery,
   resolvePackagePath,
   TokenManager,
@@ -14,7 +14,8 @@ import { FileAdapter, newEnforcer, newModelFromString } from 'casbin';
 import { Router } from 'express';
 import { Logger } from 'winston';
 
-import { CasbinDBAdapterFactory } from './casbin-adapter-factory';
+import { CasbinDBAdapterFactory } from '../database/casbin-adapter-factory';
+import { DataBaseConditionalStorage } from '../database/conditional-storage';
 import { MODEL } from './permission-model';
 import { RBACPermissionPolicy } from './permission-policy';
 import { PolicesServer } from './policies-rest-api';
@@ -27,18 +28,21 @@ export class PolicyBuilder {
     discovery: PluginEndpointDiscovery;
     identity: IdentityApi;
     permissions: PermissionEvaluator;
-    database: PluginDatabaseManager;
     tokenManager: TokenManager;
   }): Promise<Router> {
     let adapter;
     const databaseEnabled = env.config.getOptionalBoolean(
       'permission.rbac.database.enabled',
     );
+
+    const databaseManager = await DatabaseManager.fromConfig(
+      env.config,
+    ).forPlugin('permission');
     // Database adapter work
     if (databaseEnabled) {
       adapter = await new CasbinDBAdapterFactory(
         env.config,
-        env.database,
+        databaseManager,
       ).createAdapter();
     } else {
       adapter = new FileAdapter(
@@ -63,12 +67,20 @@ export class PolicyBuilder {
     enf.enableAutoBuildRoleLinks(false);
     await enf.buildRoleLinks();
 
+    const conditionStorage =
+      await DataBaseConditionalStorage.create(databaseManager);
+
     const options: RouterOptions = {
       config: env.config,
       logger: env.logger,
       discovery: env.discovery,
       identity: env.identity,
-      policy: await RBACPermissionPolicy.build(env.logger, env.config, enf),
+      policy: await RBACPermissionPolicy.build(
+        env.logger,
+        env.config,
+        conditionStorage,
+        enf,
+      ),
     };
 
     const server = new PolicesServer(
@@ -76,6 +88,7 @@ export class PolicyBuilder {
       env.permissions,
       options,
       enf,
+      conditionStorage,
     );
     return server.serve();
   }

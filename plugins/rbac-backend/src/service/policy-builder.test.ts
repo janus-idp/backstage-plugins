@@ -6,7 +6,7 @@ import { Adapter, Enforcer, FileAdapter } from 'casbin';
 import { Router } from 'express';
 import TypeORMAdapter from 'typeorm-adapter';
 
-import { CasbinDBAdapterFactory } from './casbin-adapter-factory';
+import { CasbinDBAdapterFactory } from '../database/casbin-adapter-factory';
 import { RBACPermissionPolicy } from './permission-policy';
 import { PolicesServer as PoliciesServer } from './policies-rest-api';
 import { PolicyBuilder } from './policy-builder';
@@ -38,7 +38,7 @@ const mockDataBaseAdapterFactory: Partial<CasbinDBAdapterFactory> = {
   }),
 };
 
-jest.mock('./casbin-adapter-factory', () => {
+jest.mock('../database/casbin-adapter-factory', () => {
   return {
     CasbinDBAdapterFactory: jest.fn((): Partial<CasbinDBAdapterFactory> => {
       return mockDataBaseAdapterFactory;
@@ -100,10 +100,6 @@ describe('PolicyBuilder', () => {
     })),
   };
 
-  const mockDatabaseManager = {
-    getClient: jest.fn().mockImplementation(),
-  };
-
   const mockDiscovery = {
     getBaseUrl: jest.fn(),
     getExternalBaseUrl: jest.fn(),
@@ -135,7 +131,6 @@ describe('PolicyBuilder', () => {
       discovery: mockDiscovery,
       identity: mockIdentityClient,
       permissions: mockPermissionEvaluator,
-      database: mockDatabaseManager,
       tokenManager: tokenManagerMock,
     });
 
@@ -172,7 +167,6 @@ describe('PolicyBuilder', () => {
       discovery: mockDiscovery,
       identity: mockIdentityClient,
       permissions: mockPermissionEvaluator,
-      database: mockDatabaseManager,
       tokenManager: tokenManagerMock,
     });
     expect(CasbinDBAdapterFactory).toHaveBeenCalled();
