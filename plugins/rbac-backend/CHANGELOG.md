@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac-backend [1.4.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@1.3.0...@janus-idp/backstage-plugin-rbac-backend@1.4.0) (2023-10-30)
+
+
+### Features
+
+* **rbac:** add role support for policies-csv-file ([#894](https://github.com/janus-idp/backstage-plugins/issues/894)) ([7ad4902](https://github.com/janus-idp/backstage-plugins/commit/7ad4902be12a9900149a73427a6c52cbb65659f3))
+
 ## @janus-idp/backstage-plugin-rbac-backend [1.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@1.2.1...@janus-idp/backstage-plugin-rbac-backend@1.3.0) (2023-10-27)
 
 
