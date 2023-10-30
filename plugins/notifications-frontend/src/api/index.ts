@@ -1,2 +1,2 @@
-export * from './notificationsApiV1';
-export * from './NotificationsApiV1Impl';
+export * from './notificationsApi';
+export * from './NotificationsApiImpl';

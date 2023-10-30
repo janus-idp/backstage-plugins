@@ -40,7 +40,7 @@ A new DB will be created: backstage_plugin_notifications
 Request:
 
 ```bash
-curl -X POST http://localhost:7007/api/notifications/notifications -H "Content-Type: application/json"  -d '{"subject": "my first message", "body": "I have nothing to talk about"}'
+curl -X POST http://localhost:7007/api/notifications/notifications -H "Content-Type: application/json"  -d '{"title": "my first message", "message": "I have nothing to tell", "origin": "my-origin", "title": "My title", "topic": "my-topic"}'
 ```
 
 Response:
