@@ -46,7 +46,7 @@ curl -X POST http://localhost:7007/api/notifications/notifications -H "Content-T
 Response:
 
 ```json
-{ "status": "ok", "msgid": [{ "id": 1 }] }
+{ "msgid": "2daac6ff-3aaa-420d-b755-d94e54248310" }
 ```
 
 ### Get notifications
@@ -54,7 +54,7 @@ Response:
 Request:
 
 ```bash
-curl http://localhost:7007/api/notifications/notifications
+curl 'http://localhost:7007/api/notifications/notifications?pageNumber=0&pageSize=0'
 ```
 
 Response:
@@ -62,14 +62,13 @@ Response:
 ```json
 [
   {
-    "id": 1,
-    "subject": "my first message",
-    "body": "I have nothing to talk about"
-  },
-  {
-    "id": 2,
-    "subject": "my second message",
-    "body": "I still dont have anything to talk about"
+    "id": "2daac6ff-3aaa-420d-b755-d94e54248310",
+    "created": "2023-10-30T13:48:34.931Z",
+    "readByUser": false,
+    "origin": "my-origin",
+    "title": "My title",
+    "message": "I have nothing to tell",
+    "topic": "my-topic"
   }
 ]
 ```
@@ -85,5 +84,5 @@ curl http://localhost:7007/api/notifications/notifications/count
 Response:
 
 ```json
-{ "status": "ok", "count": "0" }
+{ "count": "1" }
 ```
