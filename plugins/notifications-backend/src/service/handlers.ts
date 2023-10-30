@@ -77,6 +77,8 @@ export function getNotifications(
 
   const query = dbClient('messages').select('*');
 
+  query.orderBy('created', 'asc');
+
   addFilter(query, filter);
 
   if (pageNumber > 0) {
