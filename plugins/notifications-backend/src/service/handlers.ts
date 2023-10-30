@@ -18,7 +18,7 @@ export async function createNotification(
 ): Promise<{ msgid: string }> {
   if (Array.isArray(req.targetGroups)) {
     const promises = req.targetGroups.map(group => {
-      return catalogClient.getEntityByRef(`group:${  group}`).then(groupRef => {
+      return catalogClient.getEntityByRef(`group:${group}`).then(groupRef => {
         if (!groupRef) {
           throw new Error(`group '${group}' does not exist`);
         }
@@ -30,7 +30,7 @@ export async function createNotification(
 
   if (Array.isArray(req.targetUsers)) {
     const promises = req.targetUsers.map(user => {
-      return catalogClient.getEntityByRef(`user:${  user}`).then(userRef => {
+      return catalogClient.getEntityByRef(`user:${user}`).then(userRef => {
         if (!userRef) {
           throw new Error(`user '${user}' does not exist`);
         }
@@ -47,20 +47,18 @@ export async function createNotification(
     topic: req.topic,
   };
 
-  let msgid: string = '';
-
-  await dbClient('messages')
+  const ret = dbClient('messages')
     .insert(row)
     .returning<string, { id: string }[]>('id')
     .then(ids => {
-      msgid = ids[0].id;
+      return { msgid: ids[0].id };
     });
 
-  return { msgid: msgid };
+  return ret;
 }
 
 // getNotifications
-export async function getNotifications(
+export function getNotifications(
   dbClient: Knex<any, any>,
   filter: NotificationsFilter,
   pageSize: number,
@@ -69,8 +67,8 @@ export async function getNotifications(
   if (
     pageSize < 0 ||
     pageNumber < 0 ||
-    (pageSize == 0 && pageNumber > 0) ||
-    (pageSize > 0 && pageNumber == 0)
+    (pageSize === 0 && pageNumber > 0) ||
+    (pageSize > 0 && pageNumber === 0)
   ) {
     throw new Error(
       'pageSize and pageNumber must both be either 0 or greater than 0',
@@ -85,42 +83,45 @@ export async function getNotifications(
     query.limit(pageSize).offset((pageNumber - 1) * pageSize);
   }
 
-  const messages = await query;
+  const ret = query.then(messages => {
+    const notifications = messages.map(message => {
+      const notification: Notification = {
+        id: message.id,
+        created: message.created,
+        readByUser: false,
+        origin: message.origin,
+        title: message.title,
+        message: message.message,
+        topic: message.topic,
+      };
+      return notification;
+    });
 
-  const notifications = messages.map(message => {
-    const notification: Notification = {
-      id: message.id,
-      created: message.created,
-      readByUser: false,
-      origin: message.origin,
-      title: message.title,
-      message: message.message,
-      topic: message.topic,
-    };
-    return notification;
+    return notifications;
   });
 
-  return notifications;
+  return ret;
 }
 
-export async function getNotificationsCount(
+export function getNotificationsCount(
   dbClient: Knex<any, any>,
   filter: NotificationsFilter,
 ): Promise<{ count: number }> {
-  let msgcount = -1;
-
   const query = dbClient('messages').count('* as CNT');
 
   addFilter(query, filter);
 
-  await query.then(count => {
-    msgcount = count[0].CNT as number;
+  const ret = query.then(count => {
+    const msgcount = count[0].CNT as number;
+    return { count: msgcount };
   });
-  return { count: msgcount };
+
+  return ret;
 }
 
 function addFilter(query: Knex.QueryBuilder, filter: NotificationsFilter) {
   if (filter.containsText) {
+    // eslint-disable-next-line func-names
     query.where(function () {
       this.whereILike('title', `%${filter.containsText}%`).orWhereILike(
         'message',
@@ -128,6 +129,7 @@ function addFilter(query: Knex.QueryBuilder, filter: NotificationsFilter) {
       );
     });
   }
+
   if (filter.createdAfter) {
     query.andWhere('created', '>', filter.createdAfter);
   }

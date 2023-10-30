@@ -19,7 +19,7 @@ export async function initDB(dbConfig: Config): Promise<Knex<any, any>> {
 
   // create tables
   if (!(await dbClient.schema.hasTable('messages'))) {
-    await dbClient.schema.createTable('messages', function (table) {
+    await dbClient.schema.createTable('messages', table => {
       table.uuid('id', { primaryKey: true }).defaultTo(dbClient.fn.uuid());
       table.string('origin').notNullable();
       table.timestamp('created').defaultTo(dbClient.fn.now());
