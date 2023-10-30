@@ -32,21 +32,21 @@ export async function createRouter(
     throw new Error('Missing database config');
   }
 
-  // create DB client an tables
+  // create DB client and tables
   const dbClient = await initDB(dbConfig);
 
   // rest endpoints/operations
-  router.get('/health', async (_, response) => {
+  router.get('/health', (_, response) => {
     response.json({ status: 'ok' });
   });
 
-  router.get('/notifications/count', async (request, response) => {
+  router.get('/notifications/count', (request, response) => {
     getNotificationsCount(dbClient, request.query).then(result =>
       response.json(result),
     );
   });
 
-  router.get('/notifications', async (request, response) => {
+  router.get('/notifications', (request, response) => {
     const { pageSize, pageNumber } = request.query;
 
     if (typeof pageSize !== 'string' || typeof pageNumber !== 'string') {
@@ -55,8 +55,8 @@ export async function createRouter(
       );
     }
 
-    const pageSizeNum = Number.parseInt(pageSize);
-    const pageNumberNum = Number.parseInt(pageNumber);
+    const pageSizeNum = Number.parseInt(pageSize, 10);
+    const pageNumberNum = Number.parseInt(pageNumber, 10);
 
     if (Number.isNaN(pageSizeNum) || Number.isNaN(pageNumberNum)) {
       throw new Error('either pageSize or pageNumber is not a number');
@@ -67,10 +67,10 @@ export async function createRouter(
     );
   });
 
-  router.post('/notifications', async (request, response) => {
-    createNotification(dbClient, catalogClient, request.body).then(result =>
-      response.json(result),
-    );
+  router.post('/notifications', (request, response, next) => {
+    createNotification(dbClient, catalogClient, request.body)
+      .then(result => response.json(result))
+      .catch(next);
   });
 
   router.use(errorHandler());

@@ -1,10 +1,11 @@
 import { createServiceBuilder } from '@backstage/backend-common';
 
+import { Router } from 'express';
 import { Logger } from 'winston';
 
 import { Server } from 'http';
 
-import { createRouter } from './router';
+// import { createRouter } from './router';
 
 export interface ServerOptions {
   port: number;
@@ -18,10 +19,11 @@ export async function startStandaloneServer(
   const logger = options.logger.child({ service: 'notifications-backend' });
 
   logger.debug('Starting application server...');
-  const router = await createRouter({
+  const router = Router();
+  /* const router = await createRouter({
     logger,
     // TODO: get dbClient in standalone mode
-  });
+  }); */
 
   let service = createServiceBuilder(module)
     .setPort(options.port)
