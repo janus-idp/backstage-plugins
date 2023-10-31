@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac-backend [1.6.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@1.5.1...@janus-idp/backstage-plugin-rbac-backend@1.6.0) (2023-10-31)
+
+
+### Features
+
+* **rbac:** implement REST method to list all plugin permission policies ([#808](https://github.com/janus-idp/backstage-plugins/issues/808)) ([0a17e67](https://github.com/janus-idp/backstage-plugins/commit/0a17e67cbb72416176e978fc3ed8868855375a8b))
+
 ## @janus-idp/backstage-plugin-rbac-backend [1.5.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@1.5.0...@janus-idp/backstage-plugin-rbac-backend@1.5.1) (2023-10-30)
 
 
