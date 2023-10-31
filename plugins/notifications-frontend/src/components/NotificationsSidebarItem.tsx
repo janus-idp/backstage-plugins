@@ -24,15 +24,15 @@ export const NotificationsSidebarItem = () => {
 
   const pollCallback = React.useCallback(async () => {
     try {
-      setUnreadCount(await notificationsApi.getUnreadCount(/* params */));
+      setUnreadCount(
+        await notificationsApi.getNotificationsCount({ unreadOnly: true }),
+      );
     } catch (e: unknown) {
       setError(e as Error);
     }
   }, [notificationsApi]);
 
-  usePollingEffect(pollCallback, [
-    /* params */
-  ]);
+  usePollingEffect(pollCallback, []);
 
   let icon = NotificationsIcon;
   if (!!error) {
