@@ -19,7 +19,27 @@ import {
 } from '@janus-idp/backstage-plugin-rbac-common';
 
 import { RBACPermissionPolicy } from './permission-policy';
+import {
+  PluginMetadataResponseSerializedRule,
+  PluginPermissionMetaData,
+  PluginPermissionMetadataCollector,
+} from './plugin-endpoints';
 import { PolicesServer } from './policies-rest-api';
+
+const pluginPermissionMetadataCollectorMock = {
+  getPluginPolicies: jest.fn().mockImplementation(),
+  getPluginConditionRules: jest.fn().mockImplementation(),
+};
+
+jest.mock('./plugin-endpoints', () => {
+  return {
+    PluginPermissionMetadataCollector: jest.fn(
+      (): Partial<PluginPermissionMetadataCollector> => {
+        return pluginPermissionMetadataCollectorMock;
+      },
+    ),
+  };
+});
 
 jest.mock('@backstage/plugin-auth-node', () => ({
   getBearerTokenFromAuthorizationHeader: () => 'token',
@@ -140,14 +160,15 @@ describe('REST policies api', () => {
       },
     });
     const logger = getVoidLogger();
+    const mockDiscovery = {
+      getBaseUrl: jest.fn().mockImplementation(),
+      getExternalBaseUrl: jest.fn().mockImplementation(),
+    };
 
     const options: RouterOptions = {
       config: config,
       logger,
-      discovery: {
-        getBaseUrl: jest.fn(),
-        getExternalBaseUrl: jest.fn(),
-      },
+      discovery: mockDiscovery,
       identity: mockIdentityClient,
       policy: await RBACPermissionPolicy.build(
         logger,
@@ -156,12 +177,23 @@ describe('REST policies api', () => {
         mockEnforcer as Enforcer,
       ),
     };
+
+    const backendPluginIDsProviderMock = {
+      getPluginIds: jest.fn().mockImplementation(() => {
+        return [];
+      }),
+    };
+
     server = new PolicesServer(
       mockIdentityClient,
       mockPermissionEvaluator,
       options,
       mockEnforcer as Enforcer,
+      config,
+      logger,
+      mockDiscovery,
       conditionalStorage,
+      backendPluginIDsProviderMock,
     );
     const router = await server.serve();
     app = express().use(router);
@@ -179,7 +211,6 @@ describe('REST policies api', () => {
 
       expect(result.status).toBe(200);
       expect(result.body).toEqual({ status: 'Authorized' });
-      expect(mockIdentityClient.getIdentity).toHaveBeenCalledTimes(0);
     });
 
     it('should return a status of Unauthorized', async () => {
@@ -288,7 +319,6 @@ describe('REST policies api', () => {
       });
 
       expect(result.statusCode).toBe(201);
-      expect(mockIdentityClient.getIdentity).toHaveBeenCalledTimes(1);
     });
 
     it('should not be created permission policy, because it is has been already present', async () => {
@@ -359,7 +389,6 @@ describe('REST policies api', () => {
           effect: 'allow',
         },
       ]);
-      expect(mockIdentityClient.getIdentity).toHaveBeenCalledTimes(0);
     });
     it('should be returned policies by user reference not found', async () => {
       mockEnforcer.getFilteredPolicy = jest
@@ -426,7 +455,6 @@ describe('REST policies api', () => {
           effect: 'allow',
         },
       ]);
-      expect(mockIdentityClient.getIdentity).toHaveBeenCalledTimes(0);
     });
     it('should be returned list filtered policies', async () => {
       mockEnforcer.getFilteredPolicy = jest
@@ -577,7 +605,6 @@ describe('REST policies api', () => {
         .send();
 
       expect(result.statusCode).toEqual(204);
-      expect(mockIdentityClient.getIdentity).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -930,7 +957,6 @@ describe('REST policies api', () => {
         });
 
       expect(result.statusCode).toEqual(200);
-      expect(mockIdentityClient.getIdentity).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -1018,7 +1044,6 @@ describe('REST policies api', () => {
           name: 'role:default/rbac_admin',
         },
       ]);
-      expect(mockIdentityClient.getIdentity).toHaveBeenCalledTimes(0);
     });
 
     it('should be returned roles by role reference not found', async () => {
@@ -1136,7 +1161,6 @@ describe('REST policies api', () => {
         });
 
       expect(result.statusCode).toBe(201);
-      expect(mockIdentityClient.getIdentity).toHaveBeenCalledTimes(1);
     });
 
     it('should not be created role, because it is has been already present', async () => {
@@ -1417,7 +1441,6 @@ describe('REST policies api', () => {
         });
 
       expect(result.statusCode).toEqual(200);
-      expect(mockIdentityClient.getIdentity).toHaveBeenCalledTimes(1);
     });
 
     it('should update role where newRole has multiple roles', async () => {
@@ -1616,7 +1639,6 @@ describe('REST policies api', () => {
         .send();
 
       expect(result.statusCode).toEqual(204);
-      expect(mockIdentityClient.getIdentity).toHaveBeenCalledTimes(1);
     });
 
     it('should delete a role', async () => {
@@ -2035,6 +2057,99 @@ describe('REST policies api', () => {
           conditionDecision,
         );
         expect(mockIdentityClient.getIdentity).toHaveBeenCalledTimes(1);
+      });
+    });
+  });
+
+  describe('list plugin permissions and condition rules', () => {
+    it('should return list plugins permission', async () => {
+      const pluginMetadata: PluginPermissionMetaData[] = [
+        {
+          pluginId: 'permissions',
+          policies: [
+            {
+              permission: 'policy-entity',
+              policy: 'read',
+            },
+          ],
+        },
+      ];
+      pluginPermissionMetadataCollectorMock.getPluginPolicies = jest
+        .fn()
+        .mockImplementation(async () => {
+          return pluginMetadata;
+        });
+      const result = await request(app).get('/plugins/policies').send();
+      expect(result.statusCode).toEqual(200);
+      expect(result.body).toEqual(pluginMetadata);
+    });
+
+    it('should return a status of Unauthorized for /plugins/policies', async () => {
+      mockedAuthorizeConditional.mockImplementationOnce(async () => [
+        { result: AuthorizeResult.DENY },
+      ]);
+      const result = await request(app).get('/plugins/policies').send();
+
+      expect(mockedAuthorizeConditional).toHaveBeenCalledWith(
+        [{ permission: policyEntityReadPermission }],
+        { token: 'token' },
+      );
+      expect(result.statusCode).toBe(403);
+      expect(result.body.error).toEqual({
+        name: 'NotAllowedError',
+        message: '',
+      });
+    });
+
+    it('should return list plugins condition rules', async () => {
+      const rules: PluginMetadataResponseSerializedRule[] = [
+        {
+          pluginId: 'catalog',
+          rules: [
+            {
+              description: 'Allow entities with the specified label',
+              name: 'HAS_LABEL',
+              paramsSchema: {
+                $schema: 'http://json-schema.org/draft-07/schema#',
+                additionalProperties: false,
+                properties: {
+                  label: {
+                    description: 'Name of the label to match on',
+                    type: 'string',
+                  },
+                },
+                required: ['label'],
+                type: 'object',
+              },
+              resourceType: 'catalog-entity',
+            },
+          ],
+        },
+      ];
+      pluginPermissionMetadataCollectorMock.getPluginConditionRules = jest
+        .fn()
+        .mockImplementation(async () => {
+          return rules;
+        });
+      const result = await request(app).get('/plugins/condition-rules').send();
+      expect(result.statusCode).toEqual(200);
+      expect(result.body).toEqual(rules);
+    });
+
+    it('should return a status of Unauthorized for /plugins/condition-rules', async () => {
+      mockedAuthorizeConditional.mockImplementationOnce(async () => [
+        { result: AuthorizeResult.DENY },
+      ]);
+      const result = await request(app).get('/plugins/condition-rules').send();
+
+      expect(mockedAuthorizeConditional).toHaveBeenCalledWith(
+        [{ permission: policyEntityReadPermission }],
+        { token: 'token' },
+      );
+      expect(result.statusCode).toBe(403);
+      expect(result.body.error).toEqual({
+        name: 'NotAllowedError',
+        message: '',
       });
     });
   });

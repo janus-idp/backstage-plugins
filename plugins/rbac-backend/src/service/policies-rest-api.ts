@@ -1,3 +1,5 @@
+import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { Config } from '@backstage/config';
 import {
   ConflictError,
   InputError,
@@ -26,6 +28,7 @@ import { Router } from 'express';
 import { Request } from 'express-serve-static-core';
 import { isEqual } from 'lodash';
 import { ParsedQs } from 'qs';
+import { Logger } from 'winston';
 
 import {
   policyEntityCreatePermission,
@@ -39,12 +42,14 @@ import {
 } from '@janus-idp/backstage-plugin-rbac-common';
 
 import { ConditionalStorage } from '../database/conditional-storage';
+import { PluginPermissionMetadataCollector } from './plugin-endpoints';
 import {
   validateEntityReference,
   validatePolicy,
   validateQueries,
   validateRole,
 } from './policies-validation';
+import { PluginIdProvider } from './policy-builder';
 
 export class PolicesServer {
   constructor(
@@ -52,7 +57,11 @@ export class PolicesServer {
     private readonly permissions: PermissionEvaluator,
     private readonly options: RouterOptions,
     private readonly enforcer: Enforcer,
+    private readonly config: Config,
+    private readonly logger: Logger,
+    private readonly discovery: PluginEndpointDiscovery,
     private readonly conditionalStorage: ConditionalStorage,
+    private readonly pluginIdProvider: PluginIdProvider,
   ) {}
 
   private async authorize(
@@ -81,6 +90,13 @@ export class PolicesServer {
       resourceType: RESOURCE_TYPE_POLICY_ENTITY,
       permissions: policyEntityPermissions,
     });
+
+    const pluginPermMetaData = new PluginPermissionMetadataCollector(
+      this.discovery,
+      this.pluginIdProvider,
+      this.config,
+      this.logger,
+    );
 
     router.use(permissionsIntegrationRouter);
 
@@ -467,6 +483,32 @@ export class PolicesServer {
         response.status(204).end();
       },
     );
+
+    router.get('/plugins/policies', async (req, resp) => {
+      const decision = await this.authorize(req, {
+        permission: policyEntityReadPermission,
+      });
+
+      if (decision.result === AuthorizeResult.DENY) {
+        throw new NotAllowedError(); // 403
+      }
+
+      const policies = await pluginPermMetaData.getPluginPolicies();
+      resp.json(policies);
+    });
+
+    router.get('/plugins/condition-rules', async (req, resp) => {
+      const decision = await this.authorize(req, {
+        permission: policyEntityReadPermission,
+      });
+
+      if (decision.result === AuthorizeResult.DENY) {
+        throw new NotAllowedError(); // 403
+      }
+
+      const rules = await pluginPermMetaData.getPluginConditionRules();
+      resp.json(rules);
+    });
 
     router.get('/conditions', async (req, resp) => {
       const decision = await this.authorize(req, {

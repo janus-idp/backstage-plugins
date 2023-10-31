@@ -21,15 +21,22 @@ import { RBACPermissionPolicy } from './permission-policy';
 import { PolicesServer } from './policies-rest-api';
 import { BackstageRoleManager } from './role-manager';
 
+export interface PluginIdProvider {
+  getPluginIds: () => string[];
+}
+
 export class PolicyBuilder {
-  public static async build(env: {
-    config: Config;
-    logger: Logger;
-    discovery: PluginEndpointDiscovery;
-    identity: IdentityApi;
-    permissions: PermissionEvaluator;
-    tokenManager: TokenManager;
-  }): Promise<Router> {
+  public static async build(
+    env: {
+      config: Config;
+      logger: Logger;
+      discovery: PluginEndpointDiscovery;
+      identity: IdentityApi;
+      permissions: PermissionEvaluator;
+      tokenManager: TokenManager;
+    },
+    pluginIdProvider: PluginIdProvider = { getPluginIds: () => [] },
+  ): Promise<Router> {
     let adapter;
     const databaseEnabled = env.config.getOptionalBoolean(
       'permission.rbac.database.enabled',
@@ -83,12 +90,29 @@ export class PolicyBuilder {
       ),
     };
 
+    const pluginIdsConfig = env.config.getOptionalStringArray(
+      'permission.rbac.pluginsWithPermission',
+    );
+    if (pluginIdsConfig) {
+      const pluginIds = new Set([
+        ...pluginIdsConfig,
+        ...pluginIdProvider.getPluginIds(),
+      ]);
+      pluginIdProvider.getPluginIds = () => {
+        return [...pluginIds];
+      };
+    }
+
     const server = new PolicesServer(
       env.identity,
       env.permissions,
       options,
       enf,
+      env.config,
+      env.logger,
+      env.discovery,
       conditionStorage,
+      pluginIdProvider,
     );
     return server.serve();
   }

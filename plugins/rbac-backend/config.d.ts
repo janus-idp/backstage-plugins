@@ -28,6 +28,12 @@ export interface Config {
          */
         enabled: boolean;
       };
+
+      /**
+       * An optional list of plugin IDs.
+       * The RBAC plugin will handle access control for plugins included in this list.
+       */
+      pluginsWithPermission?: string[];
     };
   };
 }
