@@ -1,4 +1,5 @@
-import React, { useCallback } from 'react';
+import React from 'react';
+import { useAsync } from 'react-use';
 
 import {
   Link,
@@ -19,7 +20,6 @@ import {
 } from '@patternfly/react-core' /* TODO: avoid Patternfly, find a way how to get Split, Stack from Material UI */;
 
 import { Notification, notificationsApiRef } from '../../api';
-import { usePollingEffect } from '../usePollingEffect';
 
 const useStyles = makeStyles({
   actionsList: {
@@ -27,20 +27,43 @@ const useStyles = makeStyles({
   },
 });
 
-type DenseTableProps = {
-  notifications: Notification[];
-};
-
-export const DenseTable = ({ notifications }: DenseTableProps) => {
-  const classes = useStyles();
+export const NotificationsTable = () => {
   const notificationsApi = useApi(notificationsApiRef);
+  const classes = useStyles();
+  const [pageNumber, setPageNumber] = React.useState(0);
+  const [pageSize, setPageSize] = React.useState(5);
 
-  const handleMarkAsRead = React.useCallback(
+  // TODO: implement following:
+  const containsText = undefined;
+  const createdAfter = undefined;
+
+  const onMarkAsRead = React.useCallback(
     (notification: Notification) => {
       notificationsApi.markAsRead(notification.id);
     },
     [notificationsApi],
   );
+
+  const { loading, value, error } = useAsync(async (): Promise<{
+    notifications: Notification[];
+    totalCount: number;
+  }> => {
+    // TODO: extend BE to get both in a single response
+    const data = await notificationsApi.getNotifications({
+      pageSize,
+      pageNumber: pageNumber + 1 /* BE starts at 1 */,
+      containsText,
+      createdAfter,
+    });
+    const total = await notificationsApi.getNotificationsCount({
+      unreadOnly: false,
+    });
+
+    return {
+      notifications: data,
+      totalCount: total,
+    };
+  }, [pageNumber, pageSize, containsText, createdAfter]);
 
   const columns: TableColumn[] = React.useMemo(
     () => [
@@ -76,7 +99,7 @@ export const DenseTable = ({ notifications }: DenseTableProps) => {
                 <Tooltip title="Mark as read">
                   <IconButton
                     onClick={() => {
-                      handleMarkAsRead(notification);
+                      onMarkAsRead(notification);
                     }}
                   >
                     <MarkAsReadIcon aria-label="Mark as read" />
@@ -89,56 +112,32 @@ export const DenseTable = ({ notifications }: DenseTableProps) => {
         },
       },
     ],
-    [classes.actionsList, handleMarkAsRead],
+    [classes.actionsList, onMarkAsRead],
   );
-
-  const data = notifications.map(notification => {
-    // TODO: additional mapping between the Notification type and the table
-    return {
-      ...notification,
-    };
-  });
-
-  return (
-    <Table
-      title="Notifications"
-      options={{ search: true, paging: true }}
-      columns={columns}
-      data={data}
-    />
-  );
-};
-
-export const NotificationsTable = () => {
-  const notificationsApi = useApi(notificationsApiRef);
-  const [error, setError] = React.useState<Error | undefined>(undefined);
-  const [notifications, setNotifications] = React.useState<Notification[]>([]);
-
-  /*
-    TODO: avoid polling
-    Do initial load
-     - size
-     - page one
-    On page navigation or markAsRead or filter params, read
-     - size
-     - requested page
-    TODO: include "count" in the paginated response to avoid two calls
-  */
-  const pollCallback = useCallback(async () => {
-    try {
-      setNotifications(await notificationsApi.getNotifications(/* params */));
-    } catch (e: unknown) {
-      setError(e as Error);
-    }
-  }, [notificationsApi]);
-
-  usePollingEffect(pollCallback, [
-    /* params */
-  ]);
 
   if (error) {
     return <ResponseErrorPanel error={error} />;
   }
 
-  return <DenseTable notifications={notifications} />;
+  const data =
+    value?.notifications.map(notification => {
+      // TODO: additional mapping between the Notification type and the table
+      return {
+        ...notification,
+      };
+    }) || [];
+
+  return (
+    <Table
+      title="Notifications"
+      isLoading={loading}
+      options={{ search: true, paging: true, pageSize }}
+      columns={columns}
+      data={data}
+      onPageChange={setPageNumber}
+      onRowsPerPageChange={setPageSize}
+      page={pageNumber}
+      totalCount={value?.totalCount}
+    />
+  );
 };

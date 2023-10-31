@@ -15,15 +15,29 @@ export type Notification = {
   actions?: { title?: string; url: string }[];
 };
 
+// Keep in sync with BE: plugins/notifications-backend/src/service/types.ts
+export type NotificationsFilter = {
+  containsText?: string;
+  createdAfter?: Date;
+};
+
+export type NotificationsQuery = NotificationsFilter & {
+  pageSize: number;
+  pageNumber: number;
+};
+export type NotificationsCountQuery = NotificationsFilter & {
+  unreadOnly?: boolean;
+};
+
 export interface NotificationsApi {
   /** Create a notification. Returns its new ID. */
   post(notification: Notification): Promise<string>;
 
   /** Read a list of notifications based on filter parameters. */
-  getNotifications(/* TODO: params */): Promise<Notification[]>;
+  getNotifications(query?: NotificationsQuery): Promise<Notification[]>;
 
-  /** Returns the count of unread notifications for the user. */
-  getUnreadCount(): Promise<number>;
+  /** Returns the count of notifications for the user. */
+  getNotificationsCount(query?: NotificationsCountQuery): Promise<number>;
 
   /** Marks the notification as read by the user. */
   markAsRead(notificationId: string): Promise<void>;
