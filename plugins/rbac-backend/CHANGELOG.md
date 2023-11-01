@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac-backend [1.6.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@1.6.0...@janus-idp/backstage-plugin-rbac-backend@1.6.1) (2023-11-01)
+
+
+### Bug Fixes
+
+* **rbac:** add migration folder to rbac-backend package ([#897](https://github.com/janus-idp/backstage-plugins/issues/897)) ([694a9d6](https://github.com/janus-idp/backstage-plugins/commit/694a9d65bd986eb8e7fde3d66e012963033741af))
+
 ## @janus-idp/backstage-plugin-rbac-backend [1.6.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@1.5.1...@janus-idp/backstage-plugin-rbac-backend@1.6.0) (2023-10-31)
 
 
