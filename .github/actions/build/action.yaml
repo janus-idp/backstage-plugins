@@ -22,4 +22,4 @@ runs:
 
     - name: Build all packages
       shell: bash
-      run: yarn build --filter=${{ inputs.args }}
+      run: yarn build --filter=${{ inputs.args }} --concurrency=1
