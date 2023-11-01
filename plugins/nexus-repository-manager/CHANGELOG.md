@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-nexus-repository-manager [1.4.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-nexus-repository-manager@1.3.2...@janus-idp/backstage-plugin-nexus-repository-manager@1.4.0) (2023-11-01)
+
+
+### Features
+
+* **dynamic-plugins:** publish dynamic assets for all frontend plugins ([#896](https://github.com/janus-idp/backstage-plugins/issues/896)) ([dcfb0ac](https://github.com/janus-idp/backstage-plugins/commit/dcfb0ac56769c82f6b8b2cef2726251e0b60c375))
+
 ## @janus-idp/backstage-plugin-nexus-repository-manager [1.3.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-nexus-repository-manager@1.3.1...@janus-idp/backstage-plugin-nexus-repository-manager@1.3.2) (2023-10-23)
 
 
