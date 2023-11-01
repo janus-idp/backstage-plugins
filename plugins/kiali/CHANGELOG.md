@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-kiali [1.6.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.5.5...@janus-idp/backstage-plugin-kiali@1.6.0) (2023-11-01)
+
+
+### Features
+
+* **dynamic-plugins:** publish dynamic assets for all frontend plugins ([#896](https://github.com/janus-idp/backstage-plugins/issues/896)) ([dcfb0ac](https://github.com/janus-idp/backstage-plugins/commit/dcfb0ac56769c82f6b8b2cef2726251e0b60c375))
+
 ## @janus-idp/backstage-plugin-kiali [1.5.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.5.4...@janus-idp/backstage-plugin-kiali@1.5.5) (2023-10-27)
 
 
