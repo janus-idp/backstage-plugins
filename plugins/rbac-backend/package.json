@@ -58,7 +58,8 @@
   "files": [
     "dist",
     "config.d.ts",
-    "model"
+    "model",
+    "migrations"
   ],
   "repository": "github:janus-idp/backstage-plugins",
   "keywords": [
