@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-topology [1.16.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.15.9...@janus-idp/backstage-plugin-topology@1.16.0) (2023-11-01)
+
+
+### Features
+
+* **dynamic-plugins:** publish dynamic assets for all frontend plugins ([#896](https://github.com/janus-idp/backstage-plugins/issues/896)) ([dcfb0ac](https://github.com/janus-idp/backstage-plugins/commit/dcfb0ac56769c82f6b8b2cef2726251e0b60c375))
+
 ## @janus-idp/backstage-plugin-topology [1.15.9](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.15.8...@janus-idp/backstage-plugin-topology@1.15.9) (2023-10-23)
 
 
