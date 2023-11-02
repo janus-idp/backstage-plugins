@@ -29,6 +29,10 @@ export const sharedModules = {
     singleton: true,
     requiredVersion: '*',
   },
+  'react-router': {
+    singleton: true,
+    requiredVersion: '*',
+  },
   '@backstage/version-bridge': {
     singleton: true,
     requiredVersion: '*',
