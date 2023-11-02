@@ -9,7 +9,6 @@ export type CreateNotificationRequest = {
 };
 
 // Keep in sync with FE: plugins/notifications-frontend/src/api/notificationsApi.ts
-// TODO: Once we have more to share, we will introduce a notifications-common library.
 export type Notification = {
   id: string; // UUID
   created: Date;
