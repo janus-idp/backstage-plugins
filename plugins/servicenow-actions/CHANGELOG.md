@@ -1,3 +1,10 @@
+## @janus-idp/backstage-scaffolder-backend-module-servicenow [1.1.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-servicenow@1.1.0...@janus-idp/backstage-scaffolder-backend-module-servicenow@1.1.1) (2023-11-02)
+
+
+### Bug Fixes
+
+* **scalprum:** share react-router since various 3rd party plugins use it ([#902](https://github.com/janus-idp/backstage-plugins/issues/902)) ([1a548f2](https://github.com/janus-idp/backstage-plugins/commit/1a548f2b11df92fb44651d8418f6529e22833996))
+
 ## @janus-idp/backstage-scaffolder-backend-module-servicenow [1.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-servicenow@1.0.0...@janus-idp/backstage-scaffolder-backend-module-servicenow@1.1.0) (2023-11-01)
 
 
