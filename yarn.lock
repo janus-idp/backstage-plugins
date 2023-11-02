@@ -4859,6 +4859,14 @@
   resolved "https://registry.yarnpkg.com/@istanbuljs/schema/-/schema-0.1.3.tgz#e45e384e4b8ec16bce2fd903af78450f6bf7ec98"
   integrity sha512-ZXRY4jNvVgSVQ8DL3LTcakaAtXwTVUxE81hslsyD2AtoXW/wVob10HkOJ1X/pAlcI7D+2YoZKg5do8G/w6RYgA==
 
+"@janus-idp/backstage-plugin-kiali-common@1.4.1":
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/@janus-idp/backstage-plugin-kiali-common/-/backstage-plugin-kiali-common-1.4.1.tgz#d837ec1876bd94b0d6318ded6ee624be4791e692"
+  integrity sha512-uR2Br80FDMc951cooeakktrKiNYPUmu057YuV2gg2VJwPapESUFMyHbL/vJNL1E6xhN/hH3sWgJI//fkL/MfuQ==
+  dependencies:
+    "@backstage/config" "^1.1.1"
+    deep-freeze "^0.0.1"
+
 "@janus-idp/cli@1.3.0":
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/@janus-idp/cli/-/cli-1.3.0.tgz#adccc6828abd85517e9b67eab0d1c286bf1c500d"
