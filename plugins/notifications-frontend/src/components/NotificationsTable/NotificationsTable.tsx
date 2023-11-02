@@ -32,9 +32,11 @@ export const NotificationsTable = () => {
   const classes = useStyles();
   const [pageNumber, setPageNumber] = React.useState(0);
   const [pageSize, setPageSize] = React.useState(5);
+  const [containsText, setContainsText] = React.useState<string | undefined>(
+    undefined,
+  );
 
   // TODO: implement following:
-  const containsText = undefined;
   const createdAfter = undefined;
 
   const onMarkAsRead = React.useCallback(
@@ -57,6 +59,7 @@ export const NotificationsTable = () => {
     });
     const total = await notificationsApi.getNotificationsCount({
       unreadOnly: false,
+      containsText,
     });
 
     return {
@@ -138,6 +141,7 @@ export const NotificationsTable = () => {
       onRowsPerPageChange={setPageSize}
       page={pageNumber}
       totalCount={value?.totalCount}
+      onSearchChange={setContainsText}
     />
   );
 };
