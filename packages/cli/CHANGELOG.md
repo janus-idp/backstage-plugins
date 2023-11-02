@@ -1,3 +1,10 @@
+## @janus-idp/cli [1.3.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.3.1...@janus-idp/cli@1.3.2) (2023-11-02)
+
+
+### Bug Fixes
+
+* **scalprum:** share react-router since various 3rd party plugins use it ([#901](https://github.com/janus-idp/backstage-plugins/issues/901)) ([ac0c923](https://github.com/janus-idp/backstage-plugins/commit/ac0c92381c26f20d197255abcc931a7ad14c0edc))
+
 ## @janus-idp/cli [1.3.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.3.0...@janus-idp/cli@1.3.1) (2023-10-26)
 
 
