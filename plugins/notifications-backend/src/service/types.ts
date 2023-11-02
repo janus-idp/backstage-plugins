@@ -8,6 +8,12 @@ export type CreateNotificationRequest = {
   targetGroups?: string[];
 };
 
+export type NotificationAction = {
+  id: string; // UUID
+  title?: string;
+  url: string;
+};
+
 // Keep in sync with FE: plugins/notifications-frontend/src/api/notificationsApi.ts
 export type Notification = {
   id: string; // UUID
@@ -20,7 +26,7 @@ export type Notification = {
   message?: string;
   topic?: string;
 
-  actions?: { title?: string; url: string }[];
+  actions?: NotificationAction[];
 };
 
 export type NotificationsFilter = {

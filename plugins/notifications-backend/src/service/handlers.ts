@@ -2,10 +2,11 @@ import { CatalogClient } from '@backstage/catalog-client';
 
 import { Knex } from 'knex';
 
-import { MessagesInsert } from './db';
+import { ActionsInsert, MessagesInsert } from './db';
 import {
   CreateNotificationRequest,
   Notification,
+  NotificationAction,
   NotificationsFilter,
 } from './types';
 
@@ -47,18 +48,26 @@ export async function createNotification(
     topic: req.topic,
   };
 
-  const ret = dbClient('messages')
+  const messagesResult = await dbClient('messages')
     .insert(row)
-    .returning<string, { id: string }[]>('id')
-    .then(ids => {
-      return { msgid: ids[0].id };
-    });
+    .returning<string, { id: string }[]>('id');
 
-  return ret;
+  const messagesId = messagesResult[0].id;
+
+  if (Array.isArray(req.actions)) {
+    const actionRows: ActionsInsert[] = req.actions.map(action => ({
+      url: action.url,
+      title: action.title,
+      messages_id: messagesId,
+    }));
+    await dbClient.batchInsert('actions', actionRows);
+  }
+
+  return { msgid: messagesId };
 }
 
 // getNotifications
-export function getNotifications(
+export async function getNotifications(
   dbClient: Knex<any, any>,
   filter: NotificationsFilter,
   pageSize: number,
@@ -85,8 +94,8 @@ export function getNotifications(
     query.limit(pageSize).offset((pageNumber - 1) * pageSize);
   }
 
-  const ret = query.then(messages => {
-    const notifications = messages.map(message => {
+  const notifications = await query.then(messages =>
+    messages.map(message => {
       const notification: Notification = {
         id: message.id,
         created: message.created,
@@ -97,12 +106,32 @@ export function getNotifications(
         topic: message.topic,
       };
       return notification;
-    });
+    }),
+  );
 
-    return notifications;
+  const actionsMessageIds = notifications.map(notification => notification.id);
+
+  const actionsQuery = dbClient('actions')
+    .select('*')
+    .whereIn('messages_id', actionsMessageIds);
+  await actionsQuery.then(actions => {
+    actions.forEach(action => {
+      const notification = notifications.find(n => n.id === action.messages_id);
+      if (notification) {
+        notification.actions = notification.actions || [];
+        const transformedAction: NotificationAction = {
+          id: action.id,
+          url: action.url,
+        };
+        if (action.title) {
+          transformedAction.title = action.title;
+        }
+        notification.actions.push(transformedAction);
+      }
+    });
   });
 
-  return ret;
+  return notifications;
 }
 
 export function getNotificationsCount(
