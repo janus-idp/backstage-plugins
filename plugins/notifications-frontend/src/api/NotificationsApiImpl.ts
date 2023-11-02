@@ -35,7 +35,6 @@ export class NotificationsApiImpl implements NotificationsApi {
   post(notification: Notification): Promise<string> {
     // eslint-disable-next-line no-console
     console.log('TODO: implement post notification: ', notification);
-    // TODO: send to backend
     return Promise.resolve('id-todo');
   }
 

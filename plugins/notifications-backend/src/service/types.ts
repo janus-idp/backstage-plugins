@@ -10,7 +10,7 @@ export type CreateNotificationRequest = {
 
 export type NotificationAction = {
   id: string; // UUID
-  title?: string;
+  title: string;
   url: string;
 };
 
@@ -26,7 +26,7 @@ export type Notification = {
   message?: string;
   topic?: string;
 
-  actions?: NotificationAction[];
+  actions: NotificationAction[];
 };
 
 export type NotificationsFilter = {

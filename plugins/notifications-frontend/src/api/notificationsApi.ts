@@ -3,7 +3,7 @@ import { createApiRef } from '@backstage/core-plugin-api';
 // Keep in sync with BE: plugins/notifications-backend/src/service/types.ts
 export type NotificationAction = {
   id: string; // UUID
-  title?: string;
+  title: string;
   url: string;
 };
 
@@ -18,7 +18,7 @@ export type Notification = {
   message?: string;
   topic?: string;
 
-  actions?: NotificationAction[];
+  actions: NotificationAction[];
 };
 
 // Keep in sync with BE: plugins/notifications-backend/src/service/types.ts

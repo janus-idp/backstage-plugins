@@ -40,7 +40,7 @@ A new DB will be created: backstage_plugin_notifications
 Request:
 
 ```bash
-curl -X POST http://localhost:7007/api/notifications/notifications -H "Content-Type: application/json" -d '{"title": "My message title", "message": "I have nothing to say", "origin": "my-origin", "targetUsers": ["jdoe"], "targetGroups": ["jdoe"], "actions": [{"title": "my-title", "url": "http://foo.bar"}, {"url": "https://foo.foo.bar"}]}'
+curl -X POST http://localhost:7007/api/notifications/notifications -H "Content-Type: application/json" -d '{"title": "My message title", "message": "I have nothing to say", "origin": "my-origin", "targetUsers": ["jdoe"], "targetGroups": ["jdoe"], "actions": [{"title": "my-title", "url": "http://foo.bar"}, {"title": "another action", "url": "https://foo.foo.bar"}]}'
 ```
 
 Response:
@@ -68,7 +68,8 @@ Response:
     "origin": "my-origin",
     "title": "My title",
     "message": "I have nothing to tell",
-    "topic": "my-topic"
+    "topic": "my-topic",
+    "actions": []
   }
 ]
 ```
