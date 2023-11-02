@@ -32,10 +32,10 @@ export async function initDB(dbConfig: Config): Promise<Knex<any, any>> {
   if (!(await dbClient.schema.hasTable('actions'))) {
     await dbClient.schema.createTable('actions', table => {
       table.uuid('id', { primaryKey: true }).defaultTo(dbClient.fn.uuid());
-      table.uuid('messages_id').notNullable();
-      table.foreign('messages_id').references('id').inTable('messages');
+      table.uuid('message_id').notNullable();
+      table.foreign('message_id').references('id').inTable('messages');
       table.string('url').notNullable();
-      table.string('title');
+      table.string('title').notNullable();
     });
   }
 
@@ -50,7 +50,7 @@ export type MessagesInsert = {
 };
 
 export type ActionsInsert = {
-  messages_id: string;
-  title?: string;
+  message_id: string;
+  title: string;
   url: string;
 };
