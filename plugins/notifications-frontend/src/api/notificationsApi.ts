@@ -1,7 +1,13 @@
 import { createApiRef } from '@backstage/core-plugin-api';
 
 // Keep in sync with BE: plugins/notifications-backend/src/service/types.ts
-// TODO: Once we have more to share, we will introduce a notifications-common library.
+export type NotificationAction = {
+  id: string; // UUID
+  title?: string;
+  url: string;
+};
+
+// Keep in sync with BE: plugins/notifications-backend/src/service/types.ts
 export type Notification = {
   id: string; // UUID
   created: Date;
@@ -12,7 +18,7 @@ export type Notification = {
   message?: string;
   topic?: string;
 
-  actions?: { title?: string; url: string }[];
+  actions?: NotificationAction[];
 };
 
 // Keep in sync with BE: plugins/notifications-backend/src/service/types.ts
