@@ -20,6 +20,7 @@ import {
 } from '@patternfly/react-core' /* TODO: avoid Patternfly, find a way how to get Split, Stack from Material UI */;
 
 import { Notification, notificationsApiRef } from '../../api';
+import { NotificationsToolbar } from './NotificationsToolbar';
 
 const useStyles = makeStyles({
   actionsList: {
@@ -142,6 +143,7 @@ export const NotificationsTable = () => {
       page={pageNumber}
       totalCount={value?.totalCount}
       onSearchChange={setContainsText}
+      components={{ Toolbar: NotificationsToolbar }}
     />
   );
 };
