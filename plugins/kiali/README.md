@@ -88,14 +88,14 @@ The Kiali plugin has the following capabilities:
    import { EntityKialiContent } from '@janus-idp/backstage-plugin-kiali';
 
    const serviceEntityPage = (
-     <EntityPageLayout>
+     <EntityLayout>
        {/* ... */}
        {/* highlight-add-start */}
        <EntityLayout.Route path="/kiali" title="kiali">
          <EntityKialiContent />
        </EntityLayout.Route>
        {/* highlight-add-end */}
-     </EntityPageLayout>
+     </EntityLayout>
    );
    ```
 
