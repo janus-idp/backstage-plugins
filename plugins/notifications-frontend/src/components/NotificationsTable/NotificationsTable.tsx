@@ -20,7 +20,10 @@ import {
 } from '@patternfly/react-core' /* TODO: avoid Patternfly, find a way how to get Split, Stack from Material UI */;
 
 import { Notification, notificationsApiRef } from '../../api';
-import { NotificationsToolbar } from './NotificationsToolbar';
+import {
+  CreatedAfterOptions,
+  NotificationsToolbar,
+} from './NotificationsToolbar';
 
 const useStyles = makeStyles({
   actionsList: {
@@ -36,9 +39,7 @@ export const NotificationsTable = () => {
   const [containsText, setContainsText] = React.useState<string | undefined>(
     undefined,
   );
-
-  // TODO: implement following:
-  const createdAfter = undefined;
+  const [createdAfter, setCreatedAfter] = React.useState<string>('lastWeek');
 
   const onMarkAsRead = React.useCallback(
     (notification: Notification) => {
@@ -51,13 +52,15 @@ export const NotificationsTable = () => {
     notifications: Notification[];
     totalCount: number;
   }> => {
-    // TODO: extend BE to get both in a single response
+    const createdAfterDate = CreatedAfterOptions[createdAfter].getDate();
+
     const data = await notificationsApi.getNotifications({
       pageSize,
       pageNumber: pageNumber + 1 /* BE starts at 1 */,
       containsText,
-      createdAfter,
+      createdAfter: createdAfterDate,
     });
+    // TODO: extend BE to get both in a single query/response
     const total = await notificationsApi.getNotificationsCount({
       unreadOnly: false,
       containsText,
@@ -69,54 +72,57 @@ export const NotificationsTable = () => {
     };
   }, [pageNumber, pageSize, containsText, createdAfter]);
 
-  const columns: TableColumn[] = React.useMemo(
-    () => [
+  const actionsColumn: TableColumn<Notification> = React.useMemo(
+    () => ({
+      title: 'Actions',
+      render: (notification: Notification): React.ReactNode => {
+        let actions;
+        if (!!notification.actions?.length) {
+          actions = (
+            <SplitItem className={classes.actionsList}>
+              <Stack>
+                {notification.actions.map(action => (
+                  <StackItem key={action.url}>
+                    <Link to={action.url}>{action.title || 'More info'}</Link>
+                  </StackItem>
+                ))}
+              </Stack>
+            </SplitItem>
+          );
+        }
+
+        return (
+          <Split hasGutter>
+            <SplitItem>
+              <Tooltip title="Mark as read">
+                <IconButton
+                  onClick={() => {
+                    onMarkAsRead(notification);
+                  }}
+                >
+                  <MarkAsReadIcon aria-label="Mark as read" />
+                </IconButton>
+              </Tooltip>
+            </SplitItem>
+            {actions}
+          </Split>
+        );
+      },
+    }),
+    [classes.actionsList, onMarkAsRead],
+  );
+
+  const columns = React.useMemo(
+    (): TableColumn<Notification>[] => [
       { title: 'Title', field: 'title' },
       { title: 'Message', field: 'message' },
-      { title: 'Created', field: 'created' },
+      { title: 'Created', field: 'created', type: 'datetime' },
       { title: 'Topic', field: 'topic' },
       { title: 'Origin', field: 'origin' },
       // { title: 'ID', field: 'uuid' },
-      {
-        title: 'Actions',
-        render: (row: unknown): React.ReactNode => {
-          const notification = row as Notification;
-
-          let actions;
-          if (!!notification.actions?.length) {
-            actions = (
-              <SplitItem className={classes.actionsList}>
-                <Stack>
-                  {notification.actions.map(action => (
-                    <StackItem key={action.url}>
-                      <Link to={action.url}>{action.title || 'More info'}</Link>
-                    </StackItem>
-                  ))}
-                </Stack>
-              </SplitItem>
-            );
-          }
-
-          return (
-            <Split hasGutter>
-              <SplitItem>
-                <Tooltip title="Mark as read">
-                  <IconButton
-                    onClick={() => {
-                      onMarkAsRead(notification);
-                    }}
-                  >
-                    <MarkAsReadIcon aria-label="Mark as read" />
-                  </IconButton>
-                </Tooltip>
-              </SplitItem>
-              {actions}
-            </Split>
-          );
-        },
-      },
+      actionsColumn,
     ],
-    [classes.actionsList, onMarkAsRead],
+    [actionsColumn],
   );
 
   if (error) {
@@ -125,15 +131,14 @@ export const NotificationsTable = () => {
 
   const data =
     value?.notifications.map(notification => {
-      // TODO: additional mapping between the Notification type and the table
+      // Provide additional mapping between the Notification type and the table
       return {
         ...notification,
       };
     }) || [];
 
   return (
-    <Table
-      title="Notifications"
+    <Table<Notification>
       isLoading={loading}
       options={{ search: true, paging: true, pageSize }}
       columns={columns}
@@ -143,7 +148,15 @@ export const NotificationsTable = () => {
       page={pageNumber}
       totalCount={value?.totalCount}
       onSearchChange={setContainsText}
-      components={{ Toolbar: NotificationsToolbar }}
+      components={{
+        Toolbar: props => (
+          <NotificationsToolbar
+            {...props}
+            createdAfter={createdAfter}
+            onCreatedAfterChanged={setCreatedAfter}
+          />
+        ),
+      }}
     />
   );
 };
