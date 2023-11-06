@@ -36,7 +36,7 @@ yarn workspace backend add @janus-idp/backstage-plugin-3scale-backend
 
 2. Configure the scheduler for the entity provider using one of the following methods:
 
-   - **Method 1**: If the scheduler is configured inside the `app-config.yaml` via the schedule config key shown above, add the following code to `packages/backend/src/plugins/catalog.ts` file:
+   - **Method 1**: If the scheduler is configured inside the `app-config.yaml` using the schedule config key mentioned previously, add the following code to `packages/backend/src/plugins/catalog.ts` file:
 
      ```ts title="packages/backend/src/plugins/catalog.ts"
      /* highlight-add-next-line */
