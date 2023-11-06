@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-acr [1.2.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-acr@1.2.1...@janus-idp/backstage-plugin-acr@1.2.2) (2023-11-06)
+
+
+### Documentation
+
+* update frontend plugin docs to use EntityLayout instead of EntityPageLayout ([#907](https://github.com/janus-idp/backstage-plugins/issues/907)) ([aa91bba](https://github.com/janus-idp/backstage-plugins/commit/aa91bba4c7a43de416258eb019724e21c7cf4bb8))
+
 ## @janus-idp/backstage-plugin-acr [1.2.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-acr@1.2.0...@janus-idp/backstage-plugin-acr@1.2.1) (2023-11-02)
 
 
