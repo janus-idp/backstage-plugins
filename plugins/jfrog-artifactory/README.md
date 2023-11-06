@@ -38,7 +38,7 @@ The Jfrog Artifactory plugin displays information about your container images wi
    /* highlight-add-end */
 
    const serviceEntityPage = (
-     <EntityPageLayout>
+     <EntityLayout>
        // ...
        {/* highlight-add-start */}
        <EntityLayout.Route
@@ -49,7 +49,7 @@ The Jfrog Artifactory plugin displays information about your container images wi
          <JfrogArtifactoryPage />
        </EntityLayout.Route>
        {/* highlight-add-end */}
-     </EntityPageLayout>
+     </EntityLayout>
    );
    ```
 

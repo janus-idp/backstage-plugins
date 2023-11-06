@@ -55,7 +55,7 @@ The Azure Container Registry (ACR) plugin displays information about your contai
    /* highlight-add-end */
 
    const serviceEntityPage = (
-     <EntityPageLayout>
+     <EntityLayout>
        // ...
        {/* highlight-add-start */}
        <EntityLayout.Route
@@ -66,7 +66,7 @@ The Azure Container Registry (ACR) plugin displays information about your contai
          <AcrPage />
        </EntityLayout.Route>
        {/* highlight-add-end */}
-     </EntityPageLayout>
+     </EntityLayout>
    );
    ```
 
