@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-quay [1.4.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.4.3...@janus-idp/backstage-plugin-quay@1.4.4) (2023-11-06)
+
+
+### Documentation
+
+* update frontend plugin docs to use EntityLayout instead of EntityPageLayout ([#907](https://github.com/janus-idp/backstage-plugins/issues/907)) ([aa91bba](https://github.com/janus-idp/backstage-plugins/commit/aa91bba4c7a43de416258eb019724e21c7cf4bb8))
+
 ## @janus-idp/backstage-plugin-quay [1.4.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.4.2...@janus-idp/backstage-plugin-quay@1.4.3) (2023-11-02)
 
 
