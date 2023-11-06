@@ -56,7 +56,7 @@ The Nexus Repository Manager plugin displays the information about your build ar
    } from '@janus-idp/backstage-plugin-nexus-repository-manager';
 
    const serviceEntityPage = (
-     <EntityPageLayout>
+     <EntityLayout>
        {/* ... */}
        {/* highlight-add-next-line */}
        <EntityLayout.Route
@@ -66,7 +66,7 @@ The Nexus Repository Manager plugin displays the information about your build ar
        >
          <NexusRepositoryManagerPage />
        </EntityLayout.Route>
-     </EntityPageLayout>
+     </EntityLayout>
    );
    ```
 

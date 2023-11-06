@@ -1,4 +1,7 @@
 
 
-p, user:default/guest, catalog-entity, read, deny
-p, user:default/guest, catalog.entity.create, use, deny
+p, role:default/guests, catalog-entity, read, deny
+p, role:default/guests, catalog.entity.create, use, deny
+
+g, user:default/guest, role:default/guests
+

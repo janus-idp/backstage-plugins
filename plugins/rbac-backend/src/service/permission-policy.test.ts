@@ -47,6 +47,15 @@ const tokenManagerMock = {
   authenticate: jest.fn().mockImplementation(),
 };
 
+const conditionalStorage = {
+  getConditions: jest.fn().mockImplementation(),
+  createCondition: jest.fn().mockImplementation(),
+  findCondition: jest.fn().mockImplementation(),
+  getCondition: jest.fn().mockImplementation(),
+  deleteCondition: jest.fn().mockImplementation(),
+  updateCondition: jest.fn().mockImplementation(),
+};
+
 async function createEnforcer(
   theModel: Model,
   adapter: Adapter,
@@ -78,7 +87,12 @@ describe('RBACPermissionPolicy Tests', () => {
       tokenManagerMock,
     );
 
-    const policy = await RBACPermissionPolicy.build(logger, config, enf);
+    const policy = await RBACPermissionPolicy.build(
+      logger,
+      config,
+      conditionalStorage,
+      enf,
+    );
 
     expect(policy).not.toBeNull();
   });
@@ -109,7 +123,12 @@ describe('RBACPermissionPolicy Tests', () => {
         tokenManagerMock,
       );
 
-      policy = await RBACPermissionPolicy.build(logger, config, enf);
+      policy = await RBACPermissionPolicy.build(
+        logger,
+        config,
+        conditionalStorage,
+        enf,
+      );
 
       catalogApi.getEntities.mockReturnValue({ items: [] });
     });
@@ -144,6 +163,32 @@ describe('RBACPermissionPolicy Tests', () => {
       );
       expect(decision.result).toBe(AuthorizeResult.ALLOW);
     });
+
+    // case1 with role
+    it('should allow update access to resource permission for user from csv file', async () => {
+      const decision = await policy.handle(
+        newPolicyQueryWithResourcePermission(
+          'catalog.entity.read',
+          'catalog-entity',
+          'update',
+        ),
+        newIdentityResponse('user:default/guest'),
+      );
+      expect(decision.result).toBe(AuthorizeResult.ALLOW);
+    });
+
+    // case2 with role
+    it('should allow update access to resource permission for role from csv file', async () => {
+      const decision = await policy.handle(
+        newPolicyQueryWithResourcePermission(
+          'catalog.entity.read',
+          'catalog-entity',
+          'update',
+        ),
+        newIdentityResponse('role:default/catalog-writer'),
+      );
+      expect(decision.result).toBe(AuthorizeResult.ALLOW);
+    });
   });
 
   describe('Policy checks for users', () => {
@@ -175,7 +220,12 @@ describe('RBACPermissionPolicy Tests', () => {
         tokenManagerMock,
       );
 
-      policy = await RBACPermissionPolicy.build(logger, config, enf);
+      policy = await RBACPermissionPolicy.build(
+        logger,
+        config,
+        conditionalStorage,
+        enf,
+      );
 
       catalogApi.getEntities.mockReturnValue({ items: [] });
     });
@@ -386,7 +436,12 @@ describe('Policy checks for users and groups', () => {
       tokenManagerMock,
     );
 
-    policy = await RBACPermissionPolicy.build(logger, config, enf);
+    policy = await RBACPermissionPolicy.build(
+      logger,
+      config,
+      conditionalStorage,
+      enf,
+    );
 
     catalogApi.getEntities.mockReset();
   });
