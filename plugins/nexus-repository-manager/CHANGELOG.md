@@ -1,3 +1,16 @@
+## @janus-idp/backstage-plugin-nexus-repository-manager [1.4.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-nexus-repository-manager@1.4.2...@janus-idp/backstage-plugin-nexus-repository-manager@1.4.3) (2023-11-06)
+
+
+### Bug Fixes
+
+* **cli:** add default scalprum config ([#909](https://github.com/janus-idp/backstage-plugins/issues/909)) ([d74fc72](https://github.com/janus-idp/backstage-plugins/commit/d74fc72ab7e0a843da047c7b6570d8a6fbc068e1))
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.3.3
+
 ## @janus-idp/backstage-plugin-nexus-repository-manager [1.4.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-nexus-repository-manager@1.4.1...@janus-idp/backstage-plugin-nexus-repository-manager@1.4.2) (2023-11-06)
 
 
