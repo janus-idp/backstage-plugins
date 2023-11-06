@@ -1,3 +1,4 @@
+/* eslint-disable func-names */
 import { CatalogClient } from '@backstage/catalog-client';
 
 import { Knex } from 'knex';
@@ -16,7 +17,11 @@ export async function createNotification(
   catalogClient: CatalogClient,
   req: CreateNotificationRequest,
 ): Promise<{ msgid: string }> {
-  if (Array.isArray(req.targetGroups)) {
+  let isUser = false;
+
+  // validate users
+  if (Array.isArray(req.targetGroups) && req.targetGroups.length > 0) {
+    isUser = true;
     const promises = req.targetGroups.map(group => {
       return catalogClient.getEntityByRef(`group:${group}`).then(groupRef => {
         if (!groupRef) {
@@ -28,7 +33,9 @@ export async function createNotification(
     await Promise.all(promises);
   }
 
-  if (Array.isArray(req.targetUsers)) {
+  // validate groups
+  if (Array.isArray(req.targetUsers) && req.targetUsers.length > 0) {
+    isUser = true;
     const promises = req.targetUsers.map(user => {
       return catalogClient.getEntityByRef(`user:${user}`).then(userRef => {
         if (!userRef) {
@@ -40,40 +47,84 @@ export async function createNotification(
     await Promise.all(promises);
   }
 
+  // validate actions
+  if (Array.isArray(req.actions)) {
+    req.actions.forEach(action => {
+      if (!action.title || !action.url) {
+        throw new Error('Both action title and url are mandatory.');
+      }
+    });
+  }
+
   const row: MessagesInsert = {
     origin: req.origin,
     title: req.title,
     message: req.message,
     topic: req.topic,
+    is_system: !isUser,
   };
 
-  const messagesResult = await dbClient('messages')
-    .insert(row)
-    .returning<string, { id: string }[]>('id');
+  let msgID: string;
 
-  const messageId = messagesResult[0].id;
+  const ret = dbClient.transaction(trx => {
+    return trx
+      .insert(row)
+      .returning<string, { id: string }[]>('id')
+      .into('messages')
+      .then(ids => {
+        msgID = ids[0].id;
+        if (Array.isArray(req.targetUsers)) {
+          const userInserts = req.targetUsers.map(user => {
+            return {
+              message_id: msgID,
+              user: user,
+            };
+          });
+          return trx('users').insert(userInserts);
+        }
 
-  if (Array.isArray(req.actions)) {
-    const actionRows: ActionsInsert[] = req.actions.map(action => {
-      if (!action.title || !action.url) {
-        throw new Error('Both action title and url are mandatory.');
-      }
+        return undefined;
+      })
+      .then(() => {
+        if (Array.isArray(req.targetGroups)) {
+          const groupInserts = req.targetGroups.map(group => {
+            return {
+              message_id: msgID,
+              group: group,
+            };
+          });
+          return trx('groups').insert(groupInserts);
+        }
 
-      return {
-        url: action.url,
-        title: action.title,
-        message_id: messageId,
-      };
-    });
-    await dbClient.batchInsert('actions', actionRows);
-  }
+        return undefined;
+      })
+      .then(() => {
+        if (Array.isArray(req.actions)) {
+          const actionInserts: ActionsInsert[] = req.actions.map(action => {
+            return {
+              url: action.url,
+              title: action.title,
+              message_id: msgID,
+            };
+          });
 
-  return { msgid: messageId };
+          return trx('actions').insert(actionInserts);
+        }
+
+        return undefined;
+      })
+      .then(() => {
+        return { msgid: msgID };
+      });
+  });
+
+  return ret;
 }
 
 // getNotifications
 export async function getNotifications(
   dbClient: Knex<any, any>,
+  catalogClient: CatalogClient,
   filter: NotificationsFilter,
   pageSize: number,
   pageNumber: number,
@@ -89,22 +140,25 @@ export async function getNotifications(
     );
   }
 
-  const query = dbClient('messages').select('*');
+  if (!filter.user) {
+    throw new Error('user parameter is missing in request');
+  }
 
-  query.orderBy('created', 'asc');
+  const userGroups = await getUserGroups(catalogClient, filter.user);
 
-  addFilter(query, filter);
+  const query = createQuery(dbClient, filter, userGroups);
 
   if (pageNumber > 0) {
     query.limit(pageSize).offset((pageNumber - 1) * pageSize);
   }
 
-  const notifications = await query.then(messages =>
-    messages.map(message => {
+  const notifications: Notification[] = await query.select('*').then(messages =>
+    messages.map((message: any) => {
       const notification: Notification = {
         id: message.id,
         created: message.created,
-        readByUser: false,
+        isSystem: message.is_system,
+        readByUser: message.read ? message.read : false,
         origin: message.origin,
         title: message.title,
         message: message.message,
@@ -136,15 +190,20 @@ export async function getNotifications(
   return notifications;
 }
 
-export function getNotificationsCount(
+export async function getNotificationsCount(
   dbClient: Knex<any, any>,
+  catalogClient: CatalogClient,
   filter: NotificationsFilter,
 ): Promise<{ count: number }> {
-  const query = dbClient('messages').count('* as CNT');
+  if (!filter.user) {
+    throw new Error('user parameter is missing in request');
+  }
 
-  addFilter(query, filter);
+  const userGroups = await getUserGroups(catalogClient, filter.user);
 
-  const ret = query.then(count => {
+  const query = createQuery(dbClient, filter, userGroups);
+
+  const ret = query.count('* as CNT').then(count => {
     const msgcount = count[0].CNT as number;
     return { count: msgcount };
   });
@@ -152,10 +211,56 @@ export function getNotificationsCount(
   return ret;
 }
 
-function addFilter(query: Knex.QueryBuilder, filter: NotificationsFilter) {
+function createQuery(
+  dbClient: Knex<any, any>,
+  filter: NotificationsFilter,
+  userGroups: string[],
+) {
+  // join messages table with users table to get message status. E.g read/unread
+  const query = dbClient('messages');
+
+  query.leftJoin(
+    function () {
+      this.select('*')
+        .from('users')
+        .where('users.user', filter.user)
+        .as('users');
+    },
+    function () {
+      this.on('messages.id', '=', 'users.message_id');
+    },
+  );
+
+  // select messages matching filter
+
+  // select either system messages or messages intended for the user
+  query.where(function () {
+    if (filter.messageScope !== 'user') {
+      this.where('is_system', true);
+    }
+
+    if (filter.messageScope !== 'system') {
+      this.orWhere(function () {
+        this.where('is_system', false).andWhere(function () {
+          this.whereIn('id', function () {
+            this.select('message_id').from('users').where('user', filter.user);
+          });
+
+          if (Array.isArray(userGroups) && userGroups.length > 0) {
+            this.orWhereIn('id', function () {
+              this.select('message_id')
+                .from('groups')
+                .whereIn('group', userGroups);
+            });
+          }
+        });
+      });
+    }
+  });
+
+  // filter by text
   if (filter.containsText) {
-    // eslint-disable-next-line func-names
-    query.where(function () {
+    query.andWhere(function () {
       this.whereILike('title', `%${filter.containsText}%`).orWhereILike(
         'message',
         `%${filter.containsText}%`,
@@ -163,7 +268,33 @@ function addFilter(query: Knex.QueryBuilder, filter: NotificationsFilter) {
     });
   }
 
+  // filter by time
   if (filter.createdAfter) {
     query.andWhere('created', '>', filter.createdAfter);
   }
+
+  return query;
 }
+
+function getUserGroups(
+  catalogClient: CatalogClient,
+  user: string,
+): Promise<string[]> {
+  return catalogClient.getEntityByRef(`user:${user}`).then(userRef => {
+    if (!userRef) {
+      throw new Error(`user '${user}' does not exist`);
+    }
+
+    if (userRef.spec && Array.isArray(userRef.spec.memberOf)) {
+      return userRef.spec.memberOf.map(value => {
+        if (value) {
+          return value.toString();
+        }
+        return '';
+      });
+    }
+
+    return [];
+  });
+}
+/* eslint-enable func-names */
