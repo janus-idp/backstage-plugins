@@ -56,11 +56,5 @@
     "dist-scalprum",
     "config.d.ts"
   ],
-  "configSchema": "config.d.ts",
-  "scalprum": {
-    "name": "janus-idp.backstage-plugin-openshift-image-registry",
-    "exposedModules": {
-      "OpenshiftImageRegistryPlugin": "./src/index.ts"
-    }
-  }
+  "configSchema": "config.d.ts"
 }

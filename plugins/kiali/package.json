@@ -65,11 +65,5 @@
     "plugin"
   ],
   "homepage": "https://janus-idp.io/",
-  "bugs": "https://github.com/janus-idp/backstage-plugins/issues",
-  "scalprum": {
-    "name": "janus-idp.backstage-plugin-kiali",
-    "exposedModules": {
-      "KialiPlugin": "./src/index.ts"
-    }
-  }
+  "bugs": "https://github.com/janus-idp/backstage-plugins/issues"
 }
