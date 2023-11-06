@@ -40,13 +40,13 @@ export async function createRouter(
     response.json({ status: 'ok' });
   });
 
-  router.get('/notifications/count', (request, response) => {
-    getNotificationsCount(dbClient, request.query).then(result =>
-      response.json(result),
-    );
+  router.get('/notifications/count', (request, response, next) => {
+    getNotificationsCount(dbClient, catalogClient, request.query)
+      .then(result => response.json(result))
+      .catch(next);
   });
 
-  router.get('/notifications', (request, response) => {
+  router.get('/notifications', (request, response, next) => {
     const { pageSize, pageNumber } = request.query;
 
     if (typeof pageSize !== 'string' || typeof pageNumber !== 'string') {
@@ -62,9 +62,15 @@ export async function createRouter(
       throw new Error('either pageSize or pageNumber is not a number');
     }
 
-    getNotifications(dbClient, request.query, pageSizeNum, pageNumberNum).then(
-      notifications => response.json(notifications),
-    );
+    getNotifications(
+      dbClient,
+      catalogClient,
+      request.query,
+      pageSizeNum,
+      pageNumberNum,
+    )
+      .then(notifications => response.json(notifications))
+      .catch(next);
   });
 
   router.post('/notifications', (request, response, next) => {

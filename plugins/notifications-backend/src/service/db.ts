@@ -26,6 +26,32 @@ export async function initDB(dbConfig: Config): Promise<Knex<any, any>> {
       table.string('title').notNullable();
       table.text('message');
       table.string('topic');
+      table.boolean('is_system'); // is it a system message or a message for specific users and groups
+    });
+  }
+
+  if (!(await dbClient.schema.hasTable('users'))) {
+    await dbClient.schema.createTable('users', table => {
+      table.uuid('message_id').notNullable();
+      table.string('user').notNullable();
+      table.boolean('read').defaultTo('false');
+      table
+        .foreign('message_id')
+        .references('id')
+        .inTable('messages')
+        .onDelete('CASCADE');
+    });
+  }
+
+  if (!(await dbClient.schema.hasTable('groups'))) {
+    await dbClient.schema.createTable('groups', table => {
+      table.uuid('message_id').notNullable();
+      table.string('group').notNullable();
+      table
+        .foreign('message_id')
+        .references('id')
+        .inTable('messages')
+        .onDelete('CASCADE');
     });
   }
 
@@ -47,6 +73,7 @@ export type MessagesInsert = {
   title: string;
   message?: string;
   topic?: string;
+  is_system: boolean;
 };
 
 export type ActionsInsert = {
