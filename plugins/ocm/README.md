@@ -166,7 +166,7 @@ If you are interested in Resource discovery and do not want any of the front-end
 
 1. Import the cluster `Resource` entity provider into the `catalog` plugin in the `packages/backend/src/plugins/catalog.ts` file. The scheduler also needs to be configured. Two configurations are possible here:
 
-   - **Method 1**: If the scheduler is configured inside the `app-config.yaml` via the schedule config key shown below:
+   - **Method 1**: If the scheduler is configured inside the `app-config.yaml` using the schedule config key as follows:
 
      ```yaml title="app-config.yaml"
      catalog:
