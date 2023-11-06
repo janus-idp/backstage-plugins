@@ -27,9 +27,17 @@ export type NotificationsFilter = {
   createdAfter?: Date;
 };
 
+// Keep in sync with BE: plugins/notifications-backend/src/service/types.ts
+export type NotificationsQuerySorting = {
+  fieldName: 'title' | 'message' | 'created' | 'origin' | 'topic';
+  direction: 'asc' | 'desc';
+};
+
 export type NotificationsQuery = NotificationsFilter & {
   pageSize: number;
   pageNumber: number;
+
+  sorting?: NotificationsQuerySorting;
 };
 export type NotificationsCountQuery = NotificationsFilter & {
   unreadOnly?: boolean;

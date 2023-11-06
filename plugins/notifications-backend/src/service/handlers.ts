@@ -8,6 +8,7 @@ import {
   CreateNotificationRequest,
   Notification,
   NotificationsFilter,
+  NotificationsQuerySorting,
 } from './types';
 
 // createNotification
@@ -128,6 +129,8 @@ export async function getNotifications(
   filter: NotificationsFilter,
   pageSize: number,
   pageNumber: number,
+  orderBy: NotificationsQuerySorting['fieldName'],
+  orderByDirec: NotificationsQuerySorting['direction'],
 ): Promise<Notification[]> {
   if (
     pageSize < 0 ||
@@ -147,6 +150,8 @@ export async function getNotifications(
   const userGroups = await getUserGroups(catalogClient, filter.user);
 
   const query = createQuery(dbClient, filter, userGroups);
+
+  query.orderBy(orderBy, orderByDirec);
 
   if (pageNumber > 0) {
     query.limit(pageSize).offset((pageNumber - 1) * pageSize);
