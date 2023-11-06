@@ -44,6 +44,11 @@ export class NotificationsApiImpl implements NotificationsApi {
     url.searchParams.append('pageSize', `${query.pageSize}`);
     url.searchParams.append('pageNumber', `${query.pageNumber}`);
 
+    if (query.sorting) {
+      url.searchParams.append('orderBy', `${query.sorting.fieldName}`);
+      url.searchParams.append('orderByDirec', `${query.sorting.direction}`);
+    }
+
     this.addFilter(url, query);
 
     const response = await fetch(url.href);

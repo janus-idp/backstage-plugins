@@ -9,6 +9,7 @@ import {
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
+import { MaterialTableProps } from '@material-table/core';
 import { IconButton, Tooltip } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import MarkAsReadIcon from '@material-ui/icons/Markunread' /* TODO: find a better component */;
@@ -19,7 +20,11 @@ import {
   StackItem,
 } from '@patternfly/react-core' /* TODO: avoid Patternfly, find a way how to get Split, Stack from Material UI */;
 
-import { Notification, notificationsApiRef } from '../../api';
+import {
+  Notification,
+  notificationsApiRef,
+  NotificationsQuerySorting,
+} from '../../api';
 import {
   CreatedAfterOptions,
   NotificationsToolbar,
@@ -40,6 +45,9 @@ export const NotificationsTable = () => {
     undefined,
   );
   const [createdAfter, setCreatedAfter] = React.useState<string>('lastWeek');
+  const [sorting, setSorting] = React.useState<
+    NotificationsQuerySorting | undefined
+  >();
 
   const onMarkAsRead = React.useCallback(
     (notification: Notification) => {
@@ -59,6 +67,7 @@ export const NotificationsTable = () => {
       pageNumber: pageNumber + 1 /* BE starts at 1 */,
       containsText,
       createdAfter: createdAfterDate,
+      sorting,
     });
     // TODO: extend BE to get both in a single query/response
     const total = await notificationsApi.getNotificationsCount({
@@ -70,7 +79,7 @@ export const NotificationsTable = () => {
       notifications: data,
       totalCount: total,
     };
-  }, [pageNumber, pageSize, containsText, createdAfter]);
+  }, [pageNumber, pageSize, containsText, createdAfter, sorting]);
 
   const actionsColumn: TableColumn<Notification> = React.useMemo(
     () => ({
@@ -112,6 +121,27 @@ export const NotificationsTable = () => {
     [classes.actionsList, onMarkAsRead],
   );
 
+  const onOrderChange = React.useCallback<
+    NonNullable<MaterialTableProps<Notification>['onOrderChange']>
+  >((orderBy, direction) => {
+    if (orderBy < 0) {
+      setSorting(undefined);
+      return;
+    }
+
+    const fieldNames: NotificationsQuerySorting['fieldName'][] = [
+      /* Keep the order in sync with the column definitions */
+      'title',
+      'message',
+      'created',
+      'topic',
+      'origin',
+    ];
+    const fieldName = fieldNames[orderBy];
+
+    setSorting({ fieldName, direction });
+  }, []);
+
   const columns = React.useMemo(
     (): TableColumn<Notification>[] => [
       { title: 'Title', field: 'title' },
@@ -148,6 +178,7 @@ export const NotificationsTable = () => {
       page={pageNumber}
       totalCount={value?.totalCount}
       onSearchChange={setContainsText}
+      onOrderChange={onOrderChange}
       components={{
         Toolbar: props => (
           <NotificationsToolbar
