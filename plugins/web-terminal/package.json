@@ -64,11 +64,5 @@
     "setupFiles": [
       "jest-canvas-mock"
     ]
-  },
-  "scalprum": {
-    "name": "janus-idp.backstage-plugin-web-terminal",
-    "exposedModules": {
-      "WebTerminalPlugin": "./src/index.ts"
-    }
   }
 }
