@@ -11,6 +11,17 @@ import {
   NotificationsQuerySorting,
 } from './types';
 
+const FieldsAllowedToOrderBy: string[] = [
+  'title',
+  'message',
+  'created',
+  'topic',
+  'origin',
+];
+const OrderByDirections: string[] = ['asc', 'desc'];
+const DefaultOrderBy = 'created';
+const DefaultOrderDirection = 'desc';
+
 // createNotification
 // returns string id of created notification
 export async function createNotification(
@@ -129,8 +140,7 @@ export async function getNotifications(
   filter: NotificationsFilter,
   pageSize: number,
   pageNumber: number,
-  orderBy: NotificationsQuerySorting['fieldName'],
-  orderByDirec: NotificationsQuerySorting['direction'],
+  sorting: NotificationsQuerySorting,
 ): Promise<Notification[]> {
   if (
     pageSize < 0 ||
@@ -147,11 +157,24 @@ export async function getNotifications(
     throw new Error('user parameter is missing in request');
   }
 
+  const orderByIndex = FieldsAllowedToOrderBy.findIndex(
+    f => f === (sorting.fieldName || DefaultOrderBy),
+  );
+  const direction = sorting.direction || DefaultOrderDirection;
+  if (orderByIndex < 0 || !OrderByDirections.includes(direction)) {
+    throw new Error(
+      `The orderBy parameter can be one of ${FieldsAllowedToOrderBy.join(
+        ',',
+      )}. The orderByDirec can be either ${OrderByDirections.join(' or ')}.`,
+    );
+  }
+  const orderBy = FieldsAllowedToOrderBy[orderByIndex];
+
   const userGroups = await getUserGroups(catalogClient, filter.user);
 
   const query = createQuery(dbClient, filter, userGroups);
 
-  query.orderBy(orderBy, orderByDirec);
+  query.orderBy(orderBy, direction);
 
   if (pageNumber > 0) {
     query.limit(pageSize).offset((pageNumber - 1) * pageSize);
