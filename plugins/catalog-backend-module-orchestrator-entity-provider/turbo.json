@@ -1,0 +1,11 @@
+{
+  "extends": ["//"],
+  "pipeline": {
+    "tsc": {
+      "outputs": [
+        "../../dist-types/plugins/catalog-backend-module-orchestrator-entity-provider/**"
+      ],
+      "dependsOn": ["^tsc"]
+    }
+  }
+}
