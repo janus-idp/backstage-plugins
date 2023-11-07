@@ -1,3 +1,10 @@
+## @janus-idp/cli [1.4.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.3.3...@janus-idp/cli@1.4.0) (2023-11-07)
+
+
+### Features
+
+* **cli:** generate plugin specific schema for dynamic plugins ([#912](https://github.com/janus-idp/backstage-plugins/issues/912)) ([0c31158](https://github.com/janus-idp/backstage-plugins/commit/0c311585d5aaaa501bef8ba0e8dfddffe240f71c))
+
 ## @janus-idp/cli [1.3.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.3.2...@janus-idp/cli@1.3.3) (2023-11-06)
 
 
