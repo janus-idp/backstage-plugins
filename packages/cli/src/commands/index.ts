@@ -100,6 +100,11 @@ export function registerScriptCommand(program: Command) {
       'Allow testing/debugging a backend plugin dynamic loading locally. This installs the dynamic plugin content (symlink) into the dynamic plugins root folder configured in the app config. This also creates a link from the dynamic plugin content to the plugin package `src` folder, to enable the use of source maps (backend plugin only).',
     )
     .action(lazy(() => import('./export-dynamic-plugin').then(m => m.command)));
+
+  command
+    .command('schema')
+    .description('Print configuration schema for a package')
+    .action(lazy(() => import('./schema').then(m => m.default)));
 }
 
 export function registerCommands(program: Command) {
