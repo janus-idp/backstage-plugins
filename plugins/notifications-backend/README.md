@@ -37,6 +37,8 @@ A new DB will be created: backstage_plugin_notifications
 
 ### Posting a notification
 
+A notification without users or groups is considered a system notification. That means it is is intended for all users.
+
 Request:
 
 ```bash
@@ -51,10 +53,13 @@ Response:
 
 ### Get notifications
 
+Page number starts at '1'. Page number '0' along with page size '0' means no paging.
+User parameter is mandatory because it is needed for message status and filtering (read/unread).
+
 Request:
 
 ```bash
-curl 'http://localhost:7007/api/notifications/notifications?pageNumber=0&pageSize=0'
+curl 'http://localhost:7007/api/notifications/notifications?user=loggedinuser&pageNumber=0&pageSize=0'
 ```
 
 Response:
@@ -64,6 +69,7 @@ Response:
   {
     "id": "2daac6ff-3aaa-420d-b755-d94e54248310",
     "created": "2023-10-30T13:48:34.931Z",
+    "isSystem": false,
     "readByUser": false,
     "origin": "my-origin",
     "title": "My title",
@@ -76,10 +82,12 @@ Response:
 
 ### Get count of notifications
 
+User parameter is mandatory because it is needed for filtering (read/unread).
+
 Request:
 
 ```bash
-curl http://localhost:7007/api/notifications/notifications/count
+curl http://localhost:7007/api/notifications/notifications/count?user=loggedinuser
 ```
 
 Response:
