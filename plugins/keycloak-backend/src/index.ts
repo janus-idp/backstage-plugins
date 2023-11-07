@@ -17,3 +17,4 @@
 export * from './providers';
 export type { UserTransformer, GroupTransformer } from './lib';
 export * from './lib/transformers';
+export * from './dynamic/index';
