@@ -20,7 +20,7 @@ interface RouterOptions {
   catalogClient: CatalogClient;
 }
 
-const orderByFieldNames: NotificationsQuerySorting['fieldName'][] = [
+const FieldsAllowedToOrderBy: NotificationsQuerySorting['fieldName'][] = [
   'title',
   'message',
   'created',
@@ -76,11 +76,11 @@ export async function createRouter(
       throw new Error('either pageSize or pageNumber is not a number');
     }
 
-    const orderByIndex = orderByFieldNames.findIndex(f => f === orderBy);
+    const orderByIndex = FieldsAllowedToOrderBy.findIndex(f => f === orderBy);
     const direction = orderByDirec?.toString();
     if (orderByIndex < 0 || !['asc', 'desc'].includes(direction)) {
       throw new Error(
-        `The orderBy parameter can be one of ${orderByFieldNames.join(
+        `The orderBy parameter can be one of ${FieldsAllowedToOrderBy.join(
           ',',
         )}. The orderByDirec can be either 'asc' or 'desc'.`,
       );
@@ -92,7 +92,7 @@ export async function createRouter(
       request.query,
       pageSizeNum,
       pageNumberNum,
-      orderByFieldNames[orderByIndex],
+      FieldsAllowedToOrderBy[orderByIndex],
       direction as 'asc' | 'desc',
     )
       .then(notifications => response.json(notifications))
