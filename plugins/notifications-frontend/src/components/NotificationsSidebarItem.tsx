@@ -17,7 +17,18 @@ const NotificationsErrorIcon = () => (
   </Tooltip>
 );
 
-export const NotificationsSidebarItem = () => {
+export type NotificationsSidebarItemProps = {
+  /**
+   * Number of milliseconds between polling the notifications backend.
+   * If negative or zero, the poling is not started.
+   * Example: 5000
+   */
+  pollingInterval?: number;
+};
+
+export const NotificationsSidebarItem = ({
+  pollingInterval,
+}: NotificationsSidebarItemProps) => {
   const notificationsApi = useApi(notificationsApiRef);
   const [error, setError] = React.useState<Error | undefined>(undefined);
   const [unreadCount, setUnreadCount] = React.useState(0);
@@ -36,7 +47,7 @@ export const NotificationsSidebarItem = () => {
     }
   }, [notificationsApi]);
 
-  usePollingEffect(pollCallback, []);
+  usePollingEffect(pollCallback, [], pollingInterval);
 
   let icon = NotificationsIcon;
   if (!!error) {

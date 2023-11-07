@@ -77,7 +77,7 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
         </SidebarScrollWrapper>
       </SidebarGroup>
       <SidebarDivider />
-      <NotificationsSidebarItem />
+      <NotificationsSidebarItem pollingInterval={5000} />
       <SidebarSpace />
       <SidebarDivider />
       <SidebarGroup

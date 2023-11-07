@@ -1,18 +1,20 @@
 import { useEffect, useRef } from 'react';
 
-import { DEFAULT_POLLING_INTERVAL } from '../constants';
-
 const noop = () => {};
 
 export const usePollingEffect = (
   asyncCallback: () => Promise<void>,
   dependencies = [],
-  interval = DEFAULT_POLLING_INTERVAL,
+  interval = 0,
   onCleanUp = noop,
 ) => {
   const timeoutIdRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
+    if (!interval || interval < 0) {
+      return noop;
+    }
+
     let isStopped = false;
 
     (async function pollingCallback() {
