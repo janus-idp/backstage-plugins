@@ -68,11 +68,15 @@ export const NotificationsTable = () => {
       containsText,
       createdAfter: createdAfterDate,
       sorting,
+      user: 'jdoe' /* TODO: get logged-in user */,
+      messageScope: 'user' /* TODO: parametrize that */,
     });
     // TODO: extend BE to get both in a single query/response
     const total = await notificationsApi.getNotificationsCount({
       unreadOnly: false,
       containsText,
+      user: 'jdoe' /* TODO: get logged-in user */,
+      messageScope: 'user' /* TODO: parametrize that */,
     });
 
     return {

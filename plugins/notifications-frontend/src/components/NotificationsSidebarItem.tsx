@@ -25,7 +25,11 @@ export const NotificationsSidebarItem = () => {
   const pollCallback = React.useCallback(async () => {
     try {
       setUnreadCount(
-        await notificationsApi.getNotificationsCount({ unreadOnly: true }),
+        await notificationsApi.getNotificationsCount({
+          unreadOnly: true,
+          user: 'jdoe' /* TODO: get logged-in user */,
+          messageScope: 'user' /* TODO: parametrize that */,
+        }),
       );
     } catch (e: unknown) {
       setError(e as Error);

@@ -25,6 +25,8 @@ export type Notification = {
 export type NotificationsFilter = {
   containsText?: string;
   createdAfter?: Date;
+  messageScope?: 'all' | 'user' | 'system';
+  user?: string;
 };
 
 // Keep in sync with BE: plugins/notifications-backend/src/service/types.ts

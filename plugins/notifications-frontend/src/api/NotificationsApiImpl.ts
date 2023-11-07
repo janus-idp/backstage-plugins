@@ -30,6 +30,12 @@ export class NotificationsApiImpl implements NotificationsApi {
         filter.createdAfter.toISOString(),
       );
     }
+    if (filter.messageScope) {
+      url.searchParams.append('messageScope', filter.messageScope);
+    }
+    if (filter.user) {
+      url.searchParams.append('user', filter.user);
+    }
   }
 
   post(notification: Notification): Promise<string> {
