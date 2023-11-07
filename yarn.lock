@@ -25153,6 +25153,20 @@ typescript-json-schema@^0.61.0:
     typescript "~5.1.0"
     yargs "^17.1.1"
 
+typescript-json-schema@^0.62.0:
+  version "0.62.0"
+  resolved "https://registry.yarnpkg.com/typescript-json-schema/-/typescript-json-schema-0.62.0.tgz#774b06b0c9d86d7f3580ea9136363a6eafae1470"
+  integrity sha512-qRO6pCgyjKJ230QYdOxDRpdQrBeeino4v5p2rYmSD72Jf4rD3O+cJcROv46sQukm46CLWoeusqvBgKpynEv25g==
+  dependencies:
+    "@types/json-schema" "^7.0.9"
+    "@types/node" "^16.9.2"
+    glob "^7.1.7"
+    path-equal "^1.2.5"
+    safe-stable-stringify "^2.2.0"
+    ts-node "^10.9.1"
+    typescript "~5.1.0"
+    yargs "^17.1.1"
+
 typescript@5.2.2:
   version "5.2.2"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.2.2.tgz#5ebb5e5a5b75f085f22bc3f8460fba308310fa78"

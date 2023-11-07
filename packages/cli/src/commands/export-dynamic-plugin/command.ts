@@ -20,8 +20,17 @@ import { OptionValues } from 'commander';
 import fs from 'fs-extra';
 
 import { paths } from '../../lib/paths';
+import { getConfigSchema } from '../../lib/schema/collect';
 import { backend } from './backend';
 import { frontend } from './frontend';
+
+const saveSchema = async (packageName: string, path: string) => {
+  const configSchema = await getConfigSchema(packageName);
+  await fs.writeJson(paths.resolveTarget(path), configSchema, {
+    encoding: 'utf8',
+    spaces: 2,
+  });
+};
 
 export async function command(opts: OptionValues): Promise<void> {
   const rawPkg = await fs.readJson(paths.resolveTarget('package.json'));
@@ -33,11 +42,19 @@ export async function command(opts: OptionValues): Promise<void> {
   const roleInfo = PackageRoles.getRoleInfo(role);
 
   if (role === 'backend-plugin' || role === 'backend-plugin-module') {
-    return backend(roleInfo, opts);
+    await backend(roleInfo, opts);
+
+    await saveSchema(rawPkg.name, 'dist-dynamic/dist/configSchema.json');
+
+    return;
   }
 
   if (role === 'frontend-plugin') {
-    return frontend(roleInfo, opts);
+    await frontend(roleInfo, opts);
+
+    await saveSchema(rawPkg.name, 'dist-scalprum/configSchema.json');
+
+    return;
   }
 
   throw new Error(
