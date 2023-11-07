@@ -38,8 +38,7 @@ export type NotificationsFilter = {
   user?: string;
 };
 
-// Keep in sync with FE: plugins/notifications-frontend/src/api/notificationsApi.ts
 export type NotificationsQuerySorting = {
-  fieldName: 'title' | 'message' | 'created' | 'origin' | 'topic';
-  direction: 'asc' | 'desc';
+  fieldName?: string;
+  direction?: string;
 };

@@ -20,14 +20,6 @@ interface RouterOptions {
   catalogClient: CatalogClient;
 }
 
-const FieldsAllowedToOrderBy: NotificationsQuerySorting['fieldName'][] = [
-  'title',
-  'message',
-  'created',
-  'topic',
-  'origin',
-];
-
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
@@ -56,12 +48,7 @@ export async function createRouter(
   });
 
   router.get('/notifications', (request, response, next) => {
-    const {
-      pageSize,
-      pageNumber,
-      orderBy = 'created',
-      orderByDirec = 'desc',
-    } = request.query;
+    const { pageSize, pageNumber, orderBy, orderByDirec } = request.query;
 
     if (typeof pageSize !== 'string' || typeof pageNumber !== 'string') {
       throw new Error(
@@ -76,15 +63,10 @@ export async function createRouter(
       throw new Error('either pageSize or pageNumber is not a number');
     }
 
-    const orderByIndex = FieldsAllowedToOrderBy.findIndex(f => f === orderBy);
-    const direction = orderByDirec?.toString();
-    if (orderByIndex < 0 || !['asc', 'desc'].includes(direction)) {
-      throw new Error(
-        `The orderBy parameter can be one of ${FieldsAllowedToOrderBy.join(
-          ',',
-        )}. The orderByDirec can be either 'asc' or 'desc'.`,
-      );
-    }
+    const sorting: NotificationsQuerySorting = {
+      fieldName: orderBy?.toString(),
+      direction: orderByDirec?.toString(),
+    };
 
     getNotifications(
       dbClient,
@@ -92,8 +74,7 @@ export async function createRouter(
       request.query,
       pageSizeNum,
       pageNumberNum,
-      FieldsAllowedToOrderBy[orderByIndex],
-      direction as 'asc' | 'desc',
+      sorting,
     )
       .then(notifications => response.json(notifications))
       .catch(next);
