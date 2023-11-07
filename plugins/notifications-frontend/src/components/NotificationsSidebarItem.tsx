@@ -3,11 +3,18 @@ import React from 'react';
 import { SidebarItem } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
-import { Tooltip } from '@material-ui/core';
+import {
+  IconButton,
+  Link,
+  makeStyles,
+  Snackbar,
+  Tooltip,
+} from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import NotificationsOffIcon from '@material-ui/icons/NotificationsOff';
 
-import { notificationsApiRef } from '../api';
+import { Notification, notificationsApiRef } from '../api';
 import { NOTIFICATIONS_ROUTE } from '../constants';
 import { usePollingEffect } from './usePollingEffect';
 
@@ -26,26 +33,55 @@ export type NotificationsSidebarItemProps = {
   pollingInterval?: number;
 };
 
+const useStyles = makeStyles(_theme => ({
+  systemAlertAction: {
+    marginRight: '1rem',
+  },
+}));
+
 export const NotificationsSidebarItem = ({
   pollingInterval,
 }: NotificationsSidebarItemProps) => {
+  const styles = useStyles();
   const notificationsApi = useApi(notificationsApiRef);
   const [error, setError] = React.useState<Error | undefined>(undefined);
   const [unreadCount, setUnreadCount] = React.useState(0);
+  const [pageLoadingTime] = React.useState(new Date(Date.now()));
+  const [lastSystemWideNotification, setLastSystemWideNotification] =
+    React.useState<Notification>();
+  const [closedNotificationId, setClosedNotificationId] =
+    React.useState<string>();
+
+  // TODO: get the logged-in username
+  const user = 'jdoe';
 
   const pollCallback = React.useCallback(async () => {
     try {
       setUnreadCount(
         await notificationsApi.getNotificationsCount({
           unreadOnly: true,
-          user: 'jdoe' /* TODO: get logged-in user */,
-          messageScope: 'user' /* TODO: parametrize that */,
+          user,
+          messageScope: 'user',
         }),
       );
+
+      const data = await notificationsApi.getNotifications({
+        pageSize: 1,
+        pageNumber: 1,
+        createdAfter: pageLoadingTime,
+        sorting: {
+          fieldName: 'created',
+          direction: 'desc',
+        },
+        user,
+        messageScope: 'system',
+      });
+
+      setLastSystemWideNotification(data?.[0]);
     } catch (e: unknown) {
       setError(e as Error);
     }
-  }, [notificationsApi]);
+  }, [notificationsApi, pageLoadingTime]);
 
   usePollingEffect(pollCallback, [], pollingInterval);
 
@@ -55,11 +91,40 @@ export const NotificationsSidebarItem = ({
   }
 
   return (
-    <SidebarItem
-      icon={icon}
-      to={NOTIFICATIONS_ROUTE}
-      text="Notifications"
-      hasNotifications={!error && !!unreadCount}
-    />
+    <>
+      <SidebarItem
+        icon={icon}
+        to={NOTIFICATIONS_ROUTE}
+        text="Notifications"
+        hasNotifications={!error && !!unreadCount}
+      />
+      {lastSystemWideNotification && !lastSystemWideNotification.readByUser && (
+        <Snackbar
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+          open={closedNotificationId !== lastSystemWideNotification.id}
+          message={lastSystemWideNotification.title}
+          action={
+            <>
+              <Link
+                href={`/${NOTIFICATIONS_ROUTE}/updates`}
+                className={styles.systemAlertAction}
+              >
+                Show
+              </Link>
+              <IconButton
+                size="small"
+                aria-label="close"
+                color="inherit"
+                onClick={() =>
+                  setClosedNotificationId(lastSystemWideNotification.id)
+                }
+              >
+                <CloseIcon fontSize="small" />
+              </IconButton>
+            </>
+          }
+        />
+      )}
+    </>
   );
 };
