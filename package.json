@@ -31,6 +31,10 @@
     "packages": [
       "packages/*",
       "plugins/*"
+    ],
+    "nohoist": [
+      "@janus-idp/backstage-plugin-orchestrator",
+      "@janus-idp/backstage-plugin-orchestrator/@kie-tools/**/!(react|react-dom)"
     ]
   },
   "devDependencies": {
@@ -54,7 +58,8 @@
   },
   "resolutions": {
     "@types/react": "^17.0.68",
-    "@types/react-dom": "^17.0.21"
+    "@types/react-dom": "^17.0.21",
+    "vscode-languageserver-types": "3.17.1"
   },
   "lint-staged": {
     "*": "turbo run prettier:fix --",

@@ -52,8 +52,14 @@ site
 # vscode database functionality support files
 *.session.sql
 
+.vscode
+
 # turbo
 .turbo
+
+# idea
+.idea
+*.iml
 
 # build cache
 .webpack-cache
