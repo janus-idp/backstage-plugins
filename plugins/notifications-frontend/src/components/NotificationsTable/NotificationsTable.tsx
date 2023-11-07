@@ -23,6 +23,7 @@ import {
 import {
   Notification,
   notificationsApiRef,
+  NotificationsFilter,
   NotificationsQuerySorting,
 } from '../../api';
 import {
@@ -36,7 +37,13 @@ const useStyles = makeStyles({
   },
 });
 
-export const NotificationsTable = () => {
+export type NotificationsTableProps = {
+  messageScope: NonNullable<NotificationsFilter['messageScope']>;
+};
+
+export const NotificationsTable = ({
+  messageScope,
+}: NotificationsTableProps) => {
   const notificationsApi = useApi(notificationsApiRef);
   const classes = useStyles();
   const [pageNumber, setPageNumber] = React.useState(0);
@@ -48,6 +55,9 @@ export const NotificationsTable = () => {
   const [sorting, setSorting] = React.useState<
     NotificationsQuerySorting | undefined
   >();
+
+  // TODO: get the name of logged-in user
+  const user = 'jdoe';
 
   const onMarkAsRead = React.useCallback(
     (notification: Notification) => {
@@ -68,15 +78,15 @@ export const NotificationsTable = () => {
       containsText,
       createdAfter: createdAfterDate,
       sorting,
-      user: 'jdoe' /* TODO: get logged-in user */,
-      messageScope: 'user' /* TODO: parametrize that */,
+      user,
+      messageScope,
     });
     // TODO: extend BE to get both in a single query/response
     const total = await notificationsApi.getNotificationsCount({
       unreadOnly: false,
       containsText,
-      user: 'jdoe' /* TODO: get logged-in user */,
-      messageScope: 'user' /* TODO: parametrize that */,
+      user,
+      messageScope,
     });
 
     return {

@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { NotificationsTable } from '../NotificationsTable';
+
 export const SystemNotifications = () => (
-  <>TODO: The SystemNotifications view</>
+  <NotificationsTable messageScope="system" />
 );
