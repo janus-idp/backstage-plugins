@@ -30,5 +30,6 @@
       ],
       "groupName": "semantic-release monorepo"
     }
-  ]
+  ],
+  "ignorePaths": ["**/dist-dynamic/**"]
 }

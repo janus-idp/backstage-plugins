@@ -30,7 +30,7 @@ import { KeycloakOrgEntityProvider } from '../providers';
  */
 export const catalogModuleKeycloakEntityProvider = createBackendModule({
   pluginId: 'catalog',
-  moduleId: 'keycloakEntityProvider',
+  moduleId: 'catalog-backend-module-keycloak',
   register(env) {
     env.registerInit({
       deps: {

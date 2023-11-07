@@ -2155,6 +2155,34 @@
     express "^4.17.1"
     knex "^2.0.0"
 
+"@backstage/backend-plugin-manager@npm:@janus-idp/backend-plugin-manager@0.0.2-janus.5":
+  version "0.0.2-janus.5"
+  resolved "https://registry.yarnpkg.com/@janus-idp/backend-plugin-manager/-/backend-plugin-manager-0.0.2-janus.5.tgz#58e3c9fa2fe096da7705b86f0262bae14b3bf0f5"
+  integrity sha512-XiBxG9trGZBiiBvCmbV+WbzlqRMavkqPhNg08fr0ode4oFxEbuJkCuZwxpPoNaes7i/TMklJwpm4dVrVhRX85Q==
+  dependencies:
+    "@backstage/backend-common" "^0.19.8"
+    "@backstage/backend-plugin-api" "^0.6.6"
+    "@backstage/backend-tasks" "^0.5.11"
+    "@backstage/cli-common" "^0.1.13"
+    "@backstage/cli-node" "^0.1.5"
+    "@backstage/config" "^1.1.1"
+    "@backstage/errors" "^1.2.3"
+    "@backstage/plugin-auth-node" "^0.4.0"
+    "@backstage/plugin-catalog-backend" "^1.14.0"
+    "@backstage/plugin-events-backend" "^0.2.15"
+    "@backstage/plugin-events-node" "^0.2.15"
+    "@backstage/plugin-permission-common" "^0.7.9"
+    "@backstage/plugin-permission-node" "^0.7.17"
+    "@backstage/plugin-scaffolder-node" "^0.2.7"
+    "@backstage/plugin-search-backend-node" "^1.2.10"
+    "@backstage/plugin-search-common" "^1.2.7"
+    "@backstage/types" "^1.1.1"
+    "@types/express" "^4.17.6"
+    chokidar "^3.5.3"
+    express "^4.17.1"
+    lodash "^4.17.21"
+    winston "^3.2.1"
+
 "@backstage/backend-tasks@^0.5.11", "@backstage/backend-tasks@^0.5.4":
   version "0.5.11"
   resolved "https://registry.yarnpkg.com/@backstage/backend-tasks/-/backend-tasks-0.5.11.tgz#16f54701a19ca3c9734ea5525d46d54c11799c7b"
@@ -3181,6 +3209,20 @@
     react-use "^17.2.4"
     zen-observable "^0.10.0"
 
+"@backstage/plugin-events-backend@^0.2.15":
+  version "0.2.15"
+  resolved "https://registry.yarnpkg.com/@backstage/plugin-events-backend/-/plugin-events-backend-0.2.15.tgz#14e86ff7680f54846485231582c4714193cda187"
+  integrity sha512-TMGdXKABchjVzaFxgKDDhrKSXvKyfhwWmK0THdgew8k/5qYM6eZ8kWPAybytKqzzyZMs477oq5b0TbKAKbsMpw==
+  dependencies:
+    "@backstage/backend-common" "^0.19.8"
+    "@backstage/backend-plugin-api" "^0.6.6"
+    "@backstage/config" "^1.1.1"
+    "@backstage/plugin-events-node" "^0.2.15"
+    "@types/express" "^4.17.6"
+    express "^4.17.1"
+    express-promise-router "^4.1.0"
+    winston "^3.2.1"
+
 "@backstage/plugin-events-node@^0.2.15":
   version "0.2.15"
   resolved "https://registry.yarnpkg.com/@backstage/plugin-events-node/-/plugin-events-node-0.2.15.tgz#8be5876e60a2db87157a523d9a84f3ddba5659ac"
@@ -3518,6 +3560,24 @@
   version "0.2.6"
   resolved "https://registry.yarnpkg.com/@backstage/plugin-scaffolder-node/-/plugin-scaffolder-node-0.2.6.tgz#fca73dfb6548522f9f4c4313e4e3b1470b5c5744"
   integrity sha512-elFe0NTj/jstFHEma3yZ7Br5SvhMnOjFzRRXilg+qdD0byMlA4QtFgWsTzOsCLfxOC14GDrZA4NZU1vqgXLGug==
+  dependencies:
+    "@backstage/backend-common" "^0.19.8"
+    "@backstage/backend-plugin-api" "^0.6.6"
+    "@backstage/catalog-model" "^1.4.3"
+    "@backstage/errors" "^1.2.3"
+    "@backstage/integration" "^1.7.1"
+    "@backstage/plugin-scaffolder-common" "^1.4.2"
+    "@backstage/types" "^1.1.1"
+    fs-extra "10.1.0"
+    jsonschema "^1.2.6"
+    winston "^3.2.1"
+    zod "^3.21.4"
+    zod-to-json-schema "^3.20.4"
+
+"@backstage/plugin-scaffolder-node@^0.2.7":
+  version "0.2.7"
+  resolved "https://registry.yarnpkg.com/@backstage/plugin-scaffolder-node/-/plugin-scaffolder-node-0.2.7.tgz#70960f37faa79eed5647331c58d3977d450f4d5b"
+  integrity sha512-DQV4UkNW6RW5TbR10pp+eOQ3Hq6DeRfM+JoK9nbDQVy7c8nwUfabRCKLHbtCn/rYf/NJnEdHvMFuYWiUb3TuDw==
   dependencies:
     "@backstage/backend-common" "^0.19.8"
     "@backstage/backend-plugin-api" "^0.6.6"
