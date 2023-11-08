@@ -82,11 +82,16 @@ export class ManagedClusterProvider implements EntityProvider {
   ) {
     return readOcmConfigs(config).map(provider => {
       const client = hubApiClient(provider, options.logger);
-      const taskRunner =
-        options.schedule ||
-        options.scheduler!.createScheduledTaskRunner(provider.schedule!);
-
-      if (!options.schedule && !provider.schedule) {
+      let taskRunner;
+      if (options.scheduler && provider.schedule) {
+        // Create a scheduled task runner using the provided scheduler and schedule configuration
+        taskRunner = options.scheduler.createScheduledTaskRunner(
+          provider.schedule,
+        );
+      } else if (options.schedule) {
+        // Use the provided schedule directly
+        taskRunner = options.schedule;
+      } else {
         throw new Error(
           `No schedule provided neither via code nor config for "${provider.id}" hub.`,
         );

@@ -43,12 +43,12 @@ export class AapResourceEntityProvider implements EntityProvider {
 
     return providerConfigs.map(providerConfig => {
       let taskRunner;
-      if (options.schedule) {
-        taskRunner = options.schedule;
-      } else if (options.scheduler && providerConfig.schedule) {
+      if (options.scheduler && providerConfig.schedule) {
         taskRunner = options.scheduler.createScheduledTaskRunner(
           providerConfig.schedule,
         );
+      } else if (options.schedule) {
+        taskRunner = options.schedule;
       } else {
         throw new Error(
           `No schedule provided neither via code nor config for AapResourceEntityProvider:${providerConfig.id}.`,

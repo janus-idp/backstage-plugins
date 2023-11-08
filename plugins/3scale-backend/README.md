@@ -16,7 +16,7 @@ yarn workspace backend add @janus-idp/backstage-plugin-3scale-backend
 
 3scale Backstage provider allows configuration of one or multiple providers using the `app-config.yaml` configuration file of Backstage.
 
-**Procedure**
+### Procedure
 
 1. Use a `threeScaleApiEntity` marker to start configuring the `app-config.yaml` file of Backstage:
 
@@ -34,32 +34,80 @@ yarn workspace backend add @janus-idp/backstage-plugin-3scale-backend
              timeout: { minutes: 1 }
    ```
 
-2. Add the following code to `packages/backend/src/plugins/catalog.ts` file:
+2. Configure the scheduler for the entity provider using one of the following methods:
 
-   ```ts title="packages/backend/src/plugins/catalog.ts"
-   /* highlight-add-next-line */
-   import { ThreeScaleApiEntityProvider } from '@janus-idp/backstage-plugin-3scale-backend';
+   - **Method 1**: If the scheduler is configured inside the `app-config.yaml` using the schedule config key mentioned previously, add the following code to `packages/backend/src/plugins/catalog.ts` file:
 
-   export default async function createPlugin(
-     env: PluginEnvironment,
-   ): Promise<Router> {
-     const builder = await CatalogBuilder.create(env);
+     ```ts title="packages/backend/src/plugins/catalog.ts"
+     /* highlight-add-next-line */
+     import { ThreeScaleApiEntityProvider } from '@janus-idp/backstage-plugin-3scale-backend';
 
-     /* ... other processors and/or providers ... */
-     /* highlight-add-start */
-     builder.addEntityProvider(
-       ThreeScaleApiEntityProvider.fromConfig(env.config, {
-         logger: env.logger,
-         scheduler: env.scheduler,
-       }),
-     );
-     /* highlight-add-end */
+     export default async function createPlugin(
+       env: PluginEnvironment,
+     ): Promise<Router> {
+       const builder = await CatalogBuilder.create(env);
 
-     const { processingEngine, router } = await builder.build();
-     await processingEngine.start();
-     return router;
-   }
-   ```
+       /* ... other processors and/or providers ... */
+       /* highlight-add-start */
+       builder.addEntityProvider(
+         ThreeScaleApiEntityProvider.fromConfig(env.config, {
+           logger: env.logger,
+           scheduler: env.scheduler,
+         }),
+       );
+       /* highlight-add-end */
+
+       const { processingEngine, router } = await builder.build();
+       await processingEngine.start();
+       return router;
+     }
+     ```
+
+     ***
+
+     **NOTE**
+
+     If you have made any changes to the schedule in the `app-config.yaml` file, then restart to apply the changes.
+
+     ***
+
+   - **Method 2**: Add a schedule directly inside the `packages/backend/src/plugins/catalog.ts` file as follows:
+
+     ```ts title="packages/backend/src/plugins/catalog.ts"
+     /* highlight-add-next-line */
+     import { ThreeScaleApiEntityProvider } from '@janus-idp/backstage-plugin-3scale-backend';
+
+     export default async function createPlugin(
+       env: PluginEnvironment,
+     ): Promise<Router> {
+       const builder = await CatalogBuilder.create(env);
+
+       /* ... other processors and/or providers ... */
+       /* highlight-add-start */
+       builder.addEntityProvider(
+         ThreeScaleApiEntityProvider.fromConfig(env.config, {
+           logger: env.logger,
+           schedule: env.scheduler.createScheduledTaskRunner({
+             frequency: { minutes: 1 },
+             timeout: { minutes: 1 },
+           }),
+         }),
+       );
+       /* highlight-add-end */
+
+       const { processingEngine, router } = await builder.build();
+       await processingEngine.start();
+       return router;
+     }
+     ```
+
+   ***
+
+   **NOTE**
+
+   If both the `schedule` (hard-coded schedule) and `scheduler` (`app-config.yaml` schedule) option are provided in the `packages/backend/src/plugins/catalog.ts`, the `scheduler` option takes precedence. However, if the schedule inside the `app-config.yaml` file is not configured, then the `schedule` option is used.
+
+   ***
 
 ### Troubleshooting
 

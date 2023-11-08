@@ -38,7 +38,7 @@ describe('KeycloakOrgEntityProvider', () => {
         logger: getVoidLogger(),
       }),
     ).toThrow(
-      'No schedule provided neither via code nor config for MicrosoftGraphOrgEntityProvider:default.',
+      'No schedule provided neither via code nor config for KeycloakOrgEntityProvider:default.',
     );
   });
 
