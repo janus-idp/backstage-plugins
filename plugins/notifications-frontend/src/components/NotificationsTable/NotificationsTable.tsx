@@ -10,15 +10,10 @@ import {
 import { useApi } from '@backstage/core-plugin-api';
 
 import { MaterialTableProps } from '@material-table/core';
-import { IconButton, Tooltip } from '@material-ui/core';
+import { Grid, IconButton, Tooltip } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import MarkAsReadIcon from '@material-ui/icons/Markunread' /* TODO: find a better component */;
-import {
-  Split,
-  SplitItem,
-  Stack,
-  StackItem,
-} from '@patternfly/react-core' /* TODO: avoid Patternfly, find a way how to get Split, Stack from Material UI */;
+import Stack from '@mui/material/Stack';
 
 import {
   Notification,
@@ -102,21 +97,19 @@ export const NotificationsTable = ({
         let actions;
         if (!!notification.actions?.length) {
           actions = (
-            <SplitItem className={classes.actionsList}>
-              <Stack>
-                {notification.actions.map(action => (
-                  <StackItem key={action.url}>
-                    <Link to={action.url}>{action.title || 'More info'}</Link>
-                  </StackItem>
-                ))}
-              </Stack>
-            </SplitItem>
+            <Stack>
+              {notification.actions.map(action => (
+                <Link key={action.url} to={action.url}>
+                  {action.title || 'More info'}
+                </Link>
+              ))}
+            </Stack>
           );
         }
 
         return (
-          <Split hasGutter>
-            <SplitItem>
+          <Grid container spacing={1}>
+            <Grid item xs={3}>
               <Tooltip title="Mark as read">
                 <IconButton
                   onClick={() => {
@@ -126,9 +119,11 @@ export const NotificationsTable = ({
                   <MarkAsReadIcon aria-label="Mark as read" />
                 </IconButton>
               </Tooltip>
-            </SplitItem>
-            {actions}
-          </Split>
+            </Grid>
+            <Grid item className={classes.actionsList} xs={9}>
+              {actions}
+            </Grid>
+          </Grid>
         );
       },
     }),
