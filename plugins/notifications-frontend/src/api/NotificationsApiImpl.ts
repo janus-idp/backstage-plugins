@@ -1,6 +1,7 @@
 import { ConfigApi, IdentityApi } from '@backstage/core-plugin-api';
 
 import {
+  CreateNotificationRequest,
   Notification,
   NotificationsApi,
   NotificationsCountQuery,
@@ -38,10 +39,20 @@ export class NotificationsApiImpl implements NotificationsApi {
     }
   }
 
-  post(notification: Notification): Promise<string> {
-    // eslint-disable-next-line no-console
-    console.log('TODO: implement post notification: ', notification);
-    return Promise.resolve('id-todo');
+  async post(notification: CreateNotificationRequest): Promise<string> {
+    const url = new URL(`${this.backendUrl}/api/notifications/notifications`);
+
+    const response = await fetch(url.href, {
+      method: 'POST',
+      body: JSON.stringify(notification),
+      headers: { 'Content-Type': 'application/json' },
+    });
+    const data = await response.json();
+    if (response.status !== 200 && response.status !== 201) {
+      throw new Error(data.message);
+    }
+
+    return Promise.resolve(data.msgid);
   }
 
   async getNotifications(query: NotificationsQuery): Promise<Notification[]> {
