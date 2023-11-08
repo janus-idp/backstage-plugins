@@ -157,18 +157,18 @@ export async function getNotifications(
     throw new Error('user parameter is missing in request');
   }
 
-  const orderByIndex = FieldsAllowedToOrderBy.findIndex(
-    f => f === (sorting.fieldName || DefaultOrderBy),
-  );
+  const orderBy = sorting.fieldName || DefaultOrderBy;
   const direction = sorting.direction || DefaultOrderDirection;
-  if (orderByIndex < 0 || !OrderByDirections.includes(direction)) {
+  if (
+    !FieldsAllowedToOrderBy.includes(orderBy) ||
+    !OrderByDirections.includes(direction)
+  ) {
     throw new Error(
       `The orderBy parameter can be one of ${FieldsAllowedToOrderBy.join(
         ',',
       )}. The orderByDirec can be either ${OrderByDirections.join(' or ')}.`,
     );
   }
-  const orderBy = FieldsAllowedToOrderBy[orderByIndex];
 
   const userGroups = await getUserGroups(catalogClient, filter.user);
 
