@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-ocm [3.5.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm@3.4.0...@janus-idp/backstage-plugin-ocm@3.5.0) (2023-11-08)
+
+
+### Features
+
+* **ocm:** export default icon for use in dynamic plugins ([#919](https://github.com/janus-idp/backstage-plugins/issues/919)) ([e6dd16d](https://github.com/janus-idp/backstage-plugins/commit/e6dd16d3952b627f8938f3d73b1fb7c6d5988662))
+
 ## @janus-idp/backstage-plugin-ocm [3.4.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm@3.3.4...@janus-idp/backstage-plugin-ocm@3.4.0) (2023-11-08)
 
 
