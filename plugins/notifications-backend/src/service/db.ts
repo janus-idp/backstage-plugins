@@ -26,7 +26,7 @@ export async function initDB(dbConfig: Config): Promise<Knex<any, any>> {
       table.string('title').notNullable();
       table.text('message');
       table.string('topic');
-      table.boolean('is_system'); // is it a system message or a message for specific users and groups
+      table.boolean('is_system').notNullable(); // is it a system message or a message for specific users and groups
     });
   }
 
@@ -40,6 +40,7 @@ export async function initDB(dbConfig: Config): Promise<Knex<any, any>> {
         .references('id')
         .inTable('messages')
         .onDelete('CASCADE');
+      table.primary(['message_id', 'user']);
     });
   }
 
@@ -52,6 +53,7 @@ export async function initDB(dbConfig: Config): Promise<Knex<any, any>> {
         .references('id')
         .inTable('messages')
         .onDelete('CASCADE');
+      table.primary(['message_id', 'group']);
     });
   }
 

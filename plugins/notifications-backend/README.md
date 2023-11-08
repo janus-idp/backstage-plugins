@@ -39,10 +39,14 @@ A new DB will be created: backstage_plugin_notifications
 
 A notification without users or groups is considered a system notification. That means it is is intended for all users.
 
-Request:
+Request (User message and then system message):
 
 ```bash
 curl -X POST http://localhost:7007/api/notifications/notifications -H "Content-Type: application/json" -d '{"title": "My message title", "message": "I have nothing to say", "origin": "my-origin", "targetUsers": ["jdoe"], "targetGroups": ["jdoe"], "actions": [{"title": "my-title", "url": "http://foo.bar"}, {"title": "another action", "url": "https://foo.foo.bar"}]}'
+```
+
+```bash
+curl -X POST http://localhost:7007/api/notifications/notifications -H "Content-Type: application/json" -d '{"title": "My message title", "message": "I have nothing to say", "origin": "my-origin", "actions": [{"title": "my-title", "url": "http://foo.bar"}, {"title": "another action", "url": "https://foo.foo.bar"}]}'
 ```
 
 Response:
@@ -56,10 +60,22 @@ Response:
 Page number starts at '1'. Page number '0' along with page size '0' means no paging.
 User parameter is mandatory because it is needed for message status and filtering (read/unread).
 
+Query parameters:
+
+- pageSize. 0 means no paging.
+- pageNumber. first page is 1. 0 means no paging.
+- orderBy.
+- orderByDirec. asc/desc
+- user. name of user to retrieve notification for
+- containsText. filter title and message containing this text (case insensitive)
+- createdAfter. fetch notifications created after this point in time
+- messageScope. all/user/system. fetch notifications intended for specific user or system notifications or both
+- read. true/false (read/unread)
+
 Request:
 
 ```bash
-curl 'http://localhost:7007/api/notifications/notifications?user=loggedinuser&pageNumber=0&pageSize=0'
+curl 'http://localhost:7007/api/notifications/notifications?user=loggedinuser&read=false&pageNumber=0&pageSize=0'
 ```
 
 Response:
@@ -84,6 +100,14 @@ Response:
 
 User parameter is mandatory because it is needed for filtering (read/unread).
 
+Query parameters:
+
+- user. name of user to retrieve notification for
+- containsText. filter title and message containing this text (case insensitive)
+- createdAfter. fetch notifications created after this point in time
+- messageScope. all/user/system. fetch notifications intended for specific user or system notifications or both
+- read. true/false (read/unread)
+
 Request:
 
 ```bash
@@ -95,3 +119,13 @@ Response:
 ```json
 { "count": "1" }
 ```
+
+### Set notification as read/unread
+
+Request:
+
+```bash
+curl -X PUT 'http://localhost:7007/api/notifications/notifications/read?messageID=48bbf896-4b7c-4b68-a446-246b6a801000&user=dummy&read=true'
+```
+
+Response: just HTTP status
