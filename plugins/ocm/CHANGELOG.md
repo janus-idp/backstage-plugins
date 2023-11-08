@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-ocm [3.4.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm@3.3.4...@janus-idp/backstage-plugin-ocm@3.4.0) (2023-11-08)
+
+
+### Features
+
+* update entity provider schedulers ([#827](https://github.com/janus-idp/backstage-plugins/issues/827)) ([19731d1](https://github.com/janus-idp/backstage-plugins/commit/19731d1449a9d8ffa67aec069d2214e45bfe54ff))
+
 ## @janus-idp/backstage-plugin-ocm [3.3.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm@3.3.3...@janus-idp/backstage-plugin-ocm@3.3.4) (2023-11-07)
 
 
