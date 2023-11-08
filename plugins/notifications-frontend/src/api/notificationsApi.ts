@@ -45,9 +45,20 @@ export type NotificationsCountQuery = NotificationsFilter & {
   unreadOnly?: boolean;
 };
 
+// Keep in sync with BE: plugins/notifications-backend/src/service/types.ts
+export type CreateNotificationRequest = {
+  origin: string;
+  title: string;
+  message?: string;
+  actions?: { title: string; url: string }[];
+  topic?: string;
+  targetUsers?: string[];
+  targetGroups?: string[];
+};
+
 export interface NotificationsApi {
   /** Create a notification. Returns its new ID. */
-  post(notification: Notification): Promise<string>;
+  post(notification: CreateNotificationRequest): Promise<string>;
 
   /** Read a list of notifications based on filter parameters. */
   getNotifications(query?: NotificationsQuery): Promise<Notification[]>;
