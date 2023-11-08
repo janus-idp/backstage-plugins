@@ -36,6 +36,7 @@ export type NotificationsFilter = {
   createdAfter?: Date;
   messageScope?: 'all' | 'user' | 'system';
   user?: string;
+  read?: string; // 'false' for unread. 'true' for read. undefined for both
 };
 
 export type NotificationsQuerySorting = {

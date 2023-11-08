@@ -28,7 +28,7 @@ export async function createNotification(
   dbClient: Knex<any, any>,
   catalogClient: CatalogClient,
   req: CreateNotificationRequest,
-): Promise<{ msgid: string }> {
+): Promise<{ messageId: string }> {
   let isUser = false;
 
   // validate users
@@ -76,7 +76,7 @@ export async function createNotification(
     is_system: !isUser,
   };
 
-  let msgID: string;
+  let messageId: string;
 
   const ret = dbClient.transaction(trx => {
     return trx
@@ -84,11 +84,11 @@ export async function createNotification(
       .returning<string, { id: string }[]>('id')
       .into('messages')
       .then(ids => {
-        msgID = ids[0].id;
+        messageId = ids[0].id;
         if (Array.isArray(req.targetUsers)) {
           const userInserts = req.targetUsers.map(user => {
             return {
-              message_id: msgID,
+              message_id: messageId,
               user: user,
             };
           });
@@ -101,7 +101,7 @@ export async function createNotification(
         if (Array.isArray(req.targetGroups)) {
           const groupInserts = req.targetGroups.map(group => {
             return {
-              message_id: msgID,
+              message_id: messageId,
               group: group,
             };
           });
@@ -116,7 +116,7 @@ export async function createNotification(
             return {
               url: action.url,
               title: action.title,
-              message_id: msgID,
+              message_id: messageId,
             };
           });
 
@@ -126,7 +126,7 @@ export async function createNotification(
         return undefined;
       })
       .then(() => {
-        return { msgid: msgID };
+        return { messageId: messageId };
       });
   });
 
@@ -239,6 +239,60 @@ export async function getNotificationsCount(
   return ret;
 }
 
+export async function setRead(
+  dbClient: Knex<any, any>,
+  messageId: string,
+  user: string,
+  read: boolean,
+) {
+  let isUpdate = false;
+  let isInsert = false;
+
+  // verify that message id exists
+  await dbClient('messages')
+    .where('id', messageId)
+    .count('* as CNT')
+    .then(count => {
+      const msgcount = count[0].CNT;
+
+      if (msgcount !== '1') {
+        throw new Error(`message ID ${messageId} does not exist`);
+      }
+    });
+
+  // check user row exists
+  await dbClient('users')
+    .where('message_id', messageId)
+    .andWhere('user', user)
+    .select('*')
+    .then(rows => {
+      if (!Array.isArray(rows)) {
+        return;
+      }
+      if (rows.length === 1) {
+        isUpdate = rows[0].read !== read;
+      } else if (rows.length === 0) {
+        isInsert = true;
+      }
+    });
+
+  // insert/update user row
+  if (isInsert) {
+    await dbClient('users').insert({
+      message_id: messageId,
+      user: user,
+      read: read,
+    });
+  }
+
+  if (isUpdate) {
+    await dbClient('users')
+      .where('message_id', messageId)
+      .andWhere('user', user)
+      .update('read', read);
+  }
+}
+
 function createQuery(
   dbClient: Knex<any, any>,
   filter: NotificationsFilter,
@@ -299,6 +353,24 @@ function createQuery(
   // filter by time
   if (filter.createdAfter) {
     query.andWhere('created', '>', filter.createdAfter);
+  }
+
+  // filter by read/unread
+  switch (filter.read) {
+    case 'true':
+      query.andWhere('read', true);
+      break;
+    case 'false':
+      query.andWhere(function () {
+        this.where('read', false).orWhereNull('read');
+      });
+      break;
+    case undefined:
+      break;
+    default:
+      throw new Error(
+        'value of parameter "read" must be either "false" or "true"',
+      );
   }
 
   return query;

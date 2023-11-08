@@ -11,6 +11,7 @@ import {
   createNotification,
   getNotifications,
   getNotificationsCount,
+  setRead,
 } from './handlers';
 import { NotificationsQuerySorting } from './types';
 
@@ -83,6 +84,38 @@ export async function createRouter(
   router.post('/notifications', (request, response, next) => {
     createNotification(dbClient, catalogClient, request.body)
       .then(result => response.json(result))
+      .catch(next);
+  });
+
+  router.put('/notifications/read', (request, response, next) => {
+    const { messageId, user, read } = request.query;
+    if (
+      typeof messageId !== 'string' ||
+      typeof user !== 'string' ||
+      typeof read !== 'string'
+    ) {
+      throw new Error(
+        'the following query parameters must be provided: messageId - string, user - string, read - false/true (boolean)',
+      );
+    }
+
+    let readBool: boolean;
+
+    switch (read) {
+      case 'true':
+        readBool = true;
+        break;
+      case 'false':
+        readBool = false;
+        break;
+      default:
+        throw new Error(
+          'value of parameter "read" must be either "false" or "true"',
+        );
+    }
+
+    setRead(dbClient, messageId, user, readBool)
+      .then(() => response.end())
       .catch(next);
   });
 
