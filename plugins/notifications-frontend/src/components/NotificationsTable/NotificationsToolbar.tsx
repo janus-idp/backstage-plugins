@@ -2,20 +2,20 @@ import React, { MutableRefObject } from 'react';
 
 import { MTableToolbar } from '@material-table/core';
 import {
-  Box,
+  Grid,
   makeStyles,
   MenuItem,
   Select,
   withStyles,
 } from '@material-ui/core';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
 
 const StyledMTableToolbar = withStyles(
-  theme => ({
+  _theme => ({
     root: {
-      padding: theme.spacing(3, 0, 2.5, 2.5),
-    },
-    searchField: {
-      paddingRight: theme.spacing(2),
+      alignItems: 'center',
     },
   }),
   { name: 'BackstageTableToolbar' },
@@ -57,9 +57,11 @@ export const NotificationsToolbar = (toolbarProps: {
   toolbarRef: MutableRefObject<any>;
   onSearchChanged: (value: string) => void;
   createdAfter?: string;
+  unreadOnly: boolean;
   onCreatedAfterChanged: (value: string) => void;
+  onUnreadOnlyChanged: (checked: boolean) => void;
 }) => {
-  const { toolbarRef, createdAfter } = toolbarProps;
+  const { toolbarRef, createdAfter, unreadOnly } = toolbarProps;
   const filtersClasses = useFilterStyles();
 
   const handleOnCreatedAfterChanged = (
@@ -68,9 +70,15 @@ export const NotificationsToolbar = (toolbarProps: {
     toolbarProps.onCreatedAfterChanged(event.target.value as string);
   };
 
+  const handleOnUnreadOnlyChanged = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    toolbarProps.onUnreadOnlyChanged(event.target.checked);
+  };
+
   return (
-    <Box className={filtersClasses.root}>
-      <Box className={filtersClasses.root}>
+    <Grid spacing={2} container className={filtersClasses.root}>
+      <Grid item>
         <Select
           label="Created after"
           className={filtersClasses.createdAfterFilter}
@@ -84,12 +92,29 @@ export const NotificationsToolbar = (toolbarProps: {
             </MenuItem>
           ))}
         </Select>
-      </Box>
-      <StyledMTableToolbar
-        {...toolbarProps}
-        ref={toolbarRef}
-        onSearchChanged={toolbarProps.onSearchChanged}
-      />
-    </Box>
+      </Grid>
+
+      <Grid item>
+        <FormGroup>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={unreadOnly}
+                onChange={handleOnUnreadOnlyChanged}
+              />
+            }
+            label="Unread only"
+          />
+        </FormGroup>
+      </Grid>
+
+      <Grid item>
+        <StyledMTableToolbar
+          {...toolbarProps}
+          ref={toolbarRef}
+          onSearchChanged={toolbarProps.onSearchChanged}
+        />
+      </Grid>
+    </Grid>
   );
 };

@@ -59,7 +59,7 @@ export const NotificationsSidebarItem = ({
     try {
       setUnreadCount(
         await notificationsApi.getNotificationsCount({
-          unreadOnly: true,
+          isRead: false,
           user,
           messageScope: 'user',
         }),

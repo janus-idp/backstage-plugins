@@ -13,6 +13,7 @@ import { MaterialTableProps } from '@material-table/core';
 import { Grid, IconButton, Tooltip } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import MarkAsReadIcon from '@material-ui/icons/Markunread' /* TODO: find a better component */;
+import MarkAsUnreadIcon from '@material-ui/icons/Markunread';
 import Stack from '@mui/material/Stack';
 
 import {
@@ -47,16 +48,24 @@ export const NotificationsTable = ({
     undefined,
   );
   const [createdAfter, setCreatedAfter] = React.useState<string>('lastWeek');
+  const [unreadOnly, setUnreadOnly] = React.useState(true);
   const [sorting, setSorting] = React.useState<
     NotificationsQuerySorting | undefined
   >();
+  const [reload, setReload] = React.useState(0);
 
   // TODO: get the name of logged-in user
   const user = 'jdoe';
 
-  const onMarkAsRead = React.useCallback(
+  const onMarkAsReadSwitch = React.useCallback(
     (notification: Notification) => {
-      notificationsApi.markAsRead(notification.id);
+      notificationsApi.markAsRead({
+        user,
+        notificationId: notification.id,
+        isRead: !notification.readByUser,
+      });
+
+      setReload(Date.now());
     },
     [notificationsApi],
   );
@@ -67,28 +76,38 @@ export const NotificationsTable = ({
   }> => {
     const createdAfterDate = CreatedAfterOptions[createdAfter].getDate();
 
-    const data = await notificationsApi.getNotifications({
-      pageSize,
-      pageNumber: pageNumber + 1 /* BE starts at 1 */,
+    const commonParams: NotificationsFilter = {
+      isRead: !unreadOnly,
       containsText,
       createdAfter: createdAfterDate,
-      sorting,
       user,
       messageScope,
+    };
+
+    const data = await notificationsApi.getNotifications({
+      ...commonParams,
+      pageSize,
+      pageNumber: pageNumber + 1 /* BE starts at 1 */,
+      sorting,
     });
     // TODO: extend BE to get both in a single query/response
     const total = await notificationsApi.getNotificationsCount({
-      unreadOnly: false,
-      containsText,
-      user,
-      messageScope,
+      ...commonParams,
     });
 
     return {
       notifications: data,
       totalCount: total,
     };
-  }, [pageNumber, pageSize, containsText, createdAfter, sorting]);
+  }, [
+    pageNumber,
+    pageSize,
+    containsText,
+    createdAfter,
+    sorting,
+    unreadOnly,
+    reload,
+  ]);
 
   const actionsColumn: TableColumn<Notification> = React.useMemo(
     () => ({
@@ -107,16 +126,23 @@ export const NotificationsTable = ({
           );
         }
 
+        const markAsReadText = notification.readByUser
+          ? 'Return among unread'
+          : 'Mark as read';
+        const IconComponent = notification.readByUser
+          ? MarkAsUnreadIcon
+          : MarkAsReadIcon;
+
         return (
           <Grid container spacing={1}>
             <Grid item xs={3}>
-              <Tooltip title="Mark as read">
+              <Tooltip title={markAsReadText}>
                 <IconButton
                   onClick={() => {
-                    onMarkAsRead(notification);
+                    onMarkAsReadSwitch(notification);
                   }}
                 >
-                  <MarkAsReadIcon aria-label="Mark as read" />
+                  <IconComponent aria-label={markAsReadText} />
                 </IconButton>
               </Tooltip>
             </Grid>
@@ -127,7 +153,7 @@ export const NotificationsTable = ({
         );
       },
     }),
-    [classes.actionsList, onMarkAsRead],
+    [classes.actionsList, onMarkAsReadSwitch],
   );
 
   const onOrderChange = React.useCallback<
@@ -193,7 +219,9 @@ export const NotificationsTable = ({
           <NotificationsToolbar
             {...props}
             createdAfter={createdAfter}
+            unreadOnly={unreadOnly}
             onCreatedAfterChanged={setCreatedAfter}
+            onUnreadOnlyChanged={setUnreadOnly}
           />
         ),
       }}
