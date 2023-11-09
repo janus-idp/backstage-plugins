@@ -3,6 +3,7 @@ import { ConfigApi, IdentityApi } from '@backstage/core-plugin-api';
 import {
   CreateNotificationRequest,
   Notification,
+  NotificationMarkAsRead,
   NotificationsApi,
   NotificationsCountQuery,
   NotificationsFilter,
@@ -37,6 +38,9 @@ export class NotificationsApiImpl implements NotificationsApi {
     if (filter.user) {
       url.searchParams.append('user', filter.user);
     }
+    if (filter.isRead !== undefined) {
+      url.searchParams.append('read', filter.isRead ? 'true' : 'false');
+    }
   }
 
   async post(notification: CreateNotificationRequest): Promise<string> {
@@ -49,10 +53,10 @@ export class NotificationsApiImpl implements NotificationsApi {
     });
     const data = await response.json();
     if (response.status !== 200 && response.status !== 201) {
-      throw new Error(data.message);
+      throw new Error(data.message || data.error?.message);
     }
 
-    return Promise.resolve(data.msgid);
+    return Promise.resolve(data.messageId);
   }
 
   async getNotifications(query: NotificationsQuery): Promise<Notification[]> {
@@ -86,9 +90,6 @@ export class NotificationsApiImpl implements NotificationsApi {
       `${this.backendUrl}/api/notifications/notifications/count`,
     );
 
-    // TODO: add similar parameter to the BE
-    url.searchParams.append('unreadOnly', query.unreadOnly ? 'true' : 'false');
-
     this.addFilter(url, query);
 
     const response = await fetch(url.href);
@@ -105,9 +106,25 @@ export class NotificationsApiImpl implements NotificationsApi {
     return count;
   }
 
-  markAsRead(notificationId: string): Promise<void> {
-    // eslint-disable-next-line no-console
-    console.log('TODO: markAsRead: ', notificationId);
-    return Promise.resolve();
+  async markAsRead({
+    notificationId,
+    user,
+    isRead,
+  }: NotificationMarkAsRead): Promise<void> {
+    const url = new URL(
+      `${this.backendUrl}/api/notifications/notifications/read`,
+    );
+
+    url.searchParams.append('read', isRead ? 'true' : 'false');
+    url.searchParams.append('user', user);
+    url.searchParams.append('messageId', notificationId);
+
+    const response = await fetch(url.href, {
+      method: 'PUT',
+    });
+
+    if (response.status !== 200 && response.status !== 201) {
+      throw new Error('Failed to mark the message as read');
+    }
   }
 }

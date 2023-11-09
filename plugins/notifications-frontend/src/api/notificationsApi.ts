@@ -27,6 +27,7 @@ export type NotificationsFilter = {
   createdAfter?: Date;
   messageScope?: 'all' | 'user' | 'system';
   user?: string;
+  isRead?: boolean; // if missing, include both read and unread
 };
 
 // Keep in sync with BE: plugins/notifications-backend/src/service/types.ts
@@ -41,9 +42,7 @@ export type NotificationsQuery = NotificationsFilter & {
 
   sorting?: NotificationsQuerySorting;
 };
-export type NotificationsCountQuery = NotificationsFilter & {
-  unreadOnly?: boolean;
-};
+export type NotificationsCountQuery = NotificationsFilter;
 
 // Keep in sync with BE: plugins/notifications-backend/src/service/types.ts
 export type CreateNotificationRequest = {
@@ -56,6 +55,11 @@ export type CreateNotificationRequest = {
   targetGroups?: string[];
 };
 
+export type NotificationMarkAsRead = {
+  notificationId: string;
+  user: string;
+  isRead: boolean;
+};
 export interface NotificationsApi {
   /** Create a notification. Returns its new ID. */
   post(notification: CreateNotificationRequest): Promise<string>;
@@ -67,7 +71,7 @@ export interface NotificationsApi {
   getNotificationsCount(query?: NotificationsCountQuery): Promise<number>;
 
   /** Marks the notification as read by the user. */
-  markAsRead(notificationId: string): Promise<void>;
+  markAsRead(params: NotificationMarkAsRead): Promise<void>;
 }
 
 export const notificationsApiRef = createApiRef<NotificationsApi>({
