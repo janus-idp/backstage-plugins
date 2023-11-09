@@ -1,1 +1,0 @@
-export { orchestratorModuleEntityProvider } from './module';

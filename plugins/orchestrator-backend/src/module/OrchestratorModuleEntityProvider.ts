@@ -6,7 +6,7 @@ import {
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import { DefaultEventBroker } from '@backstage/plugin-events-backend';
 
-import { OrchestratorEntityProvider } from '@janus-idp/backstage-plugin-orchestrator-backend';
+import { OrchestratorEntityProvider } from '../provider';
 
 export const orchestratorModuleEntityProvider = createBackendModule({
   pluginId: 'catalog',
