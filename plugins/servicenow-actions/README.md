@@ -20,34 +20,46 @@ yarn workspace backend add @janus-idp/backstage-scaffolder-backend-module-servic
 
 ## Configuration
 
-[Register](https://backstage.io/docs/features/software-templates/writing-custom-actions#registering-custom-actions) the ServiceNow actions by modifying the `packages/backend/src/plugins/scaffolder.ts` file from your project with the following changes:
+1. [Register](https://backstage.io/docs/features/software-templates/writing-custom-actions#registering-custom-actions) the ServiceNow actions by modifying the `packages/backend/src/plugins/scaffolder.ts` file from your project with the following changes:
 
-```ts title="packages/backend/src/plugins/scaffolder.ts"
-/* highlight-add-next-line */
-import { createServiceNowActions } from '@janus-idp/backstage-scaffolder-backend-module-servicenow';
+   ```ts title="packages/backend/src/plugins/scaffolder.ts"
+   /* highlight-add-next-line */
+   import { createServiceNowActions } from '@janus-idp/backstage-scaffolder-backend-module-servicenow';
 
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  // ...
+   export default async function createPlugin(
+     env: PluginEnvironment,
+   ): Promise<Router> {
+     // ...
 
-  /* highlight-add-next-line */
-  const actions = [
-    ...builtInActions,
-    ...createServiceNowActions({ config: env.config }),
-  ];
+     /* highlight-add-next-line */
+     const actions = [
+       ...builtInActions,
+       ...createServiceNowActions({ config: env.config }),
+     ];
 
-  return await createRouter({
-    actions,
-    logger: env.logger,
-    config: env.config,
-    database: env.database,
-    reader: env.reader,
-    catalogClient,
-    identity: env.identity,
-  });
-}
-```
+     return await createRouter({
+       actions,
+       logger: env.logger,
+       config: env.config,
+       database: env.database,
+       reader: env.reader,
+       catalogClient,
+       identity: env.identity,
+     });
+   }
+   ```
+
+2. Update the `app-config.yaml` file to include the following config:
+
+   ```yaml title="app-config.yaml"
+   servicenow:
+     # The base url of the ServiceNow instance.
+     baseUrl: ${SERVICENOW_BASE_URL}
+     # The username to use for authentication.
+     username: ${SERVICENOW_USERNAME}
+     # The password to use for authentication.
+     password: ${SERVICENOW_PASSWORD}
+   ```
 
 ## Usage
 
