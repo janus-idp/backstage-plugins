@@ -1,9 +1,11 @@
 import { PluginDatabaseManager } from '@backstage/backend-common';
+import { Config } from '@backstage/config';
 import { ConfigApi } from '@backstage/core-plugin-api';
 
 import TypeORMAdapter from 'typeorm-adapter';
 
 import { resolve } from 'path';
+import { TlsOptions } from 'tls';
 
 const DEFAULT_SQLITE3_STORAGE_FILE_NAME = 'rbac.sqlite';
 
@@ -20,14 +22,18 @@ export class CasbinDBAdapterFactory {
     let adapter;
     if (client === 'pg') {
       const knexClient = await this.databaseManager.getClient();
-      const database = await knexClient.client.config.connection.database;
+      const dbName = await knexClient.client.config.connection.database;
+
+      const ssl = this.handleSSL(databaseConfig!);
+
       adapter = await TypeORMAdapter.newAdapter({
         type: 'postgres',
         host: databaseConfig?.getString('connection.host'),
         port: databaseConfig?.getNumber('connection.port'),
         username: databaseConfig?.getString('connection.user'),
         password: databaseConfig?.getString('connection.password'),
-        database,
+        ssl,
+        database: dbName,
       });
     }
 
@@ -52,5 +58,32 @@ export class CasbinDBAdapterFactory {
     }
 
     return adapter;
+  }
+
+  private handleSSL(dbConfig: Config): boolean | TlsOptions | undefined {
+    const connection = dbConfig.getOptional('connection');
+    if (!connection) {
+      return undefined;
+    }
+    const ssl = (connection as { ssl: Object | boolean | undefined }).ssl;
+
+    if (ssl === undefined) {
+      return undefined;
+    }
+
+    if (typeof ssl.valueOf() === 'boolean') {
+      return ssl;
+    }
+
+    if (typeof ssl.valueOf() === 'object') {
+      const ca = (ssl as { ca: string }).ca;
+      if (ca) {
+        return { ca };
+      }
+      // SSL object was defined with some options that we don't support yet.
+      return true;
+    }
+
+    return undefined;
   }
 }
