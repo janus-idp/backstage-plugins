@@ -8,7 +8,7 @@ import { Logger } from 'winston';
 
 import { Server } from 'http';
 
-import { createRouter } from '../src';
+import { createRouter } from '../src/routerWrapper';
 
 export interface ServerOptions {
   port: number;

@@ -178,8 +178,6 @@ For more information about the configuration options, including other optional p
    const routes = (
      <FlatRoutes>
        {/* ... */}
-       {/* highlight-remove-next-line */}
-       <Route path="/create" element={<ScaffolderPage />} />
        {/* highlight-add-start */}
        <Route
          path="/create"
@@ -203,7 +201,7 @@ For more information about the configuration options, including other optional p
 
    ```tsx title="packages/app/src/components/Root/Root.tsx"
    /* highlight-add-next-line */
-   import WorkflowIcon from '@material-ui/icons/Receipt';
+   import { OrchestratorIcon } from '@janus-idp/backstage-plugin-orchestrator';
 
    export const Root = ({ children }: PropsWithChildren<{}>) => (
      <SidebarPage>
@@ -212,7 +210,7 @@ For more information about the configuration options, including other optional p
            {/* ... */}
            {/* highlight-add-start */}
            <SidebarItem
-             icon={WorkflowIcon}
+             icon={OrchestratorIcon}
              to="orchestrator"
              text="Workflows"
            />
