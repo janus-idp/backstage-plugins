@@ -23,10 +23,8 @@
     "workflows"
   ],
   "files": [
-    "dist",
-    "config.d.ts"
+    "dist"
   ],
-  "configSchema": "config.d.ts",
   "scripts": {
     "build": "backstage-cli package build",
     "tsc": "tsc",

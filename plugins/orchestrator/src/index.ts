@@ -11,3 +11,4 @@ export {
   newWorkflowRef,
   createWorkflowRouteRef,
 } from './routes';
+export { default as OrchestratorIcon } from '@material-ui/icons/Receipt';

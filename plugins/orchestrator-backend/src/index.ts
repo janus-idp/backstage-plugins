@@ -1,2 +1,4 @@
+export * from './dynamic/index';
+
 export { createRouter } from './routerWrapper';
-export { OrchestratorEntityProvider } from './catalog';
+export { OrchestratorEntityProvider } from './provider';
