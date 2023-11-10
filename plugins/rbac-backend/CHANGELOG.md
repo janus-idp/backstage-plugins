@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac-backend [1.6.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@1.6.1...@janus-idp/backstage-plugin-rbac-backend@1.6.2) (2023-11-10)
+
+
+### Bug Fixes
+
+* **rbac:** handle postgres ssl connection for rbac backend plugin ([#923](https://github.com/janus-idp/backstage-plugins/issues/923)) ([deb2026](https://github.com/janus-idp/backstage-plugins/commit/deb202642f456cda446a99f55a475eeaddc59e7c))
+
 ## @janus-idp/backstage-plugin-rbac-backend [1.6.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@1.6.0...@janus-idp/backstage-plugin-rbac-backend@1.6.1) (2023-11-01)
 
 
