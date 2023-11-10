@@ -10,6 +10,12 @@
     },
     "generate": {
       "outputs": ["src/generated/**"]
+    },
+    "test": {
+      "dependsOn": ["generate"]
+    },
+    "export-dynamic": {
+      "dependsOn": ["generate"]
     }
   }
 }

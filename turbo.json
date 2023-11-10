@@ -7,14 +7,16 @@
     },
     "build": {
       "outputs": ["dist/**"],
-      "dependsOn": ["tsc", "^build"]
+      "dependsOn": ["tsc", "^build", "export-dynamic"]
     },
     "clean": {
       "cache": false
     },
     "test": {
-      "outputs": ["coverage/**"],
-      "dependsOn": ["build"]
+      "outputs": ["coverage/**"]
+    },
+    "export-dynamic": {
+      "cache": false
     },
     "lint": {},
     "lint:fix": {},

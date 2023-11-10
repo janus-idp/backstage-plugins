@@ -22,11 +22,13 @@
     "workflows"
   ],
   "files": [
-    "dist"
+    "dist",
+    "dist-scalprum"
   ],
   "scripts": {
     "start": "backstage-cli package start",
     "build": "backstage-cli package build",
+    "export-dynamic": "janus-cli package export-dynamic-plugin",
     "tsc": "tsc",
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test --passWithNoTests --coverage",
@@ -66,10 +68,17 @@
   "devDependencies": {
     "@backstage/cli": "0.23.0",
     "@backstage/dev-utils": "1.0.22",
+    "@janus-idp/cli": "1.4.0",
     "@types/json-schema": "^7.0.12"
   },
   "peerDependencies": {
     "react": "^16.13.1 || ^17.0.0",
     "react-router-dom": "^6.3.0"
+  },
+  "scalprum": {
+    "name": "janus-idp.backstage-plugin-orchestrator",
+    "exposedModules": {
+      "OrchestratorPlugin": "./src/index.ts"
+    }
   }
 }

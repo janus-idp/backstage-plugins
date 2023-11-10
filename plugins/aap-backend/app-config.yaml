@@ -1,0 +1,8 @@
+enabled:
+  aap: true
+catalog:
+  providers:
+    aap:
+      prod:
+        baseUrl: '${AAP_BASE_URL}'
+        authorization: '${AAP_AUTH_TOKEN}'

@@ -36,7 +36,7 @@ The AAP Backstage provider plugin allows the configuration of one or multiple pr
 
 1. Configure the scheduler using one of the following options:
 
-   - Add the following code to the `packages/backend/src/plugins/catalog.ts` file if the scheduler is configured inside the `app-config.yaml` file:
+   - **Method 1**: If the scheduler is configured inside the `app-config.yaml` using the schedule config key mentioned previously, add the following code to `packages/backend/src/plugins/catalog.ts` file:
 
      ```ts title="packages/backend/src/plugins/catalog.ts"
      /* highlight-add-next-line */
@@ -63,7 +63,15 @@ The AAP Backstage provider plugin allows the configuration of one or multiple pr
      }
      ```
 
-   - Add a schedule directly inside the `packages/backend/src/plugins/catalog.ts` file as follows:
+     ***
+
+     **NOTE**
+
+     If you have made any changes to the schedule in the `app-config.yaml` file, then restart to apply the changes.
+
+     ***
+
+   - **Method 2**: Add a schedule directly inside the `packages/backend/src/plugins/catalog.ts` file as follows:
 
      ```ts title="packages/backend/src/plugins/catalog.ts"
      /* highlight-add-next-line */
@@ -92,6 +100,14 @@ The AAP Backstage provider plugin allows the configuration of one or multiple pr
        return router;
      }
      ```
+
+   ***
+
+   **NOTE**
+
+   If both the `schedule` (hard-coded schedule) and `scheduler` (`app-config.yaml` schedule) option are provided in the `packages/backend/src/plugins/catalog.ts`, the `scheduler` option takes precedence. However, if the schedule inside the `app-config.yaml` file is not configured, then the `schedule` option is used.
+
+   ***
 
 ### Troubleshooting
 

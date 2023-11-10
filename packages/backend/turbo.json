@@ -1,7 +1,7 @@
 {
   "extends": ["//"],
   "pipeline": {
-    "start": {
+    "start:backstage": {
       "cache": false,
       "persistent": true
     },

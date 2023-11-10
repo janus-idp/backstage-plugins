@@ -166,69 +166,85 @@ If you are interested in Resource discovery and do not want any of the front-end
 
 1. Import the cluster `Resource` entity provider into the `catalog` plugin in the `packages/backend/src/plugins/catalog.ts` file. The scheduler also needs to be configured. Two configurations are possible here:
 
-   1. Configure the scheduler inside the `app-config.yaml`:
+   - **Method 1**: If the scheduler is configured inside the `app-config.yaml` using the schedule config key as follows:
 
-      ```yaml title="app-config.yaml"
-      catalog:
-        providers:
-          ocm:
-            env:
-              # ...
-              # highlight-add-start
-              schedule: # optional; same options as in TaskScheduleDefinition
-                # supports cron, ISO duration, "human duration" as used in code
-                frequency: { minutes: 1 }
-                # supports ISO duration, "human duration" as used in code
-                timeout: { minutes: 1 }
-              # highlight-add-end
-      ```
+     ```yaml title="app-config.yaml"
+     catalog:
+       providers:
+         ocm:
+           env:
+             # ...
+             # highlight-add-start
+             schedule: # optional; same options as in TaskScheduleDefinition
+               # supports cron, ISO duration, "human duration" as used in code
+               frequency: { minutes: 1 }
+               # supports ISO duration, "human duration" as used in code
+               timeout: { minutes: 1 }
+             # highlight-add-end
+     ```
 
-      and then use the configured scheduler in the `packages/backend/src/index.ts`:
+     Then use the configured scheduler by adding the following to the `packages/backend/src/plugins/catalog.ts`:
 
-      ```ts title="packages/backend/src/index.ts"
-      /* highlight-add-next-line */
-      import { ManagedClusterProvider } from '@janus-idp/backstage-plugin-ocm-backend';
+     ```ts title="packages/backend/src/plugins/catalog.ts"
+     /* highlight-add-next-line */
+     import { ManagedClusterProvider } from '@janus-idp/backstage-plugin-ocm-backend';
 
-      export default async function createPlugin(
-        env: PluginEnvironment,
-      ): Promise<Router> {
-        const builder = await CatalogBuilder.create(env);
-        // ...
-        /* highlight-add-start */
-        const ocm = ManagedClusterProvider.fromConfig(env.config, {
-          logger: env.logger,
-          scheduler: env.scheduler,
-        });
-        builder.addEntityProvider(ocm);
-        /* highlight-add-start */
-        // ...
-      }
-      ```
+     export default async function createPlugin(
+       env: PluginEnvironment,
+     ): Promise<Router> {
+       const builder = await CatalogBuilder.create(env);
+       // ...
+       /* highlight-add-start */
+       const ocm = ManagedClusterProvider.fromConfig(env.config, {
+         logger: env.logger,
+         scheduler: env.scheduler,
+       });
+       builder.addEntityProvider(ocm);
+       /* highlight-add-start */
+       // ...
+     }
+     ```
 
-   1. Add a schedule directly inside the `packages/backend/src/plugins/catalog.ts` file:
+     ***
 
-      ```ts title="packages/backend/src/plugins/catalog.ts"
-      /* highlight-add-next-line */
-      import { ManagedClusterProvider } from '@janus-idp/backstage-plugin-ocm-backend';
+     **NOTE**
 
-      export default async function createPlugin(
-        env: PluginEnvironment,
-      ): Promise<Router> {
-        const builder = await CatalogBuilder.create(env);
-        // ...
-        /* highlight-add-start */
-        const ocm = ManagedClusterProvider.fromConfig(env.config, {
-          logger: env.logger,
-          schedule: env.scheduler.createScheduledTaskRunner({
-            frequency: { minutes: 1 },
-            timeout: { minutes: 1 },
-          }),
-        });
-        builder.addEntityProvider(ocm);
-        /* highlight-add-start */
-        // ...
-      }
-      ```
+     If you have made any changes to the schedule in the `app-config.yaml` file, then restart to apply the changes.
+
+     ***
+
+   - **Method 2**: Add a schedule directly inside the `packages/backend/src/plugins/catalog.ts` file:
+
+     ```ts title="packages/backend/src/plugins/catalog.ts"
+     /* highlight-add-next-line */
+     import { ManagedClusterProvider } from '@janus-idp/backstage-plugin-ocm-backend';
+
+     export default async function createPlugin(
+       env: PluginEnvironment,
+     ): Promise<Router> {
+       const builder = await CatalogBuilder.create(env);
+       // ...
+       /* highlight-add-start */
+       const ocm = ManagedClusterProvider.fromConfig(env.config, {
+         logger: env.logger,
+         schedule: env.scheduler.createScheduledTaskRunner({
+           frequency: { minutes: 1 },
+           timeout: { minutes: 1 },
+         }),
+       });
+       builder.addEntityProvider(ocm);
+       /* highlight-add-start */
+       // ...
+     }
+     ```
+
+   ***
+
+   **NOTE**
+
+   If both the `schedule` (hard-coded schedule) and `scheduler` (`app-config.yaml` schedule) option are provided in the `packages/backend/src/plugins/catalog.ts`, the `scheduler` option takes precedence. However, if the schedule inside the `app-config.yaml` file is not configured, then the `schedule` option is used.
+
+   ***
 
 1. Optional: Configure the default owner for the cluster entities in the catalog for a specific environment. For example, use the following code to set `foo` as the owner for clusters from `env` in the `app-config.yaml` catalog section:
 

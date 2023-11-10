@@ -1,0 +1,17 @@
+[
+  {
+    "module": "UserSettings",
+    "scope": "janus.dynamic-frontend-plugin",
+    "manifestLocation": "http://localhost:8004/plugin-manifest.json"
+  },
+  {
+    "module": "TechRadar",
+    "scope": "janus.dynamic-frontend-plugin",
+    "manifestLocation": "http://localhost:8004/plugin-manifest.json"
+  },
+  {
+    "module": "Scaffolder",
+    "scope": "janus.dynamic-frontend-plugin",
+    "manifestLocation": "http://localhost:8004/plugin-manifest.json"
+  }
+]

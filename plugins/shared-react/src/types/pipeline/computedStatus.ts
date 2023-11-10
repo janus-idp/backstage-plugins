@@ -45,3 +45,19 @@ export type TaskStatusTypes = {
   Failed: number;
   Skipped: number;
 };
+
+export const computedStatus: { [key: string]: string | ComputedStatus } = {
+  All: '',
+  Cancelling: ComputedStatus.Cancelling,
+  Succeeded: ComputedStatus.Succeeded,
+  Failed: ComputedStatus.Failed,
+  Running: ComputedStatus.Running,
+  'In Progress': ComputedStatus['In Progress'],
+  FailedToStart: ComputedStatus.FailedToStart,
+  PipelineNotStarted: ComputedStatus.PipelineNotStarted,
+  Skipped: ComputedStatus.Skipped,
+  Cancelled: ComputedStatus.Cancelled,
+  Pending: ComputedStatus.Pending,
+  Idle: ComputedStatus.Idle,
+  Other: ComputedStatus.Other,
+};

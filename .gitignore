@@ -31,6 +31,10 @@ node_modules/
 # Build output
 dist
 dist-types
+dist-scalprum
+/plugins/*/dist-dynamic/*
+!/plugins/*/dist-dynamic/package.json
+!/plugins/*/dist-dynamic/yarn.lock
 
 # Temporary change files created by Vim
 *.swp
@@ -55,3 +59,6 @@ site
 # idea
 .idea
 *.iml
+
+# build cache
+.webpack-cache

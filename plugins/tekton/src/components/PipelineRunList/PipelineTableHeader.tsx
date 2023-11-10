@@ -60,16 +60,20 @@ export const EnhancedTableHead = ({
                 orderBy === headCell.field ? headCell.defaultSort : false
               }
             >
-              <TableSortLabel
-                active={orderBy === headCell.field && orderById === headCell.id}
-                direction={order}
-                onClick={createSortHandler(
-                  headCell.field as string,
-                  headCell.id as string,
-                )}
-              >
-                {headCell.title}
-              </TableSortLabel>
+              {headCell.field && (
+                <TableSortLabel
+                  active={
+                    orderBy === headCell.field && orderById === headCell.id
+                  }
+                  direction={order}
+                  onClick={createSortHandler(
+                    headCell.field as string,
+                    headCell.id as string,
+                  )}
+                >
+                  {headCell.title}
+                </TableSortLabel>
+              )}
             </TableCell>
           );
         })}

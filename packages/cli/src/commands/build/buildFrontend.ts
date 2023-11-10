@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { PluginBuildMetadata } from '@openshift/dynamic-plugin-sdk-webpack';
 import fs from 'fs-extra';
 
 import { resolve as resolvePath } from 'path';
@@ -26,16 +27,18 @@ interface BuildAppOptions {
   targetDir: string;
   writeStats: boolean;
   configPaths: string[];
+  pluginMetadata?: PluginBuildMetadata;
 }
 
 export async function buildFrontend(options: BuildAppOptions) {
-  const { targetDir, writeStats, configPaths } = options;
+  const { targetDir, writeStats, configPaths, pluginMetadata } = options;
   const { name } = await fs.readJson(resolvePath(targetDir, 'package.json'));
   await buildBundle({
     targetDir,
     entry: 'src/index',
     parallelism: getEnvironmentParallelism(),
     statsJsonEnabled: writeStats,
+    pluginMetadata,
     ...(await loadCliConfig({
       args: configPaths,
       fromPackage: name,

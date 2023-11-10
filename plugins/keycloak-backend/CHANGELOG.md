@@ -1,3 +1,26 @@
+## @janus-idp/backstage-plugin-keycloak-backend [1.7.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-keycloak-backend@1.6.0...@janus-idp/backstage-plugin-keycloak-backend@1.7.0) (2023-11-08)
+
+
+### Features
+
+* update entity provider schedulers ([#827](https://github.com/janus-idp/backstage-plugins/issues/827)) ([19731d1](https://github.com/janus-idp/backstage-plugins/commit/19731d1449a9d8ffa67aec069d2214e45bfe54ff))
+
+## @janus-idp/backstage-plugin-keycloak-backend [1.6.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-keycloak-backend@1.5.7...@janus-idp/backstage-plugin-keycloak-backend@1.6.0) (2023-11-07)
+
+
+### Features
+
+* make backend plugins dynamic (first round) ([#910](https://github.com/janus-idp/backstage-plugins/issues/910)) ([60523e5](https://github.com/janus-idp/backstage-plugins/commit/60523e588ba374cdcfd453afa2c17fc1a7a1ca2d))
+* update Keycloak plugin for dynamic backend ([#869](https://github.com/janus-idp/backstage-plugins/issues/869)) ([a68b38d](https://github.com/janus-idp/backstage-plugins/commit/a68b38d7b25cbfaa267fe5bb28777434ebfaaff3))
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.4.0
+
+## @janus-idp/backstage-plugin-keycloak-backend [1.5.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-keycloak-backend@1.5.6...@janus-idp/backstage-plugin-keycloak-backend@1.5.7) (2023-10-24)
+
 ## @janus-idp/backstage-plugin-keycloak-backend [1.5.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-keycloak-backend@1.5.5...@janus-idp/backstage-plugin-keycloak-backend@1.5.6) (2023-10-19)
 
 ## @janus-idp/backstage-plugin-keycloak-backend [1.5.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-keycloak-backend@1.5.4...@janus-idp/backstage-plugin-keycloak-backend@1.5.5) (2023-09-28)

@@ -40,13 +40,13 @@ The Quay plugin displays the information about your container images within the 
    import { isQuayAvailable, QuayPage } from '@janus-idp/backstage-plugin-quay';
 
    const serviceEntityPage = (
-     <EntityPageLayout>
+     <EntityLayout>
        {/* ... */}
        {/* highlight-add-next-line */}
        <EntityLayout.Route if={isQuayAvailable} path="/quay" title="Quay">
          <QuayPage />
        </EntityLayout.Route>
-     </EntityPageLayout>
+     </EntityLayout>
    );
    ```
 

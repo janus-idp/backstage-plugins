@@ -3,6 +3,8 @@ import { BrowserRouter } from 'react-router-dom';
 
 import { render } from '@testing-library/react';
 
+import { computedStatus } from '@janus-idp/shared-react';
+
 import { mockKubernetesPlrResponse } from '../../__fixtures__/1-pipelinesData';
 import { TektonResourcesContext } from '../../hooks/TektonResourcesContext';
 import PipelineRunList from './PipelineRunList';
@@ -31,8 +33,11 @@ describe('PipelineRunList', () => {
       loaded: true,
       responseError: '',
       selectedClusterErrors: [],
-      clusters: [],
+      clusters: ['ocp'],
       setSelectedCluster: () => {},
+      selectedStatus: '',
+      setSelectedStatus: () => {},
+      setIsExpanded: () => {},
     };
 
     const { queryByText } = render(
@@ -42,6 +47,7 @@ describe('PipelineRunList', () => {
         </BrowserRouter>
       </TektonResourcesContext.Provider>,
     );
+
     expect(queryByText(/No Pipeline Runs found/i)).toBeNull();
   });
 
@@ -53,6 +59,9 @@ describe('PipelineRunList', () => {
       selectedClusterErrors: [],
       clusters: [],
       setSelectedCluster: () => {},
+      selectedStatus: '',
+      setSelectedStatus: () => {},
+      setIsExpanded: () => {},
     };
 
     const { getByTestId } = render(
@@ -78,6 +87,9 @@ describe('PipelineRunList', () => {
       selectedClusterErrors: [],
       clusters: [],
       setSelectedCluster: () => {},
+      selectedStatus: '',
+      setSelectedStatus: () => {},
+      setIsExpanded: () => {},
     };
 
     const { getByText } = render(
@@ -104,6 +116,9 @@ describe('PipelineRunList', () => {
       selectedClusterErrors: [],
       clusters: [],
       setSelectedCluster: () => {},
+      selectedStatus: '',
+      setSelectedStatus: () => {},
+      setIsExpanded: () => {},
     };
 
     const { getByText, queryByText } = render(
@@ -131,6 +146,9 @@ describe('PipelineRunList', () => {
       selectedClusterErrors: [{ message: '403 - forbidden' }],
       clusters: ['ocp'],
       setSelectedCluster: () => {},
+      selectedStatus: '',
+      setSelectedStatus: () => {},
+      setIsExpanded: () => {},
     };
 
     const { getByText, queryByText } = render(
@@ -140,5 +158,67 @@ describe('PipelineRunList', () => {
     );
     getByText(/No Pipeline Runs found/i);
     expect(queryByText(/Cluster/)).not.toBeNull();
+  });
+
+  it('should render filtered PipelineRunList based on selected status', () => {
+    const mockContextData = {
+      watchResourcesData: {
+        pipelineruns: {
+          data: mockKubernetesPlrResponse.pipelineruns,
+        },
+        taskruns: {
+          data: mockKubernetesPlrResponse.taskruns,
+        },
+      },
+      loaded: true,
+      responseError: '',
+      selectedClusterErrors: [],
+      clusters: ['ocp'],
+      setSelectedCluster: () => {},
+      selectedStatus: computedStatus.Succeeded,
+      setSelectedStatus: () => {},
+      setIsExpanded: () => {},
+    };
+
+    const { queryByText } = render(
+      <TektonResourcesContext.Provider value={mockContextData}>
+        <BrowserRouter>
+          <PipelineRunList />
+        </BrowserRouter>
+      </TektonResourcesContext.Provider>,
+    );
+
+    expect(queryByText('ruby-ex-git-xf45fo')).not.toBeNull();
+  });
+
+  it('should show empty state if no PipelineRuns matches selected status', () => {
+    const mockContextData = {
+      watchResourcesData: {
+        pipelineruns: {
+          data: mockKubernetesPlrResponse.pipelineruns,
+        },
+        taskruns: {
+          data: mockKubernetesPlrResponse.taskruns,
+        },
+      },
+      loaded: true,
+      responseError: '',
+      selectedClusterErrors: [],
+      clusters: ['ocp'],
+      setSelectedCluster: () => {},
+      selectedStatus: computedStatus.Running,
+      setSelectedStatus: () => {},
+      setIsExpanded: () => {},
+    };
+
+    const { queryByText } = render(
+      <TektonResourcesContext.Provider value={mockContextData}>
+        <BrowserRouter>
+          <PipelineRunList />
+        </BrowserRouter>
+      </TektonResourcesContext.Provider>,
+    );
+
+    expect(queryByText(/No Pipeline Runs found/i)).not.toBeNull();
   });
 });

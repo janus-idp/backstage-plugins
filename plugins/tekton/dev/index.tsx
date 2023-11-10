@@ -11,7 +11,7 @@ import {
 import { TestApiProvider } from '@backstage/test-utils';
 
 import { mockKubernetesPlrResponse } from '../src/__fixtures__/1-pipelinesData';
-import { LatestPipelineRun, TektonPage, tektonPlugin } from '../src/plugin';
+import { TektonCI, tektonPlugin } from '../src/plugin';
 
 const mockEntity: Entity = {
   apiVersion: 'backstage.io/v1alpha1',
@@ -132,30 +132,12 @@ createDevApp()
         ]}
       >
         <EntityProvider entity={mockEntity}>
-          <TektonPage />
+          <TektonCI />
         </EntityProvider>
       </TestApiProvider>
     ),
-    title: 'Tekton Page',
+    title: 'Tekton CI',
     path: '/tekton',
-  })
-  .addPage({
-    element: (
-      <TestApiProvider
-        apis={[
-          [
-            kubernetesApiRef,
-            new MockKubernetesClient(mockKubernetesPlrResponse),
-          ],
-        ]}
-      >
-        <EntityProvider entity={mockEntity}>
-          <LatestPipelineRun url="/tekton" linkTekton />
-        </EntityProvider>
-      </TestApiProvider>
-    ),
-    title: 'PipelineRun Visualization',
-    path: '/pipelinerun-vis',
   })
   .addPage({
     element: (

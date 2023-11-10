@@ -1,6 +1,6 @@
 {
   "name": "@janus-idp/backstage-plugin-ocm-backend",
-  "version": "3.2.3",
+  "version": "3.4.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -20,7 +20,8 @@
     "test": "backstage-cli package test --passWithNoTests --coverage",
     "clean": "backstage-cli package clean",
     "prepack": "backstage-cli package prepack",
-    "postpack": "backstage-cli package postpack"
+    "postpack": "backstage-cli package postpack",
+    "export-dynamic": "janus-cli package export-dynamic-plugin --embed-package --embed-package @backstage/plugin-kubernetes-common"
   },
   "configSchema": "config.d.ts",
   "dependencies": {
@@ -33,6 +34,7 @@
     "@backstage/plugin-catalog-node": "^1.4.7",
     "@backstage/plugin-kubernetes-common": "^0.7.0",
     "@janus-idp/backstage-plugin-ocm-common": "2.2.1",
+    "@backstage/backend-plugin-manager": "npm:@janus-idp/backend-plugin-manager@0.0.2-janus.5",
     "@kubernetes/client-node": "^0.19.0",
     "express": "^4.18.2",
     "express-promise-router": "^4.1.1",
@@ -41,6 +43,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "0.23.0",
+    "@janus-idp/cli": "1.4.0",
     "@backstage/plugin-auth-node": "0.4.0",
     "@backstage/plugin-catalog-backend": "1.14.0",
     "@backstage/plugin-permission-common": "0.7.9",
@@ -52,7 +55,11 @@
   },
   "files": [
     "dist",
-    "config.d.ts"
+    "config.d.ts",
+    "dist-dynamic/*.*",
+    "dist-dynamic/dist/**",
+    "dist-dynamic/alpha/*",
+    "app-config.yaml"
   ],
   "repository": "github:janus-idp/backstage-plugins",
   "keywords": [

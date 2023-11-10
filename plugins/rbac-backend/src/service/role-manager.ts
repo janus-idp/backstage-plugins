@@ -1,3 +1,4 @@
+import { TokenManager } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import { parseEntityRef } from '@backstage/catalog-model';
 
@@ -6,6 +7,44 @@ import { RoleManager } from 'casbin';
 import { Logger } from 'winston';
 
 type FilterRelations = 'relations.hasMember' | 'relations.parentOf';
+
+class Role {
+  public name: string;
+
+  private roles: Role[];
+
+  public constructor(name: string) {
+    this.name = name;
+    this.roles = [];
+  }
+
+  public addRole(role: Role): void {
+    if (this.roles.some(n => n.name === role.name)) {
+      return;
+    }
+    this.roles.push(role);
+  }
+
+  public deleteRole(role: Role): void {
+    this.roles = this.roles.filter(n => n.name !== role.name);
+  }
+
+  public hasRole(name: string, hierarchyLevel: number): boolean {
+    if (this.name === name) {
+      return true;
+    }
+    if (hierarchyLevel <= 0) {
+      return false;
+    }
+    for (const role of this.roles) {
+      if (role.hasRole(name, hierarchyLevel - 1)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+}
 
 // AncestorSearchMemo - should be used to build group hierarchy graph for User entity reference.
 // It supports search group entity reference link in the graph.
@@ -72,10 +111,14 @@ class AncestorSearchMemo {
 }
 
 export class BackstageRoleManager implements RoleManager {
+  private allRoles: Map<string, Role>;
   constructor(
     private readonly catalogApi: CatalogApi,
     private readonly log: Logger,
-  ) {}
+    private readonly tokenManager: TokenManager,
+  ) {
+    this.allRoles = new Map<string, Role>();
+  }
 
   /**
    * clear clears all stored data and resets the role manager to the initial state.
@@ -90,11 +133,14 @@ export class BackstageRoleManager implements RoleManager {
    * domain is a prefix to the roles.
    */
   async addLink(
-    _name1: string,
-    _name2: string,
+    name1: string,
+    name2: string,
     ..._domain: string[]
   ): Promise<void> {
-    throw new Error('Method "addLink" not implemented.');
+    const role1 = this.getOrCreateRole(name1);
+    const role2 = this.getOrCreateRole(name2);
+
+    role1.addRole(role2);
   }
 
   /**
@@ -103,16 +149,21 @@ export class BackstageRoleManager implements RoleManager {
    * domain is a prefix to the roles.
    */
   async deleteLink(
-    _name1: string,
-    _name2: string,
+    name1: string,
+    name2: string,
     ..._domain: string[]
   ): Promise<void> {
-    throw new Error('Method "deleteLink" not implemented.');
+    const role1 = this.getOrCreateRole(name1);
+    const role2 = this.getOrCreateRole(name2);
+    role1.deleteRole(role2);
   }
 
   /**
    * hasLink determines whether role: name1 inherits role: name2.
    * domain is a prefix to the roles.
+   *
+   * name1 will always be the user that we are authorizing
+   * name2 will be the roles that the role manager is aware of
    */
   async hasLink(
     name1: string,
@@ -124,6 +175,13 @@ export class BackstageRoleManager implements RoleManager {
     }
 
     if (name1 === name2) {
+      return true;
+    }
+
+    const tempRole = this.getOrCreateRole(name1);
+
+    // Immediately check if the our temporary role has a link with the role that we are comparing it to
+    if (this.parseEntityKind(name2) === 'role' && tempRole.hasRole(name2, 1)) {
       return true;
     }
 
@@ -142,8 +200,6 @@ export class BackstageRoleManager implements RoleManager {
     if (!memo.isAcyclic()) {
       const cycles = memo.findCycles();
 
-      memo.hasEntityRef(name2);
-
       this.log.warn(
         `Detected cycle ${
           cycles.length > 0 ? 'dependencies' : 'dependency'
@@ -153,6 +209,16 @@ export class BackstageRoleManager implements RoleManager {
       );
 
       return false;
+    }
+
+    // iterate through the known roles to check if the second name is apart of the known roles
+    // and if the group that is attached to the second name is apart of the graph
+    if (!memo.hasEntityRef(name2) && this.parseEntityKind(name2) === 'role') {
+      for (const [key, value] of this.allRoles.entries()) {
+        if (value.hasRole(name2, 1) && memo.hasEntityRef(key)) {
+          return true;
+        }
+      }
     }
     return memo.hasEntityRef(name2);
   }
@@ -193,20 +259,24 @@ export class BackstageRoleManager implements RoleManager {
   }
 
   private async findAncestorGroups(memo: AncestorSearchMemo): Promise<void> {
-    const { items } = await this.catalogApi.getEntities({
-      filter: {
-        kind: 'Group',
-        [memo.getFilterRelations()]: Array.from(memo.getFilterEntityRefs()),
+    const { token } = await this.tokenManager.getToken();
+    const { items } = await this.catalogApi.getEntities(
+      {
+        filter: {
+          kind: 'Group',
+          [memo.getFilterRelations()]: Array.from(memo.getFilterEntityRefs()),
+        },
+        // Save traffic with only required information for us
+        fields: [
+          'metadata.name',
+          'kind',
+          'metadata.namespace',
+          'spec.parent',
+          'spec.children',
+        ],
       },
-      // Save traffic with only required information for us
-      fields: [
-        'metadata.name',
-        'kind',
-        'metadata.namespace',
-        'spec.parent',
-        'spec.children',
-      ],
-    });
+      { token },
+    );
 
     const groupsRefs = new Set<string>();
     for (const item of items) {
@@ -237,5 +307,22 @@ export class BackstageRoleManager implements RoleManager {
       memo.setFilterRelations('relations.parentOf');
       await this.findAncestorGroups(memo);
     }
+  }
+
+  private getOrCreateRole(name: string): Role {
+    const role = this.allRoles.get(name);
+    if (role) {
+      return role;
+    }
+    const newRole = new Role(name);
+    this.allRoles.set(name, newRole);
+
+    return newRole;
+  }
+
+  // parse the entity to find out if it is a user / group / or role
+  private parseEntityKind(name: string): string {
+    const parsed = name.split(':');
+    return parsed[0];
   }
 }

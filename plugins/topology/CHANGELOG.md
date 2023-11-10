@@ -1,3 +1,54 @@
+## @janus-idp/backstage-plugin-topology [1.16.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.16.3...@janus-idp/backstage-plugin-topology@1.16.4) (2023-11-07)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.4.0
+
+## @janus-idp/backstage-plugin-topology [1.16.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.16.2...@janus-idp/backstage-plugin-topology@1.16.3) (2023-11-06)
+
+
+### Bug Fixes
+
+* **cli:** add default scalprum config ([#909](https://github.com/janus-idp/backstage-plugins/issues/909)) ([d74fc72](https://github.com/janus-idp/backstage-plugins/commit/d74fc72ab7e0a843da047c7b6570d8a6fbc068e1))
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.3.3
+
+## @janus-idp/backstage-plugin-topology [1.16.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.16.1...@janus-idp/backstage-plugin-topology@1.16.2) (2023-11-06)
+
+
+### Documentation
+
+* update frontend plugin docs to use EntityLayout instead of EntityPageLayout ([#907](https://github.com/janus-idp/backstage-plugins/issues/907)) ([aa91bba](https://github.com/janus-idp/backstage-plugins/commit/aa91bba4c7a43de416258eb019724e21c7cf4bb8))
+
+## @janus-idp/backstage-plugin-topology [1.16.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.16.0...@janus-idp/backstage-plugin-topology@1.16.1) (2023-11-02)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.3.2
+
+## @janus-idp/backstage-plugin-topology [1.16.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.15.9...@janus-idp/backstage-plugin-topology@1.16.0) (2023-11-01)
+
+
+### Features
+
+* **dynamic-plugins:** publish dynamic assets for all frontend plugins ([#896](https://github.com/janus-idp/backstage-plugins/issues/896)) ([dcfb0ac](https://github.com/janus-idp/backstage-plugins/commit/dcfb0ac56769c82f6b8b2cef2726251e0b60c375))
+
+## @janus-idp/backstage-plugin-topology [1.15.9](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.15.8...@janus-idp/backstage-plugin-topology@1.15.9) (2023-10-23)
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.0.0
+
 ## @janus-idp/backstage-plugin-topology [1.15.8](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.15.7...@janus-idp/backstage-plugin-topology@1.15.8) (2023-10-19)
 
 

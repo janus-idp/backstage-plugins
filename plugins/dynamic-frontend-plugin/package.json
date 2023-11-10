@@ -1,0 +1,47 @@
+{
+  "name": "@janus-idp/dynamic-frontend-plugin",
+  "private": true,
+  "version": "0.0.1",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "backstage": {
+    "role": "frontend-plugin"
+  },
+  "scripts": {
+    "start": "backstage-cli package start",
+    "start:backstage": "http-server ./dist-scalprum/ -p 8004 --cors=* --cache=-1",
+    "build": "backstage-cli package build",
+    "export-dynamic": "janus-cli package export-dynamic-plugin",
+    "tsc": "tsc",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test --passWithNoTests --coverage",
+    "clean": "backstage-cli package clean",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack"
+  },
+  "dependencies": {
+    "@backstage/core-plugin-api": "^1.6.0",
+    "@backstage/plugin-tech-radar": "^0.6.9",
+    "@backstage/plugin-user-settings": "^0.7.10",
+    "@backstage/plugin-scaffolder": "^1.14.1",
+    "@material-ui/core": "^4.9.13",
+    "@scalprum/core": "^0.6.1",
+    "@scalprum/react-core": "^0.6.1"
+  },
+  "peerDependencies": {
+    "react": "^16.13.1 || ^17.0.0"
+  },
+  "devDependencies": {
+    "@backstage/cli": "0.22.9",
+    "@janus-idp/cli": "*",
+    "http-server": "14.1.1"
+  },
+  "scalprum": {
+    "name": "janus.dynamic-frontend-plugin",
+    "exposedModules": {
+      "TechRadar": "./src/remotes/TechRadarPage",
+      "UserSettings": "./src/remotes/UserSettingsLegacy",
+      "Scaffolder": "./src/remotes/Scaffolder"
+    }
+  }
+}

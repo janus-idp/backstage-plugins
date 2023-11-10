@@ -4,8 +4,13 @@ export type Policy = {
   effect?: string;
 };
 
-export type EntityReferencedPolicy = Policy & {
+export type RoleBasedPolicy = Policy & {
   entityReference?: string;
+};
+
+export type Role = {
+  memberReferences: string[];
+  name: string;
 };
 
 export type UpdatePolicy = {

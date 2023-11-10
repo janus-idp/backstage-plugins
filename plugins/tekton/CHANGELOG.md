@@ -1,3 +1,70 @@
+## @janus-idp/backstage-plugin-tekton [3.1.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.1.2...@janus-idp/backstage-plugin-tekton@3.1.3) (2023-11-07)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.4.0
+
+## @janus-idp/backstage-plugin-tekton [3.1.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.1.1...@janus-idp/backstage-plugin-tekton@3.1.2) (2023-11-06)
+
+
+### Bug Fixes
+
+* **cli:** add default scalprum config ([#909](https://github.com/janus-idp/backstage-plugins/issues/909)) ([d74fc72](https://github.com/janus-idp/backstage-plugins/commit/d74fc72ab7e0a843da047c7b6570d8a6fbc068e1))
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.3.3
+
+## @janus-idp/backstage-plugin-tekton [3.1.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.1.0...@janus-idp/backstage-plugin-tekton@3.1.1) (2023-11-02)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.3.2
+
+## @janus-idp/backstage-plugin-tekton [3.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.0.2...@janus-idp/backstage-plugin-tekton@3.1.0) (2023-11-01)
+
+
+### Features
+
+* **dynamic-plugins:** publish dynamic assets for all frontend plugins ([#896](https://github.com/janus-idp/backstage-plugins/issues/896)) ([dcfb0ac](https://github.com/janus-idp/backstage-plugins/commit/dcfb0ac56769c82f6b8b2cef2726251e0b60c375))
+
+## @janus-idp/backstage-plugin-tekton [3.0.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.0.1...@janus-idp/backstage-plugin-tekton@3.0.2) (2023-10-27)
+
+
+### Bug Fixes
+
+* **tekton:** handle flaky cluster error gracefully ([#887](https://github.com/janus-idp/backstage-plugins/issues/887)) ([10ed80e](https://github.com/janus-idp/backstage-plugins/commit/10ed80e4882d473eaee8319a9b1643b14f99a203))
+
+## @janus-idp/backstage-plugin-tekton [3.0.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.0.0...@janus-idp/backstage-plugin-tekton@3.0.1) (2023-10-26)
+
+
+### Bug Fixes
+
+* **tekton:** update README and cleanup ([#881](https://github.com/janus-idp/backstage-plugins/issues/881)) ([c495515](https://github.com/janus-idp/backstage-plugins/commit/c495515bc146dfb9e2b64ec8df50d2e5fe01a6c7))
+
+## @janus-idp/backstage-plugin-tekton [3.0.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@2.0.2...@janus-idp/backstage-plugin-tekton@3.0.0) (2023-10-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* **tekton:** update tekton UX (#839)
+
+### Features
+
+* **tekton:** update tekton UX ([#839](https://github.com/janus-idp/backstage-plugins/issues/839)) ([789c945](https://github.com/janus-idp/backstage-plugins/commit/789c945580b8f82349a5c62b98c77d5dbf4781f1))
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.0.0
+
 ## @janus-idp/backstage-plugin-tekton [2.0.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@2.0.1...@janus-idp/backstage-plugin-tekton@2.0.2) (2023-10-19)
 
 

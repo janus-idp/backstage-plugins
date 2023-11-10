@@ -1,3 +1,45 @@
+## @janus-idp/cli [1.4.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.3.3...@janus-idp/cli@1.4.0) (2023-11-07)
+
+
+### Features
+
+* **cli:** generate plugin specific schema for dynamic plugins ([#912](https://github.com/janus-idp/backstage-plugins/issues/912)) ([0c31158](https://github.com/janus-idp/backstage-plugins/commit/0c311585d5aaaa501bef8ba0e8dfddffe240f71c))
+
+## @janus-idp/cli [1.3.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.3.2...@janus-idp/cli@1.3.3) (2023-11-06)
+
+
+### Bug Fixes
+
+* **cli:** add default scalprum config ([#909](https://github.com/janus-idp/backstage-plugins/issues/909)) ([d74fc72](https://github.com/janus-idp/backstage-plugins/commit/d74fc72ab7e0a843da047c7b6570d8a6fbc068e1))
+
+## @janus-idp/cli [1.3.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.3.1...@janus-idp/cli@1.3.2) (2023-11-02)
+
+
+### Bug Fixes
+
+* **scalprum:** share react-router since various 3rd party plugins use it ([#901](https://github.com/janus-idp/backstage-plugins/issues/901)) ([ac0c923](https://github.com/janus-idp/backstage-plugins/commit/ac0c92381c26f20d197255abcc931a7ad14c0edc))
+
+## @janus-idp/cli [1.3.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.3.0...@janus-idp/cli@1.3.1) (2023-10-26)
+
+
+### Bug Fixes
+
+* **cli:** share core-app-api package ([#885](https://github.com/janus-idp/backstage-plugins/issues/885)) ([09db33c](https://github.com/janus-idp/backstage-plugins/commit/09db33ce4113ccb484a167dab8d9fe47d6185c09))
+
+## @janus-idp/cli [1.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.2.0...@janus-idp/cli@1.3.0) (2023-10-24)
+
+
+### Features
+
+* **dynamic-ui:** integrate scalprum with current backstage plugins ([#826](https://github.com/janus-idp/backstage-plugins/issues/826)) ([e1fb4ce](https://github.com/janus-idp/backstage-plugins/commit/e1fb4ceafc9e353c4d5b0ed9ba2407b3b0383c60))
+
+## @janus-idp/cli [1.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.1.1...@janus-idp/cli@1.2.0) (2023-10-23)
+
+
+### Features
+
+* **cli:** add frontend dynamic plugins base build config ([#747](https://github.com/janus-idp/backstage-plugins/issues/747)) ([91e06da](https://github.com/janus-idp/backstage-plugins/commit/91e06da8ab108c17fd2a6531f25e01c7a7350276)), closes [#831](https://github.com/janus-idp/backstage-plugins/issues/831)
+
 ## @janus-idp/cli [1.1.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.1.0...@janus-idp/cli@1.1.1) (2023-10-19)
 
 ## @janus-idp/cli [1.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.0.5...@janus-idp/cli@1.1.0) (2023-10-17)

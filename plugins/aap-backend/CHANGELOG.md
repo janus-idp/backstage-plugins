@@ -1,3 +1,23 @@
+## @janus-idp/backstage-plugin-aap-backend [1.4.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-aap-backend@1.3.0...@janus-idp/backstage-plugin-aap-backend@1.4.0) (2023-11-08)
+
+
+### Features
+
+* update entity provider schedulers ([#827](https://github.com/janus-idp/backstage-plugins/issues/827)) ([19731d1](https://github.com/janus-idp/backstage-plugins/commit/19731d1449a9d8ffa67aec069d2214e45bfe54ff))
+
+## @janus-idp/backstage-plugin-aap-backend [1.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-aap-backend@1.2.3...@janus-idp/backstage-plugin-aap-backend@1.3.0) (2023-11-07)
+
+
+### Features
+
+* make backend plugins dynamic (first round) ([#910](https://github.com/janus-idp/backstage-plugins/issues/910)) ([60523e5](https://github.com/janus-idp/backstage-plugins/commit/60523e588ba374cdcfd453afa2c17fc1a7a1ca2d))
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.4.0
+
 ## @janus-idp/backstage-plugin-aap-backend [1.2.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-aap-backend@1.2.2...@janus-idp/backstage-plugin-aap-backend@1.2.3) (2023-10-19)
 
 ## @janus-idp/backstage-plugin-aap-backend [1.2.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-aap-backend@1.2.1...@janus-idp/backstage-plugin-aap-backend@1.2.2) (2023-09-06)

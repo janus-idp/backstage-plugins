@@ -292,14 +292,14 @@ The Topology plugin enables you to visualize the workloads such as Deployment, J
    import { TopologyPage } from '@janus-idp/backstage-plugin-topology';
 
    const serviceEntityPage = (
-     <EntityPageLayout>
+     <EntityLayout>
        {/* ... */}
        {/* highlight-add-start */}
        <EntityLayout.Route path="/topology" title="Topology">
          <TopologyPage />
        </EntityLayout.Route>
        {/* highlight-add-end */}
-     </EntityPageLayout>
+     </EntityLayout>
    );
    ```
 

@@ -1,4 +1,4 @@
-# Copyright 2023 Janus Authors
+# Copyright 2023 The Janus IDP Authors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
 name: Publish Backend Plugin Manager
 
 on:
-  schedule:
-    - cron: '20 * * * *' # every hour at 20 minutes
+  #  schedule:
+  #    - cron: '20 * * * *' # every hour at 20 minutes
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -91,7 +91,7 @@ jobs:
           echo "GH Output: " && cat $GITHUB_OUTPUT
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         if: steps.test_commit_already_published.outputs.ALREADY_PUSHED == 'false'
         env:
           FORCE_COLOR: 0
@@ -107,8 +107,11 @@ jobs:
 
       - name: Get the last version of the backend-plugin-manager package pushed to the NPMJS repository
         id: get_last_pushed_version
+        if: steps.test_commit_already_published.outputs.ALREADY_PUSHED == 'false'
+        env:
+          COMMIT_VERSION: ${{ steps.get_package_version.outputs.PACKAGE_VERSION }}
         run: |
-          echo "LAST_PUSHED_VERSION=$(npm view $SCOPE/backend-plugin-manager version)" >> "$GITHUB_OUTPUT"
+          echo "LAST_PUSHED_VERSION=$(npm view $SCOPE/backend-plugin-manager@^${COMMIT_VERSION}-janus version | sed -e "s/^.*'\(.*\)'/\1/" | sort | tail -1)" >> "$GITHUB_OUTPUT"
           echo "GH Output: " && cat $GITHUB_OUTPUT
 
       - name: Get new version to push
@@ -117,16 +120,17 @@ jobs:
         env:
           COMMIT_VERSION: ${{ steps.get_package_version.outputs.PACKAGE_VERSION }}
           LAST_PUSHED_VERSION: ${{ steps.get_last_pushed_version.outputs.LAST_PUSHED_VERSION }}
+          GIT_REF: ${{ steps.get_checkout_ref.outputs.GIT_REF }}
         run: |
           #
           # The new version to push to NPMS is calculated as follows:
           #            
-          #   upstream version: 0.0.0, already pushed version: none => new version: 0.0.1-janus.0
-          #   upstream version: 0.0.0, already pushed version: 0.0.1-janus.0 => new version: 0.0.1-janus.1
+          #   upstream version: 0.0.1-next.0, no pushed version => new version: 0.0.1-janus.0
+          #   upstream version: 0.0.1-next.0, already pushed version: 0.0.1-janus.0 => new version: 0.0.1-janus.1
           #   upstream version: 0.0.1-next.0, already pushed version: 0.0.1-janus.1 => new version: 0.0.1-janus.2
           #   upstream version: 0.0.1-next.1, already pushed version: 0.0.1-janus.2 => new version: 0.0.1-janus.3
-          #   upstream version: 0.0.1, already pushed version: 0.0.1-janus.3 => new version: 0.0.2-janus.0
-          #   upstream version: 0.0.2-next.0, already pushed version: 0.0.2-janus.0 => new version: 0.0.2-janus.1
+          #   upstream version: 0.0.1, already pushed version: 0.0.1-janus.3 => new version: 0.0.1-janus.4
+          #   upstream version: 0.0.2-next.0, already pushed version: 0.0.1-janus.4 => new version: 0.0.2-janus.0
           #   etc ...
           #
 
@@ -136,27 +140,10 @@ jobs:
           COMMIT_MINOR=$(echo $COMMIT_VERSION | cut -d. -f2)
           COMMIT_PATCH=$(echo $COMMIT_VERSION | cut -d. -f3 | cut -d- -f1)
 
-          if [ "$COMMIT_MAJOR.$COMMIT_MINOR.$COMMIT_PATCH" == "$COMMIT_VERSION" ]; then
-              COMMIT_PRERELEASE=""
-          else
-              COMMIT_PRERELEASE=$(echo $COMMIT_VERSION | cut -d- -f2)
-          fi
-
-          # If there is a pre-release part, then the effective last released version is the previous one
-
-          if [ -n "$COMMIT_PRERELEASE" ]; then
-              COMMIT_PATCH=$((COMMIT_PATCH-1))
-          fi
-
-          # The PATCH part of the version pushed to NPMJS will always contain a pre-release part
-          # => increment it
-
-          PATCH=$((COMMIT_PATCH+1))
-
-          # If the last pushed version is not empty, set it to a default value, and then parse it
+          # If the last pushed version is empty, set it to a default value, and then parse it
 
           if [ -z "$LAST_PUSHED_VERSION" ]; then
-              LAST_PUSHED_VERSION=$COMMIT_MAJOR.$COMMIT_MINOR.$PATCH-janus.0
+              LAST_PUSHED_VERSION=$COMMIT_MAJOR.$COMMIT_MINOR.$COMMIT_PATCH-janus.0
           fi
 
           LAST_PUSHED_MAJOR=$(echo $LAST_PUSHED_VERSION | cut -d. -f1)
@@ -169,12 +156,13 @@ jobs:
           # then just increment the pre-release number, 
           # otherwise, use the base version of the upstream package, and reset the `.janus.` pre-release number to 0.
 
-          if [ "$COMMIT_MAJOR.$COMMIT_MINOR.$PATCH" == "$LAST_PUSHED_MAJOR.$LAST_PUSHED_MINOR.$LAST_PUSHED_PATCH" ]; then
+          if [ "$COMMIT_MAJOR.$COMMIT_MINOR.$COMMIT_PATCH" == "$LAST_PUSHED_MAJOR.$LAST_PUSHED_MINOR.$LAST_PUSHED_PATCH" ]; then
               PRERELEASE="janus.$((LAST_PUSHED_PRERELEASE_NUMBER+1))"
           else
               PRERELEASE="janus.0"
           fi
-          echo "VERSION=$COMMIT_MAJOR.$COMMIT_MINOR.$PATCH-$PRERELEASE" >> "$GITHUB_OUTPUT"
+
+          echo "VERSION=$COMMIT_MAJOR.$COMMIT_MINOR.$COMMIT_PATCH-$PRERELEASE" >> "$GITHUB_OUTPUT"
           echo "GH Output: " && cat $GITHUB_OUTPUT
 
       - name: Update BackendPluginManager package.json with changed scope and version, and make it public

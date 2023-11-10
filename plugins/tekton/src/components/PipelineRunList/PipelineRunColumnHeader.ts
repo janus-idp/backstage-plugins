@@ -1,6 +1,7 @@
 import { TableColumn } from '@backstage/core-components';
 
 export const PipelineRunColumnHeader: TableColumn[] = [
+  {},
   {
     id: 'name',
     title: 'NAME',

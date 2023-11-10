@@ -1,3 +1,61 @@
+## @janus-idp/backstage-plugin-ocm [3.5.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm@3.4.0...@janus-idp/backstage-plugin-ocm@3.5.0) (2023-11-08)
+
+
+### Features
+
+* **ocm:** export default icon for use in dynamic plugins ([#919](https://github.com/janus-idp/backstage-plugins/issues/919)) ([e6dd16d](https://github.com/janus-idp/backstage-plugins/commit/e6dd16d3952b627f8938f3d73b1fb7c6d5988662))
+
+## @janus-idp/backstage-plugin-ocm [3.4.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm@3.3.4...@janus-idp/backstage-plugin-ocm@3.4.0) (2023-11-08)
+
+
+### Features
+
+* update entity provider schedulers ([#827](https://github.com/janus-idp/backstage-plugins/issues/827)) ([19731d1](https://github.com/janus-idp/backstage-plugins/commit/19731d1449a9d8ffa67aec069d2214e45bfe54ff))
+
+## @janus-idp/backstage-plugin-ocm [3.3.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm@3.3.3...@janus-idp/backstage-plugin-ocm@3.3.4) (2023-11-07)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.4.0
+
+## @janus-idp/backstage-plugin-ocm [3.3.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm@3.3.2...@janus-idp/backstage-plugin-ocm@3.3.3) (2023-11-06)
+
+
+### Bug Fixes
+
+* **cli:** add default scalprum config ([#909](https://github.com/janus-idp/backstage-plugins/issues/909)) ([d74fc72](https://github.com/janus-idp/backstage-plugins/commit/d74fc72ab7e0a843da047c7b6570d8a6fbc068e1))
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.3.3
+
+## @janus-idp/backstage-plugin-ocm [3.3.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm@3.3.1...@janus-idp/backstage-plugin-ocm@3.3.2) (2023-11-02)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.3.2
+
+## @janus-idp/backstage-plugin-ocm [3.3.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm@3.3.0...@janus-idp/backstage-plugin-ocm@3.3.1) (2023-10-26)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.3.1
+
+## @janus-idp/backstage-plugin-ocm [3.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm@3.2.3...@janus-idp/backstage-plugin-ocm@3.3.0) (2023-10-25)
+
+
+### Features
+
+* **ocm:** enable dynamic plugin ([#876](https://github.com/janus-idp/backstage-plugins/issues/876)) ([1071eeb](https://github.com/janus-idp/backstage-plugins/commit/1071eeb3d7c56ff0896dfe2be6374ff771481411))
+
 ## @janus-idp/backstage-plugin-ocm [3.2.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm@3.2.2...@janus-idp/backstage-plugin-ocm@3.2.3) (2023-10-19)
 
 

@@ -126,15 +126,20 @@ export class KeycloakOrgEntityProvider implements EntityProvider {
     options: KeycloakOrgEntityProviderOptions,
   ): KeycloakOrgEntityProvider[] {
     return readProviderConfigs(configRoot).map(providerConfig => {
-      if (!options.schedule && !providerConfig.schedule) {
+      let taskRunner;
+      if (options.scheduler && providerConfig.schedule) {
+        // Create a scheduled task runner using the provided scheduler and schedule configuration
+        taskRunner = options.scheduler.createScheduledTaskRunner(
+          providerConfig.schedule,
+        );
+      } else if (options.schedule) {
+        // Use the provided schedule directly
+        taskRunner = options.schedule;
+      } else {
         throw new Error(
-          `No schedule provided neither via code nor config for MicrosoftGraphOrgEntityProvider:${providerConfig.id}.`,
+          `No schedule provided neither via code nor config for KeycloakOrgEntityProvider:${providerConfig.id}.`,
         );
       }
-
-      const taskRunner =
-        options.schedule ??
-        options.scheduler!.createScheduledTaskRunner(providerConfig.schedule!);
 
       const provider = new KeycloakOrgEntityProvider({
         id: providerConfig.id,

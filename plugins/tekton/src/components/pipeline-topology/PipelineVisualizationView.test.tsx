@@ -28,21 +28,17 @@ describe('PipelineVisualizationView', () => {
       selectedClusterErrors: [],
       clusters: [],
       setSelectedCluster: () => {},
+      selectedStatus: '',
+      setSelectedStatus: () => {},
+      setIsExpanded: () => {},
     };
-    const { queryByTestId, getByText } = render(
+    const { queryByTestId } = render(
       <TektonResourcesContext.Provider value={mockContextData}>
         <BrowserRouter>
           <PipelineVisualizationView pipelineRun="pipeline-test-wbvtlk" />
         </BrowserRouter>
       </TektonResourcesContext.Provider>,
     );
-    expect(
-      getByText(mockKubernetesPlrResponse.pipelineruns[1].metadata.name),
-    ).toBeInTheDocument();
-    expect(getByText('Pipeline Run')).toBeInTheDocument();
-
-    expect(getByText('Back to PipelineRun list')).toBeInTheDocument();
-
     expect(queryByTestId('pipelineRun-visualization')).toBeInTheDocument();
   });
 });

@@ -1,3 +1,69 @@
+## @janus-idp/backstage-plugin-quay [1.4.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.4.5...@janus-idp/backstage-plugin-quay@1.4.6) (2023-11-07)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.4.0
+
+## @janus-idp/backstage-plugin-quay [1.4.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.4.4...@janus-idp/backstage-plugin-quay@1.4.5) (2023-11-06)
+
+
+### Bug Fixes
+
+* **cli:** add default scalprum config ([#909](https://github.com/janus-idp/backstage-plugins/issues/909)) ([d74fc72](https://github.com/janus-idp/backstage-plugins/commit/d74fc72ab7e0a843da047c7b6570d8a6fbc068e1))
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.3.3
+
+## @janus-idp/backstage-plugin-quay [1.4.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.4.3...@janus-idp/backstage-plugin-quay@1.4.4) (2023-11-06)
+
+
+### Documentation
+
+* update frontend plugin docs to use EntityLayout instead of EntityPageLayout ([#907](https://github.com/janus-idp/backstage-plugins/issues/907)) ([aa91bba](https://github.com/janus-idp/backstage-plugins/commit/aa91bba4c7a43de416258eb019724e21c7cf4bb8))
+
+## @janus-idp/backstage-plugin-quay [1.4.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.4.2...@janus-idp/backstage-plugin-quay@1.4.3) (2023-11-02)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.3.2
+
+## @janus-idp/backstage-plugin-quay [1.4.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.4.1...@janus-idp/backstage-plugin-quay@1.4.2) (2023-10-26)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.3.1
+
+## @janus-idp/backstage-plugin-quay [1.4.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.4.0...@janus-idp/backstage-plugin-quay@1.4.1) (2023-10-23)
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.0.0
+
+## @janus-idp/backstage-plugin-quay [1.4.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.3.4...@janus-idp/backstage-plugin-quay@1.4.0) (2023-10-23)
+
+
+### Features
+
+* **cli:** add frontend dynamic plugins base build config ([#747](https://github.com/janus-idp/backstage-plugins/issues/747)) ([91e06da](https://github.com/janus-idp/backstage-plugins/commit/91e06da8ab108c17fd2a6531f25e01c7a7350276)), closes [#831](https://github.com/janus-idp/backstage-plugins/issues/831)
+
+## @janus-idp/backstage-plugin-quay [1.3.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.3.3...@janus-idp/backstage-plugin-quay@1.3.4) (2023-10-20)
+
+
+### Bug Fixes
+
+* **quay:** add visual indicator to security scan when it is still loading ([#848](https://github.com/janus-idp/backstage-plugins/issues/848)) ([71ff2a8](https://github.com/janus-idp/backstage-plugins/commit/71ff2a87ede8094df5f03efaf55b2ca70bcc33e5))
+
 ## @janus-idp/backstage-plugin-quay [1.3.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.3.2...@janus-idp/backstage-plugin-quay@1.3.3) (2023-10-19)
 
 

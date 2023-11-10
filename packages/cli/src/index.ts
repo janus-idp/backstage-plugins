@@ -28,7 +28,7 @@ import { exitWithError } from './lib/errors';
 import { version } from './lib/version';
 
 const main = (argv: string[]) => {
-  program.name('backstage-cli').version(version);
+  program.name('janus-cli').version(version);
 
   registerCommands(program);
 

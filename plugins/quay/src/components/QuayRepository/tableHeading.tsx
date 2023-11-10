@@ -1,18 +1,15 @@
 import React from 'react';
 
-import { Link, TableColumn } from '@backstage/core-components';
+import { Link, Progress, TableColumn } from '@backstage/core-components';
 
 import makeStyles from '@material-ui/core/styles/makeStyles';
 
 import type { Layer } from '../../types';
 
-const vulnerabilitySummary = (layer?: Layer): string => {
-  if (!layer) {
-    return 'No security scan';
-  }
+const vulnerabilitySummary = (layer: Layer): string => {
   const summary: Record<string, number> = {};
 
-  layer.Features.forEach(feature => {
+  layer?.Features.forEach(feature => {
     feature.Vulnerabilities?.forEach(vulnerability => {
       const { Severity } = vulnerability;
       if (!summary[Severity]) {
@@ -44,7 +41,14 @@ export const columns: TableColumn[] = [
     title: 'Security Scan',
     field: 'securityScan',
     render: (rowData: any): React.ReactNode => {
-      const tagManifest = rowData.manifest_digest_raw as string;
+      if (!rowData.securityDetails) {
+        return (
+          <span data-testid="quay-repo-security-scan-progress">
+            <Progress />
+          </span>
+        );
+      }
+      const tagManifest = rowData.manifest_digest_raw;
       const retStr = vulnerabilitySummary(rowData.securityDetails as Layer);
       return <Link to={`tag/${tagManifest}`}>{retStr}</Link>;
     },
