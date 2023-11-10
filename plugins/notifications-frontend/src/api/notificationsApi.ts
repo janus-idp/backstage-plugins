@@ -26,7 +26,6 @@ export type NotificationsFilter = {
   containsText?: string;
   createdAfter?: Date;
   messageScope?: 'all' | 'user' | 'system';
-  user?: string;
   isRead?: boolean; // if missing, include both read and unread
 };
 
@@ -57,7 +56,6 @@ export type CreateNotificationRequest = {
 
 export type NotificationMarkAsRead = {
   notificationId: string;
-  user: string;
   isRead: boolean;
 };
 export interface NotificationsApi {

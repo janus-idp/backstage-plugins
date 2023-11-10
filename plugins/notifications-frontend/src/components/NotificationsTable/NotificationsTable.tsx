@@ -54,18 +54,14 @@ export const NotificationsTable = ({
   >();
   const [reload, setReload] = React.useState(0);
 
-  // TODO: get the name of logged-in user
-  const user = 'jdoe';
-
   const onMarkAsReadSwitch = React.useCallback(
     (notification: Notification) => {
-      notificationsApi.markAsRead({
-        user,
-        notificationId: notification.id,
-        isRead: !notification.readByUser,
-      });
-
-      setReload(Date.now());
+      notificationsApi
+        .markAsRead({
+          notificationId: notification.id,
+          isRead: !notification.readByUser,
+        })
+        .then(() => setReload(Date.now()));
     },
     [notificationsApi],
   );
@@ -80,7 +76,6 @@ export const NotificationsTable = ({
       isRead: !unreadOnly,
       containsText,
       createdAfter: createdAfterDate,
-      user,
       messageScope,
     };
 
