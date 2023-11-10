@@ -44,6 +44,7 @@ export const NotificationsSidebarItem = ({
 }: NotificationsSidebarItemProps) => {
   const styles = useStyles();
   const notificationsApi = useApi(notificationsApiRef);
+
   const [error, setError] = React.useState<Error | undefined>(undefined);
   const [unreadCount, setUnreadCount] = React.useState(0);
   const [pageLoadingTime] = React.useState(new Date(Date.now()));
@@ -52,15 +53,11 @@ export const NotificationsSidebarItem = ({
   const [closedNotificationId, setClosedNotificationId] =
     React.useState<string>();
 
-  // TODO: get the logged-in username
-  const user = 'jdoe';
-
   const pollCallback = React.useCallback(async () => {
     try {
       setUnreadCount(
         await notificationsApi.getNotificationsCount({
           isRead: false,
-          user,
           messageScope: 'user',
         }),
       );
@@ -73,7 +70,6 @@ export const NotificationsSidebarItem = ({
           fieldName: 'created',
           direction: 'desc',
         },
-        user,
         messageScope: 'system',
       });
 

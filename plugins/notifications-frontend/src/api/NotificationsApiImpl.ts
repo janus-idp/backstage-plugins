@@ -17,12 +17,24 @@ export type NotificationsApiOptions = {
 
 export class NotificationsApiImpl implements NotificationsApi {
   private readonly backendUrl: string;
+  private readonly identityApi: IdentityApi;
 
   constructor(options: NotificationsApiOptions) {
     this.backendUrl = options.configApi.getString('backend.baseUrl');
+    this.identityApi = options.identityApi;
   }
 
-  private addFilter(url: URL, filter: NotificationsFilter) {
+  private async getLogedInUsername(): Promise<string> {
+    const { userEntityRef } = await this.identityApi.getBackstageIdentity();
+    if (!userEntityRef.startsWith('user:')) {
+      throw new Error('The logged-in user is not of an user entity type.');
+    }
+    return userEntityRef.slice('start:'.length - 1);
+  }
+
+  private addFilter(url: URL, user: string, filter: NotificationsFilter) {
+    url.searchParams.append('user', user);
+
     if (filter.containsText) {
       url.searchParams.append('containsText', filter.containsText);
     }
@@ -34,9 +46,6 @@ export class NotificationsApiImpl implements NotificationsApi {
     }
     if (filter.messageScope) {
       url.searchParams.append('messageScope', filter.messageScope);
-    }
-    if (filter.user) {
-      url.searchParams.append('user', filter.user);
     }
     if (filter.isRead !== undefined) {
       url.searchParams.append('read', filter.isRead ? 'true' : 'false');
@@ -61,6 +70,7 @@ export class NotificationsApiImpl implements NotificationsApi {
 
   async getNotifications(query: NotificationsQuery): Promise<Notification[]> {
     const url = new URL(`${this.backendUrl}/api/notifications/notifications`);
+    const user = await this.getLogedInUsername();
 
     url.searchParams.append('pageSize', `${query.pageSize}`);
     url.searchParams.append('pageNumber', `${query.pageNumber}`);
@@ -70,7 +80,7 @@ export class NotificationsApiImpl implements NotificationsApi {
       url.searchParams.append('orderByDirec', `${query.sorting.direction}`);
     }
 
-    this.addFilter(url, query);
+    this.addFilter(url, user, query);
 
     const response = await fetch(url.href);
     const data = await response.json();
@@ -89,8 +99,9 @@ export class NotificationsApiImpl implements NotificationsApi {
     const url = new URL(
       `${this.backendUrl}/api/notifications/notifications/count`,
     );
+    const user = await this.getLogedInUsername();
 
-    this.addFilter(url, query);
+    this.addFilter(url, user, query);
 
     const response = await fetch(url.href);
     const data = await response.json();
@@ -108,12 +119,12 @@ export class NotificationsApiImpl implements NotificationsApi {
 
   async markAsRead({
     notificationId,
-    user,
     isRead,
   }: NotificationMarkAsRead): Promise<void> {
     const url = new URL(
       `${this.backendUrl}/api/notifications/notifications/read`,
     );
+    const user = await this.getLogedInUsername();
 
     url.searchParams.append('read', isRead ? 'true' : 'false');
     url.searchParams.append('user', user);
