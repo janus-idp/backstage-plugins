@@ -1,3 +1,10 @@
+## @janus-idp/backstage-scaffolder-backend-module-servicenow [1.1.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-servicenow@1.1.1...@janus-idp/backstage-scaffolder-backend-module-servicenow@1.1.2) (2023-11-10)
+
+
+### Documentation
+
+* **servicenow:** add missing ServiceNow config in README ([#926](https://github.com/janus-idp/backstage-plugins/issues/926)) ([5b5568f](https://github.com/janus-idp/backstage-plugins/commit/5b5568f08727faecb2bc07c60b661005bc1593fd))
+
 ## @janus-idp/backstage-scaffolder-backend-module-servicenow [1.1.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-servicenow@1.1.0...@janus-idp/backstage-scaffolder-backend-module-servicenow@1.1.1) (2023-11-02)
 
 
