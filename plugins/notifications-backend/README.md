@@ -129,3 +129,10 @@ curl -X PUT 'http://localhost:7007/api/notifications/notifications/read?messageI
 ```
 
 Response: just HTTP status
+
+## Users
+
+A user the notifications are filtered for, all targetUsers or targetGroups must have corresponding entities created in the Catalog.
+Refer [Backstage documentation](https://backstage.io/docs/auth/) for details.
+
+For the purpose of development, there is `users.yaml` listing example data.
