@@ -1,5 +1,8 @@
 export { notificationsPlugin, NotificationsPage } from './plugin';
 
+// API Reference
+export { notificationsApiRef, type NotificationsApi } from './api';
+
 // selected constants for export
 export { NOTIFICATIONS_ROUTE } from './constants';
 

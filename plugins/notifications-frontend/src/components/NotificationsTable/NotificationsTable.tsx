@@ -8,6 +8,10 @@ import {
   TableColumn,
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
+import {
+  Notification,
+  NotificationsQuerySorting,
+} from '@backstage/plugin-notifications-common';
 
 import { MaterialTableProps } from '@material-table/core';
 import { Grid, IconButton, Tooltip } from '@material-ui/core';
@@ -16,12 +20,7 @@ import MarkAsReadIcon from '@material-ui/icons/Markunread' /* TODO: find a bette
 import MarkAsUnreadIcon from '@material-ui/icons/Markunread';
 import Stack from '@mui/material/Stack';
 
-import {
-  Notification,
-  notificationsApiRef,
-  NotificationsFilter,
-  NotificationsQuerySorting,
-} from '../../api';
+import { notificationsApiRef, NotificationsFilter } from '../../api';
 import {
   CreatedAfterOptions,
   NotificationsToolbar,
@@ -160,7 +159,7 @@ export const NotificationsTable = ({
     }
 
     const fieldNames: NotificationsQuerySorting['fieldName'][] = [
-      /* Keep the order in sync with the column definitions */
+      /* Keep the order in sync with the column definitions bellow */
       'title',
       'message',
       'created',

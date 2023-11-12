@@ -2,6 +2,7 @@ import React from 'react';
 
 import { SidebarItem } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
+import { Notification } from '@backstage/plugin-notifications-common';
 
 import {
   IconButton,
@@ -14,7 +15,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import NotificationsOffIcon from '@material-ui/icons/NotificationsOff';
 
-import { Notification, notificationsApiRef } from '../api';
+import { notificationsApiRef } from '../api';
 import { NOTIFICATIONS_ROUTE } from '../constants';
 import { usePollingEffect } from './usePollingEffect';
 

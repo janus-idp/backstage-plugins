@@ -1,24 +1,18 @@
 /* eslint-disable func-names */
 import { CatalogClient } from '@backstage/catalog-client';
+import {
+  CreateNotificationRequest,
+  Notification,
+  NotificationsFilterRequest,
+  NotificationsOrderByDirections,
+  NotificationsOrderByFields,
+  NotificationsSortingRequest,
+} from '@backstage/plugin-notifications-common';
 
 import { Knex } from 'knex';
 
 import { ActionsInsert, MessagesInsert } from './db';
-import {
-  CreateNotificationRequest,
-  Notification,
-  NotificationsFilter,
-  NotificationsQuerySorting,
-} from './types';
 
-const FieldsAllowedToOrderBy: string[] = [
-  'title',
-  'message',
-  'created',
-  'topic',
-  'origin',
-];
-const OrderByDirections: string[] = ['asc', 'desc'];
 const DefaultOrderBy = 'created';
 const DefaultOrderDirection = 'desc';
 
@@ -137,10 +131,10 @@ export async function createNotification(
 export async function getNotifications(
   dbClient: Knex<any, any>,
   catalogClient: CatalogClient,
-  filter: NotificationsFilter,
+  filter: NotificationsFilterRequest,
   pageSize: number,
   pageNumber: number,
-  sorting: NotificationsQuerySorting,
+  sorting: NotificationsSortingRequest,
 ): Promise<Notification[]> {
   if (
     pageSize < 0 ||
@@ -160,13 +154,15 @@ export async function getNotifications(
   const orderBy = sorting.fieldName || DefaultOrderBy;
   const direction = sorting.direction || DefaultOrderDirection;
   if (
-    !FieldsAllowedToOrderBy.includes(orderBy) ||
-    !OrderByDirections.includes(direction)
+    !NotificationsOrderByFields.includes(orderBy) ||
+    !NotificationsOrderByDirections.includes(direction)
   ) {
     throw new Error(
-      `The orderBy parameter can be one of ${FieldsAllowedToOrderBy.join(
+      `The orderBy parameter can be one of ${NotificationsOrderByFields.join(
         ',',
-      )}. The orderByDirec can be either ${OrderByDirections.join(' or ')}.`,
+      )}. The orderByDirec can be either ${NotificationsOrderByDirections.join(
+        ' or ',
+      )}.`,
     );
   }
 
@@ -221,7 +217,7 @@ export async function getNotifications(
 export async function getNotificationsCount(
   dbClient: Knex<any, any>,
   catalogClient: CatalogClient,
-  filter: NotificationsFilter,
+  filter: NotificationsFilterRequest,
 ): Promise<{ count: number }> {
   if (!filter.user) {
     throw new Error('user parameter is missing in request');
@@ -295,7 +291,7 @@ export async function setRead(
 
 function createQuery(
   dbClient: Knex<any, any>,
-  filter: NotificationsFilter,
+  filter: NotificationsFilterRequest,
   userGroups: string[],
 ) {
   // join messages table with users table to get message status. E.g read/unread

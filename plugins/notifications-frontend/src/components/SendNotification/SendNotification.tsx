@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import { CreateNotificationRequest } from '@backstage/plugin-notifications-common';
 
 import { makeStyles } from '@material-ui/core';
 import Alert from '@mui/material/Alert';
@@ -9,7 +10,7 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
-import { CreateNotificationRequest, notificationsApiRef } from '../../api';
+import { notificationsApiRef } from '../../api';
 
 const useStyles = makeStyles({
   container: {
