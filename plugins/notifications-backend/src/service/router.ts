@@ -1,6 +1,7 @@
 import { errorHandler } from '@backstage/backend-common';
 import { CatalogClient } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
+import { NotificationsSortingRequest } from '@backstage/plugin-notifications-common';
 
 import express from 'express';
 import Router from 'express-promise-router';
@@ -13,7 +14,6 @@ import {
   getNotificationsCount,
   setRead,
 } from './handlers';
-import { NotificationsQuerySorting } from './types';
 
 interface RouterOptions {
   logger: Logger;
@@ -64,7 +64,7 @@ export async function createRouter(
       throw new Error('either pageSize or pageNumber is not a number');
     }
 
-    const sorting: NotificationsQuerySorting = {
+    const sorting: NotificationsSortingRequest = {
       fieldName: orderBy?.toString(),
       direction: orderByDirec?.toString(),
     };

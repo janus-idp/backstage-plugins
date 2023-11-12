@@ -1,8 +1,10 @@
 import { ConfigApi, IdentityApi } from '@backstage/core-plugin-api';
-
 import {
   CreateNotificationRequest,
   Notification,
+} from '@backstage/plugin-notifications-common';
+
+import {
   NotificationMarkAsRead,
   NotificationsApi,
   NotificationsCountQuery,

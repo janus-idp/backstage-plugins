@@ -1,38 +1,15 @@
 import { createApiRef } from '@backstage/core-plugin-api';
+import {
+  CreateNotificationRequest,
+  Notification,
+  NotificationsQuerySorting,
+} from '@backstage/plugin-notifications-common';
 
-// Keep in sync with BE: plugins/notifications-backend/src/service/types.ts
-export type NotificationAction = {
-  id: string; // UUID
-  title: string;
-  url: string;
-};
-
-// Keep in sync with BE: plugins/notifications-backend/src/service/types.ts
-export type Notification = {
-  id: string; // UUID
-  created: Date;
-  readByUser: boolean;
-
-  origin: string; // mandatory
-  title: string; // mandatory
-  message?: string;
-  topic?: string;
-
-  actions: NotificationAction[];
-};
-
-// Keep in sync with BE: plugins/notifications-backend/src/service/types.ts
 export type NotificationsFilter = {
   containsText?: string;
   createdAfter?: Date;
   messageScope?: 'all' | 'user' | 'system';
-  isRead?: boolean; // if missing, include both read and unread
-};
-
-// Keep in sync with BE: plugins/notifications-backend/src/service/types.ts
-export type NotificationsQuerySorting = {
-  fieldName: 'title' | 'message' | 'created' | 'origin' | 'topic';
-  direction: 'asc' | 'desc';
+  isRead?: boolean; // if undefined, include both read and unread
 };
 
 export type NotificationsQuery = NotificationsFilter & {
@@ -42,17 +19,6 @@ export type NotificationsQuery = NotificationsFilter & {
   sorting?: NotificationsQuerySorting;
 };
 export type NotificationsCountQuery = NotificationsFilter;
-
-// Keep in sync with BE: plugins/notifications-backend/src/service/types.ts
-export type CreateNotificationRequest = {
-  origin: string;
-  title: string;
-  message?: string;
-  actions?: { title: string; url: string }[];
-  topic?: string;
-  targetUsers?: string[];
-  targetGroups?: string[];
-};
 
 export type NotificationMarkAsRead = {
   notificationId: string;
