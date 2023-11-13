@@ -1,3 +1,5 @@
+## @janus-idp/backstage-plugin-kiali-backend [1.5.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali-backend@1.5.2...@janus-idp/backstage-plugin-kiali-backend@1.5.3) (2023-11-13)
+
 ## @janus-idp/backstage-plugin-kiali-backend [1.5.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali-backend@1.5.1...@janus-idp/backstage-plugin-kiali-backend@1.5.2) (2023-11-13)
 
 ## @janus-idp/backstage-plugin-kiali-backend [1.5.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali-backend@1.5.0...@janus-idp/backstage-plugin-kiali-backend@1.5.1) (2023-10-27)
