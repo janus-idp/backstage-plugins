@@ -4,20 +4,26 @@ export type NotificationAction = {
   url: string;
 };
 
+/**
+ * Basic object representing a notification.
+ */
 export type Notification = {
   id: string; // UUID
   created: Date;
   readByUser: boolean;
   isSystem: boolean;
 
-  origin: string; // mandatory
-  title: string; // mandatory
+  origin: string;
+  title: string;
   message?: string;
   topic?: string;
 
   actions: NotificationAction[];
 };
 
+/**
+ * Input data for the POST request (create a notification).
+ */
 export type CreateNotificationRequest = {
   origin: string;
   title: string;
@@ -29,13 +35,38 @@ export type CreateNotificationRequest = {
 };
 
 export type NotificationsFilterRequest = {
+  /**
+   * Filter notifications whose either title or message contains the provided string.
+   */
   containsText?: string;
+
+  /**
+   * Only notifications created after this timestamp will be included.
+   */
   createdAfter?: Date;
+
+  /**
+   * When 'user' is requested, then messages whose targetUsers or targetGroups are matching the "user".
+   * When "system" is requested, only system-wide messages will be filtered (read: those without targetUsers or targetGroups provided).
+   */
   messageScope?: 'all' | 'user' | 'system';
+
+  /**
+   * The user the query is executed for.
+   * Its entity must be present in the catalog.
+   * Conforms IdentityApi.getBackstageIdentity()
+   */
   user?: string;
-  read?: string; // 'false' for unread. 'true' for read. undefined for both
+  /**
+   * 'false' for user's unread messages, 'true' for read ones.
+   * If undefined, then both marks.
+   */
+  read?: string;
 };
 
+/**
+ * How the result set is sorted.
+ */
 export type NotificationsSortingRequest = {
   fieldName?: string;
   direction?: string;
