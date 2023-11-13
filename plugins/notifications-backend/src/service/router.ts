@@ -51,14 +51,19 @@ export async function createRouter(
   router.get('/notifications', (request, response, next) => {
     const { pageSize, pageNumber, orderBy, orderByDirec } = request.query;
 
-    if (typeof pageSize !== 'string' || typeof pageNumber !== 'string') {
+    if (
+      (typeof pageSize !== 'string' && typeof pageSize !== 'undefined') ||
+      (typeof pageNumber !== 'string' && typeof pageNumber !== 'undefined')
+    ) {
       throw new Error(
         'either pageSize or pageNumber query string parameters are missing/invalid',
       );
     }
 
-    const pageSizeNum = Number.parseInt(pageSize, 10);
-    const pageNumberNum = Number.parseInt(pageNumber, 10);
+    const pageSizeNum = pageSize ? Number.parseInt(pageSize, 10) : undefined;
+    const pageNumberNum = pageNumber
+      ? Number.parseInt(pageNumber, 10)
+      : undefined;
 
     if (Number.isNaN(pageSizeNum) || Number.isNaN(pageNumberNum)) {
       throw new Error('either pageSize or pageNumber is not a number');
