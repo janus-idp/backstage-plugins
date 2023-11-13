@@ -46,13 +46,13 @@ export type NotificationsFilterRequest = {
   createdAfter?: Date;
 
   /**
-   * When 'user' is requested, then messages whose targetUsers or targetGroups are matching the "user".
-   * When "system" is requested, only system-wide messages will be filtered (read: those without targetUsers or targetGroups provided).
+   * See MessageScopes
+   * Default: DefaultMessageScope
    */
-  messageScope?: 'all' | 'user' | 'system';
+  messageScope?: string;
 
   /**
-   * The user the query is executed for.
+   * The user the query is executed for. Default: DefaultUser
    * Its entity must be present in the catalog.
    * Conforms IdentityApi.getBackstageIdentity()
    */
@@ -95,3 +95,18 @@ export type NotificationsQuerySorting = {
   fieldName: NotificationsOrderByFieldsType;
   direction: NotificationsOrderByDirectionsType;
 };
+
+/**
+ * MessageScopes
+ * When 'user' is requested, then messages whose targetUsers or targetGroups are matching the "user".
+ * When "system" is requested, only system-wide messages will be filtered (read: those without targetUsers or targetGroups provided).
+ * When 'all' is requests then fetch both system and user messages
+ */
+export const MessageScopes = ['all', 'user', 'system'];
+
+export const DefaultUser = 'default/guest';
+export const DefaultMessageScope = 'user';
+export const DefaultPageNumber = 1;
+export const DefaultPageSize = 20;
+export const DefaultOrderBy = 'created';
+export const DefaultOrderDirection = 'desc';

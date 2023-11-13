@@ -2,6 +2,12 @@
 import { CatalogClient } from '@backstage/catalog-client';
 import {
   CreateNotificationRequest,
+  DefaultMessageScope,
+  DefaultOrderBy,
+  DefaultOrderDirection,
+  DefaultPageNumber,
+  DefaultPageSize,
+  DefaultUser,
   Notification,
   NotificationsFilterRequest,
   NotificationsOrderByDirections,
@@ -12,9 +18,6 @@ import {
 import { Knex } from 'knex';
 
 import { ActionsInsert, MessagesInsert } from './db';
-
-const DefaultOrderBy = 'created';
-const DefaultOrderDirection = 'desc';
 
 // createNotification
 // returns string id of created notification
@@ -132,8 +135,8 @@ export async function getNotifications(
   dbClient: Knex<any, any>,
   catalogClient: CatalogClient,
   filter: NotificationsFilterRequest,
-  pageSize: number,
-  pageNumber: number,
+  pageSize: number = DefaultPageSize,
+  pageNumber: number = DefaultPageNumber,
   sorting: NotificationsSortingRequest,
 ): Promise<Notification[]> {
   if (
@@ -147,8 +150,12 @@ export async function getNotifications(
     );
   }
 
+  if (!filter.messageScope) {
+    filter.messageScope = DefaultMessageScope;
+  }
+
   if (!filter.user) {
-    throw new Error('user parameter is missing in request');
+    filter.user = DefaultUser;
   }
 
   const orderBy = sorting.fieldName || DefaultOrderBy;
@@ -219,8 +226,12 @@ export async function getNotificationsCount(
   catalogClient: CatalogClient,
   filter: NotificationsFilterRequest,
 ): Promise<{ count: number }> {
+  if (!filter.messageScope) {
+    filter.messageScope = DefaultMessageScope;
+  }
+
   if (!filter.user) {
-    throw new Error('user parameter is missing in request');
+    filter.user = DefaultUser;
   }
 
   const userGroups = await getUserGroups(catalogClient, filter.user);
