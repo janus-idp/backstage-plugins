@@ -1,3 +1,5 @@
+## @janus-idp/backstage-plugin-matomo-backend [1.1.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-matomo-backend@1.1.0...@janus-idp/backstage-plugin-matomo-backend@1.1.1) (2023-11-13)
+
 ## @janus-idp/backstage-plugin-matomo-backend [1.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-matomo-backend@1.0.1...@janus-idp/backstage-plugin-matomo-backend@1.1.0) (2023-10-23)
 
 
