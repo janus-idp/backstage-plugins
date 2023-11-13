@@ -1,6 +1,6 @@
 import { CatalogClient } from '@backstage/catalog-client';
+import { createRouter } from '@backstage/plugin-notifications-backend';
 
-import { createRouter } from '@internal/plugin-notifications-backend';
 import { Router } from 'express';
 
 import { PluginEnvironment } from '../types';
