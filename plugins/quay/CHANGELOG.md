@@ -1,3 +1,11 @@
+## @janus-idp/backstage-plugin-quay [1.4.8](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.4.7...@janus-idp/backstage-plugin-quay@1.4.8) (2023-11-13)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.4.2
+
 ## @janus-idp/backstage-plugin-quay [1.4.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.4.6...@janus-idp/backstage-plugin-quay@1.4.7) (2023-11-13)
 
 
