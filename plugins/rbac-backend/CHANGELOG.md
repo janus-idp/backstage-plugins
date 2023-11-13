@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac-backend [1.6.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@1.6.2...@janus-idp/backstage-plugin-rbac-backend@1.6.3) (2023-11-13)
+
+
+### Bug Fixes
+
+* **rbac:** use the same Knex version with Backstage ([#929](https://github.com/janus-idp/backstage-plugins/issues/929)) ([6923ce0](https://github.com/janus-idp/backstage-plugins/commit/6923ce07d787ea6edd911ab348704ba6b9f95ada))
+
 ## @janus-idp/backstage-plugin-rbac-backend [1.6.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@1.6.1...@janus-idp/backstage-plugin-rbac-backend@1.6.2) (2023-11-10)
 
 
