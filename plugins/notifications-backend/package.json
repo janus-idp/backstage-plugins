@@ -1,5 +1,5 @@
 {
-  "name": "@internal/plugin-notifications-backend",
+  "name": "@backstage/plugin-notifications-backend",
   "version": "0.1.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
