@@ -47,7 +47,7 @@
   "files": [
     "dist",
     "config.d.ts",
-    "app-config.yaml",
+    "app-config.janus-idp.yaml",
     "alpha"
   ],
   "configSchema": "config.d.ts",
