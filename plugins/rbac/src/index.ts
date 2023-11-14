@@ -1,1 +1,1 @@
-export { rbacPlugin, RbacPage } from './plugin';
+export { rbacPlugin, RbacPage, Administration } from './plugin';

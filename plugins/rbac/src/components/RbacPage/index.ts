@@ -1,1 +1,0 @@
-export { RbacPage } from './RbacPage';
