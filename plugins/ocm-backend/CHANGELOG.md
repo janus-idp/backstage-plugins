@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-ocm-backend [3.4.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@3.4.2...@janus-idp/backstage-plugin-ocm-backend@3.4.3) (2023-11-14)
+
+
+### Bug Fixes
+
+* share the dynamic entrypoint in ocm backend ([#932](https://github.com/janus-idp/backstage-plugins/issues/932)) ([dfddb09](https://github.com/janus-idp/backstage-plugins/commit/dfddb0912eb7c12dec2048a5bc2560981f40ecbb))
+
 ## @janus-idp/backstage-plugin-ocm-backend [3.4.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@3.4.1...@janus-idp/backstage-plugin-ocm-backend@3.4.2) (2023-11-13)
 
 
