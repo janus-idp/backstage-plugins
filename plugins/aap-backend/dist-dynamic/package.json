@@ -30,7 +30,7 @@
   "files": [
     "dist",
     "config.d.ts",
-    "app-config.yaml"
+    "app-config.janus-idp.yaml"
   ],
   "configSchema": "config.d.ts",
   "repository": "github:janus-idp/backstage-plugins",

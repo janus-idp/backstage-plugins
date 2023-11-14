@@ -59,7 +59,7 @@
     "dist-dynamic/*.*",
     "dist-dynamic/dist/**",
     "dist-dynamic/alpha/*",
-    "app-config.yaml"
+    "app-config.janus-idp.yaml"
   ],
   "repository": "github:janus-idp/backstage-plugins",
   "keywords": [
