@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac [1.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.1.5...@janus-idp/backstage-plugin-rbac@1.2.0) (2023-11-15)
+
+
+### Features
+
+* **rbac:** display administration to authorized users ([#895](https://github.com/janus-idp/backstage-plugins/issues/895)) ([70ae509](https://github.com/janus-idp/backstage-plugins/commit/70ae509e91e4967f4436a66c69be6040e235be0e))
+
 ## @janus-idp/backstage-plugin-rbac [1.1.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.1.4...@janus-idp/backstage-plugin-rbac@1.1.5) (2023-11-13)
 
 
