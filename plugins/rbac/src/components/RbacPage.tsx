@@ -1,11 +1,13 @@
 import React from 'react';
 
-import { Content, Header, InfoCard, Page } from '@backstage/core-components';
+import { Header, Page, TabbedLayout } from '@backstage/core-components';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 
-import { Grid, Typography } from '@material-ui/core';
-
 import { policyEntityReadPermission } from '@janus-idp/backstage-plugin-rbac-common';
+
+import { DeleteDialogContextProvider } from './DeleteDialogContext';
+import { RolesList } from './RolesList';
+import { ToastContextProvider } from './ToastContext';
 
 export const RbacPage = () => (
   <RequirePermission
@@ -14,17 +16,15 @@ export const RbacPage = () => (
   >
     <Page themeId="tool">
       <Header title="Administration" />
-      <Content>
-        <Grid container spacing={3} direction="column">
-          <Grid item>
-            <InfoCard title="Information card">
-              <Typography variant="body1">
-                All content should be wrapped in a card like this.
-              </Typography>
-            </InfoCard>
-          </Grid>
-        </Grid>
-      </Content>
+      <ToastContextProvider>
+        <DeleteDialogContextProvider>
+          <TabbedLayout>
+            <TabbedLayout.Route path="/rbac" title="RBAC">
+              <RolesList />
+            </TabbedLayout.Route>
+          </TabbedLayout>
+        </DeleteDialogContextProvider>
+      </ToastContextProvider>
     </Page>
   </RequirePermission>
 );
