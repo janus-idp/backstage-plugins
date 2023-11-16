@@ -1,0 +1,115 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AapResourceEntityProvider should connect and run should resolves 1`] = `
+[
+  [
+    {
+      "entities": [
+        {
+          "entity": {
+            "apiVersion": "backstage.io/v1alpha1",
+            "kind": "Resource",
+            "metadata": {
+              "annotations": {
+                "backstage.io/managed-by-location": "AapResourceEntityProvider:dev",
+                "backstage.io/managed-by-origin-location": "AapResourceEntityProvider:dev",
+              },
+              "description": "test description",
+              "links": [
+                {
+                  "title": "AAP Dashboard",
+                  "url": "http://localhost:8080",
+                },
+                {
+                  "title": "Template Details",
+                  "url": "http://localhost:8080/#/templates/job_template/undefined/details",
+                },
+              ],
+              "name": "demoJobTemplate-undefined-dev",
+              "title": "demoJobTemplate",
+            },
+            "spec": {
+              "owner": "unknown",
+              "type": "job_template",
+            },
+          },
+          "locationKey": "AapResourceEntityProvider:dev",
+        },
+        {
+          "entity": {
+            "apiVersion": "backstage.io/v1alpha1",
+            "kind": "Resource",
+            "metadata": {
+              "annotations": {
+                "backstage.io/managed-by-location": "AapResourceEntityProvider:dev",
+                "backstage.io/managed-by-origin-location": "AapResourceEntityProvider:dev",
+              },
+              "description": "test workflow description",
+              "links": [
+                {
+                  "title": "AAP Dashboard",
+                  "url": "http://localhost:8080",
+                },
+                {
+                  "title": "Template Details",
+                  "url": "http://localhost:8080/#/templates/workflow_job_template/undefined/details",
+                },
+              ],
+              "name": "demoWorkflowJobTemplate-undefined-dev",
+              "title": "demoWorkflowJobTemplate",
+            },
+            "spec": {
+              "owner": "unknown",
+              "type": "workflow_job_template",
+            },
+          },
+          "locationKey": "AapResourceEntityProvider:dev",
+        },
+      ],
+      "type": "full",
+    },
+  ],
+]
+`;
+
+exports[`AapResourceEntityProvider should connect and run should resolves even if one api call fails 1`] = `
+[
+  [
+    {
+      "entities": [
+        {
+          "entity": {
+            "apiVersion": "backstage.io/v1alpha1",
+            "kind": "Resource",
+            "metadata": {
+              "annotations": {
+                "backstage.io/managed-by-location": "AapResourceEntityProvider:dev",
+                "backstage.io/managed-by-origin-location": "AapResourceEntityProvider:dev",
+              },
+              "description": "test workflow description",
+              "links": [
+                {
+                  "title": "AAP Dashboard",
+                  "url": "http://localhost:8080",
+                },
+                {
+                  "title": "Template Details",
+                  "url": "http://localhost:8080/#/templates/workflow_job_template/undefined/details",
+                },
+              ],
+              "name": "demoWorkflowJobTemplate-undefined-dev",
+              "title": "demoWorkflowJobTemplate",
+            },
+            "spec": {
+              "owner": "unknown",
+              "type": "workflow_job_template",
+            },
+          },
+          "locationKey": "AapResourceEntityProvider:dev",
+        },
+      ],
+      "type": "full",
+    },
+  ],
+]
+`;

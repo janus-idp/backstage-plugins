@@ -119,8 +119,19 @@ export class ManagedClusterProvider implements EntityProvider {
         fn: async () => {
           try {
             await this.run();
-          } catch (error) {
-            this.logger.error(error);
+          } catch (error: any) {
+            // Ensure that we don't log any sensitive internal data:
+            this.logger.error(
+              'Error while syncing cluster resources from Open Cluster Management',
+              {
+                // Default Error properties:
+                name: error.name,
+                message: error.message,
+                stack: error.stack,
+                // Additional status code if available:
+                status: error.response?.status,
+              },
+            );
           }
         },
       });
