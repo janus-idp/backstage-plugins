@@ -309,15 +309,15 @@ export async function backend(
 
       const overrides = (pkgToCustomize as any).overrides || {};
       (pkgToCustomize as any).overrides = {
-        ...overrides,
         '@aws-sdk/util-utf8-browser': {
           '@smithy/util-utf8': '^2.0.0',
         },
+        ...overrides,
       };
       const resolutions = (pkgToCustomize as any).resolutions || {};
       (pkgToCustomize as any).resolutions = {
+        '@aws-sdk/util-utf8-browser': 'npm:@smithy/util-utf8@~2',
         ...resolutions,
-        '@aws-sdk/util-utf8-browser': 'npm:@smithy/util-utf8@^2.0.0',
       };
     },
   });
