@@ -1,3 +1,11 @@
+## @janus-idp/backstage-plugin-aap-backend [1.4.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-aap-backend@1.4.2...@janus-idp/backstage-plugin-aap-backend@1.4.3) (2023-11-16)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.4.3
+
 ## @janus-idp/backstage-plugin-aap-backend [1.4.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-aap-backend@1.4.1...@janus-idp/backstage-plugin-aap-backend@1.4.2) (2023-11-13)
 
 
