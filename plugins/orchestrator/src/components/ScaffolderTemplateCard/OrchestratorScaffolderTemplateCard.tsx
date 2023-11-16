@@ -21,7 +21,7 @@ export const OrchestratorScaffolderTemplateCard = (
 
   const onSelectedExtended = useCallback(
     (template: TemplateEntityV1beta3) => {
-      const isWorkflow = template.metadata.tags?.includes(workflow_type);
+      const isWorkflow = template.spec.type === workflow_type;
 
       if (!isWorkflow) {
         onSelected?.(template);

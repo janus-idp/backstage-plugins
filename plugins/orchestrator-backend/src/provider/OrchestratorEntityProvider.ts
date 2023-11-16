@@ -18,10 +18,12 @@ import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { Logger } from 'winston';
 
 import {
+  ASSESSMENT_WORKFLOW_TYPE,
   default_catalog_environment,
   default_catalog_owner,
   orchestrator_service_ready_topic,
   workflow_type,
+  WorkflowCategory,
   WorkflowItem,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
@@ -151,6 +153,11 @@ export class OrchestratorEntityProvider
   ): TemplateEntityV1beta3[] {
     return items.map(i => {
       const sanitizedId = i.definition.id.replace(/ /g, '_');
+      const category: WorkflowCategory = i.definition.annotations?.find(
+        annotation => annotation === ASSESSMENT_WORKFLOW_TYPE,
+      )
+        ? WorkflowCategory.ASSESSMENT
+        : WorkflowCategory.INFRASTRUCTURE;
       return {
         apiVersion: 'scaffolder.backstage.io/v1beta3',
         kind: 'Template',
@@ -158,7 +165,7 @@ export class OrchestratorEntityProvider
           name: sanitizedId,
           title: i.definition.name,
           description: i.definition.description,
-          tags: [workflow_type],
+          tags: [category],
           annotations: {
             [ANNOTATION_LOCATION]: `url:${this.sonataFlowServiceUrl}`,
             [ANNOTATION_ORIGIN_LOCATION]: `url:${this.sonataFlowServiceUrl}`,

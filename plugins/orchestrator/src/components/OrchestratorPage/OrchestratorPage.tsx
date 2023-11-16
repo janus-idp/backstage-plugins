@@ -20,7 +20,7 @@ import { orchestratorApiRef } from '../../api';
 import { newWorkflowRef, workflowInstancesRouteRef } from '../../routes';
 import { BaseOrchestratorPage } from '../BaseOrchestratorPage/BaseOrchestratorPage';
 import { OrchestratorSupportButton } from '../OrchestratorSupportButton/OrchestratorSupportButton';
-import { WorkflowsTable } from '../WorkflowDefinitionsListComponent/WorkflowDefinitionsListComponent';
+import { WorkflowsTable } from '../WorkflowDefinitionsListComponent';
 
 export const OrchestratorPage = () => {
   const orchestratorApi = useApi(orchestratorApiRef);

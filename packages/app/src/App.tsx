@@ -63,6 +63,19 @@ export const AppBase = () => {
               path="/create"
               element={
                 <ScaffolderPage
+                  groups={[
+                    {
+                      title: <h2>Assessment</h2>,
+                      filter: entity =>
+                        entity?.metadata.tags?.includes('assessment') ?? false,
+                    },
+                    {
+                      title: <h2>Infrastructure</h2>,
+                      filter: entity =>
+                        entity?.metadata.tags?.includes('infrastructure') ??
+                        false,
+                    },
+                  ]}
                   components={{
                     TemplateCardComponent: OrchestratorScaffolderTemplateCard,
                   }}

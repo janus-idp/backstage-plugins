@@ -8,6 +8,7 @@ import { ProcessInstance } from '@janus-idp/backstage-plugin-orchestrator-common
 
 import { BaseOrchestratorPage } from '../BaseOrchestratorPage/BaseOrchestratorPage';
 import { OrchestratorSupportButton } from '../OrchestratorSupportButton/OrchestratorSupportButton';
+import { AssessmentResultViewer } from './AssessmentResultViewer';
 import { ProcessDetailsViewer } from './ProcessDetailsViewer';
 import { ProcessGraphViewer } from './ProcessGraphViewer';
 import { ProcessInstancesTable } from './ProcessInstancesTable';
@@ -40,6 +41,9 @@ export const WorkflowInstancesViewerPage = () => {
           <Grid container direction="row">
             <Grid item xs={12}>
               <ProcessVariablesViewer variables={selectedInstance?.variables} />
+            </Grid>
+            <Grid item xs={12}>
+              <AssessmentResultViewer result={selectedInstance?.variables} />
             </Grid>
             <Grid item xs={12}>
               <ProcessTimeline selectedInstance={selectedInstance} />
