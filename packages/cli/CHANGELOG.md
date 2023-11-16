@@ -1,3 +1,10 @@
+## @janus-idp/cli [1.4.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.4.2...@janus-idp/cli@1.4.3) (2023-11-16)
+
+
+### Bug Fixes
+
+* **cli:** fix possible dependency conflict ([#950](https://github.com/janus-idp/backstage-plugins/issues/950)) ([6c3052e](https://github.com/janus-idp/backstage-plugins/commit/6c3052e9ef2ad77797f6a75cb7f30059442c3764))
+
 ## @janus-idp/cli [1.4.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.4.1...@janus-idp/cli@1.4.2) (2023-11-13)
 
 
