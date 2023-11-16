@@ -1,10 +1,12 @@
 import { errorHandler } from '@backstage/backend-common';
+import { Config } from '@backstage/config';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { ScmIntegrations } from '@backstage/integration';
 import { JsonObject, JsonValue } from '@backstage/types';
 
 import express from 'express';
 import Router from 'express-promise-router';
+import { Logger } from 'winston';
 
 import {
   fromWorkflowSource,
@@ -16,7 +18,11 @@ import {
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { RouterArgs } from '../routerWrapper';
+import { ApiResponseBuilder } from '../types/apiResponse';
+import { BackendExecCtx } from '../types/backendExecCtx';
+import { DEFAULT_DATA_INDEX_URL } from '../types/constants';
 import { CloudEventService } from './CloudEventService';
+import { DataIndexService } from './DataIndexService';
 import { DataInputSchemaService } from './DataInputSchemaService';
 import { JiraEvent, JiraService } from './JiraService';
 import { OpenApiService } from './OpenApiService';
@@ -77,6 +83,8 @@ export async function createBackendRouter(
     urlReader,
   );
 
+  initDataIndexService(logger, config);
+
   setupInternalRoutes(
     router,
     args.sonataFlowService,
@@ -98,6 +106,16 @@ export async function createBackendRouter(
   return router;
 }
 
+function initDataIndexService(logger: Logger, config: Config) {
+  const dataIndexUrl =
+    config.getOptionalString('orchestrator.dataIndexService.url') ||
+    DEFAULT_DATA_INDEX_URL;
+  const client = DataIndexService.getNewGraphQLClient(dataIndexUrl);
+  const backendExecCtx = new BackendExecCtx(logger, client, dataIndexUrl);
+
+  DataIndexService.initialize(backendExecCtx);
+}
+
 // ======================================================
 // Internal Backstage API calls to delegate to SonataFlow
 // ======================================================
@@ -109,6 +127,11 @@ function setupInternalRoutes(
   dataInputSchemaService: DataInputSchemaService,
   jiraService: JiraService,
 ) {
+  router.get('/workflows/definitions', async (_, response) => {
+    const swfs = await DataIndexService.getWorkflowDefinitions();
+    response.json(ApiResponseBuilder.SUCCESS_RESPONSE(swfs));
+  });
+
   router.get('/workflows', async (_, res) => {
     const definitions = await sonataFlowService.fetchWorkflows();
 

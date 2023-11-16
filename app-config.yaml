@@ -145,3 +145,5 @@ orchestrator:
       gitRepositoryUrl: https://github.com/tiagodolphine/backstage-orchestrator-workflows
       localPath: /tmp/orchestrator/repository
       autoPush: false
+  dataIndexService:
+    url: ${DATA_INDEX_URL}

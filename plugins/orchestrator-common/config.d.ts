@@ -59,6 +59,13 @@ export interface Config {
         path?: string;
       };
     };
+    dataIndexService: {
+      /**
+       * URL of the Data Index service.
+       * Example: http://localhost:8080/graphql
+       */
+      url?: string;
+    };
     /**
      * Configuration for the integration with the Catalog plugin.
      */
