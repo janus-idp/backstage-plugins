@@ -41,12 +41,6 @@ describe('BackstageRoleManager', () => {
       ).toThrow('Method "syncedHasLink" not implemented.');
     });
 
-    it('should throw an error for getRoles', async () => {
-      await expect(roleManager.getRoles('name')).rejects.toThrow(
-        'Method "getRoles" not implemented.',
-      );
-    });
-
     it('should throw an error for getUsers', async () => {
       await expect(roleManager.getUsers('name')).rejects.toThrow(
         'Method "getUsers" not implemented.',
@@ -1119,6 +1113,16 @@ describe('BackstageRoleManager', () => {
         'role:default/team-b',
       );
       expect(result).toBeTruthy();
+    });
+  });
+
+  describe('getRoles test', () => {
+    it('should returns 2 roles for user', async () => {
+      roleManager.addLink('user:default/test', 'role:default/rbac_admin');
+      const roles = await roleManager.getRoles('user:default/test');
+      expect(roles.length).toBe(2);
+      expect(roles[0]).toEqual('user:default/test');
+      expect(roles[1]).toEqual('role:default/rbac_admin');
     });
   });
   function createGroupEntity(

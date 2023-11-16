@@ -240,7 +240,7 @@ export class BackstageRoleManager implements RoleManager {
    * domain is a prefix to the roles.
    */
   async getRoles(_name: string, ..._domain: string[]): Promise<string[]> {
-    throw new Error('Method "getRoles" not implemented.');
+    return Promise.resolve([...this.allRoles.keys()]);
   }
 
   /**
