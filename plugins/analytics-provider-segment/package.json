@@ -10,11 +10,12 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "frontend-plugin-module"
+    "role": "frontend-plugin"
   },
   "scripts": {
     "start": "backstage-cli package start",
     "build": "backstage-cli package build",
+    "export-dynamic": "janus-cli package export-dynamic-plugin",
     "tsc": "tsc",
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test --passWithNoTests --coverage",
@@ -44,6 +45,7 @@
     "@backstage/core-app-api": "1.11.0",
     "@backstage/dev-utils": "1.0.22",
     "@backstage/test-utils": "1.4.4",
+    "@janus-idp/cli": "1.4.3",
     "@testing-library/dom": "9.3.3",
     "@testing-library/jest-dom": "5.17.0",
     "@testing-library/react": "12.1.5",
@@ -55,6 +57,7 @@
   },
   "files": [
     "dist",
+    "dist-scalprum",
     "config.d.ts"
   ],
   "configSchema": "config.d.ts"
