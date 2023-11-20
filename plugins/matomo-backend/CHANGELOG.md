@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-matomo-backend [1.1.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-matomo-backend@1.1.1...@janus-idp/backstage-plugin-matomo-backend@1.1.2) (2023-11-20)
+
+
+### Bug Fixes
+
+* **aap+3scale+ocm:** don't log sensitive data from errors ([#945](https://github.com/janus-idp/backstage-plugins/issues/945)) ([7a5e7b8](https://github.com/janus-idp/backstage-plugins/commit/7a5e7b8a57c9841003d9b16e1a65fb62e101fbf1))
+
 ## @janus-idp/backstage-plugin-matomo-backend [1.1.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-matomo-backend@1.1.0...@janus-idp/backstage-plugin-matomo-backend@1.1.1) (2023-11-13)
 
 ## @janus-idp/backstage-plugin-matomo-backend [1.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-matomo-backend@1.0.1...@janus-idp/backstage-plugin-matomo-backend@1.1.0) (2023-10-23)
