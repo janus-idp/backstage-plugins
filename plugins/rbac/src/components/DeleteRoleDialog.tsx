@@ -133,9 +133,8 @@ const DeleteRoleDialog = ({
         >{`${propOptions.permissions} permission policies`}</span>{' '}
         specified in this role.
         <br />
-        <br />
-        <br />
         <TextField
+          style={{ marginTop: '24px' }}
           required
           data-testid="delete-name"
           variant="outlined"
@@ -156,6 +155,7 @@ const DeleteRoleDialog = ({
           paddingLeft: '25px',
           paddingBottom: '30px',
           justifyContent: 'left',
+          paddingTop: '16px',
         }}
       >
         <Button

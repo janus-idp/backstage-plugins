@@ -7,10 +7,19 @@ import {
 } from '@backstage/plugin-permission-react';
 import { TestApiProvider } from '@backstage/test-utils';
 
-import { Role, RoleBasedPolicy } from '@janus-idp/backstage-plugin-rbac-common';
+import {
+  PermissionPolicy,
+  Policy,
+  Role,
+  RoleBasedPolicy,
+} from '@janus-idp/backstage-plugin-rbac-common';
 
+import { mockMembers } from '../src/__fixtures__/mockMembers';
+import { mockPermissionPolicies } from '../src/__fixtures__/mockPermissionPolicies';
+import { mockPolicies } from '../src/__fixtures__/mockPolicies';
 import { RBACAPI, rbacApiRef } from '../src/api/RBACBackendClient';
 import { RbacPage, rbacPlugin } from '../src/plugin';
+import { MemberEntity } from '../src/types';
 
 class MockPermissionApi implements PermissionApi {
   readonly result;
@@ -34,80 +43,7 @@ class MockRBACApi implements RBACAPI {
     return this.resources;
   }
   async getPolicies(): Promise<RoleBasedPolicy[]> {
-    return [
-      {
-        entityReference: 'role:default/guests',
-        permission: 'catalog-entity',
-        policy: 'read',
-        effect: 'deny',
-      },
-      {
-        entityReference: 'role:default/guests',
-        permission: 'catalog.entity.create',
-        policy: 'use',
-        effect: 'deny',
-      },
-      {
-        entityReference: 'role:default/guests',
-        permission: 'catalog-entity',
-        policy: 'read',
-        effect: 'allow',
-      },
-      {
-        entityReference: 'role:default/guests',
-        permission: 'catalog.entity.create',
-        policy: 'use',
-        effect: 'allow',
-      },
-      {
-        entityReference: 'role:default/guests',
-        permission: 'policy-entity',
-        policy: 'create',
-        effect: 'allow',
-      },
-      {
-        entityReference: 'role:default/guests',
-        permission: 'policy-entity',
-        policy: 'read',
-        effect: 'allow',
-      },
-      {
-        entityReference: 'role:default/guests',
-        permission: 'policy.entity.read',
-        policy: 'use',
-        effect: 'allow',
-      },
-      {
-        entityReference: 'role:default/guests',
-        permission: 'policy-entity',
-        policy: 'delete',
-        effect: 'allow',
-      },
-      {
-        entityReference: 'role:default/rbac_admin',
-        permission: 'policy-entity',
-        policy: 'read',
-        effect: 'allow',
-      },
-      {
-        entityReference: 'role:default/rbac_admin',
-        permission: 'policy-entity',
-        policy: 'create',
-        effect: 'allow',
-      },
-      {
-        entityReference: 'role:default/rbac_admin',
-        permission: 'policy-entity',
-        policy: 'delete',
-        effect: 'allow',
-      },
-      {
-        entityReference: 'role:default/rbac_admin',
-        permission: 'policy-entity',
-        policy: 'update',
-        effect: 'allow',
-      },
-    ];
+    return mockPolicies;
   }
 
   async getUserAuthorization(): Promise<{ status: string }> {
@@ -116,8 +52,29 @@ class MockRBACApi implements RBACAPI {
     };
   }
 
+  async getRole(role: string): Promise<Role[]> {
+    const roleresource = this.resources.find(res => res.name === role);
+    return roleresource ? [roleresource] : [];
+  }
+
   async deleteRole(_roleName: string): Promise<any> {
     return { status: 204 };
+  }
+
+  async getMembers(): Promise<MemberEntity[]> {
+    return mockMembers;
+  }
+
+  async listPermissions(): Promise<PermissionPolicy[]> {
+    return mockPermissionPolicies;
+  }
+
+  async deletePolicy(
+    _entityRef: string,
+    _permission: string,
+    _policies: Policy[],
+  ): Promise<number> {
+    return 204;
   }
 }
 
