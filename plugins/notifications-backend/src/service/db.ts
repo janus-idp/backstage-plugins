@@ -22,18 +22,18 @@ export async function initDB(dbConfig: Config): Promise<Knex<any, any>> {
     await dbClient.schema.createTable('messages', table => {
       table.uuid('id', { primaryKey: true }).defaultTo(dbClient.fn.uuid());
       table.string('origin').notNullable();
-      table.timestamp('created').defaultTo(dbClient.fn.now());
+      table.timestamp('created').defaultTo(dbClient.fn.now()).index();
       table.string('title').notNullable();
       table.text('message');
       table.string('topic');
-      table.boolean('is_system').notNullable(); // is it a system message or a message for specific users and groups
+      table.boolean('is_system').notNullable().index(); // is it a system message or a message for specific users and groups
     });
   }
 
   if (!(await dbClient.schema.hasTable('users'))) {
     await dbClient.schema.createTable('users', table => {
-      table.uuid('message_id').notNullable();
-      table.string('user').notNullable();
+      table.uuid('message_id').notNullable().index();
+      table.string('user').notNullable().index();
       table.boolean('read').defaultTo('false');
       table
         .foreign('message_id')
@@ -46,8 +46,8 @@ export async function initDB(dbConfig: Config): Promise<Knex<any, any>> {
 
   if (!(await dbClient.schema.hasTable('groups'))) {
     await dbClient.schema.createTable('groups', table => {
-      table.uuid('message_id').notNullable();
-      table.string('group').notNullable();
+      table.uuid('message_id').notNullable().index();
+      table.string('group').notNullable().index();
       table
         .foreign('message_id')
         .references('id')
@@ -60,7 +60,7 @@ export async function initDB(dbConfig: Config): Promise<Knex<any, any>> {
   if (!(await dbClient.schema.hasTable('actions'))) {
     await dbClient.schema.createTable('actions', table => {
       table.uuid('id', { primaryKey: true }).defaultTo(dbClient.fn.uuid());
-      table.uuid('message_id').notNullable();
+      table.uuid('message_id').notNullable().index();
       table.foreign('message_id').references('id').inTable('messages');
       table.string('url').notNullable();
       table.string('title').notNullable();
