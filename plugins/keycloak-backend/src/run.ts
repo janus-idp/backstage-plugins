@@ -22,7 +22,7 @@ const logger = getRootLogger();
 const port = process.env.PLUGIN_PORT ? Number(process.env.PLUGIN_PORT) : 7007;
 
 startStandaloneServer({ port, logger }).catch(err => {
-  logger.error(err);
+  logger.error('Standalone server failed:', err);
   process.exit(1);
 });
 
