@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac-backend [1.6.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@1.6.3...@janus-idp/backstage-plugin-rbac-backend@1.6.4) (2023-11-20)
+
+
+### Bug Fixes
+
+* **aap+3scale+ocm:** don't log sensitive data from errors ([#945](https://github.com/janus-idp/backstage-plugins/issues/945)) ([7a5e7b8](https://github.com/janus-idp/backstage-plugins/commit/7a5e7b8a57c9841003d9b16e1a65fb62e101fbf1))
+
 ## @janus-idp/backstage-plugin-rbac-backend [1.6.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@1.6.2...@janus-idp/backstage-plugin-rbac-backend@1.6.3) (2023-11-13)
 
 
