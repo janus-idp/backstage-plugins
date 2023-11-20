@@ -1,3 +1,16 @@
+## @janus-idp/backstage-plugin-keycloak-backend [1.7.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-keycloak-backend@1.7.3...@janus-idp/backstage-plugin-keycloak-backend@1.7.4) (2023-11-20)
+
+
+### Bug Fixes
+
+* **keycloak:** don't log sensitive authentication data ([#938](https://github.com/janus-idp/backstage-plugins/issues/938)) ([63d0678](https://github.com/janus-idp/backstage-plugins/commit/63d0678a6ea4decfd7677d6e16d1193722ba0f76))
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.4.4
+
 ## @janus-idp/backstage-plugin-keycloak-backend [1.7.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-keycloak-backend@1.7.2...@janus-idp/backstage-plugin-keycloak-backend@1.7.3) (2023-11-16)
 
 
