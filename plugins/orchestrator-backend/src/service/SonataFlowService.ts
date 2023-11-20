@@ -13,6 +13,7 @@ import {
   WorkflowDefinition,
   WorkflowExecutionResponse,
   WorkflowItem,
+  WorkflowOverview,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { spawn } from 'child_process';
@@ -186,6 +187,83 @@ export class SonataFlowService {
     return undefined;
   }
 
+  public async fetchWorkflowOverviews(): Promise<
+    WorkflowOverview[] | undefined
+  > {
+    try {
+      const response = await executeWithRetry(() =>
+        fetch(`${this.url}/management/processes`),
+      );
+
+      if (response.ok) {
+        const workflowIds = (await response.json()) as string[];
+        if (!workflowIds?.length) {
+          return [];
+        }
+        const items = await Promise.all(
+          workflowIds.map(async (workflowId: string) => {
+            const definition = await this.fetchWorkflowDefinition(workflowId);
+            if (!definition) {
+              return undefined;
+            }
+
+            const graphQlQuery = `{ ProcessInstances(where: {processId: {equal: "${definition.id}" } } ) { processName, state, start, lastUpdate, end } }`;
+            let processInstances: ProcessInstance[] = [];
+            try {
+              const response = await executeWithRetry(() =>
+                fetch(`${this.url}/graphql`, {
+                  method: 'POST',
+                  body: JSON.stringify({ query: graphQlQuery }),
+                  headers: { 'content-type': 'application/json' },
+                }),
+              );
+
+              if (response.ok) {
+                const json = await response.json();
+                processInstances = json.data.ProcessInstances;
+              }
+            } catch (error) {
+              this.logger.error(`Error when fetching instances: ${error}`);
+            }
+
+            let lastTriggered: Date = new Date(0);
+            let lastRunStatus = '';
+            let counter = 0;
+            let totalDuration = 0;
+
+            processInstances.forEach((pInstance: ProcessInstance) => {
+              if (new Date(pInstance.start) > lastTriggered) {
+                lastTriggered = new Date(pInstance.start);
+                lastRunStatus = pInstance.state;
+              }
+              if (pInstance.start && pInstance.end) {
+                const start: Date = new Date(pInstance.start);
+                const end: Date = new Date(pInstance.end);
+                totalDuration += end.valueOf() - start.valueOf();
+                counter++;
+              }
+            });
+
+            return {
+              name: definition.name,
+              lastTriggered: lastTriggered,
+              lastRunStatus: lastRunStatus,
+              type: this.extractWorkflowType(definition),
+              avgDurationMs: counter == 0 ? 0 : totalDuration / counter,
+              documentation: definition.description,
+            } as WorkflowOverview;
+          }),
+        );
+        return items.filter((item): item is WorkflowOverview => !!item);
+      }
+    } catch (error) {
+      this.logger.error(
+        `Error when fetching workflows for workflowoverview: ${error}`,
+      );
+    }
+    return undefined;
+  }
+
   public async fetchProcessInstances(): Promise<ProcessInstance[] | undefined> {
     const graphQlQuery =
       '{ ProcessInstances ( orderBy: { start: ASC }, where: {processId: {isNull: false} } ) { id, processName, processId, state, start, lastUpdate, end, nodes { id }, variables, parentProcessInstance {id, processName, businessKey} } }';
@@ -317,6 +395,16 @@ export class SonataFlowService {
       this.logger.error(`Error when checking SonataFlow health: ${e}`);
     }
     return false;
+  }
+
+  private extractWorkflowType(workflowDef: WorkflowDefinition): string {
+    if (workflowDef.annotations) {
+      const firstValue: string = workflowDef.annotations[0];
+      const value: string = firstValue.substring(firstValue.indexOf('/') + 1);
+      return value[0].toUpperCase() + value.slice(1);
+    }
+
+    return '';
   }
 
   private createLauncherCommand(): LauncherCommand {

@@ -32,6 +32,13 @@ export type WorkflowListResult = {
   limit: number;
 };
 
+export type WorkflowOverviewListResult = {
+  items: WorkflowOverview[];
+  totalCount: number;
+  offset: number;
+  limit: number;
+};
+
 export type WorkflowFormat = 'yaml' | 'json';
 
 export interface WorkflowSample {
@@ -64,4 +71,13 @@ export interface WorkflowExecutionResponse {
 export enum WorkflowCategory {
   ASSESSMENT = 'assessment',
   INFRASTRUCTURE = 'infrastructure',
+}
+
+export interface WorkflowOverview {
+  name: string;
+  lastTriggered: Date;
+  lastRunStatus: string;
+  type: string;
+  avgDurationMs: number;
+  documentation: string;
 }
