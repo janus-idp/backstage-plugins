@@ -6,16 +6,16 @@ import knex, { Knex } from 'knex';
 // creates DB client and tables
 export async function initDB(dbConfig: Config): Promise<Knex<any, any>> {
   // create db client
-  const dbClient = knex({
-    client: dbConfig.getString('client'),
-    connection: {
-      host: dbConfig.getString('connection.host'),
-      port: dbConfig.getNumber('connection.port'),
-      user: dbConfig.getString('connection.user'),
-      password: dbConfig.getString('connection.password'),
-      database: 'backstage_plugin_notifications',
-    },
-  });
+  const database = dbConfig.getOptional('connection.database')
+    ? {}
+    : { connection: { database: 'backstage_plugin_notifications' } };
+  const knexConfig = require('lodash').merge(
+    {},
+    dbConfig.get(),
+    dbConfig.getOptional('knexConfig'),
+    database,
+  );
+  const dbClient = knex(knexConfig);
 
   // create tables
   if (!(await dbClient.schema.hasTable('messages'))) {
