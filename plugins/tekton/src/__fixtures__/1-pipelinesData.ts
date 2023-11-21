@@ -366,6 +366,7 @@ export const mockKubernetesPlrResponse = {
           workspaces: [],
           startTime: '2023-04-11T06:48:50Z',
         },
+        startTime: '2023-04-11T05:49:05Z',
       },
     },
   ],
