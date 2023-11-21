@@ -13,16 +13,17 @@
     "role": "frontend-plugin"
   },
   "scripts": {
-    "start": "backstage-cli package start",
-    "generate": "openapi --input ./nexus-swagger.json --output ./src/generated --useUnionTypes --useOptions",
     "build": "backstage-cli package build",
-    "export-dynamic": "janus-cli package export-dynamic-plugin",
-    "tsc": "tsc",
-    "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test --passWithNoTests --coverage",
     "clean": "backstage-cli package clean",
+    "export-dynamic": "janus-cli package export-dynamic-plugin",
+    "generate": "openapi --input ./nexus-swagger.json --output ./src/generated --useUnionTypes --useOptions",
+    "lint": "backstage-cli package lint",
+    "postpack": "backstage-cli package postpack",
+    "postversion": "yarn run export-dynamic",
     "prepack": "backstage-cli package prepack",
-    "postpack": "backstage-cli package postpack"
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test --passWithNoTests --coverage",
+    "tsc": "tsc"
   },
   "dependencies": {
     "@backstage/catalog-model": "^1.4.3",

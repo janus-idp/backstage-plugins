@@ -29,17 +29,18 @@
     }
   },
   "scripts": {
-    "start": "opener http://localhost:8080/admin/master/console/#/janus-realm && opener http://localhost:7007/catalog/entities && turbo run start:plugin start:keycloak",
-    "start:plugin": "backstage-cli package start",
-    "start:keycloak": "podman run -p 8080:8080 -e 'KEYCLOAK_ADMIN=admin' -e 'KEYCLOAK_ADMIN_PASSWORD=admin' -v ./__fixtures__/keycloak-realm.json:/opt/keycloak/data/import/keycloak-realm.json$([[ $OSTYPE = linux* ]] && echo ':z') quay.io/keycloak/keycloak:22.0.1 start-dev --import-realm",
     "build": "backstage-cli package build",
-    "tsc": "tsc",
-    "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test --passWithNoTests --coverage",
     "clean": "backstage-cli package clean",
-    "prepack": "backstage-cli package prepack",
+    "export-dynamic": "janus-cli package export-dynamic-plugin",
+    "lint": "backstage-cli package lint",
     "postpack": "backstage-cli package postpack",
-    "export-dynamic": "janus-cli package export-dynamic-plugin"
+    "postversion": "yarn run export-dynamic",
+    "prepack": "backstage-cli package prepack",
+    "start": "opener http://localhost:8080/admin/master/console/#/janus-realm && opener http://localhost:7007/catalog/entities && turbo run start:plugin start:keycloak",
+    "start:keycloak": "podman run -p 8080:8080 -e 'KEYCLOAK_ADMIN=admin' -e 'KEYCLOAK_ADMIN_PASSWORD=admin' -v ./__fixtures__/keycloak-realm.json:/opt/keycloak/data/import/keycloak-realm.json$([[ $OSTYPE = linux* ]] && echo ':z') quay.io/keycloak/keycloak:22.0.1 start-dev --import-realm",
+    "start:plugin": "backstage-cli package start",
+    "test": "backstage-cli package test --passWithNoTests --coverage",
+    "tsc": "tsc"
   },
   "dependencies": {
     "@backstage/backend-common": "^0.19.8",

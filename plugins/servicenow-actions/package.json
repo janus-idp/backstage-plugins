@@ -14,16 +14,17 @@
     "role": "backend-plugin-module"
   },
   "scripts": {
-    "start": "backstage-cli package start",
-    "generate": "bash ./scripts/generate.sh",
     "build": "backstage-cli package build",
-    "tsc": "tsc",
-    "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test --passWithNoTests --coverage",
     "clean": "backstage-cli package clean",
-    "prepack": "backstage-cli package prepack",
+    "export-dynamic": "janus-cli package export-dynamic-plugin",
+    "generate": "bash ./scripts/generate.sh",
+    "lint": "backstage-cli package lint",
     "postpack": "backstage-cli package postpack",
-    "export-dynamic": "janus-cli package export-dynamic-plugin"
+    "postversion": "yarn run export-dynamic",
+    "prepack": "backstage-cli package prepack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test --passWithNoTests --coverage",
+    "tsc": "tsc"
   },
   "dependencies": {
     "@backstage/plugin-scaffolder-node": "^0.2.6",

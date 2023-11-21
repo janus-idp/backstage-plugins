@@ -1,7 +1,7 @@
 {
   "name": "@janus-idp/backstage-scaffolder-backend-module-quay-dynamic",
   "description": "The quay-actions module for @backstage/plugin-scaffolder-backend",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "main": "dist/index.cjs.js",
   "types": "dist/index.d.ts",
   "license": "Apache-2.0",
@@ -14,15 +14,16 @@
     "role": "backend-plugin-module"
   },
   "scripts": {
-    "start": "backstage-cli package start",
     "build": "backstage-cli package build",
-    "tsc": "tsc",
-    "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test --passWithNoTests --coverage",
     "clean": "backstage-cli package clean",
-    "prepack": "backstage-cli package prepack",
+    "export-dynamic": "janus-cli package export-dynamic-plugin",
+    "lint": "backstage-cli package lint",
     "postpack": "backstage-cli package postpack",
-    "export-dynamic": "janus-cli package export-dynamic-plugin"
+    "postversion": "yarn run export-dynamic",
+    "prepack": "backstage-cli package prepack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test --passWithNoTests --coverage",
+    "tsc": "tsc"
   },
   "dependencies": {},
   "devDependencies": {},

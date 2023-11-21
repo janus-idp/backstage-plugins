@@ -1,6 +1,6 @@
 {
   "name": "@janus-idp/backstage-plugin-ocm-backend-dynamic",
-  "version": "3.2.3",
+  "version": "3.4.5",
   "main": "dist/index.cjs.js",
   "types": "dist/index.d.ts",
   "license": "Apache-2.0",
@@ -13,15 +13,16 @@
     "role": "backend-plugin"
   },
   "scripts": {
-    "start": "backstage-cli package start",
     "build": "backstage-cli package build",
-    "tsc": "tsc",
-    "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test --passWithNoTests --coverage",
     "clean": "backstage-cli package clean",
-    "prepack": "backstage-cli package prepack",
+    "export-dynamic": "janus-cli package export-dynamic-plugin --embed-package --embed-package @backstage/plugin-kubernetes-common",
+    "lint": "backstage-cli package lint",
     "postpack": "backstage-cli package postpack",
-    "export-dynamic": "janus-cli package export-dynamic-plugin --embed-package --embed-package @backstage/plugin-kubernetes-common"
+    "postversion": "yarn run export-dynamic",
+    "prepack": "backstage-cli package prepack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test --passWithNoTests --coverage",
+    "tsc": "tsc"
   },
   "configSchema": "config.d.ts",
   "dependencies": {
@@ -68,6 +69,6 @@
     }
   },
   "resolutions": {
-    "@aws-sdk/util-utf8-browser": "npm:@smithy/util-utf8@^2.0.0"
+    "@aws-sdk/util-utf8-browser": "npm:@smithy/util-utf8@~2"
   }
 }
