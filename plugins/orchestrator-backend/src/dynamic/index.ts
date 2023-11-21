@@ -1,4 +1,4 @@
-import { HostDiscovery } from '@backstage/backend-common';
+import { HostDiscovery } from '@backstage/backend-app-api';
 import { BackendDynamicPluginInstaller } from '@backstage/backend-plugin-manager';
 import { CatalogClient } from '@backstage/catalog-client';
 
