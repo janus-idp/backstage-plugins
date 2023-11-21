@@ -1,3 +1,11 @@
+## @janus-idp/backstage-plugin-tekton [3.1.8](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.1.7...@janus-idp/backstage-plugin-tekton@3.1.8) (2023-11-21)
+
+
+### Bug Fixes
+
+* sync versions in dynamic assets and publish derived packages as additional packages ([#963](https://github.com/janus-idp/backstage-plugins/issues/963)) ([7d0a386](https://github.com/janus-idp/backstage-plugins/commit/7d0a38609b4a18b54c75378a150e8b5c3ba8ff43))
+* **tekton:** fix sorting for pipeline run durations ([#952](https://github.com/janus-idp/backstage-plugins/issues/952)) ([dc711dd](https://github.com/janus-idp/backstage-plugins/commit/dc711dd24b267a8ba7671e5380d84179e65f4995))
+
 ## @janus-idp/backstage-plugin-tekton [3.1.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.1.6...@janus-idp/backstage-plugin-tekton@3.1.7) (2023-11-20)
 
 
