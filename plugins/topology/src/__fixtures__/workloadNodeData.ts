@@ -1251,7 +1251,7 @@ export const workloadNodeWtknRes2 = {
         pipelineRuns: [
           ...tektonWorkloadNodeData.data.data.pipelinesData.pipelineRuns,
           {
-            apiVersion: 'tekton.dev/v1beta1',
+            apiVersion: 'tekton.dev/v1',
             kind: 'PipelineRun',
             metadata: {
               annotations: {
@@ -1692,7 +1692,7 @@ export const workloadNodeWtknRes2 = {
             },
           },
           {
-            apiVersion: 'tekton.dev/v1beta1',
+            apiVersion: 'tekton.dev/v1',
             kind: 'PipelineRun',
             metadata: {
               annotations: {

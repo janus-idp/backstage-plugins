@@ -1,7 +1,7 @@
 export const mockPLRResponseData = {
   pipelineruns: [
     {
-      apiVersion: 'tekton.dev/v1beta1',
+      apiVersion: 'tekton.dev/v1',
       kind: 'PipelineRun',
       metadata: {
         annotations: {
@@ -81,7 +81,7 @@ export const mockPLRResponseData = {
       },
     },
     {
-      apiVersion: 'tekton.dev/v1beta1',
+      apiVersion: 'tekton.dev/v1',
       kind: 'PipelineRun',
       metadata: {
         annotations: {
@@ -132,7 +132,7 @@ export const mockPLRResponseData = {
   ],
   taskruns: [
     {
-      apiVersion: 'tekton.dev/v1beta1',
+      apiVersion: 'tekton.dev/v1',
       kind: 'TaskRun',
       metadata: {
         annotations: {
@@ -167,7 +167,7 @@ export const mockPLRResponseData = {
         namespace: 'jai-test',
         ownerReferences: [
           {
-            apiVersion: 'tekton.dev/v1beta1',
+            apiVersion: 'tekton.dev/v1',
             blockOwnerDeletion: true,
             controller: true,
             kind: 'PipelineRun',
@@ -271,7 +271,7 @@ export const mockPLRResponseData = {
       },
     },
     {
-      apiVersion: 'tekton.dev/v1beta1',
+      apiVersion: 'tekton.dev/v1',
       kind: 'TaskRun',
       metadata: {
         annotations: {
@@ -305,7 +305,7 @@ export const mockPLRResponseData = {
         namespace: 'deb-test',
         ownerReferences: [
           {
-            apiVersion: 'tekton.dev/v1beta1',
+            apiVersion: 'tekton.dev/v1',
             blockOwnerDeletion: true,
             controller: true,
             kind: 'PipelineRun',
@@ -374,7 +374,7 @@ export const mockPLRResponseData = {
       },
     },
     {
-      apiVersion: 'tekton.dev/v1beta1',
+      apiVersion: 'tekton.dev/v1',
       kind: 'TaskRun',
       metadata: {
         annotations: {
@@ -408,7 +408,7 @@ export const mockPLRResponseData = {
         namespace: 'deb-test',
         ownerReferences: [
           {
-            apiVersion: 'tekton.dev/v1beta1',
+            apiVersion: 'tekton.dev/v1',
             blockOwnerDeletion: true,
             controller: true,
             kind: 'PipelineRun',
