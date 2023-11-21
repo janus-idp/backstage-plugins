@@ -399,9 +399,12 @@ export class SonataFlowService {
 
   private extractWorkflowType(workflowDef: WorkflowDefinition): string {
     if (workflowDef.annotations) {
-      const firstValue: string = workflowDef.annotations[0];
-      const value: string = firstValue.substring(firstValue.indexOf('/') + 1);
-      return value[0].toUpperCase() + value.slice(1);
+      for (const annotation of workflowDef.annotations) {
+        if (annotation.includes('workflow-type/')) {
+          const value: string = annotation.split('/')[1].trim();
+          return value.charAt(0).toUpperCase() + value.slice(1);
+        }
+      }
     }
 
     return '';
