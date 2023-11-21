@@ -150,12 +150,6 @@
           "successComment": false,
           "releasedLabels": false
         }
-      ],
-      [
-        "@semantic-release/exec",
-        {
-          "successCmd": "npm publish --ignore-scripts dist-dynamic"
-        }
       ]
     ]
   }
