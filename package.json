@@ -133,12 +133,28 @@
       ],
       "@semantic-release/changelog",
       "@semrel-extra/npm",
-      "@semantic-release/git",
+      [
+        "@semantic-release/git",
+        {
+          "assets": [
+            "CHANGELOG.md",
+            "package.json",
+            "dist-dynamic/package.json",
+            "dist-dynamic/yarn.lock"
+          ]
+        }
+      ],
       [
         "@semantic-release/github",
         {
           "successComment": false,
           "releasedLabels": false
+        }
+      ],
+      [
+        "@semantic-release/exec",
+        {
+          "successCmd": "npm publish --ignore-scripts dist-dynamic"
         }
       ]
     ]

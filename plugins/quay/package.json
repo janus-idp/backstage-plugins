@@ -13,16 +13,17 @@
     "role": "frontend-plugin"
   },
   "scripts": {
-    "start": "backstage-cli package start",
     "build": "backstage-cli package build",
-    "export-dynamic": "janus-cli package export-dynamic-plugin",
-    "tsc": "tsc",
-    "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test --passWithNoTests --coverage",
     "clean": "backstage-cli package clean",
-    "prepack": "backstage-cli package prepack",
+    "export-dynamic": "janus-cli package export-dynamic-plugin",
+    "lint": "backstage-cli package lint",
     "postpack": "backstage-cli package postpack",
-    "prepare": ""
+    "postversion": "yarn run export-dynamic",
+    "prepack": "backstage-cli package prepack",
+    "prepare": "",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test --passWithNoTests --coverage",
+    "tsc": "tsc"
   },
   "dependencies": {
     "@backstage/catalog-model": "^1.4.3",

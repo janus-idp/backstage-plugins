@@ -8,16 +8,17 @@
     "role": "frontend-plugin"
   },
   "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "export-dynamic": "janus-cli package export-dynamic-plugin",
+    "lint": "backstage-cli package lint",
+    "postpack": "backstage-cli package postpack",
+    "postversion": "yarn run export-dynamic",
+    "prepack": "backstage-cli package prepack",
     "start": "backstage-cli package start",
     "start:backstage": "http-server ./dist-scalprum/ -p 8004 --cors=* --cache=-1",
-    "build": "backstage-cli package build",
-    "export-dynamic": "janus-cli package export-dynamic-plugin",
-    "tsc": "tsc",
-    "lint": "backstage-cli package lint",
     "test": "backstage-cli package test --passWithNoTests --coverage",
-    "clean": "backstage-cli package clean",
-    "prepack": "backstage-cli package prepack",
-    "postpack": "backstage-cli package postpack"
+    "tsc": "tsc"
   },
   "dependencies": {
     "@backstage/core-plugin-api": "^1.6.0",
