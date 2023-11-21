@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac [1.2.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.2.2...@janus-idp/backstage-plugin-rbac@1.2.3) (2023-11-21)
+
+
+### Bug Fixes
+
+* sync versions in dynamic assets and publish derived packages as additional packages ([#963](https://github.com/janus-idp/backstage-plugins/issues/963)) ([7d0a386](https://github.com/janus-idp/backstage-plugins/commit/7d0a38609b4a18b54c75378a150e8b5c3ba8ff43))
+
 ## @janus-idp/backstage-plugin-rbac [1.2.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.2.1...@janus-idp/backstage-plugin-rbac@1.2.2) (2023-11-20)
 
 
