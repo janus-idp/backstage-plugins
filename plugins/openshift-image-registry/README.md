@@ -18,14 +18,15 @@ yarn workspace app add @janus-idp/backstage-plugin-openshift-image-registry
 
    ```yaml title="app-config.yaml"
    proxy:
-     '/openshift-image-registry/api':
-     target: <URL where k8s control plane for OpenShift cluster is running>
-     headers:
-       X-Requested-With: 'XMLHttpRequest'
-       Authorization: Bearer <TOKEN>
-     changeOrigin: true
-     # Change to "false" in case of using self hosted OpenShift cluster with a self-signed certificate
-     secure: true
+     endpoints:
+       '/openshift-image-registry/api':
+       target: <URL where k8s control plane for OpenShift cluster is running>
+       headers:
+         X-Requested-With: 'XMLHttpRequest'
+         Authorization: Bearer <TOKEN>
+       changeOrigin: true
+       # Change to "false" in case of using self hosted OpenShift cluster with a self-signed certificate
+       secure: true
    ```
 
 2. Enable an additional sidebar-item on the app sidebar in the `packages/app/src/components/Root/Root.tsx` file:

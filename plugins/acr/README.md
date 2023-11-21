@@ -17,14 +17,15 @@ The Azure Container Registry (ACR) plugin displays information about your contai
    ```yaml
    # app-config.yaml
    proxy:
-     '/acr/api':
-       target: 'https://mycontainerregistry.azurecr.io/acr/v1/'
-       changeOrigin: true
-       headers:
-         # If you use Bearer Token for authorization, please replace the 'Basic' with 'Bearer' in the following line.
-         Authorization: 'Basic ${ACR_AUTH_TOKEN}'
-       # Change to "false" in case of using self hosted artifactory instance with a self-signed certificate
-       secure: true
+     endpoints:
+       '/acr/api':
+         target: 'https://mycontainerregistry.azurecr.io/acr/v1/'
+         changeOrigin: true
+         headers:
+           # If you use Bearer Token for authorization, please replace the 'Basic' with 'Bearer' in the following line.
+           Authorization: 'Basic ${ACR_AUTH_TOKEN}'
+         # Change to "false" in case of using self hosted artifactory instance with a self-signed certificate
+         secure: true
    ```
 
 1. Set the authorization using one of the following options:

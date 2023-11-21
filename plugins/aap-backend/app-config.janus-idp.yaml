@@ -1,5 +1,3 @@
-enabled:
-  aap: true
 catalog:
   providers:
     aap:
