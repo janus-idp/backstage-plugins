@@ -1,0 +1,19 @@
+catalog:
+  providers:
+    # highlight-add-start
+    kiali:
+      # Required. Kiali endpoint
+      url: ${KIALI_ENDPOINT}
+      # Required. Kiali authentication. Supported anonymous and token
+      strategy: ${KIALI_AUTH_STRATEGY}
+      # Optional. Required by token authentication
+      serviceAccountToken: ${KIALI_SERVICE_ACCOUNT_TOKEN}
+      # Optional. defaults false
+      skipTLSVerify: true
+      # Optional
+      caData: ${KIALI_CONFIG_CA_DATA}
+      # Optional. Local path to CA file
+      caFile: ''
+      # Optional. Time in seconds that session is enabled, defaults to 1 minute.
+      sessionTime: 60
+      # highlight-add-end

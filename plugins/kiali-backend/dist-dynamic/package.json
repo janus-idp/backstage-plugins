@@ -1,0 +1,62 @@
+{
+  "name": "@janus-idp/backstage-plugin-kiali-backend-dynamic",
+  "version": "1.5.3",
+  "main": "dist/index.cjs.js",
+  "types": "dist/index.d.ts",
+  "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "types": "dist/index.d.ts"
+  },
+  "backstage": {
+    "role": "backend-plugin"
+  },
+  "scripts": {
+    "start": "backstage-cli package start",
+    "build": "backstage-cli package build",
+    "tsc": "tsc",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test --passWithNoTests --coverage",
+    "clean": "backstage-cli package clean",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "export-dynamic": "janus-cli package export-dynamic-plugin"
+  },
+  "configSchema": "config.d.ts",
+  "dependencies": {
+    "axios": "^1.6.0",
+    "express": "^4.18.2",
+    "express-promise-router": "^4.1.1",
+    "moment": "^2.29.4",
+    "winston": "^3.11.0",
+    "yn": "^4.0.0",
+    "deep-freeze": "^0.0.1"
+  },
+  "devDependencies": {},
+  "files": [
+    "dist",
+    "config.d.ts",
+    "app-config.janus-idp.yaml"
+  ],
+  "bundleDependencies": true,
+  "peerDependencies": {
+    "@backstage/backend-common": "^0.19.8",
+    "@backstage/backend-plugin-api": "^0.6.6",
+    "@backstage/catalog-client": "^1.4.5",
+    "@backstage/catalog-model": "^1.4.3",
+    "@backstage/config": "^1.1.1",
+    "@backstage/errors": "^1.2.3",
+    "@backstage/plugin-auth-node": "^0.4.0",
+    "@backstage/plugin-catalog-node": "^1.4.7",
+    "@backstage/backend-plugin-manager": "npm:@janus-idp/backend-plugin-manager@0.0.2-janus.5"
+  },
+  "overrides": {
+    "@aws-sdk/util-utf8-browser": {
+      "@smithy/util-utf8": "^2.0.0"
+    }
+  },
+  "resolutions": {
+    "@aws-sdk/util-utf8-browser": "npm:@smithy/util-utf8@~2"
+  }
+}
