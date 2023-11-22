@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-keycloak-backend [1.7.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-keycloak-backend@1.7.5...@janus-idp/backstage-plugin-keycloak-backend@1.7.6) (2023-11-22)
+
+
+### Bug Fixes
+
+* **keycloak:** embed keycloak admin dependency for dynamic export ([#968](https://github.com/janus-idp/backstage-plugins/issues/968)) ([2f005a0](https://github.com/janus-idp/backstage-plugins/commit/2f005a0bbbe16bebaa047ba364b17a4d4453589a))
+
 ## @janus-idp/backstage-plugin-keycloak-backend [1.7.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-keycloak-backend@1.7.4...@janus-idp/backstage-plugin-keycloak-backend@1.7.5) (2023-11-21)
 
 
