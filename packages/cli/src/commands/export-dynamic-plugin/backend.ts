@@ -22,6 +22,7 @@ import fs from 'fs-extra';
 import { rollup } from 'rollup';
 import * as semver from 'semver';
 
+import { execSync } from 'child_process';
 import path, { basename } from 'path';
 
 import { Output } from '../../lib/builder';
@@ -29,6 +30,7 @@ import { makeRollupConfigs } from '../../lib/builder/config';
 import { embedModules } from '../../lib/builder/embedPlugin';
 import { buildPackage, formatErrorMessage } from '../../lib/builder/packager';
 import { loadCliConfig } from '../../lib/config';
+import { readEntryPoints } from '../../lib/entryPoints';
 import { productionPack } from '../../lib/packager/productionPack';
 import { paths } from '../../lib/paths';
 import { Task } from '../../lib/tasks';
@@ -38,8 +40,8 @@ export async function backend(
   opts: OptionValues,
 ): Promise<void> {
   if (!fs.existsSync(paths.resolveTarget('src', 'dynamic'))) {
-    throw new Error(
-      `Package doesn't seem to support dynamic loading. It should have a src/dynamic folder, containing the dynamic loading entrypoints.`,
+    console.warn(
+      `Package doesn't seem to provide dynamic loading entrypoints. You might want to add dynamic loading entrypoints in a src/dynamic folder.`,
     );
   }
 
@@ -65,13 +67,18 @@ export async function backend(
 
   const target = path.join(paths.targetDir, 'dist-dynamic');
 
-  if (
-    !pkg.files?.includes('dist-dynamic/*.*') ||
-    !pkg.files?.includes('dist-dynamic/dist/**') ||
-    !pkg.files?.includes('dist-dynamic/alpha/*')
-  ) {
-    throw new Error(
-      `Package doesn't seem to support dynamic loading: its "files" property should include the following entries: ["dist-dynamic/*.*", "dist-dynamic/dist/**", "dist-dynamic/alpha/*"].`,
+  const requiredFiles = ['dist-dynamic/*.*', 'dist-dynamic/dist/**'];
+
+  const entryPoints = readEntryPoints(pkg);
+  if (entryPoints.find(e => e.mount === './alpha')) {
+    requiredFiles.push('dist-dynamic/alpha/*');
+  }
+
+  if (requiredFiles.some(f => !pkg.files?.includes(f))) {
+    console.warn(
+      `Package doesn't seem to fully support dynamic loading: its "files" property should include the following entries: [${requiredFiles
+        .map(f => `"${f}"`)
+        .join(', ')}].`,
     );
   }
 
@@ -332,9 +339,10 @@ export async function backend(
   }
 
   if (opts.install) {
-    const yarnInstall = `yarn install --production${
-      yarnLockExists ? ' --frozen-lockfile' : ''
-    }`;
+    const version = execSync('yarn --version').toString().trim();
+    const yarnInstall = version.startsWith('1.')
+      ? `yarn install --production${yarnLockExists ? ' --frozen-lockfile' : ''}`
+      : `yarn install${yarnLockExists ? ' --immutable' : ''}`;
 
     await Task.forCommand(yarnInstall, { cwd: target, optional: false });
     await fs.remove(paths.resolveTarget('dist-dynamic', '.yarn'));
