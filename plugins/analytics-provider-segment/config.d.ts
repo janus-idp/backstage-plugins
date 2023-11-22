@@ -37,7 +37,7 @@ export interface Config {
 
             /**
              * Prevents IP address to be sent as when set to true. Defaults to false
-             * @visbility frontend
+             * @visibility frontend
              */
             maskIP?: boolean;
           }
@@ -57,7 +57,7 @@ export interface Config {
 
             /**
              * Prevents IP address to be sent as when set to true. Defaults to false
-             * @visbility frontend
+             * @visibility frontend
              */
             maskIP?: boolean;
           };
