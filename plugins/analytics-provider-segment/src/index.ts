@@ -13,5 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import {
+  analyticsApiRef,
+  configApiRef,
+  createApiFactory,
+  identityApiRef,
+} from '@backstage/core-plugin-api';
+
+import { SegmentAnalytics } from './apis/implementations/AnalyticsApi';
+
 export { analyticsModuleSegment } from './plugin';
 export * from './apis/implementations/AnalyticsApi';
+export const SegmentAnalyticsApi = createApiFactory({
+  api: analyticsApiRef,
+  deps: { configApi: configApiRef, identityApi: identityApiRef },
+  factory: ({ configApi, identityApi }) =>
+    SegmentAnalytics.fromConfig(configApi, identityApi),
+});
