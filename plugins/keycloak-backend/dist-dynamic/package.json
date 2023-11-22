@@ -27,7 +27,7 @@
   "scripts": {
     "build": "backstage-cli package build",
     "clean": "backstage-cli package clean",
-    "export-dynamic": "janus-cli package export-dynamic-plugin",
+    "export-dynamic": "janus-cli package export-dynamic-plugin --embed-package @keycloak/keycloak-admin-client",
     "lint": "backstage-cli package lint",
     "postpack": "backstage-cli package postpack",
     "postversion": "yarn run export-dynamic",
@@ -39,10 +39,15 @@
     "tsc": "tsc"
   },
   "dependencies": {
-    "@keycloak/keycloak-admin-client": "<19.0.0",
     "lodash": "^4.17.21",
     "uuid": "^9.0.1",
-    "winston": "^3.11.0"
+    "winston": "^3.11.0",
+    "axios": "^0.26.1",
+    "camelize-ts": "^1.0.8",
+    "keycloak-js": "^17.0.1",
+    "query-string": "^7.0.1",
+    "url-join": "^4.0.0",
+    "url-template": "^2.0.8"
   },
   "devDependencies": {},
   "files": [
