@@ -15,6 +15,8 @@
  */
 
 import { BackstagePackageJson, PackageRoleInfo } from '@backstage/cli-node';
+import { ConfigReader } from '@backstage/config';
+import { loadConfig } from '@backstage/config-loader';
 
 import { getPackages } from '@manypkg/get-packages';
 import { OptionValues } from 'commander';
@@ -29,7 +31,6 @@ import { Output } from '../../lib/builder';
 import { makeRollupConfigs } from '../../lib/builder/config';
 import { embedModules } from '../../lib/builder/embedPlugin';
 import { buildPackage, formatErrorMessage } from '../../lib/builder/packager';
-import { loadCliConfig } from '../../lib/config';
 import { readEntryPoints } from '../../lib/entryPoints';
 import { productionPack } from '../../lib/packager/productionPack';
 import { paths } from '../../lib/paths';
@@ -357,35 +358,38 @@ export async function backend(
   });
 
   if (opts.dev) {
-    if (opts.dev) {
-      const { fullConfig } = await loadCliConfig({ args: [] });
-      const dynamicPlugins = fullConfig.getOptional('dynamicPlugins');
-      if (
-        typeof dynamicPlugins === 'object' &&
-        dynamicPlugins !== null &&
-        'rootDirectory' in dynamicPlugins &&
-        typeof dynamicPlugins.rootDirectory === 'string'
-      ) {
-        await fs.ensureSymlink(
-          paths.resolveTarget('src'),
-          path.resolve(target, 'src'),
-          'dir',
-        );
-        const dynamicPluginsRootPath = path.isAbsolute(
-          dynamicPlugins.rootDirectory,
-        )
-          ? dynamicPlugins.rootDirectory
-          : paths.resolveTargetRoot(dynamicPlugins.rootDirectory);
-        await fs.ensureSymlink(
-          target,
-          path.resolve(dynamicPluginsRootPath, basename(paths.targetDir)),
-          'dir',
-        );
-      } else {
-        throw new Error(
-          `'dynamicPlugins.rootDirectory' should be configured in the app config in order to use the --dev option.`,
-        );
-      }
+    const appConfigs = await loadConfig({
+      configRoot: paths.targetRoot,
+      configTargets: [],
+    });
+    const fullConfig = ConfigReader.fromConfigs(appConfigs.appConfigs);
+
+    const dynamicPlugins = fullConfig.getOptional('dynamicPlugins');
+    if (
+      typeof dynamicPlugins === 'object' &&
+      dynamicPlugins !== null &&
+      'rootDirectory' in dynamicPlugins &&
+      typeof dynamicPlugins.rootDirectory === 'string'
+    ) {
+      await fs.ensureSymlink(
+        paths.resolveTarget('src'),
+        path.resolve(target, 'src'),
+        'dir',
+      );
+      const dynamicPluginsRootPath = path.isAbsolute(
+        dynamicPlugins.rootDirectory,
+      )
+        ? dynamicPlugins.rootDirectory
+        : paths.resolveTargetRoot(dynamicPlugins.rootDirectory);
+      await fs.ensureSymlink(
+        target,
+        path.resolve(dynamicPluginsRootPath, basename(paths.targetDir)),
+        'dir',
+      );
+    } else {
+      throw new Error(
+        `'dynamicPlugins.rootDirectory' should be configured in the app config in order to use the --dev option.`,
+      );
     }
   }
 }
