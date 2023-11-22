@@ -65,11 +65,14 @@ orchestrator:
   sonataFlowService:
     baseUrl: http://localhost
     port: 8899
+    autoStart: true
     workflowsSource:
       gitRepositoryUrl: https://github.com/tiagodolphine/backstage-orchestrator-workflows
       localPath: /tmp/orchestrator/repository
       autoPush: true
 ```
+
+when interacting with an existing Sonataflow backend service from `baseUrl` and `port`, `autoStart` needs to be unset or set to `false`, also the section of `workflowSource` can be neglect.
 
 For more information about the configuration options, including other optional properties, see the [config.d.ts](../orchestrator-common/config.d.ts) file.
 

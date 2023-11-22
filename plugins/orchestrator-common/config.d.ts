@@ -23,7 +23,7 @@ export interface Config {
       /**
        * Workflows definitions source configurations
        */
-      workflowsSource:
+      workflowsSource?:
         | {
             /**
              * Remote git repository where workflows definitions are stored

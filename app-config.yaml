@@ -139,7 +139,7 @@ dynamicPlugins:
 orchestrator:
   sonataFlowService:
     baseUrl: http://localhost
-    port: 8899
+    port: 8080
     autoStart: true
     workflowsSource:
       gitRepositoryUrl: https://github.com/tiagodolphine/backstage-orchestrator-workflows

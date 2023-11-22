@@ -57,6 +57,10 @@ export class SonataFlowService {
     this.connection = this.extractConnectionConfig(config);
   }
 
+  public get autoStart(): boolean {
+    return this.connection.autoStart;
+  }
+
   public get url(): string {
     return `${this.connection.host}:${this.connection.port}`;
   }
@@ -366,9 +370,10 @@ export class SonataFlowService {
     const host = config.getString('orchestrator.sonataFlowService.baseUrl');
     const port = config.getNumber('orchestrator.sonataFlowService.port');
 
-    const resourcesPath = config.getString(
-      'orchestrator.sonataFlowService.workflowsSource.localPath',
-    );
+    const resourcesPath =
+      config.getOptionalString(
+        'orchestrator.sonataFlowService.workflowsSource.localPath',
+      ) ?? '';
 
     const containerImage =
       config.getOptionalString('orchestrator.sonataFlowService.container') ??
