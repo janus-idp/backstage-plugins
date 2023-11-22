@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-3scale-backend [1.3.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-3scale-backend@1.3.5...@janus-idp/backstage-plugin-3scale-backend@1.3.6) (2023-11-22)
+
+
+### Bug Fixes
+
+* add default 3scale schedule ([#969](https://github.com/janus-idp/backstage-plugins/issues/969)) ([11c10b0](https://github.com/janus-idp/backstage-plugins/commit/11c10b0472a191e467573f2eecad06487172014f))
+
 ## @janus-idp/backstage-plugin-3scale-backend [1.3.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-3scale-backend@1.3.4...@janus-idp/backstage-plugin-3scale-backend@1.3.5) (2023-11-21)
 
 
