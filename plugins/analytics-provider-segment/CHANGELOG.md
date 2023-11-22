@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-analytics-provider-segment [1.1.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-analytics-provider-segment@1.1.3...@janus-idp/backstage-plugin-analytics-provider-segment@1.1.4) (2023-11-22)
+
+
+### Bug Fixes
+
+* segment config schema visibility typo ([#964](https://github.com/janus-idp/backstage-plugins/issues/964)) ([836c58c](https://github.com/janus-idp/backstage-plugins/commit/836c58c9be4bbac1033979151b2be0ea6de4bf37))
+
 ## @janus-idp/backstage-plugin-analytics-provider-segment [1.1.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-analytics-provider-segment@1.1.2...@janus-idp/backstage-plugin-analytics-provider-segment@1.1.3) (2023-10-19)
 
 ## @janus-idp/backstage-plugin-analytics-provider-segment [1.1.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-analytics-provider-segment@1.1.1...@janus-idp/backstage-plugin-analytics-provider-segment@1.1.2) (2023-09-22)
