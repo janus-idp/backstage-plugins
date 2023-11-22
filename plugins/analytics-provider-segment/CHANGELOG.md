@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-analytics-provider-segment [1.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-analytics-provider-segment@1.1.4...@janus-idp/backstage-plugin-analytics-provider-segment@1.2.0) (2023-11-22)
+
+
+### Features
+
+* **segment:** expose plugin also as a dynamic ([#955](https://github.com/janus-idp/backstage-plugins/issues/955)) ([7b80a40](https://github.com/janus-idp/backstage-plugins/commit/7b80a4088b91c2d38af64fe9338c0815225dd1d4))
+
 ## @janus-idp/backstage-plugin-analytics-provider-segment [1.1.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-analytics-provider-segment@1.1.3...@janus-idp/backstage-plugin-analytics-provider-segment@1.1.4) (2023-11-22)
 
 
