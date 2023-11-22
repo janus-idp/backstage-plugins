@@ -9,6 +9,10 @@ export const dynamicPluginInstaller: BackendDynamicPluginInstaller = {
       ThreeScaleApiEntityProvider.fromConfig(env.config, {
         logger: env.logger,
         scheduler: env.scheduler,
+        schedule: env.scheduler.createScheduledTaskRunner({
+          frequency: { minutes: 1 },
+          timeout: { minutes: 1 },
+        }),
       }),
     );
   },
