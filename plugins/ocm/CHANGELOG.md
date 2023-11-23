@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-ocm [3.5.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm@3.5.6...@janus-idp/backstage-plugin-ocm@3.5.7) (2023-11-23)
+
+
+### Bug Fixes
+
+* add config partials for dynamic frontend plugins ([#965](https://github.com/janus-idp/backstage-plugins/issues/965)) ([b01e55e](https://github.com/janus-idp/backstage-plugins/commit/b01e55e877278afc5de8d28a4c687a6989566bdc))
+
 ## @janus-idp/backstage-plugin-ocm [3.5.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm@3.5.5...@janus-idp/backstage-plugin-ocm@3.5.6) (2023-11-22)
 
 
