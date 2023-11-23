@@ -1,3 +1,16 @@
+## @janus-idp/backstage-plugin-topology [1.16.11](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.16.10...@janus-idp/backstage-plugin-topology@1.16.11) (2023-11-23)
+
+
+### Bug Fixes
+
+* **tekton:** update tekton version in the documentation ([#958](https://github.com/janus-idp/backstage-plugins/issues/958)) ([51cc924](https://github.com/janus-idp/backstage-plugins/commit/51cc924b1341d04aa75a1713713c8a6700b2c0a3))
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.0.1
+
 ## @janus-idp/backstage-plugin-topology [1.16.10](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.16.9...@janus-idp/backstage-plugin-topology@1.16.10) (2023-11-22)
 
 
