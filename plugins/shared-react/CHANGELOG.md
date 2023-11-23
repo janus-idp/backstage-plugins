@@ -1,3 +1,10 @@
+## @janus-idp/shared-react [2.0.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/shared-react@2.0.0...@janus-idp/shared-react@2.0.1) (2023-11-23)
+
+
+### Bug Fixes
+
+* **tekton:** update tekton version in the documentation ([#958](https://github.com/janus-idp/backstage-plugins/issues/958)) ([51cc924](https://github.com/janus-idp/backstage-plugins/commit/51cc924b1341d04aa75a1713713c8a6700b2c0a3))
+
 ## @janus-idp/shared-react [2.0.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/shared-react@1.3.3...@janus-idp/shared-react@2.0.0) (2023-10-23)
 
 
