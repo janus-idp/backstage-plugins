@@ -203,7 +203,7 @@ export const mockKubernetesPlrResponse = {
   ],
   pipelineruns: [
     {
-      apiVersion: 'tekton.dev/v1beta1',
+      apiVersion: 'tekton.dev/v1',
       kind: 'PipelineRun',
       metadata: {
         annotations: {
@@ -284,7 +284,7 @@ export const mockKubernetesPlrResponse = {
       },
     },
     {
-      apiVersion: 'tekton.dev/v1beta1',
+      apiVersion: 'tekton.dev/v1',
       kind: 'PipelineRun',
       metadata: {
         annotations: {
@@ -372,7 +372,7 @@ export const mockKubernetesPlrResponse = {
   ],
   taskruns: [
     {
-      apiVersion: 'tekton.dev/v1beta1',
+      apiVersion: 'tekton.dev/v1',
       kind: 'TaskRun',
       metadata: {
         annotations: {
@@ -407,7 +407,7 @@ export const mockKubernetesPlrResponse = {
         namespace: 'jai-test',
         ownerReferences: [
           {
-            apiVersion: 'tekton.dev/v1beta1',
+            apiVersion: 'tekton.dev/v1',
             blockOwnerDeletion: true,
             controller: true,
             kind: 'PipelineRun',
@@ -563,7 +563,7 @@ export const mockKubernetesPlrResponse = {
       },
     },
     {
-      apiVersion: 'tekton.dev/v1beta1',
+      apiVersion: 'tekton.dev/v1',
       kind: 'TaskRun',
       metadata: {
         annotations: {
@@ -597,7 +597,7 @@ export const mockKubernetesPlrResponse = {
         namespace: 'deb-test',
         ownerReferences: [
           {
-            apiVersion: 'tekton.dev/v1beta1',
+            apiVersion: 'tekton.dev/v1',
             blockOwnerDeletion: true,
             controller: true,
             kind: 'PipelineRun',

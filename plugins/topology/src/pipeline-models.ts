@@ -5,7 +5,7 @@ import { GroupVersionKind, Model } from './types/types';
 const color = tektonGroupColor.value;
 
 export const PipelineRunGVK: GroupVersionKind = {
-  apiVersion: 'v1beta1',
+  apiVersion: 'v1',
   apiGroup: 'tekton.dev',
   kind: 'PipelineRun',
 };
@@ -19,7 +19,7 @@ export const PipelineRunModel: Model = {
 };
 
 export const PipelineGVK: GroupVersionKind = {
-  apiVersion: 'v1beta1',
+  apiVersion: 'v1',
   apiGroup: 'tekton.dev',
   kind: 'Pipeline',
 };
@@ -33,7 +33,7 @@ export const PipelineModel: Model = {
 };
 
 export const TaskRunGVK: GroupVersionKind = {
-  apiVersion: 'v1beta1',
+  apiVersion: 'v1',
   apiGroup: 'tekton.dev',
   kind: 'TaskRun',
 };

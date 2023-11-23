@@ -1,7 +1,7 @@
 export const mockTektonResources = {
   pipelineruns: [
     {
-      apiVersion: 'tekton.dev/v1beta1',
+      apiVersion: 'tekton.dev/v1',
       kind: 'PipelineRun',
       metadata: {
         annotations: {
@@ -438,7 +438,7 @@ export const mockTektonResources = {
       },
     },
     {
-      apiVersion: 'tekton.dev/v1beta1',
+      apiVersion: 'tekton.dev/v1',
       kind: 'PipelineRun',
       metadata: {
         annotations: {
@@ -877,7 +877,7 @@ export const mockTektonResources = {
   ],
   taskruns: [
     {
-      apiVersion: 'tekton.dev/v1beta1',
+      apiVersion: 'tekton.dev/v1',
       kind: 'TaskRun',
       metadata: {
         annotations: {
@@ -912,7 +912,7 @@ export const mockTektonResources = {
         namespace: 'jai-test',
         ownerReferences: [
           {
-            apiVersion: 'tekton.dev/v1beta1',
+            apiVersion: 'tekton.dev/v1',
             blockOwnerDeletion: true,
             controller: true,
             kind: 'PipelineRun',
@@ -1061,7 +1061,7 @@ export const mockTektonResources = {
       },
     },
     {
-      apiVersion: 'tekton.dev/v1beta1',
+      apiVersion: 'tekton.dev/v1',
       kind: 'TaskRun',
       metadata: {
         annotations: {
@@ -1095,7 +1095,7 @@ export const mockTektonResources = {
         namespace: 'deb-test',
         ownerReferences: [
           {
-            apiVersion: 'tekton.dev/v1beta1',
+            apiVersion: 'tekton.dev/v1',
             blockOwnerDeletion: true,
             controller: true,
             kind: 'PipelineRun',
@@ -1177,7 +1177,7 @@ export const mockTektonResources = {
   ],
   pipelines: [
     {
-      apiVersion: 'tekton.dev/v1beta1',
+      apiVersion: 'tekton.dev/v1',
       kind: 'Pipeline',
       metadata: {
         creationTimestamp: new Date('2023-06-14T09:57:09Z'),
