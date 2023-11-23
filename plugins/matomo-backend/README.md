@@ -49,7 +49,7 @@ async function main() {
 
 4. Now you need to add in app-config.yaml file
 
-```
+```yaml
 matomo:
   apiToken: ${MATOMO_API_TOKEN}
   apiUrl: ${MATOMO_API_URL}

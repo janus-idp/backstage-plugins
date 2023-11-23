@@ -71,7 +71,8 @@
   },
   "files": [
     "dist",
-    "dist-scalprum"
+    "dist-scalprum",
+    "app-config.janus-idp.yaml"
   ],
   "repository": "github:janus-idp/backstage-plugins",
   "keywords": [
