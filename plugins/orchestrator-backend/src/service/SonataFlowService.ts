@@ -244,14 +244,15 @@ export class SonataFlowService {
               }
             });
 
-            return {
+            const result: WorkflowOverview = {
               name: definition.name,
               lastTriggered: lastTriggered,
               lastRunStatus: lastRunStatus,
               type: this.extractWorkflowType(definition),
               avgDurationMs: counter == 0 ? 0 : totalDuration / counter,
               documentation: definition.description,
-            } as WorkflowOverview;
+            };
+            return result;
           }),
         );
         return items.filter((item): item is WorkflowOverview => !!item);
