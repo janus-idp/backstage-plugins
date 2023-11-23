@@ -16,10 +16,10 @@ import {
 import { MaterialTableProps } from '@material-table/core';
 import { Grid, IconButton, Tooltip } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import MarkAsReadIcon from '@material-ui/icons/Markunread' /* TODO: find a better component */;
-import MarkAsUnreadIcon from '@material-ui/icons/Markunread';
+import MarkAsReadIcon from '@material-ui/icons/CheckCircle';
 
 import { notificationsApiRef, NotificationsFilter } from '../../api';
+import MarkAsUnreadIcon from './MarkAsUnreadIcon';
 import {
   CreatedAfterOptions,
   NotificationsToolbar,
@@ -29,6 +29,9 @@ const useStyles = makeStyles({
   actionsRoot: {
     justifyContent: 'space-between',
     paddingRight: '1rem',
+  },
+  readActionIcon: {
+    color: 'black',
   },
 });
 
@@ -145,7 +148,10 @@ export const NotificationsTable = ({
                     onMarkAsReadSwitch(notification);
                   }}
                 >
-                  <IconComponent aria-label={markAsReadText} />
+                  <IconComponent
+                    aria-label={markAsReadText}
+                    className={classes.readActionIcon}
+                  />
                 </IconButton>
               </Tooltip>
             </Grid>
@@ -153,7 +159,7 @@ export const NotificationsTable = ({
         );
       },
     }),
-    [classes.actionsRoot, onMarkAsReadSwitch],
+    [classes.actionsRoot, classes.readActionIcon, onMarkAsReadSwitch],
   );
 
   const onOrderChange = React.useCallback<
