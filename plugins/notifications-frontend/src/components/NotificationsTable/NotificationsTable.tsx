@@ -72,11 +72,14 @@ export const NotificationsTable = ({
     const createdAfterDate = CreatedAfterOptions[createdAfter].getDate();
 
     const commonParams: NotificationsFilter = {
-      isRead: !unreadOnly,
       containsText,
       createdAfter: createdAfterDate,
       messageScope,
     };
+
+    if (unreadOnly !== undefined) {
+      commonParams.isRead = !unreadOnly;
+    }
 
     const data = await notificationsApi.getNotifications({
       ...commonParams,
