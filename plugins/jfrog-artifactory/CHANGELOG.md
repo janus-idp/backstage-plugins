@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-jfrog-artifactory [1.2.12](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-jfrog-artifactory@1.2.11...@janus-idp/backstage-plugin-jfrog-artifactory@1.2.12) (2023-11-23)
+
+
+### Bug Fixes
+
+* add config partials for dynamic frontend plugins ([#965](https://github.com/janus-idp/backstage-plugins/issues/965)) ([b01e55e](https://github.com/janus-idp/backstage-plugins/commit/b01e55e877278afc5de8d28a4c687a6989566bdc))
+
 ## @janus-idp/backstage-plugin-jfrog-artifactory [1.2.11](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-jfrog-artifactory@1.2.10...@janus-idp/backstage-plugin-jfrog-artifactory@1.2.11) (2023-11-23)
 
 
