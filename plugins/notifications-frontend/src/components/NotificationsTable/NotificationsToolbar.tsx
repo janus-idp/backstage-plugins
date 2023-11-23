@@ -8,8 +8,6 @@ import {
   Select,
   withStyles,
 } from '@material-ui/core';
-import Checkbox from '@mui/material/Checkbox';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
 
 const StyledMTableToolbar = withStyles(
@@ -27,10 +25,14 @@ const useFilterStyles = makeStyles(
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'flex-end',
+      width: '100%',
     },
-    createdAfterFilter: {
+    filter: {
       fontSize: 18,
       whiteSpace: 'nowrap',
+    },
+    tool: {
+      marginLeft: '1rem',
     },
   }),
   { name: 'BackstageTableFiltersContainer' },
@@ -59,7 +61,7 @@ export const NotificationsToolbar = (toolbarProps: {
   createdAfter?: string;
   unreadOnly: boolean;
   onCreatedAfterChanged: (value: string) => void;
-  onUnreadOnlyChanged: (checked: boolean) => void;
+  onUnreadOnlyChanged: (checked?: boolean) => void;
 }) => {
   const { toolbarRef, createdAfter, unreadOnly } = toolbarProps;
   const filtersClasses = useFilterStyles();
@@ -71,17 +73,24 @@ export const NotificationsToolbar = (toolbarProps: {
   };
 
   const handleOnUnreadOnlyChanged = (
-    event: React.ChangeEvent<HTMLInputElement>,
+    event: React.ChangeEvent<{ name?: string; value: unknown }>,
   ) => {
-    toolbarProps.onUnreadOnlyChanged(event.target.checked);
+    let value = undefined;
+    if (event.target.value === 'unread') value = true;
+    if (event.target.value === 'read') value = false;
+    toolbarProps.onUnreadOnlyChanged(value);
   };
+
+  let unreadOnlyValue = 'all';
+  if (unreadOnly) unreadOnlyValue = 'unread';
+  if (unreadOnly === false) unreadOnlyValue = 'read';
 
   return (
     <Grid spacing={2} container className={filtersClasses.root}>
-      <Grid item>
+      <Grid item className={filtersClasses.tool}>
         <Select
           label="Created after"
-          className={filtersClasses.createdAfterFilter}
+          className={filtersClasses.filter}
           placeholder="Notifications since"
           value={createdAfter}
           onChange={handleOnCreatedAfterChanged}
@@ -94,21 +103,22 @@ export const NotificationsToolbar = (toolbarProps: {
         </Select>
       </Grid>
 
-      <Grid item>
+      <Grid item className={filtersClasses.tool}>
         <FormGroup>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={unreadOnly}
-                onChange={handleOnUnreadOnlyChanged}
-              />
-            }
-            label="Unread only"
-          />
+          <Select
+            label="Show"
+            className={filtersClasses.filter}
+            value={unreadOnlyValue}
+            onChange={handleOnUnreadOnlyChanged}
+          >
+            <MenuItem value="unread">Unread only</MenuItem>
+            <MenuItem value="read">Marked as read</MenuItem>
+            <MenuItem value="all">All</MenuItem>
+          </Select>
         </FormGroup>
       </Grid>
 
-      <Grid item>
+      <Grid item className={filtersClasses.tool}>
         <StyledMTableToolbar
           {...toolbarProps}
           ref={toolbarRef}
