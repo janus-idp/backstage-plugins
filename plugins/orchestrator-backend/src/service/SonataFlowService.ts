@@ -249,7 +249,7 @@ export class SonataFlowService {
               lastTriggered: lastTriggered,
               lastRunStatus: lastRunStatus,
               type: this.extractWorkflowType(definition),
-              avgDurationMs: counter == 0 ? 0 : totalDuration / counter,
+              avgDurationMs: counter ? totalDuration / counter : 0,
               documentation: definition.description,
             };
             return result;
