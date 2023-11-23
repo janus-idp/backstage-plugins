@@ -222,7 +222,7 @@ export class SonataFlowService {
             const graphQlQuery = `{ ProcessInstances(where: {processId: {equal: "${definition.id}" } } ) { processName, state, start, lastUpdate, end } }`;
             let processInstances: ProcessInstance[] = [];
             try {
-              const response = await executeWithRetry(() =>
+              const graphQlResponse = await executeWithRetry(() =>
                 fetch(`${this.url}/graphql`, {
                   method: 'POST',
                   body: JSON.stringify({ query: graphQlQuery }),
@@ -230,8 +230,8 @@ export class SonataFlowService {
                 }),
               );
 
-              if (response.ok) {
-                const json = await response.json();
+              if (graphQlResponse.ok) {
+                const json = await graphQlResponse.json();
                 processInstances = json.data.ProcessInstances;
               }
             } catch (error) {
