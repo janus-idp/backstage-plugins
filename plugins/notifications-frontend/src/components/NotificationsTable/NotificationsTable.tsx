@@ -18,7 +18,6 @@ import { Grid, IconButton, Tooltip } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import MarkAsReadIcon from '@material-ui/icons/Markunread' /* TODO: find a better component */;
 import MarkAsUnreadIcon from '@material-ui/icons/Markunread';
-import Stack from '@mui/material/Stack';
 
 import { notificationsApiRef, NotificationsFilter } from '../../api';
 import {
@@ -27,8 +26,9 @@ import {
 } from './NotificationsToolbar';
 
 const useStyles = makeStyles({
-  actionsList: {
-    alignSelf: 'center',
+  actionsRoot: {
+    justifyContent: 'space-between',
+    paddingRight: '1rem',
   },
 });
 
@@ -110,13 +110,15 @@ export const NotificationsTable = ({
         let actions;
         if (!!notification.actions?.length) {
           actions = (
-            <Stack>
+            <Grid container>
               {notification.actions.map(action => (
-                <Link key={action.url} to={action.url}>
-                  {action.title || 'More info'}
-                </Link>
+                <Grid item>
+                  <Link key={action.url} to={action.url}>
+                    {action.title || 'More info'}
+                  </Link>
+                </Grid>
               ))}
-            </Stack>
+            </Grid>
           );
         }
 
@@ -128,8 +130,12 @@ export const NotificationsTable = ({
           : MarkAsReadIcon;
 
         return (
-          <Grid container spacing={1}>
-            <Grid item xs={3}>
+          <Grid container spacing={1} className={classes.actionsRoot}>
+            <Grid item xs={9}>
+              {actions}
+            </Grid>
+
+            <Grid item xs={2}>
               <Tooltip title={markAsReadText}>
                 <IconButton
                   onClick={() => {
@@ -140,14 +146,11 @@ export const NotificationsTable = ({
                 </IconButton>
               </Tooltip>
             </Grid>
-            <Grid item className={classes.actionsList} xs={9}>
-              {actions}
-            </Grid>
           </Grid>
         );
       },
     }),
-    [classes.actionsList, onMarkAsReadSwitch],
+    [classes.actionsRoot, onMarkAsReadSwitch],
   );
 
   const onOrderChange = React.useCallback<
