@@ -35,6 +35,7 @@ dist-scalprum
 /plugins/*/dist-dynamic/*
 !/plugins/*/dist-dynamic/package.json
 !/plugins/*/dist-dynamic/yarn.lock
+storybook-static
 
 # Temporary change files created by Vim
 *.swp
@@ -56,3 +57,5 @@ site
 
 # build cache
 .webpack-cache
+
+.idea/

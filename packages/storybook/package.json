@@ -1,0 +1,49 @@
+{
+  "name": "storybook",
+  "version": "0.0.0",
+  "license": "Apache-2.0",
+  "private": true,
+  "backstage": {
+    "role": "frontend"
+  },
+  "sideEffects": false,
+  "scripts": {
+    "start": "storybook dev -p 6006",
+    "start:debug": "yarn start:storybook --debug-webpack",
+    "build": "storybook build",
+    "lint": "backstage-cli package lint",
+    "clean": "backstage-cli package clean"
+  },
+  "devDependencies": {
+    "@storybook/react-webpack5": "^7.5.3",
+    "@storybook/testing-library": "^0.2.2",
+    "@testing-library/jest-dom": "^5.17.0",
+    "@types/react": "^17",
+    "@types/react-dom": "^17",
+    "@swc/core": "^1.3.96",
+    "eslint-plugin-storybook": "^0.6.15",
+    "prop-types": "^15.8.1",
+    "swc-loader": "^0.2.3"
+  },
+  "dependencies": {
+    "@material-ui/core": "^4.12.4",
+    "@storybook/addon-controls": "^7.5.3",
+    "@storybook/addon-essentials": "^7.5.3",
+    "@storybook/addon-interactions": "^7.5.3",
+    "@storybook/addon-links": "^7.5.3",
+    "@storybook/blocks": "^7.5.3",
+    "@storybook/react": "^7.5.3",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "storybook": "^7.5.3",
+    "storybook-dark-mode": "^3.0.1"
+  },
+  "peerDependencies": {
+    "@backstage/cli": "*",
+    "@backstage/core-app-api": "*",
+    "@backstage/core-components": "*",
+    "@backstage/core-plugin-api": "*",
+    "@backstage/test-utils": "*",
+    "@backstage/theme": "*"
+  }
+}
