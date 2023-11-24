@@ -80,7 +80,7 @@ export class AapResourceEntityProvider implements EntityProvider {
     this.scheduleFn = this.createScheduleFn(taskRunner);
   }
 
-  private createScheduleFn(taskRunner: TaskRunner): () => Promise<void> {
+  createScheduleFn(taskRunner: TaskRunner): () => Promise<void> {
     return async () => {
       const taskId = `${this.getProviderName()}:run`;
       return taskRunner.run({
@@ -88,8 +88,19 @@ export class AapResourceEntityProvider implements EntityProvider {
         fn: async () => {
           try {
             await this.run();
-          } catch (error) {
-            this.logger.error(error);
+          } catch (error: any) {
+            // Ensure that we don't log any sensitive internal data:
+            this.logger.error(
+              `Error while syncing resources from AAP ${this.baseUrl}`,
+              {
+                // Default Error properties:
+                name: error.name,
+                message: error.message,
+                stack: error.stack,
+                // Additional status code if available:
+                status: error.response?.status,
+              },
+            );
           }
         },
       });
@@ -125,7 +136,16 @@ export class AapResourceEntityProvider implements EntityProvider {
       if (results.status === 'fulfilled') {
         templates.push(...results.value);
       } else if (results.status === 'rejected') {
-        console.error('Failed to fetch AAP job templates', results.reason);
+        // Ensure that we don't log any sensitive internal data:
+        const error = results.reason || {};
+        this.logger.error('Failed to fetch AAP job templates', {
+          // Default Error properties:
+          name: error.name,
+          message: error.message,
+          stack: error.stack,
+          // Additional status code if available:
+          status: error.response?.status,
+        });
       }
     });
 
@@ -133,7 +153,7 @@ export class AapResourceEntityProvider implements EntityProvider {
       const resourceEntity: ResourceEntity =
         this.buildApiEntityFromJobTemplate(template);
       entities.push(resourceEntity);
-      this.logger.debug(`Discovered ResourceEntity ${template}`);
+      this.logger.debug(`Discovered ResourceEntity "${template.name}"`);
     }
 
     this.logger.info(`Applying the mutation with ${entities.length} entities`);

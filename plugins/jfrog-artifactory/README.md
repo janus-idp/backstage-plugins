@@ -18,12 +18,13 @@ The Jfrog Artifactory plugin displays information about your container images wi
 
    ```yaml title="app-config.yaml"
    proxy:
-     '/jfrog-artifactory/api':
-       target: 'http://<hostname>:8082' # or https://<customer>.jfrog.io
-       headers:
-         # Authorization: 'Bearer <YOUR TOKEN>'
-       # Change to "false" in case of using self hosted artifactory instance with a self-signed certificate
-       secure: true
+     endpoints:
+       '/jfrog-artifactory/api':
+         target: 'http://<hostname>:8082' # or https://<customer>.jfrog.io
+         headers:
+           # Authorization: 'Bearer <YOUR TOKEN>'
+         # Change to "false" in case of using self hosted artifactory instance with a self-signed certificate
+         secure: true
    ```
 
 1. Enable the **JFROG ARTIFACTORY** tab on the entity view page in `packages/app/src/components/catalog/EntityPage.tsx`:

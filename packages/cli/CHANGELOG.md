@@ -1,3 +1,33 @@
+## @janus-idp/cli [1.4.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.4.4...@janus-idp/cli@1.4.5) (2023-11-22)
+
+
+### Bug Fixes
+
+* make the `export-dynamic-plugin` command more generic for backend plugins. ([#967](https://github.com/janus-idp/backstage-plugins/issues/967)) ([b40c661](https://github.com/janus-idp/backstage-plugins/commit/b40c66174ee4dd3240e034d794b19900c9738c86))
+
+## @janus-idp/cli [1.4.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.4.3...@janus-idp/cli@1.4.4) (2023-11-20)
+
+
+### Bug Fixes
+
+* **aap+3scale+ocm:** don't log sensitive data from errors ([#945](https://github.com/janus-idp/backstage-plugins/issues/945)) ([7a5e7b8](https://github.com/janus-idp/backstage-plugins/commit/7a5e7b8a57c9841003d9b16e1a65fb62e101fbf1))
+
+## @janus-idp/cli [1.4.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.4.2...@janus-idp/cli@1.4.3) (2023-11-16)
+
+
+### Bug Fixes
+
+* **cli:** fix possible dependency conflict ([#950](https://github.com/janus-idp/backstage-plugins/issues/950)) ([6c3052e](https://github.com/janus-idp/backstage-plugins/commit/6c3052e9ef2ad77797f6a75cb7f30059442c3764))
+
+## @janus-idp/cli [1.4.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.4.1...@janus-idp/cli@1.4.2) (2023-11-13)
+
+
+### Bug Fixes
+
+* **cli:** use react v17 in dynamic plugins build ([#931](https://github.com/janus-idp/backstage-plugins/issues/931)) ([b47b10a](https://github.com/janus-idp/backstage-plugins/commit/b47b10ab9a1673bf5b303b3051db71f0921049ed))
+
+## @janus-idp/cli [1.4.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.4.0...@janus-idp/cli@1.4.1) (2023-11-13)
+
 ## @janus-idp/cli [1.4.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.3.3...@janus-idp/cli@1.4.0) (2023-11-07)
 
 

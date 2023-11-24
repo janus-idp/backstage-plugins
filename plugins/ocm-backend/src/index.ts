@@ -16,3 +16,4 @@
 
 export * from './service/router';
 export * from './providers';
+export * from './dynamic/index';

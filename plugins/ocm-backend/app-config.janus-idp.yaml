@@ -1,5 +1,3 @@
-enabled:
-  ocm: true
 catalog:
   providers:
     ocm:

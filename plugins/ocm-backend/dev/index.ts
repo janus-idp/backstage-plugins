@@ -122,7 +122,7 @@ export async function startStandaloneServer(
     .addRouter('/catalog', await catalog(catalogEnv));
 
   return await service.start().catch(err => {
-    logger.error(err);
+    logger.error('Dev server failed:', err);
     process.exit(1);
   });
 }

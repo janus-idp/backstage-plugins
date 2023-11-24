@@ -16,10 +16,10 @@ The Tekton plugin enables you to visualize the `PipelineRun` resources available
      ...
      customResources:
        - group: 'tekton.dev'
-         apiVersion: 'v1beta1'
+         apiVersion: 'v1'
          plural: 'pipelineruns'
        - group: 'tekton.dev'
-         apiVersion: 'v1beta1'
+         apiVersion: 'v1'
          plural: 'taskruns'
   ```
 - The Kubernetes plugin is configured and connects to the cluster using a `ServiceAccount`.
@@ -123,10 +123,13 @@ The Tekton plugin enables you to visualize the `PipelineRun` resources available
 
    ```tsx title="packages/app/src/components/catalog/EntityPage.tsx"
    /* highlight-add-next-line */
-   import { TektonCI, isTektonCIAvailable } from '@janus-idp/backstage-plugin-tekton';
+   import {
+     isTektonCIAvailable,
+     TektonCI,
+   } from '@janus-idp/backstage-plugin-tekton';
 
    const cicdContent = (
-     <EntitySwitch>>
+     <EntitySwitch>
        {/* ... */}
        {/* highlight-add-start */}
        <EntitySwitch.Case if={isTektonCIAvailable}>

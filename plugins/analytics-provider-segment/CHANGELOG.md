@@ -1,3 +1,24 @@
+## @janus-idp/backstage-plugin-analytics-provider-segment [1.2.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-analytics-provider-segment@1.2.0...@janus-idp/backstage-plugin-analytics-provider-segment@1.2.1) (2023-11-23)
+
+
+### Bug Fixes
+
+* add config partials for dynamic frontend plugins ([#965](https://github.com/janus-idp/backstage-plugins/issues/965)) ([b01e55e](https://github.com/janus-idp/backstage-plugins/commit/b01e55e877278afc5de8d28a4c687a6989566bdc))
+
+## @janus-idp/backstage-plugin-analytics-provider-segment [1.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-analytics-provider-segment@1.1.4...@janus-idp/backstage-plugin-analytics-provider-segment@1.2.0) (2023-11-22)
+
+
+### Features
+
+* **segment:** expose plugin also as a dynamic ([#955](https://github.com/janus-idp/backstage-plugins/issues/955)) ([7b80a40](https://github.com/janus-idp/backstage-plugins/commit/7b80a4088b91c2d38af64fe9338c0815225dd1d4))
+
+## @janus-idp/backstage-plugin-analytics-provider-segment [1.1.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-analytics-provider-segment@1.1.3...@janus-idp/backstage-plugin-analytics-provider-segment@1.1.4) (2023-11-22)
+
+
+### Bug Fixes
+
+* segment config schema visibility typo ([#964](https://github.com/janus-idp/backstage-plugins/issues/964)) ([836c58c](https://github.com/janus-idp/backstage-plugins/commit/836c58c9be4bbac1033979151b2be0ea6de4bf37))
+
 ## @janus-idp/backstage-plugin-analytics-provider-segment [1.1.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-analytics-provider-segment@1.1.2...@janus-idp/backstage-plugin-analytics-provider-segment@1.1.3) (2023-10-19)
 
 ## @janus-idp/backstage-plugin-analytics-provider-segment [1.1.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-analytics-provider-segment@1.1.1...@janus-idp/backstage-plugin-analytics-provider-segment@1.1.2) (2023-09-22)

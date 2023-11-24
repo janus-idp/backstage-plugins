@@ -29,7 +29,7 @@ const server = setupServer(...handlers);
 server.listen();
 
 startStandaloneServer({ port, logger }).catch(err => {
-  logger.error(err);
+  logger.error('Standalone server failed:', err);
   server.close();
   process.exit(1);
 });

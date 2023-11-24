@@ -1,3 +1,36 @@
+## @janus-idp/backstage-plugin-kiali-backend [1.6.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali-backend@1.6.1...@janus-idp/backstage-plugin-kiali-backend@1.6.2) (2023-11-22)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.4.5
+
+## @janus-idp/backstage-plugin-kiali-backend [1.6.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali-backend@1.6.0...@janus-idp/backstage-plugin-kiali-backend@1.6.1) (2023-11-21)
+
+
+### Bug Fixes
+
+* sync versions in dynamic assets and publish derived packages as additional packages ([#963](https://github.com/janus-idp/backstage-plugins/issues/963)) ([7d0a386](https://github.com/janus-idp/backstage-plugins/commit/7d0a38609b4a18b54c75378a150e8b5c3ba8ff43))
+
+## @janus-idp/backstage-plugin-kiali-backend [1.6.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali-backend@1.5.4...@janus-idp/backstage-plugin-kiali-backend@1.6.0) (2023-11-21)
+
+
+### Features
+
+* make all backend plugins dynamic ([#954](https://github.com/janus-idp/backstage-plugins/issues/954)) ([1b4338a](https://github.com/janus-idp/backstage-plugins/commit/1b4338a45c3b92f5607391b2bfc17c4d29050ce3))
+
+## @janus-idp/backstage-plugin-kiali-backend [1.5.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali-backend@1.5.3...@janus-idp/backstage-plugin-kiali-backend@1.5.4) (2023-11-20)
+
+
+### Bug Fixes
+
+* **aap+3scale+ocm:** don't log sensitive data from errors ([#945](https://github.com/janus-idp/backstage-plugins/issues/945)) ([7a5e7b8](https://github.com/janus-idp/backstage-plugins/commit/7a5e7b8a57c9841003d9b16e1a65fb62e101fbf1))
+
+## @janus-idp/backstage-plugin-kiali-backend [1.5.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali-backend@1.5.2...@janus-idp/backstage-plugin-kiali-backend@1.5.3) (2023-11-13)
+
+## @janus-idp/backstage-plugin-kiali-backend [1.5.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali-backend@1.5.1...@janus-idp/backstage-plugin-kiali-backend@1.5.2) (2023-11-13)
+
 ## @janus-idp/backstage-plugin-kiali-backend [1.5.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali-backend@1.5.0...@janus-idp/backstage-plugin-kiali-backend@1.5.1) (2023-10-27)
 
 

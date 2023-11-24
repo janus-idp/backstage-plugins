@@ -37,7 +37,7 @@ export async function startStandaloneServer(
   }
 
   return await service.start().catch(err => {
-    logger.error(err);
+    logger.error('Standalone server failed:', err);
     process.exit(1);
   });
 }

@@ -1,0 +1,3 @@
+matomo:
+  apiToken: ${MATOMO_API_TOKEN}
+  apiUrl: ${MATOMO_API_URL}

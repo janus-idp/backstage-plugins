@@ -153,12 +153,12 @@ const PipelineRunList = () => {
   const visibleRows = React.useMemo(
     () =>
       pipelineRuns
-        ?.sort(getComparator(order, orderBy))
+        ?.sort(getComparator(order, orderBy, orderById))
         .slice(
           page * rowsPerPage,
           page * rowsPerPage + rowsPerPage,
         ) as PipelineRunKind[],
-    [order, orderBy, page, rowsPerPage, pipelineRuns],
+    [pipelineRuns, order, orderBy, orderById, page, rowsPerPage],
   );
   const classes = useStyles();
 

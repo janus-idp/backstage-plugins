@@ -1,0 +1,3 @@
+matomo:
+  frontendBaseUrl: ${MATOMO_INSTANCE_URL}
+  contactUsLink: mailto:${MATOMO_CONTACT_EMAIL}

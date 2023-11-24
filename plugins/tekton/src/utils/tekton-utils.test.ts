@@ -6,6 +6,7 @@ import { mockKubernetesPlrResponse } from '../__fixtures__/1-pipelinesData';
 import { kubernetesObjects } from '../__fixtures__/kubernetesObject';
 import {
   calculateDuration,
+  calculateDurationInSeconds,
   getClusters,
   getComparator,
   getDuration,
@@ -100,6 +101,26 @@ describe('tekton-utils', () => {
     });
   });
 
+  it('should return duration in seconds', () => {
+    let duration = calculateDurationInSeconds(
+      '2020-05-22T11:57:53Z',
+      '2020-05-22T11:57:57Z',
+    );
+    expect(duration).toEqual(4);
+
+    duration = calculateDurationInSeconds(
+      '2020-05-22T11:57:53Z',
+      '2020-05-22T12:02:20Z',
+    );
+    expect(duration).toBe(267);
+
+    duration = calculateDurationInSeconds(
+      '2020-05-22T10:57:53Z',
+      '2020-05-22T12:57:57Z',
+    );
+    expect(duration).toBe(7204);
+  });
+
   it('should return the right duration strings', () => {
     expect(getDuration(0, false)).toBe('less than a sec');
     expect(getDuration(0, true)).toBe('less than a sec');
@@ -189,7 +210,7 @@ describe('tekton-utils', () => {
     ];
 
     const sortedData: PipelineRunKind[] = Array.from(mockPipelineRuns).sort(
-      getComparator('asc', 'metadata.name'),
+      getComparator('asc', 'metadata.name', 'name'),
     );
     expect(sortedData[0].metadata?.name).toBe('pipeline-test-wbvtlk');
   });
@@ -200,7 +221,18 @@ describe('tekton-utils', () => {
     ];
 
     const sortedData: PipelineRunKind[] = Array.from(mockPipelineRuns).sort(
-      getComparator('asc', 'status.startTime'),
+      getComparator('asc', 'status.startTime', 'start-time'),
+    );
+    expect(sortedData[0].metadata?.name).toBe('ruby-ex-git-xf45fo');
+  });
+
+  it('should be able to sort pipelineRunsData in ascending order based on pipelinerun duration', () => {
+    const mockPipelineRuns: PipelineRunKind[] = [
+      ...mockKubernetesPlrResponse.pipelineruns,
+    ];
+
+    const sortedData: PipelineRunKind[] = Array.from(mockPipelineRuns).sort(
+      getComparator('asc', 'status.completionTime', 'duration'),
     );
     expect(sortedData[0].metadata?.name).toBe('ruby-ex-git-xf45fo');
   });

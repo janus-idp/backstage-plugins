@@ -9,7 +9,7 @@ const enableCors = yn(process.env.PLUGIN_CORS, { default: false });
 const logger = getRootLogger();
 
 startStandaloneServer({ port, enableCors, logger }).catch(err => {
-  logger.error(err);
+  logger.error('Standalone server failed:', err);
   process.exit(1);
 });
 

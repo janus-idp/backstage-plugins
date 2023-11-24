@@ -1,0 +1,20 @@
+proxy:
+  endpoints:
+    '/openshift-image-registry/api':
+    target: ${OCP_API_ENDPOINT}
+    headers:
+      X-Requested-With: 'XMLHttpRequest'
+      Authorization: Bearer ${OCP_API_TOKEN}
+    changeOrigin: true
+    # Change to "false" in case of using self hosted OpenShift cluster with a self-signed certificate
+    secure: true
+
+dynamicPlugins:
+  frontend:
+    janus-idp.backstage-plugin-acr:
+      dynamicRoutes:
+        - path: /openshift-image-registry
+          importName: OpenshiftImageRegistryPage
+          menuItem:
+            icon: dashboard
+            text: Image Registry

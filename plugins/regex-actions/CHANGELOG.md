@@ -1,3 +1,27 @@
+## @janus-idp/backstage-scaffolder-backend-module-regex [1.2.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-regex@1.2.1...@janus-idp/backstage-scaffolder-backend-module-regex@1.2.2) (2023-11-22)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.4.5
+
+## @janus-idp/backstage-scaffolder-backend-module-regex [1.2.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-regex@1.2.0...@janus-idp/backstage-scaffolder-backend-module-regex@1.2.1) (2023-11-21)
+
+
+### Bug Fixes
+
+* sync versions in dynamic assets and publish derived packages as additional packages ([#963](https://github.com/janus-idp/backstage-plugins/issues/963)) ([7d0a386](https://github.com/janus-idp/backstage-plugins/commit/7d0a38609b4a18b54c75378a150e8b5c3ba8ff43))
+
+## @janus-idp/backstage-scaffolder-backend-module-regex [1.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-regex@1.1.2...@janus-idp/backstage-scaffolder-backend-module-regex@1.2.0) (2023-11-21)
+
+
+### Features
+
+* make all backend plugins dynamic ([#954](https://github.com/janus-idp/backstage-plugins/issues/954)) ([1b4338a](https://github.com/janus-idp/backstage-plugins/commit/1b4338a45c3b92f5607391b2bfc17c4d29050ce3))
+
+## @janus-idp/backstage-scaffolder-backend-module-regex [1.1.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-regex@1.1.1...@janus-idp/backstage-scaffolder-backend-module-regex@1.1.2) (2023-11-13)
+
 ## @janus-idp/backstage-scaffolder-backend-module-regex [1.1.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-regex@1.1.0...@janus-idp/backstage-scaffolder-backend-module-regex@1.1.1) (2023-10-19)
 
 ## @janus-idp/backstage-scaffolder-backend-module-regex [1.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-regex@1.0.5...@janus-idp/backstage-scaffolder-backend-module-regex@1.1.0) (2023-08-14)
