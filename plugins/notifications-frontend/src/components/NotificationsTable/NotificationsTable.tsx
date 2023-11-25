@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useAsync } from 'react-use';
 
 import {
@@ -17,8 +17,10 @@ import { MaterialTableProps } from '@material-table/core';
 import { Grid, IconButton, Tooltip } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import MarkAsReadIcon from '@material-ui/icons/CheckCircle';
+import debounce from 'lodash/debounce';
 
 import { notificationsApiRef, NotificationsFilter } from '../../api';
+import { DebounceDelayMs } from '../../constants';
 import MarkAsUnreadIcon from './MarkAsUnreadIcon';
 import {
   CreatedAfterOptions,
@@ -46,9 +48,7 @@ export const NotificationsTable = ({
   const classes = useStyles();
   const [pageNumber, setPageNumber] = React.useState(0);
   const [pageSize, setPageSize] = React.useState(5);
-  const [containsText, setContainsText] = React.useState<string | undefined>(
-    undefined,
-  );
+  const [containsText, setContainsText] = React.useState<string>();
   const [createdAfter, setCreatedAfter] = React.useState<string>('lastWeek');
   const [unreadOnly, setUnreadOnly] = React.useState(true);
   const [sorting, setSorting] = React.useState<
@@ -66,6 +66,11 @@ export const NotificationsTable = ({
         .then(() => setReload(Date.now()));
     },
     [notificationsApi],
+  );
+
+  const debouncedContainsTextHandler = useMemo(
+    () => debounce(setContainsText, DebounceDelayMs),
+    [],
   );
 
   const { loading, value, error } = useAsync(async (): Promise<{
@@ -200,25 +205,17 @@ export const NotificationsTable = ({
     return <ResponseErrorPanel error={error} />;
   }
 
-  const data =
-    value?.notifications.map(notification => {
-      // Provide additional mapping between the Notification type and the table
-      return {
-        ...notification,
-      };
-    }) || [];
-
   return (
     <Table<Notification>
       isLoading={loading}
       options={{ search: true, paging: true, pageSize }}
       columns={columns}
-      data={data}
+      data={value?.notifications || []}
       onPageChange={setPageNumber}
       onRowsPerPageChange={setPageSize}
       page={pageNumber}
       totalCount={value?.totalCount}
-      onSearchChange={setContainsText}
+      onSearchChange={debouncedContainsTextHandler}
       onOrderChange={onOrderChange}
       components={{
         Toolbar: props => (

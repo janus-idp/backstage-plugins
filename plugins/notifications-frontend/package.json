@@ -29,6 +29,7 @@
     "@backstage/core-plugin-api": "^1.7.0",
     "@backstage/theme": "^0.4.3",
     "@backstage/plugin-notifications-common": "0.1.0",
+    "lodash": "^4.17.21",
     "@material-ui/core": "^4.9.13",
     "@material-ui/icons": "^4.11.3",
     "@material-ui/lab": "^4.0.0-alpha.45",
