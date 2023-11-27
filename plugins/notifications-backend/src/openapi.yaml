@@ -89,6 +89,7 @@ paths:
           required: false
           schema:
             type: string
+            format: date-time
         - name: messageScope
           in: query
           description: retrieve either user messages, system messages or both
@@ -138,6 +139,7 @@ paths:
           required: false
           schema:
             type: string
+            format: date-time
         - name: messageScope
           in: query
           description: retrieve either user messages, system messages or both
@@ -211,6 +213,7 @@ components:
           type: string
         created:
           type: string
+          format: date-time
         readByUser:
           type: boolean
         isSystem:
