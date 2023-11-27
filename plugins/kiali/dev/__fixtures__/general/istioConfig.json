@@ -1,0 +1,375 @@
+{
+  "bookinfo": {
+    "namespace": {
+      "name": "bookinfo",
+      "cluster": "",
+      "isAmbient": false,
+      "labels": null,
+      "annotations": null
+    },
+    "destinationRules": [],
+    "envoyFilters": [],
+    "gateways": [
+      {
+        "kind": "Gateway",
+        "apiVersion": "networking.istio.io/v1alpha3",
+        "metadata": {
+          "name": "bookinfo-gateway",
+          "namespace": "bookinfo",
+          "resourceVersion": "30111",
+          "creationTimestamp": "2023-10-09T07:02:07Z",
+          "annotations": {
+            "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"networking.istio.io/v1alpha3\",\"kind\":\"Gateway\",\"metadata\":{\"annotations\":{},\"name\":\"bookinfo-gateway\",\"namespace\":\"bookinfo\"},\"spec\":{\"selector\":{\"istio\":\"ingressgateway\"},\"servers\":[{\"hosts\":[\"*\"],\"port\":{\"name\":\"http\",\"number\":80,\"protocol\":\"HTTP\"}}]}}\n"
+          }
+        },
+        "spec": {
+          "servers": [
+            {
+              "port": {
+                "number": 80,
+                "protocol": "HTTP",
+                "name": "http"
+              },
+              "hosts": ["*"]
+            }
+          ],
+          "selector": {
+            "istio": "ingressgateway"
+          }
+        },
+        "status": {}
+      }
+    ],
+    "serviceEntries": [],
+    "sidecars": [],
+    "virtualServices": [
+      {
+        "kind": "VirtualService",
+        "apiVersion": "networking.istio.io/v1alpha3",
+        "metadata": {
+          "name": "bookinfo",
+          "namespace": "bookinfo",
+          "resourceVersion": "30205",
+          "creationTimestamp": "2023-10-09T07:02:07Z",
+          "annotations": {
+            "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"networking.istio.io/v1alpha3\",\"kind\":\"VirtualService\",\"metadata\":{\"annotations\":{},\"name\":\"bookinfo\",\"namespace\":\"bookinfo\"},\"spec\":{\"gateways\":[\"bookinfo-gateway\"],\"hosts\":[\"*\"],\"http\":[{\"match\":[{\"uri\":{\"exact\":\"/productpage\"}},{\"uri\":{\"prefix\":\"/static\"}},{\"uri\":{\"exact\":\"/login\"}},{\"uri\":{\"exact\":\"/logout\"}},{\"uri\":{\"prefix\":\"/api/v1/products\"}}],\"route\":[{\"destination\":{\"host\":\"productpage\",\"port\":{\"number\":9080}}}]}]}}\n"
+          }
+        },
+        "spec": {
+          "hosts": ["istio-ingressgateway-istio-system.apps-crc.testing"],
+          "gateways": ["bookinfo-gateway"],
+          "http": [
+            {
+              "match": [
+                {
+                  "uri": {
+                    "exact": "/productpage"
+                  }
+                },
+                {
+                  "uri": {
+                    "prefix": "/static"
+                  }
+                },
+                {
+                  "uri": {
+                    "exact": "/login"
+                  }
+                },
+                {
+                  "uri": {
+                    "exact": "/logout"
+                  }
+                },
+                {
+                  "uri": {
+                    "prefix": "/api/v1/products"
+                  }
+                }
+              ],
+              "route": [
+                {
+                  "destination": {
+                    "host": "productpage",
+                    "port": {
+                      "number": 9080
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "status": {}
+      }
+    ],
+    "workloadEntries": [],
+    "workloadGroups": [],
+    "wasmPlugins": [],
+    "telemetries": [],
+    "k8sGateways": [],
+    "k8sHTTPRoutes": [],
+    "authorizationPolicies": [],
+    "peerAuthentications": [],
+    "requestAuthentications": [],
+    "validations": {}
+  },
+  "default": {
+    "namespace": {
+      "name": "default",
+      "cluster": "",
+      "isAmbient": false,
+      "labels": null,
+      "annotations": null
+    },
+    "destinationRules": [],
+    "envoyFilters": [],
+    "gateways": [],
+    "serviceEntries": [],
+    "sidecars": [],
+    "virtualServices": [],
+    "workloadEntries": [],
+    "workloadGroups": [],
+    "wasmPlugins": [],
+    "telemetries": [],
+    "k8sGateways": [],
+    "k8sHTTPRoutes": [],
+    "authorizationPolicies": [],
+    "peerAuthentications": [],
+    "requestAuthentications": [],
+    "validations": {}
+  },
+  "hostpath-provisioner": {
+    "namespace": {
+      "name": "hostpath-provisioner",
+      "cluster": "",
+      "isAmbient": false,
+      "labels": null,
+      "annotations": null
+    },
+    "destinationRules": [],
+    "envoyFilters": [],
+    "gateways": [],
+    "serviceEntries": [],
+    "sidecars": [],
+    "virtualServices": [],
+    "workloadEntries": [],
+    "workloadGroups": [],
+    "wasmPlugins": [],
+    "telemetries": [],
+    "k8sGateways": [],
+    "k8sHTTPRoutes": [],
+    "authorizationPolicies": [],
+    "peerAuthentications": [],
+    "requestAuthentications": [],
+    "validations": {}
+  },
+  "istio-system": {
+    "namespace": {
+      "name": "istio-system",
+      "cluster": "",
+      "isAmbient": false,
+      "labels": null,
+      "annotations": null
+    },
+    "destinationRules": [],
+    "envoyFilters": [],
+    "gateways": [],
+    "serviceEntries": [],
+    "sidecars": [],
+    "virtualServices": [],
+    "workloadEntries": [],
+    "workloadGroups": [],
+    "wasmPlugins": [],
+    "telemetries": [],
+    "k8sGateways": [],
+    "k8sHTTPRoutes": [],
+    "authorizationPolicies": [],
+    "peerAuthentications": [],
+    "requestAuthentications": [],
+    "validations": {}
+  },
+  "kiali": {
+    "namespace": {
+      "name": "kiali",
+      "cluster": "",
+      "isAmbient": false,
+      "labels": null,
+      "annotations": null
+    },
+    "destinationRules": [],
+    "envoyFilters": [],
+    "gateways": [],
+    "serviceEntries": [],
+    "sidecars": [],
+    "virtualServices": [],
+    "workloadEntries": [],
+    "workloadGroups": [],
+    "wasmPlugins": [],
+    "telemetries": [],
+    "k8sGateways": [],
+    "k8sHTTPRoutes": [],
+    "authorizationPolicies": [],
+    "peerAuthentications": [],
+    "requestAuthentications": [],
+    "validations": {}
+  },
+  "travel-agency": {
+    "namespace": {
+      "name": "travel-agency",
+      "cluster": "",
+      "isAmbient": false,
+      "labels": null,
+      "annotations": null
+    },
+    "destinationRules": [
+      {
+        "kind": "DestinationRule",
+        "apiVersion": "networking.istio.io/v1alpha3",
+        "metadata": {
+          "name": "travels",
+          "namespace": "travel-agency",
+          "resourceVersion": "79940",
+          "creationTimestamp": "2023-10-09T10:34:13Z",
+          "labels": {
+            "kiali_wizard": "request_routing"
+          }
+        },
+        "spec": {
+          "host": "travels.travel-agency.svc.cluster.local",
+          "subsets": [
+            {
+              "name": "v1",
+              "labels": {
+                "version": "v1"
+              }
+            },
+            {
+              "name": "v2",
+              "labels": {
+                "version": "v2"
+              }
+            },
+            {
+              "name": "v3",
+              "labels": {
+                "version": "v3"
+              }
+            }
+          ]
+        },
+        "status": {}
+      }
+    ],
+    "envoyFilters": [],
+    "gateways": [],
+    "serviceEntries": [],
+    "sidecars": [],
+    "virtualServices": [
+      {
+        "kind": "VirtualService",
+        "apiVersion": "networking.istio.io/v1alpha3",
+        "metadata": {
+          "name": "travels",
+          "namespace": "travel-agency",
+          "resourceVersion": "79939",
+          "creationTimestamp": "2023-10-09T10:34:13Z",
+          "labels": {
+            "kiali_wizard": "request_routing"
+          }
+        },
+        "spec": {
+          "hosts": ["travels.travel-agency.svc.cluster.local"],
+          "http": [
+            {
+              "route": [
+                {
+                  "destination": {
+                    "host": "travels.travel-agency.svc.cluster.local",
+                    "subset": "v1"
+                  },
+                  "weight": 52
+                },
+                {
+                  "destination": {
+                    "host": "travels.travel-agency.svc.cluster.local",
+                    "subset": "v2"
+                  },
+                  "weight": 24
+                },
+                {
+                  "destination": {
+                    "host": "travels.travel-agency.svc.cluster.local",
+                    "subset": "v3"
+                  },
+                  "weight": 24
+                }
+              ]
+            }
+          ]
+        },
+        "status": {}
+      }
+    ],
+    "workloadEntries": [],
+    "workloadGroups": [],
+    "wasmPlugins": [],
+    "telemetries": [],
+    "k8sGateways": [],
+    "k8sHTTPRoutes": [],
+    "authorizationPolicies": [],
+    "peerAuthentications": [],
+    "requestAuthentications": [],
+    "validations": {}
+  },
+  "travel-control": {
+    "namespace": {
+      "name": "travel-control",
+      "cluster": "",
+      "isAmbient": false,
+      "labels": null,
+      "annotations": null
+    },
+    "destinationRules": [],
+    "envoyFilters": [],
+    "gateways": [],
+    "serviceEntries": [],
+    "sidecars": [],
+    "virtualServices": [],
+    "workloadEntries": [],
+    "workloadGroups": [],
+    "wasmPlugins": [],
+    "telemetries": [],
+    "k8sGateways": [],
+    "k8sHTTPRoutes": [],
+    "authorizationPolicies": [],
+    "peerAuthentications": [],
+    "requestAuthentications": [],
+    "validations": {}
+  },
+  "travel-portal": {
+    "namespace": {
+      "name": "travel-portal",
+      "cluster": "",
+      "isAmbient": false,
+      "labels": null,
+      "annotations": null
+    },
+    "destinationRules": [],
+    "envoyFilters": [],
+    "gateways": [],
+    "serviceEntries": [],
+    "sidecars": [],
+    "virtualServices": [],
+    "workloadEntries": [],
+    "workloadGroups": [],
+    "wasmPlugins": [],
+    "telemetries": [],
+    "k8sGateways": [],
+    "k8sHTTPRoutes": [],
+    "authorizationPolicies": [],
+    "peerAuthentications": [],
+    "requestAuthentications": [],
+    "validations": {}
+  }
+}

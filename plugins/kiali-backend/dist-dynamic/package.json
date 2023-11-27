@@ -1,6 +1,6 @@
 {
   "name": "@janus-idp/backstage-plugin-kiali-backend-dynamic",
-  "version": "1.6.5",
+  "version": "1.6.6",
   "main": "dist/index.cjs.js",
   "types": "dist/index.d.ts",
   "license": "Apache-2.0",
@@ -30,8 +30,7 @@
     "express-promise-router": "^4.1.1",
     "moment": "^2.29.4",
     "winston": "^3.11.0",
-    "yn": "^4.0.0",
-    "deep-freeze": "^0.0.1"
+    "yn": "^4.0.0"
   },
   "devDependencies": {},
   "files": [

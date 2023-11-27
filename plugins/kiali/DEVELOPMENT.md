@@ -18,51 +18,13 @@
    "@janus-idp/backstage-plugin-kiali": "link:../../plugins/kiali",
    ```
 
-   or launch
-
-   ```bash
-   yarn workspace add @janus-idp/backstage-plugin-kiali@*
-   ```
-
    - Add to packages/backend/package.json
 
    ```yaml title="packages/backend/package.json"
    '@janus-idp/backstage-plugin-kiali-backend': 'link:../../plugins/kiali-backend'
    ```
 
-   or launch
-
-   ```bash
-   yarn workspace backend @janus-idp/backstage-plugin-kiali-backend@*
-   ```
-
-2. If you are going to modify `kiali-common` then you need to link this too.
-
-   - Replace in plugin/kiali/package.json
-
-   ```yaml title="plugin/kiali/package.json"
-   "@janus-idp/backstage-plugin-kiali-common": "link:../kiali-common",
-   ```
-
-   or launch
-
-   ```bash
-   yarn upgrade @janus-idp/backstage-plugin-kiali-common@link:../kiali-common
-   ```
-
-   - Replace in plugin/kiali-backend/package.json
-
-   ```yaml title="plugin/kiali-backend/package.json"
-   "@janus-idp/backstage-plugin-kiali-common": "link:../kiali-common",
-   ```
-
-   or launch
-
-   ```bash
-   yarn upgrade @janus-idp/backstage-plugin-kiali-common@link:../kiali-common
-   ```
-
-3. Enable the **Kiali** tab on the entity view page using the `packages/app/src/components/catalog/EntityPage.tsx` file:
+2. Enable the **Kiali** tab on the entity view page using the `packages/app/src/components/catalog/EntityPage.tsx` file:
 
    ```tsx title="packages/app/src/components/catalog/EntityPage.tsx"
    /* highlight-add-next-line */
@@ -80,12 +42,10 @@
    );
    ```
 
-4. Create a file called `kiali.ts` inside `packages/backend/src/plugins/` and add the following:
+3. Create a file called `kiali.ts` inside `packages/backend/src/plugins/` and add the following:
 
 ```ts
 /* highlight-add-start */
-import { CatalogClient } from '@backstage/catalog-client';
-
 import { Router } from 'express';
 
 import { createRouter } from '@janus-idp/backstage-plugin-kiali-backend';
@@ -95,10 +55,8 @@ import { PluginEnvironment } from '../types';
 export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
-  const catalogApi = new CatalogClient({ discoveryApi: env.discovery });
   return await createRouter({
     logger: env.logger,
-    catalogApi,
     config: env.config,
   });
 }
@@ -130,8 +88,6 @@ catalog:
     kiali:
       # Required. Kiali endpoint
       url: ${KIALI_ENDPOINT}
-      # Required. Kiali authentication. Supported anonymous and token
-      strategy: ${KIALI_AUTH_STRATEGY}
       # Optional. Required by token authentication
       serviceAccountToken: ${KIALI_SERVICE_ACCOUNT_TOKEN}
       # Optional. defaults false
@@ -143,6 +99,17 @@ catalog:
       # Optional. Time in seconds that session is enabled, defaults to 1 minute.
       sessionTime: 60
       # highlight-add-end
+```
+
+7. Add catalog
+
+Add to locations in `app-config.yaml`
+
+```yaml
+locations:
+  # Local example data for Kiali plugin
+  - type: file
+    target: ../../plugins/kiali/catalog-demo.yaml
 ```
 
 ## Configure auth
@@ -158,8 +125,6 @@ catalog:
     kiali:
       # Required. Kiali endpoint
       url: ${KIALI_ENDPOINT}
-      # Required. Kiali authentication. Supported anonymous and token
-      strategy: token
       # Optional. Required by token authentication
       serviceAccountToken: ${KIALI_SERVICE_ACCOUNT_TOKEN}
       # Optional. defaults false
@@ -171,4 +136,10 @@ catalog:
 
 ```bash
 kubectl create token $KIALI_SERVICE_ACCOUNT
+```
+
+or if you installed kiali with the operator then execute
+
+```bash
+export KIALI_SERVICE_ACCOUNT_TOKEN=$(kubectl describe secret $(kubectl get secret -n istio-system | grep kiali-service-account-token | cut -d" " -f1) -n istio-system | grep token: | cut -d ":" -f2 | sed 's/^ *//')
 ```
