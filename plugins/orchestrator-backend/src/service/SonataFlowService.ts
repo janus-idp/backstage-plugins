@@ -218,47 +218,53 @@ export class SonataFlowService {
             if (!definition) {
               return undefined;
             }
-
-            const graphQlQuery = `{ ProcessInstances(where: {processId: {equal: "${definition.id}" } } ) { processName, state, start, lastUpdate, end } }`;
             let processInstances: ProcessInstance[] = [];
-            try {
-              const graphQlResponse = await executeWithRetry(() =>
-                fetch(`${this.url}/graphql`, {
-                  method: 'POST',
-                  body: JSON.stringify({ query: graphQlQuery }),
-                  headers: { 'content-type': 'application/json' },
-                }),
-              );
-
-              if (graphQlResponse.ok) {
-                const json = await graphQlResponse.json();
-                processInstances = json.data.ProcessInstances;
-              }
-            } catch (error) {
-              this.logger.error(`Error when fetching instances: ${error}`);
-            }
+            const limit = 10;
+            let offset: number = 0;
 
             let lastTriggered: Date = new Date(0);
             let lastRunStatus = '';
             let counter = 0;
             let totalDuration = 0;
 
-            processInstances.forEach((pInstance: ProcessInstance) => {
-              if (new Date(pInstance.start) > lastTriggered) {
-                lastTriggered = new Date(pInstance.start);
-                lastRunStatus = pInstance.state;
+            do {
+              const graphQlQuery = `{ ProcessInstances(where: {processId: {equal: "${definition.id}" } }, pagination: {limit: "${limit}", offset: "${offset}"}) { processName, state, start, lastUpdate, end } }`;
+
+              try {
+                const graphQlResponse = await executeWithRetry(() =>
+                  fetch(`${this.url}/graphql`, {
+                    method: 'POST',
+                    body: JSON.stringify({ query: graphQlQuery }),
+                    headers: { 'content-type': 'application/json' },
+                  }),
+                );
+
+                if (graphQlResponse.ok) {
+                  const json = await graphQlResponse.json();
+                  processInstances = json.data.ProcessInstances;
+                }
+              } catch (error) {
+                this.logger.error(`Error when fetching instances: ${error}`);
               }
-              if (pInstance.start && pInstance.end) {
-                const start: Date = new Date(pInstance.start);
-                const end: Date = new Date(pInstance.end);
-                totalDuration += end.valueOf() - start.valueOf();
-                counter++;
-              }
-            });
+
+              processInstances.forEach((pInstance: ProcessInstance) => {
+                if (new Date(pInstance.start) > lastTriggered) {
+                  lastTriggered = new Date(pInstance.start);
+                  lastRunStatus = pInstance.state;
+                }
+                if (pInstance.start && pInstance.end) {
+                  const start: Date = new Date(pInstance.start);
+                  const end: Date = new Date(pInstance.end);
+                  totalDuration += end.valueOf() - start.valueOf();
+                  counter++;
+                }
+              });
+              offset += limit;
+            } while (processInstances.length > 0);
 
             const result: WorkflowOverview = {
               name: definition.name,
-              lastTriggered: lastTriggered,
+              lastTriggered: lastTriggered === new Date(0) ? '' : lastTriggered,
               lastRunStatus: lastRunStatus,
               type: this.extractWorkflowType(definition),
               avgDurationMs: counter ? totalDuration / counter : 0,
