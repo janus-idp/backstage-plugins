@@ -240,6 +240,7 @@ components:
           type: string
         url:
           type: string
+      required: [id, title, url]
     CreateBody:
       properties:
         origin:
