@@ -23,7 +23,7 @@
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
     "tsc": "tsc",
-    "openapi:generate": "openapi-generator-cli generate -i ../notifications-backend/src/openapi.yaml -g typescript-fetch -o ./src/openapi"
+    "openapi:generate": "openapi-generator-cli generate -i ../notifications-backend/src/openapi.yaml --enable-post-process-file -g typescript-fetch -o ./src/openapi && find ./src/openapi -name '*.ts' -exec sed  -i '1i // @ts-nocheck' {} \\;"
   },
   "dependencies": {
     "@backstage/core-components": "^0.13.6",
