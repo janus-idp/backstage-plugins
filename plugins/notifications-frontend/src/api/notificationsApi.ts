@@ -1,32 +1,26 @@
 import { createApiRef } from '@backstage/core-plugin-api';
+
 import {
-  CreateNotificationRequest,
+  CreateBody,
+  GetNotificationsCountRequest,
+  GetNotificationsRequest,
   Notification,
-  NotificationsQuerySorting,
-} from '@backstage/plugin-notifications-common';
+  SetReadRequest,
+} from '../openapi';
 
-export type NotificationsFilter = {
-  containsText?: string;
-  createdAfter?: Date;
-  messageScope?: 'all' | 'user' | 'system';
-  isRead?: boolean; // if undefined, include both read and unread
-};
+export type NotificationsCreateRequest = CreateBody;
 
-export type NotificationsQuery = NotificationsFilter & {
-  pageSize: number;
-  pageNumber: number;
+export type NotificationsQuery = Omit<GetNotificationsRequest, 'user'>;
 
-  sorting?: NotificationsQuerySorting;
-};
-export type NotificationsCountQuery = NotificationsFilter;
+export type NotificationsCountQuery = Omit<
+  GetNotificationsCountRequest,
+  'user'
+>;
 
-export type NotificationMarkAsRead = {
-  notificationId: string;
-  isRead: boolean;
-};
+export type NotificationMarkAsRead = Omit<SetReadRequest, 'user'>;
 export interface NotificationsApi {
   /** Create a notification. Returns its new ID. */
-  post(notification: CreateNotificationRequest): Promise<string>;
+  createNotification(notification: NotificationsCreateRequest): Promise<string>;
 
   /** Read a list of notifications based on filter parameters. */
   getNotifications(query?: NotificationsQuery): Promise<Notification[]>;

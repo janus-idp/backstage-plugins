@@ -8,10 +8,6 @@ import {
   TableColumn,
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
-import {
-  Notification,
-  NotificationsQuerySorting,
-} from '@backstage/plugin-notifications-common';
 
 import { MaterialTableProps } from '@material-table/core';
 import { Grid, IconButton, Tooltip } from '@material-ui/core';
@@ -19,8 +15,14 @@ import { makeStyles } from '@material-ui/core/styles';
 import MarkAsReadIcon from '@material-ui/icons/CheckCircle';
 import debounce from 'lodash/debounce';
 
-import { notificationsApiRef, NotificationsFilter } from '../../api';
+import { notificationsApiRef, NotificationsQuery } from '../../api';
 import { DebounceDelayMs } from '../../constants';
+import {
+  GetNotificationsCountMessageScopeEnum,
+  GetNotificationsOrderByDirecEnum,
+  GetNotificationsOrderByEnum,
+  Notification,
+} from '../../openapi';
 import MarkAsUnreadIcon from './MarkAsUnreadIcon';
 import {
   CreatedAfterOptions,
@@ -38,7 +40,7 @@ const useStyles = makeStyles({
 });
 
 export type NotificationsTableProps = {
-  messageScope: NonNullable<NotificationsFilter['messageScope']>;
+  messageScope: GetNotificationsCountMessageScopeEnum;
 };
 
 export const NotificationsTable = ({
@@ -52,7 +54,11 @@ export const NotificationsTable = ({
   const [createdAfter, setCreatedAfter] = React.useState<string>('lastWeek');
   const [unreadOnly, setUnreadOnly] = React.useState(true);
   const [sorting, setSorting] = React.useState<
-    NotificationsQuerySorting | undefined
+    | {
+        orderBy: GetNotificationsOrderByEnum;
+        orderByDirec: GetNotificationsOrderByDirecEnum;
+      }
+    | undefined
   >();
   const [reload, setReload] = React.useState(0);
 
@@ -60,8 +66,8 @@ export const NotificationsTable = ({
     (notification: Notification) => {
       notificationsApi
         .markAsRead({
-          notificationId: notification.id,
-          isRead: !notification.readByUser,
+          messageId: notification.id,
+          read: !notification.readByUser,
         })
         .then(() => setReload(Date.now()));
     },
@@ -79,22 +85,26 @@ export const NotificationsTable = ({
   }> => {
     const createdAfterDate = CreatedAfterOptions[createdAfter].getDate();
 
-    const commonParams: NotificationsFilter = {
+    const commonParams: Pick<
+      NotificationsQuery,
+      'containsText' | 'createdAfter' | 'messageScope' | 'read'
+    > = {
       containsText,
       createdAfter: createdAfterDate,
       messageScope,
     };
 
     if (unreadOnly !== undefined) {
-      commonParams.isRead = !unreadOnly;
+      commonParams.read = !unreadOnly;
     }
 
     const data = await notificationsApi.getNotifications({
       ...commonParams,
+      ...sorting,
       pageSize,
       pageNumber: pageNumber + 1 /* BE starts at 1 */,
-      sorting,
     });
+
     // TODO: extend BE to get both in a single query/response
     const total = await notificationsApi.getNotificationsCount({
       ...commonParams,
@@ -169,13 +179,13 @@ export const NotificationsTable = ({
 
   const onOrderChange = React.useCallback<
     NonNullable<MaterialTableProps<Notification>['onOrderChange']>
-  >((orderBy, direction) => {
+  >((orderBy, orderByDirec) => {
     if (orderBy < 0) {
       setSorting(undefined);
       return;
     }
 
-    const fieldNames: NotificationsQuerySorting['fieldName'][] = [
+    const fieldNames: GetNotificationsOrderByEnum[] = [
       /* Keep the order in sync with the column definitions bellow */
       'title',
       'message',
@@ -185,7 +195,7 @@ export const NotificationsTable = ({
     ];
     const fieldName = fieldNames[orderBy];
 
-    setSorting({ fieldName, direction });
+    setSorting({ orderBy: fieldName, orderByDirec });
   }, []);
 
   const columns = React.useMemo(

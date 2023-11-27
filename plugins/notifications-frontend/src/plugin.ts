@@ -1,5 +1,4 @@
 import {
-  configApiRef,
   createApiFactory,
   createPlugin,
   createRoutableExtension,
@@ -17,10 +16,9 @@ export const notificationsPlugin = createPlugin({
   apis: [
     createApiFactory({
       api: notificationsApiRef,
-      deps: { configApi: configApiRef, identityApi: identityApiRef },
-      factory({ configApi, identityApi }) {
+      deps: { identityApi: identityApiRef },
+      factory({ identityApi }) {
         return new NotificationsApiImpl({
-          configApi,
           identityApi,
         });
       },

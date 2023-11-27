@@ -1,29 +1,31 @@
-import { ConfigApi, IdentityApi } from '@backstage/core-plugin-api';
-import {
-  CreateNotificationRequest,
-  Notification,
-} from '@backstage/plugin-notifications-common';
+import { IdentityApi } from '@backstage/core-plugin-api';
 
+import {
+  CreateBody,
+  DefaultConfig,
+  GetNotificationsRequest,
+  Notification,
+  NotificationsApi as NotificationsOpenApi,
+} from '../openapi';
 import {
   NotificationMarkAsRead,
   NotificationsApi,
   NotificationsCountQuery,
-  NotificationsFilter,
-  NotificationsQuery,
 } from './notificationsApi';
 
 export type NotificationsApiOptions = {
-  configApi: ConfigApi;
   identityApi: IdentityApi;
 };
 
 export class NotificationsApiImpl implements NotificationsApi {
-  private readonly backendUrl: string;
   private readonly identityApi: IdentityApi;
+  private readonly backendRestApi: NotificationsOpenApi;
 
   constructor(options: NotificationsApiOptions) {
-    this.backendUrl = options.configApi.getString('backend.baseUrl');
     this.identityApi = options.identityApi;
+
+    const configuration = DefaultConfig;
+    this.backendRestApi = new NotificationsOpenApi(configuration);
   }
 
   private async getLogedInUsername(): Promise<string> {
@@ -34,110 +36,32 @@ export class NotificationsApiImpl implements NotificationsApi {
     return userEntityRef.slice('start:'.length - 1);
   }
 
-  private addFilter(url: URL, user: string, filter: NotificationsFilter) {
-    url.searchParams.append('user', user);
-
-    if (filter.containsText) {
-      url.searchParams.append('containsText', filter.containsText);
-    }
-    if (filter.createdAfter) {
-      url.searchParams.append(
-        'createdAfter',
-        filter.createdAfter.toISOString(),
-      );
-    }
-    if (filter.messageScope) {
-      url.searchParams.append('messageScope', filter.messageScope);
-    }
-    if (filter.isRead !== undefined) {
-      url.searchParams.append('read', filter.isRead ? 'true' : 'false');
-    }
-  }
-
-  async post(notification: CreateNotificationRequest): Promise<string> {
-    const url = new URL(`${this.backendUrl}/api/notifications/notifications`);
-
-    const response = await fetch(url.href, {
-      method: 'POST',
-      body: JSON.stringify(notification),
-      headers: { 'Content-Type': 'application/json' },
+  async createNotification(notification: CreateBody): Promise<string> {
+    const data = await this.backendRestApi.createNotification({
+      createBody: notification,
     });
-    const data = await response.json();
-    if (response.status !== 200 && response.status !== 201) {
-      throw new Error(data.message || data.error?.message);
-    }
-
-    return Promise.resolve(data.messageId);
+    return data.messageId;
   }
 
-  async getNotifications(query: NotificationsQuery): Promise<Notification[]> {
-    const url = new URL(`${this.backendUrl}/api/notifications/notifications`);
+  async getNotifications(
+    query: GetNotificationsRequest,
+  ): Promise<Notification[]> {
     const user = await this.getLogedInUsername();
-
-    url.searchParams.append('pageSize', `${query.pageSize}`);
-    url.searchParams.append('pageNumber', `${query.pageNumber}`);
-
-    if (query.sorting) {
-      url.searchParams.append('orderBy', `${query.sorting.fieldName}`);
-      url.searchParams.append('orderByDirec', `${query.sorting.direction}`);
-    }
-
-    this.addFilter(url, user, query);
-
-    const response = await fetch(url.href);
-    const data = await response.json();
-    if (response.status !== 200 && response.status !== 201) {
-      throw new Error(data.message);
-    }
-
-    if (!Array.isArray(data)) {
-      throw new Error('Unexpected format of notifications received');
-    }
-
-    return data;
+    return this.backendRestApi.getNotifications({ ...query, user });
   }
 
   async getNotificationsCount(query: NotificationsCountQuery): Promise<number> {
-    const url = new URL(
-      `${this.backendUrl}/api/notifications/notifications/count`,
-    );
     const user = await this.getLogedInUsername();
-
-    this.addFilter(url, user, query);
-
-    const response = await fetch(url.href);
-    const data = await response.json();
-    if (response.status !== 200 && response.status !== 201) {
-      throw new Error(data.message);
-    }
-
-    const count = parseInt(data.count, 10);
-    if (Number.isNaN(count)) {
-      throw new Error('Unexpected format of notifications count received');
-    }
-
-    return count;
+    const data = await this.backendRestApi.getNotificationsCount({
+      ...query,
+      user,
+    });
+    return data.count;
   }
 
-  async markAsRead({
-    notificationId,
-    isRead,
-  }: NotificationMarkAsRead): Promise<void> {
-    const url = new URL(
-      `${this.backendUrl}/api/notifications/notifications/read`,
-    );
+  async markAsRead(params: NotificationMarkAsRead): Promise<void> {
     const user = await this.getLogedInUsername();
 
-    url.searchParams.append('read', isRead ? 'true' : 'false');
-    url.searchParams.append('user', user);
-    url.searchParams.append('messageId', notificationId);
-
-    const response = await fetch(url.href, {
-      method: 'PUT',
-    });
-
-    if (response.status !== 200 && response.status !== 201) {
-      throw new Error('Failed to mark the message as read');
-    }
+    return this.backendRestApi.setRead({ ...params, user });
   }
 }

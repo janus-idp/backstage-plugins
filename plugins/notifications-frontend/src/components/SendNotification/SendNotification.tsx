@@ -1,7 +1,6 @@
 import React from 'react';
 
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
-import { CreateNotificationRequest } from '@backstage/plugin-notifications-common';
 
 import { makeStyles } from '@material-ui/core';
 import Alert from '@mui/material/Alert';
@@ -10,7 +9,7 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
-import { notificationsApiRef } from '../../api';
+import { notificationsApiRef, NotificationsCreateRequest } from '../../api';
 
 const useStyles = makeStyles({
   container: {
@@ -39,7 +38,7 @@ export const SendNotification = () => {
     try {
       const parsedActions = actions ? JSON.parse(actions) : undefined;
 
-      const notification: CreateNotificationRequest = {
+      const notification: NotificationsCreateRequest = {
         origin,
         title,
         message,
@@ -49,7 +48,7 @@ export const SendNotification = () => {
         targetGroups,
       };
 
-      const id = await notificationsApi.post(notification);
+      const id = await notificationsApi.createNotification(notification);
       setNotificationId(id);
     } catch (_e) {
       const e = _e as Error;
@@ -58,7 +57,7 @@ export const SendNotification = () => {
   };
 
   const getCurl = () => {
-    const data: CreateNotificationRequest = {
+    const data: NotificationsCreateRequest = {
       title,
       origin,
     };
