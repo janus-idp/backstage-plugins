@@ -2,7 +2,6 @@ import React from 'react';
 
 import { SidebarItem } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
-import { Notification } from '@backstage/plugin-notifications-common';
 
 import {
   IconButton,
@@ -17,6 +16,7 @@ import NotificationsOffIcon from '@material-ui/icons/NotificationsOff';
 
 import { notificationsApiRef } from '../api';
 import { NOTIFICATIONS_ROUTE } from '../constants';
+import { Notification } from '../openapi';
 import { usePollingEffect } from './usePollingEffect';
 
 const NotificationsErrorIcon = () => (
@@ -58,7 +58,7 @@ export const NotificationsSidebarItem = ({
     try {
       setUnreadCount(
         await notificationsApi.getNotificationsCount({
-          isRead: false,
+          read: false,
           messageScope: 'user',
         }),
       );
@@ -67,10 +67,8 @@ export const NotificationsSidebarItem = ({
         pageSize: 1,
         pageNumber: 1,
         createdAfter: pageLoadingTime,
-        sorting: {
-          fieldName: 'created',
-          direction: 'desc',
-        },
+        orderBy: 'created',
+        orderByDirec: 'desc',
         messageScope: 'system',
       });
 
