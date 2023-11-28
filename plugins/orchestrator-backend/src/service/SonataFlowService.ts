@@ -35,7 +35,7 @@ interface LauncherCommand {
 
 interface SonataFlowConnectionConfig {
   host: string;
-  port: number;
+  port?: number;
   containerImage: string;
   resourcesPath: string;
   persistencePath: string;
@@ -63,6 +63,9 @@ export class SonataFlowService {
   }
 
   public get url(): string {
+    if (!this.connection.port) {
+      return this.connection.host;
+    }
     return `${this.connection.host}:${this.connection.port}`;
   }
 
@@ -399,7 +402,7 @@ export class SonataFlowService {
     }
 
     launcherArgs.push('--rm');
-    launcherArgs.push('-p', `${this.connection.port}:8080`);
+    launcherArgs.push('-p', `${this.connection.port ?? 80}:8080`);
     launcherArgs.push(
       '-v',
       `${resourcesAbsPath}:${SONATA_FLOW_RESOURCES_PATH}`,
@@ -432,7 +435,9 @@ export class SonataFlowService {
       false;
 
     const host = config.getString('orchestrator.sonataFlowService.baseUrl');
-    const port = config.getNumber('orchestrator.sonataFlowService.port');
+    const port = config.getOptionalNumber(
+      'orchestrator.sonataFlowService.port',
+    );
 
     const resourcesPath =
       config.getOptionalString(
