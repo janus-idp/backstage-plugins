@@ -247,6 +247,7 @@ export class SonataFlowService {
                 this.logger.error(`Error when fetching instances: ${error}`);
               }
 
+              // eslint-disable-next-line no-loop-func
               processInstances.forEach((pInstance: ProcessInstance) => {
                 if (new Date(pInstance.start) > lastTriggered) {
                   lastTriggered = new Date(pInstance.start);
