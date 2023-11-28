@@ -39,9 +39,11 @@ class MockRBACApi implements RBACAPI {
   constructor(fixtureData: Role[]) {
     this.resources = fixtureData;
   }
+
   async getRoles(): Promise<Role[]> {
     return this.resources;
   }
+
   async getPolicies(): Promise<RoleBasedPolicy[]> {
     return mockPolicies;
   }
@@ -75,6 +77,10 @@ class MockRBACApi implements RBACAPI {
     _policies: Policy[],
   ): Promise<number> {
     return 204;
+  }
+
+  async createRole(_role: Role): Promise<any> {
+    return { status: 200 };
   }
 }
 
