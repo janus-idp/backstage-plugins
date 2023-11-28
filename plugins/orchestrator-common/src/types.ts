@@ -80,5 +80,5 @@ export interface WorkflowOverview {
   lastRunStatus: string;
   type: string;
   avgDurationMs: number;
-  documentation?: string;
+  description?: string;
 }
