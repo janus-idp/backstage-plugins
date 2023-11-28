@@ -263,6 +263,7 @@ export class SonataFlowService {
             } while (processInstances.length > 0);
 
             const result: WorkflowOverview = {
+              workflowId: definition.id,
               name: definition.name,
               lastTriggered: lastTriggered === new Date(0) ? '' : lastTriggered,
               lastRunStatus: lastRunStatus,
