@@ -80,6 +80,6 @@ export interface WorkflowOverview {
   lastTriggeredMs?: number;
   lastRunStatus?: string;
   type?: string;
-  avgDurationMs: number;
+  avgDurationMs?: number;
   description?: string;
 }

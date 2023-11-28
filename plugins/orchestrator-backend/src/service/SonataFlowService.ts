@@ -531,7 +531,7 @@ export class SonataFlowService {
             lastRunStatus.slice(1).toLowerCase()
           : undefined,
       type: this.extractWorkflowType(definition),
-      avgDurationMs: counter ? totalDuration / counter : 0,
+      avgDurationMs: counter ? totalDuration / counter : undefined,
       description: definition.description,
     };
   }
