@@ -42,9 +42,10 @@ export class WorkflowService {
     this.sonataFlowService = sonataFlowService;
     this.logger = logger;
     this.githubService = new GitService(logger, config);
-    this.repoURL = config.getString(
-      'orchestrator.sonataFlowService.workflowsSource.gitRepositoryUrl',
-    );
+    this.repoURL =
+      config.getOptionalString(
+        'orchestrator.sonataFlowService.workflowsSource.gitRepositoryUrl',
+      ) ?? '';
     this.autoPush =
       config.getOptionalBoolean(
         'orchestrator.sonataFlowService.workflowsSource.autoPush',

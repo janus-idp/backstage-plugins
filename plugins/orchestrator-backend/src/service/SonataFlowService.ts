@@ -57,6 +57,10 @@ export class SonataFlowService {
     this.connection = this.extractConnectionConfig(config);
   }
 
+  public get autoStart(): boolean {
+    return this.connection.autoStart;
+  }
+
   public get url(): string {
     if (!this.connection.port) {
       return this.connection.host;
@@ -187,7 +191,7 @@ export class SonataFlowService {
 
   public async fetchProcessInstances(): Promise<ProcessInstance[] | undefined> {
     const graphQlQuery =
-      '{ ProcessInstances (where: {processId: {isNull: false} } ) { id, processName, processId, state, start, lastUpdate, end, nodes { id }, variables, parentProcessInstance {id, processName, businessKey} } }';
+      '{ ProcessInstances ( orderBy: { start: ASC }, where: {processId: {isNull: false} } ) { id, processName, processId, state, start, lastUpdate, end, nodes { id }, variables, parentProcessInstance {id, processName, businessKey} } }';
 
     try {
       const response = await executeWithRetry(() =>
@@ -371,9 +375,10 @@ export class SonataFlowService {
       'orchestrator.sonataFlowService.port',
     );
 
-    const resourcesPath = config.getString(
-      'orchestrator.sonataFlowService.workflowsSource.localPath',
-    );
+    const resourcesPath =
+      config.getOptionalString(
+        'orchestrator.sonataFlowService.workflowsSource.localPath',
+      ) ?? '';
 
     const containerImage =
       config.getOptionalString('orchestrator.sonataFlowService.container') ??
