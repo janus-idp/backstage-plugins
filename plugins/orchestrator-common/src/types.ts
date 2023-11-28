@@ -77,8 +77,8 @@ export interface WorkflowOverview {
   workflowId: string;
   name?: string;
   lastTriggered?: string;
-  lastRunStatus: string;
-  type: string;
+  lastRunStatus?: string;
+  type?: string;
   avgDurationMs: number;
   description?: string;
 }

@@ -268,7 +268,7 @@ export class SonataFlowService {
               name: definition.name,
               lastTriggered:
                 lastTriggered === new Date(0)
-                  ? ''
+                  ? undefined
                   : parseInt(
                       (lastTriggered.getTime() / 1000).toFixed(0),
                       10,
@@ -277,7 +277,7 @@ export class SonataFlowService {
                 lastRunStatus.length > 0
                   ? lastRunStatus.charAt(0).toUpperCase() +
                     lastRunStatus.slice(1).toLowerCase()
-                  : '',
+                  : undefined,
               type: this.extractWorkflowType(definition),
               avgDurationMs: counter ? totalDuration / counter : 0,
               description: definition.description,
@@ -431,7 +431,9 @@ export class SonataFlowService {
     return false;
   }
 
-  private extractWorkflowType(workflowDef: WorkflowDefinition): string {
+  private extractWorkflowType(
+    workflowDef: WorkflowDefinition,
+  ): string | undefined {
     if (workflowDef.annotations) {
       for (const annotation of workflowDef.annotations) {
         if (annotation.includes('workflow-type/')) {
@@ -441,7 +443,7 @@ export class SonataFlowService {
       }
     }
 
-    return '';
+    return undefined;
   }
 
   private createLauncherCommand(): LauncherCommand {
