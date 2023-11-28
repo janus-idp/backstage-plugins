@@ -520,16 +520,10 @@ export class SonataFlowService {
       offset += limit;
     } while (processInstances.length > 0);
 
-    const result: WorkflowOverview = {
+    return {
       workflowId: definition.id,
       name: definition.name,
-      lastTriggered:
-        lastTriggered === new Date(0)
-          ? undefined
-          : parseInt(
-              (lastTriggered.getTime() / 1000).toFixed(0),
-              10,
-            ).toString(),
+      lastTriggeredMs: lastTriggered.getTime(),
       lastRunStatus:
         lastRunStatus.length > 0
           ? lastRunStatus.charAt(0).toUpperCase() +
@@ -539,6 +533,5 @@ export class SonataFlowService {
       avgDurationMs: counter ? totalDuration / counter : 0,
       description: definition.description,
     };
-    return result;
   }
 }
