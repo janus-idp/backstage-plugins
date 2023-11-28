@@ -523,6 +523,7 @@ export class SonataFlowService {
     return {
       workflowId: definition.id,
       name: definition.name,
+      uri: await this.fetchWorkflowUri(workflowId),
       lastTriggeredMs: lastTriggered.getTime(),
       lastRunStatus:
         lastRunStatus.length > 0
