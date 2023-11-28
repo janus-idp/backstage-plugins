@@ -48,7 +48,7 @@ export class OrchestratorEntityProvider
     const sonataFlowBaseUrl = args.config.getString(
       'orchestrator.sonataFlowService.baseUrl',
     );
-    const sonataFlowPort = args.config.getNumber(
+    const sonataFlowPort = args.config.getOptionalNumber(
       'orchestrator.sonataFlowService.port',
     );
     const owner =
@@ -60,7 +60,10 @@ export class OrchestratorEntityProvider
 
     const orchestratorPluginUrl =
       await args.discovery.getBaseUrl('orchestrator');
-    const sonataFlowServiceUrl = `${sonataFlowBaseUrl}:${sonataFlowPort}`;
+
+    const sonataFlowServiceUrl = sonataFlowPort
+      ? `${sonataFlowBaseUrl}:${sonataFlowPort}`
+      : sonataFlowBaseUrl;
 
     return new OrchestratorEntityProvider({
       sonataFlowServiceUrl,
