@@ -8,10 +8,6 @@ import { CatalogEntityPage, CatalogIndexPage } from '@backstage/plugin-catalog';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
 import { CatalogGraphPage } from '@backstage/plugin-catalog-graph';
 import { CatalogImportPage } from '@backstage/plugin-catalog-import';
-import {
-  NOTIFICATIONS_ROUTE,
-  NotificationsPage,
-} from '@backstage/plugin-notifications-frontend';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import { SearchPage } from '@backstage/plugin-search';
 import {
@@ -70,7 +66,6 @@ export const AppBase = () => {
               {searchPage}
             </Route>
             <Route path="/catalog-graph" element={<CatalogGraphPage />} />
-            <Route path={NOTIFICATIONS_ROUTE} element={<NotificationsPage />} />
             {dynamicRoutes.map(({ Component, path, ...props }) => (
               <Route
                 key={path}
