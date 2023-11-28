@@ -228,7 +228,7 @@ export class SonataFlowService {
             let totalDuration = 0;
 
             do {
-              const graphQlQuery = `{ ProcessInstances(where: {processId: {equal: "${definition.id}" } }, pagination: {limit: "${limit}", offset: "${offset}"}) { processName, state, start, lastUpdate, end } }`;
+              const graphQlQuery = `{ ProcessInstances(where: {processId: {equal: "${definition.id}" } }, pagination: {limit: ${limit}, offset: ${offset}}) { processName, state, start, lastUpdate, end } }`;
 
               try {
                 const graphQlResponse = await executeWithRetry(() =>
@@ -265,8 +265,15 @@ export class SonataFlowService {
             const result: WorkflowOverview = {
               workflowId: definition.id,
               name: definition.name,
-              lastTriggered: lastTriggered === new Date(0) ? '' : lastTriggered,
-              lastRunStatus: lastRunStatus,
+              lastTriggered:
+                lastTriggered === new Date(0)
+                  ? ''
+                  : parseInt((lastTriggered.getTime() / 1000).toFixed(0), 10),
+              lastRunStatus:
+                lastRunStatus.length > 0
+                  ? lastRunStatus.charAt(0).toUpperCase() +
+                    lastRunStatus.slice(1).toLowerCase()
+                  : '',
               type: this.extractWorkflowType(definition),
               avgDurationMs: counter ? totalDuration / counter : 0,
               description: definition.description,

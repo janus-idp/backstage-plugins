@@ -76,7 +76,7 @@ export enum WorkflowCategory {
 export interface WorkflowOverview {
   workflowId: string;
   name?: string;
-  lastTriggered: string | Date;
+  lastTriggered: string | number;
   lastRunStatus: string;
   type: string;
   avgDurationMs: number;
