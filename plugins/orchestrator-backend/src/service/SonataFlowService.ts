@@ -247,8 +247,8 @@ export class SonataFlowService {
                 this.logger.error(`Error when fetching instances: ${error}`);
               }
 
-              // eslint-disable-next-line no-loop-func
-              processInstances.forEach((pInstance: ProcessInstance) => {
+              for (let i = 0; i < processInstances.length; i++) {
+                const pInstance: ProcessInstance = processInstances[i];
                 if (new Date(pInstance.start) > lastTriggered) {
                   lastTriggered = new Date(pInstance.start);
                   lastRunStatus = pInstance.state;
@@ -259,7 +259,7 @@ export class SonataFlowService {
                   totalDuration += end.valueOf() - start.valueOf();
                   counter++;
                 }
-              });
+              }
               offset += limit;
             } while (processInstances.length > 0);
 
