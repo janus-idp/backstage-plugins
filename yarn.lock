@@ -3464,6 +3464,25 @@
     zen-observable "^0.10.0"
     zod "^3.21.4"
 
+"@backstage/core-app-api@^1.11.1":
+  version "1.11.1"
+  resolved "https://registry.yarnpkg.com/@backstage/core-app-api/-/core-app-api-1.11.1.tgz#21584a43cf7bc80171b8f03a3c0db80b1adef424"
+  integrity sha512-BtYilKoiAnyPjTBZ/LuBIU+nopuleAG/KqfDB36cQ5zAC5cNd2xpXw9NlCQcxJnMV1MjsiqHrfK2lb1S1owXpQ==
+  dependencies:
+    "@backstage/config" "^1.1.1"
+    "@backstage/core-plugin-api" "^1.8.0"
+    "@backstage/types" "^1.1.1"
+    "@backstage/version-bridge" "^1.0.7"
+    "@types/prop-types" "^15.7.3"
+    "@types/react" "^16.13.1 || ^17.0.0"
+    history "^5.0.0"
+    i18next "^22.4.15"
+    lodash "^4.17.21"
+    prop-types "^15.7.2"
+    react-use "^17.2.4"
+    zen-observable "^0.10.0"
+    zod "^3.21.4"
+
 "@backstage/core-components@0.13.6", "@backstage/core-components@^0.13.6":
   version "0.13.6"
   resolved "https://registry.yarnpkg.com/@backstage/core-components/-/core-components-0.13.6.tgz#c34b9ec741c993db7a63634bc25b9d23e4939e6b"
@@ -5164,6 +5183,25 @@
     "@material-ui/icons" "^4.9.1"
     "@types/react" "^16.13.1 || ^17.0.0"
     cross-fetch "^3.1.5"
+    i18next "^22.4.15"
+    zen-observable "^0.10.0"
+
+"@backstage/test-utils@^1.4.4":
+  version "1.4.5"
+  resolved "https://registry.yarnpkg.com/@backstage/test-utils/-/test-utils-1.4.5.tgz#c6dd719aff8d41233786026171a98f34c03eb244"
+  integrity sha512-79ZYGh2gNJRltQ9Mv60P8CZ1IDAQ/lY50ihlLUUohVXXYept3m53z4r68FwRVZl1/XwmXgsdh19beBrrxOA8tQ==
+  dependencies:
+    "@backstage/config" "^1.1.1"
+    "@backstage/core-app-api" "^1.11.1"
+    "@backstage/core-plugin-api" "^1.8.0"
+    "@backstage/plugin-permission-common" "^0.7.10"
+    "@backstage/plugin-permission-react" "^0.4.17"
+    "@backstage/theme" "^0.4.4"
+    "@backstage/types" "^1.1.1"
+    "@material-ui/core" "^4.12.2"
+    "@material-ui/icons" "^4.9.1"
+    "@types/react" "^16.13.1 || ^17.0.0"
+    cross-fetch "^4.0.0"
     i18next "^22.4.15"
     zen-observable "^0.10.0"
 
