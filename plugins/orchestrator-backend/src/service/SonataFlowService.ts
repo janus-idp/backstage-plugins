@@ -269,7 +269,10 @@ export class SonataFlowService {
               lastTriggered:
                 lastTriggered === new Date(0)
                   ? ''
-                  : parseInt((lastTriggered.getTime() / 1000).toFixed(0), 10),
+                  : parseInt(
+                      (lastTriggered.getTime() / 1000).toFixed(0),
+                      10,
+                    ).toString(),
               lastRunStatus:
                 lastRunStatus.length > 0
                   ? lastRunStatus.charAt(0).toUpperCase() +
