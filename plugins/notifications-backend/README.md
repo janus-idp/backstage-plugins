@@ -136,3 +136,7 @@ A user the notifications are filtered for, all targetUsers or targetGroups must 
 Refer [Backstage documentation](https://backstage.io/docs/auth/) for details.
 
 For the purpose of development, there is `users.yaml` listing example data.
+
+## Building a client for the API
+
+We supply an Open API spec YAML file: openapi.yaml.
