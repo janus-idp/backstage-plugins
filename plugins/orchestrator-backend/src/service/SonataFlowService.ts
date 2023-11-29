@@ -229,6 +229,11 @@ export class SonataFlowService {
     }
     return undefined;
   }
+  public async fetchWorkflowOverview(
+    workflowId: string,
+  ): Promise<WorkflowOverview | undefined> {
+    return this.getWorkflowOverview(workflowId);
+  }
 
   public async fetchProcessInstances(): Promise<ProcessInstance[] | undefined> {
     const graphQlQuery =
