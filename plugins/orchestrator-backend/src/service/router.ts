@@ -212,6 +212,22 @@ function setupInternalRoutes(
     res.status(200).json(executionResponse);
   });
 
+  router.get('/workflows/:workflowId/overview', async (req, res) => {
+    const {
+      params: { workflowId },
+    } = req;
+    const overviewObj =
+      await sonataFlowService.fetchWorkflowOverview(workflowId);
+
+    if (!overviewObj) {
+      res
+        .status(500)
+        .send(`Couldn't fetch workflow overview for ${workflowId}`);
+      return;
+    }
+    res.status(200).json(overviewObj);
+  });
+
   router.get('/instances', async (_, res) => {
     const instances = await sonataFlowService.fetchProcessInstances();
 
