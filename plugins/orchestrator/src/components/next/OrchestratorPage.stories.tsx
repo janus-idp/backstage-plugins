@@ -5,7 +5,7 @@ import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
 
 import { Meta, StoryObj } from '@storybook/react';
 
-import { fakeProcessInstance } from '../../__fixtures__/fakeProcessInstance';
+import { fakeProcessInstances } from '../../__fixtures__/fakeProcessInstance';
 import { fakeWorkflowItem } from '../../__fixtures__/fakeWorkflowItem';
 import { orchestratorApiRef } from '../../api';
 import { MockOrchestratorClient } from '../../api/MockOrchestratorClient';
@@ -37,7 +37,7 @@ export const OrchestratorPageStory: Story = {
             [
               orchestratorApiRef,
               new MockOrchestratorClient({
-                getInstancesResponse: Promise.resolve([fakeProcessInstance]),
+                getInstancesResponse: Promise.resolve(fakeProcessInstances),
                 listWorkflowsResponse: Promise.resolve({
                   limit: 0,
                   offset: 0,
