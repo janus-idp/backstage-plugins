@@ -1,5 +1,9 @@
 /* eslint-disable func-names */
 import { CatalogClient } from '@backstage/catalog-client';
+
+import { Knex } from 'knex';
+
+import { ActionsInsert, MessagesInsert } from './db';
 import {
   CreateNotificationRequest,
   DefaultMessageScope,
@@ -13,11 +17,7 @@ import {
   NotificationsOrderByDirections,
   NotificationsOrderByFields,
   NotificationsSortingRequest,
-} from '@backstage/plugin-notifications-common';
-
-import { Knex } from 'knex';
-
-import { ActionsInsert, MessagesInsert } from './db';
+} from './types';
 
 // createNotification
 // returns string id of created notification

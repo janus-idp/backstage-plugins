@@ -1,7 +1,6 @@
 import { errorHandler } from '@backstage/backend-common';
 import { CatalogClient } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
-import { NotificationsSortingRequest } from '@backstage/plugin-notifications-common';
 
 import express from 'express';
 import Router from 'express-promise-router';
@@ -14,6 +13,7 @@ import {
   getNotificationsCount,
   setRead,
 } from './handlers';
+import { NotificationsSortingRequest } from './types';
 
 interface RouterOptions {
   logger: Logger;
