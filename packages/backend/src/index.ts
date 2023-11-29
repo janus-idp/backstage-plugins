@@ -28,7 +28,6 @@ import Router from 'express-promise-router';
 import app from './plugins/app';
 import auth from './plugins/auth';
 import catalog from './plugins/catalog';
-import notifications from './plugins/notifications';
 import permission from './plugins/permissions';
 import proxy from './plugins/proxy';
 import scaffolder from './plugins/scaffolder';
@@ -105,11 +104,6 @@ async function main() {
       getPluginIds: () => ['catalog', 'scaffolder', 'permission'],
     }),
   );
-
-  const notificationsEnv = useHotMemoize(module, () =>
-    createEnv('notifications'),
-  );
-  apiRouter.use('/notifications', await notifications(notificationsEnv));
 
   // Add backends ABOVE this line; this 404 handler is the catch-all fallback
   apiRouter.use(notFoundHandler());

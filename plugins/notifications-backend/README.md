@@ -1,8 +1,12 @@
 # Notifications
 
-Welcome to the Notifications backend plugin!
+This Backstage backend plugin provides REST API endpoint for the notifications.
+
+It's backed by a relational database, so far tested with PostgreSQL.
 
 ## Getting started
+
+### Prerequisities
 
 - Install [PostgresSQL DB](https://www.postgresql.org/download/)
 - Configure Postgres for tcp/ip
@@ -24,16 +28,107 @@ host   all             postgres       127.0.0.1/32                          pass
 sudo systemctl enable --now postgresql.service
 ```
 
-- Clone this repo
-- Start this repo's backstage instance.
-
-```
-yarn start:backstage
-```
-
 A new DB will be created: backstage_plugin_notifications
 
+### Add NPM dependency
+
+```
+cd packages/backend
+yarn add @backstage/plugin-notifications-backend
+```
+
+### Add backend-plugin
+
+Create `packages/backend/src/plugins/notifications.ts` with following content:
+
+```
+import { CatalogClient } from '@backstage/catalog-client';
+import { createRouter } from '@backstage/plugin-notifications-backend';
+
+import { Router } from 'express';
+
+import { PluginEnvironment } from '../types';
+
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const catalogClient = new CatalogClient({ discoveryApi: env.discovery });
+  const dbConfig = env.config.getConfig('backend.database');
+  return await createRouter({
+    logger: env.logger,
+    dbConfig,
+    catalogClient,
+  });
+}
+```
+
+### Add to router
+
+In the `packages/backend/src/index.ts`:
+
+```
+import notifications from './plugins/notifications';
+...
+{/* Existing code for reference: */}
+const apiRouter = Router();
+...
+{/* New code: */}
+const notificationsEnv = useHotMemoize(module, () =>
+  createEnv('notifications'),
+);
+apiRouter.use('/notifications', await notifications(notificationsEnv));
+```
+
+### Configure
+
+In the `app-config.yaml` or `app-config.local.yaml`:
+
+#### Database
+
+```
+  database:
+    client: pg
+    connection:
+      host: 127.0.0.1
+      port: 5432
+      user: postgres
+      password: secret
+    knexConfig:
+      pool:
+        min: 3
+        max: 12
+        acquireTimeoutMillis: 60000
+        idleTimeoutMillis: 60000
+  cache:
+    store: memory
+```
+
+#### Catalog
+
+The notifications require affected users or groups (as receivers) to be listed in the Catalog.
+
+As an example how to do it, add following to the config:
+
+```
+catalog:
+  import:
+    entityFilename: catalog-info.yaml
+    pullRequestBranchName: backstage-integration
+  rules:
+    # *** Here is new change:
+    - allow: [Component, System, API, Resource, Location, User, Group]
+  locations:
+    # Local example data, file locations are relative to the backend process, typically `packages/backend`
+    - type: file
+      # *** Here is new change, referes to a file stored in the root of the Backstage:
+      target: ../../users.yaml
+```
+
+The example list of users is stored in the `plugins/notifications-backend/users.yaml` and can be copied to the root of the Backstage for development purposes.
+
 ## REST API
+
+See `src/openapi.yaml` for full OpenAPI spec.
 
 ### Posting a notification
 
