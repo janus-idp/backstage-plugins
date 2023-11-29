@@ -217,7 +217,7 @@ export class SonataFlowService {
         }
         const items = await Promise.all(
           workflowIds.map(async (workflowId: string) => {
-            return this.getWorkflowOverview(workflowId);
+            return this.fetchWorkflowOverview(workflowId);
           }),
         );
         return items.filter((item): item is WorkflowOverview => !!item);
@@ -227,7 +227,7 @@ export class SonataFlowService {
       );
     } catch (error) {
       this.logger.error(
-        `Error when fetching workflows for workflowoverview: ${error}`,
+        `Error when fetching workflows for workflowOverview: ${error}`,
       );
     }
     return undefined;
@@ -472,7 +472,7 @@ export class SonataFlowService {
     };
   }
 
-  private async getWorkflowOverview(
+  public async fetchWorkflowOverview(
     workflowId: string,
   ): Promise<WorkflowOverview | undefined> {
     const definition = await this.fetchWorkflowDefinition(workflowId);
