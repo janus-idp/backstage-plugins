@@ -70,9 +70,12 @@ orchestrator:
       gitRepositoryUrl: https://github.com/tiagodolphine/backstage-orchestrator-workflows
       localPath: /tmp/orchestrator/repository
       autoPush: true
+  dataIndexService:
+    url: ${DATA_INDEX_URL}
 ```
 
-when interacting with an existing Sonataflow backend service from `baseUrl` and `port`, `autoStart` needs to be unset or set to `false`, also the section of `workflowSource` can be neglect.
+- when interacting with an existing Sonataflow backend service from `baseUrl` and `port`, `autoStart` needs to be unset or set to `false`, also the section of `workflowSource` can be neglected.
+- set the environment variable `DATA_INDEX_URL`, which points to a running data index service accessible via data index graphql interface such as http://<server:port>/graphql
 
 For more information about the configuration options, including other optional properties, see the [config.d.ts](../orchestrator-common/config.d.ts) file.
 
