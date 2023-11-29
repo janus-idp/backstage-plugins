@@ -30,7 +30,7 @@
     "@types/express": "*",
     "express": "^4.18.2",
     "express-promise-router": "^4.1.1",
-    "knex": "2.5.1",
+    "knex": "^2.5.1",
     "lodash": "^4.17.21",
     "node-fetch": "^3.3.2",
     "winston": "^3.11.0",
