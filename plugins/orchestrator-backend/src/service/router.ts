@@ -15,6 +15,7 @@ import {
   WorkflowDataInputSchemaResponse,
   WorkflowItem,
   WorkflowListResult,
+  WorkflowOverviewListResult,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { RouterArgs } from '../routerWrapper';
@@ -130,6 +131,23 @@ function setupInternalRoutes(
   router.get('/workflows/definitions', async (_, response) => {
     const swfs = await DataIndexService.getWorkflowDefinitions();
     response.json(ApiResponseBuilder.SUCCESS_RESPONSE(swfs));
+  });
+
+  router.get('/workflows/overview', async (_, res) => {
+    const overviews = await sonataFlowService.fetchWorkflowOverviews();
+
+    if (!overviews) {
+      res.status(500).send("Couldn't fetch workflow overviews");
+      return;
+    }
+
+    const result: WorkflowOverviewListResult = {
+      items: overviews,
+      limit: 0,
+      offset: 0,
+      totalCount: overviews?.length ?? 0,
+    };
+    res.status(200).json(result);
   });
 
   router.get('/workflows', async (_, res) => {
