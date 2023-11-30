@@ -1,6 +1,6 @@
 {
   "name": "@janus-idp/backstage-plugin-keycloak-backend",
-  "version": "1.7.7",
+  "version": "1.7.8",
   "description": "A Backend backend plugin for Keycloak",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -63,7 +63,7 @@
     "@backstage/plugin-catalog-backend": "1.14.0",
     "@backstage/plugin-permission-common": "0.7.9",
     "@backstage/plugin-permission-node": "0.7.17",
-    "@janus-idp/cli": "1.4.5",
+    "@janus-idp/cli": "1.4.6",
     "@types/lodash": "4.14.200",
     "@types/supertest": "2.0.16",
     "@types/uuid": "9.0.5",
