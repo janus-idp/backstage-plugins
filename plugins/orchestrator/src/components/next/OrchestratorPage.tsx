@@ -4,21 +4,21 @@ import { TabbedLayout } from '@backstage/core-components';
 
 import { workflowInstancesRouteRef } from '../../routes';
 import { BaseOrchestratorPage } from './BaseOrchestratorPage';
-import { WorkflowRunListContent } from './WorkflowRunListContent';
-import { WorkflowsTableContent } from './WorkflowsTableContent';
+import { WorkflowRunsTabContent } from './WorkflowRunsTabContent';
+import { WorkflowsTabContent } from './WorkflowsTabContent';
 
 export const OrchestratorPage = () => {
   return (
     <BaseOrchestratorPage title="Workflow Orchestrator" noPadding>
       <TabbedLayout>
         <TabbedLayout.Route path="/" title="Workflows">
-          <WorkflowsTableContent />
+          <WorkflowsTabContent />
         </TabbedLayout.Route>
         <TabbedLayout.Route
           path={workflowInstancesRouteRef.path}
           title="Workflow runs"
         >
-          <WorkflowRunListContent />
+          <WorkflowRunsTabContent />
         </TabbedLayout.Route>
       </TabbedLayout>
     </BaseOrchestratorPage>

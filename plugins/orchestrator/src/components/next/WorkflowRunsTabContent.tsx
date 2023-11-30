@@ -35,7 +35,7 @@ const DetailPanel = ({ rowData }: { rowData: Row }) => {
   );
 };
 
-export const WorkflowRunListContent = () => {
+export const WorkflowRunsTabContent = () => {
   const orchestratorApi = useApi(orchestratorApiRef);
   const workflowInstanceLink = useRouteRef(workflowInstanceRouteRef);
   const [workflow, setWorkflow] = useState<string>();

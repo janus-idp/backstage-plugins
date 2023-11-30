@@ -9,11 +9,11 @@ import { fakeWorkflowItem } from '../../__fixtures__/fakeWorkflowItem';
 import { orchestratorApiRef } from '../../api';
 import { MockOrchestratorClient } from '../../api/MockOrchestratorClient';
 import { orchestratorRootRouteRef } from '../../routes';
-import { WorkflowRunListContent } from './WorkflowRunListContent';
+import { WorkflowRunsTabContent } from './WorkflowRunsTabContent';
 
 const meta = {
   title: 'Orchestrator/next',
-  component: WorkflowRunListContent,
+  component: WorkflowRunsTabContent,
   decorators: [
     Story =>
       wrapInTestApp(
@@ -45,12 +45,12 @@ const meta = {
   parameters: {
     layout: 'centered',
   },
-} satisfies Meta<typeof WorkflowRunListContent>;
+} satisfies Meta<typeof WorkflowRunsTabContent>;
 
 type Story = StoryObj<typeof meta>;
 
-export const WorkfloRunListStory: Story = {
-  name: 'WorkflowRunList',
+export const WorkflowRunsTabContentStory: Story = {
+  name: 'WorkflowRunsTabContent',
   args: {},
 };
 
