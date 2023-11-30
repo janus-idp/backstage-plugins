@@ -22,6 +22,7 @@ import { RouterArgs } from '../routerWrapper';
 import { ApiResponseBuilder } from '../types/apiResponse';
 import { BackendExecCtx } from '../types/backendExecCtx';
 import { DEFAULT_DATA_INDEX_URL } from '../types/constants';
+import { buildPagination } from '../types/pagination';
 import { CloudEventService } from './CloudEventService';
 import { DataIndexService } from './DataIndexService';
 import { DataInputSchemaService } from './DataInputSchemaService';
@@ -228,8 +229,10 @@ function setupInternalRoutes(
     res.status(200).json(overviewObj);
   });
 
-  router.get('/instances', async (_, res) => {
-    const instances = await sonataFlowService.fetchProcessInstances();
+  router.get('/instances', async (req, res) => {
+    const instances = await sonataFlowService.fetchProcessInstances(
+      buildPagination(req),
+    );
 
     if (!instances) {
       res.status(500).send("Couldn't fetch process instances");
@@ -258,7 +261,10 @@ function setupInternalRoutes(
       params: { instanceId },
     } = req;
 
-    const jobs = await sonataFlowService.fetchProcessInstanceJobs(instanceId);
+    const jobs = await sonataFlowService.fetchProcessInstanceJobs(
+      instanceId,
+      buildPagination(req),
+    );
 
     if (!jobs) {
       res.status(500).send(`Couldn't fetch jobs for instance ${instanceId}`);

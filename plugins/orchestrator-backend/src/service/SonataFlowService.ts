@@ -19,6 +19,8 @@ import {
 import { spawn } from 'child_process';
 import { join, resolve } from 'path';
 
+import { QueryBuilder } from '../helpers/queryBuilder';
+import { Pagination } from '../types/pagination';
 import { executeWithRetry } from './Helper';
 
 const SONATA_FLOW_RESOURCES_PATH =
@@ -233,10 +235,18 @@ export class SonataFlowService {
     return undefined;
   }
 
-  public async fetchProcessInstances(): Promise<ProcessInstance[] | undefined> {
-    const graphQlQuery =
-      '{ ProcessInstances ( orderBy: { start: ASC }, where: {processId: {isNull: false} } ) { id, processName, processId, state, start, lastUpdate, end, nodes { id }, variables, parentProcessInstance {id, processName, businessKey} } }';
-
+  public async fetchProcessInstances(
+    pagination: Pagination,
+  ): Promise<ProcessInstance[] | undefined> {
+    pagination.sortField = 'start';
+    pagination.order = 'ASC';
+    const graphQlQuery = QueryBuilder.buildGraphQlQuery(
+      'ProcessInstances',
+      'id, processName, processId, state, start, lastUpdate, end, nodes { id }, variables, parentProcessInstance {id, processName, businessKey}',
+      'processId: {isNull: false}',
+      pagination,
+    );
+    this.logger.debug(`GraphQL query: ${graphQlQuery}`);
     try {
       const response = await executeWithRetry(() =>
         fetch(`${this.url}/graphql`, {
@@ -259,8 +269,13 @@ export class SonataFlowService {
   public async fetchProcessInstance(
     instanceId: string,
   ): Promise<ProcessInstance | undefined> {
-    const graphQlQuery = `{ ProcessInstances (where: { id: {equal: "${instanceId}" } } ) { id, processName, processId, state, start, lastUpdate, end, nodes { id, nodeId, definitionId, type, name, enter, exit }, variables, parentProcessInstance {id, processName, businessKey}, error { nodeDefinitionId, message} } }`;
-
+    const graphQlQuery = QueryBuilder.buildGraphQlQuery(
+      'ProcessInstances',
+      'id, processName, processId, state, start, lastUpdate, end, nodes { id, nodeId, definitionId, type, name, enter, exit }, variables, parentProcessInstance {id, processName, businessKey}, error { nodeDefinitionId, message}',
+      `id: {equal: "${instanceId}"}`,
+      undefined,
+    );
+    this.logger.debug(`GraphQL query: ${graphQlQuery}`);
     try {
       const response = await executeWithRetry(() =>
         fetch(`${this.url}/graphql`, {
@@ -299,9 +314,15 @@ export class SonataFlowService {
 
   public async fetchProcessInstanceJobs(
     instanceId: string,
+    pagination: Pagination,
   ): Promise<Job[] | undefined> {
-    const graphQlQuery = `{ Jobs (where: { processInstanceId: { equal: "${instanceId}" } }) { id, processId, processInstanceId, rootProcessId, status, expirationTime, priority, callbackEndpoint, repeatInterval, repeatLimit, scheduledId, retries, lastUpdate, endpoint, nodeInstanceId, executionCounter } }`;
-
+    const graphQlQuery = QueryBuilder.buildGraphQlQuery(
+      'Jobs',
+      'id, processId, processInstanceId, rootProcessId, status, expirationTime, priority, callbackEndpoint, repeatInterval, repeatLimit, scheduledId, retries, lastUpdate, endpoint, nodeInstanceId, executionCounter',
+      `processInstanceId: {equal: "${instanceId}"}`,
+      pagination,
+    );
+    this.logger.debug(`GraphQL query: ${graphQlQuery}`);
     try {
       const response = await executeWithRetry(() =>
         fetch(`${this.url}/graphql`, {
