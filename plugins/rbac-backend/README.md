@@ -18,6 +18,50 @@ You need to [set up the permission framework in Backstage](https://backstage.io/
 
 Note: Red Hat Developer Hub users enjoy the benefit of Permission Framework and backend-to-backend authentication being enabled by default
 
+### Configuring the Backend
+
+To connect the RBAC framework to your backend use the `PolicyBuilder` class in your backend permissions plugin (typically `packages/backend/src/plugins/permissions.ts`) as follows:
+
+```ts
+import { Router } from 'express';
+
+import {
+  PluginIdProvider,
+  PolicyBuilder,
+} from '@janus-idp/backstage-plugin-rbac-backend';
+
+import { PluginEnvironment } from '../types';
+
+export default async function createPlugin(
+  env: PluginEnvironment,
+  pluginIdProvider: PluginIdProvider,
+): Promise<Router> {
+  return PolicyBuilder.build(
+    {
+      config: env.config,
+      logger: env.logger,
+      discovery: env.discovery,
+      identity: env.identity,
+      permissions: env.permissions,
+      tokenManager: env.tokenManager,
+    },
+    pluginIdProvider,
+  );
+}
+```
+
+Secondly, in your backend router (typically `packages/backend/src/index.ts`) add a route for `/permission` specifying the list of plugin id's that support permissions:
+
+```ts
+apiRouter.use(
+  '/permission',
+  await permission(permissionEnv, {
+    // return list static plugin which supports Backstage permissions.
+    getPluginIds: () => ['catalog', 'scaffolder', 'permission'],
+  }),
+);
+```
+
 ### Identity resolver
 
 The permission framework, and consequently, this RBAC plugin, rely on the concept of group membership. To ensure smooth operation, please follow the [Sign-in identities and resolvers](https://backstage.io/docs/auth/identity-resolver/) documentation. It's crucial that when populating groups, you include any groups that you plan to assign permissions to.
