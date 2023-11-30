@@ -4,16 +4,16 @@ import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
 
 import { Meta, StoryObj } from '@storybook/react';
 
-import { fakeProcessInstance1 } from '../../__fixtures__/fakeProcessInstance';
+import { fakeProcessInstances } from '../../__fixtures__/fakeProcessInstance';
 import { fakeWorkflowItem } from '../../__fixtures__/fakeWorkflowItem';
 import { orchestratorApiRef } from '../../api';
 import { MockOrchestratorClient } from '../../api/MockOrchestratorClient';
 import { orchestratorRootRouteRef } from '../../routes';
-import { WorkflowsTable } from './WorkflowsTable';
+import { WorkflowRunListContent } from './WorkflowRunListContent';
 
 const meta = {
   title: 'Orchestrator/next',
-  component: WorkflowsTable,
+  component: WorkflowRunListContent,
   decorators: [
     Story =>
       wrapInTestApp(
@@ -22,7 +22,7 @@ const meta = {
             [
               orchestratorApiRef,
               new MockOrchestratorClient({
-                getInstancesResponse: Promise.resolve([fakeProcessInstance1]),
+                getInstancesResponse: Promise.resolve(fakeProcessInstances),
                 listWorkflowsResponse: Promise.resolve({
                   limit: 0,
                   offset: 0,
@@ -45,14 +45,13 @@ const meta = {
   parameters: {
     layout: 'centered',
   },
-} satisfies Meta<typeof WorkflowsTable>;
+} satisfies Meta<typeof WorkflowRunListContent>;
 
-export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const WorkflowsTableStory: Story = {
-  name: 'WorkflowsTable',
-  args: {
-    items: [],
-  },
+export const WorkfloRunListStory: Story = {
+  name: 'WorkflowRunList',
+  args: {},
 };
+
+export default meta;
