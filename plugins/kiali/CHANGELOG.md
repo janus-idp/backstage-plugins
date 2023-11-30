@@ -1,3 +1,11 @@
+## @janus-idp/backstage-plugin-kiali [1.6.11](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.6.10...@janus-idp/backstage-plugin-kiali@1.6.11) (2023-11-30)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.4.6
+
 ## @janus-idp/backstage-plugin-kiali [1.6.10](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.6.9...@janus-idp/backstage-plugin-kiali@1.6.10) (2023-11-22)
 
 
