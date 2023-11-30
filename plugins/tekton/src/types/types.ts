@@ -34,3 +34,7 @@ export type TektonResourcesContextData = {
 };
 
 export type Order = 'asc' | 'desc';
+
+export type OpenRowStatus = {
+  [x: string]: boolean;
+};
