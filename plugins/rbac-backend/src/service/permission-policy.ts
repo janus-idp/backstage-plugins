@@ -197,11 +197,11 @@ export class RBACPermissionPolicy implements PermissionPolicy {
 
       const result = status ? AuthorizeResult.ALLOW : AuthorizeResult.DENY;
       this.logger.info(
-        `${userEntityRef} is ${result} for permission ${
+        `${userEntityRef} is ${result} for permission '${
           request.permission.name
-        }${
+        }'${
           isResourcePermission(request.permission)
-            ? `, resource type ${request.permission.resourceType}`
+            ? `, resource type '${request.permission.resourceType}'`
             : ''
         } and action ${action}`,
       );

@@ -197,16 +197,24 @@ describe('RBACPermissionPolicy Tests', () => {
     beforeEach(async () => {
       const adapter = new StringAdapter(
         `
-                # basic type permission policies
+                # ========== basic type permission policies ========== #
+                # case 1
                 p, user:default/known_user, test.resource.deny, use, deny
+                # case 2 is about user without listed permissions
+                # case 3
                 p, user:default/duplicated, test.resource, use, allow
                 p, user:default/duplicated, test.resource, use, deny
+                # case 4
                 p, user:default/known_user, test.resource, use, allow
 
-                # resource type permission policies
-                p, user:default/known_user, test-resource-deny, update, deny 
+                # ========== resource type permission policies ========== #
+                # case 1
+                p, user:default/known_user, test-resource-deny, update, deny
+                # case 2 is about user without listed permissions
+                # case 3
                 p, user:default/duplicated, test-resource, update, allow
                 p, user:default/duplicated, test-resource, update, deny
+                # case 4
                 p, user:default/known_user, test-resource, update, allow 
                 `,
       );
@@ -229,13 +237,13 @@ describe('RBACPermissionPolicy Tests', () => {
 
       catalogApi.getEntities.mockReturnValue({ items: [] });
     });
-    // +-------+------+------------------------+
-    // | allow | deny |         result         |
-    // +-------+------+------------------------+
-    // | N     | Y    | deny                   | 1
-    // | N     | N    | deny (user not listed) | 2
-    // | Y     | Y    | deny (user:default/duplicated)      | 3
-    // | Y     | N    | allow                  | 4
+    // +-------+------+------------------------------------+
+    // | allow | deny |         result                 |   |
+    // +-------+------+--------------------------------+---|
+    // | N     | Y    | deny                           | 1 |
+    // | N     | N    | deny (user not listed)         | 2 |
+    // | Y     | Y    | deny (user:default/duplicated) | 3 |
+    // | Y     | N    | allow                          | 4 |
 
     // Tests for Resource basic type permission
 
@@ -348,6 +356,126 @@ describe('RBACPermissionPolicy Tests', () => {
       );
       expect(decision.result).toBe(AuthorizeResult.ALLOW);
     });
+  });
+});
+
+// Notice: There is corner case, when "resourced" permission policy can be defined not by resource type, but by name.
+describe('Policy checks for resourced permissions defined by name', () => {
+  async function createRBACPolicy(
+    policyContent: string,
+  ): Promise<RBACPermissionPolicy> {
+    const adapter = new StringAdapter(policyContent);
+    const config = newConfigReader();
+    const theModel = newModelFromString(MODEL);
+    const logger = getVoidLogger();
+    const enf = await createEnforcer(
+      theModel,
+      adapter,
+      logger,
+      tokenManagerMock,
+    );
+
+    return await RBACPermissionPolicy.build(
+      logger,
+      config,
+      conditionalStorage,
+      enf,
+    );
+  }
+  it('should allow access to resourced permission assigned by name', async () => {
+    catalogApi.getEntities.mockReturnValue({ items: [] });
+
+    const policy = await createRBACPolicy(`
+      p, role:default/catalog_reader, catalog.entity.read, read, allow
+
+      g, user:default/andrienkoaleksandr, role:default/catalog_reader
+    `);
+
+    const decision = await policy.handle(
+      newPolicyQueryWithResourcePermission(
+        'catalog.entity.read',
+        'catalog-entity',
+        'read',
+      ),
+      newIdentityResponse('user:default/andrienkoaleksandr'),
+    );
+    expect(decision.result).toBe(AuthorizeResult.ALLOW);
+  });
+
+  it('should allow access to resourced permission assigned by name, because it has higher priority then permission for the same resource assigned by resource type', async () => {
+    catalogApi.getEntities.mockReturnValue({ items: [] });
+
+    const policy = await createRBACPolicy(`
+      p, role:default/catalog_reader, catalog.entity.read, read, allow
+      p, role:default/catalog_reader, catalog-entity, read, deny
+
+      g, user:default/andrienkoaleksandr, role:default/catalog_reader
+    `);
+
+    const decision = await policy.handle(
+      newPolicyQueryWithResourcePermission(
+        'catalog.entity.read',
+        'catalog-entity',
+        'read',
+      ),
+      newIdentityResponse('user:default/andrienkoaleksandr'),
+    );
+    expect(decision.result).toBe(AuthorizeResult.ALLOW);
+  });
+
+  it('should deny access to resourced permission assigned by name, because it has higher priority then permission for the same resource assigned by resource type', async () => {
+    catalogApi.getEntities.mockReturnValue({ items: [] });
+
+    const policy = await createRBACPolicy(`
+      p, role:default/catalog_reader, catalog.entity.read, read, deny
+      p, role:default/catalog_reader, catalog-entity, read, allow
+
+      g, user:default/andrienkoaleksandr, role:default/catalog_reader
+    `);
+
+    const decision = await policy.handle(
+      newPolicyQueryWithResourcePermission(
+        'catalog.entity.read',
+        'catalog-entity',
+        'read',
+      ),
+      newIdentityResponse('user:default/andrienkoaleksandr'),
+    );
+    expect(decision.result).toBe(AuthorizeResult.DENY);
+  });
+
+  it('should allow access to resourced permission assigned by name, but user inherits policy from his group', async () => {
+    const groupEntityMock: Entity = {
+      apiVersion: 'v1',
+      kind: 'Group',
+      metadata: {
+        name: 'team-a',
+        namespace: 'default',
+      },
+    };
+    catalogApi.getEntities.mockImplementation(arg => {
+      const hasMember = arg.filter['relations.hasMember'];
+      if (hasMember && hasMember[0] === 'user:default/andrienkoaleksandr') {
+        return { items: [groupEntityMock] };
+      }
+      return { items: [] };
+    });
+
+    const policy = await createRBACPolicy(`
+    p, role:default/catalog_user, catalog.entity.read, read, allow
+
+    g, group:default/team-a, role:default/catalog_user
+    `);
+
+    const decision = await policy.handle(
+      newPolicyQueryWithResourcePermission(
+        'catalog.entity.read',
+        'catalog-entity',
+        'read',
+      ),
+      newIdentityResponse('user:default/andrienkoaleksandr'),
+    );
+    expect(decision.result).toBe(AuthorizeResult.ALLOW);
   });
 });
 
