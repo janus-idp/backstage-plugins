@@ -9,6 +9,8 @@ import {
   TitleFieldProps,
 } from '@rjsf/utils';
 
+const ROOT_TITLE_ID = 'root__title';
+
 export const TitleFieldTemplate = <
   T = any,
   S extends StrictRJSFSchema = RJSFSchema,
@@ -17,6 +19,10 @@ export const TitleFieldTemplate = <
   props: TitleFieldProps<T, S, F>,
 ) => {
   const { id, title } = props;
+
+  if (id === ROOT_TITLE_ID) {
+    return <></>;
+  }
 
   return (
     <Grid

@@ -1,5 +1,5 @@
 import { Specification } from '@severlessworkflow/sdk-typescript';
-import { JSONSchema4 } from 'json-schema';
+import { JSONSchema7 } from 'json-schema';
 import { OpenAPIV3 } from 'openapi-types';
 
 type Id<T> = { [P in keyof T]: T[P] };
@@ -51,17 +51,9 @@ export interface WorkflowSpecFile {
   content: OpenAPIV3.Document;
 }
 
-export type WorkflowDataInputSchema = JSONSchema4 & {
-  components: {
-    schemas: {
-      [key: string]: OpenAPIV3.NonArraySchemaObject;
-    };
-  };
-};
-
 export interface WorkflowDataInputSchemaResponse {
   workflowItem: WorkflowItem;
-  schema: WorkflowDataInputSchema | undefined;
+  schema: JSONSchema7 | undefined;
 }
 
 export interface WorkflowExecutionResponse {
@@ -82,4 +74,13 @@ export interface WorkflowOverview {
   type?: string;
   avgDurationMs?: number;
   description?: string;
+}
+
+export interface WorkflowInfo {
+  id: string;
+  type: string;
+  name: string;
+  version: string;
+  description?: string;
+  inputSchema?: JSONSchema7;
 }

@@ -16,7 +16,7 @@ export interface Config {
       port?: string;
       /**
        * Whether to start the Sonata Flow service automatically.
-       * If set to `false`, the plugin assumes that the SonataFlow service is already running on `baseUrl`:`port` (or just `baseUrl` if `port` is not set)`.
+       * If set to `false`, the plugin assumes that the SonataFlow service is already running on `baseUrl`:`port` (or just `baseUrl` if `port` is not set).
        * Default: false
        */
       autoStart?: boolean;

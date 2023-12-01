@@ -36,10 +36,7 @@ export class DataIndexService {
   public static getNewGraphQLClient(
     dataIndexUrl = DEFAULT_DATA_INDEX_URL,
   ): Client {
-    const diURL =
-      this.backendExecCtx && this.backendExecCtx.dataIndexUrl
-        ? this.backendExecCtx.dataIndexUrl
-        : dataIndexUrl;
+    const diURL = this.backendExecCtx?.dataIndexUrl ?? dataIndexUrl;
     return new Client({
       url: diURL,
       exchanges: [cacheExchange, fetchExchange],
