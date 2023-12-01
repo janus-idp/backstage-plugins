@@ -1,8 +1,6 @@
 import { CompoundEntityRef, parseEntityRef } from '@backstage/catalog-model';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
-import { Request } from 'express-serve-static-core';
-
 import { Role, RoleBasedPolicy } from '@janus-idp/backstage-plugin-rbac-common';
 
 export function validatePolicy(policy: RoleBasedPolicy): Error | undefined {
@@ -85,22 +83,6 @@ export function validateEntityReference(entityRef?: string): Error | undefined {
     return new Error(
       `Unsupported kind ${entityRefCompound.kind}. List supported values ["user", "group", "role"]`,
     );
-  }
-
-  return undefined;
-}
-
-export function validateQueries(request: Request): Error | undefined {
-  if (!request.query.permission) {
-    return new Error('specify "permission" query param.');
-  }
-
-  if (!request.query.policy) {
-    return new Error('specify "policy" query param.');
-  }
-
-  if (!request.query.effect) {
-    return new Error('specify "effect" query param.');
   }
 
   return undefined;
