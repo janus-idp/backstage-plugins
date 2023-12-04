@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac-backend [1.6.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@1.6.4...@janus-idp/backstage-plugin-rbac-backend@1.6.5) (2023-12-04)
+
+
+### Documentation
+
+* **rbac:** additional docs for backend configuration ([#982](https://github.com/janus-idp/backstage-plugins/issues/982)) ([17b95a0](https://github.com/janus-idp/backstage-plugins/commit/17b95a0c51e97ee5a9160dc7bec7559c075eca88))
+
 ## @janus-idp/backstage-plugin-rbac-backend [1.6.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@1.6.3...@janus-idp/backstage-plugin-rbac-backend@1.6.4) (2023-11-20)
 
 
