@@ -11,14 +11,14 @@ import DataFormatter from './DataFormatter';
 const UNAVAILABLE = '---';
 
 export interface FormattedWorkflowOverview {
-  id: string;
-  name: string;
-  lastTriggered: string;
-  lastRunStatus: string;
-  type: string;
-  avgDuration: string;
-  description: string;
-  format: WorkflowFormat;
+  readonly id: string;
+  readonly name: string;
+  readonly lastTriggered: string;
+  readonly lastRunStatus: string;
+  readonly type: string;
+  readonly avgDuration: string;
+  readonly description: string;
+  readonly format: WorkflowFormat;
 }
 
 const formatDuration = (milliseconds: number): string => {

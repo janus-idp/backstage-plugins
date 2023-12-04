@@ -276,7 +276,7 @@ const RefForwardingWorkflowEditor: ForwardRefRenderFunction<
     const workflowEditorPreviewOptionsChannelApiImpl =
       new SwfPreviewOptionsChannelApiImpl({
         editorMode: 'full',
-        defaultWidth: kind === EditorViewKind.AUTHORING ? '50%' : '100%',
+        defaultWidth: '50%',
       });
 
     return new SwfCombinedEditorChannelApiImpl({
@@ -286,7 +286,7 @@ const RefForwardingWorkflowEditor: ForwardRefRenderFunction<
       swfPreviewOptionsChannelApiImpl:
         workflowEditorPreviewOptionsChannelApiImpl,
     });
-  }, [embeddedFile, languageService, stateControl, kind]);
+  }, [embeddedFile, languageService, stateControl]);
 
   useEffect(() => {
     if (!ready || !currentProcessInstance) {

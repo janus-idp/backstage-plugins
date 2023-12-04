@@ -242,5 +242,6 @@ export const fakeWorkflowItem: WorkflowItem = {
     ],
     dataInputSchema:
       'schemas/quarkus-backend-workflow-ci-switch__main_schema.json',
+    annotations: ['workflow-type/ci'],
   },
 };

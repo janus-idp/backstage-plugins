@@ -9,7 +9,7 @@ import { WorkflowsTableContent } from './WorkflowsTableContent';
 
 export const OrchestratorPage = () => {
   return (
-    <BaseOrchestratorPage title="Workflow Orchestrator">
+    <BaseOrchestratorPage title="Workflow Orchestrator" noPadding>
       <TabbedLayout>
         <TabbedLayout.Route path="/" title="Workflows">
           <WorkflowsTableContent />

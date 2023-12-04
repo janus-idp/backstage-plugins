@@ -9,6 +9,7 @@ import {
   WorkflowExecutionResponse,
   WorkflowItem,
   WorkflowListResult,
+  WorkflowOverview,
   WorkflowSpecFile,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
@@ -127,6 +128,15 @@ export class OrchestratorClient implements OrchestratorApi {
   async getSpecs(): Promise<WorkflowSpecFile[]> {
     const baseUrl = await this.discoveryApi.getBaseUrl('orchestrator');
     const res = await fetch(`${baseUrl}/specs`);
+    if (!res.ok) {
+      throw await ResponseError.fromResponse(res);
+    }
+    return res.json();
+  }
+
+  async getWorkflowOverview(workflowId: string): Promise<WorkflowOverview> {
+    const baseUrl = await this.discoveryApi.getBaseUrl('orchestrator');
+    const res = await fetch(`${baseUrl}/workflows/${workflowId}/overview`);
     if (!res.ok) {
       throw await ResponseError.fromResponse(res);
     }
