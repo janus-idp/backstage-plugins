@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Progress, Table } from '@backstage/core-components';
+import { Table } from '@backstage/core-components';
 
 import { makeStyles } from '@material-ui/core';
 import Alert from '@mui/material/Alert';
@@ -34,14 +34,6 @@ export const RolesList = () => {
     retry();
   };
 
-  if (loading) {
-    return (
-      <div data-testid="roles-progress">
-        <Progress />
-      </div>
-    );
-  }
-
   const onAlertClose = () => {
     setToastMessage('');
   };
@@ -70,16 +62,19 @@ export const RolesList = () => {
         </Alert>
       </Snackbar>
       <Table
-        title={`All roles (${
-          data.length ? roles ?? data.length : data.length
-        })`}
+        title={
+          !loading && data?.length
+            ? `All roles (${roles ?? data.length})`
+            : `All roles`
+        }
         options={{ padding: 'default', search: true, paging: true }}
         data={data}
+        isLoading={loading}
         columns={columns}
         renderSummaryRow={summary => onSearchResultsChange(summary.data)}
         emptyContent={
           <div data-testid="roles-table-empty" className={classes.empty}>
-            No roles found&nbsp;
+            No roles found
           </div>
         }
       />

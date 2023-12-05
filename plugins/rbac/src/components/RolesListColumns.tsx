@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { TableColumn } from '@backstage/core-components';
+import { Link, TableColumn } from '@backstage/core-components';
 
 import { RolesData } from '../types';
 import { getMembers } from '../utils/rbac-utils';
@@ -11,6 +11,9 @@ export const columns: TableColumn<RolesData>[] = [
     title: 'Name',
     field: 'name',
     type: 'string',
+    render: (props: RolesData) => (
+      <Link to={`roles/${props.name}`}>{props.name}</Link>
+    ),
   },
   {
     title: 'Users and groups',

@@ -4,14 +4,24 @@ import {
   IdentityApi,
 } from '@backstage/core-plugin-api';
 
-import { Role, RoleBasedPolicy } from '@janus-idp/backstage-plugin-rbac-common';
+import {
+  PermissionPolicy,
+  Role,
+  RoleBasedPolicy,
+} from '@janus-idp/backstage-plugin-rbac-common';
+
+import { MemberEntity } from '../types';
+import { getKindNamespaceName } from '../utils/rbac-utils';
 
 // @public
 export type RBACAPI = {
   getUserAuthorization: () => Promise<{ status: string }>;
   getRoles: () => Promise<Role[]>;
-  getPolicies: () => Promise<RoleBasedPolicy[]>;
+  getPolicies: () => Promise<RoleBasedPolicy[] | Response>;
   deleteRole: (role: string) => Promise<Response>;
+  getRole: (role: string) => Promise<Role[]>;
+  getMembers: () => Promise<MemberEntity[]>;
+  listPermissions: () => Promise<PermissionPolicy[]>;
 };
 
 export type Options = {
@@ -64,27 +74,78 @@ export class RBACBackendClient implements RBACAPI {
         ...(idToken && { Authorization: `Bearer ${idToken}` }),
       },
     });
+    if (jsonResponse.status !== 200 && jsonResponse.status !== 204) {
+      return jsonResponse;
+    }
     return jsonResponse.json();
   }
 
   async deleteRole(role: string) {
     const { token: idToken } = await this.identityApi.getCredentials();
     const backendUrl = this.configApi.getString('backend.baseUrl');
-    const str = role.split(':');
-    const kind = str[0];
-    const namespace = str[1].split('/')[0];
-    const name = str[1].split('/')[1];
+    const { kind, namespace, name } = getKindNamespaceName(role);
     const jsonResponse = await fetch(
       `${backendUrl}/api/permission/roles/${kind}/${namespace}/${name}`,
       {
         headers: {
           ...(idToken && { Authorization: `Bearer ${idToken}` }),
           'Content-Type': 'application/json',
-          Accept: 'application/json',
         },
         method: 'DELETE',
       },
     );
     return jsonResponse;
+  }
+
+  async getRole(role: string) {
+    const { token: idToken } = await this.identityApi.getCredentials();
+    const backendUrl = this.configApi.getString('backend.baseUrl');
+    const { kind, namespace, name } = getKindNamespaceName(role);
+    const jsonResponse = await fetch(
+      `${backendUrl}/api/permission/roles/${kind}/${namespace}/${name}`,
+      {
+        headers: {
+          ...(idToken && { Authorization: `Bearer ${idToken}` }),
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+    if (jsonResponse.status !== 200 && jsonResponse.status !== 204) {
+      return jsonResponse;
+    }
+    return jsonResponse.json();
+  }
+
+  async getMembers() {
+    const { token: idToken } = await this.identityApi.getCredentials();
+    const backendUrl = this.configApi.getString('backend.baseUrl');
+    const jsonResponse = await fetch(
+      `${backendUrl}/api/catalog/entities?filter=kind=user&filter=kind=group`,
+      {
+        headers: {
+          ...(idToken && { Authorization: `Bearer ${idToken}` }),
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+    if (jsonResponse.status !== 200 && jsonResponse.status !== 204) {
+      return jsonResponse;
+    }
+    return jsonResponse.json();
+  }
+
+  async listPermissions() {
+    const { token: idToken } = await this.identityApi.getCredentials();
+    const backendUrl = this.configApi.getString('backend.baseUrl');
+    const jsonResponse = await fetch(
+      `${backendUrl}/api/permission/plugins/policies`,
+      {
+        headers: {
+          ...(idToken && { Authorization: `Bearer ${idToken}` }),
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+    return jsonResponse.json();
   }
 }

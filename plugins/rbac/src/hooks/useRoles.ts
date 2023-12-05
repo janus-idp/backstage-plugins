@@ -34,25 +34,28 @@ export const useRoles = (pollInterval?: number) => {
   const data: RolesData[] = React.useMemo(
     () =>
       roles && roles?.length > 0
-        ? roles.reduce(
-            (acc: any, role: Role) => [
-              ...acc,
-              {
-                id: role.name,
-                name: role.name,
-                description: '-',
-                members: role.memberReferences,
-                permissions: getPermissions(
-                  role.name,
-                  policies as RoleBasedPolicy[],
-                ),
-                modifiedBy: '-',
-                lastModified: '-',
-                permissionResult,
-              },
-            ],
-            [],
-          )
+        ? roles.reduce((acc: any, role: Role) => {
+            const permissions = getPermissions(
+              role.name,
+              policies as RoleBasedPolicy[],
+            );
+
+            return permissions > 0 && role.memberReferences.length > 0
+              ? [
+                  ...acc,
+                  {
+                    id: role.name,
+                    name: role.name,
+                    description: '-',
+                    members: role.memberReferences,
+                    permissions,
+                    modifiedBy: '-',
+                    lastModified: '-',
+                    permissionResult,
+                  },
+                ]
+              : acc;
+          }, [])
         : [],
     [roles, policies, permissionResult],
   );

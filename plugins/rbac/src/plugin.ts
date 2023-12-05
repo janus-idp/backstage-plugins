@@ -8,12 +8,13 @@ import {
 } from '@backstage/core-plugin-api';
 
 import { rbacApiRef, RBACBackendClient } from './api/RBACBackendClient';
-import { rootRouteRef } from './routes';
+import { roleRouteRef, rootRouteRef } from './routes';
 
 export const rbacPlugin = createPlugin({
   id: 'rbac',
   routes: {
     root: rootRouteRef,
+    role: roleRouteRef,
   },
   apis: [
     createApiFactory({
@@ -31,7 +32,7 @@ export const rbacPlugin = createPlugin({
 export const RbacPage = rbacPlugin.provide(
   createRoutableExtension({
     name: 'RbacPage',
-    component: () => import('./components').then(m => m.RbacPage),
+    component: () => import('./components/Router').then(m => m.Router),
     mountPoint: rootRouteRef,
   }),
 );

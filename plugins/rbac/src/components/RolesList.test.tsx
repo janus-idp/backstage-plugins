@@ -51,14 +51,6 @@ const RequirePermissionMock = RequirePermission as jest.MockedFunction<
 >;
 
 describe('RolesList', () => {
-  it('should show Progress when roles are still loading', async () => {
-    RequirePermissionMock.mockImplementation(props => <>{props.children}</>);
-    mockUsePermission.mockReturnValue({ loading: false, allowed: true });
-    mockUseRoles.mockReturnValue({ loading: true, data: [], retry: () => {} });
-    const { getByTestId } = await renderInTestApp(<RolesList />);
-    expect(getByTestId('roles-progress')).not.toBeNull();
-  });
-
   it('should show list of roles when the roles are loaded', async () => {
     RequirePermissionMock.mockImplementation(props => <>{props.children}</>);
     mockUsePermission.mockReturnValue({ loading: false, allowed: true });
@@ -74,7 +66,7 @@ describe('RolesList', () => {
     expect(queryByText('1 User, 1 Group')).not.toBeNull();
   });
 
-  it('should show empty state when there are no roles', async () => {
+  it('should show empty table when there are no roles', async () => {
     RequirePermissionMock.mockImplementation(props => <>{props.children}</>);
     mockUsePermission.mockReturnValue({ loading: false, allowed: true });
     mockUseRoles.mockReturnValue({ loading: false, data: [], retry: () => {} });
