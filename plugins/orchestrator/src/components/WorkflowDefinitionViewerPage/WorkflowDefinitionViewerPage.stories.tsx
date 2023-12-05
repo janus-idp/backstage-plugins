@@ -15,7 +15,7 @@ import { orchestratorRootRouteRef } from '../../routes';
 import { WorkflowDefinitionViewerPage } from './WorkflowDefinitionViewerPage';
 
 const meta = {
-  title: 'Orchestrator/workflow viewer page',
+  title: 'Orchestrator/next/WorkflowDefinitionViewerPage',
   component: WorkflowDefinitionViewerPage,
   decorators: [
     (Story, context) => {

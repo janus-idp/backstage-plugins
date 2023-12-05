@@ -12,7 +12,7 @@ import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import Button from '@material-ui/core/Button/Button';
 import Grid from '@material-ui/core/Grid/Grid';
 
-import { WorkflowItem } from '@janus-idp/backstage-plugin-orchestrator-common';
+import { WorkflowOverview } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { orchestratorApiRef } from '../../api';
 import { newWorkflowRef } from '../../routes';
@@ -23,9 +23,10 @@ export const WorkflowsTabContent = () => {
   const navigate = useNavigate();
   const newWorkflowLink = useRouteRef(newWorkflowRef);
   const { value, error, loading } = useAsync(async (): Promise<
-    WorkflowItem[]
+    WorkflowOverview[]
   > => {
-    const data = await orchestratorApi.listWorkflows();
+    const data = await orchestratorApi.listWorkflowsOverview();
+
     return data.items;
   }, []);
 

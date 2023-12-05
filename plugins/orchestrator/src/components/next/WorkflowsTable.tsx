@@ -8,16 +8,13 @@ import DeleteForever from '@material-ui/icons/DeleteForever';
 import Edit from '@material-ui/icons/Edit';
 import Pageview from '@material-ui/icons/Pageview';
 import PlayArrow from '@material-ui/icons/PlayArrow';
-import moment from 'moment';
 
-import {
-  ASSESSMENT_WORKFLOW_TYPE,
-  extractWorkflowFormatFromUri,
-  WorkflowCategory,
-  WorkflowItem,
-} from '@janus-idp/backstage-plugin-orchestrator-common';
+import { WorkflowOverview } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { orchestratorApiRef } from '../../api';
+import WorkflowOverviewFormatter, {
+  FormattedWorkflowOverview,
+} from '../../dataFormatters/WorkflowOverviewFormatter';
 import {
   editWorkflowRouteRef,
   nextExecuteWorkflowRouteRef,
@@ -25,7 +22,7 @@ import {
 } from '../../routes';
 
 export interface WorkflowsTableProps {
-  items: WorkflowItem[];
+  items: WorkflowOverview[];
 }
 
 export const WorkflowsTable = ({ items }: WorkflowsTableProps) => {
@@ -34,92 +31,19 @@ export const WorkflowsTable = ({ items }: WorkflowsTableProps) => {
   const definitionLink = useRouteRef(workflowDefinitionsRouteRef);
   const executeWorkflowLink = useRouteRef(nextExecuteWorkflowRouteRef);
   const editLink = useRouteRef(editWorkflowRouteRef);
-  const [data, setData] = useState<Row[]>([]);
+  const [data, setData] = useState<FormattedWorkflowOverview[]>([]);
 
-  interface Row {
-    id: string;
-    name: string;
-    lastRun: string;
-    lastRunStatus: string;
-    type: WorkflowCategory;
-    components: string;
-    format: string;
-  }
-
-  const columns: TableColumn[] = [
-    { title: 'Name', field: 'name' },
-    { title: 'Last run', field: 'lastRun' },
-    { title: 'Last run status', field: 'lastRunStatus' },
-    { title: 'Type', field: 'type' },
-    { title: 'Components', field: 'components' },
-  ];
-
-  const initTableState = useMemo(() => {
-    const assessmentExist = !!items.find(
-      item =>
-        item.definition.annotations?.find(
-          annotation => annotation === ASSESSMENT_WORKFLOW_TYPE,
-        ),
-    );
-    return {
-      filtersOpen: true,
-      filters: assessmentExist
-        ? { Type: WorkflowCategory.ASSESSMENT }
-        : undefined,
-    };
-  }, [items]);
-
-  const getInitialState = useMemo(() => {
-    return items.map(item => {
-      return {
-        id: item.definition.id,
-        name: item.definition.name ?? '',
-        lastRun: '',
-        lastRunStatus: '',
-        type: item.definition.annotations?.find(
-          annotation => annotation === ASSESSMENT_WORKFLOW_TYPE,
-        )
-          ? WorkflowCategory.ASSESSMENT
-          : WorkflowCategory.INFRASTRUCTURE,
-        components: '---',
-        format: extractWorkflowFormatFromUri(item.uri),
-      };
-    });
-  }, [items]);
-
-  const loadFromInstances = useCallback(
-    (initData: Row[]) => {
-      orchestratorApi.getInstances().then(instances => {
-        const clonedData: Row[] = [];
-        for (const init_row of initData) {
-          const row = { ...init_row };
-          const instancesById = instances.filter(
-            instance => instance.processId === row.id,
-          );
-          const lastRunInstance = instancesById.at(-1);
-          if (lastRunInstance) {
-            row.lastRun = moment(lastRunInstance.start?.toString()).format(
-              'MMMM DD, YYYY',
-            );
-            row.lastRunStatus = lastRunInstance.state;
-            row.components = instancesById.length.toString();
-          }
-          clonedData.push(row);
-        }
-        setData(clonedData);
-      });
-    },
-    [orchestratorApi],
+  const initialState = useMemo(
+    () => items.map(WorkflowOverviewFormatter.format),
+    [items],
   );
 
   useEffect(() => {
-    const initData = getInitialState;
-    setData(initData);
-    loadFromInstances(initData);
-  }, [getInitialState, loadFromInstances]);
+    setData(initialState);
+  }, [initialState]);
 
-  const doView = useCallback(
-    (rowData: Row) => {
+  const handleView = useCallback(
+    (rowData: FormattedWorkflowOverview) => {
       navigate(
         definitionLink({ workflowId: rowData.id, format: rowData.format }),
       );
@@ -127,15 +51,15 @@ export const WorkflowsTable = ({ items }: WorkflowsTableProps) => {
     [definitionLink, navigate],
   );
 
-  const doExecute = useCallback(
-    (rowData: Row) => {
+  const handleExecute = useCallback(
+    (rowData: FormattedWorkflowOverview) => {
       navigate(executeWorkflowLink({ workflowId: rowData.id }));
     },
     [executeWorkflowLink, navigate],
   );
 
-  const doEdit = useCallback(
-    (rowData: Row) => {
+  const handleEdit = useCallback(
+    (rowData: FormattedWorkflowOverview) => {
       navigate(
         editLink({ workflowId: `${rowData.id}`, format: rowData.format }),
       );
@@ -143,8 +67,8 @@ export const WorkflowsTable = ({ items }: WorkflowsTableProps) => {
     [editLink, navigate],
   );
 
-  const doDelete = useCallback(
-    (rowData: Row) => {
+  const handleDelete = useCallback(
+    (rowData: FormattedWorkflowOverview) => {
       // Lazy use of window.confirm vs writing a popup.
       if (
         // eslint-disable-next-line no-alert
@@ -158,39 +82,63 @@ export const WorkflowsTable = ({ items }: WorkflowsTableProps) => {
     [orchestratorApi],
   );
 
-  const actions: TableProps['actions'] = React.useMemo(
+  const actions: TableProps<FormattedWorkflowOverview>['actions'] = useMemo(
     () => [
       {
         icon: PlayArrow,
         tooltip: 'Execute',
-        onClick: (_, rowData) => doExecute(rowData as Row),
+        onClick: (_, rowData) =>
+          handleExecute(rowData as FormattedWorkflowOverview),
       },
       {
         icon: Pageview,
         tooltip: 'View',
-        onClick: (_, rowData) => doView(rowData as Row),
+        onClick: (_, rowData) =>
+          handleView(rowData as FormattedWorkflowOverview),
       },
       {
         icon: Edit,
         tooltip: 'Edit',
-        onClick: (_, rowData) => doEdit(rowData as Row),
+        onClick: (_, rowData) =>
+          handleEdit(rowData as FormattedWorkflowOverview),
       },
       {
         icon: DeleteForever,
         tooltip: 'Delete',
-        onClick: (_, rowData) => doDelete(rowData as Row),
+        onClick: (_, rowData) =>
+          handleDelete(rowData as FormattedWorkflowOverview),
       },
     ],
-    [doDelete, doEdit, doExecute, doView],
+    [handleDelete, handleEdit, handleExecute, handleView],
+  );
+
+  const columns = useMemo<TableColumn<FormattedWorkflowOverview>[]>(
+    () => [
+      { title: 'Name', field: 'name' },
+      { title: 'Last run', field: 'lastTriggered' },
+      { title: 'Last run status', field: 'lastRunStatus' },
+      { title: 'Type', field: 'type' },
+      { title: 'Avg. duration', field: 'avgDuration' },
+      { title: 'Description', field: 'description' },
+    ],
+    [],
+  );
+
+  const options = useMemo<TableProps['options']>(
+    () => ({
+      search: true,
+      paging: false,
+      actionsColumnIndex: columns.length,
+    }),
+    [columns.length],
   );
 
   return (
-    <Table
+    <Table<FormattedWorkflowOverview>
       title="Workflows"
-      options={{ search: true, paging: false, actionsColumnIndex: 5 }}
+      options={options}
       columns={columns}
       data={data}
-      initialState={initTableState}
       actions={actions}
     />
   );

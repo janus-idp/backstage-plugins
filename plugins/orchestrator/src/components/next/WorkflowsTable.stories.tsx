@@ -4,30 +4,30 @@ import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
 
 import { Meta, StoryObj } from '@storybook/react';
 
-import { fakeProcessInstance1 } from '../../__fixtures__/fakeProcessInstance';
-import { fakeWorkflowItem } from '../../__fixtures__/fakeWorkflowItem';
+import { WorkflowOverview } from '@janus-idp/backstage-plugin-orchestrator-common';
+
+import { fakeWorkflowOverviewList } from '../../__fixtures__/fakeWorkflowOverviewList';
 import { orchestratorApiRef } from '../../api';
 import { MockOrchestratorClient } from '../../api/MockOrchestratorClient';
 import { orchestratorRootRouteRef } from '../../routes';
 import { WorkflowsTable } from './WorkflowsTable';
 
 const meta = {
-  title: 'Orchestrator/next',
+  title: 'Orchestrator/next/WorkflowsTable',
   component: WorkflowsTable,
   decorators: [
-    Story =>
+    (Story, context) =>
       wrapInTestApp(
         <TestApiProvider
           apis={[
             [
               orchestratorApiRef,
               new MockOrchestratorClient({
-                getInstancesResponse: Promise.resolve([fakeProcessInstance1]),
-                listWorkflowsResponse: Promise.resolve({
+                listWorkflowsOverviewResponse: Promise.resolve({
                   limit: 0,
                   offset: 0,
                   totalCount: 1,
-                  items: [fakeWorkflowItem],
+                  items: (context.args as { items: WorkflowOverview[] }).items,
                 }),
               }),
             ],
@@ -51,8 +51,8 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const WorkflowsTableStory: Story = {
-  name: 'WorkflowsTable',
+  name: 'Sample 1',
   args: {
-    items: [],
+    items: fakeWorkflowOverviewList.slice(0, 3),
   },
 };
