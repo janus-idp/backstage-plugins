@@ -6,6 +6,7 @@ import {
   editWorkflowRouteRef,
   executeWorkflowRouteRef,
   newWorkflowRef,
+  nextExecuteWorkflowRouteRef,
   workflowDefinitionsRouteRef,
   workflowInstanceRouteRef,
   workflowInstancesRouteRef,
@@ -13,6 +14,7 @@ import {
 import { CreateWorkflowPage } from './CreateWorkflowPage';
 import { ExecuteWorkflowPage } from './ExecuteWorkflowPage';
 import { NewWorkflowViewerPage } from './NewWorkflowViewerPage';
+import { ExecuteWorkflowPage as ExecuteWorkflowPageNext } from './next/ExecuteWorkflowPage';
 import { OrchestratorPage as OrchestratorPageNext } from './next/OrchestratorPage';
 import { OrchestratorPage } from './OrchestratorPage';
 import { WorkflowDefinitionViewerPage } from './WorkflowDefinitionViewerPage';
@@ -48,6 +50,10 @@ export const Router = () => {
         element={<ExecuteWorkflowPage />}
       />
       <Route path="/next/*" element={<OrchestratorPageNext />} />
+      <Route
+        path={nextExecuteWorkflowRouteRef.path}
+        element={<ExecuteWorkflowPageNext />}
+      />
     </Routes>
   );
 };

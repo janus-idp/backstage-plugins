@@ -20,7 +20,7 @@ import {
 import { orchestratorApiRef } from '../../api';
 import {
   editWorkflowRouteRef,
-  executeWorkflowRouteRef,
+  nextExecuteWorkflowRouteRef,
   workflowDefinitionsRouteRef,
 } from '../../routes';
 
@@ -32,7 +32,7 @@ export const WorkflowsTable = ({ items }: WorkflowsTableProps) => {
   const orchestratorApi = useApi(orchestratorApiRef);
   const navigate = useNavigate();
   const definitionLink = useRouteRef(workflowDefinitionsRouteRef);
-  const executeWorkflowLink = useRouteRef(executeWorkflowRouteRef);
+  const executeWorkflowLink = useRouteRef(nextExecuteWorkflowRouteRef);
   const editLink = useRouteRef(editWorkflowRouteRef);
   const [data, setData] = useState<Row[]>([]);
 
