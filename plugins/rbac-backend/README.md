@@ -111,6 +111,14 @@ g, user:default/bob, role:default/team_a
 g, group:default/team_b, role:default/team_b
 ```
 
+---
+
+**NOTE**
+
+When you add a role in the permission policies configuration file, ensure that the role is associated with at least one permission policy with the `allow` effect.
+
+---
+
 You can specify the path to this configuration file in your application configuration:
 
 ```YAML

@@ -40,21 +40,19 @@ export const useRoles = (pollInterval?: number) => {
               policies as RoleBasedPolicy[],
             );
 
-            return permissions > 0 && role.memberReferences.length > 0
-              ? [
-                  ...acc,
-                  {
-                    id: role.name,
-                    name: role.name,
-                    description: '-',
-                    members: role.memberReferences,
-                    permissions,
-                    modifiedBy: '-',
-                    lastModified: '-',
-                    permissionResult,
-                  },
-                ]
-              : acc;
+            return [
+              ...acc,
+              {
+                id: role.name,
+                name: role.name,
+                description: '-',
+                members: role.memberReferences,
+                permissions,
+                modifiedBy: '-',
+                lastModified: '-',
+                permissionResult,
+              },
+            ];
           }, [])
         : [],
     [roles, policies, permissionResult],
