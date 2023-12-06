@@ -16,13 +16,12 @@ To effectively utilize the RBAC plugin, you must have the Backstage permission f
 
 You need to [set up the permission framework in Backstage](https://backstage.io/docs/permissions/getting-started/).Since this plugin provides a dynamic policy that replaces the traditional one, there's no need to create a policy manually. Please note that one of the requirements for permission framework is enabling the [service-to-service authentication](https://backstage.io/docs/auth/service-to-service-auth/#setup). Ensure that you complete these authentication setup steps as well.
 
-Note: Red Hat Developer Hub users enjoy the benefit of Permission Framework and backend-to-backend authentication being enabled by default
-
 ### Configuring the Backend
 
 To connect the RBAC framework to your backend use the `PolicyBuilder` class in your backend permissions plugin (typically `packages/backend/src/plugins/permissions.ts`) as follows:
 
 ```ts
+/* highlight-add-start */
 import { Router } from 'express';
 
 import {
@@ -48,18 +47,32 @@ export default async function createPlugin(
     pluginIdProvider,
   );
 }
+/* highlight-add-end */
 ```
 
 Secondly, in your backend router (typically `packages/backend/src/index.ts`) add a route for `/permission` specifying the list of plugin id's that support permissions:
 
 ```ts
-apiRouter.use(
-  '/permission',
-  await permission(permissionEnv, {
-    // return list static plugin which supports Backstage permissions.
-    getPluginIds: () => ['catalog', 'scaffolder', 'permission'],
-  }),
-);
+// ...
+/* highlight-add-next-line */
+import permission from './plugins/permissions';
+
+async function main() {
+  // ...
+  /* highlight-add-next-line */
+  const permissionEnv = useHotMemoize(module, () => createEnv('permission'));
+
+  // ...
+  /* highlight-add-start */
+  apiRouter.use(
+    '/permission',
+    await permission(permissionEnv, {
+      // return list static plugin which supports Backstage permissions.
+      getPluginIds: () => ['catalog', 'scaffolder', 'permission'],
+    }),
+  );
+  /* highlight-add-end */
+}
 ```
 
 ### Identity resolver
@@ -96,6 +109,8 @@ permission:
         - name: group:default/admins
 ```
 
+For more information on the available API endpoints, refer to the [API documentation](./docs/apis.md).
+
 ### Configuring policies via file
 
 The RBAC plugin also allows you to import policies from an external file. These policies are defined in the [Casbin rules format](https://casbin.org/docs/category/the-basics), known for its simplicity and clarity. For a quick start, please refer to the format details in the provided link.
@@ -104,7 +119,7 @@ Here's an example of an external permission policies configuration file named `r
 
 ```CSV
 p, role:default/team_a, catalog-entity, read, deny
-p, role:default/team_b, catalog.entity.create, use, deny
+p, role:default/team_b, catalog.entity.create, create, deny
 
 g, user:default/bob, role:default/team_a
 
@@ -127,6 +142,8 @@ permission:
   rbac:
     policies-csv-file: /some/path/rbac-policy.csv
 ```
+
+For more information on the available permissions within Showcase and RHDH, refer to the [permissions documentation](./docs/permissions.md).
 
 ### Configuring Database Storage for policies
 
