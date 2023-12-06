@@ -1,0 +1,8 @@
+g, user:default/guest, role:default/catalog-writer
+g, user:default/guest, role:default/catalog-reader
+g, user:default/guest, role:default/catalog-deleter
+
+p, role:default/catalog-writer, catalog-entity, update, allow
+p, role:default/catalog-writer, catalog-entity, read, allow
+p, role:default/catalog-writer, catalog.entity.create, use, allow
+p, role:default/catalog-deleter, catalog-entity, delete, deny

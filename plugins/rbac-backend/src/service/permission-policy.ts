@@ -14,12 +14,15 @@ import {
   PolicyQuery,
 } from '@backstage/plugin-permission-node';
 
-import { Enforcer, FileAdapter, newEnforcer, newModelFromString } from 'casbin';
+import { Enforcer } from 'casbin';
 import { Logger } from 'winston';
 
 import { ConditionalStorage } from '../database/conditional-storage';
-import { MODEL } from './permission-model';
-import { validateEntityReference } from './policies-validation';
+import {
+  loadFilteredGroupingPoliciesFromCSV,
+  loadFilteredPoliciesFromCSV,
+  loadPoliciesFromCSV,
+} from '../helpers/csv';
 
 const useAdmins = async (admins: Config[], enf: Enforcer) => {
   const adminRoleName = 'role:default/rbac_admin';
@@ -65,51 +68,11 @@ const useAdmins = async (admins: Config[], enf: Enforcer) => {
   }
 };
 
-const addPredefinedPoliciesAndGroupPolicies = async (
-  preDefinedPoliciesFile: string,
-  enf: Enforcer,
-) => {
-  const fileEnf = await newEnforcer(
-    newModelFromString(MODEL),
-    new FileAdapter(preDefinedPoliciesFile),
-  );
-  const policies = await fileEnf.getPolicy();
-  for (const policy of policies) {
-    const err = validateEntityReference(policy[0]);
-    if (err) {
-      throw new Error(
-        `Failed to validate policy from file ${preDefinedPoliciesFile}. Cause: ${err.message}`,
-      );
-    }
-
-    if (!(await enf.hasPolicy(...policy))) {
-      await enf.addPolicy(...policy);
-    }
-  }
-  const groupPolicies = await fileEnf.getGroupingPolicy();
-  for (const groupPolicy of groupPolicies) {
-    let err = validateEntityReference(groupPolicy[0]);
-    if (err) {
-      throw new Error(
-        `Failed to validate group policy from file ${preDefinedPoliciesFile}. Cause: ${err.message}`,
-      );
-    }
-    err = validateEntityReference(groupPolicy[1]);
-    if (err) {
-      throw new Error(
-        `Failed to validate group policy from file ${preDefinedPoliciesFile}. Cause: ${err.message}`,
-      );
-    }
-    if (!(await enf.hasGroupingPolicy(...groupPolicy))) {
-      await enf.addGroupingPolicy(...groupPolicy);
-    }
-  }
-};
-
 export class RBACPermissionPolicy implements PermissionPolicy {
   private readonly enforcer: Enforcer;
   private readonly logger: Logger;
   private readonly conditionStorage: ConditionalStorage;
+  private readonly policiesFile?: string;
 
   public static async build(
     logger: Logger,
@@ -126,24 +89,31 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     );
 
     if (policiesFile) {
-      await addPredefinedPoliciesAndGroupPolicies(policiesFile, enf);
+      await loadPoliciesFromCSV(policiesFile, enf);
     }
 
     if (adminUsers) {
       useAdmins(adminUsers, enf);
     }
 
-    return new RBACPermissionPolicy(enf, logger, conditionalStorage);
+    return new RBACPermissionPolicy(
+      enf,
+      logger,
+      conditionalStorage,
+      policiesFile,
+    );
   }
 
   private constructor(
     enforcer: Enforcer,
     logger: Logger,
     conditionStorage: ConditionalStorage,
+    policiesFile?: string,
   ) {
     this.enforcer = enforcer;
     this.logger = logger;
     this.conditionStorage = conditionStorage;
+    this.policiesFile = policiesFile;
   }
 
   async handle(
@@ -208,6 +178,22 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     }
 
     const entityRef = identity.userEntityRef;
+
+    if (this.policiesFile) {
+      await loadFilteredPoliciesFromCSV(
+        this.policiesFile,
+        this.enforcer,
+        entityRef,
+        resourceType,
+        action,
+      );
+
+      await loadFilteredGroupingPoliciesFromCSV(
+        this.policiesFile,
+        this.enforcer,
+        entityRef,
+      );
+    }
 
     return await this.enforcer.enforce(entityRef, resourceType, action);
   };

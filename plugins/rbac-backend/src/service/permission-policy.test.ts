@@ -106,7 +106,10 @@ describe('RBACPermissionPolicy Tests', () => {
                 p, user:default/known_user, test.resource.deny, use, allow
         `,
       );
-      const csvPermFile = resolve(__dirname, './test/data/rbac-policy.csv');
+      const csvPermFile = resolve(
+        __dirname,
+        './../__fixtures__/data/valid-csv/rbac-policy.csv',
+      );
       const config = new ConfigReader({
         permission: {
           rbac: {
