@@ -20,6 +20,7 @@ import {
   nextExecuteWorkflowRouteRef,
   workflowDefinitionsRouteRef,
 } from '../../routes';
+import { ProcessInstanceStatus } from './ProcessInstanceStatus';
 
 export interface WorkflowsTableProps {
   items: WorkflowOverview[];
@@ -116,7 +117,12 @@ export const WorkflowsTable = ({ items }: WorkflowsTableProps) => {
     () => [
       { title: 'Name', field: 'name' },
       { title: 'Last run', field: 'lastTriggered' },
-      { title: 'Last run status', field: 'lastRunStatus' },
+      {
+        title: 'Last run status',
+        render: rowData => (
+          <ProcessInstanceStatus status={rowData.lastRunStatus} />
+        ),
+      },
       { title: 'Type', field: 'type' },
       { title: 'Avg. duration', field: 'avgDuration' },
       { title: 'Description', field: 'description' },

@@ -8,7 +8,7 @@ export const fakeWorkflowOverviewList: WorkflowOverview[] = [
     lastTriggeredMs: 1701765793,
     type: 'Infrastructure',
     avgDurationMs: 5000,
-    lastRunStatus: 'Completed',
+    lastRunStatus: 'COMPLETED',
     description:
       '[WF] Create a starter Quarkus Backend application with a CI pipeline - CI Switch',
   },
@@ -19,20 +19,20 @@ export const fakeWorkflowOverviewList: WorkflowOverview[] = [
     lastTriggeredMs: 1701765793,
     type: 'Infrastructure',
     avgDurationMs: 5000,
-    lastRunStatus: 'Running',
+    lastRunStatus: 'ACTIVE',
     description:
       '[WF] Launch an Ansible Job within Ansible Automation Platform with Jira integration and Timeout',
   },
   {
     workflowId: 'orchestrator-ansible-job-parallel-error-handler',
-    name: '[WF] Ansible Job - Parallel/Error',
+    name: '[WF] Ansible Job - Parallel/ERROR',
     uri: 'orchestrator-ansible-job-parallel-error-handler.sw.yaml',
     lastTriggeredMs: 1701765793,
     type: 'Infrastructure',
     avgDurationMs: 5000,
-    lastRunStatus: 'Suspended',
+    lastRunStatus: 'SUSPENDED',
     description:
-      '[WF] Launch an Ansible Job within Ansible Automation Platform - Error Handling',
+      '[WF] Launch an Ansible Job within Ansible Automation Platform - ERROR Handling',
   },
   {
     workflowId: 'orchestrator-ansible-job-long',
@@ -41,7 +41,7 @@ export const fakeWorkflowOverviewList: WorkflowOverview[] = [
     lastTriggeredMs: 1701765793,
     type: 'Infrastructure',
     avgDurationMs: 5000,
-    lastRunStatus: 'Suspended',
+    lastRunStatus: 'SUSPENDED',
     description:
       '[WF] Launch an Ansible Job within Ansible Automation Platform with Jira integration',
   },
@@ -52,7 +52,7 @@ export const fakeWorkflowOverviewList: WorkflowOverview[] = [
     lastTriggeredMs: 1701765793,
     type: 'Infrastructure',
     avgDurationMs: 5000,
-    lastRunStatus: 'Error',
+    lastRunStatus: 'ERROR',
     description:
       '[WF] Launch an Ansible Job within Ansible Automation Platform',
   },
@@ -63,7 +63,7 @@ export const fakeWorkflowOverviewList: WorkflowOverview[] = [
     lastTriggeredMs: 1701765793,
     type: 'Infrastructure',
     avgDurationMs: 5000,
-    lastRunStatus: 'Suspended',
+    lastRunStatus: 'SUSPENDED',
     description:
       '[WF] Create a starter Quarkus Backend application with a CI pipeline - Extended',
   },
@@ -74,7 +74,7 @@ export const fakeWorkflowOverviewList: WorkflowOverview[] = [
     lastTriggeredMs: 1701765793,
     type: 'Infrastructure',
     avgDurationMs: 5000,
-    lastRunStatus: 'Completed',
+    lastRunStatus: 'COMPLETED',
     description: 'Workflow description',
   },
   {
@@ -84,7 +84,7 @@ export const fakeWorkflowOverviewList: WorkflowOverview[] = [
     lastTriggeredMs: 1701765793,
     type: 'Infrastructure',
     avgDurationMs: 5000,
-    lastRunStatus: 'Error',
+    lastRunStatus: 'ERROR',
     description: 'YAML based greeting workflow',
   },
   {
@@ -94,7 +94,7 @@ export const fakeWorkflowOverviewList: WorkflowOverview[] = [
     lastTriggeredMs: 1701765793,
     type: 'Infrastructure',
     avgDurationMs: 5000,
-    lastRunStatus: 'Suspended',
+    lastRunStatus: 'SUSPENDED',
     description: '[WF] Jira issue',
   },
 ];

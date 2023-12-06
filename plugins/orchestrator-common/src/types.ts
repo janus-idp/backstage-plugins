@@ -2,6 +2,8 @@ import { Specification } from '@severlessworkflow/sdk-typescript';
 import { JSONSchema7 } from 'json-schema';
 import { OpenAPIV3 } from 'openapi-types';
 
+import { ProcessInstanceStateValues } from './models';
+
 type Id<T> = { [P in keyof T]: T[P] };
 
 type OmitDistributive<T, K extends PropertyKey> = T extends any
@@ -70,7 +72,7 @@ export interface WorkflowOverview {
   name?: string;
   uri?: string;
   lastTriggeredMs?: number;
-  lastRunStatus?: string;
+  lastRunStatus?: ProcessInstanceStateValues;
   type?: string;
   avgDurationMs?: number;
   description?: string;

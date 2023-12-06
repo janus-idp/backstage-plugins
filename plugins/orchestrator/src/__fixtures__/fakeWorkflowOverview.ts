@@ -4,7 +4,7 @@ export const fakeWorkflowOverview: WorkflowOverview = {
   workflowId: 'quarkus-backend-workflow-ci-switch',
   name: '[WF] Create a starter Quarkus Backend application with a CI pipeline - CI Switch',
   lastTriggeredMs: 1697276096000,
-  lastRunStatus: 'Success',
+  lastRunStatus: 'COMPLETED',
   type: 'ci',
   avgDurationMs: 150000,
   description:

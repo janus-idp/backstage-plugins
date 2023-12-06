@@ -35,7 +35,6 @@ export const ProcessInstanceStatus = ({ status }: { status: string }) => {
     <DotIcon className={`${styles.icon} ${colorStyle}`} />
   );
 
-  // TODO(mlibra): Show progress, i.e.: (2/5)
   return (
     <div className={styles.root}>
       {icon} {humanizeProcessInstanceState(status)}

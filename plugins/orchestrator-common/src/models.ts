@@ -6,6 +6,10 @@ export enum ProcessInstanceState {
   Error = 'ERROR',
 }
 
+export type ProcessInstanceStateValues = Uppercase<
+  keyof typeof ProcessInstanceState
+>;
+
 export enum MilestoneStatus {
   Available = 'AVAILABLE',
   Active = 'ACTIVE',
@@ -51,7 +55,7 @@ export interface ProcessInstance {
   rootProcessInstanceId?: string;
   rootProcessId?: string;
   roles?: string[];
-  state: ProcessInstanceState;
+  state: ProcessInstanceStateValues;
   endpoint: string;
   serviceUrl?: string;
   nodes: NodeInstance[];

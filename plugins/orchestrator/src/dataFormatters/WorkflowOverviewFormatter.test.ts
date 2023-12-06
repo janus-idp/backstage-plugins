@@ -11,7 +11,7 @@ describe('WorkflowOverviewAdapter', () => {
       workflowId: '123',
       name: 'Sample Workflow',
       lastTriggeredMs: 1697276096000,
-      lastRunStatus: 'Success',
+      lastRunStatus: 'COMPLETED',
       type: 'Sample Type',
       avgDurationMs: 150000,
       description: 'Sample description',

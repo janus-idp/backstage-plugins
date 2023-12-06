@@ -10,6 +10,7 @@ import {
   fromWorkflowSource,
   Job,
   ProcessInstance,
+  ProcessInstanceStateValues,
   WorkflowDefinition,
   WorkflowExecutionResponse,
   WorkflowInfo,
@@ -507,7 +508,7 @@ export class SonataFlowService {
     let offset: number = 0;
 
     let lastTriggered: Date = new Date(0);
-    let lastRunStatus = '';
+    let lastRunStatus: ProcessInstanceStateValues | undefined;
     let counter = 0;
     let totalDuration = 0;
 
@@ -552,11 +553,7 @@ export class SonataFlowService {
       name: definition.name,
       uri: await this.fetchWorkflowUri(workflowId),
       lastTriggeredMs: lastTriggered.getTime(),
-      lastRunStatus:
-        lastRunStatus.length > 0
-          ? lastRunStatus.charAt(0).toUpperCase() +
-            lastRunStatus.slice(1).toLowerCase()
-          : undefined,
+      lastRunStatus,
       type: this.extractWorkflowType(definition),
       avgDurationMs: counter ? totalDuration / counter : undefined,
       description: definition.description,
