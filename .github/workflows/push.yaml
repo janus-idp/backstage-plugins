@@ -32,6 +32,12 @@ jobs:
       - name: Build all packages
         uses: ./.github/actions/build
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          registry-url: 'https://registry.npmjs.org'
+
       - name: Release via semantic-release
         run: |
           npm config set workspaces-update false
