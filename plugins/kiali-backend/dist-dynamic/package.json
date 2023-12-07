@@ -33,7 +33,6 @@
     "yn": "^4.0.0",
     "deep-freeze": "^0.0.1"
   },
-  "devDependencies": {},
   "files": [
     "dist",
     "config.d.ts",

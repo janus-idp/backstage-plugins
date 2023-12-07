@@ -27,7 +27,6 @@
   "dependencies": {
     "@kubernetes/client-node": "^0.19.0"
   },
-  "devDependencies": {},
   "files": [
     "dist"
   ],
