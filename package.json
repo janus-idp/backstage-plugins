@@ -152,6 +152,12 @@
           "successComment": false,
           "releasedLabels": false
         }
+      ],
+      [
+        "@semantic-release/exec",
+        {
+          "successCmd": "if [ -d 'dist-dynamic' ]; then echo 'publishing backend derived package ...' && cd dist-dynamic && npm publish --ignore-scripts --access public ; fi"
+        }
       ]
     ]
   }
