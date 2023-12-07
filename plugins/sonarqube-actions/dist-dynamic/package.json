@@ -28,7 +28,6 @@
   "dependencies": {
     "yaml": "^2.3.3"
   },
-  "devDependencies": {},
   "files": [
     "dist"
   ],

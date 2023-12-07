@@ -26,7 +26,6 @@
     "tsc": "tsc"
   },
   "dependencies": {},
-  "devDependencies": {},
   "files": [
     "dist"
   ],
