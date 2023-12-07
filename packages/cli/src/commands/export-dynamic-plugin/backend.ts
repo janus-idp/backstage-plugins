@@ -21,7 +21,7 @@ import { loadConfig } from '@backstage/config-loader';
 import { getPackages } from '@manypkg/get-packages';
 import { OptionValues } from 'commander';
 import fs from 'fs-extra';
-import { rollup } from 'rollup';
+import { InteropType, rollup } from 'rollup';
 import * as semver from 'semver';
 
 import { execSync } from 'child_process';
@@ -102,6 +102,8 @@ export async function backend(
       if (relatedCommonPackage !== pkgToEmbed) {
         mergeWithOutput.push(relatedCommonPackage);
       }
+      const relatedAlphaPackage = pkgToEmbed.concat('/alpha');
+      mergeWithOutput.push(relatedAlphaPackage);
     }
   }
 
@@ -124,6 +126,21 @@ export async function backend(
     .filter(p => p.startsWith('!'))
     .map(p => p.slice(1))
     .map(stringOrRegexp);
+
+  let interopForAll: InteropType | undefined = undefined;
+  const interopForPackage: { [key: string]: InteropType } = {};
+  for (const mode in opts.overrideInterop) {
+    if (!Object.prototype.hasOwnProperty.call(opts.overrideInterop, mode)) {
+      continue;
+    }
+
+    if (!opts.overrideInterop[mode]?.length) {
+      interopForAll = mode as InteropType;
+    }
+    for (const interopPkg of opts.overrideInterop[mode]) {
+      interopForPackage[interopPkg] = mode as InteropType;
+    }
+  }
 
   const rollupConfigs = await makeRollupConfigs({
     outputs,
@@ -189,7 +206,20 @@ export async function backend(
   if (Array.isArray(rollupConfig.output)) {
     rollupConfig.output.forEach(output => {
       if (output.format === 'commonjs') {
-        output.interop = 'default';
+        if (interopForAll) {
+          console.log(
+            `Overriding Interop to '${interopForAll}' for all imports`,
+          );
+        }
+        output.interop = (id: string | null) => {
+          if (id && interopForPackage[id]) {
+            console.log(
+              `Overriding Interop to '${interopForPackage[id]}' for '${id}'`,
+            );
+            return interopForPackage[id];
+          }
+          return interopForAll || true; // true is the default value in Rollup.
+        };
       }
     });
   }

@@ -16,7 +16,7 @@
 
 import { assertError } from '@backstage/errors';
 
-import { Command } from 'commander';
+import { Command, InvalidArgumentError } from 'commander';
 
 import { exitWithError } from '../lib/errors';
 
@@ -86,6 +86,20 @@ export function registerScriptCommand(program: Command) {
     .option(
       '--shared-package [package-name...]',
       'Optional list of packages that should be considered shared by all dynamic plugins, and will be moved to peer dependencies of the dynamic plugin. The `@backstage` packages are by default considered shared dependencies.',
+    )
+    .option(
+      '--override-interop <mode:package-name,package-name...>',
+      'Optional list of packages for which the CommonJS Rollup output interop mode should be overridden to `mode` when building the dynamic plugin assets (backend plugin only).',
+      (value, previous) => {
+        const [key, val] = value.split(':');
+        if (!['auto', 'esModule', 'default', 'defaultOnly'].includes(key)) {
+          throw new InvalidArgumentError(
+            `Invalid interop mode '${key}'. Possible values are: auto, esModule, default, defaultOnly (see https://rollupjs.org/configuration-options/#output-interop).`,
+          );
+        }
+        return { ...previous, [key]: val?.split(',') || [] };
+      },
+      {},
     )
     .option(
       '--no-install',

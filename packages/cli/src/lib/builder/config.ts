@@ -92,6 +92,7 @@ export async function makeRollupConfigs(
         chunkFileNames: `cjs/[name]-[hash].cjs.js`,
         format: 'commonjs',
         sourcemap: true,
+        exports: 'named',
       });
     }
     if (options.outputs.has(Output.esm)) {
