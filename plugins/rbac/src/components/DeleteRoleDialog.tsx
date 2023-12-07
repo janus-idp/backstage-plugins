@@ -19,6 +19,8 @@ import CloseIcon from '@material-ui/icons/Close';
 import ErrorIcon from '@material-ui/icons/Error';
 import { Alert } from '@material-ui/lab';
 
+import { RoleBasedPolicy } from '@janus-idp/backstage-plugin-rbac-common';
+
 import { rbacApiRef } from '../api/RBACBackendClient';
 import { getMembers } from '../utils/rbac-utils';
 import { useToast } from './ToastContext';
@@ -65,12 +67,32 @@ const DeleteRoleDialog = ({
 
   const deleteRole = async () => {
     try {
+      const policies = await rbacApi.getAssociatedPolicies(roleName);
+      let cleanupPoliciesResponse;
+      if (Array.isArray(policies)) {
+        const allowedPolicies = policies.filter(
+          (policy: RoleBasedPolicy) => policy.effect !== 'deny',
+        );
+        if (allowedPolicies.length > 0) {
+          cleanupPoliciesResponse = await rbacApi.deletePolicies(
+            roleName,
+            allowedPolicies,
+          );
+        }
+        if (cleanupPoliciesResponse && !cleanupPoliciesResponse.ok) {
+          setError(
+            `Unable to delete Policies. ${cleanupPoliciesResponse.statusText}`,
+          );
+          return;
+        }
+      }
+
       const response = await rbacApi.deleteRole(roleName);
       if (response.status === 200 || response.status === 204) {
         setToastMessage(`Role ${roleName} deleted successfully`);
         closeDialog();
       } else {
-        setError(response.statusText);
+        setError(`Unable to delete the role. ${response.statusText}`);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : `${err}`);
@@ -147,7 +169,7 @@ const DeleteRoleDialog = ({
       </DialogContent>
       {error && (
         <Box maxWidth="650px" marginLeft="20px">
-          <Alert severity="error">{`Unable to delete. ${error}`}</Alert>
+          <Alert severity="error">{error}</Alert>
         </Box>
       )}
       <DialogActions

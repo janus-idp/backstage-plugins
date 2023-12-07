@@ -37,7 +37,7 @@ describe('RbacPage', () => {
     mockUseRoles.mockReturnValue({
       loading: true,
       data: [],
-      retry: () => {},
+      retry: jest.fn(),
       createRoleAllowed: false,
     });
     await renderInTestApp(<RbacPage />);
