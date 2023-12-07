@@ -15,7 +15,7 @@ import { Timestamp } from '@patternfly/react-core';
 
 import { PipelineRunKind } from '@janus-idp/shared-react';
 
-import { tektonGroupColor } from '../../types/types';
+import { OpenRowStatus, tektonGroupColor } from '../../types/types';
 import { pipelineRunDuration } from '../../utils/tekton-utils';
 import { PipelineRunVisualization } from '../pipeline-topology';
 import PipelineRunTaskStatus from './PipelineRunTaskStatus';
@@ -39,8 +39,8 @@ type PipelineRunRowProps = {
   row: PipelineRunKind;
   startTime: string;
   isExpanded?: boolean;
-  rowIndex: number;
-  plrCount: number;
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<OpenRowStatus>>;
 };
 
 type PipelineRunNameProps = { row: PipelineRunKind };
@@ -62,39 +62,43 @@ const PipelineRunName = ({ row }: PipelineRunNameProps) => {
 export const PipelineRunRow = ({
   row,
   startTime,
-  rowIndex,
-  plrCount,
-  isExpanded,
+  isExpanded = false,
+  open,
+  setOpen,
 }: PipelineRunRowProps) => {
   const classes = useStyles();
-  const [open, setOpen] = React.useState<boolean[]>(
-    [...Array(plrCount)].map(() => isExpanded ?? false),
-  );
+  const uid = row.metadata?.uid;
 
   React.useEffect(() => {
-    return isExpanded
-      ? setOpen(val => val.map(() => true))
-      : setOpen(val => val.map(() => false));
-  }, [isExpanded, plrCount]);
+    return setOpen((val: OpenRowStatus) => {
+      return {
+        ...val,
+        ...(uid && { [uid]: isExpanded }),
+      };
+    });
+  }, [isExpanded, uid, setOpen]);
+
+  const expandCollapseClickHandler = () => {
+    setOpen((val: OpenRowStatus) => {
+      return {
+        ...val,
+        ...(uid && {
+          [uid]: !val[uid],
+        }),
+      };
+    });
+  };
 
   return (
     <>
-      <TableRow key={row.metadata?.uid} className={classes.plrRow}>
+      <TableRow key={uid} className={classes.plrRow}>
         <TableCell>
           <IconButton
             aria-label="expand row"
             size="small"
-            onClick={() =>
-              setOpen(val =>
-                val.map((v, index) => (index === rowIndex ? !v : v)),
-              )
-            }
+            onClick={expandCollapseClickHandler}
           >
-            {open[rowIndex] ? (
-              <KeyboardArrowDownIcon />
-            ) : (
-              <KeyboardArrowRightIcon />
-            )}
+            {open ? <KeyboardArrowDownIcon /> : <KeyboardArrowRightIcon />}
           </IconButton>
         </TableCell>
         <TableCell align="left">
@@ -120,7 +124,7 @@ export const PipelineRunRow = ({
       </TableRow>
       <TableRow className={classes.plrVisRow}>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-          <Collapse in={open[rowIndex]} timeout="auto" unmountOnExit>
+          <Collapse in={open} timeout="auto" unmountOnExit>
             <Box margin={1}>
               <PipelineRunVisualization pipelineRunName={row.metadata?.name} />
             </Box>

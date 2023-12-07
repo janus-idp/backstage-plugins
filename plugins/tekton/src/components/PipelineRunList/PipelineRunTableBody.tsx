@@ -3,6 +3,7 @@ import * as React from 'react';
 import { PipelineRunKind } from '@janus-idp/shared-react';
 
 import { TektonResourcesContext } from '../../hooks/TektonResourcesContext';
+import { OpenRowStatus } from '../../types/types';
 import { PipelineRunRow } from './PipelineRunRow';
 
 type PipelineRunTableBodyProps = {
@@ -11,11 +12,19 @@ type PipelineRunTableBodyProps = {
 
 export const PipelineRunTableBody = ({ rows }: PipelineRunTableBodyProps) => {
   const { isExpanded } = React.useContext(TektonResourcesContext);
+  const [open, setOpen] = React.useState<OpenRowStatus>(
+    rows.reduce((acc, row) => {
+      if (row.metadata?.uid) {
+        acc[row.metadata?.uid] = isExpanded ?? false;
+      }
+      return acc;
+    }, {} as OpenRowStatus),
+  );
+
   return (
     <>
-      {rows.map((row, index, plrs) => {
+      {rows.map((row: PipelineRunKind) => {
         const startTime = row.status?.startTime || '';
-        const plrCount = plrs.length;
 
         return (
           <PipelineRunRow
@@ -23,8 +32,8 @@ export const PipelineRunTableBody = ({ rows }: PipelineRunTableBodyProps) => {
             startTime={startTime}
             isExpanded={isExpanded}
             key={row.metadata?.uid}
-            rowIndex={index}
-            plrCount={plrCount}
+            open={row.metadata?.uid ? open[row.metadata.uid] : false}
+            setOpen={setOpen}
           />
         );
       })}
