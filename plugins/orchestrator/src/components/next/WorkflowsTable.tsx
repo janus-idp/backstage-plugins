@@ -1,7 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { Table, TableColumn, TableProps } from '@backstage/core-components';
+import {
+  Link,
+  Table,
+  TableColumn,
+  TableProps,
+} from '@backstage/core-components';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 
 import DeleteForever from '@material-ui/icons/DeleteForever';
@@ -115,7 +120,19 @@ export const WorkflowsTable = ({ items }: WorkflowsTableProps) => {
 
   const columns = useMemo<TableColumn<FormattedWorkflowOverview>[]>(
     () => [
-      { title: 'Name', field: 'name' },
+      {
+        title: 'Name',
+        render: rowData => (
+          <Link
+            to={definitionLink({
+              workflowId: rowData.id,
+              format: rowData.format,
+            })}
+          >
+            {rowData.name}
+          </Link>
+        ),
+      },
       { title: 'Last run', field: 'lastTriggered' },
       {
         title: 'Last run status',
@@ -127,7 +144,7 @@ export const WorkflowsTable = ({ items }: WorkflowsTableProps) => {
       { title: 'Avg. duration', field: 'avgDuration' },
       { title: 'Description', field: 'description' },
     ],
-    [],
+    [definitionLink],
   );
 
   const options = useMemo<TableProps['options']>(

@@ -7,6 +7,7 @@ import {
   executeWorkflowRouteRef,
   newWorkflowRef,
   nextExecuteWorkflowRouteRef,
+  nextOrchestratorRootRouteRef,
   workflowDefinitionsRouteRef,
   workflowInstanceRouteRef,
   workflowInstancesRouteRef,
@@ -49,7 +50,10 @@ export const Router = () => {
         path={executeWorkflowRouteRef.path}
         element={<ExecuteWorkflowPage />}
       />
-      <Route path="/next/*" element={<OrchestratorPageNext />} />
+      <Route
+        path={nextOrchestratorRootRouteRef.path}
+        element={<OrchestratorPageNext />}
+      />
       <Route
         path={nextExecuteWorkflowRouteRef.path}
         element={<ExecuteWorkflowPageNext />}
