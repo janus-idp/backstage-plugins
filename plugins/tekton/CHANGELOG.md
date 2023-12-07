@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-tekton [3.1.13](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.1.12...@janus-idp/backstage-plugin-tekton@3.1.13) (2023-12-07)
+
+
+### Bug Fixes
+
+* **tekton:** fix expand collapse with sorting of PLR list table ([#980](https://github.com/janus-idp/backstage-plugins/issues/980)) ([d5fc710](https://github.com/janus-idp/backstage-plugins/commit/d5fc710c09e272583e27dbf5beaa3694d18100fe))
+
 ## @janus-idp/backstage-plugin-tekton [3.1.12](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.1.11...@janus-idp/backstage-plugin-tekton@3.1.12) (2023-11-30)
 
 
