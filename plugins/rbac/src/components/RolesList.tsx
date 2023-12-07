@@ -74,7 +74,7 @@ export const RolesList = () => {
         renderSummaryRow={summary => onSearchResultsChange(summary.data)}
         emptyContent={
           <div data-testid="roles-table-empty" className={classes.empty}>
-            No roles found
+            No records found
           </div>
         }
       />

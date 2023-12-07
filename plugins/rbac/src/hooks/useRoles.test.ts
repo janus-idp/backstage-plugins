@@ -110,11 +110,11 @@ jest.mock('@backstage/core-plugin-api', () => ({
 }));
 
 describe('useRoles', () => {
-  it('should return roles with alteast one policy with effect allow', async () => {
+  it('should return all roles irrespective of permission policies', async () => {
     const { result } = renderHook(() => useRoles());
     await waitFor(() => {
       expect(result.current.loading).toBeFalsy();
-      expect(result.current.data).toHaveLength(1);
+      expect(result.current.data).toHaveLength(2);
     });
   });
 
