@@ -1,3 +1,10 @@
+## @janus-idp/backstage-scaffolder-backend-module-quay [1.2.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-quay@1.2.4...@janus-idp/backstage-scaffolder-backend-module-quay@1.2.5) (2023-12-07)
+
+
+### Bug Fixes
+
+* attempt to force a bump of backend plugins ([#1007](https://github.com/janus-idp/backstage-plugins/issues/1007)) ([7a37225](https://github.com/janus-idp/backstage-plugins/commit/7a372254fb7e8107aa794f7900a6511eee096677))
+
 ## @janus-idp/backstage-scaffolder-backend-module-quay [1.2.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-quay@1.2.3...@janus-idp/backstage-scaffolder-backend-module-quay@1.2.4) (2023-12-07)
 
 
