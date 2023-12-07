@@ -156,7 +156,7 @@
       [
         "@semantic-release/exec",
         {
-          "successCmd": "if [ -d 'dist-dynamic' ]; then echo 'publishing backend derived package ...' && cd dist-dynamic && npm publish --ignore-scripts --access public ; fi"
+          "successCmd": "if [ -d 'dist-dynamic' ]; then echo 'publishing backend derived package ...' && cd dist-dynamic && npm publish --registry https://registry.npmjs.org/ --ignore-scripts --access public ; fi"
         }
       ]
     ]
