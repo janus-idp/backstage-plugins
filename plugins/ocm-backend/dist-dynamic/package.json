@@ -1,6 +1,6 @@
 {
   "name": "@janus-idp/backstage-plugin-ocm-backend-dynamic",
-  "version": "3.4.10",
+  "version": "3.4.11",
   "main": "dist/index.cjs.js",
   "types": "dist/index.d.ts",
   "license": "Apache-2.0",
@@ -35,6 +35,7 @@
     "lodash": "^4.17.21",
     "luxon": "^3.0.0"
   },
+  "devDependencies": {},
   "files": [
     "dist",
     "config.d.ts",
