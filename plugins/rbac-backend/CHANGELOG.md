@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac-backend [1.7.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@1.6.6...@janus-idp/backstage-plugin-rbac-backend@1.7.0) (2023-12-07)
+
+
+### Features
+
+* **rbac:** list roles with no permission policies ([#998](https://github.com/janus-idp/backstage-plugins/issues/998)) ([217b7b0](https://github.com/janus-idp/backstage-plugins/commit/217b7b0db3414788c8e77247f378a51cf0eeda0d))
+
 ## @janus-idp/backstage-plugin-rbac-backend [1.6.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@1.6.5...@janus-idp/backstage-plugin-rbac-backend@1.6.6) (2023-12-05)
 
 
