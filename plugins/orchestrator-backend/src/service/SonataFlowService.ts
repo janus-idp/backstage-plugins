@@ -21,6 +21,7 @@ import {
 import { spawn } from 'child_process';
 import { join, resolve } from 'path';
 
+import { getWorkflowCategory } from '../helpers/workflows';
 import { executeWithRetry } from './Helper';
 
 const SONATA_FLOW_RESOURCES_PATH =
@@ -242,6 +243,7 @@ export class SonataFlowService {
             return this.fetchWorkflowOverview(workflowId);
           }),
         );
+
         return items.filter((item): item is WorkflowOverview => !!item);
       }
       const responseStr = JSON.stringify(response);
@@ -295,7 +297,19 @@ export class SonataFlowService {
 
       if (response.ok) {
         const json = await response.json();
-        return (json.data.ProcessInstances as ProcessInstance[])?.pop();
+        const processInstance = (
+          json.data.ProcessInstances as ProcessInstance[]
+        )?.pop();
+
+        if (processInstance?.processId) {
+          const workflowDefinition = await this.fetchWorkflowDefinition(
+            processInstance.processId,
+          );
+
+          processInstance.category = getWorkflowCategory(workflowDefinition);
+        }
+
+        return processInstance;
       }
     } catch (error) {
       this.logger.error(`Error when fetching instance: ${error}`);

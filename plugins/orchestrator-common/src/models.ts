@@ -1,3 +1,5 @@
+import { WorkflowCategory } from './types';
+
 export enum ProcessInstanceState {
   Active = 'ACTIVE',
   Completed = 'COMPLETED',
@@ -75,6 +77,7 @@ export interface ProcessInstance {
   diagram?: string;
   nodeDefinitions?: TriggerableNode[];
   source?: string;
+  category?: WorkflowCategory;
 }
 
 export enum JobStatus {

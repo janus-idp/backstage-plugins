@@ -18,7 +18,6 @@ import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { Logger } from 'winston';
 
 import {
-  ASSESSMENT_WORKFLOW_TYPE,
   default_catalog_environment,
   default_catalog_owner,
   orchestrator_service_ready_topic,
@@ -26,6 +25,8 @@ import {
   WorkflowCategory,
   WorkflowItem,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
+
+import { getWorkflowCategory } from '../helpers/workflows';
 
 export class OrchestratorEntityProvider
   implements EntityProvider, EventSubscriber
@@ -156,11 +157,8 @@ export class OrchestratorEntityProvider
   ): TemplateEntityV1beta3[] {
     return items.map(i => {
       const sanitizedId = i.definition.id.replace(/ /g, '_');
-      const category: WorkflowCategory = i.definition.annotations?.find(
-        annotation => annotation === ASSESSMENT_WORKFLOW_TYPE,
-      )
-        ? WorkflowCategory.ASSESSMENT
-        : WorkflowCategory.INFRASTRUCTURE;
+      const category: WorkflowCategory = getWorkflowCategory(i.definition);
+
       return {
         apiVersion: 'scaffolder.backstage.io/v1beta3',
         kind: 'Template',
