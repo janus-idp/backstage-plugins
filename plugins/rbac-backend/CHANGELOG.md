@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac-backend [1.7.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@1.7.0...@janus-idp/backstage-plugin-rbac-backend@1.7.1) (2023-12-08)
+
+
+### Documentation
+
+* **rbac:** add documentation for api and known permissions ([#1000](https://github.com/janus-idp/backstage-plugins/issues/1000)) ([8f8133f](https://github.com/janus-idp/backstage-plugins/commit/8f8133f12d2a74dc6503f7545942f11c40b52092))
+
 ## @janus-idp/backstage-plugin-rbac-backend [1.7.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@1.6.6...@janus-idp/backstage-plugin-rbac-backend@1.7.0) (2023-12-07)
 
 
