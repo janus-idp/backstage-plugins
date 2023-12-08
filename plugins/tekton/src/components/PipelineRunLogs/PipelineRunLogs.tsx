@@ -22,12 +22,14 @@ type PipelineRunLogsProps = {
   taskRuns: TaskRunKind[];
   pods: V1Pod[];
   activeTask?: string;
+  setActiveTask?: () => void;
 };
 export const PipelineRunLogs = ({
   pipelineRun,
   taskRuns,
   pods,
   activeTask,
+  setActiveTask,
 }: PipelineRunLogsProps) => {
   const PLRTaskRuns = getTaskRunsForPipelineRun(pipelineRun, taskRuns);
   const sortedTaskRuns = getSortedTaskRuns(PLRTaskRuns);
@@ -61,6 +63,10 @@ export const PipelineRunLogs = ({
       !activeTask ? (mostRecentFailedOrActiveStep?.id as string) : '',
     );
   }, [sortedTaskRuns, completed, activeTask]);
+
+  React.useEffect(() => {
+    setActiveTask(userSelectedStepId);
+  }, [userSelectedStepId, setActiveTask]);
 
   const currentStepId = userSelectedStepId || lastActiveStepId;
   const activeItem = getActiveTaskRun(sortedTaskRuns, currentStepId);
