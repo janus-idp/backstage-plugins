@@ -22,7 +22,7 @@ type PipelineRunLogsProps = {
   taskRuns: TaskRunKind[];
   pods: V1Pod[];
   activeTask?: string;
-  setActiveTask?: () => void;
+  setActiveTask: (t: string) => void;
 };
 export const PipelineRunLogs = ({
   pipelineRun,
