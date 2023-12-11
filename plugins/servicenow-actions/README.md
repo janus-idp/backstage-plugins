@@ -154,7 +154,7 @@ yarn workspace backend add @janus-idp/backstage-scaffolder-backend-module-servic
 | Parameter Name                    |              Type              | Required | Description                                                                               |
 | --------------------------------- | :----------------------------: | :------: | ----------------------------------------------------------------------------------------- |
 | `tableName`                       |            `string`            |   Yes    | Name of the table from which to retrieve the records                                      |
-| `sysparamQuery`                   |            `string`            |    No    | An encoded query string used to filter the results                                        |
+| `sysparmQuery`                    |            `string`            |    No    | An encoded query string used to filter the results                                        |
 | `sysparmDisplayValue`             | `enum("true", "false", "all")` |    No    | Return field display values (true), actual values (false), or both (all) (default: false) |
 | `sysparmExcludeReferenceLink`     |           `boolean`            |    No    | True to exclude Table API links for reference fields (default: false)                     |
 | `sysparmSuppressPaginationHeader` |           `boolean`            |    No    | True to suppress pagination header (default: false)                                       |
