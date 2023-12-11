@@ -9,6 +9,7 @@ import { Skeleton } from '@material-ui/lab';
 import { WorkflowOverview } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import WorkflowOverviewFormatter from '../../dataFormatters/WorkflowOverviewFormatter';
+import { ProcessInstanceStatus } from '../next/ProcessInstanceStatus';
 
 const useStyles = makeStyles({
   details: {
@@ -49,6 +50,11 @@ const WorkflowDefinitionDetailsCard = ({
       {
         label: 'last run status',
         value: formattedWorkflowOverview?.lastRunStatus,
+        children: formattedWorkflowOverview?.lastRunStatus ? (
+          <ProcessInstanceStatus
+            status={formattedWorkflowOverview?.lastRunStatus}
+          />
+        ) : null,
       },
     ],
     [formattedWorkflowOverview],
@@ -60,11 +66,11 @@ const WorkflowDefinitionDetailsCard = ({
     <InfoCard title="Details" className={classes.details}>
       <Grid container spacing={3} alignContent="flex-start">
         <Grid container item md={4} spacing={3} alignContent="flex-start">
-          {details?.map(({ label, value }) => (
+          {details?.map(({ label, value, children }) => (
             <Grid item md={6} key={label}>
               {/* AboutField requires the value to be defined as a prop as well */}
               <AboutField label={label} value={value}>
-                {loading ? <Skeleton variant="text" /> : value}
+                {loading ? <Skeleton variant="text" /> : children || value}
               </AboutField>
             </Grid>
           ))}
