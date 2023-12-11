@@ -37,12 +37,17 @@ export function validateRole(role: Role): Error | undefined {
     return new Error(`'name' field must not be empty`);
   }
 
+  let err = validateEntityReference(role.name);
+  if (err) {
+    return err;
+  }
+
   if (!role.memberReferences || role.memberReferences.length === 0) {
     return new Error(`'memberReferences' field must not be empty`);
   }
 
   for (const member of role.memberReferences) {
-    const err = validateEntityReference(member);
+    err = validateEntityReference(member);
     if (err) {
       return err;
     }

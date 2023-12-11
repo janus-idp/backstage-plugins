@@ -16,6 +16,7 @@ import {
   policyEntityDeletePermission,
   policyEntityReadPermission,
   policyEntityUpdatePermission,
+  Role,
 } from '@janus-idp/backstage-plugin-rbac-common';
 
 import { RBACPermissionPolicy } from './permission-policy';
@@ -246,6 +247,17 @@ describe('REST policies api', () => {
       expect(result.body.error).toEqual({
         name: 'NotAllowedError',
         message: '',
+      });
+    });
+
+    it('should return a status of Unauthorized - no user', async () => {
+      mockIdentityClient.getIdentity.mockImplementationOnce(() => undefined);
+      const result = await request(app).post('/policies').send();
+
+      expect(result.statusCode).toBe(403);
+      expect(result.body.error).toEqual({
+        name: 'NotAllowedError',
+        message: 'User not found',
       });
     });
 
@@ -1152,6 +1164,21 @@ describe('REST policies api', () => {
       });
     });
 
+    it('should not create a role - name is invalid', async () => {
+      const result = await request(app)
+        .post('/roles')
+        .send({
+          memberReferences: ['user:default/permission_admin'],
+          name: 'x:default/rbac_admin',
+        });
+
+      expect(result.statusCode).toBe(400);
+      expect(result.body.error).toEqual({
+        name: 'InputError',
+        message: `Invalid role definition. Cause: Unsupported kind x. List supported values ["user", "group", "role"]`,
+      });
+    });
+
     it('should be created role', async () => {
       const result = await request(app)
         .post('/roles')
@@ -1278,7 +1305,7 @@ describe('REST policies api', () => {
           },
           newRole: {
             memberReferences: ['user:default/test'],
-            name: 'role/default/rbac_admin',
+            name: 'role:default/rbac_admin',
           },
         });
 
@@ -1553,6 +1580,26 @@ describe('REST policies api', () => {
 
       expect(result.statusCode).toEqual(200);
     });
+
+    it('should fail to update role name when role name is invalid', async () => {
+      const result = await request(app)
+        .put('/roles/role/default/rbac_admin')
+        .send({
+          oldRole: {
+            memberReferences: ['user:default/permission_admin'],
+          },
+          newRole: {
+            memberReferences: ['user:default/test'],
+            name: 'role:default/',
+          },
+        });
+
+      expect(result.statusCode).toBe(400);
+      expect(result.body.error).toEqual({
+        name: 'InputError',
+        message: `Invalid new role object. Cause: Entity reference "role:default/" was not on the form [<kind>:][<namespace>/]<name>`,
+      });
+    });
   });
 
   describe('DELETE /roles/:kind/:namespace/:name', () => {
@@ -1693,6 +1740,25 @@ describe('REST policies api', () => {
           server.getFirstQuery(queryValue);
         }).toThrow(InputError);
       });
+    });
+  });
+
+  describe('transformRoleArray', () => {
+    it('should combine two roles together that are similar', () => {
+      const roles = [
+        ['group:default/test', 'role:default/test'],
+        ['user:default/test', 'role:default/test'],
+      ];
+
+      const expectedResult: Role[] = [
+        {
+          memberReferences: ['group:default/test', 'user:default/test'],
+          name: 'role:default/test',
+        },
+      ];
+
+      const transformedRoles = server.transformRoleArray(...roles);
+      expect(transformedRoles).toStrictEqual(expectedResult);
     });
   });
 
