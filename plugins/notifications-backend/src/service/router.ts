@@ -1,11 +1,13 @@
-import { errorHandler } from '@backstage/backend-common';
 import { CatalogClient } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 
+import { fullFormats } from 'ajv-formats/dist/formats';
 import express from 'express';
 import Router from 'express-promise-router';
+import { Context, OpenAPIBackend, Request } from 'openapi-backend';
 import { Logger } from 'winston';
 
+import { Paths } from '../openapi';
 import { initDB } from './db';
 import {
   createNotification,
@@ -13,7 +15,6 @@ import {
   getNotificationsCount,
   setRead,
 } from './handlers';
-import { NotificationsSortingRequest } from './types';
 
 interface RouterOptions {
   logger: Logger;
@@ -26,104 +27,107 @@ export async function createRouter(
 ): Promise<express.Router> {
   const { logger, dbConfig, catalogClient } = options;
 
-  const router = Router();
-  router.use(express.json());
-
+  // create DB client and tables
   if (!dbConfig) {
     logger.error('Missing dbConfig');
     throw new Error('Missing database config');
   }
 
-  // create DB client and tables
   const dbClient = await initDB(dbConfig);
 
-  // rest endpoints/operations
-  router.get('/health', (_, response) => {
-    response.json({ status: 'ok' });
+  // create openapi requests handler
+
+  const api = new OpenAPIBackend({
+    ajvOpts: {
+      formats: fullFormats, // open issue: https://github.com/openapistack/openapi-backend/issues/280
+    },
+    validate: true,
+    definition: '../../plugins/notifications-backend/src/openapi.yaml',
   });
 
-  router.get('/notifications/count', (request, response, next) => {
-    getNotificationsCount(dbClient, catalogClient, request.query)
-      .then(result => response.json(result))
+  await api.init();
+
+  api.register(
+    'createNotification',
+    (
+      c: Context<Paths.CreateNotification.RequestBody>,
+      _,
+      res: express.Response,
+      next,
+    ) => {
+      createNotification(dbClient, catalogClient, c.request.requestBody)
+        .then(result => res.json(result))
+        .catch(next);
+    },
+  );
+
+  api.register('getNotifications', (c, _, res: express.Response, next) => {
+    const q: Paths.GetNotifications.QueryParameters = Object.assign(
+      {},
+      c.request.query,
+    );
+
+    // we need to convert strings to real types due to open PR https://github.com/openapistack/openapi-backend/pull/571
+    q.pageNumber = stringToNumber(q.pageNumber);
+    q.pageSize = stringToNumber(q.pageSize);
+    q.read = stringToBool(q.read);
+
+    getNotifications(dbClient, catalogClient, q, q.pageSize, q.pageNumber, q)
+      .then(notifications => res.json(notifications))
       .catch(next);
   });
 
-  router.get('/notifications', (request, response, next) => {
-    const { pageSize, pageNumber, orderBy, orderByDirec } = request.query;
+  api.register('getNotificationsCount', (c, _, res: express.Response, next) => {
+    const q: Paths.GetNotificationsCount.QueryParameters = Object.assign(
+      {},
+      c.request.query,
+    );
 
-    if (
-      (typeof pageSize !== 'string' && typeof pageSize !== 'undefined') ||
-      (typeof pageNumber !== 'string' && typeof pageNumber !== 'undefined')
-    ) {
-      throw new Error(
-        'either pageSize or pageNumber query string parameters are missing/invalid',
-      );
-    }
+    // we need to convert strings to real types due to open PR https://github.com/openapistack/openapi-backend/pull/571
+    q.read = q.read = stringToBool(q.read);
 
-    const pageSizeNum = pageSize ? Number.parseInt(pageSize, 10) : undefined;
-    const pageNumberNum = pageNumber
-      ? Number.parseInt(pageNumber, 10)
-      : undefined;
-
-    if (Number.isNaN(pageSizeNum) || Number.isNaN(pageNumberNum)) {
-      throw new Error('either pageSize or pageNumber is not a number');
-    }
-
-    const sorting: NotificationsSortingRequest = {
-      fieldName: orderBy?.toString(),
-      direction: orderByDirec?.toString(),
-    };
-
-    getNotifications(
-      dbClient,
-      catalogClient,
-      request.query,
-      pageSizeNum,
-      pageNumberNum,
-      sorting,
-    )
-      .then(notifications => response.json(notifications))
+    getNotificationsCount(dbClient, catalogClient, q)
+      .then(result => res.json(result))
       .catch(next);
   });
 
-  router.post('/notifications', (request, response, next) => {
-    createNotification(dbClient, catalogClient, request.body)
-      .then(result => response.json(result))
+  api.register('setRead', (c, _, res: express.Response, next) => {
+    const messageId = c.request.query.messageId.toString();
+    const user = c.request.query.user.toString();
+    const read = c.request.query.read.toString() === 'true';
+
+    setRead(dbClient, messageId, user, read)
+      .then(result => res.json(result))
       .catch(next);
   });
 
-  router.put('/notifications/read', (request, response, next) => {
-    const { messageId, user, read } = request.query;
-    if (
-      typeof messageId !== 'string' ||
-      typeof user !== 'string' ||
-      typeof read !== 'string'
-    ) {
-      throw new Error(
-        'the following query parameters must be provided: messageId - string, user - string, read - false/true (boolean)',
-      );
+  // create router
+
+  const router = Router();
+  router.use(express.json());
+  router.use((req, res, next) => {
+    if (!next) {
+      throw new Error('next is undefined');
+    }
+    const validation = api.validateRequest(req as Request);
+    if (!validation.valid) {
+      throw validation.errors;
     }
 
-    let readBool: boolean;
-
-    switch (read) {
-      case 'true':
-        readBool = true;
-        break;
-      case 'false':
-        readBool = false;
-        break;
-      default:
-        throw new Error(
-          'value of parameter "read" must be either "false" or "true"',
-        );
-    }
-
-    setRead(dbClient, messageId, user, readBool)
-      .then(() => response.end())
-      .catch(next);
+    api.handleRequest(req as Request, req, res, next);
   });
 
-  router.use(errorHandler());
   return router;
+}
+
+function stringToNumber(s: number | undefined): number | undefined {
+  return s ? Number.parseInt(s.toString(), 10) : undefined;
+}
+
+function stringToBool(s: boolean | undefined): boolean | undefined {
+  if (!s) {
+    return undefined;
+  }
+
+  return s.toString() === 'true' ? true : false;
 }

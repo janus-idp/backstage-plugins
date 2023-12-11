@@ -3,16 +3,16 @@ import { CatalogClient } from '@backstage/catalog-client';
 
 import { Knex } from 'knex';
 
+import { Components, Paths } from '../openapi';
 import { ActionsInsert, MessagesInsert } from './db';
 import {
-  CreateNotificationRequest,
   DefaultMessageScope,
   DefaultOrderBy,
   DefaultOrderDirection,
   DefaultPageNumber,
   DefaultPageSize,
   DefaultUser,
-  Notification,
+  MessageScopes,
   NotificationsFilterRequest,
   NotificationsOrderByDirections,
   NotificationsOrderByFields,
@@ -24,8 +24,8 @@ import {
 export async function createNotification(
   dbClient: Knex<any, any>,
   catalogClient: CatalogClient,
-  req: CreateNotificationRequest,
-): Promise<{ messageId: string }> {
+  req: Paths.CreateNotification.RequestBody,
+): Promise<Paths.CreateNotification.Responses.$200> {
   let isUser = false;
 
   // validate users
@@ -138,7 +138,7 @@ export async function getNotifications(
   pageSize: number = DefaultPageSize,
   pageNumber: number = DefaultPageNumber,
   sorting: NotificationsSortingRequest,
-): Promise<Notification[]> {
+): Promise<Paths.GetNotifications.Responses.$200> {
   if (
     pageSize < 0 ||
     pageNumber < 0 ||
@@ -152,17 +152,21 @@ export async function getNotifications(
 
   if (!filter.messageScope) {
     filter.messageScope = DefaultMessageScope;
+  } else if (!MessageScopes.includes(filter.messageScope)) {
+    throw new Error(
+      `messageScope parameter must be one of ${MessageScopes.join()}`,
+    );
   }
 
   if (!filter.user) {
     filter.user = DefaultUser;
   }
 
-  const orderBy = sorting.fieldName || DefaultOrderBy;
-  const direction = sorting.direction || DefaultOrderDirection;
+  const orderBy = sorting.orderBy || DefaultOrderBy;
+  const orderByDirec = sorting.OrderByDirec || DefaultOrderDirection;
   if (
     !NotificationsOrderByFields.includes(orderBy) ||
-    !NotificationsOrderByDirections.includes(direction)
+    !NotificationsOrderByDirections.includes(orderByDirec)
   ) {
     throw new Error(
       `The orderBy parameter can be one of ${NotificationsOrderByFields.join(
@@ -177,15 +181,15 @@ export async function getNotifications(
 
   const query = createQuery(dbClient, filter, userGroups);
 
-  query.orderBy(orderBy, direction);
+  query.orderBy(orderBy, orderByDirec);
 
   if (pageNumber > 0) {
     query.limit(pageSize).offset((pageNumber - 1) * pageSize);
   }
 
-  const notifications: Notification[] = await query.select('*').then(messages =>
+  const notifications = await query.select('*').then(messages =>
     messages.map((message: any) => {
-      const notification: Notification = {
+      const notification: Components.Schemas.Notification = {
         id: message.id,
         created: message.created,
         isSystem: message.is_system,
@@ -225,7 +229,7 @@ export async function getNotificationsCount(
   dbClient: Knex<any, any>,
   catalogClient: CatalogClient,
   filter: NotificationsFilterRequest,
-): Promise<{ count: number }> {
+): Promise<Paths.GetNotificationsCount.Responses.$200> {
   if (!filter.messageScope) {
     filter.messageScope = DefaultMessageScope;
   }
@@ -364,10 +368,10 @@ function createQuery(
 
   // filter by read/unread
   switch (filter.read) {
-    case 'true':
+    case true:
       query.andWhere('read', true);
       break;
-    case 'false':
+    case false:
       query.andWhere(function () {
         this.where('read', false).orWhereNull('read');
       });
