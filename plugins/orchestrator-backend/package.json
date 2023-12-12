@@ -37,14 +37,12 @@
     "workflows"
   ],
   "files": [
-    "app-config.yaml",
-    "config.d.ts",
+    "app-config.janus-idp.yaml",
     "dist",
     "dist-dynamic/*.*",
     "dist-dynamic/dist/**",
     "dist-dynamic/alpha/*"
   ],
-  "configSchema": "config.d.ts",
   "scripts": {
     "start": "backstage-cli package start",
     "build": "backstage-cli package build",
