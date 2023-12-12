@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme: Theme) =>
     downloadAction: {
       position: 'relative',
       marginBottom: 'var(--pf-v5-global--spacer--sm)',
-      color: theme.palette.grey[700],
+      color: 'var(--pf-v5-global--color--100)',
       cursor: 'pointer',
     },
     buttonDisabled: {
@@ -34,15 +34,14 @@ const PodLogsDownloadLink: React.FC<{
   pods: V1Pod[];
   fileName: string;
   downloadTitle: string;
-}> = ({ pods, fileName, downloadTitle }): React.ReactElement => {
+}> = ({ pods, fileName, downloadTitle, ...props }): React.ReactElement => {
   const classes = useStyles();
   const [downloading, setDownloading] = React.useState<boolean>(false);
   const kubernetesProxyApi = useApi(kubernetesProxyApiRef);
 
-  const { clusters, selectedCluster } =
+  const { clusters, selectedCluster = 0 } =
     React.useContext<TektonResourcesContextData>(TektonResourcesContext);
-  const currCluster =
-    (clusters.length > 0 && clusters[selectedCluster || 0]) || '';
+  const currCluster = clusters.length > 0 ? clusters[selectedCluster] : '';
 
   const getLogs = (podScope: ContainerScope): Promise<{ text: string }> => {
     const { podName, podNamespace, containerName, clusterName } = podScope;
@@ -60,16 +59,24 @@ const PodLogsDownloadLink: React.FC<{
       variant="body2"
       underline="none"
       disabled={downloading}
+      title={downloading ? 'downloading logs' : downloadTitle}
       onClick={() => {
         setDownloading(true);
-        getPodLogs(pods, getLogs, currCluster).then((logs: string) => {
-          setDownloading(false);
-          downloadLogFile(logs || '', fileName);
-        });
+        getPodLogs(pods, getLogs, currCluster)
+          .then((logs: string) => {
+            setDownloading(false);
+            downloadLogFile(logs || '', fileName);
+          })
+          .catch(err => {
+            // eslint-disable-next-line no-console
+            console.warn('Download failed', err);
+            setDownloading(false);
+          });
       }}
       className={classNames(classes.downloadAction, {
         [classes.buttonDisabled]: downloading,
       })}
+      {...props}
     >
       <DownloadIcon title="Download logs" /> {downloadTitle || 'Download '}
     </Link>

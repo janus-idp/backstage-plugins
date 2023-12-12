@@ -1,5 +1,42 @@
 import { V1Pod } from '@kubernetes/client-node';
 
+import { PipelineRunKind } from '@janus-idp/shared-react';
+
+export const testPipelineRun: PipelineRunKind = {
+  apiVersion: 'tekton.dev/v1',
+  kind: 'PipelineRun',
+  metadata: {
+    name: 'test-pipeline-8e09zm',
+    uid: '17080e46-1ff6-4f15-99e9-e32f603d7cc8',
+    creationTimestamp: new Date('2023-12-12T06:38:29Z'),
+    labels: {
+      'backstage.io/kubernetes-id': 'developer-portal',
+      'janus-idp.io/tekton': 'developer-portal',
+      'tekton.dev/build-namespace': 'karthik',
+      'tekton.dev/pipeline': 'new-pipeline',
+    },
+  },
+  spec: {
+    pipelineRef: {
+      name: 'new-pipeline',
+    },
+  },
+  status: {
+    completionTime: '2023-12-12T06:39:12Z',
+    pipelineSpec: { tasks: [] },
+    conditions: [
+      {
+        lastTransitionTime: '2023-12-12T06:39:12Z',
+        message: 'Tasks Completed: 3 (Failed: 0, Cancelled 0), Skipped: 0',
+        reason: 'Succeeded',
+        status: 'True',
+        type: 'Succeeded',
+      },
+    ],
+    startTime: '2023-12-12T06:38:29Z',
+  },
+};
+
 export const testPods: V1Pod[] = [
   {
     metadata: {
@@ -69,3 +106,11 @@ export const testPods: V1Pod[] = [
     },
   },
 ];
+
+export const testPipelineRunPods: {
+  pipelineRun: PipelineRunKind;
+  pods: V1Pod[];
+} = {
+  pipelineRun: testPipelineRun,
+  pods: testPods,
+};

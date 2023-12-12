@@ -25,7 +25,7 @@ const PipelineRunLogDownloader: React.FC<{
 
   const sortedPods: V1Pod[] = React.useMemo(
     () =>
-      filteredPods?.sort(
+      Array.from(filteredPods)?.sort(
         (a: V1Pod, b: V1Pod) =>
           new Date(a?.status?.startTime as Date).getTime() -
           new Date(b?.status?.startTime as Date).getTime(),
@@ -37,25 +37,32 @@ const PipelineRunLogDownloader: React.FC<{
     sortedPods.find(
       (sp: V1Pod) =>
         sp.metadata?.labels?.[TEKTON_PIPELINE_TASKRUN] === activeTask,
-    ) || sortedPods[sortedPods.length - 1];
+    ) ?? sortedPods[sortedPods.length - 1];
 
-  return (
-    <Flex justifyContent={{ default: 'justifyContentFlexEnd' }}>
+  return sortedPods.length > 0 ? (
+    <Flex
+      data-testid="pipelinerun-logs-downloader"
+      justifyContent={{ default: 'justifyContentFlexEnd' }}
+    >
       <FlexItem>
         <PodLogsDownloadLink
-          pods={[activeTaskPod]}
-          fileName={`${activeTaskPod?.metadata?.labels?.[TEKTON_PIPELINE_TASK]}.log`}
+          data-testid="download-task-logs"
+          pods={activeTaskPod ? [activeTaskPod] : []}
+          fileName={`${
+            activeTaskPod?.metadata?.labels?.[TEKTON_PIPELINE_TASK] ?? 'task'
+          }.log`}
           downloadTitle="Download"
         />
       </FlexItem>
       <FlexItem>
         <PodLogsDownloadLink
+          data-testid="download-pipelinerun-logs"
           pods={sortedPods}
-          fileName={`${pipelineRun?.metadata?.name}.log`}
+          fileName={`${pipelineRun?.metadata?.name ?? 'pipelinerun'}.log`}
           downloadTitle="Download all tasks logs"
         />
       </FlexItem>
     </Flex>
-  );
+  ) : null;
 };
 export default PipelineRunLogDownloader;
