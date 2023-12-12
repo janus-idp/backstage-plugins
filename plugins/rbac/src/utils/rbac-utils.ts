@@ -9,6 +9,7 @@ import {
   RoleBasedPolicy,
 } from '@janus-idp/backstage-plugin-rbac-common';
 
+import { SelectedMember } from '../components/CreateRole/types';
 import { MembersData, PermissionsData } from '../types';
 
 export const getPermissions = (
@@ -41,7 +42,9 @@ export const getMembersString = (res: {
   return membersString;
 };
 
-export const getMembers = (members: (string | MembersData)[]): string => {
+export const getMembers = (
+  members: (string | MembersData | SelectedMember)[],
+): string => {
   if (!members || members.length === 0) {
     return 'No members';
   }

@@ -9,3 +9,9 @@ export const roleRouteRef = createSubRouteRef({
   parent: rootRouteRef,
   path: '/roles/:roleKind/:roleName',
 });
+
+export const createRoleRouteRef = createSubRouteRef({
+  id: 'rbac-create-role',
+  parent: rootRouteRef,
+  path: '/role/new',
+});

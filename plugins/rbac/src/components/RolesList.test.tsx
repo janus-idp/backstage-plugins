@@ -58,6 +58,7 @@ describe('RolesList', () => {
       loading: false,
       data: useRolesMockData,
       retry: () => {},
+      createRoleAllowed: false,
     });
     const { queryByText } = await renderInTestApp(<RolesList />);
     expect(queryByText('All roles (2)')).not.toBeNull();
@@ -69,7 +70,12 @@ describe('RolesList', () => {
   it('should show empty table when there are no roles', async () => {
     RequirePermissionMock.mockImplementation(props => <>{props.children}</>);
     mockUsePermission.mockReturnValue({ loading: false, allowed: true });
-    mockUseRoles.mockReturnValue({ loading: false, data: [], retry: () => {} });
+    mockUseRoles.mockReturnValue({
+      loading: false,
+      data: [],
+      retry: () => {},
+      createRoleAllowed: false,
+    });
     const { getByTestId } = await renderInTestApp(<RolesList />);
     expect(getByTestId('roles-table-empty')).not.toBeNull();
   });
@@ -83,6 +89,7 @@ describe('RolesList', () => {
       loading: false,
       data: useRolesMockData,
       retry: () => {},
+      createRoleAllowed: false,
     });
     const { getAllByTestId, getByText } = await renderInTestApp(<RolesList />);
     expect(getAllByTestId('delete-role')).not.toBeNull();
@@ -107,8 +114,41 @@ describe('RolesList', () => {
         },
       ],
       retry: () => {},
+      createRoleAllowed: false,
     });
     const { getAllByTestId } = await renderInTestApp(<RolesList />);
     expect(getAllByTestId('disable-delete-role')).not.toBeNull();
+  });
+
+  it('should disable create button if user is not authorized to create roles', async () => {
+    RequirePermissionMock.mockImplementation(props => <>{props.children}</>);
+    mockUsePermission.mockReturnValue({ loading: false, allowed: true });
+    mockUseRoles.mockReturnValue({
+      loading: false,
+      data: useRolesMockData,
+      retry: () => {},
+      createRoleAllowed: false,
+    });
+    const { getByTestId } = await renderInTestApp(<RolesList />);
+
+    expect(getByTestId('create-role').getAttribute('aria-disabled')).toEqual(
+      'true',
+    );
+  });
+
+  it('should enable create button if user is authorized to create roles', async () => {
+    RequirePermissionMock.mockImplementation(props => <>{props.children}</>);
+    mockUsePermission.mockReturnValue({ loading: false, allowed: true });
+    mockUseRoles.mockReturnValue({
+      loading: false,
+      data: useRolesMockData,
+      retry: () => {},
+      createRoleAllowed: true,
+    });
+    const { getByTestId } = await renderInTestApp(<RolesList />);
+
+    expect(getByTestId('create-role').getAttribute('aria-disabled')).toEqual(
+      'false',
+    );
   });
 });

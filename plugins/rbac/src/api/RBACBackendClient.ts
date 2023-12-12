@@ -22,6 +22,7 @@ export type RBACAPI = {
   getRole: (role: string) => Promise<Role[]>;
   getMembers: () => Promise<MemberEntity[]>;
   listPermissions: () => Promise<PermissionPolicy[]>;
+  createRole: (role: Role) => Promise<Response>;
 };
 
 export type Options = {
@@ -147,5 +148,19 @@ export class RBACBackendClient implements RBACAPI {
       },
     );
     return jsonResponse.json();
+  }
+
+  async createRole(role: Role) {
+    const { token: idToken } = await this.identityApi.getCredentials();
+    const backendUrl = this.configApi.getString('backend.baseUrl');
+    return fetch(`${backendUrl}/api/permission/roles`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        ...(idToken && { Authorization: `Bearer ${idToken}` }),
+      },
+      body: JSON.stringify(role),
+    });
   }
 }

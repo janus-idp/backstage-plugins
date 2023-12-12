@@ -34,7 +34,12 @@ describe('RbacPage', () => {
   it('should render if authorized', async () => {
     RequirePermissionMock.mockImplementation(props => <>{props.children}</>);
     mockUsePermission.mockReturnValue({ loading: false, allowed: true });
-    mockUseRoles.mockReturnValue({ loading: true, data: [], retry: () => {} });
+    mockUseRoles.mockReturnValue({
+      loading: true,
+      data: [],
+      retry: () => {},
+      createRoleAllowed: false,
+    });
     await renderInTestApp(<RbacPage />);
     expect(screen.getByText('Administration')).toBeInTheDocument();
   });

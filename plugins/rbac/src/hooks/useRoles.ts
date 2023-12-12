@@ -2,9 +2,11 @@ import React from 'react';
 import { useAsync, useAsyncRetry, useInterval } from 'react-use';
 
 import { useApi } from '@backstage/core-plugin-api';
+import { catalogEntityReadPermission } from '@backstage/plugin-catalog-common/alpha';
 import { usePermission } from '@backstage/plugin-permission-react';
 
 import {
+  policyEntityCreatePermission,
   policyEntityDeletePermission,
   Role,
   RoleBasedPolicy,
@@ -27,10 +29,25 @@ export const useRoles = (pollInterval?: number) => {
     [],
   );
 
-  const permissionResult = usePermission({
+  const deletePermissionResult = usePermission({
     permission: policyEntityDeletePermission,
     resourceRef: policyEntityDeletePermission.resourceType,
   });
+
+  const policyEntityCreatePermissionResult = usePermission({
+    permission: policyEntityCreatePermission,
+    resourceRef: policyEntityCreatePermission.resourceType,
+  });
+
+  const catalogEntityReadPermissionResult = usePermission({
+    permission: catalogEntityReadPermission,
+    resourceRef: catalogEntityReadPermission.resourceType,
+  });
+
+  const createRoleAllowed =
+    policyEntityCreatePermissionResult.allowed &&
+    catalogEntityReadPermissionResult.allowed;
+
   const data: RolesData[] = React.useMemo(
     () =>
       roles && roles?.length > 0
@@ -50,15 +67,15 @@ export const useRoles = (pollInterval?: number) => {
                 permissions,
                 modifiedBy: '-',
                 lastModified: '-',
-                permissionResult,
+                permissionResult: deletePermissionResult,
               },
             ];
           }, [])
         : [],
-    [roles, policies, permissionResult],
+    [roles, policies, deletePermissionResult],
   );
   const loading = rolesLoading && policiesLoading;
   useInterval(() => retry(), loading ? null : pollInterval || 5000);
 
-  return { loading, data, retry };
+  return { loading, data, retry, createRoleAllowed };
 };

@@ -11,6 +11,7 @@ import { RolesData } from '../types';
 import { useDeleteDialog } from './DeleteDialogContext';
 import DeleteRoleDialog from './DeleteRoleDialog';
 import { columns } from './RolesListColumns';
+import { RolesListToolbar } from './RolesListToolbar';
 import { useToast } from './ToastContext';
 
 const useStyles = makeStyles(theme => ({
@@ -27,7 +28,7 @@ export const RolesList = () => {
 
   const [roles, setRoles] = React.useState<number | undefined>();
   const classes = useStyles();
-  const { loading, data, retry } = useRoles();
+  const { loading, data, retry, createRoleAllowed } = useRoles();
 
   const closeDialog = () => {
     setOpenDialog(false);
@@ -61,6 +62,7 @@ export const RolesList = () => {
           {toastMessage}
         </Alert>
       </Snackbar>
+      <RolesListToolbar createRoleAllowed={createRoleAllowed} />
       <Table
         title={
           !loading && data?.length
