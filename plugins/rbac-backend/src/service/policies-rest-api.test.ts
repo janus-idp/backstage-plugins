@@ -1175,7 +1175,7 @@ describe('REST policies api', () => {
       expect(result.statusCode).toBe(400);
       expect(result.body.error).toEqual({
         name: 'InputError',
-        message: `Invalid role definition. Cause: Unsupported kind x. List supported values ["user", "group", "role"]`,
+        message: `Invalid role definition. Cause: Unsupported kind x. Supported value should be "role"`,
       });
     });
 
