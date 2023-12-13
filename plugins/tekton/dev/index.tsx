@@ -7,6 +7,8 @@ import {
   EntityKubernetesContent,
   KubernetesApi,
   kubernetesApiRef,
+  KubernetesProxyApi,
+  kubernetesProxyApiRef,
 } from '@backstage/plugin-kubernetes';
 import { TestApiProvider } from '@backstage/test-utils';
 
@@ -31,6 +33,21 @@ const mockEntity: Entity = {
   },
 };
 
+class MockKubernetesProxyApi implements KubernetesProxyApi {
+  async getPodLogs(_request: any): Promise<any> {
+    return new Promise(resolve => {
+      setTimeout(() => {
+        resolve({
+          text: `\nstreaming logs from container: ${_request.containerName} \n...`,
+        });
+      }, 500);
+    });
+  }
+
+  async getEventsByInvolvedObjectName(): Promise<any> {
+    return {};
+  }
+}
 class MockKubernetesClient implements KubernetesApi {
   readonly resources;
 
@@ -55,6 +72,7 @@ class MockKubernetesClient implements KubernetesApi {
       },
     );
   }
+
   async getWorkloadsByEntity(_request: any): Promise<any> {
     return {
       items: [
@@ -129,6 +147,7 @@ createDevApp()
             kubernetesApiRef,
             new MockKubernetesClient(mockKubernetesPlrResponse),
           ],
+          [kubernetesProxyApiRef, new MockKubernetesProxyApi()],
         ]}
       >
         <EntityProvider entity={mockEntity}>
