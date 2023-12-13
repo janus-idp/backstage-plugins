@@ -43,7 +43,7 @@ export const WorkflowInstancesViewerPage = () => {
               <ProcessVariablesViewer variables={selectedInstance?.variables} />
             </Grid>
             <Grid item xs={12}>
-              <AssessmentResultViewer result={selectedInstance?.variables} />
+              <AssessmentResultViewer selectedInstance={selectedInstance} />
             </Grid>
             <Grid item xs={12}>
               <ProcessTimeline selectedInstance={selectedInstance} />

@@ -13,10 +13,12 @@ import {
 } from '@material-ui/core';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 
-import { executeWorkflowRouteRef } from '../../routes';
+import { ProcessInstance } from '@janus-idp/backstage-plugin-orchestrator-common';
+
+import { executeWorkflowWithBusinessKeyRouteRef } from '../../routes';
 
 interface AssessmentResultViewerProps {
-  result: Record<string, unknown> | string | undefined;
+  selectedInstance: ProcessInstance | undefined;
 }
 
 interface WorkflowOption {
@@ -25,19 +27,21 @@ interface WorkflowOption {
 }
 
 export const AssessmentResultViewer = (props: AssessmentResultViewerProps) => {
-  const { result } = props;
+  const { selectedInstance } = props;
 
   const jsonSource = useMemo(() => {
-    if (!result) {
+    if (!selectedInstance?.variables) {
       return undefined;
     }
-    if (typeof result === 'string') {
-      return JSON.parse(result);
+    if (typeof selectedInstance?.variables === 'string') {
+      return JSON.parse(selectedInstance.variables);
     }
-    return result;
-  }, [result]);
+    return selectedInstance.variables;
+  }, [selectedInstance]);
 
-  const executeWorkflowLink = useRouteRef(executeWorkflowRouteRef);
+  const executeWorkflowLink = useRouteRef(
+    executeWorkflowWithBusinessKeyRouteRef,
+  );
 
   const keyToTitle = (key: string) => {
     const title = key.replace(/([a-z])([A-Z])/g, '$1 $2');
@@ -55,7 +59,12 @@ export const AssessmentResultViewer = (props: AssessmentResultViewerProps) => {
       const workflowOption: WorkflowOption = items;
       return (
         <>
-          <Link href={executeWorkflowLink({ workflowId: workflowOption.id })}>
+          <Link
+            href={executeWorkflowLink({
+              workflowId: workflowOption.id,
+              businessKey: selectedInstance?.businessKey ?? '',
+            })}
+          >
             {workflowOption.name}
           </Link>
           &nbsp;&nbsp;
@@ -67,7 +76,12 @@ export const AssessmentResultViewer = (props: AssessmentResultViewerProps) => {
       const workflowOption: WorkflowOption = item;
       return (
         <>
-          <Link href={executeWorkflowLink({ workflowId: workflowOption.id })}>
+          <Link
+            href={executeWorkflowLink({
+              workflowId: workflowOption.id,
+              businessKey: selectedInstance?.businessKey ?? '',
+            })}
+          >
             {workflowOption.name}
           </Link>
           <br />

@@ -8,6 +8,7 @@ import {
   default_sonataflow_persistance_path,
   default_workflows_path,
   fromWorkflowSource,
+  getWorkflowCategory,
   Job,
   ProcessInstance,
   ProcessInstanceStateValues,
@@ -21,7 +22,6 @@ import {
 import { spawn } from 'child_process';
 import { join, resolve } from 'path';
 
-import { getWorkflowCategory } from '../helpers/workflows';
 import { executeWithRetry } from './Helper';
 
 const SONATA_FLOW_RESOURCES_PATH =
@@ -260,7 +260,7 @@ export class SonataFlowService {
 
   public async fetchProcessInstances(): Promise<ProcessInstance[] | undefined> {
     const graphQlQuery =
-      '{ ProcessInstances ( orderBy: { start: ASC }, where: {processId: {isNull: false} } ) { id, processName, processId, state, start, lastUpdate, end, nodes { id }, variables, parentProcessInstance {id, processName, businessKey} } }';
+      '{ ProcessInstances ( orderBy: { start: ASC }, where: {processId: {isNull: false} } ) { id, processName, processId, businessKey, state, start, lastUpdate, end, nodes { id }, variables, parentProcessInstance {id, processName, businessKey} } }';
 
     try {
       const response = await executeWithRetry(() =>
@@ -284,7 +284,7 @@ export class SonataFlowService {
   public async fetchProcessInstance(
     instanceId: string,
   ): Promise<ProcessInstance | undefined> {
-    const graphQlQuery = `{ ProcessInstances (where: { id: {equal: "${instanceId}" } } ) { id, processName, processId, state, start, lastUpdate, end, nodes { id, nodeId, definitionId, type, name, enter, exit }, variables, parentProcessInstance {id, processName, businessKey}, error { nodeDefinitionId, message} } }`;
+    const graphQlQuery = `{ ProcessInstances (where: { id: {equal: "${instanceId}" } } ) { id, processName, processId, businessKey, state, start, lastUpdate, end, nodes { id, nodeId, definitionId, type, name, enter, exit }, variables, parentProcessInstance {id, processName, businessKey}, error { nodeDefinitionId, message} } }`;
 
     try {
       const response = await executeWithRetry(() =>
@@ -322,7 +322,10 @@ export class SonataFlowService {
     inputData: Record<string, string>;
   }): Promise<WorkflowExecutionResponse | undefined> {
     try {
-      const response = await fetch(`${this.url}/${args.workflowId}`, {
+      const endpoint = args.inputData?.businessKey
+        ? `${this.url}/${args.workflowId}?businessKey=${args.inputData.businessKey}`
+        : `${this.url}/${args.workflowId}`;
+      const response = await fetch(endpoint, {
         method: 'POST',
         body: JSON.stringify(args.inputData),
         headers: { 'content-type': 'application/json' },

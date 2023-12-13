@@ -20,13 +20,12 @@ import { Logger } from 'winston';
 import {
   default_catalog_environment,
   default_catalog_owner,
+  getWorkflowCategory,
   orchestrator_service_ready_topic,
   workflow_type,
   WorkflowCategory,
   WorkflowItem,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
-
-import { getWorkflowCategory } from '../helpers/workflows';
 
 export class OrchestratorEntityProvider
   implements EntityProvider, EventSubscriber

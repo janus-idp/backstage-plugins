@@ -56,6 +56,11 @@ export const ProcessInstancesTable = (props: ProcessInstancesTableProps) => {
   };
 
   const column3 = {
+    title: 'Business Key',
+    field: 'businessKey',
+  };
+
+  const column4 = {
     title: 'State',
     field: 'state',
   };
@@ -69,6 +74,7 @@ export const ProcessInstancesTable = (props: ProcessInstancesTableProps) => {
           return {
             pid: pi.id,
             name: pi.processId,
+            businessKey: pi.businessKey?.substring(0, 8),
             state: pi.state,
           };
         })
@@ -185,7 +191,7 @@ export const ProcessInstancesTable = (props: ProcessInstancesTableProps) => {
       <div style={{ height: '500px', padding: '10px' }}>
         <Table<Row>
           data={data}
-          columns={[column1, column2, column3]}
+          columns={[column1, column2, column3, column4]}
           isLoading={isLoadingInstances}
           onRowClick={(_, rowData) => {
             if (rowData && rowData.pid !== selectedInstance?.id) {

@@ -15,13 +15,16 @@ import validator from '@rjsf/validator-ajv8';
 import { JSONSchema7 } from 'json-schema';
 
 import {
+  getWorkflowCategory,
   workflow_title,
+  WorkflowCategory,
   WorkflowDataInputSchemaResponse,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { orchestratorApiRef } from '../../api';
 import {
   executeWorkflowRouteRef,
+  executeWorkflowWithBusinessKeyRouteRef,
   workflowInstanceRouteRef,
 } from '../../routes';
 import { BaseOrchestratorPage } from '../BaseOrchestratorPage/BaseOrchestratorPage';
@@ -39,6 +42,9 @@ interface ExecuteWorkflowPageProps {
 export const ExecuteWorkflowPage = (props: ExecuteWorkflowPageProps) => {
   const orchestratorApi = useApi(orchestratorApiRef);
   const { workflowId } = useRouteRefParams(executeWorkflowRouteRef);
+  const { businessKey } = useRouteRefParams(
+    executeWorkflowWithBusinessKeyRouteRef,
+  );
   const [loading, setLoading] = useState(false);
   const [schemaResponse, setSchemaResponse] =
     useState<WorkflowDataInputSchemaResponse>();
@@ -66,12 +72,20 @@ export const ExecuteWorkflowPage = (props: ExecuteWorkflowPageProps) => {
       for (const key in formState) {
         if (formState.hasOwnProperty(key)) {
           const property = formState[key];
-          Object.assign(parameters, property);
+          Object.assign(parameters, { [key]: property });
         }
       }
     }
 
     setLoading(true);
+    const workflowCategory = getWorkflowCategory(
+      schemaResponse?.workflowItem.definition,
+    );
+    if (workflowCategory === WorkflowCategory.ASSESSMENT) {
+      Object.assign(parameters, { businessKey: crypto.randomUUID() });
+    } else {
+      Object.assign(parameters, { businessKey: businessKey ?? '' });
+    }
     const response = await orchestratorApi.executeWorkflow({
       workflowId,
       parameters,
@@ -86,6 +100,7 @@ export const ExecuteWorkflowPage = (props: ExecuteWorkflowPageProps) => {
     orchestratorApi,
     schemaResponse,
     workflowId,
+    businessKey,
   ]);
 
   const onFormChanged = useCallback(
