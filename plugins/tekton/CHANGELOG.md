@@ -1,3 +1,16 @@
+## @janus-idp/backstage-plugin-tekton [3.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.1.14...@janus-idp/backstage-plugin-tekton@3.2.0) (2023-12-14)
+
+
+### Features
+
+* **tekton:** add support for downloading task and pipelinerun logs ([#1014](https://github.com/janus-idp/backstage-plugins/issues/1014)) ([f588292](https://github.com/janus-idp/backstage-plugins/commit/f5882921756a7aa6d5a74d8fdb6bfc52a7c0c209))
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.1.0
+
 ## @janus-idp/backstage-plugin-tekton [3.1.14](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.1.13...@janus-idp/backstage-plugin-tekton@3.1.14) (2023-12-07)
 
 
