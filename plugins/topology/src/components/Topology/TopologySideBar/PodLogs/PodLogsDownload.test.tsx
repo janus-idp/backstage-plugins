@@ -2,7 +2,8 @@ import React from 'react';
 
 import { fireEvent, render, screen } from '@testing-library/react';
 
-import { downloadLogFile } from '../../../../utils/pod-log-utils';
+import { downloadLogFile } from '@janus-idp/shared-react';
+
 import PodLogsDownload from './PodLogsDownload';
 
 jest.mock('@material-ui/core', () => ({
@@ -14,7 +15,7 @@ jest.mock('@material-ui/core', () => ({
 
 jest.mock('@material-ui/icons/GetApp', () => () => <div>DownloadIcon</div>);
 
-jest.mock('../../../../utils/pod-log-utils', () => ({
+jest.mock('@janus-idp/shared-react', () => ({
   downloadLogFile: jest.fn(),
 }));
 

@@ -22,12 +22,14 @@ type PipelineRunLogsProps = {
   taskRuns: TaskRunKind[];
   pods: V1Pod[];
   activeTask?: string;
+  setActiveTask: (t: string) => void;
 };
 export const PipelineRunLogs = ({
   pipelineRun,
   taskRuns,
   pods,
   activeTask,
+  setActiveTask,
 }: PipelineRunLogsProps) => {
   const PLRTaskRuns = getTaskRunsForPipelineRun(pipelineRun, taskRuns);
   const sortedTaskRuns = getSortedTaskRuns(PLRTaskRuns);
@@ -42,9 +44,6 @@ export const PipelineRunLogs = ({
   );
 
   const completed = pipelineRunFilterReducer(pipelineRun);
-  const [userSelectedStepId, setUserSelectedStepId] = React.useState<string>(
-    activeTask ?? '',
-  );
   const [lastActiveStepId, setLastActiveStepId] = React.useState<string>('');
 
   React.useEffect(() => {
@@ -62,7 +61,7 @@ export const PipelineRunLogs = ({
     );
   }, [sortedTaskRuns, completed, activeTask]);
 
-  const currentStepId = userSelectedStepId || lastActiveStepId;
+  const currentStepId = activeTask || lastActiveStepId;
   const activeItem = getActiveTaskRun(sortedTaskRuns, currentStepId);
   const podName =
     activeItem && taskRunFromYaml?.[currentStepId]?.status?.podName;
@@ -81,7 +80,7 @@ export const PipelineRunLogs = ({
           <TaskStatusStepper
             steps={sortedTaskRuns}
             currentStepId={currentStepId}
-            onUserStepChange={setUserSelectedStepId}
+            onUserStepChange={setActiveTask}
           />
         </Paper>
       </Grid>
@@ -96,7 +95,7 @@ export const PipelineRunLogs = ({
               <LogViewer text="No Logs found" />
             </Paper>
           ) : (
-            <PipelineRunLogViewer pod={podData as V1Pod} />
+            <PipelineRunLogViewer pod={podData} />
           )}
         </div>
       </Grid>

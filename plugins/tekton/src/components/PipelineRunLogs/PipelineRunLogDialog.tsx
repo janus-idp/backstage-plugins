@@ -19,6 +19,7 @@ import { PipelineRunKind, TaskRunKind } from '@janus-idp/shared-react';
 
 import { tektonGroupColor } from '../../types/types';
 import ResourceBadge from '../PipelineRunList/ResourceBadge';
+import PipelineRunLogDownloader from './PipelineRunLogDownloader';
 import PipelineRunLogs from './PipelineRunLogs';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -55,14 +56,22 @@ const PipelineRunLogDialog = ({
 }: PipelineRunLogDialogProps) => {
   const classes = useStyles();
 
+  const [task, setTask] = React.useState(activeTask);
+
   return (
-    <Dialog maxWidth="xl" fullWidth open={open} onClose={closeDialog}>
+    <Dialog
+      data-testid="pipelinerun-logs-dialog"
+      maxWidth="xl"
+      fullWidth
+      open={open}
+      onClose={closeDialog}
+    >
       <DialogTitle id="pipelinerun-logs" title="PipelineRun Logs">
         <Box className={classes.titleContainer}>
           <ResourceBadge
             color={tektonGroupColor}
             abbr="PLR"
-            name={pipelineRun?.metadata?.name || ''}
+            name={pipelineRun?.metadata?.name ?? ''}
           />
           <IconButton
             aria-label="close"
@@ -75,11 +84,17 @@ const PipelineRunLogDialog = ({
       </DialogTitle>
       <DialogContent>
         <ErrorBoundary>
+          <PipelineRunLogDownloader
+            pods={pods}
+            activeTask={task}
+            pipelineRun={pipelineRun}
+          />
           <PipelineRunLogs
             pipelineRun={pipelineRun}
             taskRuns={taskRuns}
             pods={pods}
-            activeTask={activeTask}
+            activeTask={task}
+            setActiveTask={setTask}
           />
         </ErrorBoundary>
       </DialogContent>

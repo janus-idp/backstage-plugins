@@ -2,6 +2,43 @@ export const mockKubernetesPlrResponse = {
   pods: [
     {
       metadata: {
+        name: 'pipeline-test-wbvtlk-tkn-pod',
+        namespace: 'karthik',
+        uid: 'bd868fde-1b37-4168-a780-f1772c5924e3',
+        resourceVersion: '379524',
+        labels: {
+          'app.kubernetes.io/managed-by': 'tekton-pipelines',
+          'backstage.io/kubernetes-id': 'developer-portal',
+          'janus-idp.io/tekton': 'developer-portal',
+          'tekton.dev/clusterTask': 'tkn',
+          'tekton.dev/memberOf': 'tasks',
+          'tekton.dev/pipeline': 'test-pipeline',
+          'tekton.dev/pipelineRun': 'pipeline-test-wbvtlk',
+          'tekton.dev/pipelineTask': 'tkn',
+          'tekton.dev/taskRun': 'test-pipeline-8e09zm-task1',
+        },
+      },
+      spec: {
+        volumes: [
+          {
+            name: 'tekton-internal-workspace',
+            emptyDir: {},
+          },
+        ],
+        containers: [
+          {
+            name: 'step-tkn',
+          },
+        ],
+      },
+      status: {
+        phase: 'Succeeded',
+        conditions: [],
+        startTime: new Date('2023-12-08T12:19:29Z'),
+      },
+    },
+    {
+      metadata: {
         name: 'ruby-ex-git-xf45fo-build-pod',
         generateName: 'ruby-ex-git-66d547b559-',
         namespace: 'jai-test',
@@ -13,6 +50,8 @@ export const mockKubernetesPlrResponse = {
           'backstage.io/kubernetes-id': 'backstage',
           deployment: 'ruby-ex-git',
           'pod-template-hash': '66d547b559',
+          'tekton.dev/pipelineRun': 'ruby-ex-git-xf45fo',
+          'tekton.dev/pipelineTask': 'build',
         },
         ownerReferences: [
           {
