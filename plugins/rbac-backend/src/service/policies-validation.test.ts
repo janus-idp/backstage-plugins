@@ -3,7 +3,6 @@ import { RoleBasedPolicy } from '@janus-idp/backstage-plugin-rbac-common';
 import {
   validateEntityReference,
   validatePolicy,
-  validateQueries,
   validateRole,
 } from './policies-validation';
 
@@ -175,45 +174,6 @@ describe('rest data validation', () => {
         const err = validateEntityReference(entityRef);
         expect(err).toBeFalsy();
       }
-    });
-  });
-
-  describe('validatePolicyQueries', () => {
-    it('should return an error when "permission" query param is missing', () => {
-      const request = { query: { policy: 'read', effect: 'allow' } } as any;
-      const err = validateQueries(request);
-      expect(err).toBeTruthy();
-      expect(err?.message).toEqual('specify "permission" query param.');
-    });
-
-    it('should return an error when "policy" query param is missing', () => {
-      const request = {
-        query: { permission: 'user:default/guest', effect: 'allow' },
-      } as any;
-      const err = validateQueries(request);
-      expect(err).toBeTruthy();
-      expect(err?.message).toEqual('specify "policy" query param.');
-    });
-
-    it('should return an error when "effect" query param is missing', () => {
-      const request = {
-        query: { permission: 'user:default/guest', policy: 'read' },
-      } as any;
-      const err = validateQueries(request);
-      expect(err).toBeTruthy();
-      expect(err?.message).toEqual('specify "effect" query param.');
-    });
-
-    it('should pass validation when all required query params are present', () => {
-      const request = {
-        query: {
-          permission: 'user:default/guest',
-          policy: 'read',
-          effect: 'allow',
-        },
-      } as any;
-      const err = validateQueries(request);
-      expect(err).toBeUndefined();
     });
   });
 

@@ -26,7 +26,7 @@ import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-
 import { Enforcer } from 'casbin';
 import { Router } from 'express';
 import { Request } from 'express-serve-static-core';
-import { isEqual } from 'lodash';
+import { isEmpty, isEqual } from 'lodash';
 import { ParsedQs } from 'qs';
 import { Logger } from 'winston';
 
@@ -46,7 +46,6 @@ import { PluginPermissionMetadataCollector } from './plugin-endpoints';
 import {
   validateEntityReference,
   validatePolicy,
-  validateQueries,
   validateRole,
 } from './policies-validation';
 import { PluginIdProvider } from './policy-builder';
@@ -173,24 +172,18 @@ export class PolicesServer {
 
         const entityRef = this.getEntityReference(request);
 
-        const err = validateQueries(request);
-        if (err) {
-          throw new InputError( // 400
-            `Invalid policy definition. Cause: ${err.message}`,
-          );
+        const policyRaw: RoleBasedPolicy[] = request.body;
+        if (isEmpty(policyRaw)) {
+          throw new InputError(`permission policy must be present`); // 400
         }
 
-        const permission = this.getFirstQuery(request.query.permission!);
-        const policy = this.getFirstQuery(request.query.policy!);
-        const effect = this.getFirstQuery(request.query.effect!);
+        policyRaw.forEach(element => {
+          element.entityReference = entityRef;
+        });
 
-        const policyPermission = [entityRef, permission, policy, effect];
+        const processedPolicies = await this.processPolicies(policyRaw, true);
 
-        if (!(await this.enforcer.hasPolicy(...policyPermission))) {
-          throw new NotFoundError(); // 404
-        }
-
-        const isRemoved = await this.enforcer.removePolicy(...policyPermission);
+        const isRemoved = await this.enforcer.removePolicies(processedPolicies);
         if (!isRemoved) {
           throw new Error('Unexpected error'); // 500
         }
@@ -207,21 +200,15 @@ export class PolicesServer {
         throw new NotAllowedError(); // 403
       }
 
-      const policyRaw: RoleBasedPolicy = request.body;
-      const err = validatePolicy(policyRaw);
-      if (err) {
-        throw new InputError( // 400
-          `Invalid policy definition. Cause: ${err.message}`,
-        );
+      const policyRaw: RoleBasedPolicy[] = request.body;
+
+      if (isEmpty(policyRaw)) {
+        throw new InputError(`permission policy must be present`); // 400
       }
 
-      const policy = this.transformPolicyToArray(policyRaw);
+      const processedPolicies = await this.processPolicies(policyRaw);
 
-      if (await this.enforcer.hasPolicy(...policy)) {
-        throw new ConflictError(); // 409
-      }
-
-      const isAdded = await this.enforcer.addPolicy(...policy);
+      const isAdded = await this.enforcer.addPolicies(processedPolicies);
       if (!isAdded) {
         throw new Error('Unexpected error'); // 500
       }
@@ -241,54 +228,64 @@ export class PolicesServer {
 
         const entityRef = this.getEntityReference(request);
 
-        const oldPolicyRaw = request.body.oldPolicy;
-        if (!oldPolicyRaw) {
+        const oldPolicyRaw: RoleBasedPolicy[] = request.body.oldPolicy;
+        if (isEmpty(oldPolicyRaw)) {
           throw new InputError(`'oldPolicy' object must be present`); // 400
         }
-        const newPolicyRaw = request.body.newPolicy;
-        if (!newPolicyRaw) {
+        const newPolicyRaw: RoleBasedPolicy[] = request.body.newPolicy;
+        if (isEmpty(newPolicyRaw)) {
           throw new InputError(`'newPolicy' object must be present`); // 400
         }
 
-        oldPolicyRaw.entityReference = entityRef;
-        let err = validatePolicy(oldPolicyRaw);
-        if (err) {
-          throw new InputError( // 400
-            `Invalid old policy object. Cause: ${err.message}`,
+        [...oldPolicyRaw, ...newPolicyRaw].forEach(element => {
+          element.entityReference = entityRef;
+        });
+
+        const processedOldPolicy = await this.processPolicies(
+          oldPolicyRaw,
+          true,
+          'old policy',
+        );
+
+        oldPolicyRaw.sort((a, b) =>
+          a.permission === b.permission
+            ? this.nameSort(a.policy!, b.policy!)
+            : this.nameSort(a.permission!, b.permission!),
+        );
+
+        newPolicyRaw.sort((a, b) =>
+          a.permission === b.permission
+            ? this.nameSort(a.policy!, b.policy!)
+            : this.nameSort(a.permission!, b.permission!),
+        );
+
+        if (
+          isEqual(oldPolicyRaw, newPolicyRaw) &&
+          !oldPolicyRaw.some(isEmpty)
+        ) {
+          response.status(204).end();
+        } else if (oldPolicyRaw.length > newPolicyRaw.length) {
+          throw new InputError(
+            `'oldPolicy' object has more permission policies compared to 'newPolicy' object`,
           );
         }
-        newPolicyRaw.entityReference = entityRef;
-        err = validatePolicy(newPolicyRaw);
-        if (err) {
-          throw new InputError( // 400
-            `Invalid new policy object. Cause: ${err.message}`,
-          );
-        }
 
-        const oldPolicy = this.transformPolicyToArray(oldPolicyRaw);
-        const newPolicy = this.transformPolicyToArray(newPolicyRaw);
-
-        if (await this.enforcer.hasPolicy(...newPolicy)) {
-          if (isEqual(oldPolicy, newPolicy)) {
-            response.status(204).end();
-            return;
-          }
-          throw new ConflictError(); // 409
-        }
-
-        if (!(await this.enforcer.hasPolicy(...oldPolicy))) {
-          throw new NotFoundError(); // 404
-        }
+        const processedNewPolicy = await this.processPolicies(
+          newPolicyRaw,
+          false,
+          'new policy',
+        );
 
         // enforcer.updatePolicy(oldPolicyPermission, newPolicyPermission) was not implemented
         // for ORMTypeAdapter.
         // So, let's compensate this combination delete + create.
-        const isRemoved = await this.enforcer.removePolicy(...oldPolicy);
+        const isRemoved =
+          await this.enforcer.removePolicies(processedOldPolicy);
         if (!isRemoved) {
           throw new Error('Unexpected error'); // 500
         }
 
-        const isAdded = await this.enforcer.addPolicy(...newPolicy);
+        const isAdded = await this.enforcer.addPolicies(processedNewPolicy);
         if (!isAdded) {
           throw new Error('Unexpected error');
         }
@@ -336,6 +333,7 @@ export class PolicesServer {
     });
 
     router.post('/roles', async (request, response) => {
+      const uniqueItems = new Set<string>();
       const decision = await this.authorize(request, {
         permission: policyEntityCreatePermission,
       });
@@ -353,9 +351,20 @@ export class PolicesServer {
 
       const roles = this.transformRoleToArray(roleRaw);
 
-      for (const role in roles) {
+      for (const role of roles) {
         if (await this.enforcer.hasGroupingPolicy(...role)) {
           throw new ConflictError(); // 409
+        }
+        const roleString = JSON.stringify(role);
+
+        if (uniqueItems.has(roleString)) {
+          throw new ConflictError(
+            `Duplicate role members found; ${role.at(0)}, ${role.at(
+              1,
+            )} is a duplicate`,
+          );
+        } else {
+          uniqueItems.add(roleString);
         }
       }
 
@@ -368,6 +377,7 @@ export class PolicesServer {
     });
 
     router.put('/roles/:kind/:namespace/:name', async (request, response) => {
+      const uniqueItems = new Set<string>();
       const decision = await this.authorize(request, {
         permission: policyEntityUpdatePermission,
       });
@@ -419,11 +429,34 @@ export class PolicesServer {
             throw new ConflictError(); // 409
           }
         }
+        const roleString = JSON.stringify(role);
+
+        if (uniqueItems.has(roleString)) {
+          throw new ConflictError(
+            `Duplicate role members found; ${role.at(0)}, ${role.at(
+              1,
+            )} is a duplicate`,
+          );
+        } else {
+          uniqueItems.add(roleString);
+        }
       }
 
+      uniqueItems.clear();
       for (const role of oldRole) {
         if (!(await this.enforcer.hasGroupingPolicy(...role))) {
           throw new NotFoundError(); // 404
+        }
+        const roleString = JSON.stringify(role);
+
+        if (uniqueItems.has(roleString)) {
+          throw new ConflictError(
+            `Duplicate role members found; ${role.at(0)}, ${role.at(
+              1,
+            )} is a duplicate`,
+          );
+        } else {
+          uniqueItems.add(roleString);
         }
       }
 
@@ -691,5 +724,56 @@ export class PolicesServer {
       !!request.query.policy ||
       !!request.query.effect
     );
+  }
+
+  async processPolicies(
+    policyArray: RoleBasedPolicy[],
+    isOld?: boolean,
+    errorMessage?: string,
+  ): Promise<string[][]> {
+    const policies: string[][] = [];
+    const uniqueItems = new Set<string>();
+    for (const policy of policyArray) {
+      const err = validatePolicy(policy);
+      if (err) {
+        throw new InputError(
+          `Invalid ${errorMessage || 'policy'} definition. Cause: ${
+            err.message
+          }`,
+        ); // 400
+      }
+
+      const transformedPolicy = this.transformPolicyToArray(policy);
+
+      if (isOld && !(await this.enforcer.hasPolicy(...transformedPolicy))) {
+        throw new NotFoundError(); // 404
+      }
+
+      if (!isOld && (await this.enforcer.hasPolicy(...transformedPolicy))) {
+        throw new ConflictError(); // 409
+      }
+
+      // We want to ensure that there are not duplicate permission policies
+      const rowString = JSON.stringify(transformedPolicy);
+      if (uniqueItems.has(rowString)) {
+        throw new ConflictError(
+          `Duplicate polices found; ${policy.entityReference}, ${policy.permission}, ${policy.policy}, ${policy.effect} is a duplicate`,
+        );
+      } else {
+        uniqueItems.add(rowString);
+        policies.push(transformedPolicy);
+      }
+    }
+    return policies;
+  }
+
+  nameSort(nameA: string, nameB: string): number {
+    if (nameA.toUpperCase() < nameB.toUpperCase()) {
+      return -1;
+    }
+    if (nameA.toUpperCase() > nameB.toUpperCase()) {
+      return 1;
+    }
+    return 0;
   }
 }

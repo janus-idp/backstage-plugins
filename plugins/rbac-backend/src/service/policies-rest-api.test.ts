@@ -46,7 +46,7 @@ jest.mock('@backstage/plugin-auth-node', () => ({
 }));
 
 const mockEnforcer: Partial<Enforcer> = {
-  addPolicy: jest
+  addPolicies: jest
     .fn()
     .mockImplementation(async (..._param: string[]): Promise<boolean> => {
       return true;
@@ -255,6 +255,16 @@ describe('REST policies api', () => {
       expect(result.statusCode).toBe(400);
       expect(result.body.error).toEqual({
         name: 'InputError',
+        message: `permission policy must be present`,
+      });
+    });
+
+    it('should not be created permission policy - entityReference is empty', async () => {
+      const result = await request(app).post('/policies').send([{}]);
+
+      expect(result.statusCode).toBe(400);
+      expect(result.body.error).toEqual({
+        name: 'InputError',
         message: `Invalid policy definition. Cause: 'entityReference' must not be empty`,
       });
     });
@@ -262,7 +272,7 @@ describe('REST policies api', () => {
     it('should not be created permission policy - entityReference is invalid', async () => {
       const result = await request(app)
         .post('/policies')
-        .send({ entityReference: 'user' });
+        .send([{ entityReference: 'user' }]);
 
       expect(result.statusCode).toBe(400);
       expect(result.body.error).toEqual({
@@ -272,9 +282,13 @@ describe('REST policies api', () => {
     });
 
     it('should not be created permission policy - permission is an empty', async () => {
-      const result = await request(app).post('/policies').send({
-        entityReference: 'user:default/permission_admin',
-      });
+      const result = await request(app)
+        .post('/policies')
+        .send([
+          {
+            entityReference: 'user:default/permission_admin',
+          },
+        ]);
 
       expect(result.statusCode).toBe(400);
       expect(result.body.error).toEqual({
@@ -284,10 +298,14 @@ describe('REST policies api', () => {
     });
 
     it('should not be created permission policy - policy is an empty', async () => {
-      const result = await request(app).post('/policies').send({
-        entityReference: 'user:default/permission_admin',
-        permission: 'policy-entity',
-      });
+      const result = await request(app)
+        .post('/policies')
+        .send([
+          {
+            entityReference: 'user:default/permission_admin',
+            permission: 'policy-entity',
+          },
+        ]);
 
       expect(result.statusCode).toBe(400);
       expect(result.body.error).toEqual({
@@ -297,11 +315,15 @@ describe('REST policies api', () => {
     });
 
     it('should not be created permission policy - effect is an empty', async () => {
-      const result = await request(app).post('/policies').send({
-        entityReference: 'user:default/permission_admin',
-        permission: 'policy-entity',
-        policy: 'read',
-      });
+      const result = await request(app)
+        .post('/policies')
+        .send([
+          {
+            entityReference: 'user:default/permission_admin',
+            permission: 'policy-entity',
+            policy: 'read',
+          },
+        ]);
 
       expect(result.statusCode).toBe(400);
       expect(result.body.error).toEqual({
@@ -311,12 +333,16 @@ describe('REST policies api', () => {
     });
 
     it('should be created permission policy', async () => {
-      const result = await request(app).post('/policies').send({
-        entityReference: 'user:default/permission_admin',
-        permission: 'policy-entity',
-        policy: 'delete',
-        effect: 'deny',
-      });
+      const result = await request(app)
+        .post('/policies')
+        .send([
+          {
+            entityReference: 'user:default/permission_admin',
+            permission: 'policy-entity',
+            policy: 'delete',
+            effect: 'deny',
+          },
+        ]);
 
       expect(result.statusCode).toBe(201);
     });
@@ -324,35 +350,77 @@ describe('REST policies api', () => {
     it('should not be created permission policy, because it is has been already present', async () => {
       mockEnforcer.hasPolicy = jest
         .fn()
-        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
+        .mockImplementation(async (...param: string[]): Promise<boolean> => {
+          if (param.at(2) === 'read') {
+            return false;
+          }
           return true;
         });
 
-      const result = await request(app).post('/policies').send({
-        entityReference: 'user:default/permission_admin',
-        permission: 'policy-entity',
-        policy: 'delete',
-        effect: 'deny',
-      });
+      const result = await request(app)
+        .post('/policies')
+        .send([
+          {
+            entityReference: 'user:default/permission_admin',
+            permission: 'policy-entity',
+            policy: 'read',
+            effect: 'deny',
+          },
+          {
+            entityReference: 'user:default/permission_admin',
+            permission: 'policy-entity',
+            policy: 'delete',
+            effect: 'deny',
+          },
+        ]);
 
       expect(result.statusCode).toBe(409);
     });
 
     it('should not be created permission policy caused some unexpected error', async () => {
-      mockEnforcer.addPolicy = jest
+      mockEnforcer.addPolicies = jest
         .fn()
         .mockImplementation(async (..._param: string[]): Promise<boolean> => {
           return false;
         });
 
-      const result = await request(app).post('/policies').send({
-        entityReference: 'user:default/permission_admin',
-        permission: 'policy-entity',
-        policy: 'delete',
-        effect: 'deny',
-      });
+      const result = await request(app)
+        .post('/policies')
+        .send([
+          {
+            entityReference: 'user:default/permission_admin',
+            permission: 'policy-entity',
+            policy: 'delete',
+            effect: 'deny',
+          },
+        ]);
 
       expect(result.statusCode).toBe(500);
+    });
+
+    it('should fail to create permission policy - duplication in req body', async () => {
+      const result = await request(app)
+        .post('/policies')
+        .send([
+          {
+            entityReference: 'user:default/permission_admin',
+            permission: 'policy-entity',
+            policy: 'delete',
+            effect: 'deny',
+          },
+          {
+            entityReference: 'user:default/permission_admin',
+            permission: 'policy-entity',
+            policy: 'delete',
+            effect: 'deny',
+          },
+        ]);
+
+      expect(result.statusCode).toBe(409);
+      expect(result.body.error).toEqual({
+        name: 'ConflictError',
+        message: `Duplicate polices found; user:default/permission_admin, policy-entity, delete, deny is a duplicate`,
+      });
     });
   });
 
@@ -501,7 +569,7 @@ describe('REST policies api', () => {
       });
     });
 
-    it('should fail to delete, because permission query is absent', async () => {
+    it('should fail to delete, request is empty', async () => {
       const result = await request(app)
         .delete('/policies/user/default/permission_admin')
         .send();
@@ -509,35 +577,52 @@ describe('REST policies api', () => {
       expect(result.statusCode).toEqual(400);
       expect(result.body.error).toEqual({
         name: 'InputError',
-        message: `Invalid policy definition. Cause: specify "permission" query param.`,
+        message: `permission policy must be present`,
       });
     });
 
-    it('should fail to delete, because policy query is absent', async () => {
+    it('should fail to delete, because permission field is absent', async () => {
       const result = await request(app)
-        .delete(
-          '/policies/user/default/permission_admin?permission=policy-entity',
-        )
-        .send();
+        .delete('/policies/user/default/permission_admin')
+        .send([{}]);
 
       expect(result.statusCode).toEqual(400);
       expect(result.body.error).toEqual({
         name: 'InputError',
-        message: `Invalid policy definition. Cause: specify "policy" query param.`,
+        message: `Invalid policy definition. Cause: 'permission' field must not be empty`,
       });
     });
 
-    it('should fail to delete, because effect query is absent', async () => {
+    it('should fail to delete, because policy field is absent', async () => {
       const result = await request(app)
-        .delete(
-          '/policies/user/default/permission_admin?permission=policy-entity&policy=read',
-        )
-        .send();
+        .delete('/policies/user/default/permission_admin')
+        .send([
+          {
+            permission: 'policy-entity',
+          },
+        ]);
 
       expect(result.statusCode).toEqual(400);
       expect(result.body.error).toEqual({
         name: 'InputError',
-        message: `Invalid policy definition. Cause: specify "effect" query param.`,
+        message: `Invalid policy definition. Cause: 'policy' field must not be empty`,
+      });
+    });
+
+    it('should fail to delete, because effect field is absent', async () => {
+      const result = await request(app)
+        .delete('/policies/user/default/permission_admin')
+        .send([
+          {
+            permission: 'policy-entity',
+            policy: 'read',
+          },
+        ]);
+
+      expect(result.statusCode).toEqual(400);
+      expect(result.body.error).toEqual({
+        name: 'InputError',
+        message: `Invalid policy definition. Cause: 'effect' field must not be empty`,
       });
     });
 
@@ -549,10 +634,14 @@ describe('REST policies api', () => {
         });
 
       const result = await request(app)
-        .delete(
-          '/policies/user/default/permission_admin?permission=policy-entity&policy=read&effect=allow',
-        )
-        .send();
+        .delete('/policies/user/default/permission_admin')
+        .send([
+          {
+            permission: 'policy-entity',
+            policy: 'read',
+            effect: 'allow',
+          },
+        ]);
 
       expect(result.statusCode).toEqual(404);
       expect(result.body.error).toEqual({
@@ -567,17 +656,21 @@ describe('REST policies api', () => {
         .mockImplementation(async (..._param: string[]): Promise<boolean> => {
           return true;
         });
-      mockEnforcer.removePolicy = jest
+      mockEnforcer.removePolicies = jest
         .fn()
         .mockImplementation(async (..._param: string[]): Promise<boolean> => {
           return false;
         });
 
       const result = await request(app)
-        .delete(
-          '/policies/user/default/permission_admin?permission=policy-entity&policy=read&effect=allow',
-        )
-        .send();
+        .delete('/policies/user/default/permission_admin')
+        .send([
+          {
+            permission: 'policy-entity',
+            policy: 'read',
+            effect: 'allow',
+          },
+        ]);
 
       expect(result.statusCode).toEqual(500);
       expect(result.body.error).toEqual({
@@ -592,7 +685,7 @@ describe('REST policies api', () => {
         .mockImplementation(async (..._param: string[]): Promise<boolean> => {
           return true;
         });
-      mockEnforcer.removePolicy = jest
+      mockEnforcer.removePolicies = jest
         .fn()
         .mockImplementation(async (..._param: string[]): Promise<boolean> => {
           return true;
@@ -602,7 +695,13 @@ describe('REST policies api', () => {
         .delete(
           '/policies/user/default/permission_admin?permission=policy-entity&policy=read&effect=allow',
         )
-        .send();
+        .send([
+          {
+            permission: 'policy-entity',
+            policy: 'read',
+            effect: 'allow',
+          },
+        ]);
 
       expect(result.statusCode).toEqual(204);
     });
@@ -631,7 +730,7 @@ describe('REST policies api', () => {
     it('should fail to update policy - old policy is absent', async () => {
       const result = await request(app)
         .put('/policies/user/default/permission_admin')
-        .send();
+        .send([{}]);
 
       expect(result.statusCode).toEqual(400);
       expect(result.body.error).toEqual({
@@ -643,7 +742,7 @@ describe('REST policies api', () => {
     it('should fail to update policy - new policy is absent', async () => {
       const result = await request(app)
         .put('/policies/user/default/permission_admin')
-        .send({ oldPolicy: {} });
+        .send({ oldPolicy: [{}] });
 
       expect(result.statusCode).toEqual(400);
       expect(result.body.error).toEqual({
@@ -655,24 +754,27 @@ describe('REST policies api', () => {
     it('should fail to update policy - oldPolicy permission is absent', async () => {
       const result = await request(app)
         .put('/policies/user/default/permission_admin')
-        .send({ oldPolicy: {}, newPolicy: {} });
+        .send({ oldPolicy: [{}], newPolicy: [{}] });
 
       expect(result.statusCode).toEqual(400);
       expect(result.body.error).toEqual({
         name: 'InputError',
-        message: `Invalid old policy object. Cause: 'permission' field must not be empty`,
+        message: `Invalid old policy definition. Cause: 'permission' field must not be empty`,
       });
     });
 
     it('should fail to update policy - oldPolicy policy is absent', async () => {
       const result = await request(app)
         .put('/policies/user/default/permission_admin')
-        .send({ oldPolicy: { permission: 'policy-entity' }, newPolicy: {} });
+        .send({
+          oldPolicy: [{ permission: 'policy-entity' }],
+          newPolicy: [{}],
+        });
 
       expect(result.statusCode).toEqual(400);
       expect(result.body.error).toEqual({
         name: 'InputError',
-        message: `Invalid old policy object. Cause: 'policy' field must not be empty`,
+        message: `Invalid old policy definition. Cause: 'policy' field must not be empty`,
       });
     });
 
@@ -680,71 +782,92 @@ describe('REST policies api', () => {
       const result = await request(app)
         .put('/policies/user/default/permission_admin')
         .send({
-          oldPolicy: { permission: 'policy-entity', policy: 'read' },
-          newPolicy: {},
+          oldPolicy: [{ permission: 'policy-entity', policy: 'read' }],
+          newPolicy: [{}],
         });
 
       expect(result.statusCode).toEqual(400);
       expect(result.body.error).toEqual({
         name: 'InputError',
-        message: `Invalid old policy object. Cause: 'effect' field must not be empty`,
+        message: `Invalid old policy definition. Cause: 'effect' field must not be empty`,
       });
     });
 
     it('should fail to update policy - newPolicy permission is absent', async () => {
+      mockEnforcer.hasPolicy = jest
+        .fn()
+        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
+          return true;
+        });
       const result = await request(app)
         .put('/policies/user/default/permission_admin')
         .send({
-          oldPolicy: {
-            permission: 'policy-entity',
-            policy: 'read',
-            effect: 'allow',
-          },
-          newPolicy: {},
+          oldPolicy: [
+            {
+              permission: 'policy-entity',
+              policy: 'read',
+              effect: 'allow',
+            },
+          ],
+          newPolicy: [{}],
         });
 
       expect(result.statusCode).toEqual(400);
       expect(result.body.error).toEqual({
         name: 'InputError',
-        message: `Invalid new policy object. Cause: 'permission' field must not be empty`,
+        message: `Invalid new policy definition. Cause: 'permission' field must not be empty`,
       });
     });
 
     it('should fail to update policy - newPolicy policy is absent', async () => {
+      mockEnforcer.hasPolicy = jest
+        .fn()
+        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
+          return true;
+        });
       const result = await request(app)
         .put('/policies/user/default/permission_admin')
         .send({
-          oldPolicy: {
-            permission: 'policy-entity',
-            policy: 'read',
-            effect: 'allow',
-          },
-          newPolicy: { permission: 'policy-entity' },
+          oldPolicy: [
+            {
+              permission: 'policy-entity',
+              policy: 'read',
+              effect: 'allow',
+            },
+          ],
+          newPolicy: [{ permission: 'policy-entity' }],
         });
 
       expect(result.statusCode).toEqual(400);
       expect(result.body.error).toEqual({
         name: 'InputError',
-        message: `Invalid new policy object. Cause: 'policy' field must not be empty`,
+        message: `Invalid new policy definition. Cause: 'policy' field must not be empty`,
       });
     });
 
     it('should fail to update policy - newPolicy effect is absent', async () => {
+      mockEnforcer.hasPolicy = jest
+        .fn()
+        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
+          return true;
+        });
       const result = await request(app)
         .put('/policies/user/default/permission_admin')
         .send({
-          oldPolicy: {
-            permission: 'policy-entity',
-            policy: 'read',
-            effect: 'allow',
-          },
-          newPolicy: { permission: 'policy-entity', policy: 'write' },
+          oldPolicy: [
+            {
+              permission: 'policy-entity',
+              policy: 'read',
+              effect: 'allow',
+            },
+          ],
+          newPolicy: [{ permission: 'policy-entity', policy: 'write' }],
         });
 
       expect(result.statusCode).toEqual(400);
       expect(result.body.error).toEqual({
         name: 'InputError',
-        message: `Invalid new policy object. Cause: 'effect' field must not be empty`,
+        message: `Invalid new policy definition. Cause: 'effect' field must not be empty`,
       });
     });
 
@@ -752,18 +875,20 @@ describe('REST policies api', () => {
       const result = await request(app)
         .put('/policies/user/default/permission_admin')
         .send({
-          oldPolicy: {
-            permission: 'policy-entity',
-            policy: 'read',
-            effect: 'unknown',
-          },
-          newPolicy: { permission: 'policy-entity', policy: 'write' },
+          oldPolicy: [
+            {
+              permission: 'policy-entity',
+              policy: 'read',
+              effect: 'unknown',
+            },
+          ],
+          newPolicy: [{ permission: 'policy-entity', policy: 'write' }],
         });
 
       expect(result.statusCode).toEqual(400);
       expect(result.body.error).toEqual({
         name: 'InputError',
-        message: `Invalid old policy object. Cause: 'effect' has invalid value: 'unknown'. It should be: '${AuthorizeResult.ALLOW.toLocaleLowerCase()}' or '${AuthorizeResult.DENY.toLocaleLowerCase()}'`,
+        message: `Invalid old policy definition. Cause: 'effect' has invalid value: 'unknown'. It should be: '${AuthorizeResult.ALLOW.toLocaleLowerCase()}' or '${AuthorizeResult.DENY.toLocaleLowerCase()}'`,
       });
     });
 
@@ -771,16 +896,47 @@ describe('REST policies api', () => {
       const result = await request(app)
         .put('/policies/user/default/permission_admin')
         .send({
-          oldPolicy: {
-            permission: 'policy-entity',
-            policy: 'read',
-            effect: 'allow',
-          },
-          newPolicy: {
-            permission: 'policy-entity',
-            policy: 'write',
-            effect: 'allow',
-          },
+          oldPolicy: [
+            {
+              permission: 'policy-entity',
+              policy: 'read',
+              effect: 'allow',
+            },
+          ],
+          newPolicy: [
+            {
+              permission: 'policy-entity',
+              policy: 'write',
+              effect: 'allow',
+            },
+          ],
+        });
+
+      expect(result.statusCode).toEqual(404);
+      expect(result.body.error).toEqual({
+        name: 'NotFoundError',
+        message: '',
+      });
+    });
+
+    it('should fail to update policy - old policy not found but old and new policies match', async () => {
+      const result = await request(app)
+        .put('/policies/user/default/permission_admin')
+        .send({
+          oldPolicy: [
+            {
+              permission: 'policy-entity',
+              policy: 'read',
+              effect: 'allow',
+            },
+          ],
+          newPolicy: [
+            {
+              permission: 'policy-entity',
+              policy: 'read',
+              effect: 'allow',
+            },
+          ],
         });
 
       expect(result.statusCode).toEqual(404);
@@ -799,16 +955,20 @@ describe('REST policies api', () => {
       const result = await request(app)
         .put('/policies/user/default/permission_admin')
         .send({
-          oldPolicy: {
-            permission: 'policy-entity',
-            policy: 'read',
-            effect: 'allow',
-          },
-          newPolicy: {
-            permission: 'policy-entity',
-            policy: 'write',
-            effect: 'allow',
-          },
+          oldPolicy: [
+            {
+              permission: 'policy-entity',
+              policy: 'read',
+              effect: 'allow',
+            },
+          ],
+          newPolicy: [
+            {
+              permission: 'policy-entity',
+              policy: 'write',
+              effect: 'allow',
+            },
+          ],
         });
 
       expect(result.statusCode).toEqual(409);
@@ -827,16 +987,58 @@ describe('REST policies api', () => {
       const result = await request(app)
         .put('/policies/user/default/permission_admin')
         .send({
-          oldPolicy: {
-            permission: 'policy-entity',
-            policy: 'read',
-            effect: 'allow',
-          },
-          newPolicy: {
-            permission: 'policy-entity',
-            policy: 'read',
-            effect: 'allow',
-          },
+          oldPolicy: [
+            {
+              permission: 'policy-entity',
+              policy: 'read',
+              effect: 'allow',
+            },
+          ],
+          newPolicy: [
+            {
+              permission: 'policy-entity',
+              policy: 'read',
+              effect: 'allow',
+            },
+          ],
+        });
+
+      expect(result.statusCode).toEqual(204);
+    });
+
+    it('should nothing to update - permissions in a different order', async () => {
+      mockEnforcer.hasPolicy = jest
+        .fn()
+        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
+          return true;
+        });
+      const result = await request(app)
+        .put('/policies/user/default/permission_admin')
+        .send({
+          oldPolicy: [
+            {
+              permission: 'policy-entity',
+              policy: 'read',
+              effect: 'allow',
+            },
+            {
+              permission: 'policy-entity',
+              policy: 'delete',
+              effect: 'allow',
+            },
+          ],
+          newPolicy: [
+            {
+              permission: 'policy-entity',
+              policy: 'delete',
+              effect: 'allow',
+            },
+            {
+              permission: 'policy-entity',
+              policy: 'read',
+              effect: 'allow',
+            },
+          ],
         });
 
       expect(result.statusCode).toEqual(204);
@@ -851,7 +1053,7 @@ describe('REST policies api', () => {
           }
           return true;
         });
-      mockEnforcer.removePolicy = jest
+      mockEnforcer.removePolicies = jest
         .fn()
         .mockImplementation(async (..._param: string[]): Promise<boolean> => {
           return false;
@@ -860,16 +1062,20 @@ describe('REST policies api', () => {
       const result = await request(app)
         .put('/policies/user/default/permission_admin')
         .send({
-          oldPolicy: {
-            permission: 'policy-entity',
-            policy: 'read',
-            effect: 'allow',
-          },
-          newPolicy: {
-            permission: 'policy-entity',
-            policy: 'write',
-            effect: 'allow',
-          },
+          oldPolicy: [
+            {
+              permission: 'policy-entity',
+              policy: 'read',
+              effect: 'allow',
+            },
+          ],
+          newPolicy: [
+            {
+              permission: 'policy-entity',
+              policy: 'write',
+              effect: 'allow',
+            },
+          ],
         });
 
       expect(result.statusCode).toEqual(500);
@@ -888,12 +1094,12 @@ describe('REST policies api', () => {
           }
           return true;
         });
-      mockEnforcer.removePolicy = jest
+      mockEnforcer.removePolicies = jest
         .fn()
         .mockImplementation(async (..._param: string[]): Promise<boolean> => {
           return true;
         });
-      mockEnforcer.addPolicy = jest
+      mockEnforcer.addPolicies = jest
         .fn()
         .mockImplementation(async (..._param: string[]): Promise<boolean> => {
           return false;
@@ -902,16 +1108,20 @@ describe('REST policies api', () => {
       const result = await request(app)
         .put('/policies/user/default/permission_admin')
         .send({
-          oldPolicy: {
-            permission: 'policy-entity',
-            policy: 'read',
-            effect: 'allow',
-          },
-          newPolicy: {
-            permission: 'policy-entity',
-            policy: 'write',
-            effect: 'allow',
-          },
+          oldPolicy: [
+            {
+              permission: 'policy-entity',
+              policy: 'read',
+              effect: 'allow',
+            },
+          ],
+          newPolicy: [
+            {
+              permission: 'policy-entity',
+              policy: 'write',
+              effect: 'allow',
+            },
+          ],
         });
 
       expect(result.statusCode).toEqual(500);
@@ -930,12 +1140,12 @@ describe('REST policies api', () => {
           }
           return true;
         });
-      mockEnforcer.removePolicy = jest
+      mockEnforcer.removePolicies = jest
         .fn()
         .mockImplementation(async (..._param: string[]): Promise<boolean> => {
           return true;
         });
-      mockEnforcer.addPolicy = jest
+      mockEnforcer.addPolicies = jest
         .fn()
         .mockImplementation(async (..._param: string[]): Promise<boolean> => {
           return true;
@@ -944,19 +1154,152 @@ describe('REST policies api', () => {
       const result = await request(app)
         .put('/policies/user/default/permission_admin')
         .send({
-          oldPolicy: {
-            permission: 'policy-entity',
-            policy: 'read',
-            effect: 'allow',
-          },
-          newPolicy: {
-            permission: 'policy-entity',
-            policy: 'write',
-            effect: 'allow',
-          },
+          oldPolicy: [
+            {
+              permission: 'policy-entity',
+              policy: 'read',
+              effect: 'allow',
+            },
+          ],
+          newPolicy: [
+            {
+              permission: 'policy-entity',
+              policy: 'write',
+              effect: 'allow',
+            },
+          ],
         });
 
       expect(result.statusCode).toEqual(200);
+    });
+
+    it('should fail to update permission policy - duplication in old policy', async () => {
+      mockEnforcer.hasPolicy = jest
+        .fn()
+        .mockImplementation(async (...param: string[]): Promise<boolean> => {
+          if (param[2] === 'write') {
+            return false;
+          }
+          return true;
+        });
+
+      const result = await request(app)
+        .put('/policies/user/default/permission_admin')
+        .send({
+          oldPolicy: [
+            {
+              permission: 'policy-entity',
+              policy: 'read',
+              effect: 'allow',
+            },
+            {
+              permission: 'policy-entity',
+              policy: 'read',
+              effect: 'allow',
+            },
+          ],
+          newPolicy: [
+            {
+              permission: 'policy-entity',
+              policy: 'write',
+              effect: 'allow',
+            },
+            {
+              permission: 'policy-entity',
+              policy: 'create',
+              effect: 'allow',
+            },
+          ],
+        });
+
+      expect(result.statusCode).toBe(409);
+      expect(result.body.error).toEqual({
+        name: 'ConflictError',
+        message: `Duplicate polices found; user:default/permission_admin, policy-entity, read, allow is a duplicate`,
+      });
+    });
+
+    it('should fail to update permission policy - duplication in new policy', async () => {
+      mockEnforcer.hasPolicy = jest
+        .fn()
+        .mockImplementation(async (...param: string[]): Promise<boolean> => {
+          if (param[2] === 'write') {
+            return false;
+          }
+          return true;
+        });
+
+      const result = await request(app)
+        .put('/policies/user/default/permission_admin')
+        .send({
+          oldPolicy: [
+            {
+              permission: 'policy-entity',
+              policy: 'read',
+              effect: 'allow',
+            },
+            {
+              permission: 'policy-entity',
+              policy: 'create',
+              effect: 'allow',
+            },
+          ],
+          newPolicy: [
+            {
+              permission: 'policy-entity',
+              policy: 'write',
+              effect: 'allow',
+            },
+            {
+              permission: 'policy-entity',
+              policy: 'write',
+              effect: 'allow',
+            },
+          ],
+        });
+
+      expect(result.statusCode).toBe(409);
+      expect(result.body.error).toEqual({
+        name: 'ConflictError',
+        message: `Duplicate polices found; user:default/permission_admin, policy-entity, write, allow is a duplicate`,
+      });
+    });
+
+    it('should fail to update permission policy - oldPolicy has an additional permission', async () => {
+      mockEnforcer.hasPolicy = jest
+        .fn()
+        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
+          return true;
+        });
+      const result = await request(app)
+        .put('/policies/user/default/permission_admin')
+        .send({
+          oldPolicy: [
+            {
+              permission: 'policy-entity',
+              policy: 'read',
+              effect: 'allow',
+            },
+            {
+              permission: 'policy-entity',
+              policy: 'create',
+              effect: 'allow',
+            },
+          ],
+          newPolicy: [
+            {
+              permission: 'policy-entity',
+              policy: 'delete',
+              effect: 'allow',
+            },
+          ],
+        });
+
+      expect(result.statusCode).toBe(400);
+      expect(result.body.error).toEqual({
+        name: 'InputError',
+        message: `'oldPolicy' object has more permission policies compared to 'newPolicy' object`,
+      });
     });
   });
 
@@ -1195,6 +1538,24 @@ describe('REST policies api', () => {
         });
 
       expect(result.statusCode).toBe(500);
+    });
+
+    it('should fail to create role - duplicate', async () => {
+      const result = await request(app)
+        .post('/roles')
+        .send({
+          memberReferences: [
+            'user:default/permission_admin',
+            'user:default/permission_admin',
+          ],
+          name: 'role:default/rbac_admin',
+        });
+
+      expect(result.statusCode).toBe(409);
+      expect(result.body.error).toEqual({
+        name: 'ConflictError',
+        message: `Duplicate role members found; user:default/permission_admin, role:default/rbac_admin is a duplicate`,
+      });
     });
   });
 
@@ -1552,6 +1913,58 @@ describe('REST policies api', () => {
         });
 
       expect(result.statusCode).toEqual(200);
+    });
+
+    it('should fail to update role - duplicate roles in oldRole', async () => {
+      mockEnforcer.hasGroupingPolicy = jest
+        .fn()
+        .mockImplementation(async (...param: string[]): Promise<boolean> => {
+          if (param[0] === 'user:default/test') {
+            return false;
+          }
+          return true;
+        });
+
+      const result = await request(app)
+        .put('/roles/role/default/rbac_admin')
+        .send({
+          oldRole: {
+            memberReferences: [
+              'user:default/permission_admin',
+              'user:default/permission_admin',
+            ],
+          },
+          newRole: {
+            memberReferences: ['user:default/test'],
+            name: 'role:default/rbac_admin',
+          },
+        });
+
+      expect(result.statusCode).toBe(409);
+      expect(result.body.error).toEqual({
+        name: 'ConflictError',
+        message: `Duplicate role members found; user:default/permission_admin, role:default/rbac_admin is a duplicate`,
+      });
+    });
+
+    it('should fail to update role - duplicate roles in newRole', async () => {
+      const result = await request(app)
+        .put('/roles/role/default/rbac_admin')
+        .send({
+          oldRole: {
+            memberReferences: ['user:default/permission_admin'],
+          },
+          newRole: {
+            memberReferences: ['user:default/test', 'user:default/test'],
+            name: 'role:default/rbac_admin',
+          },
+        });
+
+      expect(result.statusCode).toBe(409);
+      expect(result.body.error).toEqual({
+        name: 'ConflictError',
+        message: `Duplicate role members found; user:default/test, role:default/rbac_admin is a duplicate`,
+      });
     });
   });
 
