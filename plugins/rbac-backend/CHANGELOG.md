@@ -1,3 +1,14 @@
+## @janus-idp/backstage-plugin-rbac-backend [2.0.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@1.7.1...@janus-idp/backstage-plugin-rbac-backend@2.0.0) (2023-12-14)
+
+
+### ⚠ BREAKING CHANGES
+
+* **rbac:** add support for multiple policies CRUD (#984)
+
+### Features
+
+* **rbac:** add support for multiple policies CRUD ([#984](https://github.com/janus-idp/backstage-plugins/issues/984)) ([518c767](https://github.com/janus-idp/backstage-plugins/commit/518c7674aa037669fe9c2fc6f8dc9be5f0c8fa84))
+
 ## @janus-idp/backstage-plugin-rbac-backend [1.7.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@1.7.0...@janus-idp/backstage-plugin-rbac-backend@1.7.1) (2023-12-08)
 
 
