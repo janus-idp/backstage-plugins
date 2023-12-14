@@ -1,3 +1,10 @@
+## @janus-idp/shared-react [2.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/shared-react@2.0.1...@janus-idp/shared-react@2.1.0) (2023-12-14)
+
+
+### Features
+
+* **tekton:** add support for downloading task and pipelinerun logs ([#1014](https://github.com/janus-idp/backstage-plugins/issues/1014)) ([f588292](https://github.com/janus-idp/backstage-plugins/commit/f5882921756a7aa6d5a74d8fdb6bfc52a7c0c209))
+
 ## @janus-idp/shared-react [2.0.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/shared-react@2.0.0...@janus-idp/shared-react@2.0.1) (2023-11-23)
 
 
