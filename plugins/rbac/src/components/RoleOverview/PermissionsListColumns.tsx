@@ -1,6 +1,6 @@
 import { TableColumn } from '@backstage/core-components';
 
-import { PermissionsData } from '../types';
+import { PermissionsData } from '../../types';
 
 export const columns: TableColumn<PermissionsData>[] = [
   {

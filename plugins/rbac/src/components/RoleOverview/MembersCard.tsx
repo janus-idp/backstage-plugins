@@ -8,10 +8,10 @@ import CachedIcon from '@material-ui/icons/Cached';
 
 import { policyEntityUpdatePermission } from '@janus-idp/backstage-plugin-rbac-common';
 
-import { useMembers } from '../hooks/useMembers';
-import { MembersData } from '../types';
-import { getKindNamespaceName, getMembers } from '../utils/rbac-utils';
-import EditRole from './EditRole';
+import { useMembers } from '../../hooks/useMembers';
+import { MembersData } from '../../types';
+import { getKindNamespaceName, getMembers } from '../../utils/rbac-utils';
+import EditRole from '../EditRole';
 import { columns } from './MembersListColumns';
 
 type MembersCardProps = {

@@ -5,8 +5,8 @@ import { Table, WarningPanel } from '@backstage/core-components';
 import { Card, CardContent, makeStyles } from '@material-ui/core';
 import CachedIcon from '@material-ui/icons/Cached';
 
-import { usePermissionPolicies } from '../hooks/usePermissionPolicies';
-import { PermissionsData } from '../types';
+import { usePermissionPolicies } from '../../hooks/usePermissionPolicies';
+import { PermissionsData } from '../../types';
 import { columns } from './PermissionsListColumns';
 
 const useStyles = makeStyles(theme => ({

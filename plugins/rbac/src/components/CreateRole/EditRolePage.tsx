@@ -30,6 +30,18 @@ export const EditRolePage = () => {
     kind: roleKind || 'role',
     description: '',
     selectedMembers,
+    permissionPoliciesRows: [
+      {
+        plugin: '',
+        permission: '',
+        policies: [
+          { label: 'Create', checked: false },
+          { label: 'Read', checked: false },
+          { label: 'Update', checked: false },
+          { label: 'Delete', checked: false },
+        ],
+      },
+    ],
   };
   const renderPage = () => {
     if (loading) {

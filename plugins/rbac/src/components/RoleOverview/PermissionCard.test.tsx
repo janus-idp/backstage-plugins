@@ -2,11 +2,11 @@ import React from 'react';
 
 import { renderInTestApp } from '@backstage/test-utils';
 
-import { usePermissionPolicies } from '../hooks/usePermissionPolicies';
-import { PermissionsData } from '../types';
+import { usePermissionPolicies } from '../../hooks/usePermissionPolicies';
+import { PermissionsData } from '../../types';
 import { PermissionsCard } from './PermissionsCard';
 
-jest.mock('../hooks/usePermissionPolicies', () => ({
+jest.mock('../../hooks/usePermissionPolicies', () => ({
   usePermissionPolicies: jest.fn(),
 }));
 

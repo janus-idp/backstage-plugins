@@ -33,6 +33,7 @@ export type RBACAPI = {
     oldPolicy: RoleBasedPolicy,
     newPolicy: RoleBasedPolicy,
   ) => Promise<Response>;
+  createPolicy: (data: any) => Promise<Response>;
 };
 
 export type Options = {
@@ -266,6 +267,24 @@ export class RBACBackendClient implements RBACAPI {
         method: 'DELETE',
       },
     );
+    return jsonResponse;
+  }
+
+  async createPolicy(data: RoleBasedPolicy[]) {
+    const { token: idToken } = await this.identityApi.getCredentials();
+    const backendUrl = this.configApi.getString('backend.baseUrl');
+    const jsonResponse = await fetch(`${backendUrl}/api/permission/policies`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        ...(idToken && { Authorization: `Bearer ${idToken}` }),
+      },
+      body: JSON.stringify(data),
+    });
+    if (jsonResponse.status !== 200 && jsonResponse.status !== 201) {
+      return jsonResponse.json();
+    }
     return jsonResponse;
   }
 }

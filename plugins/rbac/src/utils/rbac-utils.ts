@@ -33,12 +33,12 @@ export const getMembersString = (res: {
 }): string => {
   let membersString = '';
   if (res.users > 0) {
-    membersString = `${res.users} ${res.users > 1 ? 'Users' : 'User'}`;
+    membersString = `${res.users} ${res.users > 1 ? 'users' : 'user'}`;
   }
   if (res.groups > 0) {
     membersString = membersString.concat(
       membersString.length > 0 ? ', ' : '',
-      `${res.groups} ${res.groups > 1 ? 'Groups' : 'Group'}`,
+      `${res.groups} ${res.groups > 1 ? 'groups' : 'group'}`,
     );
   }
   return membersString;

@@ -32,7 +32,7 @@ export const MembersDropdownOption = ({
   const parts = parse(label, matches);
 
   return (
-    <Box>
+    <Box key={`${etag}`}>
       {parts.map(part => (
         <span
           key={`${part.text}-${etag}`}

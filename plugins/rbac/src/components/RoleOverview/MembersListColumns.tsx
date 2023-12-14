@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Link, TableColumn } from '@backstage/core-components';
 
-import { MembersData } from '../types';
+import { MembersData } from '../../types';
 
 export const columns: TableColumn<MembersData>[] = [
   {

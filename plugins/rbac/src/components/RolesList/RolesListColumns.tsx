@@ -2,10 +2,10 @@ import React from 'react';
 
 import { Link, TableColumn } from '@backstage/core-components';
 
-import { RolesData } from '../types';
-import { getKindNamespaceName, getMembers } from '../utils/rbac-utils';
+import { RolesData } from '../../types';
+import { getKindNamespaceName, getMembers } from '../../utils/rbac-utils';
+import EditRole from '../EditRole';
 import DeleteRole from './DeleteRole';
-import EditRole from './EditRole';
 
 export const columns: TableColumn<RolesData>[] = [
   {
