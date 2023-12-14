@@ -243,8 +243,11 @@ export async function getNotificationsCount(
   const query = createQuery(dbClient, filter, userGroups);
 
   const ret = query.count('* as CNT').then(count => {
-    const msgcount = count[0].CNT as number;
-    return { count: msgcount };
+    const msgcount = Number.parseInt(count[0].CNT.toString(), 10);
+    const result: Paths.GetNotificationsCount.Responses.$200 = {
+      count: msgcount,
+    };
+    return result;
   });
 
   return ret;
