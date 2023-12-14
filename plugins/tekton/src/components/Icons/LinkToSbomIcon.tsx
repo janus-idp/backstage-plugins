@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const LinkToSBom: React.FC<SVGIconProps> = (props): React.ReactElement => {
+const LinkToSBomIcon: React.FC<SVGIconProps> = (props): React.ReactElement => {
   const classes = useStyles();
   return (
     <svg
@@ -33,4 +33,4 @@ const LinkToSBom: React.FC<SVGIconProps> = (props): React.ReactElement => {
   );
 };
 
-export default LinkToSBom;
+export default LinkToSBomIcon;

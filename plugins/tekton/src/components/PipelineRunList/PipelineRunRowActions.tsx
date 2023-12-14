@@ -1,12 +1,13 @@
 import * as React from 'react';
 
+import { IconButton } from '@material-ui/core';
 import { Flex, FlexItem } from '@patternfly/react-core';
 import { Tooltip } from '@patternfly/react-core/dist/esm/components/Tooltip/Tooltip';
 
 import { PipelineRunKind } from '@janus-idp/shared-react';
 
 import { TektonResourcesContext } from '../../hooks/TektonResourcesContext';
-import { getSbomTaskRun } from '../../utils/taskRun-utils';
+import { getSbomTaskRun, isSbomTaskRun } from '../../utils/taskRun-utils';
 import ViewLogsIcon from '../Icons/ViewLogsIcon';
 import PipelineRunLogDialog from '../PipelineRunLogs/PipelineRunLogDialog';
 import PipelineRunSBOMLink from './PipelineRunSBOMLink';
@@ -42,10 +43,12 @@ const PipelineRunRowActions: React.FC<{ pipelineRun: PipelineRunKind }> = ({
         taskRuns={taskRuns}
         activeTask={noActiveTask ? undefined : activeTaskName}
       />
-      <Flex gap={{ default: 'gapSm' }}>
+      <Flex gap={{ default: 'gapXs' }}>
         <FlexItem>
           <Tooltip content="View logs">
-            <ViewLogsIcon onClick={() => openDialog(true)} />
+            <IconButton size="small" onClick={() => openDialog(true)}>
+              <ViewLogsIcon />
+            </IconButton>
           </Tooltip>
         </FlexItem>
 
@@ -57,10 +60,14 @@ const PipelineRunRowActions: React.FC<{ pipelineRun: PipelineRunKind }> = ({
                 : 'View SBOM'
             }
           >
-            <PipelineRunSBOMLink
-              sbomTaskRun={sbomTaskRun}
+            <IconButton
+              disabled={!sbomTaskRun || !isSbomTaskRun(sbomTaskRun)}
+              size="small"
               onClick={() => openDialog()}
-            />
+              style={{ pointerEvents: 'auto', padding: 0 }}
+            >
+              <PipelineRunSBOMLink sbomTaskRun={sbomTaskRun} />
+            </IconButton>
           </Tooltip>
         </FlexItem>
       </Flex>
