@@ -318,7 +318,7 @@ export class PolicesServer {
       if (decision.result === AuthorizeResult.DENY) {
         throw new NotAllowedError(); // 403
       }
-      const roleEntityRef = this.getEntityReference(request);
+      const roleEntityRef = this.getEntityReference(request, true);
 
       const role = await this.enforcer.getFilteredGroupingPolicy(
         1,
@@ -385,7 +385,7 @@ export class PolicesServer {
       if (decision.result === AuthorizeResult.DENY) {
         throw new NotAllowedError(); // 403
       }
-      const roleEntityRef = this.getEntityReference(request);
+      const roleEntityRef = this.getEntityReference(request, true);
 
       const oldRoleRaw = request.body.oldRole;
 
@@ -488,7 +488,7 @@ export class PolicesServer {
           throw new NotAllowedError(); // 403
         }
 
-        const roleEntityRef = this.getEntityReference(request);
+        const roleEntityRef = this.getEntityReference(request, true);
 
         if (request.query.memberReferences) {
           const memberReferences = this.getFirstQuery(
@@ -641,13 +641,13 @@ export class PolicesServer {
     return router;
   }
 
-  getEntityReference(request: Request): string {
+  getEntityReference(request: Request, role?: boolean): string {
     const kind = request.params.kind;
     const namespace = request.params.namespace;
     const name = request.params.name;
     const entityRef = `${kind}:${namespace}/${name}`;
 
-    const err = validateEntityReference(entityRef);
+    const err = validateEntityReference(entityRef, role);
     if (err) {
       throw new InputError(err.message);
     }

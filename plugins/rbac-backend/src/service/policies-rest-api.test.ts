@@ -16,6 +16,7 @@ import {
   policyEntityDeletePermission,
   policyEntityReadPermission,
   policyEntityUpdatePermission,
+  Role,
 } from '@janus-idp/backstage-plugin-rbac-common';
 
 import { RBACPermissionPolicy } from './permission-policy';
@@ -246,6 +247,17 @@ describe('REST policies api', () => {
       expect(result.body.error).toEqual({
         name: 'NotAllowedError',
         message: '',
+      });
+    });
+
+    it('should return a status of Unauthorized - no user', async () => {
+      mockIdentityClient.getIdentity.mockImplementationOnce(() => undefined);
+      const result = await request(app).post('/policies').send();
+
+      expect(result.statusCode).toBe(403);
+      expect(result.body.error).toEqual({
+        name: 'NotAllowedError',
+        message: 'User not found',
       });
     });
 
@@ -1006,7 +1018,7 @@ describe('REST policies api', () => {
       expect(result.statusCode).toEqual(204);
     });
 
-    it('should nothing to update - permissions in a different order', async () => {
+    it('should nothing to update - same permissions with different policy in a different order', async () => {
       mockEnforcer.hasPolicy = jest
         .fn()
         .mockImplementation(async (..._param: string[]): Promise<boolean> => {
@@ -1031,6 +1043,44 @@ describe('REST policies api', () => {
             {
               permission: 'policy-entity',
               policy: 'delete',
+              effect: 'allow',
+            },
+            {
+              permission: 'policy-entity',
+              policy: 'read',
+              effect: 'allow',
+            },
+          ],
+        });
+
+      expect(result.statusCode).toEqual(204);
+    });
+
+    it('should nothing to update - same permissions with different permission type in a different order', async () => {
+      mockEnforcer.hasPolicy = jest
+        .fn()
+        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
+          return true;
+        });
+      const result = await request(app)
+        .put('/policies/user/default/permission_admin')
+        .send({
+          oldPolicy: [
+            {
+              permission: 'policy-entity',
+              policy: 'read',
+              effect: 'allow',
+            },
+            {
+              permission: 'catalog-entity',
+              policy: 'read',
+              effect: 'allow',
+            },
+          ],
+          newPolicy: [
+            {
+              permission: 'catalog-entity',
+              policy: 'read',
               effect: 'allow',
             },
             {
@@ -1372,7 +1422,7 @@ describe('REST policies api', () => {
       expect(result.statusCode).toBe(400);
       expect(result.body.error).toEqual({
         name: 'InputError',
-        message: `Unsupported kind test. List supported values ["user", "group", "role"]`,
+        message: `Unsupported kind test. Supported value should be "role"`,
       });
     });
 
@@ -1492,6 +1542,21 @@ describe('REST policies api', () => {
       expect(result.body.error).toEqual({
         name: 'InputError',
         message: `Invalid role definition. Cause: 'name' field must not be empty`,
+      });
+    });
+
+    it('should not create a role - name is invalid', async () => {
+      const result = await request(app)
+        .post('/roles')
+        .send({
+          memberReferences: ['user:default/permission_admin'],
+          name: 'x:default/rbac_admin',
+        });
+
+      expect(result.statusCode).toBe(400);
+      expect(result.body.error).toEqual({
+        name: 'InputError',
+        message: `Invalid role definition. Cause: Unsupported kind x. Supported value should be "role"`,
       });
     });
 
@@ -1639,7 +1704,7 @@ describe('REST policies api', () => {
           },
           newRole: {
             memberReferences: ['user:default/test'],
-            name: 'role/default/rbac_admin',
+            name: 'role:default/rbac_admin',
           },
         });
 
@@ -1966,6 +2031,46 @@ describe('REST policies api', () => {
         message: `Duplicate role members found; user:default/test, role:default/rbac_admin is a duplicate`,
       });
     });
+
+    it('should fail to update role name when role name is invalid', async () => {
+      const result = await request(app)
+        .put('/roles/role/default/rbac_admin')
+        .send({
+          oldRole: {
+            memberReferences: ['user:default/permission_admin'],
+          },
+          newRole: {
+            memberReferences: ['user:default/test'],
+            name: 'role:default/',
+          },
+        });
+
+      expect(result.statusCode).toBe(400);
+      expect(result.body.error).toEqual({
+        name: 'InputError',
+        message: `Invalid new role object. Cause: Entity reference "role:default/" was not on the form [<kind>:][<namespace>/]<name>`,
+      });
+    });
+
+    it('should fail to update - oldRole name is invalid', async () => {
+      const result = await request(app)
+        .put('/roles/x/default/rbac_admin')
+        .send({
+          oldRole: {
+            memberReferences: ['user:default/permission_admin'],
+          },
+          newRole: {
+            memberReferences: ['user:default/test'],
+            name: 'role:default/',
+          },
+        });
+
+      expect(result.statusCode).toBe(400);
+      expect(result.body.error).toEqual({
+        name: 'InputError',
+        message: `Unsupported kind x. Supported value should be "role"`,
+      });
+    });
   });
 
   describe('DELETE /roles/:kind/:namespace/:name', () => {
@@ -2106,6 +2211,25 @@ describe('REST policies api', () => {
           server.getFirstQuery(queryValue);
         }).toThrow(InputError);
       });
+    });
+  });
+
+  describe('transformRoleArray', () => {
+    it('should combine two roles together that are similar', () => {
+      const roles = [
+        ['group:default/test', 'role:default/test'],
+        ['user:default/test', 'role:default/test'],
+      ];
+
+      const expectedResult: Role[] = [
+        {
+          memberReferences: ['group:default/test', 'user:default/test'],
+          name: 'role:default/test',
+        },
+      ];
+
+      const transformedRoles = server.transformRoleArray(...roles);
+      expect(transformedRoles).toStrictEqual(expectedResult);
     });
   });
 

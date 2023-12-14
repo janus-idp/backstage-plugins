@@ -35,12 +35,17 @@ export function validateRole(role: Role): Error | undefined {
     return new Error(`'name' field must not be empty`);
   }
 
+  let err = validateEntityReference(role.name, true);
+  if (err) {
+    return err;
+  }
+
   if (!role.memberReferences || role.memberReferences.length === 0) {
     return new Error(`'memberReferences' field must not be empty`);
   }
 
   for (const member of role.memberReferences) {
-    const err = validateEntityReference(member);
+    err = validateEntityReference(member);
     if (err) {
       return err;
     }
@@ -56,7 +61,10 @@ function isValidEffectValue(effect: string): boolean {
 }
 
 // We supports only full form entity reference: [<kind>:][<namespace>/]<name>
-export function validateEntityReference(entityRef?: string): Error | undefined {
+export function validateEntityReference(
+  entityRef?: string,
+  role?: boolean,
+): Error | undefined {
   if (!entityRef) {
     return new Error(`'entityReference' must not be empty`);
   }
@@ -72,6 +80,12 @@ export function validateEntityReference(entityRef?: string): Error | undefined {
   if (entityRefFull !== entityRef) {
     return new Error(
       `entity reference '${entityRef}' does not match the required format [<kind>:][<namespace>/]<name>. Provide, please, full entity reference.`,
+    );
+  }
+
+  if (role && entityRefCompound.kind !== 'role') {
+    return new Error(
+      `Unsupported kind ${entityRefCompound.kind}. Supported value should be "role"`,
     );
   }
 
