@@ -27,7 +27,10 @@ const useRolesMockData: RolesData[] = [
     permissions: 2,
     modifiedBy: '-',
     lastModified: '-',
-    permissionResult: { allowed: true, loading: false },
+    actionsPermissionResults: {
+      delete: { allowed: true, loading: false },
+      edit: { allowed: true, loading: false },
+    },
   },
   {
     name: 'role:default/rbac_admin',
@@ -36,7 +39,10 @@ const useRolesMockData: RolesData[] = [
     permissions: 4,
     modifiedBy: '-',
     lastModified: '-',
-    permissionResult: { allowed: true, loading: false },
+    actionsPermissionResults: {
+      delete: { allowed: true, loading: false },
+      edit: { allowed: true, loading: false },
+    },
   },
 ];
 
@@ -106,11 +112,17 @@ describe('RolesList', () => {
       data: [
         {
           ...useRolesMockData[0],
-          permissionResult: { allowed: false, loading: true },
+          actionsPermissionResults: {
+            delete: { allowed: false, loading: false },
+            edit: { allowed: true, loading: false },
+          },
         },
         {
           ...useRolesMockData[0],
-          permissionResult: { allowed: false, loading: true },
+          actionsPermissionResults: {
+            delete: { allowed: false, loading: true },
+            edit: { allowed: true, loading: false },
+          },
         },
       ],
       retry: () => {},
@@ -118,6 +130,38 @@ describe('RolesList', () => {
     });
     const { getAllByTestId } = await renderInTestApp(<RolesList />);
     expect(getAllByTestId('disable-delete-role')).not.toBeNull();
+    expect(getAllByTestId('update-role')).not.toBeNull();
+  });
+
+  it('should show disabled edit icon if user is not authorized to update roles', async () => {
+    RequirePermissionMock.mockImplementation(props => <>{props.children}</>);
+    mockUsePermission
+      .mockReturnValueOnce({ loading: false, allowed: true })
+      .mockReturnValue({ loading: false, allowed: false });
+    mockUseRoles.mockReturnValue({
+      loading: false,
+      data: [
+        {
+          ...useRolesMockData[0],
+          actionsPermissionResults: {
+            delete: { allowed: true, loading: false },
+            edit: { allowed: false, loading: false },
+          },
+        },
+        {
+          ...useRolesMockData[0],
+          actionsPermissionResults: {
+            delete: { allowed: true, loading: true },
+            edit: { allowed: false, loading: false },
+          },
+        },
+      ],
+      retry: () => {},
+      createRoleAllowed: true,
+    });
+    const { getAllByTestId } = await renderInTestApp(<RolesList />);
+    expect(getAllByTestId('disable-update-role')).not.toBeNull();
+    expect(getAllByTestId('delete-role')).not.toBeNull();
   });
 
   it('should disable create button if user is not authorized to create roles', async () => {

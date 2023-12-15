@@ -2,6 +2,7 @@ import {
   GroupEntity,
   isUserEntity,
   parseEntityRef,
+  stringifyEntityRef,
 } from '@backstage/catalog-model';
 
 import {
@@ -10,7 +11,8 @@ import {
 } from '@janus-idp/backstage-plugin-rbac-common';
 
 import { SelectedMember } from '../components/CreateRole/types';
-import { MembersData, PermissionsData } from '../types';
+import { MemberEntity, MembersData, PermissionsData } from '../types';
+import { getMembersCount } from './create-role-utils';
 
 export const getPermissions = (
   role: string,
@@ -52,7 +54,7 @@ export const getMembers = (
   const res = members.reduce(
     (acc, member) => {
       if (typeof member === 'object') {
-        if (member.type === 'User') {
+        if (member.type === 'User' || member.type === 'user') {
           acc.users++;
         } else {
           acc.groups++;
@@ -94,13 +96,11 @@ export const getPluginId = (
 export const getPermissionsData = (
   policies: RoleBasedPolicy[],
   permissionPolicies: PermissionPolicy[],
-  entityReference: string,
 ): PermissionsData[] =>
   policies.reduce((acc: PermissionsData[], policy: RoleBasedPolicy) => {
     if (policy?.effect === 'allow') {
       const permission = acc.find(
         plugin =>
-          policy.entityReference === entityReference &&
           plugin.permission === policy.permission &&
           !plugin.policies.has({
             policy: policy?.policy || 'use',
@@ -115,7 +115,7 @@ export const getPermissionsData = (
           policy: policy.policy || 'use',
           effect: policy.effect,
         });
-      } else if (policy.entityReference === entityReference) {
+      } else {
         const policyString = new Set<string>();
         const policiesSet = new Set<{ policy: string; effect: string }>();
         acc.push({
@@ -138,4 +138,33 @@ export const getKindNamespaceName = (roleRef: string) => {
   const namespace = refs[1].split('/')[0];
   const name = refs[1].split('/')[1];
   return { kind, namespace, name };
+};
+
+export const getSelectedMember = (
+  memberResource: MemberEntity | undefined,
+  ref: string,
+): SelectedMember => {
+  if (memberResource) {
+    return {
+      ref: stringifyEntityRef(memberResource),
+      label:
+        memberResource.spec.profile?.displayName ??
+        memberResource.metadata.name,
+      etag: memberResource.metadata.etag as string,
+      type: memberResource.kind,
+      namespace: memberResource.metadata.namespace as string,
+      members: getMembersCount(memberResource),
+    };
+  } else if (ref) {
+    const { kind, namespace, name } = getKindNamespaceName(ref);
+    return {
+      ref,
+      label: name,
+      etag: `${kind}-${namespace}-${name}`,
+      type: kind,
+      namespace: namespace,
+      members: kind === 'group' ? 0 : undefined,
+    };
+  }
+  return {} as SelectedMember;
 };

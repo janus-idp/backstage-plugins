@@ -6,7 +6,7 @@ import { IconButton } from '@material-ui/core';
 import Delete from '@mui/icons-material/Delete';
 import { FormikErrors } from 'formik';
 
-import { CreateRoleFormValues, SelectedMember } from './types';
+import { RoleFormValues, SelectedMember } from './types';
 
 export const selectedMembersColumns = (
   selectedMembers: SelectedMember[],
@@ -14,7 +14,7 @@ export const selectedMembersColumns = (
     field: string,
     value: any,
     shouldValidate?: boolean,
-  ) => Promise<FormikErrors<CreateRoleFormValues>> | Promise<void>,
+  ) => Promise<FormikErrors<RoleFormValues>> | Promise<void>,
 ): TableColumn<SelectedMember>[] => {
   const onRemove = (etag: string) => {
     const updatedMembers = selectedMembers.filter(

@@ -5,11 +5,13 @@ export type SelectedMember = {
   type: string;
   members?: number;
   description?: string;
+  ref: string;
 };
 
-export type CreateRoleFormValues = {
+export type RoleFormValues = {
   name: string;
   namespace: string;
+  kind: string;
   description?: string;
   selectedMembers: SelectedMember[];
 };

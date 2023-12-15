@@ -10,11 +10,15 @@ import { MembersCard } from './MembersCard';
 import { PermissionsCard } from './PermissionsCard';
 
 export const RoleOverviewPage = () => {
-  const { roleName, roleKind } = useParams();
+  const { roleName, roleNamespace, roleKind } = useParams();
 
   return (
     <Page themeId="tool">
-      <Header title={`${roleKind}/${roleName}`} type="RBAC" typeLink="/rbac" />
+      <Header
+        title={`${roleKind}:${roleNamespace}/${roleName}`}
+        type="RBAC"
+        typeLink="/rbac"
+      />
       <TabbedLayout>
         <TabbedLayout.Route path="" title="Overview">
           <Grid container direction="row">
@@ -22,10 +26,14 @@ export const RoleOverviewPage = () => {
               <AboutCard />
             </Grid>
             <Grid item lg={6} xs={12}>
-              <MembersCard roleName={`${roleKind}/${roleName}`} />
+              <MembersCard
+                roleName={`${roleKind}:${roleNamespace}/${roleName}`}
+              />
             </Grid>
             <Grid item lg={6} xs={12}>
-              <PermissionsCard entityReference={`${roleKind}/${roleName}`} />
+              <PermissionsCard
+                entityReference={`${roleKind}:${roleNamespace}/${roleName}`}
+              />
             </Grid>
           </Grid>
         </TabbedLayout.Route>

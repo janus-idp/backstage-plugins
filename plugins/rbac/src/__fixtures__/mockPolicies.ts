@@ -1,5 +1,38 @@
 import { RoleBasedPolicy } from '@janus-idp/backstage-plugin-rbac-common';
 
+export const mockAssociatedPolicies: RoleBasedPolicy[] = [
+  {
+    entityReference: 'role:default/rbac_admin',
+    permission: 'policy-entity',
+    policy: 'read',
+    effect: 'allow',
+  },
+  {
+    entityReference: 'role:default/rbac_admin',
+    permission: 'policy-entity',
+    policy: 'create',
+    effect: 'allow',
+  },
+  {
+    entityReference: 'role:default/rbac_admin',
+    permission: 'policy-entity',
+    policy: 'delete',
+    effect: 'allow',
+  },
+  {
+    entityReference: 'role:default/rbac_admin',
+    permission: 'catalog-entity',
+    policy: 'read',
+    effect: 'allow',
+  },
+  {
+    entityReference: 'role:default/rbac_admin',
+    permission: 'catalog.entity.create',
+    policy: 'use',
+    effect: 'allow',
+  },
+];
+
 export const mockPolicies: RoleBasedPolicy[] = [
   {
     entityReference: 'role:default/guests',
@@ -49,28 +82,5 @@ export const mockPolicies: RoleBasedPolicy[] = [
     policy: 'delete',
     effect: 'allow',
   },
-  {
-    entityReference: 'role:default/rbac_admin',
-    permission: 'policy-entity',
-    policy: 'read',
-    effect: 'allow',
-  },
-  {
-    entityReference: 'role:default/rbac_admin',
-    permission: 'policy-entity',
-    policy: 'create',
-    effect: 'allow',
-  },
-  {
-    entityReference: 'role:default/rbac_admin',
-    permission: 'policy-entity',
-    policy: 'delete',
-    effect: 'allow',
-  },
-  {
-    entityReference: 'role:default/rbac_admin',
-    permission: 'policy-entity',
-    policy: 'update',
-    effect: 'allow',
-  },
+  ...mockAssociatedPolicies,
 ];

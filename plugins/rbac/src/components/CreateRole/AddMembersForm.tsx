@@ -1,14 +1,12 @@
 import React from 'react';
-import { useAsync } from 'react-use';
 
-import { useApi } from '@backstage/core-plugin-api';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 
 import { LinearProgress, TextField } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import FormHelperText from '@mui/material/FormHelperText';
 import { FormikErrors } from 'formik';
 
-import { rbacApiRef } from '../../api/RBACBackendClient';
 import { MemberEntity } from '../../types';
 import {
   getChildGroupsCount,
@@ -16,32 +14,26 @@ import {
   getParentGroupsCount,
 } from '../../utils/create-role-utils';
 import { MembersDropdownOption } from './MembersDropdownOption';
-import { CreateRoleFormValues, SelectedMember } from './types';
+import { RoleFormValues, SelectedMember } from './types';
 
 type AddMembersFormProps = {
   selectedMembers: SelectedMember[];
   selectedMembersError?: string;
+  membersData: { members: MemberEntity[]; loading: boolean; error: Error };
   setFieldValue: (
     field: string,
     value: any,
     shouldValidate?: boolean,
-  ) => Promise<FormikErrors<CreateRoleFormValues>> | Promise<void>;
+  ) => Promise<FormikErrors<RoleFormValues>> | Promise<void>;
 };
 
 export const AddMembersForm = ({
   selectedMembers,
   selectedMembersError,
   setFieldValue,
+  membersData,
 }: AddMembersFormProps) => {
-  const rbacApi = useApi(rbacApiRef);
   const [search, setSearch] = React.useState<string>('');
-  const {
-    loading: membersLoading,
-    value: members,
-    error,
-  } = useAsync(async () => {
-    return await rbacApi.getMembers();
-  });
 
   const getDescription = (member: MemberEntity) => {
     const memberCount = getMembersCount(member);
@@ -53,9 +45,9 @@ export const AddMembersForm = ({
       : undefined;
   };
 
-  const membersOptions: SelectedMember[] = members
-    ? members.map((member: MemberEntity, index) => ({
-        label: member.metadata.name,
+  const membersOptions: SelectedMember[] = membersData.members
+    ? membersData.members.map((member: MemberEntity, index: number) => ({
+        label: member.spec?.profile?.displayName ?? member.metadata.name,
         description: getDescription(member),
         etag:
           member.metadata.etag ??
@@ -63,8 +55,9 @@ export const AddMembersForm = ({
         type: member.kind,
         namespace: member.metadata.namespace,
         members: getMembersCount(member),
+        ref: stringifyEntityRef(member),
       }))
-    : [];
+    : ([] as SelectedMember[]);
 
   return (
     <>
@@ -79,9 +72,9 @@ export const AddMembersForm = ({
         getOptionSelected={(option: SelectedMember, value: SelectedMember) =>
           option.etag === value.etag
         }
-        loading={membersLoading}
+        loading={membersData.loading}
         loadingText={<LinearProgress />}
-        onChange={(_e, value: SelectedMember) =>
+        onChange={(_e, value: SelectedMember | null) =>
           setFieldValue('selectedMembers', [...selectedMembers, value])
         }
         disableClearable
@@ -108,8 +101,10 @@ export const AddMembersForm = ({
         )}
       />
       <br />
-      {error?.message && (
-        <FormHelperText error={!error}>{error.message}</FormHelperText>
+      {membersData.error?.message && (
+        <FormHelperText error={!!membersData.error}>
+          {`Error fetching user and groups: ${membersData.error.message}`}
+        </FormHelperText>
       )}
     </>
   );

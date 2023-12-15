@@ -48,22 +48,41 @@ class MockRBACApi implements RBACAPI {
     return mockPolicies;
   }
 
+  async getAssociatedPolicies(
+    entityReference: string,
+  ): Promise<RoleBasedPolicy[]> {
+    return mockPolicies.filter(pol => pol.entityReference === entityReference);
+  }
+
   async getUserAuthorization(): Promise<{ status: string }> {
     return {
       status: 'Authorized',
     };
   }
 
-  async getRole(role: string): Promise<Role[]> {
+  async getRole(role: string): Promise<Role[] | Response> {
     const roleresource = this.resources.find(res => res.name === role);
-    return roleresource ? [roleresource] : [];
+    return roleresource
+      ? [roleresource]
+      : ({ status: 404, statusText: 'Not Found' } as Response);
   }
 
-  async deleteRole(_roleName: string): Promise<any> {
-    return { status: 204 };
+  async updateRole(_oldRole: Role, _newRole: Role): Promise<Response> {
+    return { status: 200 } as Response;
   }
 
-  async getMembers(): Promise<MemberEntity[]> {
+  async updatePolicy(
+    _oldPolicy: RoleBasedPolicy,
+    _newPolicy: RoleBasedPolicy,
+  ): Promise<Response> {
+    return { status: 204 } as Response;
+  }
+
+  async deleteRole(_roleName: string): Promise<Response> {
+    return { status: 204, statusText: 'Deleted Successfully' } as Response;
+  }
+
+  async getMembers(): Promise<MemberEntity[] | Response> {
     return mockMembers;
   }
 
@@ -79,8 +98,8 @@ class MockRBACApi implements RBACAPI {
     return 204;
   }
 
-  async createRole(_role: Role): Promise<any> {
-    return { status: 200 };
+  async createRole(_role: Role): Promise<Response> {
+    return { status: 200 } as Response;
   }
 }
 
