@@ -88,7 +88,8 @@ describe('parseGroup', () => {
     };
     const entity = await parseGroup(groupsFixture[0], 'test', transformer);
 
-    expect(entity!.metadata.name).toEqual('biggroup_test');
+    expect(entity).toBeDefined();
+    expect(entity?.metadata.name).toEqual('biggroup_test');
   });
 });
 
@@ -134,7 +135,8 @@ describe('parseUser', () => {
     };
     const entity = await parseUser(usersFixture[0], 'test', [], transformer);
 
-    expect(entity!.metadata.name).toEqual('jamesdoe_test');
+    expect(entity).toBeDefined();
+    expect(entity?.metadata.name).toEqual('jamesdoe_test');
   });
 });
 
@@ -150,6 +152,7 @@ describe('getEntities', () => {
 
     expect(users).toHaveLength(3);
   });
+
   it('should fetch all users with pagination', async () => {
     const client = new KeycloakAdminClientMock() as unknown as KcAdminClient;
 

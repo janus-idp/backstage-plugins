@@ -203,12 +203,16 @@ export class KeycloakOrgEntityProvider implements EntityProvider {
         username: provider.username,
         password: provider.password,
       };
-    } else {
+    } else if (provider.clientId && provider.clientSecret) {
       credentials = {
         grantType: 'client_credentials',
-        clientId: provider.clientId!,
+        clientId: provider.clientId,
         clientSecret: provider.clientSecret,
       };
+    } else {
+      throw new Error(
+        `username and password or clientId and clientSecret must be provided.`,
+      );
     }
 
     await kcAdminClient.auth(credentials);
