@@ -1116,15 +1116,74 @@ describe('BackstageRoleManager', () => {
     });
   });
 
-  describe('getRoles test', () => {
-    it('should returns 2 roles for user', async () => {
+  describe('getRoles returns roles per user', () => {
+    it('should returns role per user', async () => {
       roleManager.addLink('user:default/test', 'role:default/rbac_admin');
-      const roles = await roleManager.getRoles('user:default/test');
-      expect(roles.length).toBe(2);
-      expect(roles[0]).toEqual('user:default/test');
-      expect(roles[1]).toEqual('role:default/rbac_admin');
+      roleManager.addLink('user:default/test-two', 'role:default/rbac_admin');
+      roleManager.addLink(
+        'user:default/test-three',
+        'role:default/rbac_admin_test',
+      );
+
+      catalogApiMock.getEntities.mockImplementation((arg: any) => {
+        const hasMember = arg.filter['relations.hasMember'];
+
+        if (hasMember && hasMember[0] === 'user:default/test') {
+          return { items: [] };
+        }
+        if (hasMember && hasMember[0] === 'user:default/test-two') {
+          return { items: [] };
+        }
+        if (hasMember && hasMember[0] === 'user:default/test-three') {
+          return { items: [] };
+        }
+        return { items: [] };
+      });
+
+      let roles = await roleManager.getRoles('user:default/test');
+      expect(roles.length).toBe(1);
+      expect(roles[0]).toEqual('role:default/rbac_admin');
+
+      roles = await roleManager.getRoles('user:default/test-two');
+      expect(roles.length).toBe(1);
+      expect(roles[0]).toEqual('role:default/rbac_admin');
+
+      roles = await roleManager.getRoles('user:default/test-three');
+      expect(roles.length).toBe(1);
+      expect(roles[0]).toEqual('role:default/rbac_admin_test');
+    });
+
+    it('getRoles returns role for user inherited from group', async () => {
+      const teamAGroup = createGroupEntity('team-a', undefined, [
+        'user:default/test',
+      ]);
+
+      roleManager.addLink('group:default/team-a', 'role:default/rbac_admin');
+
+      catalogApiMock.getEntities.mockImplementation((arg: any) => {
+        const hasMember = arg.filter['relations.hasMember'];
+
+        if (hasMember && hasMember[0] === 'user:default/test') {
+          return { items: [teamAGroup] };
+        }
+
+        return { items: [] };
+      });
+
+      let roles = await roleManager.getRoles('user:default/test');
+      expect(roles.length).toBe(1);
+      expect(roles[0]).toEqual('role:default/rbac_admin');
+
+      // should return empty array for group
+      roles = await roleManager.getRoles('group:default/team-a');
+      expect(roles.length).toBe(0);
+
+      // should return empty array for role
+      roles = await roleManager.getRoles('role:default/rbac_admin');
+      expect(roles.length).toBe(0);
     });
   });
+
   function createGroupEntity(
     name: string,
     parent?: string,

@@ -365,7 +365,7 @@ describe('Policy checks for resourced permissions defined by name', () => {
     policyContent: string,
   ): Promise<RBACPermissionPolicy> {
     const adapter = new StringAdapter(policyContent);
-    const config = newConfigReader();
+    const config = new ConfigReader({});
     const theModel = newModelFromString(MODEL);
     const logger = getVoidLogger();
     const enf = await createEnforcer(
@@ -388,7 +388,7 @@ describe('Policy checks for resourced permissions defined by name', () => {
     const policy = await createRBACPolicy(`
       p, role:default/catalog_reader, catalog.entity.read, read, allow
 
-      g, user:default/andrienkoaleksandr, role:default/catalog_reader
+      g, user:default/tor, role:default/catalog_reader
     `);
 
     const decision = await policy.handle(
@@ -397,7 +397,7 @@ describe('Policy checks for resourced permissions defined by name', () => {
         'catalog-entity',
         'read',
       ),
-      newIdentityResponse('user:default/andrienkoaleksandr'),
+      newIdentityResponse('user:default/tor'),
     );
     expect(decision.result).toBe(AuthorizeResult.ALLOW);
   });
@@ -409,7 +409,7 @@ describe('Policy checks for resourced permissions defined by name', () => {
       p, role:default/catalog_reader, catalog.entity.read, read, allow
       p, role:default/catalog_reader, catalog-entity, read, deny
 
-      g, user:default/andrienkoaleksandr, role:default/catalog_reader
+      g, user:default/tor, role:default/catalog_reader
     `);
 
     const decision = await policy.handle(
@@ -418,7 +418,7 @@ describe('Policy checks for resourced permissions defined by name', () => {
         'catalog-entity',
         'read',
       ),
-      newIdentityResponse('user:default/andrienkoaleksandr'),
+      newIdentityResponse('user:default/tor'),
     );
     expect(decision.result).toBe(AuthorizeResult.ALLOW);
   });
@@ -430,7 +430,7 @@ describe('Policy checks for resourced permissions defined by name', () => {
       p, role:default/catalog_reader, catalog.entity.read, read, deny
       p, role:default/catalog_reader, catalog-entity, read, allow
 
-      g, user:default/andrienkoaleksandr, role:default/catalog_reader
+      g, user:default/tor, role:default/catalog_reader
     `);
 
     const decision = await policy.handle(
@@ -439,7 +439,7 @@ describe('Policy checks for resourced permissions defined by name', () => {
         'catalog-entity',
         'read',
       ),
-      newIdentityResponse('user:default/andrienkoaleksandr'),
+      newIdentityResponse('user:default/tor'),
     );
     expect(decision.result).toBe(AuthorizeResult.DENY);
   });
@@ -455,7 +455,7 @@ describe('Policy checks for resourced permissions defined by name', () => {
     };
     catalogApi.getEntities.mockImplementation(arg => {
       const hasMember = arg.filter['relations.hasMember'];
-      if (hasMember && hasMember[0] === 'user:default/andrienkoaleksandr') {
+      if (hasMember && hasMember[0] === 'user:default/tor') {
         return { items: [groupEntityMock] };
       }
       return { items: [] };
@@ -473,7 +473,57 @@ describe('Policy checks for resourced permissions defined by name', () => {
         'catalog-entity',
         'read',
       ),
-      newIdentityResponse('user:default/andrienkoaleksandr'),
+      newIdentityResponse('user:default/tor'),
+    );
+    expect(decision.result).toBe(AuthorizeResult.ALLOW);
+  });
+
+  it('should allow access to resourced permission assigned by name, but user inherits policy from few groups', async () => {
+    const groupEntityMock: Entity = {
+      apiVersion: 'v1',
+      kind: 'Group',
+      metadata: {
+        name: 'team-a',
+        namespace: 'default',
+      },
+      spec: {
+        parent: 'team-b',
+      },
+    };
+    const groupParentMock: Entity = {
+      apiVersion: 'v1',
+      kind: 'Group',
+      metadata: {
+        name: 'team-b',
+        namespace: 'default',
+      },
+    };
+    catalogApi.getEntities.mockImplementation(arg => {
+      const hasMember = arg.filter['relations.hasMember'];
+      if (hasMember && hasMember[0] === 'user:default/tor') {
+        return { items: [groupEntityMock] };
+      }
+      const hasParent = arg.filter['relations.parentOf'];
+      if (hasParent && hasParent[0] === 'group:default/team-a') {
+        return { items: [groupParentMock] };
+      }
+      return { items: [] };
+    });
+
+    const policy = await createRBACPolicy(`
+    p, role:default/catalog_user, catalog.entity.read, read, allow
+
+    g, group:default/team-a, group:default/team-b
+    g, group:default/team-b, role:default/catalog_user
+    `);
+
+    const decision = await policy.handle(
+      newPolicyQueryWithResourcePermission(
+        'catalog.entity.read',
+        'catalog-entity',
+        'read',
+      ),
+      newIdentityResponse('user:default/tor'),
     );
     expect(decision.result).toBe(AuthorizeResult.ALLOW);
   });
