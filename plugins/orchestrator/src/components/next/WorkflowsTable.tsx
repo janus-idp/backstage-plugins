@@ -133,6 +133,7 @@ export const WorkflowsTable = ({ items }: WorkflowsTableProps) => {
           </Link>
         ),
       },
+      { title: 'Type', field: 'type' },
       { title: 'Last run', field: 'lastTriggered' },
       {
         title: 'Last run status',
@@ -140,7 +141,6 @@ export const WorkflowsTable = ({ items }: WorkflowsTableProps) => {
           <ProcessInstanceStatus status={rowData.lastRunStatus} />
         ),
       },
-      { title: 'Type', field: 'type' },
       { title: 'Avg. duration', field: 'avgDuration' },
       { title: 'Description', field: 'description' },
     ],

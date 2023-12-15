@@ -6,7 +6,7 @@ import { makeStyles, Typography } from '@material-ui/core';
 
 import { ProcessInstanceState } from '@janus-idp/backstage-plugin-orchestrator-common';
 
-import { humanizeProcessInstanceState } from './utils';
+import { humanizeProcessInstanceState } from '../../utils';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -54,10 +54,12 @@ export const StatusSelector = ({
       ProcessInstanceState.Error,
       ProcessInstanceState.Aborted,
       ProcessInstanceState.Suspended,
-    ].map(status => ({
-      label: humanizeProcessInstanceState(status),
-      value: status,
-    })),
+    ].map(
+      (status): SelectItem => ({
+        label: humanizeProcessInstanceState(status) || '',
+        value: status,
+      }),
+    ),
   ];
 
   const selected = statuses?.find(item => item.value === value)?.value;

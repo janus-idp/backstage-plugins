@@ -273,7 +273,22 @@ export class SonataFlowService {
 
       if (response.ok) {
         const json = await response.json();
-        return json.data.ProcessInstances;
+        const processInstancesSrc = json.data
+          .ProcessInstances as ProcessInstance[];
+        const workflowItems = await this.fetchWorkflows();
+        const processInstances = processInstancesSrc.map(instance => {
+          const workflowItem = workflowItems?.find(
+            wi => wi.definition.id === instance.processId,
+          );
+
+          if (workflowItem) {
+            instance.category = getWorkflowCategory(workflowItem.definition);
+            instance.description = workflowItem.definition.description;
+          }
+          return instance;
+        });
+
+        return processInstances;
       }
     } catch (error) {
       this.logger.error(`Error when fetching instances: ${error}`);
@@ -307,6 +322,7 @@ export class SonataFlowService {
           );
 
           processInstance.category = getWorkflowCategory(workflowDefinition);
+          processInstance.description = workflowDefinition?.description;
         }
 
         return processInstance;

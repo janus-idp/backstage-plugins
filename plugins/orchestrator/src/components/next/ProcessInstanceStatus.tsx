@@ -5,7 +5,7 @@ import DotIcon from '@material-ui/icons/FiberManualRecord';
 
 import { ProcessInstanceState } from '@janus-idp/backstage-plugin-orchestrator-common';
 
-import { humanizeProcessInstanceState } from './utils';
+import { humanizeProcessInstanceState } from '../../utils';
 
 const useStyles = makeStyles(theme => ({
   root: {},
