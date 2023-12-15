@@ -5,7 +5,6 @@ import {
   LinkButton,
   MarkdownContent,
 } from '@backstage/core-components';
-import { BackstageTheme } from '@backstage/theme';
 
 import {
   Box,
@@ -15,12 +14,13 @@ import {
   CardMedia,
   Chip,
   makeStyles,
+  Theme,
   Typography,
 } from '@material-ui/core';
 
 import { ImageStreamMetadata } from '../../types';
 
-const useStyles = makeStyles<BackstageTheme>(theme => ({
+const useStyles = makeStyles<Theme>(theme => ({
   label: {
     color: theme.palette.text.secondary,
     textTransform: 'uppercase',
@@ -39,12 +39,12 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
 
 type OcirImagesCardProps = {
   imageStream: ImageStreamMetadata;
-  openSidebar: (imageStream: ImageStreamMetadata) => void;
+  onImageStreamSelected: (imageStream: ImageStreamMetadata) => void;
 };
 
 export const OcirImagesCard = ({
   imageStream,
-  openSidebar,
+  onImageStreamSelected,
 }: OcirImagesCardProps) => {
   const classes = useStyles();
 
@@ -65,7 +65,7 @@ export const OcirImagesCard = ({
             Description
           </Typography>
           <MarkdownContent
-            content={imageStream.description || 'N/A'}
+            content={imageStream.description ?? 'N/A'}
             className={classes.description}
           />
         </Box>
@@ -86,8 +86,8 @@ export const OcirImagesCard = ({
             Tags
           </Typography>
           {imageStream.tags?.length
-            ? imageStream.tags.map((tag: string, i: number) => (
-                <Chip size="small" label={tag} key={i} />
+            ? imageStream.tags.map((tag: string) => (
+                <Chip key={tag} size="small" label={tag} />
               ))
             : 'N/A'}
         </Box>
@@ -96,7 +96,7 @@ export const OcirImagesCard = ({
         <LinkButton
           color="primary"
           to=""
-          onClick={() => openSidebar(imageStream)}
+          onClick={() => onImageStreamSelected(imageStream)}
         >
           Open
         </LinkButton>
