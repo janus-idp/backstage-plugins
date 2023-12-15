@@ -1,0 +1,15 @@
+{
+    "version": "1.0.0",
+    "configurations": [
+      {
+        "type": "node",
+        "request": "launch",
+        "name": "Jest RBAC backend: debug current test file",
+        "program": "${workspaceRoot}/node_modules/.bin/jest",
+        "args": ["${relativeFile}", "--config", "./jest.config.debug.js"],
+        "console": "integratedTerminal",
+        "cwd": "${workspaceRoot}/plugins/rbac-backend",
+        "internalConsoleOptions": "neverOpen",
+      }
+    ]
+  }
