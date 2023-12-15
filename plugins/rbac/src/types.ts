@@ -7,7 +7,10 @@ export type RolesData = {
   permissions: number;
   modifiedBy: string;
   lastModified: string;
-  permissionResult: { allowed: boolean; loading: boolean };
+  actionsPermissionResults: {
+    delete: { allowed: boolean; loading: boolean };
+    edit: { allowed: boolean; loading: boolean };
+  };
 };
 
 export type MembersData = {
@@ -29,3 +32,5 @@ export type PermissionsData = {
 };
 
 export type MemberEntity = UserEntity | GroupEntity;
+
+export type CreateRoleError = { error: { name: string; message: string } };

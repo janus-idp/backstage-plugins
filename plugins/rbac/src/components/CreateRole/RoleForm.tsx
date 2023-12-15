@@ -17,35 +17,72 @@ import { Alert } from '@material-ui/lab';
 import { FormikHelpers, useFormik } from 'formik';
 
 import { rbacApiRef } from '../../api/RBACBackendClient';
+import { CreateRoleError, MemberEntity } from '../../types';
 import { getRoleData, validationSchema } from '../../utils/create-role-utils';
+import { useToast } from '../ToastContext';
 import { AddedMembersTable } from './AddedMembersTable';
 import { AddMembersForm } from './AddMembersForm';
 import { RoleDetailsForm } from './RoleDetailsForm';
-import { CreateRoleFormValues } from './types';
+import { RoleFormValues } from './types';
 
-export const CreateRoleForm = () => {
-  const [activeStep, setActiveStep] = React.useState<number>(0);
+type RoleFormProps = {
+  membersData: { members: MemberEntity[]; loading: boolean; error: Error };
+  titles: {
+    formTitle: string;
+    nameAndDescriptionTitle: string;
+    usersAndGroupsTitle: string;
+    permissionPoliciesTitle: string;
+  };
+  submitLabel?: string;
+  roleName?: string;
+  step?: number;
+  initialValues: RoleFormValues;
+};
+
+export const RoleForm = ({
+  roleName,
+  step,
+  titles,
+  membersData,
+  submitLabel,
+  initialValues,
+}: RoleFormProps) => {
+  const { setToastMessage } = useToast();
+  const [activeStep, setActiveStep] = React.useState<number>(step || 0);
   const navigate = useNavigate();
   const rbacApi = useApi(rbacApiRef);
-  const formik = useFormik<CreateRoleFormValues>({
-    initialValues: {
-      name: '',
-      namespace: 'default',
-      description: '',
-      selectedMembers: [],
-    },
+
+  const formik = useFormik<RoleFormValues>({
+    enableReinitialize: true,
+    initialValues,
     validationSchema: validationSchema,
     onSubmit: async (
-      values: CreateRoleFormValues,
-      formikHelpers: FormikHelpers<CreateRoleFormValues>,
+      values: RoleFormValues,
+      formikHelpers: FormikHelpers<RoleFormValues>,
     ) => {
       try {
-        const data = getRoleData(values);
-        const res = await rbacApi.createRole(data);
-        if (res.status !== 200 && res.status !== 201) {
-          const resData = await res.json();
-          throw new Error(resData?.error?.message ?? 'Unable to create role');
+        const newData = getRoleData(values);
+        const oldData = getRoleData(initialValues);
+
+        let res: Response | CreateRoleError;
+        if (roleName) {
+          res = await rbacApi.updateRole(oldData, newData);
         } else {
+          res = await rbacApi.createRole(newData);
+        }
+
+        if ((res as CreateRoleError).error) {
+          throw new Error(
+            `${
+              roleName ? 'Unable to edit the role. ' : 'Unable to create role. '
+            }${(res as CreateRoleError).error.message}`,
+          );
+        } else {
+          if (roleName) {
+            setToastMessage(`Role ${roleName} updated successfully`);
+          } else {
+            setToastMessage(`Role ${newData.name} created successfully`);
+          }
           navigate('/rbac');
         }
       } catch (e) {
@@ -87,12 +124,12 @@ export const CreateRoleForm = () => {
 
   return (
     <Card>
-      <CardHeader title="Create role" />
+      <CardHeader title={titles.formTitle} />
       <Divider />
       <CardContent component="form" onSubmit={formik.handleSubmit}>
         <SimpleStepper activeStep={activeStep}>
           <SimpleStepperStep
-            title="Enter name and description of role"
+            title={titles.nameAndDescriptionTitle}
             actions={{
               showBack: false,
               showNext: true,
@@ -110,7 +147,7 @@ export const CreateRoleForm = () => {
             />
           </SimpleStepperStep>
           <SimpleStepperStep
-            title="Add users and groups"
+            title={titles.usersAndGroupsTitle}
             actions={{
               showNext: true,
               nextText: 'Next',
@@ -128,6 +165,7 @@ export const CreateRoleForm = () => {
                 selectedMembers={formik.values.selectedMembers}
                 selectedMembersError={formik.errors.selectedMembers as string}
                 setFieldValue={formik.setFieldValue}
+                membersData={membersData}
               />
               <br />
               <AddedMembersTable
@@ -148,14 +186,14 @@ export const CreateRoleForm = () => {
                   !!formik.errors.name || !!formik.errors.selectedMembers
                 }
               >
-                Create
+                {submitLabel || 'Create'}
               </Button>
             </Paper>
           </SimpleStepperStep>
         </SimpleStepper>
         {formik.status?.submitError && (
           <Box>
-            <Alert severity="error">{`Unable to create role. ${formik.status.submitError}`}</Alert>
+            <Alert severity="error">{`${formik.status.submitError}`}</Alert>
           </Box>
         )}
       </CardContent>

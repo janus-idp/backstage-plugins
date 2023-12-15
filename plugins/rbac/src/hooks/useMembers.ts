@@ -4,8 +4,6 @@ import { useAsync, useAsyncRetry } from 'react-use';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 
-import { get } from 'lodash';
-
 import { rbacApiRef } from '../api/RBACBackendClient';
 import { MembersData } from '../types';
 import { getKindNamespaceName, getMembersFromGroup } from '../utils/rbac-utils';
@@ -14,13 +12,13 @@ const getErrorText = (
   role: any,
   members: any,
 ): { message: string } | undefined => {
-  if (!Array.isArray(role) && get(role, 'statusText')) {
+  if (!Array.isArray(role) && (role as Response)?.statusText) {
     return {
-      message: `Unable to fetch role: ${get(role, 'statusText')}`,
+      message: `Unable to fetch role: ${(role as Response).statusText}`,
     };
-  } else if (!Array.isArray(members) && get(members, 'statusText')) {
+  } else if (!Array.isArray(members) && (members as Response)?.statusText) {
     return {
-      message: `Unable to fetch members: ${get(members, 'statusText')}`,
+      message: `Unable to fetch members: ${(members as Response).statusText}`,
     };
   }
   return undefined;
@@ -51,7 +49,7 @@ export const useMembers = (roleName: string) => {
   data = React.useMemo(
     () =>
       Array.isArray(role)
-        ? role[0].memberReferences.reduce((acc: MembersData[], ref) => {
+        ? role[0].memberReferences.reduce((acc: MembersData[], ref: string) => {
             const memberResource =
               Array.isArray(members) &&
               members.find(member => stringifyEntityRef(member) === ref);

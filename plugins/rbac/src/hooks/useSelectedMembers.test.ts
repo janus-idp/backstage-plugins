@@ -2,7 +2,7 @@ import { waitFor } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
 
 import { mockMembers } from '../__fixtures__/mockMembers';
-import { useMembers } from './useMembers';
+import { useSelectedMembers } from './useSelectedMembers';
 
 jest.mock('@backstage/core-plugin-api', () => ({
   ...jest.requireActual('@backstage/core-plugin-api'),
@@ -23,12 +23,14 @@ jest.mock('@backstage/core-plugin-api', () => ({
   }),
 }));
 
-describe('useMembers', () => {
-  it('should return members', async () => {
-    const { result } = renderHook(() => useMembers('role:default/rbac_admin'));
+describe('useSelectedMembers', () => {
+  it('should return selected members', async () => {
+    const { result } = renderHook(() =>
+      useSelectedMembers('role:default/rbac_admin'),
+    );
     await waitFor(() => {
       expect(result.current.loading).toBeFalsy();
-      expect(result.current.data).toHaveLength(5);
+      expect(result.current.selectedMembers).toHaveLength(5);
     });
   });
 });

@@ -8,6 +8,7 @@ import { usePermission } from '@backstage/plugin-permission-react';
 import {
   policyEntityCreatePermission,
   policyEntityDeletePermission,
+  policyEntityUpdatePermission,
   Role,
   RoleBasedPolicy,
 } from '@janus-idp/backstage-plugin-rbac-common';
@@ -48,10 +49,14 @@ export const useRoles = (pollInterval?: number) => {
     policyEntityCreatePermissionResult.allowed &&
     catalogEntityReadPermissionResult.allowed;
 
+  const editPermissionResult = usePermission({
+    permission: policyEntityUpdatePermission,
+    resourceRef: policyEntityUpdatePermission.resourceType,
+  });
   const data: RolesData[] = React.useMemo(
     () =>
       roles && roles?.length > 0
-        ? roles.reduce((acc: any, role: Role) => {
+        ? roles.reduce((acc: RolesData[], role: Role) => {
             const permissions = getPermissions(
               role.name,
               policies as RoleBasedPolicy[],
@@ -67,12 +72,15 @@ export const useRoles = (pollInterval?: number) => {
                 permissions,
                 modifiedBy: '-',
                 lastModified: '-',
-                permissionResult: deletePermissionResult,
+                actionsPermissionResults: {
+                  delete: deletePermissionResult,
+                  edit: editPermissionResult,
+                },
               },
             ];
           }, [])
         : [],
-    [roles, policies, deletePermissionResult],
+    [roles, policies, deletePermissionResult, editPermissionResult],
   );
   const loading = rolesLoading && policiesLoading;
   useInterval(() => retry(), loading ? null : pollInterval || 5000);

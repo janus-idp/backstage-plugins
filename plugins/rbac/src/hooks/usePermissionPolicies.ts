@@ -14,7 +14,7 @@ export const usePermissionPolicies = (entityReference: string) => {
     retry,
     error,
   } = useAsyncRetry(async () => {
-    return await rbacApi.getPolicies();
+    return await rbacApi.getAssociatedPolicies(entityReference);
   });
 
   const { value: permissionPolicies, loading: permissionPoliciesLoading } =
@@ -26,10 +26,8 @@ export const usePermissionPolicies = (entityReference: string) => {
 
   const data = React.useMemo(() => {
     const pp = Array.isArray(permissionPolicies) ? permissionPolicies : [];
-    return Array.isArray(policies)
-      ? getPermissionsData(policies, pp, entityReference)
-      : [];
-  }, [policies, permissionPolicies, entityReference]);
+    return Array.isArray(policies) ? getPermissionsData(policies, pp) : [];
+  }, [policies, permissionPolicies]);
   return {
     loading,
     data,

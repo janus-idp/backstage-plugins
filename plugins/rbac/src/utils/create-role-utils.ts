@@ -1,17 +1,14 @@
 import * as yup from 'yup';
 
-import {
-  CreateRoleFormValues,
-  SelectedMember,
-} from '../components/CreateRole/types';
+import { RoleFormValues, SelectedMember } from '../components/CreateRole/types';
 import { MemberEntity } from '../types';
 
-export const getRoleData = (values: CreateRoleFormValues) => {
+export const getRoleData = (values: RoleFormValues) => {
   return {
-    memberReferences: values.selectedMembers.map((mem: SelectedMember) =>
-      `${mem.type}:${mem.namespace}/${mem.label}`.toLowerCase(),
+    memberReferences: values.selectedMembers.map(
+      (mem: SelectedMember) => mem.ref,
     ),
-    name: `role:${values.namespace}/${values.name}`,
+    name: `${values.kind}:${values.namespace}/${values.name}`,
   };
 };
 

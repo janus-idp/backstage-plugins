@@ -1,6 +1,7 @@
 import { waitFor } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
 
+import { mockPolicies } from '../__fixtures__/mockPolicies';
 import { useRoles } from './useRoles';
 
 jest.mock('@backstage/core-plugin-api', () => ({
@@ -18,50 +19,7 @@ jest.mock('@backstage/core-plugin-api', () => ({
     ]),
     getPolicies: jest
       .fn()
-      .mockReturnValueOnce([
-        {
-          entityReference: 'role:default/guests',
-          permission: 'catalog-entity',
-          policy: 'read',
-          effect: 'deny',
-        },
-        {
-          entityReference: 'role:default/guests',
-          permission: 'catalog.entity.create',
-          policy: 'use',
-          effect: 'deny',
-        },
-        {
-          entityReference: 'role:default/rbac_admin',
-          permission: 'policy-entity',
-          policy: 'read',
-          effect: 'allow',
-        },
-        {
-          entityReference: 'role:default/rbac_admin',
-          permission: 'policy-entity',
-          policy: 'create',
-          effect: 'allow',
-        },
-        {
-          entityReference: 'role:default/rbac_admin',
-          permission: 'policy-entity',
-          policy: 'delete',
-          effect: 'allow',
-        },
-        {
-          entityReference: 'role:default/rbac_admin',
-          permission: 'catalog-entity',
-          policy: 'read',
-          effect: 'allow',
-        },
-        {
-          entityReference: 'role:default/rbac_admin',
-          permission: 'catalog.entity.create',
-          policy: 'use',
-          effect: 'allow',
-        },
-      ])
+      .mockReturnValueOnce(mockPolicies)
       .mockReturnValue([
         {
           entityReference: 'role:default/guests',

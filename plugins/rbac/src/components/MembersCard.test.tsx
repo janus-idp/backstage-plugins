@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { usePermission } from '@backstage/plugin-permission-react';
 import { renderInTestApp } from '@backstage/test-utils';
 
 import { useMembers } from '../hooks/useMembers';
@@ -8,6 +9,10 @@ import { MembersCard } from './MembersCard';
 
 jest.mock('../hooks/useMembers', () => ({
   useMembers: jest.fn(),
+}));
+
+jest.mock('@backstage/plugin-permission-react', () => ({
+  usePermission: jest.fn(),
 }));
 
 const useMembersMockData: MembersData[] = [
@@ -54,9 +59,13 @@ const useMembersMockData: MembersData[] = [
 ];
 
 const mockMembers = useMembers as jest.MockedFunction<typeof useMembers>;
+const mockUsePermission = usePermission as jest.MockedFunction<
+  typeof usePermission
+>;
 
 describe('MembersCard', () => {
   it('should show list of Users and groups associated with the role when the data is loaded', async () => {
+    mockUsePermission.mockReturnValue({ loading: false, allowed: true });
     mockMembers.mockReturnValue({
       loading: false,
       data: useMembersMockData,
@@ -73,6 +82,7 @@ describe('MembersCard', () => {
   });
 
   it('should show empty table when there are no users and groups', async () => {
+    mockUsePermission.mockReturnValue({ loading: false, allowed: true });
     mockMembers.mockReturnValue({
       loading: false,
       data: [],
@@ -83,10 +93,11 @@ describe('MembersCard', () => {
       <MembersCard roleName="role:default/rbac_admin" />,
     );
     expect(queryByText('Users and groups')).not.toBeNull();
-    expect(queryByText('No users and groups found')).not.toBeNull();
+    expect(queryByText('No records found')).not.toBeNull();
   });
 
   it('should show an error if api call fails', async () => {
+    mockUsePermission.mockReturnValue({ loading: false, allowed: true });
     mockMembers.mockReturnValue({
       loading: false,
       data: [],
@@ -102,6 +113,34 @@ describe('MembersCard', () => {
       ),
     ).not.toBeNull();
 
-    expect(queryByText('No users and groups found')).not.toBeNull();
+    expect(queryByText('No records found')).not.toBeNull();
+  });
+
+  it('should show edit icon when the user is authorized to update roles', async () => {
+    mockUsePermission.mockReturnValue({ loading: false, allowed: true });
+    mockMembers.mockReturnValue({
+      loading: false,
+      data: useMembersMockData,
+      error: undefined,
+      retry: () => {},
+    });
+    const { getByTestId } = await renderInTestApp(
+      <MembersCard roleName="role:default/rbac_admin" />,
+    );
+    expect(getByTestId('update-members')).not.toBeNull();
+  });
+
+  it('should disable edit icon when the user is not authorized to update roles', async () => {
+    mockUsePermission.mockReturnValue({ loading: false, allowed: false });
+    mockMembers.mockReturnValue({
+      loading: false,
+      data: useMembersMockData,
+      error: undefined,
+      retry: () => {},
+    });
+    const { queryByTestId } = await renderInTestApp(
+      <MembersCard roleName="role:default/rbac_admin" />,
+    );
+    expect(queryByTestId('disable-update-members')).not.toBeNull();
   });
 });

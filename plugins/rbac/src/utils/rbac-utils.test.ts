@@ -1,5 +1,6 @@
 import { GroupEntity } from '@backstage/catalog-model';
 
+import { mockPermissionPolicies } from '../__fixtures__/mockPermissionPolicies';
 import {
   getKindNamespaceName,
   getMembers,
@@ -53,54 +54,8 @@ const mockPolicies = [
   },
 ];
 
-const mockPermissionPolicies = [
-  {
-    pluginId: 'catalog',
-    policies: [
-      {
-        permission: 'catalog-entity',
-        policy: 'read',
-      },
-      {
-        permission: 'catalog.entity.create',
-        policy: 'create',
-      },
-    ],
-  },
-  {
-    pluginId: 'scaffolder',
-    policies: [
-      {
-        permission: 'scaffolder-template',
-        policy: 'read',
-      },
-      {
-        permission: 'scaffolder-action',
-        policy: 'use',
-      },
-    ],
-  },
-  {
-    pluginId: 'permission',
-    policies: [
-      {
-        permission: 'policy-entity',
-        policy: 'read',
-      },
-      {
-        permission: 'policy-entity',
-        policy: 'create',
-      },
-      {
-        permission: 'policy-entity',
-        policy: 'update',
-      },
-    ],
-  },
-];
-
 describe('rbac utils', () => {
-  it('should list associated permissions for a role', () => {
+  it('should list associated allowed permissions for a role', () => {
     expect(getPermissions('role:default/guests', mockPolicies)).toBe(0);
     expect(getPermissions('user:default/xyz', mockPolicies)).toBe(5);
   });

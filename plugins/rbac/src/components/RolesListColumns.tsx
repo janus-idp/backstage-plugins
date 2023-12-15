@@ -3,17 +3,21 @@ import React from 'react';
 import { Link, TableColumn } from '@backstage/core-components';
 
 import { RolesData } from '../types';
-import { getMembers } from '../utils/rbac-utils';
+import { getKindNamespaceName, getMembers } from '../utils/rbac-utils';
 import DeleteRole from './DeleteRole';
+import EditRole from './EditRole';
 
 export const columns: TableColumn<RolesData>[] = [
   {
     title: 'Name',
     field: 'name',
     type: 'string',
-    render: (props: RolesData) => (
-      <Link to={`roles/${props.name}`}>{props.name}</Link>
-    ),
+    render: (props: RolesData) => {
+      const { kind, namespace, name } = getKindNamespaceName(props.name);
+      return (
+        <Link to={`roles/${kind}/${namespace}/${name}`}>{props.name}</Link>
+      );
+    },
   },
   {
     title: 'Users and groups',
@@ -44,18 +48,36 @@ export const columns: TableColumn<RolesData>[] = [
     title: 'Actions',
     sorting: false,
     render: (props: RolesData) => (
-      <DeleteRole
-        dataTestId={
-          !props.permissionResult.allowed
-            ? 'disable-delete-role'
-            : 'delete-role'
-        }
-        roleName={props.name}
-        disable={!props.permissionResult.allowed}
-        tooltip={
-          !props.permissionResult.allowed ? 'Role cannot be deleted' : ''
-        }
-      />
+      <>
+        <EditRole
+          dataTestId={
+            !props.actionsPermissionResults.edit.allowed
+              ? 'disable-update-role'
+              : 'update-role'
+          }
+          roleName={props.name}
+          disable={!props.actionsPermissionResults.edit.allowed}
+          tooltip={
+            !props.actionsPermissionResults.edit.allowed
+              ? 'Unauthorized to edit'
+              : ''
+          }
+        />
+        <DeleteRole
+          dataTestId={
+            !props.actionsPermissionResults.delete.allowed
+              ? 'disable-delete-role'
+              : 'delete-role'
+          }
+          roleName={props.name}
+          disable={!props.actionsPermissionResults.delete.allowed}
+          tooltip={
+            !props.actionsPermissionResults.delete.allowed
+              ? 'Role cannot be deleted'
+              : ''
+          }
+        />
+      </>
     ),
   },
 ];

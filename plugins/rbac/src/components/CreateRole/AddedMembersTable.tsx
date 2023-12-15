@@ -7,7 +7,7 @@ import { FormikErrors } from 'formik';
 
 import { getMembers } from '../../utils/rbac-utils';
 import { selectedMembersColumns } from './AddedMembersTableColumn';
-import { CreateRoleFormValues, SelectedMember } from './types';
+import { RoleFormValues, SelectedMember } from './types';
 
 const useStyles = makeStyles(theme => ({
   empty: {
@@ -23,7 +23,7 @@ type AddedMembersTableProps = {
     field: string,
     value: any,
     shouldValidate?: boolean,
-  ) => Promise<FormikErrors<CreateRoleFormValues>> | Promise<void>;
+  ) => Promise<FormikErrors<RoleFormValues>> | Promise<void>;
 };
 
 export const AddedMembersTable = ({

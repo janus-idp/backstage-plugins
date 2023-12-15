@@ -8,20 +8,62 @@ import {
 
 describe('getRoleData', () => {
   it('should return role data object', () => {
-    const values = {
+    let values = {
       name: 'testRole',
       namespace: 'default',
+      kind: 'group',
       selectedMembers: [
-        { type: 'User', namespace: 'default', label: 'user1', etag: '1' },
-        { type: 'Group', namespace: 'default', label: 'group1', etag: '2' },
+        {
+          type: 'User',
+          namespace: 'default',
+          label: 'user1',
+          etag: '1',
+          ref: 'user:default/user1',
+        },
+        {
+          type: 'Group',
+          namespace: 'default',
+          label: 'group1',
+          etag: '2',
+          ref: 'group:default/group1',
+        },
       ],
     };
 
-    const result = getRoleData(values);
+    let result = getRoleData(values);
 
     expect(result).toEqual({
       memberReferences: ['user:default/user1', 'group:default/group1'],
-      name: 'role:default/testRole',
+      name: 'group:default/testRole',
+    });
+
+    values = {
+      name: 'testRole',
+      namespace: 'default',
+      kind: 'user',
+      selectedMembers: [
+        {
+          type: 'User',
+          namespace: 'default',
+          label: 'user1',
+          etag: '1',
+          ref: 'user:default/user1',
+        },
+        {
+          type: 'Group',
+          namespace: 'default',
+          label: 'group1',
+          etag: '2',
+          ref: 'group:default/group1',
+        },
+      ],
+    };
+
+    result = getRoleData(values);
+
+    expect(result).toEqual({
+      memberReferences: ['user:default/user1', 'group:default/group1'],
+      name: 'user:default/testRole',
     });
   });
 });
