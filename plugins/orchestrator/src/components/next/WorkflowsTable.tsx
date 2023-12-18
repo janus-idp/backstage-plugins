@@ -28,7 +28,6 @@ import WorkflowOverviewFormatter, {
   FormattedWorkflowOverview,
 } from '../../dataFormatters/WorkflowOverviewFormatter';
 import {
-  editWorkflowRouteRef,
   nextExecuteWorkflowRouteRef,
   workflowDefinitionsRouteRef,
 } from '../../routes';
@@ -36,15 +35,15 @@ import { ProcessInstanceStatus } from './ProcessInstanceStatus';
 
 export interface WorkflowsTableProps {
   items: WorkflowOverview[];
+  handleEdit: (workflowOverview: FormattedWorkflowOverview) => void;
 }
 
-export const WorkflowsTable = ({ items }: WorkflowsTableProps) => {
+export const WorkflowsTable = ({ items, handleEdit }: WorkflowsTableProps) => {
   const orchestratorApi = useApi(orchestratorApiRef);
   const featureFlagsApi = useApi(featureFlagsApiRef);
   const navigate = useNavigate();
   const definitionLink = useRouteRef(workflowDefinitionsRouteRef);
   const executeWorkflowLink = useRouteRef(nextExecuteWorkflowRouteRef);
-  const editLink = useRouteRef(editWorkflowRouteRef);
   const [data, setData] = useState<FormattedWorkflowOverview[]>([]);
   const isDeveloperModeOn = featureFlagsApi.isActive(
     FEATURE_FLAG_DEVELOPER_MODE,
@@ -73,15 +72,6 @@ export const WorkflowsTable = ({ items }: WorkflowsTableProps) => {
       navigate(executeWorkflowLink({ workflowId: rowData.id }));
     },
     [executeWorkflowLink, navigate],
-  );
-
-  const handleEdit = useCallback(
-    (rowData: FormattedWorkflowOverview) => {
-      navigate(
-        editLink({ workflowId: `${rowData.id}`, format: rowData.format }),
-      );
-    },
-    [editLink, navigate],
   );
 
   const handleDelete = useCallback(

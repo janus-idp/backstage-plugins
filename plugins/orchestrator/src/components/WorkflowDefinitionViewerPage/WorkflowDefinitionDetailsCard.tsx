@@ -19,8 +19,10 @@ const useStyles = makeStyles({
 });
 
 const WorkflowDefinitionDetailsCard = ({
+  loading,
   workflowOverview,
 }: {
+  loading: boolean;
   workflowOverview?: WorkflowOverview;
 }) => {
   const classes = useStyles();
@@ -59,8 +61,6 @@ const WorkflowDefinitionDetailsCard = ({
     ],
     [formattedWorkflowOverview],
   );
-
-  const loading = !formattedWorkflowOverview;
 
   return (
     <InfoCard title="Details" className={classes.details}>

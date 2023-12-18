@@ -19,22 +19,37 @@ import {
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { orchestratorApiRef } from '../../api';
+import { FormattedWorkflowOverview } from '../../dataFormatters/WorkflowOverviewFormatter';
 import { newWorkflowRef } from '../../routes';
+import EditWorkflowDialog from '../WorkflowDialog/EditWorkflowDialog';
 import { WorkflowsTable } from './WorkflowsTable';
 
 export const WorkflowsTabContent = () => {
   const orchestratorApi = useApi(orchestratorApiRef);
   const navigate = useNavigate();
   const newWorkflowLink = useRouteRef(newWorkflowRef);
+
+  const [forceReload, setForceReload] = React.useState(false);
+
+  const [editModalWorkflow, setEditModalWorkflow] =
+    React.useState<FormattedWorkflowOverview>();
+
   const { value, error, loading } = useAsync(async (): Promise<
     WorkflowOverview[]
   > => {
     const data = await orchestratorApi.listWorkflowsOverview();
-
     return data.items;
-  }, []);
+  }, [forceReload]);
 
   const isReady = React.useMemo(() => !loading && !error, [loading, error]);
+
+  // wrap with useCallback since WorkflowsTable has useMemo with onEdit prop as a dependency
+  const handleEdit = React.useCallback(
+    (workflowOverview: FormattedWorkflowOverview) => {
+      setEditModalWorkflow(workflowOverview);
+    },
+    [],
+  );
 
   return (
     <Content noPadding>
@@ -57,9 +72,20 @@ export const WorkflowsTabContent = () => {
           </FeatureFlagged>
           <Grid container direction="column">
             <Grid item>
-              <WorkflowsTable items={value ?? []} />
+              <WorkflowsTable items={value ?? []} handleEdit={handleEdit} />
             </Grid>
           </Grid>
+          {editModalWorkflow && (
+            <EditWorkflowDialog
+              close={() => setEditModalWorkflow(undefined)}
+              open={!!editModalWorkflow}
+              workflowId={editModalWorkflow.id}
+              handleSaveSucceeded={() => {
+                setForceReload(!forceReload);
+              }}
+              name={editModalWorkflow.name}
+            />
+          )}
         </>
       ) : null}
     </Content>

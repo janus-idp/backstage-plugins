@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAsync } from 'react-use';
 
 import { FeatureFlagged } from '@backstage/core-app-api';
-import { InfoCard } from '@backstage/core-components';
+import { InfoCard, ResponseErrorPanel } from '@backstage/core-components';
 import {
   featureFlagsApiRef,
   useApi,
@@ -18,11 +18,11 @@ import { FEATURE_FLAG_DEVELOPER_MODE } from '@janus-idp/backstage-plugin-orchest
 
 import { orchestratorApiRef } from '../../api';
 import {
-  editWorkflowRouteRef,
   executeWorkflowRouteRef,
   workflowDefinitionsRouteRef,
 } from '../../routes';
 import { BaseOrchestratorPage } from '../next/BaseOrchestratorPage';
+import EditWorkflowDialog from '../WorkflowDialog/EditWorkflowDialog';
 import { EditorViewKind, WorkflowEditor } from '../WorkflowEditor';
 import WorkflowDefinitionDetailsCard from './WorkflowDefinitionDetailsCard';
 
@@ -30,12 +30,18 @@ export const WorkflowDefinitionViewerPage = () => {
   const featureFlagsApi = useApi(featureFlagsApiRef);
   const { workflowId, format } = useRouteRefParams(workflowDefinitionsRouteRef);
   const orchestratorApi = useApi(orchestratorApiRef);
-  const { value: workflowOverview } = useAsync(() =>
-    orchestratorApi.getWorkflowOverview(workflowId),
-  );
+  const [forceReload, setForceReload] = React.useState(false);
+  const {
+    value: workflowOverview,
+    loading,
+    error,
+  } = useAsync(() => {
+    return orchestratorApi.getWorkflowOverview(workflowId);
+  }, [forceReload]);
   const navigate = useNavigate();
   const executeWorkflowLink = useRouteRef(executeWorkflowRouteRef);
-  const editWorkflowLink = useRouteRef(editWorkflowRouteRef);
+  const [editModalOpen, setEditModalOpen] = React.useState(false);
+
   const workflowFormat = useMemo(
     () => (format === 'json' ? 'json' : 'yaml'),
     [format],
@@ -49,10 +55,8 @@ export const WorkflowDefinitionViewerPage = () => {
   };
 
   const handleEdit = () => {
-    navigate(editWorkflowLink({ workflowId, format }));
+    setEditModalOpen(true);
   };
-
-  const loading = !workflowOverview;
 
   return (
     <BaseOrchestratorPage
@@ -61,6 +65,11 @@ export const WorkflowDefinitionViewerPage = () => {
       typeLink="/orchestrator"
     >
       <Grid container spacing={2} direction="column" wrap="nowrap">
+        {error && (
+          <Grid item>
+            <ResponseErrorPanel error={error} />
+          </Grid>
+        )}
         <Grid container item justifyContent="flex-end" spacing={1}>
           <Grid item>
             <FeatureFlagged with={FEATURE_FLAG_DEVELOPER_MODE}>
@@ -92,7 +101,10 @@ export const WorkflowDefinitionViewerPage = () => {
           </Grid>
         </Grid>
         <Grid item>
-          <WorkflowDefinitionDetailsCard workflowOverview={workflowOverview} />
+          <WorkflowDefinitionDetailsCard
+            workflowOverview={workflowOverview}
+            loading={loading}
+          />
         </Grid>
         <Grid item>
           <InfoCard title="Workflow definition">
@@ -101,11 +113,23 @@ export const WorkflowDefinitionViewerPage = () => {
                 kind={EditorViewKind.EXTENDED_DIAGRAM_VIEWER}
                 workflowId={workflowId}
                 format={workflowFormat}
+                forceReload={forceReload}
               />
             </div>
           </InfoCard>
         </Grid>
       </Grid>
+      {editModalOpen && (
+        <EditWorkflowDialog
+          close={() => setEditModalOpen(false)}
+          open={editModalOpen}
+          workflowId={workflowId}
+          handleSaveSucceeded={() => {
+            setForceReload(!forceReload);
+          }}
+          name={workflowOverview?.name || ''}
+        />
+      )}
     </BaseOrchestratorPage>
   );
 };

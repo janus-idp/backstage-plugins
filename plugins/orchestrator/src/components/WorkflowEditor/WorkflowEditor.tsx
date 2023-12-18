@@ -92,6 +92,7 @@ export type WorkflowEditorView =
 type WorkflowEditorProps = {
   workflowId: string | undefined;
   format?: WorkflowFormat;
+  forceReload?: boolean;
 } & WorkflowEditorView;
 
 const RefForwardingWorkflowEditor: ForwardRefRenderFunction<
@@ -319,7 +320,6 @@ const RefForwardingWorkflowEditor: ForwardRefRenderFunction<
           });
           return;
         }
-
         const promise = workflowId
           ? orchestratorApi.getWorkflow(workflowId)
           : Promise.resolve({
@@ -332,7 +332,6 @@ const RefForwardingWorkflowEditor: ForwardRefRenderFunction<
             if (canceled.get()) {
               return;
             }
-
             setWorkflowItemPromise({ data: item });
 
             const workflowFormat = extractWorkflowFormatFromUri(item.uri);
@@ -373,6 +372,9 @@ const RefForwardingWorkflowEditor: ForwardRefRenderFunction<
             setWorkflowItemPromise({ error: e });
           });
       },
+
+      // disabled exhaustive-deps to enable force reload after edit
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       [
         format,
         workflowId,
@@ -382,6 +384,7 @@ const RefForwardingWorkflowEditor: ForwardRefRenderFunction<
         editWorkflowLink,
         viewWorkflowLink,
         navigate,
+        props.forceReload,
       ],
     ),
   );

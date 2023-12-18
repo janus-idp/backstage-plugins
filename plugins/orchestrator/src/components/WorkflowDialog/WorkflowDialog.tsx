@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef, ForwardRefRenderFunction } from 'react';
 
 import {
   Box,
@@ -12,13 +12,17 @@ import {
 import CloseIcon from '@material-ui/icons/Close';
 
 import { WorkflowEditor } from '../WorkflowEditor';
-import { WorkflowEditorView } from '../WorkflowEditor/WorkflowEditor';
+import {
+  WorkflowEditorRef,
+  WorkflowEditorView,
+} from '../WorkflowEditor/WorkflowEditor';
 
-type OrchestratorWorkflowDialogProps = {
+export type OrchestratorWorkflowDialogProps = {
   workflowId: string;
   title: string;
   open: boolean;
   close: () => void;
+  dialogActions?: React.ReactNode;
 } & WorkflowEditorView;
 
 const useStyles = makeStyles(_theme => ({
@@ -33,9 +37,10 @@ const useStyles = makeStyles(_theme => ({
   },
 }));
 
-export const WorkflowDialog = (
-  props: OrchestratorWorkflowDialogProps,
-): JSX.Element | null => {
+export const RefForwardingWorkflowDialog: ForwardRefRenderFunction<
+  WorkflowEditorRef,
+  OrchestratorWorkflowDialogProps
+> = (props, forwardedRef): JSX.Element | null => {
   const { workflowId, title, open, close } = props;
   const classes = useStyles();
 
@@ -55,9 +60,16 @@ export const WorkflowDialog = (
       </DialogTitle>
       <DialogContent>
         <Box className={classes.editor}>
-          <WorkflowEditor {...props} workflowId={workflowId} />
+          <WorkflowEditor
+            {...props}
+            workflowId={workflowId}
+            ref={forwardedRef}
+          />
         </Box>
       </DialogContent>
+      {props.dialogActions}
     </Dialog>
   );
 };
+
+export const WorkflowDialog = forwardRef(RefForwardingWorkflowDialog);
