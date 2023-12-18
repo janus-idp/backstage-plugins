@@ -16,12 +16,6 @@ export type NotificationsFilterRequest = {
   messageScope?: string;
 
   /**
-   * The user the query is executed for. Default: DefaultUser
-   * Its entity must be present in the catalog.
-   * Conforms IdentityApi.getBackstageIdentity()
-   */
-  user?: string;
-  /**
    * 'false' for user's unread messages, 'true' for read ones.
    * If undefined, then both marks.
    */

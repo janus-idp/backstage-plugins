@@ -11,7 +11,6 @@ import {
   DefaultOrderDirection,
   DefaultPageNumber,
   DefaultPageSize,
-  DefaultUser,
   MessageScopes,
   NotificationsFilterRequest,
   NotificationsOrderByDirections,
@@ -133,6 +132,7 @@ export async function createNotification(
 // getNotifications
 export async function getNotifications(
   dbClient: Knex<any, any>,
+  loggedInUser: string,
   catalogClient: CatalogClient,
   filter: NotificationsFilterRequest,
   pageSize: number = DefaultPageSize,
@@ -158,10 +158,6 @@ export async function getNotifications(
     );
   }
 
-  if (!filter.user) {
-    filter.user = DefaultUser;
-  }
-
   const orderBy = sorting.orderBy || DefaultOrderBy;
   const orderByDirec = sorting.OrderByDirec || DefaultOrderDirection;
   if (
@@ -177,9 +173,9 @@ export async function getNotifications(
     );
   }
 
-  const userGroups = await getUserGroups(catalogClient, filter.user);
+  const userGroups = await getUserGroups(catalogClient, loggedInUser);
 
-  const query = createQuery(dbClient, filter, userGroups);
+  const query = createQuery(dbClient, loggedInUser, filter, userGroups);
 
   query.orderBy(orderBy, orderByDirec);
 
@@ -227,6 +223,7 @@ export async function getNotifications(
 
 export async function getNotificationsCount(
   dbClient: Knex<any, any>,
+  loggedInUser: string,
   catalogClient: CatalogClient,
   filter: NotificationsFilterRequest,
 ): Promise<Paths.GetNotificationsCount.Responses.$200> {
@@ -234,13 +231,9 @@ export async function getNotificationsCount(
     filter.messageScope = DefaultMessageScope;
   }
 
-  if (!filter.user) {
-    filter.user = DefaultUser;
-  }
+  const userGroups = await getUserGroups(catalogClient, loggedInUser);
 
-  const userGroups = await getUserGroups(catalogClient, filter.user);
-
-  const query = createQuery(dbClient, filter, userGroups);
+  const query = createQuery(dbClient, loggedInUser, filter, userGroups);
 
   const ret = query.count('* as CNT').then(count => {
     const msgcount = Number.parseInt(count[0].CNT.toString(), 10);
@@ -255,8 +248,8 @@ export async function getNotificationsCount(
 
 export async function setRead(
   dbClient: Knex<any, any>,
+  loggedInUser: string,
   messageId: string,
-  user: string,
   read: boolean,
 ) {
   let isUpdate = false;
@@ -277,7 +270,7 @@ export async function setRead(
   // check user row exists
   await dbClient('users')
     .where('message_id', messageId)
-    .andWhere('user', user)
+    .andWhere('user', loggedInUser)
     .select('*')
     .then(rows => {
       if (!Array.isArray(rows)) {
@@ -294,7 +287,7 @@ export async function setRead(
   if (isInsert) {
     await dbClient('users').insert({
       message_id: messageId,
-      user: user,
+      user: loggedInUser,
       read: read,
     });
   }
@@ -302,13 +295,14 @@ export async function setRead(
   if (isUpdate) {
     await dbClient('users')
       .where('message_id', messageId)
-      .andWhere('user', user)
+      .andWhere('user', loggedInUser)
       .update('read', read);
   }
 }
 
 function createQuery(
   dbClient: Knex<any, any>,
+  loggedInUser: string,
   filter: NotificationsFilterRequest,
   userGroups: string[],
 ) {
@@ -319,7 +313,7 @@ function createQuery(
     function () {
       this.select('*')
         .from('users')
-        .where('users.user', filter.user)
+        .where('users.user', loggedInUser)
         .as('users');
     },
     function () {
@@ -339,7 +333,7 @@ function createQuery(
       this.orWhere(function () {
         this.where('is_system', false).andWhere(function () {
           this.whereIn('id', function () {
-            this.select('message_id').from('users').where('user', filter.user);
+            this.select('message_id').from('users').where('user', loggedInUser);
           });
 
           if (Array.isArray(userGroups) && userGroups.length > 0) {
