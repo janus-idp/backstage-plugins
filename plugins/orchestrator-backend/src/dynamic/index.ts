@@ -21,6 +21,13 @@ export const dynamicPluginInstaller: BackendDynamicPluginInstaller = {
     },
   },
   async catalog(builder, env) {
+    const isIntegrationEnabled = !!env.config.getOptionalBoolean(
+      'orchestrator.catalog.isEnabled',
+    );
+    if (!isIntegrationEnabled) {
+      env.logger.info('The integration with the Catalog plugin is disabled.');
+      return;
+    }
     builder.addEntityProvider(
       await OrchestratorEntityProvider.fromConfig({ ...env }),
     );

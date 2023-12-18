@@ -7,14 +7,21 @@ import {
   TableColumn,
   TableProps,
 } from '@backstage/core-components';
-import { useApi, useRouteRef } from '@backstage/core-plugin-api';
+import {
+  featureFlagsApiRef,
+  useApi,
+  useRouteRef,
+} from '@backstage/core-plugin-api';
 
 import DeleteForever from '@material-ui/icons/DeleteForever';
 import Edit from '@material-ui/icons/Edit';
 import Pageview from '@material-ui/icons/Pageview';
 import PlayArrow from '@material-ui/icons/PlayArrow';
 
-import { WorkflowOverview } from '@janus-idp/backstage-plugin-orchestrator-common';
+import {
+  FEATURE_FLAG_DEVELOPER_MODE,
+  WorkflowOverview,
+} from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { orchestratorApiRef } from '../../api';
 import WorkflowOverviewFormatter, {
@@ -33,11 +40,15 @@ export interface WorkflowsTableProps {
 
 export const WorkflowsTable = ({ items }: WorkflowsTableProps) => {
   const orchestratorApi = useApi(orchestratorApiRef);
+  const featureFlagsApi = useApi(featureFlagsApiRef);
   const navigate = useNavigate();
   const definitionLink = useRouteRef(workflowDefinitionsRouteRef);
   const executeWorkflowLink = useRouteRef(nextExecuteWorkflowRouteRef);
   const editLink = useRouteRef(editWorkflowRouteRef);
   const [data, setData] = useState<FormattedWorkflowOverview[]>([]);
+  const isDeveloperModeOn = featureFlagsApi.isActive(
+    FEATURE_FLAG_DEVELOPER_MODE,
+  );
 
   const initialState = useMemo(
     () => items.map(WorkflowOverviewFormatter.format),
@@ -88,8 +99,8 @@ export const WorkflowsTable = ({ items }: WorkflowsTableProps) => {
     [orchestratorApi],
   );
 
-  const actions: TableProps<FormattedWorkflowOverview>['actions'] = useMemo(
-    () => [
+  const actions = useMemo(() => {
+    const actionItems: TableProps<FormattedWorkflowOverview>['actions'] = [
       {
         icon: PlayArrow,
         tooltip: 'Execute',
@@ -102,21 +113,27 @@ export const WorkflowsTable = ({ items }: WorkflowsTableProps) => {
         onClick: (_, rowData) =>
           handleView(rowData as FormattedWorkflowOverview),
       },
-      {
-        icon: Edit,
-        tooltip: 'Edit',
-        onClick: (_, rowData) =>
-          handleEdit(rowData as FormattedWorkflowOverview),
-      },
-      {
-        icon: DeleteForever,
-        tooltip: 'Delete',
-        onClick: (_, rowData) =>
-          handleDelete(rowData as FormattedWorkflowOverview),
-      },
-    ],
-    [handleDelete, handleEdit, handleExecute, handleView],
-  );
+    ];
+
+    if (isDeveloperModeOn) {
+      actionItems.push(
+        {
+          icon: Edit,
+          tooltip: 'Edit',
+          onClick: (_, rowData) =>
+            handleEdit(rowData as FormattedWorkflowOverview),
+        },
+        {
+          icon: DeleteForever,
+          tooltip: 'Delete',
+          onClick: (_, rowData) =>
+            handleDelete(rowData as FormattedWorkflowOverview),
+        },
+      );
+    }
+
+    return actionItems;
+  }, [handleDelete, handleEdit, handleExecute, handleView, isDeveloperModeOn]);
 
   const columns = useMemo<TableColumn<FormattedWorkflowOverview>[]>(
     () => [

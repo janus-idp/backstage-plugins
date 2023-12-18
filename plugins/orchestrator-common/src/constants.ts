@@ -72,3 +72,5 @@ export const default_workflows_path = 'workflows';
 
 export const ASSESSMENT_WORKFLOW_TYPE = 'workflow-type/assessment';
 export const INFRASTRUCTURE_WORKFLOW_TYPE = 'workflow-type/infrastructure';
+
+export const FEATURE_FLAG_DEVELOPER_MODE = 'developer-mode';

@@ -71,6 +71,11 @@ export interface Config {
      */
     catalog?: {
       /**
+       * Whether to enable the integration with the Catalog plugin.
+       * Default: false
+       */
+      isEnabled?: boolean;
+      /**
        * Owner of workflows to present on the component catalog.
        * Default: infrastructure
        */

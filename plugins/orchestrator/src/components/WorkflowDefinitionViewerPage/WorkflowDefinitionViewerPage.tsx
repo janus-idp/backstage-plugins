@@ -2,8 +2,10 @@ import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAsync } from 'react-use';
 
+import { FeatureFlagged } from '@backstage/core-app-api';
 import { InfoCard } from '@backstage/core-components';
 import {
+  featureFlagsApiRef,
   useApi,
   useRouteRef,
   useRouteRefParams,
@@ -11,6 +13,8 @@ import {
 
 import { Button, Grid } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
+
+import { FEATURE_FLAG_DEVELOPER_MODE } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { orchestratorApiRef } from '../../api';
 import {
@@ -23,6 +27,7 @@ import { EditorViewKind, WorkflowEditor } from '../WorkflowEditor';
 import WorkflowDefinitionDetailsCard from './WorkflowDefinitionDetailsCard';
 
 export const WorkflowDefinitionViewerPage = () => {
+  const featureFlagsApi = useApi(featureFlagsApiRef);
   const { workflowId, format } = useRouteRefParams(workflowDefinitionsRouteRef);
   const orchestratorApi = useApi(orchestratorApiRef);
   const { value: workflowOverview } = useAsync(() =>
@@ -34,6 +39,9 @@ export const WorkflowDefinitionViewerPage = () => {
   const workflowFormat = useMemo(
     () => (format === 'json' ? 'json' : 'yaml'),
     [format],
+  );
+  const isDeveloperModeOn = featureFlagsApi.isActive(
+    FEATURE_FLAG_DEVELOPER_MODE,
   );
 
   const handleExecute = () => {
@@ -55,20 +63,26 @@ export const WorkflowDefinitionViewerPage = () => {
       <Grid container spacing={2} direction="column" wrap="nowrap">
         <Grid container item justifyContent="flex-end" spacing={1}>
           <Grid item>
-            {loading ? (
-              <Skeleton variant="text" width="5rem" />
-            ) : (
-              <Button variant="contained" color="primary" onClick={handleEdit}>
-                Edit
-              </Button>
-            )}
+            <FeatureFlagged with={FEATURE_FLAG_DEVELOPER_MODE}>
+              {loading ? (
+                <Skeleton variant="text" width="5rem" />
+              ) : (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleEdit}
+                >
+                  Edit
+                </Button>
+              )}
+            </FeatureFlagged>
           </Grid>
           <Grid item>
             {loading ? (
               <Skeleton variant="text" width="5rem" />
             ) : (
               <Button
-                variant="outlined"
+                variant={isDeveloperModeOn ? 'outlined' : 'contained'}
                 color="primary"
                 onClick={handleExecute}
               >

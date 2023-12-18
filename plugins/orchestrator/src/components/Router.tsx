@@ -1,6 +1,10 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 
+import { FeatureFlagged } from '@backstage/core-app-api';
+
+import { FEATURE_FLAG_DEVELOPER_MODE } from '@janus-idp/backstage-plugin-orchestrator-common';
+
 import {
   createWorkflowRouteRef,
   editWorkflowRouteRef,
@@ -40,14 +44,29 @@ export const Router = () => {
         path={workflowInstanceRouteRef.path}
         element={<WorkflowInstancesViewerPage />}
       />
-      <Route path={newWorkflowRef.path} element={<NewWorkflowViewerPage />} />
+      <Route
+        path={newWorkflowRef.path}
+        element={
+          <FeatureFlagged with={FEATURE_FLAG_DEVELOPER_MODE}>
+            <NewWorkflowViewerPage />
+          </FeatureFlagged>
+        }
+      />
       <Route
         path={createWorkflowRouteRef.path}
-        element={<CreateWorkflowPage />}
+        element={
+          <FeatureFlagged with={FEATURE_FLAG_DEVELOPER_MODE}>
+            <CreateWorkflowPage />
+          </FeatureFlagged>
+        }
       />
       <Route
         path={editWorkflowRouteRef.path}
-        element={<CreateWorkflowPage />}
+        element={
+          <FeatureFlagged with={FEATURE_FLAG_DEVELOPER_MODE}>
+            <CreateWorkflowPage />
+          </FeatureFlagged>
+        }
       />
       <Route
         path={executeWorkflowRouteRef.path}
