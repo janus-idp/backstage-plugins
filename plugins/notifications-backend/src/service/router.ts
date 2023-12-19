@@ -21,10 +21,9 @@ import { Logger } from 'winston';
 
 import { Paths } from '../openapi';
 import {
-  notificationsCountPermission,
   notificationsCreatePermission,
-  notificationsListPermission,
   notificationsPermissions,
+  notificationsReadPermission,
   notificationsSetReadPermission,
 } from '../permissions';
 import { initDB } from './db';
@@ -167,7 +166,7 @@ export async function createRouter(
     'getNotifications',
     async (c, req: express.Request, res: express.Response, next) => {
       const loggedInUser = await getLoggedInUser(req);
-      await checkPermission(req, notificationsListPermission, loggedInUser);
+      await checkPermission(req, notificationsReadPermission, loggedInUser);
 
       const q: Paths.GetNotifications.QueryParameters = Object.assign(
         {},
@@ -196,7 +195,7 @@ export async function createRouter(
     'getNotificationsCount',
     async (c, req: express.Request, res: express.Response, next) => {
       const loggedInUser = await getLoggedInUser(req);
-      await checkPermission(req, notificationsCountPermission, loggedInUser);
+      await checkPermission(req, notificationsReadPermission, loggedInUser);
 
       const q: Paths.GetNotificationsCount.QueryParameters = Object.assign(
         {},

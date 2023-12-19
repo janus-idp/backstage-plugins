@@ -6,13 +6,8 @@ export const notificationsCreatePermission = createPermission({
   attributes: { action: 'create' },
 });
 
-export const notificationsListPermission = createPermission({
+export const notificationsReadPermission = createPermission({
   name: 'notifications.list',
-  attributes: { action: 'read' },
-});
-
-export const notificationsCountPermission = createPermission({
-  name: 'notifications.count',
   attributes: { action: 'read' },
 });
 
@@ -23,7 +18,6 @@ export const notificationsSetReadPermission = createPermission({
 
 export const notificationsPermissions = [
   notificationsCreatePermission,
-  notificationsListPermission,
-  notificationsCountPermission,
+  notificationsReadPermission,
   notificationsSetReadPermission,
 ];
