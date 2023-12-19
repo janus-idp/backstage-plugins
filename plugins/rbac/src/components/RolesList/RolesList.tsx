@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Table } from '@backstage/core-components';
+import { Table, WarningPanel } from '@backstage/core-components';
 
 import { makeStyles } from '@material-ui/core';
 
@@ -27,12 +27,13 @@ export const RolesList = () => {
 
   const [roles, setRoles] = React.useState<number | undefined>();
   const classes = useStyles();
-  const { loading, data, retry, createRoleAllowed, createRoleLoading } =
+  const { loading, data, retry, createRoleAllowed, createRoleLoading, error } =
     useRoles();
 
   const closeDialog = () => {
     setOpenDialog(false);
-    retry();
+    retry.roleRetry();
+    retry.policiesRetry();
   };
 
   const onAlertClose = () => {
@@ -49,6 +50,19 @@ export const RolesList = () => {
         createRoleAllowed={createRoleAllowed}
         createRoleLoading={createRoleLoading}
       />
+      {(error?.rolesError || error?.policiesError) && (
+        <div style={{ paddingBottom: '16px' }}>
+          <WarningPanel
+            message={error.rolesError || error.policiesError}
+            title={
+              error.rolesError
+                ? 'Something went wrong while fetching the roles'
+                : 'Something went wrong while fetching the permission policies'
+            }
+            severity="error"
+          />
+        </div>
+      )}
       <Table
         title={
           !loading && data?.length
