@@ -8,10 +8,12 @@ const ResourceBadge = ({
   color,
   abbr,
   name,
+  suffix,
 }: {
   color: string;
   abbr: string;
   name: string;
+  suffix?: React.ReactNode;
 }) => {
   return (
     <Split className="bs-tkn-pipeline-visualization__label">
@@ -23,6 +25,11 @@ const ResourceBadge = ({
       <SplitItem>
         <span>{name}</span>
       </SplitItem>
+      {suffix ? (
+        <SplitItem style={{ marginLeft: 'var(--pf-v5-global--spacer--sm)' }}>
+          {suffix}
+        </SplitItem>
+      ) : null}
     </Split>
   );
 };

@@ -1,6 +1,6 @@
 import { RawFetchError } from '@backstage/plugin-kubernetes-common';
 
-import { PipelineRunKind } from '@janus-idp/shared-react';
+import { PipelineRunKind, PipelineRunStatus } from '@janus-idp/shared-react';
 
 import { mockKubernetesPlrResponse } from '../__fixtures__/1-pipelinesData';
 import { kubernetesObjects } from '../__fixtures__/kubernetesObject';
@@ -235,5 +235,96 @@ describe('tekton-utils', () => {
       getComparator('asc', 'status.completionTime', 'duration'),
     );
     expect(sortedData[0].metadata?.name).toBe('ruby-ex-git-xf45fo');
+  });
+  it('should be able to sort pipelineRunsData in ascending order based on pipelinerun vulnerabilities', () => {
+    const mockPipelineRun: PipelineRunKind =
+      mockKubernetesPlrResponse.pipelineruns[1];
+
+    const pipelineRunA: PipelineRunKind = {
+      ...mockPipelineRun,
+      metadata: { ...mockPipelineRun.metadata, name: 'A' },
+      status: {
+        ...mockPipelineRun.status,
+        results: [
+          {
+            name: 'SCAN_OUTPUT',
+            value:
+              '{"vulnerabilities":{\n"critical": 13,\n"high": 29,\n"medium": 32,\n"low": 3,\n"unknown": 0}\n}\n',
+          },
+        ],
+      } as PipelineRunStatus,
+    };
+    const pipelineRunB: PipelineRunKind = {
+      ...mockPipelineRun,
+      metadata: { ...mockPipelineRun.metadata, name: 'B' },
+      status: {
+        ...mockPipelineRun.status,
+        results: [
+          {
+            name: 'SCAN_OUTPUT',
+            value:
+              '{"vulnerabilities":{\n"critical": 1,\n"high": 29,\n"medium": 32,\n"low": 3,\n"unknown": 0}\n}\n',
+          },
+        ],
+      } as PipelineRunStatus,
+    };
+    const pipelineRuns = [pipelineRunA, pipelineRunB];
+
+    let sortedData: PipelineRunKind[] = Array.from(pipelineRuns).sort(
+      getComparator('asc', 'status.results', 'vulnerabilities'),
+    );
+    expect(sortedData[0].metadata?.name).toBe('B');
+    sortedData = Array.from(pipelineRuns).sort(
+      getComparator('desc', 'status.results', 'vulnerabilities'),
+    );
+    expect(sortedData[0].metadata?.name).toBe('A');
+
+    pipelineRunB.status!.results = [
+      {
+        name: 'SCAN_OUTPUT',
+        value:
+          '{"vulnerabilities":{\n"critical": 13,\n"high": 30,\n"medium": 2,\n"low": 2,\n"unknown": 0}\n}\n',
+      },
+    ];
+    sortedData = Array.from(pipelineRuns).sort(
+      getComparator('asc', 'status.results', 'vulnerabilities'),
+    );
+    expect(sortedData[0].metadata?.name).toBe('A');
+    sortedData = Array.from(pipelineRuns).sort(
+      getComparator('desc', 'status.results', 'vulnerabilities'),
+    );
+    expect(sortedData[0].metadata?.name).toBe('B');
+
+    pipelineRunB.status!.results = [
+      {
+        name: 'SCAN_OUTPUT',
+        value:
+          '{"vulnerabilities":{\n"critical": 13,\n"high": 29,\n"medium": 33,\n"low": 2,\n"unknown": 0}\n}\n',
+      },
+    ];
+    sortedData = Array.from(pipelineRuns).sort(
+      getComparator('asc', 'status.results', 'vulnerabilities'),
+    );
+    expect(sortedData[0].metadata?.name).toBe('A');
+    sortedData = Array.from(pipelineRuns).sort(
+      getComparator('desc', 'status.results', 'vulnerabilities'),
+    );
+    expect(sortedData[0].metadata?.name).toBe('B');
+
+    pipelineRunB.status!.results = [
+      {
+        name: 'SCAN_OUTPUT',
+        value:
+          '{"vulnerabilities":{\n"critical": 13,\n"high": 29,\n"medium": 32,\n"low": 4,\n"unknown": 0}\n}\n',
+      },
+    ];
+    sortedData = Array.from(pipelineRuns).sort(
+      getComparator('asc', 'status.results', 'vulnerabilities'),
+    );
+    expect(sortedData[0].metadata?.name).toBe('A');
+    sortedData = Array.from(pipelineRuns).sort(
+      getComparator('desc', 'status.results', 'vulnerabilities'),
+    );
+    expect(sortedData[0].metadata?.name).toBe('B');
   });
 });

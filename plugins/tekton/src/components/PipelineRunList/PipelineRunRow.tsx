@@ -11,15 +11,18 @@ import {
 } from '@material-ui/core';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
-import { Timestamp } from '@patternfly/react-core';
+import { Timestamp, Tooltip } from '@patternfly/react-core';
 
 import { PipelineRunKind } from '@janus-idp/shared-react';
 
+import { TEKTON_SIGNED_ANNOTATION } from '../../consts/tekton-const';
 import { OpenRowStatus, tektonGroupColor } from '../../types/types';
+import { signedBadgeSrc } from '../../utils/image-utils';
 import { pipelineRunDuration } from '../../utils/tekton-utils';
 import { PipelineRunVisualization } from '../pipeline-topology';
 import PipelineRunRowActions from './PipelineRunRowActions';
 import PipelineRunTaskStatus from './PipelineRunTaskStatus';
+import PipelineRunVulnerabilities from './PipelineRunVulnerabilities';
 import PlrStatus from './PlrStatus';
 import ResourceBadge from './ResourceBadge';
 
@@ -34,6 +37,12 @@ const useStyles = makeStyles((theme: Theme) => ({
   plrVisRow: {
     borderBottom: `1px solid ${theme.palette.grey.A100}`,
   },
+  signedIndicator: {
+    display: 'inline-block',
+    width: theme.spacing(2.5),
+    position: 'relative',
+    top: theme.spacing(0.5),
+  },
 }));
 
 type PipelineRunRowProps = {
@@ -47,12 +56,28 @@ type PipelineRunRowProps = {
 type PipelineRunNameProps = { row: PipelineRunKind };
 
 const PipelineRunName = ({ row }: PipelineRunNameProps) => {
+  const classes = useStyles();
   const name = row.metadata?.name;
+  const signed =
+    row?.metadata?.annotations?.[TEKTON_SIGNED_ANNOTATION] === 'true';
 
   return (
     <div>
       {name ? (
-        <ResourceBadge color={tektonGroupColor} abbr="PLR" name={name || ''} />
+        <ResourceBadge
+          color={tektonGroupColor}
+          abbr="PLR"
+          name={name || ''}
+          suffix={
+            signed ? (
+              <Tooltip content="Signed">
+                <div className={classes.signedIndicator}>
+                  <img src={signedBadgeSrc} alt="Signed" />
+                </div>
+              </Tooltip>
+            ) : null
+          }
+        />
       ) : (
         '-'
       )}
@@ -104,6 +129,9 @@ export const PipelineRunRow = ({
         </TableCell>
         <TableCell align="left">
           <PipelineRunName row={row} />
+        </TableCell>
+        <TableCell align="left">
+          <PipelineRunVulnerabilities pipelineRun={row} condensed />
         </TableCell>
         <TableCell align="left">
           <PlrStatus obj={row} />

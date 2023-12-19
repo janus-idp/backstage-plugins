@@ -1,11 +1,18 @@
 import { TableColumn } from '@backstage/core-components';
 
 export const PipelineRunColumnHeader: TableColumn[] = [
-  {},
+  {
+    id: 'expander',
+  },
   {
     id: 'name',
     title: 'NAME',
     field: 'metadata.name',
+  },
+  {
+    id: 'vulnerabilities',
+    title: 'VULNERABILITIES',
+    field: 'status.results',
   },
   {
     id: 'status',
