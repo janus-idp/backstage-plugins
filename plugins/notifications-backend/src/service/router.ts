@@ -1,6 +1,7 @@
+import { TokenManager } from '@backstage/backend-common';
 import { CatalogClient } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
-import { NotAllowedError } from '@backstage/errors';
+import { AuthenticationError, NotAllowedError } from '@backstage/errors';
 import {
   getBearerTokenFromAuthorizationHeader,
   IdentityApi,
@@ -33,7 +34,7 @@ import {
   getNotificationsCount,
   setRead,
 } from './handlers';
-import { DefaultUser } from './types';
+import { DefaultServiceUser } from './types';
 
 interface RouterOptions {
   logger: Logger;
@@ -41,19 +42,31 @@ interface RouterOptions {
   catalogClient: CatalogClient;
   identity: IdentityApi;
   permissions: PermissionEvaluator;
+  tokenManager: TokenManager;
+  notificationsServiceToServiceAuthEnabled: boolean;
 }
 
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { logger, dbConfig, catalogClient, identity, permissions } = options;
+  const {
+    logger,
+    dbConfig,
+    catalogClient,
+    identity,
+    permissions,
+    tokenManager,
+    notificationsServiceToServiceAuthEnabled,
+  } = options;
 
   /*
    * User's entity must be present in the catalog.
-   * To properly set identity, see packages/backend/src/plugins/auth.ts or https://backstage.io/docs/auth/identity-resolver
    */
-  const getLoggedInUser = (request: express.Request): Promise<string> =>
-    identity.getIdentity({ request }).then(identityResponse => {
+  const getLoggedInUser = async (request: express.Request): Promise<string> => {
+    const identityResponse = await identity.getIdentity({ request });
+
+    // To properly set identity, see packages/backend/src/plugins/auth.ts or https://backstage.io/docs/auth/identity-resolver
+    if (identityResponse) {
       // user:default/guest
       let author = identityResponse?.identity.userEntityRef;
       if (author) {
@@ -61,12 +74,33 @@ export async function createRouter(
           author = author.slice('user:'.length);
         }
       } else {
-        logger.warn(
-          `Can not find user in the catalog, using "${DefaultUser}" instead`,
+        throw new AuthenticationError(
+          'Missing valid authentication data or the user is not in the Catalog.',
         );
       }
-      return author || DefaultUser;
-    });
+      return author;
+    }
+
+    if (notificationsServiceToServiceAuthEnabled) {
+      logger.info(
+        'Identity not found for the request, trying to authorize service-to-service.',
+      );
+      const token = getBearerTokenFromAuthorizationHeader(
+        request.header('authorization'),
+      );
+      if (!token) {
+        throw new AuthenticationError(
+          'Missing authorization token in the request.',
+        );
+      }
+      await tokenManager.authenticate(token);
+    }
+
+    logger.info(
+      `Identity not found for the request. Since the service to service authentication is disabled, using default service user "${DefaultServiceUser}" instead.`,
+    );
+    return DefaultServiceUser;
+  };
 
   const checkPermission = async (
     request: express.Request,

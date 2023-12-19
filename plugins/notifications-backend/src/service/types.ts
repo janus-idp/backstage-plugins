@@ -48,7 +48,7 @@ export const NotificationsOrderByDirections: string[] = ['asc', 'desc'];
  */
 export const MessageScopes = ['all', 'user', 'system'];
 
-export const DefaultUser = 'default/guest';
+export const DefaultServiceUser = 'default/externalServiceNotificationsUser';
 export const DefaultMessageScope = 'user';
 export const DefaultPageNumber = 1;
 export const DefaultPageSize = 20;
