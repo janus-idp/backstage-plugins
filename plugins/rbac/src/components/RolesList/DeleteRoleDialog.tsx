@@ -22,6 +22,7 @@ import { Alert } from '@material-ui/lab';
 import { RoleBasedPolicy } from '@janus-idp/backstage-plugin-rbac-common';
 
 import { rbacApiRef } from '../../api/RBACBackendClient';
+import { RoleError } from '../../types';
 import { getMembers } from '../../utils/rbac-utils';
 import { useToast } from '../ToastContext';
 
@@ -68,22 +69,23 @@ const DeleteRoleDialog = ({
   const deleteRole = async () => {
     try {
       const policies = await rbacApi.getAssociatedPolicies(roleName);
-      let cleanupPoliciesResponse;
       if (Array.isArray(policies)) {
         const allowedPolicies = policies.filter(
           (policy: RoleBasedPolicy) => policy.effect !== 'deny',
         );
         if (allowedPolicies.length > 0) {
-          cleanupPoliciesResponse = await rbacApi.deletePolicies(
+          const cleanupPoliciesResponse = await rbacApi.deletePolicies(
             roleName,
             allowedPolicies,
           );
-        }
-        if (cleanupPoliciesResponse && !cleanupPoliciesResponse.ok) {
-          setError(
-            `Unable to delete Policies. ${cleanupPoliciesResponse.statusText}`,
-          );
-          return;
+          if ((cleanupPoliciesResponse as unknown as RoleError)?.error) {
+            setError(
+              `Unable to delete policies. ${
+                (cleanupPoliciesResponse as unknown as RoleError).error.message
+              }`,
+            );
+            return;
+          }
         }
       }
 

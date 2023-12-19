@@ -6,6 +6,7 @@ import {
   Role,
   RoleBasedPolicy,
 } from '@janus-idp/backstage-plugin-rbac-common';
+import { getTitleCase } from '@janus-idp/shared-react';
 
 import {
   PermissionPolicies,
@@ -87,7 +88,7 @@ export const getPermissionPolicies = (
       [policy.permission as string]: uniqBy(
         policies.reduce((policiesAcc: any, pol) => {
           if (pol.permission === policy.permission)
-            return [...policiesAcc, pol.policy];
+            return [...policiesAcc, getTitleCase(pol.policy as string)];
           return policiesAcc;
         }, []),
         val => val,
@@ -126,20 +127,20 @@ export const getPluginsPermissionPoliciesData = (
 export const getPermissionPoliciesData = (
   values: RoleFormValues,
 ): RoleBasedPolicy[] => {
-  const { name, namespace, permissionPoliciesRows } = values;
+  const { kind, name, namespace, permissionPoliciesRows } = values;
 
   return permissionPoliciesRows.reduce(
     (acc: RoleBasedPolicy[], permissionPolicyRow) => {
       const { permission, policies } = permissionPolicyRow;
       const permissionPoliciesData = policies.reduce(
         (pAcc: RoleBasedPolicy[], policy) => {
-          if (policy.checked) {
+          if (policy.effect === 'allow') {
             return [
               ...pAcc,
               {
-                entityReference: `role:${namespace}/${name}`,
+                entityReference: `${kind}:${namespace}/${name}`,
                 permission: `${permission}`,
-                policy: policy.label.toLowerCase(),
+                policy: policy.policy.toLowerCase(),
                 effect: 'allow',
               },
             ];

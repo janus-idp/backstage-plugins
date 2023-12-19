@@ -1,4 +1,7 @@
+import { PermissionsData } from '../../types';
+
 export type SelectedMember = {
+  id?: string;
   label: string;
   etag: string;
   namespace?: string;
@@ -8,12 +11,9 @@ export type SelectedMember = {
   ref: string;
 };
 
-export type RowPolicy = { label: string; checked: boolean };
-
-export type PermissionPolicyRow = {
-  plugin: string;
-  permission: string;
-  policies: RowPolicy[];
+export type RowPolicy = {
+  policy: string;
+  effect: string;
 };
 
 export type RoleFormValues = {
@@ -22,7 +22,7 @@ export type RoleFormValues = {
   kind: string;
   description?: string;
   selectedMembers: SelectedMember[];
-  permissionPoliciesRows: PermissionPolicyRow[];
+  permissionPoliciesRows: PermissionsData[];
 };
 
 export type PermissionPolicies = { [permission: string]: string[] };

@@ -18,16 +18,16 @@ export const columns: TableColumn<PermissionsData>[] = [
     field: 'policyString',
     type: 'string',
     customSort: (a, b) => {
-      if (a.policies.size === 0) {
+      if (a.policies.length === 0) {
         return -1;
       }
-      if (b.policies.size === 0) {
+      if (b.policies.length === 0) {
         return 1;
       }
-      if (a.policies.size === b.policies.size) {
+      if (a.policies.length === b.policies.length) {
         return 0;
       }
-      return a.policies.size < b.policies.size ? -1 : 1;
+      return a.policies.length < b.policies.length ? -1 : 1;
     },
   },
 ];

@@ -7,11 +7,18 @@ import {
 
 import {
   PermissionPolicy,
+  Policy,
   RoleBasedPolicy,
 } from '@janus-idp/backstage-plugin-rbac-common';
+import { getTitleCase } from '@janus-idp/shared-react';
 
-import { SelectedMember } from '../components/CreateRole/types';
-import { MemberEntity, MembersData, PermissionsData } from '../types';
+import { RowPolicy, SelectedMember } from '../components/CreateRole/types';
+import {
+  MemberEntity,
+  MembersData,
+  PermissionsData,
+  PermissionsDataSet,
+} from '../types';
 import { getMembersCount } from './create-role-utils';
 
 export const getPermissions = (
@@ -93,44 +100,89 @@ export const getPluginId = (
   permissions.find(p => p.policies?.find(pol => pol.permission === permission))
     ?.pluginId || '-';
 
+const getPolicy = (str: string) => {
+  const arr = str.split('.');
+  return arr[arr.length - 1];
+};
+
+const getAllPolicies = (
+  permission: string,
+  allowedPolicies: RowPolicy[],
+  policies: Policy[],
+) => {
+  const deniedPolicies = policies?.reduce((acc, p) => {
+    if (
+      permission === p.permission &&
+      !allowedPolicies.find(
+        allowedPolicy =>
+          allowedPolicy.policy.toLowerCase() === p.policy?.toLowerCase(),
+      )
+    ) {
+      acc.push({
+        policy: getTitleCase(p.policy as string) || 'Use',
+        effect: 'deny',
+      });
+    }
+    return acc;
+  }, [] as RowPolicy[]);
+  return [...(allowedPolicies || []), ...(deniedPolicies || [])];
+};
+
 export const getPermissionsData = (
   policies: RoleBasedPolicy[],
   permissionPolicies: PermissionPolicy[],
-): PermissionsData[] =>
-  policies.reduce((acc: PermissionsData[], policy: RoleBasedPolicy) => {
-    if (policy?.effect === 'allow') {
-      const permission = acc.find(
-        plugin =>
-          plugin.permission === policy.permission &&
-          !plugin.policies.has({
-            policy: policy?.policy || 'use',
-            effect: 'allow',
-          }),
-      );
-      if (permission) {
-        permission.policyString.add(
-          policy.policy ? `, ${policy.policy}` : ', use',
+): PermissionsData[] => {
+  const data = policies.reduce(
+    (acc: PermissionsDataSet[], policy: RoleBasedPolicy) => {
+      if (policy?.effect === 'allow') {
+        const policyStr =
+          policy?.policy || getPolicy(policy.permission as string);
+        const policyTitleCase = getTitleCase(policyStr);
+        const permission = acc.find(
+          plugin =>
+            plugin.permission === policy.permission &&
+            !plugin.policies.has({
+              policy: policyTitleCase || 'Use',
+              effect: 'allow',
+            }),
         );
-        permission.policies.add({
-          policy: policy.policy || 'use',
-          effect: policy.effect,
-        });
-      } else {
-        const policyString = new Set<string>();
-        const policiesSet = new Set<{ policy: string; effect: string }>();
-        acc.push({
-          permission: policy.permission || '-',
-          plugin: getPluginId(permissionPolicies, policy?.permission) || '-',
-          policyString: policyString.add(policy.policy || 'use'),
-          policies: policiesSet.add({
-            policy: policy.policy || 'use',
+        if (permission) {
+          permission.policyString?.add(
+            policyTitleCase ? `, ${policyTitleCase}` : ', Use',
+          );
+          permission.policies.add({
+            policy: policyTitleCase || 'Use',
             effect: policy.effect,
-          }),
-        });
+          });
+        } else {
+          const policyString = new Set<string>();
+          const policiesSet = new Set<{ policy: string; effect: string }>();
+          acc.push({
+            permission: policy.permission || '-',
+            plugin: getPluginId(permissionPolicies, policy?.permission) || '-',
+            policyString: policyString.add(policyTitleCase || 'Use'),
+            policies: policiesSet.add({
+              policy: policyTitleCase || 'Use',
+              effect: policy.effect,
+            }),
+          });
+        }
       }
-    }
-    return acc;
-  }, []);
+      return acc;
+    },
+    [],
+  );
+  return data.map((p: PermissionsDataSet) => ({
+    ...p,
+    ...(p.policyString ? { policyString: Array.from(p.policyString) } : {}),
+    policies: getAllPolicies(
+      p.permission,
+      Array.from(p.policies),
+      permissionPolicies.find(pp => pp.pluginId === p.plugin)
+        ?.policies as Policy[],
+    ),
+  })) as PermissionsData[];
+};
 
 export const getKindNamespaceName = (roleRef: string) => {
   const refs: string[] = roleRef.split(':');
@@ -146,6 +198,7 @@ export const getSelectedMember = (
 ): SelectedMember => {
   if (memberResource) {
     return {
+      id: memberResource.metadata.etag as string,
       ref: stringifyEntityRef(memberResource),
       label:
         memberResource.spec.profile?.displayName ??
@@ -158,6 +211,7 @@ export const getSelectedMember = (
   } else if (ref) {
     const { kind, namespace, name } = getKindNamespaceName(ref);
     return {
+      id: `${kind}-${namespace}-${name}`,
       ref,
       label: name,
       etag: `${kind}-${namespace}-${name}`,
@@ -168,3 +222,22 @@ export const getSelectedMember = (
   }
   return {} as SelectedMember;
 };
+
+export const isSamePermissionPolicy = (
+  a: RoleBasedPolicy,
+  b: RoleBasedPolicy,
+) =>
+  a.entityReference === b.entityReference &&
+  a.permission === b.permission &&
+  a.policy === b.policy &&
+  a.effect === b.effect;
+
+export const onlyInLeft = (
+  left: RoleBasedPolicy[],
+  right: RoleBasedPolicy[],
+  compareFunction: (a: RoleBasedPolicy, b: RoleBasedPolicy) => boolean,
+) =>
+  left.filter(
+    leftValue =>
+      !right.some(rightValue => compareFunction(leftValue, rightValue)),
+  );

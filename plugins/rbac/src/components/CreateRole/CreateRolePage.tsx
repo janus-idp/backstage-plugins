@@ -45,7 +45,7 @@ export const CreateRolePage = () => {
               formTitle: 'Create Role',
               nameAndDescriptionTitle: 'Enter name and description of role ',
               usersAndGroupsTitle: 'Add users and groups',
-              permissionPoliciesTitle: '',
+              permissionPoliciesTitle: 'Add permission policies',
             }}
             membersData={{
               members: Array.isArray(members)

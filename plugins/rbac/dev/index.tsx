@@ -9,7 +9,6 @@ import { TestApiProvider } from '@backstage/test-utils';
 
 import {
   PermissionPolicy,
-  Policy,
   Role,
   RoleBasedPolicy,
 } from '@janus-idp/backstage-plugin-rbac-common';
@@ -71,9 +70,10 @@ class MockRBACApi implements RBACAPI {
     return { status: 200 } as Response;
   }
 
-  async updatePolicy(
-    _oldPolicy: RoleBasedPolicy,
-    _newPolicy: RoleBasedPolicy,
+  async updatePolicies(
+    _entityReference: string,
+    _oldPolicies: RoleBasedPolicy[],
+    _newPolicies: RoleBasedPolicy[],
   ): Promise<Response> {
     return { status: 204 } as Response;
   }
@@ -92,7 +92,7 @@ class MockRBACApi implements RBACAPI {
 
   async deletePolicies(
     _entityRef: string,
-    _policies: Policy[],
+    _policies: RoleBasedPolicy[],
   ): Promise<Response> {
     return {
       ok: true,
@@ -105,7 +105,7 @@ class MockRBACApi implements RBACAPI {
     return { status: 200 } as Response;
   }
 
-  async createPolicy(_data: any): Promise<Response> {
+  async createPolicies(_policies: RoleBasedPolicy[]): Promise<Response> {
     return { status: 200 } as Response;
   }
 }

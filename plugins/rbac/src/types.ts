@@ -1,5 +1,7 @@
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 
+import { RowPolicy } from './components/CreateRole/types';
+
 export type RolesData = {
   name: string;
   description: string;
@@ -24,13 +26,20 @@ export type MembersData = {
   };
 };
 
+export type PermissionsDataSet = {
+  plugin: string;
+  permission: string;
+  policies: Set<RowPolicy>;
+  policyString?: Set<string>;
+};
+
 export type PermissionsData = {
   plugin: string;
   permission: string;
-  policies: Set<{ policy: string; effect: string }>;
-  policyString: Set<string>;
+  policies: RowPolicy[];
+  policyString?: string[];
 };
 
 export type MemberEntity = UserEntity | GroupEntity;
 
-export type CreateRoleError = { error: { name: string; message: string } };
+export type RoleError = { error: { name: string; message: string } };

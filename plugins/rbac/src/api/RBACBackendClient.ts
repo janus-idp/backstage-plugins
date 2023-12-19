@@ -6,12 +6,11 @@ import {
 
 import {
   PermissionPolicy,
-  Policy,
   Role,
   RoleBasedPolicy,
 } from '@janus-idp/backstage-plugin-rbac-common';
 
-import { CreateRoleError, MemberEntity } from '../types';
+import { MemberEntity, RoleError } from '../types';
 import { getKindNamespaceName } from '../utils/rbac-utils';
 
 // @public
@@ -23,17 +22,21 @@ export type RBACAPI = {
     entityReference: string,
   ) => Promise<RoleBasedPolicy[] | Response>;
   deleteRole: (role: string) => Promise<Response>;
-  deletePolicies: (role: string, policy: Policy[]) => Promise<Response>;
   getRole: (role: string) => Promise<Role[] | Response>;
   getMembers: () => Promise<MemberEntity[] | Response>;
-  listPermissions: () => Promise<PermissionPolicy[]>;
-  createRole: (role: Role) => Promise<CreateRoleError | Response>;
-  updateRole: (oldRole: Role, newRole: Role) => Promise<Response>;
-  updatePolicy: (
-    oldPolicy: RoleBasedPolicy,
-    newPolicy: RoleBasedPolicy,
-  ) => Promise<Response>;
-  createPolicy: (data: any) => Promise<Response>;
+  listPermissions: () => Promise<PermissionPolicy[] | Response>;
+  createRole: (role: Role) => Promise<RoleError | Response>;
+  updateRole: (oldRole: Role, newRole: Role) => Promise<RoleError | Response>;
+  updatePolicies: (
+    entityReference: string,
+    oldPolicy: RoleBasedPolicy[],
+    newPolicy: RoleBasedPolicy[],
+  ) => Promise<RoleError | Response>;
+  createPolicies: (polices: RoleBasedPolicy[]) => Promise<RoleError | Response>;
+  deletePolicies: (
+    entityReference: string,
+    polices: RoleBasedPolicy[],
+  ) => Promise<RoleError | Response>;
 };
 
 export type Options = {
@@ -176,6 +179,9 @@ export class RBACBackendClient implements RBACAPI {
         },
       },
     );
+    if (jsonResponse.status !== 200 && jsonResponse.status !== 204) {
+      return jsonResponse;
+    }
     return jsonResponse.json();
   }
 
@@ -217,21 +223,27 @@ export class RBACBackendClient implements RBACAPI {
         body: JSON.stringify(body),
       },
     );
-    if (jsonResponse.status !== 200 && jsonResponse.status !== 201) {
+    if (
+      jsonResponse.status !== 200 &&
+      jsonResponse.status !== 201 &&
+      jsonResponse.status !== 204
+    ) {
       return jsonResponse.json();
     }
     return jsonResponse;
   }
 
-  async updatePolicy(oldPolicy: RoleBasedPolicy, newPolicy: RoleBasedPolicy) {
+  async updatePolicies(
+    entityReference: string,
+    oldPolicies: RoleBasedPolicy[],
+    newPolicies: RoleBasedPolicy[],
+  ) {
     const { token: idToken } = await this.identityApi.getCredentials();
     const backendUrl = this.configApi.getString('backend.baseUrl');
-    const { kind, namespace, name } = getKindNamespaceName(
-      oldPolicy.entityReference as string,
-    );
+    const { kind, namespace, name } = getKindNamespaceName(entityReference);
     const body = {
-      oldPolicy,
-      newPolicy,
+      oldPolicy: oldPolicies,
+      newPolicy: newPolicies,
     };
     const jsonResponse = await fetch(
       `${backendUrl}/api/permission/policies/${kind}/${namespace}/${name}`,
@@ -251,7 +263,7 @@ export class RBACBackendClient implements RBACAPI {
     return jsonResponse;
   }
 
-  async deletePolicies(entityReference: string, policies: Policy[]) {
+  async deletePolicies(entityReference: string, policies: RoleBasedPolicy[]) {
     const { token: idToken } = await this.identityApi.getCredentials();
     const backendUrl = this.configApi.getString('backend.baseUrl');
     const { kind, namespace, name } = getKindNamespaceName(entityReference);
@@ -267,10 +279,18 @@ export class RBACBackendClient implements RBACAPI {
         method: 'DELETE',
       },
     );
+
+    if (
+      jsonResponse.status !== 200 &&
+      jsonResponse.status !== 201 &&
+      jsonResponse.status !== 204
+    ) {
+      return jsonResponse.json();
+    }
     return jsonResponse;
   }
 
-  async createPolicy(data: RoleBasedPolicy[]) {
+  async createPolicies(policies: RoleBasedPolicy[]) {
     const { token: idToken } = await this.identityApi.getCredentials();
     const backendUrl = this.configApi.getString('backend.baseUrl');
     const jsonResponse = await fetch(`${backendUrl}/api/permission/policies`, {
@@ -280,7 +300,7 @@ export class RBACBackendClient implements RBACAPI {
         Accept: 'application/json',
         ...(idToken && { Authorization: `Bearer ${idToken}` }),
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify(policies),
     });
     if (jsonResponse.status !== 200 && jsonResponse.status !== 201) {
       return jsonResponse.json();

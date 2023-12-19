@@ -47,17 +47,21 @@ export const AddMembersForm = ({
   };
 
   const membersOptions: SelectedMember[] = membersData.members
-    ? membersData.members.map((member: MemberEntity, index: number) => ({
-        label: member.spec?.profile?.displayName ?? member.metadata.name,
-        description: getDescription(member),
-        etag:
+    ? membersData.members.map((member: MemberEntity, index: number) => {
+        const tag =
           member.metadata.etag ??
-          `${member.metadata.name}-${member.kind}-${index}`,
-        type: member.kind,
-        namespace: member.metadata.namespace,
-        members: getMembersCount(member),
-        ref: stringifyEntityRef(member),
-      }))
+          `${member.metadata.name}-${member.kind}-${index}`;
+        return {
+          id: tag,
+          label: member.spec?.profile?.displayName ?? member.metadata.name,
+          description: getDescription(member),
+          etag: tag,
+          type: member.kind,
+          namespace: member.metadata.namespace,
+          members: getMembersCount(member),
+          ref: stringifyEntityRef(member),
+        };
+      })
     : ([] as SelectedMember[]);
 
   return (
