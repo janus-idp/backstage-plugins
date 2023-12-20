@@ -1,4 +1,5 @@
 import { errorHandler } from '@backstage/backend-common';
+import { Config } from '@backstage/config';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { ScmIntegrations } from '@backstage/integration';
 import { JsonObject, JsonValue } from '@backstage/types';
@@ -6,17 +7,19 @@ import { JsonObject, JsonValue } from '@backstage/types';
 import express from 'express';
 import Router from 'express-promise-router';
 import { JSONSchema7 } from 'json-schema';
+import { OpenAPIBackend, Request } from 'openapi-backend';
+import { Logger } from 'winston';
 
 import {
   fromWorkflowSource,
   ORCHESTRATOR_SERVICE_READY_TOPIC,
   WorkflowDataInputSchemaResponse,
-  WorkflowDefinition,
-  WorkflowInfo,
   WorkflowItem,
   WorkflowListResult,
   WorkflowOverviewListResult,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
+
+import path from 'path';
 
 import { RouterArgs } from '../routerWrapper';
 import { ApiResponseBuilder } from '../types/apiResponse';
@@ -37,6 +40,42 @@ export async function createBackendRouter(
 ): Promise<express.Router> {
   const { eventBroker, config, logger, discovery, catalogApi, urlReader } =
     args;
+
+  // Avoid hard coded path
+  // https://issues.redhat.com/browse/FLPATH-932
+  const openapiFolderPath = path.join(
+    process.cwd(),
+    '..',
+    '..',
+    'plugins',
+    'orchestrator-common',
+    'api',
+  );
+  const api = new OpenAPIBackend({
+    definition: path.join(openapiFolderPath, 'openapi.yaml'),
+    strict: false,
+    ajvOpts: {
+      strict: false,
+      strictSchema: false,
+      verbose: true,
+      addUsedSchema: false,
+    },
+    handlers: {
+      validationFail: async (
+        c,
+        req: express.Request,
+        res: express.Response,
+      ) => {
+        console.log('validationFail', c.operation);
+        res.status(400).json({ err: c.validation.errors });
+      },
+      notFound: async (c, req: express.Request, res: express.Response) =>
+        res.status(404).json({ err: 'not found' }),
+      notImplemented: async (c, req: express.Request, res: express.Response) =>
+        res.status(500).json({ err: 'not implemented' }),
+    },
+  });
+  await api.init();
 
   const router = Router();
   router.use(express.json());
@@ -100,8 +139,32 @@ export async function createBackendRouter(
     eventPayload: {},
   });
 
+  router.use((req, res, next) => {
+    if (!next) {
+      throw new Error('next is undefined');
+    }
+
+    // const validation = api.validateRequest(req as Request);
+    // if (!validation.valid) {
+    //   console.log('errors: ', validation.errors);
+    //   throw validation.errors;
+    // }
+
+    api.handleRequest(req as Request, req, res, next);
+  });
+
   router.use(errorHandler());
   return router;
+}
+
+function initDataIndexService(logger: Logger, config: Config) {
+  const dataIndexUrl =
+    config.getOptionalString('orchestrator.dataIndexService.url') ||
+    DEFAULT_DATA_INDEX_URL;
+  const client = DataIndexService.getNewGraphQLClient(dataIndexUrl);
+  const backendExecCtx = new BackendExecCtx(logger, client, dataIndexUrl);
+
+  DataIndexService.initialize(backendExecCtx);
 }
 
 // ======================================================
