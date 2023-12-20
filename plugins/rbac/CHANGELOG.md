@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac [1.8.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.7.0...@janus-idp/backstage-plugin-rbac@1.8.0) (2023-12-20)
+
+
+### Features
+
+* **rbac:** cleanup policies when a role is deleted ([#1018](https://github.com/janus-idp/backstage-plugins/issues/1018)) ([fb0ee8c](https://github.com/janus-idp/backstage-plugins/commit/fb0ee8c269892f6c2ccaea69754a9dda653d4fcb))
+
 ## @janus-idp/backstage-plugin-rbac [1.7.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.6.0...@janus-idp/backstage-plugin-rbac@1.7.0) (2023-12-15)
 
 
