@@ -63,7 +63,7 @@ describe('RolesList', () => {
     mockUseRoles.mockReturnValue({
       loading: false,
       data: useRolesMockData,
-      retry: () => {},
+      retry: jest.fn(),
       createRoleAllowed: false,
     });
     const { queryByText } = await renderInTestApp(<RolesList />);
@@ -79,7 +79,7 @@ describe('RolesList', () => {
     mockUseRoles.mockReturnValue({
       loading: false,
       data: [],
-      retry: () => {},
+      retry: jest.fn(),
       createRoleAllowed: false,
     });
     const { getByTestId } = await renderInTestApp(<RolesList />);
@@ -94,7 +94,7 @@ describe('RolesList', () => {
     mockUseRoles.mockReturnValue({
       loading: false,
       data: useRolesMockData,
-      retry: () => {},
+      retry: jest.fn(),
       createRoleAllowed: false,
     });
     const { getAllByTestId, getByText } = await renderInTestApp(<RolesList />);
@@ -125,7 +125,7 @@ describe('RolesList', () => {
           },
         },
       ],
-      retry: () => {},
+      retry: jest.fn(),
       createRoleAllowed: false,
     });
     const { getAllByTestId } = await renderInTestApp(<RolesList />);
@@ -156,7 +156,7 @@ describe('RolesList', () => {
           },
         },
       ],
-      retry: () => {},
+      retry: jest.fn(),
       createRoleAllowed: true,
     });
     const { getAllByTestId } = await renderInTestApp(<RolesList />);
@@ -170,7 +170,7 @@ describe('RolesList', () => {
     mockUseRoles.mockReturnValue({
       loading: false,
       data: useRolesMockData,
-      retry: () => {},
+      retry: jest.fn(),
       createRoleAllowed: false,
     });
     const { getByTestId } = await renderInTestApp(<RolesList />);
@@ -186,7 +186,7 @@ describe('RolesList', () => {
     mockUseRoles.mockReturnValue({
       loading: false,
       data: useRolesMockData,
-      retry: () => {},
+      retry: jest.fn(),
       createRoleAllowed: true,
     });
     const { getByTestId } = await renderInTestApp(<RolesList />);

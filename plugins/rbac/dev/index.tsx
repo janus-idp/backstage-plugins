@@ -44,14 +44,14 @@ class MockRBACApi implements RBACAPI {
     return this.resources;
   }
 
-  async getPolicies(): Promise<RoleBasedPolicy[]> {
-    return mockPolicies;
-  }
-
   async getAssociatedPolicies(
     entityReference: string,
   ): Promise<RoleBasedPolicy[]> {
     return mockPolicies.filter(pol => pol.entityReference === entityReference);
+  }
+
+  async getPolicies(): Promise<RoleBasedPolicy[]> {
+    return mockPolicies;
   }
 
   async getUserAuthorization(): Promise<{ status: string }> {
@@ -90,12 +90,15 @@ class MockRBACApi implements RBACAPI {
     return mockPermissionPolicies;
   }
 
-  async deletePolicy(
+  async deletePolicies(
     _entityRef: string,
-    _permission: string,
     _policies: Policy[],
-  ): Promise<number> {
-    return 204;
+  ): Promise<Response> {
+    return {
+      ok: true,
+      status: 204,
+      statusText: 'Deleted Successfully',
+    } as Response;
   }
 
   async createRole(_role: Role): Promise<Response> {

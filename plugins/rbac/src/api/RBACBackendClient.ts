@@ -6,6 +6,7 @@ import {
 
 import {
   PermissionPolicy,
+  Policy,
   Role,
   RoleBasedPolicy,
 } from '@janus-idp/backstage-plugin-rbac-common';
@@ -22,6 +23,7 @@ export type RBACAPI = {
     entityReference: string,
   ) => Promise<RoleBasedPolicy[] | Response>;
   deleteRole: (role: string) => Promise<Response>;
+  deletePolicies: (role: string, policy: Policy[]) => Promise<Response>;
   getRole: (role: string) => Promise<Role[] | Response>;
   getMembers: () => Promise<MemberEntity[] | Response>;
   listPermissions: () => Promise<PermissionPolicy[]>;
@@ -245,6 +247,25 @@ export class RBACBackendClient implements RBACAPI {
     if (jsonResponse.status !== 200 && jsonResponse.status !== 201) {
       return jsonResponse.json();
     }
+    return jsonResponse;
+  }
+
+  async deletePolicies(entityReference: string, policies: Policy[]) {
+    const { token: idToken } = await this.identityApi.getCredentials();
+    const backendUrl = this.configApi.getString('backend.baseUrl');
+    const { kind, namespace, name } = getKindNamespaceName(entityReference);
+    const jsonResponse = await fetch(
+      `${backendUrl}/api/permission/policies/${kind}/${namespace}/${name}`,
+      {
+        headers: {
+          ...(idToken && { Authorization: `Bearer ${idToken}` }),
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify(policies),
+        method: 'DELETE',
+      },
+    );
     return jsonResponse;
   }
 }

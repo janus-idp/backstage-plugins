@@ -27,6 +27,7 @@ const EditRole = ({
     <Tooltip title={tooltip || ''}>
       <span data-testid={dataTestId}>
         <IconButton
+          color="inherit"
           component={Link}
           aria-label="Update"
           disabled={disable}
