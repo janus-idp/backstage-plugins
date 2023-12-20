@@ -4,13 +4,15 @@ import { CatalogClient } from '@backstage/catalog-client';
 import { Knex } from 'knex';
 
 import { Components, Paths } from '../openapi';
-import { ActionsInsert, dbValToBoolean, MessagesInsert } from './db';
 import {
   DefaultMessageScope,
   DefaultOrderBy,
   DefaultOrderDirection,
   DefaultPageNumber,
   DefaultPageSize,
+} from './constants';
+import { ActionsInsert, dbValToBoolean, MessagesInsert } from './db';
+import {
   MessageScopes,
   NotificationsFilterRequest,
   NotificationsOrderByDirections,

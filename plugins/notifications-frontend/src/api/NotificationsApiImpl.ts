@@ -34,9 +34,7 @@ export class NotificationsApiImpl implements NotificationsApi {
     return data.messageId;
   }
 
-  async getNotifications(
-    query: GetNotificationsRequest,
-  ): Promise<Notification[]> {
+  getNotifications(query: GetNotificationsRequest): Promise<Notification[]> {
     return this.backendRestApi.getNotifications(query);
   }
 

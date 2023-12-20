@@ -54,8 +54,10 @@ export default async function createPlugin(
 ): Promise<Router> {
   const catalogClient = new CatalogClient({ discoveryApi: env.discovery });
   const dbConfig = env.config.getConfig('backend.database');
-  const notificationsServiceToServiceAuthEnabled =
-    !!env.config.getOptionalBoolean('notifications.authorizeExternalCallers');
+  // Following is optional
+  const externalCallerSecret = env.config.getOptionalString(
+    'notifications.externalCallerSecret',
+  );
 
   return await createRouter({
     identity: env.identity,
@@ -64,7 +66,7 @@ export default async function createPlugin(
     tokenManager: env.tokenManager,
     dbConfig,
     catalogClient,
-    notificationsServiceToServiceAuthEnabled,
+    externalCallerSecret,
   });
 }
 ```
@@ -112,10 +114,29 @@ In the `app-config.yaml` or `app-config.local.yaml`:
 
 #### Other configuration (optional):
 
+If you have issues to create valid JWT tokens by an external caller, use following option to bypass the service-to-service configuration for them:
+
 ```
 notifications:
-  authorizeExternalCallers: false
+  # Workaround for issues with external caller JWT token creation.
+  # When following config option is not provided and the request "authentication" header is missing, the request is ALLOWED by default
+  # When following option is present, the request must contain either a valid JWT token or that provided shared secret in the "notifications-secret" header
+  externalCallerSecret: your-secret-token-shared-with-external-services
 ```
+
+Mind using HTTPS to help preventing leaking the shared secret.
+
+Example of the request then:
+
+```
+curl -X POST http://localhost:7007/api/notifications/notifications -H "Content-Type: application/json" -H "notifications-secret: your-secret-token-shared-with-external-services" -d '{"title":"my-title","origin":"my-origin","message":"message one","topic":"my-topic"}'
+
+```
+
+Notes:
+
+- The `externalCallerSecret` is an workaround and will be probably replaced by proper use of JWT tokens.
+- Sharing the same shared secret with the "auth.secret" option is not recommended
 
 #### Authentication
 
@@ -142,13 +163,6 @@ To configure those two flows, refer
 
 - https://backstage.io/docs/auth/service-to-service-auth.
 - https://backstage.io/docs/auth/service-to-service-auth#usage-in-external-callers
-
-**Note:** Recently we have difficulties to get authorization via custom JWT tokens of external services working. For this reason and to allow simple deployments, the service-to-service token authorization is skipped by default. Can be enabled via the backstage configuration (like `app-config.yaml`) by adding at the top-level:
-
-```
-notifications:
-  authorizeExternalCallers: true
-```
 
 #### Catalog
 

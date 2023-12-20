@@ -1,3 +1,23 @@
+import { TokenManager } from '@backstage/backend-common';
+import { CatalogClient } from '@backstage/catalog-client';
+import { Config } from '@backstage/config';
+import { IdentityApi } from '@backstage/plugin-auth-node';
+import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+
+import { Logger } from 'winston';
+
+export interface RouterOptions {
+  logger: Logger;
+  dbConfig: Config;
+  catalogClient: CatalogClient;
+  identity: IdentityApi;
+  permissions: PermissionEvaluator;
+  tokenManager: TokenManager;
+
+  // Workaround - see auth.ts
+  externalCallerSecret?: string;
+}
+
 export type NotificationsFilterRequest = {
   /**
    * Filter notifications whose either title or message contains the provided string.
@@ -47,10 +67,3 @@ export const NotificationsOrderByDirections: string[] = ['asc', 'desc'];
  * When 'all' is requests then fetch both system and user messages
  */
 export const MessageScopes = ['all', 'user', 'system'];
-
-export const DefaultServiceUser = 'default/externalServiceNotificationsUser';
-export const DefaultMessageScope = 'user';
-export const DefaultPageNumber = 1;
-export const DefaultPageSize = 20;
-export const DefaultOrderBy = 'created';
-export const DefaultOrderDirection = 'desc';

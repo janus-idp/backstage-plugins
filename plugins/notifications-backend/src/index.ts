@@ -1,2 +1,2 @@
 export * from './service/router';
-export * from './permissions';
+export * from './service/permissions';

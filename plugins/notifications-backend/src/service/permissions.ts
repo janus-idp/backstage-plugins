@@ -1,4 +1,3 @@
-/* TODO(mlibra): move following to notifications-common for its easier reuse by frontend and policies */
 import { createPermission } from '@backstage/plugin-permission-common';
 
 export const notificationsCreatePermission = createPermission({
