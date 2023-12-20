@@ -1,3 +1,16 @@
+## @janus-idp/backstage-plugin-tekton [3.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.2.0...@janus-idp/backstage-plugin-tekton@3.3.0) (2023-12-20)
+
+
+### Features
+
+* **tekton:** add view logs and view sbom actions in the pipelineRun list ([#1003](https://github.com/janus-idp/backstage-plugins/issues/1003)) ([c7eff5f](https://github.com/janus-idp/backstage-plugins/commit/c7eff5f33daef8eaba58df7e987b44f09c7a8ff9))
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.2.0
+
 ## @janus-idp/backstage-plugin-tekton [3.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.1.14...@janus-idp/backstage-plugin-tekton@3.2.0) (2023-12-14)
 
 
