@@ -2,9 +2,15 @@ import {
   ComputedStatus,
   pipelineRunFilterReducer,
   TaskRunKind,
+  TaskRunResults,
+  TaskRunResultsAnnotations,
+  TaskRunResultsAnnotationValue,
 } from '@janus-idp/shared-react';
 
-import { TEKTON_PIPELINE_TASK } from '../consts/tekton-const';
+import {
+  TEKTON_PIPELINE_RUN,
+  TEKTON_PIPELINE_TASK,
+} from '../consts/tekton-const';
 
 export type TaskStep = {
   id: string;
@@ -49,3 +55,30 @@ export const getActiveTaskRun = (
   activeTask
     ? taskRuns.find(taskRun => taskRun?.id === activeTask)?.id
     : taskRuns[taskRuns.length - 1]?.id;
+
+export const isSbomTaskRun = (tr: TaskRunKind | undefined): boolean =>
+  tr?.metadata?.annotations?.[TaskRunResultsAnnotations.KEY] ===
+  TaskRunResults.SBOM;
+
+export const getSbomTaskRun = (
+  pipelineRunName: string | undefined,
+  taskruns: TaskRunKind[],
+): TaskRunKind | undefined =>
+  taskruns?.find(
+    (tr: any) =>
+      tr?.metadata?.labels?.[TEKTON_PIPELINE_RUN] === pipelineRunName &&
+      isSbomTaskRun(tr),
+  );
+
+export const hasExternalLink = (
+  sbomTaskRun: TaskRunKind | undefined,
+): boolean =>
+  sbomTaskRun?.metadata?.annotations?.[TaskRunResultsAnnotations.TYPE] ===
+  TaskRunResultsAnnotationValue.EXTERNAL_LINK;
+
+export const getSbomLink = (
+  sbomTaskRun: TaskRunKind | undefined,
+): string | undefined =>
+  (sbomTaskRun?.status?.results || sbomTaskRun?.status?.taskResults)?.find(
+    r => r.name === TaskRunResults.SBOM,
+  )?.value;

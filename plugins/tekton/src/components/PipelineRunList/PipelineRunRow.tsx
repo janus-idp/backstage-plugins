@@ -18,6 +18,7 @@ import { PipelineRunKind } from '@janus-idp/shared-react';
 import { OpenRowStatus, tektonGroupColor } from '../../types/types';
 import { pipelineRunDuration } from '../../utils/tekton-utils';
 import { PipelineRunVisualization } from '../pipeline-topology';
+import PipelineRunRowActions from './PipelineRunRowActions';
 import PipelineRunTaskStatus from './PipelineRunTaskStatus';
 import PlrStatus from './PlrStatus';
 import ResourceBadge from './ResourceBadge';
@@ -121,6 +122,9 @@ export const PipelineRunRow = ({
           )}
         </TableCell>
         <TableCell align="left">{pipelineRunDuration(row)}</TableCell>
+        <TableCell align="left">
+          <PipelineRunRowActions pipelineRun={row} />
+        </TableCell>
       </TableRow>
       <TableRow className={classes.plrVisRow}>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>

@@ -28,4 +28,8 @@ export const PipelineRunColumnHeader: TableColumn[] = [
     title: 'DURATION',
     field: 'status.completionTime',
   },
+  {
+    id: 'actions',
+    title: 'ACTIONS',
+  },
 ];
