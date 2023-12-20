@@ -45,82 +45,88 @@ interface RouterOptions {
   notificationsServiceToServiceAuthEnabled: boolean;
 }
 
-export async function createRouter(
-  options: RouterOptions,
-): Promise<express.Router> {
-  const {
-    logger,
-    dbConfig,
-    catalogClient,
+/*
+ * User's entity must be present in the catalog.
+ */
+const getLoggedInUser = async (
+  request: express.Request,
+  {
     identity,
-    permissions,
+    logger,
     tokenManager,
     notificationsServiceToServiceAuthEnabled,
-  } = options;
+  }: {
+    identity: IdentityApi;
+    logger: Logger;
+    tokenManager: TokenManager;
+    notificationsServiceToServiceAuthEnabled: boolean;
+  },
+): Promise<string> => {
+  const identityResponse = await identity.getIdentity({ request });
 
-  /*
-   * User's entity must be present in the catalog.
-   */
-  const getLoggedInUser = async (request: express.Request): Promise<string> => {
-    const identityResponse = await identity.getIdentity({ request });
-
-    // To properly set identity, see packages/backend/src/plugins/auth.ts or https://backstage.io/docs/auth/identity-resolver
-    if (identityResponse) {
-      // user:default/guest
-      let author = identityResponse?.identity.userEntityRef;
-      if (author) {
-        if (author.startsWith('user:')) {
-          author = author.slice('user:'.length);
-        }
-      } else {
-        throw new AuthenticationError(
-          'Missing valid authentication data or the user is not in the Catalog.',
-        );
+  // To properly set identity, see packages/backend/src/plugins/auth.ts or https://backstage.io/docs/auth/identity-resolver
+  if (identityResponse) {
+    // Example: user:default/guest
+    let author = identityResponse?.identity.userEntityRef;
+    if (author) {
+      if (author.startsWith('user:')) {
+        author = author.slice('user:'.length);
       }
-      return author;
-    }
-
-    if (notificationsServiceToServiceAuthEnabled) {
-      logger.info(
-        'Identity not found for the request, trying to authorize service-to-service.',
+    } else {
+      throw new AuthenticationError(
+        'Missing valid authentication data or the user is not in the Catalog.',
       );
-      const token = getBearerTokenFromAuthorizationHeader(
-        request.header('authorization'),
-      );
-      if (!token) {
-        throw new AuthenticationError(
-          'Missing authorization token in the request.',
-        );
-      }
-      await tokenManager.authenticate(token);
     }
+    return author;
+  }
 
+  if (notificationsServiceToServiceAuthEnabled) {
     logger.info(
-      `Identity not found for the request. Since the service to service authentication is disabled, using default service user "${DefaultServiceUser}" instead.`,
+      'Identity not found for the request, trying to authorize service-to-service.',
     );
-    return DefaultServiceUser;
-  };
-
-  const checkPermission = async (
-    request: express.Request,
-    permission: BasicPermission,
-    loggedInUser: string,
-  ) => {
     const token = getBearerTokenFromAuthorizationHeader(
       request.header('authorization'),
     );
-    const decision = (
-      await permissions.authorize([{ permission }], {
-        token,
-      })
-    )[0];
-
-    if (decision.result === AuthorizeResult.DENY) {
-      throw new NotAllowedError(
-        `The user ${loggedInUser} is unauthorized to ${permission.name}`,
+    if (!token) {
+      throw new AuthenticationError(
+        'Missing authorization token in the request.',
       );
     }
-  };
+    await tokenManager.authenticate(token);
+  }
+
+  logger.info(
+    `Identity not found for the request. Since the service to service authentication is disabled, using default service user "${DefaultServiceUser}" instead.`,
+  );
+  return DefaultServiceUser;
+};
+
+const checkPermission = async (
+  request: express.Request,
+  permissions: PermissionEvaluator,
+  permission: BasicPermission,
+  loggedInUser: string,
+) => {
+  const token = getBearerTokenFromAuthorizationHeader(
+    request.header('authorization'),
+  );
+  const decision = (
+    await permissions.authorize([{ permission }], {
+      token,
+    })
+  )[0];
+
+  if (decision.result === AuthorizeResult.DENY) {
+    throw new NotAllowedError(
+      `The user ${loggedInUser} is unauthorized to ${permission.name}`,
+    );
+  }
+};
+
+export async function createRouter(
+  options: RouterOptions,
+): Promise<express.Router> {
+  const { logger, dbConfig, catalogClient, permissions } = options;
 
   const permissionIntegrationRouter = createPermissionIntegrationRouter({
     permissions: notificationsPermissions,
@@ -153,8 +159,13 @@ export async function createRouter(
       res: express.Response,
       next,
     ) => {
-      const loggedInUser = await getLoggedInUser(req);
-      await checkPermission(req, notificationsCreatePermission, loggedInUser);
+      const loggedInUser = await getLoggedInUser(req, options);
+      await checkPermission(
+        req,
+        permissions,
+        notificationsCreatePermission,
+        loggedInUser,
+      );
 
       createNotification(dbClient, catalogClient, c.request.requestBody)
         .then(result => res.json(result))
@@ -165,8 +176,13 @@ export async function createRouter(
   api.register(
     'getNotifications',
     async (c, req: express.Request, res: express.Response, next) => {
-      const loggedInUser = await getLoggedInUser(req);
-      await checkPermission(req, notificationsReadPermission, loggedInUser);
+      const loggedInUser = await getLoggedInUser(req, options);
+      await checkPermission(
+        req,
+        permissions,
+        notificationsReadPermission,
+        loggedInUser,
+      );
 
       const q: Paths.GetNotifications.QueryParameters = Object.assign(
         {},
@@ -194,8 +210,13 @@ export async function createRouter(
   api.register(
     'getNotificationsCount',
     async (c, req: express.Request, res: express.Response, next) => {
-      const loggedInUser = await getLoggedInUser(req);
-      await checkPermission(req, notificationsReadPermission, loggedInUser);
+      const loggedInUser = await getLoggedInUser(req, options);
+      await checkPermission(
+        req,
+        permissions,
+        notificationsReadPermission,
+        loggedInUser,
+      );
 
       const q: Paths.GetNotificationsCount.QueryParameters = Object.assign(
         {},
@@ -214,8 +235,13 @@ export async function createRouter(
   api.register(
     'setRead',
     async (c, req: express.Request, res: express.Response, next) => {
-      const loggedInUser = await getLoggedInUser(req);
-      await checkPermission(req, notificationsSetReadPermission, loggedInUser);
+      const loggedInUser = await getLoggedInUser(req, options);
+      await checkPermission(
+        req,
+        permissions,
+        notificationsSetReadPermission,
+        loggedInUser,
+      );
 
       const messageId = c.request.query.messageId.toString();
       const read = c.request.query.read.toString() === 'true';

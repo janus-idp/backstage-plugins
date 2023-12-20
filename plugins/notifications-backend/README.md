@@ -58,7 +58,10 @@ export default async function createPlugin(
     !!env.config.getOptionalBoolean('notifications.authorizeExternalCallers');
 
   return await createRouter({
-    ...env,
+    identity: env.identity,
+    logger: env.logger,
+    permissions: env.permissions,
+    tokenManager: env.tokenManager,
     dbConfig,
     catalogClient,
     notificationsServiceToServiceAuthEnabled,
@@ -133,7 +136,7 @@ It is up to particular deployment to provide corresponding permission policies b
 
 #### Service-to-service and External Calls
 
-The notification-backend is expected to be called by other backend plugins or external services.
+The notification-backend is expected to be called by FE plugins (including the notifications-frontend), other backend plugins or external services.
 
 To configure those two flows, refer
 
