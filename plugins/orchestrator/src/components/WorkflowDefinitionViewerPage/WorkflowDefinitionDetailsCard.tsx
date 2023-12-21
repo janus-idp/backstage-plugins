@@ -39,7 +39,7 @@ const WorkflowDefinitionDetailsCard = ({
     () => [
       {
         label: 'type',
-        value: formattedWorkflowOverview?.type,
+        value: formattedWorkflowOverview?.category,
       },
       {
         label: 'average duration',

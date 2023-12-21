@@ -422,21 +422,6 @@ export class SonataFlowService {
     return false;
   }
 
-  private extractWorkflowType(
-    workflowDef: WorkflowDefinition,
-  ): string | undefined {
-    if (workflowDef.annotations) {
-      for (const annotation of workflowDef.annotations) {
-        if (annotation.includes('workflow-type/')) {
-          const value: string = annotation.split('/')[1].trim();
-          return value.charAt(0).toUpperCase() + value.slice(1);
-        }
-      }
-    }
-
-    return undefined;
-  }
-
   private createLauncherCommand(): LauncherCommand {
     const resourcesAbsPath = resolve(
       join(this.connection.resourcesPath, default_workflows_path),
@@ -587,7 +572,7 @@ export class SonataFlowService {
       uri: await this.fetchWorkflowUri(workflowId),
       lastTriggeredMs: lastTriggered.getTime(),
       lastRunStatus,
-      type: this.extractWorkflowType(definition),
+      category: getWorkflowCategory(definition),
       avgDurationMs: counter ? totalDuration / counter : undefined,
       description: definition.description,
     };

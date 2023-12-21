@@ -73,7 +73,7 @@ export interface WorkflowOverview {
   uri?: string;
   lastTriggeredMs?: number;
   lastRunStatus?: ProcessInstanceStateValues;
-  type?: string;
+  category?: string;
   avgDurationMs?: number;
   description?: string;
 }
