@@ -9,7 +9,12 @@ import LinkIcon from '@material-ui/icons/Link';
 import WarningIcon from '@material-ui/icons/Warning';
 
 import { SEVERITY_COLORS } from '../../lib/utils';
-import { Layer, Vulnerability, VulnerabilityListItem } from '../../types';
+import {
+  Layer,
+  Vulnerability,
+  VulnerabilityListItem,
+  VulnerabilityOrder,
+} from '../../types';
 
 type QuayTagDetailsProps = {
   layer: Layer;
@@ -125,7 +130,13 @@ export const QuayTagDetails = ({
         },
       );
     })
-    .flat();
+    .flat()
+    .sort((a, b) => {
+      const severityA = VulnerabilityOrder[a.Severity];
+      const severityB = VulnerabilityOrder[b.Severity];
+
+      return severityA - severityB;
+    });
 
   return (
     <TableContainer>

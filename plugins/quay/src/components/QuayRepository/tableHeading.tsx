@@ -5,26 +5,8 @@ import { Link, Progress, TableColumn } from '@backstage/core-components';
 import { Tooltip } from '@material-ui/core';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 
+import { vulnerabilitySummary } from '../../lib/utils';
 import type { Layer } from '../../types';
-
-const vulnerabilitySummary = (layer: Layer): string => {
-  const summary: Record<string, number> = {};
-
-  layer?.Features.forEach(feature => {
-    feature.Vulnerabilities?.forEach(vulnerability => {
-      const { Severity } = vulnerability;
-      if (!summary[Severity]) {
-        summary[Severity] = 0;
-      }
-      summary[Severity]++;
-    });
-  });
-
-  const scanResults = Object.entries(summary)
-    .map(([severity, count]) => `${severity}: ${count}`)
-    .join(', ');
-  return scanResults.trim() !== '' ? scanResults : 'Passed';
-};
 
 export const columns: TableColumn[] = [
   {

@@ -115,7 +115,8 @@ export const VulnerabilityOrder = {
   [VulnerabilitySeverity.Medium]: 2,
   [VulnerabilitySeverity.Low]: 3,
   [VulnerabilitySeverity.Negligible]: 4,
-  [VulnerabilitySeverity.Unknown]: 5,
+  [VulnerabilitySeverity.None]: 5,
+  [VulnerabilitySeverity.Unknown]: 6,
 };
 
 export interface ManifestByDigestResponse {
