@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-openshift-image-registry [1.3.16](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-openshift-image-registry@1.3.15...@janus-idp/backstage-plugin-openshift-image-registry@1.3.16) (2023-12-21)
+
+
+### Bug Fixes
+
+* **openshift-image-registry:** fix [#596](https://github.com/janus-idp/backstage-plugins/issues/596): Add mock data for test page and cleanup some small code smells ([#1024](https://github.com/janus-idp/backstage-plugins/issues/1024)) ([39f7351](https://github.com/janus-idp/backstage-plugins/commit/39f7351d0f342270a31b3ba4605b1d58b6b571e5))
+
 ## @janus-idp/backstage-plugin-openshift-image-registry [1.3.15](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-openshift-image-registry@1.3.14...@janus-idp/backstage-plugin-openshift-image-registry@1.3.15) (2023-12-20)
 
 
