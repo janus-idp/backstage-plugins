@@ -42,7 +42,7 @@ export const parseGroup = async (
   realm: string,
   groupTransformer?: GroupTransformer,
 ): Promise<GroupEntity | undefined> => {
-  const transformer = groupTransformer || noopGroupTransformer;
+  const transformer = groupTransformer ?? noopGroupTransformer;
   const entity: GroupEntity = {
     apiVersion: 'backstage.io/v1beta1',
     kind: 'Group',
@@ -59,7 +59,7 @@ export const parseGroup = async (
         displayName: keycloakGroup.name!,
       },
       // children, parent and members are updated again after all group and user transformers applied.
-      children: keycloakGroup.subGroups?.map(g => g.name!) || [],
+      children: keycloakGroup.subGroups?.map(g => g.name!) ?? [],
       parent: keycloakGroup.parent,
       members: keycloakGroup.members,
     },
@@ -75,7 +75,7 @@ export const parseUser = async (
 
   userTransformer?: UserTransformer,
 ): Promise<UserEntity | undefined> => {
-  const transformer = userTransformer || noopUserTransformer;
+  const transformer = userTransformer ?? noopUserTransformer;
   const entity: UserEntity = {
     apiVersion: 'backstage.io/v1beta1',
     kind: 'User',
@@ -230,11 +230,11 @@ export const readKeycloakRealm = async (
     entity.spec.members =
       g.entity.spec.members?.map(
         m => parsedUsers.find(p => p.username === m)?.entity.metadata.name!,
-      ) || [];
+      ) ?? [];
     entity.spec.children =
       g.entity.spec.children?.map(
         c => parsedGroups.find(p => p.name === c)?.entity.metadata.name!,
-      ) || [];
+      ) ?? [];
     entity.spec.parent = parsedGroups.find(p => p.name === entity.spec.parent)
       ?.entity.metadata.name;
     return entity;
