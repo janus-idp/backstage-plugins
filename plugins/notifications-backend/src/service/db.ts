@@ -10,6 +10,8 @@ export async function initDB(dbConfig: Config): Promise<Knex<any, any>> {
   const knexConfig = merge(
     {},
     { connection: { database: 'backstage_plugin_notifications' } },
+    dbConfig.getOptional('plugin.notifications'),
+    dbConfig.getOptional('plugin.notifications.knexConfig'),
     dbConfig.get(),
     dbConfig.getOptional('knexConfig'),
   );
@@ -18,7 +20,7 @@ export async function initDB(dbConfig: Config): Promise<Knex<any, any>> {
   // create tables
   if (!(await dbClient.schema.hasTable('messages'))) {
     await dbClient.schema.createTable('messages', table => {
-      table.uuid('id', { primaryKey: true }).defaultTo(dbClient.fn.uuid());
+      table.uuid('id').primary().notNullable().defaultTo(dbClient.fn.uuid());
       table.string('origin').notNullable();
       table.timestamp('created').defaultTo(dbClient.fn.now()).index();
       table.string('title').notNullable();
@@ -85,3 +87,24 @@ export type ActionsInsert = {
   title: string;
   url: string;
 };
+
+export function dbValToBoolean(val: any): boolean {
+  if (!val) {
+    return false;
+  }
+
+  const valStr = val.toString();
+
+  switch (valStr) {
+    case 'true':
+    case 'TRUE':
+    case '1':
+      return true;
+    case 'false':
+    case 'FALSE':
+    case '0':
+      return false;
+    default:
+      throw new Error(`${valStr} is not a boolean value`);
+  }
+}

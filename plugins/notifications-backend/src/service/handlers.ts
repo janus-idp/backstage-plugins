@@ -4,7 +4,7 @@ import { CatalogClient } from '@backstage/catalog-client';
 import { Knex } from 'knex';
 
 import { Components, Paths } from '../openapi';
-import { ActionsInsert, MessagesInsert } from './db';
+import { ActionsInsert, dbValToBoolean, MessagesInsert } from './db';
 import {
   DefaultMessageScope,
   DefaultOrderBy,
@@ -192,8 +192,8 @@ export async function getNotifications(
       const notification: Components.Schemas.Notification = {
         id: message.id,
         created: message.created,
-        isSystem: message.is_system,
-        readByUser: message.read ? message.read : false,
+        isSystem: dbValToBoolean(message.is_system),
+        readByUser: dbValToBoolean(message.read),
         origin: message.origin,
         title: message.title,
         message: message.message,
@@ -267,7 +267,7 @@ export async function setRead(
     .where('id', messageId)
     .count('* as CNT')
     .then(count => {
-      const msgcount = count[0].CNT;
+      const msgcount = count[0].CNT.toString();
 
       if (msgcount !== '1') {
         throw new Error(`message ID ${messageId} does not exist`);
@@ -284,7 +284,7 @@ export async function setRead(
         return;
       }
       if (rows.length === 1) {
-        isUpdate = rows[0].read !== read;
+        isUpdate = true;
       } else if (rows.length === 0) {
         isInsert = true;
       }
