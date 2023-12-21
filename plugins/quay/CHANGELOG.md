@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-quay [1.4.20](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.4.19...@janus-idp/backstage-plugin-quay@1.4.20) (2023-12-21)
+
+
+### Bug Fixes
+
+* **quay:** fix sorting and ordering of vulneribilities based on severity ([#1033](https://github.com/janus-idp/backstage-plugins/issues/1033)) ([d3fdcdf](https://github.com/janus-idp/backstage-plugins/commit/d3fdcdfb51d782e8f22a9eecdb5091def8ff4176))
+
 ## @janus-idp/backstage-plugin-quay [1.4.19](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.4.18...@janus-idp/backstage-plugin-quay@1.4.19) (2023-12-21)
 
 
