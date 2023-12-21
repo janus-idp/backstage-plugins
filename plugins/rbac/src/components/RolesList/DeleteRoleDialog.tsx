@@ -21,9 +21,9 @@ import { Alert } from '@material-ui/lab';
 
 import { RoleBasedPolicy } from '@janus-idp/backstage-plugin-rbac-common';
 
-import { rbacApiRef } from '../api/RBACBackendClient';
-import { getMembers } from '../utils/rbac-utils';
-import { useToast } from './ToastContext';
+import { rbacApiRef } from '../../api/RBACBackendClient';
+import { getMembers } from '../../utils/rbac-utils';
+import { useToast } from '../ToastContext';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

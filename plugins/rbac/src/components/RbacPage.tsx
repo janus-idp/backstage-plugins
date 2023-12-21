@@ -5,8 +5,8 @@ import { RequirePermission } from '@backstage/plugin-permission-react';
 
 import { policyEntityReadPermission } from '@janus-idp/backstage-plugin-rbac-common';
 
-import { DeleteDialogContextProvider } from './DeleteDialogContext';
-import { RolesList } from './RolesList';
+import { DeleteDialogContextProvider } from './RolesList/DeleteDialogContext';
+import { RolesList } from './RolesList/RolesList';
 
 export const RbacPage = () => (
   <RequirePermission

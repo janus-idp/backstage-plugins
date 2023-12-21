@@ -6,13 +6,13 @@ import { makeStyles } from '@material-ui/core';
 import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
 
-import { useRoles } from '../hooks/useRoles';
-import { RolesData } from '../types';
+import { useRoles } from '../../hooks/useRoles';
+import { RolesData } from '../../types';
+import { useToast } from '../ToastContext';
 import { useDeleteDialog } from './DeleteDialogContext';
 import DeleteRoleDialog from './DeleteRoleDialog';
 import { columns } from './RolesListColumns';
 import { RolesListToolbar } from './RolesListToolbar';
-import { useToast } from './ToastContext';
 
 const useStyles = makeStyles(theme => ({
   empty: {

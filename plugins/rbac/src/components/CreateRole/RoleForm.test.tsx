@@ -1,11 +1,19 @@
 import React from 'react';
 
+import { LinkProps } from '@backstage/core-components';
+
 import { render, screen } from '@testing-library/react';
 import { useFormik } from 'formik';
 
 import { RoleForm } from './RoleForm';
 
 jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  Link: (props: LinkProps) => (
+    <a href={props.to} data-test={props.to}>
+      {props.children}
+    </a>
+  ),
   useNavigate: jest.fn(),
 }));
 
@@ -39,6 +47,18 @@ describe('Create RoleForm', () => {
           kind: 'role',
           description: '',
           selectedMembers: [],
+          permissionPoliciesRows: [
+            {
+              plugin: '',
+              permission: '',
+              policies: [
+                { label: 'Create', checked: false },
+                { label: 'Read', checked: false },
+                { label: 'Update', checked: false },
+                { label: 'Delete', checked: false },
+              ],
+            },
+          ],
         }}
         titles={{
           formTitle: 'Create Role',
@@ -74,6 +94,18 @@ describe('Create RoleForm', () => {
           kind: 'role',
           description: '',
           selectedMembers: [],
+          permissionPoliciesRows: [
+            {
+              plugin: '',
+              permission: '',
+              policies: [
+                { label: 'Create', checked: false },
+                { label: 'Read', checked: false },
+                { label: 'Update', checked: false },
+                { label: 'Delete', checked: false },
+              ],
+            },
+          ],
         }}
         titles={{
           formTitle: 'Create Role',
@@ -114,6 +146,18 @@ describe('Edit RoleForm', () => {
               etag: 'b027e001c70faf091869106d4e9023f7bddb9502',
               type: 'User',
               namespace: 'default',
+            },
+          ],
+          permissionPoliciesRows: [
+            {
+              plugin: '',
+              permission: '',
+              policies: [
+                { label: 'Create', checked: false },
+                { label: 'Read', checked: false },
+                { label: 'Update', checked: false },
+                { label: 'Delete', checked: false },
+              ],
             },
           ],
         }}
@@ -211,6 +255,18 @@ describe('Edit RoleForm', () => {
               namespace: 'default',
             },
           ],
+          permissionPoliciesRows: [
+            {
+              plugin: '',
+              permission: '',
+              policies: [
+                { label: 'Create', checked: false },
+                { label: 'Read', checked: false },
+                { label: 'Update', checked: false },
+                { label: 'Delete', checked: false },
+              ],
+            },
+          ],
         }}
         titles={{
           formTitle: 'Edit Role',
@@ -252,6 +308,18 @@ describe('Edit RoleForm', () => {
           kind: 'role',
           description: '',
           selectedMembers: [],
+          permissionPoliciesRows: [
+            {
+              plugin: '',
+              permission: '',
+              policies: [
+                { label: 'Create', checked: false },
+                { label: 'Read', checked: false },
+                { label: 'Update', checked: false },
+                { label: 'Delete', checked: false },
+              ],
+            },
+          ],
         }}
         titles={{
           formTitle: 'Edit Role',

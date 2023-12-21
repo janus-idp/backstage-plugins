@@ -8,6 +8,7 @@ import { RequirePermission } from '@backstage/plugin-permission-react';
 
 import { rbacApiRef } from '../../api/RBACBackendClient';
 import { MemberEntity } from '../../types';
+import { initialPermissionPolicyRowValue } from './const';
 import { RoleForm } from './RoleForm';
 import { RoleFormValues } from './types';
 
@@ -27,6 +28,7 @@ export const CreateRolePage = () => {
     kind: 'role',
     description: '',
     selectedMembers: [],
+    permissionPoliciesRows: [initialPermissionPolicyRowValue],
   };
 
   return (
@@ -35,7 +37,7 @@ export const CreateRolePage = () => {
       resourceRef={catalogEntityReadPermission.resourceType}
     >
       <Page themeId="tool">
-        <Header title="Create role" />
+        <Header title="Create role" type="RBAC" typeLink="/rbac" />
         <Content>
           <RoleForm
             initialValues={initialValues}

@@ -14,16 +14,22 @@ import {
   Paper,
 } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
-import { FormikHelpers, useFormik } from 'formik';
+import { FormikErrors, FormikHelpers, useFormik } from 'formik';
 
 import { rbacApiRef } from '../../api/RBACBackendClient';
 import { CreateRoleError, MemberEntity } from '../../types';
-import { getRoleData, validationSchema } from '../../utils/create-role-utils';
+import {
+  getPermissionPoliciesData,
+  getRoleData,
+  validationSchema,
+} from '../../utils/create-role-utils';
 import { useToast } from '../ToastContext';
 import { AddedMembersTable } from './AddedMembersTable';
 import { AddMembersForm } from './AddMembersForm';
+import { PermissionPoliciesForm } from './PermissionPoliciesForm';
+import { ReviewStep } from './ReviewStep';
 import { RoleDetailsForm } from './RoleDetailsForm';
-import { RoleFormValues } from './types';
+import { PermissionPolicyRow, RoleFormValues } from './types';
 
 type RoleFormProps = {
   membersData: { members: MemberEntity[]; loading: boolean; error: Error };
@@ -77,13 +83,23 @@ export const RoleForm = ({
               roleName ? 'Unable to edit the role. ' : 'Unable to create role. '
             }${(res as CreateRoleError).error.message}`,
           );
+        } else if (roleName) {
+          setToastMessage(`Role ${roleName} updated successfully`);
+          navigate('/rbac');
         } else {
-          if (roleName) {
-            setToastMessage(`Role ${roleName} updated successfully`);
+          const permissionsData = getPermissionPoliciesData(values);
+          const permissionsRes: Response | CreateRoleError =
+            await rbacApi.createPolicy(permissionsData);
+          if ((permissionsRes as unknown as CreateRoleError).error) {
+            throw new Error(
+              `Role was created successfully but unable to add permissions to the role. ${
+                (permissionsRes as unknown as CreateRoleError).error.message
+              }`,
+            );
           } else {
             setToastMessage(`Role ${newData.name} created successfully`);
+            navigate('/rbac');
           }
-          navigate('/rbac');
         }
       } catch (e) {
         formikHelpers.setStatus({ submitError: e });
@@ -101,6 +117,13 @@ export const RoleForm = ({
         formik.validateField(fieldName);
         return formik.errors.selectedMembers;
       }
+      case 'permissionPoliciesRows': {
+        formik.values.permissionPoliciesRows.forEach((_pp, index) => {
+          formik.validateField(`permissionPoliciesRows[${index}].plugin`);
+          formik.validateField(`permissionPoliciesRows[${index}].permission`);
+        });
+        return formik.errors.permissionPoliciesRows;
+      }
       default:
         return undefined;
     }
@@ -113,6 +136,18 @@ export const RoleForm = ({
       const stepNum = Math.min(activeStep + 1, 3);
       setActiveStep(stepNum);
     }
+  };
+
+  const canNextPermissionPoliciesStep = () => {
+    return (
+      formik.values.permissionPoliciesRows.filter(pp => !!pp.plugin).length ===
+        formik.values.permissionPoliciesRows.length &&
+      (!formik.errors.permissionPoliciesRows ||
+        (
+          formik.errors
+            .permissionPoliciesRows as unknown as FormikErrors<PermissionPolicyRow>[]
+        )?.filter(err => !!err)?.length === 0)
+    );
   };
 
   const handleBack = () => setActiveStep(Math.max(activeStep - 1, 0));
@@ -174,8 +209,33 @@ export const RoleForm = ({
               />
             </Box>
           </SimpleStepperStep>
+          <SimpleStepperStep
+            title="Add permission policies"
+            actions={{
+              showNext: true,
+              nextText: 'Next',
+              canNext: () => canNextPermissionPoliciesStep(),
+              onNext: () => handleNext('permissionPoliciesRows'),
+              showBack: true,
+              backText: 'Back',
+              onBack: handleBack,
+            }}
+          >
+            <PermissionPoliciesForm
+              permissionPoliciesRows={formik.values.permissionPoliciesRows}
+              permissionPoliciesRowsError={
+                formik.errors
+                  .permissionPoliciesRows as FormikErrors<PermissionPolicyRow>[]
+              }
+              setFieldValue={formik.setFieldValue}
+              setFieldError={formik.setFieldError}
+              handleBlur={formik.handleBlur}
+            />
+          </SimpleStepperStep>
           <SimpleStepperStep title="" end>
-            <Paper elevation={0}>
+            <Paper square elevation={0}>
+              <ReviewStep values={formik.values} />
+              <br />
               <Button onClick={handleBack}>Back</Button>
               <Button onClick={e => handleReset(e)}>Reset</Button>
               <Button

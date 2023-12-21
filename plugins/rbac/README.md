@@ -10,6 +10,20 @@ The RBAC UI plugin offers a streamlined user interface for effectively managing 
 
 Follow the RBAC backend plugin [README](https://github.com/janus-idp/backstage-plugins/tree/main/plugins/rbac-backend) to integrate rbac in your Backstage instance
 
+---
+
+**NOTE**
+
+To enable create role button on Administration -> RBAC roles list page, the role associacted with your user should have the following permission policies associated with it. Add the following in your permission policies configuration file:
+
+```CSV
+p, role:default/team_a, catalog-entity, read, allow
+p, role:default/team_a, policy-entity, create, allow
+g, user:default/user, role:default/team_a
+```
+
+---
+
 #### Procedure
 
 1. Install the RBAC UI plugin using the following command:

@@ -3,11 +3,11 @@ import React from 'react';
 import { usePermission } from '@backstage/plugin-permission-react';
 import { renderInTestApp } from '@backstage/test-utils';
 
-import { useMembers } from '../hooks/useMembers';
-import { MembersData } from '../types';
+import { useMembers } from '../../hooks/useMembers';
+import { MembersData } from '../../types';
 import { MembersCard } from './MembersCard';
 
-jest.mock('../hooks/useMembers', () => ({
+jest.mock('../../hooks/useMembers', () => ({
   useMembers: jest.fn(),
 }));
 
@@ -75,7 +75,7 @@ describe('MembersCard', () => {
     const { queryByText } = await renderInTestApp(
       <MembersCard roleName="role:default/rbac_admin" />,
     );
-    expect(queryByText('Users and groups (2 Users, 2 Groups)')).not.toBeNull();
+    expect(queryByText('Users and groups (2 users, 2 groups)')).not.toBeNull();
     expect(queryByText('Calum Leavy')).not.toBeNull();
     expect(queryByText('Amelia Park')).not.toBeNull();
     expect(queryByText('Team B')).not.toBeNull();

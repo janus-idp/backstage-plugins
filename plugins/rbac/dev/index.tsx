@@ -104,6 +104,10 @@ class MockRBACApi implements RBACAPI {
   async createRole(_role: Role): Promise<Response> {
     return { status: 200 } as Response;
   }
+
+  async createPolicy(_data: any): Promise<Response> {
+    return { status: 200 } as Response;
+  }
 }
 
 const mockPermissionApi = new MockPermissionApi({ result: 'ALLOW' });

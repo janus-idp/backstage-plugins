@@ -62,7 +62,7 @@ describe('rbac utils', () => {
 
   it('should return number of users and groups in member references', () => {
     expect(getMembers(['user:default/xyz', 'group:default/admins'])).toBe(
-      '1 User, 1 Group',
+      '1 user, 1 group',
     );
 
     expect(
@@ -71,11 +71,11 @@ describe('rbac utils', () => {
         'group:default/admins',
         'user:default/alice',
       ]),
-    ).toBe('2 Users, 1 Group');
+    ).toBe('2 users, 1 group');
 
-    expect(getMembers(['user:default/xyz'])).toBe('1 User');
+    expect(getMembers(['user:default/xyz'])).toBe('1 user');
 
-    expect(getMembers(['group:default/xyz'])).toBe('1 Group');
+    expect(getMembers(['group:default/xyz'])).toBe('1 group');
 
     expect(getMembers([])).toBe('No members');
   });

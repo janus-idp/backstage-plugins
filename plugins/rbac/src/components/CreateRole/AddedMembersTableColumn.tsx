@@ -1,12 +1,38 @@
 import React from 'react';
 
-import { TableColumn } from '@backstage/core-components';
+import { Link, TableColumn } from '@backstage/core-components';
 
 import { IconButton } from '@material-ui/core';
 import Delete from '@mui/icons-material/Delete';
 import { FormikErrors } from 'formik';
 
+import { getKindNamespaceName } from '../../utils/rbac-utils';
 import { RoleFormValues, SelectedMember } from './types';
+
+export const basicSelectedMembersColumns =
+  (): TableColumn<SelectedMember>[] => [
+    {
+      title: 'Type',
+      field: 'type',
+      type: 'string',
+    },
+    {
+      title: 'Members',
+      field: 'members',
+      type: 'numeric',
+      align: 'left',
+      emptyValue: '-',
+    },
+  ];
+
+export const reviewStepMemebersTableColumns = () => [
+  {
+    title: 'Name',
+    field: 'label',
+    type: 'string',
+  },
+  ...basicSelectedMembersColumns(),
+];
 
 export const selectedMembersColumns = (
   selectedMembers: SelectedMember[],
@@ -28,19 +54,16 @@ export const selectedMembersColumns = (
       title: 'Name',
       field: 'label',
       type: 'string',
+      render: props => {
+        const { kind, namespace, name } = getKindNamespaceName(props.ref);
+        return (
+          <Link to={`/catalog/${namespace}/${kind}/${name}`} target="blank">
+            {props.label}
+          </Link>
+        );
+      },
     },
-    {
-      title: 'Type',
-      field: 'type',
-      type: 'string',
-    },
-    {
-      title: 'Members',
-      field: 'members',
-      type: 'numeric',
-      align: 'left',
-      emptyValue: '-',
-    },
+    ...basicSelectedMembersColumns(),
     {
       title: 'Actions',
       sorting: false,

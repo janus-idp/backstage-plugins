@@ -6,8 +6,8 @@ import {
 } from '@backstage/plugin-permission-react';
 import { renderInTestApp } from '@backstage/test-utils';
 
-import { useRoles } from '../hooks/useRoles';
-import { RolesData } from '../types';
+import { useRoles } from '../../hooks/useRoles';
+import { RolesData } from '../../types';
 import { RolesList } from './RolesList';
 
 jest.mock('@backstage/plugin-permission-react', () => ({
@@ -15,7 +15,7 @@ jest.mock('@backstage/plugin-permission-react', () => ({
   RequirePermission: jest.fn(),
 }));
 
-jest.mock('../hooks/useRoles', () => ({
+jest.mock('../../hooks/useRoles', () => ({
   useRoles: jest.fn(),
 }));
 
@@ -70,7 +70,7 @@ describe('RolesList', () => {
     expect(queryByText('All roles (2)')).not.toBeNull();
     expect(queryByText('role:default/guests')).not.toBeNull();
     expect(queryByText('role:default/rbac_admin')).not.toBeNull();
-    expect(queryByText('1 User, 1 Group')).not.toBeNull();
+    expect(queryByText('1 user, 1 group')).not.toBeNull();
   });
 
   it('should show empty table when there are no roles', async () => {

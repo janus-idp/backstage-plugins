@@ -34,6 +34,7 @@ export const AddMembersForm = ({
   membersData,
 }: AddMembersFormProps) => {
   const [search, setSearch] = React.useState<string>('');
+  const [selectedMember, setSelectedMember] = React.useState<SelectedMember>();
 
   const getDescription = (member: MemberEntity) => {
     const memberCount = getMembersCount(member);
@@ -74,10 +75,16 @@ export const AddMembersForm = ({
         }
         loading={membersData.loading}
         loadingText={<LinearProgress />}
-        onChange={(_e, value: SelectedMember | null) =>
-          setFieldValue('selectedMembers', [...selectedMembers, value])
-        }
         disableClearable
+        value={selectedMember}
+        onChange={(_e, value: SelectedMember) => {
+          setSelectedMember(value);
+          if (value) {
+            setFieldValue('selectedMembers', [...selectedMembers, value]);
+          }
+        }}
+        inputValue={search}
+        onInputChange={(_e, newSearch: string) => setSearch(newSearch)}
         getOptionDisabled={(option: SelectedMember) =>
           !!selectedMembers.find(
             (sm: SelectedMember) => sm.etag === option.etag,
@@ -86,6 +93,7 @@ export const AddMembersForm = ({
         renderOption={(option: SelectedMember, state) => (
           <MembersDropdownOption option={option} state={state} />
         )}
+        clearOnEscape
         renderInput={params => (
           <TextField
             {...params}
@@ -94,8 +102,6 @@ export const AddMembersForm = ({
             placeholder="Search by user name or group name"
             error={!!selectedMembersError}
             helperText={selectedMembersError ?? ''}
-            value={search}
-            onChange={e => setSearch(e.target.value)}
             required
           />
         )}

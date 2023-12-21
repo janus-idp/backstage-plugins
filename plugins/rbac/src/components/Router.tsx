@@ -12,7 +12,7 @@ import { createRoleRouteRef, editRoleRouteRef, roleRouteRef } from '../routes';
 import { CreateRolePage } from './CreateRole/CreateRolePage';
 import { EditRolePage } from './CreateRole/EditRolePage';
 import { RbacPage } from './RbacPage';
-import { RoleOverviewPage } from './RoleOverviewPage';
+import { RoleOverviewPage } from './RoleOverview/RoleOverviewPage';
 import { ToastContextProvider } from './ToastContext';
 
 /**
