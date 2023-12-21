@@ -1,0 +1,1111 @@
+{
+  "apiVersion": "v1",
+  "items": [
+    {
+      "apiVersion": "image.openshift.io/v1",
+      "kind": "ImageStream",
+      "metadata": {
+        "annotations": {
+          "openshift.io/display-name": "Go",
+          "openshift.io/image.dockerRepositoryCheck": "2023-07-26T18:56:46Z",
+          "samples.operator.openshift.io/version": "4.13.6"
+        },
+        "creationTimestamp": "2023-07-26T18:56:22Z",
+        "generation": 2,
+        "labels": {
+          "samples.operator.openshift.io/managed": "true"
+        },
+        "name": "golang",
+        "namespace": "openshift",
+        "resourceVersion": "14813",
+        "uid": "693949d1-2093-49ed-ae56-929acc790182"
+      },
+      "spec": {
+        "lookupPolicy": {
+          "local": false
+        },
+        "tags": [
+          {
+            "annotations": {
+              "description": "Build and run Go applications on UBI 7. For more information about using this builder image, including OpenShift considerations, see https://github.com/sclorg/golang-container/blob/master/README.md.",
+              "iconClass": "icon-go-gopher",
+              "openshift.io/display-name": "Go 1.18 (UBI 7)",
+              "openshift.io/provider-display-name": "Red Hat, Inc.",
+              "sampleRepo": "https://github.com/sclorg/golang-ex.git",
+              "supports": "golang",
+              "tags": "builder,golang,go"
+            },
+            "from": {
+              "kind": "DockerImage",
+              "name": "registry.redhat.io/ubi7/go-toolset:1.18"
+            },
+            "generation": 2,
+            "importPolicy": {
+              "importMode": "Legacy"
+            },
+            "name": "1.18-ubi7",
+            "referencePolicy": {
+              "type": "Local"
+            }
+          },
+          {
+            "annotations": {
+              "description": "Build and run Go applications on UBI 8. For more information about using this builder image, including OpenShift considerations, see https://github.com/sclorg/golang-container/blob/master/README.md.",
+              "iconClass": "icon-go-gopher",
+              "openshift.io/display-name": "Go 1.18 (UBI 8)",
+              "openshift.io/provider-display-name": "Red Hat, Inc.",
+              "sampleRepo": "https://github.com/sclorg/golang-ex.git",
+              "supports": "golang",
+              "tags": "builder,golang,go"
+            },
+            "from": {
+              "kind": "DockerImage",
+              "name": "registry.redhat.io/ubi8/go-toolset:1.18"
+            },
+            "generation": 2,
+            "importPolicy": {
+              "importMode": "Legacy"
+            },
+            "name": "1.18-ubi8",
+            "referencePolicy": {
+              "type": "Local"
+            }
+          },
+          {
+            "annotations": {
+              "description": "Build and run Go applications on UBI 9. For more information about using this builder image, including OpenShift considerations, see https://github.com/sclorg/golang-container/blob/master/README.md.",
+              "iconClass": "icon-go-gopher",
+              "openshift.io/display-name": "Go 1.18 (UBI 9)",
+              "openshift.io/provider-display-name": "Red Hat, Inc.",
+              "sampleRepo": "https://github.com/sclorg/golang-ex.git",
+              "supports": "golang",
+              "tags": "builder,golang,go"
+            },
+            "from": {
+              "kind": "DockerImage",
+              "name": "registry.redhat.io/ubi9/go-toolset:1.18"
+            },
+            "generation": 2,
+            "importPolicy": {
+              "importMode": "Legacy"
+            },
+            "name": "1.18-ubi9",
+            "referencePolicy": {
+              "type": "Local"
+            }
+          },
+          {
+            "annotations": {
+              "description": "Build and run Go applications on UBI. For more information about using this builder image, including OpenShift considerations, see https://github.com/sclorg/golang-container/blob/master/README.md.\n\nWARNING: By selecting this tag, your application will automatically update to use the latest version of Go available on OpenShift, including major version updates.",
+              "iconClass": "icon-go-gopher",
+              "openshift.io/display-name": "Go (Latest)",
+              "openshift.io/provider-display-name": "Red Hat, Inc.",
+              "sampleRepo": "https://github.com/sclorg/golang-ex.git",
+              "supports": "golang",
+              "tags": "builder,golang,go"
+            },
+            "from": {
+              "kind": "ImageStreamTag",
+              "name": "1.18-ubi8"
+            },
+            "generation": 1,
+            "importPolicy": {
+              "importMode": "Legacy"
+            },
+            "name": "latest",
+            "referencePolicy": {
+              "type": "Local"
+            }
+          }
+        ]
+      },
+      "status": {
+        "dockerImageRepository": "image-registry.openshift-image-registry.svc:5000/openshift/golang",
+        "publicDockerImageRepository": "default-route-openshift-image-registry.apps-crc.testing/openshift/golang",
+        "tags": [
+          {
+            "items": [
+              {
+                "created": "2023-07-26T18:56:46Z",
+                "dockerImageReference": "registry.redhat.io/ubi7/go-toolset@sha256:07addbabcfd72212a82efce053a70362a06925ee1522c4dd783be878ffad46cb",
+                "generation": 2,
+                "image": "sha256:07addbabcfd72212a82efce053a70362a06925ee1522c4dd783be878ffad46cb"
+              }
+            ],
+            "tag": "1.18-ubi7"
+          },
+          {
+            "items": [
+              {
+                "created": "2023-07-26T18:56:46Z",
+                "dockerImageReference": "registry.redhat.io/ubi8/go-toolset@sha256:6740d72db4de99ecb4652cff89a239242afd150d6ccf6ed0ebff89ffcbbc649e",
+                "generation": 2,
+                "image": "sha256:6740d72db4de99ecb4652cff89a239242afd150d6ccf6ed0ebff89ffcbbc649e"
+              }
+            ],
+            "tag": "1.18-ubi8"
+          },
+          {
+            "items": [
+              {
+                "created": "2023-07-26T18:56:46Z",
+                "dockerImageReference": "registry.redhat.io/ubi9/go-toolset@sha256:2861514e125903261aa0004883a7f7aeeb4c189b2d0d175372d1edc111942eda",
+                "generation": 2,
+                "image": "sha256:2861514e125903261aa0004883a7f7aeeb4c189b2d0d175372d1edc111942eda"
+              }
+            ],
+            "tag": "1.18-ubi9"
+          },
+          {
+            "items": [
+              {
+                "created": "2023-07-26T18:56:46Z",
+                "dockerImageReference": "registry.redhat.io/ubi8/go-toolset@sha256:6740d72db4de99ecb4652cff89a239242afd150d6ccf6ed0ebff89ffcbbc649e",
+                "generation": 2,
+                "image": "sha256:6740d72db4de99ecb4652cff89a239242afd150d6ccf6ed0ebff89ffcbbc649e"
+              }
+            ],
+            "tag": "latest"
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "image.openshift.io/v1",
+      "kind": "ImageStream",
+      "metadata": {
+        "annotations": {
+          "openshift.io/display-name": "Red Hat OpenJDK",
+          "openshift.io/image.dockerRepositoryCheck": "2023-07-26T18:56:48Z",
+          "openshift.io/provider-display-name": "Red Hat, Inc.",
+          "samples.operator.openshift.io/version": "4.13.6",
+          "version": "1.4.17"
+        },
+        "creationTimestamp": "2023-07-26T18:56:22Z",
+        "generation": 2,
+        "labels": {
+          "samples.operator.openshift.io/managed": "true",
+          "xpaas": "1.4.17"
+        },
+        "name": "java",
+        "namespace": "openshift",
+        "resourceVersion": "14860",
+        "uid": "210e1300-206b-4f15-a169-edbeadca5d88"
+      },
+      "spec": {
+        "lookupPolicy": {
+          "local": false
+        },
+        "tags": [
+          {
+            "annotations": {
+              "description": "Build and run Java applications using Maven and OpenJDK 11.",
+              "iconClass": "icon-rh-openjdk",
+              "openshift.io/display-name": "Red Hat OpenJDK 11",
+              "sampleContextDir": "undertow-servlet",
+              "sampleRepo": "https://github.com/jboss-openshift/openshift-quickstarts",
+              "supports": "java:11,java",
+              "tags": "builder,java,openjdk,hidden",
+              "version": "11"
+            },
+            "from": {
+              "kind": "DockerImage",
+              "name": "registry.redhat.io/openjdk/openjdk-11-rhel7:latest"
+            },
+            "generation": 2,
+            "importPolicy": {
+              "importMode": "Legacy"
+            },
+            "name": "11",
+            "referencePolicy": {
+              "type": "Local"
+            }
+          },
+          {
+            "annotations": {
+              "description": "Build and run Java applications using Maven and OpenJDK 8.",
+              "iconClass": "icon-rh-openjdk",
+              "openshift.io/display-name": "Red Hat OpenJDK 8",
+              "sampleContextDir": "undertow-servlet",
+              "sampleRepo": "https://github.com/jboss-openshift/openshift-quickstarts",
+              "supports": "java:8,java",
+              "tags": "builder,java,openjdk,hidden",
+              "version": "8"
+            },
+            "from": {
+              "kind": "DockerImage",
+              "name": "registry.redhat.io/redhat-openjdk-18/openjdk18-openshift:latest"
+            },
+            "generation": 2,
+            "importPolicy": {
+              "importMode": "Legacy"
+            },
+            "name": "8",
+            "referencePolicy": {
+              "type": "Local"
+            }
+          },
+          {
+            "annotations": {
+              "description": "Build and run Java applications using Maven.",
+              "iconClass": "icon-rh-openjdk",
+              "openshift.io/display-name": "Java (Latest)",
+              "sampleContextDir": "undertow-servlet",
+              "sampleRepo": "https://github.com/jboss-openshift/openshift-quickstarts",
+              "supports": "java",
+              "tags": "builder,java,openjdk",
+              "version": "latest"
+            },
+            "from": {
+              "kind": "ImageStreamTag",
+              "name": "openjdk-17-ubi8"
+            },
+            "generation": 1,
+            "importPolicy": {
+              "importMode": "Legacy"
+            },
+            "name": "latest",
+            "referencePolicy": {
+              "type": "Local"
+            }
+          },
+          {
+            "annotations": {
+              "description": "Build and run Java applications using Maven and OpenJDK 11.",
+              "iconClass": "icon-rh-openjdk",
+              "openshift.io/display-name": "Red Hat OpenJDK 11 (RHEL 7)",
+              "sampleContextDir": "undertow-servlet",
+              "sampleRepo": "https://github.com/jboss-openshift/openshift-quickstarts",
+              "supports": "java:11,java",
+              "tags": "builder,java,openjdk",
+              "version": "11"
+            },
+            "from": {
+              "kind": "DockerImage",
+              "name": "registry.redhat.io/openjdk/openjdk-11-rhel7:latest"
+            },
+            "generation": 2,
+            "importPolicy": {
+              "importMode": "Legacy"
+            },
+            "name": "openjdk-11-el7",
+            "referencePolicy": {
+              "type": "Local"
+            }
+          },
+          {
+            "annotations": {
+              "description": "Build and run Java applications using Maven and OpenJDK 11.",
+              "iconClass": "icon-rh-openjdk",
+              "openshift.io/display-name": "Red Hat OpenJDK 11 (UBI 8)",
+              "sampleContextDir": "undertow-servlet",
+              "sampleRepo": "https://github.com/jboss-openshift/openshift-quickstarts",
+              "supports": "java:11,java",
+              "tags": "builder,java,openjdk",
+              "version": "11"
+            },
+            "from": {
+              "kind": "DockerImage",
+              "name": "registry.redhat.io/ubi8/openjdk-11:latest"
+            },
+            "generation": 2,
+            "importPolicy": {
+              "importMode": "Legacy"
+            },
+            "name": "openjdk-11-ubi8",
+            "referencePolicy": {
+              "type": "Local"
+            }
+          },
+          {
+            "annotations": {
+              "description": "Build and run Java applications using Maven and OpenJDK 17.",
+              "iconClass": "icon-rh-openjdk",
+              "openshift.io/display-name": "Red Hat OpenJDK 17 (UBI 8)",
+              "sampleContextDir": "undertow-servlet",
+              "sampleRepo": "https://github.com/jboss-openshift/openshift-quickstarts",
+              "supports": "java:17,java",
+              "tags": "builder,java,openjdk",
+              "version": "17"
+            },
+            "from": {
+              "kind": "DockerImage",
+              "name": "registry.redhat.io/ubi8/openjdk-17:latest"
+            },
+            "generation": 2,
+            "importPolicy": {
+              "importMode": "Legacy"
+            },
+            "name": "openjdk-17-ubi8",
+            "referencePolicy": {
+              "type": "Local"
+            }
+          },
+          {
+            "annotations": {
+              "description": "Build and run Java applications using Maven and OpenJDK 8.",
+              "iconClass": "icon-rh-openjdk",
+              "openshift.io/display-name": "Red Hat OpenJDK 8 (RHEL 7)",
+              "sampleContextDir": "undertow-servlet",
+              "sampleRepo": "https://github.com/jboss-openshift/openshift-quickstarts",
+              "supports": "java:8,java",
+              "tags": "builder,java,openjdk",
+              "version": "8"
+            },
+            "from": {
+              "kind": "DockerImage",
+              "name": "registry.redhat.io/redhat-openjdk-18/openjdk18-openshift:latest"
+            },
+            "generation": 2,
+            "importPolicy": {
+              "importMode": "Legacy"
+            },
+            "name": "openjdk-8-el7",
+            "referencePolicy": {
+              "type": "Local"
+            }
+          },
+          {
+            "annotations": {
+              "description": "Build and run Java applications using Maven and OpenJDK 8.",
+              "iconClass": "icon-rh-openjdk",
+              "openshift.io/display-name": "Red Hat OpenJDK 8 (UBI 8)",
+              "sampleContextDir": "undertow-servlet",
+              "sampleRepo": "https://github.com/jboss-openshift/openshift-quickstarts",
+              "supports": "java:8,java",
+              "tags": "builder,java,openjdk",
+              "version": "8"
+            },
+            "from": {
+              "kind": "DockerImage",
+              "name": "registry.redhat.io/ubi8/openjdk-8:latest"
+            },
+            "generation": 2,
+            "importPolicy": {
+              "importMode": "Legacy"
+            },
+            "name": "openjdk-8-ubi8",
+            "referencePolicy": {
+              "type": "Local"
+            }
+          }
+        ]
+      },
+      "status": {
+        "dockerImageRepository": "image-registry.openshift-image-registry.svc:5000/openshift/java",
+        "publicDockerImageRepository": "default-route-openshift-image-registry.apps-crc.testing/openshift/java",
+        "tags": [
+          {
+            "items": [
+              {
+                "created": "2023-07-26T18:56:48Z",
+                "dockerImageReference": "registry.redhat.io/openjdk/openjdk-11-rhel7@sha256:a9158f829df4163cd1c25ab02b7e8a85fd968d15a24f3e8494e53a116b9d3bb6",
+                "generation": 2,
+                "image": "sha256:a9158f829df4163cd1c25ab02b7e8a85fd968d15a24f3e8494e53a116b9d3bb6"
+              }
+            ],
+            "tag": "11"
+          },
+          {
+            "items": [
+              {
+                "created": "2023-07-26T18:56:48Z",
+                "dockerImageReference": "registry.redhat.io/redhat-openjdk-18/openjdk18-openshift@sha256:ea11ce0cc12305edec4b417799e657a1fddf0e05274dac2c92f5c00f1f6ada5c",
+                "generation": 2,
+                "image": "sha256:ea11ce0cc12305edec4b417799e657a1fddf0e05274dac2c92f5c00f1f6ada5c"
+              }
+            ],
+            "tag": "8"
+          },
+          {
+            "items": [
+              {
+                "created": "2023-07-26T18:56:48Z",
+                "dockerImageReference": "registry.redhat.io/ubi8/openjdk-17@sha256:3b94ccfa422b8ba0014302a3cfc6916b69f0f5a9dfd757b6704049834d4ff0ae",
+                "generation": 2,
+                "image": "sha256:3b94ccfa422b8ba0014302a3cfc6916b69f0f5a9dfd757b6704049834d4ff0ae"
+              }
+            ],
+            "tag": "latest"
+          },
+          {
+            "items": [
+              {
+                "created": "2023-07-26T18:56:48Z",
+                "dockerImageReference": "registry.redhat.io/openjdk/openjdk-11-rhel7@sha256:a9158f829df4163cd1c25ab02b7e8a85fd968d15a24f3e8494e53a116b9d3bb6",
+                "generation": 2,
+                "image": "sha256:a9158f829df4163cd1c25ab02b7e8a85fd968d15a24f3e8494e53a116b9d3bb6"
+              }
+            ],
+            "tag": "openjdk-11-el7"
+          },
+          {
+            "items": [
+              {
+                "created": "2023-07-26T18:56:48Z",
+                "dockerImageReference": "registry.redhat.io/ubi8/openjdk-11@sha256:425e2c7c355bea32be238aa2c7bdd363b6ab3709412bdf095efe28a8f6c07d84",
+                "generation": 2,
+                "image": "sha256:425e2c7c355bea32be238aa2c7bdd363b6ab3709412bdf095efe28a8f6c07d84"
+              }
+            ],
+            "tag": "openjdk-11-ubi8"
+          },
+          {
+            "items": [
+              {
+                "created": "2023-07-26T18:56:48Z",
+                "dockerImageReference": "registry.redhat.io/ubi8/openjdk-17@sha256:3b94ccfa422b8ba0014302a3cfc6916b69f0f5a9dfd757b6704049834d4ff0ae",
+                "generation": 2,
+                "image": "sha256:3b94ccfa422b8ba0014302a3cfc6916b69f0f5a9dfd757b6704049834d4ff0ae"
+              }
+            ],
+            "tag": "openjdk-17-ubi8"
+          },
+          {
+            "items": [
+              {
+                "created": "2023-07-26T18:56:48Z",
+                "dockerImageReference": "registry.redhat.io/redhat-openjdk-18/openjdk18-openshift@sha256:ea11ce0cc12305edec4b417799e657a1fddf0e05274dac2c92f5c00f1f6ada5c",
+                "generation": 2,
+                "image": "sha256:ea11ce0cc12305edec4b417799e657a1fddf0e05274dac2c92f5c00f1f6ada5c"
+              }
+            ],
+            "tag": "openjdk-8-el7"
+          },
+          {
+            "items": [
+              {
+                "created": "2023-07-26T18:56:48Z",
+                "dockerImageReference": "registry.redhat.io/ubi8/openjdk-8@sha256:2f59ad75b66a3169b0b03032afb09aa3cfa531dbd844e3d3a562246e7d09c282",
+                "generation": 2,
+                "image": "sha256:2f59ad75b66a3169b0b03032afb09aa3cfa531dbd844e3d3a562246e7d09c282"
+              }
+            ],
+            "tag": "openjdk-8-ubi8"
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "image.openshift.io/v1",
+      "kind": "ImageStream",
+      "metadata": {
+        "annotations": {
+          "openshift.io/display-name": "Node.js",
+          "openshift.io/image.dockerRepositoryCheck": "2023-07-26T18:56:51Z",
+          "samples.operator.openshift.io/version": "4.13.6"
+        },
+        "creationTimestamp": "2023-07-26T18:56:22Z",
+        "generation": 2,
+        "labels": {
+          "samples.operator.openshift.io/managed": "true"
+        },
+        "name": "nodejs",
+        "namespace": "openshift",
+        "resourceVersion": "14915",
+        "uid": "9f67482c-1e83-42d5-a8eb-04099005ea27"
+      },
+      "spec": {
+        "lookupPolicy": {
+          "local": false
+        },
+        "tags": [
+          {
+            "annotations": {
+              "description": "Build and run Node.js 14 applications on UBI 7. For more information about using this builder image, including OpenShift considerations, see https://github.com/sclorg/s2i-nodejs-container/blob/master/14/README.md.",
+              "iconClass": "icon-nodejs",
+              "openshift.io/display-name": "Node.js 14 (UBI 7)",
+              "openshift.io/provider-display-name": "Red Hat, Inc.",
+              "sampleRepo": "https://github.com/sclorg/nodejs-ex.git",
+              "tags": "builder,nodejs,hidden",
+              "version": "14"
+            },
+            "from": {
+              "kind": "DockerImage",
+              "name": "registry.redhat.io/ubi7/nodejs-14:latest"
+            },
+            "generation": 2,
+            "importPolicy": {
+              "importMode": "Legacy"
+            },
+            "name": "14-ubi7",
+            "referencePolicy": {
+              "type": "Local"
+            }
+          },
+          {
+            "annotations": {
+              "description": "Build and run Node.js 14 applications on UBI 8. For more information about using this builder image, including OpenShift considerations, see https://github.com/sclorg/s2i-nodejs-container/blob/master/14/README.md.",
+              "iconClass": "icon-nodejs",
+              "openshift.io/display-name": "Node.js 14 (UBI 8)",
+              "openshift.io/provider-display-name": "Red Hat, Inc.",
+              "sampleRepo": "https://github.com/sclorg/nodejs-ex.git",
+              "tags": "builder,nodejs",
+              "version": "14"
+            },
+            "from": {
+              "kind": "DockerImage",
+              "name": "registry.redhat.io/ubi8/nodejs-14:latest"
+            },
+            "generation": 2,
+            "importPolicy": {
+              "importMode": "Legacy"
+            },
+            "name": "14-ubi8",
+            "referencePolicy": {
+              "type": "Local"
+            }
+          },
+          {
+            "annotations": {
+              "description": "Build and run Node.js 14 applications on UBI 8 Minimal. For more information about using this builder image, including OpenShift considerations, see https://github.com/sclorg/s2i-nodejs-container/blob/master/14-minimal/README.md.",
+              "iconClass": "icon-nodejs",
+              "openshift.io/display-name": "Node.js 14 (UBI 8 Minimal)",
+              "openshift.io/provider-display-name": "Red Hat, Inc.",
+              "sampleRepo": "https://github.com/sclorg/nodejs-ex.git",
+              "tags": "builder,nodejs",
+              "version": "14"
+            },
+            "from": {
+              "kind": "DockerImage",
+              "name": "registry.redhat.io/ubi8/nodejs-14-minimal:latest"
+            },
+            "generation": 2,
+            "importPolicy": {
+              "importMode": "Legacy"
+            },
+            "name": "14-ubi8-minimal",
+            "referencePolicy": {
+              "type": "Local"
+            }
+          },
+          {
+            "annotations": {
+              "description": "Build and run Node.js 16 applications on UBI 8. For more information about using this builder image, including OpenShift considerations, see https://github.com/sclorg/s2i-nodejs-container/blob/master/16/README.md.",
+              "iconClass": "icon-nodejs",
+              "openshift.io/display-name": "Node.js 16 (UBI 8)",
+              "openshift.io/provider-display-name": "Red Hat, Inc.",
+              "sampleRepo": "https://github.com/sclorg/nodejs-ex.git",
+              "tags": "builder,nodejs",
+              "version": "16"
+            },
+            "from": {
+              "kind": "DockerImage",
+              "name": "registry.redhat.io/ubi8/nodejs-16:latest"
+            },
+            "generation": 2,
+            "importPolicy": {
+              "importMode": "Legacy"
+            },
+            "name": "16-ubi8",
+            "referencePolicy": {
+              "type": "Local"
+            }
+          },
+          {
+            "annotations": {
+              "description": "Build and run Node.js 16 applications on UBI 8 Minimal. For more information about using this builder image, including OpenShift considerations, see https://github.com/sclorg/s2i-nodejs-container/blob/master/16-minimal/README.md.",
+              "iconClass": "icon-nodejs",
+              "openshift.io/display-name": "Node.js 16 (UBI 8 Minimal)",
+              "openshift.io/provider-display-name": "Red Hat, Inc.",
+              "sampleRepo": "https://github.com/sclorg/nodejs-ex.git",
+              "tags": "builder,nodejs",
+              "version": "16"
+            },
+            "from": {
+              "kind": "DockerImage",
+              "name": "registry.redhat.io/ubi8/nodejs-16-minimal:latest"
+            },
+            "generation": 2,
+            "importPolicy": {
+              "importMode": "Legacy"
+            },
+            "name": "16-ubi8-minimal",
+            "referencePolicy": {
+              "type": "Local"
+            }
+          },
+          {
+            "annotations": {
+              "description": "Build and run Node.js 16 applications on UBI 9. For more information about using this builder image, including OpenShift considerations, see https://github.com/sclorg/s2i-nodejs-container/blob/master/16/README.md.",
+              "iconClass": "icon-nodejs",
+              "openshift.io/display-name": "Node.js 16 (UBI 9)",
+              "openshift.io/provider-display-name": "Red Hat, Inc.",
+              "sampleRepo": "https://github.com/sclorg/nodejs-ex.git",
+              "tags": "builder,nodejs",
+              "version": "16"
+            },
+            "from": {
+              "kind": "DockerImage",
+              "name": "registry.redhat.io/ubi9/nodejs-16:latest"
+            },
+            "generation": 2,
+            "importPolicy": {
+              "importMode": "Legacy"
+            },
+            "name": "16-ubi9",
+            "referencePolicy": {
+              "type": "Local"
+            }
+          },
+          {
+            "annotations": {
+              "description": "Build and run Node.js 16 applications on UBI 9 Minimal. For more information about using this builder image, including OpenShift considerations, see https://github.com/sclorg/s2i-nodejs-container/blob/master/16-minimal/README.md.",
+              "iconClass": "icon-nodejs",
+              "openshift.io/display-name": "Node.js 16 (UBI 9 Minimal)",
+              "openshift.io/provider-display-name": "Red Hat, Inc.",
+              "sampleRepo": "https://github.com/sclorg/nodejs-ex.git",
+              "tags": "builder,nodejs",
+              "version": "16"
+            },
+            "from": {
+              "kind": "DockerImage",
+              "name": "registry.redhat.io/ubi9/nodejs-16-minimal:latest"
+            },
+            "generation": 2,
+            "importPolicy": {
+              "importMode": "Legacy"
+            },
+            "name": "16-ubi9-minimal",
+            "referencePolicy": {
+              "type": "Local"
+            }
+          },
+          {
+            "annotations": {
+              "description": "Build and run Node.js applications on UBI. For more information about using this builder image, including OpenShift considerations, see https://github.com/sclorg/s2i-nodejs-container/blob/master/16/README.md.\n\nWARNING: By selecting this tag, your application will automatically update to use the latest version of Node.js available on OpenShift, including major version updates.",
+              "iconClass": "icon-nodejs",
+              "openshift.io/display-name": "Node.js (Latest)",
+              "openshift.io/provider-display-name": "Red Hat, Inc.",
+              "sampleRepo": "https://github.com/sclorg/nodejs-ex.git",
+              "supports": "nodejs",
+              "tags": "builder,nodejs"
+            },
+            "from": {
+              "kind": "ImageStreamTag",
+              "name": "16-ubi8"
+            },
+            "generation": 1,
+            "importPolicy": {
+              "importMode": "Legacy"
+            },
+            "name": "latest",
+            "referencePolicy": {
+              "type": "Local"
+            }
+          }
+        ]
+      },
+      "status": {
+        "dockerImageRepository": "image-registry.openshift-image-registry.svc:5000/openshift/nodejs",
+        "publicDockerImageRepository": "default-route-openshift-image-registry.apps-crc.testing/openshift/nodejs",
+        "tags": [
+          {
+            "items": [
+              {
+                "created": "2023-07-26T18:56:51Z",
+                "dockerImageReference": "registry.redhat.io/ubi7/nodejs-14@sha256:9a6eb662ac0c2f8f94d35b162553c3d8b81ea001cb7a9022e1d52e339da98b09",
+                "generation": 2,
+                "image": "sha256:9a6eb662ac0c2f8f94d35b162553c3d8b81ea001cb7a9022e1d52e339da98b09"
+              }
+            ],
+            "tag": "14-ubi7"
+          },
+          {
+            "items": [
+              {
+                "created": "2023-07-26T18:56:51Z",
+                "dockerImageReference": "registry.redhat.io/ubi8/nodejs-14@sha256:b646b221151acc36356a79a1c81094ffa17d9016ae1ceb81c175e634d7bde894",
+                "generation": 2,
+                "image": "sha256:b646b221151acc36356a79a1c81094ffa17d9016ae1ceb81c175e634d7bde894"
+              }
+            ],
+            "tag": "14-ubi8"
+          },
+          {
+            "items": [
+              {
+                "created": "2023-07-26T18:56:51Z",
+                "dockerImageReference": "registry.redhat.io/ubi8/nodejs-14-minimal@sha256:1dd31294b75abe17fec7b5f87f0ddee2e6256359da2559b063a5a5b44e0c9784",
+                "generation": 2,
+                "image": "sha256:1dd31294b75abe17fec7b5f87f0ddee2e6256359da2559b063a5a5b44e0c9784"
+              }
+            ],
+            "tag": "14-ubi8-minimal"
+          },
+          {
+            "items": [
+              {
+                "created": "2023-07-26T18:56:51Z",
+                "dockerImageReference": "registry.redhat.io/ubi8/nodejs-16@sha256:e92d96b0d409c14f7a36ec11b62d9d79c102fa4610e764d75c64b56469b83de8",
+                "generation": 2,
+                "image": "sha256:e92d96b0d409c14f7a36ec11b62d9d79c102fa4610e764d75c64b56469b83de8"
+              }
+            ],
+            "tag": "16-ubi8"
+          },
+          {
+            "items": [
+              {
+                "created": "2023-07-26T18:56:51Z",
+                "dockerImageReference": "registry.redhat.io/ubi8/nodejs-16-minimal@sha256:ce6faef8fc1560faa4f22fe8a19b6386c799c0820bd35c237263f5536570538a",
+                "generation": 2,
+                "image": "sha256:ce6faef8fc1560faa4f22fe8a19b6386c799c0820bd35c237263f5536570538a"
+              }
+            ],
+            "tag": "16-ubi8-minimal"
+          },
+          {
+            "items": [
+              {
+                "created": "2023-07-26T18:56:51Z",
+                "dockerImageReference": "registry.redhat.io/ubi9/nodejs-16@sha256:fe0d986de49351344ee52336bbe7a0d95f1cc3ace9131c37793503a0e13128ba",
+                "generation": 2,
+                "image": "sha256:fe0d986de49351344ee52336bbe7a0d95f1cc3ace9131c37793503a0e13128ba"
+              }
+            ],
+            "tag": "16-ubi9"
+          },
+          {
+            "items": [
+              {
+                "created": "2023-07-26T18:56:51Z",
+                "dockerImageReference": "registry.redhat.io/ubi9/nodejs-16-minimal@sha256:73e550cfb4359b0b9689ee6b7658cee192cd07bf7a1f903e82a12bef7335ffef",
+                "generation": 2,
+                "image": "sha256:73e550cfb4359b0b9689ee6b7658cee192cd07bf7a1f903e82a12bef7335ffef"
+              }
+            ],
+            "tag": "16-ubi9-minimal"
+          },
+          {
+            "items": [
+              {
+                "created": "2023-07-26T18:56:51Z",
+                "dockerImageReference": "registry.redhat.io/ubi8/nodejs-16@sha256:e92d96b0d409c14f7a36ec11b62d9d79c102fa4610e764d75c64b56469b83de8",
+                "generation": 2,
+                "image": "sha256:e92d96b0d409c14f7a36ec11b62d9d79c102fa4610e764d75c64b56469b83de8"
+              }
+            ],
+            "tag": "latest"
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "image.openshift.io/v1",
+      "kind": "ImageStream",
+      "metadata": {
+        "annotations": {
+          "openshift.io/display-name": "Python",
+          "openshift.io/image.dockerRepositoryCheck": "2023-07-26T18:56:50Z",
+          "samples.operator.openshift.io/version": "4.13.6"
+        },
+        "creationTimestamp": "2023-07-26T18:56:23Z",
+        "generation": 2,
+        "labels": {
+          "samples.operator.openshift.io/managed": "true"
+        },
+        "name": "python",
+        "namespace": "openshift",
+        "resourceVersion": "14907",
+        "uid": "ef07a854-3ba3-4325-9c09-d40cafa55d87"
+      },
+      "spec": {
+        "lookupPolicy": {
+          "local": false
+        },
+        "tags": [
+          {
+            "annotations": {
+              "description": "Build and run Python 2.7 applications on UBI 8. For more information about using this builder image, including OpenShift considerations, see https://github.com/sclorg/s2i-python-container/blob/master/2.7/README.md.",
+              "iconClass": "icon-python",
+              "openshift.io/display-name": "Python 2.7 (UBI 8)",
+              "openshift.io/provider-display-name": "Red Hat, Inc.",
+              "sampleRepo": "https://github.com/sclorg/django-ex.git",
+              "supports": "python:2.7,python",
+              "tags": "builder,python",
+              "version": "2.7"
+            },
+            "from": {
+              "kind": "DockerImage",
+              "name": "registry.redhat.io/ubi8/python-27:latest"
+            },
+            "generation": 2,
+            "importPolicy": {
+              "importMode": "Legacy"
+            },
+            "name": "2.7-ubi8",
+            "referencePolicy": {
+              "type": "Local"
+            }
+          },
+          {
+            "annotations": {
+              "description": "Build and run Python 3.6 applications on UBI 8. For more information about using this builder image, including OpenShift considerations, see https://github.com/sclorg/s2i-python-container/blob/master/3.6/README.md.",
+              "iconClass": "icon-python",
+              "openshift.io/display-name": "Python 3.6 (UBI 8)",
+              "openshift.io/provider-display-name": "Red Hat, Inc.",
+              "sampleRepo": "https://github.com/sclorg/django-ex.git",
+              "supports": "python:3.6,python",
+              "tags": "builder,python",
+              "version": "3.6"
+            },
+            "from": {
+              "kind": "DockerImage",
+              "name": "registry.redhat.io/ubi8/python-36:latest"
+            },
+            "generation": 2,
+            "importPolicy": {
+              "importMode": "Legacy"
+            },
+            "name": "3.6-ubi8",
+            "referencePolicy": {
+              "type": "Local"
+            }
+          },
+          {
+            "annotations": {
+              "description": "Build and run Python 3.8 applications on RHEL 7. For more information about using this builder image, including OpenShift considerations, see https://github.com/sclorg/s2i-python-container/blob/master/3.8/README.md.",
+              "iconClass": "icon-python",
+              "openshift.io/display-name": "Python 3.8",
+              "openshift.io/provider-display-name": "Red Hat, Inc.",
+              "sampleRepo": "https://github.com/sclorg/django-ex.git",
+              "supports": "python:3.8,python",
+              "tags": "builder,python,hidden",
+              "version": "3.8"
+            },
+            "from": {
+              "kind": "DockerImage",
+              "name": "registry.redhat.io/rhscl/python-38-rhel7:latest"
+            },
+            "generation": 2,
+            "importPolicy": {
+              "importMode": "Legacy"
+            },
+            "name": "3.8",
+            "referencePolicy": {
+              "type": "Local"
+            }
+          },
+          {
+            "annotations": {
+              "description": "Build and run Python 3.8 applications on UBI 7. For more information about using this builder image, including OpenShift considerations, see https://github.com/sclorg/s2i-python-container/blob/master/3.8/README.md.",
+              "iconClass": "icon-python",
+              "openshift.io/display-name": "Python 3.8 (UBI 7)",
+              "openshift.io/provider-display-name": "Red Hat, Inc.",
+              "sampleRepo": "https://github.com/sclorg/django-ex.git",
+              "supports": "python:3.8,python",
+              "tags": "builder,python",
+              "version": "3.8"
+            },
+            "from": {
+              "kind": "DockerImage",
+              "name": "registry.redhat.io/ubi7/python-38:latest"
+            },
+            "generation": 2,
+            "importPolicy": {
+              "importMode": "Legacy"
+            },
+            "name": "3.8-ubi7",
+            "referencePolicy": {
+              "type": "Local"
+            }
+          },
+          {
+            "annotations": {
+              "description": "Build and run Python 3.8 applications on UBI 8. For more information about using this builder image, including OpenShift considerations, see https://github.com/sclorg/s2i-python-container/blob/master/3.8/README.md.",
+              "iconClass": "icon-python",
+              "openshift.io/display-name": "Python 3.8 (UBI 8)",
+              "openshift.io/provider-display-name": "Red Hat, Inc.",
+              "sampleRepo": "https://github.com/sclorg/django-ex.git",
+              "supports": "python:3.8,python",
+              "tags": "builder,python",
+              "version": "3.8"
+            },
+            "from": {
+              "kind": "DockerImage",
+              "name": "registry.redhat.io/ubi8/python-38:latest"
+            },
+            "generation": 2,
+            "importPolicy": {
+              "importMode": "Legacy"
+            },
+            "name": "3.8-ubi8",
+            "referencePolicy": {
+              "type": "Local"
+            }
+          },
+          {
+            "annotations": {
+              "description": "Build and run Python 3.9 applications on UBI 8. For more information about using this builder image, including OpenShift considerations, see https://github.com/sclorg/s2i-python-container/blob/master/3.9/README.md.",
+              "iconClass": "icon-python",
+              "openshift.io/display-name": "Python 3.9 (UBI 8)",
+              "openshift.io/provider-display-name": "Red Hat, Inc.",
+              "sampleRepo": "https://github.com/sclorg/django-ex.git",
+              "supports": "python:3.9,python",
+              "tags": "builder,python",
+              "version": "3.9"
+            },
+            "from": {
+              "kind": "DockerImage",
+              "name": "registry.redhat.io/ubi8/python-39:latest"
+            },
+            "generation": 2,
+            "importPolicy": {
+              "importMode": "Legacy"
+            },
+            "name": "3.9-ubi8",
+            "referencePolicy": {
+              "type": "Local"
+            }
+          },
+          {
+            "annotations": {
+              "description": "Build and run Python 3.9 applications on UBI 9. For more information about using this builder image, including OpenShift considerations, see https://github.com/sclorg/s2i-python-container/blob/master/3.9/README.md.",
+              "iconClass": "icon-python",
+              "openshift.io/display-name": "Python 3.9 (UBI 9)",
+              "openshift.io/provider-display-name": "Red Hat, Inc.",
+              "sampleRepo": "https://github.com/sclorg/django-ex.git",
+              "supports": "python:3.9,python",
+              "tags": "builder,python",
+              "version": "3.9"
+            },
+            "from": {
+              "kind": "DockerImage",
+              "name": "registry.redhat.io/ubi9/python-39:latest"
+            },
+            "generation": 2,
+            "importPolicy": {
+              "importMode": "Legacy"
+            },
+            "name": "3.9-ubi9",
+            "referencePolicy": {
+              "type": "Local"
+            }
+          },
+          {
+            "annotations": {
+              "description": "Build and run Python applications on UBI. For more information about using this builder image, including OpenShift considerations, see https://github.com/sclorg/s2i-python-container/blob/master/3.9/README.md.\n\nWARNING: By selecting this tag, your application will automatically update to use the latest version of Python available on OpenShift, including major version updates.",
+              "iconClass": "icon-python",
+              "openshift.io/display-name": "Python (Latest)",
+              "openshift.io/provider-display-name": "Red Hat, Inc.",
+              "sampleRepo": "https://github.com/sclorg/django-ex.git",
+              "supports": "python",
+              "tags": "builder,python"
+            },
+            "from": {
+              "kind": "ImageStreamTag",
+              "name": "3.9-ubi8"
+            },
+            "generation": 1,
+            "importPolicy": {
+              "importMode": "Legacy"
+            },
+            "name": "latest",
+            "referencePolicy": {
+              "type": "Local"
+            }
+          }
+        ]
+      },
+      "status": {
+        "dockerImageRepository": "image-registry.openshift-image-registry.svc:5000/openshift/python",
+        "publicDockerImageRepository": "default-route-openshift-image-registry.apps-crc.testing/openshift/python",
+        "tags": [
+          {
+            "items": [
+              {
+                "created": "2023-07-26T18:56:50Z",
+                "dockerImageReference": "registry.redhat.io/ubi8/python-27@sha256:190ea81f2f64ccf7f7c8cb9dc4612eda59eb9e3d2e17f71727a270f078f5114a",
+                "generation": 2,
+                "image": "sha256:190ea81f2f64ccf7f7c8cb9dc4612eda59eb9e3d2e17f71727a270f078f5114a"
+              }
+            ],
+            "tag": "2.7-ubi8"
+          },
+          {
+            "items": [
+              {
+                "created": "2023-07-26T18:56:50Z",
+                "dockerImageReference": "registry.redhat.io/ubi8/python-36@sha256:971dcd27c3d53f58eb59c946f123223b95662841c1214a394a445380beb75f59",
+                "generation": 2,
+                "image": "sha256:971dcd27c3d53f58eb59c946f123223b95662841c1214a394a445380beb75f59"
+              }
+            ],
+            "tag": "3.6-ubi8"
+          },
+          {
+            "items": [
+              {
+                "created": "2023-07-26T18:56:50Z",
+                "dockerImageReference": "registry.redhat.io/rhscl/python-38-rhel7@sha256:8896e5ded8b15b1746261d1bfe421dc53621d7fbc8568b74d76bdedab30da62f",
+                "generation": 2,
+                "image": "sha256:8896e5ded8b15b1746261d1bfe421dc53621d7fbc8568b74d76bdedab30da62f"
+              }
+            ],
+            "tag": "3.8"
+          },
+          {
+            "items": [
+              {
+                "created": "2023-07-26T18:56:50Z",
+                "dockerImageReference": "registry.redhat.io/ubi7/python-38@sha256:8896e5ded8b15b1746261d1bfe421dc53621d7fbc8568b74d76bdedab30da62f",
+                "generation": 2,
+                "image": "sha256:8896e5ded8b15b1746261d1bfe421dc53621d7fbc8568b74d76bdedab30da62f"
+              }
+            ],
+            "tag": "3.8-ubi7"
+          },
+          {
+            "items": [
+              {
+                "created": "2023-07-26T18:56:50Z",
+                "dockerImageReference": "registry.redhat.io/ubi8/python-38@sha256:4a1d451e1d513115ff54c6e80299e761f60454b5f2f091f3c9ddb9fc1d61f5c4",
+                "generation": 2,
+                "image": "sha256:4a1d451e1d513115ff54c6e80299e761f60454b5f2f091f3c9ddb9fc1d61f5c4"
+              }
+            ],
+            "tag": "3.8-ubi8"
+          },
+          {
+            "items": [
+              {
+                "created": "2023-07-26T18:56:50Z",
+                "dockerImageReference": "registry.redhat.io/ubi8/python-39@sha256:aace8817af3c1c92b10abfa9f1e027340d53d13fb97e2f4ce960cf9947041578",
+                "generation": 2,
+                "image": "sha256:aace8817af3c1c92b10abfa9f1e027340d53d13fb97e2f4ce960cf9947041578"
+              }
+            ],
+            "tag": "3.9-ubi8"
+          },
+          {
+            "items": [
+              {
+                "created": "2023-07-26T18:56:50Z",
+                "dockerImageReference": "registry.redhat.io/ubi9/python-39@sha256:0c2f708b4977469d090719d939778eb95b42c02c1da6476aa95f2e875920652b",
+                "generation": 2,
+                "image": "sha256:0c2f708b4977469d090719d939778eb95b42c02c1da6476aa95f2e875920652b"
+              }
+            ],
+            "tag": "3.9-ubi9"
+          },
+          {
+            "items": [
+              {
+                "created": "2023-07-26T18:56:50Z",
+                "dockerImageReference": "registry.redhat.io/ubi8/python-39@sha256:aace8817af3c1c92b10abfa9f1e027340d53d13fb97e2f4ce960cf9947041578",
+                "generation": 2,
+                "image": "sha256:aace8817af3c1c92b10abfa9f1e027340d53d13fb97e2f4ce960cf9947041578"
+              }
+            ],
+            "tag": "latest"
+          }
+        ]
+      }
+    }
+  ],
+  "kind": "List",
+  "metadata": {
+    "resourceVersion": ""
+  }
+}

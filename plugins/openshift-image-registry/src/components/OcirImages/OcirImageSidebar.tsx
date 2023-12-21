@@ -1,7 +1,6 @@
 import React from 'react';
 
 import { CopyTextButton, MarkdownContent } from '@backstage/core-components';
-import { BackstageTheme } from '@backstage/theme';
 
 import {
   Box,
@@ -11,13 +10,14 @@ import {
   IconButton,
   Input,
   makeStyles,
+  Theme,
   Typography,
 } from '@material-ui/core';
 import Close from '@material-ui/icons/Close';
 
 import { ImageStreamMetadata } from '../../types';
 
-const useDrawerStyles = makeStyles<BackstageTheme>(theme =>
+const useDrawerStyles = makeStyles<Theme>(theme =>
   createStyles({
     paper: {
       width: '40%',
@@ -27,7 +27,7 @@ const useDrawerStyles = makeStyles<BackstageTheme>(theme =>
   }),
 );
 
-const useDrawerContentStyles = makeStyles<BackstageTheme>(theme =>
+const useDrawerContentStyles = makeStyles<Theme>(theme =>
   createStyles({
     header: {
       display: 'flex',
@@ -56,14 +56,14 @@ const useDrawerContentStyles = makeStyles<BackstageTheme>(theme =>
 );
 
 type OcirImageSidebarProps = {
-  isOpen: boolean;
-  toggleDrawer: React.Dispatch<React.SetStateAction<boolean>>;
+  open: boolean;
+  onClose: () => void;
   imageStream: ImageStreamMetadata;
 };
 
 export const OcirImageSidebar = ({
-  isOpen,
-  toggleDrawer,
+  open,
+  onClose,
   imageStream,
 }: OcirImageSidebarProps) => {
   const classes = useDrawerStyles();
@@ -71,8 +71,8 @@ export const OcirImageSidebar = ({
   return (
     <Drawer
       anchor="right"
-      open={isOpen}
-      onClose={() => toggleDrawer(false)}
+      open={open}
+      onClose={onClose}
       classes={{
         paper: classes.paper,
       }}
@@ -83,7 +83,7 @@ export const OcirImageSidebar = ({
           <IconButton
             key="dismiss"
             title="Close the drawer"
-            onClick={() => toggleDrawer(false)}
+            onClick={onClose}
             color="inherit"
           >
             <Close className={contentClasses.icon} />
@@ -95,7 +95,7 @@ export const OcirImageSidebar = ({
               Description
             </Typography>
             <MarkdownContent
-              content={imageStream.description || 'N/A'}
+              content={imageStream.description ?? 'N/A'}
               className={contentClasses.description}
             />
           </Box>
@@ -112,7 +112,7 @@ export const OcirImageSidebar = ({
               Version
             </Typography>
             <span className={contentClasses.description}>
-              {imageStream.version || 'N/A'}
+              {imageStream.version ?? 'N/A'}
             </span>
           </Box>
           <Box>
@@ -120,7 +120,7 @@ export const OcirImageSidebar = ({
               Size
             </Typography>
             <span className={contentClasses.description}>
-              {imageStream.size || 'N/A'}
+              {imageStream.size ?? 'N/A'}
             </span>
           </Box>
           <Box>
@@ -132,8 +132,8 @@ export const OcirImageSidebar = ({
               Tags
             </Typography>
             {imageStream.tags?.length
-              ? imageStream.tags.map((tag: string, i: number) => (
-                  <Chip size="small" label={tag} key={i} />
+              ? imageStream.tags.map((tag: string) => (
+                  <Chip key={tag} size="small" label={tag} />
                 ))
               : 'N/A'}
           </Box>
