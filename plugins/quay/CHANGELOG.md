@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-quay [1.4.19](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.4.18...@janus-idp/backstage-plugin-quay@1.4.19) (2023-12-21)
+
+
+### Bug Fixes
+
+* **quay:** fix infinite progress bar when scan is unsupported ([#1031](https://github.com/janus-idp/backstage-plugins/issues/1031)) ([2c050db](https://github.com/janus-idp/backstage-plugins/commit/2c050dbcfe4fae55ce89f9a8b54c8c4550b804f8))
+
 ## @janus-idp/backstage-plugin-quay [1.4.18](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.4.17...@janus-idp/backstage-plugin-quay@1.4.18) (2023-12-20)
 
 
