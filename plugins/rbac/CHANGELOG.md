@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac [1.9.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.8.0...@janus-idp/backstage-plugin-rbac@1.9.0) (2023-12-21)
+
+
+### Features
+
+* **rbac:** support for adding permission policies to roles ([#1021](https://github.com/janus-idp/backstage-plugins/issues/1021)) ([dd11c3a](https://github.com/janus-idp/backstage-plugins/commit/dd11c3a14eebaea9e8acc43b0c28b338d5fa14c1))
+
 ## @janus-idp/backstage-plugin-rbac [1.8.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.7.0...@janus-idp/backstage-plugin-rbac@1.8.0) (2023-12-20)
 
 
