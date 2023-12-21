@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-keycloak-backend [1.7.11](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-keycloak-backend@1.7.10...@janus-idp/backstage-plugin-keycloak-backend@1.7.11) (2023-12-21)
+
+
+### Bug Fixes
+
+* **keycloak:** fix [#591](https://github.com/janus-idp/backstage-plugins/issues/591): Cleanup some small code smells in Keycloak plugin ([#1022](https://github.com/janus-idp/backstage-plugins/issues/1022)) ([74cb7b1](https://github.com/janus-idp/backstage-plugins/commit/74cb7b1ea552e4e52128e3bb87c4713eb22f1d92))
+
 ## @janus-idp/backstage-plugin-keycloak-backend [1.7.10](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-keycloak-backend@1.7.9...@janus-idp/backstage-plugin-keycloak-backend@1.7.10) (2023-12-07)
 
 
