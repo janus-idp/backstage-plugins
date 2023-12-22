@@ -124,12 +124,12 @@ export const TerminalComponent = () => {
   const setupPodRef = useRef(setupPod);
 
   React.useEffect(() => {
-    if (!token || !cluster) {
+    if (!token || !cluster || !namespace) {
       return;
     }
     const setupPodCurrent = setupPodRef.current;
     setLoading(true);
-    setupPodCurrent(cluster, token, namespace!).then(names => {
+    setupPodCurrent(cluster, token, namespace).then(names => {
       if (!names) {
         setDisplayModal(true);
         setLoading(false);
@@ -146,7 +146,7 @@ export const TerminalComponent = () => {
         `base64url.workspace.id.k8s.io.${encodeURIComponent(
           names.workspaceID,
         )}`,
-        `base64url.namespace.k8s.io.${encodeURIComponent(namespace!)}`,
+        `base64url.namespace.k8s.io.${encodeURIComponent(namespace)}`,
         `base64url.terminal.id.k8s.io.${encodeURIComponent(names.terminalID)}`,
         `base64url.terminal.size.k8s.io.${encodeURIComponent(
           `${terminal.cols}x${terminal.rows}`,
@@ -191,10 +191,10 @@ export const TerminalComponent = () => {
             Submit
           </Button>
         </form>
-        {displayModal && (
+        {displayModal && cluster && token && (
           <NamespacePickerDialog
-            onInit={() => getNamespaces(restServerUrl, cluster!, token!)}
-            previousNamespace={namespace!}
+            onInit={() => getNamespaces(restServerUrl, cluster, token)}
+            previousNamespace={namespace}
             open={displayModal}
             handleClose={handleClose}
             onSubmit={handleSubmitModal}

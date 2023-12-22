@@ -7,9 +7,7 @@ import {
   setupRequestMockHandlers,
   TestApiProvider,
 } from '@backstage/test-utils';
-import { lightTheme } from '@backstage/theme';
 
-import { ThemeProvider } from '@material-ui/core';
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
@@ -70,25 +68,23 @@ describe('TerminalComponent', () => {
       }),
       rest.post(`https://${DOMAIN_URL}/rest`, (req, res, ctx) => {
         const url = req.url.searchParams.get('url');
-        switch (url) {
-          case WORKSPACES_URL:
-            if (
-              req.headers.get('Authorization') ===
-              `Bearer ${NOT_VALID_PERMISSIONS_TOKEN}`
-            ) {
-              return res(
-                ctx.status(403),
-                ctx.json(require('./__fixtures__/invalidToken.json')),
-              );
-            }
+        if (url === WORKSPACES_URL) {
+          if (
+            req.headers.get('Authorization') ===
+            `Bearer ${NOT_VALID_PERMISSIONS_TOKEN}`
+          ) {
             return res(
-              ctx.delay(800),
-              ctx.status(200),
-              ctx.json(require('./__fixtures__/createWorkspace.json')),
+              ctx.status(403),
+              ctx.json(require('./__fixtures__/invalidToken.json')),
             );
-          default:
-            return res(ctx.status(404), ctx.json({}));
+          }
+          return res(
+            ctx.delay(800),
+            ctx.status(200),
+            ctx.json(require('./__fixtures__/createWorkspace.json')),
+          );
         }
+        return res(ctx.status(404), ctx.json({}));
       }),
     );
   });
@@ -97,25 +93,21 @@ describe('TerminalComponent', () => {
   });
   it('should render form for the Web Terminal', async () => {
     const rendered = render(
-      <ThemeProvider theme={lightTheme}>
-        <TestApiProvider apis={[[configApiRef, mockConfig]]}>
-          <EntityProvider entity={entityMock}>
-            <TerminalComponent />
-          </EntityProvider>
-        </TestApiProvider>
-      </ThemeProvider>,
+      <TestApiProvider apis={[[configApiRef, mockConfig]]}>
+        <EntityProvider entity={entityMock}>
+          <TerminalComponent />
+        </EntityProvider>
+      </TestApiProvider>,
     );
     expect(rendered.getByText('Web Terminal')).toBeInTheDocument();
   });
   it('should start loading', async () => {
     const rendered = render(
-      <ThemeProvider theme={lightTheme}>
-        <TestApiProvider apis={[[configApiRef, mockConfig]]}>
-          <EntityProvider entity={entityMock}>
-            <TerminalComponent />
-          </EntityProvider>
-        </TestApiProvider>
-      </ThemeProvider>,
+      <TestApiProvider apis={[[configApiRef, mockConfig]]}>
+        <EntityProvider entity={entityMock}>
+          <TerminalComponent />
+        </EntityProvider>
+      </TestApiProvider>,
     );
     const inputField = rendered
       .getByTestId('token-input')
@@ -134,13 +126,11 @@ describe('TerminalComponent', () => {
 
   it('should render popup on token without valid permissions', async () => {
     const rendered = render(
-      <ThemeProvider theme={lightTheme}>
-        <TestApiProvider apis={[[configApiRef, mockConfig]]}>
-          <EntityProvider entity={entityMock}>
-            <TerminalComponent />
-          </EntityProvider>
-        </TestApiProvider>
-      </ThemeProvider>,
+      <TestApiProvider apis={[[configApiRef, mockConfig]]}>
+        <EntityProvider entity={entityMock}>
+          <TerminalComponent />
+        </EntityProvider>
+      </TestApiProvider>,
     );
     const inputField = rendered
       .getByTestId('token-input')
@@ -171,13 +161,11 @@ describe('TerminalComponent', () => {
       })),
     });
     const rendered = render(
-      <ThemeProvider theme={lightTheme}>
-        <TestApiProvider apis={[[configApiRef, mockConfig]]}>
-          <EntityProvider entity={entityMock}>
-            <TerminalComponent />
-          </EntityProvider>
-        </TestApiProvider>
-      </ThemeProvider>,
+      <TestApiProvider apis={[[configApiRef, mockConfig]]}>
+        <EntityProvider entity={entityMock}>
+          <TerminalComponent />
+        </EntityProvider>
+      </TestApiProvider>,
     );
     const inputField = rendered
       .getByTestId('token-input')
