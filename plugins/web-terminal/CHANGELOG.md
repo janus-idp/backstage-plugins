@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-web-terminal [1.2.12](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-web-terminal@1.2.11...@janus-idp/backstage-plugin-web-terminal@1.2.12) (2023-12-22)
+
+
+### Bug Fixes
+
+* **web-terminal:** fix [#598](https://github.com/janus-idp/backstage-plugins/issues/598): Cleanup some small code smells in the web-terminal plugin ([#1023](https://github.com/janus-idp/backstage-plugins/issues/1023)) ([3d2bafb](https://github.com/janus-idp/backstage-plugins/commit/3d2bafb3174189e16cfe3988ba2659876e7919d4))
+
 ## @janus-idp/backstage-plugin-web-terminal [1.2.11](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-web-terminal@1.2.10...@janus-idp/backstage-plugin-web-terminal@1.2.11) (2023-12-07)
 
 
