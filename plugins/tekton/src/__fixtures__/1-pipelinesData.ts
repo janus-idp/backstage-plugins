@@ -246,6 +246,7 @@ export const mockKubernetesPlrResponse = {
       kind: 'PipelineRun',
       metadata: {
         annotations: {
+          'chains.tekton.dev/signed': 'true',
           'pipeline.openshift.io/started-by': 'kube:admin',
         },
         creationTimestamp: new Date('2023-03-30T07:03:04Z'),
@@ -319,6 +320,13 @@ export const mockKubernetesPlrResponse = {
           ],
           workspaces: [],
         },
+        pipelineResults: [
+          {
+            name: 'MY_SCAN_OUTPUT',
+            value:
+              '{"vulnerabilities":{\n"critical": 1,\n"high": 9,\n"medium": 20,\n"low": 1,\n"unknown": 0},\n"unpatched_vulnerabilities": {\n"critical": 0,\n"high": 1,\n"medium": 0,\n"low":1}\n}\n',
+          },
+        ],
         startTime: '2023-03-30T07:03:04Z',
       },
     },
@@ -328,6 +336,7 @@ export const mockKubernetesPlrResponse = {
       metadata: {
         annotations: {
           'pipeline.openshift.io/started-by': 'kube-admin',
+          'chains.tekton.dev/signed': 'false',
         },
         labels: {
           'backstage.io/kubernetes-id': 'test-backstage',
@@ -406,6 +415,13 @@ export const mockKubernetesPlrResponse = {
           startTime: '2023-04-11T06:48:50Z',
         },
         startTime: '2023-04-11T05:49:05Z',
+        results: [
+          {
+            name: 'SCAN_OUTPUT',
+            value:
+              '{"vulnerabilities":{\n"critical": 13,\n"high": 29,\n"medium": 32,\n"low": 3,\n"unknown": 0},\n"unpatched_vulnerabilities": {\n"critical": 0,\n"high": 1,\n"medium": 0,\n"low":1}\n}\n',
+          },
+        ],
       },
     },
   ],

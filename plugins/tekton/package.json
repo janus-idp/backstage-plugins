@@ -41,6 +41,7 @@
     "@patternfly/react-charts": "^7.1.1",
     "@patternfly/react-core": "^5.1.1",
     "@patternfly/react-icons": "^5.1.1",
+    "@patternfly/react-tokens": "^5.1.2",
     "@patternfly/react-topology": "^5.1.0",
     "classnames": "^2.3.2",
     "dagre": "^0.8.5",
