@@ -1,3 +1,16 @@
+## @janus-idp/backstage-plugin-tekton [3.4.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.3.0...@janus-idp/backstage-plugin-tekton@3.4.0) (2023-12-22)
+
+
+### Features
+
+* **tekton:** add CVE summary and signed badge ([#1028](https://github.com/janus-idp/backstage-plugins/issues/1028)) ([effdef0](https://github.com/janus-idp/backstage-plugins/commit/effdef085deaeea78a819d1bde960f83820ec705))
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.3.0
+
 ## @janus-idp/backstage-plugin-tekton [3.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.2.0...@janus-idp/backstage-plugin-tekton@3.3.0) (2023-12-20)
 
 
