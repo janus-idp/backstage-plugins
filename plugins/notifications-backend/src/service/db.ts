@@ -14,6 +14,8 @@ export async function initDB(dbConfig: Config): Promise<Knex<any, any>> {
     dbConfig.getOptional('plugin.notifications.knexConfig'),
     dbConfig.get(),
     dbConfig.getOptional('knexConfig'),
+    dbConfig.getOptional('plugin.notifications'),
+    dbConfig.getOptional('plugin.notifications.knexConfig'),
   );
   const dbClient = knex(knexConfig);
 
