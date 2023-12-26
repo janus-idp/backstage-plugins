@@ -1,7 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 
-import { Content, InfoCard } from '@backstage/core-components';
+import { Content, InfoCard, Link } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { AboutField } from '@backstage/plugin-catalog';
 
@@ -11,24 +10,12 @@ import moment from 'moment';
 
 import { ProcessInstance } from '@janus-idp/backstage-plugin-orchestrator-common';
 
+import { VALUE_UNAVAILABLE } from '../../constants';
 import { nextExecuteWorkflowRouteRef } from '../../routes';
-import { firstLetterCapital } from '../../utils';
+import { capitalize } from '../../utils/StringUtils';
+import { EditorViewKind, WorkflowEditor } from '../WorkflowEditor';
 import { ProcessInstanceStatus } from './ProcessInstanceStatus';
-import { WorkflowSuggestion } from './types';
-
-export type WorkflowRunDetail = {
-  id: string;
-  name: string;
-  workflow: string;
-  status: string;
-  started: string;
-  duration: string;
-  category?: string;
-  description?: string;
-  nextWorflowSuggestions?: {
-    [key: string]: WorkflowSuggestion | WorkflowSuggestion[];
-  };
-};
+import { WorkflowRunDetail, WorkflowSuggestion } from './WorkflowRunDetail';
 
 export const mapProcessInstanceToDetails = (
   instance: ProcessInstance,
@@ -45,31 +32,26 @@ export const mapProcessInstanceToDetails = (
     variables = instance?.variables;
   }
 
-  const nextWorflowSuggestions: WorkflowRunDetail['nextWorflowSuggestions'] =
+  const nextWorkflowSuggestions: WorkflowRunDetail['nextWorkflowSuggestions'] =
     // @ts-ignore
     variables?.workflowdata?.workflowOptions;
 
-  const row: WorkflowRunDetail = {
+  return {
     id: instance.id,
     name,
     workflow: name,
-    started: start.format('MMM DD, YYYY LTS'),
+    started: start.toDate().toLocaleString(),
     duration: duration.humanize(),
     category: instance.category,
     status: instance.state,
     description: instance.description,
-    nextWorflowSuggestions,
+    nextWorkflowSuggestions,
   };
-
-  return row;
 };
 
 const useStyles = makeStyles(_ => ({
   card: {
     height: '100%',
-  },
-  link: {
-    color: '-webkit-link',
   },
 }));
 
@@ -89,8 +71,8 @@ export const WorkflowInstancePageContent = ({
 
   const detailLabelValues = [
     {
-      label: 'Type',
-      value: firstLetterCapital(details.category),
+      label: 'Category',
+      value: capitalize(details.category ?? VALUE_UNAVAILABLE),
     },
     { label: 'Started', value: details.started },
     { label: 'Duration', value: details.duration },
@@ -104,16 +86,16 @@ export const WorkflowInstancePageContent = ({
 
   const nextWorkflows: { title: string; link: string }[] = [];
 
-  if (details.nextWorflowSuggestions) {
-    Object.entries(details.nextWorflowSuggestions).forEach(([_, value]) => {
-      const nextWorflowSuggestions: WorkflowSuggestion[] = Array.isArray(value)
+  if (details.nextWorkflowSuggestions) {
+    Object.entries(details.nextWorkflowSuggestions).forEach(([_, value]) => {
+      const nextWorkflowSuggestions: WorkflowSuggestion[] = Array.isArray(value)
         ? value
         : [value];
-      nextWorflowSuggestions.forEach(nextWorflowSuggestion => {
+      nextWorkflowSuggestions.forEach(nextWorkflowSuggestion => {
         // Produce flat structure
         nextWorkflows.push({
-          title: nextWorflowSuggestion.name,
-          link: executeWorkflowLink({ workflowId: nextWorflowSuggestion.id }),
+          title: nextWorkflowSuggestion.name,
+          link: executeWorkflowLink({ workflowId: nextWorkflowSuggestion.id }),
         });
       });
     });
@@ -121,7 +103,7 @@ export const WorkflowInstancePageContent = ({
 
   return (
     <Content noPadding>
-      <Grid container spacing={2}>
+      <Grid container>
         <Grid item xs={6}>
           <InfoCard title="Details" divider={false} className={styles.card}>
             <Grid container spacing={3}>
@@ -134,29 +116,38 @@ export const WorkflowInstancePageContent = ({
           </InfoCard>
         </Grid>
 
-        {
-          /* details.category === WorkflowCategory.ASSESSMENT */ nextWorkflows.length >
-            0 && (
-            <Grid item xs={6}>
-              <InfoCard
-                title="Assessment Results"
-                subheader="Select your next workflow"
-                divider={false}
-                className={styles.card}
-              >
-                <Grid container spacing={3}>
-                  {nextWorkflows.map(item => (
-                    <Grid item xs={4} key={item.title}>
-                      <Link to={item.link} className={styles.link}>
-                        {item.title}
-                      </Link>
-                    </Grid>
-                  ))}
+        <Grid item xs={6}>
+          <InfoCard title="Results" divider={false} className={styles.card}>
+            <Grid container spacing={3}>
+              {nextWorkflows.map(item => (
+                <Grid item xs={4} key={item.title}>
+                  <Link to={item.link}>{item.title}</Link>
                 </Grid>
-              </InfoCard>
+              ))}
             </Grid>
-          )
-        }
+          </InfoCard>
+        </Grid>
+
+        <Grid item xs={12}>
+          <InfoCard
+            title="Workflow definition"
+            divider={false}
+            className={styles.card}
+          >
+            <WorkflowEditor
+              workflowId={processInstance.description}
+              kind={EditorViewKind.EXTENDED_DIAGRAM_VIEWER}
+            />
+          </InfoCard>
+        </Grid>
+
+        <Grid item xs={6}>
+          <InfoCard title="Timeline" divider={false} className={styles.card} />
+        </Grid>
+
+        <Grid item xs={6}>
+          <InfoCard title="Variables" divider={false} className={styles.card} />
+        </Grid>
       </Grid>
     </Content>
   );

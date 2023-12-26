@@ -1,39 +1,54 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useAsync } from 'react-use';
 
-import { SelectItem, Table, TableColumn } from '@backstage/core-components';
+import {
+  ErrorPanel,
+  InfoCard,
+  Link,
+  SelectItem,
+  Table,
+  TableColumn,
+} from '@backstage/core-components';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 
-import { Box, makeStyles } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 
-import { WorkflowCategory } from '@janus-idp/backstage-plugin-orchestrator-common';
+import { ProcessInstanceState } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { orchestratorApiRef } from '../../api';
+import { VALUE_UNAVAILABLE } from '../../constants';
 import { nextWorkflowInstanceRouteRef } from '../../routes';
-import { firstLetterCapital } from '../../utils';
+import { humanizeProcessInstanceState } from '../../utils';
+import { capitalize } from '../../utils/StringUtils';
 import { ProcessInstanceStatus } from './ProcessInstanceStatus';
-import { StatusSelector } from './StatusSelector';
+import { Selector } from './Selector';
 import { TableExpandCollapse } from './TableExpandCollapse';
-import {
-  mapProcessInstanceToDetails,
-  WorkflowRunDetail,
-} from './WorkflowInstancePageContent';
-import { WorkflowSelector } from './WorkflowSelector';
-import { WrapperInfoCard } from './WrapperInfoCard';
+import { mapProcessInstanceToDetails } from './WorkflowInstancePageContent';
+import { WorkflowRunDetail } from './WorkflowRunDetail';
 
-const useStyles = makeStyles(_ => ({
-  link: {
-    color: '-webkit-link',
-  },
-}));
+const makeSelectItemsFromProcessInstanceValues = () =>
+  [
+    ProcessInstanceState.Active,
+    ProcessInstanceState.Error,
+    ProcessInstanceState.Completed,
+    ProcessInstanceState.Aborted,
+    ProcessInstanceState.Suspended,
+  ].map(
+    (status): SelectItem => ({
+      label: humanizeProcessInstanceState(status) || '',
+      value: status,
+    }),
+  );
 
 export const WorkflowRunsTabContent = () => {
   const orchestratorApi = useApi(orchestratorApiRef);
   const workflowInstanceLink = useRouteRef(nextWorkflowInstanceRouteRef);
-  const styles = useStyles();
-  const [workflow, setWorkflow] = useState<string>();
-  const [status, setStatus] = useState<string>();
+  const [workflowSelectorValue, setWorkflowSelectorValue] = useState<string>(
+    Selector.AllItems,
+  );
+  const [statusSelectorValue, setStatusSelectorValue] = useState<string>(
+    Selector.AllItems,
+  );
   const [isExpanded, setIsExpanded] = React.useState(true);
 
   const { loading, error, value } = useAsync(async () => {
@@ -49,30 +64,25 @@ export const WorkflowRunsTabContent = () => {
     (): TableColumn<WorkflowRunDetail>[] => [
       {
         title: 'Name',
-        render: data =>
-          data.category?.toLowerCase() ===
-          WorkflowCategory.ASSESSMENT.toLowerCase() ? (
-            <Link
-              className={styles.link}
-              to={workflowInstanceLink({ instanceId: data.id })}
-            >
-              {data.name}
-            </Link>
-          ) : (
-            data.name
-          ),
+        render: data => (
+          <Link to={workflowInstanceLink({ instanceId: data.id })}>
+            {data.name}
+          </Link>
+        ),
       },
-      { title: 'Type', render: data => firstLetterCapital(data.category) },
+      {
+        title: 'Category',
+        render: data => capitalize(data.category ?? VALUE_UNAVAILABLE),
+      },
       {
         title: 'Status',
         render: data => <ProcessInstanceStatus status={data.status} />,
       },
       { title: 'Started', field: 'started' },
       { title: 'Duration', field: 'duration' },
-      { title: 'Component', field: 'component' },
       { title: 'ID', field: 'id' },
     ],
-    [styles.link, workflowInstanceLink],
+    [workflowInstanceLink],
   );
 
   const workflows: SelectItem[] = React.useMemo(
@@ -89,51 +99,72 @@ export const WorkflowRunsTabContent = () => {
     [value],
   );
 
+  const statuses = React.useMemo(makeSelectItemsFromProcessInstanceValues, []);
+
   const filteredData = React.useMemo(
     () =>
       (value || []).filter(
         (row: WorkflowRunDetail) =>
-          (!workflow || row.workflow === workflow) &&
-          (!status || row.status === status),
+          (workflowSelectorValue === Selector.AllItems ||
+            row.workflow === workflowSelectorValue) &&
+          (statusSelectorValue === Selector.AllItems ||
+            row.status === statusSelectorValue),
       ),
-    [status, value, workflow],
+    [statusSelectorValue, value, workflowSelectorValue],
   );
 
-  const selectors = (
-    <Box sx={{ display: 'flex', justifyContent: 'flex-start' }}>
-      <Box>
-        <WorkflowSelector
-          workflows={workflows}
-          onChange={setWorkflow}
-          value={workflow}
-        />
-      </Box>
-      <Box paddingLeft="1rem">
-        <StatusSelector onChange={setStatus} value={status} />
-      </Box>
-      <Box sx={{ display: 'flex', flexGrow: 1, justifyContent: 'flex-end' }}>
-        <TableExpandCollapse
-          isExpanded={isExpanded}
-          setIsExpanded={setIsExpanded}
-        />
-      </Box>
-    </Box>
+  const selectors = React.useMemo(
+    () => (
+      <Grid container alignItems="center">
+        <Grid item>
+          <Selector
+            label="Workflow"
+            items={workflows}
+            onChange={setWorkflowSelectorValue}
+            selected={workflowSelectorValue}
+          />
+        </Grid>
+        <Grid item>
+          <Selector
+            label="Status"
+            items={statuses}
+            onChange={setStatusSelectorValue}
+            selected={statusSelectorValue}
+          />
+        </Grid>
+        <Grid item style={{ marginLeft: 'auto' }}>
+          <TableExpandCollapse
+            isExpanded={isExpanded}
+            setIsExpanded={setIsExpanded}
+          />
+        </Grid>
+      </Grid>
+    ),
+    [
+      isExpanded,
+      statusSelectorValue,
+      statuses,
+      workflowSelectorValue,
+      workflows,
+    ],
   );
 
-  return (
-    <WrapperInfoCard error={error} selectors={selectors}>
-      {isExpanded && (
+  return error ? (
+    <ErrorPanel error={error} />
+  ) : (
+    <InfoCard noPadding title={selectors}>
+      {isExpanded ? (
         <Table
+          title="Workflow Runs"
           options={{
             search: true,
             paging: true,
           }}
           isLoading={loading && !error}
-          title="Workflow Runs"
           columns={columns}
           data={filteredData}
         />
-      )}
-    </WrapperInfoCard>
+      ) : null}
+    </InfoCard>
   );
 };

@@ -36,8 +36,8 @@ export const ProcessInstanceStatus = ({ status }: { status: string }) => {
   );
 
   return (
-    <div className={styles.root}>
+    <span className={styles.root}>
       {icon} {humanizeProcessInstanceState(status)}
-    </div>
+    </span>
   );
 };

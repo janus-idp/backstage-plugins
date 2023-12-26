@@ -13,7 +13,7 @@ export const TableExpandCollapse = ({
   isExpanded,
   setIsExpanded,
 }: TableExpandCollapseProps) => {
-  const handleExpandCollaspse = () => {
+  const handleExpandCollapse = () => {
     setIsExpanded(!isExpanded);
   };
 
@@ -21,14 +21,14 @@ export const TableExpandCollapse = ({
     <>
       <Tooltip title="Collapse all" placement="top">
         <span>
-          <IconButton onClick={handleExpandCollaspse} disabled={!isExpanded}>
+          <IconButton onClick={handleExpandCollapse} disabled={!isExpanded}>
             <Collapse />
           </IconButton>
         </span>
       </Tooltip>
       <Tooltip title="Expand all" placement="top">
         <span>
-          <IconButton onClick={handleExpandCollaspse} disabled={isExpanded}>
+          <IconButton onClick={handleExpandCollapse} disabled={isExpanded}>
             <Expand />
           </IconButton>
         </span>

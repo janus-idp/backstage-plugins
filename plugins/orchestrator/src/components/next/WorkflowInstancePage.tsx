@@ -6,7 +6,7 @@ import { useApi, useRouteRefParams } from '@backstage/core-plugin-api';
 
 import { orchestratorApiRef } from '../../api';
 import { workflowInstanceRouteRef } from '../../routes';
-import { BaseOrchestratorPage } from '../BaseOrchestratorPage/BaseOrchestratorPage';
+import { BaseOrchestratorPage } from './BaseOrchestratorPage';
 import { WorkflowInstancePageContent } from './WorkflowInstancePageContent';
 
 export const WorkflowInstancePage = ({
@@ -29,7 +29,11 @@ export const WorkflowInstancePage = ({
   const isReady = React.useMemo(() => !loading && !error, [loading, error]);
 
   return (
-    <BaseOrchestratorPage>
+    <BaseOrchestratorPage
+      title={value?.processId ?? value?.id ?? instanceId}
+      type="Workflow runs"
+      typeLink="/orchestrator/next/instances"
+    >
       {loading ? <Progress /> : null}
       {error ? <ResponseErrorPanel error={error} /> : null}
       {isReady ? <WorkflowInstancePageContent processInstance={value} /> : null}
