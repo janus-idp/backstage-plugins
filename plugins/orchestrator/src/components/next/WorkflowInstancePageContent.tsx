@@ -157,13 +157,6 @@ export const WorkflowInstancePageContent = ({
             </Grid>
           )
         }
-
-        {/* TODO(mlibra): Under discussion, probably not needed - FLPATH-698
-        <Grid item xs={12}>
-          <InfoCard title="Status" divider={false}>
-            TODO: status as timeline
-          </InfoCard>
-        </Grid> */}
       </Grid>
     </Content>
   );

@@ -550,8 +550,7 @@ export class SonataFlowService {
         this.logger.error(`Error when fetching workflow instances: ${error}`);
       }
 
-      for (let i = 0; i < processInstances.length; i++) {
-        const pInstance: ProcessInstance = processInstances[i];
+      for (const pInstance of processInstances) {
         if (new Date(pInstance.start) > lastTriggered) {
           lastTriggered = new Date(pInstance.start);
           lastRunStatus = pInstance.state;

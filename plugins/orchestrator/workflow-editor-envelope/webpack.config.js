@@ -13,7 +13,7 @@ module.exports = env => {
       splitChunks: {
         cacheGroups: {
           monacoEditorMin: {
-            test: /[\\/]node_modules[\\/]monaco\-editor/,
+            test: /[\\/]node_modules[\\/]monaco-editor/,
             name: 'monaco-editor',
             chunks: 'async',
           },

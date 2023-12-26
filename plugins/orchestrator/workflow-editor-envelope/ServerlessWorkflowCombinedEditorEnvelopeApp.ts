@@ -17,8 +17,8 @@ initCustom<
     'serverless-workflow-combined-editor-envelope-app',
   )!,
   bus: {
-    postMessage: (message, targetOrigin, _) =>
-      window.parent.postMessage(message, targetOrigin!, _),
+    postMessage: (message, targetOrigin: string, _) =>
+      window.parent.postMessage(message, targetOrigin, _),
   },
   apiImplFactory: {
     create: args =>

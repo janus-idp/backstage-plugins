@@ -28,21 +28,12 @@ const useStyles = makeStyles(_ => ({
   },
 }));
 
-// TODO(mlibra): Under discussion - the timeline component will not be probably used.
-// const DetailPanel = ({ rowData }: { rowData: WorkflowRunDetail }) => {
-//   return (
-//     <div>
-//       TODO - render timeline component based on {JSON.stringify(rowData)}
-//     </div>
-//   );
-// };
-
 export const WorkflowRunsTabContent = () => {
   const orchestratorApi = useApi(orchestratorApiRef);
   const workflowInstanceLink = useRouteRef(nextWorkflowInstanceRouteRef);
   const styles = useStyles();
   const [workflow, setWorkflow] = useState<string>();
-  const [status, onChangeStatus] = useState<string>();
+  const [status, setStatus] = useState<string>();
   const [isExpanded, setIsExpanded] = React.useState(true);
 
   const { loading, error, value } = useAsync(async () => {
@@ -118,7 +109,7 @@ export const WorkflowRunsTabContent = () => {
         />
       </Box>
       <Box paddingLeft="1rem">
-        <StatusSelector onChange={onChangeStatus} value={status} />
+        <StatusSelector onChange={setStatus} value={status} />
       </Box>
       <Box sx={{ display: 'flex', flexGrow: 1, justifyContent: 'flex-end' }}>
         <TableExpandCollapse
@@ -141,7 +132,6 @@ export const WorkflowRunsTabContent = () => {
           title="Workflow Runs"
           columns={columns}
           data={filteredData}
-          // detailPanel={DetailPanel}
         />
       )}
     </WrapperInfoCard>
