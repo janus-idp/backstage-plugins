@@ -16,6 +16,10 @@ import { Logger } from 'winston';
 
 import { CasbinDBAdapterFactory } from '../database/casbin-adapter-factory';
 import { DataBaseConditionalStorage } from '../database/conditional-storage';
+import { migrate } from '../database/migration';
+import { DataBasePolicyMetadataStorage } from '../database/policy-metadata-storage';
+import { DataBaseRoleMetadataStorage } from '../database/role-metadata';
+import { EnforcerDelegate } from './enforcer-delegate';
 import { MODEL } from './permission-model';
 import { RBACPermissionPolicy } from './permission-policy';
 import { PolicesServer } from './policies-rest-api';
@@ -58,6 +62,7 @@ export class PolicyBuilder {
           './model/rbac-policy.csv',
         ),
       );
+      env.logger.info('rbac backend plugin uses only file storage');
     }
 
     const enf = await newEnforcer(newModelFromString(MODEL), adapter);
@@ -74,8 +79,14 @@ export class PolicyBuilder {
     enf.enableAutoBuildRoleLinks(false);
     await enf.buildRoleLinks();
 
-    const conditionStorage =
-      await DataBaseConditionalStorage.create(databaseManager);
+    await migrate(databaseManager);
+    const knex = await databaseManager.getClient();
+
+    const conditionStorage = new DataBaseConditionalStorage(knex);
+
+    const policyMetadataStorage = new DataBasePolicyMetadataStorage(knex);
+    const roleMetadataStorage = new DataBaseRoleMetadataStorage(knex);
+    const enforcerDelegate = new EnforcerDelegate(enf, policyMetadataStorage);
 
     const options: RouterOptions = {
       config: env.config,
@@ -86,7 +97,8 @@ export class PolicyBuilder {
         env.logger,
         env.config,
         conditionStorage,
-        enf,
+        enforcerDelegate,
+        roleMetadataStorage,
       ),
     };
 
@@ -107,12 +119,13 @@ export class PolicyBuilder {
       env.identity,
       env.permissions,
       options,
-      enf,
+      enforcerDelegate,
       env.config,
       env.logger,
       env.discovery,
       conditionStorage,
       pluginIdProvider,
+      roleMetadataStorage,
     );
     return server.serve();
   }

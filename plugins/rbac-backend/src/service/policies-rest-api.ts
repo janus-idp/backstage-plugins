@@ -23,7 +23,6 @@ import {
 } from '@backstage/plugin-permission-common';
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 
-import { Enforcer } from 'casbin';
 import { Router } from 'express';
 import { Request } from 'express-serve-static-core';
 import { isEmpty, isEqual } from 'lodash';
@@ -42,6 +41,8 @@ import {
 } from '@janus-idp/backstage-plugin-rbac-common';
 
 import { ConditionalStorage } from '../database/conditional-storage';
+import { RoleMetadataStorage } from '../database/role-metadata';
+import { EnforcerDelegate } from './enforcer-delegate';
 import { PluginPermissionMetadataCollector } from './plugin-endpoints';
 import {
   validateEntityReference,
@@ -55,12 +56,13 @@ export class PolicesServer {
     private readonly identity: IdentityApi,
     private readonly permissions: PermissionEvaluator,
     private readonly options: RouterOptions,
-    private readonly enforcer: Enforcer,
+    private readonly enforcer: EnforcerDelegate,
     private readonly config: Config,
     private readonly logger: Logger,
     private readonly discovery: PluginEndpointDiscovery,
     private readonly conditionalStorage: ConditionalStorage,
     private readonly pluginIdProvider: PluginIdProvider,
+    private readonly roleMetadata: RoleMetadataStorage,
   ) {}
 
   private async authorize(
@@ -134,7 +136,7 @@ export class PolicesServer {
         policies = await this.enforcer.getPolicy();
       }
 
-      response.json(this.transformPolicyArray(...policies));
+      response.json(await this.transformPolicyArray(...policies));
     });
 
     router.get(
@@ -183,10 +185,7 @@ export class PolicesServer {
 
         const processedPolicies = await this.processPolicies(policyRaw, true);
 
-        const isRemoved = await this.enforcer.removePolicies(processedPolicies);
-        if (!isRemoved) {
-          throw new Error('Unexpected error'); // 500
-        }
+        await this.enforcer.removePolicies(processedPolicies);
         response.status(204).end();
       },
     );
@@ -208,10 +207,8 @@ export class PolicesServer {
 
       const processedPolicies = await this.processPolicies(policyRaw);
 
-      const isAdded = await this.enforcer.addPolicies(processedPolicies);
-      if (!isAdded) {
-        throw new Error('Unexpected error'); // 500
-      }
+      await this.enforcer.addPolicies(processedPolicies, 'rest');
+
       response.status(201).end();
     });
 
@@ -278,17 +275,9 @@ export class PolicesServer {
 
         // enforcer.updatePolicy(oldPolicyPermission, newPolicyPermission) was not implemented
         // for ORMTypeAdapter.
-        // So, let's compensate this combination delete + create.
-        const isRemoved =
-          await this.enforcer.removePolicies(processedOldPolicy);
-        if (!isRemoved) {
-          throw new Error('Unexpected error'); // 500
-        }
-
-        const isAdded = await this.enforcer.addPolicies(processedNewPolicy);
-        if (!isAdded) {
-          throw new Error('Unexpected error');
-        }
+        // So, let's compensate this combination delete + add.
+        await this.enforcer.removePolicies(processedOldPolicy);
+        await this.enforcer.addPolicies(processedNewPolicy, 'rest');
 
         response.status(200).end();
       },
@@ -307,7 +296,7 @@ export class PolicesServer {
 
       const roles = await this.enforcer.getGroupingPolicy();
 
-      response.json(this.transformRoleArray(...roles));
+      response.json(await this.transformRoleArray(...roles));
     });
 
     router.get('/roles/:kind/:namespace/:name', async (request, response) => {
@@ -326,7 +315,7 @@ export class PolicesServer {
       );
 
       if (role.length !== 0) {
-        response.json(this.transformRoleArray(...role));
+        response.json(await this.transformRoleArray(...role));
       } else {
         throw new NotFoundError(); // 404
       }
@@ -368,11 +357,12 @@ export class PolicesServer {
         }
       }
 
-      const isAdded = await this.enforcer.addGroupingPolicies(roles);
+      await this.roleMetadata.createRoleMetadata(
+        { location: 'rest' },
+        roleRaw.name,
+      );
+      await this.enforcer.addGroupingPolicies(roles, 'rest');
 
-      if (!isAdded) {
-        throw new Error('Unexpected error'); // 500
-      }
       response.status(201).end();
     });
 
@@ -445,7 +435,9 @@ export class PolicesServer {
       uniqueItems.clear();
       for (const role of oldRole) {
         if (!(await this.enforcer.hasGroupingPolicy(...role))) {
-          throw new NotFoundError(); // 404
+          throw new NotFoundError(
+            `Member reference: ${role[0]} was not found for role ${roleEntityRef}`,
+          ); // 404
         }
         const roleString = JSON.stringify(role);
 
@@ -460,18 +452,15 @@ export class PolicesServer {
         }
       }
 
+      await this.roleMetadata.updateRoleMetadata(
+        { location: 'rest' },
+        roleEntityRef,
+      );
       // enforcer.updateGroupingPolicy(oldRole, newRole) was not implemented
       // for ORMTypeAdapter.
       // So, let's compensate this combination delete + create.
-      const isRemoved = await this.enforcer.removeGroupingPolicies(oldRole);
-      if (!isRemoved) {
-        throw new Error('Unexpected error'); // 500
-      }
-
-      const isAdded = await this.enforcer.addGroupingPolicies(newRole);
-      if (!isAdded) {
-        throw new Error('Unexpected error');
-      }
+      await this.enforcer.removeGroupingPolicies(oldRole);
+      await this.enforcer.addGroupingPolicies(newRole, 'rest');
 
       response.status(200).end();
     });
@@ -503,16 +492,9 @@ export class PolicesServer {
           );
         }
 
-        for (const role of roles) {
-          if (!(await this.enforcer.hasGroupingPolicy(...role))) {
-            throw new NotFoundError(); // 404
-          }
-        }
+        await this.roleMetadata.removeRoleMetadata(roleEntityRef);
+        await this.enforcer.removeGroupingPolicies(roles);
 
-        const isRemoved = await this.enforcer.removeGroupingPolicies(roles);
-        if (!isRemoved) {
-          throw new Error('Unexpected error'); // 500
-        }
         response.status(204).end();
       },
     );
@@ -655,14 +637,26 @@ export class PolicesServer {
     return entityRef;
   }
 
-  transformPolicyArray(...policies: string[][]): RoleBasedPolicy[] {
-    return policies.map((p: string[]) => {
+  async transformPolicyArray(
+    ...policies: string[][]
+  ): Promise<RoleBasedPolicy[]> {
+    const roleBasedPolices: RoleBasedPolicy[] = [];
+    for (const p of policies) {
       const [entityReference, permission, policy, effect] = p;
-      return { entityReference, permission, policy, effect };
-    });
+      const metadata = await this.enforcer.getMetadata(p);
+      roleBasedPolices.push({
+        entityReference,
+        permission,
+        policy,
+        effect,
+        metadata,
+      });
+    }
+
+    return roleBasedPolices;
   }
 
-  transformRoleArray(...roles: string[][]): Role[] {
+  async transformRoleArray(...roles: string[][]): Promise<Role[]> {
     const combinedRoles: { [key: string]: string[] } = {};
 
     roles.forEach(([value, role]) => {
@@ -673,10 +667,16 @@ export class PolicesServer {
       }
     });
 
-    const result: Role[] = Object.entries(combinedRoles).map(
-      ([role, value]) => {
-        return { memberReferences: value, name: role };
-      },
+    console.log(`combined roles: ${combinedRoles}`);
+    const result: Role[] = await Promise.all(
+      Object.entries(combinedRoles).map(async ([role, value]) => {
+        const metadata = await this.roleMetadata.findRoleMetadata(role);
+        return Promise.resolve({
+          memberReferences: value,
+          name: role,
+          metadata,
+        }); // todo add metadata
+      }),
     );
     return result;
   }
@@ -744,7 +744,6 @@ export class PolicesServer {
       }
 
       const transformedPolicy = this.transformPolicyToArray(policy);
-
       if (isOld && !(await this.enforcer.hasPolicy(...transformedPolicy))) {
         throw new NotFoundError(); // 404
       }
@@ -776,4 +775,8 @@ export class PolicesServer {
     }
     return 0;
   }
+
+  // addPoliciesMetadata(roleMetadataStorage: RoleMetadataStorage, ) {
+
+  // }
 }

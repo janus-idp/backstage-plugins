@@ -1,7 +1,3 @@
-import {
-  PluginDatabaseManager,
-  resolvePackagePath,
-} from '@backstage/backend-common';
 import { ConflictError, InputError, NotFoundError } from '@backstage/errors';
 import {
   AuthorizeResult,
@@ -11,10 +7,6 @@ import {
 import { Knex } from 'knex';
 
 const CONDITIONAL_TABLE = 'policy-conditions';
-const migrationsDir = resolvePackagePath(
-  '@janus-idp/backstage-plugin-rbac-backend', // Package name
-  'migrations', // Migrations directory
-);
 
 interface ConditionalPolicyDecisionDAO {
   result: AuthorizeResult.CONDITIONAL;
@@ -45,20 +37,6 @@ export interface ConditionalStorage {
 
 export class DataBaseConditionalStorage implements ConditionalStorage {
   public constructor(private readonly knex: Knex<any, any[]>) {}
-
-  static async create(
-    databaseManager: PluginDatabaseManager,
-  ): Promise<ConditionalStorage> {
-    const knex = await databaseManager.getClient();
-
-    if (!databaseManager.migrations?.skip) {
-      await knex.migrate.latest({
-        directory: migrationsDir,
-      });
-    }
-
-    return new DataBaseConditionalStorage(knex);
-  }
 
   async getConditions(
     pluginId: string,

@@ -11,25 +11,50 @@ import {
   PolicyQuery,
 } from '@backstage/plugin-permission-node';
 
-import { Enforcer, FileAdapter, newEnforcer, newModelFromString } from 'casbin';
+import { FileAdapter, newEnforcer, newModelFromString } from 'casbin';
 import { Logger } from 'winston';
 
+import { Location } from '@janus-idp/backstage-plugin-rbac-common';
+
 import { ConditionalStorage } from '../database/conditional-storage';
+import { RoleMetadataStorage } from '../database/role-metadata';
+import { EnforcerDelegate } from './enforcer-delegate';
 import { MODEL } from './permission-model';
 import { validateEntityReference } from './policies-validation';
 
-const useAdmins = async (admins: Config[], enf: Enforcer) => {
+async function addRoleMetadata(
+  groupPolicies: string[][],
+  location: Location,
+  roleMetadataStorage: RoleMetadataStorage,
+) {
+  const roles = new Set<string>();
+  groupPolicies
+    .filter(policy => policy[1].startsWith(`role:`))
+    .forEach(policy => roles.add(policy[1]));
+  console.log(`==== ${JSON.stringify(roles.values().next())}`);
+
+  for (const role of roles) {
+    await roleMetadataStorage.createRoleMetadata({ location }, role);
+  }
+}
+
+const useAdmins = async (
+  admins: Config[],
+  enf: EnforcerDelegate,
+  roleMetadataStorage: RoleMetadataStorage,
+) => {
   const adminRoleName = 'role:default/rbac_admin';
   admins.flatMap(async localConfig => {
     const name = localConfig.getString('name');
     const adminRole = [name, adminRoleName];
     if (!(await enf.hasGroupingPolicy(...adminRole))) {
-      await enf.addGroupingPolicy(...adminRole);
+      await enf.addGroupingPolicy(adminRole, 'pre-defined');
+      await addRoleMetadata([adminRole], 'pre-defined', roleMetadataStorage);
     }
   });
   const adminReadPermission = [adminRoleName, 'policy-entity', 'read', 'allow'];
   if (!(await enf.hasPolicy(...adminReadPermission))) {
-    await enf.addPolicy(...adminReadPermission);
+    await enf.addPolicy(adminReadPermission, 'pre-defined');
   }
   const adminCreatePermission = [
     adminRoleName,
@@ -38,7 +63,7 @@ const useAdmins = async (admins: Config[], enf: Enforcer) => {
     'allow',
   ];
   if (!(await enf.hasPolicy(...adminCreatePermission))) {
-    await enf.addPolicy(...adminCreatePermission);
+    await enf.addPolicy(adminCreatePermission, 'pre-defined');
   }
 
   const adminDeletePermission = [
@@ -48,7 +73,7 @@ const useAdmins = async (admins: Config[], enf: Enforcer) => {
     'allow',
   ];
   if (!(await enf.hasPolicy(...adminDeletePermission))) {
-    await enf.addPolicy(...adminDeletePermission);
+    await enf.addPolicy(adminDeletePermission, 'pre-defined');
   }
 
   const adminUpdatePermission = [
@@ -58,7 +83,7 @@ const useAdmins = async (admins: Config[], enf: Enforcer) => {
     'allow',
   ];
   if (!(await enf.hasPolicy(...adminUpdatePermission))) {
-    await enf.addPolicy(...adminUpdatePermission);
+    await enf.addPolicy(adminUpdatePermission, 'pre-defined');
   }
 
   // needed for rbac frontend.
@@ -75,7 +100,8 @@ const useAdmins = async (admins: Config[], enf: Enforcer) => {
 
 const addPredefinedPoliciesAndGroupPolicies = async (
   preDefinedPoliciesFile: string,
-  enf: Enforcer,
+  enf: EnforcerDelegate,
+  roleMetadataStorage: RoleMetadataStorage,
 ) => {
   const fileEnf = await newEnforcer(
     newModelFromString(MODEL),
@@ -89,9 +115,8 @@ const addPredefinedPoliciesAndGroupPolicies = async (
         `Failed to validate policy from file ${preDefinedPoliciesFile}. Cause: ${err.message}`,
       );
     }
-
     if (!(await enf.hasPolicy(...policy))) {
-      await enf.addPolicy(...policy);
+      await enf.addPolicy(policy, 'csv-file');
     }
   }
   const groupPolicies = await fileEnf.getGroupingPolicy();
@@ -109,13 +134,14 @@ const addPredefinedPoliciesAndGroupPolicies = async (
       );
     }
     if (!(await enf.hasGroupingPolicy(...groupPolicy))) {
-      await enf.addGroupingPolicy(...groupPolicy);
+      await enf.addGroupingPolicy(groupPolicy, 'csv-file');
+      await addRoleMetadata([groupPolicy], 'csv-file', roleMetadataStorage);
     }
   }
 };
 
 export class RBACPermissionPolicy implements PermissionPolicy {
-  private readonly enforcer: Enforcer;
+  private readonly enforcer: EnforcerDelegate;
   private readonly logger: Logger;
   private readonly conditionStorage: ConditionalStorage;
 
@@ -123,7 +149,8 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     logger: Logger,
     configApi: ConfigApi,
     conditionalStorage: ConditionalStorage,
-    enf: Enforcer,
+    enforcerDelegate: EnforcerDelegate,
+    roleMetadataStorage: RoleMetadataStorage,
   ): Promise<RBACPermissionPolicy> {
     const adminUsers = configApi.getOptionalConfigArray(
       'permission.rbac.admin.users',
@@ -134,18 +161,26 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     );
 
     if (policiesFile) {
-      await addPredefinedPoliciesAndGroupPolicies(policiesFile, enf);
+      await addPredefinedPoliciesAndGroupPolicies(
+        policiesFile,
+        enforcerDelegate,
+        roleMetadataStorage,
+      );
     }
 
     if (adminUsers) {
-      useAdmins(adminUsers, enf);
+      useAdmins(adminUsers, enforcerDelegate, roleMetadataStorage);
     }
 
-    return new RBACPermissionPolicy(enf, logger, conditionalStorage);
+    return new RBACPermissionPolicy(
+      enforcerDelegate,
+      logger,
+      conditionalStorage,
+    );
   }
 
   private constructor(
-    enforcer: Enforcer,
+    enforcer: EnforcerDelegate,
     logger: Logger,
     conditionStorage: ConditionalStorage,
   ) {

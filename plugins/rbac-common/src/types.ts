@@ -1,7 +1,18 @@
+export type Location = 'rest' | 'csv-file' | 'pre-defined';
+
+export type PermissionPolicyMetadata = {
+  location: Location;
+};
+
+export type RoleMetadata = {
+  location: Location;
+};
+
 export type Policy = {
   permission?: string;
   policy?: string;
   effect?: string;
+  metadata?: PermissionPolicyMetadata;
 };
 
 export type RoleBasedPolicy = Policy & {
@@ -11,6 +22,7 @@ export type RoleBasedPolicy = Policy & {
 export type Role = {
   memberReferences: string[];
   name: string;
+  metadata?: RoleMetadata;
 };
 
 export type UpdatePolicy = {
