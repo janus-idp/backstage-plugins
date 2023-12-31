@@ -1,6 +1,7 @@
 apiVersion: backstage.io/v1alpha1
 kind: User
 metadata:
+  namespace: default
   name: guest
 spec:
   profile:

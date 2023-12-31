@@ -7,7 +7,7 @@
     },
     "build": {
       "outputs": ["dist/**"],
-      "dependsOn": ["tsc", "^build", "export-dynamic"]
+      "dependsOn": ["tsc", "^build"]
     },
     "clean": {
       "cache": false

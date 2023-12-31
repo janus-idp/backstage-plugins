@@ -28,7 +28,25 @@ backend:
   # This is for local development only, it is not recommended to use this in production
   # The production database configuration is stored in app-config.production.yaml
   database:
-    connection: ':memory:'
+    client: better-sqlite3
+    connection:
+      ':memory:'
+      #directory: ./mydb.sqlite
+    useNullAsDefault: true
+    #plugin:
+    #notifications:
+    #connection:
+    #filename: ./mydb.sqlite/thedb.sqlite
+    #host: 127.0.0.1
+    #port: 5432
+    #user: postgres
+    #password: secret
+    #knexConfig:
+    #  pool:
+    #    min: 3
+    #    max: 12
+    #    acquireTimeoutMillis: 60000
+    #    idleTimeoutMillis: 60000
   cache:
     store: memory
   # workingDirectory: /tmp # Use this to configure a working directory for the scaffolder, defaults to the OS temp-dir
@@ -84,8 +102,11 @@ catalog:
     entityFilename: catalog-info.yaml
     pullRequestBranchName: backstage-integration
   rules:
-    - allow: [Component, System, API, Resource, Location]
+    - allow: [Component, System, API, Resource, Location, User, Group]
   locations:
+    - type: file
+      # *** Here is new change, referes to a file stored in the root of the Backstage:
+      target: /home/ydayagi/work/src/github.com/ydayagi/backstage-plugins/plugins/notifications-backend/users.yaml
     # Local example data, file locations are relative to the backend process, typically `packages/backend`
     - type: file
       target: ../../examples/entities.yaml

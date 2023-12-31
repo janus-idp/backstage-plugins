@@ -3,7 +3,7 @@ name: Push
 on:
   push:
     branches:
-      - main
+      - flpath799
 
 concurrency:
   group: push
@@ -19,24 +19,3 @@ jobs:
 
       - name: Test
         uses: ./.github/actions/test
-
-  release:
-    name: Release
-    needs:
-      - test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Build all packages
-        uses: ./.github/actions/build
-
-      - name: Release via semantic-release
-        run: |
-          npm config set workspaces-update false
-          yarn release --ignore-private-packages
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NODE_OPTIONS: '--max-old-space-size=8192'

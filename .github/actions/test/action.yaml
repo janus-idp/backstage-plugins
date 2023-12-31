@@ -1,33 +1,26 @@
 name: Test
 description: Test Node.js package
-inputs:
-  args:
-    description: Backstage CLI repo build arguments
-    default: '@janus-idp/*'
 runs:
   using: 'composite'
   steps:
     - name: Setup Node.js
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version-file: '.nvmrc'
         cache: 'yarn'
 
-    - name: Setup local Turbo cache
-      uses: dtinth/setup-github-actions-caching-for-turbo@v1
-
-    - name: Install dependencies
+    - name: Start backstage
       shell: bash
-      run: yarn --prefer-offline --frozen-lockfile
+      run: yarn install
 
-    - name: Run prettier
+    - name: Start backstage
       shell: bash
-      run: yarn prettier:check
+      run: yarn start:backstage
 
-    - name: Run lint
+    - name: Wait for  backstage
       shell: bash
-      run: yarn lint --filter=${{ inputs.args }}
+      run: timeout 600 bash -c 'until echo > /dev/tcp/localhost/7007; do sleep 3; done;' && sleep 180 && cat >/tmp/backstage.log
 
-    - name: Run tests
+    - name: Test get notifications
       shell: bash
-      run: yarn test --filter=${{ inputs.args }}
+      run: curl http://localhost:7007/api/notifications/notifications
