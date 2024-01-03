@@ -8,6 +8,10 @@ export interface Paths {
     /** @description Get a list of workflow overviews */
     get: operations['getWorkflowsOverview'];
   };
+  '/v2/workflows/{workflowId}/overview': {
+    /** @description Get a workflow overview by ID */
+    get: operations['getWorkflowOverviewById'];
+  };
 }
 
 export type webhooks = Record<string, never>;
@@ -58,6 +62,32 @@ export interface Operations {
         };
       };
       /** @description Error fetching workflow overviews */
+      500: {
+        content: {
+          'application/json': {
+            /** @description Error message */
+            message?: string;
+          };
+        };
+      };
+    };
+  };
+  /** @description Get a workflow overview by ID */
+  getWorkflowOverviewById: {
+    parameters: {
+      path: {
+        /** @description Unique identifier of the workflow */
+        workflowId: string;
+      };
+    };
+    responses: {
+      /** @description Success */
+      200: {
+        content: {
+          'application/json': components['schemas']['WorkflowOverview'];
+        };
+      };
+      /** @description Error fetching workflow overview */
       500: {
         content: {
           'application/json': {

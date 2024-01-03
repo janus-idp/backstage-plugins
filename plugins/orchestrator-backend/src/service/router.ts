@@ -24,7 +24,11 @@ import { ApiResponseBuilder } from '../types/apiResponse';
 import { CloudEventService } from './CloudEventService';
 import { DataIndexService } from './DataIndexService';
 import { DataInputSchemaService } from './DataInputSchemaService';
-import { getWorkflowOverviewV1, getWorkflowOverviewV2 } from './handlers';
+import {
+  getWorkflowOverviewById,
+  getWorkflowOverviewV1,
+  getWorkflowOverviewV2,
+} from './handlers';
 import { JiraEvent, JiraService } from './JiraService';
 import { OpenApiService } from './OpenApiService';
 import { ScaffolderService } from './ScaffolderService';
@@ -439,23 +443,23 @@ function setupInternalRoutes(
   });
 
   router.get('/actions/schema', async (_, res) => {
-    const openApi = await services.openApiService.generateOpenApi();
+    const openApi = await openApiService.generateOpenApi();
     res.json(openApi).status(200).send();
   });
 
   router.put('/actions/schema', async (_, res) => {
-    const openApi = await services.workflowService.saveOpenApi();
+    const openApi = await workflowService.saveOpenApi();
     res.json(openApi).status(200).send();
   });
 
   router.post('/webhook/jira', async (req, res) => {
     const event = req.body as JiraEvent;
-    await services.jiraService.handleEvent(event);
+    await jiraService.handleEvent(event);
     res.status(200).send();
   });
 
   router.get('/specs', async (_, res) => {
-    const specs = await services.workflowService.listStoredSpecs();
+    const specs = await workflowService.listStoredSpecs();
     res.status(200).json(specs);
   });
 }
