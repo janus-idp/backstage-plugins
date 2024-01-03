@@ -5,6 +5,10 @@
 
 
 export interface paths {
+  "/v2/workflows": {
+    /** @description Get a list of workflow */
+    get: operations["getWorkflows"];
+  };
   "/v2/workflows/{workflowId}/overview": {
     /** @description Get a workflow overview by ID */
     get: operations["getWorkflowOverviewById"];
@@ -23,6 +27,27 @@ export interface components {
       limit?: number;
       offset?: number;
       totalCount?: number;
+    };
+    /**
+     * @description Category of the workflow
+     * @enum {string}
+     */
+    WorkflowCategoryDTO: "assessment" | "infrastructure";
+    WorkflowDTO: {
+      annotations?: string[];
+      category: components["schemas"]["WorkflowCategoryDTO"];
+      /** @description Description of the workflow */
+      description?: string;
+      /** @description Workflow unique identifier */
+      id: string;
+      /** @description Workflow name */
+      name?: string;
+      /** @description URI of the workflow definition */
+      uri: string;
+    };
+    WorkflowListResultDTO: {
+      items: components["schemas"]["WorkflowDTO"][];
+      paginationInfo: components["schemas"]["PaginationInfoDTO"];
     };
     WorkflowOverviewDTO: {
       avgDurationMs?: number;
@@ -54,6 +79,26 @@ export type external = Record<string, never>;
 
 export interface operations {
 
+  /** @description Get a list of workflow */
+  getWorkflows: {
+    responses: {
+      /** @description Success */
+      200: {
+        content: {
+          "application/json": components["schemas"]["WorkflowListResultDTO"];
+        };
+      };
+      /** @description Error fetching workflow list */
+      500: {
+        content: {
+          "application/json": {
+            /** @description Error message */
+            message?: string;
+          };
+        };
+      };
+    };
+  };
   /** @description Get a workflow overview by ID */
   getWorkflowOverviewById: {
     parameters: {

@@ -6,3 +6,11 @@ export type WorkflowOverviewDTO = components['schemas']['WorkflowOverviewDTO'];
 export type WorkflowDTO = components['schemas']['WorkflowDTO'];
 export type WorkflowListResultDTO =
   components['schemas']['WorkflowListResultDTO'];
+
+// FIX ME
+export enum WorkflowCategoryDTO {
+  // Assessment Workflow
+  ASSESSMENT = 'assessment',
+  // Infrastructure Workflow
+  INFRASTRUCTURE = 'infrastructure',
+}

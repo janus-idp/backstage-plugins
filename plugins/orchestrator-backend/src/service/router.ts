@@ -28,6 +28,9 @@ import {
   getWorkflowOverviewById,
   getWorkflowOverviewV1,
   getWorkflowOverviewV2,
+  getWorkflows,
+  getWorkflowsV1,
+  getWorkflowsV2,
 } from './handlers';
 import { JiraEvent, JiraService } from './JiraService';
 import { OpenApiService } from './OpenApiService';
@@ -198,35 +201,21 @@ function setupInternalRoutes(
   );
 
   router.get('/workflows', async (_, res) => {
-    const definitions: WorkflowInfo[] =
-      await services.dataIndexService.getWorkflowDefinitions();
-    const items: WorkflowItem[] = await Promise.all(
-      definitions.map(async info => {
-        const uri = await services.sonataFlowService.fetchWorkflowUri(info.id);
-        if (!uri) {
-          throw new Error(`Uri is required for workflow ${info.id}`);
-        }
-        const item: WorkflowItem = {
-          definition: info as WorkflowDefinition,
-          serviceUrl: info.serviceUrl,
-          uri,
-        };
-        return item;
-      }),
-    );
+    await getWorkflowsV1(services.sonataFlowService, services.dataIndexService)
+      .then(result => res.status(200).json(result))
+      .catch(error => {
+        res.status(500).send(error.message || 'Internal Server Error');
+      });
+  });
 
-    if (!items) {
-      res.status(500).send("Couldn't fetch workflows");
-      return;
-    }
-
-    const result: WorkflowListResult = {
-      items: items,
-      limit: 0,
-      offset: 0,
-      totalCount: items?.length ?? 0,
-    };
-    res.status(200).json(result);
+  // v2
+  api.register('getWorkflows', async (_c, _req, res, next) => {
+    await getWorkflowsV2(services.sonataFlowService, services.dataIndexService)
+      .then(result => res.json(result))
+      .catch(error => {
+        res.status(500).send(error.message || 'Internal Server Error');
+        next();
+      });
   });
 
   router.get('/workflows/:workflowId', async (req, res) => {
@@ -312,6 +301,19 @@ function setupInternalRoutes(
     }
     res.status(200).json(overviewObj);
   });
+
+  // v2
+  api.register(
+    'getWorkflowOverviewById',
+    async (_c, req: express.Request, res: express.Response, next) => {
+      const {
+        params: { workflowId },
+      } = req;
+      await getWorkflowOverviewById(services.sonataFlowService, workflowId)
+        .then(result => res.json(result))
+        .catch(next);
+    },
+  );
 
   router.get('/instances', async (_, res) => {
     const instances = await services.dataIndexService.fetchProcessInstances();
@@ -443,23 +445,23 @@ function setupInternalRoutes(
   });
 
   router.get('/actions/schema', async (_, res) => {
-    const openApi = await openApiService.generateOpenApi();
+    const openApi = await services.openApiService.generateOpenApi();
     res.json(openApi).status(200).send();
   });
 
   router.put('/actions/schema', async (_, res) => {
-    const openApi = await workflowService.saveOpenApi();
+    const openApi = await services.workflowService.saveOpenApi();
     res.json(openApi).status(200).send();
   });
 
   router.post('/webhook/jira', async (req, res) => {
     const event = req.body as JiraEvent;
-    await jiraService.handleEvent(event);
+    await services.jiraService.handleEvent(event);
     res.status(200).send();
   });
 
   router.get('/specs', async (_, res) => {
-    const specs = await workflowService.listStoredSpecs();
+    const specs = await services.workflowService.listStoredSpecs();
     res.status(200).json(specs);
   });
 }

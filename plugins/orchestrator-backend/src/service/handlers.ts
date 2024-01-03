@@ -1,9 +1,17 @@
 import {
+  ASSESSMENT_WORKFLOW_TYPE,
+  WorkflowCategoryDTO,
+  WorkflowDefinition,
+  WorkflowInfo,
+  WorkflowItem,
+  WorkflowListResult,
+  WorkflowListResultDTO,
   WorkflowOverviewDTO,
   WorkflowOverviewListResult,
   WorkflowOverviewListResultDTO,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
+import { DataIndexService } from './DataIndexService';
 import { SonataFlowService } from './SonataFlowService';
 
 export async function getWorkflowOverviewV1(
@@ -48,4 +56,84 @@ export async function getWorkflowOverviewById(
     throw new Error(`Couldn't fetch workflow overview for ${workflowId}`);
   }
   return overviewObj;
+}
+
+export async function getWorkflowsV1(
+  sonataFlowService: SonataFlowService,
+  dataIndexService: DataIndexService,
+): Promise<WorkflowListResult> {
+  const definitions: WorkflowInfo[] =
+    await dataIndexService.getWorkflowDefinitions();
+  const items: WorkflowItem[] = await Promise.all(
+    definitions.map(async info => {
+      const uri = await sonataFlowService.fetchWorkflowUri(info.id);
+      if (!uri) {
+        throw new Error(`Uri is required for workflow ${info.id}`);
+      }
+      const item: WorkflowItem = {
+        definition: info as WorkflowDefinition,
+        serviceUrl: info.serviceUrl,
+        uri,
+      };
+      return item;
+    }),
+  );
+
+  if (!items) {
+    throw new Error("Couldn't fetch workflows");
+  }
+
+  const result: WorkflowListResult = {
+    items: items,
+    limit: 0,
+    offset: 0,
+    totalCount: items?.length ?? 0,
+  };
+
+  return result;
+}
+export async function getWorkflowsV2(
+  sonataFlowService: SonataFlowService,
+  dataIndexService: DataIndexService,
+): Promise<WorkflowListResultDTO> {
+  const definitions: WorkflowListResult = await getWorkflowsV1(
+    sonataFlowService,
+    dataIndexService,
+  );
+  return mapToWorkflowListResultDTO(definitions);
+}
+
+function mapToWorkflowListResultDTO(
+  definitions: WorkflowListResult,
+): WorkflowListResultDTO {
+  const result = {
+    items: definitions.items.map(def => {
+      return {
+        annotations: def.definition.annotations,
+        category: getWorkflowCategoryDTO(def.definition),
+        description: def.definition.description,
+        name: def.definition.name,
+        uri: def.uri,
+        id: def.definition.id,
+      };
+    }),
+    paginationInfo: {
+      limit: definitions.limit,
+      offset: definitions.offset,
+      totalCount: definitions.totalCount,
+    },
+  };
+  return result;
+}
+function getWorkflowCategoryDTO(
+  definition: WorkflowDefinition | undefined,
+): WorkflowCategoryDTO {
+  if (definition === undefined) {
+    return WorkflowCategoryDTO.INFRASTRUCTURE;
+  }
+  return definition?.annotations?.find(
+    annotation => annotation === ASSESSMENT_WORKFLOW_TYPE,
+  )
+    ? WorkflowCategoryDTO.ASSESSMENT
+    : WorkflowCategoryDTO.INFRASTRUCTURE;
 }
