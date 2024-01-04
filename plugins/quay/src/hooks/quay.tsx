@@ -77,6 +77,7 @@ export const useTags = (organization: string, repository: string) => {
         name: tag.name,
         last_modified: formatDate(tag.last_modified),
         size: formatByteSize(tag.size),
+        rawSize: tag.size,
         manifest_digest: (
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Chip label={hashFunc} className={localClasses.chip} />

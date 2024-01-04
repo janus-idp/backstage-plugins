@@ -42,10 +42,24 @@ const columns: TableColumn[] = [
         </div>
       );
     },
+    customSort: (a, b) => {
+      const rowA = a as Vulnerability;
+      const rowB = b as Vulnerability;
+
+      return rowA.Name.localeCompare(rowB.Name, 'en');
+    },
   },
   {
     title: 'Severity',
     field: 'Severity',
+    customSort: (a, b) => {
+      const rowA = a as VulnerabilityListItem;
+      const rowB = b as VulnerabilityListItem;
+      const severityA = VulnerabilityOrder[rowA.Severity];
+      const severityB = VulnerabilityOrder[rowB.Severity];
+
+      return severityA - severityB;
+    },
     render: (rowData: any): React.ReactNode => {
       const row = rowData as Vulnerability;
       return (
@@ -77,15 +91,7 @@ const columns: TableColumn[] = [
     render: (rowData: any): React.ReactNode => {
       const row = rowData as VulnerabilityListItem;
       return (
-        <>
-          {row.FixedBy.length > 0 ? (
-            <>
-              <span>{row.FixedBy}</span>
-            </>
-          ) : (
-            '(None)'
-          )}
-        </>
+        <>{row.FixedBy.length > 0 ? <span>{row.FixedBy}</span> : '(None)'}</>
       );
     },
   },

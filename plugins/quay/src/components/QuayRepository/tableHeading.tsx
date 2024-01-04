@@ -47,11 +47,18 @@ export const columns: TableColumn[] = [
       return <Link to={`tag/${tagManifest}`}>{retStr}</Link>;
     },
     id: 'securityScan',
+    sorting: false,
   },
   {
     title: 'Size',
     field: 'size',
     type: 'numeric',
+    customSort: (a, b) => {
+      const A = a as any;
+      const B = b as any;
+
+      return A.rawSize - B.rawSize;
+    },
   },
   {
     title: 'Expires',
@@ -63,6 +70,12 @@ export const columns: TableColumn[] = [
     title: 'Manifest',
     field: 'manifest_digest',
     type: 'string',
+    customSort: (a, b) => {
+      const A = a as any;
+      const B = b as any;
+
+      return A.manifest_digest_raw.localeCompare(B.manifest_digest_raw);
+    },
   },
 ];
 
