@@ -14,7 +14,7 @@ import {
 import { FileAdapter, newEnforcer, newModelFromString } from 'casbin';
 import { Logger } from 'winston';
 
-import { Location } from '@janus-idp/backstage-plugin-rbac-common';
+import { RoleSource, Source } from '@janus-idp/backstage-plugin-rbac-common';
 
 import { ConditionalStorage } from '../database/conditional-storage';
 import { RoleMetadataStorage } from '../database/role-metadata';
@@ -23,18 +23,16 @@ import { MODEL } from './permission-model';
 import { validateEntityReference } from './policies-validation';
 
 async function addRoleMetadata(
-  groupPolicies: string[][],
-  location: Location,
+  groupPolicy: string[],
+  source: RoleSource,
   roleMetadataStorage: RoleMetadataStorage,
 ) {
-  const roles = new Set<string>();
-  groupPolicies
-    .filter(policy => policy[1].startsWith(`role:`))
-    .forEach(policy => roles.add(policy[1]));
-  console.log(`==== ${JSON.stringify(roles.values().next())}`);
-
-  for (const role of roles) {
-    await roleMetadataStorage.createRoleMetadata({ location }, role);
+  const entityRef = groupPolicy[1];
+  if (entityRef.startsWith(`role:`)) {
+    const metadata = await roleMetadataStorage.findRoleMetadata(entityRef);
+    if (!metadata) {
+      await roleMetadataStorage.createRoleMetadata({ source }, entityRef);
+    }
   }
 }
 
@@ -44,17 +42,28 @@ const useAdmins = async (
   roleMetadataStorage: RoleMetadataStorage,
 ) => {
   const adminRoleName = 'role:default/rbac_admin';
+
+  const adminRoleMeta =
+    await roleMetadataStorage.findRoleMetadata(adminRoleName);
+  if (!adminRoleMeta) {
+    await roleMetadataStorage.createRoleMetadata(
+      { source: 'default' },
+      adminRoleName,
+    );
+  }
+  // try {} catch () {revert transaction} finally { flush transaction }
+
   admins.flatMap(async localConfig => {
     const name = localConfig.getString('name');
     const adminRole = [name, adminRoleName];
     if (!(await enf.hasGroupingPolicy(...adminRole))) {
-      await enf.addGroupingPolicy(adminRole, 'pre-defined');
-      await addRoleMetadata([adminRole], 'pre-defined', roleMetadataStorage);
+      await enf.addGroupingPolicy(adminRole, 'configuration');
     }
   });
+
   const adminReadPermission = [adminRoleName, 'policy-entity', 'read', 'allow'];
   if (!(await enf.hasPolicy(...adminReadPermission))) {
-    await enf.addPolicy(adminReadPermission, 'pre-defined');
+    await enf.addPolicy(adminReadPermission, 'configuration');
   }
   const adminCreatePermission = [
     adminRoleName,
@@ -63,7 +72,7 @@ const useAdmins = async (
     'allow',
   ];
   if (!(await enf.hasPolicy(...adminCreatePermission))) {
-    await enf.addPolicy(adminCreatePermission, 'pre-defined');
+    await enf.addPolicy(adminCreatePermission, 'configuration');
   }
 
   const adminDeletePermission = [
@@ -73,7 +82,7 @@ const useAdmins = async (
     'allow',
   ];
   if (!(await enf.hasPolicy(...adminDeletePermission))) {
-    await enf.addPolicy(adminDeletePermission, 'pre-defined');
+    await enf.addPolicy(adminDeletePermission, 'configuration');
   }
 
   const adminUpdatePermission = [
@@ -83,7 +92,7 @@ const useAdmins = async (
     'allow',
   ];
   if (!(await enf.hasPolicy(...adminUpdatePermission))) {
-    await enf.addPolicy(adminUpdatePermission, 'pre-defined');
+    await enf.addPolicy(adminUpdatePermission, 'configuration');
   }
 
   // needed for rbac frontend.
@@ -121,24 +130,67 @@ const addPredefinedPoliciesAndGroupPolicies = async (
   }
   const groupPolicies = await fileEnf.getGroupingPolicy();
   for (const groupPolicy of groupPolicies) {
-    let err = validateEntityReference(groupPolicy[0]);
-    if (err) {
-      throw new Error(
-        `Failed to validate group policy from file ${preDefinedPoliciesFile}. Cause: ${err.message}`,
-      );
-    }
-    err = validateEntityReference(groupPolicy[1], true);
-    if (err) {
-      throw new Error(
-        `Failed to validate group policy from file ${preDefinedPoliciesFile}. Cause: ${err.message}`,
-      );
-    }
     if (!(await enf.hasGroupingPolicy(...groupPolicy))) {
+      await validateGroupingPolicy(
+        groupPolicy,
+        preDefinedPoliciesFile,
+        roleMetadataStorage,
+        `csv-file`,
+      );
+
+      await addRoleMetadata(groupPolicy, 'csv-file', roleMetadataStorage);
       await enf.addGroupingPolicy(groupPolicy, 'csv-file');
-      await addRoleMetadata([groupPolicy], 'csv-file', roleMetadataStorage);
     }
   }
 };
+
+async function validateGroupingPolicy(
+  groupPolicy: string[],
+  preDefinedPoliciesFile: string,
+  roleMetadataStorage: RoleMetadataStorage,
+  source: Source,
+) {
+  if (groupPolicy.length === 3) {
+    throw new Error(`Group policy should has length 2`);
+  }
+
+  const member = groupPolicy[0];
+  let err = validateEntityReference(member);
+  if (err) {
+    throw new Error(
+      `Failed to validate group policy ${groupPolicy} from file ${preDefinedPoliciesFile}. Cause: ${err.message}`,
+    );
+  }
+  const parent = groupPolicy[1];
+  err = validateEntityReference(parent);
+  if (err) {
+    throw new Error(
+      `Failed to validate group policy ${groupPolicy} from file ${preDefinedPoliciesFile}. Cause: ${err.message}`,
+    );
+  }
+  if (member.startsWith(`role:`)) {
+    throw new Error(
+      `Group policy is invalid: ${groupPolicy}. rbac-backend plugin doesn't support role inheritance.`,
+    );
+  }
+  if (member.startsWith(`group:`) && parent.startsWith(`group:`)) {
+    throw new Error(
+      `Group policy is invalid: ${groupPolicy}. Group inheritance information could be provided only with help of Catalog API.`,
+    );
+  }
+  if (member.startsWith(`user:`) && parent.startsWith(`group:`)) {
+    throw new Error(
+      `Group policy is invalid: ${groupPolicy}. User membership information could be provided only with help of Catalog API.`,
+    );
+  }
+
+  const metadata = await roleMetadataStorage.findRoleMetadata(parent);
+  if (metadata && metadata.source !== source) {
+    throw new Error(
+      `You could not add user or group to the role created with source ${metadata.source}`,
+    );
+  }
+}
 
 export class RBACPermissionPolicy implements PermissionPolicy {
   private readonly enforcer: EnforcerDelegate;

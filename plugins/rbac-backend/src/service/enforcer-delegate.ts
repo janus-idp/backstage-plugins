@@ -3,8 +3,8 @@ import { NotAllowedError, NotFoundError } from '@backstage/errors';
 import { Enforcer } from 'casbin';
 
 import {
-  Location,
   PermissionPolicyMetadata,
+  Source,
 } from '@janus-idp/backstage-plugin-rbac-common';
 
 import { PolicyMetadataStorage } from '../database/policy-metadata-storage';
@@ -24,10 +24,10 @@ export class EnforcerDelegate {
     return await this.enforcer.hasGroupingPolicy(...policy);
   }
 
-  async addPolicy(policy: string[], location: Location): Promise<void> {
+  async addPolicy(policy: string[], source: Source): Promise<void> {
     // todo: use transaction here...
     // try {
-    await this.metadataStorage.createPolicyMetadata(location, policy);
+    await this.metadataStorage.createPolicyMetadata(source, policy);
     const ok = await this.enforcer.addPolicy(...policy);
     if (!ok) {
       throw new Error(`failed to create policy ${policyToString(policy)}`);
@@ -39,9 +39,9 @@ export class EnforcerDelegate {
     // }
   }
 
-  async addPolicies(policies: string[][], location: Location): Promise<void> {
+  async addPolicies(policies: string[][], source: Source): Promise<void> {
     for (const policy of policies) {
-      await this.metadataStorage.createPolicyMetadata(location, policy);
+      await this.metadataStorage.createPolicyMetadata(source, policy);
     }
     const ok = this.enforcer.addPolicies(policies);
     if (!ok) {
@@ -50,8 +50,8 @@ export class EnforcerDelegate {
     }
   }
 
-  async addGroupingPolicy(policy: string[], location: Location): Promise<void> {
-    await this.metadataStorage.createPolicyMetadata(location, policy);
+  async addGroupingPolicy(policy: string[], source: Source): Promise<void> {
+    await this.metadataStorage.createPolicyMetadata(source, policy);
     const ok = await this.enforcer.addGroupingPolicy(...policy);
     if (!ok) {
       // todo revert transactions
@@ -61,10 +61,10 @@ export class EnforcerDelegate {
 
   async addGroupingPolicies(
     policies: string[][],
-    location: Location,
+    source: Source,
   ): Promise<void> {
     for (const policy of policies) {
-      await this.metadataStorage.createPolicyMetadata(location, policy);
+      await this.metadataStorage.createPolicyMetadata(source, policy);
     }
     const ok = await this.enforcer.addGroupingPolicies(policies);
     if (!ok) {
@@ -180,7 +180,7 @@ export class EnforcerDelegate {
         `A metadata for policy ${policyToString(policy)} was not found`,
       );
     }
-    if (metadata.location === 'csv-file' && !allowToDeleCSVFilePolicy) {
+    if (metadata.source === 'csv-file' && !allowToDeleCSVFilePolicy) {
       throw new NotAllowedError(
         `policy ${policy} can be modified or deleted only with help of 'policies-csv-file'`,
       );

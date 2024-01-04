@@ -3,8 +3,8 @@ import { ConflictError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
 
 import {
-  Location,
   PermissionPolicyMetadata,
+  Source,
 } from '@janus-idp/backstage-plugin-rbac-common';
 
 import { policyToString } from '../helper';
@@ -20,7 +20,7 @@ export interface PolicyMetadataStorage {
   findPolicyMetadata(
     policy: string[],
   ): Promise<PermissionPolicyMetadata | undefined>;
-  createPolicyMetadata(source: Location, policy: string[]): Promise<number>;
+  createPolicyMetadata(source: Source, policy: string[]): Promise<number>;
   updatePolicyMetadata(newPolicy: string[]): Promise<void>;
   removePolicyMetadata(policy: string[]): Promise<void>;
 }
@@ -51,7 +51,7 @@ export class DataBasePolicyMetadataStorage implements PolicyMetadataStorage {
   }
 
   async createPolicyMetadata(
-    location: Location,
+    source: Source,
     policy: string[],
   ): Promise<number> {
     const stringPolicy = policyToString(policy);
@@ -62,7 +62,7 @@ export class DataBasePolicyMetadataStorage implements PolicyMetadataStorage {
     }
 
     console.log(`=== Create policy metadata!!!!`);
-    const metadataDao = { location, policy: stringPolicy };
+    const metadataDao = { source, policy: stringPolicy };
     const result = await this.knex
       .table(POLICY_METADATA_TABLE)
       .insert<PermissionPolicyMetadataDao>(metadataDao)
@@ -119,7 +119,7 @@ export class DataBasePolicyMetadataStorage implements PolicyMetadataStorage {
     dao: PermissionPolicyMetadataDao,
   ): PermissionPolicyMetadata {
     return {
-      location: dao.location,
+      source: dao.source,
     };
   }
 }

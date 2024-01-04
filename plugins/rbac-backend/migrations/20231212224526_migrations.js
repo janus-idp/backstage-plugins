@@ -6,7 +6,7 @@ exports.up = async function up(knex) {
   await knex.schema.createTable('policy-metadata', table => {
     table.increments('id').primary();
     table.string('policy').primary();
-    table.string('location');
+    table.string('source');
   });
 };
 

@@ -1,11 +1,16 @@
-export type Location = 'rest' | 'csv-file' | 'pre-defined';
+export type Source =
+  | 'rest' // created via REST API
+  | 'csv-file' // created via policies-csv-file with defined path in the application configuration
+  | 'configuration'; // created from application configuration
+
+export type RoleSource = Source | 'default'; // hard coded in the plugin code
 
 export type PermissionPolicyMetadata = {
-  location: Location;
+  source: Source;
 };
 
 export type RoleMetadata = {
-  location: Location;
+  source: RoleSource;
 };
 
 export type Policy = {

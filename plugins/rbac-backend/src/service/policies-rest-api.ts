@@ -358,7 +358,7 @@ export class PolicesServer {
       }
 
       await this.roleMetadata.createRoleMetadata(
-        { location: 'rest' },
+        { source: 'rest' },
         roleRaw.name,
       );
       await this.enforcer.addGroupingPolicies(roles, 'rest');
@@ -377,12 +377,12 @@ export class PolicesServer {
       }
       const roleEntityRef = this.getEntityReference(request, true);
 
-      const oldRoleRaw = request.body.oldRole;
+      const oldRoleRaw: Role = request.body.oldRole;
 
       if (!oldRoleRaw) {
         throw new InputError(`'oldRole' object must be present`); // 400
       }
-      const newRoleRaw = request.body.newRole;
+      const newRoleRaw: Role = request.body.newRole;
       if (!newRoleRaw) {
         throw new InputError(`'newRole' object must be present`); // 400
       }
@@ -452,8 +452,23 @@ export class PolicesServer {
         }
       }
 
+      const metadata = await this.roleMetadata.findRoleMetadata(roleEntityRef);
+      if (!metadata) {
+        throw new NotFoundError(`Unable to find metadata for ${roleEntityRef}`);
+      }
+      if (metadata.source === 'csv-file') {
+        throw new Error(
+          `Role ${roleEntityRef} can be modified only using csv policy file.`,
+        );
+      }
+      if (metadata.source === 'default') {
+        throw new Error(
+          `Role ${roleEntityRef} can be modified only using application config`,
+        );
+      }
+
       await this.roleMetadata.updateRoleMetadata(
-        { location: 'rest' },
+        { source: metadata?.source, roleEntityRef: newRoleRaw.name },
         roleEntityRef,
       );
       // enforcer.updateGroupingPolicy(oldRole, newRole) was not implemented
@@ -489,6 +504,19 @@ export class PolicesServer {
           roles = await this.enforcer.getFilteredGroupingPolicy(
             1,
             roleEntityRef,
+          );
+        }
+
+        const metadata =
+          await this.roleMetadata.findRoleMetadata(roleEntityRef);
+        if (metadata?.source === 'csv-file') {
+          throw new Error(
+            `Role ${roleEntityRef} can be removed only using csv policy file.`,
+          );
+        }
+        if (metadata?.source === 'default') {
+          throw new Error(
+            `Pre-defined role ${roleEntityRef} is reserved and can not be removed.`,
           );
         }
 

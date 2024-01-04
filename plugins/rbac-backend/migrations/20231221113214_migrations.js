@@ -6,7 +6,7 @@ exports.up = async function up(knex) {
   await knex.schema.createTable('role-metadata', table => {
     table.increments('id').primary();
     table.string('roleEntityRef').primary();
-    table.string('location');
+    table.string('source');
   });
 };
 

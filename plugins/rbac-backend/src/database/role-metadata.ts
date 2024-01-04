@@ -18,7 +18,7 @@ export interface RoleMetadataStorage {
     roleEntityRef: string,
   ): Promise<number>;
   updateRoleMetadata(
-    roleMetadata: RoleMetadata,
+    roleMetadata: RoleMetadataDao,
     roleEntityRef: string,
   ): Promise<void>;
   removeRoleMetadata(roleEntityRef: string): Promise<void>;
@@ -89,8 +89,8 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
       roleEntityRef,
     );
 
-    if (currentMetadataDao.location !== newRoleMetadataDao.location) {
-      throw new InputError(`The RoleMetadata.location field is 'read-only'`);
+    if (currentMetadataDao.source !== newRoleMetadataDao.source) {
+      throw new InputError(`The RoleMetadata.source field is 'read-only'`);
     }
 
     if (currentMetadataDao.roleEntityRef !== newRoleMetadataDao.roleEntityRef) {
@@ -124,7 +124,7 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
 
   private daoToMetadata(dao: RoleMetadataDao): RoleMetadata {
     return {
-      location: dao.location,
+      source: dao.source,
     };
   }
 
@@ -134,7 +134,7 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
   ): RoleMetadataDao {
     return {
       roleEntityRef,
-      location: roleMetadata.location,
+      source: roleMetadata.source,
     };
   }
 }
