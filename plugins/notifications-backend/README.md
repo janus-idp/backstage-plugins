@@ -272,10 +272,10 @@ Optionally add `-H "Authorization: Bearer eyJh.....` with a valid JWT token to t
 
 Query parameters:
 
-- containsText. filter title and message containing this text (case insensitive)
-- createdAfter. fetch notifications created after this point in time
-- messageScope. all/user/system. fetch notifications intended for specific user or system notifications or both
-- read. true/false (read/unread)
+- `containsText`. filter title and message containing this text (case insensitive)
+- `createdAfter`. fetch notifications created after this point in time
+- `messageScope`. all/user/system. fetch notifications intended for specific user or system notifications or both
+- `read`. true/false (read/unread)
 
 Request:
 
