@@ -123,20 +123,6 @@ export async function createBackendRouter(
     eventPayload: {},
   });
 
-  router.use((req, res, next) => {
-    if (!next) {
-      throw new Error('next is undefined');
-    }
-
-    // const validation = api.validateRequest(req as Request);
-    // if (!validation.valid) {
-    //   console.log('errors: ', validation.errors);
-    //   throw validation.errors;
-    // }
-
-    api.handleRequest(req as Request, req, res, next);
-  });
-
   router.use(errorHandler());
   return router;
 }
