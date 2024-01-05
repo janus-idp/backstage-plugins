@@ -139,32 +139,8 @@ export async function createBackendRouter(
     eventPayload: {},
   });
 
-  router.use((req, res, next) => {
-    if (!next) {
-      throw new Error('next is undefined');
-    }
-
-    // const validation = api.validateRequest(req as Request);
-    // if (!validation.valid) {
-    //   console.log('errors: ', validation.errors);
-    //   throw validation.errors;
-    // }
-
-    api.handleRequest(req as Request, req, res, next);
-  });
-
   router.use(errorHandler());
   return router;
-}
-
-function initDataIndexService(logger: Logger, config: Config) {
-  const dataIndexUrl =
-    config.getOptionalString('orchestrator.dataIndexService.url') ||
-    DEFAULT_DATA_INDEX_URL;
-  const client = DataIndexService.getNewGraphQLClient(dataIndexUrl);
-  const backendExecCtx = new BackendExecCtx(logger, client, dataIndexUrl);
-
-  DataIndexService.initialize(backendExecCtx);
 }
 
 // ======================================================
