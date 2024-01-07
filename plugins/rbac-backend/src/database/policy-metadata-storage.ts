@@ -20,9 +20,12 @@ export interface PolicyMetadataStorage {
   findPolicyMetadata(
     policy: string[],
   ): Promise<PermissionPolicyMetadata | undefined>;
-  createPolicyMetadata(source: Source, policy: string[]): Promise<number>;
-  updatePolicyMetadata(newPolicy: string[]): Promise<void>;
-  removePolicyMetadata(policy: string[]): Promise<void>;
+  createPolicyMetadata(
+    source: Source,
+    policy: string[],
+    trx: Knex.Transaction,
+  ): Promise<number>;
+  removePolicyMetadata(policy: string[], trx: Knex.Transaction): Promise<void>;
 }
 
 export class DataBasePolicyMetadataStorage implements PolicyMetadataStorage {
@@ -53,6 +56,7 @@ export class DataBasePolicyMetadataStorage implements PolicyMetadataStorage {
   async createPolicyMetadata(
     source: Source,
     policy: string[],
+    trx: Knex.Transaction,
   ): Promise<number> {
     const stringPolicy = policyToString(policy);
     if (await this.findPolicyMetadataDao(policy)) {
@@ -61,9 +65,8 @@ export class DataBasePolicyMetadataStorage implements PolicyMetadataStorage {
       );
     }
 
-    console.log(`=== Create policy metadata!!!!`);
     const metadataDao = { source, policy: stringPolicy };
-    const result = await this.knex
+    const result = await trx
       .table(POLICY_METADATA_TABLE)
       .insert<PermissionPolicyMetadataDao>(metadataDao)
       .returning('id');
@@ -74,45 +77,25 @@ export class DataBasePolicyMetadataStorage implements PolicyMetadataStorage {
     throw new Error(`Failed to create the policy metadata.`);
   }
 
-  async updatePolicyMetadata(policy: string[]): Promise<void> {
-    const metadataDao = await this.findPolicyMetadataDao(policy);
-    const policyStr = policyToString(policy);
-    if (!metadataDao) {
-      throw new NotFoundError(
-        `A metadata for policy ${policyStr} was not found`,
-      );
-    }
-
-    if (metadataDao.policy !== policyStr) {
-      metadataDao.policy = policyStr;
-      const result = await this.knex
-        ?.table(POLICY_METADATA_TABLE)
-        .where('id', metadataDao.id)
-        .update<PermissionPolicyMetadataDao>(metadataDao)
-        .returning('id');
-
-      if (!result || result.length === 0) {
-        throw new Error(
-          `Failed to update the policy metadata with for policy: ${policyToString(
-            policy,
-          )}.`,
+  async removePolicyMetadata(
+    policy: string[],
+    trx: Knex.Transaction,
+  ): Promise<void> {
+    try {
+      const metadataDao = await this.findPolicyMetadataDao(policy);
+      if (!metadataDao) {
+        throw new NotFoundError(
+          `A metadata for policy ${policyToString(policy)} was not found`,
         );
       }
-    }
-  }
 
-  async removePolicyMetadata(policy: string[]): Promise<void> {
-    const metadataDao = await this.findPolicyMetadataDao(policy);
-    if (!metadataDao) {
-      throw new NotFoundError(
-        `A metadata for policy ${policyToString(policy)} was not found`,
-      );
+      await trx
+        .table(POLICY_METADATA_TABLE)
+        .delete()
+        .whereIn('id', [metadataDao.id]);
+    } catch (error) {
+      throw error;
     }
-
-    await this.knex
-      ?.table(POLICY_METADATA_TABLE)
-      .delete()
-      .whereIn('id', [metadataDao.id]);
   }
 
   private daoToMetadata(

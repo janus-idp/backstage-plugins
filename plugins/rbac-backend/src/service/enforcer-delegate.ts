@@ -1,6 +1,7 @@
 import { NotAllowedError, NotFoundError } from '@backstage/errors';
 
 import { Enforcer } from 'casbin';
+import { Knex } from 'knex';
 
 import {
   PermissionPolicyMetadata,
@@ -14,6 +15,7 @@ export class EnforcerDelegate {
   constructor(
     private readonly enforcer: Enforcer,
     private readonly metadataStorage: PolicyMetadataStorage,
+    private readonly knex: Knex,
   ) {}
 
   async hasPolicy(...policy: string[]): Promise<boolean> {
@@ -22,55 +24,6 @@ export class EnforcerDelegate {
 
   async hasGroupingPolicy(...policy: string[]): Promise<boolean> {
     return await this.enforcer.hasGroupingPolicy(...policy);
-  }
-
-  async addPolicy(policy: string[], source: Source): Promise<void> {
-    // todo: use transaction here...
-    // try {
-    await this.metadataStorage.createPolicyMetadata(source, policy);
-    const ok = await this.enforcer.addPolicy(...policy);
-    if (!ok) {
-      throw new Error(`failed to create policy ${policyToString(policy)}`);
-    }
-    // } catch(err) {
-    // todo revert metadata transactions
-    // } finally {
-    // commit transaction
-    // }
-  }
-
-  async addPolicies(policies: string[][], source: Source): Promise<void> {
-    for (const policy of policies) {
-      await this.metadataStorage.createPolicyMetadata(source, policy);
-    }
-    const ok = this.enforcer.addPolicies(policies);
-    if (!ok) {
-      // todo revert transaction.
-      throw new Error(`Failed to store policies ${policiesToString(policies)}`);
-    }
-  }
-
-  async addGroupingPolicy(policy: string[], source: Source): Promise<void> {
-    await this.metadataStorage.createPolicyMetadata(source, policy);
-    const ok = await this.enforcer.addGroupingPolicy(...policy);
-    if (!ok) {
-      // todo revert transactions
-      throw new Error(`failed to create policy ${policyToString(policy)}`);
-    }
-  }
-
-  async addGroupingPolicies(
-    policies: string[][],
-    source: Source,
-  ): Promise<void> {
-    for (const policy of policies) {
-      await this.metadataStorage.createPolicyMetadata(source, policy);
-    }
-    const ok = await this.enforcer.addGroupingPolicies(policies);
-    if (!ok) {
-      // todo revert transaction.
-      throw new Error(`Failed to store policies ${policiesToString(policies)}`);
-    }
   }
 
   async getPolicy(): Promise<string[][]> {
@@ -95,14 +48,111 @@ export class EnforcerDelegate {
     return await this.enforcer.getFilteredGroupingPolicy(fieldIndex, ...filter);
   }
 
+  async addPolicy(policy: string[], source: Source): Promise<void> {
+    const addMetadataTrx = await this.knex.transaction();
+
+    try {
+      await this.metadataStorage.createPolicyMetadata(
+        source,
+        policy,
+        addMetadataTrx,
+      );
+      const ok = await this.enforcer.addPolicy(...policy);
+      if (!ok) {
+        throw new Error(`failed to create policy ${policyToString(policy)}`);
+      }
+      addMetadataTrx.commit();
+    } catch (err) {
+      addMetadataTrx.rollback();
+      throw err;
+    }
+  }
+
+  async addPolicies(policies: string[][], source: Source): Promise<void> {
+    const addMetadataTrx = await this.knex.transaction();
+    try {
+      for (const policy of policies) {
+        await this.metadataStorage.createPolicyMetadata(
+          source,
+          policy,
+          addMetadataTrx,
+        );
+      }
+      const ok = this.enforcer.addPolicies(policies);
+      if (!ok) {
+        throw new Error(
+          `Failed to store policies ${policiesToString(policies)}`,
+        );
+      }
+      addMetadataTrx.commit();
+    } catch (err) {
+      addMetadataTrx.rollback();
+      throw err;
+    }
+  }
+
+  async addGroupingPolicy(policy: string[], source: Source): Promise<void> {
+    const addMetadataTrx = await this.knex.transaction();
+
+    try {
+      await this.metadataStorage.createPolicyMetadata(
+        source,
+        policy,
+        addMetadataTrx,
+      );
+      const ok = await this.enforcer.addGroupingPolicy(...policy);
+      if (!ok) {
+        throw new Error(`failed to create policy ${policyToString(policy)}`);
+      }
+      addMetadataTrx.commit();
+    } catch (err) {
+      addMetadataTrx.rollback();
+      throw err;
+    }
+  }
+
+  async addGroupingPolicies(
+    policies: string[][],
+    source: Source,
+  ): Promise<void> {
+    const addMetadataTrx = await this.knex.transaction();
+
+    try {
+      for (const policy of policies) {
+        await this.metadataStorage.createPolicyMetadata(
+          source,
+          policy,
+          addMetadataTrx,
+        );
+      }
+      const ok = await this.enforcer.addGroupingPolicies(policies);
+      if (!ok) {
+        throw new Error(
+          `Failed to store policies ${policiesToString(policies)}`,
+        );
+      }
+      addMetadataTrx.commit();
+    } catch (err) {
+      addMetadataTrx.rollback();
+      throw err;
+    }
+  }
+
   async removePolicy(policy: string[], allowToDeleCSVFilePolicy?: boolean) {
     await this.checkIfPolicyModifiable(policy, allowToDeleCSVFilePolicy);
 
-    await this.metadataStorage.removePolicyMetadata(policy);
-    const ok = await this.enforcer.removePolicy(...policy);
-    if (!ok) {
-      // todo revert transaction
-      throw new Error(`fail to delete policy ${policy}`);
+    const rmMetadataTrx = await this.knex.transaction();
+
+    try {
+      await this.metadataStorage.removePolicyMetadata(policy, rmMetadataTrx);
+      const ok = await this.enforcer.removePolicy(...policy);
+      if (!ok) {
+        throw new Error(`fail to delete policy ${policy}`);
+      }
+      rmMetadataTrx.commit();
+    } catch (err) {
+      rmMetadataTrx.rollback(err);
+      throw err;
     }
   }
 
@@ -110,16 +160,23 @@ export class EnforcerDelegate {
     policies: string[][],
     allowToDeleCSVFilePolicy?: boolean,
   ): Promise<void> {
-    for (const policy of policies) {
-      await this.checkIfPolicyModifiable(policy, allowToDeleCSVFilePolicy);
-      await this.metadataStorage.removePolicyMetadata(policy);
-    }
-    const ok = await this.enforcer.removePolicies(policies);
-    if (!ok) {
-      // revert transactions
-      throw new Error(
-        `Failed to delete policies ${policiesToString(policies)}`,
-      );
+    const rmMetadataTrx = await this.knex.transaction();
+
+    try {
+      for (const policy of policies) {
+        await this.checkIfPolicyModifiable(policy, allowToDeleCSVFilePolicy);
+        await this.metadataStorage.removePolicyMetadata(policy, rmMetadataTrx);
+      }
+      const ok = await this.enforcer.removePolicies(policies);
+      if (!ok) {
+        throw new Error(
+          `Failed to delete policies ${policiesToString(policies)}`,
+        );
+      }
+      rmMetadataTrx.commit();
+    } catch (err) {
+      rmMetadataTrx.rollback(err);
+      throw err;
     }
   }
 
@@ -127,12 +184,19 @@ export class EnforcerDelegate {
     policy: string[],
     allowToDeleCSVFilePolicy?: boolean,
   ) {
-    await this.checkIfPolicyModifiable(policy, allowToDeleCSVFilePolicy);
-    await this.metadataStorage.removePolicyMetadata(policy);
-    const ok = await this.enforcer.removeGroupingPolicy(...policy);
-    if (!ok) {
-      // todo revert transaction
-      throw new Error(`Failed to delete policy ${policyToString(policy)}`);
+    const rmMetadataTrx = await this.knex.transaction();
+
+    try {
+      await this.checkIfPolicyModifiable(policy, allowToDeleCSVFilePolicy);
+      await this.metadataStorage.removePolicyMetadata(policy, rmMetadataTrx);
+      const ok = await this.enforcer.removeGroupingPolicy(...policy);
+      if (!ok) {
+        throw new Error(`Failed to delete policy ${policyToString(policy)}`);
+      }
+      rmMetadataTrx.commit();
+    } catch (err) {
+      rmMetadataTrx.rollback(err);
+      throw err;
     }
   }
 
@@ -140,16 +204,22 @@ export class EnforcerDelegate {
     policies: string[][],
     allowToDeleCSVFilePolicy?: boolean,
   ): Promise<void> {
-    for (const policy of policies) {
-      await this.checkIfPolicyModifiable(policy, allowToDeleCSVFilePolicy);
-      await this.metadataStorage.removePolicyMetadata(policy);
-    }
-    const ok = await this.enforcer.removeGroupingPolicies(policies);
-    if (!ok) {
-      // revert transactions
-      throw new Error(
-        `Failed to delete grouping policies: ${policiesToString(policies)}`,
-      );
+    const rmMetadataTrx = await this.knex.transaction();
+    try {
+      for (const policy of policies) {
+        await this.checkIfPolicyModifiable(policy, allowToDeleCSVFilePolicy);
+        await this.metadataStorage.removePolicyMetadata(policy, rmMetadataTrx);
+      }
+      const ok = await this.enforcer.removeGroupingPolicies(policies);
+      if (!ok) {
+        throw new Error(
+          `Failed to delete grouping policies: ${policiesToString(policies)}`,
+        );
+      }
+      rmMetadataTrx.commit();
+    } catch (err) {
+      rmMetadataTrx.rollback(err);
+      throw err;
     }
   }
 

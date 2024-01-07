@@ -86,7 +86,11 @@ export class PolicyBuilder {
 
     const policyMetadataStorage = new DataBasePolicyMetadataStorage(knex);
     const roleMetadataStorage = new DataBaseRoleMetadataStorage(knex);
-    const enforcerDelegate = new EnforcerDelegate(enf, policyMetadataStorage);
+    const enforcerDelegate = new EnforcerDelegate(
+      enf,
+      policyMetadataStorage,
+      knex,
+    );
 
     const options: RouterOptions = {
       config: env.config,
@@ -99,6 +103,7 @@ export class PolicyBuilder {
         conditionStorage,
         enforcerDelegate,
         roleMetadataStorage,
+        knex,
       ),
     };
 
@@ -126,6 +131,7 @@ export class PolicyBuilder {
       conditionStorage,
       pluginIdProvider,
       roleMetadataStorage,
+      knex,
     );
     return server.serve();
   }

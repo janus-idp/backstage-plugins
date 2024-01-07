@@ -16,12 +16,17 @@ export interface RoleMetadataStorage {
   createRoleMetadata(
     roleMetadata: RoleMetadata,
     roleEntityRef: string,
+    trx: Knex.Transaction,
   ): Promise<number>;
   updateRoleMetadata(
     roleMetadata: RoleMetadataDao,
     roleEntityRef: string,
+    trx: Knex.Transaction,
   ): Promise<void>;
-  removeRoleMetadata(roleEntityRef: string): Promise<void>;
+  removeRoleMetadata(
+    roleEntityRef: string,
+    trx: Knex.Transaction,
+  ): Promise<void>;
 }
 
 export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
@@ -41,7 +46,7 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
     roleEntityRef: string,
   ): Promise<RoleMetadataDao | undefined> {
     const metadataDao = await this.knex
-      ?.table(ROLE_METADATA_TABLE)
+      .table(ROLE_METADATA_TABLE)
       .where('roleEntityRef', roleEntityRef)
       // roleEntityRef should be unique.
       .first();
@@ -52,6 +57,7 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
   async createRoleMetadata(
     roleMetadata: RoleMetadata,
     roleEntityRef: string,
+    trx: Knex.Transaction,
   ): Promise<number> {
     if (await this.findRoleMetadataDao(roleEntityRef)) {
       throw new ConflictError(
@@ -59,9 +65,8 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
       );
     }
 
-    console.log(`=== Create role metadata!!!!`);
     const metadataDao = this.metadataToDao(roleMetadata, roleEntityRef);
-    const result = await this.knex
+    const result = await trx
       .table(ROLE_METADATA_TABLE)
       .insert<RoleMetadataDao>(metadataDao)
       .returning('id');
@@ -73,8 +78,9 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
   }
 
   async updateRoleMetadata(
-    newRoleMetadata: RoleMetadata,
+    newRoleMetadataDao: RoleMetadataDao,
     roleEntityRef: string,
+    trx: Knex.Transaction,
   ): Promise<void> {
     const currentMetadataDao = await this.findRoleMetadataDao(roleEntityRef);
 
@@ -84,20 +90,19 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
       );
     }
 
-    const newRoleMetadataDao = this.metadataToDao(
-      newRoleMetadata,
-      roleEntityRef,
-    );
-
     if (currentMetadataDao.source !== newRoleMetadataDao.source) {
       throw new InputError(`The RoleMetadata.source field is 'read-only'`);
     }
 
+    console.log(
+      `${currentMetadataDao.roleEntityRef} and ${newRoleMetadataDao.roleEntityRef}`,
+    );
     if (currentMetadataDao.roleEntityRef !== newRoleMetadataDao.roleEntityRef) {
-      const result = await this.knex
-        ?.table(ROLE_METADATA_TABLE)
+      console.log('============');
+      const result = await trx
+        .table(ROLE_METADATA_TABLE)
         .where('id', currentMetadataDao.id)
-        .update<RoleMetadataDao>(currentMetadataDao)
+        .update<RoleMetadataDao>(newRoleMetadataDao)
         .returning('id');
 
       if (!result || result.length === 0) {
@@ -108,7 +113,10 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
     }
   }
 
-  async removeRoleMetadata(roleEntityRef: string): Promise<void> {
+  async removeRoleMetadata(
+    roleEntityRef: string,
+    trx: Knex.Transaction,
+  ): Promise<void> {
     const metadataDao = await this.findRoleMetadataDao(roleEntityRef);
     if (!metadataDao) {
       throw new NotFoundError(
@@ -116,8 +124,8 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
       );
     }
 
-    await this.knex
-      ?.table(ROLE_METADATA_TABLE)
+    await trx
+      .table(ROLE_METADATA_TABLE)
       .delete()
       .whereIn('id', [metadataDao.id!]);
   }

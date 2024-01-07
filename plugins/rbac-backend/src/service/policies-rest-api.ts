@@ -25,6 +25,7 @@ import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-
 
 import { Router } from 'express';
 import { Request } from 'express-serve-static-core';
+import { Knex } from 'knex';
 import { isEmpty, isEqual } from 'lodash';
 import { ParsedQs } from 'qs';
 import { Logger } from 'winston';
@@ -63,6 +64,7 @@ export class PolicesServer {
     private readonly conditionalStorage: ConditionalStorage,
     private readonly pluginIdProvider: PluginIdProvider,
     private readonly roleMetadata: RoleMetadataStorage,
+    private readonly knex: Knex,
   ) {}
 
   private async authorize(
@@ -357,11 +359,20 @@ export class PolicesServer {
         }
       }
 
-      await this.roleMetadata.createRoleMetadata(
-        { source: 'rest' },
-        roleRaw.name,
-      );
-      await this.enforcer.addGroupingPolicies(roles, 'rest');
+      const createTrx = await this.knex.transaction();
+      try {
+        await this.roleMetadata.createRoleMetadata(
+          { source: 'rest' },
+          roleRaw.name,
+          createTrx,
+        );
+        await this.enforcer.addGroupingPolicies(roles, 'rest');
+        createTrx.commit();
+        // throw new Error('ops');
+      } catch (trxErr) {
+        createTrx.rollback();
+        throw trxErr;
+      }
 
       response.status(201).end();
     });
@@ -467,15 +478,25 @@ export class PolicesServer {
         );
       }
 
-      await this.roleMetadata.updateRoleMetadata(
-        { source: metadata?.source, roleEntityRef: newRoleRaw.name },
-        roleEntityRef,
-      );
-      // enforcer.updateGroupingPolicy(oldRole, newRole) was not implemented
-      // for ORMTypeAdapter.
-      // So, let's compensate this combination delete + create.
-      await this.enforcer.removeGroupingPolicies(oldRole);
-      await this.enforcer.addGroupingPolicies(newRole, 'rest');
+      const updateTrx = await this.knex.transaction();
+      try {
+        await this.roleMetadata.updateRoleMetadata(
+          { source: metadata?.source, roleEntityRef: newRoleRaw.name },
+          roleEntityRef,
+          updateTrx,
+        );
+        // enforcer.updateGroupingPolicy(oldRole, newRole) was not implemented
+        // for ORMTypeAdapter.
+        // So, let's compensate this combination delete + create.
+        console.log(`Remove========`);
+        await this.enforcer.removeGroupingPolicies(oldRole, false);
+        await this.enforcer.addGroupingPolicies(newRole, 'rest');
+        // throw new Error('ops');
+        updateTrx.commit();
+      } catch (trxErr) {
+        updateTrx.rollback();
+        throw trxErr;
+      }
 
       response.status(200).end();
     });
@@ -520,8 +541,16 @@ export class PolicesServer {
           );
         }
 
-        await this.roleMetadata.removeRoleMetadata(roleEntityRef);
-        await this.enforcer.removeGroupingPolicies(roles);
+        const rmTrx = await this.knex.transaction();
+        try {
+          await this.roleMetadata.removeRoleMetadata(roleEntityRef, rmTrx);
+          // throw new Error('ops');
+          await this.enforcer.removeGroupingPolicies(roles, false);
+          rmTrx.commit();
+        } catch (trxErr) {
+          rmTrx.rollback();
+          throw trxErr;
+        }
 
         response.status(204).end();
       },

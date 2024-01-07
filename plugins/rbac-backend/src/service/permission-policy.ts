@@ -12,6 +12,7 @@ import {
 } from '@backstage/plugin-permission-node';
 
 import { FileAdapter, newEnforcer, newModelFromString } from 'casbin';
+import { Knex } from 'knex';
 import { Logger } from 'winston';
 
 import { RoleSource, Source } from '@janus-idp/backstage-plugin-rbac-common';
@@ -26,12 +27,13 @@ async function addRoleMetadata(
   groupPolicy: string[],
   source: RoleSource,
   roleMetadataStorage: RoleMetadataStorage,
+  trx: Knex.Transaction,
 ) {
   const entityRef = groupPolicy[1];
   if (entityRef.startsWith(`role:`)) {
     const metadata = await roleMetadataStorage.findRoleMetadata(entityRef);
     if (!metadata) {
-      await roleMetadataStorage.createRoleMetadata({ source }, entityRef);
+      await roleMetadataStorage.createRoleMetadata({ source }, entityRef, trx);
     }
   }
 }
@@ -40,18 +42,21 @@ const useAdmins = async (
   admins: Config[],
   enf: EnforcerDelegate,
   roleMetadataStorage: RoleMetadataStorage,
+  knex: Knex,
 ) => {
   const adminRoleName = 'role:default/rbac_admin';
 
   const adminRoleMeta =
     await roleMetadataStorage.findRoleMetadata(adminRoleName);
   if (!adminRoleMeta) {
+    const trx = await knex.transaction();
     await roleMetadataStorage.createRoleMetadata(
       { source: 'default' },
       adminRoleName,
+      trx,
     );
+    trx.commit();
   }
-  // try {} catch () {revert transaction} finally { flush transaction }
 
   admins.flatMap(async localConfig => {
     const name = localConfig.getString('name');
@@ -111,6 +116,7 @@ const addPredefinedPoliciesAndGroupPolicies = async (
   preDefinedPoliciesFile: string,
   enf: EnforcerDelegate,
   roleMetadataStorage: RoleMetadataStorage,
+  knex: Knex,
 ) => {
   const fileEnf = await newEnforcer(
     newModelFromString(MODEL),
@@ -137,9 +143,20 @@ const addPredefinedPoliciesAndGroupPolicies = async (
         roleMetadataStorage,
         `csv-file`,
       );
-
-      await addRoleMetadata(groupPolicy, 'csv-file', roleMetadataStorage);
-      await enf.addGroupingPolicy(groupPolicy, 'csv-file');
+      const trx = await knex.transaction();
+      try {
+        await addRoleMetadata(
+          groupPolicy,
+          'csv-file',
+          roleMetadataStorage,
+          trx,
+        );
+        await enf.addGroupingPolicy(groupPolicy, 'csv-file');
+        trx.commit();
+      } catch (err) {
+        trx.rollback();
+        throw err;
+      }
     }
   }
 };
@@ -196,6 +213,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
   private readonly enforcer: EnforcerDelegate;
   private readonly logger: Logger;
   private readonly conditionStorage: ConditionalStorage;
+  private readonly knex: Knex;
 
   public static async build(
     logger: Logger,
@@ -203,6 +221,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     conditionalStorage: ConditionalStorage,
     enforcerDelegate: EnforcerDelegate,
     roleMetadataStorage: RoleMetadataStorage,
+    knex: Knex,
   ): Promise<RBACPermissionPolicy> {
     const adminUsers = configApi.getOptionalConfigArray(
       'permission.rbac.admin.users',
@@ -217,17 +236,19 @@ export class RBACPermissionPolicy implements PermissionPolicy {
         policiesFile,
         enforcerDelegate,
         roleMetadataStorage,
+        knex,
       );
     }
 
     if (adminUsers) {
-      useAdmins(adminUsers, enforcerDelegate, roleMetadataStorage);
+      useAdmins(adminUsers, enforcerDelegate, roleMetadataStorage, knex);
     }
 
     return new RBACPermissionPolicy(
       enforcerDelegate,
       logger,
       conditionalStorage,
+      knex,
     );
   }
 
@@ -235,10 +256,12 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     enforcer: EnforcerDelegate,
     logger: Logger,
     conditionStorage: ConditionalStorage,
+    knex: Knex,
   ) {
     this.enforcer = enforcer;
     this.logger = logger;
     this.conditionStorage = conditionStorage;
+    this.knex = knex;
   }
 
   async handle(
