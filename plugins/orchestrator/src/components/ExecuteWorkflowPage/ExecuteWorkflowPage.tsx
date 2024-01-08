@@ -16,7 +16,7 @@ import { JSONSchema7 } from 'json-schema';
 
 import {
   getWorkflowCategory,
-  workflow_title,
+  WORKFLOW_TITLE,
   WorkflowCategory,
   WorkflowDataInputSchemaResponse,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
@@ -135,7 +135,7 @@ export const ExecuteWorkflowPage = (props: ExecuteWorkflowPageProps) => {
                 style={{ marginTop: 8, marginRight: 8 }}
                 onClick={_ => setWorkflowDialogOpen(true)}
               >
-                View {workflow_title}
+                View {WORKFLOW_TITLE}
               </Button>
               <WorkflowDialog
                 kind={EditorViewKind.EXTENDED_DIAGRAM_VIEWER}

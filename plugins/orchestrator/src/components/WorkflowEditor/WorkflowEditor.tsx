@@ -45,8 +45,8 @@ import { parseApiContent } from '@kie-tools/serverless-workflow-service-catalog/
 import { Diagnostic, DiagnosticSeverity } from 'vscode-languageserver-types';
 
 import {
-  default_editor_path,
-  empty_definition,
+  DEFAULT_EDITOR_PATH,
+  EMPTY_DEFINITION,
   extractWorkflowFormatFromUri,
   ProcessInstance,
   toWorkflowString,
@@ -103,7 +103,7 @@ const RefForwardingWorkflowEditor: ForwardRefRenderFunction<
   const configApi = useApi(configApiRef);
   const contextPath =
     configApi.getOptionalString('orchestrator.editor.path') ??
-    default_editor_path;
+    DEFAULT_EDITOR_PATH;
   const { workflowId, kind, format } = props;
   const { editor, editorRef } = useEditorRef();
   const [embeddedFile, setEmbeddedFile] = useState<EmbeddedEditorFile>();
@@ -324,7 +324,7 @@ const RefForwardingWorkflowEditor: ForwardRefRenderFunction<
           ? orchestratorApi.getWorkflow(workflowId)
           : Promise.resolve({
               uri: `workflow.sw.${format ?? 'yaml'}`,
-              definition: empty_definition,
+              definition: EMPTY_DEFINITION,
             } as WorkflowItem);
 
         promise

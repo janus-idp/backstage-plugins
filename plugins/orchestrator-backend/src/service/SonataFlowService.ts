@@ -4,9 +4,9 @@ import { OpenAPIV3 } from 'openapi-types';
 import { Logger } from 'winston';
 
 import {
-  default_sonataflow_container_image,
-  default_sonataflow_persistance_path,
-  default_workflows_path,
+  DEFAULT_SONATAFLOW_CONTAINER_IMAGE,
+  DEFAULT_SONATAFLOW_PERSISTANCE_PATH,
+  DEFAULT_WORKFLOWS_PATH,
   fromWorkflowSource,
   getWorkflowCategory,
   Job,
@@ -424,7 +424,7 @@ export class SonataFlowService {
 
   private createLauncherCommand(): LauncherCommand {
     const resourcesAbsPath = resolve(
-      join(this.connection.resourcesPath, default_workflows_path),
+      join(this.connection.resourcesPath, DEFAULT_WORKFLOWS_PATH),
     );
 
     const launcherArgs = [
@@ -482,12 +482,12 @@ export class SonataFlowService {
 
     const containerImage =
       config.getOptionalString('orchestrator.sonataFlowService.container') ??
-      default_sonataflow_container_image;
+      DEFAULT_SONATAFLOW_CONTAINER_IMAGE;
 
     const persistencePath =
       config.getOptionalString(
         'orchestrator.sonataFlowService.persistence.path',
-      ) ?? default_sonataflow_persistance_path;
+      ) ?? DEFAULT_SONATAFLOW_PERSISTANCE_PATH;
 
     const jiraHost = config.getOptionalString('orchestrator.jira.host');
     const jiraBearerToken = config.getOptionalString(

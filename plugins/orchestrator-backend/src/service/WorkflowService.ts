@@ -4,12 +4,12 @@ import fs from 'fs-extra';
 import { Logger } from 'winston';
 
 import {
-  actions_open_api_file_path,
-  default_workflows_path,
+  ACTIONS_OPEN_API_FILE_PATH,
+  DEFAULT_WORKFLOWS_PATH,
   extractWorkflowFormatFromUri,
   fromWorkflowSource,
-  schemas_folder,
-  spec_files,
+  SCHEMAS_FOLDER,
+  SPEC_FILES,
   toWorkflowString,
   WorkflowItem,
   WorkflowSpecFile,
@@ -111,7 +111,7 @@ export class WorkflowService {
   }
 
   async saveOpenApi(): Promise<void> {
-    const path = this.resolveResourcePath(actions_open_api_file_path);
+    const path = this.resolveResourcePath(ACTIONS_OPEN_API_FILE_PATH);
     const openApi = await this.openApiService.generateOpenApi();
     if (!openApi) {
       return;
@@ -140,7 +140,7 @@ export class WorkflowService {
     }
 
     const workflowDataInputSchemaPath = join(
-      schemas_folder,
+      SCHEMAS_FOLDER,
       dataInputSchema.compositionSchema.fileName,
     );
 
@@ -151,7 +151,7 @@ export class WorkflowService {
 
     dataInputSchema.actionSchemas.forEach(actionSchema => {
       actionSchema.jsonSchema = {
-        $id: `classpath:/${schemas_folder}/${actionSchema.fileName}`,
+        $id: `classpath:/${SCHEMAS_FOLDER}/${actionSchema.fileName}`,
         ...actionSchema.jsonSchema,
       };
     });
@@ -163,7 +163,7 @@ export class WorkflowService {
 
     const saveSchemaPromises = schemaFiles.map(schemaFile => {
       const path = this.resolveResourcePath(
-        join(schemas_folder, schemaFile.fileName),
+        join(SCHEMAS_FOLDER, schemaFile.fileName),
       );
       return this.saveFile(path, schemaFile.jsonSchema);
     });
@@ -181,7 +181,7 @@ export class WorkflowService {
   async listStoredSpecs(): Promise<WorkflowSpecFile[]> {
     const specs: WorkflowSpecFile[] = [];
     // We can list all spec files from FS but let's keep it simple for now
-    for (const relativePath of spec_files) {
+    for (const relativePath of SPEC_FILES) {
       const path = this.resolveResourcePath(relativePath);
       const buffer = await fs.readFile(path);
       const content = JSON.parse(buffer.toString('utf8'));
@@ -194,7 +194,7 @@ export class WorkflowService {
     return resolve(
       join(
         this.sonataFlowService.resourcesPath,
-        default_workflows_path,
+        DEFAULT_WORKFLOWS_PATH,
         relativePath,
       ),
     );

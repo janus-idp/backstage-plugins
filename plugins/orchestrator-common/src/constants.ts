@@ -1,8 +1,8 @@
 import { WorkflowDefinition, WorkflowSample } from './types';
 
-export const orchestrator_service_ready_topic = 'orchestrator-service-ready';
+export const ORCHESTRATOR_SERVICE_READY_TOPIC = 'orchestrator-service-ready';
 
-export const empty_definition: WorkflowDefinition = {
+export const EMPTY_DEFINITION: WorkflowDefinition = {
   id: 'workflow_unique_identifier',
   version: '0.1',
   specVersion: '0.8',
@@ -35,40 +35,40 @@ export const empty_definition: WorkflowDefinition = {
   ],
 };
 
-export const schemas_folder = 'schemas';
-export const specs_folder = 'specs';
+export const SCHEMAS_FOLDER = 'schemas';
+export const SPECS_FOLDER = 'specs';
 
-export const jira_open_api_file = 'jira-openapi.json';
-export const jira_open_api_file_path = `${specs_folder}/${jira_open_api_file}`;
+export const JIRA_OPEN_API_FILE = 'jira-openapi.json';
+export const JIRA_OPEN_API_FILE_PATH = `${SPECS_FOLDER}/${JIRA_OPEN_API_FILE}`;
 
-export const actions_open_api_file = 'actions-openapi.json';
-export const actions_open_api_file_path = `${specs_folder}/${actions_open_api_file}`;
+export const ACTIONS_OPEN_API_FILE = 'actions-openapi.json';
+export const ACTIONS_OPEN_API_FILE_PATH = `${SPECS_FOLDER}/${ACTIONS_OPEN_API_FILE}`;
 
-export const spec_files = [actions_open_api_file_path, jira_open_api_file_path];
+export const SPEC_FILES = [ACTIONS_OPEN_API_FILE_PATH, JIRA_OPEN_API_FILE_PATH];
 
-export const workflow_title = 'Workflow';
-export const workflow_title_plural = 'Workflows';
-export const workflow_type = 'workflow';
+export const WORKFLOW_TITLE = 'Workflow';
+export const WORKFLOW_TITLE_PLURAL = 'Workflows';
+export const WORKFLOW_TYPE = 'workflow';
 
-export const workflow_json_sample: WorkflowSample = {
+export const WORKFLOW_JSON_SAMPLE: WorkflowSample = {
   id: 'jsongreet',
   url: 'https://raw.githubusercontent.com/kiegroup/kogito-examples/stable/serverless-workflow-examples/serverless-workflow-greeting-quarkus/src/main/resources/jsongreet.sw.json',
 };
 
-export const workflow_yaml_sample: WorkflowSample = {
+export const WORKFLOW_YAML_SAMPLE: WorkflowSample = {
   id: 'yamlgreet',
   url: 'https://raw.githubusercontent.com/kiegroup/kogito-examples/stable/serverless-workflow-examples/serverless-workflow-greeting-quarkus/src/main/resources/yamlgreet.sw.yml',
 };
 
 // Default values for the orchestrator plugin configuration
-export const default_sonataflow_container_image =
+export const DEFAULT_SONATAFLOW_CONTAINER_IMAGE =
   'quay.io/kiegroup/kogito-swf-devmode-nightly:main-2023-08-30';
-export const default_sonataflow_persistance_path = '/home/kogito/persistence';
-export const default_catalog_owner = 'orchestrator';
-export const default_catalog_environment = 'development';
-export const default_editor_path = 'https://start.kubesmarts.org';
+export const DEFAULT_SONATAFLOW_PERSISTANCE_PATH = '/home/kogito/persistence';
+export const DEFAULT_CATALOG_OWNER = 'orchestrator';
+export const DEFAULT_CATALOG_ENVIRONMENT = 'development';
+export const DEFAULT_EDITOR_PATH = 'https://start.kubesmarts.org';
 
-export const default_workflows_path = 'workflows';
+export const DEFAULT_WORKFLOWS_PATH = 'workflows';
 
 export const ASSESSMENT_WORKFLOW_TYPE = 'workflow-type/assessment';
 export const INFRASTRUCTURE_WORKFLOW_TYPE = 'workflow-type/infrastructure';

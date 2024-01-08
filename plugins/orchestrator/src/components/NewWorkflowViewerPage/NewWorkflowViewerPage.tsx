@@ -18,8 +18,8 @@ import {
 } from '@material-ui/core';
 
 import {
-  workflow_json_sample,
-  workflow_yaml_sample,
+  WORKFLOW_JSON_SAMPLE,
+  WORKFLOW_YAML_SAMPLE,
   WorkflowFormat,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
@@ -42,7 +42,7 @@ export const NewWorkflowViewerPage = () => {
   const createWorkflowLink = useRouteRef(createWorkflowRouteRef);
 
   const defaultValues: FormData = {
-    url: workflow_json_sample.url,
+    url: WORKFLOW_JSON_SAMPLE.url,
   };
   const { handleSubmit, register, formState } = useForm<FormData>({
     defaultValues,
@@ -167,17 +167,17 @@ export const NewWorkflowViewerPage = () => {
                 color="default"
                 variant="outlined"
                 style={{ marginTop: 8, marginRight: 8 }}
-                onClick={() => handleResult({ url: workflow_yaml_sample.url })}
+                onClick={() => handleResult({ url: WORKFLOW_YAML_SAMPLE.url })}
               >
-                {workflow_yaml_sample.id}
+                {WORKFLOW_YAML_SAMPLE.id}
               </Button>
               <Button
                 color="default"
                 variant="outlined"
                 style={{ marginTop: 8, marginRight: 8 }}
-                onClick={() => handleResult({ url: workflow_json_sample.url })}
+                onClick={() => handleResult({ url: WORKFLOW_JSON_SAMPLE.url })}
               >
-                {workflow_json_sample.id}
+                {WORKFLOW_JSON_SAMPLE.id}
               </Button>
             </Box>
           </Grid>

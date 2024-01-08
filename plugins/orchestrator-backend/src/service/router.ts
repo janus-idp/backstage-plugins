@@ -11,7 +11,7 @@ import { Logger } from 'winston';
 
 import {
   fromWorkflowSource,
-  orchestrator_service_ready_topic,
+  ORCHESTRATOR_SERVICE_READY_TOPIC,
   WorkflowDataInputSchemaResponse,
   WorkflowItem,
   WorkflowListResult,
@@ -98,7 +98,7 @@ export async function createBackendRouter(
   await workflowService.reloadWorkflows();
 
   await eventBroker.publish({
-    topic: orchestrator_service_ready_topic,
+    topic: ORCHESTRATOR_SERVICE_READY_TOPIC,
     eventPayload: {},
   });
 
@@ -320,7 +320,7 @@ function setupInternalRoutes(
     }
 
     await workflowService.deleteWorkflowDefinitionById(uri);
-    res.status(201).send();
+    res.status(200).send();
   });
 
   router.post('/workflows', async (req, res) => {

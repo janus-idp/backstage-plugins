@@ -18,11 +18,11 @@ import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { Logger } from 'winston';
 
 import {
-  default_catalog_environment,
-  default_catalog_owner,
+  DEFAULT_CATALOG_ENVIRONMENT,
+  DEFAULT_CATALOG_OWNER,
   getWorkflowCategory,
-  orchestrator_service_ready_topic,
-  workflow_type,
+  ORCHESTRATOR_SERVICE_READY_TOPIC,
+  WORKFLOW_TYPE,
   WorkflowCategory,
   WorkflowItem,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
@@ -55,10 +55,10 @@ export class OrchestratorEntityProvider
     );
     const owner =
       args.config.getOptionalString('orchestrator.catalog.owner') ??
-      default_catalog_owner;
+      DEFAULT_CATALOG_OWNER;
     const environment =
       args.config.getOptionalString('orchestrator.catalog.environment') ??
-      default_catalog_environment;
+      DEFAULT_CATALOG_ENVIRONMENT;
 
     const orchestratorPluginUrl =
       await args.discovery.getBaseUrl('orchestrator');
@@ -98,7 +98,7 @@ export class OrchestratorEntityProvider
   }
 
   supportsEventTopics(): string[] {
-    return [orchestrator_service_ready_topic];
+    return [ORCHESTRATOR_SERVICE_READY_TOPIC];
   }
 
   async connect(connection: EntityProviderConnection): Promise<void> {
@@ -115,7 +115,7 @@ export class OrchestratorEntityProvider
   }
 
   async onEvent(params: EventParams): Promise<void> {
-    if (params.topic !== orchestrator_service_ready_topic) {
+    if (params.topic !== ORCHESTRATOR_SERVICE_READY_TOPIC) {
       return;
     }
     await this.run();
@@ -175,7 +175,7 @@ export class OrchestratorEntityProvider
         },
         spec: {
           owner: this.owner,
-          type: workflow_type,
+          type: WORKFLOW_TYPE,
           steps: [],
         },
       };

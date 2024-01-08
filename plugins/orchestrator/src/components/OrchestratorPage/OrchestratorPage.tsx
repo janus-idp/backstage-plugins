@@ -12,7 +12,7 @@ import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { Button, Grid } from '@material-ui/core';
 
 import {
-  workflow_title,
+  WORKFLOW_TITLE,
   WorkflowItem,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
@@ -48,7 +48,7 @@ export const OrchestratorPage = () => {
                 color="primary"
                 onClick={() => navigate(newWorkflowLink())}
               >
-                {`New ${workflow_title}`}
+                {`New ${WORKFLOW_TITLE}`}
               </Button>
             </Grid>
             <Grid item>

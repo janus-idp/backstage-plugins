@@ -14,7 +14,7 @@ import { useController } from '@kie-tools-core/react-hooks/dist/useController';
 import { Grid } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 
-import { workflow_title } from '@janus-idp/backstage-plugin-orchestrator-common';
+import { WORKFLOW_TITLE } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { orchestratorApiRef } from '../../api';
 import {
@@ -132,7 +132,7 @@ export const CreateWorkflowPage = () => {
                 </Button>
               )
             }
-            title={workflowId ?? `New ${workflow_title}`}
+            title={workflowId ?? `New ${WORKFLOW_TITLE}`}
           >
             <div style={{ height: '600px', padding: '10px' }}>
               <WorkflowEditor
