@@ -19,6 +19,7 @@ import { RoleSource, Source } from '@janus-idp/backstage-plugin-rbac-common';
 
 import { ConditionalStorage } from '../database/conditional-storage';
 import { RoleMetadataStorage } from '../database/role-metadata';
+import { metadataStringToPolicy } from '../helper';
 import { EnforcerDelegate } from './enforcer-delegate';
 import { MODEL } from './permission-model';
 import { validateEntityReference } from './policies-validation';
@@ -122,7 +123,50 @@ const addPredefinedPoliciesAndGroupPolicies = async (
     newModelFromString(MODEL),
     new FileAdapter(preDefinedPoliciesFile),
   );
-  const policies = await fileEnf.getPolicy();
+  const policies = new Set<string[]>(await fileEnf.getPolicy());
+  const groupPolicies = new Set<string[]>(await fileEnf.getGroupingPolicy());
+
+  const oldFilePolicies = new Set<string[]>();
+  const policiesMetadata = await enf.getFilteredPolicyMetadata('csv-file');
+  for (const policyMetadata of policiesMetadata) {
+    oldFilePolicies.add(metadataStringToPolicy(policyMetadata.policy));
+  }
+
+  const policiesToDelete: string[][] = [];
+  const groupPoliciesToDelete: string[][] = [];
+  for (const oldFilePolicy of oldFilePolicies) {
+    if (oldFilePolicy.length === 2 && !groupPolicies.has(oldFilePolicy)) {
+      groupPoliciesToDelete.push(oldFilePolicy);
+    } else if (!policies.has(oldFilePolicy)) {
+      policiesToDelete.push(oldFilePolicy);
+    }
+  }
+
+  const rolesToDelete = new Set<string>();
+  groupPoliciesToDelete
+    .filter(gp => gp[1].startsWith(`role:`))
+    .forEach(gp => {
+      rolesToDelete.add(gp[1]);
+    });
+  for (const gp of groupPolicies) {
+    if (rolesToDelete.has(gp[1])) {
+      rolesToDelete.delete(gp[1]);
+    }
+  }
+
+  const delRoleMetaTrx = await knex.transaction();
+  try {
+    for (const roleMeta of rolesToDelete) {
+      await roleMetadataStorage.removeRoleMetadata(roleMeta, delRoleMetaTrx);
+    }
+    await enf.removeGroupingPolicies(groupPoliciesToDelete, true);
+    delRoleMetaTrx.commit();
+  } catch (err) {
+    delRoleMetaTrx.rollback();
+    throw err;
+  }
+  await enf.removePolicies(policiesToDelete, true);
+
   for (const policy of policies) {
     const err = validateEntityReference(policy[0]);
     if (err) {
@@ -134,7 +178,7 @@ const addPredefinedPoliciesAndGroupPolicies = async (
       await enf.addPolicy(policy, 'csv-file');
     }
   }
-  const groupPolicies = await fileEnf.getGroupingPolicy();
+
   for (const groupPolicy of groupPolicies) {
     if (!(await enf.hasGroupingPolicy(...groupPolicy))) {
       await validateGroupingPolicy(
@@ -167,8 +211,9 @@ async function validateGroupingPolicy(
   roleMetadataStorage: RoleMetadataStorage,
   source: Source,
 ) {
+  console.log(`validate policy: ${groupPolicy}}`);
   if (groupPolicy.length === 3) {
-    throw new Error(`Group policy should has length 2`);
+    throw new Error(`Group policy should has length 3`);
   }
 
   const member = groupPolicy[0];
@@ -213,7 +258,6 @@ export class RBACPermissionPolicy implements PermissionPolicy {
   private readonly enforcer: EnforcerDelegate;
   private readonly logger: Logger;
   private readonly conditionStorage: ConditionalStorage;
-  private readonly knex: Knex;
 
   public static async build(
     logger: Logger,
@@ -248,7 +292,6 @@ export class RBACPermissionPolicy implements PermissionPolicy {
       enforcerDelegate,
       logger,
       conditionalStorage,
-      knex,
     );
   }
 
@@ -256,12 +299,10 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     enforcer: EnforcerDelegate,
     logger: Logger,
     conditionStorage: ConditionalStorage,
-    knex: Knex,
   ) {
     this.enforcer = enforcer;
     this.logger = logger;
     this.conditionStorage = conditionStorage;
-    this.knex = knex;
   }
 
   async handle(

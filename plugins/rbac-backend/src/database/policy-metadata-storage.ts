@@ -11,12 +11,15 @@ import { policyToString } from '../helper';
 
 const POLICY_METADATA_TABLE = 'policy-metadata';
 
-interface PermissionPolicyMetadataDao extends PermissionPolicyMetadata {
+export interface PermissionPolicyMetadataDao extends PermissionPolicyMetadata {
   id: number;
   policy: string;
 }
 
 export interface PolicyMetadataStorage {
+  findPolicyMetadataBySource(
+    source: string,
+  ): Promise<PermissionPolicyMetadataDao[]>;
   findPolicyMetadata(
     policy: string[],
   ): Promise<PermissionPolicyMetadata | undefined>;
@@ -30,6 +33,16 @@ export interface PolicyMetadataStorage {
 
 export class DataBasePolicyMetadataStorage implements PolicyMetadataStorage {
   constructor(private readonly knex: Knex<any, any[]>) {}
+
+  async findPolicyMetadataBySource(
+    source: string,
+  ): Promise<PermissionPolicyMetadataDao[]> {
+    const metadataDao = await this.knex
+      ?.table(POLICY_METADATA_TABLE)
+      .where('source', source);
+
+    return metadataDao;
+  }
 
   async findPolicyMetadata(
     policy: string[],

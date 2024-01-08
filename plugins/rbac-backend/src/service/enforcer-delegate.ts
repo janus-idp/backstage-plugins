@@ -8,7 +8,10 @@ import {
   Source,
 } from '@janus-idp/backstage-plugin-rbac-common';
 
-import { PolicyMetadataStorage } from '../database/policy-metadata-storage';
+import {
+  PermissionPolicyMetadataDao,
+  PolicyMetadataStorage,
+} from '../database/policy-metadata-storage';
 import { policiesToString, policyToString } from '../helper';
 
 export class EnforcerDelegate {
@@ -255,5 +258,11 @@ export class EnforcerDelegate {
         `policy ${policy} can be modified or deleted only with help of 'policies-csv-file'`,
       );
     }
+  }
+
+  async getFilteredPolicyMetadata(
+    source: Source,
+  ): Promise<PermissionPolicyMetadataDao[]> {
+    return await this.metadataStorage.findPolicyMetadataBySource(source);
   }
 }

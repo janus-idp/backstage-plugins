@@ -8,3 +8,7 @@ export function policiesToString(policies: string[][]): string {
     .join(',');
   return `[${policiesString}]`;
 }
+
+export function metadataStringToPolicy(policy: string): string[] {
+  return policy.replace('[', '').replace(']', '').split(',');
+}

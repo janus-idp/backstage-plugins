@@ -368,7 +368,6 @@ export class PolicesServer {
         );
         await this.enforcer.addGroupingPolicies(roles, 'rest');
         createTrx.commit();
-        // throw new Error('ops');
       } catch (trxErr) {
         createTrx.rollback();
         throw trxErr;
@@ -414,6 +413,7 @@ export class PolicesServer {
 
       const oldRole = this.transformRoleToArray(oldRoleRaw);
       const newRole = this.transformRoleToArray(newRoleRaw);
+      // todo shell we allow newRole with an empty array?...
 
       for (const role of newRole) {
         const hasRole = oldRole.some(element => {
@@ -488,10 +488,8 @@ export class PolicesServer {
         // enforcer.updateGroupingPolicy(oldRole, newRole) was not implemented
         // for ORMTypeAdapter.
         // So, let's compensate this combination delete + create.
-        console.log(`Remove========`);
         await this.enforcer.removeGroupingPolicies(oldRole, false);
         await this.enforcer.addGroupingPolicies(newRole, 'rest');
-        // throw new Error('ops');
         updateTrx.commit();
       } catch (trxErr) {
         updateTrx.rollback();
@@ -504,7 +502,7 @@ export class PolicesServer {
     router.delete(
       '/roles/:kind/:namespace/:name',
       async (request, response) => {
-        let roles = [];
+        let roleMembers = [];
         const decision = await this.authorize(request, {
           permission: policyEntityDeletePermission,
         });
@@ -519,10 +517,9 @@ export class PolicesServer {
           const memberReferences = this.getFirstQuery(
             request.query.memberReferences!,
           );
-
-          roles.push([memberReferences, roleEntityRef]);
+          roleMembers.push([memberReferences, roleEntityRef]);
         } else {
-          roles = await this.enforcer.getFilteredGroupingPolicy(
+          roleMembers = await this.enforcer.getFilteredGroupingPolicy(
             1,
             roleEntityRef,
           );
@@ -532,20 +529,25 @@ export class PolicesServer {
           await this.roleMetadata.findRoleMetadata(roleEntityRef);
         if (metadata?.source === 'csv-file') {
           throw new Error(
-            `Role ${roleEntityRef} can be removed only using csv policy file.`,
+            `Role ${roleEntityRef} can be modified only using csv policy file.`,
           );
         }
         if (metadata?.source === 'default') {
           throw new Error(
-            `Pre-defined role ${roleEntityRef} is reserved and can not be removed.`,
+            `Pre-defined role ${roleEntityRef} is reserved and can not be modified.`,
           );
         }
 
         const rmTrx = await this.knex.transaction();
         try {
-          await this.roleMetadata.removeRoleMetadata(roleEntityRef, rmTrx);
-          // throw new Error('ops');
-          await this.enforcer.removeGroupingPolicies(roles, false);
+          await this.enforcer.removeGroupingPolicies(roleMembers, false);
+          roleMembers = await this.enforcer.getFilteredGroupingPolicy(
+            1,
+            roleEntityRef,
+          );
+          if (roleMembers.length === 0) {
+            await this.roleMetadata.removeRoleMetadata(roleEntityRef, rmTrx);
+          }
           rmTrx.commit();
         } catch (trxErr) {
           rmTrx.rollback();
