@@ -83,7 +83,7 @@ export const getWorkspace = async (
     },
   );
   const data = await response.json();
-  return [data.status.devworkspaceId, data.status.phase];
+  return [data.status?.devworkspaceId, data.status?.phase];
 };
 
 export const getNamespaces = async (
