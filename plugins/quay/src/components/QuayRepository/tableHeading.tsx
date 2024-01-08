@@ -8,7 +8,7 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import { vulnerabilitySummary } from '../../lib/utils';
 import type { QuayTagData } from '../../types';
 
-export const columns: TableColumn[] = [
+export const columns: TableColumn<QuayTagData>[] = [
   {
     title: 'Tag',
     field: 'name',
@@ -23,9 +23,8 @@ export const columns: TableColumn[] = [
   {
     title: 'Security Scan',
     field: 'securityScan',
-    render: (rowData: any): React.ReactNode => {
-      const quayRowData = rowData as QuayTagData;
-      if (!quayRowData.securityStatus && !quayRowData.securityDetails) {
+    render: (rowData: QuayTagData): React.ReactNode => {
+      if (!rowData.securityStatus && !rowData.securityDetails) {
         return (
           <span data-testid="quay-repo-security-scan-progress">
             <Progress />
@@ -33,7 +32,7 @@ export const columns: TableColumn[] = [
         );
       }
 
-      if (quayRowData.securityStatus === 'unsupported') {
+      if (rowData.securityStatus === 'unsupported') {
         return (
           <Tooltip title="The manifest for this tag has an operating system or package manager unsupported by Quay Security Scanner">
             <span data-testid="quay-repo-security-scan-unsupported">
@@ -43,8 +42,8 @@ export const columns: TableColumn[] = [
         );
       }
 
-      const tagManifest = quayRowData.manifest_digest_raw;
-      const retStr = vulnerabilitySummary(quayRowData.securityDetails);
+      const tagManifest = rowData.manifest_digest_raw;
+      const retStr = vulnerabilitySummary(rowData.securityDetails);
       return <Link to={`tag/${tagManifest}`}>{retStr}</Link>;
     },
     id: 'securityScan',
@@ -54,12 +53,7 @@ export const columns: TableColumn[] = [
     title: 'Size',
     field: 'size',
     type: 'numeric',
-    customSort: (a, b) => {
-      const A = a as QuayTagData;
-      const B = b as QuayTagData;
-
-      return A.rawSize - B.rawSize;
-    },
+    customSort: (a: QuayTagData, b: QuayTagData) => a.rawSize - b.rawSize,
   },
   {
     title: 'Expires',
@@ -71,12 +65,8 @@ export const columns: TableColumn[] = [
     title: 'Manifest',
     field: 'manifest_digest',
     type: 'string',
-    customSort: (a, b) => {
-      const A = a as QuayTagData;
-      const B = b as QuayTagData;
-
-      return A.manifest_digest_raw.localeCompare(B.manifest_digest_raw);
-    },
+    customSort: (a: QuayTagData, b: QuayTagData) =>
+      a.manifest_digest_raw.localeCompare(b.manifest_digest_raw),
   },
 ];
 
