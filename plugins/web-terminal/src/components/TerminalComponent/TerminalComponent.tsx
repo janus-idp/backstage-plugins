@@ -1,6 +1,6 @@
 import React, { useCallback, useRef } from 'react';
 
-import { InfoCard, Progress } from '@backstage/core-components';
+import { InfoCard, Progress, WarningPanel } from '@backstage/core-components';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { useEntity } from '@backstage/plugin-catalog-react';
 
@@ -14,11 +14,13 @@ import {
   getDefaultNamespace,
   getNamespaces,
   getWorkspace,
+  waitBetweenRetries,
 } from './utils';
 
 import './static/xterm.css';
 
 import { NamespacePickerDialog } from '../NamespacePickerDialog';
+import { KUBERNETES_API_SERVER } from './utils/annotations';
 
 const useStyles = makeStyles({
   term: {
@@ -53,9 +55,10 @@ export const TerminalComponent = () => {
   );
 
   const { entity } = useEntity();
-  const cluster = entity.metadata.annotations?.[
-    'kubernetes.io/api-server'
-  ]?.replace(/(https?:\/\/)/, '');
+  const cluster = entity.metadata.annotations?.[KUBERNETES_API_SERVER]?.replace(
+    /(https?:\/\/)/,
+    '',
+  );
   const classes = useStyles();
   const tokenRef = React.useRef<HTMLInputElement>(null);
   const termRef = React.useRef(null);
@@ -109,7 +112,13 @@ export const TerminalComponent = () => {
     }
     let workspaceID;
     let phase;
-    while (phase !== 'Running') {
+    const waitUntil = Date.now() + 5 * 60 * 1000; // wait max 5 minutes
+    for (
+      let retry = 0;
+      retry < 1000 && Date.now() < waitUntil && phase !== 'Running';
+      retry++
+    ) {
+      await waitBetweenRetries(retry);
       [workspaceID, phase] = await getWorkspace(
         restServerUrl,
         link,
@@ -173,24 +182,32 @@ export const TerminalComponent = () => {
   return (
     <div>
       <InfoCard title="Web Terminal" noPadding>
-        <form onSubmit={handleSubmit} className={classes.formDisplay}>
-          <TextField
-            data-testid="token-input"
-            label="Token"
-            type="password"
-            variant="outlined"
-            inputRef={tokenRef}
-            required
+        {cluster ? (
+          <form onSubmit={handleSubmit} className={classes.formDisplay}>
+            <TextField
+              data-testid="token-input"
+              label="Token"
+              type="password"
+              variant="outlined"
+              inputRef={tokenRef}
+              required
+            />
+            <Button
+              data-testid="submit-token-button"
+              type="submit"
+              color="primary"
+              variant="contained"
+            >
+              Submit
+            </Button>
+          </form>
+        ) : (
+          <WarningPanel
+            title="Entity missing Kubernetes API annotation"
+            message={`Entity "${entity.metadata.name}" must have the "${KUBERNETES_API_SERVER}" annotation to setup a web terminal.`}
+            defaultExpanded
           />
-          <Button
-            data-testid="submit-token-button"
-            type="submit"
-            color="primary"
-            variant="contained"
-          >
-            Submit
-          </Button>
-        </form>
+        )}
         {displayModal && cluster && token && (
           <NamespacePickerDialog
             onInit={() => getNamespaces(restServerUrl, cluster, token)}

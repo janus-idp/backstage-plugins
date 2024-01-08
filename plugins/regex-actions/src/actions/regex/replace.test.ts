@@ -18,17 +18,13 @@ import { createReplaceAction } from './replace';
 describe('regex:replace', () => {
   const action = createReplaceAction();
 
-  const logStream = {
-    write: jest.fn(),
-  } as jest.Mocked<Partial<Writable>> as jest.Mocked<Writable>;
-
   const mockTmpDir = os.tmpdir();
   const mockContext = {
     input: {},
     baseUrl: 'somebase',
     workspacePath: mockTmpDir,
     logger: getVoidLogger(),
-    logStream,
+    logStream: {} as Writable,
     output: jest.fn(),
     createTemporaryDirectory: jest.fn().mockResolvedValue(mockTmpDir),
   };
@@ -87,7 +83,7 @@ describe('regex:replace', () => {
         {
           pattern: 'Dog',
           replacement: 'ferret',
-          flags: ['i'] as any,
+          flags: ['i'] as 'i'[],
           values: [
             {
               key: 'eg2',
@@ -120,7 +116,7 @@ describe('regex:replace', () => {
         {
           pattern: 'dog',
           replacement: 'monkey',
-          flags: ['g'] as any,
+          flags: ['g'] as ('g' | 'i')[],
           values: [
             {
               key: 'eg1',
@@ -131,7 +127,7 @@ describe('regex:replace', () => {
         {
           pattern: 'Dog',
           replacement: 'ferret',
-          flags: ['g', 'i'] as any,
+          flags: ['g', 'i'] as ('g' | 'i')[],
           values: [
             {
               key: 'eg2',

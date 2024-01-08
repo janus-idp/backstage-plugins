@@ -13,6 +13,7 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 
 import { TerminalComponent } from './TerminalComponent';
+import { KUBERNETES_API_SERVER } from './utils/annotations';
 
 const DOMAIN_URL = 'mock-domain.com/webterminal';
 const API_URL = 'https://api.cluster.com';
@@ -20,10 +21,11 @@ const NAMESPACES_URL = `${API_URL}/api/v1/namespaces`;
 const NAMESPACE = 'web-terminal-service-catalog';
 const WORKSPACES_URL = `${API_URL}/apis/workspace.devfile.io/v1alpha2/namespaces/${NAMESPACE}/devworkspaces`;
 const CREATED_WORKSPACE_URL = `${WORKSPACES_URL}/web-terminal-c5e12`;
+
 const entityMock = {
   metadata: {
     annotations: {
-      'kubernetes.io/api-server': API_URL,
+      [KUBERNETES_API_SERVER]: API_URL,
     },
     name: 'cluster',
   },
