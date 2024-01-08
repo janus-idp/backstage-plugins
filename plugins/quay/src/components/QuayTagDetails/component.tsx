@@ -30,7 +30,7 @@ const columns: TableColumn[] = [
     title: 'Advisory',
     field: 'name',
     render: (rowData: any): React.ReactNode => {
-      const row = rowData as Vulnerability;
+      const row = rowData as VulnerabilityListItem;
       return (
         <div style={{ display: 'flex', alignItems: 'center' }}>
           {row.Name}
@@ -43,8 +43,8 @@ const columns: TableColumn[] = [
       );
     },
     customSort: (a, b) => {
-      const rowA = a as Vulnerability;
-      const rowB = b as Vulnerability;
+      const rowA = a as VulnerabilityListItem;
+      const rowB = b as VulnerabilityListItem;
 
       return rowA.Name.localeCompare(rowB.Name, 'en');
     },
@@ -61,7 +61,7 @@ const columns: TableColumn[] = [
       return severityA - severityB;
     },
     render: (rowData: any): React.ReactNode => {
-      const row = rowData as Vulnerability;
+      const row = rowData as VulnerabilityListItem;
       return (
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <WarningIcon

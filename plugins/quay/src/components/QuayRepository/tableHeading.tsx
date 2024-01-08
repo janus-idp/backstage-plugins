@@ -6,7 +6,7 @@ import { Tooltip } from '@material-ui/core';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 
 import { vulnerabilitySummary } from '../../lib/utils';
-import type { Layer } from '../../types';
+import type { QuayTagData } from '../../types';
 
 export const columns: TableColumn[] = [
   {
@@ -24,7 +24,8 @@ export const columns: TableColumn[] = [
     title: 'Security Scan',
     field: 'securityScan',
     render: (rowData: any): React.ReactNode => {
-      if (!rowData.securityStatus && !rowData.securityDetails) {
+      const quayRowData = rowData as QuayTagData;
+      if (!quayRowData.securityStatus && !quayRowData.securityDetails) {
         return (
           <span data-testid="quay-repo-security-scan-progress">
             <Progress />
@@ -32,7 +33,7 @@ export const columns: TableColumn[] = [
         );
       }
 
-      if (rowData.securityStatus === 'unsupported') {
+      if (quayRowData.securityStatus === 'unsupported') {
         return (
           <Tooltip title="The manifest for this tag has an operating system or package manager unsupported by Quay Security Scanner">
             <span data-testid="quay-repo-security-scan-unsupported">
@@ -42,8 +43,8 @@ export const columns: TableColumn[] = [
         );
       }
 
-      const tagManifest = rowData.manifest_digest_raw;
-      const retStr = vulnerabilitySummary(rowData.securityDetails as Layer);
+      const tagManifest = quayRowData.manifest_digest_raw;
+      const retStr = vulnerabilitySummary(quayRowData.securityDetails);
       return <Link to={`tag/${tagManifest}`}>{retStr}</Link>;
     },
     id: 'securityScan',
@@ -54,8 +55,8 @@ export const columns: TableColumn[] = [
     field: 'size',
     type: 'numeric',
     customSort: (a, b) => {
-      const A = a as any;
-      const B = b as any;
+      const A = a as QuayTagData;
+      const B = b as QuayTagData;
 
       return A.rawSize - B.rawSize;
     },
@@ -71,8 +72,8 @@ export const columns: TableColumn[] = [
     field: 'manifest_digest',
     type: 'string',
     customSort: (a, b) => {
-      const A = a as any;
-      const B = b as any;
+      const A = a as QuayTagData;
+      const B = b as QuayTagData;
 
       return A.manifest_digest_raw.localeCompare(B.manifest_digest_raw);
     },
