@@ -94,7 +94,7 @@ const addPredefinedPoliciesAndGroupPolicies = async (
         `Failed to validate group policy from file ${preDefinedPoliciesFile}. Cause: ${err.message}`,
       );
     }
-    err = validateEntityReference(groupPolicy[1]);
+    err = validateEntityReference(groupPolicy[1], true);
     if (err) {
       throw new Error(
         `Failed to validate group policy from file ${preDefinedPoliciesFile}. Cause: ${err.message}`,
