@@ -99,5 +99,5 @@ export interface Node {
   type?: string;
   name?: string;
   uniqueId?: string;
-  nodeDefinitionId?: String;
+  nodeDefinitionId?: string;
 }
