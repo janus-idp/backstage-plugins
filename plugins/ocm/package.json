@@ -39,7 +39,8 @@
     "@material-ui/lab": "^4.0.0-alpha.45",
     "@patternfly/patternfly": "^5.1.0",
     "@patternfly/react-icons": "^5.1.1",
-    "react-use": "^17.4.0"
+    "react-use": "^17.4.0",
+    "semver": "^7.5.4"
   },
   "peerDependencies": {
     "react": "^16.13.1 || ^17.0.0"

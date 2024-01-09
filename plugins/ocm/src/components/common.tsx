@@ -9,10 +9,9 @@ import {
 import { Button, Grid, makeStyles, Tooltip } from '@material-ui/core';
 import { ArrowCircleUpIcon } from '@patternfly/react-icons';
 
-import {
-  ClusterStatus,
-  ClusterUpdate,
-} from '@janus-idp/backstage-plugin-ocm-common';
+import { ClusterStatus } from '@janus-idp/backstage-plugin-ocm-common';
+
+import { versionDetails } from '../types';
 
 const useStyles = makeStyles({
   button: {
@@ -48,11 +47,7 @@ export const Status = ({ status }: { status: ClusterStatus }) => {
   );
 };
 
-export const Update = ({
-  data,
-}: {
-  data: { version: string; update: ClusterUpdate };
-}) => {
+export const Update = ({ data }: { data: versionDetails }) => {
   const classes = useStyles();
   return (
     <>

@@ -26,7 +26,9 @@ import {
 } from '@janus-idp/backstage-plugin-ocm-common';
 
 import { OcmApiRef } from '../../api';
+import { ClusterStatusRowData } from '../../types';
 import { Status, Update } from '../common';
+import { columns } from './tableHeading';
 
 const useStylesTwo = makeStyles({
   container: {
@@ -53,17 +55,15 @@ const NodeChip = ({
 }) => (
   <>
     {count > 0 ? (
-      <>
-        <Chip
-          label={
-            <>
-              {indicator}
-              {count}
-            </>
-          }
-          variant="outlined"
-        />
-      </>
+      <Chip
+        label={
+          <>
+            {indicator}
+            {count}
+          </>
+        }
+        variant="outlined"
+      />
     ) : (
       <></>
     )}
@@ -140,7 +140,7 @@ const CatalogClusters = () => {
     return <CircularProgress />;
   }
 
-  const data = clusterEntities
+  const data: ClusterStatusRowData[] = clusterEntities
     ? clusterEntities.map(ce => {
         return {
           name: (
@@ -168,29 +168,7 @@ const CatalogClusters = () => {
       <Table
         options={{ paging: false }}
         data={data}
-        columns={[
-          {
-            title: 'Name',
-            field: 'name',
-            highlight: true,
-          },
-          {
-            title: 'Status',
-            field: 'status',
-          },
-          {
-            title: 'Infrastructure',
-            field: 'infrastructure',
-          },
-          {
-            title: 'Version',
-            field: 'version',
-          },
-          {
-            title: 'Nodes',
-            field: 'nodes',
-          },
-        ]}
+        columns={columns}
         title="All"
       />
     </div>
