@@ -81,13 +81,26 @@ export const useRoles = (
                 lastModified: '-',
                 actionsPermissionResults: {
                   delete: deletePermissionResult,
-                  edit: editPermissionResult,
+                  edit: {
+                    allowed:
+                      editPermissionResult.allowed &&
+                      catalogEntityReadPermissionResult.allowed,
+                    loading:
+                      editPermissionResult.loading &&
+                      catalogEntityReadPermissionResult.loading,
+                  },
                 },
               },
             ];
           }, [])
         : [],
-    [roles, policies, deletePermissionResult, editPermissionResult],
+    [
+      roles,
+      policies,
+      deletePermissionResult,
+      editPermissionResult,
+      catalogEntityReadPermissionResult,
+    ],
   );
   const loading = rolesLoading && policiesLoading;
   useInterval(

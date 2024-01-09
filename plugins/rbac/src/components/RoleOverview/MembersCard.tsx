@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { Table, WarningPanel } from '@backstage/core-components';
+import { catalogEntityReadPermission } from '@backstage/plugin-catalog-common/alpha';
 import { usePermission } from '@backstage/plugin-permission-react';
 
 import { Card, CardContent, makeStyles } from '@material-ui/core';
@@ -43,9 +44,13 @@ const getEditIcon = (isAllowed: boolean, roleName: string) => {
 export const MembersCard = ({ roleName }: MembersCardProps) => {
   const { data, loading, retry, error } = useMembers(roleName);
   const [members, setMembers] = React.useState<MembersData[]>();
-  const permissionResult = usePermission({
+  const policyEntityPermissionResult = usePermission({
     permission: policyEntityUpdatePermission,
     resourceRef: policyEntityUpdatePermission.resourceType,
+  });
+  const catalogEntityPermissionResult = usePermission({
+    permission: catalogEntityReadPermission,
+    resourceRef: catalogEntityReadPermission.resourceType,
   });
 
   const classes = useStyles();
@@ -57,8 +62,17 @@ export const MembersCard = ({ roleName }: MembersCardProps) => {
       onClick: () => retry(),
     },
     {
-      icon: () => getEditIcon(permissionResult.allowed, roleName),
-      tooltip: !permissionResult.allowed ? 'Unauthorized to edit' : 'Edit',
+      icon: () =>
+        getEditIcon(
+          policyEntityPermissionResult.allowed &&
+            catalogEntityPermissionResult.allowed,
+          roleName,
+        ),
+      tooltip:
+        catalogEntityPermissionResult.allowed &&
+        policyEntityPermissionResult.allowed
+          ? 'Edit'
+          : 'Unauthorized to edit',
       isFreeAction: true,
       onClick: () => {},
     },
