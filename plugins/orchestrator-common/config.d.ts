@@ -6,9 +6,9 @@ export interface Config {
     sonataFlowService: {
       /**
        * Base URL of the Sonata Flow service.
-       * Example: http://localhost
+       * Default: http://localhost
        */
-      baseUrl: string;
+      baseUrl?: string;
       /**
        * Port of the Sonata Flow service.
        * Default: no port
@@ -62,9 +62,9 @@ export interface Config {
     dataIndexService: {
       /**
        * URL of the Data Index service.
-       * Example: http://localhost:8080/graphql
+       * Example: http://localhost:8099
        */
-      url?: string;
+      url: string;
     };
     /**
      * Configuration for the integration with the Catalog plugin.

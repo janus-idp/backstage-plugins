@@ -80,9 +80,24 @@ export interface WorkflowOverview {
 
 export interface WorkflowInfo {
   id: string;
-  type: string;
-  name: string;
-  version: string;
+  type?: string;
+  name?: string;
+  version?: string;
+  annotations?: string[];
   description?: string;
   inputSchema?: JSONSchema7;
+  endpoint?: string;
+  serviceUrl?: string;
+  roles?: string[];
+  source?: string;
+  metadata?: Map<string, string>;
+  nodes?: Node[];
+}
+
+export interface Node {
+  id: string;
+  type?: string;
+  name?: string;
+  uniqueId?: string;
+  nodeDefinitionId?: String;
 }

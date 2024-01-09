@@ -55,10 +55,10 @@ export class WorkflowService {
   async saveWorkflowDefinition(item: WorkflowItem): Promise<WorkflowItem> {
     const workflowFormat = extractWorkflowFormatFromUri(item.uri);
     const definitionsPath = this.resolveResourcePath(
-      `${item.definition.id}.sw.${workflowFormat}`,
+      `${item.definition?.id}.sw.${workflowFormat}`,
     );
     const dataInputSchemaPath = await this.saveDataInputSchema(item);
-    if (dataInputSchemaPath) {
+    if (dataInputSchemaPath && item.definition) {
       item.definition.dataInputSchema = dataInputSchemaPath;
     }
 
@@ -129,6 +129,9 @@ export class WorkflowService {
   async saveDataInputSchema(
     workflowItem: WorkflowItem,
   ): Promise<string | undefined> {
+    if (!workflowItem.definition) {
+      return undefined;
+    }
     const openApi = await this.openApiService.generateOpenApi();
     const dataInputSchema = await this.dataInputSchemaService.generate({
       definition: workflowItem.definition,

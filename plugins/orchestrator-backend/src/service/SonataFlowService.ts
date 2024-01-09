@@ -4,12 +4,12 @@ import { OpenAPIV3 } from 'openapi-types';
 import { Logger } from 'winston';
 
 import {
+  DEFAULT_SONATAFLOW_BASE_URL,
   DEFAULT_SONATAFLOW_CONTAINER_IMAGE,
   DEFAULT_SONATAFLOW_PERSISTANCE_PATH,
   DEFAULT_WORKFLOWS_PATH,
   fromWorkflowSource,
   getWorkflowCategory,
-  Job,
   ProcessInstance,
   ProcessInstanceStateValues,
   WorkflowDefinition,
@@ -22,6 +22,7 @@ import {
 import { spawn } from 'child_process';
 import { join, resolve } from 'path';
 
+import { DataIndexService } from './DataIndexService';
 import { executeWithRetry } from './Helper';
 
 const SONATA_FLOW_RESOURCES_PATH =
@@ -53,23 +54,19 @@ interface JiraConfig {
 
 export class SonataFlowService {
   private readonly connection: SonataFlowConnectionConfig;
+  private dataIndex: DataIndexService;
 
   constructor(
     config: Config,
+    dataIndexService: DataIndexService,
     private readonly logger: Logger,
   ) {
     this.connection = this.extractConnectionConfig(config);
+    this.dataIndex = dataIndexService;
   }
 
   public get autoStart(): boolean {
     return this.connection.autoStart;
-  }
-
-  public get url(): string {
-    if (!this.connection.port) {
-      return this.connection.host;
-    }
-    return `${this.connection.host}:${this.connection.port}`;
   }
 
   public get resourcesPath(): string {
@@ -77,24 +74,34 @@ export class SonataFlowService {
   }
 
   public async connect(): Promise<boolean> {
-    const isAlreadyUp = await this.isSonataFlowUp(false);
+    if (!this.connection.autoStart) {
+      return true;
+    }
+
+    const isAlreadyUp = await this.isSonataFlowUp(false, this.devmodeUrl);
     if (isAlreadyUp) {
       return true;
     }
 
-    if (this.connection.autoStart) {
-      this.launchSonataFlow();
-      return await this.isSonataFlowUp(true);
-    }
+    this.launchSonataFlow();
+    return await this.isSonataFlowUp(true, this.devmodeUrl);
+  }
 
-    return false;
+  public get devmodeUrl(): string {
+    if (!this.connection.port) {
+      return this.connection.host;
+    }
+    return `${this.connection.host}:${this.connection.port}`;
   }
 
   public async fetchWorkflowUri(
     workflowId: string,
   ): Promise<string | undefined> {
     try {
-      const urlToFetch = `${this.url}/management/processes/${workflowId}/sources`;
+      const endpoint =
+        (await this.dataIndex.getWorkflowDefinition(workflowId)).serviceUrl ??
+        '';
+      const urlToFetch = `${endpoint}/management/processes/${workflowId}/sources`;
       const response = await executeWithRetry(() => fetch(urlToFetch));
 
       if (response.ok) {
@@ -109,15 +116,15 @@ export class SonataFlowService {
     } catch (error) {
       this.logger.error(`Error when fetching workflow uri: ${error}`);
     }
-
     return undefined;
   }
 
   public async fetchWorkflowInfo(
     workflowId: string,
+    endpoint: string,
   ): Promise<WorkflowInfo | undefined> {
     try {
-      const urlToFetch = `${this.url}/management/processes/${workflowId}`;
+      const urlToFetch = `${endpoint}/management/processes/${workflowId}`;
       const response = await executeWithRetry(() => fetch(urlToFetch));
 
       if (response.ok) {
@@ -134,31 +141,11 @@ export class SonataFlowService {
     return undefined;
   }
 
-  public async fetchWorkflowSource(
-    workflowId: string,
-  ): Promise<string | undefined> {
-    try {
-      const urlToFetch = `${this.url}/management/processes/${workflowId}/source`;
-      const response = await executeWithRetry(() => fetch(urlToFetch));
-
-      if (response.ok) {
-        return await response.text();
-      }
-      const responseStr = JSON.stringify(response);
-      this.logger.error(
-        `Response was NOT okay when fetch(${urlToFetch}). Received response: ${responseStr}`,
-      );
-    } catch (error) {
-      this.logger.error(`Error when fetching workflow source: ${error}`);
-    }
-    return undefined;
-  }
-
   public async fetchWorkflowDefinition(
     workflowId: string,
   ): Promise<WorkflowDefinition | undefined> {
     try {
-      const source = await this.fetchWorkflowSource(workflowId);
+      const source = await this.dataIndex.fetchWorkflowSource(workflowId);
       if (source) {
         return fromWorkflowSource(source);
       }
@@ -168,9 +155,11 @@ export class SonataFlowService {
     return undefined;
   }
 
-  public async fetchOpenApi(): Promise<OpenAPIV3.Document | undefined> {
+  public async fetchOpenApi(
+    endpoint: string,
+  ): Promise<OpenAPIV3.Document | undefined> {
     try {
-      const urlToFetch = `${this.url}/q/openapi.json`;
+      const urlToFetch = `${endpoint}/q/openapi.json`;
       const response = await executeWithRetry(() => fetch(urlToFetch));
       if (response.ok) {
         return await response.json();
@@ -185,9 +174,11 @@ export class SonataFlowService {
     return undefined;
   }
 
-  public async fetchWorkflows(): Promise<WorkflowItem[] | undefined> {
+  public async fetchWorkflows(
+    endpoint: string,
+  ): Promise<WorkflowItem[] | undefined> {
     try {
-      const urlToFetch = `${this.url}/management/processes`;
+      const urlToFetch = `${endpoint}/management/processes`;
       const response = await executeWithRetry(() => fetch(urlToFetch));
 
       if (response.ok) {
@@ -230,26 +221,16 @@ export class SonataFlowService {
     WorkflowOverview[] | undefined
   > {
     try {
-      const urlToFetch = `${this.url}/management/processes`;
-      const response = await executeWithRetry(() => fetch(urlToFetch));
-
-      if (response.ok) {
-        const workflowIds = (await response.json()) as string[];
-        if (!workflowIds?.length) {
-          return [];
-        }
-        const items = await Promise.all(
-          workflowIds.map(async (workflowId: string) => {
-            return this.fetchWorkflowOverview(workflowId);
-          }),
-        );
-
-        return items.filter((item): item is WorkflowOverview => !!item);
+      const workflowDefinitions = await this.dataIndex.getWorkflowDefinitions();
+      if (!workflowDefinitions?.length) {
+        return [];
       }
-      const responseStr = JSON.stringify(response);
-      this.logger.error(
-        `Response was NOT okay when fetch(${urlToFetch}). Received response: ${responseStr}`,
+      const items = await Promise.all(
+        workflowDefinitions
+          .filter(def => def.id)
+          .map(async (def: WorkflowInfo) => this.fetchWorkflowOverview(def.id)),
       );
+      return items.filter((item): item is WorkflowOverview => !!item);
     } catch (error) {
       this.logger.error(
         `Error when fetching workflows for workflowOverview: ${error}`,
@@ -258,90 +239,16 @@ export class SonataFlowService {
     return undefined;
   }
 
-  public async fetchProcessInstances(): Promise<ProcessInstance[] | undefined> {
-    const graphQlQuery =
-      '{ ProcessInstances ( orderBy: { start: ASC }, where: {processId: {isNull: false} } ) { id, processName, processId, businessKey, state, start, lastUpdate, end, nodes { id }, variables, parentProcessInstance {id, processName, businessKey} } }';
-
-    try {
-      const response = await executeWithRetry(() =>
-        fetch(`${this.url}/graphql`, {
-          method: 'POST',
-          body: JSON.stringify({ query: graphQlQuery }),
-          headers: { 'content-type': 'application/json' },
-        }),
-      );
-
-      if (response.ok) {
-        const json = await response.json();
-        const processInstancesSrc = json.data
-          .ProcessInstances as ProcessInstance[];
-        const workflowItems = await this.fetchWorkflows();
-        const processInstances = processInstancesSrc.map(instance => {
-          const workflowItem = workflowItems?.find(
-            wi => wi.definition.id === instance.processId,
-          );
-
-          if (workflowItem) {
-            instance.category = getWorkflowCategory(workflowItem.definition);
-            instance.description = workflowItem.definition.description;
-          }
-          return instance;
-        });
-
-        return processInstances;
-      }
-    } catch (error) {
-      this.logger.error(`Error when fetching instances: ${error}`);
-    }
-    return undefined;
-  }
-
-  public async fetchProcessInstance(
-    instanceId: string,
-  ): Promise<ProcessInstance | undefined> {
-    const graphQlQuery = `{ ProcessInstances (where: { id: {equal: "${instanceId}" } } ) { id, processName, processId, businessKey, state, start, lastUpdate, end, nodes { id, nodeId, definitionId, type, name, enter, exit }, variables, parentProcessInstance {id, processName, businessKey}, error { nodeDefinitionId, message} } }`;
-
-    try {
-      const response = await executeWithRetry(() =>
-        fetch(`${this.url}/graphql`, {
-          method: 'POST',
-          body: JSON.stringify({ query: graphQlQuery }),
-          headers: { 'content-type': 'application/json' },
-        }),
-      );
-
-      if (response.ok) {
-        const json = await response.json();
-        const processInstance = (
-          json.data.ProcessInstances as ProcessInstance[]
-        )?.pop();
-
-        if (processInstance?.processId) {
-          const workflowDefinition = await this.fetchWorkflowDefinition(
-            processInstance.processId,
-          );
-
-          processInstance.category = getWorkflowCategory(workflowDefinition);
-          processInstance.description = workflowDefinition?.description;
-        }
-
-        return processInstance;
-      }
-    } catch (error) {
-      this.logger.error(`Error when fetching instance: ${error}`);
-    }
-    return undefined;
-  }
-
   public async executeWorkflow(args: {
     workflowId: string;
+    endpoint: string;
     inputData: Record<string, string>;
   }): Promise<WorkflowExecutionResponse | undefined> {
     try {
-      const endpoint = args.inputData?.businessKey
-        ? `${this.url}/${args.workflowId}?businessKey=${args.inputData.businessKey}`
-        : `${this.url}/${args.workflowId}`;
-      const response = await fetch(endpoint, {
+      const workflowEndpoint = args.inputData?.businessKey
+        ? `${args.endpoint}/${args.workflowId}?businessKey=${args.inputData.businessKey}`
+        : `${args.endpoint}/${args.workflowId}`;
+      const response = await fetch(workflowEndpoint, {
         method: 'POST',
         body: JSON.stringify(args.inputData),
         headers: { 'content-type': 'application/json' },
@@ -349,30 +256,6 @@ export class SonataFlowService {
       return response.json();
     } catch (error) {
       this.logger.error(`Error when executing workflow: ${error}`);
-    }
-    return undefined;
-  }
-
-  public async fetchProcessInstanceJobs(
-    instanceId: string,
-  ): Promise<Job[] | undefined> {
-    const graphQlQuery = `{ Jobs (where: { processInstanceId: { equal: "${instanceId}" } }) { id, processId, processInstanceId, rootProcessId, status, expirationTime, priority, callbackEndpoint, repeatInterval, repeatLimit, scheduledId, retries, lastUpdate, endpoint, nodeInstanceId, executionCounter } }`;
-
-    try {
-      const response = await executeWithRetry(() =>
-        fetch(`${this.url}/graphql`, {
-          method: 'POST',
-          body: JSON.stringify({ query: graphQlQuery }),
-          headers: { 'content-type': 'application/json' },
-        }),
-      );
-
-      if (response.ok) {
-        const json = await response.json();
-        return json.data.Jobs;
-      }
-    } catch (error) {
-      this.logger.error(`Error when fetching jobs: ${error}`);
     }
     return undefined;
   }
@@ -403,8 +286,11 @@ export class SonataFlowService {
     });
   }
 
-  private async isSonataFlowUp(withRetry: boolean): Promise<boolean> {
-    const healthUrl = `${this.url}/q/health`;
+  private async isSonataFlowUp(
+    withRetry: boolean,
+    endpoint: string,
+  ): Promise<boolean> {
+    const healthUrl = `${endpoint}/q/health`;
     this.logger.info(`Checking SonataFlow health at: ${healthUrl}`);
 
     try {
@@ -421,7 +307,6 @@ export class SonataFlowService {
     }
     return false;
   }
-
   private createLauncherCommand(): LauncherCommand {
     const resourcesAbsPath = resolve(
       join(this.connection.resourcesPath, DEFAULT_WORKFLOWS_PATH),
@@ -438,7 +323,10 @@ export class SonataFlowService {
     }
 
     launcherArgs.push('--rm');
-    launcherArgs.push('-p', `${this.connection.port ?? 80}:8080`);
+    launcherArgs.push('-e', `QUARKUS_HTTP_PORT=${this.connection.port}`);
+
+    launcherArgs.push('-p', `${this.connection.port}:${this.connection.port}`);
+    launcherArgs.push('-e', `KOGITO_SERVICE_URL=${this.devmodeUrl}`);
     launcherArgs.push(
       '-v',
       `${resourcesAbsPath}:${SONATA_FLOW_RESOURCES_PATH}`,
@@ -470,7 +358,9 @@ export class SonataFlowService {
       config.getOptionalBoolean('orchestrator.sonataFlowService.autoStart') ??
       false;
 
-    const host = config.getString('orchestrator.sonataFlowService.baseUrl');
+    const host =
+      config.getOptionalString('orchestrator.sonataFlowService.baseUrl') ??
+      DEFAULT_SONATAFLOW_BASE_URL;
     const port = config.getOptionalNumber(
       'orchestrator.sonataFlowService.port',
     );
@@ -531,24 +421,11 @@ export class SonataFlowService {
     let totalDuration = 0;
 
     do {
-      const graphQlQuery = `{ ProcessInstances(where: {processId: {equal: "${definition.id}" } }, pagination: {limit: ${limit}, offset: ${offset}}) { processName, state, start, lastUpdate, end } }`;
-
-      try {
-        const graphQlResponse = await executeWithRetry(() =>
-          fetch(`${this.url}/graphql`, {
-            method: 'POST',
-            body: JSON.stringify({ query: graphQlQuery }),
-            headers: { 'content-type': 'application/json' },
-          }),
-        );
-
-        if (graphQlResponse.ok) {
-          const json = await graphQlResponse.json();
-          processInstances = json.data.ProcessInstances;
-        }
-      } catch (error) {
-        this.logger.error(`Error when fetching workflow instances: ${error}`);
-      }
+      processInstances = await this.dataIndex.fetchWorkflowInstances(
+        definition.id,
+        limit,
+        offset,
+      );
 
       for (const pInstance of processInstances) {
         if (new Date(pInstance.start) > lastTriggered) {

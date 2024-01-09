@@ -6,19 +6,17 @@ export type CloudEventResponse =
   | { success: false; error: string };
 
 export class CloudEventService {
-  constructor(
-    private readonly logger: Logger,
-    private readonly baseUrl: string,
-  ) {}
+  constructor(private readonly logger: Logger) {}
 
   public async send<T>(args: {
     event: CloudEvent<T>;
     endpoint?: string;
   }): Promise<CloudEventResponse> {
     try {
-      const targetUrl = args.endpoint
-        ? `${this.baseUrl}/${args.endpoint}`
-        : this.baseUrl;
+      if (!args.endpoint) {
+        throw new Error('Endpoint is required');
+      }
+      const targetUrl = args.endpoint;
       this.logger.info(
         `Sending CloudEvent to ${targetUrl} with data ${JSON.stringify(
           args.event,
