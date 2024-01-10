@@ -1,4 +1,4 @@
-export const DefaultServiceUser = 'default/externalServiceNotificationsUser';
+export const DefaultServiceUser = 'default/guest';
 export const DefaultMessageScope = 'user';
 export const DefaultPageNumber = 1;
 export const DefaultPageSize = 20;
