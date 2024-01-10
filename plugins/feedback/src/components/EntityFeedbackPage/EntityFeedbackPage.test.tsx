@@ -1,7 +1,9 @@
 import React from 'react';
 
+import { ConfigReader } from '@backstage/config';
 import {
   BackstageUserIdentity,
+  configApiRef,
   IdentityApi,
   identityApiRef,
 } from '@backstage/core-plugin-api';
@@ -39,12 +41,17 @@ describe('Entity Feedback Page', () => {
       }),
   };
 
+  const mockConfigApi = new ConfigReader({
+    feedback: { integrations: { jira: [{ host: 'https://jira-server-url' }] } },
+  });
+
   const render = async () =>
     await renderInTestApp(
       <TestApiProvider
         apis={[
           [feedbackApiRef, feedbackApi],
           [identityApiRef, mockIdentityApi],
+          [configApiRef, mockConfigApi],
         ]}
       >
         <EntityProvider entity={mockEntity}>
