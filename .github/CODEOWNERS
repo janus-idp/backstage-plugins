@@ -32,3 +32,5 @@ yarn.lock                    @janus-idp/maintainers-plugins
 /plugins/orchestrator          @janus-idp/maintainers-plugins @caponetto @jkilzi
 /plugins/orchestrator-backend  @janus-idp/maintainers-plugins @caponetto @jkilzi
 /plugins/orchestrator-common   @janus-idp/maintainers-plugins @caponetto @jkilzi
+/plugins/feedback           @janus-idp/maintainers-plugins @yashoswalyo @riginoommen @deshmukhmayur 
+/plugins/feedback-backend   @janus-idp/maintainers-plugins @yashoswalyo @riginoommen @deshmukhmayur
