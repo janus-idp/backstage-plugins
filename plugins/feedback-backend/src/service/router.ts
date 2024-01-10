@@ -206,7 +206,7 @@ export async function createRouter(
         searchKey,
       );
       const page = offset / limit + 1;
-      res
+      return res
         .status(200)
         .json({ ...feedbackData, currentPage: page, pageSize: limit });
     })();
@@ -219,12 +219,14 @@ export async function createRouter(
       if (await feedbackDB.checkFeedbackId(feedbackId)) {
         const feedback: FeedbackModel =
           await feedbackDB.getFeedbackByUuid(feedbackId);
-        res.status(200).json({
+        return res.status(200).json({
           data: feedback,
           message: 'Feedback fetched successfully',
         });
       }
-      res.status(404).json({ error: `No feedback found for id ${feedbackId}` });
+      return res
+        .status(404)
+        .json({ error: `No feedback found for id ${feedbackId}` });
     })();
   });
 
@@ -255,14 +257,14 @@ export async function createRouter(
           const authToken = serviceConfig.getString('token');
 
           const resp = await getTicketDetails(host, ticketId, authToken);
-          res.status(200).json({
+          return res.status(200).json({
             data: { ...resp },
             message: 'fetched successfully',
           });
         }
       }
 
-      res
+      return res
         .status(404)
         .json({ error: `Unable to fetch jira ticket ${ticketId}` });
     })();
@@ -279,15 +281,17 @@ export async function createRouter(
         data.updatedAt = new Date().toISOString();
         const updatedData = await feedbackDB.updateFeedback(data);
         if (updatedData) {
-          res.status(200).json({
+          return res.status(200).json({
             data: updatedData,
             message: 'Feedback updated successfully',
           });
         }
-        res.status(500).json({ error: 'Failed to edit the feedback' });
+        return res.status(500).json({ error: 'Failed to edit the feedback' });
       }
 
-      res.status(404).json({ error: `No feedback found for id ${feedbackId}` });
+      return res
+        .status(404)
+        .json({ error: `No feedback found for id ${feedbackId}` });
     })();
   });
 
