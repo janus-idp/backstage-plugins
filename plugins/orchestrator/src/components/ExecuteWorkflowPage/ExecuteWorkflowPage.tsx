@@ -15,9 +15,7 @@ import validator from '@rjsf/validator-ajv8';
 import { JSONSchema7 } from 'json-schema';
 
 import {
-  getWorkflowCategory,
   WORKFLOW_TITLE,
-  WorkflowCategory,
   WorkflowDataInputSchemaResponse,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
@@ -78,13 +76,8 @@ export const ExecuteWorkflowPage = (props: ExecuteWorkflowPageProps) => {
     }
 
     setLoading(true);
-    const workflowCategory = getWorkflowCategory(
-      schemaResponse?.workflowItem.definition,
-    );
-    if (workflowCategory === WorkflowCategory.ASSESSMENT) {
-      Object.assign(parameters, { businessKey: crypto.randomUUID() });
-    } else {
-      Object.assign(parameters, { businessKey: businessKey ?? '' });
+    if (businessKey !== undefined) {
+      Object.assign(parameters, { businessKey: businessKey });
     }
     const response = await orchestratorApi.executeWorkflow({
       workflowId,

@@ -62,7 +62,7 @@ export const AssessmentResultViewer = (props: AssessmentResultViewerProps) => {
           <Link
             href={executeWorkflowLink({
               workflowId: workflowOption.id,
-              businessKey: selectedInstance?.businessKey ?? '',
+              businessKey: selectedInstance?.id ?? '',
             })}
           >
             {workflowOption.name}
@@ -79,7 +79,7 @@ export const AssessmentResultViewer = (props: AssessmentResultViewerProps) => {
           <Link
             href={executeWorkflowLink({
               workflowId: workflowOption.id,
-              businessKey: selectedInstance?.businessKey ?? '',
+              businessKey: selectedInstance?.id ?? '',
             })}
           >
             {workflowOption.name}
