@@ -10,7 +10,9 @@ import { rootRouteRef } from '../../routes';
 import { FeedbackTable } from './FeedbackTable';
 
 jest.mock('@backstage/plugin-catalog-react', () => ({
-  EntityRefLink: (props: { entityRef: string }) => <a>{props.entityRef}</a>,
+  EntityRefLink: (props: { entityRef: string }) => (
+    <a href="https://localhost">{props.entityRef}</a>
+  ),
   EntityPeekAheadPopover: (props: { children?: React.ReactNode }) => (
     <>{props.children}</>
   ),

@@ -1,8 +1,10 @@
 # Feedback Plugin
 
-Welcome to the feedback plugin!
+## Introduction
 
-This plugin helps to collect feedback from users for service catalog entities and create Jira ticket associated with it.
+Feedback plugin is a valuable addition to backstage which allows project managers to get feedbacks for entites in Backstage Catalog.
+
+It is dedicated to simplifying the process of gathering and managing user feedback for service catalog entities. This plugin seamlessly integrates with the [feedback-backend-plugin](../feedback-backend) and extends its capabilities by allowing users to create Jira tickets associated with their feedback.
 
 <details>
 <summary><strong>Screenshots</strong></summary>
@@ -21,19 +23,19 @@ This plugin helps to collect feedback from users for service catalog entities an
 
 </details>
 
-## Features
+### Key Features
 
-- List all the feedbacks and bugs for the services globally.
-- List all the feedbacks and bugs for each entity.
-- Create Bugs, Feedbacks directly on JIRA and mail.
-- Unique feedback links for each feedback
+- List all the feedbacks and bugs for the componnets on global page.
+- List all the feedbacks and bugs for each component on entity page.
+- Create Bugs, Feedbacks directly on JIRA and also sends a mail to reporter.
+- Unique feedback links for each feedback.
 - Works with all knex supported databases.
 
-## Requirements
+### Requirements
 
-- Make sure that [feedback-backend](../feedback-backend) plugin is configured prior to this.
+- Make sure that [feedback-backend-plugin](../feedback-backend) is configured prior to this.
 
-## Plugin Setup
+### Plugin Setup
 
 1. Install the plugin in your environment
 
@@ -95,7 +97,7 @@ This plugin helps to collect feedback from users for service catalog entities an
    );
    ```
 
-4. Then add a route to sidebar to easily access `/feedback`, in `src/components/Root/Root.tsx`.
+4. Then add the feedback route to sidebar to easily access `/feedback`, in `src/components/Root/Root.tsx`.
 
    ```ts
    import TextsmsOutlined  from '@material-ui/icons/TextsmsOutlined';
@@ -165,3 +167,8 @@ metadata:
     #  while sending mail on feedback generation.
     feedback/email-to: 'example@example.com';
 ```
+
+### Credits
+
+- @1-Platform for [opc-feedback](https://github.com/1-platform/op-components) component.
+-

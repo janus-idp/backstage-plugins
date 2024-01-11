@@ -162,7 +162,7 @@ describe('Router', () => {
       const response = await request(app)
         .patch(`/1234567890`)
         .send({ ...mockFeedback, summary: 'This is updated summmary' });
-      expect(response.body.message).toEqual(
+      expect(response.body.error).toEqual(
         'No feedback found for id 1234567890',
       );
       expect(response.statusCode).toEqual(404);
@@ -178,7 +178,7 @@ describe('Router', () => {
     it('/:feedbackId\tshould give error', async () => {
       const response = await request(app).delete(`/1234567890`);
       expect(response.statusCode).toEqual(404);
-      expect(response.body.message).toEqual(
+      expect(response.body.error).toEqual(
         'No feedback found for id 1234567890',
       );
     });

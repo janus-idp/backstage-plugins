@@ -13,7 +13,9 @@ import { rootRouteRef } from '../../routes';
 import { FeedbackDetailsModal } from './FeedbackDetailsModal';
 
 jest.mock('@backstage/plugin-catalog-react', () => ({
-  EntityRefLink: (props: { entityRef: string }) => <a>{props.entityRef}</a>,
+  EntityRefLink: (props: { entityRef: string }) => (
+    <a href="https://localhost">{props.entityRef}</a>
+  ),
 }));
 
 jest.mock('@backstage/core-components', () => ({
@@ -114,7 +116,7 @@ describe('Feedback details modal', () => {
     expect(rendered.getByText(mockJiraDetails.data.status)).toBeInTheDocument();
   });
 
-  it('should have asignee for jira ticket ', async () => {
+  it('should have assignee for jira ticket', async () => {
     const rendered = await render();
     expect(rendered.getByText('Assignee')).toBeInTheDocument();
     expect(

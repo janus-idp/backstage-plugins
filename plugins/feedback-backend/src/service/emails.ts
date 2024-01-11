@@ -16,9 +16,10 @@ export class NodeMailer {
     const useSecure: boolean = config.getBoolean(
       'feedback.integrations.email.secure',
     );
-    const customCACert = readFileSync(
-      config.getString('feedback.integrations.email.caCert'),
+    const caCertPath = config.getOptionalString(
+      'feedback.integrations.email.caCert',
     );
+    const customCACert = caCertPath ? readFileSync(caCertPath) : undefined;
 
     this.from = config.getString('feedback.integrations.email.from');
     this.transportConfig = createTransport({
