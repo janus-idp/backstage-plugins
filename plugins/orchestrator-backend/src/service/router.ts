@@ -91,6 +91,7 @@ export async function createBackendRouter(
     openApiService,
     jiraService,
     args.dataIndexService,
+    dataInputSchemaService,
   );
   setupExternalRoutes(router, discovery, scaffolderService);
 
@@ -113,6 +114,7 @@ function setupInternalRoutes(
   openApiService: OpenApiService,
   jiraService: JiraService,
   dataIndexService: DataIndexService,
+  dataInputSchemaService: DataInputSchemaService,
 ) {
   router.get('/workflows/definitions', async (_, response) => {
     const swfs = await dataIndexService.getWorkflowDefinitions();
@@ -274,7 +276,7 @@ function setupInternalRoutes(
     res.status(200).json(jobs);
   });
 
-  router.get('/workflows/:workflowId/schema', async (req, res) => {
+  router.get('/workflows/:workflowId/inputSchema', async (req, res) => {
     const {
       params: { workflowId },
     } = req;
@@ -304,7 +306,7 @@ function setupInternalRoutes(
 
     const workflowItem: WorkflowItem = { uri, definition };
 
-    let schema: JSONSchema7 | undefined = undefined;
+    let schemas: JSONSchema7[] = [];
 
     if (definition.dataInputSchema) {
       const workflowInfo = await sonataFlowService.fetchWorkflowInfo(
@@ -317,12 +319,21 @@ function setupInternalRoutes(
         return;
       }
 
-      schema = workflowInfo.inputSchema;
+      if (!workflowInfo.inputSchema) {
+        res
+          .status(500)
+          .send(`Couldn't fetch workflow input schema ${workflowId}`);
+        return;
+      }
+
+      schemas = dataInputSchemaService.parseComposition(
+        workflowInfo.inputSchema,
+      );
     }
 
     const response: WorkflowDataInputSchemaResponse = {
-      workflowItem: workflowItem,
-      schema,
+      workflowItem,
+      schemas,
     };
 
     res.status(200).json(response);

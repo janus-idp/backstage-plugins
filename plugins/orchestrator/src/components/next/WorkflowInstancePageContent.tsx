@@ -11,7 +11,7 @@ import moment from 'moment';
 import { ProcessInstance } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { VALUE_UNAVAILABLE } from '../../constants';
-import { nextExecuteWorkflowRouteRef } from '../../routes';
+import { executeWorkflowRouteRef } from '../../routes';
 import { capitalize } from '../../utils/StringUtils';
 import { EditorViewKind, WorkflowEditor } from '../WorkflowEditor';
 import { ProcessInstanceStatus } from './ProcessInstanceStatus';
@@ -61,7 +61,7 @@ export const WorkflowInstancePageContent = ({
   processInstance?: ProcessInstance;
 }) => {
   const styles = useStyles();
-  const executeWorkflowLink = useRouteRef(nextExecuteWorkflowRouteRef);
+  const executeWorkflowLink = useRouteRef(executeWorkflowRouteRef);
 
   if (!processInstance) {
     return <Skeleton />;

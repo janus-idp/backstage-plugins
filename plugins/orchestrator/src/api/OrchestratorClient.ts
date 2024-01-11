@@ -108,7 +108,7 @@ export class OrchestratorClient implements OrchestratorApi {
     workflowId: string,
   ): Promise<WorkflowDataInputSchemaResponse> {
     const baseUrl = await this.getBaseUrl();
-    const res = await fetch(`${baseUrl}/workflows/${workflowId}/schema`);
+    const res = await fetch(`${baseUrl}/workflows/${workflowId}/inputSchema`);
     if (!res.ok) {
       throw await ResponseError.fromResponse(res);
     }

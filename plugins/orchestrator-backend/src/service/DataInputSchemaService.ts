@@ -10,7 +10,7 @@ import { Parallelstate } from '@severlessworkflow/sdk-typescript/lib/definitions
 import { Sleepstate } from '@severlessworkflow/sdk-typescript/lib/definitions/sleepstate';
 import { Transitiondatacondition } from '@severlessworkflow/sdk-typescript/lib/definitions/transitiondatacondition';
 import { Switchstate } from '@severlessworkflow/sdk-typescript/lib/definitions/types';
-import { JSONSchema4 } from 'json-schema';
+import { JSONSchema4, JSONSchema7 } from 'json-schema';
 import { OpenAPIV3 } from 'openapi-types';
 import { Logger } from 'winston';
 
@@ -1191,5 +1191,46 @@ export class DataInputSchemaService {
     workflowVariableSet.forEach(v => inputVariableSet.delete(v));
 
     return inputVariableSet;
+  }
+
+  public parseComposition(inputSchema: JSONSchema7): JSONSchema7[] {
+    if (!inputSchema.properties) {
+      return [];
+    }
+
+    const refPaths = Object.values(inputSchema.properties)
+      .map(p => (p as JSONSchema7).$ref)
+      .filter((r): r is string => r !== undefined);
+
+    if (!refPaths.length) {
+      return [inputSchema];
+    }
+
+    return refPaths
+      .map(r => this.findReferencedSchema({ rootSchema: inputSchema, ref: r }))
+      .filter((r): r is JSONSchema7 => r !== undefined);
+  }
+
+  private findReferencedSchema(args: {
+    rootSchema: JSONSchema7;
+    ref: string;
+  }): JSONSchema7 | undefined {
+    const pathParts = args.ref
+      .split('/')
+      .filter(part => !['#', ''].includes(part));
+
+    let current: any = args.rootSchema;
+    for (const part of pathParts) {
+      current = current?.[part];
+      if (current === undefined) {
+        return undefined;
+      }
+    }
+
+    if (!current.properties) {
+      return undefined;
+    }
+
+    return current;
   }
 }

@@ -28,7 +28,7 @@ import WorkflowOverviewFormatter, {
   FormattedWorkflowOverview,
 } from '../../dataFormatters/WorkflowOverviewFormatter';
 import {
-  nextExecuteWorkflowRouteRef,
+  executeWorkflowRouteRef,
   workflowDefinitionsRouteRef,
 } from '../../routes';
 import { capitalize } from '../../utils/StringUtils';
@@ -44,7 +44,7 @@ export const WorkflowsTable = ({ items, handleEdit }: WorkflowsTableProps) => {
   const featureFlagsApi = useApi(featureFlagsApiRef);
   const navigate = useNavigate();
   const definitionLink = useRouteRef(workflowDefinitionsRouteRef);
-  const executeWorkflowLink = useRouteRef(nextExecuteWorkflowRouteRef);
+  const executeWorkflowLink = useRouteRef(executeWorkflowRouteRef);
   const [data, setData] = useState<FormattedWorkflowOverview[]>([]);
   const isDeveloperModeOn = featureFlagsApi.isActive(
     FEATURE_FLAG_DEVELOPER_MODE,

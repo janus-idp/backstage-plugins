@@ -52,10 +52,9 @@ export interface WorkflowSpecFile {
   path: string;
   content: OpenAPIV3.Document;
 }
-
 export interface WorkflowDataInputSchemaResponse {
   workflowItem: WorkflowItem;
-  schema: JSONSchema7 | undefined;
+  schemas: JSONSchema7[];
 }
 
 export interface WorkflowExecutionResponse {

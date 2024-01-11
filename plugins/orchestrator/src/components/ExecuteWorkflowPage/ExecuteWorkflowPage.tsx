@@ -1,7 +1,12 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAsync } from 'react-use';
 
-import { ContentHeader, InfoCard, Progress } from '@backstage/core-components';
+import {
+  InfoCard,
+  Progress,
+  ResponseErrorPanel,
+} from '@backstage/core-components';
 import {
   useApi,
   useRouteRef,
@@ -9,15 +14,9 @@ import {
 } from '@backstage/core-plugin-api';
 import { JsonValue } from '@backstage/types';
 
-import { Button, Grid, Typography } from '@material-ui/core';
-import { withTheme } from '@rjsf/core-v5';
-import validator from '@rjsf/validator-ajv8';
-import { JSONSchema7 } from 'json-schema';
+import { Grid } from '@material-ui/core';
 
-import {
-  WORKFLOW_TITLE,
-  WorkflowDataInputSchemaResponse,
-} from '@janus-idp/backstage-plugin-orchestrator-common';
+import { WorkflowDataInputSchemaResponse } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { orchestratorApiRef } from '../../api';
 import {
@@ -25,149 +24,105 @@ import {
   executeWorkflowWithBusinessKeyRouteRef,
   workflowInstanceRouteRef,
 } from '../../routes';
-import { BaseOrchestratorPage } from '../BaseOrchestratorPage/BaseOrchestratorPage';
-import { OrchestratorSupportButton } from '../OrchestratorSupportButton/OrchestratorSupportButton';
-import { WorkflowDialog } from '../WorkflowDialog';
-import { EditorViewKind } from '../WorkflowEditor';
-import { TitleFieldTemplate } from './TitleFieldTemplate';
+import { getErrorObject } from '../../utils/errorUtils';
+import { BaseOrchestratorPage } from '../next/BaseOrchestratorPage';
+import JsonTextAreaForm from './JsonTextAreaForm';
+import StepperForm from './StepperForm';
 
-const WrappedForm = withTheme(require('@rjsf/material-ui-v5').Theme);
-
-interface ExecuteWorkflowPageProps {
-  initialState?: Record<string, JsonValue>;
-}
-
-export const ExecuteWorkflowPage = (props: ExecuteWorkflowPageProps) => {
+export const ExecuteWorkflowPage = () => {
   const orchestratorApi = useApi(orchestratorApiRef);
   const { workflowId } = useRouteRefParams(executeWorkflowRouteRef);
   const { businessKey } = useRouteRefParams(
     executeWorkflowWithBusinessKeyRouteRef,
   );
-  const [loading, setLoading] = useState(false);
-  const [schemaResponse, setSchemaResponse] =
-    useState<WorkflowDataInputSchemaResponse>();
-  const [workflowDialogOpen, setWorkflowDialogOpen] = useState<boolean>(false);
-  const [formState, setFormState] = useState(props.initialState);
-
+  const [isExecuting, setIsExecuting] = useState(false);
+  const [updateError, setUpdateError] = React.useState<Error>();
   const navigate = useNavigate();
   const instanceLink = useRouteRef(workflowInstanceRouteRef);
+  const {
+    value: schemaResponse,
+    loading,
+    error: responseError,
+  } = useAsync(
+    async (): Promise<WorkflowDataInputSchemaResponse> =>
+      await orchestratorApi.getWorkflowDataInputSchema(workflowId),
+    [orchestratorApi, workflowId],
+  );
 
-  useEffect(() => {
-    setLoading(true);
-    orchestratorApi
-      .getWorkflowDataInputSchema(workflowId)
-      .then(response => {
-        setSchemaResponse(response);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, [orchestratorApi, workflowId]);
-
-  const onExecute = useCallback(async () => {
-    const parameters: Record<string, JsonValue> = {};
-    if (schemaResponse?.schema && formState) {
-      for (const key in formState) {
-        if (formState.hasOwnProperty(key)) {
-          const property = formState[key];
-          Object.assign(parameters, { [key]: property });
-        }
+  const handleExecute = useCallback(
+    async (getParameters: () => Record<string, JsonValue>) => {
+      setUpdateError(undefined);
+      let parameters: Record<string, JsonValue> = {};
+      try {
+        parameters = getParameters();
+      } catch (err) {
+        setUpdateError(getErrorObject(err));
+        return;
       }
-    }
-
-    setLoading(true);
-    if (businessKey !== undefined) {
-      Object.assign(parameters, { businessKey: businessKey });
-    }
-    const response = await orchestratorApi.executeWorkflow({
-      workflowId,
-      parameters,
-    });
-    setLoading(false);
-
-    navigate(instanceLink({ instanceId: response.id }));
-  }, [
-    formState,
-    instanceLink,
-    navigate,
-    orchestratorApi,
-    schemaResponse,
-    workflowId,
-    businessKey,
-  ]);
-
-  const onFormChanged = useCallback(
-    e => setFormState(current => ({ ...current, ...e.formData })),
-    [setFormState],
+      try {
+        if (businessKey !== undefined) {
+          parameters.businessKey = businessKey;
+        }
+        setIsExecuting(true);
+        const response = await orchestratorApi.executeWorkflow({
+          workflowId,
+          parameters,
+        });
+        navigate(instanceLink({ instanceId: response.id }));
+      } catch (err) {
+        setUpdateError(getErrorObject(err));
+      } finally {
+        setIsExecuting(false);
+      }
+    },
+    [orchestratorApi, workflowId, navigate, instanceLink, businessKey],
   );
 
-  const executeButton = useMemo(
-    () => (
-      <Button variant="contained" color="primary" onClick={onExecute}>
-        Execute
-      </Button>
-    ),
-    [onExecute],
-  );
+  let pageContent;
+
+  if (loading) {
+    pageContent = <Progress />;
+  } else if (responseError) {
+    pageContent = <ResponseErrorPanel error={responseError} />;
+  } else if (!schemaResponse) {
+    pageContent = (
+      <ResponseErrorPanel
+        error={
+          new Error('Request for data input schema returned an empty response')
+        }
+      />
+    );
+  } else {
+    pageContent = (
+      <Grid container spacing={2} direction="column" wrap="nowrap">
+        {updateError && (
+          <Grid item>
+            <ResponseErrorPanel error={updateError} />
+          </Grid>
+        )}
+        <Grid item>
+          <InfoCard title={schemaResponse.workflowItem.definition.name}>
+            {schemaResponse.schemas.length > 0 ? (
+              <StepperForm
+                refSchemas={schemaResponse.schemas}
+                handleExecute={handleExecute}
+                isExecuting={isExecuting}
+              />
+            ) : (
+              <JsonTextAreaForm
+                handleExecute={handleExecute}
+                isExecuting={isExecuting}
+              />
+            )}
+          </InfoCard>
+        </Grid>
+      </Grid>
+    );
+  }
 
   return (
-    <BaseOrchestratorPage>
-      <ContentHeader title="Execute">
-        <OrchestratorSupportButton />
-      </ContentHeader>
-      {loading && <Progress />}
-      {schemaResponse && (
-        <InfoCard
-          title={schemaResponse.workflowItem.definition.name ?? workflowId}
-          subheader={schemaResponse.workflowItem.definition.description}
-          action={
-            <>
-              <Button
-                variant="outlined"
-                color="secondary"
-                style={{ marginTop: 8, marginRight: 8 }}
-                onClick={_ => setWorkflowDialogOpen(true)}
-              >
-                View {WORKFLOW_TITLE}
-              </Button>
-              <WorkflowDialog
-                kind={EditorViewKind.EXTENDED_DIAGRAM_VIEWER}
-                workflowId={workflowId}
-                title={
-                  schemaResponse.workflowItem.definition.name ??
-                  schemaResponse.workflowItem.definition.id
-                }
-                open={workflowDialogOpen}
-                close={() => setWorkflowDialogOpen(false)}
-              />
-            </>
-          }
-        >
-          {schemaResponse?.schema ? (
-            <WrappedForm
-              schema={schemaResponse.schema as JSONSchema7}
-              validator={validator}
-              showErrorList={false}
-              onSubmit={onExecute}
-              onChange={onFormChanged}
-              formData={formState}
-              formContext={{ formData: formState }}
-              templates={{ TitleFieldTemplate }}
-            >
-              {executeButton}
-            </WrappedForm>
-          ) : (
-            <Grid container spacing={2} direction="column">
-              <Grid item>
-                <Typography>
-                  No data input schema found for this workflow
-                </Typography>
-              </Grid>
-              <Grid item>{executeButton}</Grid>
-            </Grid>
-          )}
-        </InfoCard>
-      )}
+    <BaseOrchestratorPage title="Workflow Orchestrator" noPadding={loading}>
+      {pageContent}
     </BaseOrchestratorPage>
   );
 };
