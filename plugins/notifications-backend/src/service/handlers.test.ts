@@ -210,14 +210,9 @@ describe('handlers', () => {
       {},
     );
 
-    const setReadPromises: Promise<void>[] = [];
-
-    resultGet.forEach(async notification => {
-      setReadPromises.push(
-        setRead(dbClient, catalogUser, notification.id, true),
-      );
-    });
-
+    const setReadPromises: Promise<void>[] = resultGet.map(notification =>
+      setRead(dbClient, catalogUser, notification.id, true),
+    );
     await Promise.all(setReadPromises);
 
     const resultGetRead = await getNotifications(

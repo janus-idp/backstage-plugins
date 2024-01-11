@@ -13,10 +13,7 @@
  * Do not edit the class manually.
  */
 
-export const BASE_PATH = 'http://localhost:7007/api/notifications'.replace(
-  /\/+$/,
-  '',
-);
+export const BASE_PATH = 'http://localhost:7007/api/notifications';
 
 export interface ConfigurationParameters {
   basePath?: string; // override base path
