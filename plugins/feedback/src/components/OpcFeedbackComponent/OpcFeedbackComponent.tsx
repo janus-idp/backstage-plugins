@@ -27,7 +27,7 @@ export const OpcFeedbackComponent = () => {
   });
   const projectId = appConfig.getString('feedback.baseEntityRef');
   const summaryLimit =
-    appConfig.getOptionalNumber('feedback.summaryLimit') || 240;
+    appConfig.getOptionalNumber('feedback.summaryLimit') ?? 240;
   const docsSpa = useRouteRef(viewDocsRouteRef);
   const feedbackSpa = useRouteRef(rootRouteRef);
 

@@ -19,7 +19,8 @@
     "test": "backstage-cli package test",
     "clean": "backstage-cli package clean",
     "prepack": "backstage-cli package prepack",
-    "postpack": "backstage-cli package postpack"
+    "postpack": "backstage-cli package postpack",
+    "tsc": "tsc"
   },
   "dependencies": {
     "@backstage/backend-common": "^0.19.8",
@@ -48,6 +49,7 @@
   "files": [
     "dist",
     "config.d.ts",
+    "app-config.janus-idp.yaml",
     "migrations/**/*.{js,d.ts}"
   ],
   "configSchema": "config.d.ts"
