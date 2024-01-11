@@ -10,7 +10,7 @@ import { Box, Chip, makeStyles } from '@material-ui/core';
 import { formatByteSize, formatDate } from '@janus-idp/shared-react';
 
 import { quayApiRef } from '../api';
-import { Layer, Tag } from '../types';
+import { Layer, QuayTagData, Tag } from '../types';
 
 const useLocalStyles = makeStyles({
   chip: {
@@ -68,7 +68,7 @@ export const useTags = (organization: string, repository: string) => {
     return tagsResponse;
   });
 
-  const data = useMemo(() => {
+  const data: QuayTagData[] = useMemo(() => {
     return Object.values(tags)?.map(tag => {
       const hashFunc = tag.manifest_digest.substring(0, 6);
       const shortHash = tag.manifest_digest.substring(7, 19);
@@ -77,6 +77,7 @@ export const useTags = (organization: string, repository: string) => {
         name: tag.name,
         last_modified: formatDate(tag.last_modified),
         size: formatByteSize(tag.size),
+        rawSize: tag.size,
         manifest_digest: (
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Chip label={hashFunc} className={localClasses.chip} />

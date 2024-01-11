@@ -6,9 +6,9 @@ import { Tooltip } from '@material-ui/core';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 
 import { vulnerabilitySummary } from '../../lib/utils';
-import type { Layer } from '../../types';
+import type { QuayTagData } from '../../types';
 
-export const columns: TableColumn[] = [
+export const columns: TableColumn<QuayTagData>[] = [
   {
     title: 'Tag',
     field: 'name',
@@ -23,7 +23,7 @@ export const columns: TableColumn[] = [
   {
     title: 'Security Scan',
     field: 'securityScan',
-    render: (rowData: any): React.ReactNode => {
+    render: (rowData: QuayTagData): React.ReactNode => {
       if (!rowData.securityStatus && !rowData.securityDetails) {
         return (
           <span data-testid="quay-repo-security-scan-progress">
@@ -43,15 +43,17 @@ export const columns: TableColumn[] = [
       }
 
       const tagManifest = rowData.manifest_digest_raw;
-      const retStr = vulnerabilitySummary(rowData.securityDetails as Layer);
+      const retStr = vulnerabilitySummary(rowData.securityDetails);
       return <Link to={`tag/${tagManifest}`}>{retStr}</Link>;
     },
     id: 'securityScan',
+    sorting: false,
   },
   {
     title: 'Size',
     field: 'size',
     type: 'numeric',
+    customSort: (a: QuayTagData, b: QuayTagData) => a.rawSize - b.rawSize,
   },
   {
     title: 'Expires',
@@ -63,6 +65,8 @@ export const columns: TableColumn[] = [
     title: 'Manifest',
     field: 'manifest_digest',
     type: 'string',
+    customSort: (a: QuayTagData, b: QuayTagData) =>
+      a.manifest_digest_raw.localeCompare(b.manifest_digest_raw),
   },
 ];
 

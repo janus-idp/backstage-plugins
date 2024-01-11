@@ -25,38 +25,44 @@ type QuayTagDetailsProps = {
 // from: https://github.com/quay/quay/blob/f1d85588157eababc3cbf789002c5db521dbd616/web/src/routes/TagDetails/SecurityReport/SecurityReportTable.tsx#L43
 const getVulnerabilityLink = (link: string) => link.split(' ')[0];
 
-const columns: TableColumn[] = [
+const columns: TableColumn<VulnerabilityListItem>[] = [
   {
     title: 'Advisory',
     field: 'name',
-    render: (rowData: any): React.ReactNode => {
-      const row = rowData as Vulnerability;
+    render: (rowData: VulnerabilityListItem): React.ReactNode => {
       return (
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          {row.Name}
-          {row.Link.trim().length > 0 ? (
-            <Link to={getVulnerabilityLink(row.Link)}>
+          {rowData.Name}
+          {rowData.Link.trim().length > 0 ? (
+            <Link to={getVulnerabilityLink(rowData.Link)}>
               <LinkIcon style={{ marginLeft: '0.5rem' }} />
             </Link>
           ) : null}
         </div>
       );
     },
+    customSort: (a: VulnerabilityListItem, b: VulnerabilityListItem) =>
+      a.Name.localeCompare(b.Name, 'en'),
   },
   {
     title: 'Severity',
     field: 'Severity',
-    render: (rowData: any): React.ReactNode => {
-      const row = rowData as Vulnerability;
+    customSort: (a: VulnerabilityListItem, b: VulnerabilityListItem) => {
+      const severityA = VulnerabilityOrder[a.Severity];
+      const severityB = VulnerabilityOrder[b.Severity];
+
+      return severityA - severityB;
+    },
+    render: (rowData: VulnerabilityListItem): React.ReactNode => {
       return (
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <WarningIcon
-            htmlColor={SEVERITY_COLORS[row.Severity]}
+            htmlColor={SEVERITY_COLORS[rowData.Severity]}
             style={{
               marginRight: '0.5rem',
             }}
           />
-          <span>{row.Severity}</span>
+          <span>{rowData.Severity}</span>
         </div>
       );
     },
@@ -74,14 +80,11 @@ const columns: TableColumn[] = [
   {
     title: 'Fixed By',
     field: 'FixedBy',
-    render: (rowData: any): React.ReactNode => {
-      const row = rowData as VulnerabilityListItem;
+    render: (rowData: VulnerabilityListItem): React.ReactNode => {
       return (
         <>
-          {row.FixedBy.length > 0 ? (
-            <>
-              <span>{row.FixedBy}</span>
-            </>
+          {rowData.FixedBy.length > 0 ? (
+            <span>{rowData.FixedBy}</span>
           ) : (
             '(None)'
           )}
