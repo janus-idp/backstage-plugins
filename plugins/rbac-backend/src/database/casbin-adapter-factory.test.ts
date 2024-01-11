@@ -49,7 +49,7 @@ describe('CasbinAdapterFactory', () => {
     let mockDatabaseManager: DatabaseService;
 
     beforeEach(() => {
-      const db = Knex.knex({ client: MockClient });
+      const db = Knex.knex({ client: MockClient as unknown as undefined });
       db.client = {
         config: {
           connection: {
