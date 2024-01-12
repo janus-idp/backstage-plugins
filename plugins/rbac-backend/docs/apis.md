@@ -395,6 +395,433 @@ Returns:
 
 ---
 
+## Conditions
+
+The Backstage permission framework provides conditions, and the RBAC backend plugin supports this feature. Conditions work like content filters for Backstage resources (provided by plugins). The RBAC backend plugin checks if a user has access to a particular resource. If the user has access to the resource, the RBAC backend API delegates the condition for this resource to the corresponding plugin by plugin ID.
+
+The corresponding plugin analyzes conditional parameters and makes a decision about which part of the content the user should see. Consequently, the user can view not all resource content but only some allowed parts. The RBAC backend plugin supports conditions on a generic level - conditions are bound to all roles but none to specific roles.
+
+A Backstage condition consists of a parameter or an array of parameters joined by criteria. The list of supported conditional criteria includes:
+
+- allOf
+- anyOf
+- not
+
+The plugin defines the supported condition parameters. API users can retrieve the conditional object schema from the RBAC API endpoint to determine how to build a condition JSON object and utilize it through the RBAC backend plugin API.
+
+The structure of the condition JSON object is as follows:
+
+| Json field   | Description                                                           | Type   |
+| ------------ | --------------------------------------------------------------------- | ------ |
+| result       | Always has the value "CONDITIONAL"                                    | String |
+| pluginId     | Corresponding plugin ID (e.g., "catalog")                             | String |
+| resourceType | Resource type provided by the plugin (e.g., "catalog-entity")         | String |
+| conditions   | Condition JSON with parameters or array parameters joined by criteria | JSON   |
+
+### GET </plugins/condition-rules>
+
+GET </plugins/condition-rules> provides condition parameters schemas.
+
+```json
+[
+   {
+      "pluginId": "catalog",
+      "rules": [
+         {
+            "name": "HAS_ANNOTATION",
+            "description": "Allow entities with the specified annotation",
+            "resourceType": "catalog-entity",
+            "paramsSchema": {
+               "type": "object",
+               "properties": {
+                  "annotation": {
+                     "type": "string",
+                     "description": "Name of the annotation to match on"
+                  },
+                  "value": {
+                     "type": "string",
+                     "description": "Value of the annotation to match on"
+                  }
+               },
+               "required": [
+                  "annotation"
+               ],
+               "additionalProperties": false,
+               "$schema": "http://json-schema.org/draft-07/schema#"
+            }
+         },
+         {
+            "name": "HAS_LABEL",
+            "description": "Allow entities with the specified label",
+            "resourceType": "catalog-entity",
+            "paramsSchema": {
+               "type": "object",
+               "properties": {
+                  "label": {
+                     "type": "string",
+                     "description": "Name of the label to match on"
+                  }
+               },
+               "required": [
+                  "label"
+               ],
+               "additionalProperties": false,
+               "$schema": "http://json-schema.org/draft-07/schema#"
+            }
+         },
+         {
+            "name": "HAS_METADATA",
+            "description": "Allow entities with the specified metadata subfield",
+            "resourceType": "catalog-entity",
+            "paramsSchema": {
+               "type": "object",
+               "properties": {
+                  "key": {
+                     "type": "string",
+                     "description": "Property within the entities metadata to match on"
+                  },
+                  "value": {
+                     "type": "string",
+                     "description": "Value of the given property to match on"
+                  }
+               },
+               "required": [
+                  "key"
+               ],
+               "additionalProperties": false,
+               "$schema": "http://json-schema.org/draft-07/schema#"
+            }
+         },
+         {
+            "name": "HAS_SPEC",
+            "description": "Allow entities with the specified spec subfield",
+            "resourceType": "catalog-entity",
+            "paramsSchema": {
+               "type": "object",
+               "properties": {
+                  "key": {
+                     "type": "string",
+                     "description": "Property within the entities spec to match on"
+                  },
+                  "value": {
+                     "type": "string",
+                     "description": "Value of the given property to match on"
+                  }
+               },
+               "required": [
+                  "key"
+               ],
+               "additionalProperties": false,
+               "$schema": "http://json-schema.org/draft-07/schema#"
+            }
+         },
+         {
+            "name": "IS_ENTITY_KIND",
+            "description": "Allow entities matching a specified kind",
+            "resourceType": "catalog-entity",
+            "paramsSchema": {
+               "type": "object",
+               "properties": {
+                  "kinds": {
+                     "type": "array",
+                     "items": {
+                        "type": "string"
+                     },
+                     "description": "List of kinds to match at least one of"
+                  }
+               },
+               "required": [
+                  "kinds"
+               ],
+               "additionalProperties": false,
+               "$schema": "http://json-schema.org/draft-07/schema#"
+            }
+         },
+         {
+            "name": "IS_ENTITY_OWNER",
+            "description": "Allow entities owned by a specified claim",
+            "resourceType": "catalog-entity",
+            "paramsSchema": {
+               "type": "object",
+               "properties": {
+                  "claims": {
+                     "type": "array",
+                     "items": {
+                        "type": "string"
+                     },
+                     "description": "List of claims to match at least one on within ownedBy"
+                  }
+               },
+               "required": [
+                  "claims"
+               ],
+               "additionalProperties": false,
+               "$schema": "http://json-schema.org/draft-07/schema#"
+            }
+         }
+      ]
+   }
+   ... <another plugin condition parameter schemas>
+]
+```
+
+From this condition schema, the RBAC backend API user can determine how to build a condition JSON object.
+
+For example, consider a condition without criteria: displaying catalogs only if the user is a member of the owner group. The Catalog plugin schema "IS_ENTITY_OWNER" can be utilized to achieve this goal. To construct the condition JSON object based on this schema, the following information should be used:
+
+- rule: the parameter name is "IS_ENTITY_OWNER" in this case
+- resourceType: "catalog-entity"
+- criteria: in this example, criteria are not used since we need to use only one conditional parameter
+- params: from the schema, it is evident that it should be an object named "claims" with a string array. This string array constitutes a list of user or group string entity references.
+
+Based on the above schema:
+
+```json
+{
+  "rule": "IS_ENTITY_OWNER",
+  "resourceType": "catalog-entity",
+  "params": {
+    "claims": ["group:default/team-a"]
+  }
+}
+```
+
+To utilize this condition to the RBAC REST api you need to wrap it with more info:
+
+```json
+{
+  "result": "CONDITIONAL",
+  "pluginId": "catalog",
+  "resourceType": "catalog-entity",
+  "conditions": {
+    "rule": "IS_ENTITY_OWNER",
+    "resourceType": "catalog-entity",
+    "params": {
+      "claims": ["group:default/team-a"]
+    }
+  }
+}
+```
+
+**Example condition with criteria**: display catalogs only if user is a member of owner group "OR" display list of all catalog user groups.
+
+We can reuse previous condition parameter to display catalogs only for owner. Also we can use one more condition "IS_ENTITY_KIND" to display catalog groups for any user:
+
+- rule - the parameter name is "IS_ENTITY_KIND" in this case.
+- resource type: "catalog-entity".
+- criteria - "anyOf".
+- params - from the schema, it is evident that it should be an object named "kinds" with string array. This string array is a list of catalog kinds. It should be array with single element "Group" in our case.
+
+Based on the above schema:
+
+```json
+{
+  "anyOf": [
+    {
+      "rule": "IS_ENTITY_OWNER",
+      "resourceType": "catalog-entity",
+      "params": {
+        "claims": ["group:default/team-a"]
+      }
+    },
+    {
+      "rule": "IS_ENTITY_KIND",
+      "resourceType": "catalog-entity",
+      "params": {
+        "kinds": ["Group"]
+      }
+    }
+  ]
+}
+```
+
+To utilize this condition to the RBAC REST api you need to wrap it with more info:
+
+```json
+{
+  "result": "CONDITIONAL",
+  "pluginId": "catalog",
+  "resourceType": "catalog-entity",
+  "conditions": {
+    "anyOf": [
+      {
+        "rule": "IS_ENTITY_OWNER",
+        "resourceType": "catalog-entity",
+        "params": {
+          "claims": ["group:default/team-a"]
+        }
+      },
+      {
+        "rule": "IS_ENTITY_KIND",
+        "resourceType": "catalog-entity",
+        "params": {
+          "kinds": ["Group"]
+        }
+      }
+    ]
+  }
+}
+```
+
+---
+
+### POST condition
+
+POST </api/permission/conditions>
+
+Creates a new condition.
+
+Request Parameters: condition object in json format described above.
+
+body:
+
+```json
+{
+  "result": "CONDITIONAL",
+  "pluginId": "catalog",
+  "resourceType": "catalog-entity",
+  "conditions": {
+    "rule": "IS_ENTITY_OWNER",
+    "resourceType": "catalog-entity",
+    "params": {
+      "claims": ["group:default/team-a"]
+    }
+  }
+}
+```
+
+Returns a status code of 201 and json with id upon success:
+
+```json
+{
+  "id": 1
+}
+```
+
+---
+
+### PUT condition
+
+PUT </permission/conditions/:id>
+
+Update conditions by id.
+
+Request Parameters: condition object in json format described above.
+
+body:
+
+```json
+{
+  "result": "CONDITIONAL",
+  "pluginId": "catalog",
+  "resourceType": "catalog-entity",
+  "conditions": {
+    "anyOf": [
+      {
+        "rule": "IS_ENTITY_OWNER",
+        "resourceType": "catalog-entity",
+        "params": {
+          "claims": ["group:default/team-a"]
+        }
+      },
+      {
+        "rule": "IS_ENTITY_KIND",
+        "resourceType": "catalog-entity",
+        "params": {
+          "kinds": ["Group"]
+        }
+      }
+    ]
+  }
+}
+```
+
+Returns a status code of 200 upon success.
+
+---
+
+### Get condition by id
+
+GET </api/permission/conditions/:id>
+
+Returns condition by id:
+
+```json
+{
+  "result": "CONDITIONAL",
+  "pluginId": "catalog",
+  "resourceType": "catalog-entity",
+  "conditions": {
+    "anyOf": [
+      {
+        "rule": "IS_ENTITY_OWNER",
+        "resourceType": "catalog-entity",
+        "params": {
+          "claims": ["group:default/team-a"]
+        }
+      },
+      {
+        "rule": "IS_ENTITY_KIND",
+        "resourceType": "catalog-entity",
+        "params": {
+          "kinds": ["Group"]
+        }
+      }
+    ]
+  }
+}
+```
+
+Returns a status code of 200 upon success.
+
+---
+
+### GET conditions
+
+GET </api/permission/conditions>
+
+Returns lists all conditions:
+
+```json
+[
+  {
+    "result": "CONDITIONAL",
+    "pluginId": "catalog",
+    "resourceType": "catalog-entity",
+    "conditions": {
+      "anyOf": [
+        {
+          "rule": "IS_ENTITY_OWNER",
+          "resourceType": "catalog-entity",
+          "params": {
+            "claims": ["group:default/team-a"]
+          }
+        },
+        {
+          "rule": "IS_ENTITY_KIND",
+          "resourceType": "catalog-entity",
+          "params": {
+            "kinds": ["Group"]
+          }
+        }
+      ]
+    }
+  }
+]
+```
+
+Returns a status code of 200 upon success.
+
+---
+
+### DELETE condition by id
+
+DELETE </api/permission/conditions/:id>
+
+Deletes condition by id.
+
+Returns a status code of 204 upon success.
+
 ## HTTP status codes
 
 | Code | Descriptions                                    |
