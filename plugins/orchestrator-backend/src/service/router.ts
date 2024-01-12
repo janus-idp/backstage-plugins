@@ -149,7 +149,8 @@ function setupInternalRoutes(
         }
         const item: WorkflowItem = {
           definition: info as WorkflowDefinition,
-          uri: uri,
+          serviceUrl: info.serviceUrl,
+          uri,
         };
         return item;
       }),

@@ -23,6 +23,7 @@ export type WorkflowDefinition = OmitRecursively<
 >;
 
 export interface WorkflowItem {
+  serviceUrl?: string;
   uri: string;
   definition: WorkflowDefinition;
 }

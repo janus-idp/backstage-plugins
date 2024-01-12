@@ -38,7 +38,6 @@ export class OrchestratorEntityProvider
   private readonly owner: string;
   private readonly environment: string;
 
-  private readonly sonataFlowServiceUrl: string;
   private readonly orchestratorPluginUrl: string;
 
   static async fromConfig(args: {
@@ -47,12 +46,6 @@ export class OrchestratorEntityProvider
     scheduler: PluginTaskScheduler;
     discovery: DiscoveryApi;
   }): Promise<OrchestratorEntityProvider> {
-    const sonataFlowBaseUrl = args.config.getString(
-      'orchestrator.sonataFlowService.baseUrl',
-    );
-    const sonataFlowPort = args.config.getOptionalNumber(
-      'orchestrator.sonataFlowService.port',
-    );
     const owner =
       args.config.getOptionalString('orchestrator.catalog.owner') ??
       DEFAULT_CATALOG_OWNER;
@@ -63,12 +56,7 @@ export class OrchestratorEntityProvider
     const orchestratorPluginUrl =
       await args.discovery.getBaseUrl('orchestrator');
 
-    const sonataFlowServiceUrl = sonataFlowPort
-      ? `${sonataFlowBaseUrl}:${sonataFlowPort}`
-      : sonataFlowBaseUrl;
-
     return new OrchestratorEntityProvider({
-      sonataFlowServiceUrl,
       orchestratorPluginUrl,
       scheduler: args.scheduler,
       logger: args.logger,
@@ -78,14 +66,12 @@ export class OrchestratorEntityProvider
   }
 
   constructor(args: {
-    sonataFlowServiceUrl: string;
     orchestratorPluginUrl: string;
     scheduler: PluginTaskScheduler;
     logger: Logger;
     owner: string;
     environment: string;
   }) {
-    this.sonataFlowServiceUrl = args.sonataFlowServiceUrl;
     this.orchestratorPluginUrl = args.orchestratorPluginUrl;
     this.scheduler = args.scheduler;
     this.owner = args.owner;
@@ -154,31 +140,33 @@ export class OrchestratorEntityProvider
   private workflowToTemplateEntities(
     items: WorkflowItem[],
   ): TemplateEntityV1beta3[] {
-    return items.map(i => {
-      const sanitizedId = i.definition.id.replace(/ /g, '_');
-      const category: WorkflowCategory = getWorkflowCategory(i.definition);
+    return items
+      .filter(i => i.serviceUrl)
+      .map(i => {
+        const sanitizedId = i.definition.id.replace(/ /g, '_');
+        const category: WorkflowCategory = getWorkflowCategory(i.definition);
 
-      return {
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
-        kind: 'Template',
-        metadata: {
-          name: sanitizedId,
-          title: i.definition.name,
-          description: i.definition.description,
-          tags: [category],
-          annotations: {
-            [ANNOTATION_LOCATION]: `url:${this.sonataFlowServiceUrl}`,
-            [ANNOTATION_ORIGIN_LOCATION]: `url:${this.sonataFlowServiceUrl}`,
-            [ANNOTATION_SOURCE_LOCATION]: `url:${this.sonataFlowServiceUrl}/management/processes/${sanitizedId}/source`,
-            [ANNOTATION_VIEW_URL]: `${this.sonataFlowServiceUrl}/management/processes/${sanitizedId}/source`,
+        return {
+          apiVersion: 'scaffolder.backstage.io/v1beta3',
+          kind: 'Template',
+          metadata: {
+            name: sanitizedId,
+            title: i.definition.name,
+            description: i.definition.description,
+            tags: [category],
+            annotations: {
+              [ANNOTATION_LOCATION]: `url:${i.serviceUrl}`,
+              [ANNOTATION_ORIGIN_LOCATION]: `url:${i.serviceUrl}`,
+              [ANNOTATION_SOURCE_LOCATION]: `url:${i.serviceUrl}/management/processes/${sanitizedId}/source`,
+              [ANNOTATION_VIEW_URL]: `${i.serviceUrl}/management/processes/${sanitizedId}/source`,
+            },
           },
-        },
-        spec: {
-          owner: this.owner,
-          type: WORKFLOW_TYPE,
-          steps: [],
-        },
-      };
-    });
+          spec: {
+            owner: this.owner,
+            type: WORKFLOW_TYPE,
+            steps: [],
+          },
+        };
+      });
   }
 }
