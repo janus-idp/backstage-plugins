@@ -186,6 +186,9 @@ export class WorkflowService {
     // We can list all spec files from FS but let's keep it simple for now
     for (const relativePath of SPEC_FILES) {
       const path = this.resolveResourcePath(relativePath);
+      if (!(await fs.pathExists(path))) {
+        continue;
+      }
       const buffer = await fs.readFile(path);
       const content = JSON.parse(buffer.toString('utf8'));
       specs.push({ path, content });
