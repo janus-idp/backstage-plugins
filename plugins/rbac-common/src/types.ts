@@ -1,7 +1,8 @@
 export type Source =
   | 'rest' // created via REST API
   | 'csv-file' // created via policies-csv-file with defined path in the application configuration
-  | 'configuration'; // created from application configuration
+  | 'configuration' // created from application configuration
+  | 'legacy'; // preexisting policies
 
 export type RoleSource = Source | 'default'; // hard coded in the plugin code
 

@@ -367,9 +367,9 @@ export class PolicesServer {
           createTrx,
         );
         await this.enforcer.addGroupingPolicies(roles, 'rest');
-        createTrx.commit();
+        await createTrx.commit();
       } catch (trxErr) {
-        createTrx.rollback();
+        await createTrx.rollback();
         throw trxErr;
       }
 
@@ -490,9 +490,9 @@ export class PolicesServer {
         // So, let's compensate this combination delete + create.
         await this.enforcer.removeGroupingPolicies(oldRole, false);
         await this.enforcer.addGroupingPolicies(newRole, 'rest');
-        updateTrx.commit();
+        await updateTrx.commit();
       } catch (trxErr) {
-        updateTrx.rollback();
+        await updateTrx.rollback();
         throw trxErr;
       }
 
@@ -548,9 +548,9 @@ export class PolicesServer {
           if (roleMembers.length === 0) {
             await this.roleMetadata.removeRoleMetadata(roleEntityRef, rmTrx);
           }
-          rmTrx.commit();
+          await rmTrx.commit();
         } catch (trxErr) {
-          rmTrx.rollback();
+          await rmTrx.rollback();
           throw trxErr;
         }
 

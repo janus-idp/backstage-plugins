@@ -1,5 +1,5 @@
 export function policyToString(policy: string[]): string {
-  return `[${policy.join(',')}]`;
+  return `[${policy.join(', ')}]`;
 }
 
 export function policiesToString(policies: string[][]): string {
@@ -10,5 +10,5 @@ export function policiesToString(policies: string[][]): string {
 }
 
 export function metadataStringToPolicy(policy: string): string[] {
-  return policy.replace('[', '').replace(']', '').split(',');
+  return policy.replace('[', '').replace(']', '').split(', ');
 }
