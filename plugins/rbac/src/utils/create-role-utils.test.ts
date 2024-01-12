@@ -37,10 +37,10 @@ describe('getRoleData', () => {
           plugin: '',
           permission: '',
           policies: [
-            { label: 'Create', checked: false },
-            { label: 'Read', checked: false },
-            { label: 'Update', checked: false },
-            { label: 'Delete', checked: false },
+            { policy: 'Create', effect: 'deny' },
+            { policy: 'Read', effect: 'deny' },
+            { policy: 'Update', effect: 'deny' },
+            { policy: 'Delete', effect: 'deny' },
           ],
         },
       ],
@@ -78,10 +78,10 @@ describe('getRoleData', () => {
           plugin: '',
           permission: '',
           policies: [
-            { label: 'Create', checked: false },
-            { label: 'Read', checked: false },
-            { label: 'Update', checked: false },
-            { label: 'Delete', checked: false },
+            { policy: 'Create', effect: 'deny' },
+            { policy: 'Read', effect: 'deny' },
+            { policy: 'Update', effect: 'deny' },
+            { policy: 'Delete', effect: 'deny' },
           ],
         },
       ],
@@ -177,8 +177,8 @@ describe('getPermissionPolicies', () => {
     ];
     const result = getPermissionPolicies(policies);
     expect(result).toEqual({
-      'catalog-entity': ['read', 'delete', 'update'],
-      'catalog.entity.create': ['create'],
+      'catalog-entity': ['Read', 'Delete', 'Update'],
+      'catalog.entity.create': ['Create'],
     });
   });
 });
@@ -203,24 +203,24 @@ describe('getPluginsPermissionPoliciesData', () => {
             'catalog.location.delete',
           ],
           policies: {
-            'catalog-entity': ['read', 'delete', 'update'],
-            'catalog.entity.create': ['create'],
-            'catalog.location.read': ['read'],
-            'catalog.location.create': ['create'],
-            'catalog.location.delete': ['delete'],
+            'catalog-entity': ['Read', 'Delete', 'Update'],
+            'catalog.entity.create': ['Create'],
+            'catalog.location.read': ['Read'],
+            'catalog.location.create': ['Create'],
+            'catalog.location.delete': ['Delete'],
           },
         },
         scaffolder: {
           permissions: ['scaffolder-template', 'scaffolder-action'],
           policies: {
-            'scaffolder-template': ['read'],
-            'scaffolder-action': ['use'],
+            'scaffolder-template': ['Read'],
+            'scaffolder-action': ['Use'],
           },
         },
         permission: {
           permissions: ['policy-entity'],
           policies: {
-            'policy-entity': ['read', 'create', 'delete', 'update'],
+            'policy-entity': ['Read', 'Create', 'Delete', 'Update'],
           },
         },
       },
@@ -252,8 +252,8 @@ describe('getPermissionPoliciesData', () => {
           permission: 'scaffolder-template',
           policies: [
             {
-              label: 'read',
-              checked: true,
+              policy: 'Read',
+              effect: 'allow',
             },
           ],
         },
@@ -262,16 +262,16 @@ describe('getPermissionPoliciesData', () => {
           permission: 'catalog-entity',
           policies: [
             {
-              label: 'read',
-              checked: true,
+              policy: 'Read',
+              effect: 'allow',
             },
             {
-              label: 'delete',
-              checked: true,
+              policy: 'Delete',
+              effect: 'allow',
             },
             {
-              label: 'update',
-              checked: true,
+              policy: 'Update',
+              effect: 'allow',
             },
           ],
         },

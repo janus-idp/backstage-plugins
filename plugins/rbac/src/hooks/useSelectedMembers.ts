@@ -20,7 +20,6 @@ export const useSelectedMembers = (
   loading: boolean;
 } => {
   const rbacApi = useApi(rbacApiRef);
-  let data: SelectedMember[] = [];
   const {
     value: role,
     loading: roleLoading,
@@ -43,7 +42,7 @@ export const useSelectedMembers = (
     message: (members as Response)?.statusText,
   };
 
-  data = Array.isArray(role)
+  const data: SelectedMember[] = Array.isArray(role)
     ? (role[0] as Role).memberReferences.reduce(
         (acc: SelectedMember[], ref) => {
           const memberResource =

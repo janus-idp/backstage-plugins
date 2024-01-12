@@ -14,11 +14,11 @@ import { RoleFormValues } from './types';
 const tableMetadata = (values: RoleFormValues) => {
   const membersKey =
     values.selectedMembers.length > 0
-      ? `Users and groups - ${getMembers(values.selectedMembers)}`
+      ? `Users and groups (${getMembers(values.selectedMembers)})`
       : 'Users and groups';
-  const permissionPoliciesKey = `Permission policies ${getPermissionsNumber(
+  const permissionPoliciesKey = `Permission policies (${getPermissionsNumber(
     values,
-  )}`;
+  )})`;
   return {
     'Name and description of role': (
       <>
@@ -42,11 +42,23 @@ const tableMetadata = (values: RoleFormValues) => {
   };
 };
 
-export const ReviewStep = ({ values }: { values: RoleFormValues }) => {
+export const ReviewStep = ({
+  values,
+  isEditing,
+}: {
+  values: RoleFormValues;
+  isEditing: boolean;
+}) => {
   return (
     <div style={{ overflow: 'scroll' }}>
-      <Typography variant="h6">Review and create</Typography>
-      <StructuredMetadataTable dense metadata={tableMetadata(values)} />
+      <Typography variant="h6">
+        {isEditing ? 'Review and save' : 'Review and create'}
+      </Typography>
+      <StructuredMetadataTable
+        dense
+        metadata={tableMetadata(values)}
+        options={{ titleFormat: (key: string) => key }}
+      />
     </div>
   );
 };

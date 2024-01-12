@@ -1,6 +1,7 @@
 import React from 'react';
 import { useAsync } from 'react-use';
 
+import { Progress } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
 import { makeStyles } from '@material-ui/core';
@@ -10,10 +11,11 @@ import FormHelperText from '@mui/material/FormHelperText';
 import { FormikErrors } from 'formik';
 
 import { rbacApiRef } from '../../api/RBACBackendClient';
+import { PermissionsData } from '../../types';
 import { getPluginsPermissionPoliciesData } from '../../utils/create-role-utils';
 import { initialPermissionPolicyRowValue } from './const';
 import { PermissionPoliciesFormRow } from './PermissionPoliciesFormRow';
-import { PermissionPolicyRow, RoleFormValues } from './types';
+import { RoleFormValues } from './types';
 
 const useStyles = makeStyles(theme => ({
   permissionPoliciesForm: {
@@ -27,8 +29,8 @@ const useStyles = makeStyles(theme => ({
 }));
 
 type PermissionPoliciesFormProps = {
-  permissionPoliciesRows: PermissionPolicyRow[];
-  permissionPoliciesRowsError: FormikErrors<PermissionPolicyRow>[];
+  permissionPoliciesRows: PermissionsData[];
+  permissionPoliciesRowsError: FormikErrors<PermissionsData>[];
   setFieldValue: (
     field: string,
     value: any,
@@ -48,13 +50,16 @@ export const PermissionPoliciesForm = ({
   const classes = useStyles();
   const rbacApi = useApi(rbacApiRef);
 
-  const { value: permissionPolicies, loading: permissionPoliciesLoading } =
-    useAsync(async () => {
-      return await rbacApi.listPermissions();
-    });
+  const {
+    value: permissionPolicies,
+    loading: permissionPoliciesLoading,
+    error: permissionPoliciesErr,
+  } = useAsync(async () => {
+    return await rbacApi.listPermissions();
+  });
 
   const permissionPoliciesData =
-    !permissionPoliciesLoading && permissionPolicies
+    !permissionPoliciesLoading && Array.isArray(permissionPolicies)
       ? getPluginsPermissionPoliciesData(permissionPolicies)
       : undefined;
 
@@ -81,7 +86,7 @@ export const PermissionPoliciesForm = ({
     setFieldValue(
       `permissionPoliciesRows[${index}].policies`,
       policies
-        ? policies.map(p => ({ label: p, checked: true }))
+        ? policies.map(p => ({ policy: p, effect: 'allow' }))
         : initialPermissionPolicyRowValue.policies,
       false,
     );
@@ -93,8 +98,8 @@ export const PermissionPoliciesForm = ({
     index: number,
   ) => {
     setFieldValue(
-      `permissionPoliciesRows[${index}].policies[${policyIndex}].checked`,
-      isChecked,
+      `permissionPoliciesRows[${index}].policies[${policyIndex}].effect`,
+      isChecked ? 'allow' : 'deny',
       true,
     );
   };
@@ -121,33 +126,50 @@ export const PermissionPoliciesForm = ({
         multiple permission policies using +Add option.
       </FormHelperText>
       <br />
-      <div className={classes.permissionPoliciesForm}>
-        {permissionPoliciesRows.map((pp, index) => (
-          <PermissionPoliciesFormRow
-            key={index}
-            permissionPoliciesRowError={
-              permissionPoliciesRowsError?.[index] ?? {}
-            }
-            rowName={`permissionPoliciesRows[${index}]`}
-            permissionPoliciesRowData={pp}
-            permissionPoliciesData={permissionPoliciesData}
-            rowCount={permissionPoliciesRows.length}
-            onChangePlugin={(plugin: string) => onChangePlugin(plugin, index)}
-            onChangePermission={(permission: string, policies?: string[]) =>
-              onChangePermission(permission, index, policies)
-            }
-            onChangePolicy={(isChecked: boolean, policyIndex: number) =>
-              onChangePolicy(isChecked, policyIndex, index)
-            }
-            onRemove={() => onRowRemove(index)}
-            handleBlur={handleBlur}
-          />
-        ))}
-        <Button className={classes.addButton} size="small" onClick={onRowAdd}>
-          <AddIcon />
-          Add
-        </Button>
-      </div>
+      {permissionPoliciesLoading ? (
+        <Progress />
+      ) : (
+        <div className={classes.permissionPoliciesForm}>
+          {permissionPoliciesRows.map((pp, index) => (
+            <PermissionPoliciesFormRow
+              key={index}
+              permissionPoliciesRowError={
+                permissionPoliciesRowsError?.[index] ?? {}
+              }
+              rowName={`permissionPoliciesRows[${index}]`}
+              permissionPoliciesRowData={pp}
+              permissionPoliciesData={permissionPoliciesData}
+              rowCount={permissionPoliciesRows.length}
+              onChangePlugin={(plugin: string) => onChangePlugin(plugin, index)}
+              onChangePermission={(permission: string, policies?: string[]) =>
+                onChangePermission(permission, index, policies)
+              }
+              onChangePolicy={(isChecked: boolean, policyIndex: number) =>
+                onChangePolicy(isChecked, policyIndex, index)
+              }
+              onRemove={() => onRowRemove(index)}
+              handleBlur={handleBlur}
+            />
+          ))}
+          <Button className={classes.addButton} size="small" onClick={onRowAdd}>
+            <AddIcon />
+            Add
+          </Button>
+        </div>
+      )}
+      {!permissionPoliciesLoading &&
+        (permissionPoliciesErr?.message ||
+          !Array.isArray(permissionPolicies)) && (
+          <>
+            <br />
+            <FormHelperText error>
+              {`Error fetching the permission policies: ${
+                permissionPoliciesErr?.message ||
+                (permissionPolicies as Response)?.statusText
+              }`}
+            </FormHelperText>
+          </>
+        )}
     </div>
   );
 };

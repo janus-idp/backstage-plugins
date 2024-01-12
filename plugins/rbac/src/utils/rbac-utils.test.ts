@@ -6,6 +6,7 @@ import {
   getMembers,
   getMembersFromGroup,
   getPermissions,
+  getPermissionsData,
   getPluginId,
 } from './rbac-utils';
 
@@ -170,6 +171,53 @@ describe('rbac utils', () => {
       kind: 'role',
       namespace: 'abc',
       name: 'test',
+    });
+  });
+
+  it('should return the permissions data', () => {
+    let data = getPermissionsData(mockPolicies, mockPermissionPolicies);
+    expect(data[0]).toEqual({
+      permission: 'policy-entity',
+      plugin: 'permission',
+      policies: [
+        {
+          effect: 'allow',
+          policy: 'Read',
+        },
+        {
+          effect: 'allow',
+          policy: 'Create',
+        },
+        {
+          effect: 'allow',
+          policy: 'Delete',
+        },
+        {
+          effect: 'deny',
+          policy: 'Update',
+        },
+      ],
+      policyString: ['Read', ', Create', ', Delete'],
+    });
+    data = getPermissionsData(mockPolicies, []);
+    expect(data[0]).toEqual({
+      permission: 'policy-entity',
+      plugin: '-',
+      policies: [
+        {
+          effect: 'allow',
+          policy: 'Read',
+        },
+        {
+          effect: 'allow',
+          policy: 'Create',
+        },
+        {
+          effect: 'allow',
+          policy: 'Delete',
+        },
+      ],
+      policyString: ['Read', ', Create', ', Delete'],
     });
   });
 });

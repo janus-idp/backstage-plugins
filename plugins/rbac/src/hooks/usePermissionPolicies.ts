@@ -17,12 +17,15 @@ export const usePermissionPolicies = (entityReference: string) => {
     return await rbacApi.getAssociatedPolicies(entityReference);
   });
 
-  const { value: permissionPolicies, loading: permissionPoliciesLoading } =
-    useAsync(async () => {
-      return await rbacApi.listPermissions();
-    });
+  const {
+    value: permissionPolicies,
+    loading: permissionPoliciesLoading,
+    error: permissionPoliciesError,
+  } = useAsync(async () => {
+    return await rbacApi.listPermissions();
+  });
 
-  const loading = policiesLoading && permissionPoliciesLoading;
+  const loading = policiesLoading || permissionPoliciesLoading;
 
   const data = React.useMemo(() => {
     const pp = Array.isArray(permissionPolicies) ? permissionPolicies : [];
@@ -32,11 +35,16 @@ export const usePermissionPolicies = (entityReference: string) => {
     loading,
     data,
     retry,
-    error:
-      !Array.isArray(policies) &&
-      policies?.status !== 200 &&
-      policies?.status !== 204
-        ? policies
-        : error,
+    error: (error as Error) ||
+      (permissionPoliciesError as Error) || {
+        name: (policies as Response)?.status,
+        message: `Error fetching policies. ${(policies as Response)
+          ?.statusText}`,
+      } || {
+        name: (permissionPolicies as Response)?.status,
+        message: `Error fetching permission policies. ${(
+          permissionPolicies as Response
+        )?.statusText}`,
+      },
   };
 };

@@ -6,15 +6,17 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
 import FormLabel from '@mui/material/FormLabel';
 
-import { PermissionPolicyRow, RowPolicy } from './types';
+import { PermissionsData } from '../../types';
+import { RowPolicy } from './types';
 
 export const PoliciesCheckboxGroup = ({
   permissionPoliciesRowData,
   rowName,
   onChangePolicy,
 }: {
-  permissionPoliciesRowData: PermissionPolicyRow;
+  permissionPoliciesRowData: PermissionsData;
   rowName: string;
+
   onChangePolicy: (isChecked: boolean, policyIndex: number) => void;
 }) => {
   return (
@@ -40,11 +42,13 @@ export const PoliciesCheckboxGroup = ({
       >
         {permissionPoliciesRowData.policies.map(
           (p: RowPolicy, index: number, self) => {
-            const labelCheckedArray = self.filter(val => !!val.checked);
+            const labelCheckedArray = self.filter(
+              val => val.effect === 'allow',
+            );
             const labelCheckedCount = labelCheckedArray.length;
             return (
               <FormControlLabel
-                key={p.label}
+                key={p.policy}
                 disabled={
                   !(
                     permissionPoliciesRowData.plugin &&
@@ -52,14 +56,14 @@ export const PoliciesCheckboxGroup = ({
                   ) ||
                   permissionPoliciesRowData.policies.length === 1 ||
                   (labelCheckedCount === 1 &&
-                    labelCheckedArray[0].label === p.label)
+                    labelCheckedArray[0].policy === p.policy)
                 }
-                label={p.label}
-                name={`${rowName}.policies[${index}].label`}
+                label={p.policy}
+                name={`${rowName}.policies[${index}].policy`}
                 control={
                   <Checkbox
-                    checked={p.checked}
-                    name={`${rowName}.policies[${index}].checked`}
+                    checked={p.effect === 'allow'}
+                    name={`${rowName}.policies[${index}].policy`}
                     onChange={e => onChangePolicy(e.target.checked, index)}
                   />
                 }

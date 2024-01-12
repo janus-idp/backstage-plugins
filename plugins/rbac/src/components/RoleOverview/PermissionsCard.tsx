@@ -1,12 +1,17 @@
 import React from 'react';
 
 import { Table, WarningPanel } from '@backstage/core-components';
+import { usePermission } from '@backstage/plugin-permission-react';
 
 import { Card, CardContent, makeStyles } from '@material-ui/core';
 import CachedIcon from '@material-ui/icons/Cached';
 
+import { policyEntityUpdatePermission } from '@janus-idp/backstage-plugin-rbac-common';
+
 import { usePermissionPolicies } from '../../hooks/usePermissionPolicies';
 import { PermissionsData } from '../../types';
+import { getKindNamespaceName } from '../../utils/rbac-utils';
+import EditRole from '../EditRole';
 import { columns } from './PermissionsListColumns';
 
 const useStyles = makeStyles(theme => ({
@@ -22,11 +27,27 @@ type PermissionsCardProps = {
 };
 
 const getRefreshIcon = () => <CachedIcon />;
+const getEditIcon = (isAllowed: boolean, roleName: string) => {
+  const { kind, name, namespace } = getKindNamespaceName(roleName);
+
+  return (
+    <EditRole
+      dataTestId={isAllowed ? 'update-policies' : 'disable-update-policies'}
+      roleName={roleName}
+      disable={!isAllowed}
+      to={`/rbac/role/${kind}/${namespace}/${name}?activeStep=${2}`}
+    />
+  );
+};
 
 export const PermissionsCard = ({ entityReference }: PermissionsCardProps) => {
   const { data, loading, retry, error } =
     usePermissionPolicies(entityReference);
   const [permissions, setPermissions] = React.useState<PermissionsData[]>();
+  const permissionResult = usePermission({
+    permission: policyEntityUpdatePermission,
+    resourceRef: policyEntityUpdatePermission.resourceType,
+  });
   const classes = useStyles();
 
   const onSearchResultsChange = (searchResults: PermissionsData[]) => {
@@ -35,7 +56,9 @@ export const PermissionsCard = ({ entityReference }: PermissionsCardProps) => {
 
   let numberOfPolicies = 0;
   (permissions || data)?.forEach(p => {
-    numberOfPolicies = numberOfPolicies + p.policies.size;
+    numberOfPolicies =
+      numberOfPolicies +
+      p.policies.filter(pol => pol.effect === 'allow').length;
   });
   const actions = [
     {
@@ -44,19 +67,21 @@ export const PermissionsCard = ({ entityReference }: PermissionsCardProps) => {
       isFreeAction: true,
       onClick: () => retry(),
     },
+    {
+      icon: () => getEditIcon(permissionResult.allowed, entityReference),
+      tooltip: !permissionResult.allowed ? 'Unauthorized to edit' : 'Edit',
+      isFreeAction: true,
+      onClick: () => {},
+    },
   ];
 
   return (
     <Card>
       <CardContent>
-        {error && (
+        {error?.name && (
           <div style={{ paddingBottom: '16px' }}>
             <WarningPanel
-              message={
-                (error as Response)?.statusText ||
-                (error as Error)?.message ||
-                (error as Error)?.name
-              }
+              message={error?.message}
               title="Something went wrong while fetching the permission policies"
               severity="error"
             />

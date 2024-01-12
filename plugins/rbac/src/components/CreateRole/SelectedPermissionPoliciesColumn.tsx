@@ -14,7 +14,7 @@ export const selectedPermissionPoliciesColumn = () => [
     field: 'policies',
     render: (policies: RowPolicy[]) => {
       const policyStr = policies.reduce((acc: string, p) => {
-        if (p.checked) return acc.concat(`${p.label}, `);
+        if (p.effect === 'allow') return acc.concat(`${p.policy}, `);
         return acc;
       }, '');
       return policyStr.slice(0, policyStr.length - 2);

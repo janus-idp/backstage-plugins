@@ -7,8 +7,9 @@ import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
 import { FormikErrors } from 'formik';
 
+import { PermissionsData } from '../../types';
 import { PoliciesCheckboxGroup } from './PoliciesCheckboxGroup';
-import { PermissionPolicyRow, PluginsPermissionPoliciesData } from './types';
+import { PluginsPermissionPoliciesData } from './types';
 
 const useStyles = makeStyles(theme => ({
   removeButton: {
@@ -17,9 +18,9 @@ const useStyles = makeStyles(theme => ({
 }));
 
 type PermissionPoliciesFormRowProps = {
-  permissionPoliciesRowData: PermissionPolicyRow;
+  permissionPoliciesRowData: PermissionsData;
   permissionPoliciesData?: PluginsPermissionPoliciesData;
-  permissionPoliciesRowError: FormikErrors<PermissionPolicyRow>;
+  permissionPoliciesRowError: FormikErrors<PermissionsData>;
   rowCount: number;
   rowName: string;
   onRemove: () => void;
@@ -54,6 +55,7 @@ export const PermissionPoliciesFormRow = ({
         options={permissionPoliciesData?.plugins ?? []}
         sx={{ width: '450px' }}
         value={permissionPoliciesRowData.plugin}
+        isOptionEqualToValue={(option, value) => option === value}
         onChange={(_e, value) => {
           onChangePlugin(value || '');
         }}
@@ -81,6 +83,7 @@ export const PermissionPoliciesFormRow = ({
           ]?.permissions ?? []
         }
         sx={{ width: '450px' }}
+        isOptionEqualToValue={(option, value) => option === value}
         value={permissionPoliciesRowData.permission}
         onChange={(_e, value) =>
           onChangePermission(

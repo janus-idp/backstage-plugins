@@ -52,10 +52,10 @@ describe('Create RoleForm', () => {
               plugin: '',
               permission: '',
               policies: [
-                { label: 'Create', checked: false },
-                { label: 'Read', checked: false },
-                { label: 'Update', checked: false },
-                { label: 'Delete', checked: false },
+                { policy: 'Create', effect: 'deny' },
+                { policy: 'Read', effect: 'deny' },
+                { policy: 'Update', effect: 'deny' },
+                { policy: 'Delete', effect: 'deny' },
               ],
             },
           ],
@@ -64,7 +64,7 @@ describe('Create RoleForm', () => {
           formTitle: 'Create Role',
           nameAndDescriptionTitle: 'Enter name and description of role ',
           usersAndGroupsTitle: 'Add users and groups',
-          permissionPoliciesTitle: '',
+          permissionPoliciesTitle: 'Add permission policies',
         }}
       />,
     );
@@ -99,10 +99,10 @@ describe('Create RoleForm', () => {
               plugin: '',
               permission: '',
               policies: [
-                { label: 'Create', checked: false },
-                { label: 'Read', checked: false },
-                { label: 'Update', checked: false },
-                { label: 'Delete', checked: false },
+                { policy: 'Create', effect: 'deny' },
+                { policy: 'Read', effect: 'deny' },
+                { policy: 'Update', effect: 'deny' },
+                { policy: 'Delete', effect: 'deny' },
               ],
             },
           ],
@@ -111,7 +111,7 @@ describe('Create RoleForm', () => {
           formTitle: 'Create Role',
           nameAndDescriptionTitle: 'Enter name and description of role ',
           usersAndGroupsTitle: 'Add users and groups',
-          permissionPoliciesTitle: '',
+          permissionPoliciesTitle: 'Add permission policies',
         }}
       />,
     );
@@ -153,10 +153,10 @@ describe('Edit RoleForm', () => {
               plugin: '',
               permission: '',
               policies: [
-                { label: 'Create', checked: false },
-                { label: 'Read', checked: false },
-                { label: 'Update', checked: false },
-                { label: 'Delete', checked: false },
+                { policy: 'Create', effect: 'deny' },
+                { policy: 'Read', effect: 'deny' },
+                { policy: 'Update', effect: 'deny' },
+                { policy: 'Delete', effect: 'deny' },
               ],
             },
           ],
@@ -165,7 +165,7 @@ describe('Edit RoleForm', () => {
           formTitle: 'Edit Role',
           nameAndDescriptionTitle: 'Edit name and description of role ',
           usersAndGroupsTitle: 'Edit users and groups',
-          permissionPoliciesTitle: '',
+          permissionPoliciesTitle: 'Edit permission policies',
         }}
       />,
     );
@@ -260,10 +260,10 @@ describe('Edit RoleForm', () => {
               plugin: '',
               permission: '',
               policies: [
-                { label: 'Create', checked: false },
-                { label: 'Read', checked: false },
-                { label: 'Update', checked: false },
-                { label: 'Delete', checked: false },
+                { policy: 'Create', effect: 'deny' },
+                { policy: 'Read', effect: 'deny' },
+                { policy: 'Update', effect: 'deny' },
+                { policy: 'Delete', effect: 'deny' },
               ],
             },
           ],
@@ -272,7 +272,7 @@ describe('Edit RoleForm', () => {
           formTitle: 'Edit Role',
           nameAndDescriptionTitle: 'Edit name and description of role ',
           usersAndGroupsTitle: 'Edit users and groups',
-          permissionPoliciesTitle: '',
+          permissionPoliciesTitle: 'Edit permission policies',
         }}
       />,
     );
@@ -313,10 +313,10 @@ describe('Edit RoleForm', () => {
               plugin: '',
               permission: '',
               policies: [
-                { label: 'Create', checked: false },
-                { label: 'Read', checked: false },
-                { label: 'Update', checked: false },
-                { label: 'Delete', checked: false },
+                { policy: 'Create', effect: 'deny' },
+                { policy: 'Read', effect: 'deny' },
+                { policy: 'Update', effect: 'deny' },
+                { policy: 'Delete', effect: 'deny' },
               ],
             },
           ],
@@ -325,7 +325,7 @@ describe('Edit RoleForm', () => {
           formTitle: 'Edit Role',
           nameAndDescriptionTitle: 'Edit name and description of role ',
           usersAndGroupsTitle: 'Edit users and groups',
-          permissionPoliciesTitle: '',
+          permissionPoliciesTitle: 'Edit permission policies',
         }}
       />,
     );

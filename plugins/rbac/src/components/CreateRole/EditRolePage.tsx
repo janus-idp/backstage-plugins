@@ -12,6 +12,7 @@ import {
 import { catalogEntityReadPermission } from '@backstage/plugin-catalog-common/alpha';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 
+import { usePermissionPolicies } from '../../hooks/usePermissionPolicies';
 import { useSelectedMembers } from '../../hooks/useSelectedMembers';
 import { RoleForm } from './RoleForm';
 import { RoleFormValues } from './types';
@@ -24,36 +25,32 @@ export const EditRolePage = () => {
       roleName ? `${roleKind}:${roleNamespace}/${roleName}` : '',
     );
 
+  const { data: permissionPolicies } = usePermissionPolicies(
+    `${roleKind}:${roleNamespace}/${roleName}`,
+  );
+
   const initialValues: RoleFormValues = {
     name: roleName || '',
     namespace: roleNamespace || 'default',
     kind: roleKind || 'role',
     description: '',
     selectedMembers,
-    permissionPoliciesRows: [
-      {
-        plugin: '',
-        permission: '',
-        policies: [
-          { label: 'Create', checked: false },
-          { label: 'Read', checked: false },
-          { label: 'Update', checked: false },
-          { label: 'Delete', checked: false },
-        ],
-      },
-    ],
+    permissionPoliciesRows: permissionPolicies,
   };
   const renderPage = () => {
     if (loading) {
       return <Progress />;
     } else if (roleError?.name) {
       return (
-        <ErrorPage status={roleError.name} statusMessage={roleError.message} />
+        <ErrorPage
+          status={roleError?.name}
+          statusMessage={roleError?.message}
+        />
       );
     }
     return (
       <>
-        <Header title="Edit Role" />
+        <Header title="Edit role" type="RBAC" typeLink="/rbac" />
         <Content>
           <RoleForm
             initialValues={initialValues}
@@ -61,7 +58,7 @@ export const EditRolePage = () => {
               formTitle: 'Edit Role',
               nameAndDescriptionTitle: 'Edit name and description of role ',
               usersAndGroupsTitle: 'Edit users and groups',
-              permissionPoliciesTitle: '',
+              permissionPoliciesTitle: 'Edit permission policies',
             }}
             roleName={
               roleName ? `${roleKind}:${roleNamespace}/${roleName}` : ''

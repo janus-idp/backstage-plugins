@@ -17,19 +17,24 @@ import { Alert } from '@material-ui/lab';
 import { FormikErrors, FormikHelpers, useFormik } from 'formik';
 
 import { rbacApiRef } from '../../api/RBACBackendClient';
-import { CreateRoleError, MemberEntity } from '../../types';
+import { MemberEntity, PermissionsData, RoleError } from '../../types';
 import {
   getPermissionPoliciesData,
   getRoleData,
   validationSchema,
 } from '../../utils/create-role-utils';
+import {
+  getKindNamespaceName,
+  isSamePermissionPolicy,
+  onlyInLeft,
+} from '../../utils/rbac-utils';
 import { useToast } from '../ToastContext';
 import { AddedMembersTable } from './AddedMembersTable';
 import { AddMembersForm } from './AddMembersForm';
 import { PermissionPoliciesForm } from './PermissionPoliciesForm';
 import { ReviewStep } from './ReviewStep';
 import { RoleDetailsForm } from './RoleDetailsForm';
-import { PermissionPolicyRow, RoleFormValues } from './types';
+import { RoleFormValues } from './types';
 
 type RoleFormProps = {
   membersData: { members: MemberEntity[]; loading: boolean; error: Error };
@@ -58,6 +63,106 @@ export const RoleForm = ({
   const navigate = useNavigate();
   const rbacApi = useApi(rbacApiRef);
 
+  const navigateTo = () => {
+    if (step && roleName) {
+      const { kind, namespace, name } = getKindNamespaceName(roleName);
+
+      navigate(`/rbac/roles/${kind}/${namespace}/${name}`);
+    } else {
+      navigate('/rbac');
+    }
+  };
+
+  const updateRole = async (
+    name: string,
+    values: RoleFormValues,
+    formikHelpers: FormikHelpers<RoleFormValues>,
+  ) => {
+    try {
+      const newData = getRoleData(values);
+      const newPermissionsData = getPermissionPoliciesData(values);
+
+      const oldData = getRoleData(initialValues);
+      const res = await rbacApi.updateRole(oldData, newData);
+      if ((res as RoleError).error) {
+        throw new Error(
+          `${'Unable to edit the role. '}${(res as RoleError).error.message}`,
+        );
+      } else {
+        const oldPermissionsData = getPermissionPoliciesData(initialValues);
+        const newPermissions = onlyInLeft(
+          newPermissionsData,
+          oldPermissionsData,
+          isSamePermissionPolicy,
+        );
+        const deletePermissions = onlyInLeft(
+          oldPermissionsData,
+          newPermissionsData,
+          isSamePermissionPolicy,
+        );
+
+        if (newPermissions.length > 0) {
+          const permissionsRes = await rbacApi.createPolicies(newPermissions);
+          if ((permissionsRes as unknown as RoleError).error) {
+            throw new Error(
+              `Unable to create the permissions. ${
+                (permissionsRes as unknown as RoleError).error.message
+              }`,
+            );
+          }
+        }
+
+        if (deletePermissions.length > 0) {
+          const permissionsRes = await rbacApi.deletePolicies(
+            name,
+            deletePermissions,
+          );
+          if ((permissionsRes as unknown as RoleError).error) {
+            throw new Error(
+              `Unable to delete the permissions. ${
+                (permissionsRes as unknown as RoleError).error.message
+              }`,
+            );
+          }
+        }
+        setToastMessage(`Role ${name} updated successfully`);
+        navigateTo();
+      }
+    } catch (e) {
+      formikHelpers.setStatus({ submitError: e });
+    }
+  };
+
+  const newRole = async (
+    values: RoleFormValues,
+    formikHelpers: FormikHelpers<RoleFormValues>,
+  ) => {
+    try {
+      const newData = getRoleData(values);
+      const newPermissionsData = getPermissionPoliciesData(values);
+
+      const res = await rbacApi.createRole(newData);
+      if ((res as RoleError).error) {
+        throw new Error(
+          `${'Unable to create role. '}${(res as RoleError).error.message}`,
+        );
+      }
+      const permissionsRes: Response | RoleError =
+        await rbacApi.createPolicies(newPermissionsData);
+      if ((permissionsRes as unknown as RoleError).error) {
+        throw new Error(
+          `Role was created successfully but unable to add permissions to the role. ${
+            (permissionsRes as unknown as RoleError).error.message
+          }`,
+        );
+      }
+      setToastMessage(`Role ${newData.name} created successfully`);
+      navigateTo();
+    } catch (e) {
+      formikHelpers.setStatus({ submitError: e });
+    }
+  };
+
   const formik = useFormik<RoleFormValues>({
     enableReinitialize: true,
     initialValues,
@@ -66,43 +171,10 @@ export const RoleForm = ({
       values: RoleFormValues,
       formikHelpers: FormikHelpers<RoleFormValues>,
     ) => {
-      try {
-        const newData = getRoleData(values);
-        const oldData = getRoleData(initialValues);
-
-        let res: Response | CreateRoleError;
-        if (roleName) {
-          res = await rbacApi.updateRole(oldData, newData);
-        } else {
-          res = await rbacApi.createRole(newData);
-        }
-
-        if ((res as CreateRoleError).error) {
-          throw new Error(
-            `${
-              roleName ? 'Unable to edit the role. ' : 'Unable to create role. '
-            }${(res as CreateRoleError).error.message}`,
-          );
-        } else if (roleName) {
-          setToastMessage(`Role ${roleName} updated successfully`);
-          navigate('/rbac');
-        } else {
-          const permissionsData = getPermissionPoliciesData(values);
-          const permissionsRes: Response | CreateRoleError =
-            await rbacApi.createPolicy(permissionsData);
-          if ((permissionsRes as unknown as CreateRoleError).error) {
-            throw new Error(
-              `Role was created successfully but unable to add permissions to the role. ${
-                (permissionsRes as unknown as CreateRoleError).error.message
-              }`,
-            );
-          } else {
-            setToastMessage(`Role ${newData.name} created successfully`);
-            navigate('/rbac');
-          }
-        }
-      } catch (e) {
-        formikHelpers.setStatus({ submitError: e });
+      if (roleName) {
+        updateRole(roleName, values, formikHelpers);
+      } else {
+        newRole(values, formikHelpers);
       }
     },
   });
@@ -144,13 +216,17 @@ export const RoleForm = ({
         formik.values.permissionPoliciesRows.length &&
       (!formik.errors.permissionPoliciesRows ||
         (
-          formik.errors
-            .permissionPoliciesRows as unknown as FormikErrors<PermissionPolicyRow>[]
+          formik.errors.permissionPoliciesRows as unknown as FormikErrors<
+            PermissionsData[]
+          >[]
         )?.filter(err => !!err)?.length === 0)
     );
   };
 
   const handleBack = () => setActiveStep(Math.max(activeStep - 1, 0));
+  const handleCancel = () => {
+    navigateTo();
+  };
 
   const handleReset = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     setActiveStep(0);
@@ -161,7 +237,11 @@ export const RoleForm = ({
     <Card>
       <CardHeader title={titles.formTitle} />
       <Divider />
-      <CardContent component="form" onSubmit={formik.handleSubmit}>
+      <CardContent
+        component="form"
+        onSubmit={formik.handleSubmit}
+        style={{ position: 'relative' }}
+      >
         <SimpleStepper activeStep={activeStep}>
           <SimpleStepperStep
             title={titles.nameAndDescriptionTitle}
@@ -210,7 +290,7 @@ export const RoleForm = ({
             </Box>
           </SimpleStepperStep>
           <SimpleStepperStep
-            title="Add permission policies"
+            title={titles.permissionPoliciesTitle}
             actions={{
               showNext: true,
               nextText: 'Next',
@@ -225,7 +305,7 @@ export const RoleForm = ({
               permissionPoliciesRows={formik.values.permissionPoliciesRows}
               permissionPoliciesRowsError={
                 formik.errors
-                  .permissionPoliciesRows as FormikErrors<PermissionPolicyRow>[]
+                  .permissionPoliciesRows as FormikErrors<PermissionsData>[]
               }
               setFieldValue={formik.setFieldValue}
               setFieldError={formik.setFieldError}
@@ -234,7 +314,7 @@ export const RoleForm = ({
           </SimpleStepperStep>
           <SimpleStepperStep title="" end>
             <Paper square elevation={0}>
-              <ReviewStep values={formik.values} />
+              <ReviewStep values={formik.values} isEditing={!!roleName} />
               <br />
               <Button onClick={handleBack}>Back</Button>
               <Button onClick={e => handleReset(e)}>Reset</Button>
@@ -243,7 +323,9 @@ export const RoleForm = ({
                 color="primary"
                 type="submit"
                 disabled={
-                  !!formik.errors.name || !!formik.errors.selectedMembers
+                  !!formik.errors.name ||
+                  !!formik.errors.selectedMembers ||
+                  !formik.dirty
                 }
               >
                 {submitLabel || 'Create'}
@@ -252,10 +334,17 @@ export const RoleForm = ({
           </SimpleStepperStep>
         </SimpleStepper>
         {formik.status?.submitError && (
-          <Box>
+          <Box style={{ paddingBottom: '16px' }}>
             <Alert severity="error">{`${formik.status.submitError}`}</Alert>
           </Box>
         )}
+        <Button
+          style={{ position: 'absolute', right: '0', bottom: '0' }}
+          onClick={handleCancel}
+          color="primary"
+        >
+          Cancel
+        </Button>
       </CardContent>
     </Card>
   );
