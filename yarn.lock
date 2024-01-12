@@ -6426,34 +6426,6 @@
     "@backstage/config" "^1.1.1"
     deep-freeze "^0.0.1"
 
-"@janus-idp/backstage-plugin-rbac-backend@^1.6.4":
-  version "1.7.1"
-  resolved "https://registry.yarnpkg.com/@janus-idp/backstage-plugin-rbac-backend/-/backstage-plugin-rbac-backend-1.7.1.tgz#dfcd6bbf5357db3c88f6223d70ab0f6051abed55"
-  integrity sha512-KWFBfFfmteA//Lq/NH79LHXOCCWBHNsoakSMhaFnACt4R1ChlmgOsg0x56jKpIfE/5RqjYetxEDDhX6Pmx2sWw==
-  dependencies:
-    "@backstage/backend-common" "^0.19.8"
-    "@backstage/backend-plugin-api" "^0.5.4"
-    "@backstage/catalog-client" "^1.4.5"
-    "@backstage/catalog-model" "^1.4.3"
-    "@backstage/config" "^1.1.1"
-    "@backstage/core-plugin-api" "^1.7.0"
-    "@backstage/errors" "^1.2.3"
-    "@backstage/plugin-auth-node" "^0.4.0"
-    "@backstage/plugin-permission-backend" "^0.5.29"
-    "@backstage/plugin-permission-common" "^0.7.9"
-    "@backstage/plugin-permission-node" "^0.7.17"
-    "@dagrejs/graphlib" "^2.1.13"
-    "@janus-idp/backstage-plugin-rbac-common" "1.2.0"
-    casbin "^5.27.1"
-    express "^4.18.2"
-    express-promise-router "^4.1.1"
-    knex "^2.0.0"
-    lodash "^4.17.21"
-    qs "^6.11.2"
-    typeorm-adapter "^1.6.1"
-    winston "^3.11.0"
-    yn "^4.0.0"
-
 "@jest/console@^29.7.0":
   version "29.7.0"
   resolved "https://registry.yarnpkg.com/@jest/console/-/console-29.7.0.tgz#cd4822dbdb84529265c5a2bdb529a3c9cc950ffc"
@@ -19293,12 +19265,7 @@ focus-trap@7.5.2:
   dependencies:
     tabbable "^6.2.0"
 
-follow-redirects@^1.0.0, follow-redirects@^1.14.0, follow-redirects@^1.14.8, follow-redirects@^1.14.9, follow-redirects@^1.15.0:
-  version "1.15.3"
-  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.3.tgz#fe2f3ef2690afce7e82ed0b44db08165b207123a"
-  integrity sha512-1VzOtuEM8pC9SFU1E+8KfTjZyMztRsgEfwQl44z8A25uy13jSzTj6dyK2Df52iV0vgHCfBwLhDWevLn95w5v6Q==
-
-follow-redirects@^1.15.4:
+follow-redirects@^1.0.0, follow-redirects@^1.14.0, follow-redirects@^1.14.8, follow-redirects@^1.14.9, follow-redirects@^1.15.0, follow-redirects@^1.15.4:
   version "1.15.4"
   resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.4.tgz#cdc7d308bf6493126b17ea2191ea0ccf3e535adf"
   integrity sha512-Cr4D/5wlrb0z9dgERpUL3LrmPKVDsETIJhaCMeDfuFYcqa5bldGV6wBsAN6X/vxlXQtFBMrXdXxdL8CbDTGniw==
