@@ -48,6 +48,7 @@ const JsonTextAreaForm = ({
             language="json"
             onChange={(value: string | undefined) => setJsonText(value ?? '')}
             height="30rem"
+            theme={theme.palette.type === 'dark' ? 'vs-dark' : 'light'}
             options={{
               minimap: { enabled: false },
             }}

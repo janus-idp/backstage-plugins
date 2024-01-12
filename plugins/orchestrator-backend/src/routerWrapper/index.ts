@@ -10,8 +10,6 @@ import { Logger } from 'winston';
 import { DataIndexService } from '../service/DataIndexService';
 import { createBackendRouter } from '../service/router';
 import { SonataFlowService } from '../service/SonataFlowService';
-import { BackendExecCtx } from '../types/backendExecCtx';
-import { DEFAULT_DATA_INDEX_URL } from '../types/constants';
 
 export interface RouterArgs {
   eventBroker: EventBroker;
@@ -54,8 +52,6 @@ function initDataIndexService(
   logger: Logger,
   config: Config,
 ): DataIndexService {
-  const dataIndexUrl =
-    config.getOptionalString('orchestrator.dataIndexService.url') ||
-    DEFAULT_DATA_INDEX_URL;
-  return new DataIndexService(new BackendExecCtx(logger, dataIndexUrl));
+  const dataIndexUrl = config.getString('orchestrator.dataIndexService.url');
+  return new DataIndexService(dataIndexUrl, logger);
 }

@@ -11,34 +11,24 @@ import {
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { ErrorBuilder } from '../helpers/errorBuilder';
-import { BackendExecCtx } from '../types/backendExecCtx';
 
 export class DataIndexService {
-  private backendExecCtx: BackendExecCtx;
   private client: Client;
-  private logger: Logger;
 
-  public constructor(backendExecCtx: BackendExecCtx) {
-    this.backendExecCtx = backendExecCtx;
-
-    if (!backendExecCtx) {
-      throw ErrorBuilder.GET_NO_BACKEND_EXEC_CTX_ERR();
-    }
-
-    if (
-      !backendExecCtx.dataIndexUrl ||
-      backendExecCtx.dataIndexUrl.length === 0
-    ) {
+  public constructor(
+    private readonly dataIndexUrl: string,
+    private readonly logger: Logger,
+  ) {
+    if (!dataIndexUrl.length) {
       throw ErrorBuilder.GET_NO_DATA_INDEX_URL_ERR();
     }
 
-    this.logger = backendExecCtx.logger;
     this.client = this.getNewGraphQLClient();
     this.logger.info('DataIndexService Initialized');
   }
 
   private getNewGraphQLClient(): Client {
-    const diURL = `${this.backendExecCtx.dataIndexUrl}/graphql`;
+    const diURL = `${this.dataIndexUrl}/graphql`;
     return new Client({
       url: diURL,
       exchanges: [fetchExchange],
@@ -73,9 +63,7 @@ export class DataIndexService {
         }
       `;
 
-    this.logger.info(
-      `getWorkflowDefinitions() called:  ${this.backendExecCtx.dataIndexUrl}`,
-    );
+    this.logger.info(`getWorkflowDefinitions() called:  ${this.dataIndexUrl}`);
     const result = await this.client.query(QUERY, {});
 
     if (result.error) {
