@@ -1,5 +1,5 @@
 {
-  "name": "@backstage/plugin-notifications-frontend",
+  "name": "@backstage/plugin-notifications",
   "description": "Frontend part of the notifications providing the Notifications API, Notifications page, left-side menu item and other REACT components.",
   "version": "0.1.0",
   "main": "src/index.ts",
