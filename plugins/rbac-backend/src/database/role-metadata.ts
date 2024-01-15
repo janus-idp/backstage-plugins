@@ -6,7 +6,7 @@ import { RoleMetadata } from '@janus-idp/backstage-plugin-rbac-common';
 
 const ROLE_METADATA_TABLE = 'role-metadata';
 
-interface RoleMetadataDao extends RoleMetadata {
+export interface RoleMetadataDao extends RoleMetadata {
   id?: number;
   roleEntityRef: string;
 }
@@ -44,8 +44,10 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
 
   private async findRoleMetadataDao(
     roleEntityRef: string,
+    trx?: Knex.Transaction,
   ): Promise<RoleMetadataDao | undefined> {
-    const metadataDao = await this.knex
+    const db = trx || this.knex;
+    const metadataDao = await db
       .table(ROLE_METADATA_TABLE)
       .where('roleEntityRef', roleEntityRef)
       // roleEntityRef should be unique.
@@ -59,22 +61,23 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
     roleEntityRef: string,
     trx: Knex.Transaction,
   ): Promise<number> {
-    if (await this.findRoleMetadataDao(roleEntityRef)) {
+    if (await this.findRoleMetadataDao(roleEntityRef, trx)) {
       throw new ConflictError(
         `A metadata for role ${roleEntityRef} has already been stored`,
       );
     }
 
     const metadataDao = this.metadataToDao(roleMetadata, roleEntityRef);
-    const result = await trx
-      .table(ROLE_METADATA_TABLE)
-      .insert<RoleMetadataDao>(metadataDao)
-      .returning('id');
+    const result = await trx<RoleMetadataDao>(ROLE_METADATA_TABLE)
+      .insert(metadataDao)
+      .returning<[{ id: number }]>('id');
     if (result && result?.length > 0) {
       return result[0].id;
     }
 
-    throw new Error(`Failed to create the role metadata.`);
+    throw new Error(
+      `Failed to create the role metadata: ${JSON.stringify(metadataDao)}.`,
+    );
   }
 
   async updateRoleMetadata(
@@ -82,34 +85,35 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
     roleEntityRef: string,
     trx: Knex.Transaction,
   ): Promise<void> {
-    const currentMetadataDao = await this.findRoleMetadataDao(roleEntityRef);
+    const currentMetadataDao = await this.findRoleMetadataDao(
+      roleEntityRef,
+      trx,
+    );
 
     if (!currentMetadataDao) {
       throw new NotFoundError(
-        `A metadata for role ${roleEntityRef} was not found`,
+        `A metadata for role '${roleEntityRef}' was not found`,
       );
     }
 
-    if (currentMetadataDao.source !== newRoleMetadataDao.source) {
-      throw new InputError(`The RoleMetadata.source field is 'read-only'`);
+    if (
+      currentMetadataDao.source !== 'legacy' &&
+      currentMetadataDao.source !== newRoleMetadataDao.source
+    ) {
+      throw new InputError(`The RoleMetadata.source field is 'read-only'.`);
     }
 
-    console.log(
-      `${currentMetadataDao.roleEntityRef} and ${newRoleMetadataDao.roleEntityRef}`,
-    );
-    if (currentMetadataDao.roleEntityRef !== newRoleMetadataDao.roleEntityRef) {
-      console.log('============');
-      const result = await trx
-        .table(ROLE_METADATA_TABLE)
-        .where('id', currentMetadataDao.id)
-        .update<RoleMetadataDao>(newRoleMetadataDao)
-        .returning('id');
+    const result = await trx<RoleMetadataDao>(ROLE_METADATA_TABLE)
+      .where('id', currentMetadataDao.id)
+      .update(newRoleMetadataDao)
+      .returning('id');
 
-      if (!result || result.length === 0) {
-        throw new Error(
-          `Failed to update the role metadata for role: ${currentMetadataDao.roleEntityRef}.`,
-        );
-      }
+    if (!result || result.length === 0) {
+      throw new Error(
+        `Failed to update the role metadata '${JSON.stringify(
+          currentMetadataDao,
+        )}' with new value: '${JSON.stringify(newRoleMetadataDao)}'.`,
+      );
     }
   }
 
@@ -117,15 +121,14 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
     roleEntityRef: string,
     trx: Knex.Transaction,
   ): Promise<void> {
-    const metadataDao = await this.findRoleMetadataDao(roleEntityRef);
+    const metadataDao = await this.findRoleMetadataDao(roleEntityRef, trx);
     if (!metadataDao) {
       throw new NotFoundError(
-        `A metadata for role ${roleEntityRef} was not found`,
+        `A metadata for role '${roleEntityRef}' was not found`,
       );
     }
 
-    await trx
-      .table(ROLE_METADATA_TABLE)
+    await trx<RoleMetadataDao>(ROLE_METADATA_TABLE)
       .delete()
       .whereIn('id', [metadataDao.id!]);
   }
