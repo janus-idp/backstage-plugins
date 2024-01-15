@@ -101,7 +101,7 @@ export const ExecuteWorkflowPage = () => {
           </Grid>
         )}
         <Grid item>
-          <InfoCard title={schemaResponse.workflowItem.definition.name}>
+          <InfoCard title="Run workflow">
             {schemaResponse.schemas.length > 0 ? (
               <StepperForm
                 refSchemas={schemaResponse.schemas}
@@ -121,7 +121,12 @@ export const ExecuteWorkflowPage = () => {
   }
 
   return (
-    <BaseOrchestratorPage title="Workflow Orchestrator" noPadding={loading}>
+    <BaseOrchestratorPage
+      noPadding={loading}
+      title={schemaResponse?.workflowItem.definition.name || workflowId}
+      type="workflows"
+      typeLink="/orchestrator"
+    >
       {pageContent}
     </BaseOrchestratorPage>
   );

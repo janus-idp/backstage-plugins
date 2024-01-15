@@ -22,7 +22,7 @@ export interface MockOrchestratorApiData {
   deleteWorkflowDefinitionResponse: ReturnType<
     OrchestratorApi['deleteWorkflowDefinition']
   >;
-  executeWorkflowResponse: ReturnType<OrchestratorApi['executeWorkflow']>;
+  executeWorkflowResponse: () => ReturnType<OrchestratorApi['executeWorkflow']>;
   getInstanceResponse: ReturnType<OrchestratorApi['getInstance']>;
   getInstancesResponse: ReturnType<OrchestratorApi['getInstances']>;
   getInstanceJobsResponse: ReturnType<OrchestratorApi['getInstanceJobs']>;
@@ -83,7 +83,7 @@ export class MockOrchestratorClient implements OrchestratorApi {
       throw new Error(`[executeWorkflow]: No mock data available`);
     }
 
-    return Promise.resolve(this._mockData.executeWorkflowResponse);
+    return this._mockData.executeWorkflowResponse();
   }
 
   getInstance(_instanceId: string): Promise<ProcessInstance> {

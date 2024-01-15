@@ -34,7 +34,7 @@ const JsonTextAreaForm = ({
       <Grid item xs={12}>
         <Alert severity="info" style={{ width: '100%' }}>
           <AlertTitle>Missing JSON Schema for Input Form.</AlertTitle>
-          To proceed, manually enter the input variables in JSON format below.
+          Type the input data in JSON format below.
           <br />
           If you prefer using a form to start the workflow, ensure a valid JSON
           schema is provided in the 'dataInputSchema' property of your workflow

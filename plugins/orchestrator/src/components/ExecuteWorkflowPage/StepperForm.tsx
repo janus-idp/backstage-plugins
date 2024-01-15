@@ -13,8 +13,9 @@ import {
   Stepper,
   Typography,
 } from '@material-ui/core';
-import { withTheme } from '@rjsf/core-v5';
+import { FormProps, withTheme } from '@rjsf/core-v5';
 import { Theme as MuiTheme } from '@rjsf/material-ui-v5';
+import { UiSchema } from '@rjsf/utils';
 import validator from '@rjsf/validator-ajv8';
 import { JSONSchema7 } from 'json-schema';
 
@@ -55,11 +56,43 @@ const ReviewStep = ({
         <Button onClick={handleReset} disabled={busy}>
           Reset
         </Button>
-        <SubmitButton handleClick={handleExecute} submitting={busy}>
+        <SubmitButton
+          handleClick={handleExecute}
+          submitting={busy}
+          focusOnMount
+        >
           Run
         </SubmitButton>
       </Paper>
     </Content>
+  );
+};
+
+const FormWrapper = ({
+  formData,
+  schema,
+  onSubmit,
+  children,
+}: Pick<
+  FormProps<Record<string, JsonValue>>,
+  'formData' | 'schema' | 'onSubmit' | 'children'
+>) => {
+  const firstKey = Object.keys(schema?.properties || {})[0];
+  const uiSchema: UiSchema<Record<string, JsonValue>> | undefined = firstKey
+    ? { [firstKey]: { 'ui:autofocus': 'true' } }
+    : undefined;
+  return (
+    <MuiForm
+      validator={validator}
+      showErrorList={false}
+      noHtml5Validate
+      formData={formData}
+      uiSchema={uiSchema}
+      schema={{ ...schema, title: '' }} // title is in step
+      onSubmit={onSubmit}
+    >
+      {children}
+    </MuiForm>
   );
 };
 
@@ -117,12 +150,9 @@ const StepperForm = ({
               </Typography>
             </StepLabel>
             <StepContent>
-              <MuiForm
-                validator={validator}
-                showErrorList={false}
-                noHtml5Validate
+              <FormWrapper
                 formData={formDataObjects[index]}
-                schema={{ ...schema, title: '' }} // title is in step
+                schema={schema}
                 onSubmit={e => {
                   const newDataObjects = [...formDataObjects];
                   newDataObjects.splice(index, 1, e.formData ?? {});
@@ -136,7 +166,7 @@ const StepperForm = ({
                 <Button variant="contained" color="primary" type="submit">
                   Next step
                 </Button>
-              </MuiForm>
+              </FormWrapper>
             </StepContent>
           </Step>
         ))}

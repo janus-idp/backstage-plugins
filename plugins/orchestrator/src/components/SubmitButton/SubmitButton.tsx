@@ -6,21 +6,32 @@ const SubmitButton = ({
   submitting,
   handleClick,
   children,
+  focusOnMount,
 }: {
   submitting: boolean;
   handleClick: () => void;
   children: React.ReactNode;
-}) => (
-  <Button
-    variant="contained"
-    color="primary"
-    onClick={handleClick}
-    disabled={submitting}
-    type="submit"
-    startIcon={submitting ? <CircularProgress size="1rem" /> : null}
-  >
-    {children}
-  </Button>
-);
+  focusOnMount?: boolean;
+}) => {
+  const ref = React.useRef<HTMLButtonElement>(null);
+  React.useEffect(() => {
+    if (focusOnMount) {
+      ref.current?.focus();
+    }
+  }, [focusOnMount]);
+  return (
+    <Button
+      ref={ref}
+      variant="contained"
+      color="primary"
+      onClick={handleClick}
+      disabled={submitting}
+      type="submit"
+      startIcon={submitting ? <CircularProgress size="1rem" /> : null}
+    >
+      {children}
+    </Button>
+  );
+};
 
 export default SubmitButton;

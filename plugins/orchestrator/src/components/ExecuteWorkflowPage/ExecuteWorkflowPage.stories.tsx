@@ -6,6 +6,7 @@ import { Meta, StoryObj } from '@storybook/react';
 
 import { WorkflowDataInputSchemaResponse } from '@janus-idp/backstage-plugin-orchestrator-common';
 
+import { fakeDataInputSchemaDifferentTypes } from '../../__fixtures__/fakeWorkflowDataInputSchemaDifferentTypes';
 import { fakeDataInputSchemaReponse } from '../../__fixtures__/fakeWorkflowDataInputSchemaResponse';
 import { fakeDataInputSchemaMultiStepReponse } from '../../__fixtures__/fakeWorkflowDataInputSchemaResponseMultiStep';
 import { orchestratorApiRef } from '../../api';
@@ -35,6 +36,11 @@ const meta = {
                   ?.schemaResponse
                   ? context?.args?.schemaResponse()
                   : Promise.resolve(fakeDataInputSchemaReponse),
+                executeWorkflowResponse: () => {
+                  // eslint-disable-next-line no-alert
+                  alert('Execute workflow API called');
+                  return Promise.resolve({ id: 'dummy' });
+                },
               }),
             ],
           ]}
@@ -62,6 +68,13 @@ export const ExecuteWorkflowPageMultipleStepsStory: Story = {
   name: 'Multiple steps',
   args: {
     schemaResponse: () => Promise.resolve(fakeDataInputSchemaMultiStepReponse),
+  },
+};
+
+export const DifferentInputTypesStory: Story = {
+  name: 'Different input types',
+  args: {
+    schemaResponse: () => Promise.resolve(fakeDataInputSchemaDifferentTypes),
   },
 };
 
