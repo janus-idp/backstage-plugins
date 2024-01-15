@@ -319,13 +319,11 @@ describe('role-metadata-db-table', () => {
     it('should throw failed to update metadata error, because inserted result is an empty array.', async () => {
       const knex = Knex.knex({ client: MockClient });
       const tracker = createTracker(knex);
-      tracker.on
-        .select('role-metadata')
-        .response({
-          roleEntityRef: 'role:default/some-super-important-role',
-          source: 'configuration',
-          id: 1,
-        });
+      tracker.on.select('role-metadata').response({
+        roleEntityRef: 'role:default/some-super-important-role',
+        source: 'configuration',
+        id: 1,
+      });
       tracker.on.update('role-metadata').response([]);
 
       const db = new DataBaseRoleMetadataStorage(knex);
@@ -348,13 +346,11 @@ describe('role-metadata-db-table', () => {
     it('should throw failed to update metadata error, because inserted result is undefined.', async () => {
       const knex = Knex.knex({ client: MockClient });
       const tracker = createTracker(knex);
-      tracker.on
-        .select('role-metadata')
-        .response({
-          roleEntityRef: 'role:default/some-super-important-role',
-          source: 'configuration',
-          id: 1,
-        });
+      tracker.on.select('role-metadata').response({
+        roleEntityRef: 'role:default/some-super-important-role',
+        source: 'configuration',
+        id: 1,
+      });
       tracker.on.update('role-metadata').response(undefined);
 
       const db = new DataBaseRoleMetadataStorage(knex);
@@ -377,13 +373,11 @@ describe('role-metadata-db-table', () => {
     it('should throw on insert metadata operation', async () => {
       const knex = Knex.knex({ client: MockClient });
       const tracker = createTracker(knex);
-      tracker.on
-        .select('role-metadata')
-        .response({
-          roleEntityRef: 'role:default/some-super-important-role',
-          source: 'configuration',
-          id: 1,
-        });
+      tracker.on.select('role-metadata').response({
+        roleEntityRef: 'role:default/some-super-important-role',
+        source: 'configuration',
+        id: 1,
+      });
       tracker.on
         .update('role-metadata')
         .simulateError('connection refused error');
@@ -462,13 +456,11 @@ describe('role-metadata-db-table', () => {
     it('should throw on delete metadata operation', async () => {
       const knex = Knex.knex({ client: MockClient });
       const tracker = createTracker(knex);
-      tracker.on
-        .select('role-metadata')
-        .response({
-          roleEntityRef: 'role:default/some-super-important-role',
-          source: 'configuration',
-          id: 1,
-        });
+      tracker.on.select('role-metadata').response({
+        roleEntityRef: 'role:default/some-super-important-role',
+        source: 'configuration',
+        id: 1,
+      });
       tracker.on
         .delete('role-metadata')
         .simulateError('connection refused error');
