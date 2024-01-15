@@ -156,7 +156,7 @@ export class PolicesServer {
 
         const policy = await this.enforcer.getFilteredPolicy(0, entityRef);
         if (policy.length !== 0) {
-          response.json(this.transformPolicyArray(...policy));
+          response.json(await this.transformPolicyArray(...policy));
         } else {
           throw new NotFoundError(); // 404
         }
@@ -525,6 +525,11 @@ export class PolicesServer {
           );
         }
 
+        for (const role of roleMembers) {
+          if (!(await this.enforcer.hasGroupingPolicy(...role))) {
+            throw new NotFoundError(); // 404
+          }
+        }
         const metadata =
           await this.roleMetadata.findRoleMetadata(roleEntityRef);
         if (metadata?.source === 'csv-file') {
@@ -726,7 +731,6 @@ export class PolicesServer {
       }
     });
 
-    console.log(`combined roles: ${combinedRoles}`);
     const result: Role[] = await Promise.all(
       Object.entries(combinedRoles).map(async ([role, value]) => {
         const metadata = await this.roleMetadata.findRoleMetadata(role);
@@ -734,7 +738,7 @@ export class PolicesServer {
           memberReferences: value,
           name: role,
           metadata,
-        }); // todo add metadata
+        });
       }),
     );
     return result;
@@ -834,8 +838,4 @@ export class PolicesServer {
     }
     return 0;
   }
-
-  // addPoliciesMetadata(roleMetadataStorage: RoleMetadataStorage, ) {
-
-  // }
 }
