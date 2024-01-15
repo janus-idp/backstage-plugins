@@ -39,6 +39,7 @@ describe('RbacPage', () => {
       data: [],
       retry: jest.fn(),
       createRoleAllowed: false,
+      createRoleLoading: false,
     });
     await renderInTestApp(<RbacPage />);
     expect(screen.getByText('Administration')).toBeInTheDocument();

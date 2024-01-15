@@ -27,7 +27,8 @@ export const RolesList = () => {
 
   const [roles, setRoles] = React.useState<number | undefined>();
   const classes = useStyles();
-  const { loading, data, retry, createRoleAllowed } = useRoles();
+  const { loading, data, retry, createRoleAllowed, createRoleLoading } =
+    useRoles();
 
   const closeDialog = () => {
     setOpenDialog(false);
@@ -44,7 +45,10 @@ export const RolesList = () => {
   return (
     <>
       <SnackbarAlert toastMessage={toastMessage} onAlertClose={onAlertClose} />
-      <RolesListToolbar createRoleAllowed={createRoleAllowed} />
+      <RolesListToolbar
+        createRoleAllowed={createRoleAllowed}
+        createRoleLoading={createRoleLoading}
+      />
       <Table
         title={
           !loading && data?.length

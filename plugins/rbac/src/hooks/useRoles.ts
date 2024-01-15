@@ -22,6 +22,7 @@ export const useRoles = (
 ): {
   loading: boolean;
   data: RolesData[];
+  createRoleLoading: boolean;
   createRoleAllowed: boolean;
   retry: () => void;
 } => {
@@ -51,6 +52,10 @@ export const useRoles = (
     permission: catalogEntityReadPermission,
     resourceRef: catalogEntityReadPermission.resourceType,
   });
+
+  const createRoleLoading =
+    policyEntityCreatePermissionResult.loading ||
+    catalogEntityReadPermissionResult.loading;
 
   const createRoleAllowed =
     policyEntityCreatePermissionResult.allowed &&
@@ -113,6 +118,7 @@ export const useRoles = (
   return {
     loading,
     data,
+    createRoleLoading,
     createRoleAllowed,
     retry: roleRetry,
   };
