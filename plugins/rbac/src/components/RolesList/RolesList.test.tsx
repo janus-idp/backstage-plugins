@@ -65,6 +65,7 @@ describe('RolesList', () => {
       data: useRolesMockData,
       retry: jest.fn(),
       createRoleAllowed: false,
+      createRoleLoading: false,
     });
     const { queryByText } = await renderInTestApp(<RolesList />);
     expect(queryByText('All roles (2)')).not.toBeNull();
@@ -81,6 +82,7 @@ describe('RolesList', () => {
       data: [],
       retry: jest.fn(),
       createRoleAllowed: false,
+      createRoleLoading: false,
     });
     const { getByTestId } = await renderInTestApp(<RolesList />);
     expect(getByTestId('roles-table-empty')).not.toBeNull();
@@ -96,6 +98,7 @@ describe('RolesList', () => {
       data: useRolesMockData,
       retry: jest.fn(),
       createRoleAllowed: false,
+      createRoleLoading: false,
     });
     const { getAllByTestId, getByText } = await renderInTestApp(<RolesList />);
     expect(getAllByTestId('delete-role')).not.toBeNull();
@@ -127,6 +130,7 @@ describe('RolesList', () => {
       ],
       retry: jest.fn(),
       createRoleAllowed: false,
+      createRoleLoading: false,
     });
     const { getAllByTestId } = await renderInTestApp(<RolesList />);
     expect(getAllByTestId('disable-delete-role')).not.toBeNull();
@@ -158,6 +162,7 @@ describe('RolesList', () => {
       ],
       retry: jest.fn(),
       createRoleAllowed: true,
+      createRoleLoading: false,
     });
     const { getAllByTestId } = await renderInTestApp(<RolesList />);
     expect(getAllByTestId('disable-update-role')).not.toBeNull();
@@ -172,6 +177,7 @@ describe('RolesList', () => {
       data: useRolesMockData,
       retry: jest.fn(),
       createRoleAllowed: false,
+      createRoleLoading: false,
     });
     const { getByTestId } = await renderInTestApp(<RolesList />);
 
@@ -188,11 +194,27 @@ describe('RolesList', () => {
       data: useRolesMockData,
       retry: jest.fn(),
       createRoleAllowed: true,
+      createRoleLoading: false,
     });
     const { getByTestId } = await renderInTestApp(<RolesList />);
 
     expect(getByTestId('create-role').getAttribute('aria-disabled')).toEqual(
       'false',
     );
+  });
+
+  it('should show warning alert if user is not authorized to create roles', async () => {
+    RequirePermissionMock.mockImplementation(props => <>{props.children}</>);
+    mockUsePermission.mockReturnValue({ loading: false, allowed: true });
+    mockUseRoles.mockReturnValue({
+      loading: false,
+      data: useRolesMockData,
+      retry: jest.fn(),
+      createRoleAllowed: false,
+      createRoleLoading: false,
+    });
+    const { getByTestId } = await renderInTestApp(<RolesList />);
+
+    expect(getByTestId('create-role-warning')).not.toBeNull();
   });
 });
