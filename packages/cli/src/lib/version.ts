@@ -36,6 +36,13 @@ import Manifest from '../../package.json';
 import { paths } from './paths';
 import { Lockfile } from './versioning';
 
+export function findVersion() {
+  const pkgContent = fs.readFileSync(paths.resolveOwn('package.json'), 'utf8');
+  return JSON.parse(pkgContent).version;
+}
+
+export const version = findVersion();
+
 export const packageVersions: Record<string, string> = {
   ...Object.fromEntries(
     Object.entries(Manifest.devDependencies as Record<string, string>).filter(
@@ -47,14 +54,8 @@ export const packageVersions: Record<string, string> = {
       ([k, _v]) => k.startsWith('@backstage/'),
     ),
   ),
+  '@janus-idp/cli': version,
 };
-
-export function findVersion() {
-  const pkgContent = fs.readFileSync(paths.resolveOwn('package.json'), 'utf8');
-  return JSON.parse(pkgContent).version;
-}
-
-export const version = findVersion();
 
 export function createPackageVersionProvider(lockfile?: Lockfile) {
   return (name: string, versionHint?: string): string => {

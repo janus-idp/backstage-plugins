@@ -5621,7 +5621,7 @@
     "@backstage/plugin-permission-common" "^0.7.12"
     "@backstage/types" "^1.1.1"
 
-"@backstage/plugin-scaffolder-node@^0.2.6":
+"@backstage/plugin-scaffolder-node@0.2.6", "@backstage/plugin-scaffolder-node@^0.2.6":
   version "0.2.6"
   resolved "https://registry.yarnpkg.com/@backstage/plugin-scaffolder-node/-/plugin-scaffolder-node-0.2.6.tgz#fca73dfb6548522f9f4c4313e4e3b1470b5c5744"
   integrity sha512-elFe0NTj/jstFHEma3yZ7Br5SvhMnOjFzRRXilg+qdD0byMlA4QtFgWsTzOsCLfxOC14GDrZA4NZU1vqgXLGug==

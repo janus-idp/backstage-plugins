@@ -96,6 +96,8 @@ describe('frontendPlugin factory', () => {
       'Executing Template:',
       'copying       .eslintrc.js',
       'templating    README.md.hbs',
+      'templating    app-config.janus-idp.yaml.hbs',
+      'copying       config.d.ts',
       'templating    package.json.hbs',
       'templating    tsconfig.json.hbs',
       'templating    turbo.json.hbs',

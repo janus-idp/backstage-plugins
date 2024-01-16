@@ -19,26 +19,52 @@
   "backstage": {
     "role": "backend-plugin-module"
   },
+  "exports": {
+    ".": "./src/index.ts",
+    "./alpha": "./src/alpha.ts",
+    "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "alpha": [
+        "src/alpha.ts"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
   "scripts": {
-    "start": "backstage-cli package start",
     "build": "backstage-cli package build",
-    "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
     "clean": "backstage-cli package clean",
+    "export-dynamic": "janus-cli package export-dynamic-plugin",
+    "lint": "backstage-cli package lint",
+    "postpack": "backstage-cli package postpack",
+    "postversion": "yarn run export-dynamic",
     "prepack": "backstage-cli package prepack",
-    "postpack": "backstage-cli package postpack"
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test --passWithNoTests --coverage",
+    "tsc": "tsc"
   },
   "dependencies": {
     "@backstage/backend-common": "^{{versionQuery '@backstage/backend-common'}}",
-    "@backstage/backend-plugin-api": "^{{versionQuery '@backstage/backend-plugin-api'}}"
+    "@backstage/backend-plugin-api": "^{{versionQuery '@backstage/backend-plugin-api'}}",
+    "@backstage/backend-plugin-manager": "{{versionQuery '@backstage/backend-plugin-manager' 'npm:@janus-idp/backend-plugin-manager@0.0.2-janus.5'}}"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "{{versionQuery '@backstage/backend-test-utils'}}",
-    "@backstage/cli": "{{versionQuery '@backstage/cli'}}"
+    "@backstage/cli": "{{versionQuery '@backstage/cli'}}",
+    "@janus-idp/cli": "{{versionQuery '@janus-idp/cli'}}"
   },
   "files": [
-    "dist"
+    "dist",
+    "config.d.ts",
+    "dist-dynamic/*.*",
+    "dist-dynamic/dist/**",
+    "dist-dynamic/alpha/*",
+    "app-config.janus-idp.yaml"
   ],
+  "configSchema": "config.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/janus-idp/backstage-plugins",
