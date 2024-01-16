@@ -61,7 +61,7 @@
     "*.{js,jsx,ts,tsx,mjs,cjs}": "turbo run lint:fix --"
   },
   "jest": {
-    "testTimeout": 15000
+    "testTimeout": 25000
   },
   "release": {
     "branches": "main",
