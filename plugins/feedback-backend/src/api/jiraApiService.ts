@@ -20,8 +20,13 @@ export const createJiraTicket = async (options: {
     feedbackType,
     reporter,
   } = options;
-  let body: any = {
+  const requestBody = {
     fields: {
+      ...(reporter && {
+        reporter: {
+          name: reporter,
+        },
+      }),
       project: {
         key: projectKey,
       },
@@ -33,28 +38,7 @@ export const createJiraTicket = async (options: {
       },
     },
   };
-  if (reporter) {
-    body = {
-      fields: {
-        reporter: {
-          name: reporter,
-        },
-        project: {
-          key: projectKey,
-        },
-        summary: summary,
-        description: description,
-        labels: [
-          'reported-by-backstage',
-          tag.toLowerCase().split(' ').join('-'),
-        ],
-        issuetype: {
-          name: feedbackType === 'BUG' ? 'Bug' : 'Task',
-        },
-      },
-    };
-  }
-  const resp = await axios.post(`${host}/rest/api/latest/issue`, body, {
+  const resp = await axios.post(`${host}/rest/api/latest/issue`, requestBody, {
     headers: {
       Authorization: `Bearer ${authToken}`,
       'Content-Type': 'application/json',
