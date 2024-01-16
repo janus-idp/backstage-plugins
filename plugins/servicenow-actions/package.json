@@ -24,7 +24,8 @@
     "prepack": "backstage-cli package prepack",
     "start": "backstage-cli package start",
     "test": "backstage-cli package test --passWithNoTests --coverage",
-    "tsc": "tsc"
+    "tsc": "tsc",
+    "openapi": "npx openapi-typescript-codegen"
   },
   "dependencies": {
     "@backstage/plugin-scaffolder-node": "^0.2.6",
