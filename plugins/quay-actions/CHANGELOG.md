@@ -1,3 +1,11 @@
+## @janus-idp/backstage-scaffolder-backend-module-quay [1.2.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-quay@1.2.5...@janus-idp/backstage-scaffolder-backend-module-quay@1.2.6) (2024-01-16)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.5.0
+
 ## @janus-idp/backstage-scaffolder-backend-module-quay [1.2.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-quay@1.2.4...@janus-idp/backstage-scaffolder-backend-module-quay@1.2.5) (2023-12-07)
 
 
