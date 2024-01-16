@@ -16,10 +16,20 @@ import {
   newModelFromString,
   StringAdapter,
 } from 'casbin';
+import * as Knex from 'knex';
+import { MockClient } from 'knex-mock-client';
 import { Logger } from 'winston';
+
+import { RoleMetadata, Source } from '@janus-idp/backstage-plugin-rbac-common';
 
 import { resolve } from 'path';
 
+import {
+  PermissionPolicyMetadataDao,
+  PolicyMetadataStorage,
+} from '../database/policy-metadata-storage';
+import { RoleMetadataStorage } from '../database/role-metadata';
+import { EnforcerDelegate } from './enforcer-delegate';
 import { MODEL } from './permission-model';
 import { RBACPermissionPolicy } from './permission-policy';
 import { BackstageRoleManager } from './role-manager';
@@ -58,6 +68,32 @@ const conditionalStorage = {
   updateCondition: jest.fn().mockImplementation(),
 };
 
+const roleMetadataStorageMock: RoleMetadataStorage = {
+  findRoleMetadata: jest
+    .fn()
+    .mockImplementation(
+      async (_roleEntityRef: string): Promise<RoleMetadata> => {
+        return { source: 'csv-file' };
+      },
+    ),
+  createRoleMetadata: jest.fn().mockImplementation(),
+  updateRoleMetadata: jest.fn().mockImplementation(),
+  removeRoleMetadata: jest.fn().mockImplementation(),
+};
+
+const policyMetadataStorageMock: PolicyMetadataStorage = {
+  findPolicyMetadataBySource: jest
+    .fn()
+    .mockImplementation(
+      async (_source: Source): Promise<PermissionPolicyMetadataDao[]> => {
+        return [];
+      },
+    ),
+  findPolicyMetadata: jest.fn().mockImplementation(),
+  createPolicyMetadata: jest.fn().mockImplementation(),
+  removePolicyMetadata: jest.fn().mockImplementation(),
+};
+
 async function createEnforcer(
   theModel: Model,
   adapter: Adapter,
@@ -88,12 +124,20 @@ describe('RBACPermissionPolicy Tests', () => {
       logger,
       tokenManagerMock,
     );
+    const knex = Knex.knex({ client: MockClient });
+    const enfDelegate = new EnforcerDelegate(
+      enf,
+      policyMetadataStorageMock,
+      knex,
+    );
 
     const policy = await RBACPermissionPolicy.build(
       logger,
       config,
       conditionalStorage,
-      enf,
+      enfDelegate,
+      roleMetadataStorageMock,
+      knex,
     );
 
     expect(policy).not.toBeNull();
@@ -125,11 +169,21 @@ describe('RBACPermissionPolicy Tests', () => {
         tokenManagerMock,
       );
 
+      const knex = Knex.knex({ client: MockClient });
+      // policyMetadataStorageMock.findPolicyMetadataBySource
+      const enfDelegate = new EnforcerDelegate(
+        enf,
+        policyMetadataStorageMock,
+        knex,
+      );
+
       policy = await RBACPermissionPolicy.build(
         logger,
         config,
         conditionalStorage,
-        enf,
+        enfDelegate,
+        roleMetadataStorageMock,
+        knex,
       );
 
       catalogApi.getEntities.mockReturnValue({ items: [] });
@@ -230,11 +284,20 @@ describe('RBACPermissionPolicy Tests', () => {
         tokenManagerMock,
       );
 
+      const knex = Knex.knex({ client: MockClient });
+      const enfDelegate = new EnforcerDelegate(
+        enf,
+        policyMetadataStorageMock,
+        knex,
+      );
+
       policy = await RBACPermissionPolicy.build(
         logger,
         config,
         conditionalStorage,
-        enf,
+        enfDelegate,
+        roleMetadataStorageMock,
+        knex,
       );
 
       catalogApi.getEntities.mockReturnValue({ items: [] });
@@ -649,11 +712,20 @@ describe('Policy checks for users and groups', () => {
       tokenManagerMock,
     );
 
+    const knex = Knex.knex({ client: MockClient });
+    const enfDelegate = new EnforcerDelegate(
+      enf,
+      policyMetadataStorageMock,
+      knex,
+    );
+
     policy = await RBACPermissionPolicy.build(
       logger,
       config,
       conditionalStorage,
-      enf,
+      enfDelegate,
+      roleMetadataStorageMock,
+      knex,
     );
 
     catalogApi.getEntities.mockReset();

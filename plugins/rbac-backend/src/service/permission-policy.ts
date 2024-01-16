@@ -154,18 +154,20 @@ const addPredefinedPoliciesAndGroupPolicies = async (
     }
   }
 
-  const delRoleMetaTrx = await knex.transaction();
-  try {
-    for (const roleMeta of rolesToDelete) {
-      await roleMetadataStorage.removeRoleMetadata(roleMeta, delRoleMetaTrx);
+  if (groupPoliciesToDelete.length > 0) {
+    const delRoleMetaTrx = await knex.transaction();
+    try {
+      for (const roleMeta of rolesToDelete) {
+        await roleMetadataStorage.removeRoleMetadata(roleMeta, delRoleMetaTrx);
+      }
+      await enf.removeGroupingPolicies(groupPoliciesToDelete, true);
+      await delRoleMetaTrx.commit();
+    } catch (err) {
+      await delRoleMetaTrx.rollback();
+      throw err;
     }
-    await enf.removeGroupingPolicies(groupPoliciesToDelete, true);
-    await delRoleMetaTrx.commit();
-  } catch (err) {
-    await delRoleMetaTrx.rollback();
-    throw err;
+    await enf.removePolicies(policiesToDelete, true);
   }
-  await enf.removePolicies(policiesToDelete, true);
 
   for (const policy of policies) {
     const err = validateEntityReference(policy[0]);
@@ -211,7 +213,6 @@ async function validateGroupingPolicy(
   roleMetadataStorage: RoleMetadataStorage,
   source: Source,
 ) {
-  console.log(`validate policy: ${groupPolicy}}`);
   if (groupPolicy.length === 3) {
     throw new Error(`Group policy should has length 3`);
   }

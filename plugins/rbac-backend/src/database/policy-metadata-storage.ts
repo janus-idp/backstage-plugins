@@ -94,21 +94,17 @@ export class DataBasePolicyMetadataStorage implements PolicyMetadataStorage {
     policy: string[],
     trx: Knex.Transaction,
   ): Promise<void> {
-    try {
-      const metadataDao = await this.findPolicyMetadataDao(policy);
-      if (!metadataDao) {
-        throw new NotFoundError(
-          `A metadata for policy ${policyToString(policy)} was not found`,
-        );
-      }
-
-      await trx
-        .table(POLICY_METADATA_TABLE)
-        .delete()
-        .whereIn('id', [metadataDao.id]);
-    } catch (error) {
-      throw error;
+    const metadataDao = await this.findPolicyMetadataDao(policy);
+    if (!metadataDao) {
+      throw new NotFoundError(
+        `A metadata for policy ${policyToString(policy)} was not found`,
+      );
     }
+
+    await trx
+      .table(POLICY_METADATA_TABLE)
+      .delete()
+      .whereIn('id', [metadataDao.id]);
   }
 
   private daoToMetadata(
