@@ -1,29 +1,37 @@
 import React from 'react';
 
 import { Content, InfoCard, Link } from '@backstage/core-components';
-import { useRouteRef } from '@backstage/core-plugin-api';
+import { PathParams, RouteFunc, useRouteRef } from '@backstage/core-plugin-api';
 import { AboutField } from '@backstage/plugin-catalog';
 
 import { Grid, makeStyles } from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
 import moment from 'moment';
 
-import { ProcessInstance } from '@janus-idp/backstage-plugin-orchestrator-common';
+import {
+  ProcessInstance,
+  ProcessInstanceStateValues,
+} from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { VALUE_UNAVAILABLE } from '../../constants';
-import { executeWorkflowRouteRef } from '../../routes';
+import {
+  executeWorkflowRouteRef,
+  nextWorkflowInstanceRouteRef,
+} from '../../routes';
 import { capitalize } from '../../utils/StringUtils';
 import { EditorViewKind, WorkflowEditor } from '../WorkflowEditor';
-import { ProcessInstanceStatus } from './ProcessInstanceStatus';
+import { WorkflowInstanceStatusIndicator } from './WorkflowInstanceStatusIndicator';
+import { WorkflowProgress } from './WorkflowProgress';
 import { WorkflowRunDetail, WorkflowSuggestion } from './WorkflowRunDetail';
+import { WorkflowVariablesViewer } from './WorkflowVariablesViewer';
 
 export const mapProcessInstanceToDetails = (
   instance: ProcessInstance,
 ): WorkflowRunDetail => {
-  const start = moment(instance.start?.toString());
+  const start = moment(instance.start);
   const end = moment(instance.end?.toString());
   const duration = moment.duration(start.diff(end));
   const name = instance.processName || instance.processId;
+  const businessKey = instance.businessKey;
 
   let variables: Record<string, unknown> | undefined;
   if (typeof instance?.variables === 'string') {
@@ -46,44 +54,16 @@ export const mapProcessInstanceToDetails = (
     status: instance.state,
     description: instance.description,
     nextWorkflowSuggestions,
+    businessKey,
   };
 };
 
-const useStyles = makeStyles(_ => ({
-  card: {
-    height: '100%',
-  },
-}));
-
-export const WorkflowInstancePageContent = ({
-  processInstance,
-}: {
-  processInstance?: ProcessInstance;
-}) => {
-  const styles = useStyles();
-  const executeWorkflowLink = useRouteRef(executeWorkflowRouteRef);
-
-  if (!processInstance) {
-    return <Skeleton />;
-  }
-
-  const details = mapProcessInstanceToDetails(processInstance);
-
-  const detailLabelValues = [
-    {
-      label: 'Category',
-      value: capitalize(details.category ?? VALUE_UNAVAILABLE),
-    },
-    { label: 'Started', value: details.started },
-    { label: 'Duration', value: details.duration },
-    {
-      label: 'Status',
-      value: <ProcessInstanceStatus status={details.status} />,
-    },
-    { label: 'ID', value: details.id },
-    { label: 'Description', value: details.description },
-  ];
-
+const getNextWorkflows = (
+  details: WorkflowRunDetail,
+  executeWorkflowLink: RouteFunc<
+    PathParams<'/next/workflows/:workflowId/execute'>
+  >,
+) => {
   const nextWorkflows: { title: string; link: string }[] = [];
 
   if (details.nextWorkflowSuggestions) {
@@ -101,11 +81,89 @@ export const WorkflowInstancePageContent = ({
     });
   }
 
+  return nextWorkflows;
+};
+
+const useStyles = makeStyles(_ => ({
+  topRowCard: {
+    height: '252px',
+  },
+  middleRowCard: {
+    height: 'calc(2 * 252px)',
+  },
+  bottomRowCard: {
+    height: '100%',
+  },
+  autoOverflow: { overflow: 'auto' },
+}));
+
+export const WorkflowInstancePageContent: React.FC<{
+  processInstance: ProcessInstance;
+}> = ({ processInstance }) => {
+  const styles = useStyles();
+  const executeWorkflowLink = useRouteRef(executeWorkflowRouteRef);
+  const workflowInstanceLink = useRouteRef(nextWorkflowInstanceRouteRef);
+  const details = React.useMemo(
+    () => mapProcessInstanceToDetails(processInstance),
+    [processInstance],
+  );
+  const detailLabelValues = React.useMemo(() => {
+    const labelsAndValues = [
+      {
+        label: 'Status',
+        value: (
+          <WorkflowInstanceStatusIndicator
+            status={details.status as ProcessInstanceStateValues}
+          />
+        ),
+      },
+      { label: 'Started', value: details.started },
+      { label: 'ID', value: details.id },
+      {
+        label: 'Category',
+        value: capitalize(details.category ?? VALUE_UNAVAILABLE),
+      },
+      { label: 'Duration', value: details.duration },
+      { label: 'Description', value: details.description },
+    ];
+
+    if (details.businessKey) {
+      labelsAndValues.push({
+        label: 'Assessed by',
+        value: (
+          <Link to={workflowInstanceLink({ instanceId: details.businessKey })}>
+            {details.businessKey}
+          </Link>
+        ),
+      });
+    }
+
+    return labelsAndValues;
+  }, [
+    details.businessKey,
+    details.category,
+    details.description,
+    details.duration,
+    details.id,
+    details.started,
+    details.status,
+    workflowInstanceLink,
+  ]);
+
+  const nextWorkflows = React.useMemo(
+    () => getNextWorkflows(details, executeWorkflowLink),
+    [details, executeWorkflowLink],
+  );
+
   return (
     <Content noPadding>
       <Grid container>
         <Grid item xs={6}>
-          <InfoCard title="Details" divider={false} className={styles.card}>
+          <InfoCard
+            title="Details"
+            divider={false}
+            className={styles.topRowCard}
+          >
             <Grid container spacing={3}>
               {detailLabelValues.map(item => (
                 <Grid item xs={4} key={item.label}>
@@ -117,38 +175,68 @@ export const WorkflowInstancePageContent = ({
         </Grid>
 
         <Grid item xs={6}>
-          <InfoCard title="Results" divider={false} className={styles.card}>
-            <Grid container spacing={3}>
-              {nextWorkflows.map(item => (
-                <Grid item xs={4} key={item.title}>
-                  <Link to={item.link}>{item.title}</Link>
-                </Grid>
-              ))}
-            </Grid>
+          <InfoCard
+            title="Results"
+            divider={false}
+            className={styles.topRowCard}
+            cardClassName={styles.autoOverflow}
+          >
+            {nextWorkflows.length === 0 ? (
+              <WorkflowVariablesViewer variables={processInstance.variables} />
+            ) : (
+              <Grid container spacing={3}>
+                {nextWorkflows.map(item => (
+                  <Grid item xs={4} key={item.title}>
+                    <Link to={item.link}>{item.title}</Link>
+                  </Grid>
+                ))}
+              </Grid>
+            )}
           </InfoCard>
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid item xs={6}>
           <InfoCard
             title="Workflow definition"
-            divider={false}
-            className={styles.card}
+            className={styles.middleRowCard}
           >
             <WorkflowEditor
-              workflowId={processInstance.description}
-              kind={EditorViewKind.EXTENDED_DIAGRAM_VIEWER}
+              workflowId={processInstance.processId}
+              kind={EditorViewKind.DIAGRAM_VIEWER}
+              editorMode="text"
+              readonly
             />
           </InfoCard>
         </Grid>
 
         <Grid item xs={6}>
-          <InfoCard title="Timeline" divider={false} className={styles.card} />
+          <InfoCard
+            title="Workflow progress"
+            divider={false}
+            className={styles.middleRowCard}
+            cardClassName={styles.autoOverflow}
+          >
+            <WorkflowProgress
+              workflowError={processInstance.error}
+              workflowNodes={processInstance.nodes}
+              workflowStatus={processInstance.state}
+            />
+          </InfoCard>
         </Grid>
 
-        <Grid item xs={6}>
-          <InfoCard title="Variables" divider={false} className={styles.card} />
-        </Grid>
+        {nextWorkflows.length > 0 ? (
+          <Grid item xs={12}>
+            <InfoCard
+              title="Variables"
+              className={styles.bottomRowCard}
+              cardClassName={styles.autoOverflow}
+            >
+              <WorkflowVariablesViewer variables={processInstance.variables} />
+            </InfoCard>
+          </Grid>
+        ) : null}
       </Grid>
     </Content>
   );
 };
+WorkflowInstancePageContent.displayName = 'WorkflowInstancePageContent';

@@ -20,10 +20,12 @@ import PlayArrow from '@material-ui/icons/PlayArrow';
 
 import {
   FEATURE_FLAG_DEVELOPER_MODE,
+  ProcessInstanceStateValues,
   WorkflowOverview,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { orchestratorApiRef } from '../../api';
+import { VALUE_UNAVAILABLE } from '../../constants';
 import WorkflowOverviewFormatter, {
   FormattedWorkflowOverview,
 } from '../../dataFormatters/WorkflowOverviewFormatter';
@@ -32,7 +34,7 @@ import {
   workflowDefinitionsRouteRef,
 } from '../../routes';
 import { capitalize } from '../../utils/StringUtils';
-import { ProcessInstanceStatus } from './ProcessInstanceStatus';
+import { WorkflowInstanceStatusIndicator } from './WorkflowInstanceStatusIndicator';
 
 export interface WorkflowsTableProps {
   items: WorkflowOverview[];
@@ -148,9 +150,14 @@ export const WorkflowsTable = ({ items, handleEdit }: WorkflowsTableProps) => {
       { title: 'Last run', field: 'lastTriggered' },
       {
         title: 'Last run status',
-        render: rowData => (
-          <ProcessInstanceStatus status={rowData.lastRunStatus} />
-        ),
+        render: rowData =>
+          rowData.lastRunStatus !== VALUE_UNAVAILABLE ? (
+            <WorkflowInstanceStatusIndicator
+              status={rowData.lastRunStatus as ProcessInstanceStateValues}
+            />
+          ) : (
+            VALUE_UNAVAILABLE
+          ),
       },
       { title: 'Avg. duration', field: 'avgDuration' },
       { title: 'Description', field: 'description' },

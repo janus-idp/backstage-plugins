@@ -12,6 +12,7 @@ export type WorkflowRunDetail = {
   duration: string;
   category?: string;
   description?: string;
+  businessKey?: string;
   nextWorkflowSuggestions?: {
     [key: string]: WorkflowSuggestion | WorkflowSuggestion[];
   };

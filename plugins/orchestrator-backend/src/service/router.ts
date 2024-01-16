@@ -197,6 +197,22 @@ function setupInternalRoutes(
     });
   });
 
+  router.delete('/workflows/:workflowId/abort', async (req, res) => {
+    const {
+      params: { workflowId },
+    } = req;
+
+    const result = await dataIndexService.abortWorkflowInstance(workflowId);
+
+    if (result.error) {
+      res.status(500).json(result.error);
+      return;
+    }
+
+    res.status(200).json(result.data);
+    return;
+  });
+
   router.post('/workflows/:workflowId/execute', async (req, res) => {
     const {
       params: { workflowId },
@@ -382,7 +398,7 @@ function setupInternalRoutes(
 
   router.get('/specs', async (_, res) => {
     const specs = await workflowService.listStoredSpecs();
-    res.json(specs).status(200).send();
+    res.status(200).json(specs);
   });
 }
 

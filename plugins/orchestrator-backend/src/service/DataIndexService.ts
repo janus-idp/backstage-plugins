@@ -1,4 +1,4 @@
-import { Client, fetchExchange } from '@urql/core';
+import { Client, fetchExchange, gql } from '@urql/core';
 import { Logger } from 'winston';
 
 import {
@@ -33,6 +33,28 @@ export class DataIndexService {
       url: diURL,
       exchanges: [fetchExchange],
     });
+  }
+
+  public async abortWorkflowInstance(workflowId: string) {
+    this.logger.info(`Aborting workflow instance ${workflowId}`);
+    const ProcessInstanceAbortMutationDocument = gql`
+      mutation ProcessInstanceAbortMutation($id: String) {
+        ProcessInstanceAbort(id: $id)
+      }
+    `;
+
+    const result = await this.client
+      .mutation(ProcessInstanceAbortMutationDocument, { id: workflowId })
+      .toPromise();
+
+    if (result.error) {
+      this.logger.error(
+        `Error aborting workflow instance ${workflowId}: ${result.error}`,
+      );
+    }
+
+    this.logger.debug(`Successfully aborted workflow instance ${workflowId}`);
+    return result;
   }
 
   public async getWorkflowDefinition(

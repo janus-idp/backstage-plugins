@@ -186,4 +186,8 @@ export class MockOrchestratorClient implements OrchestratorApi {
 
     return Promise.resolve(this._mockData.getWorkflowOverviewResponse);
   }
+
+  abortWorkflow(_workflowId: string): Promise<void> {
+    return Promise.resolve(undefined);
+  }
 }

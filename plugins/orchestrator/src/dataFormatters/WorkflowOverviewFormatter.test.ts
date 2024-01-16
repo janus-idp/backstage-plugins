@@ -24,7 +24,7 @@ describe('WorkflowOverviewAdapter', () => {
     expect(adaptedData.id).toBe(mockWorkflowOverview.workflowId);
     expect(adaptedData.name).toBe(mockWorkflowOverview.name);
     expect(adaptedData.lastTriggered).toBe(
-      new Date(adaptedData.lastTriggered).toLocaleString(),
+      new Date(mockWorkflowOverview.lastTriggeredMs!).toLocaleString(),
     );
     expect(adaptedData.lastRunStatus).toBe(mockWorkflowOverview.lastRunStatus);
     expect(adaptedData.category).toBe(mockWorkflowOverview.category);

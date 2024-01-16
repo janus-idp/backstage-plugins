@@ -4,9 +4,15 @@ import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
 
 import { Meta, StoryObj } from '@storybook/react';
 
-import { ProcessInstance } from '@janus-idp/backstage-plugin-orchestrator-common';
+import {
+  ProcessInstance,
+  WorkflowItem,
+  WorkflowSpecFile,
+} from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { fakeProcessInstances } from '../../__fixtures__/fakeProcessInstance';
+import { fakeWorkflowItem } from '../../__fixtures__/fakeWorkflowItem';
+import { fakeWorkflowSpecs } from '../../__fixtures__/fakeWorkflowSpecs';
 import { orchestratorApiRef } from '../../api';
 import { MockOrchestratorClient } from '../../api/MockOrchestratorClient';
 import { orchestratorRootRouteRef } from '../../routes';
@@ -18,7 +24,7 @@ const delay = (timeMs: number) => {
   });
 };
 
-const getProcessInstance = async (
+const getFakeProcessInstance = async (
   instanceId?: string,
 ): Promise<ProcessInstance> => {
   if (instanceId === '__loading__') {
@@ -33,6 +39,22 @@ const getProcessInstance = async (
   throw new Error('This is an example error for non existing instance');
 };
 
+const getFakeWorkflowItem = async (
+  workflowId?: string,
+): Promise<WorkflowItem> => {
+  if (workflowId === '__loading__') {
+    await delay(5 * 1000);
+    return fakeWorkflowItem;
+  }
+
+  return fakeWorkflowItem;
+};
+
+const getFakeSpecs = async (): Promise<WorkflowSpecFile[]> => {
+  await delay(5 * 1000);
+  return fakeWorkflowSpecs;
+};
+
 const meta = {
   title: 'Orchestrator/next/WorkflowInstancePage',
   component: WorkflowInstancePage,
@@ -44,7 +66,11 @@ const meta = {
             [
               orchestratorApiRef,
               new MockOrchestratorClient({
-                getInstanceResponse: getProcessInstance(
+                getSpecsResponse: getFakeSpecs(),
+                getWorkflowResponse: getFakeWorkflowItem(
+                  context.args.instanceId,
+                ),
+                getInstanceResponse: getFakeProcessInstance(
                   context.args.instanceId,
                 ),
               }),

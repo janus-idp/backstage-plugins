@@ -6,10 +6,14 @@ import { AboutField } from '@backstage/plugin-catalog';
 import { Grid, makeStyles } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 
-import { WorkflowOverview } from '@janus-idp/backstage-plugin-orchestrator-common';
+import {
+  ProcessInstanceStateValues,
+  WorkflowOverview,
+} from '@janus-idp/backstage-plugin-orchestrator-common';
 
+import { VALUE_UNAVAILABLE } from '../../constants';
 import WorkflowOverviewFormatter from '../../dataFormatters/WorkflowOverviewFormatter';
-import { ProcessInstanceStatus } from '../next/ProcessInstanceStatus';
+import { WorkflowInstanceStatusIndicator } from '../next/WorkflowInstanceStatusIndicator';
 
 const useStyles = makeStyles({
   details: {
@@ -52,11 +56,16 @@ const WorkflowDefinitionDetailsCard = ({
       {
         label: 'last run status',
         value: formattedWorkflowOverview?.lastRunStatus,
-        children: formattedWorkflowOverview?.lastRunStatus ? (
-          <ProcessInstanceStatus
-            status={formattedWorkflowOverview?.lastRunStatus}
-          />
-        ) : null,
+        children:
+          formattedWorkflowOverview?.lastRunStatus !== VALUE_UNAVAILABLE ? (
+            <WorkflowInstanceStatusIndicator
+              status={
+                formattedWorkflowOverview?.lastRunStatus as ProcessInstanceStateValues
+              }
+            />
+          ) : (
+            VALUE_UNAVAILABLE
+          ),
       },
     ],
     [formattedWorkflowOverview],

@@ -33,7 +33,10 @@ import {
   usePromiseState,
 } from '@kie-tools-core/react-hooks/dist/PromiseState';
 import { useCancelableEffect } from '@kie-tools-core/react-hooks/dist/useCancelableEffect';
-import { ServerlessWorkflowCombinedEditorChannelApi } from '@kie-tools/serverless-workflow-combined-editor/dist/api';
+import {
+  editorDisplayOptions,
+  ServerlessWorkflowCombinedEditorChannelApi,
+} from '@kie-tools/serverless-workflow-combined-editor/dist/api';
 import { ServerlessWorkflowCombinedEditorEnvelopeApi } from '@kie-tools/serverless-workflow-combined-editor/dist/api/ServerlessWorkflowCombinedEditorEnvelopeApi';
 import { SwfCombinedEditorChannelApiImpl } from '@kie-tools/serverless-workflow-combined-editor/dist/channel/SwfCombinedEditorChannelApiImpl';
 import { SwfPreviewOptionsChannelApiImpl } from '@kie-tools/serverless-workflow-combined-editor/dist/channel/SwfPreviewOptionsChannelApiImpl';
@@ -93,6 +96,8 @@ type WorkflowEditorProps = {
   workflowId: string | undefined;
   format?: WorkflowFormat;
   forceReload?: boolean;
+  editorMode?: editorDisplayOptions;
+  readonly?: boolean;
 } & WorkflowEditorView;
 
 const RefForwardingWorkflowEditor: ForwardRefRenderFunction<
@@ -104,7 +109,14 @@ const RefForwardingWorkflowEditor: ForwardRefRenderFunction<
   const contextPath =
     configApi.getOptionalString('orchestrator.editor.path') ??
     DEFAULT_EDITOR_PATH;
-  const { workflowId, kind, format } = props;
+  const {
+    workflowId,
+    kind,
+    format,
+    forceReload = false,
+    editorMode = 'full',
+    readonly = false,
+  } = props;
   const { editor, editorRef } = useEditorRef();
   const [embeddedFile, setEmbeddedFile] = useState<EmbeddedEditorFile>();
   const [workflowItemPromise, setWorkflowItemPromise] =
@@ -276,7 +288,7 @@ const RefForwardingWorkflowEditor: ForwardRefRenderFunction<
 
     const workflowEditorPreviewOptionsChannelApiImpl =
       new SwfPreviewOptionsChannelApiImpl({
-        editorMode: 'full',
+        editorMode,
         defaultWidth: '50%',
       });
 
@@ -287,7 +299,7 @@ const RefForwardingWorkflowEditor: ForwardRefRenderFunction<
       swfPreviewOptionsChannelApiImpl:
         workflowEditorPreviewOptionsChannelApiImpl,
     });
-  }, [embeddedFile, languageService, stateControl]);
+  }, [editorMode, embeddedFile, languageService, stateControl]);
 
   useEffect(() => {
     if (!ready || !currentProcessInstance) {
@@ -361,7 +373,7 @@ const RefForwardingWorkflowEditor: ForwardRefRenderFunction<
               path: item.uri,
               getFileContents: async () =>
                 toWorkflowString(item.definition, workflowFormat),
-              isReadOnly: kind !== EditorViewKind.AUTHORING,
+              isReadOnly: readonly || kind !== EditorViewKind.AUTHORING,
               fileExtension,
               fileName,
             });
@@ -384,7 +396,7 @@ const RefForwardingWorkflowEditor: ForwardRefRenderFunction<
         editWorkflowLink,
         viewWorkflowLink,
         navigate,
-        props.forceReload,
+        forceReload,
       ],
     ),
   );

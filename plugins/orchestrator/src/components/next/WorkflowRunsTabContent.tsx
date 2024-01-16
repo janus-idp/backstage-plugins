@@ -13,17 +13,18 @@ import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 
 import { Grid } from '@material-ui/core';
 
-import { ProcessInstanceState } from '@janus-idp/backstage-plugin-orchestrator-common';
+import {
+  ProcessInstanceState,
+  ProcessInstanceStateValues,
+} from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { orchestratorApiRef } from '../../api';
 import { VALUE_UNAVAILABLE } from '../../constants';
 import { nextWorkflowInstanceRouteRef } from '../../routes';
-import { humanizeProcessInstanceState } from '../../utils';
-import { capitalize } from '../../utils/StringUtils';
-import { ProcessInstanceStatus } from './ProcessInstanceStatus';
+import { capitalize, ellipsis } from '../../utils/StringUtils';
 import { Selector } from './Selector';
-import { TableExpandCollapse } from './TableExpandCollapse';
 import { mapProcessInstanceToDetails } from './WorkflowInstancePageContent';
+import { WorkflowInstanceStatusIndicator } from './WorkflowInstanceStatusIndicator';
 import { WorkflowRunDetail } from './WorkflowRunDetail';
 
 const makeSelectItemsFromProcessInstanceValues = () =>
@@ -35,7 +36,7 @@ const makeSelectItemsFromProcessInstanceValues = () =>
     ProcessInstanceState.Suspended,
   ].map(
     (status): SelectItem => ({
-      label: humanizeProcessInstanceState(status) || '',
+      label: capitalize(status),
       value: status,
     }),
   );
@@ -43,13 +44,9 @@ const makeSelectItemsFromProcessInstanceValues = () =>
 export const WorkflowRunsTabContent = () => {
   const orchestratorApi = useApi(orchestratorApiRef);
   const workflowInstanceLink = useRouteRef(nextWorkflowInstanceRouteRef);
-  const [workflowSelectorValue, setWorkflowSelectorValue] = useState<string>(
-    Selector.AllItems,
-  );
   const [statusSelectorValue, setStatusSelectorValue] = useState<string>(
     Selector.AllItems,
   );
-  const [isExpanded, setIsExpanded] = React.useState(true);
 
   const { loading, error, value } = useAsync(async () => {
     const instances = await orchestratorApi.getInstances();
@@ -63,40 +60,33 @@ export const WorkflowRunsTabContent = () => {
   const columns = React.useMemo(
     (): TableColumn<WorkflowRunDetail>[] => [
       {
-        title: 'Name',
+        title: 'ID',
         render: data => (
           <Link to={workflowInstanceLink({ instanceId: data.id })}>
-            {data.name}
+            {ellipsis(data.id)}
           </Link>
+        ),
+      },
+      {
+        title: 'Name',
+        field: 'name',
+      },
+      {
+        title: 'Status',
+        render: data => (
+          <WorkflowInstanceStatusIndicator
+            status={data.status as ProcessInstanceStateValues}
+          />
         ),
       },
       {
         title: 'Category',
         render: data => capitalize(data.category ?? VALUE_UNAVAILABLE),
       },
-      {
-        title: 'Status',
-        render: data => <ProcessInstanceStatus status={data.status} />,
-      },
       { title: 'Started', field: 'started' },
       { title: 'Duration', field: 'duration' },
-      { title: 'ID', field: 'id' },
     ],
     [workflowInstanceLink],
-  );
-
-  const workflows: SelectItem[] = React.useMemo(
-    () =>
-      [
-        // deduplicate
-        ...new Set(value?.map(row => row.workflow)),
-      ]
-        .sort((a, b) => a.localeCompare(b))
-        .map(
-          // make the resulting SelectItem
-          name => ({ label: name, value: name }),
-        ),
-    [value],
   );
 
   const statuses = React.useMemo(makeSelectItemsFromProcessInstanceValues, []);
@@ -105,25 +95,15 @@ export const WorkflowRunsTabContent = () => {
     () =>
       (value || []).filter(
         (row: WorkflowRunDetail) =>
-          (workflowSelectorValue === Selector.AllItems ||
-            row.workflow === workflowSelectorValue) &&
-          (statusSelectorValue === Selector.AllItems ||
-            row.status === statusSelectorValue),
+          statusSelectorValue === Selector.AllItems ||
+          row.status === statusSelectorValue,
       ),
-    [statusSelectorValue, value, workflowSelectorValue],
+    [statusSelectorValue, value],
   );
 
   const selectors = React.useMemo(
     () => (
       <Grid container alignItems="center">
-        <Grid item>
-          <Selector
-            label="Workflow"
-            items={workflows}
-            onChange={setWorkflowSelectorValue}
-            selected={workflowSelectorValue}
-          />
-        </Grid>
         <Grid item>
           <Selector
             label="Status"
@@ -132,39 +112,25 @@ export const WorkflowRunsTabContent = () => {
             selected={statusSelectorValue}
           />
         </Grid>
-        <Grid item style={{ marginLeft: 'auto' }}>
-          <TableExpandCollapse
-            isExpanded={isExpanded}
-            setIsExpanded={setIsExpanded}
-          />
-        </Grid>
       </Grid>
     ),
-    [
-      isExpanded,
-      statusSelectorValue,
-      statuses,
-      workflowSelectorValue,
-      workflows,
-    ],
+    [statusSelectorValue, statuses],
   );
 
   return error ? (
     <ErrorPanel error={error} />
   ) : (
     <InfoCard noPadding title={selectors}>
-      {isExpanded ? (
-        <Table
-          title="Workflow Runs"
-          options={{
-            search: true,
-            paging: true,
-          }}
-          isLoading={loading && !error}
-          columns={columns}
-          data={filteredData}
-        />
-      ) : null}
+      <Table
+        title="Workflow Runs"
+        options={{
+          search: true,
+          paging: true,
+        }}
+        isLoading={loading}
+        columns={columns}
+        data={filteredData}
+      />
     </InfoCard>
   );
 };
