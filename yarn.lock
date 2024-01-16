@@ -24891,6 +24891,13 @@ knex-mock-client@2.0.0:
   dependencies:
     lodash.clonedeep "^4.5.0"
 
+knex-mock-client@2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/knex-mock-client/-/knex-mock-client-2.0.1.tgz#b72c14d177c6bef6f019edfad7a5c1d5308dfcde"
+  integrity sha512-tSNaht+aquo6SgEhwPYidfYWVS2IUbF2ZNu4Ye0mScGTmyS+ZTJzpAkogpUIDwiZbkjIg/bvsopRDM/Lbdt+Mw==
+  dependencies:
+    lodash.clonedeep "^4.5.0"
+
 knex@2.4.2, knex@^2.0.0, knex@^2.3.0:
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/knex/-/knex-2.4.2.tgz#a34a289d38406dc19a0447a78eeaf2d16ebedd61"
