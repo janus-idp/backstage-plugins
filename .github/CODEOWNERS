@@ -29,4 +29,6 @@ yarn.lock                    @janus-idp/maintainers-plugins
 /plugins/rbac-common/        @janus-idp/maintainers-plugins @gorkem @AndrienkoAleksandr @PatAKnight
 /plugins/notifications       @janus-idp/maintainers-plugins @mareklibra
 /plugins/notifications-backend  @janus-idp/maintainers-plugins @mareklibra @ydayagi
-
+/plugins/orchestrator          @janus-idp/maintainers-plugins @caponetto @jkilzi
+/plugins/orchestrator-backend  @janus-idp/maintainers-plugins @caponetto @jkilzi
+/plugins/orchestrator-common   @janus-idp/maintainers-plugins @caponetto @jkilzi
