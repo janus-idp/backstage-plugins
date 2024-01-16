@@ -1,3 +1,10 @@
+## @janus-idp/cli [1.5.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.4.7...@janus-idp/cli@1.5.0) (2024-01-16)
+
+
+### Features
+
+* **Notifications:** new notifications FE plugin, API and backend ([#933](https://github.com/janus-idp/backstage-plugins/issues/933)) ([4d4cb78](https://github.com/janus-idp/backstage-plugins/commit/4d4cb781ca9fc331a2c621583e9203f9e4585ee7))
+
 ## @janus-idp/cli [1.4.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.4.6...@janus-idp/cli@1.4.7) (2023-12-07)
 
 
