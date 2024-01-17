@@ -1,3 +1,16 @@
+## @janus-idp/backstage-plugin-quay [1.5.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.4.21...@janus-idp/backstage-plugin-quay@1.5.0) (2024-01-17)
+
+
+### Features
+
+* **quay:** fix sorting in quay table and tag details ([#1044](https://github.com/janus-idp/backstage-plugins/issues/1044)) ([ceb16a9](https://github.com/janus-idp/backstage-plugins/commit/ceb16a97870f939e88b1424b3ce208ca24eb868a))
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.4.0
+
 ## @janus-idp/backstage-plugin-quay [1.4.21](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.4.20...@janus-idp/backstage-plugin-quay@1.4.21) (2023-12-22)
 
 
