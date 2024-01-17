@@ -19,6 +19,10 @@ import {
 } from './permissions';
 import { RouterOptions } from './types';
 
+// TODO: fix filename resolving
+const OPENAPI_ROOT =
+  '../../node_modules/@janus-idp/plugin-notifications-backend/src';
+
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
@@ -38,7 +42,7 @@ export async function createRouter(
       formats: fullFormats, // open issue: https://github.com/openapistack/openapi-backend/issues/280
     },
     validate: true,
-    definition: '../../plugins/notifications-backend/src/openapi.yaml',
+    definition: `${OPENAPI_ROOT}/openapi.yaml`,
   });
 
   await api.init();
