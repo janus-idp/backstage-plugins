@@ -1,3 +1,10 @@
+## @janus-idp/backstage-scaffolder-backend-module-servicenow [1.2.8](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-servicenow@1.2.7...@janus-idp/backstage-scaffolder-backend-module-servicenow@1.2.8) (2024-01-17)
+
+
+### Bug Fixes
+
+* **servicenow:** make sure that the correct openapi generator is executed ([#1066](https://github.com/janus-idp/backstage-plugins/issues/1066)) ([6eda572](https://github.com/janus-idp/backstage-plugins/commit/6eda572edde9bee3f237d415f893380e29792457))
+
 ## @janus-idp/backstage-scaffolder-backend-module-servicenow [1.2.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-servicenow@1.2.6...@janus-idp/backstage-scaffolder-backend-module-servicenow@1.2.7) (2023-12-11)
 
 

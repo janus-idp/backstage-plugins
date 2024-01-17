@@ -1,7 +1,7 @@
 {
   "name": "@janus-idp/backstage-scaffolder-backend-module-servicenow-dynamic",
   "description": "The servicenow custom actions",
-  "version": "1.2.7",
+  "version": "1.2.8",
   "main": "dist/index.cjs.js",
   "types": "dist/index.d.ts",
   "license": "Apache-2.0",
@@ -24,7 +24,8 @@
     "prepack": "backstage-cli package prepack",
     "start": "backstage-cli package start",
     "test": "backstage-cli package test --passWithNoTests --coverage",
-    "tsc": "tsc"
+    "tsc": "tsc",
+    "openapi": "npx openapi-typescript-codegen"
   },
   "dependencies": {
     "abort-controller": "^3.0.0",
