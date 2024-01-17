@@ -48,7 +48,7 @@ export const fakeProcessInstance1: ProcessInstance = {
   },
 };
 
-export const fakeProcessInstance2: ProcessInstance = {
+export const fakeCompletedInstance: ProcessInstance = {
   id: `12f767c1-9002-43af-9515-62a72d0eaf${id++}`,
   processName: fakeWorkflowOverviewList[1].name,
   processId: fakeWorkflowOverviewList[1].workflowId,
@@ -65,7 +65,7 @@ export const fakeProcessInstance2: ProcessInstance = {
   description: 'test description 2',
 };
 
-export const fakeProcessInstance3: ProcessInstance = {
+export const fakeActiveInstance: ProcessInstance = {
   id: `12f767c1-9002-43af-9515-62a72d0eaf${id++}`,
   processName: fakeWorkflowOverviewList[2].name,
   processId: fakeWorkflowOverviewList[2].workflowId,
@@ -99,7 +99,7 @@ export const fakeProcessInstance4: ProcessInstance = {
 
 export const fakeProcessInstances = [
   fakeProcessInstance1,
-  fakeProcessInstance2,
-  fakeProcessInstance3,
+  fakeCompletedInstance,
+  fakeActiveInstance,
   fakeProcessInstance4,
 ];
