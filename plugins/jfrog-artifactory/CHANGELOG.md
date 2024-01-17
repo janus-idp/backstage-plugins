@@ -4,7 +4,6 @@
 
 ### Dependencies
 
-* **@janus-idp/shared-react:** upgraded to 2.4.0
 * **@janus-idp/cli:** upgraded to 1.5.0
 
 ## @janus-idp/backstage-plugin-jfrog-artifactory [1.2.17](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-jfrog-artifactory@1.2.16...@janus-idp/backstage-plugin-jfrog-artifactory@1.2.17) (2023-12-22)
