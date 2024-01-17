@@ -218,7 +218,7 @@ export class DataIndexService {
     );
     if (workflowItem) {
       instance.category = getWorkflowCategory(workflowDefinitionSrc);
-      instance.description = workflowItem.description;
+      instance.description = workflowDefinitionSrc.description;
     }
     return instance;
   }
