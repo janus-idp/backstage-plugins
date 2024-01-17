@@ -30,7 +30,7 @@
     "@backstage/backend-plugin-api": "^0.6.6",
     "@backstage/plugin-scaffolder-node": "^0.2.6",
     "@backstage/backend-plugin-manager": "npm:@janus-idp/backend-plugin-manager@0.0.2-janus.5",
-    "@kubernetes/client-node": "^0.19.0"
+    "@kubernetes/client-node": "^0.20.0"
   },
   "devDependencies": {
     "@backstage/backend-common": "0.19.8",

@@ -46,10 +46,10 @@
   },
   "devDependencies": {
     "@backstage/cli": "0.23.0",
-    "@types/dockerode": "3.3.21",
-    "@types/express-serve-static-core": "4.17.38",
-    "@types/express": "4.17.20",
-    "@types/luxon": "3.3.3"
+    "@types/dockerode": "3.3.23",
+    "@types/express-serve-static-core": "4.17.41",
+    "@types/express": "4.17.21",
+    "@types/luxon": "3.4.1"
   },
   "files": [
     "dist"
