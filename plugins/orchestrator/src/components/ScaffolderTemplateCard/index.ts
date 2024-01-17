@@ -1,0 +1,1 @@
+export { OrchestratorScaffolderTemplateCard } from './OrchestratorScaffolderTemplateCard';
