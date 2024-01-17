@@ -1,3 +1,16 @@
+## @janus-idp/backstage-plugin-rbac-backend [2.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.0.0...@janus-idp/backstage-plugin-rbac-backend@2.1.0) (2024-01-17)
+
+
+### Features
+
+* **Notifications:** new notifications FE plugin, API and backend ([#933](https://github.com/janus-idp/backstage-plugins/issues/933)) ([4d4cb78](https://github.com/janus-idp/backstage-plugins/commit/4d4cb781ca9fc331a2c621583e9203f9e4585ee7))
+* **rbac:** add doc about RBAC backend conditions API ([#1027](https://github.com/janus-idp/backstage-plugins/issues/1027)) ([fc9ad53](https://github.com/janus-idp/backstage-plugins/commit/fc9ad5348d768423cbce0df7e2a4239c9a24a11e))
+
+
+### Bug Fixes
+
+* **rbac:** fix role validation ([#1020](https://github.com/janus-idp/backstage-plugins/issues/1020)) ([49c7975](https://github.com/janus-idp/backstage-plugins/commit/49c7975f74a1791e205fe3a322f1efe6504212ed))
+
 ## @janus-idp/backstage-plugin-rbac-backend [2.0.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@1.7.1...@janus-idp/backstage-plugin-rbac-backend@2.0.0) (2023-12-14)
 
 
