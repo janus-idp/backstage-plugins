@@ -19,7 +19,7 @@ import { UiSchema } from '@rjsf/utils';
 import validator from '@rjsf/validator-ajv8';
 import { JSONSchema7 } from 'json-schema';
 
-import SubmitButton from '../SubmitButton/SubmitButton';
+import SubmitButton from '../SubmitButton';
 
 const MuiForm = withTheme<Record<string, JsonValue>>(MuiTheme);
 

@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Meta, StoryObj } from '@storybook/react';
 
-import { fakeNodeInstances } from '../../__fixtures__/fakeNodeInstances';
+import { fakeNodeInstances } from '../__fixtures__/fakeNodeInstances';
 import { WorkflowProgress } from './WorkflowProgress';
 
 const meta = {

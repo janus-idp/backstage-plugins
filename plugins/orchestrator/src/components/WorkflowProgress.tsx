@@ -2,8 +2,8 @@ import React from 'react';
 
 import { ProcessInstance } from '@janus-idp/backstage-plugin-orchestrator-common';
 
-import { compareNodes } from '../../utils/NodeInstanceUtils';
-import { Paragraph } from '../Paragraph/Paragraph';
+import { compareNodes } from '../utils/NodeInstanceUtils';
+import { Paragraph } from './Paragraph';
 import { WorkflowProgressNode } from './WorkflowProgressNode';
 import { fromNodeInstanceToWorkflowProgressNodeModel } from './WorkflowProgressNodeModel';
 

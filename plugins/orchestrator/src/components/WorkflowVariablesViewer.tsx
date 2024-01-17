@@ -3,7 +3,7 @@ import ReactJson from 'react-json-view';
 
 import { useTheme } from '@material-ui/core';
 
-import { Paragraph } from '../Paragraph/Paragraph';
+import { Paragraph } from './Paragraph';
 
 interface ProcessVariablesViewerProps {
   variables?: string | Record<string, unknown>;

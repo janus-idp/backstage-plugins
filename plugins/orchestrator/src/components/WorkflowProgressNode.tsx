@@ -8,9 +8,9 @@ import ErrorIcon from '@mui/icons-material/Error';
 import HourglassTopIcon from '@mui/icons-material/HourglassTop';
 import PauseCircleIcon from '@mui/icons-material/PauseCircle';
 
-import { VALUE_UNAVAILABLE } from '../../constants';
-import { Paragraph } from '../Paragraph/Paragraph';
-import { useWorkflowInstanceStateColors } from './hooks/useWorkflowInstanceStatusColors';
+import { VALUE_UNAVAILABLE } from '../constants';
+import { useWorkflowInstanceStateColors } from '../hooks/useWorkflowInstanceStatusColors';
+import { Paragraph } from './Paragraph';
 import { WorkflowProgressNodeModel } from './WorkflowProgressNodeModel';
 
 const WorkflowProgressNodeIcon: React.FC<{

@@ -5,16 +5,16 @@ import { alertApiRef, errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { useController } from '@kie-tools-core/react-hooks/dist/useController';
 import { Button, DialogActions } from '@material-ui/core';
 
-import { orchestratorApiRef } from '../../api';
-import SubmitButton from '../SubmitButton/SubmitButton';
-import {
-  EditorViewKind,
-  WorkflowEditorRef,
-} from '../WorkflowEditor/WorkflowEditor';
+import { orchestratorApiRef } from '../api';
+import SubmitButton from './SubmitButton';
 import {
   OrchestratorWorkflowDialogProps,
   WorkflowDialog,
 } from './WorkflowDialog';
+import {
+  EditorViewKind,
+  WorkflowEditorRef,
+} from './WorkflowEditor/WorkflowEditor';
 
 const EditWorkflowDialog = ({
   name,

@@ -18,10 +18,10 @@ import {
   ProcessInstanceStateValues,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
-import { orchestratorApiRef } from '../../api';
-import { VALUE_UNAVAILABLE } from '../../constants';
-import { nextWorkflowInstanceRouteRef } from '../../routes';
-import { capitalize, ellipsis } from '../../utils/StringUtils';
+import { orchestratorApiRef } from '../api';
+import { VALUE_UNAVAILABLE } from '../constants';
+import { workflowInstanceRouteRef } from '../routes';
+import { capitalize, ellipsis } from '../utils/StringUtils';
 import { Selector } from './Selector';
 import { mapProcessInstanceToDetails } from './WorkflowInstancePageContent';
 import { WorkflowInstanceStatusIndicator } from './WorkflowInstanceStatusIndicator';
@@ -43,7 +43,7 @@ const makeSelectItemsFromProcessInstanceValues = () =>
 
 export const WorkflowRunsTabContent = () => {
   const orchestratorApi = useApi(orchestratorApiRef);
-  const workflowInstanceLink = useRouteRef(nextWorkflowInstanceRouteRef);
+  const workflowInstanceLink = useRouteRef(workflowInstanceRouteRef);
   const [statusSelectorValue, setStatusSelectorValue] = useState<string>(
     Selector.AllItems,
   );

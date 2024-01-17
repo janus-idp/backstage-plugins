@@ -21,8 +21,8 @@ import {
   executeWorkflowRouteRef,
   workflowDefinitionsRouteRef,
 } from '../../routes';
-import { BaseOrchestratorPage } from '../next/BaseOrchestratorPage';
-import EditWorkflowDialog from '../WorkflowDialog/EditWorkflowDialog';
+import { BaseOrchestratorPage } from '../BaseOrchestratorPage';
+import EditWorkflowDialog from '../EditWorkflowDialog';
 import { EditorViewKind, WorkflowEditor } from '../WorkflowEditor';
 import WorkflowDefinitionDetailsCard from './WorkflowDefinitionDetailsCard';
 
@@ -61,7 +61,7 @@ export const WorkflowDefinitionViewerPage = () => {
   return (
     <BaseOrchestratorPage
       title={workflowOverview?.name || workflowId}
-      type="workflows"
+      type="Workflows"
       typeLink="/orchestrator"
     >
       <Grid container spacing={2} direction="column" wrap="nowrap">

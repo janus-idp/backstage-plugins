@@ -210,7 +210,6 @@ function setupInternalRoutes(
     }
 
     res.status(200).json(result.data);
-    return;
   });
 
   router.post('/workflows/:workflowId/execute', async (req, res) => {

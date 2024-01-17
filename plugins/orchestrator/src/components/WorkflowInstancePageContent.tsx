@@ -12,13 +12,10 @@ import {
   ProcessInstanceStateValues,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
-import { VALUE_UNAVAILABLE } from '../../constants';
-import {
-  executeWorkflowRouteRef,
-  nextWorkflowInstanceRouteRef,
-} from '../../routes';
-import { capitalize } from '../../utils/StringUtils';
-import { EditorViewKind, WorkflowEditor } from '../WorkflowEditor';
+import { VALUE_UNAVAILABLE } from '../constants';
+import { executeWorkflowRouteRef, workflowInstanceRouteRef } from '../routes';
+import { capitalize } from '../utils/StringUtils';
+import { EditorViewKind, WorkflowEditor } from './WorkflowEditor';
 import { WorkflowInstanceStatusIndicator } from './WorkflowInstanceStatusIndicator';
 import { WorkflowProgress } from './WorkflowProgress';
 import { WorkflowRunDetail, WorkflowSuggestion } from './WorkflowRunDetail';
@@ -102,7 +99,7 @@ export const WorkflowInstancePageContent: React.FC<{
 }> = ({ processInstance }) => {
   const styles = useStyles();
   const executeWorkflowLink = useRouteRef(executeWorkflowRouteRef);
-  const workflowInstanceLink = useRouteRef(nextWorkflowInstanceRouteRef);
+  const workflowInstanceLink = useRouteRef(workflowInstanceRouteRef);
   const details = React.useMemo(
     () => mapProcessInstanceToDetails(processInstance),
     [processInstance],

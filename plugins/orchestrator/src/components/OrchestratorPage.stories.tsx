@@ -11,14 +11,14 @@ import {
   WorkflowOverview,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
-import { createFakeFeatureFlagsApi } from '../../__fixtures__/fakeFeatureFlagsApi';
-import { fakeProcessInstances } from '../../__fixtures__/fakeProcessInstance';
-import { fakeWorkflowItem } from '../../__fixtures__/fakeWorkflowItem';
-import { fakeWorkflowOverviewList } from '../../__fixtures__/fakeWorkflowOverviewList';
-import { fakeWorkflowSpecs } from '../../__fixtures__/fakeWorkflowSpecs';
-import { orchestratorApiRef } from '../../api';
-import { MockOrchestratorClient } from '../../api/MockOrchestratorClient';
-import { orchestratorRootRouteRef } from '../../routes';
+import { createFakeFeatureFlagsApi } from '../__fixtures__/fakeFeatureFlagsApi';
+import { fakeProcessInstances } from '../__fixtures__/fakeProcessInstance';
+import { fakeWorkflowItem } from '../__fixtures__/fakeWorkflowItem';
+import { fakeWorkflowOverviewList } from '../__fixtures__/fakeWorkflowOverviewList';
+import { fakeWorkflowSpecs } from '../__fixtures__/fakeWorkflowSpecs';
+import { orchestratorApiRef } from '../api';
+import { MockOrchestratorClient } from '../api/MockOrchestratorClient';
+import { orchestratorRootRouteRef } from '../routes';
 import { OrchestratorPage } from './OrchestratorPage';
 
 /** This component is used in order to correctly render nested components using the `TabbedLayout.Route` component. */

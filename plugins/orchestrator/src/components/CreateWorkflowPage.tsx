@@ -16,18 +16,14 @@ import Button from '@material-ui/core/Button';
 
 import { WORKFLOW_TITLE } from '@janus-idp/backstage-plugin-orchestrator-common';
 
-import { orchestratorApiRef } from '../../api';
-import {
-  editWorkflowRouteRef,
-  workflowDefinitionsRouteRef,
-} from '../../routes';
-import { BaseOrchestratorPage } from '../BaseOrchestratorPage/BaseOrchestratorPage';
-import { OrchestratorSupportButton } from '../OrchestratorSupportButton/OrchestratorSupportButton';
-import { WorkflowEditor } from '../WorkflowEditor';
+import { orchestratorApiRef } from '../api';
+import { editWorkflowRouteRef, workflowDefinitionsRouteRef } from '../routes';
+import { BaseOrchestratorPage } from './BaseOrchestratorPage';
+import { WorkflowEditor } from './WorkflowEditor';
 import {
   EditorViewKind,
   WorkflowEditorRef,
-} from '../WorkflowEditor/WorkflowEditor';
+} from './WorkflowEditor/WorkflowEditor';
 
 export const CreateWorkflowPage = () => {
   const { format } = useParams();
@@ -105,9 +101,7 @@ export const CreateWorkflowPage = () => {
     <BaseOrchestratorPage>
       <ContentHeader
         title={`Authoring - ${workflowFormat.toLocaleUpperCase('en-US')}`}
-      >
-        <OrchestratorSupportButton />
-      </ContentHeader>
+      />
       <Grid container spacing={3} direction="column">
         <Grid item>
           {loading && <Progress />}

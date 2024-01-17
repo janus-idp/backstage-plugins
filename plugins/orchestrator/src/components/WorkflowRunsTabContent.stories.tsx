@@ -6,11 +6,11 @@ import { Meta, StoryObj } from '@storybook/react';
 
 import { WorkflowOverview } from '@janus-idp/backstage-plugin-orchestrator-common';
 
-import { fakeProcessInstances } from '../../__fixtures__/fakeProcessInstance';
-import { fakeWorkflowOverviewList } from '../../__fixtures__/fakeWorkflowOverviewList';
-import { orchestratorApiRef } from '../../api';
-import { MockOrchestratorClient } from '../../api/MockOrchestratorClient';
-import { orchestratorRootRouteRef } from '../../routes';
+import { fakeProcessInstances } from '../__fixtures__/fakeProcessInstance';
+import { fakeWorkflowOverviewList } from '../__fixtures__/fakeWorkflowOverviewList';
+import { orchestratorApiRef } from '../api';
+import { MockOrchestratorClient } from '../api/MockOrchestratorClient';
+import { orchestratorRootRouteRef } from '../routes';
 import { WorkflowRunsTabContent } from './WorkflowRunsTabContent';
 
 const meta = {

@@ -24,16 +24,16 @@ import {
   WorkflowOverview,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
-import { orchestratorApiRef } from '../../api';
-import { VALUE_UNAVAILABLE } from '../../constants';
+import { orchestratorApiRef } from '../api';
+import { VALUE_UNAVAILABLE } from '../constants';
 import WorkflowOverviewFormatter, {
   FormattedWorkflowOverview,
-} from '../../dataFormatters/WorkflowOverviewFormatter';
+} from '../dataFormatters/WorkflowOverviewFormatter';
 import {
   executeWorkflowRouteRef,
   workflowDefinitionsRouteRef,
-} from '../../routes';
-import { capitalize } from '../../utils/StringUtils';
+} from '../routes';
+import { capitalize } from '../utils/StringUtils';
 import { WorkflowInstanceStatusIndicator } from './WorkflowInstanceStatusIndicator';
 
 export interface WorkflowsTableProps {

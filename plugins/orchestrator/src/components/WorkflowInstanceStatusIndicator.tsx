@@ -4,8 +4,8 @@ import DotIcon from '@material-ui/icons/FiberManualRecord';
 
 import { ProcessInstanceStateValues } from '@janus-idp/backstage-plugin-orchestrator-common';
 
-import { capitalize } from '../../utils/StringUtils';
-import { useWorkflowInstanceStateColors } from './hooks/useWorkflowInstanceStatusColors';
+import { useWorkflowInstanceStateColors } from '../hooks/useWorkflowInstanceStatusColors';
+import { capitalize } from '../utils/StringUtils';
 
 export const WorkflowInstanceStatusIndicator = ({
   status,

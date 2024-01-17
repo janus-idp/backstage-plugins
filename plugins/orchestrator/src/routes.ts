@@ -51,16 +51,3 @@ export const executeWorkflowWithBusinessKeyRouteRef = createSubRouteRef({
   parent: orchestratorRootRouteRef,
   path: '/workflows/:workflowId/execute/:businessKey',
 });
-
-// The "Next":
-export const nextOrchestratorRootRouteRef = createSubRouteRef({
-  id: 'orchestrator/next',
-  parent: orchestratorRootRouteRef,
-  path: '/next/*',
-});
-
-export const nextWorkflowInstanceRouteRef = createSubRouteRef({
-  id: 'orchestrator/next/instances',
-  parent: orchestratorRootRouteRef,
-  path: '/next/instances/:instanceId',
-});

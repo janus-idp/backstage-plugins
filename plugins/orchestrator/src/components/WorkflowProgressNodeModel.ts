@@ -4,7 +4,7 @@ import {
   ProcessInstanceStateValues,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
-import { isNonNullable } from '../../utils/TypeGuards';
+import { isNonNullable } from '../utils/TypeGuards';
 
 export type WorkflowProgressNodeModel = NodeInstance & {
   status: ProcessInstanceStateValues;

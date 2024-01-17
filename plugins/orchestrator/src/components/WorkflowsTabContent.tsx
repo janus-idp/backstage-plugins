@@ -18,10 +18,10 @@ import {
   WorkflowOverview,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
-import { orchestratorApiRef } from '../../api';
-import { FormattedWorkflowOverview } from '../../dataFormatters/WorkflowOverviewFormatter';
-import { newWorkflowRef } from '../../routes';
-import EditWorkflowDialog from '../WorkflowDialog/EditWorkflowDialog';
+import { orchestratorApiRef } from '../api';
+import { FormattedWorkflowOverview } from '../dataFormatters/WorkflowOverviewFormatter';
+import { newWorkflowRef } from '../routes';
+import EditWorkflowDialog from './EditWorkflowDialog';
 import { WorkflowsTable } from './WorkflowsTable';
 
 export const WorkflowsTabContent = () => {

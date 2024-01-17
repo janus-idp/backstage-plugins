@@ -13,7 +13,7 @@ import {
 
 import { VALUE_UNAVAILABLE } from '../../constants';
 import WorkflowOverviewFormatter from '../../dataFormatters/WorkflowOverviewFormatter';
-import { WorkflowInstanceStatusIndicator } from '../next/WorkflowInstanceStatusIndicator';
+import { WorkflowInstanceStatusIndicator } from '../WorkflowInstanceStatusIndicator';
 
 const useStyles = makeStyles({
   details: {

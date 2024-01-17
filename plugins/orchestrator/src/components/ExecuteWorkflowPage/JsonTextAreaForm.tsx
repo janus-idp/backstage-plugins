@@ -6,7 +6,7 @@ import { Box, Grid, useTheme } from '@material-ui/core';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import { Editor } from '@monaco-editor/react';
 
-import SubmitButton from '../SubmitButton/SubmitButton';
+import SubmitButton from '../SubmitButton';
 
 const DEFAULT_VALUE = JSON.stringify({ myKey: 'myValue' }, null, 4);
 

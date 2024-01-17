@@ -23,12 +23,9 @@ import {
   WorkflowFormat,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
-import { orchestratorApiRef } from '../../api';
-import {
-  createWorkflowRouteRef,
-  workflowDefinitionsRouteRef,
-} from '../../routes';
-import { BaseOrchestratorPage } from '../BaseOrchestratorPage/BaseOrchestratorPage';
+import { orchestratorApiRef } from '../api';
+import { createWorkflowRouteRef, workflowDefinitionsRouteRef } from '../routes';
+import { BaseOrchestratorPage } from './BaseOrchestratorPage';
 
 type FormData = {
   url: string;

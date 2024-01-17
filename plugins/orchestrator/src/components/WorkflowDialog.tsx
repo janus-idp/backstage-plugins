@@ -11,11 +11,11 @@ import {
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 
-import { WorkflowEditor } from '../WorkflowEditor';
+import { WorkflowEditor } from './WorkflowEditor';
 import {
   WorkflowEditorRef,
   WorkflowEditorView,
-} from '../WorkflowEditor/WorkflowEditor';
+} from './WorkflowEditor/WorkflowEditor';
 
 export type OrchestratorWorkflowDialogProps = {
   workflowId: string;

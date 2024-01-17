@@ -1,1 +1,0 @@
-export { WorkflowsTable } from './WorkflowDefinitionsListComponent';

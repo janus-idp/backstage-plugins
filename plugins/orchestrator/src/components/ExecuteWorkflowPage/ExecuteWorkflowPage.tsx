@@ -25,7 +25,7 @@ import {
   workflowInstanceRouteRef,
 } from '../../routes';
 import { getErrorObject } from '../../utils/errorUtils';
-import { BaseOrchestratorPage } from '../next/BaseOrchestratorPage';
+import { BaseOrchestratorPage } from '../BaseOrchestratorPage';
 import JsonTextAreaForm from './JsonTextAreaForm';
 import StepperForm from './StepperForm';
 
@@ -124,7 +124,7 @@ export const ExecuteWorkflowPage = () => {
     <BaseOrchestratorPage
       noPadding={loading}
       title={schemaResponse?.workflowItem.definition.name || workflowId}
-      type="workflows"
+      type="Workflows"
       typeLink="/orchestrator"
     >
       {pageContent}

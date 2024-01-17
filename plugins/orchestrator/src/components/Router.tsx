@@ -11,36 +11,27 @@ import {
   executeWorkflowRouteRef,
   executeWorkflowWithBusinessKeyRouteRef,
   newWorkflowRef,
-  nextOrchestratorRootRouteRef,
-  nextWorkflowInstanceRouteRef,
   workflowDefinitionsRouteRef,
   workflowInstanceRouteRef,
-  workflowInstancesRouteRef,
 } from '../routes';
 import { CreateWorkflowPage } from './CreateWorkflowPage';
 import { ExecuteWorkflowPage } from './ExecuteWorkflowPage/ExecuteWorkflowPage';
 import { NewWorkflowViewerPage } from './NewWorkflowViewerPage';
-import { OrchestratorPage as OrchestratorPageNext } from './next/OrchestratorPage';
-import { WorkflowInstancePage } from './next/WorkflowInstancePage';
 import { OrchestratorPage } from './OrchestratorPage';
 import { WorkflowDefinitionViewerPage } from './WorkflowDefinitionViewerPage';
-import { WorkflowInstancesViewerPage } from './WorkflownstancesViewerPage';
+import { WorkflowInstancePage } from './WorkflowInstancePage';
 
 export const Router = () => {
   return (
     <Routes>
-      <Route path="/" element={<OrchestratorPage />} />
+      <Route path="/*" element={<OrchestratorPage />} />
+      <Route
+        path={workflowInstanceRouteRef.path}
+        element={<WorkflowInstancePage />}
+      />
       <Route
         path={workflowDefinitionsRouteRef.path}
         element={<WorkflowDefinitionViewerPage />}
-      />
-      <Route
-        path={workflowInstancesRouteRef.path}
-        element={<WorkflowInstancesViewerPage />}
-      />
-      <Route
-        path={workflowInstanceRouteRef.path}
-        element={<WorkflowInstancesViewerPage />}
       />
       <Route
         path={newWorkflowRef.path}
@@ -74,15 +65,6 @@ export const Router = () => {
         path={executeWorkflowWithBusinessKeyRouteRef.path}
         element={<ExecuteWorkflowPage />}
       />
-      <Route
-        path={nextOrchestratorRootRouteRef.path}
-        element={<OrchestratorPageNext />}
-      />
-      <Route
-        path={nextWorkflowInstanceRouteRef.path}
-        element={<WorkflowInstancePage />}
-      />
-      <Route path="/next/*" element={<OrchestratorPageNext />} />
     </Routes>
   );
 };

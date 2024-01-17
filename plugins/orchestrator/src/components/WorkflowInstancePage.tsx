@@ -10,9 +10,9 @@ import { useApi, useRouteRefParams } from '@backstage/core-plugin-api';
 
 import { Button, Grid } from '@material-ui/core';
 
-import { orchestratorApiRef } from '../../api';
-import { workflowInstanceRouteRef } from '../../routes';
-import { isNonNullable } from '../../utils/TypeGuards';
+import { orchestratorApiRef } from '../api';
+import { workflowInstanceRouteRef } from '../routes';
+import { isNonNullable } from '../utils/TypeGuards';
 import { BaseOrchestratorPage } from './BaseOrchestratorPage';
 import { WorkflowInstancePageContent } from './WorkflowInstancePageContent';
 
@@ -62,7 +62,7 @@ export const WorkflowInstancePage = ({
     <BaseOrchestratorPage
       title={value?.processId ?? value?.id ?? instanceId}
       type="Workflow runs"
-      typeLink="/orchestrator/next/instances"
+      typeLink="/orchestrator/instances"
     >
       {loading ? <Progress /> : null}
       {error ? <ResponseErrorPanel error={error} /> : null}

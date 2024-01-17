@@ -10,12 +10,12 @@ import {
   WorkflowSpecFile,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
-import { fakeProcessInstances } from '../../__fixtures__/fakeProcessInstance';
-import { fakeWorkflowItem } from '../../__fixtures__/fakeWorkflowItem';
-import { fakeWorkflowSpecs } from '../../__fixtures__/fakeWorkflowSpecs';
-import { orchestratorApiRef } from '../../api';
-import { MockOrchestratorClient } from '../../api/MockOrchestratorClient';
-import { orchestratorRootRouteRef } from '../../routes';
+import { fakeProcessInstances } from '../__fixtures__/fakeProcessInstance';
+import { fakeWorkflowItem } from '../__fixtures__/fakeWorkflowItem';
+import { fakeWorkflowSpecs } from '../__fixtures__/fakeWorkflowSpecs';
+import { orchestratorApiRef } from '../api';
+import { MockOrchestratorClient } from '../api/MockOrchestratorClient';
+import { orchestratorRootRouteRef } from '../routes';
 import { WorkflowInstancePage } from './WorkflowInstancePage';
 
 const delay = (timeMs: number) => {
