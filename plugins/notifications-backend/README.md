@@ -62,7 +62,7 @@ If PostgreSQL is used, additional configuration in the in the `app-config.yaml` 
 
 ```
 cd packages/backend
-yarn add @backstage/plugin-notifications-backend
+yarn add @janus-idp/plugin-notifications-backend
 ```
 
 ### Add backend-plugin
@@ -71,7 +71,7 @@ Create `packages/backend/src/plugins/notifications.ts` with following content:
 
 ```
 import { CatalogClient } from '@backstage/catalog-client';
-import { createRouter } from '@backstage/plugin-notifications-backend';
+import { createRouter } from '@janus-idp/plugin-notifications-backend';
 
 import { Router } from 'express';
 
@@ -301,4 +301,4 @@ Response: just HTTP status
 
 ## Building a client for the API
 
-We supply an Open API spec YAML file: openapi.yaml.
+We supply an Open API spec YAML file: `openapi.yaml`.
