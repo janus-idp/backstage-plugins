@@ -32,7 +32,7 @@ async function addRoleMetadata(
 ) {
   const entityRef = groupPolicy[1];
   if (entityRef.startsWith(`role:`)) {
-    const metadata = await roleMetadataStorage.findRoleMetadata(entityRef);
+    const metadata = await roleMetadataStorage.findRoleMetadata(entityRef, trx);
     if (!metadata) {
       await roleMetadataStorage.createRoleMetadata({ source }, entityRef, trx);
     }
@@ -47,25 +47,41 @@ const useAdmins = async (
 ) => {
   const adminRoleName = 'role:default/rbac_admin';
 
-  const adminRoleMeta =
-    await roleMetadataStorage.findRoleMetadata(adminRoleName);
-  if (!adminRoleMeta) {
-    const trx = await knex.transaction();
-    await roleMetadataStorage.createRoleMetadata(
-      { source: 'default' },
+  const rbacAdminsGroupPolicies: string[][] = [];
+  admins.flatMap(async localConfig => {
+    const name = localConfig.getString('name');
+    const groupPolicy = [name, adminRoleName];
+    if (!(await enf.hasGroupingPolicy(...groupPolicy))) {
+      rbacAdminsGroupPolicies.push(groupPolicy);
+    }
+  });
+
+  const trx = await knex.transaction();
+  try {
+    const adminRoleMeta = await roleMetadataStorage.findRoleMetadata(
       adminRoleName,
       trx,
     );
-    await trx.commit();
-  }
-
-  admins.flatMap(async localConfig => {
-    const name = localConfig.getString('name');
-    const adminRole = [name, adminRoleName];
-    if (!(await enf.hasGroupingPolicy(...adminRole))) {
-      await enf.addGroupingPolicy(adminRole, 'configuration');
+    if (!adminRoleMeta) {
+      await roleMetadataStorage.createRoleMetadata(
+        { source: 'default' },
+        adminRoleName,
+        trx,
+      );
     }
-  });
+
+    // // todo: hmm... error: cannot to save policy, the adapter does not implement the BatchAdapter!
+    // if (rbacAdminsGroupPolicies.length > 0) {
+    //   await enf.addGroupingPolicies(rbacAdminsGroupPolicies, 'configuration', trx);
+    // }
+    for (const gPolicy of rbacAdminsGroupPolicies) {
+      await enf.addGroupingPolicy(gPolicy, 'configuration', trx);
+    }
+    await trx.commit();
+  } catch (err) {
+    await trx.rollback(err);
+    throw err;
+  }
 
   const adminReadPermission = [adminRoleName, 'policy-entity', 'read', 'allow'];
   if (!(await enf.hasPolicy(...adminReadPermission))) {
@@ -155,15 +171,15 @@ const addPredefinedPoliciesAndGroupPolicies = async (
   }
 
   if (groupPoliciesToDelete.length > 0) {
-    const delRoleMetaTrx = await knex.transaction();
+    const trx = await knex.transaction();
     try {
       for (const roleMeta of rolesToDelete) {
-        await roleMetadataStorage.removeRoleMetadata(roleMeta, delRoleMetaTrx);
+        await roleMetadataStorage.removeRoleMetadata(roleMeta, trx);
       }
-      await enf.removeGroupingPolicies(groupPoliciesToDelete, true);
-      await delRoleMetaTrx.commit();
+      await enf.removeGroupingPolicies(groupPoliciesToDelete, true, trx);
+      await trx.commit();
     } catch (err) {
-      await delRoleMetaTrx.rollback();
+      await trx.rollback(err);
       throw err;
     }
     await enf.removePolicies(policiesToDelete, true);
@@ -183,24 +199,25 @@ const addPredefinedPoliciesAndGroupPolicies = async (
 
   for (const groupPolicy of groupPolicies) {
     if (!(await enf.hasGroupingPolicy(...groupPolicy))) {
-      await validateGroupingPolicy(
-        groupPolicy,
-        preDefinedPoliciesFile,
-        roleMetadataStorage,
-        `csv-file`,
-      );
       const trx = await knex.transaction();
       try {
+        await validateGroupingPolicy(
+          groupPolicy,
+          preDefinedPoliciesFile,
+          roleMetadataStorage,
+          `csv-file`,
+          trx,
+        );
         await addRoleMetadata(
           groupPolicy,
           'csv-file',
           roleMetadataStorage,
           trx,
         );
-        await enf.addGroupingPolicy(groupPolicy, 'csv-file');
+        await enf.addGroupingPolicy(groupPolicy, 'csv-file', trx);
         await trx.commit();
       } catch (err) {
-        await trx.rollback();
+        await trx.rollback(err);
         throw err;
       }
     }
@@ -212,6 +229,7 @@ async function validateGroupingPolicy(
   preDefinedPoliciesFile: string,
   roleMetadataStorage: RoleMetadataStorage,
   source: Source,
+  trx: Knex.Transaction,
 ) {
   if (groupPolicy.length === 3) {
     throw new Error(`Group policy should has length 3`);
@@ -247,7 +265,7 @@ async function validateGroupingPolicy(
     );
   }
 
-  const metadata = await roleMetadataStorage.findRoleMetadata(parent);
+  const metadata = await roleMetadataStorage.findRoleMetadata(parent, trx);
   if (metadata && metadata.source !== source && metadata.source !== 'legacy') {
     throw new Error(
       `You could not add user or group to the role created with source ${metadata.source}`,
@@ -286,7 +304,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     }
 
     if (adminUsers) {
-      useAdmins(adminUsers, enforcerDelegate, roleMetadataStorage, knex);
+      await useAdmins(adminUsers, enforcerDelegate, roleMetadataStorage, knex);
     }
 
     return new RBACPermissionPolicy(

@@ -704,7 +704,7 @@ describe('REST policies api', () => {
       expect(result.statusCode).toEqual(404);
       expect(result.body.error).toEqual({
         name: 'NotFoundError',
-        message: '',
+        message: `Policy '[user:default/permission_admin, policy-entity, read, allow]' not found`,
       });
     });
 
@@ -973,7 +973,7 @@ describe('REST policies api', () => {
       expect(result.statusCode).toEqual(404);
       expect(result.body.error).toEqual({
         name: 'NotFoundError',
-        message: '',
+        message: `Policy '[user:default/permission_admin, policy-entity, read, allow]' not found`,
       });
     });
 
@@ -1000,7 +1000,7 @@ describe('REST policies api', () => {
       expect(result.statusCode).toEqual(404);
       expect(result.body.error).toEqual({
         name: 'NotFoundError',
-        message: '',
+        message: `Policy '[user:default/permission_admin, policy-entity, read, allow]' not found`,
       });
     });
 
@@ -1032,7 +1032,7 @@ describe('REST policies api', () => {
       expect(result.statusCode).toEqual(409);
       expect(result.body.error).toEqual({
         name: 'ConflictError',
-        message: '',
+        message: `Policy '[user:default/permission_admin, policy-entity, write, allow]' has been already stored`,
       });
     });
 

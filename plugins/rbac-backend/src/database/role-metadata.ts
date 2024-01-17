@@ -12,7 +12,10 @@ export interface RoleMetadataDao extends RoleMetadata {
 }
 
 export interface RoleMetadataStorage {
-  findRoleMetadata(roleEntityRef: string): Promise<RoleMetadata | undefined>;
+  findRoleMetadata(
+    roleEntityRef: string,
+    trx?: Knex.Transaction,
+  ): Promise<RoleMetadata | undefined>;
   createRoleMetadata(
     roleMetadata: RoleMetadata,
     roleEntityRef: string,
@@ -34,8 +37,9 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
 
   async findRoleMetadata(
     roleEntityRef: string,
+    trx: Knex.Transaction,
   ): Promise<RoleMetadata | undefined> {
-    const roleMetadataDao = await this.findRoleMetadataDao(roleEntityRef);
+    const roleMetadataDao = await this.findRoleMetadataDao(roleEntityRef, trx);
     if (roleMetadataDao) {
       return this.daoToMetadata(roleMetadataDao);
     }
@@ -44,16 +48,14 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
 
   private async findRoleMetadataDao(
     roleEntityRef: string,
-    trx?: Knex.Transaction,
+    trx: Knex.Transaction,
   ): Promise<RoleMetadataDao | undefined> {
     const db = trx || this.knex;
-    const metadataDao = await db
+    return await db
       .table(ROLE_METADATA_TABLE)
       .where('roleEntityRef', roleEntityRef)
       // roleEntityRef should be unique.
       .first();
-
-    return metadataDao;
   }
 
   async createRoleMetadata(

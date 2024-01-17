@@ -33,11 +33,19 @@ describe('role-metadata-db-table', () => {
     it.each(databases.eachSupportedId())(
       'should return undefined',
       async databasesId => {
-        const { db } = await createDatabase(databasesId);
-        const roleMetadata = await db.findRoleMetadata(
-          'role:default/some-super-important-role',
-        );
-        expect(roleMetadata).toBeUndefined();
+        const { knex, db } = await createDatabase(databasesId);
+        const trx = await knex.transaction();
+        try {
+          const roleMetadata = await db.findRoleMetadata(
+            'role:default/some-super-important-role',
+            trx,
+          );
+          await trx.commit();
+          expect(roleMetadata).toBeUndefined();
+        } catch (err) {
+          await trx.rollback();
+          throw err;
+        }
       },
     );
 
@@ -49,10 +57,19 @@ describe('role-metadata-db-table', () => {
           roleEntityRef: 'role:default/some-super-important-role',
           source: 'rest',
         });
-        const roleMetadata = await db.findRoleMetadata(
-          'role:default/some-super-important-role',
-        );
-        expect(roleMetadata).toEqual({ source: 'rest' });
+
+        const trx = await knex.transaction();
+        try {
+          const roleMetadata = await db.findRoleMetadata(
+            'role:default/some-super-important-role',
+            trx,
+          );
+          await trx.commit();
+          expect(roleMetadata).toEqual({ source: 'rest' });
+        } catch (err) {
+          await trx.rollback();
+          throw err;
+        }
       },
     );
   });

@@ -72,7 +72,10 @@ const roleMetadataStorageMock: RoleMetadataStorage = {
   findRoleMetadata: jest
     .fn()
     .mockImplementation(
-      async (_roleEntityRef: string): Promise<RoleMetadata> => {
+      async (
+        _roleEntityRef: string,
+        _trx: Knex.Knex.Transaction,
+      ): Promise<RoleMetadata> => {
         return { source: 'csv-file' };
       },
     ),

@@ -43,6 +43,7 @@ import {
 
 import { ConditionalStorage } from '../database/conditional-storage';
 import { RoleMetadataStorage } from '../database/role-metadata';
+import { policyToString } from '../helper';
 import { EnforcerDelegate } from './enforcer-delegate';
 import { PluginPermissionMetadataCollector } from './plugin-endpoints';
 import {
@@ -359,17 +360,17 @@ export class PolicesServer {
         }
       }
 
-      const createTrx = await this.knex.transaction();
+      const trx = await this.knex.transaction();
       try {
         await this.roleMetadata.createRoleMetadata(
           { source: 'rest' },
           roleRaw.name,
-          createTrx,
+          trx,
         );
-        await this.enforcer.addGroupingPolicies(roles, 'rest');
-        await createTrx.commit();
+        await this.enforcer.addGroupingPolicies(roles, 'rest', trx);
+        await trx.commit();
       } catch (trxErr) {
-        await createTrx.rollback();
+        trx.rollback(trxErr);
         throw trxErr;
       }
 
@@ -478,21 +479,21 @@ export class PolicesServer {
         );
       }
 
-      const updateTrx = await this.knex.transaction();
+      const trx = await this.knex.transaction();
       try {
         await this.roleMetadata.updateRoleMetadata(
           { source: metadata?.source, roleEntityRef: newRoleRaw.name },
           roleEntityRef,
-          updateTrx,
+          trx,
         );
         // enforcer.updateGroupingPolicy(oldRole, newRole) was not implemented
         // for ORMTypeAdapter.
         // So, let's compensate this combination delete + create.
-        await this.enforcer.removeGroupingPolicies(oldRole, false);
-        await this.enforcer.addGroupingPolicies(newRole, 'rest');
-        await updateTrx.commit();
+        await this.enforcer.removeGroupingPolicies(oldRole, false, trx);
+        await this.enforcer.addGroupingPolicies(newRole, 'rest', trx);
+        await trx.commit();
       } catch (trxErr) {
-        await updateTrx.rollback();
+        await trx.rollback(trxErr);
         throw trxErr;
       }
 
@@ -530,6 +531,7 @@ export class PolicesServer {
             throw new NotFoundError(); // 404
           }
         }
+
         const metadata =
           await this.roleMetadata.findRoleMetadata(roleEntityRef);
         if (metadata?.source === 'csv-file') {
@@ -543,19 +545,19 @@ export class PolicesServer {
           );
         }
 
-        const rmTrx = await this.knex.transaction();
+        const trx = await this.knex.transaction();
         try {
-          await this.enforcer.removeGroupingPolicies(roleMembers, false);
+          await this.enforcer.removeGroupingPolicies(roleMembers, false, trx);
           roleMembers = await this.enforcer.getFilteredGroupingPolicy(
             1,
             roleEntityRef,
           );
           if (roleMembers.length === 0) {
-            await this.roleMetadata.removeRoleMetadata(roleEntityRef, rmTrx);
+            await this.roleMetadata.removeRoleMetadata(roleEntityRef, trx);
           }
-          await rmTrx.commit();
+          await trx.commit();
         } catch (trxErr) {
-          await rmTrx.rollback();
+          await trx.rollback();
           throw trxErr;
         }
 
@@ -808,11 +810,17 @@ export class PolicesServer {
 
       const transformedPolicy = this.transformPolicyToArray(policy);
       if (isOld && !(await this.enforcer.hasPolicy(...transformedPolicy))) {
-        throw new NotFoundError(); // 404
+        throw new NotFoundError(
+          `Policy '${policyToString(transformedPolicy)}' not found`,
+        ); // 404
       }
 
       if (!isOld && (await this.enforcer.hasPolicy(...transformedPolicy))) {
-        throw new ConflictError(); // 409
+        throw new ConflictError(
+          `Policy '${policyToString(
+            transformedPolicy,
+          )}' has been already stored`,
+        ); // 409
       }
 
       // We want to ensure that there are not duplicate permission policies

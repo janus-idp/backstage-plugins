@@ -17,7 +17,7 @@ import { policiesToString, policyToString } from '../helper';
 export class EnforcerDelegate {
   constructor(
     private readonly enforcer: Enforcer,
-    private readonly metadataStorage: PolicyMetadataStorage,
+    private readonly policyMetadataStorage: PolicyMetadataStorage,
     private readonly knex: Knex,
   ) {}
 
@@ -55,7 +55,7 @@ export class EnforcerDelegate {
     const addMetadataTrx = await this.knex.transaction();
 
     try {
-      await this.metadataStorage.createPolicyMetadata(
+      await this.policyMetadataStorage.createPolicyMetadata(
         source,
         policy,
         addMetadataTrx,
@@ -66,7 +66,7 @@ export class EnforcerDelegate {
       }
       await addMetadataTrx.commit();
     } catch (err) {
-      await addMetadataTrx.rollback();
+      await addMetadataTrx.rollback(err);
       throw err;
     }
   }
@@ -75,7 +75,7 @@ export class EnforcerDelegate {
     const addMetadataTrx = await this.knex.transaction();
     try {
       for (const policy of policies) {
-        await this.metadataStorage.createPolicyMetadata(
+        await this.policyMetadataStorage.createPolicyMetadata(
           source,
           policy,
           addMetadataTrx,
@@ -89,27 +89,35 @@ export class EnforcerDelegate {
       }
       await addMetadataTrx.commit();
     } catch (err) {
-      await addMetadataTrx.rollback();
+      await addMetadataTrx.rollback(err);
       throw err;
     }
   }
 
-  async addGroupingPolicy(policy: string[], source: Source): Promise<void> {
-    const addMetadataTrx = await this.knex.transaction();
+  async addGroupingPolicy(
+    policy: string[],
+    source: Source,
+    externalTrx?: Knex.Transaction,
+  ): Promise<void> {
+    const trx = externalTrx || (await this.knex.transaction());
 
     try {
-      await this.metadataStorage.createPolicyMetadata(
+      await this.policyMetadataStorage.createPolicyMetadata(
         source,
         policy,
-        addMetadataTrx,
+        trx,
       );
       const ok = await this.enforcer.addGroupingPolicy(...policy);
       if (!ok) {
         throw new Error(`failed to create policy ${policyToString(policy)}`);
       }
-      await addMetadataTrx.commit();
+      if (!externalTrx) {
+        await trx.commit();
+      }
     } catch (err) {
-      await addMetadataTrx.rollback();
+      if (!externalTrx) {
+        await trx.rollback(err);
+      }
       throw err;
     }
   }
@@ -117,37 +125,50 @@ export class EnforcerDelegate {
   async addGroupingPolicies(
     policies: string[][],
     source: Source,
+    externalTrx?: Knex.Transaction,
   ): Promise<void> {
-    const addMetadataTrx = await this.knex.transaction();
+    const trx = externalTrx || (await this.knex.transaction());
 
     try {
       for (const policy of policies) {
-        await this.metadataStorage.createPolicyMetadata(
+        await this.policyMetadataStorage.createPolicyMetadata(
           source,
           policy,
-          addMetadataTrx,
+          trx,
         );
       }
+
       const ok = await this.enforcer.addGroupingPolicies(policies);
       if (!ok) {
         throw new Error(
           `Failed to store policies ${policiesToString(policies)}`,
         );
       }
-      await addMetadataTrx.commit();
+
+      if (!externalTrx) {
+        await trx.commit();
+      }
     } catch (err) {
-      await addMetadataTrx.rollback();
+      if (!externalTrx) {
+        await trx.rollback(err);
+      }
       throw err;
     }
   }
 
-  async removePolicy(policy: string[], allowToDeleCSVFilePolicy?: boolean) {
-    await this.checkIfPolicyModifiable(policy, allowToDeleCSVFilePolicy);
-
+  async removePolicy(policy: string[], allowToDeleteCSVFilePolicy?: boolean) {
     const rmMetadataTrx = await this.knex.transaction();
 
     try {
-      await this.metadataStorage.removePolicyMetadata(policy, rmMetadataTrx);
+      await this.checkIfPolicyModifiable(
+        policy,
+        rmMetadataTrx,
+        allowToDeleteCSVFilePolicy,
+      );
+      await this.policyMetadataStorage.removePolicyMetadata(
+        policy,
+        rmMetadataTrx,
+      );
       const ok = await this.enforcer.removePolicy(...policy);
       if (!ok) {
         throw new Error(`fail to delete policy ${policy}`);
@@ -167,8 +188,15 @@ export class EnforcerDelegate {
 
     try {
       for (const policy of policies) {
-        await this.checkIfPolicyModifiable(policy, allowToDeleCSVFilePolicy);
-        await this.metadataStorage.removePolicyMetadata(policy, rmMetadataTrx);
+        await this.checkIfPolicyModifiable(
+          policy,
+          rmMetadataTrx,
+          allowToDeleCSVFilePolicy,
+        );
+        await this.policyMetadataStorage.removePolicyMetadata(
+          policy,
+          rmMetadataTrx,
+        );
       }
       const ok = await this.enforcer.removePolicies(policies);
       if (!ok) {
@@ -190,8 +218,15 @@ export class EnforcerDelegate {
     const rmMetadataTrx = await this.knex.transaction();
 
     try {
-      await this.checkIfPolicyModifiable(policy, allowToDeleCSVFilePolicy);
-      await this.metadataStorage.removePolicyMetadata(policy, rmMetadataTrx);
+      await this.checkIfPolicyModifiable(
+        policy,
+        rmMetadataTrx,
+        allowToDeleCSVFilePolicy,
+      );
+      await this.policyMetadataStorage.removePolicyMetadata(
+        policy,
+        rmMetadataTrx,
+      );
       const ok = await this.enforcer.removeGroupingPolicy(...policy);
       if (!ok) {
         throw new Error(`Failed to delete policy ${policyToString(policy)}`);
@@ -205,23 +240,34 @@ export class EnforcerDelegate {
 
   async removeGroupingPolicies(
     policies: string[][],
-    allowToDeleCSVFilePolicy?: boolean,
+    allowToDeleteCSVFilePolicy?: boolean,
+    externalTrx?: Knex.Transaction,
   ): Promise<void> {
-    const rmMetadataTrx = await this.knex.transaction();
+    const trx = externalTrx || (await this.knex.transaction());
     try {
       for (const policy of policies) {
-        await this.checkIfPolicyModifiable(policy, allowToDeleCSVFilePolicy);
-        await this.metadataStorage.removePolicyMetadata(policy, rmMetadataTrx);
+        await this.checkIfPolicyModifiable(
+          policy,
+          trx,
+          allowToDeleteCSVFilePolicy,
+        );
+        await this.policyMetadataStorage.removePolicyMetadata(policy, trx);
       }
+
       const ok = await this.enforcer.removeGroupingPolicies(policies);
       if (!ok) {
         throw new Error(
           `Failed to delete grouping policies: ${policiesToString(policies)}`,
         );
       }
-      await rmMetadataTrx.commit();
+
+      if (!externalTrx) {
+        await trx.commit();
+      }
     } catch (err) {
-      await rmMetadataTrx.rollback(err);
+      if (!externalTrx) {
+        await trx.rollback(err);
+      }
       throw err;
     }
   }
@@ -236,7 +282,8 @@ export class EnforcerDelegate {
 
   // todo take a look, maybe we can make make it private ....
   async getMetadata(policy: string[]): Promise<PermissionPolicyMetadata> {
-    const metadata = await this.metadataStorage.findPolicyMetadata(policy);
+    const metadata =
+      await this.policyMetadataStorage.findPolicyMetadata(policy);
     if (!metadata) {
       throw new NotFoundError(`A metadata for policy ${policy} was not found`);
     }
@@ -245,9 +292,13 @@ export class EnforcerDelegate {
 
   private async checkIfPolicyModifiable(
     policy: string[],
+    trx: Knex.Transaction,
     allowToDeleCSVFilePolicy?: boolean,
   ) {
-    const metadata = await this.metadataStorage.findPolicyMetadata(policy);
+    const metadata = await this.policyMetadataStorage.findPolicyMetadata(
+      policy,
+      trx,
+    );
     if (!metadata) {
       throw new NotFoundError(
         `A metadata for policy ${policyToString(policy)} was not found`,
@@ -263,6 +314,6 @@ export class EnforcerDelegate {
   async getFilteredPolicyMetadata(
     source: Source,
   ): Promise<PermissionPolicyMetadataDao[]> {
-    return await this.metadataStorage.findPolicyMetadataBySource(source);
+    return await this.policyMetadataStorage.findPolicyMetadataBySource(source);
   }
 }

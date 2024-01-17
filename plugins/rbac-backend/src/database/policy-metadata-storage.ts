@@ -19,9 +19,11 @@ export interface PermissionPolicyMetadataDao extends PermissionPolicyMetadata {
 export interface PolicyMetadataStorage {
   findPolicyMetadataBySource(
     source: string,
+    trx?: Knex.Transaction,
   ): Promise<PermissionPolicyMetadataDao[]>;
   findPolicyMetadata(
     policy: string[],
+    trx?: Knex.Transaction,
   ): Promise<PermissionPolicyMetadata | undefined>;
   createPolicyMetadata(
     source: Source,
@@ -36,8 +38,10 @@ export class DataBasePolicyMetadataStorage implements PolicyMetadataStorage {
 
   async findPolicyMetadataBySource(
     source: string,
+    trx: Knex.Transaction,
   ): Promise<PermissionPolicyMetadataDao[]> {
-    const metadataDao = await this.knex
+    const db = trx || this.knex;
+    const metadataDao = await db
       ?.table(POLICY_METADATA_TABLE)
       .where('source', source);
 
@@ -46,8 +50,9 @@ export class DataBasePolicyMetadataStorage implements PolicyMetadataStorage {
 
   async findPolicyMetadata(
     policy: string[],
+    trx: Knex.Transaction,
   ): Promise<PermissionPolicyMetadata | undefined> {
-    const policyMetadataDao = await this.findPolicyMetadataDao(policy);
+    const policyMetadataDao = await this.findPolicyMetadataDao(policy, trx);
     if (policyMetadataDao) {
       return this.daoToMetadata(policyMetadataDao);
     }
@@ -56,14 +61,14 @@ export class DataBasePolicyMetadataStorage implements PolicyMetadataStorage {
 
   private async findPolicyMetadataDao(
     policy: string[],
+    trx?: Knex.Transaction,
   ): Promise<PermissionPolicyMetadataDao | undefined> {
-    const metadataDao = await this.knex
+    const db = trx || this.knex;
+    return await db
       ?.table(POLICY_METADATA_TABLE)
       .where('policy', policyToString(policy))
       // policy should be unique.
       .first();
-
-    return metadataDao;
   }
 
   async createPolicyMetadata(
@@ -72,7 +77,7 @@ export class DataBasePolicyMetadataStorage implements PolicyMetadataStorage {
     trx: Knex.Transaction,
   ): Promise<number> {
     const stringPolicy = policyToString(policy);
-    if (await this.findPolicyMetadataDao(policy)) {
+    if (await this.findPolicyMetadataDao(policy, trx)) {
       throw new ConflictError(
         `A metadata for policy ${stringPolicy} has already been stored`,
       );
@@ -94,7 +99,7 @@ export class DataBasePolicyMetadataStorage implements PolicyMetadataStorage {
     policy: string[],
     trx: Knex.Transaction,
   ): Promise<void> {
-    const metadataDao = await this.findPolicyMetadataDao(policy);
+    const metadataDao = await this.findPolicyMetadataDao(policy, trx);
     if (!metadataDao) {
       throw new NotFoundError(
         `A metadata for policy ${policyToString(policy)} was not found`,
