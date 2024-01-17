@@ -1,3 +1,10 @@
+## @janus-idp/backstage-scaffolder-backend-module-regex [1.2.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-regex@1.2.5...@janus-idp/backstage-scaffolder-backend-module-regex@1.2.6) (2024-01-17)
+
+
+### Bug Fixes
+
+* **regex-actions:** fix [#594](https://github.com/janus-idp/backstage-plugins/issues/594): Cleanup some small code smells ([#1039](https://github.com/janus-idp/backstage-plugins/issues/1039)) ([215e49c](https://github.com/janus-idp/backstage-plugins/commit/215e49c01a8b41a7b37ce2a58d14c1b6c6c2c939))
+
 ## @janus-idp/backstage-scaffolder-backend-module-regex [1.2.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-regex@1.2.4...@janus-idp/backstage-scaffolder-backend-module-regex@1.2.5) (2023-12-07)
 
 
