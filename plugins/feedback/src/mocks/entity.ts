@@ -9,7 +9,9 @@ export const mockEntity: Entity = {
     namespace: 'default',
     annotations: {
       'feedback/type': 'JIRA',
+      'feedback/host': 'https://jira-host-url',
       'feedback/email-to': 'example@email.com',
+      'jira/project-key': 'XYZ',
     },
     spec: {
       owner: 'guest',

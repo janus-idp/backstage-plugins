@@ -1,6 +1,6 @@
 feedback:
   # A ref to base entity under which global feedbacks gets stored
-  # in format: 'kind:namespace/name'
+  # in format: 'kind:namespace/name', eg: 'component:default/example-website'
   baseEntityRef: ${FEEDBACK_PLUGIN_BASE_ENTITY}
 
   # Limit the number of characters for summary field

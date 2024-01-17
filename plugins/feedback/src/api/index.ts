@@ -45,11 +45,15 @@ export class FeedbackAPI {
   ) {
     const baseUrl = await this.discoveryApi.getBaseUrl('feedback');
     const offset = (page - 1) * pageSize;
-    const resp = await fetch(
-      `${baseUrl}?query=${searchText}&offset=${offset}&limit=${pageSize}&projectId=${projectId}`,
-    );
-    const respData: feedbacksResp = await resp.json();
-    return respData;
+    try {
+      const resp = await fetch(
+        `${baseUrl}?query=${searchText}&offset=${offset}&limit=${pageSize}&projectId=${projectId}`,
+      );
+      const respData: feedbacksResp = await resp.json();
+      return respData;
+    } catch (error) {
+      return { data: [], count: 0, currentPage: page, pageSize: pageSize };
+    }
   }
 
   async getFeedbackById(feedbackId: string): Promise<feedbackResp> {
@@ -62,16 +66,20 @@ export class FeedbackAPI {
   async createFeedback(
     data: any,
   ): Promise<{ data?: {}; message?: string; error?: string }> {
-    const baseUrl = await this.discoveryApi.getBaseUrl('feedback');
-    const resp = await fetch(`${baseUrl}`, {
-      method: 'POST',
-      body: JSON.stringify(data),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const respData = await resp.json();
-    return respData;
+    try {
+      const baseUrl = await this.discoveryApi.getBaseUrl('feedback');
+      const resp = await fetch(`${baseUrl}`, {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const respData = await resp.json();
+      return respData;
+    } catch (error: any) {
+      return { error: error.message };
+    }
   }
 
   async getTicketDetails(
