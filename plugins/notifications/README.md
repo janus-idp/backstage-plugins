@@ -11,13 +11,13 @@ This Backstage front-end plugin provides:
 
 ### Prerequisities
 
-Have `@backstage/plugin-notifications-backend` installed and running.
+Have `@janus-idp/plugin-notifications-backend` installed and running.
 
 ### Add NPM dependency
 
 ```
 cd packages/app
-yarn add @backstage/plugin-notifications
+yarn add @janus-idp/plugin-notifications
 ```
 
 ### Add left-side menu item
@@ -25,7 +25,7 @@ yarn add @backstage/plugin-notifications
 In the `packages/app/src/components/Root/Root.tsx`:
 
 ```
-import { NotificationsSidebarItem } from '@backstage/plugin-notifications';
+import { NotificationsSidebarItem } from '@janus-idp/plugin-notifications';
 
 ...
 export const Root = ({ children }: PropsWithChildren<{}>) => (
@@ -48,7 +48,7 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
 In the `packages/app/src/App.tsx`:
 
 ```
-import { NOTIFICATIONS_ROUTE, NotificationsPage } from '@backstage/plugin-notifications';
+import { NOTIFICATIONS_ROUTE, NotificationsPage } from '@janus-idp/plugin-notifications';
 ...
 
 export const AppBase = () => {
@@ -60,7 +60,7 @@ export const AppBase = () => {
 ## How to use the NotificationApi
 
 ```
-import { notificationsApiRef, Notification } from '@backstage/plugin-notifications';
+import { notificationsApiRef, Notification } from '@janus-idp/plugin-notifications';
 
 ...
 
