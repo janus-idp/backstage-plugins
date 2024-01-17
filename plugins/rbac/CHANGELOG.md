@@ -1,3 +1,22 @@
+## @janus-idp/backstage-plugin-rbac [1.10.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.9.0...@janus-idp/backstage-plugin-rbac@1.10.0) (2024-01-17)
+
+
+### Features
+
+* **rbac:** allow editing permission policies ([#1037](https://github.com/janus-idp/backstage-plugins/issues/1037)) ([c10347d](https://github.com/janus-idp/backstage-plugins/commit/c10347d1ecaa13d6d786ab51a05c6046530e457c))
+* **rbac:** show warning alert when user is not authorised to create roles ([#1064](https://github.com/janus-idp/backstage-plugins/issues/1064)) ([b5c46c8](https://github.com/janus-idp/backstage-plugins/commit/b5c46c8d19a092b8ecef653a48331d844cfb3c8c))
+
+
+### Bug Fixes
+
+* **rbac:** disable edit when the user is unauthorized to read the catalog-entity ([#1049](https://github.com/janus-idp/backstage-plugins/issues/1049)) ([c4f2969](https://github.com/janus-idp/backstage-plugins/commit/c4f296960f450e29bd8cbd34f5ecbf1aae0f0837))
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.4.0
+
 ## @janus-idp/backstage-plugin-rbac [1.9.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.8.0...@janus-idp/backstage-plugin-rbac@1.9.0) (2023-12-21)
 
 
