@@ -353,7 +353,9 @@ function createQuery(
   // filter by text
   if (filter.containsText) {
     query.andWhere(function () {
-      this.whereILike('title', `%${filter.containsText}%`).orWhereILike(
+      // case-insensitive "whereILike" should be used instead but
+      // there is bug for SQLite around this: https://github.com/knex/knex/issues/5604
+      this.whereLike('title', `%${filter.containsText}%`).orWhereLike(
         'message',
         `%${filter.containsText}%`,
       );
