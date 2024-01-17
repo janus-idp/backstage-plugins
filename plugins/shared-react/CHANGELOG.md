@@ -1,3 +1,10 @@
+## @janus-idp/shared-react [2.4.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/shared-react@2.3.0...@janus-idp/shared-react@2.4.0) (2024-01-17)
+
+
+### Features
+
+* **rbac:** allow editing permission policies ([#1037](https://github.com/janus-idp/backstage-plugins/issues/1037)) ([c10347d](https://github.com/janus-idp/backstage-plugins/commit/c10347d1ecaa13d6d786ab51a05c6046530e457c))
+
 ## @janus-idp/shared-react [2.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/shared-react@2.2.0...@janus-idp/shared-react@2.3.0) (2023-12-22)
 
 
