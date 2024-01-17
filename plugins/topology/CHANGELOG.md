@@ -1,3 +1,11 @@
+## @janus-idp/backstage-plugin-topology [1.17.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.17.2...@janus-idp/backstage-plugin-topology@1.17.3) (2024-01-17)
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.4.0
+
 ## @janus-idp/backstage-plugin-topology [1.17.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.17.1...@janus-idp/backstage-plugin-topology@1.17.2) (2023-12-22)
 
 
