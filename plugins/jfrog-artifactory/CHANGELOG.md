@@ -1,3 +1,16 @@
+## @janus-idp/backstage-plugin-jfrog-artifactory [1.2.19](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-jfrog-artifactory@1.2.18...@janus-idp/backstage-plugin-jfrog-artifactory@1.2.19) (2024-01-17)
+
+
+### Other changes
+
+* **web-terminal:** remove TerminalComponent test race condition issue ([#1071](https://github.com/janus-idp/backstage-plugins/issues/1071)) ([05ee8dc](https://github.com/janus-idp/backstage-plugins/commit/05ee8dc8812c012217d7fc9de24cd86843ed9642)), closes [#1070](https://github.com/janus-idp/backstage-plugins/issues/1070)
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.4.0
+
 ## @janus-idp/backstage-plugin-jfrog-artifactory [1.2.18](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-jfrog-artifactory@1.2.17...@janus-idp/backstage-plugin-jfrog-artifactory@1.2.18) (2024-01-16)
 
 
