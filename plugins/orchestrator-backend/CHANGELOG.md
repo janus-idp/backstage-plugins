@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-orchestrator-backend [1.0.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.0.0...@janus-idp/backstage-plugin-orchestrator-backend@1.0.1) (2024-01-18)
+
+
+### Bug Fixes
+
+* **orchestrator:** regenerate `orchestrator-backend/dist-dynamic/package.json` ([#1083](https://github.com/janus-idp/backstage-plugins/issues/1083)) ([8a8051c](https://github.com/janus-idp/backstage-plugins/commit/8a8051c5eded7bdd3e05d1532e8354709aaccb8b))
+
 ## @janus-idp/backstage-plugin-orchestrator-backend 1.0.0 (2024-01-17)
 
 
