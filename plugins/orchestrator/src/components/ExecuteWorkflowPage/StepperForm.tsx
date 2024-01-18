@@ -71,11 +71,12 @@ const ReviewStep = ({
 const FormWrapper = ({
   formData,
   schema,
+  onChange,
   onSubmit,
   children,
 }: Pick<
   FormProps<Record<string, JsonValue>>,
-  'formData' | 'schema' | 'onSubmit' | 'children'
+  'formData' | 'schema' | 'onChange' | 'onSubmit' | 'children'
 >) => {
   const firstKey = Object.keys(schema?.properties || {})[0];
   const uiSchema: UiSchema<Record<string, JsonValue>> | undefined = firstKey
@@ -90,6 +91,7 @@ const FormWrapper = ({
       uiSchema={uiSchema}
       schema={{ ...schema, title: '' }} // title is in step
       onSubmit={onSubmit}
+      onChange={onChange}
     >
       {children}
     </MuiForm>
@@ -100,12 +102,14 @@ const StepperForm = ({
   refSchemas,
   handleExecute,
   isExecuting,
+  initialState,
 }: {
   refSchemas: JSONSchema7[];
   handleExecute: (
     getParameters: () => Record<string, JsonValue>,
   ) => Promise<void>;
   isExecuting: boolean;
+  initialState?: Record<string, JsonValue>[];
 }) => {
   const [activeStep, setActiveStep] = React.useState(0);
   const handleBack = () => setActiveStep(activeStep - 1);
@@ -132,8 +136,12 @@ const StepperForm = ({
   );
 
   React.useEffect(() => {
-    resetFormDataObjects();
-  }, [resetFormDataObjects]);
+    if (!initialState) {
+      resetFormDataObjects();
+      return;
+    }
+    setFormDataObjects(initialState);
+  }, [initialState, resetFormDataObjects]);
 
   return (
     <>
