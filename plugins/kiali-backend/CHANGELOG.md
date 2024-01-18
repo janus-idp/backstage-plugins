@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-kiali-backend [1.7.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali-backend@1.6.6...@janus-idp/backstage-plugin-kiali-backend@1.7.0) (2024-01-18)
+
+
+### Features
+
+* **kiali:** add OWNERS file to kiali* plugin ([#1082](https://github.com/janus-idp/backstage-plugins/issues/1082)) ([e2dc23b](https://github.com/janus-idp/backstage-plugins/commit/e2dc23b9db3da0384137e809795a57da118e494d))
+
 ## @janus-idp/backstage-plugin-kiali-backend [1.6.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali-backend@1.6.5...@janus-idp/backstage-plugin-kiali-backend@1.6.6) (2024-01-16)
 
 
