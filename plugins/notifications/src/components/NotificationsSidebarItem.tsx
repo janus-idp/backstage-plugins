@@ -32,6 +32,7 @@ export type NotificationsSidebarItemProps = {
    * Example: 5000
    */
   pollingInterval?: number;
+  className?: string;
 };
 
 const useStyles = makeStyles(_theme => ({
@@ -42,6 +43,7 @@ const useStyles = makeStyles(_theme => ({
 
 export const NotificationsSidebarItem = ({
   pollingInterval,
+  className,
 }: NotificationsSidebarItemProps) => {
   const styles = useStyles();
   const notificationsApi = useApi(notificationsApiRef);
@@ -88,6 +90,7 @@ export const NotificationsSidebarItem = ({
   return (
     <>
       <SidebarItem
+        className={className}
         icon={icon}
         to={NOTIFICATIONS_ROUTE}
         text="Notifications"

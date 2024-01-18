@@ -55,6 +55,7 @@
     "supertest": "6.3.3"
   },
   "files": [
-    "dist"
+    "dist",
+    "src/openapi.yaml"
   ]
 }
