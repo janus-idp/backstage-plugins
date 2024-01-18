@@ -1,3 +1,10 @@
+## @janus-idp/plugin-notifications-backend [1.0.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications-backend@1.0.0...@janus-idp/plugin-notifications-backend@1.0.1) (2024-01-18)
+
+
+### Bug Fixes
+
+* **notifications:** a few fixes when adding the pkgs to the show-case ([#1077](https://github.com/janus-idp/backstage-plugins/issues/1077)) ([75c4dc5](https://github.com/janus-idp/backstage-plugins/commit/75c4dc535d4904a496d5145e1f1e02d83760681d))
+
 ## @janus-idp/plugin-notifications-backend 1.0.0 (2024-01-17)
 
 
