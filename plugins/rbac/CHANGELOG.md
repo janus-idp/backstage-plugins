@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac [1.10.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.10.0...@janus-idp/backstage-plugin-rbac@1.10.1) (2024-01-18)
+
+
+### Bug Fixes
+
+* **rbac:** update the rbac ui readme ([#1079](https://github.com/janus-idp/backstage-plugins/issues/1079)) ([145e95b](https://github.com/janus-idp/backstage-plugins/commit/145e95bf47cead017872f130ee1c60f77809ff80))
+
 ## @janus-idp/backstage-plugin-rbac [1.10.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.9.0...@janus-idp/backstage-plugin-rbac@1.10.0) (2024-01-17)
 
 
