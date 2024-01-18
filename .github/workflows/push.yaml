@@ -35,6 +35,10 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # don't persist the GITHUB_TOKEN
+          # so that semantic-release can use use the generated token
+          persist-credentials: false
 
       - name: Build all packages
         uses: ./.github/actions/build
