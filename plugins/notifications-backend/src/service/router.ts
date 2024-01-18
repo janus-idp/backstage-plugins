@@ -19,9 +19,10 @@ import {
 } from './permissions';
 import { RouterOptions } from './types';
 
-// TODO: fix filename resolving
+// TODO: fix filename resolving, so far hardcoded for the demo
 const OPENAPI_ROOT =
-  '../../node_modules/@janus-idp/plugin-notifications-backend/src';
+  '/opt/app-root/src/node_modules/@janus-idp/plugin-notifications-backend/src';
+// '../../node_modules/@janus-idp/plugin-notifications-backend/src';
 
 export async function createRouter(
   options: RouterOptions,
