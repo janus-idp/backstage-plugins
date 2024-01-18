@@ -22,7 +22,10 @@ import { RoleMetadataStorage } from '../database/role-metadata';
 import { metadataStringToPolicy } from '../helper';
 import { EnforcerDelegate } from './enforcer-delegate';
 import { MODEL } from './permission-model';
-import { validateEntityReference } from './policies-validation';
+import {
+  validateAllPredefinedPolicies,
+  validateEntityReference,
+} from './policies-validation';
 
 async function addRoleMetadata(
   groupPolicy: string[],
@@ -49,8 +52,10 @@ const useAdmins = async (
 
   const rbacAdminsGroupPolicies: string[][] = [];
   admins.flatMap(async localConfig => {
-    const name = localConfig.getString('name');
-    const groupPolicy = [name, adminRoleName];
+    const entityRef = localConfig.getString('name');
+    validateEntityReference(entityRef);
+
+    const groupPolicy = [entityRef, adminRoleName];
     if (!(await enf.hasGroupingPolicy(...groupPolicy))) {
       rbacAdminsGroupPolicies.push(groupPolicy);
     }
@@ -185,13 +190,14 @@ const addPredefinedPoliciesAndGroupPolicies = async (
     await enf.removePolicies(policiesToDelete, true);
   }
 
+  await validateAllPredefinedPolicies(
+    Array.from(policies),
+    Array.from(groupPolicies),
+    preDefinedPoliciesFile,
+    roleMetadataStorage,
+  );
+
   for (const policy of policies) {
-    const err = validateEntityReference(policy[0]);
-    if (err) {
-      throw new Error(
-        `Failed to validate policy from file ${preDefinedPoliciesFile}. Cause: ${err.message}`,
-      );
-    }
     if (!(await enf.hasPolicy(...policy))) {
       await enf.addPolicy(policy, 'csv-file');
     }
@@ -201,13 +207,6 @@ const addPredefinedPoliciesAndGroupPolicies = async (
     if (!(await enf.hasGroupingPolicy(...groupPolicy))) {
       const trx = await knex.transaction();
       try {
-        await validateGroupingPolicy(
-          groupPolicy,
-          preDefinedPoliciesFile,
-          roleMetadataStorage,
-          `csv-file`,
-          trx,
-        );
         await addRoleMetadata(
           groupPolicy,
           'csv-file',
@@ -223,55 +222,6 @@ const addPredefinedPoliciesAndGroupPolicies = async (
     }
   }
 };
-
-async function validateGroupingPolicy(
-  groupPolicy: string[],
-  preDefinedPoliciesFile: string,
-  roleMetadataStorage: RoleMetadataStorage,
-  source: Source,
-  trx: Knex.Transaction,
-) {
-  if (groupPolicy.length === 3) {
-    throw new Error(`Group policy should has length 3`);
-  }
-
-  const member = groupPolicy[0];
-  let err = validateEntityReference(member);
-  if (err) {
-    throw new Error(
-      `Failed to validate group policy ${groupPolicy} from file ${preDefinedPoliciesFile}. Cause: ${err.message}`,
-    );
-  }
-  const parent = groupPolicy[1];
-  err = validateEntityReference(parent);
-  if (err) {
-    throw new Error(
-      `Failed to validate group policy ${groupPolicy} from file ${preDefinedPoliciesFile}. Cause: ${err.message}`,
-    );
-  }
-  if (member.startsWith(`role:`)) {
-    throw new Error(
-      `Group policy is invalid: ${groupPolicy}. rbac-backend plugin doesn't support role inheritance.`,
-    );
-  }
-  if (member.startsWith(`group:`) && parent.startsWith(`group:`)) {
-    throw new Error(
-      `Group policy is invalid: ${groupPolicy}. Group inheritance information could be provided only with help of Catalog API.`,
-    );
-  }
-  if (member.startsWith(`user:`) && parent.startsWith(`group:`)) {
-    throw new Error(
-      `Group policy is invalid: ${groupPolicy}. User membership information could be provided only with help of Catalog API.`,
-    );
-  }
-
-  const metadata = await roleMetadataStorage.findRoleMetadata(parent, trx);
-  if (metadata && metadata.source !== source && metadata.source !== 'legacy') {
-    throw new Error(
-      `You could not add user or group to the role created with source ${metadata.source}`,
-    );
-  }
-}
 
 export class RBACPermissionPolicy implements PermissionPolicy {
   private readonly enforcer: EnforcerDelegate;
