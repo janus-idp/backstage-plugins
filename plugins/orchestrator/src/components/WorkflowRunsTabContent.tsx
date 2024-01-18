@@ -19,9 +19,9 @@ import {
 
 import { orchestratorApiRef } from '../api';
 import { VALUE_UNAVAILABLE } from '../constants';
+import usePolling from '../hooks/usePolling';
 import { workflowInstanceRouteRef } from '../routes';
 import { capitalize, ellipsis } from '../utils/StringUtils';
-import usePolling from '../utils/usePolling';
 import { Selector } from './Selector';
 import { mapProcessInstanceToDetails } from './WorkflowInstancePageContent';
 import { WorkflowInstanceStatusIndicator } from './WorkflowInstanceStatusIndicator';

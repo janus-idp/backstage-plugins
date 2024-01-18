@@ -13,9 +13,9 @@ import { ProcessInstance } from '@janus-idp/backstage-plugin-orchestrator-common
 
 import { orchestratorApiRef } from '../api';
 import { SHORT_REFRESH_INTERVAL } from '../constants';
+import usePolling from '../hooks/usePolling';
 import { workflowInstanceRouteRef } from '../routes';
 import { isNonNullable } from '../utils/TypeGuards';
-import usePolling from '../utils/usePolling';
 import { BaseOrchestratorPage } from './BaseOrchestratorPage';
 import { WorkflowInstancePageContent } from './WorkflowInstancePageContent';
 
