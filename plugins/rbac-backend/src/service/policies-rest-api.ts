@@ -473,7 +473,7 @@ export class PolicesServer {
           `Role ${roleEntityRef} can be modified only using csv policy file.`,
         );
       }
-      if (metadata.source === 'default') {
+      if (metadata.source === 'configuration') {
         throw new Error(
           `Role ${roleEntityRef} can be modified only using application config`,
         );
@@ -539,7 +539,7 @@ export class PolicesServer {
             `Role ${roleEntityRef} can be modified only using csv policy file.`,
           );
         }
-        if (metadata?.source === 'default') {
+        if (metadata?.source === 'configuration') {
           throw new Error(
             `Pre-defined role ${roleEntityRef} is reserved and can not be modified.`,
           );

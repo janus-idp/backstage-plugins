@@ -4,14 +4,12 @@ export type Source =
   | 'configuration' // created from application configuration
   | 'legacy'; // preexisting policies
 
-export type RoleSource = Source | 'default'; // hard coded in the plugin code
-
 export type PermissionPolicyMetadata = {
   source: Source;
 };
 
 export type RoleMetadata = {
-  source: RoleSource;
+  source: Source;
 };
 
 export type Policy = {
