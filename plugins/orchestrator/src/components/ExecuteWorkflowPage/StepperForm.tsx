@@ -71,12 +71,11 @@ const ReviewStep = ({
 const FormWrapper = ({
   formData,
   schema,
-  onChange,
   onSubmit,
   children,
 }: Pick<
   FormProps<Record<string, JsonValue>>,
-  'formData' | 'schema' | 'onChange' | 'onSubmit' | 'children'
+  'formData' | 'schema' | 'onSubmit' | 'children'
 >) => {
   const firstKey = Object.keys(schema?.properties || {})[0];
   const uiSchema: UiSchema<Record<string, JsonValue>> | undefined = firstKey
@@ -91,7 +90,6 @@ const FormWrapper = ({
       uiSchema={uiSchema}
       schema={{ ...schema, title: '' }} // title is in step
       onSubmit={onSubmit}
-      onChange={onChange}
     >
       {children}
     </MuiForm>
