@@ -14,19 +14,19 @@ Follow the RBAC backend plugin [README](https://github.com/janus-idp/backstage-p
 
 **NOTE**
 
-To enable create role button on Administration -> RBAC roles list page, the role associacted with your user should have the following permission policies associated with it. Add the following in your permission policies configuration file:
+To enable create role button on Administration -> RBAC roles list page, the role associated with your user should have the following permission policies associated with it. Add the following in your permission policies configuration file:
 
 ```CSV
 p, role:default/team_a, catalog-entity, read, allow
 p, role:default/team_a, policy-entity, create, allow
-g, user:default/user, role:default/team_a
+g, user:default/<login-id/user-name>, role:default/team_a
 ```
 
 ---
 
 #### Procedure
 
-1. Install the RBAC UI plugin using the following command:
+1. Install the RBAC UI plugin executing the following command from the Backstage root directory :
 
    ```console
    yarn workspace app add @janus-idp/backstage-plugin-rbac
@@ -50,9 +50,31 @@ g, user:default/user, role:default/team_a
    export const Root = ({ children }: PropsWithChildren<{}>) => (
     <SidebarPage>
       <Sidebar>
-      ...
-      <Administration />
-      ...
+         ...
+         <Administration />
+         ...
+      <Sidebar>
     </SidebarPage>
    );
    ```
+
+4. For users with vanilla backstage instance, would need to integrate [`Auth`](https://backstage.io/docs/auth/) in to the instance:
+
+   - ```yaml title="app-config.yaml"
+     # see https://backstage.io/docs/auth/ to learn about auth providers
+     environment: development
+     providers:
+        # Plugin: GitHub
+        github:
+           development:
+           clientId: ${GITHUB_BUCKET_CLIENT_ID}
+           clientSecret: ${GITHUB_BUCKET_SECRET}
+        # Plugin: BitBucket
+        bitbucket:
+           development:
+           clientId: ${BIT_BUCKET_CLIENT_ID}
+           clientSecret: ${BIT_BUCKET_SECRET}
+        ...
+     ```
+
+   - Integrate the [`SignIn`](https://backstage.io/docs/auth/#sign-in-configuration) component to be able to sign-in to the Backstage instance.
