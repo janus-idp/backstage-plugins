@@ -1,6 +1,6 @@
 {
   "name": "@janus-idp/backstage-plugin-orchestrator-backend-dynamic",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "license": "Apache-2.0",
   "main": "dist/index.cjs.js",
   "types": "dist/index.d.ts",
@@ -46,6 +46,7 @@
     "clean": "backstage-cli package clean",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
+    "postversion": "yarn run export-dynamic",
     "export-dynamic": "janus-cli package export-dynamic-plugin"
   },
   "dependencies": {
