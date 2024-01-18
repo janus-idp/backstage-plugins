@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-orchestrator [1.0.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.0.0...@janus-idp/backstage-plugin-orchestrator@1.0.1) (2024-01-18)
+
+
+### Bug Fixes
+
+* **orchestrator:** update the navigation bar icon according to UX ([#1078](https://github.com/janus-idp/backstage-plugins/issues/1078)) ([da3d8fc](https://github.com/janus-idp/backstage-plugins/commit/da3d8fc7a33f01729ead1d515d16ebefc47326c3))
+
 ## @janus-idp/backstage-plugin-orchestrator 1.0.0 (2024-01-17)
 
 
