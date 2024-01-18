@@ -2,7 +2,7 @@
 
 This Backstage front-end plugin provides:
 
-- the Notifications page listing notifications from the logged-in user's perspective
+- the `Notifications` page listing notifications from the logged-in user's perspective
 - the NotificationsApi for accessing the notifications backend from front-end plugins
 - an active item to the main left side menu to both notify the user about new messages and provide navigation to the Notifications page
 - an alert about new system notifications
