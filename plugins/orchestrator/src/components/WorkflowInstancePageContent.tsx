@@ -13,7 +13,10 @@ import {
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { VALUE_UNAVAILABLE } from '../constants';
-import { executeWorkflowRouteRef, workflowInstanceRouteRef } from '../routes';
+import {
+  executeWorkflowWithBusinessKeyRouteRef,
+  workflowInstanceRouteRef,
+} from '../routes';
 import { capitalize } from '../utils/StringUtils';
 import { EditorViewKind, WorkflowEditor } from './WorkflowEditor';
 import { WorkflowInstanceStatusIndicator } from './WorkflowInstanceStatusIndicator';
@@ -58,7 +61,7 @@ export const mapProcessInstanceToDetails = (
 const getNextWorkflows = (
   details: WorkflowRunDetail,
   executeWorkflowLink: RouteFunc<
-    PathParams<'/next/workflows/:workflowId/execute'>
+    PathParams<'/workflows/:workflowId/execute/:businessKey'>
   >,
 ) => {
   const nextWorkflows: { title: string; link: string }[] = [];
@@ -72,7 +75,10 @@ const getNextWorkflows = (
         // Produce flat structure
         nextWorkflows.push({
           title: nextWorkflowSuggestion.name,
-          link: executeWorkflowLink({ workflowId: nextWorkflowSuggestion.id }),
+          link: executeWorkflowLink({
+            workflowId: nextWorkflowSuggestion.id,
+            businessKey: details.id,
+          }),
         });
       });
     });
@@ -98,7 +104,9 @@ export const WorkflowInstancePageContent: React.FC<{
   processInstance: ProcessInstance;
 }> = ({ processInstance }) => {
   const styles = useStyles();
-  const executeWorkflowLink = useRouteRef(executeWorkflowRouteRef);
+  const executeWorkflowLink = useRouteRef(
+    executeWorkflowWithBusinessKeyRouteRef,
+  );
   const workflowInstanceLink = useRouteRef(workflowInstanceRouteRef);
   const details = React.useMemo(
     () => mapProcessInstanceToDetails(processInstance),

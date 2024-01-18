@@ -100,12 +100,14 @@ const StepperForm = ({
   refSchemas,
   handleExecute,
   isExecuting,
+  initialState,
 }: {
   refSchemas: JSONSchema7[];
   handleExecute: (
     getParameters: () => Record<string, JsonValue>,
   ) => Promise<void>;
   isExecuting: boolean;
+  initialState?: Record<string, JsonValue>[];
 }) => {
   const [activeStep, setActiveStep] = React.useState(0);
   const handleBack = () => setActiveStep(activeStep - 1);
@@ -132,8 +134,12 @@ const StepperForm = ({
   );
 
   React.useEffect(() => {
-    resetFormDataObjects();
-  }, [resetFormDataObjects]);
+    if (!initialState) {
+      resetFormDataObjects();
+      return;
+    }
+    setFormDataObjects(initialState);
+  }, [initialState, resetFormDataObjects]);
 
   return (
     <>

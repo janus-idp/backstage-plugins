@@ -48,6 +48,20 @@ export const ExecuteWorkflowPage = () => {
       await orchestratorApi.getWorkflowDataInputSchema(workflowId),
     [orchestratorApi, workflowId],
   );
+  const { value: variables } = useAsync(async (): Promise<
+    Record<string, JsonValue>[] | undefined
+  > => {
+    if (businessKey !== undefined) {
+      const instance = await orchestratorApi.getInstance(businessKey);
+      const vs = instance.variables as Record<string, JsonValue>;
+      const response: Record<string, JsonValue>[] = [];
+      Object.entries(vs?.workflowdata ?? {}).forEach(([key, value]) => {
+        if (key !== 'workflowOptions') response.push({ [key]: value });
+      });
+      return response;
+    }
+    return undefined;
+  }, [businessKey]);
 
   const handleExecute = useCallback(
     async (getParameters: () => Record<string, JsonValue>) => {
@@ -107,6 +121,7 @@ export const ExecuteWorkflowPage = () => {
                 refSchemas={schemaResponse.schemas}
                 handleExecute={handleExecute}
                 isExecuting={isExecuting}
+                initialState={variables}
               />
             ) : (
               <JsonTextAreaForm
