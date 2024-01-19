@@ -7,12 +7,13 @@ import { useEntity } from '@backstage/plugin-catalog-react';
 
 import { Button } from '@material-ui/core';
 
-import { KUBERNETES_NAMESPACE } from '@janus-idp/backstage-plugin-kiali-common';
-
-import { KialiComponent, KialiNoPath } from './components/KialiComponent';
+import { KialiNoPath, KialiPage } from './pages/Kiali';
+import { KialiProvider } from './store/KialiProvider';
 
 export const KUBERNETES_ANNOTATION = 'backstage.io/kubernetes-id';
-const KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION =
+export const KUBERNETES_NAMESPACE = 'backstage.io/kubernetes-namespace';
+
+export const KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION =
   'backstage.io/kubernetes-label-selector';
 
 export const isKubernetesAvailable = (entity: Entity) =>
@@ -38,11 +39,13 @@ export const Router = () => {
     kubernetesLabelSelectorQueryAnnotationValue
   ) {
     return (
-      <Routes>
-        <Route path="/" element={<KialiComponent />} />
-        <Route path="/overview" element={<KialiComponent />} />
-        <Route path="*" element={<KialiNoPath />} />
-      </Routes>
+      <KialiProvider>
+        <Routes>
+          <Route path="/" element={<KialiPage />} />
+          <Route path="/overview" element={<KialiPage />} />
+          <Route path="*" element={<KialiNoPath />} />
+        </Routes>
+      </KialiProvider>
     );
   }
 
