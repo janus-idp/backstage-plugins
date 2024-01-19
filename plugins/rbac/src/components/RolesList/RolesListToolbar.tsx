@@ -15,6 +15,9 @@ const useStyles = makeStyles(theme => ({
   rbacPreReqLink: {
     color: theme.palette.link,
   },
+  alertTitle: {
+    fontWeight: 'bold',
+  },
 }));
 
 export const RolesListToolbar = ({
@@ -29,8 +32,10 @@ export const RolesListToolbar = ({
     <div>
       {!createRoleLoading && !createRoleAllowed && (
         <Alert severity="warning" data-testid="create-role-warning">
-          <AlertTitle>Unable to create role.</AlertTitle>
-          To enable create role button, the role associacted with your user
+          <AlertTitle className={classes.alertTitle}>
+            Unable to create role.
+          </AlertTitle>
+          To enable create role button, the role associated with your user
           should have the permission policies mentioned{' '}
           <a
             href="https://github.com/janus-idp/backstage-plugins/tree/main/plugins/rbac#prerequisites"
