@@ -1,4 +1,4 @@
-import { FetchApi } from '@backstage/core-plugin-api';
+import { ConfigApi, FetchApi } from '@backstage/core-plugin-api';
 
 import {
   Configuration,
@@ -15,14 +15,19 @@ import {
 
 export type NotificationsApiOptions = {
   fetchApi: FetchApi;
+  configApi: ConfigApi;
 };
 
 export class NotificationsApiImpl implements NotificationsApi {
   private readonly backendRestApi: NotificationsOpenApi;
 
   constructor(options: NotificationsApiOptions) {
+    const backendUrl = options.configApi.getString('backend.baseUrl');
+    const basePath = `${backendUrl}/api/notifications`;
+
     const configuration = new Configuration({
       fetchApi: options.fetchApi.fetch,
+      basePath,
     });
     this.backendRestApi = new NotificationsOpenApi(configuration);
   }
