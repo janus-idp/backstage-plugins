@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-kiali [1.8.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.7.0...@janus-idp/backstage-plugin-kiali@1.8.0) (2024-01-19)
+
+
+### Other changes
+
+* **kiali:** add context, remove kiali-common and refactor backend ([#855](https://github.com/janus-idp/backstage-plugins/issues/855)) ([54c7001](https://github.com/janus-idp/backstage-plugins/commit/54c70018d948912d36a4949bbaf1633763fb9ae1))
+
 ## @janus-idp/backstage-plugin-kiali [1.7.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.6.13...@janus-idp/backstage-plugin-kiali@1.7.0) (2024-01-18)
 
 
