@@ -80,6 +80,10 @@ import { PluginEnvironment } from '../types';
 export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
+  // workaround for creating the database when client is not sqlite
+  const dbClient = await env.database.getClient()
+  dbClient.destroy()
+
   const catalogClient = new CatalogClient({ discoveryApi: env.discovery });
   const dbConfig = env.config.getConfig('backend.database');
   // Following is optional
