@@ -1,3 +1,10 @@
+## @janus-idp/plugin-notifications [1.0.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications@1.0.1...@janus-idp/plugin-notifications@1.0.2) (2024-01-21)
+
+
+### Bug Fixes
+
+* **notifications:** use baseUrl from configuration ([#1092](https://github.com/janus-idp/backstage-plugins/issues/1092)) ([eed63a9](https://github.com/janus-idp/backstage-plugins/commit/eed63a9b4700e8ddd6a0f51006a56301b333a9ab))
+
 ## @janus-idp/plugin-notifications [1.0.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications@1.0.0...@janus-idp/plugin-notifications@1.0.1) (2024-01-18)
 
 
