@@ -52,7 +52,7 @@ const getFakeProcessInstance = async (
   if (instanceId === '__auto_refresh_three_errors__') {
     const ret = !context.responseCounter
       ? Promise.resolve(fakeActiveInstance)
-      : Promise.reject(new Error('Test refresh error'));
+      : Promise.reject(new Error('Failed to fetch'));
     context.responseCounter = (context.responseCounter || 0) + 1;
     return ret;
   }

@@ -43,7 +43,6 @@ export const WorkflowInstancePage = ({
       !!curValue && curValue.state === 'ACTIVE',
   );
 
-  const isReady = React.useMemo(() => !loading && !error, [loading, error]);
   const handleAbort = React.useCallback(async () => {
     if (value) {
       // eslint-disable-next-line no-alert
@@ -75,7 +74,7 @@ export const WorkflowInstancePage = ({
     >
       {loading ? <Progress /> : null}
       {error ? <ResponseErrorPanel error={error} /> : null}
-      {isReady && isNonNullable(value) ? (
+      {!loading && isNonNullable(value) ? (
         <>
           <ContentHeader title="">
             <Grid container item justifyContent="flex-end" spacing={1}>
