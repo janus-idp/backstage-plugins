@@ -1,3 +1,10 @@
+## @janus-idp/plugin-notifications-backend [1.0.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications-backend@1.0.2...@janus-idp/plugin-notifications-backend@1.0.3) (2024-01-22)
+
+
+### Bug Fixes
+
+* **notifications:** include openapi spec at build-time ([#1091](https://github.com/janus-idp/backstage-plugins/issues/1091)) ([4e656aa](https://github.com/janus-idp/backstage-plugins/commit/4e656aa054cbd06ca8697b308dee6b27533c4bb4))
+
 ## @janus-idp/plugin-notifications-backend [1.0.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications-backend@1.0.1...@janus-idp/plugin-notifications-backend@1.0.2) (2024-01-22)
 
 
