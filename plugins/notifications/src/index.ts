@@ -17,3 +17,5 @@ export { NOTIFICATIONS_ROUTE } from './constants';
 // selected components for export
 export { NotificationsSidebarItem } from './components/NotificationsSidebarItem';
 export { usePollingEffect } from './components/usePollingEffect';
+
+export { default as NotificationsIcon } from '@material-ui/icons/Notifications';

@@ -16,6 +16,7 @@
   "scripts": {
     "start": "backstage-cli package start",
     "build": "backstage-cli package build",
+    "export-dynamic": "janus-cli package export-dynamic-plugin",
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test --passWithNoTests --coverage",
     "clean": "backstage-cli package clean",
@@ -45,6 +46,7 @@
     "@backstage/core-app-api": "1.11.0",
     "@backstage/dev-utils": "1.0.22",
     "@backstage/test-utils": "^1.4.4",
+    "@janus-idp/cli": "1.4.7",
     "@openapitools/openapi-generator-cli": "^2.7.0",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^12.1.5",
@@ -52,8 +54,16 @@
     "@types/node": "*",
     "msw": "1.3.2"
   },
+  "scalprum": {
+    "name": "janus-idp.backstage-plugin-notifications",
+    "exposedModules": {
+      "NotificationsPlugin": "./src/index.ts"
+    }
+  },
   "files": [
-    "dist"
+    "dist",
+    "dist-scalprum",
+    "app-config.janus-idp.yaml"
   ],
   "repository": "github:janus-idp/backstage-plugins",
   "keywords": [
