@@ -13,6 +13,7 @@ import {
 
 import { FileAdapter, newEnforcer, newModelFromString } from 'casbin';
 import { Knex } from 'knex';
+import { isEqual } from 'lodash';
 import { Logger } from 'winston';
 
 import { Source } from '@janus-idp/backstage-plugin-rbac-common';
@@ -26,6 +27,8 @@ import {
   validateAllPredefinedPolicies,
   validateEntityReference,
 } from './policies-validation';
+
+const adminRoleName = 'role:default/rbac_admin';
 
 async function addRoleMetadata(
   groupPolicy: string[],
@@ -48,8 +51,6 @@ const useAdmins = async (
   roleMetadataStorage: RoleMetadataStorage,
   knex: Knex,
 ) => {
-  const adminRoleName = 'role:default/rbac_admin';
-
   const rbacAdminsGroupPolicies: string[][] = [];
   admins.flatMap(async localConfig => {
     const entityRef = localConfig.getString('name');
@@ -134,19 +135,13 @@ const useAdmins = async (
   }
 };
 
-const addPredefinedPoliciesAndGroupPolicies = async (
-  preDefinedPoliciesFile: string,
+const removedOldPermissionPoliciesFileData = async (
   enf: EnforcerDelegate,
   roleMetadataStorage: RoleMetadataStorage,
+  policies: Set<string[]>,
+  groupPolicies: Set<string[]>,
   knex: Knex,
-) => {
-  const fileEnf = await newEnforcer(
-    newModelFromString(MODEL),
-    new FileAdapter(preDefinedPoliciesFile),
-  );
-  const policies = new Set<string[]>(await fileEnf.getPolicy());
-  const groupPolicies = new Set<string[]>(await fileEnf.getGroupingPolicy());
-
+): Promise<void> => {
   const oldFilePolicies = new Set<string[]>();
   const policiesMetadata = await enf.getFilteredPolicyMetadata('csv-file');
   for (const policyMetadata of policiesMetadata) {
@@ -178,23 +173,51 @@ const addPredefinedPoliciesAndGroupPolicies = async (
   if (groupPoliciesToDelete.length > 0) {
     const trx = await knex.transaction();
     try {
-      for (const roleMeta of rolesToDelete) {
-        await roleMetadataStorage.removeRoleMetadata(roleMeta, trx);
-      }
       await enf.removeGroupingPolicies(groupPoliciesToDelete, true, trx);
+      for (const roleMeta of rolesToDelete) {
+        const isRoleUnUsed =
+          (await enf.getFilteredGroupingPolicy(1, ...[roleMeta])).length === 0;
+        if (isRoleUnUsed) {
+          await roleMetadataStorage.removeRoleMetadata(roleMeta, trx);
+        }
+      }
       await trx.commit();
     } catch (err) {
       await trx.rollback(err);
       throw err;
     }
+  }
+  if (policiesToDelete.length > 0) {
     await enf.removePolicies(policiesToDelete, true);
   }
+};
+
+const addPermissionPoliciesFileData = async (
+  preDefinedPoliciesFile: string,
+  enf: EnforcerDelegate,
+  roleMetadataStorage: RoleMetadataStorage,
+  knex: Knex,
+) => {
+  const fileEnf = await newEnforcer(
+    newModelFromString(MODEL),
+    new FileAdapter(preDefinedPoliciesFile),
+  );
+  const policies = await fileEnf.getPolicy();
+  const groupPolicies = await fileEnf.getGroupingPolicy();
 
   await validateAllPredefinedPolicies(
     Array.from(policies),
     Array.from(groupPolicies),
     preDefinedPoliciesFile,
     roleMetadataStorage,
+  );
+
+  await removedOldPermissionPoliciesFileData(
+    enf,
+    roleMetadataStorage,
+    new Set<string[]>(policies),
+    new Set<string[]>(groupPolicies),
+    knex,
   );
 
   for (const policy of policies) {
@@ -245,10 +268,18 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     );
 
     if (policiesFile) {
-      await addPredefinedPoliciesAndGroupPolicies(
+      await addPermissionPoliciesFileData(
         policiesFile,
         enforcerDelegate,
         roleMetadataStorage,
+        knex,
+      );
+    } else {
+      await removedOldPermissionPoliciesFileData(
+        enforcerDelegate,
+        roleMetadataStorage,
+        new Set(),
+        new Set(),
         knex,
       );
     }

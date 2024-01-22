@@ -110,6 +110,10 @@ const mockEnforcer: Partial<EnforcerDelegate> = {
     const metadata: PermissionPolicyMetadata = { source: 'rest' };
     return Promise.resolve(metadata);
   }),
+
+  getFilteredPolicyMetadata: jest.fn().mockImplementation(() => {
+    return [];
+  }),
 };
 
 const roleMetadataStorageMock: RoleMetadataStorage = {
