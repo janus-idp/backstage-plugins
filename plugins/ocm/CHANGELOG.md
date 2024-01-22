@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-ocm [3.6.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm@3.5.9...@janus-idp/backstage-plugin-ocm@3.6.0) (2024-01-22)
+
+
+### Features
+
+* **ocm:** add sorting to the ocm ClusterStatusPage table ([#1052](https://github.com/janus-idp/backstage-plugins/issues/1052)) ([8203aaf](https://github.com/janus-idp/backstage-plugins/commit/8203aafb4d83c667e87b736e6e2df09e6a60d6ee))
+
 ## @janus-idp/backstage-plugin-ocm [3.5.9](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm@3.5.8...@janus-idp/backstage-plugin-ocm@3.5.9) (2023-12-07)
 
 
