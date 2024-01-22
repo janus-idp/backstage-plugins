@@ -183,20 +183,18 @@ export class EnforcerDelegate {
   async removePolicies(
     policies: string[][],
     allowToDeleCSVFilePolicy?: boolean,
+    externalTrx?: Knex.Transaction,
   ): Promise<void> {
-    const rmMetadataTrx = await this.knex.transaction();
+    const trx = externalTrx || (await this.knex.transaction());
 
     try {
       for (const policy of policies) {
         await this.checkIfPolicyModifiable(
           policy,
-          rmMetadataTrx,
+          trx,
           allowToDeleCSVFilePolicy,
         );
-        await this.policyMetadataStorage.removePolicyMetadata(
-          policy,
-          rmMetadataTrx,
-        );
+        await this.policyMetadataStorage.removePolicyMetadata(policy, trx);
       }
       const ok = await this.enforcer.removePolicies(policies);
       if (!ok) {
@@ -204,9 +202,14 @@ export class EnforcerDelegate {
           `Failed to delete policies ${policiesToString(policies)}`,
         );
       }
-      await rmMetadataTrx.commit();
+
+      if (!externalTrx) {
+        await trx.commit();
+      }
     } catch (err) {
-      await rmMetadataTrx.rollback(err);
+      if (!externalTrx) {
+        await trx.rollback(err);
+      }
       throw err;
     }
   }

@@ -886,6 +886,7 @@ describe('RBACPermissionPolicy Tests', () => {
       );
     });
   });
+
   describe('Policy checks for users', () => {
     let policy: RBACPermissionPolicy;
 
