@@ -48,6 +48,7 @@ export const getHubClusterFromConfig = (config: Config): KialiDetails => {
     skipTLSVerify: hub.getOptionalBoolean('skipTLSVerify') || false,
     caData: hub.getOptionalString('caData'),
     caFile: hub.getOptionalString('caFile'),
+    sessionTime: hub.getOptionalNumber('sessionTime'),
   };
 };
 
