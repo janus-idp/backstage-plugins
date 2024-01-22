@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-kiali-backend [1.8.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali-backend@1.8.0...@janus-idp/backstage-plugin-kiali-backend@1.8.1) (2024-01-22)
+
+
+### Bug Fixes
+
+* **kiali:** update login url ([#1097](https://github.com/janus-idp/backstage-plugins/issues/1097)) ([10c7128](https://github.com/janus-idp/backstage-plugins/commit/10c712874d1a6fbad8cde6c44b1af76babdef85c))
+
 ## @janus-idp/backstage-plugin-kiali-backend [1.8.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali-backend@1.7.0...@janus-idp/backstage-plugin-kiali-backend@1.8.0) (2024-01-19)
 
 
