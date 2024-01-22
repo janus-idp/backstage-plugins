@@ -13,7 +13,7 @@ import { RouterOptions } from './types';
 
 export type GetLoggedInUserOptions = Pick<
   RouterOptions,
-  'identity' | 'tokenManager' | 'externalCallerSecret'
+  'identity' | 'tokenManager' | 'config'
 >;
 export type CheckUserPermission = GetLoggedInUserOptions &
   Pick<RouterOptions, 'permissions'>;
@@ -23,9 +23,12 @@ export type CheckUserPermission = GetLoggedInUserOptions &
  */
 export const getLoggedInUser = async (
   request: express.Request,
-  { identity, tokenManager, externalCallerSecret }: GetLoggedInUserOptions,
+  { identity, tokenManager, config }: GetLoggedInUserOptions,
 ): Promise<string> => {
   const identityResponse = await identity.getIdentity({ request });
+  const externalCallerSecret = config.getOptionalString(
+    'notifications.externalCallerSecret',
+  );
 
   // To properly set identity, see packages/backend/src/plugins/auth.ts or https://backstage.io/docs/auth/identity-resolver
   if (identityResponse) {
