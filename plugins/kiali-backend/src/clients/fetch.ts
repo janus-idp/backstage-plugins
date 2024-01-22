@@ -147,7 +147,8 @@ export class KialiFetcher {
       };
     }
 
-    requestInit.url = new URL(endpoint, this.KialiDetails.url).href;
+    const loginUrl = `${this.KialiDetails.url}/${endpoint}`;
+    requestInit.url = new URL(loginUrl).href;
 
     if (this.KialiDetails.skipTLSVerify) {
       requestInit.httpsAgent = new https.Agent({
