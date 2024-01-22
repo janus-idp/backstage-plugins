@@ -4,6 +4,7 @@ import Router from 'express-promise-router';
 import { Context, OpenAPIBackend, Request } from 'openapi-backend';
 
 import { Paths } from '../openapi';
+import { openApiDocument } from '../openapidocument';
 import { checkUserPermission } from './auth';
 import { initDB } from './db';
 import {
@@ -18,10 +19,6 @@ import {
   notificationsSetReadPermission,
 } from './permissions';
 import { RouterOptions } from './types';
-
-// TODO: fix filename resolving
-const OPENAPI_ROOT =
-  '../../node_modules/@janus-idp/plugin-notifications-backend/src';
 
 export async function createRouter(
   options: RouterOptions,
@@ -42,7 +39,7 @@ export async function createRouter(
       formats: fullFormats, // open issue: https://github.com/openapistack/openapi-backend/issues/280
     },
     validate: true,
-    definition: `${OPENAPI_ROOT}/openapi.yaml`,
+    definition: openApiDocument,
   });
 
   await api.init();

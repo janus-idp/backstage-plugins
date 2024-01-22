@@ -67,7 +67,6 @@ declare namespace Paths {
       export type PageNumber = number;
       export type PageSize = number;
       export type Read = boolean;
-      export type User = string;
     }
     export interface QueryParameters {
       pageSize?: Parameters.PageSize;
@@ -77,7 +76,6 @@ declare namespace Paths {
       containsText?: Parameters.ContainsText;
       createdAfter?: Parameters.CreatedAfter /* date-time */;
       messageScope?: Parameters.MessageScope;
-      user?: Parameters.User;
       read?: Parameters.Read;
     }
     namespace Responses {
@@ -90,13 +88,11 @@ declare namespace Paths {
       export type CreatedAfter = string; // date-time
       export type MessageScope = 'all' | 'user' | 'system';
       export type Read = boolean;
-      export type User = string;
     }
     export interface QueryParameters {
       containsText?: Parameters.ContainsText;
       createdAfter?: Parameters.CreatedAfter /* date-time */;
       messageScope?: Parameters.MessageScope;
-      user?: Parameters.User;
       read?: Parameters.Read;
     }
     namespace Responses {
@@ -109,11 +105,9 @@ declare namespace Paths {
     namespace Parameters {
       export type MessageId = string;
       export type Read = boolean;
-      export type User = string;
     }
     export interface QueryParameters {
       messageId: Parameters.MessageId;
-      user: Parameters.User;
       read: Parameters.Read;
     }
     namespace Responses {
