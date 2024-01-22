@@ -1,3 +1,10 @@
+## @janus-idp/plugin-notifications-backend [1.0.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications-backend@1.0.1...@janus-idp/plugin-notifications-backend@1.0.2) (2024-01-22)
+
+
+### Bug Fixes
+
+* **notifications:** create DB upon startup ([#1096](https://github.com/janus-idp/backstage-plugins/issues/1096)) ([10ff235](https://github.com/janus-idp/backstage-plugins/commit/10ff2351a67bf78f441e2cf2fae024775142fe5c))
+
 ## @janus-idp/plugin-notifications-backend [1.0.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications-backend@1.0.0...@janus-idp/plugin-notifications-backend@1.0.1) (2024-01-18)
 
 
