@@ -147,7 +147,7 @@ export class KialiFetcher {
       };
     }
 
-    const loginUrl = `${this.KialiDetails.url}/${endpoint}`;
+    const loginUrl = `${this.KialiDetails.url}/${endpoint.replace(/^\//g, '')}`;
     requestInit.url = new URL(loginUrl).href;
 
     if (this.KialiDetails.skipTLSVerify) {
