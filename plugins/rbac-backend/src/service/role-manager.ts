@@ -44,6 +44,10 @@ class Role {
 
     return false;
   }
+
+  getRoles(): Role[] {
+    return this.roles;
+  }
 }
 
 // AncestorSearchMemo - should be used to build group hierarchy graph for User entity reference.
@@ -107,6 +111,10 @@ class AncestorSearchMemo {
     log.debug(
       `SubGraph nodes: ${JSON.stringify(this.graph.nodes())} for ${userEntity}`,
     );
+  }
+
+  getNodes(): string[] {
+    return this.graph.nodes();
   }
 }
 
@@ -237,10 +245,56 @@ export class BackstageRoleManager implements RoleManager {
 
   /**
    * getRoles gets the roles that a subject inherits.
-   * domain is a prefix to the roles.
+   *
+   * name - is a string entity reference, for example: user:default/tom, role:default/dev,
+   * so format is <kind>:<namespace>/<entity-name>.
+   * GetRoles method supports only two kind values: 'user' and 'role'.
+   *
+   * domain - is a prefix to the roles, unused parameter.
+   *
+   * If name's kind === 'user' we return all inherited roles from groups and roles directly assigned to the user.
+   * if name's kind === 'role' we return empty array, because we don't support role inheritance.
+   * Case kind === 'group' - should not happen, because:
+   * 1) Method getRoles returns only role entity references, so casbin engine doesn't call this
+   * method again to ask about name with kind "group".
+   * 2) We implemented getRoles method only to use:
+   * 'await enforcer.getImplicitPermissionsForUser(userEntityRef)',
+   * so name argument can be only with kind 'user' or 'role'.
+   *
+   * Info: when we call 'await enforcer.getImplicitPermissionsForUser(userEntityRef)',
+   * then casbin engine executes 'getRoles' method few times.
+   * Firstly casbin asks about roles for 'userEntityRef'.
+   * Let's imagine, that 'getRoles' returned two roles for userEntityRef.
+   * Then casbin calls 'getRoles' two more times to
+   * find parent roles. But we return empty array for each such call,
+   * because we don't support role inheritance and we notify casbin about end of the role sub-tree.
    */
-  async getRoles(_name: string, ..._domain: string[]): Promise<string[]> {
-    throw new Error('Method "getRoles" not implemented.');
+  async getRoles(name: string, ..._domain: string[]): Promise<string[]> {
+    const { kind } = parseEntityRef(name);
+    if (kind === 'user') {
+      const memo = new AncestorSearchMemo(name);
+      await this.findAncestorGroups(memo);
+      memo.debugNodesAndEdges(this.log, name);
+      const userAndParentGroups = memo.getNodes();
+      userAndParentGroups.push(name);
+
+      const allRoles: string[] = [];
+      for (const userOrParentGroup of userAndParentGroups) {
+        const r = this.allRoles.get(userOrParentGroup);
+        if (r) {
+          const rolesEntityRefs = [...r.getRoles()]
+            .filter(role => {
+              return role.name.startsWith('role:default');
+            })
+            .map(role => role.name);
+
+          allRoles.push(...rolesEntityRefs);
+        }
+      }
+      return Promise.resolve(allRoles);
+    }
+
+    return [];
   }
 
   /**
