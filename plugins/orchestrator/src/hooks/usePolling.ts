@@ -1,52 +1,54 @@
 import React from 'react';
-import { useAsyncRetry, useInterval } from 'react-use';
+
+import useSwr, { useSWRConfig } from 'swr';
+import * as uuid from 'uuid';
 
 import { LONG_REFRESH_INTERVAL } from '../constants';
 
 const usePolling = <T>(
   fn: () => Promise<T>,
-  delayMs = LONG_REFRESH_INTERVAL,
+  delayMs: number = LONG_REFRESH_INTERVAL,
   continueRefresh?: (value: T | undefined) => boolean,
-  maxErrorRetries = 3,
+  maxErrorRetryCount: number = 3,
 ) => {
-  const [value, setValue] = React.useState<T | undefined>();
-  const [error, setError] = React.useState<Error | undefined>();
-  const errorCount = React.useRef(0);
-  const refreshCount = React.useRef(0);
-  const isFirstLoad = refreshCount.current < 2;
-  const shouldStop = error || (continueRefresh && !continueRefresh(value));
+  const config = useSWRConfig();
 
-  const { retry, ...state } = useAsyncRetry<T>(async () => {
-    refreshCount.current++;
-    const ret = await fn();
-    return ret;
+  const uniqueKey = React.useMemo<string>(() => {
+    return uuid.v4();
   }, []);
 
-  useInterval(retry, shouldStop ? null : delayMs);
+  const [error, setError] = React.useState();
+  const isInitalLoad = React.useRef(true);
+
+  const { data, isLoading } = useSwr<T>(uniqueKey, fn, {
+    refreshInterval: (value_: T | undefined) => {
+      return !continueRefresh || continueRefresh(value_) ? delayMs : 0;
+    },
+    shouldRetryOnError: true,
+    onErrorRetry: (curError, _key, _config, revalidate, { retryCount }) => {
+      // requires custom behavior, retryErrorCount option doesn't support hiding the error before reaching the maximum
+      if (isInitalLoad.current || retryCount >= maxErrorRetryCount) {
+        setError(curError);
+      } else {
+        setTimeout(() => revalidate({ retryCount }), delayMs);
+      }
+    },
+    onSuccess: () => {
+      isInitalLoad.current = false;
+    },
+  });
 
   React.useEffect(() => {
-    if (state.loading) {
-      return;
-    } else if (!state.error) {
-      errorCount.current = 0;
-      setValue(state.value); // preserve value in case of error during polling
-      setError(undefined);
-    } else if (isFirstLoad || errorCount.current === maxErrorRetries) {
-      setError(state.error);
-    } else {
-      errorCount.current++;
-    }
-  }, [state, maxErrorRetries, isFirstLoad]);
+    // clean cache after unmount, no need to store the data globally
+    return () => config.cache.delete(uniqueKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return {
+    value: data,
     error,
-    loading: isFirstLoad && state.loading, // avoid loading indicator while polling
-    value,
-    restart: () => {
-      errorCount.current = 0;
-      refreshCount.current = 0;
-      retry();
-    },
+    loading: isLoading,
+    restart: () => config.mutate(uniqueKey),
   };
 };
 

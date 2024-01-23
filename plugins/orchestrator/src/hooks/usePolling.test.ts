@@ -110,23 +110,25 @@ describe('usePolling', () => {
     expect(result.current.error).toBeUndefined();
   });
 
-  test('should return error if fails three times, and should preserve previous value', async () => {
+  test('should return error if fails three times, and should preserve previous value, and stop polling', async () => {
     const mockAsyncFn = jest
       .fn()
       .mockResolvedValueOnce(ACTIVE)
       .mockResolvedValueOnce(ACTIVE1)
       .mockRejectedValueOnce('test error')
       .mockRejectedValueOnce('test error')
-      .mockRejectedValueOnce('test error');
+      .mockRejectedValueOnce('test error')
+      .mockReturnValueOnce(COMPLETED);
     const { result, waitForNextUpdate } = renderHook(() =>
       usePolling(mockAsyncFn, SHORT_REFRESH_INTERVAL),
     );
     await waitForNextUpdate();
-    for (let i = 0; i < 4; ++i) {
+    for (let i = 0; i < 5; ++i) {
       await act(async () => jest.advanceTimersByTime(SHORT_REFRESH_INTERVAL));
     }
     expect(result.current.value).toEqual(ACTIVE1);
     expect(result.current.error).toEqual('test error');
+    expect(mockAsyncFn).toHaveBeenCalledTimes(5);
   });
 
   test('should continue polling after less than three errors during polling', async () => {
