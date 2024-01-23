@@ -296,7 +296,7 @@ export class EnforcerDelegate {
   private async checkIfPolicyModifiable(
     policy: string[],
     trx: Knex.Transaction,
-    allowToDeleCSVFilePolicy?: boolean,
+    allowToModifyCSVFilePolicy?: boolean,
   ) {
     const metadata = await this.policyMetadataStorage.findPolicyMetadata(
       policy,
@@ -304,12 +304,24 @@ export class EnforcerDelegate {
     );
     if (!metadata) {
       throw new NotFoundError(
-        `A metadata for policy ${policyToString(policy)} was not found`,
+        `A metadata for policy '${policyToString(policy)}' was not found`,
       );
     }
-    if (metadata.source === 'csv-file' && !allowToDeleCSVFilePolicy) {
+    if (metadata.source === 'csv-file' && !allowToModifyCSVFilePolicy) {
       throw new NotAllowedError(
-        `policy ${policy} can be modified or deleted only with help of 'policies-csv-file'`,
+        `policy '${policyToString(
+          policy,
+        )}' can be modified or deleted only with help of 'policies-csv-file'`,
+      );
+    }
+    if (metadata?.source === 'configuration') {
+      throw new Error(
+        `Error: Attempted to modify an immutable pre-defined policy '${policyToString(
+          policy,
+        )}'.
+        This policy cannot be altered directly. If you need to make changes, consider removing the associated RBAC admin '${
+          policy[0]
+        }' using the application configuration.`,
       );
     }
   }
