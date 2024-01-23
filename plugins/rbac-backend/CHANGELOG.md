@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac-backend [2.1.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.1.0...@janus-idp/backstage-plugin-rbac-backend@2.1.1) (2024-01-23)
+
+
+### Bug Fixes
+
+* **rbac:** fix work resource permission specified by name ([#940](https://github.com/janus-idp/backstage-plugins/issues/940)) ([3601eb8](https://github.com/janus-idp/backstage-plugins/commit/3601eb8d0c19e0aad27031ab61f1afa0edc78945))
+
 ## @janus-idp/backstage-plugin-rbac-backend [2.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.0.0...@janus-idp/backstage-plugin-rbac-backend@2.1.0) (2024-01-17)
 
 
