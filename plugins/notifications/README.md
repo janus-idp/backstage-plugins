@@ -13,6 +13,13 @@ This Backstage front-end plugin provides:
 
 Have `@janus-idp/plugin-notifications-backend` installed and running.
 
+### Installing as a dynamic plugin?
+
+The sections below are relevant for static plugins. If the plugin is expected to be installed as a dynamic one:
+
+- follow https://github.com/janus-idp/backstage-showcase/blob/main/showcase-docs/dynamic-plugins.md#installing-a-dynamic-plugin-package-in-the-showcase
+- add content of `app-config.janus-idp.yaml` into `app-config.local.yaml`.
+
 ### Add NPM dependency
 
 ```
