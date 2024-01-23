@@ -65,7 +65,10 @@ export const PermissionsCard = ({ entityReference }: PermissionsCardProps) => {
       icon: getRefreshIcon,
       tooltip: 'Refresh',
       isFreeAction: true,
-      onClick: () => retry(),
+      onClick: () => {
+        retry.permissionPoliciesRetry();
+        retry.policiesRetry();
+      },
     },
     {
       icon: () => getEditIcon(permissionResult.allowed, entityReference),

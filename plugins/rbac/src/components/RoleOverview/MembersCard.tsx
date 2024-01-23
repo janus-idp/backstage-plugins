@@ -59,7 +59,10 @@ export const MembersCard = ({ roleName }: MembersCardProps) => {
       icon: getRefreshIcon,
       tooltip: 'Refresh',
       isFreeAction: true,
-      onClick: () => retry(),
+      onClick: () => {
+        retry.roleRetry();
+        retry.membersRetry();
+      },
     },
     {
       icon: () =>
