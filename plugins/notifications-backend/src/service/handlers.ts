@@ -161,7 +161,7 @@ export async function getNotifications(
   }
 
   const orderBy = sorting.orderBy || DefaultOrderBy;
-  const orderByDirec = sorting.OrderByDirec || DefaultOrderDirection;
+  const orderByDirec = sorting.orderByDirec || DefaultOrderDirection;
   if (
     !NotificationsOrderByFields.includes(orderBy) ||
     !NotificationsOrderByDirections.includes(orderByDirec)

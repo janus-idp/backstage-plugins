@@ -47,7 +47,7 @@ export type NotificationsFilterRequest = {
  */
 export type NotificationsSortingRequest = {
   orderBy?: string;
-  OrderByDirec?: string;
+  orderByDirec?: string;
 };
 
 export const NotificationsOrderByFields: string[] = [
