@@ -38,7 +38,7 @@ export const webLibraryPackage = createFactory<Options>({
   optionsPrompts: [pluginIdPrompt(), ownerPrompt()],
   async create(options: Options, ctx: CreateContext) {
     const { id } = options;
-    const name = ctx.scope ? `@${ctx.scope}/${id}` : `${id}`;
+    const name = `@janus-idp/backstage-${id}`;
 
     Task.log();
     Task.log(`Creating web-library package ${chalk.cyan(name)}`);

@@ -56,14 +56,7 @@ export const scaffolderModule = createFactory<Options>({
     const { id } = options;
     const slug = `scaffolder-backend-module-${id}`;
 
-    let name = `backstage-plugin-${slug}`;
-    if (ctx.scope) {
-      if (ctx.scope === 'backstage') {
-        name = `@backstage/plugin-${slug}`;
-      } else {
-        name = `@${ctx.scope}/backstage-plugin-${slug}`;
-      }
-    }
+    const name = `@janus-idp/backstage-plugin-${slug}`;
 
     Task.log();
     Task.log(`Creating module ${chalk.cyan(name)}`);

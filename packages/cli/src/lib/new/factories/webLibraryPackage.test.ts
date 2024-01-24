@@ -73,7 +73,7 @@ describe('webLibraryPackage factory', () => {
 
     expect(output).toEqual([
       '',
-      `Creating web-library package ${expectedwebLibraryPackageName}`,
+      `Creating web-library package @janus-idp/backstage-${expectedwebLibraryPackageName}`,
       'Checking Prerequisites:',
       `availability  ${joinPath('packages', expectedwebLibraryPackageName)}`,
       'creating      temp dir',
@@ -81,6 +81,8 @@ describe('webLibraryPackage factory', () => {
       'copying       .eslintrc.js',
       'templating    README.md.hbs',
       'templating    package.json.hbs',
+      'templating    tsconfig.json.hbs',
+      'templating    turbo.json.hbs',
       'templating    index.ts.hbs',
       'copying       setupTests.ts',
       'Installing:',
@@ -93,7 +95,7 @@ describe('webLibraryPackage factory', () => {
       ),
     ).resolves.toEqual(
       expect.objectContaining({
-        name: expectedwebLibraryPackageName,
+        name: `@janus-idp/backstage-${expectedwebLibraryPackageName}`,
         private: true,
         version: '1.0.0',
       }),
@@ -133,7 +135,6 @@ describe('webLibraryPackage factory', () => {
     jest.spyOn(Task, 'forCommand').mockResolvedValue();
 
     await webLibraryPackage.create(options, {
-      scope: 'internal',
       private: true,
       isMonoRepo: false,
       defaultVersion: '1.0.0',

@@ -22,7 +22,7 @@
     "lint-staged": "lint-staged",
     "prettier:check": "prettier --ignore-unknown --check .",
     "prettier:fix": "prettier --ignore-unknown --write .",
-    "new": "backstage-cli new --scope @janus-idp",
+    "new": "janus-cli new --do-not-edit-packages",
     "release": "multi-semantic-release",
     "prepare": "husky install",
     "versions:bump": "backstage-cli versions:bump && find . -name 'package.json' ! -path '*/node_modules/*' -exec sed -i '' -e '/devDependencies/,/\\}/{ s/\"\\^/\"/; }' {} \\;"

@@ -42,9 +42,7 @@ export const frontendPlugin = createFactory<Options>({
   async create(options: Options, ctx: CreateContext) {
     const { id } = options;
 
-    const name = ctx.scope
-      ? `@${ctx.scope}/plugin-${id}`
-      : `backstage-plugin-${id}`;
+    const name = `@janus-idp/backstage-plugin-${id}`;
     const extensionName = `${upperFirst(camelCase(id))}Page`;
 
     Task.log();
@@ -68,7 +66,10 @@ export const frontendPlugin = createFactory<Options>({
       },
     });
 
-    if (await fs.pathExists(paths.resolveTargetRoot('packages/app'))) {
+    if (
+      !ctx.doNotEditPackages &&
+      (await fs.pathExists(paths.resolveTargetRoot('packages/app')))
+    ) {
       await Task.forItem('app', 'adding dependency', async () => {
         await addPackageDependency(
           paths.resolveTargetRoot('packages/app/package.json'),
