@@ -1,3 +1,10 @@
+## @janus-idp/plugin-notifications [1.1.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications@1.1.0...@janus-idp/plugin-notifications@1.1.1) (2024-01-24)
+
+
+### Bug Fixes
+
+* make the notifications icon active in dynamic plugin ([#1111](https://github.com/janus-idp/backstage-plugins/issues/1111)) ([bc98491](https://github.com/janus-idp/backstage-plugins/commit/bc984912f96adb8bc7575f154877dff7fcdbb6e8))
+
 ## @janus-idp/plugin-notifications [1.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications@1.0.3...@janus-idp/plugin-notifications@1.1.0) (2024-01-24)
 
 
