@@ -1,3 +1,10 @@
+## @janus-idp/plugin-notifications [1.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications@1.0.3...@janus-idp/plugin-notifications@1.1.0) (2024-01-24)
+
+
+### Features
+
+* **notifications:** turn plugins into dynamic ones ([#1104](https://github.com/janus-idp/backstage-plugins/issues/1104)) ([5146977](https://github.com/janus-idp/backstage-plugins/commit/51469770c254a90790f466c3480add5caa41ca11))
+
 ## @janus-idp/plugin-notifications [1.0.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications@1.0.2...@janus-idp/plugin-notifications@1.0.3) (2024-01-24)
 
 

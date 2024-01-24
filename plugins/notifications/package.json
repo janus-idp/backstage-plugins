@@ -1,7 +1,7 @@
 {
   "name": "@janus-idp/plugin-notifications",
   "description": "Frontend part of the notifications providing the Notifications API, Notifications page, left-side menu item and other REACT components.",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -47,7 +47,7 @@
     "@backstage/core-app-api": "1.11.0",
     "@backstage/dev-utils": "1.0.22",
     "@backstage/test-utils": "^1.4.4",
-    "@janus-idp/cli": "1.4.7",
+    "@janus-idp/cli": "1.5.0",
     "@openapitools/openapi-generator-cli": "^2.7.0",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^12.1.5",
