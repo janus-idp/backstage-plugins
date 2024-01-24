@@ -1,3 +1,10 @@
+## @janus-idp/plugin-notifications [1.0.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications@1.0.2...@janus-idp/plugin-notifications@1.0.3) (2024-01-24)
+
+
+### Bug Fixes
+
+* **notifications:** redesign the Notifications page ([#1095](https://github.com/janus-idp/backstage-plugins/issues/1095)) ([7efb107](https://github.com/janus-idp/backstage-plugins/commit/7efb107b6142ad966dd8cf836c8480e2316575b1))
+
 ## @janus-idp/plugin-notifications [1.0.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications@1.0.1...@janus-idp/plugin-notifications@1.0.2) (2024-01-21)
 
 
