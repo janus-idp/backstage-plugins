@@ -71,7 +71,7 @@ describe('pluginCommon factory', () => {
 
     expect(output).toEqual([
       '',
-      'Creating backend plugin backstage-plugin-test-common',
+      'Creating backend plugin @janus-idp/backstage-plugin-test-common',
       'Checking Prerequisites:',
       `availability  plugins${sep}test-common`,
       'creating      temp dir',
@@ -79,6 +79,8 @@ describe('pluginCommon factory', () => {
       'copying       .eslintrc.js',
       'templating    README.md.hbs',
       'templating    package.json.hbs',
+      'templating    tsconfig.json.hbs',
+      'templating    turbo.json.hbs',
       'templating    index.ts.hbs',
       'copying       setupTests.ts',
       'Installing:',
@@ -89,7 +91,7 @@ describe('pluginCommon factory', () => {
       fs.readJson('/root/plugins/test-common/package.json'),
     ).resolves.toEqual(
       expect.objectContaining({
-        name: 'backstage-plugin-test-common',
+        name: '@janus-idp/backstage-plugin-test-common',
         description: 'Common functionalities for the test plugin',
         private: true,
         version: '1.0.0',

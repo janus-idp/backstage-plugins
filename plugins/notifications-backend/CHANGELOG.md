@@ -1,3 +1,24 @@
+## @janus-idp/plugin-notifications-backend [1.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications-backend@1.0.5...@janus-idp/plugin-notifications-backend@1.1.0) (2024-01-24)
+
+
+### Features
+
+* **notifications:** turn plugins into dynamic ones ([#1104](https://github.com/janus-idp/backstage-plugins/issues/1104)) ([5146977](https://github.com/janus-idp/backstage-plugins/commit/51469770c254a90790f466c3480add5caa41ca11))
+
+## @janus-idp/plugin-notifications-backend [1.0.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications-backend@1.0.4...@janus-idp/plugin-notifications-backend@1.0.5) (2024-01-24)
+
+
+### Bug Fixes
+
+* **notifications:** filtering by text does not work with sqlite ([#1110](https://github.com/janus-idp/backstage-plugins/issues/1110)) ([e08d461](https://github.com/janus-idp/backstage-plugins/commit/e08d461d5d1f5a37c7be26385e2fa10593fb0a18))
+
+## @janus-idp/plugin-notifications-backend [1.0.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications-backend@1.0.3...@janus-idp/plugin-notifications-backend@1.0.4) (2024-01-24)
+
+
+### Bug Fixes
+
+* **notifications:** redesign the Notifications page ([#1095](https://github.com/janus-idp/backstage-plugins/issues/1095)) ([7efb107](https://github.com/janus-idp/backstage-plugins/commit/7efb107b6142ad966dd8cf836c8480e2316575b1))
+
 ## @janus-idp/plugin-notifications-backend [1.0.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications-backend@1.0.2...@janus-idp/plugin-notifications-backend@1.0.3) (2024-01-22)
 
 

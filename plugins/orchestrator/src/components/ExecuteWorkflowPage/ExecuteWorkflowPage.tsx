@@ -24,7 +24,7 @@ import {
   executeWorkflowWithBusinessKeyRouteRef,
   workflowInstanceRouteRef,
 } from '../../routes';
-import { getErrorObject } from '../../utils/errorUtils';
+import { getErrorObject } from '../../utils/ErrorUtils';
 import { BaseOrchestratorPage } from '../BaseOrchestratorPage';
 import JsonTextAreaForm from './JsonTextAreaForm';
 import StepperForm from './StepperForm';

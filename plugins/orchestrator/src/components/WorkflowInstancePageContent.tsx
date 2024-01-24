@@ -24,11 +24,14 @@ import { WorkflowVariablesViewer } from './WorkflowVariablesViewer';
 export const mapProcessInstanceToDetails = (
   instance: ProcessInstance,
 ): WorkflowRunDetail => {
-  const start = moment(instance.start);
-  const end = moment(instance.end?.toString());
-  const duration = moment.duration(start.diff(end));
-  const name = instance.processName || instance.processId;
   const businessKey = instance.businessKey;
+  const name = instance.processName || instance.processId;
+  const start = moment(instance.start);
+  let duration: string = VALUE_UNAVAILABLE;
+  if (instance.end) {
+    const end = moment(instance.end);
+    duration = moment.duration(start.diff(end)).humanize();
+  }
 
   let variables: Record<string, unknown> | undefined;
   if (typeof instance?.variables === 'string') {
@@ -46,7 +49,7 @@ export const mapProcessInstanceToDetails = (
     name,
     workflow: name,
     started: start.toDate().toLocaleString(),
-    duration: duration.humanize(),
+    duration,
     category: instance.category,
     status: instance.state,
     description: instance.description,

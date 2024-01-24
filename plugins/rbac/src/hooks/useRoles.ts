@@ -24,19 +24,24 @@ export const useRoles = (
   data: RolesData[];
   createRoleLoading: boolean;
   createRoleAllowed: boolean;
-  retry: () => void;
+  error: {
+    rolesError: string;
+    policiesError: string;
+  };
+  retry: { roleRetry: () => void; policiesRetry: () => void };
 } => {
   const rbacApi = useApi(rbacApiRef);
   const {
-    loading: rolesLoading,
     value: roles,
     retry: roleRetry,
+    error: rolesError,
   } = useAsyncRetry(async () => await rbacApi.getRoles());
 
-  const { loading: policiesLoading, value: policies } = useAsyncRetry(
-    async () => await rbacApi.getPolicies(),
-    [],
-  );
+  const {
+    value: policies,
+    retry: policiesRetry,
+    error: policiesError,
+  } = useAsyncRetry(async () => await rbacApi.getPolicies(), []);
 
   const deletePermissionResult = usePermission({
     permission: policyEntityDeletePermission,
@@ -67,7 +72,7 @@ export const useRoles = (
   });
   const data: RolesData[] = React.useMemo(
     () =>
-      roles && roles?.length > 0
+      Array.isArray(roles) && roles?.length > 0
         ? roles.reduce((acc: RolesData[], role: Role) => {
             const permissions = getPermissions(
               role.name,
@@ -107,10 +112,12 @@ export const useRoles = (
       catalogEntityReadPermissionResult,
     ],
   );
-  const loading = rolesLoading && policiesLoading;
+  const loading = !rolesError && !policiesError && !roles && !policies;
+
   useInterval(
     () => {
       roleRetry();
+      policiesRetry();
     },
     loading ? null : pollInterval || 10000,
   );
@@ -118,8 +125,18 @@ export const useRoles = (
   return {
     loading,
     data,
+    error: {
+      rolesError: (rolesError?.message ||
+        (typeof roles === 'object'
+          ? (roles as any as Response)?.statusText
+          : '')) as string,
+      policiesError: (policiesError?.message ||
+        (typeof policies === 'object'
+          ? (policies as any as Response)?.statusText
+          : '')) as string,
+    },
     createRoleLoading,
     createRoleAllowed,
-    retry: roleRetry,
+    retry: { roleRetry, policiesRetry },
   };
 };

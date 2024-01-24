@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-orchestrator [1.0.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.0.1...@janus-idp/backstage-plugin-orchestrator@1.0.2) (2024-01-24)
+
+
+### Bug Fixes
+
+* **orchestrator:** do not show duration when ProcessInstance.end time is n/a ([#1112](https://github.com/janus-idp/backstage-plugins/issues/1112)) ([75e6bbe](https://github.com/janus-idp/backstage-plugins/commit/75e6bbe8737742494817112b8da0fc50be5ff245))
+
 ## @janus-idp/backstage-plugin-orchestrator [1.0.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.0.0...@janus-idp/backstage-plugin-orchestrator@1.0.1) (2024-01-18)
 
 

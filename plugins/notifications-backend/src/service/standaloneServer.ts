@@ -1,7 +1,7 @@
 import { createServiceBuilder } from '@backstage/backend-common';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 import { Router } from 'express';
-import { Logger } from 'winston';
 
 import { Server } from 'http';
 
@@ -10,7 +10,7 @@ import { Server } from 'http';
 export interface ServerOptions {
   port: number;
   enableCors: boolean;
-  logger: Logger;
+  logger: LoggerService;
 }
 
 export async function startStandaloneServer(

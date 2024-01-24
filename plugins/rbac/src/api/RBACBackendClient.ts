@@ -16,7 +16,7 @@ import { getKindNamespaceName } from '../utils/rbac-utils';
 // @public
 export type RBACAPI = {
   getUserAuthorization: () => Promise<{ status: string }>;
-  getRoles: () => Promise<Role[]>;
+  getRoles: () => Promise<Role[] | Response>;
   getPolicies: () => Promise<RoleBasedPolicy[] | Response>;
   getAssociatedPolicies: (
     entityReference: string,
@@ -78,6 +78,11 @@ export class RBACBackendClient implements RBACAPI {
         ...(idToken && { Authorization: `Bearer ${idToken}` }),
       },
     });
+
+    if (jsonResponse.status !== 200 && jsonResponse.status !== 204) {
+      return jsonResponse;
+    }
+
     return jsonResponse.json();
   }
 

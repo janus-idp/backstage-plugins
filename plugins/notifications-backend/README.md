@@ -4,13 +4,23 @@ This Backstage backend plugin provides REST API endpoint for the notifications.
 
 It's backed by a relational database, so far tested with PostgreSQL.
 
+## Deploying as a dynamic plugin
+
+The notifications backend plugin can be loaded either as a static or a dynamic plugin.
+
+To install it as a dynamic plugin, please follow instructions here: https://github.com/janus-idp/backstage-showcase/blob/main/showcase-docs/dynamic-plugins.md#installing-a-dynamic-plugin-package-in-the-showcase
+
+To install it as a static plugin, several steps are required as described below.
+
+In any case, do not miss the info about configuration and especially about creating entities in Catalog as described below.
+
 ## Getting started
 
 The plugin uses a relational database to persist messages, it has been tested with the SQLite and PostgreSQL.
 
 Upon backend's plugin start, the `backstage_plugin_notifications` database and its tables are created automatically.
 
-### Optional: PostgreSQL
+### Optional: PostgreSQL setup
 
 **To use the Backstage's default SQLite, no specific configuration is needed.**
 
@@ -58,6 +68,8 @@ If PostgreSQL is used, additional configuration in the in the `app-config.yaml` 
     store: memory
 ```
 
+## Deploy as a static plugin
+
 ### Add NPM dependency
 
 ```
@@ -80,25 +92,14 @@ import { PluginEnvironment } from '../types';
 export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
-  // workaround for creating the database when client is not sqlite
-  const dbClient = await env.database.getClient()
-  dbClient.destroy()
-
-  const catalogClient = new CatalogClient({ discoveryApi: env.discovery });
-  const dbConfig = env.config.getConfig('backend.database');
-  // Following is optional
-  const externalCallerSecret = env.config.getOptionalString(
-    'notifications.externalCallerSecret',
-  );
-
   return await createRouter({
     identity: env.identity,
     logger: env.logger,
     permissions: env.permissions,
     tokenManager: env.tokenManager,
-    dbConfig,
-    catalogClient,
-    externalCallerSecret,
+    database: env.database,
+    discovery: env.discovery,
+    config: env.config,
   });
 }
 ```
@@ -120,7 +121,7 @@ const notificationsEnv = useHotMemoize(module, () =>
 apiRouter.use('/notifications', await notifications(notificationsEnv));
 ```
 
-### Configure
+## Configure
 
 #### Optional: Plugin's configuration
 
@@ -148,7 +149,7 @@ Notes:
 - The `externalCallerSecret` is an workaround, exclusive use of JWT tokens will probably be required in the future.
 - Sharing the same shared secret with the "auth.secret" option is not recommended.
 
-#### Authentication
+## Authentication
 
 Please refer https://backstage.io/docs/auth/ to set-up authentication.
 
@@ -159,13 +160,13 @@ Refer https://backstage.io/docs/auth/identity-resolver for details.
 
 For the purpose of development, there is `users.yaml` listing example data created.
 
-#### Authorization
+## Authorization
 
 Every service endpoint is guarded by a permission check, enabled by default.
 
 It is up to particular deployment to provide corresponding permission policies based on https://backstage.io/docs/permissions/writing-a-policy. To register your permission policies, refer https://backstage.io/docs/permissions/getting-started#integrating-the-permission-framework-with-your-backstage-instance.
 
-#### Service-to-service and External Calls
+### Service-to-service and External Calls
 
 The notification-backend is expected to be called by FE plugins (including the Notifications frontend-end plugin), other backend plugins or external services.
 
@@ -174,9 +175,9 @@ To configure those two flows, refer
 - https://backstage.io/docs/auth/service-to-service-auth.
 - https://backstage.io/docs/auth/service-to-service-auth#usage-in-external-callers
 
-#### Catalog
+### Important: User entities in Catalog
 
-The notifications require target users or groups (as receivers) to be listed in the Catalog.
+_The notifications require target users or groups (as receivers) to be listed in the Catalog._
 
 As an example how to do it, add following to the config:
 
@@ -186,12 +187,12 @@ catalog:
     entityFilename: catalog-info.yaml
     pullRequestBranchName: backstage-integration
   rules:
-    # *** Here is new change:
+    # *** Here is a new change:
     - allow: [Component, System, API, Resource, Location, User, Group]
   locations:
     # Local example data, file locations are relative to the backend process, typically `packages/backend`
     - type: file
-      # *** Here is new change, referes to a file stored in the root of the Backstage:
+      # *** Here is a new change, referes to a file stored in the root of the Backstage:
       target: ../../users.yaml
 ```
 

@@ -1,3 +1,17 @@
+## @janus-idp/backstage-plugin-rbac [1.11.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.10.2...@janus-idp/backstage-plugin-rbac@1.11.0) (2024-01-24)
+
+
+### Features
+
+* **rbac:** center align toast ([#1090](https://github.com/janus-idp/backstage-plugins/issues/1090)) ([697c96f](https://github.com/janus-idp/backstage-plugins/commit/697c96f25c220750ae290879e3020ecc1a5f03c5))
+
+## @janus-idp/backstage-plugin-rbac [1.10.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.10.1...@janus-idp/backstage-plugin-rbac@1.10.2) (2024-01-23)
+
+
+### Bug Fixes
+
+* **rbac:** fix the roles table to also watch policies ([#1057](https://github.com/janus-idp/backstage-plugins/issues/1057)) ([ead78e2](https://github.com/janus-idp/backstage-plugins/commit/ead78e2e96e208ef394497d06452c3f3415af31b))
+
 ## @janus-idp/backstage-plugin-rbac [1.10.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.10.0...@janus-idp/backstage-plugin-rbac@1.10.1) (2024-01-18)
 
 

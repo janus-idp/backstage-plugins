@@ -13,6 +13,13 @@ This Backstage front-end plugin provides:
 
 Have `@janus-idp/plugin-notifications-backend` installed and running.
 
+### Installing as a dynamic plugin?
+
+The sections below are relevant for static plugins. If the plugin is expected to be installed as a dynamic one:
+
+- follow https://github.com/janus-idp/backstage-showcase/blob/main/showcase-docs/dynamic-plugins.md#installing-a-dynamic-plugin-package-in-the-showcase
+- add content of `app-config.janus-idp.yaml` into `app-config.local.yaml`.
+
 ### Add NPM dependency
 
 ```
@@ -32,7 +39,7 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
     ...
       {/* New code: */}
       <SidebarDivider />
-      <NotificationsSidebarItem pollingInterval={5000} />
+      <SidebarItem icon={NotificationsActiveIcon} to="notifications" text="Notifications" />
 
       {/* Existing code for reference: */}
       <SidebarSpace />
@@ -48,13 +55,13 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
 In the `packages/app/src/App.tsx`:
 
 ```
-import { NOTIFICATIONS_ROUTE, NotificationsPage } from '@janus-idp/plugin-notifications';
+import { NotificationsPage } from '@janus-idp/plugin-notifications';
 ...
 
 export const AppBase = () => {
     ...
       {/* New code: */}
-      <Route path={NOTIFICATIONS_ROUTE} element={<NotificationsPage />} />
+      <Route path="/notifications" element={<NotificationsPage />} />
 ```
 
 ## How to use the NotificationApi

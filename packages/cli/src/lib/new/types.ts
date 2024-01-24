@@ -17,8 +17,6 @@
 import { Answers, DistinctQuestion } from 'inquirer';
 
 export interface CreateContext {
-  /** The package scope to use for new packages */
-  scope?: string;
   /** The NPM registry to use for new packages */
   npmRegistry?: string;
   /** Whether new packages should be marked as private */
@@ -33,6 +31,9 @@ export interface CreateContext {
 
   /** Signal that the creation process got to a point where permanent modifications were made */
   markAsModified(): void;
+
+  /** Specify if the processing should edit packages/app and packages/backend or if the plugin should be created as standalone */
+  doNotEditPackages?: boolean;
 }
 
 export type AnyOptions = Record<string, string>;

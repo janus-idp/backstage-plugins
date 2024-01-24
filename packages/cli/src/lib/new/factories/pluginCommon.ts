@@ -39,9 +39,7 @@ export const pluginCommon = createFactory<Options>({
   async create(options: Options, ctx: CreateContext) {
     const { id } = options;
     const suffix = `${id}-common`;
-    const name = ctx.scope
-      ? `@${ctx.scope}/plugin-${suffix}`
-      : `backstage-plugin-${suffix}`;
+    const name = `@janus-idp/backstage-plugin-${suffix}`;
 
     Task.log();
     Task.log(`Creating backend plugin ${chalk.cyan(name)}`);

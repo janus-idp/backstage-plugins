@@ -63,7 +63,11 @@ describe('RolesList', () => {
     mockUseRoles.mockReturnValue({
       loading: false,
       data: useRolesMockData,
-      retry: jest.fn(),
+      error: {
+        rolesError: '',
+        policiesError: '',
+      },
+      retry: { roleRetry: jest.fn(), policiesRetry: jest.fn() },
       createRoleAllowed: false,
       createRoleLoading: false,
     });
@@ -80,12 +84,17 @@ describe('RolesList', () => {
     mockUseRoles.mockReturnValue({
       loading: false,
       data: [],
-      retry: jest.fn(),
+      error: {
+        rolesError: '',
+        policiesError: '',
+      },
+      retry: { roleRetry: jest.fn(), policiesRetry: jest.fn() },
       createRoleAllowed: false,
       createRoleLoading: false,
     });
-    const { getByTestId } = await renderInTestApp(<RolesList />);
+    const { getByTestId, queryByText } = await renderInTestApp(<RolesList />);
     expect(getByTestId('roles-table-empty')).not.toBeNull();
+    expect(queryByText('Something went wrong')).not.toBeInTheDocument();
   });
 
   it('should show delete icon if user is authorized to delete roles', async () => {
@@ -96,7 +105,11 @@ describe('RolesList', () => {
     mockUseRoles.mockReturnValue({
       loading: false,
       data: useRolesMockData,
-      retry: jest.fn(),
+      error: {
+        rolesError: '',
+        policiesError: '',
+      },
+      retry: { roleRetry: jest.fn(), policiesRetry: jest.fn() },
       createRoleAllowed: false,
       createRoleLoading: false,
     });
@@ -128,7 +141,11 @@ describe('RolesList', () => {
           },
         },
       ],
-      retry: jest.fn(),
+      error: {
+        rolesError: '',
+        policiesError: '',
+      },
+      retry: { roleRetry: jest.fn(), policiesRetry: jest.fn() },
       createRoleAllowed: false,
       createRoleLoading: false,
     });
@@ -160,7 +177,11 @@ describe('RolesList', () => {
           },
         },
       ],
-      retry: jest.fn(),
+      error: {
+        rolesError: '',
+        policiesError: '',
+      },
+      retry: { roleRetry: jest.fn(), policiesRetry: jest.fn() },
       createRoleAllowed: true,
       createRoleLoading: false,
     });
@@ -175,7 +196,11 @@ describe('RolesList', () => {
     mockUseRoles.mockReturnValue({
       loading: false,
       data: useRolesMockData,
-      retry: jest.fn(),
+      error: {
+        rolesError: '',
+        policiesError: '',
+      },
+      retry: { roleRetry: jest.fn(), policiesRetry: jest.fn() },
       createRoleAllowed: false,
       createRoleLoading: false,
     });
@@ -192,7 +217,11 @@ describe('RolesList', () => {
     mockUseRoles.mockReturnValue({
       loading: false,
       data: useRolesMockData,
-      retry: jest.fn(),
+      error: {
+        rolesError: '',
+        policiesError: '',
+      },
+      retry: { roleRetry: jest.fn(), policiesRetry: jest.fn() },
       createRoleAllowed: true,
       createRoleLoading: false,
     });
@@ -209,12 +238,35 @@ describe('RolesList', () => {
     mockUseRoles.mockReturnValue({
       loading: false,
       data: useRolesMockData,
-      retry: jest.fn(),
+      error: {
+        rolesError: '',
+        policiesError: '',
+      },
+      retry: { roleRetry: jest.fn(), policiesRetry: jest.fn() },
       createRoleAllowed: false,
       createRoleLoading: false,
     });
     const { getByTestId } = await renderInTestApp(<RolesList />);
 
     expect(getByTestId('create-role-warning')).not.toBeNull();
+  });
+
+  it('should show error message when there is an error fetching the roles', async () => {
+    RequirePermissionMock.mockImplementation(props => <>{props.children}</>);
+    mockUsePermission.mockReturnValue({ loading: false, allowed: true });
+    mockUseRoles.mockReturnValue({
+      loading: true,
+      data: [],
+      error: {
+        rolesError: 'Something went wrong',
+        policiesError: '',
+      },
+      retry: { roleRetry: jest.fn(), policiesRetry: jest.fn() },
+      createRoleAllowed: false,
+      createRoleLoading: false,
+    });
+
+    const { queryByText } = await renderInTestApp(<RolesList />);
+    expect(queryByText('Something went wrong')).toBeInTheDocument();
   });
 });

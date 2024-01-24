@@ -1,9 +1,6 @@
 import { Config } from '@backstage/config';
 import { ConfigApi } from '@backstage/core-plugin-api';
-import {
-  BackstageIdentityResponse,
-  BackstageUserIdentity,
-} from '@backstage/plugin-auth-node';
+import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 import {
   AuthorizeResult,
   isResourcePermission,
@@ -160,32 +157,53 @@ export class RBACPermissionPolicy implements PermissionPolicy {
       // a more complicated model with multiple policy and request shapes.
       const action = request.permission.attributes.action ?? 'use';
 
+      if (!identityResp?.identity) {
+        return { result: AuthorizeResult.DENY };
+      }
+
+      const userEntityRef = identityResp.identity.userEntityRef;
+      const permissionName = request.permission.name;
+
       if (isResourcePermission(request.permission)) {
-        status = await this.isAuthorized(
-          identityResp?.identity,
-          request.permission.resourceType,
-          action,
-        );
+        const resourceType = request.permission.resourceType;
+        const hasNamedPermission =
+          await this.hasImplicitPermissionSpecifiedByName(
+            userEntityRef,
+            permissionName,
+            action,
+          );
+        // Let's set up higher priority for permission specified by name, than by resource type
+        const obj = hasNamedPermission ? permissionName : resourceType;
+
+        status = await this.enforcer.enforce(userEntityRef, obj, action);
 
         if (status && identityResp) {
-          const conditionalDecision = await this.conditionStorage.findCondition(
-            request.permission.resourceType,
-          );
+          const conditionalDecision =
+            await this.conditionStorage.findCondition(resourceType);
           if (conditionalDecision) {
+            this.logger.info(
+              `${identityResp?.identity.userEntityRef} executed condition for permission ${request.permission.name}, resource type ${resourceType} and action ${action}`,
+            );
             return conditionalDecision;
           }
         }
       } else {
-        status = await this.isAuthorized(
-          identityResp?.identity,
-          request.permission.name,
+        status = await this.enforcer.enforce(
+          userEntityRef,
+          permissionName,
           action,
         );
       }
 
       const result = status ? AuthorizeResult.ALLOW : AuthorizeResult.DENY;
       this.logger.info(
-        `${identityResp?.identity.userEntityRef} is ${result} for permission ${request.permission.name} and action ${action}`,
+        `${userEntityRef} is ${result} for permission '${
+          request.permission.name
+        }'${
+          isResourcePermission(request.permission)
+            ? `, resource type '${request.permission.resourceType}'`
+            : ''
+        } and action ${action}`,
       );
       return Promise.resolve({
         result: result,
@@ -198,17 +216,18 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     }
   }
 
-  private isAuthorized = async (
-    identity: BackstageUserIdentity | undefined,
-    resourceType: string,
+  private async hasImplicitPermissionSpecifiedByName(
+    userEntityRef: string,
+    permissionName: string,
     action: string,
-  ): Promise<boolean> => {
-    if (!identity) {
-      return false;
+  ): Promise<boolean> {
+    const userPerms =
+      await this.enforcer.getImplicitPermissionsForUser(userEntityRef);
+    for (const perm of userPerms) {
+      if (permissionName === perm[1] && action === perm[2]) {
+        return true;
+      }
     }
-
-    const entityRef = identity.userEntityRef;
-
-    return await this.enforcer.enforce(entityRef, resourceType, action);
-  };
+    return false;
+  }
 }

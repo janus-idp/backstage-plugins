@@ -37,7 +37,11 @@ describe('RbacPage', () => {
     mockUseRoles.mockReturnValue({
       loading: true,
       data: [],
-      retry: jest.fn(),
+      error: {
+        rolesError: '',
+        policiesError: '',
+      },
+      retry: { roleRetry: jest.fn(), policiesRetry: jest.fn() },
       createRoleAllowed: false,
       createRoleLoading: false,
     });
