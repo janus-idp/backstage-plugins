@@ -15,17 +15,10 @@ export const SnackbarAlert = ({
       open={toastMessage !== ''}
       autoHideDuration={6000}
       anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-      sx={{ width: '100%' }}
-      style={{ top: '100px', right: '20px' }}
+      style={{ top: '100px', left: '0px', justifyContent: 'center' }}
       onClose={onAlertClose}
     >
-      <Alert
-        onClose={onAlertClose}
-        severity="info"
-        variant="filled"
-        icon={false}
-        sx={{ width: '60%' }}
-      >
+      <Alert onClose={onAlertClose} severity="success">
         {toastMessage}
       </Alert>
     </Snackbar>
