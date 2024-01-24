@@ -12,10 +12,8 @@ export {
 export { type Notification } from './openapi';
 
 // selected constants for export
-export { NOTIFICATIONS_ROUTE } from './constants';
+export { notificationsRootRouteRef } from './routes';
 
 // selected components for export
-export { NotificationsSidebarItem } from './components/NotificationsSidebarItem';
 export { usePollingEffect } from './components/usePollingEffect';
-
-export { default as NotificationsIcon } from '@material-ui/icons/Notifications';
+export { NotificationsActiveIcon } from './components/NotificationsActiveIcon';
