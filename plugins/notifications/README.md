@@ -39,7 +39,7 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
     ...
       {/* New code: */}
       <SidebarDivider />
-      <NotificationsSidebarItem pollingInterval={5000} />
+      <SidebarItem icon={NotificationsActiveIcon} to="notifications" text="Notifications" />
 
       {/* Existing code for reference: */}
       <SidebarSpace />
@@ -55,13 +55,13 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
 In the `packages/app/src/App.tsx`:
 
 ```
-import { NOTIFICATIONS_ROUTE, NotificationsPage } from '@janus-idp/plugin-notifications';
+import { NotificationsPage } from '@janus-idp/plugin-notifications';
 ...
 
 export const AppBase = () => {
     ...
       {/* New code: */}
-      <Route path={NOTIFICATIONS_ROUTE} element={<NotificationsPage />} />
+      <Route path="/notifications" element={<NotificationsPage />} />
 ```
 
 ## How to use the NotificationApi

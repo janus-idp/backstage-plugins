@@ -4,7 +4,7 @@ dynamicPlugins:
       appIcons:
         - name: notificationsIcon
           module: NotificationsPlugin
-          importName: NotificationsIcon
+          importName: NotificationsActiveIcon
       dynamicRoutes:
         - path: /notifications
           importName: NotificationsPage
