@@ -92,6 +92,8 @@ const mockEnforcer: Partial<EnforcerDelegate> = {
 
   addPolicy: jest.fn().mockImplementation(),
 
+  addOrUpdatePolicy: jest.fn().mockImplementation(),
+
   addPolicies: jest.fn().mockImplementation(),
 
   addGroupingPolicy: jest.fn().mockImplementation(),
@@ -106,7 +108,7 @@ const mockEnforcer: Partial<EnforcerDelegate> = {
 
   removeGroupingPolicies: jest.fn().mockImplementation(),
 
-  getPolicyMetadata: jest.fn().mockImplementation(async () => {
+  getMetadata: jest.fn().mockImplementation(async () => {
     const metadata: PermissionPolicyMetadata = { source: 'rest' };
     return Promise.resolve(metadata);
   }),
@@ -114,6 +116,16 @@ const mockEnforcer: Partial<EnforcerDelegate> = {
   getFilteredPolicyMetadata: jest.fn().mockImplementation(() => {
     return [];
   }),
+
+  hasFilteredPolicyMetadata: jest.fn().mockImplementation(() => {
+    return Promise.resolve(false);
+  }),
+
+  updatePolicies: jest.fn().mockImplementation(),
+
+  addOrUpdateGroupingPolicy: jest.fn().mockImplementation(),
+
+  updateGroupingPolicies: jest.fn().mockImplementation(),
 };
 
 const roleMetadataStorageMock: RoleMetadataStorage = {
@@ -184,6 +196,14 @@ describe('REST policies api', () => {
         return false;
       });
 
+    roleMetadataStorageMock.findRoleMetadata = jest
+      .fn()
+      .mockImplementation(
+        async (_roleEntityRef: string): Promise<RoleMetadata> => {
+          return { source: 'rest' };
+        },
+      );
+
     const config = new ConfigReader({
       backend: {
         database: {
@@ -232,7 +252,6 @@ describe('REST policies api', () => {
       conditionalStorage,
       backendPluginIDsProviderMock,
       roleMetadataStorageMock,
-      knex,
     );
     const router = await server.serve();
     app = express().use(router);
@@ -428,9 +447,9 @@ describe('REST policies api', () => {
     });
 
     it('should not be created permission policy caused some unexpected error', async () => {
-      mockEnforcer.addPolicies = jest
+      mockEnforcer.addOrUpdatePolicy = jest
         .fn()
-        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
+        .mockImplementation(async (): Promise<void> => {
           throw new Error(`Failed to add policies`);
         });
 
@@ -1153,9 +1172,9 @@ describe('REST policies api', () => {
           }
           return true;
         });
-      mockEnforcer.removePolicies = jest
+      mockEnforcer.updatePolicies = jest
         .fn()
-        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
+        .mockImplementation(async (): Promise<void> => {
           throw new Error('Fail to remove policy');
         });
 
@@ -1194,8 +1213,7 @@ describe('REST policies api', () => {
           }
           return true;
         });
-      mockEnforcer.removePolicies = jest.fn().mockImplementation();
-      mockEnforcer.addPolicies = jest
+      mockEnforcer.updatePolicies = jest
         .fn()
         .mockImplementation(
           async (_param: string[][], _source: Source): Promise<void> => {
@@ -1238,16 +1256,7 @@ describe('REST policies api', () => {
           }
           return true;
         });
-      mockEnforcer.removePolicies = jest
-        .fn()
-        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
-          return true;
-        });
-      mockEnforcer.addPolicies = jest
-        .fn()
-        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
-          return true;
-        });
+      mockEnforcer.updatePolicies = jest.fn().mockImplementation();
 
       const result = await request(app)
         .put('/policies/user/default/permission_admin')
@@ -1646,13 +1655,11 @@ describe('REST policies api', () => {
     });
 
     it('should not be created role caused some unexpected error', async () => {
-      mockEnforcer.addGroupingPolicies = jest
+      mockEnforcer.addOrUpdateGroupingPolicy = jest
         .fn()
-        .mockImplementation(
-          async (_param: string[][], _source: Source): Promise<void> => {
-            throw new Error('Fail to create new policy');
-          },
-        );
+        .mockImplementation(async (): Promise<void> => {
+          throw new Error('Fail to create new policy');
+        });
 
       const result = await request(app)
         .post('/roles')
@@ -1830,6 +1837,39 @@ describe('REST policies api', () => {
       expect(result.statusCode).toEqual(204);
     });
 
+    it('should fail to update policy - role metadata could not be found', async () => {
+      mockEnforcer.hasGroupingPolicy = jest
+        .fn()
+        .mockImplementation(async (...param: string[]): Promise<boolean> => {
+          if (param[0] === 'user:default/test') {
+            return false;
+          }
+          return true;
+        });
+      roleMetadataStorageMock.findRoleMetadata = jest
+        .fn()
+        .mockImplementation(async (): Promise<undefined> => {
+          return undefined;
+        });
+      const result = await request(app)
+        .put('/roles/role/default/rbac_admin')
+        .send({
+          oldRole: {
+            memberReferences: ['user:default/permission_admin'],
+          },
+          newRole: {
+            memberReferences: ['user:default/test'],
+            name: 'role:default/rbac_admin',
+          },
+        });
+
+      expect(result.statusCode).toEqual(404);
+      expect(result.body.error).toEqual({
+        name: 'NotFoundError',
+        message: `Unable to find metadata for role:default/rbac_admin`,
+      });
+    });
+
     it('should fail to update role - unable to remove oldRole', async () => {
       mockEnforcer.hasGroupingPolicy = jest
         .fn()
@@ -1839,9 +1879,9 @@ describe('REST policies api', () => {
           }
           return true;
         });
-      mockEnforcer.removeGroupingPolicies = jest
+      mockEnforcer.updateGroupingPolicies = jest
         .fn()
-        .mockImplementation(async (_param: string[][]): Promise<void> => {
+        .mockImplementation(async (): Promise<void> => {
           throw new Error('Unexpected error');
         });
 
@@ -1873,12 +1913,7 @@ describe('REST policies api', () => {
           }
           return true;
         });
-      mockEnforcer.removeGroupingPolicies = jest
-        .fn()
-        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
-          return true;
-        });
-      mockEnforcer.addGroupingPolicies = jest
+      mockEnforcer.updateGroupingPolicies = jest
         .fn()
         .mockImplementation(
           async (_param: string[][], _source: Source): Promise<void> => {
@@ -1914,16 +1949,7 @@ describe('REST policies api', () => {
           }
           return true;
         });
-      mockEnforcer.removeGroupingPolicies = jest
-        .fn()
-        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
-          return true;
-        });
-      mockEnforcer.addGroupingPolicies = jest
-        .fn()
-        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
-          return true;
-        });
+      mockEnforcer.updateGroupingPolicies = jest.fn().mockImplementation();
 
       const result = await request(app)
         .put('/roles/role/default/rbac_admin')
@@ -1952,16 +1978,7 @@ describe('REST policies api', () => {
           }
           return true;
         });
-      mockEnforcer.removeGroupingPolicies = jest
-        .fn()
-        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
-          return true;
-        });
-      mockEnforcer.addGroupingPolicies = jest
-        .fn()
-        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
-          return true;
-        });
+      mockEnforcer.updateGroupingPolicies = jest.fn().mockImplementation();
 
       const result = await request(app)
         .put('/roles/role/default/rbac_admin')
@@ -1987,16 +2004,7 @@ describe('REST policies api', () => {
           }
           return true;
         });
-      mockEnforcer.removeGroupingPolicies = jest
-        .fn()
-        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
-          return true;
-        });
-      mockEnforcer.addGroupingPolicies = jest
-        .fn()
-        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
-          return true;
-        });
+      mockEnforcer.updateGroupingPolicies = jest.fn().mockImplementation();
 
       const result = await request(app)
         .put('/roles/role/default/rbac_admin')
@@ -2025,16 +2033,7 @@ describe('REST policies api', () => {
           }
           return true;
         });
-      mockEnforcer.removeGroupingPolicies = jest
-        .fn()
-        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
-          return true;
-        });
-      mockEnforcer.addGroupingPolicies = jest
-        .fn()
-        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
-          return true;
-        });
+      mockEnforcer.updateGroupingPolicies = jest.fn().mockImplementation();
 
       const result = await request(app)
         .put('/roles/role/default/rbac_admin')

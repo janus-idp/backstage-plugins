@@ -13,14 +13,11 @@ import {
 
 import { Enforcer, FileAdapter, newEnforcer, newModelFromString } from 'casbin';
 import { Knex } from 'knex';
-import { isEqual } from 'lodash';
 import { Logger } from 'winston';
-
-import { Source } from '@janus-idp/backstage-plugin-rbac-common';
 
 import { ConditionalStorage } from '../database/conditional-storage';
 import { RoleMetadataStorage } from '../database/role-metadata';
-import { metadataStringToPolicy } from '../helper';
+import { metadataStringToPolicy, removeTheDifference } from '../helper';
 import { EnforcerDelegate } from './enforcer-delegate';
 import { MODEL } from './permission-model';
 import {
@@ -30,78 +27,90 @@ import {
 
 const adminRoleName = 'role:default/rbac_admin';
 
-async function addRoleMetadata(
-  groupPolicy: string[],
-  source: Source,
-  roleMetadataStorage: RoleMetadataStorage,
-  trx: Knex.Transaction,
-) {
-  const entityRef = groupPolicy[1];
-  if (entityRef.startsWith(`role:`)) {
-    const metadata = await roleMetadataStorage.findRoleMetadata(entityRef, trx);
-    if (!metadata) {
-      await roleMetadataStorage.createRoleMetadata({ source }, entityRef, trx);
-    }
-  }
-}
-
 const useAdmins = async (
   admins: Config[],
   enf: EnforcerDelegate,
   roleMetadataStorage: RoleMetadataStorage,
   knex: Knex,
 ) => {
+  let legacy = false;
   const rbacAdminsGroupPolicies: string[][] = [];
-  admins.flatMap(async localConfig => {
+  const groupPoliciesToCompare: string[] = [];
+  const addedGroupPolicies: string[] = [];
+
+  admins.forEach(async localConfig => {
     const entityRef = localConfig.getString('name');
     validateEntityReference(entityRef);
 
     const groupPolicy = [entityRef, adminRoleName];
     if (!(await enf.hasGroupingPolicy(...groupPolicy))) {
       rbacAdminsGroupPolicies.push(groupPolicy);
+      addedGroupPolicies.push(entityRef);
     }
   });
 
-  const trx = await knex.transaction();
-  try {
-    const adminRoleMeta = await roleMetadataStorage.findRoleMetadata(
-      adminRoleName,
-      trx,
-    );
-    if (!adminRoleMeta) {
+  const adminRoleMeta =
+    await roleMetadataStorage.findRoleMetadata(adminRoleName);
+
+  if (adminRoleMeta?.source === 'legacy') {
+    const trx = await knex.transaction();
+    try {
+      await roleMetadataStorage.removeRoleMetadata(adminRoleName, trx);
+      await trx.commit();
+      legacy = true;
+    } catch (error) {
+      await trx.rollback(error);
+    }
+  }
+
+  if (!adminRoleMeta || legacy) {
+    const trx = await knex.transaction();
+    try {
       await roleMetadataStorage.createRoleMetadata(
         { source: 'configuration' },
         adminRoleName,
         trx,
       );
+      await trx.commit();
+    } catch (error) {
+      await trx.rollback(error);
     }
-
-    // Cannot to save policy with help of addGroupingPolicies, the adapter does not implement the BatchAdapter
-    // if (rbacAdminsGroupPolicies.length > 0) {
-    //   await enf.addGroupingPolicies(rbacAdminsGroupPolicies, 'configuration', trx);
-    // }
-    for (const gPolicy of rbacAdminsGroupPolicies) {
-      await enf.addGroupingPolicy(gPolicy, 'configuration', trx);
-    }
-    await trx.commit();
-  } catch (err) {
-    await trx.rollback(err);
-    throw err;
   }
+
+  await enf.addOrUpdateGroupingPolicies(
+    rbacAdminsGroupPolicies,
+    'configuration',
+    false,
+  );
+
+  const configPoliciesMetadata =
+    await enf.getFilteredPolicyMetadata('configuration');
+
+  for (const policyMetadata of configPoliciesMetadata) {
+    if (metadataStringToPolicy(policyMetadata.policy).length === 2) {
+      const stringPolicy = metadataStringToPolicy(policyMetadata.policy);
+      groupPoliciesToCompare.push(stringPolicy.at(0)!);
+    }
+  }
+
+  await removeTheDifference(
+    groupPoliciesToCompare,
+    addedGroupPolicies,
+    'configuration',
+    adminRoleName,
+    enf,
+  );
 
   const adminReadPermission = [adminRoleName, 'policy-entity', 'read', 'allow'];
-  if (!(await enf.hasPolicy(...adminReadPermission))) {
-    await enf.addPolicy(adminReadPermission, 'configuration');
-  }
+  await enf.addOrUpdatePolicy(adminReadPermission, 'configuration', false);
+
   const adminCreatePermission = [
     adminRoleName,
     'policy-entity',
     'create',
     'allow',
   ];
-  if (!(await enf.hasPolicy(...adminCreatePermission))) {
-    await enf.addPolicy(adminCreatePermission, 'configuration');
-  }
+  await enf.addOrUpdatePolicy(adminCreatePermission, 'configuration', false);
 
   const adminDeletePermission = [
     adminRoleName,
@@ -109,9 +118,7 @@ const useAdmins = async (
     'delete',
     'allow',
   ];
-  if (!(await enf.hasPolicy(...adminDeletePermission))) {
-    await enf.addPolicy(adminDeletePermission, 'configuration');
-  }
+  await enf.addOrUpdatePolicy(adminDeletePermission, 'configuration', false);
 
   const adminUpdatePermission = [
     adminRoleName,
@@ -119,9 +126,7 @@ const useAdmins = async (
     'update',
     'allow',
   ];
-  if (!(await enf.hasPolicy(...adminUpdatePermission))) {
-    await enf.addPolicy(adminUpdatePermission, 'configuration');
-  }
+  await enf.addOrUpdatePolicy(adminUpdatePermission, 'configuration', false);
 
   // needed for rbac frontend.
   const adminCatalogReadPermission = [
@@ -130,75 +135,42 @@ const useAdmins = async (
     'read',
     'allow',
   ];
-  if (!(await enf.hasPolicy(...adminCatalogReadPermission))) {
-    await enf.addPolicy(...adminCatalogReadPermission);
-  }
+  await enf.addOrUpdatePolicy(adminCatalogReadPermission, 'configuration', false);
 };
 
 const removedOldPermissionPoliciesFileData = async (
   enf: EnforcerDelegate,
-  roleMetadataStorage: RoleMetadataStorage,
-  knex: Knex,
   fileEnf?: Enforcer,
-): Promise<void> => {
-  let policiesToDelete: string[][] = [];
-  let groupPoliciesToDelete: string[][] = [];
-
+) => {
+  const tempEnforcer =
+    fileEnf || (await newEnforcer(newModelFromString(MODEL)));
+  const oldFilePolicies = new Set<string[]>();
   const policiesMetadata = await enf.getFilteredPolicyMetadata('csv-file');
   for (const policyMetadata of policiesMetadata) {
-    const policy = metadataStringToPolicy(policyMetadata.policy);
-    if (policy.length === 2) {
-      groupPoliciesToDelete.push(policy);
-    } else {
-      policiesToDelete.push(policy);
+    oldFilePolicies.add(metadataStringToPolicy(policyMetadata.policy));
+  }
+
+  const policiesToDelete: string[][] = [];
+  const groupPoliciesToDelete: string[][] = [];
+  for (const oldFilePolicy of oldFilePolicies) {
+    if (
+      oldFilePolicy.length === 2 &&
+      !(await tempEnforcer.hasGroupingPolicy(...oldFilePolicy))
+    ) {
+      groupPoliciesToDelete.push(oldFilePolicy);
+    } else if (
+      oldFilePolicy.length > 2 &&
+      !(await tempEnforcer.hasPolicy(...oldFilePolicy))
+    ) {
+      policiesToDelete.push(oldFilePolicy);
     }
   }
 
-  let rolesToDelete = new Set(
-    groupPoliciesToDelete
-      .filter(gp => gp[1].startsWith('role:'))
-      .map(gp => gp[1]),
-  );
-
-  if (fileEnf) {
-    groupPoliciesToDelete = await groupPoliciesToDelete.filter(
-      async gp => !(await fileEnf.hasGroupingPolicy(...gp)),
-    );
-    policiesToDelete = await policiesToDelete.filter(
-      async p => !(await fileEnf.hasPolicy(...p)),
-    );
-
-    const actualFileRoles = await fileEnf.getAllRoles();
-    rolesToDelete = new Set(
-      Array.from(rolesToDelete).filter(
-        role => !actualFileRoles.some(actualRole => isEqual(actualRole, role)),
-      ),
-    );
+  if (groupPoliciesToDelete.length > 0) {
+    await enf.removeGroupingPolicies(groupPoliciesToDelete, 'csv-file', true);
   }
-
-  const trx = await knex.transaction();
-  try {
-    if (groupPoliciesToDelete.length > 0) {
-      await enf.removeGroupingPolicies(groupPoliciesToDelete, true, trx);
-    }
-    if (policiesToDelete.length > 0) {
-      await enf.removePolicies(policiesToDelete, true, trx);
-    }
-    for (const roleMeta of rolesToDelete) {
-      const isRoleUnUsed =
-        (await enf.getFilteredGroupingPolicy(1, ...[roleMeta])).length === 0;
-
-      if (
-        (await roleMetadataStorage.findRoleMetadata(roleMeta)) &&
-        isRoleUnUsed
-      ) {
-        await roleMetadataStorage.removeRoleMetadata(roleMeta, trx);
-      }
-    }
-    await trx.commit();
-  } catch (err) {
-    await trx.rollback(err);
-    throw err;
+  if (policiesToDelete.length > 0) {
+    await enf.removePolicies(policiesToDelete, 'csv-file', true);
   }
 };
 
@@ -206,7 +178,6 @@ const addPermissionPoliciesFileData = async (
   preDefinedPoliciesFile: string,
   enf: EnforcerDelegate,
   roleMetadataStorage: RoleMetadataStorage,
-  knex: Knex,
 ) => {
   const fileEnf = await newEnforcer(
     newModelFromString(MODEL),
@@ -222,36 +193,14 @@ const addPermissionPoliciesFileData = async (
     roleMetadataStorage,
   );
 
-  await removedOldPermissionPoliciesFileData(
-    enf,
-    roleMetadataStorage,
-    knex,
-    fileEnf,
-  );
+  await removedOldPermissionPoliciesFileData(enf, fileEnf);
 
   for (const policy of policies) {
-    if (!(await enf.hasPolicy(...policy))) {
-      await enf.addPolicy(policy, 'csv-file');
-    }
+    await enf.addOrUpdatePolicy(policy, 'csv-file', true);
   }
 
   for (const groupPolicy of groupPolicies) {
-    if (!(await enf.hasGroupingPolicy(...groupPolicy))) {
-      const trx = await knex.transaction();
-      try {
-        await addRoleMetadata(
-          groupPolicy,
-          'csv-file',
-          roleMetadataStorage,
-          trx,
-        );
-        await enf.addGroupingPolicy(groupPolicy, 'csv-file', trx);
-        await trx.commit();
-      } catch (err) {
-        await trx.rollback(err);
-        throw err;
-      }
-    }
+    await enf.addOrUpdateGroupingPolicy(groupPolicy, 'csv-file', false);
   }
 };
 
@@ -281,14 +230,9 @@ export class RBACPermissionPolicy implements PermissionPolicy {
         policiesFile,
         enforcerDelegate,
         roleMetadataStorage,
-        knex,
       );
     } else {
-      await removedOldPermissionPoliciesFileData(
-        enforcerDelegate,
-        roleMetadataStorage,
-        knex,
-      );
+      await removedOldPermissionPoliciesFileData(enforcerDelegate);
     }
 
     if (adminUsers) {

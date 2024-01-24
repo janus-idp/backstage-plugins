@@ -25,7 +25,6 @@ import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-
 
 import { Router } from 'express';
 import { Request } from 'express-serve-static-core';
-import { Knex } from 'knex';
 import { isEmpty, isEqual } from 'lodash';
 import { ParsedQs } from 'qs';
 import { Logger } from 'winston';
@@ -65,7 +64,6 @@ export class PolicesServer {
     private readonly conditionalStorage: ConditionalStorage,
     private readonly pluginIdProvider: PluginIdProvider,
     private readonly roleMetadata: RoleMetadataStorage,
-    private readonly knex: Knex,
   ) {}
 
   private async authorize(
@@ -188,7 +186,7 @@ export class PolicesServer {
 
         const processedPolicies = await this.processPolicies(policyRaw, true);
 
-        await this.enforcer.removePolicies(processedPolicies);
+        await this.enforcer.removePolicies(processedPolicies, 'rest');
         response.status(204).end();
       },
     );
@@ -210,7 +208,9 @@ export class PolicesServer {
 
       const processedPolicies = await this.processPolicies(policyRaw);
 
-      await this.enforcer.addPolicies(processedPolicies, 'rest');
+      for (const policy of processedPolicies) {
+        await this.enforcer.addOrUpdatePolicy(policy, 'rest', false);
+      }
 
       response.status(201).end();
     });
@@ -276,11 +276,12 @@ export class PolicesServer {
           'new policy',
         );
 
-        // enforcer.updatePolicy(oldPolicyPermission, newPolicyPermission) was not implemented
-        // for ORMTypeAdapter.
-        // So, let's compensate this combination delete + add.
-        await this.enforcer.removePolicies(processedOldPolicy);
-        await this.enforcer.addPolicies(processedNewPolicy, 'rest');
+        await this.enforcer.updatePolicies(
+          processedOldPolicy,
+          processedNewPolicy,
+          'rest',
+          false,
+        );
 
         response.status(200).end();
       },
@@ -344,7 +345,10 @@ export class PolicesServer {
       const roles = this.transformRoleToArray(roleRaw);
 
       for (const role of roles) {
-        if (await this.enforcer.hasGroupingPolicy(...role)) {
+        if (
+          (await this.enforcer.hasGroupingPolicy(...role)) &&
+          !(await this.enforcer.hasFilteredPolicyMetadata(role, 'legacy'))
+        ) {
           throw new ConflictError(); // 409
         }
         const roleString = JSON.stringify(role);
@@ -360,18 +364,8 @@ export class PolicesServer {
         }
       }
 
-      const trx = await this.knex.transaction();
-      try {
-        await this.roleMetadata.createRoleMetadata(
-          { source: 'rest' },
-          roleRaw.name,
-          trx,
-        );
-        await this.enforcer.addGroupingPolicies(roles, 'rest', trx);
-        await trx.commit();
-      } catch (trxErr) {
-        trx.rollback(trxErr);
-        throw trxErr;
+      for (const role of roles) {
+        await this.enforcer.addOrUpdateGroupingPolicy(role, 'rest', false);
       }
 
       response.status(201).end();
@@ -479,23 +473,12 @@ export class PolicesServer {
         );
       }
 
-      const trx = await this.knex.transaction();
-      try {
-        await this.roleMetadata.updateRoleMetadata(
-          { source: metadata?.source, roleEntityRef: newRoleRaw.name },
-          roleEntityRef,
-          trx,
-        );
-        // enforcer.updateGroupingPolicy(oldRole, newRole) was not implemented
-        // for ORMTypeAdapter.
-        // So, let's compensate this combination delete + create.
-        await this.enforcer.removeGroupingPolicies(oldRole, false, trx);
-        await this.enforcer.addGroupingPolicies(newRole, 'rest', trx);
-        await trx.commit();
-      } catch (trxErr) {
-        await trx.rollback(trxErr);
-        throw trxErr;
-      }
+      await this.enforcer.updateGroupingPolicies(
+        oldRole,
+        newRole,
+        'rest',
+        false,
+      );
 
       response.status(200).end();
     });
@@ -545,21 +528,7 @@ export class PolicesServer {
           );
         }
 
-        const trx = await this.knex.transaction();
-        try {
-          await this.enforcer.removeGroupingPolicies(roleMembers, false, trx);
-          roleMembers = await this.enforcer.getFilteredGroupingPolicy(
-            1,
-            roleEntityRef,
-          );
-          if (roleMembers.length === 0) {
-            await this.roleMetadata.removeRoleMetadata(roleEntityRef, trx);
-          }
-          await trx.commit();
-        } catch (trxErr) {
-          await trx.rollback();
-          throw trxErr;
-        }
+        await this.enforcer.removeGroupingPolicies(roleMembers, 'rest', false);
 
         response.status(204).end();
       },
@@ -709,7 +678,7 @@ export class PolicesServer {
     const roleBasedPolices: RoleBasedPolicy[] = [];
     for (const p of policies) {
       const [entityReference, permission, policy, effect] = p;
-      const metadata = await this.enforcer.getPolicyMetadata(p);
+      const metadata = await this.enforcer.getMetadata(p);
       roleBasedPolices.push({
         entityReference,
         permission,
@@ -815,7 +784,14 @@ export class PolicesServer {
         ); // 404
       }
 
-      if (!isOld && (await this.enforcer.hasPolicy(...transformedPolicy))) {
+      if (
+        !isOld &&
+        (await this.enforcer.hasPolicy(...transformedPolicy)) &&
+        !(await this.enforcer.hasFilteredPolicyMetadata(
+          transformedPolicy,
+          'legacy',
+        ))
+      ) {
         throw new ConflictError(
           `Policy '${policyToString(
             transformedPolicy,
