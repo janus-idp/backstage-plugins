@@ -4,6 +4,7 @@ import { Content, Page } from '@backstage/core-components';
 
 import { OverviewPage } from '../Overview/OverviewPage';
 import { KialiHeader } from './Header/KialiHeader';
+import { WorkloadListPage } from '../WorkloadList/WorkloadListPage';
 import { KialiNoPath } from './NoPath';
 
 const noPath = 'noPath';
@@ -24,6 +25,8 @@ export const KialiPage = () => {
     switch (kialiTab) {
       case 'overview':
         return <OverviewPage />;
+      case 'workloads':
+        return <WorkloadListPage />;
       default:
         return <KialiNoPath />;
     }

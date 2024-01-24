@@ -24,6 +24,7 @@ export interface ServiceOverview {
 }
 
 export interface ServiceListItem extends ServiceOverview {
+  type: string;
   namespace: string;
   validation?: ObjectValidation;
 }

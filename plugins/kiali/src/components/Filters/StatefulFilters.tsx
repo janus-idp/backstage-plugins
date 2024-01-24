@@ -1,3 +1,5 @@
+import * as React from 'react';
+
 import { history, HistoryManager } from '../../app/History';
 import {
   ActiveFilter,
@@ -82,3 +84,34 @@ export class Toggles {
     return new Map<string, boolean>(Toggles.checked);
   };
 }
+
+export interface StatefulFiltersProps {
+  childrenFirst?: boolean;
+  initialFilters: FilterType[];
+  initialToggles?: ToggleType[];
+  onFilterChange: (active: ActiveFiltersInfo) => void;
+  onToggleChange?: (active: ActiveTogglesInfo) => void;
+  ref?: React.RefObject<any>;
+}
+
+interface StatefulFiltersState {
+  activeFilters: ActiveFiltersInfo;
+  activeToggles: number;
+  currentFilterType: FilterType;
+  currentValue: string;
+  filterTypes: FilterType[];
+  focusedItemIndex: number | null;
+  isOpen: boolean;
+}
+
+export const StatefulFilters = (
+  filterProps: StatefulFiltersProps,
+  filterState: StatefulFiltersState,
+) => {
+  return (
+    <>
+      {filterProps.initialFilters}
+      {filterState.activeFilters}
+    </>
+  );
+};
