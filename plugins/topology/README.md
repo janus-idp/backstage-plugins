@@ -70,7 +70,7 @@ The following permission must be granted to the [`ClusterRole`](https://backstag
         - watch
 ```
 
-##### To view the Techton PipelineRuns
+##### To view the Tekton PipelineRuns
 
 - Ensure that read access is granted to the Pipelines, PipelineRuns, and TaskRuns resource in the [`ClusterRole`](https://backstage.io/docs/features/kubernetes/configuration#role-based-access-control). You can use the following code to do so:
 
