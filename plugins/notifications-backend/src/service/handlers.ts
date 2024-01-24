@@ -58,7 +58,7 @@ export async function createNotification(
   }
 
   // validate actions
-  if (Array.isArray(req.actions)) {
+  if (Array.isArray(req.actions) && req.actions.length > 0) {
     req.actions.forEach(action => {
       if (!action.title || !action.url) {
         throw new Error('Both action title and url are mandatory.');
@@ -83,7 +83,7 @@ export async function createNotification(
       .into('messages')
       .then(ids => {
         messageId = ids[0].id;
-        if (Array.isArray(req.targetUsers)) {
+        if (Array.isArray(req.targetUsers) && req.targetUsers.length > 0) {
           const userInserts = req.targetUsers.map(user => {
             return {
               message_id: messageId,
@@ -96,7 +96,7 @@ export async function createNotification(
         return undefined;
       })
       .then(() => {
-        if (Array.isArray(req.targetGroups)) {
+        if (Array.isArray(req.targetGroups) && req.targetGroups.length > 0) {
           const groupInserts = req.targetGroups.map(group => {
             return {
               message_id: messageId,
@@ -109,7 +109,7 @@ export async function createNotification(
         return undefined;
       })
       .then(() => {
-        if (Array.isArray(req.actions)) {
+        if (Array.isArray(req.actions) && req.actions.length > 0) {
           const actionInserts: ActionsInsert[] = req.actions.map(action => {
             return {
               url: action.url,
