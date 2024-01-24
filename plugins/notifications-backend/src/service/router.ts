@@ -1,3 +1,5 @@
+import { CatalogClient } from '@backstage/catalog-client';
+
 import { fullFormats } from 'ajv-formats/dist/formats';
 import express from 'express';
 import Router from 'express-promise-router';
@@ -23,7 +25,14 @@ import { RouterOptions } from './types';
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { logger, dbConfig, catalogClient } = options;
+  const { logger, database, discovery, config } = options;
+
+  // workaround for creating the database when client is not sqlite
+  const existingDbClient = await database.getClient();
+  existingDbClient.destroy();
+
+  const catalogClient = new CatalogClient({ discoveryApi: discovery });
+  const dbConfig = config.getConfig('backend.database');
 
   // create DB client and tables
   if (!dbConfig) {

@@ -1,5 +1,8 @@
-import { TokenManager } from '@backstage/backend-common';
-import { CatalogClient } from '@backstage/catalog-client';
+import {
+  PluginDatabaseManager,
+  PluginEndpointDiscovery,
+  TokenManager,
+} from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
@@ -8,14 +11,12 @@ import { Logger } from 'winston';
 
 export interface RouterOptions {
   logger: Logger;
-  dbConfig: Config;
-  catalogClient: CatalogClient;
   identity: IdentityApi;
   permissions: PermissionEvaluator;
   tokenManager: TokenManager;
-
-  // Workaround - see auth.ts
-  externalCallerSecret?: string;
+  database: PluginDatabaseManager;
+  discovery: PluginEndpointDiscovery;
+  config: Config;
 }
 
 export type NotificationsFilterRequest = {

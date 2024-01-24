@@ -1,0 +1,14 @@
+dynamicPlugins:
+  frontend:
+    janus-idp.backstage-plugin-notifications:
+      appIcons:
+        - name: notificationsIcon
+          module: NotificationsPlugin
+          importName: NotificationsIcon
+      dynamicRoutes:
+        - path: /notifications
+          importName: NotificationsPage
+          module: NotificationsPlugin
+          menuItem:
+            icon: notificationsIcon
+            text: Notifications
