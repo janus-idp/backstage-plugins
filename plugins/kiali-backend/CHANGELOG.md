@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-kiali-backend [1.8.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali-backend@1.8.1...@janus-idp/backstage-plugin-kiali-backend@1.8.2) (2024-01-24)
+
+
+### Bug Fixes
+
+* **kiali:** fix sessionTime configuration and tests ([#1099](https://github.com/janus-idp/backstage-plugins/issues/1099)) ([882381c](https://github.com/janus-idp/backstage-plugins/commit/882381c0b65a2bcfecc2365048f83376938a0fb8)), closes [#1100](https://github.com/janus-idp/backstage-plugins/issues/1100)
+
 ## @janus-idp/backstage-plugin-kiali-backend [1.8.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali-backend@1.8.0...@janus-idp/backstage-plugin-kiali-backend@1.8.1) (2024-01-22)
 
 
