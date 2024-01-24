@@ -41,9 +41,12 @@ export const getHubClusterFromConfig = (config: Config): KialiDetails => {
   if (!isValidUrl(url)) {
     throw new Error(`"${url}" is not a valid url`);
   }
-
+  /*
+    new URL(url).href => guarantees that the url will end in '/' 
+    - If the user does not indicate the last character as /, URL class will put it
+  */
   return {
-    url,
+    url: new URL(url).href,
     serviceAccountToken: hub.getOptionalString('serviceAccountToken'),
     skipTLSVerify: hub.getOptionalBoolean('skipTLSVerify') || false,
     caData: hub.getOptionalString('caData'),

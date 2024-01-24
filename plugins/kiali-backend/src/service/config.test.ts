@@ -15,7 +15,7 @@ describe('Configuration', () => {
     });
     const result = readKialiConfigs(configuration);
     expect(result).toStrictEqual({
-      url: 'https://localhost:4000',
+      url: 'https://localhost:4000/',
       serviceAccountToken: undefined,
       skipTLSVerify: false,
       sessionTime: undefined,

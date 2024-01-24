@@ -144,8 +144,11 @@ export class KialiFetcher {
         cookie: this.kialiAuth.getCookie(),
       };
     }
-
-    const loginUrl = `${this.KialiDetails.url}/${endpoint.replace(/^\//g, '')}`;
+    /*
+      kialiDetails.utl is formatted to make sure it ends in '/'
+      We check that endpoint does not begin with '/'
+    */
+    const loginUrl = `${this.KialiDetails.url}${endpoint.replace(/^\//g, '')}`;
     requestInit.url = new URL(loginUrl).href;
 
     if (this.KialiDetails.skipTLSVerify) {
