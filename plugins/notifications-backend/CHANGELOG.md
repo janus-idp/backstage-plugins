@@ -1,3 +1,10 @@
+## @janus-idp/plugin-notifications-backend [1.0.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications-backend@1.0.4...@janus-idp/plugin-notifications-backend@1.0.5) (2024-01-24)
+
+
+### Bug Fixes
+
+* **notifications:** filtering by text does not work with sqlite ([#1110](https://github.com/janus-idp/backstage-plugins/issues/1110)) ([e08d461](https://github.com/janus-idp/backstage-plugins/commit/e08d461d5d1f5a37c7be26385e2fa10593fb0a18))
+
 ## @janus-idp/plugin-notifications-backend [1.0.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications-backend@1.0.3...@janus-idp/plugin-notifications-backend@1.0.4) (2024-01-24)
 
 
