@@ -283,8 +283,7 @@ export class EnforcerDelegate {
     return await this.enforcer.enforce(entityRef, resourceType, action);
   }
 
-  // todo take a look, maybe we can make make it private ....
-  async getMetadata(policy: string[]): Promise<PermissionPolicyMetadata> {
+  async getPolicyMetadata(policy: string[]): Promise<PermissionPolicyMetadata> {
     const metadata =
       await this.policyMetadataStorage.findPolicyMetadata(policy);
     if (!metadata) {

@@ -709,7 +709,7 @@ export class PolicesServer {
     const roleBasedPolices: RoleBasedPolicy[] = [];
     for (const p of policies) {
       const [entityReference, permission, policy, effect] = p;
-      const metadata = await this.enforcer.getMetadata(p);
+      const metadata = await this.enforcer.getPolicyMetadata(p);
       roleBasedPolices.push({
         entityReference,
         permission,

@@ -4,7 +4,7 @@ import { Knex } from 'knex';
 
 import { RoleMetadata } from '@janus-idp/backstage-plugin-rbac-common';
 
-const ROLE_METADATA_TABLE = 'role-metadata';
+export const ROLE_METADATA_TABLE = 'role-metadata';
 
 export interface RoleMetadataDao extends RoleMetadata {
   id?: number;
@@ -78,7 +78,7 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
     }
 
     throw new Error(
-      `Failed to create the role metadata: ${JSON.stringify(metadataDao)}.`,
+      `Failed to create the role metadata: '${JSON.stringify(metadataDao)}'.`,
     );
   }
 

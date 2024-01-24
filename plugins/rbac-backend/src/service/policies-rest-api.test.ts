@@ -106,7 +106,7 @@ const mockEnforcer: Partial<EnforcerDelegate> = {
 
   removeGroupingPolicies: jest.fn().mockImplementation(),
 
-  getMetadata: jest.fn().mockImplementation(async () => {
+  getPolicyMetadata: jest.fn().mockImplementation(async () => {
     const metadata: PermissionPolicyMetadata = { source: 'rest' };
     return Promise.resolve(metadata);
   }),

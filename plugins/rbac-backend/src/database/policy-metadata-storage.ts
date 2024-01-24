@@ -9,7 +9,7 @@ import {
 
 import { policyToString } from '../helper';
 
-const POLICY_METADATA_TABLE = 'policy-metadata';
+export const POLICY_METADATA_TABLE = 'policy-metadata';
 
 export interface PermissionPolicyMetadataDao extends PermissionPolicyMetadata {
   id: number;
@@ -41,16 +41,12 @@ export class DataBasePolicyMetadataStorage implements PolicyMetadataStorage {
     trx: Knex.Transaction,
   ): Promise<PermissionPolicyMetadataDao[]> {
     const db = trx || this.knex;
-    const metadataDao = await db
-      ?.table(POLICY_METADATA_TABLE)
-      .where('source', source);
-
-    return metadataDao;
+    return await db?.table(POLICY_METADATA_TABLE).where('source', source);
   }
 
   async findPolicyMetadata(
     policy: string[],
-    trx: Knex.Transaction,
+    trx?: Knex.Transaction,
   ): Promise<PermissionPolicyMetadata | undefined> {
     const policyMetadataDao = await this.findPolicyMetadataDao(policy, trx);
     if (policyMetadataDao) {
@@ -79,7 +75,7 @@ export class DataBasePolicyMetadataStorage implements PolicyMetadataStorage {
     const stringPolicy = policyToString(policy);
     if (await this.findPolicyMetadataDao(policy, trx)) {
       throw new ConflictError(
-        `A metadata for policy ${stringPolicy} has already been stored`,
+        `A metadata for policy '${stringPolicy}' has already been stored`,
       );
     }
 
@@ -92,7 +88,9 @@ export class DataBasePolicyMetadataStorage implements PolicyMetadataStorage {
       return result[0].id;
     }
 
-    throw new Error(`Failed to create the policy metadata.`);
+    throw new Error(
+      `Failed to create the policy metadata: '${JSON.stringify(metadataDao)}'.`,
+    );
   }
 
   async removePolicyMetadata(
@@ -102,7 +100,7 @@ export class DataBasePolicyMetadataStorage implements PolicyMetadataStorage {
     const metadataDao = await this.findPolicyMetadataDao(policy, trx);
     if (!metadataDao) {
       throw new NotFoundError(
-        `A metadata for policy ${policyToString(policy)} was not found`,
+        `A metadata for policy '${policyToString(policy)}' was not found`,
       );
     }
 
