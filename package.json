@@ -3,7 +3,7 @@
   "version": "2.0.0",
   "private": true,
   "engines": {
-    "node": "18"
+    "node": "18 || 20"
   },
   "scripts": {
     "preinstall": "npx only-allow yarn",
@@ -38,7 +38,7 @@
     ]
   },
   "devDependencies": {
-    "@backstage/cli": "0.23.0",
+    "@backstage/cli": "0.25.1",
     "@ianvs/prettier-plugin-sort-imports": "4.1.1",
     "@janus-idp/cli": "*",
     "@semantic-release/changelog": "6.0.3",
