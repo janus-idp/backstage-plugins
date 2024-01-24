@@ -3,14 +3,13 @@ import {
   PluginEndpointDiscovery,
   TokenManager,
 } from '@backstage/backend-common';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 
-import { Logger } from 'winston';
-
 export interface RouterOptions {
-  logger: Logger;
+  logger: LoggerService;
   identity: IdentityApi;
   permissions: PermissionEvaluator;
   tokenManager: TokenManager;
