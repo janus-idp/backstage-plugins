@@ -5,7 +5,7 @@ import { KialiDetails } from '../service/config';
 export const MILLISECONDS = 1000;
 export const AUTH_KIALI_TOKEN = 'kiali-token-aes';
 
-const timeOutforWarningUser = 60 * MILLISECONDS;
+export const timeOutforWarningUser = 60 * MILLISECONDS;
 
 export enum AuthStrategy {
   anonymous = 'anonymous',
@@ -34,10 +34,10 @@ export type AuthInfo = {
 export class KialiAuthentication {
   protected cookie: string;
   protected auth: AuthInfo;
-  private readonly sessionSeconds: number;
+  private readonly sessionMilliSeconds: number;
 
   constructor(KD: KialiDetails) {
-    this.sessionSeconds = KD.sessionTime
+    this.sessionMilliSeconds = KD.sessionTime
       ? KD.sessionTime * MILLISECONDS
       : timeOutforWarningUser;
     this.auth = {
@@ -46,6 +46,9 @@ export class KialiAuthentication {
     this.cookie = '';
   }
 
+  /*
+    Store Auth Information
+  */
   setAuthInfo = (auth: AuthInfo) => {
     this.auth = auth;
   };
@@ -54,18 +57,24 @@ export class KialiAuthentication {
     return this.auth;
   };
 
+  getSecondsSession = () => {
+    return this.sessionMilliSeconds;
+  };
+
   getCookie = () => {
     return this.cookie;
   };
 
+  /*
+    Store session
+  */
   setSession = (session: SessionInfo) => {
     this.auth.sessionInfo = session;
   };
 
-  checkIfExtendSession = () => {
-    return this.timeLeft() < this.sessionSeconds;
-  };
-
+  /*
+    Parse kiali token with key AUTH_KIALI_TOKEN from headers and store
+  */
   setKialiCookie = (rawCookie: string) => {
     if (rawCookie !== '') {
       const kCookie = rawCookie
@@ -77,16 +86,20 @@ export class KialiAuthentication {
     }
   };
 
+  /*
+    Calculate the time feft until the session expires
+  */
   private timeLeft = (): number => {
     const expiresOn = moment(this.auth.sessionInfo.expiresOn);
-
     if (expiresOn <= moment()) {
       return -1;
     }
-
     return expiresOn.diff(moment());
   };
 
+  /*
+    Check if user should relogin due the timeLeft
+  */
   shouldRelogin = (): boolean => {
     if (this.auth.strategy === 'anonymous') {
       return false;
@@ -94,6 +107,7 @@ export class KialiAuthentication {
     if (this.cookie === '') {
       return true;
     }
-    return moment(this.auth.sessionInfo.expiresOn).diff(moment()) <= 0;
+    const timeLeft = this.timeLeft();
+    return timeLeft <= 0 || timeLeft < this.sessionMilliSeconds;
   };
 }

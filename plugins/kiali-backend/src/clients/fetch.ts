@@ -54,7 +54,10 @@ export class KialiFetcher {
       case AuthStrategy.anonymous:
         break;
       case AuthStrategy.token: {
-        if (this.KialiDetails.serviceAccountToken === '') {
+        if (
+          !this.KialiDetails.serviceAccountToken ||
+          this.KialiDetails.serviceAccountToken === ''
+        ) {
           result.verify = false;
           result.message = `Attribute 'serviceAccountToken' is not in the backstage configuration`;
           result.helper = `For more information follow the steps in https://janus-idp.io/plugins/kiali`;
@@ -74,42 +77,34 @@ export class KialiFetcher {
   async checkSession(): Promise<AuthValid> {
     let checkAuth: AuthValid = { verify: true };
     /*
-     * Check if the actual cookie/session is valid
+     * Get/Update AuthInformation from /api/auth/info
      */
-    if (this.kialiAuth.shouldRelogin()) {
+
+    const auth = await this.getAuthInfo();
+    this.kialiAuth.setAuthInfo(auth);
+    this.logger.info(`AuthInfo: ${JSON.stringify(auth)}`);
+    /*
+     * Check Configuration
+     */
+    checkAuth = this.validateConfiguration(auth);
+    /*
+     * Check if the actual cookie/session is valid and if the configuration is right
+     */
+    if (checkAuth.verify && this.kialiAuth.shouldRelogin()) {
       this.logger.info(`User must relogin`);
-      /*
-       * Get/Update AuthInformation from /api/auth/info
-       */
-      const auth = await this.getAuthInfo();
-      this.kialiAuth.setAuthInfo(auth);
-      this.logger.info(`AuthInfo: ${JSON.stringify(auth)}`);
-      /*
-       * Check Configuration
-       */
-      checkAuth = this.validateConfiguration(auth);
-      if (!checkAuth.verify) {
-        return checkAuth;
-      }
-      /*
-       * Verify that SA token is in the config file
-       */
-      if (this.kialiAuth.checkIfExtendSession()) {
-        this.logger.info(`User need extend the session`);
-        await this.newRequest<AuthInfo>('api/authenticate', true)
-          .then(resp => {
-            const session = resp.data as SessionInfo;
-            this.kialiAuth.setSession(session);
-            this.kialiAuth.setKialiCookie(
-              resp.headers['set-cookie']?.join(';') || '',
-            );
-            this.logger.info(`User ${session.username} logged in kiali plugin`);
-          })
-          .catch(err => {
-            checkAuth.verify = false;
-            checkAuth.message = this.handleUnsuccessfulResponse(err);
-          });
-      }
+      await this.newRequest<AuthInfo>('api/authenticate', true)
+        .then(resp => {
+          const session = resp.data as SessionInfo;
+          this.kialiAuth.setSession(session);
+          this.kialiAuth.setKialiCookie(
+            resp.headers['set-cookie']?.join(';') || '',
+          );
+          this.logger.info(`User ${session.username} logged in kiali plugin`);
+        })
+        .catch(err => {
+          checkAuth.verify = false;
+          checkAuth.message = this.handleUnsuccessfulResponse(err);
+        });
     }
     return checkAuth;
   }
@@ -131,6 +126,9 @@ export class KialiFetcher {
     const requestInit: AxiosRequestConfig = { timeout: TIMEOUT_FETCH };
     const headers = { 'X-Auth-Type-Kiali-UI': '1' };
 
+    /*
+      Check if is an authentication request to add the serviceAccountToken
+    */
     if (auth) {
       const params = new URLSearchParams();
       params.append('token', this.KialiDetails.serviceAccountToken || '');
@@ -146,8 +144,11 @@ export class KialiFetcher {
         cookie: this.kialiAuth.getCookie(),
       };
     }
-
-    const loginUrl = `${this.KialiDetails.url}/${endpoint.replace(/^\//g, '')}`;
+    /*
+      kialiDetails.utl is formatted to make sure it ends in '/'
+      We check that endpoint does not begin with '/'
+    */
+    const loginUrl = `${this.KialiDetails.url}${endpoint.replace(/^\//g, '')}`;
     requestInit.url = new URL(loginUrl).href;
 
     if (this.KialiDetails.skipTLSVerify) {

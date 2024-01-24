@@ -78,7 +78,6 @@
     "dist",
     "dist-scalprum"
   ],
-  "configSchema": "config.d.ts",
   "repository": "github:janus-idp/backstage-plugins",
   "keywords": [
     "backstage",
