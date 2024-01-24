@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useAsync } from 'react-use';
 
 import {
   ErrorPanel,
@@ -20,6 +19,7 @@ import {
 
 import { orchestratorApiRef } from '../api';
 import { VALUE_UNAVAILABLE } from '../constants';
+import usePolling from '../hooks/usePolling';
 import { workflowInstanceRouteRef } from '../routes';
 import { capitalize, ellipsis } from '../utils/StringUtils';
 import { Selector } from './Selector';
@@ -48,14 +48,14 @@ export const WorkflowRunsTabContent = () => {
     Selector.AllItems,
   );
 
-  const { loading, error, value } = useAsync(async () => {
+  const { loading, error, value } = usePolling(async () => {
     const instances = await orchestratorApi.getInstances();
     const clonedData: WorkflowRunDetail[] = instances.map(
       mapProcessInstanceToDetails,
     );
 
     return clonedData;
-  }, [orchestratorApi]);
+  });
 
   const columns = React.useMemo(
     (): TableColumn<WorkflowRunDetail>[] => [
