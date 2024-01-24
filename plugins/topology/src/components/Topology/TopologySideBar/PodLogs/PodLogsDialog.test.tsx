@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 
 import { V1Pod } from '@kubernetes/client-node';
-import { render } from '@testing-library/react';
+import { fireEvent, render } from '@testing-library/react';
 
 import { mockKubernetesResponse } from '../../../../__fixtures__/1-deployments';
 import { PodLogsDialog } from './PodLogsDialog';
@@ -28,9 +28,12 @@ describe('PodLogsDialog', () => {
       clusters: ['OCP'],
       selectedCluster: [0],
     });
-    const { queryByText, queryByTestId } = render(
+    const { queryByText, queryByTestId, getByRole } = render(
       <PodLogsDialog podData={mockKubernetesResponse.pods[0] as V1Pod} />,
     );
+    const button = getByRole('button');
+
+    fireEvent.click(button);
     expect(queryByText(/View Logs/i)).toBeInTheDocument();
     expect(queryByTestId('dialog')).toBeInTheDocument();
   });

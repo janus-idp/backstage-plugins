@@ -11,11 +11,17 @@ import { ContainerScope } from './types';
 type PodLogsProps = {
   podScope: ContainerScope;
   setLogText: React.Dispatch<React.SetStateAction<string>>;
+  stopPolling: boolean;
 };
 
-export const PodLogs = ({ podScope, setLogText }: PodLogsProps) => {
+export const PodLogs = ({
+  podScope,
+  setLogText,
+  stopPolling,
+}: PodLogsProps) => {
   const { value, error, loading } = usePodLogs({
     podScope: podScope,
+    stopPolling,
   });
 
   React.useEffect(() => {

@@ -65,7 +65,10 @@ export const usePodLogsOfPipelineRun = ({
     return requests.length > 0 ? Promise.all(requests) : [];
   }, [containersList, pod, getLogs]);
 
-  useInterval(() => retry(), intervalMs);
+  const stopPolling =
+    pod?.status?.phase === 'Succeeded' || pod?.status?.phase === 'Failed';
+
+  useInterval(() => retry(), stopPolling ? null : intervalMs);
 
   React.useEffect(() => {
     let mounted = true;
