@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-kiali-backend [1.8.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali-backend@1.8.3...@janus-idp/backstage-plugin-kiali-backend@1.8.4) (2024-01-25)
+
+
+### Bug Fixes
+
+* **kiali:** remove strategy in dinamyc plugin ([#1121](https://github.com/janus-idp/backstage-plugins/issues/1121)) ([88e8b83](https://github.com/janus-idp/backstage-plugins/commit/88e8b834f5553e5520b68c09824cbc22ab6aeac2))
+
 ## @janus-idp/backstage-plugin-kiali-backend [1.8.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali-backend@1.8.2...@janus-idp/backstage-plugin-kiali-backend@1.8.3) (2024-01-25)
 
 
