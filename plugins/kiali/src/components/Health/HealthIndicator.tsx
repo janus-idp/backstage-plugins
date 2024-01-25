@@ -4,6 +4,7 @@ import { PopoverPosition, Tooltip } from '@patternfly/react-core';
 
 import { createTooltipIcon } from '../../config/KialiIcon';
 import * as H from '../../types/Health';
+import { HealthDetails } from './HealthDetails';
 import { healthIndicatorStyle } from './HealthStyle';
 import { createIcon } from './Helper';
 
@@ -27,7 +28,7 @@ export const HealthIndicator: React.FC<HealthIndicatorProps> = (
         content={
           <div>
             <strong>{globalStatus.name}</strong>
-            {props.health}
+            <HealthDetails health={props.health} />
           </div>
         }
         position={PopoverPosition.auto}

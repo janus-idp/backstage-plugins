@@ -6,7 +6,7 @@ import { useApi } from '@backstage/core-plugin-api';
 import { CircularProgress, Grid } from '@material-ui/core';
 import _ from 'lodash';
 
-import * as FilterHelper from '../../components/FilterList/FitlerHelper';
+import * as FilterHelper from '../../components/FilterList/FilterHelper';
 import { isMultiCluster, serverConfig } from '../../config';
 import { getErrorString, kialiApiRef } from '../../services/Api';
 import { computePrometheusRateParams } from '../../services/Prometheus';

@@ -9,7 +9,7 @@ import {
   LabelOperation,
   ToggleType,
 } from '../../types/Filters';
-import * as FilterHelper from '../FilterList/FitlerHelper';
+import * as FilterHelper from '../FilterList/FilterHelper';
 
 export class FilterSelected {
   static selectedFilters: ActiveFilter[] | undefined = undefined;
@@ -94,24 +94,18 @@ export interface StatefulFiltersProps {
   ref?: React.RefObject<any>;
 }
 
-interface StatefulFiltersState {
-  activeFilters: ActiveFiltersInfo;
-  activeToggles: number;
-  currentFilterType: FilterType;
-  currentValue: string;
-  filterTypes: FilterType[];
-  focusedItemIndex: number | null;
-  isOpen: boolean;
+export interface StatefulFilters {
+  filterAdded(labelFilt: FilterType, label: string): unknown;
+  removeFilter(category: string, label: string): unknown;
 }
-
+/*
 export const StatefulFilters = (
-  filterProps: StatefulFiltersProps,
-  filterState: StatefulFiltersState,
+  filterProps: StatefulFiltersProps
 ) => {
   return (
     <>
       {filterProps.initialFilters}
-      {filterState.activeFilters}
     </>
   );
 };
+*/

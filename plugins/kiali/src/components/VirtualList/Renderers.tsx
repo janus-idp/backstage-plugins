@@ -3,10 +3,16 @@ import { Link } from 'react-router-dom';
 
 import { TableCell, Tooltip } from '@material-ui/core';
 
-import { KialiIcon, serverConfig } from '../../config';
+import { isMultiCluster, KialiIcon, serverConfig } from '../../config';
 import { infoStyle } from '../../pages/Overview/OverviewCard/CanaryUpgradeProgress';
 import { ControlPlaneBadge } from '../../pages/Overview/OverviewCard/ControlPlaneBadge';
 import { OverviewCardSparklineCharts } from '../../pages/Overview/OverviewCard/OverviewCardSparklineCharts';
+import {
+  appLabelFilter,
+  labelFilter as NsLabelFilter,
+  versionLabelFilter,
+} from '../../pages/WorkloadList/FiltersAndSorts';
+import { ActiveFilter } from '../../types/Filters';
 import { Health } from '../../types/Health';
 import { IstioConfigItem } from '../../types/IstioConfigList';
 import { ValidationStatus } from '../../types/IstioObjects';
@@ -14,7 +20,12 @@ import { ComponentStatus } from '../../types/IstioStatus';
 import { NamespaceInfo } from '../../types/NamespaceInfo';
 import { ServiceListItem } from '../../types/ServiceList';
 import { WorkloadListItem } from '../../types/Workload';
+import * as FilterHelper from '../FilterList/FilterHelper';
+import { labelFilter } from '../Filters/CommonFilters';
+import { StatefulFilters } from '../Filters/StatefulFilters';
 import { HealthIndicator } from '../Health/HealthIndicator';
+import { Label } from '../Label/Label';
+import { getIstioObjectUrl } from '../Link/IstioObjectLink';
 import { ValidationSummaryLink } from '../Link/ValidationSummaryLink';
 import { NamespaceMTLSStatus } from '../MTls/NamespaceMTLSStatus';
 import { PFBadge, PFBadges, PFBadgeType } from '../Pf/PfBadges';
@@ -27,9 +38,40 @@ import {
   TResource,
 } from './Config';
 
-// Links TODO
-
 const topPosition = 'top';
+
+// Istio Links
+const getIstioLink = (item: TResource): string => {
+  const type = item.type;
+
+  return getIstioObjectUrl(item.name, item.namespace, type, item.cluster);
+};
+
+// Links
+const getLink = (item: TResource, config: Resource, query?: string): string => {
+  let url =
+    config.name === 'istio'
+      ? getIstioLink(item)
+      : `/namespaces/${item.namespace}/${config.name}/${item.name}`;
+
+  if (item.cluster && isMultiCluster && !url.includes('cluster')) {
+    if (url.includes('?')) {
+      url = `${url}&clusterName=${item.cluster}`;
+    } else {
+      url = `${url}?clusterName=${item.cluster}`;
+    }
+  }
+
+  if (query) {
+    if (url.includes('?')) {
+      url = `${url}&${query}`;
+    } else {
+      url = `${url}?${query}`;
+    }
+  }
+
+  return url;
+};
 
 // Cells
 export const actionRenderer = (
@@ -49,9 +91,10 @@ export const actionRenderer = (
 
 export const item: Renderer<TResource> = (
   resource: TResource,
-  _: Resource,
+  config: Resource,
   badge: PFBadgeType,
 ) => {
+  const key = `link_definition_${config.name}_${resource.namespace}_${resource.name}`;
   let serviceBadge = badge;
 
   if ('serviceRegistry' in resource && resource.serviceRegistry) {
@@ -71,10 +114,13 @@ export const item: Renderer<TResource> = (
   return (
     <TableCell
       role="gridcell"
-      key={`VirtuaItem_Item_${resource.namespace}_${item.name}`}
+      key={`VirtuaItem_Item_${resource.namespace}_${resource.name}`}
       style={{ verticalAlign: 'middle' }}
     >
       <PFBadge badge={serviceBadge} position={topPosition} />
+      <Link key={key} to={getLink(resource, config)}>
+        {resource.name}
+      </Link>
     </TableCell>
   );
 };
@@ -105,17 +151,54 @@ export const namespace: Renderer<TResource> = (resource: TResource) => {
   );
 };
 
+const labelActivate = (
+  filters: ActiveFilter[],
+  key: string,
+  value: string,
+  id: string,
+): boolean => {
+  return filters.some(filter => {
+    if (filter.category === id) {
+      if (filter.value.includes('=')) {
+        const [k, v] = filter.value.split('=');
+
+        if (k === key) {
+          return v
+            .split(',')
+            .some(val =>
+              value.split(',').some(vl => vl.trim().startsWith(val.trim())),
+            );
+        }
+
+        return false;
+      }
+
+      return key === filter.value;
+    }
+    if (filter.category === appLabelFilter.category) {
+      return filter.value === 'Present' && key === 'app';
+    }
+
+    return filter.value === 'Present' && key === 'version';
+  });
+};
+
 export const labels: Renderer<SortResource | NamespaceInfo> = (
   resource: SortResource | NamespaceInfo,
   _: Resource,
   __: PFBadgeType,
   ___?: Health,
+  statefulFilter?: React.RefObject<StatefulFilters>,
 ) => {
   // @ts-ignore
   let path = window.location.pathname;
   path = path.substring(path.lastIndexOf('/console') + '/console'.length + 1);
-  // const labelFilt = path === 'overview' ? NsLabelFilter : labelFilter;
-  // const filters = FilterHelper.getFiltersFromURL([labelFilt, appLabelFilter, versionLabelFilter]);
+  const labelFilt = path === 'overview' ? NsLabelFilter : labelFilter;
+  const filters = FilterHelper.getFiltersFromURL([
+    labelFilt,
+    appLabelFilter,
+    versionLabelFilter,
+  ]);
 
   return (
     <TableCell
@@ -126,11 +209,66 @@ export const labels: Renderer<SortResource | NamespaceInfo> = (
       style={{ verticalAlign: 'middle', paddingBottom: '0.25rem' }}
     >
       {resource.labels &&
-        Object.entries(resource.labels).map(([key, value]) => {
-          return (
-            <Tooltip key={`Tooltip_Label_${key}_${value}`} title={value}>
-              <div>{value}</div>
+        Object.entries(resource.labels).map(([key, value], i) => {
+          const label = `${key}=${value}`;
+          const labelAct = labelActivate(
+            filters.filters,
+            key,
+            value,
+            labelFilt.category,
+          );
+
+          const isExactlyLabelFilter = FilterHelper.getFiltersFromURL([
+            labelFilt,
+          ]).filters.some(f => f.value.includes(label));
+
+          const labelComponent = (
+            <Label
+              key={`label_${i}`}
+              name={key}
+              value={value}
+              style={{
+                cursor:
+                  isExactlyLabelFilter || !labelAct ? 'pointer' : 'not-allowed',
+                whiteSpace: 'nowrap',
+              }}
+              onClick={(): void => {
+                if (statefulFilter) {
+                  if (labelAct) {
+                    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+                    isExactlyLabelFilter &&
+                      statefulFilter.current!.removeFilter(
+                        labelFilt.category,
+                        label,
+                      );
+                  } else {
+                    statefulFilter.current!.filterAdded(labelFilt, label);
+                  }
+                }
+              }}
+            />
+          );
+
+          return statefulFilter ? (
+            <Tooltip
+              key={`Tooltip_Label_${key}_${value}`}
+              title={
+                // eslint-disable-next-line no-nested-ternary
+                labelAct ? (
+                  isExactlyLabelFilter ? (
+                    <>Remove label from Filters</>
+                  ) : (
+                    <>Kiali can't remove the filter if is an expression</>
+                  )
+                ) : (
+                  <>Add label to Filters</>
+                )
+              }
+            >
+              {labelComponent}
             </Tooltip>
+          ) : (
+            labelComponent
           );
         })}
     </TableCell>
