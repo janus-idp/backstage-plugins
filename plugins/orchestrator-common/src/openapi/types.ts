@@ -1,4 +1,4 @@
-import { components } from '../../api/auto-generated/models/schema';
+import { components } from '../auto-generated/api/models/schema';
 
 export type WorkflowOverviewListResultDTO =
   components['schemas']['WorkflowOverviewListResultDTO'];
