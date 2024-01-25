@@ -1,3 +1,10 @@
+## @janus-idp/plugin-notifications [1.1.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications@1.1.2...@janus-idp/plugin-notifications@1.1.3) (2024-01-25)
+
+
+### Bug Fixes
+
+* **notifications:** fix navigation to Updates ([#1120](https://github.com/janus-idp/backstage-plugins/issues/1120)) ([e282b22](https://github.com/janus-idp/backstage-plugins/commit/e282b227a97ab1b7207755d1f5285e573be922de))
+
 ## @janus-idp/plugin-notifications [1.1.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications@1.1.1...@janus-idp/plugin-notifications@1.1.2) (2024-01-25)
 
 
