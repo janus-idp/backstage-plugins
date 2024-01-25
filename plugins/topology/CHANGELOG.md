@@ -1,3 +1,11 @@
+## @janus-idp/backstage-plugin-topology [1.17.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.17.3...@janus-idp/backstage-plugin-topology@1.17.4) (2024-01-25)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.6.0
+
 ## @janus-idp/backstage-plugin-topology [1.17.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.17.2...@janus-idp/backstage-plugin-topology@1.17.3) (2024-01-17)
 
 
