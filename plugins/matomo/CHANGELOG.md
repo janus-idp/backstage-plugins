@@ -1,3 +1,11 @@
+## @janus-idp/backstage-plugin-matomo [1.2.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-matomo@1.2.0...@janus-idp/backstage-plugin-matomo@1.2.1) (2024-01-25)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.6.0
+
 ## @janus-idp/backstage-plugin-matomo [1.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-matomo@1.1.13...@janus-idp/backstage-plugin-matomo@1.2.0) (2024-01-16)
 
 
