@@ -28,6 +28,7 @@ type PermissionPoliciesFormRowProps = {
   onChangePermission: (permission: string, policies?: string[]) => void;
   onChangePolicy: (isChecked: boolean, policyIndex: number) => void;
   handleBlur: React.FocusEventHandler<HTMLInputElement | HTMLTextAreaElement>;
+  getPermissionDisabled: (permission: string) => boolean;
 };
 
 export const PermissionPoliciesFormRow = ({
@@ -41,6 +42,7 @@ export const PermissionPoliciesFormRow = ({
   onChangePolicy,
   onChangePlugin,
   handleBlur,
+  getPermissionDisabled,
 }: PermissionPoliciesFormRowProps) => {
   const classes = useStyles();
   const [pluginSearch, setPluginSearch] = React.useState('');
@@ -97,6 +99,7 @@ export const PermissionPoliciesFormRow = ({
         }
         inputValue={permissionSearch}
         onInputChange={(_e, newSearch) => setPermissionSearch(newSearch)}
+        getOptionDisabled={getPermissionDisabled}
         renderInput={params => (
           <TextField
             {...params}
