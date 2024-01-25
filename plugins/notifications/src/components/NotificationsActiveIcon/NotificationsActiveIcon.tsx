@@ -74,26 +74,30 @@ export const NotificationsActiveIcon = () => {
     return <NotificationsErrorIcon />;
   }
 
-  if (unreadCount) {
-    return (
-      <>
-        <Badge color="secondary" variant="dot" overlap="circular">
-          <NotificationsIcon />
-        </Badge>
+  const showSystemWideNotification =
+    lastSystemWideNotification &&
+    !lastSystemWideNotification.readByUser &&
+    closedNotificationId !== lastSystemWideNotification.id;
 
-        {lastSystemWideNotification &&
-          !lastSystemWideNotification.readByUser &&
-          closedNotificationId !== lastSystemWideNotification.id && (
-            <SystemNotificationAlert
-              message={lastSystemWideNotification.title}
-              onCloseNotification={() =>
-                setClosedNotificationId(lastSystemWideNotification.id)
-              }
-            />
-          )}
-      </>
-    );
-  }
+  return (
+    <>
+      <Badge
+        color="secondary"
+        variant="dot"
+        overlap="circular"
+        invisible={unreadCount === 0}
+      >
+        <NotificationsIcon />
+      </Badge>
 
-  return <NotificationsIcon />;
+      {showSystemWideNotification && (
+        <SystemNotificationAlert
+          message={lastSystemWideNotification.title}
+          onCloseNotification={() =>
+            setClosedNotificationId(lastSystemWideNotification.id)
+          }
+        />
+      )}
+    </>
+  );
 };
