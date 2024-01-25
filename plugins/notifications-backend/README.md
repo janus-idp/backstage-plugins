@@ -12,7 +12,7 @@ To install it as a dynamic plugin, please follow instructions here: https://gith
 
 To install it as a static plugin, several steps are required as described below.
 
-In any case, do not miss the info about configuration and especially about creating entities in Catalog as described below.
+In any case, do not miss the info about configuration and especially about creating entities [in Catalog as described below](#important-user-entities-in-catalog).
 
 ## Getting started
 
@@ -192,7 +192,7 @@ catalog:
   locations:
     # Local example data, file locations are relative to the backend process, typically `packages/backend`
     - type: file
-      # *** Here is a new change, referes to a file stored in the root of the Backstage:
+      # *** Here is a new change, refers to a file stored in the root of the Backstage:
       target: ../../users.yaml
 ```
 
