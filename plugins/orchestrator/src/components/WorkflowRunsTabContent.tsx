@@ -18,7 +18,7 @@ import {
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { orchestratorApiRef } from '../api';
-import { VALUE_UNAVAILABLE } from '../constants';
+import { DEFAULT_TABLE_PAGE_SIZE, VALUE_UNAVAILABLE } from '../constants';
 import usePolling from '../hooks/usePolling';
 import { workflowInstanceRouteRef } from '../routes';
 import { capitalize, ellipsis } from '../utils/StringUtils';
@@ -116,6 +116,7 @@ export const WorkflowRunsTabContent = () => {
     ),
     [statusSelectorValue, statuses],
   );
+  const paging = (value?.length || 0) > DEFAULT_TABLE_PAGE_SIZE; // this behavior fits the backstage catalog table behavior https://github.com/backstage/backstage/blob/v1.14.0/plugins/catalog/src/components/CatalogTable/CatalogTable.tsx#L228
 
   return error ? (
     <ErrorPanel error={error} />
@@ -124,8 +125,9 @@ export const WorkflowRunsTabContent = () => {
       <Table
         title="Workflow Runs"
         options={{
+          paging,
           search: true,
-          paging: true,
+          pageSize: DEFAULT_TABLE_PAGE_SIZE,
         }}
         isLoading={loading}
         columns={columns}

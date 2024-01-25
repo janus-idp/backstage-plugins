@@ -4,9 +4,7 @@ import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
 
 import { Meta, StoryObj } from '@storybook/react';
 
-import { WorkflowOverview } from '@janus-idp/backstage-plugin-orchestrator-common';
-
-import { fakeProcessInstances } from '../__fixtures__/fakeProcessInstance';
+import { generateFakeProcessInstances } from '../__fixtures__/fakeLongProcessInstanceList';
 import { fakeWorkflowOverviewList } from '../__fixtures__/fakeWorkflowOverviewList';
 import { orchestratorApiRef } from '../api';
 import { MockOrchestratorClient } from '../api/MockOrchestratorClient';
@@ -19,12 +17,16 @@ const meta = {
   decorators: [
     (Story, context) => {
       const api = new MockOrchestratorClient({
-        getInstancesResponse: Promise.resolve(fakeProcessInstances),
+        getInstancesResponse: Promise.resolve(
+          generateFakeProcessInstances(
+            (context.args as { length: number }).length,
+          ),
+        ),
         listWorkflowsOverviewResponse: Promise.resolve({
           limit: 0,
           offset: 0,
           totalCount: 1,
-          items: (context.args as { items: WorkflowOverview[] }).items,
+          items: fakeWorkflowOverviewList,
         }),
       });
 
@@ -48,9 +50,16 @@ const meta = {
 type Story = StoryObj<typeof meta>;
 
 export const WorkflowRunsTabContentStory: Story = {
-  name: 'Sample 1',
+  name: 'Short list',
   args: {
-    items: fakeWorkflowOverviewList,
+    length: 3,
+  },
+};
+
+export const WorkflowRunsTabContentLongListStory: Story = {
+  name: 'Long list',
+  args: {
+    length: 100,
   },
 };
 
