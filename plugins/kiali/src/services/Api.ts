@@ -31,7 +31,11 @@ import { Namespace } from '../types/Namespace';
 import { ServerConfig } from '../types/ServerConfig';
 import { StatusState } from '../types/StatusState';
 import { TLSStatus } from '../types/TLSStatus';
-import { filterNsByAnnotation } from '../utils/entityFilter';
+import { WorkloadListItem, WorkloadNamespaceResponse } from '../types/Workload';
+import {
+  filterNsByAnnotation,
+  filterWkByAnnotation,
+} from '../utils/entityFilter';
 
 export const ANONYMOUS_USER = 'anonymous';
 
@@ -116,6 +120,8 @@ export interface KialiApi {
   getIstioCertsInfo(): Promise<CertsInfo[]>;
   setEntity(entity?: Entity): void;
   status(): Promise<any>;
+
+  getWorkloads(namespace: string): Promise<WorkloadListItem[]>;
 }
 
 export const kialiApiRef = createApiRef<KialiApi>({
@@ -477,6 +483,16 @@ export class KialiApiClient implements KialiApi {
 
   setEntity = (entity?: Entity) => {
     this.entity = entity;
+  };
+
+  getWorkloads = async (namespace: string): Promise<WorkloadListItem[]> => {
+    return this.newRequest<WorkloadNamespaceResponse>(
+      HTTP_VERBS.GET,
+      urls.workloads(namespace),
+      { health: true, istioResources: true, rateInterval: '60s' },
+      {},
+      // eslint-disable-next-line no-console
+    ).then(resp => filterWkByAnnotation(resp, this.entity));
   };
 }
 

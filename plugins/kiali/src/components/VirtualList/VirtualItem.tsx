@@ -22,10 +22,10 @@ type VirtualItemProps = {
 
 export const VirtualItem = (props: VirtualItemProps) => {
   const getBadge = (): React.ReactNode => {
-    // @ts-ignore
-    return itemProps.config.name !== 'istio'
-      ? itemProps.config.badge
-      : IstioTypes[itemProps.item.type].badge;
+    const istioType = typeof props.item;
+    return props.config.name !== 'istio'
+      ? props.config.badge
+      : IstioTypes[istioType].badge;
   };
 
   const renderDetails = (

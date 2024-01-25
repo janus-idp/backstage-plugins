@@ -14,6 +14,7 @@ export type Renderer<R extends RenderResource> = (
   item: R,
   config: Resource,
   badge: PFBadgeType,
+  type: string,
   health?: Health,
   statefulFilter?: StatefulFiltersProps,
 ) => JSX.Element | undefined;

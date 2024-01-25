@@ -48,15 +48,13 @@ export const actionRenderer = (
 };
 
 export const item: Renderer<TResource> = (
-  res: TResource,
+  resource: TResource,
   _: Resource,
   badge: PFBadgeType,
 ) => {
   let serviceBadge = badge;
 
-  // @ts-ignore
-  if (resource.serviceRegistry) {
-    // @ts-ignore
+  if ('serviceRegistry' in resource && resource.serviceRegistry) {
     switch (resource.serviceRegistry) {
       case 'External':
         serviceBadge = PFBadges.ExternalService;
@@ -73,7 +71,7 @@ export const item: Renderer<TResource> = (
   return (
     <TableCell
       role="gridcell"
-      key={`VirtuaItem_Item_${res.namespace}_${item.name}`}
+      key={`VirtuaItem_Item_${resource.namespace}_${item.name}`}
       style={{ verticalAlign: 'middle' }}
     >
       <PFBadge badge={serviceBadge} position={topPosition} />

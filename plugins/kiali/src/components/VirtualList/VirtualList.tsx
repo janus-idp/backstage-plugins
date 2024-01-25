@@ -41,6 +41,7 @@ type VirtualListProps<R> = {
 };
 
 export const VirtualList = (listProps: VirtualListProps<RenderResource>) => {
+  // @ts-ignore
   const conf = config[listProps.type] as Resource;
   const getColumns = (): ResourceType<any>[] => {
     let columns = [] as ResourceType<any>[];
@@ -58,16 +59,6 @@ export const VirtualList = (listProps: VirtualListProps<RenderResource>) => {
   const { rows } = listProps;
   const typeDisplay =
     listProps.type === 'istio' ? 'Istio config' : listProps.type;
-  const childrenWithProps = React.Children.map(listProps.children, child => {
-    // Checking isValidElement is the safe way and avoids a TS error too.
-    if (React.isValidElement(child)) {
-      return React.cloneElement(child, {
-        ref: statefulFilters,
-      } as React.Attributes);
-    }
-
-    return child;
-  });
 
   const rowItems = rows.map((row, index) => (
     <VirtualItem
@@ -76,9 +67,7 @@ export const VirtualList = (listProps: VirtualListProps<RenderResource>) => {
       index={index}
       columns={columns}
       config={conf}
-      statefulFilterProps={
-        listProps.statefulProps ? listProps.statefulProps : statefulFilters
-      }
+      statefulFilterProps={listProps.statefulProps}
       action={
         listProps.actions && listProps.actions[index]
           ? listProps.actions[index]
@@ -89,14 +78,11 @@ export const VirtualList = (listProps: VirtualListProps<RenderResource>) => {
 
   return (
     <div>
-      {childrenWithProps}
       <Table>
         <TableHead>
           <TableRow>
             {columns.map((column, index) => (
-              <TableCell key={`column_${index}`} width={column.width}>
-                {column.title}
-              </TableCell>
+              <TableCell key={`column_${index}`}>{column.title}</TableCell>
             ))}
           </TableRow>
         </TableHead>

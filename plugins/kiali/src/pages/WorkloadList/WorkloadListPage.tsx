@@ -7,34 +7,65 @@ import { useEntity } from '@backstage/plugin-catalog-react';
 
 import { CircularProgress } from '@material-ui/core';
 
-import { kialiApiRef } from '../../services/Api';
+import { VirtualList } from '../../components/VirtualList/VirtualList';
+import { getErrorString, kialiApiRef } from '../../services/Api';
+import { KialiAppState, KialiContext } from '../../store';
+import { WorkloadListItem } from '../../types/Workload';
+import { NamespaceInfo } from '../Overview/NamespaceInfo';
 
 export const WorkloadListPage = () => {
   const kialiClient = useApi(kialiApiRef);
   kialiClient.setEntity(useEntity().entity);
 
+  const [namespaces, setNamespaces] = React.useState<NamespaceInfo[]>([]);
+  const [allWorkloads, setWorkloads] = React.useState<WorkloadListItem[]>([]);
+  const kialiState = React.useContext(KialiContext) as KialiAppState;
+
+  const fetchWorkloads = (nss: NamespaceInfo[]): Promise<void> => {
+    return Promise.all(
+      nss.map(nsInfo => {
+        return kialiClient.getWorkloads(nsInfo.name).then(workloadsResponse => {
+          return workloadsResponse;
+        });
+      }),
+    )
+      .then(results => {
+        let wkList: WorkloadListItem[] = [];
+        results.forEach(result => {
+          wkList = Array.from(wkList).concat(result);
+        });
+        setWorkloads(wkList);
+      })
+      .catch(err =>
+        kialiState.alertUtils!.add(
+          `Could not fetch workloads: ${getErrorString(err)}`,
+        ),
+      );
+  };
+
   const load = async () => {
-    kialiClient.getNamespaces().then(() => {
-      /*
-            const allNamespaces: NamespaceInfo[] = namespacesResponse.map(ns => {
-                const previous = namespaces.find(prev => prev.name === ns.name);
-                return {
-                    name: ns.name,
-                    cluster: ns.cluster,
-                    isAmbient: ns.isAmbient,
-                    status: previous ? previous.status : undefined,
-                    tlsStatus: previous ? previous.tlsStatus : undefined,
-                    metrics: previous ? previous.metrics : undefined,
-                    errorMetrics: previous ? previous.errorMetrics : undefined,
-                    validations: previous ? previous.validations : undefined,
-                    labels: ns.labels,
-                    annotations: ns.annotations,
-                    controlPlaneMetrics: previous
-                        ? previous.controlPlaneMetrics
-                        : undefined,
-                };
-            });
-            */
+    kialiClient.getNamespaces().then(namespacesResponse => {
+      const allNamespaces: NamespaceInfo[] = namespacesResponse.map(ns => {
+        const previous = namespaces.find(prev => prev.name === ns.name);
+        return {
+          name: ns.name,
+          cluster: ns.cluster,
+          isAmbient: ns.isAmbient,
+          status: previous ? previous.status : undefined,
+          tlsStatus: previous ? previous.tlsStatus : undefined,
+          metrics: previous ? previous.metrics : undefined,
+          errorMetrics: previous ? previous.errorMetrics : undefined,
+          validations: previous ? previous.validations : undefined,
+          labels: ns.labels,
+          annotations: ns.annotations,
+          controlPlaneMetrics: previous
+            ? previous.controlPlaneMetrics
+            : undefined,
+        };
+      });
+
+      setNamespaces(allNamespaces);
+      fetchWorkloads(allNamespaces);
     });
   };
 
@@ -60,7 +91,11 @@ export const WorkloadListPage = () => {
   return (
     <Page themeId="tool">
       <Content>
-        <VirtualList></VirtualList>
+        <VirtualList
+          activeNamespaces={namespaces}
+          rows={allWorkloads}
+          type="workloads"
+        />
       </Content>
     </Page>
   );
