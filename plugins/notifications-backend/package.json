@@ -65,6 +65,7 @@
     "dist-dynamic/*.*",
     "dist-dynamic/dist/**",
     "dist-dynamic/alpha/*",
-    "config.d.ts"
+    "config.d.ts",
+    "users.yaml"
   ]
 }
