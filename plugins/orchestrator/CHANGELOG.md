@@ -1,3 +1,15 @@
+## @janus-idp/backstage-plugin-orchestrator [1.1.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.1.0...@janus-idp/backstage-plugin-orchestrator@1.1.1) (2024-01-25)
+
+
+### Bug Fixes
+
+* **orchestrator:** set default workflow runs table size to 20 ([#1127](https://github.com/janus-idp/backstage-plugins/issues/1127)) ([c5e14fd](https://github.com/janus-idp/backstage-plugins/commit/c5e14fd8e343df7d8c6db7f539fbbd2747e7792e))
+
+
+### Documentation
+
+* **orchestrator:** adds a section about deploying as a dynamic plugins ([#1125](https://github.com/janus-idp/backstage-plugins/issues/1125)) ([eaff621](https://github.com/janus-idp/backstage-plugins/commit/eaff621cf39ab76909446616230de48512714187))
+
 ## @janus-idp/backstage-plugin-orchestrator [1.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.0.2...@janus-idp/backstage-plugin-orchestrator@1.1.0) (2024-01-25)
 
 
