@@ -147,15 +147,15 @@ function setOpenAPIOptions(openapiFolderPath: string): Options {
     handlers: {
       validationFail: async (
         c,
-        req: express.Request,
+        _req: express.Request,
         res: express.Response,
       ) => {
         console.log('validationFail', c.operation);
         res.status(400).json({ err: c.validation.errors });
       },
-      notFound: async (c, req: express.Request, res: express.Response) =>
+      notFound: async (_c, _req: express.Request, res: express.Response) =>
         res.status(404).json({ err: 'not found' }),
-      notImplemented: async (c, req: express.Request, res: express.Response) =>
+      notImplemented: async (_, _req: express.Request, res: express.Response) =>
         res.status(500).json({ err: 'not implemented' }),
     },
   };
