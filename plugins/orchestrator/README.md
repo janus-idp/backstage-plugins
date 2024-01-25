@@ -50,11 +50,14 @@ The Orchestrator plugin is composed of the following packages:
 - `@janus-idp/backstage-plugin-orchestrator-backend` package connects the Backstage server to the Orchestrator. For setup process, see [Backend Setup](#setting-up-the-orchestrator-backend-package)
 - `@janus-idp/backstage-plugin-orchestrator` package contains frontend components for the Orchestrator plugin. For setup process, see [Frontend Setup](#setting-up-the-orchestrator-frontend-package)
 - `@janus-idp/backstage-plugin-orchestrator-common` package contains shared code between the Orchestrator plugin packages.
-- `@janus-idp/backstage-plugin-catalog-backend-module-orchestrator-entity-provider` package is a backend module to the catalog plugin to build the Orchestrator entity provider.
 
 #### Prerequisites
 
 - Docker up and running (currently it is a limitation, see [Limitations](#limitations))
+
+#### Setting up the Orchestrator as a dynamic plugin in a Helm deployment
+
+Please follow this link for instructions: https://github.com/janus-idp/backstage-showcase/blob/main/showcase-docs/dynamic-plugins.md#helm-deployment
 
 #### Setting up the configuration for the Orchestrator plugin
 
@@ -71,11 +74,10 @@ orchestrator:
       localPath: /tmp/orchestrator/repository
       autoPush: true
   dataIndexService:
-    url: ${DATA_INDEX_URL}
+    url: http://localhost:8899
 ```
 
-- when interacting with an existing Sonataflow backend service from `baseUrl` and `port`, `autoStart` needs to be unset or set to `false`, also the section of `workflowSource` can be neglected.
-- set the environment variable `DATA_INDEX_URL`, which points to a running data index service accessible via data index graphql interface such as http://<server:port>/graphql
+- When interacting with an existing SonataFlow infrastructure, the `sonataFlowService` config section must be entirely omitted and the `dataIndexService.url` must point to the existing Data Index Service.
 
 For more information about the configuration options, including other optional properties, see the [config.d.ts](../orchestrator-common/config.d.ts) file.
 
@@ -203,7 +205,7 @@ For more information about the configuration options, including other optional p
    );
    ```
 
-1. Add the Orchestrator to Backstage side bar (`packages/app/src/components/Root/Root.tsx`):
+1. Add the Orchestrator to Backstage sidebar (`packages/app/src/components/Root/Root.tsx`):
 
    ```tsx title="packages/app/src/components/Root/Root.tsx"
    /* highlight-add-next-line */
