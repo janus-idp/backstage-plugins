@@ -1,3 +1,10 @@
+## @janus-idp/plugin-notifications-backend [1.1.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications-backend@1.1.1...@janus-idp/plugin-notifications-backend@1.1.2) (2024-01-25)
+
+
+### Bug Fixes
+
+* **notifications:** improve README for adding users to Catalog ([#1119](https://github.com/janus-idp/backstage-plugins/issues/1119)) ([d7cf42c](https://github.com/janus-idp/backstage-plugins/commit/d7cf42c69ef18f1de85b179c3d6af1ae91b0c5ce))
+
 ## @janus-idp/plugin-notifications-backend [1.1.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications-backend@1.1.0...@janus-idp/plugin-notifications-backend@1.1.1) (2024-01-25)
 
 
