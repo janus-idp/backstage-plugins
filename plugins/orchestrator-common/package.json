@@ -35,7 +35,7 @@
     "clean": "backstage-cli package clean",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
-    "generate-models": "openapi-typescript ./api/openapi.yaml -o ./api/auto-generated/models/schema.d.ts"
+    "generate-models": "openapi-typescript ./api/openapi.yaml -o ./src/auto-generated/api/models/schema.ts"
   },
   "dependencies": {
     "@severlessworkflow/sdk-typescript": "^3.0.3",
