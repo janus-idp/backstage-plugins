@@ -1,5 +1,4 @@
 import { errorHandler } from '@backstage/backend-common';
-import { Config } from '@backstage/config';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { ScmIntegrations } from '@backstage/integration';
 import { JsonObject, JsonValue } from '@backstage/types';
@@ -7,13 +6,14 @@ import { JsonObject, JsonValue } from '@backstage/types';
 import express from 'express';
 import Router from 'express-promise-router';
 import { JSONSchema7 } from 'json-schema';
-import { OpenAPIBackend, Request } from 'openapi-backend';
-import { Logger } from 'winston';
+import { OpenAPIBackend, Options, Request } from 'openapi-backend';
 
 import {
   fromWorkflowSource,
   ORCHESTRATOR_SERVICE_READY_TOPIC,
   WorkflowDataInputSchemaResponse,
+  WorkflowDefinition,
+  WorkflowInfo,
   WorkflowItem,
   WorkflowListResult,
   WorkflowOverviewListResult,
@@ -51,30 +51,7 @@ export async function createBackendRouter(
     'orchestrator-common',
     'api',
   );
-  const api = new OpenAPIBackend({
-    definition: path.join(openapiFolderPath, 'openapi.yaml'),
-    strict: false,
-    ajvOpts: {
-      strict: false,
-      strictSchema: false,
-      verbose: true,
-      addUsedSchema: false,
-    },
-    handlers: {
-      validationFail: async (
-        c,
-        req: express.Request,
-        res: express.Response,
-      ) => {
-        console.log('validationFail', c.operation);
-        res.status(400).json({ err: c.validation.errors });
-      },
-      notFound: async (c, req: express.Request, res: express.Response) =>
-        res.status(404).json({ err: 'not found' }),
-      notImplemented: async (c, req: express.Request, res: express.Response) =>
-        res.status(500).json({ err: 'not implemented' }),
-    },
-  });
+  const api = new OpenAPIBackend(setOpenAPIOptions(openapiFolderPath));
   await api.init();
 
   const router = Router();
@@ -155,6 +132,33 @@ export async function createBackendRouter(
 
   router.use(errorHandler());
   return router;
+}
+
+function setOpenAPIOptions(openapiFolderPath: string): Options {
+  return {
+    definition: path.join(openapiFolderPath, 'openapi.yaml'),
+    strict: false,
+    ajvOpts: {
+      strict: false,
+      strictSchema: false,
+      verbose: true,
+      addUsedSchema: false,
+    },
+    handlers: {
+      validationFail: async (
+        c,
+        req: express.Request,
+        res: express.Response,
+      ) => {
+        console.log('validationFail', c.operation);
+        res.status(400).json({ err: c.validation.errors });
+      },
+      notFound: async (c, req: express.Request, res: express.Response) =>
+        res.status(404).json({ err: 'not found' }),
+      notImplemented: async (c, req: express.Request, res: express.Response) =>
+        res.status(500).json({ err: 'not implemented' }),
+    },
+  };
 }
 
 // ======================================================
