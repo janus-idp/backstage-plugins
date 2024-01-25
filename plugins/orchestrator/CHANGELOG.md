@@ -1,3 +1,16 @@
+## @janus-idp/backstage-plugin-orchestrator [1.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.0.2...@janus-idp/backstage-plugin-orchestrator@1.1.0) (2024-01-25)
+
+
+### Features
+
+* **orchestrator:** add auto refresh to workflow instance list and details pages ([#1081](https://github.com/janus-idp/backstage-plugins/issues/1081)) ([fc30645](https://github.com/janus-idp/backstage-plugins/commit/fc30645ff740e914708a20f1fa1e2e118f771433))
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.6.0
+
 ## @janus-idp/backstage-plugin-orchestrator [1.0.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.0.1...@janus-idp/backstage-plugin-orchestrator@1.0.2) (2024-01-24)
 
 
