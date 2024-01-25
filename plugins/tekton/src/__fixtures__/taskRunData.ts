@@ -160,3 +160,175 @@ export const taskRunWithSBOMResultExternalLink: TaskRunKind = {
     ],
   },
 };
+
+export const enterpriseContractTaskRun: TaskRunKind = {
+  apiVersion: 'tekton.dev/v1',
+  kind: 'TaskRun',
+  metadata: {
+    labels: {
+      'tekton.dev/pipelineRun': 'test-plr',
+    },
+    annotations: {
+      'chains.tekton.dev/signed': 'true',
+      'pipeline.openshift.io/preferredName': 'pipelineRun-ec-task',
+      'pipeline.openshift.io/started-by': 'kube:admin',
+      'pipeline.tekton.dev/release': 'a2f17f6',
+      'task.results.format': 'application/json',
+      'task.output.location': 'logs',
+      'task.results.type': 'ec',
+      name: 'pipelineRun-ec-task-t237ev',
+      uid: '764d0a6c-a4f6-419c-a3c3-585c2a9eb67c',
+    },
+  },
+  spec: {
+    serviceAccountName: 'pipeline',
+    taskRef: {
+      kind: 'Task',
+      name: 'ec-task',
+    },
+    timeout: '1h0m0s',
+  },
+  status: {
+    completionTime: '2023-11-08T08:18:25Z',
+    conditions: [
+      {
+        lastTransitionTime: '2023-11-08T08:18:25Z',
+        message: 'All Steps have completed executing',
+        reason: 'Succeeded',
+        status: 'True',
+        type: 'Succeeded',
+      },
+    ],
+    podName: 'pipelineRun-ec-task-t237ev-pod',
+  },
+};
+
+export const acsImageScanTaskRun: TaskRunKind = {
+  apiVersion: 'tekton.dev/v1',
+  kind: 'TaskRun',
+  metadata: {
+    labels: {
+      'tekton.dev/pipelineRun': 'test-plr',
+    },
+    annotations: {
+      'chains.tekton.dev/signed': 'true',
+      'pipeline.openshift.io/preferredName': 'pipelineRun-image-scan-task',
+      'pipeline.openshift.io/started-by': 'kube:admin',
+      'pipeline.tekton.dev/release': 'a2f17f6',
+      'task.results.format': 'application/json',
+      'task.output.location': 'logs',
+      'task.results.type': 'roxctl-image-scan',
+      'task.results.key': 'SCAN_OUTPUT',
+      name: 'pipelineRun-image-scan-task-t237ev',
+      uid: '764d0a6c-a4f6-419c-a3c3-585c2a9eb67c',
+    },
+  },
+  spec: {
+    serviceAccountName: 'pipeline',
+    taskRef: {
+      kind: 'Task',
+      name: 'image-scan-task',
+    },
+    timeout: '1h0m0s',
+  },
+  status: {
+    completionTime: '2023-11-08T08:18:25Z',
+    conditions: [
+      {
+        lastTransitionTime: '2023-11-08T08:18:25Z',
+        message: 'All Steps have completed executing',
+        reason: 'Succeeded',
+        status: 'True',
+        type: 'Succeeded',
+      },
+    ],
+    podName: 'pipelineRun-image-scan-task-t237ev-pod',
+  },
+};
+
+export const acsImageCheckTaskRun: TaskRunKind = {
+  apiVersion: 'tekton.dev/v1',
+  kind: 'TaskRun',
+  metadata: {
+    labels: {
+      'tekton.dev/pipelineRun': 'test-plr',
+    },
+    annotations: {
+      'chains.tekton.dev/signed': 'true',
+      'pipeline.openshift.io/preferredName': 'pipelineRun-image-check-task',
+      'pipeline.openshift.io/started-by': 'kube:admin',
+      'pipeline.tekton.dev/release': 'a2f17f6',
+      'task.results.format': 'application/json',
+      'task.output.location': 'logs',
+      'task.results.type': 'roxctl-image-check',
+      'task.results.key': 'SCAN_OUTPUT',
+      name: 'pipelineRun-image-check-task-t237ev',
+      uid: '764d0a6c-a4f6-419c-a3c3-585c2a9eb67c',
+    },
+  },
+  spec: {
+    serviceAccountName: 'pipeline',
+    taskRef: {
+      kind: 'Task',
+      name: 'image-check-task',
+    },
+    timeout: '1h0m0s',
+  },
+  status: {
+    completionTime: '2023-11-08T08:18:25Z',
+    conditions: [
+      {
+        lastTransitionTime: '2023-11-08T08:18:25Z',
+        message: 'All Steps have completed executing',
+        reason: 'Succeeded',
+        status: 'True',
+        type: 'Succeeded',
+      },
+    ],
+    podName: 'pipelineRun-image-check-task-t237ev-pod',
+  },
+};
+
+export const acsDeploymentCheckTaskRun: TaskRunKind = {
+  apiVersion: 'tekton.dev/v1',
+  kind: 'TaskRun',
+  metadata: {
+    labels: {
+      'tekton.dev/pipelineRun': 'test-plr',
+    },
+    annotations: {
+      'chains.tekton.dev/signed': 'true',
+      'pipeline.openshift.io/preferredName':
+        'pipelineRun-deployment-check-task',
+      'pipeline.openshift.io/started-by': 'kube:admin',
+      'pipeline.tekton.dev/release': 'a2f17f6',
+      'task.results.format': 'application/json',
+      'task.output.location': 'logs',
+      'task.results.type': 'roxctl-deployment-check',
+      'task.results.key': 'SCAN_OUTPUT',
+      name: 'pipelineRun-deployment-check-task-t237ev',
+      uid: '764d0a6c-a4f6-419c-a3c3-585c2a9eb67c',
+    },
+  },
+  spec: {
+    serviceAccountName: 'pipeline',
+    taskRef: {
+      kind: 'Task',
+      name: 'deployment-check-task',
+    },
+    timeout: '1h0m0s',
+  },
+  status: {
+    completionTime: '2023-11-08T08:18:25Z',
+    conditions: [
+      {
+        lastTransitionTime: '2023-11-08T08:18:25Z',
+        message: 'All Steps have completed executing',
+        reason: 'Succeeded',
+        status: 'True',
+        type: 'Succeeded',
+      },
+    ],
+    podName: 'pipelineRun-deployment-check-task-t237ev-pod',
+  },
+};
