@@ -1,3 +1,16 @@
+## @janus-idp/plugin-notifications-backend [1.1.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications-backend@1.1.0...@janus-idp/plugin-notifications-backend@1.1.1) (2024-01-25)
+
+
+### Bug Fixes
+
+* **notifications:** create fails when array fields are empty ([#1116](https://github.com/janus-idp/backstage-plugins/issues/1116)) ([81645b7](https://github.com/janus-idp/backstage-plugins/commit/81645b7876169bac9c8c6ee90f60c5de33509f72))
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.6.0
+
 ## @janus-idp/plugin-notifications-backend [1.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications-backend@1.0.5...@janus-idp/plugin-notifications-backend@1.1.0) (2024-01-24)
 
 
