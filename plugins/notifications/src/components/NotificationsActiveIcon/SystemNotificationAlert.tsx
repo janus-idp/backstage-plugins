@@ -1,8 +1,9 @@
 import React from 'react';
 
+import { Link } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 
-import { IconButton, Link, makeStyles, Snackbar } from '@material-ui/core';
+import { IconButton, makeStyles, Snackbar } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 
 import { notificationsRootRouteRef } from '../../routes';
@@ -33,8 +34,9 @@ export const SystemNotificationAlert = ({
       action={
         <>
           <Link
-            href={`${notificationsRoute()}/updates`}
+            to={`${notificationsRoute()}/updates`}
             className={styles.systemAlertAction}
+            onClick={onCloseNotification}
           >
             Show
           </Link>
