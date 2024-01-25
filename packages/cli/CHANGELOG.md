@@ -1,3 +1,10 @@
+## @janus-idp/cli [1.6.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.5.0...@janus-idp/cli@1.6.0) (2024-01-25)
+
+
+### Features
+
+* **cli:** switch to @janus-idp/cli for new plugins and populate them with the basics ([#782](https://github.com/janus-idp/backstage-plugins/issues/782)) ([bbbefbd](https://github.com/janus-idp/backstage-plugins/commit/bbbefbd7a534844ee35533a62e4b626bd5b8eb4f))
+
 ## @janus-idp/cli [1.5.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.4.7...@janus-idp/cli@1.5.0) (2024-01-16)
 
 
