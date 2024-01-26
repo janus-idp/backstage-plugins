@@ -31,6 +31,14 @@ import { ScaffolderService } from './ScaffolderService';
 import { SonataFlowService } from './SonataFlowService';
 import { WorkflowService } from './WorkflowService';
 
+interface Services {
+  sonataFlowService: SonataFlowService;
+  workflowService: WorkflowService;
+  openApiService: OpenApiService;
+  jiraService: JiraService;
+  dataIndexService: DataIndexService;
+  dataInputSchemaService: DataInputSchemaService;
+}
 export async function createBackendRouter(
   args: RouterArgs & {
     sonataFlowService: SonataFlowService;
@@ -89,16 +97,16 @@ export async function createBackendRouter(
 
   await workflowService.reloadWorkflows();
 
-  setupInternalRoutes(
-    router,
-    api,
-    args.sonataFlowService,
+  const services: Services = {
+    sonataFlowService: args.sonataFlowService,
     workflowService,
     openApiService,
     jiraService,
-    args.dataIndexService,
+    dataIndexService: args.dataIndexService,
     dataInputSchemaService,
-  );
+  };
+
+  setupInternalRoutes(router, api, services);
   setupExternalRoutes(router, discovery, scaffolderService);
 
   await eventBroker.publish({
@@ -157,20 +165,15 @@ function setOpenAPIOptions(): Options {
 function setupInternalRoutes(
   router: express.Router,
   api: OpenAPIBackend,
-  sonataFlowService: SonataFlowService,
-  workflowService: WorkflowService,
-  openApiService: OpenApiService,
-  jiraService: JiraService,
-  dataIndexService: DataIndexService,
-  dataInputSchemaService: DataInputSchemaService,
+  services: Services,
 ) {
   router.get('/workflows/definitions', async (_, response) => {
-    const swfs = await dataIndexService.getWorkflowDefinitions();
+    const swfs = await services.dataIndexService.getWorkflowDefinitions();
     response.json(ApiResponseBuilder.SUCCESS_RESPONSE(swfs));
   });
 
   router.get('/workflows/overview', async (_c, res) => {
-    await getWorkflowOverviewV1(sonataFlowService)
+    await getWorkflowOverviewV1(services.sonataFlowService)
       .then(result => res.status(200).json(result))
       .catch(error => {
         res.status(500).send(error.message || 'Internal Server Error');
@@ -181,7 +184,7 @@ function setupInternalRoutes(
   api.register(
     'getWorkflowsOverview',
     async (_c, _req, res: express.Response, next) => {
-      await getWorkflowOverviewV2(sonataFlowService)
+      await getWorkflowOverviewV2(services.sonataFlowService)
         .then(result => res.json(result))
         .catch(error => {
           res.status(500).send(error.message || 'Internal Server Error');
@@ -192,10 +195,10 @@ function setupInternalRoutes(
 
   router.get('/workflows', async (_, res) => {
     const definitions: WorkflowInfo[] =
-      await dataIndexService.getWorkflowDefinitions();
+      await services.dataIndexService.getWorkflowDefinitions();
     const items: WorkflowItem[] = await Promise.all(
       definitions.map(async info => {
-        const uri = await sonataFlowService.fetchWorkflowUri(info.id);
+        const uri = await services.sonataFlowService.fetchWorkflowUri(info.id);
         if (!uri) {
           throw new Error(`Uri is required for workflow ${info.id}`);
         }
@@ -228,7 +231,7 @@ function setupInternalRoutes(
     } = req;
 
     const definition =
-      await sonataFlowService.fetchWorkflowDefinition(workflowId);
+      await services.sonataFlowService.fetchWorkflowDefinition(workflowId);
 
     if (!definition) {
       res
@@ -237,7 +240,7 @@ function setupInternalRoutes(
       return;
     }
 
-    const uri = await sonataFlowService.fetchWorkflowUri(workflowId);
+    const uri = await services.sonataFlowService.fetchWorkflowUri(workflowId);
     if (!uri) {
       res.status(500).send(`Couldn't fetch workflow uri for ${workflowId}`);
       return;
@@ -254,7 +257,8 @@ function setupInternalRoutes(
       params: { workflowId },
     } = req;
 
-    const result = await dataIndexService.abortWorkflowInstance(workflowId);
+    const result =
+      await services.dataIndexService.abortWorkflowInstance(workflowId);
 
     if (result.error) {
       res.status(500).json(result.error);
@@ -269,12 +273,13 @@ function setupInternalRoutes(
       params: { workflowId },
     } = req;
 
-    const definition = await dataIndexService.getWorkflowDefinition(workflowId);
+    const definition =
+      await services.dataIndexService.getWorkflowDefinition(workflowId);
     const serviceUrl = definition.serviceUrl;
     if (!serviceUrl) {
       throw new Error(`ServiceURL is not defined for workflow ${workflowId}`);
     }
-    const executionResponse = await sonataFlowService.executeWorkflow({
+    const executionResponse = await services.sonataFlowService.executeWorkflow({
       workflowId,
       inputData: req.body,
       endpoint: serviceUrl,
@@ -293,7 +298,7 @@ function setupInternalRoutes(
       params: { workflowId },
     } = req;
     const overviewObj =
-      await sonataFlowService.fetchWorkflowOverview(workflowId);
+      await services.sonataFlowService.fetchWorkflowOverview(workflowId);
 
     if (!overviewObj) {
       res
@@ -305,7 +310,7 @@ function setupInternalRoutes(
   });
 
   router.get('/instances', async (_, res) => {
-    const instances = await dataIndexService.fetchProcessInstances();
+    const instances = await services.dataIndexService.fetchProcessInstances();
 
     if (!instances) {
       res.status(500).send("Couldn't fetch process instances");
@@ -319,7 +324,8 @@ function setupInternalRoutes(
     const {
       params: { instanceId },
     } = req;
-    const instance = await dataIndexService.fetchProcessInstance(instanceId);
+    const instance =
+      await services.dataIndexService.fetchProcessInstance(instanceId);
 
     if (!instance) {
       res.status(500).send(`Couldn't fetch process instance ${instanceId}`);
@@ -334,7 +340,8 @@ function setupInternalRoutes(
       params: { instanceId },
     } = req;
 
-    const jobs = await dataIndexService.fetchProcessInstanceJobs(instanceId);
+    const jobs =
+      await services.dataIndexService.fetchProcessInstanceJobs(instanceId);
 
     if (!jobs) {
       res.status(500).send(`Couldn't fetch jobs for instance ${instanceId}`);
@@ -350,7 +357,7 @@ function setupInternalRoutes(
     } = req;
 
     const workflowDefinition =
-      await dataIndexService.getWorkflowDefinition(workflowId);
+      await services.dataIndexService.getWorkflowDefinition(workflowId);
     const serviceUrl = workflowDefinition.serviceUrl;
     if (!serviceUrl) {
       throw new Error(`ServiceUrl is not defined for workflow ${workflowId}`);
@@ -358,14 +365,14 @@ function setupInternalRoutes(
 
     // workflow source
     const definition =
-      await sonataFlowService.fetchWorkflowDefinition(workflowId);
+      await services.sonataFlowService.fetchWorkflowDefinition(workflowId);
 
     if (!definition) {
       res.status(500).send(`Couldn't fetch workflow definition ${workflowId}`);
       return;
     }
 
-    const uri = await sonataFlowService.fetchWorkflowUri(workflowId);
+    const uri = await services.sonataFlowService.fetchWorkflowUri(workflowId);
 
     if (!uri) {
       res.status(500).send(`Couldn't fetch workflow uri ${workflowId}`);
@@ -377,7 +384,7 @@ function setupInternalRoutes(
     let schemas: JSONSchema7[] = [];
 
     if (definition.dataInputSchema) {
-      const workflowInfo = await sonataFlowService.fetchWorkflowInfo(
+      const workflowInfo = await services.sonataFlowService.fetchWorkflowInfo(
         workflowId,
         serviceUrl,
       );
@@ -394,7 +401,7 @@ function setupInternalRoutes(
         return;
       }
 
-      schemas = dataInputSchemaService.parseComposition(
+      schemas = services.dataInputSchemaService.parseComposition(
         workflowInfo.inputSchema,
       );
     }
@@ -409,22 +416,22 @@ function setupInternalRoutes(
 
   router.delete('/workflows/:workflowId', async (req, res) => {
     const workflowId = req.params.workflowId;
-    const uri = await sonataFlowService.fetchWorkflowUri(workflowId);
+    const uri = await services.sonataFlowService.fetchWorkflowUri(workflowId);
 
     if (!uri) {
       res.status(500).send(`Couldn't fetch workflow uri ${workflowId}`);
       return;
     }
 
-    await workflowService.deleteWorkflowDefinitionById(uri);
+    await services.workflowService.deleteWorkflowDefinitionById(uri);
     res.status(200).send();
   });
 
   router.post('/workflows', async (req, res) => {
     const uri = req.query.uri as string;
     const workflowItem = uri?.startsWith('http')
-      ? await workflowService.saveWorkflowDefinitionFromUrl(uri)
-      : await workflowService.saveWorkflowDefinition({
+      ? await services.workflowService.saveWorkflowDefinitionFromUrl(uri)
+      : await services.workflowService.saveWorkflowDefinition({
           uri,
           definition: fromWorkflowSource(req.body),
         });
@@ -432,23 +439,23 @@ function setupInternalRoutes(
   });
 
   router.get('/actions/schema', async (_, res) => {
-    const openApi = await openApiService.generateOpenApi();
+    const openApi = await services.openApiService.generateOpenApi();
     res.json(openApi).status(200).send();
   });
 
   router.put('/actions/schema', async (_, res) => {
-    const openApi = await workflowService.saveOpenApi();
+    const openApi = await services.workflowService.saveOpenApi();
     res.json(openApi).status(200).send();
   });
 
   router.post('/webhook/jira', async (req, res) => {
     const event = req.body as JiraEvent;
-    await jiraService.handleEvent(event);
+    await services.jiraService.handleEvent(event);
     res.status(200).send();
   });
 
   router.get('/specs', async (_, res) => {
-    const specs = await workflowService.listStoredSpecs();
+    const specs = await services.workflowService.listStoredSpecs();
     res.status(200).json(specs);
   });
 }
