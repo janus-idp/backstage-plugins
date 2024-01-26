@@ -114,8 +114,8 @@ async function validateGroupingPolicy(
   roleMetadataStorage: RoleMetadataStorage,
   source: Source,
 ) {
-  if (groupPolicy.length === 3) {
-    throw new Error(`Group policy should has length 3`);
+  if (groupPolicy.length !== 2) {
+    throw new Error(`Group policy should has length 2`);
   }
 
   const member = groupPolicy[0];
