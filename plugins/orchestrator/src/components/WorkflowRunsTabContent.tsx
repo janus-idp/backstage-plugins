@@ -11,6 +11,7 @@ import {
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 
 import { Grid } from '@material-ui/core';
+import _ from 'lodash';
 
 import {
   ProcessInstanceState,
@@ -93,11 +94,14 @@ export const WorkflowRunsTabContent = () => {
 
   const filteredData = React.useMemo(
     () =>
-      (value || []).filter(
-        (row: WorkflowRunDetail) =>
-          statusSelectorValue === Selector.AllItems ||
-          row.status === statusSelectorValue,
-      ),
+      _.sortBy(
+        (value || []).filter(
+          (row: WorkflowRunDetail) =>
+            statusSelectorValue === Selector.AllItems ||
+            row.status === statusSelectorValue,
+        ),
+        'started',
+      ).reverse(),
     [statusSelectorValue, value],
   );
 
