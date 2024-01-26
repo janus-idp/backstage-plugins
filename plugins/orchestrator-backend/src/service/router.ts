@@ -17,7 +17,6 @@ import {
   WorkflowInfo,
   WorkflowItem,
   WorkflowListResult,
-  WorkflowOverviewListResult,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { RouterArgs } from '../routerWrapper';
@@ -25,6 +24,7 @@ import { ApiResponseBuilder } from '../types/apiResponse';
 import { CloudEventService } from './CloudEventService';
 import { DataIndexService } from './DataIndexService';
 import { DataInputSchemaService } from './DataInputSchemaService';
+import { getWorkflowOverviewV1, getWorkflowOverviewV2 } from './handlers';
 import { JiraEvent, JiraService } from './JiraService';
 import { OpenApiService } from './OpenApiService';
 import { ScaffolderService } from './ScaffolderService';
@@ -91,6 +91,7 @@ export async function createBackendRouter(
 
   setupInternalRoutes(
     router,
+    api,
     args.sonataFlowService,
     workflowService,
     openApiService,
@@ -155,6 +156,7 @@ function setOpenAPIOptions(): Options {
 // ======================================================
 function setupInternalRoutes(
   router: express.Router,
+  api: OpenAPIBackend,
   sonataFlowService: SonataFlowService,
   workflowService: WorkflowService,
   openApiService: OpenApiService,
@@ -167,22 +169,26 @@ function setupInternalRoutes(
     response.json(ApiResponseBuilder.SUCCESS_RESPONSE(swfs));
   });
 
-  router.get('/workflows/overview', async (_, res) => {
-    const overviews = await sonataFlowService.fetchWorkflowOverviews();
-
-    if (!overviews) {
-      res.status(500).send("Couldn't fetch workflow overviews");
-      return;
-    }
-
-    const result: WorkflowOverviewListResult = {
-      items: overviews,
-      limit: 0,
-      offset: 0,
-      totalCount: overviews?.length ?? 0,
-    };
-    res.status(200).json(result);
+  router.get('/workflows/overview', async (_c, res) => {
+    await getWorkflowOverviewV1(sonataFlowService)
+      .then(result => res.status(200).json(result))
+      .catch(error => {
+        res.status(500).send(error.message || 'Internal Server Error');
+      });
   });
+
+  // v2
+  api.register(
+    'getWorkflowsOverview',
+    async (_c, _req, res: express.Response, next) => {
+      await getWorkflowOverviewV2(sonataFlowService)
+        .then(result => res.json(result))
+        .catch(error => {
+          res.status(500).send(error.message || 'Internal Server Error');
+          next();
+        });
+    },
+  );
 
   router.get('/workflows', async (_, res) => {
     const definitions: WorkflowInfo[] =
