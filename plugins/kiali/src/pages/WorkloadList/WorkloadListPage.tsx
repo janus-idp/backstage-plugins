@@ -87,15 +87,15 @@ export const WorkloadListPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const NsEqual = (ns: string[], index: string | any[]): boolean => {
+  const nsEqual = (ns: string[], ns2: string[]): boolean => {
     return (
-      ns.length === arr2.length &&
-      ns.every((value: any, index: number) => value === arr2[index])
+      ns.length === ns2.length &&
+      ns.every((value: any, index: number) => value === ns2[index])
     );
   };
 
   React.useEffect(() => {
-    if (!NsEqual(activeNs, prevActiveNs.current)) {
+    if (!nsEqual(activeNs, prevActiveNs.current)) {
       const nsl = namespaces.filter(ns => activeNs.includes(ns.name));
       fetchWorkloads(nsl);
       prevActiveNs.current = activeNs;
