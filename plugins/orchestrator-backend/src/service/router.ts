@@ -10,6 +10,7 @@ import { OpenAPIBackend, Options, Request } from 'openapi-backend';
 
 import {
   fromWorkflowSource,
+  openApiDocument,
   ORCHESTRATOR_SERVICE_READY_TOPIC,
   WorkflowDataInputSchemaResponse,
   WorkflowDefinition,
@@ -18,8 +19,6 @@ import {
   WorkflowListResult,
   WorkflowOverviewListResult,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
-
-import path from 'path';
 
 import { RouterArgs } from '../routerWrapper';
 import { ApiResponseBuilder } from '../types/apiResponse';
@@ -41,17 +40,7 @@ export async function createBackendRouter(
   const { eventBroker, config, logger, discovery, catalogApi, urlReader } =
     args;
 
-  // Avoid hard coded path
-  // https://issues.redhat.com/browse/FLPATH-932
-  const openapiFolderPath = path.join(
-    process.cwd(),
-    '..',
-    '..',
-    'plugins',
-    'orchestrator-common',
-    'api',
-  );
-  const api = new OpenAPIBackend(setOpenAPIOptions(openapiFolderPath));
+  const api = new OpenAPIBackend(setOpenAPIOptions());
   await api.init();
 
   const router = Router();
@@ -134,9 +123,9 @@ export async function createBackendRouter(
   return router;
 }
 
-function setOpenAPIOptions(openapiFolderPath: string): Options {
+function setOpenAPIOptions(): Options {
   return {
-    definition: path.join(openapiFolderPath, 'openapi.yaml'),
+    definition: openApiDocument,
     strict: false,
     ajvOpts: {
       strict: false,
