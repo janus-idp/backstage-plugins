@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useRef } from 'react';
 import { useAsyncFn, useDebounce } from 'react-use';
 
 import { Content, Page } from '@backstage/core-components';
@@ -20,6 +21,8 @@ export const WorkloadListPage = () => {
   const [namespaces, setNamespaces] = React.useState<NamespaceInfo[]>([]);
   const [allWorkloads, setWorkloads] = React.useState<WorkloadListItem[]>([]);
   const kialiState = React.useContext(KialiContext) as KialiAppState;
+  const activeNs = kialiState.namespaces.activeNamespaces.map(ns => ns.name);
+  const prevActiveNs = useRef(activeNs);
 
   const fetchWorkloads = (nss: NamespaceInfo[]): Promise<void> => {
     return Promise.all(
@@ -83,6 +86,23 @@ export const WorkloadListPage = () => {
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const NsEqual = (ns: string[], index: string | any[]): boolean => {
+    return (
+      ns.length === arr2.length &&
+      ns.every((value: any, index: number) => value === arr2[index])
+    );
+  };
+
+  React.useEffect(() => {
+    if (!NsEqual(activeNs, prevActiveNs.current)) {
+      const nsl = namespaces.filter(ns => activeNs.includes(ns.name));
+      fetchWorkloads(nsl);
+      prevActiveNs.current = activeNs;
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeNs]);
 
   if (loading) {
     return <CircularProgress />;
