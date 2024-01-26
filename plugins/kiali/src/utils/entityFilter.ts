@@ -100,6 +100,7 @@ const filterWkBySelector = (
   );
 };
 
+// TODO: Filtering is not being done (It returns no data...?)
 export const filterWkByAnnotation = (
   wkResp: WorkloadNamespaceResponse,
   entity: Entity | undefined,
