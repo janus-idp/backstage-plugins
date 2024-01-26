@@ -1,7 +1,4 @@
-import {
-  ECPolicy,
-  EnterpriseContractRule,
-} from '@aonic-ui/pipelines/dist/esm/types/components/Output/types';
+import { ECPolicy } from '@aonic-ui/pipelines/dist/esm/types/components/Output/types';
 import { V1Pod } from '@kubernetes/client-node';
 
 import { ComputedStatus, TaskRunKind } from '@janus-idp/shared-react';
@@ -20,6 +17,18 @@ export type EnterpriseContractPolicy = {
   msg?: string;
   collection?: string[];
   solution?: string;
+};
+
+export type EnterpriseContractRule = {
+  metadata?: {
+    title: string;
+    description: string;
+    collections: string[];
+    code: string;
+    effective_on?: string;
+    solution?: string;
+  };
+  msg: string;
 };
 
 export type ComponentEnterpriseContractResult = {

@@ -25,10 +25,10 @@ const PipelineRunOutput: React.FC<PipelineRunOutputProps> = ({
   const outputGroup = usePipelineRunOutputData(pipelineRun, taskRuns);
 
   const stillLoading =
-    outputGroup?.ec?.loading &&
-    outputGroup?.acsImageScan?.loading &&
-    outputGroup?.acsImageCheck?.loading &&
-    outputGroup?.acsDeploymentCheck?.loading;
+    outputGroup?.ec?.loading ||
+    (outputGroup?.acsImageScan?.loading &&
+      outputGroup?.acsImageCheck?.loading &&
+      outputGroup?.acsDeploymentCheck?.loading);
 
   return (
     <Grid>

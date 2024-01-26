@@ -25,7 +25,9 @@ export const usePipelineRunOutputData = (
   pipelineRun: PipelineRunKind,
   taskRuns: TaskRunKind[],
 ): OutputGroup => {
-  const { watchResourcesData } = React.useContext(TektonResourcesContext);
+  const { loaded: allResourceLoaded, watchResourcesData } = React.useContext(
+    TektonResourcesContext,
+  );
   const pods = React.useMemo(
     () => watchResourcesData?.pods?.data || [],
     [watchResourcesData],
@@ -105,25 +107,29 @@ export const usePipelineRunOutputData = (
     },
     ec: {
       data: ecData,
-      loading: ecLoading,
+      loading: !!allResourceLoaded && !ecPod ? false : ecLoading,
       pod: ecPod,
       taskRun: ecTaskRun,
     },
     acsImageScan: {
       data: acsImageScanData,
-      loading: loading,
+      loading: !!allResourceLoaded && !acsImageScanPod ? false : loading,
       pod: acsImageScanPod,
       taskRun: acsImageScanTaskRun,
     },
     acsImageCheck: {
       data: acsImageCheckData,
-      loading: acsImageCheckLoading,
+      loading:
+        !!allResourceLoaded && !acsImageCheckPod ? false : acsImageCheckLoading,
       pod: acsImageCheckPod,
       taskRun: acsImageCheckTaskRun,
     },
     acsDeploymentCheck: {
       data: acsDeploymentCheckData,
-      loading: acsDeploymentCheckLoading,
+      loading:
+        !!allResourceLoaded && !acsDeploymentCheckPod
+          ? false
+          : acsDeploymentCheckLoading,
       pod: acsDeploymentCheckPod,
       taskRun: acsDeploymentCheckTaskRun,
     },

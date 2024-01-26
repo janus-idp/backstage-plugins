@@ -44,7 +44,7 @@ describe('taskRun-utils', () => {
       getSortedTaskRuns(mockKubernetesPlrResponse.taskruns),
       '',
     );
-    expect(activeTaskRun).toBe('pipeline-test-wbvtlk-tkn');
+    expect(activeTaskRun).toBe('ec-taskrun');
   });
 
   it('should return active taskrun when active task is present', () => {
@@ -122,11 +122,10 @@ describe('taskRun-utils', () => {
   });
 
   it('should return the taskrun group', () => {
-    const outputGroup = getTaskrunsOutputGroup('test-plr', [
-      acsImageScanTaskRun,
-      acsImageCheckTaskRun,
-      acsDeploymentCheckTaskRun,
-    ]);
+    const outputGroup = getTaskrunsOutputGroup(
+      'pipelinerun-with-scanner-task',
+      [acsImageScanTaskRun, acsImageCheckTaskRun, acsDeploymentCheckTaskRun],
+    );
 
     expect(outputGroup.acsImageScanTaskRun).toBeDefined();
     expect(outputGroup.acsImageCheckTaskRun).toBeDefined();
@@ -136,9 +135,10 @@ describe('taskRun-utils', () => {
   });
 
   it('should return the pods group', () => {
-    const outputGroup = getTaskrunsOutputGroup('test-plr', [
-      acsImageScanTaskRun,
-    ]);
+    const outputGroup = getTaskrunsOutputGroup(
+      'pipelinerun-with-scanner-task',
+      [acsImageScanTaskRun],
+    );
 
     const podGroup = getPodsOutputGroup(outputGroup, testPipelineRunPods.pods);
     expect(podGroup.acsImageScanPod).toBeDefined();
@@ -156,11 +156,11 @@ describe('taskRun-utils', () => {
   });
 
   it('should throw error if the json is not parsable', () => {
-    const errorFunction = jest.fn();
-    jest.spyOn(console, 'error').mockImplementation(errorFunction);
+    const warnFunction = jest.fn();
+    jest.spyOn(console, 'warn').mockImplementation(warnFunction);
 
     expect(formatData('application/json', 'key:value')).toEqual('');
-    expect(errorFunction).toHaveBeenCalled();
+    expect(warnFunction).toHaveBeenCalled();
   });
 
   it('should process the enterprise contract results and return in expected structure', () => {

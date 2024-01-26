@@ -165,8 +165,10 @@ export const enterpriseContractTaskRun: TaskRunKind = {
   apiVersion: 'tekton.dev/v1',
   kind: 'TaskRun',
   metadata: {
+    name: 'ec-taskrun',
     labels: {
-      'tekton.dev/pipelineRun': 'test-plr',
+      'tekton.dev/pipelineRun': 'pipelinerun-with-scanner-task',
+      'tekton.dev/pipelineTask': 'ec-task',
     },
     annotations: {
       'chains.tekton.dev/signed': 'true',
@@ -207,8 +209,10 @@ export const acsImageScanTaskRun: TaskRunKind = {
   apiVersion: 'tekton.dev/v1',
   kind: 'TaskRun',
   metadata: {
+    name: 'image-scan-taskrun',
     labels: {
-      'tekton.dev/pipelineRun': 'test-plr',
+      'tekton.dev/pipelineRun': 'pipelinerun-with-scanner-task',
+      'tekton.dev/pipelineTask': 'image-scan-task',
     },
     annotations: {
       'chains.tekton.dev/signed': 'true',
@@ -250,8 +254,10 @@ export const acsImageCheckTaskRun: TaskRunKind = {
   apiVersion: 'tekton.dev/v1',
   kind: 'TaskRun',
   metadata: {
+    name: 'image-check-taskrun',
     labels: {
-      'tekton.dev/pipelineRun': 'test-plr',
+      'tekton.dev/pipelineRun': 'pipelinerun-with-scanner-task',
+      'tekton.dev/pipelineTask': 'image-check-task',
     },
     annotations: {
       'chains.tekton.dev/signed': 'true',
@@ -293,8 +299,10 @@ export const acsDeploymentCheckTaskRun: TaskRunKind = {
   apiVersion: 'tekton.dev/v1',
   kind: 'TaskRun',
   metadata: {
+    name: 'deployment-check-taskrun',
     labels: {
-      'tekton.dev/pipelineRun': 'test-plr',
+      'tekton.dev/pipelineRun': 'pipelinerun-with-scanner-task',
+      'tekton.dev/pipelineTask': 'deployment-check-task',
     },
     annotations: {
       'chains.tekton.dev/signed': 'true',

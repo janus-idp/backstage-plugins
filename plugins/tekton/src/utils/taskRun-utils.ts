@@ -15,6 +15,7 @@ import {
   ENTERPRISE_CONTRACT_POLICY_STATUS,
   EnterpriseContractPolicy,
   EnterpriseContractResult,
+  EnterpriseContractRule,
   OutputPodGroup,
   OutputTaskRunGroup,
 } from '../types/output';
@@ -160,7 +161,7 @@ export const formatData = (format: string, data: string) => {
       return JSON.parse(d);
     } catch (e) {
       // eslint-disable-next-line no-console
-      console.error('error parsing data', e);
+      console.warn('error parsing data', e);
       return '';
     }
   };
@@ -188,43 +189,49 @@ export const mapEnterpriseContractResultData = (
       })
     : [];
 
-  return components?.reduce((acc: any[], compResult: any) => {
-    compResult?.violations?.forEach((v: any) => {
-      const rule: EnterpriseContractPolicy = {
-        title: v.metadata?.title ?? '',
-        description: v.metadata?.description ?? '',
-        status: ENTERPRISE_CONTRACT_POLICY_STATUS.failed,
-        timestamp: v.metadata?.effective_on,
-        component: compResult.name,
-        msg: v.msg,
-        collection: v.metadata?.collections,
-        solution: v.metadata?.solution,
-      };
-      acc.push(rule);
-    });
-    compResult?.warnings?.forEach((v: any) => {
-      const rule: EnterpriseContractPolicy = {
-        title: v.metadata?.title ?? '',
-        description: v.metadata?.description ?? '',
-        status: ENTERPRISE_CONTRACT_POLICY_STATUS.warnings,
-        timestamp: v.metadata?.effective_on,
-        component: compResult.name,
-        msg: v.msg,
-        collection: v.metadata?.collections,
-      };
-      acc.push(rule);
-    });
-    compResult?.successes?.forEach((v: any) => {
-      const rule: EnterpriseContractPolicy = {
-        title: v.metadata?.title ?? '',
-        description: v.metadata?.description ?? '',
-        status: ENTERPRISE_CONTRACT_POLICY_STATUS.successes,
-        component: compResult.name,
-        collection: v.metadata?.collections,
-      };
-      acc.push(rule);
-    });
+  return components?.reduce(
+    (
+      acc: EnterpriseContractPolicy[],
+      compResult: ComponentEnterpriseContractResult,
+    ) => {
+      compResult?.violations?.forEach((v: EnterpriseContractRule) => {
+        const rule: EnterpriseContractPolicy = {
+          title: v.metadata?.title ?? '',
+          description: v.metadata?.description ?? '',
+          status: ENTERPRISE_CONTRACT_POLICY_STATUS.failed,
+          timestamp: v.metadata?.effective_on,
+          component: compResult.name,
+          msg: v.msg,
+          collection: v.metadata?.collections,
+          solution: v.metadata?.solution,
+        };
+        acc.push(rule);
+      });
+      compResult?.warnings?.forEach((w: EnterpriseContractRule) => {
+        const rule: EnterpriseContractPolicy = {
+          title: w.metadata?.title ?? '',
+          description: w.metadata?.description ?? '',
+          status: ENTERPRISE_CONTRACT_POLICY_STATUS.warnings,
+          timestamp: w.metadata?.effective_on,
+          component: compResult.name,
+          msg: w.msg,
+          collection: w.metadata?.collections,
+        };
+        acc.push(rule);
+      });
+      compResult?.successes?.forEach((s: EnterpriseContractRule) => {
+        const rule: EnterpriseContractPolicy = {
+          title: s.metadata?.title ?? '',
+          description: s.metadata?.description ?? '',
+          status: ENTERPRISE_CONTRACT_POLICY_STATUS.successes,
+          component: compResult.name,
+          collection: s.metadata?.collections,
+        };
+        acc.push(rule);
+      });
 
-    return acc;
-  }, []) as EnterpriseContractPolicy[];
+      return acc;
+    },
+    [],
+  ) as EnterpriseContractPolicy[];
 };

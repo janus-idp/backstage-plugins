@@ -1,3 +1,10 @@
+import {
+  acsDeploymentCheckTaskRun,
+  acsImageCheckTaskRun,
+  acsImageScanTaskRun,
+  enterpriseContractTaskRun,
+} from './taskRunData';
+
 export const mockKubernetesPlrResponse = {
   pods: [
     {
@@ -239,6 +246,156 @@ export const mockKubernetesPlrResponse = {
         qosClass: 'BestEffort',
       },
     },
+    {
+      metadata: {
+        name: 'pipelineRun-ec-task-t237ev-pod',
+        namespace: 'karthik',
+        uid: '055cc13a-bd3e-414e-9eb6-e6cb72870578',
+        resourceVersion: '379623',
+        labels: {
+          'backstage.io/kubernetes-id': 'developer-portal',
+          'janus-idp.io/tekton': 'developer-portal',
+          'tekton.dev/pipeline': 'test-pipeline',
+          'tekton.dev/pipelineRun': 'test-pipeline-three',
+          'tekton.dev/pipelineTask': 'scan-task',
+          'tekton.dev/task': 'scan-task',
+          'tekton.dev/taskRun': 'test-pipeline-8e09zm-scan-task',
+        },
+      },
+      spec: {
+        containers: [
+          {
+            name: 'step-ec-report',
+          },
+        ],
+      },
+      status: {
+        phase: 'Running',
+        conditions: [],
+
+        startTime: new Date('2023-12-08T12:19:38Z'),
+      },
+    },
+    {
+      metadata: {
+        name: 'pipelineRun-ec-task-t237ev-pod',
+        namespace: 'karthik',
+        uid: '055cc13a-bd3e-414e-9eb6-e6cb72870578',
+        resourceVersion: '379623',
+        labels: {
+          'backstage.io/kubernetes-id': 'developer-portal',
+          'janus-idp.io/tekton': 'developer-portal',
+          'tekton.dev/pipeline': 'test-pipeline',
+          'tekton.dev/pipelineRun': 'test-pipeline-8e09zm',
+          'tekton.dev/pipelineTask': 'sbom-task',
+          'tekton.dev/task': 'sbom-task',
+          'tekton.dev/taskRun': 'test-pipeline-8e09zm-sbom-task',
+        },
+      },
+      spec: {
+        containers: [
+          {
+            name: 'step-ec-report',
+          },
+        ],
+      },
+      status: {
+        phase: 'Succeeded',
+        conditions: [],
+
+        startTime: new Date('2023-12-08T12:19:38Z'),
+      },
+    },
+    {
+      metadata: {
+        name: 'pipelineRun-image-scan-task-t237ev-pod',
+        namespace: 'karthik',
+        uid: '055cc13a-bd3e-414e-9eb6-e6cb72870578',
+        resourceVersion: '379623',
+        labels: {
+          'backstage.io/kubernetes-id': 'developer-portal',
+          'janus-idp.io/tekton': 'developer-portal',
+          'tekton.dev/pipeline': 'test-pipeline',
+          'tekton.dev/pipelineRun': 'test-pipeline-8e09zm',
+          'tekton.dev/pipelineTask': 'sbom-task',
+          'tekton.dev/task': 'sbom-task',
+          'tekton.dev/taskRun': 'test-pipeline-8e09zm-sbom-task',
+        },
+      },
+      spec: {
+        containers: [
+          {
+            name: 'step-print-scan-results',
+          },
+        ],
+      },
+      status: {
+        phase: 'Succeeded',
+        conditions: [],
+
+        startTime: new Date('2023-12-08T12:19:38Z'),
+      },
+    },
+    {
+      metadata: {
+        name: 'pipelineRun-image-check-task-t237ev-pod',
+        namespace: 'karthik',
+        uid: '055cc13a-bd3e-414e-9eb6-e6cb72870578',
+        resourceVersion: '379623',
+        labels: {
+          'backstage.io/kubernetes-id': 'developer-portal',
+          'janus-idp.io/tekton': 'developer-portal',
+          'tekton.dev/pipeline': 'test-pipeline',
+          'tekton.dev/pipelineRun': 'test-pipeline-8e09zm',
+          'tekton.dev/pipelineTask': 'sbom-task',
+          'tekton.dev/task': 'sbom-task',
+          'tekton.dev/taskRun': 'test-pipeline-8e09zm-sbom-task',
+        },
+      },
+      spec: {
+        containers: [
+          {
+            name: 'step-print-scan-results',
+          },
+        ],
+      },
+      status: {
+        phase: 'Succeeded',
+        conditions: [],
+
+        startTime: new Date('2023-12-08T12:19:38Z'),
+      },
+    },
+    {
+      metadata: {
+        name: 'pipelineRun-deployment-check-task-t237ev-pod',
+        namespace: 'karthik',
+        uid: '055cc13a-bd3e-414e-9eb6-e6cb72870578',
+        resourceVersion: '379623',
+        labels: {
+          'backstage.io/kubernetes-id': 'developer-portal',
+          'janus-idp.io/tekton': 'developer-portal',
+          'tekton.dev/pipeline': 'test-pipeline',
+          'tekton.dev/pipelineRun': 'test-pipeline-8e09zm',
+          'tekton.dev/pipelineTask': 'sbom-task',
+          'tekton.dev/task': 'sbom-task',
+          'tekton.dev/taskRun': 'test-pipeline-8e09zm-sbom-task',
+        },
+      },
+      spec: {
+        containers: [
+          {
+            name: 'step-print-scan-results',
+          },
+        ],
+      },
+      status: {
+        phase: 'Succeeded',
+        conditions: [],
+
+        startTime: new Date('2023-12-08T12:19:38Z'),
+      },
+    },
   ],
   pipelineruns: [
     {
@@ -281,8 +438,7 @@ export const mockKubernetesPlrResponse = {
           {
             lastTransitionTime: '2023-03-30T07:05:13Z',
             message: 'Tasks Completed: 3 (Failed: 0, Cancelled 0), Skipped: 0',
-            reason: 'Succeeded',
-            status: 'True',
+            status: 'Unknown',
             type: 'Succeeded',
           },
         ],
@@ -415,6 +571,65 @@ export const mockKubernetesPlrResponse = {
           startTime: '2023-04-11T06:48:50Z',
         },
         startTime: '2023-04-11T05:49:05Z',
+      },
+    },
+    {
+      apiVersion: 'tekton.dev/v1',
+      kind: 'PipelineRun',
+      metadata: {
+        annotations: {
+          'pipeline.openshift.io/started-by': 'kube-admin',
+          'chains.tekton.dev/signed': 'false',
+        },
+        labels: {
+          'backstage.io/kubernetes-id': 'test-backstage',
+          'tekton.dev/pipeline': 'pipeline-test',
+          'app.kubernetes.io/instance': 'abs',
+          'app.kubernetes.io/name': 'ghg',
+          'operator.tekton.dev/operand-name': 'ytui',
+          'pipeline.openshift.io/runtime-version': 'hjkhk',
+          'pipeline.openshift.io/type': 'hhu',
+          'pipeline.openshift.io/runtime': 'node',
+        },
+        name: 'pipelinerun-with-scanner-task',
+        namespace: 'deb-test',
+        resourceVersion: '117337',
+        uid: '0a091bbf-3813-48d3-a6ce-fc43644a9b24',
+        creationTimestamp: new Date('2023-04-11T12:31:56Z'),
+      },
+      spec: {
+        pipelineRef: {
+          name: 'pipeline-test',
+        },
+        serviceAccountName: 'pipeline',
+        workspaces: [],
+      },
+      status: {
+        completionTime: '2023-04-11T06:49:05Z',
+        conditions: [
+          {
+            lastTransitionTime: '2023-03-30T07:05:13Z',
+            message: 'Tasks Completed: 3 (Failed: 0, Cancelled 0), Skipped: 0',
+            reason: 'Succeeded',
+            status: 'True',
+            type: 'Succeeded',
+          },
+        ],
+        pipelineSpec: {
+          tasks: [
+            {
+              name: 'scan-task',
+              params: [],
+              taskRef: {
+                kind: 'ClusterTask',
+                name: 'scan-task',
+              },
+              workspaces: [],
+            },
+          ],
+          workspaces: [],
+          startTime: '2023-04-11T06:48:50Z',
+        },
         results: [
           {
             name: 'SCAN_OUTPUT',
@@ -422,6 +637,7 @@ export const mockKubernetesPlrResponse = {
               '{"vulnerabilities":{\n"critical": 13,\n"high": 29,\n"medium": 32,\n"low": 3,\n"unknown": 0},\n"unpatched_vulnerabilities": {\n"critical": 0,\n"high": 1,\n"medium": 0,\n"low":1}\n}\n',
           },
         ],
+        startTime: '2023-04-11T05:49:05Z',
       },
     },
   ],
@@ -637,6 +853,115 @@ export const mockKubernetesPlrResponse = {
           'backstage.io/kubernetes-id': 'test-backstage',
           'operator.tekton.dev/operand-name': 'openshift-pipelines-addons',
           'operator.tekton.dev/provider-type': 'redhat',
+          'tekton.dev/clusterTask': 'scan-task',
+          'tekton.dev/memberOf': 'tasks',
+          'tekton.dev/pipeline': 'pipeline-test',
+          'tekton.dev/pipelineRun': 'pipelinerun-with-scanner-task',
+          'tekton.dev/pipelineTask': 'scan-task',
+          'app.kubernetes.io/instance': 'xyz',
+          'app.kubernetes.io/name': 'xyz',
+          'pipeline.openshift.io/runtime': 'node',
+          'pipeline.openshift.io/runtime-version': 'gh',
+          'pipeline.openshift.io/type': 'abc',
+        },
+        name: 'pipeline-test-wbvtlk-scan-task',
+        namespace: 'deb-test',
+        ownerReferences: [
+          {
+            apiVersion: 'tekton.dev/v1',
+            blockOwnerDeletion: true,
+            controller: true,
+            kind: 'PipelineRun',
+            name: 'pipelinerun-with-scanner-task',
+            uid: '0a091bbf-3813-48d3-a6ce-fc43644a9b24',
+          },
+        ],
+        resourceVersion: '117189',
+        uid: 'cb08cb7d-71fc-48a7-888f-4ad14a7277b9',
+      },
+      spec: {
+        params: [],
+        resources: [],
+        serviceAccountName: 'pipeline',
+        taskRef: {
+          kind: 'ClusterTask',
+          name: 'scan-task',
+        },
+        timeout: '1h0m0s',
+      },
+      status: {
+        completionTime: '2023-04-11T06:48:56Z',
+        conditions: [
+          {
+            lastTransitionTime: '2023-04-11T06:48:56Z',
+            message: 'All Steps have completed executing',
+            reason: 'Succeeded',
+            status: 'True',
+            type: 'Succeeded',
+          },
+        ],
+        podName: 'pipelineRun-ec-task-t237ev-pod',
+        startTime: '2023-04-11T06:48:50Z',
+        steps: [
+          {
+            container: 'step-tkn',
+            imageID:
+              'registry.redhat.io/openshift-pipelines/pipelines-cli-tkn-rhel8@sha256:c73cefdd22522b2309f02dfa9858ed9079f1d5c94a3cd850f3f96dfbeafebc64',
+            name: 'tkn',
+            terminated: {
+              containerID:
+                'cri-o://53fbddbb25c08e97d0061a3dd79021e8d411485bbc3f18cfcffd41ae3448c0d2',
+              exitCode: 0,
+              finishedAt: '2023-04-11T06:48:56Z',
+              reason: 'Completed',
+              startedAt: '2023-04-11T06:48:56Z',
+            },
+          },
+        ],
+        taskSpec: {
+          description:
+            'This task performs operations on Tekton resources using tkn',
+          params: [],
+          steps: [
+            {
+              args: ['--help'],
+              env: [],
+              image:
+                'registry.redhat.io/openshift-pipelines/pipelines-cli-tkn-rhel8@sha256:c73cefdd22522b2309f02dfa9858ed9079f1d5c94a3cd850f3f96dfbeafebc64',
+              name: 'tkn',
+              resources: {},
+              script:
+                'if [ "false" = "true" ] && [ -e /kubeconfig ]; then\n  export KUBECONFIG=""/kubeconfig\nfi\n\neval "tkn $@"\n',
+              securityContext: {
+                runAsNonRoot: true,
+                runAsUser: 65532,
+              },
+            },
+          ],
+          workspaces: [],
+        },
+      },
+    },
+    {
+      apiVersion: 'tekton.dev/v1',
+      kind: 'TaskRun',
+      metadata: {
+        annotations: {
+          'operator.tekton.dev/last-applied-hash': 'undefined',
+          'pipeline.openshift.io/started-by': 'undefined',
+          'pipeline.tekton.dev/release': 'undefined',
+          'tekton.dev/displayName': 'undefined',
+          'tekton.dev/pipelines.minVersion': 'undefined',
+          'tekton.dev/tags': 'undefined',
+        },
+        creationTimestamp: new Date('2023-04-11T06:48:50Z'),
+        generation: 1,
+        labels: {
+          'app.kubernetes.io/managed-by': 'tekton-pipelines',
+          'app.kubernetes.io/version': '0.4',
+          'backstage.io/kubernetes-id': 'test-backstage',
+          'operator.tekton.dev/operand-name': 'openshift-pipelines-addons',
+          'operator.tekton.dev/provider-type': 'redhat',
           'tekton.dev/clusterTask': 'tkn',
           'tekton.dev/memberOf': 'tasks',
           'tekton.dev/pipeline': 'pipeline-test',
@@ -726,5 +1051,9 @@ export const mockKubernetesPlrResponse = {
         },
       },
     },
+    enterpriseContractTaskRun,
+    acsImageScanTaskRun,
+    acsImageCheckTaskRun,
+    acsDeploymentCheckTaskRun,
   ],
 };

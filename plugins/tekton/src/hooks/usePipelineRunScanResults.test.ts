@@ -11,7 +11,7 @@ jest.mock('@backstage/core-plugin-api', () => ({
 describe('usePipelineRunVulnerabilities', () => {
   it('should return vulnerabilities when SCAN_OUTPUT is set', () => {
     const { result } = renderHook(() =>
-      usePipelineRunScanResults(mockKubernetesPlrResponse.pipelineruns[1]),
+      usePipelineRunScanResults(mockKubernetesPlrResponse.pipelineruns[2]),
     );
 
     expect(result.current.vulnerabilities?.critical).toEqual(13);
@@ -34,11 +34,11 @@ describe('usePipelineRunVulnerabilities', () => {
       const results0 =
         mockKubernetesPlrResponse.pipelineruns[0].status.pipelineResults?.[0];
       const results1 =
-        mockKubernetesPlrResponse.pipelineruns[1].status.results?.[0];
+        mockKubernetesPlrResponse.pipelineruns[2].status.results?.[0];
       const plr = {
-        ...mockKubernetesPlrResponse.pipelineruns[1],
+        ...mockKubernetesPlrResponse.pipelineruns[2],
         status: {
-          ...mockKubernetesPlrResponse.pipelineruns[1].status,
+          ...mockKubernetesPlrResponse.pipelineruns[2].status,
           results: results0 && results1 ? [results0, results1] : [],
         },
       };

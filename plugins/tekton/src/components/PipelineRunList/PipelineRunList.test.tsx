@@ -188,7 +188,7 @@ describe('PipelineRunList', () => {
       </TektonResourcesContext.Provider>,
     );
 
-    expect(queryByText('ruby-ex-git-xf45fo')).not.toBeNull();
+    expect(queryByText('pipelinerun-with-scanner-task')).not.toBeNull();
   });
 
   it('should show empty state if no PipelineRuns matches selected status', () => {
@@ -206,7 +206,7 @@ describe('PipelineRunList', () => {
       selectedClusterErrors: [],
       clusters: ['ocp'],
       setSelectedCluster: () => {},
-      selectedStatus: computedStatus.Running,
+      selectedStatus: computedStatus.Cancelled,
       setSelectedStatus: () => {},
       setIsExpanded: () => {},
     };
