@@ -132,6 +132,7 @@ export const WorkflowsTable = ({ items, handleEdit }: WorkflowsTableProps) => {
     () => [
       {
         title: 'Name',
+        field: 'name',
         render: rowData => (
           <Link
             to={definitionLink({
@@ -145,11 +146,13 @@ export const WorkflowsTable = ({ items, handleEdit }: WorkflowsTableProps) => {
       },
       {
         title: 'Category',
+        field: 'category',
         render: rowData => capitalize(rowData.category),
       },
       { title: 'Last run', field: 'lastTriggered' },
       {
         title: 'Last run status',
+        field: 'lastRunStatus',
         render: rowData =>
           rowData.lastRunStatus !== VALUE_UNAVAILABLE ? (
             <WorkflowInstanceStatusIndicator
