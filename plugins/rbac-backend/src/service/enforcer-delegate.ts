@@ -118,14 +118,16 @@ export class EnforcerDelegate {
     externalTrx?: Knex.Transaction,
     isUpdate?: boolean,
   ): Promise<void> {
+    const trx = externalTrx || (await this.knex.transaction());
     const entityRef = policy[1];
     let metadata;
 
     if (entityRef.startsWith(`role:`)) {
-      metadata = await this.roleMetadataStorage.findRoleMetadata(entityRef);
+      metadata = await this.roleMetadataStorage.findRoleMetadata(
+        entityRef,
+        trx,
+      );
     }
-
-    const trx = externalTrx || (await this.knex.transaction());
 
     try {
       await this.policyMetadataStorage.createPolicyMetadata(

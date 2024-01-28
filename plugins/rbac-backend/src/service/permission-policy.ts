@@ -33,7 +33,6 @@ const useAdmins = async (
   roleMetadataStorage: RoleMetadataStorage,
   knex: Knex,
 ) => {
-  let legacy = false;
   const rbacAdminsGroupPolicies: string[][] = [];
   const groupPoliciesToCompare: string[] = [];
   const addedGroupPolicies: string[] = [];
@@ -45,36 +44,34 @@ const useAdmins = async (
     const groupPolicy = [entityRef, adminRoleName];
     if (!(await enf.hasGroupingPolicy(...groupPolicy))) {
       rbacAdminsGroupPolicies.push(groupPolicy);
-      addedGroupPolicies.push(entityRef);
     }
+    addedGroupPolicies.push(entityRef);
   });
 
   const adminRoleMeta =
     await roleMetadataStorage.findRoleMetadata(adminRoleName);
 
-  if (adminRoleMeta?.source === 'legacy') {
-    const trx = await knex.transaction();
-    try {
-      await roleMetadataStorage.removeRoleMetadata(adminRoleName, trx);
-      await trx.commit();
-      legacy = true;
-    } catch (error) {
-      await trx.rollback(error);
-    }
-  }
-
-  if (!adminRoleMeta || legacy) {
-    const trx = await knex.transaction();
-    try {
+  const trx = await knex.transaction();
+  try {
+    if (!adminRoleMeta) {
       await roleMetadataStorage.createRoleMetadata(
         { source: 'configuration' },
         adminRoleName,
         trx,
       );
-      await trx.commit();
-    } catch (error) {
-      await trx.rollback(error);
+    } else if (adminRoleMeta.source === 'legacy') {
+      await roleMetadataStorage.removeRoleMetadata(adminRoleName, trx);
+      await roleMetadataStorage.createRoleMetadata(
+        { source: 'configuration' },
+        adminRoleName,
+        trx,
+      );
     }
+
+    await trx.commit();
+  } catch (error) {
+    await trx.rollback(error);
+    throw error;
   }
 
   await enf.addOrUpdateGroupingPolicies(
@@ -235,8 +232,17 @@ export class RBACPermissionPolicy implements PermissionPolicy {
       await removedOldPermissionPoliciesFileData(enforcerDelegate);
     }
 
-    if (adminUsers) {
-      await useAdmins(adminUsers, enforcerDelegate, roleMetadataStorage, knex);
+    if (adminUsers && adminUsers.length > 0) {
+      await useAdmins(
+        adminUsers || [],
+        enforcerDelegate,
+        roleMetadataStorage,
+        knex,
+      );
+    } else {
+      logger.warn(
+        'There are no admins configured for the RBAC-backend plugin. The plugin may not work properly.',
+      );
     }
 
     return new RBACPermissionPolicy(
