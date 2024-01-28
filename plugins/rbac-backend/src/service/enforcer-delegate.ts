@@ -588,4 +588,8 @@ export class EnforcerDelegate {
 
     return false;
   }
+
+  async getImplicitPermissionsForUser(user: string): Promise<string[][]> {
+    return this.enforcer.getImplicitPermissionsForUser(user);
+  }
 }

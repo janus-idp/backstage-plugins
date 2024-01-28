@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@backstage/backend-common": "^0.19.8",
-    "@backstage/backend-plugin-api": "^0.5.4",
+    "@backstage/backend-plugin-api": "^0.6.6",
     "@backstage/backend-test-utils": "^0.2.7",
     "@backstage/catalog-client": "^1.4.5",
     "@backstage/catalog-model": "^1.4.3",
