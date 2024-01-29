@@ -14,11 +14,4 @@
  * limitations under the License.
  */
 
-import { BackendDynamicPluginInstaller } from '@backstage/backend-plugin-manager';
-
-import { notificationBackendModule } from '../module';
-
-export const dynamicPluginInstaller: BackendDynamicPluginInstaller = {
-  kind: 'new',
-  install: notificationBackendModule,
-};
+export { notificationBackendModule as default } from './module';

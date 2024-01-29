@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-import { BackendDynamicPluginInstaller } from '@backstage/backend-plugin-manager';
+import { createBackendModule } from '@backstage/backend-plugin-api';
 
-import { notificationBackendModule } from '../module';
-
-export const dynamicPluginInstaller: BackendDynamicPluginInstaller = {
-  kind: 'new',
-  install: notificationBackendModule,
-};
+export const notificationBackendModule = createBackendModule({
+  moduleId: 'scaffolder-backend-notifications',
+  pluginId: 'scaffolder',
+  register(env) {
+    env.registerInit({
+      deps: {},
+      async init() {},
+    });
+  },
+});
