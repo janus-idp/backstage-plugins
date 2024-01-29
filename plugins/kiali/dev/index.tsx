@@ -40,6 +40,7 @@ import { Namespace } from '../src/types/Namespace';
 import { ServerConfig } from '../src/types/ServerConfig';
 import { StatusState } from '../src/types/StatusState';
 import { TLSStatus } from '../src/types/TLSStatus';
+import { WorkloadListItem } from '../src/types/Workload';
 import { filterNsByAnnotation } from '../src/utils/entityFilter';
 import { kialiData } from './__fixtures__';
 import { mockEntity } from './mockEntity';
@@ -240,6 +241,10 @@ class MockKialiClient implements KialiApi {
   }
   isDevEnv(): boolean {
     return true;
+  }
+
+  getWorkloads(namespace: string): Promise<WorkloadListItem[]> {
+    return kialiData.namespacesData[namespace].getWorkloads();
   }
 }
 
