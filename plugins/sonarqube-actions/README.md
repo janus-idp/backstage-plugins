@@ -19,48 +19,65 @@ Run the following command to install the action package in your Backstage projec
 yarn workspace backend add @janus-idp/backstage-scaffolder-backend-module-sonarqube
 ```
 
+### Installing the action on the legacy backend
+
+[Register](https://backstage.io/docs/features/software-templates/writing-custom-actions#registering-custom-actions) the SonarQube actions by modifying the `packages/backend/src/plugins/scaffolder.ts` file from your project with the following changes:
+
+```ts title=packages/backend/src/plugins/scaffolder.ts
+/* highlight-add-next-line */
+import { createSonarQubeProjectAction } from '@janus-idp/backstage-scaffolder-backend-module-sonarqube';
+
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  // ...
+
+  /* highlight-add-next-line */
+  const actions = [...builtInActions, createSonarQubeProjectAction()];
+
+  return await createRouter({
+    actions,
+    logger: env.logger,
+    config: env.config,
+    database: env.database,
+    reader: env.reader,
+    catalogClient,
+    identity: env.identity,
+  });
+}
+```
+
+### Installing the action on the new backend
+
+Add the following to your `packages/backend/src/index.ts` file:
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+
+// Add the following line
+backend.add(
+  import('@janus-idp/backstage-scaffolder-backend-module-sonarqube/alpha'),
+);
+
+backend.start();
+```
+
 ## Configuration
 
-1. [Register](https://backstage.io/docs/features/software-templates/writing-custom-actions#registering-custom-actions) the SonarQube actions by modifying the `packages/backend/src/plugins/scaffolder.ts` file from your project with the following changes:
+Add the SonarQube actions to your templates, see the [examples](./examples/templates) directory of this repository for complete usage examples
 
-   ```ts
-   /* highlight-add-next-line */
-   import { createSonarQubeProjectAction } from '@janus-idp/backstage-scaffolder-backend-module-sonarqube';
-
-   export default async function createPlugin(
-     env: PluginEnvironment,
-   ): Promise<Router> {
-     // ...
-
-     /* highlight-add-next-line */
-     const actions = [...builtInActions, createSonarQubeProjectAction()];
-
-     return await createRouter({
-       actions,
-       logger: env.logger,
-       config: env.config,
-       database: env.database,
-       reader: env.reader,
-       catalogClient,
-       identity: env.identity,
-     });
-   }
-   ```
-
-2. Add the SonarQube actions to your templates, see the [examples](./examples/templates) directory of this repository for complete usage examples
-
-   ```yaml
-   action: sonarqube:create-project
-   id: 'create-sonar-project'
-   name: 'Create SonarQube Project'
-   input:
-     baseUrl: 'https://sonarqube.com'
-     token: '4518a13e-093f-4b66-afac-46a1aece3149'
-     name: 'My SonarQube Project'
-     key: 'my-sonarqube-project'
-     branch: 'main'
-     visibility: 'public'
-   ```
+```yaml
+action: sonarqube:create-project
+id: 'create-sonar-project'
+name: 'Create SonarQube Project'
+input:
+  baseUrl: 'https://sonarqube.com'
+  token: '4518a13e-093f-4b66-afac-46a1aece3149'
+  name: 'My SonarQube Project'
+  key: 'my-sonarqube-project'
+  branch: 'main'
+  visibility: 'public'
+```
 
 ## Usage
 
