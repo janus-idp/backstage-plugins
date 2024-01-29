@@ -424,6 +424,45 @@ const OPENAPI = `
           }
         }
       }
+    },
+    "/v2/workflows/{workflowId}/progress": {
+      "get": {
+        "summary": "Get Workflow Progress",
+        "operationId": "getWorkflowProgress",
+        "parameters": [
+          {
+            "name": "workflowId",
+            "in": "path",
+            "required": true,
+            "description": "Unique identifier of the workflow",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkflowProgressDTO"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -727,6 +766,82 @@ const OPENAPI = `
           "name",
           "type"
         ]
+      },
+      "WorkflowProgressDTO": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/NodeInstanceDTO"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "status": {
+                "$ref": "#/components/schemas/ProcessInstanceStatusDTO"
+              },
+              "error": {
+                "$ref": "#/components/schemas/ProcessInstanceErrorDTO"
+              }
+            }
+          }
+        ]
+      },
+      "NodeInstanceDTO": {
+        "type": "object",
+        "properties": {
+          "__typename": {
+            "type": "string",
+            "default": "NodeInstance",
+            "description": "Type name"
+          },
+          "id": {
+            "type": "string",
+            "description": "Node instance ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "Node name"
+          },
+          "type": {
+            "type": "string",
+            "description": "Node type"
+          },
+          "enter": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date when the node was entered"
+          },
+          "exit": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date when the node was exited (optional)"
+          },
+          "definitionId": {
+            "type": "string",
+            "description": "Definition ID"
+          },
+          "nodeId": {
+            "type": "string",
+            "description": "Node ID"
+          }
+        }
+      },
+      "ProcessInstanceErrorDTO": {
+        "type": "object",
+        "properties": {
+          "__typename": {
+            "type": "string",
+            "default": "ProcessInstanceError",
+            "description": "Type name"
+          },
+          "nodeDefinitionId": {
+            "type": "string",
+            "description": "Node definition ID"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message (optional)"
+          }
+        }
       }
     }
   }

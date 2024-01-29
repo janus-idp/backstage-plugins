@@ -28,6 +28,10 @@ export interface paths {
     /** Get input parameters by steps */
     get: operations['getParametersByStep'];
   };
+  '/v2/workflows/{workflowId}/progress': {
+    /** Get Workflow Progress */
+    get: operations['getWorkflowProgress'];
+  };
   '/v2/workflows/instances': {
     /**
      * Get instances
@@ -68,6 +72,33 @@ export interface components {
     ExecuteWorkflowResponseDTO: {
       id?: string;
     };
+    NodeInstanceDTO: {
+      /**
+       * @description Type name
+       * @default NodeInstance
+       */
+      __typename?: string;
+      /** @description Definition ID */
+      definitionId?: string;
+      /**
+       * Format: date-time
+       * @description Date when the node was entered
+       */
+      enter?: string;
+      /**
+       * Format: date-time
+       * @description Date when the node was exited (optional)
+       */
+      exit?: string;
+      /** @description Node instance ID */
+      id?: string;
+      /** @description Node name */
+      name?: string;
+      /** @description Node ID */
+      nodeId?: string;
+      /** @description Node type */
+      type?: string;
+    };
     PaginationInfoDTO: {
       limit?: number;
       offset?: number;
@@ -90,6 +121,17 @@ export interface components {
       started?: string;
       status?: components['schemas']['ProcessInstanceStatusDTO'];
       workflow?: string;
+    };
+    ProcessInstanceErrorDTO: {
+      /**
+       * @description Type name
+       * @default ProcessInstanceError
+       */
+      __typename?: string;
+      /** @description Error message (optional) */
+      message?: string;
+      /** @description Node definition ID */
+      nodeDefinitionId?: string;
     };
     ProcessInstancesDTO: components['schemas']['ProcessInstanceDTO'][];
     /**
@@ -142,6 +184,10 @@ export interface components {
     WorkflowOverviewListResultDTO: {
       overviews?: components['schemas']['WorkflowOverviewDTO'][];
       paginationInfo?: components['schemas']['PaginationInfoDTO'];
+    };
+    WorkflowProgressDTO: components['schemas']['NodeInstanceDTO'] & {
+      error?: components['schemas']['ProcessInstanceErrorDTO'];
+      status?: components['schemas']['ProcessInstanceStatusDTO'];
     };
     WorkflowRunStatusDTO: {
       key?: string;
@@ -305,6 +351,29 @@ export interface operations {
       };
       /** @description Bad Request */
       400: {
+        content: {
+          'text/plain': string;
+        };
+      };
+    };
+  };
+  /** Get Workflow Progress */
+  getWorkflowProgress: {
+    parameters: {
+      path: {
+        /** @description Unique identifier of the workflow */
+        workflowId: string;
+      };
+    };
+    responses: {
+      /** @description Successful response */
+      200: {
+        content: {
+          'application/json': components['schemas']['WorkflowProgressDTO'];
+        };
+      };
+      /** @description Internal Server Error */
+      500: {
         content: {
           'text/plain': string;
         };
