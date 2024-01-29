@@ -4,6 +4,10 @@
  */
 
 export interface paths {
+  '/v2/specs': {
+    /** Get workflow specifications */
+    get: operations['getWorkflowSpecs'];
+  };
   '/v2/workflows': {
     /** @description Get a list of workflow */
     get: operations['getWorkflows'];
@@ -149,6 +153,23 @@ export type $defs = Record<string, never>;
 export type external = Record<string, never>;
 
 export interface operations {
+  /** Get workflow specifications */
+  getWorkflowSpecs: {
+    responses: {
+      /** @description Successful retrieval of workflow specifications */
+      200: {
+        content: {
+          'application/json': components['schemas']['WorkflowSpecFileDTO'][];
+        };
+      };
+      /** @description Internal Server Error */
+      500: {
+        content: {
+          'text/plain': string;
+        };
+      };
+    };
+  };
   /** @description Get a list of workflow */
   getWorkflows: {
     responses: {

@@ -354,6 +354,37 @@ const OPENAPI = `
           }
         }
       }
+    },
+    "/v2/specs": {
+      "get": {
+        "summary": "Get workflow specifications",
+        "operationId": "getWorkflowSpecs",
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of workflow specifications",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WorkflowSpecFileDTO"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
