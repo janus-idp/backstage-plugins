@@ -13,10 +13,7 @@ import {
   openApiDocument,
   ORCHESTRATOR_SERVICE_READY_TOPIC,
   WorkflowDataInputSchemaResponse,
-  WorkflowDefinition,
-  WorkflowInfo,
   WorkflowItem,
-  WorkflowListResult,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { RouterArgs } from '../routerWrapper';
@@ -25,10 +22,11 @@ import { CloudEventService } from './CloudEventService';
 import { DataIndexService } from './DataIndexService';
 import { DataInputSchemaService } from './DataInputSchemaService';
 import {
+  getWorkflowByIdV1,
+  getWorkflowByIdV2,
   getWorkflowOverviewById,
   getWorkflowOverviewV1,
   getWorkflowOverviewV2,
-  getWorkflows,
   getWorkflowsV1,
   getWorkflowsV2,
 } from './handlers';
@@ -222,27 +220,23 @@ function setupInternalRoutes(
     const {
       params: { workflowId },
     } = req;
+    await getWorkflowByIdV1(services.sonataFlowService, workflowId)
+      .then(result => res.status(200).json(result))
+      .catch(error => {
+        res.status(500).send(error.message || 'Internal Server Error');
+      });
+  });
 
-    const definition =
-      await services.sonataFlowService.fetchWorkflowDefinition(workflowId);
+  // v2
+  api.register('getWorkflowById', async (c, _req, res, next) => {
+    const workflowId = c.request.params.workflowId as string;
 
-    if (!definition) {
-      res
-        .status(500)
-        .send(`Couldn't fetch workflow definition for ${workflowId}`);
-      return;
-    }
-
-    const uri = await services.sonataFlowService.fetchWorkflowUri(workflowId);
-    if (!uri) {
-      res.status(500).send(`Couldn't fetch workflow uri for ${workflowId}`);
-      return;
-    }
-
-    res.status(200).json({
-      uri,
-      definition,
-    });
+    await getWorkflowByIdV2(services.sonataFlowService, workflowId)
+      .then(result => res.status(200).json(result))
+      .catch(error => {
+        res.status(500).send(error.message || 'Internal Server Error');
+        next();
+      });
   });
 
   router.delete('/workflows/:workflowId/abort', async (req, res) => {

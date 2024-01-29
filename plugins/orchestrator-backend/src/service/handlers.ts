@@ -2,6 +2,7 @@ import {
   ASSESSMENT_WORKFLOW_TYPE,
   WorkflowCategoryDTO,
   WorkflowDefinition,
+  WorkflowDTO,
   WorkflowInfo,
   WorkflowItem,
   WorkflowListResult,
@@ -103,6 +104,47 @@ export async function getWorkflowsV2(
   return mapToWorkflowListResultDTO(definitions);
 }
 
+export async function getWorkflowByIdV1(
+  sonataFlowService: SonataFlowService,
+  workflowId: string,
+): Promise<{ uri: string; definition: WorkflowDefinition }> {
+  const definition =
+    await sonataFlowService.fetchWorkflowDefinition(workflowId);
+
+  if (!definition) {
+    throw new Error(`Couldn't fetch workflow definition for ${workflowId}`);
+  }
+
+  const uri = await sonataFlowService.fetchWorkflowUri(workflowId);
+  if (!uri) {
+    throw new Error(`Couldn't fetch workflow uri for ${workflowId}`);
+  }
+
+  return { uri, definition };
+}
+
+export async function getWorkflowByIdV2(
+  sonataFlowService: SonataFlowService,
+  workflowId: string,
+): Promise<WorkflowDTO> {
+  const resultV1 = await getWorkflowByIdV1(sonataFlowService, workflowId);
+  return mapToWorkflowDTO(resultV1.uri, resultV1.definition);
+}
+
+function mapToWorkflowDTO(
+  uri: string,
+  definition: WorkflowDefinition,
+): WorkflowDTO {
+  return {
+    annotations: definition.annotations,
+    category: getWorkflowCategoryDTO(definition),
+    description: definition.description,
+    name: definition.name,
+    uri: uri,
+    id: definition.id,
+  };
+}
+
 function mapToWorkflowListResultDTO(
   definitions: WorkflowListResult,
 ): WorkflowListResultDTO {
@@ -125,6 +167,7 @@ function mapToWorkflowListResultDTO(
   };
   return result;
 }
+
 function getWorkflowCategoryDTO(
   definition: WorkflowDefinition | undefined,
 ): WorkflowCategoryDTO {
