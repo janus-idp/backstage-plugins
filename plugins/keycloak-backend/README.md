@@ -21,6 +21,8 @@ yarn workspace backend add @janus-idp/backstage-plugin-keycloak-backend
 
 ### Configuration
 
+#### Legacy Backend Configuration
+
 1. Add the following configuration to the `app-config.yaml` file:
 
    ```yaml title="app-config.yaml"
@@ -48,9 +50,9 @@ yarn workspace backend add @janus-idp/backstage-plugin-keycloak-backend
               # highlight-add-start
               schedule: # optional; same options as in TaskScheduleDefinition
                 # supports cron, ISO duration, "human duration" as used in code
-                frequency: { minutes: 1 }
+                frequency: { minutes: 30 }
                 # supports ISO duration, "human duration" as used in code
-                timeout: { minutes: 1 }
+                timeout: { minutes: 3 }
                 initialDelay: { seconds: 15 }
                 # highlight-add-end
       ```
@@ -113,8 +115,8 @@ yarn workspace backend add @janus-idp/backstage-plugin-keycloak-backend
             logger: env.logger,
             /* highlight-add-start */
             schedule: env.scheduler.createScheduledTaskRunner({
-              frequency: { minutes: 1 },
-              timeout: { minutes: 1 },
+              frequency: { minutes: 30 },
+              timeout: { minutes: 3 },
               initialDelay: { seconds: 15 },
             }),
             /* highlight-add-end */
@@ -207,6 +209,47 @@ yarn workspace backend add @janus-idp/backstage-plugin-keycloak-backend
    - `entity`: The output of the default parser
    - `group`: Keycloak group representation
    - `realm`: Realm name
+
+#### New Backend Configuration
+
+1. Add the following configuration to the `app-config.yaml` file, and customize the schedule to fit your needs:
+
+   ```yaml title="app-config.yaml"
+   catalog:
+     providers:
+       keycloakOrg:
+         default:
+           baseUrl: https://<keycloak_host>/auth
+           loginRealm: ${KEYCLOAK_REALM}
+           realm: ${KEYCLOAK_REALM}
+           clientId: ${KEYCLOAK_CLIENTID}
+           clientSecret: ${KEYCLOAK_CLIENTSECRET}
+           schedule: # Mandatory; same options as in TaskScheduleDefinition
+             # supports cron, ISO duration, "human duration" as used in code
+             frequency: { minutes: 30 } # Customize this to fit your needs
+             # supports ISO duration, "human duration" as used in code
+             timeout: { minutes: 3 } # Customize this to fit your needs
+             initialDelay: { seconds: 15 } # Customize this to fit your needs
+   ```
+
+1. Register the plugin in the `packages/backend/src/index.ts` file:
+
+   ```ts title="packages/backend/src/index.ts"
+   const backend = createBackend();
+
+   /* highlight-add-next-line */
+   backend.add(import('@janus-idp/backstage-plugin-keycloak-backend/alpha'));
+
+   backend.start();
+   ```
+
+---
+
+**NOTE**
+
+Currently the new backend installation method does not support transformer functions for users and groups.
+
+---
 
 Communication between Backstage and Keycloak is enabled by using the Keycloak API. Username/password or client credentials are supported authentication methods.
 
