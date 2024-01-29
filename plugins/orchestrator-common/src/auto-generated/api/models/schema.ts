@@ -12,6 +12,10 @@ export interface paths {
     /** @description Get a workflow by ID */
     get: operations['getWorkflowById'];
   };
+  '/v2/workflows/{workflowId}/execute': {
+    /** Execute a workflow */
+    post: operations['executeWorkflow'];
+  };
   '/v2/workflows/{workflowId}/overview': {
     /** @description Get a workflow overview by ID */
     get: operations['getWorkflowOverviewById'];
@@ -48,6 +52,14 @@ export type webhooks = Record<string, never>;
 
 export interface components {
   schemas: {
+    ExecuteWorkflowRequestDTO: {
+      inputData: {
+        [key: string]: string;
+      };
+    };
+    ExecuteWorkflowResponseDTO: {
+      id?: string;
+    };
     PaginationInfoDTO: {
       limit?: number;
       offset?: number;
@@ -179,6 +191,34 @@ export interface operations {
             /** @description Error message */
             message?: string;
           };
+        };
+      };
+    };
+  };
+  /** Execute a workflow */
+  executeWorkflow: {
+    parameters: {
+      path: {
+        /** @description ID of the workflow to execute */
+        workflowId: string;
+      };
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ExecuteWorkflowRequestDTO'];
+      };
+    };
+    responses: {
+      /** @description Successful execution */
+      200: {
+        content: {
+          'application/json': components['schemas']['ExecuteWorkflowResponseDTO'];
+        };
+      };
+      /** @description Internal Server Error */
+      500: {
+        content: {
+          'text/plain': string;
         };
       };
     };
