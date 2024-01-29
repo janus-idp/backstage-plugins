@@ -22,6 +22,8 @@ import { CloudEventService } from './CloudEventService';
 import { DataIndexService } from './DataIndexService';
 import { DataInputSchemaService } from './DataInputSchemaService';
 import {
+  getInstancesV1,
+  getInstancesV2,
   getWorkflowByIdV1,
   getWorkflowByIdV2,
   getWorkflowOverviewById,
@@ -310,15 +312,22 @@ function setupInternalRoutes(
   );
 
   router.get('/instances', async (_, res) => {
-    const instances = await services.dataIndexService.fetchProcessInstances();
-
-    if (!instances) {
-      res.status(500).send("Couldn't fetch process instances");
-      return;
-    }
-
-    res.status(200).json(instances);
+    await getInstancesV1(services.dataIndexService)
+      .then(result => res.status(200).json(result))
+      .catch(error => {
+        res.status(500).send(error.message || 'Internal Server Error');
+      });
   });
+
+  // v2
+  api.register(
+    'getInstances',
+    async (_c, _req: express.Request, res: express.Response, next) => {
+      await getInstancesV2(services.dataIndexService)
+        .then(result => res.json(result))
+        .catch(next);
+    },
+  );
 
   router.get('/instances/:instanceId', async (req, res) => {
     const {

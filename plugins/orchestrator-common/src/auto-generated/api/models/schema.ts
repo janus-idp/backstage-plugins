@@ -16,6 +16,13 @@ export interface paths {
     /** @description Get a workflow overview by ID */
     get: operations['getWorkflowOverviewById'];
   };
+  '/v2/workflows/instances': {
+    /**
+     * Get instances
+     * @description Retrieve an array of instances
+     */
+    get: operations['getInstances'];
+  };
   '/v2/workflows/overview': {
     /** @description Get a list of workflow overviews */
     get: operations['getWorkflowsOverview'];
@@ -31,6 +38,29 @@ export interface components {
       offset?: number;
       totalCount?: number;
     };
+    ProcessInstanceDTO: {
+      category?: components['schemas']['WorkflowCategoryDTO'];
+      description?: string;
+      duration?: string;
+      id?: string;
+      name?: string;
+      nextWorkflowSuggestions?: components['schemas']['WorkflowSuggestionsDTO'];
+      /** Format: date-time */
+      started?: string;
+      status?: components['schemas']['ProcessInstanceStatusDTO'];
+      workflow?: string;
+    };
+    ProcessInstancesDTO: components['schemas']['ProcessInstanceDTO'][];
+    /**
+     * @description Status of the workflow run
+     * @enum {string}
+     */
+    ProcessInstanceStatusDTO:
+      | 'Running'
+      | 'Error'
+      | 'Completed'
+      | 'Aborted'
+      | 'Suspended';
     /**
      * @description Category of the workflow
      * @enum {string}
@@ -67,6 +97,13 @@ export interface components {
     WorkflowOverviewListResultDTO: {
       overviews?: components['schemas']['WorkflowOverviewDTO'][];
       paginationInfo?: components['schemas']['PaginationInfoDTO'];
+    };
+    WorkflowSuggestionDTO: {
+      suggestion?: string;
+      workflow?: string;
+    };
+    WorkflowSuggestionsDTO: {
+      [key: string]: components['schemas']['WorkflowSuggestionDTO'];
     };
   };
   responses: never;
@@ -143,6 +180,29 @@ export interface operations {
         };
       };
       /** @description Error fetching workflow overview */
+      500: {
+        content: {
+          'application/json': {
+            /** @description Error message */
+            message?: string;
+          };
+        };
+      };
+    };
+  };
+  /**
+   * Get instances
+   * @description Retrieve an array of instances
+   */
+  getInstances: {
+    responses: {
+      /** @description Success */
+      200: {
+        content: {
+          'application/json': components['schemas']['ProcessInstancesDTO'];
+        };
+      };
+      /** @description Error fetching instances */
       500: {
         content: {
           'application/json': {

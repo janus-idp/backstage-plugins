@@ -1,5 +1,13 @@
+import moment from 'moment';
+
 import {
   ASSESSMENT_WORKFLOW_TYPE,
+  ProcessInstance,
+  ProcessInstanceDTO,
+  ProcessInstancesDTO,
+  ProcessInstanceState,
+  ProcessInstanceStatusDTO,
+  WorkflowCategory,
   WorkflowCategoryDTO,
   WorkflowDefinition,
   WorkflowDTO,
@@ -145,6 +153,52 @@ function mapToWorkflowDTO(
   };
 }
 
+export async function getInstancesV1(
+  dataIndexService: DataIndexService,
+): Promise<ProcessInstance[]> {
+  const instances = await dataIndexService.fetchProcessInstances();
+
+  if (!instances) {
+    throw new Error("Couldn't fetch process instances");
+  }
+  return instances;
+}
+
+export async function getInstancesV2(
+  dataIndexService: DataIndexService,
+): Promise<ProcessInstancesDTO> {
+  const instances = await getInstancesV1(dataIndexService);
+  const result = instances.map(def => mapToProcessInstanceDTO(def));
+
+  return result;
+}
+
+function mapToProcessInstanceDTO(
+  processInstance: ProcessInstance,
+): ProcessInstanceDTO {
+  const start = moment(processInstance.start?.toString());
+  const end = moment(processInstance.end?.toString());
+  const duration = moment.duration(start.diff(end));
+  let variables: Record<string, unknown> | undefined;
+  if (typeof processInstance?.variables === 'string') {
+    variables = JSON.parse(processInstance?.variables);
+  } else {
+    variables = processInstance?.variables;
+  }
+  return {
+    category: mapWorkflowCategoryDTO(processInstance.category),
+    description: processInstance.description,
+    duration: duration.humanize(),
+    id: processInstance.id,
+    name: processInstance.processName,
+    // @ts-ignore
+    nextWorkflowSuggestions: variables?.workflowdata?.workflowOptions,
+    started: start.toDate().toLocaleString(),
+    status: getProcessInstancesDTOFromString(processInstance.state),
+    workflow: processInstance.processName || processInstance.processId,
+  };
+}
+
 function mapToWorkflowListResultDTO(
   definitions: WorkflowListResult,
 ): WorkflowListResultDTO {
@@ -179,4 +233,35 @@ function getWorkflowCategoryDTO(
   )
     ? WorkflowCategoryDTO.ASSESSMENT
     : WorkflowCategoryDTO.INFRASTRUCTURE;
+}
+
+function mapWorkflowCategoryDTO(category?: WorkflowCategory) {
+  switch (category) {
+    case WorkflowCategory.ASSESSMENT:
+      return WorkflowCategoryDTO.ASSESSMENT;
+    case WorkflowCategory.INFRASTRUCTURE:
+      return WorkflowCategoryDTO.INFRASTRUCTURE;
+    default:
+      return WorkflowCategoryDTO.INFRASTRUCTURE;
+  }
+}
+
+function getProcessInstancesDTOFromString(
+  state: string,
+): ProcessInstanceStatusDTO {
+  switch (state) {
+    case ProcessInstanceState.Active.valueOf():
+      return ProcessInstanceStatusDTO.RUNNING;
+    case ProcessInstanceState.Error.valueOf():
+      return ProcessInstanceStatusDTO.ERROR;
+    case ProcessInstanceState.Completed.valueOf():
+      return ProcessInstanceStatusDTO.COMPLETED;
+    case ProcessInstanceState.Aborted.valueOf():
+      return ProcessInstanceStatusDTO.ABORTED;
+    case ProcessInstanceState.Suspended.valueOf():
+      return ProcessInstanceStatusDTO.SUSPENDED;
+    default:
+      // TODO: What is the default value?
+      return ProcessInstanceStatusDTO.SUSPENDED;
+  }
 }
