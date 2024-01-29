@@ -1,4 +1,4 @@
-import { EnterpriseContractResult } from '../types/output';
+import { EnterpriseContractResult } from '@aonic-ui/pipelines';
 
 export const enterpriseContractResult: EnterpriseContractResult = {
   success: false,

@@ -1,3 +1,10 @@
+import {
+  ComponentEnterpriseContractResult,
+  ENTERPRISE_CONTRACT_POLICY_STATUS,
+  EnterpriseContractPolicy,
+  EnterpriseContractResult,
+  EnterpriseContractRule,
+} from '@aonic-ui/pipelines';
 import { V1Pod } from '@kubernetes/client-node';
 
 import {
@@ -10,15 +17,7 @@ import {
   TEKTON_PIPELINE_RUN,
   TEKTON_PIPELINE_TASK,
 } from '../consts/tekton-const';
-import {
-  ComponentEnterpriseContractResult,
-  ENTERPRISE_CONTRACT_POLICY_STATUS,
-  EnterpriseContractPolicy,
-  EnterpriseContractResult,
-  EnterpriseContractRule,
-  OutputPodGroup,
-  OutputTaskRunGroup,
-} from '../types/output';
+import { OutputPodGroup, OutputTaskRunGroup } from '../types/output';
 import {
   TaskRunResultsAnnotations,
   TaskRunResultsFormatValue,
