@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { BackendDynamicPluginInstaller } from '@backstage/backend-plugin-manager';
 
-import { catalogModule3ScaleEntityProvider } from '../module';
-
-export const dynamicPluginInstaller: BackendDynamicPluginInstaller = {
-  kind: 'new',
-  install: catalogModule3ScaleEntityProvider,
-};
+/**
+ * The 3Scale backend plugin integrates 3Scale into Backstage
+ *
+ * @packageDocumentation
+ */
+export { catalogModule3ScaleEntityProvider as default } from './module';
