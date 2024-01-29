@@ -33,12 +33,11 @@ export const labelFilter: RunnableFilter<NamespaceInfo> = {
             val =>
               !!ns.labels && k in ns.labels && ns.labels[k].startsWith(val),
           );
-      } else {
-        return (
-          !!ns.labels &&
-          Object.keys(ns.labels).some(label => label.startsWith(f.value))
-        );
       }
+      return (
+        !!ns.labels &&
+        Object.keys(ns.labels).some(label => label.startsWith(f.value))
+      );
     });
   },
 };
