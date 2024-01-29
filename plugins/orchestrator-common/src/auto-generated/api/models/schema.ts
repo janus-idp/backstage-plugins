@@ -18,6 +18,13 @@ export interface paths {
     /** @description Get a workflow by ID */
     get: operations['getWorkflowById'];
   };
+  '/v2/workflows/{workflowId}/abort': {
+    /**
+     * Abort a workflow instance
+     * @description Aborts a workflow instance identified by the provided workflowId.
+     */
+    delete: operations['abortWorkflow'];
+  };
   '/v2/workflows/{workflowId}/execute': {
     /** Execute a workflow */
     post: operations['executeWorkflow'];
@@ -314,6 +321,32 @@ export interface operations {
             /** @description Error message */
             message?: string;
           };
+        };
+      };
+    };
+  };
+  /**
+   * Abort a workflow instance
+   * @description Aborts a workflow instance identified by the provided workflowId.
+   */
+  abortWorkflow: {
+    parameters: {
+      path: {
+        /** @description The identifier of the workflow instance to abort. */
+        workflowId: string;
+      };
+    };
+    responses: {
+      /** @description Successful operation */
+      200: {
+        content: {
+          'text/plain': string;
+        };
+      };
+      /** @description Internal Server Error */
+      500: {
+        content: {
+          'text/plain': string;
         };
       };
     };
