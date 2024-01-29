@@ -3,7 +3,7 @@
  * Do not make direct changes to the file.
  */
 
-export interface paths {
+export interface Paths {
   '/v2/workflows/overview': {
     /** @description Get a list of workflow overviews */
     get: operations['getWorkflowsOverview'];
@@ -12,7 +12,7 @@ export interface paths {
 
 export type webhooks = Record<string, never>;
 
-export interface components {
+export interface Components {
   schemas: {
     WorkflowOverviewListResultDTO: {
       overviews?: components['schemas']['WorkflowOverviewDTO'][];
@@ -47,7 +47,7 @@ export type $defs = Record<string, never>;
 
 export type external = Record<string, never>;
 
-export interface operations {
+export interface Operations {
   /** @description Get a list of workflow overviews */
   getWorkflowsOverview: {
     responses: {
