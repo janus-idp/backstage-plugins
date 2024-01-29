@@ -42,7 +42,10 @@ const topPosition = 'top';
 
 // Istio Links
 const getIstioLink = (item: TResource): string => {
-  const type = item.type;
+  let type = '';
+  if ('type' in item) {
+    type = item.type;
+  }
 
   return getIstioObjectUrl(item.name, item.namespace, type, item.cluster);
 };

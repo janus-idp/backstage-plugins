@@ -1,4 +1,7 @@
-import { StatefulFiltersProps } from '../../components/Filters/StatefulFilters';
+import * as React from 'react';
+
+import { StatefulFilters } from '../../components/Filters/StatefulFilters';
+import { AppListItem } from '../../types/AppList';
 import { Health } from '../../types/Health';
 import { IstioConfigItem } from '../../types/IstioConfigList';
 import { NamespaceInfo } from '../../types/NamespaceInfo';
@@ -7,16 +10,15 @@ import { WorkloadListItem } from '../../types/Workload';
 import { PFBadges, PFBadgeType } from '../Pf/PfBadges';
 import * as Renderers from './Renderers';
 
-export type SortResource = WorkloadListItem | ServiceListItem;
+export type SortResource = WorkloadListItem | ServiceListItem | AppListItem;
 export type TResource = SortResource | IstioConfigItem;
 export type RenderResource = TResource | NamespaceInfo;
 export type Renderer<R extends RenderResource> = (
   item: R,
   config: Resource,
   badge: PFBadgeType,
-  type: string,
   health?: Health,
-  statefulFilter?: StatefulFiltersProps,
+  statefulFilter?: React.RefObject<StatefulFilters>,
 ) => JSX.Element | undefined;
 
 export type ResourceType<R extends RenderResource> = {
