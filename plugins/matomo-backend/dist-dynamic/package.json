@@ -12,6 +12,17 @@
   "backstage": {
     "role": "backend-plugin"
   },
+  "exports": {
+    ".": {
+      "require": "./dist/index.cjs.js",
+      "default": "./dist/index.cjs.js"
+    },
+    "./alpha": {
+      "require": "./dist/alpha.cjs.js",
+      "default": "./dist/alpha.cjs.js"
+    },
+    "./package.json": "./package.json"
+  },
   "scripts": {
     "build": "backstage-cli package build",
     "clean": "backstage-cli package clean",
@@ -37,7 +48,8 @@
   "files": [
     "dist",
     "config.d.ts",
-    "app-config.janus-idp.yaml"
+    "app-config.janus-idp.yaml",
+    "alpha"
   ],
   "repository": "github:janus-idp/backstage-plugins",
   "keywords": [

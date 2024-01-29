@@ -14,11 +14,4 @@
  * limitations under the License.
  */
 
-import { BackendDynamicPluginInstaller } from '@backstage/backend-plugin-manager';
-
-import { matomoBackendPlugin } from '../plugin';
-
-export const dynamicPluginInstaller: BackendDynamicPluginInstaller = {
-  kind: 'new',
-  install: matomoBackendPlugin,
-};
+export { matomoBackendPlugin as default } from './plugin';
