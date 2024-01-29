@@ -31,6 +31,13 @@ export interface paths {
     /** Get assessment results */
     get: operations['getAssessmentResults'];
   };
+  '/v2/workflows/instances/statuses': {
+    /**
+     * Get workflow status list
+     * @description Retrieve an array of workflow statuses as string
+     */
+    get: operations['getWorkflowStatuses'];
+  };
   '/v2/workflows/overview': {
     /** @description Get a list of workflow overviews */
     get: operations['getWorkflowsOverview'];
@@ -105,6 +112,10 @@ export interface components {
     WorkflowOverviewListResultDTO: {
       overviews?: components['schemas']['WorkflowOverviewDTO'][];
       paginationInfo?: components['schemas']['PaginationInfoDTO'];
+    };
+    WorkflowRunStatusDTO: {
+      key?: string;
+      value?: string;
     };
     WorkflowSuggestionDTO: {
       suggestion?: string;
@@ -260,6 +271,20 @@ export interface operations {
       200: {
         content: {
           'application/json': components['schemas']['WorkflowSuggestionsDTO'];
+        };
+      };
+    };
+  };
+  /**
+   * Get workflow status list
+   * @description Retrieve an array of workflow statuses as string
+   */
+  getWorkflowStatuses: {
+    responses: {
+      /** @description Success */
+      200: {
+        content: {
+          'application/json': components['schemas']['WorkflowRunStatusDTO'][];
         };
       };
     };

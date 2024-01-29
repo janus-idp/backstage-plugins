@@ -283,6 +283,28 @@ const OPENAPI = `
           }
         }
       }
+    },
+    "/v2/workflows/instances/statuses": {
+      "get": {
+        "operationId": "getWorkflowStatuses",
+        "summary": "Get workflow status list",
+        "description": "Retrieve an array of workflow statuses as string",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WorkflowRunStatusDTO"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -506,6 +528,17 @@ const OPENAPI = `
           "Aborted",
           "Suspended"
         ]
+      },
+      "WorkflowRunStatusDTO": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
+        }
       }
     }
   }
