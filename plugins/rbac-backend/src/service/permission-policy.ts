@@ -33,20 +33,15 @@ const useAdmins = async (
   roleMetadataStorage: RoleMetadataStorage,
   knex: Knex,
 ) => {
-  const rbacAdminsGroupPolicies: string[][] = [];
   const groupPoliciesToCompare: string[] = [];
   const addedGroupPolicies = new Map<string, string>();
 
-  admins.forEach(async localConfig => {
-    const entityRef = localConfig.getString('name');
+  for (const admin of admins) {
+    const entityRef = admin.getString('name');
     validateEntityReference(entityRef);
 
-    const groupPolicy = [entityRef, adminRoleName];
-    if (!(await enf.hasGroupingPolicy(...groupPolicy))) {
-      rbacAdminsGroupPolicies.push(groupPolicy);
-    }
     addedGroupPolicies.set(entityRef, adminRoleName);
-  });
+  }
 
   const adminRoleMeta =
     await roleMetadataStorage.findRoleMetadata(adminRoleName);
@@ -140,7 +135,7 @@ const removedOldPermissionPoliciesFileData = async (
   fileEnf?: Enforcer,
 ) => {
   const tempEnforcer =
-    fileEnf || (await newEnforcer(newModelFromString(MODEL)));
+    fileEnf ?? (await newEnforcer(newModelFromString(MODEL)));
   const oldFilePolicies = new Set<string[]>();
   const policiesMetadata = await enf.getFilteredPolicyMetadata('csv-file');
   for (const policyMetadata of policiesMetadata) {
@@ -222,6 +217,14 @@ export class RBACPermissionPolicy implements PermissionPolicy {
       'permission.rbac.policies-csv-file',
     );
 
+    if (adminUsers && adminUsers.length > 0) {
+      await useAdmins(adminUsers, enforcerDelegate, roleMetadataStorage, knex);
+    } else {
+      logger.warn(
+        'There are no admins configured for the RBAC-backend plugin. The plugin may not work properly.',
+      );
+    }
+
     if (policiesFile) {
       await addPermissionPoliciesFileData(
         policiesFile,
@@ -230,19 +233,6 @@ export class RBACPermissionPolicy implements PermissionPolicy {
       );
     } else {
       await removedOldPermissionPoliciesFileData(enforcerDelegate);
-    }
-
-    if (adminUsers && adminUsers.length > 0) {
-      await useAdmins(
-        adminUsers || [],
-        enforcerDelegate,
-        roleMetadataStorage,
-        knex,
-      );
-    } else {
-      logger.warn(
-        'There are no admins configured for the RBAC-backend plugin. The plugin may not work properly.',
-      );
     }
 
     return new RBACPermissionPolicy(

@@ -771,7 +771,7 @@ export class PolicesServer {
       const err = validatePolicy(policy);
       if (err) {
         throw new InputError(
-          `Invalid ${errorMessage || 'policy'} definition. Cause: ${
+          `Invalid ${errorMessage ?? 'policy'} definition. Cause: ${
             err.message
           }`,
         ); // 400

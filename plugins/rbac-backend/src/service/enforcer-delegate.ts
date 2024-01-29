@@ -58,7 +58,7 @@ export class EnforcerDelegate {
     source: Source,
     externalTrx?: Knex.Transaction,
   ): Promise<void> {
-    const trx = externalTrx || (await this.knex.transaction());
+    const trx = externalTrx ?? (await this.knex.transaction());
 
     try {
       await this.policyMetadataStorage.createPolicyMetadata(
@@ -95,7 +95,7 @@ export class EnforcerDelegate {
           trx,
         );
       }
-      const ok = this.enforcer.addPolicies(policies);
+      const ok = await this.enforcer.addPolicies(policies);
       if (!ok) {
         throw new Error(
           `Failed to store policies ${policiesToString(policies)}`,
@@ -118,7 +118,7 @@ export class EnforcerDelegate {
     externalTrx?: Knex.Transaction,
     isUpdate?: boolean,
   ): Promise<void> {
-    const trx = externalTrx || (await this.knex.transaction());
+    const trx = externalTrx ?? (await this.knex.transaction());
     const entityRef = policy[1];
     let metadata;
 
@@ -165,7 +165,7 @@ export class EnforcerDelegate {
     externalTrx?: Knex.Transaction,
     isUpdate?: boolean,
   ): Promise<void> {
-    const trx = externalTrx || (await this.knex.transaction());
+    const trx = externalTrx ?? (await this.knex.transaction());
 
     try {
       for (const policy of policies) {
@@ -215,7 +215,7 @@ export class EnforcerDelegate {
     allowToDeleteCSVFilePolicy?: boolean,
     externalTrx?: Knex.Transaction,
   ): Promise<void> {
-    const trx = externalTrx || (await this.knex.transaction());
+    const trx = externalTrx ?? (await this.knex.transaction());
     const newRoleName = newRole.at(0)?.at(1)!;
     const oldRoleName = oldRole.at(0)?.at(1)!;
     try {
@@ -250,7 +250,7 @@ export class EnforcerDelegate {
     allowToDeleteCSVFilePolicy?: boolean,
     externalTrx?: Knex.Transaction,
   ): Promise<void> {
-    const trx = externalTrx || (await this.knex.transaction());
+    const trx = externalTrx ?? (await this.knex.transaction());
 
     try {
       await this.removePolicies(
@@ -277,7 +277,7 @@ export class EnforcerDelegate {
     allowToDeleteCSVFilePolicy?: boolean,
     externalTrx?: Knex.Transaction,
   ) {
-    const trx = externalTrx || (await this.knex.transaction());
+    const trx = externalTrx ?? (await this.knex.transaction());
 
     try {
       await this.checkIfPolicyModifiable(
@@ -308,7 +308,7 @@ export class EnforcerDelegate {
     allowToDeleCSVFilePolicy?: boolean,
     externalTrx?: Knex.Transaction,
   ): Promise<void> {
-    const trx = externalTrx || (await this.knex.transaction());
+    const trx = externalTrx ?? (await this.knex.transaction());
 
     try {
       for (const policy of policies) {
@@ -345,7 +345,7 @@ export class EnforcerDelegate {
     allowToDeleCSVFilePolicy?: boolean,
     externalTrx?: Knex.Transaction,
   ): Promise<void> {
-    const trx = externalTrx || (await this.knex.transaction());
+    const trx = externalTrx ?? (await this.knex.transaction());
     const roleEntity = policy[1];
 
     try {
@@ -381,7 +381,7 @@ export class EnforcerDelegate {
     isUpdate?: boolean,
     externalTrx?: Knex.Transaction,
   ): Promise<void> {
-    const trx = externalTrx || (await this.knex.transaction());
+    const trx = externalTrx ?? (await this.knex.transaction());
     try {
       for (const policy of policies) {
         const roleEntity = policy[1];
@@ -421,7 +421,7 @@ export class EnforcerDelegate {
     isCSV: boolean,
     externalTrx?: Knex.Transaction,
   ): Promise<void> {
-    const trx = externalTrx || (await this.knex.transaction());
+    const trx = externalTrx ?? (await this.knex.transaction());
     try {
       if (!(await this.enforcer.hasPolicy(...policy))) {
         await this.addPolicy(policy, source, trx);
@@ -446,7 +446,7 @@ export class EnforcerDelegate {
     isCSV?: boolean,
     externalTrx?: Knex.Transaction,
   ): Promise<void> {
-    const trx = externalTrx || (await this.knex.transaction());
+    const trx = externalTrx ?? (await this.knex.transaction());
     try {
       if (!(await this.hasGroupingPolicy(...groupPolicy))) {
         await this.addGroupingPolicy(groupPolicy, source, trx);
@@ -478,7 +478,7 @@ export class EnforcerDelegate {
     isCSV?: boolean,
     externalTrx?: Knex.Transaction,
   ): Promise<void> {
-    const trx = externalTrx || (await this.knex.transaction());
+    const trx = externalTrx ?? (await this.knex.transaction());
     try {
       for (const groupPolicy of groupPolicies) {
         if (!(await this.hasGroupingPolicy(...groupPolicy))) {
@@ -576,7 +576,7 @@ export class EnforcerDelegate {
     policy: string[],
     source: Source,
     externalTrx?: Knex.Transaction,
-  ): Promise<Boolean> {
+  ): Promise<boolean> {
     const metadata = await this.policyMetadataStorage.findPolicyMetadata(
       policy,
       externalTrx,
