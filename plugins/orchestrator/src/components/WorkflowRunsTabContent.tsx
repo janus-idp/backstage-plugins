@@ -61,6 +61,7 @@ export const WorkflowRunsTabContent = () => {
     (): TableColumn<WorkflowRunDetail>[] => [
       {
         title: 'ID',
+        field: 'id',
         render: data => (
           <Link to={workflowInstanceLink({ instanceId: data.id })}>
             {ellipsis(data.id)}
@@ -73,6 +74,7 @@ export const WorkflowRunsTabContent = () => {
       },
       {
         title: 'Status',
+        field: 'status',
         render: data => (
           <WorkflowInstanceStatusIndicator
             status={data.status as ProcessInstanceStateValues}
@@ -81,9 +83,10 @@ export const WorkflowRunsTabContent = () => {
       },
       {
         title: 'Category',
+        field: 'category',
         render: data => capitalize(data.category ?? VALUE_UNAVAILABLE),
       },
-      { title: 'Started', field: 'started' },
+      { title: 'Started', field: 'started', defaultSort: 'desc' },
       { title: 'Duration', field: 'duration' },
     ],
     [workflowInstanceLink],
