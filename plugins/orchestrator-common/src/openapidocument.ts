@@ -50,6 +50,51 @@ const OPENAPI = `
           }
         }
       }
+    },
+    "/v2/workflows/{workflowId}/overview": {
+      "get": {
+        "operationId": "getWorkflowOverviewById",
+        "description": "Get a workflow overview by ID",
+        "parameters": [
+          {
+            "name": "workflowId",
+            "in": "path",
+            "required": true,
+            "description": "Unique identifier of the workflow",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkflowOverviewDTO"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error fetching workflow overview",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Error message"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -124,5 +169,5 @@ const OPENAPI = `
       }
     }
   }
-}`;
+}`
 export const openApiDocument = JSON.parse(OPENAPI);

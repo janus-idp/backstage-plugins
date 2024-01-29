@@ -3,14 +3,15 @@
  * Do not make direct changes to the file.
  */
 
+
 export interface paths {
-  '/v2/workflows/overview': {
-    /** @description Get a list of workflow overviews */
-    get: operations['getWorkflowsOverview'];
-  };
-  '/v2/workflows/{workflowId}/overview': {
+  "/v2/workflows/{workflowId}/overview": {
     /** @description Get a workflow overview by ID */
-    get: operations['getWorkflowOverviewById'];
+    get: operations["getWorkflowOverviewById"];
+  };
+  "/v2/workflows/overview": {
+    /** @description Get a list of workflow overviews */
+    get: operations["getWorkflowsOverview"];
   };
 }
 
@@ -18,26 +19,26 @@ export type webhooks = Record<string, never>;
 
 export interface components {
   schemas: {
-    WorkflowOverviewListResultDTO: {
-      overviews?: components['schemas']['WorkflowOverviewDTO'][];
-      paginationInfo?: components['schemas']['PaginationInfoDTO'];
-    };
-    WorkflowOverviewDTO: {
-      /** @description Workflow unique identifier */
-      workflowId?: string;
-      /** @description Workflow name */
-      name?: string;
-      uri?: string;
-      lastTriggeredMs?: number;
-      lastRunStatus?: string;
-      type?: string;
-      avgDurationMs?: number;
-      description?: string;
-    };
     PaginationInfoDTO: {
       limit?: number;
       offset?: number;
       totalCount?: number;
+    };
+    WorkflowOverviewDTO: {
+      avgDurationMs?: number;
+      description?: string;
+      lastRunStatus?: string;
+      lastTriggeredMs?: number;
+      /** @description Workflow name */
+      name?: string;
+      type?: string;
+      uri?: string;
+      /** @description Workflow unique identifier */
+      workflowId?: string;
+    };
+    WorkflowOverviewListResultDTO: {
+      overviews?: components["schemas"]["WorkflowOverviewDTO"][];
+      paginationInfo?: components["schemas"]["PaginationInfoDTO"];
     };
   };
   responses: never;
@@ -52,26 +53,7 @@ export type $defs = Record<string, never>;
 export type external = Record<string, never>;
 
 export interface operations {
-  /** @description Get a list of workflow overviews */
-  getWorkflowsOverview: {
-    responses: {
-      /** @description Success */
-      200: {
-        content: {
-          'application/json': components['schemas']['WorkflowOverviewListResultDTO'];
-        };
-      };
-      /** @description Error fetching workflow overviews */
-      500: {
-        content: {
-          'application/json': {
-            /** @description Error message */
-            message?: string;
-          };
-        };
-      };
-    };
-  };
+
   /** @description Get a workflow overview by ID */
   getWorkflowOverviewById: {
     parameters: {
@@ -84,13 +66,33 @@ export interface operations {
       /** @description Success */
       200: {
         content: {
-          'application/json': components['schemas']['WorkflowOverview'];
+          "application/json": components["schemas"]["WorkflowOverviewDTO"];
         };
       };
       /** @description Error fetching workflow overview */
       500: {
         content: {
-          'application/json': {
+          "application/json": {
+            /** @description Error message */
+            message?: string;
+          };
+        };
+      };
+    };
+  };
+  /** @description Get a list of workflow overviews */
+  getWorkflowsOverview: {
+    responses: {
+      /** @description Success */
+      200: {
+        content: {
+          "application/json": components["schemas"]["WorkflowOverviewListResultDTO"];
+        };
+      };
+      /** @description Error fetching workflow overviews */
+      500: {
+        content: {
+          "application/json": {
             /** @description Error message */
             message?: string;
           };

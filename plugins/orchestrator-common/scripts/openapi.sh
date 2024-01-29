@@ -3,7 +3,7 @@ pwd
 set -ex
 
 export SCHEMA=./src/auto-generated/api/models/schema.ts
-npx openapi-typescript ./api/openapi.yaml -o ${SCHEMA}
+npx openapi-typescript ./api/openapi.yaml -o ${SCHEMA} --alphabetize
 # Fix sonarcloud warning typescript:S101 (Class names should comply with a naming convention)
 
 
