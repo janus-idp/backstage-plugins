@@ -173,6 +173,29 @@ export async function getInstancesV2(
   return result;
 }
 
+export async function getInstancesByIdV1(
+  dataIndexService: DataIndexService,
+  instanceId: string,
+): Promise<ProcessInstance> {
+  const instance = await dataIndexService.fetchProcessInstance(instanceId);
+
+  if (!instance) {
+    throw new Error(`Couldn't fetch process instance ${instanceId}`);
+  }
+  return instance;
+}
+
+export async function getInstancesByIdV2(
+  dataIndexService: DataIndexService,
+  instanceId: string,
+): Promise<ProcessInstanceDTO> {
+  const instance: ProcessInstance = await getInstancesByIdV1(
+    dataIndexService,
+    instanceId,
+  );
+  return mapToProcessInstanceDTO(instance);
+}
+
 function mapToProcessInstanceDTO(
   processInstance: ProcessInstance,
 ): ProcessInstanceDTO {

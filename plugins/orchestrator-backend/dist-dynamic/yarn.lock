@@ -779,6 +779,11 @@ mock-json-schema@^1.0.7:
   dependencies:
     lodash "^4.17.21"
 
+moment@^2.30.1:
+  version "2.30.1"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.30.1.tgz#f8c91c07b7a786e30c59926df530b4eac96974ae"
+  integrity sha512-uEmtNhbDOrWPFS+hdjFCBfy9f2YoyzRpwcl+DqpC6taX21FzsTLQVbMV/W7PzNSX6x/bhC1zA3c2UQ5NzH6how==
+
 ms@2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.0.0.tgz#5608aeadfc00be6c2901df5f9861788de0d597c8"
@@ -828,9 +833,9 @@ one-time@^1.0.0:
     fn.name "1.x.x"
 
 openapi-backend@^5.10.5:
-  version "5.10.5"
-  resolved "https://registry.yarnpkg.com/openapi-backend/-/openapi-backend-5.10.5.tgz#344905d7db0dcddbec827e9aa3e8dc8e7089b0a7"
-  integrity sha512-ivZfL0Lwj7rRctCqxAquGy4j/VcdUXUvDsEVM3NG/2jDuvYT2dS+sf9ntGo5vv4hkOnkWgPnR6HxHp7NPexqAA==
+  version "5.10.6"
+  resolved "https://registry.yarnpkg.com/openapi-backend/-/openapi-backend-5.10.6.tgz#e719be85d006a1379900d0ff5c8f60baecb5de21"
+  integrity sha512-vTjBRys/O4JIHdlRHUKZ7pxS+gwIJreAAU9dvYRFrImtPzQ5qxm5a6B8BTVT9m6I8RGGsShJv35MAc3Tu2/y/A==
   dependencies:
     "@apidevtools/json-schema-ref-parser" "^11.1.0"
     ajv "^8.6.2"

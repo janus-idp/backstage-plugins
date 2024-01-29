@@ -23,6 +23,10 @@ export interface paths {
      */
     get: operations['getInstances'];
   };
+  '/v2/workflows/instances/{instanceId}': {
+    /** Get Workflow Instance by ID */
+    get: operations['getInstanceById'];
+  };
   '/v2/workflows/overview': {
     /** @description Get a list of workflow overviews */
     get: operations['getWorkflowsOverview'];
@@ -203,6 +207,32 @@ export interface operations {
         };
       };
       /** @description Error fetching instances */
+      500: {
+        content: {
+          'application/json': {
+            /** @description Error message */
+            message?: string;
+          };
+        };
+      };
+    };
+  };
+  /** Get Workflow Instance by ID */
+  getInstanceById: {
+    parameters: {
+      path: {
+        /** @description ID of the workflow instance */
+        instanceId: string;
+      };
+    };
+    responses: {
+      /** @description Successful response */
+      200: {
+        content: {
+          'application/json': components['schemas']['ProcessInstanceDTO'];
+        };
+      };
+      /** @description Internal Server Error */
       500: {
         content: {
           'application/json': {
