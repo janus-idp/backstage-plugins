@@ -24,6 +24,10 @@ export interface paths {
     /** @description Get a workflow overview by ID */
     get: operations['getWorkflowOverviewById'];
   };
+  '/v2/workflows/{workflowId}/parameters': {
+    /** Get input parameters by steps */
+    get: operations['getParametersByStep'];
+  };
   '/v2/workflows/instances': {
     /**
      * Get instances
@@ -69,6 +73,12 @@ export interface components {
       offset?: number;
       totalCount?: number;
     };
+    ParameterDTO: {
+      name: string;
+      type: string;
+    };
+    ParametersByStepDTO: components['schemas']['ParameterStepDTO'][];
+    ParameterStepDTO: components['schemas']['ParameterDTO'][];
     ProcessInstanceDTO: {
       category?: components['schemas']['WorkflowCategoryDTO'];
       description?: string;
@@ -97,6 +107,10 @@ export interface components {
      * @enum {string}
      */
     WorkflowCategoryDTO: 'assessment' | 'infrastructure';
+    WorkflowContentDTO: {
+      /** @description JSON string */
+      content?: string;
+    };
     WorkflowDTO: {
       annotations?: string[];
       category: components['schemas']['WorkflowCategoryDTO'];
@@ -132,6 +146,10 @@ export interface components {
     WorkflowRunStatusDTO: {
       key?: string;
       value?: string;
+    };
+    WorkflowSpecFileDTO: {
+      content?: components['schemas']['WorkflowContentDTO'];
+      path?: string;
     };
     WorkflowSuggestionDTO: {
       suggestion?: string;
@@ -266,6 +284,29 @@ export interface operations {
             /** @description Error message */
             message?: string;
           };
+        };
+      };
+    };
+  };
+  /** Get input parameters by steps */
+  getParametersByStep: {
+    parameters: {
+      path: {
+        /** @description Unique identifier of the workflow */
+        workflowId: string;
+      };
+    };
+    responses: {
+      /** @description Successful division of parameters */
+      200: {
+        content: {
+          'application/json': components['schemas']['ParametersByStepDTO'];
+        };
+      };
+      /** @description Bad Request */
+      400: {
+        content: {
+          'text/plain': string;
         };
       };
     };

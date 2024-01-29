@@ -385,6 +385,45 @@ const OPENAPI = `
           }
         }
       }
+    },
+    "/v2/workflows/{workflowId}/parameters": {
+      "get": {
+        "summary": "Get input parameters by steps",
+        "operationId": "getParametersByStep",
+        "parameters": [
+          {
+            "name": "workflowId",
+            "in": "path",
+            "required": true,
+            "description": "Unique identifier of the workflow",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful division of parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ParametersByStepDTO"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -641,6 +680,53 @@ const OPENAPI = `
             "type": "string"
           }
         }
+      },
+      "WorkflowSpecFileDTO": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "content": {
+            "$ref": "#/components/schemas/WorkflowContentDTO"
+          }
+        }
+      },
+      "WorkflowContentDTO": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "description": "JSON string"
+          }
+        }
+      },
+      "ParametersByStepDTO": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/ParameterStepDTO"
+        }
+      },
+      "ParameterStepDTO": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/ParameterDTO"
+        }
+      },
+      "ParameterDTO": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "type"
+        ]
       }
     }
   }
