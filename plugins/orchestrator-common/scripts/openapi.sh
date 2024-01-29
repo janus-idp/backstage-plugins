@@ -5,9 +5,7 @@ set -ex
 export SCHEMA=./src/auto-generated/api/models/schema.ts
 npx openapi-typescript ./api/openapi.yaml -o ${SCHEMA}
 # Fix sonarcloud warning typescript:S101 (Class names should comply with a naming convention)
-sed -i 's/export interface paths {/export interface Paths {/' ${SCHEMA}
-sed -i 's/export interface components {/export interface Components {/' ${SCHEMA}
-sed -i 's/export interface operations {/export interface Operations {/' ${SCHEMA}
+
 
 npx yaml2json -f ./api/openapi.yaml
 
