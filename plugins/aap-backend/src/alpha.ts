@@ -13,11 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { BackendDynamicPluginInstaller } from '@backstage/backend-plugin-manager';
 
-import { catalogModuleAapResourceEntityProvider } from '../module';
-
-export const dynamicPluginInstaller: BackendDynamicPluginInstaller = {
-  kind: 'new',
-  install: catalogModuleAapResourceEntityProvider,
-};
+export { catalogModuleAapResourceEntityProvider as default } from './module';
