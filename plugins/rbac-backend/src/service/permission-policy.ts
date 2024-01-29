@@ -35,7 +35,7 @@ const useAdmins = async (
 ) => {
   const rbacAdminsGroupPolicies: string[][] = [];
   const groupPoliciesToCompare: string[] = [];
-  const addedGroupPolicies: string[] = [];
+  const addedGroupPolicies = new Map<string, string>();
 
   admins.forEach(async localConfig => {
     const entityRef = localConfig.getString('name');
@@ -45,7 +45,7 @@ const useAdmins = async (
     if (!(await enf.hasGroupingPolicy(...groupPolicy))) {
       rbacAdminsGroupPolicies.push(groupPolicy);
     }
-    addedGroupPolicies.push(entityRef);
+    addedGroupPolicies.set(entityRef, adminRoleName);
   });
 
   const adminRoleMeta =
@@ -75,7 +75,7 @@ const useAdmins = async (
   }
 
   await enf.addOrUpdateGroupingPolicies(
-    rbacAdminsGroupPolicies,
+    Array.from<string[]>(addedGroupPolicies.entries()),
     'configuration',
     false,
   );
@@ -92,7 +92,7 @@ const useAdmins = async (
 
   await removeTheDifference(
     groupPoliciesToCompare,
-    addedGroupPolicies,
+    Array.from<string>(addedGroupPolicies.keys()),
     'configuration',
     adminRoleName,
     enf,
