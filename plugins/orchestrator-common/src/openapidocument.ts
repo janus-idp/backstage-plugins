@@ -254,6 +254,35 @@ const OPENAPI = `
           }
         }
       }
+    },
+    "/v2/workflows/instances/{instanceId}/result": {
+      "get": {
+        "summary": "Get assessment results",
+        "operationId": "getAssessmentResults",
+        "parameters": [
+          {
+            "name": "instanceId",
+            "in": "path",
+            "required": true,
+            "description": "ID of the workflow instance",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkflowSuggestionsDTO"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {

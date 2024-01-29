@@ -27,6 +27,10 @@ export interface paths {
     /** Get Workflow Instance by ID */
     get: operations['getInstanceById'];
   };
+  '/v2/workflows/instances/{instanceId}/result': {
+    /** Get assessment results */
+    get: operations['getAssessmentResults'];
+  };
   '/v2/workflows/overview': {
     /** @description Get a list of workflow overviews */
     get: operations['getWorkflowsOverview'];
@@ -239,6 +243,23 @@ export interface operations {
             /** @description Error message */
             message?: string;
           };
+        };
+      };
+    };
+  };
+  /** Get assessment results */
+  getAssessmentResults: {
+    parameters: {
+      path: {
+        /** @description ID of the workflow instance */
+        instanceId: string;
+      };
+    };
+    responses: {
+      /** @description Successful response */
+      200: {
+        content: {
+          'application/json': components['schemas']['WorkflowSuggestionsDTO'];
         };
       };
     };
