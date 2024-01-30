@@ -5,7 +5,10 @@
 
 export interface paths {
   '/v2/specs': {
-    /** Get workflow specifications */
+    /**
+     * Get workflow specifications
+     * @description List all stored workflow specification. Each workflow specification is represented as a JSON string
+     */
     get: operations['getWorkflowSpecs'];
   };
   '/v2/workflows': {
@@ -160,7 +163,7 @@ export interface components {
     WorkflowCategoryDTO: 'assessment' | 'infrastructure';
     WorkflowContentDTO: {
       /** @description JSON string */
-      content?: string;
+      content: string;
     };
     WorkflowDTO: {
       annotations?: string[];
@@ -226,7 +229,10 @@ export type $defs = Record<string, never>;
 export type external = Record<string, never>;
 
 export interface operations {
-  /** Get workflow specifications */
+  /**
+   * Get workflow specifications
+   * @description List all stored workflow specification. Each workflow specification is represented as a JSON string
+   */
   getWorkflowSpecs: {
     responses: {
       /** @description Successful retrieval of workflow specifications */

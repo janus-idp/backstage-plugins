@@ -427,6 +427,7 @@ const OPENAPI = `
       "get": {
         "summary": "Get workflow specifications",
         "operationId": "getWorkflowSpecs",
+        "description": "List all stored workflow specification. Each workflow specification is represented as a JSON string",
         "responses": {
           "200": {
             "description": "Successful retrieval of workflow specifications",
@@ -536,7 +537,7 @@ const OPENAPI = `
       "delete": {
         "summary": "Abort a workflow instance",
         "operationId": "abortWorkflow",
-        "description": "Aborts a workflow instance identified by the provided workflowId.\n",
+        "description": "Aborts a workflow instance identified by the provided workflowId.",
         "parameters": [
           {
             "name": "workflowId",
@@ -846,7 +847,10 @@ const OPENAPI = `
             "type": "string",
             "description": "JSON string"
           }
-        }
+        },
+        "required": [
+          "content"
+        ]
       },
       "ParametersByStepDTO": {
         "type": "array",
