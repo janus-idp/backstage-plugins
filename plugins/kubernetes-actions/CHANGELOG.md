@@ -1,3 +1,16 @@
+## @janus-idp/backstage-scaffolder-backend-module-kubernetes [1.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-kubernetes@1.2.7...@janus-idp/backstage-scaffolder-backend-module-kubernetes@1.3.0) (2024-01-30)
+
+
+### Features
+
+* add new backend system support for existing backend plugins that have not been migrated over yet ([#1132](https://github.com/janus-idp/backstage-plugins/issues/1132)) ([06e16fd](https://github.com/janus-idp/backstage-plugins/commit/06e16fdcf64257dd08297cb727445d9a8a23c522))
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.0
+
 ## @janus-idp/backstage-scaffolder-backend-module-kubernetes [1.2.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-kubernetes@1.2.6...@janus-idp/backstage-scaffolder-backend-module-kubernetes@1.2.7) (2024-01-25)
 
 
