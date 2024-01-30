@@ -100,8 +100,8 @@ export const OverviewToolbar = (props: OverviewToolbarProps) => {
   };
 
   return (
-    <Grid container spacing={3} direction="row">
-      <Grid item xs={3}>
+    <Grid container spacing={1} direction="row">
+      <Grid item xs={1}>
         <Select
           onChange={e => updateOverviewType(e as String)}
           label="Health for"
@@ -109,7 +109,7 @@ export const OverviewToolbar = (props: OverviewToolbarProps) => {
           selected={props.overviewType}
         />
       </Grid>
-      <Grid item xs={3}>
+      <Grid item xs={1}>
         <Select
           onChange={e => updateDirectionType(e as String)}
           label="Traffic"
@@ -117,7 +117,7 @@ export const OverviewToolbar = (props: OverviewToolbarProps) => {
           selected={props.directionType}
         />
       </Grid>
-      <Grid item xs={3}>
+      <Grid item xs={1}>
         <Select
           onChange={e => updateDurationType(e as number)}
           label="Metrics from"
@@ -125,9 +125,9 @@ export const OverviewToolbar = (props: OverviewToolbarProps) => {
           selected={props.duration.toString()}
         />
       </Grid>
-      <Grid item xs={2} />
+      <Grid item xs={8} />
       <Grid item xs={1}>
-        <Tooltip title="Refresh" style={{ marginTop: '20px' }}>
+        <Tooltip title="Refresh" style={{ marginTop: '35px', float: 'right' }}>
           <IconButton
             color="primary"
             aria-label="upload picture"
