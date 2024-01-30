@@ -3,7 +3,7 @@ import { CSSProperties } from 'react';
 
 import { TableRow } from '@material-ui/core';
 
-import { Health } from '../../types/Health';
+import { hasHealth, Health } from '../../types/Health';
 import { StatefulFiltersProps } from '../Filters/StatefulFilters';
 import { IstioTypes, RenderResource, Resource } from './Config';
 import { actionRenderer } from './Renderers';
@@ -21,6 +21,17 @@ type VirtualItemProps = {
 };
 
 export const VirtualItem = (props: VirtualItemProps) => {
+  const [itemState, setItemState] = React.useState<Health>();
+
+  React.useEffect(() => {
+    if (hasHealth(props.item)) {
+      if ('health' in props.item) {
+        setItemState(props.item.health);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [itemState]);
+
   const getBadge = (): React.ReactNode => {
     const istioType = typeof props.item;
     return props.config.name !== 'istio'
@@ -61,7 +72,7 @@ export const VirtualItem = (props: VirtualItemProps) => {
       key={key}
       data-test={key}
     >
-      {renderDetails(item)}
+      {renderDetails(item, itemState)}
       {props.action && actionRenderer(key, props.action)}
     </TableRow>
   );

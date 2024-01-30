@@ -5,6 +5,7 @@ import {
   KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION,
   KUBERNETES_NAMESPACE,
 } from '../Router';
+import { WorkloadHealth } from '../types/Health';
 import { Namespace } from '../types/Namespace';
 import { WorkloadListItem, WorkloadNamespaceResponse } from '../types/Workload';
 
@@ -121,7 +122,11 @@ export const filterWkByAnnotation = (
       labels: w.labels,
       istioReferences: w.istioReferences,
       notCoveredAuthPolicy: w.notCoveredAuthPolicy,
-      health: w.health,
+      health: WorkloadHealth.fromJson(wkResp.namespace.name, w.name, w.health, {
+        rateInterval: 60, // TODO: use param
+        hasSidecar: w.istioSidecar,
+        hasAmbient: w.istioAmbient,
+      }),
     };
   });
 
