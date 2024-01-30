@@ -9,15 +9,16 @@ export type WorkflowListResultDTO =
 export type ProcessInstanceDTO = components['schemas']['ProcessInstanceDTO'];
 export type ProcessInstancesDTO = components['schemas']['ProcessInstancesDTO'];
 
-// FIX ME
+// Generate ts enum instead of strings union
+// https://issues.redhat.com/browse/FLPATH-947
 export enum WorkflowCategoryDTO {
   // Assessment Workflow
   ASSESSMENT = 'assessment',
   // Infrastructure Workflow
   INFRASTRUCTURE = 'infrastructure',
 }
-
-// FIX ME
+// Generate ts enum instead of strings union
+// https://issues.redhat.com/browse/FLPATH-947
 export enum ProcessInstanceStatusDTO {
   // Running
   RUNNING = 'Running',
