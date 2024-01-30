@@ -6,6 +6,7 @@ import { Grid, IconButton, Tooltip } from '@material-ui/core';
 import Refresh from '@material-ui/icons/Refresh';
 
 import { HistoryManager, URLParam } from '../../app/History';
+import { TimeDurationComponent } from '../../components/Time/TimeDurationComponent';
 import { serverConfig } from '../../config';
 
 export enum OverviewDisplayMode {
@@ -58,7 +59,7 @@ export const currentDirectionType = (): DirectionType => {
   return (drtype as DirectionType) || 'inbound';
 };
 
-const getDurationType = (): SelectItem[] => {
+export const getDurationType = (): SelectItem[] => {
   const items: SelectItem[] = [];
   Object.entries(serverConfig.durations).forEach(([key, value]) =>
     items.push({
@@ -94,11 +95,6 @@ export const OverviewToolbar = (props: OverviewToolbarProps) => {
     }
   };
 
-  const updateDurationType = (duration: number) => {
-    HistoryManager.setParam(URLParam.DURATION, duration.toString());
-    props.setDuration(duration);
-  };
-
   return (
     <Grid container spacing={1} direction="row">
       <Grid item xs={1}>
@@ -117,15 +113,14 @@ export const OverviewToolbar = (props: OverviewToolbarProps) => {
           selected={props.directionType}
         />
       </Grid>
-      <Grid item xs={1}>
-        <Select
-          onChange={e => updateDurationType(e as number)}
-          label="Metrics from"
-          items={getDurationType()}
-          selected={props.duration.toString()}
-        />
-      </Grid>
-      <Grid item xs={8} />
+      <TimeDurationComponent
+        key="DurationDropdown"
+        id="workload-list-duration-dropdown"
+        disabled={false}
+        duration={props.duration.toString()}
+        setDuration={props.setDuration}
+        label="Metrics for"
+      />
       <Grid item xs={1}>
         <Tooltip title="Refresh" style={{ marginTop: '35px', float: 'right' }}>
           <IconButton

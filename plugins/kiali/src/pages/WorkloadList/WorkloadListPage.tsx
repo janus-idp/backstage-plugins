@@ -8,6 +8,9 @@ import { useEntity } from '@backstage/plugin-catalog-react';
 
 import { CircularProgress } from '@material-ui/core';
 
+import { DefaultSecondaryMasthead } from '../../components/DefaultSecondaryMasthead/DefaultSecondaryMasthead';
+import * as FilterHelper from '../../components/FilterList/FilterHelper';
+import { TimeDurationComponent } from '../../components/Time/TimeDurationComponent';
 import { VirtualList } from '../../components/VirtualList/VirtualList';
 import { getErrorString, kialiApiRef } from '../../services/Api';
 import { KialiAppState, KialiContext } from '../../store';
@@ -23,13 +26,22 @@ export const WorkloadListPage = () => {
   const kialiState = React.useContext(KialiContext) as KialiAppState;
   const activeNs = kialiState.namespaces.activeNamespaces.map(ns => ns.name);
   const prevActiveNs = useRef(activeNs);
+  const [duration, setDuration] = React.useState<number>(
+    FilterHelper.currentDuration(),
+  );
+  const prevDuration = useRef(duration);
 
-  const fetchWorkloads = (nss: NamespaceInfo[]): Promise<void> => {
+  const fetchWorkloads = (
+    nss: NamespaceInfo[],
+    timeDuration: number,
+  ): Promise<void> => {
     return Promise.all(
       nss.map(nsInfo => {
-        return kialiClient.getWorkloads(nsInfo.name).then(workloadsResponse => {
-          return workloadsResponse;
-        });
+        return kialiClient
+          .getWorkloads(nsInfo.name, timeDuration)
+          .then(workloadsResponse => {
+            return workloadsResponse;
+          });
       }),
     )
       .then(results => {
@@ -68,7 +80,7 @@ export const WorkloadListPage = () => {
       });
 
       setNamespaces(allNamespaces);
-      fetchWorkloads(allNamespaces);
+      fetchWorkloads(allNamespaces, duration);
     });
   };
 
@@ -95,12 +107,20 @@ export const WorkloadListPage = () => {
   };
 
   React.useEffect(() => {
+    if (duration !== prevDuration.current) {
+      const nsl = namespaces.filter(ns => activeNs.includes(ns.name));
+      fetchWorkloads(nsl, duration);
+      prevDuration.current = duration;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [duration]);
+
+  React.useEffect(() => {
     if (!nsEqual(activeNs, prevActiveNs.current)) {
       const nsl = namespaces.filter(ns => activeNs.includes(ns.name));
-      fetchWorkloads(nsl);
+      fetchWorkloads(nsl, duration);
       prevActiveNs.current = activeNs;
     }
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeNs]);
 
@@ -108,9 +128,25 @@ export const WorkloadListPage = () => {
     return <CircularProgress />;
   }
 
+  const grids = () => {
+    const elements = [];
+    elements.push(
+      <TimeDurationComponent
+        key="DurationDropdown"
+        id="workload-list-duration-dropdown"
+        disabled={false}
+        duration={duration.toString()}
+        setDuration={setDuration}
+        label="From:"
+      />,
+    );
+    return elements;
+  };
+
   return (
     <Page themeId="tool">
       <Content>
+        <DefaultSecondaryMasthead elements={grids()} onRefresh={() => load()} />
         <VirtualList
           activeNamespaces={namespaces}
           rows={allWorkloads}

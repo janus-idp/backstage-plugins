@@ -121,7 +121,10 @@ export interface KialiApi {
   setEntity(entity?: Entity): void;
   status(): Promise<any>;
 
-  getWorkloads(namespace: string): Promise<WorkloadListItem[]>;
+  getWorkloads(
+    namespace: string,
+    duration: number,
+  ): Promise<WorkloadListItem[]>;
 }
 
 export const kialiApiRef = createApiRef<KialiApi>({
@@ -485,11 +488,14 @@ export class KialiApiClient implements KialiApi {
     this.entity = entity;
   };
 
-  getWorkloads = async (namespace: string): Promise<WorkloadListItem[]> => {
+  getWorkloads = async (
+    namespace: string,
+    duration: number,
+  ): Promise<WorkloadListItem[]> => {
     return this.newRequest<WorkloadNamespaceResponse>(
       HTTP_VERBS.GET,
       urls.workloads(namespace),
-      { health: true, istioResources: true, rateInterval: '60s' },
+      { health: true, istioResources: true, rateInterval: `${duration}s` },
       {},
       // eslint-disable-next-line no-console
     ).then(resp => filterWkByAnnotation(resp, this.entity));
