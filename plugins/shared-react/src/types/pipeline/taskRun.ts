@@ -54,17 +54,3 @@ export type TaskRunKind = {
   };
   status?: TaskRunStatus;
 };
-
-export enum TaskRunResultsAnnotations {
-  KEY = 'task.results.key',
-  TYPE = 'task.results.type',
-}
-
-export enum TaskRunResultsAnnotationValue {
-  EXTERNAL_LINK = 'external-link',
-}
-
-export enum TaskRunResults {
-  SBOM = 'LINK_TO_SBOM',
-  SCAN_OUTPUT = 'SCAN_OUTPUT',
-}
