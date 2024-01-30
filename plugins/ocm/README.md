@@ -124,6 +124,22 @@ If you are interested in Resource discovery and do not want any of the front-end
 
      For more information about the configuration, see [Backstage Kubernetes plugin](https://backstage.io/docs/features/kubernetes/configuration#configuring-kubernetes-clusters) documentation.
 
+1. Optional: Configure the default owner for the cluster entities in the catalog for a specific environment. For example, use the following code to set `foo` as the owner for clusters from `env` in the `app-config.yaml` catalog section:
+
+```yaml title="app-config.yaml"
+catalog:
+  providers:
+    ocm:
+      env:
+        # ...
+        # highlight-next-line
+        owner: user:foo
+```
+
+For more information about the default owner configuration, see [upstream string references documentation](https://backstage.io/docs/features/software-catalog/references/#string-references).
+
+##### Installing the OCM backend package into the legacy backend
+
 1. Create a new plugin instance in `packages/backend/src/plugins/ocm.ts` file as follows:
 
    ```ts title="packages/backend/src/plugins/ocm.ts"
@@ -177,9 +193,9 @@ If you are interested in Resource discovery and do not want any of the front-end
              # highlight-add-start
              schedule: # optional; same options as in TaskScheduleDefinition
                # supports cron, ISO duration, "human duration" as used in code
-               frequency: { minutes: 1 }
+               frequency: { minutes: 1 } # Customize with your desired frequency
                # supports ISO duration, "human duration" as used in code
-               timeout: { minutes: 1 }
+               timeout: { minutes: 1 } # Customize with your desired timeout
              # highlight-add-end
      ```
 
@@ -246,29 +262,45 @@ If you are interested in Resource discovery and do not want any of the front-end
 
    ***
 
-1. Optional: Configure the default owner for the cluster entities in the catalog for a specific environment. For example, use the following code to set `foo` as the owner for clusters from `env` in the `app-config.yaml` catalog section:
-
-   ```yaml title="app-config.yaml"
-   catalog:
-     providers:
-       ocm:
-         env:
-           # ...
-           # highlight-next-line
-           owner: user:foo
-   ```
-
-   For more information about the default owner configuration, see [upstream string references documentation](https://backstage.io/docs/features/software-catalog/references/#string-references).
-
-#### Setting up the OCM backend package using the new backend system
+##### Installing the OCM backend package into the new backend
 
 The OCM plugin supports integration with the [new backend system](https://backstage.io/docs/backend-system/). In order to install the plugin follow the first 2 configuration steps described [here](#setting-up-the-ocm-backend-package). Then add the following lines to the `packages/backend/src/index.ts` file.
 
-```ts
-import { ocmPlugin } from '@janus-idp/backstage-plugin-ocm-backend';
+```ts title="packages/backend/src/index.ts"
+import {
+  catalogModuleOCMEntityProvider,
+  ocmPlugin,
+} from '@janus-idp/backstage-plugin-ocm-backend/alpha';
 
-backend.add(ocmPlugin());
+const backend = createBackend();
+/* highlight-add-next-line */
+backend.add(catalogModuleOCMEntityProvider);
+backend.add(ocmPlugin);
+
+backend.start();
 ```
+
+---
+
+**NOTE**
+The default schedule for the OCM plugin has a frequency of 1 hour and a timeout of 15 minutes. If you want to modify the schedule, you can do so by specifying the `schedule` field in the `app-config.yaml` file as follows:
+
+```yaml title="app-config.yaml"
+catalog:
+  providers:
+    ocm:
+      env:
+        # ...
+        # highlight-add-start
+        schedule: # optional; same options as in TaskScheduleDefinition
+          # supports cron, ISO duration, "human duration" as used in code
+          frequency: { minutes: 1 } # Customize with your desired frequency
+          # supports ISO duration, "human duration" as used in code
+          timeout: { minutes: 1 } # Customize with your desired timeout
+        # highlight-add-end
+```
+
+---
 
 #### Setting up the OCM frontend package
 

@@ -8,7 +8,7 @@ The Ansible Automation Platform (AAP) Backstage provider plugin synchronizes the
 
 The AAP Backstage provider plugin allows the configuration of one or multiple providers using the `app-config.yaml` configuration file of Backstage.
 
-#### Procedure
+#### Legacy Backend Procedure
 
 1. Run the following command to install the AAP Backstage provider plugin:
 
@@ -88,8 +88,8 @@ The AAP Backstage provider plugin allows the configuration of one or multiple pr
          AapResourceEntityProvider.fromConfig(env.config, {
            logger: env.logger,
            schedule: env.scheduler.createScheduledTaskRunner({
-             frequency: { minutes: 1 },
-             timeout: { minutes: 1 },
+             frequency: { minutes: 30 },
+             timeout: { minutes: 3 },
            }),
          }),
        );
@@ -108,6 +108,43 @@ The AAP Backstage provider plugin allows the configuration of one or multiple pr
    If both the `schedule` (hard-coded schedule) and `scheduler` (`app-config.yaml` schedule) option are provided in the `packages/backend/src/plugins/catalog.ts`, the `scheduler` option takes precedence. However, if the schedule inside the `app-config.yaml` file is not configured, then the `schedule` option is used.
 
    ***
+
+#### New Backend Procedure
+
+1. Run the following command to install the AAP Backstage provider plugin:
+
+   ```console
+   yarn workspace backend add @janus-idp/backstage-plugin-aap-backend
+   ```
+
+1. Use `aap` marker to configure the `app-config.yaml` file of Backstage . The default schedule is a frequency of 30 minutes and a timeout of 3 minutes, please configure the schedule in the `app-config.yaml` as per your requirement.
+
+   ```yaml title="app-config.yaml"
+   catalog:
+     providers:
+       aap:
+         dev:
+           baseUrl: <URL>
+           authorization: 'Bearer ${AAP_AUTH_TOKEN}'
+           owner: <owner>
+           system: <system>
+           schedule: # optional (defaults to the configurations below if not provided); same options as in TaskScheduleDefinition
+             # supports cron, ISO duration, "human duration" as used in code
+             frequency: { minutes: 30 }
+             # supports ISO duration, "human duration" as used in code
+             timeout: { minutes: 3 }
+   ```
+
+1. Add the following code to the `packages/backend/src/index.ts` file:
+
+   ```ts title="packages/backend/src/index.ts"
+   const backend = createBackend();
+
+   /* highlight-add-next-line */
+   backend.add(import('@janus-idp/backstage-plugin-aap-backend/alpha'));
+
+   backend.start();
+   ```
 
 ### Troubleshooting
 

@@ -15,16 +15,16 @@ The following actions are currently supported in this plugin:
 Run the following command to install the action package in your Backstage project:
 
 ```console
-yarn workspace backend add @janus-idp/backstage-plugin-regex-actions
+yarn workspace backend add @janus-idp/backstage-scaffolder-backend-module-regex
 ```
 
-## Configuration
+### Installing the action on the legacy backend
 
 [Register](https://backstage.io/docs/features/software-templates/writing-custom-actions#registering-custom-actions) the regex actions by modifying the `packages/backend/src/plugins/scaffolder.ts` file from your project with the following changes:
 
 ```ts title="packages/backend/src/plugins/scaffolder.ts"
 /* highlight-add-next-line */
-import { createReplaceAction } from '@janus-idp/backstage-plugin-regex-actions';
+import { createReplaceAction } from '@janus-idp/backstage-scaffolder-backend-module-regex';
 
 export default async function createPlugin(
   env: PluginEnvironment,
@@ -44,6 +44,21 @@ export default async function createPlugin(
     identity: env.identity,
   });
 }
+```
+
+### Installing the action on the new backend
+
+Add the following to your `packages/backend/src/index.ts` file:
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+
+// Add the following line
+backend.add(
+  import('@janus-idp/backstage-scaffolder-backend-module-regex/alpha'),
+);
+
+backend.start();
 ```
 
 ## Usage

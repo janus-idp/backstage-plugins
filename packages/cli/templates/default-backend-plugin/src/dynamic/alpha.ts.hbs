@@ -1,8 +1,0 @@
-import { BackendDynamicPluginInstaller } from '@backstage/backend-plugin-manager';
-
-import { {{id}}Plugin } from '../service/router';
-
-export const dynamicPluginInstaller: BackendDynamicPluginInstaller = {
-  kind: 'new',
-  install: () => [{{id}}Plugin()],
-};
