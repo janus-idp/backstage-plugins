@@ -116,8 +116,8 @@ export const PipelineRunRow = ({
   };
 
   return (
-    <>
-      <TableRow key={uid} className={classes.plrRow}>
+    <React.Fragment key={uid}>
+      <TableRow className={classes.plrRow}>
         <TableCell>
           <IconButton
             aria-label="expand row"
@@ -155,14 +155,14 @@ export const PipelineRunRow = ({
         </TableCell>
       </TableRow>
       <TableRow className={classes.plrVisRow}>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
           <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box margin={1}>
+            <Box marginTop={1} marginBottom={1}>
               <PipelineRunVisualization pipelineRunName={row.metadata?.name} />
             </Box>
           </Collapse>
         </TableCell>
       </TableRow>
-    </>
+    </React.Fragment>
   );
 };

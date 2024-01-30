@@ -2,7 +2,6 @@ import React from 'react';
 
 import { EmptyState, Progress } from '@backstage/core-components';
 
-import { Table, TableBody } from '@material-ui/core';
 import { isEmpty } from 'lodash';
 
 import { TektonResourcesContext } from '../../hooks/TektonResourcesContext';
@@ -35,30 +34,20 @@ export const PipelineVisualizationView = ({
       </div>
     );
 
-  const pipelineRunViz = (
-    <>
-      {loaded && (responseError || isEmpty(pipelineRunResource)) ? (
-        <EmptyState
-          missing="data"
-          description="No Pipeline Run to visualize"
-          title=""
-        />
-      ) : (
-        <PipelineVisualization
-          pipelineRun={pipelineRunResource}
-          taskRuns={watchResourcesData?.taskruns?.data ?? []}
-        />
-      )}
-    </>
-  );
+  if (loaded && (responseError || isEmpty(pipelineRunResource))) {
+    return (
+      <EmptyState
+        missing="data"
+        description="No Pipeline Run to visualize"
+        title=""
+      />
+    );
+  }
 
   return (
-    <Table>
-      <TableBody>
-        <tr>
-          <td>{pipelineRunViz}</td>
-        </tr>
-      </TableBody>
-    </Table>
+    <PipelineVisualization
+      pipelineRun={pipelineRunResource}
+      taskRuns={watchResourcesData?.taskruns?.data ?? []}
+    />
   );
 };
