@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { TableCell, Tooltip } from '@material-ui/core';
 
 import { isMultiCluster, KialiIcon, serverConfig } from '../../config';
+import { isWaypoint } from '../../helpers/LabelFilterHelper';
 import { infoStyle } from '../../pages/Overview/OverviewCard/CanaryUpgradeProgress';
 import { ControlPlaneBadge } from '../../pages/Overview/OverviewCard/ControlPlaneBadge';
 import { OverviewCardSparklineCharts } from '../../pages/Overview/OverviewCard/OverviewCardSparklineCharts';
@@ -298,6 +299,8 @@ export const health: Renderer<TResource> = (
 export const details: Renderer<WorkloadListItem | ServiceListItem> = (
   resource: WorkloadListItem | ServiceListItem,
 ) => {
+  const isAmbientWaypoint = isWaypoint(resource.labels);
+
   return (
     <TableCell
       role="gridcell"
@@ -319,17 +322,18 @@ export const details: Renderer<WorkloadListItem | ServiceListItem> = (
               {ir.name}
             </li>
           ))}
-
-        <li style={{ marginBottom: '0.125rem' }}>
-          <PFBadge badge={PFBadges.Waypoint} position={topPosition} />
-          Waypoint Proxy
-          <Tooltip
-            key="tooltip_missing_label"
-            title="Layer 7 service Mesh capabilities in Istio Ambient"
-          >
-            <KialiIcon.Info className={infoStyle} />
-          </Tooltip>
-        </li>
+        {isAmbientWaypoint && (
+          <li style={{ marginBottom: '0.125rem' }}>
+            <PFBadge badge={PFBadges.Waypoint} position={topPosition} />
+            Waypoint Proxy
+            <Tooltip
+              key="tooltip_missing_label"
+              title="Layer 7 service Mesh capabilities in Istio Ambient"
+            >
+              <KialiIcon.Info className={infoStyle} />
+            </Tooltip>
+          </li>
+        )}
       </ul>
     </TableCell>
   );

@@ -1,9 +1,11 @@
 import * as React from 'react';
 
 import {
+  Paper,
   Table,
   TableBody,
   TableCell,
+  TableContainer,
   TableHead,
   TableRow,
 } from '@material-ui/core';
@@ -78,33 +80,44 @@ export const VirtualList = (listProps: VirtualListProps<RenderResource>) => {
 
   return (
     <div>
-      <Table>
-        <TableHead>
-          <TableRow>
-            {columns.map((column, index) => (
-              <TableCell key={`column_${index}`}>{column.title}</TableCell>
-            ))}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {listProps.rows.length > 0 ? (
-            rowItems
-          ) : (
-            <TableRow className={emptyStyle}>
-              <TableCell colSpan={columns.length}>
-                {listProps.activeNamespaces.length > 0
-                  ? `No ${typeDisplay} in namespace 
-        ${
-          listProps.activeNamespaces.length === 1
-            ? ` ${listProps.activeNamespaces[0].name}`
-            : `s: ${listProps.activeNamespaces.map(ns => ns.name).join(', ')}`
-        }`
-                  : `There is currently no namespace selected, please select one using the Namespace selector.`}
-              </TableCell>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              {columns.map((column, index) => (
+                <TableCell
+                  key={`column_${index}`}
+                  align="center"
+                  sortDirection="asc"
+                  style={{ minWidth: '140px' }}
+                >
+                  {column.title}
+                </TableCell>
+              ))}
             </TableRow>
-          )}
-        </TableBody>
-      </Table>
+          </TableHead>
+          <TableBody>
+            {listProps.rows.length > 0 ? (
+              rowItems
+            ) : (
+              <TableRow className={emptyStyle}>
+                <TableCell colSpan={columns.length}>
+                  {listProps.activeNamespaces.length > 0
+                    ? `No ${typeDisplay} in namespace 
+                  ${
+                    listProps.activeNamespaces.length === 1
+                      ? ` ${listProps.activeNamespaces[0].name}`
+                      : `s: ${listProps.activeNamespaces
+                          .map(ns => ns.name)
+                          .join(', ')}`
+                  }`
+                    : `There is currently no namespace selected, please select one using the Namespace selector.`}
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </div>
   );
 };

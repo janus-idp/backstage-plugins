@@ -14,7 +14,7 @@ const noPath = 'noPath';
 const getPathPage = () => {
   const pathname = window.location.pathname.split('/').pop();
   if (pathname && pathname === 'kiali') {
-    return 'workloads';
+    return 'overview';
   } else if (pathname) {
     return pathname;
   }
