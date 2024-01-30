@@ -31,6 +31,7 @@ import {
   getWorkflowOverviewById,
   getWorkflowOverviewV1,
   getWorkflowOverviewV2,
+  getWorkflowSpecsV2,
   getWorkflowsV1,
   getWorkflowsV2,
 } from './handlers';
@@ -492,9 +493,25 @@ function setupInternalRoutes(
   });
 
   router.get('/specs', async (_, res) => {
-    const specs = await services.workflowService.listStoredSpecs();
-    res.status(200).json(specs);
+    await getWorkflowSpecsV2(services.workflowService)
+      .then(result => res.status(200).json(result))
+      .catch(error => {
+        res.status(500).send(error.message || 'Internal Server Error');
+      });
   });
+
+  // v2
+  api.register(
+    'getWorkflowSpecs',
+    async (_c, _req: express.Request, res: express.Response, next) => {
+      await getWorkflowSpecsV2(services.workflowService)
+        .then(result => res.status(200).json(result))
+        .catch(error => {
+          res.status(500).send(error.message || 'Internal Server Error');
+          next();
+        });
+    },
+  );
 }
 
 // ======================================================

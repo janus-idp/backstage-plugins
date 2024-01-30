@@ -18,10 +18,13 @@ import {
   WorkflowOverviewDTO,
   WorkflowOverviewListResult,
   WorkflowOverviewListResultDTO,
+  WorkflowSpecFile,
+  WorkflowSpecFileDTO,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { DataIndexService } from './DataIndexService';
 import { SonataFlowService } from './SonataFlowService';
+import { WorkflowService } from './WorkflowService';
 
 export async function getWorkflowOverviewV1(
   sonataFlowService: SonataFlowService,
@@ -196,6 +199,19 @@ export async function getInstancesByIdV2(
   return mapToProcessInstanceDTO(instance);
 }
 
+export async function getWorkflowSpecsV1(
+  workflowService: WorkflowService,
+): Promise<WorkflowSpecFile[]> {
+  return await workflowService.listStoredSpecs();
+}
+
+export async function getWorkflowSpecsV2(
+  workflowService: WorkflowService,
+): Promise<WorkflowSpecFileDTO[]> {
+  const specV1 = await getWorkflowSpecsV1(workflowService);
+  return specV1.map(spec => mapToWorkflowSpecFileDTO(spec));
+}
+
 function mapToProcessInstanceDTO(
   processInstance: ProcessInstance,
 ): ProcessInstanceDTO {
@@ -243,6 +259,19 @@ function mapToWorkflowListResultDTO(
     },
   };
   return result;
+}
+
+function mapToWorkflowSpecFileDTO(
+  specV1: WorkflowSpecFile,
+): WorkflowSpecFileDTO {
+  if (!specV1.content) {
+    throw new Error('Workflow specification content is empty');
+  }
+
+  return {
+    content: { content: JSON.stringify(specV1.content) },
+    path: specV1.path,
+  };
 }
 
 function getWorkflowCategoryDTO(
