@@ -1,5 +1,4 @@
 import React from 'react';
-import { useAsyncFn, useDebounce } from 'react-use';
 
 import { Content, Page } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
@@ -78,7 +77,7 @@ export const OverviewPage = () => {
     return nss;
   };
 
-  const fetchHealthChunk = (chunk: NamespaceInfo[]): Promise<void> => {
+  const fetchHealthChunk = async (chunk: NamespaceInfo[]): Promise<void> => {
     const apiFunc = switchType(
       overviewType,
       kialiClient.getNamespaceAppHealth,
@@ -87,7 +86,7 @@ export const OverviewPage = () => {
     );
 
     return Promise.all(
-      chunk.map(nsInfo => {
+      chunk.map(async nsInfo => {
         const healthPromise: Promise<
           NamespaceAppHealth | NamespaceWorkloadHealth | NamespaceServiceHealth
         > = apiFunc(nsInfo.name, duration, nsInfo.cluster);
@@ -161,9 +160,9 @@ export const OverviewPage = () => {
     });
   };
 
-  const fetchTLSChunk = (chunk: NamespaceInfo[]): Promise<void> => {
+  const fetchTLSChunk = async (chunk: NamespaceInfo[]): Promise<void> => {
     return Promise.all(
-      chunk.map(nsInfo => {
+      chunk.map(async nsInfo => {
         return kialiClient
           .getNamespaceTls(nsInfo.name, nsInfo.cluster)
           .then(rs => ({ status: rs, nsInfo: nsInfo }));
@@ -226,7 +225,7 @@ export const OverviewPage = () => {
       });
   };
 
-  const fetchCanariesStatus = async () =>
+  const fetchCanariesStatus = () =>
     kialiClient
       .getCanaryUpgradeStatus()
       .then(response => {
@@ -260,7 +259,7 @@ export const OverviewPage = () => {
       });
   };
 
-  const fetchValidationResultForCluster = (
+  const fetchValidationResultForCluster = async (
     nss: NamespaceInfo[],
     cluster: string,
   ) => {
@@ -377,7 +376,7 @@ export const OverviewPage = () => {
   };
 
   const load = async () => {
-    kialiClient.getNamespaces().then(namespacesResponse => {
+    await kialiClient.getNamespaces().then(namespacesResponse => {
       const allNamespaces: NamespaceInfo[] = namespacesResponse.map(ns => {
         const previous = namespaces.find(prev => prev.name === ns.name);
         return {
@@ -405,31 +404,20 @@ export const OverviewPage = () => {
       fetchTLS(sortNs, isAscending, sortField);
       fetchValidations(sortNs, isAscending, sortField);
       fetchMetrics(sortNs);
-
       fetchOutboundTrafficPolicyMode();
       fetchCanariesStatus();
       fetchIstiodResourceThresholds();
-
+      promises.waitAll();
       setNamespaces(sortNs);
     });
   };
-
-  const [{ loading }, refresh] = useAsyncFn(
-    async () => {
-      // Check if the config is loaded
-      await load();
-    },
-    [],
-    { loading: true },
-  );
-  useDebounce(refresh, 10);
 
   React.useEffect(() => {
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [duration, overviewType, directionType]);
 
-  if (loading) {
+  if (namespaces.length === 0) {
     return <CircularProgress />;
   }
 
