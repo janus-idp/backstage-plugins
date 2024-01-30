@@ -83,7 +83,7 @@ For more information about the configuration options, including other optional p
 
 - Although optional, you may also want to set up the `GITHUB_TOKEN` environment variable to allow the Orchestrator to access the GitHub API.
 
-#### Setting up the Orchestrator backend package
+#### Setting up the Orchestrator backend package for the legacy backend
 
 1. Install the Orchestrator backend plugin using the following command:
 
@@ -164,6 +164,30 @@ For more information about the configuration options, including other optional p
      apiRouter.use('/orchestrator', await orchestrator(orchestratorEnv));
      // ...
    }
+   ```
+
+#### Setting up the Orchestrator backend package for the new backend
+
+1. Install the Orchestrator backend plugin using the following command:
+
+   ```console
+   yarn workspace backend add @janus-idp/backstage-plugin-orchestrator-backend
+   ```
+
+1. Add the following code to `packages/backend/src/index.ts` file:
+
+   ```ts title="packages/backend/src/index.ts"
+   import {
+     orchestratorModuleEntityProvider,
+     orchestratorPlugin,
+   } from '@janus-idp/backstage-plugin-orchestrator-backend/alpha';
+
+   const backend = createBackend();
+   /* highlight-add-next-line */
+   backend.add(orchestratorModuleEntityProvider);
+   backend.add(orchestratorPlugin);
+
+   backend.start();
    ```
 
 #### Setting up the Orchestrator frontend package
