@@ -137,9 +137,6 @@ export const WorkflowInstancePageContent: React.FC<{
         label: 'Assessed by',
         value: (
           <Link
-            // Remove `reloadDocument`
-            // https://issues.redhat.com/browse/FLPATH-945
-            reloadDocument
             to={workflowInstanceLink({
               instanceId: assessedInstance.assessedBy.id,
             })}

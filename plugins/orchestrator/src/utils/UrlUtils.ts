@@ -10,7 +10,7 @@ export function buildUrl(
     .filter(([, value]) => value !== undefined)
     .map(
       ([key, value]) =>
-        `${encodeURIComponent(key)}=${encodeURIComponent(value!)}`,
+        `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
     )
     .join('&');
 
