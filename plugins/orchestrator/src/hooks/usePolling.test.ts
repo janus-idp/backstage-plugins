@@ -162,4 +162,19 @@ describe('usePolling', () => {
     await act(async () => result.current.restart());
     expect(result.current.value).toEqual(ABORTED);
   });
+
+  test('should refetch after fn property changed', async () => {
+    const mockAsyncFn = jest.fn().mockResolvedValue(ACTIVE);
+    const { result, waitForNextUpdate, rerender } = renderHook(
+      ({ fn }: { fn: () => Promise<void> }) =>
+        usePolling(fn, SHORT_REFRESH_INTERVAL),
+      { initialProps: { fn: mockAsyncFn } },
+    );
+    await waitForNextUpdate();
+    const mockAsyncFn2 = jest.fn().mockResolvedValue(COMPLETED);
+    expect(result.current.value).toEqual(ACTIVE);
+    rerender({ fn: mockAsyncFn2 });
+    await waitForNextUpdate();
+    expect(result.current.value).toEqual(COMPLETED);
+  });
 });
