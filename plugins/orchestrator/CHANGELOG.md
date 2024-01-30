@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-orchestrator [1.1.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.1.2...@janus-idp/backstage-plugin-orchestrator@1.1.3) (2024-01-30)
+
+
+### Bug Fixes
+
+* **orchestrator:** resolve bug in workflow instance page assessed by link ([#1142](https://github.com/janus-idp/backstage-plugins/issues/1142)) ([48724f8](https://github.com/janus-idp/backstage-plugins/commit/48724f8d90ec9927ed07382061bce78171ccb1b2))
+
 ## @janus-idp/backstage-plugin-orchestrator [1.1.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.1.1...@janus-idp/backstage-plugin-orchestrator@1.1.2) (2024-01-29)
 
 

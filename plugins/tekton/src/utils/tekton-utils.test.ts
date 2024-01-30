@@ -193,9 +193,9 @@ describe('tekton-utils', () => {
 
   it('should return expect duration as - for PipelineRun without end time', () => {
     const mockPipelineRun: PipelineRunKind = {
-      ...mockKubernetesPlrResponse.pipelineruns[0],
+      ...mockKubernetesPlrResponse.pipelineruns[1],
       status: {
-        ...mockKubernetesPlrResponse.pipelineruns[0].status,
+        ...mockKubernetesPlrResponse.pipelineruns[1].status,
         completionTime: '',
       },
     };

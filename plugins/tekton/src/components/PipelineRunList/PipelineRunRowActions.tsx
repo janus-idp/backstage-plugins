@@ -4,12 +4,22 @@ import { IconButton } from '@material-ui/core';
 import { Flex, FlexItem } from '@patternfly/react-core';
 import { Tooltip } from '@patternfly/react-core/dist/esm/components/Tooltip/Tooltip';
 
-import { PipelineRunKind } from '@janus-idp/shared-react';
+import {
+  ComputedStatus,
+  pipelineRunFilterReducer,
+  PipelineRunKind,
+  TaskRunKind,
+} from '@janus-idp/shared-react';
 
 import { TektonResourcesContext } from '../../hooks/TektonResourcesContext';
-import { getSbomTaskRun, isSbomTaskRun } from '../../utils/taskRun-utils';
+import {
+  getTaskrunsOutputGroup,
+  isSbomTaskRun,
+} from '../../utils/taskRun-utils';
+import OutputIcon from '../Icons/OutputIcon';
 import ViewLogsIcon from '../Icons/ViewLogsIcon';
 import PipelineRunLogDialog from '../PipelineRunLogs/PipelineRunLogDialog';
+import PipelineRunOutputDialog from '../PipelineRunOutput/PipelineRunOutputDialog';
 import PipelineRunSBOMLink from './PipelineRunSBOMLink';
 
 const PipelineRunRowActions: React.FC<{ pipelineRun: PipelineRunKind }> = ({
@@ -17,10 +27,15 @@ const PipelineRunRowActions: React.FC<{ pipelineRun: PipelineRunKind }> = ({
 }) => {
   const { watchResourcesData } = React.useContext(TektonResourcesContext);
   const [open, setOpen] = React.useState<boolean>(false);
+
+  const [openOutput, setOpenOutput] = React.useState<boolean>(false);
   const [noActiveTask, setNoActiveTask] = React.useState(false);
   const pods = watchResourcesData?.pods?.data || [];
   const taskRuns = watchResourcesData?.taskruns?.data || [];
-  const sbomTaskRun = getSbomTaskRun(pipelineRun?.metadata?.name, taskRuns);
+  const { sbomTaskRun } = getTaskrunsOutputGroup(
+    pipelineRun?.metadata?.name,
+    taskRuns,
+  );
   const activeTaskName = sbomTaskRun?.metadata?.name;
 
   const openDialog = (viewLogs?: boolean) => {
@@ -28,10 +43,40 @@ const PipelineRunRowActions: React.FC<{ pipelineRun: PipelineRunKind }> = ({
     setOpen(true);
   };
 
+  const openOutputDialog = () => {
+    setOpenOutput(true);
+  };
+
   const closeDialog = () => {
     setNoActiveTask(false);
     setOpen(false);
   };
+
+  const {
+    acsImageScanTaskRun,
+    acsImageCheckTaskRun,
+    acsDeploymentCheckTaskRun,
+    ecTaskRun,
+  } = getTaskrunsOutputGroup(pipelineRun?.metadata?.name, taskRuns);
+
+  const finishedTaskruns = [
+    ...(acsImageScanTaskRun ? [acsImageScanTaskRun] : []),
+    ...(acsImageCheckTaskRun ? [acsImageCheckTaskRun] : []),
+    ...(acsDeploymentCheckTaskRun ? [acsDeploymentCheckTaskRun] : []),
+    ...(ecTaskRun ? [ecTaskRun] : []),
+  ].filter((taskRun: TaskRunKind) =>
+    [
+      ComputedStatus.Succeeded,
+      ComputedStatus.Failed,
+      ComputedStatus.Skipped,
+    ].includes(pipelineRunFilterReducer(taskRun)),
+  );
+
+  const results =
+    pipelineRun?.status?.pipelineResults || pipelineRun?.status?.results || [];
+
+  const disabled =
+    results.length === 0 ? finishedTaskruns.length === 0 : results.length === 0;
 
   return (
     <>
@@ -42,6 +87,15 @@ const PipelineRunRowActions: React.FC<{ pipelineRun: PipelineRunKind }> = ({
         pods={pods}
         taskRuns={taskRuns}
         activeTask={noActiveTask ? undefined : activeTaskName}
+      />
+
+      <PipelineRunOutputDialog
+        pipelineRun={pipelineRun}
+        taskRuns={taskRuns}
+        open={openOutput}
+        closeDialog={() => {
+          setOpenOutput(false);
+        }}
       />
       <Flex gap={{ default: 'gapXs' }}>
         <FlexItem>
@@ -67,6 +121,24 @@ const PipelineRunRowActions: React.FC<{ pipelineRun: PipelineRunKind }> = ({
               style={{ pointerEvents: 'auto', padding: 0 }}
             >
               <PipelineRunSBOMLink sbomTaskRun={sbomTaskRun} />
+            </IconButton>
+          </Tooltip>
+        </FlexItem>
+        <FlexItem align={{ default: 'alignLeft' }}>
+          <Tooltip
+            content={
+              disabled
+                ? 'View Output is not applicable for this PipelineRun'
+                : 'View Output'
+            }
+          >
+            <IconButton
+              disabled={disabled}
+              size="small"
+              onClick={() => openOutputDialog()}
+              style={{ pointerEvents: 'auto', padding: 0 }}
+            >
+              <OutputIcon disabled={disabled} />
             </IconButton>
           </Tooltip>
         </FlexItem>

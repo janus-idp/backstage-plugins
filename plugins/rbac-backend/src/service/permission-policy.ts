@@ -60,6 +60,17 @@ const useAdmins = async (admins: Config[], enf: Enforcer) => {
   if (!(await enf.hasPolicy(...adminUpdatePermission))) {
     await enf.addPolicy(...adminUpdatePermission);
   }
+
+  // needed for rbac frontend.
+  const adminCatalogReadPermission = [
+    adminRoleName,
+    'catalog-entity',
+    'read',
+    'allow',
+  ];
+  if (!(await enf.hasPolicy(...adminCatalogReadPermission))) {
+    await enf.addPolicy(...adminCatalogReadPermission);
+  }
 };
 
 const addPredefinedPoliciesAndGroupPolicies = async (

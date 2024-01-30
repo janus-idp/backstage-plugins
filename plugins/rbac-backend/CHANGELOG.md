@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac-backend [2.1.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.1.1...@janus-idp/backstage-plugin-rbac-backend@2.1.2) (2024-01-30)
+
+
+### Bug Fixes
+
+* **rbac:** enable create button for default role:default/rbac_admin ([#1137](https://github.com/janus-idp/backstage-plugins/issues/1137)) ([9926463](https://github.com/janus-idp/backstage-plugins/commit/9926463c8c46871b823796adf77bbd52eb8e6758))
+
 ## @janus-idp/backstage-plugin-rbac-backend [2.1.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.1.0...@janus-idp/backstage-plugin-rbac-backend@2.1.1) (2024-01-23)
 
 

@@ -1,11 +1,11 @@
 import React from 'react';
-import { useAsync, useAsyncRetry } from 'react-use';
+import { useAsyncRetry, useInterval } from 'react-use';
 
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 
 import { rbacApiRef } from '../api/RBACBackendClient';
-import { MembersData } from '../types';
+import { MemberEntity, MembersData } from '../types';
 import { getKindNamespaceName, getMembersFromGroup } from '../utils/rbac-utils';
 
 const getErrorText = (
@@ -24,74 +24,90 @@ const getErrorText = (
   return undefined;
 };
 
-export const useMembers = (roleName: string) => {
+const getMemberData = (
+  memberResource: MemberEntity | undefined,
+  ref: string,
+) => {
+  if (memberResource) {
+    return {
+      name:
+        memberResource.spec.profile?.displayName ??
+        memberResource.metadata.name,
+      type: memberResource.kind,
+      ref: {
+        namespace: memberResource.metadata.namespace as string,
+        kind: memberResource.kind.toLowerCase(),
+        name: memberResource.metadata.name,
+      },
+      members:
+        memberResource.kind === 'Group'
+          ? getMembersFromGroup(memberResource)
+          : 0,
+    };
+  }
+  const { kind, namespace, name } = getKindNamespaceName(ref);
+  return {
+    name,
+    type: kind === 'user' ? 'User' : ('Group' as 'User' | 'Group'),
+    ref: {
+      namespace,
+      kind,
+      name,
+    },
+    members: 0,
+  };
+};
+
+export const useMembers = (roleName: string, pollInterval?: number) => {
   const rbacApi = useApi(rbacApiRef);
   let data: MembersData[] = [];
   const {
-    loading: rolesLoading,
     value: role,
-    retry,
+    retry: roleRetry,
     error: roleError,
   } = useAsyncRetry(async () => {
     return await rbacApi.getRole(roleName);
   });
 
   const {
-    loading: membersLoading,
     value: members,
+    retry: membersRetry,
     error: membersError,
-  } = useAsync(async () => {
+  } = useAsyncRetry(async () => {
     return await rbacApi.getMembers();
   });
 
-  const loading = rolesLoading && membersLoading;
+  const loading = !roleError && !membersError && !role && !members;
 
   data = React.useMemo(
     () =>
       Array.isArray(role)
         ? role[0].memberReferences.reduce((acc: MembersData[], ref: string) => {
-            const memberResource =
-              Array.isArray(members) &&
-              members.find(member => stringifyEntityRef(member) === ref);
-            if (memberResource) {
-              acc.push({
-                name:
-                  memberResource.spec.profile?.displayName ??
-                  memberResource.metadata.name,
-                type: memberResource.kind,
-                ref: {
-                  namespace: memberResource.metadata.namespace as string,
-                  kind: memberResource.kind.toLowerCase(),
-                  name: memberResource.metadata.name,
-                },
-                members:
-                  memberResource.kind === 'Group'
-                    ? getMembersFromGroup(memberResource)
-                    : 0,
-              });
-            } else {
-              const { kind, namespace, name } = getKindNamespaceName(ref);
-              acc.push({
-                name,
-                type: kind === 'user' ? 'User' : 'Group',
-                ref: {
-                  namespace,
-                  kind,
-                  name,
-                },
-                members: 0,
-              });
-            }
+            const memberResource: MemberEntity | undefined = Array.isArray(
+              members,
+            )
+              ? members.find(member => stringifyEntityRef(member) === ref)
+              : undefined;
+            const memberData = getMemberData(memberResource, ref);
+            acc.push(memberData);
             return acc;
           }, [])
         : [],
     [role, members],
   );
 
+  useInterval(
+    () => {
+      roleRetry();
+      membersRetry();
+    },
+    loading ? null : pollInterval || 10000,
+  );
+
   return {
     loading,
     data,
-    retry,
+    retry: { roleRetry, membersRetry },
     error: getErrorText(role, members) || roleError || membersError,
   };
 };

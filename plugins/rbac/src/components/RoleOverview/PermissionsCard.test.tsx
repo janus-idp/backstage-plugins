@@ -50,7 +50,7 @@ describe('PermissionsCard', () => {
     mockPermissionPolicies.mockReturnValue({
       loading: false,
       data: usePermissionPoliciesMockData,
-      retry: () => {},
+      retry: { policiesRetry: jest.fn(), permissionPoliciesRetry: jest.fn() },
       error: new Error(''),
     });
     const { queryByText } = await renderInTestApp(
@@ -65,7 +65,7 @@ describe('PermissionsCard', () => {
     mockPermissionPolicies.mockReturnValue({
       loading: false,
       data: [],
-      retry: () => {},
+      retry: { policiesRetry: jest.fn(), permissionPoliciesRetry: jest.fn() },
       error: new Error(''),
     });
     const { queryByText } = await renderInTestApp(
@@ -79,7 +79,7 @@ describe('PermissionsCard', () => {
     mockPermissionPolicies.mockReturnValue({
       loading: false,
       data: [],
-      retry: () => {},
+      retry: { policiesRetry: jest.fn(), permissionPoliciesRetry: jest.fn() },
       error: { message: '404', name: 'Not Found' },
     });
     const { queryByText } = await renderInTestApp(
@@ -99,7 +99,7 @@ describe('PermissionsCard', () => {
       loading: false,
       data: [],
       error: new Error(''),
-      retry: () => {},
+      retry: { policiesRetry: jest.fn(), permissionPoliciesRetry: jest.fn() },
     });
     const { getByTestId } = await renderInTestApp(
       <PermissionsCard entityReference="role:default/rbac_admin" />,
@@ -113,7 +113,7 @@ describe('PermissionsCard', () => {
       loading: false,
       data: [],
       error: new Error(''),
-      retry: () => {},
+      retry: { policiesRetry: jest.fn(), permissionPoliciesRetry: jest.fn() },
     });
     const { queryByTestId } = await renderInTestApp(
       <PermissionsCard entityReference="role:default/rbac_admin" />,

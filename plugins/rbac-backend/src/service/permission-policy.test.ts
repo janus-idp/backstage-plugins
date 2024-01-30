@@ -24,6 +24,8 @@ import { MODEL } from './permission-model';
 import { RBACPermissionPolicy } from './permission-policy';
 import { BackstageRoleManager } from './role-manager';
 
+type PermissionAction = 'create' | 'read' | 'update' | 'delete';
+
 const catalogApi = {
   getEntityAncestors: jest.fn().mockImplementation(),
   getLocationById: jest.fn().mockImplementation(),
@@ -345,16 +347,49 @@ describe('RBACPermissionPolicy Tests', () => {
     });
 
     // Tests for admin added through app config
-    it('should allow access to permission resource for admin added through app config', async () => {
-      const decision = await policy.handle(
-        newPolicyQueryWithResourcePermission(
-          'policy-entity.read',
-          'policy-entity',
-          'read',
-        ),
-        newIdentityResponse('user:default/guest'),
-      );
-      expect(decision.result).toBe(AuthorizeResult.ALLOW);
+    it('should allow access to permission resources for admin added through app config', async () => {
+      const adminPerm: {
+        name: string;
+        resource: string;
+        action: PermissionAction;
+      }[] = [
+        {
+          name: 'policy.entity.read',
+          resource: 'policy-entity',
+          action: 'read',
+        },
+        {
+          name: 'policy.entity.create',
+          resource: 'policy-entity',
+          action: 'create',
+        },
+        {
+          name: 'policy.entity.update',
+          resource: 'policy-entity',
+          action: 'update',
+        },
+        {
+          name: 'policy.entity.delete',
+          resource: 'policy-entity',
+          action: 'delete',
+        },
+        {
+          name: 'catalog.entity.read',
+          resource: 'catalog-entity',
+          action: 'read',
+        },
+      ];
+      for (const perm of adminPerm) {
+        const decision = await policy.handle(
+          newPolicyQueryWithResourcePermission(
+            perm.name,
+            perm.resource,
+            perm.action,
+          ),
+          newIdentityResponse('user:default/guest'),
+        );
+        expect(decision.result).toBe(AuthorizeResult.ALLOW);
+      }
     });
   });
 });
@@ -988,7 +1023,7 @@ function newPolicyQueryWithBasicPermission(name: string): PolicyQuery {
 function newPolicyQueryWithResourcePermission(
   name: string,
   resource: string,
-  action: 'create' | 'read' | 'update' | 'delete',
+  action: PermissionAction,
 ): PolicyQuery {
   const mockPermission = createPermission({
     name: name,

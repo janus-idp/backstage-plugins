@@ -19,7 +19,9 @@ describe('getPodLogs', () => {
     expect(logs).toBe(`STEP-TKN
 step-tkn
 STEP-PRINT-SBOM-RESULTS
-step-print-sbom-results`);
+step-print-sbom-results
+STEP-PRINT-SCAN-RESULTS
+step-print-scan-results`);
   });
 
   it('should display logs only for the pods that has logs', async () => {

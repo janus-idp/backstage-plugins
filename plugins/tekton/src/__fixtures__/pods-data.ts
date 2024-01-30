@@ -105,6 +105,36 @@ export const testPods: V1Pod[] = [
       startTime: new Date('2023-12-08T12:19:38Z'),
     },
   },
+  {
+    metadata: {
+      name: 'pipelineRun-image-scan-task-t237ev-pod',
+      namespace: 'karthik',
+      uid: '055cc13a-bd3e-414e-9eb6-e6cb72870578',
+      resourceVersion: '379623',
+      labels: {
+        'backstage.io/kubernetes-id': 'developer-portal',
+        'janus-idp.io/tekton': 'developer-portal',
+        'tekton.dev/pipeline': 'test-pipeline',
+        'tekton.dev/pipelineRun': 'test-pipeline-8e09zm',
+        'tekton.dev/pipelineTask': 'sbom-task',
+        'tekton.dev/task': 'sbom-task',
+        'tekton.dev/taskRun': 'test-pipeline-8e09zm-sbom-task',
+      },
+    },
+    spec: {
+      containers: [
+        {
+          name: 'step-print-scan-results',
+        },
+      ],
+    },
+    status: {
+      phase: 'Succeeded',
+      conditions: [],
+
+      startTime: new Date('2023-12-08T12:19:38Z'),
+    },
+  },
 ];
 
 export const testPipelineRunPods: {
