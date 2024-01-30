@@ -14,12 +14,5 @@
  * limitations under the License.
  */
 
-import { BackendDynamicPluginInstaller } from '@backstage/backend-plugin-manager';
-
-import { catalogModuleOCMEntityProvider } from '../providers';
-import { ocmPlugin } from '../service/router';
-
-export const dynamicPluginInstaller: BackendDynamicPluginInstaller = {
-  kind: 'new',
-  install: () => [catalogModuleOCMEntityProvider(), ocmPlugin()],
-};
+export { catalogModuleOCMEntityProvider } from './providers';
+export { ocmPlugin } from './service/router';
