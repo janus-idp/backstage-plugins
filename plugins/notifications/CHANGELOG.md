@@ -1,3 +1,10 @@
+## @janus-idp/plugin-notifications [1.1.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications@1.1.3...@janus-idp/plugin-notifications@1.1.4) (2024-01-29)
+
+
+### Bug Fixes
+
+* **notificatoins:** polling interval can be configured ([#1134](https://github.com/janus-idp/backstage-plugins/issues/1134)) ([fd1c430](https://github.com/janus-idp/backstage-plugins/commit/fd1c43042a4e003b35f8bb0d4ead009a62e716ee))
+
 ## @janus-idp/plugin-notifications [1.1.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications@1.1.2...@janus-idp/plugin-notifications@1.1.3) (2024-01-25)
 
 

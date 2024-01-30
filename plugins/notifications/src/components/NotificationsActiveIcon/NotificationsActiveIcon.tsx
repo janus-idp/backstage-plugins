@@ -18,6 +18,25 @@ const NotificationsErrorIcon = () => (
   </Tooltip>
 );
 
+const usePollingIntervalConfig = (): number => {
+  const configApi = useApi(configApiRef);
+
+  const dynamicRoutes =
+    // @ts-ignore
+    configApi.getOptionalConfig('dynamicPlugins')?.data?.frontend?.[
+      'janus-idp.backstage-plugin-notifications'
+    ]?.dynamicRoutes;
+
+  const config = dynamicRoutes?.find(
+    (r: { importName?: string }) => r.importName === 'NotificationsPage',
+  )?.config;
+  const pollingInterval = config?.pollingIntervalMs;
+
+  return pollingInterval === undefined
+    ? DefaultPollingIntervalMs
+    : pollingInterval;
+};
+
 /**
  * Dynamic plugins recently do not support passing configuration
  * to icons or making the left-side menu item texts active (so far strings only).
@@ -27,14 +46,6 @@ const NotificationsErrorIcon = () => (
  */
 export const NotificationsActiveIcon = () => {
   const notificationsApi = useApi(notificationsApiRef);
-  const configApi = useApi(configApiRef);
-
-  let pollingInterval = configApi.getOptionalNumber(
-    'notifications.pollingIntervalMs',
-  );
-  if (pollingInterval === undefined) {
-    pollingInterval = DefaultPollingIntervalMs;
-  }
 
   const [error, setError] = React.useState<Error | undefined>(undefined);
   const [unreadCount, setUnreadCount] = React.useState(0);
@@ -43,6 +54,7 @@ export const NotificationsActiveIcon = () => {
     React.useState<Notification>();
   const [closedNotificationId, setClosedNotificationId] =
     React.useState<string>();
+  const pollingInterval = usePollingIntervalConfig();
 
   const pollCallback = React.useCallback(async () => {
     try {

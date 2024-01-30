@@ -149,6 +149,14 @@ export const PermissionPoliciesForm = ({
               }
               onRemove={() => onRowRemove(index)}
               handleBlur={handleBlur}
+              getPermissionDisabled={(permission: string) => {
+                const pluginPermissionPolicies = permissionPoliciesRows.filter(
+                  ppr => ppr.plugin === pp.plugin,
+                );
+                return !!pluginPermissionPolicies.find(
+                  ppp => ppp.permission === permission,
+                );
+              }}
             />
           ))}
           <Button className={classes.addButton} size="small" onClick={onRowAdd}>

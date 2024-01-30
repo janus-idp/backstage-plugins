@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac [1.12.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.11.1...@janus-idp/backstage-plugin-rbac@1.12.0) (2024-01-29)
+
+
+### Features
+
+* **rbac:** disable selected permissions ([#1117](https://github.com/janus-idp/backstage-plugins/issues/1117)) ([00cd501](https://github.com/janus-idp/backstage-plugins/commit/00cd501d6cd587c8a7b151189da30dd8c9865803))
+
 ## @janus-idp/backstage-plugin-rbac [1.11.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.11.0...@janus-idp/backstage-plugin-rbac@1.11.1) (2024-01-25)
 
 
