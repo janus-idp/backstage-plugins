@@ -1,16 +1,29 @@
 import { mockKubernetesPlrResponse } from '../__fixtures__/1-pipelinesData';
+import { enterpriseContractResult } from '../__fixtures__/enterpriseContractData';
+import { testPipelineRunPods } from '../__fixtures__/pods-data';
 import {
+  acsDeploymentCheckTaskRun,
+  acsImageCheckTaskRun,
+  acsImageScanTaskRun,
+  enterpriseContractTaskRun,
   taskRunWithResults,
   taskRunWithSBOMResult,
   taskRunWithSBOMResultExternalLink,
 } from '../__fixtures__/taskRunData';
 import {
+  formatData,
   getActiveTaskRun,
+  getPodsOutputGroup,
   getSbomLink,
-  getSbomTaskRun,
   getSortedTaskRuns,
+  getTaskrunsOutputGroup,
   hasExternalLink,
+  isACSDeploymentCheckTaskRun,
+  isACSImageCheckTaskRun,
+  isACSImageScanTaskRun,
+  isECTaskRun,
   isSbomTaskRun,
+  mapEnterpriseContractResultData,
 } from './taskRun-utils';
 
 describe('taskRun-utils', () => {
@@ -31,7 +44,7 @@ describe('taskRun-utils', () => {
       getSortedTaskRuns(mockKubernetesPlrResponse.taskruns),
       '',
     );
-    expect(activeTaskRun).toBe('pipeline-test-wbvtlk-tkn');
+    expect(activeTaskRun).toBe('ec-taskrun');
   });
 
   it('should return active taskrun when active task is present', () => {
@@ -48,16 +61,6 @@ describe('taskRun-utils', () => {
       'pipeline-test-wbvt-tkn',
     );
     expect(activeTaskRun).toBe(undefined);
-  });
-
-  it('should not return the taskrun related to SBOM', () => {
-    const taskrunsWithoutSBOM = [taskRunWithResults];
-    expect(getSbomTaskRun('test-plr', [])).toBeUndefined();
-    expect(getSbomTaskRun('test-plr', taskrunsWithoutSBOM)).toBeUndefined();
-  });
-
-  it('should return the taskrun related to SBOM', () => {
-    expect(getSbomTaskRun('test-plr', [taskRunWithSBOMResult])).toBeDefined();
   });
 
   it('should not return the SBOM link', () => {
@@ -95,7 +98,74 @@ describe('taskRun-utils', () => {
     expect(isSbomTaskRun(taskRunWithSBOMResult)).toBe(true);
   });
 
+  it('should return true if the taskrun is a valid EC task', () => {
+    expect(isECTaskRun(enterpriseContractTaskRun)).toBe(true);
+  });
+
+  it('should return true if the taskrun is a valid ACS image scan task', () => {
+    expect(isACSImageScanTaskRun(acsImageScanTaskRun)).toBe(true);
+  });
+
+  it('should return true if the taskrun is a valid ACS image check task', () => {
+    expect(isACSImageCheckTaskRun(acsImageCheckTaskRun)).toBe(true);
+  });
+  it('should return true if the taskrun is a valid ACS deployment check task', () => {
+    expect(isACSDeploymentCheckTaskRun(acsDeploymentCheckTaskRun)).toBe(true);
+  });
+
   it('should return false if the taskrun is not a valid SBOM task', () => {
     expect(isSbomTaskRun(taskRunWithResults)).toBe(false);
+    expect(isECTaskRun(taskRunWithResults)).toBe(false);
+    expect(isACSImageScanTaskRun(taskRunWithResults)).toBe(false);
+    expect(isACSImageCheckTaskRun(taskRunWithResults)).toBe(false);
+    expect(isACSDeploymentCheckTaskRun(taskRunWithResults)).toBe(false);
+  });
+
+  it('should return the taskrun group', () => {
+    const outputGroup = getTaskrunsOutputGroup(
+      'pipelinerun-with-scanner-task',
+      [acsImageScanTaskRun, acsImageCheckTaskRun, acsDeploymentCheckTaskRun],
+    );
+
+    expect(outputGroup.acsImageScanTaskRun).toBeDefined();
+    expect(outputGroup.acsImageCheckTaskRun).toBeDefined();
+    expect(outputGroup.acsDeploymentCheckTaskRun).toBeDefined();
+    expect(outputGroup.ecTaskRun).toBeUndefined();
+    expect(outputGroup.sbomTaskRun).toBeUndefined();
+  });
+
+  it('should return the pods group', () => {
+    const outputGroup = getTaskrunsOutputGroup(
+      'pipelinerun-with-scanner-task',
+      [acsImageScanTaskRun],
+    );
+
+    const podGroup = getPodsOutputGroup(outputGroup, testPipelineRunPods.pods);
+    expect(podGroup.acsImageScanPod).toBeDefined();
+    expect(podGroup.ecPod).toBeUndefined();
+  });
+
+  it('should formatData in the given format', () => {
+    expect(formatData('application/json', '{"key":"value"}')).toEqual({
+      key: 'value',
+    });
+
+    expect(formatData('application/text', '{"key":"value"}')).toEqual(
+      '{"key":"value"}',
+    );
+  });
+
+  it('should throw error if the json is not parsable', () => {
+    const warnFunction = jest.fn();
+    jest.spyOn(console, 'warn').mockImplementation(warnFunction);
+
+    expect(formatData('application/json', 'key:value')).toEqual('');
+    expect(warnFunction).toHaveBeenCalled();
+  });
+
+  it('should process the enterprise contract results and return in expected structure', () => {
+    expect(
+      mapEnterpriseContractResultData(enterpriseContractResult),
+    ).toHaveLength(4);
   });
 });

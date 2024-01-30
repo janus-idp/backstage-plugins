@@ -6,6 +6,13 @@ The RBAC UI plugin offers a streamlined user interface for effectively managing 
 
 ### Installation
 
+#### Installing as a dynamic plugin?
+
+The sections below are relevant for static plugins. If the plugin is expected to be installed as a dynamic one:
+
+- follow https://github.com/janus-idp/backstage-showcase/blob/main/showcase-docs/dynamic-plugins.md#installing-a-dynamic-plugin-package-in-the-showcase
+- add content of `app-config.janus-idp.yaml` into `app-config.local.yaml`.
+
 #### Prerequisites
 
 Follow the RBAC backend plugin [README](https://github.com/janus-idp/backstage-plugins/tree/main/plugins/rbac-backend) to integrate rbac in your Backstage instance

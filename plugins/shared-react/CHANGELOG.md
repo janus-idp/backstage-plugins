@@ -1,3 +1,10 @@
+## @janus-idp/shared-react [2.5.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/shared-react@2.4.0...@janus-idp/shared-react@2.5.0) (2024-01-30)
+
+
+### Features
+
+* **tekton:** add view output action in pipelinerun list view ([#1128](https://github.com/janus-idp/backstage-plugins/issues/1128)) ([ad50c44](https://github.com/janus-idp/backstage-plugins/commit/ad50c44233332b0f1325cef5a41d82ba79c538fb))
+
 ## @janus-idp/shared-react [2.4.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/shared-react@2.3.0...@janus-idp/shared-react@2.4.0) (2024-01-17)
 
 

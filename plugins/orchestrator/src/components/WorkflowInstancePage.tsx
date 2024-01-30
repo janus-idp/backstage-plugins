@@ -29,15 +29,17 @@ export const WorkflowInstancePage = ({
     workflowInstanceRouteRef,
   );
 
+  const fetchInstance = React.useCallback(async () => {
+    if (!instanceId && !queryInstanceId) {
+      return undefined;
+    }
+    return await orchestratorApi.getInstance(instanceId || queryInstanceId);
+  }, [instanceId, orchestratorApi, queryInstanceId]);
+
   const { loading, error, value, restart } = usePolling<
     ProcessInstance | undefined
   >(
-    async () => {
-      if (!instanceId && !queryInstanceId) {
-        return undefined;
-      }
-      return await orchestratorApi.getInstance(instanceId || queryInstanceId);
-    },
+    fetchInstance,
     SHORT_REFRESH_INTERVAL,
     (curValue: ProcessInstance | undefined) =>
       !!curValue && curValue.state === 'ACTIVE',

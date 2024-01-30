@@ -11,6 +11,7 @@ rules:
       - pods
       - services
       - configmaps
+      - resourcequotas
       - limitranges
     verbs:
       - get

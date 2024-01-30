@@ -40,6 +40,13 @@
     tslib "^2.6.2"
     typescript "^5.2.2"
 
+"@aonic-ui/pipelines@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@aonic-ui/pipelines/-/pipelines-1.0.1.tgz#91de0ba17b2affffcd8d8e474a76d34a0e810c59"
+  integrity sha512-hwwQzr65DfKmG5o0rdwDq6hc/3kaVvhbKWow+mA3cdknzZ/0Ci/WKDhgb0rqVWcpA5Nf4q8PSdo2qPJ0JC9MxQ==
+  dependencies:
+    "@patternfly/react-table" "^5.1.2"
+
 "@apidevtools/json-schema-ref-parser@9.0.6":
   version "9.0.6"
   resolved "https://registry.yarnpkg.com/@apidevtools/json-schema-ref-parser/-/json-schema-ref-parser-9.0.6.tgz#5d9000a3ac1fd25404da886da6b266adcd99cf1c"
@@ -7239,69 +7246,6 @@
     "@backstage/config" "^1.1.1"
     deep-freeze "^0.0.1"
 
-"@janus-idp/cli@1.4.7":
-  version "1.4.7"
-  resolved "https://registry.yarnpkg.com/@janus-idp/cli/-/cli-1.4.7.tgz#2f013d68f768bc3d5b930c9527e032a1dd90c379"
-  integrity sha512-7lnmkTvcxT/iFXE3or5exgQ3CXd+VR9gJtCAXzjcFfpf8LfTQ4SgS7xRiijaQSZJacg/JSpRoIxuIH0sOHAvvw==
-  dependencies:
-    "@backstage/cli-common" "^0.1.13"
-    "@backstage/cli-node" "^0.1.5"
-    "@backstage/config" "^1.1.1"
-    "@backstage/config-loader" "^1.5.1"
-    "@backstage/errors" "^1.2.3"
-    "@backstage/eslint-plugin" "^0.1.3"
-    "@backstage/types" "^1.1.1"
-    "@manypkg/get-packages" "^1.1.3"
-    "@openshift/dynamic-plugin-sdk-webpack" "^3.0.0"
-    "@pmmmwh/react-refresh-webpack-plugin" "^0.5.7"
-    "@rollup/plugin-commonjs" "^25.0.4"
-    "@rollup/plugin-json" "^6.0.0"
-    "@rollup/plugin-node-resolve" "^15.2.1"
-    "@rollup/plugin-yaml" "^4.0.0"
-    "@svgr/rollup" "^8.1.0"
-    "@svgr/webpack" "^6.5.1"
-    "@yarnpkg/lockfile" "^1.1.0"
-    "@yarnpkg/parsers" "^3.0.0-rc.4"
-    bfj "^7.0.2"
-    chalk "^4.0.0"
-    chokidar "^3.3.1"
-    commander "^9.1.0"
-    css-loader "^6.5.1"
-    esbuild "^0.19.0"
-    esbuild-loader "^2.18.0"
-    eslint "^8.49.0"
-    eslint-config-prettier "^8.10.0"
-    eslint-webpack-plugin "^3.2.0"
-    express "^4.18.2"
-    fork-ts-checker-webpack-plugin "^7.0.0-alpha.8"
-    fs-extra "^10.1.0"
-    handlebars "^4.7.7"
-    html-webpack-plugin "^5.3.1"
-    inquirer "^8.2.0"
-    lodash "^4.17.21"
-    mini-css-extract-plugin "^2.4.2"
-    node-libs-browser "^2.2.1"
-    npm-packlist "^5.0.0"
-    ora "^5.3.0"
-    postcss "^8.2.13"
-    process "^0.11.10"
-    react-dev-utils "^12.0.0-next.60"
-    react-refresh "^0.14.0"
-    recursive-readdir "^2.2.2"
-    rollup "^2.78.0"
-    rollup-plugin-dts "^4.0.1"
-    rollup-plugin-esbuild "^4.7.2"
-    rollup-plugin-postcss "^4.0.0"
-    rollup-pluginutils "^2.8.2"
-    semver "^7.5.4"
-    style-loader "^3.3.1"
-    swc-loader "^0.2.3"
-    typescript-json-schema "^0.62.0"
-    webpack "^5.89.0"
-    webpack-dev-server "^4.15.1"
-    yml-loader "^2.1.0"
-    yn "^4.0.0"
-
 "@jest/console@^29.7.0":
   version "29.7.0"
   resolved "https://registry.yarnpkg.com/@jest/console/-/console-29.7.0.tgz#cd4822dbdb84529265c5a2bdb529a3c9cc950ffc"
@@ -9519,6 +9463,18 @@
     react-dropzone "^14.2.3"
     tslib "^2.5.0"
 
+"@patternfly/react-core@^5.1.2":
+  version "5.1.2"
+  resolved "https://registry.yarnpkg.com/@patternfly/react-core/-/react-core-5.1.2.tgz#dcf643ce369452565bc471e2fe4e597182400306"
+  integrity sha512-MeSasp7PgkqlirlbbGuEj6j3KqXVoNkE3c3N6rfxTZOF025ullDJjtzf/L/Fiyht4tH1uNCtkdlpnea6jqTMPg==
+  dependencies:
+    "@patternfly/react-icons" "^5.1.2"
+    "@patternfly/react-styles" "^5.1.2"
+    "@patternfly/react-tokens" "^5.1.2"
+    focus-trap "7.5.2"
+    react-dropzone "^14.2.3"
+    tslib "^2.5.0"
+
 "@patternfly/react-icons@^4.93.6", "@patternfly/react-icons@^4.93.7":
   version "4.93.7"
   resolved "https://registry.yarnpkg.com/@patternfly/react-icons/-/react-icons-4.93.7.tgz#130acbcda4835cf0f26802aaddbb75664709ad4b"
@@ -9529,6 +9485,11 @@
   resolved "https://registry.yarnpkg.com/@patternfly/react-icons/-/react-icons-5.1.1.tgz#be1249e2f3abdc0e280952f88c3d5deb07fe1dde"
   integrity sha512-9gCxkWz2xcdi0rtXu2F0L68w4tLIlsgGTACo1ggr4aVng9jRX++o1PlCOqscOd9o0NiFnFD7BLlZUGvJWaYEZg==
 
+"@patternfly/react-icons@^5.1.2":
+  version "5.1.2"
+  resolved "https://registry.yarnpkg.com/@patternfly/react-icons/-/react-icons-5.1.2.tgz#c5c1a733230261a4747cd5fc88c946d4f290526c"
+  integrity sha512-hgf3OchvNyCcxqDrRJCkxauFdxENtVX2d6uTkMfOQWP3hs8hqYGHR5S0pe2teJ1SwAs2Rgtf7ezzmzKAouAjkw==
+
 "@patternfly/react-styles@^4.92.8":
   version "4.92.8"
   resolved "https://registry.yarnpkg.com/@patternfly/react-styles/-/react-styles-4.92.8.tgz#2f05455dfe8095a16df27c0d185a7f46f9451d74"
@@ -9538,6 +9499,23 @@
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/@patternfly/react-styles/-/react-styles-5.1.1.tgz#73762306972e520c2eff63a8b5412914c51a2ca8"
   integrity sha512-swO9X+WixYYDsMVsEJp1V8QUfhEQY91QfFm4phfYP4jc2TQ2opIFYdUIHkc+yrZwBhrgb/pPUUfemyqAoSbZcA==
+
+"@patternfly/react-styles@^5.1.2":
+  version "5.1.2"
+  resolved "https://registry.yarnpkg.com/@patternfly/react-styles/-/react-styles-5.1.2.tgz#89fa082f728e2724f89455a7049b3a9f6e48c4e0"
+  integrity sha512-rGNo8MstZG2r3yDS1tWwYDctK1qWW5RT1UwKF1DrQfhZ8ruEEL6m2ZXXM0u62hmM3qq4Q8h5lgn/bVHBnOHSLA==
+
+"@patternfly/react-table@^5.1.2":
+  version "5.1.2"
+  resolved "https://registry.yarnpkg.com/@patternfly/react-table/-/react-table-5.1.2.tgz#5541807f9770e32d29d7049470a6f71a7957e89d"
+  integrity sha512-C+ctkW6oWmdVhGv1rawVlo54baSu5G3ja3ZDtBjVsgMmpsGD0GIBXpvwtFO+OJVeY7T6qXHInMyuW3QNz/0rog==
+  dependencies:
+    "@patternfly/react-core" "^5.1.2"
+    "@patternfly/react-icons" "^5.1.2"
+    "@patternfly/react-styles" "^5.1.2"
+    "@patternfly/react-tokens" "^5.1.2"
+    lodash "^4.17.19"
+    tslib "^2.5.0"
 
 "@patternfly/react-tokens@^4.94.7":
   version "4.94.7"
@@ -30628,6 +30606,11 @@ react-refresh@^0.14.0:
   version "0.14.0"
   resolved "https://registry.yarnpkg.com/react-refresh/-/react-refresh-0.14.0.tgz#4e02825378a5f227079554d4284889354e5f553e"
   integrity sha512-wViHqhAd8OHeLS/IRMJjTSDHF3U9eWi62F/MledQGPdJGDhodXJ9PBLNGr6WWL7qlH12Mt3TyTpbS+hGXMjCzQ==
+
+react-relative-time@^0.0.9:
+  version "0.0.9"
+  resolved "https://registry.npmjs.org/react-relative-time/-/react-relative-time-0.0.9.tgz#2fcbd7e9a74ee82ff0eac24bfbd26a7dc2998ccc"
+  integrity sha512-Vf59erCwSaJaYp/IhoEtq7dtt1y4YNDqNegmOY8sK2P6oHHe3sLOXjz9VTCr0yvL2Y7W6uwufrxU4jOX8fS/dA==
 
 react-remove-scroll-bar@^2.3.3:
   version "2.3.4"

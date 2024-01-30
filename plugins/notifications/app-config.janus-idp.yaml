@@ -12,3 +12,5 @@ dynamicPlugins:
           menuItem:
             icon: notificationsIcon
             text: Notifications
+          config:
+            pollingIntervalMs: 5000

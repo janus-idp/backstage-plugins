@@ -1,3 +1,25 @@
+## @janus-idp/backstage-plugin-rbac [1.12.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.12.1...@janus-idp/backstage-plugin-rbac@1.12.2) (2024-01-30)
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.5.0
+
+## @janus-idp/backstage-plugin-rbac [1.12.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.12.0...@janus-idp/backstage-plugin-rbac@1.12.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* **rbac:** watch users and permission-policies ([#1102](https://github.com/janus-idp/backstage-plugins/issues/1102)) ([cec734b](https://github.com/janus-idp/backstage-plugins/commit/cec734b3998e37fce9b7291640beb7fc2d797939))
+
+## @janus-idp/backstage-plugin-rbac [1.12.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.11.1...@janus-idp/backstage-plugin-rbac@1.12.0) (2024-01-29)
+
+
+### Features
+
+* **rbac:** disable selected permissions ([#1117](https://github.com/janus-idp/backstage-plugins/issues/1117)) ([00cd501](https://github.com/janus-idp/backstage-plugins/commit/00cd501d6cd587c8a7b151189da30dd8c9865803))
+
 ## @janus-idp/backstage-plugin-rbac [1.11.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.11.0...@janus-idp/backstage-plugin-rbac@1.11.1) (2024-01-25)
 
 

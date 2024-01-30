@@ -70,7 +70,7 @@ describe('MembersCard', () => {
       loading: false,
       data: useMembersMockData,
       error: undefined,
-      retry: () => {},
+      retry: { roleRetry: jest.fn(), membersRetry: jest.fn() },
     });
     const { queryByText } = await renderInTestApp(
       <MembersCard roleName="role:default/rbac_admin" />,
@@ -87,7 +87,7 @@ describe('MembersCard', () => {
       loading: false,
       data: [],
       error: undefined,
-      retry: () => {},
+      retry: { roleRetry: jest.fn(), membersRetry: jest.fn() },
     });
     const { queryByText } = await renderInTestApp(
       <MembersCard roleName="role:default/rbac_admin" />,
@@ -102,7 +102,7 @@ describe('MembersCard', () => {
       loading: false,
       data: [],
       error: { message: 'xyz' },
-      retry: () => {},
+      retry: { roleRetry: jest.fn(), membersRetry: jest.fn() },
     });
     const { queryByText } = await renderInTestApp(
       <MembersCard roleName="role:default/rbac_admin" />,
@@ -122,7 +122,7 @@ describe('MembersCard', () => {
       loading: false,
       data: useMembersMockData,
       error: undefined,
-      retry: () => {},
+      retry: { roleRetry: jest.fn(), membersRetry: jest.fn() },
     });
     const { getByTestId } = await renderInTestApp(
       <MembersCard roleName="role:default/rbac_admin" />,
@@ -136,7 +136,7 @@ describe('MembersCard', () => {
       loading: false,
       data: useMembersMockData,
       error: undefined,
-      retry: () => {},
+      retry: { roleRetry: jest.fn(), membersRetry: jest.fn() },
     });
     const { queryByTestId } = await renderInTestApp(
       <MembersCard roleName="role:default/rbac_admin" />,
