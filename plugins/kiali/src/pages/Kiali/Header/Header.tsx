@@ -105,7 +105,7 @@ export const KialiHeader = (props: { title: string }) => {
               >
                 <span style={{ margin: '10px' }}>
                   <b>User : </b>
-                  {kialiState.authentication.session.username}
+                  {kialiState.authentication.session.username || 'anonymous'}
                 </span>
               </div>
             )}
