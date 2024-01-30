@@ -42,7 +42,7 @@ export const KialiHeader = (props: { title: string }) => {
 
   const title = props.title.charAt(0).toUpperCase() + props.title.slice(1);
   return (
-    <>
+    <div style={{ marginLeft: '20px' }}>
       <Select
         label="Namespaces Selected"
         placeholder="Select namespaces"
@@ -65,8 +65,9 @@ export const KialiHeader = (props: { title: string }) => {
 
       <ContentHeader title={title}>
         <Grid container spacing={1}>
+          <Grid item xs={homeCluster ? 2 : 3} />
           {homeCluster && (
-            <Grid item>
+            <Grid item xs={3}>
               <Tooltip
                 title={<div>Kiali home cluster: {homeCluster?.name}</div>}
               >
@@ -78,12 +79,12 @@ export const KialiHeader = (props: { title: string }) => {
               </Tooltip>
             </Grid>
           )}
-          <Grid item>
-            <Button onClick={handleClick}>
+          <Grid item xs={1}>
+            <Button onClick={handleClick} style={{ marginTop: '5px' }}>
               <QuestionCircleIcon />
             </Button>
           </Grid>
-          <Grid item>
+          <Grid item xs={1}>
             <MessageCenter />
           </Grid>
           <Grid item>
@@ -94,8 +95,8 @@ export const KialiHeader = (props: { title: string }) => {
               <MenuItem onClick={openAbout}>About</MenuItem>
             </Menu>
           </Grid>
-          <Grid item>
-            {kialiState.authentication.session && (
+          {kialiState.authentication.session && (
+            <Grid item>
               <div
                 style={{
                   display: 'flex',
@@ -108,8 +109,8 @@ export const KialiHeader = (props: { title: string }) => {
                   {kialiState.authentication.session.username || 'anonymous'}
                 </span>
               </div>
-            )}
-          </Grid>
+            </Grid>
+          )}
         </Grid>
       </ContentHeader>
       <AboutUIModal
@@ -124,6 +125,6 @@ export const KialiHeader = (props: { title: string }) => {
         showDebug={showDebug}
         setShowDebug={setShowDebug}
       />
-    </>
+    </div>
   );
 };
