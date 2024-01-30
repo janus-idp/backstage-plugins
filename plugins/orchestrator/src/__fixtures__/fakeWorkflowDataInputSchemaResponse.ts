@@ -1,6 +1,6 @@
 import { WorkflowDataInputSchemaResponse } from '@janus-idp/backstage-plugin-orchestrator-common';
 
-export const fakeDataInputSchemaReponse: WorkflowDataInputSchemaResponse = {
+export const fakeDataInputSchemaResponse: WorkflowDataInputSchemaResponse = {
   workflowItem: {
     uri: 'yamlgreet.sw.yaml',
     definition: {
@@ -91,4 +91,5 @@ export const fakeDataInputSchemaReponse: WorkflowDataInputSchemaResponse = {
       },
     },
   ],
+  initialState: [],
 };

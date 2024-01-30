@@ -1,6 +1,6 @@
 import { WorkflowDataInputSchemaResponse } from '@janus-idp/backstage-plugin-orchestrator-common';
 
-export const fakeDataInputSchemaMultiStepResponse: WorkflowDataInputSchemaResponse =
+export const fakeDataInputSchemaMultiStepInitialStateResponse: WorkflowDataInputSchemaResponse =
   {
     workflowItem: {
       uri: 'quarkus-backend.sw.yaml',
@@ -553,5 +553,13 @@ export const fakeDataInputSchemaMultiStepResponse: WorkflowDataInputSchemaRespon
         ],
       },
     ],
-    initialState: [],
+    initialState: [
+      {
+        orgName: 'Org name',
+        repoName: 'Repo name',
+        description: 'Description',
+        owner: 'owner',
+        system: 'system',
+      },
+    ],
   };

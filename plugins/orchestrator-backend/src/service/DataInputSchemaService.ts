@@ -1,3 +1,5 @@
+import { JsonObject } from '@backstage/types';
+
 import { Octokit } from '@octokit/rest';
 import { Specification } from '@severlessworkflow/sdk-typescript';
 import { Callbackstate } from '@severlessworkflow/sdk-typescript/lib/definitions/callbackstate';
@@ -1227,10 +1229,54 @@ export class DataInputSchemaService {
       }
     }
 
-    if (!current.properties) {
-      return undefined;
+    return current;
+  }
+
+  public extractInitialStateFromWorkflowData(args: {
+    workflowData: JsonObject;
+    schemas: JSONSchema7[];
+  }): JsonObject[] {
+    return args.schemas.map(s => {
+      const mergedProperties = this.mergeValuesByObjectKey(
+        s as JsonObject,
+        'properties',
+      );
+      return Object.keys(mergedProperties)
+        .filter(k => k in args.workflowData)
+        .reduce((result, k) => {
+          result[k] = args.workflowData[k];
+          return result;
+        }, {} as JsonObject);
+    });
+  }
+
+  private mergeValuesByObjectKey(
+    jsonObj: JsonObject,
+    targetKey: string,
+  ): JsonObject {
+    let result: JsonObject = {};
+
+    function traverse(currentObj: JsonObject) {
+      for (const key of Object.keys(currentObj)) {
+        const child = currentObj[key];
+        if (!child || typeof child !== 'object') {
+          continue;
+        }
+        if (Array.isArray(child)) {
+          child
+            .filter(c => typeof c === 'object')
+            .forEach(c => {
+              traverse(c as JsonObject);
+            });
+        } else if (key === targetKey) {
+          result = { ...result, ...child };
+        } else {
+          traverse(child);
+        }
+      }
     }
 
-    return current;
+    traverse(jsonObj);
+    return result;
   }
 }

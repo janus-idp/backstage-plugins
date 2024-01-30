@@ -243,10 +243,11 @@ export class SonataFlowService {
     workflowId: string;
     endpoint: string;
     inputData: Record<string, string>;
+    businessKey?: string;
   }): Promise<WorkflowExecutionResponse | undefined> {
     try {
-      const workflowEndpoint = args.inputData?.businessKey
-        ? `${args.endpoint}/${args.workflowId}?businessKey=${args.inputData.businessKey}`
+      const workflowEndpoint = args.businessKey
+        ? `${args.endpoint}/${args.workflowId}?businessKey=${args.businessKey}`
         : `${args.endpoint}/${args.workflowId}`;
       const response = await fetch(workflowEndpoint, {
         method: 'POST',

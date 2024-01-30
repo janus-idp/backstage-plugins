@@ -1,7 +1,8 @@
 import { createApiRef } from '@backstage/core-plugin-api';
-import { JsonValue } from '@backstage/types';
+import { JsonObject } from '@backstage/types';
 
 import {
+  AssessedProcessInstance,
   Job,
   ProcessInstance,
   WorkflowDataInputSchemaResponse,
@@ -18,7 +19,8 @@ export interface OrchestratorApi {
 
   executeWorkflow(args: {
     workflowId: string;
-    parameters: Record<string, JsonValue>;
+    parameters: JsonObject;
+    businessKey?: string;
   }): Promise<WorkflowExecutionResponse>;
 
   getWorkflow(workflowId: string): Promise<WorkflowItem>;
@@ -29,13 +31,17 @@ export interface OrchestratorApi {
 
   getInstances(): Promise<ProcessInstance[]>;
 
-  getInstance(instanceId: string): Promise<ProcessInstance>;
+  getInstance(
+    instanceId: string,
+    includeAssessment: boolean,
+  ): Promise<AssessedProcessInstance>;
 
   getInstanceJobs(instanceId: string): Promise<Job[]>;
 
-  getWorkflowDataInputSchema(
-    workflowId: string,
-  ): Promise<WorkflowDataInputSchemaResponse>;
+  getWorkflowDataInputSchema(args: {
+    workflowId: string;
+    instanceId?: string;
+  }): Promise<WorkflowDataInputSchemaResponse>;
 
   createWorkflowDefinition(
     uri: string,

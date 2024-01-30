@@ -10,6 +10,7 @@ import { JSONSchema7 } from 'json-schema';
 import {
   fromWorkflowSource,
   ORCHESTRATOR_SERVICE_READY_TOPIC,
+  ProcessInstance,
   WorkflowDataInputSchemaResponse,
   WorkflowDefinition,
   WorkflowInfo,
@@ -21,6 +22,7 @@ import {
 import { RouterArgs } from '../routerWrapper';
 import { ApiResponseBuilder } from '../types/apiResponse';
 import { CloudEventService } from './CloudEventService';
+import { WORKFLOW_DATA_KEY } from './constants';
 import { DataIndexService } from './DataIndexService';
 import { DataInputSchemaService } from './DataInputSchemaService';
 import { JiraEvent, JiraService } from './JiraService';
@@ -217,6 +219,12 @@ function setupInternalRoutes(
       params: { workflowId },
     } = req;
 
+    const { businessKey } = req.query;
+    const resolvedBusinessKey =
+      typeof businessKey === 'string' && businessKey.trim().length
+        ? businessKey
+        : undefined;
+
     const definition = await dataIndexService.getWorkflowDefinition(workflowId);
     const serviceUrl = definition.serviceUrl;
     if (!serviceUrl) {
@@ -226,6 +234,7 @@ function setupInternalRoutes(
       workflowId,
       inputData: req.body,
       endpoint: serviceUrl,
+      businessKey: resolvedBusinessKey,
     });
 
     if (!executionResponse) {
@@ -267,6 +276,9 @@ function setupInternalRoutes(
     const {
       params: { instanceId },
     } = req;
+
+    const { includeAssessment } = req.query;
+
     const instance = await dataIndexService.fetchProcessInstance(instanceId);
 
     if (!instance) {
@@ -274,7 +286,18 @@ function setupInternalRoutes(
       return;
     }
 
-    res.status(200).json(instance);
+    let assessedByInstance: ProcessInstance | undefined;
+
+    if (!!includeAssessment && instance.businessKey) {
+      assessedByInstance = await dataIndexService.fetchProcessInstance(
+        instance.businessKey,
+      );
+    }
+
+    res.status(200).json({
+      instance,
+      assessedByInstance,
+    });
   });
 
   router.get('/instances/:instanceId/jobs', async (req, res) => {
@@ -297,6 +320,12 @@ function setupInternalRoutes(
       params: { workflowId },
     } = req;
 
+    const { instanceId } = req.query;
+    const resolvedInstanceId =
+      typeof instanceId === 'string' && instanceId.trim().length
+        ? instanceId
+        : undefined;
+
     const workflowDefinition =
       await dataIndexService.getWorkflowDefinition(workflowId);
     const serviceUrl = workflowDefinition.serviceUrl;
@@ -304,7 +333,6 @@ function setupInternalRoutes(
       throw new Error(`ServiceUrl is not defined for workflow ${workflowId}`);
     }
 
-    // workflow source
     const definition =
       await sonataFlowService.fetchWorkflowDefinition(workflowId);
 
@@ -323,6 +351,7 @@ function setupInternalRoutes(
     const workflowItem: WorkflowItem = { uri, definition };
 
     let schemas: JSONSchema7[] = [];
+    let initialState: JsonObject[] = [];
 
     if (definition.dataInputSchema) {
       const workflowInfo = await sonataFlowService.fetchWorkflowInfo(
@@ -345,11 +374,28 @@ function setupInternalRoutes(
       schemas = dataInputSchemaService.parseComposition(
         workflowInfo.inputSchema,
       );
+
+      const instanceVariables = resolvedInstanceId
+        ? await dataIndexService.fetchProcessInstanceVariables(
+            resolvedInstanceId,
+          )
+        : undefined;
+
+      const workflowData = instanceVariables?.[WORKFLOW_DATA_KEY];
+
+      if (workflowData) {
+        initialState =
+          dataInputSchemaService.extractInitialStateFromWorkflowData({
+            workflowData: workflowData as JsonObject,
+            schemas,
+          });
+      }
     }
 
     const response: WorkflowDataInputSchemaResponse = {
       workflowItem,
       schemas,
+      initialState,
     };
 
     res.status(200).json(response);

@@ -97,7 +97,7 @@ export const WorkflowRunsTabContent = () => {
 
   const filteredData = React.useMemo(
     () =>
-      (value || []).filter(
+      (value ?? []).filter(
         (row: WorkflowRunDetail) =>
           statusSelectorValue === Selector.AllItems ||
           row.status === statusSelectorValue,

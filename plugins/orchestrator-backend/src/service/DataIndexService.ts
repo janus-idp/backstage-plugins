@@ -5,7 +5,9 @@ import {
   fromWorkflowSource,
   getWorkflowCategory,
   Job,
+  parseWorkflowVariables,
   ProcessInstance,
+  ProcessInstanceVariables,
   WorkflowDefinition,
   WorkflowInfo,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
@@ -188,6 +190,25 @@ export class DataIndexService {
     }
 
     return result.data.Jobs;
+  }
+
+  public async fetchProcessInstanceVariables(
+    instanceId: string,
+  ): Promise<ProcessInstanceVariables | undefined> {
+    const graphQlQuery = `{ ProcessInstances (where: { id: {equal: "${instanceId}" } } ) { variables } }`;
+
+    const result = await this.client.query(graphQlQuery, {});
+
+    if (result.error) {
+      this.logger.error(
+        `Error when fetching process instance variables: ${result.error}`,
+      );
+      throw result.error;
+    }
+
+    const variables = result.data.ProcessInstances.pop().variables;
+
+    return parseWorkflowVariables(variables);
   }
 
   public async fetchProcessInstance(

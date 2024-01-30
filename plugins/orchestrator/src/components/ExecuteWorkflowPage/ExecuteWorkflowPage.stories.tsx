@@ -7,8 +7,9 @@ import { Meta, StoryObj } from '@storybook/react';
 import { WorkflowDataInputSchemaResponse } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { fakeDataInputSchemaDifferentTypes } from '../../__fixtures__/fakeWorkflowDataInputSchemaDifferentTypes';
-import { fakeDataInputSchemaReponse } from '../../__fixtures__/fakeWorkflowDataInputSchemaResponse';
-import { fakeDataInputSchemaMultiStepReponse } from '../../__fixtures__/fakeWorkflowDataInputSchemaResponseMultiStep';
+import { fakeDataInputSchemaResponse } from '../../__fixtures__/fakeWorkflowDataInputSchemaResponse';
+import { fakeDataInputSchemaMultiStepResponse } from '../../__fixtures__/fakeWorkflowDataInputSchemaResponseMultiStep';
+import { fakeDataInputSchemaMultiStepInitialStateResponse } from '../../__fixtures__/fakeWorkflowDataInputSchemaResponseMultiStepInitialState';
 import { orchestratorApiRef } from '../../api';
 import { MockOrchestratorClient } from '../../api/MockOrchestratorClient';
 import { orchestratorRootRouteRef } from '../../routes';
@@ -35,7 +36,7 @@ const meta = {
                 getWorkflowDataInputSchemaResponse: context?.args
                   ?.schemaResponse
                   ? context?.args?.schemaResponse()
-                  : Promise.resolve(fakeDataInputSchemaReponse),
+                  : Promise.resolve(fakeDataInputSchemaResponse),
                 executeWorkflowResponse: () => {
                   // eslint-disable-next-line no-alert
                   alert('Execute workflow API called');
@@ -67,7 +68,15 @@ export const ExecuteWorkflowPageStory: Story = {
 export const ExecuteWorkflowPageMultipleStepsStory: Story = {
   name: 'Multiple steps',
   args: {
-    schemaResponse: () => Promise.resolve(fakeDataInputSchemaMultiStepReponse),
+    schemaResponse: () => Promise.resolve(fakeDataInputSchemaMultiStepResponse),
+  },
+};
+
+export const ExecuteWorkflowPageMultipleStepsWithInitialStateStory: Story = {
+  name: 'Multiple steps with initial state',
+  args: {
+    schemaResponse: () =>
+      Promise.resolve(fakeDataInputSchemaMultiStepInitialStateResponse),
   },
 };
 
@@ -82,7 +91,7 @@ export const ExecuteWorkflowPageNoSchemaStory: Story = {
   name: 'No schema',
   args: {
     schemaResponse: () => ({
-      ...fakeDataInputSchemaReponse,
+      ...fakeDataInputSchemaResponse,
       schemas: [],
     }),
   },

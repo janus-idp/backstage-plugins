@@ -49,6 +49,9 @@ export interface ProcessInstanceError {
   nodeDefinitionId: string;
   message?: string;
 }
+
+export type ProcessInstanceVariables = Record<string, unknown>;
+
 export interface ProcessInstance {
   id: string;
   processId: string;
@@ -62,7 +65,7 @@ export interface ProcessInstance {
   serviceUrl?: string;
   nodes: NodeInstance[];
   milestones?: Milestone[];
-  variables?: Record<string, unknown> | string;
+  variables?: ProcessInstanceVariables | string;
   start: Date;
   end?: Date;
   parentProcessInstance?: ProcessInstance;

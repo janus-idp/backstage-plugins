@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Content, StructuredMetadataTable } from '@backstage/core-components';
-import { JsonValue } from '@backstage/types';
+import { JsonObject } from '@backstage/types';
 
 import {
   Box,
@@ -21,24 +21,26 @@ import { JSONSchema7 } from 'json-schema';
 
 import SubmitButton from '../SubmitButton';
 
-const MuiForm = withTheme<Record<string, JsonValue>>(MuiTheme);
+const MuiForm = withTheme<JsonObject>(MuiTheme);
 
 const ReviewStep = ({
   busy,
+  disableReset,
   formDataObjects,
   handleBack,
   handleReset,
   handleExecute,
 }: {
   busy: boolean;
-  formDataObjects: Record<string, JsonValue>[];
+  disableReset: boolean;
+  formDataObjects: JsonObject[];
   handleBack: () => void;
   handleReset: () => void;
   handleExecute: () => void;
 }) => {
   const combinedFormData = React.useMemo(
     () =>
-      formDataObjects.reduce<Record<string, JsonValue>>(
+      formDataObjects.reduce<JsonObject>(
         (prev, cur) => ({ ...prev, ...cur }),
         {},
       ),
@@ -53,7 +55,7 @@ const ReviewStep = ({
         <Button onClick={handleBack} disabled={busy}>
           Back
         </Button>
-        <Button onClick={handleReset} disabled={busy}>
+        <Button onClick={handleReset} disabled={busy || disableReset}>
           Reset
         </Button>
         <SubmitButton
@@ -71,16 +73,17 @@ const ReviewStep = ({
 const FormWrapper = ({
   formData,
   schema,
+  uiSchema = {},
   onSubmit,
   children,
 }: Pick<
-  FormProps<Record<string, JsonValue>>,
-  'formData' | 'schema' | 'onSubmit' | 'children'
+  FormProps<JsonObject>,
+  'formData' | 'schema' | 'uiSchema' | 'onSubmit' | 'children'
 >) => {
-  const firstKey = Object.keys(schema?.properties || {})[0];
-  const uiSchema: UiSchema<Record<string, JsonValue>> | undefined = firstKey
-    ? { [firstKey]: { 'ui:autofocus': 'true' } }
-    : undefined;
+  const firstKey = Object.keys(schema?.properties ?? {})[0];
+  uiSchema[firstKey] = firstKey
+    ? { ...uiSchema[firstKey], 'ui:autofocus': 'true' }
+    : uiSchema[firstKey];
   return (
     <MuiForm
       validator={validator}
@@ -98,24 +101,25 @@ const FormWrapper = ({
 
 const StepperForm = ({
   refSchemas,
+  initialState,
+  disableInitialState = false,
   handleExecute,
   isExecuting,
 }: {
   refSchemas: JSONSchema7[];
-  handleExecute: (
-    getParameters: () => Record<string, JsonValue>,
-  ) => Promise<void>;
+  initialState: JsonObject[];
+  disableInitialState?: boolean;
+  handleExecute: (getParameters: () => JsonObject) => Promise<void>;
   isExecuting: boolean;
 }) => {
   const [activeStep, setActiveStep] = React.useState(0);
   const handleBack = () => setActiveStep(activeStep - 1);
 
-  const [formDataObjects, setFormDataObjects] = React.useState<
-    Record<string, JsonValue>[]
-  >([]);
+  const [formDataObjects, setFormDataObjects] =
+    React.useState<JsonObject[]>(initialState);
 
   const getFormData = () =>
-    formDataObjects.reduce<Record<string, JsonValue>>(
+    formDataObjects.reduce<JsonObject>(
       (prev, curFormObject) => ({ ...prev, ...curFormObject }),
       {},
     );
@@ -123,17 +127,27 @@ const StepperForm = ({
   const resetFormDataObjects = React.useCallback(
     () =>
       setFormDataObjects(
-        refSchemas.reduce<Record<string, JsonValue>[]>(
-          prev => [...prev, {}],
-          [],
-        ),
+        refSchemas.reduce<JsonObject[]>(prev => [...prev, {}], []),
       ),
     [refSchemas],
   );
 
-  React.useEffect(() => {
-    resetFormDataObjects();
-  }, [resetFormDataObjects]);
+  const uiSchema = React.useMemo(() => {
+    if (!disableInitialState) {
+      return {};
+    }
+    return initialState.reduce<UiSchema<JsonObject>>(
+      (prev, cur) =>
+        Object.keys(cur).reduce<UiSchema<JsonObject>>(
+          (prev2, cur2) => ({
+            ...prev2,
+            [cur2]: { ...prev2[cur2], 'ui:disabled': 'true' },
+          }),
+          prev,
+        ),
+      {},
+    );
+  }, [disableInitialState, initialState]);
 
   return (
     <>
@@ -153,6 +167,7 @@ const StepperForm = ({
               <FormWrapper
                 formData={formDataObjects[index]}
                 schema={schema}
+                uiSchema={uiSchema}
                 onSubmit={e => {
                   const newDataObjects = [...formDataObjects];
                   newDataObjects.splice(index, 1, e.formData ?? {});
@@ -179,6 +194,7 @@ const StepperForm = ({
             resetFormDataObjects();
             setActiveStep(0);
           }}
+          disableReset={disableInitialState}
           busy={isExecuting}
           handleExecute={() => handleExecute(() => getFormData())}
         />

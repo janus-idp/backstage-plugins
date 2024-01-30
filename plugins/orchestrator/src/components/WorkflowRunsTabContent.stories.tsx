@@ -12,7 +12,7 @@ import { orchestratorRootRouteRef } from '../routes';
 import { WorkflowRunsTabContent } from './WorkflowRunsTabContent';
 
 const meta = {
-  title: 'Orchestrator/next/WorkflowRunsTabContent',
+  title: 'Orchestrator/WorkflowRunsTabContent',
   component: WorkflowRunsTabContent,
   decorators: [
     (Story, context) => {
@@ -36,7 +36,7 @@ const meta = {
         </TestApiProvider>,
         {
           mountedRoutes: {
-            '/orchestrator/next': orchestratorRootRouteRef,
+            '/orchestrator': orchestratorRootRouteRef,
           },
         },
       );

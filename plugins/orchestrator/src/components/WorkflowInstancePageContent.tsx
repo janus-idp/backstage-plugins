@@ -8,13 +8,20 @@ import { Grid, makeStyles } from '@material-ui/core';
 import moment from 'moment';
 
 import {
+  AssessedProcessInstance,
+  parseWorkflowVariables,
   ProcessInstance,
   ProcessInstanceStateValues,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
-import { VALUE_UNAVAILABLE } from '../constants';
+import {
+  QUERY_PARAM_ASSESSMENT_ID,
+  QUERY_PARAM_INSTANCE_ID,
+  VALUE_UNAVAILABLE,
+} from '../constants';
 import { executeWorkflowRouteRef, workflowInstanceRouteRef } from '../routes';
 import { capitalize } from '../utils/StringUtils';
+import { buildUrl } from '../utils/UrlUtils';
 import { EditorViewKind, WorkflowEditor } from './WorkflowEditor';
 import { WorkflowInstanceStatusIndicator } from './WorkflowInstanceStatusIndicator';
 import { WorkflowProgress } from './WorkflowProgress';
@@ -24,7 +31,6 @@ import { WorkflowVariablesViewer } from './WorkflowVariablesViewer';
 export const mapProcessInstanceToDetails = (
   instance: ProcessInstance,
 ): WorkflowRunDetail => {
-  const businessKey = instance.businessKey;
   const name = instance.processName || instance.processId;
   const start = moment(instance.start);
   let duration: string = VALUE_UNAVAILABLE;
@@ -33,13 +39,7 @@ export const mapProcessInstanceToDetails = (
     duration = moment.duration(start.diff(end)).humanize();
   }
 
-  let variables: Record<string, unknown> | undefined;
-  if (typeof instance?.variables === 'string') {
-    variables = JSON.parse(instance?.variables);
-  } else {
-    variables = instance?.variables;
-  }
-
+  const variables = parseWorkflowVariables(instance?.variables);
   const nextWorkflowSuggestions: WorkflowRunDetail['nextWorkflowSuggestions'] =
     // @ts-ignore
     variables?.workflowdata?.workflowOptions;
@@ -47,22 +47,20 @@ export const mapProcessInstanceToDetails = (
   return {
     id: instance.id,
     name,
-    workflow: name,
+    workflowId: instance.processId,
     started: start.toDate().toLocaleString(),
     duration,
     category: instance.category,
     status: instance.state,
     description: instance.description,
     nextWorkflowSuggestions,
-    businessKey,
+    businessKey: instance.businessKey,
   };
 };
 
 const getNextWorkflows = (
   details: WorkflowRunDetail,
-  executeWorkflowLink: RouteFunc<
-    PathParams<'/next/workflows/:workflowId/execute'>
-  >,
+  executeWorkflowLink: RouteFunc<PathParams<'/workflows/:workflowId/execute'>>,
 ) => {
   const nextWorkflows: { title: string; link: string }[] = [];
 
@@ -73,9 +71,16 @@ const getNextWorkflows = (
         : [value];
       nextWorkflowSuggestions.forEach(nextWorkflowSuggestion => {
         // Produce flat structure
+        const routeUrl = executeWorkflowLink({
+          workflowId: nextWorkflowSuggestion.id,
+        });
+        const urlToNavigate = buildUrl(routeUrl, {
+          [QUERY_PARAM_INSTANCE_ID]: details.id,
+          [QUERY_PARAM_ASSESSMENT_ID]: details.workflowId,
+        });
         nextWorkflows.push({
           title: nextWorkflowSuggestion.name,
-          link: executeWorkflowLink({ workflowId: nextWorkflowSuggestion.id }),
+          link: urlToNavigate,
         });
       });
     });
@@ -86,10 +91,10 @@ const getNextWorkflows = (
 
 const useStyles = makeStyles(_ => ({
   topRowCard: {
-    height: '252px',
+    height: '258px',
   },
   middleRowCard: {
-    height: 'calc(2 * 252px)',
+    height: 'calc(2 * 258px)',
   },
   bottomRowCard: {
     height: '100%',
@@ -98,17 +103,21 @@ const useStyles = makeStyles(_ => ({
 }));
 
 export const WorkflowInstancePageContent: React.FC<{
-  processInstance: ProcessInstance;
-}> = ({ processInstance }) => {
+  assessedInstance: AssessedProcessInstance;
+}> = ({ assessedInstance }) => {
   const styles = useStyles();
   const executeWorkflowLink = useRouteRef(executeWorkflowRouteRef);
   const workflowInstanceLink = useRouteRef(workflowInstanceRouteRef);
   const details = React.useMemo(
-    () => mapProcessInstanceToDetails(processInstance),
-    [processInstance],
+    () => mapProcessInstanceToDetails(assessedInstance.instance),
+    [assessedInstance.instance],
   );
   const detailLabelValues = React.useMemo(() => {
     const labelsAndValues = [
+      {
+        label: 'Category',
+        value: capitalize(details.category ?? VALUE_UNAVAILABLE),
+      },
       {
         label: 'Status',
         value: (
@@ -117,22 +126,22 @@ export const WorkflowInstancePageContent: React.FC<{
           />
         ),
       },
-      { label: 'Started', value: details.started },
-      { label: 'ID', value: details.id },
-      {
-        label: 'Category',
-        value: capitalize(details.category ?? VALUE_UNAVAILABLE),
-      },
       { label: 'Duration', value: details.duration },
+      { label: 'ID', value: details.id },
+      { label: 'Started', value: details.started },
       { label: 'Description', value: details.description },
     ];
 
-    if (details.businessKey) {
+    if (assessedInstance.assessedBy) {
       labelsAndValues.push({
         label: 'Assessed by',
         value: (
-          <Link to={workflowInstanceLink({ instanceId: details.businessKey })}>
-            {details.businessKey}
+          <Link
+            to={workflowInstanceLink({
+              instanceId: assessedInstance.assessedBy.id,
+            })}
+          >
+            {assessedInstance.assessedBy.processName}
           </Link>
         ),
       });
@@ -140,7 +149,6 @@ export const WorkflowInstancePageContent: React.FC<{
 
     return labelsAndValues;
   }, [
-    details.businessKey,
     details.category,
     details.description,
     details.duration,
@@ -148,11 +156,17 @@ export const WorkflowInstancePageContent: React.FC<{
     details.started,
     details.status,
     workflowInstanceLink,
+    assessedInstance,
   ]);
 
   const nextWorkflows = React.useMemo(
     () => getNextWorkflows(details, executeWorkflowLink),
     [details, executeWorkflowLink],
+  );
+
+  const instanceVariables = React.useMemo(
+    () => parseWorkflowVariables(assessedInstance.instance.variables),
+    [assessedInstance],
   );
 
   return (
@@ -166,7 +180,7 @@ export const WorkflowInstancePageContent: React.FC<{
           >
             <Grid container spacing={3}>
               {detailLabelValues.map(item => (
-                <Grid item xs={4} key={item.label}>
+                <Grid item xs={3} key={item.label}>
                   <AboutField label={item.label} value={item.value as string} />
                 </Grid>
               ))}
@@ -182,7 +196,7 @@ export const WorkflowInstancePageContent: React.FC<{
             cardClassName={styles.autoOverflow}
           >
             {nextWorkflows.length === 0 ? (
-              <WorkflowVariablesViewer variables={processInstance.variables} />
+              <WorkflowVariablesViewer variables={instanceVariables} />
             ) : (
               <Grid container spacing={3}>
                 {nextWorkflows.map(item => (
@@ -201,7 +215,7 @@ export const WorkflowInstancePageContent: React.FC<{
             className={styles.middleRowCard}
           >
             <WorkflowEditor
-              workflowId={processInstance.processId}
+              workflowId={assessedInstance.instance.processId}
               kind={EditorViewKind.DIAGRAM_VIEWER}
               editorMode="text"
               readonly
@@ -217,9 +231,9 @@ export const WorkflowInstancePageContent: React.FC<{
             cardClassName={styles.autoOverflow}
           >
             <WorkflowProgress
-              workflowError={processInstance.error}
-              workflowNodes={processInstance.nodes}
-              workflowStatus={processInstance.state}
+              workflowError={assessedInstance.instance.error}
+              workflowNodes={assessedInstance.instance.nodes}
+              workflowStatus={assessedInstance.instance.state}
             />
           </InfoCard>
         </Grid>
@@ -231,7 +245,7 @@ export const WorkflowInstancePageContent: React.FC<{
               className={styles.bottomRowCard}
               cardClassName={styles.autoOverflow}
             >
-              <WorkflowVariablesViewer variables={processInstance.variables} />
+              <WorkflowVariablesViewer variables={instanceVariables} />
             </InfoCard>
           </Grid>
         ) : null}

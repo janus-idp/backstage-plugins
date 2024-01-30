@@ -29,7 +29,7 @@ const TestRouter: React.FC<React.PropsWithChildren<{}>> = ({ children }) => (
 );
 
 const meta = {
-  title: 'Orchestrator/next/OrchestratorPage',
+  title: 'Orchestrator/OrchestratorPage',
   component: OrchestratorPage,
   decorators: [
     (

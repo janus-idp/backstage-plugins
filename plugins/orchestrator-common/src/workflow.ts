@@ -2,6 +2,7 @@ import { Specification } from '@severlessworkflow/sdk-typescript';
 import { dump } from 'js-yaml';
 
 import { ASSESSMENT_WORKFLOW_TYPE } from './constants';
+import { ProcessInstanceVariables } from './models';
 import { WorkflowCategory, WorkflowDefinition, WorkflowFormat } from './types';
 
 export function fromWorkflowSource(content: string): WorkflowDefinition {
@@ -76,4 +77,24 @@ function removeProperty<T>(obj: T, propToDelete: string): T {
   }
 
   return newObj;
+}
+
+export function parseWorkflowVariables(
+  variables: ProcessInstanceVariables | string | undefined,
+): ProcessInstanceVariables | undefined {
+  if (variables === undefined) {
+    return undefined;
+  }
+
+  if (typeof variables === 'string') {
+    try {
+      return JSON.parse(variables) as ProcessInstanceVariables;
+    } catch {
+      throw new Error(
+        `Error when parsing process instance variables: ${variables}`,
+      );
+    }
+  }
+
+  return variables;
 }

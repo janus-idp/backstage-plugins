@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { JsonValue } from '@backstage/types';
+import { JsonObject } from '@backstage/types';
 
 import { Box, Grid, useTheme } from '@material-ui/core';
 import { Alert, AlertTitle } from '@material-ui/lab';
@@ -15,18 +15,16 @@ const JsonTextAreaForm = ({
   handleExecute,
 }: {
   isExecuting: boolean;
-  handleExecute: (
-    getParameters: () => Record<string, JsonValue>,
-  ) => Promise<void>;
+  handleExecute: (getParameters: () => JsonObject) => Promise<void>;
 }) => {
   const [jsonText, setJsonText] = React.useState(DEFAULT_VALUE);
   const theme = useTheme();
-  const getParameters = (): Record<string, JsonValue> => {
+  const getParameters = (): JsonObject => {
     if (!jsonText) {
       return {};
     }
     const parameters = JSON.parse(jsonText);
-    return parameters as Record<string, JsonValue>;
+    return parameters as JsonObject;
   };
 
   return (

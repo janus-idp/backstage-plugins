@@ -5,6 +5,7 @@ import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
 import { Meta, StoryObj } from '@storybook/react';
 
 import {
+  AssessedProcessInstance,
   ProcessInstance,
   WorkflowItem,
   WorkflowSpecFile,
@@ -60,6 +61,15 @@ const getFakeProcessInstance = async (
   throw new Error('This is an example error for non existing instance');
 };
 
+const getFakeAssessedProcessInstance = async (
+  context: { responseCounter?: number },
+  instanceId?: string,
+): Promise<AssessedProcessInstance> => {
+  return {
+    instance: await getFakeProcessInstance(context, instanceId),
+  };
+};
+
 const getFakeWorkflowItem = async (
   workflowId?: string,
 ): Promise<WorkflowItem> => {
@@ -77,7 +87,7 @@ const getFakeSpecs = async (): Promise<WorkflowSpecFile[]> => {
 };
 
 const meta = {
-  title: 'Orchestrator/next/WorkflowInstancePage',
+  title: 'Orchestrator/WorkflowInstancePage',
   component: WorkflowInstancePage,
   decorators: [
     (Story, context) =>
@@ -92,7 +102,7 @@ const meta = {
                   context.args.instanceId,
                 ),
                 getInstanceResponse: () => {
-                  return getFakeProcessInstance(
+                  return getFakeAssessedProcessInstance(
                     context as { responseCounter?: number },
                     context.args.instanceId,
                   );
@@ -105,7 +115,7 @@ const meta = {
         </TestApiProvider>,
         {
           mountedRoutes: {
-            '/orchestrator/next': orchestratorRootRouteRef,
+            '/orchestrator': orchestratorRootRouteRef,
           },
         },
       ),
