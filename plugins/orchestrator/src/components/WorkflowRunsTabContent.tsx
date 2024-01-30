@@ -48,14 +48,15 @@ export const WorkflowRunsTabContent = () => {
     Selector.AllItems,
   );
 
-  const { loading, error, value } = usePolling(async () => {
+  const fetchInstances = React.useCallback(async () => {
     const instances = await orchestratorApi.getInstances();
     const clonedData: WorkflowRunDetail[] = instances.map(
       mapProcessInstanceToDetails,
     );
-
     return clonedData;
-  });
+  }, [orchestratorApi]);
+
+  const { loading, error, value } = usePolling(fetchInstances);
 
   const columns = React.useMemo(
     (): TableColumn<WorkflowRunDetail>[] => [

@@ -13,6 +13,7 @@ const usePolling = <T>(
 ) => {
   const config = useSWRConfig();
 
+  const prevFn = React.useRef(fn);
   const uniqueKey = React.useMemo<string>(() => {
     return uuid.v4();
   }, []);
@@ -38,6 +39,18 @@ const usePolling = <T>(
     },
   });
 
+  const restart = React.useCallback(
+    () => config.mutate(uniqueKey),
+    [config, uniqueKey],
+  );
+
+  React.useEffect(() => {
+    if (prevFn.current !== fn) {
+      restart();
+      prevFn.current = fn;
+    }
+  }, [fn, restart]);
+
   React.useEffect(() => {
     // clean cache after unmount, no need to store the data globally
     return () => config.cache.delete(uniqueKey);
@@ -48,7 +61,7 @@ const usePolling = <T>(
     value: data,
     error,
     loading: isLoading,
-    restart: () => config.mutate(uniqueKey),
+    restart,
   };
 };
 
