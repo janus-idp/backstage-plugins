@@ -6,7 +6,7 @@ import { makeStyles, Theme, Typography } from '@material-ui/core';
 
 import './StatusSelector.css';
 
-import { computedStatus } from '@janus-idp/shared-react';
+import { ComputedStatus } from '@janus-idp/shared-react';
 
 import { TektonResourcesContext } from '../../hooks/TektonResourcesContext';
 
@@ -19,18 +19,18 @@ const useStyles = makeStyles<Theme>(theme => ({
   },
 }));
 
-export const statusOptions = Object.keys(computedStatus)
-  .sort((a, b) => {
-    if (a === b) {
+export const statusOptions = Object.entries(ComputedStatus)
+  .sort(([keyA], [keyB]) => {
+    if (keyA === keyB) {
       return 0;
-    } else if (a < b) {
+    } else if (keyA < keyB) {
       return -1;
     }
     return 1;
   })
-  .map((status: string) => ({
-    value: computedStatus[status],
-    label: status,
+  .map(([key, value]) => ({
+    value: key,
+    label: value,
   }));
 
 export const StatusSelector = () => {
@@ -40,7 +40,7 @@ export const StatusSelector = () => {
   );
 
   const onStatusChange = (status: SelectedItems) => {
-    setSelectedStatus(status as string);
+    setSelectedStatus(status as ComputedStatus);
   };
 
   return (
@@ -52,7 +52,6 @@ export const StatusSelector = () => {
         items={statusOptions}
         selected={selectedStatus}
         margin="dense"
-        native
       />
     </div>
   );

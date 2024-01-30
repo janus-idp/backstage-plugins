@@ -16,7 +16,7 @@ import {
 } from '@material-ui/core';
 
 import {
-  computedStatus,
+  ComputedStatus,
   PipelineRunKind,
   pipelineRunStatus,
 } from '@janus-idp/shared-react';
@@ -91,36 +91,61 @@ const PipelineRunList = () => {
     watchResourcesData,
     selectedClusterErrors,
     clusters,
+    selectedCluster,
     selectedStatus,
   } = React.useContext(TektonResourcesContext);
+  const [search, setSearch] = React.useState<string>('');
   const [order, setOrder] = React.useState<Order>('desc');
   const [orderBy, setOrderBy] = React.useState<string>('status.startTime');
   const [orderById, setOrderById] = React.useState<string>('startTime'); // 2 columns have the same field
   const [page, setPage] = React.useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = React.useState<number>(5);
-  const [filteredPipelineRuns, setFilteredPipelineRuns] = React.useState<
-    PipelineRunKind[] | undefined
-  >();
 
-  const totalPlrs = watchResourcesData?.pipelineruns?.data?.map(d => ({
-    ...d,
-    id: d.metadata.uid,
-  }));
+  // Jump to first page when cluster, status and search filter changed
+  const updateStateOnFilterChanges = React.useRef(false);
+  React.useEffect(() => {
+    if (updateStateOnFilterChanges.current) {
+      setPage(0);
+    } else {
+      updateStateOnFilterChanges.current = true;
+    }
+  }, [selectedCluster, selectedStatus, search]);
 
-  const pipelineRunsData = React.useMemo(
-    () =>
-      selectedStatus === computedStatus.All
-        ? totalPlrs
-        : // eslint-disable-next-line consistent-return
-          totalPlrs?.filter(plr => {
-            if (pipelineRunStatus(plr) === selectedStatus) {
-              return plr;
-            }
-          }),
-    [selectedStatus, totalPlrs],
-  );
+  const allPipelineRuns = React.useMemo(() => {
+    const plrs =
+      watchResourcesData?.pipelineruns?.data?.map(d => ({
+        ...d,
+        id: d.metadata.uid,
+      })) ?? [];
+    return plrs as PipelineRunKind[];
+  }, [watchResourcesData]);
 
-  const pipelineRuns = filteredPipelineRuns || pipelineRunsData;
+  const filteredPipelineRuns = React.useMemo(() => {
+    let plrs = allPipelineRuns;
+
+    if (selectedStatus && selectedStatus !== ComputedStatus.All) {
+      plrs = plrs.filter(plr => pipelineRunStatus(plr) === selectedStatus);
+    }
+
+    if (search) {
+      const f = search.toUpperCase();
+      plrs = plrs.filter((plr: PipelineRunKind) => {
+        const n = plr.metadata?.name?.toUpperCase();
+        return n?.includes(f);
+      });
+    }
+
+    plrs = plrs.sort(getComparator(order, orderBy, orderById));
+
+    return plrs;
+  }, [allPipelineRuns, selectedStatus, search, order, orderBy, orderById]);
+
+  const visibleRows = React.useMemo(() => {
+    return filteredPipelineRuns.slice(
+      page * rowsPerPage,
+      page * rowsPerPage + rowsPerPage,
+    );
+  }, [filteredPipelineRuns, page, rowsPerPage]);
 
   const handleRequestSort = (
     _event: React.MouseEvent<unknown>,
@@ -147,19 +172,12 @@ const PipelineRunList = () => {
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
     page > 0
-      ? Math.max(0, (1 + page) * rowsPerPage - (pipelineRuns?.length ?? 0))
+      ? Math.max(
+          0,
+          (1 + page) * rowsPerPage - (filteredPipelineRuns.length ?? 0),
+        )
       : 0;
 
-  const visibleRows = React.useMemo(
-    () =>
-      pipelineRuns
-        ?.sort(getComparator(order, orderBy, orderById))
-        .slice(
-          page * rowsPerPage,
-          page * rowsPerPage + rowsPerPage,
-        ) as PipelineRunKind[],
-    [pipelineRuns, order, orderBy, orderById, page, rowsPerPage],
-  );
   const classes = useStyles();
 
   const allErrors: ClusterErrors = [
@@ -186,10 +204,7 @@ const PipelineRunList = () => {
             <Typography variant="h5" component="h2">
               Pipeline Runs
             </Typography>
-            <PipelineRunListSearchBar
-              pipelineRuns={pipelineRunsData}
-              onSearch={setFilteredPipelineRuns}
-            />
+            <PipelineRunListSearchBar value={search} onChange={setSearch} />
           </Toolbar>
           <Table
             aria-labelledby="Pipeline Runs"
@@ -206,11 +221,7 @@ const PipelineRunList = () => {
               <TableBody>
                 <PipelineRunTableBody rows={visibleRows} />
                 {emptyRows > 0 && (
-                  <TableRow
-                    style={{
-                      height: 33 * emptyRows,
-                    }}
-                  >
+                  <TableRow style={{ height: 55 * emptyRows }}>
                     <TableCell colSpan={PipelineRunColumnHeader.length} />
                   </TableRow>
                 )}
@@ -221,7 +232,7 @@ const PipelineRunList = () => {
                       { value: 10, label: '10 rows' },
                       { value: 25, label: '25 rows' },
                     ]}
-                    count={pipelineRuns?.length ?? 0}
+                    count={filteredPipelineRuns.length}
                     rowsPerPage={rowsPerPage}
                     page={page}
                     onPageChange={handleChangePage}

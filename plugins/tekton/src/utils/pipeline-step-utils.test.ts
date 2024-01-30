@@ -87,7 +87,7 @@ describe('createStepStatus', () => {
     expect(stepStatus).toEqual({
       duration: undefined,
       name: '',
-      status: '-',
+      status: ComputedStatus.Other,
     });
   });
 });

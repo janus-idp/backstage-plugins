@@ -52,7 +52,6 @@ export const ClusterSelector = () => {
         items={clusterOptions}
         selected={clusterSelected}
         margin="dense"
-        native
       />
     </div>
   );
