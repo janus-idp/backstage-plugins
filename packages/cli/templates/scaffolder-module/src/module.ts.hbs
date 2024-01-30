@@ -2,14 +2,16 @@ import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
-import { BackendDynamicPluginInstaller } from '@backstage/backend-plugin-manager';
 import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
+import { createAcmeExampleAction } from './actions';
 
-import { createAcmeExampleAction } from '../actions';
-
-export const dynamicPluginInstaller: BackendDynamicPluginInstaller = {
-  kind: 'new',
-  install: createBackendModule({
+/***/
+/**
+ * The {{id}} module for @backstage/plugin-scaffolder-backend.
+ *
+ * @alpha
+ */
+export const scaffolderModule{{id}}Action = createBackendModule({
     moduleId: 'scaffolder-backend-{{id}}',
     pluginId: 'scaffolder',
     register(env) {
@@ -23,5 +25,4 @@ export const dynamicPluginInstaller: BackendDynamicPluginInstaller = {
         },
       });
     },
-  }),
-};
+  })
