@@ -16,7 +16,6 @@ exports.up = async function up(knex) {
         let rbacFlag = false;
         for (const groupPolicy of listGroupPolicies) {
           const { v1 } = groupPolicy;
-          console.log(`here is v1 ${v1}`);
           if (v1 === 'role:default/rbac_admin') {
             rbacFlag = true;
             continue;
