@@ -755,8 +755,8 @@ const OPENAPI = `
         }
       },
       "WorkflowSuggestionsDTO": {
-        "type": "object",
-        "additionalProperties": {
+        "type": "array",
+        "items": {
           "$ref": "#/components/schemas/WorkflowSuggestionDTO"
         }
       },

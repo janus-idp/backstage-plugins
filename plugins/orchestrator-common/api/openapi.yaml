@@ -482,8 +482,8 @@ components:
         nextWorkflowSuggestions:
           $ref: '#/components/schemas/WorkflowSuggestionsDTO'
     WorkflowSuggestionsDTO:
-      type: object
-      additionalProperties:
+      type: array
+      items:
         $ref: '#/components/schemas/WorkflowSuggestionDTO'
     WorkflowSuggestionDTO:
       type: object

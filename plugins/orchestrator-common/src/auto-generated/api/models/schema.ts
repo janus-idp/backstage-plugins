@@ -213,9 +213,7 @@ export interface components {
       suggestion?: string;
       workflow?: string;
     };
-    WorkflowSuggestionsDTO: {
-      [key: string]: components['schemas']['WorkflowSuggestionDTO'];
-    };
+    WorkflowSuggestionsDTO: components['schemas']['WorkflowSuggestionDTO'][];
   };
   responses: never;
   parameters: never;
