@@ -137,6 +137,9 @@ export const WorkflowInstancePageContent: React.FC<{
         label: 'Assessed by',
         value: (
           <Link
+            // Remove `reloadDocument`
+            // https://issues.redhat.com/browse/FLPATH-945
+            reloadDocument
             to={workflowInstanceLink({
               instanceId: assessedInstance.assessedBy.id,
             })}
@@ -242,6 +245,7 @@ export const WorkflowInstancePageContent: React.FC<{
           <Grid item xs={12}>
             <InfoCard
               title="Variables"
+              divider={false}
               className={styles.bottomRowCard}
               cardClassName={styles.autoOverflow}
             >

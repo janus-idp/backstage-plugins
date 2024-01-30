@@ -8,8 +8,10 @@ import Router from 'express-promise-router';
 import { JSONSchema7 } from 'json-schema';
 
 import {
+  AssessedProcessInstance,
   fromWorkflowSource,
   ORCHESTRATOR_SERVICE_READY_TOPIC,
+  parseWorkflowVariables,
   ProcessInstance,
   WorkflowDataInputSchemaResponse,
   WorkflowDefinition,
@@ -288,16 +290,26 @@ function setupInternalRoutes(
 
     let assessedByInstance: ProcessInstance | undefined;
 
-    if (!!includeAssessment && instance.businessKey) {
-      assessedByInstance = await dataIndexService.fetchProcessInstance(
-        instance.businessKey,
-      );
+    // We should take the business key from `instance.businessKey`
+    // https://issues.redhat.com/browse/FLPATH-946
+    if (!!includeAssessment && instance.variables) {
+      const parseVariables = parseWorkflowVariables(instance.variables);
+      const workflowData = parseVariables?.[WORKFLOW_DATA_KEY];
+      if (workflowData) {
+        const businessKey = (workflowData as JsonObject).businessKey as string;
+        if (businessKey) {
+          assessedByInstance =
+            await dataIndexService.fetchProcessInstance(businessKey);
+        }
+      }
     }
 
-    res.status(200).json({
+    const response: AssessedProcessInstance = {
       instance,
-      assessedByInstance,
-    });
+      assessedBy: assessedByInstance,
+    };
+
+    res.status(200).json(response);
   });
 
   router.get('/instances/:instanceId/jobs', async (req, res) => {
