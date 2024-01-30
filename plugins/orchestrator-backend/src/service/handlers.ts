@@ -18,6 +18,7 @@ import {
   WorkflowOverviewDTO,
   WorkflowOverviewListResult,
   WorkflowOverviewListResultDTO,
+  WorkflowRunStatusDTO,
   WorkflowSpecFile,
   WorkflowSpecFileDTO,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
@@ -210,6 +211,18 @@ export async function getWorkflowSpecsV2(
 ): Promise<WorkflowSpecFileDTO[]> {
   const specV1 = await getWorkflowSpecsV1(workflowService);
   return specV1.map(spec => mapToWorkflowSpecFileDTO(spec));
+}
+
+export async function getWorkflowStatuses(): Promise<WorkflowRunStatusDTO[]> {
+  const enumKeys = Object.keys(ProcessInstanceState) as Array<
+    keyof typeof ProcessInstanceState
+  >;
+  const res: WorkflowRunStatusDTO[] = [];
+  for (const key of enumKeys) {
+    const value = ProcessInstanceState[key];
+    res.push({ key: key, value: value });
+  }
+  return res;
 }
 
 function mapToProcessInstanceDTO(
