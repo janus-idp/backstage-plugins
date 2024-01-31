@@ -354,7 +354,7 @@ spec: …
           image: 'quay.io/lrangine/crda-maven:11.0'
           script: |
               #!/bin/sh
-              cat $(workspaces.reports.path)/image-check
+              cat $(workspaces.reports.path)/deployment-check
 
 ```
 
