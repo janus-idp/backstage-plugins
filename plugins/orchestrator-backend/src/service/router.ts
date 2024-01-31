@@ -5,7 +5,6 @@ import { JsonObject, JsonValue } from '@backstage/types';
 
 import express from 'express';
 import Router from 'express-promise-router';
-import { JSONSchema7 } from 'json-schema';
 
 import {
   AssessedProcessInstance,
@@ -357,79 +356,87 @@ function setupInternalRoutes(
 
     const workflowItem: WorkflowItem = { uri, definition };
 
-    let schemas: JSONSchema7[] = [];
+    const response: WorkflowDataInputSchemaResponse = {
+      workflowItem,
+      schemas: [],
+      initialState: {
+        values: [],
+        readonlyKeys: [],
+      },
+    };
+
+    if (!definition.dataInputSchema) {
+      res.status(200).json(response);
+      return;
+    }
+
+    const workflowInfo = await sonataFlowService.fetchWorkflowInfo(
+      workflowId,
+      serviceUrl,
+    );
+
+    if (!workflowInfo) {
+      res.status(500).send(`Couldn't fetch workflow info ${workflowId}`);
+      return;
+    }
+
+    if (!workflowInfo.inputSchema) {
+      res
+        .status(500)
+        .send(`Couldn't fetch workflow input schema ${workflowId}`);
+      return;
+    }
+
+    const schemas = dataInputSchemaService.parseComposition(
+      workflowInfo.inputSchema,
+    );
+
+    const instanceVariables = instanceId
+      ? await dataIndexService.fetchProcessInstanceVariables(instanceId)
+      : undefined;
+
+    const instanceWorkflowData = instanceVariables?.[WORKFLOW_DATA_KEY];
     let initialState: JsonObject[] = [];
     let readonlyKeys: string[] = [];
 
-    if (definition.dataInputSchema) {
-      const workflowInfo = await sonataFlowService.fetchWorkflowInfo(
-        workflowId,
-        serviceUrl,
+    if (instanceWorkflowData) {
+      initialState = dataInputSchemaService.extractInitialStateFromWorkflowData(
+        {
+          workflowData: instanceWorkflowData as JsonObject,
+          schemas,
+        },
       );
-
-      if (!workflowInfo) {
-        res.status(500).send(`Couldn't fetch workflow info ${workflowId}`);
-        return;
-      }
-
-      if (!workflowInfo.inputSchema) {
-        res
-          .status(500)
-          .send(`Couldn't fetch workflow input schema ${workflowId}`);
-        return;
-      }
-
-      schemas = dataInputSchemaService.parseComposition(
-        workflowInfo.inputSchema,
-      );
-
-      const instanceVariables = instanceId
-        ? await dataIndexService.fetchProcessInstanceVariables(instanceId)
-        : undefined;
-
-      const instanceWorkflowData = instanceVariables?.[WORKFLOW_DATA_KEY];
-
-      if (instanceWorkflowData) {
-        initialState =
-          dataInputSchemaService.extractInitialStateFromWorkflowData({
-            workflowData: instanceWorkflowData as JsonObject,
-            schemas,
-          });
-      }
-
-      const assessmentInstanceVariables = assessmentInstanceId
-        ? await dataIndexService.fetchProcessInstanceVariables(
-            assessmentInstanceId,
-          )
-        : undefined;
-
-      const assessmentInstanceWorkflowData =
-        assessmentInstanceVariables?.[WORKFLOW_DATA_KEY];
-
-      if (assessmentInstanceWorkflowData) {
-        const assessmentInstanceInitialState =
-          dataInputSchemaService.extractInitialStateFromWorkflowData({
-            workflowData: assessmentInstanceWorkflowData as JsonObject,
-            schemas,
-          });
-
-        if (initialState.length === 0) {
-          initialState = assessmentInstanceInitialState;
-        }
-
-        readonlyKeys = assessmentInstanceInitialState
-          .map(item => Object.keys(item).filter(key => item[key] !== undefined))
-          .flat();
-      }
     }
 
-    const response: WorkflowDataInputSchemaResponse = {
-      workflowItem,
-      schemas,
-      initialState: {
-        values: initialState,
-        readonlyKeys,
-      },
+    const assessmentInstanceVariables = assessmentInstanceId
+      ? await dataIndexService.fetchProcessInstanceVariables(
+          assessmentInstanceId,
+        )
+      : undefined;
+
+    const assessmentInstanceWorkflowData =
+      assessmentInstanceVariables?.[WORKFLOW_DATA_KEY];
+
+    if (assessmentInstanceWorkflowData) {
+      const assessmentInstanceInitialState =
+        dataInputSchemaService.extractInitialStateFromWorkflowData({
+          workflowData: assessmentInstanceWorkflowData as JsonObject,
+          schemas,
+        });
+
+      if (initialState.length === 0) {
+        initialState = assessmentInstanceInitialState;
+      }
+
+      readonlyKeys = assessmentInstanceInitialState
+        .map(item => Object.keys(item).filter(key => item[key] !== undefined))
+        .flat();
+    }
+
+    response.schemas = schemas;
+    response.initialState = {
+      values: initialState,
+      readonlyKeys,
     };
 
     res.status(200).json(response);
