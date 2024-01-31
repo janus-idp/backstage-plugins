@@ -12,7 +12,7 @@ type Props = {
 
 export const DefaultSecondaryMasthead: React.FC<Props> = (props: Props) => {
   const refresh = (
-    <Tooltip title="Refresh" style={{ marginTop: '20px' }}>
+    <Tooltip title="Refresh" style={{ marginTop: '35px', float: 'right' }}>
       <IconButton
         color="primary"
         aria-label="upload picture"
@@ -25,7 +25,7 @@ export const DefaultSecondaryMasthead: React.FC<Props> = (props: Props) => {
   );
 
   return (
-    <Grid container spacing={3} direction="row">
+    <Grid container spacing={1} direction="row">
       {props.elements?.map(element => {
         return element;
       })}

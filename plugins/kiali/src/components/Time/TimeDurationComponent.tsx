@@ -2,8 +2,6 @@ import * as React from 'react';
 
 import { Select } from '@backstage/core-components';
 
-import { Grid } from '@material-ui/core';
-
 import { HistoryManager, URLParam } from '../../app/History';
 import { getDurationType } from '../../pages/Overview/OverviewToolbar';
 
@@ -25,13 +23,11 @@ export const TimeDurationComponent: React.FC<TimeControlsProps> = (
   };
 
   return (
-    <Grid item xs={3}>
-      <Select
-        onChange={e => updateDurationType(e as number)}
-        label={props.label}
-        items={getDurationType()}
-        selected={props.duration.toString()}
-      />
-    </Grid>
+    <Select
+      onChange={e => updateDurationType(e as number)}
+      label={props.label}
+      items={getDurationType()}
+      selected={props.duration.toString()}
+    />
   );
 };

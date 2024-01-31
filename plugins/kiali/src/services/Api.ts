@@ -32,10 +32,7 @@ import { ServerConfig } from '../types/ServerConfig';
 import { StatusState } from '../types/StatusState';
 import { TLSStatus } from '../types/TLSStatus';
 import { WorkloadListItem, WorkloadNamespaceResponse } from '../types/Workload';
-import {
-  filterNsByAnnotation,
-  filterWkByAnnotation,
-} from '../utils/entityFilter';
+import { filterNsByAnnotation } from '../utils/entityFilter';
 
 export const ANONYMOUS_USER = 'anonymous';
 
@@ -497,8 +494,34 @@ export class KialiApiClient implements KialiApi {
       urls.workloads(namespace),
       { health: true, istioResources: true, rateInterval: `${duration}s` },
       {},
-      // eslint-disable-next-line no-console
-    ).then(resp => filterWkByAnnotation(resp, this.entity));
+    ).then(resp => {
+      return resp.workloads.map(w => {
+        return {
+          name: w.name,
+          namespace: resp.namespace.name,
+          cluster: w.cluster,
+          type: w.type,
+          istioSidecar: w.istioSidecar,
+          istioAmbient: w.istioAmbient,
+          additionalDetailSample: undefined,
+          appLabel: w.appLabel,
+          versionLabel: w.versionLabel,
+          labels: w.labels,
+          istioReferences: w.istioReferences,
+          notCoveredAuthPolicy: w.notCoveredAuthPolicy,
+          health: WorkloadHealth.fromJson(
+            resp.namespace.name,
+            w.name,
+            w.health,
+            {
+              rateInterval: duration,
+              hasSidecar: w.istioSidecar,
+              hasAmbient: w.istioAmbient,
+            },
+          ),
+        };
+      });
+    });
   };
 }
 

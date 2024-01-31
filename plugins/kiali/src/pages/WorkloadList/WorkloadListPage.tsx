@@ -16,19 +16,19 @@ import { getErrorString, kialiApiRef } from '../../services/Api';
 import { KialiAppState, KialiContext } from '../../store';
 import { WorkloadListItem } from '../../types/Workload';
 import { NamespaceInfo } from '../Overview/NamespaceInfo';
+import { getNamespaces } from '../Overview/OverviewPage';
 
 export const WorkloadListPage = () => {
   const kialiClient = useApi(kialiApiRef);
   kialiClient.setEntity(useEntity().entity);
-
   const [namespaces, setNamespaces] = React.useState<NamespaceInfo[]>([]);
   const [allWorkloads, setWorkloads] = React.useState<WorkloadListItem[]>([]);
-  const kialiState = React.useContext(KialiContext) as KialiAppState;
-  const activeNs = kialiState.namespaces.activeNamespaces.map(ns => ns.name);
-  const prevActiveNs = useRef(activeNs);
   const [duration, setDuration] = React.useState<number>(
     FilterHelper.currentDuration(),
   );
+  const kialiState = React.useContext(KialiContext) as KialiAppState;
+  const activeNs = kialiState.namespaces.activeNamespaces.map(ns => ns.name);
+  const prevActiveNs = useRef(activeNs);
   const prevDuration = useRef(duration);
 
   const fetchWorkloads = (
@@ -58,29 +58,22 @@ export const WorkloadListPage = () => {
       );
   };
 
+  const nsEqual = (ns: string[], ns2: string[]): boolean => {
+    return (
+      ns.length === ns2.length &&
+      ns.every((value: any, index: number) => value === ns2[index])
+    );
+  };
+
   const load = async () => {
     kialiClient.getNamespaces().then(namespacesResponse => {
-      const allNamespaces: NamespaceInfo[] = namespacesResponse.map(ns => {
-        const previous = namespaces.find(prev => prev.name === ns.name);
-        return {
-          name: ns.name,
-          cluster: ns.cluster,
-          isAmbient: ns.isAmbient,
-          status: previous ? previous.status : undefined,
-          tlsStatus: previous ? previous.tlsStatus : undefined,
-          metrics: previous ? previous.metrics : undefined,
-          errorMetrics: previous ? previous.errorMetrics : undefined,
-          validations: previous ? previous.validations : undefined,
-          labels: ns.labels,
-          annotations: ns.annotations,
-          controlPlaneMetrics: previous
-            ? previous.controlPlaneMetrics
-            : undefined,
-        };
-      });
-
-      setNamespaces(allNamespaces);
-      fetchWorkloads(allNamespaces, duration);
+      const allNamespaces: NamespaceInfo[] = getNamespaces(
+        namespacesResponse,
+        namespaces,
+      );
+      const nsl = allNamespaces.filter(ns => activeNs.includes(ns.name));
+      setNamespaces(nsl);
+      fetchWorkloads(nsl, duration);
     });
   };
 
@@ -95,34 +88,16 @@ export const WorkloadListPage = () => {
   useDebounce(refresh, 10);
 
   React.useEffect(() => {
-    load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const nsEqual = (ns: string[], ns2: string[]): boolean => {
-    return (
-      ns.length === ns2.length &&
-      ns.every((value: any, index: number) => value === ns2[index])
-    );
-  };
-
-  React.useEffect(() => {
-    if (duration !== prevDuration.current) {
-      const nsl = namespaces.filter(ns => activeNs.includes(ns.name));
-      fetchWorkloads(nsl, duration);
+    if (
+      duration !== prevDuration.current ||
+      !nsEqual(activeNs, prevActiveNs.current)
+    ) {
+      load();
       prevDuration.current = duration;
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [duration]);
-
-  React.useEffect(() => {
-    if (!nsEqual(activeNs, prevActiveNs.current)) {
-      const nsl = namespaces.filter(ns => activeNs.includes(ns.name));
-      fetchWorkloads(nsl, duration);
       prevActiveNs.current = activeNs;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeNs]);
+  }, [duration, activeNs]);
 
   if (loading) {
     return <CircularProgress />;
