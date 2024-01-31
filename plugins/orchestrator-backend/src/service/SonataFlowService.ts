@@ -250,14 +250,9 @@ export class SonataFlowService {
         ? `${args.endpoint}/${args.workflowId}?businessKey=${args.businessKey}`
         : `${args.endpoint}/${args.workflowId}`;
 
-      // No need to pass the business key as input value
-      // https://issues.redhat.com/browse/FLPATH-946
       const response = await fetch(workflowEndpoint, {
         method: 'POST',
-        body: JSON.stringify({
-          ...args.inputData,
-          ...(args.businessKey ? { businessKey: args.businessKey } : {}),
-        }),
+        body: JSON.stringify(args.inputData),
         headers: { 'content-type': 'application/json' },
       });
       return response.json();

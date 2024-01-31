@@ -11,7 +11,6 @@ import {
   AssessedProcessInstance,
   fromWorkflowSource,
   ORCHESTRATOR_SERVICE_READY_TOPIC,
-  parseWorkflowVariables,
   ProcessInstance,
   QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
   QUERY_PARAM_BUSINESS_KEY,
@@ -294,18 +293,10 @@ function setupInternalRoutes(
 
     let assessedByInstance: ProcessInstance | undefined;
 
-    // We should take the business key from `instance.businessKey`
-    // https://issues.redhat.com/browse/FLPATH-946
-    if (!!includeAssessment && instance.variables) {
-      const parseVariables = parseWorkflowVariables(instance.variables);
-      const workflowData = parseVariables?.[WORKFLOW_DATA_KEY];
-      if (workflowData) {
-        const businessKey = (workflowData as JsonObject).businessKey as string;
-        if (businessKey) {
-          assessedByInstance =
-            await dataIndexService.fetchProcessInstance(businessKey);
-        }
-      }
+    if (!!includeAssessment && instance.businessKey) {
+      assessedByInstance = await dataIndexService.fetchProcessInstance(
+        instance.businessKey,
+      );
     }
 
     const response: AssessedProcessInstance = {
