@@ -398,7 +398,7 @@ function mapToExecuteWorkflowResponseDTO(
   workflowId: string,
   workflowExecutionResponse: WorkflowExecutionResponse,
 ): ExecuteWorkflowResponseDTO {
-  if (!workflowExecutionResponse || !workflowExecutionResponse?.id) {
+  if (!workflowExecutionResponse?.id) {
     throw new Error(
       `Error while mapping ExecuteWorkflowResponse to ExecuteWorkflowResponseDTO for workflow with id ${workflowId}`,
     );
