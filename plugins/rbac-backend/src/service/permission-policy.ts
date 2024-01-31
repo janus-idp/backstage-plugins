@@ -12,34 +12,97 @@ import {
 } from '@backstage/plugin-permission-node';
 
 import { Enforcer, FileAdapter, newEnforcer, newModelFromString } from 'casbin';
+import { Knex } from 'knex';
 import { Logger } from 'winston';
 
 import { ConditionalStorage } from '../database/conditional-storage';
+import { RoleMetadataStorage } from '../database/role-metadata';
+import { metadataStringToPolicy, removeTheDifference } from '../helper';
+import { EnforcerDelegate } from './enforcer-delegate';
 import { MODEL } from './permission-model';
-import { validateEntityReference } from './policies-validation';
+import {
+  validateAllPredefinedPolicies,
+  validateEntityReference,
+} from './policies-validation';
 
-const useAdmins = async (admins: Config[], enf: Enforcer) => {
-  const adminRoleName = 'role:default/rbac_admin';
-  admins.flatMap(async localConfig => {
-    const name = localConfig.getString('name');
-    const adminRole = [name, adminRoleName];
-    if (!(await enf.hasGroupingPolicy(...adminRole))) {
-      await enf.addGroupingPolicy(...adminRole);
-    }
-  });
-  const adminReadPermission = [adminRoleName, 'policy-entity', 'read', 'allow'];
-  if (!(await enf.hasPolicy(...adminReadPermission))) {
-    await enf.addPolicy(...adminReadPermission);
+const adminRoleName = 'role:default/rbac_admin';
+
+const useAdmins = async (
+  admins: Config[],
+  enf: EnforcerDelegate,
+  roleMetadataStorage: RoleMetadataStorage,
+  knex: Knex,
+) => {
+  const groupPoliciesToCompare: string[] = [];
+  const addedGroupPolicies = new Map<string, string>();
+
+  for (const admin of admins) {
+    const entityRef = admin.getString('name');
+    validateEntityReference(entityRef);
+
+    addedGroupPolicies.set(entityRef, adminRoleName);
   }
+
+  const adminRoleMeta =
+    await roleMetadataStorage.findRoleMetadata(adminRoleName);
+
+  const trx = await knex.transaction();
+  try {
+    if (!adminRoleMeta) {
+      await roleMetadataStorage.createRoleMetadata(
+        { source: 'configuration' },
+        adminRoleName,
+        trx,
+      );
+    } else if (adminRoleMeta.source === 'legacy') {
+      await roleMetadataStorage.removeRoleMetadata(adminRoleName, trx);
+      await roleMetadataStorage.createRoleMetadata(
+        { source: 'configuration' },
+        adminRoleName,
+        trx,
+      );
+    }
+
+    await trx.commit();
+  } catch (error) {
+    await trx.rollback(error);
+    throw error;
+  }
+
+  await enf.addOrUpdateGroupingPolicies(
+    Array.from<string[]>(addedGroupPolicies.entries()),
+    'configuration',
+    false,
+  );
+
+  const configPoliciesMetadata =
+    await enf.getFilteredPolicyMetadata('configuration');
+
+  for (const policyMetadata of configPoliciesMetadata) {
+    if (metadataStringToPolicy(policyMetadata.policy).length === 2) {
+      const stringPolicy = metadataStringToPolicy(policyMetadata.policy);
+      groupPoliciesToCompare.push(stringPolicy.at(0)!);
+    }
+  }
+
+  await removeTheDifference(
+    groupPoliciesToCompare,
+    Array.from<string>(addedGroupPolicies.keys()),
+    'configuration',
+    adminRoleName,
+    enf,
+  );
+
+  const adminReadPermission = [adminRoleName, 'policy-entity', 'read', 'allow'];
+  await enf.addOrUpdatePolicy(adminReadPermission, 'configuration', false);
+
   const adminCreatePermission = [
     adminRoleName,
     'policy-entity',
     'create',
     'allow',
   ];
-  if (!(await enf.hasPolicy(...adminCreatePermission))) {
-    await enf.addPolicy(...adminCreatePermission);
-  }
+  await enf.addOrUpdatePolicy(adminCreatePermission, 'configuration', false);
 
   const adminDeletePermission = [
     adminRoleName,
@@ -47,9 +110,7 @@ const useAdmins = async (admins: Config[], enf: Enforcer) => {
     'delete',
     'allow',
   ];
-  if (!(await enf.hasPolicy(...adminDeletePermission))) {
-    await enf.addPolicy(...adminDeletePermission);
-  }
+  await enf.addOrUpdatePolicy(adminDeletePermission, 'configuration', false);
 
   const adminUpdatePermission = [
     adminRoleName,
@@ -57,9 +118,7 @@ const useAdmins = async (admins: Config[], enf: Enforcer) => {
     'update',
     'allow',
   ];
-  if (!(await enf.hasPolicy(...adminUpdatePermission))) {
-    await enf.addPolicy(...adminUpdatePermission);
-  }
+  await enf.addOrUpdatePolicy(adminUpdatePermission, 'configuration', false);
 
   // needed for rbac frontend.
   const adminCatalogReadPermission = [
@@ -68,54 +127,81 @@ const useAdmins = async (admins: Config[], enf: Enforcer) => {
     'read',
     'allow',
   ];
-  if (!(await enf.hasPolicy(...adminCatalogReadPermission))) {
-    await enf.addPolicy(...adminCatalogReadPermission);
+  await enf.addOrUpdatePolicy(
+    adminCatalogReadPermission,
+    'configuration',
+    false,
+  );
+};
+
+const removedOldPermissionPoliciesFileData = async (
+  enf: EnforcerDelegate,
+  fileEnf?: Enforcer,
+) => {
+  const tempEnforcer =
+    fileEnf ?? (await newEnforcer(newModelFromString(MODEL)));
+  const oldFilePolicies = new Set<string[]>();
+  const policiesMetadata = await enf.getFilteredPolicyMetadata('csv-file');
+  for (const policyMetadata of policiesMetadata) {
+    oldFilePolicies.add(metadataStringToPolicy(policyMetadata.policy));
+  }
+
+  const policiesToDelete: string[][] = [];
+  const groupPoliciesToDelete: string[][] = [];
+  for (const oldFilePolicy of oldFilePolicies) {
+    if (
+      oldFilePolicy.length === 2 &&
+      !(await tempEnforcer.hasGroupingPolicy(...oldFilePolicy))
+    ) {
+      groupPoliciesToDelete.push(oldFilePolicy);
+    } else if (
+      oldFilePolicy.length > 2 &&
+      !(await tempEnforcer.hasPolicy(...oldFilePolicy))
+    ) {
+      policiesToDelete.push(oldFilePolicy);
+    }
+  }
+
+  if (groupPoliciesToDelete.length > 0) {
+    await enf.removeGroupingPolicies(groupPoliciesToDelete, 'csv-file', true);
+  }
+  if (policiesToDelete.length > 0) {
+    await enf.removePolicies(policiesToDelete, 'csv-file', true);
   }
 };
 
-const addPredefinedPoliciesAndGroupPolicies = async (
+const addPermissionPoliciesFileData = async (
   preDefinedPoliciesFile: string,
-  enf: Enforcer,
+  enf: EnforcerDelegate,
+  roleMetadataStorage: RoleMetadataStorage,
 ) => {
   const fileEnf = await newEnforcer(
     newModelFromString(MODEL),
     new FileAdapter(preDefinedPoliciesFile),
   );
   const policies = await fileEnf.getPolicy();
-  for (const policy of policies) {
-    const err = validateEntityReference(policy[0]);
-    if (err) {
-      throw new Error(
-        `Failed to validate policy from file ${preDefinedPoliciesFile}. Cause: ${err.message}`,
-      );
-    }
-
-    if (!(await enf.hasPolicy(...policy))) {
-      await enf.addPolicy(...policy);
-    }
-  }
   const groupPolicies = await fileEnf.getGroupingPolicy();
+
+  await validateAllPredefinedPolicies(
+    Array.from(policies),
+    Array.from(groupPolicies),
+    preDefinedPoliciesFile,
+    roleMetadataStorage,
+  );
+
+  await removedOldPermissionPoliciesFileData(enf, fileEnf);
+
+  for (const policy of policies) {
+    await enf.addOrUpdatePolicy(policy, 'csv-file', true);
+  }
+
   for (const groupPolicy of groupPolicies) {
-    let err = validateEntityReference(groupPolicy[0]);
-    if (err) {
-      throw new Error(
-        `Failed to validate group policy from file ${preDefinedPoliciesFile}. Cause: ${err.message}`,
-      );
-    }
-    err = validateEntityReference(groupPolicy[1], true);
-    if (err) {
-      throw new Error(
-        `Failed to validate group policy from file ${preDefinedPoliciesFile}. Cause: ${err.message}`,
-      );
-    }
-    if (!(await enf.hasGroupingPolicy(...groupPolicy))) {
-      await enf.addGroupingPolicy(...groupPolicy);
-    }
+    await enf.addOrUpdateGroupingPolicy(groupPolicy, 'csv-file', false);
   }
 };
 
 export class RBACPermissionPolicy implements PermissionPolicy {
-  private readonly enforcer: Enforcer;
+  private readonly enforcer: EnforcerDelegate;
   private readonly logger: Logger;
   private readonly conditionStorage: ConditionalStorage;
 
@@ -123,7 +209,9 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     logger: Logger,
     configApi: ConfigApi,
     conditionalStorage: ConditionalStorage,
-    enf: Enforcer,
+    enforcerDelegate: EnforcerDelegate,
+    roleMetadataStorage: RoleMetadataStorage,
+    knex: Knex,
   ): Promise<RBACPermissionPolicy> {
     const adminUsers = configApi.getOptionalConfigArray(
       'permission.rbac.admin.users',
@@ -133,19 +221,33 @@ export class RBACPermissionPolicy implements PermissionPolicy {
       'permission.rbac.policies-csv-file',
     );
 
+    if (adminUsers && adminUsers.length > 0) {
+      await useAdmins(adminUsers, enforcerDelegate, roleMetadataStorage, knex);
+    } else {
+      logger.warn(
+        'There are no admins configured for the RBAC-backend plugin. The plugin may not work properly.',
+      );
+    }
+
     if (policiesFile) {
-      await addPredefinedPoliciesAndGroupPolicies(policiesFile, enf);
+      await addPermissionPoliciesFileData(
+        policiesFile,
+        enforcerDelegate,
+        roleMetadataStorage,
+      );
+    } else {
+      await removedOldPermissionPoliciesFileData(enforcerDelegate);
     }
 
-    if (adminUsers) {
-      useAdmins(adminUsers, enf);
-    }
-
-    return new RBACPermissionPolicy(enf, logger, conditionalStorage);
+    return new RBACPermissionPolicy(
+      enforcerDelegate,
+      logger,
+      conditionalStorage,
+    );
   }
 
   private constructor(
-    enforcer: Enforcer,
+    enforcer: EnforcerDelegate,
     logger: Logger,
     conditionStorage: ConditionalStorage,
   ) {

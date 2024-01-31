@@ -1,7 +1,13 @@
 import { CompoundEntityRef, parseEntityRef } from '@backstage/catalog-model';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
-import { Role, RoleBasedPolicy } from '@janus-idp/backstage-plugin-rbac-common';
+import {
+  Role,
+  RoleBasedPolicy,
+  Source,
+} from '@janus-idp/backstage-plugin-rbac-common';
+
+import { RoleMetadataStorage } from '../database/role-metadata';
 
 export function validatePolicy(policy: RoleBasedPolicy): Error | undefined {
   const err = validateEntityReference(policy.entityReference);
@@ -100,4 +106,77 @@ export function validateEntityReference(
   }
 
   return undefined;
+}
+
+async function validateGroupingPolicy(
+  groupPolicy: string[],
+  preDefinedPoliciesFile: string,
+  roleMetadataStorage: RoleMetadataStorage,
+  source: Source,
+) {
+  if (groupPolicy.length !== 2) {
+    throw new Error(`Group policy should has length 2`);
+  }
+
+  const member = groupPolicy[0];
+  let err = validateEntityReference(member);
+  if (err) {
+    throw new Error(
+      `Failed to validate group policy ${groupPolicy} from file ${preDefinedPoliciesFile}. Cause: ${err.message}`,
+    );
+  }
+  const parent = groupPolicy[1];
+  err = validateEntityReference(parent);
+  if (err) {
+    throw new Error(
+      `Failed to validate group policy ${groupPolicy} from file ${preDefinedPoliciesFile}. Cause: ${err.message}`,
+    );
+  }
+  if (member.startsWith(`role:`)) {
+    throw new Error(
+      `Group policy is invalid: ${groupPolicy}. rbac-backend plugin doesn't support role inheritance.`,
+    );
+  }
+  if (member.startsWith(`group:`) && parent.startsWith(`group:`)) {
+    throw new Error(
+      `Group policy is invalid: ${groupPolicy}. Group inheritance information could be provided only with help of Catalog API.`,
+    );
+  }
+  if (member.startsWith(`user:`) && parent.startsWith(`group:`)) {
+    throw new Error(
+      `Group policy is invalid: ${groupPolicy}. User membership information could be provided only with help of Catalog API.`,
+    );
+  }
+
+  const metadata = await roleMetadataStorage.findRoleMetadata(parent);
+  if (metadata && metadata.source !== source && metadata.source !== 'legacy') {
+    throw new Error(
+      `You could not add user or group to the role created with source ${metadata.source}`,
+    );
+  }
+}
+
+export async function validateAllPredefinedPolicies(
+  policies: string[][],
+  groupPolicies: string[][],
+  preDefinedPoliciesFile: string,
+  roleMetadataStorage: RoleMetadataStorage,
+): Promise<void> {
+  for (const policy of policies) {
+    const err = validateEntityReference(policy[0]);
+    if (err) {
+      throw new Error(
+        `Failed to validate policy from file ${preDefinedPoliciesFile}. Cause: ${err.message}`,
+      );
+    }
+  }
+
+  for (const groupPolicy of groupPolicies) {
+    await validateGroupingPolicy(
+      groupPolicy,
+      preDefinedPoliciesFile,
+      roleMetadataStorage,
+      `csv-file`,
+    );
+  }
 }

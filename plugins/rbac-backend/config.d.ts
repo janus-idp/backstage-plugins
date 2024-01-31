@@ -1,6 +1,7 @@
 export interface Config {
   permission: {
     rbac: {
+      'policies-csv-file'?: string;
       /**
        * Optional configuration for admins, can declare individual users and / or groups
        * @visibility frontend
