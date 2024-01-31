@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac [1.13.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.12.3...@janus-idp/backstage-plugin-rbac@1.13.0) (2024-01-31)
+
+
+### Features
+
+* **rbac:** turn rbac plugin into a dynamic plugin ([#1133](https://github.com/janus-idp/backstage-plugins/issues/1133)) ([b9b36d5](https://github.com/janus-idp/backstage-plugins/commit/b9b36d5b58b86eed457ffb347af785b3181a9de7))
+
 ## @janus-idp/backstage-plugin-rbac [1.12.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.12.2...@janus-idp/backstage-plugin-rbac@1.12.3) (2024-01-30)
 
 
