@@ -1,4 +1,8 @@
-import { createRouteRef, createSubRouteRef } from '@backstage/core-plugin-api';
+import {
+  createRouteRef,
+  createSubRouteRef,
+  SubRouteRef,
+} from '@backstage/core-plugin-api';
 
 export const rootRouteRef = createRouteRef({
   id: 'kiali',
@@ -7,5 +11,11 @@ export const rootRouteRef = createRouteRef({
 export const overviewRouteRef = createSubRouteRef({
   id: 'kiali-overview',
   path: '/overview',
+  parent: rootRouteRef,
+});
+
+export const workloadsRouteRef: SubRouteRef<undefined> = createSubRouteRef({
+  id: 'kiali-overview',
+  path: '/workloads',
   parent: rootRouteRef,
 });

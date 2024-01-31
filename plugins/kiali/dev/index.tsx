@@ -1,4 +1,5 @@
 import React from 'react';
+import { BrowserRouter } from 'react-router-dom';
 
 import { Entity } from '@backstage/catalog-model';
 import { Content, Page } from '@backstage/core-components';
@@ -10,6 +11,7 @@ import { KialiHeader } from '../src/pages/Kiali/Header/KialiHeader';
 import { KialiHeaderEntity } from '../src/pages/Kiali/Header/KialiHeaderEntity';
 import { KialiEntity } from '../src/pages/Kiali/KialiEntity';
 import { OverviewPage } from '../src/pages/Overview/OverviewPage';
+import { KialiPage } from '../src/pages/Kiali/KialiPage';
 import { kialiPlugin } from '../src/plugin';
 import { KialiApi, kialiApiRef } from '../src/services/Api';
 import { KialiProvider } from '../src/store/KialiProvider';
@@ -40,7 +42,11 @@ import { Namespace } from '../src/types/Namespace';
 import { ServerConfig } from '../src/types/ServerConfig';
 import { StatusState } from '../src/types/StatusState';
 import { TLSStatus } from '../src/types/TLSStatus';
-import { WorkloadListItem } from '../src/types/Workload';
+import {
+  WorkloadListItem,
+  WorkloadNamespaceResponse,
+  WorkloadOverview,
+} from '../src/types/Workload';
 import { filterNsByAnnotation } from '../src/utils/entityFilter';
 import { kialiData } from './__fixtures__';
 import { mockEntity } from './mockEntity';
@@ -71,6 +77,37 @@ class MockKialiClient implements KialiApi {
     return filterNsByAnnotation(
       kialiData.namespaces as Namespace[],
       this.entity,
+    );
+  }
+
+  async getWorkloads(
+    namespace: string,
+    duration: number,
+  ): Promise<WorkloadListItem[]> {
+    const nsl = kialiData.workloads as WorkloadNamespaceResponse[];
+    // @ts-ignore
+    return nsl[namespace].workloads.map(
+      (w: WorkloadOverview): WorkloadListItem => {
+        return {
+          name: w.name,
+          namespace: namespace,
+          cluster: w.cluster,
+          type: w.type,
+          istioSidecar: w.istioSidecar,
+          istioAmbient: w.istioAmbient,
+          additionalDetailSample: undefined,
+          appLabel: w.appLabel,
+          versionLabel: w.versionLabel,
+          labels: w.labels,
+          istioReferences: w.istioReferences,
+          notCoveredAuthPolicy: w.notCoveredAuthPolicy,
+          health: WorkloadHealth.fromJson(namespace, w.name, w.health, {
+            rateInterval: duration,
+            hasSidecar: w.istioSidecar,
+            hasAmbient: w.istioAmbient,
+          }),
+        };
+      },
     );
   }
 
@@ -242,10 +279,6 @@ class MockKialiClient implements KialiApi {
   isDevEnv(): boolean {
     return true;
   }
-
-  getWorkloads(namespace: string): Promise<WorkloadListItem[]> {
-    return kialiData.namespacesData[namespace].getWorkloads();
-  }
 }
 
 interface Props {
@@ -282,7 +315,10 @@ createDevApp()
   .addPage({
     element: (
       <MockProvider>
-        <OverviewPage />
+        <BrowserRouter>
+          <KialiPage />
+          <OverviewPage />
+        </BrowserRouter>
       </MockProvider>
     ),
     title: 'Kiali Overview',
