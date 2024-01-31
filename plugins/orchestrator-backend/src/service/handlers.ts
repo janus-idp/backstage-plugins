@@ -2,6 +2,8 @@ import moment from 'moment';
 
 import {
   ASSESSMENT_WORKFLOW_TYPE,
+  ExecuteWorkflowRequestDTO,
+  ExecuteWorkflowResponseDTO,
   ProcessInstance,
   ProcessInstanceDTO,
   ProcessInstancesDTO,
@@ -11,6 +13,7 @@ import {
   WorkflowCategoryDTO,
   WorkflowDefinition,
   WorkflowDTO,
+  WorkflowExecutionResponse,
   WorkflowInfo,
   WorkflowItem,
   WorkflowListResult,
@@ -57,6 +60,66 @@ export async function getWorkflowOverviewV2(
     },
   };
   return result;
+}
+export async function executeWorkflowByIdV1(
+  dataIndexService: DataIndexService,
+  sonataFlowService: SonataFlowService,
+  reqBody: Record<string, any>,
+  workflowId: string,
+): Promise<WorkflowExecutionResponse> {
+  const definition = await dataIndexService.getWorkflowDefinition(workflowId);
+  const serviceUrl = definition.serviceUrl;
+  if (!serviceUrl) {
+    throw new Error(`ServiceURL is not defined for workflow ${workflowId}`);
+  }
+  const executionResponse = await sonataFlowService.executeWorkflow({
+    workflowId,
+    inputData: reqBody.inputData,
+    endpoint: serviceUrl,
+  });
+
+  if (!executionResponse) {
+    throw new Error(`Couldn't execute workflow ${workflowId}`);
+  }
+  return executionResponse;
+}
+
+export async function executeWorkflowByIdV2(
+  dataIndexService: DataIndexService,
+  sonataFlowService: SonataFlowService,
+  executeWorkflowRequestDTO: ExecuteWorkflowRequestDTO,
+  workflowId: string,
+): Promise<ExecuteWorkflowResponseDTO> {
+  if (!dataIndexService) {
+    throw new Error(
+      `No data index service provided for executing workflow with id ${workflowId}`,
+    );
+  }
+
+  if (!sonataFlowService) {
+    throw new Error(
+      `No sonata flow service provided for executing workflow with id ${workflowId}`,
+    );
+  }
+
+  if (Object.keys(executeWorkflowRequestDTO?.inputData).length === 0) {
+    throw new Error(
+      `ExecuteWorkflowRequestDTO.inputData is required for executing workflow with id ${workflowId}`,
+    );
+  }
+
+  const executeWorkflowResponse = await executeWorkflowByIdV1(
+    dataIndexService,
+    sonataFlowService,
+    executeWorkflowRequestDTO,
+    workflowId,
+  );
+
+  if (!executeWorkflowResponse) {
+    throw new Error('Error executing workflow with id ${workflowId}');
+  }
+
+  return mapToExecuteWorkflowResponseDTO(workflowId, executeWorkflowResponse);
 }
 
 export async function getWorkflowOverviewById(
@@ -329,4 +392,19 @@ function getProcessInstancesDTOFromString(
       // TODO: What is the default value?
       return ProcessInstanceStatusDTO.SUSPENDED;
   }
+}
+
+function mapToExecuteWorkflowResponseDTO(
+  workflowId: string,
+  workflowExecutionResponse: WorkflowExecutionResponse,
+): ExecuteWorkflowResponseDTO {
+  if (!workflowExecutionResponse || !workflowExecutionResponse?.id) {
+    throw new Error(
+      `Error while mapping ExecuteWorkflowResponse to ExecuteWorkflowResponseDTO for workflow with id ${workflowId}`,
+    );
+  }
+
+  return {
+    id: workflowExecutionResponse.id,
+  };
 }

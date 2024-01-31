@@ -22,6 +22,8 @@ import { CloudEventService } from './CloudEventService';
 import { DataIndexService } from './DataIndexService';
 import { DataInputSchemaService } from './DataInputSchemaService';
 import {
+  executeWorkflowByIdV1,
+  executeWorkflowByIdV2,
   getInstancesByIdV1,
   getInstancesByIdV2,
   getInstancesV1,
@@ -266,25 +268,36 @@ function setupInternalRoutes(
       params: { workflowId },
     } = req;
 
-    const definition =
-      await services.dataIndexService.getWorkflowDefinition(workflowId);
-    const serviceUrl = definition.serviceUrl;
-    if (!serviceUrl) {
-      throw new Error(`ServiceURL is not defined for workflow ${workflowId}`);
-    }
-    const executionResponse = await services.sonataFlowService.executeWorkflow({
+    await executeWorkflowByIdV1(
+      services.dataIndexService,
+      services.sonataFlowService,
+      req.body,
       workflowId,
-      inputData: req.body,
-      endpoint: serviceUrl,
-    });
-
-    if (!executionResponse) {
-      res.status(500).send(`Couldn't execute workflow ${workflowId}`);
-      return;
-    }
-
-    res.status(200).json(executionResponse);
+    )
+      .then((result: any) => res.status(200).json(result))
+      .catch((error: { message: any }) => {
+        res.status(500).send(error.message || 'Internal Server Error');
+      });
   });
+
+  // v2
+  api.register(
+    'executeWorkflow',
+    async (c, req: express.Request, res: express.Response) => {
+      const workflowId = c.request.params.workflowId as string;
+      const executeWorkflowRequestDTO = req.body;
+      await executeWorkflowByIdV2(
+        services.dataIndexService,
+        services.sonataFlowService,
+        executeWorkflowRequestDTO,
+        workflowId,
+      )
+        .then(result => res.status(200).json(result))
+        .catch((error: { message: string }) => {
+          res.status(500).send(error.message || 'Internal Server Error');
+        });
+    },
+  );
 
   router.get('/workflows/:workflowId/overview', async (req, res) => {
     const {
