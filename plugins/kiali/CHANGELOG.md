@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-kiali [1.8.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.8.3...@janus-idp/backstage-plugin-kiali@1.8.4) (2024-01-31)
+
+
+### Bug Fixes
+
+* **kiali:** show username when auth is anonymous ([#1139](https://github.com/janus-idp/backstage-plugins/issues/1139)) ([0a04992](https://github.com/janus-idp/backstage-plugins/commit/0a04992b0581a3cb47017c0713703ed7e204ac02))
+
 ## @janus-idp/backstage-plugin-kiali [1.8.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.8.2...@janus-idp/backstage-plugin-kiali@1.8.3) (2024-01-30)
 
 
