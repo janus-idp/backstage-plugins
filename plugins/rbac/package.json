@@ -62,9 +62,16 @@
     "@types/node": "18.18.5",
     "msw": "1.3.2"
   },
+  "scalprum": {
+    "name": "janus-idp.backstage-plugin-rbac",
+    "exposedModules": {
+      "RbacPlugin": "./src/index.ts"
+    }
+  },
   "files": [
     "dist",
-    "dist-scalprum"
+    "dist-scalprum",
+    "app-config.janus-idp.yaml"
   ],
   "repository": "github:janus-idp/backstage-plugins",
   "keywords": [
