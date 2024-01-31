@@ -23,13 +23,9 @@ paths:
         '500':
           description: Error fetching workflow overviews
           content:
-            application/json:
+            text/plain:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: Error message
+                type: string
   /v2/workflows/{workflowId}/overview:
     get:
       operationId: getWorkflowOverviewById
@@ -51,13 +47,9 @@ paths:
         '500':
           description: Error fetching workflow overview
           content:
-            application/json:
+            text/plain:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: Error message
+                type: string
   /v2/workflows:
     get:
       operationId: getWorkflows
@@ -72,13 +64,9 @@ paths:
         '500':
           description: Error fetching workflow list
           content:
-            application/json:
+            text/plain:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: Error message
+                type: string
     post:
       operationId: createWorkflow
       summary: Create or update a workflow
@@ -112,15 +100,11 @@ paths:
                   workflowItem:
                     $ref: '#/components/schemas/WorkflowDTO'
         '500':
-          description: Error fetching workflow list
+          description: Error creating workflow
           content:
-            application/json:
+            text/plain:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: Error message
+                type: string
   /v2/workflows/{workflowId}:
     get:
       operationId: getWorkflowById
@@ -142,13 +126,9 @@ paths:
         '500':
           description: Error fetching workflow
           content:
-            application/json:
+            text/plain:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: Error message
+                type: string
   /v2/workflows/instances:
     get:
       operationId: getInstances
@@ -164,13 +144,9 @@ paths:
         '500':
           description: Error fetching instances
           content:
-            application/json:
+            text/plain:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: Error message
+                type: string
   /v2/workflows/instances/{instanceId}:
     get:
       summary: Get Workflow Instance by ID
@@ -190,15 +166,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/ProcessInstanceDTO'
         '500':
-          description: Internal Server Error
+          description: Error fetching instance
           content:
-            application/json:
+            text/plain:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: Error message
+                type: string
   /v2/workflows/instances/{instanceId}/result:
     get:
       summary: Get assessment results
@@ -217,6 +189,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WorkflowSuggestionsDTO'
+        '500':
+          description: Error fetching instance results
+          content:
+            text/plain:
+              schema:
+                type: string
   /v2/workflows/instances/statuses:
     get:
       operationId: getWorkflowStatuses
@@ -231,6 +209,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/WorkflowRunStatusDTO'
+        '500':
+          description: Error fetching instances statuses list
+          content:
+            text/plain:
+              schema:
+                type: string
   /v2/workflows/{workflowId}/execute:
     post:
       summary: Execute a workflow
@@ -256,7 +240,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ExecuteWorkflowResponseDTO'
         '500':
-          description: Internal Server Error
+          description: Error executing workflow
           content:
             text/plain:
               schema:
@@ -276,7 +260,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/WorkflowSpecFileDTO'
         '500':
-          description: Internal Server Error
+          description: Error fetching workflow specifications list
           content:
             text/plain:
               schema:
@@ -305,6 +289,12 @@ paths:
             text/plain:
               schema:
                 type: string
+        '500':
+          description: Error fetching workflow input parameters
+          content:
+            text/plain:
+              schema:
+                type: string
   /v2/workflows/{workflowId}/progress:
     get:
       summary: Get Workflow Progress
@@ -324,7 +314,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/WorkflowProgressDTO'
         '500':
-          description: Internal Server Error
+          description: Error fetching workflow progress
           content:
             text/plain:
               schema:
@@ -349,7 +339,7 @@ paths:
               schema:
                 type: string
         '500':
-          description: Internal Server Error
+          description: Error aborting workflow
           content:
             text/plain:
               schema:

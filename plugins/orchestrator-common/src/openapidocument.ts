@@ -35,15 +35,9 @@ const OPENAPI = `
           "500": {
             "description": "Error fetching workflow overviews",
             "content": {
-              "application/json": {
+              "text/plain": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "description": "Error message"
-                    }
-                  }
+                  "type": "string"
                 }
               }
             }
@@ -80,15 +74,9 @@ const OPENAPI = `
           "500": {
             "description": "Error fetching workflow overview",
             "content": {
-              "application/json": {
+              "text/plain": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "description": "Error message"
-                    }
-                  }
+                  "type": "string"
                 }
               }
             }
@@ -114,15 +102,9 @@ const OPENAPI = `
           "500": {
             "description": "Error fetching workflow list",
             "content": {
-              "application/json": {
+              "text/plain": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "description": "Error message"
-                    }
-                  }
+                  "type": "string"
                 }
               }
             }
@@ -180,17 +162,11 @@ const OPENAPI = `
             }
           },
           "500": {
-            "description": "Error fetching workflow list",
+            "description": "Error creating workflow",
             "content": {
-              "application/json": {
+              "text/plain": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "description": "Error message"
-                    }
-                  }
+                  "type": "string"
                 }
               }
             }
@@ -227,15 +203,9 @@ const OPENAPI = `
           "500": {
             "description": "Error fetching workflow",
             "content": {
-              "application/json": {
+              "text/plain": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "description": "Error message"
-                    }
-                  }
+                  "type": "string"
                 }
               }
             }
@@ -262,15 +232,9 @@ const OPENAPI = `
           "500": {
             "description": "Error fetching instances",
             "content": {
-              "application/json": {
+              "text/plain": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "description": "Error message"
-                    }
-                  }
+                  "type": "string"
                 }
               }
             }
@@ -305,17 +269,11 @@ const OPENAPI = `
             }
           },
           "500": {
-            "description": "Internal Server Error",
+            "description": "Error fetching instance",
             "content": {
-              "application/json": {
+              "text/plain": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "description": "Error message"
-                    }
-                  }
+                  "type": "string"
                 }
               }
             }
@@ -348,6 +306,16 @@ const OPENAPI = `
                 }
               }
             }
+          },
+          "500": {
+            "description": "Error fetching instance results",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -367,6 +335,16 @@ const OPENAPI = `
                   "items": {
                     "$ref": "#/components/schemas/WorkflowRunStatusDTO"
                   }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error fetching instances statuses list",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
                 }
               }
             }
@@ -411,7 +389,7 @@ const OPENAPI = `
             }
           },
           "500": {
-            "description": "Internal Server Error",
+            "description": "Error executing workflow",
             "content": {
               "text/plain": {
                 "schema": {
@@ -443,7 +421,7 @@ const OPENAPI = `
             }
           },
           "500": {
-            "description": "Internal Server Error",
+            "description": "Error fetching workflow specifications list",
             "content": {
               "text/plain": {
                 "schema": {
@@ -490,6 +468,16 @@ const OPENAPI = `
                 }
               }
             }
+          },
+          "500": {
+            "description": "Error fetching workflow input parameters",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -521,7 +509,7 @@ const OPENAPI = `
             }
           },
           "500": {
-            "description": "Internal Server Error",
+            "description": "Error fetching workflow progress",
             "content": {
               "text/plain": {
                 "schema": {
@@ -561,7 +549,7 @@ const OPENAPI = `
             }
           },
           "500": {
-            "description": "Internal Server Error",
+            "description": "Error aborting workflow",
             "content": {
               "text/plain": {
                 "schema": {

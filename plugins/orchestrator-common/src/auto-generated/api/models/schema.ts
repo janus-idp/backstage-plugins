@@ -239,7 +239,7 @@ export interface operations {
           'application/json': components['schemas']['WorkflowSpecFileDTO'][];
         };
       };
-      /** @description Internal Server Error */
+      /** @description Error fetching workflow specifications list */
       500: {
         content: {
           'text/plain': string;
@@ -259,10 +259,7 @@ export interface operations {
       /** @description Error fetching workflow list */
       500: {
         content: {
-          'application/json': {
-            /** @description Error message */
-            message?: string;
-          };
+          'text/plain': string;
         };
       };
     };
@@ -292,13 +289,10 @@ export interface operations {
           };
         };
       };
-      /** @description Error fetching workflow list */
+      /** @description Error creating workflow */
       500: {
         content: {
-          'application/json': {
-            /** @description Error message */
-            message?: string;
-          };
+          'text/plain': string;
         };
       };
     };
@@ -321,10 +315,7 @@ export interface operations {
       /** @description Error fetching workflow */
       500: {
         content: {
-          'application/json': {
-            /** @description Error message */
-            message?: string;
-          };
+          'text/plain': string;
         };
       };
     };
@@ -347,7 +338,7 @@ export interface operations {
           'text/plain': string;
         };
       };
-      /** @description Internal Server Error */
+      /** @description Error aborting workflow */
       500: {
         content: {
           'text/plain': string;
@@ -375,7 +366,7 @@ export interface operations {
           'application/json': components['schemas']['ExecuteWorkflowResponseDTO'];
         };
       };
-      /** @description Internal Server Error */
+      /** @description Error executing workflow */
       500: {
         content: {
           'text/plain': string;
@@ -401,10 +392,7 @@ export interface operations {
       /** @description Error fetching workflow overview */
       500: {
         content: {
-          'application/json': {
-            /** @description Error message */
-            message?: string;
-          };
+          'text/plain': string;
         };
       };
     };
@@ -430,6 +418,12 @@ export interface operations {
           'text/plain': string;
         };
       };
+      /** @description Error fetching workflow input parameters */
+      500: {
+        content: {
+          'text/plain': string;
+        };
+      };
     };
   };
   /** Get Workflow Progress */
@@ -447,7 +441,7 @@ export interface operations {
           'application/json': components['schemas']['WorkflowProgressDTO'];
         };
       };
-      /** @description Internal Server Error */
+      /** @description Error fetching workflow progress */
       500: {
         content: {
           'text/plain': string;
@@ -470,10 +464,7 @@ export interface operations {
       /** @description Error fetching instances */
       500: {
         content: {
-          'application/json': {
-            /** @description Error message */
-            message?: string;
-          };
+          'text/plain': string;
         };
       };
     };
@@ -493,13 +484,10 @@ export interface operations {
           'application/json': components['schemas']['ProcessInstanceDTO'];
         };
       };
-      /** @description Internal Server Error */
+      /** @description Error fetching instance */
       500: {
         content: {
-          'application/json': {
-            /** @description Error message */
-            message?: string;
-          };
+          'text/plain': string;
         };
       };
     };
@@ -519,6 +507,12 @@ export interface operations {
           'application/json': components['schemas']['WorkflowSuggestionsDTO'];
         };
       };
+      /** @description Error fetching instance results */
+      500: {
+        content: {
+          'text/plain': string;
+        };
+      };
     };
   };
   /**
@@ -531,6 +525,12 @@ export interface operations {
       200: {
         content: {
           'application/json': components['schemas']['WorkflowRunStatusDTO'][];
+        };
+      };
+      /** @description Error fetching instances statuses list */
+      500: {
+        content: {
+          'text/plain': string;
         };
       };
     };
@@ -547,10 +547,7 @@ export interface operations {
       /** @description Error fetching workflow overviews */
       500: {
         content: {
-          'application/json': {
-            /** @description Error message */
-            message?: string;
-          };
+          'text/plain': string;
         };
       };
     };
