@@ -98,14 +98,3 @@ export interface StatefulFilters {
   filterAdded(labelFilt: FilterType, label: string): unknown;
   removeFilter(category: string, label: string): unknown;
 }
-/*
-export const StatefulFilters = (
-  filterProps: StatefulFiltersProps
-) => {
-  return (
-    <>
-      {filterProps.initialFilters}
-    </>
-  );
-};
-*/
