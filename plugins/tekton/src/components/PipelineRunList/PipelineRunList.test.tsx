@@ -3,7 +3,7 @@ import { BrowserRouter } from 'react-router-dom';
 
 import { render } from '@testing-library/react';
 
-import { computedStatus } from '@janus-idp/shared-react';
+import { ComputedStatus } from '@janus-idp/shared-react';
 
 import { mockKubernetesPlrResponse } from '../../__fixtures__/1-pipelinesData';
 import { TektonResourcesContext } from '../../hooks/TektonResourcesContext';
@@ -35,7 +35,7 @@ describe('PipelineRunList', () => {
       selectedClusterErrors: [],
       clusters: ['ocp'],
       setSelectedCluster: () => {},
-      selectedStatus: '',
+      selectedStatus: ComputedStatus.All,
       setSelectedStatus: () => {},
       setIsExpanded: () => {},
     };
@@ -59,7 +59,7 @@ describe('PipelineRunList', () => {
       selectedClusterErrors: [],
       clusters: [],
       setSelectedCluster: () => {},
-      selectedStatus: '',
+      selectedStatus: ComputedStatus.All,
       setSelectedStatus: () => {},
       setIsExpanded: () => {},
     };
@@ -87,7 +87,7 @@ describe('PipelineRunList', () => {
       selectedClusterErrors: [],
       clusters: [],
       setSelectedCluster: () => {},
-      selectedStatus: '',
+      selectedStatus: ComputedStatus.All,
       setSelectedStatus: () => {},
       setIsExpanded: () => {},
     };
@@ -116,7 +116,7 @@ describe('PipelineRunList', () => {
       selectedClusterErrors: [],
       clusters: [],
       setSelectedCluster: () => {},
-      selectedStatus: '',
+      selectedStatus: ComputedStatus.All,
       setSelectedStatus: () => {},
       setIsExpanded: () => {},
     };
@@ -146,7 +146,7 @@ describe('PipelineRunList', () => {
       selectedClusterErrors: [{ message: '403 - forbidden' }],
       clusters: ['ocp'],
       setSelectedCluster: () => {},
-      selectedStatus: '',
+      selectedStatus: ComputedStatus.All,
       setSelectedStatus: () => {},
       setIsExpanded: () => {},
     };
@@ -175,7 +175,7 @@ describe('PipelineRunList', () => {
       selectedClusterErrors: [],
       clusters: ['ocp'],
       setSelectedCluster: () => {},
-      selectedStatus: computedStatus.Succeeded,
+      selectedStatus: ComputedStatus.Succeeded,
       setSelectedStatus: () => {},
       setIsExpanded: () => {},
     };
@@ -206,7 +206,7 @@ describe('PipelineRunList', () => {
       selectedClusterErrors: [],
       clusters: ['ocp'],
       setSelectedCluster: () => {},
-      selectedStatus: computedStatus.Cancelled,
+      selectedStatus: ComputedStatus.Cancelled,
       setSelectedStatus: () => {},
       setIsExpanded: () => {},
     };

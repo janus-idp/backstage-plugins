@@ -3,6 +3,8 @@ import { BrowserRouter } from 'react-router-dom';
 
 import { render } from '@testing-library/react';
 
+import { ComputedStatus } from '@janus-idp/shared-react';
+
 import { mockKubernetesPlrResponse } from '../../__fixtures__/1-pipelinesData';
 import { TektonResourcesContext } from '../../hooks/TektonResourcesContext';
 import { PipelineVisualizationView } from './PipelineVisualizationView';
@@ -28,7 +30,7 @@ describe('PipelineVisualizationView', () => {
       selectedClusterErrors: [],
       clusters: [],
       setSelectedCluster: () => {},
-      selectedStatus: '',
+      selectedStatus: ComputedStatus.All,
       setSelectedStatus: () => {},
       setIsExpanded: () => {},
     };

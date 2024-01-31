@@ -13,15 +13,14 @@ describe('getRunStatusColor should handle ComputedStatus values', () => {
   it('should expect all but PipelineNotStarted to produce a non-default result', () => {
     // Verify that we cover colour states for all the ComputedStatus values
     const failCase = 'PipelineNotStarted';
-    const defaultCase = getRunStatusColor(ComputedStatus[failCase]);
-    const allOtherStatuses = Object.keys(ComputedStatus)
-      .filter(
-        status =>
-          status !== failCase &&
-          ComputedStatus[status as keyof typeof ComputedStatus] !==
-            ComputedStatus.Other,
-      )
-      .map(status => ComputedStatus[status as keyof typeof ComputedStatus]);
+    const defaultCase = getRunStatusColor(failCase);
+    const allStatuses = Object.keys(ComputedStatus) as ComputedStatus[];
+    const allOtherStatuses = allStatuses.filter(
+      status =>
+        status !== ComputedStatus.All &&
+        status !== ComputedStatus.Other &&
+        status !== failCase,
+    );
 
     expect(allOtherStatuses).not.toHaveLength(0);
     allOtherStatuses.forEach(statusValue => {

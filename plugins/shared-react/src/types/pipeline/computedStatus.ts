@@ -3,6 +3,7 @@ export enum TerminatedReasons {
 }
 
 export enum ComputedStatus {
+  All = 'All',
   Cancelling = 'Cancelling',
   Succeeded = 'Succeeded',
   Failed = 'Failed',
@@ -14,7 +15,7 @@ export enum ComputedStatus {
   Cancelled = 'Cancelled',
   Pending = 'Pending',
   Idle = 'Idle',
-  Other = '-',
+  Other = 'Other',
 }
 
 export enum SucceedConditionReason {
@@ -44,20 +45,4 @@ export type TaskStatusTypes = {
   Cancelled: number;
   Failed: number;
   Skipped: number;
-};
-
-export const computedStatus: { [key: string]: string | ComputedStatus } = {
-  All: '',
-  Cancelling: ComputedStatus.Cancelling,
-  Succeeded: ComputedStatus.Succeeded,
-  Failed: ComputedStatus.Failed,
-  Running: ComputedStatus.Running,
-  'In Progress': ComputedStatus['In Progress'],
-  FailedToStart: ComputedStatus.FailedToStart,
-  PipelineNotStarted: ComputedStatus.PipelineNotStarted,
-  Skipped: ComputedStatus.Skipped,
-  Cancelled: ComputedStatus.Cancelled,
-  Pending: ComputedStatus.Pending,
-  Idle: ComputedStatus.Idle,
-  Other: ComputedStatus.Other,
 };
