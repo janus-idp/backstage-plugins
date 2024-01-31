@@ -173,7 +173,10 @@ export class EnforcerDelegate {
         let metadata;
 
         if (entityRef.startsWith(`role:`)) {
-          metadata = await this.roleMetadataStorage.findRoleMetadata(entityRef);
+          metadata = await this.roleMetadataStorage.findRoleMetadata(
+            entityRef,
+            trx,
+          );
         }
 
         await this.policyMetadataStorage.createPolicyMetadata(

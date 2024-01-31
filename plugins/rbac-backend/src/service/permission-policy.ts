@@ -127,7 +127,11 @@ const useAdmins = async (
     'read',
     'allow',
   ];
-  await enf.addOrUpdatePolicy(adminCatalogReadPermission, 'configuration', false);
+  await enf.addOrUpdatePolicy(
+    adminCatalogReadPermission,
+    'configuration',
+    false,
+  );
 };
 
 const removedOldPermissionPoliciesFileData = async (
