@@ -1141,6 +1141,7 @@ describe('RBACPermissionPolicy Tests', () => {
       ['role:default/rbac_admin', 'policy-entity', 'create', 'allow'],
       ['role:default/rbac_admin', 'policy-entity', 'delete', 'allow'],
       ['role:default/rbac_admin', 'policy-entity', 'update', 'allow'],
+      ['role:default/rbac_admin', 'catalog-entity', 'read', 'allow'],
     ];
     const oldGroupPolicy = [
       'user:default/old_admin',
