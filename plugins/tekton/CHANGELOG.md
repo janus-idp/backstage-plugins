@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-tekton [3.5.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.5.1...@janus-idp/backstage-plugin-tekton@3.5.2) (2024-01-31)
+
+
+### Bug Fixes
+
+* **tekton:** fix [#922](https://github.com/janus-idp/backstage-plugins/issues/922) and [#962](https://github.com/janus-idp/backstage-plugins/issues/962) by using full width for pipeline visualization ([#1145](https://github.com/janus-idp/backstage-plugins/issues/1145)) ([1ea9f01](https://github.com/janus-idp/backstage-plugins/commit/1ea9f01c3487035f8495bb98fce30c6c34396510))
+
 ## @janus-idp/backstage-plugin-tekton [3.5.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.5.0...@janus-idp/backstage-plugin-tekton@3.5.1) (2024-01-30)
 
 
