@@ -12,6 +12,6 @@ export function buildPagination(req: Request): Pagination {
     offset: req.query.pageNumber ? Number(req.query.pageNumber) : 0,
     limit: req.query.pageSize ? Number(req.query.pageSize) : 10,
     sortField: req.query.sortField ? String(req.query.sortField) : undefined,
-    order: req.query.order ? String(req.query.order) : undefined,
+    order: req.query.order ? String(req.query.order) : 'ASC',
   };
 }
