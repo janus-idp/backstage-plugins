@@ -553,13 +553,16 @@ export const fakeDataInputSchemaMultiStepInitialStateResponse: WorkflowDataInput
         ],
       },
     ],
-    initialState: [
-      {
-        orgName: 'Org name',
-        repoName: 'Repo name',
-        description: 'Description',
-        owner: 'owner',
-        system: 'system',
-      },
-    ],
+    initialState: {
+      values: [
+        {
+          orgName: 'Org name',
+          repoName: 'Repo name',
+          description: 'Description',
+          owner: 'owner',
+          system: 'system',
+        },
+      ],
+      readonlyKeys: ['orgName', 'system'],
+    },
   };

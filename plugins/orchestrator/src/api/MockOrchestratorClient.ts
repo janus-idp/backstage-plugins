@@ -148,6 +148,7 @@ export class MockOrchestratorClient implements OrchestratorApi {
   getWorkflowDataInputSchema(_args: {
     workflowId: string;
     instanceId?: string;
+    assessmentInstanceId?: string;
   }): Promise<WorkflowDataInputSchemaResponse> {
     if (
       !hasOwnProp(this._mockData, 'getWorkflowDataInputSchemaResponse') ||

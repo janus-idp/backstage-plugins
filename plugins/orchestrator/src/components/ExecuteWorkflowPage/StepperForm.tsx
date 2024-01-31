@@ -19,20 +19,20 @@ import { UiSchema } from '@rjsf/utils';
 import validator from '@rjsf/validator-ajv8';
 import { JSONSchema7 } from 'json-schema';
 
+import { DataInputSchemaInitialState } from '@janus-idp/backstage-plugin-orchestrator-common';
+
 import SubmitButton from '../SubmitButton';
 
 const MuiForm = withTheme<JsonObject>(MuiTheme);
 
 const ReviewStep = ({
   busy,
-  disableReset,
   formDataObjects,
   handleBack,
   handleReset,
   handleExecute,
 }: {
   busy: boolean;
-  disableReset: boolean;
   formDataObjects: JsonObject[];
   handleBack: () => void;
   handleReset: () => void;
@@ -55,7 +55,7 @@ const ReviewStep = ({
         <Button onClick={handleBack} disabled={busy}>
           Back
         </Button>
-        <Button onClick={handleReset} disabled={busy || disableReset}>
+        <Button onClick={handleReset} disabled={busy}>
           Reset
         </Button>
         <SubmitButton
@@ -102,21 +102,20 @@ const FormWrapper = ({
 const StepperForm = ({
   refSchemas,
   initialState,
-  disableInitialState = false,
   handleExecute,
   isExecuting,
 }: {
   refSchemas: JSONSchema7[];
-  initialState: JsonObject[];
-  disableInitialState?: boolean;
+  initialState: DataInputSchemaInitialState;
   handleExecute: (getParameters: () => JsonObject) => Promise<void>;
   isExecuting: boolean;
 }) => {
   const [activeStep, setActiveStep] = React.useState(0);
   const handleBack = () => setActiveStep(activeStep - 1);
 
-  const [formDataObjects, setFormDataObjects] =
-    React.useState<JsonObject[]>(initialState);
+  const [formDataObjects, setFormDataObjects] = React.useState<JsonObject[]>(
+    initialState.values,
+  );
 
   const getFormData = () =>
     formDataObjects.reduce<JsonObject>(
@@ -124,30 +123,28 @@ const StepperForm = ({
       {},
     );
 
-  const resetFormDataObjects = React.useCallback(
-    () =>
-      setFormDataObjects(
-        refSchemas.reduce<JsonObject[]>(prev => [...prev, {}], []),
-      ),
-    [refSchemas],
-  );
-
-  const uiSchema = React.useMemo(() => {
-    if (!disableInitialState) {
-      return {};
+  const [uiSchema, setUiSchema] = React.useState<
+    UiSchema<JsonObject> | undefined
+  >(() => {
+    if (!initialState.readonlyKeys) {
+      return undefined;
     }
-    return initialState.reduce<UiSchema<JsonObject>>(
-      (prev, cur) =>
-        Object.keys(cur).reduce<UiSchema<JsonObject>>(
-          (prev2, cur2) => ({
-            ...prev2,
-            [cur2]: { ...prev2[cur2], 'ui:disabled': 'true' },
-          }),
-          prev,
-        ),
+
+    return initialState.readonlyKeys.reduce<UiSchema<JsonObject>>(
+      (obj, key) => ({
+        ...obj,
+        [key]: { ...obj[key], 'ui:disabled': 'true' },
+      }),
       {},
     );
-  }, [disableInitialState, initialState]);
+  });
+
+  const resetFormDataObjects = React.useCallback(() => {
+    setFormDataObjects(
+      refSchemas.reduce<JsonObject[]>(prev => [...prev, {}], []),
+    );
+    setUiSchema(undefined);
+  }, [refSchemas]);
 
   return (
     <>
@@ -194,7 +191,6 @@ const StepperForm = ({
             resetFormDataObjects();
             setActiveStep(0);
           }}
-          disableReset={disableInitialState}
           busy={isExecuting}
           handleExecute={() => handleExecute(() => getFormData())}
         />

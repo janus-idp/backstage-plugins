@@ -12,13 +12,10 @@ import {
   parseWorkflowVariables,
   ProcessInstance,
   ProcessInstanceStateValues,
+  QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
-import {
-  QUERY_PARAM_ASSESSMENT_ID,
-  QUERY_PARAM_INSTANCE_ID,
-  VALUE_UNAVAILABLE,
-} from '../constants';
+import { VALUE_UNAVAILABLE } from '../constants';
 import { executeWorkflowRouteRef, workflowInstanceRouteRef } from '../routes';
 import { capitalize } from '../utils/StringUtils';
 import { buildUrl } from '../utils/UrlUtils';
@@ -75,8 +72,7 @@ const getNextWorkflows = (
           workflowId: nextWorkflowSuggestion.id,
         });
         const urlToNavigate = buildUrl(routeUrl, {
-          [QUERY_PARAM_INSTANCE_ID]: details.id,
-          [QUERY_PARAM_ASSESSMENT_ID]: details.workflowId,
+          [QUERY_PARAM_ASSESSMENT_INSTANCE_ID]: details.id,
         });
         nextWorkflows.push({
           title: nextWorkflowSuggestion.name,

@@ -55,10 +55,16 @@ export interface WorkflowSpecFile {
   path: string;
   content: OpenAPIV3.Document;
 }
+
+export interface DataInputSchemaInitialState {
+  values: JsonObject[];
+  readonlyKeys: string[];
+}
+
 export interface WorkflowDataInputSchemaResponse {
   workflowItem: WorkflowItem;
   schemas: JSONSchema7[];
-  initialState: JsonObject[];
+  initialState: DataInputSchemaInitialState;
 }
 
 export interface WorkflowExecutionResponse {

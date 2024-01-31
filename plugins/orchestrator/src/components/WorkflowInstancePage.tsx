@@ -14,14 +14,14 @@ import {
 
 import { Button, Grid } from '@material-ui/core';
 
-import { AssessedProcessInstance } from '@janus-idp/backstage-plugin-orchestrator-common';
+import {
+  AssessedProcessInstance,
+  QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
+  QUERY_PARAM_INSTANCE_ID,
+} from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { orchestratorApiRef } from '../api';
-import {
-  QUERY_PARAM_ASSESSMENT_ID,
-  QUERY_PARAM_INSTANCE_ID,
-  SHORT_REFRESH_INTERVAL,
-} from '../constants';
+import { SHORT_REFRESH_INTERVAL } from '../constants';
 import usePolling from '../hooks/usePolling';
 import { executeWorkflowRouteRef, workflowInstanceRouteRef } from '../routes';
 import { isNonNullable } from '../utils/TypeGuards';
@@ -104,16 +104,10 @@ export const WorkflowInstancePage = ({
       workflowId: value.instance.processId,
     });
 
-    const queryParams = value.assessedBy
-      ? {
-          [QUERY_PARAM_INSTANCE_ID]: value.assessedBy.id,
-          [QUERY_PARAM_ASSESSMENT_ID]: value.assessedBy.processId,
-        }
-      : {
-          [QUERY_PARAM_INSTANCE_ID]: value.instance.id,
-        };
-
-    const urlToNavigate = buildUrl(routeUrl, queryParams);
+    const urlToNavigate = buildUrl(routeUrl, {
+      [QUERY_PARAM_INSTANCE_ID]: value.instance.id,
+      [QUERY_PARAM_ASSESSMENT_INSTANCE_ID]: value.assessedBy?.id,
+    });
     navigate(urlToNavigate);
   }, [value, navigate, executeWorkflowLink]);
 

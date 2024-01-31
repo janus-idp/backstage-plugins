@@ -553,5 +553,5 @@ export const fakeDataInputSchemaMultiStepResponse: WorkflowDataInputSchemaRespon
         ],
       },
     ],
-    initialState: [],
+    initialState: { values: [], readonlyKeys: [] },
   };

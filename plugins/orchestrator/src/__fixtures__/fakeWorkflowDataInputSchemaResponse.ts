@@ -91,5 +91,5 @@ export const fakeDataInputSchemaResponse: WorkflowDataInputSchemaResponse = {
       },
     },
   ],
-  initialState: [],
+  initialState: { values: [], readonlyKeys: [] },
 };

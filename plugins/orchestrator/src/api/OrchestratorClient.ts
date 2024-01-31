@@ -6,6 +6,11 @@ import {
   AssessedProcessInstance,
   Job,
   ProcessInstance,
+  QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
+  QUERY_PARAM_BUSINESS_KEY,
+  QUERY_PARAM_INCLUDE_ASSESSMENT,
+  QUERY_PARAM_INSTANCE_ID,
+  QUERY_PARAM_URI,
   WorkflowDataInputSchemaResponse,
   WorkflowExecutionResponse,
   WorkflowItem,
@@ -15,11 +20,6 @@ import {
   WorkflowSpecFile,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
-import {
-  QUERY_PARAM_BUSINESS_KEY,
-  QUERY_PARAM_INCLUDE_ASSESSMENT,
-  QUERY_PARAM_INSTANCE_ID,
-} from '../constants';
 import { buildUrl } from '../utils/UrlUtils';
 import { OrchestratorApi } from './api';
 
@@ -140,11 +140,13 @@ export class OrchestratorClient implements OrchestratorApi {
   async getWorkflowDataInputSchema(args: {
     workflowId: string;
     instanceId?: string;
+    assessmentInstanceId?: string;
   }): Promise<WorkflowDataInputSchemaResponse> {
     const baseUrl = await this.getBaseUrl();
     const endpoint = `${baseUrl}/workflows/${args.workflowId}/inputSchema`;
     const urlToFetch = buildUrl(endpoint, {
       [QUERY_PARAM_INSTANCE_ID]: args.instanceId,
+      [QUERY_PARAM_ASSESSMENT_INSTANCE_ID]: args.assessmentInstanceId,
     });
     const res = await fetch(urlToFetch);
     if (!res.ok) {
@@ -158,7 +160,11 @@ export class OrchestratorClient implements OrchestratorApi {
     content: string,
   ): Promise<WorkflowItem> {
     const baseUrl = await this.getBaseUrl();
-    const res = await fetch(`${baseUrl}/workflows?uri=${uri}`, {
+    const endpoint = `${baseUrl}/workflows`;
+    const urlToFetch = buildUrl(endpoint, {
+      [QUERY_PARAM_URI]: uri,
+    });
+    const res = await fetch(urlToFetch, {
       method: 'POST',
       body: content,
       headers: {

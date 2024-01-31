@@ -17,13 +17,13 @@ import { JsonObject } from '@backstage/types';
 
 import { Grid } from '@material-ui/core';
 
-import { WorkflowDataInputSchemaResponse } from '@janus-idp/backstage-plugin-orchestrator-common';
+import {
+  QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
+  QUERY_PARAM_INSTANCE_ID,
+  WorkflowDataInputSchemaResponse,
+} from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { orchestratorApiRef } from '../../api';
-import {
-  QUERY_PARAM_ASSESSMENT_ID,
-  QUERY_PARAM_INSTANCE_ID,
-} from '../../constants';
 import {
   executeWorkflowRouteRef,
   workflowInstanceRouteRef,
@@ -39,7 +39,9 @@ export const ExecuteWorkflowPage = () => {
   const [isExecuting, setIsExecuting] = useState(false);
   const [updateError, setUpdateError] = React.useState<Error>();
   const [instanceId] = useQueryParamState<string>(QUERY_PARAM_INSTANCE_ID);
-  const [assessmentId] = useQueryParamState<string>(QUERY_PARAM_ASSESSMENT_ID);
+  const [assessmentInstanceId] = useQueryParamState<string>(
+    QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
+  );
   const navigate = useNavigate();
   const instanceLink = useRouteRef(workflowInstanceRouteRef);
   const {
@@ -51,6 +53,7 @@ export const ExecuteWorkflowPage = () => {
       await orchestratorApi.getWorkflowDataInputSchema({
         workflowId,
         instanceId,
+        assessmentInstanceId,
       }),
     [orchestratorApi, workflowId],
   );
@@ -66,12 +69,11 @@ export const ExecuteWorkflowPage = () => {
         return;
       }
       try {
-        const businessKey = instanceId && assessmentId ? instanceId : undefined;
         setIsExecuting(true);
         const response = await orchestratorApi.executeWorkflow({
           workflowId,
           parameters,
-          businessKey,
+          businessKey: assessmentInstanceId,
         });
         navigate(instanceLink({ instanceId: response.id }));
       } catch (err) {
@@ -80,14 +82,7 @@ export const ExecuteWorkflowPage = () => {
         setIsExecuting(false);
       }
     },
-    [
-      orchestratorApi,
-      workflowId,
-      navigate,
-      instanceLink,
-      instanceId,
-      assessmentId,
-    ],
+    [orchestratorApi, workflowId, navigate, instanceLink, assessmentInstanceId],
   );
 
   let pageContent;
@@ -119,7 +114,6 @@ export const ExecuteWorkflowPage = () => {
                 refSchemas={schemaResponse.schemas}
                 initialState={schemaResponse.initialState}
                 handleExecute={handleExecute}
-                disableInitialState={!!assessmentId}
                 isExecuting={isExecuting}
               />
             ) : (

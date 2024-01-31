@@ -41,6 +41,7 @@ export interface OrchestratorApi {
   getWorkflowDataInputSchema(args: {
     workflowId: string;
     instanceId?: string;
+    assessmentInstanceId?: string;
   }): Promise<WorkflowDataInputSchemaResponse>;
 
   createWorkflowDefinition(

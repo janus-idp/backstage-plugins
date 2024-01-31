@@ -166,5 +166,5 @@ export const fakeDataInputSchemaDifferentTypes: WorkflowDataInputSchemaResponse 
         },
       },
     ],
-    initialState: [],
+    initialState: { values: [], readonlyKeys: [] },
   };
