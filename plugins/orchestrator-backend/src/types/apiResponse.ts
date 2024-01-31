@@ -1,7 +1,7 @@
 export interface ApiResponse {
-  message?: String;
+  message?: string;
   result?: any;
-  backEndErrCd?: String;
+  backEndErrCd?: string;
 }
 
 export class ApiResponseBuilder {

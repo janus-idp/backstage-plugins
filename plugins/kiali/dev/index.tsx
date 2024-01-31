@@ -5,112 +5,254 @@ import { createDevApp } from '@backstage/dev-utils';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { TestApiProvider } from '@backstage/test-utils';
 
-import {
-  FetchResponse,
-  FetchResponseWrapper,
-} from '@janus-idp/backstage-plugin-kiali-common';
-
-import { KialiApi, kialiApiRef } from '../src/api';
 import { KialiPage, kialiPlugin } from '../src/plugin';
-import overviewJson from './__fixtures__/1-overview.json';
-import configJson from './__fixtures__/config.json';
-import namespacesJson from './__fixtures__/namespaces.json';
-import statusJson from './__fixtures__/status.json';
-
-const mockEntity: Entity = {
-  apiVersion: 'backstage.io/v1alpha1',
-  kind: 'Component',
-  metadata: {
-    name: 'backstage',
-    description: 'backstage.io',
-    annotations: {
-      'backstage.io/kubernetes-namespace': 'istio-system,bookinfo',
-    },
-  },
-  spec: {
-    lifecycle: 'production',
-    type: 'service',
-    owner: 'user:guest',
-  },
-};
+import { KialiApi, kialiApiRef } from '../src/services/Api';
+import { KialiProvider } from '../src/store/KialiProvider';
+import { AuthInfo } from '../src/types/Auth';
+import { CertsInfo } from '../src/types/CertsInfo';
+import { DurationInSeconds, TimeInSeconds } from '../src/types/Common';
+import {
+  AppHealth,
+  NamespaceAppHealth,
+  NamespaceServiceHealth,
+  NamespaceWorkloadHealth,
+  ServiceHealth,
+  WorkloadHealth,
+} from '../src/types/Health';
+import { IstioConfigsMap } from '../src/types/IstioConfigList';
+import {
+  CanaryUpgradeStatus,
+  OutboundTrafficPolicy,
+  ValidationStatus,
+} from '../src/types/IstioObjects';
+import {
+  ComponentStatus,
+  IstiodResourceThresholds,
+} from '../src/types/IstioStatus';
+import { IstioMetricsMap } from '../src/types/Metrics';
+import { IstioMetricsOptions } from '../src/types/MetricsOptions';
+import { Namespace } from '../src/types/Namespace';
+import { ServerConfig } from '../src/types/ServerConfig';
+import { StatusState } from '../src/types/StatusState';
+import { TLSStatus } from '../src/types/TLSStatus';
+import { filterNsByAnnotation } from '../src/utils/entityFilter';
+import { kialiData } from './__fixtures__';
+import { mockEntity } from './mockEntity';
 
 class MockKialiClient implements KialiApi {
-  readonly resource: FetchResponse;
-  readonly status: FetchResponse;
-  readonly config: FetchResponse;
-  readonly namespaces: FetchResponse;
+  private entity?: Entity;
 
-  constructor(
-    fixtureData: any,
-    status: any = statusJson,
-    config: any = configJson,
-    namespaces: any = namespacesJson,
-  ) {
-    this.resource = fixtureData;
-    this.status = status;
-    this.config = config;
-    this.namespaces = namespaces;
+  constructor() {
+    this.entity = undefined;
   }
 
-  setEntity(_: Entity): void {}
-
-  async getConfig(): Promise<FetchResponseWrapper> {
-    return {
-      errors: [],
-      warnings: [],
-      response: this.config,
-    };
+  setEntity(entity?: Entity): void {
+    this.entity = entity;
   }
 
-  async getNamespaces(): Promise<FetchResponseWrapper> {
-    return {
-      errors: [],
-      warnings: [],
-      response: this.namespaces,
-    };
+  async status(): Promise<StatusState> {
+    return kialiData.status;
   }
 
-  async getInfo(): Promise<FetchResponseWrapper> {
-    return {
-      errors: [],
-      warnings: [],
-      response: this.status,
-    };
+  async getAuthInfo(): Promise<AuthInfo> {
+    return kialiData.auth;
+  }
+  async getStatus(): Promise<StatusState> {
+    return kialiData.status;
   }
 
-  async getOverview(): Promise<FetchResponseWrapper> {
-    return {
-      errors: [],
-      warnings: [],
-      response: this.resource,
+  async getNamespaces(): Promise<Namespace[]> {
+    return filterNsByAnnotation(
+      kialiData.namespaces as Namespace[],
+      this.entity,
+    );
+  }
+
+  async getServerConfig(): Promise<ServerConfig> {
+    return kialiData.config;
+  }
+
+  async getNamespaceAppHealth(
+    namespace: string,
+    duration: DurationInSeconds,
+    cluster?: string,
+    queryTime?: TimeInSeconds,
+  ): Promise<NamespaceAppHealth> {
+    const ret: NamespaceAppHealth = {};
+    const params: any = {
+      type: 'app',
+      rateInterval: `${String(duration)}s`,
+      queryTime: String(queryTime),
+      clusterName: cluster,
     };
+    const data = kialiData.namespacesData[namespace].health[params.type];
+    Object.keys(data).forEach(k => {
+      ret[k] = AppHealth.fromJson(namespace, k, data[k], {
+        rateInterval: duration,
+        hasSidecar: true,
+        hasAmbient: false,
+      });
+    });
+    return ret;
+  }
+
+  async getNamespaceServiceHealth(
+    namespace: string,
+    duration: DurationInSeconds,
+    cluster?: string,
+    queryTime?: TimeInSeconds,
+  ): Promise<NamespaceServiceHealth> {
+    const ret: NamespaceServiceHealth = {};
+    const params: any = {
+      type: 'service',
+      rateInterval: `${String(duration)}s`,
+      queryTime: String(queryTime),
+      clusterName: cluster,
+    };
+    const data = kialiData.namespacesData[namespace].health[params.type];
+    Object.keys(data).forEach(k => {
+      ret[k] = ServiceHealth.fromJson(namespace, k, data[k], {
+        rateInterval: duration,
+        hasSidecar: true,
+        hasAmbient: false,
+      });
+    });
+    return ret;
+  }
+
+  async getNamespaceWorkloadHealth(
+    namespace: string,
+    duration: DurationInSeconds,
+    cluster?: string,
+    queryTime?: TimeInSeconds,
+  ): Promise<NamespaceWorkloadHealth> {
+    const ret: NamespaceWorkloadHealth = {};
+    const params: any = {
+      type: 'workload',
+      rateInterval: `${String(duration)}s`,
+      queryTime: String(queryTime),
+      clusterName: cluster,
+    };
+    const data = kialiData.namespacesData[namespace].health[params.type];
+    Object.keys(data).forEach(k => {
+      ret[k] = WorkloadHealth.fromJson(namespace, k, data[k], {
+        rateInterval: duration,
+        hasSidecar: true,
+        hasAmbient: false,
+      });
+    });
+    return ret;
+  }
+
+  async getNamespaceTls(
+    namespace: string,
+    cluster?: string,
+  ): Promise<TLSStatus> {
+    const queryParams: any = {};
+    if (cluster) {
+      queryParams.clusterName = cluster;
+    }
+    return kialiData.namespacesData[namespace].tls;
+  }
+
+  async getMeshTls(cluster?: string): Promise<TLSStatus> {
+    const queryParams: any = {};
+    if (cluster) {
+      queryParams.clusterName = cluster;
+    }
+    return kialiData.meshTls;
+  }
+
+  async getOutboundTrafficPolicyMode(): Promise<OutboundTrafficPolicy> {
+    return kialiData.outboundTrafficPolicy;
+  }
+
+  async getCanaryUpgradeStatus(): Promise<CanaryUpgradeStatus> {
+    return kialiData.meshCanaryStatus;
+  }
+
+  async getIstiodResourceThresholds(): Promise<IstiodResourceThresholds> {
+    return kialiData.meshIstioResourceThresholds;
+  }
+
+  async getConfigValidations(cluster?: string): Promise<ValidationStatus> {
+    const queryParams: any = {};
+    if (cluster) {
+      queryParams.clusterName = cluster;
+    }
+    return kialiData.istioValidations;
+  }
+
+  async getAllIstioConfigs(
+    namespaces: string[],
+    objects: string[],
+    validate: boolean,
+    labelSelector: string,
+    workloadSelector: string,
+    cluster?: string,
+  ): Promise<IstioConfigsMap> {
+    const params: any =
+      namespaces && namespaces.length > 0
+        ? { namespaces: namespaces.join(',') }
+        : {};
+    if (objects && objects.length > 0) {
+      params.objects = objects.join(',');
+    }
+    if (validate) {
+      params.validate = validate;
+    }
+    if (labelSelector) {
+      params.labelSelector = labelSelector;
+    }
+    if (workloadSelector) {
+      params.workloadSelector = workloadSelector;
+    }
+    if (cluster) {
+      params.clusterName = cluster;
+    }
+    return kialiData.istioConfig;
+  }
+
+  async getNamespaceMetrics(
+    namespace: string,
+    params: IstioMetricsOptions,
+  ): Promise<Readonly<IstioMetricsMap>> {
+    return kialiData.namespacesData[namespace].metrics[params.direction][
+      params.duration as number
+    ];
+  }
+
+  async getIstioStatus(cluster?: string): Promise<ComponentStatus[]> {
+    const queryParams: any = {};
+    if (cluster) {
+      queryParams.clusterName = cluster;
+    }
+    return kialiData.istioStatus;
+  }
+
+  async getIstioCertsInfo(): Promise<CertsInfo[]> {
+    return kialiData.istioCertsInfo;
+  }
+  isDevEnv(): boolean {
+    return true;
   }
 }
+// @ts-expect-error
+const MockProvider = ({ children }) => (
+  <TestApiProvider apis={[[kialiApiRef, new MockKialiClient()]]}>
+    <EntityProvider entity={mockEntity}>
+      <KialiProvider>{children}</KialiProvider>
+    </EntityProvider>
+  </TestApiProvider>
+);
 
 createDevApp()
   .registerPlugin(kialiPlugin)
   .addPage({
     element: (
-      <TestApiProvider
-        apis={[[kialiApiRef, new MockKialiClient(overviewJson)]]}
-      >
-        <EntityProvider entity={mockEntity}>
-          <KialiPage />
-        </EntityProvider>
-      </TestApiProvider>
-    ),
-    title: 'Kiali Plugin Page',
-    path: '/kiali',
-  })
-  .addPage({
-    element: (
-      <TestApiProvider
-        apis={[[kialiApiRef, new MockKialiClient(overviewJson)]]}
-      >
-        <EntityProvider entity={mockEntity}>
-          <KialiPage />
-        </EntityProvider>
-      </TestApiProvider>
+      <MockProvider>
+        <KialiPage />
+      </MockProvider>
     ),
     title: 'Overview Page',
     path: '/kiali/overview',

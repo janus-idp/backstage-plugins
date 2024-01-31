@@ -46,9 +46,7 @@ export const backendModule = createFactory<Options>({
   async create(options: Options, ctx: CreateContext) {
     const { id: pluginId, moduleId } = options;
     const dirName = `${pluginId}-backend-module-${moduleId}`;
-    const name = ctx.scope
-      ? `@${ctx.scope}/plugin-${dirName}`
-      : `backstage-plugin-${dirName}`;
+    const name = `@janus-idp/backstage-plugin-${dirName}`;
 
     Task.log();
     Task.log(`Creating backend module ${chalk.cyan(name)}`);
@@ -75,7 +73,10 @@ export const backendModule = createFactory<Options>({
       },
     });
 
-    if (await fs.pathExists(paths.resolveTargetRoot('packages/backend'))) {
+    if (
+      !ctx.doNotEditPackages &&
+      (await fs.pathExists(paths.resolveTargetRoot('packages/backend')))
+    ) {
       await Task.forItem('backend', 'adding dependency', async () => {
         await addPackageDependency(
           paths.resolveTargetRoot('packages/backend/package.json'),

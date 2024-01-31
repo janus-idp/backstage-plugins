@@ -1,4 +1,4 @@
-import { VulnerabilitySeverity } from '../types';
+import { Layer, VulnerabilityOrder, VulnerabilitySeverity } from '../types';
 
 export const SEVERITY_COLORS = new Proxy(
   new Map([
@@ -13,3 +13,28 @@ export const SEVERITY_COLORS = new Proxy(
       o.has(k) ? o.get(k) : '#8A8D90',
   },
 );
+
+export const vulnerabilitySummary = (layer: Layer): string => {
+  const summary: Record<string, number> = {};
+
+  layer?.Features.forEach(feature => {
+    feature.Vulnerabilities?.forEach(vulnerability => {
+      const { Severity } = vulnerability;
+      if (!summary[Severity]) {
+        summary[Severity] = 0;
+      }
+      summary[Severity]++;
+    });
+  });
+
+  const scanResults = Object.entries(summary)
+    .sort((a, b) => {
+      const severityA = VulnerabilityOrder[a[0] as VulnerabilitySeverity];
+      const severityB = VulnerabilityOrder[b[0] as VulnerabilitySeverity];
+
+      return severityA - severityB;
+    })
+    .map(([severity, count]) => `${severity}: ${count}`)
+    .join(', ');
+  return scanResults.trim() !== '' ? scanResults : 'Passed';
+};

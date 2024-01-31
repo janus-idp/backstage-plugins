@@ -33,7 +33,10 @@ import {
   usePromiseState,
 } from '@kie-tools-core/react-hooks/dist/PromiseState';
 import { useCancelableEffect } from '@kie-tools-core/react-hooks/dist/useCancelableEffect';
-import { ServerlessWorkflowCombinedEditorChannelApi } from '@kie-tools/serverless-workflow-combined-editor/dist/api';
+import {
+  editorDisplayOptions,
+  ServerlessWorkflowCombinedEditorChannelApi,
+} from '@kie-tools/serverless-workflow-combined-editor/dist/api';
 import { ServerlessWorkflowCombinedEditorEnvelopeApi } from '@kie-tools/serverless-workflow-combined-editor/dist/api/ServerlessWorkflowCombinedEditorEnvelopeApi';
 import { SwfCombinedEditorChannelApiImpl } from '@kie-tools/serverless-workflow-combined-editor/dist/channel/SwfCombinedEditorChannelApiImpl';
 import { SwfPreviewOptionsChannelApiImpl } from '@kie-tools/serverless-workflow-combined-editor/dist/channel/SwfPreviewOptionsChannelApiImpl';
@@ -45,8 +48,8 @@ import { parseApiContent } from '@kie-tools/serverless-workflow-service-catalog/
 import { Diagnostic, DiagnosticSeverity } from 'vscode-languageserver-types';
 
 import {
-  default_editor_path,
-  empty_definition,
+  DEFAULT_EDITOR_PATH,
+  EMPTY_DEFINITION,
   extractWorkflowFormatFromUri,
   ProcessInstance,
   toWorkflowString,
@@ -92,6 +95,9 @@ export type WorkflowEditorView =
 type WorkflowEditorProps = {
   workflowId: string | undefined;
   format?: WorkflowFormat;
+  forceReload?: boolean;
+  editorMode?: editorDisplayOptions;
+  readonly?: boolean;
 } & WorkflowEditorView;
 
 const RefForwardingWorkflowEditor: ForwardRefRenderFunction<
@@ -102,8 +108,15 @@ const RefForwardingWorkflowEditor: ForwardRefRenderFunction<
   const configApi = useApi(configApiRef);
   const contextPath =
     configApi.getOptionalString('orchestrator.editor.path') ??
-    default_editor_path;
-  const { workflowId, kind, format } = props;
+    DEFAULT_EDITOR_PATH;
+  const {
+    workflowId,
+    kind,
+    format,
+    forceReload = false,
+    editorMode = 'full',
+    readonly = false,
+  } = props;
   const { editor, editorRef } = useEditorRef();
   const [embeddedFile, setEmbeddedFile] = useState<EmbeddedEditorFile>();
   const [workflowItemPromise, setWorkflowItemPromise] =
@@ -275,8 +288,8 @@ const RefForwardingWorkflowEditor: ForwardRefRenderFunction<
 
     const workflowEditorPreviewOptionsChannelApiImpl =
       new SwfPreviewOptionsChannelApiImpl({
-        editorMode: 'full',
-        defaultWidth: kind === EditorViewKind.AUTHORING ? '50%' : '100%',
+        editorMode,
+        defaultWidth: '50%',
       });
 
     return new SwfCombinedEditorChannelApiImpl({
@@ -286,7 +299,7 @@ const RefForwardingWorkflowEditor: ForwardRefRenderFunction<
       swfPreviewOptionsChannelApiImpl:
         workflowEditorPreviewOptionsChannelApiImpl,
     });
-  }, [embeddedFile, languageService, stateControl, kind]);
+  }, [editorMode, embeddedFile, languageService, stateControl]);
 
   useEffect(() => {
     if (!ready || !currentProcessInstance) {
@@ -319,12 +332,11 @@ const RefForwardingWorkflowEditor: ForwardRefRenderFunction<
           });
           return;
         }
-
         const promise = workflowId
           ? orchestratorApi.getWorkflow(workflowId)
           : Promise.resolve({
               uri: `workflow.sw.${format ?? 'yaml'}`,
-              definition: empty_definition,
+              definition: EMPTY_DEFINITION,
             } as WorkflowItem);
 
         promise
@@ -332,7 +344,6 @@ const RefForwardingWorkflowEditor: ForwardRefRenderFunction<
             if (canceled.get()) {
               return;
             }
-
             setWorkflowItemPromise({ data: item });
 
             const workflowFormat = extractWorkflowFormatFromUri(item.uri);
@@ -362,7 +373,7 @@ const RefForwardingWorkflowEditor: ForwardRefRenderFunction<
               path: item.uri,
               getFileContents: async () =>
                 toWorkflowString(item.definition, workflowFormat),
-              isReadOnly: kind !== EditorViewKind.AUTHORING,
+              isReadOnly: readonly || kind !== EditorViewKind.AUTHORING,
               fileExtension,
               fileName,
             });
@@ -373,6 +384,9 @@ const RefForwardingWorkflowEditor: ForwardRefRenderFunction<
             setWorkflowItemPromise({ error: e });
           });
       },
+
+      // disabled exhaustive-deps to enable force reload after edit
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       [
         format,
         workflowId,
@@ -382,6 +396,7 @@ const RefForwardingWorkflowEditor: ForwardRefRenderFunction<
         editWorkflowLink,
         viewWorkflowLink,
         navigate,
+        forceReload,
       ],
     ),
   );

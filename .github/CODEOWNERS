@@ -27,4 +27,10 @@ yarn.lock                    @janus-idp/maintainers-plugins
 /plugins/tekton/             @janus-idp/maintainers-plugins @debsmita1 @divyanshiGupta
 /plugins/rbac-backend/       @janus-idp/maintainers-plugins @gorkem @AndrienkoAleksandr @PatAKnight
 /plugins/rbac-common/        @janus-idp/maintainers-plugins @gorkem @AndrienkoAleksandr @PatAKnight
-
+/plugins/notifications       @janus-idp/maintainers-plugins @mareklibra
+/plugins/notifications-backend  @janus-idp/maintainers-plugins @mareklibra @ydayagi
+/plugins/orchestrator          @janus-idp/maintainers-plugins @caponetto @jkilzi
+/plugins/orchestrator-backend  @janus-idp/maintainers-plugins @caponetto @jkilzi
+/plugins/orchestrator-common   @janus-idp/maintainers-plugins @caponetto @jkilzi
+/plugins/feedback           @janus-idp/maintainers-plugins @yashoswalyo @riginoommen @deshmukhmayur 
+/plugins/feedback-backend   @janus-idp/maintainers-plugins @yashoswalyo @riginoommen @deshmukhmayur

@@ -78,13 +78,13 @@ export default async (opts: OptionValues) => {
     await factory.create(options, {
       isMonoRepo: await isMonoRepo(),
       defaultVersion,
-      scope: opts.scope?.replace(/^@/, ''),
       npmRegistry: opts.npmRegistry,
       private: Boolean(opts.private),
       createTemporaryDirectory,
       markAsModified() {
         modified = true;
       },
+      doNotEditPackages: Boolean(opts.doNotEditPackages),
     });
 
     Task.log();

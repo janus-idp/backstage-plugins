@@ -8,10 +8,14 @@ import {
   WorkflowExecutionResponse,
   WorkflowItem,
   WorkflowListResult,
+  WorkflowOverview,
+  WorkflowOverviewListResult,
   WorkflowSpecFile,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 export interface OrchestratorApi {
+  abortWorkflow(workflowId: string): Promise<void>;
+
   executeWorkflow(args: {
     workflowId: string;
     parameters: Record<string, JsonValue>;
@@ -20,6 +24,8 @@ export interface OrchestratorApi {
   getWorkflow(workflowId: string): Promise<WorkflowItem>;
 
   listWorkflows(): Promise<WorkflowListResult>;
+
+  listWorkflowsOverview(): Promise<WorkflowOverviewListResult>;
 
   getInstances(): Promise<ProcessInstance[]>;
 
@@ -39,6 +45,8 @@ export interface OrchestratorApi {
   deleteWorkflowDefinition(workflowId: string): Promise<any>;
 
   getSpecs(): Promise<WorkflowSpecFile[]>;
+
+  getWorkflowOverview(workflowId: string): Promise<WorkflowOverview>;
 }
 
 export const orchestratorApiRef = createApiRef<OrchestratorApi>({

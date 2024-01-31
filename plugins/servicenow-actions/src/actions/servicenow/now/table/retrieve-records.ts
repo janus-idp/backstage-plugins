@@ -24,7 +24,7 @@ const schemaInput = z.object({
     .string()
     .min(1)
     .describe('Name of the table from which to retrieve the records'),
-  sysparamQuery: z
+  sysparmQuery: z
     .string()
     .optional()
     .describe('An encoded query string used to filter the results'),

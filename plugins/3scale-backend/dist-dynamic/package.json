@@ -1,6 +1,6 @@
 {
   "name": "@janus-idp/backstage-plugin-3scale-backend-dynamic",
-  "version": "1.3.7",
+  "version": "1.4.0",
   "license": "Apache-2.0",
   "main": "dist/index.cjs.js",
   "types": "dist/index.d.ts",
@@ -11,6 +11,17 @@
   },
   "backstage": {
     "role": "backend-plugin"
+  },
+  "exports": {
+    ".": {
+      "require": "./dist/index.cjs.js",
+      "default": "./dist/index.cjs.js"
+    },
+    "./alpha": {
+      "require": "./dist/alpha.cjs.js",
+      "default": "./dist/alpha.cjs.js"
+    },
+    "./package.json": "./package.json"
   },
   "scripts": {
     "build": "backstage-cli package build",
@@ -31,7 +42,8 @@
   "files": [
     "dist",
     "config.d.ts",
-    "app-config.janus-idp.yaml"
+    "app-config.janus-idp.yaml",
+    "alpha"
   ],
   "configSchema": "config.d.ts",
   "repository": "github:janus-idp/backstage-plugins",

@@ -45,7 +45,7 @@ export class OpenshiftImageRegistryApiClient
 
   private async getBaseUrl() {
     const proxyPath =
-      this.configApi.getOptionalString('openshiftImageRegistry.proxyPath') ||
+      this.configApi.getOptionalString('openshiftImageRegistry.proxyPath') ??
       DEFAULT_PROXY_PATH;
     return `${await this.discoveryApi.getBaseUrl('proxy')}${proxyPath}`;
   }

@@ -4,6 +4,30 @@ The OpenShift Image Registry plugin displays all ImageStreams in an Openshift cl
 
 ## For administrators
 
+### Prerequisites
+
+The OpenShift Image Registry plugin requires read access to **_all_** `ImageStreams` and `ImageStreamTags` on a cluster. (Currently only a single cluster is supported.)
+
+You can create a `ServiceAccount`, `ClusterRole` and `ClusterRoleBinding` with this commands.
+
+Please notice that the ServiceAccount will be created in your current namespace while the `ClusterRole` and `ClusterRoleBinding` giving access to all namespaces are cluster-wide resources.
+
+Additional information on these commands could be found in the [OpenShift Container Platform authentication and authorization documentation](https://docs.openshift.com/container-platform/latest/authentication/index.html).
+
+```console
+oc create serviceaccount janus-idp-openshift-image-registry-reader
+
+oc create clusterrole janus-idp-openshift-image-registry-reader --verb=get,watch,list --resource=imagestreams --resource=imagestreamtags
+
+oc adm policy add-cluster-role-to-user janus-idp-openshift-image-registry-reader -z janus-idp-openshift-image-registry-reader
+```
+
+And finally you can use this command to create a token that is valid for one week:
+
+```console
+oc create token --duration=168h janus-idp-openshift-image-registry-reader
+```
+
 ### Installation
 
 Run the following command to install the OpenShift Image Registry plugin:
@@ -46,7 +70,7 @@ yarn workspace app add @janus-idp/backstage-plugin-openshift-image-registry
              to="openshift-image-registry"
              text="Image Registry"
            />
-           ;{/* highlight-add-end */}
+           {/* highlight-add-end */}
          </SidebarGroup>
          {/* ... */}
        </Sidebar>

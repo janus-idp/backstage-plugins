@@ -7,15 +7,6 @@ export interface Config {
          */
         url: string;
         /**
-         * Strategy used to auth with Kiali
-         * -  anonymous
-         * -  token
-         *
-         * More info in https://kiali.io/docs/configuration/authentication/
-         *
-         */
-        strategy: string;
-        /**
          * Service Account Token which is used for querying data from Kiali
          * @visibility secret
          */

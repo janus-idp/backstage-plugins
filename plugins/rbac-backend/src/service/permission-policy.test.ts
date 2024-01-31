@@ -24,6 +24,8 @@ import { MODEL } from './permission-model';
 import { RBACPermissionPolicy } from './permission-policy';
 import { BackstageRoleManager } from './role-manager';
 
+type PermissionAction = 'create' | 'read' | 'update' | 'delete';
+
 const catalogApi = {
   getEntityAncestors: jest.fn().mockImplementation(),
   getLocationById: jest.fn().mockImplementation(),
@@ -197,16 +199,24 @@ describe('RBACPermissionPolicy Tests', () => {
     beforeEach(async () => {
       const adapter = new StringAdapter(
         `
-                # basic type permission policies
+                # ========== basic type permission policies ========== #
+                # case 1
                 p, user:default/known_user, test.resource.deny, use, deny
+                # case 2 is about user without listed permissions
+                # case 3
                 p, user:default/duplicated, test.resource, use, allow
                 p, user:default/duplicated, test.resource, use, deny
+                # case 4
                 p, user:default/known_user, test.resource, use, allow
 
-                # resource type permission policies
-                p, user:default/known_user, test-resource-deny, update, deny 
+                # ========== resource type permission policies ========== #
+                # case 1
+                p, user:default/known_user, test-resource-deny, update, deny
+                # case 2 is about user without listed permissions
+                # case 3
                 p, user:default/duplicated, test-resource, update, allow
                 p, user:default/duplicated, test-resource, update, deny
+                # case 4
                 p, user:default/known_user, test-resource, update, allow 
                 `,
       );
@@ -229,13 +239,13 @@ describe('RBACPermissionPolicy Tests', () => {
 
       catalogApi.getEntities.mockReturnValue({ items: [] });
     });
-    // +-------+------+------------------------+
-    // | allow | deny |         result         |
-    // +-------+------+------------------------+
-    // | N     | Y    | deny                   | 1
-    // | N     | N    | deny (user not listed) | 2
-    // | Y     | Y    | deny (user:default/duplicated)      | 3
-    // | Y     | N    | allow                  | 4
+    // +-------+------+------------------------------------+
+    // | allow | deny |         result                 |   |
+    // +-------+------+--------------------------------+---|
+    // | N     | Y    | deny                           | 1 |
+    // | N     | N    | deny (user not listed)         | 2 |
+    // | Y     | Y    | deny (user:default/duplicated) | 3 |
+    // | Y     | N    | allow                          | 4 |
 
     // Tests for Resource basic type permission
 
@@ -337,17 +347,220 @@ describe('RBACPermissionPolicy Tests', () => {
     });
 
     // Tests for admin added through app config
-    it('should allow access to permission resource for admin added through app config', async () => {
-      const decision = await policy.handle(
-        newPolicyQueryWithResourcePermission(
-          'policy-entity.read',
-          'policy-entity',
-          'read',
-        ),
-        newIdentityResponse('user:default/guest'),
-      );
-      expect(decision.result).toBe(AuthorizeResult.ALLOW);
+    it('should allow access to permission resources for admin added through app config', async () => {
+      const adminPerm: {
+        name: string;
+        resource: string;
+        action: PermissionAction;
+      }[] = [
+        {
+          name: 'policy.entity.read',
+          resource: 'policy-entity',
+          action: 'read',
+        },
+        {
+          name: 'policy.entity.create',
+          resource: 'policy-entity',
+          action: 'create',
+        },
+        {
+          name: 'policy.entity.update',
+          resource: 'policy-entity',
+          action: 'update',
+        },
+        {
+          name: 'policy.entity.delete',
+          resource: 'policy-entity',
+          action: 'delete',
+        },
+        {
+          name: 'catalog.entity.read',
+          resource: 'catalog-entity',
+          action: 'read',
+        },
+      ];
+      for (const perm of adminPerm) {
+        const decision = await policy.handle(
+          newPolicyQueryWithResourcePermission(
+            perm.name,
+            perm.resource,
+            perm.action,
+          ),
+          newIdentityResponse('user:default/guest'),
+        );
+        expect(decision.result).toBe(AuthorizeResult.ALLOW);
+      }
     });
+  });
+});
+
+// Notice: There is corner case, when "resourced" permission policy can be defined not by resource type, but by name.
+describe('Policy checks for resourced permissions defined by name', () => {
+  async function createRBACPolicy(
+    policyContent: string,
+  ): Promise<RBACPermissionPolicy> {
+    const adapter = new StringAdapter(policyContent);
+    const config = new ConfigReader({});
+    const theModel = newModelFromString(MODEL);
+    const logger = getVoidLogger();
+    const enf = await createEnforcer(
+      theModel,
+      adapter,
+      logger,
+      tokenManagerMock,
+    );
+
+    return await RBACPermissionPolicy.build(
+      logger,
+      config,
+      conditionalStorage,
+      enf,
+    );
+  }
+  it('should allow access to resourced permission assigned by name', async () => {
+    catalogApi.getEntities.mockReturnValue({ items: [] });
+
+    const policy = await createRBACPolicy(`
+      p, role:default/catalog_reader, catalog.entity.read, read, allow
+
+      g, user:default/tor, role:default/catalog_reader
+    `);
+
+    const decision = await policy.handle(
+      newPolicyQueryWithResourcePermission(
+        'catalog.entity.read',
+        'catalog-entity',
+        'read',
+      ),
+      newIdentityResponse('user:default/tor'),
+    );
+    expect(decision.result).toBe(AuthorizeResult.ALLOW);
+  });
+
+  it('should allow access to resourced permission assigned by name, because it has higher priority then permission for the same resource assigned by resource type', async () => {
+    catalogApi.getEntities.mockReturnValue({ items: [] });
+
+    const policy = await createRBACPolicy(`
+      p, role:default/catalog_reader, catalog.entity.read, read, allow
+      p, role:default/catalog_reader, catalog-entity, read, deny
+
+      g, user:default/tor, role:default/catalog_reader
+    `);
+
+    const decision = await policy.handle(
+      newPolicyQueryWithResourcePermission(
+        'catalog.entity.read',
+        'catalog-entity',
+        'read',
+      ),
+      newIdentityResponse('user:default/tor'),
+    );
+    expect(decision.result).toBe(AuthorizeResult.ALLOW);
+  });
+
+  it('should deny access to resourced permission assigned by name, because it has higher priority then permission for the same resource assigned by resource type', async () => {
+    catalogApi.getEntities.mockReturnValue({ items: [] });
+
+    const policy = await createRBACPolicy(`
+      p, role:default/catalog_reader, catalog.entity.read, read, deny
+      p, role:default/catalog_reader, catalog-entity, read, allow
+
+      g, user:default/tor, role:default/catalog_reader
+    `);
+
+    const decision = await policy.handle(
+      newPolicyQueryWithResourcePermission(
+        'catalog.entity.read',
+        'catalog-entity',
+        'read',
+      ),
+      newIdentityResponse('user:default/tor'),
+    );
+    expect(decision.result).toBe(AuthorizeResult.DENY);
+  });
+
+  it('should allow access to resourced permission assigned by name, but user inherits policy from his group', async () => {
+    const groupEntityMock: Entity = {
+      apiVersion: 'v1',
+      kind: 'Group',
+      metadata: {
+        name: 'team-a',
+        namespace: 'default',
+      },
+    };
+    catalogApi.getEntities.mockImplementation(arg => {
+      const hasMember = arg.filter['relations.hasMember'];
+      if (hasMember && hasMember[0] === 'user:default/tor') {
+        return { items: [groupEntityMock] };
+      }
+      return { items: [] };
+    });
+
+    const policy = await createRBACPolicy(`
+    p, role:default/catalog_user, catalog.entity.read, read, allow
+
+    g, group:default/team-a, role:default/catalog_user
+    `);
+
+    const decision = await policy.handle(
+      newPolicyQueryWithResourcePermission(
+        'catalog.entity.read',
+        'catalog-entity',
+        'read',
+      ),
+      newIdentityResponse('user:default/tor'),
+    );
+    expect(decision.result).toBe(AuthorizeResult.ALLOW);
+  });
+
+  it('should allow access to resourced permission assigned by name, but user inherits policy from few groups', async () => {
+    const groupEntityMock: Entity = {
+      apiVersion: 'v1',
+      kind: 'Group',
+      metadata: {
+        name: 'team-a',
+        namespace: 'default',
+      },
+      spec: {
+        parent: 'team-b',
+      },
+    };
+    const groupParentMock: Entity = {
+      apiVersion: 'v1',
+      kind: 'Group',
+      metadata: {
+        name: 'team-b',
+        namespace: 'default',
+      },
+    };
+    catalogApi.getEntities.mockImplementation(arg => {
+      const hasMember = arg.filter['relations.hasMember'];
+      if (hasMember && hasMember[0] === 'user:default/tor') {
+        return { items: [groupEntityMock] };
+      }
+      const hasParent = arg.filter['relations.parentOf'];
+      if (hasParent && hasParent[0] === 'group:default/team-a') {
+        return { items: [groupParentMock] };
+      }
+      return { items: [] };
+    });
+
+    const policy = await createRBACPolicy(`
+    p, role:default/catalog_user, catalog.entity.read, read, allow
+
+    g, group:default/team-a, group:default/team-b
+    g, group:default/team-b, role:default/catalog_user
+    `);
+
+    const decision = await policy.handle(
+      newPolicyQueryWithResourcePermission(
+        'catalog.entity.read',
+        'catalog-entity',
+        'read',
+      ),
+      newIdentityResponse('user:default/tor'),
+    );
+    expect(decision.result).toBe(AuthorizeResult.ALLOW);
   });
 });
 
@@ -810,7 +1023,7 @@ function newPolicyQueryWithBasicPermission(name: string): PolicyQuery {
 function newPolicyQueryWithResourcePermission(
   name: string,
   resource: string,
-  action: 'create' | 'read' | 'update' | 'delete',
+  action: PermissionAction,
 ): PolicyQuery {
   const mockPermission = createPermission({
     name: name,

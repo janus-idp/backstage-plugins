@@ -1,6 +1,8 @@
 import { Specification } from '@severlessworkflow/sdk-typescript';
-import { JSONSchema4 } from 'json-schema';
+import { JSONSchema7 } from 'json-schema';
 import { OpenAPIV3 } from 'openapi-types';
+
+import { ProcessInstanceStateValues } from './models';
 
 type Id<T> = { [P in keyof T]: T[P] };
 
@@ -21,6 +23,7 @@ export type WorkflowDefinition = OmitRecursively<
 >;
 
 export interface WorkflowItem {
+  serviceUrl?: string;
   uri: string;
   definition: WorkflowDefinition;
 }
@@ -50,18 +53,9 @@ export interface WorkflowSpecFile {
   path: string;
   content: OpenAPIV3.Document;
 }
-
-export type WorkflowDataInputSchema = JSONSchema4 & {
-  components: {
-    schemas: {
-      [key: string]: OpenAPIV3.NonArraySchemaObject;
-    };
-  };
-};
-
 export interface WorkflowDataInputSchemaResponse {
   workflowItem: WorkflowItem;
-  schema: WorkflowDataInputSchema | undefined;
+  schemas: JSONSchema7[];
 }
 
 export interface WorkflowExecutionResponse {
@@ -78,8 +72,32 @@ export interface WorkflowOverview {
   name?: string;
   uri?: string;
   lastTriggeredMs?: number;
-  lastRunStatus?: string;
-  type?: string;
+  lastRunStatus?: ProcessInstanceStateValues;
+  category?: string;
   avgDurationMs?: number;
   description?: string;
+}
+
+export interface WorkflowInfo {
+  id: string;
+  type?: string;
+  name?: string;
+  version?: string;
+  annotations?: string[];
+  description?: string;
+  inputSchema?: JSONSchema7;
+  endpoint?: string;
+  serviceUrl?: string;
+  roles?: string[];
+  source?: string;
+  metadata?: Map<string, string>;
+  nodes?: Node[];
+}
+
+export interface Node {
+  id: string;
+  type?: string;
+  name?: string;
+  uniqueId?: string;
+  nodeDefinitionId?: string;
 }

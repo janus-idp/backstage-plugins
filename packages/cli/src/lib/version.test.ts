@@ -60,22 +60,22 @@ describe('createPackageVersionProvider', () => {
     const lockfile = await Lockfile.load('yarn.lock');
     const provider = createPackageVersionProvider(lockfile);
 
-    expect(provider('a', '0.1.5')).toBe('^0.1.0');
+    expect(provider('a', '0.1.5')).toBe('0.1.0');
     expect(provider('b', '1.0.0')).toBe('*');
-    expect(provider('c', '0.1.0')).toBe('^0.1.0');
-    expect(provider('c', '0.1.6')).toBe('^0.1.4');
-    expect(provider('c', '0.2.0')).toBe('^0.2.0');
-    expect(provider('c', '0.2.6')).toBe('^0.2.4');
+    expect(provider('c', '0.1.0')).toBe('0.1.0');
+    expect(provider('c', '0.1.6')).toBe('0.1.4');
+    expect(provider('c', '0.2.0')).toBe('0.2.0');
+    expect(provider('c', '0.2.6')).toBe('0.2.4');
     expect(provider('c', '0.3.0-rc1')).toBe('0.3.0-rc1');
-    expect(provider('c', '0.3.0')).toBe('^0.3.0');
-    expect(provider('c', '0.3.6')).toBe('^0.3.4');
+    expect(provider('c', '0.3.0')).toBe('0.3.0');
+    expect(provider('c', '0.3.6')).toBe('0.3.4');
     const cliVersion = packageVersions['@backstage/cli'];
     expect(provider('@backstage/cli')).toBe(
       // If we're currently in pre-release we expect that to be picked instead
-      cliVersion.includes('-') ? `^${cliVersion}` : '*',
+      cliVersion.includes('-') ? `${cliVersion}` : '*',
     );
     expect(provider('@backstage/core-plugin-api')).toBe(
-      `^${corePluginApiPkg.version}`,
+      `${corePluginApiPkg.version}`,
     );
     expect(provider('@types/t', '1.4.2')).toBe('*');
   });

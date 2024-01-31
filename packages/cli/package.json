@@ -1,7 +1,7 @@
 {
   "name": "@janus-idp/cli",
   "description": "CLI for developing Backstage plugins and apps",
-  "version": "1.4.5",
+  "version": "1.7.0",
   "publishConfig": {
     "access": "public"
   },
@@ -23,7 +23,7 @@
     "build": "backstage-cli package build",
     "lint": "backstage-cli package lint",
     "tsc": "tsc",
-    "test": "backstage-cli package test",
+    "test": "backstage-cli package test --passWithNoTests --coverage",
     "clean": "backstage-cli package clean",
     "start": "nodemon --"
   },
@@ -99,6 +99,7 @@
     "@backstage/core-plugin-api": "1.7.0",
     "@backstage/dev-utils": "1.0.22",
     "@backstage/plugin-scaffolder-backend": "1.18.0",
+    "@backstage/plugin-scaffolder-node": "0.2.6",
     "@backstage/test-utils": "1.4.4",
     "@backstage/theme": "0.4.3",
     "@types/express": "4.17.20",

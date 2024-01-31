@@ -1,1 +1,2 @@
-export * from './dynamic/alpha';
+export { orchestratorPlugin } from './OrchestratorPlugin';
+export { orchestratorModuleEntityProvider } from './module';

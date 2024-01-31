@@ -16,7 +16,7 @@
 
 import { assertError } from '@backstage/errors';
 
-import { Command } from 'commander';
+import { Command, InvalidArgumentError } from 'commander';
 
 import { exitWithError } from '../lib/errors';
 
@@ -88,6 +88,20 @@ export function registerScriptCommand(program: Command) {
       'Optional list of packages that should be considered shared by all dynamic plugins, and will be moved to peer dependencies of the dynamic plugin. The `@backstage` packages are by default considered shared dependencies.',
     )
     .option(
+      '--override-interop <mode:package-name,package-name...>',
+      'Optional list of packages for which the CommonJS Rollup output interop mode should be overridden to `mode` when building the dynamic plugin assets (backend plugin only).',
+      (value, previous) => {
+        const [key, val] = value.split(':');
+        if (!['auto', 'esModule', 'default', 'defaultOnly'].includes(key)) {
+          throw new InvalidArgumentError(
+            `Invalid interop mode '${key}'. Possible values are: auto, esModule, default, defaultOnly (see https://rollupjs.org/configuration-options/#output-interop).`,
+          );
+        }
+        return { ...previous, [key]: val?.split(',') || [] };
+      },
+      {},
+    )
+    .option(
       '--no-install',
       'Do not run `yarn install` to fill the dynamic plugin `node_modules` folder (backend plugin only).',
     )
@@ -124,7 +138,6 @@ export function registerCommands(program: Command) {
       (opt, arr: string[]) => [...arr, opt],
       [],
     )
-    .option('--scope <scope>', 'The scope to use for new packages')
     .option(
       '--npm-registry <URL>',
       'The package registry to use for new packages',
@@ -134,6 +147,10 @@ export function registerCommands(program: Command) {
       'The version to use for any new packages (default: 0.1.0)',
     )
     .option('--no-private', 'Do not mark new packages as private')
+    .option(
+      '--do-not-edit-packages',
+      'Do not edit packages/app and packages/backend',
+    )
     .action(lazy(() => import('./new/new').then(m => m.default)));
 
   registerScriptCommand(program);

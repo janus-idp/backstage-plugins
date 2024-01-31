@@ -18,11 +18,11 @@ import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { Logger } from 'winston';
 
 import {
-  ASSESSMENT_WORKFLOW_TYPE,
-  default_catalog_environment,
-  default_catalog_owner,
-  orchestrator_service_ready_topic,
-  workflow_type,
+  DEFAULT_CATALOG_ENVIRONMENT,
+  DEFAULT_CATALOG_OWNER,
+  getWorkflowCategory,
+  ORCHESTRATOR_SERVICE_READY_TOPIC,
+  WORKFLOW_TYPE,
   WorkflowCategory,
   WorkflowItem,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
@@ -38,7 +38,6 @@ export class OrchestratorEntityProvider
   private readonly owner: string;
   private readonly environment: string;
 
-  private readonly sonataFlowServiceUrl: string;
   private readonly orchestratorPluginUrl: string;
 
   static async fromConfig(args: {
@@ -47,28 +46,17 @@ export class OrchestratorEntityProvider
     scheduler: PluginTaskScheduler;
     discovery: DiscoveryApi;
   }): Promise<OrchestratorEntityProvider> {
-    const sonataFlowBaseUrl = args.config.getString(
-      'orchestrator.sonataFlowService.baseUrl',
-    );
-    const sonataFlowPort = args.config.getOptionalNumber(
-      'orchestrator.sonataFlowService.port',
-    );
     const owner =
       args.config.getOptionalString('orchestrator.catalog.owner') ??
-      default_catalog_owner;
+      DEFAULT_CATALOG_OWNER;
     const environment =
       args.config.getOptionalString('orchestrator.catalog.environment') ??
-      default_catalog_environment;
+      DEFAULT_CATALOG_ENVIRONMENT;
 
     const orchestratorPluginUrl =
       await args.discovery.getBaseUrl('orchestrator');
 
-    const sonataFlowServiceUrl = sonataFlowPort
-      ? `${sonataFlowBaseUrl}:${sonataFlowPort}`
-      : sonataFlowBaseUrl;
-
     return new OrchestratorEntityProvider({
-      sonataFlowServiceUrl,
       orchestratorPluginUrl,
       scheduler: args.scheduler,
       logger: args.logger,
@@ -78,14 +66,12 @@ export class OrchestratorEntityProvider
   }
 
   constructor(args: {
-    sonataFlowServiceUrl: string;
     orchestratorPluginUrl: string;
     scheduler: PluginTaskScheduler;
     logger: Logger;
     owner: string;
     environment: string;
   }) {
-    this.sonataFlowServiceUrl = args.sonataFlowServiceUrl;
     this.orchestratorPluginUrl = args.orchestratorPluginUrl;
     this.scheduler = args.scheduler;
     this.owner = args.owner;
@@ -98,7 +84,7 @@ export class OrchestratorEntityProvider
   }
 
   supportsEventTopics(): string[] {
-    return [orchestrator_service_ready_topic];
+    return [ORCHESTRATOR_SERVICE_READY_TOPIC];
   }
 
   async connect(connection: EntityProviderConnection): Promise<void> {
@@ -115,7 +101,7 @@ export class OrchestratorEntityProvider
   }
 
   async onEvent(params: EventParams): Promise<void> {
-    if (params.topic !== orchestrator_service_ready_topic) {
+    if (params.topic !== ORCHESTRATOR_SERVICE_READY_TOPIC) {
       return;
     }
     await this.run();
@@ -154,34 +140,33 @@ export class OrchestratorEntityProvider
   private workflowToTemplateEntities(
     items: WorkflowItem[],
   ): TemplateEntityV1beta3[] {
-    return items.map(i => {
-      const sanitizedId = i.definition.id.replace(/ /g, '_');
-      const category: WorkflowCategory = i.definition.annotations?.find(
-        annotation => annotation === ASSESSMENT_WORKFLOW_TYPE,
-      )
-        ? WorkflowCategory.ASSESSMENT
-        : WorkflowCategory.INFRASTRUCTURE;
-      return {
-        apiVersion: 'scaffolder.backstage.io/v1beta3',
-        kind: 'Template',
-        metadata: {
-          name: sanitizedId,
-          title: i.definition.name,
-          description: i.definition.description,
-          tags: [category],
-          annotations: {
-            [ANNOTATION_LOCATION]: `url:${this.sonataFlowServiceUrl}`,
-            [ANNOTATION_ORIGIN_LOCATION]: `url:${this.sonataFlowServiceUrl}`,
-            [ANNOTATION_SOURCE_LOCATION]: `url:${this.sonataFlowServiceUrl}/management/processes/${sanitizedId}/source`,
-            [ANNOTATION_VIEW_URL]: `${this.sonataFlowServiceUrl}/management/processes/${sanitizedId}/source`,
+    return items
+      .filter(i => i.serviceUrl)
+      .map(i => {
+        const sanitizedId = i.definition.id.replace(/ /g, '_');
+        const category: WorkflowCategory = getWorkflowCategory(i.definition);
+
+        return {
+          apiVersion: 'scaffolder.backstage.io/v1beta3',
+          kind: 'Template',
+          metadata: {
+            name: sanitizedId,
+            title: i.definition.name,
+            description: i.definition.description,
+            tags: [category],
+            annotations: {
+              [ANNOTATION_LOCATION]: `url:${i.serviceUrl}`,
+              [ANNOTATION_ORIGIN_LOCATION]: `url:${i.serviceUrl}`,
+              [ANNOTATION_SOURCE_LOCATION]: `url:${i.serviceUrl}/management/processes/${sanitizedId}/source`,
+              [ANNOTATION_VIEW_URL]: `${i.serviceUrl}/management/processes/${sanitizedId}/source`,
+            },
           },
-        },
-        spec: {
-          owner: this.owner,
-          type: workflow_type,
-          steps: [],
-        },
-      };
-    });
+          spec: {
+            owner: this.owner,
+            type: WORKFLOW_TYPE,
+            steps: [],
+          },
+        };
+      });
   }
 }

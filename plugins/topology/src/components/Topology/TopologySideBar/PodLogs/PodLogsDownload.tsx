@@ -3,7 +3,7 @@ import React from 'react';
 import { IconButton } from '@material-ui/core';
 import DownloadIcon from '@material-ui/icons/GetApp';
 
-import { downloadLogFile } from '../../../../utils/pod-log-utils';
+import { downloadLogFile } from '@janus-idp/shared-react';
 
 type PodLogsDownloadProps = {
   logText?: string;

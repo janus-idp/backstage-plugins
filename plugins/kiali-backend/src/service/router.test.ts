@@ -1,5 +1,3 @@
-import { HostDiscovery } from '@backstage/backend-common';
-import { CatalogClient } from '@backstage/catalog-client';
 import { ConfigReader } from '@backstage/config';
 
 import express from 'express';
@@ -7,32 +5,10 @@ import { setupServer } from 'msw/node';
 import request from 'supertest';
 import { createLogger, transports } from 'winston';
 
-import { readKialiConfigs } from '@janus-idp/backstage-plugin-kiali-common';
-
 import { handlers } from '../../__fixtures__/handlers';
-import { KialiApiImpl } from '../clients/KialiAPIConnector';
-import { makeRouter } from './router';
+import { createRouter } from './router';
 
 const server = setupServer(...handlers);
-
-const kialiURL = 'https://localhost:4000';
-const MockConfig = {
-  backend: {
-    baseUrl: 'http://localhost:7007',
-  },
-  catalog: {
-    providers: {
-      kiali: {
-        url: kialiURL,
-        strategy: 'anonymous',
-        skipTLSVerify: true,
-      },
-    },
-  },
-};
-
-afterEach(() => server.restoreHandlers());
-afterAll(() => server.close());
 
 beforeAll(() =>
   server.listen({
@@ -43,228 +19,180 @@ beforeAll(() =>
     onUnhandledRequest: 'bypass',
   }),
 );
+afterEach(() => server.restoreHandlers());
+afterAll(() => server.close());
+
+const logger = createLogger({
+  transports: [new transports.Console({ silent: true })],
+});
 
 describe('createRouter', () => {
   let app: express.Express;
 
   beforeAll(async () => {
-    const mockConfig = new ConfigReader(MockConfig, 'kiali');
-    const kiali = readKialiConfigs(mockConfig);
-    const mockCatalog = new CatalogClient({
-      discoveryApi: HostDiscovery.fromConfig(mockConfig),
-    });
-    const logger = createLogger({
-      transports: [new transports.Console({ silent: true })],
-    });
-    const kialiAPI = new KialiApiImpl({ logger, kiali });
-    app = express();
-    app.use(express.json());
-    const router = makeRouter(logger, kialiAPI, mockCatalog);
-    app.use('/', router);
-  });
-
-  beforeEach(() => {
     jest.resetAllMocks();
+    const router = await createRouter({
+      logger: logger,
+      config: new ConfigReader({
+        catalog: {
+          providers: {
+            kiali: {
+              url: 'https://localhost:4000',
+              serviceAccountToken: '<token>',
+            },
+          },
+        },
+      }),
+    });
+    app = express().use(router);
   });
 
-  describe('POST /config', () => {
-    it('returns config', async () => {
-      const response = await request(app)
-        .post('/config')
-        .set('Content-Type', 'application/json');
-
-      expect(response.status).toEqual(200);
-      expect(response.body).toEqual({
-        warnings: [],
-        errors: [],
-        response: {
-          server: {
-            accessibleNamespaces: ['**'],
-            authStrategy: 'anonymous',
-            clusterInfo: {},
-            deployment: {},
-            healthConfig: {
-              rate: [
-                {
-                  tolerance: [
-                    {
-                      code: '5XX',
-                      degraded: 0,
-                      failure: 10,
-                      protocol: 'http',
-                      direction: '.*',
-                    },
-                    {
-                      code: '4XX',
-                      degraded: 10,
-                      failure: 20,
-                      protocol: 'http',
-                      direction: '.*',
-                    },
-                    {
-                      code: '^[1-9]$|^1[0-6]$',
-                      degraded: 0,
-                      failure: 10,
-                      protocol: 'grpc',
-                      direction: '.*',
-                    },
-                    {
-                      code: '^-$',
-                      degraded: 0,
-                      failure: 10,
-                      protocol: 'http|grpc',
-                      direction: '.*',
-                    },
-                  ],
-                },
-                {
-                  tolerance: [
-                    {
-                      code: '5XX',
-                      degraded: 0,
-                      failure: 10,
-                      protocol: 'http',
-                      direction: '.*',
-                    },
-                    {
-                      code: '4XX',
-                      degraded: 10,
-                      failure: 20,
-                      protocol: 'http',
-                      direction: '.*',
-                    },
-                    {
-                      code: '^[1-9]$|^1[0-6]$',
-                      degraded: 0,
-                      failure: 10,
-                      protocol: 'grpc',
-                      direction: '.*',
-                    },
-                    {
-                      code: '^-$',
-                      degraded: 0,
-                      failure: 10,
-                      protocol: 'http|grpc',
-                      direction: '.*',
-                    },
-                  ],
-                },
-              ],
-            },
-            istioAnnotations: {
-              istioInjectionAnnotation: 'sidecar.istio.io/inject',
-            },
-            istioCanaryRevision: {},
-            istioStatusEnabled: true,
-            istioIdentityDomain: 'svc.cluster.local',
-            istioNamespace: 'istio-system',
-            istioLabels: {
-              appLabelName: 'app',
-              injectionLabelName: 'istio-injection',
-              injectionLabelRev: 'istio.io/rev',
-              versionLabelName: 'version',
-            },
-            istioConfigMap: 'istio',
-            kialiFeatureFlags: {
-              certificatesInformationIndicators: {
-                enabled: true,
-                secrets: ['cacerts', 'istio-ca-secret'],
-              },
-              clustering: {
-                enable_exec_provider: false,
-              },
-              istioAnnotationAction: true,
-              istioInjectionAction: true,
-              istioUpgradeAction: false,
-              uiDefaults: {
-                graph: {
-                  findOptions: [
-                    {
-                      description: 'Find: slow edges (\u003e 1s)',
-                      expression: 'rt \u003e 1000',
-                    },
-                    {
-                      description: 'Find: unhealthy nodes',
-                      expression: '! healthy',
-                    },
-                    {
-                      description: 'Find: unknown nodes',
-                      expression: 'name = unknown',
-                    },
-                    {
-                      description: 'Find: nodes with the 2 top rankings',
-                      expression: 'rank \u003c= 2',
-                    },
-                  ],
-                  hideOptions: [
-                    {
-                      description: 'Hide: healthy nodes',
-                      expression: 'healthy',
-                    },
-                    {
-                      description: 'Hide: unknown nodes',
-                      expression: 'name = unknown',
-                    },
-                    {
-                      description:
-                        'Hide: nodes ranked lower than the 2 top rankings',
-                      expression: 'rank \u003e 2',
-                    },
-                  ],
-                  settings: {
-                    fontLabel: 13,
-                    minFontBadge: 7,
-                    minFontLabel: 10,
-                  },
-                  traffic: {
-                    grpc: 'requests',
-                    http: 'requests',
-                    tcp: 'sent',
-                  },
-                },
-                list: {
-                  includeHealth: true,
-                  includeIstioResources: true,
-                  includeValidations: true,
-                  showIncludeToggles: false,
-                },
-                metricsPerRefresh: '1m',
-                metricsInbound: {},
-                metricsOutbound: {},
-                refreshInterval: '60s',
-              },
-              validations: {
-                ignore: ['KIA1301'],
-                SkipWildcardGatewayHosts: false,
-              },
-            },
-            logLevel: 'trace',
-            prometheus: {
-              globalScrapeInterval: 15,
-              storageTsdbRetention: 1296000,
-            },
+  describe('POST /status', () => {
+    it('should get the kiali status', async () => {
+      const result = await request(app).post('/status');
+      expect(result.status).toBe(200);
+      expect(result.body).toEqual({
+        status: {
+          'Kiali commit hash': '72a2496cb4ed1545457a68e34fe3e81409b1611d',
+          'Kiali container version': 'v1.71.0-SNAPSHOT',
+          'Kiali state': 'running',
+          'Kiali version': 'v1.71.0-SNAPSHOT',
+          'Mesh name': 'Istio',
+          'Mesh version': '1.17.1',
+        },
+        externalServices: [
+          {
+            name: 'Istio',
+            version: '1.17.1',
           },
-          meshTLSStatus: {
-            status: 'MTLS_NOT_ENABLED',
-            autoMTLSEnabled: true,
-            minTLS: 'N/A',
+          {
+            name: 'Prometheus',
+            version: '2.34.0',
           },
-          username: 'anonymous',
-          istioCerts: [
-            {
-              secretName: 'istio-ca-secret',
-              secretNamespace: 'istio-system',
-              dnsNames: null,
-              issuer: 'O=cluster.local',
-              notBefore: '2023-07-10T10:43:24Z',
-              notAfter: '2033-07-07T10:43:24Z',
-              error: '',
-              accessible: true,
-            },
-          ],
-          kialiConsole: kialiURL,
+          {
+            name: 'Kubernetes',
+            version: 'v1.26.3+b404935',
+          },
+          {
+            name: 'Grafana',
+          },
+          {
+            name: 'Jaeger',
+          },
+        ],
+        warningMessages: [],
+        istioEnvironment: {
+          isMaistra: false,
+          istioAPIEnabled: true,
         },
       });
+    });
+  });
+
+  describe('POST /proxy', () => {
+    it('should get namespaces', async () => {
+      const result = await request(app)
+        .post('/proxy')
+        .send('{"endpoint":"api/namespaces"}')
+        .set('Content-Type', 'application/json')
+        .set('Accept', 'application/json');
+      expect(result.status).toBe(200);
+      expect(result.body).toEqual([
+        {
+          name: 'bookinfo',
+          cluster: 'Kubernetes',
+          isAmbient: false,
+          labels: {
+            'istio-injection': 'enabled',
+            'kubernetes.io/metadata.name': 'bookinfo',
+            'pod-security.kubernetes.io/audit': 'privileged',
+            'pod-security.kubernetes.io/audit-version': 'v1.24',
+            'pod-security.kubernetes.io/warn': 'privileged',
+            'pod-security.kubernetes.io/warn-version': 'v1.24',
+          },
+          annotations: {
+            'openshift.io/description': '',
+            'openshift.io/display-name': '',
+            'openshift.io/requester': 'kubeadmin',
+            'openshift.io/sa.scc.mcs': 's0:c26,c15',
+            'openshift.io/sa.scc.supplemental-groups': '1000680000/10000',
+            'openshift.io/sa.scc.uid-range': '1000680000/10000',
+          },
+        },
+        {
+          name: 'default',
+          cluster: 'Kubernetes',
+          isAmbient: false,
+          labels: {
+            'kubernetes.io/metadata.name': 'default',
+            'pod-security.kubernetes.io/audit': 'privileged',
+            'pod-security.kubernetes.io/enforce': 'privileged',
+            'pod-security.kubernetes.io/warn': 'privileged',
+          },
+          annotations: {
+            'openshift.io/sa.scc.mcs': 's0:c1,c0',
+            'openshift.io/sa.scc.supplemental-groups': '1000000000/10000',
+            'openshift.io/sa.scc.uid-range': '1000000000/10000',
+          },
+        },
+        {
+          name: 'hostpath-provisioner',
+          cluster: 'Kubernetes',
+          isAmbient: false,
+          labels: {
+            'kubernetes.io/metadata.name': 'hostpath-provisioner',
+            'pod-security.kubernetes.io/audit': 'privileged',
+            'pod-security.kubernetes.io/audit-version': 'v1.24',
+            'pod-security.kubernetes.io/warn': 'privileged',
+            'pod-security.kubernetes.io/warn-version': 'v1.24',
+          },
+          annotations: {
+            'kubectl.kubernetes.io/last-applied-configuration':
+              '{"apiVersion":"v1","kind":"Namespace","metadata":{"annotations":{},"name":"hostpath-provisioner"}}\n',
+            'openshift.io/sa.scc.mcs': 's0:c26,c0',
+            'openshift.io/sa.scc.supplemental-groups': '1000650000/10000',
+            'openshift.io/sa.scc.uid-range': '1000650000/10000',
+          },
+        },
+        {
+          name: 'istio-system',
+          cluster: 'Kubernetes',
+          isAmbient: false,
+          labels: {
+            'kubernetes.io/metadata.name': 'istio-system',
+            'pod-security.kubernetes.io/audit': 'privileged',
+            'pod-security.kubernetes.io/audit-version': 'v1.24',
+            'pod-security.kubernetes.io/warn': 'privileged',
+            'pod-security.kubernetes.io/warn-version': 'v1.24',
+            'topology.istio.io/network': '',
+          },
+          annotations: {
+            'openshift.io/description': '',
+            'openshift.io/display-name': '',
+            'openshift.io/requester': 'kubeadmin',
+            'openshift.io/sa.scc.mcs': 's0:c26,c5',
+            'openshift.io/sa.scc.supplemental-groups': '1000660000/10000',
+            'openshift.io/sa.scc.uid-range': '1000660000/10000',
+          },
+        },
+        {
+          name: 'kiali',
+          cluster: 'Kubernetes',
+          isAmbient: false,
+          labels: {
+            'kubernetes.io/metadata.name': 'kiali',
+            'pod-security.kubernetes.io/audit': 'restricted',
+            'pod-security.kubernetes.io/audit-version': 'v1.24',
+            'pod-security.kubernetes.io/warn': 'restricted',
+            'pod-security.kubernetes.io/warn-version': 'v1.24',
+          },
+          annotations: {
+            'openshift.io/sa.scc.mcs': 's0:c26,c20',
+            'openshift.io/sa.scc.supplemental-groups': '1000690000/10000',
+            'openshift.io/sa.scc.uid-range': '1000690000/10000',
+          },
+        },
+      ]);
     });
   });
 });

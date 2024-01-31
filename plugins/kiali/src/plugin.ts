@@ -6,8 +6,10 @@ import {
   identityApiRef,
 } from '@backstage/core-plugin-api';
 
-import { KialiApiClient, kialiApiRef } from './api';
 import { overviewRouteRef, rootRouteRef } from './routes';
+import { KialiApiClient, kialiApiRef } from './services/Api';
+
+import '@patternfly/patternfly/patternfly.css';
 
 export const kialiPlugin = createPlugin({
   id: 'kiali',
@@ -22,8 +24,7 @@ export const kialiPlugin = createPlugin({
         discoveryApi: discoveryApiRef,
         identityApi: identityApiRef,
       },
-      factory: ({ discoveryApi, identityApi }) =>
-        new KialiApiClient({ discoveryApi, identityApi }),
+      factory: ({ discoveryApi }) => new KialiApiClient(discoveryApi),
     }),
   ],
 });
@@ -31,8 +32,7 @@ export const kialiPlugin = createPlugin({
 export const KialiPage = kialiPlugin.provide(
   createRoutableExtension({
     name: 'KialiPage',
-    component: () =>
-      import('./components/KialiComponent').then(m => m.KialiComponent),
+    component: () => import('./pages/Kiali/KialiPage').then(m => m.KialiPage),
     mountPoint: rootRouteRef,
   }),
 );

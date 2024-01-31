@@ -1,3 +1,47 @@
+## @janus-idp/backstage-plugin-ocm [3.7.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm@3.6.1...@janus-idp/backstage-plugin-ocm@3.7.0) (2024-01-30)
+
+
+### Features
+
+* add new backend system support for existing backend plugins that have not been migrated over yet ([#1132](https://github.com/janus-idp/backstage-plugins/issues/1132)) ([06e16fd](https://github.com/janus-idp/backstage-plugins/commit/06e16fdcf64257dd08297cb727445d9a8a23c522))
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.0
+
+## @janus-idp/backstage-plugin-ocm [3.6.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm@3.6.0...@janus-idp/backstage-plugin-ocm@3.6.1) (2024-01-25)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.6.0
+
+## @janus-idp/backstage-plugin-ocm [3.6.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm@3.5.9...@janus-idp/backstage-plugin-ocm@3.6.0) (2024-01-22)
+
+
+### Features
+
+* **ocm:** add sorting to the ocm ClusterStatusPage table ([#1052](https://github.com/janus-idp/backstage-plugins/issues/1052)) ([8203aaf](https://github.com/janus-idp/backstage-plugins/commit/8203aafb4d83c667e87b736e6e2df09e6a60d6ee))
+
+## @janus-idp/backstage-plugin-ocm [3.5.9](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm@3.5.8...@janus-idp/backstage-plugin-ocm@3.5.9) (2023-12-07)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.4.7
+
+## @janus-idp/backstage-plugin-ocm [3.5.8](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm@3.5.7...@janus-idp/backstage-plugin-ocm@3.5.8) (2023-11-30)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.4.6
+
 ## @janus-idp/backstage-plugin-ocm [3.5.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm@3.5.6...@janus-idp/backstage-plugin-ocm@3.5.7) (2023-11-23)
 
 

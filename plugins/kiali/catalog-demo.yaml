@@ -1,0 +1,16 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: istio
+  description: An example of a Kiali demo istio-system.
+  tags:
+    - istio
+    - kiali
+    - core
+    - servicemesh
+  annotations:
+    'backstage.io/kubernetes-namespace': istio-system,bookinfo
+spec:
+  type: service
+  lifecycle: production
+  owner: user:guest

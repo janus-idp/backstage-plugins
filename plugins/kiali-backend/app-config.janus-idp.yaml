@@ -3,9 +3,7 @@ catalog:
     # highlight-add-start
     kiali:
       # Required. Kiali endpoint
-      url: ${KIALI_ENDPOINT}
-      # Required. Kiali authentication. Supported anonymous and token
-      strategy: ${KIALI_AUTH_STRATEGY}
+      url: ${KIALI_BASE_URL}
       # Optional. Required by token authentication
       serviceAccountToken: ${KIALI_SERVICE_ACCOUNT_TOKEN}
       # Optional. defaults false

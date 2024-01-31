@@ -1,3 +1,70 @@
+## @janus-idp/backstage-plugin-rbac-backend [2.1.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.1.1...@janus-idp/backstage-plugin-rbac-backend@2.1.2) (2024-01-30)
+
+
+### Bug Fixes
+
+* **rbac:** enable create button for default role:default/rbac_admin ([#1137](https://github.com/janus-idp/backstage-plugins/issues/1137)) ([9926463](https://github.com/janus-idp/backstage-plugins/commit/9926463c8c46871b823796adf77bbd52eb8e6758))
+
+## @janus-idp/backstage-plugin-rbac-backend [2.1.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.1.0...@janus-idp/backstage-plugin-rbac-backend@2.1.1) (2024-01-23)
+
+
+### Bug Fixes
+
+* **rbac:** fix work resource permission specified by name ([#940](https://github.com/janus-idp/backstage-plugins/issues/940)) ([3601eb8](https://github.com/janus-idp/backstage-plugins/commit/3601eb8d0c19e0aad27031ab61f1afa0edc78945))
+
+## @janus-idp/backstage-plugin-rbac-backend [2.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.0.0...@janus-idp/backstage-plugin-rbac-backend@2.1.0) (2024-01-17)
+
+
+### Features
+
+* **Notifications:** new notifications FE plugin, API and backend ([#933](https://github.com/janus-idp/backstage-plugins/issues/933)) ([4d4cb78](https://github.com/janus-idp/backstage-plugins/commit/4d4cb781ca9fc331a2c621583e9203f9e4585ee7))
+* **rbac:** add doc about RBAC backend conditions API ([#1027](https://github.com/janus-idp/backstage-plugins/issues/1027)) ([fc9ad53](https://github.com/janus-idp/backstage-plugins/commit/fc9ad5348d768423cbce0df7e2a4239c9a24a11e))
+
+
+### Bug Fixes
+
+* **rbac:** fix role validation ([#1020](https://github.com/janus-idp/backstage-plugins/issues/1020)) ([49c7975](https://github.com/janus-idp/backstage-plugins/commit/49c7975f74a1791e205fe3a322f1efe6504212ed))
+
+## @janus-idp/backstage-plugin-rbac-backend [2.0.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@1.7.1...@janus-idp/backstage-plugin-rbac-backend@2.0.0) (2023-12-14)
+
+
+### ⚠ BREAKING CHANGES
+
+* **rbac:** add support for multiple policies CRUD (#984)
+
+### Features
+
+* **rbac:** add support for multiple policies CRUD ([#984](https://github.com/janus-idp/backstage-plugins/issues/984)) ([518c767](https://github.com/janus-idp/backstage-plugins/commit/518c7674aa037669fe9c2fc6f8dc9be5f0c8fa84))
+
+## @janus-idp/backstage-plugin-rbac-backend [1.7.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@1.7.0...@janus-idp/backstage-plugin-rbac-backend@1.7.1) (2023-12-08)
+
+
+### Documentation
+
+* **rbac:** add documentation for api and known permissions ([#1000](https://github.com/janus-idp/backstage-plugins/issues/1000)) ([8f8133f](https://github.com/janus-idp/backstage-plugins/commit/8f8133f12d2a74dc6503f7545942f11c40b52092))
+
+## @janus-idp/backstage-plugin-rbac-backend [1.7.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@1.6.6...@janus-idp/backstage-plugin-rbac-backend@1.7.0) (2023-12-07)
+
+
+### Features
+
+* **rbac:** list roles with no permission policies ([#998](https://github.com/janus-idp/backstage-plugins/issues/998)) ([217b7b0](https://github.com/janus-idp/backstage-plugins/commit/217b7b0db3414788c8e77247f378a51cf0eeda0d))
+
+## @janus-idp/backstage-plugin-rbac-backend [1.6.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@1.6.5...@janus-idp/backstage-plugin-rbac-backend@1.6.6) (2023-12-05)
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-rbac-common:** upgraded to 1.2.0
+
+## @janus-idp/backstage-plugin-rbac-backend [1.6.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@1.6.4...@janus-idp/backstage-plugin-rbac-backend@1.6.5) (2023-12-04)
+
+
+### Documentation
+
+* **rbac:** additional docs for backend configuration ([#982](https://github.com/janus-idp/backstage-plugins/issues/982)) ([17b95a0](https://github.com/janus-idp/backstage-plugins/commit/17b95a0c51e97ee5a9160dc7bec7559c075eca88))
+
 ## @janus-idp/backstage-plugin-rbac-backend [1.6.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@1.6.3...@janus-idp/backstage-plugin-rbac-backend@1.6.4) (2023-11-20)
 
 

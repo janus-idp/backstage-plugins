@@ -6,17 +6,21 @@ Plugin will inject the auth token and ensure that the request are only read only
 
 Matomo API cannot be used as proxy layer due to the token auth it follows. Thus this plugin will act as proxy layer
 
-## Getting started
+## Getting Started
 
-1. First install the backend plugin
+### Installing the NPM package
 
 ```bash
 yarn add --cwd packages/backend  @janus-idp/plugin-matomo-backend
 ```
 
-2. Then create a new file `packages/backend/src/plugins/matomo.ts`, and add the following
+### Installing the plugin
 
-```ts
+#### Adding the plugin to the legacy backend
+
+1. Create a new file `packages/backend/src/plugins/matomo.ts`, and add the following
+
+```ts title="packages/backend/src/plugins/matomo.ts"
 import { Router } from 'express';
 
 import { createRouter } from '@janus-idp/plugin-matomo-backend';
@@ -32,10 +36,11 @@ export default async function createPlugin(
 }
 ```
 
-3. Next we wire this into overall backend router, edit `packages/backend/src/index.ts`:
+1. Next we wire this into overall backend router by editing the `packages/backend/src/index.ts` file:
 
-```ts
-import matomo from './plugins/matomo'
+```ts title="packages/backend/src/index.ts"
+import matomo from './plugins/matomo';
+
 // ...
 
 async function main() {
@@ -45,14 +50,29 @@ async function main() {
   // ...
   // Insert this line under the other lines that add their routers to apiRouter in the same way
   apiRouter.use('/matomo', await matomo(matomoEnv));
+  // ...
+}
 ```
 
-4. Now you need to add in app-config.yaml file
+#### Adding the plugin to the new backend
+
+Add the following to your `packages/backend/src/index.ts` file:
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+
+// Add the following line
+backend.add(import('@janus-idp/backstage-plugin-matomo-backend/alpha'));
+
+backend.start();
+```
+
+### Plugin Configurations
+
+Add the following configurations into your `app-config.yaml` file:
 
 ```yaml
 matomo:
   apiToken: ${MATOMO_API_TOKEN}
   apiUrl: ${MATOMO_API_URL}
 ```
-
-5. Now run `yarn start-backend` from repo

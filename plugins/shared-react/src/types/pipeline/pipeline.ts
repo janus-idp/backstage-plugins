@@ -55,6 +55,7 @@ export type TektonTaskSpec = {
 
 export type TektonResultsRun = {
   name: string;
+  type?: string;
   value: string;
 };
 

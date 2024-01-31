@@ -1,0 +1,26 @@
+{
+  "kind": "NamespaceList",
+  "apiVersion": "v1",
+  "metadata": {
+    "resourceVersion": "81626349"
+  },
+  "items": [
+    {
+      "metadata": {
+        "name": "openshift",
+        "uid": "e9c1249f-b300-4b43-8c10-cd8473280844",
+        "resourceVersion": "75916512",
+        "creationTimestamp": "2023-07-26T18:44:09Z",
+        "labels": {
+          "kubernetes.io/metadata.name": "openshift"
+        }
+      },
+      "spec": {
+        "finalizers": ["kubernetes"]
+      },
+      "status": {
+        "phase": "Active"
+      }
+    }
+  ]
+}

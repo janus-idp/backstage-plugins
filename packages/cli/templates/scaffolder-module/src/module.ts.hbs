@@ -1,0 +1,28 @@
+import {
+  coreServices,
+  createBackendModule,
+} from '@backstage/backend-plugin-api';
+import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
+import { createAcmeExampleAction } from './actions';
+
+/***/
+/**
+ * The {{id}} module for @backstage/plugin-scaffolder-backend.
+ *
+ * @alpha
+ */
+export const {{id}}ActionScaffolderModule = createBackendModule({
+    moduleId: 'scaffolder-backend-{{id}}',
+    pluginId: 'scaffolder',
+    register(env) {
+      env.registerInit({
+        deps: {
+          scaffolder: scaffolderActionsExtensionPoint,
+          config: coreServices.rootConfig,
+        },
+        async init({ scaffolder }) {
+          scaffolder.addActions(createAcmeExampleAction());
+        },
+      });
+    },
+  })

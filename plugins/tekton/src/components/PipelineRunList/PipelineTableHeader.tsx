@@ -60,7 +60,7 @@ export const EnhancedTableHead = ({
                 orderBy === headCell.field ? headCell.defaultSort : false
               }
             >
-              {headCell.field && (
+              {headCell.field ? (
                 <TableSortLabel
                   active={
                     orderBy === headCell.field && orderById === headCell.id
@@ -73,6 +73,8 @@ export const EnhancedTableHead = ({
                 >
                   {headCell.title}
                 </TableSortLabel>
+              ) : (
+                <> {headCell.title}</>
               )}
             </TableCell>
           );

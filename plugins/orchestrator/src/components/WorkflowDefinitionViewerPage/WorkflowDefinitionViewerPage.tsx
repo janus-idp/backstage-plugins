@@ -1,82 +1,135 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAsync } from 'react-use';
 
-import { ContentHeader, InfoCard, Progress } from '@backstage/core-components';
-import { useRouteRef, useRouteRefParams } from '@backstage/core-plugin-api';
+import { FeatureFlagged } from '@backstage/core-app-api';
+import { InfoCard, ResponseErrorPanel } from '@backstage/core-components';
+import {
+  featureFlagsApiRef,
+  useApi,
+  useRouteRef,
+  useRouteRefParams,
+} from '@backstage/core-plugin-api';
 
-import { useController } from '@kie-tools-core/react-hooks/dist/useController';
 import { Button, Grid } from '@material-ui/core';
+import { Skeleton } from '@material-ui/lab';
 
+import { FEATURE_FLAG_DEVELOPER_MODE } from '@janus-idp/backstage-plugin-orchestrator-common';
+
+import { orchestratorApiRef } from '../../api';
 import {
   executeWorkflowRouteRef,
   workflowDefinitionsRouteRef,
 } from '../../routes';
-import { BaseOrchestratorPage } from '../BaseOrchestratorPage/BaseOrchestratorPage';
-import { OrchestratorSupportButton } from '../OrchestratorSupportButton/OrchestratorSupportButton';
-import {
-  EditorViewKind,
-  WorkflowEditor,
-  WorkflowEditorRef,
-} from '../WorkflowEditor';
+import { BaseOrchestratorPage } from '../BaseOrchestratorPage';
+import EditWorkflowDialog from '../EditWorkflowDialog';
+import { EditorViewKind, WorkflowEditor } from '../WorkflowEditor';
+import WorkflowDefinitionDetailsCard from './WorkflowDefinitionDetailsCard';
 
 export const WorkflowDefinitionViewerPage = () => {
-  const [name, setName] = useState<string>();
+  const featureFlagsApi = useApi(featureFlagsApiRef);
   const { workflowId, format } = useRouteRefParams(workflowDefinitionsRouteRef);
-  const [workflowEditor, workflowEditorRef] =
-    useController<WorkflowEditorRef>();
-  const [loading, setLoading] = useState(true);
+  const orchestratorApi = useApi(orchestratorApiRef);
+  const [forceReload, setForceReload] = React.useState(false);
+  const {
+    value: workflowOverview,
+    loading,
+    error,
+  } = useAsync(() => {
+    return orchestratorApi.getWorkflowOverview(workflowId);
+  }, [forceReload]);
   const navigate = useNavigate();
   const executeWorkflowLink = useRouteRef(executeWorkflowRouteRef);
+  const [editModalOpen, setEditModalOpen] = React.useState(false);
 
   const workflowFormat = useMemo(
     () => (format === 'json' ? 'json' : 'yaml'),
     [format],
   );
+  const isDeveloperModeOn = featureFlagsApi.isActive(
+    FEATURE_FLAG_DEVELOPER_MODE,
+  );
 
-  useEffect(() => {
-    if (!workflowEditor?.workflowItem) {
-      return;
-    }
-    setLoading(false);
-    setName(workflowEditor.workflowItem.definition.name);
-  }, [workflowEditor]);
-
-  const onExecute = useCallback(() => {
+  const handleExecute = () => {
     navigate(executeWorkflowLink({ workflowId }));
-  }, [executeWorkflowLink, navigate, workflowId]);
+  };
+
+  const handleEdit = () => {
+    setEditModalOpen(true);
+  };
 
   return (
-    <BaseOrchestratorPage>
-      <ContentHeader title="Definition">
-        <OrchestratorSupportButton />
-      </ContentHeader>
-      <Grid container spacing={3} direction="column">
-        <Grid item>
-          {loading && <Progress />}
-          <InfoCard
-            title={name}
-            action={
+    <BaseOrchestratorPage
+      title={workflowOverview?.name || workflowId}
+      type="Workflows"
+      typeLink="/orchestrator"
+    >
+      <Grid container spacing={2} direction="column" wrap="nowrap">
+        {error && (
+          <Grid item>
+            <ResponseErrorPanel error={error} />
+          </Grid>
+        )}
+        <Grid container item justifyContent="flex-end" spacing={1}>
+          <Grid item>
+            <FeatureFlagged with={FEATURE_FLAG_DEVELOPER_MODE}>
+              {loading ? (
+                <Skeleton variant="text" width="5rem" />
+              ) : (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleEdit}
+                >
+                  Edit
+                </Button>
+              )}
+            </FeatureFlagged>
+          </Grid>
+          <Grid item>
+            {loading ? (
+              <Skeleton variant="text" width="5rem" />
+            ) : (
               <Button
+                variant={isDeveloperModeOn ? 'outlined' : 'contained'}
                 color="primary"
-                variant="contained"
-                style={{ marginTop: 8, marginRight: 8 }}
-                onClick={() => onExecute()}
+                onClick={handleExecute}
               >
-                Execute
+                Run
               </Button>
-            }
-          >
+            )}
+          </Grid>
+        </Grid>
+        <Grid item>
+          <WorkflowDefinitionDetailsCard
+            workflowOverview={workflowOverview}
+            loading={loading}
+          />
+        </Grid>
+        <Grid item>
+          <InfoCard title="Workflow definition">
             <div style={{ height: '600px' }}>
               <WorkflowEditor
-                ref={workflowEditorRef}
                 kind={EditorViewKind.EXTENDED_DIAGRAM_VIEWER}
                 workflowId={workflowId}
                 format={workflowFormat}
+                forceReload={forceReload}
               />
             </div>
           </InfoCard>
         </Grid>
       </Grid>
+      {editModalOpen && (
+        <EditWorkflowDialog
+          close={() => setEditModalOpen(false)}
+          open={editModalOpen}
+          workflowId={workflowId}
+          handleSaveSucceeded={() => {
+            setForceReload(!forceReload);
+          }}
+          name={workflowOverview?.name || ''}
+        />
+      )}
     </BaseOrchestratorPage>
   );
 };

@@ -17,3 +17,8 @@ export type UpdatePolicy = {
   oldPolicy: Policy;
   newPolicy: Policy;
 };
+
+export type PermissionPolicy = {
+  pluginId?: string;
+  policies?: Policy[];
+};

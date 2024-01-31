@@ -71,7 +71,7 @@ describe('pluginNode factory', () => {
 
     expect(output).toEqual([
       '',
-      'Creating Node.js plugin library backstage-plugin-test-node',
+      'Creating Node.js plugin library @janus-idp/backstage-plugin-test-node',
       'Checking Prerequisites:',
       `availability  plugins${sep}test-node`,
       'creating      temp dir',
@@ -79,6 +79,8 @@ describe('pluginNode factory', () => {
       'copying       .eslintrc.js',
       'templating    README.md.hbs',
       'templating    package.json.hbs',
+      'templating    tsconfig.json.hbs',
+      'templating    turbo.json.hbs',
       'templating    index.ts.hbs',
       'copying       setupTests.ts',
       'Installing:',
@@ -89,7 +91,7 @@ describe('pluginNode factory', () => {
       fs.readJson('/root/plugins/test-node/package.json'),
     ).resolves.toEqual(
       expect.objectContaining({
-        name: 'backstage-plugin-test-node',
+        name: '@janus-idp/backstage-plugin-test-node',
         description: 'Node.js library for the test plugin',
         private: true,
         version: '1.0.0',

@@ -1,3 +1,38 @@
+## @janus-idp/cli [1.7.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.6.0...@janus-idp/cli@1.7.0) (2024-01-30)
+
+
+### Features
+
+* add new backend system support for existing backend plugins that have not been migrated over yet ([#1132](https://github.com/janus-idp/backstage-plugins/issues/1132)) ([06e16fd](https://github.com/janus-idp/backstage-plugins/commit/06e16fdcf64257dd08297cb727445d9a8a23c522))
+
+## @janus-idp/cli [1.6.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.5.0...@janus-idp/cli@1.6.0) (2024-01-25)
+
+
+### Features
+
+* **cli:** switch to @janus-idp/cli for new plugins and populate them with the basics ([#782](https://github.com/janus-idp/backstage-plugins/issues/782)) ([bbbefbd](https://github.com/janus-idp/backstage-plugins/commit/bbbefbd7a534844ee35533a62e4b626bd5b8eb4f))
+
+## @janus-idp/cli [1.5.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.4.7...@janus-idp/cli@1.5.0) (2024-01-16)
+
+
+### Features
+
+* **Notifications:** new notifications FE plugin, API and backend ([#933](https://github.com/janus-idp/backstage-plugins/issues/933)) ([4d4cb78](https://github.com/janus-idp/backstage-plugins/commit/4d4cb781ca9fc331a2c621583e9203f9e4585ee7))
+
+## @janus-idp/cli [1.4.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.4.6...@janus-idp/cli@1.4.7) (2023-12-07)
+
+
+### Bug Fixes
+
+* **cli:** do not change interop mode by default ([#971](https://github.com/janus-idp/backstage-plugins/issues/971)) ([4159977](https://github.com/janus-idp/backstage-plugins/commit/41599773d60fe944e402065970295b47cc2d46d6))
+
+## @janus-idp/cli [1.4.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.4.5...@janus-idp/cli@1.4.6) (2023-11-30)
+
+
+### Bug Fixes
+
+* **cli:** schema generator do not ignore repo root ([#981](https://github.com/janus-idp/backstage-plugins/issues/981)) ([67f22f6](https://github.com/janus-idp/backstage-plugins/commit/67f22f686860e79f5d019f71072b2856a9b17230))
+
 ## @janus-idp/cli [1.4.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.4.4...@janus-idp/cli@1.4.5) (2023-11-22)
 
 

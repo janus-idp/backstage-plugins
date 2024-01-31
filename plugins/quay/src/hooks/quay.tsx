@@ -10,7 +10,7 @@ import { Box, Chip, makeStyles } from '@material-ui/core';
 import { formatByteSize, formatDate } from '@janus-idp/shared-react';
 
 import { quayApiRef } from '../api';
-import { Layer, Tag } from '../types';
+import { Layer, QuayTagData, Tag } from '../types';
 
 const useLocalStyles = makeStyles({
   chip: {
@@ -29,6 +29,9 @@ export const useTags = (organization: string, repository: string) => {
   const [tagManifestLayers, setTagManifestLayers] = React.useState<
     Record<string, Layer>
   >({});
+  const [tagManifestStatuses, setTagManifestStatuses] = React.useState<
+    Record<string, string>
+  >({});
   const localClasses = useLocalStyles();
 
   const fetchSecurityDetails = async (tag: Tag) => {
@@ -46,20 +49,26 @@ export const useTags = (organization: string, repository: string) => {
       tagsResponse.tags.map(async tag => {
         const securityDetails = await fetchSecurityDetails(tag);
         const securityData = securityDetails.data;
-        if (!securityData) {
-          return;
-        }
-        setTagManifestLayers(prevState => ({
+        const securityStatus = securityDetails.status;
+
+        setTagManifestStatuses(prevState => ({
           ...prevState,
-          [tag.manifest_digest]: securityData.Layer,
+          [tag.manifest_digest]: securityStatus,
         }));
+
+        if (securityData) {
+          setTagManifestLayers(prevState => ({
+            ...prevState,
+            [tag.manifest_digest]: securityData.Layer,
+          }));
+        }
       }),
     );
     setTags(prevTags => [...prevTags, ...tagsResponse.tags]);
     return tagsResponse;
   });
 
-  const data = useMemo(() => {
+  const data: QuayTagData[] = useMemo(() => {
     return Object.values(tags)?.map(tag => {
       const hashFunc = tag.manifest_digest.substring(0, 6);
       const shortHash = tag.manifest_digest.substring(7, 19);
@@ -68,6 +77,7 @@ export const useTags = (organization: string, repository: string) => {
         name: tag.name,
         last_modified: formatDate(tag.last_modified),
         size: formatByteSize(tag.size),
+        rawSize: tag.size,
         manifest_digest: (
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Chip label={hashFunc} className={localClasses.chip} />
@@ -76,6 +86,7 @@ export const useTags = (organization: string, repository: string) => {
         ),
         expiration: tag.expiration,
         securityDetails: tagManifestLayers[tag.manifest_digest],
+        securityStatus: tagManifestStatuses[tag.manifest_digest],
         manifest_digest_raw: tag.manifest_digest,
         // is_manifest_list: tag.is_manifest_list,
         // reversion: tag.reversion,
@@ -84,7 +95,7 @@ export const useTags = (organization: string, repository: string) => {
         // manifest_list: tag.manifest_list,
       };
     });
-  }, [tags, tagManifestLayers, localClasses.chip]);
+  }, [tags, localClasses.chip, tagManifestLayers, tagManifestStatuses]);
 
   return { loading, data };
 };

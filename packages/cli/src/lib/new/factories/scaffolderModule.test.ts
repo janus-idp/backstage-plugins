@@ -71,14 +71,21 @@ describe('scaffolderModule factory', () => {
 
     expect(output).toEqual([
       '',
-      'Creating module backstage-plugin-scaffolder-backend-module-test',
+      'Creating module @janus-idp/backstage-plugin-scaffolder-backend-module-test',
       'Checking Prerequisites:',
       `availability  plugins${sep}scaffolder-backend-module-test`,
       'creating      temp dir',
       'Executing Template:',
       'copying       .eslintrc.js',
       'templating    README.md.hbs',
+      'copying       app-config.janus-idp.yaml',
+      'copying       config.d.ts',
       'templating    package.json.hbs',
+      'templating    tsconfig.json.hbs',
+      'templating    turbo.json.hbs',
+      'templating    alpha.ts.hbs',
+      'templating    index.ts.hbs',
+      'templating    module.ts.hbs',
       'templating    index.ts.hbs',
       'copying       index.ts',
       'copying       example.test.ts',
@@ -92,7 +99,7 @@ describe('scaffolderModule factory', () => {
       fs.readJson('/root/plugins/scaffolder-backend-module-test/package.json'),
     ).resolves.toEqual(
       expect.objectContaining({
-        name: 'backstage-plugin-scaffolder-backend-module-test',
+        name: '@janus-idp/backstage-plugin-scaffolder-backend-module-test',
         description: 'The test module for @backstage/plugin-scaffolder-backend',
         private: true,
         version: '1.0.0',

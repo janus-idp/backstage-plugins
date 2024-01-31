@@ -1,12 +1,8 @@
-import {
-  HostDiscovery,
-  loggerToWinstonLogger,
-} from '@backstage/backend-common';
+import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
-import { CatalogClient } from '@backstage/catalog-client';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
 
 import { createRouter } from './service/router';
@@ -27,13 +23,9 @@ export const kialiPlugin = createBackendPlugin({
       },
       async init({ http, logger, config }) {
         const winstonLogger = loggerToWinstonLogger(logger);
-        const catalogApi = new CatalogClient({
-          discoveryApi: HostDiscovery.fromConfig(config),
-        });
         const router = await createRouter({
           logger: winstonLogger,
           config,
-          catalogApi,
         });
         http.use(router);
       },

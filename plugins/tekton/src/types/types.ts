@@ -34,3 +34,16 @@ export type TektonResourcesContextData = {
 };
 
 export type Order = 'asc' | 'desc';
+
+export type OpenRowStatus = {
+  [x: string]: boolean;
+};
+
+export type PipelineRunScanResults = {
+  vulnerabilities?: {
+    critical: number;
+    high: number;
+    medium: number;
+    low: number;
+  };
+};

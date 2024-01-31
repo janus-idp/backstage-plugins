@@ -32,6 +32,9 @@ export const catalogModuleKeycloakEntityProvider = createBackendModule({
   pluginId: 'catalog',
   moduleId: 'catalog-backend-module-keycloak',
   register(env) {
+    // TODO: add extension points to support setting custom User and Group Transformers using modules
+    // Refer to https://backstage.io/docs/backend-system/architecture/extension-points/
+    // env.registerExtensionPoint(...)
     env.registerInit({
       deps: {
         catalog: catalogProcessingExtensionPoint,

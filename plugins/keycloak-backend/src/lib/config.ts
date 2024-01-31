@@ -94,6 +94,60 @@ export type KeycloakProviderConfig = {
   groupQuerySize?: number;
 };
 
+const readProviderConfig = (
+  id: string,
+  providerConfigInstance: Config,
+): KeycloakProviderConfig => {
+  const baseUrl = providerConfigInstance.getString('baseUrl');
+  const realm = providerConfigInstance.getOptionalString('realm') ?? 'master';
+  const loginRealm =
+    providerConfigInstance.getOptionalString('loginRealm') ?? 'master';
+  const username = providerConfigInstance.getOptionalString('username');
+  const password = providerConfigInstance.getOptionalString('password');
+  const clientId = providerConfigInstance.getOptionalString('clientId');
+  const clientSecret = providerConfigInstance.getOptionalString('clientSecret');
+  const userQuerySize =
+    providerConfigInstance.getOptionalNumber('userQuerySize');
+  const groupQuerySize =
+    providerConfigInstance.getOptionalNumber('groupQuerySize');
+
+  if (clientId && !clientSecret) {
+    throw new Error(`clientSecret must be provided when clientId is defined.`);
+  }
+
+  if (clientSecret && !clientId) {
+    throw new Error(`clientId must be provided when clientSecret is defined.`);
+  }
+
+  if (username && !password) {
+    throw new Error(`password must be provided when username is defined.`);
+  }
+
+  if (password && !username) {
+    throw new Error(`username must be provided when password is defined.`);
+  }
+
+  const schedule = providerConfigInstance.has('schedule')
+    ? readTaskScheduleDefinitionFromConfig(
+        providerConfigInstance.getConfig('schedule'),
+      )
+    : undefined;
+
+  return {
+    id,
+    baseUrl,
+    loginRealm,
+    realm,
+    username,
+    password,
+    clientId,
+    clientSecret,
+    schedule,
+    userQuerySize,
+    groupQuerySize,
+  };
+};
+
 export const readProviderConfigs = (
   config: Config,
 ): KeycloakProviderConfig[] => {
@@ -103,62 +157,8 @@ export const readProviderConfigs = (
   if (!providersConfig) {
     return [];
   }
-
   return providersConfig.keys().map(id => {
     const providerConfigInstance = providersConfig.getConfig(id);
-
-    const baseUrl = providerConfigInstance.getString('baseUrl');
-    const realm = providerConfigInstance.getOptionalString('realm') ?? 'master';
-    const loginRealm =
-      providerConfigInstance.getOptionalString('loginRealm') ?? 'master';
-    const username = providerConfigInstance.getOptionalString('username');
-    const password = providerConfigInstance.getOptionalString('password');
-    const clientId = providerConfigInstance.getOptionalString('clientId');
-    const clientSecret =
-      providerConfigInstance.getOptionalString('clientSecret');
-    const userQuerySize =
-      providerConfigInstance.getOptionalNumber('userQuerySize');
-    const groupQuerySize =
-      providerConfigInstance.getOptionalNumber('groupQuerySize');
-
-    if (clientId && !clientSecret) {
-      throw new Error(
-        `clientSecret must be provided when clientId is defined.`,
-      );
-    }
-
-    if (clientSecret && !clientId) {
-      throw new Error(
-        `clientId must be provided when clientSecret is defined.`,
-      );
-    }
-
-    if (username && !password) {
-      throw new Error(`password must be provided when username is defined.`);
-    }
-
-    if (password && !username) {
-      throw new Error(`username must be provided when password is defined.`);
-    }
-
-    const schedule = providerConfigInstance.has('schedule')
-      ? readTaskScheduleDefinitionFromConfig(
-          providerConfigInstance.getConfig('schedule'),
-        )
-      : undefined;
-
-    return {
-      id,
-      baseUrl,
-      loginRealm,
-      realm,
-      username,
-      password,
-      clientId,
-      clientSecret,
-      schedule,
-      userQuerySize,
-      groupQuerySize,
-    };
+    return readProviderConfig(id, providerConfigInstance);
   });
 };

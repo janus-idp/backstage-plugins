@@ -18,8 +18,14 @@ import {
   updateTaskStatus,
 } from '@janus-idp/shared-react';
 
+import { getPipelineRunScanResults } from '../hooks/usePipelineRunScanResults';
 import { PipelineRunGVK, TaskRunGVK } from '../models';
-import { ClusterErrors, Order, TektonResponseData } from '../types/types';
+import {
+  ClusterErrors,
+  Order,
+  PipelineRunScanResults,
+  TektonResponseData,
+} from '../types/types';
 
 export const getClusters = (k8sObjects: ObjectsByEntityResponse) => {
   const clusters: string[] = k8sObjects.items.map(
@@ -199,6 +205,41 @@ export const durationComparator = (a: PipelineRunKind, b: PipelineRunKind) => {
   return 0;
 };
 
+const vulnerabilitiesSortValue = (
+  scanResults: PipelineRunScanResults,
+): number => {
+  if (!scanResults?.vulnerabilities) {
+    return -1;
+  }
+  // Expect no more than 999 of any one severity
+  return (
+    (scanResults.vulnerabilities.critical ?? 0) * 1000000000 +
+    (scanResults.vulnerabilities.high ?? 0) * 1000000 +
+    (scanResults.vulnerabilities.medium ?? 0) * 1000 +
+    (scanResults.vulnerabilities.low ?? 0)
+  );
+};
+
+export const vulnerabilitiesComparator = (
+  a: PipelineRunKind,
+  b: PipelineRunKind,
+) => {
+  const vulnerabilitiesSortValueA = vulnerabilitiesSortValue(
+    getPipelineRunScanResults(a),
+  );
+  const vulnerabilitiesSortValueB = vulnerabilitiesSortValue(
+    getPipelineRunScanResults(b),
+  );
+
+  if (vulnerabilitiesSortValueB < vulnerabilitiesSortValueA) {
+    return -1;
+  }
+  if (vulnerabilitiesSortValueB > vulnerabilitiesSortValueA) {
+    return 1;
+  }
+  return 0;
+};
+
 export const getComparator = (
   order: Order,
   orderBy: string,
@@ -210,6 +251,12 @@ export const getComparator = (
         return order === 'desc'
           ? durationComparator(a, b)
           : -durationComparator(a, b);
+      };
+    case 'vulnerabilities':
+      return (a: PipelineRunKind, b: PipelineRunKind) => {
+        return order === 'desc'
+          ? vulnerabilitiesComparator(a, b)
+          : -vulnerabilitiesComparator(a, b);
       };
     default:
       return (a: PipelineRunKind, b: PipelineRunKind) => {

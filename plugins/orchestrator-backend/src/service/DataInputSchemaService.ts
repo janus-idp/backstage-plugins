@@ -10,14 +10,11 @@ import { Parallelstate } from '@severlessworkflow/sdk-typescript/lib/definitions
 import { Sleepstate } from '@severlessworkflow/sdk-typescript/lib/definitions/sleepstate';
 import { Transitiondatacondition } from '@severlessworkflow/sdk-typescript/lib/definitions/transitiondatacondition';
 import { Switchstate } from '@severlessworkflow/sdk-typescript/lib/definitions/types';
-import { JSONSchema4 } from 'json-schema';
+import { JSONSchema4, JSONSchema7 } from 'json-schema';
 import { OpenAPIV3 } from 'openapi-types';
 import { Logger } from 'winston';
 
-import {
-  WorkflowDataInputSchema,
-  WorkflowDefinition,
-} from '@janus-idp/backstage-plugin-orchestrator-common';
+import { WorkflowDefinition } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 type OpenApiSchemaProperties = {
   [k: string]: OpenAPIV3.SchemaObject | OpenAPIV3.ReferenceObject;
@@ -1196,129 +1193,42 @@ export class DataInputSchemaService {
     return inputVariableSet;
   }
 
-  public async resolveDataInputSchema(args: {
-    openApi: OpenAPIV3.Document;
-    workflowId: string;
-  }): Promise<WorkflowDataInputSchema | undefined> {
-    const requestBody =
-      args.openApi.paths[`/${args.workflowId}`]?.post?.requestBody;
-    if (!requestBody) {
-      return undefined;
-    }
-
-    const content = (requestBody as OpenAPIV3.RequestBodyObject).content;
-    if (!content) {
-      return undefined;
-    }
-
-    const mainSchema = content[`application/json`]?.schema;
-    if (!mainSchema) {
-      return undefined;
-    }
-
-    const referencedSchemas = this.findReferencedSchemas({
-      workflowId: args.workflowId,
-      openApi: args.openApi,
-      schema: mainSchema as OpenAPIV3.SchemaObject,
-    });
-
-    const compositionSchema = {
-      ...mainSchema,
-      title: '',
-      properties: {
-        ...referencedSchemas.reduce(
-          (obj, s) => {
-            if (obj && s.title) {
-              obj[s.title] = {
-                $ref: `#/components/schemas/${s.title}`,
-              };
-            }
-            return obj;
-          },
-          {} as WorkflowDataInputSchema['properties'],
-        ),
-      },
-    };
-
-    const dataInputSchema: WorkflowDataInputSchema = {
-      ...compositionSchema,
-      properties: referencedSchemas.reduce(
-        (obj, s) => {
-          if (obj) {
-            obj[s.title!] = {
-              $ref: `#/components/schemas/${s.title!}`,
-            };
-          }
-          return obj;
-        },
-        {} as WorkflowDataInputSchema['properties'],
-      ),
-      components: {
-        schemas: referencedSchemas.reduce(
-          (obj, s) => {
-            obj[s.title!] = s as OpenAPIV3.NonArraySchemaObject;
-            return obj;
-          },
-          {} as WorkflowDataInputSchema['components']['schemas'],
-        ),
-      },
-    };
-
-    return dataInputSchema;
-  }
-
-  private findReferencedSchemas(args: {
-    workflowId: string;
-    openApi: OpenAPIV3.Document;
-    schema: JSONSchema4;
-  }): JSONSchema4[] {
-    if (!args.schema.properties) {
+  public parseComposition(inputSchema: JSONSchema7): JSONSchema7[] {
+    if (!inputSchema.properties) {
       return [];
     }
 
-    const schemas: JSONSchema4[] = [];
+    const refPaths = Object.values(inputSchema.properties)
+      .map(p => (p as JSONSchema7).$ref)
+      .filter((r): r is string => r !== undefined);
 
-    for (const key of Object.keys(args.schema.properties)) {
-      const property = args.schema.properties[key];
-      if (!property.$ref) {
-        continue;
-      }
-      const referencedSchema = this.findReferencedSchema({
-        rootSchema: args.openApi,
-        ref: property.$ref,
-      });
-      if (referencedSchema) {
-        schemas.push({
-          ...referencedSchema,
-          title: referencedSchema
-            .title!.replace(`${args.workflowId}:`, '')
-            .trim(),
-        });
-      }
+    if (!refPaths.length) {
+      return [inputSchema];
     }
 
-    if (!schemas.length) {
-      return [args.schema];
-    }
-
-    return schemas;
+    return refPaths
+      .map(r => this.findReferencedSchema({ rootSchema: inputSchema, ref: r }))
+      .filter((r): r is JSONSchema7 => r !== undefined);
   }
 
   private findReferencedSchema(args: {
-    rootSchema: JSONSchema4;
+    rootSchema: JSONSchema7;
     ref: string;
-  }): JSONSchema4 | undefined {
+  }): JSONSchema7 | undefined {
     const pathParts = args.ref
       .split('/')
       .filter(part => !['#', ''].includes(part));
 
-    let current: JSONSchema4 | undefined = args.rootSchema;
-
+    let current: any = args.rootSchema;
     for (const part of pathParts) {
       current = current?.[part];
       if (current === undefined) {
         return undefined;
       }
+    }
+
+    if (!current.properties) {
+      return undefined;
     }
 
     return current;

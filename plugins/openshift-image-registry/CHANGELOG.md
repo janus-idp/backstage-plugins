@@ -1,3 +1,82 @@
+## @janus-idp/backstage-plugin-openshift-image-registry [1.3.21](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-openshift-image-registry@1.3.20...@janus-idp/backstage-plugin-openshift-image-registry@1.3.21) (2024-01-30)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.0
+
+## @janus-idp/backstage-plugin-openshift-image-registry [1.3.20](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-openshift-image-registry@1.3.19...@janus-idp/backstage-plugin-openshift-image-registry@1.3.20) (2024-01-30)
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.5.0
+
+## @janus-idp/backstage-plugin-openshift-image-registry [1.3.19](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-openshift-image-registry@1.3.18...@janus-idp/backstage-plugin-openshift-image-registry@1.3.19) (2024-01-25)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.6.0
+
+## @janus-idp/backstage-plugin-openshift-image-registry [1.3.18](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-openshift-image-registry@1.3.17...@janus-idp/backstage-plugin-openshift-image-registry@1.3.18) (2024-01-17)
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.4.0
+
+## @janus-idp/backstage-plugin-openshift-image-registry [1.3.17](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-openshift-image-registry@1.3.16...@janus-idp/backstage-plugin-openshift-image-registry@1.3.17) (2023-12-22)
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.3.0
+
+## @janus-idp/backstage-plugin-openshift-image-registry [1.3.16](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-openshift-image-registry@1.3.15...@janus-idp/backstage-plugin-openshift-image-registry@1.3.16) (2023-12-21)
+
+
+### Bug Fixes
+
+* **openshift-image-registry:** fix [#596](https://github.com/janus-idp/backstage-plugins/issues/596): Add mock data for test page and cleanup some small code smells ([#1024](https://github.com/janus-idp/backstage-plugins/issues/1024)) ([39f7351](https://github.com/janus-idp/backstage-plugins/commit/39f7351d0f342270a31b3ba4605b1d58b6b571e5))
+
+## @janus-idp/backstage-plugin-openshift-image-registry [1.3.15](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-openshift-image-registry@1.3.14...@janus-idp/backstage-plugin-openshift-image-registry@1.3.15) (2023-12-20)
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.2.0
+
+## @janus-idp/backstage-plugin-openshift-image-registry [1.3.14](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-openshift-image-registry@1.3.13...@janus-idp/backstage-plugin-openshift-image-registry@1.3.14) (2023-12-14)
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.1.0
+
+## @janus-idp/backstage-plugin-openshift-image-registry [1.3.13](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-openshift-image-registry@1.3.12...@janus-idp/backstage-plugin-openshift-image-registry@1.3.13) (2023-12-07)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.4.7
+
+## @janus-idp/backstage-plugin-openshift-image-registry [1.3.12](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-openshift-image-registry@1.3.11...@janus-idp/backstage-plugin-openshift-image-registry@1.3.12) (2023-11-30)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.4.6
+
 ## @janus-idp/backstage-plugin-openshift-image-registry [1.3.11](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-openshift-image-registry@1.3.10...@janus-idp/backstage-plugin-openshift-image-registry@1.3.11) (2023-11-23)
 
 

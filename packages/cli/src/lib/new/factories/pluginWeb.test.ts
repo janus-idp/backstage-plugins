@@ -71,7 +71,7 @@ describe('pluginWeb factory', () => {
 
     expect(output).toEqual([
       '',
-      'Creating web plugin library backstage-plugin-test-react',
+      'Creating web plugin library @janus-idp/backstage-plugin-test-react',
       'Checking Prerequisites:',
       `availability  plugins${sep}test-react`,
       'creating      temp dir',
@@ -79,6 +79,8 @@ describe('pluginWeb factory', () => {
       'copying       .eslintrc.js',
       'templating    README.md.hbs',
       'templating    package.json.hbs',
+      'templating    tsconfig.json.hbs',
+      'templating    turbo.json.hbs',
       'templating    index.ts.hbs',
       'copying       setupTests.ts',
       'copying       index.ts',
@@ -96,7 +98,7 @@ describe('pluginWeb factory', () => {
       fs.readJson('/root/plugins/test-react/package.json'),
     ).resolves.toEqual(
       expect.objectContaining({
-        name: 'backstage-plugin-test-react',
+        name: '@janus-idp/backstage-plugin-test-react',
         description: 'Web library for the test plugin',
         private: true,
         version: '1.0.0',

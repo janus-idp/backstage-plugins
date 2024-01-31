@@ -1,7 +1,13 @@
 {
   "extends": "@backstage/cli/config/tsconfig.json",
   "include": ["src", "dev", "migrations"],
-  "exclude": ["node_modules"],
+  "exclude": [
+    "node_modules",
+    "src/types",
+    "src/reducers",
+    "src/store",
+    "src/components/**"
+  ],
   "compilerOptions": {
     "outDir": "../../dist-types/plugins/kiali",
     "rootDir": "."

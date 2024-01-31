@@ -1,3 +1,54 @@
+## @janus-idp/backstage-plugin-web-terminal [1.3.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-web-terminal@1.3.1...@janus-idp/backstage-plugin-web-terminal@1.3.2) (2024-01-30)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.0
+
+## @janus-idp/backstage-plugin-web-terminal [1.3.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-web-terminal@1.3.0...@janus-idp/backstage-plugin-web-terminal@1.3.1) (2024-01-25)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.6.0
+
+## @janus-idp/backstage-plugin-web-terminal [1.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-web-terminal@1.2.12...@janus-idp/backstage-plugin-web-terminal@1.3.0) (2024-01-17)
+
+
+### Features
+
+* **web-terminal:** impr README, add isWebTerminalAvailable util and fix some other small bugs ([#1036](https://github.com/janus-idp/backstage-plugins/issues/1036)) ([a3d6d86](https://github.com/janus-idp/backstage-plugins/commit/a3d6d867d2c050be620b98217811c747e9629b2e))
+
+
+### Other changes
+
+* **web-terminal:** remove TerminalComponent test race condition issue ([#1071](https://github.com/janus-idp/backstage-plugins/issues/1071)) ([05ee8dc](https://github.com/janus-idp/backstage-plugins/commit/05ee8dc8812c012217d7fc9de24cd86843ed9642)), closes [#1070](https://github.com/janus-idp/backstage-plugins/issues/1070)
+
+## @janus-idp/backstage-plugin-web-terminal [1.2.12](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-web-terminal@1.2.11...@janus-idp/backstage-plugin-web-terminal@1.2.12) (2023-12-22)
+
+
+### Bug Fixes
+
+* **web-terminal:** fix [#598](https://github.com/janus-idp/backstage-plugins/issues/598): Cleanup some small code smells in the web-terminal plugin ([#1023](https://github.com/janus-idp/backstage-plugins/issues/1023)) ([3d2bafb](https://github.com/janus-idp/backstage-plugins/commit/3d2bafb3174189e16cfe3988ba2659876e7919d4))
+
+## @janus-idp/backstage-plugin-web-terminal [1.2.11](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-web-terminal@1.2.10...@janus-idp/backstage-plugin-web-terminal@1.2.11) (2023-12-07)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.4.7
+
+## @janus-idp/backstage-plugin-web-terminal [1.2.10](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-web-terminal@1.2.9...@janus-idp/backstage-plugin-web-terminal@1.2.10) (2023-11-30)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.4.6
+
 ## @janus-idp/backstage-plugin-web-terminal [1.2.9](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-web-terminal@1.2.8...@janus-idp/backstage-plugin-web-terminal@1.2.9) (2023-11-22)
 
 

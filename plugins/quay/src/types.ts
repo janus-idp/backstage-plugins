@@ -20,7 +20,18 @@ export interface Tag {
 export interface LabelsResponse {
   labels: Label[];
 }
-
+export interface QuayTagData {
+  id: string;
+  name: string;
+  last_modified: string;
+  size: string;
+  rawSize: number;
+  manifest_digest: React.JSX.Element;
+  expiration?: string;
+  securityDetails: Layer;
+  securityStatus: string;
+  manifest_digest_raw: string;
+}
 export interface Label {
   id: string;
   key: string;
@@ -115,7 +126,8 @@ export const VulnerabilityOrder = {
   [VulnerabilitySeverity.Medium]: 2,
   [VulnerabilitySeverity.Low]: 3,
   [VulnerabilitySeverity.Negligible]: 4,
-  [VulnerabilitySeverity.Unknown]: 5,
+  [VulnerabilitySeverity.None]: 5,
+  [VulnerabilitySeverity.Unknown]: 6,
 };
 
 export interface ManifestByDigestResponse {

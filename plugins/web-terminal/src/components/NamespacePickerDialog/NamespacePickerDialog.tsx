@@ -30,7 +30,7 @@ const useStyles = makeStyles({
 type props = {
   onInit: () => Promise<any>;
   open: boolean;
-  previousNamespace: string;
+  previousNamespace?: string;
   handleClose: () => void;
   onSubmit: (selectedNamesapce: string) => void;
 };

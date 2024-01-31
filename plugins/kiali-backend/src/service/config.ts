@@ -1,0 +1,61 @@
+import { Config } from '@backstage/config';
+
+const KIALI_PREFIX = 'catalog.providers.kiali';
+
+export type KialiDetails = {
+  url: string;
+  skipTLSVerify?: boolean;
+  sessionTime?: number;
+  serviceAccountToken?: string;
+  caData?: string;
+  caFile?: string;
+};
+
+const isValidUrl = (url: string): boolean => {
+  try {
+    // eslint-disable-next-line no-new
+    new URL(url);
+  } catch (error) {
+    return false;
+  }
+  return true;
+};
+
+export const getFromKialiConfig = (config: Config): Config => {
+  // Check if required values are valid
+  const requiredValues = ['url'];
+  requiredValues.forEach(key => {
+    if (!config.has(key)) {
+      throw new Error(
+        `Value must be specified in config at '${KIALI_PREFIX}.${key}'`,
+      );
+    }
+  });
+  return config;
+};
+
+export const getHubClusterFromConfig = (config: Config): KialiDetails => {
+  const hub = getFromKialiConfig(config);
+
+  const url = hub.getString('url');
+  if (!isValidUrl(url)) {
+    throw new Error(`"${url}" is not a valid url`);
+  }
+  /*
+    new URL(url).href => guarantees that the url will end in '/' 
+    - If the user does not indicate the last character as /, URL class will put it
+  */
+  return {
+    url: new URL(url).href,
+    serviceAccountToken: hub.getOptionalString('serviceAccountToken'),
+    skipTLSVerify: hub.getOptionalBoolean('skipTLSVerify') || false,
+    caData: hub.getOptionalString('caData'),
+    caFile: hub.getOptionalString('caFile'),
+    sessionTime: hub.getOptionalNumber('sessionTime'),
+  };
+};
+
+export const readKialiConfigs = (config: Config): KialiDetails => {
+  const kialiConfigs = config.getConfig(KIALI_PREFIX);
+  return getHubClusterFromConfig(kialiConfigs);
+};

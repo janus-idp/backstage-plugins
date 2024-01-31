@@ -1,3 +1,88 @@
+## @janus-idp/backstage-plugin-nexus-repository-manager [1.4.22](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-nexus-repository-manager@1.4.21...@janus-idp/backstage-plugin-nexus-repository-manager@1.4.22) (2024-01-30)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.0
+
+## @janus-idp/backstage-plugin-nexus-repository-manager [1.4.21](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-nexus-repository-manager@1.4.20...@janus-idp/backstage-plugin-nexus-repository-manager@1.4.21) (2024-01-30)
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.5.0
+
+## @janus-idp/backstage-plugin-nexus-repository-manager [1.4.20](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-nexus-repository-manager@1.4.19...@janus-idp/backstage-plugin-nexus-repository-manager@1.4.20) (2024-01-25)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.6.0
+
+## @janus-idp/backstage-plugin-nexus-repository-manager [1.4.19](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-nexus-repository-manager@1.4.18...@janus-idp/backstage-plugin-nexus-repository-manager@1.4.19) (2024-01-17)
+
+
+### Other changes
+
+* **web-terminal:** remove TerminalComponent test race condition issue ([#1071](https://github.com/janus-idp/backstage-plugins/issues/1071)) ([05ee8dc](https://github.com/janus-idp/backstage-plugins/commit/05ee8dc8812c012217d7fc9de24cd86843ed9642)), closes [#1070](https://github.com/janus-idp/backstage-plugins/issues/1070)
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.4.0
+
+## @janus-idp/backstage-plugin-nexus-repository-manager [1.4.18](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-nexus-repository-manager@1.4.17...@janus-idp/backstage-plugin-nexus-repository-manager@1.4.18) (2024-01-16)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.5.0
+
+## @janus-idp/backstage-plugin-nexus-repository-manager [1.4.17](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-nexus-repository-manager@1.4.16...@janus-idp/backstage-plugin-nexus-repository-manager@1.4.17) (2023-12-22)
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.3.0
+
+## @janus-idp/backstage-plugin-nexus-repository-manager [1.4.16](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-nexus-repository-manager@1.4.15...@janus-idp/backstage-plugin-nexus-repository-manager@1.4.16) (2023-12-20)
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.2.0
+
+## @janus-idp/backstage-plugin-nexus-repository-manager [1.4.15](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-nexus-repository-manager@1.4.14...@janus-idp/backstage-plugin-nexus-repository-manager@1.4.15) (2023-12-14)
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.1.0
+
+## @janus-idp/backstage-plugin-nexus-repository-manager [1.4.14](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-nexus-repository-manager@1.4.13...@janus-idp/backstage-plugin-nexus-repository-manager@1.4.14) (2023-12-07)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.4.7
+
+## @janus-idp/backstage-plugin-nexus-repository-manager [1.4.13](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-nexus-repository-manager@1.4.12...@janus-idp/backstage-plugin-nexus-repository-manager@1.4.13) (2023-11-30)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.4.6
+
 ## @janus-idp/backstage-plugin-nexus-repository-manager [1.4.12](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-nexus-repository-manager@1.4.11...@janus-idp/backstage-plugin-nexus-repository-manager@1.4.12) (2023-11-23)
 
 

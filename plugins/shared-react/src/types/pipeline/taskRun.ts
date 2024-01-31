@@ -36,6 +36,7 @@ export type TaskRunStatus = {
   startTime?: string;
   steps?: PLRTaskRunStep[];
   taskResults?: TektonResultsRun[];
+  results?: TektonResultsRun[];
 };
 
 export type TaskRunKind = {

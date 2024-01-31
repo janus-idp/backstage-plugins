@@ -18,13 +18,6 @@ export class ErrorBuilder {
     );
   }
 
-  public static GET_NO_BACKEND_EXEC_CTX_ERR(): Error {
-    return this.NewBackendError(
-      NO_BACKEND_EXEC_CTX,
-      'No or null backend execution context provided',
-    );
-  }
-
   public static GET_NO_CLIENT_PROVIDED_ERR(): Error {
     return this.NewBackendError(
       NO_CLIENT_PROVIDED,

@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac-common [1.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-common@1.1.0...@janus-idp/backstage-plugin-rbac-common@1.2.0) (2023-12-05)
+
+
+### Features
+
+* **rbac:** role overview ([#972](https://github.com/janus-idp/backstage-plugins/issues/972)) ([43c1906](https://github.com/janus-idp/backstage-plugins/commit/43c19064e9477a5449ff5d56b00efe27cf640c27))
+
 ## @janus-idp/backstage-plugin-rbac-common [1.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-common@1.0.1...@janus-idp/backstage-plugin-rbac-common@1.1.0) (2023-10-27)
 
 

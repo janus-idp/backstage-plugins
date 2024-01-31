@@ -8,7 +8,7 @@ import {
   TemplateCardProps,
 } from '@backstage/plugin-scaffolder-react/alpha';
 
-import { workflow_type } from '@janus-idp/backstage-plugin-orchestrator-common';
+import { WORKFLOW_TYPE } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { executeWorkflowRouteRef } from '../../routes';
 
@@ -21,7 +21,7 @@ export const OrchestratorScaffolderTemplateCard = (
 
   const onSelectedExtended = useCallback(
     (template: TemplateEntityV1beta3) => {
-      const isWorkflow = template.spec.type === workflow_type;
+      const isWorkflow = template.spec.type === WORKFLOW_TYPE;
 
       if (!isWorkflow) {
         onSelected?.(template);

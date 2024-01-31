@@ -54,6 +54,9 @@ export function embedModules(options: EmbedModulesOptions): Plugin {
         return;
       }
       for (const e of embedded) {
+        if (e.endsWith('/alpha')) {
+          continue;
+        }
         const mod = await this.resolve(
           path.join(e, 'package.json'),
           undefined,

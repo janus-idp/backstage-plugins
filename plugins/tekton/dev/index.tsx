@@ -7,10 +7,18 @@ import {
   EntityKubernetesContent,
   KubernetesApi,
   kubernetesApiRef,
+  KubernetesProxyApi,
+  kubernetesProxyApiRef,
 } from '@backstage/plugin-kubernetes';
 import { TestApiProvider } from '@backstage/test-utils';
 
 import { mockKubernetesPlrResponse } from '../src/__fixtures__/1-pipelinesData';
+import {
+  acsDeploymentCheck,
+  acsImageCheckResults,
+  acsImageScanResult,
+} from '../src/__fixtures__/advancedClusterSecurityData';
+import { enterpriseContractResult } from '../src/__fixtures__/enterpriseContractData';
 import { TektonCI, tektonPlugin } from '../src/plugin';
 
 const mockEntity: Entity = {
@@ -31,6 +39,41 @@ const mockEntity: Entity = {
   },
 };
 
+class MockKubernetesProxyApi implements KubernetesProxyApi {
+  async getPodLogs(_request: any): Promise<any> {
+    const delayedResponse = (data: string, ms: number) =>
+      new Promise(resolve => {
+        setTimeout(() => {
+          resolve({
+            text: data,
+          });
+        }, ms);
+      });
+
+    if (_request.podName.includes('ec-task')) {
+      return delayedResponse(JSON.stringify(enterpriseContractResult), 100);
+    }
+
+    if (_request.podName.includes('image-scan-task')) {
+      return delayedResponse(JSON.stringify(acsImageScanResult), 200);
+    }
+
+    if (_request.podName.includes('image-check-task')) {
+      return delayedResponse(JSON.stringify(acsImageCheckResults), 300);
+    }
+
+    if (_request.podName.includes('deployment-check-task')) {
+      return delayedResponse(JSON.stringify(acsDeploymentCheck), 400);
+    }
+
+    const response = `\nstreaming logs from container: ${_request.containerName} \n...`;
+    return delayedResponse(response, 500);
+  }
+
+  async getEventsByInvolvedObjectName(): Promise<any> {
+    return {};
+  }
+}
 class MockKubernetesClient implements KubernetesApi {
   readonly resources;
 
@@ -55,6 +98,7 @@ class MockKubernetesClient implements KubernetesApi {
       },
     );
   }
+
   async getWorkloadsByEntity(_request: any): Promise<any> {
     return {
       items: [
@@ -129,6 +173,7 @@ createDevApp()
             kubernetesApiRef,
             new MockKubernetesClient(mockKubernetesPlrResponse),
           ],
+          [kubernetesProxyApiRef, new MockKubernetesProxyApi()],
         ]}
       >
         <EntityProvider entity={mockEntity}>

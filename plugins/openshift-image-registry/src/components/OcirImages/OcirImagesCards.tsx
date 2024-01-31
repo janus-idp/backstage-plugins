@@ -12,19 +12,20 @@ type OcirImagesCardsProps = {
 };
 
 export const OcirImagesCards = ({ imageStreams }: OcirImagesCardsProps) => {
-  const [isOpen, toggleDrawer] = React.useState<boolean>(false);
+  const [isOpen, setIsOpen] = React.useState<boolean>(false);
   const [activeImageStream, setActiveImageStream] =
     React.useState<ImageStreamMetadata>();
   const [filteredImageStreams, setFilteredImageStreams] = React.useState<
     ImageStreamMetadata[] | undefined
   >();
 
-  const imageStreamsList = filteredImageStreams || imageStreams;
+  const imageStreamsList = filteredImageStreams ?? imageStreams;
 
-  const handleOpen = React.useCallback(imageStream => {
+  const handleImageStreamSelected = React.useCallback(imageStream => {
     setActiveImageStream(imageStream);
-    toggleDrawer(true);
+    setIsOpen(true);
   }, []);
+  const handleClose = React.useCallback(() => setIsOpen(false), [setIsOpen]);
 
   return (
     <>
@@ -39,14 +40,14 @@ export const OcirImagesCards = ({ imageStreams }: OcirImagesCardsProps) => {
               <OcirImagesCard
                 key={imageStream.uid}
                 imageStream={imageStream}
-                openSidebar={handleOpen}
+                onImageStreamSelected={handleImageStreamSelected}
               />
             ))}
           </ItemCardGrid>
           {activeImageStream && (
             <OcirImageSidebar
-              isOpen={isOpen}
-              toggleDrawer={toggleDrawer}
+              open={isOpen}
+              onClose={handleClose}
               imageStream={activeImageStream}
             />
           )}

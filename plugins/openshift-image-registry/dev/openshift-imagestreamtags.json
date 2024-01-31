@@ -1,0 +1,650 @@
+{
+  "apiVersion": "v1",
+  "items": [
+    {
+      "apiVersion": "image.openshift.io/v1",
+      "generation": 2,
+      "image": {
+        "dockerImageLayers": [
+          {
+            "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+            "name": "sha256:2e449f0d8596b91719b366a7f134954cd2a03e99408e3899b004182af82a6979",
+            "size": 79829956
+          },
+          {
+            "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+            "name": "sha256:7fff4c4748a270604546349c7386ae461ba01a71b193d651cfcb0abc5fa88a34",
+            "size": 7552327
+          },
+          {
+            "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+            "name": "sha256:0b8fa8a9a8dc81f189373242af953709ea22ffa2b0a9c6d6070dc5027c12d432",
+            "size": 106012003
+          },
+          {
+            "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+            "name": "sha256:126a494c3c5f3513f4482bdcc5f0608a41c2f413c33b350e3ef2daef61cbe07c",
+            "size": 164861497
+          }
+        ],
+        "dockerImageManifestMediaType": "application/vnd.docker.distribution.manifest.v2+json",
+        "dockerImageMetadata": {
+          "Architecture": "amd64",
+          "Author": "Red Hat, Inc.",
+          "Config": {
+            "Cmd": ["/bin/sh", "-c", "$STI_SCRIPTS_PATH/usage"],
+            "Entrypoint": ["container-entrypoint"],
+            "Env": [
+              "container=oci",
+              "STI_SCRIPTS_URL=image:///usr/libexec/s2i",
+              "STI_SCRIPTS_PATH=/usr/libexec/s2i",
+              "APP_ROOT=/opt/app-root",
+              "HOME=/opt/app-root/src",
+              "PATH=/opt/app-root/src/bin:/opt/app-root/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+              "PLATFORM=el7",
+              "BASH_ENV=/opt/app-root/etc/scl_enable",
+              "ENV=/opt/app-root/etc/scl_enable",
+              "PROMPT_COMMAND=. /opt/app-root/etc/scl_enable",
+              "NODEJS_SCL=rh-nodejs14",
+              "NAME=golang",
+              "VERSION=1.18.10",
+              "SUMMARY=Platform for building and running Go applications",
+              "DESCRIPTION=Go Toolset available as a container is a base platform for building and running various Go applications and frameworks. Go is an easy to learn, powerful, statically typed language in the C/C++ tradition with garbage collection, concurrent programming support, and memory safety features."
+            ],
+            "Labels": {
+              "architecture": "x86_64",
+              "build-date": "2023-04-12T16:30:01",
+              "com.redhat.component": "go-toolset-container",
+              "com.redhat.license_terms": "https://www.redhat.com/agreements",
+              "description": "Go Toolset available as a container is a base platform for building and running various Go applications and frameworks. Go is an easy to learn, powerful, statically typed language in the C/C++ tradition with garbage collection, concurrent programming support, and memory safety features.",
+              "distribution-scope": "public",
+              "io.buildah.version": "1.27.3",
+              "io.k8s.description": "Go Toolset available as a container is a base platform for building and running various Go applications and frameworks. Go is an easy to learn, powerful, statically typed language in the C/C++ tradition with garbage collection, concurrent programming support, and memory safety features.",
+              "io.k8s.display-name": "Go 1.18.10",
+              "io.openshift.s2i.scripts-url": "image:///usr/libexec/s2i",
+              "io.openshift.tags": "builder,golang,golang117,rh-golang117,go",
+              "io.s2i.scripts-url": "image:///usr/libexec/s2i",
+              "maintainer": "Red Hat, Inc.",
+              "name": "devtools/go-toolset-rhel7",
+              "release": "6.1681314820",
+              "summary": "Platform for building and running Go applications",
+              "url": "https://access.redhat.com/containers/#/registry.access.redhat.com/devtools/go-toolset-rhel7/images/1.18.10-6.1681314820",
+              "vcs-ref": "10d1ace5725c33abb5ceaf9c297d54bd34a13de9",
+              "vcs-type": "git",
+              "vendor": "Red Hat, Inc.",
+              "version": "1.18.10"
+            },
+            "User": "1001",
+            "WorkingDir": "/opt/app-root/src"
+          },
+          "ContainerConfig": {},
+          "Created": "2023-04-12T16:32:45Z",
+          "Id": "sha256:524410e529e4a936dfcc37a6f8fa90f068ff9b3419fe5e9a264e8e359c11531b",
+          "Size": 358277196,
+          "apiVersion": "image.openshift.io/1.0",
+          "kind": "DockerImage"
+        },
+        "dockerImageMetadataVersion": "1.0",
+        "dockerImageReference": "image-registry.openshift-image-registry.svc:5000/openshift/golang@sha256:07addbabcfd72212a82efce053a70362a06925ee1522c4dd783be878ffad46cb",
+        "metadata": {
+          "annotations": {
+            "description": "Build and run Go applications on UBI 7. For more information about using this builder image, including OpenShift considerations, see https://github.com/sclorg/golang-container/blob/master/README.md.",
+            "iconClass": "icon-go-gopher",
+            "image.openshift.io/dockerLayersOrder": "ascending",
+            "openshift.io/display-name": "Go 1.18 (UBI 7)",
+            "openshift.io/provider-display-name": "Red Hat, Inc.",
+            "sampleRepo": "https://github.com/sclorg/golang-ex.git",
+            "supports": "golang",
+            "tags": "builder,golang,go"
+          },
+          "creationTimestamp": "2023-07-26T18:56:46Z",
+          "name": "sha256:07addbabcfd72212a82efce053a70362a06925ee1522c4dd783be878ffad46cb",
+          "resourceVersion": "14809",
+          "uid": "d973c923-e8d6-4ced-822b-46f00dcf3049"
+        }
+      },
+      "kind": "ImageStreamTag",
+      "lookupPolicy": {
+        "local": false
+      },
+      "metadata": {
+        "annotations": {
+          "description": "Build and run Go applications on UBI 7. For more information about using this builder image, including OpenShift considerations, see https://github.com/sclorg/golang-container/blob/master/README.md.",
+          "iconClass": "icon-go-gopher",
+          "openshift.io/display-name": "Go 1.18 (UBI 7)",
+          "openshift.io/provider-display-name": "Red Hat, Inc.",
+          "sampleRepo": "https://github.com/sclorg/golang-ex.git",
+          "supports": "golang",
+          "tags": "builder,golang,go"
+        },
+        "creationTimestamp": "2023-07-26T18:56:46Z",
+        "labels": {
+          "samples.operator.openshift.io/managed": "true"
+        },
+        "name": "golang:1.18-ubi7",
+        "namespace": "openshift",
+        "resourceVersion": "14813",
+        "uid": "693949d1-2093-49ed-ae56-929acc790182"
+      },
+      "tag": {
+        "annotations": {
+          "description": "Build and run Go applications on UBI 7. For more information about using this builder image, including OpenShift considerations, see https://github.com/sclorg/golang-container/blob/master/README.md.",
+          "iconClass": "icon-go-gopher",
+          "openshift.io/display-name": "Go 1.18 (UBI 7)",
+          "openshift.io/provider-display-name": "Red Hat, Inc.",
+          "sampleRepo": "https://github.com/sclorg/golang-ex.git",
+          "supports": "golang",
+          "tags": "builder,golang,go"
+        },
+        "from": {
+          "kind": "DockerImage",
+          "name": "registry.redhat.io/ubi7/go-toolset:1.18"
+        },
+        "generation": 2,
+        "importPolicy": {
+          "importMode": "Legacy"
+        },
+        "name": "1.18-ubi7",
+        "referencePolicy": {
+          "type": "Local"
+        }
+      }
+    },
+    {
+      "apiVersion": "image.openshift.io/v1",
+      "generation": 2,
+      "image": {
+        "dockerImageLayers": [
+          {
+            "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+            "name": "sha256:c6f9a461b2c17715e19e293f43e21c9734c699fb1df0c2c20c75ffb87551f7cb",
+            "size": 79785956
+          },
+          {
+            "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+            "name": "sha256:ca4f917972b4a900e5c352b3b6272879fa384dd413b70d1d7e4356c3c752da12",
+            "size": 115594803
+          }
+        ],
+        "dockerImageManifestMediaType": "application/vnd.docker.distribution.manifest.v2+json",
+        "dockerImageMetadata": {
+          "Architecture": "amd64",
+          "Author": "Red Hat, Inc.",
+          "Config": {
+            "Cmd": ["/usr/local/s2i/run"],
+            "Env": [
+              "container=oci",
+              "HOME=/home/jboss",
+              "JAVA_HOME=/usr/lib/jvm/java-11",
+              "JAVA_VENDOR=openjdk",
+              "JAVA_VERSION=11",
+              "JBOSS_CONTAINER_OPENJDK_JDK_MODULE=/opt/jboss/container/openjdk/jdk",
+              "AB_PROMETHEUS_JMX_EXPORTER_CONFIG=/opt/jboss/container/prometheus/etc/jmx-exporter-config.yaml",
+              "JBOSS_CONTAINER_PROMETHEUS_MODULE=/opt/jboss/container/prometheus",
+              "AB_JOLOKIA_AUTH_OPENSHIFT=true",
+              "AB_JOLOKIA_HTTPS=true",
+              "AB_JOLOKIA_PASSWORD_RANDOM=true",
+              "JBOSS_CONTAINER_JOLOKIA_MODULE=/opt/jboss/container/jolokia",
+              "JOLOKIA_VERSION=1.6.2",
+              "LD_PRELOAD=libnss_wrapper.so",
+              "NSS_WRAPPER_GROUP=/etc/group",
+              "NSS_WRAPPER_PASSWD=/home/jboss/passwd",
+              "S2I_SOURCE_DEPLOYMENTS_FILTER=*.jar",
+              "JBOSS_CONTAINER_S2I_CORE_MODULE=/opt/jboss/container/s2i/core/",
+              "JBOSS_CONTAINER_JAVA_PROXY_MODULE=/opt/jboss/container/java/proxy",
+              "JBOSS_CONTAINER_JAVA_JVM_MODULE=/opt/jboss/container/java/jvm",
+              "JBOSS_CONTAINER_MAVEN_36_MODULE=/opt/jboss/container/maven/36/",
+              "MAVEN_VERSION=3.6",
+              "JBOSS_CONTAINER_UTIL_LOGGING_MODULE=/opt/jboss/container/util/logging/",
+              "JBOSS_CONTAINER_MAVEN_DEFAULT_MODULE=/opt/jboss/container/maven/default/",
+              "JBOSS_CONTAINER_MAVEN_S2I_MODULE=/opt/jboss/container/maven/s2i",
+              "JAVA_DATA_DIR=/deployments/data",
+              "JBOSS_CONTAINER_JAVA_RUN_MODULE=/opt/jboss/container/java/run",
+              "JBOSS_CONTAINER_JAVA_S2I_MODULE=/opt/jboss/container/java/s2i",
+              "JBOSS_IMAGE_NAME=openjdk/openjdk-11-rhel7",
+              "JBOSS_IMAGE_VERSION=1.15",
+              "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/s2i"
+            ],
+            "ExposedPorts": {
+              "8080/tcp": {},
+              "8443/tcp": {},
+              "8778/tcp": {}
+            },
+            "Labels": {
+              "architecture": "x86_64",
+              "build-date": "2023-07-20T08:08:13",
+              "com.redhat.component": "openjdk-11-rhel7-container",
+              "com.redhat.license_terms": "https://www.redhat.com/agreements",
+              "description": "Source To Image (S2I) image for Red Hat OpenShift providing OpenJDK 11",
+              "distribution-scope": "public",
+              "io.buildah.version": "1.29.0",
+              "io.cekit.version": "4.7.0",
+              "io.fabric8.s2i.version.jolokia": "1.6.2-redhat-00002",
+              "io.fabric8.s2i.version.maven": "3.6",
+              "io.k8s.description": "Platform for building and running plain Java applications (fat-jar and flat classpath)",
+              "io.k8s.display-name": "Java Applications",
+              "io.openshift.s2i.destination": "/tmp",
+              "io.openshift.s2i.scripts-url": "image:///usr/local/s2i",
+              "io.openshift.tags": "builder,java",
+              "maintainer": "Red Hat OpenJDK <openjdk@redhat.com>",
+              "name": "openjdk/openjdk-11-rhel7",
+              "org.jboss.container.deployments-dir": "/deployments",
+              "org.jboss.product": "openjdk",
+              "org.jboss.product.openjdk.version": "11",
+              "org.jboss.product.version": "11",
+              "release": "9",
+              "summary": "Source To Image (S2I) image for Red Hat OpenShift providing OpenJDK 11",
+              "url": "https://access.redhat.com/containers/#/registry.access.redhat.com/openjdk/openjdk-11-rhel7/images/1.15-9",
+              "usage": "https://access.redhat.com/documentation/en-us/red_hat_jboss_middleware_for_openshift/3/html/red_hat_java_s2i_for_openshift/",
+              "vcs-ref": "bc2e8cbed5194676f5e562e97468861dc04c055f",
+              "vcs-type": "git",
+              "vendor": "Red Hat, Inc.",
+              "version": "1.15"
+            },
+            "User": "185",
+            "WorkingDir": "/home/jboss"
+          },
+          "ContainerConfig": {},
+          "Created": "2023-07-20T08:14:33Z",
+          "Id": "sha256:9c63b4dc2dc9e3aff2d0981ecfa512f8a4f5a584097f3b20a3bc44d247e4acf3",
+          "Size": 195410705,
+          "apiVersion": "image.openshift.io/1.0",
+          "kind": "DockerImage"
+        },
+        "dockerImageMetadataVersion": "1.0",
+        "dockerImageReference": "image-registry.openshift-image-registry.svc:5000/openshift/java@sha256:a9158f829df4163cd1c25ab02b7e8a85fd968d15a24f3e8494e53a116b9d3bb6",
+        "metadata": {
+          "annotations": {
+            "description": "Build and run Java applications using Maven and OpenJDK 11.",
+            "iconClass": "icon-rh-openjdk",
+            "image.openshift.io/dockerLayersOrder": "ascending",
+            "openshift.io/display-name": "Red Hat OpenJDK 11",
+            "sampleContextDir": "undertow-servlet",
+            "sampleRepo": "https://github.com/jboss-openshift/openshift-quickstarts",
+            "supports": "java:11,java",
+            "tags": "builder,java,openjdk,hidden",
+            "version": "11"
+          },
+          "creationTimestamp": "2023-07-26T18:56:48Z",
+          "name": "sha256:a9158f829df4163cd1c25ab02b7e8a85fd968d15a24f3e8494e53a116b9d3bb6",
+          "resourceVersion": "14855",
+          "uid": "7c5ad778-ed25-437b-a07a-c65764781b2a"
+        }
+      },
+      "kind": "ImageStreamTag",
+      "lookupPolicy": {
+        "local": false
+      },
+      "metadata": {
+        "annotations": {
+          "description": "Build and run Java applications using Maven and OpenJDK 11.",
+          "iconClass": "icon-rh-openjdk",
+          "openshift.io/display-name": "Red Hat OpenJDK 11",
+          "sampleContextDir": "undertow-servlet",
+          "sampleRepo": "https://github.com/jboss-openshift/openshift-quickstarts",
+          "supports": "java:11,java",
+          "tags": "builder,java,openjdk,hidden",
+          "version": "11"
+        },
+        "creationTimestamp": "2023-07-26T18:56:48Z",
+        "labels": {
+          "samples.operator.openshift.io/managed": "true",
+          "xpaas": "1.4.17"
+        },
+        "name": "java:11",
+        "namespace": "openshift",
+        "resourceVersion": "14860",
+        "uid": "210e1300-206b-4f15-a169-edbeadca5d88"
+      },
+      "tag": {
+        "annotations": {
+          "description": "Build and run Java applications using Maven and OpenJDK 11.",
+          "iconClass": "icon-rh-openjdk",
+          "openshift.io/display-name": "Red Hat OpenJDK 11",
+          "sampleContextDir": "undertow-servlet",
+          "sampleRepo": "https://github.com/jboss-openshift/openshift-quickstarts",
+          "supports": "java:11,java",
+          "tags": "builder,java,openjdk,hidden",
+          "version": "11"
+        },
+        "from": {
+          "kind": "DockerImage",
+          "name": "registry.redhat.io/openjdk/openjdk-11-rhel7:latest"
+        },
+        "generation": 2,
+        "importPolicy": {
+          "importMode": "Legacy"
+        },
+        "name": "11",
+        "referencePolicy": {
+          "type": "Local"
+        }
+      }
+    },
+    {
+      "apiVersion": "image.openshift.io/v1",
+      "generation": 2,
+      "image": {
+        "dockerImageLayers": [
+          {
+            "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+            "name": "sha256:d43c95783c3d99a3c275f4c278f8d68a1dfda166c399fd55aee8c1dce7d76611",
+            "size": 79767891
+          },
+          {
+            "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+            "name": "sha256:e53ac5fae1ac340de75c4c78c6eea9df409b45b2ffee95cd8085a8ed3b9cbf6c",
+            "size": 7515417
+          },
+          {
+            "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+            "name": "sha256:fa1531c978aeb28eb31c5ebc320c46907e5a56de6fc34d821ed2262d3d6c2864",
+            "size": 90352629
+          }
+        ],
+        "dockerImageManifestMediaType": "application/vnd.docker.distribution.manifest.v2+json",
+        "dockerImageMetadata": {
+          "Architecture": "amd64",
+          "Author": "Red Hat, Inc.",
+          "Config": {
+            "Cmd": ["/bin/sh", "-c", "$STI_SCRIPTS_PATH/usage"],
+            "Entrypoint": ["container-entrypoint"],
+            "Env": [
+              "container=oci",
+              "STI_SCRIPTS_URL=image:///usr/libexec/s2i",
+              "STI_SCRIPTS_PATH=/usr/libexec/s2i",
+              "APP_ROOT=/opt/app-root",
+              "HOME=/opt/app-root/src",
+              "PLATFORM=el7",
+              "BASH_ENV=/opt/app-root/etc/scl_enable",
+              "ENV=/opt/app-root/etc/scl_enable",
+              "PROMPT_COMMAND=. /opt/app-root/etc/scl_enable",
+              "NODEJS_VERSION=14",
+              "NPM_RUN=start",
+              "NAME=nodejs",
+              "NPM_CONFIG_PREFIX=/opt/app-root/src/.npm-global",
+              "SUMMARY=Platform for building and running Node.js 14 applications",
+              "DESCRIPTION=Node.js 14 available as container is a base platform for building and running various Node.js 14 applications and frameworks. Node.js is a platform built on Chrome's JavaScript runtime for easily building fast, scalable network applications. Node.js uses an event-driven, non-blocking I/O model that makes it lightweight and efficient, perfect for data-intensive real-time applications that run across distributed devices.",
+              "PATH=/opt/rh/rh-nodejs14/root/usr/bin:/opt/app-root/src/node_modules/.bin/:/opt/app-root/src/.npm-global/bin/:/opt/app-root/src/bin:/opt/app-root/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+              "LD_LIBRARY_PATH=/opt/rh/rh-nodejs14/root/usr/lib64",
+              "X_SCLS=rh-nodejs14",
+              "MANPATH=/opt/rh/rh-nodejs14/root/usr/share/man"
+            ],
+            "ExposedPorts": {
+              "8080/tcp": {}
+            },
+            "Labels": {
+              "architecture": "x86_64",
+              "build-date": "2023-07-19T11:53:29",
+              "com.redhat.component": "rh-nodejs14-container",
+              "com.redhat.deployments-dir": "/opt/app-root/src",
+              "com.redhat.dev-mode": "DEV_MODE:false",
+              "com.redhat.dev-mode.port": "DEBUG_PORT:5858",
+              "com.redhat.license_terms": "https://www.redhat.com/en/about/red-hat-end-user-license-agreements#UBI",
+              "description": "Node.js 14 available as container is a base platform for building and running various Node.js 14 applications and frameworks. Node.js is a platform built on Chrome's JavaScript runtime for easily building fast, scalable network applications. Node.js uses an event-driven, non-blocking I/O model that makes it lightweight and efficient, perfect for data-intensive real-time applications that run across distributed devices.",
+              "distribution-scope": "public",
+              "help": "For more information visit https://github.com/sclorg/s2i-nodejs-container",
+              "io.buildah.version": "1.29.0",
+              "io.k8s.description": "Node.js 14 available as container is a base platform for building and running various Node.js 14 applications and frameworks. Node.js is a platform built on Chrome's JavaScript runtime for easily building fast, scalable network applications. Node.js uses an event-driven, non-blocking I/O model that makes it lightweight and efficient, perfect for data-intensive real-time applications that run across distributed devices.",
+              "io.k8s.display-name": "Node.js 14",
+              "io.openshift.expose-services": "8080:http",
+              "io.openshift.s2i.scripts-url": "image:///usr/libexec/s2i",
+              "io.openshift.tags": "builder,nodejs,nodejs14",
+              "io.s2i.scripts-url": "image:///usr/libexec/s2i",
+              "maintainer": "SoftwareCollections.org <sclorg@redhat.com>",
+              "name": "rhscl/nodejs-14-rhel7",
+              "release": "99",
+              "summary": "Platform for building and running Node.js 14 applications",
+              "url": "https://access.redhat.com/containers/#/registry.access.redhat.com/rhscl/nodejs-14-rhel7/images/1-99",
+              "usage": "s2i build <SOURCE-REPOSITORY> rhscl/nodejs-14-rhel7:latest <APP-NAME>",
+              "vcs-ref": "8da2b9bd5665ecf7344eab52ac75ab35ee11194f",
+              "vcs-type": "git",
+              "vendor": "Red Hat, Inc.",
+              "version": "1"
+            },
+            "User": "1001",
+            "WorkingDir": "/opt/app-root/src"
+          },
+          "ContainerConfig": {},
+          "Created": "2023-07-19T11:57:00Z",
+          "Id": "sha256:8a2260b54d832ff4d44833e312c3e96de44651194c872b1851d8bcf8b1074d16",
+          "Size": 177656312,
+          "apiVersion": "image.openshift.io/1.0",
+          "kind": "DockerImage"
+        },
+        "dockerImageMetadataVersion": "1.0",
+        "dockerImageReference": "image-registry.openshift-image-registry.svc:5000/openshift/nodejs@sha256:9a6eb662ac0c2f8f94d35b162553c3d8b81ea001cb7a9022e1d52e339da98b09",
+        "metadata": {
+          "annotations": {
+            "description": "Build and run Node.js 14 applications on UBI 7. For more information about using this builder image, including OpenShift considerations, see https://github.com/sclorg/s2i-nodejs-container/blob/master/14/README.md.",
+            "iconClass": "icon-nodejs",
+            "image.openshift.io/dockerLayersOrder": "ascending",
+            "openshift.io/display-name": "Node.js 14 (UBI 7)",
+            "openshift.io/provider-display-name": "Red Hat, Inc.",
+            "sampleRepo": "https://github.com/sclorg/nodejs-ex.git",
+            "tags": "builder,nodejs,hidden",
+            "version": "14"
+          },
+          "creationTimestamp": "2023-07-26T18:56:51Z",
+          "name": "sha256:9a6eb662ac0c2f8f94d35b162553c3d8b81ea001cb7a9022e1d52e339da98b09",
+          "resourceVersion": "14908",
+          "uid": "c6005c71-4d6a-493f-bd6a-a87761606bac"
+        }
+      },
+      "kind": "ImageStreamTag",
+      "lookupPolicy": {
+        "local": false
+      },
+      "metadata": {
+        "annotations": {
+          "description": "Build and run Node.js 14 applications on UBI 7. For more information about using this builder image, including OpenShift considerations, see https://github.com/sclorg/s2i-nodejs-container/blob/master/14/README.md.",
+          "iconClass": "icon-nodejs",
+          "openshift.io/display-name": "Node.js 14 (UBI 7)",
+          "openshift.io/provider-display-name": "Red Hat, Inc.",
+          "sampleRepo": "https://github.com/sclorg/nodejs-ex.git",
+          "tags": "builder,nodejs,hidden",
+          "version": "14"
+        },
+        "creationTimestamp": "2023-07-26T18:56:51Z",
+        "labels": {
+          "samples.operator.openshift.io/managed": "true"
+        },
+        "name": "nodejs:14-ubi7",
+        "namespace": "openshift",
+        "resourceVersion": "14915",
+        "uid": "9f67482c-1e83-42d5-a8eb-04099005ea27"
+      },
+      "tag": {
+        "annotations": {
+          "description": "Build and run Node.js 14 applications on UBI 7. For more information about using this builder image, including OpenShift considerations, see https://github.com/sclorg/s2i-nodejs-container/blob/master/14/README.md.",
+          "iconClass": "icon-nodejs",
+          "openshift.io/display-name": "Node.js 14 (UBI 7)",
+          "openshift.io/provider-display-name": "Red Hat, Inc.",
+          "sampleRepo": "https://github.com/sclorg/nodejs-ex.git",
+          "tags": "builder,nodejs,hidden",
+          "version": "14"
+        },
+        "from": {
+          "kind": "DockerImage",
+          "name": "registry.redhat.io/ubi7/nodejs-14:latest"
+        },
+        "generation": 2,
+        "importPolicy": {
+          "importMode": "Legacy"
+        },
+        "name": "14-ubi7",
+        "referencePolicy": {
+          "type": "Local"
+        }
+      }
+    },
+    {
+      "apiVersion": "image.openshift.io/v1",
+      "generation": 2,
+      "image": {
+        "dockerImageLayers": [
+          {
+            "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+            "name": "sha256:6c53be4efe39270422e3e2f7ee1c15887955e3d5e378ea6577c622f358f87691",
+            "size": 79290957
+          },
+          {
+            "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+            "name": "sha256:d96c2f4a5465b79c577fdecc27cd49a2c0f103fd2cfd372e667512be069e0143",
+            "size": 18415088
+          },
+          {
+            "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+            "name": "sha256:1a3c9e41511310aa895b5bc5b140efe6b6d9e9583f3ce9d70205d1f415d2d25f",
+            "size": 151139355
+          },
+          {
+            "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+            "name": "sha256:0e05217c3e5798923dce4c10d4991ac94a7811ca5b864ed1c2a18beaeb60b9de",
+            "size": 74183818
+          }
+        ],
+        "dockerImageManifestMediaType": "application/vnd.docker.distribution.manifest.v2+json",
+        "dockerImageMetadata": {
+          "Architecture": "amd64",
+          "Config": {
+            "Cmd": ["/bin/sh", "-c", "$STI_SCRIPTS_PATH/usage"],
+            "Entrypoint": ["container-entrypoint"],
+            "Env": [
+              "container=oci",
+              "STI_SCRIPTS_URL=image:///usr/libexec/s2i",
+              "STI_SCRIPTS_PATH=/usr/libexec/s2i",
+              "APP_ROOT=/opt/app-root",
+              "HOME=/opt/app-root/src",
+              "PLATFORM=el8",
+              "NODEJS_VER=14",
+              "PYTHON_VERSION=2.7",
+              "PATH=/opt/app-root/src/.local/bin/:/opt/app-root/src/bin:/opt/app-root/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+              "PYTHONUNBUFFERED=1",
+              "PYTHONIOENCODING=UTF-8",
+              "LC_ALL=en_US.UTF-8",
+              "LANG=en_US.UTF-8",
+              "CNB_STACK_ID=com.redhat.stacks.ubi8-python-27",
+              "CNB_USER_ID=1001",
+              "CNB_GROUP_ID=0",
+              "PIP_NO_CACHE_DIR=off",
+              "SUMMARY=Platform for building and running Python 2.7 applications",
+              "DESCRIPTION=Python 2.7 available as container is a base platform for building and running various Python 2.7 applications and frameworks. Python is an easy to learn, powerful programming language. It has efficient high-level data structures and a simple but effective approach to object-oriented programming. Python's elegant syntax and dynamic typing, together with its interpreted nature, make it an ideal language for scripting and rapid application development in many areas on most platforms.",
+              "BASH_ENV=/opt/app-root/bin/activate",
+              "ENV=/opt/app-root/bin/activate",
+              "PROMPT_COMMAND=. /opt/app-root/bin/activate"
+            ],
+            "ExposedPorts": {
+              "8080/tcp": {}
+            },
+            "Labels": {
+              "architecture": "x86_64",
+              "build-date": "2023-06-23T09:49:56",
+              "com.redhat.component": "python-27-container",
+              "com.redhat.license_terms": "https://www.redhat.com/en/about/red-hat-end-user-license-agreements#UBI",
+              "description": "Python 2.7 available as container is a base platform for building and running various Python 2.7 applications and frameworks. Python is an easy to learn, powerful programming language. It has efficient high-level data structures and a simple but effective approach to object-oriented programming. Python's elegant syntax and dynamic typing, together with its interpreted nature, make it an ideal language for scripting and rapid application development in many areas on most platforms.",
+              "distribution-scope": "public",
+              "io.buildah.version": "1.29.0",
+              "io.buildpacks.stack.id": "com.redhat.stacks.ubi8-python-27",
+              "io.k8s.description": "Python 2.7 available as container is a base platform for building and running various Python 2.7 applications and frameworks. Python is an easy to learn, powerful programming language. It has efficient high-level data structures and a simple but effective approach to object-oriented programming. Python's elegant syntax and dynamic typing, together with its interpreted nature, make it an ideal language for scripting and rapid application development in many areas on most platforms.",
+              "io.k8s.display-name": "Python 2.7",
+              "io.openshift.expose-services": "8080:http",
+              "io.openshift.s2i.scripts-url": "image:///usr/libexec/s2i",
+              "io.openshift.tags": "builder,python,python27,python-27,rh-python27",
+              "io.s2i.scripts-url": "image:///usr/libexec/s2i",
+              "maintainer": "SoftwareCollections.org <sclorg@redhat.com>",
+              "name": "ubi8/python-27",
+              "release": "216",
+              "summary": "Platform for building and running Python 2.7 applications",
+              "url": "https://access.redhat.com/containers/#/registry.access.redhat.com/ubi8/python-27/images/2.7-216",
+              "usage": "s2i build https://github.com/sclorg/s2i-python-container.git --context-dir=2.7/test/setup-test-app/ ubi8/python-27 python-sample-app",
+              "vcs-ref": "b9428036ceb2aef42c4f5d4181ff3acd52ef810a",
+              "vcs-type": "git",
+              "vendor": "Red Hat, Inc.",
+              "version": "2.7"
+            },
+            "User": "1001",
+            "WorkingDir": "/opt/app-root/src"
+          },
+          "ContainerConfig": {},
+          "Created": "2023-06-23T09:53:13Z",
+          "Id": "sha256:e73ddbbc6ecebcb472f62618fb02fb654af3802f69f45e8d3cfcfddc8c5bfd6d",
+          "Size": 323053263,
+          "apiVersion": "image.openshift.io/1.0",
+          "kind": "DockerImage"
+        },
+        "dockerImageMetadataVersion": "1.0",
+        "dockerImageReference": "image-registry.openshift-image-registry.svc:5000/openshift/python@sha256:190ea81f2f64ccf7f7c8cb9dc4612eda59eb9e3d2e17f71727a270f078f5114a",
+        "metadata": {
+          "annotations": {
+            "description": "Build and run Python 2.7 applications on UBI 8. For more information about using this builder image, including OpenShift considerations, see https://github.com/sclorg/s2i-python-container/blob/master/2.7/README.md.",
+            "iconClass": "icon-python",
+            "image.openshift.io/dockerLayersOrder": "ascending",
+            "openshift.io/display-name": "Python 2.7 (UBI 8)",
+            "openshift.io/provider-display-name": "Red Hat, Inc.",
+            "sampleRepo": "https://github.com/sclorg/django-ex.git",
+            "supports": "python:2.7,python",
+            "tags": "builder,python",
+            "version": "2.7"
+          },
+          "creationTimestamp": "2023-07-26T18:56:50Z",
+          "name": "sha256:190ea81f2f64ccf7f7c8cb9dc4612eda59eb9e3d2e17f71727a270f078f5114a",
+          "resourceVersion": "14901",
+          "uid": "c4fb3d1a-acbc-4ad8-8c69-0ca441c6e448"
+        }
+      },
+      "kind": "ImageStreamTag",
+      "lookupPolicy": {
+        "local": false
+      },
+      "metadata": {
+        "annotations": {
+          "description": "Build and run Python 2.7 applications on UBI 8. For more information about using this builder image, including OpenShift considerations, see https://github.com/sclorg/s2i-python-container/blob/master/2.7/README.md.",
+          "iconClass": "icon-python",
+          "openshift.io/display-name": "Python 2.7 (UBI 8)",
+          "openshift.io/provider-display-name": "Red Hat, Inc.",
+          "sampleRepo": "https://github.com/sclorg/django-ex.git",
+          "supports": "python:2.7,python",
+          "tags": "builder,python",
+          "version": "2.7"
+        },
+        "creationTimestamp": "2023-07-26T18:56:50Z",
+        "labels": {
+          "samples.operator.openshift.io/managed": "true"
+        },
+        "name": "python:2.7-ubi8",
+        "namespace": "openshift",
+        "resourceVersion": "14907",
+        "uid": "ef07a854-3ba3-4325-9c09-d40cafa55d87"
+      },
+      "tag": {
+        "annotations": {
+          "description": "Build and run Python 2.7 applications on UBI 8. For more information about using this builder image, including OpenShift considerations, see https://github.com/sclorg/s2i-python-container/blob/master/2.7/README.md.",
+          "iconClass": "icon-python",
+          "openshift.io/display-name": "Python 2.7 (UBI 8)",
+          "openshift.io/provider-display-name": "Red Hat, Inc.",
+          "sampleRepo": "https://github.com/sclorg/django-ex.git",
+          "supports": "python:2.7,python",
+          "tags": "builder,python",
+          "version": "2.7"
+        },
+        "from": {
+          "kind": "DockerImage",
+          "name": "registry.redhat.io/ubi8/python-27:latest"
+        },
+        "generation": 2,
+        "importPolicy": {
+          "importMode": "Legacy"
+        },
+        "name": "2.7-ubi8",
+        "referencePolicy": {
+          "type": "Local"
+        }
+      }
+    }
+  ],
+  "kind": "List",
+  "metadata": {
+    "resourceVersion": ""
+  }
+}

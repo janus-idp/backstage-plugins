@@ -1,9 +1,10 @@
 {
   "extends": "@backstage/cli/config/tsconfig.json",
-  "include": ["src", "dev"],
+  "include": ["src", "dev", "workflow-editor-envelope"],
   "exclude": ["node_modules"],
   "compilerOptions": {
     "outDir": "../../dist-types/plugins/orchestrator",
-    "rootDir": "."
+    "rootDir": ".",
+    "emitDeclarationOnly": false
   }
 }

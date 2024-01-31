@@ -12,10 +12,7 @@ const schemaInput = z.object({
           // You should not parse a regex (regular language) with a regex (regular language),
           // you actually need a context free grammar to parse a regex (regular language).
           // Hence, we are using a string comparison here.
-          value =>
-            !(
-              value.charAt(0) === '/' && value.charAt(value.length - 1) === '/'
-            ),
+          value => !value.startsWith('/') && !value.endsWith('/'),
           {
             message:
               'The RegExp constructor cannot take a string pattern with a leading and trailing forward slash.',
@@ -26,7 +23,7 @@ const schemaInput = z.object({
         ),
       flags: z
         .array(
-          // FIXME: changed from z.set() because that breaks zod-to-json-schema parser in unknown way.
+          // Prefer array over set here because input values are normally defined in YAML which doesn't support Sets.
           z.enum(['g', 'm', 'i', 'y', 'u', 's', 'd'], {
             invalid_type_error:
               'Invalid flag, possible values are: g, m, i, y, u, s, d',
@@ -169,7 +166,7 @@ export const createReplaceAction = () => {
     async handler(ctx) {
       const input = ctx.input;
 
-      const values = {} as Record<string, string>;
+      const values: Record<string, string> = {};
 
       for (const {
         pattern,
@@ -177,7 +174,7 @@ export const createReplaceAction = () => {
         replacement,
         values: valuesInput,
       } of input.regExps) {
-        // FIXME: remove `new Set()` when the `z.set()` issue is fixed
+        // remove duplicates from the flags input array
         const flags = flagsInput
           ? Array.from(new Set(flagsInput)).join('')
           : '';

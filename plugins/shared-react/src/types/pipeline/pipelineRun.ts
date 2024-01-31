@@ -87,7 +87,8 @@ export type PipelineRunStatus = {
   skippedTasks?: {
     name: string;
   }[];
-  pipelineResults?: TektonResultsRun[];
+  pipelineResults?: TektonResultsRun[]; // in tekton v1 pipelineResults is renamed to results
+  results?: TektonResultsRun[];
 };
 
 export type PipelineRunKind = {

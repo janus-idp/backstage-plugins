@@ -6,19 +6,18 @@ import {
   WorkflowOverview,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
+import { VALUE_UNAVAILABLE } from '../constants';
 import DataFormatter from './DataFormatter';
 
-const UNAVAILABLE = '---';
-
 export interface FormattedWorkflowOverview {
-  id: string;
-  name: string;
-  lastTriggered: string;
-  lastRunStatus: string;
-  type: string;
-  avgDuration: string;
-  description: string;
-  format: WorkflowFormat;
+  readonly id: string;
+  readonly name: string;
+  readonly lastTriggered: string;
+  readonly lastRunStatus: string;
+  readonly category: string;
+  readonly avgDuration: string;
+  readonly description: string;
+  readonly format: WorkflowFormat;
 }
 
 const formatDuration = (milliseconds: number): string => {
@@ -52,16 +51,16 @@ const WorkflowOverviewFormatter: DataFormatter<
   format: (data: WorkflowOverview): FormattedWorkflowOverview => {
     return {
       id: data.workflowId,
-      name: data.name || UNAVAILABLE,
+      name: data.name || VALUE_UNAVAILABLE,
       lastTriggered: data.lastTriggeredMs
-        ? moment(data.lastTriggeredMs).format('DD/MM/YY HH:mm:ss')
-        : UNAVAILABLE,
-      lastRunStatus: data.lastRunStatus || UNAVAILABLE,
-      type: data.type || UNAVAILABLE,
+        ? moment(data.lastTriggeredMs).toDate().toLocaleString()
+        : VALUE_UNAVAILABLE,
+      lastRunStatus: data.lastRunStatus || VALUE_UNAVAILABLE,
+      category: data.category || VALUE_UNAVAILABLE,
       avgDuration: data.avgDurationMs
         ? formatDuration(data.avgDurationMs)
-        : UNAVAILABLE,
-      description: data.description || UNAVAILABLE,
+        : VALUE_UNAVAILABLE,
+      description: data.description || VALUE_UNAVAILABLE,
       format: data.uri ? extractWorkflowFormatFromUri(data.uri) : 'yaml',
     };
   },

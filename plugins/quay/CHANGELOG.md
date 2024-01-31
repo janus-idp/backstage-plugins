@@ -1,3 +1,94 @@
+## @janus-idp/backstage-plugin-quay [1.5.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.5.2...@janus-idp/backstage-plugin-quay@1.5.3) (2024-01-30)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.0
+
+## @janus-idp/backstage-plugin-quay [1.5.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.5.1...@janus-idp/backstage-plugin-quay@1.5.2) (2024-01-30)
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.5.0
+
+## @janus-idp/backstage-plugin-quay [1.5.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.5.0...@janus-idp/backstage-plugin-quay@1.5.1) (2024-01-25)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.6.0
+
+## @janus-idp/backstage-plugin-quay [1.5.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.4.21...@janus-idp/backstage-plugin-quay@1.5.0) (2024-01-17)
+
+
+### Features
+
+* **quay:** fix sorting in quay table and tag details ([#1044](https://github.com/janus-idp/backstage-plugins/issues/1044)) ([ceb16a9](https://github.com/janus-idp/backstage-plugins/commit/ceb16a97870f939e88b1424b3ce208ca24eb868a))
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.4.0
+
+## @janus-idp/backstage-plugin-quay [1.4.21](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.4.20...@janus-idp/backstage-plugin-quay@1.4.21) (2023-12-22)
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.3.0
+
+## @janus-idp/backstage-plugin-quay [1.4.20](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.4.19...@janus-idp/backstage-plugin-quay@1.4.20) (2023-12-21)
+
+
+### Bug Fixes
+
+* **quay:** fix sorting and ordering of vulneribilities based on severity ([#1033](https://github.com/janus-idp/backstage-plugins/issues/1033)) ([d3fdcdf](https://github.com/janus-idp/backstage-plugins/commit/d3fdcdfb51d782e8f22a9eecdb5091def8ff4176))
+
+## @janus-idp/backstage-plugin-quay [1.4.19](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.4.18...@janus-idp/backstage-plugin-quay@1.4.19) (2023-12-21)
+
+
+### Bug Fixes
+
+* **quay:** fix infinite progress bar when scan is unsupported ([#1031](https://github.com/janus-idp/backstage-plugins/issues/1031)) ([2c050db](https://github.com/janus-idp/backstage-plugins/commit/2c050dbcfe4fae55ce89f9a8b54c8c4550b804f8))
+
+## @janus-idp/backstage-plugin-quay [1.4.18](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.4.17...@janus-idp/backstage-plugin-quay@1.4.18) (2023-12-20)
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.2.0
+
+## @janus-idp/backstage-plugin-quay [1.4.17](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.4.16...@janus-idp/backstage-plugin-quay@1.4.17) (2023-12-14)
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.1.0
+
+## @janus-idp/backstage-plugin-quay [1.4.16](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.4.15...@janus-idp/backstage-plugin-quay@1.4.16) (2023-12-07)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.4.7
+
+## @janus-idp/backstage-plugin-quay [1.4.15](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.4.14...@janus-idp/backstage-plugin-quay@1.4.15) (2023-11-30)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.4.6
+
 ## @janus-idp/backstage-plugin-quay [1.4.14](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.4.13...@janus-idp/backstage-plugin-quay@1.4.14) (2023-11-23)
 
 

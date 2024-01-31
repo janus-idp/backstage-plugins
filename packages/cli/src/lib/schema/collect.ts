@@ -166,7 +166,10 @@ async function collectConfigSchemas(
     );
   }
 
-  await processItem({ name: packageName, parentPath: currentDir });
+  await processItem({
+    name: packageName,
+    packagePath: `${currentDir}/package.json`,
+  });
 
   const tsSchemas = await compileTsSchemas(tsSchemaPaths);
 
