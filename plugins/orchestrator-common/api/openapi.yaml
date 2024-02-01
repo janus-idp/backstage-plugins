@@ -188,7 +188,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WorkflowSuggestionsDTO'
+                $ref: '#/components/schemas/WorkflowDataDTO'
         '500':
           description: Error fetching instance results
           content:
@@ -469,18 +469,26 @@ components:
           $ref: '#/components/schemas/WorkflowCategoryDTO'
         description:
           type: string
-        nextWorkflowSuggestions:
-          $ref: '#/components/schemas/WorkflowSuggestionsDTO'
-    WorkflowSuggestionsDTO:
+        workflowdata:
+          $ref: '#/components/schemas/WorkflowDataDTO'
+    WorkflowDataDTO:
+      type: object
+      properties:
+        workflowoptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkflowOptionsDTO'
+      additionalProperties: true
+    WorkflowOptionsDTO:
       type: array
       items:
         $ref: '#/components/schemas/WorkflowSuggestionDTO'
     WorkflowSuggestionDTO:
       type: object
       properties:
-        suggestion:
+        id:
           type: string
-        workflow:
+        name:
           type: string
     ProcessInstanceStatusDTO:
       type: string

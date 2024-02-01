@@ -294,12 +294,14 @@ function mapToProcessInstanceDTO(
   const start = moment(processInstance.start?.toString());
   const end = moment(processInstance.end?.toString());
   const duration = moment.duration(start.diff(end));
-  // let variables: Record<string, unknown> | undefined;
-  // if (typeof processInstance?.variables === 'string') {
-  //   variables = JSON.parse(processInstance?.variables);
-  // } else {
-  //   variables = processInstance?.variables;
-  // }
+
+  let variables: Record<string, unknown> | undefined;
+  if (typeof processInstance?.variables === 'string') {
+    variables = JSON.parse(processInstance?.variables);
+  } else {
+    variables = processInstance?.variables;
+  }
+
   return {
     category: mapWorkflowCategoryDTO(processInstance.category),
     description: processInstance.description,
@@ -307,7 +309,8 @@ function mapToProcessInstanceDTO(
     id: processInstance.id,
     name: processInstance.processName,
     // To be fixed https://issues.redhat.com/browse/FLPATH-950
-    nextWorkflowSuggestions: undefined, // variables?.workflowdata?.workflowOptions,
+    // @ts-ignore
+    workflowdata: variables?.workflowdata,
     started: start.toDate().toLocaleString(),
     status: getProcessInstancesDTOFromString(processInstance.state),
     workflow: processInstance.processName || processInstance.processId,

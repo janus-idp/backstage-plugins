@@ -128,11 +128,11 @@ export interface components {
       duration?: string;
       id?: string;
       name?: string;
-      nextWorkflowSuggestions?: components['schemas']['WorkflowSuggestionsDTO'];
       /** Format: date-time */
       started?: string;
       status?: components['schemas']['ProcessInstanceStatusDTO'];
       workflow?: string;
+      workflowdata?: components['schemas']['WorkflowDataDTO'];
     };
     ProcessInstanceErrorDTO: {
       /**
@@ -165,6 +165,10 @@ export interface components {
       /** @description JSON string */
       content: string;
     };
+    WorkflowDataDTO: {
+      workflowoptions?: components['schemas']['WorkflowOptionsDTO'][];
+      [key: string]: unknown;
+    };
     WorkflowDTO: {
       annotations?: string[];
       category: components['schemas']['WorkflowCategoryDTO'];
@@ -181,6 +185,7 @@ export interface components {
       items: components['schemas']['WorkflowDTO'][];
       paginationInfo: components['schemas']['PaginationInfoDTO'];
     };
+    WorkflowOptionsDTO: components['schemas']['WorkflowSuggestionDTO'][];
     WorkflowOverviewDTO: {
       avgDurationMs?: number;
       description?: string;
@@ -210,10 +215,9 @@ export interface components {
       path?: string;
     };
     WorkflowSuggestionDTO: {
-      suggestion?: string;
-      workflow?: string;
+      id?: string;
+      name?: string;
     };
-    WorkflowSuggestionsDTO: components['schemas']['WorkflowSuggestionDTO'][];
   };
   responses: never;
   parameters: never;
@@ -504,7 +508,7 @@ export interface operations {
       /** @description Successful response */
       200: {
         content: {
-          'application/json': components['schemas']['WorkflowSuggestionsDTO'];
+          'application/json': components['schemas']['WorkflowDataDTO'];
         };
       };
       /** @description Error fetching instance results */

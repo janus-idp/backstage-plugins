@@ -302,7 +302,7 @@ const OPENAPI = `
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/WorkflowSuggestionsDTO"
+                  "$ref": "#/components/schemas/WorkflowDataDTO"
                 }
               }
             }
@@ -737,12 +737,24 @@ const OPENAPI = `
           "description": {
             "type": "string"
           },
-          "nextWorkflowSuggestions": {
-            "$ref": "#/components/schemas/WorkflowSuggestionsDTO"
+          "workflowdata": {
+            "$ref": "#/components/schemas/WorkflowDataDTO"
           }
         }
       },
-      "WorkflowSuggestionsDTO": {
+      "WorkflowDataDTO": {
+        "type": "object",
+        "properties": {
+          "workflowoptions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkflowOptionsDTO"
+            }
+          }
+        },
+        "additionalProperties": true
+      },
+      "WorkflowOptionsDTO": {
         "type": "array",
         "items": {
           "$ref": "#/components/schemas/WorkflowSuggestionDTO"
@@ -751,10 +763,10 @@ const OPENAPI = `
       "WorkflowSuggestionDTO": {
         "type": "object",
         "properties": {
-          "suggestion": {
+          "id": {
             "type": "string"
           },
-          "workflow": {
+          "name": {
             "type": "string"
           }
         }
