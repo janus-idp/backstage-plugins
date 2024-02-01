@@ -47,7 +47,8 @@
   },
   "files": [
     "dist",
-    "dist-scalprum"
+    "dist-scalprum",
+    "app-config.janus-idp.yaml"
   ],
   "scalprum": {
     "name": "janus-idp.backstage-plugin-dynamic-plugins-info",
