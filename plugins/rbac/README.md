@@ -15,18 +15,32 @@ The sections below are relevant for static plugins. If the plugin is expected to
 
 #### Prerequisites
 
-Follow the RBAC backend plugin [README](https://github.com/janus-idp/backstage-plugins/tree/main/plugins/rbac-backend) to integrate rbac in your Backstage instance
+Follow the RBAC backend plugin [README](https://github.com/janus-idp/backstage-plugins/blob/main/plugins/rbac-backend/README.md) to integrate rbac in your Backstage instance.
 
 ---
 
 **NOTE**
 
-To enable create role button on Administration -> RBAC roles list page, the role associated with your user should have the following permission policies associated with it. Add the following in your permission policies configuration file:
+- For non-admin users, to enable create role button on Administration -> RBAC roles list page, the role associated with your user should have the following permission policies associated with it. Add the following in your permission policies configuration file:
 
 ```CSV
 p, role:default/team_a, catalog-entity, read, allow
 p, role:default/team_a, policy-entity, create, allow
 g, user:default/<login-id/user-name>, role:default/team_a
+```
+
+- To fetch the permissions from other plugins like `Kubernetes` and `Jenkins` in the Role Form as mentioned [here](https://github.com/janus-idp/backstage-plugins/blob/main/plugins/rbac-backend/docs/permissions.md), add the following configuration in your `app-config.yaml`:
+
+```yaml title="app-config.yaml"
+permission:
+  enabled: true
+  rbac:
+    pluginsWithPermission:
+      - kubernetes
+      - jenkins
+    admin:
+      users:
+        - name: user:default/<user-name>
 ```
 
 ---
