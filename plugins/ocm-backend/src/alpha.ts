@@ -16,3 +16,4 @@
 
 export { catalogModuleOCMEntityProvider } from './providers';
 export { ocmPlugin } from './service/router';
+export { dynamicPluginInstaller } from './dynamic/alpha';
