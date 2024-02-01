@@ -39,6 +39,7 @@ type VirtualListProps<R> = {
   rows: R[];
   sort?: (sortField: SortField<NamespaceInfo>, isAscending: boolean) => void;
   statefulProps?: StatefulFiltersProps;
+  tableToolbar?: React.ReactNode;
   type: string;
 };
 
@@ -53,7 +54,6 @@ export const VirtualList = (listProps: VirtualListProps<RenderResource>) => {
         info.title.toLowerCase(),
       );
     }
-
     return columns;
   };
   const columns = getColumns();
@@ -61,6 +61,14 @@ export const VirtualList = (listProps: VirtualListProps<RenderResource>) => {
   const { rows } = listProps;
   const typeDisplay =
     listProps.type === 'istio' ? 'Istio config' : listProps.type;
+
+  const tableHeaderStyle = {
+    minWidth: '120px',
+    fontWeight: '700',
+    color: 'grey',
+    borderTop: '1px solid #d5d5d5',
+    borderBottom: '1px solid #d5d5d5',
+  };
 
   const rowItems = rows.map((row, index) => (
     <VirtualItem
@@ -80,30 +88,31 @@ export const VirtualList = (listProps: VirtualListProps<RenderResource>) => {
 
   return (
     <div>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              {columns.map((column, index) => (
-                <TableCell
-                  key={`column_${index}`}
-                  align="center"
-                  sortDirection="asc"
-                  style={{ minWidth: '140px' }}
-                >
-                  {column.title}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {listProps.rows.length > 0 ? (
-              rowItems
-            ) : (
-              <TableRow className={emptyStyle}>
-                <TableCell colSpan={columns.length}>
-                  {listProps.activeNamespaces.length > 0
-                    ? `No ${typeDisplay} in namespace 
+      <Paper className="Paper">
+        {listProps.tableToolbar}
+        <TableContainer>
+          <Table>
+            <TableHead style={{ border: 'collapse' }}>
+              <TableRow>
+                {columns.map((column, index) => (
+                  <TableCell
+                    key={`column_${index}`}
+                    align="center"
+                    style={tableHeaderStyle}
+                  >
+                    {column.title.toUpperCase()}
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {listProps.rows.length > 0 ? (
+                rowItems
+              ) : (
+                <TableRow className={emptyStyle}>
+                  <TableCell colSpan={columns.length}>
+                    {listProps.activeNamespaces.length > 0
+                      ? `No ${typeDisplay} in namespace 
                   ${
                     listProps.activeNamespaces.length === 1
                       ? ` ${listProps.activeNamespaces[0].name}`
@@ -111,13 +120,14 @@ export const VirtualList = (listProps: VirtualListProps<RenderResource>) => {
                           .map(ns => ns.name)
                           .join(', ')}`
                   }`
-                    : `There is currently no namespace selected, please select one using the Namespace selector.`}
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+                      : `There is currently no namespace selected, please select one using the Namespace selector.`}
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Paper>
     </div>
   );
 };

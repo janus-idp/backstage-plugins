@@ -6,7 +6,14 @@ import { Content, Page } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import { useEntity } from '@backstage/plugin-catalog-react';
 
-import { CircularProgress } from '@material-ui/core';
+import {
+  CircularProgress,
+  IconButton,
+  Toolbar,
+  Tooltip,
+  Typography,
+} from '@material-ui/core';
+import FilterListIcon from '@material-ui/icons/FilterList';
 
 import { DefaultSecondaryMasthead } from '../../components/DefaultSecondaryMasthead/DefaultSecondaryMasthead';
 import * as FilterHelper from '../../components/FilterList/FilterHelper';
@@ -118,11 +125,31 @@ export const WorkloadListPage = () => {
     return elements;
   };
 
+  const tableToolbarStyle = {
+    backgroundColor: 'white',
+  };
+
+  const tableToolbar = () => {
+    return (
+      <Toolbar style={tableToolbarStyle}>
+        <Typography variant="h6" id="tableTitle" component="div">
+          Workloads
+        </Typography>
+        <Tooltip title="Filter list">
+          <IconButton aria-label="filter list">
+            <FilterListIcon />
+          </IconButton>
+        </Tooltip>
+      </Toolbar>
+    );
+  };
+
   return (
     <Page themeId="tool">
       <Content>
         <DefaultSecondaryMasthead elements={grids()} onRefresh={() => load()} />
         <VirtualList
+          tableToolbar={tableToolbar()}
           activeNamespaces={namespaces}
           rows={allWorkloads}
           type="workloads"
