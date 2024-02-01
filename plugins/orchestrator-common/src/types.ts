@@ -1,8 +1,10 @@
+import { JsonObject } from '@backstage/types';
+
 import { Specification } from '@severlessworkflow/sdk-typescript';
 import { JSONSchema7 } from 'json-schema';
 import { OpenAPIV3 } from 'openapi-types';
 
-import { ProcessInstanceStateValues } from './models';
+import { ProcessInstance, ProcessInstanceStateValues } from './models';
 
 type Id<T> = { [P in keyof T]: T[P] };
 
@@ -53,9 +55,16 @@ export interface WorkflowSpecFile {
   path: string;
   content: OpenAPIV3.Document;
 }
+
+export interface DataInputSchemaInitialState {
+  values: JsonObject[];
+  readonlyKeys: string[];
+}
+
 export interface WorkflowDataInputSchemaResponse {
   workflowItem: WorkflowItem;
   schemas: JSONSchema7[];
+  initialState: DataInputSchemaInitialState;
 }
 
 export interface WorkflowExecutionResponse {
@@ -100,4 +109,9 @@ export interface Node {
   name?: string;
   uniqueId?: string;
   nodeDefinitionId?: string;
+}
+
+export interface AssessedProcessInstance {
+  instance: ProcessInstance;
+  assessedBy?: ProcessInstance;
 }

@@ -6,7 +6,7 @@ export interface WorkflowSuggestion {
 export type WorkflowRunDetail = {
   id: string;
   name: string;
-  workflow: string;
+  workflowId: string;
   status: string;
   started: string;
   duration: string;

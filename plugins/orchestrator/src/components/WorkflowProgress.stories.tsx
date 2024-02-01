@@ -6,7 +6,7 @@ import { fakeNodeInstances } from '../__fixtures__/fakeNodeInstances';
 import { WorkflowProgress } from './WorkflowProgress';
 
 const meta = {
-  title: 'Orchestrator/next/WorkflowProgress',
+  title: 'Orchestrator/WorkflowProgress',
   component: WorkflowProgress,
   decorators: [Story => <Story />],
   parameters: {

@@ -6,22 +6,26 @@ import {
   InfoCard,
   Progress,
   ResponseErrorPanel,
+  useQueryParamState,
 } from '@backstage/core-components';
 import {
   useApi,
   useRouteRef,
   useRouteRefParams,
 } from '@backstage/core-plugin-api';
-import { JsonValue } from '@backstage/types';
+import { JsonObject } from '@backstage/types';
 
 import { Grid } from '@material-ui/core';
 
-import { WorkflowDataInputSchemaResponse } from '@janus-idp/backstage-plugin-orchestrator-common';
+import {
+  QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
+  QUERY_PARAM_INSTANCE_ID,
+  WorkflowDataInputSchemaResponse,
+} from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { orchestratorApiRef } from '../../api';
 import {
   executeWorkflowRouteRef,
-  executeWorkflowWithBusinessKeyRouteRef,
   workflowInstanceRouteRef,
 } from '../../routes';
 import { getErrorObject } from '../../utils/ErrorUtils';
@@ -32,11 +36,12 @@ import StepperForm from './StepperForm';
 export const ExecuteWorkflowPage = () => {
   const orchestratorApi = useApi(orchestratorApiRef);
   const { workflowId } = useRouteRefParams(executeWorkflowRouteRef);
-  const { businessKey } = useRouteRefParams(
-    executeWorkflowWithBusinessKeyRouteRef,
-  );
   const [isExecuting, setIsExecuting] = useState(false);
   const [updateError, setUpdateError] = React.useState<Error>();
+  const [instanceId] = useQueryParamState<string>(QUERY_PARAM_INSTANCE_ID);
+  const [assessmentInstanceId] = useQueryParamState<string>(
+    QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
+  );
   const navigate = useNavigate();
   const instanceLink = useRouteRef(workflowInstanceRouteRef);
   const {
@@ -45,14 +50,18 @@ export const ExecuteWorkflowPage = () => {
     error: responseError,
   } = useAsync(
     async (): Promise<WorkflowDataInputSchemaResponse> =>
-      await orchestratorApi.getWorkflowDataInputSchema(workflowId),
+      await orchestratorApi.getWorkflowDataInputSchema({
+        workflowId,
+        instanceId,
+        assessmentInstanceId,
+      }),
     [orchestratorApi, workflowId],
   );
 
   const handleExecute = useCallback(
-    async (getParameters: () => Record<string, JsonValue>) => {
+    async (getParameters: () => JsonObject) => {
       setUpdateError(undefined);
-      let parameters: Record<string, JsonValue> = {};
+      let parameters: JsonObject = {};
       try {
         parameters = getParameters();
       } catch (err) {
@@ -60,13 +69,11 @@ export const ExecuteWorkflowPage = () => {
         return;
       }
       try {
-        if (businessKey !== undefined) {
-          parameters.businessKey = businessKey;
-        }
         setIsExecuting(true);
         const response = await orchestratorApi.executeWorkflow({
           workflowId,
           parameters,
+          businessKey: assessmentInstanceId,
         });
         navigate(instanceLink({ instanceId: response.id }));
       } catch (err) {
@@ -75,7 +82,7 @@ export const ExecuteWorkflowPage = () => {
         setIsExecuting(false);
       }
     },
-    [orchestratorApi, workflowId, navigate, instanceLink, businessKey],
+    [orchestratorApi, workflowId, navigate, instanceLink, assessmentInstanceId],
   );
 
   let pageContent;
@@ -105,6 +112,7 @@ export const ExecuteWorkflowPage = () => {
             {schemaResponse.schemas.length > 0 ? (
               <StepperForm
                 refSchemas={schemaResponse.schemas}
+                initialState={schemaResponse.initialState}
                 handleExecute={handleExecute}
                 isExecuting={isExecuting}
               />

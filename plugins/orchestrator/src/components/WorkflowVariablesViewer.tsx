@@ -1,12 +1,14 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import ReactJson from 'react-json-view';
 
 import { useTheme } from '@material-ui/core';
 
+import { ProcessInstanceVariables } from '@janus-idp/backstage-plugin-orchestrator-common';
+
 import { Paragraph } from './Paragraph';
 
 interface ProcessVariablesViewerProps {
-  variables?: string | Record<string, unknown>;
+  variables?: ProcessInstanceVariables;
   emptyState?: React.ReactNode;
 }
 
@@ -16,24 +18,11 @@ export const WorkflowVariablesViewer: React.FC<ProcessVariablesViewerProps> = ({
 }) => {
   const theme = useTheme();
 
-  const jsonSource = useMemo(() => {
-    let value = variables;
-    if (typeof variables === 'string') {
-      try {
-        value = JSON.parse(variables) as Record<string, unknown>;
-      } catch {
-        value = { error: 'Failed to parse workflow variables' };
-      }
-    }
-
-    return value;
-  }, [variables]);
-
   return !variables ? (
     <>{emptyState}</>
   ) : (
     <ReactJson
-      src={jsonSource as object}
+      src={variables}
       name={false}
       theme={theme.palette.type === 'dark' ? 'monokai' : 'rjv-default'}
     />

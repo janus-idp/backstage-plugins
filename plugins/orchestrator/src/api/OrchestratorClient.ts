@@ -1,10 +1,16 @@
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
-import { JsonValue } from '@backstage/types';
+import { JsonObject } from '@backstage/types';
 
 import {
+  AssessedProcessInstance,
   Job,
   ProcessInstance,
+  QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
+  QUERY_PARAM_BUSINESS_KEY,
+  QUERY_PARAM_INCLUDE_ASSESSMENT,
+  QUERY_PARAM_INSTANCE_ID,
+  QUERY_PARAM_URI,
   WorkflowDataInputSchemaResponse,
   WorkflowExecutionResponse,
   WorkflowItem,
@@ -14,6 +20,7 @@ import {
   WorkflowSpecFile,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
+import { buildUrl } from '../utils/UrlUtils';
 import { OrchestratorApi } from './api';
 
 export interface OrchestratorClientOptions {
@@ -36,10 +43,15 @@ export class OrchestratorClient implements OrchestratorApi {
 
   async executeWorkflow(args: {
     workflowId: string;
-    parameters: Record<string, JsonValue>;
+    parameters: JsonObject;
+    businessKey?: string;
   }): Promise<WorkflowExecutionResponse> {
     const baseUrl = await this.getBaseUrl();
-    const res = await fetch(`${baseUrl}/workflows/${args.workflowId}/execute`, {
+    const endpoint = `${baseUrl}/workflows/${args.workflowId}/execute`;
+    const urlToFetch = buildUrl(endpoint, {
+      [QUERY_PARAM_BUSINESS_KEY]: args.businessKey,
+    });
+    const res = await fetch(urlToFetch, {
       method: 'POST',
       body: JSON.stringify(args.parameters),
       headers: { 'content-type': 'application/json' },
@@ -100,9 +112,16 @@ export class OrchestratorClient implements OrchestratorApi {
     return await res.json();
   }
 
-  async getInstance(instanceId: string): Promise<ProcessInstance> {
+  async getInstance(
+    instanceId: string,
+    includeAssessment = false,
+  ): Promise<AssessedProcessInstance> {
     const baseUrl = await this.getBaseUrl();
-    const res = await fetch(`${baseUrl}/instances/${instanceId}`);
+    const endpoint = `${baseUrl}/instances/${instanceId}`;
+    const urlToFetch = buildUrl(endpoint, {
+      [QUERY_PARAM_INCLUDE_ASSESSMENT]: includeAssessment,
+    });
+    const res = await fetch(urlToFetch);
     if (!res.ok) {
       throw await ResponseError.fromResponse(res);
     }
@@ -118,11 +137,18 @@ export class OrchestratorClient implements OrchestratorApi {
     return await res.json();
   }
 
-  async getWorkflowDataInputSchema(
-    workflowId: string,
-  ): Promise<WorkflowDataInputSchemaResponse> {
+  async getWorkflowDataInputSchema(args: {
+    workflowId: string;
+    instanceId?: string;
+    assessmentInstanceId?: string;
+  }): Promise<WorkflowDataInputSchemaResponse> {
     const baseUrl = await this.getBaseUrl();
-    const res = await fetch(`${baseUrl}/workflows/${workflowId}/inputSchema`);
+    const endpoint = `${baseUrl}/workflows/${args.workflowId}/inputSchema`;
+    const urlToFetch = buildUrl(endpoint, {
+      [QUERY_PARAM_INSTANCE_ID]: args.instanceId,
+      [QUERY_PARAM_ASSESSMENT_INSTANCE_ID]: args.assessmentInstanceId,
+    });
+    const res = await fetch(urlToFetch);
     if (!res.ok) {
       throw await ResponseError.fromResponse(res);
     }
@@ -134,7 +160,11 @@ export class OrchestratorClient implements OrchestratorApi {
     content: string,
   ): Promise<WorkflowItem> {
     const baseUrl = await this.getBaseUrl();
-    const res = await fetch(`${baseUrl}/workflows?uri=${uri}`, {
+    const endpoint = `${baseUrl}/workflows`;
+    const urlToFetch = buildUrl(endpoint, {
+      [QUERY_PARAM_URI]: uri,
+    });
+    const res = await fetch(urlToFetch, {
       method: 'POST',
       body: content,
       headers: {

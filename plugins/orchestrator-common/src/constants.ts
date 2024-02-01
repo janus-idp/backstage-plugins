@@ -62,7 +62,7 @@ export const WORKFLOW_YAML_SAMPLE: WorkflowSample = {
 
 // Default values for the orchestrator plugin configuration
 export const DEFAULT_SONATAFLOW_CONTAINER_IMAGE =
-  'quay.io/kiegroup/kogito-swf-devmode-nightly:main-2024-01-08';
+  'quay.io/kiegroup/kogito-swf-devmode-nightly:main-2024-01-31';
 export const DEFAULT_SONATAFLOW_PERSISTANCE_PATH = '/home/kogito/persistence';
 export const DEFAULT_CATALOG_OWNER = 'orchestrator';
 export const DEFAULT_CATALOG_ENVIRONMENT = 'development';

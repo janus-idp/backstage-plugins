@@ -1,21 +1,31 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import {
   ContentHeader,
   Progress,
   ResponseErrorPanel,
 } from '@backstage/core-components';
-import { useApi, useRouteRefParams } from '@backstage/core-plugin-api';
+import {
+  useApi,
+  useRouteRef,
+  useRouteRefParams,
+} from '@backstage/core-plugin-api';
 
 import { Button, Grid } from '@material-ui/core';
 
-import { ProcessInstance } from '@janus-idp/backstage-plugin-orchestrator-common';
+import {
+  AssessedProcessInstance,
+  QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
+  QUERY_PARAM_INSTANCE_ID,
+} from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { orchestratorApiRef } from '../api';
 import { SHORT_REFRESH_INTERVAL } from '../constants';
 import usePolling from '../hooks/usePolling';
-import { workflowInstanceRouteRef } from '../routes';
+import { executeWorkflowRouteRef, workflowInstanceRouteRef } from '../routes';
 import { isNonNullable } from '../utils/TypeGuards';
+import { buildUrl } from '../utils/UrlUtils';
 import { BaseOrchestratorPage } from './BaseOrchestratorPage';
 import { WorkflowInstancePageContent } from './WorkflowInstancePageContent';
 
@@ -24,7 +34,9 @@ export const WorkflowInstancePage = ({
 }: {
   instanceId?: string;
 }) => {
+  const navigate = useNavigate();
   const orchestratorApi = useApi(orchestratorApiRef);
+  const executeWorkflowLink = useRouteRef(executeWorkflowRouteRef);
   const { instanceId: queryInstanceId } = useRouteRefParams(
     workflowInstanceRouteRef,
   );
@@ -33,16 +45,32 @@ export const WorkflowInstancePage = ({
     if (!instanceId && !queryInstanceId) {
       return undefined;
     }
-    return await orchestratorApi.getInstance(instanceId || queryInstanceId);
+    return await orchestratorApi.getInstance(
+      instanceId ?? queryInstanceId,
+      true,
+    );
   }, [instanceId, orchestratorApi, queryInstanceId]);
 
   const { loading, error, value, restart } = usePolling<
-    ProcessInstance | undefined
+    AssessedProcessInstance | undefined
   >(
     fetchInstance,
     SHORT_REFRESH_INTERVAL,
-    (curValue: ProcessInstance | undefined) =>
-      !!curValue && curValue.state === 'ACTIVE',
+    (curValue: AssessedProcessInstance | undefined) =>
+      !!curValue && curValue.instance.state === 'ACTIVE',
+  );
+
+  const canAbort = React.useMemo(
+    () =>
+      value?.instance.state === 'ACTIVE' || value?.instance.state === 'ERROR',
+    [value],
+  );
+
+  const canRerun = React.useMemo(
+    () =>
+      value?.instance.state === 'COMPLETED' ||
+      value?.instance.state === 'ABORTED',
+    [value],
   );
 
   const handleAbort = React.useCallback(async () => {
@@ -54,7 +82,7 @@ export const WorkflowInstancePage = ({
 
       if (yes) {
         try {
-          await orchestratorApi.abortWorkflow(value.id);
+          await orchestratorApi.abortWorkflow(value.instance.id);
           restart();
         } catch (e) {
           // eslint-disable-next-line no-alert
@@ -68,9 +96,24 @@ export const WorkflowInstancePage = ({
     }
   }, [orchestratorApi, restart, value]);
 
+  const handleRerun = React.useCallback(() => {
+    if (!value) {
+      return;
+    }
+    const routeUrl = executeWorkflowLink({
+      workflowId: value.instance.processId,
+    });
+
+    const urlToNavigate = buildUrl(routeUrl, {
+      [QUERY_PARAM_INSTANCE_ID]: value.instance.id,
+      [QUERY_PARAM_ASSESSMENT_INSTANCE_ID]: value.assessedBy?.id,
+    });
+    navigate(urlToNavigate);
+  }, [value, navigate, executeWorkflowLink]);
+
   return (
     <BaseOrchestratorPage
-      title={value?.processId ?? value?.id ?? instanceId}
+      title={value?.instance.processId ?? value?.instance.id ?? instanceId}
       type="Workflow runs"
       typeLink="/orchestrator/instances"
     >
@@ -80,19 +123,33 @@ export const WorkflowInstancePage = ({
         <>
           <ContentHeader title="">
             <Grid container item justifyContent="flex-end" spacing={1}>
-              <Grid item>
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  disabled={value?.state !== 'ACTIVE'}
-                  onClick={value?.state === 'ACTIVE' ? handleAbort : undefined}
-                >
-                  Abort
-                </Button>
-              </Grid>
+              {!canRerun && (
+                <Grid item>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    disabled={!canAbort}
+                    onClick={canAbort ? handleAbort : undefined}
+                  >
+                    Abort
+                  </Button>
+                </Grid>
+              )}
+              {!canAbort && (
+                <Grid item>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    disabled={!canRerun}
+                    onClick={canRerun ? handleRerun : undefined}
+                  >
+                    Rerun
+                  </Button>
+                </Grid>
+              )}
             </Grid>
           </ContentHeader>
-          <WorkflowInstancePageContent processInstance={value} />
+          <WorkflowInstancePageContent assessedInstance={value} />
         </>
       ) : null}
     </BaseOrchestratorPage>

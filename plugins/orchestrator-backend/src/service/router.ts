@@ -5,11 +5,17 @@ import { JsonObject, JsonValue } from '@backstage/types';
 
 import express from 'express';
 import Router from 'express-promise-router';
-import { JSONSchema7 } from 'json-schema';
 
 import {
+  AssessedProcessInstance,
   fromWorkflowSource,
   ORCHESTRATOR_SERVICE_READY_TOPIC,
+  ProcessInstance,
+  QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
+  QUERY_PARAM_BUSINESS_KEY,
+  QUERY_PARAM_INCLUDE_ASSESSMENT,
+  QUERY_PARAM_INSTANCE_ID,
+  QUERY_PARAM_URI,
   WorkflowDataInputSchemaResponse,
   WorkflowDefinition,
   WorkflowInfo,
@@ -21,6 +27,7 @@ import {
 import { RouterArgs } from '../routerWrapper';
 import { ApiResponseBuilder } from '../types/apiResponse';
 import { CloudEventService } from './CloudEventService';
+import { WORKFLOW_DATA_KEY } from './constants';
 import { DataIndexService } from './DataIndexService';
 import { DataInputSchemaService } from './DataInputSchemaService';
 import { JiraEvent, JiraService } from './JiraService';
@@ -217,6 +224,8 @@ function setupInternalRoutes(
       params: { workflowId },
     } = req;
 
+    const businessKey = extractQueryParam(req, QUERY_PARAM_BUSINESS_KEY);
+
     const definition = await dataIndexService.getWorkflowDefinition(workflowId);
     const serviceUrl = definition.serviceUrl;
     if (!serviceUrl) {
@@ -226,6 +235,7 @@ function setupInternalRoutes(
       workflowId,
       inputData: req.body,
       endpoint: serviceUrl,
+      businessKey,
     });
 
     if (!executionResponse) {
@@ -267,6 +277,12 @@ function setupInternalRoutes(
     const {
       params: { instanceId },
     } = req;
+
+    const includeAssessment = extractQueryParam(
+      req,
+      QUERY_PARAM_INCLUDE_ASSESSMENT,
+    );
+
     const instance = await dataIndexService.fetchProcessInstance(instanceId);
 
     if (!instance) {
@@ -274,7 +290,20 @@ function setupInternalRoutes(
       return;
     }
 
-    res.status(200).json(instance);
+    let assessedByInstance: ProcessInstance | undefined;
+
+    if (!!includeAssessment && instance.businessKey) {
+      assessedByInstance = await dataIndexService.fetchProcessInstance(
+        instance.businessKey,
+      );
+    }
+
+    const response: AssessedProcessInstance = {
+      instance,
+      assessedBy: assessedByInstance,
+    };
+
+    res.status(200).json(response);
   });
 
   router.get('/instances/:instanceId/jobs', async (req, res) => {
@@ -297,6 +326,12 @@ function setupInternalRoutes(
       params: { workflowId },
     } = req;
 
+    const instanceId = extractQueryParam(req, QUERY_PARAM_INSTANCE_ID);
+    const assessmentInstanceId = extractQueryParam(
+      req,
+      QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
+    );
+
     const workflowDefinition =
       await dataIndexService.getWorkflowDefinition(workflowId);
     const serviceUrl = workflowDefinition.serviceUrl;
@@ -304,7 +339,6 @@ function setupInternalRoutes(
       throw new Error(`ServiceUrl is not defined for workflow ${workflowId}`);
     }
 
-    // workflow source
     const definition =
       await sonataFlowService.fetchWorkflowDefinition(workflowId);
 
@@ -322,34 +356,87 @@ function setupInternalRoutes(
 
     const workflowItem: WorkflowItem = { uri, definition };
 
-    let schemas: JSONSchema7[] = [];
+    const response: WorkflowDataInputSchemaResponse = {
+      workflowItem,
+      schemas: [],
+      initialState: {
+        values: [],
+        readonlyKeys: [],
+      },
+    };
 
-    if (definition.dataInputSchema) {
-      const workflowInfo = await sonataFlowService.fetchWorkflowInfo(
-        workflowId,
-        serviceUrl,
-      );
+    if (!definition.dataInputSchema) {
+      res.status(200).json(response);
+      return;
+    }
 
-      if (!workflowInfo) {
-        res.status(500).send(`Couldn't fetch workflow info ${workflowId}`);
-        return;
-      }
+    const workflowInfo = await sonataFlowService.fetchWorkflowInfo(
+      workflowId,
+      serviceUrl,
+    );
 
-      if (!workflowInfo.inputSchema) {
-        res
-          .status(500)
-          .send(`Couldn't fetch workflow input schema ${workflowId}`);
-        return;
-      }
+    if (!workflowInfo) {
+      res.status(500).send(`Couldn't fetch workflow info ${workflowId}`);
+      return;
+    }
 
-      schemas = dataInputSchemaService.parseComposition(
-        workflowInfo.inputSchema,
+    if (!workflowInfo.inputSchema) {
+      res
+        .status(500)
+        .send(`Couldn't fetch workflow input schema ${workflowId}`);
+      return;
+    }
+
+    const schemas = dataInputSchemaService.parseComposition(
+      workflowInfo.inputSchema,
+    );
+
+    const instanceVariables = instanceId
+      ? await dataIndexService.fetchProcessInstanceVariables(instanceId)
+      : undefined;
+
+    const instanceWorkflowData = instanceVariables?.[WORKFLOW_DATA_KEY];
+    let initialState: JsonObject[] = [];
+    let readonlyKeys: string[] = [];
+
+    if (instanceWorkflowData) {
+      initialState = dataInputSchemaService.extractInitialStateFromWorkflowData(
+        {
+          workflowData: instanceWorkflowData as JsonObject,
+          schemas,
+        },
       );
     }
 
-    const response: WorkflowDataInputSchemaResponse = {
-      workflowItem,
-      schemas,
+    const assessmentInstanceVariables = assessmentInstanceId
+      ? await dataIndexService.fetchProcessInstanceVariables(
+          assessmentInstanceId,
+        )
+      : undefined;
+
+    const assessmentInstanceWorkflowData =
+      assessmentInstanceVariables?.[WORKFLOW_DATA_KEY];
+
+    if (assessmentInstanceWorkflowData) {
+      const assessmentInstanceInitialState =
+        dataInputSchemaService.extractInitialStateFromWorkflowData({
+          workflowData: assessmentInstanceWorkflowData as JsonObject,
+          schemas,
+        });
+
+      if (initialState.length === 0) {
+        initialState = assessmentInstanceInitialState;
+      }
+
+      readonlyKeys = assessmentInstanceInitialState
+        .map(item => Object.keys(item).filter(key => item[key] !== undefined))
+        .flat();
+    }
+
+    response.schemas = schemas;
+    response.initialState = {
+      values: initialState,
+      readonlyKeys,
     };
 
     res.status(200).json(response);
@@ -369,7 +456,13 @@ function setupInternalRoutes(
   });
 
   router.post('/workflows', async (req, res) => {
-    const uri = req.query.uri as string;
+    const uri = extractQueryParam(req, QUERY_PARAM_URI);
+
+    if (!uri) {
+      res.status(400).send('uri query param is required');
+      return;
+    }
+
     const workflowItem = uri?.startsWith('http')
       ? await workflowService.saveWorkflowDefinitionFromUrl(uri)
       : await workflowService.saveWorkflowDefinition({
@@ -427,4 +520,11 @@ function setupExternalRoutes(
     });
     res.status(200).json(result);
   });
+}
+
+function extractQueryParam(
+  req: express.Request,
+  key: string,
+): string | undefined {
+  return req.query[key] as string | undefined;
 }

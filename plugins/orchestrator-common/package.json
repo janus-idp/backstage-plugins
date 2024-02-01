@@ -37,6 +37,7 @@
     "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
+    "@backstage/types": "^1.1.1",
     "@severlessworkflow/sdk-typescript": "^3.0.3",
     "js-yaml": "^4.1.0",
     "json-schema": "^0.4.0",

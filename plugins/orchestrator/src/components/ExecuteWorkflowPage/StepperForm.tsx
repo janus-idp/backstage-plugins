@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Content, StructuredMetadataTable } from '@backstage/core-components';
-import { JsonValue } from '@backstage/types';
+import { JsonObject } from '@backstage/types';
 
 import {
   Box,
@@ -19,9 +19,11 @@ import { UiSchema } from '@rjsf/utils';
 import validator from '@rjsf/validator-ajv8';
 import { JSONSchema7 } from 'json-schema';
 
+import { DataInputSchemaInitialState } from '@janus-idp/backstage-plugin-orchestrator-common';
+
 import SubmitButton from '../SubmitButton';
 
-const MuiForm = withTheme<Record<string, JsonValue>>(MuiTheme);
+const MuiForm = withTheme<JsonObject>(MuiTheme);
 
 const ReviewStep = ({
   busy,
@@ -31,14 +33,14 @@ const ReviewStep = ({
   handleExecute,
 }: {
   busy: boolean;
-  formDataObjects: Record<string, JsonValue>[];
+  formDataObjects: JsonObject[];
   handleBack: () => void;
   handleReset: () => void;
   handleExecute: () => void;
 }) => {
   const combinedFormData = React.useMemo(
     () =>
-      formDataObjects.reduce<Record<string, JsonValue>>(
+      formDataObjects.reduce<JsonObject>(
         (prev, cur) => ({ ...prev, ...cur }),
         {},
       ),
@@ -71,16 +73,17 @@ const ReviewStep = ({
 const FormWrapper = ({
   formData,
   schema,
+  uiSchema = {},
   onSubmit,
   children,
 }: Pick<
-  FormProps<Record<string, JsonValue>>,
-  'formData' | 'schema' | 'onSubmit' | 'children'
+  FormProps<JsonObject>,
+  'formData' | 'schema' | 'uiSchema' | 'onSubmit' | 'children'
 >) => {
-  const firstKey = Object.keys(schema?.properties || {})[0];
-  const uiSchema: UiSchema<Record<string, JsonValue>> | undefined = firstKey
-    ? { [firstKey]: { 'ui:autofocus': 'true' } }
-    : undefined;
+  const firstKey = Object.keys(schema?.properties ?? {})[0];
+  uiSchema[firstKey] = firstKey
+    ? { ...uiSchema[firstKey], 'ui:autofocus': 'true' }
+    : uiSchema[firstKey];
   return (
     <MuiForm
       validator={validator}
@@ -98,42 +101,50 @@ const FormWrapper = ({
 
 const StepperForm = ({
   refSchemas,
+  initialState,
   handleExecute,
   isExecuting,
 }: {
   refSchemas: JSONSchema7[];
-  handleExecute: (
-    getParameters: () => Record<string, JsonValue>,
-  ) => Promise<void>;
+  initialState: DataInputSchemaInitialState;
+  handleExecute: (getParameters: () => JsonObject) => Promise<void>;
   isExecuting: boolean;
 }) => {
   const [activeStep, setActiveStep] = React.useState(0);
   const handleBack = () => setActiveStep(activeStep - 1);
 
-  const [formDataObjects, setFormDataObjects] = React.useState<
-    Record<string, JsonValue>[]
-  >([]);
+  const [formDataObjects, setFormDataObjects] = React.useState<JsonObject[]>(
+    initialState.values,
+  );
 
   const getFormData = () =>
-    formDataObjects.reduce<Record<string, JsonValue>>(
+    formDataObjects.reduce<JsonObject>(
       (prev, curFormObject) => ({ ...prev, ...curFormObject }),
       {},
     );
 
-  const resetFormDataObjects = React.useCallback(
-    () =>
-      setFormDataObjects(
-        refSchemas.reduce<Record<string, JsonValue>[]>(
-          prev => [...prev, {}],
-          [],
-        ),
-      ),
-    [refSchemas],
-  );
+  const [uiSchema, setUiSchema] = React.useState<
+    UiSchema<JsonObject> | undefined
+  >(() => {
+    if (!initialState.readonlyKeys) {
+      return undefined;
+    }
 
-  React.useEffect(() => {
-    resetFormDataObjects();
-  }, [resetFormDataObjects]);
+    return initialState.readonlyKeys.reduce<UiSchema<JsonObject>>(
+      (obj, key) => ({
+        ...obj,
+        [key]: { ...obj[key], 'ui:disabled': 'true' },
+      }),
+      {},
+    );
+  });
+
+  const resetFormDataObjects = React.useCallback(() => {
+    setFormDataObjects(
+      refSchemas.reduce<JsonObject[]>(prev => [...prev, {}], []),
+    );
+    setUiSchema(undefined);
+  }, [refSchemas]);
 
   return (
     <>
@@ -153,6 +164,7 @@ const StepperForm = ({
               <FormWrapper
                 formData={formDataObjects[index]}
                 schema={schema}
+                uiSchema={uiSchema}
                 onSubmit={e => {
                   const newDataObjects = [...formDataObjects];
                   newDataObjects.splice(index, 1, e.formData ?? {});

@@ -25,7 +25,7 @@ import {
 import { WorkflowDefinitionViewerPage } from './WorkflowDefinitionViewerPage';
 
 const meta = {
-  title: 'Orchestrator/next/WorkflowDefinitionViewerPage',
+  title: 'Orchestrator/WorkflowDefinitionViewerPage',
   component: WorkflowDefinitionViewerPage,
   decorators: [
     (

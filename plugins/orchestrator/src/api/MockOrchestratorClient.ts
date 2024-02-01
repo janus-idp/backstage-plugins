@@ -1,6 +1,7 @@
-import { JsonValue } from '@backstage/types';
+import { JsonObject } from '@backstage/types';
 
 import {
+  AssessedProcessInstance,
   Job,
   ProcessInstance,
   WorkflowDataInputSchemaResponse,
@@ -74,7 +75,7 @@ export class MockOrchestratorClient implements OrchestratorApi {
 
   executeWorkflow(_args: {
     workflowId: string;
-    parameters: Record<string, JsonValue>;
+    parameters: JsonObject;
   }): Promise<WorkflowExecutionResponse> {
     if (
       !hasOwnProp(this._mockData, 'executeWorkflowResponse') ||
@@ -86,7 +87,10 @@ export class MockOrchestratorClient implements OrchestratorApi {
     return this._mockData.executeWorkflowResponse();
   }
 
-  getInstance(_instanceId: string): Promise<ProcessInstance> {
+  getInstance(
+    _instanceId: string,
+    _includeAssessment: boolean,
+  ): Promise<AssessedProcessInstance> {
     if (
       !hasOwnProp(this._mockData, 'getInstanceResponse') ||
       !isNonNullable(this._mockData.getInstanceResponse)
@@ -141,9 +145,11 @@ export class MockOrchestratorClient implements OrchestratorApi {
     return Promise.resolve(this._mockData.getWorkflowResponse);
   }
 
-  getWorkflowDataInputSchema(
-    _workflowId: string,
-  ): Promise<WorkflowDataInputSchemaResponse> {
+  getWorkflowDataInputSchema(_args: {
+    workflowId: string;
+    instanceId?: string;
+    assessmentInstanceId?: string;
+  }): Promise<WorkflowDataInputSchemaResponse> {
     if (
       !hasOwnProp(this._mockData, 'getWorkflowDataInputSchemaResponse') ||
       !isNonNullable(this._mockData.getWorkflowDataInputSchemaResponse)
