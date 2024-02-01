@@ -3,6 +3,8 @@ import {
   acsImageCheckTaskRun,
   acsImageScanTaskRun,
   enterpriseContractTaskRun,
+  taskRunWithSBOMResult,
+  taskRunWithSBOMResultExternalLink,
 } from './taskRunData';
 
 export const mockKubernetesPlrResponse = {
@@ -396,6 +398,66 @@ export const mockKubernetesPlrResponse = {
         startTime: new Date('2023-12-08T12:19:38Z'),
       },
     },
+    {
+      metadata: {
+        name: 'pipelinerun-with-sbom-task-t237ev-sbom-task-pod',
+        namespace: 'karthik',
+        uid: '055cc13a-bd3e-414e-9eb6-e6cb72870578',
+        resourceVersion: '379623',
+        labels: {
+          'backstage.io/kubernetes-id': 'developer-portal',
+          'janus-idp.io/tekton': 'developer-portal',
+          'tekton.dev/pipeline': 'test-pipeline',
+          'tekton.dev/pipelineRun': 'pipelinerun-with-sbom-task',
+          'tekton.dev/pipelineTask': 'sbom-task',
+          'tekton.dev/task': 'sbom-task',
+          'tekton.dev/taskRun': 'test-pipeline-8e09zm-sbom-task',
+        },
+      },
+      spec: {
+        containers: [
+          {
+            name: 'step-print-sbom-results',
+          },
+        ],
+      },
+      status: {
+        phase: 'Succeeded',
+        conditions: [],
+
+        startTime: new Date('2023-12-08T12:19:38Z'),
+      },
+    },
+    {
+      metadata: {
+        name: 'pipelinerun-with-sbom-task-with-external-pod',
+        namespace: 'karthik',
+        uid: '055cc13a-bd3e-414e-9eb6-e6cb72870578',
+        resourceVersion: '379623',
+        labels: {
+          'backstage.io/kubernetes-id': 'developer-portal',
+          'janus-idp.io/tekton': 'developer-portal',
+          'tekton.dev/pipeline': 'test-pipeline',
+          'tekton.dev/pipelineRun': 'pipelinerun-with-external-sbom-task',
+          'tekton.dev/pipelineTask': 'sbom-task-with-external-link',
+          'tekton.dev/task': 'sbom-task-with-external-link',
+          'tekton.dev/taskRun': 'test-pipeline-8e09zm-sbom-task',
+        },
+      },
+      spec: {
+        containers: [
+          {
+            name: 'step-print-sbom-results',
+          },
+        ],
+      },
+      status: {
+        phase: 'Succeeded',
+        conditions: [],
+
+        startTime: new Date('2023-12-08T12:19:38Z'),
+      },
+    },
   ],
   pipelineruns: [
     {
@@ -637,6 +699,126 @@ export const mockKubernetesPlrResponse = {
               '{"vulnerabilities":{\n"critical": 13,\n"high": 29,\n"medium": 32,\n"low": 3,\n"unknown": 0},\n"unpatched_vulnerabilities": {\n"critical": 0,\n"high": 1,\n"medium": 0,\n"low":1}\n}\n',
           },
         ],
+        startTime: '2023-04-11T05:49:05Z',
+      },
+    },
+    {
+      apiVersion: 'tekton.dev/v1',
+      kind: 'PipelineRun',
+      metadata: {
+        annotations: {
+          'pipeline.openshift.io/started-by': 'kube-admin',
+          'chains.tekton.dev/signed': 'false',
+        },
+        labels: {
+          'backstage.io/kubernetes-id': 'test-backstage',
+          'tekton.dev/pipeline': 'pipeline-test',
+          'app.kubernetes.io/instance': 'abs',
+          'app.kubernetes.io/name': 'ghg',
+          'operator.tekton.dev/operand-name': 'ytui',
+          'pipeline.openshift.io/runtime-version': 'hjkhk',
+          'pipeline.openshift.io/type': 'hhu',
+          'pipeline.openshift.io/runtime': 'node',
+        },
+        name: 'pipelinerun-with-sbom-task',
+        namespace: 'deb-test',
+        resourceVersion: '117337',
+        uid: '0a091bbf-3813-48d3-a6ce-fc43644a9b24',
+        creationTimestamp: new Date('2023-04-11T12:31:56Z'),
+      },
+      spec: {
+        pipelineRef: {
+          name: 'pipeline-test',
+        },
+        serviceAccountName: 'pipeline',
+        workspaces: [],
+      },
+      status: {
+        completionTime: '2023-04-11T06:49:05Z',
+        conditions: [
+          {
+            lastTransitionTime: '2023-03-30T07:05:13Z',
+            message: 'Tasks Completed: 3 (Failed: 0, Cancelled 0), Skipped: 0',
+            reason: 'Succeeded',
+            status: 'True',
+            type: 'Succeeded',
+          },
+        ],
+        pipelineSpec: {
+          tasks: [
+            {
+              name: 'sbom-task',
+              params: [],
+              taskRef: {
+                kind: 'ClusterTask',
+                name: 'sbom-task',
+              },
+              workspaces: [],
+            },
+          ],
+          workspaces: [],
+          startTime: '2023-04-11T06:48:50Z',
+        },
+        startTime: '2023-04-11T05:49:05Z',
+      },
+    },
+    {
+      apiVersion: 'tekton.dev/v1',
+      kind: 'PipelineRun',
+      metadata: {
+        annotations: {
+          'pipeline.openshift.io/started-by': 'kube-admin',
+          'chains.tekton.dev/signed': 'false',
+        },
+        labels: {
+          'backstage.io/kubernetes-id': 'test-backstage',
+          'tekton.dev/pipeline': 'pipeline-test',
+          'app.kubernetes.io/instance': 'abs',
+          'app.kubernetes.io/name': 'ghg',
+          'operator.tekton.dev/operand-name': 'ytui',
+          'pipeline.openshift.io/runtime-version': 'hjkhk',
+          'pipeline.openshift.io/type': 'hhu',
+          'pipeline.openshift.io/runtime': 'node',
+        },
+        name: 'pipelinerun-with-external-sbom-task',
+        namespace: 'deb-test',
+        resourceVersion: '117337',
+        uid: '0a091bbf-3813-48d3-a6ce-fc43644a9b24',
+        creationTimestamp: new Date('2023-04-11T12:31:56Z'),
+      },
+      spec: {
+        pipelineRef: {
+          name: 'pipeline-test',
+        },
+        serviceAccountName: 'pipeline',
+        workspaces: [],
+      },
+      status: {
+        completionTime: '2023-04-11T06:49:05Z',
+        conditions: [
+          {
+            lastTransitionTime: '2023-03-30T07:05:13Z',
+            message: 'Tasks Completed: 3 (Failed: 0, Cancelled 0), Skipped: 0',
+            reason: 'Succeeded',
+            status: 'True',
+            type: 'Succeeded',
+          },
+        ],
+        pipelineSpec: {
+          tasks: [
+            {
+              name: 'sbom-task-with-external-link',
+              params: [],
+              taskRef: {
+                kind: 'ClusterTask',
+                name: 'sbom-task-with-external-link',
+              },
+              workspaces: [],
+            },
+          ],
+          workspaces: [],
+          startTime: '2023-04-11T06:48:50Z',
+        },
         startTime: '2023-04-11T05:49:05Z',
       },
     },
@@ -1051,6 +1233,8 @@ export const mockKubernetesPlrResponse = {
         },
       },
     },
+    taskRunWithSBOMResult,
+    taskRunWithSBOMResultExternalLink,
     enterpriseContractTaskRun,
     acsImageScanTaskRun,
     acsImageCheckTaskRun,

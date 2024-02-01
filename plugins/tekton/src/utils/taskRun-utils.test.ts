@@ -44,7 +44,7 @@ describe('taskRun-utils', () => {
       getSortedTaskRuns(mockKubernetesPlrResponse.taskruns),
       '',
     );
-    expect(activeTaskRun).toBe('ec-taskrun');
+    expect(activeTaskRun).toBe('pipelinerun-with-sbom-task-t237ev-sbom-task');
   });
 
   it('should return active taskrun when active task is present', () => {
