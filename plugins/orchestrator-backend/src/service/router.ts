@@ -21,6 +21,7 @@ import {
 
 import { RouterArgs } from '../routerWrapper';
 import { ApiResponseBuilder } from '../types/apiResponse';
+import { buildPagination } from '../types/pagination';
 import { V1 } from './api/v1';
 import { V2 } from './api/v2';
 import { CloudEventService } from './CloudEventService';
@@ -407,8 +408,10 @@ function setupInternalRoutes(
       params: { instanceId },
     } = req;
 
-    const jobs =
-      await services.dataIndexService.fetchProcessInstanceJobs(instanceId);
+    const jobs = await services.dataIndexService.fetchProcessInstanceJobs(
+      instanceId,
+      buildPagination(req),
+    );
 
     if (!jobs) {
       res.status(500).send(`Couldn't fetch jobs for instance ${instanceId}`);
