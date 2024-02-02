@@ -1,3 +1,4 @@
+import defaultImg from '../imgs/logos/defaulthub.svg';
 import djangoImg from '../imgs/logos/django.svg';
 import dotnetImg from '../imgs/logos/dotnet.svg';
 import drupalImg from '../imgs/logos/drupal.svg';
@@ -48,7 +49,8 @@ const logos = new Map<string, any>()
   .set('icon-rh-openjdk', openjdkImg)
   .set('icon-ruby', rubyImg)
   .set('icon-spring', springImg)
-  .set('icon-spring-boot', springBootImg);
+  .set('icon-spring-boot', springBootImg)
+  .set('icon-default', defaultImg);
 
 export const getImageForIconClass = (iconClass: string): string => {
   return logos.get(iconClass);
