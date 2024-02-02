@@ -27,11 +27,12 @@ import {
 
 import { RouterArgs } from '../routerWrapper';
 import { ApiResponseBuilder } from '../types/apiResponse';
+import { getWorkflowOverviewV1 } from './api/v1';
+import { getWorkflowOverviewV2 } from './api/v2';
 import { CloudEventService } from './CloudEventService';
 import { WORKFLOW_DATA_KEY } from './constants';
 import { DataIndexService } from './DataIndexService';
 import { DataInputSchemaService } from './DataInputSchemaService';
-import { getWorkflowOverviewV1, getWorkflowOverviewV2 } from './handlers';
 import { JiraEvent, JiraService } from './JiraService';
 import { OpenApiService } from './OpenApiService';
 import { ScaffolderService } from './ScaffolderService';
