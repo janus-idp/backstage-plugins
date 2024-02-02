@@ -17,6 +17,8 @@ import {
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { RouterArgs } from '../routerWrapper';
+import { ApiResponseBuilder } from '../types/apiResponse';
+import { buildPagination } from '../types/pagination';
 import { V1 } from './api/v1';
 import { V2 } from './api/v2';
 import { CloudEventService } from './CloudEventService';
@@ -410,6 +412,24 @@ function setupInternalRoutes(
         });
     },
   );
+
+  router.get('/instances/:instanceId/jobs', async (req, res) => {
+    const {
+      params: { instanceId },
+    } = req;
+
+    const jobs = await services.dataIndexService.fetchProcessInstanceJobs(
+      instanceId,
+      buildPagination(req),
+    );
+
+    if (!jobs) {
+      res.status(500).send(`Couldn't fetch jobs for instance ${instanceId}`);
+      return;
+    }
+
+    res.status(200).json(jobs);
+  });
 
   router.get('/workflows/:workflowId/inputSchema', async (req, res) => {
     const {
