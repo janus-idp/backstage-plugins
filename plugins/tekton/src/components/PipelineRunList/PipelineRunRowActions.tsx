@@ -14,6 +14,7 @@ import {
 import { TektonResourcesContext } from '../../hooks/TektonResourcesContext';
 import {
   getTaskrunsOutputGroup,
+  hasExternalLink,
   isSbomTaskRun,
 } from '../../utils/taskRun-utils';
 import OutputIcon from '../Icons/OutputIcon';
@@ -115,9 +116,12 @@ const PipelineRunRowActions: React.FC<{ pipelineRun: PipelineRunKind }> = ({
             }
           >
             <IconButton
+              data-testid="view-sbom-icon"
               disabled={!sbomTaskRun || !isSbomTaskRun(sbomTaskRun)}
               size="small"
-              onClick={() => openDialog()}
+              onClick={
+                !hasExternalLink(sbomTaskRun) ? () => openDialog() : undefined
+              }
               style={{ pointerEvents: 'auto', padding: 0 }}
             >
               <PipelineRunSBOMLink sbomTaskRun={sbomTaskRun} />
@@ -133,6 +137,7 @@ const PipelineRunRowActions: React.FC<{ pipelineRun: PipelineRunKind }> = ({
             }
           >
             <IconButton
+              data-testid="view-output-icon"
               disabled={disabled}
               size="small"
               onClick={() => openOutputDialog()}

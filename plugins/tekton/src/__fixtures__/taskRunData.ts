@@ -77,15 +77,26 @@ export const taskRunWithSBOMResult = {
       'task.results.key': 'LINK_TO_SBOM',
     },
     labels: {
-      [TEKTON_PIPELINE_RUN]: 'test-plr',
+      [TEKTON_PIPELINE_RUN]: 'pipelinerun-with-sbom-task',
+      'tekton.dev/pipelineTask': 'sbom-task',
     },
+    ownerReferences: [
+      {
+        apiVersion: 'tekton.dev/v1',
+        blockOwnerDeletion: true,
+        controller: true,
+        kind: 'PipelineRun',
+        name: 'pipelinerun-with-sbom-task',
+        uid: '0a091bbf-3813-48d3-a6ce-fc43644a9b24',
+      },
+    ],
     name: 'pipelinerun-with-sbom-task-t237ev-sbom-task',
     uid: '764d0a6c-a4f6-419c-a3c3-585c2a9eb67c',
   },
   spec: {
     serviceAccountName: 'pipeline',
     taskRef: {
-      kind: 'Task',
+      kind: 'ClusterTask',
       name: 'sbom-task',
     },
     timeout: '1h0m0s',
@@ -126,6 +137,20 @@ export const taskRunWithSBOMResultExternalLink: TaskRunKind = {
       'task.results.type': 'external-link',
       'task.results.key': 'LINK_TO_SBOM',
     },
+    labels: {
+      [TEKTON_PIPELINE_RUN]: 'pipelinerun-with-external-sbom-task',
+      'tekton.dev/pipelineTask': 'sbom-task-with-external-link',
+    },
+    ownerReferences: [
+      {
+        apiVersion: 'tekton.dev/v1',
+        blockOwnerDeletion: true,
+        controller: true,
+        kind: 'PipelineRun',
+        name: 'pipelinerun-with-external-sbom-task',
+        uid: '0a091bbf-3813-48d3-a6ce-fc43644a9b24',
+      },
+    ],
     resourceVersion: '197373',
     name: 'pipelinerun-with-sbom-task-t237ev-sbom-task',
     uid: '764d0a6c-a4f6-419c-a3c3-585c2a9eb67c',
@@ -134,8 +159,8 @@ export const taskRunWithSBOMResultExternalLink: TaskRunKind = {
   spec: {
     serviceAccountName: 'pipeline',
     taskRef: {
-      kind: 'Task',
-      name: 'sbom-task',
+      kind: 'ClusterTask',
+      name: 'sbom-task-with-external-link',
     },
     timeout: '1h0m0s',
   },
@@ -150,12 +175,13 @@ export const taskRunWithSBOMResultExternalLink: TaskRunKind = {
         type: 'Succeeded',
       },
     ],
-    podName: 'pipelinerun-with-sbom-task-t237ev-sbom-task-pod',
+    podName: 'pipelinerun-with-sbom-task-with-external-pod',
     results: [
       {
         name: 'LINK_TO_SBOM',
         type: 'string',
-        value: 'http://quay.io/test/image:build-8e536-1692702836',
+        value:
+          'https://quay.io/repository/janus-idp/backstage-showcase?tab=tags',
       },
     ],
   },
