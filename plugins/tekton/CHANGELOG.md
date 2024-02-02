@@ -1,3 +1,22 @@
+## @janus-idp/backstage-plugin-tekton [3.5.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.5.2...@janus-idp/backstage-plugin-tekton@3.5.3) (2024-02-02)
+
+
+### Bug Fixes
+
+* **tekton:** external sbom view action should not open logs modal ([#1152](https://github.com/janus-idp/backstage-plugins/issues/1152)) ([714ac5d](https://github.com/janus-idp/backstage-plugins/commit/714ac5d10a5b878232dc1468ebfa03a7a52aa656))
+* **tekton:** fix [#947](https://github.com/janus-idp/backstage-plugins/issues/947): Reset pagination when changing any filter ([#1140](https://github.com/janus-idp/backstage-plugins/issues/1140)) ([5a1a2f4](https://github.com/janus-idp/backstage-plugins/commit/5a1a2f442e2c5957bd725e57066448e5b67d8807))
+
+
+### Documentation
+
+* **tekton:** add tekton plugin documentation to enable UI elements ([#1148](https://github.com/janus-idp/backstage-plugins/issues/1148)) ([91742e8](https://github.com/janus-idp/backstage-plugins/commit/91742e8c524a8b4f87fe9a6cb0d1f5006661b4d2))
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.5.1
+
 ## @janus-idp/backstage-plugin-tekton [3.5.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.5.1...@janus-idp/backstage-plugin-tekton@3.5.2) (2024-01-31)
 
 
