@@ -1,3 +1,16 @@
+## @janus-idp/backstage-plugin-orchestrator [1.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.2.0...@janus-idp/backstage-plugin-orchestrator@1.3.0) (2024-02-02)
+
+
+### Features
+
+* **orchestrator:** add the ability to rerun workflows in a new instance ([#1141](https://github.com/janus-idp/backstage-plugins/issues/1141)) ([fe326df](https://github.com/janus-idp/backstage-plugins/commit/fe326df569caa5a9e7b7ec809c1c371a2a936010))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.1.0
+
 ## @janus-idp/backstage-plugin-orchestrator [1.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.1.3...@janus-idp/backstage-plugin-orchestrator@1.2.0) (2024-01-30)
 
 
