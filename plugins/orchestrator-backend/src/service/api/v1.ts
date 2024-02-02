@@ -1,8 +1,13 @@
 import {
+  WorkflowDefinition,
+  WorkflowInfo,
+  WorkflowItem,
+  WorkflowListResult,
   WorkflowOverview,
   WorkflowOverviewListResult,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
+import { DataIndexService } from '../DataIndexService';
 import { SonataFlowService } from '../SonataFlowService';
 
 export async function getWorkflowOverviewV1(
@@ -31,4 +36,37 @@ export async function getWorkflowOverviewByIdV1(
     throw new Error(`Couldn't fetch workflow overview for ${workflowId}`);
   }
   return overviewObj;
+}
+
+export async function getWorkflowsV1(
+  sonataFlowService: SonataFlowService,
+  dataIndexService: DataIndexService,
+): Promise<WorkflowListResult> {
+  const definitions: WorkflowInfo[] =
+    await dataIndexService.getWorkflowDefinitions();
+  const items: WorkflowItem[] = await Promise.all(
+    definitions.map(async info => {
+      const uri = await sonataFlowService.fetchWorkflowUri(info.id);
+      if (!uri) {
+        throw new Error(`Uri is required for workflow ${info.id}`);
+      }
+      const item: WorkflowItem = {
+        definition: info as WorkflowDefinition,
+        serviceUrl: info.serviceUrl,
+        uri,
+      };
+      return item;
+    }),
+  );
+
+  if (!items) {
+    throw new Error("Couldn't fetch workflows");
+  }
+
+  return {
+    items: items,
+    limit: 0,
+    offset: 0,
+    totalCount: items?.length ?? 0,
+  };
 }

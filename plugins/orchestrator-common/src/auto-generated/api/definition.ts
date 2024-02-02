@@ -83,6 +83,34 @@ const OPENAPI = `
           }
         }
       }
+    },
+    "/v2/workflows": {
+      "get": {
+        "operationId": "getWorkflows",
+        "description": "Get a list of workflow",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkflowListResultDTO"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error fetching workflow list",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -160,6 +188,61 @@ const OPENAPI = `
         "enum": [
           "assessment",
           "infrastructure"
+        ]
+      },
+      "WorkflowListResultDTO": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkflowDTO"
+            }
+          },
+          "paginationInfo": {
+            "$ref": "#/components/schemas/PaginationInfoDTO"
+          }
+        },
+        "required": [
+          "items",
+          "paginationInfo"
+        ]
+      },
+      "WorkflowDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Workflow unique identifier",
+            "minLength": 1
+          },
+          "name": {
+            "type": "string",
+            "description": "Workflow name",
+            "minLength": 1
+          },
+          "uri": {
+            "type": "string",
+            "description": "URI of the workflow definition"
+          },
+          "category": {
+            "$ref": "#/components/schemas/WorkflowCategoryDTO"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the workflow"
+          },
+          "annotations": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "category",
+          "uri"
         ]
       }
     }

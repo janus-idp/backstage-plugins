@@ -12,6 +12,10 @@ export interface paths {
     /** @description Get a workflow overview by ID */
     get: operations['getWorkflowOverviewById'];
   };
+  '/v2/workflows': {
+    /** @description Get a list of workflow */
+    get: operations['getWorkflows'];
+  };
 }
 
 export type webhooks = Record<string, never>;
@@ -44,6 +48,22 @@ export interface components {
      * @enum {string}
      */
     WorkflowCategoryDTO: 'assessment' | 'infrastructure';
+    WorkflowListResultDTO: {
+      items: components['schemas']['WorkflowDTO'][];
+      paginationInfo: components['schemas']['PaginationInfoDTO'];
+    };
+    WorkflowDTO: {
+      /** @description Workflow unique identifier */
+      id: string;
+      /** @description Workflow name */
+      name?: string;
+      /** @description URI of the workflow definition */
+      uri: string;
+      category: components['schemas']['WorkflowCategoryDTO'];
+      /** @description Description of the workflow */
+      description?: string;
+      annotations?: string[];
+    };
   };
   responses: never;
   parameters: never;
@@ -90,6 +110,23 @@ export interface operations {
         };
       };
       /** @description Error fetching workflow overview */
+      500: {
+        content: {
+          'text/plain': string;
+        };
+      };
+    };
+  };
+  /** @description Get a list of workflow */
+  getWorkflows: {
+    responses: {
+      /** @description Success */
+      200: {
+        content: {
+          'application/json': components['schemas']['WorkflowListResultDTO'];
+        };
+      };
+      /** @description Error fetching workflow list */
       500: {
         content: {
           'text/plain': string;

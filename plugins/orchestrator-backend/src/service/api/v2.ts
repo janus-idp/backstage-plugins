@@ -1,12 +1,17 @@
 import {
+  ASSESSMENT_WORKFLOW_TYPE,
   WorkflowCategoryDTO,
+  WorkflowDefinition,
+  WorkflowListResult,
+  WorkflowListResultDTO,
   WorkflowOverview,
   WorkflowOverviewDTO,
   WorkflowOverviewListResultDTO,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
+import { DataIndexService } from '../DataIndexService';
 import { SonataFlowService } from '../SonataFlowService';
-import { getWorkflowOverviewV1 } from './v1';
+import { getWorkflowOverviewV1, getWorkflowsV1 } from './v1';
 
 export async function getWorkflowOverviewV2(
   sonataFlowService: SonataFlowService,
@@ -35,6 +40,17 @@ export async function getWorkflowOverviewByIdV2(
   return mapToWorkflowOverviewDTO(overviewV1);
 }
 
+export async function getWorkflowsV2(
+  sonataFlowService: SonataFlowService,
+  dataIndexService: DataIndexService,
+): Promise<WorkflowListResultDTO> {
+  const definitions: WorkflowListResult = await getWorkflowsV1(
+    sonataFlowService,
+    dataIndexService,
+  );
+  return mapToWorkflowListResultDTO(definitions);
+}
+
 function mapToWorkflowOverviewDTO(
   overview: WorkflowOverview,
 ): WorkflowOverviewDTO {
@@ -59,4 +75,40 @@ function mapToWorkflowOverviewDTO(
         return WorkflowCategoryDTO.INFRASTRUCTURE;
     }
   }
+}
+
+function mapToWorkflowListResultDTO(
+  definitions: WorkflowListResult,
+): WorkflowListResultDTO {
+  const result = {
+    items: definitions.items.map(def => {
+      return {
+        annotations: def.definition.annotations,
+        category: getWorkflowCategoryDTO(def.definition),
+        description: def.definition.description,
+        name: def.definition.name,
+        uri: def.uri,
+        id: def.definition.id,
+      };
+    }),
+    paginationInfo: {
+      limit: definitions.limit,
+      offset: definitions.offset,
+      totalCount: definitions.totalCount,
+    },
+  };
+  return result;
+}
+
+function getWorkflowCategoryDTO(
+  definition: WorkflowDefinition | undefined,
+): WorkflowCategoryDTO {
+  if (definition === undefined) {
+    return WorkflowCategoryDTO.INFRASTRUCTURE;
+  }
+  return definition?.annotations?.find(
+    annotation => annotation === ASSESSMENT_WORKFLOW_TYPE,
+  )
+    ? WorkflowCategoryDTO.ASSESSMENT
+    : WorkflowCategoryDTO.INFRASTRUCTURE;
 }

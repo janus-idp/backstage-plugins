@@ -180,42 +180,28 @@ function setupInternalRoutes(
       await getWorkflowOverviewV2(services.sonataFlowService)
         .then(result => res.json(result))
         .catch(error => {
-          res.status(500).send(error.message || 'Internal Server Error');
+          res.status(500).send(error.message || 'internal Server Error');
           next();
         });
     },
   );
 
   router.get('/workflows', async (_, res) => {
-    const definitions: WorkflowInfo[] =
-      await services.dataIndexService.getWorkflowDefinitions();
-    const items: WorkflowItem[] = await Promise.all(
-      definitions.map(async info => {
-        const uri = await services.sonataFlowService.fetchWorkflowUri(info.id);
-        if (!uri) {
-          throw new Error(`Uri is required for workflow ${info.id}`);
-        }
-        const item: WorkflowItem = {
-          definition: info as WorkflowDefinition,
-          serviceUrl: info.serviceUrl,
-          uri,
-        };
-        return item;
-      }),
-    );
+    await getWorkflowsV1(services.sonataFlowService, services.dataIndexService)
+      .then(result => res.status(200).json(result))
+      .catch(error => {
+        res.status(500).send(error.message || 'internal Server Error');
+      });
+  });
 
-    if (!items) {
-      res.status(500).send("Couldn't fetch workflows");
-      return;
-    }
-
-    const result: WorkflowListResult = {
-      items: items,
-      limit: 0,
-      offset: 0,
-      totalCount: items?.length ?? 0,
-    };
-    res.status(200).json(result);
+  // v2
+  api.register('getWorkflows', async (_c, _req, res, next) => {
+    await getWorkflowsV2(services.sonataFlowService, services.dataIndexService)
+      .then(result => res.json(result))
+      .catch(error => {
+        res.status(500).send(error.message || 'internal Server Error');
+        next();
+      });
   });
 
   router.get('/workflows/:workflowId', async (req, res) => {
