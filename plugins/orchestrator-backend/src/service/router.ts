@@ -204,31 +204,22 @@ function setupInternalRoutes(
       });
   });
 
-  router.get('/workflows/:workflowId', async (req, res) => {
-    const {
-      params: { workflowId },
-    } = req;
+  router.get('/workflows', async (_, res) => {
+    await getWorkflowsV1(services.sonataFlowService, services.dataIndexService)
+      .then(result => res.status(200).json(result))
+      .catch(error => {
+        res.status(500).send(error.message || 'Internal Server Error');
+      });
+  });
 
-    const definition =
-      await services.sonataFlowService.fetchWorkflowDefinition(workflowId);
-
-    if (!definition) {
-      res
-        .status(500)
-        .send(`Couldn't fetch workflow definition for ${workflowId}`);
-      return;
-    }
-
-    const uri = await services.sonataFlowService.fetchWorkflowUri(workflowId);
-    if (!uri) {
-      res.status(500).send(`Couldn't fetch workflow uri for ${workflowId}`);
-      return;
-    }
-
-    res.status(200).json({
-      uri,
-      definition,
-    });
+  // v2
+  api.register('getWorkflows', async (_c, _req, res, next) => {
+    await getWorkflowsV2(services.sonataFlowService, services.dataIndexService)
+      .then(result => res.json(result))
+      .catch(error => {
+        res.status(500).send(error.message || 'Internal Server Error');
+        next();
+      });
   });
 
   router.delete('/workflows/:workflowId/abort', async (req, res) => {

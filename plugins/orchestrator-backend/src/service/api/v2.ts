@@ -2,6 +2,7 @@ import {
   ASSESSMENT_WORKFLOW_TYPE,
   WorkflowCategoryDTO,
   WorkflowDefinition,
+  WorkflowDTO,
   WorkflowListResult,
   WorkflowListResultDTO,
   WorkflowOverview,
@@ -11,7 +12,7 @@ import {
 
 import { DataIndexService } from '../DataIndexService';
 import { SonataFlowService } from '../SonataFlowService';
-import { getWorkflowOverviewV1, getWorkflowsV1 } from './v1';
+import { getWorkflowByIdV1, getWorkflowOverviewV1, getWorkflowsV1 } from './v1';
 
 export async function getWorkflowOverviewV2(
   sonataFlowService: SonataFlowService,
@@ -51,6 +52,15 @@ export async function getWorkflowsV2(
   return mapToWorkflowListResultDTO(definitions);
 }
 
+export async function getWorkflowByIdV2(
+  sonataFlowService: SonataFlowService,
+  workflowId: string,
+): Promise<WorkflowDTO> {
+  const resultV1 = await getWorkflowByIdV1(sonataFlowService, workflowId);
+  return mapToWorkflowDTO(resultV1.uri, resultV1.definition);
+}
+
+// Mapping functions
 function mapToWorkflowOverviewDTO(
   overview: WorkflowOverview,
 ): WorkflowOverviewDTO {
@@ -111,4 +121,18 @@ function getWorkflowCategoryDTO(
   )
     ? WorkflowCategoryDTO.ASSESSMENT
     : WorkflowCategoryDTO.INFRASTRUCTURE;
+}
+
+function mapToWorkflowDTO(
+  uri: string,
+  definition: WorkflowDefinition,
+): WorkflowDTO {
+  return {
+    annotations: definition.annotations,
+    category: getWorkflowCategoryDTO(definition),
+    description: definition.description,
+    name: definition.name,
+    uri: uri,
+    id: definition.id,
+  };
 }

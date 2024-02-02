@@ -70,3 +70,22 @@ export async function getWorkflowsV1(
     totalCount: items?.length ?? 0,
   };
 }
+
+export async function getWorkflowByIdV1(
+  sonataFlowService: SonataFlowService,
+  workflowId: string,
+): Promise<{ uri: string; definition: WorkflowDefinition }> {
+  const definition =
+    await sonataFlowService.fetchWorkflowDefinition(workflowId);
+
+  if (!definition) {
+    throw new Error(`Couldn't fetch workflow definition for ${workflowId}`);
+  }
+
+  const uri = await sonataFlowService.fetchWorkflowUri(workflowId);
+  if (!uri) {
+    throw new Error(`Couldn't fetch workflow uri for ${workflowId}`);
+  }
+
+  return { uri, definition };
+}
