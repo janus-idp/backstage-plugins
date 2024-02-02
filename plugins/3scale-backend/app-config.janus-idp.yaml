@@ -2,8 +2,8 @@ catalog:
   providers:
     threeScaleApiEntity:
       dev:
-        baseUrl: '${3SCALE_BASE_URL}' # https://<TENANT>-admin.3scale.net
-        accessToken: '${3SCALE_ACCESS_TOKEN}'
+        baseUrl: '${_3SCALE_BASE_URL}' # https://<TENANT>-admin.3scale.net
+        accessToken: '${_3SCALE_ACCESS_TOKEN}'
         schedule: # optional; same options as in TaskScheduleDefinition
           # supports cron, ISO duration, "human duration" as used in code
           frequency: { minutes: 1 }
