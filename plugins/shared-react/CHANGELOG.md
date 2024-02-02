@@ -1,3 +1,10 @@
+## @janus-idp/shared-react [2.5.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/shared-react@2.5.0...@janus-idp/shared-react@2.5.1) (2024-02-02)
+
+
+### Bug Fixes
+
+* **tekton:** fix [#947](https://github.com/janus-idp/backstage-plugins/issues/947): Reset pagination when changing any filter ([#1140](https://github.com/janus-idp/backstage-plugins/issues/1140)) ([5a1a2f4](https://github.com/janus-idp/backstage-plugins/commit/5a1a2f442e2c5957bd725e57066448e5b67d8807))
+
 ## @janus-idp/shared-react [2.5.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/shared-react@2.4.0...@janus-idp/shared-react@2.5.0) (2024-01-30)
 
 
