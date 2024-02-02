@@ -1,3 +1,17 @@
+## @janus-idp/backstage-plugin-rbac-backend [2.1.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.1.2...@janus-idp/backstage-plugin-rbac-backend@2.1.3) (2024-02-02)
+
+
+### Bug Fixes
+
+* **rbac:** set up higher jest timeout for rbac db tests ([#1163](https://github.com/janus-idp/backstage-plugins/issues/1163)) ([b8541f3](https://github.com/janus-idp/backstage-plugins/commit/b8541f3ac149446238dc07432116fafc23a48a82))
+* **rbac:** split policies and roles by source ([#1042](https://github.com/janus-idp/backstage-plugins/issues/1042)) ([03a678d](https://github.com/janus-idp/backstage-plugins/commit/03a678d96deeb1d42448e94ac95d735e61393a40)), closes [#1103](https://github.com/janus-idp/backstage-plugins/issues/1103)
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-rbac-common:** upgraded to 1.2.1
+
 ## @janus-idp/backstage-plugin-rbac-backend [2.1.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.1.1...@janus-idp/backstage-plugin-rbac-backend@2.1.2) (2024-01-30)
 
 
