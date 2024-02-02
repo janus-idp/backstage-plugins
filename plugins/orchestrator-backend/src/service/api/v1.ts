@@ -1,4 +1,7 @@
-import { WorkflowOverviewListResult } from '@janus-idp/backstage-plugin-orchestrator-common';
+import {
+  WorkflowOverview,
+  WorkflowOverviewListResult,
+} from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { SonataFlowService } from '../SonataFlowService';
 
@@ -16,4 +19,16 @@ export async function getWorkflowOverviewV1(
     totalCount: overviews?.length ?? 0,
   };
   return result;
+}
+
+export async function getWorkflowOverviewByIdV1(
+  sonataFlowService: SonataFlowService,
+  workflowId: string,
+): Promise<WorkflowOverview> {
+  const overviewObj = await sonataFlowService.fetchWorkflowOverview(workflowId);
+
+  if (!overviewObj) {
+    throw new Error(`Couldn't fetch workflow overview for ${workflowId}`);
+  }
+  return overviewObj;
 }

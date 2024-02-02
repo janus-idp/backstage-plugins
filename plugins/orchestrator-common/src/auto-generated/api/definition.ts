@@ -35,15 +35,48 @@ const OPENAPI = `
           "500": {
             "description": "Error fetching workflow overviews",
             "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/workflows/{workflowId}/overview": {
+      "get": {
+        "operationId": "getWorkflowOverviewById",
+        "description": "Get a workflow overview by ID",
+        "parameters": [
+          {
+            "name": "workflowId",
+            "in": "path",
+            "required": true,
+            "description": "Unique identifier of the workflow",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "description": "Error message"
-                    }
-                  }
+                  "$ref": "#/components/schemas/WorkflowOverviewDTO"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error fetching workflow overview",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
                 }
               }
             }
@@ -91,9 +124,8 @@ const OPENAPI = `
           "lastRunStatus": {
             "type": "string"
           },
-          "type": {
-            "type": "string",
-            "minimum": 0
+          "category": {
+            "$ref": "#/components/schemas/WorkflowCategoryDTO"
           },
           "avgDurationMs": {
             "type": "number",
@@ -121,6 +153,14 @@ const OPENAPI = `
           }
         },
         "additionalProperties": false
+      },
+      "WorkflowCategoryDTO": {
+        "type": "string",
+        "description": "Category of the workflow",
+        "enum": [
+          "assessment",
+          "infrastructure"
+        ]
       }
     }
   }
