@@ -29,6 +29,7 @@ import { RouterArgs } from '../routerWrapper';
 import { ApiResponseBuilder } from '../types/apiResponse';
 import { getWorkflowOverviewV1 } from './api/v1';
 import { getWorkflowOverviewV2 } from './api/v2';
+import { buildPagination } from '../types/pagination';
 import { CloudEventService } from './CloudEventService';
 import { WORKFLOW_DATA_KEY } from './constants';
 import { DataIndexService } from './DataIndexService';
@@ -306,8 +307,10 @@ function setupInternalRoutes(
     res.status(200).json(overviewObj);
   });
 
-  router.get('/instances', async (_, res) => {
-    const instances = await services.dataIndexService.fetchProcessInstances();
+  router.get('/instances', async (req, res) => {
+    const instances = await dataIndexService.fetchProcessInstances(
+      buildPagination(req),
+    );
 
     if (!instances) {
       res.status(500).send("Couldn't fetch process instances");
@@ -356,8 +359,10 @@ function setupInternalRoutes(
       params: { instanceId },
     } = req;
 
-    const jobs =
-      await services.dataIndexService.fetchProcessInstanceJobs(instanceId);
+    const jobs = await dataIndexService.fetchProcessInstanceJobs(
+      instanceId,
+      buildPagination(req),
+    );
 
     if (!jobs) {
       res.status(500).send(`Couldn't fetch jobs for instance ${instanceId}`);
