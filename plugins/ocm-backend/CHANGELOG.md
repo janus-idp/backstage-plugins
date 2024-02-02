@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-ocm-backend [3.5.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@3.5.0...@janus-idp/backstage-plugin-ocm-backend@3.5.1) (2024-02-02)
+
+
+### Bug Fixes
+
+* add missing alpha  dynamic plugin entry points ([#1161](https://github.com/janus-idp/backstage-plugins/issues/1161)) ([36e9d91](https://github.com/janus-idp/backstage-plugins/commit/36e9d910b8f534fd9db2f8210c9aa7a24560f01d))
+
 ## @janus-idp/backstage-plugin-ocm-backend [3.5.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@3.4.12...@janus-idp/backstage-plugin-ocm-backend@3.5.0) (2024-01-30)
 
 
