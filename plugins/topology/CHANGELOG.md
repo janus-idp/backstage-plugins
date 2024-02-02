@@ -1,3 +1,16 @@
+## @janus-idp/backstage-plugin-topology [1.18.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.17.7...@janus-idp/backstage-plugin-topology@1.18.0) (2024-02-02)
+
+
+### Features
+
+* **topology:** added default runtime icon to topology nodes ([#1157](https://github.com/janus-idp/backstage-plugins/issues/1157)) ([5a8b27d](https://github.com/janus-idp/backstage-plugins/commit/5a8b27d01672d1dd0eb92eeb2429f36e2745409a))
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.5.1
+
 ## @janus-idp/backstage-plugin-topology [1.17.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.17.6...@janus-idp/backstage-plugin-topology@1.17.7) (2024-01-30)
 
 
