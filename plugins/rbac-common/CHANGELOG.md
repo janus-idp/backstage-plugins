@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac-common [1.2.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-common@1.2.0...@janus-idp/backstage-plugin-rbac-common@1.2.1) (2024-02-02)
+
+
+### Bug Fixes
+
+* **rbac:** split policies and roles by source ([#1042](https://github.com/janus-idp/backstage-plugins/issues/1042)) ([03a678d](https://github.com/janus-idp/backstage-plugins/commit/03a678d96deeb1d42448e94ac95d735e61393a40)), closes [#1103](https://github.com/janus-idp/backstage-plugins/issues/1103)
+
 ## @janus-idp/backstage-plugin-rbac-common [1.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-common@1.1.0...@janus-idp/backstage-plugin-rbac-common@1.2.0) (2023-12-05)
 
 
