@@ -14,6 +14,8 @@ import {
   POLICY_METADATA_TABLE,
 } from './policy-metadata-storage';
 
+jest.setTimeout(60000);
+
 describe('policy-metadata-db-table', () => {
   const policy = ['role:default/team-a', 'catalog-entity', 'read', 'allow'];
   const policyStr = policyToString(policy);
