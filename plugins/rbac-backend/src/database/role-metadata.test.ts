@@ -11,6 +11,8 @@ import {
   RoleMetadataDao,
 } from './role-metadata';
 
+jest.setTimeout(60000);
+
 describe('role-metadata-db-table', () => {
   const databases = TestDatabases.create({
     ids: ['POSTGRES_13', 'SQLITE_3'],
