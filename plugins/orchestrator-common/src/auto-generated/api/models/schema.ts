@@ -31,6 +31,13 @@ export interface paths {
     /** Get assessment results */
     get: operations['getWorkflowResults'];
   };
+  '/v2/workflows/instances/statuses': {
+    /**
+     * Get workflow status list
+     * @description Retrieve an array of workflow statuses
+     */
+    get: operations['getWorkflowStatuses'];
+  };
 }
 
 export type webhooks = Record<string, never>;
@@ -115,6 +122,10 @@ export interface components {
       | 'Completed'
       | 'Aborted'
       | 'Suspended';
+    WorkflowRunStatusDTO: {
+      key?: string;
+      value?: string;
+    };
   };
   responses: never;
   parameters: never;
@@ -244,6 +255,26 @@ export interface operations {
         };
       };
       /** @description Error getting workflow results */
+      500: {
+        content: {
+          'text/plain': string;
+        };
+      };
+    };
+  };
+  /**
+   * Get workflow status list
+   * @description Retrieve an array of workflow statuses
+   */
+  getWorkflowStatuses: {
+    responses: {
+      /** @description Success */
+      200: {
+        content: {
+          'application/json': components['schemas']['WorkflowRunStatusDTO'][];
+        };
+      };
+      /** @description Error fetching workflow statuses */
       500: {
         content: {
           'text/plain': string;
