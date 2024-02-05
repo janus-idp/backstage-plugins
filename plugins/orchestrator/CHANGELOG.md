@@ -1,3 +1,11 @@
+## @janus-idp/backstage-plugin-orchestrator [1.3.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.3.0...@janus-idp/backstage-plugin-orchestrator@1.3.1) (2024-02-05)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.1
+
 ## @janus-idp/backstage-plugin-orchestrator [1.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.2.0...@janus-idp/backstage-plugin-orchestrator@1.3.0) (2024-02-02)
 
 
