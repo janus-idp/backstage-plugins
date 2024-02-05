@@ -1,3 +1,11 @@
+## @janus-idp/backstage-plugin-analytics-provider-segment [1.2.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-analytics-provider-segment@1.2.6...@janus-idp/backstage-plugin-analytics-provider-segment@1.2.7) (2024-02-05)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.1
+
 ## @janus-idp/backstage-plugin-analytics-provider-segment [1.2.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-analytics-provider-segment@1.2.5...@janus-idp/backstage-plugin-analytics-provider-segment@1.2.6) (2024-01-30)
 
 
