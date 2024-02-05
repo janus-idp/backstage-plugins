@@ -140,6 +140,48 @@ export interface components {
     ExecuteWorkflowResponseDTO: {
       id?: string;
     };
+    WorkflowProgressDTO: components['schemas']['NodeInstanceDTO'] & {
+      status?: components['schemas']['ProcessInstanceStatusDTO'];
+      error?: components['schemas']['ProcessInstanceErrorDTO'];
+    };
+    NodeInstanceDTO: {
+      /**
+       * @description Type name
+       * @default NodeInstance
+       */
+      __typename?: string;
+      /** @description Node instance ID */
+      id?: string;
+      /** @description Node name */
+      name?: string;
+      /** @description Node type */
+      type?: string;
+      /**
+       * Format: date-time
+       * @description Date when the node was entered
+       */
+      enter?: string;
+      /**
+       * Format: date-time
+       * @description Date when the node was exited (optional)
+       */
+      exit?: string;
+      /** @description Definition ID */
+      definitionId?: string;
+      /** @description Node ID */
+      nodeId?: string;
+    };
+    ProcessInstanceErrorDTO: {
+      /**
+       * @description Type name
+       * @default ProcessInstanceError
+       */
+      __typename?: string;
+      /** @description Node definition ID */
+      nodeDefinitionId?: string;
+      /** @description Error message (optional) */
+      message?: string;
+    };
   };
   responses: never;
   parameters: never;

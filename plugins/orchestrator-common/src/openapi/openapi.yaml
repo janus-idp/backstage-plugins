@@ -399,3 +399,55 @@ components:
       properties:
         id:
           type: string
+    WorkflowProgressDTO:
+      allOf:
+        - $ref: '#/components/schemas/NodeInstanceDTO'
+        - type: object
+          properties:
+            status:
+              $ref: '#/components/schemas/ProcessInstanceStatusDTO'
+            error:
+              $ref: '#/components/schemas/ProcessInstanceErrorDTO'
+    NodeInstanceDTO:
+      type: object
+      properties:
+        __typename:
+          type: string
+          default: 'NodeInstance'
+          description: Type name
+        id:
+          type: string
+          description: Node instance ID
+        name:
+          type: string
+          description: Node name
+        type:
+          type: string
+          description: Node type
+        enter:
+          type: string
+          format: date-time
+          description: Date when the node was entered
+        exit:
+          type: string
+          format: date-time
+          description: Date when the node was exited (optional)
+        definitionId:
+          type: string
+          description: Definition ID
+        nodeId:
+          type: string
+          description: Node ID
+    ProcessInstanceErrorDTO:
+      type: object
+      properties:
+        __typename:
+          type: string
+          default: 'ProcessInstanceError'
+          description: Type name
+        nodeDefinitionId:
+          type: string
+          description: Node definition ID
+        message:
+          type: string
+          description: Error message (optional)
