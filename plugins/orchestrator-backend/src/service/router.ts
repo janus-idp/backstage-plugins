@@ -22,22 +22,8 @@ import {
 
 import { RouterArgs } from '../routerWrapper';
 import { ApiResponseBuilder } from '../types/apiResponse';
-import {
-  extractQueryParamV1,
-  getInstanceByIdV1,
-  getInstancesV1,
-  getWorkflowOverviewByIdV1,
-  getWorkflowOverviewV1,
-  getWorkflowsV1,
-} from './api/v1';
-import {
-  extractQueryParamV2,
-  getInstanceByIdV2,
-  getInstancesV2,
-  getWorkflowOverviewByIdV2,
-  getWorkflowOverviewV2,
-  getWorkflowsV2,
-} from './api/v2';
+import { V1 } from './api/v1';
+import { V2 } from './api/v2';
 import { CloudEventService } from './CloudEventService';
 import { DataIndexService } from './DataIndexService';
 import { DataInputSchemaService } from './DataInputSchemaService';
@@ -175,7 +161,7 @@ function setupInternalRoutes(
   });
 
   router.get('/workflows/overview', async (_c, res) => {
-    await getWorkflowOverviewV1(services.sonataFlowService)
+    await V1.getWorkflowOverview(services.sonataFlowService)
       .then(result => res.status(200).json(result))
       .catch(error => {
         res.status(500).send(error.message || 'Internal Server Error');
@@ -186,7 +172,7 @@ function setupInternalRoutes(
   api.register(
     'getWorkflowsOverview',
     async (_c, _req, res: express.Response, next) => {
-      await getWorkflowOverviewV2(services.sonataFlowService)
+      await V2.getWorkflowOverview(services.sonataFlowService)
         .then(result => res.json(result))
         .catch(error => {
           res.status(500).send(error.message || 'internal Server Error');
@@ -196,7 +182,7 @@ function setupInternalRoutes(
   );
 
   router.get('/workflows', async (_, res) => {
-    await getWorkflowsV1(services.sonataFlowService, services.dataIndexService)
+    await V1.getWorkflows(services.sonataFlowService, services.dataIndexService)
       .then(result => res.status(200).json(result))
       .catch(error => {
         res.status(500).send(error.message || 'internal Server Error');
@@ -205,7 +191,7 @@ function setupInternalRoutes(
 
   // v2
   api.register('getWorkflows', async (_c, _req, res, next) => {
-    await getWorkflowsV2(services.sonataFlowService, services.dataIndexService)
+    await V2.getWorkflows(services.sonataFlowService, services.dataIndexService)
       .then(result => res.json(result))
       .catch(error => {
         res.status(500).send(error.message || 'internal Server Error');
@@ -214,7 +200,7 @@ function setupInternalRoutes(
   });
 
   router.get('/workflows', async (_, res) => {
-    await getWorkflowsV1(services.sonataFlowService, services.dataIndexService)
+    await V1.getWorkflows(services.sonataFlowService, services.dataIndexService)
       .then(result => res.status(200).json(result))
       .catch(error => {
         res.status(500).send(error.message || 'Internal Server Error');
@@ -223,7 +209,7 @@ function setupInternalRoutes(
 
   // v2
   api.register('getWorkflows', async (_c, _req, res, next) => {
-    await getWorkflowsV2(services.sonataFlowService, services.dataIndexService)
+    await V2.getWorkflows(services.sonataFlowService, services.dataIndexService)
       .then(result => res.json(result))
       .catch(error => {
         res.status(500).send(error.message || 'Internal Server Error');
@@ -252,7 +238,7 @@ function setupInternalRoutes(
       params: { workflowId },
     } = req;
 
-    const businessKey = extractQueryParamV1(req, QUERY_PARAM_BUSINESS_KEY);
+    const businessKey = V1.extractQueryParam(req, QUERY_PARAM_BUSINESS_KEY);
 
     const definition =
       await services.dataIndexService.getWorkflowDefinition(workflowId);
@@ -275,11 +261,36 @@ function setupInternalRoutes(
     res.status(200).json(executionResponse);
   });
 
+  // v2
+  api.register(
+    'executeWorkflow',
+    async (c, req: express.Request, res: express.Response) => {
+      const workflowId = c.request.params.workflowId as string;
+      const businessKey = V2.extractQueryParam(
+        c.request,
+        QUERY_PARAM_BUSINESS_KEY,
+      );
+
+      const executeWorkflowRequestDTO = req.body;
+      await V2.executeWorkflow(
+        services.dataIndexService,
+        services.sonataFlowService,
+        executeWorkflowRequestDTO,
+        workflowId,
+        businessKey,
+      )
+        .then(result => res.status(200).json(result))
+        .catch((error: { message: string }) => {
+          res.status(500).send(error.message || 'Internal Server Error');
+        });
+    },
+  );
+
   router.get('/workflows/:workflowId/overview', async (req, res) => {
     const {
       params: { workflowId },
     } = req;
-    await getWorkflowOverviewByIdV1(
+    await V1.getWorkflowOverviewById(
       services.sonataFlowService,
       workflowId,
     ).then(result => res.json(result));
@@ -292,14 +303,14 @@ function setupInternalRoutes(
       const {
         params: { workflowId },
       } = req;
-      await getWorkflowOverviewByIdV2(services.sonataFlowService, workflowId)
+      await V2.getWorkflowOverviewById(services.sonataFlowService, workflowId)
         .then(result => res.json(result))
         .catch(next);
     },
   );
 
   router.get('/instances', async (_, res) => {
-    await getInstancesV1(services.dataIndexService)
+    await V1.getInstances(services.dataIndexService)
       .then(result => res.status(200).json(result))
       .catch(error => {
         res.status(500).send(error.message || 'internal Server Error');
@@ -310,7 +321,7 @@ function setupInternalRoutes(
   api.register(
     'getInstances',
     async (_c, _req: express.Request, res: express.Response, next) => {
-      await getInstancesV2(services.dataIndexService)
+      await V2.getInstances(services.dataIndexService)
         .then(result => res.json(result))
         .catch(next);
     },
@@ -321,12 +332,12 @@ function setupInternalRoutes(
       params: { instanceId },
     } = req;
 
-    const includeAssessment = extractQueryParamV1(
+    const includeAssessment = V1.extractQueryParam(
       req,
       QUERY_PARAM_INCLUDE_ASSESSMENT,
     );
 
-    await getInstanceByIdV1(
+    await V1.getInstanceById(
       services.dataIndexService,
       instanceId,
       includeAssessment,
@@ -342,11 +353,11 @@ function setupInternalRoutes(
     'getInstanceById',
     async (c, _req: express.Request, res: express.Response, next) => {
       const instanceId = c.request.params.instanceId as string;
-      const includeAssessment = extractQueryParamV2(
+      const includeAssessment = V2.extractQueryParam(
         c.request,
         QUERY_PARAM_INCLUDE_ASSESSMENT,
       );
-      await getInstanceByIdV2(
+      await V2.getInstanceById(
         services.dataIndexService,
         instanceId,
         includeAssessment,
@@ -380,8 +391,8 @@ function setupInternalRoutes(
       params: { workflowId },
     } = req;
 
-    const instanceId = extractQueryParamV1(req, QUERY_PARAM_INSTANCE_ID);
-    const assessmentInstanceId = extractQueryParamV1(
+    const instanceId = V1.extractQueryParam(req, QUERY_PARAM_INSTANCE_ID);
+    const assessmentInstanceId = V1.extractQueryParam(
       req,
       QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
     );
@@ -477,7 +488,7 @@ function setupInternalRoutes(
   });
 
   router.post('/workflows', async (req, res) => {
-    const uri = extractQueryParamV1(req, QUERY_PARAM_URI);
+    const uri = V1.extractQueryParam(req, QUERY_PARAM_URI);
 
     if (!uri) {
       res.status(400).send('uri query param is required');

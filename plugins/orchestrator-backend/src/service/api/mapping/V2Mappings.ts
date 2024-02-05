@@ -1,0 +1,155 @@
+import moment from 'moment';
+import { ParsedRequest } from 'openapi-backend';
+
+import {
+  ASSESSMENT_WORKFLOW_TYPE,
+  ProcessInstance,
+  ProcessInstanceDTO,
+  ProcessInstanceState,
+  ProcessInstanceStatusDTO,
+  WorkflowCategory,
+  WorkflowCategoryDTO,
+  WorkflowDefinition,
+  WorkflowDTO,
+  WorkflowListResult,
+  WorkflowListResultDTO,
+  WorkflowOverview,
+  WorkflowOverviewDTO,
+} from '@janus-idp/backstage-plugin-orchestrator-common';
+
+// Mapping functions
+export function mapToWorkflowOverviewDTO(
+  overview: WorkflowOverview,
+): WorkflowOverviewDTO {
+  return {
+    workflowId: overview.workflowId,
+    name: overview.name,
+    uri: overview.uri,
+    lastTriggeredMs: overview.lastTriggeredMs,
+    lastRunStatus: overview.lastRunStatus,
+    category: mapWorkflowCategoryDTOFromString(overview.category),
+    avgDurationMs: overview.avgDurationMs,
+    description: overview.description,
+  };
+
+  function mapWorkflowCategoryDTOFromString(category?: string) {
+    switch (category?.toLocaleLowerCase()) {
+      case 'assessment':
+        return WorkflowCategoryDTO.ASSESSMENT;
+      case 'infrastructure':
+        return WorkflowCategoryDTO.INFRASTRUCTURE;
+      default:
+        return WorkflowCategoryDTO.INFRASTRUCTURE;
+    }
+  }
+}
+
+export function mapToWorkflowListResultDTO(
+  definitions: WorkflowListResult,
+): WorkflowListResultDTO {
+  const result = {
+    items: definitions.items.map(def => {
+      return {
+        annotations: def.definition.annotations,
+        category: getWorkflowCategoryDTO(def.definition),
+        description: def.definition.description,
+        name: def.definition.name,
+        uri: def.uri,
+        id: def.definition.id,
+      };
+    }),
+    paginationInfo: {
+      limit: definitions.limit,
+      offset: definitions.offset,
+      totalCount: definitions.totalCount,
+    },
+  };
+  return result;
+}
+
+export function getWorkflowCategoryDTO(
+  definition: WorkflowDefinition | undefined,
+): WorkflowCategoryDTO {
+  if (definition === undefined) {
+    return WorkflowCategoryDTO.INFRASTRUCTURE;
+  }
+  return definition?.annotations?.find(
+    annotation => annotation === ASSESSMENT_WORKFLOW_TYPE,
+  )
+    ? WorkflowCategoryDTO.ASSESSMENT
+    : WorkflowCategoryDTO.INFRASTRUCTURE;
+}
+
+export function mapToWorkflowDTO(
+  uri: string,
+  definition: WorkflowDefinition,
+): WorkflowDTO {
+  return {
+    annotations: definition.annotations,
+    category: getWorkflowCategoryDTO(definition),
+    description: definition.description,
+    name: definition.name,
+    uri: uri,
+    id: definition.id,
+  };
+}
+
+export function mapWorkflowCategoryDTO(category?: WorkflowCategory) {
+  switch (category) {
+    case WorkflowCategory.ASSESSMENT:
+      return WorkflowCategoryDTO.ASSESSMENT;
+    case WorkflowCategory.INFRASTRUCTURE:
+      return WorkflowCategoryDTO.INFRASTRUCTURE;
+    default:
+      return WorkflowCategoryDTO.INFRASTRUCTURE;
+  }
+}
+
+export function getProcessInstancesDTOFromString(
+  state: string,
+): ProcessInstanceStatusDTO {
+  switch (state) {
+    case ProcessInstanceState.Active.valueOf():
+      return ProcessInstanceStatusDTO.RUNNING;
+    case ProcessInstanceState.Error.valueOf():
+      return ProcessInstanceStatusDTO.ERROR;
+    case ProcessInstanceState.Completed.valueOf():
+      return ProcessInstanceStatusDTO.COMPLETED;
+    case ProcessInstanceState.Aborted.valueOf():
+      return ProcessInstanceStatusDTO.ABORTED;
+    case ProcessInstanceState.Suspended.valueOf():
+      return ProcessInstanceStatusDTO.SUSPENDED;
+    default:
+      // TODO: What is the default value?
+      return ProcessInstanceStatusDTO.SUSPENDED;
+  }
+}
+
+export function mapToProcessInstanceDTO(
+  processInstance: ProcessInstance,
+): ProcessInstanceDTO {
+  const start = moment(processInstance.start?.toString());
+  const end = moment(processInstance.end?.toString());
+  const duration = moment.duration(start.diff(end));
+
+  let variables: Record<string, unknown> | undefined;
+  if (typeof processInstance?.variables === 'string') {
+    variables = JSON.parse(processInstance?.variables);
+  } else {
+    variables = processInstance?.variables;
+  }
+
+  return {
+    category: mapWorkflowCategoryDTO(processInstance.category),
+    description: processInstance.description,
+    duration: duration.humanize(),
+    id: processInstance.id,
+    name: processInstance.processName,
+    // To be fixed https://issues.redhat.com/browse/FLPATH-950
+    // @ts-ignore
+    workflowdata: variables?.workflowdata,
+    started: start.toDate().toLocaleString(),
+    status: getProcessInstancesDTOFromString(processInstance.state),
+    workflow: processInstance.processName ?? processInstance.processId,
+  };
+}
