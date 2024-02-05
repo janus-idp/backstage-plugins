@@ -89,6 +89,10 @@ export async function backend(
   if (commonPackage !== pkg.name) {
     mergeWithOutput.push(commonPackage);
   }
+  const nodePackage = pkg.name.replace(/-backend$/, '-node');
+  if (nodePackage !== pkg.name) {
+    mergeWithOutput.push(nodePackage);
+  }
 
   if (opts.embedPackage !== undefined) {
     for (const pkgToEmbed of opts.embedPackage as string[]) {
@@ -102,8 +106,10 @@ export async function backend(
       if (relatedCommonPackage !== pkgToEmbed) {
         mergeWithOutput.push(relatedCommonPackage);
       }
-      const relatedAlphaPackage = pkgToEmbed.concat('/alpha');
-      mergeWithOutput.push(relatedAlphaPackage);
+      const relatedNodePackage = pkgToEmbed.replace(/-backend$/, '-node');
+      if (relatedNodePackage !== pkgToEmbed) {
+        mergeWithOutput.push(relatedNodePackage);
+      }
     }
   }
 
