@@ -1,3 +1,11 @@
+## @janus-idp/backstage-plugin-jfrog-artifactory [1.2.24](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-jfrog-artifactory@1.2.23...@janus-idp/backstage-plugin-jfrog-artifactory@1.2.24) (2024-02-05)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.1
+
 ## @janus-idp/backstage-plugin-jfrog-artifactory [1.2.23](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-jfrog-artifactory@1.2.22...@janus-idp/backstage-plugin-jfrog-artifactory@1.2.23) (2024-02-02)
 
 
