@@ -1,3 +1,10 @@
+## @janus-idp/cli [1.7.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.7.0...@janus-idp/cli@1.7.1) (2024-02-05)
+
+
+### Bug Fixes
+
+* **cli:** embedded alpha module dependencies not hoisted. ([#1170](https://github.com/janus-idp/backstage-plugins/issues/1170)) ([063b343](https://github.com/janus-idp/backstage-plugins/commit/063b3437e7a8267a0fb174d454e7cd9411ea790c))
+
 ## @janus-idp/cli [1.7.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.6.0...@janus-idp/cli@1.7.0) (2024-01-30)
 
 
