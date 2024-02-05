@@ -27,6 +27,10 @@ export interface paths {
     /** Get Workflow Instance by ID */
     get: operations['getInstanceById'];
   };
+  '/v2/workflows/instances/{instanceId}/results': {
+    /** Get assessment results */
+    get: operations['getWorkflowResults'];
+  };
 }
 
 export type webhooks = Record<string, never>;
@@ -217,6 +221,29 @@ export interface operations {
         };
       };
       /** @description Error fetching instance */
+      500: {
+        content: {
+          'text/plain': string;
+        };
+      };
+    };
+  };
+  /** Get assessment results */
+  getWorkflowResults: {
+    parameters: {
+      path: {
+        /** @description ID of the workflow instance */
+        instanceId: string;
+      };
+    };
+    responses: {
+      /** @description Successful response */
+      200: {
+        content: {
+          'application/json': components['schemas']['WorkflowDataDTO'];
+        };
+      };
+      /** @description Error getting workflow results */
       500: {
         content: {
           'text/plain': string;
