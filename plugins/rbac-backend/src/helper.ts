@@ -1,6 +1,9 @@
 import { difference } from 'lodash';
 
-import { Source } from '@janus-idp/backstage-plugin-rbac-common';
+import {
+  RoleBasedPolicy,
+  Source,
+} from '@janus-idp/backstage-plugin-rbac-common';
 
 import { EnforcerDelegate } from './service/enforcer-delegate';
 
@@ -35,3 +38,10 @@ export async function removeTheDifference(
     await enf.removeGroupingPolicy(role, source, true);
   }
 }
+
+export const transformArraytoPolicy = (
+  policyArray: string[],
+): RoleBasedPolicy => {
+  const [entityReference, permission, policy, effect] = policyArray;
+  return { entityReference, permission, policy, effect };
+};

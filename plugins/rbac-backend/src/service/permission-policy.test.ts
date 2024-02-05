@@ -148,6 +148,7 @@ describe('RBACPermissionPolicy Tests', () => {
       conditionalStorage,
       enfDelegate,
       roleMetadataStorageMock,
+      policyMetadataStorageMock,
       knex,
     );
 
@@ -155,10 +156,15 @@ describe('RBACPermissionPolicy Tests', () => {
   });
 
   describe('Policy checks from csv file', () => {
+    let enf: Enforcer;
+    let enfDelegate: EnforcerDelegate;
     let policy: RBACPermissionPolicy;
 
     beforeEach(async () => {
-      const csvPermFile = resolve(__dirname, './test/data/rbac-policy.csv');
+      const csvPermFile = resolve(
+        __dirname,
+        './../__fixtures__/data/valid-csv/rbac-policy.csv',
+      );
       const adapter = new FileAdapter(csvPermFile);
       const config = new ConfigReader({
         permission: {
@@ -169,16 +175,12 @@ describe('RBACPermissionPolicy Tests', () => {
       });
       const theModel = newModelFromString(MODEL);
       const logger = getVoidLogger();
-      const enf = await createEnforcer(
-        theModel,
-        adapter,
-        logger,
-        tokenManagerMock,
-      );
+
+      enf = await createEnforcer(theModel, adapter, logger, tokenManagerMock);
 
       const knex = Knex.knex({ client: MockClient });
-      // policyMetadataStorageMock.findPolicyMetadataBySource
-      const enfDelegate = new EnforcerDelegate(
+
+      enfDelegate = new EnforcerDelegate(
         enf,
         policyMetadataStorageMock,
         roleMetadataStorageMock,
@@ -191,6 +193,7 @@ describe('RBACPermissionPolicy Tests', () => {
         conditionalStorage,
         enfDelegate,
         roleMetadataStorageMock,
+        policyMetadataStorageMock,
         knex,
       );
 
@@ -262,7 +265,10 @@ describe('RBACPermissionPolicy Tests', () => {
       getClient: jest.fn().mockImplementation(),
     };
 
-    const csvPermFile = resolve(__dirname, './test/data/rbac-policy.csv');
+    const csvPermFile = resolve(
+      __dirname,
+      './../__fixtures__/data/valid-csv/rbac-policy.csv',
+    );
     const config = new ConfigReader({
       permission: {
         rbac: {
@@ -345,6 +351,7 @@ describe('RBACPermissionPolicy Tests', () => {
         conditionalStorage,
         enfDelegate,
         roleMetadataStorageMock,
+        policyMetadataStorageMock,
         knex,
       );
     }
@@ -391,19 +398,18 @@ describe('RBACPermissionPolicy Tests', () => {
       );
       await createRBACPolicy(enf);
 
-      expect(await enf.getAllRoles()).toEqual([
-        'role:default/some-role', // stored role
-        'role:default/catalog-writer', // role from csv file
-      ]);
-
       expect(await enf.getGroupingPolicy()).toEqual([
         ['user:default/tester', 'role:default/some-role'], // stored group policy
         ['user:default/guest', 'role:default/catalog-writer'], // group policy from csv file
+        ['user:default/guest', 'role:default/catalog-reader'],
+        ['user:default/guest', 'role:default/catalog-deleter'],
       ]);
 
       expect(await enf.getAllRoles()).toEqual([
         'role:default/some-role', // stored role
         'role:default/catalog-writer', // role from csv file
+        'role:default/catalog-reader',
+        'role:default/catalog-deleter',
       ]);
 
       expect(await enf.getPolicy()).toEqual([
@@ -411,8 +417,14 @@ describe('RBACPermissionPolicy Tests', () => {
         ['role:default/some-role', 'test.some.resource', 'use', 'allow'],
         // policies from csv file
         ['role:default/catalog-writer', 'catalog-entity', 'update', 'allow'],
-        ['user:default/guest', 'catalog-entity', 'read', 'allow'],
-        ['user:default/guest', 'catalog.entity.create', 'use', 'allow'],
+        ['role:default/catalog-writer', 'catalog-entity', 'read', 'allow'],
+        [
+          'role:default/catalog-writer',
+          'catalog.entity.create',
+          'use',
+          'allow',
+        ],
+        ['role:default/catalog-deleter', 'catalog-entity', 'delete', 'deny'],
         ['user:default/known_user', 'test.resource.deny', 'use', 'allow'],
       ]);
 
@@ -477,11 +489,15 @@ describe('RBACPermissionPolicy Tests', () => {
       expect(await enf.getAllRoles()).toEqual([
         'role:default/some-role', // stored role
         'role:default/catalog-writer', // role from csv file
+        'role:default/catalog-reader',
+        'role:default/catalog-deleter',
       ]);
 
       expect(await enf.getGroupingPolicy()).toEqual([
         ['user:default/tester', 'role:default/some-role'], // stored group policy
         ['user:default/guest', 'role:default/catalog-writer'], // group policy from csv file
+        ['user:default/guest', 'role:default/catalog-reader'],
+        ['user:default/guest', 'role:default/catalog-deleter'],
       ]);
 
       expect(await enf.getPolicy()).toEqual([
@@ -489,8 +505,14 @@ describe('RBACPermissionPolicy Tests', () => {
         ['role:default/some-role', 'test.some.resource', 'use', 'allow'],
         // policies from csv file
         ['role:default/catalog-writer', 'catalog-entity', 'update', 'allow'],
-        ['user:default/guest', 'catalog-entity', 'read', 'allow'],
-        ['user:default/guest', 'catalog.entity.create', 'use', 'allow'],
+        ['role:default/catalog-writer', 'catalog-entity', 'read', 'allow'],
+        [
+          'role:default/catalog-writer',
+          'catalog.entity.create',
+          'use',
+          'allow',
+        ],
+        ['role:default/catalog-deleter', 'catalog-entity', 'delete', 'deny'],
         ['user:default/known_user', 'test.resource.deny', 'use', 'allow'],
       ]);
 
@@ -576,11 +598,15 @@ describe('RBACPermissionPolicy Tests', () => {
       expect(await enf.getAllRoles()).toEqual([
         'role:default/some-role', // stored role
         'role:default/catalog-writer', // role from csv file
+        'role:default/catalog-reader',
+        'role:default/catalog-deleter',
       ]);
 
       expect(await enf.getGroupingPolicy()).toEqual([
-        ['user:default/tester', 'role:default/some-role'], // stored group policy
-        ['user:default/guest', 'role:default/catalog-writer'], // group policy from csv file
+        ['user:default/tester', 'role:default/some-role'],
+        ['user:default/guest', 'role:default/catalog-writer'], // stored group policy
+        ['user:default/guest', 'role:default/catalog-reader'],
+        ['user:default/guest', 'role:default/catalog-deleter'],
       ]);
 
       expect(await enf.getPolicy()).toEqual([
@@ -588,8 +614,14 @@ describe('RBACPermissionPolicy Tests', () => {
         ['role:default/some-role', 'test.some.resource', 'use', 'allow'],
         // policies from csv file
         ['role:default/catalog-writer', 'catalog-entity', 'update', 'allow'],
-        ['user:default/guest', 'catalog-entity', 'read', 'allow'],
-        ['user:default/guest', 'catalog.entity.create', 'use', 'allow'],
+        ['role:default/catalog-writer', 'catalog-entity', 'read', 'allow'],
+        [
+          'role:default/catalog-writer',
+          'catalog.entity.create',
+          'use',
+          'allow',
+        ],
+        ['role:default/catalog-deleter', 'catalog-entity', 'delete', 'deny'],
         ['user:default/known_user', 'test.resource.deny', 'use', 'allow'],
       ]);
 
@@ -671,19 +703,30 @@ describe('RBACPermissionPolicy Tests', () => {
       expect(await enf.getAllRoles()).toEqual([
         'role:default/some-role',
         'role:default/catalog-writer', // stored role
+        'role:default/catalog-reader',
+        'role:default/catalog-deleter',
       ]);
 
       expect(await enf.getGroupingPolicy()).toEqual([
         ['user:default/tester', 'role:default/some-role'],
         ['user:default/guest', 'role:default/catalog-writer'], // stored group policy
+        ['user:default/guest', 'role:default/catalog-reader'],
+        ['user:default/guest', 'role:default/catalog-deleter'],
       ]);
 
       expect(await enf.getPolicy()).toEqual([
         // stored policy
         ['role:default/some-role', 'test.some.resource', 'use', 'allow'],
+        // policies from csv file
         ['role:default/catalog-writer', 'catalog-entity', 'update', 'allow'],
-        ['user:default/guest', 'catalog-entity', 'read', 'allow'],
-        ['user:default/guest', 'catalog.entity.create', 'use', 'allow'],
+        ['role:default/catalog-writer', 'catalog-entity', 'read', 'allow'],
+        [
+          'role:default/catalog-writer',
+          'catalog.entity.create',
+          'use',
+          'allow',
+        ],
+        ['role:default/catalog-deleter', 'catalog-entity', 'delete', 'deny'],
         ['user:default/known_user', 'test.resource.deny', 'use', 'allow'],
       ]);
 
@@ -748,19 +791,30 @@ describe('RBACPermissionPolicy Tests', () => {
       expect(await enf.getAllRoles()).toEqual([
         'role:default/some-role',
         'role:default/catalog-writer', // stored role
+        'role:default/catalog-reader',
+        'role:default/catalog-deleter',
       ]);
 
       expect(await enf.getGroupingPolicy()).toEqual([
         ['user:default/tester', 'role:default/some-role'],
         ['user:default/guest', 'role:default/catalog-writer'], // stored group policy
+        ['user:default/guest', 'role:default/catalog-reader'],
+        ['user:default/guest', 'role:default/catalog-deleter'],
       ]);
 
       expect(await enf.getPolicy()).toEqual([
         // stored policy
         ['role:default/some-role', 'test.some.resource', 'use', 'allow'],
+        // policies from csv file
         ['role:default/catalog-writer', 'catalog-entity', 'update', 'allow'],
-        ['user:default/guest', 'catalog-entity', 'read', 'allow'],
-        ['user:default/guest', 'catalog.entity.create', 'use', 'allow'],
+        ['role:default/catalog-writer', 'catalog-entity', 'read', 'allow'],
+        [
+          'role:default/catalog-writer',
+          'catalog.entity.create',
+          'use',
+          'allow',
+        ],
+        ['role:default/catalog-deleter', 'catalog-entity', 'delete', 'deny'],
         ['user:default/known_user', 'test.resource.deny', 'use', 'allow'],
       ]);
 
@@ -840,19 +894,30 @@ describe('RBACPermissionPolicy Tests', () => {
       expect(await enf.getAllRoles()).toEqual([
         'role:default/some-role',
         'role:default/catalog-writer', // stored role
+        'role:default/catalog-reader',
+        'role:default/catalog-deleter',
       ]);
 
       expect(await enf.getGroupingPolicy()).toEqual([
         ['user:default/tester', 'role:default/some-role'],
         ['user:default/guest', 'role:default/catalog-writer'], // stored group policy
+        ['user:default/guest', 'role:default/catalog-reader'],
+        ['user:default/guest', 'role:default/catalog-deleter'],
       ]);
 
       expect(await enf.getPolicy()).toEqual([
         // stored policy
         ['role:default/some-role', 'test.some.resource', 'use', 'allow'],
+        // policies from csv file
         ['role:default/catalog-writer', 'catalog-entity', 'update', 'allow'],
-        ['user:default/guest', 'catalog-entity', 'read', 'allow'],
-        ['user:default/guest', 'catalog.entity.create', 'use', 'allow'],
+        ['role:default/catalog-writer', 'catalog-entity', 'read', 'allow'],
+        [
+          'role:default/catalog-writer',
+          'catalog.entity.create',
+          'use',
+          'allow',
+        ],
+        ['role:default/catalog-deleter', 'catalog-entity', 'delete', 'deny'],
         ['user:default/known_user', 'test.resource.deny', 'use', 'allow'],
       ]);
 
@@ -904,6 +969,8 @@ describe('RBACPermissionPolicy Tests', () => {
                 p, user:default/duplicated, test.resource, use, deny
                 # case 4
                 p, user:default/known_user, test.resource, use, allow
+                # case 5
+                unknown user
 
                 # ========== resource type permission policies ========== #
                 # case 1
@@ -940,6 +1007,7 @@ describe('RBACPermissionPolicy Tests', () => {
         conditionalStorage,
         enfDelegate,
         roleMetadataStorageMock,
+        policyMetadataStorageMock,
         knex,
       );
 
@@ -986,6 +1054,14 @@ describe('RBACPermissionPolicy Tests', () => {
         newIdentityResponse('user:default/known_user'),
       );
       expect(decision.result).toBe(AuthorizeResult.ALLOW);
+    });
+    // case5
+    it('should deny access to undefined user', async () => {
+      const decision = await policy.handle(
+        newPolicyQueryWithBasicPermission('test.resource'),
+        newIdentityResponse(),
+      );
+      expect(decision.result).toBe(AuthorizeResult.DENY);
     });
 
     // Tests for Resource Permission type
@@ -1053,49 +1129,16 @@ describe('RBACPermissionPolicy Tests', () => {
     });
 
     // Tests for admin added through app config
-    it('should allow access to permission resources for admin added through app config', async () => {
-      const adminPerm: {
-        name: string;
-        resource: string;
-        action: PermissionAction;
-      }[] = [
-        {
-          name: 'policy.entity.read',
-          resource: 'policy-entity',
-          action: 'read',
-        },
-        {
-          name: 'policy.entity.create',
-          resource: 'policy-entity',
-          action: 'create',
-        },
-        {
-          name: 'policy.entity.update',
-          resource: 'policy-entity',
-          action: 'update',
-        },
-        {
-          name: 'policy.entity.delete',
-          resource: 'policy-entity',
-          action: 'delete',
-        },
-        {
-          name: 'catalog.entity.read',
-          resource: 'catalog-entity',
-          action: 'read',
-        },
-      ];
-      for (const perm of adminPerm) {
-        const decision = await policy.handle(
-          newPolicyQueryWithResourcePermission(
-            perm.name,
-            perm.resource,
-            perm.action,
-          ),
-          newIdentityResponse('user:default/guest'),
-        );
-        expect(decision.result).toBe(AuthorizeResult.ALLOW);
-      }
+    it('should allow access to permission resource for admin added through app config', async () => {
+      const decision = await policy.handle(
+        newPolicyQueryWithResourcePermission(
+          'policy-entity.read',
+          'policy-entity',
+          'read',
+        ),
+        newIdentityResponse('user:default/guest'),
+      );
+      expect(decision.result).toBe(AuthorizeResult.ALLOW);
     });
   });
 
@@ -1222,6 +1265,7 @@ describe('RBACPermissionPolicy Tests', () => {
         conditionalStorage,
         enfDelegate,
         roleMetadataStorageTest,
+        policyMetadataStorageMock,
         knex,
       );
     });
@@ -1335,6 +1379,7 @@ describe('Policy checks for resourced permissions defined by name', () => {
       conditionalStorage,
       enfDelegate,
       roleMetadataStorageMock,
+      policyMetadataStorageMock,
       knex,
     );
   }
@@ -1584,6 +1629,7 @@ describe('Policy checks for users and groups', () => {
       conditionalStorage,
       enfDelegate,
       roleMetadataStorageMock,
+      policyMetadataStorageMock,
       knex,
     );
 
@@ -1967,15 +2013,20 @@ function newPolicyQueryWithResourcePermission(
   return { permission: mockPermission };
 }
 
-function newIdentityResponse(user: string): BackstageIdentityResponse {
-  return {
-    identity: {
-      ownershipEntityRefs: [],
-      type: 'user',
-      userEntityRef: user,
-    },
-    token: '',
-  };
+function newIdentityResponse(
+  user?: string,
+): BackstageIdentityResponse | undefined {
+  if (user) {
+    return {
+      identity: {
+        ownershipEntityRefs: [],
+        type: 'user',
+        userEntityRef: user,
+      },
+      token: '',
+    };
+  }
+  return undefined;
 }
 
 function newConfigReader(): ConfigReader {
