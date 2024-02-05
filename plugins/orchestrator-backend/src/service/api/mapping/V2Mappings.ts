@@ -1,8 +1,8 @@
 import moment from 'moment';
-import { ParsedRequest } from 'openapi-backend';
 
 import {
   ASSESSMENT_WORKFLOW_TYPE,
+  ExecuteWorkflowResponseDTO,
   ProcessInstance,
   ProcessInstanceDTO,
   ProcessInstanceState,
@@ -11,6 +11,7 @@ import {
   WorkflowCategoryDTO,
   WorkflowDefinition,
   WorkflowDTO,
+  WorkflowExecutionResponse,
   WorkflowListResult,
   WorkflowListResultDTO,
   WorkflowOverview,
@@ -151,5 +152,20 @@ export function mapToProcessInstanceDTO(
     started: start.toDate().toLocaleString(),
     status: getProcessInstancesDTOFromString(processInstance.state),
     workflow: processInstance.processName ?? processInstance.processId,
+  };
+}
+
+export function mapToExecuteWorkflowResponseDTO(
+  workflowId: string,
+  workflowExecutionResponse: WorkflowExecutionResponse,
+): ExecuteWorkflowResponseDTO {
+  if (!workflowExecutionResponse?.id) {
+    throw new Error(
+      `Error while mapping ExecuteWorkflowResponse to ExecuteWorkflowResponseDTO for workflow with id ${workflowId}`,
+    );
+  }
+
+  return {
+    id: workflowExecutionResponse.id,
   };
 }

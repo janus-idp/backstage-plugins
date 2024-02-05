@@ -10,6 +10,10 @@ export type ProcessInstanceDTO = components['schemas']['ProcessInstanceDTO'];
 export type ProcessInstancesDTO = components['schemas']['ProcessInstancesDTO'];
 export type AssessedProcessInstanceDTO =
   components['schemas']['AssessedProcessInstanceDTO'];
+export type ExecuteWorkflowRequestDTO =
+  components['schemas']['ExecuteWorkflowRequestDTO'];
+export type ExecuteWorkflowResponseDTO =
+  components['schemas']['ExecuteWorkflowResponseDTO'];
 // Generate ts enum instead of strings union
 // https://issues.redhat.com/browse/FLPATH-947
 export enum WorkflowCategoryDTO {

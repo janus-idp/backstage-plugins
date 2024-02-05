@@ -4,6 +4,7 @@ import {
   AssessedProcessInstance,
   ProcessInstance,
   WorkflowDefinition,
+  WorkflowExecutionResponse,
   WorkflowInfo,
   WorkflowItem,
   WorkflowListResult,
@@ -131,6 +132,32 @@ export namespace V1 {
       assessedBy: assessedByInstance,
     };
     return response;
+  }
+
+  export async function executeWorkflow(
+    dataIndexService: DataIndexService,
+    sonataFlowService: SonataFlowService,
+    reqBody: Record<string, any>,
+    workflowId: string,
+    businessKey: string | undefined,
+  ): Promise<WorkflowExecutionResponse> {
+    const definition = await dataIndexService.getWorkflowDefinition(workflowId);
+    const serviceUrl = definition.serviceUrl;
+    if (!serviceUrl) {
+      throw new Error(`ServiceURL is not defined for workflow ${workflowId}`);
+    }
+    const executionResponse = await sonataFlowService.executeWorkflow({
+      workflowId,
+      inputData: reqBody,
+      endpoint: serviceUrl,
+      businessKey,
+    });
+
+    if (!executionResponse) {
+      throw new Error(`Couldn't execute workflow ${workflowId}`);
+    }
+
+    return executionResponse;
   }
 
   export function extractQueryParam(

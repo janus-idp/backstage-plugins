@@ -3,6 +3,8 @@ import { ParsedRequest } from 'openapi-backend';
 import {
   AssessedProcessInstance,
   AssessedProcessInstanceDTO,
+  ExecuteWorkflowRequestDTO,
+  ExecuteWorkflowResponseDTO,
   ProcessInstancesDTO,
   WorkflowDTO,
   WorkflowListResult,
@@ -14,6 +16,7 @@ import {
 import { DataIndexService } from '../DataIndexService';
 import { SonataFlowService } from '../SonataFlowService';
 import {
+  mapToExecuteWorkflowResponseDTO,
   mapToProcessInstanceDTO,
   mapToWorkflowDTO,
   mapToWorkflowListResultDTO,
@@ -99,6 +102,46 @@ export namespace V2 {
         ? mapToProcessInstanceDTO(instance.assessedBy)
         : undefined,
     };
+  }
+
+  export async function executeWorkflow(
+    dataIndexService: DataIndexService,
+    sonataFlowService: SonataFlowService,
+    executeWorkflowRequestDTO: ExecuteWorkflowRequestDTO,
+    workflowId: string,
+    businessKey: string | undefined,
+  ): Promise<ExecuteWorkflowResponseDTO> {
+    if (!dataIndexService) {
+      throw new Error(
+        `No data index service provided for executing workflow with id ${workflowId}`,
+      );
+    }
+
+    if (!sonataFlowService) {
+      throw new Error(
+        `No sonata flow service provided for executing workflow with id ${workflowId}`,
+      );
+    }
+
+    if (Object.keys(executeWorkflowRequestDTO?.inputData).length === 0) {
+      throw new Error(
+        `ExecuteWorkflowRequestDTO.inputData is required for executing workflow with id ${workflowId}`,
+      );
+    }
+
+    const executeWorkflowResponse = await V1.executeWorkflow(
+      dataIndexService,
+      sonataFlowService,
+      executeWorkflowRequestDTO,
+      workflowId,
+      businessKey,
+    );
+
+    if (!executeWorkflowResponse) {
+      throw new Error('Error executing workflow with id ${workflowId}');
+    }
+
+    return mapToExecuteWorkflowResponseDTO(workflowId, executeWorkflowResponse);
   }
 
   export function extractQueryParam(

@@ -240,26 +240,43 @@ function setupInternalRoutes(
 
     const businessKey = V1.extractQueryParam(req, QUERY_PARAM_BUSINESS_KEY);
 
-    const definition =
-      await services.dataIndexService.getWorkflowDefinition(workflowId);
-    const serviceUrl = definition.serviceUrl;
-    if (!serviceUrl) {
-      throw new Error(`ServiceURL is not defined for workflow ${workflowId}`);
-    }
-    const executionResponse = await services.sonataFlowService.executeWorkflow({
+    await V1.executeWorkflow(
+      services.dataIndexService,
+      services.sonataFlowService,
+      req.body,
       workflowId,
-      inputData: req.body,
-      endpoint: serviceUrl,
       businessKey,
-    });
-
-    if (!executionResponse) {
-      res.status(500).send(`Couldn't execute workflow ${workflowId}`);
-      return;
-    }
-
-    res.status(200).json(executionResponse);
+    )
+      .then((result: any) => res.status(200).json(result))
+      .catch((error: { message: any }) => {
+        res.status(500).send(error.message || 'Internal Server Error');
+      });
   });
+
+  // v2
+  api.register(
+    'executeWorkflow',
+    async (c, req: express.Request, res: express.Response) => {
+      const workflowId = c.request.params.workflowId as string;
+      const businessKey = V2.extractQueryParam(
+        c.request,
+        QUERY_PARAM_BUSINESS_KEY,
+      );
+
+      const executeWorkflowRequestDTO = req.body;
+      await V2.executeWorkflow(
+        services.dataIndexService,
+        services.sonataFlowService,
+        executeWorkflowRequestDTO,
+        workflowId,
+        businessKey,
+      )
+        .then(result => res.status(200).json(result))
+        .catch((error: { message: string }) => {
+          res.status(500).send(error.message || 'Internal Server Error');
+        });
+    },
+  );
 
   // v2
   api.register(
