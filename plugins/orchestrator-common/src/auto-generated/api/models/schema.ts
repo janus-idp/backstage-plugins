@@ -44,6 +44,17 @@ export interface paths {
     /** Execute a workflow */
     post: operations['executeWorkflow'];
   };
+  '/v2/workflows/{workflowId}/abort': {
+    /**
+     * Abort a workflow instance
+     * @description Aborts a workflow instance identified by the provided workflowId.
+     */
+    delete: operations['abortWorkflow'];
+  };
+  '/v2/specs': {
+    /** Get workflow specifications */
+    get: operations['getWorkflowSpecs'];
+  };
 }
 
 export type webhooks = Record<string, never>;
@@ -139,6 +150,11 @@ export interface components {
     };
     ExecuteWorkflowResponseDTO: {
       id?: string;
+    };
+    WorkflowSpecFileDTO: {
+      path?: string;
+      /** @description JSON string */
+      content: string;
     };
     WorkflowProgressDTO: components['schemas']['NodeInstanceDTO'] & {
       status?: components['schemas']['ProcessInstanceStatusDTO'];
@@ -392,6 +408,49 @@ export interface operations {
         };
       };
       /** @description Internal Server Error */
+      500: {
+        content: {
+          'text/plain': string;
+        };
+      };
+    };
+  };
+  /**
+   * Abort a workflow instance
+   * @description Aborts a workflow instance identified by the provided workflowId.
+   */
+  abortWorkflow: {
+    parameters: {
+      path: {
+        /** @description The identifier of the workflow instance to abort. */
+        workflowId: string;
+      };
+    };
+    responses: {
+      /** @description Successful operation */
+      200: {
+        content: {
+          'text/plain': string;
+        };
+      };
+      /** @description Error aborting workflow */
+      500: {
+        content: {
+          'text/plain': string;
+        };
+      };
+    };
+  };
+  /** Get workflow specifications */
+  getWorkflowSpecs: {
+    responses: {
+      /** @description Successful retrieval of workflow specifications */
+      200: {
+        content: {
+          'application/json': components['schemas']['WorkflowSpecFileDTO'][];
+        };
+      };
+      /** @description Error fetching workflow specifications */
       500: {
         content: {
           'text/plain': string;

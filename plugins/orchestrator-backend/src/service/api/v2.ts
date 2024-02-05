@@ -12,6 +12,7 @@ import {
   WorkflowListResultDTO,
   WorkflowOverviewDTO,
   WorkflowOverviewListResultDTO,
+  WorkflowSpecFileDTO,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { DataIndexService } from '../DataIndexService';
@@ -24,6 +25,7 @@ import {
   mapToWorkflowDTO,
   mapToWorkflowListResultDTO,
   mapToWorkflowOverviewDTO,
+  mapToWorkflowSpecFileDTO,
 } from './mapping/V2Mappings';
 import { V1 } from './v1';
 
@@ -191,6 +193,13 @@ export namespace V2 {
     }
 
     return mapToGetWorkflowInstanceResults(instanceResult.instance.variables);
+  }
+
+  export async function getWorkflowSpecs(
+    workflowService: WorkflowService,
+  ): Promise<WorkflowSpecFileDTO[]> {
+    const specV1 = await V1.getWorkflowSpecs(workflowService);
+    return specV1.map(spec => mapToWorkflowSpecFileDTO(spec));
   }
 
   export function extractQueryParam(

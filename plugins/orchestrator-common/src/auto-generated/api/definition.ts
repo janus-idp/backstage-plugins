@@ -361,6 +361,77 @@ const OPENAPI = `
           }
         }
       }
+    },
+    "/v2/workflows/{workflowId}/abort": {
+      "delete": {
+        "summary": "Abort a workflow instance",
+        "operationId": "abortWorkflow",
+        "description": "Aborts a workflow instance identified by the provided workflowId.",
+        "parameters": [
+          {
+            "name": "workflowId",
+            "in": "path",
+            "required": true,
+            "description": "The identifier of the workflow instance to abort.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error aborting workflow",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/specs": {
+      "get": {
+        "summary": "Get workflow specifications",
+        "operationId": "getWorkflowSpecs",
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of workflow specifications",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WorkflowSpecFileDTO"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error fetching workflow specifications",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -620,6 +691,21 @@ const OPENAPI = `
             "type": "string"
           }
         }
+      },
+      "WorkflowSpecFileDTO": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string",
+            "description": "JSON string"
+          }
+        },
+        "required": [
+          "content"
+        ]
       },
       "WorkflowProgressDTO": {
         "allOf": [

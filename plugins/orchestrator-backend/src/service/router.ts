@@ -561,9 +561,24 @@ function setupInternalRoutes(
   });
 
   router.get('/specs', async (_, res) => {
-    const specs = await services.workflowService.listStoredSpecs();
-    res.status(200).json(specs);
+    await V1.getWorkflowSpecs(services.workflowService)
+      .then(result => res.status(200).json(result))
+      .catch(error => {
+        res.status(500).send(error.message || 'Internal Server Error');
+      });
   });
+
+  // v2
+  api.register(
+    'getWorkflowSpecs',
+    async (_c, _req: express.Request, res: express.Response) => {
+      await V2.getWorkflowSpecs(services.workflowService)
+        .then(result => res.status(200).json(result))
+        .catch((error: { message: string }) => {
+          res.status(500).send(error.message || 'Internal Server Error');
+        });
+    },
+  );
 
   // v2
   api.register(

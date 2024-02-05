@@ -12,6 +12,7 @@ import {
   WorkflowListResult,
   WorkflowOverview,
   WorkflowOverviewListResult,
+  WorkflowSpecFile,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { DataIndexService } from '../DataIndexService';
@@ -190,6 +191,12 @@ export namespace V1 {
     }
 
     return result;
+  }
+
+  export async function getWorkflowSpecs(
+    workflowService: WorkflowService,
+  ): Promise<WorkflowSpecFile[]> {
+    return await workflowService.listStoredSpecs();
   }
 
   export function extractQueryParam(
