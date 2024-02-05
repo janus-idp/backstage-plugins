@@ -2,6 +2,7 @@ import express from 'express';
 
 import {
   AssessedProcessInstance,
+  fromWorkflowSource,
   ProcessInstance,
   WorkflowDefinition,
   WorkflowExecutionResponse,
@@ -14,6 +15,7 @@ import {
 
 import { DataIndexService } from '../DataIndexService';
 import { SonataFlowService } from '../SonataFlowService';
+import { WorkflowService } from '../WorkflowService';
 
 export namespace V1 {
   export async function getWorkflowOverview(
@@ -158,6 +160,20 @@ export namespace V1 {
     }
 
     return executionResponse;
+  }
+
+  export async function createWorkflow(
+    workflowService: WorkflowService,
+    uri: string,
+    reqBody: string,
+  ): Promise<WorkflowItem> {
+    const workflowItem = uri?.startsWith('http')
+      ? await workflowService.saveWorkflowDefinitionFromUrl(uri)
+      : await workflowService.saveWorkflowDefinition({
+          uri,
+          definition: fromWorkflowSource(reqBody),
+        });
+    return workflowItem;
   }
 
   export function extractQueryParam(

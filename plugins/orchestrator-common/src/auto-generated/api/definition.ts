@@ -110,6 +110,68 @@ const OPENAPI = `
             }
           }
         }
+      },
+      "post": {
+        "operationId": "createWorkflow",
+        "summary": "Create or update a workflow",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "uri": {
+                    "type": "string"
+                  },
+                  "body": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "uri"
+                ]
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "uri",
+            "in": "query",
+            "description": "URI parameter",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "workflowItem": {
+                      "$ref": "#/components/schemas/WorkflowDTO"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error creating workflow",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/v2/workflows/instances": {

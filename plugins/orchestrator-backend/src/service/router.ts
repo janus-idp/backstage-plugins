@@ -512,14 +512,31 @@ function setupInternalRoutes(
       return;
     }
 
-    const workflowItem = uri?.startsWith('http')
-      ? await services.workflowService.saveWorkflowDefinitionFromUrl(uri)
-      : await services.workflowService.saveWorkflowDefinition({
-          uri,
-          definition: fromWorkflowSource(req.body),
-        });
-    res.status(201).json(workflowItem).send();
+    await V1.createWorkflow(services.workflowService, uri, req.body)
+      .then(result => res.status(201).json(result))
+      .catch(error => {
+        res.status(500).send(error.message || 'Internal Server Error');
+      });
   });
+
+  // v2
+  api.register(
+    'createWorkflow',
+    async (c, _req, res: express.Response, next) => {
+      const uri = V2.extractQueryParam(c.request, QUERY_PARAM_URI);
+
+      if (!uri) {
+        res.status(400).send('uri query param is required');
+        return;
+      }
+      await V2.createWorkflow(services.workflowService, uri, c.request.body)
+        .then(result => res.json(result))
+        .catch(error => {
+          res.status(500).send(error.message || 'Internal Server Error');
+          next();
+        });
+    },
+  );
 
   router.get('/actions/schema', async (_, res) => {
     const openApi = await services.openApiService.generateOpenApi();

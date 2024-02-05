@@ -15,6 +15,7 @@ import {
 
 import { DataIndexService } from '../DataIndexService';
 import { SonataFlowService } from '../SonataFlowService';
+import { WorkflowService } from '../WorkflowService';
 import {
   mapToExecuteWorkflowResponseDTO,
   mapToProcessInstanceDTO,
@@ -142,6 +143,15 @@ export namespace V2 {
     }
 
     return mapToExecuteWorkflowResponseDTO(workflowId, executeWorkflowResponse);
+  }
+
+  export async function createWorkflow(
+    workflowService: WorkflowService,
+    uri: string,
+    reqBody: string,
+  ): Promise<WorkflowDTO> {
+    const workflowItem = await V1.createWorkflow(workflowService, uri, reqBody);
+    return mapToWorkflowDTO(uri, workflowItem.definition);
   }
 
   export function extractQueryParam(
