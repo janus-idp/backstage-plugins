@@ -38,6 +38,10 @@ export interface paths {
      */
     get: operations['getWorkflowStatuses'];
   };
+  '/v2/workflows/{workflowId}/execute': {
+    /** Execute a workflow */
+    post: operations['executeWorkflow'];
+  };
 }
 
 export type webhooks = Record<string, never>;
@@ -125,6 +129,14 @@ export interface components {
     WorkflowRunStatusDTO: {
       key?: string;
       value?: string;
+    };
+    ExecuteWorkflowRequestDTO: {
+      inputData: {
+        [key: string]: string;
+      };
+    };
+    ExecuteWorkflowResponseDTO: {
+      id?: string;
     };
   };
   responses: never;
@@ -275,6 +287,34 @@ export interface operations {
         };
       };
       /** @description Error fetching workflow statuses */
+      500: {
+        content: {
+          'text/plain': string;
+        };
+      };
+    };
+  };
+  /** Execute a workflow */
+  executeWorkflow: {
+    parameters: {
+      path: {
+        /** @description ID of the workflow to execute */
+        workflowId: string;
+      };
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ExecuteWorkflowRequestDTO'];
+      };
+    };
+    responses: {
+      /** @description Successful execution */
+      200: {
+        content: {
+          'application/json': components['schemas']['ExecuteWorkflowResponseDTO'];
+        };
+      };
+      /** @description Internal Server Error */
       500: {
         content: {
           'text/plain': string;

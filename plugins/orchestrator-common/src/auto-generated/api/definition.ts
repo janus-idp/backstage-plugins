@@ -250,6 +250,55 @@ const OPENAPI = `
           }
         }
       }
+    },
+    "/v2/workflows/{workflowId}/execute": {
+      "post": {
+        "summary": "Execute a workflow",
+        "operationId": "executeWorkflow",
+        "parameters": [
+          {
+            "name": "workflowId",
+            "in": "path",
+            "description": "ID of the workflow to execute",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExecuteWorkflowRequestDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful execution",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExecuteWorkflowResponseDTO"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -484,6 +533,28 @@ const OPENAPI = `
             "type": "string"
           },
           "value": {
+            "type": "string"
+          }
+        }
+      },
+      "ExecuteWorkflowRequestDTO": {
+        "type": "object",
+        "properties": {
+          "inputData": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "inputData"
+        ]
+      },
+      "ExecuteWorkflowResponseDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
             "type": "string"
           }
         }
