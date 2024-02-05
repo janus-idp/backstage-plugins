@@ -15,12 +15,60 @@ import {
   validatePolicy,
 } from '../service/policies-validation';
 
+const addPolicy = async (
+  policy: string[],
+  enf: EnforcerDelegate,
+  policyMetadataStorage: PolicyMetadataStorage,
+  logger: Logger,
+): Promise<void> => {
+  const source = await policyMetadataStorage?.findPolicyMetadata(policy);
+
+  if (!(await enf.hasPolicy(...policy))) {
+    await enf.addPolicy(policy, 'csv-file');
+  } else if (source?.source !== 'csv-file') {
+    logger.warn(
+      `Duplicate policy: ${policy[0]}, ${policy[1]}, ${policy[2]} found with the source ${source?.source}`,
+    );
+  }
+};
+
+const removeEnforcerPolicies = async (
+  enforcerPolicies: string[][],
+  tempEnf: Enforcer,
+  enf: EnforcerDelegate,
+  policyMetadataStorage: PolicyMetadataStorage,
+): Promise<void> => {
+  for (const policy of enforcerPolicies) {
+    const enfPolicySource =
+      await policyMetadataStorage?.findPolicyMetadata(policy);
+    if (
+      !(await tempEnf.hasPolicy(...policy)) &&
+      enfPolicySource?.source === 'csv-file'
+    ) {
+      await enf.removePolicy(policy, 'csv-file', true);
+    }
+  }
+};
+
+const catchRoleIssues = (
+  roleIssues: string[][],
+  policyFile: string,
+  logger: Logger,
+): void => {
+  for (const role of roleIssues) {
+    const err = validateEntityReference(role[0]);
+    if (err) {
+      logger.warn(
+        `Failed to validate role from file ${policyFile}. Cause: ${err.message}`,
+      );
+    }
+  }
+};
+
 export const loadFilteredPoliciesFromCSV = async (
   policyFile: string,
   enf: EnforcerDelegate,
-  entityRef: string,
-  resource: string,
-  action: string,
+  policyFilter: string[],
   logger: Logger,
   policyMetadataStorage: PolicyMetadataStorage,
   fileEnf?: Enforcer,
@@ -29,7 +77,7 @@ export const loadFilteredPoliciesFromCSV = async (
     fileEnf ??
     (await newEnforcer(newModelFromString(MODEL), new FileAdapter(policyFile)));
 
-  const roles = await enf.getFilteredGroupingPolicy(0, entityRef);
+  const roles = await enf.getFilteredGroupingPolicy(0, policyFilter[0]);
 
   const policies: string[][] = [];
   let enforcerPolicies: string[][] = [];
@@ -38,15 +86,15 @@ export const loadFilteredPoliciesFromCSV = async (
     const policyByRole = await tempEnforcer.getFilteredPolicy(
       0,
       role[1],
-      resource,
-      action,
+      policyFilter[1],
+      policyFilter[2],
     );
     policies.push(...policyByRole);
     const enforcerPolicy = await enf.getFilteredPolicy(
       0,
       role[1],
-      resource,
-      action,
+      policyFilter[1],
+      policyFilter[2],
     );
     enforcerPolicies.push(...enforcerPolicy);
   }
@@ -57,7 +105,11 @@ export const loadFilteredPoliciesFromCSV = async (
 
   if (policies.length === 0) {
     policies.push(
-      ...(await tempEnforcer.getFilteredPolicy(1, resource, action)),
+      ...(await tempEnforcer.getFilteredPolicy(
+        1,
+        policyFilter[1],
+        policyFilter[2],
+      )),
     );
   }
 
@@ -80,10 +132,10 @@ export const loadFilteredPoliciesFromCSV = async (
     }
 
     const effectFlipPolicy = [
-      policy.at(0)!,
-      policy.at(1)!,
-      policy.at(2)!,
-      policy.at(3)! === 'deny' ? 'allow' : 'deny',
+      policy[0],
+      policy[1],
+      policy[2],
+      policy[3] === 'deny' ? 'allow' : 'deny',
     ];
 
     const flipSource =
@@ -110,28 +162,15 @@ export const loadFilteredPoliciesFromCSV = async (
       );
     }
 
-    const source = await policyMetadataStorage?.findPolicyMetadata(policy);
-
-    if (!(await enf.hasPolicy(...policy))) {
-      await enf.addPolicy(policy, 'csv-file');
-    } else if (source?.source !== 'csv-file') {
-      logger.warn(
-        `Duplicate policy: ${policy[0]}, ${policy[1]}, ${policy[2]} found with the source ${source?.source}`,
-      );
-      continue;
-    }
+    await addPolicy(policy, enf, policyMetadataStorage, logger);
   }
 
-  for (const policy of enforcerPolicies) {
-    const enfPolicySource =
-      await policyMetadataStorage?.findPolicyMetadata(policy);
-    if (
-      !(await tempEnforcer.hasPolicy(...policy)) &&
-      enfPolicySource?.source === 'csv-file'
-    ) {
-      await enf.removePolicy(policy, 'csv-file', true);
-    }
-  }
+  await removeEnforcerPolicies(
+    enforcerPolicies,
+    tempEnforcer,
+    enf,
+    policyMetadataStorage,
+  );
 };
 
 export const loadFilteredGroupingPoliciesFromCSV = async (
@@ -204,23 +243,13 @@ export const loadFilteredGroupingPoliciesFromCSV = async (
   }
 
   // Role Issues was meant to catch things with messed up users,
-  for (const role of roleIssues) {
-    const err = validateEntityReference(role[0]);
-    if (err) {
-      logger.warn(
-        `Failed to validate role from file ${policyFile}. Cause: ${err.message}`,
-      );
-      continue;
-    }
-  }
+  catchRoleIssues(roleIssues, policyFile, logger);
 };
 
 export const loadFilteredCSV = async (
   policyFile: string,
   enf: EnforcerDelegate,
-  entityRef: string,
-  resource: string,
-  action: string,
+  policyFilter: string[],
   logger: Logger,
   policyMetadataStorage: PolicyMetadataStorage,
 ) => {
@@ -232,9 +261,7 @@ export const loadFilteredCSV = async (
   await loadFilteredPoliciesFromCSV(
     policyFile,
     enf,
-    entityRef,
-    resource,
-    action,
+    policyFilter,
     logger,
     policyMetadataStorage,
     fileEnf,
@@ -242,7 +269,7 @@ export const loadFilteredCSV = async (
   await loadFilteredGroupingPoliciesFromCSV(
     policyFile,
     enf,
-    entityRef,
+    policyFilter[0],
     logger,
     policyMetadataStorage,
     fileEnf,

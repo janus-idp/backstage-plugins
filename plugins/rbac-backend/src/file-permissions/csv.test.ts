@@ -127,9 +127,11 @@ describe('CSV file', () => {
   let enfAddGroupingSpy: jest.SpyInstance<Promise<boolean>, string[], any>;
   let enfRemoveGroupingSpy: jest.SpyInstance<Promise<boolean>, string[], any>;
 
-  const user: string = 'user:default/guest';
-  const resourceType: string = 'catalog.entity.create';
-  const action: string = 'use';
+  const policyFilter: string[] = [
+    'user:default/guest',
+    'catalog.entity.create',
+    'use',
+  ];
 
   describe('Loading filtered policies from a CSV file', () => {
     let csvPermFile: string;
@@ -211,9 +213,7 @@ describe('CSV file', () => {
       await loadFilteredPoliciesFromCSV(
         updatedPolicyFile,
         enfDelegate,
-        user,
-        resourceType,
-        action,
+        policyFilter,
         loggerMock,
         policyMetadataStorageMock,
       );
@@ -226,6 +226,11 @@ describe('CSV file', () => {
     });
 
     it('should update a policy that has changed in the file (deny -> allow)', async () => {
+      const tempFilter: string[] = [
+        policyFilter[0],
+        'catalog-entity',
+        'delete',
+      ];
       const originalPolicy = [
         'role:default/catalog-deleter',
         'catalog-entity',
@@ -238,8 +243,6 @@ describe('CSV file', () => {
         'delete',
         'allow',
       ];
-      const denyResource = 'catalog-entity';
-      const denyAction = 'delete';
 
       const updatedPolicyFile = resolve(
         __dirname,
@@ -252,9 +255,7 @@ describe('CSV file', () => {
       await loadFilteredPoliciesFromCSV(
         updatedPolicyFile,
         enfDelegate,
-        user,
-        denyResource,
-        denyAction,
+        tempFilter,
         loggerMock,
         policyMetadataStorageMock,
       );
@@ -267,15 +268,17 @@ describe('CSV file', () => {
     });
 
     it('should add a policy that is new in the file', async () => {
+      const tempFilter: string[] = [
+        policyFilter[0],
+        'catalog.entity.delete',
+        'delete',
+      ];
       const newPolicy = [
         'role:default/catalog-writer',
         'catalog.entity.delete',
         'delete',
         'allow',
       ];
-
-      const newResourceType = 'catalog.entity.delete';
-      const newAction = 'delete';
 
       const updatedPolicyFile = resolve(
         __dirname,
@@ -287,9 +290,7 @@ describe('CSV file', () => {
       await loadFilteredPoliciesFromCSV(
         updatedPolicyFile,
         enfDelegate,
-        user,
-        newResourceType,
-        newAction,
+        tempFilter,
         loggerMock,
         policyMetadataStorageMock,
       );
@@ -300,15 +301,13 @@ describe('CSV file', () => {
     });
 
     it('should remove a policy that is no longer in the file', async () => {
+      const tempFilter: string[] = [policyFilter[0], 'catalog-entity', 'read'];
       const originalPolicy = [
         'role:default/catalog-writer',
         'catalog-entity',
         'read',
         'allow',
       ];
-
-      const originalResource = 'catalog-entity';
-      const originalAction = 'read';
 
       const updatedPolicyFile = resolve(
         __dirname,
@@ -320,9 +319,7 @@ describe('CSV file', () => {
       await loadFilteredPoliciesFromCSV(
         updatedPolicyFile,
         enfDelegate,
-        user,
-        originalResource,
-        originalAction,
+        tempFilter,
         loggerMock,
         policyMetadataStorageMock,
       );
@@ -349,9 +346,7 @@ describe('CSV file', () => {
       await loadFilteredPoliciesFromCSV(
         originalPolicyFile,
         enfDelegate,
-        user,
-        resourceType,
-        action,
+        policyFilter,
         loggerMock,
         policyMetadataStorageMock,
       );
@@ -388,14 +383,12 @@ describe('CSV file', () => {
       await loadFilteredPoliciesFromCSV(
         updatedPolicyFile,
         enfDelegate,
-        user,
-        resourceType,
-        action,
+        policyFilter,
         loggerMock,
         policyMetadataStorageMock,
       );
       expect(loggerMock.warn).toHaveBeenCalledWith(
-        `Failed to validate policy from file ${updatedPolicyFile}. Cause: Entity reference \"role:default/\" was not on the form [<kind>:][<namespace>/]<name>`,
+        `Failed to validate policy from file ${updatedPolicyFile}. Cause: Entity reference "role:default/" was not on the form [<kind>:][<namespace>/]<name>`,
       );
     });
 
@@ -416,9 +409,7 @@ describe('CSV file', () => {
       await loadFilteredPoliciesFromCSV(
         updatedPolicyFile,
         enfDelegate,
-        user,
-        resourceType,
-        action,
+        policyFilter,
         loggerMock,
         policyMetadataStorageMock,
       );
@@ -450,9 +441,7 @@ describe('CSV file', () => {
       await loadFilteredPoliciesFromCSV(
         updatedPolicyFile,
         enfDelegate,
-        user,
-        resourceType,
-        action,
+        policyFilter,
         loggerMock,
         policyMetadataStorageMock,
       );
@@ -476,6 +465,11 @@ describe('CSV file', () => {
     });
 
     it('should fail to update a policy that has changed in the file, duplicate error different source', async () => {
+      const tempFilter: string[] = [
+        policyFilter[0],
+        'catalog-entity',
+        'delete',
+      ];
       const originalPolicy = [
         'role:default/catalog-writer',
         'catalog-entity',
@@ -509,9 +503,7 @@ describe('CSV file', () => {
       await loadFilteredPoliciesFromCSV(
         updatedPolicyFile,
         enfDelegate,
-        user,
-        'catalog-entity',
-        'delete',
+        tempFilter,
         loggerMock,
         policyMetadataStorageMock,
       );
@@ -598,7 +590,7 @@ describe('CSV file', () => {
       await loadFilteredGroupingPoliciesFromCSV(
         updatedPolicyFile,
         enfDelegate,
-        user,
+        policyFilter[0],
         loggerMock,
         policyMetadataStorageMock,
       );
@@ -625,7 +617,7 @@ describe('CSV file', () => {
       await loadFilteredGroupingPoliciesFromCSV(
         updatedPolicyFile,
         enfDelegate,
-        user,
+        policyFilter[0],
         loggerMock,
         policyMetadataStorageMock,
       );
@@ -651,7 +643,7 @@ describe('CSV file', () => {
       await loadFilteredGroupingPoliciesFromCSV(
         updatedPolicyFile,
         enfDelegate,
-        user,
+        policyFilter[0],
         loggerMock,
         policyMetadataStorageMock,
       );
@@ -678,7 +670,7 @@ describe('CSV file', () => {
       await loadFilteredGroupingPoliciesFromCSV(
         originalPolicyFile,
         enfDelegate,
-        user,
+        policyFilter[0],
         loggerMock,
         policyMetadataStorageMock,
       );
@@ -711,13 +703,13 @@ describe('CSV file', () => {
       await loadFilteredGroupingPoliciesFromCSV(
         updatedPolicyFile,
         enfDelegate,
-        user,
+        policyFilter[0],
         loggerMock,
         policyMetadataStorageMock,
       );
 
       expect(loggerMock.warn).toHaveBeenCalledWith(
-        `Failed to validate role from file ${updatedPolicyFile}. Cause: Entity reference \"user:default/\" was not on the form [<kind>:][<namespace>/]<name>`,
+        `Failed to validate role from file ${updatedPolicyFile}. Cause: Entity reference "user:default/" was not on the form [<kind>:][<namespace>/]<name>`,
       );
     });
 
@@ -741,7 +733,7 @@ describe('CSV file', () => {
       );
 
       expect(loggerMock.warn).toHaveBeenCalledWith(
-        `Failed to validate role from file ${updatedPolicyFile}. Cause: Entity reference \"role:default/\" was not on the form [<kind>:][<namespace>/]<name>`,
+        `Failed to validate role from file ${updatedPolicyFile}. Cause: Entity reference "role:default/" was not on the form [<kind>:][<namespace>/]<name>`,
       );
     });
 
@@ -779,7 +771,7 @@ describe('CSV file', () => {
       await loadFilteredGroupingPoliciesFromCSV(
         errorPolicyFile,
         enfDelegate,
-        user,
+        policyFilter[0],
         loggerMock,
         policyMetadataStorageMock,
       );
@@ -869,7 +861,7 @@ describe('CSV file', () => {
       );
 
       expect(loggerMock.warn).toHaveBeenCalledWith(
-        `Failed to validate group policy user:default/,role:default/catalog-deleter from file ${errorPolicyFile}. Cause: Entity reference \"user:default/\" was not on the form [<kind>:][<namespace>/]<name>`,
+        `Failed to validate group policy user:default/,role:default/catalog-deleter from file ${errorPolicyFile}. Cause: Entity reference "user:default/" was not on the form [<kind>:][<namespace>/]<name>`,
       );
     });
 
@@ -887,7 +879,7 @@ describe('CSV file', () => {
       );
 
       expect(loggerMock.warn).toHaveBeenCalledWith(
-        `Failed to validate group policy user:default/test,role:default/ from file ${errorPolicyFile}. Cause: Entity reference \"role:default/\" was not on the form [<kind>:][<namespace>/]<name>`,
+        `Failed to validate group policy user:default/test,role:default/ from file ${errorPolicyFile}. Cause: Entity reference "role:default/" was not on the form [<kind>:][<namespace>/]<name>`,
       );
     });
 
@@ -904,7 +896,7 @@ describe('CSV file', () => {
         loggerMock,
       );
       expect(loggerMock.warn).toHaveBeenCalledWith(
-        `Failed to validate policy from file ${errorPolicyFile}. Cause: Entity reference \"role:default/\" was not on the form [<kind>:][<namespace>/]<name>`,
+        `Failed to validate policy from file ${errorPolicyFile}. Cause: Entity reference "role:default/" was not on the form [<kind>:][<namespace>/]<name>`,
       );
     });
 

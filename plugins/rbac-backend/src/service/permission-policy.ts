@@ -298,13 +298,12 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     permission: string,
     action: string,
   ): Promise<boolean> => {
+    const filter: string[] = [userIdentity, permission, action];
     if (this.policiesFile) {
       await loadFilteredCSV(
         this.policiesFile,
         this.enforcer,
-        userIdentity,
-        permission,
-        action,
+        filter,
         this.logger,
         this.policyMetadataStorage,
       );
