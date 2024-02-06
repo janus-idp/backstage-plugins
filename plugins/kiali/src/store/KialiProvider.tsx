@@ -1,8 +1,8 @@
 import React from 'react';
 import { useAsyncFn, useDebounce } from 'react-use';
 
+import { Entity } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
-import { useEntity } from '@backstage/plugin-catalog-react';
 
 import { CircularProgress } from '@material-ui/core';
 import axios from 'axios';
@@ -49,12 +49,17 @@ const initialChecker: KialiChecker = {
 
 interface Props {
   children: React.ReactNode;
+  entity?: Entity;
 }
 
-export const KialiProvider: React.FC<Props> = ({ children }): JSX.Element => {
+export const KialiProvider: React.FC<Props> = ({
+  children,
+  entity,
+}): JSX.Element => {
   const promises = new PromisesRegistry();
   const [kialiCheck, setKialiCheck] =
     React.useState<KialiChecker>(initialChecker);
+
   const [loginState, loginDispatch] = React.useReducer(
     LoginReducer,
     initialStore.authentication,
@@ -87,8 +92,9 @@ export const KialiProvider: React.FC<Props> = ({ children }): JSX.Element => {
     IstioCertsInfoStateReducer,
     initialStore.istioCertsInfo,
   );
+
   const kialiClient = useApi(kialiApiRef);
-  kialiClient.setEntity(useEntity().entity);
+  kialiClient.setEntity(entity);
   const alertUtils = new AlertUtils(messageDispatch);
 
   const fetchNamespaces = async () => {

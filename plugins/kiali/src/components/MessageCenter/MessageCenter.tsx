@@ -74,7 +74,7 @@ const calculateMessageStatus = (state: KialiAppState) => {
     );
 };
 
-export const MessageCenter = () => {
+export const MessageCenter = (props: { color?: string }) => {
   const kialiState = React.useContext(KialiContext) as KialiAppState;
   const [isOpen, toggleDrawer] = React.useState(false);
   const messageCenterStatus = calculateMessageStatus(kialiState);
@@ -99,7 +99,7 @@ export const MessageCenter = () => {
           }
           color={messageCenterStatus.badgeDanger ? 'error' : 'primary'}
         >
-          <KialiIcon.Bell className={bell} />
+          <KialiIcon.Bell className={bell} color={`${props.color}`} />
         </Badge>
       </Button>
       <Drawer anchor="right" open={isOpen} onClose={() => toggleDrawer(false)}>

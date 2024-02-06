@@ -33,6 +33,7 @@ import { OverviewCardSparklineCharts } from './OverviewCardSparklineCharts';
 
 type OverviewCardProps = {
   namespace: NamespaceInfo;
+  entity?: boolean;
   canaryUpgradeStatus?: CanaryUpgradeStatus;
   duration: DurationInSeconds;
   refreshInterval: IntervalInMilliseconds;
@@ -111,9 +112,9 @@ export const OverviewCard = (props: OverviewCardProps) => {
 
   return (
     <Card>
-      <NamespaceHeader {...props} />
+      {!props.entity && <NamespaceHeader {...props} />}
       <CardContent>
-        {isMultiCluster && props.namespace.cluster && (
+        {!props.entity && isMultiCluster && props.namespace.cluster && (
           <>
             <PFBadge badge={PFBadges.Cluster} position="right" />
             {props.namespace.cluster}
@@ -121,23 +122,27 @@ export const OverviewCard = (props: OverviewCardProps) => {
         )}
         <Grid container>
           <Grid item xs={3}>
-            <NamespaceLabels labels={props.namespace.labels} />
-            <div style={{ textAlign: 'left' }}>
-              <div style={{ display: 'inline-block', width: '125px' }}>
-                Istio config
-              </div>
-              {props.namespace.tlsStatus && (
-                <span>
-                  <NamespaceMTLSStatus
-                    status={props.namespace.tlsStatus!.status}
-                  />
-                </span>
-              )}
-              {props.istioAPIEnabled
-                ? renderIstioConfigStatus(props.namespace)
-                : 'N/A'}
-            </div>
-            <NamespaceStatus {...props} />
+            {!props.entity && (
+              <>
+                <NamespaceLabels labels={props.namespace.labels} />
+                <div style={{ textAlign: 'left' }}>
+                  <div style={{ display: 'inline-block', width: '125px' }}>
+                    Istio config
+                  </div>
+                  {props.namespace.tlsStatus && (
+                    <span>
+                      <NamespaceMTLSStatus
+                        status={props.namespace.tlsStatus!.status}
+                      />
+                    </span>
+                  )}
+                  {props.istioAPIEnabled
+                    ? renderIstioConfigStatus(props.namespace)
+                    : 'N/A'}
+                </div>
+              </>
+            )}
+            {!props.entity && <NamespaceStatus {...props} />}
             {isIstioSystem && (
               <>
                 <ControlPlaneNamespaceStatus

@@ -79,7 +79,7 @@ async function main() {
   apiRouter.use('/kiali', await kiali(kialiEnv));
 ```
 
-6. Configure you `app-config.yaml` with kiali configuration
+6. Configure you `app-config.local.yaml` with kiali configuration
 
 ```yaml
 catalog:
@@ -103,7 +103,7 @@ catalog:
 
 7. Add catalog
 
-Add to locations in `app-config.yaml`
+Add to locations in `app-config.local.yaml`
 
 ```yaml
 locations:
@@ -116,7 +116,7 @@ locations:
 
 ### Token authentication
 
-1. Set the parameters in app-config.yaml
+1. Set the parameters in app-config.local.yaml
 
 ```yaml
 catalog:

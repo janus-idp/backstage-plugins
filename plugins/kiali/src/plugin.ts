@@ -32,7 +32,7 @@ export const kialiPlugin = createPlugin({
 export const KialiPage = kialiPlugin.provide(
   createRoutableExtension({
     name: 'KialiPage',
-    component: () => import('./pages/Kiali/KialiPage').then(m => m.KialiPage),
+    component: () => import('./Router').then(m => m.Router),
     mountPoint: rootRouteRef,
   }),
 );
@@ -54,7 +54,7 @@ export const EntityKialiContent: (
 ) => JSX.Element = kialiPlugin.provide(
   createRoutableExtension({
     name: 'EntityKialiContent',
-    component: () => import('./Router').then(m => m.Router),
+    component: () => import('./Router').then(m => m.EmbeddedRouter),
     mountPoint: rootRouteRef,
   }),
 );
