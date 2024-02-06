@@ -8,7 +8,6 @@ import Router from 'express-promise-router';
 import { OpenAPIBackend, Request } from 'openapi-backend';
 
 import {
-  fromWorkflowSource,
   openApiDocument,
   ORCHESTRATOR_SERVICE_READY_TOPIC,
   QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
@@ -222,15 +221,22 @@ function setupInternalRoutes(
       params: { workflowId },
     } = req;
 
-    const result =
-      await services.dataIndexService.abortWorkflowInstance(workflowId);
+    await V1.abortWorkflow(services.dataIndexService, workflowId)
+      .then(result => res.status(200).json(result.data))
+      .catch(error => {
+        res.status(500).send(error.message || 'Internal Server Error');
+      });
+  });
 
-    if (result.error) {
-      res.status(500).json(result.error);
-      return;
-    }
-
-    res.status(200).json(result.data);
+  // v2
+  api.register('abortWorkflow', async (c, _req, res, next) => {
+    const workflowId = c.request.params.workflowId as string;
+    await V2.abortWorkflow(services.dataIndexService, workflowId)
+      .then(result => res.json(result))
+      .catch(error => {
+        res.status(500).send(error.message || 'Internal Server Error');
+        next();
+      });
   });
 
   router.post('/workflows/:workflowId/execute', async (req, res) => {

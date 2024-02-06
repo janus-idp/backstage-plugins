@@ -154,6 +154,14 @@ export namespace V2 {
     return mapToWorkflowDTO(uri, workflowItem.definition);
   }
 
+  export async function abortWorkflow(
+    dataIndexService: DataIndexService,
+    workflowId: string,
+  ): Promise<string> {
+    await V1.abortWorkflow(dataIndexService, workflowId);
+    return 'Workflow ${workflowId} successfully aborted';
+  }
+
   export function extractQueryParam(
     req: ParsedRequest,
     key: string,

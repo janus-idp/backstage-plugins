@@ -1,3 +1,4 @@
+import { OperationResult } from '@urql/core';
 import express from 'express';
 
 import {
@@ -174,6 +175,21 @@ export namespace V1 {
           definition: fromWorkflowSource(reqBody),
         });
     return workflowItem;
+  }
+
+  export async function abortWorkflow(
+    dataIndexService: DataIndexService,
+    workflowId: string,
+  ): Promise<OperationResult> {
+    const result = await dataIndexService.abortWorkflowInstance(workflowId);
+
+    if (result.error) {
+      throw new Error(
+        `Can't abort workflow ${workflowId}. The error was: ${result.error}`,
+      );
+    }
+
+    return result;
   }
 
   export function extractQueryParam(
