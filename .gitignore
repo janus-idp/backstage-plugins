@@ -65,3 +65,9 @@ site
 .webpack-cache
 
 .tmp
+
+# playwright
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
