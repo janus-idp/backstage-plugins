@@ -16,6 +16,7 @@ describe('usePodLogs', () => {
     });
     const { result, waitForNextUpdate } = renderHook(() =>
       usePodLogs({
+        stopPolling: true,
         podScope: {
           podName: 'node-ex-git-er56',
           podNamespace: 'sample-app',
@@ -38,6 +39,7 @@ describe('usePodLogs', () => {
     });
     const { result, waitForNextUpdate } = renderHook(() =>
       usePodLogs({
+        stopPolling: true,
         podScope: {
           podName: 'node-ex-git-er56',
           podNamespace: 'sample-app',

@@ -43,10 +43,14 @@ type PodLogsDialogProps = {
   podData: V1Pod;
 };
 
-export const PodLogsDialog = ({ podData }: PodLogsDialogProps) => {
+type ViewLogsProps = {
+  podData: V1Pod;
+  onClose?: () => void;
+};
+
+const ViewLogs = ({ podData, onClose }: ViewLogsProps) => {
   const { clusters, selectedCluster } = React.useContext(K8sResourcesContext);
   const classes = useStyles();
-  const [open, setOpen] = useState<boolean>(false);
   const [logText, setLogText] = useState<string>('');
 
   const curCluster =
@@ -73,14 +77,6 @@ export const PodLogsDialog = ({ podData }: PodLogsDialogProps) => {
     setContainerSelected(event.target.value as string);
   };
 
-  const openDialog = () => {
-    setOpen(true);
-  };
-
-  const closeDialog = () => {
-    setOpen(false);
-  };
-
   React.useEffect(() => {
     if (containerSelected) {
       setPodScope(ps => ({
@@ -93,37 +89,71 @@ export const PodLogsDialog = ({ podData }: PodLogsDialogProps) => {
   if (!podName || !podNamespace || !curCluster) {
     return null;
   }
+  const stopPolling =
+    podData?.status?.phase === 'Succeeded' ||
+    podData?.status?.phase === 'Failed' ||
+    podData?.status?.phase === 'Running';
+
+  return (
+    <Dialog maxWidth="xl" fullWidth open onClose={onClose}>
+      <DialogTitle id="dialog-title">
+        <Box className={classes.titleContainer}>
+          <ResourceName name={podName} kind={podData.kind as string} />
+          <IconButton
+            aria-label="close"
+            className={classes.closeButton}
+            onClick={onClose}
+          >
+            <CloseIcon />
+          </IconButton>
+          <ContainerSelector
+            containersList={containersList}
+            onContainerChange={onContainerChange}
+            containerSelected={containerSelected}
+          />
+          <PodLogsDownload
+            logText={logText}
+            fileName={`${podName}-${containerSelected}`}
+          />
+        </Box>
+      </DialogTitle>
+      <DialogContent>
+        <ErrorBoundary>
+          <PodLogs
+            podScope={podScope}
+            setLogText={setLogText}
+            stopPolling={stopPolling}
+          />
+        </ErrorBoundary>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export const PodLogsDialog = ({ podData }: PodLogsDialogProps) => {
+  const { clusters, selectedCluster } = React.useContext(K8sResourcesContext);
+  const [open, setOpen] = useState<boolean>(false);
+
+  const curCluster =
+    (clusters.length > 0 && clusters[selectedCluster || 0]) || '';
+  const { name: podName = '', namespace: podNamespace = '' } =
+    podData?.metadata || {};
+
+  const openDialog = () => {
+    setOpen(true);
+  };
+
+  const closeDialog = () => {
+    setOpen(false);
+  };
+
+  if (!podName || !podNamespace || !curCluster) {
+    return null;
+  }
 
   return (
     <>
-      <Dialog maxWidth="xl" fullWidth open={open} onClose={closeDialog}>
-        <DialogTitle id="dialog-title">
-          <Box className={classes.titleContainer}>
-            <ResourceName name={podName} kind={podData.kind as string} />
-            <IconButton
-              aria-label="close"
-              className={classes.closeButton}
-              onClick={closeDialog}
-            >
-              <CloseIcon />
-            </IconButton>
-            <ContainerSelector
-              containersList={containersList}
-              onContainerChange={onContainerChange}
-              containerSelected={containerSelected}
-            />
-            <PodLogsDownload
-              logText={logText}
-              fileName={`${podName}-${containerSelected}`}
-            />
-          </Box>
-        </DialogTitle>
-        <DialogContent>
-          <ErrorBoundary>
-            <PodLogs podScope={podScope} setLogText={setLogText} />
-          </ErrorBoundary>
-        </DialogContent>
-      </Dialog>
+      {open && <ViewLogs podData={podData} onClose={closeDialog} />}
       <Button
         style={{ padding: 0 }}
         variant="link"

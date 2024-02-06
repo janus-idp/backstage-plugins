@@ -9,10 +9,15 @@ import { ContainerScope } from '../components/Topology/TopologySideBar/PodLogs/t
 
 interface PodLogsOptions {
   podScope: ContainerScope;
+  stopPolling: boolean;
   intervalMs?: number;
 }
 
-export const usePodLogs = ({ podScope, intervalMs = 5000 }: PodLogsOptions) => {
+export const usePodLogs = ({
+  podScope,
+  stopPolling,
+  intervalMs = 5000,
+}: PodLogsOptions) => {
   const [loadingData, setLoadingData] = React.useState<boolean>(true);
   const kubernetesProxyApi = useApi(kubernetesProxyApiRef);
   const getLogs = React.useCallback(async (): Promise<{ text: string }> => {
@@ -30,7 +35,7 @@ export const usePodLogs = ({ podScope, intervalMs = 5000 }: PodLogsOptions) => {
     [getLogs],
   );
 
-  useInterval(() => retry(), intervalMs);
+  useInterval(() => retry(), stopPolling ? null : intervalMs);
 
   React.useEffect(() => {
     let mounted = true;

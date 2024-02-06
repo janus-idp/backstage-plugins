@@ -29,7 +29,7 @@ describe('PodLogs', () => {
       value: 'log data...',
     });
     const { queryByTestId } = render(
-      <PodLogs podScope={podScopeData} setLogText={() => {}} />,
+      <PodLogs podScope={podScopeData} setLogText={() => {}} stopPolling />,
     );
     expect(queryByTestId('pod-log-banner')).not.toBeInTheDocument();
     expect(queryByTestId('log-viewer')).toBeInTheDocument();
@@ -44,7 +44,7 @@ describe('PodLogs', () => {
     };
     (usePodLogs as jest.Mock).mockReturnValue({ loading: true });
     const { queryByTestId } = render(
-      <PodLogs podScope={podScopeData} setLogText={() => {}} />,
+      <PodLogs podScope={podScopeData} setLogText={() => {}} stopPolling />,
     );
     expect(queryByTestId('pod-log-banner')).not.toBeInTheDocument();
     expect(queryByTestId('log-viewer')).not.toBeInTheDocument();
@@ -63,7 +63,7 @@ describe('PodLogs', () => {
       error: { message: 'some crash!!' },
     });
     const { queryByTestId } = render(
-      <PodLogs podScope={podScopeData} setLogText={() => {}} />,
+      <PodLogs podScope={podScopeData} setLogText={() => {}} stopPolling />,
     );
     expect(queryByTestId('pod-log-banner')).toBeInTheDocument();
     expect(queryByTestId('log-viewer')).not.toBeInTheDocument();
