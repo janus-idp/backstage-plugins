@@ -6,19 +6,13 @@ import { Content, Page } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import { useEntity } from '@backstage/plugin-catalog-react';
 
-import {
-  CircularProgress,
-  IconButton,
-  Toolbar,
-  Tooltip,
-  Typography,
-} from '@material-ui/core';
-import FilterListIcon from '@material-ui/icons/FilterList';
+import { CircularProgress, Toolbar, Typography } from '@material-ui/core';
 
 import { DefaultSecondaryMasthead } from '../../components/DefaultSecondaryMasthead/DefaultSecondaryMasthead';
 import * as FilterHelper from '../../components/FilterList/FilterHelper';
 import { TimeDurationComponent } from '../../components/Time/TimeDurationComponent';
 import { VirtualList } from '../../components/VirtualList/VirtualList';
+import { isMultiCluster } from '../../config';
 import { getErrorString, kialiApiRef } from '../../services/Api';
 import { KialiAppState, KialiContext } from '../../store';
 import { WorkloadListItem } from '../../types/Workload';
@@ -110,6 +104,8 @@ export const WorkloadListPage = () => {
     return <CircularProgress />;
   }
 
+  const hiddenColumns = isMultiCluster ? [] : ['cluster'];
+
   const grids = () => {
     const elements = [];
     elements.push(
@@ -135,11 +131,6 @@ export const WorkloadListPage = () => {
         <Typography variant="h6" id="tableTitle" component="div">
           Workloads
         </Typography>
-        <Tooltip title="Filter list">
-          <IconButton aria-label="filter list">
-            <FilterListIcon />
-          </IconButton>
-        </Tooltip>
       </Toolbar>
     );
   };
@@ -153,6 +144,7 @@ export const WorkloadListPage = () => {
           activeNamespaces={namespaces}
           rows={allWorkloads}
           type="workloads"
+          hiddenColumns={hiddenColumns}
         />
       </Content>
     </Page>

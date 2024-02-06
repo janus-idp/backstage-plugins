@@ -8,12 +8,6 @@ import { isWaypoint } from '../../helpers/LabelFilterHelper';
 import { infoStyle } from '../../pages/Overview/OverviewCard/CanaryUpgradeProgress';
 import { ControlPlaneBadge } from '../../pages/Overview/OverviewCard/ControlPlaneBadge';
 import { OverviewCardSparklineCharts } from '../../pages/Overview/OverviewCard/OverviewCardSparklineCharts';
-import {
-  appLabelFilter,
-  labelFilter as NsLabelFilter,
-  versionLabelFilter,
-} from '../../pages/WorkloadList/FiltersAndSorts';
-import { ActiveFilter } from '../../types/Filters';
 import { Health } from '../../types/Health';
 import { IstioConfigItem } from '../../types/IstioConfigList';
 import { ValidationStatus } from '../../types/IstioObjects';
@@ -21,8 +15,6 @@ import { ComponentStatus } from '../../types/IstioStatus';
 import { NamespaceInfo } from '../../types/NamespaceInfo';
 import { ServiceListItem } from '../../types/ServiceList';
 import { WorkloadListItem } from '../../types/Workload';
-import * as FilterHelper from '../FilterList/FilterHelper';
-import { labelFilter } from '../Filters/CommonFilters';
 import { StatefulFilters } from '../Filters/StatefulFilters';
 import { HealthIndicator } from '../Health/HealthIndicator';
 import { Label } from '../Label/Label';
@@ -119,7 +111,7 @@ export const item: Renderer<TResource> = (
     <TableCell
       role="gridcell"
       key={`VirtuaItem_Item_${resource.namespace}_${resource.name}`}
-      style={{ verticalAlign: 'middle' }}
+      style={{ verticalAlign: 'middle', whiteSpace: 'nowrap' }}
     >
       <PFBadge badge={serviceBadge} position={topPosition} />
       <Link key={key} to={getLink(resource, config)}>
@@ -134,7 +126,7 @@ export const cluster: Renderer<TResource> = (resource: TResource) => {
     <TableCell
       role="gridcell"
       key={`VirtuaItem_Cluster_${resource.cluster}`}
-      style={{ verticalAlign: 'middle' }}
+      style={{ verticalAlign: 'middle', whiteSpace: 'nowrap' }}
     >
       <PFBadge badge={PFBadges.Cluster} position={topPosition} />
       {resource.cluster}
@@ -147,7 +139,7 @@ export const namespace: Renderer<TResource> = (resource: TResource) => {
     <TableCell
       role="gridcell"
       key={`VirtuaItem_Namespace_${resource.namespace}_${item.name}`}
-      style={{ verticalAlign: 'middle' }}
+      style={{ verticalAlign: 'middle', whiteSpace: 'nowrap' }}
     >
       <PFBadge badge={PFBadges.Namespace} position={topPosition} />
       {resource.namespace}
@@ -155,54 +147,16 @@ export const namespace: Renderer<TResource> = (resource: TResource) => {
   );
 };
 
-const labelActivate = (
-  filters: ActiveFilter[],
-  key: string,
-  value: string,
-  id: string,
-): boolean => {
-  return filters.some(filter => {
-    if (filter.category === id) {
-      if (filter.value.includes('=')) {
-        const [k, v] = filter.value.split('=');
-
-        if (k === key) {
-          return v
-            .split(',')
-            .some(val =>
-              value.split(',').some(vl => vl.trim().startsWith(val.trim())),
-            );
-        }
-
-        return false;
-      }
-
-      return key === filter.value;
-    }
-    if (filter.category === appLabelFilter.category) {
-      return filter.value === 'Present' && key === 'app';
-    }
-
-    return filter.value === 'Present' && key === 'version';
-  });
-};
-
 export const labels: Renderer<SortResource | NamespaceInfo> = (
   resource: SortResource | NamespaceInfo,
   _: Resource,
   __: PFBadgeType,
   ___?: Health,
-  statefulFilter?: React.RefObject<StatefulFilters>,
+  ____?: React.RefObject<StatefulFilters>,
 ) => {
   // @ts-ignore
   let path = window.location.pathname;
   path = path.substring(path.lastIndexOf('/console') + '/console'.length + 1);
-  const labelFilt = path === 'overview' ? NsLabelFilter : labelFilter;
-  const filters = FilterHelper.getFiltersFromURL([
-    labelFilt,
-    appLabelFilter,
-    versionLabelFilter,
-  ]);
 
   return (
     <TableCell
@@ -214,66 +168,7 @@ export const labels: Renderer<SortResource | NamespaceInfo> = (
     >
       {resource.labels &&
         Object.entries(resource.labels).map(([key, value], i) => {
-          const label = `${key}=${value}`;
-          const labelAct = labelActivate(
-            filters.filters,
-            key,
-            value,
-            labelFilt.category,
-          );
-
-          const isExactlyLabelFilter = FilterHelper.getFiltersFromURL([
-            labelFilt,
-          ]).filters.some(f => f.value.includes(label));
-
-          const labelComponent = (
-            <Label
-              key={`label_${i}`}
-              name={key}
-              value={value}
-              style={{
-                cursor:
-                  isExactlyLabelFilter || !labelAct ? 'pointer' : 'not-allowed',
-                whiteSpace: 'nowrap',
-              }}
-              onClick={(): void => {
-                if (statefulFilter) {
-                  if (labelAct) {
-                    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-                    isExactlyLabelFilter &&
-                      statefulFilter.current!.removeFilter(
-                        labelFilt.category,
-                        label,
-                      );
-                  } else {
-                    statefulFilter.current!.filterAdded(labelFilt, label);
-                  }
-                }
-              }}
-            />
-          );
-
-          return statefulFilter ? (
-            <Tooltip
-              key={`Tooltip_Label_${key}_${value}`}
-              title={
-                // eslint-disable-next-line no-nested-ternary
-                labelAct ? (
-                  isExactlyLabelFilter ? (
-                    <>Remove label from Filters</>
-                  ) : (
-                    <>Kiali can't remove the filter if is an expression</>
-                  )
-                ) : (
-                  <>Add label to Filters</>
-                )
-              }
-            >
-              {labelComponent}
-            </Tooltip>
-          ) : (
-            labelComponent
-          );
+          return <Label key={`label_${i}`} name={key} value={value} />;
         })}
     </TableCell>
   );
@@ -290,6 +185,7 @@ export const health: Renderer<TResource> = (
       role="gridcell"
       key={`VirtuaItem_Health_${resource.namespace}_${resource.name}`}
       style={{ verticalAlign: 'middle' }}
+      align="center"
     >
       {healthI && <HealthIndicator id={resource.name} health={healthI} />}
     </TableCell>

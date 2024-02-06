@@ -50,10 +50,13 @@ export const VirtualList = (listProps: VirtualListProps<RenderResource>) => {
     let columns = [] as ResourceType<any>[];
 
     if (conf.columns) {
-      columns = conf.columns.filter((info: { title: string }) =>
-        info.title.toLowerCase(),
+      columns = conf.columns.filter(
+        info =>
+          !listProps.hiddenColumns ||
+          !listProps.hiddenColumns.includes(info.title.toLowerCase()),
       );
     }
+
     return columns;
   };
   const columns = getColumns();
