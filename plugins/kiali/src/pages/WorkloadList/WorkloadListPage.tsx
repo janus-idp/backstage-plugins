@@ -8,9 +8,6 @@ import { useEntity } from '@backstage/plugin-catalog-react';
 
 import { CircularProgress, Toolbar, Typography } from '@material-ui/core';
 
-import { DefaultSecondaryMasthead } from '../../components/DefaultSecondaryMasthead/DefaultSecondaryMasthead';
-import * as FilterHelper from '../../components/FilterList/FilterHelper';
-import { TimeDurationComponent } from '../../components/Time/TimeDurationComponent';
 import { VirtualList } from '../../components/VirtualList/VirtualList';
 import { isMultiCluster } from '../../config';
 import { getErrorString, kialiApiRef } from '../../services/Api';
@@ -24,13 +21,9 @@ export const WorkloadListPage = () => {
   kialiClient.setEntity(useEntity().entity);
   const [namespaces, setNamespaces] = React.useState<NamespaceInfo[]>([]);
   const [allWorkloads, setWorkloads] = React.useState<WorkloadListItem[]>([]);
-  const [duration, setDuration] = React.useState<number>(
-    FilterHelper.currentDuration(),
-  );
   const kialiState = React.useContext(KialiContext) as KialiAppState;
   const activeNs = kialiState.namespaces.activeNamespaces.map(ns => ns.name);
   const prevActiveNs = useRef(activeNs);
-  const prevDuration = useRef(duration);
 
   const fetchWorkloads = (
     nss: NamespaceInfo[],
@@ -74,7 +67,7 @@ export const WorkloadListPage = () => {
       );
       const nsl = allNamespaces.filter(ns => activeNs.includes(ns.name));
       setNamespaces(nsl);
-      fetchWorkloads(nsl, duration);
+      fetchWorkloads(nsl, 60);
     });
   };
 
@@ -89,37 +82,18 @@ export const WorkloadListPage = () => {
   useDebounce(refresh, 10);
 
   React.useEffect(() => {
-    if (
-      duration !== prevDuration.current ||
-      !nsEqual(activeNs, prevActiveNs.current)
-    ) {
+    if (!nsEqual(activeNs, prevActiveNs.current)) {
       load();
-      prevDuration.current = duration;
       prevActiveNs.current = activeNs;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [duration, activeNs]);
+  }, [activeNs]);
 
   if (loading) {
     return <CircularProgress />;
   }
 
   const hiddenColumns = isMultiCluster ? [] : ['cluster'];
-
-  const grids = () => {
-    const elements = [];
-    elements.push(
-      <TimeDurationComponent
-        key="DurationDropdown"
-        id="workload-list-duration-dropdown"
-        disabled={false}
-        duration={duration.toString()}
-        setDuration={setDuration}
-        label="From:"
-      />,
-    );
-    return elements;
-  };
 
   const tableToolbarStyle = {
     backgroundColor: 'white',
@@ -138,7 +112,6 @@ export const WorkloadListPage = () => {
   return (
     <Page themeId="tool">
       <Content>
-        <DefaultSecondaryMasthead elements={grids()} onRefresh={() => load()} />
         <VirtualList
           tableToolbar={tableToolbar()}
           activeNamespaces={namespaces}
