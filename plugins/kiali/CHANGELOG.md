@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-kiali [1.9.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.8.5...@janus-idp/backstage-plugin-kiali@1.9.0) (2024-02-07)
+
+
+### Features
+
+* **kiali:** add KialiPage Component ([#1180](https://github.com/janus-idp/backstage-plugins/issues/1180)) ([c91bcc3](https://github.com/janus-idp/backstage-plugins/commit/c91bcc3bc13b274312de3d0656d8ea865a3af27b))
+
 ## @janus-idp/backstage-plugin-kiali [1.8.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.8.4...@janus-idp/backstage-plugin-kiali@1.8.5) (2024-02-05)
 
 
