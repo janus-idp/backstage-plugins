@@ -1,13 +1,10 @@
-import React, { ChangeEvent } from 'react';
+import React from 'react';
 
 import { Content, Page } from '@backstage/core-components';
 
-import { Tab } from '@material-ui/core';
-import { TabContext, TabList } from '@material-ui/lab';
-
 import { OverviewPage } from '../Overview/OverviewPage';
-import { KialiHeader } from './Header/KialiHeader';
 import { WorkloadListPage } from '../WorkloadList/WorkloadListPage';
+import { KialiHeader } from './Header/KialiHeader';
 import { KialiNoPath } from './NoPath';
 
 const noPath = 'noPath';
@@ -22,10 +19,10 @@ const getPathPage = () => {
 };
 
 export const KialiPage = () => {
-  const [kialiTab, setTab] = React.useState<string>(getPathPage());
+  const [selectedTab, _] = React.useState<string>(getPathPage());
 
   const renderPath = () => {
-    switch (kialiTab) {
+    switch (selectedTab) {
       case 'overview':
         return <OverviewPage />;
       case 'workloads':
@@ -35,20 +32,10 @@ export const KialiPage = () => {
     }
   };
 
-  const handleChange = (_: ChangeEvent<{}>, value: any) => {
-    setTab(value);
-  };
-
   return (
     <Page themeId="tool">
       <Content>
         <KialiHeader />
-        <TabContext value={kialiTab}>
-          <TabList onChange={handleChange}>
-            <Tab label="Overview" value="overview" />
-            <Tab label="Workloads" value="workloads" />
-          </TabList>
-        </TabContext>
         {renderPath()}
       </Content>
     </Page>

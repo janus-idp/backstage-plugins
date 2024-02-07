@@ -4,7 +4,6 @@ import { useAsyncFn, useDebounce } from 'react-use';
 
 import { Content, Page } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
-import { useEntity } from '@backstage/plugin-catalog-react';
 
 import { CircularProgress, Toolbar, Typography } from '@material-ui/core';
 
@@ -18,7 +17,6 @@ import { getNamespaces } from '../Overview/OverviewPage';
 
 export const WorkloadListPage = () => {
   const kialiClient = useApi(kialiApiRef);
-  kialiClient.setEntity(useEntity().entity);
   const [namespaces, setNamespaces] = React.useState<NamespaceInfo[]>([]);
   const [allWorkloads, setWorkloads] = React.useState<WorkloadListItem[]>([]);
   const kialiState = React.useContext(KialiContext) as KialiAppState;

@@ -11,7 +11,7 @@ import { KialiAppState, KialiContext } from '../../../store';
 import { HelpKiali } from './HelpKiali';
 import { NamespaceSelector } from './NamespaceSelector';
 
-const tabs = [{ label: 'Overview' }];
+const tabs = [{ label: 'Overview' }, { label: 'Workloads' }];
 
 export const KialiHeader = () => {
   const kialiState = React.useContext(KialiContext) as KialiAppState;
