@@ -208,6 +208,7 @@ export const WorkflowInstancePageContent: React.FC<{
         <Grid item xs={6}>
           <InfoCard
             title="Workflow definition"
+            divider={false}
             className={styles.middleRowCard}
           >
             <WorkflowEditor
