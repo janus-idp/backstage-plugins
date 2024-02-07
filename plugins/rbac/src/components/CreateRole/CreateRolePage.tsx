@@ -37,7 +37,7 @@ export const CreateRolePage = () => {
       resourceRef={catalogEntityReadPermission.resourceType}
     >
       <Page themeId="tool">
-        <Header title="Create role" type="RBAC" typeLink="/rbac" />
+        <Header title="Create role" type="RBAC" typeLink=".." />
         <Content>
           <RoleForm
             initialValues={initialValues}

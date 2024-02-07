@@ -50,7 +50,7 @@ export const EditRolePage = () => {
     }
     return (
       <>
-        <Header title="Edit role" type="RBAC" typeLink="/rbac" />
+        <Header title="Edit role" type="RBAC" typeLink=".." />
         <Content>
           <RoleForm
             initialValues={initialValues}

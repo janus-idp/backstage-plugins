@@ -36,7 +36,7 @@ const getEditIcon = (isAllowed: boolean, roleName: string) => {
       dataTestId={isAllowed ? 'update-members' : 'disable-update-members'}
       roleName={roleName}
       disable={!isAllowed}
-      to={`/rbac/role/${kind}/${namespace}/${name}?activeStep=${1}`}
+      to={`../../role/${kind}/${namespace}/${name}?activeStep=${1}`}
     />
   );
 };

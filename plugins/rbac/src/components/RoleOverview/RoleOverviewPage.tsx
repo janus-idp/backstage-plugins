@@ -26,7 +26,7 @@ export const RoleOverviewPage = () => {
         <Header
           title={`${roleKind}:${roleNamespace}/${roleName}`}
           type="RBAC"
-          typeLink="/rbac"
+          typeLink=".."
         />
         <TabbedLayout>
           <TabbedLayout.Route path="" title="Overview">
