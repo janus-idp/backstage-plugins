@@ -15,7 +15,7 @@ import CloseIcon from '@material-ui/icons/Close';
 export type InfoDialogProps = {
   title: string;
   open: boolean;
-  close?: () => void;
+  onClose?: () => void;
   dialogActions?: React.ReactNode;
   children: React.ReactNode;
 };
@@ -34,18 +34,18 @@ export const RefForwardingInfoDialog: ForwardRefRenderFunction<
   ParentComponentRef,
   InfoDialogProps
 > = (props, forwardedRef): JSX.Element | null => {
-  const { title, open, close, children, dialogActions } = props;
+  const { title, open = false, onClose, children, dialogActions } = props;
   const classes = useStyles();
 
   return (
-    <Dialog onClose={_ => close} open={open} ref={forwardedRef}>
+    <Dialog onClose={_ => onClose} open={open} ref={forwardedRef}>
       <DialogTitle>
         <Box>
           <Typography variant="h5">{title}</Typography>
           <IconButton
             className={classes.closeBtn}
             aria-label="close"
-            onClick={close}
+            onClick={onClose}
           >
             <CloseIcon />
           </IconButton>

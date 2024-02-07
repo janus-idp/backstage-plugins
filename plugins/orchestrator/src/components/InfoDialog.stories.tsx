@@ -18,14 +18,13 @@ const handleSubmit = () => console.log('submitted');
 
 const ConfirmationDialogContent = () => (
   <div>
-    Are you sure you want to submit? By click the submit button, you cannot
+    Are you sure you want to submit? By clicking the submit button, you cannot
     change the action
   </div>
 );
 const AlertDialogContent = () => (
   <div>
-    Let Google help apps determine location. This means sending anonymous
-    location data to Google, even when no apps are running.
+    This app sends anonymous location data, even when it is not running.
   </div>
 );
 
@@ -56,7 +55,7 @@ export const ConfirmDialogStory: Story = {
     return (
       <InfoDialog
         {...args}
-        close={handleClose}
+        onClose={handleClose}
         dialogActions={<DialogActions />}
       />
     );
@@ -79,11 +78,8 @@ export const AlertDialogStory: Story = {
 
     const DialogActions = () => (
       <>
-        <Button onClick={handleClose} color="primary">
-          Disagree
-        </Button>
-        <Button onClick={handleSubmit} color="primary" autoFocus>
-          Agree
+        <Button onClick={handleClose} color="primary" autoFocus>
+          OK
         </Button>
       </>
     );
@@ -91,7 +87,7 @@ export const AlertDialogStory: Story = {
     return (
       <InfoDialog
         {...args}
-        close={handleClose}
+        onClose={handleClose}
         dialogActions={<DialogActions />}
       />
     );
