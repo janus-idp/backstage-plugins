@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-orchestrator [1.3.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.3.1...@janus-idp/backstage-plugin-orchestrator@1.3.2) (2024-02-07)
+
+
+### Bug Fixes
+
+* **orchestrator:** removes the divider from the workflow definition card ([#1181](https://github.com/janus-idp/backstage-plugins/issues/1181)) ([c2fe940](https://github.com/janus-idp/backstage-plugins/commit/c2fe940fa395842c705f1371872791fdbd77095c))
+
 ## @janus-idp/backstage-plugin-orchestrator [1.3.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.3.0...@janus-idp/backstage-plugin-orchestrator@1.3.1) (2024-02-05)
 
 
