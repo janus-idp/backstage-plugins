@@ -9,6 +9,7 @@ import {
   ProcessInstanceStatusDTO,
   WorkflowCategory,
   WorkflowCategoryDTO,
+  WorkflowDataDTO,
   WorkflowDefinition,
   WorkflowDTO,
   WorkflowExecutionResponse,
@@ -168,4 +169,27 @@ export function mapToExecuteWorkflowResponseDTO(
   return {
     id: workflowExecutionResponse.id,
   };
+}
+
+export function mapToGetWorkflowInstanceResults(
+  variables: string | Record<string, unknown>,
+): WorkflowDataDTO {
+  if (typeof variables === 'string') {
+    return {
+      variables: variables,
+    };
+  }
+
+  let returnObject = {};
+  if (variables?.workflowdata) {
+    returnObject = {
+      ...variables.workflowdata,
+    };
+  } else {
+    returnObject = {
+      workflowoptions: [],
+    };
+  }
+
+  return returnObject;
 }

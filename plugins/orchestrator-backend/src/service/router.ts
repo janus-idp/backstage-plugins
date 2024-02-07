@@ -564,6 +564,20 @@ function setupInternalRoutes(
     const specs = await services.workflowService.listStoredSpecs();
     res.status(200).json(specs);
   });
+
+  // v2
+  api.register(
+    'getWorkflowResults',
+    async (c, _req: express.Request, res: express.Response) => {
+      const instanceId = c.request.params.instanceId as string;
+
+      await V2.getWorkflowResults(services.dataIndexService, instanceId)
+        .then(result => res.status(200).json(result))
+        .catch((error: { message: string }) => {
+          res.status(500).send(error.message || 'Internal Server Error');
+        });
+    },
+  );
 }
 
 // ======================================================

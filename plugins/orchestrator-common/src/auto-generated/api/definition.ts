@@ -244,7 +244,7 @@ const OPENAPI = `
     },
     "/v2/workflows/instances/{instanceId}/results": {
       "get": {
-        "summary": "Get assessment results",
+        "summary": "Get workflow results",
         "operationId": "getWorkflowResults",
         "parameters": [
           {

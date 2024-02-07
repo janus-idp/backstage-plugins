@@ -6,6 +6,7 @@ import {
   ExecuteWorkflowRequestDTO,
   ExecuteWorkflowResponseDTO,
   ProcessInstancesDTO,
+  WorkflowDataDTO,
   WorkflowDTO,
   WorkflowListResult,
   WorkflowListResultDTO,
@@ -18,6 +19,7 @@ import { SonataFlowService } from '../SonataFlowService';
 import { WorkflowService } from '../WorkflowService';
 import {
   mapToExecuteWorkflowResponseDTO,
+  mapToGetWorkflowInstanceResults,
   mapToProcessInstanceDTO,
   mapToWorkflowDTO,
   mapToWorkflowListResultDTO,
@@ -160,6 +162,35 @@ export namespace V2 {
   ): Promise<string> {
     await V1.abortWorkflow(dataIndexService, workflowId);
     return 'Workflow ${workflowId} successfully aborted';
+  }
+
+  export async function getWorkflowResults(
+    dataIndexService: DataIndexService,
+    instanceId: string,
+    includeAssessment?: string,
+  ): Promise<WorkflowDataDTO> {
+    if (!instanceId) {
+      throw new Error(`No instance id was provided to get workflow results`);
+    }
+    if (!dataIndexService) {
+      throw new Error(
+        `No data index service provided for executing workflow with id ${instanceId}`,
+      );
+    }
+
+    const instanceResult = await V1.getInstanceById(
+      dataIndexService,
+      instanceId,
+      includeAssessment,
+    );
+
+    if (!instanceResult.instance?.variables) {
+      throw new Error(
+        `Error getting workflow instance results with id ${instanceId}`,
+      );
+    }
+
+    return mapToGetWorkflowInstanceResults(instanceResult.instance.variables);
   }
 
   export function extractQueryParam(

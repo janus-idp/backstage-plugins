@@ -30,7 +30,7 @@ export interface paths {
     get: operations['getInstanceById'];
   };
   '/v2/workflows/instances/{instanceId}/results': {
-    /** Get assessment results */
+    /** Get workflow results */
     get: operations['getWorkflowResults'];
   };
   '/v2/workflows/instances/statuses': {
@@ -328,7 +328,7 @@ export interface operations {
       };
     };
   };
-  /** Get assessment results */
+  /** Get workflow results */
   getWorkflowResults: {
     parameters: {
       path: {
