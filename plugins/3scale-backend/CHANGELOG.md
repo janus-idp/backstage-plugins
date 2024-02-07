@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-3scale-backend [1.4.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-3scale-backend@1.4.2...@janus-idp/backstage-plugin-3scale-backend@1.4.3) (2024-02-07)
+
+
+### Bug Fixes
+
+* **3scale:** modify 3scale environment variables - using THREESCALE ([#1173](https://github.com/janus-idp/backstage-plugins/issues/1173)) ([247ebe0](https://github.com/janus-idp/backstage-plugins/commit/247ebe0d7ea6971d460f962455d0c36a73ca7606))
+
 ## @janus-idp/backstage-plugin-3scale-backend [1.4.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-3scale-backend@1.4.1...@janus-idp/backstage-plugin-3scale-backend@1.4.2) (2024-02-05)
 
 
