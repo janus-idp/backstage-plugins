@@ -33,9 +33,8 @@ const filterByNs = (ns: Namespace[], value: string): Namespace[] => {
 export const filterNsByAnnotation = (
   ns: Namespace[],
   entity: Entity | undefined,
-  global: boolean = false,
 ): Namespace[] => {
-  if (global || !entity) {
+  if (!entity) {
     return ns;
   }
   const annotations = entity?.metadata?.annotations || undefined;

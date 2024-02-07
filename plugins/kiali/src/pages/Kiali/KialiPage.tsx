@@ -3,7 +3,7 @@ import React from 'react';
 import { Content, Page } from '@backstage/core-components';
 
 import { OverviewPage } from '../Overview/OverviewPage';
-import { KialiHeader } from './Header/Header';
+import { KialiHeader } from './Header/KialiHeader';
 import { KialiNoPath } from './NoPath';
 
 const noPath = 'noPath';
@@ -32,7 +32,7 @@ export const KialiPage = () => {
   return (
     <Page themeId="tool">
       <Content>
-        <KialiHeader title={kialiTab} />
+        <KialiHeader />
         {renderPath()}
       </Content>
     </Page>

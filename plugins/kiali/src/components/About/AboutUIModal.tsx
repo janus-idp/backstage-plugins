@@ -82,14 +82,14 @@ export const AboutUIModal = (props: AboutUIModalProps) => {
       : `${externalService.name} URL`;
     const additionalInfo = additionalComponentInfoContent(externalService);
     return (
-      <div key={`component_${name}`}>
-        <Grid item xs={4}>
+      <>
+        <Grid item xs={8} key={`component_${name}`}>
           {name}
         </Grid>
-        <Grid item xs={8}>
+        <Grid item xs={4} key={`component_version_${name}`}>
           {additionalInfo}
         </Grid>
-      </div>
+      </>
     );
   };
 

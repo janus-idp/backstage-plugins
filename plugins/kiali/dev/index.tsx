@@ -1,11 +1,16 @@
 import React from 'react';
 
 import { Entity } from '@backstage/catalog-model';
+import { Content, Page } from '@backstage/core-components';
 import { createDevApp } from '@backstage/dev-utils';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { TestApiProvider } from '@backstage/test-utils';
 
-import { KialiPage, kialiPlugin } from '../src/plugin';
+import { KialiHeader } from '../src/pages/Kiali/Header/KialiHeader';
+import { KialiHeaderEntity } from '../src/pages/Kiali/Header/KialiHeaderEntity';
+import { KialiEntity } from '../src/pages/Kiali/KialiEntity';
+import { OverviewPage } from '../src/pages/Overview/OverviewPage';
+import { kialiPlugin } from '../src/plugin';
 import { KialiApi, kialiApiRef } from '../src/services/Api';
 import { KialiProvider } from '../src/store/KialiProvider';
 import { AuthInfo } from '../src/types/Auth';
@@ -237,24 +242,54 @@ class MockKialiClient implements KialiApi {
     return true;
   }
 }
-// @ts-expect-error
-const MockProvider = ({ children }) => (
-  <TestApiProvider apis={[[kialiApiRef, new MockKialiClient()]]}>
-    <EntityProvider entity={mockEntity}>
-      <KialiProvider>{children}</KialiProvider>
-    </EntityProvider>
-  </TestApiProvider>
-);
+
+interface Props {
+  children: React.ReactNode;
+  isEntity?: boolean;
+}
+
+const MockProvider = (props: Props) => {
+  const content = (
+    <KialiProvider entity={mockEntity}>
+      <Page themeId="tool">
+        {!props.isEntity && <KialiHeader />}
+        <Content>
+          {props.isEntity && <KialiHeaderEntity />}
+          {props.children}
+        </Content>
+      </Page>
+    </KialiProvider>
+  );
+
+  const viewIfEntity = props.isEntity && (
+    <EntityProvider entity={mockEntity}>{content}</EntityProvider>
+  );
+
+  return (
+    <TestApiProvider apis={[[kialiApiRef, new MockKialiClient()]]}>
+      {viewIfEntity || content}
+    </TestApiProvider>
+  );
+};
 
 createDevApp()
   .registerPlugin(kialiPlugin)
   .addPage({
     element: (
       <MockProvider>
-        <KialiPage />
+        <OverviewPage />
       </MockProvider>
     ),
-    title: 'Overview Page',
-    path: '/kiali/overview',
+    title: 'Kiali Overview',
+    path: '/overview',
+  })
+  .addPage({
+    element: (
+      <MockProvider isEntity>
+        <KialiEntity />
+      </MockProvider>
+    ),
+    title: 'Kiali Entity',
+    path: '/kiali',
   })
   .render();

@@ -72,7 +72,7 @@ The Kiali plugin has the following capabilities:
 
   ***
 
-#### Procedure
+#### Setting up the OCM frontend package
 
 1. Install the Kiali plugin using the following commands:
 
@@ -80,7 +80,45 @@ The Kiali plugin has the following capabilities:
    yarn workspace app add @janus-idp/backstage-plugin-kiali
    ```
 
-2. Enable the **Kiali** tab on the entity view page using the `packages/app/src/components/catalog/EntityPage.tsx` file:
+2. Select the components that you want to use, such as:
+
+   - `KialiPage`: This is a standalone page or dashboard displaying all namespaces in the mesh. You can add `KialiPage` to `packages/app/src/App.tsx` file as follows:
+
+     ```tsx title="packages/app/src/App.tsx"
+     /* highlight-add-next-line */
+     import { KialiPage } from '@janus-idp/backstage-plugin-kiali';
+
+     const routes = (
+       <FlatRoutes>
+         {/* ... */}
+         {/* highlight-add-next-line */}
+         <Route path="/kiali" element={<KialiPage />} />
+       </FlatRoutes>
+     );
+     ```
+
+     You can also update navigation in `packages/app/src/components/Root/Root.tsx` as follows:
+
+     ```tsx title="packages/app/src/components/Root/Root.tsx"
+     /* highlight-add-next-line */
+     import { KialiIcon } from '@janus-idp/backstage-plugin-kiali';
+
+     export const Root = ({ children }: PropsWithChildren<{}>) => (
+       <SidebarPage>
+         <Sidebar>
+           <SidebarGroup label="Menu" icon={<MenuIcon />}>
+             {/* ... */}
+             {/* highlight-add-next-line */}
+             <SidebarItem icon={KialiIcon} to="kiali" text="Kiali" />
+           </SidebarGroup>
+           {/* ... */}
+         </Sidebar>
+         {children}
+       </SidebarPage>
+     );
+     ```
+
+   - `EntityKialiContent`: This component is a React context provided for Kiali data, which is related to the current entity. The `EntityKialiContent` component is used to display any data on the React components mentioned in `packages/app/src/components/catalog/EntityPage.tsx`:
 
    ```tsx title="packages/app/src/components/catalog/EntityPage.tsx"
    /* highlight-add-next-line */

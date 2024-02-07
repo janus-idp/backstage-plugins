@@ -209,7 +209,7 @@ export const DebugInformation = (props: DebugInformationProps) => {
     );
 
     const kialiConfigCard = (
-      <CardTab label="Kiali Config" key="kialiConfig">
+      <CardTab label="Kiali Config" value="kialiConfig">
         {copyClip}
       </CardTab>
     );

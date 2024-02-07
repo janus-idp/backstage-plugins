@@ -1,8 +1,7 @@
 import React from 'react';
 
-import { Content, Page } from '@backstage/core-components';
+import { CardTab, Content, Page, TabbedCard } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
-import { useEntity } from '@backstage/plugin-catalog-react';
 
 import { CircularProgress, Grid } from '@material-ui/core';
 import _ from 'lodash';
@@ -45,9 +44,8 @@ import {
 } from './OverviewToolbar';
 import * as Sorts from './Sorts';
 
-export const OverviewPage = () => {
+export const OverviewPage = (props: { entity?: boolean }) => {
   const kialiClient = useApi(kialiApiRef);
-  kialiClient.setEntity(useEntity().entity);
   const kialiState = React.useContext(KialiContext) as KialiAppState;
   const promises = new PromisesRegistry();
   const [namespaces, setNamespaces] = React.useState<NamespaceInfo[]>([]);
@@ -400,13 +398,15 @@ export const OverviewPage = () => {
       const isAscending = FilterHelper.isCurrentSortAscending();
       const sortField = FilterHelper.currentSortField(Sorts.sortFields);
       const sortNs = sortedNamespaces(allNamespaces);
-      fetchHealth(sortNs, isAscending, sortField);
-      fetchTLS(sortNs, isAscending, sortField);
-      fetchValidations(sortNs, isAscending, sortField);
+      if (!props.entity) {
+        fetchHealth(sortNs, isAscending, sortField);
+        fetchTLS(sortNs, isAscending, sortField);
+        fetchValidations(sortNs, isAscending, sortField);
+        fetchOutboundTrafficPolicyMode();
+        fetchCanariesStatus();
+        fetchIstiodResourceThresholds();
+      }
       fetchMetrics(sortNs);
-      fetchOutboundTrafficPolicyMode();
-      fetchCanariesStatus();
-      fetchIstiodResourceThresholds();
       promises.waitAll();
       setNamespaces(sortNs);
     });
@@ -421,40 +421,74 @@ export const OverviewPage = () => {
     return <CircularProgress />;
   }
 
+  const overviewLinkInfo = { title: 'Go to Full Overview', link: '#' };
+
   return (
     <Page themeId="tool">
       <Content>
-        <OverviewToolbar
-          onRefresh={() => load()}
-          overviewType={overviewType}
-          setOverviewType={setOverviewType}
-          directionType={directionType}
-          setDirectionType={setDirectionType}
-          duration={duration}
-          setDuration={setDuration}
-        />
-        <Grid container spacing={2}>
-          {filterActiveNamespaces().map((ns, i) => (
-            <Grid key={`Card_${ns.name}_${i}`} item xs={12}>
-              <OverviewCard
-                namespace={ns}
-                canaryUpgradeStatus={canaryUpgradeStatus}
-                istioAPIEnabled={
-                  kialiState.statusState.istioEnvironment.istioAPIEnabled
-                }
-                type={overviewType}
-                direction={directionType}
-                duration={duration}
-                refreshInterval={kialiState.userSettings.refreshInterval}
-                certsInfo={kialiState.istioCertsInfo}
-                minTLS={kialiState.meshTLSStatus.minTLS}
-                istiodResourceThresholds={istiodResourceThresholds}
-                istioStatus={kialiState.istioStatus}
-                outboundTrafficPolicy={outboundTrafficPolicy}
-              />
+        {props.entity ? (
+          <TabbedCard title="Overview" deepLink={overviewLinkInfo}>
+            {filterActiveNamespaces().map(ns => (
+              <CardTab label={ns.name} key={`card_ns_${ns.name}`}>
+                <OverviewCard
+                  entity
+                  namespace={ns}
+                  canaryUpgradeStatus={canaryUpgradeStatus}
+                  istioAPIEnabled={
+                    kialiState.statusState.istioEnvironment.istioAPIEnabled
+                  }
+                  type={overviewType}
+                  direction={directionType}
+                  duration={duration}
+                  refreshInterval={kialiState.userSettings.refreshInterval}
+                  certsInfo={kialiState.istioCertsInfo}
+                  minTLS={kialiState.meshTLSStatus.minTLS}
+                  istiodResourceThresholds={istiodResourceThresholds}
+                  istioStatus={kialiState.istioStatus}
+                  outboundTrafficPolicy={outboundTrafficPolicy}
+                />
+              </CardTab>
+            ))}
+          </TabbedCard>
+        ) : (
+          <>
+            <OverviewToolbar
+              onRefresh={() => load()}
+              overviewType={overviewType}
+              setOverviewType={setOverviewType}
+              directionType={directionType}
+              setDirectionType={setDirectionType}
+              duration={duration}
+              setDuration={setDuration}
+            />
+            <Grid container spacing={2}>
+              {filterActiveNamespaces().map((ns, i) => (
+                <Grid
+                  key={`Card_${ns.name}_${i}`}
+                  item
+                  xs={ns.name === serverConfig.istioNamespace ? 12 : 4}
+                >
+                  <OverviewCard
+                    namespace={ns}
+                    canaryUpgradeStatus={canaryUpgradeStatus}
+                    istioAPIEnabled={
+                      kialiState.statusState.istioEnvironment.istioAPIEnabled
+                    }
+                    type={overviewType}
+                    direction={directionType}
+                    duration={duration}
+                    refreshInterval={kialiState.userSettings.refreshInterval}
+                    certsInfo={kialiState.istioCertsInfo}
+                    minTLS={kialiState.meshTLSStatus.minTLS}
+                    istiodResourceThresholds={istiodResourceThresholds}
+                    istioStatus={kialiState.istioStatus}
+                    outboundTrafficPolicy={outboundTrafficPolicy}
+                  />
+                </Grid>
+              ))}
             </Grid>
-          ))}
-        </Grid>
+          </>
+        )}
       </Content>
     </Page>
   );

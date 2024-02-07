@@ -1,0 +1,22 @@
+dynamicPlugins:
+  frontend:
+    janus-idp.backstage-plugin-kiali:
+      appIcons:
+        - name: kialiIcon
+          importName: KialiIcon
+      dynamicRoutes:
+        - path: /kiali
+          importName: KialiPage
+          menuItem:
+            icon: kialiIcon
+            text: Kiali
+      mountPoints:
+        - config:
+            layout:
+              gridColumn: '1 / -1'
+              height: 75vh
+            if:
+              anyOf:
+                - hasAnnotation: backstage.io/kubernetes-namespace
+          importName: EntityKialiContent
+          mountPoint: entity.page.kiali/cards
