@@ -14,6 +14,8 @@ import { FileAdapter, newEnforcer, newModelFromString } from 'casbin';
 import { Router } from 'express';
 import { Logger } from 'winston';
 
+import { PluginIdProvider } from '@janus-idp/backstage-plugin-rbac-node';
+
 import { CasbinDBAdapterFactory } from '../database/casbin-adapter-factory';
 import { DataBaseConditionalStorage } from '../database/conditional-storage';
 import { migrate } from '../database/migration';
@@ -24,10 +26,6 @@ import { MODEL } from './permission-model';
 import { RBACPermissionPolicy } from './permission-policy';
 import { PolicesServer } from './policies-rest-api';
 import { BackstageRoleManager } from './role-manager';
-
-export interface PluginIdProvider {
-  getPluginIds: () => string[];
-}
 
 export class PolicyBuilder {
   public static async build(
