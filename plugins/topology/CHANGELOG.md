@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-topology [1.18.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.18.1...@janus-idp/backstage-plugin-topology@1.18.2) (2024-02-07)
+
+
+### Bug Fixes
+
+* **topology/tekton:** stop polling after log streaming completes ([#1122](https://github.com/janus-idp/backstage-plugins/issues/1122)) ([191bac2](https://github.com/janus-idp/backstage-plugins/commit/191bac2d21259b4fdc42193c6cf436987968eb88))
+
 ## @janus-idp/backstage-plugin-topology [1.18.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.18.0...@janus-idp/backstage-plugin-topology@1.18.1) (2024-02-05)
 
 
