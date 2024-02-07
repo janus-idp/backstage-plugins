@@ -463,7 +463,11 @@ export const OverviewPage = (props: { entity?: boolean }) => {
             />
             <Grid container spacing={2}>
               {filterActiveNamespaces().map((ns, i) => (
-                <Grid key={`Card_${ns.name}_${i}`} item xs={12}>
+                <Grid
+                  key={`Card_${ns.name}_${i}`}
+                  item
+                  xs={ns.name === serverConfig.istioNamespace ? 12 : 4}
+                >
                   <OverviewCard
                     namespace={ns}
                     canaryUpgradeStatus={canaryUpgradeStatus}
