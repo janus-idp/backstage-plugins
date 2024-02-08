@@ -105,6 +105,14 @@ describe('getMembersCount', () => {
     expect(result).toBe(2);
   });
 
+  it('should return 0 if there are no members in the group', () => {
+    const group = mockMembers[1];
+
+    const result = getMembersCount(group);
+
+    expect(result).toBe(0);
+  });
+
   it('should return undefined for non-group entities', () => {
     const user = mockMembers[2];
 
