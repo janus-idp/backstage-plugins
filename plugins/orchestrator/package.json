@@ -80,7 +80,8 @@
     "react-use": "^17.4.0",
     "swr": "^2.0.0",
     "uuid": "^9.0.1",
-    "vscode-languageserver-types": "^3.16.0"
+    "vscode-languageserver-types": "^3.16.0",
+    "@storybook/preview-api": "^7.5.3"
   },
   "devDependencies": {
     "@babel/core": "^7.16.0",
