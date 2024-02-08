@@ -1,21 +1,27 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { Header, HeaderTabs } from '@backstage/core-components';
+import { useRouteRef } from '@backstage/core-plugin-api';
 
 import { Chip, Tooltip } from '@material-ui/core';
 import { ClusterIcon } from '@patternfly/react-icons';
 
 import { MessageCenter } from '../../../components/MessageCenter/MessageCenter';
 import { homeCluster } from '../../../config';
+import { overviewRouteRef, workloadsRouteRef } from '../../../routes';
 import { KialiAppState, KialiContext } from '../../../store';
 import { HelpKiali } from './HelpKiali';
 import { NamespaceSelector } from './NamespaceSelector';
 
-const tabs = [{ label: 'Overview' }, { label: 'Workloads' }];
-
 export const KialiHeader = () => {
   const kialiState = React.useContext(KialiContext) as KialiAppState;
   const [selectedTab, setSelectedTab] = React.useState<number>(0);
+  const tabs = [
+    { label: 'Overview', route: useRouteRef(overviewRouteRef) },
+    { label: 'Workloads', route: useRouteRef(workloadsRouteRef) },
+  ];
+  const navigate = useNavigate();
 
   return (
     <>
@@ -49,7 +55,10 @@ export const KialiHeader = () => {
       </Header>
       <HeaderTabs
         selectedIndex={selectedTab}
-        onChange={index => setSelectedTab(index)}
+        onChange={(index: number) => {
+          navigate(tabs[index].route());
+          setSelectedTab(index);
+        }}
         tabs={tabs.map(({ label }, index) => ({
           id: index.toString(),
           label,
