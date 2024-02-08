@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-orchestrator [1.3.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.3.2...@janus-idp/backstage-plugin-orchestrator@1.3.3) (2024-02-08)
+
+
+### Bug Fixes
+
+* **orchestrator:** resolve inconsistency with workflow run average duration format  ([#1191](https://github.com/janus-idp/backstage-plugins/issues/1191)) ([0d82e90](https://github.com/janus-idp/backstage-plugins/commit/0d82e90a15fc8e90a4855188586986235394e3d3))
+
 ## @janus-idp/backstage-plugin-orchestrator [1.3.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.3.1...@janus-idp/backstage-plugin-orchestrator@1.3.2) (2024-02-07)
 
 
