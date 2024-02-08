@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac [1.14.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.14.0...@janus-idp/backstage-plugin-rbac@1.14.1) (2024-02-08)
+
+
+### Bug Fixes
+
+* **rbac:** show 0 if no members in a group ([#1187](https://github.com/janus-idp/backstage-plugins/issues/1187)) ([0410800](https://github.com/janus-idp/backstage-plugins/commit/0410800f55f3fb43b75a144943ea70fc2ceca444))
+
 ## @janus-idp/backstage-plugin-rbac [1.14.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.13.2...@janus-idp/backstage-plugin-rbac@1.14.0) (2024-02-08)
 
 
