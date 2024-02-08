@@ -7,12 +7,12 @@ import { createDevApp } from '@backstage/dev-utils';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { TestApiProvider } from '@backstage/test-utils';
 
+import { kialiPlugin } from '../src';
+import { KialiPage } from '../src/pages/Kiali';
 import { KialiHeader } from '../src/pages/Kiali/Header/KialiHeader';
 import { KialiHeaderEntity } from '../src/pages/Kiali/Header/KialiHeaderEntity';
 import { KialiEntity } from '../src/pages/Kiali/KialiEntity';
 import { OverviewPage } from '../src/pages/Overview/OverviewPage';
-import { KialiPage } from '../src/pages/Kiali/KialiPage';
-import { kialiPlugin } from '../src/plugin';
 import { KialiApi, kialiApiRef } from '../src/services/Api';
 import { KialiProvider } from '../src/store/KialiProvider';
 import { AuthInfo } from '../src/types/Auth';

@@ -10,8 +10,7 @@ import * as FilterHelper from '../../components/FilterList/FilterHelper';
 import { isMultiCluster, serverConfig } from '../../config';
 import { getErrorString, kialiApiRef } from '../../services/Api';
 import { computePrometheusRateParams } from '../../services/Prometheus';
-import { KialiContext } from '../../store/Context';
-import { KialiAppState } from '../../store/Store';
+import { KialiAppState, KialiContext } from '../../store';
 import {
   DEGRADED,
   FAILURE,
@@ -43,7 +42,6 @@ import {
   OverviewType,
 } from './OverviewToolbar';
 import * as Sorts from './Sorts';
-
 
 export const getNamespaces = (
   namespacesResponse: NamespaceInfo[],
@@ -167,7 +165,7 @@ export const OverviewPage = (props: { entity?: boolean }) => {
               isAscending,
             );
           }
-          return nss;
+          return newNamespaces;
         })
         .catch(error => {
           kialiState.alertUtils!.add(
