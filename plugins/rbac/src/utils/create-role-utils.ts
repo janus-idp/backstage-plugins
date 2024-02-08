@@ -51,7 +51,7 @@ export const getMembersCount = (member: MemberEntity) => {
           temp++;
         }
         return temp;
-      }, 0) || 1
+      }, 0)
     : undefined;
 };
 
