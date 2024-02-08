@@ -39,6 +39,7 @@ import {
   Role,
   RoleBasedPolicy,
 } from '@janus-idp/backstage-plugin-rbac-common';
+import { PluginIdProvider } from '@janus-idp/backstage-plugin-rbac-node';
 
 import { ConditionalStorage } from '../database/conditional-storage';
 import { RoleMetadataStorage } from '../database/role-metadata';
@@ -50,7 +51,6 @@ import {
   validatePolicy,
   validateRole,
 } from './policies-validation';
-import { PluginIdProvider } from './policy-builder';
 
 export class PolicesServer {
   constructor(

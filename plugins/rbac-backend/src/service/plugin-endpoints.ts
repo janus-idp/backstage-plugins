@@ -19,8 +19,7 @@ import {
 import { Logger } from 'winston';
 
 import { Policy } from '@janus-idp/backstage-plugin-rbac-common';
-
-import { PluginIdProvider } from './policy-builder';
+import { PluginIdProvider } from '@janus-idp/backstage-plugin-rbac-node';
 
 type PluginMetadataResponse = {
   pluginId: string;
