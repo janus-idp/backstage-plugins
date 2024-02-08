@@ -9,29 +9,27 @@ import { FormikErrors } from 'formik';
 import { getKindNamespaceName } from '../../utils/rbac-utils';
 import { RoleFormValues, SelectedMember } from './types';
 
-export const basicSelectedMembersColumns =
-  (): TableColumn<SelectedMember>[] => [
-    {
-      title: 'Type',
-      field: 'type',
-      type: 'string',
-    },
-    {
-      title: 'Members',
-      field: 'members',
-      type: 'numeric',
-      align: 'left',
-      emptyValue: '-',
-    },
-  ];
-
 export const reviewStepMemebersTableColumns = () => [
   {
     title: 'Name',
     field: 'label',
     type: 'string',
   },
-  ...basicSelectedMembersColumns(),
+  {
+    title: 'Type',
+    field: 'type',
+    type: 'string',
+  },
+  {
+    title: 'Members',
+    field: 'members',
+    type: 'numeric',
+    align: 'left',
+    render: (mem: number) => {
+      if (mem || mem === 0) return mem;
+      return '-';
+    },
+  },
 ];
 
 export const selectedMembersColumns = (
@@ -63,7 +61,18 @@ export const selectedMembersColumns = (
         );
       },
     },
-    ...basicSelectedMembersColumns(),
+    {
+      title: 'Type',
+      field: 'type',
+      type: 'string',
+    },
+    {
+      title: 'Members',
+      field: 'members',
+      type: 'numeric',
+      align: 'left',
+      emptyValue: '-',
+    },
     {
       title: 'Actions',
       sorting: false,
