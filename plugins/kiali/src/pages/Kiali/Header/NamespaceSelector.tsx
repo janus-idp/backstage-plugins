@@ -58,7 +58,7 @@ export const NamespaceSelector = (props: { page?: boolean }) => {
         MenuProps={MenuProps}
         style={{ color: props.page ? 'white' : undefined }}
       >
-        {kialiState.namespaces.activeNamespaces.map(ns => (
+        {(kialiState.namespaces.items || []).map(ns => (
           <MenuItem key={ns.name} value={ns.name}>
             <Checkbox
               checked={
