@@ -12,7 +12,7 @@ type Props = {
 
 export const DefaultSecondaryMasthead: React.FC<Props> = (props: Props) => {
   const refresh = (
-    <Tooltip title="Refresh" style={{ marginTop: '35px', float: 'right' }}>
+    <Tooltip title="Refresh" style={{ marginTop: '25px', float: 'left' }}>
       <IconButton
         color="primary"
         aria-label="upload picture"

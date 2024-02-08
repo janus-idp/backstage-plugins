@@ -2,12 +2,14 @@ import * as React from 'react';
 
 import {
   Paper,
+  SortDirection,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
+  TableSortLabel,
 } from '@material-ui/core';
 
 import { kialiStyle } from '../../styles/StyleUtils';
@@ -46,9 +48,11 @@ type VirtualListProps<R> = {
 export const VirtualList = (listProps: VirtualListProps<RenderResource>) => {
   // @ts-ignore
   const conf = config[listProps.type] as Resource;
+  const [order, setOrder] = React.useState<SortDirection>('asc');
+  const [orderBy, setOrderBy] = React.useState<String>('');
+
   const getColumns = (): ResourceType<any>[] => {
     let columns = [] as ResourceType<any>[];
-
     if (conf.columns) {
       columns = conf.columns.filter(
         info =>
@@ -65,29 +69,63 @@ export const VirtualList = (listProps: VirtualListProps<RenderResource>) => {
   const typeDisplay =
     listProps.type === 'istio' ? 'Istio config' : listProps.type;
 
-  const tableHeaderStyle = {
+  const tableHeaderStyle: any = {
     minWidth: '120px',
     fontWeight: '700',
     color: 'grey',
     borderTop: '1px solid #d5d5d5',
     borderBottom: '1px solid #d5d5d5',
+    whiteSpace: 'nowrap',
   };
 
-  const rowItems = rows.map((row, index) => (
-    <VirtualItem
-      key={`vItem_${index}`}
-      item={row}
-      index={index}
-      columns={columns}
-      config={conf}
-      statefulFilterProps={listProps.statefulProps}
-      action={
-        listProps.actions && listProps.actions[index]
-          ? listProps.actions[index]
-          : undefined
-      }
-    />
-  ));
+  function descendingComparator(a: string, b: string): number {
+    if (b < a) {
+      return -1;
+    }
+    if (b > a) {
+      return 1;
+    }
+    return 0;
+  }
+
+  function getComparator(): any {
+    return order === 'desc'
+      ? (a: string, b: string) => descendingComparator(a, b)
+      : (a: string, b: string) => -descendingComparator(a, b);
+  }
+
+  function stableSort(
+    array: RenderResource[],
+    comparator: any,
+  ): RenderResource[] {
+    const stabilizedThis: [RenderResource, number][] = array.map(
+      (el, index) => [el, index],
+    );
+    stabilizedThis.sort(
+      (a: [RenderResource, number], b: [RenderResource, number]): number => {
+        // @ts-ignore
+        const aProp = a[0][orderBy];
+        // @ts-ignore
+        const bProp = b[0][orderBy];
+        if (aProp !== undefined || bProp !== undefined) {
+          return 0;
+        }
+        const sort = comparator(aProp, bProp);
+        if (sort !== 0) return sort;
+        return a[1] - b[1];
+      },
+    );
+    return stabilizedThis.map(el => el[0]);
+  }
+
+  const handleRequestSort = (
+    _: React.MouseEvent<unknown>,
+    property: string,
+  ) => {
+    const isAsc = orderBy === property && order === 'asc';
+    setOrder(isAsc ? 'desc' : 'asc');
+    setOrderBy(property.toLowerCase());
+  };
 
   return (
     <div>
@@ -97,20 +135,50 @@ export const VirtualList = (listProps: VirtualListProps<RenderResource>) => {
           <Table>
             <TableHead style={{ border: 'collapse' }}>
               <TableRow>
-                {columns.map((column, index) => (
+                {columns.map((column: ResourceType<any>, index: number) => (
                   <TableCell
                     key={`column_${index}`}
                     align="center"
                     style={tableHeaderStyle}
+                    sortDirection={
+                      orderBy === column.title.toLowerCase() ? order : false
+                    }
                   >
-                    {column.title.toUpperCase()}
+                    <TableSortLabel
+                      active={orderBy === column.title.toLowerCase()}
+                      // @ts-ignore
+                      direction={
+                        orderBy === column.title.toLowerCase() ? order : 'asc'
+                      }
+                      onClick={e =>
+                        handleRequestSort(e, column.title.toLowerCase())
+                      }
+                    >
+                      {column.title.toUpperCase()}
+                    </TableSortLabel>
                   </TableCell>
                 ))}
               </TableRow>
             </TableHead>
             <TableBody>
               {listProps.rows.length > 0 ? (
-                rowItems
+                stableSort(rows, getComparator()).map(
+                  (row: RenderResource, index: number) => (
+                    <VirtualItem
+                      key={`vItem_${index}`}
+                      item={row}
+                      index={index}
+                      columns={columns}
+                      config={conf}
+                      statefulFilterProps={listProps.statefulProps}
+                      action={
+                        listProps.actions && listProps.actions[index]
+                          ? listProps.actions[index]
+                          : undefined
+                      }
+                    />
+                  ),
+                )
               ) : (
                 <TableRow className={emptyStyle}>
                   <TableCell colSpan={columns.length}>
