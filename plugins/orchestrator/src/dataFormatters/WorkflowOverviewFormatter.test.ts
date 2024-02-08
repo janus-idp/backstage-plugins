@@ -28,7 +28,7 @@ describe('WorkflowOverviewAdapter', () => {
     );
     expect(adaptedData.lastRunStatus).toBe(mockWorkflowOverview.lastRunStatus);
     expect(adaptedData.category).toBe(mockWorkflowOverview.category);
-    expect(adaptedData.avgDuration).toBe('2 min');
+    expect(adaptedData.avgDuration).toBe('3 minutes');
     expect(adaptedData.description).toBe(mockWorkflowOverview.description);
     expect(adaptedData.format).toBe('yaml'); // Adjust based on your expected value
   });
