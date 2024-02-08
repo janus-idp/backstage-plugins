@@ -16,25 +16,6 @@ export type ExecuteWorkflowResponseDTO =
   components['schemas']['ExecuteWorkflowResponseDTO'];
 export type WorkflowDataDTO = components['schemas']['WorkflowDataDTO'];
 export type WorkflowSpecFileDTO = components['schemas']['WorkflowSpecFileDTO'];
-// Generate ts enum instead of strings union
-// https://issues.redhat.com/browse/FLPATH-947
-export enum WorkflowCategoryDTO {
-  // Assessment Workflow
-  ASSESSMENT = 'assessment',
-  // Infrastructure Workflow
-  INFRASTRUCTURE = 'infrastructure',
-}
-// Generate ts enum instead of strings union
-// https://issues.redhat.com/browse/FLPATH-947
-export enum ProcessInstanceStatusDTO {
-  // Running
-  RUNNING = 'Running',
-  // Error
-  ERROR = 'Error',
-  // Completed
-  COMPLETED = 'Completed',
-  // Aborted
-  ABORTED = 'Aborted',
-  // Suspended
-  SUSPENDED = 'Suspended',
-}
+export type ProcessInstanceStatusDTO =
+  components['schemas']['ProcessInstanceStatusDTO'];
+export type WorkflowCategoryDTO = components['schemas']['WorkflowCategoryDTO'];
