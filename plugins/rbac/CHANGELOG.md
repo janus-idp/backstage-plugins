@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac [1.14.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.14.1...@janus-idp/backstage-plugin-rbac@1.14.2) (2024-02-08)
+
+
+### Bug Fixes
+
+* **rbac:** add test for 0 members in group ([#1189](https://github.com/janus-idp/backstage-plugins/issues/1189)) ([afebb56](https://github.com/janus-idp/backstage-plugins/commit/afebb566b314743fc2e1b2d7b12c74c96841ce26))
+
 ## @janus-idp/backstage-plugin-rbac [1.14.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.14.0...@janus-idp/backstage-plugin-rbac@1.14.1) (2024-02-08)
 
 
