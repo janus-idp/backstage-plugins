@@ -14,7 +14,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const handleSubmit = () => console.log('submitted');
+const handleSubmit = () => {};
 
 const ConfirmationDialogContent = () => (
   <div>
@@ -37,20 +37,21 @@ export const ConfirmDialogStory: Story = {
   },
   render: function Render(args) {
     const [{ open }, updateArgs] = useArgs();
+
+    const handleClose = () => {
+      updateArgs({ open: !open });
+    };
+
     const DialogActions = () => (
       <>
         <Button onClick={handleClose} color="primary">
           Disagree
         </Button>
-        <Button onClick={handleSubmit} color="primary" autoFocus>
+        <Button onClick={handleSubmit} color="primary">
           Agree
         </Button>
       </>
     );
-
-    const handleClose = () => {
-      updateArgs({ open: !open });
-    };
 
     return (
       <InfoDialog
@@ -78,7 +79,7 @@ export const AlertDialogStory: Story = {
 
     const DialogActions = () => (
       <>
-        <Button onClick={handleClose} color="primary" autoFocus>
+        <Button onClick={handleClose} color="primary">
           OK
         </Button>
       </>
