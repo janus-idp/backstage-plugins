@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac [1.14.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.13.2...@janus-idp/backstage-plugin-rbac@1.14.0) (2024-02-08)
+
+
+### Features
+
+* **rbac:** use relative links ([#1185](https://github.com/janus-idp/backstage-plugins/issues/1185)) ([9fcab95](https://github.com/janus-idp/backstage-plugins/commit/9fcab95869413f005c3246d0f9cd2b2b5acbe8cb))
+
 ## @janus-idp/backstage-plugin-rbac [1.13.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.13.1...@janus-idp/backstage-plugin-rbac@1.13.2) (2024-02-05)
 
 
