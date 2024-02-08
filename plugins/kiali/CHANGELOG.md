@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-kiali [1.9.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.9.0...@janus-idp/backstage-plugin-kiali@1.9.1) (2024-02-08)
+
+
+### Bug Fixes
+
+* **kiali:** namespaceSelector is removing options ([#1186](https://github.com/janus-idp/backstage-plugins/issues/1186)) ([0195b06](https://github.com/janus-idp/backstage-plugins/commit/0195b06158327649afb298715ceab9fc0e89a07b))
+
 ## @janus-idp/backstage-plugin-kiali [1.9.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.8.5...@janus-idp/backstage-plugin-kiali@1.9.0) (2024-02-07)
 
 
