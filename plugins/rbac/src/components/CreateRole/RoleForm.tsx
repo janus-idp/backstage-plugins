@@ -67,9 +67,9 @@ export const RoleForm = ({
     if (step && roleName) {
       const { kind, namespace, name } = getKindNamespaceName(roleName);
 
-      navigate(`/rbac/roles/${kind}/${namespace}/${name}`);
+      navigate(`../roles/${kind}/${namespace}/${name}`);
     } else {
-      navigate('/rbac');
+      navigate('..');
     }
   };
 

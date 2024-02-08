@@ -19,10 +19,10 @@ import { ToastContextProvider } from './ToastContext';
  *
  * @public
  */
-export const Router = () => (
+export const Router = ({ useHeader = true }: { useHeader?: boolean }) => (
   <ToastContextProvider>
     <Routes>
-      <Route path="/" element={<RbacPage />} />
+      <Route path="/" element={<RbacPage useHeader={useHeader} />} />
       <Route path={roleRouteRef.path} element={<RoleOverviewPage />} />
       <Route
         path={createRoleRouteRef.path}

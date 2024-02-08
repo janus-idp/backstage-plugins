@@ -32,7 +32,7 @@ const EditRole = ({
           aria-label="Update"
           disabled={disable}
           title={tooltip || 'Edit Role'}
-          to={to || `/rbac/role/${kind}/${namespace}/${name}`}
+          to={to || `../role/${kind}/${namespace}/${name}`}
         >
           <EditIcon />
         </IconButton>

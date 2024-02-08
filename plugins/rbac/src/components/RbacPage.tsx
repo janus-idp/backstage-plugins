@@ -8,20 +8,33 @@ import { policyEntityReadPermission } from '@janus-idp/backstage-plugin-rbac-com
 import { DeleteDialogContextProvider } from './RolesList/DeleteDialogContext';
 import { RolesList } from './RolesList/RolesList';
 
-export const RbacPage = () => (
-  <RequirePermission
-    permission={policyEntityReadPermission}
-    resourceRef={policyEntityReadPermission.resourceType}
-  >
-    <Page themeId="tool">
-      <Header title="Administration" />
-      <DeleteDialogContextProvider>
-        <TabbedLayout>
-          <TabbedLayout.Route path="/rbac" title="RBAC">
-            <RolesList />
-          </TabbedLayout.Route>
-        </TabbedLayout>
-      </DeleteDialogContextProvider>
-    </Page>
-  </RequirePermission>
+export const RbacPage = ({ useHeader = true }: { useHeader?: boolean }) => (
+  <>
+    {useHeader ? (
+      <RequirePermission
+        permission={policyEntityReadPermission}
+        resourceRef={policyEntityReadPermission.resourceType}
+      >
+        <Page themeId="tool">
+          <Header title="Administration" />
+          <DeleteDialogContextProvider>
+            <TabbedLayout>
+              <TabbedLayout.Route path="/rbac" title="RBAC">
+                <RolesList />
+              </TabbedLayout.Route>
+            </TabbedLayout>
+          </DeleteDialogContextProvider>
+        </Page>
+      </RequirePermission>
+    ) : (
+      <RequirePermission
+        permission={policyEntityReadPermission}
+        resourceRef={policyEntityReadPermission.resourceType}
+      >
+        <DeleteDialogContextProvider>
+          <RolesList />
+        </DeleteDialogContextProvider>
+      </RequirePermission>
+    )}
+  </>
 );
