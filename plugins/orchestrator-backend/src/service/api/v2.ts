@@ -6,12 +6,14 @@ import {
   ExecuteWorkflowRequestDTO,
   ExecuteWorkflowResponseDTO,
   ProcessInstancesDTO,
+  ProcessInstanceState,
   WorkflowDataDTO,
   WorkflowDTO,
   WorkflowListResult,
   WorkflowListResultDTO,
   WorkflowOverviewDTO,
   WorkflowOverviewListResultDTO,
+  WorkflowRunStatusDTO,
   WorkflowSpecFileDTO,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
@@ -200,6 +202,25 @@ export namespace V2 {
   ): Promise<WorkflowSpecFileDTO[]> {
     const specV1 = await V1.getWorkflowSpecs(workflowService);
     return specV1.map(spec => mapToWorkflowSpecFileDTO(spec));
+  }
+
+  export async function getWorkflowStatuses(): Promise<WorkflowRunStatusDTO[]> {
+    type Capitalized<S extends string> = Capitalize<Lowercase<S>>;
+    const capitalize = <S extends string>(text: S): Capitalized<S> =>
+      (text[0].toUpperCase() + text.slice(1).toLowerCase()) as Capitalized<S>;
+    const result: WorkflowRunStatusDTO[] = [
+      ProcessInstanceState.Active,
+      ProcessInstanceState.Error,
+      ProcessInstanceState.Completed,
+      ProcessInstanceState.Aborted,
+      ProcessInstanceState.Suspended,
+    ].map(
+      (status): WorkflowRunStatusDTO => ({
+        key: capitalize(status),
+        value: status,
+      }),
+    );
+    return result;
   }
 
   export function extractQueryParam(
