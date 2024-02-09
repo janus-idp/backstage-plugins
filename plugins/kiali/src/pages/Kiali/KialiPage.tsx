@@ -5,6 +5,7 @@ import { Content, Page } from '@backstage/core-components';
 import { OverviewPage } from '../Overview/OverviewPage';
 import { WorkloadListPage } from '../WorkloadList/WorkloadListPage';
 import { KialiHeader } from './Header/KialiHeader';
+import { KialiTabs } from './Header/KialiTabs';
 import { KialiNoPath } from './NoPath';
 
 const noPath = 'noPath';
@@ -36,6 +37,7 @@ export const KialiPage = () => {
     <Page themeId="tool">
       <Content>
         <KialiHeader />
+        <KialiTabs />
         {renderPath()}
       </Content>
     </Page>

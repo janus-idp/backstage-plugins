@@ -1,18 +1,27 @@
 import React from 'react';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import { Entity } from '@backstage/catalog-model';
 import { Content, Page } from '@backstage/core-components';
+import {
+  createRouteRef,
+  createSubRouteRef,
+  SubRouteRef,
+  useRouteRef,
+} from '@backstage/core-plugin-api';
 import { createDevApp } from '@backstage/dev-utils';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { TestApiProvider } from '@backstage/test-utils';
 
 import { kialiPlugin } from '../src';
-import { KialiPage } from '../src/pages/Kiali';
+import { KialiNoPath, KialiPage } from '../src/pages/Kiali';
 import { KialiHeader } from '../src/pages/Kiali/Header/KialiHeader';
 import { KialiHeaderEntity } from '../src/pages/Kiali/Header/KialiHeaderEntity';
+import { KialiTabs } from '../src/pages/Kiali/Header/KialiTabs';
 import { KialiEntity } from '../src/pages/Kiali/KialiEntity';
 import { OverviewPage } from '../src/pages/Overview/OverviewPage';
+import { WorkloadListPage } from '../src/pages/WorkloadList/WorkloadListPage';
+import { overviewRouteRef, workloadsRouteRef } from '../src/routes';
 import { KialiApi, kialiApiRef } from '../src/services/Api';
 import { KialiProvider } from '../src/store/KialiProvider';
 import { AuthInfo } from '../src/types/Auth';
@@ -282,20 +291,28 @@ class MockKialiClient implements KialiApi {
 }
 
 interface Props {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   isEntity?: boolean;
 }
 
 const MockProvider = (props: Props) => {
   const content = (
     <KialiProvider entity={mockEntity}>
-      <Page themeId="tool">
-        {!props.isEntity && <KialiHeader />}
-        <Content>
-          {props.isEntity && <KialiHeaderEntity />}
-          {props.children}
-        </Content>
-      </Page>
+      <BrowserRouter>
+        <Page themeId="tool">
+          <Content>
+            {!props.isEntity && <KialiHeader />}
+            {props.isEntity && <KialiHeaderEntity />}
+            <Routes>
+              <Route path="/" element={<OverviewPage />} />
+              <Route path="/overview" element={<OverviewPage />} />
+              <Route path="/workloads" element={<WorkloadListPage />} />
+              <Route path="/kiali" element={<KialiEntity />} />
+              <Route path="*" element={<KialiNoPath />} />
+            </Routes>
+          </Content>
+        </Page>
+      </BrowserRouter>
     </KialiProvider>
   );
 
@@ -313,14 +330,7 @@ const MockProvider = (props: Props) => {
 createDevApp()
   .registerPlugin(kialiPlugin)
   .addPage({
-    element: (
-      <MockProvider>
-        <BrowserRouter>
-          <KialiPage />
-          <OverviewPage />
-        </BrowserRouter>
-      </MockProvider>
-    ),
+    element: <MockProvider />,
     title: 'Kiali Overview',
     path: '/overview',
   })

@@ -15,7 +15,7 @@ export const overviewRouteRef = createSubRouteRef({
 });
 
 export const workloadsRouteRef: SubRouteRef<undefined> = createSubRouteRef({
-  id: 'kiali-overview',
+  id: 'kiali-workloads',
   path: '/workloads',
   parent: rootRouteRef,
 });

@@ -14,6 +14,7 @@ import { Button } from '@material-ui/core';
 import { KialiNoPath } from './pages/Kiali';
 import { KialiHeader } from './pages/Kiali/Header/KialiHeader';
 import { KialiHeaderEntity } from './pages/Kiali/Header/KialiHeaderEntity';
+import { KialiTabs } from './pages/Kiali/Header/KialiTabs';
 import { KialiEntity } from './pages/Kiali/KialiEntity';
 import { OverviewPage } from './pages/Overview/OverviewPage';
 import { WorkloadListPage } from './pages/WorkloadList/WorkloadListPage';
@@ -71,6 +72,7 @@ export const Router = () => {
     <KialiProvider>
       <Page themeId="tool">
         <KialiHeader />
+        <KialiTabs />
         <Content>
           <Routes>
             <Route path="/" element={<OverviewPage />} />
