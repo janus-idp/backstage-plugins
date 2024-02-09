@@ -60,7 +60,6 @@ export const VirtualList = (listProps: VirtualListProps<RenderResource>) => {
           !listProps.hiddenColumns.includes(info.title.toLowerCase()),
       );
     }
-
     return columns;
   };
   const columns = getColumns();
@@ -107,7 +106,7 @@ export const VirtualList = (listProps: VirtualListProps<RenderResource>) => {
         const aProp = a[0][orderBy];
         // @ts-ignore
         const bProp = b[0][orderBy];
-        if (aProp !== undefined || bProp !== undefined) {
+        if (aProp === undefined || bProp === undefined) {
           return 0;
         }
         const sort = comparator(aProp, bProp);
@@ -141,7 +140,9 @@ export const VirtualList = (listProps: VirtualListProps<RenderResource>) => {
                     align="center"
                     style={tableHeaderStyle}
                     sortDirection={
-                      orderBy === column.title.toLowerCase() ? order : false
+                      column.sortable && orderBy === column.title.toLowerCase()
+                        ? order
+                        : false
                     }
                   >
                     <TableSortLabel
