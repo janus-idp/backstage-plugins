@@ -1,27 +1,19 @@
 import React from 'react';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, useNavigate } from 'react-router-dom';
 
 import { Entity } from '@backstage/catalog-model';
-import { Content, Page } from '@backstage/core-components';
-import {
-  createRouteRef,
-  createSubRouteRef,
-  SubRouteRef,
-  useRouteRef,
-} from '@backstage/core-plugin-api';
+import { HeaderTabs, Page } from '@backstage/core-components';
 import { createDevApp } from '@backstage/dev-utils';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { TestApiProvider } from '@backstage/test-utils';
 
 import { kialiPlugin } from '../src';
-import { KialiNoPath, KialiPage } from '../src/pages/Kiali';
+import { KialiNoPath } from '../src/pages/Kiali';
 import { KialiHeader } from '../src/pages/Kiali/Header/KialiHeader';
 import { KialiHeaderEntity } from '../src/pages/Kiali/Header/KialiHeaderEntity';
-import { KialiTabs } from '../src/pages/Kiali/Header/KialiTabs';
 import { KialiEntity } from '../src/pages/Kiali/KialiEntity';
 import { OverviewPage } from '../src/pages/Overview/OverviewPage';
 import { WorkloadListPage } from '../src/pages/WorkloadList/WorkloadListPage';
-import { overviewRouteRef, workloadsRouteRef } from '../src/routes';
 import { KialiApi, kialiApiRef } from '../src/services/Api';
 import { KialiProvider } from '../src/store/KialiProvider';
 import { AuthInfo } from '../src/types/Auth';
@@ -295,22 +287,47 @@ interface Props {
   isEntity?: boolean;
 }
 
+export const TabsMock = () => {
+  const [selectedTab, setSelectedTab] = React.useState<number>(0);
+  const tabs = [
+    { label: 'Overview', route: 'overview' },
+    { label: 'Workloads', route: 'workloads' },
+  ];
+  const navigate = useNavigate();
+  return (
+    <HeaderTabs
+      selectedIndex={selectedTab}
+      onChange={(index: number) => {
+        navigate(tabs[index].route);
+        setSelectedTab(index);
+      }}
+      tabs={tabs.map(({ label }, index) => ({
+        id: index.toString(),
+        label,
+      }))}
+    />
+  );
+};
+
 const MockProvider = (props: Props) => {
   const content = (
     <KialiProvider entity={mockEntity}>
       <BrowserRouter>
         <Page themeId="tool">
-          <Content>
-            {!props.isEntity && <KialiHeader />}
-            {props.isEntity && <KialiHeaderEntity />}
-            <Routes>
-              <Route path="/" element={<OverviewPage />} />
-              <Route path="/overview" element={<OverviewPage />} />
-              <Route path="/workloads" element={<WorkloadListPage />} />
-              <Route path="/kiali" element={<KialiEntity />} />
-              <Route path="*" element={<KialiNoPath />} />
-            </Routes>
-          </Content>
+          {!props.isEntity && (
+            <>
+              <KialiHeader />
+              <TabsMock />
+            </>
+          )}
+          {props.isEntity && <KialiHeaderEntity />}
+          <Routes>
+            <Route path="/" element={<OverviewPage />} />
+            <Route path="/overview" element={<OverviewPage />} />
+            <Route path="/workloads" element={<WorkloadListPage />} />
+            <Route path="/kiali" element={<KialiEntity />} />
+            <Route path="*" element={<KialiNoPath />} />
+          </Routes>
         </Page>
       </BrowserRouter>
     </KialiProvider>
