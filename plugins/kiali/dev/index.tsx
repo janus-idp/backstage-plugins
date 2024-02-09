@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter, Route, Routes, useNavigate } from 'react-router-dom';
 
 import { Entity } from '@backstage/catalog-model';
-import { HeaderTabs, Page } from '@backstage/core-components';
+import { Content, HeaderTabs, Page } from '@backstage/core-components';
 import { createDevApp } from '@backstage/dev-utils';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { TestApiProvider } from '@backstage/test-utils';
@@ -309,6 +309,16 @@ export const TabsMock = () => {
   );
 };
 
+const RoutesList = () => (
+  <Routes>
+    <Route path="/" element={<OverviewPage />} />
+    <Route path="/overview" element={<OverviewPage />} />
+    <Route path="/workloads" element={<WorkloadListPage />} />
+    <Route path="/kiali" element={<KialiEntity />} />
+    <Route path="*" element={<KialiNoPath />} />
+  </Routes>
+);
+
 const MockProvider = (props: Props) => {
   const content = (
     <KialiProvider entity={mockEntity}>
@@ -318,16 +328,15 @@ const MockProvider = (props: Props) => {
             <>
               <KialiHeader />
               <TabsMock />
+              <RoutesList />
             </>
           )}
-          {props.isEntity && <KialiHeaderEntity />}
-          <Routes>
-            <Route path="/" element={<OverviewPage />} />
-            <Route path="/overview" element={<OverviewPage />} />
-            <Route path="/workloads" element={<WorkloadListPage />} />
-            <Route path="/kiali" element={<KialiEntity />} />
-            <Route path="*" element={<KialiNoPath />} />
-          </Routes>
+          {props.isEntity && (
+            <Content>
+              <KialiHeaderEntity />
+              <RoutesList />
+            </Content>
+          )}
         </Page>
       </BrowserRouter>
     </KialiProvider>
@@ -352,11 +361,7 @@ createDevApp()
     path: '/overview',
   })
   .addPage({
-    element: (
-      <MockProvider isEntity>
-        <KialiEntity />
-      </MockProvider>
-    ),
+    element: <MockProvider isEntity />,
     title: 'Kiali Entity',
     path: '/kiali',
   })
