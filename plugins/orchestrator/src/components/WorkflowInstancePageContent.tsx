@@ -2,7 +2,6 @@ import React from 'react';
 
 import { Content, InfoCard, Link } from '@backstage/core-components';
 import { PathParams, RouteFunc, useRouteRef } from '@backstage/core-plugin-api';
-import { AboutField } from '@backstage/plugin-catalog';
 
 import { Grid, makeStyles } from '@material-ui/core';
 import moment from 'moment';
@@ -11,18 +10,16 @@ import {
   AssessedProcessInstance,
   parseWorkflowVariables,
   ProcessInstance,
-  ProcessInstanceStateValues,
   QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { VALUE_UNAVAILABLE } from '../constants';
-import { executeWorkflowRouteRef, workflowInstanceRouteRef } from '../routes';
-import { capitalize } from '../utils/StringUtils';
+import { executeWorkflowRouteRef } from '../routes';
 import { buildUrl } from '../utils/UrlUtils';
 import { EditorViewKind, WorkflowEditor } from './WorkflowEditor';
-import { WorkflowInstanceStatusIndicator } from './WorkflowInstanceStatusIndicator';
 import { WorkflowProgress } from './WorkflowProgress';
 import { WorkflowRunDetail, WorkflowSuggestion } from './WorkflowRunDetail';
+import { WorkflowRunDetails } from './WorkflowRunDetails';
 import { WorkflowVariablesViewer } from './WorkflowVariablesViewer';
 
 export const mapProcessInstanceToDetails = (
@@ -87,10 +84,10 @@ const getNextWorkflows = (
 
 const useStyles = makeStyles(_ => ({
   topRowCard: {
-    height: '258px',
+    height: '20rem',
   },
   middleRowCard: {
-    height: 'calc(2 * 258px)',
+    height: 'calc(2 * 20rem)',
   },
   bottomRowCard: {
     height: '100%',
@@ -103,57 +100,10 @@ export const WorkflowInstancePageContent: React.FC<{
 }> = ({ assessedInstance }) => {
   const styles = useStyles();
   const executeWorkflowLink = useRouteRef(executeWorkflowRouteRef);
-  const workflowInstanceLink = useRouteRef(workflowInstanceRouteRef);
   const details = React.useMemo(
     () => mapProcessInstanceToDetails(assessedInstance.instance),
     [assessedInstance.instance],
   );
-  const detailLabelValues = React.useMemo(() => {
-    const labelsAndValues = [
-      {
-        label: 'Category',
-        value: capitalize(details.category ?? VALUE_UNAVAILABLE),
-      },
-      {
-        label: 'Status',
-        value: (
-          <WorkflowInstanceStatusIndicator
-            status={details.status as ProcessInstanceStateValues}
-          />
-        ),
-      },
-      { label: 'Duration', value: details.duration },
-      { label: 'ID', value: details.id },
-      { label: 'Started', value: details.started },
-      { label: 'Description', value: details.description },
-    ];
-
-    if (assessedInstance.assessedBy) {
-      labelsAndValues.push({
-        label: 'Assessed by',
-        value: (
-          <Link
-            to={workflowInstanceLink({
-              instanceId: assessedInstance.assessedBy.id,
-            })}
-          >
-            {assessedInstance.assessedBy.processName}
-          </Link>
-        ),
-      });
-    }
-
-    return labelsAndValues;
-  }, [
-    details.category,
-    details.description,
-    details.duration,
-    details.id,
-    details.started,
-    details.status,
-    workflowInstanceLink,
-    assessedInstance,
-  ]);
 
   const nextWorkflows = React.useMemo(
     () => getNextWorkflows(details, executeWorkflowLink),
@@ -167,20 +117,17 @@ export const WorkflowInstancePageContent: React.FC<{
 
   return (
     <Content noPadding>
-      <Grid container>
+      <Grid container spacing={2}>
         <Grid item xs={6}>
           <InfoCard
             title="Details"
             divider={false}
             className={styles.topRowCard}
           >
-            <Grid container spacing={3}>
-              {detailLabelValues.map(item => (
-                <Grid item xs={3} key={item.label}>
-                  <AboutField label={item.label} value={item.value as string} />
-                </Grid>
-              ))}
-            </Grid>
+            <WorkflowRunDetails
+              details={details}
+              assessedBy={assessedInstance.assessedBy}
+            />
           </InfoCard>
         </Grid>
 
