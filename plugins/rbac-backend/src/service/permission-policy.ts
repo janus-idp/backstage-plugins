@@ -143,6 +143,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
   private readonly conditionStorage: ConditionalStorage;
   private readonly policyMetadataStorage: PolicyMetadataStorage;
   private readonly policiesFile?: string;
+  private readonly allowReload?: boolean;
 
   public static async build(
     logger: Logger,
@@ -159,6 +160,10 @@ export class RBACPermissionPolicy implements PermissionPolicy {
 
     const policiesFile = configApi.getOptionalString(
       'permission.rbac.policies-csv-file',
+    );
+
+    const allowReload = configApi.getOptionalBoolean(
+      'permission.rbac.policyFileReload',
     );
 
     if (adminUsers && adminUsers.length > 0) {
@@ -192,6 +197,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
       conditionalStorage,
       policyMetaDataStorage,
       policiesFile,
+      allowReload,
     );
   }
 
@@ -201,12 +207,14 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     conditionStorage: ConditionalStorage,
     policyMetadataStorage: PolicyMetadataStorage,
     policiesFile?: string,
+    allowReload?: boolean,
   ) {
     this.enforcer = enforcer;
     this.logger = logger;
     this.conditionStorage = conditionStorage;
     this.policyMetadataStorage = policyMetadataStorage;
     this.policiesFile = policiesFile;
+    this.allowReload = allowReload;
   }
 
   async handle(
@@ -299,7 +307,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     action: string,
   ): Promise<boolean> => {
     const filter: string[] = [userIdentity, permission, action];
-    if (this.policiesFile) {
+    if (this.policiesFile && this.allowReload) {
       await loadFilteredCSV(
         this.policiesFile,
         this.enforcer,
