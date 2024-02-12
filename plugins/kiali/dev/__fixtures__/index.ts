@@ -19,6 +19,8 @@ import bookinfoHealthWorkload from './namespaces/bookinfo/health/workload.json';
 import bookInfoMetrics from './namespaces/bookinfo/metrics';
 /* bookinfo */
 import bookinfoTls from './namespaces/bookinfo/tls.json';
+/** Workloads **/
+import bookinfoWorkloads from './namespaces/bookinfo/workloads.json';
 /**   health  **/
 import istioSystemHealthApp from './namespaces/istio-system/health/app.json';
 import istioSystemHealthService from './namespaces/istio-system/health/service.json';
@@ -26,6 +28,7 @@ import istioSystemHealthWorkload from './namespaces/istio-system/health/workload
 import istioSystemMetrics from './namespaces/istio-system/metrics';
 /* istio-system */
 import istioSystemTls from './namespaces/istio-system/tls.json';
+import istioSystemWorkloads from './namespaces/istio-system/workloads.json';
 /** health **/
 
 import travelAgencyHealthApp from './namespaces/travel-agency/health/app.json';
@@ -34,6 +37,7 @@ import travelAgencyHealthWorkload from './namespaces/travel-agency/health/worklo
 import travelAgencyMetrics from './namespaces/travel-agency/metrics';
 /* Travel agency */
 import travelAgencyTls from './namespaces/travel-agency/tls.json';
+import travelAgencyWorkloads from './namespaces/travel-agency/workloads.json';
 /** health **/
 
 import travelControlHealthApp from './namespaces/travel-control/health/app.json';
@@ -42,6 +46,7 @@ import travelControlHealthWorkload from './namespaces/travel-control/health/work
 import travelControlMetrics from './namespaces/travel-control/metrics';
 /* Travel control */
 import travelControlTls from './namespaces/travel-control/tls.json';
+import travelControlWorkloads from './namespaces/travel-control/workloads.json';
 /** health **/
 
 import travelPortalHealthApp from './namespaces/travel-portal/health/app.json';
@@ -50,6 +55,7 @@ import travelPortalHealthWorkload from './namespaces/travel-portal/health/worklo
 import travelPortalMetrics from './namespaces/travel-portal/metrics';
 /* Travel portal */
 import travelPortalTls from './namespaces/travel-portal/tls.json';
+import travelPortalWorkloads from './namespaces/travel-portal/workloads.json';
 
 export const kialiData: { [index: string]: any } = {
   auth: anonymousAuth,
@@ -109,6 +115,13 @@ export const kialiData: { [index: string]: any } = {
         workload: travelAgencyHealthWorkload,
       },
     },
+  },
+  workloads: {
+    'istio-system': istioSystemWorkloads,
+    bookinfo: bookinfoWorkloads,
+    'travel-portal': travelPortalWorkloads,
+    'travel-agency': travelAgencyWorkloads,
+    'travel-control': travelControlWorkloads,
   },
   status: status,
 };

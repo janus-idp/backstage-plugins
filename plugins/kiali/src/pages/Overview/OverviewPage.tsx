@@ -6,12 +6,11 @@ import { useApi } from '@backstage/core-plugin-api';
 import { CircularProgress, Grid } from '@material-ui/core';
 import _ from 'lodash';
 
-import * as FilterHelper from '../../components/FilterList/FitlerHelper';
+import * as FilterHelper from '../../components/FilterList/FilterHelper';
 import { isMultiCluster, serverConfig } from '../../config';
 import { getErrorString, kialiApiRef } from '../../services/Api';
 import { computePrometheusRateParams } from '../../services/Prometheus';
-import { KialiContext } from '../../store/Context';
-import { KialiAppState } from '../../store/Store';
+import { KialiAppState, KialiContext } from '../../store';
 import {
   DEGRADED,
   FAILURE,
@@ -43,6 +42,28 @@ import {
   OverviewType,
 } from './OverviewToolbar';
 import * as Sorts from './Sorts';
+
+export const getNamespaces = (
+  namespacesResponse: NamespaceInfo[],
+  namespaces: NamespaceInfo[],
+): NamespaceInfo[] => {
+  return namespacesResponse.map(ns => {
+    const previous = namespaces.find(prev => prev.name === ns.name);
+    return {
+      name: ns.name,
+      cluster: ns.cluster,
+      isAmbient: ns.isAmbient,
+      status: previous ? previous.status : undefined,
+      tlsStatus: previous ? previous.tlsStatus : undefined,
+      metrics: previous ? previous.metrics : undefined,
+      errorMetrics: previous ? previous.errorMetrics : undefined,
+      validations: previous ? previous.validations : undefined,
+      labels: ns.labels,
+      annotations: ns.annotations,
+      controlPlaneMetrics: previous ? previous.controlPlaneMetrics : undefined,
+    };
+  });
+};
 
 export const OverviewPage = (props: { entity?: boolean }) => {
   const kialiClient = useApi(kialiApiRef);
@@ -144,7 +165,7 @@ export const OverviewPage = (props: { entity?: boolean }) => {
               isAscending,
             );
           }
-          return nss;
+          return newNamespaces;
         })
         .catch(error => {
           kialiState.alertUtils!.add(
@@ -375,24 +396,10 @@ export const OverviewPage = (props: { entity?: boolean }) => {
 
   const load = async () => {
     await kialiClient.getNamespaces().then(namespacesResponse => {
-      const allNamespaces: NamespaceInfo[] = namespacesResponse.map(ns => {
-        const previous = namespaces.find(prev => prev.name === ns.name);
-        return {
-          name: ns.name,
-          cluster: ns.cluster,
-          isAmbient: ns.isAmbient,
-          status: previous ? previous.status : undefined,
-          tlsStatus: previous ? previous.tlsStatus : undefined,
-          metrics: previous ? previous.metrics : undefined,
-          errorMetrics: previous ? previous.errorMetrics : undefined,
-          validations: previous ? previous.validations : undefined,
-          labels: ns.labels,
-          annotations: ns.annotations,
-          controlPlaneMetrics: previous
-            ? previous.controlPlaneMetrics
-            : undefined,
-        };
-      });
+      const allNamespaces: NamespaceInfo[] = getNamespaces(
+        namespacesResponse,
+        namespaces,
+      );
 
       // Calculate information
       const isAscending = FilterHelper.isCurrentSortAscending();
