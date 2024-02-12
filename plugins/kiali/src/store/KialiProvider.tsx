@@ -17,6 +17,7 @@ import { IstioStatusActions } from '../actions/IstioStatusActions';
 import { MeshTlsActions } from '../actions/MeshTlsActions';
 import { setServerConfig } from '../config/ServerConfig';
 import { KialiHelper } from '../pages/Kiali/KialiHelper';
+import { KialiNoResources } from '../pages/Kiali/KialiNoResources';
 import {
   HelpDropdownStateReducer,
   IstioCertsInfoStateReducer,
@@ -59,6 +60,7 @@ export const KialiProvider: React.FC<Props> = ({
   const promises = new PromisesRegistry();
   const [kialiCheck, setKialiCheck] =
     React.useState<KialiChecker>(initialChecker);
+  const [haveNamespaces, setHaveNamespaces] = React.useState<boolean>(false);
 
   const [loginState, loginDispatch] = React.useReducer(
     LoginReducer,
@@ -106,6 +108,9 @@ export const KialiProvider: React.FC<Props> = ({
           namespaceDispatch(
             NamespaceActions.receiveList([...data], new Date()),
           );
+          if (data.length > 0) {
+            setHaveNamespaces(true);
+          }
           namespaceDispatch(NamespaceActions.setActiveNamespaces([...data]));
         })
         .catch(() => namespaceDispatch(NamespaceActions.requestFailed()));
@@ -221,7 +226,7 @@ export const KialiProvider: React.FC<Props> = ({
   );
   useDebounce(refresh, 10);
 
-  return !loading ? (
+  const content = haveNamespaces ? (
     <KialiContext.Provider
       value={{
         authentication: loginState,
@@ -244,6 +249,8 @@ export const KialiProvider: React.FC<Props> = ({
       {kialiCheck.verify ? children : <KialiHelper check={kialiCheck} />}
     </KialiContext.Provider>
   ) : (
-    <CircularProgress />
+    <KialiNoResources entity={entity!} />
   );
+
+  return loading ? <CircularProgress /> : content;
 };
