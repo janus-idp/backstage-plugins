@@ -14,12 +14,17 @@ const mockUseWorkloadsWatcher = useWorkloadsWatcher as jest.Mock;
 
 jest.mock('@patternfly/react-topology', () => ({
   useVisualizationController: () => ({
-    getVisualization: () => ({
-      getGraph: () => ({
-        getElements: () => [],
-      }),
+    getGraph: () => ({
+      getElements: () => [],
+      getDimensions: () => {
+        return {
+          width: 100,
+          height: 100,
+        };
+      },
     }),
     fromModel: () => {},
+    hasGraph: () => true,
   }),
   useEventListener: () => {},
   action: () => {},
