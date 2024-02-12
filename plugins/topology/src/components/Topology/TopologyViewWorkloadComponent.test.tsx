@@ -24,6 +24,7 @@ jest.mock('@patternfly/react-topology', () => ({
   useEventListener: () => {},
   action: () => {},
   createTopologyControlButtons: () => {},
+  observer: (a: React.FC) => a,
   VisualizationSurface: () => <div>VisualizationSurface</div>,
   TopologyView: () => <div>TopologyView</div>,
 }));
