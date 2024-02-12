@@ -5,7 +5,7 @@ import { JsonObject, JsonValue } from '@backstage/types';
 
 import express from 'express';
 import Router from 'express-promise-router';
-import { OpenAPIBackend, Options, Request } from 'openapi-backend';
+import { OpenAPIBackend, Request } from 'openapi-backend';
 
 import {
   AssessedProcessInstance,
@@ -56,7 +56,7 @@ export async function createBackendRouter(
   const { eventBroker, config, logger, discovery, catalogApi, urlReader } =
     args;
 
-  const api = new OpenAPIBackend(setOpenAPIOptions());
+  const api = initOpenAPIBackend();
   await api.init();
 
   const router = Router();
@@ -140,8 +140,8 @@ export async function createBackendRouter(
   return router;
 }
 
-function setOpenAPIOptions(): Options {
-  return {
+function initOpenAPIBackend(): OpenAPIBackend {
+  return new OpenAPIBackend({
     definition: openApiDocument,
     strict: false,
     ajvOpts: {
@@ -164,7 +164,7 @@ function setOpenAPIOptions(): Options {
       notImplemented: async (_, _req: express.Request, res: express.Response) =>
         res.status(500).json({ err: 'not implemented' }),
     },
-  };
+  });
 }
 
 // ======================================================
