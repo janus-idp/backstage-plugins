@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac-backend [2.2.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.2.0...@janus-idp/backstage-plugin-rbac-backend@2.2.1) (2024-02-12)
+
+
+### Bug Fixes
+
+* **rbac:** csv updates no longer require server restarts ([#1171](https://github.com/janus-idp/backstage-plugins/issues/1171)) ([ed6fe65](https://github.com/janus-idp/backstage-plugins/commit/ed6fe65d99a2c2facf832a84d29dabc8d339e328))
+
 ## @janus-idp/backstage-plugin-rbac-backend [2.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.1.3...@janus-idp/backstage-plugin-rbac-backend@2.2.0) (2024-02-08)
 
 
