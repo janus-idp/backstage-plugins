@@ -113,6 +113,13 @@ export const loadFilteredPoliciesFromCSV = async (
     );
   }
 
+  await removeEnforcerPolicies(
+    enforcerPolicies,
+    tempEnforcer,
+    enf,
+    policyMetadataStorage,
+  );
+
   for (const policy of policies) {
     const err = validatePolicy(transformArraytoPolicy(policy));
     if (err) {
@@ -164,13 +171,6 @@ export const loadFilteredPoliciesFromCSV = async (
 
     await addPolicy(policy, enf, policyMetadataStorage, logger);
   }
-
-  await removeEnforcerPolicies(
-    enforcerPolicies,
-    tempEnforcer,
-    enf,
-    policyMetadataStorage,
-  );
 };
 
 export const loadFilteredGroupingPoliciesFromCSV = async (

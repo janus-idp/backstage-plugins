@@ -7,4 +7,6 @@ p, role:default/catalog-writer, catalog-entity, read, allow
 p, role:default/catalog-writer, catalog.entity.create, use, allow
 p, role:default/catalog-deleter, catalog-entity, delete, deny
 
-p, user:default/known_user, test.resource.deny, use, allow
+p, role:default/known_role, test.resource.deny, use, allow
+
+g, user:default/known_user, role:default/known_role

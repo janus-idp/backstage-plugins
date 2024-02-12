@@ -259,6 +259,33 @@ describe('RBACPermissionPolicy Tests', () => {
   });
 
   describe('Policy checks for clean up old policies for csv file', () => {
+    const allEnfRoles = [
+      'role:default/some-role',
+      'role:default/catalog-writer',
+      'role:default/catalog-reader',
+      'role:default/catalog-deleter',
+      'role:default/known_role',
+    ];
+
+    const allEnfGroupPolicies = [
+      ['user:default/tester', 'role:default/some-role'],
+      ['user:default/guest', 'role:default/catalog-writer'],
+      ['user:default/guest', 'role:default/catalog-reader'],
+      ['user:default/guest', 'role:default/catalog-deleter'],
+      ['user:default/known_user', 'role:default/known_role'],
+    ];
+
+    const allEnfPolicies = [
+      // stored policy
+      ['role:default/some-role', 'test.some.resource', 'use', 'allow'],
+      // policies from csv file
+      ['role:default/catalog-writer', 'catalog-entity', 'update', 'allow'],
+      ['role:default/catalog-writer', 'catalog-entity', 'read', 'allow'],
+      ['role:default/catalog-writer', 'catalog.entity.create', 'use', 'allow'],
+      ['role:default/catalog-deleter', 'catalog-entity', 'delete', 'deny'],
+      ['role:default/known_role', 'test.resource.deny', 'use', 'allow'],
+    ];
+
     const logger = getVoidLogger();
 
     const dbManagerMock: DatabaseService = {
@@ -398,35 +425,11 @@ describe('RBACPermissionPolicy Tests', () => {
       );
       await createRBACPolicy(enf);
 
-      expect(await enf.getGroupingPolicy()).toEqual([
-        ['user:default/tester', 'role:default/some-role'], // stored group policy
-        ['user:default/guest', 'role:default/catalog-writer'], // group policy from csv file
-        ['user:default/guest', 'role:default/catalog-reader'],
-        ['user:default/guest', 'role:default/catalog-deleter'],
-      ]);
+      expect(await enf.getGroupingPolicy()).toEqual(allEnfGroupPolicies);
 
-      expect(await enf.getAllRoles()).toEqual([
-        'role:default/some-role', // stored role
-        'role:default/catalog-writer', // role from csv file
-        'role:default/catalog-reader',
-        'role:default/catalog-deleter',
-      ]);
+      expect(await enf.getAllRoles()).toEqual(allEnfRoles);
 
-      expect(await enf.getPolicy()).toEqual([
-        // stored policy
-        ['role:default/some-role', 'test.some.resource', 'use', 'allow'],
-        // policies from csv file
-        ['role:default/catalog-writer', 'catalog-entity', 'update', 'allow'],
-        ['role:default/catalog-writer', 'catalog-entity', 'read', 'allow'],
-        [
-          'role:default/catalog-writer',
-          'catalog.entity.create',
-          'use',
-          'allow',
-        ],
-        ['role:default/catalog-deleter', 'catalog-entity', 'delete', 'deny'],
-        ['user:default/known_user', 'test.resource.deny', 'use', 'allow'],
-      ]);
+      expect(await enf.getPolicy()).toEqual(allEnfPolicies);
 
       // policy metadata should to be removed
       expect(policyMetadataStorage.removePolicyMetadata).toHaveBeenCalledTimes(
@@ -486,35 +489,11 @@ describe('RBACPermissionPolicy Tests', () => {
       );
       await createRBACPolicy(enf);
 
-      expect(await enf.getAllRoles()).toEqual([
-        'role:default/some-role', // stored role
-        'role:default/catalog-writer', // role from csv file
-        'role:default/catalog-reader',
-        'role:default/catalog-deleter',
-      ]);
+      expect(await enf.getAllRoles()).toEqual(allEnfRoles);
 
-      expect(await enf.getGroupingPolicy()).toEqual([
-        ['user:default/tester', 'role:default/some-role'], // stored group policy
-        ['user:default/guest', 'role:default/catalog-writer'], // group policy from csv file
-        ['user:default/guest', 'role:default/catalog-reader'],
-        ['user:default/guest', 'role:default/catalog-deleter'],
-      ]);
+      expect(await enf.getGroupingPolicy()).toEqual(allEnfGroupPolicies);
 
-      expect(await enf.getPolicy()).toEqual([
-        // stored policy
-        ['role:default/some-role', 'test.some.resource', 'use', 'allow'],
-        // policies from csv file
-        ['role:default/catalog-writer', 'catalog-entity', 'update', 'allow'],
-        ['role:default/catalog-writer', 'catalog-entity', 'read', 'allow'],
-        [
-          'role:default/catalog-writer',
-          'catalog.entity.create',
-          'use',
-          'allow',
-        ],
-        ['role:default/catalog-deleter', 'catalog-entity', 'delete', 'deny'],
-        ['user:default/known_user', 'test.resource.deny', 'use', 'allow'],
-      ]);
+      expect(await enf.getPolicy()).toEqual(allEnfPolicies);
 
       // policy metadata should to be removed
       expect(policyMetadataStorage.removePolicyMetadata).toHaveBeenCalledTimes(
@@ -595,35 +574,11 @@ describe('RBACPermissionPolicy Tests', () => {
       );
       await createRBACPolicy(enf);
 
-      expect(await enf.getAllRoles()).toEqual([
-        'role:default/some-role', // stored role
-        'role:default/catalog-writer', // role from csv file
-        'role:default/catalog-reader',
-        'role:default/catalog-deleter',
-      ]);
+      expect(await enf.getAllRoles()).toEqual(allEnfRoles);
 
-      expect(await enf.getGroupingPolicy()).toEqual([
-        ['user:default/tester', 'role:default/some-role'],
-        ['user:default/guest', 'role:default/catalog-writer'], // stored group policy
-        ['user:default/guest', 'role:default/catalog-reader'],
-        ['user:default/guest', 'role:default/catalog-deleter'],
-      ]);
+      expect(await enf.getGroupingPolicy()).toEqual(allEnfGroupPolicies);
 
-      expect(await enf.getPolicy()).toEqual([
-        // stored policy
-        ['role:default/some-role', 'test.some.resource', 'use', 'allow'],
-        // policies from csv file
-        ['role:default/catalog-writer', 'catalog-entity', 'update', 'allow'],
-        ['role:default/catalog-writer', 'catalog-entity', 'read', 'allow'],
-        [
-          'role:default/catalog-writer',
-          'catalog.entity.create',
-          'use',
-          'allow',
-        ],
-        ['role:default/catalog-deleter', 'catalog-entity', 'delete', 'deny'],
-        ['user:default/known_user', 'test.resource.deny', 'use', 'allow'],
-      ]);
+      expect(await enf.getPolicy()).toEqual(allEnfPolicies);
 
       // policy metadata should to be removed
       expect(policyMetadataStorage.removePolicyMetadata).toHaveBeenCalledTimes(
@@ -700,35 +655,11 @@ describe('RBACPermissionPolicy Tests', () => {
       );
       await createRBACPolicy(enf);
 
-      expect(await enf.getAllRoles()).toEqual([
-        'role:default/some-role',
-        'role:default/catalog-writer', // stored role
-        'role:default/catalog-reader',
-        'role:default/catalog-deleter',
-      ]);
+      expect(await enf.getAllRoles()).toEqual(allEnfRoles);
 
-      expect(await enf.getGroupingPolicy()).toEqual([
-        ['user:default/tester', 'role:default/some-role'],
-        ['user:default/guest', 'role:default/catalog-writer'], // stored group policy
-        ['user:default/guest', 'role:default/catalog-reader'],
-        ['user:default/guest', 'role:default/catalog-deleter'],
-      ]);
+      expect(await enf.getGroupingPolicy()).toEqual(allEnfGroupPolicies);
 
-      expect(await enf.getPolicy()).toEqual([
-        // stored policy
-        ['role:default/some-role', 'test.some.resource', 'use', 'allow'],
-        // policies from csv file
-        ['role:default/catalog-writer', 'catalog-entity', 'update', 'allow'],
-        ['role:default/catalog-writer', 'catalog-entity', 'read', 'allow'],
-        [
-          'role:default/catalog-writer',
-          'catalog.entity.create',
-          'use',
-          'allow',
-        ],
-        ['role:default/catalog-deleter', 'catalog-entity', 'delete', 'deny'],
-        ['user:default/known_user', 'test.resource.deny', 'use', 'allow'],
-      ]);
+      expect(await enf.getPolicy()).toEqual(allEnfPolicies);
 
       // policy metadata should to be removed
       expect(policyMetadataStorage.removePolicyMetadata).toHaveBeenCalledTimes(
@@ -788,35 +719,11 @@ describe('RBACPermissionPolicy Tests', () => {
       );
       await createRBACPolicy(enf);
 
-      expect(await enf.getAllRoles()).toEqual([
-        'role:default/some-role',
-        'role:default/catalog-writer', // stored role
-        'role:default/catalog-reader',
-        'role:default/catalog-deleter',
-      ]);
+      expect(await enf.getAllRoles()).toEqual(allEnfRoles);
 
-      expect(await enf.getGroupingPolicy()).toEqual([
-        ['user:default/tester', 'role:default/some-role'],
-        ['user:default/guest', 'role:default/catalog-writer'], // stored group policy
-        ['user:default/guest', 'role:default/catalog-reader'],
-        ['user:default/guest', 'role:default/catalog-deleter'],
-      ]);
+      expect(await enf.getGroupingPolicy()).toEqual(allEnfGroupPolicies);
 
-      expect(await enf.getPolicy()).toEqual([
-        // stored policy
-        ['role:default/some-role', 'test.some.resource', 'use', 'allow'],
-        // policies from csv file
-        ['role:default/catalog-writer', 'catalog-entity', 'update', 'allow'],
-        ['role:default/catalog-writer', 'catalog-entity', 'read', 'allow'],
-        [
-          'role:default/catalog-writer',
-          'catalog.entity.create',
-          'use',
-          'allow',
-        ],
-        ['role:default/catalog-deleter', 'catalog-entity', 'delete', 'deny'],
-        ['user:default/known_user', 'test.resource.deny', 'use', 'allow'],
-      ]);
+      expect(await enf.getPolicy()).toEqual(allEnfPolicies);
 
       // policy metadata should to be removed
       expect(policyMetadataStorage.removePolicyMetadata).toHaveBeenCalledTimes(
@@ -891,35 +798,11 @@ describe('RBACPermissionPolicy Tests', () => {
       );
       await createRBACPolicy(enf);
 
-      expect(await enf.getAllRoles()).toEqual([
-        'role:default/some-role',
-        'role:default/catalog-writer', // stored role
-        'role:default/catalog-reader',
-        'role:default/catalog-deleter',
-      ]);
+      expect(await enf.getAllRoles()).toEqual(allEnfRoles);
 
-      expect(await enf.getGroupingPolicy()).toEqual([
-        ['user:default/tester', 'role:default/some-role'],
-        ['user:default/guest', 'role:default/catalog-writer'], // stored group policy
-        ['user:default/guest', 'role:default/catalog-reader'],
-        ['user:default/guest', 'role:default/catalog-deleter'],
-      ]);
+      expect(await enf.getGroupingPolicy()).toEqual(allEnfGroupPolicies);
 
-      expect(await enf.getPolicy()).toEqual([
-        // stored policy
-        ['role:default/some-role', 'test.some.resource', 'use', 'allow'],
-        // policies from csv file
-        ['role:default/catalog-writer', 'catalog-entity', 'update', 'allow'],
-        ['role:default/catalog-writer', 'catalog-entity', 'read', 'allow'],
-        [
-          'role:default/catalog-writer',
-          'catalog.entity.create',
-          'use',
-          'allow',
-        ],
-        ['role:default/catalog-deleter', 'catalog-entity', 'delete', 'deny'],
-        ['user:default/known_user', 'test.resource.deny', 'use', 'allow'],
-      ]);
+      expect(await enf.getPolicy()).toEqual(allEnfPolicies);
 
       // policy metadata should to be removed
       expect(policyMetadataStorage.removePolicyMetadata).toHaveBeenCalledTimes(
