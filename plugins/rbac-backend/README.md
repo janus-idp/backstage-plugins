@@ -143,6 +143,16 @@ permission:
     policies-csv-file: /some/path/rbac-policy.csv
 ```
 
+Also, there is an additional configuration value that allows for the reloading of the CSV file without the need to restart.
+
+```YAML
+permission:
+  enabled: true
+  rbac:
+    policies-csv-file: /some/path/rbac-policy.csv
+    policyFileReload: true
+```
+
 For more information on the available permissions within Showcase and RHDH, refer to the [permissions documentation](./docs/permissions.md).
 
 ### Configuring Database Storage for policies
