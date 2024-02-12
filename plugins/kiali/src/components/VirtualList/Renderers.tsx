@@ -32,7 +32,7 @@ import {
 } from './Config';
 
 const topPosition = 'top';
-
+const rootPath = 'kiali';
 // Istio Links
 const getIstioLink = (item: TResource): string => {
   let type = '';
@@ -50,7 +50,7 @@ const getLink = (item: TResource, config: Resource, query?: string): string => {
   let url =
     config.name === 'istio'
       ? getIstioLink(item)
-      : `/namespaces/${item.namespace}/${config.name}/${item.name}`;
+      : `/${rootPath}/${config.name}/${item.namespace}/${item.name}`;
 
   if (item.cluster && isMultiCluster && !url.includes('cluster')) {
     if (url.includes('?')) {
