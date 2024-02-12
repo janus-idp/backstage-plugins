@@ -513,10 +513,17 @@ function setupExternalRoutes(
     const { actionId } = req.params;
     const instanceId: string | undefined = req.header('kogitoprocinstanceid');
     const body: JsonObject = (await req.body) as JsonObject;
+
+    const filteredBody = Object.fromEntries(
+      Object.entries(body).filter(
+        ([, value]) => value !== undefined && value !== null,
+      ),
+    );
+
     const result: JsonValue = await scaffolderService.executeAction({
       actionId,
       instanceId,
-      input: body,
+      input: filteredBody,
     });
     res.status(200).json(result);
   });
