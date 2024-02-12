@@ -4,6 +4,7 @@ import { InfoCard, Progress } from '@backstage/core-components';
 
 import {
   BaseNode,
+  observer,
   SELECTION_EVENT,
   SelectionEventListener,
   TopologyView,
@@ -36,6 +37,9 @@ const TopologyViewWorkloadComponent = ({
   const { loaded, dataModel } = useWorkloadsWatcher();
   const { clusters, selectedClusterErrors, responseError } =
     React.useContext(K8sResourcesContext);
+  const graphDimensions = controller.hasGraph()
+    ? controller.getGraph().getDimensions()
+    : undefined;
   const [
     sideBar,
     sideBarOpen,
@@ -51,18 +55,21 @@ const TopologyViewWorkloadComponent = ({
   ];
 
   React.useEffect(() => {
-    if (loaded && dataModel) {
-      const model = {
-        graph: {
-          id: 'g1',
-          type: 'graph',
-          layout,
-        },
-        ...dataModel,
-      };
-      controller.fromModel(model, true);
+    const model = {
+      graph: {
+        id: 'g1',
+        type: 'graph',
+        layout,
+      },
+    };
+    controller.fromModel(model);
+  }, [controller]);
+
+  React.useEffect(() => {
+    if (graphDimensions && loaded && dataModel) {
+      controller.fromModel(dataModel, true);
     }
-  }, [layout, loaded, dataModel, controller]);
+  }, [graphDimensions, layout, loaded, dataModel, controller]);
 
   React.useEffect(() => {
     if (dataModel) {
@@ -131,4 +138,4 @@ const TopologyViewWorkloadComponent = ({
   );
 };
 
-export default TopologyViewWorkloadComponent;
+export default observer(TopologyViewWorkloadComponent);
