@@ -1,8 +1,14 @@
-import { WorkflowOverviewListResultDTO } from '@janus-idp/backstage-plugin-orchestrator-common';
+import {
+  WorkflowOverviewDTO,
+  WorkflowOverviewListResultDTO,
+} from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { SonataFlowService } from '../SonataFlowService';
 import { mapToWorkflowOverviewDTO } from './mapping/V2Mappings';
-import { generateTestWorkflowOverviewList } from './test-utils';
+import {
+  generateTestWorkflowOverview,
+  generateTestWorkflowOverviewList,
+} from './test-utils';
 import { V2 } from './v2';
 
 jest.mock('../SonataFlowService', () => ({
@@ -23,6 +29,7 @@ const createMockSonataFlowService = (): SonataFlowService => {
 
   // Mock fetchWorkflowDefinition method
   mockSonataFlowService.fetchWorkflowOverviews = jest.fn();
+  mockSonataFlowService.fetchWorkflowOverview = jest.fn();
 
   return mockSonataFlowService;
 };
@@ -34,6 +41,7 @@ describe('getWorkflowOverview', () => {
     jest.clearAllMocks();
     mockSonataFlowService = createMockSonataFlowService();
   });
+
   it('0 items in workflow overview list', async () => {
     // Arrange
     const mockOverviewsV1 = {
@@ -128,5 +136,58 @@ describe('getWorkflowOverview', () => {
     (
       mockSonataFlowService.fetchWorkflowOverviews as jest.Mock
     ).mockRejectedValue(new Error('no workflow overview'));
+  });
+});
+describe('getWorkflowOverviewById', () => {
+  let mockSonataFlowService: SonataFlowService;
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockSonataFlowService = createMockSonataFlowService();
+  });
+
+  it('0 items in workflow overview list', async () => {
+    // Arrange
+    const mockOverviewsV1 = {
+      items: [],
+    };
+    (
+      mockSonataFlowService.fetchWorkflowOverview as jest.Mock
+    ).mockResolvedValue(mockOverviewsV1.items);
+    // Act
+    const overviewV2 = await V2.getWorkflowOverviewById(
+      mockSonataFlowService,
+      'test_workflowId',
+    );
+
+    // Assert
+    expect(overviewV2).toBeDefined();
+    expect(overviewV2.workflowId).toBeUndefined();
+    expect(overviewV2.name).toBeUndefined();
+    expect(overviewV2.uri).toBeUndefined();
+    expect(overviewV2.lastTriggeredMs).toBeUndefined();
+    expect(overviewV2.lastRunStatus).toBeUndefined();
+    expect(overviewV2.category).toEqual('infrastructure');
+    expect(overviewV2.avgDurationMs).toBeUndefined();
+    expect(overviewV2.description).toBeUndefined();
+  });
+
+  it('1 item in workflow overview list', async () => {
+    // Arrange
+    const mockOverviewsV1 = generateTestWorkflowOverview({
+      name: 'test_workflowId',
+    });
+
+    (
+      mockSonataFlowService.fetchWorkflowOverview as jest.Mock
+    ).mockResolvedValue(mockOverviewsV1);
+
+    // Act
+    const result: WorkflowOverviewDTO = await V2.getWorkflowOverviewById(
+      mockSonataFlowService,
+      'test_workflowId',
+    );
+
+    // Assert
+    expect(result).toEqual(mapToWorkflowOverviewDTO(mockOverviewsV1));
   });
 });
