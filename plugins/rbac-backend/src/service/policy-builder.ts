@@ -20,11 +20,11 @@ import { DataBaseConditionalStorage } from '../database/conditional-storage';
 import { migrate } from '../database/migration';
 import { DataBasePolicyMetadataStorage } from '../database/policy-metadata-storage';
 import { DataBaseRoleMetadataStorage } from '../database/role-metadata';
+import { BackstageRoleManager } from '../role-manager/role-manager';
 import { EnforcerDelegate } from './enforcer-delegate';
 import { MODEL } from './permission-model';
 import { RBACPermissionPolicy } from './permission-policy';
 import { PolicesServer } from './policies-rest-api';
-import { BackstageRoleManager } from './role-manager';
 
 export class PolicyBuilder {
   public static async build(

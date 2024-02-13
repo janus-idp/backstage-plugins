@@ -27,9 +27,9 @@ import {
   PolicyMetadataStorage,
 } from '../database/policy-metadata-storage';
 import { RoleMetadataStorage } from '../database/role-metadata';
+import { BackstageRoleManager } from '../role-manager/role-manager';
 import { EnforcerDelegate } from '../service/enforcer-delegate';
 import { MODEL } from '../service/permission-model';
-import { BackstageRoleManager } from '../service/role-manager';
 import {
   addPermissionPoliciesFileData,
   loadFilteredGroupingPoliciesFromCSV,
