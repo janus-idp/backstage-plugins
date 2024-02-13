@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac-backend [2.2.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.2.1...@janus-idp/backstage-plugin-rbac-backend@2.2.2) (2024-02-13)
+
+
+### Bug Fixes
+
+* **rbac:** display resource typed permissions by name too ([#1197](https://github.com/janus-idp/backstage-plugins/issues/1197)) ([bc4e8e7](https://github.com/janus-idp/backstage-plugins/commit/bc4e8e783b1acd8088a45ffed4d902fd9515c2e8))
+
 ## @janus-idp/backstage-plugin-rbac-backend [2.2.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.2.0...@janus-idp/backstage-plugin-rbac-backend@2.2.1) (2024-02-12)
 
 
