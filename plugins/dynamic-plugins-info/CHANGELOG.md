@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-dynamic-plugins-info [1.0.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-dynamic-plugins-info@1.0.0...@janus-idp/backstage-plugin-dynamic-plugins-info@1.0.1) (2024-02-13)
+
+
+### Bug Fixes
+
+* **plugins:** updated administration support button title ([#1205](https://github.com/janus-idp/backstage-plugins/issues/1205)) ([25e7a3e](https://github.com/janus-idp/backstage-plugins/commit/25e7a3ec11ba7da0faf97de7f80e5eb764429fe6))
+
 ## @janus-idp/backstage-plugin-dynamic-plugins-info 1.0.0 (2024-01-31)
 
 
