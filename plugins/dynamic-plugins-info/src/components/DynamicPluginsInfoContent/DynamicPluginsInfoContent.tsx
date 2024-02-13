@@ -7,7 +7,7 @@ import { DynamicPluginsTable } from '../DynamicPluginsTable/DynamicPluginsTable'
 export const DynamicPluginsInfoContent = () => (
   <>
     <ContentHeader title="">
-      <SupportButton title="Support">Some placeholder text</SupportButton>
+      <SupportButton>All of the installed plugins</SupportButton>
     </ContentHeader>
     <DynamicPluginsTable />
   </>
