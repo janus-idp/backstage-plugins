@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-topology [1.18.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.18.2...@janus-idp/backstage-plugin-topology@1.18.3) (2024-02-12)
+
+
+### Bug Fixes
+
+* **topology:** fix to layout nodes correctly on first load ([#1194](https://github.com/janus-idp/backstage-plugins/issues/1194)) ([30b4902](https://github.com/janus-idp/backstage-plugins/commit/30b4902811f24159b91c43336b73510d6531f74b)), closes [#2](https://github.com/janus-idp/backstage-plugins/issues/2)
+
 ## @janus-idp/backstage-plugin-topology [1.18.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.18.1...@janus-idp/backstage-plugin-topology@1.18.2) (2024-02-07)
 
 

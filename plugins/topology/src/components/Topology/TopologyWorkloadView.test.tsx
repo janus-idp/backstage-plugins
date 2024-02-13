@@ -14,6 +14,10 @@ jest.mock('@patternfly/react-topology', () => ({
   })),
 }));
 
+jest.mock('./TopologyViewWorkloadComponent', () => ({
+  TopologyViewWorkloadComponent: () => <div>TopologyViewWorkloadComponent</div>,
+}));
+
 jest.mock('../Graph/TopologyComponentFactory', () => ({
   TopologyComponentFactory: () => <div>TopologyComponentFactory</div>,
 }));

@@ -3,7 +3,9 @@ import React from 'react';
 import { Content, Page } from '@backstage/core-components';
 
 import { OverviewPage } from '../Overview/OverviewPage';
+import { WorkloadListPage } from '../WorkloadList/WorkloadListPage';
 import { KialiHeader } from './Header/KialiHeader';
+import { KialiTabs } from './Header/KialiTabs';
 import { KialiNoPath } from './NoPath';
 
 const noPath = 'noPath';
@@ -18,12 +20,14 @@ const getPathPage = () => {
 };
 
 export const KialiPage = () => {
-  const [kialiTab, _] = React.useState<string>(getPathPage());
+  const [selectedTab, _] = React.useState<string>(getPathPage());
 
   const renderPath = () => {
-    switch (kialiTab) {
+    switch (selectedTab) {
       case 'overview':
         return <OverviewPage />;
+      case 'workloads':
+        return <WorkloadListPage />;
       default:
         return <KialiNoPath />;
     }
@@ -33,6 +37,7 @@ export const KialiPage = () => {
     <Page themeId="tool">
       <Content>
         <KialiHeader />
+        <KialiTabs />
         {renderPath()}
       </Content>
     </Page>

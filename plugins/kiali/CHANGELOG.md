@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-kiali [1.10.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.9.1...@janus-idp/backstage-plugin-kiali@1.10.0) (2024-02-12)
+
+
+### Features
+
+* **kiali:** workloads page list ([#1129](https://github.com/janus-idp/backstage-plugins/issues/1129)) ([1e3991b](https://github.com/janus-idp/backstage-plugins/commit/1e3991b9af35ef5da8f9987fc2d17026d438a853))
+
 ## @janus-idp/backstage-plugin-kiali [1.9.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.9.0...@janus-idp/backstage-plugin-kiali@1.9.1) (2024-02-08)
 
 

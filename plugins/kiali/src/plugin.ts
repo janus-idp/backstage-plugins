@@ -6,7 +6,7 @@ import {
   identityApiRef,
 } from '@backstage/core-plugin-api';
 
-import { overviewRouteRef, rootRouteRef } from './routes';
+import { overviewRouteRef, rootRouteRef, workloadsRouteRef } from './routes';
 import { KialiApiClient, kialiApiRef } from './services/Api';
 
 import '@patternfly/patternfly/patternfly.css';
@@ -16,6 +16,7 @@ export const kialiPlugin = createPlugin({
   routes: {
     root: rootRouteRef,
     overview: overviewRouteRef,
+    workloads: workloadsRouteRef,
   },
   apis: [
     createApiFactory({
