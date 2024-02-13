@@ -31,6 +31,7 @@ import { Namespace } from '../types/Namespace';
 import { ServerConfig } from '../types/ServerConfig';
 import { StatusState } from '../types/StatusState';
 import { TLSStatus } from '../types/TLSStatus';
+import { WorkloadListItem, WorkloadNamespaceResponse } from '../types/Workload';
 import { filterNsByAnnotation } from '../utils/entityFilter';
 
 export const ANONYMOUS_USER = 'anonymous';
@@ -116,6 +117,11 @@ export interface KialiApi {
   getIstioCertsInfo(): Promise<CertsInfo[]>;
   setEntity(entity?: Entity): void;
   status(): Promise<any>;
+
+  getWorkloads(
+    namespace: string,
+    duration: number,
+  ): Promise<WorkloadListItem[]>;
 }
 
 export const kialiApiRef = createApiRef<KialiApi>({
@@ -477,6 +483,45 @@ export class KialiApiClient implements KialiApi {
 
   setEntity = (entity?: Entity) => {
     this.entity = entity;
+  };
+
+  getWorkloads = async (
+    namespace: string,
+    duration: number,
+  ): Promise<WorkloadListItem[]> => {
+    return this.newRequest<WorkloadNamespaceResponse>(
+      HTTP_VERBS.GET,
+      urls.workloads(namespace),
+      { health: true, istioResources: true, rateInterval: `${duration}s` },
+      {},
+    ).then(resp => {
+      return resp.workloads.map(w => {
+        return {
+          name: w.name,
+          namespace: resp.namespace.name,
+          cluster: w.cluster,
+          type: w.type,
+          istioSidecar: w.istioSidecar,
+          istioAmbient: w.istioAmbient,
+          additionalDetailSample: undefined,
+          appLabel: w.appLabel,
+          versionLabel: w.versionLabel,
+          labels: w.labels,
+          istioReferences: w.istioReferences,
+          notCoveredAuthPolicy: w.notCoveredAuthPolicy,
+          health: WorkloadHealth.fromJson(
+            resp.namespace.name,
+            w.name,
+            w.health,
+            {
+              rateInterval: duration,
+              hasSidecar: w.istioSidecar,
+              hasAmbient: w.istioAmbient,
+            },
+          ),
+        };
+      });
+    });
   };
 }
 

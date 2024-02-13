@@ -2,10 +2,9 @@ import React from 'react';
 
 import { Select, SelectItem } from '@backstage/core-components';
 
-import { Grid, IconButton, Tooltip } from '@material-ui/core';
-import Refresh from '@material-ui/icons/Refresh';
-
 import { HistoryManager, URLParam } from '../../app/History';
+import { DefaultSecondaryMasthead } from '../../components/DefaultSecondaryMasthead/DefaultSecondaryMasthead';
+import { TimeDurationComponent } from '../../components/Time/TimeDurationComponent';
 import { serverConfig } from '../../config';
 
 export enum OverviewDisplayMode {
@@ -58,7 +57,7 @@ export const currentDirectionType = (): DirectionType => {
   return (drtype as DirectionType) || 'inbound';
 };
 
-const getDurationType = (): SelectItem[] => {
+export const getDurationType = (): SelectItem[] => {
   const items: SelectItem[] = [];
   Object.entries(serverConfig.durations).forEach(([key, value]) =>
     items.push({
@@ -94,50 +93,37 @@ export const OverviewToolbar = (props: OverviewToolbarProps) => {
     }
   };
 
-  const updateDurationType = (duration: number) => {
-    HistoryManager.setParam(URLParam.DURATION, duration.toString());
-    props.setDuration(duration);
+  const grids = () => {
+    const elements = [];
+    elements.push(
+      <Select
+        onChange={e => updateOverviewType(e as String)}
+        label="Health for"
+        items={healthTypeItems}
+        selected={props.overviewType}
+      />,
+      <Select
+        onChange={e => updateDirectionType(e as String)}
+        label="Traffic"
+        items={directionTypeItems}
+        selected={props.directionType}
+      />,
+      <TimeDurationComponent
+        key="DurationDropdown"
+        id="workload-list-duration-dropdown"
+        disabled={false}
+        duration={props.duration.toString()}
+        setDuration={props.setDuration}
+        label="Metrics for"
+      />,
+    );
+    return elements;
   };
 
   return (
-    <Grid container spacing={1} direction="row">
-      <Grid item xs={1}>
-        <Select
-          onChange={e => updateOverviewType(e as String)}
-          label="Health for"
-          items={healthTypeItems}
-          selected={props.overviewType}
-        />
-      </Grid>
-      <Grid item xs={1}>
-        <Select
-          onChange={e => updateDirectionType(e as String)}
-          label="Traffic"
-          items={directionTypeItems}
-          selected={props.directionType}
-        />
-      </Grid>
-      <Grid item xs={1}>
-        <Select
-          onChange={e => updateDurationType(e as number)}
-          label="Metrics from"
-          items={getDurationType()}
-          selected={props.duration.toString()}
-        />
-      </Grid>
-      <Grid item xs={8} />
-      <Grid item xs={1}>
-        <Tooltip title="Refresh" style={{ marginTop: '35px', float: 'right' }}>
-          <IconButton
-            color="primary"
-            aria-label="upload picture"
-            component="label"
-            onClick={props.onRefresh}
-          >
-            <Refresh />
-          </IconButton>
-        </Tooltip>
-      </Grid>
-    </Grid>
+    <DefaultSecondaryMasthead
+      elements={grids()}
+      onRefresh={() => props.onRefresh}
+    />
   );
 };

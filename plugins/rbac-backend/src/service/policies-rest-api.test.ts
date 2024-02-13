@@ -23,6 +23,7 @@ import {
   Source,
 } from '@janus-idp/backstage-plugin-rbac-common';
 
+import { PolicyMetadataStorage } from '../database/policy-metadata-storage';
 import { RoleMetadataStorage } from '../database/role-metadata';
 import { EnforcerDelegate } from './enforcer-delegate';
 import { RBACPermissionPolicy } from './permission-policy';
@@ -141,6 +142,13 @@ const roleMetadataStorageMock: RoleMetadataStorage = {
   removeRoleMetadata: jest.fn().mockImplementation(),
 };
 
+const policyMetadataStorageMock: PolicyMetadataStorage = {
+  findPolicyMetadataBySource: jest.fn().mockImplementation(),
+  findPolicyMetadata: jest.fn().mockImplementation(),
+  createPolicyMetadata: jest.fn().mockImplementation(),
+  removePolicyMetadata: jest.fn().mockImplementation(),
+};
+
 const conditionalStorage = {
   getConditions: jest.fn().mockImplementation(),
   createCondition: jest.fn().mockImplementation(),
@@ -231,6 +239,7 @@ describe('REST policies api', () => {
         conditionalStorage,
         mockEnforcer as EnforcerDelegate,
         roleMetadataStorageMock,
+        policyMetadataStorageMock,
         knex,
       ),
     };

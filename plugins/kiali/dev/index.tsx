@@ -1,16 +1,19 @@
 import React from 'react';
+import { BrowserRouter, Route, Routes, useNavigate } from 'react-router-dom';
 
 import { Entity } from '@backstage/catalog-model';
-import { Content, Page } from '@backstage/core-components';
+import { Content, HeaderTabs, Page } from '@backstage/core-components';
 import { createDevApp } from '@backstage/dev-utils';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { TestApiProvider } from '@backstage/test-utils';
 
+import { kialiPlugin } from '../src';
+import { KialiNoPath } from '../src/pages/Kiali';
 import { KialiHeader } from '../src/pages/Kiali/Header/KialiHeader';
 import { KialiHeaderEntity } from '../src/pages/Kiali/Header/KialiHeaderEntity';
 import { KialiEntity } from '../src/pages/Kiali/KialiEntity';
 import { OverviewPage } from '../src/pages/Overview/OverviewPage';
-import { kialiPlugin } from '../src/plugin';
+import { WorkloadListPage } from '../src/pages/WorkloadList/WorkloadListPage';
 import { KialiApi, kialiApiRef } from '../src/services/Api';
 import { KialiProvider } from '../src/store/KialiProvider';
 import { AuthInfo } from '../src/types/Auth';
@@ -40,6 +43,11 @@ import { Namespace } from '../src/types/Namespace';
 import { ServerConfig } from '../src/types/ServerConfig';
 import { StatusState } from '../src/types/StatusState';
 import { TLSStatus } from '../src/types/TLSStatus';
+import {
+  WorkloadListItem,
+  WorkloadNamespaceResponse,
+  WorkloadOverview,
+} from '../src/types/Workload';
 import { filterNsByAnnotation } from '../src/utils/entityFilter';
 import { kialiData } from './__fixtures__';
 import { mockEntity } from './mockEntity';
@@ -70,6 +78,37 @@ class MockKialiClient implements KialiApi {
     return filterNsByAnnotation(
       kialiData.namespaces as Namespace[],
       this.entity,
+    );
+  }
+
+  async getWorkloads(
+    namespace: string,
+    duration: number,
+  ): Promise<WorkloadListItem[]> {
+    const nsl = kialiData.workloads as WorkloadNamespaceResponse[];
+    // @ts-ignore
+    return nsl[namespace].workloads.map(
+      (w: WorkloadOverview): WorkloadListItem => {
+        return {
+          name: w.name,
+          namespace: namespace,
+          cluster: w.cluster,
+          type: w.type,
+          istioSidecar: w.istioSidecar,
+          istioAmbient: w.istioAmbient,
+          additionalDetailSample: undefined,
+          appLabel: w.appLabel,
+          versionLabel: w.versionLabel,
+          labels: w.labels,
+          istioReferences: w.istioReferences,
+          notCoveredAuthPolicy: w.notCoveredAuthPolicy,
+          health: WorkloadHealth.fromJson(namespace, w.name, w.health, {
+            rateInterval: duration,
+            hasSidecar: w.istioSidecar,
+            hasAmbient: w.istioAmbient,
+          }),
+        };
+      },
     );
   }
 
@@ -244,20 +283,62 @@ class MockKialiClient implements KialiApi {
 }
 
 interface Props {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   isEntity?: boolean;
 }
+
+export const TabsMock = () => {
+  const [selectedTab, setSelectedTab] = React.useState<number>(0);
+  const tabs = [
+    { label: 'Overview', route: 'overview' },
+    { label: 'Workloads', route: 'workloads' },
+  ];
+  const navigate = useNavigate();
+  return (
+    <HeaderTabs
+      selectedIndex={selectedTab}
+      onChange={(index: number) => {
+        navigate(tabs[index].route);
+        setSelectedTab(index);
+      }}
+      tabs={tabs.map(({ label }, index) => ({
+        id: index.toString(),
+        label,
+      }))}
+    />
+  );
+};
+
+const RoutesList = () => (
+  <Routes>
+    <Route path="/" element={<OverviewPage />} />
+    <Route path="/overview" element={<OverviewPage />} />
+    <Route path="/workloads" element={<WorkloadListPage />} />
+    <Route path="/kiali" element={<KialiEntity />} />
+    <Route path="*" element={<KialiNoPath />} />
+  </Routes>
+);
 
 const MockProvider = (props: Props) => {
   const content = (
     <KialiProvider entity={mockEntity}>
-      <Page themeId="tool">
-        {!props.isEntity && <KialiHeader />}
-        <Content>
-          {props.isEntity && <KialiHeaderEntity />}
-          {props.children}
-        </Content>
-      </Page>
+      <BrowserRouter>
+        <Page themeId="tool">
+          {!props.isEntity && (
+            <>
+              <KialiHeader />
+              <TabsMock />
+              <RoutesList />
+            </>
+          )}
+          {props.isEntity && (
+            <Content>
+              <KialiHeaderEntity />
+              <RoutesList />
+            </Content>
+          )}
+        </Page>
+      </BrowserRouter>
     </KialiProvider>
   );
 
@@ -275,20 +356,12 @@ const MockProvider = (props: Props) => {
 createDevApp()
   .registerPlugin(kialiPlugin)
   .addPage({
-    element: (
-      <MockProvider>
-        <OverviewPage />
-      </MockProvider>
-    ),
+    element: <MockProvider />,
     title: 'Kiali Overview',
     path: '/overview',
   })
   .addPage({
-    element: (
-      <MockProvider isEntity>
-        <KialiEntity />
-      </MockProvider>
-    ),
+    element: <MockProvider isEntity />,
     title: 'Kiali Entity',
     path: '/kiali',
   })

@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Card, CardContent, Grid } from '@material-ui/core';
 
-import * as FilterHelper from '../../../components/FilterList/FitlerHelper';
+import * as FilterHelper from '../../../components/FilterList/FilterHelper';
 import { NamespaceMTLSStatus } from '../../../components/MTls/NamespaceMTLSStatus';
 import { TLSInfo } from '../../../components/Overview/TLSInfo';
 import { PFBadge, PFBadges } from '../../../components/Pf/PfBadges';

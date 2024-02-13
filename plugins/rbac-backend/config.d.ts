@@ -3,6 +3,11 @@ export interface Config {
     rbac: {
       'policies-csv-file'?: string;
       /**
+       * Allow for reloading of the CSV file.
+       * @visibility frontend
+       */
+      policyFileReload?: boolean;
+      /**
        * Optional configuration for admins, can declare individual users and / or groups
        * @visibility frontend
        */

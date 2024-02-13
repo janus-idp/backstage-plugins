@@ -1,3 +1,5 @@
+import * as React from 'react';
+
 import { history, HistoryManager } from '../../app/History';
 import {
   ActiveFilter,
@@ -7,7 +9,7 @@ import {
   LabelOperation,
   ToggleType,
 } from '../../types/Filters';
-import * as FilterHelper from '../FilterList/FitlerHelper';
+import * as FilterHelper from '../FilterList/FilterHelper';
 
 export class FilterSelected {
   static selectedFilters: ActiveFilter[] | undefined = undefined;
@@ -81,4 +83,18 @@ export class Toggles {
   static getToggles = (): ActiveTogglesInfo => {
     return new Map<string, boolean>(Toggles.checked);
   };
+}
+
+export interface StatefulFiltersProps {
+  childrenFirst?: boolean;
+  initialFilters: FilterType[];
+  initialToggles?: ToggleType[];
+  onFilterChange: (active: ActiveFiltersInfo) => void;
+  onToggleChange?: (active: ActiveTogglesInfo) => void;
+  ref?: React.RefObject<any>;
+}
+
+export interface StatefulFilters {
+  filterAdded(labelFilt: FilterType, label: string): unknown;
+  removeFilter(category: string, label: string): unknown;
 }

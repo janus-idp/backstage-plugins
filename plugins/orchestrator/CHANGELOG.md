@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-orchestrator [1.4.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.3.3...@janus-idp/backstage-plugin-orchestrator@1.4.0) (2024-02-12)
+
+
+### Features
+
+* build Information dialog component to show confirmation or alert ([#1176](https://github.com/janus-idp/backstage-plugins/issues/1176)) ([ee8cc1d](https://github.com/janus-idp/backstage-plugins/commit/ee8cc1dad2f10d698b8fb7e19ef0f9abe3b6c6c7))
+
 ## @janus-idp/backstage-plugin-orchestrator [1.3.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.3.2...@janus-idp/backstage-plugin-orchestrator@1.3.3) (2024-02-08)
 
 
