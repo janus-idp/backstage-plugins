@@ -1,22 +1,15 @@
 import {
   DatabaseManager,
   PluginEndpointDiscovery,
-  resolvePackagePath,
   TokenManager,
 } from '@backstage/backend-common';
-import { DatabaseService } from '@backstage/backend-plugin-api';
 import { CatalogClient } from '@backstage/catalog-client';
 import { Config, ConfigReader } from '@backstage/config';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { RouterOptions } from '@backstage/plugin-permission-backend';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 
-import {
-  FileAdapter,
-  newEnforcer,
-  newModelFromString,
-  StringAdapter,
-} from 'casbin';
+import { newEnforcer, newModelFromString } from 'casbin';
 import { Router } from 'express';
 import { Logger } from 'winston';
 
