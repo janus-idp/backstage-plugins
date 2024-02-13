@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-orchestrator-backend [1.2.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.2.1...@janus-idp/backstage-plugin-orchestrator-backend@1.2.2) (2024-02-13)
+
+
+### Bug Fixes
+
+* **orchestrator:** filter out `null` values from action input ([#1199](https://github.com/janus-idp/backstage-plugins/issues/1199)) ([55c3927](https://github.com/janus-idp/backstage-plugins/commit/55c3927fb5211e1ec78719fd38740eb29e481962))
+
 ## @janus-idp/backstage-plugin-orchestrator-backend [1.2.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.2.0...@janus-idp/backstage-plugin-orchestrator-backend@1.2.1) (2024-02-05)
 
 
