@@ -95,7 +95,7 @@ NOTE: If you are using Red Hat Developer Hub backend plugin is pre-installed and
 
 ### Configure policy admins
 
-The RBAC plugin empowers you to manage permission policies for users and groups with a designated group of individuals known as policy administrators. These administrators are granted access to the RBAC plugin's REST API and user interface.
+The RBAC plugin empowers you to manage permission policies for users and groups with a designated group of individuals known as policy administrators. These administrators are granted access to the RBAC plugin's REST API and user interface as well as the ability to read from the catalog.
 
 You can specify the policy administrators in your application configuration as follows:
 
@@ -109,7 +109,21 @@ permission:
         - name: group:default/admins
 ```
 
-For more information on the available API endpoints, refer to the [API documentation](./docs/apis.md).
+The RBAC plugin also enables you to grant users the title of 'super user,' which provides them with unrestricted access throughout the Backstage instance.
+
+You can specify the super users in your application configuration as follows:
+
+```YAML
+permission:
+  enabled: true
+  rbac:
+    admin:
+      superUsers:
+        - name: user:default/alice
+        - name: user:default/mike
+```
+
+For more information on the available API endpoints accessible to the policy administrators, refer to the [API documentation](./docs/apis.md).
 
 ### Configuring policies via file
 
