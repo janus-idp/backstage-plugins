@@ -4,13 +4,19 @@ import {
   resolvePackagePath,
   TokenManager,
 } from '@backstage/backend-common';
+import { DatabaseService } from '@backstage/backend-plugin-api';
 import { CatalogClient } from '@backstage/catalog-client';
-import { Config } from '@backstage/config';
+import { Config, ConfigReader } from '@backstage/config';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { RouterOptions } from '@backstage/plugin-permission-backend';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 
-import { FileAdapter, newEnforcer, newModelFromString } from 'casbin';
+import {
+  FileAdapter,
+  newEnforcer,
+  newModelFromString,
+  StringAdapter,
+} from 'casbin';
 import { Router } from 'express';
 import { Logger } from 'winston';
 
@@ -39,29 +45,34 @@ export class PolicyBuilder {
     },
     pluginIdProvider: PluginIdProvider = { getPluginIds: () => [] },
   ): Promise<Router> {
-    let adapter;
     const databaseEnabled = env.config.getOptionalBoolean(
       'permission.rbac.database.enabled',
     );
 
-    const databaseManager = await DatabaseManager.fromConfig(
-      env.config,
-    ).forPlugin('permission');
-    // Database adapter work
+    let dbConfig: Config;
     if (databaseEnabled) {
-      adapter = await new CasbinDBAdapterFactory(
-        env.config,
-        databaseManager,
-      ).createAdapter();
+      dbConfig = env.config;
     } else {
-      adapter = new FileAdapter(
-        resolvePackagePath(
-          '@janus-idp/backstage-plugin-rbac-backend',
-          './model/rbac-policy.csv',
-        ),
-      );
-      env.logger.info('rbac backend plugin uses only file storage');
+      // use in memory sqlite database, data won't be persistent
+      dbConfig = new ConfigReader({
+        backend: {
+          database: {
+            client: 'better-sqlite3',
+            connection: ':memory:',
+          },
+        },
+      });
+
+      env.logger.warn(`rbac backend plugin data won't be persistent`);
     }
+
+    const databaseManager =
+      await DatabaseManager.fromConfig(dbConfig).forPlugin('permission');
+
+    const adapter = await new CasbinDBAdapterFactory(
+      dbConfig,
+      databaseManager,
+    ).createAdapter();
 
     const enf = await newEnforcer(newModelFromString(MODEL), adapter);
     await enf.loadPolicy();

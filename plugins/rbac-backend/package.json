@@ -60,7 +60,6 @@
   "files": [
     "dist",
     "config.d.ts",
-    "model",
     "migrations"
   ],
   "repository": "github:janus-idp/backstage-plugins",
