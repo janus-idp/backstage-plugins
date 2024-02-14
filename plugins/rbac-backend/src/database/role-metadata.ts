@@ -2,28 +2,30 @@ import { ConflictError, InputError, NotFoundError } from '@backstage/errors';
 
 import { Knex } from 'knex';
 
-import { RoleMetadata } from '@janus-idp/backstage-plugin-rbac-common';
+import { RoleMetadata, Source } from '@janus-idp/backstage-plugin-rbac-common';
+
+import { deepSortedEqual } from '../helper';
 
 export const ROLE_METADATA_TABLE = 'role-metadata';
 
 export interface RoleMetadataDao extends RoleMetadata {
   id?: number;
   roleEntityRef: string;
+  source: Source;
 }
 
 export interface RoleMetadataStorage {
   findRoleMetadata(
     roleEntityRef: string,
     trx?: Knex.Transaction,
-  ): Promise<RoleMetadata | undefined>;
+  ): Promise<RoleMetadataDao | undefined>;
   createRoleMetadata(
-    roleMetadata: RoleMetadata,
-    roleEntityRef: string,
+    roleMetadata: RoleMetadataDao,
     trx: Knex.Transaction,
   ): Promise<number>;
   updateRoleMetadata(
     roleMetadata: RoleMetadataDao,
-    roleEntityRef: string,
+    oldRoleEntityRef: string,
     trx: Knex.Transaction,
   ): Promise<void>;
   removeRoleMetadata(
@@ -38,17 +40,6 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
   async findRoleMetadata(
     roleEntityRef: string,
     trx: Knex.Transaction,
-  ): Promise<RoleMetadata | undefined> {
-    const roleMetadataDao = await this.findRoleMetadataDao(roleEntityRef, trx);
-    if (roleMetadataDao) {
-      return this.daoToMetadata(roleMetadataDao);
-    }
-    return undefined;
-  }
-
-  private async findRoleMetadataDao(
-    roleEntityRef: string,
-    trx: Knex.Transaction,
   ): Promise<RoleMetadataDao | undefined> {
     const db = trx || this.knex;
     return await db
@@ -59,42 +50,40 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
   }
 
   async createRoleMetadata(
-    roleMetadata: RoleMetadata,
-    roleEntityRef: string,
+    metadata: RoleMetadataDao,
     trx: Knex.Transaction,
   ): Promise<number> {
-    if (await this.findRoleMetadataDao(roleEntityRef, trx)) {
+    if (await this.findRoleMetadata(metadata.roleEntityRef, trx)) {
       throw new ConflictError(
-        `A metadata for role ${roleEntityRef} has already been stored`,
+        `A metadata for role ${metadata.roleEntityRef} has already been stored`,
       );
     }
 
-    const metadataDao = this.metadataToDao(roleMetadata, roleEntityRef);
     const result = await trx<RoleMetadataDao>(ROLE_METADATA_TABLE)
-      .insert(metadataDao)
+      .insert(metadata)
       .returning<[{ id: number }]>('id');
     if (result && result?.length > 0) {
       return result[0].id;
     }
 
     throw new Error(
-      `Failed to create the role metadata: '${JSON.stringify(metadataDao)}'.`,
+      `Failed to create the role metadata: '${JSON.stringify(metadata)}'.`,
     );
   }
 
   async updateRoleMetadata(
     newRoleMetadataDao: RoleMetadataDao,
-    roleEntityRef: string,
+    oldRoleEntityRef: string,
     trx: Knex.Transaction,
   ): Promise<void> {
-    const currentMetadataDao = await this.findRoleMetadataDao(
-      roleEntityRef,
+    const currentMetadataDao = await this.findRoleMetadata(
+      oldRoleEntityRef,
       trx,
     );
 
     if (!currentMetadataDao) {
       throw new NotFoundError(
-        `A metadata for role '${roleEntityRef}' was not found`,
+        `A metadata for role '${oldRoleEntityRef}' was not found`,
       );
     }
 
@@ -103,6 +92,10 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
       currentMetadataDao.source !== newRoleMetadataDao.source
     ) {
       throw new InputError(`The RoleMetadata.source field is 'read-only'.`);
+    }
+
+    if (deepSortedEqual(currentMetadataDao, newRoleMetadataDao)) {
+      return;
     }
 
     const result = await trx<RoleMetadataDao>(ROLE_METADATA_TABLE)
@@ -123,7 +116,7 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
     roleEntityRef: string,
     trx: Knex.Transaction,
   ): Promise<void> {
-    const metadataDao = await this.findRoleMetadataDao(roleEntityRef, trx);
+    const metadataDao = await this.findRoleMetadata(roleEntityRef, trx);
     if (!metadataDao) {
       throw new NotFoundError(
         `A metadata for role '${roleEntityRef}' was not found`,
@@ -134,20 +127,22 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
       .delete()
       .whereIn('id', [metadataDao.id!]);
   }
+}
 
-  private daoToMetadata(dao: RoleMetadataDao): RoleMetadata {
-    return {
-      source: dao.source,
-    };
-  }
+export function daoToMetadata(dao: RoleMetadataDao): RoleMetadata {
+  return {
+    source: dao.source,
+    description: dao.description,
+  };
+}
 
-  private metadataToDao(
-    roleMetadata: RoleMetadata,
-    roleEntityRef: string,
-  ): RoleMetadataDao {
-    return {
-      roleEntityRef,
-      source: roleMetadata.source,
-    };
-  }
+export function metadataToDao(
+  roleMetadata: RoleMetadataDao,
+  roleEntityRef: string,
+): RoleMetadataDao {
+  return {
+    roleEntityRef,
+    source: roleMetadata.source,
+    description: roleMetadata.description,
+  };
 }

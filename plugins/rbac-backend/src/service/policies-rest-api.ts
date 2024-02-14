@@ -42,7 +42,11 @@ import {
 import { PluginIdProvider } from '@janus-idp/backstage-plugin-rbac-node';
 
 import { ConditionalStorage } from '../database/conditional-storage';
-import { RoleMetadataStorage } from '../database/role-metadata';
+import {
+  daoToMetadata,
+  RoleMetadataDao,
+  RoleMetadataStorage,
+} from '../database/role-metadata';
 import { policyToString } from '../helper';
 import { EnforcerDelegate } from './enforcer-delegate';
 import { PluginPermissionMetadataCollector } from './plugin-endpoints';
@@ -208,9 +212,7 @@ export class PolicesServer {
 
       const processedPolicies = await this.processPolicies(policyRaw);
 
-      for (const policy of processedPolicies) {
-        await this.enforcer.addOrUpdatePolicy(policy, 'rest', false);
-      }
+      await this.enforcer.addPolicies(processedPolicies, 'rest');
 
       response.status(201).end();
     });
@@ -364,9 +366,12 @@ export class PolicesServer {
         }
       }
 
-      for (const role of roles) {
-        await this.enforcer.addOrUpdateGroupingPolicy(role, 'rest', false);
-      }
+      const metadata: RoleMetadataDao = {
+        roleEntityRef: roleRaw.name,
+        source: 'rest',
+        description: roleRaw.metadata?.description ?? '',
+      };
+      await this.enforcer.addGroupingPolicies(roles, metadata);
 
       response.status(201).end();
     });
@@ -473,10 +478,16 @@ export class PolicesServer {
         );
       }
 
+      const newMetadata: RoleMetadataDao = {
+        ...newRoleRaw.metadata,
+        source: 'rest',
+        roleEntityRef: newRoleRaw.name,
+      };
+
       await this.enforcer.updateGroupingPolicies(
         oldRole,
         newRole,
-        'rest',
+        newMetadata,
         false,
       );
 
@@ -704,7 +715,8 @@ export class PolicesServer {
 
     const result: Role[] = await Promise.all(
       Object.entries(combinedRoles).map(async ([role, value]) => {
-        const metadata = await this.roleMetadata.findRoleMetadata(role);
+        const metadataDao = await this.roleMetadata.findRoleMetadata(role);
+        const metadata = metadataDao ? daoToMetadata(metadataDao) : undefined;
         return Promise.resolve({
           memberReferences: value,
           name: role,

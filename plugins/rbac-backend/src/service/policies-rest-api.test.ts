@@ -124,8 +124,6 @@ const mockEnforcer: Partial<EnforcerDelegate> = {
 
   updatePolicies: jest.fn().mockImplementation(),
 
-  addOrUpdateGroupingPolicy: jest.fn().mockImplementation(),
-
   updateGroupingPolicies: jest.fn().mockImplementation(),
 };
 
@@ -456,7 +454,7 @@ describe('REST policies api', () => {
     });
 
     it('should not be created permission policy caused some unexpected error', async () => {
-      mockEnforcer.addOrUpdatePolicy = jest
+      mockEnforcer.addPolicies = jest
         .fn()
         .mockImplementation(async (): Promise<void> => {
           throw new Error(`Failed to add policies`);
@@ -1664,7 +1662,7 @@ describe('REST policies api', () => {
     });
 
     it('should not be created role caused some unexpected error', async () => {
-      mockEnforcer.addOrUpdateGroupingPolicy = jest
+      mockEnforcer.addGroupingPolicies = jest
         .fn()
         .mockImplementation(async (): Promise<void> => {
           throw new Error('Fail to create new policy');
@@ -2307,6 +2305,7 @@ describe('REST policies api', () => {
           memberReferences: ['group:default/test', 'user:default/test'],
           name: 'role:default/test',
           metadata: {
+            description: undefined,
             source: 'rest',
           },
         },

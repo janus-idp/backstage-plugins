@@ -69,7 +69,12 @@ describe('role-metadata-db-table', () => {
             trx,
           );
           await trx.commit();
-          expect(roleMetadata).toEqual({ source: 'rest' });
+          expect(roleMetadata).toEqual({
+            description: null,
+            id: 1,
+            roleEntityRef: 'role:default/some-super-important-role',
+            source: 'rest',
+          });
         } catch (err) {
           await trx.rollback();
           throw err;
@@ -88,8 +93,10 @@ describe('role-metadata-db-table', () => {
         let id;
         try {
           id = await db.createRoleMetadata(
-            { source: 'configuration' },
-            'role:default/some-super-important-role',
+            {
+              source: 'configuration',
+              roleEntityRef: 'role:default/some-super-important-role',
+            },
             trx,
           );
           await trx.commit();
@@ -105,6 +112,7 @@ describe('role-metadata-db-table', () => {
         expect(metadata.length).toEqual(1);
         expect(metadata[0]).toEqual({
           roleEntityRef: 'role:default/some-super-important-role',
+          description: null,
           id: 1,
           source: 'configuration',
         });
@@ -125,8 +133,11 @@ describe('role-metadata-db-table', () => {
         await expect(async () => {
           try {
             await db.createRoleMetadata(
-              { source: 'configuration' },
-              'role:default/some-super-important-role',
+              {
+                source: 'configuration',
+                roleEntityRef: 'role:default/some-super-important-role',
+              },
+
               trx,
             );
             await trx.commit();
@@ -151,12 +162,14 @@ describe('role-metadata-db-table', () => {
 
       await expect(
         db.createRoleMetadata(
-          { source: 'configuration' },
-          'role:default/some-super-important-role',
+          {
+            source: 'configuration',
+            roleEntityRef: 'role:default/some-super-important-role',
+          },
           trx,
         ),
       ).rejects.toThrow(
-        `Failed to create the role metadata: '{"roleEntityRef":"role:default/some-super-important-role","source":"configuration"}'.`,
+        `Failed to create the role metadata: '{"source":"configuration","roleEntityRef":"role:default/some-super-important-role"}'.`,
       );
     });
 
@@ -172,8 +185,10 @@ describe('role-metadata-db-table', () => {
         const trx = await knex.transaction();
         try {
           await db.createRoleMetadata(
-            { source: 'configuration' },
-            'role:default/some-super-important-role',
+            {
+              source: 'configuration',
+              roleEntityRef: 'role:default/some-super-important-role',
+            },
             trx,
           );
           await trx.commit();
@@ -182,7 +197,7 @@ describe('role-metadata-db-table', () => {
           throw err;
         }
       }).rejects.toThrow(
-        `Failed to create the role metadata: '{"roleEntityRef":"role:default/some-super-important-role","source":"configuration"}'.`,
+        `Failed to create the role metadata: '{"source":"configuration","roleEntityRef":"role:default/some-super-important-role"}'.`,
       );
     });
 
@@ -200,8 +215,10 @@ describe('role-metadata-db-table', () => {
         const trx = await knex.transaction();
         try {
           await db.createRoleMetadata(
-            { source: 'configuration' },
-            'role:default/some-super-important-role',
+            {
+              source: 'configuration',
+              roleEntityRef: 'role:default/some-super-important-role',
+            },
             trx,
           );
           await trx.commit();
@@ -246,6 +263,7 @@ describe('role-metadata-db-table', () => {
         );
         expect(metadata.length).toEqual(1);
         expect(metadata[0]).toEqual({
+          description: null,
           source: 'rest',
           roleEntityRef: 'role:default/some-super-important-role',
           id: 1,
@@ -315,6 +333,7 @@ describe('role-metadata-db-table', () => {
         );
         expect(metadata.length).toEqual(1);
         expect(metadata[0]).toEqual({
+          description: null,
           source: 'configuration',
           roleEntityRef: 'role:default/important-role',
           id: 1,

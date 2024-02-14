@@ -9,7 +9,11 @@ export type PermissionPolicyMetadata = {
 };
 
 export type RoleMetadata = {
-  source: Source;
+  description?: string;
+  source?: Source;
+  // not implemented yet
+  modifiedBy?: string;
+  lastModified?: string;
 };
 
 export type Policy = {
