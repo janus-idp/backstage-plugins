@@ -1,6 +1,7 @@
 import { KialiAppAction } from '../actions/KialiAppAction';
 import { CertsInfo } from '../types/CertsInfo';
 import { RawDate, TimeRange, UserName } from '../types/Common';
+import { EdgeLabelMode, EdgeMode, GraphDefinition, GraphType, Layout, NodeParamsType, RankMode, RankResult, SummaryData, TrafficRate } from '../types/Graph';
 import { ComponentStatus } from '../types/IstioStatus';
 import { NotificationGroup } from '../types/MessageCenter';
 import { Namespace } from '../types/Namespace';
@@ -15,6 +16,32 @@ export interface NamespaceState {
   readonly isFetching: boolean;
   readonly lastUpdated?: Date;
   readonly namespacesPerCluster?: Map<string, string[]>;
+}
+
+export interface GraphToolbarState {
+  // dropdown props
+  edgeLabels: EdgeLabelMode[];
+  graphType: GraphType;
+  rankBy: RankMode[];
+  trafficRates: TrafficRate[];
+  // find props
+  findValue: string;
+  hideValue: string;
+  showFindHelp: boolean;
+  // Toggle props
+  boxByCluster: boolean;
+  boxByNamespace: boolean;
+  compressOnHide: boolean;
+  showIdleEdges: boolean;
+  showIdleNodes: boolean;
+  showLegend: boolean;
+  showOutOfMesh: boolean;
+  showOperationNodes: boolean;
+  showRank: boolean;
+  showSecurity: boolean;
+  showServiceNodes: boolean;
+  showTrafficAnimation: boolean;
+  showVirtualServices: boolean;
 }
 
 export interface MessageCenterState {
@@ -37,6 +64,18 @@ export interface LoginSession {
   expiresOn: RawDate;
   username: UserName;
   kialiCookie: string;
+}
+
+export interface GraphState {
+  edgeMode: EdgeMode;
+  graphDefinition: GraphDefinition | null; // Not for consumption. Only for "Debug" dialog.
+  layout: Layout;
+  namespaceLayout: Layout;
+  node?: NodeParamsType;
+  rankResult: RankResult;
+  summaryData: SummaryData | null;
+  toolbarState: GraphToolbarState;
+  updateTime: number;
 }
 
 export interface LoginState {
@@ -65,6 +104,7 @@ export interface KialiAppState {
   // could also be session state
   /** Page Settings */
   authentication: LoginState;
+  graph: GraphState;
   istioStatus: ComponentStatus[];
   istioCertsInfo: CertsInfo[];
   messageCenter: MessageCenterState;

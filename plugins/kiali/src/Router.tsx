@@ -14,6 +14,8 @@ import { KialiNoAnnotation } from './pages/Kiali/KialiNoAnnotation';
 import { OverviewPage } from './pages/Overview/OverviewPage';
 import { WorkloadListPage } from './pages/WorkloadList/WorkloadListPage';
 import { KialiProvider } from './store/KialiProvider';
+import { GraphPage } from './pages/Graph/GraphPage';
+import { kialiRoutes } from './routes';
 
 export const KUBERNETES_ANNOTATION = 'backstage.io/kubernetes-id';
 export const KUBERNETES_NAMESPACE = 'backstage.io/kubernetes-namespace';
@@ -62,6 +64,7 @@ export const Router = () => {
           <Routes>
             <Route path="/" element={<OverviewPage />} />
             <Route path="/overview" element={<OverviewPage />} />
+            <Route path="/graph" element={<GraphPage />} />
             <Route path="/workloads" element={<WorkloadListPage />} />
             <Route path="*" element={<KialiNoPath />} />
           </Routes>
