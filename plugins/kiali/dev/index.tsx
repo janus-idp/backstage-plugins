@@ -13,6 +13,7 @@ import { KialiHeader } from '../src/pages/Kiali/Header/KialiHeader';
 import { KialiHeaderEntity } from '../src/pages/Kiali/Header/KialiHeaderEntity';
 import { KialiEntity } from '../src/pages/Kiali/KialiEntity';
 import { KialiNoAnnotation } from '../src/pages/Kiali/KialiNoAnnotation';
+import { KialiNoResources } from '../src/pages/Kiali/KialiNoResources';
 import { OverviewPage } from '../src/pages/Overview/OverviewPage';
 import { WorkloadListPage } from '../src/pages/WorkloadList/WorkloadListPage';
 import { KialiApi, kialiApiRef } from '../src/services/Api';
@@ -368,7 +369,7 @@ createDevApp()
     path: '/kiali',
   })
   .addPage({
-    element: <MockProvider isEntity entity={mockEntityAnnotationNoNamespace} />,
+    element: <KialiNoResources entity={mockEntityAnnotationNoNamespace} />,
     title: 'No resource',
     path: '/no-resource',
   })

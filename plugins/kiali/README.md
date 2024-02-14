@@ -132,7 +132,7 @@ The following table describes the parameters that you can configure to enable th
 
 | Name                  | Description                                                                                                          | Default Value | Required                                |
 | --------------------- | -------------------------------------------------------------------------------------------------------------------- | ------------- | --------------------------------------- |
-| `url`                 | Location of the kIALI server, such as `https://localhost:4000`                                                       | ""            | Yes                                     |
+| `url`                 | Location of the Kiali server, such as `https://localhost:4000`                                                       | ""            | Yes                                     |
 | `serviceAccountToken` | Service Account Token which is used for querying data from Kiali                                                     | ""            | Yes if using token based authentication |
 | `skipTLSVerify`       | Skip TLS certificate verification presented by the API server                                                        | false         | No                                      |
 | `caData`              | Base64-encoded certificate authority bundle in PEM format                                                            | ""            | No                                      |

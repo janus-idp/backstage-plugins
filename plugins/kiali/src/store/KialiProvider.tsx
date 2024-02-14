@@ -60,8 +60,9 @@ export const KialiProvider: React.FC<Props> = ({
   const promises = new PromisesRegistry();
   const [kialiCheck, setKialiCheck] =
     React.useState<KialiChecker>(initialChecker);
-  const [haveNamespaces, setHaveNamespaces] = React.useState<boolean>(false);
-
+  const [notHaveResources, setNotHaveResources] = React.useState<
+    boolean | undefined
+  >(undefined);
   const [loginState, loginDispatch] = React.useReducer(
     LoginReducer,
     initialStore.authentication,
@@ -109,7 +110,9 @@ export const KialiProvider: React.FC<Props> = ({
             NamespaceActions.receiveList([...data], new Date()),
           );
           if (data.length > 0) {
-            setHaveNamespaces(true);
+            setNotHaveResources(false);
+          } else {
+            setNotHaveResources(true);
           }
           namespaceDispatch(NamespaceActions.setActiveNamespaces([...data]));
         })
@@ -226,7 +229,13 @@ export const KialiProvider: React.FC<Props> = ({
   );
   useDebounce(refresh, 10);
 
-  const content = haveNamespaces ? (
+  if (loading) {
+    return <CircularProgress />;
+  } else if (!!notHaveResources) {
+    return <KialiNoResources entity={entity!} />;
+  }
+
+  return (
     <KialiContext.Provider
       value={{
         authentication: loginState,
@@ -248,9 +257,5 @@ export const KialiProvider: React.FC<Props> = ({
     >
       {kialiCheck.verify ? children : <KialiHelper check={kialiCheck} />}
     </KialiContext.Provider>
-  ) : (
-    <KialiNoResources entity={entity!} />
   );
-
-  return loading ? <CircularProgress /> : content;
 };
