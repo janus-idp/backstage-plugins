@@ -144,6 +144,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
   private readonly policyMetadataStorage: PolicyMetadataStorage;
   private readonly policiesFile?: string;
   private readonly allowReload?: boolean;
+  private readonly superUserList?: string[];
 
   public static async build(
     logger: Logger,
@@ -154,8 +155,13 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     policyMetaDataStorage: PolicyMetadataStorage,
     knex: Knex,
   ): Promise<RBACPermissionPolicy> {
+    const superUserList: string[] = [];
     const adminUsers = configApi.getOptionalConfigArray(
       'permission.rbac.admin.users',
+    );
+
+    const superUsers = configApi.getOptionalConfigArray(
+      'permission.rbac.admin.superUsers',
     );
 
     const policiesFile = configApi.getOptionalString(
@@ -165,6 +171,13 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     const allowReload = configApi.getOptionalBoolean(
       'permission.rbac.policyFileReload',
     );
+
+    if (superUsers && superUsers.length > 0) {
+      for (const user of superUsers) {
+        const userName = user.getString('name');
+        superUserList.push(userName);
+      }
+    }
 
     if (adminUsers && adminUsers.length > 0) {
       await useAdminsFromConfig(
@@ -198,6 +211,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
       policyMetaDataStorage,
       policiesFile,
       allowReload,
+      superUserList,
     );
   }
 
@@ -208,6 +222,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     policyMetadataStorage: PolicyMetadataStorage,
     policiesFile?: string,
     allowReload?: boolean,
+    superUserList?: string[],
   ) {
     this.enforcer = enforcer;
     this.logger = logger;
@@ -215,6 +230,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     this.policyMetadataStorage = policyMetadataStorage;
     this.policiesFile = policiesFile;
     this.allowReload = allowReload;
+    this.superUserList = superUserList;
   }
 
   async handle(
@@ -306,6 +322,10 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     permission: string,
     action: string,
   ): Promise<boolean> => {
+    if (this.superUserList!.includes(userIdentity)) {
+      return true;
+    }
+
     const filter: string[] = [userIdentity, permission, action];
     if (this.policiesFile && this.allowReload) {
       await loadFilteredCSV(

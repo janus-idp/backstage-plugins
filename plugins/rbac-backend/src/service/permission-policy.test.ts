@@ -300,6 +300,7 @@ describe('RBACPermissionPolicy Tests', () => {
       permission: {
         rbac: {
           'policies-csv-file': csvPermFile,
+          policyFileReload: true,
         },
       },
       backend: {
@@ -423,7 +424,7 @@ describe('RBACPermissionPolicy Tests', () => {
         storedPolicies,
         storedGroupPolicies,
       );
-      await createRBACPolicy(enf);
+      await createRBACPolicy(enf, true);
 
       expect(await enf.getGroupingPolicy()).toEqual(allEnfGroupPolicies);
 
@@ -487,7 +488,7 @@ describe('RBACPermissionPolicy Tests', () => {
         storedPolicies,
         storedGroupPolicies,
       );
-      await createRBACPolicy(enf);
+      const policy = await createRBACPolicy(enf, true);
 
       expect(await enf.getAllRoles()).toEqual(allEnfRoles);
 
@@ -509,6 +510,12 @@ describe('RBACPermissionPolicy Tests', () => {
       expect(
         roleMetadataStorageMock.removeRoleMetadata,
       ).not.toHaveBeenCalledWith('role:default/old-role', expect.anything());
+
+      const decision = await policy.handle(
+        newPolicyQueryWithBasicPermission('test.some.resource'),
+        newIdentityResponse('user:default/user-old-1'),
+      );
+      expect(decision.result).toBe(AuthorizeResult.DENY);
     });
 
     it('should cleanup old policies and group policies and metadata after re-attach policy file', async () => {
@@ -572,7 +579,7 @@ describe('RBACPermissionPolicy Tests', () => {
         storedPolicies,
         storedGroupPolicies,
       );
-      await createRBACPolicy(enf);
+      await createRBACPolicy(enf, true);
 
       expect(await enf.getAllRoles()).toEqual(allEnfRoles);
 
@@ -653,7 +660,7 @@ describe('RBACPermissionPolicy Tests', () => {
         storedPolicies,
         storedGroupPolicies,
       );
-      await createRBACPolicy(enf);
+      await createRBACPolicy(enf, true);
 
       expect(await enf.getAllRoles()).toEqual(allEnfRoles);
 
@@ -717,7 +724,7 @@ describe('RBACPermissionPolicy Tests', () => {
         storedPolicies,
         storedGroupPolicies,
       );
-      await createRBACPolicy(enf);
+      await createRBACPolicy(enf, true);
 
       expect(await enf.getAllRoles()).toEqual(allEnfRoles);
 
@@ -796,7 +803,7 @@ describe('RBACPermissionPolicy Tests', () => {
         storedPolicies,
         storedGroupPolicies,
       );
-      await createRBACPolicy(enf);
+      await createRBACPolicy(enf, true);
 
       expect(await enf.getAllRoles()).toEqual(allEnfRoles);
 
@@ -1079,11 +1086,14 @@ describe('RBACPermissionPolicy Tests', () => {
     );
     const admins = new Array<{ name: string }>();
     admins.push({ name: 'user:default/test_admin' });
+    const superUser = new Array<{ name: string }>();
+    superUser.push({ name: 'user:default/super_user' });
     const config = new ConfigReader({
       permission: {
         rbac: {
           admin: {
             users: admins,
+            superUsers: superUser,
           },
         },
       },
@@ -1191,6 +1201,27 @@ describe('RBACPermissionPolicy Tests', () => {
         newIdentityResponse('user:default/test_admin'),
       );
       expect(decision.result).toBe(AuthorizeResult.ALLOW);
+    });
+
+    it('should allow read access to resource permission for super user from config file', async () => {
+      const decision = await policy.handle(
+        newPolicyQueryWithResourcePermission(
+          'policy.entity.read',
+          'policy-entity',
+          'read',
+        ),
+        newIdentityResponse('user:default/super_user'),
+      );
+      expect(decision.result).toBe(AuthorizeResult.ALLOW);
+      const decision2 = await policy.handle(
+        newPolicyQueryWithResourcePermission(
+          'catalog.entity.delete',
+          'catalog-entity',
+          'delete',
+        ),
+        newIdentityResponse('user:default/super_user'),
+      );
+      expect(decision2.result).toBe(AuthorizeResult.ALLOW);
     });
 
     it('should remove users that are no longer in the config file', async () => {

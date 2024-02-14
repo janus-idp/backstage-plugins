@@ -8,7 +8,7 @@ export interface Config {
        */
       policyFileReload?: boolean;
       /**
-       * Optional configuration for admins, can declare individual users and / or groups
+       * Optional configuration for admins
        * @visibility frontend
        */
       admin?: {
@@ -17,6 +17,16 @@ export interface Config {
          * @visibility frontend
          */
         users?: Array<{
+          /**
+           * @visibility frontend
+           */
+          name: string;
+        }>;
+        /**
+         * The list of super users that will have allow all access, should be a list of only users
+         * @visibility frontend
+         */
+        superUsers?: Array<{
           /**
            * @visibility frontend
            */
