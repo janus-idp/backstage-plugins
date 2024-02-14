@@ -12,14 +12,10 @@ import { Box } from '@material-ui/core';
 
 import { ANNOTATION_SUPPORTED } from '../../Router';
 
-export const KialiNoResources = (props: { entity?: Entity }) => {
-  if (!props.entity) {
-    return <></>;
-  }
+export const KialiNoResources = (props: { entity: Entity }) => {
   const annotationsKey = Object.keys(
     props.entity.metadata.annotations || [],
   ).filter(key => ANNOTATION_SUPPORTED.indexOf(key) > -1);
-  console.log(props.entity);
   return (
     <Page themeId="tool">
       <Content>
