@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-kiali [1.10.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.10.0...@janus-idp/backstage-plugin-kiali@1.10.1) (2024-02-14)
+
+
+### Bug Fixes
+
+* **kiali:** add corner cases, fix some issues and improve dev env ([#1202](https://github.com/janus-idp/backstage-plugins/issues/1202)) ([fd9a8aa](https://github.com/janus-idp/backstage-plugins/commit/fd9a8aaae4aa7f625bbfdac954e2580d0dc0e30f))
+
 ## @janus-idp/backstage-plugin-kiali [1.10.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.9.1...@janus-idp/backstage-plugin-kiali@1.10.0) (2024-02-12)
 
 
