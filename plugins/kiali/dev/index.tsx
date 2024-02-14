@@ -12,6 +12,8 @@ import { KialiNoPath } from '../src/pages/Kiali';
 import { KialiHeader } from '../src/pages/Kiali/Header/KialiHeader';
 import { KialiHeaderEntity } from '../src/pages/Kiali/Header/KialiHeaderEntity';
 import { KialiEntity } from '../src/pages/Kiali/KialiEntity';
+import { KialiNoAnnotation } from '../src/pages/Kiali/KialiNoAnnotation';
+import { KialiNoResources } from '../src/pages/Kiali/KialiNoResources';
 import { OverviewPage } from '../src/pages/Overview/OverviewPage';
 import { WorkloadListPage } from '../src/pages/WorkloadList/WorkloadListPage';
 import { KialiApi, kialiApiRef } from '../src/services/Api';
@@ -50,7 +52,7 @@ import {
 } from '../src/types/Workload';
 import { filterNsByAnnotation } from '../src/utils/entityFilter';
 import { kialiData } from './__fixtures__';
-import { mockEntity } from './mockEntity';
+import { mockEntity, mockEntityAnnotationNoNamespace } from './mockEntity';
 
 class MockKialiClient implements KialiApi {
   private entity?: Entity;
@@ -284,6 +286,7 @@ class MockKialiClient implements KialiApi {
 
 interface Props {
   children?: React.ReactNode;
+  entity?: Entity;
   isEntity?: boolean;
 }
 
@@ -321,7 +324,7 @@ const RoutesList = () => (
 
 const MockProvider = (props: Props) => {
   const content = (
-    <KialiProvider entity={mockEntity}>
+    <KialiProvider entity={props.entity || mockEntity}>
       <BrowserRouter>
         <Page themeId="tool">
           {!props.isEntity && (
@@ -357,12 +360,22 @@ createDevApp()
   .registerPlugin(kialiPlugin)
   .addPage({
     element: <MockProvider />,
-    title: 'Kiali Overview',
+    title: 'KialiPage',
     path: '/overview',
   })
   .addPage({
     element: <MockProvider isEntity />,
-    title: 'Kiali Entity',
+    title: 'Entity',
     path: '/kiali',
+  })
+  .addPage({
+    element: <KialiNoResources entity={mockEntityAnnotationNoNamespace} />,
+    title: 'No resource',
+    path: '/no-resource',
+  })
+  .addPage({
+    element: <KialiNoAnnotation />,
+    title: 'No Annotation',
+    path: '/no-annotation',
   })
   .render();

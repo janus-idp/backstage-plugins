@@ -12,6 +12,7 @@ The Kiali plugin has the following capabilities:
   - Health by namespace
   - Canary info
   - Istio Config warnings
+- Worklist
 
 ## For administrators
 
@@ -25,54 +26,18 @@ The Kiali plugin has the following capabilities:
   annotations:
     ...
 
-    backstage.io/kubernetes-id: <BACKSTAGE_ENTITY_NAME>
-  ```
-
-  You can also add the `backstage.io/kubernetes-namespace` annotation to identify the Kubernetes resources using the defined namespace.
-
-  ```yaml
-  annotations:
-    ...
-
     backstage.io/kubernetes-namespace: <RESOURCE_NS>
   ```
+
+  For now we support kubernetes-namespace due Kiali works in namespace level. We expect to support `kubernetes-label-selector` and `kubernetes-id`
 
 - The following annotation is added to the `catalog-info.yaml` file of entity to view the latest `PipelineRun` in the CI/CD tab of the application:
 
   ```yaml
-  annotations:
-    ...
-
-    janus-idp.io/kiali-enabled : 'true'
+  janus-idp.io/kiali-enabled: 'true'
   ```
 
-- A custom label selector can be added, which Backstage uses to find the Kubernetes resources. The label selector takes precedence over the ID annotations.
-
-  ```yaml
-  annotations:
-    ...
-
-    backstage.io/kubernetes-label-selector: 'app=my-app,component=front-end'
-  ```
-
-- The following label is added to the resources so that the Kubernetes plugin gets the Kubernetes resources from the requested entity:
-
-  ```yaml
-  labels:
-    ...
-
-    backstage.io/kubernetes-id: <BACKSTAGE_ENTITY_NAME>`
-  ```
-
-  ***
-
-  **NOTE**
-
-  When using the label selector, the mentioned labels must be present on the resource.
-
-  ***
-
-#### Setting up the OCM frontend package
+#### Setting up the Kiali frontend package
 
 1. Install the Kiali plugin using the following commands:
 
@@ -166,8 +131,8 @@ Authentication methods:
 The following table describes the parameters that you can configure to enable the plugin under `catalog.providers.keycloakOrg.<ENVIRONMENT_NAME>` object in the `app-config.yaml` file:
 
 | Name                  | Description                                                                                                          | Default Value | Required                                |
-| --------------------- | -------------------------------------------------------------------------------------------------------------------- | ------------- | --------------------------------------- | --- |
-| `url`                 | Location of the kIALI server, such as `https://localhost:4000`                                                       | ""            | Yes                                     |     |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------- | ------------- | --------------------------------------- |
+| `url`                 | Location of the Kiali server, such as `https://localhost:4000`                                                       | ""            | Yes                                     |
 | `serviceAccountToken` | Service Account Token which is used for querying data from Kiali                                                     | ""            | Yes if using token based authentication |
 | `skipTLSVerify`       | Skip TLS certificate verification presented by the API server                                                        | false         | No                                      |
 | `caData`              | Base64-encoded certificate authority bundle in PEM format                                                            | ""            | No                                      |
@@ -178,19 +143,23 @@ The following table describes the parameters that you can configure to enable th
 
 1. Open your Backstage application and select a component from the **Catalog** page.
 
-![catalog-list](./images/catalog-list.png)
+![catalog-list](./images/janus/catalog-list.png)
 
 2. Check that you entity has the annotations.
 
-![entity](./images/entity.png)
+![entity](./images/janus/entity.png)
 
 3. Go to the **Kiali** tab.
 
    The **Kiali** tab displays the Overview view associated to a Servicemesh.
 
-   ![overview-tab](./images/overview_tab.png)
+   ![overview-tab](./images/janus/overview_tab.png)
 
    There is also a **Go To Kiali Graph** option at the bottom of each card, which redirects you to the **Graph in the Kiali Standalone**.
+
+## Red Hat Developer Hub
+
+If you want to know more about Kiali in Red Hat Developer Hub follow [these instructions](./RHDH.md)
 
 ## Development
 

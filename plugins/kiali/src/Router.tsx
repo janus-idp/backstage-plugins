@@ -2,20 +2,15 @@ import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 
 import { Entity } from '@backstage/catalog-model';
-import {
-  Content,
-  MissingAnnotationEmptyState,
-  Page,
-} from '@backstage/core-components';
+import { Content, Page } from '@backstage/core-components';
 import { useEntity } from '@backstage/plugin-catalog-react';
-
-import { Button } from '@material-ui/core';
 
 import { KialiNoPath } from './pages/Kiali';
 import { KialiHeader } from './pages/Kiali/Header/KialiHeader';
 import { KialiHeaderEntity } from './pages/Kiali/Header/KialiHeaderEntity';
 import { KialiTabs } from './pages/Kiali/Header/KialiTabs';
 import { KialiEntity } from './pages/Kiali/KialiEntity';
+import { KialiNoAnnotation } from './pages/Kiali/KialiNoAnnotation';
 import { OverviewPage } from './pages/Overview/OverviewPage';
 import { WorkloadListPage } from './pages/WorkloadList/WorkloadListPage';
 import { KialiProvider } from './store/KialiProvider';
@@ -25,14 +20,16 @@ export const KUBERNETES_NAMESPACE = 'backstage.io/kubernetes-namespace';
 export const KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION =
   'backstage.io/kubernetes-label-selector';
 
+export const ANNOTATION_SUPPORTED = [KUBERNETES_NAMESPACE];
+
 const validateAnnotation = (entity: Entity) => {
-  return (
-    Boolean(entity.metadata.annotations?.[KUBERNETES_NAMESPACE]) ||
-    Boolean(entity.metadata.annotations?.[KUBERNETES_ANNOTATION]) ||
-    Boolean(
-      entity.metadata.annotations?.[KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION],
-    )
-  );
+  let validated = false;
+  ANNOTATION_SUPPORTED.forEach(key => {
+    if (Boolean(entity.metadata.annotations?.[key])) {
+      validated = true;
+    }
+  });
+  return validated;
 };
 
 /*
@@ -41,22 +38,10 @@ const validateAnnotation = (entity: Entity) => {
 
 export const EmbeddedRouter = () => {
   const { entity } = useEntity();
-  if (!validateAnnotation(entity)) {
-    return (
-      <>
-        <MissingAnnotationEmptyState annotation={KUBERNETES_ANNOTATION} />
-        <h1>
-          Or use a label selector query, which takes precedence over the
-          previous annotation.
-        </h1>
-        <Button variant="contained" color="primary" href="#">
-          Read Kiali Plugin Docs
-        </Button>
-      </>
-    );
-  }
 
-  return (
+  return !validateAnnotation(entity) ? (
+    <KialiNoAnnotation />
+  ) : (
     <KialiProvider entity={entity}>
       <KialiHeaderEntity />
       <Routes>
