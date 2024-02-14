@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useRef } from 'react';
 import { useAsyncFn, useDebounce } from 'react-use';
 
-import { Content, Page } from '@backstage/core-components';
+import { Content } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
 import { CircularProgress } from '@material-ui/core';
@@ -14,6 +14,7 @@ import { VirtualList } from '../../components/VirtualList/VirtualList';
 import { isMultiCluster } from '../../config';
 import { getErrorString, kialiApiRef } from '../../services/Api';
 import { KialiAppState, KialiContext } from '../../store';
+import { baseStyle } from '../../styles/StyleUtils';
 import { WorkloadListItem } from '../../types/Workload';
 import { NamespaceInfo } from '../Overview/NamespaceInfo';
 import { getNamespaces } from '../Overview/OverviewPage';
@@ -120,7 +121,7 @@ export const WorkloadListPage = () => {
   };
 
   return (
-    <Page themeId="tool">
+    <div className={baseStyle}>
       <Content>
         <DefaultSecondaryMasthead elements={grids()} onRefresh={() => load()} />
         <VirtualList
@@ -130,6 +131,6 @@ export const WorkloadListPage = () => {
           hiddenColumns={hiddenColumns}
         />
       </Content>
-    </Page>
+    </div>
   );
 };

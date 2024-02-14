@@ -44,6 +44,8 @@ const getIstioLink = (item: TResource): string => {
 };
 
 // Links
+// TODO: Will be used for details pages
+// @ts-ignore
 const getLink = (item: TResource, config: Resource, query?: string): string => {
   let url =
     config.name === 'istio'
@@ -87,10 +89,9 @@ export const actionRenderer = (
 
 export const item: Renderer<TResource> = (
   resource: TResource,
-  config: Resource,
+  _: Resource,
   badge: PFBadgeType,
 ) => {
-  const key = `link_definition_${config.name}_${resource.namespace}_${resource.name}`;
   let serviceBadge = badge;
 
   if ('serviceRegistry' in resource && resource.serviceRegistry) {
@@ -114,9 +115,7 @@ export const item: Renderer<TResource> = (
       style={{ verticalAlign: 'middle', whiteSpace: 'nowrap' }}
     >
       <PFBadge badge={serviceBadge} position={topPosition} />
-      <Link key={key} to={getLink(resource, config)}>
-        {resource.name}
-      </Link>
+      {resource.name}
     </TableCell>
   );
 };

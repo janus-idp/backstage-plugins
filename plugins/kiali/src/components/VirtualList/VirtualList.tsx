@@ -132,7 +132,7 @@ export const VirtualList = (listProps: VirtualListProps<RenderResource>) => {
         {listProps.tableToolbar}
         <TableContainer>
           <Table>
-            <TableHead style={{ border: 'collapse' }}>
+            <TableHead style={{ border: 'collapse', background: 'white' }}>
               <TableRow>
                 {columns.map((column: ResourceType<any>, index: number) => (
                   <TableCell
