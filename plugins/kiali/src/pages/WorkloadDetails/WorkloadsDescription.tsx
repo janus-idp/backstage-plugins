@@ -11,6 +11,7 @@ import {
 } from '@patternfly/react-core';
 
 import { HealthIndicator } from '../../components/Health/HealthIndicator';
+import { Labels } from '../../components/Label/Labels';
 import { renderAPILogo, renderRuntimeLogo } from '../../components/Logos/Logos';
 import { PFBadge, PFBadges } from '../../components/Pf/PfBadges';
 import { TextOrLink } from '../../components/TextOrLink';
@@ -77,6 +78,16 @@ export const WorkloadDescription: React.FC<WorkloadDescriptionProps> = (
 
     workload.services?.forEach(s => services.push(s.name));
   }
+
+  const isTemplateLabels =
+    workload &&
+    [
+      'Deployment',
+      'ReplicaSet',
+      'ReplicationController',
+      'DeploymentConfig',
+      'StatefulSet',
+    ].indexOf(workload.type) >= 0;
 
   const runtimes = (workload?.runtimes ?? [])
     .map(r => r.name)
@@ -186,7 +197,18 @@ export const WorkloadDescription: React.FC<WorkloadDescriptionProps> = (
         )}
       </CardHeader>
 
-      <CardBody>{props.workload?.name}</CardBody>
+      <CardBody>
+        {workload.labels && (
+          <Labels
+            labels={workload.labels}
+            tooltipMessage={
+              isTemplateLabels
+                ? 'Labels defined on the Workload template'
+                : undefined
+            }
+          />
+        )}
+      </CardBody>
     </Card>
   ) : (
     <>Loading</>

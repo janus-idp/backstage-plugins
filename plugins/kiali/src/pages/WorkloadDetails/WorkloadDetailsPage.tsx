@@ -11,6 +11,7 @@ import { DefaultSecondaryMasthead } from '../../components/DefaultSecondaryMasth
 import * as FilterHelper from '../../components/FilterList/FilterHelper';
 import { TimeDurationComponent } from '../../components/Time/TimeDurationComponent';
 import { kialiApiRef } from '../../services/Api';
+import { WorkloadHealth } from '../../types/Health';
 import { Workload, WorkloadQuery } from '../../types/Workload';
 import { WorkloadInfo } from './WorkloadInfo';
 
@@ -18,6 +19,7 @@ export const WorkloadDetailsPage = () => {
   const { namespace, workload } = useParams();
   const kialiClient = useApi(kialiApiRef);
   const [workloadItem, setWorkloadItem] = React.useState<Workload>();
+  const [health, setHealth] = React.useState<WorkloadHealth>();
   const [duration, setDuration] = React.useState<number>(
     FilterHelper.currentDuration(),
   );
@@ -49,6 +51,17 @@ export const WorkloadDetailsPage = () => {
       .getWorkload(namespace ? namespace : '', workload ? workload : '', query)
       .then((workloadResponse: Workload) => {
         setWorkloadItem(workloadResponse);
+        const wkHealth = WorkloadHealth.fromJson(
+          namespace ? namespace : '',
+          workloadResponse.name,
+          workloadResponse.health,
+          {
+            rateInterval: duration,
+            hasSidecar: workloadResponse.istioSidecar,
+            hasAmbient: workloadResponse.istioAmbient,
+          },
+        );
+        setHealth(wkHealth);
       });
   };
 
@@ -72,6 +85,7 @@ export const WorkloadDetailsPage = () => {
         workload={workloadItem}
         duration={duration}
         namespace={namespace}
+        health={health}
       />
     );
   };
