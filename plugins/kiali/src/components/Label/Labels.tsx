@@ -80,7 +80,9 @@ export const Labels: React.FC<LabelsProps> = (props: LabelsProps) => {
       placement="right"
       title={<div style={{ textAlign: 'left' }}>{props.tooltipMessage}</div>}
     >
-      <KialiIcon.Info className={infoStyle} />
+      <div>
+        <KialiIcon.Info className={infoStyle} />
+      </div>
     </Tooltip>
   ) : undefined;
 

@@ -2,13 +2,11 @@ import * as React from 'react';
 
 import {
   Card,
-  CardBody,
+  CardContent,
   CardHeader,
-  Title,
-  TitleSizes,
   Tooltip,
-  TooltipPosition,
-} from '@patternfly/react-core';
+  Typography,
+} from '@material-ui/core';
 
 import { HealthIndicator } from '../../components/Health/HealthIndicator';
 import { Labels } from '../../components/Label/Labels';
@@ -161,43 +159,46 @@ export const WorkloadDescription: React.FC<WorkloadDescriptionProps> = (
   ) : undefined;
 
   return workload ? (
-    <Card id="WorkloadDescriptionCard" data-test="workload-description-card">
-      <CardHeader>
-        <Title headingLevel="h5" size={TitleSizes.lg}>
-          <div key="service-icon" className={iconStyle}>
-            <PFBadge badge={PFBadges.Workload} position={TooltipPosition.top} />
-          </div>
+    <Card>
+      <CardHeader
+        title={
+          <>
+            <Typography variant="h6" style={{ margin: '10px' }}>
+              <div key="service-icon" className={iconStyle}>
+                <PFBadge badge={PFBadges.Workload} position="top" />
+              </div>
 
-          {props.workload ? props.workload.name : 'Workload'}
+              {props.workload ? props.workload.name : 'Workload'}
 
-          {workloadProperties ? (
-            <Tooltip
-              position={TooltipPosition.right}
-              content={
-                <div style={{ textAlign: 'left' }}>{workloadProperties}</div>
-              }
-            >
-              <KialiIcon.Info className={infoStyle} />
-            </Tooltip>
-          ) : undefined}
+              {workloadProperties ? (
+                <Tooltip
+                  title={
+                    <div style={{ textAlign: 'left' }}>
+                      {workloadProperties}
+                    </div>
+                  }
+                >
+                  <div style={{ display: 'inline-block' }}>
+                    <KialiIcon.Info className={infoStyle} />
+                  </div>
+                </Tooltip>
+              ) : undefined}
 
-          <span className={healthIconStyle}>
-            <HealthIndicator id={workload.name} health={props.health} />
-          </span>
-        </Title>
+              <span className={healthIconStyle}>
+                <HealthIndicator id={workload.name} health={props.health} />
+              </span>
+            </Typography>
 
-        {props.workload?.cluster && isMultiCluster && (
-          <div key="cluster-icon" className={iconStyle}>
-            <PFBadge
-              badge={PFBadges.Cluster}
-              position={TooltipPosition.right}
-            />{' '}
-            {props.workload.cluster}
-          </div>
-        )}
-      </CardHeader>
+            {props.workload?.cluster && isMultiCluster && (
+              <div key="cluster-icon" className={iconStyle}>
+                <PFBadge badge={PFBadges.Cluster} /> {props.workload.cluster}
+              </div>
+            )}
+          </>
+        }
+      />
 
-      <CardBody>
+      <CardContent>
         {workload.labels && (
           <Labels
             labels={workload.labels}
@@ -208,7 +209,7 @@ export const WorkloadDescription: React.FC<WorkloadDescriptionProps> = (
             }
           />
         )}
-      </CardBody>
+      </CardContent>
     </Card>
   ) : (
     <>Loading</>

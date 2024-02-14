@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Card, CardContent, Grid } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 
 import { WorkloadHealth } from '../../types/Health';
 import { Workload } from '../../types/Workload';
@@ -15,18 +15,14 @@ type WorkloadInfoProps = {
 
 export const WorkloadInfo = (workloadProps: WorkloadInfoProps) => {
   return (
-    <Card>
-      <CardContent>
-        <Grid container spacing={2}>
-          <Grid key={`Card_${workloadProps.workload?.name}`} item xs={4}>
-            <WorkloadDescription
-              workload={workloadProps.workload}
-              health={workloadProps.health}
-              namespace={workloadProps.namespace}
-            />
-          </Grid>
-        </Grid>
-      </CardContent>
-    </Card>
+    <Grid container spacing={2} style={{ paddingTop: '20px' }}>
+      <Grid key={`Card_${workloadProps.workload?.name}`} item xs={4}>
+        <WorkloadDescription
+          workload={workloadProps.workload}
+          health={workloadProps.health}
+          namespace={workloadProps.namespace}
+        />
+      </Grid>
+    </Grid>
   );
 };
