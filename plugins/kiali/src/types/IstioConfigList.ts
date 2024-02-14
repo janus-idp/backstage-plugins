@@ -4,7 +4,11 @@ import {
   EnvoyFilter,
   Gateway,
   K8sGateway,
+  K8sGRPCRoute,
   K8sHTTPRoute,
+  K8sReferenceGrant,
+  K8sTCPRoute,
+  K8sTLSRoute,
   ObjectValidation,
   PeerAuthentication,
   RequestAuthentication,
@@ -21,28 +25,32 @@ import { Namespace } from './Namespace';
 import { ResourcePermissions } from './Permissions';
 
 export interface IstioConfigItem {
-  namespace: string;
+  authorizationPolicy?: AuthorizationPolicy;
   cluster?: string;
-  type: string;
-  name: string;
   creationTimestamp?: string;
-  resourceVersion?: string;
+  destinationRule?: DestinationRule;
+  envoyFilter?: EnvoyFilter;
   gateway?: Gateway;
+  k8sGRPCRoute?: K8sGRPCRoute;
   k8sGateway?: K8sGateway;
   k8sHTTPRoute?: K8sHTTPRoute;
-  virtualService?: VirtualService;
-  destinationRule?: DestinationRule;
-  serviceEntry?: ServiceEntry;
-  authorizationPolicy?: AuthorizationPolicy;
-  sidecar?: Sidecar;
-  wasmPlugin?: WasmPlugin;
-  telemetry?: Telemetry;
+  k8sReferenceGrant?: K8sReferenceGrant;
+  k8sTCPRoute?: K8sTCPRoute;
+  k8sTLSRoute?: K8sTLSRoute;
+  name: string;
+  namespace: string;
   peerAuthentication?: PeerAuthentication;
   requestAuthentication?: RequestAuthentication;
+  resourceVersion?: string;
+  serviceEntry?: ServiceEntry;
+  sidecar?: Sidecar;
+  telemetry?: Telemetry;
+  type: string;
+  validation?: ObjectValidation;
+  virtualService?: VirtualService;
+  wasmPlugin?: WasmPlugin;
   workloadEntry?: WorkloadEntry;
   workloadGroup?: WorkloadGroup;
-  envoyFilter?: EnvoyFilter;
-  validation?: ObjectValidation;
 }
 
 export declare type IstioConfigsMap = { [key: string]: IstioConfigList };

@@ -1113,6 +1113,138 @@ export interface PeerAuthentication extends IstioObject {
   spec: PeerAuthenticationSpec;
 }
 
+export interface K8sGRPCRoute extends IstioObject {
+  spec: K8sGRPCRouteSpec;
+}
+
+export interface K8sReferenceGrant extends IstioObject {
+  spec: K8sReferenceGrantSpec;
+}
+
+export interface K8sTCPRoute extends IstioObject {
+  spec: K8sTCPRouteSpec;
+}
+
+export interface K8sTLSRoute extends IstioObject {
+  spec: K8sTLSRouteSpec;
+}
+
+export interface K8sCommonRouteSpec {
+  parentRefs?: ParentRef[];
+}
+
+export interface K8sGRPCRouteSpec extends K8sCommonRouteSpec {
+  hostnames?: string[];
+  rules?: K8sGRPCRouteRule[];
+}
+
+export interface K8sHTTPRouteSpec extends K8sCommonRouteSpec {
+  hostnames?: string[];
+  rules?: K8sHTTPRouteRule[];
+}
+
+export interface K8sReferenceGrantSpec {
+  from?: K8sReferenceRule[];
+  to?: K8sReferenceRule[];
+}
+
+export interface K8sTCPRouteSpec extends K8sCommonRouteSpec {
+  rules?: K8sTCPRouteRule[];
+}
+
+export interface K8sTLSRouteSpec extends K8sCommonRouteSpec {
+  hostnames?: string[];
+  rules?: K8sTLSRouteRule[];
+}
+
+// rest of attributes used by k8s gateway objects
+export interface K8sGRPCRouteRule {
+  backendRefs?: K8sRouteBackendRef[];
+  matches?: K8sGRPCRouteMatch[];
+}
+
+export interface K8sHTTPRouteRule {
+  backendRefs?: K8sRouteBackendRef[];
+  filters?: K8sHTTPRouteFilter[];
+  matches?: K8sHTTPRouteMatch[];
+}
+
+export interface K8sReferenceRule {
+  group: string;
+  kind: string;
+  namespace?: string;
+}
+
+export interface K8sTCPRouteRule {
+  backendRefs?: K8sRouteBackendRef[];
+}
+
+export interface K8sTLSRouteRule {
+  backendRefs?: K8sRouteBackendRef[];
+}
+
+export interface K8sGRPCHeaderMatch {
+  name?: string;
+  type?: string;
+  value?: string;
+}
+
+export interface K8sGRPCMethodMatch {
+  method?: string;
+  service?: string;
+  type?: string;
+}
+
+export interface K8sGRPCRouteMatch {
+  headers?: K8sGRPCHeaderMatch[];
+  method?: K8sGRPCMethodMatch;
+}
+
+export interface K8sHTTPMatch {
+  name?: string;
+  type?: string;
+  value?: string;
+}
+
+export interface K8sHTTPRouteFilter {
+  requestHeaderModifier?: K8sHTTPHeaderFilter;
+  requestMirror?: K8sHTTPRequestMirrorFilter;
+  requestRedirect?: K8sHTTPRouteRequestRedirect;
+  type?: string;
+}
+
+export interface K8sHTTPRouteMatch {
+  headers?: K8sHTTPMatch[];
+  method?: string;
+  path?: K8sHTTPMatch;
+  queryParams?: K8sHTTPMatch[];
+}
+
+export interface K8sHTTPRouteRequestRedirect {
+  hostname?: string;
+  port?: number;
+  scheme?: string;
+  statusCode?: number;
+}
+
+export interface K8sHTTPHeaderFilter {
+  add?: HTTPHeader[];
+  remove?: string[];
+  set?: HTTPHeader[];
+}
+
+export interface K8sHTTPRequestMirrorFilter {
+  backendRef?: K8sRouteBackendRef;
+}
+
+export interface K8sRouteBackendRef {
+  filters?: K8sHTTPRouteFilter[];
+  name: string;
+  namespace?: string;
+  port?: number;
+  weight?: number;
+}
+
 export interface PeerAuthenticationSpec {
   selector?: PeerAuthenticationWorkloadSelector;
   mtls?: PeerAuthenticationMutualTls;

@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+import { Typography } from '@material-ui/core';
+
 import { KialiIcon } from '../../config';
 import * as H from '../../types/Health';
 import { PFColors } from '../Pf/PfColors';
@@ -116,4 +118,66 @@ export const HealthDetails: React.FC<HealthDetailsProps> = (
     </>
   );
   // @ts-ignore
+};
+
+export const renderTrafficStatus = (health: H.Health): React.ReactNode => {
+  const config = health.getStatusConfig();
+  const isValueInConfig =
+    config && health.health.statusConfig
+      ? health.health.statusConfig.value > 0
+      : false;
+  const item = health.getTrafficStatus();
+
+  if (item) {
+    const showTraffic = item.children
+      ? item.children.filter(sub => {
+          const showItem = sub.value && sub.value > 0;
+
+          return sub.status !== H.HEALTHY && showItem;
+        }).length > 0
+      : false;
+
+    if (showTraffic) {
+      return (
+        <div>
+          <Typography variant="h6">Traffic</Typography>
+
+          {item.text}
+
+          {item.children && (
+            <ul style={{ listStyleType: 'none' }}>
+              {item.children.map((sub, subIdx) => {
+                const showItem = sub.value && sub.value > 0;
+
+                return sub.status !== H.HEALTHY && showItem ? (
+                  <li key={subIdx}>
+                    <span style={{ marginRight: '0.5rem' }}>
+                      {createIcon(sub.status)}
+                    </span>
+                    {sub.text}
+                  </li>
+                ) : (
+                  <React.Fragment key={subIdx} />
+                );
+              })}
+
+              {config && isValueInConfig && (
+                <li key="degraded_failure_config">
+                  <span style={{ marginRight: '0.5rem' }}>
+                    {createIcon(H.DEGRADED)}
+                  </span>
+                  : {config.degraded === 0 ? '>' : '>='}
+                  {config.degraded}% {createIcon(H.FAILURE)}:{' '}
+                  {config.degraded === 0 ? '>' : '>='}
+                  {config.failure}%
+                </li>
+              )}
+            </ul>
+          )}
+        </div>
+      );
+    }
+  }
+
+  return undefined;
 };

@@ -8,17 +8,25 @@ import {
   Typography,
 } from '@material-ui/core';
 
+import { AmbientLabel } from '../../components/Ambient/AmbientLabel';
+import { DetailDescription } from '../../components/DetailsDescription/DetailDescription';
 import { HealthIndicator } from '../../components/Health/HealthIndicator';
 import { Labels } from '../../components/Label/Labels';
 import { renderAPILogo, renderRuntimeLogo } from '../../components/Logos/Logos';
+import { MissingAuthPolicy } from '../../components/MissingAuthPolicy/MissingAuthPolicy';
+import { MissingLabel } from '../../components/MissingLabel/MissingLabel';
+import { MissingSidecar } from '../../components/MissingSidecar/MissingSidecar';
 import { PFBadge, PFBadges } from '../../components/Pf/PfBadges';
 import { TextOrLink } from '../../components/TextOrLink';
 import { LocalTime } from '../../components/Time/LocalTime';
 import { isMultiCluster, serverConfig } from '../../config';
 import { KialiIcon } from '../../config/KialiIcon';
+import { isGateway, isWaypoint } from '../../helpers/LabelFilterHelper';
 import { kialiStyle } from '../../styles/StyleUtils';
 import * as H from '../../types/Health';
+import { validationKey } from '../../types/IstioConfigList';
 import { Workload } from '../../types/Workload';
+import { hasMissingAuthPolicy } from '../../utils/IstioConfigUtils';
 
 type WorkloadDescriptionProps = {
   health?: H.Health;
@@ -187,6 +195,55 @@ export const WorkloadDescription: React.FC<WorkloadDescriptionProps> = (
               <span className={healthIconStyle}>
                 <HealthIndicator id={workload.name} health={props.health} />
               </span>
+
+              {props.workload &&
+                !props.workload.istioSidecar &&
+                !props.workload.istioAmbient &&
+                !isWaypoint(props.workload.labels) && (
+                  <MissingSidecar
+                    namespace={props.namespace ? props.namespace : ''}
+                    tooltip
+                    text=""
+                    isGateway={isGateway(workload.labels)}
+                  />
+                )}
+
+              {props.workload &&
+                props.workload.istioAmbient &&
+                !isWaypoint(props.workload.labels) && (
+                  <AmbientLabel
+                    tooltip
+                    waypoint={
+                      props.workload.waypointWorkloads?.length > 0
+                        ? true
+                        : false
+                    }
+                  />
+                )}
+
+              {props.workload &&
+                hasMissingAuthPolicy(
+                  validationKey(props.workload.name, props.namespace),
+                  props.workload.validations,
+                ) && (
+                  <MissingAuthPolicy
+                    namespace={props.namespace ? props.namespace : ''}
+                    tooltip
+                    className={infoStyle}
+                    text=""
+                  />
+                )}
+
+              {props.workload &&
+                (!props.workload.appLabel || !props.workload.versionLabel) &&
+                !isWaypoint(props.workload.labels) && (
+                  <MissingLabel
+                    missingApp={!props.workload.appLabel}
+                    missingVersion={!props.workload.versionLabel}
+                    className={infoStyle}
+                    tooltip
+                  />
+                )}
             </Typography>
 
             {props.workload?.cluster && isMultiCluster && (
@@ -209,6 +266,21 @@ export const WorkloadDescription: React.FC<WorkloadDescriptionProps> = (
             }
           />
         )}
+        <DetailDescription
+          namespace={props.namespace ? props.namespace : ''}
+          apps={apps}
+          services={services}
+          health={props.health}
+          cluster={props.workload?.cluster}
+          waypointWorkloads={
+            // eslint-disable-next-line no-nested-ternary
+            props.workload
+              ? isWaypoint(props.workload.labels)
+                ? props.workload.waypointWorkloads
+                : undefined
+              : undefined
+          }
+        />
       </CardContent>
     </Card>
   ) : (
