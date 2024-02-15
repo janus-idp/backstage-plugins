@@ -23,6 +23,10 @@ export interface paths {
      */
     get: operations['getInstances'];
   };
+  '/v2/workflows/instances/{instanceId}': {
+    /** Get Workflow Instance by ID */
+    get: operations['getInstanceById'];
+  };
 }
 
 export type webhooks = Record<string, never>;
@@ -72,6 +76,10 @@ export interface components {
       annotations?: string[];
     };
     ProcessInstancesDTO: components['schemas']['ProcessInstanceDTO'][];
+    AssessedProcessInstanceDTO: {
+      instance: components['schemas']['ProcessInstanceDTO'];
+      assessedBy?: components['schemas']['ProcessInstanceDTO'];
+    };
     ProcessInstanceDTO: {
       id?: string;
       name?: string;
@@ -186,6 +194,29 @@ export interface operations {
         };
       };
       /** @description Error fetching instances */
+      500: {
+        content: {
+          'text/plain': string;
+        };
+      };
+    };
+  };
+  /** Get Workflow Instance by ID */
+  getInstanceById: {
+    parameters: {
+      path: {
+        /** @description ID of the workflow instance */
+        instanceId: string;
+      };
+    };
+    responses: {
+      /** @description Successful response */
+      200: {
+        content: {
+          'application/json': components['schemas']['ProcessInstanceDTO'];
+        };
+      };
+      /** @description Error fetching instance */
       500: {
         content: {
           'text/plain': string;

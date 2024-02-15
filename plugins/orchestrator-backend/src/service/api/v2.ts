@@ -1,6 +1,9 @@
 import moment from 'moment';
+import { ParsedRequest } from 'openapi-backend';
 
 import {
+  AssessedProcessInstance,
+  AssessedProcessInstanceDTO,
   ASSESSMENT_WORKFLOW_TYPE,
   ProcessInstance,
   ProcessInstanceDTO,
@@ -21,6 +24,7 @@ import {
 import { DataIndexService } from '../DataIndexService';
 import { SonataFlowService } from '../SonataFlowService';
 import {
+  getInstanceByIdV1,
   getInstancesV1,
   getWorkflowByIdV1,
   getWorkflowOverviewV1,
@@ -80,6 +84,29 @@ export async function getInstancesV2(
   const result = instances.map(def => mapToProcessInstanceDTO(def));
 
   return result;
+}
+
+export async function getInstanceByIdV2(
+  dataIndexService: DataIndexService,
+  instanceId: string,
+  includeAssessment?: string,
+): Promise<AssessedProcessInstanceDTO> {
+  const instance: AssessedProcessInstance = await getInstanceByIdV1(
+    dataIndexService,
+    instanceId,
+    includeAssessment,
+  );
+
+  if (!instance) {
+    throw new Error(`Couldn't fetch process instance ${instanceId}`);
+  }
+
+  return {
+    instance: mapToProcessInstanceDTO(instance.instance),
+    assessedBy: instance.assessedBy
+      ? mapToProcessInstanceDTO(instance.assessedBy)
+      : undefined,
+  };
 }
 
 // Mapping functions
@@ -217,4 +244,11 @@ function mapToProcessInstanceDTO(
     status: getProcessInstancesDTOFromString(processInstance.state),
     workflow: processInstance.processName || processInstance.processId,
   };
+}
+
+export function extractQueryParamV2(
+  req: ParsedRequest,
+  key: string,
+): string | undefined {
+  return req.query[key] as string | undefined;
 }

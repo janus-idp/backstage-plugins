@@ -8,11 +8,9 @@ import Router from 'express-promise-router';
 import { OpenAPIBackend, Request } from 'openapi-backend';
 
 import {
-  AssessedProcessInstance,
   fromWorkflowSource,
   openApiDocument,
   ORCHESTRATOR_SERVICE_READY_TOPIC,
-  ProcessInstance,
   QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
   QUERY_PARAM_BUSINESS_KEY,
   QUERY_PARAM_INCLUDE_ASSESSMENT,
@@ -25,12 +23,16 @@ import {
 import { RouterArgs } from '../routerWrapper';
 import { ApiResponseBuilder } from '../types/apiResponse';
 import {
+  extractQueryParamV1,
+  getInstanceByIdV1,
   getInstancesV1,
   getWorkflowOverviewByIdV1,
   getWorkflowOverviewV1,
   getWorkflowsV1,
 } from './api/v1';
 import {
+  extractQueryParamV2,
+  getInstanceByIdV2,
   getInstancesV2,
   getWorkflowOverviewByIdV2,
   getWorkflowOverviewV2,
@@ -250,7 +252,7 @@ function setupInternalRoutes(
       params: { workflowId },
     } = req;
 
-    const businessKey = extractQueryParam(req, QUERY_PARAM_BUSINESS_KEY);
+    const businessKey = extractQueryParamV1(req, QUERY_PARAM_BUSINESS_KEY);
 
     const definition =
       await services.dataIndexService.getWorkflowDefinition(workflowId);
@@ -319,34 +321,43 @@ function setupInternalRoutes(
       params: { instanceId },
     } = req;
 
-    const includeAssessment = extractQueryParam(
+    const includeAssessment = extractQueryParamV1(
       req,
       QUERY_PARAM_INCLUDE_ASSESSMENT,
     );
 
-    const instance =
-      await services.dataIndexService.fetchProcessInstance(instanceId);
-
-    if (!instance) {
-      res.status(500).send(`Couldn't fetch process instance ${instanceId}`);
-      return;
-    }
-
-    let assessedByInstance: ProcessInstance | undefined;
-
-    if (!!includeAssessment && instance.businessKey) {
-      assessedByInstance = await services.dataIndexService.fetchProcessInstance(
-        instance.businessKey,
-      );
-    }
-
-    const response: AssessedProcessInstance = {
-      instance,
-      assessedBy: assessedByInstance,
-    };
-
-    res.status(200).json(response);
+    await getInstanceByIdV1(
+      services.dataIndexService,
+      instanceId,
+      includeAssessment,
+    )
+      .then(result => res.status(200).json(result))
+      .catch(error => {
+        res.status(500).send(error.message || 'Internal Server Error');
+      });
   });
+
+  // v2
+  api.register(
+    'getInstanceById',
+    async (c, _req: express.Request, res: express.Response, next) => {
+      const instanceId = c.request.params.instanceId as string;
+      const includeAssessment = extractQueryParamV2(
+        c.request,
+        QUERY_PARAM_INCLUDE_ASSESSMENT,
+      );
+      await getInstanceByIdV2(
+        services.dataIndexService,
+        instanceId,
+        includeAssessment,
+      )
+        .then(result => res.status(200).json(result))
+        .catch(error => {
+          res.status(500).send(error.message || 'Internal Server Error');
+          next();
+        });
+    },
+  );
 
   router.get('/instances/:instanceId/jobs', async (req, res) => {
     const {
@@ -369,8 +380,8 @@ function setupInternalRoutes(
       params: { workflowId },
     } = req;
 
-    const instanceId = extractQueryParam(req, QUERY_PARAM_INSTANCE_ID);
-    const assessmentInstanceId = extractQueryParam(
+    const instanceId = extractQueryParamV1(req, QUERY_PARAM_INSTANCE_ID);
+    const assessmentInstanceId = extractQueryParamV1(
       req,
       QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
     );
@@ -466,7 +477,7 @@ function setupInternalRoutes(
   });
 
   router.post('/workflows', async (req, res) => {
-    const uri = extractQueryParam(req, QUERY_PARAM_URI);
+    const uri = extractQueryParamV1(req, QUERY_PARAM_URI);
 
     if (!uri) {
       res.status(400).send('uri query param is required');
@@ -537,11 +548,4 @@ function setupExternalRoutes(
     });
     res.status(200).json(result);
   });
-}
-
-function extractQueryParam(
-  req: express.Request,
-  key: string,
-): string | undefined {
-  return req.query[key] as string | undefined;
 }

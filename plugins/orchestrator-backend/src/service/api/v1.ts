@@ -1,6 +1,8 @@
+import express from 'express';
+
 import {
+  AssessedProcessInstance,
   ProcessInstance,
-  QUERY_PARAM_INCLUDE_ASSESSMENT,
   WorkflowDefinition,
   WorkflowInfo,
   WorkflowItem,
@@ -101,4 +103,37 @@ export async function getInstancesV1(
     throw new Error("Couldn't fetch process instances");
   }
   return instances;
+}
+
+export async function getInstanceByIdV1(
+  dataIndexService: DataIndexService,
+  instanceId: string,
+  includeAssessment?: string,
+): Promise<AssessedProcessInstance> {
+  const instance = await dataIndexService.fetchProcessInstance(instanceId);
+
+  if (!instance) {
+    throw new Error(`Couldn't fetch process instance ${instanceId}`);
+  }
+
+  let assessedByInstance: ProcessInstance | undefined;
+
+  if (!!includeAssessment && instance.businessKey) {
+    assessedByInstance = await dataIndexService.fetchProcessInstance(
+      instance.businessKey,
+    );
+  }
+
+  const response: AssessedProcessInstance = {
+    instance,
+    assessedBy: assessedByInstance,
+  };
+  return response;
+}
+
+export function extractQueryParamV1(
+  req: express.Request,
+  key: string,
+): string | undefined {
+  return req.query[key] as string | undefined;
 }

@@ -140,6 +140,45 @@ const OPENAPI = `
           }
         }
       }
+    },
+    "/v2/workflows/instances/{instanceId}": {
+      "get": {
+        "summary": "Get Workflow Instance by ID",
+        "operationId": "getInstanceById",
+        "parameters": [
+          {
+            "name": "instanceId",
+            "in": "path",
+            "required": true,
+            "description": "ID of the workflow instance",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProcessInstanceDTO"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error fetching instance",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -279,6 +318,20 @@ const OPENAPI = `
         "items": {
           "$ref": "#/components/schemas/ProcessInstanceDTO"
         }
+      },
+      "AssessedProcessInstanceDTO": {
+        "type": "object",
+        "properties": {
+          "instance": {
+            "$ref": "#/components/schemas/ProcessInstanceDTO"
+          },
+          "assessedBy": {
+            "$ref": "#/components/schemas/ProcessInstanceDTO"
+          }
+        },
+        "required": [
+          "instance"
+        ]
       },
       "ProcessInstanceDTO": {
         "type": "object",
