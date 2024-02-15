@@ -31,7 +31,7 @@ import { hasMissingAuthPolicy } from '../../utils/IstioConfigUtils';
 type WorkloadDescriptionProps = {
   health?: H.Health;
   namespace?: string;
-  workload?: Workload;
+  workload: Workload;
 };
 
 const resourceListStyle = kialiStyle({
@@ -166,7 +166,7 @@ export const WorkloadDescription: React.FC<WorkloadDescriptionProps> = (
     </>
   ) : undefined;
 
-  return workload ? (
+  return (
     <Card>
       <CardHeader
         title={
@@ -283,7 +283,5 @@ export const WorkloadDescription: React.FC<WorkloadDescriptionProps> = (
         />
       </CardContent>
     </Card>
-  ) : (
-    <>Loading</>
   );
 };

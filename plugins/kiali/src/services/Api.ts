@@ -15,7 +15,11 @@ import {
   ServiceHealth,
   WorkloadHealth,
 } from '../types/Health';
-import { IstioConfigsMap } from '../types/IstioConfigList';
+import {
+  IstioConfigList,
+  IstioConfigListQuery,
+  IstioConfigsMap,
+} from '../types/IstioConfigList';
 import {
   CanaryUpgradeStatus,
   OutboundTrafficPolicy,
@@ -135,6 +139,14 @@ export interface KialiApi {
     namespace: string,
     duration: number,
   ): Promise<WorkloadListItem[]>;
+  getIstioConfig(
+    namespace: string,
+    objects: string[],
+    validate: boolean,
+    labelSelector: string,
+    workloadSelector: string,
+    cluster?: string,
+  ): Promise<IstioConfigList>;
   setEntity(entity?: Entity): void;
   status(): Promise<any>;
 }
@@ -553,6 +565,44 @@ export class KialiApiClient implements KialiApi {
       HTTP_VERBS.GET,
       urls.workload(namespace, name),
       queryParams,
+      {},
+    ).then(resp => {
+      return resp;
+    });
+  };
+
+  getIstioConfig = async (
+    namespace: string,
+    objects: string[],
+    validate: boolean,
+    labelSelector: string,
+    workloadSelector: string,
+    cluster?: string,
+  ): Promise<IstioConfigList> => {
+    const params: QueryParams<IstioConfigListQuery> = {};
+    if (objects && objects.length > 0) {
+      params.objects = objects.join(',');
+    }
+    if (validate) {
+      params.validate = validate;
+    }
+
+    if (labelSelector) {
+      params.labelSelector = labelSelector;
+    }
+
+    if (workloadSelector) {
+      params.workloadSelector = workloadSelector;
+    }
+
+    if (cluster) {
+      params.clusterName = cluster;
+    }
+
+    return this.newRequest<IstioConfigList>(
+      HTTP_VERBS.GET,
+      urls.istioConfig(namespace),
+      params,
       {},
     ).then(resp => {
       return resp;
