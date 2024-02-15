@@ -432,8 +432,6 @@ export class CustomSingleInstanceGithubCredentialsProvider
       // Add the app credentials with their errors as well so that user can deal with them
       else {
         credentials.push({
-          headers: undefined,
-          token: undefined,
           type: 'app',
           error: app.error,
           appId: app.appId,

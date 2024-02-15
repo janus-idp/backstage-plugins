@@ -81,12 +81,18 @@ export type AppCredentialError = { appId: number; error: Error };
 
 export type ExtendedGithubCredentials =
   | GithubCredentials
-  | GithubAppCredentials;
+  | GithubAppCredentials
+  | GithubAppError;
 
 export type GithubAppCredentials = GithubCredentials & {
   type: 'app';
   appId: number;
-  error?: Error;
+};
+
+export type GithubAppError = {
+  type: 'app';
+  appId: number;
+  error: Error;
 };
 
 export function isGithubAppCredential(
