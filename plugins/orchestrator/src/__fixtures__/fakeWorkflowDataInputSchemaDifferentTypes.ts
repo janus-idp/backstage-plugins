@@ -1,82 +1,83 @@
-import { WorkflowDataInputSchemaResponse } from '@janus-idp/backstage-plugin-orchestrator-common';
+import { WorkflowInputSchemaResponse } from '@janus-idp/backstage-plugin-orchestrator-common';
 
-export const fakeDataInputSchemaDifferentTypes: WorkflowDataInputSchemaResponse =
-  {
-    workflowItem: {
-      uri: 'yamlgreet.sw.yaml',
-      definition: {
-        id: 'yamlgreet',
-        version: '1.0',
-        specVersion: '0.8',
-        name: 'Greeting workflow',
-        description: 'YAML based greeting workflow',
-        dataInputSchema: 'schemas/yamlgreet__main_schema.json',
-        start: 'ChooseOnLanguage',
-        functions: [
-          {
-            name: 'greetFunction',
-            type: 'custom',
-            operation: 'sysout',
-          },
-        ],
-        states: [
-          {
-            name: 'ChooseOnLanguage',
-            type: 'switch',
-            dataConditions: [
-              {
-                condition: '${ .language == "English" }',
-                transition: 'GreetInEnglish',
-              },
-              {
-                condition: '${ .language == "Spanish" }',
-                transition: 'GreetInSpanish',
-              },
-            ],
-            defaultCondition: {
+export const fakeDataInputSchemaDifferentTypes: WorkflowInputSchemaResponse = {
+  workflowItem: {
+    uri: 'yamlgreet.sw.yaml',
+    definition: {
+      id: 'yamlgreet',
+      version: '1.0',
+      specVersion: '0.8',
+      name: 'Greeting workflow',
+      description: 'YAML based greeting workflow',
+      dataInputSchema: 'schemas/yamlgreet__main_schema.json',
+      start: 'ChooseOnLanguage',
+      functions: [
+        {
+          name: 'greetFunction',
+          type: 'custom',
+          operation: 'sysout',
+        },
+      ],
+      states: [
+        {
+          name: 'ChooseOnLanguage',
+          type: 'switch',
+          dataConditions: [
+            {
+              condition: '${ .language == "English" }',
               transition: 'GreetInEnglish',
             },
-          },
-          {
-            name: 'GreetInEnglish',
-            type: 'inject',
-            data: {
-              greeting: 'Hello from YAML Workflow, ',
+            {
+              condition: '${ .language == "Spanish" }',
+              transition: 'GreetInSpanish',
             },
-            transition: 'GreetPerson',
+          ],
+          defaultCondition: {
+            transition: 'GreetInEnglish',
           },
-          {
-            name: 'GreetInSpanish',
-            type: 'inject',
-            data: {
-              greeting: 'Saludos desde YAML Workflow, ',
-            },
-            transition: 'GreetPerson',
+        },
+        {
+          name: 'GreetInEnglish',
+          type: 'inject',
+          data: {
+            greeting: 'Hello from YAML Workflow, ',
           },
-          {
-            name: 'GreetPerson',
-            type: 'operation',
-            actions: [
-              {
-                name: 'greetAction',
-                functionRef: {
-                  refName: 'greetFunction',
-                  arguments: {
-                    message: '.greeting+.name',
-                  },
+          transition: 'GreetPerson',
+        },
+        {
+          name: 'GreetInSpanish',
+          type: 'inject',
+          data: {
+            greeting: 'Saludos desde YAML Workflow, ',
+          },
+          transition: 'GreetPerson',
+        },
+        {
+          name: 'GreetPerson',
+          type: 'operation',
+          actions: [
+            {
+              name: 'greetAction',
+              functionRef: {
+                refName: 'greetFunction',
+                arguments: {
+                  message: '.greeting+.name',
                 },
               },
-            ],
-            end: {
-              terminate: true,
             },
+          ],
+          end: {
+            terminate: true,
           },
-        ],
-      },
+        },
+      ],
     },
-    schemas: [
-      {
-        title: 'Boolean field',
+  },
+  isComposedSchema: true,
+  schemaSteps: [
+    {
+      title: 'Boolean field',
+      schema: {
         type: 'object',
         properties: {
           default: {
@@ -86,9 +87,15 @@ export const fakeDataInputSchemaDifferentTypes: WorkflowDataInputSchemaResponse 
           },
         },
       },
-      {
-        title: 'String formats',
+      key: 'booleanfield',
+      readonlyKeys: [],
+      data: {},
+    },
+    {
+      title: 'String formats',
+      schema: {
         type: 'object',
+
         properties: {
           email: {
             type: 'string',
@@ -100,7 +107,16 @@ export const fakeDataInputSchemaDifferentTypes: WorkflowDataInputSchemaResponse 
           },
         },
       },
-      {
+      data: {},
+      readonlyKeys: [],
+      key: 'string-formats',
+    },
+    {
+      readonlyKeys: [],
+      key: 'select',
+      title: 'Select',
+      data: {},
+      schema: {
         title: 'Select',
         type: 'object',
         properties: {
@@ -111,8 +127,13 @@ export const fakeDataInputSchemaDifferentTypes: WorkflowDataInputSchemaResponse 
           },
         },
       },
-      {
-        title: 'Date and time widgets',
+    },
+    {
+      readonlyKeys: [],
+      key: 'dateandtime',
+      title: 'Date and time',
+      data: {},
+      schema: {
         type: 'object',
         properties: {
           datetime: {
@@ -129,8 +150,11 @@ export const fakeDataInputSchemaDifferentTypes: WorkflowDataInputSchemaResponse 
           },
         },
       },
-      {
-        title: 'Array',
+    },
+    {
+      key: 'array',
+      title: 'Array',
+      schema: {
         type: 'object',
         required: ['title'],
         properties: {
@@ -165,6 +189,8 @@ export const fakeDataInputSchemaDifferentTypes: WorkflowDataInputSchemaResponse 
           },
         },
       },
-    ],
-    initialState: { values: [], readonlyKeys: [] },
-  };
+      data: { title: 'my task list' },
+      readonlyKeys: ['title'],
+    },
+  ],
+};

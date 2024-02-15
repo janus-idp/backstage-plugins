@@ -11,8 +11,8 @@ import {
   QUERY_PARAM_INCLUDE_ASSESSMENT,
   QUERY_PARAM_INSTANCE_ID,
   QUERY_PARAM_URI,
-  WorkflowDataInputSchemaResponse,
   WorkflowExecutionResponse,
+  WorkflowInputSchemaResponse,
   WorkflowItem,
   WorkflowListResult,
   WorkflowOverview,
@@ -141,7 +141,7 @@ export class OrchestratorClient implements OrchestratorApi {
     workflowId: string;
     instanceId?: string;
     assessmentInstanceId?: string;
-  }): Promise<WorkflowDataInputSchemaResponse> {
+  }): Promise<WorkflowInputSchemaResponse> {
     const baseUrl = await this.getBaseUrl();
     const endpoint = `${baseUrl}/workflows/${args.workflowId}/inputSchema`;
     const urlToFetch = buildUrl(endpoint, {

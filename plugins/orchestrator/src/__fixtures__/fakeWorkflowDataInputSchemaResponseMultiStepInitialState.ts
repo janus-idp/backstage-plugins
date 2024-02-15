@@ -1,6 +1,6 @@
-import { WorkflowDataInputSchemaResponse } from '@janus-idp/backstage-plugin-orchestrator-common';
+import { WorkflowInputSchemaResponse } from '@janus-idp/backstage-plugin-orchestrator-common';
 
-export const fakeDataInputSchemaMultiStepInitialStateResponse: WorkflowDataInputSchemaResponse =
+export const fakeDataInputSchemaMultiStepInitialStateResponse: WorkflowInputSchemaResponse =
   {
     workflowItem: {
       uri: 'quarkus-backend.sw.yaml',
@@ -402,167 +402,177 @@ export const fakeDataInputSchemaMultiStepInitialStateResponse: WorkflowDataInput
         ],
       },
     },
-    schemas: [
+    schemaSteps: [
       {
-        $id: 'classpath:/schemas/quarkus-backend__ref-schema__New_Component.json',
+        key: 'newcomponent',
+        readonlyKeys: ['system'],
         title: 'Provide information about the new component',
-        $schema: 'http://json-schema.org/draft-07/schema#',
-        type: 'object',
-        properties: {
-          orgName: {
-            title: 'Organization Name',
-            description: 'Organization name',
-            type: 'string',
-          },
-          repoName: {
-            title: 'Repository Name',
-            description: 'Repository name',
-            type: 'string',
-          },
-          description: {
-            title: 'Description',
-            description: 'Help others understand what this component is for',
-            type: 'string',
-          },
-          owner: {
-            title: 'Owner',
-            description: 'An entity from the catalog',
-            type: 'string',
-          },
-          system: {
-            title: 'System',
-            description: 'An entity from the catalog',
-            type: 'string',
-          },
-          port: {
-            title: 'Port',
-            description: 'Override the port exposed for the application',
-            type: 'number',
-            default: 8080,
-          },
-        },
-        required: ['orgName', 'repoName', 'owner', 'system', 'port'],
-      },
-      {
-        $id: 'classpath:/schemas/quarkus-backend__ref-schema__Java_Metadata.json',
-        title: 'Provide information about the Java metadata',
-        $schema: 'http://json-schema.org/draft-07/schema#',
-        type: 'object',
-        properties: {
-          groupId: {
-            title: 'Group ID',
-            description: 'Maven Group ID eg (io.janus)',
-            type: 'string',
-            default: 'io.janus',
-          },
-          artifactId: {
-            title: 'Artifact ID',
-            description: 'Maven Artifact ID',
-            type: 'string',
-            default: 'quarkusapp',
-          },
-          javaPackageName: {
-            title: 'Java Package Namespace',
-            description:
-              'Name for the Java Package (ensure to use the / character as this is used for folder structure) should match Group ID and Artifact ID',
-            type: 'string',
-            default: 'io/janus/quarkusapp',
-          },
-          version: {
-            title: 'Version',
-            description: 'Maven Artifact Version',
-            type: 'string',
-            default: '1.0.0-SNAPSHOT',
-          },
-        },
-        required: ['groupId', 'artifactId', 'javaPackageName', 'version'],
-      },
-      {
-        $id: 'classpath:/schemas/quarkus-backend__ref-schema__CI_Method.json',
-        title: 'Provide information about the CI method',
-        $schema: 'http://json-schema.org/draft-07/schema#',
-        type: 'object',
-        properties: {
-          ci: {
-            title: 'CI Method',
-            type: 'string',
-            default: 'github',
-            oneOf: [
-              {
-                const: 'github',
-                title: 'GitHub Action',
-              },
-              {
-                const: 'tekton',
-                title: 'Tekton',
-              },
-            ],
-          },
-        },
-        allOf: [
-          {
-            if: {
-              properties: {
-                ci: {
-                  const: 'github',
-                },
-              },
-            },
-          },
-          {
-            if: {
-              properties: {
-                ci: {
-                  const: 'tekton',
-                },
-              },
-            },
-            then: {
-              properties: {
-                imageRepository: {
-                  title: 'Image Registry',
-                  description: 'The registry to use',
-                  type: 'string',
-                  default: 'quay.io',
-                  oneOf: [
-                    {
-                      const: 'quay.io',
-                      title: 'Quay',
-                    },
-                    {
-                      const: 'image-registry.openshift-image-registry.svc:5000',
-                      title: 'Internal OpenShift Registry',
-                    },
-                  ],
-                },
-                imageUrl: {
-                  title: 'Image URL',
-                  description:
-                    'The Quay.io or OpenShift Image URL <REGISTRY>/<IMAGE_URL>/<REPO_NAME>',
-                  type: 'string',
-                },
-                namespace: {
-                  title: 'Namespace',
-                  description: 'The namespace for deploying resources',
-                  type: 'string',
-                },
-              },
-              required: ['namespace', 'imageUrl', 'imageRepository'],
-            },
-          },
-        ],
-      },
-    ],
-    initialState: {
-      values: [
-        {
-          orgName: 'Org name',
-          repoName: 'Repo name',
-          description: 'Description',
-          owner: 'owner',
+        data: {
           system: 'system',
         },
-      ],
-      readonlyKeys: ['orgName', 'system'],
-    },
+        schema: {
+          $id: 'classpath:/schemas/quarkus-backend__ref-schema__New_Component.json',
+          title: 'Provide information about the new component',
+          $schema: 'http://json-schema.org/draft-07/schema#',
+          type: 'object',
+          properties: {
+            orgName: {
+              title: 'Organization Name',
+              description: 'Organization name',
+              type: 'string',
+            },
+            repoName: {
+              title: 'Repository Name',
+              description: 'Repository name',
+              type: 'string',
+            },
+            description: {
+              title: 'Description',
+              description: 'Help others understand what this component is for',
+              type: 'string',
+            },
+            owner: {
+              title: 'Owner',
+              description: 'An entity from the catalog',
+              type: 'string',
+            },
+            system: {
+              title: 'System',
+              description: 'An entity from the catalog',
+              type: 'string',
+            },
+            port: {
+              title: 'Port',
+              description: 'Override the port exposed for the application',
+              type: 'number',
+              default: 8080,
+            },
+          },
+          required: ['orgName', 'repoName', 'owner', 'system', 'port'],
+        },
+      },
+      {
+        schema: {
+          $id: 'classpath:/schemas/quarkus-backend__ref-schema__Java_Metadata.json',
+          title: 'Provide information about the Java metadata',
+          $schema: 'http://json-schema.org/draft-07/schema#',
+          type: 'object',
+          properties: {
+            groupId: {
+              title: 'Group ID',
+              description: 'Maven Group ID eg (io.janus)',
+              type: 'string',
+              default: 'io.janus',
+            },
+            artifactId: {
+              title: 'Artifact ID',
+              description: 'Maven Artifact ID',
+              type: 'string',
+              default: 'quarkusapp',
+            },
+            javaPackageName: {
+              title: 'Java Package Namespace',
+              description:
+                'Name for the Java Package (ensure to use the / character as this is used for folder structure) should match Group ID and Artifact ID',
+              type: 'string',
+              default: 'io/janus/quarkusapp',
+            },
+            version: {
+              title: 'Version',
+              description: 'Maven Artifact Version',
+              type: 'string',
+              default: '1.0.0-SNAPSHOT',
+            },
+          },
+          required: ['groupId', 'artifactId', 'javaPackageName', 'version'],
+        },
+        title: 'Provide information about the Java metadata',
+        key: 'javametadata',
+        data: {},
+        readonlyKeys: [],
+      },
+      {
+        schema: {
+          $id: 'classpath:/schemas/quarkus-backend__ref-schema__CI_Method.json',
+          title: 'Provide information about the CI method',
+          $schema: 'http://json-schema.org/draft-07/schema#',
+          type: 'object',
+          properties: {
+            ci: {
+              title: 'CI Method',
+              type: 'string',
+              default: 'github',
+              oneOf: [
+                {
+                  const: 'github',
+                  title: 'GitHub Action',
+                },
+                {
+                  const: 'tekton',
+                  title: 'Tekton',
+                },
+              ],
+            },
+          },
+          allOf: [
+            {
+              if: {
+                properties: {
+                  ci: {
+                    const: 'github',
+                  },
+                },
+              },
+            },
+            {
+              if: {
+                properties: {
+                  ci: {
+                    const: 'tekton',
+                  },
+                },
+              },
+              then: {
+                properties: {
+                  imageRepository: {
+                    title: 'Image Registry',
+                    description: 'The registry to use',
+                    type: 'string',
+                    default: 'quay.io',
+                    oneOf: [
+                      {
+                        const: 'quay.io',
+                        title: 'Quay',
+                      },
+                      {
+                        const:
+                          'image-registry.openshift-image-registry.svc:5000',
+                        title: 'Internal OpenShift Registry',
+                      },
+                    ],
+                  },
+                  imageUrl: {
+                    title: 'Image URL',
+                    description:
+                      'The Quay.io or OpenShift Image URL <REGISTRY>/<IMAGE_URL>/<REPO_NAME>',
+                    type: 'string',
+                  },
+                  namespace: {
+                    title: 'Namespace',
+                    description: 'The namespace for deploying resources',
+                    type: 'string',
+                  },
+                },
+                required: ['namespace', 'imageUrl', 'imageRepository'],
+              },
+            },
+          ],
+        },
+        data: { ci: 'tekton' },
+        key: 'ci',
+        title: 'Ci',
+        readonlyKeys: [],
+      },
+    ],
+    isComposedSchema: true,
   };

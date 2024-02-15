@@ -17,40 +17,55 @@ import { FormProps, withTheme } from '@rjsf/core-v5';
 import { Theme as MuiTheme } from '@rjsf/material-ui-v5';
 import { UiSchema } from '@rjsf/utils';
 import validator from '@rjsf/validator-ajv8';
-import { JSONSchema7 } from 'json-schema';
 
-import { DataInputSchemaInitialState } from '@janus-idp/backstage-plugin-orchestrator-common';
+import { WorkflowInputSchemaStep } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import SubmitButton from '../SubmitButton';
 
 const MuiForm = withTheme<JsonObject>(MuiTheme);
 
+const getCombinedData = (
+  steps: WorkflowInputSchemaStep[],
+  isComposedSchema: boolean,
+): JsonObject => {
+  if (!isComposedSchema) {
+    return steps[0].data;
+  }
+  return steps.reduce<JsonObject>(
+    (prev, { key, data }) => ({ ...prev, [key]: data }),
+    {},
+  );
+};
+
 const ReviewStep = ({
   busy,
-  formDataObjects,
+  steps,
+  isComposedSchema,
   handleBack,
   handleReset,
   handleExecute,
 }: {
   busy: boolean;
-  formDataObjects: JsonObject[];
+  steps: WorkflowInputSchemaStep[];
+  isComposedSchema: boolean;
   handleBack: () => void;
   handleReset: () => void;
-  handleExecute: () => void;
+  handleExecute: (getParameters: () => JsonObject) => Promise<void>;
 }) => {
-  const combinedFormData = React.useMemo(
-    () =>
-      formDataObjects.reduce<JsonObject>(
-        (prev, cur) => ({ ...prev, ...cur }),
-        {},
-      ),
-    [formDataObjects],
-  );
+  const displayData: JsonObject = React.useMemo(() => {
+    if (!isComposedSchema) {
+      return steps[0].data;
+    }
+    return steps.reduce<JsonObject>(
+      (prev, { title, data }) => ({ ...prev, [title]: data }),
+      {},
+    );
+  }, [steps, isComposedSchema]);
   return (
     <Content>
       <Paper square elevation={0}>
         <Typography variant="h6">Review and run</Typography>
-        <StructuredMetadataTable dense metadata={combinedFormData} />
+        <StructuredMetadataTable dense metadata={displayData} />
         <Box mb={4} />
         <Button onClick={handleBack} disabled={busy}>
           Back
@@ -59,7 +74,9 @@ const ReviewStep = ({
           Reset
         </Button>
         <SubmitButton
-          handleClick={handleExecute}
+          handleClick={() =>
+            handleExecute(() => getCombinedData(steps, isComposedSchema))
+          }
           submitting={busy}
           focusOnMount
         >
@@ -71,28 +88,32 @@ const ReviewStep = ({
 };
 
 const FormWrapper = ({
-  formData,
-  schema,
-  uiSchema = {},
+  step,
   onSubmit,
   children,
-}: Pick<
-  FormProps<JsonObject>,
-  'formData' | 'schema' | 'uiSchema' | 'onSubmit' | 'children'
->) => {
-  const firstKey = Object.keys(schema?.properties ?? {})[0];
-  uiSchema[firstKey] = firstKey
-    ? { ...uiSchema[firstKey], 'ui:autofocus': 'true' }
-    : uiSchema[firstKey];
+}: Pick<FormProps<JsonObject>, 'onSubmit' | 'children'> & {
+  step: WorkflowInputSchemaStep;
+}) => {
+  const firstKey = Object.keys(step.schema.properties ?? {})[0];
+  const uiSchema = React.useMemo(() => {
+    const res: UiSchema<JsonObject> = firstKey
+      ? { [firstKey]: { 'ui:autofocus': 'true' } }
+      : {};
+    for (const key of step.readonlyKeys) {
+      res[key] = { 'ui:disabled': 'true' };
+    }
+    return res;
+  }, [firstKey, step.readonlyKeys]);
+
   return (
     <MuiForm
       validator={validator}
       showErrorList={false}
       noHtml5Validate
-      formData={formData}
-      uiSchema={uiSchema}
-      schema={{ ...schema, title: '' }} // title is in step
+      formData={step.data}
+      schema={{ ...step.schema, title: '' }} // title is in step
       onSubmit={onSubmit}
+      uiSchema={uiSchema}
     >
       {children}
     </MuiForm>
@@ -100,75 +121,45 @@ const FormWrapper = ({
 };
 
 const StepperForm = ({
-  refSchemas,
-  initialState,
+  isComposedSchema,
+  steps: inputSteps,
   handleExecute,
   isExecuting,
 }: {
-  refSchemas: JSONSchema7[];
-  initialState: DataInputSchemaInitialState;
+  isComposedSchema: boolean;
+  steps: WorkflowInputSchemaStep[];
   handleExecute: (getParameters: () => JsonObject) => Promise<void>;
   isExecuting: boolean;
 }) => {
   const [activeStep, setActiveStep] = React.useState(0);
   const handleBack = () => setActiveStep(activeStep - 1);
 
-  const [formDataObjects, setFormDataObjects] = React.useState<JsonObject[]>(
-    initialState.values,
-  );
-
-  const getFormData = () =>
-    formDataObjects.reduce<JsonObject>(
-      (prev, curFormObject) => ({ ...prev, ...curFormObject }),
-      {},
-    );
-
-  const [uiSchema, setUiSchema] = React.useState<
-    UiSchema<JsonObject> | undefined
-  >(() => {
-    if (!initialState.readonlyKeys) {
-      return undefined;
-    }
-
-    return initialState.readonlyKeys.reduce<UiSchema<JsonObject>>(
-      (obj, key) => ({
-        ...obj,
-        [key]: { ...obj[key], 'ui:disabled': 'true' },
-      }),
-      {},
-    );
-  });
-
-  const resetFormDataObjects = React.useCallback(() => {
-    setFormDataObjects(
-      refSchemas.reduce<JsonObject[]>(prev => [...prev, {}], []),
-    );
-    setUiSchema(undefined);
-  }, [refSchemas]);
-
+  const [steps, setSteps] = React.useState([...inputSteps]);
   return (
     <>
       <Stepper activeStep={activeStep} orientation="vertical">
-        {refSchemas.map((schema, index) => (
-          <Step key={schema.$id ?? index}>
+        {steps?.map((step, index) => (
+          <Step key={step.key}>
             <StepLabel
-              aria-label={`Step ${index + 1} ${schema.title}`}
+              aria-label={`Step ${index + 1} ${step.title}`}
               aria-disabled="false"
               tabIndex={0}
             >
               <Typography variant="h6" component="h2">
-                {schema.title}
+                {step.title}
               </Typography>
             </StepLabel>
             <StepContent>
               <FormWrapper
-                formData={formDataObjects[index]}
-                schema={schema}
-                uiSchema={uiSchema}
+                step={step}
                 onSubmit={e => {
-                  const newDataObjects = [...formDataObjects];
-                  newDataObjects.splice(index, 1, e.formData ?? {});
-                  setFormDataObjects(newDataObjects);
+                  const newStep: WorkflowInputSchemaStep = {
+                    ...step,
+                    data: e.formData ?? {},
+                  };
+                  const newSteps = [...steps];
+                  newSteps.splice(index, 1, newStep);
+                  setSteps(newSteps);
                   setActiveStep(activeStep + 1);
                 }}
               >
@@ -183,16 +174,17 @@ const StepperForm = ({
           </Step>
         ))}
       </Stepper>
-      {activeStep === refSchemas.length && (
+      {activeStep === steps.length && (
         <ReviewStep
-          formDataObjects={formDataObjects}
+          steps={steps}
+          isComposedSchema={isComposedSchema}
           handleBack={handleBack}
           handleReset={() => {
-            resetFormDataObjects();
+            setSteps([...inputSteps]);
             setActiveStep(0);
           }}
+          handleExecute={handleExecute}
           busy={isExecuting}
-          handleExecute={() => handleExecute(() => getFormData())}
         />
       )}
     </>
