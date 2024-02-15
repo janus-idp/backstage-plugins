@@ -46,7 +46,7 @@ const PipelineRunOutput: React.FC<PipelineRunOutputProps> = ({
         })
         .then(res => res?.text);
     },
-    [kubernetesProxyApi],
+    [kubernetesProxyApi, currCluster, pipelineRun],
   );
 
   const outputGroup = usePipelineRunOutput(
@@ -71,7 +71,7 @@ const PipelineRunOutput: React.FC<PipelineRunOutputProps> = ({
     isEmpty(outputGroup?.acsImageScan?.data);
 
   const renderOutput = () => {
-    if (stillLoading) {
+    if (stillLoading && noDataAvailable) {
       return <Progress />;
     }
 
