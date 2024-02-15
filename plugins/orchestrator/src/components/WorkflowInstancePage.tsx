@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import {
@@ -27,6 +27,7 @@ import { executeWorkflowRouteRef, workflowInstanceRouteRef } from '../routes';
 import { isNonNullable } from '../utils/TypeGuards';
 import { buildUrl } from '../utils/UrlUtils';
 import { BaseOrchestratorPage } from './BaseOrchestratorPage';
+import { InfoDialog } from './InfoDialog';
 import { WorkflowInstancePageContent } from './WorkflowInstancePageContent';
 
 export const WorkflowInstancePage = ({
@@ -40,6 +41,8 @@ export const WorkflowInstancePage = ({
   const { instanceId: queryInstanceId } = useRouteRefParams(
     workflowInstanceRouteRef,
   );
+  const [isAbortConfirmationDialogOpen, setIsAbortConfirmationDialogOpen] =
+    useState(false);
 
   const fetchInstance = React.useCallback(async () => {
     if (!instanceId && !queryInstanceId) {
@@ -75,24 +78,18 @@ export const WorkflowInstancePage = ({
 
   const handleAbort = React.useCallback(async () => {
     if (value) {
-      // eslint-disable-next-line no-alert
-      const yes = window.confirm(
-        'Are you sure you want to abort this instance?',
-      );
-
-      if (yes) {
-        try {
-          await orchestratorApi.abortWorkflow(value.instance.id);
-          restart();
-        } catch (e) {
-          // eslint-disable-next-line no-alert
-          window.alert(
-            `The abort operation failed with the following error: ${
-              (e as Error).message
-            }`,
-          );
-        }
+      try {
+        await orchestratorApi.abortWorkflow(value.instance.id);
+        restart();
+      } catch (e) {
+        // eslint-disable-next-line no-alert
+        window.alert(
+          `The abort operation failed with the following error: ${
+            (e as Error).message
+          }`,
+        );
       }
+      toggleAbortConfirmationDialog();
     }
   }, [orchestratorApi, restart, value]);
 
@@ -111,6 +108,23 @@ export const WorkflowInstancePage = ({
     navigate(urlToNavigate);
   }, [value, navigate, executeWorkflowLink]);
 
+  const toggleAbortConfirmationDialog = () => {
+    setIsAbortConfirmationDialogOpen(!isAbortConfirmationDialogOpen);
+  };
+
+  const AbortConfirmationDialogContent = () => (
+    <div>Are you sure you want to abort this instance?</div>
+  );
+
+  const AbortConfirmationDialogActions = () => (
+    <>
+      <Button onClick={toggleAbortConfirmationDialog}>Cancel</Button>
+      <Button onClick={handleAbort} color="primary">
+        Ok
+      </Button>
+    </>
+  );
+
   return (
     <BaseOrchestratorPage
       title={value?.instance.processId ?? value?.instance.id ?? instanceId}
@@ -122,6 +136,13 @@ export const WorkflowInstancePage = ({
       {!loading && isNonNullable(value) ? (
         <>
           <ContentHeader title="">
+            <InfoDialog
+              title="Abort instance"
+              onClose={toggleAbortConfirmationDialog}
+              open={isAbortConfirmationDialogOpen}
+              dialogActions={<AbortConfirmationDialogActions />}
+              children={<AbortConfirmationDialogContent />}
+            />
             <Grid container item justifyContent="flex-end" spacing={1}>
               {!canRerun && (
                 <Grid item>
@@ -129,7 +150,9 @@ export const WorkflowInstancePage = ({
                     variant="contained"
                     color="secondary"
                     disabled={!canAbort}
-                    onClick={canAbort ? handleAbort : undefined}
+                    onClick={
+                      canAbort ? toggleAbortConfirmationDialog : undefined
+                    }
                   >
                     Abort
                   </Button>

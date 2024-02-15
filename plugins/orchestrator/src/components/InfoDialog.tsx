@@ -17,7 +17,7 @@ export type InfoDialogProps = {
   open: boolean;
   onClose?: () => void;
   dialogActions?: React.ReactNode;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 };
 
 export type ParentComponentRef = HTMLElement;
