@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-orchestrator [1.4.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.4.0...@janus-idp/backstage-plugin-orchestrator@1.4.1) (2024-02-14)
+
+
+### Bug Fixes
+
+* **orchestrator:** the instance details card content is cropped ([#1196](https://github.com/janus-idp/backstage-plugins/issues/1196)) ([eb45070](https://github.com/janus-idp/backstage-plugins/commit/eb450709e8e34972386f4e34ee842208e323a3fb))
+
 ## @janus-idp/backstage-plugin-orchestrator [1.4.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.3.3...@janus-idp/backstage-plugin-orchestrator@1.4.0) (2024-02-12)
 
 

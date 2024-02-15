@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac-backend [2.2.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.2.2...@janus-idp/backstage-plugin-rbac-backend@2.2.3) (2024-02-14)
+
+
+### Bug Fixes
+
+* **rbac:** allow for super users to have allow all access ([#1208](https://github.com/janus-idp/backstage-plugins/issues/1208)) ([c02a4b0](https://github.com/janus-idp/backstage-plugins/commit/c02a4b029a800b1bcf1f2e2722185faae1e5837e))
+
 ## @janus-idp/backstage-plugin-rbac-backend [2.2.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.2.1...@janus-idp/backstage-plugin-rbac-backend@2.2.2) (2024-02-13)
 
 
