@@ -30,6 +30,26 @@ import { BaseOrchestratorPage } from './BaseOrchestratorPage';
 import { InfoDialog } from './InfoDialog';
 import { WorkflowInstancePageContent } from './WorkflowInstancePageContent';
 
+export type AbortConfirmationDialogActionsProps = {
+  handleSubmit: () => void;
+  handleCancel: () => void;
+};
+
+const AbortConfirmationDialogContent = () => (
+  <div>Are you sure you want to abort this workflow instance?</div>
+);
+
+const AbortConfirmationDialogActions = (
+  props: AbortConfirmationDialogActionsProps,
+) => (
+  <>
+    <Button onClick={props.handleCancel}>Cancel</Button>
+    <Button onClick={props.handleSubmit} color="primary">
+      Ok
+    </Button>
+  </>
+);
+
 export const WorkflowInstancePage = ({
   instanceId,
 }: {
@@ -112,19 +132,6 @@ export const WorkflowInstancePage = ({
     navigate(urlToNavigate);
   }, [value, navigate, executeWorkflowLink]);
 
-  const AbortConfirmationDialogContent = () => (
-    <div>Are you sure you want to abort this workflow instance?</div>
-  );
-
-  const AbortConfirmationDialogActions = () => (
-    <>
-      <Button onClick={toggleAbortConfirmationDialog}>Cancel</Button>
-      <Button onClick={handleAbort} color="primary">
-        Ok
-      </Button>
-    </>
-  );
-
   return (
     <BaseOrchestratorPage
       title={value?.instance.processId ?? value?.instance.id ?? instanceId}
@@ -140,7 +147,12 @@ export const WorkflowInstancePage = ({
               title="Abort workflow"
               onClose={toggleAbortConfirmationDialog}
               open={isAbortConfirmationDialogOpen}
-              dialogActions={<AbortConfirmationDialogActions />}
+              dialogActions={
+                <AbortConfirmationDialogActions
+                  handleCancel={toggleAbortConfirmationDialog}
+                  handleSubmit={handleAbort}
+                />
+              }
               children={<AbortConfirmationDialogContent />}
             />
             <Grid container item justifyContent="flex-end" spacing={1}>
