@@ -9,6 +9,7 @@ As a contributor, here are the guidelines we would like you to follow:
 - [Using the issue tracker](#using-the-issue-tracker)
 - [Submitting a Pull Request](#submitting-a-pull-request)
 - [Coding rules](#coding-rules)
+- [Compatibility with Backstage Showcase](#compatibility-with-backstage-showcase)
 - [Working with the code](#working-with-the-code)
 
 We also recommend that you read [How to Contribute to Open Source](https://opensource.guide/how-to-contribute).
@@ -110,6 +111,15 @@ To ensure consistency and quality throughout the source code, all code modificat
 - [Valid commit message(s)](#commit-message-and-pull-request-guidelines)
 - Documentation for new features
 - Updated documentation for modified features
+
+Familiarize yourself with the [Backstage ADRs](https://github.com/backstage/backstage/tree/master/docs/architecture-decisions) for additional guidance on best practices.
+
+### Compatibility with Backstage Showcase
+
+Plugin authors are responsible for migrating their plugins to ensure they run on the latest Backstage Showcase version.
+
+1. Check the [Backstage version](https://github.com/janus-idp/backstage-showcase/blob/main/backstage.json#L2) you need to migrate to
+2. Follow the [Keeping Backstage Updated](https://backstage.io/docs/getting-started/keeping-backstage-updated/) instructions
 
 ### Style and conventions
 
