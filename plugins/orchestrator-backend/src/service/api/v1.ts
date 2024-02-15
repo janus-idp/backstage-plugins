@@ -1,4 +1,6 @@
 import {
+  ProcessInstance,
+  QUERY_PARAM_INCLUDE_ASSESSMENT,
   WorkflowDefinition,
   WorkflowInfo,
   WorkflowItem,
@@ -88,4 +90,15 @@ export async function getWorkflowByIdV1(
   }
 
   return { uri, definition };
+}
+
+export async function getInstancesV1(
+  dataIndexService: DataIndexService,
+): Promise<ProcessInstance[]> {
+  const instances = await dataIndexService.fetchProcessInstances();
+
+  if (!instances) {
+    throw new Error("Couldn't fetch process instances");
+  }
+  return instances;
 }

@@ -16,6 +16,13 @@ export interface paths {
     /** @description Get a list of workflow */
     get: operations['getWorkflows'];
   };
+  '/v2/workflows/instances': {
+    /**
+     * Get instances
+     * @description Retrieve an array of instances
+     */
+    get: operations['getInstances'];
+  };
 }
 
 export type webhooks = Record<string, never>;
@@ -64,6 +71,38 @@ export interface components {
       description?: string;
       annotations?: string[];
     };
+    ProcessInstancesDTO: components['schemas']['ProcessInstanceDTO'][];
+    ProcessInstanceDTO: {
+      id?: string;
+      name?: string;
+      workflow?: string;
+      status?: components['schemas']['ProcessInstanceStatusDTO'];
+      /** Format: date-time */
+      started?: string;
+      duration?: string;
+      category?: components['schemas']['WorkflowCategoryDTO'];
+      description?: string;
+      workflowdata?: components['schemas']['WorkflowDataDTO'];
+    };
+    WorkflowDataDTO: {
+      workflowoptions?: components['schemas']['WorkflowOptionsDTO'][];
+      [key: string]: unknown;
+    };
+    WorkflowOptionsDTO: components['schemas']['WorkflowSuggestionDTO'][];
+    WorkflowSuggestionDTO: {
+      id?: string;
+      name?: string;
+    };
+    /**
+     * @description Status of the workflow run
+     * @enum {string}
+     */
+    ProcessInstanceStatusDTO:
+      | 'Running'
+      | 'Error'
+      | 'Completed'
+      | 'Aborted'
+      | 'Suspended';
   };
   responses: never;
   parameters: never;
@@ -127,6 +166,26 @@ export interface operations {
         };
       };
       /** @description Error fetching workflow list */
+      500: {
+        content: {
+          'text/plain': string;
+        };
+      };
+    };
+  };
+  /**
+   * Get instances
+   * @description Retrieve an array of instances
+   */
+  getInstances: {
+    responses: {
+      /** @description Success */
+      200: {
+        content: {
+          'application/json': components['schemas']['ProcessInstancesDTO'];
+        };
+      };
+      /** @description Error fetching instances */
       500: {
         content: {
           'text/plain': string;

@@ -18,17 +18,24 @@ import {
   QUERY_PARAM_INCLUDE_ASSESSMENT,
   QUERY_PARAM_INSTANCE_ID,
   QUERY_PARAM_URI,
-  WorkflowDefinition,
-  WorkflowInfo,
   WorkflowInputSchemaResponse,
   WorkflowItem,
-  WorkflowListResult,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { RouterArgs } from '../routerWrapper';
 import { ApiResponseBuilder } from '../types/apiResponse';
-import { getWorkflowOverviewV1 } from './api/v1';
-import { getWorkflowOverviewV2 } from './api/v2';
+import {
+  getInstancesV1,
+  getWorkflowOverviewByIdV1,
+  getWorkflowOverviewV1,
+  getWorkflowsV1,
+} from './api/v1';
+import {
+  getInstancesV2,
+  getWorkflowOverviewByIdV2,
+  getWorkflowOverviewV2,
+  getWorkflowsV2,
+} from './api/v2';
 import { CloudEventService } from './CloudEventService';
 import { DataIndexService } from './DataIndexService';
 import { DataInputSchemaService } from './DataInputSchemaService';
@@ -270,28 +277,42 @@ function setupInternalRoutes(
     const {
       params: { workflowId },
     } = req;
-    const overviewObj =
-      await services.sonataFlowService.fetchWorkflowOverview(workflowId);
-
-    if (!overviewObj) {
-      res
-        .status(500)
-        .send(`Couldn't fetch workflow overview for ${workflowId}`);
-      return;
-    }
-    res.status(200).json(overviewObj);
+    await getWorkflowOverviewByIdV1(
+      services.sonataFlowService,
+      workflowId,
+    ).then(result => res.json(result));
   });
+
+  // v2
+  api.register(
+    'getWorkflowOverviewById',
+    async (_c, req: express.Request, res: express.Response, next) => {
+      const {
+        params: { workflowId },
+      } = req;
+      await getWorkflowOverviewByIdV2(services.sonataFlowService, workflowId)
+        .then(result => res.json(result))
+        .catch(next);
+    },
+  );
 
   router.get('/instances', async (_, res) => {
-    const instances = await services.dataIndexService.fetchProcessInstances();
-
-    if (!instances) {
-      res.status(500).send("Couldn't fetch process instances");
-      return;
-    }
-
-    res.status(200).json(instances);
+    await getInstancesV1(services.dataIndexService)
+      .then(result => res.status(200).json(result))
+      .catch(error => {
+        res.status(500).send(error.message || 'internal Server Error');
+      });
   });
+
+  // v2
+  api.register(
+    'getInstances',
+    async (_c, _req: express.Request, res: express.Response, next) => {
+      await getInstancesV2(services.dataIndexService)
+        .then(result => res.json(result))
+        .catch(next);
+    },
+  );
 
   router.get('/instances/:instanceId', async (req, res) => {
     const {

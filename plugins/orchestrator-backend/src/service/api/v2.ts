@@ -1,5 +1,13 @@
+import moment from 'moment';
+
 import {
   ASSESSMENT_WORKFLOW_TYPE,
+  ProcessInstance,
+  ProcessInstanceDTO,
+  ProcessInstancesDTO,
+  ProcessInstanceState,
+  ProcessInstanceStatusDTO,
+  WorkflowCategory,
   WorkflowCategoryDTO,
   WorkflowDefinition,
   WorkflowDTO,
@@ -12,7 +20,12 @@ import {
 
 import { DataIndexService } from '../DataIndexService';
 import { SonataFlowService } from '../SonataFlowService';
-import { getWorkflowByIdV1, getWorkflowOverviewV1, getWorkflowsV1 } from './v1';
+import {
+  getInstancesV1,
+  getWorkflowByIdV1,
+  getWorkflowOverviewV1,
+  getWorkflowsV1,
+} from './v1';
 
 export async function getWorkflowOverviewV2(
   sonataFlowService: SonataFlowService,
@@ -58,6 +71,15 @@ export async function getWorkflowByIdV2(
 ): Promise<WorkflowDTO> {
   const resultV1 = await getWorkflowByIdV1(sonataFlowService, workflowId);
   return mapToWorkflowDTO(resultV1.uri, resultV1.definition);
+}
+
+export async function getInstancesV2(
+  dataIndexService: DataIndexService,
+): Promise<ProcessInstancesDTO> {
+  const instances = await getInstancesV1(dataIndexService);
+  const result = instances.map(def => mapToProcessInstanceDTO(def));
+
+  return result;
 }
 
 // Mapping functions
@@ -134,5 +156,65 @@ function mapToWorkflowDTO(
     name: definition.name,
     uri: uri,
     id: definition.id,
+  };
+}
+
+function mapWorkflowCategoryDTO(category?: WorkflowCategory) {
+  switch (category) {
+    case WorkflowCategory.ASSESSMENT:
+      return WorkflowCategoryDTO.ASSESSMENT;
+    case WorkflowCategory.INFRASTRUCTURE:
+      return WorkflowCategoryDTO.INFRASTRUCTURE;
+    default:
+      return WorkflowCategoryDTO.INFRASTRUCTURE;
+  }
+}
+
+function getProcessInstancesDTOFromString(
+  state: string,
+): ProcessInstanceStatusDTO {
+  switch (state) {
+    case ProcessInstanceState.Active.valueOf():
+      return ProcessInstanceStatusDTO.RUNNING;
+    case ProcessInstanceState.Error.valueOf():
+      return ProcessInstanceStatusDTO.ERROR;
+    case ProcessInstanceState.Completed.valueOf():
+      return ProcessInstanceStatusDTO.COMPLETED;
+    case ProcessInstanceState.Aborted.valueOf():
+      return ProcessInstanceStatusDTO.ABORTED;
+    case ProcessInstanceState.Suspended.valueOf():
+      return ProcessInstanceStatusDTO.SUSPENDED;
+    default:
+      // TODO: What is the default value?
+      return ProcessInstanceStatusDTO.SUSPENDED;
+  }
+}
+
+function mapToProcessInstanceDTO(
+  processInstance: ProcessInstance,
+): ProcessInstanceDTO {
+  const start = moment(processInstance.start?.toString());
+  const end = moment(processInstance.end?.toString());
+  const duration = moment.duration(start.diff(end));
+
+  let variables: Record<string, unknown> | undefined;
+  if (typeof processInstance?.variables === 'string') {
+    variables = JSON.parse(processInstance?.variables);
+  } else {
+    variables = processInstance?.variables;
+  }
+
+  return {
+    category: mapWorkflowCategoryDTO(processInstance.category),
+    description: processInstance.description,
+    duration: duration.humanize(),
+    id: processInstance.id,
+    name: processInstance.processName,
+    // To be fixed https://issues.redhat.com/browse/FLPATH-950
+    // @ts-ignore
+    workflowdata: variables?.workflowdata,
+    started: start.toDate().toLocaleString(),
+    status: getProcessInstancesDTOFromString(processInstance.state),
+    workflow: processInstance.processName || processInstance.processId,
   };
 }
