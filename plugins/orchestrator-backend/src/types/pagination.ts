@@ -1,5 +1,12 @@
 import { Request } from 'express-serve-static-core';
 
+import {
+  DEFAULT_PAGE_NUMBER,
+  DEFAULT_PAGE_SIZE,
+  DEFAULT_SORT_FIELD,
+  DEFAULT_SORT_ORDER,
+} from '../service/constants';
+
 export interface Pagination {
   offset?: number;
   limit?: number;
@@ -9,9 +16,13 @@ export interface Pagination {
 
 export function buildPagination(req: Request): Pagination {
   return {
-    offset: req.query.pageNumber ? Number(req.query.pageNumber) : 0,
-    limit: req.query.pageSize ? Number(req.query.pageSize) : 10,
-    sortField: req.query.sortField ? String(req.query.sortField) : undefined,
-    order: req.query.order ? String(req.query.order) : 'ASC',
+    offset: req.query.pageNumber
+      ? Number(req.query.pageNumber)
+      : DEFAULT_PAGE_NUMBER,
+    limit: req.query.pageSize ? Number(req.query.pageSize) : DEFAULT_PAGE_SIZE,
+    sortField: req.query.sortField
+      ? String(req.query.sortField)
+      : DEFAULT_SORT_FIELD,
+    order: req.query.order ? String(req.query.order) : DEFAULT_SORT_ORDER,
   };
 }
