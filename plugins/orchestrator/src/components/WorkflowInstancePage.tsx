@@ -76,6 +76,10 @@ export const WorkflowInstancePage = ({
     [value],
   );
 
+  const toggleAbortConfirmationDialog = () => {
+    setIsAbortConfirmationDialogOpen(!isAbortConfirmationDialogOpen);
+  };
+
   const handleAbort = React.useCallback(async () => {
     if (value) {
       try {
@@ -89,7 +93,7 @@ export const WorkflowInstancePage = ({
           }`,
         );
       }
-      toggleAbortConfirmationDialog();
+      setIsAbortConfirmationDialogOpen(false);
     }
   }, [orchestratorApi, restart, value]);
 
@@ -108,12 +112,8 @@ export const WorkflowInstancePage = ({
     navigate(urlToNavigate);
   }, [value, navigate, executeWorkflowLink]);
 
-  const toggleAbortConfirmationDialog = () => {
-    setIsAbortConfirmationDialogOpen(!isAbortConfirmationDialogOpen);
-  };
-
   const AbortConfirmationDialogContent = () => (
-    <div>Are you sure you want to abort this instance?</div>
+    <div>Are you sure you want to abort this workflow instance?</div>
   );
 
   const AbortConfirmationDialogActions = () => (
@@ -137,7 +137,7 @@ export const WorkflowInstancePage = ({
         <>
           <ContentHeader title="">
             <InfoDialog
-              title="Abort instance"
+              title="Abort workflow"
               onClose={toggleAbortConfirmationDialog}
               open={isAbortConfirmationDialogOpen}
               dialogActions={<AbortConfirmationDialogActions />}
