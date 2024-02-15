@@ -77,7 +77,7 @@ export const MissingLabel: React.FC<MissingLabelProps> = (
             ? 'Version'
             : 'Label'}
           <Tooltip key="tooltip_missing_label" title={tooltipContent}>
-            <div>
+            <div className={props.className}>
               <KialiIcon.Info className={infoStyle} />
             </div>
           </Tooltip>
@@ -88,7 +88,7 @@ export const MissingLabel: React.FC<MissingLabelProps> = (
 
   return props.tooltip ? (
     <Tooltip key="tooltip_missing_label" title={tooltipContent}>
-      <div>{iconComponent}</div>
+      <div className={props.className}>{iconComponent}</div>
     </Tooltip>
   ) : (
     iconComponent
