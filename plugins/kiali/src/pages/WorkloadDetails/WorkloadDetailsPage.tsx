@@ -12,6 +12,7 @@ import * as FilterHelper from '../../components/FilterList/FilterHelper';
 import { TimeDurationComponent } from '../../components/Time/TimeDurationComponent';
 import { kialiApiRef } from '../../services/Api';
 import { WorkloadHealth } from '../../types/Health';
+import { MetricsObjectTypes } from '../../types/Metrics';
 import { Workload, WorkloadQuery } from '../../types/Workload';
 import { WorkloadInfo } from './WorkloadInfo';
 
@@ -24,7 +25,7 @@ export const WorkloadDetailsPage = () => {
     FilterHelper.currentDuration(),
   );
   const [selectedTab, setSelectedTab] = React.useState<number>(0);
-  const tabs = [{ label: 'overview' }];
+  const tabs = [{ label: 'overview' }, { label: 'traffic' }];
 
   const grids = () => {
     const elements = [];
@@ -90,10 +91,24 @@ export const WorkloadDetailsPage = () => {
     );
   };
 
+  const trafficTab = (): React.ReactElement => {
+    return (
+      <TrafficDetails
+        itemName={workloadItem}
+        itemType={MetricsObjectTypes.WORKLOAD}
+        lastRefreshAt={duration}
+        namespace={namespace}
+        cluster={workloadItem?.cluster}
+      />
+    );
+  };
+
   const renderTab = (): React.ReactElement => {
     switch (tabs[selectedTab].label) {
       case 'overview':
         return overviewTab();
+      case 'traffic':
+        return trafficTab();
       default:
         return overviewTab();
     }

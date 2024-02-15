@@ -3,7 +3,7 @@ import { useAsyncFn, useDebounce } from 'react-use';
 
 import { useApi } from '@backstage/core-plugin-api';
 
-import { Grid } from '@material-ui/core';
+import { CircularProgress, Grid } from '@material-ui/core';
 
 import { IstioConfigCard } from '../../components/IstioConfigCard/IstioConfigCard';
 import { isIstioNamespace, serverConfig } from '../../config';
@@ -113,7 +113,7 @@ export const WorkloadInfo = (workloadProps: WorkloadInfoProps) => {
   );
   useDebounce(refresh, 10);
   if (loading) {
-    console.log('Is loading');
+    return <CircularProgress />;
   }
 
   // All information for validations is fetched in the workload, no need to add another call

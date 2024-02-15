@@ -33,7 +33,7 @@ export const IstioConfigCard: React.FC<IstioConfigCardProps> = (
   const noIstioConfig: React.ReactNode = (
     <EmptyState
       missing="content"
-      title="No Istio Config"
+      title="Istio Config List"
       description={<div>No Istio Config found for {props.name}</div>}
     />
   );
@@ -77,22 +77,36 @@ export const IstioConfigCard: React.FC<IstioConfigCardProps> = (
 
   return (
     <Card id="IstioConfigCard">
-      <CardHeader
-        title={
-          <Typography variant="h6" style={{ margin: '10px' }}>
-            Istio Config
-          </Typography>
-        }
-      />
+      {props.items.length > 0 && (
+        <>
+          <CardHeader
+            title={
+              <Typography variant="h6" style={{ margin: '10px' }}>
+                Istio Config
+              </Typography>
+            }
+          />
 
-      <CardContent>
-        <SimpleTable
-          label="Istio Config List"
-          columns={columns}
-          rows={rows}
-          emptyState={noIstioConfig}
-        />
-      </CardContent>
+          <CardContent>
+            <SimpleTable
+              label="Istio Config List"
+              columns={columns}
+              rows={rows}
+              emptyState={noIstioConfig}
+            />
+          </CardContent>
+        </>
+      )}
+      {props.items.length === 0 && (
+        <CardContent>
+          <SimpleTable
+            label="Istio Config List"
+            columns={columns}
+            rows={rows}
+            emptyState={noIstioConfig}
+          />
+        </CardContent>
+      )}
     </Card>
   );
 };

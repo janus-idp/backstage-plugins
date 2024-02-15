@@ -41,25 +41,25 @@ export const SimpleTable: React.FC<SimpleTableProps> = (
     verticalAlign: props.verticalAlign ?? 'baseline',
   });
 
-  // @ts-ignore
   return (
     <Table className={props.className}>
-      <TableHead>
-        <TableRow>
-          {props.columns.map(
-            (column: SortableTh | TableCellProps, index: number) => (
-              <TableCell
-                key={column.title ?? `column_${index}`}
-                width={column.width}
-                style={{ whiteSpace: 'nowrap' }}
-              >
-                <b>{column.title}</b>
-              </TableCell>
-            ),
-          )}
-        </TableRow>
-      </TableHead>
-
+      {!props.emptyState && (
+        <TableHead>
+          <TableRow>
+            {props.columns.map(
+              (column: SortableTh | TableCellProps, index: number) => (
+                <TableCell
+                  key={column.title ?? `column_${index}`}
+                  width={column.width}
+                  style={{ whiteSpace: 'nowrap' }}
+                >
+                  <b>{column.title}</b>
+                </TableCell>
+              ),
+            )}
+          </TableRow>
+        </TableHead>
+      )}
       <TableBody>
         {props.rows.length > 0 ? (
           props.rows.map((row, rowIndex) => (
