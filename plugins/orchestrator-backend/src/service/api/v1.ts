@@ -20,7 +20,7 @@ import { SonataFlowService } from '../SonataFlowService';
 import { WorkflowService } from '../WorkflowService';
 
 export namespace V1 {
-  export async function getWorkflowOverview(
+  export async function getWorkflowsOverview(
     sonataFlowService: SonataFlowService,
   ): Promise<WorkflowOverviewListResult> {
     const overviews = await sonataFlowService.fetchWorkflowOverviews();

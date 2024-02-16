@@ -32,10 +32,10 @@ import {
 import { V1 } from './v1';
 
 export namespace V2 {
-  export async function getWorkflowOverview(
+  export async function getWorkflowsOverview(
     sonataFlowService: SonataFlowService,
   ): Promise<WorkflowOverviewListResultDTO> {
-    const overviewsV1 = await V1.getWorkflowOverview(sonataFlowService);
+    const overviewsV1 = await V1.getWorkflowsOverview(sonataFlowService);
     const result: WorkflowOverviewListResultDTO = {
       overviews: overviewsV1.items.map(item => mapToWorkflowOverviewDTO(item)),
       paginationInfo: {
@@ -51,8 +51,10 @@ export namespace V2 {
     sonataFlowService: SonataFlowService,
     workflowId: string,
   ): Promise<WorkflowOverviewDTO> {
-    const overviewV1 =
-      await sonataFlowService.fetchWorkflowOverview(workflowId);
+    const overviewV1 = await V1.getWorkflowOverviewById(
+      sonataFlowService,
+      workflowId,
+    );
 
     if (!overviewV1) {
       throw new Error(`Couldn't fetch workflow overview for ${workflowId}`);

@@ -160,7 +160,7 @@ function setupInternalRoutes(
   });
 
   router.get('/workflows/overview', async (_c, res) => {
-    await V1.getWorkflowOverview(services.sonataFlowService)
+    await V1.getWorkflowsOverview(services.sonataFlowService)
       .then(result => res.status(200).json(result))
       .catch(error => {
         res.status(500).send(error.message || 'Internal Server Error');
@@ -171,7 +171,7 @@ function setupInternalRoutes(
   api.register(
     'getWorkflowsOverview',
     async (_c, _req, res: express.Response, next) => {
-      await V2.getWorkflowOverview(services.sonataFlowService)
+      await V2.getWorkflowsOverview(services.sonataFlowService)
         .then(result => res.json(result))
         .catch(error => {
           res.status(500).send(error.message || 'internal Server Error');
