@@ -2,17 +2,16 @@ import * as React from 'react';
 import { useParams } from 'react-router-dom';
 import { useAsyncFn, useDebounce } from 'react-use';
 
-import { Content, HeaderTabs, Page } from '@backstage/core-components';
+import { Content, Page } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
-import { Box, CircularProgress } from '@material-ui/core';
+import { CircularProgress } from '@material-ui/core';
 
 import { DefaultSecondaryMasthead } from '../../components/DefaultSecondaryMasthead/DefaultSecondaryMasthead';
 import * as FilterHelper from '../../components/FilterList/FilterHelper';
 import { TimeDurationComponent } from '../../components/Time/TimeDurationComponent';
 import { kialiApiRef } from '../../services/Api';
 import { WorkloadHealth } from '../../types/Health';
-import { MetricsObjectTypes } from '../../types/Metrics';
 import { Workload, WorkloadQuery } from '../../types/Workload';
 import { WorkloadInfo } from './WorkloadInfo';
 
@@ -24,8 +23,6 @@ export const WorkloadDetailsPage = () => {
   const [duration, setDuration] = React.useState<number>(
     FilterHelper.currentDuration(),
   );
-  const [selectedTab, setSelectedTab] = React.useState<number>(0);
-  const tabs = [{ label: 'overview' }, { label: 'traffic' }];
 
   const grids = () => {
     const elements = [];
@@ -91,29 +88,6 @@ export const WorkloadDetailsPage = () => {
     );
   };
 
-  const trafficTab = (): React.ReactElement => {
-    return (
-      <TrafficDetails
-        itemName={workloadItem}
-        itemType={MetricsObjectTypes.WORKLOAD}
-        lastRefreshAt={duration}
-        namespace={namespace}
-        cluster={workloadItem?.cluster}
-      />
-    );
-  };
-
-  const renderTab = (): React.ReactElement => {
-    switch (tabs[selectedTab].label) {
-      case 'overview':
-        return overviewTab();
-      case 'traffic':
-        return trafficTab();
-      default:
-        return overviewTab();
-    }
-  };
-
   return (
     <Page themeId="tool">
       <Content>
@@ -121,19 +95,7 @@ export const WorkloadDetailsPage = () => {
           elements={grids()}
           onRefresh={() => fetchWorkload()}
         />
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <HeaderTabs
-            selectedIndex={selectedTab}
-            onChange={(index: number) => {
-              setSelectedTab(index);
-            }}
-            tabs={tabs.map(({ label }, index) => ({
-              id: index.toString(),
-              label,
-            }))}
-          />
-          {renderTab()}
-        </Box>
+        {overviewTab()}
       </Content>
     </Page>
   );
