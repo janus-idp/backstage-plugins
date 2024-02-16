@@ -30,7 +30,7 @@ import { hasMissingAuthPolicy } from '../../utils/IstioConfigUtils';
 
 type WorkloadDescriptionProps = {
   health?: H.Health;
-  namespace?: string;
+  namespace: string;
   workload: Workload;
 };
 
@@ -78,13 +78,11 @@ export const WorkloadDescription: React.FC<WorkloadDescriptionProps> = (
   const apps: string[] = [];
   const services: string[] = [];
 
-  if (workload) {
-    if (workload.labels[serverConfig.istioLabels.appLabelName]) {
-      apps.push(workload.labels[serverConfig.istioLabels.appLabelName]);
-    }
-
-    workload.services?.forEach(s => services.push(s.name));
+  if (workload.labels[serverConfig.istioLabels.appLabelName]) {
+    apps.push(workload.labels[serverConfig.istioLabels.appLabelName]);
   }
+
+  workload.services?.forEach(s => services.push(s.name));
 
   const isTemplateLabels =
     workload &&
@@ -177,7 +175,7 @@ export const WorkloadDescription: React.FC<WorkloadDescriptionProps> = (
                 <PFBadge badge={PFBadges.Workload} position="top" />
               </div>
 
-              {props.workload ? props.workload.name : 'Workload'}
+              {props.workload.name}
 
               {workloadProperties ? (
                 <Tooltip
@@ -197,20 +195,18 @@ export const WorkloadDescription: React.FC<WorkloadDescriptionProps> = (
                 <HealthIndicator id={workload.name} health={props.health} />
               </span>
 
-              {props.workload &&
-                !props.workload.istioSidecar &&
+              {!props.workload.istioSidecar &&
                 !props.workload.istioAmbient &&
                 !isWaypoint(props.workload.labels) && (
                   <MissingSidecar
-                    namespace={props.namespace ? props.namespace : ''}
+                    namespace={props.namespace}
                     tooltip
                     text=""
                     isGateway={isGateway(workload.labels)}
                   />
                 )}
 
-              {props.workload &&
-                props.workload.istioAmbient &&
+              {props.workload.istioAmbient &&
                 !isWaypoint(props.workload.labels) && (
                   <AmbientLabel
                     tooltip
@@ -222,21 +218,19 @@ export const WorkloadDescription: React.FC<WorkloadDescriptionProps> = (
                   />
                 )}
 
-              {props.workload &&
-                hasMissingAuthPolicy(
-                  validationKey(props.workload.name, props.namespace),
-                  props.workload.validations,
-                ) && (
-                  <MissingAuthPolicy
-                    namespace={props.namespace ? props.namespace : ''}
-                    tooltip
-                    className={infoStyle}
-                    text=""
-                  />
-                )}
+              {hasMissingAuthPolicy(
+                validationKey(props.workload.name, props.namespace),
+                props.workload.validations,
+              ) && (
+                <MissingAuthPolicy
+                  namespace={props.namespace}
+                  tooltip
+                  className={infoStyle}
+                  text=""
+                />
+              )}
 
-              {props.workload &&
-                (!props.workload.appLabel || !props.workload.versionLabel) &&
+              {(!props.workload.appLabel || !props.workload.versionLabel) &&
                 !isWaypoint(props.workload.labels) && (
                   <MissingLabel
                     missingApp={!props.workload.appLabel}
@@ -268,17 +262,14 @@ export const WorkloadDescription: React.FC<WorkloadDescriptionProps> = (
           />
         )}
         <DetailDescription
-          namespace={props.namespace ? props.namespace : ''}
+          namespace={props.namespace}
           apps={apps}
           services={services}
           health={props.health}
-          cluster={props.workload?.cluster}
+          cluster={props.workload.cluster}
           waypointWorkloads={
-            // eslint-disable-next-line no-nested-ternary
-            props.workload
-              ? isWaypoint(props.workload.labels)
-                ? props.workload.waypointWorkloads
-                : undefined
+            isWaypoint(props.workload.labels)
+              ? props.workload.waypointWorkloads
               : undefined
           }
         />

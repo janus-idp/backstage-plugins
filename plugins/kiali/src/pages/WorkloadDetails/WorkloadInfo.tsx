@@ -16,6 +16,8 @@ import {
 } from '../../types/IstioConfigList';
 import {
   ObjectCheck,
+  ObjectValidation,
+  Pod,
   Validations,
   ValidationTypes,
 } from '../../types/IstioObjects';
@@ -87,7 +89,7 @@ export const WorkloadInfo = (workloadProps: WorkloadInfoProps) => {
     setIstioValidations(istioConfigItems);
   };
 
-  const fetchIstioConfig = async () => {
+  const fetchIstioConfig = () => {
     kialiClient
       .getIstioConfig(
         namespace,
@@ -167,6 +169,62 @@ export const WorkloadInfo = (workloadProps: WorkloadInfoProps) => {
     const istioLabels = serverConfig.istioLabels;
     const istioAnnotations = serverConfig.istioAnnotations;
 
+    const getPodValidations = (pod: Pod): ObjectValidation => {
+      const validations: ObjectValidation = {
+        name: pod.name,
+        objectType: 'pod',
+        valid: true,
+        checks: [],
+      };
+
+      if (!pod.istioContainers || pod.istioContainers.length === 0) {
+        if (
+          !(
+            serverConfig.ambientEnabled &&
+            (pod.annotations
+              ? pod.annotations[istioAnnotations.ambientAnnotation] ===
+                istioAnnotations.ambientAnnotationEnabled
+              : false)
+          )
+        ) {
+          validations.checks.push(noIstiosidecar);
+        }
+      } else {
+        pod.istioContainers.forEach(c => {
+          if (
+            !c.isReady &&
+            validations.checks.indexOf(failingPodIstioContainer) === -1
+          ) {
+            validations.checks.push(failingPodIstioContainer);
+          }
+        });
+      }
+      if (!pod.containers || pod.containers.length === 0) {
+        validations.checks.push(failingPodContainer);
+      } else {
+        pod.containers.forEach(c => {
+          if (
+            !c.isReady &&
+            validations.checks.indexOf(failingPodAppContainer) === -1
+          ) {
+            validations.checks.push(failingPodAppContainer);
+          }
+        });
+      }
+      if (!pod.labels) {
+        validations.checks.push(noAppLabel);
+        validations.checks.push(noVersionLabel);
+      } else {
+        if (!pod.appLabel) {
+          validations.checks.push(noAppLabel);
+        }
+        if (!pod.versionLabel) {
+          validations.checks.push(noVersionLabel);
+        }
+      }
+      return validations;
+    };
+
     const validations: Validations = {};
     const isWaypoint =
       serverConfig.ambientEnabled &&
@@ -184,71 +242,7 @@ export const WorkloadInfo = (workloadProps: WorkloadInfoProps) => {
           checks: [],
         };
         if (!isIstioNamespace(namespace) && !isWaypoint) {
-          if (
-            (!pod.istioContainers || pod.istioContainers.length === 0) &&
-            !(
-              serverConfig.ambientEnabled &&
-              (pod.annotations
-                ? pod.annotations[istioAnnotations.ambientAnnotation] ===
-                  istioAnnotations.ambientAnnotationEnabled
-                : false)
-            )
-          ) {
-            if (
-              !(
-                serverConfig.ambientEnabled &&
-                (pod.annotations
-                  ? pod.annotations[istioAnnotations.ambientAnnotation] ===
-                    istioAnnotations.ambientAnnotationEnabled
-                  : false)
-              )
-            ) {
-              validations.pod[pod.name].checks.push(noIstiosidecar);
-            }
-          } else {
-            if (pod.istioContainers && pod.istioContainers.length > 0) {
-              pod.istioContainers.forEach(c => {
-                if (
-                  !c.isReady &&
-                  validations.pod[pod.name].checks.indexOf(
-                    failingPodIstioContainer,
-                  ) === -1
-                ) {
-                  validations.pod[pod.name].checks.push(
-                    failingPodIstioContainer,
-                  );
-                }
-              });
-            }
-          }
-        }
-
-        if (!isIstioNamespace(namespace) && !isWaypoint) {
-          if (!pod.containers || pod.containers.length === 0) {
-            validations.pod[pod.name].checks.push(failingPodContainer);
-          } else {
-            pod.containers.forEach(c => {
-              if (
-                !c.isReady &&
-                validations.pod[pod.name].checks.indexOf(
-                  failingPodAppContainer,
-                ) === -1
-              ) {
-                validations.pod[pod.name].checks.push(failingPodAppContainer);
-              }
-            });
-          }
-          if (!pod.labels) {
-            validations.pod[pod.name].checks.push(noAppLabel);
-            validations.pod[pod.name].checks.push(noVersionLabel);
-          } else {
-            if (!pod.appLabel) {
-              validations.pod[pod.name].checks.push(noAppLabel);
-            }
-            if (!pod.versionLabel) {
-              validations.pod[pod.name].checks.push(noVersionLabel);
-            }
-          }
+          validations.pod[pod.name] = getPodValidations(pod);
         }
 
         switch (pod.status) {
