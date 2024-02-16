@@ -6,7 +6,7 @@ on:
 
 jobs:
   changes:
-    name: Scan for chages
+    name: Scan for changes
     runs-on: ubuntu-latest
     outputs:
       plugins: ${{ steps.scan.outputs.plugins }}
