@@ -109,10 +109,7 @@ export class AncestorSearchMemo {
   async buildUserGraph(memo: AncestorSearchMemo) {
     const userGroups = this.allGroups.filter(group => {
       const members = group.spec?.members as string[];
-      if (members && members.includes(this.userName)) {
-        return true;
-      }
-      return false;
+      return members?.includes(this.userName);
     });
     userGroups.forEach(group => this.traverseGroups(memo, group));
   }
