@@ -69,13 +69,15 @@ export const MissingLabel: React.FC<MissingLabelProps> = (
 
       {!props.tooltip && (
         <span style={{ marginLeft: '0.5rem' }}>
-          {/* eslint-disable-next-line no-nested-ternary */}
           Missing{' '}
-          {props.missingApp
-            ? 'App'
-            : props.missingVersion
-            ? 'Version'
-            : 'Label'}
+          {
+            /* eslint-disable-next-line no-nested-ternary */
+            props.missingApp
+              ? 'App'
+              : props.missingVersion
+              ? 'Version'
+              : 'Label'
+          }
           <Tooltip key="tooltip_missing_label" title={tooltipContent}>
             <div className={props.className}>
               <KialiIcon.Info className={infoStyle} />
