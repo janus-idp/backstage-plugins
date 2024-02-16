@@ -35,19 +35,19 @@ export function mapToWorkflowOverviewDTO(
     avgDurationMs: overview.avgDurationMs,
     description: overview.description,
   };
+}
 
-  function mapWorkflowCategoryDTOFromString(
-    category?: string,
-  ): WorkflowCategoryDTO {
-    const lowerCase = category?.toLocaleLowerCase();
+export function mapWorkflowCategoryDTOFromString(
+  category?: string,
+): WorkflowCategoryDTO {
+  const lowerCase = category?.toLocaleLowerCase();
 
-    switch (lowerCase) {
-      case 'assessment':
-      case 'infrastructure':
-        return lowerCase;
-      default:
-        return 'infrastructure';
-    }
+  switch (lowerCase) {
+    case 'assessment':
+    case 'infrastructure':
+      return lowerCase;
+    default:
+      return 'infrastructure';
   }
 }
 
