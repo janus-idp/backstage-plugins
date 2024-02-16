@@ -13,6 +13,9 @@ import {
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { ErrorBuilder } from '../helpers/errorBuilder';
+import { buildGraphQlQuery } from '../helpers/queryBuilder';
+import { Pagination } from '../types/pagination';
+import { FETCH_PROCESS_INSTANCES_SORT_FIELD } from './constants';
 
 export class DataIndexService {
   private client: Client;
@@ -100,10 +103,19 @@ export class DataIndexService {
     return result.data.ProcessDefinitions;
   }
 
-  public async fetchProcessInstances(): Promise<ProcessInstance[] | undefined> {
-    const graphQlQuery =
-      '{ ProcessInstances ( orderBy: { start: ASC }, where: {processId: {isNull: false} } ) { id, processName, processId, businessKey, state, start, lastUpdate, end, nodes { id }, variables, parentProcessInstance {id, processName, businessKey} } }';
+  public async fetchProcessInstances(
+    pagination: Pagination,
+  ): Promise<ProcessInstance[] | undefined> {
+    pagination.sortField = FETCH_PROCESS_INSTANCES_SORT_FIELD;
 
+    const graphQlQuery = buildGraphQlQuery({
+      type: 'ProcessInstances',
+      queryBody:
+        'id, processName, processId, state, start, lastUpdate, end, nodes { id }, variables, parentProcessInstance {id, processName, businessKey}',
+      whereClause: 'processId: {isNull: false}',
+      pagination,
+    });
+    this.logger.debug(`GraphQL query: ${graphQlQuery}`);
     const response = await this.client.query(graphQlQuery, {});
 
     if (response.error) {
@@ -179,9 +191,16 @@ export class DataIndexService {
 
   public async fetchProcessInstanceJobs(
     instanceId: string,
+    pagination: Pagination,
   ): Promise<Job[] | undefined> {
-    const graphQlQuery = `{ Jobs (where: { processInstanceId: { equal: "${instanceId}" } }) { id, processId, processInstanceId, rootProcessId, status, expirationTime, priority, callbackEndpoint, repeatInterval, repeatLimit, scheduledId, retries, lastUpdate, endpoint, nodeInstanceId, executionCounter } }`;
-
+    const graphQlQuery = buildGraphQlQuery({
+      type: 'Jobs',
+      queryBody:
+        'id, processId, processInstanceId, rootProcessId, status, expirationTime, priority, callbackEndpoint, repeatInterval, repeatLimit, scheduledId, retries, lastUpdate, endpoint, nodeInstanceId, executionCounter',
+      whereClause: `processInstanceId: {equal: "${instanceId}"}`,
+      pagination,
+    });
+    this.logger.debug(`GraphQL query: ${graphQlQuery}`);
     const result = await this.client.query(graphQlQuery, {});
 
     if (result.error) {
@@ -214,8 +233,13 @@ export class DataIndexService {
   public async fetchProcessInstance(
     instanceId: string,
   ): Promise<ProcessInstance | undefined> {
-    const graphQlQuery = `{ ProcessInstances (where: { id: {equal: "${instanceId}" } } ) { id, processName, processId, businessKey, state, start, lastUpdate, end, nodes { id, nodeId, definitionId, type, name, enter, exit }, variables, parentProcessInstance {id, processName, businessKey}, error { nodeDefinitionId, message} } }`;
-
+    const graphQlQuery = buildGraphQlQuery({
+      type: 'ProcessInstances',
+      queryBody:
+        'id, processName, processId, state, start, lastUpdate, end, nodes { id, nodeId, definitionId, type, name, enter, exit }, variables, parentProcessInstance {id, processName, businessKey}, error { nodeDefinitionId, message}',
+      whereClause: `id: {equal: "${instanceId}"}`,
+    });
+    this.logger.debug(`GraphQL query: ${graphQlQuery}`);
     const result = await this.client.query(graphQlQuery, {});
 
     if (result.error) {
