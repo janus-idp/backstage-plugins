@@ -1,22 +1,26 @@
 import React from 'react';
 
-import GraphqlIcon from '../../assets/img/api/graphql.svg';
-import GrpcIcon from '../../assets/img/api/grpc.svg';
-import RestIcon from '../../assets/img/api/rest.svg';
-import GoLogo from '../../assets/img/runtime/go.svg';
-import JVMLogo from '../../assets/img/runtime/java.svg';
-import MicroProfileLogo from '../../assets/img/runtime/microprofile.svg';
-import NodejsLogo from '../../assets/img/runtime/nodejs.svg';
-import QuarkusLogo from '../../assets/img/runtime/quarkus.svg';
-import SpringBootLogo from '../../assets/img/runtime/spring-boot.svg';
-import ThorntailLogo from '../../assets/img/runtime/thorntail.svg';
-import TomcatLogo from '../../assets/img/runtime/tomcat.svg';
-import VertxLogo from '../../assets/img/runtime/vertx.svg';
 import { kialiStyle } from '../../styles/StyleUtils';
 
 const iconStyle = kialiStyle({
   height: '1.5rem',
 });
+
+const GraphqlIcon = require('../../assets/img/api/graphql.svg') as string;
+const GrpcIcon = require('../../assets/img/api/grpc.svg') as string;
+const RestIcon = require('../../assets/img/api/rest.svg') as string;
+const GoLogo = require('../../assets/img/runtime/go.svg') as string;
+const JVMLogo = require('../../assets/img/runtime/java.svg') as string;
+const MicroProfileLogo =
+  require('../../assets/img/runtime/microprofile.svg') as string;
+const NodejsLogo = require('../../assets/img/runtime/nodejs.svg') as string;
+const QuarkusLogo = require('../../assets/img/runtime/quarkus.svg') as string;
+const SpringBootLogo =
+  require('../../assets/img/runtime/spring-boot.svg') as string;
+const ThorntailLogo =
+  require('../../assets/img/runtime/thorntail.svg') as string;
+const TomcatLogo = require('../../assets/img/runtime/tomcat.svg') as string;
+const VertxLogo = require('../../assets/img/runtime/vertx.svg') as string;
 
 const renderLogo = (
   name: string,

@@ -106,7 +106,7 @@ export const WorkloadInfo = (workloadProps: WorkloadInfoProps) => {
   const [{ loading }, refresh] = useAsyncFn(
     async () => {
       // Check if the config is loaded
-      await fetchIstioConfig();
+      fetchIstioConfig();
     },
     [],
     { loading: true },
