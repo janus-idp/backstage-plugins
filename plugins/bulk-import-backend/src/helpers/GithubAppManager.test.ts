@@ -849,9 +849,9 @@ describe('CustomSingleInstanceGithubCredentialsProvider tests', () => {
   });
 });
 
-let integrations: ScmIntegrations;
-
 describe('CustomGithubCredentialsProvider tests', () => {
+  let integrations: ScmIntegrations;
+
   beforeEach(() => {
     jest.resetAllMocks();
     jest.restoreAllMocks();
