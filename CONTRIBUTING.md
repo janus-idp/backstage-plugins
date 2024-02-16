@@ -312,6 +312,45 @@ Before pushing your code changes make sure all **tests pass** and the **coverage
 $ yarn test
 ```
 
+### UI Tests
+
+Some plugins (e.g. [quay](https://github.com/janus-idp/backstage-plugins/tree/main/plugins/quay)) also have playwright-based UI tests. When making changes to such plugin, make sure these tests pass.
+
+To run the UI tests locally, take the following steps:
+
+First, install playwright dependencies:
+
+```bash
+$ yarn install --with-deps chromium
+```
+
+The remaining steps need to be run in parallel.
+Launch the backend package and wait for it to start:
+
+```bash
+$ cd packages/backend && yarn start
+```
+
+Launch the plugin:
+
+```bash
+$ cd plugins/${plugin} && yarn start
+```
+
+Finally, launch the UI tests (headless):
+
+```bash
+$ cd plugins/${plugin} && yarn run ui-test
+```
+
+If you wish to see the test runner UI, instead of headless:
+
+```bash
+$ cd plugins/${plugin} && yarn playwright test --ui
+```
+
+Test results from the headless run will be available in `plugins/${plugin}/playwright-report` folder.
+
 ## Releasing changes
 
 This repository defaults to a rapid release scheme where we would rather release on every PR merge than restrict ourselves by a strict release cadence and policy. This brings contributors the opportunity to see the direct impact of their contributions since they are released immediately after the merge. The release process itself is done via the [semantic-release](https://semantic-release.gitbook.io/semantic-release/) tool. In order for it to work properly, it requires contributors to follow a simple set of rules:
