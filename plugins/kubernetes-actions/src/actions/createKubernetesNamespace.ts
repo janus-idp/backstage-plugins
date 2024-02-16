@@ -33,6 +33,7 @@ type TemplateActionParameters = {
   token: string;
   skipTLSVerify?: boolean;
   caData?: string;
+  labels?: string;
 };
 
 const getUrlFromClusterRef = async (
@@ -72,6 +73,38 @@ const validateUrl = (url: string | undefined = '') => {
   } catch (error) {
     throw new Error(`"${url}" is an invalid url`);
   }
+};
+
+export const convertLabelsToObject = (
+  labelsString: string | undefined,
+): { [key: string]: string } => {
+  const result: { [key: string]: string } = {};
+
+  if (!labelsString || labelsString.indexOf('=') === -1) {
+    console.error(
+      "Invalid label string. Label string must contain at least one label separated by '=' character.",
+    );
+    return result;
+  }
+
+  const labelsArray = labelsString.split(';');
+
+  labelsArray.forEach(label => {
+    const separatorIndex = label.indexOf('=');
+    if (separatorIndex !== -1) {
+      const key = label.slice(0, separatorIndex).trim();
+      const value = label.slice(separatorIndex + 1).trim();
+      if (key && value) {
+        result[key] = value;
+      }
+    } else {
+      console.error(
+        `Invalid label: '${label}'. Label must contain at least one '=' character.`,
+      );
+    }
+  });
+
+  return result;
 };
 
 export function createKubernetesNamespaceAction(catalogClient: CatalogClient) {
@@ -118,12 +151,24 @@ export function createKubernetesNamespaceAction(catalogClient: CatalogClient) {
             description: 'Certificate Authority base64 encoded certificate',
             type: 'string',
           },
+          labels: {
+            title: 'Labels',
+            description: 'Labels that will be applied to the namespace.',
+            type: 'string',
+          },
         },
       },
     },
     async handler(ctx) {
-      const { namespace, clusterRef, token, url, skipTLSVerify, caData } =
-        ctx.input;
+      const {
+        namespace,
+        clusterRef,
+        token,
+        url,
+        skipTLSVerify,
+        caData,
+        labels,
+      } = ctx.input;
       const kubeConfig = new KubeConfig();
       const name = 'backstage';
       const cluster = {
@@ -168,10 +213,13 @@ export function createKubernetesNamespaceAction(catalogClient: CatalogClient) {
         currentContext: name,
       });
 
+      const namespaceLabels = convertLabelsToObject(labels);
+
       const api = kubeConfig.makeApiClient(CoreV1Api);
       const k8sNamespace: V1Namespace = {
         metadata: {
           name: namespace,
+          labels: namespaceLabels,
         },
       };
       await api.createNamespace(k8sNamespace).catch((e: HttpError) => {

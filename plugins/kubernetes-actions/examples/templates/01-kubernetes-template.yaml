@@ -39,6 +39,16 @@ spec:
           title: CA data
           type: string
           description: Certificate Authority base64 encoded certificate
+        labels: 
+          title: Labels
+          type: string
+          description: Labels to be applied to the namespace 
+          ui:widget: textarea
+          ui:options:
+            rows: 3
+          ui:help: 'Hint: Separate multiple labels with a semicolon!'
+          ui:placeholder: 'kubernetes.io/type=namespace; app.io/managed-by=org'
+           
 
   steps:
     - id: create-kubernetes-namespace
@@ -51,3 +61,4 @@ spec:
         token: ${{ parameters.token }}
         skipTLSVerify: ${{ parameters.skipTLSVerify }}
         caData: ${{ parameters.caData }}
+        labels: ${{ parameters.labels }}
