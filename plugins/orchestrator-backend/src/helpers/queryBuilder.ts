@@ -28,10 +28,7 @@ export function buildGraphQlQuery(args: {
 
     query += `) `;
   }
-  query += ` {`;
-  query += args.queryBody;
-  query += ` }`;
-  query += ` }`;
+  query += ` {${args.queryBody} } }`;
 
   return query;
 }
