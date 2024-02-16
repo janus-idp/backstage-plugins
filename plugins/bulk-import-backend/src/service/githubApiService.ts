@@ -155,7 +155,7 @@ export class GithubApiService {
   }
 
   /**
-   * Adds the user or organization repositories accessible by the github token to the provided repositories Map<string, GithubRepository>
+   * Adds the user or organization repositories accessible by the github token to the provided repositories Map<string, GithubRepository> if they're owned by the specified owner
    * If any errors occurs, adds them to the provided errors Map<number, GithubRepoFetchError>
    */
   private async addGithubTokenRepositories(
@@ -178,13 +178,21 @@ export class GithubApiService {
           octokit.rest.repos.listForAuthenticatedUser,
         );
         repos.forEach(repo => {
-          const githubRepo: GithubRepository = {
-            name: repo.name,
-            full_name: repo.full_name,
-            url: repo.url,
-            html_url: repo.html_url,
-          };
-          repositories.set(githubRepo.full_name, githubRepo);
+          /**
+           * The listForAuthenticatedUser endpoint will grab all the repositories the github token has explicit access to.
+           * These would include repositories they own, repositories where they are a collaborator,
+           * and repositories that they can access through an organization membership.
+           * A filter is needed to grab only the repositories for the target owner
+           */
+          if (repo.owner.login === accountName) {
+            const githubRepo: GithubRepository = {
+              name: repo.name,
+              full_name: repo.full_name,
+              url: repo.url,
+              html_url: repo.html_url,
+            };
+            repositories.set(githubRepo.full_name, githubRepo);
+          }
         });
       }
       // Otherwise is an Organization
@@ -236,7 +244,6 @@ export class GithubApiService {
     const credentials = await this.githubCredentialsProvider.getAllCredentials({
       url: `${gitOwner.href}`,
     });
-
     const repositories = new Map<string, GithubRepository>();
     const errors = new Map<number, GithubRepoFetchError>();
     for (const credential of credentials) {
