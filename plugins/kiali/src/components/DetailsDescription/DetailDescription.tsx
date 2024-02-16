@@ -58,15 +58,13 @@ const infoStyle = kialiStyle({
 export const renderWaypoint = (bgsize?: string): React.ReactNode => {
   const badgeSize = bgsize === 'global' || bgsize === 'sm' ? bgsize : 'global';
   return [
-    <>
-      <div key="waypoint-workloads-title">
-        <PFBadge badge={PFBadges.Waypoint} position="top" size={badgeSize} />
-        Waypoint proxy
-        <Tooltip title="This workload is identified as a waypoint proxy, as part of Istio Ambient">
-          <KialiIcon.Info className={infoStyle} />
-        </Tooltip>
-      </div>
-    </>,
+    <div key="waypoint-workloads-title">
+      <PFBadge badge={PFBadges.Waypoint} position="top" size={badgeSize} />
+      Waypoint proxy
+      <Tooltip title="This workload is identified as a waypoint proxy, as part of Istio Ambient">
+        <KialiIcon.Info className={infoStyle} />
+      </Tooltip>
+    </div>,
   ];
 };
 
@@ -158,8 +156,8 @@ export const DetailDescription: React.FC<Props> = (props: Props) => {
             <span>Service accounts</span>
 
             <ul>
-              {workload.serviceAccountNames.map((serviceAccount, i) => (
-                <li key={i} className={itemStyle}>
+              {workload.serviceAccountNames.map((serviceAccount, _) => (
+                <li key={serviceAccount} className={itemStyle}>
                   {serviceAccount}
                 </li>
               ))}
@@ -187,7 +185,6 @@ export const DetailDescription: React.FC<Props> = (props: Props) => {
           <PFBadge badge={PFBadges.Workload} position="top" />
         </div>
         {link}
-        // @ts-ignore
         <Tooltip title={renderServiceAccounts(workload)}>
           <KialiIcon.Info className={infoStyle} />
         </Tooltip>
@@ -211,11 +208,11 @@ export const DetailDescription: React.FC<Props> = (props: Props) => {
     let workload: AppWorkload | undefined = undefined;
 
     if (props.workloads && props.workloads.length > 0) {
-      for (let i = 0; i < props.workloads.length; i++) {
+      for (const wk of props.workloads) {
         const hWorkload = sub.text.substring(0, sub.text.indexOf(':'));
 
-        if (hWorkload === props.workloads[i].workloadName) {
-          workload = props.workloads[i];
+        if (hWorkload === wk.workloadName) {
+          workload = wk;
           break;
         }
       }
@@ -305,9 +302,9 @@ export const DetailDescription: React.FC<Props> = (props: Props) => {
                   .sort((w1: AppWorkload, w2: AppWorkload) =>
                     w1.workloadName < w2.workloadName ? -1 : 1,
                   )
-                  .map((wkd, subIdx) => {
+                  .map((wkd, _) => {
                     return (
-                      <li key={subIdx} className={itemStyle}>
+                      <li key={wkd.workloadName} className={itemStyle}>
                         {renderWorkloadItem(wkd)}
                       </li>
                     );

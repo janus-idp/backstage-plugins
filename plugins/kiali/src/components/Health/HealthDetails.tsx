@@ -146,18 +146,18 @@ export const renderTrafficStatus = (health: H.Health): React.ReactNode => {
 
           {item.children && (
             <ul style={{ listStyleType: 'none' }}>
-              {item.children.map((sub, subIdx) => {
+              {item.children.map((sub, _) => {
                 const showItem = sub.value && sub.value > 0;
 
                 return sub.status !== H.HEALTHY && showItem ? (
-                  <li key={subIdx}>
+                  <li key={sub.text}>
                     <span style={{ marginRight: '0.5rem' }}>
                       {createIcon(sub.status)}
                     </span>
                     {sub.text}
                   </li>
                 ) : (
-                  <React.Fragment key={subIdx} />
+                  <React.Fragment key={sub.text} />
                 );
               })}
 

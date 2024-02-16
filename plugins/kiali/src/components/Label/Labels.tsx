@@ -63,7 +63,7 @@ export const Labels: React.FC<LabelsProps> = (props: LabelsProps) => {
     return showItem(i) ? (
       <div key={`label_div_${i}`} data-test={`${key}-label-container`}>
         <Label
-          key={`label_${i}`}
+          key={key}
           name={key}
           value={props.labels ? props.labels[key] : ''}
         />
