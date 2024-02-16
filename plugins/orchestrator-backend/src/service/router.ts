@@ -27,9 +27,9 @@ import {
 
 import { RouterArgs } from '../routerWrapper';
 import { ApiResponseBuilder } from '../types/apiResponse';
+import { buildPagination } from '../types/pagination';
 import { getWorkflowOverviewV1 } from './api/v1';
 import { getWorkflowOverviewV2 } from './api/v2';
-import { buildPagination } from '../types/pagination';
 import { CloudEventService } from './CloudEventService';
 import { WORKFLOW_DATA_KEY } from './constants';
 import { DataIndexService } from './DataIndexService';
@@ -308,7 +308,7 @@ function setupInternalRoutes(
   });
 
   router.get('/instances', async (req, res) => {
-    const instances = await dataIndexService.fetchProcessInstances(
+    const instances = await services.dataIndexService.fetchProcessInstances(
       buildPagination(req),
     );
 
@@ -359,7 +359,7 @@ function setupInternalRoutes(
       params: { instanceId },
     } = req;
 
-    const jobs = await dataIndexService.fetchProcessInstanceJobs(
+    const jobs = await services.dataIndexService.fetchProcessInstanceJobs(
       instanceId,
       buildPagination(req),
     );
