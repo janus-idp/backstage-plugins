@@ -38,13 +38,12 @@ const octokit = {
   },
 };
 
+function createOctokit() {
+  return octokit;
+}
+
 jest.mock('@octokit/rest', () => {
-  class Octokit {
-    constructor() {
-      return octokit;
-    }
-  }
-  return { Octokit };
+  return { Octokit: createOctokit };
 });
 
 const mockGetAllCredentials = jest.fn();

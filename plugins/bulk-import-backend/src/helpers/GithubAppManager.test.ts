@@ -35,13 +35,12 @@ const octokit = {
   },
 };
 
+function createOctokit() {
+  return octokit;
+}
+
 jest.mock('@octokit/rest', () => {
-  class Octokit {
-    constructor() {
-      return octokit;
-    }
-  }
-  return { Octokit };
+  return { Octokit: createOctokit };
 });
 
 describe('CustomSingleInstanceGithubCredentialsProvider tests', () => {
@@ -907,7 +906,7 @@ describe('CustomGithubCredentialsProvider tests', () => {
   });
 
   describe('#getCredentials', () => {
-    it('returns the access tokens from the creds provider', async () => {
+    it('returns the access tokens from the credential provider', async () => {
       octokit.apps.listInstallations.mockResolvedValue({
         headers: {
           etag: '123',
