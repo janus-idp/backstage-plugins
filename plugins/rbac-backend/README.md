@@ -162,14 +162,4 @@ The RBAC plugin offers the option to store policies in a database. It supports t
 - sqlite3: Suitable for development environments.
 - postgres: Recommended for production environments.
 
-To enable database storage for the RBAC plugin, you should configure it as follows:
-
-```YAML
-permission:
-  enabled: true
-  rbac:
-    database:
-      enabled: true
-```
-
 Ensure that you have already configured the database backend for your Backstage instance, as the RBAC plugin utilizes the same database configuration.
