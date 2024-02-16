@@ -1,6 +1,4 @@
 import { mockKubernetesPlrResponse } from '../__fixtures__/1-pipelinesData';
-import { enterpriseContractResult } from '../__fixtures__/enterpriseContractData';
-import { testPipelineRunPods } from '../__fixtures__/pods-data';
 import {
   acsDeploymentCheckTaskRun,
   acsImageCheckTaskRun,
@@ -11,9 +9,7 @@ import {
   taskRunWithSBOMResultExternalLink,
 } from '../__fixtures__/taskRunData';
 import {
-  formatData,
   getActiveTaskRun,
-  getPodsOutputGroup,
   getSbomLink,
   getSortedTaskRuns,
   getTaskrunsOutputGroup,
@@ -23,7 +19,6 @@ import {
   isACSImageScanTaskRun,
   isECTaskRun,
   isSbomTaskRun,
-  mapEnterpriseContractResultData,
 } from './taskRun-utils';
 
 describe('taskRun-utils', () => {
@@ -132,40 +127,5 @@ describe('taskRun-utils', () => {
     expect(outputGroup.acsDeploymentCheckTaskRun).toBeDefined();
     expect(outputGroup.ecTaskRun).toBeUndefined();
     expect(outputGroup.sbomTaskRun).toBeUndefined();
-  });
-
-  it('should return the pods group', () => {
-    const outputGroup = getTaskrunsOutputGroup(
-      'pipelinerun-with-scanner-task',
-      [acsImageScanTaskRun],
-    );
-
-    const podGroup = getPodsOutputGroup(outputGroup, testPipelineRunPods.pods);
-    expect(podGroup.acsImageScanPod).toBeDefined();
-    expect(podGroup.ecPod).toBeUndefined();
-  });
-
-  it('should formatData in the given format', () => {
-    expect(formatData('application/json', '{"key":"value"}')).toEqual({
-      key: 'value',
-    });
-
-    expect(formatData('application/text', '{"key":"value"}')).toEqual(
-      '{"key":"value"}',
-    );
-  });
-
-  it('should throw error if the json is not parsable', () => {
-    const warnFunction = jest.fn();
-    jest.spyOn(console, 'warn').mockImplementation(warnFunction);
-
-    expect(formatData('application/json', 'key:value')).toEqual('');
-    expect(warnFunction).toHaveBeenCalled();
-  });
-
-  it('should process the enterprise contract results and return in expected structure', () => {
-    expect(
-      mapEnterpriseContractResultData(enterpriseContractResult),
-    ).toHaveLength(4);
   });
 });

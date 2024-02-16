@@ -1,11 +1,8 @@
 import {
-  ComponentEnterpriseContractResult,
-  ENTERPRISE_CONTRACT_POLICY_STATUS,
-  EnterpriseContractPolicy,
-  EnterpriseContractResult,
-  EnterpriseContractRule,
+  TaskRunResultsAnnotations,
+  TaskRunResultsKeyValue,
+  TaskRunResultsTypeValue,
 } from '@aonic-ui/pipelines';
-import { V1Pod } from '@kubernetes/client-node';
 
 import {
   ComputedStatus,
@@ -17,13 +14,7 @@ import {
   TEKTON_PIPELINE_RUN,
   TEKTON_PIPELINE_TASK,
 } from '../consts/tekton-const';
-import { OutputPodGroup, OutputTaskRunGroup } from '../types/output';
-import {
-  TaskRunResultsAnnotations,
-  TaskRunResultsFormatValue,
-  TaskRunResultsKeyValue,
-  TaskRunResultsTypeValue,
-} from '../types/taskRun';
+import { OutputTaskRunGroup } from '../types/output';
 
 export type TaskStep = {
   id: string;
@@ -115,32 +106,6 @@ export const getTaskrunsOutputGroup = (
   };
 };
 
-export const getPodsOutputGroup = (
-  outputTaskGroup: OutputTaskRunGroup,
-  pods: V1Pod[],
-): OutputPodGroup => {
-  const {
-    acsImageScanTaskRun,
-    acsImageCheckTaskRun,
-    acsDeploymentCheckTaskRun,
-    ecTaskRun,
-    sbomTaskRun,
-  } = outputTaskGroup;
-
-  const getTRPods = (podName: string | undefined): V1Pod | undefined =>
-    pods?.find((pod: V1Pod) => pod?.metadata?.name === podName);
-
-  return {
-    sbomPod: getTRPods(sbomTaskRun?.status?.podName),
-    ecPod: getTRPods(ecTaskRun?.status?.podName),
-    acsImageScanPod: getTRPods(acsImageScanTaskRun?.status?.podName),
-    acsImageCheckPod: getTRPods(acsImageCheckTaskRun?.status?.podName),
-    acsDeploymentCheckPod: getTRPods(
-      acsDeploymentCheckTaskRun?.status?.podName,
-    ),
-  };
-};
-
 export const hasExternalLink = (
   sbomTaskRun: TaskRunKind | undefined,
 ): boolean =>
@@ -153,84 +118,3 @@ export const getSbomLink = (
   (sbomTaskRun?.status?.results || sbomTaskRun?.status?.taskResults)?.find(
     r => r.name === TaskRunResultsKeyValue.SBOM,
   )?.value;
-
-export const formatData = (format: string, data: string) => {
-  const parseJson = (d: string) => {
-    try {
-      return JSON.parse(d);
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.warn('error parsing data', e);
-      return '';
-    }
-  };
-  switch (format) {
-    case TaskRunResultsFormatValue.JSON:
-      return data ? parseJson(data) : data;
-    case TaskRunResultsFormatValue.YAML:
-    case TaskRunResultsFormatValue.TEXT:
-    default:
-      return data;
-  }
-};
-
-export const mapEnterpriseContractResultData = (
-  ecResult: EnterpriseContractResult,
-): EnterpriseContractPolicy[] => {
-  const components = ecResult
-    ? ecResult.components?.filter((comp: ComponentEnterpriseContractResult) => {
-        return !(
-          comp.violations &&
-          comp.violations?.length === 1 &&
-          !comp.violations[0].metadata &&
-          comp.violations[0].msg.includes('404 Not Found')
-        );
-      })
-    : [];
-
-  return components?.reduce(
-    (
-      acc: EnterpriseContractPolicy[],
-      compResult: ComponentEnterpriseContractResult,
-    ) => {
-      compResult?.violations?.forEach((v: EnterpriseContractRule) => {
-        const rule: EnterpriseContractPolicy = {
-          title: v.metadata?.title ?? '',
-          description: v.metadata?.description ?? '',
-          status: ENTERPRISE_CONTRACT_POLICY_STATUS.failed,
-          timestamp: v.metadata?.effective_on,
-          component: compResult.name,
-          msg: v.msg,
-          collection: v.metadata?.collections,
-          solution: v.metadata?.solution,
-        };
-        acc.push(rule);
-      });
-      compResult?.warnings?.forEach((w: EnterpriseContractRule) => {
-        const rule: EnterpriseContractPolicy = {
-          title: w.metadata?.title ?? '',
-          description: w.metadata?.description ?? '',
-          status: ENTERPRISE_CONTRACT_POLICY_STATUS.warnings,
-          timestamp: w.metadata?.effective_on,
-          component: compResult.name,
-          msg: w.msg,
-          collection: w.metadata?.collections,
-        };
-        acc.push(rule);
-      });
-      compResult?.successes?.forEach((s: EnterpriseContractRule) => {
-        const rule: EnterpriseContractPolicy = {
-          title: s.metadata?.title ?? '',
-          description: s.metadata?.description ?? '',
-          status: ENTERPRISE_CONTRACT_POLICY_STATUS.successes,
-          component: compResult.name,
-          collection: s.metadata?.collections,
-        };
-        acc.push(rule);
-      });
-
-      return acc;
-    },
-    [],
-  ) as EnterpriseContractPolicy[];
-};
