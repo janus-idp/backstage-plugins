@@ -3,6 +3,7 @@ import { OpenAPIV3 } from 'openapi-types';
 import {
   ProcessInstanceState,
   ProcessInstanceStateValues,
+  WorkflowDefinition,
   WorkflowOverview,
   WorkflowOverviewListResult,
   WorkflowSpecFile,
@@ -78,3 +79,19 @@ export function generateTestWorkflowSpecs(howmany: number): WorkflowSpecFile[] {
   }
   return res;
 }
+
+export const generateWorkflowDefinition: WorkflowDefinition = {
+  id: 'quarkus-backend-workflow-ci-switch',
+  version: '1.0',
+  specVersion: '0.8',
+  name: '[WF] Create a starter Quarkus Backend application with a CI pipeline - CI Switch',
+  description:
+    '[WF] Create a starter Quarkus Backend application with a CI pipeline - CI Switch',
+  states: [
+    {
+      name: 'Test state',
+      type: 'operation',
+      end: true,
+    },
+  ],
+};

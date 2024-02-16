@@ -16,6 +16,7 @@ import {
   generateTestWorkflowOverview,
   generateTestWorkflowOverviewList,
   generateTestWorkflowSpecs,
+  generateWorkflowDefinition,
 } from './test-utils';
 import { V2 } from './v2';
 
@@ -38,6 +39,8 @@ const createMockSonataFlowService = (): SonataFlowService => {
   // Mock fetchWorkflowDefinition method
   mockSonataFlowService.fetchWorkflowOverviews = jest.fn();
   mockSonataFlowService.fetchWorkflowOverview = jest.fn();
+  mockSonataFlowService.fetchWorkflowDefinition = jest.fn();
+  mockSonataFlowService.fetchWorkflowUri = jest.fn();
 
   return mockSonataFlowService;
 };
@@ -270,5 +273,54 @@ describe('getWorkflowSpecs', () => {
     expect(result).toEqual(
       mockSpecsV1.map(itemV1 => mapToWorkflowSpecFileDTO(itemV1)),
     );
+  });
+});
+
+describe('getWorkflowById', () => {
+  let mockSonataFlowService: SonataFlowService;
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockSonataFlowService = createMockSonataFlowService();
+  });
+
+  it("Workflow doesn't exists", async () => {
+    (
+      mockSonataFlowService.fetchWorkflowDefinition as jest.Mock
+    ).mockRejectedValue(new Error('No definition'));
+    // Act
+    const promise = V2.getWorkflowById(
+      mockSonataFlowService,
+      'test_workflowId',
+    );
+
+    // Assert
+    await expect(promise).rejects.toThrow('No definition');
+  });
+
+  it('1 items in workflow list', async () => {
+    const testUri = 'test-uri.sw.yaml';
+    const wfDefinition = generateWorkflowDefinition;
+
+    (
+      mockSonataFlowService.fetchWorkflowDefinition as jest.Mock
+    ).mockResolvedValue(wfDefinition);
+    (mockSonataFlowService.fetchWorkflowUri as jest.Mock).mockResolvedValue(
+      testUri,
+    );
+    // Act
+    const workflowV2 = await V2.getWorkflowById(
+      mockSonataFlowService,
+      'test_workflowId',
+    );
+
+    // Assert
+    expect(workflowV2).toBeDefined();
+    expect(workflowV2.id).toBeDefined();
+    expect(workflowV2.id).toEqual(wfDefinition.id);
+    expect(workflowV2.name).toEqual(wfDefinition.name);
+    expect(workflowV2.uri).toEqual(testUri);
+    expect(workflowV2.description).toEqual(wfDefinition.description);
+    expect(workflowV2.category).toEqual('infrastructure');
+    expect(workflowV2.annotations).toBeUndefined();
   });
 });
