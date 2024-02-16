@@ -128,12 +128,13 @@ export class DataIndexService {
   ): Promise<ProcessInstance[] | undefined> {
     pagination.sortField = 'start';
     pagination.order = 'ASC';
-    const graphQlQuery = buildGraphQlQuery(
-      'ProcessInstances',
-      'id, processName, processId, state, start, lastUpdate, end, nodes { id }, variables, parentProcessInstance {id, processName, businessKey}',
-      'processId: {isNull: false}',
+    const graphQlQuery = buildGraphQlQuery({
+      type: 'ProcessInstances',
+      queryBody:
+        'id, processName, processId, state, start, lastUpdate, end, nodes { id }, variables, parentProcessInstance {id, processName, businessKey}',
+      whereClause: 'processId: {isNull: false}',
       pagination,
-    );
+    });
     this.logger.debug(`GraphQL query: ${graphQlQuery}`);
     const result = await this.client.query(graphQlQuery, {});
 
@@ -227,12 +228,13 @@ export class DataIndexService {
     instanceId: string,
     pagination: Pagination,
   ): Promise<Job[] | undefined> {
-    const graphQlQuery = buildGraphQlQuery(
-      'Jobs',
-      'id, processId, processInstanceId, rootProcessId, status, expirationTime, priority, callbackEndpoint, repeatInterval, repeatLimit, scheduledId, retries, lastUpdate, endpoint, nodeInstanceId, executionCounter',
-      `processInstanceId: {equal: "${instanceId}"}`,
+    const graphQlQuery = buildGraphQlQuery({
+      type: 'Jobs',
+      queryBody:
+        'id, processId, processInstanceId, rootProcessId, status, expirationTime, priority, callbackEndpoint, repeatInterval, repeatLimit, scheduledId, retries, lastUpdate, endpoint, nodeInstanceId, executionCounter',
+      whereClause: `processInstanceId: {equal: "${instanceId}"}`,
       pagination,
-    );
+    });
     this.logger.debug(`GraphQL query: ${graphQlQuery}`);
     const result = await this.client.query(graphQlQuery, {});
 
@@ -278,11 +280,12 @@ export class DataIndexService {
   public async fetchProcessInstance(
     instanceId: string,
   ): Promise<ProcessInstance | undefined> {
-    const graphQlQuery = buildGraphQlQuery(
-      'ProcessInstances',
-      'id, processName, processId, state, start, lastUpdate, end, nodes { id, nodeId, definitionId, type, name, enter, exit }, variables, parentProcessInstance {id, processName, businessKey}, error { nodeDefinitionId, message}',
-      `id: {equal: "${instanceId}"}`,
-    );
+    const graphQlQuery = buildGraphQlQuery({
+      type: 'ProcessInstances',
+      queryBody:
+        'id, processName, processId, state, start, lastUpdate, end, nodes { id, nodeId, definitionId, type, name, enter, exit }, variables, parentProcessInstance {id, processName, businessKey}, error { nodeDefinitionId, message}',
+      whereClause: `id: {equal: "${instanceId}"}`,
+    });
     this.logger.debug(`GraphQL query: ${graphQlQuery}`);
     const result = await this.client.query(graphQlQuery, {});
 
