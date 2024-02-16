@@ -93,20 +93,14 @@ exports.up = async function up(knex) {
       return { roleEntityRef: rm.roleEntityRef, id: rm.id };
     });
     const existingPoliciesForRoles = await knex('casbin_rule')
-      .whereIn(
-        'v0',
-        roleMetadata.map(rm => rm.roleEntityRef),
-      )
       .orWhereIn(
         'v1',
         roleMetadata.map(rm => rm.roleEntityRef),
       )
-      .select('v0', 'v1', 'v2', 'v3');
+      .select('v1');
 
     const existingRoles = new Set(
-      existingPoliciesForRoles.map(policy =>
-        policy.length === 2 ? policy.v1 : policy.v0,
-      ),
+      existingPoliciesForRoles.map(policy => policy.v1),
     );
     const rolesMetadataToDelete = roleMetadata.filter(
       rm => !existingRoles.has(rm.roleEntityRef),
