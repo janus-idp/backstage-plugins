@@ -1,35 +1,35 @@
 import { Pagination } from '../types/pagination';
 
-export function buildGraphQlQuery(
-  type: string,
-  queryBody: string,
-  whereClause?: string,
-  pagination?: Pagination,
-): string {
-  let query = `{${type}`;
+export function buildGraphQlQuery(args: {
+  type: string;
+  queryBody: string;
+  whereClause?: string;
+  pagination?: Pagination;
+}): string {
+  let query = `{${args.type}`;
 
-  if (whereClause || pagination) {
+  if (args.whereClause || args.pagination) {
     query += ` (`;
 
-    if (whereClause) {
-      query += `where: {${whereClause}}`;
-      if (pagination) {
+    if (args.whereClause) {
+      query += `where: {${args.whereClause}}`;
+      if (args.pagination) {
         query += `, `;
       }
     }
-    if (pagination) {
-      if (pagination.sortField) {
+    if (args.pagination) {
+      if (args.pagination.sortField) {
         query += `orderBy: {${
-          pagination.sortField
-        }: ${pagination.order?.toUpperCase()}}, `;
+          args.pagination.sortField
+        }: ${args.pagination.order?.toUpperCase()}}, `;
       }
-      query += `pagination: {limit: ${pagination.limit} , offset: ${pagination.offset}}`;
+      query += `pagination: {limit: ${args.pagination.limit} , offset: ${args.pagination.offset}}`;
     }
 
     query += `) `;
   }
   query += ` {`;
-  query += queryBody;
+  query += args.queryBody;
   query += ` }`;
   query += ` }`;
 
