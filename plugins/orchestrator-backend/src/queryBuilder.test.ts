@@ -12,12 +12,13 @@ describe('GraphQL query builder', () => {
       sortField: 'lastUpdate',
     };
     expect(
-      buildGraphQlQuery(
-        'ProcessInstances',
-        'id, processName, processId, state, start, lastUpdate, end, nodes { id }, variables, parentProcessInstance {id, processName, businessKey}',
-        'processId: {isNull: false}',
+      buildGraphQlQuery({
+        type: 'ProcessInstances',
+        queryBody:
+          'id, processName, processId, state, start, lastUpdate, end, nodes { id }, variables, parentProcessInstance {id, processName, businessKey}',
+        whereClause: 'processId: {isNull: false}',
         pagination,
-      ),
+      }),
     ).toEqual(expectedQuery);
   });
 
@@ -25,11 +26,12 @@ describe('GraphQL query builder', () => {
     const expectedQuery: string =
       '{ProcessInstances (where: {processId: {isNull: false}})  {id, processName, processId, state, start, lastUpdate, end, nodes { id }, variables, parentProcessInstance {id, processName, businessKey} } }';
     expect(
-      buildGraphQlQuery(
-        'ProcessInstances',
-        'id, processName, processId, state, start, lastUpdate, end, nodes { id }, variables, parentProcessInstance {id, processName, businessKey}',
-        'processId: {isNull: false}',
-      ),
+      buildGraphQlQuery({
+        type: 'ProcessInstances',
+        queryBody:
+          'id, processName, processId, state, start, lastUpdate, end, nodes { id }, variables, parentProcessInstance {id, processName, businessKey}',
+        whereClause: 'processId: {isNull: false}',
+      }),
     ).toEqual(expectedQuery);
   });
 
@@ -37,10 +39,11 @@ describe('GraphQL query builder', () => {
     const expectedQuery: string =
       '{ProcessInstances {id, processName, processId, state, start, lastUpdate, end, nodes { id }, variables, parentProcessInstance {id, processName, businessKey} } }';
     expect(
-      buildGraphQlQuery(
-        'ProcessInstances',
-        'id, processName, processId, state, start, lastUpdate, end, nodes { id }, variables, parentProcessInstance {id, processName, businessKey}',
-      ),
+      buildGraphQlQuery({
+        type: 'ProcessInstances',
+        queryBody:
+          'id, processName, processId, state, start, lastUpdate, end, nodes { id }, variables, parentProcessInstance {id, processName, businessKey}',
+      }),
     ).toEqual(expectedQuery);
   });
 });
