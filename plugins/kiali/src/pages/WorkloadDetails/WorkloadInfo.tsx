@@ -15,6 +15,7 @@ import {
   toIstioItems,
 } from '../../types/IstioConfigList';
 import {
+  ContainerInfo,
   ObjectCheck,
   ObjectValidation,
   Pod,
@@ -169,6 +170,33 @@ export const WorkloadInfo = (workloadProps: WorkloadInfoProps) => {
     const istioLabels = serverConfig.istioLabels;
     const istioAnnotations = serverConfig.istioAnnotations;
 
+    const checkPodContainers = (
+      containerInfo: ContainerInfo[],
+    ): ObjectCheck[] => {
+      const validations: ObjectCheck[] = [];
+      containerInfo.forEach(c => {
+        if (!c.isReady && validations.indexOf(failingPodAppContainer) === -1) {
+          validations.push(failingPodAppContainer);
+        }
+      });
+      return validations;
+    };
+
+    const checkIstioContainers = (
+      containerInfo: ContainerInfo[],
+    ): ObjectCheck[] => {
+      const validations: ObjectCheck[] = [];
+      containerInfo.forEach(c => {
+        if (
+          !c.isReady &&
+          validations.indexOf(failingPodIstioContainer) === -1
+        ) {
+          validations.push(failingPodIstioContainer);
+        }
+      });
+      return validations;
+    };
+
     const getPodValidations = (pod: Pod): ObjectValidation => {
       const validations: ObjectValidation = {
         name: pod.name,
@@ -190,26 +218,13 @@ export const WorkloadInfo = (workloadProps: WorkloadInfoProps) => {
           validations.checks.push(noIstiosidecar);
         }
       } else {
-        pod.istioContainers.forEach(c => {
-          if (
-            !c.isReady &&
-            validations.checks.indexOf(failingPodIstioContainer) === -1
-          ) {
-            validations.checks.push(failingPodIstioContainer);
-          }
-        });
+        validations.checks.concat(checkIstioContainers(pod.istioContainers));
       }
+
       if (!pod.containers || pod.containers.length === 0) {
         validations.checks.push(failingPodContainer);
       } else {
-        pod.containers.forEach(c => {
-          if (
-            !c.isReady &&
-            validations.checks.indexOf(failingPodAppContainer) === -1
-          ) {
-            validations.checks.push(failingPodAppContainer);
-          }
-        });
+        validations.checks.concat(checkPodContainers(pod.containers));
       }
       if (!pod.labels) {
         validations.checks.push(noAppLabel);
@@ -281,7 +296,7 @@ export const WorkloadInfo = (workloadProps: WorkloadInfoProps) => {
             <WorkloadDescription
               workload={workloadProps.workload}
               health={workloadProps.health}
-              namespace={workloadProps.namespace}
+              namespace={namespace}
             />
           </Grid>
           <Grid key={`Card_${workloadProps.workload?.name}`} item xs={4}>
