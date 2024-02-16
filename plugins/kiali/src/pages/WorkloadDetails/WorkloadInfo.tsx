@@ -183,21 +183,30 @@ export const WorkloadInfo = (workloadProps: WorkloadInfoProps) => {
           valid: true,
           checks: [],
         };
-        if (!isIstioNamespace(namespace)) {
-          if (!isWaypoint) {
-            if (!pod.istioContainers || pod.istioContainers.length === 0) {
-              if (
-                !(
-                  serverConfig.ambientEnabled &&
-                  (pod.annotations
-                    ? pod.annotations[istioAnnotations.ambientAnnotation] ===
-                      istioAnnotations.ambientAnnotationEnabled
-                    : false)
-                )
-              ) {
-                validations.pod[pod.name].checks.push(noIstiosidecar);
-              }
-            } else {
+        if (!isIstioNamespace(namespace) && !isWaypoint) {
+          if (
+            (!pod.istioContainers || pod.istioContainers.length === 0) &&
+            !(
+              serverConfig.ambientEnabled &&
+              (pod.annotations
+                ? pod.annotations[istioAnnotations.ambientAnnotation] ===
+                  istioAnnotations.ambientAnnotationEnabled
+                : false)
+            )
+          ) {
+            if (
+              !(
+                serverConfig.ambientEnabled &&
+                (pod.annotations
+                  ? pod.annotations[istioAnnotations.ambientAnnotation] ===
+                    istioAnnotations.ambientAnnotationEnabled
+                  : false)
+              )
+            ) {
+              validations.pod[pod.name].checks.push(noIstiosidecar);
+            }
+          } else {
+            if (pod.istioContainers && pod.istioContainers.length > 0) {
               pod.istioContainers.forEach(c => {
                 if (
                   !c.isReady &&
@@ -211,30 +220,33 @@ export const WorkloadInfo = (workloadProps: WorkloadInfoProps) => {
                 }
               });
             }
-            if (!pod.containers || pod.containers.length === 0) {
-              validations.pod[pod.name].checks.push(failingPodContainer);
-            } else {
-              pod.containers.forEach(c => {
-                if (
-                  !c.isReady &&
-                  validations.pod[pod.name].checks.indexOf(
-                    failingPodAppContainer,
-                  ) === -1
-                ) {
-                  validations.pod[pod.name].checks.push(failingPodAppContainer);
-                }
-              });
-            }
-            if (!pod.labels) {
+          }
+        }
+
+        if (!isIstioNamespace(namespace) && !isWaypoint) {
+          if (!pod.containers || pod.containers.length === 0) {
+            validations.pod[pod.name].checks.push(failingPodContainer);
+          } else {
+            pod.containers.forEach(c => {
+              if (
+                !c.isReady &&
+                validations.pod[pod.name].checks.indexOf(
+                  failingPodAppContainer,
+                ) === -1
+              ) {
+                validations.pod[pod.name].checks.push(failingPodAppContainer);
+              }
+            });
+          }
+          if (!pod.labels) {
+            validations.pod[pod.name].checks.push(noAppLabel);
+            validations.pod[pod.name].checks.push(noVersionLabel);
+          } else {
+            if (!pod.appLabel) {
               validations.pod[pod.name].checks.push(noAppLabel);
+            }
+            if (!pod.versionLabel) {
               validations.pod[pod.name].checks.push(noVersionLabel);
-            } else {
-              if (!pod.appLabel) {
-                validations.pod[pod.name].checks.push(noAppLabel);
-              }
-              if (!pod.versionLabel) {
-                validations.pod[pod.name].checks.push(noVersionLabel);
-              }
             }
           }
         }
