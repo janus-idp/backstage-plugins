@@ -14,6 +14,7 @@ import {
 import { ErrorBuilder } from '../helpers/errorBuilder';
 import { buildGraphQlQuery } from '../helpers/queryBuilder';
 import { Pagination } from '../types/pagination';
+import { FETCH_PROCESS_INSTANCES_SORT_FIELD } from './constants';
 
 export class DataIndexService {
   private client: Client;
@@ -126,8 +127,8 @@ export class DataIndexService {
   public async fetchProcessInstances(
     pagination: Pagination,
   ): Promise<ProcessInstance[] | undefined> {
-    pagination.sortField = 'start';
-    pagination.order = 'ASC';
+    pagination.sortField = FETCH_PROCESS_INSTANCES_SORT_FIELD;
+
     const graphQlQuery = buildGraphQlQuery({
       type: 'ProcessInstances',
       queryBody:
