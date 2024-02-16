@@ -15,6 +15,7 @@ import { KialiEntity } from '../src/pages/Kiali/KialiEntity';
 import { KialiNoAnnotation } from '../src/pages/Kiali/KialiNoAnnotation';
 import { KialiNoResources } from '../src/pages/Kiali/KialiNoResources';
 import { OverviewPage } from '../src/pages/Overview/OverviewPage';
+import { WorkloadDetailsPage } from '../src/pages/WorkloadDetails/WorkloadDetailsPage';
 import { WorkloadListPage } from '../src/pages/WorkloadList/WorkloadListPage';
 import { KialiApi, kialiApiRef } from '../src/services/Api';
 import { KialiProvider } from '../src/store/KialiProvider';
@@ -29,7 +30,7 @@ import {
   ServiceHealth,
   WorkloadHealth,
 } from '../src/types/Health';
-import { IstioConfigsMap } from '../src/types/IstioConfigList';
+import { IstioConfigList, IstioConfigsMap } from '../src/types/IstioConfigList';
 import {
   CanaryUpgradeStatus,
   OutboundTrafficPolicy,
@@ -46,9 +47,11 @@ import { ServerConfig } from '../src/types/ServerConfig';
 import { StatusState } from '../src/types/StatusState';
 import { TLSStatus } from '../src/types/TLSStatus';
 import {
+  Workload,
   WorkloadListItem,
   WorkloadNamespaceResponse,
   WorkloadOverview,
+  WorkloadQuery,
 } from '../src/types/Workload';
 import { filterNsByAnnotation } from '../src/utils/entityFilter';
 import { kialiData } from './__fixtures__';
@@ -112,6 +115,27 @@ class MockKialiClient implements KialiApi {
         };
       },
     );
+  }
+
+  async getWorkload(
+    namespace: string,
+    name: string,
+    _: WorkloadQuery,
+    __?: string,
+  ): Promise<Workload> {
+    const parsedName = name.replace(/-/g, '');
+    return kialiData.namespacesData[namespace].workloads[parsedName];
+  }
+
+  async getIstioConfig(
+    namespace: string,
+    _: string[],
+    __: boolean,
+    ___: string,
+    ____: string,
+    _____?: string,
+  ): Promise<IstioConfigList> {
+    return kialiData.namespacesData[namespace].istioConfigList;
   }
 
   async getServerConfig(): Promise<ServerConfig> {
@@ -317,6 +341,10 @@ const RoutesList = () => (
     <Route path="/" element={<OverviewPage />} />
     <Route path="/overview" element={<OverviewPage />} />
     <Route path="/workloads" element={<WorkloadListPage />} />
+    <Route
+      path="/kiali/workloads/:namespace/:workload"
+      element={<WorkloadDetailsPage />}
+    />
     <Route path="/kiali" element={<KialiEntity />} />
     <Route path="*" element={<KialiNoPath />} />
   </Routes>

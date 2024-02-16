@@ -10,7 +10,8 @@ import { CircularProgress } from '@material-ui/core';
 import { DefaultSecondaryMasthead } from '../../components/DefaultSecondaryMasthead/DefaultSecondaryMasthead';
 import * as FilterHelper from '../../components/FilterList/FilterHelper';
 import { TimeDurationComponent } from '../../components/Time/TimeDurationComponent';
-import { kialiApiRef } from '../../services/Api';
+import { getErrorString, kialiApiRef } from '../../services/Api';
+import { KialiAppState, KialiContext } from '../../store';
 import { WorkloadHealth } from '../../types/Health';
 import { Workload, WorkloadQuery } from '../../types/Workload';
 import { WorkloadInfo } from './WorkloadInfo';
@@ -18,6 +19,7 @@ import { WorkloadInfo } from './WorkloadInfo';
 export const WorkloadDetailsPage = () => {
   const { namespace, workload } = useParams();
   const kialiClient = useApi(kialiApiRef);
+  const kialiState = React.useContext(KialiContext) as KialiAppState;
   const [workloadItem, setWorkloadItem] = React.useState<Workload>();
   const [health, setHealth] = React.useState<WorkloadHealth>();
   const [duration, setDuration] = React.useState<number>(
@@ -49,6 +51,7 @@ export const WorkloadDetailsPage = () => {
       .getWorkload(namespace ? namespace : '', workload ? workload : '', query)
       .then((workloadResponse: Workload) => {
         setWorkloadItem(workloadResponse);
+
         const wkHealth = WorkloadHealth.fromJson(
           namespace ? namespace : '',
           workloadResponse.name,
@@ -60,6 +63,11 @@ export const WorkloadDetailsPage = () => {
           },
         );
         setHealth(wkHealth);
+      })
+      .catch(err => {
+        kialiState.alertUtils!.add(
+          `Could not fetch workload: ${getErrorString(err)}`,
+        );
       });
   };
 

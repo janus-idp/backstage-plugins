@@ -87,7 +87,7 @@ export const WorkloadInfo = (workloadProps: WorkloadInfoProps) => {
     setIstioValidations(istioConfigItems);
   };
 
-  const fetchIstioConfig = () => {
+  const fetchIstioConfig = async () => {
     kialiClient
       .getIstioConfig(
         namespace,
