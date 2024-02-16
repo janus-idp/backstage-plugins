@@ -197,6 +197,22 @@ export const WorkloadInfo = (workloadProps: WorkloadInfoProps) => {
       return validations;
     };
 
+    const addMeshValidations = (pod: Pod): ObjectCheck[] => {
+      const validations: ObjectCheck[] = [];
+      if (
+        !(
+          serverConfig.ambientEnabled &&
+          (pod.annotations
+            ? pod.annotations[istioAnnotations.ambientAnnotation] ===
+              istioAnnotations.ambientAnnotationEnabled
+            : false)
+        )
+      ) {
+        validations.push(noIstiosidecar);
+      }
+      return validations;
+    };
+
     const getPodValidations = (pod: Pod): ObjectValidation => {
       const validations: ObjectValidation = {
         name: pod.name,
@@ -206,17 +222,7 @@ export const WorkloadInfo = (workloadProps: WorkloadInfoProps) => {
       };
 
       if (!pod.istioContainers || pod.istioContainers.length === 0) {
-        if (
-          !(
-            serverConfig.ambientEnabled &&
-            (pod.annotations
-              ? pod.annotations[istioAnnotations.ambientAnnotation] ===
-                istioAnnotations.ambientAnnotationEnabled
-              : false)
-          )
-        ) {
-          validations.checks.push(noIstiosidecar);
-        }
+        validations.checks.concat(addMeshValidations(pod));
       } else {
         validations.checks.concat(checkIstioContainers(pod.istioContainers));
       }
