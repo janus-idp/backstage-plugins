@@ -101,6 +101,7 @@ export const AddMembersForm = ({
         renderInput={params => (
           <TextField
             {...params}
+            name="add-users-and-groups"
             variant="outlined"
             label="Users and groups"
             placeholder="Search by user name or group name"

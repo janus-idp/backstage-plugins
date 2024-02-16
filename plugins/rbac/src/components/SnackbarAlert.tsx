@@ -13,7 +13,7 @@ export const SnackbarAlert = ({
   return (
     <Snackbar
       open={toastMessage !== ''}
-      autoHideDuration={6000}
+      autoHideDuration={10000}
       anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
       style={{ top: '100px', left: '0px', justifyContent: 'center' }}
       onClose={onAlertClose}

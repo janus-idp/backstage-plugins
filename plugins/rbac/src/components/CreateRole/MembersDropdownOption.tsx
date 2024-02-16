@@ -40,6 +40,7 @@ export const MembersDropdownOption = ({
           style={{
             fontWeight: part.highlight ? 400 : 700,
           }}
+          data-testid={option.label}
         >
           {part.text}
         </span>

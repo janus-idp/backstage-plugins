@@ -158,9 +158,9 @@ const DeleteRoleDialog = ({
         specified in this role.
         <br />
         <TextField
+          data-testid="delete-role"
           style={{ marginTop: '24px' }}
           required
-          data-testid="delete-name"
           variant="outlined"
           label="Role name"
           defaultValue={deleteRoleValue}
