@@ -15,7 +15,7 @@ export class AncestorSearchMemo {
   private tokenManager: TokenManager;
   private catalogApi: CatalogApi;
 
-  private userEntityRef: string;
+  private userName: string;
 
   private allGroups: Entity[];
 
@@ -25,7 +25,7 @@ export class AncestorSearchMemo {
     catalogApi: CatalogApi,
   ) {
     this.graph = new Graph({ directed: true });
-    this.userEntityRef = userEntityRef.split('/')[1];
+    this.userName = userEntityRef.split('/')[1];
     this.tokenManager = tokenManager;
     this.catalogApi = catalogApi;
     this.allGroups = [];
@@ -109,7 +109,7 @@ export class AncestorSearchMemo {
   async buildUserGraph(memo: AncestorSearchMemo) {
     const userGroups = this.allGroups.filter(group => {
       const members = group.spec?.members as string[];
-      if (members && members.includes(this.userEntityRef)) {
+      if (members && members.includes(this.userName)) {
         return true;
       }
       return false;
