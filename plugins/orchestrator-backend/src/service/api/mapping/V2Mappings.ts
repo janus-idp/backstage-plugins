@@ -209,7 +209,7 @@ export function mapToWorkflowSpecFileDTO(
   }
 
   return {
-    content: { content: JSON.stringify(specV1.content) },
+    content: JSON.stringify(specV1.content),
     path: specV1.path,
   };
 }

@@ -1,8 +1,11 @@
+import { OpenAPIV3 } from 'openapi-types';
+
 import {
   ProcessInstanceState,
   ProcessInstanceStateValues,
   WorkflowOverview,
   WorkflowOverviewListResult,
+  WorkflowSpecFile,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 interface WorkflowOverviewParams {
@@ -49,5 +52,29 @@ export function generateTestWorkflowOverviewList(
     res.items.push(generateTestWorkflowOverview(params));
   }
 
+  return res;
+}
+
+// Utility function to generate fake OpenAPIV3.Document
+export const fakeOpenAPIV3Document = (): OpenAPIV3.Document => {
+  // Customize this function based on your OpenAPI document structure
+  return {
+    openapi: '3.0.0',
+    info: {
+      title: 'Title',
+      version: '1.0.0',
+    },
+    paths: {},
+  };
+};
+
+export function generateTestWorkflowSpecs(howmany: number): WorkflowSpecFile[] {
+  const res: WorkflowSpecFile[] = [];
+  for (let i = 0; i < howmany; i++) {
+    res.push({
+      path: `/test/path/openapi_${i}.json`,
+      content: fakeOpenAPIV3Document(),
+    });
+  }
   return res;
 }

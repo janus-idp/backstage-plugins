@@ -1,13 +1,21 @@
+import { mockServices } from '@backstage/backend-test-utils';
+
 import {
   WorkflowOverviewDTO,
   WorkflowOverviewListResultDTO,
+  WorkflowSpecFile,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { SonataFlowService } from '../SonataFlowService';
-import { mapToWorkflowOverviewDTO } from './mapping/V2Mappings';
+import { WorkflowService } from '../WorkflowService';
+import {
+  mapToWorkflowOverviewDTO,
+  mapToWorkflowSpecFileDTO,
+} from './mapping/V2Mappings';
 import {
   generateTestWorkflowOverview,
   generateTestWorkflowOverviewList,
+  generateTestWorkflowSpecs,
 } from './test-utils';
 import { V2 } from './v2';
 
@@ -32,6 +40,20 @@ const createMockSonataFlowService = (): SonataFlowService => {
   mockSonataFlowService.fetchWorkflowOverview = jest.fn();
 
   return mockSonataFlowService;
+};
+
+// Helper function to create a mock WorkflowService instance
+const createMockWorkflowService = (): WorkflowService => {
+  const mockWorkflowService = new WorkflowService(
+    {} as any, // Mock openApiService
+    {} as any, // Mock dataInputSchemaService
+    {} as any, // Mock sonataFlowService
+    mockServices.rootConfig(), // Mock config
+    {} as any, // Mock logger
+  );
+  mockWorkflowService.listStoredSpecs = jest.fn();
+
+  return mockWorkflowService;
 };
 
 describe('getWorkflowOverview', () => {
@@ -189,5 +211,64 @@ describe('getWorkflowOverviewById', () => {
 
     // Assert
     expect(result).toEqual(mapToWorkflowOverviewDTO(mockOverviewsV1));
+  });
+});
+
+describe('getWorkflowSpecs', () => {
+  let mockWorkflowService: WorkflowService;
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockWorkflowService = createMockWorkflowService();
+  });
+
+  it('0 items in workflow spec list', async () => {
+    // Arrange
+    const mockSpecsV1: WorkflowSpecFile[] = [];
+    (mockWorkflowService.listStoredSpecs as jest.Mock).mockResolvedValue(
+      mockSpecsV1,
+    );
+
+    // Act
+    const result = await V2.getWorkflowSpecs(mockWorkflowService);
+
+    // Assert
+    expect(result).toBeDefined();
+    expect(result).toHaveLength(0);
+  });
+
+  it('1 item in workflow spec list', async () => {
+    // Arrange
+    const mockSpecsV1 = generateTestWorkflowSpecs(1);
+    (mockWorkflowService.listStoredSpecs as jest.Mock).mockResolvedValue(
+      mockSpecsV1,
+    );
+
+    // Act
+    const result = await V2.getWorkflowSpecs(mockWorkflowService);
+
+    // Assert
+    expect(result).toBeDefined();
+    expect(result).toHaveLength(1);
+    expect(result).toEqual(
+      mockSpecsV1.map(itemV1 => mapToWorkflowSpecFileDTO(itemV1)),
+    );
+  });
+
+  it('many item in workflow spec list', async () => {
+    // Arrange
+    const mockSpecsV1 = generateTestWorkflowSpecs(10);
+    (mockWorkflowService.listStoredSpecs as jest.Mock).mockResolvedValue(
+      mockSpecsV1,
+    );
+
+    // Act
+    const result = await V2.getWorkflowSpecs(mockWorkflowService);
+
+    // Assert
+    expect(result).toBeDefined();
+    expect(result).toHaveLength(10);
+    expect(result).toEqual(
+      mockSpecsV1.map(itemV1 => mapToWorkflowSpecFileDTO(itemV1)),
+    );
   });
 });
