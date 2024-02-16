@@ -90,7 +90,7 @@ const hostRegexp =
   /(?=^.{4,253}$)(^((?!-)(([a-zA-Z0-9-]{0,62}[a-zA-Z0-9])|\*)\.)+[a-zA-Z]{2,63}$)/;
 const ipRegexp =
   /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))?$/;
-const durationRegexp = /^[\d]+\.?[\d]*(h|m|s|ms)$/;
+const durationRegexp = /^[\d]{1,10}\.?[\d]{0,10}(h|m|s|ms)$/;
 
 // K8s gateway hosts have only dnsName
 export const isK8sGatewayHostValid = (k8sGatewayHost: string): boolean => {
