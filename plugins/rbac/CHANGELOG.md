@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac [1.14.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.14.2...@janus-idp/backstage-plugin-rbac@1.14.3) (2024-02-16)
+
+
+### Bug Fixes
+
+* **rbac:** fix rbac tab route ([#1213](https://github.com/janus-idp/backstage-plugins/issues/1213)) ([218ab45](https://github.com/janus-idp/backstage-plugins/commit/218ab455b3cab5e95b235b4483c7d9bf53ca125e))
+
 ## @janus-idp/backstage-plugin-rbac [1.14.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.14.1...@janus-idp/backstage-plugin-rbac@1.14.2) (2024-02-08)
 
 

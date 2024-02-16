@@ -21,7 +21,7 @@ describe('usePipelineRunVulnerabilities', () => {
   });
   it('should return vulnerabilities when the suffix SCAN_OUTPUT is set', () => {
     const { result } = renderHook(() =>
-      usePipelineRunScanResults(mockKubernetesPlrResponse.pipelineruns[0]),
+      usePipelineRunScanResults(mockKubernetesPlrResponse.pipelineruns[4]),
     );
 
     expect(result.current.vulnerabilities?.critical).toEqual(1);
@@ -31,15 +31,15 @@ describe('usePipelineRunVulnerabilities', () => {
   });
   it('should accumulate all vulnerabilities', () => {
     const { result } = renderHook(() => {
-      const results0 =
-        mockKubernetesPlrResponse.pipelineruns[0].status.pipelineResults?.[0];
+      const results4 =
+        mockKubernetesPlrResponse.pipelineruns[4].status.pipelineResults?.[0];
       const results1 =
         mockKubernetesPlrResponse.pipelineruns[2].status.results?.[0];
       const plr = {
         ...mockKubernetesPlrResponse.pipelineruns[2],
         status: {
           ...mockKubernetesPlrResponse.pipelineruns[2].status,
-          results: results0 && results1 ? [results0, results1] : [],
+          results: results4 && results1 ? [results4, results1] : [],
         },
       };
       return usePipelineRunScanResults(plr);

@@ -5,8 +5,8 @@ import {
   AssessedProcessInstance,
   Job,
   ProcessInstance,
-  WorkflowDataInputSchemaResponse,
   WorkflowExecutionResponse,
+  WorkflowInputSchemaResponse,
   WorkflowItem,
   WorkflowListResult,
   WorkflowOverview,
@@ -42,7 +42,7 @@ export interface OrchestratorApi {
     workflowId: string;
     instanceId?: string;
     assessmentInstanceId?: string;
-  }): Promise<WorkflowDataInputSchemaResponse>;
+  }): Promise<WorkflowInputSchemaResponse>;
 
   createWorkflowDefinition(
     uri: string,

@@ -19,7 +19,7 @@ export const RbacPage = ({ useHeader = true }: { useHeader?: boolean }) => (
           <Header title="Administration" />
           <DeleteDialogContextProvider>
             <TabbedLayout>
-              <TabbedLayout.Route path="/rbac" title="RBAC">
+              <TabbedLayout.Route path="/" title="RBAC">
                 <RolesList />
               </TabbedLayout.Route>
             </TabbedLayout>

@@ -538,13 +538,6 @@ export const mockKubernetesPlrResponse = {
           ],
           workspaces: [],
         },
-        pipelineResults: [
-          {
-            name: 'MY_SCAN_OUTPUT',
-            value:
-              '{"vulnerabilities":{\n"critical": 1,\n"high": 9,\n"medium": 20,\n"low": 1,\n"unknown": 0},\n"unpatched_vulnerabilities": {\n"critical": 0,\n"high": 1,\n"medium": 0,\n"low":1}\n}\n',
-          },
-        ],
         startTime: '2023-03-30T07:03:04Z',
       },
     },
@@ -819,6 +812,13 @@ export const mockKubernetesPlrResponse = {
           workspaces: [],
           startTime: '2023-04-11T06:48:50Z',
         },
+        pipelineResults: [
+          {
+            name: 'MY_SCAN_OUTPUT',
+            value:
+              '{"vulnerabilities":{\n"critical": 1,\n"high": 9,\n"medium": 20,\n"low": 1,\n"unknown": 0},\n"unpatched_vulnerabilities": {\n"critical": 0,\n"high": 1,\n"medium": 0,\n"low":1}\n}\n',
+          },
+        ],
         startTime: '2023-04-11T05:49:05Z',
       },
     },

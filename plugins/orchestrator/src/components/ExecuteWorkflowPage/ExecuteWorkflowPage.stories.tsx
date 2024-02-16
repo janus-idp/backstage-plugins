@@ -4,12 +4,13 @@ import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
 
 import { Meta, StoryObj } from '@storybook/react';
 
-import { WorkflowDataInputSchemaResponse } from '@janus-idp/backstage-plugin-orchestrator-common';
+import { WorkflowInputSchemaResponse } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { fakeDataInputSchemaDifferentTypes } from '../../__fixtures__/fakeWorkflowDataInputSchemaDifferentTypes';
-import { fakeDataInputSchemaResponse } from '../../__fixtures__/fakeWorkflowDataInputSchemaResponse';
 import { fakeDataInputSchemaMultiStepResponse } from '../../__fixtures__/fakeWorkflowDataInputSchemaResponseMultiStep';
 import { fakeDataInputSchemaMultiStepInitialStateResponse } from '../../__fixtures__/fakeWorkflowDataInputSchemaResponseMultiStepInitialState';
+import { fakeDataInputSchemaResponse } from '../../__fixtures__/fakeWorkflowInputSchemaResponse';
+import { fakeWorkflowItem } from '../../__fixtures__/fakeWorkflowItem';
 import { orchestratorApiRef } from '../../api';
 import { MockOrchestratorClient } from '../../api/MockOrchestratorClient';
 import { orchestratorRootRouteRef } from '../../routes';
@@ -23,7 +24,7 @@ const meta = {
       _,
       context?: {
         args?: {
-          schemaResponse?: () => Promise<WorkflowDataInputSchemaResponse>;
+          schemaResponse?: () => Promise<WorkflowInputSchemaResponse>;
         };
       },
     ) =>
@@ -91,8 +92,9 @@ export const ExecuteWorkflowPageNoSchemaStory: Story = {
   name: 'No schema',
   args: {
     schemaResponse: () => ({
-      ...fakeDataInputSchemaResponse,
-      schemas: [],
+      workflowItem: fakeWorkflowItem,
+      isComposedSchema: false,
+      schemaSteps: [],
     }),
   },
 };

@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-tekton [3.5.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.5.5...@janus-idp/backstage-plugin-tekton@3.5.6) (2024-02-16)
+
+
+### Bug Fixes
+
+* **tekton:** upgrade to use latest @aonic-ui/pipelines package ([#1212](https://github.com/janus-idp/backstage-plugins/issues/1212)) ([0ae37f7](https://github.com/janus-idp/backstage-plugins/commit/0ae37f7a6c56df374e0e4e326397617ccd46aca8))
+
 ## @janus-idp/backstage-plugin-tekton [3.5.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.5.4...@janus-idp/backstage-plugin-tekton@3.5.5) (2024-02-07)
 
 

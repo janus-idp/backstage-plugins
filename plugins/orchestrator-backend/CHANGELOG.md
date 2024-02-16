@@ -1,3 +1,29 @@
+## @janus-idp/backstage-plugin-orchestrator-backend [1.3.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.3.0...@janus-idp/backstage-plugin-orchestrator-backend@1.3.1) (2024-02-16)
+
+
+### Bug Fixes
+
+* **orchestrator:** resolve mismatch between execution data and composed schema ([#1217](https://github.com/janus-idp/backstage-plugins/issues/1217)) ([af85114](https://github.com/janus-idp/backstage-plugins/commit/af851148935e1ed083709cac145520d7551de737))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.2.1
+
+## @janus-idp/backstage-plugin-orchestrator-backend [1.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.2.2...@janus-idp/backstage-plugin-orchestrator-backend@1.3.0) (2024-02-16)
+
+
+### Features
+
+* **orchestrator:** add OpenAPI support ([#1123](https://github.com/janus-idp/backstage-plugins/issues/1123)) ([bd88e23](https://github.com/janus-idp/backstage-plugins/commit/bd88e2304c93761ce6754985074f004a5a3c8c4b))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.2.0
+
 ## @janus-idp/backstage-plugin-orchestrator-backend [1.2.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.2.1...@janus-idp/backstage-plugin-orchestrator-backend@1.2.2) (2024-02-13)
 
 
