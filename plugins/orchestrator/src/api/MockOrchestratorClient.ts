@@ -4,8 +4,8 @@ import {
   AssessedProcessInstance,
   Job,
   ProcessInstance,
-  WorkflowDataInputSchemaResponse,
   WorkflowExecutionResponse,
+  WorkflowInputSchemaResponse,
   WorkflowItem,
   WorkflowListResult,
   WorkflowOverview,
@@ -149,7 +149,7 @@ export class MockOrchestratorClient implements OrchestratorApi {
     workflowId: string;
     instanceId?: string;
     assessmentInstanceId?: string;
-  }): Promise<WorkflowDataInputSchemaResponse> {
+  }): Promise<WorkflowInputSchemaResponse> {
     if (
       !hasOwnProp(this._mockData, 'getWorkflowDataInputSchemaResponse') ||
       !isNonNullable(this._mockData.getWorkflowDataInputSchemaResponse)

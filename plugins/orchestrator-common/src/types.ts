@@ -1,7 +1,7 @@
 import { JsonObject } from '@backstage/types';
 
 import { Specification } from '@severlessworkflow/sdk-typescript';
-import { JSONSchema7 } from 'json-schema';
+import { JSONSchema7, JSONSchema7Definition } from 'json-schema';
 import { OpenAPIV3 } from 'openapi-types';
 
 import { ProcessInstance, ProcessInstanceStateValues } from './models';
@@ -56,15 +56,48 @@ export interface WorkflowSpecFile {
   content: OpenAPIV3.Document;
 }
 
-export interface DataInputSchemaInitialState {
-  values: JsonObject[];
+export type WorkflowInputSchemaStep = {
+  schema: JsonObjectSchema;
+  title: string;
+  key: string;
+  data: JsonObject;
   readonlyKeys: string[];
-}
+};
 
-export interface WorkflowDataInputSchemaResponse {
+export type JsonObjectSchema = Omit<JSONSchema7, 'properties'> & {
+  properties: { [key: string]: JSONSchema7 };
+};
+
+export type ComposedSchema = Omit<JSONSchema7, 'properties'> & {
+  properties: {
+    [key: string]: Omit<JSONSchema7, 'properties'> & {
+      properties: { [key: string]: JsonObjectSchema };
+    };
+  };
+};
+
+export const isJsonObjectSchema = (
+  schema: JSONSchema7 | JsonObjectSchema | JSONSchema7Definition,
+): schema is JsonObjectSchema =>
+  typeof schema === 'object' &&
+  !!schema.properties &&
+  Object.values(schema.properties).filter(
+    curSchema => typeof curSchema !== 'object',
+  ).length === 0;
+
+export const isComposedSchema = (
+  schema: JSONSchema7 | ComposedSchema,
+): schema is ComposedSchema =>
+  !!schema.properties &&
+  Object.values(schema.properties).filter(
+    curSchema => !isJsonObjectSchema(curSchema),
+  ).length === 0;
+
+export interface WorkflowInputSchemaResponse {
   workflowItem: WorkflowItem;
-  schemas: JSONSchema7[];
-  initialState: DataInputSchemaInitialState;
+  schemaSteps: WorkflowInputSchemaStep[];
+  isComposedSchema: boolean;
+  schemaParseError?: string;
 }
 
 export interface WorkflowExecutionResponse {

@@ -18,9 +18,9 @@ import {
   QUERY_PARAM_INCLUDE_ASSESSMENT,
   QUERY_PARAM_INSTANCE_ID,
   QUERY_PARAM_URI,
-  WorkflowDataInputSchemaResponse,
   WorkflowDefinition,
   WorkflowInfo,
+  WorkflowInputSchemaResponse,
   WorkflowItem,
   WorkflowListResult,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
@@ -30,7 +30,6 @@ import { ApiResponseBuilder } from '../types/apiResponse';
 import { getWorkflowOverviewV1 } from './api/v1';
 import { getWorkflowOverviewV2 } from './api/v2';
 import { CloudEventService } from './CloudEventService';
-import { WORKFLOW_DATA_KEY } from './constants';
 import { DataIndexService } from './DataIndexService';
 import { DataInputSchemaService } from './DataInputSchemaService';
 import { JiraEvent, JiraService } from './JiraService';
@@ -403,13 +402,10 @@ function setupInternalRoutes(
 
     const workflowItem: WorkflowItem = { uri, definition };
 
-    const response: WorkflowDataInputSchemaResponse = {
+    const response: WorkflowInputSchemaResponse = {
       workflowItem,
-      schemas: [],
-      initialState: {
-        values: [],
-        readonlyKeys: [],
-      },
+      schemaSteps: [],
+      isComposedSchema: false,
     };
 
     if (!definition.dataInputSchema) {
@@ -423,20 +419,16 @@ function setupInternalRoutes(
     );
 
     if (!workflowInfo) {
-      res.status(500).send(`Couldn't fetch workflow info ${workflowId}`);
+      res.status(500).send(`couldn't fetch workflow info ${workflowId}`);
       return;
     }
 
     if (!workflowInfo.inputSchema) {
       res
         .status(500)
-        .send(`Couldn't fetch workflow input schema ${workflowId}`);
+        .send(`failed to retreive schema ${definition.dataInputSchema}`);
       return;
     }
-
-    const schemas = services.dataInputSchemaService.parseComposition(
-      workflowInfo.inputSchema,
-    );
 
     const instanceVariables = instanceId
       ? await services.dataIndexService.fetchProcessInstanceVariables(
@@ -444,50 +436,22 @@ function setupInternalRoutes(
         )
       : undefined;
 
-    const instanceWorkflowData = instanceVariables?.[WORKFLOW_DATA_KEY];
-    let initialState: JsonObject[] = [];
-    let readonlyKeys: string[] = [];
-
-    if (instanceWorkflowData) {
-      initialState =
-        services.dataInputSchemaService.extractInitialStateFromWorkflowData({
-          workflowData: instanceWorkflowData as JsonObject,
-          schemas,
-        });
-    }
-
     const assessmentInstanceVariables = assessmentInstanceId
       ? await services.dataIndexService.fetchProcessInstanceVariables(
           assessmentInstanceId,
         )
       : undefined;
 
-    const assessmentInstanceWorkflowData =
-      assessmentInstanceVariables?.[WORKFLOW_DATA_KEY];
-
-    if (assessmentInstanceWorkflowData) {
-      const assessmentInstanceInitialState =
-        services.dataInputSchemaService.extractInitialStateFromWorkflowData({
-          workflowData: assessmentInstanceWorkflowData as JsonObject,
-          schemas,
-        });
-
-      if (initialState.length === 0) {
-        initialState = assessmentInstanceInitialState;
-      }
-
-      readonlyKeys = assessmentInstanceInitialState
-        .map(item => Object.keys(item).filter(key => item[key] !== undefined))
-        .flat();
-    }
-
-    response.schemas = schemas;
-    response.initialState = {
-      values: initialState,
-      readonlyKeys,
-    };
-
-    res.status(200).json(response);
+    res
+      .status(200)
+      .json(
+        services.dataInputSchemaService.getWorkflowInputSchemaResponse(
+          workflowItem,
+          workflowInfo.inputSchema,
+          instanceVariables,
+          assessmentInstanceVariables,
+        ),
+      );
   });
 
   router.delete('/workflows/:workflowId', async (req, res) => {

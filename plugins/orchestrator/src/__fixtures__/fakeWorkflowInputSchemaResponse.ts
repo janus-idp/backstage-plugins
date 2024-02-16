@@ -1,6 +1,6 @@
-import { WorkflowDataInputSchemaResponse } from '@janus-idp/backstage-plugin-orchestrator-common';
+import { WorkflowInputSchemaResponse } from '@janus-idp/backstage-plugin-orchestrator-common';
 
-export const fakeDataInputSchemaResponse: WorkflowDataInputSchemaResponse = {
+export const fakeDataInputSchemaResponse: WorkflowInputSchemaResponse = {
   workflowItem: {
     uri: 'yamlgreet.sw.yaml',
     definition: {
@@ -73,23 +73,29 @@ export const fakeDataInputSchemaResponse: WorkflowDataInputSchemaResponse = {
       ],
     },
   },
-  schemas: [
+  schemaSteps: [
     {
-      $id: 'classpath:/schemas/yamlgreet__sub_schema__Additional_input_data.json',
+      readonlyKeys: [],
+      data: {},
+      key: 'yamlgreet',
       title: 'yamlgreet: Additional input data',
-      $schema: 'http://json-schema.org/draft-07/schema#',
-      type: 'object',
-      required: ['language'],
-      properties: {
-        language: {
-          title: 'language',
-          type: 'string',
-          pattern: 'Spanish|English',
-          description: 'Extracted from the Workflow definition',
-          default: 'English',
+      schema: {
+        $id: 'classpath:/schemas/yamlgreet__sub_schema__Additional_input_data.json',
+        title: 'yamlgreet: Additional input data',
+        $schema: 'http://json-schema.org/draft-07/schema#',
+        type: 'object',
+        required: ['language'],
+        properties: {
+          language: {
+            title: 'language',
+            type: 'string',
+            pattern: 'Spanish|English',
+            description: 'Extracted from the Workflow definition',
+            default: 'English',
+          },
         },
       },
     },
   ],
-  initialState: { values: [], readonlyKeys: [] },
+  isComposedSchema: false,
 };

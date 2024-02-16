@@ -20,7 +20,7 @@ import { Grid } from '@material-ui/core';
 import {
   QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
   QUERY_PARAM_INSTANCE_ID,
-  WorkflowDataInputSchemaResponse,
+  WorkflowInputSchemaResponse,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { orchestratorApiRef } from '../../api';
@@ -49,7 +49,7 @@ export const ExecuteWorkflowPage = () => {
     loading,
     error: responseError,
   } = useAsync(
-    async (): Promise<WorkflowDataInputSchemaResponse> =>
+    async (): Promise<WorkflowInputSchemaResponse> =>
       await orchestratorApi.getWorkflowDataInputSchema({
         workflowId,
         instanceId,
@@ -107,12 +107,23 @@ export const ExecuteWorkflowPage = () => {
             <ResponseErrorPanel error={updateError} />
           </Grid>
         )}
+        {schemaResponse.schemaParseError && (
+          <Grid item>
+            <ResponseErrorPanel
+              error={
+                new Error(
+                  `Failed to parse schema: ${schemaResponse.schemaParseError}`,
+                )
+              }
+            />
+          </Grid>
+        )}
         <Grid item>
           <InfoCard title="Run workflow">
-            {schemaResponse.schemas.length > 0 ? (
+            {schemaResponse.schemaSteps.length > 0 ? (
               <StepperForm
-                refSchemas={schemaResponse.schemas}
-                initialState={schemaResponse.initialState}
+                steps={schemaResponse.schemaSteps}
+                isComposedSchema={schemaResponse.isComposedSchema}
                 handleExecute={handleExecute}
                 isExecuting={isExecuting}
               />
