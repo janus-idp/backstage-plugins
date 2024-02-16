@@ -16,10 +16,10 @@ export interface Pagination {
 
 export function buildPagination(req: Request): Pagination {
   return {
-    offset: isNaN(req.query.pageNumber)
+    offset: isNaN(req.query.pageNumber as any)
       ? DEFAULT_PAGE_NUMBER
       : Number(req.query.pageNumber),
-    limit: isNaN(req.query.pageSize)
+    limit: isNaN(req.query.pageSize as any)
       ? DEFAULT_PAGE_SIZE
       : Number(req.query.pageSize),
     sortField: req.query.sortField
