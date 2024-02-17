@@ -518,7 +518,9 @@ describe('GithubApiService tests', () => {
   });
   it('throws an error if no integration matching the inputted github account is found', async () => {
     const parsed = gitUrlParse('https://github.company.com/bob');
-    expect(githubApiService.getGithubRepositories(parsed)).rejects.toThrow(
+    await expect(
+      githubApiService.getGithubRepositories(parsed),
+    ).rejects.toThrow(
       'There is no GitHub integration that matches https://github.company.com/bob. Please add a configuration entry for it under integrations.github.',
     );
   });

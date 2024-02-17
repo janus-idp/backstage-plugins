@@ -91,7 +91,7 @@ export class GithubApiService {
     credential: GithubAppCredentials,
     repositories: Map<string, GithubRepository>,
     errors: Map<number, GithubRepoFetchError>,
-  ) {
+  ): Promise<void> {
     try {
       const repos = await octokit.paginate(
         octokit.apps.listReposAccessibleToInstallation,
@@ -164,7 +164,7 @@ export class GithubApiService {
     accountName: string,
     repositories: Map<string, GithubRepository>,
     errors: Map<number, GithubRepoFetchError>,
-  ) {
+  ): Promise<void> {
     try {
       const account = await this.getGithubAccountDetails(
         octokit,
@@ -172,8 +172,7 @@ export class GithubApiService {
         accountName,
         errors,
       );
-      if (!account) return undefined;
-      if (account.type === 'User') {
+      if (account?.type === 'User') {
         const repos = await octokit.paginate(
           octokit.rest.repos.listForAuthenticatedUser,
         );
@@ -196,7 +195,7 @@ export class GithubApiService {
         });
       }
       // Otherwise is an Organization
-      else {
+      else if (account?.type === 'Organization') {
         const repos = await octokit.paginate(octokit.rest.repos.listForOrg, {
           org: accountName,
         });

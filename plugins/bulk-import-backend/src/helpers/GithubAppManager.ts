@@ -412,7 +412,7 @@ export class CustomSingleInstanceGithubCredentialsProvider
     const appCredentials =
       await this.githubAppsCredentialManager.getAllAppTokens(owner, repo);
 
-    let credentials: ExtendedGithubCredentials[] = [];
+    const credentials: ExtendedGithubCredentials[] = [];
     if (this.token) {
       credentials.push({
         headers: { Authorization: `Bearer ${this.token}` },
