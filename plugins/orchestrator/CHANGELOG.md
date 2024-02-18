@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-orchestrator [1.5.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.4.3...@janus-idp/backstage-plugin-orchestrator@1.5.0) (2024-02-18)
+
+
+### Features
+
+* **orchestrator:** display a confirmation dialog before the user aborts a running workflow ([#1215](https://github.com/janus-idp/backstage-plugins/issues/1215)) ([1453cf8](https://github.com/janus-idp/backstage-plugins/commit/1453cf8d42b14372c1a5c1973510450d24ae4b5a))
+
 ## @janus-idp/backstage-plugin-orchestrator [1.4.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.4.2...@janus-idp/backstage-plugin-orchestrator@1.4.3) (2024-02-16)
 
 
