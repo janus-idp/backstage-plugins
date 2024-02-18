@@ -16,11 +16,16 @@
 
 import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
-import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+import {
+  AuthorizeResult,
+  PermissionEvaluator,
+} from '@backstage/plugin-permission-common';
 
 import express from 'express';
 import request from 'supertest';
 
+import { GithubRepositoryResponse } from '../types';
+import { GithubApiService } from './githubApiService';
 import { createRouter } from './router';
 
 const mockedAuthorize: jest.MockedFunction<PermissionEvaluator['authorize']> =
@@ -34,17 +39,14 @@ const permissionEvaluator: PermissionEvaluator = {
   authorizeConditional: mockedPermissionQuery,
 };
 
-const configuration = new ConfigReader({
-  healthCheck: {
-    endpoint: [
-      {
-        name: '',
-        type: '',
-        target: '',
-      },
-    ],
-  },
-});
+const allowAll: PermissionEvaluator['authorize'] &
+  PermissionEvaluator['authorizeConditional'] = async queries => {
+  return queries.map(() => ({
+    result: AuthorizeResult.ALLOW,
+  }));
+};
+
+const configuration = new ConfigReader({});
 describe('createRouter', () => {
   let app: express.Express;
 
@@ -70,5 +72,142 @@ describe('createRouter', () => {
     });
   });
 
-  // TODO: add tests for the /repositories endpoint
+  describe('POST /repositories', () => {
+    it('returns 400 when no owner field is provided in the body', async () => {
+      mockedPermissionQuery.mockImplementation(allowAll);
+      const response = await request(app).post('/repositories').send();
+      expect(response.status).toEqual(400);
+      expect(response.body).toEqual({
+        error:
+          'No owner field provided. Please provide a valid github URL to the user or organization.',
+      });
+    });
+
+    it('returns 400 when owner field is not a valid URL', async () => {
+      mockedPermissionQuery.mockImplementation(allowAll);
+      const response = await request(app)
+        .post('/repositories')
+        .send({ owner: 'invalid' });
+      expect(response.status).toEqual(400);
+      expect(response.body).toEqual({
+        error:
+          'Invalid owner field provided. Please provide a valid github URL to the user or organization.',
+      });
+    });
+    it('returns 404 when owner field does not have a corresponding github integration', async () => {
+      mockedPermissionQuery.mockImplementation(allowAll);
+      const response = await request(app)
+        .post('/repositories')
+        .send({ owner: 'https://github.com/test' });
+      expect(response.status).toEqual(404);
+      expect(response.body).toEqual({
+        errors: [],
+        repositories: [],
+      });
+    });
+    it('returns 200 when repositories are fetched without errors', async () => {
+      const githubApiServiceResponse: GithubRepositoryResponse = {
+        repositories: [
+          {
+            name: 'A',
+            full_name: 'backstage/A',
+            url: 'https://api.github.com/repos/backstage/A',
+            html_url: 'https://github.com/backstage/A',
+            default_branch: 'master',
+          },
+          {
+            name: 'B',
+            full_name: 'backstage/B',
+            url: 'https://api.github.com/repos/backstage/B',
+            html_url: 'https://github.com/backstage/B',
+            default_branch: 'main',
+          },
+        ],
+        errors: [],
+      };
+      mockedPermissionQuery.mockImplementation(allowAll);
+      const mockGetGithubRepositories = jest
+        .fn()
+        .mockReturnValue(githubApiServiceResponse);
+      GithubApiService.prototype.getGithubRepositories =
+        mockGetGithubRepositories;
+
+      const response = await request(app)
+        .post('/repositories')
+        .send({ owner: 'https://github.com/backstage' });
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual(githubApiServiceResponse);
+    });
+    it('returns 207 when repositories are fetched, but errors also occurred', async () => {
+      const githubApiServiceResponse: GithubRepositoryResponse = {
+        repositories: [
+          {
+            name: 'A',
+            full_name: 'backstage/A',
+            url: 'https://api.github.com/repos/backstage/A',
+            html_url: 'https://github.com/backstage/A',
+            default_branch: 'master',
+          },
+          {
+            name: 'B',
+            full_name: 'backstage/B',
+            url: 'https://api.github.com/repos/backstage/B',
+            html_url: 'https://github.com/backstage/B',
+            default_branch: 'main',
+          },
+        ],
+        errors: [
+          {
+            error: {
+              name: 'customError',
+              message: 'Github App with ID 2 failed spectacularly',
+            },
+            type: 'app',
+            appId: 2,
+          },
+        ],
+      };
+      mockedPermissionQuery.mockImplementation(allowAll);
+      const mockGetGithubRepositories = jest
+        .fn()
+        .mockReturnValue(githubApiServiceResponse);
+      GithubApiService.prototype.getGithubRepositories =
+        mockGetGithubRepositories;
+
+      mockedPermissionQuery.mockImplementation(allowAll);
+      const response = await request(app)
+        .post('/repositories')
+        .send({ owner: 'https://github.com/test' });
+      expect(response.status).toEqual(207);
+      expect(response.body).toEqual(githubApiServiceResponse);
+    });
+    it('returns 207 when one or more errors are returned with no successful repository fetches', async () => {
+      const githubApiServiceResponse: GithubRepositoryResponse = {
+        repositories: [],
+        errors: [
+          {
+            error: {
+              name: 'customError',
+              message: 'Github App with ID 2 failed spectacularly',
+            },
+            type: 'app',
+            appId: 2,
+          },
+        ],
+      };
+      mockedPermissionQuery.mockImplementation(allowAll);
+      const mockGetGithubRepositories = jest
+        .fn()
+        .mockReturnValue(githubApiServiceResponse);
+      GithubApiService.prototype.getGithubRepositories =
+        mockGetGithubRepositories;
+
+      mockedPermissionQuery.mockImplementation(allowAll);
+      const response = await request(app)
+        .post('/repositories')
+        .send({ owner: 'https://github.com/test' });
+      expect(response.status).toEqual(207);
+      expect(response.body).toEqual(githubApiServiceResponse);
+    });
+  });
 });
