@@ -193,12 +193,14 @@ describe('GithubApiService tests', () => {
           full_name: 'backstage/A',
           url: 'https://api.github.com/repos/backstage/A',
           html_url: 'https://github.com/backstage/A',
+          default_branch: 'master',
         },
         {
           name: 'B',
           full_name: 'backstage/B',
           url: 'https://api.github.com/repos/backstage/B',
           html_url: 'https://github.com/backstage/B',
+          default_branch: 'main',
         },
       ],
     });
@@ -213,12 +215,14 @@ describe('GithubApiService tests', () => {
           full_name: 'backstage/A',
           url: 'https://api.github.com/repos/backstage/A',
           html_url: 'https://github.com/backstage/A',
+          default_branch: 'master',
         },
         {
           name: 'B',
           full_name: 'backstage/B',
           url: 'https://api.github.com/repos/backstage/B',
           html_url: 'https://github.com/backstage/B',
+          default_branch: 'main',
         },
       ],
       errors: [
@@ -254,12 +258,14 @@ describe('GithubApiService tests', () => {
             full_name: 'backstage/A',
             url: 'https://api.github.com/repos/backstage/A',
             html_url: 'https://github.com/backstage/A',
+            default_branch: 'master',
           },
           {
             name: 'B',
             full_name: 'backstage/B',
             url: 'https://api.github.com/repos/backstage/B',
             html_url: 'https://github.com/backstage/B',
+            default_branch: 'main',
           },
         ],
       })
@@ -270,12 +276,14 @@ describe('GithubApiService tests', () => {
             full_name: 'backstage/B',
             url: 'https://api.github.com/repos/backstage/B',
             html_url: 'https://github.com/backstage/B',
+            default_branch: 'main',
           },
           {
             name: 'C',
             full_name: 'backstage/C',
             url: 'https://api.github.com/repos/backstage/C',
             html_url: 'https://github.com/backstage/C',
+            default_branch: 'default',
           },
         ],
       });
@@ -290,18 +298,21 @@ describe('GithubApiService tests', () => {
           full_name: 'backstage/A',
           url: 'https://api.github.com/repos/backstage/A',
           html_url: 'https://github.com/backstage/A',
+          default_branch: 'master',
         },
         {
           name: 'B',
           full_name: 'backstage/B',
           url: 'https://api.github.com/repos/backstage/B',
           html_url: 'https://github.com/backstage/B',
+          default_branch: 'main',
         },
         {
           name: 'C',
           full_name: 'backstage/C',
           url: 'https://api.github.com/repos/backstage/C',
           html_url: 'https://github.com/backstage/C',
+          default_branch: 'default',
         },
       ],
       errors: [],
@@ -326,6 +337,7 @@ describe('GithubApiService tests', () => {
           owner: {
             login: 'bob',
           },
+          default_branch: 'master',
         },
         {
           name: 'B',
@@ -335,6 +347,7 @@ describe('GithubApiService tests', () => {
           owner: {
             login: 'bob',
           },
+          default_branch: 'main',
         },
         {
           name: 'C',
@@ -344,6 +357,7 @@ describe('GithubApiService tests', () => {
           owner: {
             login: 'backstage',
           },
+          default_branch: 'default',
         },
         {
           name: 'D',
@@ -353,6 +367,7 @@ describe('GithubApiService tests', () => {
           owner: {
             login: 'backstage',
           },
+          default_branch: 'master',
         },
       ],
     });
@@ -370,12 +385,14 @@ describe('GithubApiService tests', () => {
           full_name: 'bob/A',
           url: 'https://api.github.com/repos/bob/A',
           html_url: 'https://github.com/bob/A',
+          default_branch: 'master',
         },
         {
           name: 'B',
           full_name: 'bob/B',
           url: 'https://api.github.com/repos/bob/B',
           html_url: 'https://github.com/bob/B',
+          default_branch: 'main',
         },
       ],
       errors: [],
@@ -411,12 +428,14 @@ describe('GithubApiService tests', () => {
             full_name: 'backstage/A',
             url: 'https://api.github.com/repos/backstage/A',
             html_url: 'https://github.com/backstage/A',
+            default_branch: 'master',
           },
           {
             name: 'B',
             full_name: 'backstage/B',
             url: 'https://api.github.com/repos/backstage/B',
             html_url: 'https://github.com/backstage/B',
+            default_branch: 'main',
           },
         ],
       });
@@ -431,12 +450,14 @@ describe('GithubApiService tests', () => {
           full_name: 'backstage/A',
           url: 'https://api.github.com/repos/backstage/A',
           html_url: 'https://github.com/backstage/A',
+          default_branch: 'master',
         },
         {
           name: 'B',
           full_name: 'backstage/B',
           url: 'https://api.github.com/repos/backstage/B',
           html_url: 'https://github.com/backstage/B',
+          default_branch: 'main',
         },
       ],
       errors: [
@@ -480,12 +501,14 @@ describe('GithubApiService tests', () => {
           full_name: 'backstage/A',
           url: 'https://api.github.com/repos/backstage/A',
           html_url: 'https://github.com/backstage/A',
+          default_branch: 'master',
         },
         {
           name: 'B',
           full_name: 'backstage/B',
           url: 'https://api.github.com/repos/backstage/B',
           html_url: 'https://github.com/backstage/B',
+          default_branch: 'main',
         },
       ],
     });
@@ -503,12 +526,14 @@ describe('GithubApiService tests', () => {
           full_name: 'backstage/A',
           url: 'https://api.github.com/repos/backstage/A',
           html_url: 'https://github.com/backstage/A',
+          default_branch: 'master',
         },
         {
           name: 'B',
           full_name: 'backstage/B',
           url: 'https://api.github.com/repos/backstage/B',
           html_url: 'https://github.com/backstage/B',
+          default_branch: 'main',
         },
       ],
       errors: [],

@@ -105,6 +105,7 @@ export class GithubApiService {
           full_name: repo.full_name,
           url: repo.url,
           html_url: repo.html_url,
+          default_branch: repo.default_branch,
         };
         repositories.set(githubRepo.full_name, githubRepo);
       });
@@ -189,6 +190,7 @@ export class GithubApiService {
               full_name: repo.full_name,
               url: repo.url,
               html_url: repo.html_url,
+              default_branch: repo.default_branch,
             };
             repositories.set(githubRepo.full_name, githubRepo);
           }
@@ -205,6 +207,7 @@ export class GithubApiService {
             full_name: repo.full_name,
             url: repo.url,
             html_url: repo.html_url,
+            default_branch: repo.default_branch,
           };
           repositories.set(githubRepo.full_name, githubRepo);
         });

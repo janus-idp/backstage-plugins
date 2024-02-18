@@ -47,6 +47,10 @@ export type GithubRepository = {
    * The HTML URL to the repository
    */
   html_url: string;
+  /**
+   * The default "main" branch of the repository to place the `catalog-info.yaml` file into
+   */
+  default_branch: string;
 };
 
 /**
