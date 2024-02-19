@@ -1,19 +1,19 @@
 import * as React from 'react';
 import * as Cy from 'cytoscape';
-
 import { GraphStyles } from './graphs/GraphStyles';
-import canvas from 'cytoscape-canvas';
 import cytoscape from 'cytoscape';
 import { BoxLayout } from './Layout/BoxLayout';
-import popper from 'cytoscape-popper';
 import { KialiGridLayout } from './Layout/KialiGridLayout';
 import { KialiDagreLayout } from './Layout/KialiDagreLayout';
 import { KialiConcentricLayout } from './Layout/KialiConcentricLayout';
 import { KialiBreadFirstLayout } from './Layout/KialiBreadthFirstLayout';
-import { setPFColorVals } from 'components/Pf/PfColors';
-const nodeHtmlLabel = require('cy-node-html-label');
+import { setPFColorVals } from '../Pf/PfColors';
 
-cytoscape.use(canvas);
+const nodeHtmlLabel = require('cy-node-html-label');
+var cyCanvas = require('cytoscape-canvas');
+var popper = require('cytoscape-popper');
+
+cytoscape.use(cyCanvas);
 cytoscape.use(popper);
 cytoscape('layout', 'box-layout', BoxLayout);
 cytoscape('layout', 'kiali-breadthfirst', KialiBreadFirstLayout);

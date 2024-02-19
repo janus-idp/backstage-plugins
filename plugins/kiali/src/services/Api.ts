@@ -15,7 +15,7 @@ import {
   ServiceHealth,
   WorkloadHealth,
 } from '../types/Health';
-import { IstioConfigsMap } from '../types/IstioConfigList';
+import { IstioConfigList, IstioConfigListQuery, IstioConfigsMap } from '../types/IstioConfigList';
 import {
   CanaryUpgradeStatus,
   OutboundTrafficPolicy,
@@ -33,6 +33,8 @@ import { StatusState } from '../types/StatusState';
 import { TLSStatus } from '../types/TLSStatus';
 import { WorkloadListItem, WorkloadNamespaceResponse } from '../types/Workload';
 import { filterNsByAnnotation } from '../utils/entityFilter';
+import { ServiceDetailsInfo, ServiceDetailsQuery } from '../types/ServiceInfo';
+import { GraphDefinition, GraphElementsQuery, NodeParamsType, NodeType } from '../types/Graph';
 
 export const ANONYMOUS_USER = 'anonymous';
 
@@ -76,6 +78,12 @@ export interface KialiApi {
   getAuthInfo(): Promise<AuthInfo>;
   getStatus(): Promise<StatusState>;
   getNamespaces(): Promise<Namespace[]>;
+  getGraphElements(params: GraphElementsQuery): Promise<GraphDefinition>;
+  getNodeGraphElements(
+    node: NodeParamsType,
+    params: GraphElementsQuery,
+    cluster?: string
+  ): Promise<GraphDefinition>;
   getNamespaceAppHealth(
     namespace: string,
     duration: DurationInSeconds,
@@ -94,6 +102,13 @@ export interface KialiApi {
     cluster?: string,
     queryTime?: TimeInSeconds,
   ): Promise<NamespaceWorkloadHealth>;
+  getServiceDetail(
+    namespace: string,
+    service: string,
+    validate: boolean,
+    cluster?: string,
+    rateInterval?: DurationInSeconds
+  ): Promise<ServiceDetailsInfo>;
   getServerConfig(): Promise<ServerConfig>;
   getMeshTls(cluster?: string): Promise<TLSStatus>;
   getNamespaceTls(namespace: string, cluster?: string): Promise<TLSStatus>;
@@ -101,6 +116,30 @@ export interface KialiApi {
   getCanaryUpgradeStatus(): Promise<CanaryUpgradeStatus>;
   getIstiodResourceThresholds(): Promise<IstiodResourceThresholds>;
   getConfigValidations(cluster?: string): Promise<ValidationStatus>;
+  getServiceMetrics(
+    namespace: string,
+    service: string,
+    params: IstioMetricsOptions,
+    cluster?: string
+  ): Promise<IstioMetricsMap>;
+  getAppMetrics(
+    namespace: string,
+    app: string,
+    params: IstioMetricsOptions,
+    cluster?: string
+  ): Promise<IstioMetricsMap>;
+  getWorkloadMetrics(
+    namespace: string,
+    workload: string,
+    params: IstioMetricsOptions,
+    cluster?: string
+  ): Promise<IstioMetricsMap>;
+  getAggregateMetrics(
+    namespace: string,
+    aggregate: string,
+    aggregateValue: string,
+    params: IstioMetricsOptions
+  ): Promise<IstioMetricsMap>;
   getAllIstioConfigs(
     namespaces: string[],
     objects: string[],
@@ -109,6 +148,14 @@ export interface KialiApi {
     workloadSelector: string,
     cluster?: string,
   ): Promise<IstioConfigsMap>;
+  getIstioConfig(
+    namespace: string,
+    objects: string[],
+    validate: boolean,
+    labelSelector: string,
+    workloadSelector: string,
+    cluster?: string
+  ): Promise<IstioConfigList>;
   getNamespaceMetrics(
     namespace: string,
     params: IstioMetricsOptions,
@@ -137,6 +184,12 @@ export interface ErrorAuth {
 export interface Response<T> {
   data: T;
 }
+
+interface ClusterParam {
+  clusterName?: string;
+}
+
+type QueryParams<T> = T & ClusterParam;
 
 /* End */
 
@@ -231,6 +284,71 @@ export class KialiApiClient implements KialiApi {
       {},
       {},
     ).then(resp => resp);
+  };
+
+  /* Graph */
+
+  getGraphElements = (params: GraphElementsQuery): Promise<GraphDefinition> => {
+    return this.newRequest<GraphDefinition>(HTTP_VERBS.GET, urls.namespacesGraphElements, params, {});
+  };
+
+  getNodeGraphElements = (
+    node: NodeParamsType,
+    params: GraphElementsQuery,
+    cluster?: string
+  ): Promise<GraphDefinition> => {
+    const queryParams: QueryParams<GraphElementsQuery> = { ...params };
+  
+    if (cluster) {
+      queryParams.clusterName = cluster;
+    }
+  
+    switch (node.nodeType) {
+      case NodeType.AGGREGATE:
+        return !node.service
+          ? this.newRequest<GraphDefinition>(
+              HTTP_VERBS.GET,
+              urls.aggregateGraphElements(node.namespace.name, node.aggregate!, node.aggregateValue!),
+              queryParams,
+              {}
+            )
+          : this.newRequest<GraphDefinition>(
+              HTTP_VERBS.GET,
+              urls.aggregateByServiceGraphElements(
+                node.namespace.name,
+                node.aggregate!,
+                node.aggregateValue!,
+                node.service
+              ),
+              queryParams,
+              {}
+            );
+      case NodeType.APP:
+      case NodeType.BOX: // we only support app box node graphs, so treat like app
+        return this.newRequest<GraphDefinition>(
+          HTTP_VERBS.GET,
+          urls.appGraphElements(node.namespace.name, node.app, node.version),
+          queryParams,
+          {}
+        );
+      case NodeType.SERVICE:
+        return this.newRequest<GraphDefinition>(
+          HTTP_VERBS.GET,
+          urls.serviceGraphElements(node.namespace.name, node.service),
+          queryParams,
+          {}
+        );
+      case NodeType.WORKLOAD:
+        return this.newRequest<GraphDefinition>(
+          HTTP_VERBS.GET,
+          urls.workloadGraphElements(node.namespace.name, node.workload),
+          queryParams,
+          {}
+        );
+      default:
+        // default to namespace graph
+        return this.getGraphElements({ ...params, namespaces: node.namespace.name });
+    }
   };
 
   /* HEALTH */
@@ -343,6 +461,42 @@ export class KialiApiClient implements KialiApi {
     });
   };
 
+  getServiceDetail = async (
+    namespace: string,
+    service: string,
+    validate: boolean,
+    cluster?: string,
+    rateInterval?: DurationInSeconds
+  ): Promise<ServiceDetailsInfo> => {
+    const params: QueryParams<ServiceDetailsQuery> = {};
+  
+    if (validate) {
+      params.validate = true;
+    }
+  
+    if (rateInterval) {
+      params.rateInterval = `${rateInterval}s`;
+    }
+  
+    if (cluster) {
+      params.clusterName = cluster;
+    }
+  
+    return this.newRequest<ServiceDetailsInfo>(HTTP_VERBS.GET, urls.service(namespace, service), params, {}).then(r => {
+      const info: ServiceDetailsInfo = r;
+  
+      if (info.health) {ServiceHealth
+        // Default rate interval in backend = 600s
+        info.health = ServiceHealth.fromJson(namespace, service, info.health, {
+          rateInterval: rateInterval ?? 600,
+          hasSidecar: info.istioSidecar,
+          hasAmbient: info.istioAmbient
+        });
+      }
+  
+      return info;
+    });
+  };
   getNamespaceTls = (
     namespace: string,
     cluster?: string,
@@ -445,6 +599,98 @@ export class KialiApiClient implements KialiApi {
       params,
       {},
     ).then(resp => resp);
+  };
+
+  getAggregateMetrics = (
+    namespace: string,
+    aggregate: string,
+    aggregateValue: string,
+    params: IstioMetricsOptions
+  ): Promise<IstioMetricsMap> => {
+    return this.newRequest<IstioMetricsMap>(
+      HTTP_VERBS.GET,
+      urls.aggregateMetrics(namespace, aggregate, aggregateValue),
+      params,
+      {}
+    );
+  };
+
+  getServiceMetrics = (
+    namespace: string,
+    service: string,
+    params: IstioMetricsOptions,
+    cluster?: string
+  ): Promise<IstioMetricsMap> => {
+    const queryParams: QueryParams<IstioMetricsOptions> = { ...params };
+  
+    if (cluster) {
+      queryParams.clusterName = cluster;
+    }
+  
+    return this.newRequest<IstioMetricsMap>(HTTP_VERBS.GET, urls.serviceMetrics(namespace, service), queryParams, {});
+  };
+
+  getAppMetrics = (
+    namespace: string,
+    app: string,
+    params: IstioMetricsOptions,
+    cluster?: string
+  ): Promise<IstioMetricsMap> => {
+    const queryParams: QueryParams<IstioMetricsOptions> = { ...params };
+  
+    if (cluster) {
+      queryParams.clusterName = cluster;
+    }
+  
+    return this.newRequest<IstioMetricsMap>(HTTP_VERBS.GET, urls.appMetrics(namespace, app), queryParams, {});
+  };
+
+  getWorkloadMetrics = (
+    namespace: string,
+    workload: string,
+    params: IstioMetricsOptions,
+    cluster?: string
+  ): Promise<IstioMetricsMap> => {
+    const queryParams: QueryParams<IstioMetricsOptions> = { ...params };
+  
+    if (cluster) {
+      queryParams.clusterName = cluster;
+    }
+  
+    return this.newRequest<IstioMetricsMap>(HTTP_VERBS.GET, urls.workloadMetrics(namespace, workload), queryParams, {});
+  };
+
+  getIstioConfig = (
+    namespace: string,
+    objects: string[],
+    validate: boolean,
+    labelSelector: string,
+    workloadSelector: string,
+    cluster?: string
+  ): Promise<IstioConfigList> => {
+    const params: QueryParams<IstioConfigListQuery> = {};
+  
+    if (objects && objects.length > 0) {
+      params.objects = objects.join(',');
+    }
+  
+    if (validate) {
+      params.validate = validate;
+    }
+  
+    if (labelSelector) {
+      params.labelSelector = labelSelector;
+    }
+  
+    if (workloadSelector) {
+      params.workloadSelector = workloadSelector;
+    }
+  
+    if (cluster) {
+      params.clusterName = cluster;
+    }
+  
+    return this.newRequest<IstioConfigList>(HTTP_VERBS.GET, urls.istioConfig(namespace), params, {});
   };
 
   getNamespaceMetrics = (

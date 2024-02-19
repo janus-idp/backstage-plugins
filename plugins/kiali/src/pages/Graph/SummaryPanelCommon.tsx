@@ -1,12 +1,13 @@
 import * as React from 'react';
-import { kialiStyle } from 'styles/StyleUtils';
 import { NodeType, SummaryPanelPropType, Protocol, DecoratedGraphNodeData, BoxByType } from '../../types/Graph';
 import { IstioMetricsOptions, Reporter, Direction } from '../../types/MetricsOptions';
 import * as API from '../../services/Api';
 import * as M from '../../types/Metrics';
-import { KialiIcon } from 'config/KialiIcon';
-import { PFColors } from 'components/Pf/PfColors';
-import { ApiResponse } from 'types/Api';
+import { KialiIcon } from '../../config/KialiIcon';
+import { PFColors } from '../../components/Pf/PfColors';
+import { ApiResponse } from '../../types/Api';
+import { style } from 'typestyle';
+import { useApi } from '@backstage/core-plugin-api';
 
 export enum NodeMetricType {
   APP = 1,
@@ -17,13 +18,13 @@ export enum NodeMetricType {
   NAMESPACE = 6
 }
 
-export const summaryBodyTabs = kialiStyle({
+export const summaryBodyTabs = style({
   padding: '0.5rem 1rem 0 1rem'
 });
 
 export const summaryPanelWidth = '350px';
 
-export const summaryPanel = kialiStyle({
+export const summaryPanel = style({
   fontSize: 'var(--graph-side-panel--font-size)',
   height: '100%',
   margin: 0,
@@ -38,14 +39,14 @@ export const summaryFont: React.CSSProperties = {
   fontSize: 'var(--graph-side-panel--font-size)'
 };
 
-export const summaryTitle = kialiStyle({
+export const summaryTitle = style({
   fontWeight: 'bolder',
   marginTop: '0.25rem',
   marginBottom: '0.25rem',
   textAlign: 'left'
 });
 
-export const noTrafficStyle = kialiStyle({
+export const noTrafficStyle = style({
   marginTop: '0.25rem',
   $nest: {
     '& .pf-v5-c-icon': {
@@ -54,7 +55,7 @@ export const noTrafficStyle = kialiStyle({
   }
 });
 
-const hrStyle = kialiStyle({
+const hrStyle = style({
   border: 0,
   borderTop: `1px solid ${PFColors.BorderColor100}`,
   margin: '0.5rem 0'
@@ -110,7 +111,8 @@ export const getNodeMetrics = (
   requestProtocol?: string,
   quantiles?: Array<string>,
   byLabels?: Array<string>
-): Promise<ApiResponse<M.IstioMetricsMap>> => {
+): Promise<M.IstioMetricsMap> => {
+  const kialiClient = useApi(API.kialiApiRef)
   const options: IstioMetricsOptions = {
     queryTime: props.queryTime,
     duration: props.duration,
@@ -126,27 +128,27 @@ export const getNodeMetrics = (
 
   switch (nodeMetricType) {
     case NodeMetricType.AGGREGATE:
-      return API.getAggregateMetrics(nodeData.namespace, nodeData.aggregate!, nodeData.aggregateValue!, options);
+      return kialiClient.getAggregateMetrics(nodeData.namespace, nodeData.aggregate!, nodeData.aggregateValue!, options);
     case NodeMetricType.APP:
-      return API.getAppMetrics(nodeData.namespace, nodeData.app!, options, nodeData.cluster);
+      return kialiClient.getAppMetrics(nodeData.namespace, nodeData.app!, options, nodeData.cluster);
     case NodeMetricType.SERVICE:
-      return API.getServiceMetrics(nodeData.namespace, nodeData.service!, options, nodeData.cluster);
+      return kialiClient.getServiceMetrics(nodeData.namespace, nodeData.service!, options, nodeData.cluster);
     case NodeMetricType.WORKLOAD:
-      return API.getWorkloadMetrics(nodeData.namespace, nodeData.workload!, options, nodeData.cluster);
+      return kialiClient.getWorkloadMetrics(nodeData.namespace, nodeData.workload!, options, nodeData.cluster);
     default:
       return Promise.reject(new Error(`Unknown NodeMetricType: ${nodeMetricType}`));
   }
 };
 
 export const mergeMetricsResponses = async (
-  promises: Promise<ApiResponse<M.IstioMetricsMap>>[]
+  promises: Promise<M.IstioMetricsMap>[]
 ): Promise<ApiResponse<M.IstioMetricsMap>> => {
   return Promise.all(promises).then(responses => {
     const metrics: M.IstioMetricsMap = {};
 
     responses.forEach(r => {
-      Object.keys(r.data).forEach(k => {
-        metrics[k] = r.data[k];
+      Object.keys(r).forEach(k => {
+        metrics[k] = r[k];
       });
     });
 

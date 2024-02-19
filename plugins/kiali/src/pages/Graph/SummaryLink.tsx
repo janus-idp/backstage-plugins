@@ -7,14 +7,14 @@ import {
   CLUSTER_DEFAULT,
   DecoratedGraphNodeData
 } from '../../types/Graph';
-import { KialiIcon } from 'config/KialiIcon';
+import { KialiIcon } from '../../config/KialiIcon';
 import { PopoverPosition } from '@patternfly/react-core';
-import { Health } from 'types/Health';
-import { HealthIndicator } from 'components/Health/HealthIndicator';
-import { PFBadge, PFBadges } from 'components/Pf/PfBadges';
-import { homeCluster } from 'config';
-import { KialiPageLink } from 'components/Link/KialiPageLink';
-import { kialiStyle } from 'styles/StyleUtils';
+import { Health } from '../../types/Health';
+import { HealthIndicator } from '../../components/Health/HealthIndicator';
+import { PFBadge, PFBadges } from '../../components/Pf/PfBadges';
+import { homeCluster } from '../../config';
+import { KialiPageLink } from '../../components/Link/KialiPageLink';
+import { style } from 'typestyle';
 
 interface LinkInfo {
   displayName: string;
@@ -22,7 +22,7 @@ interface LinkInfo {
   link: string;
 }
 
-const badgeStyle = kialiStyle({
+const badgeStyle = style({
   display: 'inline-block',
   marginRight: '0.25rem',
   marginBottom: '0.25rem'

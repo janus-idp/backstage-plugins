@@ -47,193 +47,190 @@ const defaults = {
   } // transform a given node position. Useful for changing flow direction in discrete layouts
 };
 
-export class KialiConcentricLayout {
-  readonly cy;
-  readonly eles;
-  readonly options;
 
-  constructor(options: any) {
-    this.cy = options.cy;
-    this.eles = options.eles;
-    this.options = Object.assign({}, defaults, options);
-  }
+/**
+ * @brief       : constructor
+ * @arg options : object containing layout options
+ */
+export function KialiConcentricLayout( options:any ){
+  this.cy = options.cy;
+  this.eles = options.eles;
+  this.options = Object.assign({}, defaults, options);
+}
 
-  /**
-   * This code gets executed on the cy.layout(...).  run() is the entrypoint of this algorithm.
-   */
-  run() {
-    var clockwise =
-      this.options.counterclockwise !== undefined ? !this.options.counterclockwise : this.options.clockwise;
+KialiConcentricLayout.prototype.run = function() {
+  var clockwise =
+    this.options.counterclockwise !== undefined ? !this.options.counterclockwise : this.options.clockwise;
 
-    var cy = this.cy;
-    var eles = this.eles;
-    var nodes = eles.nodes().not(':parent');
+  var cy = this.cy;
+  var eles = this.eles;
+  var nodes = eles.nodes().not(':parent');
 
-    var bb = makeBoundingBox(
-      this.options.boundingBox
-        ? this.options.boundingBox
-        : {
-            x1: 0,
-            y1: 0,
-            w: cy.width(),
-            h: cy.height()
-          }
-    );
+  var bb = makeBoundingBox(
+    this.options.boundingBox
+      ? this.options.boundingBox
+      : {
+          x1: 0,
+          y1: 0,
+          w: cy.width(),
+          h: cy.height()
+        }
+  );
 
-    var center = {
-      x: bb.x1 + bb.w / 2,
-      y: bb.y1 + bb.h / 2
-    };
+  var center = {
+    x: bb.x1 + bb.w / 2,
+    y: bb.y1 + bb.h / 2
+  };
 
-    var nodeValues: any = []; // { node, value }
-    var maxNodeSize = 0;
+  var nodeValues: any = []; // { node, value }
+  var maxNodeSize = 0;
 
-    for (var i = 0; i < nodes.length; i++) {
-      var node = nodes[i];
-      var value;
+  for (var i = 0; i < nodes.length; i++) {
+    var node = nodes[i];
+    var value;
 
-      // calculate the node value
-      value = this.options.concentric(node);
-      nodeValues.push({
-        value: value,
-        node: node
-      });
-
-      // for style mapping
-      node._private.scratch.concentric = value;
-    }
-
-    // in case we used the `concentric` in style
-    nodes.updateStyle();
-
-    // calculate max size now based on potentially updated mappers
-    for (i = 0; i < nodes.length; i++) {
-      node = nodes[i];
-      var nbb = node.layoutDimensions(this.options);
-
-      maxNodeSize = Math.max(maxNodeSize, nbb.w, nbb.h);
-    }
-
-    // sort node values in descreasing order
-    nodeValues.sort(function (a, b) {
-      return b.value - a.value;
+    // calculate the node value
+    value = this.options.concentric(node);
+    nodeValues.push({
+      value: value,
+      node: node
     });
 
-    var levelWidth = this.options.levelWidth(nodes);
+    // for style mapping
+    node._private.scratch.concentric = value;
+  }
 
-    // put the values into levels
-    var levels: any = [[]];
-    var currentLevel = levels[0];
-    for (i = 0; i < nodeValues.length; i++) {
-      var val = nodeValues[i];
+  // in case we used the `concentric` in style
+  nodes.updateStyle();
 
-      if (currentLevel.length > 0) {
-        var diff = Math.abs(currentLevel[0].value - val.value);
+  // calculate max size now based on potentially updated mappers
+  for (i = 0; i < nodes.length; i++) {
+    node = nodes[i];
+    var nbb = node.layoutDimensions(this.options);
 
-        if (diff >= levelWidth) {
-          currentLevel = [];
-          levels.push(currentLevel);
-        }
+    maxNodeSize = Math.max(maxNodeSize, nbb.w, nbb.h);
+  }
+
+  // sort node values in descreasing order
+  nodeValues.sort(function (a, b) {
+    return b.value - a.value;
+  });
+
+  var levelWidth = this.options.levelWidth(nodes);
+
+  // put the values into levels
+  var levels: any = [[]];
+  var currentLevel = levels[0];
+  for (i = 0; i < nodeValues.length; i++) {
+    var val = nodeValues[i];
+
+    if (currentLevel.length > 0) {
+      var diff = Math.abs(currentLevel[0].value - val.value);
+
+      if (diff >= levelWidth) {
+        currentLevel = [];
+        levels.push(currentLevel);
       }
-
-      currentLevel.push(val);
     }
 
-    // create positions from levels
+    currentLevel.push(val);
+  }
 
-    var minDist = maxNodeSize + this.options.minNodeSpacing; // min dist between nodes
+  // create positions from levels
 
-    if (!this.options.avoidOverlap) {
-      // then strictly constrain to bb
-      var firstLvlHasMulti = levels.length > 0 && levels[0].length > 1;
-      var maxR = Math.min(bb.w, bb.h) / 2 - minDist;
-      var rStep = maxR / (levels.length + firstLvlHasMulti ? 1 : 0);
+  var minDist = maxNodeSize + this.options.minNodeSpacing; // min dist between nodes
 
-      minDist = Math.min(minDist, rStep);
+  if (!this.options.avoidOverlap) {
+    // then strictly constrain to bb
+    var firstLvlHasMulti = levels.length > 0 && levels[0].length > 1;
+    var maxR = Math.min(bb.w, bb.h) / 2 - minDist;
+    var rStep = maxR / (levels.length + firstLvlHasMulti ? 1 : 0);
+
+    minDist = Math.min(minDist, rStep);
+  }
+
+  // find the metrics for each level
+  var r = 0;
+  for (let i = 0; i < levels.length; i++) {
+    var level = levels[i];
+    var sweep = this.options.sweep === undefined ? 2 * Math.PI - (2 * Math.PI) / level.length : this.options.sweep;
+    var dTheta = (level.dTheta = sweep / Math.max(1, level.length - 1));
+
+    // calculate the radius
+    if (level.length > 1 && this.options.avoidOverlap) {
+      // but only if more than one node (can't overlap)
+      var dcos = Math.cos(dTheta) - Math.cos(0);
+      var dsin = Math.sin(dTheta) - Math.sin(0);
+      var rMin = Math.sqrt((minDist * minDist) / (dcos * dcos + dsin * dsin)); // s.t. no nodes overlapping
+
+      r = Math.max(rMin, r);
     }
 
-    // find the metrics for each level
-    var r = 0;
-    for (let i = 0; i < levels.length; i++) {
-      var level = levels[i];
-      var sweep = this.options.sweep === undefined ? 2 * Math.PI - (2 * Math.PI) / level.length : this.options.sweep;
-      var dTheta = (level.dTheta = sweep / Math.max(1, level.length - 1));
+    level.r = r;
 
-      // calculate the radius
-      if (level.length > 1 && this.options.avoidOverlap) {
-        // but only if more than one node (can't overlap)
-        var dcos = Math.cos(dTheta) - Math.cos(0);
-        var dsin = Math.sin(dTheta) - Math.sin(0);
-        var rMin = Math.sqrt((minDist * minDist) / (dcos * dcos + dsin * dsin)); // s.t. no nodes overlapping
+    r += minDist;
+  }
 
-        r = Math.max(rMin, r);
+  if (this.options.equidistant) {
+    var rDeltaMax = 0;
+    r = 0;
+
+    for (i = 0; i < levels.length; i++) {
+      level = levels[i];
+      var rDelta = level.r - r;
+
+      rDeltaMax = Math.max(rDeltaMax, rDelta);
+    }
+
+    r = 0;
+    for (i = 0; i < levels.length; i++) {
+      level = levels[i];
+
+      if (i === 0) {
+        r = level.r;
       }
 
       level.r = r;
 
-      r += minDist;
+      r += rDeltaMax;
     }
-
-    if (this.options.equidistant) {
-      var rDeltaMax = 0;
-      r = 0;
-
-      for (i = 0; i < levels.length; i++) {
-        level = levels[i];
-        var rDelta = level.r - r;
-
-        rDeltaMax = Math.max(rDeltaMax, rDelta);
-      }
-
-      r = 0;
-      for (i = 0; i < levels.length; i++) {
-        level = levels[i];
-
-        if (i === 0) {
-          r = level.r;
-        }
-
-        level.r = r;
-
-        r += rDeltaMax;
-      }
-    }
-
-    // calculate the node positions
-    var pos = {}; // id => position
-    for (i = 0; i < levels.length; i++) {
-      level = levels[i];
-      dTheta = level.dTheta;
-      r = level.r;
-
-      for (var j = 0; j < level.length; j++) {
-        val = level[j];
-        var theta = this.options.startAngle + (clockwise ? 1 : -1) * dTheta * j;
-
-        var p = {
-          x: center.x + r * Math.cos(theta),
-          y: center.y + r * Math.sin(theta)
-        };
-
-        pos[val.node.id()] = p;
-      }
-    }
-
-    // position the nodes
-    eles.nodes().layoutPositions(this, this.options, function (ele) {
-      let id = ele.id();
-
-      return pos[id];
-    });
-
-    return this;
   }
 
-  /**
+  // calculate the node positions
+  var pos = {}; // id => position
+  for (i = 0; i < levels.length; i++) {
+    level = levels[i];
+    dTheta = level.dTheta;
+    r = level.r;
+
+    for (var j = 0; j < level.length; j++) {
+      val = level[j];
+      var theta = this.options.startAngle + (clockwise ? 1 : -1) * dTheta * j;
+
+      var p = {
+        x: center.x + r * Math.cos(theta),
+        y: center.y + r * Math.sin(theta)
+      };
+
+      pos[val.node.id()] = p;
+    }
+  }
+
+  // position the nodes
+  eles.nodes().layoutPositions(this, this.options, function (ele) {
+    let id = ele.id();
+
+    return pos[id];
+  });
+
+  return this;
+}
+
+/**
    * This is a stub required by cytoscape to allow the layout impl to emit events
    * @param _events space separated string of event names
    */
-  emit(_events) {
-    // intentionally empty
-  }
+
+KialiConcentricLayout.prototype.emit = function(_events){
+  // intentionally empty
 }

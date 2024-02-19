@@ -1,5 +1,5 @@
 import { EdgeAnimationSpeed } from '@patternfly/react-topology';
-import { clamp } from 'utils/MathUtils';
+import { clamp } from '../../../utils/MathUtils';
 
 // Some information about the mathematical problem here:
 // We try to project a set of RATE values from an upper-unbounded interval ]0, +Inf[ to a set of TIMER DELAY values in

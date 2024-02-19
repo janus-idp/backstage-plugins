@@ -1,3 +1,4 @@
+export * from './Icons';
 export * from './Config';
 export * from './ServerConfig';
 export * from './Paths';

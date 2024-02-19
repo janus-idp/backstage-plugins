@@ -19,12 +19,16 @@ import { setServerConfig } from '../config/ServerConfig';
 import { KialiHelper } from '../pages/Kiali/KialiHelper';
 import { KialiNoResources } from '../pages/Kiali/KialiNoResources';
 import {
+  GlobalStateReducer,
+  GraphDataStateReducer,
   HelpDropdownStateReducer,
   IstioCertsInfoStateReducer,
   IstioStatusStateReducer,
   LoginReducer,
   MessageCenterReducer,
   NamespaceStateReducer,
+  TourStateReducer,
+  TracingStateReducer,
   UserSettingsStateReducer,
 } from '../reducers';
 import { MeshTlsStateReducer } from '../reducers/MeshTlsState';
@@ -63,18 +67,25 @@ export const KialiProvider: React.FC<Props> = ({
   const [notHaveResources, setNotHaveResources] = React.useState<
     boolean | undefined
   >(undefined);
+  
+  
+  /* Store state and dispatch */
+  const [graphState, graphDispatch] = React.useReducer(
+    GraphDataStateReducer,
+    initialStore.graph,
+  );
   const [loginState, loginDispatch] = React.useReducer(
     LoginReducer,
     initialStore.authentication,
   );
+  const [globalState, globalStateDispatch] = React.useReducer(
+    GlobalStateReducer,
+    initialStore.globalState,
+  );
   const [meshTLSStatusState, meshTLSStatusDispatch] = React.useReducer(
     MeshTlsStateReducer,
     initialStore.meshTLSStatus,
-  );
-  const [statusState, statusDispatch] = React.useReducer(
-    HelpDropdownStateReducer,
-    initialStore.statusState,
-  );
+  ); 
   const [messageState, messageDispatch] = React.useReducer(
     MessageCenterReducer,
     initialStore.messageCenter,
@@ -82,6 +93,18 @@ export const KialiProvider: React.FC<Props> = ({
   const [namespaceState, namespaceDispatch] = React.useReducer(
     NamespaceStateReducer,
     initialStore.namespaces,
+  );
+  const [statusState, statusDispatch] = React.useReducer(
+    HelpDropdownStateReducer,
+    initialStore.statusState,
+  );
+  const [tourState, tourDispatch] = React.useReducer(
+    TourStateReducer,
+    initialStore.tourState,
+  );
+  const [tracingState, tracingDispatch] = React.useReducer(
+    TracingStateReducer,
+    initialStore.tracingState,
   );
   const [userSettingState, userSettingDispatch] = React.useReducer(
     UserSettingsStateReducer,
@@ -95,6 +118,8 @@ export const KialiProvider: React.FC<Props> = ({
     IstioCertsInfoStateReducer,
     initialStore.istioCertsInfo,
   );
+
+  /* End Store state and dispatch */
 
   const kialiClient = useApi(kialiApiRef);
   kialiClient.setEntity(entity);
@@ -205,7 +230,7 @@ export const KialiProvider: React.FC<Props> = ({
     alertUtils.addMessage({
       content:
         '[Mock]Could not fetch Grafana info. Turning off links to Grafana.',
-      detail: 'grafana URL is not set in Kiali configuration',
+      detail: 'grafathis.props.toggleLegendna URL is not set in Kiali configuration',
       group: 'default',
       type: MessageType.INFO,
       showNotification: false,
@@ -238,19 +263,27 @@ export const KialiProvider: React.FC<Props> = ({
   return (
     <KialiContext.Provider
       value={{
-        authentication: loginState,
-        statusState: statusState,
+        globalState: globalState,
+        authentication: loginState,        
+        graph: graphState,
         messageCenter: messageState,
         meshTLSStatus: meshTLSStatusState,
         namespaces: namespaceState,
         userSettings: userSettingState,
         istioStatus: istioStatusState,
         istioCertsState: istioCertsState,
+        statusState: statusState,
+        tourState: tourState,
+        tracingState: tracingState,
         dispatch: {
+          globalStateDispatch: globalStateDispatch,
+          graphDispatch: graphDispatch,
+          istioStatusDispatch: istioStatusDispatch,
           messageDispatch: messageDispatch,
           namespaceDispatch: namespaceDispatch,
+          tracingDispatch: tracingDispatch,
+          tourDispatch: tourDispatch,
           userSettingDispatch: userSettingDispatch,
-          istioStatusDispatch: istioStatusDispatch,
         },
         alertUtils: alertUtils,
       }}

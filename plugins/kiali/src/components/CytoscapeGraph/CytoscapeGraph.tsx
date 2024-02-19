@@ -2,7 +2,7 @@ import * as Cy from 'cytoscape';
 import { Core, EdgeSingular, NodeSingular } from 'cytoscape';
 import * as React from 'react';
 import ReactResizeDetector from 'react-resize-detector';
-import { GraphData } from 'pages/Graph/GraphPage';
+import { GraphData } from '../../pages/Graph/GraphPage';
 import { IntervalInMilliseconds, TimeInMilliseconds } from '../../types/Common';
 import {
   BoxByType,
@@ -22,11 +22,9 @@ import {
   UNKNOWN,
   NodeAttr
 } from '../../types/Graph';
-import { JaegerTrace } from 'types/TracingInfo';
+import { JaegerTrace } from '../../types/TracingInfo';
 import { Namespace } from '../../types/Namespace';
-import { addInfo } from 'utils/AlertUtils';
 import { angleBetweenVectors, squaredDistance, normalize } from '../../utils/MathUtils';
-import { WizardAction, WizardMode } from '../IstioWizards/WizardActions';
 import {
   CytoscapeContextMenuWrapper,
   NodeContextMenuComponentType,
@@ -40,12 +38,11 @@ import { EmptyGraphLayout } from './EmptyGraphLayout';
 import { FocusAnimation } from './FocusAnimation';
 import { GraphHighlighter } from './graphs/GraphHighlighter';
 import { TrafficRenderer } from './TrafficAnimation/TrafficRenderer';
-import { homeCluster, serverConfig } from 'config';
+import { homeCluster, serverConfig } from '../../config';
 import { decoratedNodeData } from './CytoscapeGraphUtils';
 import { scoreNodes, ScoringCriteria } from './GraphScore';
-import { assignEdgeHealth } from 'types/ErrorRate/GraphEdgeStatus';
-import { PeerAuthentication } from 'types/IstioObjects';
-import { ServiceDetailsInfo } from 'types/ServiceInfo';
+import { assignEdgeHealth } from '../../types/ErrorRate/GraphEdgeStatus';
+import { AlertUtils } from '../../utils/Alertutils';
 
 type CytoscapeGraphProps = {
   compressOnHide: boolean;
@@ -61,16 +58,7 @@ type CytoscapeGraphProps = {
   namespaceLayout: Layout;
   onEmptyGraphAction?: () => void;
   onNodeDoubleTap?: (e: GraphNodeDoubleTapEvent) => void;
-  onEdgeTap?: (e: GraphEdgeTapEvent) => void;
-  onDeleteTrafficRouting?: (key: string, serviceDetails: ServiceDetailsInfo) => void;
-  onLaunchWizard?: (
-    key: WizardAction,
-    mode: WizardMode,
-    namespace: string,
-    serviceDetails: ServiceDetailsInfo,
-    gateways: string[],
-    peerAuths: PeerAuthentication[]
-  ) => void;
+  onEdgeTap?: (e: GraphEdgeTapEvent) => void;  
   onNodeTap?: (e: GraphNodeTapEvent) => void;
   onReady?: (cytoscapeRef: any) => void;
   rankBy: RankMode[];
@@ -94,6 +82,7 @@ type CytoscapeGraphProps = {
   trace?: JaegerTrace;
   updateSummary?: (event: GraphEvent) => void;
   theme: string;
+  alertUtils: AlertUtils;
 };
 
 // This is a Cypress test hook. Cypress-react-selector can access the react node state, and so
@@ -315,8 +304,6 @@ export class CytoscapeGraph extends React.Component<CytoscapeGraphProps, Cytosca
             ref={this.contextMenuRef}
             contextMenuEdgeComponent={this.props.contextMenuEdgeComponent}
             contextMenuNodeComponent={this.props.contextMenuNodeComponent}
-            onDeleteTrafficRouting={this.props.onDeleteTrafficRouting}
-            onLaunchWizard={this.props.onLaunchWizard}
             theme={this.props.theme}
           />
           <CytoscapeReactWrapper ref={e => this.setCytoscapeReactWrapperRef(e)} />
@@ -376,7 +363,7 @@ export class CytoscapeGraph extends React.Component<CytoscapeGraphProps, Cytosca
   private onResize = () => {
     if (this.cy) {
       this.cy.resize();
-      // always fit to the newly sized space
+      // always fit to the newly sized spaceconst kialiState = React.useContext(KialiContext) as KialiAppState;
       this.safeFit(this.cy, true);
     }
   };
@@ -771,7 +758,7 @@ export class CytoscapeGraph extends React.Component<CytoscapeGraphProps, Cytosca
     let selected = cy.$(focusSelector);
 
     if (!selected) {
-      addInfo(
+      this.props.alertUtils!.addInfo(
         'Could not focus on requested node. The node may be idle or hidden.',
         true,
         undefined,

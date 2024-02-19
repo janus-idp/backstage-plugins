@@ -13,13 +13,15 @@ import {
   GraphElementsQuery
 } from '../types/Graph';
 import { Namespace } from '../types/Namespace';
-import * as AlertUtils from '../utils/AlertUtils';
 import { PromisesRegistry } from '../utils/CancelablePromises';
-import * as API from './Api';
 import { decorateGraphData } from '../store/Selectors/GraphData';
 import EventEmitter from 'eventemitter3';
 import { createSelector } from 'reselect';
 import { isMultiCluster } from '../config';
+import { KialiAppState, KialiContext } from '../store';
+import React from 'react';
+import { useApi } from '@backstage/core-plugin-api';
+import { getErrorString, kialiApiRef } from './Api';
 
 export const EMPTY_GRAPH_DATA = { nodes: [], edges: [] };
 const PROMISE_KEY = 'CURRENT_REQUEST';
@@ -107,7 +109,9 @@ export class GraphDataSource {
     (graphData: { graphElements: GraphElements; graphDuration: number }) => graphData.graphDuration,
     (graphData, duration) => decorateGraphData(graphData, duration)
   );
-
+  
+  kialiState = React.useContext(KialiContext) as KialiAppState;
+  kialiClient = useApi(kialiApiRef);
   // Public methods
 
   constructor() {
@@ -138,7 +142,6 @@ export class GraphDataSource {
 
   public fetchGraphData = (fetchParams: FetchParams): void => {
     const previousFetchParams = this.fetchParameters;
-
     // Copy fetch parameters to a local attribute
     this._fetchParams = { ...fetchParams };
 
@@ -510,9 +513,9 @@ export class GraphDataSource {
   private fetchDataForNamespaces = (restParams: GraphElementsQuery): void => {
     restParams.namespaces = this.fetchParameters.namespaces.map(namespace => namespace.name).join(',');
 
-    this.promiseRegistry.register(PROMISE_KEY, API.getGraphElements(restParams)).then(
+    this.promiseRegistry.register(PROMISE_KEY, this.kialiClient.getGraphElements(restParams)).then(
       response => {
-        const responseData: any = response.data;
+        const responseData: any = response;
         this.graphElements = responseData && responseData.elements ? responseData.elements : EMPTY_GRAPH_DATA;
         this.graphTimestamp = responseData && responseData.timestamp ? responseData.timestamp : 0;
         this.graphDuration = responseData && responseData.duration ? responseData.duration : 0;
@@ -535,8 +538,8 @@ export class GraphDataSource {
         }
 
         this._isError = true;
-        this._errorMessage = API.getErrorString(error);
-        AlertUtils.addError('Cannot load the graph', error);
+        this._errorMessage = getErrorString(error);
+        this.kialiState.alertUtils!.addError('Cannot load the graph', error);
         this.emit('fetchError', `Cannot load the graph: ${this.errorMessage}`, this.fetchParameters);
       }
     );
@@ -544,10 +547,10 @@ export class GraphDataSource {
 
   private fetchDataForNode = (restParams: GraphElementsQuery, cluster?: string): void => {
     this.promiseRegistry
-      .register(PROMISE_KEY, API.getNodeGraphElements(this.fetchParameters.node!, restParams, cluster))
+      .register(PROMISE_KEY, this.kialiClient.getNodeGraphElements(this.fetchParameters.node!, restParams, cluster))
       .then(
         response => {
-          const responseData: any = response.data;
+          const responseData: any = response;
           this.graphElements = responseData && responseData.elements ? responseData.elements : EMPTY_GRAPH_DATA;
           this.graphTimestamp = responseData && responseData.timestamp ? responseData.timestamp : 0;
           this.graphDuration = responseData && responseData.duration ? responseData.duration : 0;
@@ -570,8 +573,8 @@ export class GraphDataSource {
           }
 
           this._isError = true;
-          this._errorMessage = API.getErrorString(error);
-          AlertUtils.addError('Cannot load the graph', error);
+          this._errorMessage = getErrorString(error);
+          this.kialiState.alertUtils!.addError('Cannot load the graph', error);
           this.emit('fetchError', this.errorMessage, this.fetchParameters);
         }
       );

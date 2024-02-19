@@ -11,7 +11,7 @@ import { UnhighlightClass, HoveredClass, HighlightClass } from './GraphStyles';
 // When a node or edge is hovered or selected:
 //   - highlight the end-to-end paths (nodes and edges) for which the element may participate.
 //     - note, this is not trace-based, so a highlighted path may not represent an actual request path
-//   - unhighlight the remaining elements
+//   - unhighlight the remaining elementskialiStyle
 //   - hovering is ignored while an element is selected
 //
 // When a box is selected:

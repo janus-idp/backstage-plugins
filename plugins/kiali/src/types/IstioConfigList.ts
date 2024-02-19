@@ -68,6 +68,17 @@ export interface IstioConfigList {
   validations: Validations;
 }
 
+export interface IstioConfigListQuery {
+  labelSelector?: string;
+  objects?: string;
+  validate?: boolean;
+  workloadSelector?: string;
+}
+
+export interface IstioConfigsMapQuery extends IstioConfigListQuery {
+  namespaces?: string;
+}
+
 export const dicIstioType = {
   Sidecar: 'sidecars',
   Gateway: 'gateways',

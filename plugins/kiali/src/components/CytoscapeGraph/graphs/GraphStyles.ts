@@ -1,4 +1,3 @@
-import { kialiStyle } from 'styles/StyleUtils';
 import { PFColors, PFColorVal, PFColorVals } from '../../../components/Pf/PfColors';
 import { DEGRADED, FAILURE } from '../../../types/Health';
 import {
@@ -20,10 +19,11 @@ import NodeImageKey from '../../../assets/img/node-background-key.png';
 import { decoratedEdgeData, decoratedNodeData } from '../CytoscapeGraphUtils';
 import _ from 'lodash';
 import * as Cy from 'cytoscape';
-import { PFBadges } from 'components/Pf/PfBadges';
-import { config } from 'config/Config';
+import { PFBadges } from '../../Pf/PfBadges';
+import { config } from '../../../config/Config';
 import { kialiBadge, PFBadgeType } from '../../Pf/PfBadges';
 import { NestedCSSProperties } from 'typestyle/lib/types';
+import { style } from 'typestyle';
 
 export const HighlightClass = 'mousehighlight';
 export const HoveredClass = 'mousehover';
@@ -91,9 +91,9 @@ type contentType = {
 
 // Puts a little more space between icons when a badge has multiple icons
 const badgeMargin = (existingIcons: string) =>
-  existingIcons === '' ? kialiStyle({ marginLeft: '1px' }) : kialiStyle({ marginRight: '2px' });
+  existingIcons === '' ? style({ marginLeft: '1px' }) : style({ marginRight: '2px' });
 
-const badgesDefault = kialiStyle({
+const badgesDefault = style({
   alignItems: 'center',
   backgroundColor: NodeBadgeBackgroundColor,
   borderTopLeftRadius: '3px',
@@ -103,7 +103,7 @@ const badgesDefault = kialiStyle({
   padding: '3px 3px'
 });
 
-const contentDefault = kialiStyle({
+const contentDefault = style({
   alignItems: 'center',
   backgroundColor: NodeTextBackgroundColor,
   borderRadius: '3px',
@@ -112,12 +112,12 @@ const contentDefault = kialiStyle({
   padding: '1px 5px'
 });
 
-const contentBox = kialiStyle({
+const contentBox = style({
   backgroundColor: NodeTextBackgroundColorBox,
   color: NodeTextColorBox
 });
 
-const hostsClass = kialiStyle({
+const hostsClass = style({
   $nest: {
     '& div:last-child': {
       display: 'none'
@@ -128,14 +128,14 @@ const hostsClass = kialiStyle({
   }
 });
 
-const hostsList = kialiStyle({
+const hostsList = style({
   textAlign: 'initial',
   marginTop: 2,
   paddingTop: 2,
   borderTop: `1px solid ${PFColors.Color200}`
 });
 
-const labelDefault = kialiStyle({
+const labelDefault = style({
   borderRadius: '3px',
   boxShadow: '0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 2px 8px 0 rgba(0, 0, 0, 0.19)',
   display: 'inline-flex',
@@ -145,7 +145,7 @@ const labelDefault = kialiStyle({
   textAlign: 'center'
 });
 
-const labelBox = kialiStyle({
+const labelBox = style({
   display: 'block',
   marginTop: '13px',
   textAlign: 'left'
@@ -248,7 +248,7 @@ export class GraphStyles {
             badges = `<span class="${NodeIconFaultInjection} ${badgeMargin(badges)}"></span> ${badges}`;
           }
           if (node.hasMirroring) {
-            badges = `<span class="${NodeIconMirroring}  ${badgeMargin(badges)} ${kialiStyle({
+            badges = `<span class="${NodeIconMirroring}  ${badgeMargin(badges)} ${style({
               marginTop: '1px'
             })}"></span> ${badges}`;
           }
@@ -420,7 +420,7 @@ export class GraphStyles {
       newContent.forEach(c => {
         let contentPfBadge = '';
         if (!!c.pfBadge) {
-          const pfBadgeStyle = kialiStyle(c.pfBadge.style as NestedCSSProperties);
+          const pfBadgeStyle = style(c.pfBadge.style as NestedCSSProperties);
           contentPfBadge = `<span class="pf-v5-c-badge pf-m-unread ${kialiBadge} ${pfBadgeStyle}" style="${appBoxStyle}">${c.pfBadge.badge}</span>`;
         }
         const contentDiv = `<div class="${contentClasses} ${contentBox}" style="${appBoxStyle} ${contentStyle}">${contentPfBadge}${c.text}</div>`;
@@ -457,7 +457,7 @@ export class GraphStyles {
     newContent.forEach(c => {
       let contentPfBadge = '';
       if (!!c.pfBadge) {
-        const pfBadgeStyle = kialiStyle(c.pfBadge.style as NestedCSSProperties);
+        const pfBadgeStyle = style(c.pfBadge.style as NestedCSSProperties);
         contentPfBadge = `<span class="pf-v5-c-badge pf-m-unread ${kialiBadge} ${pfBadgeStyle}" style="${''}">${
           c.pfBadge.badge
         }</span>`;

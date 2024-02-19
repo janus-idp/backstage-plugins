@@ -33,7 +33,6 @@ export const safeFit = (cy: Cy.Core, centerElements?: Cy.Collection) => {
 export const runLayout = (cy: Cy.Core, layout: Layout, namespaceLayout: Layout): Promise<any> => {
   // generate all labels so the layout algorithm can take them into consideration
   refreshLabels(cy, true);
-
   const layoutOptions = LayoutDictionary.getLayout(layout);
   let promise: Promise<any>;
   let cyLayout: Cy.Layouts;
@@ -51,6 +50,7 @@ export const runLayout = (cy: Cy.Core, layout: Layout, namespaceLayout: Layout):
   }
   promise = cyLayout.promiseOn('layoutstop');
   cyLayout.run();
+
   return promise;
 };
 
