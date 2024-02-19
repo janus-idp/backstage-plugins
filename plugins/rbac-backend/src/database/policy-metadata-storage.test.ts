@@ -31,6 +31,17 @@ describe('policy-metadata-db-table', () => {
       }),
       migrations: { skip: false },
     };
+    await knex.schema.createTable('casbin_rule', table => {
+      table.increments('id').primary();
+      table.string('ptype');
+      table.string('v0');
+      table.string('v1');
+      table.string('v2');
+      table.string('v3');
+      table.string('v4');
+      table.string('v5');
+      table.string('v6');
+    });
     await migrate(databaseManagerMock);
     return {
       knex,

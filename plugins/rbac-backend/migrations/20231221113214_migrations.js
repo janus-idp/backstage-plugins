@@ -30,7 +30,9 @@ exports.up = async function up(knex) {
         for (const groupPolicy of groupPolicies) {
           metadata.push({ source: 'legacy', roleEntityRef: groupPolicy });
         }
-        await knex.table('role-metadata').insert(metadata);
+        if (metadata.length > 0) {
+          await knex.table('role-metadata').insert(metadata);
+        }
       });
   }
 };

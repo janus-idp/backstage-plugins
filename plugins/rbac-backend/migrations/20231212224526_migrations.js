@@ -45,14 +45,18 @@ exports.up = async function up(knex) {
         for (const policy of policies) {
           metadata.push({ source: 'legacy', policy: policy });
         }
-        await knex.table('policy-metadata').insert(metadata);
+        if (metadata.length > 0) {
+          await knex.table('policy-metadata').insert(metadata);
+        }
       })
       .then(async () => {
         const metadata = [];
         for (const groupPolicy of groupPolicies) {
           metadata.push({ source: 'legacy', policy: groupPolicy });
         }
-        await knex.table('policy-metadata').insert(metadata);
+        if (metadata.length > 0) {
+          await knex.table('policy-metadata').insert(metadata);
+        }
       });
   }
 };
