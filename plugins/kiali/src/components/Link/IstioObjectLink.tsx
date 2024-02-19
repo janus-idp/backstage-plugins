@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 
 import { isMultiCluster, Paths } from '../../config';
 import { IstioTypes } from '../VirtualList/Config';
@@ -47,12 +46,8 @@ export const getIstioObjectUrl = (
 export const IstioObjectLink: React.FC<IstioObjectProps> = (
   props: IstioObjectProps,
 ) => {
-  const { name, namespace, type, cluster, query } = props;
-  const href = getIstioObjectUrl(name, namespace, type, cluster, query);
+  //const { name, namespace, type, cluster, query } = props;
+  //const href = getIstioObjectUrl(name, namespace, type, cluster, query);
 
-  return (
-    <Link to={href} data-test={`${type}-${namespace}-${name}`}>
-      {props.children}
-    </Link>
-  );
+  return <>{props.children}</>;
 };
