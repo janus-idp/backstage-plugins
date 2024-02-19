@@ -46,8 +46,9 @@ export const getIstioObjectUrl = (
 export const IstioObjectLink: React.FC<IstioObjectProps> = (
   props: IstioObjectProps,
 ) => {
-  //const { name, namespace, type, cluster, query } = props;
-  //const href = getIstioObjectUrl(name, namespace, type, cluster, query);
+  // TODO: TO be used when the istio config page is ready
+  // const { name, namespace, type, cluster, query } = props;
+  // const href = getIstioObjectUrl(name, namespace, type, cluster, query);
 
   return <>{props.children}</>;
 };
