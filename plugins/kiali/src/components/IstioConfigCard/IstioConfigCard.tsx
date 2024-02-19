@@ -53,12 +53,13 @@ export const IstioConfigCard: React.FC<IstioConfigCardProps> = (
     .map((item, itemIdx) => {
       return {
         cells: [
-          <span>
+          <span key={item.name}>
             <PFBadge badge={IstioTypes[item.type].badge} position="top" />
             {overviewLink(item)}
           </span>,
           <ValidationObjectSummary
             id={`${itemIdx}-config-validation`}
+            key={item.name}
             validations={item.validation ? [item.validation] : []}
           />,
         ],
