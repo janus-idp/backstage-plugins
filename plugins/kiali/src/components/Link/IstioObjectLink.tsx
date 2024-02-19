@@ -3,16 +3,7 @@ import React from 'react';
 import { isMultiCluster, Paths } from '../../config';
 import { IstioTypes } from '../VirtualList/Config';
 
-type ReferenceIstioObjectProps = {
-  cluster?: string;
-  name: string;
-  namespace: string;
-  query?: string;
-  subType?: string;
-  type: string;
-};
-
-type IstioObjectProps = ReferenceIstioObjectProps & {
+type IstioObjectProps = {
   children: React.ReactNode;
 };
 
@@ -32,7 +23,7 @@ export const getIstioObjectUrl = (
     to = `${to}?clusterName=${cluster}`;
   }
 
-  if (!!query) {
+  if (!query) {
     if (to.includes('?')) {
       to = `${to}&${query}`;
     } else {
@@ -46,7 +37,7 @@ export const getIstioObjectUrl = (
 export const IstioObjectLink: React.FC<IstioObjectProps> = (
   props: IstioObjectProps,
 ) => {
-  // TODO: TO be used when the istio config page is ready
+  // To be used when the istio config page is ready
   // const { name, namespace, type, cluster, query } = props;
   // const href = getIstioObjectUrl(name, namespace, type, cluster, query);
 
