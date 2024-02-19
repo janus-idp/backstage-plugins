@@ -8,6 +8,7 @@ import { isWaypoint } from '../../helpers/LabelFilterHelper';
 import { infoStyle } from '../../pages/Overview/OverviewCard/CanaryUpgradeProgress';
 import { ControlPlaneBadge } from '../../pages/Overview/OverviewCard/ControlPlaneBadge';
 import { OverviewCardSparklineCharts } from '../../pages/Overview/OverviewCard/OverviewCardSparklineCharts';
+import { linkStyle } from '../../styles/StyleUtils';
 import { Health } from '../../types/Health';
 import { IstioConfigItem } from '../../types/IstioConfigList';
 import { ValidationStatus } from '../../types/IstioObjects';
@@ -115,7 +116,9 @@ export const item: Renderer<TResource> = (
       style={{ verticalAlign: 'middle', whiteSpace: 'nowrap' }}
     >
       <PFBadge badge={serviceBadge} position={topPosition} />
-      {resource.name}
+      <Link key={key} to={getLink(resource, config)} className={linkStyle}>
+        {resource.name}
+      </Link>
     </TableCell>
   );
 };

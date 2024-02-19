@@ -7,6 +7,8 @@ import { useApi } from '@backstage/core-plugin-api';
 
 import { CircularProgress } from '@material-ui/core';
 
+import { history } from '../../app/History';
+import { BreadcrumbView } from '../../components/BreadcrumbView/BreadcrumbView';
 import { DefaultSecondaryMasthead } from '../../components/DefaultSecondaryMasthead/DefaultSecondaryMasthead';
 import * as FilterHelper from '../../components/FilterList/FilterHelper';
 import { TimeDurationComponent } from '../../components/Time/TimeDurationComponent';
@@ -104,6 +106,7 @@ export const WorkloadDetailsPage = () => {
   return (
     <div className={baseStyle}>
       <Content>
+        <BreadcrumbView location={history.location} />
         <DefaultSecondaryMasthead
           elements={grids()}
           onRefresh={() => fetchWorkload()}

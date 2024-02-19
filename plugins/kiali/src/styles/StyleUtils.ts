@@ -18,3 +18,8 @@ export const baseStyle = kialiStyle({
   display: 'contents',
   overflow: 'visible',
 });
+
+export const linkStyle = kialiStyle({
+  color: '#06c',
+  cursor: 'pointer',
+});
