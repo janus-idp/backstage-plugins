@@ -72,7 +72,7 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
   }
 
   async updateRoleMetadata(
-    newRoleMetadataDao: RoleMetadataDao,
+    newRoleMetadata: RoleMetadataDao,
     oldRoleEntityRef: string,
     trx: Knex.Transaction,
   ): Promise<void> {
@@ -89,25 +89,25 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
 
     if (
       currentMetadataDao.source !== 'legacy' &&
-      currentMetadataDao.source !== newRoleMetadataDao.source
+      currentMetadataDao.source !== newRoleMetadata.source
     ) {
       throw new InputError(`The RoleMetadata.source field is 'read-only'.`);
     }
 
-    if (deepSortedEqual(currentMetadataDao, newRoleMetadataDao)) {
+    if (deepSortedEqual(currentMetadataDao, newRoleMetadata)) {
       return;
     }
 
     const result = await trx<RoleMetadataDao>(ROLE_METADATA_TABLE)
       .where('id', currentMetadataDao.id)
-      .update(newRoleMetadataDao)
+      .update(newRoleMetadata)
       .returning('id');
 
     if (!result || result.length === 0) {
       throw new Error(
         `Failed to update the role metadata '${JSON.stringify(
           currentMetadataDao,
-        )}' with new value: '${JSON.stringify(newRoleMetadataDao)}'.`,
+        )}' with new value: '${JSON.stringify(newRoleMetadata)}'.`,
       );
     }
   }

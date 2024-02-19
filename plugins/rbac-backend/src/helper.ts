@@ -39,7 +39,7 @@ export async function removeTheDifference(
   }
 }
 
-export function transformArraytoPolicy(policyArray: string[]): RoleBasedPolicy {
+export function transformArrayToPolicy(policyArray: string[]): RoleBasedPolicy {
   const [entityReference, permission, policy, effect] = policyArray;
   return { entityReference, permission, policy, effect };
 }

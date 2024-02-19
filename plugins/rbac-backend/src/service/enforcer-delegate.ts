@@ -218,7 +218,7 @@ export class EnforcerDelegate {
       );
       await this.removeGroupingPolicies(
         oldRole,
-        roleMetadata.source!,
+        roleMetadata.source,
         allowToDeleteCSVFilePolicy,
         true,
         trx,

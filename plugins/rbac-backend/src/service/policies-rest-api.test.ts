@@ -1644,6 +1644,36 @@ describe('REST policies api', () => {
         });
 
       expect(result.statusCode).toBe(201);
+      expect(mockEnforcer.addGroupingPolicies).toHaveBeenCalledWith(
+        [['user:default/permission_admin', 'role:default/rbac_admin']],
+        {
+          roleEntityRef: 'role:default/rbac_admin',
+          source: 'rest',
+          description: '',
+        },
+      );
+    });
+
+    it('should be created role with description', async () => {
+      const result = await request(app)
+        .post('/roles')
+        .send({
+          memberReferences: ['user:default/permission_admin'],
+          name: 'role:default/rbac_admin',
+          metadata: {
+            description: 'some test description',
+          },
+        });
+
+      expect(result.statusCode).toBe(201);
+      expect(mockEnforcer.addGroupingPolicies).toHaveBeenCalledWith(
+        [['user:default/permission_admin', 'role:default/rbac_admin']],
+        {
+          roleEntityRef: 'role:default/rbac_admin',
+          source: 'rest',
+          description: 'some test description',
+        },
+      );
     });
 
     it('should not be created role, because it is has been already present', async () => {

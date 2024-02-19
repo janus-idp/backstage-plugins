@@ -413,6 +413,7 @@ export class PolicesServer {
 
       const oldRole = this.transformRoleToArray(oldRoleRaw);
       const newRole = this.transformRoleToArray(newRoleRaw);
+      // todo shell we allow newRole with an empty array?...
 
       const newMetadata: RoleMetadataDao = {
         ...newRoleRaw.metadata,
