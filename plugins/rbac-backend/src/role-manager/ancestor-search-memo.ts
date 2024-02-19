@@ -93,7 +93,7 @@ export class AncestorSearchMemo {
     const groupName = `group:${group.metadata.namespace?.toLocaleLowerCase(
       'en-US',
     )}/${group.metadata.name.toLocaleLowerCase('en-US')}`;
-    if (!memo.hasEntityRef(group.metadata.name)) {
+    if (!memo.hasEntityRef(groupName)) {
       memo.setNode(groupName);
     }
 
