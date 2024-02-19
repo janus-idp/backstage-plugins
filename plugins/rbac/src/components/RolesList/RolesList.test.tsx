@@ -113,8 +113,8 @@ describe('RolesList', () => {
       createRoleAllowed: false,
       createRoleLoading: false,
     });
-    const { getAllByTestId, getByText } = await renderInTestApp(<RolesList />);
-    expect(getAllByTestId('delete-role')).not.toBeNull();
+    const { getByTestId, getByText } = await renderInTestApp(<RolesList />);
+    expect(getByTestId('delete-role-role:default/guests')).not.toBeNull();
     expect(getByText('Actions')).not.toBeNull();
   });
 
@@ -134,7 +134,7 @@ describe('RolesList', () => {
           },
         },
         {
-          ...useRolesMockData[0],
+          ...useRolesMockData[1],
           actionsPermissionResults: {
             delete: { allowed: false, loading: true },
             edit: { allowed: true, loading: false },
@@ -149,9 +149,11 @@ describe('RolesList', () => {
       createRoleAllowed: false,
       createRoleLoading: false,
     });
-    const { getAllByTestId } = await renderInTestApp(<RolesList />);
-    expect(getAllByTestId('disable-delete-role')).not.toBeNull();
-    expect(getAllByTestId('update-role')).not.toBeNull();
+    const { getByTestId } = await renderInTestApp(<RolesList />);
+    expect(
+      getByTestId('disable-delete-role-role:default/guests'),
+    ).not.toBeNull();
+    expect(getByTestId('update-role-role:default/guests')).not.toBeNull();
   });
 
   it('should show disabled edit icon if user is not authorized to update roles', async () => {
@@ -170,7 +172,7 @@ describe('RolesList', () => {
           },
         },
         {
-          ...useRolesMockData[0],
+          ...useRolesMockData[1],
           actionsPermissionResults: {
             delete: { allowed: true, loading: true },
             edit: { allowed: false, loading: false },
@@ -185,9 +187,11 @@ describe('RolesList', () => {
       createRoleAllowed: true,
       createRoleLoading: false,
     });
-    const { getAllByTestId } = await renderInTestApp(<RolesList />);
-    expect(getAllByTestId('disable-update-role')).not.toBeNull();
-    expect(getAllByTestId('delete-role')).not.toBeNull();
+    const { getByTestId } = await renderInTestApp(<RolesList />);
+    expect(
+      getByTestId('disable-update-role-role:default/guests'),
+    ).not.toBeNull();
+    expect(getByTestId('delete-role-role:default/rbac_admin')).not.toBeNull();
   });
 
   it('should disable create button if user is not authorized to create roles', async () => {

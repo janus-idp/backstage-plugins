@@ -63,7 +63,7 @@ export const PoliciesCheckboxGroup = ({
                 control={
                   <Checkbox
                     checked={p.effect === 'allow'}
-                    name={`${rowName}.policies[${index}].policy`}
+                    name={`${rowName}.policies[${index}].policy-${p.policy}`}
                     onChange={e => onChangePolicy(e.target.checked, index)}
                   />
                 }
