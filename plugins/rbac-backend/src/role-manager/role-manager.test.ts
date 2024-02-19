@@ -113,12 +113,7 @@ describe('BackstageRoleManager', () => {
           filter: {
             kind: 'Group',
           },
-          fields: [
-            'metadata.name',
-            'metadata.namespace',
-            'spec.parent',
-            'spec.members',
-          ],
+          fields: ['metadata.name', 'metadata.namespace', 'spec.parent'],
         },
         { token: 'some-token' },
       );
@@ -141,12 +136,7 @@ describe('BackstageRoleManager', () => {
           filter: {
             kind: 'Group',
           },
-          fields: [
-            'metadata.name',
-            'metadata.namespace',
-            'spec.parent',
-            'spec.members',
-          ],
+          fields: ['metadata.name', 'metadata.namespace', 'spec.parent'],
         },
         { token: 'some-token' },
       );
@@ -642,7 +632,11 @@ describe('BackstageRoleManager', () => {
       const groupBMock = createGroupEntity('team-b', 'team-a', ['team-c']);
       const groupCMock = createGroupEntity('team-c', 'team-b', [], ['mike']);
 
-      catalogApiMock.getEntities.mockImplementation((_arg: any) => {
+      catalogApiMock.getEntities.mockImplementation((arg: any) => {
+        const hasMember = arg.filter['relations.hasMember'];
+        if (hasMember && hasMember === 'user:default/mike') {
+          return { items: [groupCMock] };
+        }
         return { items: [groupAMock, groupBMock, groupCMock] };
       });
 
@@ -692,7 +686,11 @@ describe('BackstageRoleManager', () => {
       const groupBMock = createGroupEntity('team-b', 'team-a', ['team-c']);
       const groupCMock = createGroupEntity('team-c', 'team-b', ['mike']);
 
-      catalogApiMock.getEntities.mockImplementation((_arg: any) => {
+      catalogApiMock.getEntities.mockImplementation((arg: any) => {
+        const hasMember = arg.filter['relations.hasMember'];
+        if (hasMember && hasMember === 'user:default/mike') {
+          return { items: [groupCMock] };
+        }
         return { items: [groupAMock, groupBMock, groupCMock] };
       });
 
@@ -825,7 +823,13 @@ describe('BackstageRoleManager', () => {
       const groupAMock = createGroupEntity('team-a', 'team-c', ['team-c']);
       const groupBMock = createGroupEntity('team-b', 'root', ['team-d']);
 
-      catalogApiMock.getEntities.mockImplementation((_arg: any) => {
+      catalogApiMock.getEntities.mockImplementation((arg: any) => {
+        const hasMember = arg.filter['relations.hasMember'];
+        if (hasMember && hasMember === 'user:default/mike') {
+          return { items: [groupCMock] };
+        } else if (hasMember && hasMember === 'user:default/tom') {
+          return { items: [groupDMock] };
+        }
         return {
           items: [
             groupRootMock,
@@ -884,7 +888,13 @@ describe('BackstageRoleManager', () => {
       const groupAMock = createGroupEntity('team-a', 'team-c', ['team-c']);
       const groupBMock = createGroupEntity('team-b', 'root', ['team-d']);
 
-      catalogApiMock.getEntities.mockImplementation((_arg: any) => {
+      catalogApiMock.getEntities.mockImplementation((arg: any) => {
+        const hasMember = arg.filter['relations.hasMember'];
+        if (hasMember && hasMember === 'user:default/mike') {
+          return { items: [groupCMock] };
+        } else if (hasMember && hasMember === 'user:default/tom') {
+          return { items: [groupDMock] };
+        }
         return {
           items: [
             groupRootMock,

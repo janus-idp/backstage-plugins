@@ -15,7 +15,7 @@ export class AncestorSearchMemo {
   private tokenManager: TokenManager;
   private catalogApi: CatalogApi;
 
-  private userName: string;
+  private userEntityRef: string;
 
   private allGroups: Entity[];
 
@@ -25,7 +25,7 @@ export class AncestorSearchMemo {
     catalogApi: CatalogApi,
   ) {
     this.graph = new Graph({ directed: true });
-    this.userName = userEntityRef.split('/')[1];
+    this.userEntityRef = userEntityRef;
     this.tokenManager = tokenManager;
     this.catalogApi = catalogApi;
     this.allGroups = [];
@@ -69,16 +69,23 @@ export class AncestorSearchMemo {
     const { items } = await this.catalogApi.getEntities(
       {
         filter: { kind: 'Group' },
-        fields: [
-          'metadata.name',
-          'metadata.namespace',
-          'spec.parent',
-          'spec.members',
-        ],
+        fields: ['metadata.name', 'metadata.namespace', 'spec.parent'],
       },
       { token },
     );
     this.allGroups = items;
+  }
+
+  async getUserGroups(): Promise<Entity[]> {
+    const { token } = await this.tokenManager.getToken();
+    const { items } = await this.catalogApi.getEntities(
+      {
+        filter: { kind: 'Group', 'relations.hasMember': this.userEntityRef },
+        fields: ['metadata.name', 'metadata.namespace', 'spec.parent'],
+      },
+      { token },
+    );
+    return items;
   }
 
   traverseGroups(memo: AncestorSearchMemo, group: Entity) {
@@ -107,10 +114,7 @@ export class AncestorSearchMemo {
   }
 
   async buildUserGraph(memo: AncestorSearchMemo) {
-    const userGroups = this.allGroups.filter(group => {
-      const members = group.spec?.members as string[];
-      return members?.includes(this.userName);
-    });
+    const userGroups = await this.getUserGroups();
     userGroups.forEach(group => this.traverseGroups(memo, group));
   }
 }
