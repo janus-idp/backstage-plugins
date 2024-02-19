@@ -11,7 +11,6 @@ import {
 } from '@material-ui/core';
 
 import { IstioConfigItem } from '../../types/IstioConfigList';
-import { IstioObjectLink } from '../Link/IstioObjectLink';
 import { PFBadge } from '../Pf/PfBadges';
 import { SimpleTable, tRow } from '../SimpleTable';
 import { ValidationObjectSummary } from '../Validations/ValidationObjectSummary';
@@ -39,16 +38,7 @@ export const IstioConfigCard: React.FC<IstioConfigCardProps> = (
   );
 
   const overviewLink = (item: IstioConfigItem): React.ReactNode => {
-    return (
-      <IstioObjectLink
-        name={item.name}
-        namespace={item.namespace ?? ''}
-        cluster={item.cluster}
-        type={item.type}
-      >
-        {item.name}
-      </IstioObjectLink>
-    );
+    return <>{item.name}</>;
   };
 
   const rows: tRow = props.items
