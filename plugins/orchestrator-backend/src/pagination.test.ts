@@ -1,6 +1,6 @@
 import { buildPagination } from './types/pagination';
 
-describe('buildPagination() ', () => {
+describe('buildPagination()', () => {
   it('should build the correct pagination obj when no query parameters are passed', () => {
     const mockRequest: any = {
       query: {},
