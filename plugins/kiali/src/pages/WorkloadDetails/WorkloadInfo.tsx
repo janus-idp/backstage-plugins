@@ -29,15 +29,14 @@ import { WorkloadDescription } from './WorkloadsDescription';
 type WorkloadInfoProps = {
   duration?: number;
   namespace?: string;
-  workload?: Workload;
+  workload: Workload;
   health?: WorkloadHealth;
 };
 
 export const WorkloadInfo = (workloadProps: WorkloadInfoProps) => {
-  const pods = workloadProps.workload?.pods || [];
+  const pods = workloadProps.workload.pods || [];
   const namespace = workloadProps.namespace ? workloadProps.namespace : '';
   const kialiClient = useApi(kialiApiRef);
-  const [istioConfig, setIstioConfig] = React.useState<IstioConfigList>();
   const [istioValidations, setIstioValidations] = React.useState<
     IstioConfigItem[] | undefined
   >();
@@ -49,7 +48,7 @@ export const WorkloadInfo = (workloadProps: WorkloadInfoProps) => {
     'requestauthentications',
     'envoyfilters',
   ];
-  const labels = workloadProps.workload?.labels
+  const labels = workloadProps.workload.labels
     ? workloadProps.workload?.labels
     : {};
   const wkLabels: string[] = [];
@@ -68,29 +67,32 @@ export const WorkloadInfo = (workloadProps: WorkloadInfoProps) => {
     { field: 'peerAuthentications', validation: 'peerauthentication' },
   ];
 
-  const getValidations = () => {
-    const istioConfigItems = istioConfig
-      ? toIstioItems(istioConfig, workloadProps.workload?.cluster || '')
+  const getValidations = async (istioConfigResponse: IstioConfigList) => {
+    const istioConfigItems = istioConfigResponse
+      ? toIstioItems(istioConfigResponse, workloadProps.workload?.cluster || '')
       : [];
-
     if (workloadProps.workload) {
-      if (istioConfig?.validations) {
+      if (istioConfigResponse?.validations) {
         const typeNames: { [key: string]: string[] } = {};
         wkIstioTypes.forEach(wkIstioType => {
-          if (istioConfig && istioConfig.validations[wkIstioType.validation]) {
+          if (
+            istioConfigResponse &&
+            istioConfigResponse.validations[wkIstioType.validation]
+          ) {
             typeNames[wkIstioType.validation] = [];
             // @ts-ignore
-            istioConfig[wkIstioType.field]?.forEach(r =>
+            istioConfigResponse[wkIstioType.field]?.forEach(r =>
               typeNames[wkIstioType.validation].push(r.metadata.name),
             );
           }
         });
       }
     }
+
     setIstioValidations(istioConfigItems);
   };
 
-  const fetchIstioConfig = () => {
+  const fetchIstioConfig = async () => {
     kialiClient
       .getIstioConfig(
         namespace,
@@ -101,8 +103,7 @@ export const WorkloadInfo = (workloadProps: WorkloadInfoProps) => {
         workloadProps.workload?.cluster,
       )
       .then((istioConfigResponse: IstioConfigList) => {
-        setIstioConfig(istioConfigResponse);
-        getValidations();
+        getValidations(istioConfigResponse);
       });
   };
 
@@ -114,6 +115,7 @@ export const WorkloadInfo = (workloadProps: WorkloadInfoProps) => {
     [],
     { loading: true },
   );
+
   useDebounce(refresh, 10);
   if (loading) {
     return <CircularProgress />;

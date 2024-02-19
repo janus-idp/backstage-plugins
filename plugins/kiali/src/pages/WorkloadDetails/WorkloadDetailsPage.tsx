@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useParams } from 'react-router-dom';
 import { useAsyncFn, useDebounce } from 'react-use';
 
-import { Content, Page } from '@backstage/core-components';
+import { Content } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
 import { CircularProgress } from '@material-ui/core';
@@ -12,6 +12,7 @@ import * as FilterHelper from '../../components/FilterList/FilterHelper';
 import { TimeDurationComponent } from '../../components/Time/TimeDurationComponent';
 import { getErrorString, kialiApiRef } from '../../services/Api';
 import { KialiAppState, KialiContext } from '../../store';
+import { baseStyle } from '../../styles/StyleUtils';
 import { WorkloadHealth } from '../../types/Health';
 import { Workload, WorkloadQuery } from '../../types/Workload';
 import { WorkloadInfo } from './WorkloadInfo';
@@ -87,17 +88,21 @@ export const WorkloadDetailsPage = () => {
 
   const overviewTab = (): React.ReactElement => {
     return (
-      <WorkloadInfo
-        workload={workloadItem}
-        duration={duration}
-        namespace={namespace}
-        health={health}
-      />
+      <>
+        {workloadItem && (
+          <WorkloadInfo
+            workload={workloadItem}
+            duration={duration}
+            namespace={namespace}
+            health={health}
+          />
+        )}
+      </>
     );
   };
 
   return (
-    <Page themeId="tool">
+    <div className={baseStyle}>
       <Content>
         <DefaultSecondaryMasthead
           elements={grids()}
@@ -105,6 +110,6 @@ export const WorkloadDetailsPage = () => {
         />
         {overviewTab()}
       </Content>
-    </Page>
+    </div>
   );
 };

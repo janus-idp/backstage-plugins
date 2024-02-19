@@ -7,7 +7,58 @@
     "annotations": null
   },
   "destinationRules": [],
-  "envoyFilters": [],
+  "envoyFilters": [
+    {
+      "kind": "EnvoyFilter",
+      "apiVersion": "networking.istio.io/v1alpha3",
+      "metadata": {
+        "name": "reviews-lua",
+        "namespace": "bookinfo",
+        "uid": "6188f1b2-d252-441b-912f-abd011ff8556",
+        "resourceVersion": "90356",
+        "generation": 1,
+        "creationTimestamp": "2024-02-19T09:39:06Z",
+        "annotations": {
+          "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"networking.istio.io/v1alpha3\",\"kind\":\"EnvoyFilter\",\"metadata\":{\"annotations\":{},\"name\":\"reviews-lua\",\"namespace\":\"bookinfo\"},\"spec\":{\"workloadSelector\":{\"labels\":{\"app\":\"reviews\"}}}}\n"
+        },
+        "managedFields": [
+          {
+            "manager": "kubectl-client-side-apply",
+            "operation": "Update",
+            "apiVersion": "networking.istio.io/v1alpha3",
+            "time": "2024-02-19T09:39:06Z",
+            "fieldsType": "FieldsV1",
+            "fieldsV1": {
+              "f:metadata": {
+                "f:annotations": {
+                  ".": {},
+                  "f:kubectl.kubernetes.io/last-applied-configuration": {}
+                }
+              },
+              "f:spec": {
+                ".": {},
+                "f:workloadSelector": {
+                  ".": {},
+                  "f:labels": {
+                    ".": {},
+                    "f:app": {}
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "spec": {
+        "workloadSelector": {
+          "labels": {
+            "app": "reviews"
+          }
+        }
+      },
+      "status": {}
+    }
+  ],
   "gateways": [],
   "serviceEntries": [],
   "sidecars": [],
