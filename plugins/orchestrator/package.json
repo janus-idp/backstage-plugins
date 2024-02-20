@@ -106,7 +106,7 @@
     "terser-webpack-plugin": "5.3.9",
     "ts-loader": "8.4.0",
     "url-loader": "3.0.0",
-    "webpack": "5.70.0",
+    "webpack": "5.76.0",
     "webpack-cli": "4.10.0",
     "@storybook/preview-api": "7.5.3",
     "react": "18.2.0",
