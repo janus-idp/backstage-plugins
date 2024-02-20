@@ -129,7 +129,7 @@ export function getProcessInstancesDTOFromString(
       return 'Suspended';
     default:
       throw new Error(
-        'state is not one of the vlalues of type ProcessInstanceStatusDTO',
+        'state is not one of the values of type ProcessInstanceStatusDTO',
       );
   }
 }
