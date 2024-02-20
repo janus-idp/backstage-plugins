@@ -51,7 +51,7 @@ export const PipelineLayout = ({ model }: PipelineLayoutProps) => {
   const layout: PipelineLayoutTypes = model.graph.layout as PipelineLayoutTypes;
 
   const onLayoutUpdate = React.useCallback(
-    nodes => {
+    (nodes: Node[]) => {
       const nodeBounds = nodes.map((node: Node<NodeModel, any>) =>
         node.getBounds(),
       );
@@ -65,7 +65,9 @@ export const PipelineLayout = ({ model }: PipelineLayoutProps) => {
           .map((bounds: Rect) => bounds.height)
           .reduce((h1: number, h2: number) => Math.max(h1, h2), 0),
       );
-      const maxObject = nodeBounds.find((nb: Rect) => nb.height === maxHeight);
+      const maxObject =
+        nodeBounds.find((nb: Rect) => nb.height === maxHeight) ??
+        ({ y: 0 } as Rect);
 
       const maxX = Math.floor(
         nodeBounds

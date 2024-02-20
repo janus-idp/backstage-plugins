@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { BackendDynamicPluginInstaller } from '@backstage/backend-plugin-manager';
+import { BackendDynamicPluginInstaller } from '@backstage/backend-dynamic-feature-service';
 
 import { catalogModuleOCMEntityProvider } from '../providers';
 import { ocmPlugin } from '../service/router';

@@ -21,10 +21,13 @@ export const OcirImagesCards = ({ imageStreams }: OcirImagesCardsProps) => {
 
   const imageStreamsList = filteredImageStreams ?? imageStreams;
 
-  const handleImageStreamSelected = React.useCallback(imageStream => {
-    setActiveImageStream(imageStream);
-    setIsOpen(true);
-  }, []);
+  const handleImageStreamSelected = React.useCallback(
+    (imageStream: ImageStreamMetadata) => {
+      setActiveImageStream(imageStream);
+      setIsOpen(true);
+    },
+    [],
+  );
   const handleClose = React.useCallback(() => setIsOpen(false), [setIsOpen]);
 
   return (

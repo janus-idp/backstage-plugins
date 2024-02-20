@@ -1,10 +1,8 @@
 import React from 'react';
 
-import { renderWithEffects } from '@backstage/test-utils';
-
 import { removeScalprum } from '@scalprum/core';
 import { mockPluginData } from '@scalprum/react-test-utils';
-import { waitFor } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 
 import { AppBase } from './App';
 import TestRoot from './utils/test/TestRoot';
@@ -43,13 +41,13 @@ describe('App', () => {
       ] as any,
     };
 
-    const rendered = await renderWithEffects(
+    const rendered = render(
       <TestScalprumProvider>
         <TestRoot>
           <AppBase />
         </TestRoot>
       </TestScalprumProvider>,
     );
-    await waitFor(async () => expect(rendered.baseElement).toBeInTheDocument());
+    await waitFor(() => expect(rendered.baseElement).toBeInTheDocument());
   });
 });

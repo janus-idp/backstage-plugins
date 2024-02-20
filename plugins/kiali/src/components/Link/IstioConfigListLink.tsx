@@ -10,7 +10,9 @@ interface Props {
   warnings?: boolean;
 }
 
-export class IstioConfigListLink extends React.Component<Props> {
+export class IstioConfigListLink extends React.Component<
+  React.PropsWithChildren<Props>
+> {
   namespacesToParams = () => {
     let param: string = '';
     if (this.props.namespaces.length > 0) {

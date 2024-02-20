@@ -1,5 +1,4 @@
-import { waitFor } from '@testing-library/react';
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook, waitFor } from '@testing-library/react';
 
 import { mockPermissionPolicies } from '../__fixtures__/mockPermissionPolicies';
 import { mockAssociatedPolicies } from '../__fixtures__/mockPolicies';

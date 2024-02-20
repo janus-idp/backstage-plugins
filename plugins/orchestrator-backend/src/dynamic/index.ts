@@ -1,5 +1,5 @@
 import { HostDiscovery } from '@backstage/backend-app-api';
-import { BackendDynamicPluginInstaller } from '@backstage/backend-plugin-manager';
+import { BackendDynamicPluginInstaller } from '@backstage/backend-dynamic-feature-service';
 import { CatalogClient } from '@backstage/catalog-client';
 
 import { OrchestratorEntityProvider } from '../provider';

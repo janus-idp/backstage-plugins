@@ -1,6 +1,6 @@
 import { KubernetesObjects } from '@backstage/plugin-kubernetes';
 
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 
 import { kubernetesObject } from '../__fixtures__/kubernetesObject';
 import { kubernetesObjectsWithError } from '../__fixtures__/kubernetesObjectWithError';

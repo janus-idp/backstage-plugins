@@ -52,7 +52,11 @@ export const useTektonObjectsResponse = (
   });
 
   const updateResults = React.useCallback(
-    (resData, isLoading, errorData) => {
+    (
+      resData: TektonResponseData,
+      isLoading: boolean,
+      errorData: string | undefined,
+    ) => {
       if (!isLoading && !errorData && mounted.current) {
         setLoaded(true);
         setPipelinesData(prevPipelinesData => {

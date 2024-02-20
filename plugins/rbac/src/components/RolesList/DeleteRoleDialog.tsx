@@ -62,7 +62,7 @@ const DeleteRoleDialog = ({
   const { setToastMessage } = useToast();
   const [deleteRoleValue, setDeleteRoleValue] = React.useState<string>();
   const [disableDelete, setDisableDelete] = React.useState(false);
-  const [error, setError] = React.useState<string | {}>('');
+  const [error, setError] = React.useState<string>('');
 
   const rbacApi = useApi(rbacApiRef);
 

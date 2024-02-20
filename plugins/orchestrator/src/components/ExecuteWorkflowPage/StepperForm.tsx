@@ -13,16 +13,18 @@ import {
   Stepper,
   Typography,
 } from '@material-ui/core';
-import { FormProps, withTheme } from '@rjsf/core-v5';
+import { FormProps, ThemeProps, withTheme } from '@rjsf/core-v5';
 import { Theme as MuiTheme } from '@rjsf/material-ui-v5';
-import { UiSchema } from '@rjsf/utils';
+import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import validator from '@rjsf/validator-ajv8';
 
 import { WorkflowInputSchemaStep } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import SubmitButton from '../SubmitButton';
 
-const MuiForm = withTheme<JsonObject>(MuiTheme);
+const MuiForm = withTheme<JsonObject>(
+  MuiTheme as ThemeProps<JsonObject, RJSFSchema, any>,
+);
 
 const getCombinedData = (
   steps: WorkflowInputSchemaStep[],
