@@ -625,7 +625,10 @@ const OPENAPI = `
           "status": {
             "$ref": "#/components/schemas/ProcessInstanceStatusDTO"
           },
-          "started": {
+          "start": {
+            "type": "string"
+          },
+          "end": {
             "type": "string"
           },
           "duration": {

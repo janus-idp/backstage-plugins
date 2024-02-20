@@ -1,8 +1,10 @@
 import { OpenAPIV3 } from 'openapi-types';
 
 import {
+  ProcessInstance,
   ProcessInstanceState,
   ProcessInstanceStateValues,
+  WorkflowCategory,
   WorkflowDefinition,
   WorkflowExecutionResponse,
   WorkflowFormat,
@@ -12,6 +14,8 @@ import {
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 import { OpenAPIV3 } from 'openapi-types';
 
+const baseDate = new Date('2023-02-19T11:45:21.123Z');
+const HOUR = 60 * 60 * 1000;
 interface WorkflowOverviewParams {
   suffix?: string;
   workflowId?: string;
@@ -104,3 +108,49 @@ export const generateWorkflowDefinition: WorkflowDefinition = {
     },
   ],
 };
+
+export function generateProcessInstances(howmany: number): ProcessInstance[] {
+  const processInstances: ProcessInstance[] = [];
+  for (let i = 0; i < howmany; i++) {
+    processInstances.push(generateProcessInstance(i));
+  }
+  return processInstances;
+}
+
+export function generateProcessInstance(id: number): ProcessInstance {
+  return {
+    id: `processInstance${id}`,
+    processName: `name${id}`,
+    processId: `proceesId${id}`,
+    state: ProcessInstanceState.Active,
+    start: baseDate,
+    end: new Date(baseDate.getTime() + 1 * HOUR),
+    nodes: [],
+    endpoint: 'enpoint/foo',
+    serviceUrl: 'service/bar',
+    source: 'my-source',
+    category: WorkflowCategory.INFRASTRUCTURE,
+    description: 'test description 1',
+    variables: {
+      foo: 'bar',
+      workflowdata: {
+        workflowOptions: {
+          'my-category': {
+            id: 'next-workflow-1',
+            name: 'Next Workflow One',
+          },
+          'my-secod-category': [
+            {
+              id: 'next-workflow-20',
+              name: 'Next Workflow Twenty',
+            },
+            {
+              id: 'next-workflow-21',
+              name: 'Next Workflow Twenty One',
+            },
+          ],
+        },
+      },
+    },
+  };
+}

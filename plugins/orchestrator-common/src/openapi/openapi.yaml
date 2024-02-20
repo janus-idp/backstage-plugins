@@ -407,7 +407,9 @@ components:
           type: string
         status:
           $ref: '#/components/schemas/ProcessInstanceStatusDTO'
-        started:
+        start:
+          type: string
+        end:
           type: string
         duration:
           type: string
