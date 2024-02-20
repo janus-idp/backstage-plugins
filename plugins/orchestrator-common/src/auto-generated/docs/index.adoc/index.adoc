@@ -481,6 +481,94 @@ ifdef::internal-generation[]
 endif::internal-generation[]
 
 
+[.getWorkflowById]
+==== getWorkflowById
+
+`GET /v2/workflows/{workflowId}`
+
+
+
+===== Description
+
+Get a workflow by ID
+
+
+// markup not found, no include::{specDir}v2/workflows/\{workflowId\}/GET/spec.adoc[opts=optional]
+
+
+
+===== Parameters
+
+====== Path Parameters
+
+[cols="2,3,1,1,1"]
+|===
+|Name| Description| Required| Default| Pattern
+
+| workflowId
+| ID of the workflow to execute 
+| X
+| null
+| 
+
+|===
+
+
+
+
+
+
+===== Return Type
+
+<<WorkflowDTO>>
+
+
+===== Content Type
+
+* application/json
+* text/plain
+
+===== Responses
+
+.HTTP Response Codes
+[cols="2,3,1"]
+|===
+| Code | Message | Datatype
+
+
+| 200
+| Success
+|  <<WorkflowDTO>>
+
+
+| 500
+| Error workflow by id
+|  <<String>>
+
+|===
+
+===== Samples
+
+
+// markup not found, no include::{snippetDir}v2/workflows/\{workflowId\}/GET/http-request.adoc[opts=optional]
+
+
+// markup not found, no include::{snippetDir}v2/workflows/\{workflowId\}/GET/http-response.adoc[opts=optional]
+
+
+
+// file not found, no * wiremock data link :v2/workflows/{workflowId}/GET/GET.json[]
+
+
+ifdef::internal-generation[]
+===== Implementation
+
+// markup not found, no include::{specDir}v2/workflows/\{workflowId\}/GET/implementation.adoc[opts=optional]
+
+
+endif::internal-generation[]
+
+
 [.getWorkflowOverviewById]
 ==== getWorkflowOverviewById
 

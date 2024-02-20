@@ -105,6 +105,30 @@ paths:
             text/plain:
               schema:
                 type: string
+  /v2/workflows/{workflowId}:
+    get:
+      operationId: getWorkflowById
+      description: Get a workflow by ID
+      parameters:
+        - name: workflowId
+          in: path
+          description: ID of the workflow to execute
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowDTO'
+        '500':
+          description: Error workflow by id
+          content:
+            text/plain:
+              schema:
+                type: string
   /v2/workflows/instances:
     get:
       operationId: getInstances

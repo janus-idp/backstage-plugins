@@ -18,6 +18,10 @@ export interface paths {
     /** Create or update a workflow */
     post: operations['createWorkflow'];
   };
+  '/v2/workflows/{workflowId}': {
+    /** @description Get a workflow by ID */
+    get: operations['getWorkflowById'];
+  };
   '/v2/workflows/instances': {
     /**
      * Get instances
@@ -294,6 +298,29 @@ export interface operations {
         };
       };
       /** @description Error creating workflow */
+      500: {
+        content: {
+          'text/plain': string;
+        };
+      };
+    };
+  };
+  /** @description Get a workflow by ID */
+  getWorkflowById: {
+    parameters: {
+      path: {
+        /** @description ID of the workflow to execute */
+        workflowId: string;
+      };
+    };
+    responses: {
+      /** @description Success */
+      200: {
+        content: {
+          'application/json': components['schemas']['WorkflowDTO'];
+        };
+      };
+      /** @description Error workflow by id */
       500: {
         content: {
           'text/plain': string;

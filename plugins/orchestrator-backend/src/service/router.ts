@@ -198,8 +198,11 @@ function setupInternalRoutes(
       });
   });
 
-  router.get('/workflows', async (_, res) => {
-    await V1.getWorkflows(services.sonataFlowService, services.dataIndexService)
+  router.get('/workflows/:workflowId', async (req, res) => {
+    const {
+      params: { workflowId },
+    } = req;
+    await V1.getWorkflowById(services.sonataFlowService, workflowId)
       .then(result => res.status(200).json(result))
       .catch(error => {
         res.status(500).send(error.message || 'Internal Server Error');
@@ -207,8 +210,10 @@ function setupInternalRoutes(
   });
 
   // v2
-  api.register('getWorkflows', async (_c, _req, res, next) => {
-    await V2.getWorkflows(services.sonataFlowService, services.dataIndexService)
+  api.register('getWorkflowById', async (c, _req, res, next) => {
+    const workflowId = c.request.params.workflowId as string;
+
+    await V2.getWorkflowById(services.sonataFlowService, workflowId)
       .then(result => res.json(result))
       .catch(error => {
         res.status(500).send(error.message || 'Internal Server Error');
