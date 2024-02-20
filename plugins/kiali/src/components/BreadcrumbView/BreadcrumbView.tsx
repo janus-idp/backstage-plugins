@@ -54,7 +54,7 @@ const breadcrumStyle = kialiStyle({
 
 export const BreadcrumbView = (props: BreadCumbViewProps) => {
   const capitalize = (str: string) => {
-    return str.charAt(0).toUpperCase() + str.slice(1);
+    return str.charAt(0)?.toUpperCase() + str.slice(1);
   };
 
   const path = getPath(props);

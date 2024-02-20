@@ -90,9 +90,10 @@ export const actionRenderer = (
 
 export const item: Renderer<TResource> = (
   resource: TResource,
-  _: Resource,
+  config: Resource,
   badge: PFBadgeType,
 ) => {
+  const key = `link_definition_${config.name}_${resource.namespace}_${resource.name}`;
   let serviceBadge = badge;
 
   if ('serviceRegistry' in resource && resource.serviceRegistry) {
