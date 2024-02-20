@@ -220,8 +220,8 @@ export class KialiApiClient implements KialiApi {
     }`;
     const dataRequest = data;
     dataRequest.endpoint = endpoint;
-
-    const jsonResponse = await fetch(
+    let jsonResponse: any = undefined; 
+    await fetch(
       `${this.kialiUrl}/${proxy ? 'proxy' : 'status'}`,
       {
         method: HTTP_VERBS.POST,
@@ -231,9 +231,10 @@ export class KialiApiClient implements KialiApi {
         },
         body: JSON.stringify(dataRequest),
       },
-    );
-
-    return jsonResponse.json() as T;
+    )
+    .then(data => jsonResponse = data.json() as T)
+    .catch(err => jsonResponse = {err: err});
+    return jsonResponse
   };
 
   isDevEnv = () => {

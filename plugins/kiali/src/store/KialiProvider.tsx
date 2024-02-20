@@ -202,9 +202,18 @@ export const KialiProvider: React.FC<Props> = ({
   const fetchKiali = async () => {
     try {
       const status = await kialiClient.status();
+      console.log(status);
       if ('verify' in status && !status.verify) {
         alertUtils.addError('Could not check configuration and authenticate');
         setKialiCheck(status);
+      } else if ( 'err' in status) {
+        alertUtils.addError('Could not reach Kiali');
+        setKialiCheck({
+          verify: false,
+          missingAttributes: ['url'],
+          message: 'We can reach Kiali endpoint. Check the url attribute',
+          helper: `You can set this attribute in 'catalog.providers.kiali.url' or use the env $KIALI_ENDPOINT`
+        })
       } else {
         fetchPostLogin();
       }

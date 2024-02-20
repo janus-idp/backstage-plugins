@@ -517,19 +517,21 @@ export const GraphPage = () => {
 
   const cy = cytoscapeGraphRef && cytoscapeGraphRef.current ? cytoscapeGraphRef.current.getCy() : null;
   
-
+/*
+<GraphToolbar
+              cy={cy}
+              disabled={graphData.isLoading}
+              elementsChanged={graphData.elementsChanged}
+              onToggleHelp={toggleHelp}
+            />
+             */
   
   return (
     <Page themeId="tool">
       <Content>
         <FlexView className={containerStyle} column={true}>
           <div>
-            <GraphToolbar
-              cy={cy}
-              disabled={graphData.isLoading}
-              elementsChanged={graphData.elementsChanged}
-              onToggleHelp={toggleHelp}
-            />
+            GraphToolbar
           </div>
           <FlexView
             grow={true}
