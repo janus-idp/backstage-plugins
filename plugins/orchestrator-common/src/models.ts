@@ -72,7 +72,6 @@ export interface ProcessInstance {
   childProcessInstances?: ProcessInstance[];
   error?: ProcessInstanceError;
   addons?: string[];
-  lastUpdate: Date;
   businessKey?: string;
   isSelected?: boolean;
   errorMessage?: string;
@@ -106,7 +105,6 @@ export interface Job {
   repeatLimit: number;
   scheduledId: string;
   retries: number;
-  lastUpdate: Date;
   executionCounter?: number;
   endpoint?: string;
   nodeInstanceId?: string;
