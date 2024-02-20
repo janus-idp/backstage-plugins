@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { notificationBackendModule as default } from './module';
+export { notificationBackendPlugin as default } from './plugin';
