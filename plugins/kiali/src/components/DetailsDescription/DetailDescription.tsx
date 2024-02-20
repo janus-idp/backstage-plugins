@@ -282,9 +282,9 @@ export const DetailDescription: React.FC<Props> = (props: Props) => {
 
             {item.children && (
               <ul id="workload-list" style={{ listStyleType: 'none' }}>
-                {item.children.map((sub, subIdx) => {
+                {item.children.map((sub, _) => {
                   return (
-                    <li key={subIdx} className={itemStyle}>
+                    <li key={sub.value} className={itemStyle}>
                       {renderWorkloadHealthItem(sub)}
                     </li>
                   );

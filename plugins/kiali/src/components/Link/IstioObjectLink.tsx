@@ -9,7 +9,6 @@ type ReferenceIstioObjectProps = {
   name: string;
   namespace: string;
   query?: string;
-  subType?: string;
   type: string;
 };
 
@@ -33,7 +32,7 @@ export const getIstioObjectUrl = (
     to = `${to}?clusterName=${cluster}`;
   }
 
-  if (!!query) {
+  if (!query) {
     if (to.includes('?')) {
       to = `${to}&${query}`;
     } else {
