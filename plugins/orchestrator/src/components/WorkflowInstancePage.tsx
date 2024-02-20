@@ -35,8 +35,22 @@ export type AbortConfirmationDialogActionsProps = {
   handleCancel: () => void;
 };
 
+export type AbortAlertDialogActionsProps = {
+  handleClose: () => void;
+};
+
+export type AbortAlertDialogContentProps = {
+  message?: string;
+};
+
 const AbortConfirmationDialogContent = () => (
   <div>Are you sure you want to abort this workflow instance?</div>
+);
+
+const AbortAlertDialogContent = (props: AbortAlertDialogContentProps) => (
+  <div>
+    The abort operation failed with the following error: {props.message}
+  </div>
 );
 
 const AbortConfirmationDialogActions = (
@@ -45,6 +59,14 @@ const AbortConfirmationDialogActions = (
   <>
     <Button onClick={props.handleCancel}>Cancel</Button>
     <Button onClick={props.handleSubmit} color="primary">
+      Ok
+    </Button>
+  </>
+);
+
+const AbortAlertDialogActions = (props: AbortAlertDialogActionsProps) => (
+  <>
+    <Button onClick={props.handleClose} color="primary">
       Ok
     </Button>
   </>
@@ -63,6 +85,9 @@ export const WorkflowInstancePage = ({
   );
   const [isAbortConfirmationDialogOpen, setIsAbortConfirmationDialogOpen] =
     useState(false);
+  const [isAbortAlertDialogOpen, setIsAbortAlertDialogOpen] = useState(false);
+  const [abortWorkflowInstanceErrorMsg, setAbortWorkflowInstanceErrorMsg] =
+    useState('');
 
   const fetchInstance = React.useCallback(async () => {
     if (!instanceId && !queryInstanceId) {
@@ -100,18 +125,18 @@ export const WorkflowInstancePage = ({
     setIsAbortConfirmationDialogOpen(!isAbortConfirmationDialogOpen);
   };
 
+  const toggleAbortAlertDialog = () => {
+    setIsAbortAlertDialogOpen(!isAbortAlertDialogOpen);
+  };
+
   const handleAbort = React.useCallback(async () => {
     if (value) {
       try {
         await orchestratorApi.abortWorkflow(value.instance.id);
         restart();
       } catch (e) {
-        // eslint-disable-next-line no-alert
-        window.alert(
-          `The abort operation failed with the following error: ${
-            (e as Error).message
-          }`,
-        );
+        setAbortWorkflowInstanceErrorMsg(`${(e as Error).message}`);
+        setIsAbortAlertDialogOpen(true);
       }
       setIsAbortConfirmationDialogOpen(false);
     }
@@ -154,6 +179,19 @@ export const WorkflowInstancePage = ({
                 />
               }
               children={<AbortConfirmationDialogContent />}
+            />
+            <InfoDialog
+              title="Abort workflow failed"
+              onClose={toggleAbortAlertDialog}
+              open={isAbortAlertDialogOpen}
+              dialogActions={
+                <AbortAlertDialogActions handleClose={toggleAbortAlertDialog} />
+              }
+              children={
+                <AbortAlertDialogContent
+                  message={abortWorkflowInstanceErrorMsg}
+                />
+              }
             />
             <Grid container item justifyContent="flex-end" spacing={1}>
               {!canRerun && (
