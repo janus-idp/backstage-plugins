@@ -7,7 +7,7 @@ exports.up = async function up(knex) {
   const roleMetadataDoesExist = await knex.schema.hasTable('role-metadata');
   const groupPolicies = new Set();
 
-  if (casbinDoesExist && !roleMetadataDoesExist) {
+  if (casbinDoesExist) {
     await knex
       .select('*')
       .from('casbin_rule')
@@ -18,7 +18,9 @@ exports.up = async function up(knex) {
           groupPolicies.add(v1);
         }
       });
+  }
 
+  if (!roleMetadataDoesExist) {
     await knex.schema
       .createTable('role-metadata', table => {
         table.increments('id').primary();

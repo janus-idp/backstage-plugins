@@ -8,7 +8,7 @@ exports.up = async function up(knex) {
   let policies = [];
   let groupPolicies = [];
 
-  if (casbinDoesExist && !policyMetadataDoesExist) {
+  if (casbinDoesExist) {
     policies = await knex
       .select('*')
       .from('casbin_rule')
@@ -33,7 +33,9 @@ exports.up = async function up(knex) {
         }
         return allGroupPolicies;
       });
+  }
 
+  if (!policyMetadataDoesExist) {
     await knex.schema
       .createTable('policy-metadata', table => {
         table.increments('id').primary();
