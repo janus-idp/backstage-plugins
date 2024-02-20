@@ -1,7 +1,6 @@
 import {
   DatabaseManager,
   PluginEndpointDiscovery,
-  resolvePackagePath,
   TokenManager,
 } from '@backstage/backend-common';
 import { CatalogClient } from '@backstage/catalog-client';
@@ -10,7 +9,7 @@ import { IdentityApi } from '@backstage/plugin-auth-node';
 import { RouterOptions } from '@backstage/plugin-permission-backend';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 
-import { FileAdapter, newEnforcer, newModelFromString } from 'casbin';
+import { newEnforcer, newModelFromString } from 'casbin';
 import { Router } from 'express';
 import { Logger } from 'winston';
 
@@ -39,29 +38,14 @@ export class PolicyBuilder {
     },
     pluginIdProvider: PluginIdProvider = { getPluginIds: () => [] },
   ): Promise<Router> {
-    let adapter;
-    const databaseEnabled = env.config.getOptionalBoolean(
-      'permission.rbac.database.enabled',
+    const databaseManager = DatabaseManager.fromConfig(env.config).forPlugin(
+      'permission',
     );
 
-    const databaseManager = await DatabaseManager.fromConfig(
+    const adapter = await new CasbinDBAdapterFactory(
       env.config,
-    ).forPlugin('permission');
-    // Database adapter work
-    if (databaseEnabled) {
-      adapter = await new CasbinDBAdapterFactory(
-        env.config,
-        databaseManager,
-      ).createAdapter();
-    } else {
-      adapter = new FileAdapter(
-        resolvePackagePath(
-          '@janus-idp/backstage-plugin-rbac-backend',
-          './model/rbac-policy.csv',
-        ),
-      );
-      env.logger.info('rbac backend plugin uses only file storage');
-    }
+      databaseManager,
+    ).createAdapter();
 
     const enf = await newEnforcer(newModelFromString(MODEL), adapter);
     await enf.loadPolicy();

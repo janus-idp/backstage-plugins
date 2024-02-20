@@ -34,18 +34,6 @@ export interface Config {
         }>;
       };
       /**
-       * Optional configuration for database
-       * @visibility frontend
-       */
-      database?: {
-        /**
-         * Whether or not a database will be used
-         * @visibility frontend
-         */
-        enabled: boolean;
-      };
-
-      /**
        * An optional list of plugin IDs.
        * The RBAC plugin will handle access control for plugins included in this list.
        */

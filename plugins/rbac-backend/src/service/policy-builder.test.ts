@@ -2,7 +2,7 @@ import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
-import { Adapter, Enforcer, FileAdapter } from 'casbin';
+import { Adapter, Enforcer } from 'casbin';
 import { Router } from 'express';
 import TypeORMAdapter from 'typeorm-adapter';
 
@@ -120,40 +120,6 @@ describe('PolicyBuilder', () => {
     jest.clearAllMocks();
   });
 
-  it('should build policy server with file adapter', async () => {
-    const router = await PolicyBuilder.build(
-      {
-        config: new ConfigReader({
-          backend: {
-            database: {
-              client: 'better-sqlite3',
-              connection: ':memory:',
-            },
-          },
-          permission: {
-            enabled: true,
-          },
-        }),
-        logger: getVoidLogger(),
-        discovery: mockDiscovery,
-        identity: mockIdentityClient,
-        permissions: mockPermissionEvaluator,
-        tokenManager: tokenManagerMock,
-      },
-      backendPluginIDsProviderMock,
-    );
-
-    expect(FileAdapter).toHaveBeenCalled();
-    expect(mockEnforcer.loadPolicy).toHaveBeenCalled();
-    expect(mockEnforcer.enableAutoSave).toHaveBeenCalled();
-    expect(RBACPermissionPolicy.build).toHaveBeenCalled();
-
-    expect(PoliciesServer).toHaveBeenCalled();
-    expect(mockPoliciesServer.serve).toHaveBeenCalled();
-    expect(router).toBeTruthy();
-    expect(router).toBe(mockRouter);
-  });
-
   it('should build policy server with database adapter', async () => {
     const router = await PolicyBuilder.build(
       {
@@ -166,11 +132,7 @@ describe('PolicyBuilder', () => {
           },
           permission: {
             enabled: true,
-            rbac: {
-              database: {
-                enabled: true,
-              },
-            },
+            rbac: {},
           },
         }),
         logger: getVoidLogger(),
