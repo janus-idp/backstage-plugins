@@ -36,10 +36,10 @@ import {
   PolicyMetadataStorage,
 } from '../database/policy-metadata-storage';
 import { RoleMetadataStorage } from '../database/role-metadata';
+import { BackstageRoleManager } from '../role-manager/role-manager';
 import { EnforcerDelegate } from './enforcer-delegate';
 import { MODEL } from './permission-model';
 import { RBACPermissionPolicy } from './permission-policy';
-import { BackstageRoleManager } from './role-manager';
 
 type PermissionAction = 'create' | 'read' | 'update' | 'delete';
 
@@ -1019,16 +1019,49 @@ describe('RBACPermissionPolicy Tests', () => {
     });
 
     // Tests for admin added through app config
-    it('should allow access to permission resource for admin added through app config', async () => {
-      const decision = await policy.handle(
-        newPolicyQueryWithResourcePermission(
-          'policy-entity.read',
-          'policy-entity',
-          'read',
-        ),
-        newIdentityResponse('user:default/guest'),
-      );
-      expect(decision.result).toBe(AuthorizeResult.ALLOW);
+    it('should allow access to permission resources for admin added through app config', async () => {
+      const adminPerm: {
+        name: string;
+        resource: string;
+        action: PermissionAction;
+      }[] = [
+        {
+          name: 'policy.entity.read',
+          resource: 'policy-entity',
+          action: 'read',
+        },
+        {
+          name: 'policy.entity.create',
+          resource: 'policy-entity',
+          action: 'create',
+        },
+        {
+          name: 'policy.entity.update',
+          resource: 'policy-entity',
+          action: 'update',
+        },
+        {
+          name: 'policy.entity.delete',
+          resource: 'policy-entity',
+          action: 'delete',
+        },
+        {
+          name: 'catalog.entity.read',
+          resource: 'catalog-entity',
+          action: 'read',
+        },
+      ];
+      for (const perm of adminPerm) {
+        const decision = await policy.handle(
+          newPolicyQueryWithResourcePermission(
+            perm.name,
+            perm.resource,
+            perm.action,
+          ),
+          newIdentityResponse('user:default/guest'),
+        );
+        expect(decision.result).toBe(AuthorizeResult.ALLOW);
+      }
     });
   });
 
@@ -1367,13 +1400,12 @@ describe('Policy checks for resourced permissions defined by name', () => {
         name: 'team-a',
         namespace: 'default',
       },
+      spec: {
+        members: ['tor'],
+      },
     };
-    catalogApi.getEntities.mockImplementation(arg => {
-      const hasMember = arg.filter['relations.hasMember'];
-      if (hasMember && hasMember[0] === 'user:default/tor') {
-        return { items: [groupEntityMock] };
-      }
-      return { items: [] };
+    catalogApi.getEntities.mockImplementation(_arg => {
+      return { items: [groupEntityMock] };
     });
 
     const policy = await createRBACPolicy(`
@@ -1402,6 +1434,7 @@ describe('Policy checks for resourced permissions defined by name', () => {
         namespace: 'default',
       },
       spec: {
+        members: ['tor'],
         parent: 'team-b',
       },
     };
@@ -1413,16 +1446,8 @@ describe('Policy checks for resourced permissions defined by name', () => {
         namespace: 'default',
       },
     };
-    catalogApi.getEntities.mockImplementation(arg => {
-      const hasMember = arg.filter['relations.hasMember'];
-      if (hasMember && hasMember[0] === 'user:default/tor') {
-        return { items: [groupEntityMock] };
-      }
-      const hasParent = arg.filter['relations.parentOf'];
-      if (hasParent && hasParent[0] === 'group:default/team-a') {
-        return { items: [groupParentMock] };
-      }
-      return { items: [] };
+    catalogApi.getEntities.mockImplementation(_arg => {
+      return { items: [groupParentMock, groupEntityMock] };
     });
 
     const policy = await createRBACPolicy(`
@@ -1577,6 +1602,9 @@ describe('Policy checks for users and groups', () => {
         name: 'data_admin',
         namespace: 'default',
       },
+      spec: {
+        members: ['alice'],
+      },
     };
     catalogApi.getEntities.mockReturnValue({ items: [entityMock] });
 
@@ -1596,6 +1624,9 @@ describe('Policy checks for users and groups', () => {
         name: 'data_admin',
         namespace: 'default',
       },
+      spec: {
+        members: ['akira'],
+      },
     };
     catalogApi.getEntities.mockReturnValue({ items: [entityMock] });
     const decision = await policy.handle(
@@ -1613,6 +1644,9 @@ describe('Policy checks for users and groups', () => {
       metadata: {
         name: 'data_admin',
         namespace: 'default',
+      },
+      spec: {
+        members: ['antey'],
       },
     };
     catalogApi.getEntities.mockReturnValue({ items: [entityMock] });
@@ -1651,6 +1685,9 @@ describe('Policy checks for users and groups', () => {
         name: 'data_read_admin',
         namespace: 'default',
       },
+      spec: {
+        members: ['mike'],
+      },
     };
     catalogApi.getEntities.mockReturnValue({ items: [entityMock] });
     const decision = await policy.handle(
@@ -1668,6 +1705,9 @@ describe('Policy checks for users and groups', () => {
       metadata: {
         name: 'data_read_admin',
         namespace: 'default',
+      },
+      spec: {
+        members: ['tom'],
       },
     };
     catalogApi.getEntities.mockReturnValue({ items: [entityMock] });
@@ -1688,7 +1728,8 @@ describe('Policy checks for users and groups', () => {
         namespace: 'default',
       },
       spec: {
-        parent: 'group:default/data_parent_admin',
+        members: ['mike'],
+        parent: 'data_parent_admin',
       },
     };
 
@@ -1701,16 +1742,8 @@ describe('Policy checks for users and groups', () => {
       },
     };
 
-    catalogApi.getEntities.mockImplementation(arg => {
-      const hasMember = arg.filter['relations.hasMember'];
-      if (hasMember && hasMember[0] === 'user:default/mike') {
-        return { items: [groupMock] };
-      }
-      const hasParent = arg.filter['relations.parentOf'];
-      if (hasParent && hasParent[0] === 'group:default/data_read_admin') {
-        return { items: [groupParentMock] };
-      }
-      return { items: [] };
+    catalogApi.getEntities.mockImplementation(_arg => {
+      return { items: [groupMock, groupParentMock] };
     });
 
     const decision = await policy.handle(
@@ -1730,6 +1763,9 @@ describe('Policy checks for users and groups', () => {
       metadata: {
         name: 'data_admin',
         namespace: 'default',
+      },
+      spec: {
+        members: ['alice'],
       },
     };
     catalogApi.getEntities.mockReturnValue({ items: [entityMock] });
@@ -1821,6 +1857,9 @@ describe('Policy checks for users and groups', () => {
         name: 'data_read_admin',
         namespace: 'default',
       },
+      spec: {
+        members: ['mike'],
+      },
     };
     catalogApi.getEntities.mockReturnValue({ items: [entityMock] });
     const decision = await policy.handle(
@@ -1842,6 +1881,9 @@ describe('Policy checks for users and groups', () => {
       metadata: {
         name: 'data_read_admin',
         namespace: 'default',
+      },
+      spec: {
+        members: ['tom'],
       },
     };
     catalogApi.getEntities.mockReturnValue({ items: [entityMock] });
@@ -1866,7 +1908,8 @@ describe('Policy checks for users and groups', () => {
         namespace: 'default',
       },
       spec: {
-        parent: 'group:default/data_parent_admin',
+        members: ['mike'],
+        parent: 'data_parent_admin',
       },
     };
 
@@ -1879,16 +1922,8 @@ describe('Policy checks for users and groups', () => {
       },
     };
 
-    catalogApi.getEntities.mockImplementation(arg => {
-      const hasMember = arg.filter['relations.hasMember'];
-      if (hasMember && hasMember[0] === 'user:default/mike') {
-        return { items: [groupMock] };
-      }
-      const hasParent = arg.filter['relations.parentOf'];
-      if (hasParent && hasParent[0] === 'group:default/data_read_admin') {
-        return { items: [groupParentMock] };
-      }
-      return { items: [] };
+    catalogApi.getEntities.mockImplementation(_arg => {
+      return { items: [groupParentMock, groupMock] };
     });
 
     const decision = await policy.handle(
