@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Location, useLocation } from 'react-router-dom';
 
 import { Breadcrumbs } from '@material-ui/core';
 
@@ -8,13 +8,6 @@ import { isMultiCluster, Paths } from '../../config';
 import { kialiStyle, linkStyle } from '../../styles/StyleUtils';
 import { dicIstioType } from '../../types/IstioConfigList';
 import { FilterSelected } from '../Filters/StatefulFilters';
-
-interface BreadCumbViewProps {
-  location: {
-    pathname: string;
-    search: string;
-  };
-}
 
 const ItemNames = {
   applications: 'App',
@@ -28,13 +21,13 @@ const IstioName = 'Istio Config';
 const namespaceRegex =
   /kiali\/([a-z0-9-]+)\/([\w-.]+)\/([\w-.*]+)(\/([\w-.]+))?(\/([\w-.]+))?/;
 
-export const getPath = (props: BreadCumbViewProps) => {
-  const match = namespaceRegex.exec(props.location.pathname) || [];
+export const getPath = (props: Location) => {
+  const match = namespaceRegex.exec(props.pathname) || [];
   const ns = match[2];
   // @ts-ignore
   const page = Paths[match[1]?.toUpperCase()];
   const istioType = match[3];
-  const urlParams = new URLSearchParams(props.location.search);
+  const urlParams = new URLSearchParams(props.search);
   const itemName = page !== 'istio' ? match[3] : match[5];
   return {
     cluster: HistoryManager.getClusterName(urlParams),
@@ -52,12 +45,12 @@ const breadcrumStyle = kialiStyle({
   marginTop: '-30px',
 });
 
-export const BreadcrumbView = (props: BreadCumbViewProps) => {
+export const BreadcrumbView = () => {
   const capitalize = (str: string) => {
-    return str.charAt(0)?.toUpperCase() + str.slice(1);
+    return str?.charAt(0)?.toUpperCase() + str?.slice(1);
   };
 
-  const path = getPath(props);
+  const path = getPath(useLocation());
 
   const istioTypeF = (rawType: string) => {
     const istioType = Object.keys(dicIstioType).find(
