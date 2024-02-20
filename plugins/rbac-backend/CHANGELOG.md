@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac-backend [2.2.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.2.3...@janus-idp/backstage-plugin-rbac-backend@2.2.4) (2024-02-20)
+
+
+### Bug Fixes
+
+* **rbac:** drop database disabled mode ([#1214](https://github.com/janus-idp/backstage-plugins/issues/1214)) ([b18d80d](https://github.com/janus-idp/backstage-plugins/commit/b18d80dd14e6b7f4f9c90d72ec418609ff1f6a67))
+
 ## @janus-idp/backstage-plugin-rbac-backend [2.2.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.2.2...@janus-idp/backstage-plugin-rbac-backend@2.2.3) (2024-02-14)
 
 
