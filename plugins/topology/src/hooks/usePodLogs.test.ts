@@ -1,6 +1,6 @@
 import { useApi } from '@backstage/core-plugin-api';
 
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook, waitFor } from '@testing-library/react';
 
 import { usePodLogs } from './usePodLogs';
 
@@ -10,11 +10,11 @@ jest.mock('@backstage/core-plugin-api', () => ({
 }));
 
 describe('usePodLogs', () => {
-  it('should return loading as true and value as undefined initially', () => {
+  it('should return loading as true and value as undefined initially', async () => {
     (useApi as any).mockReturnValue({
       getPodLogs: jest.fn().mockResolvedValue({ text: 'log data...' }),
     });
-    const { result, waitForNextUpdate } = renderHook(() =>
+    const { result } = renderHook(() =>
       usePodLogs({
         stopPolling: true,
         podScope: {
@@ -27,17 +27,20 @@ describe('usePodLogs', () => {
       }),
     );
 
-    waitForNextUpdate();
+    await waitFor(() => {
+      expect(result.current.loading).toEqual(true);
+    });
 
-    expect(result.current.loading).toEqual(true);
-    expect(result.current.value).toBeUndefined();
+    await waitFor(() => {
+      expect(result.current.value).toBeUndefined();
+    });
   });
 
   it('should return value as log text', async () => {
     (useApi as any).mockReturnValue({
       getPodLogs: jest.fn().mockResolvedValueOnce({ text: 'log data...' }),
     });
-    const { result, waitForNextUpdate } = renderHook(() =>
+    const { result } = renderHook(() =>
       usePodLogs({
         stopPolling: true,
         podScope: {
@@ -50,8 +53,12 @@ describe('usePodLogs', () => {
       }),
     );
 
-    await waitForNextUpdate();
+    await waitFor(() => {
+      expect(result.current.loading).toEqual(true);
+    });
 
-    expect(result.current.value).toEqual({ text: 'log data...' });
+    await waitFor(() => {
+      expect(result.current.value).toEqual({ text: 'log data...' });
+    });
   });
 });

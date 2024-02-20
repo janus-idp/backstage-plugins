@@ -77,19 +77,23 @@ describe('Feedback Table Component', () => {
 
   it('should have pagination buttons', async () => {
     const rendered = await render();
-    await waitFor(() => {
-      expect(
-        rendered.getByRole('button', { name: 'First Page' }),
-      ).toBeInTheDocument();
-      expect(
+
+    expect(
+      await waitFor(() => rendered.getByRole('button', { name: 'First Page' })),
+    ).toBeInTheDocument();
+
+    expect(
+      await waitFor(() =>
         rendered.getByRole('button', { name: 'Previous Page' }),
-      ).toBeInTheDocument();
-      expect(
-        rendered.getByRole('button', { name: 'Next Page' }),
-      ).toBeInTheDocument();
-      expect(
-        rendered.getByRole('button', { name: 'Last Page' }),
-      ).toBeInTheDocument();
-    });
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      await waitFor(() => rendered.getByRole('button', { name: 'Next Page' })),
+    ).toBeInTheDocument();
+
+    expect(
+      await waitFor(() => rendered.getByRole('button', { name: 'Last Page' })),
+    ).toBeInTheDocument();
   });
 });

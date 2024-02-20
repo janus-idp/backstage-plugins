@@ -5,6 +5,7 @@ import { TableRow } from '@material-ui/core';
 
 import { hasHealth, Health } from '../../types/Health';
 import { StatefulFiltersProps } from '../Filters/StatefulFilters';
+import { PFBadgeType } from '../Pf/PfBadges';
 import { IstioTypes, RenderResource, Resource } from './Config';
 import { actionRenderer } from './Renderers';
 
@@ -32,7 +33,7 @@ export const VirtualItem = (props: VirtualItemProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [itemState]);
 
-  const getBadge = (): React.ReactNode => {
+  const getBadge = (): React.ReactNode | PFBadgeType => {
     const istioType = typeof props.item;
     return props.config.name !== 'istio'
       ? props.config.badge

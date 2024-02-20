@@ -374,21 +374,21 @@ export const MatomoHomePage = () => {
         <Grid item xs={12} md={4}>
           <StatsCard
             title="Avg Time On Site"
-            subTitle={visitSummary?.reportData?.avg_time_on_site}
+            subTitle={visitSummary?.reportData?.avg_time_on_site as string}
             isLoading={isVisitSummaryLoading}
           />
         </Grid>
         <Grid item xs={12} md={4}>
           <StatsCard
             title="Bounce Rate"
-            subTitle={visitSummary?.reportData?.bounce_rate}
+            subTitle={visitSummary?.reportData?.bounce_rate as string}
             isLoading={isVisitSummaryLoading}
           />
         </Grid>
         <Grid item xs={12} md={4}>
           <StatsCard
             title="Actions/Visit"
-            subTitle={visitSummary?.reportData?.nb_actions_per_visit}
+            subTitle={visitSummary?.reportData?.nb_actions_per_visit as number}
             isLoading={isVisitSummaryLoading}
           />
         </Grid>

@@ -7,9 +7,10 @@ import { K8sWorkloadResource } from '../../../types/types';
 import TopologyResourceLabels from './TopologyResourceLabels';
 import TopologySideBarDetailsItem from './TopologySideBarDetailsItem';
 
-const TopologyWorkloadDetails: React.FC<{
-  resource: K8sWorkloadResource;
-}> = ({ resource, children }) => {
+const TopologyWorkloadDetails = ({
+  resource,
+  children,
+}: React.PropsWithChildren<{ resource: K8sWorkloadResource }>) => {
   return (
     <dl>
       <TopologySideBarDetailsItem label="Name">
