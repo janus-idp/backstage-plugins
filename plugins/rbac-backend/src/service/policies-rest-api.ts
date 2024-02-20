@@ -42,8 +42,12 @@ import {
 import { PluginIdProvider } from '@janus-idp/backstage-plugin-rbac-node';
 
 import { ConditionalStorage } from '../database/conditional-storage';
-import { RoleMetadataStorage } from '../database/role-metadata';
-import { policyToString } from '../helper';
+import {
+  daoToMetadata,
+  RoleMetadataDao,
+  RoleMetadataStorage,
+} from '../database/role-metadata';
+import { deepSortedEqual, policyToString } from '../helper';
 import { EnforcerDelegate } from './enforcer-delegate';
 import { PluginPermissionMetadataCollector } from './plugin-endpoints';
 import {
@@ -208,9 +212,7 @@ export class PolicesServer {
 
       const processedPolicies = await this.processPolicies(policyRaw);
 
-      for (const policy of processedPolicies) {
-        await this.enforcer.addOrUpdatePolicy(policy, 'rest', false);
-      }
+      await this.enforcer.addPolicies(processedPolicies, 'rest');
 
       response.status(201).end();
     });
@@ -364,9 +366,12 @@ export class PolicesServer {
         }
       }
 
-      for (const role of roles) {
-        await this.enforcer.addOrUpdateGroupingPolicy(role, 'rest', false);
-      }
+      const metadata: RoleMetadataDao = {
+        roleEntityRef: roleRaw.name,
+        source: 'rest',
+        description: roleRaw.metadata?.description ?? '',
+      };
+      await this.enforcer.addGroupingPolicies(roles, metadata);
 
       response.status(201).end();
     });
@@ -410,6 +415,37 @@ export class PolicesServer {
       const newRole = this.transformRoleToArray(newRoleRaw);
       // todo shell we allow newRole with an empty array?...
 
+      const newMetadata: RoleMetadataDao = {
+        ...newRoleRaw.metadata,
+        source: newRoleRaw.metadata?.source ?? 'rest',
+        roleEntityRef: newRoleRaw.name,
+      };
+
+      const oldMetadata =
+        await this.roleMetadata.findRoleMetadata(roleEntityRef);
+      if (!oldMetadata) {
+        throw new NotFoundError(`Unable to find metadata for ${roleEntityRef}`);
+      }
+      if (oldMetadata.source === 'csv-file') {
+        throw new Error(
+          `Role ${roleEntityRef} can be modified only using csv policy file.`,
+        );
+      }
+      if (oldMetadata.source === 'configuration') {
+        throw new Error(
+          `Role ${roleEntityRef} can be modified only using application config`,
+        );
+      }
+
+      if (
+        isEqual(oldRole, newRole) &&
+        deepSortedEqual(oldMetadata, newMetadata)
+      ) {
+        // no content: old role and new role are equal and their metadata too
+        response.status(204).end();
+        return;
+      }
+
       for (const role of newRole) {
         const hasRole = oldRole.some(element => {
           return isEqual(element, role);
@@ -417,10 +453,6 @@ export class PolicesServer {
         // if the role is already part of old role and is a grouping policy we want to skip returning a conflict error
         // to allow for other roles to be checked and added
         if (await this.enforcer.hasGroupingPolicy(...role)) {
-          if (isEqual(oldRole, newRole)) {
-            response.status(204).end();
-            return;
-          }
           if (!hasRole) {
             throw new ConflictError(); // 409
           }
@@ -458,25 +490,10 @@ export class PolicesServer {
         }
       }
 
-      const metadata = await this.roleMetadata.findRoleMetadata(roleEntityRef);
-      if (!metadata) {
-        throw new NotFoundError(`Unable to find metadata for ${roleEntityRef}`);
-      }
-      if (metadata.source === 'csv-file') {
-        throw new Error(
-          `Role ${roleEntityRef} can be modified only using csv policy file.`,
-        );
-      }
-      if (metadata.source === 'configuration') {
-        throw new Error(
-          `Role ${roleEntityRef} can be modified only using application config`,
-        );
-      }
-
       await this.enforcer.updateGroupingPolicies(
         oldRole,
         newRole,
-        'rest',
+        newMetadata,
         false,
       );
 
@@ -704,7 +721,8 @@ export class PolicesServer {
 
     const result: Role[] = await Promise.all(
       Object.entries(combinedRoles).map(async ([role, value]) => {
-        const metadata = await this.roleMetadata.findRoleMetadata(role);
+        const metadataDao = await this.roleMetadata.findRoleMetadata(role);
+        const metadata = metadataDao ? daoToMetadata(metadataDao) : undefined;
         return Promise.resolve({
           memberReferences: value,
           name: role,

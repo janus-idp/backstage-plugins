@@ -4,44 +4,39 @@
  */
 exports.up = async function up(knex) {
   const casbinDoesExist = await knex.schema.hasTable('casbin_rule');
-  let groupPolicies = [];
+  const roleMetadataDoesExist = await knex.schema.hasTable('role-metadata');
+  const groupPolicies = new Set();
 
   if (casbinDoesExist) {
-    groupPolicies = await knex
+    await knex
       .select('*')
       .from('casbin_rule')
       .where('ptype', 'g')
       .then(listGroupPolicies => {
-        const allGroupPolicies = [];
-        let rbacFlag = false;
         for (const groupPolicy of listGroupPolicies) {
           const { v1 } = groupPolicy;
-          if (v1 === 'role:default/rbac_admin') {
-            rbacFlag = true;
-            continue;
-          }
-          allGroupPolicies.push(v1);
+          groupPolicies.add(v1);
         }
-        if (rbacFlag) {
-          allGroupPolicies.push('role:default/rbac_admin');
-        }
-        return allGroupPolicies;
       });
   }
 
-  await knex.schema
-    .createTable('role-metadata', table => {
-      table.increments('id').primary();
-      table.string('roleEntityRef').primary();
-      table.string('source');
-    })
-    .then(async () => {
-      for (const groupPolicy of groupPolicies) {
-        await knex
-          .table('role-metadata')
-          .insert({ source: 'legacy', roleEntityRef: groupPolicy });
-      }
-    });
+  if (!roleMetadataDoesExist) {
+    await knex.schema
+      .createTable('role-metadata', table => {
+        table.increments('id').primary();
+        table.string('roleEntityRef').primary();
+        table.string('source');
+      })
+      .then(async () => {
+        const metadata = [];
+        for (const groupPolicy of groupPolicies) {
+          metadata.push({ source: 'legacy', roleEntityRef: groupPolicy });
+        }
+        if (metadata.length > 0) {
+          await knex.table('role-metadata').insert(metadata);
+        }
+      });
+  }
 };
 
 /**

@@ -4,6 +4,7 @@
  */
 exports.up = async function up(knex) {
   const casbinDoesExist = await knex.schema.hasTable('casbin_rule');
+  const policyMetadataDoesExist = await knex.schema.hasTable('policy-metadata');
   let policies = [];
   let groupPolicies = [];
 
@@ -34,26 +35,32 @@ exports.up = async function up(knex) {
       });
   }
 
-  await knex.schema
-    .createTable('policy-metadata', table => {
-      table.increments('id').primary();
-      table.string('policy').primary();
-      table.string('source');
-    })
-    .then(async () => {
-      for (const policy of policies) {
-        await knex
-          .table('policy-metadata')
-          .insert({ source: 'legacy', policy: policy });
-      }
-    })
-    .then(async () => {
-      for (const groupPolicy of groupPolicies) {
-        await knex
-          .table('policy-metadata')
-          .insert({ source: 'legacy', policy: groupPolicy });
-      }
-    });
+  if (!policyMetadataDoesExist) {
+    await knex.schema
+      .createTable('policy-metadata', table => {
+        table.increments('id').primary();
+        table.string('policy').primary();
+        table.string('source');
+      })
+      .then(async () => {
+        const metadata = [];
+        for (const policy of policies) {
+          metadata.push({ source: 'legacy', policy: policy });
+        }
+        if (metadata.length > 0) {
+          await knex.table('policy-metadata').insert(metadata);
+        }
+      })
+      .then(async () => {
+        const metadata = [];
+        for (const groupPolicy of groupPolicies) {
+          metadata.push({ source: 'legacy', policy: groupPolicy });
+        }
+        if (metadata.length > 0) {
+          await knex.table('policy-metadata').insert(metadata);
+        }
+      });
+  }
 };
 
 /**
