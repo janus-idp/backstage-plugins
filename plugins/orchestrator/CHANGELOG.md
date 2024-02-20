@@ -1,3 +1,16 @@
+## @janus-idp/backstage-plugin-orchestrator [1.5.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.5.0...@janus-idp/backstage-plugin-orchestrator@1.5.1) (2024-02-20)
+
+
+### Bug Fixes
+
+* **orchestrator:** decommission the ProcessInstance.lastUpdate field ([#1230](https://github.com/janus-idp/backstage-plugins/issues/1230)) ([9724e27](https://github.com/janus-idp/backstage-plugins/commit/9724e27eaa84fe73d7724f28c86409681b7f79f8))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.3.0
+
 ## @janus-idp/backstage-plugin-orchestrator [1.5.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.4.3...@janus-idp/backstage-plugin-orchestrator@1.5.0) (2024-02-18)
 
 
