@@ -1,0 +1,1613 @@
+= Orchestrator plugin
+team@openapitools.org
+0.0.1
+:toc: left
+:numbered:
+:toclevels: 4
+:source-highlighter: highlightjs
+:keywords: openapi, rest, Orchestrator plugin
+:specDir: 
+:snippetDir: 
+:generator-template: v1 2019-12-20
+:info-url: https://openapi-generator.tech
+:app-name: Orchestrator plugin
+
+[abstract]
+.Abstract
+API to interact with orchestrator plugin
+
+
+// markup not found, no include::{specDir}intro.adoc[opts=optional]
+
+
+
+== Endpoints
+
+
+[.Default]
+=== Default
+
+
+[.abortWorkflow]
+==== abortWorkflow
+
+`DELETE /v2/workflows/{workflowId}/abort`
+
+Abort a workflow instance
+
+===== Description
+
+Aborts a workflow instance identified by the provided workflowId.
+
+
+// markup not found, no include::{specDir}v2/workflows/\{workflowId\}/abort/DELETE/spec.adoc[opts=optional]
+
+
+
+===== Parameters
+
+====== Path Parameters
+
+[cols="2,3,1,1,1"]
+|===
+|Name| Description| Required| Default| Pattern
+
+| workflowId
+| The identifier of the workflow instance to abort. 
+| X
+| null
+| 
+
+|===
+
+
+
+
+
+
+===== Return Type
+
+
+<<String>>
+
+
+===== Content Type
+
+* text/plain
+
+===== Responses
+
+.HTTP Response Codes
+[cols="2,3,1"]
+|===
+| Code | Message | Datatype
+
+
+| 200
+| Successful operation
+|  <<String>>
+
+
+| 500
+| Error aborting workflow
+|  <<String>>
+
+|===
+
+===== Samples
+
+
+// markup not found, no include::{snippetDir}v2/workflows/\{workflowId\}/abort/DELETE/http-request.adoc[opts=optional]
+
+
+// markup not found, no include::{snippetDir}v2/workflows/\{workflowId\}/abort/DELETE/http-response.adoc[opts=optional]
+
+
+
+// file not found, no * wiremock data link :v2/workflows/{workflowId}/abort/DELETE/DELETE.json[]
+
+
+ifdef::internal-generation[]
+===== Implementation
+
+// markup not found, no include::{specDir}v2/workflows/\{workflowId\}/abort/DELETE/implementation.adoc[opts=optional]
+
+
+endif::internal-generation[]
+
+
+[.createWorkflow]
+==== createWorkflow
+
+`POST /v2/workflows`
+
+Create or update a workflow
+
+===== Description
+
+
+
+
+// markup not found, no include::{specDir}v2/workflows/POST/spec.adoc[opts=optional]
+
+
+
+===== Parameters
+
+
+====== Body Parameter
+
+[cols="2,3,1,1,1"]
+|===
+|Name| Description| Required| Default| Pattern
+
+| CreateWorkflowRequest
+|  <<CreateWorkflowRequest>>
+| X
+| 
+| 
+
+|===
+
+
+
+====== Query Parameters
+
+[cols="2,3,1,1,1"]
+|===
+|Name| Description| Required| Default| Pattern
+
+| uri
+| URI parameter 
+| -
+| null
+| 
+
+|===
+
+
+===== Return Type
+
+<<createWorkflow_201_response>>
+
+
+===== Content Type
+
+* application/json
+* text/plain
+
+===== Responses
+
+.HTTP Response Codes
+[cols="2,3,1"]
+|===
+| Code | Message | Datatype
+
+
+| 201
+| Created
+|  <<createWorkflow_201_response>>
+
+
+| 500
+| Error creating workflow
+|  <<String>>
+
+|===
+
+===== Samples
+
+
+// markup not found, no include::{snippetDir}v2/workflows/POST/http-request.adoc[opts=optional]
+
+
+// markup not found, no include::{snippetDir}v2/workflows/POST/http-response.adoc[opts=optional]
+
+
+
+// file not found, no * wiremock data link :v2/workflows/POST/POST.json[]
+
+
+ifdef::internal-generation[]
+===== Implementation
+
+// markup not found, no include::{specDir}v2/workflows/POST/implementation.adoc[opts=optional]
+
+
+endif::internal-generation[]
+
+
+[.executeWorkflow]
+==== executeWorkflow
+
+`POST /v2/workflows/{workflowId}/execute`
+
+Execute a workflow
+
+===== Description
+
+
+
+
+// markup not found, no include::{specDir}v2/workflows/\{workflowId\}/execute/POST/spec.adoc[opts=optional]
+
+
+
+===== Parameters
+
+====== Path Parameters
+
+[cols="2,3,1,1,1"]
+|===
+|Name| Description| Required| Default| Pattern
+
+| workflowId
+| ID of the workflow to execute 
+| X
+| null
+| 
+
+|===
+
+====== Body Parameter
+
+[cols="2,3,1,1,1"]
+|===
+|Name| Description| Required| Default| Pattern
+
+| ExecuteWorkflowRequestDTO
+|  <<ExecuteWorkflowRequestDTO>>
+| X
+| 
+| 
+
+|===
+
+
+
+
+
+===== Return Type
+
+<<ExecuteWorkflowResponseDTO>>
+
+
+===== Content Type
+
+* application/json
+* text/plain
+
+===== Responses
+
+.HTTP Response Codes
+[cols="2,3,1"]
+|===
+| Code | Message | Datatype
+
+
+| 200
+| Successful execution
+|  <<ExecuteWorkflowResponseDTO>>
+
+
+| 500
+| Internal Server Error
+|  <<String>>
+
+|===
+
+===== Samples
+
+
+// markup not found, no include::{snippetDir}v2/workflows/\{workflowId\}/execute/POST/http-request.adoc[opts=optional]
+
+
+// markup not found, no include::{snippetDir}v2/workflows/\{workflowId\}/execute/POST/http-response.adoc[opts=optional]
+
+
+
+// file not found, no * wiremock data link :v2/workflows/{workflowId}/execute/POST/POST.json[]
+
+
+ifdef::internal-generation[]
+===== Implementation
+
+// markup not found, no include::{specDir}v2/workflows/\{workflowId\}/execute/POST/implementation.adoc[opts=optional]
+
+
+endif::internal-generation[]
+
+
+[.getInstanceById]
+==== getInstanceById
+
+`GET /v2/workflows/instances/{instanceId}`
+
+Get Workflow Instance by ID
+
+===== Description
+
+
+
+
+// markup not found, no include::{specDir}v2/workflows/instances/\{instanceId\}/GET/spec.adoc[opts=optional]
+
+
+
+===== Parameters
+
+====== Path Parameters
+
+[cols="2,3,1,1,1"]
+|===
+|Name| Description| Required| Default| Pattern
+
+| instanceId
+| ID of the workflow instance 
+| X
+| null
+| 
+
+|===
+
+
+
+
+
+
+===== Return Type
+
+<<ProcessInstanceDTO>>
+
+
+===== Content Type
+
+* application/json
+* text/plain
+
+===== Responses
+
+.HTTP Response Codes
+[cols="2,3,1"]
+|===
+| Code | Message | Datatype
+
+
+| 200
+| Successful response
+|  <<ProcessInstanceDTO>>
+
+
+| 500
+| Error fetching instance
+|  <<String>>
+
+|===
+
+===== Samples
+
+
+// markup not found, no include::{snippetDir}v2/workflows/instances/\{instanceId\}/GET/http-request.adoc[opts=optional]
+
+
+// markup not found, no include::{snippetDir}v2/workflows/instances/\{instanceId\}/GET/http-response.adoc[opts=optional]
+
+
+
+// file not found, no * wiremock data link :v2/workflows/instances/{instanceId}/GET/GET.json[]
+
+
+ifdef::internal-generation[]
+===== Implementation
+
+// markup not found, no include::{specDir}v2/workflows/instances/\{instanceId\}/GET/implementation.adoc[opts=optional]
+
+
+endif::internal-generation[]
+
+
+[.getInstances]
+==== getInstances
+
+`GET /v2/workflows/instances`
+
+Get instances
+
+===== Description
+
+Retrieve an array of instances
+
+
+// markup not found, no include::{specDir}v2/workflows/instances/GET/spec.adoc[opts=optional]
+
+
+
+===== Parameters
+
+
+
+
+
+
+
+===== Return Type
+
+array[<<ProcessInstanceDTO>>]
+
+
+===== Content Type
+
+* application/json
+* text/plain
+
+===== Responses
+
+.HTTP Response Codes
+[cols="2,3,1"]
+|===
+| Code | Message | Datatype
+
+
+| 200
+| Success
+| List[<<ProcessInstanceDTO>>] 
+
+
+| 500
+| Error fetching instances
+|  <<String>>
+
+|===
+
+===== Samples
+
+
+// markup not found, no include::{snippetDir}v2/workflows/instances/GET/http-request.adoc[opts=optional]
+
+
+// markup not found, no include::{snippetDir}v2/workflows/instances/GET/http-response.adoc[opts=optional]
+
+
+
+// file not found, no * wiremock data link :v2/workflows/instances/GET/GET.json[]
+
+
+ifdef::internal-generation[]
+===== Implementation
+
+// markup not found, no include::{specDir}v2/workflows/instances/GET/implementation.adoc[opts=optional]
+
+
+endif::internal-generation[]
+
+
+[.getWorkflowOverviewById]
+==== getWorkflowOverviewById
+
+`GET /v2/workflows/{workflowId}/overview`
+
+
+
+===== Description
+
+Get a workflow overview by ID
+
+
+// markup not found, no include::{specDir}v2/workflows/\{workflowId\}/overview/GET/spec.adoc[opts=optional]
+
+
+
+===== Parameters
+
+====== Path Parameters
+
+[cols="2,3,1,1,1"]
+|===
+|Name| Description| Required| Default| Pattern
+
+| workflowId
+| Unique identifier of the workflow 
+| X
+| null
+| 
+
+|===
+
+
+
+
+
+
+===== Return Type
+
+<<WorkflowOverviewDTO>>
+
+
+===== Content Type
+
+* application/json
+* text/plain
+
+===== Responses
+
+.HTTP Response Codes
+[cols="2,3,1"]
+|===
+| Code | Message | Datatype
+
+
+| 200
+| Success
+|  <<WorkflowOverviewDTO>>
+
+
+| 500
+| Error fetching workflow overview
+|  <<String>>
+
+|===
+
+===== Samples
+
+
+// markup not found, no include::{snippetDir}v2/workflows/\{workflowId\}/overview/GET/http-request.adoc[opts=optional]
+
+
+// markup not found, no include::{snippetDir}v2/workflows/\{workflowId\}/overview/GET/http-response.adoc[opts=optional]
+
+
+
+// file not found, no * wiremock data link :v2/workflows/{workflowId}/overview/GET/GET.json[]
+
+
+ifdef::internal-generation[]
+===== Implementation
+
+// markup not found, no include::{specDir}v2/workflows/\{workflowId\}/overview/GET/implementation.adoc[opts=optional]
+
+
+endif::internal-generation[]
+
+
+[.getWorkflowResults]
+==== getWorkflowResults
+
+`GET /v2/workflows/instances/{instanceId}/results`
+
+Get workflow results
+
+===== Description
+
+
+
+
+// markup not found, no include::{specDir}v2/workflows/instances/\{instanceId\}/results/GET/spec.adoc[opts=optional]
+
+
+
+===== Parameters
+
+====== Path Parameters
+
+[cols="2,3,1,1,1"]
+|===
+|Name| Description| Required| Default| Pattern
+
+| instanceId
+| ID of the workflow instance 
+| X
+| null
+| 
+
+|===
+
+
+
+
+
+
+===== Return Type
+
+<<WorkflowDataDTO>>
+
+
+===== Content Type
+
+* application/json
+* text/plain
+
+===== Responses
+
+.HTTP Response Codes
+[cols="2,3,1"]
+|===
+| Code | Message | Datatype
+
+
+| 200
+| Successful response
+|  <<WorkflowDataDTO>>
+
+
+| 500
+| Error getting workflow results
+|  <<String>>
+
+|===
+
+===== Samples
+
+
+// markup not found, no include::{snippetDir}v2/workflows/instances/\{instanceId\}/results/GET/http-request.adoc[opts=optional]
+
+
+// markup not found, no include::{snippetDir}v2/workflows/instances/\{instanceId\}/results/GET/http-response.adoc[opts=optional]
+
+
+
+// file not found, no * wiremock data link :v2/workflows/instances/{instanceId}/results/GET/GET.json[]
+
+
+ifdef::internal-generation[]
+===== Implementation
+
+// markup not found, no include::{specDir}v2/workflows/instances/\{instanceId\}/results/GET/implementation.adoc[opts=optional]
+
+
+endif::internal-generation[]
+
+
+[.getWorkflowSpecs]
+==== getWorkflowSpecs
+
+`GET /v2/specs`
+
+Get workflow specifications
+
+===== Description
+
+
+
+
+// markup not found, no include::{specDir}v2/specs/GET/spec.adoc[opts=optional]
+
+
+
+===== Parameters
+
+
+
+
+
+
+
+===== Return Type
+
+array[<<WorkflowSpecFileDTO>>]
+
+
+===== Content Type
+
+* application/json
+* text/plain
+
+===== Responses
+
+.HTTP Response Codes
+[cols="2,3,1"]
+|===
+| Code | Message | Datatype
+
+
+| 200
+| Successful retrieval of workflow specifications
+| List[<<WorkflowSpecFileDTO>>] 
+
+
+| 500
+| Error fetching workflow specifications
+|  <<String>>
+
+|===
+
+===== Samples
+
+
+// markup not found, no include::{snippetDir}v2/specs/GET/http-request.adoc[opts=optional]
+
+
+// markup not found, no include::{snippetDir}v2/specs/GET/http-response.adoc[opts=optional]
+
+
+
+// file not found, no * wiremock data link :v2/specs/GET/GET.json[]
+
+
+ifdef::internal-generation[]
+===== Implementation
+
+// markup not found, no include::{specDir}v2/specs/GET/implementation.adoc[opts=optional]
+
+
+endif::internal-generation[]
+
+
+[.getWorkflowStatuses]
+==== getWorkflowStatuses
+
+`GET /v2/workflows/instances/statuses`
+
+Get workflow status list
+
+===== Description
+
+Retrieve an array of workflow statuses
+
+
+// markup not found, no include::{specDir}v2/workflows/instances/statuses/GET/spec.adoc[opts=optional]
+
+
+
+===== Parameters
+
+
+
+
+
+
+
+===== Return Type
+
+array[<<WorkflowRunStatusDTO>>]
+
+
+===== Content Type
+
+* application/json
+* text/plain
+
+===== Responses
+
+.HTTP Response Codes
+[cols="2,3,1"]
+|===
+| Code | Message | Datatype
+
+
+| 200
+| Success
+| List[<<WorkflowRunStatusDTO>>] 
+
+
+| 500
+| Error fetching workflow statuses
+|  <<String>>
+
+|===
+
+===== Samples
+
+
+// markup not found, no include::{snippetDir}v2/workflows/instances/statuses/GET/http-request.adoc[opts=optional]
+
+
+// markup not found, no include::{snippetDir}v2/workflows/instances/statuses/GET/http-response.adoc[opts=optional]
+
+
+
+// file not found, no * wiremock data link :v2/workflows/instances/statuses/GET/GET.json[]
+
+
+ifdef::internal-generation[]
+===== Implementation
+
+// markup not found, no include::{specDir}v2/workflows/instances/statuses/GET/implementation.adoc[opts=optional]
+
+
+endif::internal-generation[]
+
+
+[.getWorkflows]
+==== getWorkflows
+
+`GET /v2/workflows`
+
+
+
+===== Description
+
+Get a list of workflow
+
+
+// markup not found, no include::{specDir}v2/workflows/GET/spec.adoc[opts=optional]
+
+
+
+===== Parameters
+
+
+
+
+
+
+
+===== Return Type
+
+<<WorkflowListResultDTO>>
+
+
+===== Content Type
+
+* application/json
+* text/plain
+
+===== Responses
+
+.HTTP Response Codes
+[cols="2,3,1"]
+|===
+| Code | Message | Datatype
+
+
+| 200
+| Success
+|  <<WorkflowListResultDTO>>
+
+
+| 500
+| Error fetching workflow list
+|  <<String>>
+
+|===
+
+===== Samples
+
+
+// markup not found, no include::{snippetDir}v2/workflows/GET/http-request.adoc[opts=optional]
+
+
+// markup not found, no include::{snippetDir}v2/workflows/GET/http-response.adoc[opts=optional]
+
+
+
+// file not found, no * wiremock data link :v2/workflows/GET/GET.json[]
+
+
+ifdef::internal-generation[]
+===== Implementation
+
+// markup not found, no include::{specDir}v2/workflows/GET/implementation.adoc[opts=optional]
+
+
+endif::internal-generation[]
+
+
+[.getWorkflowsOverview]
+==== getWorkflowsOverview
+
+`GET /v2/workflows/overview`
+
+
+
+===== Description
+
+Get a list of workflow overviews
+
+
+// markup not found, no include::{specDir}v2/workflows/overview/GET/spec.adoc[opts=optional]
+
+
+
+===== Parameters
+
+
+
+
+
+
+
+===== Return Type
+
+<<WorkflowOverviewListResultDTO>>
+
+
+===== Content Type
+
+* application/json
+* text/plain
+
+===== Responses
+
+.HTTP Response Codes
+[cols="2,3,1"]
+|===
+| Code | Message | Datatype
+
+
+| 200
+| Success
+|  <<WorkflowOverviewListResultDTO>>
+
+
+| 500
+| Error fetching workflow overviews
+|  <<String>>
+
+|===
+
+===== Samples
+
+
+// markup not found, no include::{snippetDir}v2/workflows/overview/GET/http-request.adoc[opts=optional]
+
+
+// markup not found, no include::{snippetDir}v2/workflows/overview/GET/http-response.adoc[opts=optional]
+
+
+
+// file not found, no * wiremock data link :v2/workflows/overview/GET/GET.json[]
+
+
+ifdef::internal-generation[]
+===== Implementation
+
+// markup not found, no include::{specDir}v2/workflows/overview/GET/implementation.adoc[opts=optional]
+
+
+endif::internal-generation[]
+
+
+[#models]
+== Models
+
+
+[#AssessedProcessInstanceDTO]
+=== _AssessedProcessInstanceDTO_ 
+
+
+
+[.fields-AssessedProcessInstanceDTO]
+[cols="2,1,2,4,1"]
+|===
+| Field Name| Required| Type| Description| Format
+
+| instance
+| X
+| ProcessInstanceDTO 
+| 
+|  
+
+| assessedBy
+| 
+| ProcessInstanceDTO 
+| 
+|  
+
+|===
+
+
+[#CreateWorkflow201Response]
+=== _CreateWorkflow201Response_ 
+
+
+
+[.fields-CreateWorkflow201Response]
+[cols="2,1,2,4,1"]
+|===
+| Field Name| Required| Type| Description| Format
+
+| workflowItem
+| 
+| WorkflowDTO 
+| 
+|  
+
+|===
+
+
+[#CreateWorkflowRequest]
+=== _CreateWorkflowRequest_ 
+
+
+
+[.fields-CreateWorkflowRequest]
+[cols="2,1,2,4,1"]
+|===
+| Field Name| Required| Type| Description| Format
+
+| uri
+| X
+| String 
+| 
+|  
+
+| body
+| 
+| String 
+| 
+|  
+
+|===
+
+
+[#ExecuteWorkflowRequestDTO]
+=== _ExecuteWorkflowRequestDTO_ 
+
+
+
+[.fields-ExecuteWorkflowRequestDTO]
+[cols="2,1,2,4,1"]
+|===
+| Field Name| Required| Type| Description| Format
+
+| inputData
+| X
+| Map  of <<string>>
+| 
+|  
+
+|===
+
+
+[#ExecuteWorkflowResponseDTO]
+=== _ExecuteWorkflowResponseDTO_ 
+
+
+
+[.fields-ExecuteWorkflowResponseDTO]
+[cols="2,1,2,4,1"]
+|===
+| Field Name| Required| Type| Description| Format
+
+| id
+| 
+| String 
+| 
+|  
+
+|===
+
+
+[#NodeInstanceDTO]
+=== _NodeInstanceDTO_ 
+
+
+
+[.fields-NodeInstanceDTO]
+[cols="2,1,2,4,1"]
+|===
+| Field Name| Required| Type| Description| Format
+
+| __typename
+| 
+| String 
+| Type name
+|  
+
+| id
+| 
+| String 
+| Node instance ID
+|  
+
+| name
+| 
+| String 
+| Node name
+|  
+
+| type
+| 
+| String 
+| Node type
+|  
+
+| enter
+| 
+| Date 
+| Date when the node was entered
+| date-time 
+
+| exit
+| 
+| Date 
+| Date when the node was exited (optional)
+| date-time 
+
+| definitionId
+| 
+| String 
+| Definition ID
+|  
+
+| nodeId
+| 
+| String 
+| Node ID
+|  
+
+|===
+
+
+[#PaginationInfoDTO]
+=== _PaginationInfoDTO_ 
+
+
+
+[.fields-PaginationInfoDTO]
+[cols="2,1,2,4,1"]
+|===
+| Field Name| Required| Type| Description| Format
+
+| limit
+| 
+| BigDecimal 
+| 
+|  
+
+| offset
+| 
+| BigDecimal 
+| 
+|  
+
+| totalCount
+| 
+| BigDecimal 
+| 
+|  
+
+|===
+
+
+[#ProcessInstanceDTO]
+=== _ProcessInstanceDTO_ 
+
+
+
+[.fields-ProcessInstanceDTO]
+[cols="2,1,2,4,1"]
+|===
+| Field Name| Required| Type| Description| Format
+
+| id
+| 
+| String 
+| 
+|  
+
+| name
+| 
+| String 
+| 
+|  
+
+| workflow
+| 
+| String 
+| 
+|  
+
+| status
+| 
+| ProcessInstanceStatusDTO 
+| 
+|  
+
+| started
+| 
+| Date 
+| 
+| date-time 
+
+| duration
+| 
+| String 
+| 
+|  
+
+| category
+| 
+| WorkflowCategoryDTO 
+| 
+|  
+
+| description
+| 
+| String 
+| 
+|  
+
+| workflowdata
+| 
+| WorkflowDataDTO 
+| 
+|  
+
+|===
+
+
+[#ProcessInstanceErrorDTO]
+=== _ProcessInstanceErrorDTO_ 
+
+
+
+[.fields-ProcessInstanceErrorDTO]
+[cols="2,1,2,4,1"]
+|===
+| Field Name| Required| Type| Description| Format
+
+| __typename
+| 
+| String 
+| Type name
+|  
+
+| nodeDefinitionId
+| 
+| String 
+| Node definition ID
+|  
+
+| message
+| 
+| String 
+| Error message (optional)
+|  
+
+|===
+
+
+[#ProcessInstanceStatusDTO]
+=== _ProcessInstanceStatusDTO_ 
+
+Status of the workflow run
+
+[.fields-ProcessInstanceStatusDTO]
+[cols="2,1,2,4,1"]
+|===
+| Field Name| Required| Type| Description| Format
+
+|===
+
+
+[#WorkflowCategoryDTO]
+=== _WorkflowCategoryDTO_ 
+
+Category of the workflow
+
+[.fields-WorkflowCategoryDTO]
+[cols="2,1,2,4,1"]
+|===
+| Field Name| Required| Type| Description| Format
+
+|===
+
+
+[#WorkflowDTO]
+=== _WorkflowDTO_ 
+
+
+
+[.fields-WorkflowDTO]
+[cols="2,1,2,4,1"]
+|===
+| Field Name| Required| Type| Description| Format
+
+| id
+| X
+| String 
+| Workflow unique identifier
+|  
+
+| name
+| 
+| String 
+| Workflow name
+|  
+
+| uri
+| X
+| String 
+| URI of the workflow definition
+|  
+
+| category
+| X
+| WorkflowCategoryDTO 
+| 
+|  
+
+| description
+| 
+| String 
+| Description of the workflow
+|  
+
+| annotations
+| 
+| List  of <<string>>
+| 
+|  
+
+|===
+
+
+[#WorkflowDataDTO]
+=== _WorkflowDataDTO_ 
+
+
+
+[.fields-WorkflowDataDTO]
+[cols="2,1,2,4,1"]
+|===
+| Field Name| Required| Type| Description| Format
+
+| workflowoptions
+| 
+| List  of <<array>>
+| 
+|  
+
+|===
+
+
+[#WorkflowListResultDTO]
+=== _WorkflowListResultDTO_ 
+
+
+
+[.fields-WorkflowListResultDTO]
+[cols="2,1,2,4,1"]
+|===
+| Field Name| Required| Type| Description| Format
+
+| items
+| X
+| List  of <<WorkflowDTO>>
+| 
+|  
+
+| paginationInfo
+| X
+| PaginationInfoDTO 
+| 
+|  
+
+|===
+
+
+[#WorkflowOverviewDTO]
+=== _WorkflowOverviewDTO_ 
+
+
+
+[.fields-WorkflowOverviewDTO]
+[cols="2,1,2,4,1"]
+|===
+| Field Name| Required| Type| Description| Format
+
+| workflowId
+| 
+| String 
+| Workflow unique identifier
+|  
+
+| name
+| 
+| String 
+| Workflow name
+|  
+
+| uri
+| 
+| String 
+| 
+|  
+
+| lastTriggeredMs
+| 
+| BigDecimal 
+| 
+|  
+
+| lastRunStatus
+| 
+| String 
+| 
+|  
+
+| category
+| 
+| WorkflowCategoryDTO 
+| 
+|  
+
+| avgDurationMs
+| 
+| BigDecimal 
+| 
+|  
+
+| description
+| 
+| String 
+| 
+|  
+
+|===
+
+
+[#WorkflowOverviewListResultDTO]
+=== _WorkflowOverviewListResultDTO_ 
+
+
+
+[.fields-WorkflowOverviewListResultDTO]
+[cols="2,1,2,4,1"]
+|===
+| Field Name| Required| Type| Description| Format
+
+| overviews
+| 
+| List  of <<WorkflowOverviewDTO>>
+| 
+|  
+
+| paginationInfo
+| 
+| PaginationInfoDTO 
+| 
+|  
+
+|===
+
+
+[#WorkflowProgressDTO]
+=== _WorkflowProgressDTO_ 
+
+
+
+[.fields-WorkflowProgressDTO]
+[cols="2,1,2,4,1"]
+|===
+| Field Name| Required| Type| Description| Format
+
+| __typename
+| 
+| oas_any_type_not_mapped 
+| Type name
+|  
+
+| id
+| 
+| oas_any_type_not_mapped 
+| Node instance ID
+|  
+
+| name
+| 
+| oas_any_type_not_mapped 
+| Node name
+|  
+
+| type
+| 
+| oas_any_type_not_mapped 
+| Node type
+|  
+
+| enter
+| 
+| oas_any_type_not_mapped 
+| Date when the node was entered
+| date-time 
+
+| exit
+| 
+| oas_any_type_not_mapped 
+| Date when the node was exited (optional)
+| date-time 
+
+| definitionId
+| 
+| oas_any_type_not_mapped 
+| Definition ID
+|  
+
+| nodeId
+| 
+| oas_any_type_not_mapped 
+| Node ID
+|  
+
+| status
+| 
+| ProcessInstanceStatusDTO 
+| 
+|  
+
+| error
+| 
+| ProcessInstanceErrorDTO 
+| 
+|  
+
+|===
+
+
+[#WorkflowRunStatusDTO]
+=== _WorkflowRunStatusDTO_ 
+
+
+
+[.fields-WorkflowRunStatusDTO]
+[cols="2,1,2,4,1"]
+|===
+| Field Name| Required| Type| Description| Format
+
+| key
+| 
+| String 
+| 
+|  
+
+| value
+| 
+| String 
+| 
+|  
+
+|===
+
+
+[#WorkflowSpecFileDTO]
+=== _WorkflowSpecFileDTO_ 
+
+
+
+[.fields-WorkflowSpecFileDTO]
+[cols="2,1,2,4,1"]
+|===
+| Field Name| Required| Type| Description| Format
+
+| path
+| 
+| String 
+| 
+|  
+
+| content
+| X
+| String 
+| JSON string
+|  
+
+|===
+
+
+[#WorkflowSuggestionDTO]
+=== _WorkflowSuggestionDTO_ 
+
+
+
+[.fields-WorkflowSuggestionDTO]
+[cols="2,1,2,4,1"]
+|===
+| Field Name| Required| Type| Description| Format
+
+| id
+| 
+| String 
+| 
+|  
+
+| name
+| 
+| String 
+| 
+|  
+
+|===
+
+
