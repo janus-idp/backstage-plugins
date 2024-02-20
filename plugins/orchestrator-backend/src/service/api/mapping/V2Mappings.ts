@@ -26,29 +26,17 @@ export function mapToWorkflowOverviewDTO(
   overview: WorkflowOverview,
 ): WorkflowOverviewDTO {
   return {
-    workflowId: overview.workflowId,
-    name: overview.name,
-    uri: overview.uri,
-    lastTriggeredMs: overview.lastTriggeredMs,
-    lastRunStatus: overview.lastRunStatus,
+    ...overview,
     category: mapWorkflowCategoryDTOFromString(overview.category),
-    avgDurationMs: overview.avgDurationMs,
-    description: overview.description,
   };
 }
 
 export function mapWorkflowCategoryDTOFromString(
   category?: string,
 ): WorkflowCategoryDTO {
-  const lowerCase = category?.toLocaleLowerCase();
-
-  switch (lowerCase) {
-    case 'assessment':
-    case 'infrastructure':
-      return lowerCase;
-    default:
-      return 'infrastructure';
-  }
+  return category?.toLocaleLowerCase() === 'assessment'
+    ? 'assessment'
+    : 'infrastructure';
 }
 
 export function mapToWorkflowListResultDTO(
