@@ -32,7 +32,7 @@ export const getPath = (props: BreadCumbViewProps) => {
   const match = namespaceRegex.exec(props.location.pathname) || [];
   const ns = match[2];
   // @ts-ignore
-  const page = Paths[match[1].toUpperCase()];
+  const page = Paths[match[1]?.toUpperCase()];
   const istioType = match[3];
   const urlParams = new URLSearchParams(props.location.search);
   const itemName = page !== 'istio' ? match[3] : match[5];
