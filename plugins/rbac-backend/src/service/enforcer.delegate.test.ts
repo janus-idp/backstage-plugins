@@ -20,9 +20,9 @@ import {
   RoleMetadataDao,
   RoleMetadataStorage,
 } from '../database/role-metadata';
+import { BackstageRoleManager } from '../role-manager/role-manager';
 import { EnforcerDelegate } from './enforcer-delegate';
 import { MODEL } from './permission-model';
-import { BackstageRoleManager } from './role-manager';
 
 const catalogApi = {
   getEntityAncestors: jest.fn().mockImplementation(),
