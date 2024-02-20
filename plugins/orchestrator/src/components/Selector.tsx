@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Select } from '@backstage/core-components';
+import { Select, SelectedItems } from '@backstage/core-components';
 
 import { makeStyles, Typography } from '@material-ui/core';
 
@@ -46,7 +46,7 @@ export const Selector = ({
   );
 
   const handleChange = React.useCallback(
-    item => otherProps.onChange(item as string),
+    (item: SelectedItems) => otherProps.onChange(item as string),
     [otherProps],
   );
 

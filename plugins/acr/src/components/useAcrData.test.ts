@@ -1,6 +1,6 @@
 import { useEntity } from '@backstage/plugin-catalog-react';
 
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 
 import { mockEntity } from '../__fixtures__/mockEntity';
 import { useAcrAppData } from './useAcrAppData';

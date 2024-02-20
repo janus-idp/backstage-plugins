@@ -19,12 +19,14 @@ import {
   policyEntityReadPermission,
   policyEntityUpdatePermission,
   Role,
-  RoleMetadata,
   Source,
 } from '@janus-idp/backstage-plugin-rbac-common';
 
 import { PolicyMetadataStorage } from '../database/policy-metadata-storage';
-import { RoleMetadataStorage } from '../database/role-metadata';
+import {
+  RoleMetadataDao,
+  RoleMetadataStorage,
+} from '../database/role-metadata';
 import { EnforcerDelegate } from './enforcer-delegate';
 import { RBACPermissionPolicy } from './permission-policy';
 import {
@@ -124,8 +126,6 @@ const mockEnforcer: Partial<EnforcerDelegate> = {
 
   updatePolicies: jest.fn().mockImplementation(),
 
-  addOrUpdateGroupingPolicy: jest.fn().mockImplementation(),
-
   updateGroupingPolicies: jest.fn().mockImplementation(),
 };
 
@@ -133,8 +133,8 @@ const roleMetadataStorageMock: RoleMetadataStorage = {
   findRoleMetadata: jest
     .fn()
     .mockImplementation(
-      async (_roleEntityRef: string): Promise<RoleMetadata> => {
-        return { source: 'rest' };
+      async (roleEntityRef: string): Promise<RoleMetadataDao> => {
+        return { source: 'rest', roleEntityRef: roleEntityRef };
       },
     ),
   createRoleMetadata: jest.fn().mockImplementation(),
@@ -207,8 +207,8 @@ describe('REST policies api', () => {
     roleMetadataStorageMock.findRoleMetadata = jest
       .fn()
       .mockImplementation(
-        async (_roleEntityRef: string): Promise<RoleMetadata> => {
-          return { source: 'rest' };
+        async (roleEntityRef: string): Promise<RoleMetadataDao> => {
+          return { source: 'rest', roleEntityRef: roleEntityRef };
         },
       );
 
@@ -456,7 +456,7 @@ describe('REST policies api', () => {
     });
 
     it('should not be created permission policy caused some unexpected error', async () => {
-      mockEnforcer.addOrUpdatePolicy = jest
+      mockEnforcer.addPolicies = jest
         .fn()
         .mockImplementation(async (): Promise<void> => {
           throw new Error(`Failed to add policies`);
@@ -1644,6 +1644,36 @@ describe('REST policies api', () => {
         });
 
       expect(result.statusCode).toBe(201);
+      expect(mockEnforcer.addGroupingPolicies).toHaveBeenCalledWith(
+        [['user:default/permission_admin', 'role:default/rbac_admin']],
+        {
+          roleEntityRef: 'role:default/rbac_admin',
+          source: 'rest',
+          description: '',
+        },
+      );
+    });
+
+    it('should be created role with description', async () => {
+      const result = await request(app)
+        .post('/roles')
+        .send({
+          memberReferences: ['user:default/permission_admin'],
+          name: 'role:default/rbac_admin',
+          metadata: {
+            description: 'some test description',
+          },
+        });
+
+      expect(result.statusCode).toBe(201);
+      expect(mockEnforcer.addGroupingPolicies).toHaveBeenCalledWith(
+        [['user:default/permission_admin', 'role:default/rbac_admin']],
+        {
+          roleEntityRef: 'role:default/rbac_admin',
+          source: 'rest',
+          description: 'some test description',
+        },
+      );
     });
 
     it('should not be created role, because it is has been already present', async () => {
@@ -1664,7 +1694,7 @@ describe('REST policies api', () => {
     });
 
     it('should not be created role caused some unexpected error', async () => {
-      mockEnforcer.addOrUpdateGroupingPolicy = jest
+      mockEnforcer.addGroupingPolicies = jest
         .fn()
         .mockImplementation(async (): Promise<void> => {
           throw new Error('Fail to create new policy');
@@ -1844,6 +1874,135 @@ describe('REST policies api', () => {
         });
 
       expect(result.statusCode).toEqual(204);
+    });
+
+    it('should nothing to update, because role and metadata are the same', async () => {
+      mockEnforcer.hasGroupingPolicy = jest
+        .fn()
+        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
+          return true;
+        });
+      const result = await request(app)
+        .put('/roles/role/default/rbac_admin')
+        .send({
+          oldRole: {
+            memberReferences: ['user:default/permission_admin'],
+            metadata: {
+              source: 'rest',
+            },
+          },
+          newRole: {
+            memberReferences: ['user:default/permission_admin'],
+            name: 'role:default/rbac_admin',
+            metadata: {
+              source: 'rest',
+            },
+          },
+        });
+
+      expect(result.statusCode).toEqual(204);
+    });
+
+    it('should nothing to update, because role and metadata are the same, but old role metadata was not send', async () => {
+      mockEnforcer.hasGroupingPolicy = jest
+        .fn()
+        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
+          return true;
+        });
+      const result = await request(app)
+        .put('/roles/role/default/rbac_admin')
+        .send({
+          oldRole: {
+            memberReferences: ['user:default/permission_admin'],
+          },
+          newRole: {
+            memberReferences: ['user:default/permission_admin'],
+            name: 'role:default/rbac_admin',
+            metadata: {
+              source: 'rest',
+            },
+          },
+        });
+
+      expect(result.statusCode).toEqual(204);
+    });
+
+    it('should update description', async () => {
+      mockEnforcer.hasGroupingPolicy = jest
+        .fn()
+        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
+          return true;
+        });
+      const result = await request(app)
+        .put('/roles/role/default/rbac_admin')
+        .send({
+          oldRole: {
+            memberReferences: ['user:default/permission_admin'],
+          },
+          newRole: {
+            memberReferences: ['user:default/permission_admin'],
+            name: 'role:default/rbac_admin',
+            metadata: {
+              source: 'rest',
+              description: 'some admin role.',
+            },
+          },
+        });
+
+      expect(result.statusCode).toEqual(200);
+      expect(mockEnforcer.updateGroupingPolicies).toHaveBeenCalledWith(
+        [['user:default/permission_admin', 'role:default/rbac_admin']],
+        [['user:default/permission_admin', 'role:default/rbac_admin']],
+        {
+          description: 'some admin role.',
+          roleEntityRef: 'role:default/rbac_admin',
+          source: 'rest',
+        },
+        false,
+      );
+    });
+
+    it('should update role and role description', async () => {
+      mockEnforcer.hasGroupingPolicy = jest
+        .fn()
+        .mockImplementation(async (...param: string[]): Promise<boolean> => {
+          if (param[0] === 'user:default/permission_admin') {
+            return true;
+          }
+          return false;
+        });
+
+      const result = await request(app)
+        .put('/roles/role/default/rbac_admin')
+        .send({
+          oldRole: {
+            memberReferences: ['user:default/permission_admin'],
+          },
+          newRole: {
+            memberReferences: ['user:default/test', 'user:default/dev'],
+            name: 'role:default/rbac_admin',
+            metadata: {
+              source: 'rest',
+              description: 'some admin role.',
+            },
+          },
+        });
+
+      expect(result.statusCode).toEqual(200);
+
+      expect(mockEnforcer.updateGroupingPolicies).toHaveBeenCalledWith(
+        [['user:default/permission_admin', 'role:default/rbac_admin']],
+        [
+          ['user:default/test', 'role:default/rbac_admin'],
+          ['user:default/dev', 'role:default/rbac_admin'],
+        ],
+        {
+          description: 'some admin role.',
+          roleEntityRef: 'role:default/rbac_admin',
+          source: 'rest',
+        },
+        false,
+      );
     });
 
     it('should fail to update policy - role metadata could not be found', async () => {
@@ -2307,6 +2466,7 @@ describe('REST policies api', () => {
           memberReferences: ['group:default/test', 'user:default/test'],
           name: 'role:default/test',
           metadata: {
+            description: undefined,
             source: 'rest',
           },
         },

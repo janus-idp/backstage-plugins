@@ -2,130 +2,20 @@ import { TokenManager } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import { parseEntityRef } from '@backstage/catalog-model';
 
-import { alg, Graph } from '@dagrejs/graphlib';
 import { RoleManager } from 'casbin';
 import { Logger } from 'winston';
 
-type FilterRelations = 'relations.hasMember' | 'relations.parentOf';
-
-class Role {
-  public name: string;
-
-  private roles: Role[];
-
-  public constructor(name: string) {
-    this.name = name;
-    this.roles = [];
-  }
-
-  public addRole(role: Role): void {
-    if (this.roles.some(n => n.name === role.name)) {
-      return;
-    }
-    this.roles.push(role);
-  }
-
-  public deleteRole(role: Role): void {
-    this.roles = this.roles.filter(n => n.name !== role.name);
-  }
-
-  public hasRole(name: string, hierarchyLevel: number): boolean {
-    if (this.name === name) {
-      return true;
-    }
-    if (hierarchyLevel <= 0) {
-      return false;
-    }
-    for (const role of this.roles) {
-      if (role.hasRole(name, hierarchyLevel - 1)) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  getRoles(): Role[] {
-    return this.roles;
-  }
-}
-
-// AncestorSearchMemo - should be used to build group hierarchy graph for User entity reference.
-// It supports search group entity reference link in the graph.
-// Also AncestorSearchMemo supports detection cycle dependencies between groups in the graph.
-//
-// Notice: this class should be used like cache object in the nearest feature.
-// This cache can be implemented with time expiration and it can be map: Map<userEntityRef, AncestorSearchMemo>.
-class AncestorSearchMemo {
-  private filterEntityRefs: Set<string>;
-
-  private graph: Graph;
-  private fr: FilterRelations;
-
-  constructor(userEntityRef: string) {
-    this.filterEntityRefs = new Set<string>([userEntityRef]);
-    this.graph = new Graph({ directed: true });
-    this.fr = 'relations.hasMember';
-  }
-
-  setFilterEntityRefs(entityRefs: Set<string>) {
-    this.filterEntityRefs = entityRefs;
-  }
-
-  getFilterEntityRefs(): Set<string> {
-    return this.filterEntityRefs;
-  }
-
-  setFilterRelations(fr: FilterRelations): void {
-    this.fr = fr;
-  }
-
-  getFilterRelations(): FilterRelations {
-    return this.fr;
-  }
-
-  isAcyclic(): boolean {
-    return alg.isAcyclic(this.graph);
-  }
-
-  findCycles(): string[][] {
-    return alg.findCycles(this.graph);
-  }
-
-  setEdge(parentEntityRef: string, childEntityRef: string) {
-    this.graph.setEdge(parentEntityRef, childEntityRef);
-  }
-
-  setNode(entityRef: string): void {
-    this.graph.setNode(entityRef);
-  }
-
-  hasEntityRef(groupRef: string): boolean {
-    return this.graph.hasNode(groupRef);
-  }
-
-  debugNodesAndEdges(log: Logger, userEntity: string): void {
-    log.debug(
-      `SubGraph edges: ${JSON.stringify(this.graph.edges())} for ${userEntity}`,
-    );
-    log.debug(
-      `SubGraph nodes: ${JSON.stringify(this.graph.nodes())} for ${userEntity}`,
-    );
-  }
-
-  getNodes(): string[] {
-    return this.graph.nodes();
-  }
-}
+import { AncestorSearchMemo } from './ancestor-search-memo';
+import { RoleList } from './role-list';
 
 export class BackstageRoleManager implements RoleManager {
-  private allRoles: Map<string, Role>;
+  private allRoles: Map<string, RoleList>;
   constructor(
     private readonly catalogApi: CatalogApi,
     private readonly log: Logger,
     private readonly tokenManager: TokenManager,
   ) {
-    this.allRoles = new Map<string, Role>();
+    this.allRoles = new Map<string, RoleList>();
   }
 
   /**
@@ -202,8 +92,14 @@ export class BackstageRoleManager implements RoleManager {
       return false;
     }
 
-    const memo = new AncestorSearchMemo(name1);
-    await this.findAncestorGroups(memo);
+    const memo = new AncestorSearchMemo(
+      name1,
+      this.tokenManager,
+      this.catalogApi,
+    );
+    await memo.getAllGroups();
+    await memo.buildUserGraph(memo);
+
     memo.debugNodesAndEdges(this.log, name1);
     if (!memo.isAcyclic()) {
       const cycles = memo.findCycles();
@@ -272,8 +168,13 @@ export class BackstageRoleManager implements RoleManager {
   async getRoles(name: string, ..._domain: string[]): Promise<string[]> {
     const { kind } = parseEntityRef(name);
     if (kind === 'user') {
-      const memo = new AncestorSearchMemo(name);
-      await this.findAncestorGroups(memo);
+      const memo = new AncestorSearchMemo(
+        name,
+        this.tokenManager,
+        this.catalogApi,
+      );
+      await memo.getAllGroups();
+      await memo.buildUserGraph(memo);
       memo.debugNodesAndEdges(this.log, name);
       const userAndParentGroups = memo.getNodes();
       userAndParentGroups.push(name);
@@ -312,63 +213,12 @@ export class BackstageRoleManager implements RoleManager {
     // do nothing
   }
 
-  private async findAncestorGroups(memo: AncestorSearchMemo): Promise<void> {
-    const { token } = await this.tokenManager.getToken();
-    const { items } = await this.catalogApi.getEntities(
-      {
-        filter: {
-          kind: 'Group',
-          [memo.getFilterRelations()]: Array.from(memo.getFilterEntityRefs()),
-        },
-        // Save traffic with only required information for us
-        fields: [
-          'metadata.name',
-          'kind',
-          'metadata.namespace',
-          'spec.parent',
-          'spec.children',
-        ],
-      },
-      { token },
-    );
-
-    const groupsRefs = new Set<string>();
-    for (const item of items) {
-      const groupRef = `group:default/${item.metadata.name.toLocaleLowerCase()}`;
-
-      memo.setNode(groupRef);
-      for (const child of (item.spec?.children as string[]) ?? []) {
-        const childEntityRef = `group:default/${child.toLocaleLowerCase()}`;
-        if (
-          memo.getFilterEntityRefs().has(childEntityRef) ||
-          memo.getFilterRelations() === 'relations.hasMember'
-        ) {
-          memo.setEdge(groupRef, childEntityRef);
-        }
-      }
-
-      if (item.spec?.parent) {
-        const parentRef = `group:default/${(
-          item.spec?.parent as string
-        ).toLocaleLowerCase()}`;
-        memo.setEdge(parentRef, groupRef);
-        groupsRefs.add(groupRef);
-      }
-    }
-
-    if (groupsRefs.size > 0 && memo.isAcyclic()) {
-      memo.setFilterEntityRefs(groupsRefs);
-      memo.setFilterRelations('relations.parentOf');
-      await this.findAncestorGroups(memo);
-    }
-  }
-
-  private getOrCreateRole(name: string): Role {
+  private getOrCreateRole(name: string): RoleList {
     const role = this.allRoles.get(name);
     if (role) {
       return role;
     }
-    const newRole = new Role(name);
+    const newRole = new RoleList(name);
     this.allRoles.set(name, newRole);
 
     return newRole;

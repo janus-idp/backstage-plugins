@@ -12,7 +12,10 @@ import {
   PermissionPolicyMetadataDao,
   PolicyMetadataStorage,
 } from '../database/policy-metadata-storage';
-import { RoleMetadataStorage } from '../database/role-metadata';
+import {
+  RoleMetadataDao,
+  RoleMetadataStorage,
+} from '../database/role-metadata';
 import { policiesToString, policyToString } from '../helper';
 
 export class EnforcerDelegate {
@@ -84,7 +87,7 @@ export class EnforcerDelegate {
   async addPolicies(
     policies: string[][],
     source: Source,
-    externalTrx: Knex.Transaction,
+    externalTrx?: Knex.Transaction,
   ): Promise<void> {
     const trx = externalTrx || (await this.knex.transaction());
     try {
@@ -122,14 +125,14 @@ export class EnforcerDelegate {
     const entityRef = policy[1];
     let metadata;
 
-    if (entityRef.startsWith(`role:`)) {
-      metadata = await this.roleMetadataStorage.findRoleMetadata(
-        entityRef,
-        trx,
-      );
-    }
-
     try {
+      if (entityRef.startsWith(`role:`)) {
+        metadata = await this.roleMetadataStorage.findRoleMetadata(
+          entityRef,
+          trx,
+        );
+      }
+
       await this.policyMetadataStorage.createPolicyMetadata(
         source,
         policy,
@@ -138,8 +141,7 @@ export class EnforcerDelegate {
 
       if (!metadata && !isUpdate) {
         await this.roleMetadataStorage.createRoleMetadata(
-          { source },
-          entityRef,
+          { source, roleEntityRef: entityRef },
           trx,
         );
       }
@@ -161,38 +163,25 @@ export class EnforcerDelegate {
 
   async addGroupingPolicies(
     policies: string[][],
-    source: Source,
+    roleMetadata: RoleMetadataDao,
     externalTrx?: Knex.Transaction,
-    isUpdate?: boolean,
   ): Promise<void> {
     const trx = externalTrx ?? (await this.knex.transaction());
 
     try {
       for (const policy of policies) {
-        const entityRef = policy[1];
-        let metadata;
-
-        if (entityRef.startsWith(`role:`)) {
-          metadata = await this.roleMetadataStorage.findRoleMetadata(
-            entityRef,
-            trx,
-          );
-        }
-
         await this.policyMetadataStorage.createPolicyMetadata(
-          source,
+          roleMetadata.source,
           policy,
           trx,
         );
-
-        if (!metadata && !isUpdate) {
-          await this.roleMetadataStorage.createRoleMetadata(
-            { source },
-            entityRef,
-            trx,
-          );
-        }
       }
+
+      const entityRef = roleMetadata.roleEntityRef;
+      if (!(await this.roleMetadataStorage.findRoleMetadata(entityRef, trx))) {
+        await this.roleMetadataStorage.createRoleMetadata(roleMetadata, trx);
+      }
+
       const ok = await this.enforcer.addGroupingPolicies(policies);
       if (!ok) {
         throw new Error(
@@ -214,27 +203,27 @@ export class EnforcerDelegate {
   async updateGroupingPolicies(
     oldRole: string[][],
     newRole: string[][],
-    source: Source,
+    roleMetadata: RoleMetadataDao,
     allowToDeleteCSVFilePolicy?: boolean,
     externalTrx?: Knex.Transaction,
   ): Promise<void> {
     const trx = externalTrx ?? (await this.knex.transaction());
-    const newRoleName = newRole.at(0)?.at(1)!;
     const oldRoleName = oldRole.at(0)?.at(1)!;
     try {
+      // todo handle legacy...
       await this.roleMetadataStorage.updateRoleMetadata(
-        { source: source, roleEntityRef: newRoleName },
+        roleMetadata,
         oldRoleName,
         trx,
       );
       await this.removeGroupingPolicies(
         oldRole,
-        source,
+        roleMetadata.source,
         allowToDeleteCSVFilePolicy,
         true,
         trx,
       );
-      await this.addGroupingPolicies(newRole, source, trx, true);
+      await this.addGroupingPolicies(newRole, roleMetadata, trx);
       if (!externalTrx) {
         await trx.commit();
       }
@@ -395,7 +384,11 @@ export class EnforcerDelegate {
           allowToDeleteCSVFilePolicy,
         );
         if (!isUpdate) {
-          await this.roleMetadataStorage.removeRoleMetadata(roleEntity, trx);
+          if (
+            await this.roleMetadataStorage.findRoleMetadata(roleEntity, trx)
+          ) {
+            await this.roleMetadataStorage.removeRoleMetadata(roleEntity, trx);
+          }
         }
         await this.policyMetadataStorage.removePolicyMetadata(policy, trx);
       }

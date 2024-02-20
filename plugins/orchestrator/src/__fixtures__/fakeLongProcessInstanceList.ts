@@ -51,7 +51,6 @@ export const generateFakeProcessInstances = (
       state: randomState,
       endpoint: 'enpoint/foo',
       start: valuesGenerator.getNextDate(),
-      lastUpdate: valuesGenerator.getNextDate(),
       nodes: [],
       variables: {},
       isOpen: false,

@@ -35,15 +35,436 @@ const OPENAPI = `
           "500": {
             "description": "Error fetching workflow overviews",
             "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/workflows/{workflowId}/overview": {
+      "get": {
+        "operationId": "getWorkflowOverviewById",
+        "description": "Get a workflow overview by ID",
+        "parameters": [
+          {
+            "name": "workflowId",
+            "in": "path",
+            "required": true,
+            "description": "Unique identifier of the workflow",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkflowOverviewDTO"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error fetching workflow overview",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/workflows": {
+      "get": {
+        "operationId": "getWorkflows",
+        "description": "Get a list of workflow",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkflowListResultDTO"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error fetching workflow list",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createWorkflow",
+        "summary": "Create or update a workflow",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "uri": {
+                    "type": "string"
+                  },
+                  "body": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "uri"
+                ]
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "uri",
+            "in": "query",
+            "description": "URI parameter",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "message": {
-                      "type": "string",
-                      "description": "Error message"
+                    "workflowItem": {
+                      "$ref": "#/components/schemas/WorkflowDTO"
                     }
                   }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error creating workflow",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/workflows/{workflowId}": {
+      "get": {
+        "operationId": "getWorkflowById",
+        "description": "Get a workflow by ID",
+        "parameters": [
+          {
+            "name": "workflowId",
+            "in": "path",
+            "description": "ID of the workflow to execute",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkflowDTO"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error workflow by id",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/workflows/instances": {
+      "get": {
+        "operationId": "getInstances",
+        "summary": "Get instances",
+        "description": "Retrieve an array of instances",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProcessInstancesDTO"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error fetching instances",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/workflows/instances/{instanceId}": {
+      "get": {
+        "summary": "Get Workflow Instance by ID",
+        "operationId": "getInstanceById",
+        "parameters": [
+          {
+            "name": "instanceId",
+            "in": "path",
+            "required": true,
+            "description": "ID of the workflow instance",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProcessInstanceDTO"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error fetching instance",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/workflows/instances/{instanceId}/results": {
+      "get": {
+        "summary": "Get workflow results",
+        "operationId": "getWorkflowResults",
+        "parameters": [
+          {
+            "name": "instanceId",
+            "in": "path",
+            "required": true,
+            "description": "ID of the workflow instance",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkflowDataDTO"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error getting workflow results",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/workflows/instances/statuses": {
+      "get": {
+        "operationId": "getWorkflowStatuses",
+        "summary": "Get workflow status list",
+        "description": "Retrieve an array of workflow statuses",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WorkflowRunStatusDTO"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error fetching workflow statuses",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/workflows/{workflowId}/execute": {
+      "post": {
+        "summary": "Execute a workflow",
+        "operationId": "executeWorkflow",
+        "parameters": [
+          {
+            "name": "workflowId",
+            "in": "path",
+            "description": "ID of the workflow to execute",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExecuteWorkflowRequestDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful execution",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExecuteWorkflowResponseDTO"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/workflows/{workflowId}/abort": {
+      "delete": {
+        "summary": "Abort a workflow instance",
+        "operationId": "abortWorkflow",
+        "description": "Aborts a workflow instance identified by the provided workflowId.",
+        "parameters": [
+          {
+            "name": "workflowId",
+            "in": "path",
+            "required": true,
+            "description": "The identifier of the workflow instance to abort.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error aborting workflow",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/specs": {
+      "get": {
+        "summary": "Get workflow specifications",
+        "operationId": "getWorkflowSpecs",
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of workflow specifications",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WorkflowSpecFileDTO"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error fetching workflow specifications",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
                 }
               }
             }
@@ -91,9 +512,8 @@ const OPENAPI = `
           "lastRunStatus": {
             "type": "string"
           },
-          "type": {
-            "type": "string",
-            "minimum": 0
+          "category": {
+            "$ref": "#/components/schemas/WorkflowCategoryDTO"
           },
           "avgDurationMs": {
             "type": "number",
@@ -121,6 +541,286 @@ const OPENAPI = `
           }
         },
         "additionalProperties": false
+      },
+      "WorkflowCategoryDTO": {
+        "type": "string",
+        "description": "Category of the workflow",
+        "enum": [
+          "assessment",
+          "infrastructure"
+        ]
+      },
+      "WorkflowListResultDTO": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkflowDTO"
+            }
+          },
+          "paginationInfo": {
+            "$ref": "#/components/schemas/PaginationInfoDTO"
+          }
+        },
+        "required": [
+          "items",
+          "paginationInfo"
+        ]
+      },
+      "WorkflowDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Workflow unique identifier",
+            "minLength": 1
+          },
+          "name": {
+            "type": "string",
+            "description": "Workflow name",
+            "minLength": 1
+          },
+          "uri": {
+            "type": "string",
+            "description": "URI of the workflow definition"
+          },
+          "category": {
+            "$ref": "#/components/schemas/WorkflowCategoryDTO"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the workflow"
+          },
+          "annotations": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "category",
+          "uri"
+        ]
+      },
+      "ProcessInstancesDTO": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/ProcessInstanceDTO"
+        }
+      },
+      "AssessedProcessInstanceDTO": {
+        "type": "object",
+        "properties": {
+          "instance": {
+            "$ref": "#/components/schemas/ProcessInstanceDTO"
+          },
+          "assessedBy": {
+            "$ref": "#/components/schemas/ProcessInstanceDTO"
+          }
+        },
+        "required": [
+          "instance"
+        ]
+      },
+      "ProcessInstanceDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "workflow": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ProcessInstanceStatusDTO"
+          },
+          "started": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "duration": {
+            "type": "string"
+          },
+          "category": {
+            "$ref": "#/components/schemas/WorkflowCategoryDTO"
+          },
+          "description": {
+            "type": "string"
+          },
+          "workflowdata": {
+            "$ref": "#/components/schemas/WorkflowDataDTO"
+          }
+        }
+      },
+      "WorkflowDataDTO": {
+        "type": "object",
+        "properties": {
+          "workflowoptions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkflowOptionsDTO"
+            }
+          }
+        },
+        "additionalProperties": true
+      },
+      "WorkflowOptionsDTO": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/WorkflowSuggestionDTO"
+        }
+      },
+      "WorkflowSuggestionDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "ProcessInstanceStatusDTO": {
+        "type": "string",
+        "description": "Status of the workflow run",
+        "enum": [
+          "Running",
+          "Error",
+          "Completed",
+          "Aborted",
+          "Suspended"
+        ]
+      },
+      "WorkflowRunStatusDTO": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
+        }
+      },
+      "ExecuteWorkflowRequestDTO": {
+        "type": "object",
+        "properties": {
+          "inputData": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "inputData"
+        ]
+      },
+      "ExecuteWorkflowResponseDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          }
+        }
+      },
+      "WorkflowSpecFileDTO": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string",
+            "description": "JSON string"
+          }
+        },
+        "required": [
+          "content"
+        ]
+      },
+      "WorkflowProgressDTO": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/NodeInstanceDTO"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "status": {
+                "$ref": "#/components/schemas/ProcessInstanceStatusDTO"
+              },
+              "error": {
+                "$ref": "#/components/schemas/ProcessInstanceErrorDTO"
+              }
+            }
+          }
+        ]
+      },
+      "NodeInstanceDTO": {
+        "type": "object",
+        "properties": {
+          "__typename": {
+            "type": "string",
+            "default": "NodeInstance",
+            "description": "Type name"
+          },
+          "id": {
+            "type": "string",
+            "description": "Node instance ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "Node name"
+          },
+          "type": {
+            "type": "string",
+            "description": "Node type"
+          },
+          "enter": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date when the node was entered"
+          },
+          "exit": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date when the node was exited (optional)"
+          },
+          "definitionId": {
+            "type": "string",
+            "description": "Definition ID"
+          },
+          "nodeId": {
+            "type": "string",
+            "description": "Node ID"
+          }
+        }
+      },
+      "ProcessInstanceErrorDTO": {
+        "type": "object",
+        "properties": {
+          "__typename": {
+            "type": "string",
+            "default": "ProcessInstanceError",
+            "description": "Type name"
+          },
+          "nodeDefinitionId": {
+            "type": "string",
+            "description": "Node definition ID"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message (optional)"
+          }
+        }
       }
     }
   }

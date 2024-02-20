@@ -8,6 +8,7 @@ import {
 } from '@janus-idp/shared-react';
 
 import { updateTopologyDataModel } from '../data-transforms/updateTopologyDataModel';
+import { K8sResourcesContextData, K8sResponseData } from '../types/types';
 import { K8sResourcesContext } from './K8sResourcesContext';
 
 export const useWorkloadsWatcher = (): {
@@ -19,12 +20,17 @@ export const useWorkloadsWatcher = (): {
   const k8sResponseData = React.useContext(K8sResourcesContext);
 
   const updateResults = React.useCallback(
-    async ({ watchResourcesData, loading, responseError }) => {
+    async ({
+      watchResourcesData,
+      loading,
+      responseError,
+    }: K8sResourcesContextData) => {
       if (!loading) {
         setLoaded(true);
         if (!responseError) {
-          const dataModelRes =
-            await updateTopologyDataModel(watchResourcesData);
+          const dataModelRes = await updateTopologyDataModel(
+            watchResourcesData as K8sResponseData,
+          );
           if (dataModelRes.model) {
             setDataModel(dataModelRes.model);
           }

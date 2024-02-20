@@ -1,3 +1,15 @@
+## @janus-idp/backstage-plugin-orchestrator-common [1.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-common@1.2.1...@janus-idp/backstage-plugin-orchestrator-common@1.3.0) (2024-02-20)
+
+
+### Features
+
+* **orchestrator:** add OpenAPI v2 implementations ([#1182](https://github.com/janus-idp/backstage-plugins/issues/1182)) ([43ac2f3](https://github.com/janus-idp/backstage-plugins/commit/43ac2f3f492b5c977142a3cfd9868d5e193ceb02))
+
+
+### Bug Fixes
+
+* **orchestrator:** decommission the ProcessInstance.lastUpdate field ([#1230](https://github.com/janus-idp/backstage-plugins/issues/1230)) ([9724e27](https://github.com/janus-idp/backstage-plugins/commit/9724e27eaa84fe73d7724f28c86409681b7f79f8))
+
 ## @janus-idp/backstage-plugin-orchestrator-common [1.2.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-common@1.2.0...@janus-idp/backstage-plugin-orchestrator-common@1.2.1) (2024-02-16)
 
 

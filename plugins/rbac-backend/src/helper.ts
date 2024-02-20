@@ -1,4 +1,4 @@
-import { difference } from 'lodash';
+import { difference, isEqual, sortBy, toPairs } from 'lodash';
 
 import {
   RoleBasedPolicy,
@@ -39,7 +39,17 @@ export async function removeTheDifference(
   }
 }
 
-export function transformArraytoPolicy(policyArray: string[]): RoleBasedPolicy {
+export function transformArrayToPolicy(policyArray: string[]): RoleBasedPolicy {
   const [entityReference, permission, policy, effect] = policyArray;
   return { entityReference, permission, policy, effect };
+}
+
+export function deepSortedEqual(
+  obj1: Record<string, any>,
+  obj2: Record<string, any>,
+): boolean {
+  const sortedObj1 = sortBy(toPairs(obj1), ([key]) => key);
+  const sortedObj2 = sortBy(toPairs(obj2), ([key]) => key);
+
+  return isEqual(sortedObj1, sortedObj2);
 }

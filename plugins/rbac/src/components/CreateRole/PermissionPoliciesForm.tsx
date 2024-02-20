@@ -159,7 +159,12 @@ export const PermissionPoliciesForm = ({
               }}
             />
           ))}
-          <Button className={classes.addButton} size="small" onClick={onRowAdd}>
+          <Button
+            className={classes.addButton}
+            size="small"
+            onClick={onRowAdd}
+            name="add-permission-policy"
+          >
             <AddIcon />
             Add
           </Button>

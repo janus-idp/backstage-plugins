@@ -4,7 +4,7 @@ import { Logger } from 'winston';
 
 import { PolicyMetadataStorage } from '../database/policy-metadata-storage';
 import { RoleMetadataStorage } from '../database/role-metadata';
-import { metadataStringToPolicy, transformArraytoPolicy } from '../helper';
+import { metadataStringToPolicy, transformArrayToPolicy } from '../helper';
 import { EnforcerDelegate } from '../service/enforcer-delegate';
 import { MODEL } from '../service/permission-model';
 import {
@@ -121,7 +121,7 @@ export const loadFilteredPoliciesFromCSV = async (
   );
 
   for (const policy of policies) {
-    const err = validatePolicy(transformArraytoPolicy(policy));
+    const err = validatePolicy(transformArrayToPolicy(policy));
     if (err) {
       logger.warn(
         `Failed to validate policy from file ${policyFile}. Cause: ${err.message}`,

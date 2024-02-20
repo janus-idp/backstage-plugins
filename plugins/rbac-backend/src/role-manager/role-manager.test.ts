@@ -4,7 +4,7 @@ import { Entity } from '@backstage/catalog-model';
 
 import { Logger } from 'winston';
 
-import { BackstageRoleManager } from './role-manager';
+import { BackstageRoleManager } from '../role-manager/role-manager';
 
 describe('BackstageRoleManager', () => {
   const catalogApiMock: any = {
@@ -112,15 +112,8 @@ describe('BackstageRoleManager', () => {
         {
           filter: {
             kind: 'Group',
-            'relations.hasMember': ['user:default/mike'],
           },
-          fields: [
-            'metadata.name',
-            'kind',
-            'metadata.namespace',
-            'spec.parent',
-            'spec.children',
-          ],
+          fields: ['metadata.name', 'metadata.namespace', 'spec.parent'],
         },
         { token: 'some-token' },
       );
@@ -142,15 +135,8 @@ describe('BackstageRoleManager', () => {
         {
           filter: {
             kind: 'Group',
-            'relations.hasMember': ['user:default/mike'],
           },
-          fields: [
-            'metadata.name',
-            'kind',
-            'metadata.namespace',
-            'spec.parent',
-            'spec.children',
-          ],
+          fields: ['metadata.name', 'metadata.namespace', 'spec.parent'],
         },
         { token: 'some-token' },
       );
@@ -182,7 +168,12 @@ describe('BackstageRoleManager', () => {
     //  user:default/mike
     //
     it('should return true for hasLink when user:default/mike inherits from group:default/somegroup', async () => {
-      const entityMock = createGroupEntity('somegroup', undefined, []);
+      const entityMock = createGroupEntity(
+        'somegroup',
+        undefined,
+        [],
+        ['mike'],
+      );
       catalogApiMock.getEntities.mockReturnValue({ items: [entityMock] });
 
       const result = await roleManager.hasLink(
@@ -201,7 +192,12 @@ describe('BackstageRoleManager', () => {
     //  user:default/mike
     //
     it('should return true for hasLink when user:default/mike inherits role:default/somerole from group:default/somegroup', async () => {
-      const entityMock = createGroupEntity('somegroup', undefined, []);
+      const entityMock = createGroupEntity(
+        'somegroup',
+        undefined,
+        [],
+        ['mike'],
+      );
       roleManager.addLink('group:default/somegroup', 'role:default/somerole');
       catalogApiMock.getEntities.mockReturnValue({ items: [entityMock] });
 
@@ -221,7 +217,9 @@ describe('BackstageRoleManager', () => {
     // user:default/mike
     //
     it('should return false for hasLink when user:default/mike does not inherits group:default/somegroup', async () => {
-      const entityMock = createGroupEntity('not-matched-group', undefined, []);
+      const entityMock = createGroupEntity('not-matched-group', undefined, [
+        'mike',
+      ]);
       catalogApiMock.getEntities.mockReturnValue({ items: [entityMock] });
 
       const result = await roleManager.hasLink(
@@ -240,7 +238,9 @@ describe('BackstageRoleManager', () => {
     // user:default/mike                         group:default/somegroup
     //
     it('should return false for hasLink when user:default/mike does not inherits role:default/somerole', async () => {
-      const entityMock = createGroupEntity('not-matched-group', undefined, []);
+      const entityMock = createGroupEntity('not-matched-group', undefined, [
+        'mike',
+      ]);
       roleManager.addLink('group:default/somegroup', 'role:default/somerole');
       catalogApiMock.getEntities.mockReturnValue({ items: [entityMock] });
 
@@ -262,21 +262,17 @@ describe('BackstageRoleManager', () => {
     // user:default/mike
     //
     it('should return true for hasLink, when user:default/mike inherits from group:default/team-a', async () => {
-      const groupMock = createGroupEntity('team-b', 'team-a', []);
+      const groupMock = createGroupEntity('team-b', 'team-a', [], ['mike']);
       const groupParentMock = createGroupEntity('team-a', undefined, [
         'team-b',
       ]);
 
       catalogApiMock.getEntities.mockImplementation((arg: any) => {
         const hasMember = arg.filter['relations.hasMember'];
-        if (hasMember && hasMember[0] === 'user:default/mike') {
+        if (hasMember && hasMember === 'user:default/mike') {
           return { items: [groupMock] };
         }
-        const hasParent = arg.filter['relations.parentOf'];
-        if (hasParent && hasParent[0] === 'group:default/team-b') {
-          return { items: [groupParentMock] };
-        }
-        return { items: [] };
+        return { items: [groupMock, groupParentMock] };
       });
 
       const result = await roleManager.hasLink(
@@ -297,21 +293,17 @@ describe('BackstageRoleManager', () => {
     // user:default/mike
     //
     it('should return true for hasLink, when user:default/mike inherits role:default/team-a from group:default/team-a', async () => {
-      const groupMock = createGroupEntity('team-b', 'team-a', []);
+      const groupMock = createGroupEntity('team-b', 'team-a', [], ['mike']);
       const groupParentMock = createGroupEntity('team-a', undefined, [
         'team-b',
       ]);
 
       catalogApiMock.getEntities.mockImplementation((arg: any) => {
         const hasMember = arg.filter['relations.hasMember'];
-        if (hasMember && hasMember[0] === 'user:default/mike') {
+        if (hasMember && hasMember === 'user:default/mike') {
           return { items: [groupMock] };
         }
-        const hasParent = arg.filter['relations.parentOf'];
-        if (hasParent && hasParent[0] === 'group:default/team-b') {
-          return { items: [groupParentMock] };
-        }
-        return { items: [] };
+        return { items: [groupMock, groupParentMock] };
       });
 
       roleManager.addLink('group:default/team-a', 'role:default/team-a');
@@ -339,33 +331,16 @@ describe('BackstageRoleManager', () => {
         'team-c',
         'team-d',
       ]);
-      const groupBMock = createGroupEntity('team-b', 'team-a', []);
-      const groupCMock = createGroupEntity('team-c', 'team-a', []);
-      const groupDMock = createGroupEntity('team-d', 'team-a', []);
+      const groupBMock = createGroupEntity('team-b', 'team-a', [], ['mike']);
+      const groupCMock = createGroupEntity('team-c', 'team-a', [], ['tom']);
+      const groupDMock = createGroupEntity('team-d', 'team-a', [], ['john']);
 
       catalogApiMock.getEntities.mockImplementation((arg: any) => {
         const hasMember = arg.filter['relations.hasMember'];
-        if (hasMember && hasMember[0] === 'user:default/mike') {
+        if (hasMember && hasMember === 'user:default/mike') {
           return { items: [groupBMock] };
         }
-        if (hasMember && hasMember[0] === 'user:default/tom') {
-          return { items: [groupCMock] };
-        }
-        if (hasMember && hasMember[0] === 'user:default/john') {
-          return { items: [groupDMock] };
-        }
-
-        const hasParent = arg.filter['relations.parentOf'];
-        if (hasParent && hasParent[0] === 'group:default/team-b') {
-          return { items: [groupAMock] };
-        }
-        if (hasParent && hasParent[0] === 'group:default/team-c') {
-          return { items: [groupAMock] };
-        }
-        if (hasParent && hasParent[0] === 'group:default/team-d') {
-          return { items: [groupAMock] };
-        }
-        return { items: [] };
+        return { items: [groupAMock, groupBMock, groupCMock, groupDMock] };
       });
 
       const result = await roleManager.hasLink(
@@ -386,38 +361,21 @@ describe('BackstageRoleManager', () => {
     //   user:default/tom     user:default/mike     user:default:john
     //
     it('should return true for hasLink, when user:default/mike inherits role:default/team-b from group:default/team-b', async () => {
-      const groupAMock = createGroupEntity('team-a', undefined, [
-        'team-b',
+      const groupBMock = createGroupEntity('team-b', undefined, [
+        'team-a',
         'team-c',
         'team-d',
       ]);
-      const groupBMock = createGroupEntity('team-b', 'team-a', []);
-      const groupCMock = createGroupEntity('team-c', 'team-a', []);
-      const groupDMock = createGroupEntity('team-d', 'team-a', []);
+      const groupAMock = createGroupEntity('team-a', 'team-b', [], ['mike']);
+      const groupCMock = createGroupEntity('team-c', 'team-a', [], ['tom']);
+      const groupDMock = createGroupEntity('team-d', 'team-a', [], ['john']);
 
       catalogApiMock.getEntities.mockImplementation((arg: any) => {
         const hasMember = arg.filter['relations.hasMember'];
-        if (hasMember && hasMember[0] === 'user:default/mike') {
-          return { items: [groupBMock] };
-        }
-        if (hasMember && hasMember[0] === 'user:default/tom') {
-          return { items: [groupCMock] };
-        }
-        if (hasMember && hasMember[0] === 'user:default/john') {
-          return { items: [groupDMock] };
-        }
-
-        const hasParent = arg.filter['relations.parentOf'];
-        if (hasParent && hasParent[0] === 'group:default/team-b') {
+        if (hasMember && hasMember === 'user:default/mike') {
           return { items: [groupAMock] };
         }
-        if (hasParent && hasParent[0] === 'group:default/team-c') {
-          return { items: [groupAMock] };
-        }
-        if (hasParent && hasParent[0] === 'group:default/team-d') {
-          return { items: [groupAMock] };
-        }
-        return { items: [] };
+        return { items: [groupAMock, groupBMock, groupCMock, groupDMock] };
       });
 
       roleManager.addLink('group:default/team-b', 'role:default/team-b');
@@ -440,19 +398,15 @@ describe('BackstageRoleManager', () => {
     // user:default/mike
     //
     it('should return false for hasLink, when user:default/mike does not inherits from group:default/team-c', async () => {
-      const groupBMock = createGroupEntity('team-b', 'team-a', []);
+      const groupBMock = createGroupEntity('team-b', 'team-a', ['mike']);
       const groupAMock = createGroupEntity('team-a', undefined, ['team-b']);
 
       catalogApiMock.getEntities.mockImplementation((arg: any) => {
         const hasMember = arg.filter['relations.hasMember'];
-        if (hasMember && hasMember[0] === 'user:default/mike') {
+        if (hasMember && hasMember === 'user:default/mike') {
           return { items: [groupBMock] };
         }
-        const hasParent = arg.filter['relations.parentOf'];
-        if (hasParent && hasParent[0] === 'group:default/team-b') {
-          return { items: [groupAMock] };
-        }
-        return { items: [] };
+        return { items: [groupAMock, groupBMock] };
       });
 
       const result = await roleManager.hasLink(
@@ -473,19 +427,15 @@ describe('BackstageRoleManager', () => {
     // user:default/mike
     //
     it('should return false for hasLink, when user:default/mike does not inherits role:default/team-c from group:default/team-c', async () => {
-      const groupBMock = createGroupEntity('team-b', 'team-a', []);
+      const groupBMock = createGroupEntity('team-b', 'team-a', ['mike']);
       const groupAMock = createGroupEntity('team-a', undefined, ['team-b']);
 
       catalogApiMock.getEntities.mockImplementation((arg: any) => {
         const hasMember = arg.filter['relations.hasMember'];
-        if (hasMember && hasMember[0] === 'user:default/mike') {
+        if (hasMember && hasMember === 'user:default/mike') {
           return { items: [groupBMock] };
         }
-        const hasParent = arg.filter['relations.parentOf'];
-        if (hasParent && hasParent[0] === 'group:default/team-b') {
-          return { items: [groupAMock] };
-        }
-        return { items: [] };
+        return { items: [groupAMock, groupBMock] };
       });
 
       roleManager.addLink('group:default/team-c', 'role:default/team-c');
@@ -508,25 +458,17 @@ describe('BackstageRoleManager', () => {
     //                user:default/mike
     //
     it('should return true for hasLink, when user:default/mike inherits group tree with group:default/team-a', async () => {
-      const groupCMock = createGroupEntity('team-c', 'team-a', []);
-      const groupDMock = createGroupEntity('team-d', 'team-b', []);
-      const groupAMock = createGroupEntity('team-a', undefined, ['team-c']);
-      const groupBMock = createGroupEntity('team-b', undefined, ['team-d']);
+      const groupCMock = createGroupEntity('team-c', 'team-a', [], ['mike']);
+      const groupDMock = createGroupEntity('team-d', 'team-b', ['mike']);
+      const groupAMock = createGroupEntity('team-a', undefined, [], ['team-c']);
+      const groupBMock = createGroupEntity('team-b', undefined, [], ['team-d']);
 
       catalogApiMock.getEntities.mockImplementation((arg: any) => {
         const hasMember = arg.filter['relations.hasMember'];
-        if (hasMember && hasMember[0] === 'user:default/mike') {
+        if (hasMember && hasMember === 'user:default/mike') {
           return { items: [groupCMock, groupDMock] };
         }
-        const hasParent = arg.filter['relations.parentOf'];
-        if (
-          hasParent &&
-          hasParent[0] === 'group:default/team-c' &&
-          hasParent[1] === 'group:default/team-d'
-        ) {
-          return { items: [groupAMock, groupBMock] };
-        }
-        return { items: [] };
+        return { items: [groupAMock, groupBMock, groupCMock, groupDMock] };
       });
 
       const result = await roleManager.hasLink(
@@ -547,25 +489,17 @@ describe('BackstageRoleManager', () => {
     //       |--------user:default/mike -------------------|
     //
     it('should return true for hasLink, when user:default/mike inherits role:default/team-a group tree with group:default/team-a', async () => {
-      const groupCMock = createGroupEntity('team-c', 'team-a', []);
-      const groupDMock = createGroupEntity('team-d', 'team-b', []);
+      const groupCMock = createGroupEntity('team-c', 'team-a', [], ['mike']);
+      const groupDMock = createGroupEntity('team-d', 'team-b', [], ['mike']);
       const groupAMock = createGroupEntity('team-a', undefined, ['team-c']);
       const groupBMock = createGroupEntity('team-b', undefined, ['team-d']);
 
       catalogApiMock.getEntities.mockImplementation((arg: any) => {
         const hasMember = arg.filter['relations.hasMember'];
-        if (hasMember && hasMember[0] === 'user:default/mike') {
+        if (hasMember && hasMember === 'user:default/mike') {
           return { items: [groupCMock, groupDMock] };
         }
-        const hasParent = arg.filter['relations.parentOf'];
-        if (
-          hasParent &&
-          hasParent[0] === 'group:default/team-c' &&
-          hasParent[1] === 'group:default/team-d'
-        ) {
-          return { items: [groupAMock, groupBMock] };
-        }
-        return { items: [] };
+        return { items: [groupAMock, groupBMock, groupCMock, groupDMock] };
       });
 
       roleManager.addLink('group:default/team-a', 'role:default/team-a');
@@ -588,25 +522,17 @@ describe('BackstageRoleManager', () => {
     //                user:default/mike
     //
     it('should return false for hasLink, when user:default/mike inherits from group:default/team-e', async () => {
-      const groupCMock = createGroupEntity('team-c', 'team-a', []);
-      const groupDMock = createGroupEntity('team-d', 'team-b', []);
+      const groupCMock = createGroupEntity('team-c', 'team-a', ['mike']);
+      const groupDMock = createGroupEntity('team-d', 'team-b', ['mike']);
       const groupAMock = createGroupEntity('team-a', undefined, ['team-c']);
       const groupBMock = createGroupEntity('team-b', undefined, ['team-d']);
 
       catalogApiMock.getEntities.mockImplementation((arg: any) => {
         const hasMember = arg.filter['relations.hasMember'];
-        if (hasMember && hasMember[0] === 'user:default/mike') {
+        if (hasMember && hasMember === 'user:default/mike') {
           return { items: [groupCMock, groupDMock] };
         }
-        const hasParent = arg.filter['relations.parentOf'];
-        if (
-          hasParent &&
-          hasParent[0] === 'group:default/team-c' &&
-          hasParent[1] === 'group:default/team-d'
-        ) {
-          return { items: [groupAMock, groupBMock] };
-        }
-        return { items: [] };
+        return { items: [groupAMock, groupBMock, groupCMock, groupDMock] };
       });
 
       const result = await roleManager.hasLink(
@@ -627,25 +553,17 @@ describe('BackstageRoleManager', () => {
     //                user:default/mike
     //
     it('should return false for hasLink, when user:default/mike inherits role:default/team-e from group:default/team-e', async () => {
-      const groupCMock = createGroupEntity('team-c', 'team-a', []);
-      const groupDMock = createGroupEntity('team-d', 'team-b', []);
+      const groupCMock = createGroupEntity('team-c', 'team-a', ['mike']);
+      const groupDMock = createGroupEntity('team-d', 'team-b', ['mike']);
       const groupAMock = createGroupEntity('team-a', undefined, ['team-c']);
       const groupBMock = createGroupEntity('team-b', undefined, ['team-d']);
 
       catalogApiMock.getEntities.mockImplementation((arg: any) => {
         const hasMember = arg.filter['relations.hasMember'];
-        if (hasMember && hasMember[0] === 'user:default/mike') {
+        if (hasMember && hasMember === 'user:default/mike') {
           return { items: [groupCMock, groupDMock] };
         }
-        const hasParent = arg.filter['relations.parentOf'];
-        if (
-          hasParent &&
-          hasParent[0] === 'group:default/team-c' &&
-          hasParent[1] === 'group:default/team-d'
-        ) {
-          return { items: [groupAMock, groupBMock] };
-        }
-        return { items: [] };
+        return { items: [groupAMock, groupBMock, groupCMock, groupDMock] };
       });
 
       roleManager.addLink('group:default/team-e', 'role:default/team-e');
@@ -669,19 +587,15 @@ describe('BackstageRoleManager', () => {
     // user:default/mike
     //
     it('should return false for hasLink, when user:default/mike inherits from group:default/team-a and group:default/team-b, but we have cycle dependency', async () => {
-      const groupBMock = createGroupEntity('team-b', 'team-a', []);
+      const groupBMock = createGroupEntity('team-b', 'team-a', [], ['mike']);
       const groupAMock = createGroupEntity('team-a', 'team-b', ['team-b']);
 
       catalogApiMock.getEntities.mockImplementation((arg: any) => {
         const hasMember = arg.filter['relations.hasMember'];
-        if (hasMember && hasMember[0] === 'user:default/mike') {
+        if (hasMember && hasMember === 'user:default/mike') {
           return { items: [groupBMock] };
         }
-        const hasParent = arg.filter['relations.parentOf'];
-        if (hasParent && hasParent[0] === 'group:default/team-b') {
-          return { items: [groupAMock] };
-        }
-        return { items: [] };
+        return { items: [groupBMock, groupAMock] };
       });
 
       let result = await roleManager.hasLink(
@@ -715,19 +629,15 @@ describe('BackstageRoleManager', () => {
     // user:default/mike
     //
     it('should return false for hasLink, when user:default/mike inherits role:default/team-b and role:default/team-a from group:default/team-a and group:default/team-b, but we have cycle dependency', async () => {
-      const groupBMock = createGroupEntity('team-b', 'team-a', []);
+      const groupBMock = createGroupEntity('team-b', 'team-a', ['mike']);
       const groupAMock = createGroupEntity('team-a', 'team-b', ['team-b']);
 
       catalogApiMock.getEntities.mockImplementation((arg: any) => {
         const hasMember = arg.filter['relations.hasMember'];
-        if (hasMember && hasMember[0] === 'user:default/mike') {
+        if (hasMember && hasMember === 'user:default/mike') {
           return { items: [groupBMock] };
         }
-        const hasParent = arg.filter['relations.parentOf'];
-        if (hasParent && hasParent[0] === 'group:default/team-b') {
-          return { items: [groupAMock] };
-        }
-        return { items: [] };
+        return { items: [groupBMock, groupAMock] };
       });
 
       roleManager.addLink('group:default/team-b', 'role:default/team-b');
@@ -767,22 +677,15 @@ describe('BackstageRoleManager', () => {
     //
     it('should return false for hasLink, when user:default/mike inherits from group:default/team-a, group:default/team-b, group:default/team-c, but we have cycle dependency', async () => {
       const groupAMock = createGroupEntity('team-a', 'team-b', ['team-b']);
-      const groupBMock = createGroupEntity('team-b', 'team-a', []);
-      const groupCMock = createGroupEntity('team-c', 'team-b', []);
+      const groupBMock = createGroupEntity('team-b', 'team-a', ['team-c']);
+      const groupCMock = createGroupEntity('team-c', 'team-b', [], ['mike']);
 
       catalogApiMock.getEntities.mockImplementation((arg: any) => {
         const hasMember = arg.filter['relations.hasMember'];
-        if (hasMember && hasMember[0] === 'user:default/mike') {
+        if (hasMember && hasMember === 'user:default/mike') {
           return { items: [groupCMock] };
         }
-        const hasParent = arg.filter['relations.parentOf'];
-        if (hasParent && hasParent[0] === 'group:default/team-c') {
-          return { items: [groupBMock] };
-        }
-        if (hasParent && hasParent[0] === 'group:default/team-b') {
-          return { items: [groupAMock] };
-        }
-        return { items: [] };
+        return { items: [groupAMock, groupBMock, groupCMock] };
       });
 
       let result = await roleManager.hasLink(
@@ -828,22 +731,15 @@ describe('BackstageRoleManager', () => {
     //
     it('should return false for hasLink, when user:default/mike inherits the roles from group:default/team-a, group:default/team-b, group:default/team-c, but we have cycle dependency', async () => {
       const groupAMock = createGroupEntity('team-a', 'team-b', ['team-b']);
-      const groupBMock = createGroupEntity('team-b', 'team-a', []);
-      const groupCMock = createGroupEntity('team-c', 'team-b', []);
+      const groupBMock = createGroupEntity('team-b', 'team-a', ['team-c']);
+      const groupCMock = createGroupEntity('team-c', 'team-b', ['mike']);
 
       catalogApiMock.getEntities.mockImplementation((arg: any) => {
         const hasMember = arg.filter['relations.hasMember'];
-        if (hasMember && hasMember[0] === 'user:default/mike') {
+        if (hasMember && hasMember === 'user:default/mike') {
           return { items: [groupCMock] };
         }
-        const hasParent = arg.filter['relations.parentOf'];
-        if (hasParent && hasParent[0] === 'group:default/team-c') {
-          return { items: [groupBMock] };
-        }
-        if (hasParent && hasParent[0] === 'group:default/team-b') {
-          return { items: [groupAMock] };
-        }
-        return { items: [] };
+        return { items: [groupAMock, groupBMock, groupCMock] };
       });
 
       roleManager.addLink('group:default/team-a', 'role:default/team-a');
@@ -890,27 +786,17 @@ describe('BackstageRoleManager', () => {
     //               user:default/mike
     //
     it('should return false for hasLink, when user:default/mike inherits group tree with group:default/team-a, but we cycle dependency', async () => {
-      const groupCMock = createGroupEntity('team-c', 'team-a', ['mike']);
-      const groupDMock = createGroupEntity('team-d', 'team-b', ['mike']);
+      const groupCMock = createGroupEntity('team-c', 'team-a', [], ['mike']);
+      const groupDMock = createGroupEntity('team-d', 'team-b', [], ['mike']);
       const groupAMock = createGroupEntity('team-a', 'team-c', ['team-c']);
       const groupBMock = createGroupEntity('team-b', undefined, ['team-d']);
 
       catalogApiMock.getEntities.mockImplementation((arg: any) => {
         const hasMember = arg.filter['relations.hasMember'];
-        // first iteration
-        if (hasMember && hasMember[0] === 'user:default/mike') {
+        if (hasMember && hasMember === 'user:default/mike') {
           return { items: [groupCMock, groupDMock] };
         }
-        const hasParent = arg.filter['relations.parentOf'];
-        // second iteration
-        if (
-          hasParent &&
-          hasParent[0] === 'group:default/team-c' &&
-          hasParent[1] === 'group:default/team-d'
-        ) {
-          return { items: [groupAMock, groupBMock] };
-        }
-        return { items: [] };
+        return { items: [groupCMock, groupDMock, groupAMock, groupBMock] };
       });
 
       const result = await roleManager.hasLink(
@@ -935,28 +821,19 @@ describe('BackstageRoleManager', () => {
     //               user:default/mike -------------------|
     //
     it('should return false for hasLink, when user:default/mike inherits role from group tree with group:default/team-a, but we cycle dependency', async () => {
-      const groupCMock = createGroupEntity('team-c', 'team-a', ['mike']);
-      const groupDMock = createGroupEntity('team-d', 'team-b', ['mike']);
+      const groupCMock = createGroupEntity('team-c', 'team-a', [], ['mike']);
+      const groupDMock = createGroupEntity('team-d', 'team-b', [], ['mike']);
       const groupAMock = createGroupEntity('team-a', 'team-c', ['team-c']);
       const groupBMock = createGroupEntity('team-b', undefined, ['team-d']);
 
       catalogApiMock.getEntities.mockImplementation((arg: any) => {
         const hasMember = arg.filter['relations.hasMember'];
-        // first iteration
-        if (hasMember && hasMember[0] === 'user:default/mike') {
+        if (hasMember && hasMember === 'user:default/mike') {
           return { items: [groupCMock, groupDMock] };
         }
-        const hasParent = arg.filter['relations.parentOf'];
-        // second iteration
-        if (
-          hasParent &&
-          hasParent[0] === 'group:default/team-c' &&
-          hasParent[1] === 'group:default/team-d'
-        ) {
-          return { items: [groupAMock, groupBMock] };
-        }
-        return { items: [] };
+        return { items: [groupCMock, groupDMock, groupAMock, groupBMock] };
       });
+
       roleManager.addLink('group:default/team-a', 'role:default/team-a');
       roleManager.addLink('group:default/team-c', 'role:default/team-c');
 
@@ -968,6 +845,137 @@ describe('BackstageRoleManager', () => {
       expect(loggerMock.warn).toHaveBeenCalledWith(
         'Detected cycle dependencies in the Group graph: [["group:default/team-a","group:default/team-c"]]. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for group: group:default/team-a',
       );
+    });
+
+    // user:default/mike should inherits role from group:default/team-f, and we have a complex graph, and cycle dependency
+    // So return false on call hasLink.
+    //
+    //     Hierarchy:
+    //                                                        role:default/team-e
+    //                                                                ↓
+    //                                     |----------------- group:default/team-e ---------|
+    //                                     ↓                                                |
+    //       | ----------------- group:default/team-f ----|                                 |
+    //       ↓                                            ↓                                 |
+    // group:default/team-a -> role:default/team-a   group:default/team-b                   |
+    //       ↓      ↑                                     ↓                                 ↓
+    // group:default/team-c -> role:default/team-c   group:default/team-d         group:default/team-g -> role:default/team-g
+    //               ↓                                    ↓                                 ↓
+    //               user:default/mike -------------------|---------------------------------|
+    //
+    it('should return false for hasLink, when user:default/mike inherits role from group tree with group:default/team-e, complex tree', async () => {
+      const groupCMock = createGroupEntity('team-c', 'team-a', [], ['mike']);
+      const groupDMock = createGroupEntity('team-d', 'team-b', [], ['mike']);
+      const groupAMock = createGroupEntity('team-a', 'team-c', ['team-c']);
+      const groupBMock = createGroupEntity('team-b', 'team-f', ['team-d']);
+      const groupFMock = createGroupEntity('team-f', 'team-e', [
+        'team-a',
+        'team-b',
+      ]);
+      const groupEMock = createGroupEntity('team-e', undefined, [
+        'team-f',
+        'team-g',
+      ]);
+      const groupGMock = createGroupEntity('team-g', 'team-e', [], ['mike']);
+
+      catalogApiMock.getEntities.mockImplementation((arg: any) => {
+        const hasMember = arg.filter['relations.hasMember'];
+        if (hasMember && hasMember === 'user:default/mike') {
+          return { items: [groupCMock, groupDMock, groupGMock] };
+        }
+        return {
+          items: [
+            groupCMock,
+            groupDMock,
+            groupAMock,
+            groupBMock,
+            groupFMock,
+            groupEMock,
+            groupGMock,
+          ],
+        };
+      });
+
+      roleManager.addLink('group:default/team-a', 'role:default/team-a');
+      roleManager.addLink('group:default/team-c', 'role:default/team-c');
+      roleManager.addLink('group:default/team-e', 'role:default/team-e');
+      roleManager.addLink('group:default/team-g', 'role:default/team-g');
+
+      const result = await roleManager.hasLink(
+        'user:default/mike',
+        'role:default/team-e',
+      );
+      expect(result).toBeFalsy();
+      expect(loggerMock.warn).toHaveBeenCalledWith(
+        'Detected cycle dependencies in the Group graph: [["group:default/team-a","group:default/team-c"]]. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for group: group:default/team-a',
+      );
+
+      const test = await roleManager.hasLink(
+        'user:default/mike',
+        'role:default/team-g',
+      );
+      expect(test).toBeFalsy();
+    });
+
+    // user:default/mike should inherits role from group:default/team-e, and we have a complex graph
+    // So return true on call hasLink.
+    //
+    //     Hierarchy:
+    //                                                        role:default/team-e
+    //                                                                ↓
+    //                                     |----------------- group:default/team-e ---------|
+    //                                     ↓                                                |
+    //       | ----------------- group:default/team-f ----|                                 |
+    //       ↓                                            ↓                                 |
+    // group:default/team-a -> role:default/team-a   group:default/team-b                   |
+    //       ↓                                            ↓                                 ↓
+    // group:default/team-c -> role:default/team-c   group:default/team-d         group:default/team-g -> role:default/team-g
+    //               ↓                                    ↓                                 ↓
+    //               user:default/mike -------------------|---------------------------------|
+    //
+    it('should return true for hasLink, when user:default/mike inherits role from group tree with group:default/team-e, complex tree', async () => {
+      const groupCMock = createGroupEntity('team-c', 'team-a', [], ['mike']);
+      const groupDMock = createGroupEntity('team-d', 'team-b', [], ['mike']);
+      const groupAMock = createGroupEntity('team-a', 'team-f', ['team-c']);
+      const groupBMock = createGroupEntity('team-b', 'team-f', ['team-d']);
+      const groupFMock = createGroupEntity('team-f', 'team-e', [
+        'team-a',
+        'team-b',
+      ]);
+      const groupEMock = createGroupEntity('team-e', undefined, [
+        'team-f',
+        'team-g',
+      ]);
+      const groupGMock = createGroupEntity('team-g', 'team-e', [], ['mike']);
+
+      catalogApiMock.getEntities.mockImplementation((arg: any) => {
+        const hasMember = arg.filter['relations.hasMember'];
+        if (hasMember && hasMember === 'user:default/mike') {
+          return { items: [groupCMock, groupDMock, groupGMock] };
+        }
+        return {
+          items: [
+            groupCMock,
+            groupDMock,
+            groupAMock,
+            groupBMock,
+            groupFMock,
+            groupEMock,
+            groupGMock,
+          ],
+        };
+      });
+
+      roleManager.addLink('group:default/team-a', 'role:default/team-a');
+      roleManager.addLink('group:default/team-c', 'role:default/team-c');
+      roleManager.addLink('group:default/team-e', 'role:default/team-e');
+      roleManager.addLink('group:default/team-g', 'role:default/team-g');
+
+      const result = await roleManager.hasLink(
+        'user:default/mike',
+        'role:default/team-e',
+      );
+      expect(result).toBeTruthy();
     });
 
     // user:default/mike should inherits from group:default/team-a, but we have cycle dependency: team-a -> team-c.
@@ -986,43 +994,38 @@ describe('BackstageRoleManager', () => {
     //               ↓               ↓
     //   user:default/mike    user:default/tom
     //
+    // This test passes now ?
     it('should return false for hasLink for user:default/mike and group:default/team-a(cycle dependency), but should be true for user:default/tom and group:default/team-b', async () => {
       const groupRootMock = createGroupEntity('root', undefined, [
         'team-a',
         'team-b',
       ]);
-      const groupCMock = createGroupEntity('team-c', 'team-a', ['team-a']);
-      const groupDMock = createGroupEntity('team-d', 'team-b', []);
-      const groupAMock = createGroupEntity('team-a', 'root', ['team-c']);
+      const groupCMock = createGroupEntity(
+        'team-c',
+        'team-a',
+        ['team-a'],
+        ['mike'],
+      );
+      const groupDMock = createGroupEntity('team-d', 'team-b', [], ['tom']);
+      const groupAMock = createGroupEntity('team-a', 'team-c', ['team-c']);
       const groupBMock = createGroupEntity('team-b', 'root', ['team-d']);
 
       catalogApiMock.getEntities.mockImplementation((arg: any) => {
         const hasMember = arg.filter['relations.hasMember'];
-
-        if (hasMember && hasMember[0] === 'user:default/mike') {
+        if (hasMember && hasMember === 'user:default/mike') {
           return { items: [groupCMock] };
-        }
-        if (hasMember && hasMember[0] === 'user:default/tom') {
+        } else if (hasMember && hasMember === 'user:default/tom') {
           return { items: [groupDMock] };
         }
-
-        const hasParent = arg.filter['relations.parentOf'];
-
-        if (hasParent && hasParent[0] === 'group:default/team-c') {
-          return { items: [groupAMock] };
-        }
-
-        if (hasParent && hasParent[0] === 'group:default/team-d') {
-          return { items: [groupBMock] };
-        }
-
-        if (
-          (hasParent && hasParent[0] === 'group:default/team-b') ||
-          hasParent[0] === 'group:default/team-a'
-        ) {
-          return { items: [groupRootMock] };
-        }
-        return { items: [] };
+        return {
+          items: [
+            groupRootMock,
+            groupCMock,
+            groupDMock,
+            groupAMock,
+            groupBMock,
+          ],
+        };
       });
 
       let result = await roleManager.hasLink(
@@ -1056,44 +1059,38 @@ describe('BackstageRoleManager', () => {
     // group:default/team-c                         group:default/team-d
     //               ↓                                        ↓
     //   user:default/mike                           user:default/tom
-    //
+    // This test passes now ?
     it('should return false for hasLink for user:default/mike and role:default/team-a(cycle dependency), but should be true for user:default/tom and role:default/team-b', async () => {
       const groupRootMock = createGroupEntity('root', undefined, [
         'team-a',
         'team-b',
       ]);
-      const groupCMock = createGroupEntity('team-c', 'team-a', ['team-a']);
-      const groupDMock = createGroupEntity('team-d', 'team-b', []);
-      const groupAMock = createGroupEntity('team-a', 'root', ['team-c']);
+      const groupCMock = createGroupEntity(
+        'team-c',
+        'team-a',
+        ['team-a'],
+        ['mike'],
+      );
+      const groupDMock = createGroupEntity('team-d', 'team-b', [], ['tom']);
+      const groupAMock = createGroupEntity('team-a', 'team-c', ['team-c']);
       const groupBMock = createGroupEntity('team-b', 'root', ['team-d']);
 
       catalogApiMock.getEntities.mockImplementation((arg: any) => {
         const hasMember = arg.filter['relations.hasMember'];
-
-        if (hasMember && hasMember[0] === 'user:default/mike') {
+        if (hasMember && hasMember === 'user:default/mike') {
           return { items: [groupCMock] };
-        }
-        if (hasMember && hasMember[0] === 'user:default/tom') {
+        } else if (hasMember && hasMember === 'user:default/tom') {
           return { items: [groupDMock] };
         }
-
-        const hasParent = arg.filter['relations.parentOf'];
-
-        if (hasParent && hasParent[0] === 'group:default/team-c') {
-          return { items: [groupAMock] };
-        }
-
-        if (hasParent && hasParent[0] === 'group:default/team-d') {
-          return { items: [groupBMock] };
-        }
-
-        if (
-          (hasParent && hasParent[0] === 'group:default/team-b') ||
-          hasParent[0] === 'group:default/team-a'
-        ) {
-          return { items: [groupRootMock] };
-        }
-        return { items: [] };
+        return {
+          items: [
+            groupRootMock,
+            groupCMock,
+            groupDMock,
+            groupAMock,
+            groupBMock,
+          ],
+        };
       });
 
       roleManager.addLink('group:default/team-a', 'role:default/team-a');
@@ -1154,20 +1151,12 @@ describe('BackstageRoleManager', () => {
     });
 
     it('getRoles returns role for user inherited from group', async () => {
-      const teamAGroup = createGroupEntity('team-a', undefined, [
-        'user:default/test',
-      ]);
+      const teamAGroup = createGroupEntity('team-a', undefined, [], ['test']);
 
       roleManager.addLink('group:default/team-a', 'role:default/rbac_admin');
 
-      catalogApiMock.getEntities.mockImplementation((arg: any) => {
-        const hasMember = arg.filter['relations.hasMember'];
-
-        if (hasMember && hasMember[0] === 'user:default/test') {
-          return { items: [teamAGroup] };
-        }
-
-        return { items: [] };
+      catalogApiMock.getEntities.mockImplementation((_arg: any) => {
+        return { items: [teamAGroup] };
       });
 
       let roles = await roleManager.getRoles('user:default/test');
@@ -1188,6 +1177,7 @@ describe('BackstageRoleManager', () => {
     name: string,
     parent?: string,
     children?: string[],
+    members?: string[],
   ): Entity {
     const entity: Entity = {
       apiVersion: 'v1',
@@ -1201,6 +1191,10 @@ describe('BackstageRoleManager', () => {
 
     if (children) {
       entity.spec!.children = children;
+    }
+
+    if (members) {
+      entity.spec!.members = members;
     }
 
     if (parent) {

@@ -51,15 +51,13 @@ const useAdminsFromConfig = async (
   try {
     if (!adminRoleMeta) {
       await roleMetadataStorage.createRoleMetadata(
-        { source: 'configuration' },
-        adminRoleName,
+        { source: 'configuration', roleEntityRef: adminRoleName },
         trx,
       );
     } else if (adminRoleMeta.source === 'legacy') {
       await roleMetadataStorage.removeRoleMetadata(adminRoleName, trx);
       await roleMetadataStorage.createRoleMetadata(
-        { source: 'configuration' },
-        adminRoleName,
+        { source: 'configuration', roleEntityRef: adminRoleName },
         trx,
       );
     }

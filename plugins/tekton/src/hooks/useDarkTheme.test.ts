@@ -1,5 +1,5 @@
 import { useTheme } from '@material-ui/core/styles';
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 
 import { useDarkTheme } from './useDarkTheme';
 

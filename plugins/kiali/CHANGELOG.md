@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-kiali [1.10.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.10.1...@janus-idp/backstage-plugin-kiali@1.10.2) (2024-02-19)
+
+
+### Bug Fixes
+
+* **kiali:** update styles, remove item details links ([#1207](https://github.com/janus-idp/backstage-plugins/issues/1207)) ([c133ea7](https://github.com/janus-idp/backstage-plugins/commit/c133ea76772b44ec348c5bff3ad4609f1938fdba))
+
 ## @janus-idp/backstage-plugin-kiali [1.10.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.10.0...@janus-idp/backstage-plugin-kiali@1.10.1) (2024-02-14)
 
 

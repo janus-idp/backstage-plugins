@@ -124,7 +124,7 @@ export const PermissionPoliciesFormRow = ({
         onClick={() => onRemove()}
         disabled={rowCount === 1}
       >
-        <RemoveIcon />
+        <RemoveIcon id={`${rowName}-remove`} />
       </IconButton>
     </div>
   );

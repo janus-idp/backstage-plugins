@@ -13,3 +13,8 @@ export const kialiStyle = (styleProps: NestedCSSProperties) => {
     ...styleProps,
   });
 };
+
+export const baseStyle = kialiStyle({
+  display: 'contents',
+  overflow: 'visible',
+});

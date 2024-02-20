@@ -62,7 +62,7 @@ const DeleteRoleDialog = ({
   const { setToastMessage } = useToast();
   const [deleteRoleValue, setDeleteRoleValue] = React.useState<string>();
   const [disableDelete, setDisableDelete] = React.useState(false);
-  const [error, setError] = React.useState<string | {}>('');
+  const [error, setError] = React.useState<string>('');
 
   const rbacApi = useApi(rbacApiRef);
 
@@ -158,9 +158,10 @@ const DeleteRoleDialog = ({
         specified in this role.
         <br />
         <TextField
+          name="delete-role"
+          data-testid="delete-role"
           style={{ marginTop: '24px' }}
           required
-          data-testid="delete-name"
           variant="outlined"
           label="Role name"
           defaultValue={deleteRoleValue}

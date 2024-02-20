@@ -2,9 +2,8 @@
 pwd
 set -ex
 
-# npx openapi typegen ./api/openapi.yaml > src/openapi/openapi.d.ts
 npx openapi-typescript ./src/openapi/openapi.yaml -o ./src/auto-generated/api/models/schema.ts
-
+npx openapi-generator-cli generate -g asciidoc -i ./src/openapi/openapi.yaml -o ./src/auto-generated/docs/index.adoc
 npx yaml2json -f ./src/openapi/openapi.yaml
 
 export FILE=./src/auto-generated/api/definition.ts

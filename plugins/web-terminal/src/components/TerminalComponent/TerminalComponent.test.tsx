@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 
 import { configApiRef } from '@backstage/core-plugin-api';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
@@ -52,7 +52,7 @@ const theme = createTheme({
   },
 });
 
-const Providers: React.FC = ({ children }) => (
+const Providers = ({ children }: PropsWithChildren) => (
   <ThemeProvider theme={theme}>
     <TestApiProvider apis={[[configApiRef, mockConfig]]}>
       <EntityProvider entity={entityMock}>{children}</EntityProvider>
@@ -100,6 +100,7 @@ describe('TerminalComponent', () => {
             );
           }
           return res(
+            ctx.delay(1000),
             ctx.status(200),
             ctx.json(require('./__fixtures__/createWorkspace.json')),
           );

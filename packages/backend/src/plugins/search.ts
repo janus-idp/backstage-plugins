@@ -1,11 +1,11 @@
 import { useHotCleanup } from '@backstage/backend-common';
-import { DefaultCatalogCollatorFactory } from '@backstage/plugin-catalog-backend';
 import { createRouter } from '@backstage/plugin-search-backend';
+import { DefaultCatalogCollatorFactory } from '@backstage/plugin-search-backend-module-catalog';
+import { DefaultTechDocsCollatorFactory } from '@backstage/plugin-search-backend-module-techdocs';
 import {
   IndexBuilder,
   LunrSearchEngine,
 } from '@backstage/plugin-search-backend-node';
-import { DefaultTechDocsCollatorFactory } from '@backstage/plugin-techdocs-backend';
 
 import { Router } from 'express';
 

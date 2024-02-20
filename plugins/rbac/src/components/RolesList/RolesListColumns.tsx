@@ -52,8 +52,8 @@ export const columns: TableColumn<RolesData>[] = [
         <EditRole
           dataTestId={
             !props.actionsPermissionResults.edit.allowed
-              ? 'disable-update-role'
-              : 'update-role'
+              ? `disable-update-role-${props.name}`
+              : `update-role-${props.name}`
           }
           roleName={props.name}
           disable={!props.actionsPermissionResults.edit.allowed}
@@ -66,8 +66,8 @@ export const columns: TableColumn<RolesData>[] = [
         <DeleteRole
           dataTestId={
             !props.actionsPermissionResults.delete.allowed
-              ? 'disable-delete-role'
-              : 'delete-role'
+              ? `disable-delete-role-${props.name}`
+              : `delete-role-${props.name}`
           }
           roleName={props.name}
           disable={!props.actionsPermissionResults.delete.allowed}
