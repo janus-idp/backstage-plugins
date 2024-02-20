@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac [1.14.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.14.3...@janus-idp/backstage-plugin-rbac@1.14.4) (2024-02-20)
+
+
+### Bug Fixes
+
+* **rbac:** add data-testid, names and aria-label to RBAC UI components ([#1224](https://github.com/janus-idp/backstage-plugins/issues/1224)) ([cabc76d](https://github.com/janus-idp/backstage-plugins/commit/cabc76ddf3a4b810b221de5982adbe403f3e5fac))
+
 ## @janus-idp/backstage-plugin-rbac [1.14.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.14.2...@janus-idp/backstage-plugin-rbac@1.14.3) (2024-02-16)
 
 
