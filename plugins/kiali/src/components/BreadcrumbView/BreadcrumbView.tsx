@@ -16,7 +16,7 @@ const ItemNames = {
   istio: 'Istio Object',
 };
 
-const pluginRoot = 'kiali';
+export const pluginRoot = 'kiali';
 const IstioName = 'Istio Config';
 const namespaceRegex =
   /kiali\/([a-z0-9-]+)\/([\w-.]+)\/([\w-.*]+)(\/([\w-.]+))?(\/([\w-.]+))?/;
@@ -42,7 +42,7 @@ export const getPath = (props: Location) => {
 
 const breadcrumStyle = kialiStyle({
   marginBottom: '20px',
-  marginTop: '-30px',
+  marginTop: '-20px',
 });
 
 export const BreadcrumbView = () => {

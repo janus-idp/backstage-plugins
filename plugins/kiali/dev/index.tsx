@@ -8,6 +8,7 @@ import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { TestApiProvider } from '@backstage/test-utils';
 
 import { kialiPlugin } from '../src';
+import { pluginRoot } from '../src/components/BreadcrumbView/BreadcrumbView';
 import { KialiNoPath } from '../src/pages/Kiali';
 import { KialiHeader } from '../src/pages/Kiali/Header/KialiHeader';
 import { KialiHeaderEntity } from '../src/pages/Kiali/Header/KialiHeaderEntity';
@@ -317,8 +318,8 @@ interface Props {
 export const TabsMock = () => {
   const [selectedTab, setSelectedTab] = React.useState<number>(0);
   const tabs = [
-    { label: 'Overview', route: 'overview' },
-    { label: 'Workloads', route: 'workloads' },
+    { label: 'Overview', route: `${pluginRoot}/overview` },
+    { label: 'Workloads', route: `${pluginRoot}/workloads` },
   ];
   const navigate = useNavigate();
   return (
@@ -338,14 +339,14 @@ export const TabsMock = () => {
 
 const RoutesList = () => (
   <Routes>
-    <Route path="/" element={<OverviewPage />} />
-    <Route path="/overview" element={<OverviewPage />} />
-    <Route path="/workloads" element={<WorkloadListPage />} />
+    <Route path={`/${pluginRoot}`} element={<OverviewPage />} />
+    <Route path={`/${pluginRoot}/overview`} element={<OverviewPage />} />
+    <Route path={`/${pluginRoot}/workloads`} element={<WorkloadListPage />} />
     <Route
-      path="/kiali/workloads/:namespace/:workload"
+      path={`/${pluginRoot}/workloads/:namespace/:workload`}
       element={<WorkloadDetailsPage />}
     />
-    <Route path="/kiali" element={<KialiEntity />} />
+    <Route path={`/${pluginRoot}/kiali/entity`} element={<KialiEntity />} />
     <Route path="*" element={<KialiNoPath />} />
   </Routes>
 );
@@ -389,12 +390,12 @@ createDevApp()
   .addPage({
     element: <MockProvider />,
     title: 'KialiPage',
-    path: '/overview',
+    path: `/${pluginRoot}/overview`,
   })
   .addPage({
     element: <MockProvider isEntity />,
     title: 'Entity',
-    path: '/kiali',
+    path: `/${pluginRoot}/kiali/entity`,
   })
   .addPage({
     element: <KialiNoResources entity={mockEntityAnnotationNoNamespace} />,
