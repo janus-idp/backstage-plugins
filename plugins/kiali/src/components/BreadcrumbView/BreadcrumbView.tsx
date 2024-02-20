@@ -29,7 +29,7 @@ const namespaceRegex =
   /kiali\/([a-z0-9-]+)\/([\w-.]+)\/([\w-.*]+)(\/([\w-.]+))?(\/([\w-.]+))?/;
 
 export const getPath = (props: BreadCumbViewProps) => {
-  const match = props.location.pathname.match(namespaceRegex) || [];
+  const match = namespaceRegex.exec(props.location.pathname) || [];
   const ns = match[2];
   // @ts-ignore
   const page = Paths[match[1].toUpperCase()];
@@ -60,11 +60,11 @@ export const BreadcrumbView = (props: BreadCumbViewProps) => {
   const path = getPath(props);
 
   const istioTypeF = (rawType: string) => {
-    // @ts-ignore
     const istioType = Object.keys(dicIstioType).find(
+      // @ts-ignore
       key => dicIstioType[key] === rawType,
     );
-    return istioType ? istioType : capitalize(rawType);
+    return istioType || capitalize(rawType);
   };
 
   const cleanFilters = () => {
@@ -99,8 +99,9 @@ export const BreadcrumbView = (props: BreadCumbViewProps) => {
       {item}
     </Link>
   );
-  // @ts-ignore
+
   const linkTo = `/${pluginRoot}/${pathItem}?namespaces=${namespace}&type=${
+    // @ts-ignore
     dicIstioType[path?.istioType || '']
   }`;
   return (
