@@ -102,7 +102,7 @@ export class DataIndexService {
 
   public async fetchProcessInstances(): Promise<ProcessInstance[] | undefined> {
     const graphQlQuery =
-      '{ ProcessInstances ( orderBy: { start: ASC }, where: {processId: {isNull: false} } ) { id, processName, processId, businessKey, state, start, lastUpdate, end, nodes { id }, variables, parentProcessInstance {id, processName, businessKey} } }';
+      '{ ProcessInstances ( orderBy: { start: ASC }, where: {processId: {isNull: false} } ) { id, processName, processId, businessKey, state, start, end, nodes { id }, variables, parentProcessInstance {id, processName, businessKey} } }';
 
     const response = await this.client.query(graphQlQuery, {});
 
@@ -163,7 +163,7 @@ export class DataIndexService {
     limit: number,
     offset: number,
   ): Promise<ProcessInstance[]> {
-    const graphQlQuery = `{ ProcessInstances(where: {processId: {equal: "${workflowId}" } }, pagination: {limit: ${limit}, offset: ${offset}}) { processName, state, start, lastUpdate, end } }`;
+    const graphQlQuery = `{ ProcessInstances(where: {processId: {equal: "${workflowId}" } }, pagination: {limit: ${limit}, offset: ${offset}}) { processName, state, start, end } }`;
 
     const result = await this.client.query(graphQlQuery, {});
 
@@ -180,7 +180,7 @@ export class DataIndexService {
   public async fetchProcessInstanceJobs(
     instanceId: string,
   ): Promise<Job[] | undefined> {
-    const graphQlQuery = `{ Jobs (where: { processInstanceId: { equal: "${instanceId}" } }) { id, processId, processInstanceId, rootProcessId, status, expirationTime, priority, callbackEndpoint, repeatInterval, repeatLimit, scheduledId, retries, lastUpdate, endpoint, nodeInstanceId, executionCounter } }`;
+    const graphQlQuery = `{ Jobs (where: { processInstanceId: { equal: "${instanceId}" } }) { id, processId, processInstanceId, rootProcessId, status, expirationTime, priority, callbackEndpoint, repeatInterval, repeatLimit, scheduledId, retries, endpoint, nodeInstanceId, executionCounter } }`;
 
     const result = await this.client.query(graphQlQuery, {});
 
@@ -214,7 +214,7 @@ export class DataIndexService {
   public async fetchProcessInstance(
     instanceId: string,
   ): Promise<ProcessInstance | undefined> {
-    const graphQlQuery = `{ ProcessInstances (where: { id: {equal: "${instanceId}" } } ) { id, processName, processId, businessKey, state, start, lastUpdate, end, nodes { id, nodeId, definitionId, type, name, enter, exit }, variables, parentProcessInstance {id, processName, businessKey}, error { nodeDefinitionId, message} } }`;
+    const graphQlQuery = `{ ProcessInstances (where: { id: {equal: "${instanceId}" } } ) { id, processName, processId, businessKey, state, start, end, nodes { id, nodeId, definitionId, type, name, enter, exit }, variables, parentProcessInstance {id, processName, businessKey}, error { nodeDefinitionId, message} } }`;
 
     const result = await this.client.query(graphQlQuery, {});
 
