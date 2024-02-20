@@ -876,12 +876,7 @@ describe('BackstageRoleManager', () => {
         'team-f',
         'team-g',
       ]);
-      const groupGMock = createGroupEntity(
-        'team-g',
-        'team-e',
-        ['team-d'],
-        ['mike'],
-      );
+      const groupGMock = createGroupEntity('team-g', 'team-e', [], ['mike']);
 
       catalogApiMock.getEntities.mockImplementation((arg: any) => {
         const hasMember = arg.filter['relations.hasMember'];
@@ -922,7 +917,7 @@ describe('BackstageRoleManager', () => {
       expect(test).toBeFalsy();
     });
 
-    // user:default/mike should inherits role from group:default/team-f, and we have a complex graph
+    // user:default/mike should inherits role from group:default/team-e, and we have a complex graph
     // So return true on call hasLink.
     //
     //     Hierarchy:
@@ -951,12 +946,7 @@ describe('BackstageRoleManager', () => {
         'team-f',
         'team-g',
       ]);
-      const groupGMock = createGroupEntity(
-        'team-g',
-        'team-e',
-        ['team-d'],
-        ['mike'],
-      );
+      const groupGMock = createGroupEntity('team-g', 'team-e', [], ['mike']);
 
       catalogApiMock.getEntities.mockImplementation((arg: any) => {
         const hasMember = arg.filter['relations.hasMember'];
