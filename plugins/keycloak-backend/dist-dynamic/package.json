@@ -42,7 +42,7 @@
     "lodash": "^4.17.21",
     "uuid": "^9.0.1",
     "winston": "^3.11.0",
-    "axios": "^0.26.1",
+    "axios": "^0.28.0",
     "camelize-ts": "^1.0.8",
     "keycloak-js": "^17.0.1",
     "query-string": "^7.0.1",
