@@ -17,10 +17,10 @@
   "devDependencies": {
     "@storybook/react-webpack5": "7.5.3",
     "@storybook/testing-library": "0.2.2",
+    "@swc/core": "1.3.96",
     "@testing-library/jest-dom": "6.4.2",
     "@types/react": "18.2.48",
     "@types/react-dom": "18.2.18",
-    "@swc/core": "1.3.96",
     "eslint-plugin-storybook": "0.6.15",
     "prop-types": "15.8.1",
     "swc-loader": "0.2.3"

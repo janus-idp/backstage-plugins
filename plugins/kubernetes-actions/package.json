@@ -40,11 +40,11 @@
     "export-dynamic": "janus-cli package export-dynamic-plugin"
   },
   "dependencies": {
+    "@backstage/backend-dynamic-feature-service": "^0.2.0",
+    "@backstage/backend-plugin-api": "^0.6.10",
     "@backstage/catalog-client": "^1.6.0",
     "@backstage/catalog-model": "^1.4.4",
-    "@backstage/backend-plugin-api": "^0.6.10",
     "@backstage/plugin-scaffolder-node": "^0.3.0",
-    "@backstage/backend-dynamic-feature-service": "^0.2.0",
     "@kubernetes/client-node": "^0.20.0"
   },
   "devDependencies": {

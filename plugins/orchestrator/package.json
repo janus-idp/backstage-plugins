@@ -90,6 +90,7 @@
     "@backstage/dev-utils": "1.0.27",
     "@backstage/test-utils": "1.5.0",
     "@janus-idp/cli": "1.7.2",
+    "@storybook/preview-api": "7.5.3",
     "@storybook/react": "7.5.3",
     "@testing-library/react": "14.2.1",
     "@testing-library/react-hooks": "8.0.1",
@@ -99,6 +100,8 @@
     "filemanager-webpack-plugin": "6.1.4",
     "monaco-editor-webpack-plugin": "7.0.1",
     "monaco-yaml": "4.0.4",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
     "sass": "1.54.5",
     "sass-loader": "10.3.1",
     "source-map-loader": "2.0.2",
@@ -107,10 +110,7 @@
     "ts-loader": "8.4.0",
     "url-loader": "3.0.0",
     "webpack": "5.70.0",
-    "webpack-cli": "4.10.0",
-    "@storybook/preview-api": "7.5.3",
-    "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "webpack-cli": "4.10.0"
   },
   "peerDependencies": {
     "react": "^16.13.1 || ^17.0.0 || ^18.2.0",
