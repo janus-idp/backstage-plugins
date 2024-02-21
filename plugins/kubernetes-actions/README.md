@@ -100,6 +100,7 @@ input:
   token: TOKEN
   skipTLSVerify: false
   caData: Zm9v
+  labels: app.io/type=ns; app.io/managed-by=org;
 ```
 
 ## Usage
@@ -108,14 +109,15 @@ input:
 
 #### Input
 
-| Parameter Name |  Type   | Required | Description                                         | Example                           |
-| -------------- | :-----: | :------: | --------------------------------------------------- | --------------------------------- |
-| namespace      | string  |   Yes    | Kubernetes namespace name                           | foo                               |
-| clusterRef     | string  |    No    | Cluster resource entity reference from the catalog  | bar                               |
-| url            | string  |    No    | API url of the kubernetes cluster                   | <https://api.foo.redhat.com:6443> |
-| token          | string  |    No    | Kubernetes API bearer token used for authentication |                                   |
-| skipTLSVerify  | boolean |    No    | If true, certificate verification is skipped        | false                             |
-| caData         | string  |    No    | Base64 encoded certificate data                     |                                   |
+| Parameter Name |  Type   | Required | Description                                         | Example                                |
+| -------------- | :-----: | :------: | --------------------------------------------------- | -------------------------------------- |
+| namespace      | string  |   Yes    | Kubernetes namespace name                           | foo                                    |
+| clusterRef     | string  |    No    | Cluster resource entity reference from the catalog  | bar                                    |
+| url            | string  |    No    | API url of the kubernetes cluster                   | <https://api.foo.redhat.com:6443>      |
+| token          | string  |    No    | Kubernetes API bearer token used for authentication |                                        |
+| skipTLSVerify  | boolean |    No    | If true, certificate verification is skipped        | false                                  |
+| caData         | string  |    No    | Base64 encoded certificate data                     |                                        |
+| label          | string  |    No    | Labels that will be applied to the namespace        | app.io/type=ns; app.io/managed-by=org; |
 
 #### Output
 
