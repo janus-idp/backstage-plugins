@@ -86,7 +86,7 @@ export const BreadcrumbView = () => {
 
   const isIstio = isIstioF();
   const linkItem = isIstio ? (
-    { item }
+    <>{item}</>
   ) : (
     <Link to={getItemPage()} onClick={cleanFilters}>
       {item}
