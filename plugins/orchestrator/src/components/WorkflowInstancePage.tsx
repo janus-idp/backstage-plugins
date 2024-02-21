@@ -65,11 +65,9 @@ const AbortConfirmationDialogActions = (
 );
 
 const AbortAlertDialogActions = (props: AbortAlertDialogActionsProps) => (
-  <>
-    <Button onClick={props.handleClose} color="primary">
-      OK
-    </Button>
-  </>
+  <Button onClick={props.handleClose} color="primary">
+    OK
+  </Button>
 );
 
 export const WorkflowInstancePage = ({
