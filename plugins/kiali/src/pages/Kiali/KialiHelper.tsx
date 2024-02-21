@@ -12,6 +12,7 @@ import {
 import HelpRounded from '@material-ui/icons/HelpRounded';
 
 import { KialiChecker } from '../../store/KialiProvider';
+import { Chip } from '@material-ui/core';
 
 export const KialiHelper = (props: { check: KialiChecker }) => {
   const pretty = () => {
@@ -19,7 +20,7 @@ export const KialiHelper = (props: { check: KialiChecker }) => {
       const helper = props.check.helper;
       const attributes =
         props.check.missingAttributes &&
-        `Missing attributes: ${props.check.missingAttributes.join(',')}.`;
+        (<><b>Missing attributes:</b> {props.check.missingAttributes.join(',')}.</>);
       return (
         <>
           <br />
@@ -33,10 +34,9 @@ export const KialiHelper = (props: { check: KialiChecker }) => {
             </>
           )}
           {helper && (
-            <>
-              <br /> <HelpRounded />
-              {helper}
-            </>
+            <div style={{marginTop: '15px'}}>
+              <Chip icon={<HelpRounded />} label={helper} />
+            </div>
           )}
         </>
       );
@@ -47,7 +47,7 @@ export const KialiHelper = (props: { check: KialiChecker }) => {
   const printAuthentication = (
     <>
       The authentication provided by Kiali is{' '}
-      <b>{props.check.authData?.strategy}</b>. <br />
+      <b>{props.check.authData?.strategy || 'Unknown'}</b>. <br />
       You need to install the kiali backend to be able to use this kiali.
       <br /> Follow the steps in{' '}
       <Link to="https://github.com/janus-idp/backstage-plugins/blob/main/plugins/kiali-backend/README.md">
@@ -59,7 +59,11 @@ export const KialiHelper = (props: { check: KialiChecker }) => {
 
   const getTitle = () => {
     if (!props.check.verify) {
-      return 'Authentication failed.';
+      if (props.check.missingAttributes && props.check.missingAttributes.includes('url')) {
+        return 'Kiali Plugin can reach the backend'
+      } else {
+        return 'Authentication failed.';
+      }
     }
 
     return 'Unexpected Check';

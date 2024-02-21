@@ -53,6 +53,8 @@ import {
 import { filterNsByAnnotation } from '../src/utils/entityFilter';
 import { kialiData } from './__fixtures__';
 import { mockEntity, mockEntityAnnotationNoNamespace } from './mockEntity';
+import { GraphPage } from '../src/pages/Graph/GraphPage';
+import { GraphDefinition, GraphElementsQuery } from '../src/types/Graph';
 
 class MockKialiClient implements KialiApi {
   private entity?: Entity;
@@ -114,6 +116,12 @@ class MockKialiClient implements KialiApi {
     );
   }
 
+  /** Graph **/
+
+  async getGraphElements(params: GraphElementsQuery): Promise<GraphDefinition> {
+    return kialiData.graph.graphData[params.namespaces as string][60]
+  }
+  
   async getServerConfig(): Promise<ServerConfig> {
     return kialiData.config;
   }
@@ -294,6 +302,7 @@ export const TabsMock = () => {
   const [selectedTab, setSelectedTab] = React.useState<number>(0);
   const tabs = [
     { label: 'Overview', route: 'overview' },
+    { label: 'Graph', route: 'graph' },
     { label: 'Workloads', route: 'workloads' },
   ];
   const navigate = useNavigate();
@@ -316,6 +325,7 @@ const RoutesList = () => (
   <Routes>
     <Route path="/" element={<OverviewPage />} />
     <Route path="/overview" element={<OverviewPage />} />
+    <Route path="/graph" element={<GraphPage />} />
     <Route path="/workloads" element={<WorkloadListPage />} />
     <Route path="/kiali" element={<KialiEntity />} />
     <Route path="*" element={<KialiNoPath />} />

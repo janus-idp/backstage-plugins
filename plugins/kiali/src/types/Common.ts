@@ -51,6 +51,35 @@ export type TimeRange = {
   rangeDuration?: DurationInSeconds;
 };
 
+
+// Type-guarding TimeRange: executes first callback when range is a duration, or second callback when it's a bounded range, mapping to a value
+export function guardTimeRange<T>(
+  range: TimeRange,
+  ifDuration: (d: DurationInSeconds) => T,
+  ifBounded: (b: BoundsInMilliseconds) => T
+): T {
+  if (range.from) {
+    const b: BoundsInMilliseconds = {
+      from: range.from
+    };
+    if (range.to) {
+      b.to = range.to;
+    }
+    return ifBounded(b);
+  } else {
+    if (range.rangeDuration) {
+      return ifDuration(range.rangeDuration);
+    }
+  }
+  // It shouldn't reach here a TimeRange should have DurationInSeconds or BoundsInMilliseconds
+  return ifDuration(600);
+}
+
+export const evalTimeRange = (range: TimeRange): [Date, Date] => {
+  const bounds = guardTimeRange(range, durationToBounds, b => b);
+  return [bounds.from ? new Date(bounds.from) : new Date(), bounds.to ? new Date(bounds.to) : new Date()];
+};
+
 export const boundsToDuration = (
   bounds: BoundsInMilliseconds,
 ): DurationInSeconds => {

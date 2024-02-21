@@ -89,6 +89,11 @@ export interface ServiceDetailsInfo {
   cluster?: string;
 }
 
+export interface ServiceDetailsQuery {
+  rateInterval?: string;
+  validate?: boolean;
+}
+
 export function getServiceDetailsUpdateLabel(
   serviceDetails: ServiceDetailsInfo | null,
 ) {

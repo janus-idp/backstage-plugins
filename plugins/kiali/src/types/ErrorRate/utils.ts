@@ -1,17 +1,11 @@
+import { RateHealthConfig, RegexConfig, ToleranceConfig } from '../ServerConfig';
 import { serverConfig } from '../../config';
 import { ResponseDetail, Responses } from '../Graph';
 import { RequestHealth, RequestType } from '../Health';
-import {
-  HealthAnnotationConfig,
-  HealthAnnotationType,
-} from '../HealthAnnotation';
-import {
-  RateHealthConfig,
-  RegexConfig,
-  ToleranceConfig,
-} from '../ServerConfig';
-import { generateRateForTolerance } from './ErrorRate';
 import { Rate, RequestTolerance } from './types';
+import { generateRateForTolerance } from './ErrorRate';
+import { generateRateForGraphTolerance } from './GraphEdgeStatus';
+import { HealthAnnotationType, HealthAnnotationConfig } from '../HealthAnnotation';
 
 export const emptyRate = (): Rate => {
   return { requestRate: 0, errorRate: 0, errorRatio: 0 };
@@ -19,51 +13,36 @@ export const emptyRate = (): Rate => {
 
 export const DEFAULTCONF = {
   http: new RegExp('^[4|5]\\d\\d$'),
-  grpc: new RegExp('^[1-9]$|^1[0-6]$'),
+  grpc: new RegExp('^[1-9]$|^1[0-6]$')
 };
 
 export const requestsErrorRateCode = (requests: RequestType): number => {
   const rate: Rate = emptyRate();
-  for (const [protocol, req] of Object.entries(requests)) {
-    for (const [code, value] of Object.entries(req)) {
+  for (let [protocol, req] of Object.entries(requests)) {
+    for (let [code, value] of Object.entries(req)) {
       rate.requestRate += value;
-      if (
-        Object.keys(DEFAULTCONF).includes(protocol) &&
-        (DEFAULTCONF as any)[protocol].test(code)
-      ) {
+      if (Object.keys(DEFAULTCONF).includes(protocol) && DEFAULTCONF[protocol].test(code)) {
         rate.errorRate += value;
       }
     }
   }
-  return rate.requestRate === 0
-    ? -1
-    : (rate.errorRate / rate.requestRate) * 100;
+  return rate.requestRate === 0 ? -1 : (rate.errorRate / rate.requestRate) * 100;
 };
 
-export const getHealthRateAnnotation = (
-  config?: HealthAnnotationType,
-): string | undefined => {
+export const getHealthRateAnnotation = (config?: HealthAnnotationType): string | undefined => {
   return config && HealthAnnotationConfig.HEALTH_RATE in config
     ? config[HealthAnnotationConfig.HEALTH_RATE]
     : undefined;
 };
 
-export const getErrorCodeRate = (
-  requests: RequestHealth,
-): { inbound: number; outbound: number } => {
-  return {
-    inbound: requestsErrorRateCode(requests.inbound),
-    outbound: requestsErrorRateCode(requests.outbound),
-  };
+export const getErrorCodeRate = (requests: RequestHealth): { inbound: number; outbound: number } => {
+  return { inbound: requestsErrorRateCode(requests.inbound), outbound: requestsErrorRateCode(requests.outbound) };
 };
 
 /*
 Cached this method to avoid use regexp in next calculations to improve performance
  */
-export const checkExpr = (
-  value: RegexConfig | undefined,
-  testV: string,
-): boolean => {
+export const checkExpr = (value: RegexConfig | undefined, testV: string): boolean => {
   let reg = value;
   if (!reg) {
     return true;
@@ -75,33 +54,23 @@ export const checkExpr = (
 };
 
 // Cache the configuration to avoid multiple calls to regExp
-export const configCache: { [key: string]: RateHealthConfig } = {};
+export let configCache: { [key: string]: RateHealthConfig } = {};
 
-export const getRateHealthConfig = (
-  ns: string,
-  name: string,
-  kind: string,
-): RateHealthConfig => {
-  const key = `${ns}_${kind}_${name}`;
+export const getRateHealthConfig = (ns: string, name: string, kind: string): RateHealthConfig => {
+  const key = ns + '_' + kind + '_' + name;
   // If we have the configuration cached then return it
   if (configCache[key]) {
     return configCache[key];
   }
   if (serverConfig.healthConfig && serverConfig.healthConfig.rate) {
-    for (const rate of serverConfig.healthConfig.rate) {
-      if (
-        checkExpr(rate.namespace, ns) &&
-        checkExpr(rate.name, name) &&
-        checkExpr(rate.kind, kind)
-      ) {
+    for (let rate of serverConfig.healthConfig.rate) {
+      if (checkExpr(rate.namespace, ns) && checkExpr(rate.name, name) && checkExpr(rate.kind, kind)) {
         configCache[key] = rate;
         return rate;
       }
     }
   }
-  return serverConfig.healthConfig.rate[
-    serverConfig.healthConfig.rate.length - 1
-  ];
+  return serverConfig.healthConfig.rate[serverConfig.healthConfig.rate.length - 1];
 };
 
 /*
@@ -109,17 +78,14 @@ For Responses object like { "200": { flags: { "-": 1.2, "XXX": 3.1}, hosts: ...}
 
 Return object like:  {"http": { "200": 4.3}}
 */
-export const transformEdgeResponses = (
-  requests: Responses,
-  protocol: string,
-): RequestType => {
+export const transformEdgeResponses = (requests: Responses, protocol: string): RequestType => {
   const prot: { [key: string]: number } = {};
   const result: RequestType = {};
   result[protocol] = prot;
-  for (const [code, responseDetail] of Object.entries(requests)) {
-    const percentRate = Object.values(
-      (responseDetail as ResponseDetail).flags,
-    ).reduce((acc, value) => String(Number(acc) + Number(value)));
+  for (let [code, responseDetail] of Object.entries(requests)) {
+    const percentRate = Object.values((responseDetail as ResponseDetail).flags).reduce((acc, value) =>
+      String(Number(acc) + Number(value))
+    );
     result[protocol][code] = Number(percentRate);
   }
 
@@ -143,12 +109,13 @@ export const transformEdgeResponses = (
 export const aggregate = (
   request: RequestType,
   tolerances?: ToleranceConfig[],
+  graph: boolean = false
 ): RequestTolerance[] => {
-  const result: RequestTolerance[] = [];
+  let result: RequestTolerance[] = [];
   if (request && tolerances) {
-    for (const tol of Object.values(tolerances)) {
-      const newReqTol: RequestTolerance = { tolerance: tol, requests: {} };
-      generateRateForTolerance(newReqTol, request);
+    for (let tol of Object.values(tolerances)) {
+      let newReqTol: RequestTolerance = { tolerance: tol, requests: {} };
+      graph ? generateRateForGraphTolerance(newReqTol, request) : generateRateForTolerance(newReqTol, request);
       result.push(newReqTol);
     }
   }

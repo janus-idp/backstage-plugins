@@ -57,6 +57,10 @@ import travelPortalMetrics from './namespaces/travel-portal/metrics';
 import travelPortalTls from './namespaces/travel-portal/tls.json';
 import travelPortalWorkloads from './namespaces/travel-portal/workloads.json';
 
+/**  Graph **/
+/* BookInfo */
+import bookInfoGraph from './namespaces/bookinfo/graph/'
+
 export const kialiData: { [index: string]: any } = {
   auth: anonymousAuth,
   config: configData,
@@ -69,6 +73,11 @@ export const kialiData: { [index: string]: any } = {
   istioConfig: istioConfig,
   istioStatus: istioStatus,
   istioCertsInfo: istioCertsInfo,
+  graph: {
+    graphData: {
+      'bookinfo': bookInfoGraph
+    }
+  },
   namespacesData: {
     'istio-system': {
       tls: istioSystemTls,
@@ -82,6 +91,7 @@ export const kialiData: { [index: string]: any } = {
     bookinfo: {
       tls: bookinfoTls,
       metrics: bookInfoMetrics,
+      graph: bookInfoGraph,
       health: {
         app: bookinfoHealthApp,
         service: bookinfoHealthService,
