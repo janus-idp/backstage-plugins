@@ -15,7 +15,11 @@ import {
   ServiceHealth,
   WorkloadHealth,
 } from '../types/Health';
-import { IstioConfigsMap } from '../types/IstioConfigList';
+import {
+  IstioConfigList,
+  IstioConfigListQuery,
+  IstioConfigsMap,
+} from '../types/IstioConfigList';
 import {
   CanaryUpgradeStatus,
   OutboundTrafficPolicy,
@@ -31,7 +35,12 @@ import { Namespace } from '../types/Namespace';
 import { ServerConfig } from '../types/ServerConfig';
 import { StatusState } from '../types/StatusState';
 import { TLSStatus } from '../types/TLSStatus';
-import { WorkloadListItem, WorkloadNamespaceResponse } from '../types/Workload';
+import {
+  Workload,
+  WorkloadListItem,
+  WorkloadNamespaceResponse,
+  WorkloadQuery,
+} from '../types/Workload';
 import { filterNsByAnnotation } from '../utils/entityFilter';
 
 export const ANONYMOUS_USER = 'anonymous';
@@ -39,6 +48,11 @@ export const ANONYMOUS_USER = 'anonymous';
 export interface Response<T> {
   data: T;
 }
+
+interface ClusterParam {
+  clusterName?: string;
+}
+type QueryParams<T> = T & ClusterParam;
 
 /** API URLs */
 
@@ -115,13 +129,26 @@ export interface KialiApi {
   ): Promise<Readonly<IstioMetricsMap>>;
   getIstioStatus(cluster?: string): Promise<ComponentStatus[]>;
   getIstioCertsInfo(): Promise<CertsInfo[]>;
-  setEntity(entity?: Entity): void;
-  status(): Promise<any>;
-
+  getWorkload(
+    namespace: string,
+    name: string,
+    params: WorkloadQuery,
+    cluster?: string,
+  ): Promise<Workload>;
   getWorkloads(
     namespace: string,
     duration: number,
   ): Promise<WorkloadListItem[]>;
+  getIstioConfig(
+    namespace: string,
+    objects: string[],
+    validate: boolean,
+    labelSelector: string,
+    workloadSelector: string,
+    cluster?: string,
+  ): Promise<IstioConfigList>;
+  setEntity(entity?: Entity): void;
+  status(): Promise<any>;
 }
 
 export const kialiApiRef = createApiRef<KialiApi>({
@@ -521,6 +548,64 @@ export class KialiApiClient implements KialiApi {
           ),
         };
       });
+    });
+  };
+
+  getWorkload = async (
+    namespace: string,
+    name: string,
+    params: WorkloadQuery,
+    cluster?: string,
+  ): Promise<Workload> => {
+    const queryParams: QueryParams<WorkloadQuery> = { ...params };
+    if (cluster) {
+      queryParams.clusterName = cluster;
+    }
+    return this.newRequest<Workload>(
+      HTTP_VERBS.GET,
+      urls.workload(namespace, name),
+      queryParams,
+      {},
+    ).then(resp => {
+      return resp;
+    });
+  };
+
+  getIstioConfig = async (
+    namespace: string,
+    objects: string[],
+    validate: boolean,
+    labelSelector: string,
+    workloadSelector: string,
+    cluster?: string,
+  ): Promise<IstioConfigList> => {
+    const params: QueryParams<IstioConfigListQuery> = {};
+    if (objects && objects.length > 0) {
+      params.objects = objects.join(',');
+    }
+    if (validate) {
+      params.validate = validate;
+    }
+
+    if (labelSelector) {
+      params.labelSelector = labelSelector;
+    }
+
+    if (workloadSelector) {
+      params.workloadSelector = workloadSelector;
+    }
+
+    if (cluster) {
+      params.clusterName = cluster;
+    }
+
+    return this.newRequest<IstioConfigList>(
+      HTTP_VERBS.GET,
+      urls.istioConfig(namespace),
+      params,
+      {},
+    ).then(resp => {
+      return resp;
     });
   };
 }

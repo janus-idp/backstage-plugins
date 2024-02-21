@@ -1,13 +1,22 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Location, useLocation, useNavigate } from 'react-router-dom';
 
 import { HeaderTabs } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 
 import { overviewRouteRef, workloadsRouteRef } from '../../../routes';
 
+const getPath = (loc: Location): number => {
+  if (loc.pathname.includes('workloads')) {
+    return 1;
+  }
+  return 0;
+};
+
 export const KialiTabs = () => {
-  const [selectedTab, setSelectedTab] = React.useState<number>(0);
+  const loc = useLocation();
+  const path = getPath(loc);
+  const [selectedTab, setSelectedTab] = React.useState<number>(path);
   const tabs = [
     { label: 'Overview', route: useRouteRef(overviewRouteRef) },
     { label: 'Workloads', route: useRouteRef(workloadsRouteRef) },
