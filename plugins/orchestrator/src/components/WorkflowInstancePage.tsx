@@ -40,7 +40,7 @@ export type AbortAlertDialogActionsProps = {
 };
 
 export type AbortAlertDialogContentProps = {
-  message?: string;
+  message: string;
 };
 
 const AbortConfirmationDialogContent = () => (
