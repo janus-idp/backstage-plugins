@@ -1,3 +1,12 @@
+## @janus-idp/backstage-plugin-acr [1.2.25](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-acr@1.2.24...@janus-idp/backstage-plugin-acr@1.2.25) (2024-02-21)
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.5.2
+* **@janus-idp/cli:** upgraded to 1.7.2
+
 ## @janus-idp/backstage-plugin-acr [1.2.24](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-acr@1.2.23...@janus-idp/backstage-plugin-acr@1.2.24) (2024-02-05)
 
 
