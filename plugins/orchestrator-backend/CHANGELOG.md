@@ -1,3 +1,18 @@
+## @janus-idp/backstage-plugin-orchestrator-backend [1.4.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.4.0...@janus-idp/backstage-plugin-orchestrator-backend@1.4.1) (2024-02-21)
+
+
+### Bug Fixes
+
+* **orchestrator:** implementation of getWorkflowById (v2) ([#1233](https://github.com/janus-idp/backstage-plugins/issues/1233)) ([f9f9008](https://github.com/janus-idp/backstage-plugins/commit/f9f9008d29f244c2ae6d688d3e2dc9b65b705e5b))
+* **orchestrator:** minor improvements and fixes ([#1242](https://github.com/janus-idp/backstage-plugins/issues/1242)) ([c9ec4cb](https://github.com/janus-idp/backstage-plugins/commit/c9ec4cbe1847268e8068edc69c7937c5e133c315))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.3.1
+* **@janus-idp/cli:** upgraded to 1.7.2
+
 ## @janus-idp/backstage-plugin-orchestrator-backend [1.4.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.3.1...@janus-idp/backstage-plugin-orchestrator-backend@1.4.0) (2024-02-20)
 
 
