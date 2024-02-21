@@ -43,9 +43,9 @@
     "openapi": "npx openapi-typescript-codegen"
   },
   "dependencies": {
-    "@backstage/plugin-scaffolder-node": "^0.2.10",
-    "@backstage/backend-plugin-api": "^0.6.9",
-    "@backstage/backend-dynamic-feature-service": "0.1.0",
+    "@backstage/plugin-scaffolder-node": "^0.3.0",
+    "@backstage/backend-plugin-api": "^0.6.10",
+    "@backstage/backend-dynamic-feature-service": "^0.2.0",
     "abort-controller": "^3.0.0",
     "form-data": "^4.0.0",
     "node-fetch": "^2.7.0",
@@ -53,8 +53,8 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@backstage/backend-common": "0.20.1",
-    "@backstage/cli": "0.25.1",
+    "@backstage/backend-common": "0.21.0",
+    "@backstage/cli": "0.25.2",
     "@janus-idp/cli": "1.7.1",
     "@backstage/config": "1.1.1",
     "@backstage/types": "1.1.1",
