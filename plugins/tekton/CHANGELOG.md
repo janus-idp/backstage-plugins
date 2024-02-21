@@ -1,3 +1,17 @@
+## @janus-idp/backstage-plugin-tekton [3.5.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.5.6...@janus-idp/backstage-plugin-tekton@3.5.7) (2024-02-21)
+
+
+### Other changes
+
+* **tekton:** add playwright tests for the plugin ([#1228](https://github.com/janus-idp/backstage-plugins/issues/1228)) ([705afc2](https://github.com/janus-idp/backstage-plugins/commit/705afc2892839f39a8cbad39f51c959aa3ac4c8a))
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.5.2
+* **@janus-idp/cli:** upgraded to 1.7.2
+
 ## @janus-idp/backstage-plugin-tekton [3.5.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.5.5...@janus-idp/backstage-plugin-tekton@3.5.6) (2024-02-16)
 
 
