@@ -16,7 +16,7 @@ You can also see the [Plugin Marketplace](https://backstage.io/plugins) for othe
 
 It is possible to install plugins without code changes in a backstage that supports [Dynamic Plugins](https://github.com/janus-idp/backstage-showcase/blob/main/showcase-docs/dynamic-plugins.md) (e.g. [Janus IDP](https://janus-idp.io/) and [Red Hat Developer Hub](https://developers.redhat.com/rhdh)). Follow the steps below to install a dynamic plugin:
 
-- Map the dynamic plugins root directory in `app-config.yaml`:
+- Map the dynamic plugins root directory in `app-config.local.yaml`:
 
 ```
 dynamicPlugins:
@@ -31,7 +31,7 @@ mkdir {plugin name}
 tar -xzvf {path to the NPM package tgz file} -C {plugin name}  --strip-components=1
 ```
 
-- Configure your plugin in `app-config.yaml`. For example, the configuration below will make a new menu item to access the plugin on route `my-plugin`:
+- Configure your plugin in `app-config.local.yaml`. For example, the configuration below will make a new menu item to access the plugin on route `my-plugin`:
 
 ```
 dynamicPlugins:
