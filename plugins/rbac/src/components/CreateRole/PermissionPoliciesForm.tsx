@@ -5,9 +5,9 @@ import { Progress } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
 import { makeStyles } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import FormHelperText from '@material-ui/core/FormHelperText';
 import AddIcon from '@mui/icons-material/Add';
-import Button from '@mui/material/Button';
-import FormHelperText from '@mui/material/FormHelperText';
 import { FormikErrors } from 'formik';
 
 import { rbacApiRef } from '../../api/RBACBackendClient';
