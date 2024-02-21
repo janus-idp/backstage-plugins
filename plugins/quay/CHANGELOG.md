@@ -1,3 +1,18 @@
+## @janus-idp/backstage-plugin-quay [1.5.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.5.5...@janus-idp/backstage-plugin-quay@1.5.6) (2024-02-21)
+
+
+### Other changes
+
+* **quay:** add first playwright tests ([#1201](https://github.com/janus-idp/backstage-plugins/issues/1201)) ([a7e936d](https://github.com/janus-idp/backstage-plugins/commit/a7e936d88e0c21f2948cb4f46da491ec878f4c9b))
+* **tekton:** add playwright tests for the plugin ([#1228](https://github.com/janus-idp/backstage-plugins/issues/1228)) ([705afc2](https://github.com/janus-idp/backstage-plugins/commit/705afc2892839f39a8cbad39f51c959aa3ac4c8a))
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.5.2
+* **@janus-idp/cli:** upgraded to 1.7.2
+
 ## @janus-idp/backstage-plugin-quay [1.5.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.5.4...@janus-idp/backstage-plugin-quay@1.5.5) (2024-02-05)
 
 
