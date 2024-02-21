@@ -1,10 +1,35 @@
 import { WorkflowOverview } from '@janus-idp/backstage-plugin-orchestrator-common';
 
-import { generateTestWorkflowOverview } from '../test-utils';
 import {
+  generateTestExecuteWorkflowResponse,
+  generateTestWorkflowOverview,
+} from '../test-utils';
+import {
+  mapToExecuteWorkflowResponseDTO,
   mapToWorkflowOverviewDTO,
   mapWorkflowCategoryDTOFromString,
 } from './V2Mappings';
+
+describe('scenarios to verify executeWorkflowResponseDTO', () => {
+  it('correctly maps positive scenario response', async () => {
+    const execWorkflowResp = generateTestExecuteWorkflowResponse();
+    const mappedValue = mapToExecuteWorkflowResponseDTO(
+      'test_workflowId',
+      execWorkflowResp,
+    );
+    expect(mappedValue).toBeDefined();
+    expect(mappedValue.id).toBeDefined();
+    expect(Object.keys(mappedValue).length).toBe(1);
+  });
+
+  it('throws error when no id attribute present in response', async () => {
+    expect(() => {
+      mapToExecuteWorkflowResponseDTO('workflowId', { id: '' });
+    }).toThrow(
+      `Error while mapping ExecuteWorkflowResponse to ExecuteWorkflowResponseDTO for workflow with id`,
+    );
+  });
+});
 
 describe('scenarios to verify mapToWorkflowOverviewDTO', () => {
   it('correctly maps WorkflowOverview', () => {

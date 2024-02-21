@@ -1,11 +1,16 @@
+import { OpenAPIV3 } from 'openapi-types';
+
 import {
   ProcessInstanceState,
   ProcessInstanceStateValues,
   WorkflowDefinition,
+  WorkflowExecutionResponse,
   WorkflowFormat,
+  WorkflowInfo,
   WorkflowOverview,
   WorkflowOverviewListResult,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
+import { OpenAPIV3 } from 'openapi-types';
 
 interface WorkflowOverviewParams {
   suffix?: string;
@@ -53,6 +58,36 @@ export function generateTestWorkflowOverviewList(
 
   return res;
 }
+
+export function generateTestWorkflowInfo(
+  id: string = 'test_workflowId',
+): WorkflowInfo {
+  return {
+    id: id,
+    serviceUrl: 'mock/serviceurl',
+  };
+}
+
+export function generateTestExecuteWorkflowResponse(
+  id: string = 'test_execId',
+): WorkflowExecutionResponse {
+  return {
+    id: id,
+  };
+}
+
+// Utility function to generate fake OpenAPIV3.Document
+export const fakeOpenAPIV3Document = (): OpenAPIV3.Document => {
+  // Customize this function based on your OpenAPI document structure
+  return {
+    openapi: '3.0.0',
+    info: {
+      title: 'Title',
+      version: '1.0.0',
+    },
+    paths: {},
+  };
+};
 
 export const generateWorkflowDefinition: WorkflowDefinition = {
   id: 'quarkus-backend-workflow-ci-switch',
