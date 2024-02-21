@@ -3,8 +3,8 @@ import React from 'react';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 
 import { LinearProgress, TextField } from '@material-ui/core';
+import FormHelperText from '@material-ui/core/FormHelperText';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import FormHelperText from '@mui/material/FormHelperText';
 import { FormikErrors } from 'formik';
 
 import { MemberEntity } from '../../types';
