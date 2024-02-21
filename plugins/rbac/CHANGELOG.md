@@ -1,3 +1,19 @@
+## @janus-idp/backstage-plugin-rbac [1.14.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.14.4...@janus-idp/backstage-plugin-rbac@1.14.5) (2024-02-21)
+
+
+### Bug Fixes
+
+* **rbac:** add test selectors ([#1229](https://github.com/janus-idp/backstage-plugins/issues/1229)) ([dca5f2e](https://github.com/janus-idp/backstage-plugins/commit/dca5f2e4e7db29e522752bd5743f41a83bcb6f32))
+* **rbac:** fix labels and dropdowns in dark theme by aligning/downgrading components to MUI v4 ([#1243](https://github.com/janus-idp/backstage-plugins/issues/1243)) ([ad44fa8](https://github.com/janus-idp/backstage-plugins/commit/ad44fa8a445234c1e2be0c6386dd1374feba03b0))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-rbac-common:** upgraded to 1.3.0
+* **@janus-idp/shared-react:** upgraded to 2.5.2
+* **@janus-idp/cli:** upgraded to 1.7.2
+
 ## @janus-idp/backstage-plugin-rbac [1.14.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.14.3...@janus-idp/backstage-plugin-rbac@1.14.4) (2024-02-20)
 
 
