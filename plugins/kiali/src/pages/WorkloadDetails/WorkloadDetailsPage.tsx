@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useParams } from 'react-router-dom';
 import { useAsyncFn, useDebounce } from 'react-use';
 
-import { Content } from '@backstage/core-components';
+import { CardTab, Content, TabbedCard } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
 import { CircularProgress } from '@material-ui/core';
@@ -14,9 +14,11 @@ import { TimeDurationComponent } from '../../components/Time/TimeDurationCompone
 import { getErrorString, kialiApiRef } from '../../services/Api';
 import { KialiAppState, KialiContext } from '../../store';
 import { baseStyle } from '../../styles/StyleUtils';
+import { TimeRange } from '../../types/Common';
 import { WorkloadHealth } from '../../types/Health';
 import { Workload, WorkloadQuery } from '../../types/Workload';
 import { WorkloadInfo } from './WorkloadInfo';
+import { WorkloadPodLogs } from './WorkloadPodLogs';
 
 export const WorkloadDetailsPage = () => {
   const { namespace, workload } = useParams();
@@ -27,6 +29,7 @@ export const WorkloadDetailsPage = () => {
   const [duration, setDuration] = React.useState<number>(
     FilterHelper.currentDuration(),
   );
+  const hasPods = workloadItem?.pods.length;
 
   const grids = () => {
     const elements = [];
@@ -102,6 +105,24 @@ export const WorkloadDetailsPage = () => {
     );
   };
 
+  const tm: TimeRange = {};
+  const logsTab = (): React.ReactElement => {
+    return (
+      <>
+        {hasPods && namespace && (
+          <WorkloadPodLogs
+            lastRefreshAt={432432432432}
+            namespace={namespace}
+            workload={workload ? workload : ''}
+            pods={workloadItem!.pods}
+            cluster={workloadItem.cluster}
+            timeRange={tm}
+          />
+        )}
+      </>
+    );
+  };
+
   return (
     <div className={baseStyle}>
       <Content>
@@ -110,7 +131,12 @@ export const WorkloadDetailsPage = () => {
           elements={grids()}
           onRefresh={() => fetchWorkload()}
         />
-        {overviewTab()}
+        <div style={{ marginTop: '20px' }}>
+          <TabbedCard>
+            <CardTab label="Overview">{overviewTab()}</CardTab>
+            <CardTab label="Logs">{logsTab()}</CardTab>
+          </TabbedCard>
+        </div>
       </Content>
     </div>
   );

@@ -119,7 +119,7 @@ export const BreadcrumbView = () => {
             {istioType ? istioTypeF(istioType) : istioType}
           </Link>
         )}
-        {linkItem}
+        <>{linkItem}</>
       </Breadcrumbs>
     </div>
   );

@@ -22,7 +22,10 @@ import {
 } from '../types/IstioConfigList';
 import {
   CanaryUpgradeStatus,
+  LogLevelQuery,
   OutboundTrafficPolicy,
+  PodLogs,
+  PodLogsQuery,
   ValidationStatus,
 } from '../types/IstioObjects';
 import {
@@ -35,6 +38,7 @@ import { Namespace } from '../types/Namespace';
 import { ServerConfig } from '../types/ServerConfig';
 import { StatusState } from '../types/StatusState';
 import { TLSStatus } from '../types/TLSStatus';
+import { Span, TracingQuery } from '../types/Tracing';
 import {
   Workload,
   WorkloadListItem,
@@ -149,6 +153,28 @@ export interface KialiApi {
   ): Promise<IstioConfigList>;
   setEntity(entity?: Entity): void;
   status(): Promise<any>;
+  getPodLogs(
+    namespace: string,
+    name: string,
+    container?: string,
+    maxLines?: number,
+    sinceTime?: number,
+    duration?: DurationInSeconds,
+    isProxy?: boolean,
+    cluster?: string,
+  ): Promise<PodLogs>;
+  getWorkloadSpans(
+    namespace: string,
+    workload: string,
+    params: TracingQuery,
+    cluster?: string,
+  ): Promise<Span[]>;
+  setPodEnvoyProxyLogLevel(
+    namespace: string,
+    name: string,
+    level: string,
+    cluster?: string,
+  ): Promise<void>;
 }
 
 export const kialiApiRef = createApiRef<KialiApi>({
@@ -603,6 +629,94 @@ export class KialiApiClient implements KialiApi {
       HTTP_VERBS.GET,
       urls.istioConfig(namespace),
       params,
+      {},
+    ).then(resp => {
+      return resp;
+    });
+  };
+
+  getPodLogs = async (
+    namespace: string,
+    name: string,
+    container?: string,
+    maxLines?: number,
+    sinceTime?: number,
+    duration?: DurationInSeconds,
+    isProxy?: boolean,
+    cluster?: string,
+  ): Promise<PodLogs> => {
+    const params: QueryParams<PodLogsQuery> = {};
+
+    if (container) {
+      params.container = container;
+    }
+
+    if (sinceTime) {
+      params.sinceTime = sinceTime;
+    }
+
+    if (maxLines && maxLines > 0) {
+      params.maxLines = maxLines;
+    }
+
+    if (duration && duration > 0) {
+      params.duration = `${duration}s`;
+    }
+
+    if (cluster) {
+      params.clusterName = cluster;
+    }
+
+    params.isProxy = !!isProxy;
+
+    return this.newRequest<PodLogs>(
+      HTTP_VERBS.GET,
+      urls.podLogs(namespace, name),
+      params,
+      {},
+    ).then(resp => {
+      return resp;
+    });
+  };
+
+  setPodEnvoyProxyLogLevel = async (
+    namespace: string,
+    name: string,
+    level: string,
+    cluster?: string,
+  ): Promise<void> => {
+    const params: QueryParams<LogLevelQuery> = { level: level };
+
+    if (cluster) {
+      params.clusterName = cluster;
+    }
+
+    return this.newRequest<void>(
+      HTTP_VERBS.POST,
+      urls.podEnvoyProxyLogging(namespace, name),
+      params,
+      {},
+    ).then(resp => {
+      return resp;
+    });
+  };
+
+  getWorkloadSpans = async (
+    namespace: string,
+    workload: string,
+    params: TracingQuery,
+    cluster?: string,
+  ): Promise<Span[]> => {
+    const queryParams: QueryParams<TracingQuery> = { ...params };
+
+    if (cluster) {
+      queryParams.clusterName = cluster;
+    }
+
+    return this.newRequest<Span[]>(
+      HTTP_VERBS.GET,
+      urls.workloadSpans(namespace, workload),
+      queryParams,
       {},
     ).then(resp => {
       return resp;
