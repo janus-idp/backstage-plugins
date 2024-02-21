@@ -290,6 +290,8 @@ $ yarn install
 
 The Backstage has multiple dependencies. To pass through their installation, make sure to follow the [isolated-vm](https://github.com/laverdet/isolated-vm#requirements) requirements.
 
+It's also recommended to install a pre-commit hook to prevent secrets from being accidentally exposed. If you don't already have one, you can choose from a few options here: https://pre-commit.com/hooks.html
+
 ### Lint
 
 The [backstage-plugins](https://github.com/janus-idp/backstage-plugins) repository use [ESLint](https://eslint.org/) for linting and [Prettier](https://prettier.io) for formatting.
