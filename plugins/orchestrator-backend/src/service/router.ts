@@ -74,7 +74,11 @@ export async function createBackendRouter(
   }
 
   const cloudEventService = new CloudEventService(logger);
-  const jiraService = new JiraService(logger, cloudEventService);
+  const jiraService = new JiraService(
+    logger,
+    cloudEventService,
+    args.dataIndexService,
+  );
   const openApiService = new OpenApiService(logger, discovery);
   const dataInputSchemaService = new DataInputSchemaService(
     logger,

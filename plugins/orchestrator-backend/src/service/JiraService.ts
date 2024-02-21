@@ -2,6 +2,7 @@ import { CloudEvent } from 'cloudevents';
 import { Logger } from 'winston';
 
 import { CloudEventService } from './CloudEventService';
+import { DataIndexService } from './DataIndexService';
 
 export interface BaseIssueEvent {
   webhookEvent: 'jira:issue_updated';
@@ -38,6 +39,7 @@ export class JiraService {
   constructor(
     private readonly logger: Logger,
     private readonly cloudEventService: CloudEventService,
+    private readonly dataIndexService: DataIndexService,
   ) {}
 
   public async handleEvent(jiraEvent: JiraEvent | undefined): Promise<void> {
@@ -59,6 +61,16 @@ export class JiraService {
       }
 
       const workflowInstanceId = label.slice(label.indexOf('=') + 1);
+      const processInstance =
+        await this.dataIndexService.fetchProcessInstance(workflowInstanceId);
+
+      if (!processInstance?.serviceUrl) {
+        this.logger.warn(
+          `Received event for unknown workflow instance ${workflowInstanceId}`,
+        );
+        return;
+      }
+
       if (newStatus === 'Done' || newStatus === 'Resolved') {
         const response = await this.cloudEventService.send({
           event: new CloudEvent({
@@ -67,6 +79,7 @@ export class JiraService {
             kogitoprocrefid: workflowInstanceId, // correlation
             data: jiraEvent,
           }),
+          targetUrl: processInstance.serviceUrl,
         });
 
         if (!response.success) {
