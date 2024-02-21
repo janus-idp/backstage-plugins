@@ -1,3 +1,5 @@
+## @janus-idp/backstage-plugin-analytics-module-matomo [1.0.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-analytics-module-matomo@1.0.2...@janus-idp/backstage-plugin-analytics-module-matomo@1.0.3) (2024-02-21)
+
 ## @janus-idp/backstage-plugin-analytics-module-matomo 1.0.0 (2023-10-30)
 
 
