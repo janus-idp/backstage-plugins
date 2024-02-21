@@ -8,6 +8,7 @@ import { isWaypoint } from '../../helpers/LabelFilterHelper';
 import { infoStyle } from '../../pages/Overview/OverviewCard/CanaryUpgradeProgress';
 import { ControlPlaneBadge } from '../../pages/Overview/OverviewCard/ControlPlaneBadge';
 import { OverviewCardSparklineCharts } from '../../pages/Overview/OverviewCard/OverviewCardSparklineCharts';
+import { linkStyle } from '../../styles/StyleUtils';
 import { Health } from '../../types/Health';
 import { IstioConfigItem } from '../../types/IstioConfigList';
 import { ValidationStatus } from '../../types/IstioObjects';
@@ -32,7 +33,7 @@ import {
 } from './Config';
 
 const topPosition = 'top';
-
+const rootPath = 'kiali';
 // Istio Links
 const getIstioLink = (item: TResource): string => {
   let type = '';
@@ -50,7 +51,7 @@ const getLink = (item: TResource, config: Resource, query?: string): string => {
   let url =
     config.name === 'istio'
       ? getIstioLink(item)
-      : `/namespaces/${item.namespace}/${config.name}/${item.name}`;
+      : `/${rootPath}/${config.name}/${item.namespace}/${item.name}`;
 
   if (item.cluster && isMultiCluster && !url.includes('cluster')) {
     if (url.includes('?')) {
@@ -89,9 +90,10 @@ export const actionRenderer = (
 
 export const item: Renderer<TResource> = (
   resource: TResource,
-  _: Resource,
+  config: Resource,
   badge: PFBadgeType,
 ) => {
+  const key = `link_definition_${config.name}_${resource.namespace}_${resource.name}`;
   let serviceBadge = badge;
 
   if ('serviceRegistry' in resource && resource.serviceRegistry) {
@@ -115,7 +117,9 @@ export const item: Renderer<TResource> = (
       style={{ verticalAlign: 'middle', whiteSpace: 'nowrap' }}
     >
       <PFBadge badge={serviceBadge} position={topPosition} />
-      {resource.name}
+      <Link key={key} to={getLink(resource, config)} className={linkStyle}>
+        {resource.name}
+      </Link>
     </TableCell>
   );
 };

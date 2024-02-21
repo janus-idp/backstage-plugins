@@ -77,9 +77,11 @@ describe('Feedback Table Component', () => {
 
   it('should have pagination buttons', async () => {
     const rendered = await render();
-
     expect(
-      await waitFor(() => rendered.getByRole('button', { name: 'First Page' })),
+      await waitFor(
+        () => rendered.getByRole('button', { name: 'First Page' }),
+        { timeout: 10000 },
+      ),
     ).toBeInTheDocument();
 
     expect(

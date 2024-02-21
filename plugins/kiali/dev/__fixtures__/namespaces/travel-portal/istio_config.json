@@ -1,0 +1,27 @@
+{
+  "travel-portal": {
+    "namespace": {
+      "name": "travel-portal",
+      "cluster": "",
+      "isAmbient": false,
+      "labels": null,
+      "annotations": null
+    },
+    "destinationRules": [],
+    "envoyFilters": [],
+    "gateways": [],
+    "serviceEntries": [],
+    "sidecars": [],
+    "virtualServices": [],
+    "workloadEntries": [],
+    "workloadGroups": [],
+    "wasmPlugins": [],
+    "telemetries": [],
+    "k8sGateways": [],
+    "k8sHTTPRoutes": [],
+    "authorizationPolicies": [],
+    "peerAuthentications": [],
+    "requestAuthentications": [],
+    "validations": {}
+  }
+}

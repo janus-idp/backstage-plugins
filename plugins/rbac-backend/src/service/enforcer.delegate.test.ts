@@ -38,6 +38,7 @@ const catalogApi = {
   removeLocationById: jest.fn().mockImplementation(),
   removeEntityByUid: jest.fn().mockImplementation(),
   validateEntity: jest.fn().mockImplementation(),
+  getLocationByEntity: jest.fn().mockImplementation(),
 };
 
 const roleMetadataStorageMock: RoleMetadataStorage = {

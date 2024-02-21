@@ -14,6 +14,7 @@ interface Props {
   warnings: number;
   objectCount?: number;
   style?: CSSProperties;
+  type?: string;
 }
 
 const tooltipListStyle = kialiStyle({

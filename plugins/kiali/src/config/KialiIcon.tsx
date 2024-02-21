@@ -58,6 +58,8 @@ import {
   UserClockIcon,
   WarningTriangleIcon,
 } from '@patternfly/react-icons';
+import { SVGIconProps } from '@patternfly/react-icons/dist/js/createIcon';
+import { classes } from 'typestyle';
 
 import { PFColors } from '../components/Pf/PfColors';
 import { kialiStyle } from '../styles/StyleUtils';
@@ -70,9 +72,12 @@ const iconStyle = kialiStyle({
   width: '10px',
 });
 
-interface IconProps {
+export interface IconProps {
   className?: string;
   color?: string;
+  dataTest?: string;
+  icon?: React.ComponentClass<SVGIconProps>;
+  size?: 'sm' | 'md' | 'lg' | 'xl';
 }
 
 const conversorIconProps = (
@@ -200,3 +205,25 @@ Object.keys(KialiIcon).forEach(key => {
 export function createTooltipIcon(icon: any) {
   return <span>{icon}</span>;
 }
+
+export const createIcon = (
+  props: IconProps,
+  icon?: React.ComponentClass<SVGIconProps>,
+  colorIcon?: string,
+): React.ReactElement => {
+  const iconComponent = props.icon ?? icon ?? React.Fragment;
+
+  const iconColor = props.color ?? colorIcon;
+
+  const iconStyles = iconColor ? kialiStyle({ color: iconColor }) : undefined;
+
+  return (
+    <Icon
+      className={classes(props.className, iconStyles)}
+      size={props.size}
+      data-test={props.dataTest}
+    >
+      {React.createElement(iconComponent)}
+    </Icon>
+  );
+};

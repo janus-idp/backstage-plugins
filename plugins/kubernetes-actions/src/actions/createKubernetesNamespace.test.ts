@@ -8,7 +8,10 @@ import { setupServer } from 'msw/node';
 import os from 'os';
 import { PassThrough } from 'stream';
 
-import { createKubernetesNamespaceAction } from './createKubernetesNamespace';
+import {
+  convertLabelsToObject,
+  createKubernetesNamespaceAction,
+} from './createKubernetesNamespace';
 
 const LOCAL_ADDR = 'http://localhost:5000';
 const FIXTURES_DIR = `${__dirname}/../../__fixtures__/cluster-entities`;
@@ -222,5 +225,33 @@ describe('kubernetes:create-namespace', () => {
         },
       });
     }).rejects.toThrow('Cluster reference or url are required');
+  });
+});
+
+describe('convertLabelsToObject', () => {
+  test('converts labels string to object', () => {
+    const labelsString = 'key1=value1;key2=value2;key3=value3';
+    const expectedObject = {
+      key1: 'value1',
+      key2: 'value2',
+      key3: 'value3',
+    };
+    expect(convertLabelsToObject(labelsString)).toEqual(expectedObject);
+  });
+
+  test('handles empty string', () => {
+    expect(convertLabelsToObject('')).toEqual({});
+  });
+
+  test('handles invalid input', () => {
+    // No '=' in the string
+    expect(convertLabelsToObject('key1value1;')).toEqual({});
+  });
+
+  test('handles invalid labels', () => {
+    // Label without '='
+    expect(convertLabelsToObject('key1value1;key2=value2;=value3')).toEqual({
+      key2: 'value2',
+    });
   });
 });

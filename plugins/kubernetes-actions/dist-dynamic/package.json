@@ -52,11 +52,11 @@
   "bugs": "https://github.com/janus-idp/backstage-plugins/issues",
   "bundleDependencies": true,
   "peerDependencies": {
-    "@backstage/catalog-client": "^1.5.2",
-    "@backstage/catalog-model": "^1.4.3",
-    "@backstage/backend-plugin-api": "^0.6.9",
-    "@backstage/plugin-scaffolder-node": "^0.2.10",
-    "@backstage/backend-dynamic-feature-service": "0.1.0"
+    "@backstage/catalog-client": "^1.6.0",
+    "@backstage/catalog-model": "^1.4.4",
+    "@backstage/backend-plugin-api": "^0.6.10",
+    "@backstage/plugin-scaffolder-node": "^0.3.0",
+    "@backstage/backend-dynamic-feature-service": "^0.2.0"
   },
   "overrides": {
     "@aws-sdk/util-utf8-browser": {

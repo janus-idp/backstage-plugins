@@ -2,6 +2,8 @@ import { DurationInSeconds } from './Common';
 import { MeshCluster } from './Mesh';
 
 export type IstioLabelKey =
+  | 'ambientWaypointLabel'
+  | 'ambientWaypointLabelValue'
   | 'appLabelName'
   | 'versionLabelName'
   | 'injectionLabelName'
@@ -12,6 +14,8 @@ interface DeploymentConfig {
 }
 
 interface IstioAnnotations {
+  ambientAnnotation: string;
+  ambientAnnotationEnabled: string;
   // this could also be the name of the pod label, both label and annotation are supported
   istioInjectionAnnotation: string;
 }

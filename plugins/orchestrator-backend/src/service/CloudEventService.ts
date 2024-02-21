@@ -10,19 +10,15 @@ export class CloudEventService {
 
   public async send<T>(args: {
     event: CloudEvent<T>;
-    endpoint?: string;
+    targetUrl: string;
   }): Promise<CloudEventResponse> {
     try {
-      if (!args.endpoint) {
-        throw new Error('Endpoint is required');
-      }
-      const targetUrl = args.endpoint;
       this.logger.info(
-        `Sending CloudEvent to ${targetUrl} with data ${JSON.stringify(
+        `Sending CloudEvent to ${args.targetUrl} with data ${JSON.stringify(
           args.event,
         )}`,
       );
-      const emit = emitterFor(httpTransport(targetUrl));
+      const emit = emitterFor(httpTransport(args.targetUrl));
       await emit(args.event);
       return { success: true };
     } catch (e: any) {

@@ -8,6 +8,7 @@ import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { TestApiProvider } from '@backstage/test-utils';
 
 import { kialiPlugin } from '../src';
+import { pluginRoot } from '../src/components/BreadcrumbView/BreadcrumbView';
 import { KialiNoPath } from '../src/pages/Kiali';
 import { KialiHeader } from '../src/pages/Kiali/Header/KialiHeader';
 import { KialiHeaderEntity } from '../src/pages/Kiali/Header/KialiHeaderEntity';
@@ -15,6 +16,7 @@ import { KialiEntity } from '../src/pages/Kiali/KialiEntity';
 import { KialiNoAnnotation } from '../src/pages/Kiali/KialiNoAnnotation';
 import { KialiNoResources } from '../src/pages/Kiali/KialiNoResources';
 import { OverviewPage } from '../src/pages/Overview/OverviewPage';
+import { WorkloadDetailsPage } from '../src/pages/WorkloadDetails/WorkloadDetailsPage';
 import { WorkloadListPage } from '../src/pages/WorkloadList/WorkloadListPage';
 import { KialiApi, kialiApiRef } from '../src/services/Api';
 import { KialiProvider } from '../src/store/KialiProvider';
@@ -29,7 +31,7 @@ import {
   ServiceHealth,
   WorkloadHealth,
 } from '../src/types/Health';
-import { IstioConfigsMap } from '../src/types/IstioConfigList';
+import { IstioConfigList, IstioConfigsMap } from '../src/types/IstioConfigList';
 import {
   CanaryUpgradeStatus,
   OutboundTrafficPolicy,
@@ -46,9 +48,11 @@ import { ServerConfig } from '../src/types/ServerConfig';
 import { StatusState } from '../src/types/StatusState';
 import { TLSStatus } from '../src/types/TLSStatus';
 import {
+  Workload,
   WorkloadListItem,
   WorkloadNamespaceResponse,
   WorkloadOverview,
+  WorkloadQuery,
 } from '../src/types/Workload';
 import { filterNsByAnnotation } from '../src/utils/entityFilter';
 import { kialiData } from './__fixtures__';
@@ -112,6 +116,27 @@ class MockKialiClient implements KialiApi {
         };
       },
     );
+  }
+
+  async getWorkload(
+    namespace: string,
+    name: string,
+    _: WorkloadQuery,
+    __?: string,
+  ): Promise<Workload> {
+    const parsedName = name.replace(/-/g, '');
+    return kialiData.namespacesData[namespace].workloads[parsedName];
+  }
+
+  async getIstioConfig(
+    namespace: string,
+    _: string[],
+    __: boolean,
+    ___: string,
+    ____: string,
+    _____?: string,
+  ): Promise<IstioConfigList> {
+    return kialiData.namespacesData[namespace].istioConfigList;
   }
 
   async getServerConfig(): Promise<ServerConfig> {
@@ -293,8 +318,8 @@ interface Props {
 export const TabsMock = () => {
   const [selectedTab, setSelectedTab] = React.useState<number>(0);
   const tabs = [
-    { label: 'Overview', route: 'overview' },
-    { label: 'Workloads', route: 'workloads' },
+    { label: 'Overview', route: `${pluginRoot}/overview` },
+    { label: 'Workloads', route: `${pluginRoot}/workloads` },
   ];
   const navigate = useNavigate();
   return (
@@ -314,10 +339,14 @@ export const TabsMock = () => {
 
 const RoutesList = () => (
   <Routes>
-    <Route path="/" element={<OverviewPage />} />
-    <Route path="/overview" element={<OverviewPage />} />
-    <Route path="/workloads" element={<WorkloadListPage />} />
-    <Route path="/kiali" element={<KialiEntity />} />
+    <Route path={`/${pluginRoot}`} element={<OverviewPage />} />
+    <Route path={`/${pluginRoot}/overview`} element={<OverviewPage />} />
+    <Route path={`/${pluginRoot}/workloads`} element={<WorkloadListPage />} />
+    <Route
+      path={`/${pluginRoot}/workloads/:namespace/:workload`}
+      element={<WorkloadDetailsPage />}
+    />
+    <Route path={`/${pluginRoot}/kiali/entity`} element={<KialiEntity />} />
     <Route path="*" element={<KialiNoPath />} />
   </Routes>
 );
@@ -361,12 +390,12 @@ createDevApp()
   .addPage({
     element: <MockProvider />,
     title: 'KialiPage',
-    path: '/overview',
+    path: `/${pluginRoot}/overview`,
   })
   .addPage({
     element: <MockProvider isEntity />,
     title: 'Entity',
-    path: '/kiali',
+    path: `/${pluginRoot}/kiali/entity`,
   })
   .addPage({
     element: <KialiNoResources entity={mockEntityAnnotationNoNamespace} />,

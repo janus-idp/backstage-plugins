@@ -9,7 +9,11 @@ import {
   HelpMessage,
   IstioObject,
   K8sGateway,
+  K8sGRPCRoute,
   K8sHTTPRoute,
+  K8sReferenceGrant,
+  K8sTCPRoute,
+  K8sTLSRoute,
   ObjectValidation,
   PeerAuthentication,
   References,
@@ -32,27 +36,31 @@ export interface IstioConfigId {
 }
 
 export interface IstioConfigDetails {
-  namespace: Namespace;
+  authorizationPolicy: AuthorizationPolicy;
   cluster?: string;
+  destinationRule: DestinationRule;
+  envoyFilter: EnvoyFilter;
   gateway: Gateway;
+  help?: HelpMessage[];
+  k8sGRPCRoute: K8sGRPCRoute;
   k8sGateway: K8sGateway;
   k8sHTTPRoute: K8sHTTPRoute;
-  virtualService: VirtualService;
-  destinationRule: DestinationRule;
+  k8sReferenceGrant: K8sReferenceGrant;
+  k8sTCPRoute: K8sTCPRoute;
+  k8sTLSRoute: K8sTLSRoute;
+  namespace: Namespace;
+  peerAuthentication: PeerAuthentication;
+  permissions: ResourcePermissions;
+  references?: References;
+  requestAuthentication: RequestAuthentication;
   serviceEntry: ServiceEntry;
   sidecar: Sidecar;
+  telemetry: Telemetry;
+  validation: ObjectValidation;
+  virtualService: VirtualService;
+  wasmPlugin: WasmPlugin;
   workloadEntry: WorkloadEntry;
   workloadGroup: WorkloadGroup;
-  envoyFilter: EnvoyFilter;
-  wasmPlugin: WasmPlugin;
-  telemetry: Telemetry;
-  authorizationPolicy: AuthorizationPolicy;
-  peerAuthentication: PeerAuthentication;
-  requestAuthentication: RequestAuthentication;
-  permissions: ResourcePermissions;
-  validation: ObjectValidation;
-  references?: References;
-  help?: HelpMessage[];
 }
 
 export const aceOptions: AceOptions = {

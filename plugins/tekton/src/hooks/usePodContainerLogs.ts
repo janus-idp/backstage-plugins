@@ -31,7 +31,12 @@ export const usePodContainerLogs = ({
     (clusters.length > 0 && clusters[selectedCluster || 0]) || '';
   const getLogs = React.useCallback(
     async (podScope: ContainerScope): Promise<{ text: string }> => {
-      const { podName, podNamespace, containerName, clusterName } = podScope;
+      const {
+        podName,
+        podNamespace,
+        containerName,
+        cluster: { name: clusterName },
+      } = podScope;
       return await kubernetesProxyApi.getPodLogs({
         podName: podName,
         namespace: podNamespace,
@@ -48,7 +53,7 @@ export const usePodContainerLogs = ({
         containerName: cName,
         podName: pod.metadata.name,
         podNamespace: pod.metadata.namespace,
-        clusterName: currCluster,
+        cluster: { name: currCluster },
       };
       return getLogs(podScope);
     }

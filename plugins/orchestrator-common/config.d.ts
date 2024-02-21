@@ -45,7 +45,7 @@ export interface Config {
 
       /**
        * Container image name of the Sonata Flow service.
-       * Default: quay.io/kiegroup/kogito-swf-devmode-nightly:main-2023-08-30
+       * Default: quay.io/kiegroup/kogito-swf-devmode-nightly:main-2024-02-19
        */
       container?: string;
       /**
@@ -92,7 +92,7 @@ export interface Config {
     editor?: {
       /**
        * Path to the envelope context (either a remote url or a local path under app/public folder).
-       * Default: https://start.kubesmarts.org
+       * Default: https://sandbox.kie.org/swf-chrome-extension/0.32.0
        * @visibility frontend
        */
       path?: string;

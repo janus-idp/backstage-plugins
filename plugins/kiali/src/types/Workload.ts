@@ -103,3 +103,9 @@ export interface AdditionalItem {
   value: string;
   icon?: string;
 }
+
+export interface WorkloadQuery {
+  health: 'true' | 'false';
+  rateInterval: string;
+  validate: 'true' | 'false';
+}
