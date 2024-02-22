@@ -1,6 +1,10 @@
 import React from 'react';
 
-import { MarkdownContent } from '@backstage/core-components';
+import {
+  MarkdownContent,
+  Progress,
+  WarningPanel,
+} from '@backstage/core-components';
 import { AboutField } from '@backstage/plugin-catalog';
 
 import {
@@ -10,6 +14,8 @@ import {
   Grid,
   makeStyles,
 } from '@material-ui/core';
+
+import { useRole } from '../../hooks/useRole';
 
 const useStyles = makeStyles({
   gridItemCard: {
@@ -34,35 +40,56 @@ const useStyles = makeStyles({
   },
 });
 
-export const AboutCard = () => {
+type AboutCardProps = {
+  roleName: string;
+};
+
+export const AboutCard = ({ roleName }: AboutCardProps) => {
   const classes = useStyles();
   const cardClass = classes.gridItemCard;
   const cardContentClass = classes.gridItemCardContent;
 
+  const { role, roleError, loading } = useRole(roleName);
+  if (loading) {
+    return <Progress />;
+  }
   return (
     <Card className={cardClass}>
       <CardHeader title="About" />
       <CardContent className={cardContentClass}>
-        <Grid container>
-          <AboutField label="Description" gridSizes={{ xs: 4, sm: 8, lg: 4 }}>
-            <MarkdownContent
-              className={classes.text}
-              content="No description"
+        {roleError.name ? (
+          <div style={{ paddingBottom: '16px' }}>
+            <WarningPanel
+              message={roleError?.message}
+              title="Something went wrong while fetching role"
+              severity="error"
             />
-          </AboutField>
-          <AboutField label="Modified By" gridSizes={{ xs: 4, sm: 8, lg: 4 }}>
-            <MarkdownContent
-              className={classes.text}
-              content="No information"
-            />
-          </AboutField>
-          <AboutField label="Last Modified" gridSizes={{ xs: 4, sm: 8, lg: 4 }}>
-            <MarkdownContent
-              className={classes.text}
-              content="No information"
-            />
-          </AboutField>
-        </Grid>
+          </div>
+        ) : (
+          <Grid container>
+            <AboutField label="Description" gridSizes={{ xs: 4, sm: 8, lg: 4 }}>
+              <MarkdownContent
+                className={classes.text}
+                content={role?.metadata?.description ?? 'No description'}
+              />
+            </AboutField>
+            <AboutField label="Modified By" gridSizes={{ xs: 4, sm: 8, lg: 4 }}>
+              <MarkdownContent
+                className={classes.text}
+                content={role?.metadata?.modifiedBy ?? 'No information'}
+              />
+            </AboutField>
+            <AboutField
+              label="Last Modified"
+              gridSizes={{ xs: 4, sm: 8, lg: 4 }}
+            >
+              <MarkdownContent
+                className={classes.text}
+                content={role?.metadata?.lastModified ?? 'No information'}
+              />
+            </AboutField>
+          </Grid>
+        )}
       </CardContent>
     </Card>
   );
