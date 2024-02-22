@@ -32,7 +32,9 @@ export const RoleOverviewPage = () => {
           <TabbedLayout.Route path="" title="Overview">
             <Grid container direction="row">
               <Grid item lg={12} xs={12}>
-                <AboutCard />
+                <AboutCard
+                  roleName={`${roleKind}:${roleNamespace}/${roleName}`}
+                />
               </Grid>
               <Grid item lg={6} xs={12}>
                 <MembersCard
