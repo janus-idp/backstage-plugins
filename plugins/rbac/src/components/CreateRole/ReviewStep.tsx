@@ -2,7 +2,7 @@ import React from 'react';
 
 import { StructuredMetadataTable } from '@backstage/core-components';
 
-import Typography from '@mui/material/Typography';
+import Typography from '@material-ui/core/Typography';
 
 import { getPermissionsNumber } from '../../utils/create-role-utils';
 import { getMembers } from '../../utils/rbac-utils';

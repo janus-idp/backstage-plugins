@@ -147,6 +147,21 @@ function initOpenAPIBackend(): OpenAPIBackend {
       verbose: true,
       addUsedSchema: false,
     },
+    handlers: {
+      validationFail: async (
+        c,
+        _req: express.Request,
+        res: express.Response,
+      ) => {
+        console.log('validationFail', c.operation);
+        res.status(400).json({ err: c.validation.errors });
+      },
+      notFound: async (_c, req: express.Request, res: express.Response) => {
+        res.status(404).json({ err: `${req.path} path not found` });
+      },
+      notImplemented: async (_c, req: express.Request, res: express.Response) =>
+        res.status(500).json({ err: `${req.path} not implemented` }),
+    },
   });
 }
 
@@ -431,9 +446,17 @@ function setupInternalRoutes(
 
     const workflowDefinition =
       await services.dataIndexService.getWorkflowDefinition(workflowId);
+
+    if (!workflowDefinition) {
+      res.status(500).send(`Couldn't fetch workflow definition ${workflowId}`);
+      return;
+    }
     const serviceUrl = workflowDefinition.serviceUrl;
     if (!serviceUrl) {
-      throw new Error(`ServiceUrl is not defined for workflow ${workflowId}`);
+      res
+        .status(500)
+        .send(`Service URL is not defined for workflow ${workflowId}`);
+      return;
     }
 
     // workflow source

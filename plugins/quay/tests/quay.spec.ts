@@ -6,7 +6,7 @@ test.describe('Quay plugin', () => {
   test.beforeAll(async ({ browser }) => {
     const context = await browser.newContext();
     page = await context.newPage();
-    await page.goto('http://localhost:3000/quay');
+    await page.goto('/');
     await expect(
       page.getByRole('link', { name: 'backstage-test/test-images' }),
     ).toBeEnabled({ timeout: 20000 });

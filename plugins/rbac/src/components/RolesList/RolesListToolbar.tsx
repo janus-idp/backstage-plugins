@@ -3,8 +3,8 @@ import React from 'react';
 import { LinkButton } from '@backstage/core-components';
 
 import { makeStyles } from '@material-ui/core';
-import Alert from '@mui/material/Alert';
-import AlertTitle from '@mui/material/AlertTitle';
+import Alert from '@material-ui/lab/Alert';
+import AlertTitle from '@material-ui/lab/AlertTitle';
 
 const useStyles = makeStyles(theme => ({
   toolbar: {

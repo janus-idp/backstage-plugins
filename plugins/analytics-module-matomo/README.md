@@ -28,7 +28,7 @@ import {
 import { MatomoAnalytics } from '@janus-idp/backstage-plugin-analytics-module-matomo';
 
 export const apis: AnyApiFactory[] = [
-  // Instantiate and register the GA Analytics API Implementation.
+  // Instantiate and register the Matomo Analytics API Implementation.
   createApiFactory({
     api: analyticsApiRef,
     deps: { configApi: configApiRef },
@@ -40,20 +40,20 @@ export const apis: AnyApiFactory[] = [
 3. Configure the plugin in your `app-config.yaml`:
 
 The following is the minimum configuration required to start sending analytics
-events to GA. All that's needed is your Universal Analytics tracking ID:
+events to Matomo. All that's needed is your Matomo Host and Site Id:
 
 ```yaml
 # app-config.yaml
 app:
   analytics:
     matomo:
-      instanceUrl: ${ANALYTICS_MATOMO_INSTANCE_URL}
+      host: ${ANALYTICS_MATOMO_INSTANCE_URL}
       siteId: ${ANALYTICS_MATOMO_SITE_ID}
 ```
 
 4. Update CSP in your `app-config.yaml`:(optional)
 
-The following is the minimal content security policy required to load scripts from GA.
+The following is the minimal content security policy required to load scripts from your Matomo Instance.
 
 ```yaml
 backend:

@@ -1,3 +1,22 @@
+## @janus-idp/backstage-plugin-rbac-backend [2.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.2.4...@janus-idp/backstage-plugin-rbac-backend@2.3.0) (2024-02-21)
+
+
+### Features
+
+* **rbac:** backend part - store role description to the database  ([#1178](https://github.com/janus-idp/backstage-plugins/issues/1178)) ([ec8b1c2](https://github.com/janus-idp/backstage-plugins/commit/ec8b1c27cce5c36997f84a068dc4cc5cc542f428))
+
+
+### Bug Fixes
+
+* **rbac:** reduce the catalog calls when build graph ([#1203](https://github.com/janus-idp/backstage-plugins/issues/1203)) ([e63aac2](https://github.com/janus-idp/backstage-plugins/commit/e63aac2a8e7513974a5aabb3ce25c838d6b34dde))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-rbac-common:** upgraded to 1.3.0
+* **@janus-idp/backstage-plugin-rbac-node:** upgraded to 1.0.1
+
 ## @janus-idp/backstage-plugin-rbac-backend [2.2.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.2.3...@janus-idp/backstage-plugin-rbac-backend@2.2.4) (2024-02-20)
 
 

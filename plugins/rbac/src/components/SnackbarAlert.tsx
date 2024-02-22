@@ -1,7 +1,7 @@
 import React from 'react';
 
-import Alert from '@mui/material/Alert';
-import Snackbar from '@mui/material/Snackbar';
+import Snackbar from '@material-ui/core/Snackbar';
+import Alert from '@material-ui/lab/Alert';
 
 export const SnackbarAlert = ({
   toastMessage,

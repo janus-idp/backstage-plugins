@@ -53,15 +53,16 @@ export class DataIndexService {
       this.logger.error(
         `Error aborting workflow instance ${workflowId}: ${result.error}`,
       );
+    } else {
+      this.logger.debug(`Successfully aborted workflow instance ${workflowId}`);
     }
 
-    this.logger.debug(`Successfully aborted workflow instance ${workflowId}`);
     return result;
   }
 
   public async getWorkflowDefinition(
     definitionId: string,
-  ): Promise<WorkflowInfo> {
+  ): Promise<WorkflowInfo | undefined> {
     const graphQlQuery = `{ ProcessDefinitions ( where: {id: {equal: "${definitionId}" } } ) { id, name, version, type, endpoint, serviceUrl, source } }`;
 
     const result = await this.client.query(graphQlQuery, {});
@@ -70,7 +71,15 @@ export class DataIndexService {
       this.logger.error(`Error fetching workflow definition ${result.error}`);
       throw result.error;
     }
-    return (result.data.ProcessDefinitions as WorkflowInfo[])[0];
+
+    const processDefinitions = result.data.ProcessDefinitions as WorkflowInfo[];
+
+    if (processDefinitions.length === 0) {
+      this.logger.info(`No workflow definition found for ${definitionId}`);
+      return undefined;
+    }
+
+    return processDefinitions[0];
   }
 
   public async getWorkflowDefinitions(): Promise<WorkflowInfo[]> {
@@ -123,9 +132,7 @@ export class DataIndexService {
   }
 
   private async getWorkflowDefinitionFromInstance(instance: ProcessInstance) {
-    const workflowItem: WorkflowInfo = await this.getWorkflowDefinition(
-      instance.processId,
-    );
+    const workflowItem = await this.getWorkflowDefinition(instance.processId);
     if (!workflowItem?.source) {
       throw new Error(
         `Workflow defintion is required to fetch instance ${instance.id}`,
@@ -155,7 +162,15 @@ export class DataIndexService {
       return undefined;
     }
 
-    return response.data.ProcessDefinitions[0].source;
+    const processDefinitions = response.data
+      .ProcessDefinitions as WorkflowInfo[];
+
+    if (processDefinitions.length === 0) {
+      this.logger.info(`No workflow source found for ${workflowId}`);
+      return undefined;
+    }
+
+    return processDefinitions[0].source;
   }
 
   public async fetchWorkflowInstances(
@@ -206,9 +221,13 @@ export class DataIndexService {
       throw result.error;
     }
 
-    const variables = result.data.ProcessInstances.pop().variables;
+    const processInstances = result.data.ProcessInstances as ProcessInstance[];
 
-    return parseWorkflowVariables(variables);
+    if (processInstances.length === 0) {
+      return undefined;
+    }
+
+    return parseWorkflowVariables(processInstances[0].variables);
   }
 
   public async fetchProcessInstance(
@@ -225,10 +244,15 @@ export class DataIndexService {
       throw result.error;
     }
 
-    const instance = (result.data.ProcessInstances as ProcessInstance[])[0];
-    const workflowItem: WorkflowInfo = await this.getWorkflowDefinition(
-      instance.processId,
-    );
+    const processInstances = result.data.ProcessInstances as ProcessInstance[];
+
+    if (processInstances.length === 0) {
+      return undefined;
+    }
+
+    const instance = processInstances[0];
+
+    const workflowItem = await this.getWorkflowDefinition(instance.processId);
     if (!workflowItem?.source) {
       throw new Error(
         `Workflow defintion is required to fetch instance ${instance.id}`,

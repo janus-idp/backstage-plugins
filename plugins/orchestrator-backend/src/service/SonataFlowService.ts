@@ -98,10 +98,11 @@ export class SonataFlowService {
     workflowId: string,
   ): Promise<string | undefined> {
     try {
-      const endpoint =
-        (await this.dataIndex.getWorkflowDefinition(workflowId)).serviceUrl ??
-        '';
-      const urlToFetch = `${endpoint}/management/processes/${workflowId}/sources`;
+      const definition = await this.dataIndex.getWorkflowDefinition(workflowId);
+      if (!definition?.serviceUrl) {
+        return undefined;
+      }
+      const urlToFetch = `${definition.serviceUrl}/management/processes/${workflowId}/sources`;
       const response = await executeWithRetry(() => fetch(urlToFetch));
 
       if (response.ok) {

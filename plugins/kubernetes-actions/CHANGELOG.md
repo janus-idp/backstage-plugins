@@ -1,3 +1,16 @@
+## @janus-idp/backstage-scaffolder-backend-module-kubernetes [1.3.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-kubernetes@1.3.1...@janus-idp/backstage-scaffolder-backend-module-kubernetes@1.3.2) (2024-02-21)
+
+
+### Bug Fixes
+
+* **kubernetes-actions:** support adding labels while creating namespace ([#1223](https://github.com/janus-idp/backstage-plugins/issues/1223)) ([2b266bc](https://github.com/janus-idp/backstage-plugins/commit/2b266bc123e3446c18bdaa0dda34fe7e53b16404))
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.2
+
 ## @janus-idp/backstage-scaffolder-backend-module-kubernetes [1.3.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-kubernetes@1.3.0...@janus-idp/backstage-scaffolder-backend-module-kubernetes@1.3.1) (2024-02-05)
 
 

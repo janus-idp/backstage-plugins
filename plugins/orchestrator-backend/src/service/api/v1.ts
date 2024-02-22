@@ -16,8 +16,12 @@ import {
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { DataIndexService } from '../DataIndexService';
+import { retryAsyncFunction } from '../Helper';
 import { SonataFlowService } from '../SonataFlowService';
 import { WorkflowService } from '../WorkflowService';
+
+const FETCH_INSTANCE_MAX_RETRIES = 5;
+const FETCH_INSTANCE_RETRY_DELAY_MS = 1000;
 
 export namespace V1 {
   export async function getWorkflowsOverview(
@@ -146,20 +150,30 @@ export namespace V1 {
     businessKey: string | undefined,
   ): Promise<WorkflowExecutionResponse> {
     const definition = await dataIndexService.getWorkflowDefinition(workflowId);
-    const serviceUrl = definition.serviceUrl;
-    if (!serviceUrl) {
+    if (!definition) {
+      throw new Error(`Couldn't fetch workflow definition for ${workflowId}`);
+    }
+    if (!definition.serviceUrl) {
       throw new Error(`ServiceURL is not defined for workflow ${workflowId}`);
     }
     const executionResponse = await sonataFlowService.executeWorkflow({
       workflowId,
       inputData: reqBody,
-      endpoint: serviceUrl,
+      endpoint: definition.serviceUrl,
       businessKey,
     });
 
     if (!executionResponse) {
       throw new Error(`Couldn't execute workflow ${workflowId}`);
     }
+
+    // Making sure the instance data is available before returning
+    await retryAsyncFunction({
+      asyncFunc: () =>
+        dataIndexService.fetchProcessInstance(executionResponse.id),
+      retries: FETCH_INSTANCE_MAX_RETRIES,
+      delayMs: FETCH_INSTANCE_RETRY_DELAY_MS,
+    });
 
     return executionResponse;
   }
