@@ -155,6 +155,8 @@ const toolbarTail = kialiStyle({
 
 const logsDiv = kialiStyle({
   marginRight: '0.5rem',
+  overflowX: 'scroll',
+  overflowY: 'hidden',
 });
 
 const logsDisplay = kialiStyle({

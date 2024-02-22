@@ -111,7 +111,7 @@ export const WorkloadDetailsPage = () => {
       <>
         {hasPods && namespace && (
           <WorkloadPodLogs
-            lastRefreshAt={432432432432}
+            lastRefreshAt={duration}
             namespace={namespace}
             workload={workload ? workload : ''}
             pods={workloadItem!.pods}
