@@ -10,7 +10,6 @@ import {
   CardContent,
   Checkbox,
   CircularProgress,
-  Divider,
   FormControlLabel,
   Grid,
   Input,
@@ -46,6 +45,7 @@ import { AccessLog, LogEntry, Pod, PodLogs } from '../../types/IstioObjects';
 import { Span, TracingQuery } from '../../types/Tracing';
 import { PromisesRegistry } from '../../utils/CancelablePromises';
 import { formatDuration } from '../../utils/tracing/TracingHelper';
+import { infoStyle } from '../Overview/OverviewCard/OverviewCardControlPlaneNamespace';
 
 const appContainerColors = [
   PFColors.Blue300,
@@ -187,12 +187,14 @@ const logLineStyle = kialiStyle({
   paddingLeft: '0.75rem',
 });
 
-const logInfoStyle = kialiStyle({
+const logInfoStyleIcon = kialiStyle({
   paddingLeft: 0,
   width: '0.75rem',
   height: '0.75rem',
   fontFamily: 'monospace',
   fontSize: '0.75rem',
+  padding: '10px 10px 0 5px !important',
+  minWidth: '0 !important',
 });
 
 const logMessaageStyle = kialiStyle({
@@ -202,6 +204,7 @@ const logMessaageStyle = kialiStyle({
 
 const logsBackground = (enabled: boolean): React.CSSProperties => ({
   backgroundColor: enabled ? PFColors.Black1000 : PFColors.Black500,
+  display: 'table',
 });
 
 const logsHeight = (
@@ -686,7 +689,7 @@ export const WorkloadPodLogs = (props: WorkloadPodLogsProps) => {
           >
             <Button
               key={`s-b-${index}`}
-              className={logInfoStyle}
+              className={logInfoStyleIcon}
               onClick={() => {
                 gotoSpan(e.span!);
               }}
@@ -744,7 +747,7 @@ export const WorkloadPodLogs = (props: WorkloadPodLogsProps) => {
         >
           <Button
             key={`al-b-${index}`}
-            className={logInfoStyle}
+            className={logInfoStyleIcon}
             onClick={() => {
               addAccessLogModal(le.message, le.accessLog!);
             }}
@@ -801,16 +804,17 @@ export const WorkloadPodLogs = (props: WorkloadPodLogsProps) => {
 
     const logDropDowns = Object.keys(LogLevel).map(level => {
       return (
-        <Select
+        <MenuItem
           key={`setLogLevel${level}`}
           onClick={() => {
             // @ts-ignore
             setLogLevel(LogLevel[level]);
           }}
           disabled={serverConfig.deployment.viewOnlyMode}
+          value={level}
         >
           {level}
-        </Select>
+        </MenuItem>
       );
     });
 
@@ -841,27 +845,66 @@ export const WorkloadPodLogs = (props: WorkloadPodLogsProps) => {
       setWorkloadPodLogsState(updatedState);
     };
 
-    const kebabActions = [
-      <MenuItem key="toggleToolbar" onClick={toggleToolbar}>
-        {`${workloadPodLogsState.showToolbar ? 'Collapse' : 'Expand'} Toolbar`}
-      </MenuItem>,
+    const setKebabOpen = (kebabOpen: boolean): void => {
+      workloadPodLogsState.kebabOpen = !kebabOpen;
+      const updatedState = {
+        ...workloadPodLogsState,
+        kebabOpen: !kebabOpen,
+      };
+      setWorkloadPodLogsState(updatedState);
+    };
 
-      <MenuItem key="toggleRegex" onClick={toggleUseRegex}>
-        {`Match via ${workloadPodLogsState.useRegex ? 'Substring' : 'Regex'}`}
-      </MenuItem>,
+    const kebabActions = () => (
+      <Select
+        onChange={() => setKebabOpen(workloadPodLogsState.kebabOpen)}
+        id="kebab-actions"
+        value="toggleToolbar"
+      >
+        <MenuItem value="toggleToolbar" onClick={toggleToolbar}>
+          {`${
+            workloadPodLogsState.showToolbar ? 'Collapse' : 'Expand'
+          } Toolbar`}
+        </MenuItem>
 
-      <MenuItem key="toggleTimestamps" onClick={toggleShowTimestamps}>
-        {`${
-          workloadPodLogsState.showTimestamps ? 'Remove' : 'Show'
-        } Timestamps`}
-      </MenuItem>,
+        <MenuItem value="toggleRegex" onClick={toggleUseRegex}>
+          {`Match via ${workloadPodLogsState.useRegex ? 'Substring' : 'Regex'}`}
+        </MenuItem>
 
-      <Divider key="logLevelSeparator" />,
+        <MenuItem value="toggleTimestamps" onClick={toggleShowTimestamps}>
+          {`${
+            workloadPodLogsState.showTimestamps ? 'Remove' : 'Show'
+          } Timestamps`}
+        </MenuItem>
 
-      <MenuItem key="setLogLevels">
+        {hasProxyContainer && (
+          <MenuItem value="logs" disabled>
+            Set Proxy Log Level
+            <Tooltip
+              title={
+                <div style={{ textAlign: 'left' }}>
+                  <div>
+                    This action configures the proxy logger level but does not
+                    affect the proxy <b>access</b> logs. Setting the log level
+                    to 'off' disables the proxy loggers but does <b>not</b>{' '}
+                    disable access logging. To hide all proxy logging from the
+                    logs view, including access logs, un-check the proxy
+                    container. <br />
+                    <br />
+                    This option is disabled for pods with no proxy container, or
+                    in view-only mode.
+                  </div>
+                </div>
+              }
+            >
+              <div>
+                <KialiIcon.Info className={infoStyle} />
+              </div>
+            </Tooltip>
+          </MenuItem>
+        )}
         {hasProxyContainer && logDropDowns}
-      </MenuItem>,
-    ];
+      </Select>
+    );
 
     const logEntries = workloadPodLogsState.entries
       ? filteredEntries(
@@ -871,15 +914,6 @@ export const WorkloadPodLogs = (props: WorkloadPodLogsProps) => {
           workloadPodLogsState.useRegex,
         )
       : [];
-
-    const setKebabOpen = (kebabOpen: boolean): void => {
-      workloadPodLogsState.kebabOpen = !kebabOpen;
-      const updatedState = {
-        ...workloadPodLogsState,
-        kebabOpen: !kebabOpen,
-      };
-      setWorkloadPodLogsState(updatedState);
-    };
 
     const entriesToString = (entries: Entry[]): string => {
       return entries.map(entry => entryToString(entry)).join('\n');
@@ -945,12 +979,7 @@ export const WorkloadPodLogs = (props: WorkloadPodLogsProps) => {
             </Button>
           </Tooltip>
 
-          <Select
-            open={workloadPodLogsState.kebabOpen}
-            onChange={() => setKebabOpen(workloadPodLogsState.kebabOpen)}
-          >
-            {kebabActions}
-          </Select>
+          {kebabActions()}
         </Toolbar>
 
         {workloadPodLogsState.linesTruncatedContainers.length > 0 && (
