@@ -1,14 +1,6 @@
 import * as React from 'react';
 
-import {
-  MenuToggle,
-  MenuToggleElement,
-  Select,
-  SelectList,
-  SelectOption,
-  Tooltip,
-  TooltipPosition,
-} from '@patternfly/react-core';
+import { MenuItem, Select, Tooltip } from '@material-ui/core';
 
 import { kialiStyle } from '../../styles/StyleUtils';
 
@@ -25,7 +17,7 @@ type ToolbarDropdownProps = {
   nameDropdown?: string;
   options: object;
   tooltip?: string;
-  tooltipPosition?: TooltipPosition;
+  tooltipPosition?: string;
   value?: number | string;
 
   handleSelect: (value: string) => void;
@@ -35,68 +27,38 @@ type ToolbarDropdownProps = {
 export const ToolbarDropdown: React.FC<ToolbarDropdownProps> = (
   props: ToolbarDropdownProps,
 ) => {
-  const [isOpen, setIsOpen] = React.useState<boolean>(false);
-
-  const onKeyChanged = (
-    _event?: React.MouseEvent<Element, MouseEvent>,
-    selection?: string | number,
-  ) => {
-    if (selection) {
-      props.handleSelect(String(selection));
+  const onKeyChanged = (_event: object, child?: React.ReactNode) => {
+    if (child) {
+      // @ts-ignore
+      props.handleSelect(String(child.props.value));
     }
-
-    setIsOpen(false);
   };
-
-  const onToggleClick = () => {
-    setIsOpen(!isOpen);
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    props.onToggle && props.onToggle(isOpen);
-  };
-
-  const toggle = (toggleRef: React.Ref<MenuToggleElement>) => (
-    <MenuToggle
-      id={`${props.id}-toggle`}
-      ref={toggleRef}
-      onClick={onToggleClick}
-      isExpanded={isOpen}
-      isDisabled={props.disabled}
-      className={props.className}
-    >
-      {props.label}
-    </MenuToggle>
-  );
 
   const dropdownButton = (
     <Select
-      toggle={toggle}
-      onSelect={onKeyChanged}
       aria-label={props.id}
-      selected={props.value}
+      value={props.value}
       id={props.id}
       data-test={props.id}
-      onOpenChange={isOpenC => setIsOpen(isOpenC)}
-      isOpen={isOpen}
       aria-labelledby={props.id}
+      onChange={onKeyChanged}
     >
-      <SelectList>
-        {Object.keys(props.options).map(key => {
-          return (
-            <SelectOption
-              id={key}
-              key={key}
-              isDisabled={props.disabled}
-              isSelected={key === String(props.value)}
-              value={`${key}`}
-            >
-              {
-                // @ts-ignore
-                props.options[key]
-              }
-            </SelectOption>
-          );
-        })}
-      </SelectList>
+      {Object.keys(props.options).map(key => {
+        return (
+          <MenuItem
+            id={key}
+            key={key}
+            disabled={props.disabled}
+            selected={key === String(props.value)}
+            value={`${key}`}
+          >
+            {
+              // @ts-ignore
+              props.options[key]
+            }
+          </MenuItem>
+        );
+      })}
     </Select>
   );
   return (
@@ -105,14 +67,7 @@ export const ToolbarDropdown: React.FC<ToolbarDropdownProps> = (
         <span className={dropdownTitle}>{props.nameDropdown}</span>
       )}
       {props.tooltip ? (
-        <Tooltip
-          key={`ot-${props.id}`}
-          entryDelay={1000}
-          position={
-            props.tooltipPosition ? props.tooltipPosition : TooltipPosition.auto
-          }
-          content={<>{props.tooltip}</>}
-        >
+        <Tooltip key={`ot-${props.id}`} title={<>{props.tooltip}</>}>
           {dropdownButton}
         </Tooltip>
       ) : (

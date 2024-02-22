@@ -227,7 +227,15 @@ const formatDate = (timestamp: string): string => {
 
 export const WorkloadPodLogs = (props: WorkloadPodLogsProps) => {
   const promises: PromisesRegistry = new PromisesRegistry();
-  const podOptions: string[] = [];
+  const podOptions = (): string[] => {
+    const toRet: string[] = [];
+    if (props.pods.length > 0) {
+      for (let i = 0; i < props.pods.length; ++i) {
+        toRet[`${i}`] = props.pods[i].name;
+      }
+    }
+    return toRet;
+  };
   const kialiClient = useApi(kialiApiRef);
   const kialiState = React.useContext(KialiContext) as KialiAppState;
   const getContainerOptions = (pod: Pod): ContainerOption[] => {
@@ -295,6 +303,156 @@ export const WorkloadPodLogs = (props: WorkloadPodLogsProps) => {
   const [workloadPodLogsState, setWorkloadPodLogsState] =
     React.useState<WorkloadPodLogsState>(initState);
 
+  const fetchEntries = (
+    namespace: string,
+    podName: string,
+    containerOptions: ContainerOption[],
+    showSpans: boolean,
+    maxLines: number,
+    timeRange: TimeRange,
+    cluster?: string,
+  ): void => {
+    const now: TimeInMilliseconds = Date.now();
+    const timeRangeDates = evalTimeRange(timeRange);
+    const sinceTime: TimeInSeconds = Math.floor(
+      timeRangeDates[0].getTime() / 1000,
+    );
+    const endTime: TimeInMilliseconds = timeRangeDates[1].getTime();
+
+    // to save work on the server-side, only supply duration when time range is in the past
+    let duration = 0;
+
+    if (endTime < now) {
+      duration = Math.floor(timeRangeDates[1].getTime() / 1000) - sinceTime;
+    }
+
+    const selectedContainers = containerOptions.filter(c => c.isSelected);
+    const podPromises: Promise<PodLogs | Span[]>[] = selectedContainers.map(
+      c => {
+        return kialiClient.getPodLogs(
+          namespace,
+          podName,
+          c.name,
+          maxLines,
+          sinceTime,
+          duration,
+          c.isProxy,
+          cluster,
+        );
+      },
+    );
+
+    if (showSpans) {
+      // Convert seconds to microseconds
+      const params: TracingQuery = {
+        endMicros: endTime * 1000,
+        startMicros: sinceTime * 1000000,
+      };
+
+      podPromises.unshift(
+        kialiClient.getWorkloadSpans(
+          namespace,
+          props.workload,
+          params,
+          props.cluster,
+        ),
+      );
+    }
+
+    promises
+      .registerAll('logs', podPromises)
+      .then(responses => {
+        let entries = [] as Entry[];
+        if (showSpans) {
+          const spans = showSpans ? (responses[0] as Span[]) : ([] as Span[]);
+
+          entries = spans.map(span => {
+            const startTimeU = Math.floor(span.startTime / 1000);
+
+            return {
+              timestamp: moment(startTimeU)
+                .utc()
+                .format('YYYY-MM-DD HH:mm:ss.SSS'),
+              timestampUnix: startTimeU,
+              span: span,
+            } as Entry;
+          });
+          responses.shift();
+        }
+        const linesTruncatedContainers: string[] = [];
+
+        for (let i = 0; i < responses.length; i++) {
+          const response = responses[i] as PodLogs;
+          const containerLogEntries = response.entries as LogEntry[];
+
+          if (!containerLogEntries) {
+            continue;
+          }
+
+          const color = selectedContainers[i].color;
+          containerLogEntries.forEach(le => {
+            le.color = color;
+            entries.push({
+              timestamp: le.timestamp,
+              timestampUnix: le.timestampUnix,
+              logEntry: le,
+            } as Entry);
+          });
+
+          if (response.linesTruncated) {
+            // linesTruncatedContainers.push(new URL(responses[i].responseURL).searchParams.get('container')!);
+          }
+        }
+
+        const sortedEntries = entries.sort((a, b) => {
+          return a.timestampUnix - b.timestampUnix;
+        });
+
+        const updatedState = {
+          ...workloadPodLogsState,
+          entries: sortedEntries,
+          linesTruncatedContainers: linesTruncatedContainers,
+          loadingLogs: false,
+          showSpans: showSpans,
+          maxLines: maxLines,
+        };
+        setWorkloadPodLogsState(updatedState);
+
+        return;
+      })
+      .catch(error => {
+        if (error.isCanceled) {
+          const updatedState = {
+            ...workloadPodLogsState,
+            loadingLogs: false,
+          };
+          setWorkloadPodLogsState(updatedState);
+          return;
+        }
+
+        const errorMsg = error.response?.data?.error ?? error.message;
+        const nowDate = Date.now();
+
+        const updatedState = {
+          ...workloadPodLogsState,
+          loadingLogs: false,
+          entries: [
+            {
+              timestamp: nowDate.toString(),
+              timestampUnix: nowDate,
+              logEntry: {
+                severity: 'Error',
+                timestamp: nowDate.toString(),
+                timestampUnix: nowDate,
+                message: `Failed to fetch workload logs: ${errorMsg}`,
+              },
+            },
+          ],
+        };
+        setWorkloadPodLogsState(updatedState);
+      });
+  };
+
   const toggleSpans = (checked: boolean): void => {
     const urlParams = new URLSearchParams(history.location.search);
     urlParams.set(URLParam.SHOW_SPANS, String(checked));
@@ -305,6 +463,18 @@ export const WorkloadPodLogs = (props: WorkloadPodLogsProps) => {
       showSpans: !workloadPodLogsState.showSpans,
     };
     setWorkloadPodLogsState(updatedState);
+    const podL = props.pods[workloadPodLogsState.podValue!];
+    fetchEntries(
+      props.namespace,
+      podL.name,
+      workloadPodLogsState.containerOptions
+        ? workloadPodLogsState.containerOptions
+        : [],
+      updatedState.showSpans,
+      updatedState.maxLines,
+      props.timeRange,
+      props.cluster,
+    );
   };
 
   const toggleSelected = (c: ContainerOption): void => {
@@ -315,6 +485,16 @@ export const WorkloadPodLogs = (props: WorkloadPodLogsProps) => {
       containerOptions: [...workloadPodLogsState.containerOptions!],
     };
     setWorkloadPodLogsState(updatedState);
+    const podL = props.pods[workloadPodLogsState.podValue!];
+    fetchEntries(
+      props.namespace,
+      podL.name,
+      [...workloadPodLogsState.containerOptions!],
+      updatedState.showSpans,
+      updatedState.maxLines,
+      props.timeRange,
+      props.cluster,
+    );
   };
 
   const getContainerLegend = (): React.ReactNode => {
@@ -543,7 +723,11 @@ export const WorkloadPodLogs = (props: WorkloadPodLogsProps) => {
         </p>
       </div>
     ) : (
-      <div key={`al-${index}`} className={logLineStyle} style={{ ...style }}>
+      <div
+        key={`al-${index}`}
+        className={logLineStyle}
+        style={{ ...style, minWidth: 0, padding: '10px 12px' }}
+      >
         {workloadPodLogsState.showTimestamps && (
           <span
             key={`al-s-${index}`}
@@ -857,6 +1041,18 @@ export const WorkloadPodLogs = (props: WorkloadPodLogsProps) => {
       maxLines: maxLines,
     };
     setWorkloadPodLogsState(updatedState);
+    const podL = props.pods[workloadPodLogsState.podValue!];
+    fetchEntries(
+      props.namespace,
+      podL.name,
+      workloadPodLogsState.containerOptions
+        ? workloadPodLogsState.containerOptions
+        : [],
+      updatedState.showSpans,
+      updatedState.maxLines,
+      props.timeRange,
+      props.cluster,
+    );
   };
 
   const checkSubmitShow = (event: React.KeyboardEvent): void => {
@@ -923,154 +1119,6 @@ export const WorkloadPodLogs = (props: WorkloadPodLogsProps) => {
     setWorkloadPodLogsState(updatedState);
   };
 
-  const fetchEntries = (
-    namespace: string,
-    podName: string,
-    containerOptions: ContainerOption[],
-    showSpans: boolean,
-    maxLines: number,
-    timeRange: TimeRange,
-    cluster?: string,
-  ): void => {
-    const now: TimeInMilliseconds = Date.now();
-    const timeRangeDates = evalTimeRange(timeRange);
-    const sinceTime: TimeInSeconds = Math.floor(
-      timeRangeDates[0].getTime() / 1000,
-    );
-    const endTime: TimeInMilliseconds = timeRangeDates[1].getTime();
-
-    // to save work on the server-side, only supply duration when time range is in the past
-    let duration = 0;
-
-    if (endTime < now) {
-      duration = Math.floor(timeRangeDates[1].getTime() / 1000) - sinceTime;
-    }
-
-    const selectedContainers = containerOptions.filter(c => c.isSelected);
-    const podPromises: Promise<PodLogs | Span[]>[] = selectedContainers.map(
-      c => {
-        return kialiClient.getPodLogs(
-          namespace,
-          podName,
-          c.name,
-          maxLines,
-          sinceTime,
-          duration,
-          c.isProxy,
-          cluster,
-        );
-      },
-    );
-
-    if (showSpans) {
-      // Convert seconds to microseconds
-      const params: TracingQuery = {
-        endMicros: endTime * 1000,
-        startMicros: sinceTime * 1000000,
-      };
-
-      podPromises.unshift(
-        kialiClient.getWorkloadSpans(
-          namespace,
-          props.workload,
-          params,
-          props.cluster,
-        ),
-      );
-    }
-
-    promises
-      .registerAll('logs', podPromises)
-      .then(responses => {
-        let entries = [] as Entry[];
-        if (showSpans) {
-          const spans = showSpans ? (responses[0] as Span[]) : ([] as Span[]);
-
-          entries = spans.map(span => {
-            const startTimeU = Math.floor(span.startTime / 1000);
-
-            return {
-              timestamp: moment(startTimeU)
-                .utc()
-                .format('YYYY-MM-DD HH:mm:ss.SSS'),
-              timestampUnix: startTimeU,
-              span: span,
-            } as Entry;
-          });
-          responses.shift();
-        }
-        const linesTruncatedContainers: string[] = [];
-
-        for (let i = 0; i < responses.length; i++) {
-          const response = responses[i] as PodLogs;
-          const containerLogEntries = response.entries as LogEntry[];
-
-          if (!containerLogEntries) {
-            continue;
-          }
-
-          const color = selectedContainers[i].color;
-          containerLogEntries.forEach(le => {
-            le.color = color;
-            entries.push({
-              timestamp: le.timestamp,
-              timestampUnix: le.timestampUnix,
-              logEntry: le,
-            } as Entry);
-          });
-
-          if (response.linesTruncated) {
-            // linesTruncatedContainers.push(new URL(responses[i].responseURL).searchParams.get('container')!);
-          }
-        }
-
-        const sortedEntries = entries.sort((a, b) => {
-          return a.timestampUnix - b.timestampUnix;
-        });
-
-        const updatedState = {
-          ...workloadPodLogsState,
-          entries: sortedEntries,
-          linesTruncatedContainers: linesTruncatedContainers,
-          loadingLogs: false,
-        };
-        setWorkloadPodLogsState(updatedState);
-
-        return;
-      })
-      .catch(error => {
-        if (error.isCanceled) {
-          const updatedState = {
-            ...workloadPodLogsState,
-            loadingLogs: false,
-          };
-          setWorkloadPodLogsState(updatedState);
-          return;
-        }
-
-        const errorMsg = error.response?.data?.error ?? error.message;
-        const nowDate = Date.now();
-
-        workloadPodLogsState.entries = [
-          {
-            timestamp: nowDate.toString(),
-            timestampUnix: nowDate,
-            logEntry: {
-              severity: 'Error',
-              timestamp: nowDate.toString(),
-              timestampUnix: nowDate,
-              message: `Failed to fetch workload logs: ${errorMsg}`,
-            },
-          },
-        ];
-        const updatedState = {
-          ...workloadPodLogsState,
-          loadingLogs: false,
-        };
-        setWorkloadPodLogsState(updatedState);
-      });
-  };
-
   const [{ loading }, refresh] = useAsyncFn(
     async () => {
       const podL = props.pods[workloadPodLogsState.podValue!];
@@ -1118,16 +1166,20 @@ export const WorkloadPodLogs = (props: WorkloadPodLogsProps) => {
                             style={{ marginTop: '30%' }}
                           />
                         </div>
-                        <ToolbarDropdown
-                          id="wpl_pods"
-                          tooltip="Display logs for the selected pod"
-                          handleSelect={(key: string) => setPod(key)}
-                          value={workloadPodLogsState.podValue}
-                          label={
-                            props.pods[workloadPodLogsState.podValue!]?.name
-                          }
-                          options={podOptions!}
-                        />
+                        <div
+                          style={{ marginRight: '10px', marginLeft: '10px' }}
+                        >
+                          <ToolbarDropdown
+                            id="wpl_pods"
+                            tooltip="Display logs for the selected pod"
+                            handleSelect={(key: string) => setPod(key)}
+                            value={workloadPodLogsState.podValue}
+                            label={
+                              props.pods[workloadPodLogsState.podValue!]?.name
+                            }
+                            options={podOptions()}
+                          />
+                        </div>
                         <Input
                           id="log_show"
                           name="log_show"
