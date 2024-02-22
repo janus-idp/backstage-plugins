@@ -291,6 +291,7 @@ export const WorkloadPodLogs = (props: WorkloadPodLogsProps) => {
     showLogValue: '',
     useRegex: false,
   };
+
   const [workloadPodLogsState, setWorkloadPodLogsState] =
     React.useState<WorkloadPodLogsState>(initState);
 
@@ -299,20 +300,21 @@ export const WorkloadPodLogs = (props: WorkloadPodLogsProps) => {
     urlParams.set(URLParam.SHOW_SPANS, String(checked));
     history.replace(`${history.location.pathname}?${urlParams.toString()}`);
 
-    workloadPodLogsState.showSpans = !workloadPodLogsState.showSpans;
-    console.log('togle spans');
-    console.log(workloadPodLogsState);
-    setWorkloadPodLogsState(workloadPodLogsState);
+    const updatedState = {
+      ...workloadPodLogsState,
+      showSpans: !workloadPodLogsState.showSpans,
+    };
+    setWorkloadPodLogsState(updatedState);
   };
 
   const toggleSelected = (c: ContainerOption): void => {
     c.isSelected = !c.isSelected;
-    workloadPodLogsState.containerOptions = [
-      ...workloadPodLogsState.containerOptions!,
-    ];
-    console.log('togle selected');
-    console.log(workloadPodLogsState);
-    setWorkloadPodLogsState(workloadPodLogsState);
+
+    const updatedState = {
+      ...workloadPodLogsState,
+      containerOptions: [...workloadPodLogsState.containerOptions!],
+    };
+    setWorkloadPodLogsState(updatedState);
   };
 
   const getContainerLegend = (): React.ReactNode => {
@@ -382,17 +384,19 @@ export const WorkloadPodLogs = (props: WorkloadPodLogsProps) => {
             );
 
             if (!!workloadPodLogsState.showError) {
-              workloadPodLogsState.showError = undefined;
-              console.log('filteredentries');
-              console.log(workloadPodLogsState);
-              setWorkloadPodLogsState(workloadPodLogsState);
+              const updatedState = {
+                ...workloadPodLogsState,
+                showError: undefined,
+              };
+              setWorkloadPodLogsState(updatedState);
             }
           } catch (e) {
             if (e instanceof Error) {
-              workloadPodLogsState.showError = `Show: ${e.message}`;
-              console.log('filtered 2');
-              console.log(workloadPodLogsState);
-              setWorkloadPodLogsState(workloadPodLogsState);
+              const updatedState = {
+                ...workloadPodLogsState,
+                showError: `Show: ${e.message}`,
+              };
+              setWorkloadPodLogsState(updatedState);
             }
           }
         } else {
@@ -411,17 +415,19 @@ export const WorkloadPodLogs = (props: WorkloadPodLogsProps) => {
             );
 
             if (!!workloadPodLogsState.hideError) {
-              workloadPodLogsState.hideError = undefined;
-              console.log('hide value');
-              console.log(workloadPodLogsState);
-              setWorkloadPodLogsState(workloadPodLogsState);
+              const updatedState = {
+                ...workloadPodLogsState,
+                hideError: undefined,
+              };
+              setWorkloadPodLogsState(updatedState);
             }
           } catch (e) {
             if (e instanceof Error) {
-              workloadPodLogsState.hideError = `Hide: ${e.message}`;
-              console.log('hide value');
-              console.log(workloadPodLogsState);
-              setWorkloadPodLogsState(workloadPodLogsState);
+              const updatedState = {
+                ...workloadPodLogsState,
+                hideError: `Hide: ${e.message}`,
+              };
+              setWorkloadPodLogsState(updatedState);
             }
           }
         } else {
@@ -461,10 +467,11 @@ export const WorkloadPodLogs = (props: WorkloadPodLogsProps) => {
       workloadPodLogsState.accessLogModals,
     );
     accessLogModals.set(k, v);
-    workloadPodLogsState.accessLogModals = accessLogModals;
-    console.log('acceslog modal');
-    console.log(workloadPodLogsState);
-    setWorkloadPodLogsState(workloadPodLogsState);
+    const updatedState = {
+      ...workloadPodLogsState,
+      accessLogModals: accessLogModals,
+    };
+    setWorkloadPodLogsState(updatedState);
   };
 
   const renderLogLine = ({
@@ -578,10 +585,11 @@ export const WorkloadPodLogs = (props: WorkloadPodLogsProps) => {
   };
 
   const setLogLevel = (level: LogLevel): void => {
-    workloadPodLogsState.kebabOpen = false;
-    console.log('set log level');
-    console.log(workloadPodLogsState);
-    setWorkloadPodLogsState(workloadPodLogsState);
+    const updatedState = {
+      ...workloadPodLogsState,
+      kebabOpen: false,
+    };
+    setWorkloadPodLogsState(updatedState);
 
     const podL = props.pods[workloadPodLogsState.podValue!];
 
@@ -623,28 +631,30 @@ export const WorkloadPodLogs = (props: WorkloadPodLogsProps) => {
     });
 
     const toggleToolbar = (): void => {
-      workloadPodLogsState.showToolbar = !workloadPodLogsState.showToolbar;
-      workloadPodLogsState.kebabOpen = false;
-      console.log('togle toolbar');
-      console.log(workloadPodLogsState);
-      setWorkloadPodLogsState(workloadPodLogsState);
+      const updatedState = {
+        ...workloadPodLogsState,
+        showToolbar: !workloadPodLogsState.showToolbar,
+        kebabOpen: false,
+      };
+      setWorkloadPodLogsState(updatedState);
     };
 
     const toggleShowTimestamps = (): void => {
-      workloadPodLogsState.showTimestamps =
-        !workloadPodLogsState.showTimestamps;
-      workloadPodLogsState.kebabOpen = false;
-      console.log('togle timestamps');
-      console.log(workloadPodLogsState);
-      setWorkloadPodLogsState(workloadPodLogsState);
+      const updatedState = {
+        ...workloadPodLogsState,
+        showTimestamps: !workloadPodLogsState.showTimestamps,
+        kebabOpen: false,
+      };
+      setWorkloadPodLogsState(updatedState);
     };
 
     const toggleUseRegex = (): void => {
-      workloadPodLogsState.useRegex = !workloadPodLogsState.useRegex;
-      workloadPodLogsState.kebabOpen = false;
-      console.log('togle regex');
-      console.log(workloadPodLogsState);
-      setWorkloadPodLogsState(workloadPodLogsState);
+      const updatedState = {
+        ...workloadPodLogsState,
+        useRegex: !workloadPodLogsState.useRegex,
+        kebabOpen: false,
+      };
+      setWorkloadPodLogsState(updatedState);
     };
 
     const kebabActions = [
@@ -680,9 +690,11 @@ export const WorkloadPodLogs = (props: WorkloadPodLogsProps) => {
 
     const setKebabOpen = (kebabOpen: boolean): void => {
       workloadPodLogsState.kebabOpen = !kebabOpen;
-      console.log('kebab');
-      console.log(workloadPodLogsState);
-      setWorkloadPodLogsState(workloadPodLogsState);
+      const updatedState = {
+        ...workloadPodLogsState,
+        kebabOpen: !kebabOpen,
+      };
+      setWorkloadPodLogsState(updatedState);
     };
 
     const entriesToString = (entries: Entry[]): string => {
@@ -711,7 +723,12 @@ export const WorkloadPodLogs = (props: WorkloadPodLogsProps) => {
     const renderLogs = (): React.ReactElement => {
       return (
         <>
-          {workloadPodLogsState.entries.map((_, index) => {
+          {filteredEntries(
+            workloadPodLogsState.entries,
+            workloadPodLogsState.showLogValue,
+            workloadPodLogsState.hideLogValue,
+            workloadPodLogsState.useRegex,
+          ).map((_, index) => {
             return renderLogLine({ index: index, style: logListStyle });
           })}
         </>
@@ -780,7 +797,7 @@ export const WorkloadPodLogs = (props: WorkloadPodLogsProps) => {
           }}
         >
           <List component="ul">
-            {workloadPodLogsState.entries.length === 0 ? (
+            {logEntries.length === 0 ? (
               <div className={noLogsStyle}>{NoLogsFoundMessage}</div>
             ) : (
               renderLogs()
@@ -791,15 +808,16 @@ export const WorkloadPodLogs = (props: WorkloadPodLogsProps) => {
     );
   };
 
-  const removeAccessLogModal = (k: string): void => {
-    workloadPodLogsState.accessLogModals.delete(k);
+  const removeAccessLogModal = (_: string): void => {
     const accessLogModals = new Map<string, AccessLog>(
       workloadPodLogsState.accessLogModals,
     );
-    workloadPodLogsState.accessLogModals = accessLogModals;
-    console.log('remove acces');
-    console.log(workloadPodLogsState);
-    setWorkloadPodLogsState(workloadPodLogsState);
+    const updatedState = {
+      ...workloadPodLogsState,
+      accessLogModals: accessLogModals,
+      kebabOpen: !workloadPodLogsState.kebabOpen,
+    };
+    setWorkloadPodLogsState(updatedState);
   };
 
   const getAccessLogModals = (): React.ReactNode[] => {
@@ -824,33 +842,33 @@ export const WorkloadPodLogs = (props: WorkloadPodLogsProps) => {
     const podL = props.pods[Number(podValue)];
     const containerNames = getContainerOptions(podL);
 
-    workloadPodLogsState.containerOptions = containerNames;
-    workloadPodLogsState.podValue = Number(podValue);
-    console.log('set pod');
-    console.log(workloadPodLogsState);
-    setWorkloadPodLogsState(workloadPodLogsState);
+    const updatedState = {
+      ...workloadPodLogsState,
+      containerOptions: containerNames,
+      podValue: Number(podValue),
+    };
+    setWorkloadPodLogsState(updatedState);
   };
 
   const setMaxLines = (maxLines: number): void => {
     workloadPodLogsState.maxLines = maxLines;
-    console.log('max lines');
-    console.log(workloadPodLogsState);
-    setWorkloadPodLogsState(workloadPodLogsState);
+    const updatedState = {
+      ...workloadPodLogsState,
+      maxLines: maxLines,
+    };
+    setWorkloadPodLogsState(updatedState);
   };
 
   const checkSubmitShow = (event: React.KeyboardEvent): void => {
     if (event.key === 'Enter') {
       event.preventDefault();
 
-      workloadPodLogsState.showClearShowLogButton = !!(
-        event.target as HTMLInputElement
-      ).value;
-      workloadPodLogsState.showLogValue = (
-        event.target as HTMLInputElement
-      ).value;
-      console.log('check ksubmit');
-      console.log(workloadPodLogsState);
-      setWorkloadPodLogsState(workloadPodLogsState);
+      const updatedState = {
+        ...workloadPodLogsState,
+        showClearShowLogButton: !!(event.target as HTMLInputElement).value,
+        showLogValue: (event.target as HTMLInputElement).value,
+      };
+      setWorkloadPodLogsState(updatedState);
     }
   };
 
@@ -864,26 +882,24 @@ export const WorkloadPodLogs = (props: WorkloadPodLogsProps) => {
       htmlInputElement.value = '';
     }
 
-    workloadPodLogsState.showError = undefined;
-    workloadPodLogsState.showLogValue = '';
-    workloadPodLogsState.showClearShowLogButton = false;
-    console.log('tclear show');
-    console.log(workloadPodLogsState);
-    setWorkloadPodLogsState(workloadPodLogsState);
+    const updatedState = {
+      ...workloadPodLogsState,
+      showError: undefined,
+      showLogValue: '',
+      showClearShowLogButton: false,
+    };
+    setWorkloadPodLogsState(updatedState);
   };
 
   const checkSubmitHide = (event: React.KeyboardEvent): void => {
     if (event.key === 'Enter') {
       event.preventDefault();
-      workloadPodLogsState.showClearHideLogButton = !!(
-        event.target as HTMLInputElement
-      ).value;
-      workloadPodLogsState.hideLogValue = (
-        event.target as HTMLInputElement
-      ).value;
-      console.log('check submit');
-      console.log(workloadPodLogsState);
-      setWorkloadPodLogsState(workloadPodLogsState);
+      const updatedState = {
+        ...workloadPodLogsState,
+        showClearHideLogButton: !!(event.target as HTMLInputElement).value,
+        hideLogValue: (event.target as HTMLInputElement).value,
+      };
+      setWorkloadPodLogsState(updatedState);
     }
   };
 
@@ -898,12 +914,13 @@ export const WorkloadPodLogs = (props: WorkloadPodLogsProps) => {
       htmlInputElement.value = '';
     }
 
-    workloadPodLogsState.hideError = undefined;
-    workloadPodLogsState.hideLogValue = '';
-    workloadPodLogsState.showClearHideLogButton = false;
-    console.log('clear hide');
-    console.log(workloadPodLogsState);
-    setWorkloadPodLogsState(workloadPodLogsState);
+    const updatedState = {
+      ...workloadPodLogsState,
+      hideError: undefined,
+      hideLogValue: '',
+      showClearHideLogButton: false,
+    };
+    setWorkloadPodLogsState(updatedState);
   };
 
   const fetchEntries = (
@@ -1011,22 +1028,23 @@ export const WorkloadPodLogs = (props: WorkloadPodLogsProps) => {
           return a.timestampUnix - b.timestampUnix;
         });
 
-        workloadPodLogsState.entries = sortedEntries;
-        workloadPodLogsState.linesTruncatedContainers =
-          linesTruncatedContainers;
-        workloadPodLogsState.loadingLogs = false;
-        console.log('logs');
-        console.log(workloadPodLogsState);
-        setWorkloadPodLogsState(workloadPodLogsState);
+        const updatedState = {
+          ...workloadPodLogsState,
+          entries: sortedEntries,
+          linesTruncatedContainers: linesTruncatedContainers,
+          loadingLogs: false,
+        };
+        setWorkloadPodLogsState(updatedState);
 
         return;
       })
       .catch(error => {
         if (error.isCanceled) {
-          workloadPodLogsState.loadingLogs = false;
-          console.log('logs catch');
-          console.log(workloadPodLogsState);
-          setWorkloadPodLogsState(workloadPodLogsState);
+          const updatedState = {
+            ...workloadPodLogsState,
+            loadingLogs: false,
+          };
+          setWorkloadPodLogsState(updatedState);
           return;
         }
 
@@ -1045,17 +1063,12 @@ export const WorkloadPodLogs = (props: WorkloadPodLogsProps) => {
             },
           },
         ];
-        workloadPodLogsState.loadingLogs = false;
-        console.log('loading logs');
-        console.log(workloadPodLogsState);
-        setWorkloadPodLogsState(workloadPodLogsState);
+        const updatedState = {
+          ...workloadPodLogsState,
+          loadingLogs: false,
+        };
+        setWorkloadPodLogsState(updatedState);
       });
-    /*
-        workloadPodLogsState.loadingLogs = false;
-        workloadPodLogsState.entries = [];
-        console.log("entries")
-        console.log(workloadPodLogsState)
-        setWorkloadPodLogsState(workloadPodLogsState); */
   };
 
   const [{ loading }, refresh] = useAsyncFn(
