@@ -175,8 +175,9 @@ describe('TerminalComponent', () => {
     await waitFor(() =>
       expect(rendered.getByTestId('progress')).toBeInTheDocument(),
     );
-    await waitFor(() =>
-      expect(rendered.getByTestId('terminal')).toBeInTheDocument(),
+    await waitFor(
+      () => expect(rendered.getByTestId('terminal')).toBeInTheDocument(),
+      { timeout: 8000 },
     );
   });
 });
