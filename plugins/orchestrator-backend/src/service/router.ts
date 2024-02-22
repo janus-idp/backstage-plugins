@@ -147,6 +147,21 @@ function initOpenAPIBackend(): OpenAPIBackend {
       verbose: true,
       addUsedSchema: false,
     },
+    handlers: {
+      validationFail: async (
+        c,
+        _req: express.Request,
+        res: express.Response,
+      ) => {
+        console.log('validationFail', c.operation);
+        res.status(400).json({ err: c.validation.errors });
+      },
+      notFound: async (_c, req: express.Request, res: express.Response) => {
+        res.status(404).json({ err: `${req.path} path not found` });
+      },
+      notImplemented: async (_c, req: express.Request, res: express.Response) =>
+        res.status(500).json({ err: `${req.path} not implemented` }),
+    },
   });
 }
 
