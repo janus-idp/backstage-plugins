@@ -5,6 +5,24 @@ import { Logger } from 'winston';
 
 import os from 'os';
 
+export async function retryAsyncFunction<T>(args: {
+  asyncFunc: () => Promise<T | undefined>;
+  retries: number;
+  delayMs: number;
+}): Promise<T> {
+  let result: T | undefined;
+  for (let i = 0; i < args.retries; i++) {
+    result = await args.asyncFunc();
+    if (result !== undefined) {
+      return result;
+    }
+    await new Promise(resolve => setTimeout(resolve, args.delayMs));
+  }
+  throw new Error(
+    `Exceeded maximum number of retries for function ${args.asyncFunc.name}`,
+  );
+}
+
 export async function getWorkingDirectory(
   config: Config,
   logger: Logger,

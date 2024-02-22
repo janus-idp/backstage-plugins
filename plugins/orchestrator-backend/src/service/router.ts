@@ -431,9 +431,17 @@ function setupInternalRoutes(
 
     const workflowDefinition =
       await services.dataIndexService.getWorkflowDefinition(workflowId);
+
+    if (!workflowDefinition) {
+      res.status(500).send(`Couldn't fetch workflow definition ${workflowId}`);
+      return;
+    }
     const serviceUrl = workflowDefinition.serviceUrl;
     if (!serviceUrl) {
-      throw new Error(`ServiceUrl is not defined for workflow ${workflowId}`);
+      res
+        .status(500)
+        .send(`Service URL is not defined for workflow ${workflowId}`);
+      return;
     }
 
     // workflow source
