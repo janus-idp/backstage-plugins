@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-orchestrator-backend [1.4.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.4.1...@janus-idp/backstage-plugin-orchestrator-backend@1.4.2) (2024-02-22)
+
+
+### Bug Fixes
+
+* **orchestrator:** improvements to backend services ([#1252](https://github.com/janus-idp/backstage-plugins/issues/1252)) ([af8e072](https://github.com/janus-idp/backstage-plugins/commit/af8e072f35bc033f5111207c87711c9c0f9ff386))
+
 ## @janus-idp/backstage-plugin-orchestrator-backend [1.4.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.4.0...@janus-idp/backstage-plugin-orchestrator-backend@1.4.1) (2024-02-21)
 
 
