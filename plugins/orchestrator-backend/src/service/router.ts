@@ -346,8 +346,8 @@ function setupInternalRoutes(
     },
   );
 
-  router.get('/instances', async (_, res) => {
-    await V1.getInstances(services.dataIndexService)
+  router.get('/instances', async (req, res) => {
+    await V1.getInstances(services.dataIndexService, buildPagination(req))
       .then(result => res.status(200).json(result))
       .catch(error => {
         res
@@ -359,8 +359,8 @@ function setupInternalRoutes(
   // v2
   api.register(
     'getInstances',
-    async (_c, _req: express.Request, res: express.Response, next) => {
-      await V2.getInstances(services.dataIndexService)
+    async (_c, req: express.Request, res: express.Response, next) => {
+      await V2.getInstances(services.dataIndexService, buildPagination(req))
         .then(result => res.json(result))
         .catch(next);
     },

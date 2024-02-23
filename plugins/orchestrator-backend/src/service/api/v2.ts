@@ -14,6 +14,7 @@ import {
   WorkflowRunStatusDTO,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
+import { Pagination } from '../../types/pagination';
 import { DataIndexService } from '../DataIndexService';
 import { SonataFlowService } from '../SonataFlowService';
 import {
@@ -80,8 +81,9 @@ export namespace V2 {
 
   export async function getInstances(
     dataIndexService: DataIndexService,
+    pagination: Pagination,
   ): Promise<ProcessInstancesDTO> {
-    const instances = await V1.getInstances(dataIndexService);
+    const instances = await V1.getInstances(dataIndexService, pagination);
     const result = instances.map(def => mapToProcessInstanceDTO(def));
 
     return result;

@@ -10,6 +10,7 @@ import {
   WorkflowOverviewListResult,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
+import { Pagination } from '../../types/pagination';
 import { DataIndexService } from '../DataIndexService';
 import { retryAsyncFunction } from '../Helper';
 import { SonataFlowService } from '../SonataFlowService';
@@ -76,8 +77,9 @@ export namespace V1 {
 
   export async function getInstances(
     dataIndexService: DataIndexService,
+    pagination: Pagination,
   ): Promise<ProcessInstance[]> {
-    const instances = await dataIndexService.fetchProcessInstances();
+    const instances = await dataIndexService.fetchProcessInstances(pagination);
 
     if (!instances) {
       throw new Error("Couldn't fetch process instances");
