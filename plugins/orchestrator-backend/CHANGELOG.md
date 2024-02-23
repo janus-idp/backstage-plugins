@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-orchestrator-backend [1.4.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.4.2...@janus-idp/backstage-plugin-orchestrator-backend@1.4.3) (2024-02-23)
+
+
+### Bug Fixes
+
+* **orchestrator:** handle api endpoint failure ([#1254](https://github.com/janus-idp/backstage-plugins/issues/1254)) ([503de1b](https://github.com/janus-idp/backstage-plugins/commit/503de1b028e134cafb5a04045068768f30519409))
+
 ## @janus-idp/backstage-plugin-orchestrator-backend [1.4.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.4.1...@janus-idp/backstage-plugin-orchestrator-backend@1.4.2) (2024-02-22)
 
 
