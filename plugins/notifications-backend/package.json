@@ -41,7 +41,7 @@
   },
   "configSchema": "config.d.ts",
   "dependencies": {
-    "@backstage/backend-common": "^0.21.0",
+    "@backstage/backend-common": "^0.21.1",
     "@backstage/backend-openapi-utils": "^0.1.3",
     "@backstage/catalog-client": "^1.6.0",
     "@backstage/config": "^1.1.1",

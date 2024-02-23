@@ -40,7 +40,7 @@
     "tsc": "tsc"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.21.0",
+    "@backstage/backend-common": "^0.21.1",
     "@backstage/backend-plugin-api": "^0.6.10",
     "@backstage/config": "^1.1.1",
     "@backstage/backend-dynamic-feature-service": "^0.2.0",
