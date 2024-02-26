@@ -83,12 +83,6 @@ type Entry = {
   timestampUnix: TimeInSeconds;
 };
 
-const logListStyle: React.CSSProperties = {
-  overflow: 'auto !important',
-  paddingTop: '0.375rem',
-  paddingBottom: '0.75rem',
-};
-
 interface WorkloadPodLogsState {
   accessLogModals: Map<string, AccessLog>;
   containerOptions?: ContainerOption[];
@@ -660,9 +654,11 @@ export const WorkloadPodLogs = (props: WorkloadPodLogsProps) => {
   const renderLogLine = ({
     index,
     style,
+    showTimestamps,
   }: {
     index: number;
-    style: React.CSSProperties;
+    style?: React.CSSProperties;
+    showTimestamps: boolean;
   }): React.ReactNode => {
     const e = filteredEntries(
       workloadPodLogsState.entries,
@@ -674,7 +670,7 @@ export const WorkloadPodLogs = (props: WorkloadPodLogsProps) => {
     if (e.span) {
       return (
         <div key={`s-${index}`} className={logLineStyle} style={{ ...style }}>
-          {workloadPodLogsState.showTimestamps && (
+          {showTimestamps && (
             <span
               key={`al-s-${index}`}
               className={logMessaageStyle}
@@ -731,7 +727,7 @@ export const WorkloadPodLogs = (props: WorkloadPodLogsProps) => {
         className={logLineStyle}
         style={{ ...style, minWidth: 0, padding: '10px 12px' }}
       >
-        {workloadPodLogsState.showTimestamps && (
+        {showTimestamps && (
           <span
             key={`al-s-${index}`}
             className={logMessaageStyle}
@@ -845,21 +841,8 @@ export const WorkloadPodLogs = (props: WorkloadPodLogsProps) => {
       setWorkloadPodLogsState(updatedState);
     };
 
-    const setKebabOpen = (kebabOpen: boolean): void => {
-      workloadPodLogsState.kebabOpen = !kebabOpen;
-      const updatedState = {
-        ...workloadPodLogsState,
-        kebabOpen: !kebabOpen,
-      };
-      setWorkloadPodLogsState(updatedState);
-    };
-
     const kebabActions = () => (
-      <Select
-        onChange={() => setKebabOpen(workloadPodLogsState.kebabOpen)}
-        id="kebab-actions"
-        value="toggleToolbar"
-      >
+      <Select id="kebab-actions" value="toggleToolbar">
         <MenuItem value="toggleToolbar" onClick={toggleToolbar}>
           {`${
             workloadPodLogsState.showToolbar ? 'Collapse' : 'Expand'
@@ -938,7 +921,7 @@ export const WorkloadPodLogs = (props: WorkloadPodLogsProps) => {
     const hasEntries = (entries: Entry[]): boolean =>
       !!entries && entries.length > 0;
 
-    const renderLogs = (): React.ReactElement => {
+    const renderLogs = (showTimestamps: boolean): React.ReactElement => {
       return (
         <>
           {filteredEntries(
@@ -947,7 +930,10 @@ export const WorkloadPodLogs = (props: WorkloadPodLogsProps) => {
             workloadPodLogsState.hideLogValue,
             workloadPodLogsState.useRegex,
           ).map((_, index) => {
-            return renderLogLine({ index: index, style: logListStyle });
+            return renderLogLine({
+              index: index,
+              showTimestamps: showTimestamps,
+            });
           })}
         </>
       );
@@ -1013,7 +999,7 @@ export const WorkloadPodLogs = (props: WorkloadPodLogsProps) => {
             {logEntries.length === 0 ? (
               <div className={noLogsStyle}>{NoLogsFoundMessage}</div>
             ) : (
-              renderLogs()
+              renderLogs(workloadPodLogsState.showTimestamps)
             )}
           </List>
         </div>
