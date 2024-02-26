@@ -3,6 +3,7 @@ import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { ScmIntegrations } from '@backstage/integration';
 import { JsonObject, JsonValue } from '@backstage/types';
 
+import { fullFormats } from 'ajv-formats/dist/formats';
 import express from 'express';
 import Router from 'express-promise-router';
 import { OpenAPIBackend, Request } from 'openapi-backend';
@@ -146,6 +147,7 @@ function initOpenAPIBackend(): OpenAPIBackend {
       strictSchema: false,
       verbose: true,
       addUsedSchema: false,
+      formats: fullFormats, // open issue: https://github.com/openapistack/openapi-backend/issues/280
     },
     handlers: {
       validationFail: async (
