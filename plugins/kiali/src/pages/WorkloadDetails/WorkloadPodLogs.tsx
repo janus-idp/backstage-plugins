@@ -164,7 +164,6 @@ const logsDisplay = kialiStyle({
   margin: 0,
   padding: 0,
   resize: 'none',
-  whiteSpace: 'pre',
   width: '100%',
 });
 
@@ -184,7 +183,6 @@ const noLogsStyle = kialiStyle({
 
 const logLineStyle = kialiStyle({
   display: 'flex',
-  height: '1.5rem',
   lineHeight: '1.5rem',
   paddingLeft: '0.75rem',
 });

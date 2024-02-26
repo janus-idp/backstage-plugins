@@ -5,7 +5,7 @@ import { classes } from 'typestyle';
 import { kialiStyle } from '../../../styles/StyleUtils';
 
 // TOP_PADDING constant is used to adjust the height of the main div to allow scrolling in the inner container layer.
-const TOP_PADDING = 76 + 118;
+const TOP_PADDING = 76 + 400;
 
 /**
  * By default, Kiali hides the global scrollbar and fixes the height for some pages to force the scrollbar to appear
