@@ -36,6 +36,7 @@ import { IstioMetricsMap } from '../types/Metrics';
 import { IstioMetricsOptions } from '../types/MetricsOptions';
 import { Namespace } from '../types/Namespace';
 import { ServerConfig } from '../types/ServerConfig';
+import { ServiceList, ServiceListQuery } from '../types/ServiceList';
 import { StatusState } from '../types/StatusState';
 import { TLSStatus } from '../types/TLSStatus';
 import { Span, TracingQuery } from '../types/Tracing';
@@ -175,6 +176,10 @@ export interface KialiApi {
     level: string,
     cluster?: string,
   ): Promise<void>;
+  getServices(
+    namespace: string,
+    params?: ServiceListQuery,
+  ): Promise<ServiceList>;
 }
 
 export const kialiApiRef = createApiRef<KialiApi>({
@@ -722,6 +727,18 @@ export class KialiApiClient implements KialiApi {
     ).then(resp => {
       return resp;
     });
+  };
+
+  getServices = async (
+    namespace: string,
+    params?: ServiceListQuery,
+  ): Promise<ServiceList> => {
+    return this.newRequest<ServiceList>(
+      HTTP_VERBS.GET,
+      urls.services(namespace),
+      params,
+      {},
+    );
   };
 }
 

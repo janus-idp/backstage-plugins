@@ -4,7 +4,11 @@ import { Location, useLocation, useNavigate } from 'react-router-dom';
 import { HeaderTabs } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 
-import { overviewRouteRef, workloadsRouteRef } from '../../../routes';
+import {
+  overviewRouteRef,
+  servicesRouteRef,
+  workloadsRouteRef,
+} from '../../../routes';
 
 const getPath = (loc: Location): number => {
   if (loc.pathname.includes('workloads')) {
@@ -20,6 +24,7 @@ export const KialiTabs = () => {
   const tabs = [
     { label: 'Overview', route: useRouteRef(overviewRouteRef) },
     { label: 'Workloads', route: useRouteRef(workloadsRouteRef) },
+    { label: 'Services', route: useRouteRef(servicesRouteRef) },
   ];
   const navigate = useNavigate();
   return (

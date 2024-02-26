@@ -12,10 +12,12 @@ import { KialiTabs } from './pages/Kiali/Header/KialiTabs';
 import { KialiEntity } from './pages/Kiali/KialiEntity';
 import { KialiNoAnnotation } from './pages/Kiali/KialiNoAnnotation';
 import { OverviewPage } from './pages/Overview/OverviewPage';
+import { ServiceListPage } from './pages/ServiceList/ServiceListPage';
 import { WorkloadDetailsPage } from './pages/WorkloadDetails/WorkloadDetailsPage';
 import { WorkloadListPage } from './pages/WorkloadList/WorkloadListPage';
 import {
   overviewRouteRef,
+  servicesRouteRef,
   workloadsDetailRouteRef,
   workloadsRouteRef,
 } from './routes';
@@ -72,6 +74,7 @@ export const Router = () => {
               path={workloadsRouteRef.path}
               element={<WorkloadListPage />}
             />
+            <Route path={servicesRouteRef.path} element={<ServiceListPage />} />
             <Route
               path={workloadsDetailRouteRef.path}
               element={<WorkloadDetailsPage />}
