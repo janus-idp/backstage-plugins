@@ -20,7 +20,7 @@ import { RoleFormValues } from './types';
 export const EditRolePage = () => {
   const { roleName, roleNamespace, roleKind } = useParams();
   const [queryParamState] = useQueryParamState<number>('activeStep');
-  const { selectedMembers, members, loading, roleError, membersError } =
+  const { selectedMembers, members, role, loading, roleError, membersError } =
     useSelectedMembers(
       roleName ? `${roleKind}:${roleNamespace}/${roleName}` : '',
     );
@@ -33,19 +33,16 @@ export const EditRolePage = () => {
     name: roleName || '',
     namespace: roleNamespace || 'default',
     kind: roleKind || 'role',
-    description: '',
+    description: role?.metadata?.description ?? '',
     selectedMembers,
     permissionPoliciesRows: permissionPolicies,
   };
   const renderPage = () => {
     if (loading) {
       return <Progress />;
-    } else if (roleError?.name) {
+    } else if (roleError.name) {
       return (
-        <ErrorPage
-          status={roleError?.name}
-          statusMessage={roleError?.message}
-        />
+        <ErrorPage status={roleError.name} statusMessage={roleError.message} />
       );
     }
     return (
