@@ -18,6 +18,7 @@ import {
   WorkflowFormatDTO,
   WorkflowOverview,
   WorkflowOverviewDTO,
+  WorkflowRunStatusDTO,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 // Mapping functions
@@ -160,4 +161,19 @@ export function mapToGetWorkflowInstanceResults(
   }
 
   return returnObject;
+}
+
+export function mapToWorkflowRunStatusDTO(
+  status: ProcessInstanceState,
+): WorkflowRunStatusDTO {
+  return {
+    key: firstLetterToUppercase(status),
+    value: status,
+  };
+}
+
+export function firstLetterToUppercase(text: string): string {
+  if (text === undefined || text === null || text.length < 1) return text;
+
+  return text[0].toUpperCase() + text.slice(1).toLowerCase();
 }

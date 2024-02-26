@@ -23,6 +23,7 @@ import {
   mapToProcessInstanceDTO,
   mapToWorkflowDTO,
   mapToWorkflowOverviewDTO,
+  mapToWorkflowRunStatusDTO,
 } from './mapping/V2Mappings';
 import { V1 } from './v1';
 
@@ -203,23 +204,14 @@ export namespace V2 {
   }
 
   export async function getWorkflowStatuses(): Promise<WorkflowRunStatusDTO[]> {
-    type Capitalized<S extends string> = Capitalize<Lowercase<S>>;
-    const capitalize = <S extends string>(text: S): Capitalized<S> =>
-      (text[0].toUpperCase() + text.slice(1).toLowerCase()) as Capitalized<S>;
-    const result: WorkflowRunStatusDTO[] = [
+    return [
       ProcessInstanceState.Active,
       ProcessInstanceState.Error,
       ProcessInstanceState.Completed,
       ProcessInstanceState.Aborted,
       ProcessInstanceState.Suspended,
       ProcessInstanceState.Pending,
-    ].map(
-      (status): WorkflowRunStatusDTO => ({
-        key: capitalize(status),
-        value: status,
-      }),
-    );
-    return result;
+    ].map(status => mapToWorkflowRunStatusDTO(status));
   }
 
   export function extractQueryParam(
