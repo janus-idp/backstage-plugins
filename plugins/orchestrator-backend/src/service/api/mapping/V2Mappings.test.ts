@@ -2,7 +2,9 @@ import moment from 'moment';
 
 import {
   ProcessInstance,
+  ProcessInstanceState,
   WorkflowOverview,
+  WorkflowRunStatusDTO,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import {
@@ -12,11 +14,13 @@ import {
 } from '../test-utils';
 import assessedProcessInstanceData from './__fixtures__/assessedProcessInstance.json';
 import {
+  firstLetterToUppercase,
   getProcessInstancesDTOFromString,
   mapToExecuteWorkflowResponseDTO,
   mapToGetWorkflowInstanceResults,
   mapToProcessInstanceDTO,
   mapToWorkflowOverviewDTO,
+  mapToWorkflowRunStatusDTO,
   mapWorkflowCategoryDTOFromString,
 } from './V2Mappings';
 
@@ -189,5 +193,53 @@ describe('scenarios to verify mapToProcessInstanceDTO', () => {
     expect(result.workflow).toEqual(
       processIntanceV1.processName ?? processIntanceV1.processId,
     );
+  });
+});
+
+describe('scenarios to verify mapToWorkflowRunStatusDTO', () => {
+  it('correctly maps ProcessInstanceState to WorkflowRunStatusDTO', async () => {
+    const mappedValue: WorkflowRunStatusDTO = mapToWorkflowRunStatusDTO(
+      ProcessInstanceState.Active,
+    );
+
+    expect(mappedValue).toBeDefined();
+    expect(mappedValue.key).toBeDefined();
+    expect(mappedValue.value).toBeDefined();
+    expect(mappedValue.key).toEqual('Active');
+    expect(mappedValue.value).toEqual('ACTIVE');
+  });
+});
+
+describe('scenarios to verify firstLetterToUppercase', () => {
+  it('correctly transform the first letter to Uppercase', async () => {
+    const transformedValue = firstLetterToUppercase('test');
+
+    expect(transformedValue).toBeDefined();
+    expect(transformedValue.length).toBe(4);
+    expect(transformedValue).toEqual('Test');
+  });
+
+  it('correctly transform the remaining letters to Lowercase', async () => {
+    const transformedValue = firstLetterToUppercase('testString');
+
+    expect(transformedValue).toBeDefined();
+    expect(transformedValue.length).toBe(10);
+    expect(transformedValue).toEqual('Teststring');
+  });
+
+  it('correctly ignore empty input text', async () => {
+    const transformedValue = firstLetterToUppercase('');
+
+    expect(transformedValue).toBeDefined();
+    expect(transformedValue.length).toBe(0);
+    expect(transformedValue).toEqual('');
+  });
+
+  it('correctly ignore only one letter input text', async () => {
+    const transformedValue = firstLetterToUppercase('c');
+
+    expect(transformedValue).toBeDefined();
+    expect(transformedValue.length).toBe(1);
+    expect(transformedValue).toEqual('C');
   });
 });
