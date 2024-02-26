@@ -166,8 +166,8 @@ const iconStyle = kialiStyle({
 });
 
 const checkboxStyle = kialiStyle({
-  marginLeft: '0.5rem',
-  marginRight: '1rem',
+  marginRight: '0rem',
+  marginLeft: '1rem',
 });
 
 const noLogsStyle = kialiStyle({
@@ -944,28 +944,30 @@ export const WorkloadPodLogs = (props: WorkloadPodLogsProps) => {
         <Toolbar style={{ padding: '0.25rem 0' }}>
           {getContainerLegend()}
 
-          <Tooltip key="copy_logs" title="Copy logs to clipboard">
-            <CopyToClipboard
-              text={entriesToString(workloadPodLogsState.entries)}
-            >
-              <Button>
-                <KialiIcon.Copy />
-                <span className={iconStyle}>Copy</span>
+          <div style={{ marginLeft: 'auto' }}>
+            <Tooltip key="copy_logs" title="Copy logs to clipboard">
+              <CopyToClipboard
+                text={entriesToString(workloadPodLogsState.entries)}
+              >
+                <Button>
+                  <KialiIcon.Copy />
+                  <span className={iconStyle}>Copy</span>
+                </Button>
+              </CopyToClipboard>
+            </Tooltip>
+
+            <Tooltip key="fullscreen_logs" title="Expand logs full screen">
+              <Button
+                onClick={toggleFullscreen}
+                disabled={!hasEntries(workloadPodLogsState.entries)}
+              >
+                <KialiIcon.Expand />
+                <span className={iconStyle}>Expand</span>
               </Button>
-            </CopyToClipboard>
-          </Tooltip>
+            </Tooltip>
 
-          <Tooltip key="fullscreen_logs" title="Expand logs full screen">
-            <Button
-              onClick={toggleFullscreen}
-              disabled={!hasEntries(workloadPodLogsState.entries)}
-            >
-              <KialiIcon.Expand />
-              <span className={iconStyle}>Expand</span>
-            </Button>
-          </Tooltip>
-
-          {kebabActions()}
+            {kebabActions()}
+          </div>
         </Toolbar>
 
         {workloadPodLogsState.linesTruncatedContainers.length > 0 && (
@@ -1285,15 +1287,19 @@ export const WorkloadPodLogs = (props: WorkloadPodLogsProps) => {
                             </span>
                           }
                         />
-                        <ToolbarDropdown
-                          id="wpl_maxLines"
-                          handleSelect={(key: any) => setMaxLines(Number(key))}
-                          value={workloadPodLogsState.maxLines}
-                          label={maxLines}
-                          options={MaxLinesOptions}
-                          tooltip="Truncate after N log lines"
-                          className={toolbarTail}
-                        />
+                        <div style={{ marginLeft: 'auto' }}>
+                          <ToolbarDropdown
+                            id="wpl_maxLines"
+                            handleSelect={(key: any) =>
+                              setMaxLines(Number(key))
+                            }
+                            value={workloadPodLogsState.maxLines}
+                            label={maxLines}
+                            options={MaxLinesOptions}
+                            tooltip="Truncate after N log lines"
+                            className={toolbarTail}
+                          />
+                        </div>
                       </Toolbar>
                     )}
                     {getLogsDiv()}
