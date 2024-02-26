@@ -1,4 +1,5 @@
 import {
+  AssessedProcessInstanceDTO,
   ExecuteWorkflowResponseDTO,
   toWorkflowYaml,
   ProcessInstancesDTO,
@@ -405,7 +406,6 @@ describe('executeWorkflow', () => {
         customAttrib: 'My customAttrib',
       },
     };
-
     // Act
     const actualResultV2: ExecuteWorkflowResponseDTO = await V2.executeWorkflow(
       mockDataIndexService,
@@ -475,6 +475,92 @@ describe('getInstances', () => {
     for (let i = 0; i < howmany; i++) {
       expect(processInstanceV2[i].id).toEqual(processInstance[i].id);
     }
+  });
+});
+
+describe('getInstancesById', () => {
+  let mockDataIndexService: DataIndexService;
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockDataIndexService = createMockDataIndexService();
+  });
+
+  it("Instance doesn't exists", async () => {
+    (mockDataIndexService.fetchProcessInstance as jest.Mock).mockRejectedValue(
+      new Error('No definition'),
+    );
+    // Act
+    const promise = V2.getInstanceById(mockDataIndexService, 'testInstanceId');
+
+    // Assert
+    await expect(promise).rejects.toThrow('No definition');
+  });
+
+  it('Instance exists, assessment undefined string', async () => {
+    const processInstance = generateProcessInstance(1);
+
+    (mockDataIndexService.fetchProcessInstance as jest.Mock).mockResolvedValue(
+      processInstance,
+    );
+
+    // Act
+    const processInstanceV2: AssessedProcessInstanceDTO =
+      await V2.getInstanceById(mockDataIndexService, processInstance.id);
+
+    // Assert
+    expect(mockDataIndexService.fetchProcessInstance).toHaveBeenCalledTimes(1);
+    expect(processInstanceV2).toBeDefined();
+    expect(processInstanceV2.instance).toBeDefined();
+    expect(processInstanceV2.assessedBy).toBeUndefined();
+    expect(processInstanceV2.instance.id).toEqual(processInstance.id);
+  });
+
+  it('Instance exists, assessment empty string', async () => {
+    const processInstance = generateProcessInstance(1);
+
+    (mockDataIndexService.fetchProcessInstance as jest.Mock).mockResolvedValue(
+      processInstance,
+    );
+
+    // Act
+    const processInstanceV2: AssessedProcessInstanceDTO =
+      await V2.getInstanceById(mockDataIndexService, processInstance.id, '');
+
+    // Assert
+    expect(mockDataIndexService.fetchProcessInstance).toHaveBeenCalledTimes(1);
+    expect(processInstanceV2).toBeDefined();
+    expect(processInstanceV2.instance).toBeDefined();
+    expect(processInstanceV2.assessedBy).toBeUndefined();
+    expect(processInstanceV2.instance.id).toEqual(processInstance.id);
+  });
+
+  it('Instance exists, assessment non empty string', async () => {
+    const processInstance = generateProcessInstance(1);
+    processInstance.businessKey = 'testBusinessKey';
+    const assessedBy = generateProcessInstance(1);
+    assessedBy.id = processInstance.businessKey;
+
+    (mockDataIndexService.fetchProcessInstance as jest.Mock)
+      .mockResolvedValueOnce(processInstance)
+      .mockResolvedValueOnce(assessedBy);
+
+    // Act
+    const processInstanceV2: AssessedProcessInstanceDTO =
+      await V2.getInstanceById(
+        mockDataIndexService,
+        processInstance.id,
+        'foobar',
+      );
+
+    // Assert
+    expect(mockDataIndexService.fetchProcessInstance).toHaveBeenCalledTimes(2);
+    expect(processInstanceV2).toBeDefined();
+    expect(processInstanceV2.instance).toBeDefined();
+    expect(processInstanceV2.assessedBy).toBeDefined();
+    expect(processInstanceV2.assessedBy?.id).toEqual(
+      processInstance.businessKey,
+    );
+    expect(processInstanceV2.instance.id).toEqual(processInstance.id);
   });
 });
 
