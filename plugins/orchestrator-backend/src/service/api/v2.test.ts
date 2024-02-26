@@ -11,6 +11,7 @@ import {
 import { buildPagination } from '../../types/pagination';
 import { DataIndexService } from '../DataIndexService';
 import { SonataFlowService } from '../SonataFlowService';
+import abortWorkflowResult from './mapping/__fixtures__/abortWorkFlowResponseV1.json';
 import assessedProcessInstanceData from './mapping/__fixtures__/assessedProcessInstance.json';
 import {
   mapToGetWorkflowInstanceResults,
@@ -71,82 +72,11 @@ const createMockDataIndexService = (): DataIndexService => {
   mockDataIndexService.getWorkflowDefinition = jest.fn();
   mockDataIndexService.fetchWorkflowSource = jest.fn();
   mockDataIndexService.fetchProcessInstance = jest.fn();
+  mockDataIndexService.fetchProcessInstances = jest.fn();
+  mockDataIndexService.abortWorkflowInstance = jest.fn();
+
   return mockDataIndexService;
 };
-
-describe('getWorkflowResults', () => {
-  let mockDataIndexService: DataIndexService;
-  beforeEach(async () => {
-    jest.clearAllMocks();
-    mockDataIndexService = createMockDataIndexService();
-  });
-
-  it('returns process instance', async () => {
-    // Arrange
-    const mockGetWorkflowResultsV1 = { ...assessedProcessInstanceData };
-
-    (mockDataIndexService.fetchProcessInstance as jest.Mock).mockResolvedValue(
-      mockGetWorkflowResultsV1.instance,
-    );
-
-    const expectedResultV2 = mapToGetWorkflowInstanceResults(
-      // @ts-ignore
-      mockGetWorkflowResultsV1.instance.variables,
-    );
-
-    // Act
-    const actualResultV2: WorkflowDataDTO = await V2.getWorkflowResults(
-      mockDataIndexService,
-      'testInstanceId',
-    );
-
-    // Assert
-    expect(actualResultV2).toBeDefined();
-    expect(actualResultV2).toEqual(expectedResultV2);
-  });
-
-  it('throws error when no variables attribute is present in the instance object', async () => {
-    // Arrange
-    const mockGetWorkflowResultsV1 = { ...assessedProcessInstanceData };
-
-    // @ts-ignore
-    delete mockGetWorkflowResultsV1.instance.variables;
-
-    (mockDataIndexService.fetchProcessInstance as jest.Mock).mockResolvedValue(
-      mockGetWorkflowResultsV1,
-    );
-
-    // Act
-    const promise = V2.getWorkflowResults(mockDataIndexService, 'instanceId');
-
-    // Assert
-    await expect(promise).rejects.toThrow(
-      'Error getting workflow instance results with id instanceId',
-    );
-  });
-
-  it('throws error when no instanceId is provided', async () => {
-    const promise = V2.getWorkflowResults(mockDataIndexService, '');
-
-    // Assert
-    await expect(promise).rejects.toThrow(
-      'No instance id was provided to get workflow results',
-    );
-  });
-
-  it('throws error when no dataIndexService is provided', async () => {
-    const promise = V2.getWorkflowResults(
-      // @ts-ignore
-      null,
-      'testInstanceId',
-    );
-
-    // Assert
-    await expect(promise).rejects.toThrow(
-      'No data index service provided for executing workflow with id',
-    );
-  });
-});
 
 describe('getWorkflowOverview', () => {
   let mockSonataFlowService: SonataFlowService;
@@ -634,6 +564,52 @@ describe('getWorkflowResults', () => {
     // Assert
     await expect(promise).rejects.toThrow(
       'No data index service provided for executing workflow with id',
+    );
+  });
+});
+
+describe('abortWorkflow', () => {
+  let mockDataIndexService: DataIndexService;
+  beforeEach(async () => {
+    jest.clearAllMocks();
+    mockDataIndexService = createMockDataIndexService();
+  });
+
+  it('aborts workflows', async () => {
+    // Arrange
+    const mockAbortWorkflowResultV1 = { ...abortWorkflowResult };
+
+    (mockDataIndexService.abortWorkflowInstance as jest.Mock).mockResolvedValue(
+      mockAbortWorkflowResultV1,
+    );
+
+    const expectedResultV2 = 'Workflow ${workflowId} successfully aborted';
+
+    // Act
+    const actualResultV2: string = await V2.abortWorkflow(
+      mockDataIndexService,
+      'testInstanceId',
+    );
+
+    // Assert
+    expect(actualResultV2).toBeDefined();
+    expect(actualResultV2).toEqual(expectedResultV2);
+  });
+
+  it('throws error when abort workflows response has error attribute', async () => {
+    // Arrange
+    const mockAbortWorkflowResultV1 = { ...abortWorkflowResult };
+    mockAbortWorkflowResultV1.error = 'Simulated abort workflow error';
+    (mockDataIndexService.abortWorkflowInstance as jest.Mock).mockResolvedValue(
+      mockAbortWorkflowResultV1,
+    );
+
+    // Act
+    const promise = V2.abortWorkflow(mockDataIndexService, 'instanceId');
+
+    // Assert
+    await expect(promise).rejects.toThrow(
+      "Can't abort workflow instanceId. The error was: Simulated abort workflow error",
     );
   });
 });

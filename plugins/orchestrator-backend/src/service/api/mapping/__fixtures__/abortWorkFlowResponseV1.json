@@ -1,0 +1,32 @@
+{
+  "operation": {
+    "key": "21373226325",
+    "query": {
+      "kind": "Document",
+      "definitions": [],
+      "__key": "4731997009"
+    },
+    "variables": {
+      "id": "409ccb39-9508-4ce1-a62b-7009a8c5e992"
+    },
+    "extensions": "undefined",
+    "kind": "mutation",
+    "context": {
+      "_instance": "1",
+      "url": "http://localhost:8099//graphql",
+      "fetchSubscriptions": "undefined",
+      "fetchOptions": "undefined",
+      "fetch": "undefined",
+      "preferGetMethod": "undefined",
+      "requestPolicy": "cache-first",
+      "suspense": "false"
+    }
+  },
+  "data": {
+    "ProcessInstanceAbort": "Successfully performed ABORT ProcessInstance with id 409ccb39-9508-4ce1-a62b-7009a8c5e992"
+  },
+  "error": "",
+  "extensions": "undefined",
+  "hasNext": "false",
+  "stale": "false"
+}
