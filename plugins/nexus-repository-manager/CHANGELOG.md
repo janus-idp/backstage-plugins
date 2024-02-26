@@ -1,3 +1,11 @@
+## @janus-idp/backstage-plugin-nexus-repository-manager [1.4.26](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-nexus-repository-manager@1.4.25...@janus-idp/backstage-plugin-nexus-repository-manager@1.4.26) (2024-02-26)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.3
+
 ## @janus-idp/backstage-plugin-nexus-repository-manager [1.4.25](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-nexus-repository-manager@1.4.24...@janus-idp/backstage-plugin-nexus-repository-manager@1.4.25) (2024-02-21)
 
 
