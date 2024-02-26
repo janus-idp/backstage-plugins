@@ -63,6 +63,7 @@
     "winston": "^3.11.0",
     "yn": "^5.0.0",
     "moment": "^2.29.4",
+    "ajv-formats": "^2.1.1",
     "js-yaml": "^4.1.0"
   },
   "devDependencies": {},
