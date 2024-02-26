@@ -154,7 +154,7 @@ async function validateGroupingPolicy(
   const metadata = await roleMetadataStorage.findRoleMetadata(parent);
   if (metadata && metadata.source !== source && metadata.source !== 'legacy') {
     return new Error(
-      `You could not add user or group to the role created with source ${metadata.source}`,
+      `Group policy is invalid: ${groupPolicy}. You could not add user or group to the role created with source ${metadata.source}`,
     );
   }
   return undefined;
@@ -176,9 +176,12 @@ export async function validateAllPredefinedPolicies(
     }
 
     if (await enforcer.hasPolicy(...policy)) {
-      return new Error(
-        `Duplicate policy: ${policy} found in the file ${preDefinedPoliciesFile}`,
-      );
+      const source = (await enforcer.getMetadata(policy)).source;
+      if (source !== 'csv-file') {
+        return new Error(
+          `Duplicate policy: ${policy} found in the file ${preDefinedPoliciesFile}, originates from source: ${source}`,
+        );
+      }
     }
   }
 
@@ -194,9 +197,12 @@ export async function validateAllPredefinedPolicies(
     }
 
     if (await enforcer.hasGroupingPolicy(...groupPolicy)) {
-      return new Error(
-        `Duplicate role: ${groupPolicy} found in the file ${preDefinedPoliciesFile}`,
-      );
+      const source = (await enforcer.getMetadata(groupPolicy)).source;
+      if (source !== 'csv-file') {
+        return new Error(
+          `Duplicate role: ${groupPolicy} found in the file ${preDefinedPoliciesFile}, originates from source: ${source}`,
+        );
+      }
     }
   }
   return undefined;

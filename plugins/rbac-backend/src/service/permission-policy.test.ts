@@ -100,7 +100,19 @@ const policyMetadataStorageMock: PolicyMetadataStorage = {
         return [];
       },
     ),
-  findPolicyMetadata: jest.fn().mockImplementation(),
+  findPolicyMetadata: jest
+    .fn()
+    .mockImplementation(
+      async (
+        _policy: string[],
+        _trx: Knex.Knex.Transaction,
+      ): Promise<PermissionPolicyMetadata> => {
+        const test: PermissionPolicyMetadata = {
+          source: 'csv-file',
+        };
+        return test;
+      },
+    ),
   createPolicyMetadata: jest.fn().mockImplementation(),
   removePolicyMetadata: jest.fn().mockImplementation(),
 };
