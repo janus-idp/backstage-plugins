@@ -8,15 +8,15 @@ import { Config } from '@backstage/config';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 
-export interface RouterOptions {
+export type RouterOptions = {
   logger: LoggerService;
-  identity: IdentityApi;
-  permissions: PermissionEvaluator;
-  tokenManager: TokenManager;
   database: PluginDatabaseManager;
-  discovery: PluginEndpointDiscovery;
   config: Config;
-}
+  discovery: PluginEndpointDiscovery;
+  tokenManager: TokenManager;
+  permissions: PermissionEvaluator;
+  identity: IdentityApi;
+};
 
 export type NotificationsFilterRequest = {
   /**
