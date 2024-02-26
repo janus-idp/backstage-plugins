@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac [1.15.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.14.5...@janus-idp/backstage-plugin-rbac@1.15.0) (2024-02-26)
+
+
+### Features
+
+* **rbac:** save and display role description in the frontend ([#1206](https://github.com/janus-idp/backstage-plugins/issues/1206)) ([ff61266](https://github.com/janus-idp/backstage-plugins/commit/ff61266a729d472a0e4ff57cd9d2d6ea2389b820))
+
 ## @janus-idp/backstage-plugin-rbac [1.14.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.14.4...@janus-idp/backstage-plugin-rbac@1.14.5) (2024-02-21)
 
 
