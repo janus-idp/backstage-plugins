@@ -1,3 +1,11 @@
+## @janus-idp/backstage-plugin-tekton [3.5.8](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.5.7...@janus-idp/backstage-plugin-tekton@3.5.8) (2024-02-26)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.3
+
 ## @janus-idp/backstage-plugin-tekton [3.5.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.5.6...@janus-idp/backstage-plugin-tekton@3.5.7) (2024-02-21)
 
 
