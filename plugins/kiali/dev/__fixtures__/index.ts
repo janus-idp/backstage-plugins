@@ -3,8 +3,11 @@ import anonymousAuth from './general/auth_info_anonymous.json';
 import configData from './general/config.json';
 import istioCertsInfo from './general/istioCertsInfo.json';
 import istioConfig from './general/istioConfig.json';
+import istioContainerLogs from './general/istioLogs.json';
 import istioStatus from './general/istioStatus.json';
 import istioValidations from './general/istioValidations.json';
+import containerLogs from './general/logs.json';
+import spanLogs from './general/logSpan.json';
 import meshCanaryStatus from './general/meshCanaryStatus.json';
 import meshIstioResourceThresholds from './general/meshIstioResurceThresholds.json';
 import meshTls from './general/meshTls.json';
@@ -186,6 +189,9 @@ export const kialiData: { [index: string]: any } = {
       istioConfigList: travelAgencyIstioConfig,
     },
   },
+  logs: containerLogs,
+  istioLogs: istioContainerLogs,
+  spanLogs: spanLogs,
   workloads: {
     'istio-system': istioSystemWorkloads,
     bookinfo: bookinfoWorkloads,

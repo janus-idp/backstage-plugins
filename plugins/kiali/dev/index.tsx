@@ -35,6 +35,7 @@ import { IstioConfigList, IstioConfigsMap } from '../src/types/IstioConfigList';
 import {
   CanaryUpgradeStatus,
   OutboundTrafficPolicy,
+  PodLogs,
   ValidationStatus,
 } from '../src/types/IstioObjects';
 import {
@@ -47,6 +48,7 @@ import { Namespace } from '../src/types/Namespace';
 import { ServerConfig } from '../src/types/ServerConfig';
 import { StatusState } from '../src/types/StatusState';
 import { TLSStatus } from '../src/types/TLSStatus';
+import { Span, TracingQuery } from '../src/types/Tracing';
 import {
   Workload,
   WorkloadListItem,
@@ -306,6 +308,40 @@ class MockKialiClient implements KialiApi {
   }
   isDevEnv(): boolean {
     return true;
+  }
+
+  async getPodLogs(
+    _: string,
+    __: string,
+    container?: string,
+    ___?: number,
+    ____?: number,
+    _duration?: DurationInSeconds,
+    _isProxy?: boolean,
+    _cluster?: string,
+  ): Promise<PodLogs> {
+    if (container === 'istio-proxy') {
+      return kialiData.istioLogs;
+    }
+    return kialiData.logs;
+  }
+
+  setPodEnvoyProxyLogLevel = async (
+    _namespace: string,
+    _name: string,
+    _level: string,
+    _cluster?: string,
+  ): Promise<void> => {
+    return;
+  };
+
+  async getWorkloadSpans(
+    _: string,
+    __: string,
+    ___: TracingQuery,
+    ____?: string,
+  ): Promise<Span[]> {
+    return kialiData.spanLogs;
   }
 }
 
