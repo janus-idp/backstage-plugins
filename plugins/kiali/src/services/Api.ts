@@ -220,6 +220,7 @@ export class KialiApiClient implements KialiApi {
     }`;
     const dataRequest = data;
     dataRequest.endpoint = endpoint;
+    dataRequest.method = method;
 
     const jsonResponse = await fetch(
       `${this.kialiUrl}/${proxy ? 'proxy' : 'status'}`,
