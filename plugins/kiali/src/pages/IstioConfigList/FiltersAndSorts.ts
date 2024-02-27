@@ -167,7 +167,7 @@ export const istioTypeFilter: FilterType = {
 };
 
 // Used when Istio Config should be explicit
-export const istioConfigTypeFilterT = {
+export const istioConfigTypeFilter = {
   ...istioTypeFilter,
   category: 'Istio Config Type',
   placeholder: 'Filter by Istio Config Type',

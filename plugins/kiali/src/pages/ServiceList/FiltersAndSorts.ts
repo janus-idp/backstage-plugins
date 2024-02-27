@@ -23,7 +23,7 @@ import { hasHealth } from '../../types/Health';
 import { ServiceListItem } from '../../types/ServiceList';
 import { SortField } from '../../types/SortFilters';
 import { compareObjectReferences } from '../AppList/FiltersAndSorts';
-import { istioConfigTypeFilterT } from '../IstioConfigList/FiltersAndSorts';
+import { istioConfigTypeFilter } from '../IstioConfigList/FiltersAndSorts';
 
 export const compareValidations = <
   T extends { validation?: any; name: string },
@@ -206,7 +206,7 @@ const serviceTypeFilter: FilterType = {
 export const availableFilters: FilterType[] = [
   serviceNameFilter,
   serviceTypeFilter,
-  istioConfigTypeFilterT,
+  istioConfigTypeFilter,
   istioSidecarFilter,
   healthFilter,
   labelFilter,
@@ -310,7 +310,7 @@ export const filterBy = (
   }
 
   const istioTypeSelected = getFilterSelectedValues(
-    istioConfigTypeFilterT,
+    istioConfigTypeFilter,
     filters,
   );
   if (istioTypeSelected.length > 0) {
