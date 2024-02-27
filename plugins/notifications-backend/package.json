@@ -35,6 +35,7 @@
     "clean": "backstage-cli package clean",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
+    "postversion": "yarn run export-dynamic",
     "tsc": "tsc",
     "openapi": "./scripts/openapi.sh",
     "export-dynamic": "janus-cli package export-dynamic-plugin"
