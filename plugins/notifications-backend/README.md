@@ -308,7 +308,7 @@ Response:
 Request:
 
 ```bash
-curl -X PUT 'http://localhost:7007/api/notifications/notifications/read?messageID=48bbf896-4b7c-4b68-a446-246b6a801000&read=true'
+curl -X PUT 'http://localhost:7007/api/notifications/notifications/read?messageId=48bbf896-4b7c-4b68-a446-246b6a801000&read=true'
 ```
 
 Response: A HTTP Status Code
