@@ -1,7 +1,7 @@
 import { Pagination } from '../types/pagination';
 
 export function buildGraphQlQuery(args: {
-  type: 'ProcessInstances' | 'Jobs';
+  type: 'ProcessDefinitions' | 'ProcessInstances' | 'Jobs';
   queryBody: string;
   whereClause?: string;
   pagination?: Pagination;

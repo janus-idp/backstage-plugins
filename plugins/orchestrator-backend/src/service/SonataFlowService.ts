@@ -21,6 +21,7 @@ import {
 import { spawn } from 'child_process';
 import { join, resolve } from 'path';
 
+import { Pagination } from '../types/pagination';
 import { DataIndexService } from './DataIndexService';
 import { executeWithRetry } from './Helper';
 
@@ -348,9 +349,11 @@ export class SonataFlowService {
   private async fetchWorkflowOverviewBySource(
     source: string,
   ): Promise<WorkflowOverview | undefined> {
+    const pagination: Pagination = {
+      offset: 0,
+      limit: 10,
+    };
     let processInstances: ProcessInstance[] = [];
-    const limit = 10;
-    let offset: number = 0;
 
     let lastTriggered: Date = new Date(0);
     let lastRunStatus: ProcessInstanceStateValues | undefined;
@@ -361,8 +364,7 @@ export class SonataFlowService {
     do {
       processInstances = await this.dataIndex.fetchWorkflowInstances(
         definition.id,
-        limit,
-        offset,
+        pagination,
       );
 
       for (const pInstance of processInstances) {
@@ -380,7 +382,8 @@ export class SonataFlowService {
           counter++;
         }
       }
-      offset += limit;
+      if (pagination.offset && pagination.limit)
+        pagination.offset += pagination.limit;
     } while (processInstances.length > 0);
 
     return {
