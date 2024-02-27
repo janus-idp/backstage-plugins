@@ -127,7 +127,7 @@ export class DataIndexService {
   public async fetchProcessInstances(
     pagination: Pagination,
   ): Promise<ProcessInstance[] | undefined> {
-    pagination.sortField = FETCH_PROCESS_INSTANCES_SORT_FIELD;
+    pagination.sortField ??= FETCH_PROCESS_INSTANCES_SORT_FIELD;
 
     const graphQlQuery = buildGraphQlQuery({
       type: 'ProcessInstances',
