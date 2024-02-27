@@ -7,13 +7,13 @@ import {
 import { isNonNullable } from '../utils/TypeGuards';
 
 export type WorkflowProgressNodeModel = NodeInstance & {
-  status: ProcessInstanceStateValues;
+  status?: ProcessInstanceStateValues;
   error?: ProcessInstanceError;
 };
 
 export const fromNodeInstanceToWorkflowProgressNodeModel =
   (
-    workflowStatus: ProcessInstanceStateValues,
+    workflowStatus?: ProcessInstanceStateValues,
     workflowError?: ProcessInstanceError,
   ) =>
   (
@@ -41,7 +41,11 @@ export const fromNodeInstanceToWorkflowProgressNodeModel =
       model.status = 'ACTIVE';
     }
 
-    if (isLastNode && ['ABORTED', 'SUSPENDED'].includes(workflowStatus)) {
+    if (
+      workflowStatus &&
+      isLastNode &&
+      ['ABORTED', 'SUSPENDED'].includes(workflowStatus)
+    ) {
       model.status = workflowStatus;
     }
 

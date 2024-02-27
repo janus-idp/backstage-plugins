@@ -7,7 +7,7 @@ export type WorkflowRunDetail = {
   id: string;
   name: string;
   workflowId: string;
-  status: string;
+  status?: string;
   started: string;
   duration: string;
   category?: string;

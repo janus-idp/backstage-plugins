@@ -142,7 +142,8 @@ export interface components {
       | 'Error'
       | 'Completed'
       | 'Aborted'
-      | 'Suspended';
+      | 'Suspended'
+      | 'Pending';
     WorkflowRunStatusDTO: {
       key?: string;
       value?: string;

@@ -103,7 +103,9 @@ export const WorkflowInstancePage = ({
     fetchInstance,
     SHORT_REFRESH_INTERVAL,
     (curValue: AssessedProcessInstance | undefined) =>
-      !!curValue && curValue.instance.state === 'ACTIVE',
+      !!curValue &&
+      (curValue.instance.state === 'ACTIVE' ||
+        curValue.instance.state === 'PENDING'),
   );
 
   const canAbort = React.useMemo(

@@ -49,6 +49,10 @@ export class DataIndexService {
       .mutation(ProcessInstanceAbortMutationDocument, { id: workflowId })
       .toPromise();
 
+    this.logger.debug(
+      `Abort workflow instance result: ${JSON.stringify(result)}`,
+    );
+
     if (result.error) {
       this.logger.error(
         `Error aborting workflow instance ${workflowId}: ${result.error}`,
@@ -66,6 +70,10 @@ export class DataIndexService {
     const graphQlQuery = `{ ProcessDefinitions ( where: {id: {equal: "${definitionId}" } } ) { id, name, version, type, endpoint, serviceUrl, source } }`;
 
     const result = await this.client.query(graphQlQuery, {});
+
+    this.logger.debug(
+      `Get workflow definition result: ${JSON.stringify(result)}`,
+    );
 
     if (result.error) {
       this.logger.error(`Error fetching workflow definition ${result.error}`);
@@ -99,6 +107,10 @@ export class DataIndexService {
     this.logger.info(`getWorkflowDefinitions() called:  ${this.dataIndexUrl}`);
     const result = await this.client.query(QUERY, {});
 
+    this.logger.debug(
+      `Get workflow definitions result: ${JSON.stringify(result)}`,
+    );
+
     if (result.error) {
       this.logger.error(
         `Error fetching data index swf results ${result.error}`,
@@ -113,14 +125,18 @@ export class DataIndexService {
     const graphQlQuery =
       '{ ProcessInstances ( orderBy: { start: ASC }, where: {processId: {isNull: false} } ) { id, processName, processId, businessKey, state, start, end, nodes { id }, variables, parentProcessInstance {id, processName, businessKey} } }';
 
-    const response = await this.client.query(graphQlQuery, {});
+    const result = await this.client.query(graphQlQuery, {});
 
-    if (response.error) {
-      this.logger.error(`Error when fetching instances: ${response.error}`);
-      throw response.error;
+    this.logger.debug(
+      `Fetch process instances result: ${JSON.stringify(result)}`,
+    );
+
+    if (result.error) {
+      this.logger.error(`Error when fetching instances: ${result.error}`);
+      throw result.error;
     }
 
-    const processInstancesSrc = response.data
+    const processInstancesSrc = result.data
       .ProcessInstances as ProcessInstance[];
 
     const processInstances = await Promise.all(
@@ -153,17 +169,18 @@ export class DataIndexService {
   ): Promise<string | undefined> {
     const graphQlQuery = `{ ProcessDefinitions ( where: {id: {equal: "${workflowId}" } } ) { id, source } }`;
 
-    const response = await this.client.query(graphQlQuery, {});
+    const result = await this.client.query(graphQlQuery, {});
 
-    if (response.error) {
-      this.logger.error(
-        `Error when fetching workflow source: ${response.error}`,
-      );
+    this.logger.debug(
+      `Fetch workflow source result: ${JSON.stringify(result)}`,
+    );
+
+    if (result.error) {
+      this.logger.error(`Error when fetching workflow source: ${result.error}`);
       return undefined;
     }
 
-    const processDefinitions = response.data
-      .ProcessDefinitions as WorkflowInfo[];
+    const processDefinitions = result.data.ProcessDefinitions as WorkflowInfo[];
 
     if (processDefinitions.length === 0) {
       this.logger.info(`No workflow source found for ${workflowId}`);
@@ -182,6 +199,10 @@ export class DataIndexService {
 
     const result = await this.client.query(graphQlQuery, {});
 
+    this.logger.debug(
+      `Fetch workflow instances result: ${JSON.stringify(result)}`,
+    );
+
     if (result.error) {
       this.logger.error(
         `Error when fetching workflow instances: ${result.error}`,
@@ -199,6 +220,10 @@ export class DataIndexService {
 
     const result = await this.client.query(graphQlQuery, {});
 
+    this.logger.debug(
+      `Fetch process instance jobs result: ${JSON.stringify(result)}`,
+    );
+
     if (result.error) {
       this.logger.error(`Error when fetching jobs instances: ${result.error}`);
       throw result.error;
@@ -213,6 +238,10 @@ export class DataIndexService {
     const graphQlQuery = `{ ProcessInstances (where: { id: {equal: "${instanceId}" } } ) { variables } }`;
 
     const result = await this.client.query(graphQlQuery, {});
+
+    this.logger.debug(
+      `Fetch process instance variables result: ${JSON.stringify(result)}`,
+    );
 
     if (result.error) {
       this.logger.error(
@@ -236,6 +265,10 @@ export class DataIndexService {
     const graphQlQuery = `{ ProcessInstances (where: { id: {equal: "${instanceId}" } } ) { id, processName, processId, serviceUrl, businessKey, state, start, end, nodes { id, nodeId, definitionId, type, name, enter, exit }, variables, parentProcessInstance {id, processName, businessKey}, error { nodeDefinitionId, message} } }`;
 
     const result = await this.client.query(graphQlQuery, {});
+
+    this.logger.debug(
+      `Fetch process instance result: ${JSON.stringify(result)}`,
+    );
 
     if (result.error) {
       this.logger.error(

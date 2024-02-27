@@ -6,6 +6,7 @@ export enum ProcessInstanceState {
   Aborted = 'ABORTED',
   Suspended = 'SUSPENDED',
   Error = 'ERROR',
+  Pending = 'PENDING',
 }
 
 export type ProcessInstanceStateValues = Uppercase<
@@ -60,13 +61,13 @@ export interface ProcessInstance {
   rootProcessInstanceId?: string;
   rootProcessId?: string;
   roles?: string[];
-  state: ProcessInstanceStateValues;
+  state?: ProcessInstanceStateValues;
   endpoint: string;
   serviceUrl?: string;
   nodes: NodeInstance[];
   milestones?: Milestone[];
   variables?: ProcessInstanceVariables | string;
-  start: Date;
+  start?: Date;
   end?: Date;
   parentProcessInstance?: ProcessInstance;
   childProcessInstances?: ProcessInstance[];
