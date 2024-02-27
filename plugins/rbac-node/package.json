@@ -29,6 +29,6 @@
     "dist"
   ],
   "dependencies": {
-    "@backstage/backend-plugin-api": "^0.6.10"
+    "@backstage/backend-plugin-api": "^0.6.12"
   }
 }
