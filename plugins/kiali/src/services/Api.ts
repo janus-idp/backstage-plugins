@@ -36,6 +36,7 @@ import { IstioMetricsMap } from '../types/Metrics';
 import { IstioMetricsOptions } from '../types/MetricsOptions';
 import { Namespace } from '../types/Namespace';
 import { ServerConfig } from '../types/ServerConfig';
+import { ServiceDetailsInfo, ServiceDetailsQuery } from '../types/ServiceInfo';
 import { ServiceList, ServiceListQuery } from '../types/ServiceList';
 import { StatusState } from '../types/StatusState';
 import { TLSStatus } from '../types/TLSStatus';
@@ -180,6 +181,13 @@ export interface KialiApi {
     namespace: string,
     params?: ServiceListQuery,
   ): Promise<ServiceList>;
+  getServiceDetail(
+    namespace: string,
+    service: string,
+    validate: boolean,
+    cluster?: string,
+    rateInterval?: DurationInSeconds,
+  ): Promise<ServiceDetailsInfo>;
 }
 
 export const kialiApiRef = createApiRef<KialiApi>({
@@ -739,6 +747,47 @@ export class KialiApiClient implements KialiApi {
       params,
       {},
     );
+  };
+
+  getServiceDetail = async (
+    namespace: string,
+    service: string,
+    validate: boolean,
+    cluster?: string,
+    rateInterval?: DurationInSeconds,
+  ): Promise<ServiceDetailsInfo> => {
+    const params: QueryParams<ServiceDetailsQuery> = {};
+
+    if (validate) {
+      params.validate = true;
+    }
+
+    if (rateInterval) {
+      params.rateInterval = `${rateInterval}s`;
+    }
+
+    if (cluster) {
+      params.clusterName = cluster;
+    }
+
+    return this.newRequest<ServiceDetailsInfo>(
+      HTTP_VERBS.GET,
+      urls.service(namespace, service),
+      params,
+      {},
+    ).then(r => {
+      const info: ServiceDetailsInfo = r;
+
+      if (info.health) {
+        // Default rate interval in backend = 600s
+        info.health = ServiceHealth.fromJson(namespace, service, info.health, {
+          rateInterval: rateInterval ?? 600,
+          hasSidecar: info.istioSidecar,
+          hasAmbient: info.istioAmbient,
+        });
+      }
+      return info;
+    });
   };
 }
 

@@ -16,6 +16,7 @@ import { KialiEntity } from '../src/pages/Kiali/KialiEntity';
 import { KialiNoAnnotation } from '../src/pages/Kiali/KialiNoAnnotation';
 import { KialiNoResources } from '../src/pages/Kiali/KialiNoResources';
 import { OverviewPage } from '../src/pages/Overview/OverviewPage';
+import { ServiceDetailsPage } from '../src/pages/ServiceDetails/ServiceDetailsPage';
 import { WorkloadDetailsPage } from '../src/pages/WorkloadDetails/WorkloadDetailsPage';
 import { WorkloadListPage } from '../src/pages/WorkloadList/WorkloadListPage';
 import { KialiApi, kialiApiRef } from '../src/services/Api';
@@ -381,6 +382,10 @@ const RoutesList = () => (
     <Route
       path={`/${pluginRoot}/workloads/:namespace/:workload`}
       element={<WorkloadDetailsPage />}
+    />
+    <Route
+      path={`/${pluginRoot}/services/:namespace/:workload`}
+      element={<ServiceDetailsPage />}
     />
     <Route path={`/${pluginRoot}/kiali/entity`} element={<KialiEntity />} />
     <Route path="*" element={<KialiNoPath />} />

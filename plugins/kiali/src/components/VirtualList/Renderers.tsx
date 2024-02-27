@@ -260,6 +260,7 @@ export const serviceConfiguration: Renderer<ServiceListItem> = (
       role="gridcell"
       key={`VirtuaItem_Conf_${resource.namespace}_${resource.name}`}
       style={{ verticalAlign: 'middle' }}
+      align="center"
     >
       {validation ? (
         <ValidationServiceSummary
