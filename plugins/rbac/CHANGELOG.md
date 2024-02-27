@@ -1,3 +1,16 @@
+## @janus-idp/backstage-plugin-rbac [1.15.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.15.1...@janus-idp/backstage-plugin-rbac@1.15.2) (2024-02-27)
+
+
+### Bug Fixes
+
+* **rbac:** fixed autocomplete text input behavior on clear ([#1256](https://github.com/janus-idp/backstage-plugins/issues/1256)) ([cb70ff7](https://github.com/janus-idp/backstage-plugins/commit/cb70ff77fde0013eef58b233de226818617fcf6e))
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.4
+
 ## @janus-idp/backstage-plugin-rbac [1.15.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.15.0...@janus-idp/backstage-plugin-rbac@1.15.1) (2024-02-26)
 
 
