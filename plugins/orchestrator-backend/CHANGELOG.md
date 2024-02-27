@@ -1,3 +1,16 @@
+## @janus-idp/backstage-plugin-orchestrator-backend [1.4.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.4.4...@janus-idp/backstage-plugin-orchestrator-backend@1.4.5) (2024-02-27)
+
+
+### Bug Fixes
+
+* **orchestrator:** warn "unknown format X ignored in schema at path Y" ([#1270](https://github.com/janus-idp/backstage-plugins/issues/1270)) ([de3c734](https://github.com/janus-idp/backstage-plugins/commit/de3c734299189b753d924c87aa9b5c9b5f94683c)), closes [/github.com/janus-idp/backstage-plugins/blob/903c7f37a1cf138ac96ef3f631f951866c2014fa/plugins/notifications-backend/src/service/router.ts#L45-L52](https://github.com/janus-idp//github.com/janus-idp/backstage-plugins/blob/903c7f37a1cf138ac96ef3f631f951866c2014fa/plugins/notifications-backend/src/service/router.ts/issues/L45-L52)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.4
+
 ## @janus-idp/backstage-plugin-orchestrator-backend [1.4.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.4.3...@janus-idp/backstage-plugin-orchestrator-backend@1.4.4) (2024-02-26)
 
 
