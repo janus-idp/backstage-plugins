@@ -16,7 +16,12 @@ import { getErrorString, kialiApiRef } from '../../services/Api';
 import { KialiContext } from '../../store';
 import { KialiAppState } from '../../store/Store';
 import { baseStyle } from '../../styles/StyleUtils';
-import { Validations } from '../../types/IstioObjects';
+import {
+  Gateway,
+  K8sGateway,
+  PeerAuthentication,
+  Validations,
+} from '../../types/IstioObjects';
 import { ServiceDetailsInfo } from '../../types/ServiceInfo';
 import { ServiceInfo } from './ServiceInfo';
 
@@ -30,6 +35,11 @@ export const ServiceDetailsPage = () => {
   );
   const cluster = HistoryManager.getClusterName();
   const [validations, setValidations] = React.useState<Validations>();
+  const [gateways, setGateways] = React.useState<Gateway[]>([]);
+  const [k8sGateways, setK8sGateways] = React.useState<K8sGateway[]>([]);
+  const [peerAuthentication, setPeerAuthentication] = React.useState<
+    PeerAuthentication[]
+  >([]);
 
   const grids = () => {
     const elements = [];
@@ -46,6 +56,36 @@ export const ServiceDetailsPage = () => {
     return elements;
   };
 
+  const fetchIstioObjects = async () => {
+    kialiClient
+      .getAllIstioConfigs(
+        [namespace ? namespace : ''],
+        ['gateways', 'k8sgateways', 'peerauthentications'],
+        false,
+        '',
+        '',
+        cluster,
+      )
+      .then(response => {
+        const gws: Gateway[] = [];
+        const k8sGws: K8sGateway[] = [];
+        const peer: PeerAuthentication[] = [];
+        Object.values(response.data).forEach(item => {
+          gws.push(...item.gateways);
+          k8sGws.push(...item.k8sGateways);
+          peer.push(...item.peerAuthentication);
+        });
+        setGateways(gws);
+        setK8sGateways(k8sGws);
+        setPeerAuthentication(peer);
+      })
+      .catch(gwError => {
+        kialiState.alertUtils!.add(
+          `Could not fetch Gateways list: ${getErrorString(gwError)}`,
+        );
+      });
+  };
+
   const fetchService = async () => {
     kialiClient
       .getServiceDetail(
@@ -58,6 +98,7 @@ export const ServiceDetailsPage = () => {
       .then((serviceResponse: ServiceDetailsInfo) => {
         setServiceItem(serviceResponse);
         setValidations(serviceResponse.validations);
+        fetchIstioObjects();
       })
       .catch(err => {
         kialiState.alertUtils!.add(
@@ -91,9 +132,9 @@ export const ServiceDetailsPage = () => {
             validations={validations ? validations : {}}
             cluster={cluster}
             serviceDetails={serviceItem}
-            gateways={[]}
-            k8sGateways={[]}
-            peerAuthentications={[]}
+            gateways={gateways}
+            k8sGateways={k8sGateways}
+            peerAuthentications={peerAuthentication}
             istioAPIEnabled
           />
         )}
