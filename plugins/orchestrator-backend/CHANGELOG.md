@@ -1,3 +1,16 @@
+## @janus-idp/backstage-plugin-orchestrator-backend [1.4.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.4.5...@janus-idp/backstage-plugin-orchestrator-backend@1.4.6) (2024-02-27)
+
+
+### Bug Fixes
+
+* **orchestrator:** workflowId parameter wrongly parsed in getWorkflowOverviewById (v2) ([#1283](https://github.com/janus-idp/backstage-plugins/issues/1283)) ([2cd70d0](https://github.com/janus-idp/backstage-plugins/commit/2cd70d048d707a3b117c5273a1d8bc9fdc03fff7))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.3.2
+
 ## @janus-idp/backstage-plugin-orchestrator-backend [1.4.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.4.4...@janus-idp/backstage-plugin-orchestrator-backend@1.4.5) (2024-02-27)
 
 
