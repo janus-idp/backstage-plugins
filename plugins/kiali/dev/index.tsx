@@ -17,6 +17,7 @@ import { KialiNoAnnotation } from '../src/pages/Kiali/KialiNoAnnotation';
 import { KialiNoResources } from '../src/pages/Kiali/KialiNoResources';
 import { OverviewPage } from '../src/pages/Overview/OverviewPage';
 import { ServiceDetailsPage } from '../src/pages/ServiceDetails/ServiceDetailsPage';
+import { ServiceListPage } from '../src/pages/ServiceList/ServiceListPage';
 import { WorkloadDetailsPage } from '../src/pages/WorkloadDetails/WorkloadDetailsPage';
 import { WorkloadListPage } from '../src/pages/WorkloadList/WorkloadListPage';
 import { KialiApi, kialiApiRef } from '../src/services/Api';
@@ -47,6 +48,8 @@ import { IstioMetricsMap } from '../src/types/Metrics';
 import { IstioMetricsOptions } from '../src/types/MetricsOptions';
 import { Namespace } from '../src/types/Namespace';
 import { ServerConfig } from '../src/types/ServerConfig';
+import { ServiceDetailsInfo } from '../src/types/ServiceInfo';
+import { ServiceList, ServiceListQuery } from '../src/types/ServiceList';
 import { StatusState } from '../src/types/StatusState';
 import { TLSStatus } from '../src/types/TLSStatus';
 import { Span, TracingQuery } from '../src/types/Tracing';
@@ -344,6 +347,35 @@ class MockKialiClient implements KialiApi {
   ): Promise<Span[]> {
     return kialiData.spanLogs;
   }
+
+  async getServices(
+    namespace: string,
+    _?: ServiceListQuery,
+  ): Promise<ServiceList> {
+    return kialiData.services[namespace];
+  }
+
+  async getServiceDetail(
+    namespace: string,
+    service: string,
+    _validate: boolean,
+    _cluster?: string,
+    rateInterval?: DurationInSeconds,
+  ): Promise<ServiceDetailsInfo> {
+    const parsedName = service.replace(/-/g, '');
+    const info: ServiceDetailsInfo =
+      kialiData.namespacesData[namespace].services[parsedName];
+
+    if (info.health) {
+      // Default rate interval in backend = 600s
+      info.health = ServiceHealth.fromJson(namespace, service, info.health, {
+        rateInterval: rateInterval ?? 600,
+        hasSidecar: info.istioSidecar,
+        hasAmbient: info.istioAmbient,
+      });
+    }
+    return info;
+  }
 }
 
 interface Props {
@@ -357,6 +389,7 @@ export const TabsMock = () => {
   const tabs = [
     { label: 'Overview', route: `${pluginRoot}/overview` },
     { label: 'Workloads', route: `${pluginRoot}/workloads` },
+    { label: 'Services', route: `${pluginRoot}/services` },
   ];
   const navigate = useNavigate();
   return (
@@ -379,12 +412,13 @@ const RoutesList = () => (
     <Route path={`/${pluginRoot}`} element={<OverviewPage />} />
     <Route path={`/${pluginRoot}/overview`} element={<OverviewPage />} />
     <Route path={`/${pluginRoot}/workloads`} element={<WorkloadListPage />} />
+    <Route path={`/${pluginRoot}/services`} element={<ServiceListPage />} />
     <Route
       path={`/${pluginRoot}/workloads/:namespace/:workload`}
       element={<WorkloadDetailsPage />}
     />
     <Route
-      path={`/${pluginRoot}/services/:namespace/:workload`}
+      path={`/${pluginRoot}/services/:namespace/:service`}
       element={<ServiceDetailsPage />}
     />
     <Route path={`/${pluginRoot}/kiali/entity`} element={<KialiEntity />} />
