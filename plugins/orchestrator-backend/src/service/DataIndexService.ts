@@ -204,7 +204,7 @@ export class DataIndexService {
     const graphQlQuery = buildGraphQlQuery({
       type: 'ProcessInstances',
       queryBody: 'processName, state, start, end',
-      whereClause: `processId: {equal: "${workflowId}"`,
+      whereClause: `processId: {equal: "${workflowId}"}`,
       pagination,
     });
     this.logger.debug(`GraphQL query: ${graphQlQuery}`);
