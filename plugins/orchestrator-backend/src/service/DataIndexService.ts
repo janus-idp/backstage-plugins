@@ -284,7 +284,7 @@ export class DataIndexService {
     const graphQlQuery = buildGraphQlQuery({
       type: 'ProcessInstances',
       queryBody:
-        'id, processName, processId, state, start, businessKey, end, nodes { id, nodeId, definitionId, type, name, enter, exit }, variables, parentProcessInstance {id, processName, businessKey}, error { nodeDefinitionId, message}',
+        'id, processName, processId, state, start, serviceUrl, businessKey, end, nodes { id, nodeId, definitionId, type, name, enter, exit }, variables, parentProcessInstance {id, processName, businessKey}, error { nodeDefinitionId, message}',
       whereClause: `id: {equal: "${instanceId}"}`,
     });
     this.logger.debug(`GraphQL query: ${graphQlQuery}`);
