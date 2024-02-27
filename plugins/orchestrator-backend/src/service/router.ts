@@ -348,10 +348,9 @@ function setupInternalRoutes(
   // v2
   api.register(
     'getWorkflowOverviewById',
-    async (_c, req: express.Request, res: express.Response, next) => {
-      const {
-        params: { workflowId },
-      } = req;
+    async (c, _req: express.Request, res: express.Response, next) => {
+      const workflowId = c.request.params.workflowId as string;
+
       await V2.getWorkflowOverviewById(services.sonataFlowService, workflowId)
         .then(result => res.json(result))
         .catch(next);
