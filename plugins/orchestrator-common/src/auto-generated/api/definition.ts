@@ -641,8 +641,7 @@ const OPENAPI = `
             "$ref": "#/components/schemas/ProcessInstanceStatusDTO"
           },
           "started": {
-            "type": "string",
-            "format": "date-time"
+            "type": "string"
           },
           "duration": {
             "type": "string"
@@ -786,12 +785,10 @@ const OPENAPI = `
           },
           "enter": {
             "type": "string",
-            "format": "date-time",
             "description": "Date when the node was entered"
           },
           "exit": {
             "type": "string",
-            "format": "date-time",
             "description": "Date when the node was exited (optional)"
           },
           "definitionId": {

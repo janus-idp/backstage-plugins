@@ -117,7 +117,6 @@ export interface components {
       name?: string;
       workflow?: string;
       status?: components['schemas']['ProcessInstanceStatusDTO'];
-      /** Format: date-time */
       started?: string;
       duration?: string;
       category?: components['schemas']['WorkflowCategoryDTO'];
@@ -176,15 +175,9 @@ export interface components {
       name?: string;
       /** @description Node type */
       type?: string;
-      /**
-       * Format: date-time
-       * @description Date when the node was entered
-       */
+      /** @description Date when the node was entered */
       enter?: string;
-      /**
-       * Format: date-time
-       * @description Date when the node was exited (optional)
-       */
+      /** @description Date when the node was exited (optional) */
       exit?: string;
       /** @description Definition ID */
       definitionId?: string;
