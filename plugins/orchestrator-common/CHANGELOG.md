@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-orchestrator-common [1.3.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-common@1.3.1...@janus-idp/backstage-plugin-orchestrator-common@1.3.2) (2024-02-27)
+
+
+### Bug Fixes
+
+* **orchestrator:** remove date-time format from spec ([#1282](https://github.com/janus-idp/backstage-plugins/issues/1282)) ([2b59dcf](https://github.com/janus-idp/backstage-plugins/commit/2b59dcf00082e617911289d8813ad02b83800470))
+
 ## @janus-idp/backstage-plugin-orchestrator-common [1.3.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-common@1.3.0...@janus-idp/backstage-plugin-orchestrator-common@1.3.1) (2024-02-21)
 
 
