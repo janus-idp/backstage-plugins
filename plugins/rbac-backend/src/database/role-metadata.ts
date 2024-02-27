@@ -133,6 +133,10 @@ export function daoToMetadata(dao: RoleMetadataDao): RoleMetadata {
   return {
     source: dao.source,
     description: dao.description,
+    author: dao.author,
+    modifiedBy: dao.author,
+    createdAt: dao.createdAt,
+    lastModified: dao.lastModified,
   };
 }
 

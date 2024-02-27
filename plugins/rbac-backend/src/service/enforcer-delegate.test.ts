@@ -371,6 +371,14 @@ describe('EnforcerDelegate', () => {
         policyMetadataStorageMock.createPolicyMetadata,
       ).toHaveBeenCalledWith('rest', groupingPolicy, expect.anything());
       expect(roleMetadataStorageMock.createRoleMetadata).toHaveBeenCalled();
+      expect(
+        (roleMetadataStorageMock.createRoleMetadata as jest.Mock).mock.calls
+          .length,
+      ).toEqual(1);
+      const metadata: RoleMetadataDao = (
+        roleMetadataStorageMock.createRoleMetadata as jest.Mock
+      ).mock.calls[0];
+      console.log(metadata);
     });
 
     it('should add grouping policy, but do not create role metadata', async () => {

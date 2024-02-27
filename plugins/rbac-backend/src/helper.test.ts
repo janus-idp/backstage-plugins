@@ -185,6 +185,34 @@ describe('helper.ts', () => {
       expect(deepSortedEqual(obj1, obj2)).toBe(true);
     });
 
+    it('should return true for identical objects with different ordering of top-level properties with exclude read only fields', () => {
+      const obj1: RoleMetadataDao = {
+        description: 'qa team',
+        id: 1,
+        roleEntityRef: 'role:default/qa',
+        source: 'rest',
+        // read only properties
+        author: 'role:default/some-role',
+        modifiedBy: 'role:default/some-role',
+        createdAt: '2024-02-26 12:25:31+00',
+        lastModified: '2024-02-26 12:25:31+00',
+      };
+      const obj2: RoleMetadataDao = {
+        id: 1,
+        description: 'qa team',
+        source: 'rest',
+        roleEntityRef: 'role:default/qa',
+      };
+      expect(
+        deepSortedEqual(obj1, obj2, [
+          'author',
+          'modifiedBy',
+          'createdAt',
+          'lastModified',
+        ]),
+      ).toBe(true);
+    });
+
     it('should return false for objects with different values', () => {
       const obj1: RoleMetadataDao = {
         description: 'qa',
