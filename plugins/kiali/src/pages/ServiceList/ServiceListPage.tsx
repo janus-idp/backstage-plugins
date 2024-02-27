@@ -111,26 +111,22 @@ export const ServiceListPage = (): React.JSX.Element => {
     return [];
   };
 
-  const fetchServices = (
+  const fetchServices = async (
     nss: NamespaceInfo[],
     timeDuration: number,
-    toggles: ActiveTogglesInfo,
+    _: ActiveTogglesInfo,
   ): Promise<void> => {
-    const health = toggles.get('health') ? 'true' : 'false';
-    const istioResources = toggles.get('istioResources') ? 'true' : 'false';
-    const onlyDefinitions = toggles.get('configuration') ? 'false' : 'true';
+    const health = 'true';
+    const istioResources = 'true';
+    const onlyDefinitions = 'false';
     return Promise.all(
-      nss.map(nsInfo => {
-        return kialiClient
-          .getServices(nsInfo.name, {
-            rateInterval: `${String(timeDuration)}s`,
-            health: health,
-            istioResources: istioResources,
-            onlyDefinitions: onlyDefinitions,
-          })
-          .then(servicesResponse => {
-            return servicesResponse;
-          });
+      nss.map(async nsInfo => {
+        return await kialiClient.getServices(nsInfo.name, {
+          rateInterval: `${String(timeDuration)}s`,
+          health: health,
+          istioResources: istioResources,
+          onlyDefinitions: onlyDefinitions,
+        });
       }),
     )
       .then(results => {
@@ -141,7 +137,6 @@ export const ServiceListPage = (): React.JSX.Element => {
             getServiceItem(response, duration),
           );
         });
-
         setServices(serviceListItems);
       })
       .catch(err =>
@@ -196,7 +191,7 @@ export const ServiceListPage = (): React.JSX.Element => {
         <VirtualList
           activeNamespaces={namespaces}
           rows={allServices}
-          type="workloads"
+          type="services"
           hiddenColumns={hiddenColumns}
         />
       </Content>

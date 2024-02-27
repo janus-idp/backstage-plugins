@@ -14,6 +14,9 @@ const getPath = (loc: Location): number => {
   if (loc.pathname.includes('workloads')) {
     return 1;
   }
+  if (loc.pathname.includes('services')) {
+    return 2;
+  }
   return 0;
 };
 
