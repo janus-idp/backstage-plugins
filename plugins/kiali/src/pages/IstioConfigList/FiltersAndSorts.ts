@@ -7,6 +7,7 @@ import {
 } from '../../types/Filters';
 import { IstioConfigItem } from '../../types/IstioConfigList';
 import { SortField } from '../../types/SortFilters';
+import { compareValidations } from '../ServiceList/FiltersAndSorts';
 
 export const sortFields: SortField<IstioConfigItem>[] = [
   {
@@ -50,28 +51,8 @@ export const sortFields: SortField<IstioConfigItem>[] = [
     title: 'Config',
     isNumeric: false,
     param: 'cv',
-    compare: (a: IstioConfigItem, b: IstioConfigItem): number => {
-      let sortValue = -1;
-      if (a.validation && !b.validation) {
-        sortValue = -1;
-      } else if (!a.validation && b.validation) {
-        sortValue = 1;
-      } else if (!a.validation && !b.validation) {
-        sortValue = 0;
-      } else if (a.validation && b.validation) {
-        if (a.validation.valid && !b.validation.valid) {
-          sortValue = -1;
-        } else if (!a.validation.valid && b.validation.valid) {
-          sortValue = 1;
-        } else if (a.validation.valid && b.validation.valid) {
-          sortValue = a.validation.checks.length - b.validation.checks.length;
-        } else if (!a.validation.valid && !b.validation.valid) {
-          sortValue = b.validation.checks.length - a.validation.checks.length;
-        }
-      }
-
-      return sortValue || a.name.localeCompare(b.name);
-    },
+    compare: (a: IstioConfigItem, b: IstioConfigItem) =>
+      compareValidations(a, b),
   },
   {
     id: 'cluster',
