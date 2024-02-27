@@ -1192,15 +1192,15 @@ endif::internal-generation[]
 
 | enter
 | 
-| Date 
+| String 
 | Date when the node was entered
-| date-time 
+|  
 
 | exit
 | 
-| Date 
+| String 
 | Date when the node was exited (optional)
-| date-time 
+|  
 
 | definitionId
 | 
@@ -1284,9 +1284,9 @@ endif::internal-generation[]
 
 | started
 | 
-| Date 
+| String 
 | 
-| date-time 
+|  
 
 | duration
 | 
@@ -1589,13 +1589,13 @@ Category of the workflow
 | 
 | oas_any_type_not_mapped 
 | Date when the node was entered
-| date-time 
+|  
 
 | exit
 | 
 | oas_any_type_not_mapped 
 | Date when the node was exited (optional)
-| date-time 
+|  
 
 | definitionId
 | 
