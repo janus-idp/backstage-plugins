@@ -53,6 +53,23 @@ export const AboutCard = ({ roleName }: AboutCardProps) => {
   if (loading) {
     return <Progress />;
   }
+
+  let lastModified = role?.metadata?.lastModified;
+  if (lastModified) {
+    const date = new Date(lastModified);
+    const time = date.toLocaleString('en-US', {
+      hour: '2-digit' as const,
+      minute: '2-digit' as const,
+      hour12: false,
+      timeZone: 'UTC',
+    });
+    lastModified = `${date.getUTCDate()} ${date.toLocaleString('default', {
+      month: 'short',
+    })} ${date.getUTCFullYear()}, ${time}`;
+  } else {
+    lastModified = 'No information';
+  }
+
   return (
     <Card className={cardClass}>
       <CardHeader title="About" />
@@ -85,7 +102,7 @@ export const AboutCard = ({ roleName }: AboutCardProps) => {
             >
               <MarkdownContent
                 className={classes.text}
-                content={role?.metadata?.lastModified ?? 'No information'}
+                content={lastModified}
               />
             </AboutField>
           </Grid>

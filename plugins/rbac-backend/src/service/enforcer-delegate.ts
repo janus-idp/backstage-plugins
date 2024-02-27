@@ -179,6 +179,9 @@ export class EnforcerDelegate {
 
       const entityRef = roleMetadata.roleEntityRef;
       if (!(await this.roleMetadataStorage.findRoleMetadata(entityRef, trx))) {
+        const currentDate: Date = new Date();
+        roleMetadata.createdAt = currentDate.toUTCString();
+        roleMetadata.lastModified = currentDate.toUTCString();
         await this.roleMetadataStorage.createRoleMetadata(roleMetadata, trx);
       }
 
@@ -210,7 +213,8 @@ export class EnforcerDelegate {
     const trx = externalTrx ?? (await this.knex.transaction());
     const oldRoleName = oldRole.at(0)?.at(1)!;
     try {
-      // todo handle legacy...
+      const currentDate: Date = new Date();
+      roleMetadata.lastModified = currentDate.toUTCString();
       await this.roleMetadataStorage.updateRoleMetadata(
         roleMetadata,
         oldRoleName,
