@@ -382,8 +382,9 @@ export class SonataFlowService {
           counter++;
         }
       }
-      if (pagination.offset && pagination.limit)
+      if (pagination.offset !== undefined && pagination.limit !== undefined) {
         pagination.offset += pagination.limit;
+      }
     } while (processInstances.length > 0);
 
     return {
