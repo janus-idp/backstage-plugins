@@ -1,3 +1,16 @@
+## @janus-idp/backstage-plugin-orchestrator-backend [1.4.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.4.6...@janus-idp/backstage-plugin-orchestrator-backend@1.4.7) (2024-02-28)
+
+
+### Bug Fixes
+
+* **orchestrator:** handle nullable start/state properties of process instance ([#1277](https://github.com/janus-idp/backstage-plugins/issues/1277)) ([d8a43a5](https://github.com/janus-idp/backstage-plugins/commit/d8a43a5a164f83fc90d037ae3d7a355f5de543e0))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.3.3
+
 ## @janus-idp/backstage-plugin-orchestrator-backend [1.4.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.4.5...@janus-idp/backstage-plugin-orchestrator-backend@1.4.6) (2024-02-27)
 
 
