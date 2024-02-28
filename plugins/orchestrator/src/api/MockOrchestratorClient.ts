@@ -10,24 +10,16 @@ import {
   WorkflowListResult,
   WorkflowOverview,
   WorkflowOverviewListResult,
-  WorkflowSpecFile,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { hasOwnProp, isNonNullable } from '../utils/TypeGuards';
 import { OrchestratorApi } from './api';
 
 export interface MockOrchestratorApiData {
-  createWorkflowDefinitionResponse: ReturnType<
-    OrchestratorApi['createWorkflowDefinition']
-  >;
-  deleteWorkflowDefinitionResponse: ReturnType<
-    OrchestratorApi['deleteWorkflowDefinition']
-  >;
   executeWorkflowResponse: () => ReturnType<OrchestratorApi['executeWorkflow']>;
   getInstanceResponse: () => ReturnType<OrchestratorApi['getInstance']>;
   getInstancesResponse: ReturnType<OrchestratorApi['getInstances']>;
   getInstanceJobsResponse: ReturnType<OrchestratorApi['getInstanceJobs']>;
-  getSpecsResponse: ReturnType<OrchestratorApi['getSpecs']>;
   getWorkflowResponse: ReturnType<OrchestratorApi['getWorkflow']>;
   getWorkflowDataInputSchemaResponse: ReturnType<
     OrchestratorApi['getWorkflowDataInputSchema']
@@ -46,31 +38,6 @@ export class MockOrchestratorClient implements OrchestratorApi {
 
   constructor(mockData: Partial<MockOrchestratorApiData> = {}) {
     this._mockData = mockData;
-  }
-
-  createWorkflowDefinition(
-    _uri: string,
-    _content?: string,
-  ): Promise<WorkflowItem> {
-    if (
-      !hasOwnProp(this._mockData, 'createWorkflowDefinitionResponse') ||
-      !isNonNullable(this._mockData.createWorkflowDefinitionResponse)
-    ) {
-      throw new Error(`[createWorkflowDefinition]: No mock data available`);
-    }
-
-    return Promise.resolve(this._mockData.createWorkflowDefinitionResponse);
-  }
-
-  deleteWorkflowDefinition(_workflowId: string): Promise<any> {
-    if (
-      !hasOwnProp(this._mockData, 'deleteWorkflowDefinitionResponse') ||
-      !isNonNullable(this._mockData.deleteWorkflowDefinitionResponse)
-    ) {
-      throw new Error(`[deleteWorkflowDefinition]: No mock data available`);
-    }
-
-    return Promise.resolve(this._mockData.deleteWorkflowDefinitionResponse);
   }
 
   executeWorkflow(_args: {
@@ -121,17 +88,6 @@ export class MockOrchestratorClient implements OrchestratorApi {
     }
 
     return Promise.resolve(this._mockData.getInstancesResponse);
-  }
-
-  getSpecs(): Promise<WorkflowSpecFile[]> {
-    if (
-      !hasOwnProp(this._mockData, 'getSpecsResponse') ||
-      !isNonNullable(this._mockData.getSpecsResponse)
-    ) {
-      throw new Error(`[getSpecs]: No mock data available`);
-    }
-
-    return Promise.resolve(this._mockData.getSpecsResponse);
   }
 
   getWorkflow(_workflowId: string): Promise<WorkflowItem> {

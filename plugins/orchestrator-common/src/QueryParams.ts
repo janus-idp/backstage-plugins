@@ -1,4 +1,3 @@
-export const QUERY_PARAM_URI = 'uri' as const;
 export const QUERY_PARAM_BUSINESS_KEY = 'businessKey' as const;
 export const QUERY_PARAM_INSTANCE_ID = 'instanceId' as const;
 export const QUERY_PARAM_INCLUDE_ASSESSMENT = 'includeAssessment' as const;

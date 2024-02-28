@@ -163,7 +163,6 @@ export const WorkflowInstancePageContent: React.FC<{
               workflowId={assessedInstance.instance.processId}
               kind={EditorViewKind.DIAGRAM_VIEWER}
               editorMode="text"
-              readonly
             />
           </InfoCard>
         </Grid>

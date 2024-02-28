@@ -34,10 +34,6 @@ export interface Config {
              * Example: /home/orchestrator/workflows
              */
             localPath: string;
-            /**
-             * Indicates to push changes to the gitRepository upon changes on workflows definition and resources
-             */
-            autoPush: boolean;
           }
         | {
             localPath: string;
@@ -65,26 +61,6 @@ export interface Config {
        * Example: http://localhost:8099
        */
       url: string;
-    };
-    /**
-     * Configuration for the integration with the Catalog plugin.
-     */
-    catalog?: {
-      /**
-       * Whether to enable the integration with the Catalog plugin.
-       * Default: false
-       */
-      isEnabled?: boolean;
-      /**
-       * Owner of workflows to present on the component catalog.
-       * Default: infrastructure
-       */
-      owner?: string;
-      /**
-       * Environment of workflows to present on the component catalog.
-       * Default: development
-       */
-      environment?: string;
     };
     /**
      * Configuration for the workflow editor.

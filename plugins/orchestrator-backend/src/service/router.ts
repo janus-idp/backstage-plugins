@@ -1,6 +1,5 @@
 import { errorHandler } from '@backstage/backend-common';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
-import { ScmIntegrations } from '@backstage/integration';
 import { JsonObject, JsonValue } from '@backstage/types';
 
 import { fullFormats } from 'ajv-formats/dist/formats';
@@ -10,12 +9,10 @@ import { OpenAPIBackend, Request } from 'openapi-backend';
 
 import {
   openApiDocument,
-  ORCHESTRATOR_SERVICE_READY_TOPIC,
   QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
   QUERY_PARAM_BUSINESS_KEY,
   QUERY_PARAM_INCLUDE_ASSESSMENT,
   QUERY_PARAM_INSTANCE_ID,
-  QUERY_PARAM_URI,
   WorkflowInputSchemaResponse,
   WorkflowItem,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
@@ -28,7 +25,6 @@ import { CloudEventService } from './CloudEventService';
 import { DataIndexService } from './DataIndexService';
 import { DataInputSchemaService } from './DataInputSchemaService';
 import { JiraEvent, JiraService } from './JiraService';
-import { OpenApiService } from './OpenApiService';
 import { ScaffolderService } from './ScaffolderService';
 import { SonataFlowService } from './SonataFlowService';
 import { WorkflowService } from './WorkflowService';
@@ -36,7 +32,6 @@ import { WorkflowService } from './WorkflowService';
 interface Services {
   sonataFlowService: SonataFlowService;
   workflowService: WorkflowService;
-  openApiService: OpenApiService;
   jiraService: JiraService;
   dataIndexService: DataIndexService;
   dataInputSchemaService: DataInputSchemaService;
@@ -47,8 +42,7 @@ export async function createBackendRouter(
     dataIndexService: DataIndexService;
   },
 ): Promise<express.Router> {
-  const { eventBroker, config, logger, discovery, catalogApi, urlReader } =
-    args;
+  const { config, logger, discovery, catalogApi, urlReader } = args;
 
   const api = initOpenAPIBackend();
   await api.init();
@@ -62,33 +56,15 @@ export async function createBackendRouter(
     response.json({ status: 'ok' });
   });
 
-  const githubIntegration = ScmIntegrations.fromConfig(config)
-    .github.list()
-    .pop();
-
-  const githubToken = githubIntegration?.config.token;
-
-  if (!githubToken) {
-    logger.warn(
-      'No GitHub token found. Some features may not work as expected.',
-    );
-  }
-
   const cloudEventService = new CloudEventService(logger);
   const jiraService = new JiraService(
     logger,
     cloudEventService,
     args.dataIndexService,
   );
-  const openApiService = new OpenApiService(logger, discovery);
-  const dataInputSchemaService = new DataInputSchemaService(
-    logger,
-    githubToken,
-  );
+  const dataInputSchemaService = new DataInputSchemaService();
 
   const workflowService = new WorkflowService(
-    openApiService,
-    dataInputSchemaService,
     args.sonataFlowService,
     config,
     logger,
@@ -106,7 +82,6 @@ export async function createBackendRouter(
   const services: Services = {
     sonataFlowService: args.sonataFlowService,
     workflowService,
-    openApiService,
     jiraService,
     dataIndexService: args.dataIndexService,
     dataInputSchemaService,
@@ -114,11 +89,6 @@ export async function createBackendRouter(
 
   setupInternalRoutes(router, api, services);
   setupExternalRoutes(router, discovery, scaffolderService);
-
-  await eventBroker.publish({
-    topic: ORCHESTRATOR_SERVICE_READY_TOPIC,
-    eventPayload: {},
-  });
 
   router.use((req, res, next) => {
     if (!next) {
@@ -530,88 +500,11 @@ function setupInternalRoutes(
       );
   });
 
-  router.delete('/workflows/:workflowId', async (req, res) => {
-    const workflowId = req.params.workflowId;
-    const uri = await services.sonataFlowService.fetchWorkflowUri(workflowId);
-
-    if (!uri) {
-      res.status(500).send(`Couldn't fetch workflow uri ${workflowId}`);
-      return;
-    }
-
-    await services.workflowService.deleteWorkflowDefinitionById(uri);
-    res.status(200).send();
-  });
-
-  router.post('/workflows', async (req, res) => {
-    const uri = V1.extractQueryParam(req, QUERY_PARAM_URI);
-
-    if (!uri) {
-      res.status(400).send('uri query param is required');
-      return;
-    }
-
-    await V1.createWorkflow(services.workflowService, uri, req.body)
-      .then(result => res.status(201).json(result))
-      .catch(error => {
-        res.status(500).send(error.message || 'Internal Server Error');
-      });
-  });
-
-  // v2
-  api.register(
-    'createWorkflow',
-    async (c, _req, res: express.Response, next) => {
-      const uri = V2.extractQueryParam(c.request, QUERY_PARAM_URI);
-
-      if (!uri) {
-        res.status(400).send('uri query param is required');
-        return;
-      }
-      await V2.createWorkflow(services.workflowService, uri, c.request.body)
-        .then(result => res.json(result))
-        .catch(error => {
-          res.status(500).send(error.message || 'Internal Server Error');
-          next();
-        });
-    },
-  );
-
-  router.get('/actions/schema', async (_, res) => {
-    const openApi = await services.openApiService.generateOpenApi();
-    res.json(openApi).status(200).send();
-  });
-
-  router.put('/actions/schema', async (_, res) => {
-    const openApi = await services.workflowService.saveOpenApi();
-    res.json(openApi).status(200).send();
-  });
-
   router.post('/webhook/jira', async (req, res) => {
     const event = req.body as JiraEvent;
     await services.jiraService.handleEvent(event);
     res.status(200).send();
   });
-
-  router.get('/specs', async (_, res) => {
-    await V1.getWorkflowSpecs(services.workflowService)
-      .then(result => res.status(200).json(result))
-      .catch(error => {
-        res.status(500).send(error.message || 'Internal Server Error');
-      });
-  });
-
-  // v2
-  api.register(
-    'getWorkflowSpecs',
-    async (_c, _req: express.Request, res: express.Response) => {
-      await V2.getWorkflowSpecs(services.workflowService)
-        .then(result => res.status(200).json(result))
-        .catch((error: { message: string }) => {
-          res.status(500).send(error.message || 'Internal Server Error');
-        });
-    },
-  );
 
   // v2
   api.register(

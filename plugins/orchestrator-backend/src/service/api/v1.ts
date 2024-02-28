@@ -3,7 +3,6 @@ import express from 'express';
 
 import {
   AssessedProcessInstance,
-  fromWorkflowSource,
   ProcessInstance,
   WorkflowDefinition,
   WorkflowExecutionResponse,
@@ -12,13 +11,11 @@ import {
   WorkflowListResult,
   WorkflowOverview,
   WorkflowOverviewListResult,
-  WorkflowSpecFile,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { DataIndexService } from '../DataIndexService';
 import { retryAsyncFunction } from '../Helper';
 import { SonataFlowService } from '../SonataFlowService';
-import { WorkflowService } from '../WorkflowService';
 
 const FETCH_INSTANCE_MAX_RETRIES = 5;
 const FETCH_INSTANCE_RETRY_DELAY_MS = 1000;
@@ -178,20 +175,6 @@ export namespace V1 {
     return executionResponse;
   }
 
-  export async function createWorkflow(
-    workflowService: WorkflowService,
-    uri: string,
-    reqBody: string,
-  ): Promise<WorkflowItem> {
-    const workflowItem = uri?.startsWith('http')
-      ? await workflowService.saveWorkflowDefinitionFromUrl(uri)
-      : await workflowService.saveWorkflowDefinition({
-          uri,
-          definition: fromWorkflowSource(reqBody),
-        });
-    return workflowItem;
-  }
-
   export async function abortWorkflow(
     dataIndexService: DataIndexService,
     workflowId: string,
@@ -205,12 +188,6 @@ export namespace V1 {
     }
 
     return result;
-  }
-
-  export async function getWorkflowSpecs(
-    workflowService: WorkflowService,
-  ): Promise<WorkflowSpecFile[]> {
-    return await workflowService.listStoredSpecs();
   }
 
   export function extractQueryParam(

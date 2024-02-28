@@ -10,14 +10,12 @@ import {
   QUERY_PARAM_BUSINESS_KEY,
   QUERY_PARAM_INCLUDE_ASSESSMENT,
   QUERY_PARAM_INSTANCE_ID,
-  QUERY_PARAM_URI,
   WorkflowExecutionResponse,
   WorkflowInputSchemaResponse,
   WorkflowItem,
   WorkflowListResult,
   WorkflowOverview,
   WorkflowOverviewListResult,
-  WorkflowSpecFile,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { buildUrl } from '../utils/UrlUtils';
@@ -153,48 +151,6 @@ export class OrchestratorClient implements OrchestratorApi {
       throw await ResponseError.fromResponse(res);
     }
     return await res.json();
-  }
-
-  async createWorkflowDefinition(
-    uri: string,
-    content: string,
-  ): Promise<WorkflowItem> {
-    const baseUrl = await this.getBaseUrl();
-    const endpoint = `${baseUrl}/workflows`;
-    const urlToFetch = buildUrl(endpoint, {
-      [QUERY_PARAM_URI]: uri,
-    });
-    const res = await fetch(urlToFetch, {
-      method: 'POST',
-      body: content,
-      headers: {
-        'content-type': 'text/plain',
-      },
-    });
-    if (!res.ok) {
-      throw await ResponseError.fromResponse(res);
-    }
-    return await res.json();
-  }
-
-  async deleteWorkflowDefinition(workflowId: string): Promise<any> {
-    const baseUrl = await this.getBaseUrl();
-    const res = await fetch(`${baseUrl}/workflows/${workflowId}`, {
-      method: 'DELETE',
-      headers: { 'content-type': 'application/json' },
-    });
-    if (!res.ok) {
-      throw await ResponseError.fromResponse(res);
-    }
-  }
-
-  async getSpecs(): Promise<WorkflowSpecFile[]> {
-    const baseUrl = await this.getBaseUrl();
-    const res = await fetch(`${baseUrl}/specs`);
-    if (!res.ok) {
-      throw await ResponseError.fromResponse(res);
-    }
-    return res.json();
   }
 
   async getWorkflowOverview(workflowId: string): Promise<WorkflowOverview> {

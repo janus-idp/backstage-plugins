@@ -10,7 +10,7 @@ import {
 import { SwfServiceCatalogService } from '@kie-tools/serverless-workflow-service-catalog/dist/api';
 
 export class WorkflowEditorLanguageService {
-  constructor(private readonly services: SwfServiceCatalogService[]) {}
+  constructor(private readonly services: SwfServiceCatalogService[] = []) {}
   public getLs(
     relativePath: string,
   ): SwfJsonLanguageService | SwfYamlLanguageService {
