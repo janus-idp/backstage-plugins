@@ -445,6 +445,7 @@ components:
         - Completed
         - Aborted
         - Suspended
+        - Pending
     WorkflowRunStatusDTO:
       type: object
       properties:
