@@ -5,6 +5,7 @@ import { Entity } from '@backstage/catalog-model';
 import { Content, Page } from '@backstage/core-components';
 import { useEntity } from '@backstage/plugin-catalog-react';
 
+import { pluginRoot } from './components/BreadcrumbView/BreadcrumbView';
 import { AppDetailsPage } from './pages/AppDetails/AppDetailsPage';
 import { AppListPage } from './pages/AppList/AppListPage';
 import { KialiNoPath } from './pages/Kiali';
@@ -66,34 +67,65 @@ export const EmbeddedRouter = () => {
   );
 };
 
+export const getRoutes = (dev?: boolean) => {
+  return (
+    <Routes>
+      <Route path="/" element={<OverviewPage />} />
+      <Route
+        path={dev ? `/${pluginRoot}/overview` : overviewRouteRef.path}
+        element={<OverviewPage />}
+      />
+      <Route
+        path={dev ? `/${pluginRoot}/workloads` : workloadsRouteRef.path}
+        element={<WorkloadListPage />}
+      />
+      <Route
+        path={dev ? `/${pluginRoot}/services` : servicesRouteRef.path}
+        element={<ServiceListPage />}
+      />
+      <Route
+        path={dev ? `/${pluginRoot}/applications` : appsRouteRef.path}
+        element={<AppListPage />}
+      />
+      <Route
+        path={
+          dev
+            ? `/${pluginRoot}/workloads/:namespace/:workload`
+            : workloadsDetailRouteRef.path
+        }
+        element={<WorkloadDetailsPage />}
+      />
+      <Route
+        path={
+          dev
+            ? `/${pluginRoot}/services/:namespace/:service`
+            : servicesDetailRouteRef.path
+        }
+        element={<ServiceDetailsPage />}
+      />
+      <Route
+        path={
+          dev
+            ? `/${pluginRoot}/applications/:namespace/:app`
+            : appDetailRouteRef.path
+        }
+        element={<AppDetailsPage />}
+      />
+      {dev && (
+        <Route path={`/${pluginRoot}/kiali/entity`} element={<KialiEntity />} />
+      )}
+      <Route path="*" element={<KialiNoPath />} />
+    </Routes>
+  );
+};
+
 export const Router = () => {
   return (
     <KialiProvider>
       <Page themeId="tool">
         <KialiHeader />
         <KialiTabs />
-        <Content>
-          <Routes>
-            <Route path="/" element={<OverviewPage />} />
-            <Route path={overviewRouteRef.path} element={<OverviewPage />} />
-            <Route
-              path={workloadsRouteRef.path}
-              element={<WorkloadListPage />}
-            />
-            <Route path={servicesRouteRef.path} element={<ServiceListPage />} />
-            <Route path={appsRouteRef.path} element={<AppListPage />} />
-            <Route
-              path={workloadsDetailRouteRef.path}
-              element={<WorkloadDetailsPage />}
-            />
-            <Route
-              path={servicesDetailRouteRef.path}
-              element={<ServiceDetailsPage />}
-            />
-            <Route path={appDetailRouteRef.path} element={<AppDetailsPage />} />
-            <Route path="*" element={<KialiNoPath />} />
-          </Routes>
-        </Content>
+        <Content>{getRoutes()}</Content>
       </Page>
     </KialiProvider>
   );

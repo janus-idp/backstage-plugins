@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Route, Routes, useNavigate } from 'react-router-dom';
+import { BrowserRouter, useNavigate } from 'react-router-dom';
 
 import { Entity } from '@backstage/catalog-model';
 import { Content, HeaderTabs, Page } from '@backstage/core-components';
@@ -9,19 +9,14 @@ import { TestApiProvider } from '@backstage/test-utils';
 
 import { kialiPlugin } from '../src';
 import { pluginRoot } from '../src/components/BreadcrumbView/BreadcrumbView';
-import { KialiNoPath } from '../src/pages/Kiali';
 import { KialiHeader } from '../src/pages/Kiali/Header/KialiHeader';
-import { KialiHeaderEntity } from '../src/pages/Kiali/Header/KialiHeaderEntity';
-import { KialiEntity } from '../src/pages/Kiali/KialiEntity';
 import { KialiNoAnnotation } from '../src/pages/Kiali/KialiNoAnnotation';
 import { KialiNoResources } from '../src/pages/Kiali/KialiNoResources';
-import { OverviewPage } from '../src/pages/Overview/OverviewPage';
-import { ServiceDetailsPage } from '../src/pages/ServiceDetails/ServiceDetailsPage';
-import { ServiceListPage } from '../src/pages/ServiceList/ServiceListPage';
-import { WorkloadDetailsPage } from '../src/pages/WorkloadDetails/WorkloadDetailsPage';
-import { WorkloadListPage } from '../src/pages/WorkloadList/WorkloadListPage';
+import { getRoutes } from '../src/Router';
 import { KialiApi, kialiApiRef } from '../src/services/Api';
 import { KialiProvider } from '../src/store/KialiProvider';
+import { App, AppQuery } from '../src/types/App';
+import { AppList, AppListQuery } from '../src/types/AppList';
 import { AuthInfo } from '../src/types/Auth';
 import { CertsInfo } from '../src/types/CertsInfo';
 import { DurationInSeconds, TimeInSeconds } from '../src/types/Common';
@@ -376,6 +371,23 @@ class MockKialiClient implements KialiApi {
     }
     return info;
   }
+
+  getApps = async (
+    namespace: string,
+    _params: AppListQuery,
+  ): Promise<AppList> => {
+    return kialiData.apps[namespace];
+  };
+
+  getApp = async (
+    namespace: string,
+    app: string,
+    _params: AppQuery,
+    _cluster?: string,
+  ): Promise<App> => {
+    const parsedName = app.replace(/-/g, '');
+    return kialiData.namespacesData[namespace].apps[parsedName];
+  };
 }
 
 interface Props {
@@ -390,6 +402,7 @@ export const TabsMock = () => {
     { label: 'Overview', route: `${pluginRoot}/overview` },
     { label: 'Workloads', route: `${pluginRoot}/workloads` },
     { label: 'Services', route: `${pluginRoot}/services` },
+    { label: 'Applications', route: `${pluginRoot}/applications` },
   ];
   const navigate = useNavigate();
   return (
@@ -407,25 +420,6 @@ export const TabsMock = () => {
   );
 };
 
-const RoutesList = () => (
-  <Routes>
-    <Route path={`/${pluginRoot}`} element={<OverviewPage />} />
-    <Route path={`/${pluginRoot}/overview`} element={<OverviewPage />} />
-    <Route path={`/${pluginRoot}/workloads`} element={<WorkloadListPage />} />
-    <Route path={`/${pluginRoot}/services`} element={<ServiceListPage />} />
-    <Route
-      path={`/${pluginRoot}/workloads/:namespace/:workload`}
-      element={<WorkloadDetailsPage />}
-    />
-    <Route
-      path={`/${pluginRoot}/services/:namespace/:service`}
-      element={<ServiceDetailsPage />}
-    />
-    <Route path={`/${pluginRoot}/kiali/entity`} element={<KialiEntity />} />
-    <Route path="*" element={<KialiNoPath />} />
-  </Routes>
-);
-
 const MockProvider = (props: Props) => {
   const content = (
     <KialiProvider entity={props.entity || mockEntity}>
@@ -435,15 +429,10 @@ const MockProvider = (props: Props) => {
             <>
               <KialiHeader />
               <TabsMock />
-              <RoutesList />
+              {getRoutes(true)}
             </>
           )}
-          {props.isEntity && (
-            <Content>
-              <KialiHeaderEntity />
-              <RoutesList />
-            </Content>
-          )}
+          {props.isEntity && <Content>{getRoutes(true)}</Content>}
         </Page>
       </BrowserRouter>
     </KialiProvider>
