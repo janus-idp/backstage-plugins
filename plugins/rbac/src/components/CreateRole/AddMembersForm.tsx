@@ -84,11 +84,14 @@ export const AddMembersForm = ({
         onChange={(_e, value: SelectedMember) => {
           setSelectedMember(value);
           if (value) {
+            setSearch(value.label);
             setFieldValue('selectedMembers', [...selectedMembers, value]);
           }
         }}
         inputValue={search}
-        onInputChange={(_e, newSearch: string) => setSearch(newSearch)}
+        onInputChange={(_e, newSearch: string, reason) =>
+          reason === 'input' && setSearch(newSearch)
+        }
         getOptionDisabled={(option: SelectedMember) =>
           !!selectedMembers.find(
             (sm: SelectedMember) => sm.etag === option.etag,

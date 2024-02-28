@@ -50,6 +50,9 @@ describe('getRoleData', () => {
 
     expect(result).toEqual({
       memberReferences: ['user:default/user1', 'group:default/group1'],
+      metadata: {
+        description: undefined,
+      },
       name: 'group:default/testRole',
     });
 
@@ -91,6 +94,9 @@ describe('getRoleData', () => {
 
     expect(result).toEqual({
       memberReferences: ['user:default/user1', 'group:default/group1'],
+      metadata: {
+        description: undefined,
+      },
       name: 'user:default/testRole',
     });
   });

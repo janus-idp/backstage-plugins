@@ -72,7 +72,6 @@ orchestrator:
     workflowsSource:
       gitRepositoryUrl: https://github.com/tiagodolphine/backstage-orchestrator-workflows
       localPath: /tmp/orchestrator/repository
-      autoPush: true
   dataIndexService:
     url: http://localhost:8899
 ```
@@ -104,42 +103,12 @@ For more information about the configuration options, including other optional p
      env: PluginEnvironment,
    ): Promise<Router> {
      return await createRouter({
-       eventBroker: env.eventBroker,
        config: env.config,
        logger: env.logger,
        discovery: env.discovery,
        catalogApi: env.catalogApi,
        urlReader: env.reader,
      });
-   }
-   ```
-
-1. Add the following code to `packages/backend/src/plugins/catalog.ts` file:
-
-   ```ts title="packages/backend/src/plugins/catalog.ts"
-   /* highlight-add-next-line */
-   import { OrchestratorEntityProvider } from '@janus-idp/backstage-plugin-orchestrator-backend';
-
-   export default async function createPlugin(
-     env: PluginEnvironment,
-   ): Promise<Router> {
-     const builder = await CatalogBuilder.create(env);
-
-     /* ... other processors and/or providers ... */
-     /* highlight-add-start */
-     builder.addEntityProvider(
-       await OrchestratorEntityProvider.fromConfig({
-         config: env.config,
-         logger: env.logger,
-         scheduler: env.scheduler,
-         discovery: env.discovery,
-       }),
-     );
-     /* highlight-add-end */
-
-     const { processingEngine, router } = await builder.build();
-     await processingEngine.start();
-     return router;
    }
    ```
 
@@ -271,8 +240,3 @@ The Orchestrator plugin enhances the Backstage with the execution of developer s
 1. Open your Backstage application.
 1. Click the **Workflows** tab from the left-side panel to navigate to the **Orchestrator** main page.
 1. Inside the **Orchestrator** main page, you can see the list of workflows that are available in your Backstage application.
-
-## Limitations
-
-1. The plugin architecture relies on the SonataFlow Dev Mode image locally running in the host machine. This is currently needed to map local workflow definition files to the container. This limitation will be removed in the future.
-1. The integration with Scaffolder component catalog only works if the new backend system from Backstage is used.

@@ -43,8 +43,8 @@ export class PluginPermissionMetadataCollector {
   constructor(
     private readonly discovery: PluginEndpointDiscovery,
     private readonly pluginIdProvider: PluginIdProvider,
+    private readonly logger: Logger,
     config: Config,
-    logger: Logger,
   ) {
     this.pluginIds = this.pluginIdProvider.getPluginIds();
     this.urlReader = UrlReaders.default({
@@ -97,7 +97,13 @@ export class PluginPermissionMetadataCollector {
       try {
         const permResp = await this.urlReader.readUrl(wellKnownURL);
         const permMetaDataRaw = (await permResp.buffer()).toString();
-        const permMetaData = JSON.parse(permMetaDataRaw);
+        let permMetaData;
+        try {
+          permMetaData = JSON.parse(permMetaDataRaw);
+        } catch (err) {
+          // workaround for https://issues.redhat.com/browse/RHIDP-1456
+          continue;
+        }
         if (permMetaData) {
           pluginResponses = [
             ...pluginResponses,
@@ -108,9 +114,12 @@ export class PluginPermissionMetadataCollector {
           ];
         }
       } catch (err) {
-        if (!isError(err) || err.name !== 'NotFoundError') {
-          throw err;
+        if (isError(err) && err.name === 'NotFoundError') {
+          continue;
         }
+        this.logger.error(
+          `Failed to retrieve permission metadata for ${pluginId}. ${err}`,
+        );
       }
     }
     return pluginResponses;

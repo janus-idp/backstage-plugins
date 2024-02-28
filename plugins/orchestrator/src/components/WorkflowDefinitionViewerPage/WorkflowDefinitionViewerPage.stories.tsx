@@ -1,20 +1,14 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 
-import { featureFlagsApiRef } from '@backstage/core-plugin-api';
 import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
 
 import { Meta, StoryObj } from '@storybook/react';
 
-import {
-  FEATURE_FLAG_DEVELOPER_MODE,
-  WorkflowOverview,
-} from '@janus-idp/backstage-plugin-orchestrator-common';
+import { WorkflowOverview } from '@janus-idp/backstage-plugin-orchestrator-common';
 
-import { createFakeFeatureFlagsApi } from '../../__fixtures__/fakeFeatureFlagsApi';
 import { fakeWorkflowItem } from '../../__fixtures__/fakeWorkflowItem';
 import { fakeWorkflowOverview } from '../../__fixtures__/fakeWorkflowOverview';
-import { fakeWorkflowSpecs } from '../../__fixtures__/fakeWorkflowSpecs';
 import { veryLongString } from '../../__fixtures__/veryLongString';
 import { orchestratorApiRef } from '../../api';
 import { MockOrchestratorClient } from '../../api/MockOrchestratorClient';
@@ -43,18 +37,10 @@ const meta = {
           context.args.workflowOverview || fakeWorkflowOverview,
         ),
         getWorkflowResponse: Promise.resolve(fakeWorkflowItem),
-        getSpecsResponse: Promise.resolve(fakeWorkflowSpecs),
-        createWorkflowDefinitionResponse: Promise.resolve(fakeWorkflowItem),
       });
-      const featureFlagsApi = createFakeFeatureFlagsApi(
-        context.args.featureFlags,
-      );
       return wrapInTestApp(
         <TestApiProvider
-          apis={[
-            [orchestratorApiRef, context.args.api || defaultApi],
-            [featureFlagsApiRef, featureFlagsApi],
-          ]}
+          apis={[[orchestratorApiRef, context.args.api || defaultApi]]}
         >
           <Routes>
             <Route
@@ -110,12 +96,5 @@ export const Loading: Story = {
       getWorkflowOverviewResponse: new Promise(() => {}),
       getWorkflowResponse: new Promise(() => {}),
     }),
-  },
-};
-
-export const Editable: Story = {
-  name: 'Editable',
-  args: {
-    featureFlags: [FEATURE_FLAG_DEVELOPER_MODE],
   },
 };

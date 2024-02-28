@@ -110,68 +110,6 @@ const OPENAPI = `
             }
           }
         }
-      },
-      "post": {
-        "operationId": "createWorkflow",
-        "summary": "Create or update a workflow",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "uri": {
-                    "type": "string"
-                  },
-                  "body": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "uri"
-                ]
-              }
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "uri",
-            "in": "query",
-            "description": "URI parameter",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Created",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "workflowItem": {
-                      "$ref": "#/components/schemas/WorkflowDTO"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Error creating workflow",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
       }
     },
     "/v2/workflows/{workflowId}": {
@@ -440,37 +378,6 @@ const OPENAPI = `
           }
         }
       }
-    },
-    "/v2/specs": {
-      "get": {
-        "summary": "Get workflow specifications",
-        "operationId": "getWorkflowSpecs",
-        "responses": {
-          "200": {
-            "description": "Successful retrieval of workflow specifications",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/WorkflowSpecFileDTO"
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Error fetching workflow specifications",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
     }
   },
   "components": {
@@ -641,8 +548,7 @@ const OPENAPI = `
             "$ref": "#/components/schemas/ProcessInstanceStatusDTO"
           },
           "started": {
-            "type": "string",
-            "format": "date-time"
+            "type": "string"
           },
           "duration": {
             "type": "string"
@@ -695,7 +601,8 @@ const OPENAPI = `
           "Error",
           "Completed",
           "Aborted",
-          "Suspended"
+          "Suspended",
+          "Pending"
         ]
       },
       "WorkflowRunStatusDTO": {
@@ -730,21 +637,6 @@ const OPENAPI = `
             "type": "string"
           }
         }
-      },
-      "WorkflowSpecFileDTO": {
-        "type": "object",
-        "properties": {
-          "path": {
-            "type": "string"
-          },
-          "content": {
-            "type": "string",
-            "description": "JSON string"
-          }
-        },
-        "required": [
-          "content"
-        ]
       },
       "WorkflowProgressDTO": {
         "allOf": [
@@ -786,12 +678,10 @@ const OPENAPI = `
           },
           "enter": {
             "type": "string",
-            "format": "date-time",
             "description": "Date when the node was entered"
           },
           "exit": {
             "type": "string",
-            "format": "date-time",
             "description": "Date when the node was exited (optional)"
           },
           "definitionId": {

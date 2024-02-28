@@ -1,3 +1,18 @@
+## @janus-idp/backstage-plugin-rbac-backend [2.3.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.3.1...@janus-idp/backstage-plugin-rbac-backend@2.3.2) (2024-02-28)
+
+
+### Bug Fixes
+
+* **rbac:** improve error handling in retrieving permission metadata. ([#1285](https://github.com/janus-idp/backstage-plugins/issues/1285)) ([77f5f0e](https://github.com/janus-idp/backstage-plugins/commit/77f5f0efaadf1873b68876f11ca633646ce882b9))
+
+## @janus-idp/backstage-plugin-rbac-backend [2.3.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.3.0...@janus-idp/backstage-plugin-rbac-backend@2.3.1) (2024-02-27)
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-rbac-node:** upgraded to 1.0.2
+
 ## @janus-idp/backstage-plugin-rbac-backend [2.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.2.4...@janus-idp/backstage-plugin-rbac-backend@2.3.0) (2024-02-21)
 
 

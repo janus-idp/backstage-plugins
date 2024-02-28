@@ -6,7 +6,7 @@ import {
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 export const useWorkflowInstanceStateColors = (
-  value: ProcessInstanceStateValues,
+  value?: ProcessInstanceStateValues,
 ) => {
   const useStyles = makeStyles(
     theme =>
@@ -26,9 +26,12 @@ export const useWorkflowInstanceStateColors = (
         [ProcessInstanceState.Error]: {
           color: theme.palette.error.main,
         },
+        [ProcessInstanceState.Pending]: {
+          color: theme.palette.grey[500],
+        },
       }) as const,
   );
 
   const styles = useStyles();
-  return styles[value];
+  return value ? styles[value] : undefined;
 };

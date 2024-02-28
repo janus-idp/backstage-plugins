@@ -15,7 +15,6 @@ import {
   WorkflowDefinition,
   WorkflowExecutionResponse,
   WorkflowInfo,
-  WorkflowItem,
   WorkflowOverview,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
@@ -107,6 +106,7 @@ export class SonataFlowService {
 
       if (response.ok) {
         const json = (await response.json()) as SonataFlowSource[];
+        this.logger.debug(`Fetch workflow uri result: ${JSON.stringify(json)}`);
         // Assuming only one source in the list
         return json.pop()?.uri;
       }
@@ -129,7 +129,11 @@ export class SonataFlowService {
       const response = await executeWithRetry(() => fetch(urlToFetch));
 
       if (response.ok) {
-        return await response.json();
+        const json = await response.json();
+        this.logger.debug(
+          `Fetch workflow info result: ${JSON.stringify(json)}`,
+        );
+        return json;
       }
       const responseStr = JSON.stringify(response);
       this.logger.error(
@@ -163,7 +167,9 @@ export class SonataFlowService {
       const urlToFetch = `${endpoint}/q/openapi.json`;
       const response = await executeWithRetry(() => fetch(urlToFetch));
       if (response.ok) {
-        return await response.json();
+        const json = await response.json();
+        this.logger.debug(`Fetch openapi result: ${JSON.stringify(json)}`);
+        return json;
       }
       const responseStr = JSON.stringify(response);
       this.logger.error(
@@ -171,49 +177,6 @@ export class SonataFlowService {
       );
     } catch (error) {
       this.logger.error(`Error when fetching openapi: ${error}`);
-    }
-    return undefined;
-  }
-
-  public async fetchWorkflows(
-    endpoint: string,
-  ): Promise<WorkflowItem[] | undefined> {
-    try {
-      const urlToFetch = `${endpoint}/management/processes`;
-      const response = await executeWithRetry(() => fetch(urlToFetch));
-
-      if (response.ok) {
-        const workflowIds = (await response.json()) as string[];
-        if (!workflowIds?.length) {
-          return [];
-        }
-        const items = await Promise.all(
-          workflowIds.map(async (workflowId: string) => {
-            const definition = await this.fetchWorkflowDefinition(workflowId);
-            if (!definition) {
-              return undefined;
-            }
-            const uri = await this.fetchWorkflowUri(workflowId);
-            if (!uri) {
-              return undefined;
-            }
-            return {
-              uri,
-              definition: {
-                ...definition,
-                description: definition.description ?? definition.name,
-              },
-            } as WorkflowItem;
-          }),
-        );
-        return items.filter((item): item is WorkflowItem => !!item);
-      }
-      const responseStr = JSON.stringify(response);
-      this.logger.error(
-        `Response was NOT okay when fetch(${urlToFetch}). Received response: ${responseStr}`,
-      );
-    } catch (error) {
-      this.logger.error(`Error when fetching workflows: ${error}`);
     }
     return undefined;
   }
@@ -251,12 +214,15 @@ export class SonataFlowService {
         ? `${args.endpoint}/${args.workflowId}?businessKey=${args.businessKey}`
         : `${args.endpoint}/${args.workflowId}`;
 
-      const response = await fetch(workflowEndpoint, {
+      const result = await fetch(workflowEndpoint, {
         method: 'POST',
         body: JSON.stringify(args.inputData),
         headers: { 'content-type': 'application/json' },
       });
-      return response.json();
+
+      const json = await result.json();
+      this.logger.debug(`Execute workflow result: ${JSON.stringify(json)}`);
+      return json;
     } catch (error) {
       this.logger.error(`Error when executing workflow: ${error}`);
     }
@@ -431,11 +397,14 @@ export class SonataFlowService {
       );
 
       for (const pInstance of processInstances) {
+        if (!pInstance.start) {
+          continue;
+        }
         if (new Date(pInstance.start) > lastTriggered) {
           lastTriggered = new Date(pInstance.start);
           lastRunStatus = pInstance.state;
         }
-        if (pInstance.start && pInstance.end) {
+        if (pInstance.end) {
           const start: Date = new Date(pInstance.start);
           const end: Date = new Date(pInstance.end);
           totalDuration += end.valueOf() - start.valueOf();

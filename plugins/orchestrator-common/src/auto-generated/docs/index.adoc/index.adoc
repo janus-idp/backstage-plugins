@@ -116,107 +116,6 @@ ifdef::internal-generation[]
 endif::internal-generation[]
 
 
-[.createWorkflow]
-==== createWorkflow
-
-`POST /v2/workflows`
-
-Create or update a workflow
-
-===== Description
-
-
-
-
-// markup not found, no include::{specDir}v2/workflows/POST/spec.adoc[opts=optional]
-
-
-
-===== Parameters
-
-
-====== Body Parameter
-
-[cols="2,3,1,1,1"]
-|===
-|Name| Description| Required| Default| Pattern
-
-| CreateWorkflowRequest
-|  <<CreateWorkflowRequest>>
-| X
-| 
-| 
-
-|===
-
-
-
-====== Query Parameters
-
-[cols="2,3,1,1,1"]
-|===
-|Name| Description| Required| Default| Pattern
-
-| uri
-| URI parameter 
-| -
-| null
-| 
-
-|===
-
-
-===== Return Type
-
-<<createWorkflow_201_response>>
-
-
-===== Content Type
-
-* application/json
-* text/plain
-
-===== Responses
-
-.HTTP Response Codes
-[cols="2,3,1"]
-|===
-| Code | Message | Datatype
-
-
-| 201
-| Created
-|  <<createWorkflow_201_response>>
-
-
-| 500
-| Error creating workflow
-|  <<String>>
-
-|===
-
-===== Samples
-
-
-// markup not found, no include::{snippetDir}v2/workflows/POST/http-request.adoc[opts=optional]
-
-
-// markup not found, no include::{snippetDir}v2/workflows/POST/http-response.adoc[opts=optional]
-
-
-
-// file not found, no * wiremock data link :v2/workflows/POST/POST.json[]
-
-
-ifdef::internal-generation[]
-===== Implementation
-
-// markup not found, no include::{specDir}v2/workflows/POST/implementation.adoc[opts=optional]
-
-
-endif::internal-generation[]
-
-
 [.executeWorkflow]
 ==== executeWorkflow
 
@@ -745,81 +644,6 @@ ifdef::internal-generation[]
 endif::internal-generation[]
 
 
-[.getWorkflowSpecs]
-==== getWorkflowSpecs
-
-`GET /v2/specs`
-
-Get workflow specifications
-
-===== Description
-
-
-
-
-// markup not found, no include::{specDir}v2/specs/GET/spec.adoc[opts=optional]
-
-
-
-===== Parameters
-
-
-
-
-
-
-
-===== Return Type
-
-array[<<WorkflowSpecFileDTO>>]
-
-
-===== Content Type
-
-* application/json
-* text/plain
-
-===== Responses
-
-.HTTP Response Codes
-[cols="2,3,1"]
-|===
-| Code | Message | Datatype
-
-
-| 200
-| Successful retrieval of workflow specifications
-| List[<<WorkflowSpecFileDTO>>] 
-
-
-| 500
-| Error fetching workflow specifications
-|  <<String>>
-
-|===
-
-===== Samples
-
-
-// markup not found, no include::{snippetDir}v2/specs/GET/http-request.adoc[opts=optional]
-
-
-// markup not found, no include::{snippetDir}v2/specs/GET/http-response.adoc[opts=optional]
-
-
-
-// file not found, no * wiremock data link :v2/specs/GET/GET.json[]
-
-
-ifdef::internal-generation[]
-===== Implementation
-
-// markup not found, no include::{specDir}v2/specs/GET/implementation.adoc[opts=optional]
-
-
-endif::internal-generation[]
-
-
 [.getWorkflowStatuses]
 ==== getWorkflowStatuses
 
@@ -1074,50 +898,6 @@ endif::internal-generation[]
 |===
 
 
-[#CreateWorkflow201Response]
-=== _CreateWorkflow201Response_ 
-
-
-
-[.fields-CreateWorkflow201Response]
-[cols="2,1,2,4,1"]
-|===
-| Field Name| Required| Type| Description| Format
-
-| workflowItem
-| 
-| WorkflowDTO 
-| 
-|  
-
-|===
-
-
-[#CreateWorkflowRequest]
-=== _CreateWorkflowRequest_ 
-
-
-
-[.fields-CreateWorkflowRequest]
-[cols="2,1,2,4,1"]
-|===
-| Field Name| Required| Type| Description| Format
-
-| uri
-| X
-| String 
-| 
-|  
-
-| body
-| 
-| String 
-| 
-|  
-
-|===
-
-
 [#ExecuteWorkflowRequestDTO]
 === _ExecuteWorkflowRequestDTO_ 
 
@@ -1192,15 +972,15 @@ endif::internal-generation[]
 
 | enter
 | 
-| Date 
+| String 
 | Date when the node was entered
-| date-time 
+|  
 
 | exit
 | 
-| Date 
+| String 
 | Date when the node was exited (optional)
-| date-time 
+|  
 
 | definitionId
 | 
@@ -1284,9 +1064,9 @@ endif::internal-generation[]
 
 | started
 | 
-| Date 
+| String 
 | 
-| date-time 
+|  
 
 | duration
 | 
@@ -1589,13 +1369,13 @@ Category of the workflow
 | 
 | oas_any_type_not_mapped 
 | Date when the node was entered
-| date-time 
+|  
 
 | exit
 | 
 | oas_any_type_not_mapped 
 | Date when the node was exited (optional)
-| date-time 
+|  
 
 | definitionId
 | 
@@ -1644,31 +1424,6 @@ Category of the workflow
 | 
 | String 
 | 
-|  
-
-|===
-
-
-[#WorkflowSpecFileDTO]
-=== _WorkflowSpecFileDTO_ 
-
-
-
-[.fields-WorkflowSpecFileDTO]
-[cols="2,1,2,4,1"]
-|===
-| Field Name| Required| Type| Description| Format
-
-| path
-| 
-| String 
-| 
-|  
-
-| content
-| X
-| String 
-| JSON string
 |  
 
 |===

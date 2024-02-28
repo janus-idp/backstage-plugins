@@ -2,7 +2,6 @@ import { JsonObject } from '@backstage/types';
 
 import { Specification } from '@severlessworkflow/sdk-typescript';
 import { JSONSchema7, JSONSchema7Definition } from 'json-schema';
-import { OpenAPIV3 } from 'openapi-types';
 
 import { ProcessInstance, ProcessInstanceStateValues } from './models';
 
@@ -45,16 +44,6 @@ export type WorkflowOverviewListResult = {
 };
 
 export type WorkflowFormat = 'yaml' | 'json';
-
-export interface WorkflowSample {
-  id: string;
-  url: string;
-}
-
-export interface WorkflowSpecFile {
-  path: string;
-  content: OpenAPIV3.Document;
-}
 
 export type WorkflowInputSchemaStep = {
   schema: JsonObjectSchema;

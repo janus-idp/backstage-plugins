@@ -1,3 +1,5 @@
+## @janus-idp/backstage-plugin-feedback-backend [1.1.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback-backend@1.1.1...@janus-idp/backstage-plugin-feedback-backend@1.1.2) (2024-02-27)
+
 ## @janus-idp/backstage-plugin-feedback-backend [1.1.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback-backend@1.1.0...@janus-idp/backstage-plugin-feedback-backend@1.1.1) (2024-02-21)
 
 ## @janus-idp/backstage-plugin-feedback-backend [1.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback-backend@1.0.0...@janus-idp/backstage-plugin-feedback-backend@1.1.0) (2024-01-30)

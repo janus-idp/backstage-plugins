@@ -5,8 +5,6 @@ import {
   discoveryApiRef,
 } from '@backstage/core-plugin-api';
 
-import { FEATURE_FLAG_DEVELOPER_MODE } from '@janus-idp/backstage-plugin-orchestrator-common';
-
 import { orchestratorApiRef, OrchestratorClient } from './api';
 import { orchestratorRootRouteRef } from './routes';
 
@@ -24,7 +22,6 @@ export const orchestratorPlugin = createPlugin({
   routes: {
     root: orchestratorRootRouteRef,
   },
-  featureFlags: [{ name: FEATURE_FLAG_DEVELOPER_MODE }],
 });
 
 export const OrchestratorPage = orchestratorPlugin.provide(

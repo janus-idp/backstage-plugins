@@ -1,3 +1,43 @@
+## @janus-idp/plugin-notifications-backend [1.3.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications-backend@1.3.1...@janus-idp/plugin-notifications-backend@1.3.2) (2024-02-28)
+
+
+### Bug Fixes
+
+* **notifications:** rhidp-1210 Unable to get group notifications ([#1273](https://github.com/janus-idp/backstage-plugins/issues/1273)) ([e186fad](https://github.com/janus-idp/backstage-plugins/commit/e186fad08a40d4cf076b95318d418e1c10c5d983))
+
+## @janus-idp/plugin-notifications-backend [1.3.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications-backend@1.3.0...@janus-idp/plugin-notifications-backend@1.3.1) (2024-02-28)
+
+
+### Bug Fixes
+
+* **notifications:** add dynamicPluginInstaller ([#1275](https://github.com/janus-idp/backstage-plugins/issues/1275)) ([5758a63](https://github.com/janus-idp/backstage-plugins/commit/5758a63a0b18e83349cb93aaf4417b4fa135ca64))
+
+## @janus-idp/plugin-notifications-backend [1.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications-backend@1.2.3...@janus-idp/plugin-notifications-backend@1.3.0) (2024-02-27)
+
+
+### Features
+
+* **notifications:** export Backstage plugin intsead of module ([#1231](https://github.com/janus-idp/backstage-plugins/issues/1231)) ([903c7f3](https://github.com/janus-idp/backstage-plugins/commit/903c7f37a1cf138ac96ef3f631f951866c2014fa))
+
+
+### Bug Fixes
+
+* **notifications:** bug flpath-901 spelling messageID ([#1232](https://github.com/janus-idp/backstage-plugins/issues/1232)) ([22dbc66](https://github.com/janus-idp/backstage-plugins/commit/22dbc6666225c9beb7c80084d8613812d1fdac36))
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.4
+
+## @janus-idp/plugin-notifications-backend [1.2.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications-backend@1.2.2...@janus-idp/plugin-notifications-backend@1.2.3) (2024-02-26)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.3
+
 ## @janus-idp/plugin-notifications-backend [1.2.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications-backend@1.2.1...@janus-idp/plugin-notifications-backend@1.2.2) (2024-02-21)
 
 

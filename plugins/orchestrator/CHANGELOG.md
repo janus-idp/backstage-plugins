@@ -1,3 +1,61 @@
+## @janus-idp/backstage-plugin-orchestrator [1.6.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.6.5...@janus-idp/backstage-plugin-orchestrator@1.6.6) (2024-02-28)
+
+
+### Bug Fixes
+
+* **orchestrator:** clean up the plugin code ([#1292](https://github.com/janus-idp/backstage-plugins/issues/1292)) ([ad27fb8](https://github.com/janus-idp/backstage-plugins/commit/ad27fb8e98913a6b80feb38ff58a7864e1953a7e))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.3.5
+
+## @janus-idp/backstage-plugin-orchestrator [1.6.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.6.4...@janus-idp/backstage-plugin-orchestrator@1.6.5) (2024-02-28)
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.3.4
+
+## @janus-idp/backstage-plugin-orchestrator [1.6.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.6.3...@janus-idp/backstage-plugin-orchestrator@1.6.4) (2024-02-28)
+
+
+### Bug Fixes
+
+* **orchestrator:** handle nullable start/state properties of process instance ([#1277](https://github.com/janus-idp/backstage-plugins/issues/1277)) ([d8a43a5](https://github.com/janus-idp/backstage-plugins/commit/d8a43a5a164f83fc90d037ae3d7a355f5de543e0))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.3.3
+
+## @janus-idp/backstage-plugin-orchestrator [1.6.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.6.2...@janus-idp/backstage-plugin-orchestrator@1.6.3) (2024-02-27)
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.3.2
+
+## @janus-idp/backstage-plugin-orchestrator [1.6.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.6.1...@janus-idp/backstage-plugin-orchestrator@1.6.2) (2024-02-27)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.4
+
+## @janus-idp/backstage-plugin-orchestrator [1.6.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.6.0...@janus-idp/backstage-plugin-orchestrator@1.6.1) (2024-02-26)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.3
+
 ## @janus-idp/backstage-plugin-orchestrator [1.6.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.5.2...@janus-idp/backstage-plugin-orchestrator@1.6.0) (2024-02-22)
 
 

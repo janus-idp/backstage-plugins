@@ -28,7 +28,6 @@ export async function startStandaloneServer(
   logger.debug('Starting application server...');
   const router = await createRouter({
     logger: logger,
-    eventBroker: options.eventBroker,
     config: options.config,
     discovery: options.discovery,
     catalogApi: options.catalogApi,

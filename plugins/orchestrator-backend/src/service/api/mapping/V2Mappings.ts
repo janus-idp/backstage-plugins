@@ -17,8 +17,6 @@ import {
   WorkflowListResultDTO,
   WorkflowOverview,
   WorkflowOverviewDTO,
-  WorkflowSpecFile,
-  WorkflowSpecFileDTO,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 // Mapping functions
@@ -102,7 +100,7 @@ export function mapWorkflowCategoryDTO(
 }
 
 export function getProcessInstancesDTOFromString(
-  state: string,
+  state?: string,
 ): ProcessInstanceStatusDTO {
   switch (state) {
     case ProcessInstanceState.Active.valueOf():
@@ -115,6 +113,8 @@ export function getProcessInstancesDTOFromString(
       return 'Aborted';
     case ProcessInstanceState.Suspended.valueOf():
       return 'Suspended';
+    case ProcessInstanceState.Pending.valueOf():
+      return 'Pending';
     default:
       throw new Error(
         'state is not one of the values of type ProcessInstanceStatusDTO',
@@ -187,17 +187,4 @@ export function mapToGetWorkflowInstanceResults(
   }
 
   return returnObject;
-}
-
-export function mapToWorkflowSpecFileDTO(
-  specV1: WorkflowSpecFile,
-): WorkflowSpecFileDTO {
-  if (!specV1.content) {
-    throw new Error('Workflow specification content is empty');
-  }
-
-  return {
-    content: JSON.stringify(specV1.content),
-    path: specV1.path,
-  };
 }

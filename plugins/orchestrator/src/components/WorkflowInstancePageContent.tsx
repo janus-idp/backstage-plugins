@@ -26,13 +26,14 @@ export const mapProcessInstanceToDetails = (
   instance: ProcessInstance,
 ): WorkflowRunDetail => {
   const name = instance.processName || instance.processId;
-  const start = moment(instance.start);
+  const start = instance.start ? moment(instance.start) : undefined;
   let duration: string = VALUE_UNAVAILABLE;
-  if (instance.end) {
+  if (start && instance.end) {
     const end = moment(instance.end);
     duration = moment.duration(start.diff(end)).humanize();
   }
 
+  const started = start?.toDate().toLocaleString() ?? VALUE_UNAVAILABLE;
   const variables = parseWorkflowVariables(instance?.variables);
   const nextWorkflowSuggestions: WorkflowRunDetail['nextWorkflowSuggestions'] =
     // @ts-ignore
@@ -42,7 +43,7 @@ export const mapProcessInstanceToDetails = (
     id: instance.id,
     name,
     workflowId: instance.processId,
-    started: start.toDate().toLocaleString(),
+    started,
     duration,
     category: instance.category,
     status: instance.state,
@@ -162,7 +163,6 @@ export const WorkflowInstancePageContent: React.FC<{
               workflowId={assessedInstance.instance.processId}
               kind={EditorViewKind.DIAGRAM_VIEWER}
               editorMode="text"
-              readonly
             />
           </InfoCard>
         </Grid>

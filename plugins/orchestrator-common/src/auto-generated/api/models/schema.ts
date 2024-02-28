@@ -15,8 +15,6 @@ export interface paths {
   '/v2/workflows': {
     /** @description Get a list of workflow */
     get: operations['getWorkflows'];
-    /** Create or update a workflow */
-    post: operations['createWorkflow'];
   };
   '/v2/workflows/{workflowId}': {
     /** @description Get a workflow by ID */
@@ -54,10 +52,6 @@ export interface paths {
      * @description Aborts a workflow instance identified by the provided workflowId.
      */
     delete: operations['abortWorkflow'];
-  };
-  '/v2/specs': {
-    /** Get workflow specifications */
-    get: operations['getWorkflowSpecs'];
   };
 }
 
@@ -117,7 +111,6 @@ export interface components {
       name?: string;
       workflow?: string;
       status?: components['schemas']['ProcessInstanceStatusDTO'];
-      /** Format: date-time */
       started?: string;
       duration?: string;
       category?: components['schemas']['WorkflowCategoryDTO'];
@@ -142,7 +135,8 @@ export interface components {
       | 'Error'
       | 'Completed'
       | 'Aborted'
-      | 'Suspended';
+      | 'Suspended'
+      | 'Pending';
     WorkflowRunStatusDTO: {
       key?: string;
       value?: string;
@@ -154,11 +148,6 @@ export interface components {
     };
     ExecuteWorkflowResponseDTO: {
       id?: string;
-    };
-    WorkflowSpecFileDTO: {
-      path?: string;
-      /** @description JSON string */
-      content: string;
     };
     WorkflowProgressDTO: components['schemas']['NodeInstanceDTO'] & {
       status?: components['schemas']['ProcessInstanceStatusDTO'];
@@ -176,15 +165,9 @@ export interface components {
       name?: string;
       /** @description Node type */
       type?: string;
-      /**
-       * Format: date-time
-       * @description Date when the node was entered
-       */
+      /** @description Date when the node was entered */
       enter?: string;
-      /**
-       * Format: date-time
-       * @description Date when the node was exited (optional)
-       */
+      /** @description Date when the node was exited (optional) */
       exit?: string;
       /** @description Definition ID */
       definitionId?: string;
@@ -265,39 +248,6 @@ export interface operations {
         };
       };
       /** @description Error fetching workflow list */
-      500: {
-        content: {
-          'text/plain': string;
-        };
-      };
-    };
-  };
-  /** Create or update a workflow */
-  createWorkflow: {
-    parameters: {
-      query?: {
-        /** @description URI parameter */
-        uri?: string;
-      };
-    };
-    requestBody: {
-      content: {
-        'application/json': {
-          uri: string;
-          body?: string;
-        };
-      };
-    };
-    responses: {
-      /** @description Created */
-      201: {
-        content: {
-          'application/json': {
-            workflowItem?: components['schemas']['WorkflowDTO'];
-          };
-        };
-      };
-      /** @description Error creating workflow */
       500: {
         content: {
           'text/plain': string;
@@ -461,23 +411,6 @@ export interface operations {
         };
       };
       /** @description Error aborting workflow */
-      500: {
-        content: {
-          'text/plain': string;
-        };
-      };
-    };
-  };
-  /** Get workflow specifications */
-  getWorkflowSpecs: {
-    responses: {
-      /** @description Successful retrieval of workflow specifications */
-      200: {
-        content: {
-          'application/json': components['schemas']['WorkflowSpecFileDTO'][];
-        };
-      };
-      /** @description Error fetching workflow specifications */
       500: {
         content: {
           'text/plain': string;

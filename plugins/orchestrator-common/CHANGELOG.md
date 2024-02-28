@@ -1,3 +1,31 @@
+## @janus-idp/backstage-plugin-orchestrator-common [1.3.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-common@1.3.4...@janus-idp/backstage-plugin-orchestrator-common@1.3.5) (2024-02-28)
+
+
+### Bug Fixes
+
+* **orchestrator:** clean up the plugin code ([#1292](https://github.com/janus-idp/backstage-plugins/issues/1292)) ([ad27fb8](https://github.com/janus-idp/backstage-plugins/commit/ad27fb8e98913a6b80feb38ff58a7864e1953a7e))
+
+## @janus-idp/backstage-plugin-orchestrator-common [1.3.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-common@1.3.3...@janus-idp/backstage-plugin-orchestrator-common@1.3.4) (2024-02-28)
+
+
+### Bug Fixes
+
+* **orchestrator:** regenerate Open API with new instance state ([#1289](https://github.com/janus-idp/backstage-plugins/issues/1289)) ([8755fdd](https://github.com/janus-idp/backstage-plugins/commit/8755fdd04dac406a4a02bfd7823d0993a6edf0b3))
+
+## @janus-idp/backstage-plugin-orchestrator-common [1.3.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-common@1.3.2...@janus-idp/backstage-plugin-orchestrator-common@1.3.3) (2024-02-28)
+
+
+### Bug Fixes
+
+* **orchestrator:** handle nullable start/state properties of process instance ([#1277](https://github.com/janus-idp/backstage-plugins/issues/1277)) ([d8a43a5](https://github.com/janus-idp/backstage-plugins/commit/d8a43a5a164f83fc90d037ae3d7a355f5de543e0))
+
+## @janus-idp/backstage-plugin-orchestrator-common [1.3.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-common@1.3.1...@janus-idp/backstage-plugin-orchestrator-common@1.3.2) (2024-02-27)
+
+
+### Bug Fixes
+
+* **orchestrator:** remove date-time format from spec ([#1282](https://github.com/janus-idp/backstage-plugins/issues/1282)) ([2b59dcf](https://github.com/janus-idp/backstage-plugins/commit/2b59dcf00082e617911289d8813ad02b83800470))
+
 ## @janus-idp/backstage-plugin-orchestrator-common [1.3.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-common@1.3.0...@janus-idp/backstage-plugin-orchestrator-common@1.3.1) (2024-02-21)
 
 

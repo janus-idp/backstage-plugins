@@ -4,7 +4,6 @@ import {
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
-import { DefaultEventBroker } from '@backstage/plugin-events-backend';
 
 import { createRouter } from './routerWrapper';
 
@@ -30,7 +29,6 @@ export const orchestratorPlugin = createBackendPlugin({
       }) {
         const log = loggerToWinstonLogger(logger);
         const router = await createRouter({
-          eventBroker: new DefaultEventBroker(log),
           config: config,
           logger: log,
           discovery: discovery,

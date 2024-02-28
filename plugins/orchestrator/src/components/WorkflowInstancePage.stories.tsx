@@ -8,7 +8,6 @@ import {
   AssessedProcessInstance,
   ProcessInstance,
   WorkflowItem,
-  WorkflowSpecFile,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import {
@@ -17,7 +16,6 @@ import {
   fakeProcessInstances,
 } from '../__fixtures__/fakeProcessInstance';
 import { fakeWorkflowItem } from '../__fixtures__/fakeWorkflowItem';
-import { fakeWorkflowSpecs } from '../__fixtures__/fakeWorkflowSpecs';
 import { orchestratorApiRef } from '../api';
 import { MockOrchestratorClient } from '../api/MockOrchestratorClient';
 import { orchestratorRootRouteRef } from '../routes';
@@ -81,11 +79,6 @@ const getFakeWorkflowItem = async (
   return fakeWorkflowItem;
 };
 
-const getFakeSpecs = async (): Promise<WorkflowSpecFile[]> => {
-  await delay(5 * 1000);
-  return fakeWorkflowSpecs;
-};
-
 const meta = {
   title: 'Orchestrator/WorkflowInstancePage',
   component: WorkflowInstancePage,
@@ -97,7 +90,6 @@ const meta = {
             [
               orchestratorApiRef,
               new MockOrchestratorClient({
-                getSpecsResponse: getFakeSpecs(),
                 getWorkflowResponse: getFakeWorkflowItem(
                   context.args.instanceId,
                 ),

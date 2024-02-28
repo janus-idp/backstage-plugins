@@ -406,7 +406,13 @@ function getUserGroups(
     if (userRef.spec && Array.isArray(userRef.spec.memberOf)) {
       return userRef.spec.memberOf.map(value => {
         if (value) {
-          return value.toString();
+          const strValue = value.toString();
+          const splits = strValue.split(':', 2);
+          if (splits.length === 2) {
+            return splits[1];
+          }
+
+          return splits[0];
         }
         return '';
       });

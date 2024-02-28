@@ -14,12 +14,10 @@ import {
   WorkflowOverviewDTO,
   WorkflowOverviewListResultDTO,
   WorkflowRunStatusDTO,
-  WorkflowSpecFileDTO,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { DataIndexService } from '../DataIndexService';
 import { SonataFlowService } from '../SonataFlowService';
-import { WorkflowService } from '../WorkflowService';
 import {
   mapToExecuteWorkflowResponseDTO,
   mapToGetWorkflowInstanceResults,
@@ -27,7 +25,6 @@ import {
   mapToWorkflowDTO,
   mapToWorkflowListResultDTO,
   mapToWorkflowOverviewDTO,
-  mapToWorkflowSpecFileDTO,
 } from './mapping/V2Mappings';
 import { V1 } from './v1';
 
@@ -153,15 +150,6 @@ export namespace V2 {
     return mapToExecuteWorkflowResponseDTO(workflowId, executeWorkflowResponse);
   }
 
-  export async function createWorkflow(
-    workflowService: WorkflowService,
-    uri: string,
-    reqBody: string,
-  ): Promise<WorkflowDTO> {
-    const workflowItem = await V1.createWorkflow(workflowService, uri, reqBody);
-    return mapToWorkflowDTO(uri, workflowItem.definition);
-  }
-
   export async function abortWorkflow(
     dataIndexService: DataIndexService,
     workflowId: string,
@@ -199,13 +187,6 @@ export namespace V2 {
     return mapToGetWorkflowInstanceResults(instanceResult.instance.variables);
   }
 
-  export async function getWorkflowSpecs(
-    workflowService: WorkflowService,
-  ): Promise<WorkflowSpecFileDTO[]> {
-    const specV1 = await V1.getWorkflowSpecs(workflowService);
-    return specV1.map(spec => mapToWorkflowSpecFileDTO(spec));
-  }
-
   export async function getWorkflowStatuses(): Promise<WorkflowRunStatusDTO[]> {
     type Capitalized<S extends string> = Capitalize<Lowercase<S>>;
     const capitalize = <S extends string>(text: S): Capitalized<S> =>
@@ -216,6 +197,7 @@ export namespace V2 {
       ProcessInstanceState.Completed,
       ProcessInstanceState.Aborted,
       ProcessInstanceState.Suspended,
+      ProcessInstanceState.Pending,
     ].map(
       (status): WorkflowRunStatusDTO => ({
         key: capitalize(status),
