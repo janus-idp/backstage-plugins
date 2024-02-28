@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-orchestrator-common [1.3.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-common@1.3.3...@janus-idp/backstage-plugin-orchestrator-common@1.3.4) (2024-02-28)
+
+
+### Bug Fixes
+
+* **orchestrator:** regenerate Open API with new instance state ([#1289](https://github.com/janus-idp/backstage-plugins/issues/1289)) ([8755fdd](https://github.com/janus-idp/backstage-plugins/commit/8755fdd04dac406a4a02bfd7823d0993a6edf0b3))
+
 ## @janus-idp/backstage-plugin-orchestrator-common [1.3.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-common@1.3.2...@janus-idp/backstage-plugin-orchestrator-common@1.3.3) (2024-02-28)
 
 
