@@ -4,6 +4,7 @@ import { createApiRef, DiscoveryApi } from '@backstage/core-plugin-api';
 import { AxiosError } from 'axios';
 
 import { config } from '../config';
+import { App, AppQuery } from '../types/App';
 import { AppList, AppListQuery } from '../types/AppList';
 import { AuthInfo } from '../types/Auth';
 import { CertsInfo } from '../types/CertsInfo';
@@ -190,6 +191,12 @@ export interface KialiApi {
     rateInterval?: DurationInSeconds,
   ): Promise<ServiceDetailsInfo>;
   getApps(namespace: string, params: AppListQuery): Promise<AppList>;
+  getApp(
+    namespace: string,
+    app: string,
+    params: AppQuery,
+    cluster?: string,
+  ): Promise<App>;
 }
 
 export const kialiApiRef = createApiRef<KialiApi>({
@@ -800,6 +807,26 @@ export class KialiApiClient implements KialiApi {
       HTTP_VERBS.GET,
       urls.apps(namespace),
       params,
+      {},
+    );
+  };
+
+  getApp = async (
+    namespace: string,
+    app: string,
+    params: AppQuery,
+    cluster?: string,
+  ): Promise<App> => {
+    const queryParams: QueryParams<AppQuery> = { ...params };
+
+    if (cluster) {
+      queryParams.clusterName = cluster;
+    }
+
+    return this.newRequest<App>(
+      HTTP_VERBS.GET,
+      urls.app(namespace, app),
+      queryParams,
       {},
     );
   };

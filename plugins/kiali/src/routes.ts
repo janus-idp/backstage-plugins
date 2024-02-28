@@ -43,3 +43,9 @@ export const servicesDetailRouteRef = createSubRouteRef({
   parent: rootRouteRef,
   path: '/services/:namespace/:service',
 });
+
+export const appDetailRouteRef = createSubRouteRef({
+  id: 'kiali-app-details',
+  parent: rootRouteRef,
+  path: '/applications/:namespace/:app',
+});
