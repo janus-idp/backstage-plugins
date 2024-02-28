@@ -1,3 +1,10 @@
+## @janus-idp/plugin-notifications-backend [1.3.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications-backend@1.3.1...@janus-idp/plugin-notifications-backend@1.3.2) (2024-02-28)
+
+
+### Bug Fixes
+
+* **notifications:** rhidp-1210 Unable to get group notifications ([#1273](https://github.com/janus-idp/backstage-plugins/issues/1273)) ([e186fad](https://github.com/janus-idp/backstage-plugins/commit/e186fad08a40d4cf076b95318d418e1c10c5d983))
+
 ## @janus-idp/plugin-notifications-backend [1.3.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications-backend@1.3.0...@janus-idp/plugin-notifications-backend@1.3.1) (2024-02-28)
 
 
