@@ -309,7 +309,7 @@ describe('getWorkflowById', () => {
     expect(workflowV2.format).toEqual(testFormat);
     expect(workflowV2.description).toEqual(wfDefinition.description);
     expect(workflowV2.category).toEqual('infrastructure');
-    expect(workflowV2.annotations).toBeUndefined();
+    expect(workflowV2.annotations).toBeDefined();
   });
 });
 
