@@ -35,9 +35,9 @@ const OPENAPI = `
           "500": {
             "description": "Error fetching workflow overviews",
             "content": {
-              "text/plain": {
+              "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -74,9 +74,9 @@ const OPENAPI = `
           "500": {
             "description": "Error fetching workflow overview",
             "content": {
-              "text/plain": {
+              "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -102,9 +102,9 @@ const OPENAPI = `
           "500": {
             "description": "Error fetching workflow list",
             "content": {
-              "text/plain": {
+              "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -141,9 +141,9 @@ const OPENAPI = `
           "500": {
             "description": "Error workflow by id",
             "content": {
-              "text/plain": {
+              "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -170,9 +170,9 @@ const OPENAPI = `
           "500": {
             "description": "Error fetching instances",
             "content": {
-              "text/plain": {
+              "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -209,9 +209,9 @@ const OPENAPI = `
           "500": {
             "description": "Error fetching instance",
             "content": {
-              "text/plain": {
+              "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -248,9 +248,9 @@ const OPENAPI = `
           "500": {
             "description": "Error getting workflow results",
             "content": {
-              "text/plain": {
+              "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -280,9 +280,9 @@ const OPENAPI = `
           "500": {
             "description": "Error fetching workflow statuses",
             "content": {
-              "text/plain": {
+              "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -329,9 +329,9 @@ const OPENAPI = `
           "500": {
             "description": "Internal Server Error",
             "content": {
-              "text/plain": {
+              "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -369,9 +369,9 @@ const OPENAPI = `
           "500": {
             "description": "Error aborting workflow",
             "content": {
-              "text/plain": {
+              "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -382,6 +382,24 @@ const OPENAPI = `
   },
   "components": {
     "schemas": {
+      "ErrorResponse": {
+        "description": "The ErrorResponse object represents a common structure for handling errors in API responses. It includes essential information about the error, such as the error message and additional optional details.",
+        "type": "object",
+        "properties": {
+          "message": {
+            "description": "A string providing a concise and human-readable description of the encountered error. This field is required in the ErrorResponse object.",
+            "type": "string",
+            "default": "internal server error"
+          },
+          "additionalInfo": {
+            "description": "An optional field that can contain additional information or context about the error. It provides flexibility for including extra details based on specific error scenarios.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
       "WorkflowOverviewListResultDTO": {
         "type": "object",
         "properties": {

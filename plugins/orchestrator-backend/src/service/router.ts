@@ -154,7 +154,9 @@ function setupInternalRoutes(
     await V1.getWorkflowsOverview(services.sonataFlowService)
       .then(result => res.status(200).json(result))
       .catch(error => {
-        res.status(500).send(error.message || 'Internal Server Error');
+        res
+          .status(500)
+          .json({ message: error.message || 'internal server error' });
       });
   });
 
@@ -165,7 +167,9 @@ function setupInternalRoutes(
       await V2.getWorkflowsOverview(services.sonataFlowService)
         .then(result => res.json(result))
         .catch(error => {
-          res.status(500).send(error.message || 'internal Server Error');
+          res
+            .status(500)
+            .json({ message: error.message || 'internal server error' });
           next();
         });
     },
@@ -175,7 +179,9 @@ function setupInternalRoutes(
     await V1.getWorkflows(services.sonataFlowService, services.dataIndexService)
       .then(result => res.status(200).json(result))
       .catch(error => {
-        res.status(500).send(error.message || 'internal Server Error');
+        res
+          .status(500)
+          .json({ message: error.message || 'internal server error' });
       });
   });
 
@@ -184,7 +190,9 @@ function setupInternalRoutes(
     await V2.getWorkflows(services.sonataFlowService, services.dataIndexService)
       .then(result => res.json(result))
       .catch(error => {
-        res.status(500).send(error.message || 'internal Server Error');
+        res
+          .status(500)
+          .json({ message: error.message || 'internal server error' });
         next();
       });
   });
@@ -196,7 +204,9 @@ function setupInternalRoutes(
     await V1.getWorkflowById(services.sonataFlowService, workflowId)
       .then(result => res.status(200).json(result))
       .catch(error => {
-        res.status(500).send(error.message || 'Internal Server Error');
+        res
+          .status(500)
+          .json({ message: error.message || 'internal server error' });
       });
   });
 
@@ -207,7 +217,9 @@ function setupInternalRoutes(
     await V2.getWorkflowById(services.sonataFlowService, workflowId)
       .then(result => res.json(result))
       .catch(error => {
-        res.status(500).send(error.message || 'Internal Server Error');
+        res
+          .status(500)
+          .json({ message: error.message || 'internal server error' });
         next();
       });
   });
@@ -220,7 +232,9 @@ function setupInternalRoutes(
     await V1.abortWorkflow(services.dataIndexService, workflowId)
       .then(result => res.status(200).json(result.data))
       .catch(error => {
-        res.status(500).send(error.message || 'Internal Server Error');
+        res
+          .status(500)
+          .json({ message: error.message || 'internal server error' });
       });
   });
 
@@ -230,7 +244,9 @@ function setupInternalRoutes(
     await V2.abortWorkflow(services.dataIndexService, workflowId)
       .then(result => res.json(result))
       .catch(error => {
-        res.status(500).send(error.message || 'Internal Server Error');
+        res
+          .status(500)
+          .json({ message: error.message || 'internal server error' });
         next();
       });
   });
@@ -251,7 +267,9 @@ function setupInternalRoutes(
     )
       .then((result: any) => res.status(200).json(result))
       .catch((error: { message: any }) => {
-        res.status(500).send(error.message || 'Internal Server Error');
+        res
+          .status(500)
+          .json({ message: error.message || 'internal server error' });
       });
   });
 
@@ -275,7 +293,9 @@ function setupInternalRoutes(
       )
         .then(result => res.status(200).json(result))
         .catch((error: { message: string }) => {
-          res.status(500).send(error.message || 'Internal Server Error');
+          res
+            .status(500)
+            .json({ message: error.message || 'internal server error' });
         });
     },
   );
@@ -300,7 +320,9 @@ function setupInternalRoutes(
       )
         .then(result => res.status(200).json(result))
         .catch((error: { message: string }) => {
-          res.status(500).send(error.message || 'Internal Server Error');
+          res
+            .status(500)
+            .json({ message: error.message || 'internal server error' });
         });
     },
   );
@@ -331,7 +353,9 @@ function setupInternalRoutes(
     await V1.getInstances(services.dataIndexService)
       .then(result => res.status(200).json(result))
       .catch(error => {
-        res.status(500).send(error.message || 'internal Server Error');
+        res
+          .status(500)
+          .json({ message: error.message || 'internal server error' });
       });
   });
 
@@ -362,7 +386,9 @@ function setupInternalRoutes(
     )
       .then(result => res.status(200).json(result))
       .catch(error => {
-        res.status(500).send(error.message || 'Internal Server Error');
+        res
+          .status(500)
+          .json({ message: error.message || 'internal server error' });
       });
   });
 
@@ -382,7 +408,9 @@ function setupInternalRoutes(
       )
         .then(result => res.status(200).json(result))
         .catch(error => {
-          res.status(500).send(error.message || 'Internal Server Error');
+          res
+            .status(500)
+            .json({ message: error.message || 'internal server error' });
           next();
         });
     },
@@ -515,7 +543,9 @@ function setupInternalRoutes(
       await V2.getWorkflowResults(services.dataIndexService, instanceId)
         .then(result => res.status(200).json(result))
         .catch((error: { message: string }) => {
-          res.status(500).send(error.message || 'Internal Server Error');
+          res
+            .status(500)
+            .json({ message: error.message || 'internal server error' });
         });
     },
   );
@@ -527,7 +557,9 @@ function setupInternalRoutes(
       await V2.getWorkflowStatuses()
         .then(result => res.status(200).json(result))
         .catch((error: { message: string }) => {
-          res.status(500).send(error.message || 'Internal Server Error');
+          res
+            .status(500)
+            .json({ message: error.message || 'internal server error' });
         });
     },
   );
