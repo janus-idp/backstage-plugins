@@ -52,10 +52,14 @@ export class PolicyBuilder {
     enf.enableAutoSave(true);
 
     const catalogClient = new CatalogClient({ discoveryApi: env.discovery });
+    const catalogDBClient = await DatabaseManager.fromConfig(env.config)
+      .forPlugin('catalog')
+      .getClient();
     const rm = new BackstageRoleManager(
       catalogClient,
       env.logger,
       env.tokenManager,
+      catalogDBClient,
     );
     enf.setRoleManager(rm);
     enf.enableAutoBuildRoleLinks(false);

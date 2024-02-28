@@ -3,6 +3,7 @@ import { CatalogApi } from '@backstage/catalog-client';
 import { parseEntityRef } from '@backstage/catalog-model';
 
 import { RoleManager } from 'casbin';
+import { Knex } from 'knex';
 import { Logger } from 'winston';
 
 import { AncestorSearchMemo } from './ancestor-search-memo';
@@ -14,6 +15,7 @@ export class BackstageRoleManager implements RoleManager {
     private readonly catalogApi: CatalogApi,
     private readonly log: Logger,
     private readonly tokenManager: TokenManager,
+    private readonly catalogDBClient: Knex,
   ) {
     this.allRoles = new Map<string, RoleList>();
   }
@@ -96,8 +98,8 @@ export class BackstageRoleManager implements RoleManager {
       name1,
       this.tokenManager,
       this.catalogApi,
+      this.catalogDBClient,
     );
-    await memo.getAllGroups();
     await memo.buildUserGraph(memo);
 
     memo.debugNodesAndEdges(this.log, name1);
@@ -105,9 +107,7 @@ export class BackstageRoleManager implements RoleManager {
       const cycles = memo.findCycles();
 
       this.log.warn(
-        `Detected cycle ${
-          cycles.length > 0 ? 'dependencies' : 'dependency'
-        } in the Group graph: ${JSON.stringify(
+        `Detected cycle dependencies in the Group graph: ${JSON.stringify(
           cycles,
         )}. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for group: ${name2}`,
       );
@@ -172,6 +172,7 @@ export class BackstageRoleManager implements RoleManager {
         name,
         this.tokenManager,
         this.catalogApi,
+        this.catalogDBClient,
       );
       await memo.getAllGroups();
       await memo.buildUserGraph(memo);
