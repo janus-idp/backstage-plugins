@@ -84,7 +84,7 @@ export const useRoles = (
               {
                 id: role.name,
                 name: role.name,
-                description: '-',
+                description: role.metadata?.description ?? '-',
                 members: role.memberReferences,
                 permissions,
                 modifiedBy: '-',

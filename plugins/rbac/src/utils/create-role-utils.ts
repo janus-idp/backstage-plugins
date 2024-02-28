@@ -29,6 +29,9 @@ export const getRoleData = (values: RoleFormValues): Role => {
       (mem: SelectedMember) => mem.ref,
     ),
     name: `${values.kind}:${values.namespace}/${values.name}`,
+    metadata: {
+      description: values.description,
+    },
   };
 };
 
