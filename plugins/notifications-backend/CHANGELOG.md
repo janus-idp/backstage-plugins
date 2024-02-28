@@ -1,3 +1,10 @@
+## @janus-idp/plugin-notifications-backend [1.3.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications-backend@1.3.0...@janus-idp/plugin-notifications-backend@1.3.1) (2024-02-28)
+
+
+### Bug Fixes
+
+* **notifications:** add dynamicPluginInstaller ([#1275](https://github.com/janus-idp/backstage-plugins/issues/1275)) ([5758a63](https://github.com/janus-idp/backstage-plugins/commit/5758a63a0b18e83349cb93aaf4417b4fa135ca64))
+
 ## @janus-idp/plugin-notifications-backend [1.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications-backend@1.2.3...@janus-idp/plugin-notifications-backend@1.3.0) (2024-02-27)
 
 
