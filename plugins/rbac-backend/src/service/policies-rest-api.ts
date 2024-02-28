@@ -100,8 +100,8 @@ export class PolicesServer {
     const pluginPermMetaData = new PluginPermissionMetadataCollector(
       this.discovery,
       this.pluginIdProvider,
-      this.config,
       this.logger,
+      this.config,
     );
 
     router.use(permissionsIntegrationRouter);
