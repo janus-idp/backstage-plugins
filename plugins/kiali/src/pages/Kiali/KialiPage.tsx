@@ -2,6 +2,7 @@ import React from 'react';
 
 import { Content, Page } from '@backstage/core-components';
 
+import { AppListPage } from '../AppList/AppListPage';
 import { OverviewPage } from '../Overview/OverviewPage';
 import { ServiceListPage } from '../ServiceList/ServiceListPage';
 import { WorkloadListPage } from '../WorkloadList/WorkloadListPage';
@@ -31,6 +32,8 @@ export const KialiPage = () => {
         return <WorkloadListPage />;
       case 'services':
         return <ServiceListPage />;
+      case 'applications':
+        return <AppListPage />;
       default:
         return <KialiNoPath />;
     }

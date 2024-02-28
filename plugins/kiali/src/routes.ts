@@ -26,6 +26,12 @@ export const servicesRouteRef: SubRouteRef<undefined> = createSubRouteRef({
   parent: rootRouteRef,
 });
 
+export const appsRouteRef: SubRouteRef<undefined> = createSubRouteRef({
+  id: 'kiali-apps',
+  path: '/applications',
+  parent: rootRouteRef,
+});
+
 export const workloadsDetailRouteRef = createSubRouteRef({
   id: 'kiali-workloads-details',
   parent: rootRouteRef,

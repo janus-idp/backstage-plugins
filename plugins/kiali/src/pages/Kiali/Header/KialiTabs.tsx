@@ -5,6 +5,7 @@ import { HeaderTabs } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 
 import {
+  appsRouteRef,
   overviewRouteRef,
   servicesRouteRef,
   workloadsRouteRef,
@@ -17,6 +18,9 @@ const getPath = (loc: Location): number => {
   if (loc.pathname.includes('services')) {
     return 2;
   }
+  if (loc.pathname.includes('applications')) {
+    return 3;
+  }
   return 0;
 };
 
@@ -28,6 +32,7 @@ export const KialiTabs = () => {
     { label: 'Overview', route: useRouteRef(overviewRouteRef) },
     { label: 'Workloads', route: useRouteRef(workloadsRouteRef) },
     { label: 'Services', route: useRouteRef(servicesRouteRef) },
+    { label: 'Applications', route: useRouteRef(appsRouteRef) },
   ];
   const navigate = useNavigate();
   return (

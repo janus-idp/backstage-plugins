@@ -5,6 +5,7 @@ import { Entity } from '@backstage/catalog-model';
 import { Content, Page } from '@backstage/core-components';
 import { useEntity } from '@backstage/plugin-catalog-react';
 
+import { AppListPage } from './pages/AppList/AppListPage';
 import { KialiNoPath } from './pages/Kiali';
 import { KialiHeader } from './pages/Kiali/Header/KialiHeader';
 import { KialiHeaderEntity } from './pages/Kiali/Header/KialiHeaderEntity';
@@ -17,6 +18,7 @@ import { ServiceListPage } from './pages/ServiceList/ServiceListPage';
 import { WorkloadDetailsPage } from './pages/WorkloadDetails/WorkloadDetailsPage';
 import { WorkloadListPage } from './pages/WorkloadList/WorkloadListPage';
 import {
+  appsRouteRef,
   overviewRouteRef,
   servicesDetailRouteRef,
   servicesRouteRef,
@@ -77,6 +79,7 @@ export const Router = () => {
               element={<WorkloadListPage />}
             />
             <Route path={servicesRouteRef.path} element={<ServiceListPage />} />
+            <Route path={appsRouteRef.path} element={<AppListPage />} />
             <Route
               path={workloadsDetailRouteRef.path}
               element={<WorkloadDetailsPage />}
