@@ -1,16 +1,8 @@
-import {
-  WorkflowOverview,
-  WorkflowSpecFile,
-} from '@janus-idp/backstage-plugin-orchestrator-common';
+import { WorkflowOverview } from '@janus-idp/backstage-plugin-orchestrator-common';
 
-import {
-  fakeOpenAPIV3Document,
-  generateTestWorkflowOverview,
-  generateTestWorkflowSpecs,
-} from '../test-utils';
+import { generateTestWorkflowOverview } from '../test-utils';
 import {
   mapToWorkflowOverviewDTO,
-  mapToWorkflowSpecFileDTO,
   mapWorkflowCategoryDTOFromString,
 } from './V2Mappings';
 
@@ -53,22 +45,5 @@ describe('scenarios to verify mapWorkflowCategoryDTOFromString', () => {
     // Assert
     expect(resultCategory).toBeDefined();
     expect(resultCategory).toBe(expected);
-  });
-});
-
-describe('scenarios to verify mapToWorkflowSpecFileDTO', () => {
-  it('correctly maps WorkflowSpecFile', () => {
-    // Arrange
-    const specV1: WorkflowSpecFile[] = generateTestWorkflowSpecs(1);
-
-    // Act
-    const result = mapToWorkflowSpecFileDTO(specV1[0]);
-
-    // Assert
-    expect(result.path).toBeDefined();
-    expect(result.path).toEqual('/test/path/openapi_0.json');
-    expect(result.content).toBeDefined();
-    expect(JSON.parse(result.content)).toEqual(fakeOpenAPIV3Document());
-    expect(Object.keys(result).length).toBe(2);
   });
 });

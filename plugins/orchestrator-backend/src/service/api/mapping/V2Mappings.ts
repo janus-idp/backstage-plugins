@@ -17,8 +17,6 @@ import {
   WorkflowListResultDTO,
   WorkflowOverview,
   WorkflowOverviewDTO,
-  WorkflowSpecFile,
-  WorkflowSpecFileDTO,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 // Mapping functions
@@ -189,17 +187,4 @@ export function mapToGetWorkflowInstanceResults(
   }
 
   return returnObject;
-}
-
-export function mapToWorkflowSpecFileDTO(
-  specV1: WorkflowSpecFile,
-): WorkflowSpecFileDTO {
-  if (!specV1.content) {
-    throw new Error('Workflow specification content is empty');
-  }
-
-  return {
-    content: JSON.stringify(specV1.content),
-    path: specV1.path,
-  };
 }

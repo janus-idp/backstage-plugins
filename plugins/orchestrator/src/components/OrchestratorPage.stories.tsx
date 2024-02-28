@@ -1,21 +1,15 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 
-import { featureFlagsApiRef } from '@backstage/core-plugin-api';
 import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
 
 import { Meta, StoryObj } from '@storybook/react';
 
-import {
-  FEATURE_FLAG_DEVELOPER_MODE,
-  WorkflowOverview,
-} from '@janus-idp/backstage-plugin-orchestrator-common';
+import { WorkflowOverview } from '@janus-idp/backstage-plugin-orchestrator-common';
 
-import { createFakeFeatureFlagsApi } from '../__fixtures__/fakeFeatureFlagsApi';
 import { fakeProcessInstances } from '../__fixtures__/fakeProcessInstance';
 import { fakeWorkflowItem } from '../__fixtures__/fakeWorkflowItem';
 import { fakeWorkflowOverviewList } from '../__fixtures__/fakeWorkflowOverviewList';
-import { fakeWorkflowSpecs } from '../__fixtures__/fakeWorkflowSpecs';
 import { orchestratorApiRef } from '../api';
 import { MockOrchestratorClient } from '../api/MockOrchestratorClient';
 import { orchestratorRootRouteRef } from '../routes';
@@ -52,19 +46,10 @@ const meta = {
           items,
         }),
         getWorkflowResponse: Promise.resolve(fakeWorkflowItem),
-        getSpecsResponse: Promise.resolve(fakeWorkflowSpecs),
       });
       return wrapInTestApp(
         <TestRouter>
-          <TestApiProvider
-            apis={[
-              [orchestratorApiRef, mockApi],
-              [
-                featureFlagsApiRef,
-                createFakeFeatureFlagsApi(context.args.featureFlags),
-              ],
-            ]}
-          >
+          <TestApiProvider apis={[[orchestratorApiRef, mockApi]]}>
             <Story />
           </TestApiProvider>
         </TestRouter>,
@@ -85,12 +70,5 @@ export const OrchestratorPageStory: Story = {
   name: 'Sample 1',
   args: {
     items: fakeWorkflowOverviewList.slice(0, 3),
-  },
-};
-
-export const EditMode: Story = {
-  name: 'Edit mode',
-  args: {
-    featureFlags: FEATURE_FLAG_DEVELOPER_MODE,
   },
 };

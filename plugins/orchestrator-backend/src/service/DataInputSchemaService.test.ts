@@ -1,19 +1,9 @@
-import { createLogger, format, transports } from 'winston';
-
 import mockComposedGreetingWorkflowData from '../../__fixtures__/mockComposedGreetingWorfklow';
 import mockGreetingWorkflowData from '../../__fixtures__/mockGreetingWorkflowData';
 import mockSpringBootWorkflowData from '../../__fixtures__/mockSpringBootWorkflowData';
 import { DataInputSchemaService } from './DataInputSchemaService';
 
-const logger = createLogger({
-  level: 'info',
-  format: format.json(),
-  transports: [
-    new transports.Console(),
-    new transports.File({ filename: 'logfile.log' }),
-  ],
-});
-const service = new DataInputSchemaService(logger, undefined);
+const service = new DataInputSchemaService();
 
 describe('workflow input schema response', () => {
   it('schema with refs should return multiple steps', () => {

@@ -11,7 +11,6 @@ import {
   WorkflowListResult,
   WorkflowOverview,
   WorkflowOverviewListResult,
-  WorkflowSpecFile,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 export interface OrchestratorApi {
@@ -43,15 +42,6 @@ export interface OrchestratorApi {
     instanceId?: string;
     assessmentInstanceId?: string;
   }): Promise<WorkflowInputSchemaResponse>;
-
-  createWorkflowDefinition(
-    uri: string,
-    content?: string,
-  ): Promise<WorkflowItem>;
-
-  deleteWorkflowDefinition(workflowId: string): Promise<any>;
-
-  getSpecs(): Promise<WorkflowSpecFile[]>;
 
   getWorkflowOverview(workflowId: string): Promise<WorkflowOverview>;
 }

@@ -2,7 +2,6 @@ import { HostDiscovery } from '@backstage/backend-app-api';
 import { BackendDynamicPluginInstaller } from '@backstage/backend-dynamic-feature-service';
 import { CatalogClient } from '@backstage/catalog-client';
 
-import { OrchestratorEntityProvider } from '../provider';
 import { createRouter } from '../routerWrapper';
 
 export const dynamicPluginInstaller: BackendDynamicPluginInstaller = {
@@ -19,17 +18,5 @@ export const dynamicPluginInstaller: BackendDynamicPluginInstaller = {
         catalogApi,
       });
     },
-  },
-  async catalog(builder, env) {
-    const isIntegrationEnabled = !!env.config.getOptionalBoolean(
-      'orchestrator.catalog.isEnabled',
-    );
-    if (!isIntegrationEnabled) {
-      env.logger.info('The integration with the Catalog plugin is disabled.');
-      return;
-    }
-    builder.addEntityProvider(
-      await OrchestratorEntityProvider.fromConfig({ ...env }),
-    );
   },
 };
