@@ -102,7 +102,7 @@ export function mapWorkflowCategoryDTO(
 }
 
 export function getProcessInstancesDTOFromString(
-  state: string,
+  state?: string,
 ): ProcessInstanceStatusDTO {
   switch (state) {
     case ProcessInstanceState.Active.valueOf():
@@ -115,6 +115,8 @@ export function getProcessInstancesDTOFromString(
       return 'Aborted';
     case ProcessInstanceState.Suspended.valueOf():
       return 'Suspended';
+    case ProcessInstanceState.Pending.valueOf():
+      return 'Pending';
     default:
       throw new Error(
         'state is not one of the values of type ProcessInstanceStatusDTO',
