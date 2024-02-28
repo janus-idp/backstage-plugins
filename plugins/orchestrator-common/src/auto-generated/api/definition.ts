@@ -694,7 +694,8 @@ const OPENAPI = `
           "Error",
           "Completed",
           "Aborted",
-          "Suspended"
+          "Suspended",
+          "Pending"
         ]
       },
       "WorkflowRunStatusDTO": {
