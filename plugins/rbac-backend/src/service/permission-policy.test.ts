@@ -123,9 +123,15 @@ async function createEnforcer(
   logger: Logger,
   tokenManager: TokenManager,
 ): Promise<Enforcer> {
+  const catalogDBClient = Knex.knex({ client: MockClient });
   const enf = await newEnforcer(theModel, adapter);
 
-  const rm = new BackstageRoleManager(catalogApi, logger, tokenManager);
+  const rm = new BackstageRoleManager(
+    catalogApi,
+    logger,
+    tokenManager,
+    catalogDBClient,
+  );
   enf.setRoleManager(rm);
   enf.enableAutoBuildRoleLinks(false);
   await enf.buildRoleLinks();
