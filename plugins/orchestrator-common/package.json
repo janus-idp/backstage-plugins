@@ -35,7 +35,8 @@
     "clean": "backstage-cli package clean",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
-    "openapi": "./scripts/openapi.sh"
+    "openapi": "./scripts/openapi.sh",
+    "openapi:prettier:fix": "prettier --ignore-unknown --write ./src/auto-generated"
   },
   "dependencies": {
     "@backstage/types": "^1.1.1",

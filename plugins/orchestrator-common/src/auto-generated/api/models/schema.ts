@@ -59,6 +59,16 @@ export type webhooks = Record<string, never>;
 
 export interface components {
   schemas: {
+    /** @description The ErrorResponse object represents a common structure for handling errors in API responses. It includes essential information about the error, such as the error message and additional optional details. */
+    ErrorResponse: {
+      /**
+       * @description A string providing a concise and human-readable description of the encountered error. This field is required in the ErrorResponse object.
+       * @default internal server error
+       */
+      message: string;
+      /** @description An optional field that can contain additional information or context about the error. It provides flexibility for including extra details based on specific error scenarios. */
+      additionalInfo?: string;
+    };
     WorkflowOverviewListResultDTO: {
       overviews?: components['schemas']['WorkflowOverviewDTO'][];
       paginationInfo?: components['schemas']['PaginationInfoDTO'];
@@ -210,7 +220,7 @@ export interface operations {
       /** @description Error fetching workflow overviews */
       500: {
         content: {
-          'text/plain': string;
+          'application/json': components['schemas']['ErrorResponse'];
         };
       };
     };
@@ -233,7 +243,7 @@ export interface operations {
       /** @description Error fetching workflow overview */
       500: {
         content: {
-          'text/plain': string;
+          'application/json': components['schemas']['ErrorResponse'];
         };
       };
     };
@@ -250,7 +260,7 @@ export interface operations {
       /** @description Error fetching workflow list */
       500: {
         content: {
-          'text/plain': string;
+          'application/json': components['schemas']['ErrorResponse'];
         };
       };
     };
@@ -273,7 +283,7 @@ export interface operations {
       /** @description Error workflow by id */
       500: {
         content: {
-          'text/plain': string;
+          'application/json': components['schemas']['ErrorResponse'];
         };
       };
     };
@@ -293,7 +303,7 @@ export interface operations {
       /** @description Error fetching instances */
       500: {
         content: {
-          'text/plain': string;
+          'application/json': components['schemas']['ErrorResponse'];
         };
       };
     };
@@ -316,7 +326,7 @@ export interface operations {
       /** @description Error fetching instance */
       500: {
         content: {
-          'text/plain': string;
+          'application/json': components['schemas']['ErrorResponse'];
         };
       };
     };
@@ -339,7 +349,7 @@ export interface operations {
       /** @description Error getting workflow results */
       500: {
         content: {
-          'text/plain': string;
+          'application/json': components['schemas']['ErrorResponse'];
         };
       };
     };
@@ -359,7 +369,7 @@ export interface operations {
       /** @description Error fetching workflow statuses */
       500: {
         content: {
-          'text/plain': string;
+          'application/json': components['schemas']['ErrorResponse'];
         };
       };
     };
@@ -387,7 +397,7 @@ export interface operations {
       /** @description Internal Server Error */
       500: {
         content: {
-          'text/plain': string;
+          'application/json': components['schemas']['ErrorResponse'];
         };
       };
     };
@@ -413,7 +423,7 @@ export interface operations {
       /** @description Error aborting workflow */
       500: {
         content: {
-          'text/plain': string;
+          'application/json': components['schemas']['ErrorResponse'];
         };
       };
     };
