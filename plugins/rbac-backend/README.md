@@ -16,6 +16,24 @@ To effectively utilize the RBAC plugin, you must have the Backstage permission f
 
 You need to [set up the permission framework in Backstage](https://backstage.io/docs/permissions/getting-started/).Since this plugin provides a dynamic policy that replaces the traditional one, there's no need to create a policy manually. Please note that one of the requirements for permission framework is enabling the [service-to-service authentication](https://backstage.io/docs/auth/service-to-service-auth/#setup). Ensure that you complete these authentication setup steps as well.
 
+### Identity resolver
+
+The permission framework, and consequently, this RBAC plugin, rely on the concept of group membership. To ensure smooth operation, please follow the [Sign-in identities and resolvers](https://backstage.io/docs/auth/identity-resolver/) documentation. It's crucial that when populating groups, you include any groups that you plan to assign permissions to.
+
+## Installation
+
+To integrate the RBAC plugin into your Backstage instance, follow these steps.
+
+### Installing the plugin
+
+Add the RBAC plugin packages as dependencies by running the following command.
+
+```SHELL
+yarn workspace backend add @janus-idp/backstage-plugin-rbac-backend
+```
+
+**NOTE**: If you are using Red Hat Developer Hub backend plugin is pre-installed and you do not need this step.
+
 ### Configuring the Backend
 
 To connect the RBAC framework to your backend use the `PolicyBuilder` class in your backend permissions plugin (typically `packages/backend/src/plugins/permissions.ts`) as follows:
@@ -75,24 +93,6 @@ async function main() {
 }
 ```
 
-### Identity resolver
-
-The permission framework, and consequently, this RBAC plugin, rely on the concept of group membership. To ensure smooth operation, please follow the [Sign-in identities and resolvers](https://backstage.io/docs/auth/identity-resolver/) documentation. It's crucial that when populating groups, you include any groups that you plan to assign permissions to.
-
-## Installation
-
-To integrate the RBAC plugin into your Backstage instance, follow these steps.
-
-### Installing the plugin
-
-Add the RBAC plugin packages as dependencies by running the following command.
-
-```SHELL
-yarn workspace backend add @janus-idp/backstage-plugin-rbac-backend
-```
-
-NOTE: If you are using Red Hat Developer Hub backend plugin is pre-installed and you do not need this step.
-
 ### Configure policy admins
 
 The RBAC plugin empowers you to manage permission policies for users and groups with a designated group of individuals known as policy administrators. These administrators are granted access to the RBAC plugin's REST API and user interface as well as the ability to read from the catalog.
@@ -142,9 +142,7 @@ g, group:default/team_b, role:default/team_b
 
 ---
 
-**NOTE**
-
-When you add a role in the permission policies configuration file, ensure that the role is associated with at least one permission policy with the `allow` effect.
+**NOTE**: When you add a role in the permission policies configuration file, ensure that the role is associated with at least one permission policy with the `allow` effect.
 
 ---
 

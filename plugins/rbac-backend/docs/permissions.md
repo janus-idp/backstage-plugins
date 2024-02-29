@@ -4,16 +4,17 @@ Note: The requirements section primarily pertains to the frontend and may not be
 
 When defining a permission for the RBAC Backend plugin to consume, follow these guidelines:
 
-Permission policies defined using the name of the permission will have higher priority over permission policies that are defined using the resource type.
-Example:
+- Permission policies defined using the name of the permission will have higher priority over permission policies that are defined using the resource type.
 
-```
-p, role:default/myrole, catalog-entity, read, allow
-p, role:default/myrole, catalog.entity.read, read, deny
-g, user:default/myuser, role:default/myrole
-```
+  - Example:
 
-Where 'myuser' will have a deny for reading catalog entities, because the permission name takes priority over the permission resource type.
+    ```CSV
+    p, role:default/myrole, catalog-entity, read, allow
+    p, role:default/myrole, catalog.entity.read, read, deny
+    g, user:default/myuser, role:default/myrole
+    ```
+
+  Where 'myuser' will have a deny for reading catalog entities, because the permission name takes priority over the permission resource type.
 
 - If the permission does not have a policy associated with it, use the keyword `use` in its place.
   - Example: `p, role:default/test, kubernetes.proxy, use, allow`
