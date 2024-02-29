@@ -68,10 +68,13 @@ export const RefForwardingWorkflowDescriptionModal: ForwardRefRenderFunction<
         </Box>
       </DialogTitle>
       <DialogContent>
-        <Box>{workflow.description}</Box>
-        <Box>
-          <p>Are you sure you want to run this workflow?</p>
-        </Box>
+        {workflow.description ? (
+          <Box>{workflow.description}</Box>
+        ) : (
+          <Box>
+            <p>Are you sure you want to run this workflow?</p>
+          </Box>
+        )}
       </DialogContent>
       <DialogActions>
         <Button onClick={handleRunWorkflow} color="primary" variant="contained">
