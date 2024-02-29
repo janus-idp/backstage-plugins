@@ -14,17 +14,28 @@
  * limitations under the License.
  */
 
-import { getRootLogger } from '@backstage/backend-common';
+import {
+  getRootLogger,
+  HostDiscovery,
+  loadBackendConfig,
+} from '@backstage/backend-common';
+import { CatalogClient } from '@backstage/catalog-client';
 
 import yn from 'yn';
 
-import { startStandaloneServer } from '../dev/index';
+import { startStandaloneServer } from '../dev';
 
 const port = process.env.PLUGIN_PORT ? Number(process.env.PLUGIN_PORT) : 7007;
 const enableCors = yn(process.env.PLUGIN_CORS, { default: false });
 const logger = getRootLogger();
+const config = await loadBackendConfig({ logger, argv: process.argv });
+const catalogApi = new CatalogClient({
+  discoveryApi: HostDiscovery.fromConfig(config),
+});
 
-startStandaloneServer({ port, enableCors, logger }).catch(err => {
+console.log('Starting Standalone Server from run.ts');
+
+startStandaloneServer({ port, enableCors, logger, catalogApi }).catch(err => {
   logger.error('Standalone server failed:', err);
   process.exit(1);
 });

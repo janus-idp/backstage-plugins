@@ -1,5 +1,5 @@
 {
-  "name": "@internal/backstage-plugin-bulk-import-common",
+  "name": "@janus-idp/backstage-plugin-bulk-import-common",
   "description": "Common functionalities for the bulk-import plugin",
   "version": "0.1.0",
   "main": "src/index.ts",

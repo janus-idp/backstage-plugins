@@ -19,7 +19,7 @@ import { Config, ConfigReader } from '@backstage/config';
 
 import gitUrlParse from 'git-url-parse';
 
-import { CustomGithubCredentialsProvider } from '../helpers/GithubAppManager';
+import { CustomGithubCredentialsProvider } from '../helpers';
 import { GithubApiService } from './githubApiService';
 
 const octokit = {

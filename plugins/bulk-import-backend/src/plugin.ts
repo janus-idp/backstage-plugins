@@ -19,6 +19,7 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
+import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
 
 import { createRouter } from './service/router';
 
@@ -36,13 +37,15 @@ export const bulkImportPlugin = createBackendPlugin({
         config: coreServices.rootConfig,
         http: coreServices.httpRouter,
         permissions: coreServices.permissions,
+        catalogApi: catalogServiceRef,
       },
-      async init({ config, logger, http, permissions }) {
+      async init({ config, logger, http, permissions, catalogApi }) {
         http.use(
           await createRouter({
             config,
             permissions,
             logger: loggerToWinstonLogger(logger),
+            catalogApi,
           }),
         );
       },

@@ -15,6 +15,7 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
+import { CatalogClient } from '@backstage/catalog-client';
 import { ConfigReader } from '@backstage/config';
 import {
   AuthorizeResult,
@@ -24,9 +25,19 @@ import {
 import express from 'express';
 import request from 'supertest';
 
-import { GithubRepositoryResponse } from '../types';
+import { CatalogInfoGenerator } from '../helpers';
+import {
+  CatalogInfoEntities,
+  GithubRepositoryResponse,
+  ValidatedEntity,
+} from '../types';
 import { GithubApiService } from './githubApiService';
 import { createRouter } from './router';
+
+const mockCreateCatalogInfoGenerator = jest.fn();
+
+CatalogInfoGenerator.prototype.createCatalogInfoGenerator =
+  mockCreateCatalogInfoGenerator;
 
 const mockedAuthorize: jest.MockedFunction<PermissionEvaluator['authorize']> =
   jest.fn();
@@ -46,7 +57,65 @@ const allowAll: PermissionEvaluator['authorize'] &
   }));
 };
 
+const mockAddLocation = jest.fn();
+const mockValidateEntity = jest.fn();
+const mockGetEntitiesByRefs = jest.fn();
+
+const mockCatalogClient = {
+  getEntitiesByRefs: mockGetEntitiesByRefs,
+  validateEntity: mockValidateEntity,
+  addLocation: mockAddLocation,
+} as unknown as CatalogClient;
+
 const configuration = new ConfigReader({});
+
+function createEntity(
+  name: string,
+  html_url: string,
+  kind: string,
+  branch: string,
+  namespace: string = 'default',
+): ValidatedEntity {
+  if (kind === 'Location') {
+    const catalogInfoLocation = `${html_url}/blob/${branch}/catalog-info.yaml`;
+    return {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Location',
+      metadata: {
+        name: name,
+        namespace: namespace,
+        labels: {
+          'bulk-import/uuid': 'bulk-import-session-uuid',
+          'bulk-import/date-created': '2024-02-29T16-50-40.025Z',
+        },
+      },
+      spec: {
+        target: `${catalogInfoLocation}`,
+      },
+    };
+  }
+  return {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: kind,
+    metadata: {
+      // Default to the repository name if no name is provided
+      name: name,
+      namespace: namespace,
+      title: name,
+      links: [
+        {
+          url: html_url,
+          title: 'Repository Link',
+        },
+      ],
+    },
+    spec: {
+      type: 'unknown',
+      lifecycle: 'unknown',
+      owner: 'unknown',
+    },
+  };
+}
 describe('createRouter', () => {
   let app: express.Express;
 
@@ -55,6 +124,7 @@ describe('createRouter', () => {
       logger: getVoidLogger(),
       config: configuration,
       permissions: permissionEvaluator,
+      catalogApi: mockCatalogClient,
     });
     app = express().use(router);
   });
@@ -132,11 +202,65 @@ describe('createRouter', () => {
       GithubApiService.prototype.getGithubRepositories =
         mockGetGithubRepositories;
 
+      mockAddLocation
+        .mockReturnValueOnce({ exists: false })
+        .mockReturnValue({ exists: true });
+      const existsList: boolean[] = [false, true];
+      mockValidateEntity.mockReturnValue({ valid: true });
+      mockGetEntitiesByRefs.mockReturnValue({ items: [undefined] });
+
+      const expectedEntities: CatalogInfoEntities[] =
+        githubApiServiceResponse.repositories.map(repo => {
+          return {
+            entity: createEntity(
+              repo.name,
+              repo.html_url,
+              'Component',
+              repo.default_branch,
+            ),
+            locationEntity: createEntity(
+              repo.name,
+              repo.html_url,
+              'Location',
+              repo.default_branch,
+            ),
+          };
+        });
+      mockCreateCatalogInfoGenerator
+        .mockReturnValueOnce(expectedEntities[0])
+        .mockReturnValue(expectedEntities[1]);
+
       const response = await request(app)
         .post('/repositories')
         .send({ owner: 'https://github.com/backstage' });
       expect(response.status).toEqual(200);
-      expect(response.body).toEqual(githubApiServiceResponse);
+      expect(response.body).toEqual({
+        ...githubApiServiceResponse,
+        repositories: githubApiServiceResponse.repositories.map(
+          (repo, index) => {
+            return existsList[index]
+              ? {
+                  ...repo,
+                  exists: existsList[index],
+                }
+              : {
+                  ...repo,
+                  entity: createEntity(
+                    repo.name,
+                    repo.html_url,
+                    'Component',
+                    repo.default_branch,
+                  ),
+                  locationEntity: createEntity(
+                    repo.name,
+                    repo.html_url,
+                    'Location',
+                    repo.default_branch,
+                  ),
+                };
+          },
+        ),
+      });
     });
     it('returns 207 when repositories are fetched, but errors also occurred', async () => {
       const githubApiServiceResponse: GithubRepositoryResponse = {
@@ -175,11 +299,64 @@ describe('createRouter', () => {
         mockGetGithubRepositories;
 
       mockedPermissionQuery.mockImplementation(allowAll);
+      mockAddLocation
+        .mockReturnValueOnce({ exists: false })
+        .mockReturnValue({ exists: true });
+      const existsList: boolean[] = [false, true];
+
+      const expectedEntities: CatalogInfoEntities[] =
+        githubApiServiceResponse.repositories.map(repo => {
+          return {
+            entity: createEntity(
+              repo.name,
+              repo.html_url,
+              'Component',
+              repo.default_branch,
+            ),
+            locationEntity: createEntity(
+              repo.name,
+              repo.html_url,
+              'Location',
+              repo.default_branch,
+            ),
+          };
+        });
+      mockCreateCatalogInfoGenerator
+        .mockReturnValueOnce(expectedEntities[0])
+        .mockReturnValue(expectedEntities[1]);
+
       const response = await request(app)
         .post('/repositories')
         .send({ owner: 'https://github.com/test' });
+
       expect(response.status).toEqual(207);
-      expect(response.body).toEqual(githubApiServiceResponse);
+      expect(response.body).toEqual({
+        ...githubApiServiceResponse,
+        repositories: githubApiServiceResponse.repositories.map(
+          (repo, index) => {
+            return existsList[index]
+              ? {
+                  ...repo,
+                  exists: existsList[index],
+                }
+              : {
+                  ...repo,
+                  entity: createEntity(
+                    repo.name,
+                    repo.html_url,
+                    'Component',
+                    repo.default_branch,
+                  ),
+                  locationEntity: createEntity(
+                    repo.name,
+                    repo.html_url,
+                    'Location',
+                    repo.default_branch,
+                  ),
+                };
+          },
+        ),
+      });
     });
     it('returns 207 when one or more errors are returned with no successful repository fetches', async () => {
       const githubApiServiceResponse: GithubRepositoryResponse = {

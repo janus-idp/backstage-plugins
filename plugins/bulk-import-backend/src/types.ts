@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Entity, EntityMeta } from '@backstage/catalog-model';
 import { SerializedError } from '@backstage/errors';
 import {
   GithubCredentials,
@@ -111,3 +112,20 @@ export interface ExtendedGithubCredentialsProvider
     url: string;
   }) => Promise<ExtendedGithubCredentials[]>;
 }
+
+export type CatalogInfoGeneratorOptions = {
+  repoInfo: GithubRepository;
+  backstageToken?: string;
+  /**
+   * Every batch of bulk import operation has it's own UUID to track the import job
+   */
+  bulkImportUUID: string;
+  metadata?: EntityMeta;
+};
+
+export type ValidatedEntity = Entity | SerializedError[];
+
+export type CatalogInfoEntities = {
+  entity: ValidatedEntity;
+  locationEntity: ValidatedEntity;
+};

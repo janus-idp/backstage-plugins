@@ -21,7 +21,7 @@ import { Octokit, RestEndpointMethodTypes } from '@octokit/rest';
 import gitUrlParse from 'git-url-parse';
 import { Logger } from 'winston';
 
-import { CustomGithubCredentialsProvider } from '../helpers/GithubAppManager';
+import { CustomGithubCredentialsProvider } from '../helpers';
 import {
   ExtendedGithubCredentials,
   GithubAppCredentials,

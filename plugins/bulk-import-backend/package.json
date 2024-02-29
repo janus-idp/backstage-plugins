@@ -50,7 +50,6 @@
     "@backstage/plugin-auth-node": "^0.4.4",
     "@backstage/plugin-permission-common": "^0.7.12",
     "@backstage/plugin-permission-node": "^0.7.21",
-    "@internal/backstage-plugin-bulk-import-common": "^0.1.0",
     "@octokit/auth-app": "^6.0.3",
     "@octokit/core": "^5.1.0",
     "@octokit/rest": "^20.0.2",

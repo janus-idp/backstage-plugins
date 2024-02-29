@@ -15,23 +15,75 @@
  */
 
 import {
+  CacheManager,
   createServiceBuilder,
+  DatabaseManager,
+  getRootLogger,
   HostDiscovery,
   loadBackendConfig,
   ServerTokenManager,
+  UrlReaders,
+  useHotMemoize,
 } from '@backstage/backend-common';
+import { TaskScheduler } from '@backstage/backend-tasks';
+import { CatalogApi } from '@backstage/catalog-client';
+import { Config } from '@backstage/config';
+import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
+import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 
+import { Router } from 'express';
 import { Logger } from 'winston';
 
 import { Server } from 'http';
 
 import { createRouter } from '../src/service/router';
+import { PluginEnvironment } from './types';
 
 export interface ServerOptions {
   port: number;
   enableCors: boolean;
   logger: Logger;
+  catalogApi: CatalogApi;
+}
+
+function makeCreateEnv(config: Config) {
+  const root = getRootLogger();
+  const reader = UrlReaders.default({ logger: root, config });
+  const discovery = HostDiscovery.fromConfig(config);
+  const cacheManager = CacheManager.fromConfig(config);
+  const databaseManager = DatabaseManager.fromConfig(config, { logger: root });
+  const tokenManager = ServerTokenManager.noop();
+  const taskScheduler = TaskScheduler.fromConfig(config);
+
+  const identity = DefaultIdentityClient.create({
+    discovery,
+  });
+  const permissions = ServerPermissionClient.fromConfig(config, {
+    discovery,
+    tokenManager,
+  });
+
+  root.info(`Created UrlReader ${reader}`);
+
+  return (plugin: string): PluginEnvironment => {
+    const logger = root.child({ type: 'plugin', plugin });
+    const database = databaseManager.forPlugin(plugin);
+    const cache = cacheManager.forPlugin(plugin);
+    const scheduler = taskScheduler.forPlugin(plugin);
+    return {
+      logger,
+      database,
+      cache,
+      config,
+      reader,
+      discovery,
+      tokenManager,
+      scheduler,
+      permissions,
+      identity,
+    };
+  };
 }
 
 export async function startStandaloneServer(
@@ -48,16 +100,31 @@ export async function startStandaloneServer(
     tokenManager,
   });
 
+  const createEnv = makeCreateEnv(config);
+  const catalogEnv = useHotMemoize(module, () => createEnv('catalog'));
+
+  const catalog = async (env: PluginEnvironment): Promise<Router> => {
+    const builder = await CatalogBuilder.create(env);
+    const { processingEngine, router } = await builder.build();
+    await processingEngine.start();
+    return router;
+  };
+
   logger.debug('Starting application server...');
   const router = await createRouter({
     config,
     logger,
     permissions,
+    catalogApi: options.catalogApi,
   });
 
   let service = createServiceBuilder(module)
     .setPort(options.port)
-    .addRouter('/bulk-import', router);
+    .enableCors({
+      origin: '*',
+    })
+    .addRouter('/api/bulk-import', router)
+    .addRouter('/api/catalog', await catalog(catalogEnv));
   if (options.enableCors) {
     service = service.enableCors({ origin: 'http://localhost:3000' });
   }
