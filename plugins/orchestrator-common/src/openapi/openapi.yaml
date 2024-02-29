@@ -69,7 +69,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/WorkflowDTO'
         '500':
-          description: Error workflow by id
+          description: Error fetching workflow by id
           content:
             application/json:
               schema:
@@ -93,7 +93,7 @@ paths:
               schema:
                 type: string
         '500':
-          description: Error workflow by id
+          description: Error fetching workflow source by id
           content:
             text/plain:
               schema:
