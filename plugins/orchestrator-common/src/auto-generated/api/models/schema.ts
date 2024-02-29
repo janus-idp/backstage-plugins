@@ -12,13 +12,13 @@ export interface paths {
     /** @description Get a workflow overview by ID */
     get: operations['getWorkflowOverviewById'];
   };
-  '/v2/workflows': {
-    /** @description Get a list of workflow */
-    get: operations['getWorkflows'];
-  };
   '/v2/workflows/{workflowId}': {
     /** @description Get a workflow by ID */
     get: operations['getWorkflowById'];
+  };
+  '/v2/workflows/{workflowId}/source': {
+    /** @description Get a workflow source by ID */
+    get: operations['getWorkflowSourceById'];
   };
   '/v2/workflows/instances': {
     /**
@@ -78,7 +78,7 @@ export interface components {
       workflowId?: string;
       /** @description Workflow name */
       name?: string;
-      uri?: string;
+      format?: components['schemas']['WorkflowFormatDTO'];
       lastTriggeredMs?: number;
       lastRunStatus?: string;
       category?: components['schemas']['WorkflowCategoryDTO'];
@@ -90,6 +90,11 @@ export interface components {
       offset?: number;
       totalCount?: number;
     };
+    /**
+     * @description Format of the workflow definition
+     * @enum {string}
+     */
+    WorkflowFormatDTO: 'yaml' | 'json';
     /**
      * @description Category of the workflow
      * @enum {string}
@@ -104,8 +109,7 @@ export interface components {
       id: string;
       /** @description Workflow name */
       name?: string;
-      /** @description URI of the workflow definition */
-      uri: string;
+      format: components['schemas']['WorkflowFormatDTO'];
       category: components['schemas']['WorkflowCategoryDTO'];
       /** @description Description of the workflow */
       description?: string;
@@ -248,28 +252,11 @@ export interface operations {
       };
     };
   };
-  /** @description Get a list of workflow */
-  getWorkflows: {
-    responses: {
-      /** @description Success */
-      200: {
-        content: {
-          'application/json': components['schemas']['WorkflowListResultDTO'];
-        };
-      };
-      /** @description Error fetching workflow list */
-      500: {
-        content: {
-          'application/json': components['schemas']['ErrorResponse'];
-        };
-      };
-    };
-  };
   /** @description Get a workflow by ID */
   getWorkflowById: {
     parameters: {
       path: {
-        /** @description ID of the workflow to execute */
+        /** @description ID of the workflow to fetch */
         workflowId: string;
       };
     };
@@ -284,6 +271,29 @@ export interface operations {
       500: {
         content: {
           'application/json': components['schemas']['ErrorResponse'];
+        };
+      };
+    };
+  };
+  /** @description Get a workflow source by ID */
+  getWorkflowSourceById: {
+    parameters: {
+      path: {
+        /** @description ID of the workflow to fetch */
+        workflowId: string;
+      };
+    };
+    responses: {
+      /** @description Success */
+      200: {
+        content: {
+          'text/plain': string;
+        };
+      };
+      /** @description Error workflow by id */
+      500: {
+        content: {
+          'text/plain': string;
         };
       };
     };

@@ -14,11 +14,9 @@ import {
   QUERY_PARAM_INCLUDE_ASSESSMENT,
   QUERY_PARAM_INSTANCE_ID,
   WorkflowInputSchemaResponse,
-  WorkflowItem,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { RouterArgs } from '../routerWrapper';
-import { ApiResponseBuilder } from '../types/apiResponse';
 import { V1 } from './api/v1';
 import { V2 } from './api/v2';
 import { CloudEventService } from './CloudEventService';
@@ -145,11 +143,6 @@ function setupInternalRoutes(
   api: OpenAPIBackend,
   services: Services,
 ) {
-  router.get('/workflows/definitions', async (_, response) => {
-    const swfs = await services.dataIndexService.getWorkflowDefinitions();
-    response.json(ApiResponseBuilder.SUCCESS_RESPONSE(swfs));
-  });
-
   router.get('/workflows/overview', async (_c, res) => {
     await V1.getWorkflowsOverview(services.sonataFlowService)
       .then(result => res.status(200).json(result))
@@ -175,28 +168,6 @@ function setupInternalRoutes(
     },
   );
 
-  router.get('/workflows', async (_, res) => {
-    await V1.getWorkflows(services.sonataFlowService, services.dataIndexService)
-      .then(result => res.status(200).json(result))
-      .catch(error => {
-        res
-          .status(500)
-          .json({ message: error.message || 'internal server error' });
-      });
-  });
-
-  // v2
-  api.register('getWorkflows', async (_c, _req, res, next) => {
-    await V2.getWorkflows(services.sonataFlowService, services.dataIndexService)
-      .then(result => res.json(result))
-      .catch(error => {
-        res
-          .status(500)
-          .json({ message: error.message || 'internal server error' });
-        next();
-      });
-  });
-
   router.get('/workflows/:workflowId', async (req, res) => {
     const {
       params: { workflowId },
@@ -220,6 +191,29 @@ function setupInternalRoutes(
         res
           .status(500)
           .json({ message: error.message || 'internal server error' });
+        next();
+      });
+  });
+
+  router.get('/workflows/:workflowId/source', async (req, res) => {
+    const {
+      params: { workflowId },
+    } = req;
+    await V1.getWorkflowSourceById(services.sonataFlowService, workflowId)
+      .then(result => res.status(200).send(result))
+      .catch(error => {
+        res.status(500).send(error.message || 'Internal Server Error');
+      });
+  });
+
+  // v2
+  api.register('getWorkflowSourceById', async (c, _req, res, next) => {
+    const workflowId = c.request.params.workflowId as string;
+
+    await V2.getWorkflowSourceById(services.sonataFlowService, workflowId)
+      .then(result => res.send(result))
+      .catch(error => {
+        res.status(500).send(error.message || 'Internal Server Error');
         next();
       });
   });
@@ -416,22 +410,6 @@ function setupInternalRoutes(
     },
   );
 
-  router.get('/instances/:instanceId/jobs', async (req, res) => {
-    const {
-      params: { instanceId },
-    } = req;
-
-    const jobs =
-      await services.dataIndexService.fetchProcessInstanceJobs(instanceId);
-
-    if (!jobs) {
-      res.status(500).send(`Couldn't fetch jobs for instance ${instanceId}`);
-      return;
-    }
-
-    res.status(200).json(jobs);
-  });
-
   router.get('/workflows/:workflowId/inputSchema', async (req, res) => {
     const {
       params: { workflowId },
@@ -467,17 +445,8 @@ function setupInternalRoutes(
       return;
     }
 
-    const uri = await services.sonataFlowService.fetchWorkflowUri(workflowId);
-
-    if (!uri) {
-      res.status(500).send(`Couldn't fetch workflow uri ${workflowId}`);
-      return;
-    }
-
-    const workflowItem: WorkflowItem = { uri, definition };
-
     const response: WorkflowInputSchemaResponse = {
-      workflowItem,
+      definition,
       schemaSteps: [],
       isComposedSchema: false,
     };
@@ -520,7 +489,7 @@ function setupInternalRoutes(
       .status(200)
       .json(
         services.dataInputSchemaService.getWorkflowInputSchemaResponse(
-          workflowItem,
+          definition,
           workflowInfo.inputSchema,
           instanceVariables,
           assessmentInstanceVariables,

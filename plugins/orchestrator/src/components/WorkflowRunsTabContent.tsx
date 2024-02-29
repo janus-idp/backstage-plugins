@@ -49,7 +49,7 @@ export const WorkflowRunsTabContent = () => {
   );
 
   const fetchInstances = React.useCallback(async () => {
-    const instances = await orchestratorApi.getInstances();
+    const instances = await orchestratorApi.listInstances();
     const clonedData: WorkflowRunDetail[] = instances.map(
       mapProcessInstanceToDetails,
     );

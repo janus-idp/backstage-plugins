@@ -9,8 +9,6 @@ import {
   ProcessInstanceState,
   WorkflowDataDTO,
   WorkflowDTO,
-  WorkflowListResult,
-  WorkflowListResultDTO,
   WorkflowOverviewDTO,
   WorkflowOverviewListResultDTO,
   WorkflowRunStatusDTO,
@@ -23,7 +21,6 @@ import {
   mapToGetWorkflowInstanceResults,
   mapToProcessInstanceDTO,
   mapToWorkflowDTO,
-  mapToWorkflowListResultDTO,
   mapToWorkflowOverviewDTO,
 } from './mapping/V2Mappings';
 import { V1 } from './v1';
@@ -59,23 +56,26 @@ export namespace V2 {
     return mapToWorkflowOverviewDTO(overviewV1);
   }
 
-  export async function getWorkflows(
-    sonataFlowService: SonataFlowService,
-    dataIndexService: DataIndexService,
-  ): Promise<WorkflowListResultDTO> {
-    const definitions: WorkflowListResult = await V1.getWorkflows(
-      sonataFlowService,
-      dataIndexService,
-    );
-    return mapToWorkflowListResultDTO(definitions);
-  }
-
   export async function getWorkflowById(
     sonataFlowService: SonataFlowService,
     workflowId: string,
   ): Promise<WorkflowDTO> {
-    const resultV1 = await V1.getWorkflowById(sonataFlowService, workflowId);
-    return mapToWorkflowDTO(resultV1.uri, resultV1.definition);
+    const resultV1 = await V1.getWorkflowSourceById(
+      sonataFlowService,
+      workflowId,
+    );
+    return mapToWorkflowDTO(resultV1);
+  }
+
+  export async function getWorkflowSourceById(
+    sonataFlowService: SonataFlowService,
+    workflowId: string,
+  ): Promise<string> {
+    const resultV1 = await V1.getWorkflowSourceById(
+      sonataFlowService,
+      workflowId,
+    );
+    return resultV1;
   }
 
   export async function getInstances(

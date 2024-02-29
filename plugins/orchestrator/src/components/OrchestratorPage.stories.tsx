@@ -8,7 +8,7 @@ import { Meta, StoryObj } from '@storybook/react';
 import { WorkflowOverview } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { fakeProcessInstances } from '../__fixtures__/fakeProcessInstance';
-import { fakeWorkflowItem } from '../__fixtures__/fakeWorkflowItem';
+import { fakeWorkflowDefinition } from '../__fixtures__/fakeWorkflowDefinition';
 import { fakeWorkflowOverviewList } from '../__fixtures__/fakeWorkflowOverviewList';
 import { orchestratorApiRef } from '../api';
 import { MockOrchestratorClient } from '../api/MockOrchestratorClient';
@@ -38,14 +38,14 @@ const meta = {
     ) => {
       const items = context.args.items || fakeWorkflowOverviewList;
       const mockApi = new MockOrchestratorClient({
-        getInstancesResponse: Promise.resolve(fakeProcessInstances),
-        listWorkflowsOverviewResponse: Promise.resolve({
+        listInstancesResponse: Promise.resolve(fakeProcessInstances),
+        listWorkflowOverviewsResponse: Promise.resolve({
           limit: 0,
           offset: 0,
           totalCount: 0,
           items,
         }),
-        getWorkflowResponse: Promise.resolve(fakeWorkflowItem),
+        getWorkflowDefinitionResponse: Promise.resolve(fakeWorkflowDefinition),
       });
       return wrapInTestApp(
         <TestRouter>

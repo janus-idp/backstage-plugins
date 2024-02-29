@@ -4,16 +4,14 @@ import { JsonObject } from '@backstage/types';
 
 import {
   AssessedProcessInstance,
-  Job,
   ProcessInstance,
   QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
   QUERY_PARAM_BUSINESS_KEY,
   QUERY_PARAM_INCLUDE_ASSESSMENT,
   QUERY_PARAM_INSTANCE_ID,
+  WorkflowDefinition,
   WorkflowExecutionResponse,
   WorkflowInputSchemaResponse,
-  WorkflowItem,
-  WorkflowListResult,
   WorkflowOverview,
   WorkflowOverviewListResult,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
@@ -74,7 +72,7 @@ export class OrchestratorClient implements OrchestratorApi {
     return await response.json();
   }
 
-  async getWorkflow(workflowId: string): Promise<WorkflowItem> {
+  async getWorkflowDefinition(workflowId: string): Promise<WorkflowDefinition> {
     const baseUrl = await this.getBaseUrl();
     const res = await fetch(`${baseUrl}/workflows/${workflowId}`);
     if (!res.ok) {
@@ -83,16 +81,16 @@ export class OrchestratorClient implements OrchestratorApi {
     return await res.json();
   }
 
-  async listWorkflows(): Promise<WorkflowListResult> {
+  async getWorkflowSource(workflowId: string): Promise<string> {
     const baseUrl = await this.getBaseUrl();
-    const res = await fetch(`${baseUrl}/workflows`);
+    const res = await fetch(`${baseUrl}/workflows/${workflowId}/source`);
     if (!res.ok) {
       throw await ResponseError.fromResponse(res);
     }
-    return await res.json();
+    return await res.text();
   }
 
-  async listWorkflowsOverview(): Promise<WorkflowOverviewListResult> {
+  async listWorkflowOverviews(): Promise<WorkflowOverviewListResult> {
     const baseUrl = await this.getBaseUrl();
     const res = await fetch(`${baseUrl}/workflows/overview`);
     if (!res.ok) {
@@ -101,7 +99,7 @@ export class OrchestratorClient implements OrchestratorApi {
     return res.json();
   }
 
-  async getInstances(): Promise<ProcessInstance[]> {
+  async listInstances(): Promise<ProcessInstance[]> {
     const baseUrl = await this.getBaseUrl();
     const res = await fetch(`${baseUrl}/instances`);
     if (!res.ok) {
@@ -120,15 +118,6 @@ export class OrchestratorClient implements OrchestratorApi {
       [QUERY_PARAM_INCLUDE_ASSESSMENT]: includeAssessment,
     });
     const res = await fetch(urlToFetch);
-    if (!res.ok) {
-      throw await ResponseError.fromResponse(res);
-    }
-    return await res.json();
-  }
-
-  async getInstanceJobs(instanceId: string): Promise<Job[]> {
-    const baseUrl = await this.getBaseUrl();
-    const res = await fetch(`${baseUrl}/instances/${instanceId}/jobs`);
     if (!res.ok) {
       throw await ResponseError.fromResponse(res);
     }
