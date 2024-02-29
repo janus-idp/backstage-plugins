@@ -104,6 +104,9 @@ export class DataIndexService {
     this.logger.debug(`GraphQL query: ${graphQlQuery}`);
     this.logger.info(`getWorkflowInfos() called:  ${this.dataIndexUrl}`);
     const result = await this.client.query(graphQlQuery, {});
+    this.logger.debug(
+      `Get workflow definitions result: ${JSON.stringify(result)}`,
+    );
 
     if (result.error) {
       this.logger.error(
