@@ -20,6 +20,7 @@ import { RouterArgs } from '../routerWrapper';
 import { V1 } from './api/v1';
 import { V2 } from './api/v2';
 import { CloudEventService } from './CloudEventService';
+import { INTERNAL_SERVER_ERROR_MESSAGE } from './constants';
 import { DataIndexService } from './DataIndexService';
 import { DataInputSchemaService } from './DataInputSchemaService';
 import { JiraEvent, JiraService } from './JiraService';
@@ -149,7 +150,7 @@ function setupInternalRoutes(
       .catch(error => {
         res
           .status(500)
-          .json({ message: error.message || 'internal server error' });
+          .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
       });
   });
 
@@ -162,7 +163,7 @@ function setupInternalRoutes(
         .catch(error => {
           res
             .status(500)
-            .json({ message: error.message || 'internal server error' });
+            .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
           next();
         });
     },
@@ -177,7 +178,7 @@ function setupInternalRoutes(
       .catch(error => {
         res
           .status(500)
-          .json({ message: error.message || 'internal server error' });
+          .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
       });
   });
 
@@ -190,7 +191,7 @@ function setupInternalRoutes(
       .catch(error => {
         res
           .status(500)
-          .json({ message: error.message || 'internal server error' });
+          .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
         next();
       });
   });
@@ -202,7 +203,7 @@ function setupInternalRoutes(
     await V1.getWorkflowSourceById(services.sonataFlowService, workflowId)
       .then(result => res.status(200).send(result))
       .catch(error => {
-        res.status(500).send(error.message || 'Internal Server Error');
+        res.status(500).send(error.message || INTERNAL_SERVER_ERROR_MESSAGE);
       });
   });
 
@@ -213,7 +214,7 @@ function setupInternalRoutes(
     await V2.getWorkflowSourceById(services.sonataFlowService, workflowId)
       .then(result => res.send(result))
       .catch(error => {
-        res.status(500).send(error.message || 'Internal Server Error');
+        res.status(500).send(error.message || INTERNAL_SERVER_ERROR_MESSAGE);
         next();
       });
   });
@@ -228,7 +229,7 @@ function setupInternalRoutes(
       .catch(error => {
         res
           .status(500)
-          .json({ message: error.message || 'internal server error' });
+          .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
       });
   });
 
@@ -240,7 +241,7 @@ function setupInternalRoutes(
       .catch(error => {
         res
           .status(500)
-          .json({ message: error.message || 'internal server error' });
+          .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
         next();
       });
   });
@@ -263,7 +264,7 @@ function setupInternalRoutes(
       .catch((error: { message: any }) => {
         res
           .status(500)
-          .json({ message: error.message || 'internal server error' });
+          .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
       });
   });
 
@@ -289,7 +290,7 @@ function setupInternalRoutes(
         .catch((error: { message: string }) => {
           res
             .status(500)
-            .json({ message: error.message || 'internal server error' });
+            .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
         });
     },
   );
@@ -316,7 +317,7 @@ function setupInternalRoutes(
         .catch((error: { message: string }) => {
           res
             .status(500)
-            .json({ message: error.message || 'internal server error' });
+            .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
         });
     },
   );
@@ -349,7 +350,7 @@ function setupInternalRoutes(
       .catch(error => {
         res
           .status(500)
-          .json({ message: error.message || 'internal server error' });
+          .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
       });
   });
 
@@ -382,7 +383,7 @@ function setupInternalRoutes(
       .catch(error => {
         res
           .status(500)
-          .json({ message: error.message || 'internal server error' });
+          .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
       });
   });
 
@@ -404,7 +405,7 @@ function setupInternalRoutes(
         .catch(error => {
           res
             .status(500)
-            .json({ message: error.message || 'internal server error' });
+            .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
           next();
         });
     },
@@ -514,7 +515,7 @@ function setupInternalRoutes(
         .catch((error: { message: string }) => {
           res
             .status(500)
-            .json({ message: error.message || 'internal server error' });
+            .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
         });
     },
   );
@@ -528,7 +529,7 @@ function setupInternalRoutes(
         .catch((error: { message: string }) => {
           res
             .status(500)
-            .json({ message: error.message || 'internal server error' });
+            .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
         });
     },
   );

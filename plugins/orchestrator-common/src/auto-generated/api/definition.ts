@@ -111,7 +111,7 @@ const OPENAPI = `
             }
           },
           "500": {
-            "description": "Error workflow by id",
+            "description": "Error fetching workflow by id",
             "content": {
               "application/json": {
                 "schema": {
@@ -150,11 +150,11 @@ const OPENAPI = `
             }
           },
           "500": {
-            "description": "Error workflow by id",
+            "description": "Error fetching workflow source by id",
             "content": {
-              "text/plain": {
+              "application/json": {
                 "schema": {
-                  "type": "string"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }

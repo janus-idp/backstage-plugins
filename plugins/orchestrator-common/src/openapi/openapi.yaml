@@ -95,9 +95,9 @@ paths:
         '500':
           description: Error fetching workflow source by id
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
+                $ref: '#/components/schemas/ErrorResponse'
   /v2/workflows/instances:
     get:
       operationId: getInstances

@@ -438,7 +438,7 @@ Get a workflow by ID
 
 
 | 500
-| Error workflow by id
+| Error fetching workflow by id
 |  <<ErrorResponse>>
 
 |===
@@ -685,6 +685,7 @@ Get a workflow source by ID
 ===== Content Type
 
 * text/plain
+* application/json
 
 ===== Responses
 
@@ -700,8 +701,8 @@ Get a workflow source by ID
 
 
 | 500
-| Error workflow by id
-|  <<String>>
+| Error fetching workflow source by id
+|  <<ErrorResponse>>
 
 |===
 

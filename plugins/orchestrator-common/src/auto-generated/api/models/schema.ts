@@ -267,7 +267,7 @@ export interface operations {
           'application/json': components['schemas']['WorkflowDTO'];
         };
       };
-      /** @description Error workflow by id */
+      /** @description Error fetching workflow by id */
       500: {
         content: {
           'application/json': components['schemas']['ErrorResponse'];
@@ -290,10 +290,10 @@ export interface operations {
           'text/plain': string;
         };
       };
-      /** @description Error workflow by id */
+      /** @description Error fetching workflow source by id */
       500: {
         content: {
-          'text/plain': string;
+          'application/json': components['schemas']['ErrorResponse'];
         };
       };
     };
