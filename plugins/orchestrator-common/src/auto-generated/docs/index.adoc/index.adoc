@@ -74,6 +74,7 @@ Aborts a workflow instance identified by the provided workflowId.
 ===== Content Type
 
 * text/plain
+* application/json
 
 ===== Responses
 
@@ -90,7 +91,7 @@ Aborts a workflow instance identified by the provided workflowId.
 
 | 500
 | Error aborting workflow
-|  <<String>>
+|  <<ErrorResponse>>
 
 |===
 
@@ -174,7 +175,6 @@ Execute a workflow
 ===== Content Type
 
 * application/json
-* text/plain
 
 ===== Responses
 
@@ -191,7 +191,7 @@ Execute a workflow
 
 | 500
 | Internal Server Error
-|  <<String>>
+|  <<ErrorResponse>>
 
 |===
 
@@ -262,7 +262,6 @@ Get Workflow Instance by ID
 ===== Content Type
 
 * application/json
-* text/plain
 
 ===== Responses
 
@@ -279,7 +278,7 @@ Get Workflow Instance by ID
 
 | 500
 | Error fetching instance
-|  <<String>>
+|  <<ErrorResponse>>
 
 |===
 
@@ -337,7 +336,6 @@ array[<<ProcessInstanceDTO>>]
 ===== Content Type
 
 * application/json
-* text/plain
 
 ===== Responses
 
@@ -354,7 +352,7 @@ array[<<ProcessInstanceDTO>>]
 
 | 500
 | Error fetching instances
-|  <<String>>
+|  <<ErrorResponse>>
 
 |===
 
@@ -425,7 +423,6 @@ Get a workflow by ID
 ===== Content Type
 
 * application/json
-* text/plain
 
 ===== Responses
 
@@ -442,7 +439,7 @@ Get a workflow by ID
 
 | 500
 | Error workflow by id
-|  <<String>>
+|  <<ErrorResponse>>
 
 |===
 
@@ -513,7 +510,6 @@ Get a workflow overview by ID
 ===== Content Type
 
 * application/json
-* text/plain
 
 ===== Responses
 
@@ -530,7 +526,7 @@ Get a workflow overview by ID
 
 | 500
 | Error fetching workflow overview
-|  <<String>>
+|  <<ErrorResponse>>
 
 |===
 
@@ -601,7 +597,6 @@ Get workflow results
 ===== Content Type
 
 * application/json
-* text/plain
 
 ===== Responses
 
@@ -618,7 +613,7 @@ Get workflow results
 
 | 500
 | Error getting workflow results
-|  <<String>>
+|  <<ErrorResponse>>
 
 |===
 
@@ -676,7 +671,6 @@ array[<<WorkflowRunStatusDTO>>]
 ===== Content Type
 
 * application/json
-* text/plain
 
 ===== Responses
 
@@ -693,7 +687,7 @@ array[<<WorkflowRunStatusDTO>>]
 
 | 500
 | Error fetching workflow statuses
-|  <<String>>
+|  <<ErrorResponse>>
 
 |===
 
@@ -751,7 +745,6 @@ Get a list of workflow
 ===== Content Type
 
 * application/json
-* text/plain
 
 ===== Responses
 
@@ -768,7 +761,7 @@ Get a list of workflow
 
 | 500
 | Error fetching workflow list
-|  <<String>>
+|  <<ErrorResponse>>
 
 |===
 
@@ -826,7 +819,6 @@ Get a list of workflow overviews
 ===== Content Type
 
 * application/json
-* text/plain
 
 ===== Responses
 
@@ -843,7 +835,7 @@ Get a list of workflow overviews
 
 | 500
 | Error fetching workflow overviews
-|  <<String>>
+|  <<ErrorResponse>>
 
 |===
 
@@ -893,6 +885,31 @@ endif::internal-generation[]
 | 
 | ProcessInstanceDTO 
 | 
+|  
+
+|===
+
+
+[#ErrorResponse]
+=== _ErrorResponse_ 
+
+The ErrorResponse object represents a common structure for handling errors in API responses. It includes essential information about the error, such as the error message and additional optional details.
+
+[.fields-ErrorResponse]
+[cols="2,1,2,4,1"]
+|===
+| Field Name| Required| Type| Description| Format
+
+| message
+| X
+| String 
+| A string providing a concise and human-readable description of the encountered error. This field is required in the ErrorResponse object.
+|  
+
+| additionalInfo
+| 
+| String 
+| An optional field that can contain additional information or context about the error. It provides flexibility for including extra details based on specific error scenarios.
 |  
 
 |===

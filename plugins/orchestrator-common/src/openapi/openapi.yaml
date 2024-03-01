@@ -23,9 +23,9 @@ paths:
         '500':
           description: Error fetching workflow overviews
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
+                $ref: '#/components/schemas/ErrorResponse'
   /v2/workflows/{workflowId}/overview:
     get:
       operationId: getWorkflowOverviewById
@@ -47,9 +47,9 @@ paths:
         '500':
           description: Error fetching workflow overview
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
+                $ref: '#/components/schemas/ErrorResponse'
   /v2/workflows:
     get:
       operationId: getWorkflows
@@ -64,9 +64,9 @@ paths:
         '500':
           description: Error fetching workflow list
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
+                $ref: '#/components/schemas/ErrorResponse'
   /v2/workflows/{workflowId}:
     get:
       operationId: getWorkflowById
@@ -88,9 +88,9 @@ paths:
         '500':
           description: Error workflow by id
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
+                $ref: '#/components/schemas/ErrorResponse'
   /v2/workflows/instances:
     get:
       operationId: getInstances
@@ -106,9 +106,9 @@ paths:
         '500':
           description: Error fetching instances
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
+                $ref: '#/components/schemas/ErrorResponse'
   /v2/workflows/instances/{instanceId}:
     get:
       summary: Get Workflow Instance by ID
@@ -130,9 +130,9 @@ paths:
         '500':
           description: Error fetching instance
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
+                $ref: '#/components/schemas/ErrorResponse'
   /v2/workflows/instances/{instanceId}/results:
     get:
       summary: Get workflow results
@@ -154,9 +154,9 @@ paths:
         '500':
           description: Error getting workflow results
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
+                $ref: '#/components/schemas/ErrorResponse'
   /v2/workflows/instances/statuses:
     get:
       operationId: getWorkflowStatuses
@@ -174,9 +174,9 @@ paths:
         '500':
           description: Error fetching workflow statuses
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
+                $ref: '#/components/schemas/ErrorResponse'
   /v2/workflows/{workflowId}/execute:
     post:
       summary: Execute a workflow
@@ -204,9 +204,9 @@ paths:
         '500':
           description: Internal Server Error
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
+                $ref: '#/components/schemas/ErrorResponse'
   /v2/workflows/{workflowId}/abort:
     delete:
       summary: Abort a workflow instance
@@ -229,11 +229,30 @@ paths:
         '500':
           description: Error aborting workflow
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
+                $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
+    ErrorResponse:
+      description:
+        The ErrorResponse object represents a common structure for handling errors in API responses.
+        It includes essential information about the error, such as the error message and additional optional details.
+      type: object
+      properties:
+        message:
+          description:
+            A string providing a concise and human-readable description of the encountered error.
+            This field is required in the ErrorResponse object.
+          type: string
+          default: internal server error
+        additionalInfo:
+          description:
+            An optional field that can contain additional information or context about the error.
+            It provides flexibility for including extra details based on specific error scenarios.
+          type: string
+      required:
+        - message
     WorkflowOverviewListResultDTO:
       type: object
       properties:

@@ -1,5 +1,6 @@
 import { components } from '../auto-generated/api/models/schema';
 
+export type ErrorResponse = components['schemas']['ErrorResponse'];
 export type WorkflowOverviewListResultDTO =
   components['schemas']['WorkflowOverviewListResultDTO'];
 export type WorkflowOverviewDTO = components['schemas']['WorkflowOverviewDTO'];

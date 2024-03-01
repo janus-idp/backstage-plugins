@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-orchestrator-common [1.3.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-common@1.3.5...@janus-idp/backstage-plugin-orchestrator-common@1.3.6) (2024-02-29)
+
+
+### Bug Fixes
+
+* **orchestrator:** refactor 500 response to use ErrorResponse object ([#1290](https://github.com/janus-idp/backstage-plugins/issues/1290)) ([2580f3d](https://github.com/janus-idp/backstage-plugins/commit/2580f3d38cecf78334964666eb7c127c21b00924))
+
 ## @janus-idp/backstage-plugin-orchestrator-common [1.3.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-common@1.3.4...@janus-idp/backstage-plugin-orchestrator-common@1.3.5) (2024-02-28)
 
 

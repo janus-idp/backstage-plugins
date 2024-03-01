@@ -14,3 +14,4 @@ echo '`' >> ${FILE}
 echo "export const openApiDocument = JSON.parse(OPENAPI);" >> ${FILE}
 
 rm ./src/openapi/openapi.json
+yarn openapi:prettier:fix
