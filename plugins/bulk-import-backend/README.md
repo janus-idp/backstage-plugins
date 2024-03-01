@@ -18,6 +18,9 @@ yarn workspace backend add @janus-idp/backstage-plugin-bulk-import-backend
 1. Create a plugin instance in the `src/packages/backend/plugins/bulk-import.ts` file:
 
 ```ts title="src/packages/backend/plugins/bulk-import.ts"
+import { HostDiscovery } from '@backstage/backend-common';
+import { CatalogClient } from '@backstage/catalog-client';
+
 import { Router } from 'express';
 
 import { BulkImportApi } from '@janus-idp/backstage-plugin-bulk-import-backend';
@@ -27,10 +30,14 @@ import { PluginEnvironment } from '../types';
 export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
+  const catalogApi = new CatalogClient({
+    discoveryApi: env.discovery,
+  });
   return await createRouter({
     config: env.config,
     logger: env.logger,
     permissions: env.permissions,
+    catalogApi: env.catalogApi,
   });
 }
 ```
@@ -76,7 +83,9 @@ export default async function createPlugin(
 
 #### Permission Framework Support
 
-The bulk import backend plugin has support for the permission framework. A basic example permission policy is shown below to disallow access to the bulk import API for all users except those in the `backstage-admins` group. This policy should be added to the `packages/backend/src/plugins/permissions.ts` file:
+TODO: Update this section of the documentation as it doesn't work. Not sure how to setup the permission framework on vanilla backstage, but confirmed to work with the RBAC plugin.
+
+The bulk import backend plugin has support for the permission framework. A basic example permission policy is shown below to disallow access to the bulk import API for all users except those in the `backstage-admins` group. Please note that the This policy should be added to the `packages/backend/src/plugins/permissions.ts` file:
 
 ```ts title="packages/backend/src/plugins/permissions.ts"
 import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
