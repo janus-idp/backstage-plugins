@@ -112,4 +112,4 @@ class BulkImportPermissionPolicy implements PermissionPolicy {
 ### Usage
 
 The bulk import backend plugin provides a REST API to bulk import catalog entities into the catalog. The API is available at the `api/bulk-import` endpoint.
-Please refer to the [API documentation](./docs/apis.md) for the API endpoints and their corresponding request and response formats
+Please refer to the [OpenAPI spec](./openapi.yaml) for the API endpoints and their corresponding request and response formats
