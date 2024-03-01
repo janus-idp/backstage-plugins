@@ -1,3 +1,10 @@
+## @janus-idp/plugin-notifications-backend [1.3.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications-backend@1.3.2...@janus-idp/plugin-notifications-backend@1.3.3) (2024-03-01)
+
+
+### Bug Fixes
+
+* **notifications:** users.yaml path is wrong ([#1296](https://github.com/janus-idp/backstage-plugins/issues/1296)) ([12b9140](https://github.com/janus-idp/backstage-plugins/commit/12b9140f2dfb85494e20eeea764ed18e1863ba9f))
+
 ## @janus-idp/plugin-notifications-backend [1.3.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications-backend@1.3.1...@janus-idp/plugin-notifications-backend@1.3.2) (2024-02-28)
 
 
