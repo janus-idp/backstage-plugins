@@ -48,7 +48,7 @@
     "@backstage/dev-utils": "1.0.27",
     "@backstage/test-utils": "1.5.0",
     "@janus-idp/cli": "1.7.4",
-    "@openapitools/openapi-generator-cli": "2.7.0",
+    "@openapitools/openapi-generator-cli": "2.9.0",
     "@testing-library/jest-dom": "6.4.2",
     "@testing-library/react": "14.2.1",
     "@testing-library/user-event": "14.5.1",
