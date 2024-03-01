@@ -1,3 +1,10 @@
+## @janus-idp/plugin-notifications [1.1.10](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications@1.1.9...@janus-idp/plugin-notifications@1.1.10) (2024-03-01)
+
+
+### Bug Fixes
+
+* **notifications:** replace NotificationsSidebarItem with NotificationsActiveIcon ([#1295](https://github.com/janus-idp/backstage-plugins/issues/1295)) ([af874de](https://github.com/janus-idp/backstage-plugins/commit/af874de891ee3ee7b2a521639bcee36932ba4ef4))
+
 ## @janus-idp/plugin-notifications [1.1.9](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications@1.1.8...@janus-idp/plugin-notifications@1.1.9) (2024-02-27)
 
 
