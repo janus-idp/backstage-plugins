@@ -17,7 +17,7 @@ import { DataIndexService } from '../DataIndexService';
 import { retryAsyncFunction } from '../Helper';
 import { SonataFlowService } from '../SonataFlowService';
 
-const FETCH_INSTANCE_MAX_RETRIES = 5;
+const FETCH_INSTANCE_MAX_ATTEMPTS = 10;
 const FETCH_INSTANCE_RETRY_DELAY_MS = 1000;
 
 export namespace V1 {
@@ -166,9 +166,9 @@ export namespace V1 {
 
     // Making sure the instance data is available before returning
     await retryAsyncFunction({
-      asyncFunc: () =>
+      asyncFn: () =>
         dataIndexService.fetchProcessInstance(executionResponse.id),
-      retries: FETCH_INSTANCE_MAX_RETRIES,
+      maxAttempts: FETCH_INSTANCE_MAX_ATTEMPTS,
       delayMs: FETCH_INSTANCE_RETRY_DELAY_MS,
     });
 
