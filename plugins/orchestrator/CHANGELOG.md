@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-orchestrator [1.7.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.6.7...@janus-idp/backstage-plugin-orchestrator@1.7.0) (2024-03-03)
+
+
+### Features
+
+* **orchestrator:** display a description modal before triggering infra-wfs that resulted from an assessment wf ([#1284](https://github.com/janus-idp/backstage-plugins/issues/1284)) ([ec293c9](https://github.com/janus-idp/backstage-plugins/commit/ec293c9e79efd77873e17d07b1511ad9fdda8842))
+
 ## @janus-idp/backstage-plugin-orchestrator [1.6.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.6.6...@janus-idp/backstage-plugin-orchestrator@1.6.7) (2024-02-29)
 
 
