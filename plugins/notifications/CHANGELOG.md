@@ -1,3 +1,10 @@
+## @janus-idp/plugin-notifications [1.1.11](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications@1.1.10...@janus-idp/plugin-notifications@1.1.11) (2024-03-03)
+
+
+### Bug Fixes
+
+* text filtering in Notifications ([#1303](https://github.com/janus-idp/backstage-plugins/issues/1303)) ([9ee3439](https://github.com/janus-idp/backstage-plugins/commit/9ee343935c0e20161c596734b77163f086ca0022))
+
 ## @janus-idp/plugin-notifications [1.1.10](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications@1.1.9...@janus-idp/plugin-notifications@1.1.10) (2024-03-01)
 
 
