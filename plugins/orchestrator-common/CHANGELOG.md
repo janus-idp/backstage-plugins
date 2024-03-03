@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-orchestrator-common [1.3.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-common@1.3.6...@janus-idp/backstage-plugin-orchestrator-common@1.3.7) (2024-03-03)
+
+
+### Bug Fixes
+
+* **orchestrator:** stop fetching workflow URI ([#1297](https://github.com/janus-idp/backstage-plugins/issues/1297)) ([2456a28](https://github.com/janus-idp/backstage-plugins/commit/2456a287dbff955a0916b9600e89a39511cd537a))
+
 ## @janus-idp/backstage-plugin-orchestrator-common [1.3.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-common@1.3.5...@janus-idp/backstage-plugin-orchestrator-common@1.3.6) (2024-02-29)
 
 
