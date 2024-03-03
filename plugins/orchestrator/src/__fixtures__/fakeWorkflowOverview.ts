@@ -9,5 +9,5 @@ export const fakeWorkflowOverview: WorkflowOverview = {
   avgDurationMs: 150000,
   description:
     'Create a starter Quarkus Backend application with a CI pipeline',
-  uri: 'quarkus-backend-workflow-ci-switch.sw.yaml',
+  format: 'yaml',
 };

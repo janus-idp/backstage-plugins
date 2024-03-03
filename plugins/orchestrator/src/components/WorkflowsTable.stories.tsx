@@ -23,7 +23,7 @@ const meta = {
             [
               orchestratorApiRef,
               new MockOrchestratorClient({
-                listWorkflowsOverviewResponse: Promise.resolve({
+                listWorkflowOverviewsResponse: Promise.resolve({
                   limit: 0,
                   offset: 0,
                   totalCount: 1,

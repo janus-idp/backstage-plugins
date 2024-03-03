@@ -8,7 +8,7 @@ const service = new DataInputSchemaService();
 describe('workflow input schema response', () => {
   it('schema with refs should return multiple steps', () => {
     const response = service.getWorkflowInputSchemaResponse(
-      mockSpringBootWorkflowData.workflowItem,
+      mockSpringBootWorkflowData.workflowDefinition,
       mockSpringBootWorkflowData.schema,
     );
     expect(response.isComposedSchema).toEqual(true);
@@ -26,7 +26,7 @@ describe('workflow input schema response', () => {
 
   it('schema with two layers without refs should return a schema parse error', () => {
     const response = service.getWorkflowInputSchemaResponse(
-      mockSpringBootWorkflowData.workflowItem,
+      mockSpringBootWorkflowData.workflowDefinition,
       { ...mockSpringBootWorkflowData.schema, $defs: undefined },
     );
     expect(response.isComposedSchema).toEqual(false);
@@ -38,7 +38,7 @@ describe('workflow input schema response', () => {
 
   it('none composed schema should return isComposedSchema false and one step', () => {
     const response = service.getWorkflowInputSchemaResponse(
-      mockGreetingWorkflowData.workflowItem,
+      mockGreetingWorkflowData.workflowDefinition,
       mockGreetingWorkflowData.schema,
     );
     expect(response.isComposedSchema).toEqual(false);
@@ -48,7 +48,7 @@ describe('workflow input schema response', () => {
 
   it('composed schema also wihtout refs should return multiple steps', () => {
     const response = service.getWorkflowInputSchemaResponse(
-      mockComposedGreetingWorkflowData.workflowItem,
+      mockComposedGreetingWorkflowData.workflowDefinition,
       mockComposedGreetingWorkflowData.schema,
     );
     expect(response.isComposedSchema).toEqual(true);
@@ -60,7 +60,7 @@ describe('workflow input schema response', () => {
 
   it('a schema without properties should return a schema parse error', () => {
     const response = service.getWorkflowInputSchemaResponse(
-      mockComposedGreetingWorkflowData.workflowItem,
+      mockComposedGreetingWorkflowData.workflowDefinition,
       { title: 'A' },
     );
     expect(response.isComposedSchema).toEqual(false);
@@ -72,7 +72,7 @@ describe('workflow input schema response', () => {
 
   it('using initial variables should return data for each step', () => {
     const response = service.getWorkflowInputSchemaResponse(
-      mockGreetingWorkflowData.workflowItem,
+      mockGreetingWorkflowData.workflowDefinition,
       mockGreetingWorkflowData.schema,
       mockGreetingWorkflowData.variables,
     );
@@ -86,7 +86,7 @@ describe('workflow input schema response', () => {
 
   it('using initial variables on composed schema should return data for each step', () => {
     const response = service.getWorkflowInputSchemaResponse(
-      mockComposedGreetingWorkflowData.workflowItem,
+      mockComposedGreetingWorkflowData.workflowDefinition,
       mockComposedGreetingWorkflowData.schema,
       mockComposedGreetingWorkflowData.variables,
     );
@@ -98,7 +98,7 @@ describe('workflow input schema response', () => {
 
   it('using initial assessment variables should return read only keys', () => {
     const response = service.getWorkflowInputSchemaResponse(
-      mockGreetingWorkflowData.workflowItem,
+      mockGreetingWorkflowData.workflowDefinition,
       mockGreetingWorkflowData.schema,
       undefined,
       {

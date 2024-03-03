@@ -1,77 +1,74 @@
 import { WorkflowInputSchemaResponse } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 export const fakeDataInputSchemaDifferentTypes: WorkflowInputSchemaResponse = {
-  workflowItem: {
-    uri: 'yamlgreet.sw.yaml',
-    definition: {
-      id: 'yamlgreet',
-      version: '1.0',
-      specVersion: '0.8',
-      name: 'Greeting workflow',
-      description: 'YAML based greeting workflow',
-      dataInputSchema: 'schemas/yamlgreet__main_schema.json',
-      start: 'ChooseOnLanguage',
-      functions: [
-        {
-          name: 'greetFunction',
-          type: 'custom',
-          operation: 'sysout',
-        },
-      ],
-      states: [
-        {
-          name: 'ChooseOnLanguage',
-          type: 'switch',
-          dataConditions: [
-            {
-              condition: '${ .language == "English" }',
-              transition: 'GreetInEnglish',
-            },
-            {
-              condition: '${ .language == "Spanish" }',
-              transition: 'GreetInSpanish',
-            },
-          ],
-          defaultCondition: {
+  definition: {
+    id: 'yamlgreet',
+    version: '1.0',
+    specVersion: '0.8',
+    name: 'Greeting workflow',
+    description: 'YAML based greeting workflow',
+    dataInputSchema: 'schemas/yamlgreet__main_schema.json',
+    start: 'ChooseOnLanguage',
+    functions: [
+      {
+        name: 'greetFunction',
+        type: 'custom',
+        operation: 'sysout',
+      },
+    ],
+    states: [
+      {
+        name: 'ChooseOnLanguage',
+        type: 'switch',
+        dataConditions: [
+          {
+            condition: '${ .language == "English" }',
             transition: 'GreetInEnglish',
           },
-        },
-        {
-          name: 'GreetInEnglish',
-          type: 'inject',
-          data: {
-            greeting: 'Hello from YAML Workflow, ',
+          {
+            condition: '${ .language == "Spanish" }',
+            transition: 'GreetInSpanish',
           },
-          transition: 'GreetPerson',
+        ],
+        defaultCondition: {
+          transition: 'GreetInEnglish',
         },
-        {
-          name: 'GreetInSpanish',
-          type: 'inject',
-          data: {
-            greeting: 'Saludos desde YAML Workflow, ',
-          },
-          transition: 'GreetPerson',
+      },
+      {
+        name: 'GreetInEnglish',
+        type: 'inject',
+        data: {
+          greeting: 'Hello from YAML Workflow, ',
         },
-        {
-          name: 'GreetPerson',
-          type: 'operation',
-          actions: [
-            {
-              name: 'greetAction',
-              functionRef: {
-                refName: 'greetFunction',
-                arguments: {
-                  message: '.greeting+.name',
-                },
+        transition: 'GreetPerson',
+      },
+      {
+        name: 'GreetInSpanish',
+        type: 'inject',
+        data: {
+          greeting: 'Saludos desde YAML Workflow, ',
+        },
+        transition: 'GreetPerson',
+      },
+      {
+        name: 'GreetPerson',
+        type: 'operation',
+        actions: [
+          {
+            name: 'greetAction',
+            functionRef: {
+              refName: 'greetFunction',
+              arguments: {
+                message: '.greeting+.name',
               },
             },
-          ],
-          end: {
-            terminate: true,
           },
+        ],
+        end: {
+          terminate: true,
         },
-      ],
-    },
+      },
+    ],
   },
   isComposedSchema: true,
   schemaSteps: [

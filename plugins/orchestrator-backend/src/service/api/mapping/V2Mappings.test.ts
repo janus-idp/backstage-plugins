@@ -19,7 +19,7 @@ describe('scenarios to verify mapToWorkflowOverviewDTO', () => {
     // Assert
     expect(result.workflowId).toBe(overview.workflowId);
     expect(result.name).toBe(overview.name);
-    expect(result.uri).toBe(overview.uri);
+    expect(result.format).toBe(overview.format);
     expect(result.lastTriggeredMs).toBe(overview.lastTriggeredMs);
     expect(result.lastRunStatus).toBe(overview.lastRunStatus);
     expect(result.category).toBe('assessment');

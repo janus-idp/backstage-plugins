@@ -403,7 +403,7 @@ Get a workflow by ID
 |Name| Description| Required| Default| Pattern
 
 | workflowId
-| ID of the workflow to execute 
+| ID of the workflow to fetch 
 | X
 | null
 | 
@@ -438,7 +438,7 @@ Get a workflow by ID
 
 
 | 500
-| Error workflow by id
+| Error fetching workflow by id
 |  <<ErrorResponse>>
 
 |===
@@ -639,6 +639,95 @@ ifdef::internal-generation[]
 endif::internal-generation[]
 
 
+[.getWorkflowSourceById]
+==== getWorkflowSourceById
+
+`GET /v2/workflows/{workflowId}/source`
+
+
+
+===== Description
+
+Get a workflow source by ID
+
+
+// markup not found, no include::{specDir}v2/workflows/\{workflowId\}/source/GET/spec.adoc[opts=optional]
+
+
+
+===== Parameters
+
+====== Path Parameters
+
+[cols="2,3,1,1,1"]
+|===
+|Name| Description| Required| Default| Pattern
+
+| workflowId
+| ID of the workflow to fetch 
+| X
+| null
+| 
+
+|===
+
+
+
+
+
+
+===== Return Type
+
+
+<<String>>
+
+
+===== Content Type
+
+* text/plain
+* application/json
+
+===== Responses
+
+.HTTP Response Codes
+[cols="2,3,1"]
+|===
+| Code | Message | Datatype
+
+
+| 200
+| Success
+|  <<String>>
+
+
+| 500
+| Error fetching workflow source by id
+|  <<ErrorResponse>>
+
+|===
+
+===== Samples
+
+
+// markup not found, no include::{snippetDir}v2/workflows/\{workflowId\}/source/GET/http-request.adoc[opts=optional]
+
+
+// markup not found, no include::{snippetDir}v2/workflows/\{workflowId\}/source/GET/http-response.adoc[opts=optional]
+
+
+
+// file not found, no * wiremock data link :v2/workflows/{workflowId}/source/GET/GET.json[]
+
+
+ifdef::internal-generation[]
+===== Implementation
+
+// markup not found, no include::{specDir}v2/workflows/\{workflowId\}/source/GET/implementation.adoc[opts=optional]
+
+
+endif::internal-generation[]
+
+
 [.getWorkflowStatuses]
 ==== getWorkflowStatuses
 
@@ -708,80 +797,6 @@ ifdef::internal-generation[]
 ===== Implementation
 
 // markup not found, no include::{specDir}v2/workflows/instances/statuses/GET/implementation.adoc[opts=optional]
-
-
-endif::internal-generation[]
-
-
-[.getWorkflows]
-==== getWorkflows
-
-`GET /v2/workflows`
-
-
-
-===== Description
-
-Get a list of workflow
-
-
-// markup not found, no include::{specDir}v2/workflows/GET/spec.adoc[opts=optional]
-
-
-
-===== Parameters
-
-
-
-
-
-
-
-===== Return Type
-
-<<WorkflowListResultDTO>>
-
-
-===== Content Type
-
-* application/json
-
-===== Responses
-
-.HTTP Response Codes
-[cols="2,3,1"]
-|===
-| Code | Message | Datatype
-
-
-| 200
-| Success
-|  <<WorkflowListResultDTO>>
-
-
-| 500
-| Error fetching workflow list
-|  <<ErrorResponse>>
-
-|===
-
-===== Samples
-
-
-// markup not found, no include::{snippetDir}v2/workflows/GET/http-request.adoc[opts=optional]
-
-
-// markup not found, no include::{snippetDir}v2/workflows/GET/http-response.adoc[opts=optional]
-
-
-
-// file not found, no * wiremock data link :v2/workflows/GET/GET.json[]
-
-
-ifdef::internal-generation[]
-===== Implementation
-
-// markup not found, no include::{specDir}v2/workflows/GET/implementation.adoc[opts=optional]
 
 
 endif::internal-generation[]
@@ -1191,10 +1206,10 @@ Category of the workflow
 | Workflow name
 |  
 
-| uri
+| format
 | X
-| String 
-| URI of the workflow definition
+| WorkflowFormatDTO 
+| 
 |  
 
 | category
@@ -1233,6 +1248,19 @@ Category of the workflow
 | List  of <<array>>
 | 
 |  
+
+|===
+
+
+[#WorkflowFormatDTO]
+=== _WorkflowFormatDTO_ 
+
+Format of the workflow definition
+
+[.fields-WorkflowFormatDTO]
+[cols="2,1,2,4,1"]
+|===
+| Field Name| Required| Type| Description| Format
 
 |===
 
@@ -1284,9 +1312,9 @@ Category of the workflow
 | Workflow name
 |  
 
-| uri
+| format
 | 
-| String 
+| WorkflowFormatDTO 
 | 
 |  
 

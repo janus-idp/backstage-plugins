@@ -1,8 +1,10 @@
 import moment from 'moment';
 
 import {
-  ASSESSMENT_WORKFLOW_TYPE,
   ExecuteWorkflowResponseDTO,
+  extractWorkflowFormat,
+  fromWorkflowSource,
+  getWorkflowCategory,
   ProcessInstance,
   ProcessInstanceDTO,
   ProcessInstanceState,
@@ -13,8 +15,7 @@ import {
   WorkflowDefinition,
   WorkflowDTO,
   WorkflowExecutionResponse,
-  WorkflowListResult,
-  WorkflowListResultDTO,
+  WorkflowFormatDTO,
   WorkflowOverview,
   WorkflowOverviewDTO,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
@@ -37,55 +38,24 @@ export function mapWorkflowCategoryDTOFromString(
     : 'infrastructure';
 }
 
-export function mapToWorkflowListResultDTO(
-  definitions: WorkflowListResult,
-): WorkflowListResultDTO {
-  const result = {
-    items: definitions.items.map(def => {
-      return {
-        annotations: def.definition.annotations,
-        category: getWorkflowCategoryDTO(def.definition),
-        description: def.definition.description,
-        name: def.definition.name,
-        uri: def.uri,
-        id: def.definition.id,
-      };
-    }),
-    paginationInfo: {
-      limit: definitions.limit,
-      offset: definitions.offset,
-      totalCount: definitions.totalCount,
-    },
-  };
-  return result;
-}
-
 export function getWorkflowCategoryDTO(
   definition: WorkflowDefinition | undefined,
 ): WorkflowCategoryDTO {
-  let result: WorkflowCategoryDTO = 'infrastructure';
-
-  if (
-    definition?.annotations?.find(
-      annotation => annotation === ASSESSMENT_WORKFLOW_TYPE,
-    )
-  ) {
-    result = 'assessment';
-  }
-
-  return result;
+  return getWorkflowCategory(definition);
 }
 
-export function mapToWorkflowDTO(
-  uri: string,
-  definition: WorkflowDefinition,
-): WorkflowDTO {
+export function getWorkflowFormatDTO(source: string): WorkflowFormatDTO {
+  return extractWorkflowFormat(source);
+}
+
+export function mapToWorkflowDTO(source: string): WorkflowDTO {
+  const definition = fromWorkflowSource(source);
   return {
     annotations: definition.annotations,
     category: getWorkflowCategoryDTO(definition),
     description: definition.description,
     name: definition.name,
-    uri: uri,
+    format: getWorkflowFormatDTO(source),
     id: definition.id,
   };
 }

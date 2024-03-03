@@ -23,14 +23,8 @@ export type WorkflowDefinition = OmitRecursively<
   'normalize'
 >;
 
-export interface WorkflowItem {
-  serviceUrl?: string;
-  uri: string;
-  definition: WorkflowDefinition;
-}
-
 export type WorkflowListResult = {
-  items: WorkflowItem[];
+  items: WorkflowDefinition[];
   totalCount: number;
   offset: number;
   limit: number;
@@ -83,7 +77,7 @@ export const isComposedSchema = (
   ).length === 0;
 
 export interface WorkflowInputSchemaResponse {
-  workflowItem: WorkflowItem;
+  definition: WorkflowDefinition;
   schemaSteps: WorkflowInputSchemaStep[];
   isComposedSchema: boolean;
   schemaParseError?: string;
@@ -100,8 +94,8 @@ export enum WorkflowCategory {
 
 export interface WorkflowOverview {
   workflowId: string;
+  format: WorkflowFormat;
   name?: string;
-  uri?: string;
   lastTriggeredMs?: number;
   lastRunStatus?: ProcessInstanceStateValues;
   category?: string;
