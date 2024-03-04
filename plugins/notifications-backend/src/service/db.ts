@@ -24,7 +24,7 @@ export async function initDB(dbConfig: Config): Promise<Knex<any, any>> {
     await dbClient.schema.createTable('messages', table => {
       table.uuid('id').primary().notNullable().defaultTo(dbClient.fn.uuid());
       table.string('origin').notNullable();
-      table.timestamp('created').defaultTo(dbClient.fn.now()).index();
+      table.string('created').index(); // ISO 8601 date-time string
       table.string('title').notNullable();
       table.text('message');
       table.string('topic');
@@ -82,6 +82,7 @@ export type MessagesInsert = {
   message?: string;
   topic?: string;
   is_system: boolean;
+  created: string;
 };
 
 export type ActionsInsert = {

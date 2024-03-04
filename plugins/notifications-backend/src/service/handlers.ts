@@ -72,6 +72,7 @@ export async function createNotification(
     message: req.message,
     topic: req.topic,
     is_system: !isUser,
+    created: new Date().toISOString(),
   };
 
   let messageId: string;
