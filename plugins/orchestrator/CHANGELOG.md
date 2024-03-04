@@ -1,3 +1,16 @@
+## @janus-idp/backstage-plugin-orchestrator [1.7.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.7.1...@janus-idp/backstage-plugin-orchestrator@1.7.2) (2024-03-04)
+
+
+### Bug Fixes
+
+* **orchestrator:** walk around the state field is empty issue when fetch instance ([#1299](https://github.com/janus-idp/backstage-plugins/issues/1299)) ([e5c33c0](https://github.com/janus-idp/backstage-plugins/commit/e5c33c06fc66a6ff393365282f825c5fdc4713c9))
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.5
+
 ## @janus-idp/backstage-plugin-orchestrator [1.7.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.7.0...@janus-idp/backstage-plugin-orchestrator@1.7.1) (2024-03-03)
 
 
