@@ -60,10 +60,10 @@
   "bugs": "https://github.com/janus-idp/backstage-plugins/issues",
   "bundleDependencies": true,
   "peerDependencies": {
-    "@backstage/backend-common": "^0.21.2",
-    "@backstage/backend-plugin-api": "^0.6.12",
-    "@backstage/config": "^1.1.1",
-    "@backstage/backend-dynamic-feature-service": "^0.2.2"
+    "@backstage/backend-common": "0.21.2",
+    "@backstage/backend-plugin-api": "0.6.12",
+    "@backstage/config": "1.1.1",
+    "@backstage/backend-dynamic-feature-service": "0.2.2"
   },
   "overrides": {
     "@aws-sdk/util-utf8-browser": {
