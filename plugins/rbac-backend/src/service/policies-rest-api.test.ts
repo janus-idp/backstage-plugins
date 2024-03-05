@@ -101,7 +101,7 @@ const mockEnforcer: Partial<EnforcerDelegate> = {
 
   addPolicies: jest.fn().mockImplementation(),
 
-  addGroupingPolicy: jest.fn().mockImplementation(),
+  // addGroupingPolicy: jest.fn().mockImplementation(),
 
   addGroupingPolicies: jest.fn().mockImplementation(),
 
