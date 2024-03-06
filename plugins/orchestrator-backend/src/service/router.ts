@@ -145,11 +145,8 @@ function setupInternalRoutes(
   api: OpenAPIBackend,
   services: Services,
 ) {
-  router.get('/workflows/overview', async (req, res) => {
-    await V1.getWorkflowsOverview(
-      services.sonataFlowService,
-      buildPagination(req),
-    )
+  router.get('/workflows/overview', async (_c, res) => {
+    await V1.getWorkflowsOverview(services.sonataFlowService)
       .then(result => res.status(200).json(result))
       .catch(error => {
         res
@@ -351,8 +348,8 @@ function setupInternalRoutes(
     },
   );
 
-  router.get('/instances', async (req, res) => {
-    await V1.getInstances(services.dataIndexService, buildPagination(req))
+  router.get('/instances', async (_, res) => {
+    await V1.getInstances(services.dataIndexService)
       .then(result => res.status(200).json(result))
       .catch(error => {
         res

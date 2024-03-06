@@ -145,7 +145,7 @@ export class SonataFlowService {
   }
 
   public async fetchWorkflowOverviews(
-    pagination: Pagination,
+    pagination?: Pagination,
   ): Promise<WorkflowOverview[] | undefined> {
     try {
       const workflowInfos = await this.dataIndex.getWorkflowInfos(pagination);

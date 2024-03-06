@@ -93,7 +93,7 @@ export class DataIndexService {
   }
 
   public async getWorkflowInfos(
-    pagination: Pagination,
+    pagination?: Pagination,
   ): Promise<WorkflowInfo[]> {
     this.logger.info(`getWorkflowInfos() called: ${this.dataIndexUrl}`);
 
@@ -120,9 +120,9 @@ export class DataIndexService {
   }
 
   public async fetchProcessInstances(
-    pagination: Pagination,
+    pagination?: Pagination,
   ): Promise<ProcessInstance[] | undefined> {
-    pagination.sortField ??= FETCH_PROCESS_INSTANCES_SORT_FIELD;
+    if (pagination) pagination.sortField ??= FETCH_PROCESS_INSTANCES_SORT_FIELD;
 
     const graphQlQuery = buildGraphQlQuery({
       type: 'ProcessInstances',

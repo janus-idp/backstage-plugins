@@ -31,16 +31,17 @@ export namespace V2 {
     sonataFlowService: SonataFlowService,
     pagination: Pagination,
   ): Promise<WorkflowOverviewListResultDTO> {
-    const overviewsV1 = await V1.getWorkflowsOverview(
-      sonataFlowService,
-      pagination,
-    );
+    const overviews =
+      await sonataFlowService.fetchWorkflowOverviews(pagination);
+    if (!overviews) {
+      throw new Error("Couldn't fetch workflow overviews");
+    }
     const result: WorkflowOverviewListResultDTO = {
-      overviews: overviewsV1.items.map(item => mapToWorkflowOverviewDTO(item)),
+      overviews: overviews.map(item => mapToWorkflowOverviewDTO(item)),
       paginationInfo: {
         pageSize: pagination.limit,
         page: pagination.offset,
-        totalCount: overviewsV1.items?.length ?? 0,
+        totalCount: overviews.length,
       },
     };
     return result;
@@ -87,11 +88,11 @@ export namespace V2 {
     dataIndexService: DataIndexService,
     pagination: Pagination,
   ): Promise<ProcessInstanceListResultDTO> {
-    const instances = await V1.getInstances(dataIndexService, pagination);
+    const instances = await dataIndexService.fetchProcessInstances(pagination);
     const totalCount = await dataIndexService.getProcessInstancesTotalCount();
 
     const result: ProcessInstanceListResultDTO = {
-      items: instances.map(def => mapToProcessInstanceDTO(def)),
+      items: instances?.map(def => mapToProcessInstanceDTO(def)),
       paginationInfo: {
         pageSize: pagination.limit,
         page: pagination.offset,
