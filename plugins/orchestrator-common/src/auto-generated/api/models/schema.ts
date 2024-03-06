@@ -46,10 +46,10 @@ export interface paths {
     /** Execute a workflow */
     post: operations['executeWorkflow'];
   };
-  '/v2/workflows/{workflowId}/abort': {
+  '/v2/instances/{instanceId}/abort': {
     /**
      * Abort a workflow instance
-     * @description Aborts a workflow instance identified by the provided workflowId.
+     * @description Aborts a workflow instance identified by the provided instanceId.
      */
     delete: operations['abortWorkflow'];
   };
@@ -442,13 +442,13 @@ export interface operations {
   };
   /**
    * Abort a workflow instance
-   * @description Aborts a workflow instance identified by the provided workflowId.
+   * @description Aborts a workflow instance identified by the provided instanceId.
    */
   abortWorkflow: {
     parameters: {
       path: {
         /** @description The identifier of the workflow instance to abort. */
-        workflowId: string;
+        instanceId: string;
       };
     };
     responses: {

@@ -10,8 +10,7 @@ import {
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { buildPagination } from '../../types/pagination';
-import { DataIndexService } from '../DataIndexService';
-import { SonataFlowService } from '../SonataFlowService';
+import { OrchestratorService } from '../OrchestratorService';
 import assessedProcessInstanceData from './mapping/__fixtures__/assessedProcessInstance.json';
 import {
   mapToGetWorkflowInstanceResults,
@@ -26,66 +25,45 @@ import {
   generateTestWorkflowOverviewList,
   generateWorkflowDefinition,
 } from './test-utils';
+import { V1 } from './v1';
 import { V2 } from './v2';
-
-jest.mock('../SonataFlowService', () => ({
-  SonataFlowService: jest.fn(),
-  fetchWorkflowOverviews: jest.fn(),
-  fetchWorkflowOverview: jest.fn(),
-  fetchWorkflowDefinition: jest.fn(),
-  fetchWorkflowUri: jest.fn(),
-}));
-
-jest.mock('../DataIndexService', () => ({
-  DataIndexService: jest.fn(),
-  getWorkflowDefinitions: jest.fn(),
-  getWorkflowDefinition: jest.fn(),
-  fetchProcessInstance: jest.fn(),
-  fetchProcessInstances: jest.fn(),
-  abortWorkflowInstance: jest.fn(),
-}));
 
 jest.mock('../Helper.ts', () => ({
   retryAsyncFunction: jest.fn(),
 }));
 
-// Helper function to create a mock SonataFlowService instance
-const createMockSonataFlowService = (): SonataFlowService => {
-  const mockSonataFlowService = new SonataFlowService(
-    {} as any, // Mock config
-    {} as any, // Mock dataIndexService
+jest.mock('../OrchestratorService', () => ({
+  OrchestratorService: jest.fn(),
+}));
+
+// Helper function to create a mock OrchestratorService instance
+const createMockOrchestratorService = (): OrchestratorService => {
+  const mockOrchestratorService = new OrchestratorService(
     {} as any, // Mock logger
+    {} as any, // Mock sonataFlowService
+    {} as any, // Mock dataIndexService
+    {} as any, // Mock scheduler
   );
 
-  // Mock fetchWorkflowDefinition method
-  mockSonataFlowService.fetchWorkflowOverviews = jest.fn();
-  mockSonataFlowService.fetchWorkflowOverview = jest.fn();
-  mockSonataFlowService.fetchWorkflowDefinition = jest.fn();
-  mockSonataFlowService.fetchWorkflowSource = jest.fn();
-  mockSonataFlowService.executeWorkflow = jest.fn();
+  mockOrchestratorService.fetchWorkflowOverviews = jest.fn();
+  mockOrchestratorService.fetchWorkflowOverview = jest.fn();
+  mockOrchestratorService.fetchWorkflowDefinition = jest.fn();
+  mockOrchestratorService.fetchWorkflowSource = jest.fn();
+  mockOrchestratorService.fetchWorkflowInfo = jest.fn();
+  mockOrchestratorService.fetchInstances = jest.fn();
+  mockOrchestratorService.fetchInstance = jest.fn();
+  mockOrchestratorService.fetchInstancesTotalCount = jest.fn();
+  mockOrchestratorService.executeWorkflow = jest.fn();
+  mockOrchestratorService.abortWorkflowInstance = jest.fn();
 
-  return mockSonataFlowService;
+  return mockOrchestratorService;
 };
-
-const createMockDataIndexService = (): DataIndexService => {
-  const mockDataIndexService = new DataIndexService({} as any, {} as any);
-
-  mockDataIndexService.getWorkflowDefinition = jest.fn();
-  mockDataIndexService.fetchWorkflowSource = jest.fn();
-  mockDataIndexService.fetchProcessInstance = jest.fn();
-  mockDataIndexService.fetchProcessInstances = jest.fn();
-  mockDataIndexService.abortWorkflowInstance = jest.fn();
-  mockDataIndexService.getProcessInstancesTotalCount = jest.fn();
-
-  return mockDataIndexService;
-};
+const mockOrchestratorService = createMockOrchestratorService();
+const v2 = new V2(mockOrchestratorService, new V1(mockOrchestratorService));
 
 describe('getWorkflowOverview', () => {
-  let mockSonataFlowService: SonataFlowService;
-
   beforeEach(() => {
     jest.clearAllMocks();
-    mockSonataFlowService = createMockSonataFlowService();
   });
 
   it('0 items in workflow overview list', async () => {
@@ -103,12 +81,11 @@ describe('getWorkflowOverview', () => {
     };
 
     (
-      mockSonataFlowService.fetchWorkflowOverviews as jest.Mock
+      mockOrchestratorService.fetchWorkflowOverviews as jest.Mock
     ).mockResolvedValue(mockOverviewsV1.items);
 
     // Act
-    const result: WorkflowOverviewListResultDTO = await V2.getWorkflowsOverview(
-      mockSonataFlowService,
+    const result: WorkflowOverviewListResultDTO = await v2.getWorkflowsOverview(
       buildPagination(mockRequest),
     );
 
@@ -133,12 +110,11 @@ describe('getWorkflowOverview', () => {
     const mockOverviewsV1 = generateTestWorkflowOverviewList(1, {});
 
     (
-      mockSonataFlowService.fetchWorkflowOverviews as jest.Mock
+      mockOrchestratorService.fetchWorkflowOverviews as jest.Mock
     ).mockResolvedValue(mockOverviewsV1.items);
 
     // Act
-    const result: WorkflowOverviewListResultDTO = await V2.getWorkflowsOverview(
-      mockSonataFlowService,
+    const result: WorkflowOverviewListResultDTO = await v2.getWorkflowsOverview(
       buildPagination(mockRequest),
     );
 
@@ -168,12 +144,11 @@ describe('getWorkflowOverview', () => {
     const mockOverviewsV1 = generateTestWorkflowOverviewList(100, {});
 
     (
-      mockSonataFlowService.fetchWorkflowOverviews as jest.Mock
+      mockOrchestratorService.fetchWorkflowOverviews as jest.Mock
     ).mockResolvedValue(mockOverviewsV1.items);
 
     // Act
-    const result: WorkflowOverviewListResultDTO = await V2.getWorkflowsOverview(
-      mockSonataFlowService,
+    const result: WorkflowOverviewListResultDTO = await v2.getWorkflowsOverview(
       buildPagination(mockRequest),
     );
 
@@ -196,24 +171,19 @@ describe('getWorkflowOverview', () => {
       query: {},
     };
     (
-      mockSonataFlowService.fetchWorkflowOverviews as jest.Mock
+      mockOrchestratorService.fetchWorkflowOverviews as jest.Mock
     ).mockRejectedValue(new Error('no workflow overview'));
 
     // Act
-    const promise = V2.getWorkflowsOverview(
-      mockSonataFlowService,
-      buildPagination(mockRequest),
-    );
+    const promise = v2.getWorkflowsOverview(buildPagination(mockRequest));
 
     // Assert
     await expect(promise).rejects.toThrow('no workflow overview');
   });
 });
 describe('getWorkflowOverviewById', () => {
-  let mockSonataFlowService: SonataFlowService;
   beforeEach(() => {
     jest.clearAllMocks();
-    mockSonataFlowService = createMockSonataFlowService();
   });
 
   it('0 items in workflow overview list', async () => {
@@ -222,13 +192,10 @@ describe('getWorkflowOverviewById', () => {
       items: [],
     };
     (
-      mockSonataFlowService.fetchWorkflowOverview as jest.Mock
+      mockOrchestratorService.fetchWorkflowOverview as jest.Mock
     ).mockResolvedValue(mockOverviewsV1.items);
     // Act
-    const overviewV2 = await V2.getWorkflowOverviewById(
-      mockSonataFlowService,
-      'test_workflowId',
-    );
+    const overviewV2 = await v2.getWorkflowOverviewById('test_workflowId');
 
     // Assert
     expect(overviewV2).toBeDefined();
@@ -249,14 +216,12 @@ describe('getWorkflowOverviewById', () => {
     });
 
     (
-      mockSonataFlowService.fetchWorkflowOverview as jest.Mock
+      mockOrchestratorService.fetchWorkflowOverview as jest.Mock
     ).mockResolvedValue(mockOverviewsV1);
 
     // Act
-    const result: WorkflowOverviewDTO = await V2.getWorkflowOverviewById(
-      mockSonataFlowService,
-      'test_workflowId',
-    );
+    const result: WorkflowOverviewDTO =
+      await v2.getWorkflowOverviewById('test_workflowId');
 
     // Assert
     expect(result).toEqual(mapToWorkflowOverviewDTO(mockOverviewsV1));
@@ -264,21 +229,16 @@ describe('getWorkflowOverviewById', () => {
 });
 
 describe('getWorkflowById', () => {
-  let mockSonataFlowService: SonataFlowService;
   beforeEach(() => {
     jest.clearAllMocks();
-    mockSonataFlowService = createMockSonataFlowService();
   });
 
   it("Workflow doesn't exists", async () => {
-    (mockSonataFlowService.fetchWorkflowSource as jest.Mock).mockRejectedValue(
-      new Error('No definition'),
-    );
+    (
+      mockOrchestratorService.fetchWorkflowSource as jest.Mock
+    ).mockRejectedValue(new Error('No definition'));
     // Act
-    const promise = V2.getWorkflowById(
-      mockSonataFlowService,
-      'test_workflowId',
-    );
+    const promise = v2.getWorkflowById('test_workflowId');
 
     // Assert
     await expect(promise).rejects.toThrow('No definition');
@@ -289,14 +249,11 @@ describe('getWorkflowById', () => {
     const wfDefinition = generateWorkflowDefinition;
     const source = toWorkflowYaml(wfDefinition);
 
-    (mockSonataFlowService.fetchWorkflowSource as jest.Mock).mockResolvedValue(
-      source,
-    );
+    (
+      mockOrchestratorService.fetchWorkflowSource as jest.Mock
+    ).mockResolvedValue(source);
     // Act
-    const workflowV2 = await V2.getWorkflowById(
-      mockSonataFlowService,
-      'test_workflowId',
-    );
+    const workflowV2 = await v2.getWorkflowById('test_workflowId');
 
     // Assert
     expect(workflowV2).toBeDefined();
@@ -311,23 +268,18 @@ describe('getWorkflowById', () => {
 });
 
 describe('executeWorkflow', () => {
-  let mockSonataFlowService: SonataFlowService;
-  let mockDataIndexService: DataIndexService;
   beforeEach(async () => {
     jest.clearAllMocks();
-    // Mock SonataFlowService instance
-    mockSonataFlowService = createMockSonataFlowService();
-    mockDataIndexService = createMockDataIndexService();
   });
   it('executes a given workflow', async () => {
     // Arrange
     const workflowInfo = generateTestWorkflowInfo();
     const execResponse = generateTestExecuteWorkflowResponse();
-    (mockDataIndexService.getWorkflowDefinition as jest.Mock).mockResolvedValue(
+    (mockOrchestratorService.fetchWorkflowInfo as jest.Mock).mockResolvedValue(
       workflowInfo,
     );
 
-    (mockSonataFlowService.executeWorkflow as jest.Mock).mockResolvedValue(
+    (mockOrchestratorService.executeWorkflow as jest.Mock).mockResolvedValue(
       execResponse,
     );
     const workflowData = {
@@ -336,9 +288,7 @@ describe('executeWorkflow', () => {
       },
     };
     // Act
-    const actualResultV2: ExecuteWorkflowResponseDTO = await V2.executeWorkflow(
-      mockDataIndexService,
-      mockSonataFlowService,
+    const actualResultV2: ExecuteWorkflowResponseDTO = await v2.executeWorkflow(
       workflowData,
       workflowInfo.id,
       'businessKey',
@@ -353,24 +303,21 @@ describe('executeWorkflow', () => {
 });
 
 describe('getInstances', () => {
-  let mockDataIndexService: DataIndexService;
   const mockRequest: any = {
     query: {},
   };
   const pagination = buildPagination(mockRequest);
   beforeEach(() => {
     jest.clearAllMocks();
-    mockDataIndexService = createMockDataIndexService();
   });
 
   it("Instance doesn't exist", async () => {
     // Arrange
-
-    (mockDataIndexService.fetchProcessInstances as jest.Mock).mockRejectedValue(
+    (mockOrchestratorService.fetchInstances as jest.Mock).mockRejectedValue(
       new Error('No instance'),
     );
     // Act
-    const promise = V2.getInstances(mockDataIndexService, pagination);
+    const promise = v2.getInstances(pagination);
 
     // Assert
     await expect(promise).rejects.toThrow('No instance');
@@ -379,13 +326,13 @@ describe('getInstances', () => {
   it('1 item in process instance list', async () => {
     const processInstance = generateProcessInstance(1);
 
-    (mockDataIndexService.fetchProcessInstances as jest.Mock).mockResolvedValue(
-      [processInstance],
-    );
+    (mockOrchestratorService.fetchInstances as jest.Mock).mockResolvedValue([
+      processInstance,
+    ]);
 
     // Act
     const processInstanceV2: ProcessInstanceListResultDTO =
-      await V2.getInstances(mockDataIndexService, pagination);
+      await v2.getInstances(pagination);
 
     // Assert
     expect(processInstanceV2).toBeDefined();
@@ -397,13 +344,13 @@ describe('getInstances', () => {
     const howmany = 10;
     const processInstances = generateProcessInstances(howmany);
 
-    (mockDataIndexService.fetchProcessInstances as jest.Mock).mockResolvedValue(
+    (mockOrchestratorService.fetchInstances as jest.Mock).mockResolvedValue(
       processInstances,
     );
 
     // Act
     const processInstanceList: ProcessInstanceListResultDTO =
-      await V2.getInstances(mockDataIndexService, pagination);
+      await v2.getInstances(pagination);
 
     // Assert
     expect(processInstanceList).toBeDefined();
@@ -416,55 +363,34 @@ describe('getInstances', () => {
 });
 
 describe('getInstanceById', () => {
-  let mockDataIndexService: DataIndexService;
   beforeEach(() => {
     jest.clearAllMocks();
-    mockDataIndexService = createMockDataIndexService();
   });
 
   it("Instance doesn't exist", async () => {
-    (mockDataIndexService.fetchProcessInstance as jest.Mock).mockRejectedValue(
+    (mockOrchestratorService.fetchInstance as jest.Mock).mockRejectedValue(
       new Error('No instance'),
     );
     // Act
-    const promise = V2.getInstanceById(mockDataIndexService, 'testInstanceId');
+    const promise = v2.getInstanceById('testInstanceId');
 
     // Assert
     await expect(promise).rejects.toThrow('No instance');
   });
 
-  it('Instance exists, assessment undefined string', async () => {
+  it('Instance exists and do not include assessment', async () => {
     const processInstance = generateProcessInstance(1);
 
-    (mockDataIndexService.fetchProcessInstance as jest.Mock).mockResolvedValue(
+    (mockOrchestratorService.fetchInstance as jest.Mock).mockResolvedValue(
       processInstance,
     );
 
     // Act
     const processInstanceV2: AssessedProcessInstanceDTO =
-      await V2.getInstanceById(mockDataIndexService, processInstance.id);
+      await v2.getInstanceById(processInstance.id);
 
     // Assert
-    expect(mockDataIndexService.fetchProcessInstance).toHaveBeenCalledTimes(1);
-    expect(processInstanceV2).toBeDefined();
-    expect(processInstanceV2.instance).toBeDefined();
-    expect(processInstanceV2.assessedBy).toBeUndefined();
-    expect(processInstanceV2.instance.id).toEqual(processInstance.id);
-  });
-
-  it('Instance exists, assessment empty string', async () => {
-    const processInstance = generateProcessInstance(1);
-
-    (mockDataIndexService.fetchProcessInstance as jest.Mock).mockResolvedValue(
-      processInstance,
-    );
-
-    // Act
-    const processInstanceV2: AssessedProcessInstanceDTO =
-      await V2.getInstanceById(mockDataIndexService, processInstance.id, '');
-
-    // Assert
-    expect(mockDataIndexService.fetchProcessInstance).toHaveBeenCalledTimes(1);
+    expect(mockOrchestratorService.fetchInstance).toHaveBeenCalledTimes(1);
     expect(processInstanceV2).toBeDefined();
     expect(processInstanceV2.instance).toBeDefined();
     expect(processInstanceV2.assessedBy).toBeUndefined();
@@ -477,20 +403,16 @@ describe('getInstanceById', () => {
     const assessedBy = generateProcessInstance(1);
     assessedBy.id = processInstance.businessKey;
 
-    (mockDataIndexService.fetchProcessInstance as jest.Mock)
+    (mockOrchestratorService.fetchInstance as jest.Mock)
       .mockResolvedValueOnce(processInstance)
       .mockResolvedValueOnce(assessedBy);
 
     // Act
     const processInstanceV2: AssessedProcessInstanceDTO =
-      await V2.getInstanceById(
-        mockDataIndexService,
-        processInstance.id,
-        'foobar',
-      );
+      await v2.getInstanceById(processInstance.id);
 
     // Assert
-    expect(mockDataIndexService.fetchProcessInstance).toHaveBeenCalledTimes(2);
+    expect(mockOrchestratorService.fetchInstance).toHaveBeenCalledTimes(2);
     expect(processInstanceV2).toBeDefined();
     expect(processInstanceV2.instance).toBeDefined();
     expect(processInstanceV2.assessedBy).toBeDefined();
@@ -502,30 +424,25 @@ describe('getInstanceById', () => {
 });
 
 describe('getWorkflowResults', () => {
-  let mockDataIndexService: DataIndexService;
   beforeEach(async () => {
     jest.clearAllMocks();
-    mockDataIndexService = createMockDataIndexService();
   });
 
   it('returns process instance', async () => {
     // Arrange
     const mockGetWorkflowResultsV1 = { ...assessedProcessInstanceData };
 
-    (mockDataIndexService.fetchProcessInstance as jest.Mock).mockResolvedValue(
+    (mockOrchestratorService.fetchInstance as jest.Mock).mockResolvedValue(
       mockGetWorkflowResultsV1.instance,
     );
 
     const expectedResultV2 = mapToGetWorkflowInstanceResults(
-      // @ts-ignore
       mockGetWorkflowResultsV1.instance.variables,
     );
 
     // Act
-    const actualResultV2: WorkflowDataDTO = await V2.getWorkflowResults(
-      mockDataIndexService,
-      'testInstanceId',
-    );
+    const actualResultV2: WorkflowDataDTO =
+      await v2.getWorkflowResults('testInstanceId');
 
     // Assert
     expect(actualResultV2).toBeDefined();
@@ -539,12 +456,12 @@ describe('getWorkflowResults', () => {
     // @ts-ignore
     delete mockGetWorkflowResults.instance.variables;
 
-    (mockDataIndexService.fetchProcessInstance as jest.Mock).mockResolvedValue(
+    (mockOrchestratorService.fetchInstance as jest.Mock).mockResolvedValue(
       mockGetWorkflowResults,
     );
 
     // Act
-    const promise = V2.getWorkflowResults(mockDataIndexService, 'instanceId');
+    const promise = v2.getWorkflowResults('instanceId');
 
     // Assert
     await expect(promise).rejects.toThrow(
@@ -553,24 +470,11 @@ describe('getWorkflowResults', () => {
   });
 
   it('throws error when no instanceId is provided', async () => {
-    const promise = V2.getWorkflowResults(mockDataIndexService, '');
+    const promise = v2.getWorkflowResults('');
 
     // Assert
     await expect(promise).rejects.toThrow(
       'No instance id was provided to get workflow results',
-    );
-  });
-
-  it('throws error when no dataIndexService is provided', async () => {
-    const promise = V2.getWorkflowResults(
-      // @ts-ignore
-      null,
-      'testInstanceId',
-    );
-
-    // Assert
-    await expect(promise).rejects.toThrow(
-      'No data index service provided for executing workflow with id',
     );
   });
 });
@@ -592,7 +496,7 @@ describe('getWorkflowStatuses', () => {
 
     // Act
     const actualResultV2: WorkflowRunStatusDTO[] =
-      await V2.getWorkflowStatuses();
+      await v2.getWorkflowStatuses();
 
     // Assert
     expect(actualResultV2).toBeDefined();
@@ -601,25 +505,21 @@ describe('getWorkflowStatuses', () => {
 });
 
 describe('abortWorkflow', () => {
-  let mockDataIndexService: DataIndexService;
   beforeEach(async () => {
     jest.clearAllMocks();
-    mockDataIndexService = createMockDataIndexService();
   });
 
   it('aborts workflows', async () => {
     // Arrange
-    (mockDataIndexService.abortWorkflowInstance as jest.Mock).mockResolvedValue(
-      {} as any,
-    );
+    const workflowId = 'testInstanceId';
+    (
+      mockOrchestratorService.abortWorkflowInstance as jest.Mock
+    ).mockResolvedValue({} as any);
 
-    const expectedResult = 'Workflow ${workflowId} successfully aborted';
+    const expectedResult = `Workflow instance ${workflowId} successfully aborted`;
 
     // Act
-    const actualResult: string = await V2.abortWorkflow(
-      mockDataIndexService,
-      'testInstanceId',
-    );
+    const actualResult: string = await v2.abortWorkflow(workflowId);
 
     // Assert
     expect(actualResult).toBeDefined();
@@ -628,12 +528,12 @@ describe('abortWorkflow', () => {
 
   it('throws error when abort workflows response has error attribute', async () => {
     // Arrange
-    (mockDataIndexService.abortWorkflowInstance as jest.Mock).mockRejectedValue(
-      new Error('Simulated abort workflow error'),
-    );
+    (
+      mockOrchestratorService.abortWorkflowInstance as jest.Mock
+    ).mockRejectedValue(new Error('Simulated abort workflow error'));
 
     // Act
-    const promise = V2.abortWorkflow(mockDataIndexService, 'instanceId');
+    const promise = v2.abortWorkflow('instanceId');
 
     // Assert
     await expect(promise).rejects.toThrow('Simulated abort workflow error');

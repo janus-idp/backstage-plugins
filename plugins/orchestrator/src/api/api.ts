@@ -12,7 +12,7 @@ import {
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 export interface OrchestratorApi {
-  abortWorkflow(workflowId: string): Promise<void>;
+  abortWorkflowInstance(instanceId: string): Promise<void>;
 
   executeWorkflow(args: {
     workflowId: string;

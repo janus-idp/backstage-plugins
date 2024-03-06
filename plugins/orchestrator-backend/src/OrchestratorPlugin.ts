@@ -17,6 +17,7 @@ export const orchestratorPlugin = createBackendPlugin({
         discovery: coreServices.discovery,
         httpRouter: coreServices.httpRouter,
         urlReader: coreServices.urlReader,
+        scheduler: coreServices.scheduler,
         catalogApi: catalogServiceRef,
       },
       async init({
@@ -26,6 +27,7 @@ export const orchestratorPlugin = createBackendPlugin({
         httpRouter,
         catalogApi,
         urlReader,
+        scheduler,
       }) {
         const log = loggerToWinstonLogger(logger);
         const router = await createRouter({
@@ -34,6 +36,7 @@ export const orchestratorPlugin = createBackendPlugin({
           discovery: discovery,
           catalogApi: catalogApi,
           urlReader: urlReader,
+          scheduler: scheduler,
         });
         httpRouter.use(router);
       },

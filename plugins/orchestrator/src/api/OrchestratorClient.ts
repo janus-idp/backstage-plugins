@@ -58,9 +58,9 @@ export class OrchestratorClient implements OrchestratorApi {
     return await res.json();
   }
 
-  async abortWorkflow(workflowId: string) {
+  async abortWorkflowInstance(instanceId: string): Promise<void> {
     const baseUrl = await this.getBaseUrl();
-    const response = await fetch(`${baseUrl}/workflows/${workflowId}/abort`, {
+    const response = await fetch(`${baseUrl}/instances/${instanceId}/abort`, {
       method: 'DELETE',
       headers: { 'content-type': 'application/json' },
     });
@@ -68,8 +68,6 @@ export class OrchestratorClient implements OrchestratorApi {
     if (!response.ok) {
       throw await ResponseError.fromResponse(response);
     }
-
-    return await response.json();
   }
 
   async getWorkflowDefinition(workflowId: string): Promise<WorkflowDefinition> {

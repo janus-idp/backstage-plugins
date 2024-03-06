@@ -4,6 +4,7 @@ import {
   loadBackendConfig,
   UrlReaders,
 } from '@backstage/backend-common';
+import { TaskScheduler } from '@backstage/backend-tasks';
 import { CatalogClient } from '@backstage/catalog-client';
 import { DefaultEventBroker } from '@backstage/plugin-events-backend';
 
@@ -17,6 +18,7 @@ const logger = getRootLogger();
 const config = await loadBackendConfig({ logger, argv: process.argv });
 const eventBroker = new DefaultEventBroker(logger);
 const discovery = HostDiscovery.fromConfig(config);
+const scheduler = TaskScheduler.fromConfig(config).forPlugin('orchestrator');
 const catalogApi = new CatalogClient({
   discoveryApi: HostDiscovery.fromConfig(config),
 });
@@ -31,6 +33,7 @@ startStandaloneServer({
   discovery,
   catalogApi,
   urlReader,
+  scheduler,
 }).catch(err => {
   logger.error(err);
   process.exit(1);
