@@ -1,3 +1,10 @@
+## @janus-idp/plugin-notifications-backend [1.3.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications-backend@1.3.4...@janus-idp/plugin-notifications-backend@1.3.5) (2024-03-06)
+
+
+### Bug Fixes
+
+* **notifications:** notifications time is wrong when using sqlite ([#1306](https://github.com/janus-idp/backstage-plugins/issues/1306)) ([a98346e](https://github.com/janus-idp/backstage-plugins/commit/a98346ec3fe8746115b57e5c03b131ba3fafdf25))
+
 ## @janus-idp/plugin-notifications-backend [1.3.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications-backend@1.3.3...@janus-idp/plugin-notifications-backend@1.3.4) (2024-03-04)
 
 
