@@ -106,7 +106,7 @@ export const WorkflowInstancePage = ({
       !!curValue &&
       (curValue.instance.state === 'ACTIVE' ||
         curValue.instance.state === 'PENDING' ||
-        curValue.instance.hasOwnProperty('state')),
+        curValue.instance.state === null),
   );
 
   const canAbort = React.useMemo(
