@@ -498,27 +498,7 @@ describe('EnforcerDelegate', () => {
       ).rejects.toThrow('some unexpected error');
     });
 
-    it('should not create role metadata if isUpdate is true', async () => {
-      const enfDelegate = await createEnfDelegate();
-
-      await enfDelegate.addGroupingPolicy(
-        groupingPolicy,
-        'rest',
-        undefined,
-        true,
-      );
-
-      expect(enfUpdateGroupingPolicySpy).toHaveBeenCalledWith(
-        ...groupingPolicy,
-      );
-      expect(
-        policyMetadataStorageMock.createPolicyMetadata,
-      ).toHaveBeenCalledWith('rest', groupingPolicy, expect.anything());
-
-      expect(roleMetadataStorageMock.createRoleMetadata).not.toHaveBeenCalled();
-    });
-
-    it('should not create role metadata, because metadata has been created', async () => {
+    it('should update role metadata, because metadata has been created', async () => {
       roleMetadataStorageMock.findRoleMetadata = jest
         .fn()
         .mockImplementation(
@@ -529,6 +509,7 @@ describe('EnforcerDelegate', () => {
             return {
               source: 'csv-file',
               roleEntityRef: 'role:default/dev-team',
+              createdAt: '2024-03-01 00:23:41+00',
             };
           },
         );
@@ -544,7 +525,15 @@ describe('EnforcerDelegate', () => {
         policyMetadataStorageMock.createPolicyMetadata,
       ).toHaveBeenCalledWith('rest', groupingPolicy, expect.anything());
 
-      expect(roleMetadataStorageMock.createRoleMetadata).not.toHaveBeenCalled();
+      const metadata: RoleMetadataDao = (
+        roleMetadataStorageMock.updateRoleMetadata as jest.Mock
+      ).mock.calls[0][0];
+      const createdAtData = new Date(`${metadata.createdAt}`);
+      const lastModified = new Date(`${metadata.lastModified}`);
+      expect(lastModified > createdAtData).toBeTruthy();
+
+      expect(metadata.source).toEqual('rest');
+      expect(metadata.roleEntityRef).toEqual('role:default/dev-team');
     });
   });
 
@@ -1819,6 +1808,13 @@ describe('EnforcerDelegate', () => {
       ).mockReturnValue({
         source: 'legacy',
       });
+      (roleMetadataStorageMock.findRoleMetadata as jest.Mock).mockReturnValue(
+        Promise.resolve({
+          roleEntityRef: 'role:default/dev-team',
+          source: 'legacy',
+          createdAt: '2024-03-01 00:23:41+00',
+        }),
+      );
       enfUpdateGroupingPolicySpy.mockClear();
       enfRemoveGroupingPolicySpy.mockClear();
 
@@ -1826,14 +1822,15 @@ describe('EnforcerDelegate', () => {
 
       await enfDelegate.addOrUpdateGroupingPolicy(groupingPolicy, 'rest');
 
-      expect(roleMetadataStorageMock.updateRoleMetadata).toHaveBeenCalledWith(
-        {
-          source: 'rest',
-          roleEntityRef: 'role:default/dev-team',
-        },
-        'role:default/dev-team',
-        expect.anything(),
-      );
+      const metadata: RoleMetadataDao = (
+        roleMetadataStorageMock.updateRoleMetadata as jest.Mock
+      ).mock.calls[0][0];
+      const createdAtData = new Date(`${metadata.createdAt}`);
+      const lastModified = new Date(`${metadata.lastModified}`);
+      expect(lastModified > createdAtData).toBeTruthy();
+
+      expect(metadata.source).toEqual('rest');
+      expect(metadata.roleEntityRef).toEqual('role:default/dev-team');
       expect(
         policyMetadataStorageMock.findPolicyMetadata,
       ).toHaveBeenCalledTimes(2);
