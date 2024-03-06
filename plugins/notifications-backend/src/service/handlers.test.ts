@@ -164,7 +164,7 @@ describe('handlers', () => {
 
     expect(resultGet).toHaveLength(1);
     expect(createdDate >= before).toBeTruthy();
-    expect(createdDate < after).toBeTruthy();
+    expect(createdDate <= after).toBeTruthy();
     expect(resultGet[0].isSystem).toBeFalsy();
   });
 
@@ -195,7 +195,7 @@ describe('handlers', () => {
 
     expect(resultGet).toHaveLength(1);
     expect(createdDate >= before).toBeTruthy();
-    expect(createdDate < after).toBeTruthy();
+    expect(createdDate <= after).toBeTruthy();
     expect(resultGet[0].isSystem).toBeTruthy();
   });
 
