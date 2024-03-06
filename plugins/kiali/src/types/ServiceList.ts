@@ -24,7 +24,13 @@ export interface ServiceOverview {
 }
 
 export interface ServiceListItem extends ServiceOverview {
-  type: string;
   namespace: string;
   validation?: ObjectValidation;
+}
+
+export interface ServiceListQuery {
+  health: 'true' | 'false';
+  istioResources: 'true' | 'false';
+  onlyDefinitions: 'true' | 'false';
+  rateInterval: string;
 }

@@ -86,6 +86,12 @@ export enum URLParam {
   SORT = 'sort',
   TO = 'to',
   EXPERIMENTAL_FLAGS = 'xflags',
+  TRACING_ERRORS_ONLY = 'errs',
+  TRACING_LIMIT_TRACES = 'limit',
+  TRACING_PERCENTILE = 'percentile',
+  TRACING_SHOW_SPANS_AVG = 'showSpansAvg',
+  TRACING_TRACE_ID = 'traceId',
+  TRACING_SPAN_ID = 'spanId',
 }
 
 export interface URLParamValue {

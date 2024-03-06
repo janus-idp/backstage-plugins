@@ -9,7 +9,7 @@ import {
 } from '@material-ui/core';
 
 import { AmbientLabel } from '../../components/Ambient/AmbientLabel';
-import { DetailDescription } from '../../components/DetailsDescription/DetailDescription';
+import { DetailDescription } from '../../components/DetailDescription/DetailDescription';
 import { HealthIndicator } from '../../components/Health/HealthIndicator';
 import { Labels } from '../../components/Label/Labels';
 import { renderAPILogo, renderRuntimeLogo } from '../../components/Logos/Logos';

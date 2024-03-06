@@ -20,9 +20,9 @@ import { StatefulFilters } from '../Filters/StatefulFilters';
 import { HealthIndicator } from '../Health/HealthIndicator';
 import { Label } from '../Label/Label';
 import { getIstioObjectUrl } from '../Link/IstioObjectLink';
-import { ValidationSummaryLink } from '../Link/ValidationSummaryLink';
 import { NamespaceMTLSStatus } from '../MTls/NamespaceMTLSStatus';
 import { PFBadge, PFBadges, PFBadgeType } from '../Pf/PfBadges';
+import { ValidationServiceSummary } from '../Validations/ValidationServiceSummary';
 import { ValidationSummary } from '../Validations/ValidationSummary';
 import {
   IstioTypes,
@@ -45,8 +45,6 @@ const getIstioLink = (item: TResource): string => {
 };
 
 // Links
-// TODO: Will be used for details pages
-// @ts-ignore
 const getLink = (item: TResource, config: Resource, query?: string): string => {
   let url =
     config.name === 'istio'
@@ -95,7 +93,6 @@ export const item: Renderer<TResource> = (
 ) => {
   const key = `link_definition_${config.name}_${resource.namespace}_${resource.name}`;
   let serviceBadge = badge;
-
   if ('serviceRegistry' in resource && resource.serviceRegistry) {
     switch (resource.serviceRegistry) {
       case 'External':
@@ -263,8 +260,16 @@ export const serviceConfiguration: Renderer<ServiceListItem> = (
       role="gridcell"
       key={`VirtuaItem_Conf_${resource.namespace}_${resource.name}`}
       style={{ verticalAlign: 'middle' }}
+      align="center"
     >
-      {validation ? <Link to="">${resource.name}</Link> : <>N/A</>}
+      {validation ? (
+        <ValidationServiceSummary
+          id={`${item.name}-service-validation`}
+          validations={[validation]}
+        />
+      ) : (
+        <>N/A</>
+      )}
     </TableCell>
   );
 };
@@ -361,19 +366,12 @@ export const istioConfig: Renderer<NamespaceInfo> = (ns: NamespaceInfo) => {
       key={`VirtuaItem_IstioConfig_${ns.name}`}
       style={{ verticalAlign: 'middle' }}
     >
-      <ValidationSummaryLink
-        namespace={ns.name}
-        objectCount={validations.objectCount}
+      <ValidationSummary
+        id={`ns-val-${ns.name}`}
         errors={validations.errors}
         warnings={validations.warnings}
-      >
-        <ValidationSummary
-          id={`ns-val-${ns.name}`}
-          errors={validations.errors}
-          warnings={validations.warnings}
-          objectCount={validations.objectCount}
-        />
-      </ValidationSummaryLink>
+        objectCount={validations.objectCount}
+      />
     </TableCell>
   );
 

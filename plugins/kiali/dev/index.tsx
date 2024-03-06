@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Route, Routes, useNavigate } from 'react-router-dom';
+import { BrowserRouter, useNavigate } from 'react-router-dom';
 
 import { Entity } from '@backstage/catalog-model';
 import { Content, HeaderTabs, Page } from '@backstage/core-components';
@@ -9,17 +9,14 @@ import { TestApiProvider } from '@backstage/test-utils';
 
 import { kialiPlugin } from '../src';
 import { pluginRoot } from '../src/components/BreadcrumbView/BreadcrumbView';
-import { KialiNoPath } from '../src/pages/Kiali';
 import { KialiHeader } from '../src/pages/Kiali/Header/KialiHeader';
-import { KialiHeaderEntity } from '../src/pages/Kiali/Header/KialiHeaderEntity';
-import { KialiEntity } from '../src/pages/Kiali/KialiEntity';
 import { KialiNoAnnotation } from '../src/pages/Kiali/KialiNoAnnotation';
 import { KialiNoResources } from '../src/pages/Kiali/KialiNoResources';
-import { OverviewPage } from '../src/pages/Overview/OverviewPage';
-import { WorkloadDetailsPage } from '../src/pages/WorkloadDetails/WorkloadDetailsPage';
-import { WorkloadListPage } from '../src/pages/WorkloadList/WorkloadListPage';
+import { getRoutes } from '../src/Router';
 import { KialiApi, kialiApiRef } from '../src/services/Api';
 import { KialiProvider } from '../src/store/KialiProvider';
+import { App, AppQuery } from '../src/types/App';
+import { AppList, AppListQuery } from '../src/types/AppList';
 import { AuthInfo } from '../src/types/Auth';
 import { CertsInfo } from '../src/types/CertsInfo';
 import { DurationInSeconds, TimeInSeconds } from '../src/types/Common';
@@ -35,6 +32,7 @@ import { IstioConfigList, IstioConfigsMap } from '../src/types/IstioConfigList';
 import {
   CanaryUpgradeStatus,
   OutboundTrafficPolicy,
+  PodLogs,
   ValidationStatus,
 } from '../src/types/IstioObjects';
 import {
@@ -45,8 +43,11 @@ import { IstioMetricsMap } from '../src/types/Metrics';
 import { IstioMetricsOptions } from '../src/types/MetricsOptions';
 import { Namespace } from '../src/types/Namespace';
 import { ServerConfig } from '../src/types/ServerConfig';
+import { ServiceDetailsInfo } from '../src/types/ServiceInfo';
+import { ServiceList, ServiceListQuery } from '../src/types/ServiceList';
 import { StatusState } from '../src/types/StatusState';
 import { TLSStatus } from '../src/types/TLSStatus';
+import { Span, TracingQuery } from '../src/types/Tracing';
 import {
   Workload,
   WorkloadListItem,
@@ -307,6 +308,86 @@ class MockKialiClient implements KialiApi {
   isDevEnv(): boolean {
     return true;
   }
+
+  async getPodLogs(
+    _: string,
+    __: string,
+    container?: string,
+    ___?: number,
+    ____?: number,
+    _duration?: DurationInSeconds,
+    _isProxy?: boolean,
+    _cluster?: string,
+  ): Promise<PodLogs> {
+    if (container === 'istio-proxy') {
+      return kialiData.istioLogs;
+    }
+    return kialiData.logs;
+  }
+
+  setPodEnvoyProxyLogLevel = async (
+    _namespace: string,
+    _name: string,
+    _level: string,
+    _cluster?: string,
+  ): Promise<void> => {
+    return;
+  };
+
+  async getWorkloadSpans(
+    _: string,
+    __: string,
+    ___: TracingQuery,
+    ____?: string,
+  ): Promise<Span[]> {
+    return kialiData.spanLogs;
+  }
+
+  async getServices(
+    namespace: string,
+    _?: ServiceListQuery,
+  ): Promise<ServiceList> {
+    return kialiData.services[namespace];
+  }
+
+  async getServiceDetail(
+    namespace: string,
+    service: string,
+    _validate: boolean,
+    _cluster?: string,
+    rateInterval?: DurationInSeconds,
+  ): Promise<ServiceDetailsInfo> {
+    const parsedName = service.replace(/-/g, '');
+    const info: ServiceDetailsInfo =
+      kialiData.namespacesData[namespace].services[parsedName];
+
+    if (info.health) {
+      // Default rate interval in backend = 600s
+      info.health = ServiceHealth.fromJson(namespace, service, info.health, {
+        rateInterval: rateInterval ?? 600,
+        hasSidecar: info.istioSidecar,
+        hasAmbient: info.istioAmbient,
+      });
+    }
+    return info;
+  }
+
+  getApps = async (
+    namespace: string,
+    _params: AppListQuery,
+  ): Promise<AppList> => {
+    return kialiData.apps[namespace];
+  };
+
+  getApp = async (
+    namespace: string,
+    app: string,
+    _params: AppQuery,
+    _cluster?: string,
+  ): Promise<App> => {
+    const parsedName = app.replace(/-/g, '');
+    return kialiData.namespacesData[namespace].apps[parsedName];
+  };
 }
 
 interface Props {
@@ -320,6 +401,8 @@ export const TabsMock = () => {
   const tabs = [
     { label: 'Overview', route: `${pluginRoot}/overview` },
     { label: 'Workloads', route: `${pluginRoot}/workloads` },
+    { label: 'Services', route: `${pluginRoot}/services` },
+    { label: 'Applications', route: `${pluginRoot}/applications` },
   ];
   const navigate = useNavigate();
   return (
@@ -337,20 +420,6 @@ export const TabsMock = () => {
   );
 };
 
-const RoutesList = () => (
-  <Routes>
-    <Route path={`/${pluginRoot}`} element={<OverviewPage />} />
-    <Route path={`/${pluginRoot}/overview`} element={<OverviewPage />} />
-    <Route path={`/${pluginRoot}/workloads`} element={<WorkloadListPage />} />
-    <Route
-      path={`/${pluginRoot}/workloads/:namespace/:workload`}
-      element={<WorkloadDetailsPage />}
-    />
-    <Route path={`/${pluginRoot}/kiali/entity`} element={<KialiEntity />} />
-    <Route path="*" element={<KialiNoPath />} />
-  </Routes>
-);
-
 const MockProvider = (props: Props) => {
   const content = (
     <KialiProvider entity={props.entity || mockEntity}>
@@ -360,15 +429,10 @@ const MockProvider = (props: Props) => {
             <>
               <KialiHeader />
               <TabsMock />
-              <RoutesList />
+              {getRoutes(true)}
             </>
           )}
-          {props.isEntity && (
-            <Content>
-              <KialiHeaderEntity />
-              <RoutesList />
-            </Content>
-          )}
+          {props.isEntity && <Content>{getRoutes(true)}</Content>}
         </Page>
       </BrowserRouter>
     </KialiProvider>
