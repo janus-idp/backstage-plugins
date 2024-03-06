@@ -167,13 +167,47 @@ const OPENAPI = `
         "operationId": "getInstances",
         "summary": "Get instances",
         "description": "Retrieve an array of instances",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "page number",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "page size",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "orderBy",
+            "in": "query",
+            "description": "field name to order the data",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "orderDirection",
+            "in": "query",
+            "description": "ascending or descending",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProcessInstancesDTO"
+                  "$ref": "#/components/schemas/ProcessInstanceListResultDTO"
                 }
               }
             }
@@ -463,11 +497,11 @@ const OPENAPI = `
       "PaginationInfoDTO": {
         "type": "object",
         "properties": {
-          "limit": {
+          "pageSize": {
             "type": "number",
             "minimum": 0
           },
-          "offset": {
+          "page": {
             "type": "number",
             "minimum": 0
           },
@@ -548,10 +582,18 @@ const OPENAPI = `
           "format"
         ]
       },
-      "ProcessInstancesDTO": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/ProcessInstanceDTO"
+      "ProcessInstanceListResultDTO": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProcessInstanceDTO"
+            }
+          },
+          "paginationInfo": {
+            "$ref": "#/components/schemas/PaginationInfoDTO"
+          }
         }
       },
       "AssessedProcessInstanceDTO": {

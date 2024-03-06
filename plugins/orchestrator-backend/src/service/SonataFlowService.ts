@@ -21,6 +21,7 @@ import {
 import { spawn } from 'child_process';
 import { join, resolve } from 'path';
 
+import { Pagination } from '../types/pagination';
 import { DataIndexService } from './DataIndexService';
 import { executeWithRetry } from './Helper';
 
@@ -143,11 +144,11 @@ export class SonataFlowService {
     return undefined;
   }
 
-  public async fetchWorkflowOverviews(): Promise<
-    WorkflowOverview[] | undefined
-  > {
+  public async fetchWorkflowOverviews(
+    pagination: Pagination,
+  ): Promise<WorkflowOverview[] | undefined> {
     try {
-      const workflowInfos = await this.dataIndex.getWorkflowInfos();
+      const workflowInfos = await this.dataIndex.getWorkflowInfos(pagination);
       if (!workflowInfos?.length) {
         return [];
       }

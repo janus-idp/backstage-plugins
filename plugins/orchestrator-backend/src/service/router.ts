@@ -17,6 +17,7 @@ import {
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { RouterArgs } from '../routerWrapper';
+import { buildPagination } from '../types/pagination';
 import { V1 } from './api/v1';
 import { V2 } from './api/v2';
 import { CloudEventService } from './CloudEventService';
@@ -144,8 +145,11 @@ function setupInternalRoutes(
   api: OpenAPIBackend,
   services: Services,
 ) {
-  router.get('/workflows/overview', async (_c, res) => {
-    await V1.getWorkflowsOverview(services.sonataFlowService)
+  router.get('/workflows/overview', async (req, res) => {
+    await V1.getWorkflowsOverview(
+      services.sonataFlowService,
+      buildPagination(req),
+    )
       .then(result => res.status(200).json(result))
       .catch(error => {
         res
@@ -157,8 +161,11 @@ function setupInternalRoutes(
   // v2
   api.register(
     'getWorkflowsOverview',
-    async (_c, _req, res: express.Response, next) => {
-      await V2.getWorkflowsOverview(services.sonataFlowService)
+    async (_c, req, res: express.Response, next) => {
+      await V2.getWorkflowsOverview(
+        services.sonataFlowService,
+        buildPagination(req),
+      )
         .then(result => res.json(result))
         .catch(error => {
           res
@@ -344,8 +351,8 @@ function setupInternalRoutes(
     },
   );
 
-  router.get('/instances', async (_, res) => {
-    await V1.getInstances(services.dataIndexService)
+  router.get('/instances', async (req, res) => {
+    await V1.getInstances(services.dataIndexService, buildPagination(req))
       .then(result => res.status(200).json(result))
       .catch(error => {
         res
@@ -357,8 +364,8 @@ function setupInternalRoutes(
   // v2
   api.register(
     'getInstances',
-    async (_c, _req: express.Request, res: express.Response, next) => {
-      await V2.getInstances(services.dataIndexService)
+    async (_c, req: express.Request, res: express.Response, next) => {
+      await V2.getInstances(services.dataIndexService, buildPagination(req))
         .then(result => res.json(result))
         .catch(next);
     },

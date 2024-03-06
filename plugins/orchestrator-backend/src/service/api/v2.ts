@@ -5,7 +5,7 @@ import {
   AssessedProcessInstanceDTO,
   ExecuteWorkflowRequestDTO,
   ExecuteWorkflowResponseDTO,
-  ProcessInstancesDTO,
+  ProcessInstanceListResultDTO,
   ProcessInstanceState,
   WorkflowDataDTO,
   WorkflowDTO,
@@ -14,6 +14,7 @@ import {
   WorkflowRunStatusDTO,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
+import { Pagination } from '../../types/pagination';
 import { DataIndexService } from '../DataIndexService';
 import { SonataFlowService } from '../SonataFlowService';
 import {
@@ -28,13 +29,17 @@ import { V1 } from './v1';
 export namespace V2 {
   export async function getWorkflowsOverview(
     sonataFlowService: SonataFlowService,
+    pagination: Pagination,
   ): Promise<WorkflowOverviewListResultDTO> {
-    const overviewsV1 = await V1.getWorkflowsOverview(sonataFlowService);
+    const overviewsV1 = await V1.getWorkflowsOverview(
+      sonataFlowService,
+      pagination,
+    );
     const result: WorkflowOverviewListResultDTO = {
       overviews: overviewsV1.items.map(item => mapToWorkflowOverviewDTO(item)),
       paginationInfo: {
-        limit: 0,
-        offset: 0,
+        pageSize: pagination.limit,
+        page: pagination.offset,
         totalCount: overviewsV1.items?.length ?? 0,
       },
     };
@@ -80,10 +85,19 @@ export namespace V2 {
 
   export async function getInstances(
     dataIndexService: DataIndexService,
-  ): Promise<ProcessInstancesDTO> {
-    const instances = await V1.getInstances(dataIndexService);
-    const result = instances.map(def => mapToProcessInstanceDTO(def));
+    pagination: Pagination,
+  ): Promise<ProcessInstanceListResultDTO> {
+    const instances = await V1.getInstances(dataIndexService, pagination);
+    const totalCount = await dataIndexService.getProcessInstancesTotalCount();
 
+    const result: ProcessInstanceListResultDTO = {
+      items: instances.map(def => mapToProcessInstanceDTO(def)),
+      paginationInfo: {
+        pageSize: pagination.limit,
+        page: pagination.offset,
+        totalCount: totalCount,
+      },
+    };
     return result;
   }
 

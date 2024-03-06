@@ -12,6 +12,9 @@ import {
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { ErrorBuilder } from '../helpers/errorBuilder';
+import { buildGraphQlQuery } from '../helpers/queryBuilder';
+import { Pagination } from '../types/pagination';
+import { FETCH_PROCESS_INSTANCES_SORT_FIELD } from './constants';
 
 export class DataIndexService {
   private client: Client;
@@ -89,23 +92,18 @@ export class DataIndexService {
     return processDefinitions[0];
   }
 
-  public async getWorkflowInfos(): Promise<WorkflowInfo[]> {
-    const QUERY = `
-        query ProcessDefinitions {
-            ProcessDefinitions {
-                id
-                name
-                version
-                type
-                endpoint
-                serviceUrl
-                source
-            }
-        }
-      `;
-
+  public async getWorkflowInfos(
+    pagination: Pagination,
+  ): Promise<WorkflowInfo[]> {
     this.logger.info(`getWorkflowInfos() called: ${this.dataIndexUrl}`);
-    const result = await this.client.query(QUERY, {});
+
+    const graphQlQuery = buildGraphQlQuery({
+      type: 'ProcessDefinitions',
+      queryBody: 'id, name, version, type, endpoint, serviceUrl, source',
+      pagination,
+    });
+    this.logger.debug(`GraphQL query: ${graphQlQuery}`);
+    const result = await this.client.query(graphQlQuery, {});
 
     this.logger.debug(
       `Get workflow definitions result: ${JSON.stringify(result)}`,
@@ -121,10 +119,19 @@ export class DataIndexService {
     return result.data.ProcessDefinitions;
   }
 
-  public async fetchProcessInstances(): Promise<ProcessInstance[] | undefined> {
-    const graphQlQuery =
-      '{ ProcessInstances ( orderBy: { start: ASC }, where: {processId: {isNull: false} } ) { id, processName, processId, businessKey, state, start, end, nodes { id }, variables, parentProcessInstance {id, processName, businessKey} } }';
+  public async fetchProcessInstances(
+    pagination: Pagination,
+  ): Promise<ProcessInstance[] | undefined> {
+    pagination.sortField ??= FETCH_PROCESS_INSTANCES_SORT_FIELD;
 
+    const graphQlQuery = buildGraphQlQuery({
+      type: 'ProcessInstances',
+      queryBody:
+        'id, processName, processId, businessKey, state, start, end, nodes { id }, variables, parentProcessInstance {id, processName, businessKey}',
+      whereClause: 'processId: {isNull: false}',
+      pagination,
+    });
+    this.logger.debug(`GraphQL query: ${graphQlQuery}`);
     const result = await this.client.query(graphQlQuery, {});
 
     this.logger.debug(
@@ -145,6 +152,24 @@ export class DataIndexService {
       }),
     );
     return processInstances;
+  }
+
+  public async getProcessInstancesTotalCount(): Promise<number> {
+    const graphQlQuery = buildGraphQlQuery({
+      type: 'ProcessInstances',
+      queryBody: 'id',
+    });
+    this.logger.debug(`GraphQL query: ${graphQlQuery}`);
+    const result = await this.client.query(graphQlQuery, {});
+
+    if (result.error) {
+      this.logger.error(`Error when fetching instances: ${result.error}`);
+      throw result.error;
+    }
+
+    const idArr = result.data.ProcessInstances as ProcessInstance[];
+
+    return Promise.resolve(idArr.length);
   }
 
   private async getWorkflowDefinitionFromInstance(instance: ProcessInstance) {
