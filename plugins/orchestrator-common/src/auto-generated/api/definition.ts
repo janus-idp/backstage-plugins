@@ -84,34 +84,6 @@ const OPENAPI = `
         }
       }
     },
-    "/v2/workflows": {
-      "get": {
-        "operationId": "getWorkflows",
-        "description": "Get a list of workflow",
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/WorkflowListResultDTO"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Error fetching workflow list",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/v2/workflows/{workflowId}": {
       "get": {
         "operationId": "getWorkflowById",
@@ -120,7 +92,7 @@ const OPENAPI = `
           {
             "name": "workflowId",
             "in": "path",
-            "description": "ID of the workflow to execute",
+            "description": "ID of the workflow to fetch",
             "required": true,
             "schema": {
               "type": "string"
@@ -139,7 +111,46 @@ const OPENAPI = `
             }
           },
           "500": {
-            "description": "Error workflow by id",
+            "description": "Error fetching workflow by id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/workflows/{workflowId}/source": {
+      "get": {
+        "operationId": "getWorkflowSourceById",
+        "description": "Get a workflow source by ID",
+        "parameters": [
+          {
+            "name": "workflowId",
+            "in": "path",
+            "description": "ID of the workflow to fetch",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error fetching workflow source by id",
             "content": {
               "application/json": {
                 "schema": {
@@ -427,8 +438,8 @@ const OPENAPI = `
             "description": "Workflow name",
             "minLength": 1
           },
-          "uri": {
-            "type": "string"
+          "format": {
+            "$ref": "#/components/schemas/WorkflowFormatDTO"
           },
           "lastTriggeredMs": {
             "type": "number",
@@ -466,6 +477,14 @@ const OPENAPI = `
           }
         },
         "additionalProperties": false
+      },
+      "WorkflowFormatDTO": {
+        "type": "string",
+        "description": "Format of the workflow definition",
+        "enum": [
+          "yaml",
+          "json"
+        ]
       },
       "WorkflowCategoryDTO": {
         "type": "string",
@@ -506,9 +525,8 @@ const OPENAPI = `
             "description": "Workflow name",
             "minLength": 1
           },
-          "uri": {
-            "type": "string",
-            "description": "URI of the workflow definition"
+          "format": {
+            "$ref": "#/components/schemas/WorkflowFormatDTO"
           },
           "category": {
             "$ref": "#/components/schemas/WorkflowCategoryDTO"
@@ -527,7 +545,7 @@ const OPENAPI = `
         "required": [
           "id",
           "category",
-          "uri"
+          "format"
         ]
       },
       "ProcessInstancesDTO": {

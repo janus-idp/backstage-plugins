@@ -45,13 +45,15 @@ type VirtualListProps<R> = {
   type: string;
 };
 
-export const VirtualList = (listProps: VirtualListProps<RenderResource>) => {
-  // @ts-ignore
-  const conf = config[listProps.type] as Resource;
+export const VirtualList = <R extends RenderResource>(
+  listProps: VirtualListProps<R>,
+) => {
   const [order, setOrder] = React.useState<SortDirection>('asc');
   const [orderBy, setOrderBy] = React.useState<String>('');
+  // @ts-ignore
+  const [conf] = React.useState<Resource>(config[listProps.type] as Resource);
 
-  const getColumns = (): ResourceType<any>[] => {
+  const getColumns = (): ResourceType<R>[] => {
     let columns = [] as ResourceType<any>[];
     if (conf.columns) {
       columns = conf.columns.filter(

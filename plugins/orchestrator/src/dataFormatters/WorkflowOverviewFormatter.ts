@@ -1,7 +1,6 @@
 import moment from 'moment';
 
 import {
-  extractWorkflowFormatFromUri,
   WorkflowFormat,
   WorkflowOverview,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
@@ -30,17 +29,17 @@ const WorkflowOverviewFormatter: DataFormatter<
   format: (data: WorkflowOverview): FormattedWorkflowOverview => {
     return {
       id: data.workflowId,
-      name: data.name || VALUE_UNAVAILABLE,
+      name: data.name ?? VALUE_UNAVAILABLE,
       lastTriggered: data.lastTriggeredMs
         ? moment(data.lastTriggeredMs).toDate().toLocaleString()
         : VALUE_UNAVAILABLE,
-      lastRunStatus: data.lastRunStatus || VALUE_UNAVAILABLE,
-      category: data.category || VALUE_UNAVAILABLE,
+      lastRunStatus: data.lastRunStatus ?? VALUE_UNAVAILABLE,
+      category: data.category ?? VALUE_UNAVAILABLE,
       avgDuration: data.avgDurationMs
         ? formatDuration(data.avgDurationMs)
         : VALUE_UNAVAILABLE,
-      description: data.description || VALUE_UNAVAILABLE,
-      format: data.uri ? extractWorkflowFormatFromUri(data.uri) : 'yaml',
+      description: data.description ?? VALUE_UNAVAILABLE,
+      format: data.format,
     };
   },
 };

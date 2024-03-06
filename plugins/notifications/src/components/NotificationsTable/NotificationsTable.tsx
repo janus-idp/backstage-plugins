@@ -137,6 +137,9 @@ export const NotificationsTable = ({
   const compactColumns = React.useMemo(
     (): TableColumn<Notification>[] => [
       {
+        customFilterAndSearch: () =>
+          true /* Keep it on backend due to pagination. If recent flickering is an issue, implement search here as well. */,
+
         // Compact content
         render: (notification: Notification) => {
           return (

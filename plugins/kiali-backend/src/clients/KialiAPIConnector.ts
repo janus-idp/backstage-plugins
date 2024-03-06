@@ -9,7 +9,7 @@ export type Options = {
 };
 
 export interface KialiApi {
-  proxy(endpoint: string): Promise<any>;
+  proxy(endpoint: string, method?: string): Promise<any>;
 }
 export class KialiApiImpl implements KialiApi {
   private kialiFetcher: KialiFetcher;
@@ -21,7 +21,7 @@ export class KialiApiImpl implements KialiApi {
     this.kialiFetcher = new KialiFetcher(options.kiali, options.logger);
   }
 
-  async proxy(endpoint: string): Promise<any> {
+  async proxy(endpoint: string, method: string): Promise<any> {
     const authValid = await this.kialiFetcher.checkSession();
     if (authValid.verify) {
       this.logger.debug(
@@ -30,7 +30,7 @@ export class KialiApiImpl implements KialiApi {
         }`,
       );
       return this.kialiFetcher
-        .newRequest<any>(endpoint)
+        .newRequest<any>(endpoint, false, method)
         .then(resp => resp.data);
     }
     this.logger.debug(

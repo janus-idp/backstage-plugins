@@ -1,3 +1,29 @@
+## @janus-idp/backstage-plugin-orchestrator-backend [1.4.12](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.4.11...@janus-idp/backstage-plugin-orchestrator-backend@1.4.12) (2024-03-04)
+
+
+### Bug Fixes
+
+* **orchestrator:** increase the number of attempts to fetch the instance after execution ([#1301](https://github.com/janus-idp/backstage-plugins/issues/1301)) ([77dcce3](https://github.com/janus-idp/backstage-plugins/commit/77dcce3adceaf12b583bda5e74be69a5cc273ba1))
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.5
+
+## @janus-idp/backstage-plugin-orchestrator-backend [1.4.11](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.4.10...@janus-idp/backstage-plugin-orchestrator-backend@1.4.11) (2024-03-03)
+
+
+### Bug Fixes
+
+* **orchestrator:** stop fetching workflow URI ([#1297](https://github.com/janus-idp/backstage-plugins/issues/1297)) ([2456a28](https://github.com/janus-idp/backstage-plugins/commit/2456a287dbff955a0916b9600e89a39511cd537a))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.3.7
+
 ## @janus-idp/backstage-plugin-orchestrator-backend [1.4.10](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.4.9...@janus-idp/backstage-plugin-orchestrator-backend@1.4.10) (2024-02-29)
 
 

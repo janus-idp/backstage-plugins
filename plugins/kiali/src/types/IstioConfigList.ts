@@ -270,9 +270,9 @@ export const toIstioItems = (
     }
     // @ts-expect-error
     const typeNameProto = dicIstioType[field.toLowerCase()]; // ex. serviceEntries -> ServiceEntry
-    const typeName = typeNameProto.toLowerCase(); // ex. ServiceEntry -> serviceentry
+    const typeName = typeNameProto?.toLowerCase(); // ex. ServiceEntry -> serviceentry
     const entryName =
-      typeNameProto.charAt(0).toLowerCase() + typeNameProto.slice(1);
+      typeNameProto?.charAt(0).toLowerCase() + typeNameProto?.slice(1);
     // @ts-expect-error
     let entries = istioConfigList[field];
     if (entries && !(entries instanceof Array)) {

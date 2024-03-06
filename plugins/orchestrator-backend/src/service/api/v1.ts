@@ -6,9 +6,6 @@ import {
   ProcessInstance,
   WorkflowDefinition,
   WorkflowExecutionResponse,
-  WorkflowInfo,
-  WorkflowItem,
-  WorkflowListResult,
   WorkflowOverview,
   WorkflowOverviewListResult,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
@@ -17,7 +14,7 @@ import { DataIndexService } from '../DataIndexService';
 import { retryAsyncFunction } from '../Helper';
 import { SonataFlowService } from '../SonataFlowService';
 
-const FETCH_INSTANCE_MAX_RETRIES = 5;
+const FETCH_INSTANCE_MAX_ATTEMPTS = 10;
 const FETCH_INSTANCE_RETRY_DELAY_MS = 1000;
 
 export namespace V1 {
@@ -50,43 +47,10 @@ export namespace V1 {
     return overviewObj;
   }
 
-  export async function getWorkflows(
-    sonataFlowService: SonataFlowService,
-    dataIndexService: DataIndexService,
-  ): Promise<WorkflowListResult> {
-    const definitions: WorkflowInfo[] =
-      await dataIndexService.getWorkflowDefinitions();
-    const items: WorkflowItem[] = await Promise.all(
-      definitions.map(async info => {
-        const uri = await sonataFlowService.fetchWorkflowUri(info.id);
-        if (!uri) {
-          throw new Error(`Uri is required for workflow ${info.id}`);
-        }
-        const item: WorkflowItem = {
-          definition: info as WorkflowDefinition,
-          serviceUrl: info.serviceUrl,
-          uri,
-        };
-        return item;
-      }),
-    );
-
-    if (!items) {
-      throw new Error("Couldn't fetch workflows");
-    }
-
-    return {
-      items: items,
-      limit: 0,
-      offset: 0,
-      totalCount: items?.length ?? 0,
-    };
-  }
-
   export async function getWorkflowById(
     sonataFlowService: SonataFlowService,
     workflowId: string,
-  ): Promise<{ uri: string; definition: WorkflowDefinition }> {
+  ): Promise<WorkflowDefinition> {
     const definition =
       await sonataFlowService.fetchWorkflowDefinition(workflowId);
 
@@ -94,12 +58,20 @@ export namespace V1 {
       throw new Error(`Couldn't fetch workflow definition for ${workflowId}`);
     }
 
-    const uri = await sonataFlowService.fetchWorkflowUri(workflowId);
-    if (!uri) {
-      throw new Error(`Couldn't fetch workflow uri for ${workflowId}`);
+    return definition;
+  }
+
+  export async function getWorkflowSourceById(
+    sonataFlowService: SonataFlowService,
+    workflowId: string,
+  ): Promise<string> {
+    const source = await sonataFlowService.fetchWorkflowSource(workflowId);
+
+    if (!source) {
+      throw new Error(`Couldn't fetch workflow source for ${workflowId}`);
     }
 
-    return { uri, definition };
+    return source;
   }
 
   export async function getInstances(
@@ -166,9 +138,9 @@ export namespace V1 {
 
     // Making sure the instance data is available before returning
     await retryAsyncFunction({
-      asyncFunc: () =>
+      asyncFn: () =>
         dataIndexService.fetchProcessInstance(executionResponse.id),
-      retries: FETCH_INSTANCE_MAX_RETRIES,
+      maxAttempts: FETCH_INSTANCE_MAX_ATTEMPTS,
       delayMs: FETCH_INSTANCE_RETRY_DELAY_MS,
     });
 

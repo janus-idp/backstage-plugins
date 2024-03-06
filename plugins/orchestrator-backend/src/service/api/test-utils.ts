@@ -2,6 +2,7 @@ import {
   ProcessInstanceState,
   ProcessInstanceStateValues,
   WorkflowDefinition,
+  WorkflowFormat,
   WorkflowOverview,
   WorkflowOverviewListResult,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
@@ -10,7 +11,7 @@ interface WorkflowOverviewParams {
   suffix?: string;
   workflowId?: string;
   name?: string;
-  uri?: string;
+  format?: WorkflowFormat;
   lastTriggeredMs?: number;
   lastRunStatus?: ProcessInstanceStateValues;
   category?: string;
@@ -23,7 +24,7 @@ export function generateTestWorkflowOverview(
   return {
     workflowId: params.workflowId ?? `testWorkflowId${params.suffix}`,
     name: params.name ?? `Test Workflow${params.suffix}`,
-    uri: params.uri ?? 'http://example.com',
+    format: params.format ?? 'yaml',
     lastTriggeredMs:
       params.lastTriggeredMs ?? Date.parse('2024-02-09T10:34:56Z'),
     lastRunStatus: params.lastRunStatus ?? ProcessInstanceState.Completed,

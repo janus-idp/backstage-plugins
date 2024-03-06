@@ -22,8 +22,10 @@ export const makeRouter = (
   // curl -H "Content-type: application/json" -H "Accept: application/json" -X GET localhost:7007/api/kiali/proxy --data '{"endpoint": "api/namespaces"}'
   router.post('/proxy', async (req, res) => {
     const endpoint = req.body.endpoint;
+    const method = req.body.method;
+
     logger.info(`Call to Kiali ${endpoint}`);
-    res.json(await kialiAPI.proxy(endpoint));
+    res.json(await kialiAPI.proxy(endpoint, method));
   });
 
   router.post('/status', async (_, res) => {

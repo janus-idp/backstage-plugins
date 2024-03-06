@@ -4,6 +4,8 @@ import { createApiRef, DiscoveryApi } from '@backstage/core-plugin-api';
 import { AxiosError } from 'axios';
 
 import { config } from '../config';
+import { App, AppQuery } from '../types/App';
+import { AppList, AppListQuery } from '../types/AppList';
 import { AuthInfo } from '../types/Auth';
 import { CertsInfo } from '../types/CertsInfo';
 import { DurationInSeconds, HTTP_VERBS, TimeInSeconds } from '../types/Common';
@@ -22,7 +24,10 @@ import {
 } from '../types/IstioConfigList';
 import {
   CanaryUpgradeStatus,
+  LogLevelQuery,
   OutboundTrafficPolicy,
+  PodLogs,
+  PodLogsQuery,
   ValidationStatus,
 } from '../types/IstioObjects';
 import {
@@ -33,8 +38,11 @@ import { IstioMetricsMap } from '../types/Metrics';
 import { IstioMetricsOptions } from '../types/MetricsOptions';
 import { Namespace } from '../types/Namespace';
 import { ServerConfig } from '../types/ServerConfig';
+import { ServiceDetailsInfo, ServiceDetailsQuery } from '../types/ServiceInfo';
+import { ServiceList, ServiceListQuery } from '../types/ServiceList';
 import { StatusState } from '../types/StatusState';
 import { TLSStatus } from '../types/TLSStatus';
+import { Span, TracingQuery } from '../types/Tracing';
 import {
   Workload,
   WorkloadListItem,
@@ -149,6 +157,46 @@ export interface KialiApi {
   ): Promise<IstioConfigList>;
   setEntity(entity?: Entity): void;
   status(): Promise<any>;
+  getPodLogs(
+    namespace: string,
+    name: string,
+    container?: string,
+    maxLines?: number,
+    sinceTime?: number,
+    duration?: DurationInSeconds,
+    isProxy?: boolean,
+    cluster?: string,
+  ): Promise<PodLogs>;
+  getWorkloadSpans(
+    namespace: string,
+    workload: string,
+    params: TracingQuery,
+    cluster?: string,
+  ): Promise<Span[]>;
+  setPodEnvoyProxyLogLevel(
+    namespace: string,
+    name: string,
+    level: string,
+    cluster?: string,
+  ): Promise<void>;
+  getServices(
+    namespace: string,
+    params?: ServiceListQuery,
+  ): Promise<ServiceList>;
+  getServiceDetail(
+    namespace: string,
+    service: string,
+    validate: boolean,
+    cluster?: string,
+    rateInterval?: DurationInSeconds,
+  ): Promise<ServiceDetailsInfo>;
+  getApps(namespace: string, params: AppListQuery): Promise<AppList>;
+  getApp(
+    namespace: string,
+    app: string,
+    params: AppQuery,
+    cluster?: string,
+  ): Promise<App>;
 }
 
 export const kialiApiRef = createApiRef<KialiApi>({
@@ -194,6 +242,7 @@ export class KialiApiClient implements KialiApi {
     }`;
     const dataRequest = data;
     dataRequest.endpoint = endpoint;
+    dataRequest.method = method;
 
     const jsonResponse = await fetch(
       `${this.kialiUrl}/${proxy ? 'proxy' : 'status'}`,
@@ -607,6 +656,179 @@ export class KialiApiClient implements KialiApi {
     ).then(resp => {
       return resp;
     });
+  };
+
+  getPodLogs = async (
+    namespace: string,
+    name: string,
+    container?: string,
+    maxLines?: number,
+    sinceTime?: number,
+    duration?: DurationInSeconds,
+    isProxy?: boolean,
+    cluster?: string,
+  ): Promise<PodLogs> => {
+    const params: QueryParams<PodLogsQuery> = {};
+
+    if (container) {
+      params.container = container;
+    }
+
+    if (sinceTime) {
+      params.sinceTime = sinceTime;
+    }
+
+    if (maxLines && maxLines > 0) {
+      params.maxLines = maxLines;
+    }
+
+    if (duration && duration > 0) {
+      params.duration = `${duration}s`;
+    }
+
+    if (cluster) {
+      params.clusterName = cluster;
+    }
+
+    params.isProxy = !!isProxy;
+
+    return this.newRequest<PodLogs>(
+      HTTP_VERBS.GET,
+      urls.podLogs(namespace, name),
+      params,
+      {},
+    ).then(resp => {
+      return resp;
+    });
+  };
+
+  setPodEnvoyProxyLogLevel = async (
+    namespace: string,
+    name: string,
+    level: string,
+    cluster?: string,
+  ): Promise<void> => {
+    const params: QueryParams<LogLevelQuery> = { level: level };
+
+    if (cluster) {
+      params.clusterName = cluster;
+    }
+
+    return this.newRequest<void>(
+      HTTP_VERBS.POST,
+      urls.podEnvoyProxyLogging(namespace, name),
+      params,
+      {},
+    ).then(resp => {
+      return resp;
+    });
+  };
+
+  getWorkloadSpans = async (
+    namespace: string,
+    workload: string,
+    params: TracingQuery,
+    cluster?: string,
+  ): Promise<Span[]> => {
+    const queryParams: QueryParams<TracingQuery> = { ...params };
+
+    if (cluster) {
+      queryParams.clusterName = cluster;
+    }
+
+    return this.newRequest<Span[]>(
+      HTTP_VERBS.GET,
+      urls.workloadSpans(namespace, workload),
+      queryParams,
+      {},
+    ).then(resp => {
+      return resp;
+    });
+  };
+
+  getServices = async (
+    namespace: string,
+    params?: ServiceListQuery,
+  ): Promise<ServiceList> => {
+    return this.newRequest<ServiceList>(
+      HTTP_VERBS.GET,
+      urls.services(namespace),
+      params,
+      {},
+    );
+  };
+
+  getServiceDetail = async (
+    namespace: string,
+    service: string,
+    validate: boolean,
+    cluster?: string,
+    rateInterval?: DurationInSeconds,
+  ): Promise<ServiceDetailsInfo> => {
+    const params: QueryParams<ServiceDetailsQuery> = {};
+
+    if (validate) {
+      params.validate = true;
+    }
+
+    if (rateInterval) {
+      params.rateInterval = `${rateInterval}s`;
+    }
+
+    if (cluster) {
+      params.clusterName = cluster;
+    }
+
+    return this.newRequest<ServiceDetailsInfo>(
+      HTTP_VERBS.GET,
+      urls.service(namespace, service),
+      params,
+      {},
+    ).then(r => {
+      const info: ServiceDetailsInfo = r;
+
+      if (info.health) {
+        // Default rate interval in backend = 600s
+        info.health = ServiceHealth.fromJson(namespace, service, info.health, {
+          rateInterval: rateInterval ?? 600,
+          hasSidecar: info.istioSidecar,
+          hasAmbient: info.istioAmbient,
+        });
+      }
+      return info;
+    });
+  };
+
+  getApps = async (
+    namespace: string,
+    params: AppListQuery,
+  ): Promise<AppList> => {
+    return this.newRequest<AppList>(
+      HTTP_VERBS.GET,
+      urls.apps(namespace),
+      params,
+      {},
+    );
+  };
+
+  getApp = async (
+    namespace: string,
+    app: string,
+    params: AppQuery,
+    cluster?: string,
+  ): Promise<App> => {
+    const queryParams: QueryParams<AppQuery> = { ...params };
+
+    if (cluster) {
+      queryParams.clusterName = cluster;
+    }
+
+    return this.newRequest<App>(
+      HTTP_VERBS.GET,
+      urls.app(namespace, app),
+      queryParams,
+      {},
+    );
   };
 }
 
