@@ -119,13 +119,18 @@ export class EnforcerDelegate {
     policy: string[],
     source: Source,
     externalTrx?: Knex.Transaction,
-    isUpdate?: boolean,
   ): Promise<void> {
     const trx = externalTrx ?? (await this.knex.transaction());
     const entityRef = policy[1];
     let metadata;
 
     try {
+      await this.policyMetadataStorage.createPolicyMetadata(
+        source,
+        policy,
+        trx,
+      );
+
       if (entityRef.startsWith(`role:`)) {
         metadata = await this.roleMetadataStorage.findRoleMetadata(
           entityRef,
@@ -133,22 +138,26 @@ export class EnforcerDelegate {
         );
       }
 
-      await this.policyMetadataStorage.createPolicyMetadata(
-        source,
-        policy,
-        trx,
-      );
-
-      if (!metadata && !isUpdate) {
-        const currentDate: Date = new Date();
+      const currentDate: Date = new Date();
+      if (!metadata) {
         await this.roleMetadataStorage.createRoleMetadata(
-          // todo: author and so on....
           {
             source,
             roleEntityRef: entityRef,
             createdAt: currentDate.toUTCString(),
             lastModified: currentDate.toUTCString(),
           },
+          trx,
+        );
+      } else {
+        await this.roleMetadataStorage.updateRoleMetadata(
+          {
+            source,
+            roleEntityRef: entityRef,
+            createdAt: metadata.createdAt,
+            lastModified: currentDate.toUTCString(),
+          },
+          entityRef,
           trx,
         );
       }
@@ -392,7 +401,11 @@ export class EnforcerDelegate {
           1,
           roleEntity,
         );
-        if (roleMetadata && groupPolicies.length === 0) {
+        if (
+          roleMetadata &&
+          groupPolicies.length === 0 &&
+          roleEntity !== 'role:default/rbac_admin'
+        ) {
           await this.roleMetadataStorage.removeRoleMetadata(roleEntity, trx);
         } else if (roleMetadata) {
           const currentDate: Date = new Date();
@@ -513,13 +526,8 @@ export class EnforcerDelegate {
       } else if (
         await this.hasFilteredPolicyMetadata(groupPolicy, 'legacy', trx)
       ) {
-        await this.roleMetadataStorage.updateRoleMetadata(
-          { source: source, roleEntityRef: groupPolicy.at(1)! },
-          groupPolicy.at(1)!,
-          trx,
-        );
         await this.removeGroupingPolicy(groupPolicy, source, true, isCSV, trx);
-        await this.addGroupingPolicy(groupPolicy, source, trx, true);
+        await this.addGroupingPolicy(groupPolicy, source, trx);
       }
       if (!externalTrx) {
         await trx.commit();
@@ -546,11 +554,6 @@ export class EnforcerDelegate {
         } else if (
           await this.hasFilteredPolicyMetadata(groupPolicy, 'legacy', trx)
         ) {
-          await this.roleMetadataStorage.updateRoleMetadata(
-            { source: source, roleEntityRef: groupPolicy.at(1)! },
-            groupPolicy.at(1)!,
-            trx,
-          );
           await this.removeGroupingPolicy(
             groupPolicy,
             source,
@@ -558,7 +561,7 @@ export class EnforcerDelegate {
             isCSV,
             trx,
           );
-          await this.addGroupingPolicy(groupPolicy, source, trx, true);
+          await this.addGroupingPolicy(groupPolicy, source, trx);
         }
       }
       if (!externalTrx) {

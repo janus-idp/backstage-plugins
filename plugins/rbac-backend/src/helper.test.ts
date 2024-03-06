@@ -90,7 +90,7 @@ describe('helper.ts', () => {
       expect(mockEnforcerDelegate.removeGroupingPolicy).toHaveBeenCalledWith(
         ['user:default/admin', roleName],
         source,
-        true,
+        false,
       );
     });
 
