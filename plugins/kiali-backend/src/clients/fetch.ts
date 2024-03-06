@@ -32,9 +32,13 @@ export class KialiFetcher {
     this.kialiAuth = new KialiAuthentication(KD);
   }
 
-  newRequest = async <P>(endpoint: string, auth: boolean = false) => {
+  newRequest = async <P>(
+    endpoint: string,
+    auth: boolean = false,
+    method?: string,
+  ) => {
     this.logger.info(`Query to ${endpoint}`);
-    return axios.request<P>(this.getRequestInit(endpoint, auth));
+    return axios.request<P>(this.getRequestInit(endpoint, auth, method));
   };
 
   private async getAuthInfo(): Promise<AuthInfo> {
@@ -122,6 +126,7 @@ export class KialiFetcher {
   private getRequestInit = (
     endpoint: string,
     auth: boolean = false,
+    method?: string,
   ): AxiosRequestConfig => {
     const requestInit: AxiosRequestConfig = { timeout: TIMEOUT_FETCH };
     const headers = { 'X-Auth-Type-Kiali-UI': '1' };
@@ -136,7 +141,7 @@ export class KialiFetcher {
       requestInit.data = params;
       requestInit.method = 'post';
     } else {
-      requestInit.method = 'get';
+      requestInit.method = method ? method : 'get';
       requestInit.headers = {
         ...headers,
         Accept: 'application/json',

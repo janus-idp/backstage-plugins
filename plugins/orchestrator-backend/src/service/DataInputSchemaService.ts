@@ -8,9 +8,9 @@ import {
   isJsonObjectSchema,
   JsonObjectSchema,
   ProcessInstanceVariables,
+  WorkflowDefinition,
   WorkflowInputSchemaResponse,
   WorkflowInputSchemaStep,
-  WorkflowItem,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { WORKFLOW_DATA_KEY } from './constants';
@@ -86,7 +86,7 @@ export class DataInputSchemaService {
   }
 
   public getWorkflowInputSchemaResponse(
-    workflowItem: WorkflowItem,
+    definition: WorkflowDefinition,
     inputSchema: JSONSchema7,
     instanceVariables?: ProcessInstanceVariables,
     assessmentInstanceVariables?: ProcessInstanceVariables,
@@ -98,7 +98,7 @@ export class DataInputSchemaService {
       : undefined;
 
     const res: WorkflowInputSchemaResponse = {
-      workflowItem,
+      definition,
       isComposedSchema: false,
       schemaSteps: [],
     };

@@ -1,4 +1,5 @@
 import {
+  toWorkflowYaml,
   WorkflowOverviewDTO,
   WorkflowOverviewListResultDTO,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
@@ -32,7 +33,7 @@ const createMockSonataFlowService = (): SonataFlowService => {
   mockSonataFlowService.fetchWorkflowOverviews = jest.fn();
   mockSonataFlowService.fetchWorkflowOverview = jest.fn();
   mockSonataFlowService.fetchWorkflowDefinition = jest.fn();
-  mockSonataFlowService.fetchWorkflowUri = jest.fn();
+  mockSonataFlowService.fetchWorkflowSource = jest.fn();
 
   return mockSonataFlowService;
 };
@@ -166,7 +167,7 @@ describe('getWorkflowOverviewById', () => {
     expect(overviewV2).toBeDefined();
     expect(overviewV2.workflowId).toBeUndefined();
     expect(overviewV2.name).toBeUndefined();
-    expect(overviewV2.uri).toBeUndefined();
+    expect(overviewV2.format).toBeUndefined();
     expect(overviewV2.lastTriggeredMs).toBeUndefined();
     expect(overviewV2.lastRunStatus).toBeUndefined();
     expect(overviewV2.category).toEqual('infrastructure');
@@ -203,9 +204,9 @@ describe('getWorkflowById', () => {
   });
 
   it("Workflow doesn't exists", async () => {
-    (
-      mockSonataFlowService.fetchWorkflowDefinition as jest.Mock
-    ).mockRejectedValue(new Error('No definition'));
+    (mockSonataFlowService.fetchWorkflowSource as jest.Mock).mockRejectedValue(
+      new Error('No definition'),
+    );
     // Act
     const promise = V2.getWorkflowById(
       mockSonataFlowService,
@@ -217,14 +218,12 @@ describe('getWorkflowById', () => {
   });
 
   it('1 items in workflow list', async () => {
-    const testUri = 'test-uri.sw.yaml';
+    const testFormat = 'yaml';
     const wfDefinition = generateWorkflowDefinition;
+    const source = toWorkflowYaml(wfDefinition);
 
-    (
-      mockSonataFlowService.fetchWorkflowDefinition as jest.Mock
-    ).mockResolvedValue(wfDefinition);
-    (mockSonataFlowService.fetchWorkflowUri as jest.Mock).mockResolvedValue(
-      testUri,
+    (mockSonataFlowService.fetchWorkflowSource as jest.Mock).mockResolvedValue(
+      source,
     );
     // Act
     const workflowV2 = await V2.getWorkflowById(
@@ -237,7 +236,7 @@ describe('getWorkflowById', () => {
     expect(workflowV2.id).toBeDefined();
     expect(workflowV2.id).toEqual(wfDefinition.id);
     expect(workflowV2.name).toEqual(wfDefinition.name);
-    expect(workflowV2.uri).toEqual(testUri);
+    expect(workflowV2.format).toEqual(testFormat);
     expect(workflowV2.description).toEqual(wfDefinition.description);
     expect(workflowV2.category).toEqual('infrastructure');
     expect(workflowV2.annotations).toBeUndefined();

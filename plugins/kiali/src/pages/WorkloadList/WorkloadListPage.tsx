@@ -12,6 +12,7 @@ import * as FilterHelper from '../../components/FilterList/FilterHelper';
 import { TimeDurationComponent } from '../../components/Time/TimeDurationComponent';
 import { VirtualList } from '../../components/VirtualList/VirtualList';
 import { isMultiCluster } from '../../config';
+import { nsEqual } from '../../helpers/namespaces';
 import { getErrorString, kialiApiRef } from '../../services/Api';
 import { KialiAppState, KialiContext } from '../../store';
 import { baseStyle } from '../../styles/StyleUtils';
@@ -56,13 +57,6 @@ export const WorkloadListPage = () => {
           `Could not fetch workloads: ${getErrorString(err)}`,
         ),
       );
-  };
-
-  const nsEqual = (ns: string[], ns2: string[]): boolean => {
-    return (
-      ns.length === ns2.length &&
-      ns.every((value: any, index: number) => value === ns2[index])
-    );
   };
 
   const load = async () => {

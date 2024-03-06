@@ -21,7 +21,7 @@ export const WorkflowsTabContent = () => {
   const { value, error, loading } = useAsync(async (): Promise<
     WorkflowOverview[]
   > => {
-    const data = await orchestratorApi.listWorkflowsOverview();
+    const data = await orchestratorApi.listWorkflowOverviews();
     return data.items;
   }, []);
 

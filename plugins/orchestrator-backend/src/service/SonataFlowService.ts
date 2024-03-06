@@ -1,6 +1,5 @@
 import { Config } from '@backstage/config';
 
-import { OpenAPIV3 } from 'openapi-types';
 import { Logger } from 'winston';
 
 import {
@@ -8,6 +7,7 @@ import {
   DEFAULT_SONATAFLOW_CONTAINER_IMAGE,
   DEFAULT_SONATAFLOW_PERSISTANCE_PATH,
   DEFAULT_WORKFLOWS_PATH,
+  extractWorkflowFormat,
   fromWorkflowSource,
   getWorkflowCategory,
   ProcessInstance,
@@ -26,10 +26,6 @@ import { executeWithRetry } from './Helper';
 
 const SONATA_FLOW_RESOURCES_PATH =
   '/home/kogito/serverless-workflow-project/src/main/resources';
-
-interface SonataFlowSource {
-  uri: string;
-}
 
 interface LauncherCommand {
   command: string;
@@ -77,47 +73,20 @@ export class SonataFlowService {
       return true;
     }
 
-    const isAlreadyUp = await this.isSonataFlowUp(false, this.devmodeUrl);
+    const isAlreadyUp = await this.isSonataFlowUp(false, this.devModeUrl);
     if (isAlreadyUp) {
       return true;
     }
 
     this.launchSonataFlow();
-    return await this.isSonataFlowUp(true, this.devmodeUrl);
+    return await this.isSonataFlowUp(true, this.devModeUrl);
   }
 
-  public get devmodeUrl(): string {
+  public get devModeUrl(): string {
     if (!this.connection.port) {
       return this.connection.host;
     }
     return `${this.connection.host}:${this.connection.port}`;
-  }
-
-  public async fetchWorkflowUri(
-    workflowId: string,
-  ): Promise<string | undefined> {
-    try {
-      const definition = await this.dataIndex.getWorkflowDefinition(workflowId);
-      if (!definition?.serviceUrl) {
-        return undefined;
-      }
-      const urlToFetch = `${definition.serviceUrl}/management/processes/${workflowId}/sources`;
-      const response = await executeWithRetry(() => fetch(urlToFetch));
-
-      if (response.ok) {
-        const json = (await response.json()) as SonataFlowSource[];
-        this.logger.debug(`Fetch workflow uri result: ${JSON.stringify(json)}`);
-        // Assuming only one source in the list
-        return json.pop()?.uri;
-      }
-      const responseStr = JSON.stringify(response);
-      this.logger.error(
-        `Response was NOT okay when fetch(${urlToFetch}). Received response: ${responseStr}`,
-      );
-    } catch (error) {
-      this.logger.error(`Error when fetching workflow uri: ${error}`);
-    }
-    return undefined;
   }
 
   public async fetchWorkflowInfo(
@@ -146,11 +115,25 @@ export class SonataFlowService {
     return undefined;
   }
 
+  public async fetchWorkflowSource(
+    workflowId: string,
+  ): Promise<string | undefined> {
+    try {
+      const source = await this.dataIndex.fetchWorkflowSource(workflowId);
+      if (source) {
+        return source;
+      }
+    } catch (error) {
+      this.logger.error(`Error when fetching workflow source: ${error}`);
+    }
+    return undefined;
+  }
+
   public async fetchWorkflowDefinition(
     workflowId: string,
   ): Promise<WorkflowDefinition | undefined> {
     try {
-      const source = await this.dataIndex.fetchWorkflowSource(workflowId);
+      const source = await this.fetchWorkflowSource(workflowId);
       if (source) {
         return fromWorkflowSource(source);
       }
@@ -160,39 +143,18 @@ export class SonataFlowService {
     return undefined;
   }
 
-  public async fetchOpenApi(
-    endpoint: string,
-  ): Promise<OpenAPIV3.Document | undefined> {
-    try {
-      const urlToFetch = `${endpoint}/q/openapi.json`;
-      const response = await executeWithRetry(() => fetch(urlToFetch));
-      if (response.ok) {
-        const json = await response.json();
-        this.logger.debug(`Fetch openapi result: ${JSON.stringify(json)}`);
-        return json;
-      }
-      const responseStr = JSON.stringify(response);
-      this.logger.error(
-        `Response was NOT okay when fetch(${urlToFetch}). Received response: ${responseStr}`,
-      );
-    } catch (error) {
-      this.logger.error(`Error when fetching openapi: ${error}`);
-    }
-    return undefined;
-  }
-
   public async fetchWorkflowOverviews(): Promise<
     WorkflowOverview[] | undefined
   > {
     try {
-      const workflowDefinitions = await this.dataIndex.getWorkflowDefinitions();
-      if (!workflowDefinitions?.length) {
+      const workflowInfos = await this.dataIndex.getWorkflowInfos();
+      if (!workflowInfos?.length) {
         return [];
       }
       const items = await Promise.all(
-        workflowDefinitions
-          .filter(def => def.id)
-          .map(async (def: WorkflowInfo) => this.fetchWorkflowOverview(def.id)),
+        workflowInfos
+          .filter(info => info.source)
+          .map(info => this.fetchWorkflowOverviewBySource(info.source!)),
       );
       return items.filter((item): item is WorkflowOverview => !!item);
     } catch (error) {
@@ -295,7 +257,7 @@ export class SonataFlowService {
     launcherArgs.push('-e', `QUARKUS_HTTP_PORT=${this.connection.port}`);
 
     launcherArgs.push('-p', `${this.connection.port}:${this.connection.port}`);
-    launcherArgs.push('-e', `KOGITO_SERVICE_URL=${this.devmodeUrl}`);
+    launcherArgs.push('-e', `KOGITO_SERVICE_URL=${this.devModeUrl}`);
     launcherArgs.push(
       '-v',
       `${resourcesAbsPath}:${SONATA_FLOW_RESOURCES_PATH}`,
@@ -375,11 +337,17 @@ export class SonataFlowService {
   public async fetchWorkflowOverview(
     workflowId: string,
   ): Promise<WorkflowOverview | undefined> {
-    const definition = await this.fetchWorkflowDefinition(workflowId);
-    if (!definition) {
-      this.logger.debug(`Workflow definition not found: ${workflowId}`);
+    const source = await this.dataIndex.fetchWorkflowSource(workflowId);
+    if (!source) {
+      this.logger.debug(`Workflow source not found: ${workflowId}`);
       return undefined;
     }
+    return await this.fetchWorkflowOverviewBySource(source);
+  }
+
+  private async fetchWorkflowOverviewBySource(
+    source: string,
+  ): Promise<WorkflowOverview | undefined> {
     let processInstances: ProcessInstance[] = [];
     const limit = 10;
     let offset: number = 0;
@@ -388,6 +356,7 @@ export class SonataFlowService {
     let lastRunStatus: ProcessInstanceStateValues | undefined;
     let counter = 0;
     let totalDuration = 0;
+    const definition = fromWorkflowSource(source);
 
     do {
       processInstances = await this.dataIndex.fetchWorkflowInstances(
@@ -417,7 +386,7 @@ export class SonataFlowService {
     return {
       workflowId: definition.id,
       name: definition.name,
-      uri: await this.fetchWorkflowUri(workflowId),
+      format: extractWorkflowFormat(source),
       lastTriggeredMs: lastTriggered.getTime(),
       lastRunStatus,
       category: getWorkflowCategory(definition),

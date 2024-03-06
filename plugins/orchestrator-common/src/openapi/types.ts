@@ -19,5 +19,6 @@ export type WorkflowDataDTO = components['schemas']['WorkflowDataDTO'];
 export type ProcessInstanceStatusDTO =
   components['schemas']['ProcessInstanceStatusDTO'];
 export type WorkflowCategoryDTO = components['schemas']['WorkflowCategoryDTO'];
+export type WorkflowFormatDTO = components['schemas']['WorkflowFormatDTO'];
 export type WorkflowRunStatusDTO =
   components['schemas']['WorkflowRunStatusDTO'];

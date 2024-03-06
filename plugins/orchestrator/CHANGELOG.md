@@ -1,3 +1,36 @@
+## @janus-idp/backstage-plugin-orchestrator [1.7.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.7.1...@janus-idp/backstage-plugin-orchestrator@1.7.2) (2024-03-04)
+
+
+### Bug Fixes
+
+* **orchestrator:** walk around the state field is empty issue when fetch instance ([#1299](https://github.com/janus-idp/backstage-plugins/issues/1299)) ([e5c33c0](https://github.com/janus-idp/backstage-plugins/commit/e5c33c06fc66a6ff393365282f825c5fdc4713c9))
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.5
+
+## @janus-idp/backstage-plugin-orchestrator [1.7.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.7.0...@janus-idp/backstage-plugin-orchestrator@1.7.1) (2024-03-03)
+
+
+### Bug Fixes
+
+* **orchestrator:** stop fetching workflow URI ([#1297](https://github.com/janus-idp/backstage-plugins/issues/1297)) ([2456a28](https://github.com/janus-idp/backstage-plugins/commit/2456a287dbff955a0916b9600e89a39511cd537a))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.3.7
+
+## @janus-idp/backstage-plugin-orchestrator [1.7.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.6.7...@janus-idp/backstage-plugin-orchestrator@1.7.0) (2024-03-03)
+
+
+### Features
+
+* **orchestrator:** display a description modal before triggering infra-wfs that resulted from an assessment wf ([#1284](https://github.com/janus-idp/backstage-plugins/issues/1284)) ([ec293c9](https://github.com/janus-idp/backstage-plugins/commit/ec293c9e79efd77873e17d07b1511ad9fdda8842))
+
 ## @janus-idp/backstage-plugin-orchestrator [1.6.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.6.6...@janus-idp/backstage-plugin-orchestrator@1.6.7) (2024-02-29)
 
 
