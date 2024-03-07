@@ -798,6 +798,17 @@ describe('CSV file', () => {
     let enfDelegate: EnforcerDelegate;
 
     beforeEach(async () => {
+      policyMetadataStorageMock.findPolicyMetadata = jest
+        .fn()
+        .mockImplementation(
+          async (
+            _policy: string[],
+            _trx: Knex.Knex.Transaction,
+          ): Promise<PermissionPolicyMetadata> => {
+            return { source: 'csv-file' };
+          },
+        );
+
       const adapter = new StringAdapter(
         `
           p, user:default/known_user, test.resource.deny, use, allow
@@ -828,6 +839,7 @@ describe('CSV file', () => {
 
     afterEach(() => {
       (loggerMock.warn as jest.Mock).mockReset();
+      (policyMetadataStorageMock.findPolicyMetadata as jest.Mock).mockReset();
     });
 
     it('should add policies from the CSV file', async () => {
@@ -926,6 +938,23 @@ describe('CSV file', () => {
         'role:default/catalog-updater',
       ];
 
+      policyMetadataStorageMock.findPolicyMetadata = jest
+        .fn()
+        .mockImplementation(
+          async (
+            policy: string[],
+            _trx: Knex.Knex.Transaction,
+          ): Promise<PermissionPolicyMetadata> => {
+            if (
+              isEqual(policy, duplicatePolicyEnforcer) ||
+              isEqual(policy, duplicateRoleEnforcer)
+            ) {
+              return { source: 'rest' };
+            }
+            return { source: 'csv-file' };
+          },
+        );
+
       await enfDelegate.addPolicy(duplicatePolicyEnforcer, 'rest');
       await enfDelegate.addGroupingPolicy(duplicateRoleEnforcer, 'rest');
 
@@ -943,7 +972,7 @@ describe('CSV file', () => {
 
       expect(loggerMock.warn).toHaveBeenNthCalledWith(
         1,
-        `Duplicate policy: ${duplicatePolicyEnforcer} found in the file ${errorPolicyFile}`,
+        `Duplicate policy: ${duplicatePolicyEnforcer} found in the file ${errorPolicyFile}, originates from source: rest`,
       );
       expect(loggerMock.warn).toHaveBeenNthCalledWith(
         2,
