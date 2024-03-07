@@ -185,9 +185,12 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     );
     await setAdminPermissions(enforcerDelegate);
 
-    if (!adminUsers || adminUsers.length === 0) {
+    if (
+      (!adminUsers || adminUsers.length === 0) &&
+      (!superUsers || superUsers.length === 0)
+    ) {
       logger.warn(
-        'There are no admins configured for the RBAC-backend plugin.',
+        'There are no admins or super admins configured for the RBAC-backend plugin.',
       );
     }
 
