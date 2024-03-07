@@ -8,7 +8,8 @@ export type WorkflowDTO = components['schemas']['WorkflowDTO'];
 export type WorkflowListResultDTO =
   components['schemas']['WorkflowListResultDTO'];
 export type ProcessInstanceDTO = components['schemas']['ProcessInstanceDTO'];
-export type ProcessInstancesDTO = components['schemas']['ProcessInstancesDTO'];
+export type ProcessInstanceListResultDTO =
+  components['schemas']['ProcessInstanceListResultDTO'];
 export type AssessedProcessInstanceDTO =
   components['schemas']['AssessedProcessInstanceDTO'];
 export type ExecuteWorkflowRequestDTO =

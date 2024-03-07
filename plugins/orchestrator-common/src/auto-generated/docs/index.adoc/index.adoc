@@ -326,11 +326,42 @@ Retrieve an array of instances
 
 
 
+====== Query Parameters
+
+[cols="2,3,1,1,1"]
+|===
+|Name| Description| Required| Default| Pattern
+
+| page
+| page number 
+| -
+| null
+| 
+
+| pageSize
+| page size 
+| -
+| null
+| 
+
+| orderBy
+| field name to order the data 
+| -
+| null
+| 
+
+| orderDirection
+| ascending or descending 
+| -
+| null
+| 
+
+|===
 
 
 ===== Return Type
 
-array[<<ProcessInstanceDTO>>]
+<<ProcessInstanceListResultDTO>>
 
 
 ===== Content Type
@@ -347,7 +378,7 @@ array[<<ProcessInstanceDTO>>]
 
 | 200
 | Success
-| List[<<ProcessInstanceDTO>>] 
+|  <<ProcessInstanceListResultDTO>>
 
 
 | 500
@@ -1039,13 +1070,13 @@ The ErrorResponse object represents a common structure for handling errors in AP
 |===
 | Field Name| Required| Type| Description| Format
 
-| limit
+| pageSize
 | 
 | BigDecimal 
 | 
 |  
 
-| offset
+| page
 | 
 | BigDecimal 
 | 
@@ -1153,6 +1184,31 @@ The ErrorResponse object represents a common structure for handling errors in AP
 | 
 | String 
 | Error message (optional)
+|  
+
+|===
+
+
+[#ProcessInstanceListResultDTO]
+=== _ProcessInstanceListResultDTO_ 
+
+
+
+[.fields-ProcessInstanceListResultDTO]
+[cols="2,1,2,4,1"]
+|===
+| Field Name| Required| Type| Description| Format
+
+| items
+| 
+| List  of <<ProcessInstanceDTO>>
+| 
+|  
+
+| paginationInfo
+| 
+| PaginationInfoDTO 
+| 
 |  
 
 |===

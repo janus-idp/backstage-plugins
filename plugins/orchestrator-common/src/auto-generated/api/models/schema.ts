@@ -86,8 +86,8 @@ export interface components {
       description?: string;
     };
     PaginationInfoDTO: {
-      limit?: number;
-      offset?: number;
+      pageSize?: number;
+      page?: number;
       totalCount?: number;
     };
     /**
@@ -115,7 +115,10 @@ export interface components {
       description?: string;
       annotations?: string[];
     };
-    ProcessInstancesDTO: components['schemas']['ProcessInstanceDTO'][];
+    ProcessInstanceListResultDTO: {
+      items?: components['schemas']['ProcessInstanceDTO'][];
+      paginationInfo?: components['schemas']['PaginationInfoDTO'];
+    };
     AssessedProcessInstanceDTO: {
       instance: components['schemas']['ProcessInstanceDTO'];
       assessedBy?: components['schemas']['ProcessInstanceDTO'];
@@ -303,11 +306,23 @@ export interface operations {
    * @description Retrieve an array of instances
    */
   getInstances: {
+    parameters: {
+      query?: {
+        /** @description page number */
+        page?: number;
+        /** @description page size */
+        pageSize?: number;
+        /** @description field name to order the data */
+        orderBy?: string;
+        /** @description ascending or descending */
+        orderDirection?: string;
+      };
+    };
     responses: {
       /** @description Success */
       200: {
         content: {
-          'application/json': components['schemas']['ProcessInstancesDTO'];
+          'application/json': components['schemas']['ProcessInstanceListResultDTO'];
         };
       };
       /** @description Error fetching instances */

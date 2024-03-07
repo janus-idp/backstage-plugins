@@ -4,6 +4,7 @@ import {
   WorkflowOverviewListResultDTO,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
+import { buildPagination } from '../../types/pagination';
 import { SonataFlowService } from '../SonataFlowService';
 import { mapToWorkflowOverviewDTO } from './mapping/V2Mappings';
 import {
@@ -48,6 +49,14 @@ describe('getWorkflowOverview', () => {
 
   it('0 items in workflow overview list', async () => {
     // Arrange
+    const mockRequest: any = {
+      query: {
+        page: 1,
+        pageSize: 50,
+        orderBy: 'lastUpdated',
+        orderDirection: 'DESC',
+      },
+    };
     const mockOverviewsV1 = {
       items: [],
     };
@@ -59,6 +68,7 @@ describe('getWorkflowOverview', () => {
     // Act
     const result: WorkflowOverviewListResultDTO = await V2.getWorkflowsOverview(
       mockSonataFlowService,
+      buildPagination(mockRequest),
     );
 
     // Assert
@@ -67,8 +77,8 @@ describe('getWorkflowOverview', () => {
         mapToWorkflowOverviewDTO(item),
       ),
       paginationInfo: {
-        limit: 0,
-        offset: 0,
+        page: 1,
+        pageSize: 50,
         totalCount: mockOverviewsV1.items.length,
       },
     });
@@ -76,6 +86,9 @@ describe('getWorkflowOverview', () => {
 
   it('1 item in workflow overview list', async () => {
     // Arrange
+    const mockRequest: any = {
+      query: {},
+    };
     const mockOverviewsV1 = generateTestWorkflowOverviewList(1, {});
 
     (
@@ -85,6 +98,7 @@ describe('getWorkflowOverview', () => {
     // Act
     const result: WorkflowOverviewListResultDTO = await V2.getWorkflowsOverview(
       mockSonataFlowService,
+      buildPagination(mockRequest),
     );
 
     // Assert
@@ -93,8 +107,8 @@ describe('getWorkflowOverview', () => {
         mapToWorkflowOverviewDTO(item),
       ),
       paginationInfo: {
-        limit: 0,
-        offset: 0,
+        page: 0,
+        pageSize: 10,
         totalCount: mockOverviewsV1.items.length,
       },
     });
@@ -102,6 +116,14 @@ describe('getWorkflowOverview', () => {
 
   it('many items in workflow overview list', async () => {
     // Arrange
+    const mockRequest: any = {
+      query: {
+        page: 1,
+        pageSize: 50,
+        orderBy: 'lastUpdated',
+        orderDirection: 'DESC',
+      },
+    };
     const mockOverviewsV1 = generateTestWorkflowOverviewList(100, {});
 
     (
@@ -111,6 +133,7 @@ describe('getWorkflowOverview', () => {
     // Act
     const result: WorkflowOverviewListResultDTO = await V2.getWorkflowsOverview(
       mockSonataFlowService,
+      buildPagination(mockRequest),
     );
 
     // Assert
@@ -119,8 +142,8 @@ describe('getWorkflowOverview', () => {
         mapToWorkflowOverviewDTO(item),
       ),
       paginationInfo: {
-        limit: 0,
-        offset: 0,
+        page: 1,
+        pageSize: 50,
         totalCount: mockOverviewsV1.items.length,
       },
     });
@@ -128,12 +151,18 @@ describe('getWorkflowOverview', () => {
 
   it('undefined workflow overview list', async () => {
     // Arrange
+    const mockRequest: any = {
+      query: {},
+    };
     (
       mockSonataFlowService.fetchWorkflowOverviews as jest.Mock
     ).mockRejectedValue(new Error('no workflow overview'));
 
     // Act
-    const promise = V2.getWorkflowsOverview(mockSonataFlowService);
+    const promise = V2.getWorkflowsOverview(
+      mockSonataFlowService,
+      buildPagination(mockRequest),
+    );
 
     // Assert
     await expect(promise).rejects.toThrow('no workflow overview');

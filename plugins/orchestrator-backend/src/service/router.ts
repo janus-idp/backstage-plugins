@@ -17,6 +17,7 @@ import {
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { RouterArgs } from '../routerWrapper';
+import { buildPagination } from '../types/pagination';
 import { V1 } from './api/v1';
 import { V2 } from './api/v2';
 import { CloudEventService } from './CloudEventService';
@@ -157,8 +158,11 @@ function setupInternalRoutes(
   // v2
   api.register(
     'getWorkflowsOverview',
-    async (_c, _req, res: express.Response, next) => {
-      await V2.getWorkflowsOverview(services.sonataFlowService)
+    async (_c, req, res: express.Response, next) => {
+      await V2.getWorkflowsOverview(
+        services.sonataFlowService,
+        buildPagination(req),
+      )
         .then(result => res.json(result))
         .catch(error => {
           res
@@ -357,8 +361,8 @@ function setupInternalRoutes(
   // v2
   api.register(
     'getInstances',
-    async (_c, _req: express.Request, res: express.Response, next) => {
-      await V2.getInstances(services.dataIndexService)
+    async (_c, req: express.Request, res: express.Response, next) => {
+      await V2.getInstances(services.dataIndexService, buildPagination(req))
         .then(result => res.json(result))
         .catch(next);
     },
