@@ -390,7 +390,6 @@ export class EnforcerDelegate {
     const trx = externalTrx ?? (await this.knex.transaction());
     try {
       for (const policy of policies) {
-        const roleEntity = policy[1];
         await this.checkIfPolicyModifiable(
           policy,
           source,
