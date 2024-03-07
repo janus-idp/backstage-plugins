@@ -4,11 +4,57 @@ import {
   generateTestExecuteWorkflowResponse,
   generateTestWorkflowOverview,
 } from '../test-utils';
+import assessedProcessInstanceData from './__fixtures__/assessedProcessInstance.json';
 import {
   mapToExecuteWorkflowResponseDTO,
+  mapToGetWorkflowInstanceResults,
   mapToWorkflowOverviewDTO,
   mapWorkflowCategoryDTOFromString,
 } from './V2Mappings';
+
+describe('scenarios to verify mapToGetWorkflowInstanceResults', () => {
+  it('correctly maps positive scenario response', async () => {
+    const assessedProcessInstance = assessedProcessInstanceData;
+
+    const mappedValue = mapToGetWorkflowInstanceResults(
+      // @ts-ignore
+      assessedProcessInstance.instance.variables,
+    );
+
+    expect(mappedValue).toBeDefined();
+    expect(mappedValue.result).toBeDefined();
+    expect(mappedValue.preCheck).toBeDefined();
+    expect(mappedValue.workflowOptions).toBeDefined();
+    expect(mappedValue.repositoryUrl).toEqual('https://java.com');
+    expect(Object.keys(mappedValue).length).toBe(4);
+  });
+
+  it('correctly maps string response', async () => {
+    const testValue = 'string_value';
+    const mappedValue = mapToGetWorkflowInstanceResults(testValue);
+    expect(mappedValue).toBeDefined();
+    expect(Object.keys(mappedValue).length).toBe(1);
+    expect(mappedValue.variables).toBeDefined();
+    expect(mappedValue.variables).toEqual(testValue);
+  });
+
+  it('correctly returns empty workflowoptions when variables property does not exist', async () => {
+    const assessedProcessInstance = assessedProcessInstanceData;
+
+    // @ts-ignore
+    delete assessedProcessInstance.instance.variables;
+
+    const mappedValue = mapToGetWorkflowInstanceResults(
+      // @ts-ignore
+      assessedProcessInstance.instance.variables,
+    );
+
+    expect(mappedValue).toBeDefined();
+    expect(Object.keys(mappedValue).length).toBe(1);
+    expect(mappedValue.workflowoptions).toBeDefined();
+    expect(mappedValue.workflowoptions?.length).toBe(0);
+  });
+});
 
 describe('scenarios to verify executeWorkflowResponseDTO', () => {
   it('correctly maps positive scenario response', async () => {
