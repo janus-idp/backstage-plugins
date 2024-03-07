@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useParams } from 'react-router-dom';
 import { useAsyncFn, useDebounce } from 'react-use';
 
-import { Content } from '@backstage/core-components';
+import { Content, EmptyState } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
 import { CircularProgress } from '@material-ui/core';
@@ -37,6 +37,7 @@ export const ServiceDetailsPage = () => {
   const [validations, setValidations] = React.useState<Validations>();
   const [gateways, setGateways] = React.useState<Gateway[]>([]);
   const [k8sGateways, setK8sGateways] = React.useState<K8sGateway[]>([]);
+  const [error, setError] = React.useState<string>();
   const [peerAuthentication, setPeerAuthentication] = React.useState<
     PeerAuthentication[]
   >([]);
@@ -87,6 +88,14 @@ export const ServiceDetailsPage = () => {
   };
 
   const fetchService = async () => {
+    if (!namespace || !service) {
+      setError(`Could not fetch service: Empty namespace or service name`);
+      kialiState.alertUtils!.add(
+        `Could not fetch service: Empty namespace or service name`,
+      );
+      return;
+    }
+
     kialiClient
       .getServiceDetail(
         namespace ? namespace : '',
@@ -101,6 +110,7 @@ export const ServiceDetailsPage = () => {
         fetchIstioObjects();
       })
       .catch(err => {
+        setError(`Could not fetch service: ${getErrorString(err)}`);
         kialiState.alertUtils!.add(
           `Could not fetch service: ${getErrorString(err)}`,
         );
@@ -150,6 +160,13 @@ export const ServiceDetailsPage = () => {
           elements={grids()}
           onRefresh={() => fetchService()}
         />
+        {error !== undefined && (
+          <EmptyState
+            missing="content"
+            title="Service details"
+            description={<div>No Service found </div>}
+          />
+        )}
         <div style={{ marginTop: '20px' }}>{overviewTab()}</div>
       </Content>
     </div>

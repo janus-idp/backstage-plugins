@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useParams } from 'react-router-dom';
 import { useAsyncFn, useDebounce } from 'react-use';
 
-import { Content } from '@backstage/core-components';
+import { Content, EmptyState } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
 import { CircularProgress } from '@material-ui/core';
@@ -27,6 +27,7 @@ export const AppDetailsPage = () => {
   const kialiState = React.useContext(KialiContext) as KialiAppState;
   const [appItem, setAppItem] = React.useState<App>();
   const [health, setHealth] = React.useState<AppHealth>();
+  const [error, setError] = React.useState<string>();
   const [duration, setDuration] = React.useState<number>(
     FilterHelper.currentDuration(),
   );
@@ -53,6 +54,7 @@ export const AppDetailsPage = () => {
       health: 'true',
     };
     if (!namespace || !app) {
+      setError(`Could not fetch application: Empty namespace or app name`);
       kialiState.alertUtils!.add(
         `Could not fetch application: Empty namespace or app name`,
       );
@@ -71,6 +73,7 @@ export const AppDetailsPage = () => {
         setHealth(healthR);
       })
       .catch((err: AxiosError<unknown, any>) => {
+        setError(`Could not fetch application: ${getErrorString(err)}`);
         kialiState.alertUtils!.add(
           `Could not fetch application: ${getErrorString(err)}`,
         );
@@ -109,6 +112,13 @@ export const AppDetailsPage = () => {
           elements={grids()}
           onRefresh={() => fetchApp()}
         />
+        {error !== undefined && (
+          <EmptyState
+            missing="content"
+            title="App details"
+            description={<div>No App found </div>}
+          />
+        )}
         <div style={{ marginTop: '20px' }}>{overviewTab()}</div>
       </Content>
     </div>

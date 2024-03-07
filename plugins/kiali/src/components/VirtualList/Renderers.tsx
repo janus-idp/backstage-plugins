@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 
-import { TableCell, Tooltip } from '@material-ui/core';
+import { Chip, TableCell, Tooltip } from '@material-ui/core';
 
 import { isMultiCluster, KialiIcon, serverConfig } from '../../config';
 import { isWaypoint } from '../../helpers/LabelFilterHelper';
@@ -15,10 +15,10 @@ import { ValidationStatus } from '../../types/IstioObjects';
 import { ComponentStatus } from '../../types/IstioStatus';
 import { NamespaceInfo } from '../../types/NamespaceInfo';
 import { ServiceListItem } from '../../types/ServiceList';
+import { ENTITY } from '../../types/types';
 import { WorkloadListItem } from '../../types/Workload';
 import { StatefulFilters } from '../Filters/StatefulFilters';
 import { HealthIndicator } from '../Health/HealthIndicator';
-import { Label } from '../Label/Label';
 import { getIstioObjectUrl } from '../Link/IstioObjectLink';
 import { NamespaceMTLSStatus } from '../MTls/NamespaceMTLSStatus';
 import { PFBadge, PFBadges, PFBadgeType } from '../Pf/PfBadges';
@@ -90,6 +90,9 @@ export const item: Renderer<TResource> = (
   resource: TResource,
   config: Resource,
   badge: PFBadgeType,
+  _?: Health,
+  __?: React.RefObject<StatefulFilters>,
+  view?: string,
 ) => {
   const key = `link_definition_${config.name}_${resource.namespace}_${resource.name}`;
   let serviceBadge = badge;
@@ -113,7 +116,9 @@ export const item: Renderer<TResource> = (
       key={`VirtuaItem_Item_${resource.namespace}_${resource.name}`}
       style={{ verticalAlign: 'middle', whiteSpace: 'nowrap' }}
     >
-      <PFBadge badge={serviceBadge} position={topPosition} />
+      {view !== ENTITY && (
+        <PFBadge badge={serviceBadge} position={topPosition} />
+      )}
       <Link key={key} to={getLink(resource, config)} className={linkStyle}>
         {resource.name}
       </Link>
@@ -134,14 +139,23 @@ export const cluster: Renderer<TResource> = (resource: TResource) => {
   );
 };
 
-export const namespace: Renderer<TResource> = (resource: TResource) => {
+export const namespace: Renderer<TResource> = (
+  resource: TResource,
+  _: Resource,
+  __: PFBadgeType,
+  ___?: Health,
+  ____?: React.RefObject<StatefulFilters>,
+  view?: string,
+) => {
   return (
     <TableCell
       role="gridcell"
       key={`VirtuaItem_Namespace_${resource.namespace}_${item.name}`}
       style={{ verticalAlign: 'middle', whiteSpace: 'nowrap' }}
     >
-      <PFBadge badge={PFBadges.Namespace} position={topPosition} />
+      {view !== ENTITY && (
+        <PFBadge badge={PFBadges.Namespace} position={topPosition} />
+      )}
       {resource.namespace}
     </TableCell>
   );
@@ -153,10 +167,21 @@ export const labels: Renderer<SortResource | NamespaceInfo> = (
   __: PFBadgeType,
   ___?: Health,
   ____?: React.RefObject<StatefulFilters>,
+  view?: string,
 ) => {
   // @ts-ignore
   let path = window.location.pathname;
   path = path.substring(path.lastIndexOf('/console') + '/console'.length + 1);
+
+  const labelsView = resource.labels ? (
+    Object.entries(resource.labels).map(([key, value], _i) => {
+      return <Chip label={`${key}=${value}`} />;
+    })
+  ) : (
+    <></>
+  );
+
+  const labelsWrap = <div>{labelsView}</div>;
 
   return (
     <TableCell
@@ -166,10 +191,12 @@ export const labels: Renderer<SortResource | NamespaceInfo> = (
       }${resource.name}`}
       style={{ verticalAlign: 'middle', paddingBottom: '0.25rem' }}
     >
-      {resource.labels &&
-        Object.entries(resource.labels).map(([key, value], i) => {
-          return <Label key={`label_${i}`} name={key} value={value} />;
-        })}
+      {view === ENTITY && resource.labels && (
+        <Tooltip title={labelsWrap}>
+          <Chip label={Object.entries(resource.labels).length.toString()} />
+        </Tooltip>
+      )}
+      {view !== ENTITY && labelsView}
     </TableCell>
   );
 };

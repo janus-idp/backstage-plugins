@@ -17,11 +17,12 @@ import { getErrorString, kialiApiRef } from '../../services/Api';
 import { KialiAppState, KialiContext } from '../../store';
 import { baseStyle } from '../../styles/StyleUtils';
 import { AppListItem } from '../../types/AppList';
+import { ENTITY } from '../../types/types';
 import { NamespaceInfo } from '../Overview/NamespaceInfo';
 import { getNamespaces } from '../Overview/OverviewPage';
 import * as AppListClass from './AppListClass';
 
-export const AppListPage = (): React.JSX.Element => {
+export const AppListPage = (props: { view?: string }): React.JSX.Element => {
   const kialiClient = useApi(kialiApiRef);
   const [namespaces, setNamespaces] = React.useState<NamespaceInfo[]>([]);
   const [allApps, setApps] = React.useState<AppListItem[]>([]);
@@ -123,12 +124,18 @@ export const AppListPage = (): React.JSX.Element => {
   return (
     <div className={baseStyle}>
       <Content>
-        <DefaultSecondaryMasthead elements={grids()} onRefresh={() => load()} />
+        {props.view !== ENTITY && (
+          <DefaultSecondaryMasthead
+            elements={grids()}
+            onRefresh={() => load()}
+          />
+        )}
         <VirtualList
           activeNamespaces={namespaces}
           rows={allApps}
           type="applications"
           hiddenColumns={hiddenColumns}
+          view={props.view}
         />
       </Content>
     </div>
