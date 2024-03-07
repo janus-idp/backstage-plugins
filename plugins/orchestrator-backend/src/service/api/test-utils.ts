@@ -1,5 +1,3 @@
-import { OpenAPIV3 } from 'openapi-types';
-
 import {
   ProcessInstance,
   ProcessInstanceState,
@@ -12,7 +10,6 @@ import {
   WorkflowOverview,
   WorkflowOverviewListResult,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
-import { OpenAPIV3 } from 'openapi-types';
 
 const baseDate = new Date('2023-02-19T11:45:21.123Z');
 const HOUR = 60 * 60 * 1000;
@@ -79,19 +76,6 @@ export function generateTestExecuteWorkflowResponse(
     id: id,
   };
 }
-
-// Utility function to generate fake OpenAPIV3.Document
-export const fakeOpenAPIV3Document = (): OpenAPIV3.Document => {
-  // Customize this function based on your OpenAPI document structure
-  return {
-    openapi: '3.0.0',
-    info: {
-      title: 'Title',
-      version: '1.0.0',
-    },
-    paths: {},
-  };
-};
 
 export const generateWorkflowDefinition: WorkflowDefinition = {
   id: 'quarkus-backend-workflow-ci-switch',

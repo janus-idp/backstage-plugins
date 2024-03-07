@@ -1,8 +1,8 @@
 import {
   AssessedProcessInstanceDTO,
   ExecuteWorkflowResponseDTO,
+  ProcessInstanceListResultDTO,
   toWorkflowYaml,
-  ProcessInstancesDTO,
   WorkflowDataDTO,
   WorkflowOverviewDTO,
   WorkflowOverviewListResultDTO,
@@ -76,6 +76,7 @@ const createMockDataIndexService = (): DataIndexService => {
   mockDataIndexService.fetchProcessInstance = jest.fn();
   mockDataIndexService.fetchProcessInstances = jest.fn();
   mockDataIndexService.abortWorkflowInstance = jest.fn();
+  mockDataIndexService.getProcessInstancesTotalCount = jest.fn();
 
   return mockDataIndexService;
 };
@@ -357,17 +358,23 @@ describe('executeWorkflow', () => {
 
 describe('getInstances', () => {
   let mockDataIndexService: DataIndexService;
+  const mockRequest: any = {
+    query: {},
+  };
+  const pagination = buildPagination(mockRequest);
   beforeEach(() => {
     jest.clearAllMocks();
     mockDataIndexService = createMockDataIndexService();
   });
 
   it("Instance doesn't exists", async () => {
+    // Arrange
+
     (mockDataIndexService.fetchProcessInstances as jest.Mock).mockRejectedValue(
       new Error('No definition'),
     );
     // Act
-    const promise = V2.getInstances(mockDataIndexService);
+    const promise = V2.getInstances(mockDataIndexService, pagination);
 
     // Assert
     await expect(promise).rejects.toThrow('No definition');
@@ -381,13 +388,14 @@ describe('getInstances', () => {
     );
 
     // Act
-    const processInstanceV2: ProcessInstancesDTO =
-      await V2.getInstances(mockDataIndexService);
+    const processInstanceV2: ProcessInstanceListResultDTO =
+      await V2.getInstances(mockDataIndexService, pagination);
 
     // Assert
     expect(processInstanceV2).toBeDefined();
-    expect(processInstanceV2).toHaveLength(1);
-    expect(processInstanceV2[0].id).toEqual(processInstance.id);
+    expect(processInstanceV2.items).toBeDefined();
+    expect(processInstanceV2.items).toHaveLength(1);
+    expect(processInstanceV2.items?.[0].id).toEqual(processInstance.id);
   });
   it('10 items in process instance list', async () => {
     const howmany = 10;
@@ -398,14 +406,15 @@ describe('getInstances', () => {
     );
 
     // Act
-    const processInstanceV2: ProcessInstancesDTO =
-      await V2.getInstances(mockDataIndexService);
+    const processInstanceV2: ProcessInstanceListResultDTO =
+      await V2.getInstances(mockDataIndexService, pagination);
 
     // Assert
     expect(processInstanceV2).toBeDefined();
-    expect(processInstanceV2).toHaveLength(howmany);
+    expect(processInstanceV2.items).toBeDefined();
+    expect(processInstanceV2.items).toHaveLength(howmany);
     for (let i = 0; i < howmany; i++) {
-      expect(processInstanceV2[i].id).toEqual(processInstance[i].id);
+      expect(processInstanceV2.items?.[i].id).toEqual(processInstance[i].id);
     }
   });
 });
