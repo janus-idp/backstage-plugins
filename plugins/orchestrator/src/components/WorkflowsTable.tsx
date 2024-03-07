@@ -1,12 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import {
-  Link,
-  Table,
-  TableColumn,
-  TableProps,
-} from '@backstage/core-components';
+import { Link, TableColumn, TableProps } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 
 import Pageview from '@material-ui/icons/Pageview';
@@ -26,6 +21,7 @@ import {
   workflowDefinitionsRouteRef,
 } from '../routes';
 import { capitalize } from '../utils/StringUtils';
+import OverrideBackstageTable from './ui/OverrideBackstageTable';
 import { WorkflowInstanceStatusIndicator } from './WorkflowInstanceStatusIndicator';
 
 export interface WorkflowsTableProps {
@@ -132,7 +128,7 @@ export const WorkflowsTable = ({ items }: WorkflowsTableProps) => {
   );
 
   return (
-    <Table<FormattedWorkflowOverview>
+    <OverrideBackstageTable<FormattedWorkflowOverview>
       title="Workflows"
       options={options}
       columns={columns}
