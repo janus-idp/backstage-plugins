@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-orchestrator [1.7.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.7.4...@janus-idp/backstage-plugin-orchestrator@1.7.5) (2024-03-07)
+
+
+### Bug Fixes
+
+* **orchestraotr:** resolved grey background appears in actions column in workflows table ([#1317](https://github.com/janus-idp/backstage-plugins/issues/1317)) ([cd7b4e7](https://github.com/janus-idp/backstage-plugins/commit/cd7b4e7267c804c75b4bccf927b48c32f7943ed6))
+
 ## @janus-idp/backstage-plugin-orchestrator [1.7.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.7.3...@janus-idp/backstage-plugin-orchestrator@1.7.4) (2024-03-07)
 
 
