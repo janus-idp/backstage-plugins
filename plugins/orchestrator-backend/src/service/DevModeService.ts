@@ -218,18 +218,19 @@ export class DevModeService {
 
   public async loadDevWorkflows() {
     if (!this.connection.repoUrl) {
-      this.logger.info('No Git repository configured. Skipping reload.');
+      this.logger.info(
+        'No Git repository configured. Skipping dev workflows loading.',
+      );
       return;
     }
 
-    this.logger.info(`Reloading workflows from ${this.connection.repoUrl}`);
+    this.logger.info(`Loading dev workflows from ${this.connection.repoUrl}`);
     const localPath = this.connection.resourcesPath;
     if (await fs.pathExists(localPath)) {
       this.logger.info(`Path ${localPath} already exists. Skipping clone.`);
       return;
     }
 
-    await fs.remove(localPath);
     await this.gitService.clone(this.connection.repoUrl, localPath);
   }
 }
