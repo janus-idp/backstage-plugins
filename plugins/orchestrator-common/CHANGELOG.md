@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-orchestrator-common [1.4.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-common@1.3.7...@janus-idp/backstage-plugin-orchestrator-common@1.4.0) (2024-03-07)
+
+
+### Features
+
+* **orchestrator:** support pagination for /instances and /overview ([#1313](https://github.com/janus-idp/backstage-plugins/issues/1313)) ([79d5988](https://github.com/janus-idp/backstage-plugins/commit/79d598816f16c8346b6868bff4cc30d695cad518))
+
 ## @janus-idp/backstage-plugin-orchestrator-common [1.3.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-common@1.3.6...@janus-idp/backstage-plugin-orchestrator-common@1.3.7) (2024-03-03)
 
 
