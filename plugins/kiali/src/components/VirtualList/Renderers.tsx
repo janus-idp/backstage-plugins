@@ -45,7 +45,46 @@ const getIstioLink = (item: TResource): string => {
 };
 
 // Links
-const getLink = (item: TResource, config: Resource, query?: string): string => {
+const getEntityLink = (
+  item: TResource,
+  config: Resource,
+  query?: string,
+): string => {
+  let url =
+    config.name === 'istio'
+      ? getIstioLink(item)
+      : `#config=${config.name}&ns=${item.namespace}&name=${item.name}`;
+
+  if (item.cluster && isMultiCluster && !url.includes('cluster')) {
+    if (url.includes('?')) {
+      url = `${url}&clusterName=${item.cluster}`;
+    } else {
+      url = `${url}&clusterName=${item.cluster}`;
+    }
+  }
+
+  if (query) {
+    if (url.includes('?')) {
+      url = `${url}&${query}`;
+    } else {
+      url = `${url}?${query}`;
+    }
+  }
+
+  return url;
+};
+
+// Links
+const getLink = (
+  item: TResource,
+  config: Resource,
+  query?: string,
+  view?: string,
+): string => {
+  if (view === ENTITY) {
+    return getEntityLink(item, config, query);
+  }
+
   let url =
     config.name === 'istio'
       ? getIstioLink(item)
@@ -119,7 +158,11 @@ export const item: Renderer<TResource> = (
       {view !== ENTITY && (
         <PFBadge badge={serviceBadge} position={topPosition} />
       )}
-      <Link key={key} to={getLink(resource, config)} className={linkStyle}>
+      <Link
+        key={key}
+        to={getLink(resource, config, undefined, view)}
+        className={linkStyle}
+      >
         {resource.name}
       </Link>
     </TableCell>
