@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac-backend [2.3.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.3.4...@janus-idp/backstage-plugin-rbac-backend@2.3.5) (2024-03-07)
+
+
+### Bug Fixes
+
+* **rbac:** check source before throwing duplicate warning ([#1278](https://github.com/janus-idp/backstage-plugins/issues/1278)) ([a100eef](https://github.com/janus-idp/backstage-plugins/commit/a100eef67983ba73d929864f0b64991de69718d0))
+
 ## @janus-idp/backstage-plugin-rbac-backend [2.3.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.3.3...@janus-idp/backstage-plugin-rbac-backend@2.3.4) (2024-03-04)
 
 
