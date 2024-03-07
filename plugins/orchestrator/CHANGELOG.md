@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-orchestrator [1.7.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.7.2...@janus-idp/backstage-plugin-orchestrator@1.7.3) (2024-03-07)
+
+
+### Bug Fixes
+
+* **orchestrator:** fix abort button and rerun button disable issue ([#1311](https://github.com/janus-idp/backstage-plugins/issues/1311)) ([0c98279](https://github.com/janus-idp/backstage-plugins/commit/0c982798872f2cb1a3b9fef7ab15850474cb03a7))
+
 ## @janus-idp/backstage-plugin-orchestrator [1.7.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.7.1...@janus-idp/backstage-plugin-orchestrator@1.7.2) (2024-03-04)
 
 
