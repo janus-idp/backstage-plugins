@@ -43,6 +43,9 @@ export const ServiceListPage = (props: {
   const activeToggles: ActiveTogglesInfo = Toggles.getToggles();
 
   const hiddenColumns = isMultiCluster ? [] : ['cluster'];
+  if (props.view === ENTITY) {
+    hiddenColumns.push('details');
+  }
 
   const grids = () => {
     const elements = [];

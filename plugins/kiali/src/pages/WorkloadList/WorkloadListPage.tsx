@@ -99,6 +99,9 @@ export const WorkloadListPage = (props: { view?: string }) => {
   }
 
   const hiddenColumns = isMultiCluster ? [] : ['cluster'];
+  if (props.view === ENTITY) {
+    hiddenColumns.push('details');
+  }
 
   const grids = () => {
     const elements = [];

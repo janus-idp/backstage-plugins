@@ -36,7 +36,7 @@ export const HelpKiali = (props: { color?: string }) => {
 
   return (
     <>
-      <Button onClick={handleClick} style={{ marginTop: '5px' }}>
+      <Button onClick={handleClick} style={{ marginTop: '-5px' }}>
         <QuestionCircleIcon color={`${props.color}`} />
       </Button>
       <Menu open={open} anchorEl={anchorEl} onClose={handleClose}>

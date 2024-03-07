@@ -35,6 +35,9 @@ export const AppListPage = (props: { view?: string }): React.JSX.Element => {
   const prevDuration = useRef(duration);
 
   const hiddenColumns = isMultiCluster ? [] : ['cluster'];
+  if (props.view === ENTITY) {
+    hiddenColumns.push('details');
+  }
 
   const grids = () => {
     const elements = [];

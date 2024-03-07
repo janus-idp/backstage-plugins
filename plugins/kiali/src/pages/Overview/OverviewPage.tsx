@@ -431,9 +431,9 @@ export const OverviewPage = (props: { entity?: boolean; view?: string }) => {
   const overviewLinkInfo = { title: 'Go to Full Overview', link: '#' };
 
   return (
-    <Page themeId="tool">
-      <Content>
-        {props.entity ? (
+    <>
+      {props.entity ? (
+        <div style={{ marginBottom: '20px' }}>
           <TabbedCard title="Overview" deepLink={overviewLinkInfo}>
             {filterActiveNamespaces().map(ns => (
               <CardTab label={ns.name} key={`card_ns_${ns.name}`}>
@@ -457,8 +457,10 @@ export const OverviewPage = (props: { entity?: boolean; view?: string }) => {
               </CardTab>
             ))}
           </TabbedCard>
-        ) : (
-          <>
+        </div>
+      ) : (
+        <Page themeId="tool">
+          <Content>
             <OverviewToolbar
               onRefresh={() => load()}
               overviewType={overviewType}
@@ -494,9 +496,9 @@ export const OverviewPage = (props: { entity?: boolean; view?: string }) => {
                 </Grid>
               ))}
             </Grid>
-          </>
-        )}
-      </Content>
-    </Page>
+          </Content>
+        </Page>
+      )}
+    </>
   );
 };
