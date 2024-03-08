@@ -57,6 +57,18 @@ describe('getClaim', () => {
 
     expect(result).toEqual('');
   });
+
+  it('should return empty string when clusterClaims is undefined', () => {
+    const cluster: any = {
+      status: {
+        clusterClaims: undefined,
+      },
+    };
+
+    const result = getClaim(cluster, 'any');
+
+    expect(result).toEqual('');
+  });
 });
 
 describe('parseResources', () => {
