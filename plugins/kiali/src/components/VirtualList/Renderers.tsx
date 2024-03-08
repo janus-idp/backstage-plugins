@@ -119,11 +119,7 @@ export const item: Renderer<TResource> = (
       {view !== ENTITY && (
         <PFBadge badge={serviceBadge} position={topPosition} />
       )}
-      <Link
-        key={key}
-        to={getLink(resource, config, undefined)}
-        className={linkStyle}
-      >
+      <Link key={key} to={getLink(resource, config)} className={linkStyle}>
         {resource.name}
       </Link>
     </TableCell>

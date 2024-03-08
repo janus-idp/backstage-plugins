@@ -65,7 +65,7 @@ export const getNamespaces = (
   });
 };
 
-export const OverviewPage = (props: { entity?: boolean; view?: string }) => {
+export const OverviewPage = (props: { entity?: boolean }) => {
   const kialiClient = useApi(kialiApiRef);
   const kialiState = React.useContext(KialiContext) as KialiAppState;
   const promises = new PromisesRegistry();
