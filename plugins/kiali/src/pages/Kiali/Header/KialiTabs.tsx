@@ -6,6 +6,7 @@ import { useRouteRef } from '@backstage/core-plugin-api';
 
 import {
   appsRouteRef,
+  istioConfigRouteRef,
   overviewRouteRef,
   servicesRouteRef,
   workloadsRouteRef,
@@ -21,6 +22,9 @@ const getPath = (loc: Location): number => {
   if (loc.pathname.includes('applications')) {
     return 3;
   }
+  if (loc.pathname.includes('istio')) {
+    return 4;
+  }
   return 0;
 };
 
@@ -33,6 +37,7 @@ export const KialiTabs = () => {
     { label: 'Workloads', route: useRouteRef(workloadsRouteRef) },
     { label: 'Services', route: useRouteRef(servicesRouteRef) },
     { label: 'Applications', route: useRouteRef(appsRouteRef) },
+    { label: 'Istio Config', route: useRouteRef(istioConfigRouteRef) },
   ];
   const navigate = useNavigate();
   return (

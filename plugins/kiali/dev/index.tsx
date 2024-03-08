@@ -30,6 +30,7 @@ import {
   ServiceHealth,
   WorkloadHealth,
 } from '../src/types/Health';
+import { IstioConfigDetails } from '../src/types/IstioConfigDetails';
 import { IstioConfigList, IstioConfigsMap } from '../src/types/IstioConfigList';
 import {
   CanaryUpgradeStatus,
@@ -352,6 +353,18 @@ class MockKialiClient implements KialiApi {
     return kialiData.services[namespace];
   }
 
+  async getIstioConfigDetail(
+    namespace: string,
+    objectType: string,
+    object: string,
+    _validate: boolean,
+    _cluster?: string,
+  ): Promise<IstioConfigDetails> {
+    return kialiData.namespacesData[namespace].istioConfigDetails[objectType][
+      object
+    ];
+  }
+
   async getServiceDetail(
     namespace: string,
     service: string,
@@ -458,6 +471,7 @@ export const TabsMock = () => {
     { label: 'Workloads', route: `${pluginRoot}/workloads` },
     { label: 'Services', route: `${pluginRoot}/services` },
     { label: 'Applications', route: `${pluginRoot}/applications` },
+    { label: 'Istio Config', route: `${pluginRoot}/istio` },
   ];
   const navigate = useNavigate();
   return (

@@ -377,6 +377,7 @@ const services: Resource = {
 const istio: Resource = {
   name: 'istio',
   columns: [istioItem, namespace, cluster, istioType, istioObjectConfiguration],
+  badge: PFBadges.App,
 };
 
 type Config = {

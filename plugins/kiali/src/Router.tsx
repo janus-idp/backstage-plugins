@@ -8,6 +8,8 @@ import { useEntity } from '@backstage/plugin-catalog-react';
 import { pluginRoot } from './components/BreadcrumbView/BreadcrumbView';
 import { AppDetailsPage } from './pages/AppDetails/AppDetailsPage';
 import { AppListPage } from './pages/AppList/AppListPage';
+import { IstioConfigDetailsPage } from './pages/IstioConfigDetails/IstioConfigDetailsPage';
+import { IstioConfigListPage } from './pages/IstioConfigList/IstioConfigListPage';
 import { KialiNoPath } from './pages/Kiali';
 import { KialiHeader } from './pages/Kiali/Header/KialiHeader';
 import { KialiHeaderEntity } from './pages/Kiali/Header/KialiHeaderEntity';
@@ -22,6 +24,8 @@ import { WorkloadListPage } from './pages/WorkloadList/WorkloadListPage';
 import {
   appDetailRouteRef,
   appsRouteRef,
+  istioConfigDetailRouteRef,
+  istioConfigRouteRef,
   overviewRouteRef,
   servicesDetailRouteRef,
   servicesRouteRef,
@@ -88,6 +92,10 @@ export const getRoutes = (dev?: boolean) => {
         element={<AppListPage />}
       />
       <Route
+        path={dev ? `/${pluginRoot}/istio` : istioConfigRouteRef.path}
+        element={<IstioConfigListPage />}
+      />
+      <Route
         path={
           dev
             ? `/${pluginRoot}/workloads/:namespace/:workload`
@@ -110,6 +118,14 @@ export const getRoutes = (dev?: boolean) => {
             : appDetailRouteRef.path
         }
         element={<AppDetailsPage />}
+      />
+      <Route
+        path={
+          dev
+            ? `/${pluginRoot}/istio/:namespace/:objectType/:object`
+            : istioConfigDetailRouteRef.path
+        }
+        element={<IstioConfigDetailsPage />}
       />
       {dev && (
         <Route path={`/${pluginRoot}/kiali/entity`} element={<KialiEntity />} />
