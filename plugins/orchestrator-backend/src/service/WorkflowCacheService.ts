@@ -5,21 +5,35 @@ import { Logger } from 'winston';
 import { DataIndexService } from './DataIndexService';
 import { SonataFlowService } from './SonataFlowService';
 
+export type CacheHandler = 'skip' | 'throw';
+
 export class WorkflowCacheService {
   private readonly TASK_ID = 'task__Orchestrator__WorkflowCacheService';
   private readonly DEFAULT_FREQUENCY_IN_SECONDS = 5;
   private readonly DEFAULT_TIMEOUT_IN_MINUTES = 10;
   private readonly definitionIdCache = new Set<string>();
 
-  public contains(definitionId: string): boolean {
-    return this.definitionIdCache.has(definitionId);
-  }
-
   constructor(
     private readonly logger: Logger,
     private readonly dataIndexService: DataIndexService,
     private readonly sonataFlowService: SonataFlowService,
   ) {}
+
+  public isAvailable(
+    definitionId?: string,
+    cacheHandler: CacheHandler = 'skip',
+  ): boolean {
+    if (!definitionId) {
+      return false;
+    }
+    const isAvailable = this.definitionIdCache.has(definitionId);
+    if (!isAvailable && cacheHandler === 'throw') {
+      throw new Error(
+        `Workflow service "${definitionId}" not available at the moment`,
+      );
+    }
+    return isAvailable;
+  }
 
   public schedule(args: {
     scheduler: PluginTaskScheduler;

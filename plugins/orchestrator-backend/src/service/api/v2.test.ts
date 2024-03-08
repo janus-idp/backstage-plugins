@@ -39,10 +39,9 @@ jest.mock('../OrchestratorService', () => ({
 // Helper function to create a mock OrchestratorService instance
 const createMockOrchestratorService = (): OrchestratorService => {
   const mockOrchestratorService = new OrchestratorService(
-    {} as any, // Mock logger
     {} as any, // Mock sonataFlowService
     {} as any, // Mock dataIndexService
-    {} as any, // Mock scheduler
+    {} as any, // Mock workflowCacheService
   );
 
   mockOrchestratorService.fetchWorkflowOverviews = jest.fn();

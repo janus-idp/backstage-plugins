@@ -31,6 +31,7 @@ import { JiraEvent, JiraService } from './JiraService';
 import { OrchestratorService } from './OrchestratorService';
 import { ScaffolderService } from './ScaffolderService';
 import { SonataFlowService } from './SonataFlowService';
+import { WorkflowCacheService } from './WorkflowCacheService';
 
 interface PublicServices {
   jiraService: JiraService;
@@ -98,11 +99,18 @@ function initPublicServices(
   const dataIndexUrl = config.getString('orchestrator.dataIndexService.url');
   const dataIndexService = new DataIndexService(dataIndexUrl, logger);
   const sonataFlowService = new SonataFlowService(dataIndexService, logger);
-  const orchestratorService = new OrchestratorService(
+
+  const workflowCacheService = new WorkflowCacheService(
     logger,
+    dataIndexService,
+    sonataFlowService,
+  );
+  workflowCacheService.schedule({ scheduler: scheduler });
+
+  const orchestratorService = new OrchestratorService(
     sonataFlowService,
     dataIndexService,
-    scheduler,
+    workflowCacheService,
   );
 
   const cloudEventService = new CloudEventService(logger);

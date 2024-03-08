@@ -1,7 +1,3 @@
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
-
-import { Logger } from 'winston';
-
 import {
   ProcessInstance,
   ProcessInstanceVariables,
@@ -14,44 +10,14 @@ import {
 import { Pagination } from '../types/pagination';
 import { DataIndexService } from './DataIndexService';
 import { SonataFlowService } from './SonataFlowService';
-import { WorkflowCacheService } from './WorkflowCacheService';
-
-type CacheHandler = 'skip' | 'throw';
+import { CacheHandler, WorkflowCacheService } from './WorkflowCacheService';
 
 export class OrchestratorService {
-  private readonly workflowCacheService: WorkflowCacheService;
-
   constructor(
-    logger: Logger,
     private readonly sonataFlowService: SonataFlowService,
     private readonly dataIndexService: DataIndexService,
-    private readonly scheduler: PluginTaskScheduler,
-  ) {
-    this.workflowCacheService = new WorkflowCacheService(
-      logger,
-      dataIndexService,
-      sonataFlowService,
-    );
-
-    this.init();
-  }
-
-  private init() {
-    this.workflowCacheService.schedule({ scheduler: this.scheduler });
-  }
-
-  private isAvailableOnCache(
-    definitionId: string,
-    cacheHandler: CacheHandler,
-  ): boolean {
-    const isAvailable = this.workflowCacheService.contains(definitionId);
-    if (!isAvailable && cacheHandler === 'throw') {
-      throw new Error(
-        `Workflow service "${definitionId}" not available at the moment`,
-      );
-    }
-    return isAvailable;
-  }
+    private readonly workflowCacheService: WorkflowCacheService,
+  ) {}
 
   // Data Index Service Wrapper
 
@@ -59,32 +25,39 @@ export class OrchestratorService {
     instanceId: string;
     cacheHandler?: CacheHandler;
   }): Promise<void> {
-    const { instanceId, cacheHandler = 'skip' } = args;
+    const { instanceId, cacheHandler } = args;
     const definitionId =
       await this.dataIndexService.fetchDefinitionIdByInstanceId(instanceId);
-    if (!definitionId || !this.isAvailableOnCache(definitionId, cacheHandler)) {
-      return;
-    }
-    await this.dataIndexService.abortWorkflowInstance(instanceId);
+    const isWorkflowAvailable = this.workflowCacheService.isAvailable(
+      definitionId,
+      cacheHandler,
+    );
+    return isWorkflowAvailable
+      ? await this.dataIndexService.abortWorkflowInstance(instanceId)
+      : undefined;
   }
 
   public async fetchWorkflowInfo(args: {
     definitionId: string;
     cacheHandler?: CacheHandler;
   }): Promise<WorkflowInfo | undefined> {
-    const { definitionId, cacheHandler = 'skip' } = args;
-    if (!this.isAvailableOnCache(definitionId, cacheHandler)) {
-      return undefined;
-    }
-    return await this.dataIndexService.fetchWorkflowInfo(definitionId);
+    const { definitionId, cacheHandler } = args;
+    const isWorkflowAvailable = this.workflowCacheService.isAvailable(
+      definitionId,
+      cacheHandler,
+    );
+    return isWorkflowAvailable
+      ? await this.dataIndexService.fetchWorkflowInfo(definitionId)
+      : undefined;
   }
 
-  public async fetchWorkflowInfos(
-    cacheHandler: CacheHandler = 'skip',
-  ): Promise<WorkflowInfo[]> {
+  public async fetchWorkflowInfos(args: {
+    cacheHandler?: CacheHandler;
+  }): Promise<WorkflowInfo[]> {
+    const { cacheHandler } = args;
     const workflowInfos = await this.dataIndexService.fetchWorkflowInfos();
     return workflowInfos.filter(workflowInfo =>
-      this.isAvailableOnCache(workflowInfo.id, cacheHandler),
+      this.workflowCacheService.isAvailable(workflowInfo.id, cacheHandler),
     );
   }
 
@@ -92,11 +65,14 @@ export class OrchestratorService {
     pagination?: Pagination;
     cacheHandler?: CacheHandler;
   }): Promise<ProcessInstance[]> {
-    const { pagination, cacheHandler = 'skip' } = args;
+    const { pagination, cacheHandler } = args;
     const workflowInstances =
       await this.dataIndexService.fetchInstances(pagination);
     return workflowInstances.filter(workflowInstance =>
-      this.isAvailableOnCache(workflowInstance.processId, cacheHandler),
+      this.workflowCacheService.isAvailable(
+        workflowInstance.processId,
+        cacheHandler,
+      ),
     );
   }
 
@@ -108,11 +84,14 @@ export class OrchestratorService {
     definitionId: string;
     cacheHandler?: CacheHandler;
   }): Promise<string | undefined> {
-    const { definitionId, cacheHandler = 'skip' } = args;
-    if (!this.isAvailableOnCache(definitionId, cacheHandler)) {
-      return undefined;
-    }
-    return await this.dataIndexService.fetchWorkflowSource(definitionId);
+    const { definitionId, cacheHandler } = args;
+    const isWorkflowAvailable = this.workflowCacheService.isAvailable(
+      definitionId,
+      cacheHandler,
+    );
+    return isWorkflowAvailable
+      ? await this.dataIndexService.fetchWorkflowSource(definitionId)
+      : undefined;
   }
 
   public async fetchInstancesByDefinitionId(args: {
@@ -121,11 +100,14 @@ export class OrchestratorService {
     offset: number;
     cacheHandler?: CacheHandler;
   }): Promise<ProcessInstance[]> {
-    const { cacheHandler = 'skip' } = args;
+    const { cacheHandler } = args;
     const workflowInstances =
       await this.dataIndexService.fetchInstancesByDefinitionId(args);
     return workflowInstances.filter(workflowInstance =>
-      this.isAvailableOnCache(workflowInstance.processId, cacheHandler),
+      this.workflowCacheService.isAvailable(
+        workflowInstance.processId,
+        cacheHandler,
+      ),
     );
   }
 
@@ -133,28 +115,29 @@ export class OrchestratorService {
     instanceId: string;
     cacheHandler?: CacheHandler;
   }): Promise<ProcessInstanceVariables | undefined> {
-    const { instanceId, cacheHandler = 'skip' } = args;
+    const { instanceId, cacheHandler } = args;
     const definitionId =
       await this.dataIndexService.fetchDefinitionIdByInstanceId(instanceId);
-    if (!definitionId || !this.isAvailableOnCache(definitionId, cacheHandler)) {
-      return undefined;
-    }
-    return await this.dataIndexService.fetchInstanceVariables(instanceId);
+    const isWorkflowAvailable = this.workflowCacheService.isAvailable(
+      definitionId,
+      cacheHandler,
+    );
+    return isWorkflowAvailable
+      ? await this.dataIndexService.fetchInstanceVariables(instanceId)
+      : undefined;
   }
 
   public async fetchInstance(args: {
     instanceId: string;
     cacheHandler?: CacheHandler;
   }): Promise<ProcessInstance | undefined> {
-    const { instanceId, cacheHandler = 'skip' } = args;
+    const { instanceId, cacheHandler } = args;
     const instance = await this.dataIndexService.fetchInstance(instanceId);
-    if (
-      !instance ||
-      !this.isAvailableOnCache(instance.processId, cacheHandler)
-    ) {
-      return undefined;
-    }
-    return instance;
+    const isWorkflowAvailable = this.workflowCacheService.isAvailable(
+      instance?.processId,
+      cacheHandler,
+    );
+    return isWorkflowAvailable ? instance : undefined;
   }
 
   // SonataFlow Service Wrapper
@@ -164,33 +147,39 @@ export class OrchestratorService {
     serviceUrl: string;
     cacheHandler?: CacheHandler;
   }): Promise<WorkflowInfo | undefined> {
-    const { definitionId, cacheHandler = 'skip' } = args;
-    if (!this.isAvailableOnCache(definitionId, cacheHandler)) {
-      return undefined;
-    }
-    return await this.sonataFlowService.fetchWorkflowInfoOnService(args);
+    const { definitionId, cacheHandler } = args;
+    const isWorkflowAvailable = this.workflowCacheService.isAvailable(
+      definitionId,
+      cacheHandler,
+    );
+    return isWorkflowAvailable
+      ? await this.sonataFlowService.fetchWorkflowInfoOnService(args)
+      : undefined;
   }
 
   public async fetchWorkflowDefinition(args: {
     definitionId: string;
     cacheHandler?: CacheHandler;
   }): Promise<WorkflowDefinition | undefined> {
-    const { definitionId, cacheHandler = 'skip' } = args;
-    if (!this.isAvailableOnCache(definitionId, cacheHandler)) {
-      return undefined;
-    }
-    return await this.sonataFlowService.fetchWorkflowDefinition(definitionId);
+    const { definitionId, cacheHandler } = args;
+    const isWorkflowAvailable = this.workflowCacheService.isAvailable(
+      definitionId,
+      cacheHandler,
+    );
+    return isWorkflowAvailable
+      ? await this.sonataFlowService.fetchWorkflowDefinition(definitionId)
+      : undefined;
   }
 
   public async fetchWorkflowOverviews(args: {
     pagination?: Pagination;
     cacheHandler?: CacheHandler;
   }): Promise<WorkflowOverview[] | undefined> {
-    const { pagination, cacheHandler = 'skip' } = args;
+    const { pagination, cacheHandler } = args;
     const overviews =
       await this.sonataFlowService.fetchWorkflowOverviews(pagination);
     return overviews?.filter(overview =>
-      this.isAvailableOnCache(overview.workflowId, cacheHandler),
+      this.workflowCacheService.isAvailable(overview.workflowId, cacheHandler),
     );
   }
 
@@ -201,21 +190,27 @@ export class OrchestratorService {
     businessKey?: string;
     cacheHandler?: CacheHandler;
   }): Promise<WorkflowExecutionResponse | undefined> {
-    const { cacheHandler = 'skip' } = args;
-    if (!this.isAvailableOnCache(args.definitionId, cacheHandler)) {
-      return undefined;
-    }
-    return await this.sonataFlowService.executeWorkflow(args);
+    const { definitionId, cacheHandler } = args;
+    const isWorkflowAvailable = this.workflowCacheService.isAvailable(
+      definitionId,
+      cacheHandler,
+    );
+    return isWorkflowAvailable
+      ? await this.sonataFlowService.executeWorkflow(args)
+      : undefined;
   }
 
   public async fetchWorkflowOverview(args: {
     definitionId: string;
     cacheHandler?: CacheHandler;
   }): Promise<WorkflowOverview | undefined> {
-    const { definitionId, cacheHandler = 'skip' } = args;
-    if (!this.isAvailableOnCache(definitionId, cacheHandler)) {
-      return undefined;
-    }
-    return await this.sonataFlowService.fetchWorkflowOverview(definitionId);
+    const { definitionId, cacheHandler } = args;
+    const isWorkflowAvailable = this.workflowCacheService.isAvailable(
+      definitionId,
+      cacheHandler,
+    );
+    return isWorkflowAvailable
+      ? await this.sonataFlowService.fetchWorkflowOverview(definitionId)
+      : undefined;
   }
 }
