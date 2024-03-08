@@ -12,7 +12,6 @@ import {
 import { buildPagination } from '../../types/pagination';
 import { DataIndexService } from '../DataIndexService';
 import { SonataFlowService } from '../SonataFlowService';
-import abortWorkflowResult from './mapping/__fixtures__/abortWorkFlowResponseV1.json';
 import assessedProcessInstanceData from './mapping/__fixtures__/assessedProcessInstance.json';
 import {
   mapToGetWorkflowInstanceResults,
@@ -610,39 +609,33 @@ describe('abortWorkflow', () => {
 
   it('aborts workflows', async () => {
     // Arrange
-    const mockAbortWorkflowResultV1 = { ...abortWorkflowResult };
-
     (mockDataIndexService.abortWorkflowInstance as jest.Mock).mockResolvedValue(
-      mockAbortWorkflowResultV1,
+      {} as any,
     );
 
-    const expectedResultV2 = 'Workflow ${workflowId} successfully aborted';
+    const expectedResult = 'Workflow ${workflowId} successfully aborted';
 
     // Act
-    const actualResultV2: string = await V2.abortWorkflow(
+    const actualResult: string = await V2.abortWorkflow(
       mockDataIndexService,
       'testInstanceId',
     );
 
     // Assert
-    expect(actualResultV2).toBeDefined();
-    expect(actualResultV2).toEqual(expectedResultV2);
+    expect(actualResult).toBeDefined();
+    expect(actualResult).toEqual(expectedResult);
   });
 
   it('throws error when abort workflows response has error attribute', async () => {
     // Arrange
-    const mockAbortWorkflowResultV1 = { ...abortWorkflowResult };
-    mockAbortWorkflowResultV1.error = 'Simulated abort workflow error';
-    (mockDataIndexService.abortWorkflowInstance as jest.Mock).mockResolvedValue(
-      mockAbortWorkflowResultV1,
+    (mockDataIndexService.abortWorkflowInstance as jest.Mock).mockRejectedValue(
+      new Error('Simulated abort workflow error'),
     );
 
     // Act
     const promise = V2.abortWorkflow(mockDataIndexService, 'instanceId');
 
     // Assert
-    await expect(promise).rejects.toThrow(
-      "Can't abort workflow instanceId. The error was: Simulated abort workflow error",
-    );
+    await expect(promise).rejects.toThrow('Simulated abort workflow error');
   });
 });
