@@ -28,14 +28,15 @@
   ],
   "configSchema": "config.d.ts",
   "scripts": {
-    "build": "backstage-cli package build",
+    "build": "yarn openapi:check && backstage-cli package build",
     "tsc": "tsc",
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test --passWithNoTests --coverage",
     "clean": "backstage-cli package clean",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
-    "openapi": "./scripts/openapi.sh",
+    "openapi:generate": "./scripts/openapi.sh generate",
+    "openapi:check": "./scripts/openapi.sh check",
     "openapi:prettier:fix": "prettier --ignore-unknown --write ./src/auto-generated"
   },
   "dependencies": {
