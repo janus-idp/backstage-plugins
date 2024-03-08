@@ -208,9 +208,6 @@ describe('getWorkflowOverview', () => {
 
     // Assert
     await expect(promise).rejects.toThrow('no workflow overview');
-    (
-      mockSonataFlowService.fetchWorkflowOverviews as jest.Mock
-    ).mockRejectedValue(new Error('no workflow overview'));
   });
 });
 describe('getWorkflowOverviewById', () => {
@@ -367,20 +364,20 @@ describe('getInstances', () => {
     mockDataIndexService = createMockDataIndexService();
   });
 
-  it("Instance doesn't exists", async () => {
+  it("Instance doesn't exist", async () => {
     // Arrange
 
     (mockDataIndexService.fetchProcessInstances as jest.Mock).mockRejectedValue(
-      new Error('No definition'),
+      new Error('No instance'),
     );
     // Act
     const promise = V2.getInstances(mockDataIndexService, pagination);
 
     // Assert
-    await expect(promise).rejects.toThrow('No definition');
+    await expect(promise).rejects.toThrow('No instance');
   });
 
-  it('1 items in process instance list', async () => {
+  it('1 item in process instance list', async () => {
     const processInstance = generateProcessInstance(1);
 
     (mockDataIndexService.fetchProcessInstances as jest.Mock).mockResolvedValue(
@@ -399,42 +396,42 @@ describe('getInstances', () => {
   });
   it('10 items in process instance list', async () => {
     const howmany = 10;
-    const processInstance = generateProcessInstances(howmany);
+    const processInstances = generateProcessInstances(howmany);
 
     (mockDataIndexService.fetchProcessInstances as jest.Mock).mockResolvedValue(
-      processInstance,
+      processInstances,
     );
 
     // Act
-    const processInstanceV2: ProcessInstanceListResultDTO =
+    const processInstanceList: ProcessInstanceListResultDTO =
       await V2.getInstances(mockDataIndexService, pagination);
 
     // Assert
-    expect(processInstanceV2).toBeDefined();
-    expect(processInstanceV2.items).toBeDefined();
-    expect(processInstanceV2.items).toHaveLength(howmany);
+    expect(processInstanceList).toBeDefined();
+    expect(processInstanceList.items).toBeDefined();
+    expect(processInstanceList.items).toHaveLength(howmany);
     for (let i = 0; i < howmany; i++) {
-      expect(processInstanceV2.items?.[i].id).toEqual(processInstance[i].id);
+      expect(processInstanceList.items?.[i].id).toEqual(processInstances[i].id);
     }
   });
 });
 
-describe('getInstancesById', () => {
+describe('getInstanceById', () => {
   let mockDataIndexService: DataIndexService;
   beforeEach(() => {
     jest.clearAllMocks();
     mockDataIndexService = createMockDataIndexService();
   });
 
-  it("Instance doesn't exists", async () => {
+  it("Instance doesn't exist", async () => {
     (mockDataIndexService.fetchProcessInstance as jest.Mock).mockRejectedValue(
-      new Error('No definition'),
+      new Error('No instance'),
     );
     // Act
     const promise = V2.getInstanceById(mockDataIndexService, 'testInstanceId');
 
     // Assert
-    await expect(promise).rejects.toThrow('No definition');
+    await expect(promise).rejects.toThrow('No instance');
   });
 
   it('Instance exists, assessment undefined string', async () => {
@@ -538,13 +535,13 @@ describe('getWorkflowResults', () => {
 
   it('throws error when no variables attribute is present in the instance object', async () => {
     // Arrange
-    const mockGetWorkflowResultsV1 = { ...assessedProcessInstanceData };
+    const mockGetWorkflowResults = { ...assessedProcessInstanceData };
 
     // @ts-ignore
-    delete mockGetWorkflowResultsV1.instance.variables;
+    delete mockGetWorkflowResults.instance.variables;
 
     (mockDataIndexService.fetchProcessInstance as jest.Mock).mockResolvedValue(
-      mockGetWorkflowResultsV1,
+      mockGetWorkflowResults,
     );
 
     // Act
