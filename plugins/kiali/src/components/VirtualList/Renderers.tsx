@@ -175,7 +175,7 @@ export const labels: Renderer<SortResource | NamespaceInfo> = (
 
   const labelsView = resource.labels ? (
     Object.entries(resource.labels).map(([key, value], _i) => {
-      return <Chip label={`${key}=${value}`} />;
+      return <Chip key={key} label={`${key}=${value}`} />;
     })
   ) : (
     <></>

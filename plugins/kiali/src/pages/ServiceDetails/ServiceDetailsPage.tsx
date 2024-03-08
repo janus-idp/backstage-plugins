@@ -90,7 +90,7 @@ export const ServiceDetailsPage = () => {
   const fetchService = async () => {
     if (!namespace || !service) {
       setError(`Could not fetch service: Empty namespace or service name`);
-      kialiState.alertUtils!.add(
+      kialiState.alertUtils?.add(
         `Could not fetch service: Empty namespace or service name`,
       );
       return;

@@ -98,7 +98,7 @@ export const AppListPage = (props: { view?: string }): React.JSX.Element => {
     });
   };
 
-  const [{}, refresh] = useAsyncFn(
+  const [_, refresh] = useAsyncFn(
     async () => {
       await getNS();
     },

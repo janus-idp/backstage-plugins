@@ -60,7 +60,7 @@ export const WorkloadDetailsPage = () => {
     };
     if (!namespace || !workload) {
       setError(`Could not fetch workload: Empty namespace or workload name`);
-      kialiState.alertUtils!.add(
+      kialiState.alertUtils?.add(
         `Could not fetch workload: Empty namespace or workload name`,
       );
       return;
