@@ -13,6 +13,27 @@ paths:
     get:
       operationId: getWorkflowsOverview
       description: Get a list of workflow overviews
+      parameters:
+        - name: page
+          in: query
+          description: page number
+          schema:
+            type: number
+        - name: pageSize
+          in: query
+          description: page size
+          schema:
+            type: number
+        - name: orderBy
+          in: query
+          description: field name to order the data
+          schema:
+            type: string
+        - name: orderDirection
+          in: query
+          description: ascending or descending
+          schema:
+            type: string
       responses:
         '200':
           description: Success

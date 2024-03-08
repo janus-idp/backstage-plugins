@@ -218,6 +218,18 @@ export type external = Record<string, never>;
 export interface operations {
   /** @description Get a list of workflow overviews */
   getWorkflowsOverview: {
+    parameters: {
+      query?: {
+        /** @description page number */
+        page?: number;
+        /** @description page size */
+        pageSize?: number;
+        /** @description field name to order the data */
+        orderBy?: string;
+        /** @description ascending or descending */
+        orderDirection?: string;
+      };
+    };
     responses: {
       /** @description Success */
       200: {
