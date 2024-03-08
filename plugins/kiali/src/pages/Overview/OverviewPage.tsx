@@ -428,13 +428,11 @@ export const OverviewPage = (props: { entity?: boolean; view?: string }) => {
     return <CircularProgress />;
   }
 
-  const overviewLinkInfo = { title: 'Go to Full Overview', link: '#' };
-
   return (
     <>
       {props.entity ? (
         <div style={{ marginBottom: '20px' }}>
-          <TabbedCard title="Overview" deepLink={overviewLinkInfo}>
+          <TabbedCard title="Overview">
             {filterActiveNamespaces().map(ns => (
               <CardTab label={ns.name} key={`card_ns_${ns.name}`}>
                 <OverviewCard
