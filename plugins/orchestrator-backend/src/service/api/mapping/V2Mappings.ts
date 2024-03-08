@@ -1,6 +1,7 @@
 import moment from 'moment';
 
 import {
+  capitalize,
   ExecuteWorkflowResponseDTO,
   extractWorkflowFormat,
   fromWorkflowSource,
@@ -18,6 +19,7 @@ import {
   WorkflowFormatDTO,
   WorkflowOverview,
   WorkflowOverviewDTO,
+  WorkflowRunStatusDTO,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 // Mapping functions
@@ -95,9 +97,11 @@ export function getProcessInstancesDTOFromString(
 export function mapToProcessInstanceDTO(
   processInstance: ProcessInstance,
 ): ProcessInstanceDTO {
-  const start = moment(processInstance.start?.toString());
-  const end = moment(processInstance.end?.toString());
-  const duration = moment.duration(start.diff(end));
+  const start = moment(processInstance.start);
+  const end = moment(processInstance.end);
+  const duration = processInstance.end
+    ? moment.duration(start.diff(end)).humanize()
+    : undefined;
 
   let variables: Record<string, unknown> | undefined;
   if (typeof processInstance?.variables === 'string') {
@@ -109,13 +113,14 @@ export function mapToProcessInstanceDTO(
   return {
     category: mapWorkflowCategoryDTO(processInstance.category),
     description: processInstance.description,
-    duration: duration.humanize(),
     id: processInstance.id,
     name: processInstance.processName,
     // To be fixed https://issues.redhat.com/browse/FLPATH-950
     // @ts-ignore
     workflowdata: variables?.workflowdata,
-    started: start.toDate().toLocaleString(),
+    start: processInstance.start?.toUTCString(),
+    end: processInstance.end?.toUTCString(),
+    duration: duration,
     status: getProcessInstancesDTOFromString(processInstance.state),
     workflow: processInstance.processName ?? processInstance.processId,
   };
@@ -157,4 +162,13 @@ export function mapToGetWorkflowInstanceResults(
   }
 
   return returnObject;
+}
+
+export function mapToWorkflowRunStatusDTO(
+  status: ProcessInstanceState,
+): WorkflowRunStatusDTO {
+  return {
+    key: capitalize(status),
+    value: status,
+  };
 }

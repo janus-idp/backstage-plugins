@@ -128,7 +128,8 @@ export interface components {
       name?: string;
       workflow?: string;
       status?: components['schemas']['ProcessInstanceStatusDTO'];
-      started?: string;
+      start?: string;
+      end?: string;
       duration?: string;
       category?: components['schemas']['WorkflowCategoryDTO'];
       description?: string;
