@@ -7,13 +7,13 @@ import { AboutField } from '@backstage/plugin-catalog';
 import { Grid, makeStyles, Typography } from '@material-ui/core';
 
 import {
+  capitalize,
   ProcessInstance,
   ProcessInstanceStateValues,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { VALUE_UNAVAILABLE } from '../constants';
 import { workflowInstanceRouteRef } from '../routes';
-import { capitalize } from '../utils/StringUtils';
 import { WorkflowInstanceStatusIndicator } from './WorkflowInstanceStatusIndicator';
 import { WorkflowRunDetail } from './WorkflowRunDetail';
 

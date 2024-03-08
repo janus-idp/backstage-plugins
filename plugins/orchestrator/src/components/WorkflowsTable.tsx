@@ -8,6 +8,7 @@ import Pageview from '@material-ui/icons/Pageview';
 import PlayArrow from '@material-ui/icons/PlayArrow';
 
 import {
+  capitalize,
   ProcessInstanceStateValues,
   WorkflowOverview,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
@@ -20,7 +21,6 @@ import {
   executeWorkflowRouteRef,
   workflowDefinitionsRouteRef,
 } from '../routes';
-import { capitalize } from '../utils/StringUtils';
 import OverrideBackstageTable from './ui/OverrideBackstageTable';
 import { WorkflowInstanceStatusIndicator } from './WorkflowInstanceStatusIndicator';
 

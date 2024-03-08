@@ -14,7 +14,6 @@ import {
 } from '../test-utils';
 import assessedProcessInstanceData from './__fixtures__/assessedProcessInstance.json';
 import {
-  firstLetterToUppercase,
   getProcessInstancesDTOFromString,
   mapToExecuteWorkflowResponseDTO,
   mapToGetWorkflowInstanceResults,
@@ -207,39 +206,5 @@ describe('scenarios to verify mapToWorkflowRunStatusDTO', () => {
     expect(mappedValue.value).toBeDefined();
     expect(mappedValue.key).toEqual('Active');
     expect(mappedValue.value).toEqual('ACTIVE');
-  });
-});
-
-describe('scenarios to verify firstLetterToUppercase', () => {
-  it('correctly transform the first letter to Uppercase', async () => {
-    const transformedValue = firstLetterToUppercase('test');
-
-    expect(transformedValue).toBeDefined();
-    expect(transformedValue.length).toBe(4);
-    expect(transformedValue).toEqual('Test');
-  });
-
-  it('correctly transform the remaining letters to Lowercase', async () => {
-    const transformedValue = firstLetterToUppercase('testString');
-
-    expect(transformedValue).toBeDefined();
-    expect(transformedValue.length).toBe(10);
-    expect(transformedValue).toEqual('Teststring');
-  });
-
-  it('correctly ignore empty input text', async () => {
-    const transformedValue = firstLetterToUppercase('');
-
-    expect(transformedValue).toBeDefined();
-    expect(transformedValue.length).toBe(0);
-    expect(transformedValue).toEqual('');
-  });
-
-  it('correctly ignore only one letter input text', async () => {
-    const transformedValue = firstLetterToUppercase('c');
-
-    expect(transformedValue).toBeDefined();
-    expect(transformedValue.length).toBe(1);
-    expect(transformedValue).toEqual('C');
   });
 });

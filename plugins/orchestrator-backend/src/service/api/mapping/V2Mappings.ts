@@ -1,6 +1,7 @@
 import moment from 'moment';
 
 import {
+  capitalize,
   ExecuteWorkflowResponseDTO,
   extractWorkflowFormat,
   fromWorkflowSource,
@@ -167,13 +168,7 @@ export function mapToWorkflowRunStatusDTO(
   status: ProcessInstanceState,
 ): WorkflowRunStatusDTO {
   return {
-    key: firstLetterToUppercase(status),
+    key: capitalize(status),
     value: status,
   };
-}
-
-export function firstLetterToUppercase(text: string): string {
-  if (text === undefined || text === null || text.length < 1) return text;
-
-  return text[0].toUpperCase() + text.slice(1).toLowerCase();
 }
