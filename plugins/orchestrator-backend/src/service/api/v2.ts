@@ -79,8 +79,9 @@ export class V2 {
     const instances = await this.orchestratorService.fetchInstances({
       pagination,
     });
-    const totalCount =
-      await this.orchestratorService.fetchInstancesTotalCount();
+    const totalCount = await this.orchestratorService.fetchInstancesTotalCount(
+      {},
+    );
 
     const result: ProcessInstanceListResultDTO = {
       items: instances?.map(def => mapToProcessInstanceDTO(def)),

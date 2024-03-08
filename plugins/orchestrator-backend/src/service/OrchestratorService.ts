@@ -76,8 +76,16 @@ export class OrchestratorService {
     );
   }
 
-  public async fetchInstancesTotalCount(): Promise<number> {
-    return await this.dataIndexService.fetchInstancesTotalCount();
+  public async fetchInstancesTotalCount(args: {
+    cacheHandler?: CacheHandler;
+  }): Promise<number> {
+    const { cacheHandler } = args;
+    const map =
+      await this.dataIndexService.fetchInstancesTotalCountByWorkflow();
+    const filtered = Array.from(map.entries()).filter(([definitionId]) =>
+      this.workflowCacheService.isAvailable(definitionId, cacheHandler),
+    );
+    return filtered.reduce((acc, [, value]) => acc + value, 0);
   }
 
   public async fetchWorkflowSource(args: {
@@ -92,23 +100,6 @@ export class OrchestratorService {
     return isWorkflowAvailable
       ? await this.dataIndexService.fetchWorkflowSource(definitionId)
       : undefined;
-  }
-
-  public async fetchInstancesByDefinitionId(args: {
-    definitionId: string;
-    limit: number;
-    offset: number;
-    cacheHandler?: CacheHandler;
-  }): Promise<ProcessInstance[]> {
-    const { cacheHandler } = args;
-    const workflowInstances =
-      await this.dataIndexService.fetchInstancesByDefinitionId(args);
-    return workflowInstances.filter(workflowInstance =>
-      this.workflowCacheService.isAvailable(
-        workflowInstance.processId,
-        cacheHandler,
-      ),
-    );
   }
 
   public async fetchInstanceVariables(args: {
@@ -185,7 +176,7 @@ export class OrchestratorService {
 
   public async executeWorkflow(args: {
     definitionId: string;
-    endpoint: string;
+    serviceUrl: string;
     inputData: Record<string, string>;
     businessKey?: string;
     cacheHandler?: CacheHandler;

@@ -88,14 +88,14 @@ export class SonataFlowService {
 
   public async executeWorkflow(args: {
     definitionId: string;
-    endpoint: string;
+    serviceUrl: string;
     inputData: Record<string, string>;
     businessKey?: string;
   }): Promise<WorkflowExecutionResponse | undefined> {
     try {
       const workflowEndpoint = args.businessKey
-        ? `${args.endpoint}/${args.definitionId}?businessKey=${args.businessKey}`
-        : `${args.endpoint}/${args.definitionId}`;
+        ? `${args.serviceUrl}/${args.definitionId}?businessKey=${args.businessKey}`
+        : `${args.serviceUrl}/${args.definitionId}`;
 
       const result = await fetch(workflowEndpoint, {
         method: 'POST',

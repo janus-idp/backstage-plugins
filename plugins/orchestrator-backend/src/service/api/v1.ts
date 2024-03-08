@@ -125,7 +125,7 @@ export class V1 {
     const executionResponse = await this.orchestratorService.executeWorkflow({
       definitionId: definitionId,
       inputData: reqBody,
-      endpoint: definition.serviceUrl,
+      serviceUrl: definition.serviceUrl,
       businessKey,
       cacheHandler: 'throw',
     });

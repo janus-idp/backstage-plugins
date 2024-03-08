@@ -173,10 +173,12 @@ export class DataIndexService {
     return processInstances;
   }
 
-  public async fetchInstancesTotalCount(): Promise<number> {
+  public async fetchInstancesTotalCountByWorkflow(): Promise<
+    Map<string, number>
+  > {
     const graphQlQuery = buildGraphQlQuery({
       type: 'ProcessInstances',
-      queryBody: 'id',
+      queryBody: 'id, processId',
     });
     this.logger.debug(`GraphQL query: ${graphQlQuery}`);
     const result = await this.client.query(graphQlQuery, {});
@@ -188,9 +190,13 @@ export class DataIndexService {
       throw result.error;
     }
 
-    const idArr = result.data.ProcessInstances as ProcessInstance[];
-
-    return idArr.length;
+    const instances = result.data.ProcessInstances as ProcessInstance[];
+    return instances
+      .map(instance => instance.processId)
+      .reduce((acc, curr) => {
+        acc.set(curr, (acc.get(curr) || 0) + 1);
+        return acc;
+      }, new Map<string, number>());
   }
 
   private async getWorkflowDefinitionFromInstance(instance: ProcessInstance) {
