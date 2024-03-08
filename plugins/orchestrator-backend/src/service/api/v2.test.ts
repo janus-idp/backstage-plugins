@@ -409,7 +409,7 @@ describe('getInstanceById', () => {
 
     // Act
     const processInstanceV2: AssessedProcessInstanceDTO =
-      await v2.getInstanceById(processInstance.id);
+      await v2.getInstanceById(processInstance.id, true);
 
     // Assert
     expect(mockOrchestratorService.fetchInstance).toHaveBeenCalledTimes(2);

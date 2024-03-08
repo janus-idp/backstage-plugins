@@ -93,7 +93,7 @@ export class V1 {
 
     let assessedByInstance: ProcessInstance | undefined;
 
-    if (!includeAssessment && instance.businessKey) {
+    if (includeAssessment && instance.businessKey) {
       assessedByInstance = await this.orchestratorService.fetchInstance({
         instanceId: instance.businessKey,
         cacheHandler: 'throw',
