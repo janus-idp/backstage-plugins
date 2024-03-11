@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-ocm-backend [3.5.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@3.5.6...@janus-idp/backstage-plugin-ocm-backend@3.5.7) (2024-03-11)
+
+
+### Bug Fixes
+
+* **ocm:** prevent error when ManagedCluster.status doesn't contain a 'clusterClaims' field ([#1324](https://github.com/janus-idp/backstage-plugins/issues/1324)) ([c3ec56c](https://github.com/janus-idp/backstage-plugins/commit/c3ec56ccd8add3c6ac17ba6a933fbe8d1d841255))
+
 ## @janus-idp/backstage-plugin-ocm-backend [3.5.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@3.5.5...@janus-idp/backstage-plugin-ocm-backend@3.5.6) (2024-03-04)
 
 
