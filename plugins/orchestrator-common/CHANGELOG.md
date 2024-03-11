@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-orchestrator-common [1.5.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-common@1.4.1...@janus-idp/backstage-plugin-orchestrator-common@1.5.0) (2024-03-11)
+
+
+### Features
+
+* **orchestrator:** verify if auto-generated openapi files are up-to-date ([#1323](https://github.com/janus-idp/backstage-plugins/issues/1323)) ([650b435](https://github.com/janus-idp/backstage-plugins/commit/650b435ac53c517fc5e960734a4d3085399b1608))
+
 ## @janus-idp/backstage-plugin-orchestrator-common [1.4.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-common@1.4.0...@janus-idp/backstage-plugin-orchestrator-common@1.4.1) (2024-03-11)
 
 
