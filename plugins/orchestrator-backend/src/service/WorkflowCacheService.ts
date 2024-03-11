@@ -63,6 +63,11 @@ export class WorkflowCacheService {
   private async runTask() {
     try {
       const idUrlMap = await this.dataIndexService.fetchWorkflowServiceUrls();
+      this.definitionIdCache.forEach(definitionId => {
+        if (!idUrlMap[definitionId]) {
+          this.definitionIdCache.delete(definitionId);
+        }
+      });
       await Promise.all(
         Object.entries(idUrlMap).map(async ([definitionId, serviceUrl]) => {
           const isServiceUp = await this.sonataFlowService.pingWorkflowService({
