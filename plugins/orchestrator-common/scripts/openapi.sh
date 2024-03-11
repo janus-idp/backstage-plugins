@@ -39,7 +39,7 @@ openapi_update() {
 openapi_check() {
 
     if [ ! -f "${METADATA_FILE}" ]; then
-        echo "Error: Metadata file '${METADATA_FILE}' not found. Run 'generate_openapi.sh' first."
+        echo "Error: Metadata file '${METADATA_FILE}' not found. Run 'yarn openapi:generate' first."
         exit 1
     else
         STORED_SHA1=$(cat "${METADATA_FILE}")
