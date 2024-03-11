@@ -20,18 +20,12 @@ const createWorkflowInfoMock = (x: number): WorkflowInfo => {
     id: createDefinitionIdMock(x),
   };
 };
-const createWorkflowInfosMock = (size: number): WorkflowInfo[] =>
-  Array.from({ length: size }, (_, i) => createWorkflowInfoMock(i + 1));
-
 const createWorkflowOverviewMock = (x: number): WorkflowOverview => {
   return {
     workflowId: createDefinitionIdMock(x),
     format: 'yaml',
   };
 };
-const createWorkflowOverviewsMock = (size: number): WorkflowOverview[] =>
-  Array.from({ length: size }, (_, i) => createWorkflowOverviewMock(i + 1));
-
 const createInstanceMock = (x: number): ProcessInstance => {
   return {
     id: createInstanceIdMock(x),
@@ -40,23 +34,13 @@ const createInstanceMock = (x: number): ProcessInstance => {
     nodes: [],
   };
 };
-const createInstancesMock = (size: number): ProcessInstance[] => {
-  const result: ProcessInstance[] = [];
-  for (let i = 1; i <= size; i++) {
-    result.push(createInstanceMock(i));
-  }
-  return result;
-};
 
 // Mocked data
 const instanceId = createInstanceIdMock(1);
 const definitionId = createDefinitionIdMock(1);
 const workflowInfo = createWorkflowInfoMock(1);
-const workflowInfos = createWorkflowInfosMock(3);
 const workflowOverview = createWorkflowOverviewMock(1);
-const workflowOverviews = createWorkflowOverviewsMock(3);
 const instance = createInstanceMock(1);
-const instances = createInstancesMock(3);
 
 // Mocked dependencies
 const sonataFlowServiceMock = {} as SonataFlowService;
@@ -189,211 +173,6 @@ describe('OrchestratorService', () => {
       await expect(promise).rejects.toThrow();
 
       expect(dataIndexServiceMock.fetchWorkflowInfo).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('fetchWorkflowInfos', () => {
-    beforeEach(() => {
-      jest.clearAllMocks();
-    });
-
-    it('should execute the operation when the workflows are available', async () => {
-      workflowCacheServiceMock.isAvailable = jest.fn().mockReturnValue(true);
-      dataIndexServiceMock.fetchWorkflowInfos = jest
-        .fn()
-        .mockResolvedValue(workflowInfos);
-
-      const result = await orchestratorService.fetchWorkflowInfos({
-        cacheHandler: 'skip',
-      });
-
-      expect(result).toBeDefined();
-      expect(result).toHaveLength(3);
-    });
-
-    it('should partially execute the operation when some workflows are available', async () => {
-      workflowCacheServiceMock.isAvailable = jest
-        .fn()
-        .mockImplementation((id: string) => id !== definitionId);
-
-      dataIndexServiceMock.fetchWorkflowInfos = jest
-        .fn()
-        .mockResolvedValue(workflowInfos);
-
-      const result = await orchestratorService.fetchWorkflowInfos({
-        cacheHandler: 'skip',
-      });
-
-      expect(result).toBeDefined();
-      expect(result).toHaveLength(2);
-    });
-
-    it('should skip and not execute the operation when workflows are not available', async () => {
-      workflowCacheServiceMock.isAvailable = jest.fn().mockReturnValue(false);
-      dataIndexServiceMock.fetchWorkflowInfos = jest
-        .fn()
-        .mockResolvedValue(workflowInfos);
-
-      const result = await orchestratorService.fetchWorkflowInfos({
-        cacheHandler: 'skip',
-      });
-
-      expect(result).toHaveLength(0);
-    });
-
-    it('should throw an error and not execute the operation when any workflow is not available', async () => {
-      workflowCacheServiceMock.isAvailable = jest
-        .fn()
-        .mockImplementation(id => {
-          if (id === workflowInfo.id) throw new Error();
-        });
-      dataIndexServiceMock.fetchWorkflowInfos = jest
-        .fn()
-        .mockResolvedValue(workflowInfos);
-
-      const promise = orchestratorService.fetchWorkflowInfos({
-        cacheHandler: 'throw',
-      });
-
-      await expect(promise).rejects.toThrow();
-    });
-  });
-
-  describe('fetchInstances', () => {
-    beforeEach(() => {
-      jest.clearAllMocks();
-    });
-
-    it('should execute the operation when the workflows are available', async () => {
-      workflowCacheServiceMock.isAvailable = jest.fn().mockReturnValue(true);
-      dataIndexServiceMock.fetchInstances = jest
-        .fn()
-        .mockResolvedValue(instances);
-
-      const result = await orchestratorService.fetchInstances({
-        cacheHandler: 'skip',
-      });
-
-      expect(result).toBeDefined();
-      expect(result).toHaveLength(3);
-    });
-
-    it('should partially execute the operation when some workflows are available', async () => {
-      workflowCacheServiceMock.isAvailable = jest
-        .fn()
-        .mockImplementation((id: string) => id !== definitionId);
-
-      dataIndexServiceMock.fetchInstances = jest
-        .fn()
-        .mockResolvedValue(instances);
-
-      const result = await orchestratorService.fetchInstances({
-        cacheHandler: 'skip',
-      });
-
-      expect(result).toBeDefined();
-      expect(result).toHaveLength(2);
-    });
-
-    it('should skip and not execute the operation when workflows are not available', async () => {
-      workflowCacheServiceMock.isAvailable = jest.fn().mockReturnValue(false);
-      dataIndexServiceMock.fetchInstances = jest
-        .fn()
-        .mockResolvedValue(instances);
-
-      const result = await orchestratorService.fetchInstances({
-        cacheHandler: 'skip',
-      });
-
-      expect(result).toHaveLength(0);
-    });
-
-    it('should throw an error and not execute the operation when any workflow is not available', async () => {
-      workflowCacheServiceMock.isAvailable = jest
-        .fn()
-        .mockImplementation(id => {
-          if (id === definitionId) throw new Error();
-        });
-      dataIndexServiceMock.fetchInstances = jest
-        .fn()
-        .mockResolvedValue(instances);
-
-      const promise = orchestratorService.fetchInstances({
-        cacheHandler: 'throw',
-      });
-
-      await expect(promise).rejects.toThrow();
-    });
-  });
-
-  describe('fetchInstancesTotalCount', () => {
-    const totalMap = new Map<string, number>([
-      [definitionId, 10],
-      [createDefinitionIdMock(2), 20],
-      [createDefinitionIdMock(3), 30],
-    ]);
-
-    beforeEach(() => {
-      jest.clearAllMocks();
-    });
-
-    it('should execute the operation when the workflows are available', async () => {
-      workflowCacheServiceMock.isAvailable = jest.fn().mockReturnValue(true);
-      dataIndexServiceMock.fetchInstancesTotalCountByWorkflow = jest
-        .fn()
-        .mockResolvedValue(totalMap);
-
-      const result = await orchestratorService.fetchInstancesTotalCount({
-        cacheHandler: 'skip',
-      });
-
-      expect(result).toBe(60);
-    });
-
-    it('should partially execute the operation when some workflows are available', async () => {
-      workflowCacheServiceMock.isAvailable = jest
-        .fn()
-        .mockImplementation((id: string) => id !== definitionId);
-
-      dataIndexServiceMock.fetchInstancesTotalCountByWorkflow = jest
-        .fn()
-        .mockResolvedValue(totalMap);
-
-      const result = await orchestratorService.fetchInstancesTotalCount({
-        cacheHandler: 'skip',
-      });
-
-      expect(result).toBe(50);
-    });
-
-    it('should skip and not execute the operation when workflows are not available', async () => {
-      workflowCacheServiceMock.isAvailable = jest.fn().mockReturnValue(false);
-      dataIndexServiceMock.fetchInstancesTotalCountByWorkflow = jest
-        .fn()
-        .mockResolvedValue(totalMap);
-
-      const result = await orchestratorService.fetchInstancesTotalCount({
-        cacheHandler: 'skip',
-      });
-
-      expect(result).toBe(0);
-    });
-
-    it('should throw an error and not execute the operation when any workflow is not available', async () => {
-      workflowCacheServiceMock.isAvailable = jest
-        .fn()
-        .mockImplementation(id => {
-          if (id === definitionId) throw new Error();
-        });
-      dataIndexServiceMock.fetchInstancesTotalCountByWorkflow = jest
-        .fn()
-        .mockResolvedValue(totalMap);
-
-      const promise = orchestratorService.fetchInstancesTotalCount({
-        cacheHandler: 'throw',
-      });
-
-      await expect(promise).rejects.toThrow();
     });
   });
 
@@ -784,73 +563,6 @@ describe('OrchestratorService', () => {
       await expect(promise).rejects.toThrow();
 
       expect(sonataFlowServiceMock.executeWorkflow).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('fetchWorkflowOverviews', () => {
-    beforeEach(() => {
-      jest.clearAllMocks();
-    });
-
-    it('should execute the operation when the workflows are available', async () => {
-      workflowCacheServiceMock.isAvailable = jest.fn().mockReturnValue(true);
-      sonataFlowServiceMock.fetchWorkflowOverviews = jest
-        .fn()
-        .mockResolvedValue(workflowOverviews);
-
-      const result = await orchestratorService.fetchWorkflowOverviews({
-        cacheHandler: 'skip',
-      });
-
-      expect(result).toBeDefined();
-      expect(result).toHaveLength(3);
-    });
-
-    it('should partially execute the operation when some workflows are available', async () => {
-      workflowCacheServiceMock.isAvailable = jest
-        .fn()
-        .mockImplementation((id: string) => id !== definitionId);
-
-      sonataFlowServiceMock.fetchWorkflowOverviews = jest
-        .fn()
-        .mockResolvedValue(workflowOverviews);
-
-      const result = await orchestratorService.fetchWorkflowOverviews({
-        cacheHandler: 'skip',
-      });
-
-      expect(result).toBeDefined();
-      expect(result).toHaveLength(2);
-    });
-
-    it('should skip and not execute the operation when workflows are not available', async () => {
-      workflowCacheServiceMock.isAvailable = jest.fn().mockReturnValue(false);
-      sonataFlowServiceMock.fetchWorkflowOverviews = jest
-        .fn()
-        .mockResolvedValue(workflowOverviews);
-
-      const result = await orchestratorService.fetchWorkflowOverviews({
-        cacheHandler: 'skip',
-      });
-
-      expect(result).toHaveLength(0);
-    });
-
-    it('should throw an error and not execute the operation when any workflow is not available', async () => {
-      workflowCacheServiceMock.isAvailable = jest
-        .fn()
-        .mockImplementation(id => {
-          if (id === workflowInfo.id) throw new Error();
-        });
-      sonataFlowServiceMock.fetchWorkflowOverviews = jest
-        .fn()
-        .mockResolvedValue(workflowOverviews);
-
-      const promise = orchestratorService.fetchWorkflowOverviews({
-        cacheHandler: 'throw',
-      });
-
-      await expect(promise).rejects.toThrow();
     });
   });
 });

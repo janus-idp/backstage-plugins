@@ -63,12 +63,16 @@ export class SonataFlowService {
     return undefined;
   }
 
-  public async fetchWorkflowOverviews(
-    pagination?: Pagination,
-  ): Promise<WorkflowOverview[] | undefined> {
+  public async fetchWorkflowOverviews(args: {
+    definitionIds?: string[];
+    pagination?: Pagination;
+  }): Promise<WorkflowOverview[] | undefined> {
+    const { definitionIds, pagination } = args;
     try {
-      const workflowInfos =
-        await this.dataIndexService.fetchWorkflowInfos(pagination);
+      const workflowInfos = await this.dataIndexService.fetchWorkflowInfos({
+        definitionIds,
+        pagination,
+      });
       if (!workflowInfos?.length) {
         return [];
       }

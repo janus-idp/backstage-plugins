@@ -19,6 +19,10 @@ export class WorkflowCacheService {
     private readonly sonataFlowService: SonataFlowService,
   ) {}
 
+  public get definitionIds(): string[] {
+    return Array.from(this.definitionIdCache);
+  }
+
   public isAvailable(
     definitionId?: string,
     cacheHandler: CacheHandler = 'skip',

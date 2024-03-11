@@ -51,41 +51,19 @@ export class OrchestratorService {
       : undefined;
   }
 
-  public async fetchWorkflowInfos(args: {
-    cacheHandler?: CacheHandler;
-  }): Promise<WorkflowInfo[]> {
-    const { cacheHandler } = args;
-    const workflowInfos = await this.dataIndexService.fetchWorkflowInfos();
-    return workflowInfos.filter(workflowInfo =>
-      this.workflowCacheService.isAvailable(workflowInfo.id, cacheHandler),
-    );
-  }
-
   public async fetchInstances(args: {
     pagination?: Pagination;
-    cacheHandler?: CacheHandler;
   }): Promise<ProcessInstance[]> {
-    const { pagination, cacheHandler } = args;
-    const workflowInstances =
-      await this.dataIndexService.fetchInstances(pagination);
-    return workflowInstances.filter(workflowInstance =>
-      this.workflowCacheService.isAvailable(
-        workflowInstance.processId,
-        cacheHandler,
-      ),
-    );
+    return await this.dataIndexService.fetchInstances({
+      definitionIds: this.workflowCacheService.definitionIds,
+      pagination: args.pagination,
+    });
   }
 
-  public async fetchInstancesTotalCount(args: {
-    cacheHandler?: CacheHandler;
-  }): Promise<number> {
-    const { cacheHandler } = args;
-    const map =
-      await this.dataIndexService.fetchInstancesTotalCountByWorkflow();
-    const filtered = Array.from(map.entries()).filter(([definitionId]) =>
-      this.workflowCacheService.isAvailable(definitionId, cacheHandler),
+  public async fetchInstancesTotalCount(): Promise<number> {
+    return await this.dataIndexService.fetchInstancesTotalCount(
+      this.workflowCacheService.definitionIds,
     );
-    return filtered.reduce((acc, [, value]) => acc + value, 0);
   }
 
   public async fetchWorkflowSource(args: {
@@ -164,14 +142,11 @@ export class OrchestratorService {
 
   public async fetchWorkflowOverviews(args: {
     pagination?: Pagination;
-    cacheHandler?: CacheHandler;
   }): Promise<WorkflowOverview[] | undefined> {
-    const { pagination, cacheHandler } = args;
-    const overviews =
-      await this.sonataFlowService.fetchWorkflowOverviews(pagination);
-    return overviews?.filter(overview =>
-      this.workflowCacheService.isAvailable(overview.workflowId, cacheHandler),
-    );
+    return await this.sonataFlowService.fetchWorkflowOverviews({
+      definitionIds: this.workflowCacheService.definitionIds,
+      pagination: args.pagination,
+    });
   }
 
   public async executeWorkflow(args: {

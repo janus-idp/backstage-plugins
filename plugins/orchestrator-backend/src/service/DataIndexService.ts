@@ -110,14 +110,19 @@ export class DataIndexService {
       .reduce((acc, curr) => ({ ...acc, ...curr }), {});
   }
 
-  public async fetchWorkflowInfos(
-    pagination?: Pagination,
-  ): Promise<WorkflowInfo[]> {
+  public async fetchWorkflowInfos(args: {
+    definitionIds?: string[];
+    pagination?: Pagination;
+  }): Promise<WorkflowInfo[]> {
     this.logger.info(`fetchWorkflowInfos() called: ${this.dataIndexUrl}`);
+    const { definitionIds, pagination } = args;
 
     const graphQlQuery = buildGraphQlQuery({
       type: 'ProcessDefinitions',
       queryBody: 'id, name, version, type, endpoint, serviceUrl, source',
+      whereClause: definitionIds
+        ? `id: {in: ${JSON.stringify(definitionIds)}}`
+        : undefined,
       pagination,
     });
     this.logger.debug(`GraphQL query: ${graphQlQuery}`);
@@ -137,16 +142,26 @@ export class DataIndexService {
     return result.data.ProcessDefinitions;
   }
 
-  public async fetchInstances(
-    pagination?: Pagination,
-  ): Promise<ProcessInstance[]> {
+  public async fetchInstances(args: {
+    definitionIds?: string[];
+    pagination?: Pagination;
+  }): Promise<ProcessInstance[]> {
+    const { pagination, definitionIds } = args;
     if (pagination) pagination.sortField ??= FETCH_PROCESS_INSTANCES_SORT_FIELD;
+
+    const processIdNotNullCondition = 'processId: {isNull: false}';
+    const definitionIdsCondition = definitionIds
+      ? `processId: {in: ${JSON.stringify(definitionIds)}}`
+      : undefined;
+    const whereClause = definitionIdsCondition
+      ? `and: [{${processIdNotNullCondition}}, {${definitionIdsCondition}}]`
+      : processIdNotNullCondition;
 
     const graphQlQuery = buildGraphQlQuery({
       type: 'ProcessInstances',
       queryBody:
         'id, processName, processId, businessKey, state, start, end, nodes { id }, variables, parentProcessInstance {id, processName, businessKey}',
-      whereClause: 'processId: {isNull: false}',
+      whereClause,
       pagination,
     });
     this.logger.debug(`GraphQL query: ${graphQlQuery}`);
@@ -173,12 +188,15 @@ export class DataIndexService {
     return processInstances;
   }
 
-  public async fetchInstancesTotalCountByWorkflow(): Promise<
-    Map<string, number>
-  > {
+  public async fetchInstancesTotalCount(
+    definitionIds?: string[],
+  ): Promise<number> {
     const graphQlQuery = buildGraphQlQuery({
       type: 'ProcessInstances',
-      queryBody: 'id, processId',
+      queryBody: 'id',
+      whereClause: definitionIds
+        ? `processId: {in: ${JSON.stringify(definitionIds)}}`
+        : undefined,
     });
     this.logger.debug(`GraphQL query: ${graphQlQuery}`);
     const result = await this.client.query(graphQlQuery, {});
@@ -190,13 +208,9 @@ export class DataIndexService {
       throw result.error;
     }
 
-    const instances = result.data.ProcessInstances as ProcessInstance[];
-    return instances
-      .map(instance => instance.processId)
-      .reduce((acc, curr) => {
-        acc.set(curr, (acc.get(curr) || 0) + 1);
-        return acc;
-      }, new Map<string, number>());
+    const idArr = result.data.ProcessInstances as ProcessInstance[];
+
+    return idArr.length;
   }
 
   private async getWorkflowDefinitionFromInstance(instance: ProcessInstance) {
