@@ -1,3 +1,16 @@
+## @janus-idp/backstage-plugin-orchestrator-backend [1.5.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.5.0...@janus-idp/backstage-plugin-orchestrator-backend@1.5.1) (2024-03-11)
+
+
+### Other changes
+
+* **orchestrator:** add unit tests for v2 endpoints ([#1300](https://github.com/janus-idp/backstage-plugins/issues/1300)) ([9a13138](https://github.com/janus-idp/backstage-plugins/commit/9a13138c61d3cc7331f739da80f020bb68dd61e5))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.4.1
+
 ## @janus-idp/backstage-plugin-orchestrator-backend [1.5.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.4.12...@janus-idp/backstage-plugin-orchestrator-backend@1.5.0) (2024-03-07)
 
 
