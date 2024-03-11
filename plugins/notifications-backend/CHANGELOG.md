@@ -1,3 +1,10 @@
+## @janus-idp/plugin-notifications-backend [1.3.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications-backend@1.3.5...@janus-idp/plugin-notifications-backend@1.3.6) (2024-03-11)
+
+
+### Bug Fixes
+
+* **notifications:** return a detailed message for validation errors ([#1315](https://github.com/janus-idp/backstage-plugins/issues/1315)) ([e1c7046](https://github.com/janus-idp/backstage-plugins/commit/e1c70463b4d54917483a3a92355a128e85603a9e))
+
 ## @janus-idp/plugin-notifications-backend [1.3.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications-backend@1.3.4...@janus-idp/plugin-notifications-backend@1.3.5) (2024-03-06)
 
 
