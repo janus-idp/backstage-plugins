@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-kiali [1.12.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.12.0...@janus-idp/backstage-plugin-kiali@1.12.1) (2024-03-11)
+
+
+### Documentation
+
+* **kiali:** minor update in development docs ([#820](https://github.com/janus-idp/backstage-plugins/issues/820)) ([81e79bf](https://github.com/janus-idp/backstage-plugins/commit/81e79bf59ebff745a8775dc9ac784c7889e9532c))
+
 ## @janus-idp/backstage-plugin-kiali [1.12.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.11.3...@janus-idp/backstage-plugin-kiali@1.12.0) (2024-03-06)
 
 
