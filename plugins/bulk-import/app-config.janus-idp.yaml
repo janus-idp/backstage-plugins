@@ -1,0 +1,14 @@
+dynamicPlugins:
+  frontend:
+    janus-idp.backstage-plugin-bulk-import:
+      appIcons:
+        - name: LibraryAddOutlinedIcon
+          module: BulkImportPlugin
+          importName: LibraryAddOutlinedIcon
+      dynamicRoutes:
+        - path: /bulk-import
+          importName: BulkImportPage
+          module: BulkImportPlugin
+          menuItem:
+            icon: LibraryAddOutlinedIcon
+            text: Bulk import
