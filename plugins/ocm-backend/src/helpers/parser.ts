@@ -31,7 +31,7 @@ export const getClaim = (
   cluster: { status?: { clusterClaims: ClusterClaim[] } },
   claimName: string,
 ): string =>
-  cluster.status?.clusterClaims.find(value => value.name === claimName)
+  cluster.status?.clusterClaims?.find(value => value.name === claimName)
     ?.value || '';
 
 export const parseClusterStatus = (mc: ManagedCluster): ClusterStatus => {
