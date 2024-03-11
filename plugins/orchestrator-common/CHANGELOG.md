@@ -1,3 +1,15 @@
+## @janus-idp/backstage-plugin-orchestrator-common [1.4.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-common@1.4.0...@janus-idp/backstage-plugin-orchestrator-common@1.4.1) (2024-03-11)
+
+
+### Bug Fixes
+
+* **orchestrator:** add missing query parameter changes for /overview endpoint ([#1321](https://github.com/janus-idp/backstage-plugins/issues/1321)) ([241576d](https://github.com/janus-idp/backstage-plugins/commit/241576d242cd88e6d264180a69a5e1e9cd282df6))
+
+
+### Other changes
+
+* **orchestrator:** add unit tests for v2 endpoints ([#1300](https://github.com/janus-idp/backstage-plugins/issues/1300)) ([9a13138](https://github.com/janus-idp/backstage-plugins/commit/9a13138c61d3cc7331f739da80f020bb68dd61e5))
+
 ## @janus-idp/backstage-plugin-orchestrator-common [1.4.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-common@1.3.7...@janus-idp/backstage-plugin-orchestrator-common@1.4.0) (2024-03-07)
 
 
