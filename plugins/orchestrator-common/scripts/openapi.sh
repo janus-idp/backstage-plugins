@@ -7,17 +7,19 @@ SCHEMA_FILE="./src/auto-generated/api/models/schema.ts"
 DEFINITION_FILE="./src/auto-generated/api/definition.ts"
 METADATA_FILE="./src/auto-generated/.METADATA.sha1"
 
-
 openapi_generate() {
     npx openapi-typescript ${OPENAPI_SPEC_FILE} -o ${SCHEMA_FILE}
     npx openapi-generator-cli generate -g asciidoc -i ./src/openapi/openapi.yaml -o ./src/auto-generated/docs/index.adoc
     npx yaml2json -f ${OPENAPI_SPEC_FILE}
 
-    echo '// GENERATED FILE. DO NOT EDIT.' > ${DEFINITION_FILE}
-    echo 'const OPENAPI = `' >> ${DEFINITION_FILE}
-    cat ./src/openapi/openapi.json >> ${DEFINITION_FILE}
-    echo '`' >> ${DEFINITION_FILE}
-    echo "export const openApiDocument = JSON.parse(OPENAPI);" >> ${DEFINITION_FILE}
+    OPENAPI_SPEC_FILE_JSON=$(tr -d '[:space:]' < "$(dirname $OPENAPI_SPEC_FILE)"/openapi.json)
+    cat << EOF > ${DEFINITION_FILE}
+/* eslint-disable */
+/* prettier-ignore */
+// GENERATED FILE DO NOT EDIT.
+const OPENAPI = \`${OPENAPI_SPEC_FILE_JSON}\`;
+export const openApiDocument = JSON.parse(OPENAPI);
+EOF
 
     rm ./src/openapi/openapi.json
     yarn openapi:prettier:fix
