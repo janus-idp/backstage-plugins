@@ -6635,69 +6635,6 @@
     "@backstage/config" "^1.1.1"
     deep-freeze "^0.0.1"
 
-"@janus-idp/cli@1.7.2":
-  version "1.7.2"
-  resolved "https://registry.yarnpkg.com/@janus-idp/cli/-/cli-1.7.2.tgz#e61e03ca638c4b4d7d19b9def6750ac1a9a8f989"
-  integrity sha512-vPhVz71U+hWLGIhusLcEpJ0x4+MuBULstlHhGEbJq1jRb5LkqhdFuB7AASsfTXL9Giyxmf8kPvUAlr6LN+r9Jg==
-  dependencies:
-    "@backstage/cli-common" "^0.1.13"
-    "@backstage/cli-node" "^0.2.3"
-    "@backstage/config" "^1.1.1"
-    "@backstage/config-loader" "^1.6.2"
-    "@backstage/errors" "^1.2.3"
-    "@backstage/eslint-plugin" "^0.1.5"
-    "@backstage/types" "^1.1.1"
-    "@manypkg/get-packages" "^1.1.3"
-    "@openshift/dynamic-plugin-sdk-webpack" "^3.0.0"
-    "@pmmmwh/react-refresh-webpack-plugin" "^0.5.7"
-    "@rollup/plugin-commonjs" "^25.0.4"
-    "@rollup/plugin-json" "^6.0.0"
-    "@rollup/plugin-node-resolve" "^15.2.1"
-    "@rollup/plugin-yaml" "^4.0.0"
-    "@svgr/rollup" "^8.1.0"
-    "@svgr/webpack" "^6.5.1"
-    "@yarnpkg/lockfile" "^1.1.0"
-    "@yarnpkg/parsers" "^3.0.0-rc.4"
-    bfj "^7.0.2"
-    chalk "^4.0.0"
-    chokidar "^3.3.1"
-    commander "^9.1.0"
-    css-loader "^6.5.1"
-    esbuild "^0.19.0"
-    esbuild-loader "^2.18.0"
-    eslint "^8.49.0"
-    eslint-config-prettier "^8.10.0"
-    eslint-webpack-plugin "^3.2.0"
-    express "^4.18.2"
-    fork-ts-checker-webpack-plugin "^7.0.0-alpha.8"
-    fs-extra "^10.1.0"
-    handlebars "^4.7.7"
-    html-webpack-plugin "^5.3.1"
-    inquirer "^8.2.0"
-    lodash "^4.17.21"
-    mini-css-extract-plugin "^2.4.2"
-    node-libs-browser "^2.2.1"
-    npm-packlist "^5.0.0"
-    ora "^5.3.0"
-    postcss "^8.2.13"
-    process "^0.11.10"
-    react-dev-utils "^12.0.0-next.60"
-    react-refresh "^0.14.0"
-    recursive-readdir "^2.2.2"
-    rollup "^2.78.0"
-    rollup-plugin-dts "^4.0.1"
-    rollup-plugin-esbuild "^4.7.2"
-    rollup-plugin-postcss "^4.0.0"
-    rollup-pluginutils "^2.8.2"
-    semver "^7.5.4"
-    style-loader "^3.3.1"
-    swc-loader "^0.2.3"
-    typescript-json-schema "^0.62.0"
-    webpack "^5.89.0"
-    webpack-dev-server "^4.15.1"
-    yml-loader "^2.1.0"
-    yn "^4.0.0"
-
 "@jest/console@^29.7.0":
   version "29.7.0"
   resolved "https://registry.yarnpkg.com/@jest/console/-/console-29.7.0.tgz#cd4822dbdb84529265c5a2bdb529a3c9cc950ffc"
@@ -14596,9 +14533,9 @@
     "@types/react" "*"
 
 "@types/react-dom@18.2.18", "@types/react-dom@^18", "@types/react-dom@^18.0.0":
-  version "18.2.19"
-  resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-18.2.19.tgz#b84b7c30c635a6c26c6a6dfbb599b2da9788be58"
-  integrity sha512-aZvQL6uUbIJpjZk4U8JZGbau9KDeAwMfmhyWorxgBkqDIEf6ROjRozcmPIicqsUwPUjbkDfHKgGee1Lq65APcA==
+  version "18.2.21"
+  resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-18.2.21.tgz#b8c81715cebdebb2994378616a8d54ace54f043a"
+  integrity sha512-gnvBA/21SA4xxqNXEwNiVcP0xSGHh/gi1VhWv9Bl46a0ItbTT5nFY+G9VSQpaG/8N/qdJpJ+vftQ4zflTtnjLw==
   dependencies:
     "@types/react" "*"
 
@@ -14648,9 +14585,9 @@
     "@types/react" "*"
 
 "@types/react@*", "@types/react@18.2.48", "@types/react@>=16", "@types/react@^16.13.1 || ^17.0.0", "@types/react@^16.13.1 || ^17.0.0 || ^18.0.0", "@types/react@^18":
-  version "18.2.55"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.2.55.tgz#38141821b7084404b5013742bc4ae08e44da7a67"
-  integrity sha512-Y2Tz5P4yz23brwm2d7jNon39qoAtMMmalOQv6+fEFt1mT+FcM3D841wDpoUvFXhaYenuROCy3FZYqdTjM7qVyA==
+  version "18.2.65"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.2.65.tgz#54eb311fa9aba173c9e163d42ec188d5a42878b8"
+  integrity sha512-98TsY0aW4jqx/3RqsUXwMDZSWR1Z4CUlJNue8ueS2/wcxZOsz4xmW1X8ieaWVRHcmmQM3R8xVA4XWB3dJnWwDQ==
   dependencies:
     "@types/prop-types" "*"
     "@types/scheduler" "*"
