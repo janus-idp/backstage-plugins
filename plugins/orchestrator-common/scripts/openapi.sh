@@ -28,8 +28,8 @@ EOF
 }
 
 openapi_checksum() {
-    CONCATENATED_CONTENT=$(cat ${DEFINITION_FILE} ${SCHEMA_FILE} ${OPENAPI_SPEC_FILE})
-    node -e $'console.log(crypto.createHash("sha1").update(`$CONCATENATED_CONTENT`).digest("hex"))'
+    export CONCATENATED_CONTENT=$(cat ${DEFINITION_FILE} ${SCHEMA_FILE} ${OPENAPI_SPEC_FILE})
+    node -e $'console.log(crypto.createHash("sha1").update(`${process.env.CONCATENATED_CONTENT}`).digest("hex"))'
 }
 
 openapi_update() {
