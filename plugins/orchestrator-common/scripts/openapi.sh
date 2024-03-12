@@ -24,11 +24,12 @@ EOF
     rm ./src/openapi/openapi.json
     yarn openapi:prettier:fix
     NEW_SHA=$(openapi_checksum)
-    openapi_update ${NEW_SHA}
+    openapi_update "${NEW_SHA}"
 }
 
-openapi_checksum(){
-    cat ${DEFINITION_FILE} ${SCHEMA_FILE} ${OPENAPI_SPEC_FILE} | sha1sum | awk '{print $1}' | tr -d '[:space:]'
+openapi_checksum() {
+    CONCATENATED_CONTENT=$(cat ${DEFINITION_FILE} ${SCHEMA_FILE} ${OPENAPI_SPEC_FILE})
+    node -e $'console.log(crypto.createHash("sha1").update(`$CONCATENATED_CONTENT`).digest("hex"))'
 }
 
 openapi_update() {
