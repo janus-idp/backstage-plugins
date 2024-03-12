@@ -269,8 +269,20 @@ export class RBACPermissionPolicy implements PermissionPolicy {
         status = await this.isAuthorized(userEntityRef, obj, action);
 
         if (status && identityResp) {
-          const conditionalDecision =
-            await this.conditionStorage.findCondition(resourceType);
+          const roles = await this.enforcer.getRolesForUser(userEntityRef);
+          console.log(`===== Roles ${roles} ${userEntityRef} ===`);
+          let conditionalDecision;
+          for (const role of roles) {
+            conditionalDecision = await this.conditionStorage.findCondition(
+              role,
+              resourceType,
+            );
+            // todo handle few roles
+            if (conditionalDecision) {
+              break;
+            }
+          }
+
           if (conditionalDecision) {
             this.logger.info(
               `${identityResp?.identity.userEntityRef} executed condition for permission ${request.permission.name}, resource type ${resourceType} and action ${action}`,

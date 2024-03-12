@@ -43,6 +43,10 @@ export class EnforcerDelegate {
     return await this.enforcer.getGroupingPolicy();
   }
 
+  async getRolesForUser(userEntityRef: string): Promise<string[]> {
+    return await this.enforcer.getRolesForUser(userEntityRef);
+  }
+
   async getFilteredPolicy(
     fieldIndex: number,
     ...filter: string[]

@@ -1,3 +1,5 @@
+import { ConditionalPolicyDecision } from '@backstage/plugin-permission-common';
+
 export type Source =
   | 'rest' // created via REST API
   | 'csv-file' // created via policies-csv-file with defined path in the application configuration
@@ -41,4 +43,8 @@ export type UpdatePolicy = {
 export type PermissionPolicy = {
   pluginId?: string;
   policies?: Policy[];
+};
+
+export type RoleConditionalPolicyDecision = ConditionalPolicyDecision & {
+  roleEntityRef: string;
 };
