@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-orchestrator-common [1.5.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-common@1.5.0...@janus-idp/backstage-plugin-orchestrator-common@1.5.1) (2024-03-12)
+
+
+### Bug Fixes
+
+* **orchestrator:** openapi files hash generation use nodejs script ([#1328](https://github.com/janus-idp/backstage-plugins/issues/1328)) ([e91c27e](https://github.com/janus-idp/backstage-plugins/commit/e91c27ecf7066149aa498e5b2e65a1d3653fa448))
+
 ## @janus-idp/backstage-plugin-orchestrator-common [1.5.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-common@1.4.1...@janus-idp/backstage-plugin-orchestrator-common@1.5.0) (2024-03-11)
 
 
