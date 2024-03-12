@@ -16,7 +16,6 @@ import {
 } from '@backstage/plugin-permission-backend';
 import {
   AuthorizeResult,
-  ConditionalPolicyDecision,
   PermissionEvaluator,
   PolicyDecision,
   QueryPermissionRequest,
@@ -38,6 +37,7 @@ import {
   RESOURCE_TYPE_POLICY_ENTITY,
   Role,
   RoleBasedPolicy,
+  RoleConditionalPolicyDecision,
 } from '@janus-idp/backstage-plugin-rbac-common';
 import { PluginIdProvider } from '@janus-idp/backstage-plugin-rbac-node';
 
@@ -583,100 +583,140 @@ export class PolicesServer {
       response.json(rules);
     });
 
-    router.get('/conditions', async (req, resp) => {
-      const decision = await this.authorize(req, {
-        permission: policyEntityReadPermission,
-      });
+    router.get(
+      '/roles/:kind/:namespace/:name/conditions',
+      async (req, resp) => {
+        const decision = await this.authorize(req, {
+          permission: policyEntityReadPermission,
+        });
 
-      if (decision.result === AuthorizeResult.DENY) {
-        throw new NotAllowedError(); // 403
-      }
+        if (decision.result === AuthorizeResult.DENY) {
+          throw new NotAllowedError(); // 403
+        }
 
-      const pluginId = this.getFirstQuery(req.query.pluginId);
-      const resourceType = this.getFirstQuery(req.query.resourceType);
-      const conditions = await this.conditionalStorage.getConditions(
-        pluginId,
-        resourceType,
-      );
+        const roleEntityRef = this.getEntityReference(req, true);
 
-      resp.json(conditions);
-    });
+        const pluginId = this.getFirstQuery(req.query.pluginId);
+        const resourceType = this.getFirstQuery(req.query.resourceType);
+        const conditions = await this.conditionalStorage.getConditions(
+          roleEntityRef,
+          pluginId,
+          resourceType,
+        );
 
-    router.post('/conditions', async (req, resp) => {
-      const decision = await this.authorize(req, {
-        permission: policyEntityCreatePermission,
-      });
+        resp.json(conditions);
+      },
+    );
 
-      if (decision.result === AuthorizeResult.DENY) {
-        throw new NotAllowedError(); // 403
-      }
+    router.post(
+      '/roles/:kind/:namespace/:name/conditions',
+      async (req, resp) => {
+        const decision = await this.authorize(req, {
+          permission: policyEntityCreatePermission,
+        });
 
-      const conditionalPolicy: ConditionalPolicyDecision = req.body;
-      // TODO add validation.
-      const id =
-        await this.conditionalStorage.createCondition(conditionalPolicy);
+        if (decision.result === AuthorizeResult.DENY) {
+          throw new NotAllowedError(); // 403
+        }
 
-      resp.status(201).json({ id: id });
-    });
+        const roleEntityRef = this.getEntityReference(req, true);
 
-    router.get('/conditions/:id', async (req, resp) => {
-      const decision = await this.authorize(req, {
-        permission: policyEntityReadPermission,
-      });
+        const conditionalPolicy: RoleConditionalPolicyDecision = req.body;
+        // TODO add validation.
+        const roleConditionPolicy = {
+          ...conditionalPolicy,
+          roleEntityRef,
+        };
 
-      if (decision.result === AuthorizeResult.DENY) {
-        throw new NotAllowedError(); // 403
-      }
+        const id =
+          await this.conditionalStorage.createCondition(roleConditionPolicy);
 
-      const id: number = parseInt(req.params.id, 10);
-      if (isNaN(id)) {
-        throw new InputError('Id is not a valid number.');
-      }
+        resp.status(201).json({ id: id });
+      },
+    );
 
-      const condition = await this.conditionalStorage.getCondition(id);
-      if (!condition) {
-        throw new NotFoundError();
-      }
+    router.get(
+      '/roles/:kind/:namespace/:name/conditions/:id',
+      async (req, resp) => {
+        const decision = await this.authorize(req, {
+          permission: policyEntityReadPermission,
+        });
 
-      resp.json(condition);
-    });
+        if (decision.result === AuthorizeResult.DENY) {
+          throw new NotAllowedError(); // 403
+        }
 
-    router.delete('/conditions/:id', async (req, resp) => {
-      const decision = await this.authorize(req, {
-        permission: policyEntityDeletePermission,
-      });
+        const roleEntityRef = this.getEntityReference(req, true);
 
-      if (decision.result === AuthorizeResult.DENY) {
-        throw new NotAllowedError(); // 403
-      }
+        const id: number = parseInt(req.params.id, 10);
+        if (isNaN(id)) {
+          throw new InputError('Id is not a valid number.');
+        }
 
-      const id: number = parseInt(req.params.id, 10);
-      if (isNaN(id)) {
-        throw new InputError('Id is not a valid number.');
-      }
+        const condition = await this.conditionalStorage.getCondition(id);
+        if (!condition) {
+          throw new NotFoundError();
+        }
+        if (condition && condition.roleEntityRef !== roleEntityRef) {
+          throw new NotFoundError();
+        }
 
-      await this.conditionalStorage.deleteCondition(id);
-      resp.status(204).end();
-    });
+        resp.json(condition);
+      },
+    );
 
-    router.put('/conditions/:id', async (req, resp) => {
-      const decision = await this.authorize(req, {
-        permission: policyEntityUpdatePermission,
-      });
+    router.delete(
+      '/roles/:kind/:namespace/:name/conditions/:id',
+      async (req, resp) => {
+        const decision = await this.authorize(req, {
+          permission: policyEntityDeletePermission,
+        });
 
-      if (decision.result === AuthorizeResult.DENY) {
-        throw new NotAllowedError(); // 403
-      }
+        if (decision.result === AuthorizeResult.DENY) {
+          throw new NotAllowedError(); // 403
+        }
 
-      const id: number = parseInt(req.params.id, 10);
-      if (isNaN(id)) {
-        throw new InputError('Id is not a valid number.');
-      }
-      const conditionalPolicy: ConditionalPolicyDecision = req.body;
+        const roleEntityRef = this.getEntityReference(req, true);
 
-      await this.conditionalStorage.updateCondition(id, conditionalPolicy);
-      resp.status(200).end();
-    });
+        const id: number = parseInt(req.params.id, 10);
+        if (isNaN(id)) {
+          throw new InputError('Id is not a valid number.');
+        }
+
+        await this.conditionalStorage.deleteCondition(roleEntityRef, id);
+        resp.status(204).end();
+      },
+    );
+
+    router.put(
+      '/roles/:kind/:namespace/:name/conditions/:id',
+      async (req, resp) => {
+        const decision = await this.authorize(req, {
+          permission: policyEntityUpdatePermission,
+        });
+
+        if (decision.result === AuthorizeResult.DENY) {
+          throw new NotAllowedError(); // 403
+        }
+
+        const roleEntityRef = this.getEntityReference(req, true);
+
+        const id: number = parseInt(req.params.id, 10);
+        if (isNaN(id)) {
+          throw new InputError('Id is not a valid number.');
+        }
+
+        const conditionalPolicy: RoleConditionalPolicyDecision = req.body;
+        // TODO add validation.
+        const roleConditionPolicy = {
+          ...conditionalPolicy,
+          roleEntityRef,
+        };
+
+        await this.conditionalStorage.updateCondition(id, roleConditionPolicy);
+        resp.status(200).end();
+      },
+    );
 
     return router;
   }
