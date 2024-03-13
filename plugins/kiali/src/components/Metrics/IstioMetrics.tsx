@@ -231,7 +231,8 @@ export const IstioMetrics = (props: Props) => {
       refresh();
       prevDirection.current = props.direction;
     }
-  }, [props.direction, refresh]);
+    /* eslint-disable-next-line */
+  }, [props.direction]);
 
   const [_, refreshy] = useAsyncFn(
     async () => {
