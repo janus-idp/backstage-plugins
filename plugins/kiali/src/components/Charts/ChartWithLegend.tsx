@@ -240,8 +240,9 @@ export class ChartWithLegend<
           // Was not already hidden => add to set
           this.state.hiddenSeries.add(serieName);
         }
-
-        this.setState({ hiddenSeries: new Set(this.state.hiddenSeries) });
+        this.setState(prevState => ({
+          hiddenSeries: new Set(prevState.hiddenSeries),
+        }));
         return null;
       },
     });

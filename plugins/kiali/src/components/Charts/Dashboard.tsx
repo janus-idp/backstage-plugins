@@ -45,28 +45,13 @@ export class Dashboard<T extends LineInfo> extends React.Component<
     };
   }
 
-  render() {
-    if (this.state.maximizedChart) {
-      const chart = this.props.dashboard.charts.find(
-        c => c.name === this.state.maximizedChart,
-      );
-      if (chart) {
-        return this.renderChart(chart);
-      }
-    }
-
-    return (
-      <Grid>
-        {this.props.dashboard.charts.map(c => {
-          return (
-            <GridItem span={c.spans} key={c.name}>
-              {this.renderChart(c)}
-            </GridItem>
-          );
-        })}
-      </Grid>
-    );
-  }
+  private onToggleMaximized = (chartKey: string): void => {
+    const maximized = this.state.maximizedChart ? undefined : chartKey;
+    this.setState(prevState => ({
+      maximizedChart: prevState.maximizedChart ? undefined : chartKey,
+    }));
+    this.props.expandHandler(maximized);
+  };
 
   private getChartHeight = (): number => {
     if (this.state.maximizedChart) {
@@ -116,9 +101,26 @@ export class Dashboard<T extends LineInfo> extends React.Component<
     );
   }
 
-  private onToggleMaximized = (chartKey: string): void => {
-    const maximized = this.state.maximizedChart ? undefined : chartKey;
-    this.setState({ maximizedChart: maximized });
-    this.props.expandHandler(maximized);
-  };
+  render() {
+    if (this.state.maximizedChart) {
+      const chart = this.props.dashboard.charts.find(
+        c => c.name === this.state.maximizedChart,
+      );
+      if (chart) {
+        return this.renderChart(chart);
+      }
+    }
+
+    return (
+      <Grid>
+        {this.props.dashboard.charts.map(c => {
+          return (
+            <GridItem span={c.spans} key={c.name}>
+              {this.renderChart(c)}
+            </GridItem>
+          );
+        })}
+      </Grid>
+    );
+  }
 }
