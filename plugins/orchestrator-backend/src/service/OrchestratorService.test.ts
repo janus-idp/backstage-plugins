@@ -26,6 +26,8 @@ const createWorkflowOverviewMock = (x: number): WorkflowOverview => {
     format: 'yaml',
   };
 };
+const createWorkflowOverviewsMock = (size: number): WorkflowOverview[] =>
+  Array.from({ length: size }, (_, i) => createWorkflowOverviewMock(i + 1));
 const createInstanceMock = (x: number): ProcessInstance => {
   return {
     id: createInstanceIdMock(x),
@@ -34,13 +36,22 @@ const createInstanceMock = (x: number): ProcessInstance => {
     nodes: [],
   };
 };
+const createInstancesMock = (size: number): ProcessInstance[] => {
+  const result: ProcessInstance[] = [];
+  for (let i = 1; i <= size; i++) {
+    result.push(createInstanceMock(i));
+  }
+  return result;
+};
 
 // Mocked data
 const instanceId = createInstanceIdMock(1);
 const definitionId = createDefinitionIdMock(1);
 const workflowInfo = createWorkflowInfoMock(1);
 const workflowOverview = createWorkflowOverviewMock(1);
+const workflowOverviews = createWorkflowOverviewsMock(3);
 const instance = createInstanceMock(1);
+const instances = createInstancesMock(3);
 
 // Mocked dependencies
 const sonataFlowServiceMock = {} as SonataFlowService;
@@ -124,6 +135,91 @@ describe('OrchestratorService', () => {
         'throw',
       );
       expect(dataIndexServiceMock.abortWorkflowInstance).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('fetchInstances', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should execute the operation when the cache is not empty', async () => {
+      workflowCacheServiceMock.isEmpty = jest.fn().mockReturnValue(false);
+      dataIndexServiceMock.fetchInstances = jest
+        .fn()
+        .mockResolvedValue(instances);
+
+      const result = await orchestratorService.fetchInstances({});
+
+      expect(result).toHaveLength(instances.length);
+      expect(dataIndexServiceMock.fetchInstances).toHaveBeenCalled();
+    });
+
+    it('should not execute the operation when the cache is empty', async () => {
+      workflowCacheServiceMock.isEmpty = jest.fn().mockReturnValue(true);
+
+      const result = await orchestratorService.fetchInstances({});
+
+      expect(result).toHaveLength(0);
+      expect(dataIndexServiceMock.fetchInstances).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('fetchInstancesTotalCount', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should execute the operation when the cache is not empty', async () => {
+      workflowCacheServiceMock.isEmpty = jest.fn().mockReturnValue(false);
+      dataIndexServiceMock.fetchInstancesTotalCount = jest
+        .fn()
+        .mockResolvedValue(instances.length);
+
+      const result = await orchestratorService.fetchInstancesTotalCount();
+
+      expect(result).toBe(instances.length);
+      expect(dataIndexServiceMock.fetchInstancesTotalCount).toHaveBeenCalled();
+    });
+
+    it('should not execute the operation when the cache is empty', async () => {
+      workflowCacheServiceMock.isEmpty = jest.fn().mockReturnValue(true);
+
+      const result = await orchestratorService.fetchInstancesTotalCount();
+
+      expect(result).toBe(0);
+      expect(
+        dataIndexServiceMock.fetchInstancesTotalCount,
+      ).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('fetchWorkflowOverviews', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should execute the operation when the cache is not empty', async () => {
+      workflowCacheServiceMock.isEmpty = jest.fn().mockReturnValue(false);
+      sonataFlowServiceMock.fetchWorkflowOverviews = jest
+        .fn()
+        .mockResolvedValue(workflowOverviews);
+
+      const result = await orchestratorService.fetchWorkflowOverviews({});
+
+      expect(result).toHaveLength(workflowOverviews.length);
+      expect(sonataFlowServiceMock.fetchWorkflowOverviews).toHaveBeenCalled();
+    });
+
+    it('should not execute the operation when the cache is empty', async () => {
+      workflowCacheServiceMock.isEmpty = jest.fn().mockReturnValue(true);
+
+      const result = await orchestratorService.fetchWorkflowOverviews({});
+
+      expect(result).toHaveLength(0);
+      expect(
+        sonataFlowServiceMock.fetchWorkflowOverviews,
+      ).not.toHaveBeenCalled();
     });
   });
 

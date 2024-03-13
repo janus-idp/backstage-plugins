@@ -23,6 +23,10 @@ export class WorkflowCacheService {
     return Array.from(this.definitionIdCache);
   }
 
+  public isEmpty(): boolean {
+    return this.definitionIdCache.size === 0;
+  }
+
   public isAvailable(
     definitionId?: string,
     cacheHandler: CacheHandler = 'skip',
@@ -85,9 +89,10 @@ export class WorkflowCacheService {
         }),
       );
 
-      const workflowDefinitionIds = Array.from(this.definitionIdCache).join(
-        ', ',
-      );
+      const workflowDefinitionIds = this.isEmpty()
+        ? 'empty cache'
+        : Array.from(this.definitionIdCache).join(', ');
+
       this.logger.info(
         `${this.TASK_ID} updated the workflow definition ID cache to: ${workflowDefinitionIds}`,
       );
