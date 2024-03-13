@@ -99,7 +99,7 @@ export const IstioMetrics = (props: Props) => {
   const spanOverlay = new SpanOverlay(changed => setSpanOverlayState(changed));
   const tracingIntegration = kialiState.tracingState?.info
     ? kialiState.tracingState.info.integration
-    : false;
+    : true;
   const [timeRange, setTimeRange] = React.useState<TimeRange>(initTimeRange());
 
   const initOptions = (settingsI: MetricsSettings): IstioMetricsOptions => {
@@ -205,7 +205,6 @@ export const IstioMetrics = (props: Props) => {
 
   const refresh = (): void => {
     fetchMetrics();
-
     if (tracingIntegration) {
       spanOverlay.fetch({
         namespace: props.namespace,
@@ -225,6 +224,10 @@ export const IstioMetrics = (props: Props) => {
     fetchGrafanaInfo();
     refresh();
   };
+
+  React.useEffect(() => {
+    fetchMetrics();
+  }, [showSpans]);
 
   const [_, refreshy] = useAsyncFn(
     async () => {
@@ -417,7 +420,7 @@ export const IstioMetrics = (props: Props) => {
                 dashboardHeight={dashboardHeight}
                 timeWindow={evalTimeRange(timeRange)}
                 brushHandlers={{
-                  onDomainChangeEnd: (_, propsD) =>
+                  onDomainChangeEnd: (__, propsD) =>
                     onDomainChange(propsD.currentDomain.x),
                 }}
               />
