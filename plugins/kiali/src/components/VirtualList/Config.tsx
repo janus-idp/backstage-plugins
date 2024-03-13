@@ -21,6 +21,7 @@ export type Renderer<R extends RenderResource> = (
   badge: PFBadgeType,
   health?: Health,
   statefulFilter?: React.RefObject<StatefulFilters>,
+  view?: string,
 ) => JSX.Element | undefined;
 
 export type ResourceType<R extends RenderResource> = {

@@ -22,11 +22,14 @@ import { ServiceHealth } from '../../types/Health';
 import { validationKey } from '../../types/IstioConfigList';
 import { ObjectValidation, Validations } from '../../types/IstioObjects';
 import { ServiceList, ServiceListItem } from '../../types/ServiceList';
+import { ENTITY } from '../../types/types';
 import { sortIstioReferences } from '../AppList/FiltersAndSorts';
 import { NamespaceInfo } from '../Overview/NamespaceInfo';
 import { getNamespaces } from '../Overview/OverviewPage';
 
-export const ServiceListPage = (): React.JSX.Element => {
+export const ServiceListPage = (props: {
+  view?: string;
+}): React.JSX.Element => {
   const kialiClient = useApi(kialiApiRef);
   const [namespaces, setNamespaces] = React.useState<NamespaceInfo[]>([]);
   const [allServices, setServices] = React.useState<ServiceListItem[]>([]);
@@ -40,6 +43,9 @@ export const ServiceListPage = (): React.JSX.Element => {
   const activeToggles: ActiveTogglesInfo = Toggles.getToggles();
 
   const hiddenColumns = isMultiCluster ? [] : ['cluster'];
+  if (props.view === ENTITY) {
+    hiddenColumns.push('details');
+  }
 
   const grids = () => {
     const elements = [];
@@ -187,12 +193,18 @@ export const ServiceListPage = (): React.JSX.Element => {
   return (
     <div className={baseStyle}>
       <Content>
-        <DefaultSecondaryMasthead elements={grids()} onRefresh={() => load()} />
+        {props.view !== ENTITY && (
+          <DefaultSecondaryMasthead
+            elements={grids()}
+            onRefresh={() => load()}
+          />
+        )}
         <VirtualList
           activeNamespaces={namespaces}
           rows={allServices}
           type="services"
           hiddenColumns={hiddenColumns}
+          view={props.view}
         />
       </Content>
     </div>

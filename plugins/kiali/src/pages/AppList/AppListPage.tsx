@@ -5,8 +5,6 @@ import { useAsyncFn, useDebounce } from 'react-use';
 import { Content } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
-import { CircularProgress } from '@material-ui/core';
-
 import { DefaultSecondaryMasthead } from '../../components/DefaultSecondaryMasthead/DefaultSecondaryMasthead';
 import * as FilterHelper from '../../components/FilterList/FilterHelper';
 import { TimeDurationComponent } from '../../components/Time/TimeDurationComponent';
@@ -17,11 +15,12 @@ import { getErrorString, kialiApiRef } from '../../services/Api';
 import { KialiAppState, KialiContext } from '../../store';
 import { baseStyle } from '../../styles/StyleUtils';
 import { AppListItem } from '../../types/AppList';
+import { ENTITY } from '../../types/types';
 import { NamespaceInfo } from '../Overview/NamespaceInfo';
 import { getNamespaces } from '../Overview/OverviewPage';
 import * as AppListClass from './AppListClass';
 
-export const AppListPage = (): React.JSX.Element => {
+export const AppListPage = (props: { view?: string }): React.JSX.Element => {
   const kialiClient = useApi(kialiApiRef);
   const [namespaces, setNamespaces] = React.useState<NamespaceInfo[]>([]);
   const [allApps, setApps] = React.useState<AppListItem[]>([]);
@@ -34,6 +33,9 @@ export const AppListPage = (): React.JSX.Element => {
   const prevDuration = useRef(duration);
 
   const hiddenColumns = isMultiCluster ? [] : ['cluster'];
+  if (props.view === ENTITY) {
+    hiddenColumns.push('details');
+  }
 
   const grids = () => {
     const elements = [];
@@ -82,53 +84,56 @@ export const AppListPage = (): React.JSX.Element => {
       );
   };
 
-  const load = async () => {
+  const getNS = async () => {
     kialiClient.getNamespaces().then(namespacesResponse => {
       const allNamespaces: NamespaceInfo[] = getNamespaces(
         namespacesResponse,
         namespaces,
       );
-      const nsl = allNamespaces.filter(ns => activeNs.includes(ns.name));
-      setNamespaces(nsl);
-      fetchApps(nsl, duration);
+      const namespaceInfos = allNamespaces.filter(ns =>
+        activeNs.includes(ns.name),
+      );
+      setNamespaces(namespaceInfos);
+      fetchApps(namespaceInfos, duration);
     });
   };
 
-  const [{ loading }, refresh] = useAsyncFn(
+  const [_, refresh] = useAsyncFn(
     async () => {
-      // Check if the config is loaded
-      await load();
+      await getNS();
     },
     [],
     { loading: true },
   );
-  useDebounce(refresh, 10);
+  useDebounce(refresh, 5);
 
   React.useEffect(() => {
     if (
       duration !== prevDuration.current ||
       !nsEqual(activeNs, prevActiveNs.current)
     ) {
-      load();
+      getNS();
       prevDuration.current = duration;
       prevActiveNs.current = activeNs;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeNs, duration]);
 
-  if (loading) {
-    return <CircularProgress />;
-  }
-
   return (
     <div className={baseStyle}>
       <Content>
-        <DefaultSecondaryMasthead elements={grids()} onRefresh={() => load()} />
+        {props.view !== ENTITY && (
+          <DefaultSecondaryMasthead
+            elements={grids()}
+            onRefresh={() => getNS()}
+          />
+        )}
         <VirtualList
           activeNamespaces={namespaces}
           rows={allApps}
           type="applications"
           hiddenColumns={hiddenColumns}
+          view={props.view}
         />
       </Content>
     </div>

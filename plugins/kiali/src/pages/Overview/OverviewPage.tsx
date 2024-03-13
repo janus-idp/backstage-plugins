@@ -428,13 +428,11 @@ export const OverviewPage = (props: { entity?: boolean }) => {
     return <CircularProgress />;
   }
 
-  const overviewLinkInfo = { title: 'Go to Full Overview', link: '#' };
-
   return (
-    <Page themeId="tool">
-      <Content>
-        {props.entity ? (
-          <TabbedCard title="Overview" deepLink={overviewLinkInfo}>
+    <>
+      {props.entity ? (
+        <div style={{ marginBottom: '20px' }}>
+          <TabbedCard title="Overview">
             {filterActiveNamespaces().map(ns => (
               <CardTab label={ns.name} key={`card_ns_${ns.name}`}>
                 <OverviewCard
@@ -457,8 +455,10 @@ export const OverviewPage = (props: { entity?: boolean }) => {
               </CardTab>
             ))}
           </TabbedCard>
-        ) : (
-          <>
+        </div>
+      ) : (
+        <Page themeId="tool">
+          <Content>
             <OverviewToolbar
               onRefresh={() => load()}
               overviewType={overviewType}
@@ -494,9 +494,9 @@ export const OverviewPage = (props: { entity?: boolean }) => {
                 </Grid>
               ))}
             </Grid>
-          </>
-        )}
-      </Content>
-    </Page>
+          </Content>
+        </Page>
+      )}
+    </>
   );
 };

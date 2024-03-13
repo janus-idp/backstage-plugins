@@ -16,11 +16,12 @@ import { nsEqual } from '../../helpers/namespaces';
 import { getErrorString, kialiApiRef } from '../../services/Api';
 import { KialiAppState, KialiContext } from '../../store';
 import { baseStyle } from '../../styles/StyleUtils';
+import { ENTITY } from '../../types/types';
 import { WorkloadListItem } from '../../types/Workload';
 import { NamespaceInfo } from '../Overview/NamespaceInfo';
 import { getNamespaces } from '../Overview/OverviewPage';
 
-export const WorkloadListPage = () => {
+export const WorkloadListPage = (props: { view?: string }) => {
   const kialiClient = useApi(kialiApiRef);
   const [namespaces, setNamespaces] = React.useState<NamespaceInfo[]>([]);
   const [allWorkloads, setWorkloads] = React.useState<WorkloadListItem[]>([]);
@@ -98,6 +99,9 @@ export const WorkloadListPage = () => {
   }
 
   const hiddenColumns = isMultiCluster ? [] : ['cluster'];
+  if (props.view === ENTITY) {
+    hiddenColumns.push('details');
+  }
 
   const grids = () => {
     const elements = [];
@@ -117,12 +121,18 @@ export const WorkloadListPage = () => {
   return (
     <div className={baseStyle}>
       <Content>
-        <DefaultSecondaryMasthead elements={grids()} onRefresh={() => load()} />
+        {props.view !== ENTITY && (
+          <DefaultSecondaryMasthead
+            elements={grids()}
+            onRefresh={() => load()}
+          />
+        )}
         <VirtualList
           activeNamespaces={namespaces}
           rows={allWorkloads}
           type="workloads"
           hiddenColumns={hiddenColumns}
+          view={props.view}
         />
       </Content>
     </div>
