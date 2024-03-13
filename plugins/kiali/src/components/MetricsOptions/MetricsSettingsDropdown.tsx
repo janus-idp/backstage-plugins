@@ -115,9 +115,9 @@ export class MetricsSettingsDropdown extends React.Component<Props, State> {
     this.updateLabelsSettingsURL(this.state.labelsSettings);
 
     this.setState(
-      {
-        labelsSettings: new Map(this.state.labelsSettings),
-      },
+      prevState => ({
+        labelsSettings: new Map(prevState.labelsSettings),
+      }),
       () => {
         this.props.onChanged(this.state);
         this.checkSelected();
@@ -140,10 +140,21 @@ export class MetricsSettingsDropdown extends React.Component<Props, State> {
     );
     this.updateLabelsSettingsURL(newValues);
 
-    this.setState({ labelsSettings: newValues }, () => {
-      this.props.onLabelsFiltersChanged(newValues);
-      this.checkSelected();
-    });
+    this.setState(
+      prevState => ({
+        labelsSettings: mergeLabelFilter(
+          prevState.labelsSettings,
+          label,
+          value,
+          checked,
+          singleSelection,
+        ),
+      }),
+      () => {
+        this.props.onLabelsFiltersChanged(newValues);
+        this.checkSelected();
+      },
+    );
   };
 
   onHistogramAverageChanged = (checked: boolean) => {
@@ -165,8 +176,13 @@ export class MetricsSettingsDropdown extends React.Component<Props, State> {
     urlParams.set(URLParam.QUANTILES, newQuantiles.join(' '));
     history.replace(`${history.location.pathname}?${urlParams.toString()}`);
 
-    this.setState({ showQuantiles: newQuantiles }, () =>
-      this.props.onChanged(this.state),
+    this.setState(
+      prevState => ({
+        showQuantiles: checked
+          ? [quantile].concat(prevState.showQuantiles)
+          : prevState.showQuantiles.filter(q => quantile !== q),
+      }),
+      () => this.props.onChanged(this.state),
     );
   };
 
@@ -192,9 +208,9 @@ export class MetricsSettingsDropdown extends React.Component<Props, State> {
     this.updateLabelsSettingsURL(this.state.labelsSettings);
 
     this.setState(
-      {
-        labelsSettings: new Map(this.state.labelsSettings),
-      },
+      prevState => ({
+        labelsSettings: new Map(prevState.labelsSettings),
+      }),
       () => {
         this.props.onChanged(this.state);
       },

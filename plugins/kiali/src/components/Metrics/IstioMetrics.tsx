@@ -179,7 +179,10 @@ export const IstioMetrics = (props: Props) => {
   };
 
   const fetchGrafanaInfo = (): void => {
-    if (!grafanaInfoPromise) {
+    if (
+      typeof grafanaInfoPromise === 'undefined' ||
+      grafanaInfoPromise === null
+    ) {
       grafanaInfoPromise = kialiClient.getGrafanaInfo().then(response => {
         return response;
       });
@@ -223,7 +226,7 @@ export const IstioMetrics = (props: Props) => {
     refresh();
   };
 
-  const [{}, refreshy] = useAsyncFn(
+  const [_, refreshy] = useAsyncFn(
     async () => {
       // Check if the config is loaded
       await fetchCripledFeatures();
