@@ -101,6 +101,7 @@ export const IstioMetrics = (props: Props) => {
     ? kialiState.tracingState.info.integration
     : true;
   const [timeRange, setTimeRange] = React.useState<TimeRange>(initTimeRange());
+  const prevDirection = React.useRef(props.direction);
 
   const initOptions = (settingsI: MetricsSettings): IstioMetricsOptions => {
     const options: IstioMetricsOptions = {
@@ -226,8 +227,11 @@ export const IstioMetrics = (props: Props) => {
   };
 
   React.useEffect(() => {
-    fetchMetrics();
-  }, [showSpans]);
+    if (props.direction !== prevDirection.current) {
+      refresh();
+      prevDirection.current = props.direction;
+    }
+  }, [props.direction, refresh]);
 
   const [_, refreshy] = useAsyncFn(
     async () => {
