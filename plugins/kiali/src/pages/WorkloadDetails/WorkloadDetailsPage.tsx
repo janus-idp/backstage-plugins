@@ -37,7 +37,7 @@ export const WorkloadDetailsPage = () => {
   const [duration, setDuration] = React.useState<number>(
     FilterHelper.currentDuration(),
   );
-  const hasPods = workloadItem?.pods.length;
+  const hasPods = workloadItem?.pods?.length;
 
   const grids = () => {
     const elements = [];
