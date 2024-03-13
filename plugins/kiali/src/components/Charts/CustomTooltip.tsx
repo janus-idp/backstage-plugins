@@ -132,7 +132,9 @@ export const CustomTooltip = (props: Props) => {
       flyoutWidth={initialState.width}
       flyoutHeight={initialState.height}
       flyoutComponent={
-        <ChartCursorFlyout style={{ stroke: 'none', fillOpacity: 0.6 }} />
+        <ChartCursorFlyout
+          style={{ stroke: 'none', fillOpacity: 0.6, zIndex: 9999 }}
+        />
       }
       labelComponent={
         <CustomLabel

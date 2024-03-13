@@ -1,7 +1,7 @@
 import * as React from 'react';
 
+import { Grid } from '@material-ui/core';
 import { ChartThemeColor, getTheme } from '@patternfly/react-charts';
-import { Grid, GridItem } from '@patternfly/react-core';
 import { isArray } from 'lodash';
 
 import { ChartModel, DashboardModel } from '../../types/Dashboards';
@@ -112,13 +112,9 @@ export class Dashboard<T extends LineInfo> extends React.Component<
     }
 
     return (
-      <Grid>
+      <Grid container spacing={2}>
         {this.props.dashboard.charts.map(c => {
-          return (
-            <GridItem span={c.spans} key={c.name}>
-              {this.renderChart(c)}
-            </GridItem>
-          );
+          return <Grid xs={3}>{this.renderChart(c)}</Grid>;
         })}
       </Grid>
     );

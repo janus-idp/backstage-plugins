@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import { Tooltip } from '@material-ui/core';
 import {
   Chart,
   ChartAxis,
@@ -12,12 +13,7 @@ import {
   ChartTooltipProps,
   createContainer,
 } from '@patternfly/react-charts';
-import {
-  Button,
-  ButtonVariant,
-  Tooltip,
-  TooltipPosition,
-} from '@patternfly/react-core';
+import { Button, ButtonVariant } from '@patternfly/react-core';
 import { format as d3Format } from 'd3-format';
 import regression from 'regression';
 import { VictoryBoxPlot } from 'victory-box-plot';
@@ -353,6 +349,7 @@ export class ChartWithLegend<
                 return [t, trendPoint];
               });
 
+              // @ts-ignore
               const linearRegression = regression.linear(datapoints, {
                 precision: 10,
               });
@@ -724,8 +721,7 @@ export class ChartWithLegend<
 
         {showMoreLegend && chartHeight > MIN_HEIGHT_YAXIS && (
           <Tooltip
-            position={TooltipPosition.left}
-            content={<div style={{ textAlign: 'left' }}>Show full legend</div>}
+            title={<div style={{ textAlign: 'left' }}>Show full legend</div>}
           >
             <Button
               variant={ButtonVariant.link}
@@ -763,8 +759,7 @@ export class ChartWithLegend<
     ) : (
       <div>
         <Tooltip
-          position={TooltipPosition.right}
-          content={
+          title={
             <div style={{ textAlign: 'left' }}>
               Increase height of the chart
             </div>

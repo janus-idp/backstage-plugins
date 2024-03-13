@@ -5,12 +5,11 @@ import { useApi } from '@backstage/core-plugin-api';
 
 import {
   Card,
-  CardBody,
+  CardContent,
   Checkbox,
+  FormControlLabel,
   Toolbar,
-  ToolbarGroup,
-  ToolbarItem,
-} from '@patternfly/react-core';
+} from '@material-ui/core';
 
 import { history, URLParam } from '../../app/History';
 import { Dashboard } from '../../components/Charts/Dashboard';
@@ -43,7 +42,6 @@ import {
   MetricsSettings,
 } from '../MetricsOptions/MetricsSettings';
 import { MetricsSettingsDropdown } from '../MetricsOptions/MetricsSettingsDropdown';
-import { RenderComponentScroll } from '../Nav/Page/RenderComponentScroll';
 import { GrafanaLinks } from './GrafanaLinks';
 import * as MetricsHelper from './Helper';
 import { JaegerLineInfo, SpanOverlay } from './SpanOverlay';
@@ -95,7 +93,7 @@ export const IstioMetrics = (props: Props) => {
   );
   const [spanOverlayState, setSpanOverlayState] =
     React.useState<Overlay<JaegerLineInfo>>();
-  const [tabHeight, setTabHeight] = React.useState<number>(500);
+  const [tabHeight, _setter] = React.useState<number>(500);
   const spanOverlay = new SpanOverlay(changed => setSpanOverlayState(changed));
   const tracingIntegration = kialiState.tracingState?.info
     ? kialiState.tracingState.info.integration
@@ -328,56 +326,52 @@ export const IstioMetrics = (props: Props) => {
     return (
       <div ref={toolbarRef}>
         <Toolbar style={{ padding: 0, marginBottom: '1.25rem' }}>
-          <ToolbarGroup>
-            <ToolbarItem>
-              <MetricsSettingsDropdown
-                onChanged={onMetricsSettingsChanged}
-                onLabelsFiltersChanged={onLabelsFiltersChanged}
-                direction={props.direction}
-                labelsSettings={labelsSettings}
-                hasHistograms
-                hasHistogramsAverage={hasHistogramsAverage}
-                hasHistogramsPercentiles={hasHistogramsPercentiles}
-              />
-            </ToolbarItem>
+          <MetricsSettingsDropdown
+            onChanged={onMetricsSettingsChanged}
+            onLabelsFiltersChanged={onLabelsFiltersChanged}
+            direction={props.direction}
+            labelsSettings={labelsSettings}
+            hasHistograms
+            hasHistogramsAverage={hasHistogramsAverage}
+            hasHistogramsPercentiles={hasHistogramsPercentiles}
+          />
 
-            <ToolbarItem>
-              <MetricsReporter
-                onChanged={onReporterChanged}
-                direction={props.direction}
-                reporter={options.reporter}
-              />
-            </ToolbarItem>
+          <MetricsReporter
+            onChanged={onReporterChanged}
+            direction={props.direction}
+            reporter={options.reporter}
+          />
 
-            <ToolbarItem style={{ alignSelf: 'center' }}>
+          <FormControlLabel
+            control={
               <Checkbox
                 id="spans-show-"
-                isChecked={showSpans}
+                checked={showSpans}
                 key="spans-show-chart"
-                label="Spans"
                 onChange={(_event, checked) => onSpans(checked)}
               />
-            </ToolbarItem>
+            }
+            label="Spans"
+          />
 
-            <ToolbarItem style={{ alignSelf: 'center' }}>
+          <FormControlLabel
+            control={
               <Checkbox
                 id="trendlines-show-"
-                isChecked={showTrendlines}
+                checked={showTrendlines}
                 key="trendlines-show-chart"
-                label="Trendlines"
                 onChange={(_event, checked) => onTrendlines(checked)}
               />
-            </ToolbarItem>
+            }
+            label="Trendlines"
+          />
 
-            <ToolbarItem style={{ marginLeft: 'auto', paddingRight: '20px' }}>
-              <GrafanaLinks
-                links={grafanaLinks}
-                namespace={props.namespace}
-                object={props.object}
-                objectType={props.objectType}
-              />
-            </ToolbarItem>
-          </ToolbarGroup>
+          <GrafanaLinks
+            links={grafanaLinks}
+            namespace={props.namespace}
+            object={props.object}
+            objectType={props.objectType}
+          />
         </Toolbar>
       </div>
     );
@@ -406,33 +400,30 @@ export const IstioMetrics = (props: Props) => {
 
   return (
     <>
-      <RenderComponentScroll onResize={height => setTabHeight(height)}>
-        <Card className={fullHeightStyle}>
-          <CardBody>
-            {renderOptionsBar()}
-
-            {dashboard && (
-              <Dashboard
-                dashboard={dashboard}
-                labelValues={MetricsHelper.convertAsPromLabels(labelsSettings)}
-                maximizedChart={expandedChart}
-                expandHandler={expandHandler}
-                onClick={onClickDataPoint}
-                labelPrettifier={MetricsHelper.prettyLabelValues}
-                overlay={spanOverlayState}
-                showSpans={showSpans}
-                showTrendlines={showTrendlines}
-                dashboardHeight={dashboardHeight}
-                timeWindow={evalTimeRange(timeRange)}
-                brushHandlers={{
-                  onDomainChangeEnd: (__, propsD) =>
-                    onDomainChange(propsD.currentDomain.x),
-                }}
-              />
-            )}
-          </CardBody>
-        </Card>
-      </RenderComponentScroll>
+      <Card className={fullHeightStyle}>
+        <CardContent>
+          {renderOptionsBar()}
+          {dashboard && (
+            <Dashboard
+              dashboard={dashboard}
+              labelValues={MetricsHelper.convertAsPromLabels(labelsSettings)}
+              maximizedChart={expandedChart}
+              expandHandler={expandHandler}
+              onClick={onClickDataPoint}
+              labelPrettifier={MetricsHelper.prettyLabelValues}
+              overlay={spanOverlayState}
+              showSpans={showSpans}
+              showTrendlines={showTrendlines}
+              dashboardHeight={dashboardHeight}
+              timeWindow={evalTimeRange(timeRange)}
+              brushHandlers={{
+                onDomainChangeEnd: (__, propsD) =>
+                  onDomainChange(propsD.currentDomain.x),
+              }}
+            />
+          )}
+        </CardContent>
+      </Card>
     </>
   );
 };
