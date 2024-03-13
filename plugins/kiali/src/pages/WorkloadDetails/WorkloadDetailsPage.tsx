@@ -15,12 +15,14 @@ import { CircularProgress } from '@material-ui/core';
 import { BreadcrumbView } from '../../components/BreadcrumbView/BreadcrumbView';
 import { DefaultSecondaryMasthead } from '../../components/DefaultSecondaryMasthead/DefaultSecondaryMasthead';
 import * as FilterHelper from '../../components/FilterList/FilterHelper';
+import { IstioMetrics } from '../../components/Metrics/IstioMetrics';
 import { TimeDurationComponent } from '../../components/Time/TimeDurationComponent';
 import { getErrorString, kialiApiRef } from '../../services/Api';
 import { KialiAppState, KialiContext } from '../../store';
 import { baseStyle } from '../../styles/StyleUtils';
 import { TimeRange } from '../../types/Common';
 import { WorkloadHealth } from '../../types/Health';
+import { MetricsObjectTypes } from '../../types/Metrics';
 import { Workload, WorkloadQuery } from '../../types/Workload';
 import { WorkloadInfo } from './WorkloadInfo';
 import { WorkloadPodLogs } from './WorkloadPodLogs';
@@ -137,6 +139,42 @@ export const WorkloadDetailsPage = () => {
     );
   };
 
+  const inboundTab = (): React.ReactElement => {
+    return (
+      <>
+        {namespace && workload && (
+          <IstioMetrics
+            data-test="inbound-metrics-component"
+            lastRefreshAt={duration}
+            namespace={namespace}
+            object={workload}
+            cluster={workloadItem?.cluster}
+            objectType={MetricsObjectTypes.WORKLOAD}
+            direction="inbound"
+          />
+        )}
+      </>
+    );
+  };
+
+  const outboundTab = (): React.ReactElement => {
+    return (
+      <>
+        {namespace && workload && (
+          <IstioMetrics
+            data-test="outbound-metrics-component"
+            lastRefreshAt={duration}
+            namespace={namespace}
+            object={workload}
+            cluster={workloadItem?.cluster}
+            objectType={MetricsObjectTypes.WORKLOAD}
+            direction="outbound"
+          />
+        )}
+      </>
+    );
+  };
+
   return (
     <div className={baseStyle}>
       <Content>
@@ -157,6 +195,8 @@ export const WorkloadDetailsPage = () => {
             <TabbedCard>
               <CardTab label="Overview">{overviewTab()}</CardTab>
               <CardTab label="Logs">{logsTab()}</CardTab>
+              <CardTab label="Inbound Metrics">{inboundTab()}</CardTab>
+              <CardTab label="Outbound Metrics">{outboundTab()}</CardTab>
             </TabbedCard>
           </div>
         )}
