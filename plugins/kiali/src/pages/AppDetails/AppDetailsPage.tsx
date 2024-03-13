@@ -2,7 +2,12 @@ import * as React from 'react';
 import { useParams } from 'react-router-dom';
 import { useAsyncFn, useDebounce } from 'react-use';
 
-import { Content, EmptyState } from '@backstage/core-components';
+import {
+  CardTab,
+  Content,
+  EmptyState,
+  TabbedCard,
+} from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
 import { CircularProgress } from '@material-ui/core';
@@ -12,6 +17,7 @@ import { HistoryManager } from '../../app/History';
 import { BreadcrumbView } from '../../components/BreadcrumbView/BreadcrumbView';
 import { DefaultSecondaryMasthead } from '../../components/DefaultSecondaryMasthead/DefaultSecondaryMasthead';
 import * as FilterHelper from '../../components/FilterList/FilterHelper';
+import { IstioMetrics } from '../../components/Metrics/IstioMetrics';
 import { TimeDurationComponent } from '../../components/Time/TimeDurationComponent';
 import { getErrorString, kialiApiRef } from '../../services/Api';
 import { KialiContext } from '../../store';
@@ -19,6 +25,7 @@ import { KialiAppState } from '../../store/Store';
 import { baseStyle } from '../../styles/StyleUtils';
 import { App, AppQuery } from '../../types/App';
 import { AppHealth } from '../../types/Health';
+import { MetricsObjectTypes } from '../../types/Metrics';
 import { AppInfo } from './AppInfo';
 
 export const AppDetailsPage = () => {
@@ -104,6 +111,42 @@ export const AppDetailsPage = () => {
     );
   };
 
+  const inboundTab = (): React.ReactElement => {
+    return (
+      <>
+        {namespace && app && (
+          <IstioMetrics
+            data-test="inbound-metrics-component"
+            lastRefreshAt={duration}
+            namespace={namespace}
+            object={app}
+            cluster={appItem?.cluster}
+            objectType={MetricsObjectTypes.APP}
+            direction="inbound"
+          />
+        )}
+      </>
+    );
+  };
+
+  const outboundTab = (): React.ReactElement => {
+    return (
+      <>
+        {namespace && app && (
+          <IstioMetrics
+            data-test="outbound-metrics-component"
+            lastRefreshAt={duration}
+            namespace={namespace}
+            object={app}
+            cluster={appItem?.cluster}
+            objectType={MetricsObjectTypes.APP}
+            direction="outbound"
+          />
+        )}
+      </>
+    );
+  };
+
   return (
     <div className={baseStyle}>
       <Content>
@@ -119,7 +162,13 @@ export const AppDetailsPage = () => {
             description={<div>No App found </div>}
           />
         )}
-        <div style={{ marginTop: '20px' }}>{overviewTab()}</div>
+        <div style={{ marginTop: '20px' }}>
+          <TabbedCard>
+            <CardTab label="Overview">{overviewTab()}</CardTab>
+            <CardTab label="Inbound Metrics">{inboundTab()}</CardTab>
+            <CardTab label="Outbound Metrics">{outboundTab()}</CardTab>
+          </TabbedCard>
+        </div>
       </Content>
     </div>
   );

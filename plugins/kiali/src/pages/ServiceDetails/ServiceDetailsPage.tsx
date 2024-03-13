@@ -2,7 +2,12 @@ import * as React from 'react';
 import { useParams } from 'react-router-dom';
 import { useAsyncFn, useDebounce } from 'react-use';
 
-import { Content, EmptyState } from '@backstage/core-components';
+import {
+  CardTab,
+  Content,
+  EmptyState,
+  TabbedCard,
+} from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
 import { CircularProgress } from '@material-ui/core';
@@ -11,6 +16,7 @@ import { HistoryManager } from '../../app/History';
 import { BreadcrumbView } from '../../components/BreadcrumbView/BreadcrumbView';
 import { DefaultSecondaryMasthead } from '../../components/DefaultSecondaryMasthead/DefaultSecondaryMasthead';
 import * as FilterHelper from '../../components/FilterList/FilterHelper';
+import { IstioMetrics } from '../../components/Metrics/IstioMetrics';
 import { TimeDurationComponent } from '../../components/Time/TimeDurationComponent';
 import { getErrorString, kialiApiRef } from '../../services/Api';
 import { KialiContext } from '../../store';
@@ -22,6 +28,7 @@ import {
   PeerAuthentication,
   Validations,
 } from '../../types/IstioObjects';
+import { MetricsObjectTypes } from '../../types/Metrics';
 import { ServiceDetailsInfo } from '../../types/ServiceInfo';
 import { ServiceInfo } from './ServiceInfo';
 
@@ -152,6 +159,42 @@ export const ServiceDetailsPage = () => {
     );
   };
 
+  const inboundTab = (): React.ReactElement => {
+    return (
+      <>
+        {namespace && service && (
+          <IstioMetrics
+            data-test="inbound-metrics-component"
+            lastRefreshAt={duration}
+            namespace={namespace}
+            object={service}
+            cluster={serviceItem?.cluster}
+            objectType={MetricsObjectTypes.SERVICE}
+            direction="inbound"
+          />
+        )}
+      </>
+    );
+  };
+
+  const outboundTab = (): React.ReactElement => {
+    return (
+      <>
+        {namespace && service && (
+          <IstioMetrics
+            data-test="outbound-metrics-component"
+            lastRefreshAt={duration}
+            namespace={namespace}
+            object={service}
+            cluster={serviceItem?.cluster}
+            objectType={MetricsObjectTypes.SERVICE}
+            direction="outbound"
+          />
+        )}
+      </>
+    );
+  };
+
   return (
     <div className={baseStyle}>
       <Content>
@@ -167,7 +210,13 @@ export const ServiceDetailsPage = () => {
             description={<div>No Service found </div>}
           />
         )}
-        <div style={{ marginTop: '20px' }}>{overviewTab()}</div>
+        <div style={{ marginTop: '20px' }}>
+          <TabbedCard>
+            <CardTab label="Overview">{overviewTab()}</CardTab>
+            <CardTab label="Inbound Metrics">{inboundTab()}</CardTab>
+            <CardTab label="Outbound Metrics">{outboundTab()}</CardTab>
+          </TabbedCard>
+        </div>
       </Content>
     </div>
   );
