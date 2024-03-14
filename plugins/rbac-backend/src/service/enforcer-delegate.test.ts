@@ -108,9 +108,15 @@ describe('EnforcerDelegate', () => {
       dbManagerMock,
     ).createAdapter();
 
+    const catalogDBClient = Knex.knex({ client: MockClient });
     const enf = await newEnforcer(theModel, sqliteInMemoryAdapter);
 
-    const rm = new BackstageRoleManager(catalogApi, logger, tokenManagerMock);
+    const rm = new BackstageRoleManager(
+      catalogApi,
+      logger,
+      tokenManagerMock,
+      catalogDBClient,
+    );
     enf.setRoleManager(rm);
     enf.enableAutoBuildRoleLinks(false);
     await enf.buildRoleLinks();
