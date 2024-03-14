@@ -16,7 +16,10 @@ import { Logger } from 'winston';
 
 import { ConditionalStorage } from '../database/conditional-storage';
 import { PolicyMetadataStorage } from '../database/policy-metadata-storage';
-import { RoleMetadataStorage } from '../database/role-metadata';
+import {
+  RoleMetadataDao,
+  RoleMetadataStorage,
+} from '../database/role-metadata';
 import {
   addPermissionPoliciesFileData,
   loadFilteredCSV,
@@ -27,6 +30,19 @@ import { EnforcerDelegate } from './enforcer-delegate';
 import { validateEntityReference } from './policies-validation';
 
 const adminRoleName = 'role:default/rbac_admin';
+const defaultAdminRoleDescription =
+  'The default permission policy for the admin role allows for the creation, deletion, updating, and reading of roles and permission policies.';
+
+const getAdminRoleMetadata = (): RoleMetadataDao => {
+  const currentDate: Date = new Date();
+  return {
+    source: 'configuration',
+    roleEntityRef: adminRoleName,
+    description: defaultAdminRoleDescription,
+    lastModified: currentDate.toUTCString(),
+    createdAt: currentDate.toUTCString(),
+  };
+};
 
 const useAdminsFromConfig = async (
   admins: Config[],
@@ -50,18 +66,11 @@ const useAdminsFromConfig = async (
   const trx = await knex.transaction();
   try {
     if (!adminRoleMeta) {
-      await roleMetadataStorage.createRoleMetadata(
-        { source: 'configuration', roleEntityRef: adminRoleName },
-        trx,
-      );
+      await roleMetadataStorage.createRoleMetadata(getAdminRoleMetadata(), trx);
     } else if (adminRoleMeta.source === 'legacy') {
       await roleMetadataStorage.removeRoleMetadata(adminRoleName, trx);
-      await roleMetadataStorage.createRoleMetadata(
-        { source: 'configuration', roleEntityRef: adminRoleName },
-        trx,
-      );
+      await roleMetadataStorage.createRoleMetadata(getAdminRoleMetadata(), trx);
     }
-
     await trx.commit();
   } catch (error) {
     await trx.rollback(error);

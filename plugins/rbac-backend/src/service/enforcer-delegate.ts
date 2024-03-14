@@ -119,13 +119,18 @@ export class EnforcerDelegate {
     policy: string[],
     source: Source,
     externalTrx?: Knex.Transaction,
-    isUpdate?: boolean,
   ): Promise<void> {
     const trx = externalTrx ?? (await this.knex.transaction());
     const entityRef = policy[1];
     let metadata;
 
     try {
+      await this.policyMetadataStorage.createPolicyMetadata(
+        source,
+        policy,
+        trx,
+      );
+
       if (entityRef.startsWith(`role:`)) {
         metadata = await this.roleMetadataStorage.findRoleMetadata(
           entityRef,
@@ -133,15 +138,26 @@ export class EnforcerDelegate {
         );
       }
 
-      await this.policyMetadataStorage.createPolicyMetadata(
-        source,
-        policy,
-        trx,
-      );
-
-      if (!metadata && !isUpdate) {
+      const currentDate: Date = new Date();
+      if (!metadata) {
         await this.roleMetadataStorage.createRoleMetadata(
-          { source, roleEntityRef: entityRef },
+          {
+            source,
+            roleEntityRef: entityRef,
+            createdAt: currentDate.toUTCString(),
+            lastModified: currentDate.toUTCString(),
+          },
+          trx,
+        );
+      } else {
+        await this.roleMetadataStorage.updateRoleMetadata(
+          {
+            source,
+            roleEntityRef: entityRef,
+            createdAt: metadata.createdAt,
+            lastModified: currentDate.toUTCString(),
+          },
+          entityRef,
           trx,
         );
       }
@@ -178,8 +194,20 @@ export class EnforcerDelegate {
       }
 
       const entityRef = roleMetadata.roleEntityRef;
-      if (!(await this.roleMetadataStorage.findRoleMetadata(entityRef, trx))) {
+      const currentDate: Date = new Date();
+      const currentRoleMetadata =
+        await this.roleMetadataStorage.findRoleMetadata(entityRef, trx);
+      if (!currentRoleMetadata) {
+        roleMetadata.createdAt = currentDate.toUTCString();
+        roleMetadata.lastModified = currentDate.toUTCString();
         await this.roleMetadataStorage.createRoleMetadata(roleMetadata, trx);
+      } else {
+        const metadata = this.mergeMetadata(currentRoleMetadata, roleMetadata);
+        await this.roleMetadataStorage.updateRoleMetadata(
+          metadata,
+          entityRef,
+          trx,
+        );
       }
 
       const ok = await this.enforcer.addGroupingPolicies(policies);
@@ -203,27 +231,38 @@ export class EnforcerDelegate {
   async updateGroupingPolicies(
     oldRole: string[][],
     newRole: string[][],
-    roleMetadata: RoleMetadataDao,
+    newRoleMetadata: RoleMetadataDao,
     allowToDeleteCSVFilePolicy?: boolean,
     externalTrx?: Knex.Transaction,
   ): Promise<void> {
     const trx = externalTrx ?? (await this.knex.transaction());
     const oldRoleName = oldRole.at(0)?.at(1)!;
     try {
-      // todo handle legacy...
+      const currentMetadata = await this.roleMetadataStorage.findRoleMetadata(
+        oldRoleName,
+        trx,
+      );
+      if (!currentMetadata) {
+        throw new Error(`Role metadata ${oldRoleName} was not found`);
+      }
+
+      const actualMetadata = this.mergeMetadata(
+        currentMetadata,
+        newRoleMetadata,
+      );
       await this.roleMetadataStorage.updateRoleMetadata(
-        roleMetadata,
+        actualMetadata,
         oldRoleName,
         trx,
       );
       await this.removeGroupingPolicies(
         oldRole,
-        roleMetadata.source,
+        newRoleMetadata.source,
         allowToDeleteCSVFilePolicy,
         true,
         trx,
       );
-      await this.addGroupingPolicies(newRole, roleMetadata, trx);
+      await this.addGroupingPolicies(newRole, newRoleMetadata, trx);
       if (!externalTrx) {
         await trx.commit();
       }
@@ -348,13 +387,36 @@ export class EnforcerDelegate {
         allowToDeleCSVFilePolicy,
       );
       await this.policyMetadataStorage.removePolicyMetadata(policy, trx);
-      if (!isUpdate) {
-        await this.roleMetadataStorage.removeRoleMetadata(roleEntity, trx);
-      }
       const ok = await this.enforcer.removeGroupingPolicy(...policy);
       if (!ok) {
         throw new Error(`Failed to delete policy ${policyToString(policy)}`);
       }
+
+      if (!isUpdate) {
+        const roleMetadata = await this.roleMetadataStorage.findRoleMetadata(
+          roleEntity,
+          trx,
+        );
+        const groupPolicies = await this.enforcer.getFilteredGroupingPolicy(
+          1,
+          roleEntity,
+        );
+        if (
+          roleMetadata &&
+          groupPolicies.length === 0 &&
+          roleEntity !== 'role:default/rbac_admin'
+        ) {
+          await this.roleMetadataStorage.removeRoleMetadata(roleEntity, trx);
+        } else if (roleMetadata) {
+          const currentDate: Date = new Date();
+          await this.roleMetadataStorage.updateRoleMetadata(
+            { ...roleMetadata, lastModified: currentDate.toUTCString() },
+            roleEntity,
+            trx,
+          );
+        }
+      }
+
       if (!externalTrx) {
         await trx.commit();
       }
@@ -376,20 +438,13 @@ export class EnforcerDelegate {
     const trx = externalTrx ?? (await this.knex.transaction());
     try {
       for (const policy of policies) {
-        const roleEntity = policy[1];
         await this.checkIfPolicyModifiable(
           policy,
           source,
           trx,
           allowToDeleteCSVFilePolicy,
         );
-        if (!isUpdate) {
-          if (
-            await this.roleMetadataStorage.findRoleMetadata(roleEntity, trx)
-          ) {
-            await this.roleMetadataStorage.removeRoleMetadata(roleEntity, trx);
-          }
-        }
+
         await this.policyMetadataStorage.removePolicyMetadata(policy, trx);
       }
 
@@ -398,6 +453,28 @@ export class EnforcerDelegate {
         throw new Error(
           `Failed to delete grouping policies: ${policiesToString(policies)}`,
         );
+      }
+
+      if (!isUpdate) {
+        const roleEntity = policies[0][1];
+        const roleMetadata = await this.roleMetadataStorage.findRoleMetadata(
+          roleEntity,
+          trx,
+        );
+        const groupPolicies = await this.enforcer.getFilteredGroupingPolicy(
+          1,
+          roleEntity,
+        );
+        if (roleMetadata && groupPolicies.length === 0) {
+          await this.roleMetadataStorage.removeRoleMetadata(roleEntity, trx);
+        } else if (roleMetadata) {
+          const currentDate: Date = new Date();
+          await this.roleMetadataStorage.updateRoleMetadata(
+            { ...roleMetadata, lastModified: currentDate.toUTCString() },
+            roleEntity,
+            trx,
+          );
+        }
       }
 
       if (!externalTrx) {
@@ -449,13 +526,8 @@ export class EnforcerDelegate {
       } else if (
         await this.hasFilteredPolicyMetadata(groupPolicy, 'legacy', trx)
       ) {
-        await this.roleMetadataStorage.updateRoleMetadata(
-          { source: source, roleEntityRef: groupPolicy.at(1)! },
-          groupPolicy.at(1)!,
-          trx,
-        );
         await this.removeGroupingPolicy(groupPolicy, source, true, isCSV, trx);
-        await this.addGroupingPolicy(groupPolicy, source, trx, true);
+        await this.addGroupingPolicy(groupPolicy, source, trx);
       }
       if (!externalTrx) {
         await trx.commit();
@@ -482,11 +554,6 @@ export class EnforcerDelegate {
         } else if (
           await this.hasFilteredPolicyMetadata(groupPolicy, 'legacy', trx)
         ) {
-          await this.roleMetadataStorage.updateRoleMetadata(
-            { source: source, roleEntityRef: groupPolicy.at(1)! },
-            groupPolicy.at(1)!,
-            trx,
-          );
           await this.removeGroupingPolicy(
             groupPolicy,
             source,
@@ -494,7 +561,7 @@ export class EnforcerDelegate {
             isCSV,
             trx,
           );
-          await this.addGroupingPolicy(groupPolicy, source, trx, true);
+          await this.addGroupingPolicy(groupPolicy, source, trx);
         }
       }
       if (!externalTrx) {
@@ -554,8 +621,7 @@ export class EnforcerDelegate {
       throw new Error(
         `Error: Attempted to modify an immutable pre-defined policy '${policyToString(
           policy,
-        )}'.
-        This policy cannot be altered directly. If you need to make changes, consider removing the associated RBAC admin '${
+        )}'. This policy cannot be altered directly. If you need to make changes, consider removing the associated RBAC admin '${
           policy[0]
         }' using the application configuration.`,
       );
@@ -587,5 +653,20 @@ export class EnforcerDelegate {
 
   async getImplicitPermissionsForUser(user: string): Promise<string[][]> {
     return this.enforcer.getImplicitPermissionsForUser(user);
+  }
+
+  private mergeMetadata(
+    currentMetadata: RoleMetadataDao,
+    newMetadata: RoleMetadataDao,
+  ): RoleMetadataDao {
+    const currentDate: Date = new Date();
+    const mergedMetaData: RoleMetadataDao = { ...currentMetadata };
+    mergedMetaData.lastModified = currentDate.toUTCString();
+    mergedMetaData.modifiedBy = newMetadata.modifiedBy;
+    mergedMetaData.description =
+      newMetadata.description ?? currentMetadata.description;
+    mergedMetaData.roleEntityRef = newMetadata.roleEntityRef;
+    mergedMetaData.source = newMetadata.source;
+    return mergedMetaData;
   }
 }
