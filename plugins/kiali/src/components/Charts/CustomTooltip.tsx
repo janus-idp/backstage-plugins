@@ -142,6 +142,7 @@ export const CustomTooltip = (props: Props) => {
           textWidth={initialState.textWidth}
         />
       }
+      constrainToVisibleArea
     />
   );
 };

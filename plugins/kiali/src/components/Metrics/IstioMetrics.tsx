@@ -100,6 +100,7 @@ export const IstioMetrics = (props: Props) => {
     : true;
   const [timeRange, setTimeRange] = React.useState<TimeRange>(initTimeRange());
   const prevDirection = React.useRef(props.direction);
+  const prevLastRefreshAt = React.useRef(props.lastRefreshAt);
 
   const initOptions = (settingsI: MetricsSettings): IstioMetricsOptions => {
     const options: IstioMetricsOptions = {
@@ -229,8 +230,12 @@ export const IstioMetrics = (props: Props) => {
       refresh();
       prevDirection.current = props.direction;
     }
+    if (props.lastRefreshAt !== prevLastRefreshAt.current) {
+      setTimeRange(initTimeRange());
+      prevLastRefreshAt.current = props.lastRefreshAt;
+    }
     /* eslint-disable-next-line */
-  }, [props.direction]);
+  }, [props.direction, props.lastRefreshAt]);
 
   const [_, refreshy] = useAsyncFn(
     async () => {
