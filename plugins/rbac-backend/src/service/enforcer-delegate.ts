@@ -349,7 +349,21 @@ export class EnforcerDelegate {
       );
       await this.policyMetadataStorage.removePolicyMetadata(policy, trx);
       if (!isUpdate) {
-        await this.roleMetadataStorage.removeRoleMetadata(roleEntity, trx);
+        const roleMetadata = await this.roleMetadataStorage.findRoleMetadata(
+          roleEntity,
+          trx,
+        );
+        const groupPolicies = await this.enforcer.getFilteredGroupingPolicy(
+          1,
+          roleEntity,
+        );
+        if (
+          roleMetadata &&
+          groupPolicies.length === 0 &&
+          roleEntity !== 'role:default/rbac_admin'
+        ) {
+          await this.roleMetadataStorage.removeRoleMetadata(roleEntity, trx);
+        }
       }
       const ok = await this.enforcer.removeGroupingPolicy(...policy);
       if (!ok) {
@@ -376,20 +390,12 @@ export class EnforcerDelegate {
     const trx = externalTrx ?? (await this.knex.transaction());
     try {
       for (const policy of policies) {
-        const roleEntity = policy[1];
         await this.checkIfPolicyModifiable(
           policy,
           source,
           trx,
           allowToDeleteCSVFilePolicy,
         );
-        if (!isUpdate) {
-          if (
-            await this.roleMetadataStorage.findRoleMetadata(roleEntity, trx)
-          ) {
-            await this.roleMetadataStorage.removeRoleMetadata(roleEntity, trx);
-          }
-        }
         await this.policyMetadataStorage.removePolicyMetadata(policy, trx);
       }
 
@@ -398,6 +404,21 @@ export class EnforcerDelegate {
         throw new Error(
           `Failed to delete grouping policies: ${policiesToString(policies)}`,
         );
+      }
+
+      if (!isUpdate) {
+        const roleEntity = policies[0][1];
+        const roleMetadata = await this.roleMetadataStorage.findRoleMetadata(
+          roleEntity,
+          trx,
+        );
+        const groupPolicies = await this.enforcer.getFilteredGroupingPolicy(
+          1,
+          roleEntity,
+        );
+        if (roleMetadata && groupPolicies.length === 0) {
+          await this.roleMetadataStorage.removeRoleMetadata(roleEntity, trx);
+        }
       }
 
       if (!externalTrx) {
