@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-orchestrator [1.8.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.8.0...@janus-idp/backstage-plugin-orchestrator@1.8.1) (2024-03-14)
+
+
+### Bug Fixes
+
+* **orchestrator:** update the installation instructions ([#1336](https://github.com/janus-idp/backstage-plugins/issues/1336)) ([d77e388](https://github.com/janus-idp/backstage-plugins/commit/d77e3887ee838a0d4ce075ab976203f13f2037c8))
+
 ## @janus-idp/backstage-plugin-orchestrator [1.8.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.7.8...@janus-idp/backstage-plugin-orchestrator@1.8.0) (2024-03-14)
 
 
