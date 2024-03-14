@@ -48,6 +48,7 @@ import {
   RoleMetadataStorage,
 } from '../database/role-metadata';
 import { deepSortedEqual, policyToString } from '../helper';
+import { validateRoleCondition } from './condition-validation';
 import { EnforcerDelegate } from './enforcer-delegate';
 import { PluginPermissionMetadataCollector } from './plugin-endpoints';
 import {
@@ -622,11 +623,12 @@ export class PolicesServer {
         const roleEntityRef = this.getEntityReference(req, true);
 
         const conditionalPolicy: RoleConditionalPolicyDecision = req.body;
-        // TODO add validation.
         const roleConditionPolicy = {
           ...conditionalPolicy,
           roleEntityRef,
         };
+
+        validateRoleCondition(roleConditionPolicy);
 
         const id =
           await this.conditionalStorage.createCondition(roleConditionPolicy);
@@ -707,11 +709,11 @@ export class PolicesServer {
         }
 
         const conditionalPolicy: RoleConditionalPolicyDecision = req.body;
-        // TODO add validation.
         const roleConditionPolicy = {
           ...conditionalPolicy,
           roleEntityRef,
         };
+        validateRoleCondition(roleConditionPolicy);
 
         await this.conditionalStorage.updateCondition(id, roleConditionPolicy);
         resp.status(200).end();
