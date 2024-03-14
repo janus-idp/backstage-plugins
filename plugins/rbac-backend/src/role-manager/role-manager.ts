@@ -109,7 +109,9 @@ export class BackstageRoleManager implements RoleManager {
       this.log.warn(
         `Detected cycle dependencies in the Group graph: ${JSON.stringify(
           cycles,
-        )}. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for group: ${name2}`,
+        )}. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for groups: ${JSON.stringify(
+          cycles,
+        )}`,
       );
 
       return false;
