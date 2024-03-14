@@ -12,7 +12,7 @@ The orchestrator relies on [SonataFlow](https://sonataflow.org/), a powerful too
 
 The main idea is to keep the same user experience for users, levering the UI components, input forms, and flow that Scaffolder provides, this way it should be straightforward for users and transparent no matter whether using Templates or Workflows, both can live together being compatible with integration points.
 
-The orchestrator controls the flow orchestrating operations/tasks that may be executed in any external service including Scaffolder Actions, this way it is possible to leverage any existing Action hence Templates and GPT can be easily migrated to workflows opening the door to extend them to more complex use cases.
+The orchestrator controls the flow orchestrating operations/tasks that may be executed in any external service including Scaffolder Actions, this way it is possible to leverage any existing Action hence Software Templates can be easily migrated to workflows opening the door to extend them to more complex use cases.
 
 ## Capabilities
 
@@ -51,9 +51,9 @@ The Orchestrator plugin is composed of the following packages:
 - `@janus-idp/backstage-plugin-orchestrator` package contains frontend components for the Orchestrator plugin. For setup process, see [Frontend Setup](#setting-up-the-orchestrator-frontend-package)
 - `@janus-idp/backstage-plugin-orchestrator-common` package contains shared code between the Orchestrator plugin packages.
 
-#### Prerequisites
+#### Prerequisites for running the plugins locally in development mode
 
-- Docker up and running (currently it is a limitation, see [Limitations](#limitations))
+- Docker up and running
 
 #### Setting up the Orchestrator as a dynamic plugin in a Helm deployment
 
@@ -79,8 +79,6 @@ orchestrator:
 - When interacting with an existing SonataFlow infrastructure, the `sonataFlowService` config section must be entirely omitted and the `dataIndexService.url` must point to the existing Data Index Service.
 
 For more information about the configuration options, including other optional properties, see the [config.d.ts](../orchestrator-common/config.d.ts) file.
-
-- Although optional, you may also want to set up the `GITHUB_TOKEN` environment variable to allow the Orchestrator to access the GitHub API.
 
 #### Setting up the Orchestrator backend package for the legacy backend
 
@@ -108,6 +106,7 @@ For more information about the configuration options, including other optional p
        discovery: env.discovery,
        catalogApi: env.catalogApi,
        urlReader: env.reader,
+       scheduler: env.scheduler,
      });
    }
    ```
@@ -146,14 +145,10 @@ For more information about the configuration options, including other optional p
 1. Add the following code to `packages/backend/src/index.ts` file:
 
    ```ts title="packages/backend/src/index.ts"
-   import {
-     orchestratorModuleEntityProvider,
-     orchestratorPlugin,
-   } from '@janus-idp/backstage-plugin-orchestrator-backend/alpha';
+   import { orchestratorPlugin } from '@janus-idp/backstage-plugin-orchestrator-backend/alpha';
 
    const backend = createBackend();
    /* highlight-add-next-line */
-   backend.add(orchestratorModuleEntityProvider);
    backend.add(orchestratorPlugin);
 
    backend.start();
@@ -171,26 +166,10 @@ For more information about the configuration options, including other optional p
 
    ```tsx title="packages/app/src/App.tsx"
    /* highlight-add-next-line */
-   import {
-     OrchestratorPage,
-     OrchestratorScaffolderTemplateCard,
-   } from '@janus-idp/backstage-plugin-orchestrator';
+   import { OrchestratorPage } from '@janus-idp/backstage-plugin-orchestrator';
 
    const routes = (
      <FlatRoutes>
-       {/* ... */}
-       {/* highlight-add-start */}
-       <Route
-         path="/create"
-         element={
-           <ScaffolderPage
-             components={{
-               TemplateCardComponent: OrchestratorScaffolderTemplateCard,
-             }}
-           />
-         }
-       />
-       {/* highlight-add-end */}
        {/* ... */}
        {/* highlight-add-next-line */}
        <Route path="/orchestrator" element={<OrchestratorPage />} />
@@ -213,7 +192,7 @@ For more information about the configuration options, including other optional p
            <SidebarItem
              icon={OrchestratorIcon}
              to="orchestrator"
-             text="Workflows"
+             text="Orchestrator"
            />
            {/* highlight-add-end */}
          </SidebarGroup>
@@ -228,7 +207,7 @@ For more information about the configuration options, including other optional p
 
 ### Using the Orchestrator plugin in Backstage
 
-The Orchestrator plugin enhances the Backstage with the execution of developer self-service flows. It provides a graphical editor to manage workflows, and a dashboard to monitor the execution of the workflows.
+The Orchestrator plugin enhances the Backstage with the execution of developer self-service flows. It provides a graphical editor to visualize workflow definitions, and a dashboard to monitor the execution of the workflows.
 
 #### Prerequisites
 
@@ -238,5 +217,5 @@ The Orchestrator plugin enhances the Backstage with the execution of developer s
 #### Procedure
 
 1. Open your Backstage application.
-1. Click the **Workflows** tab from the left-side panel to navigate to the **Orchestrator** main page.
-1. Inside the **Orchestrator** main page, you can see the list of workflows that are available in your Backstage application.
+1. Click the **Orchestrator** tab from the left-side panel to navigate to the **Orchestrator** main page.
+1. Inside the **Orchestrator** main page, you can see the list of workflow definitions that are available in your Backstage application.
