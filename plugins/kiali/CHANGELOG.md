@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-kiali [1.13.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.12.1...@janus-idp/backstage-plugin-kiali@1.13.0) (2024-03-14)
+
+
+### Features
+
+* **kiali:** include a new List entity view ([#1316](https://github.com/janus-idp/backstage-plugins/issues/1316)) ([f4d5e70](https://github.com/janus-idp/backstage-plugins/commit/f4d5e70ed98ceaf6277402f39feb26bd114d0d6b))
+
 ## @janus-idp/backstage-plugin-kiali [1.12.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.12.0...@janus-idp/backstage-plugin-kiali@1.12.1) (2024-03-11)
 
 
