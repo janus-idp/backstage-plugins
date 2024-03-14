@@ -31,16 +31,16 @@ API to interact with orchestrator plugin
 [.abortWorkflow]
 ==== abortWorkflow
 
-`DELETE /v2/workflows/{workflowId}/abort`
+`DELETE /v2/instances/{instanceId}/abort`
 
 Abort a workflow instance
 
 ===== Description
 
-Aborts a workflow instance identified by the provided workflowId.
+Aborts a workflow instance identified by the provided instanceId.
 
 
-// markup not found, no include::{specDir}v2/workflows/\{workflowId\}/abort/DELETE/spec.adoc[opts=optional]
+// markup not found, no include::{specDir}v2/instances/\{instanceId\}/abort/DELETE/spec.adoc[opts=optional]
 
 
 
@@ -52,7 +52,7 @@ Aborts a workflow instance identified by the provided workflowId.
 |===
 |Name| Description| Required| Default| Pattern
 
-| workflowId
+| instanceId
 | The identifier of the workflow instance to abort. 
 | X
 | null
@@ -98,20 +98,20 @@ Aborts a workflow instance identified by the provided workflowId.
 ===== Samples
 
 
-// markup not found, no include::{snippetDir}v2/workflows/\{workflowId\}/abort/DELETE/http-request.adoc[opts=optional]
+// markup not found, no include::{snippetDir}v2/instances/\{instanceId\}/abort/DELETE/http-request.adoc[opts=optional]
 
 
-// markup not found, no include::{snippetDir}v2/workflows/\{workflowId\}/abort/DELETE/http-response.adoc[opts=optional]
+// markup not found, no include::{snippetDir}v2/instances/\{instanceId\}/abort/DELETE/http-response.adoc[opts=optional]
 
 
 
-// file not found, no * wiremock data link :v2/workflows/{workflowId}/abort/DELETE/DELETE.json[]
+// file not found, no * wiremock data link :v2/instances/{instanceId}/abort/DELETE/DELETE.json[]
 
 
 ifdef::internal-generation[]
 ===== Implementation
 
-// markup not found, no include::{specDir}v2/workflows/\{workflowId\}/abort/DELETE/implementation.adoc[opts=optional]
+// markup not found, no include::{specDir}v2/instances/\{instanceId\}/abort/DELETE/implementation.adoc[opts=optional]
 
 
 endif::internal-generation[]

@@ -62,7 +62,7 @@ export class JiraService {
 
       const workflowInstanceId = label.slice(label.indexOf('=') + 1);
       const processInstance =
-        await this.dataIndexService.fetchProcessInstance(workflowInstanceId);
+        await this.dataIndexService.fetchInstance(workflowInstanceId);
 
       if (!processInstance?.serviceUrl) {
         this.logger.warn(

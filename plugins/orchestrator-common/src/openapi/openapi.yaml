@@ -256,13 +256,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /v2/workflows/{workflowId}/abort:
+  /v2/instances/{instanceId}/abort:
     delete:
       summary: Abort a workflow instance
       operationId: abortWorkflow
-      description: Aborts a workflow instance identified by the provided workflowId.
+      description: Aborts a workflow instance identified by the provided instanceId.
       parameters:
-        - name: workflowId
+        - name: instanceId
           in: path
           required: true
           description: The identifier of the workflow instance to abort.
