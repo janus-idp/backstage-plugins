@@ -1,3 +1,15 @@
+## @janus-idp/backstage-plugin-rbac-backend [2.4.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.3.5...@janus-idp/backstage-plugin-rbac-backend@2.4.0) (2024-03-14)
+
+
+### Features
+
+* **rbac:** query the catalog database when building graph ([#1298](https://github.com/janus-idp/backstage-plugins/issues/1298)) ([c2c9e22](https://github.com/janus-idp/backstage-plugins/commit/c2c9e22e90a594e2a44d1683a05d3111c4baa97b))
+
+
+### Bug Fixes
+
+* **rbac:** remove admin metadata, when all admins removed from config ([#1314](https://github.com/janus-idp/backstage-plugins/issues/1314)) ([cc6555e](https://github.com/janus-idp/backstage-plugins/commit/cc6555ea22a191c9f9f554b1909b67e517deee71))
+
 ## @janus-idp/backstage-plugin-rbac-backend [2.3.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.3.4...@janus-idp/backstage-plugin-rbac-backend@2.3.5) (2024-03-07)
 
 
