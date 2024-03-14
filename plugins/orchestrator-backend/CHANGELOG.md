@@ -1,3 +1,16 @@
+## @janus-idp/backstage-plugin-orchestrator-backend [1.6.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.5.3...@janus-idp/backstage-plugin-orchestrator-backend@1.6.0) (2024-03-14)
+
+
+### Features
+
+* **orchestrator:** verify availability and cache workflow definition IDs ([#1309](https://github.com/janus-idp/backstage-plugins/issues/1309)) ([4d322f1](https://github.com/janus-idp/backstage-plugins/commit/4d322f1fc5b6f8b1afedf40cfe1b24b2edae2ac1))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.6.0
+
 ## @janus-idp/backstage-plugin-orchestrator-backend [1.5.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.5.2...@janus-idp/backstage-plugin-orchestrator-backend@1.5.3) (2024-03-12)
 
 
