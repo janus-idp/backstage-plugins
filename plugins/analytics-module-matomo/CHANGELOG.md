@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-analytics-module-matomo [1.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-analytics-module-matomo@1.0.4...@janus-idp/backstage-plugin-analytics-module-matomo@1.1.0) (2024-03-15)
+
+
+### Features
+
+* **matomo-analytics:** export apifactory for dynamic plugin ([#1329](https://github.com/janus-idp/backstage-plugins/issues/1329)) ([c687617](https://github.com/janus-idp/backstage-plugins/commit/c6876177f062878801e798ea0193126a28f9fa08))
+
 ## @janus-idp/backstage-plugin-analytics-module-matomo [1.0.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-analytics-module-matomo@1.0.3...@janus-idp/backstage-plugin-analytics-module-matomo@1.0.4) (2024-02-22)
 
 
