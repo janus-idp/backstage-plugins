@@ -2,6 +2,11 @@ import { AnalyticsEvent, ConfigApi } from '@backstage/core-plugin-api';
 
 import { loadMatomo } from './loadMatomo';
 
+declare const window: Window &
+  typeof globalThis & {
+    _paq: any[];
+  };
+
 type AnalyticsAPI = {};
 
 type Options = {
@@ -10,7 +15,6 @@ type Options = {
 
 export class MatomoAnalytics implements AnalyticsAPI {
   private readonly configApi: ConfigApi;
-  private paq: any[];
 
   private constructor(options: Options) {
     this.configApi = options.configApi;
@@ -19,7 +23,6 @@ export class MatomoAnalytics implements AnalyticsAPI {
       'app.analytics.matomo.siteId',
     );
     loadMatomo(matomoUrl, matomoSiteId);
-    this.paq = (window as any)._paq;
   }
 
   static fromConfig(config: ConfigApi) {
@@ -30,7 +33,7 @@ export class MatomoAnalytics implements AnalyticsAPI {
     const { context, action, subject, value } = event;
     // REF: https://github.com/backstage/backstage/blob/master/plugins/analytics-module-ga/src/apis/implementations/AnalyticsApi/GoogleAnalytics.ts#L160
     // REF: https://matomo.org/faq/reports/implement-event-tracking-with-matomo/
-    this.paq.push([
+    window._paq.push([
       'trackEvent',
       context.extension || 'App',
       action,
