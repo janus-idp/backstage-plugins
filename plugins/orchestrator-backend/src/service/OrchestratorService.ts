@@ -161,7 +161,7 @@ export class OrchestratorService {
   public async executeWorkflow(args: {
     definitionId: string;
     serviceUrl: string;
-    inputData: Record<string, string>;
+    inputData: ProcessInstanceVariables;
     businessKey?: string;
     cacheHandler?: CacheHandler;
   }): Promise<WorkflowExecutionResponse | undefined> {
@@ -187,5 +187,46 @@ export class OrchestratorService {
     return isWorkflowAvailable
       ? await this.sonataFlowService.fetchWorkflowOverview(definitionId)
       : undefined;
+  }
+
+  public async retriggerInstanceInError(args: {
+    definitionId: string;
+    serviceUrl: string;
+    instanceId: string;
+    cacheHandler?: CacheHandler;
+  }): Promise<void> {
+    const { definitionId, cacheHandler } = args;
+
+    const isWorkflowAvailable = this.workflowCacheService.isAvailable(
+      definitionId,
+      cacheHandler,
+    );
+
+    if (!isWorkflowAvailable) {
+      return;
+    }
+
+    await this.sonataFlowService.retriggerInstanceInError(args);
+  }
+
+  public async updateInstanceInputData(args: {
+    definitionId: string;
+    serviceUrl: string;
+    instanceId: string;
+    inputData: ProcessInstanceVariables;
+    cacheHandler?: CacheHandler;
+  }): Promise<void> {
+    const { definitionId, cacheHandler } = args;
+
+    const isWorkflowAvailable = this.workflowCacheService.isAvailable(
+      definitionId,
+      cacheHandler,
+    );
+
+    if (!isWorkflowAvailable) {
+      return;
+    }
+
+    await this.sonataFlowService.updateInstanceInputData(args);
   }
 }

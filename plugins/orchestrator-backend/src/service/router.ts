@@ -305,8 +305,8 @@ function setupInternalRoutes(
 
     await routerApi.v1
       .executeWorkflow(req.body, workflowId, businessKey)
-      .then((result: any) => res.status(200).json(result))
-      .catch((error: { message: any }) => {
+      .then(result => res.status(200).json(result))
+      .catch((error: { message: string }) => {
         res
           .status(500)
           .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
@@ -334,6 +334,22 @@ function setupInternalRoutes(
         });
     },
   );
+
+  // v1
+  router.post('/instances/:instanceId/retrigger', async (req, res) => {
+    const {
+      params: { instanceId },
+    } = req;
+
+    await routerApi.v1
+      .retriggerInstanceInError(instanceId, req.body)
+      .then(result => res.status(200).json(result))
+      .catch((error: { message: string }) => {
+        res
+          .status(500)
+          .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
+      });
+  });
 
   // v1
   router.get('/workflows/:workflowId/overview', async (req, res) => {
@@ -494,7 +510,11 @@ function setupInternalRoutes(
     if (!workflowInfo.inputSchema) {
       res
         .status(500)
-        .send(`failed to retreive schema ${definition.dataInputSchema}`);
+        .send(
+          `failed to retreive schema ${JSON.stringify(
+            definition.dataInputSchema,
+          )}`,
+        );
       return;
     }
 
