@@ -3,13 +3,7 @@ import { useAsyncFn, useDebounce } from 'react-use';
 
 import { useApi } from '@backstage/core-plugin-api';
 
-import {
-  Card,
-  CardContent,
-  Checkbox,
-  FormControlLabel,
-  Toolbar,
-} from '@material-ui/core';
+import { Checkbox, FormControlLabel, Toolbar } from '@material-ui/core';
 
 import { history, URLParam } from '../../app/History';
 import { Dashboard } from '../../components/Charts/Dashboard';
@@ -405,30 +399,28 @@ export const IstioMetrics = (props: Props) => {
 
   return (
     <>
-      <Card className={fullHeightStyle}>
-        <CardContent style={{ overflow: 'auto' }}>
-          {renderOptionsBar()}
-          {dashboard && (
-            <Dashboard
-              dashboard={dashboard}
-              labelValues={MetricsHelper.convertAsPromLabels(labelsSettings)}
-              maximizedChart={expandedChart}
-              expandHandler={expandHandler}
-              onClick={onClickDataPoint}
-              labelPrettifier={MetricsHelper.prettyLabelValues}
-              overlay={spanOverlayState}
-              showSpans={showSpans}
-              showTrendlines={showTrendlines}
-              dashboardHeight={dashboardHeight}
-              timeWindow={evalTimeRange(timeRange)}
-              brushHandlers={{
-                onDomainChangeEnd: (__, propsD) =>
-                  onDomainChange(propsD.currentDomain.x),
-              }}
-            />
-          )}
-        </CardContent>
-      </Card>
+      <div className={fullHeightStyle}>
+        {renderOptionsBar()}
+        {dashboard && (
+          <Dashboard
+            dashboard={dashboard}
+            labelValues={MetricsHelper.convertAsPromLabels(labelsSettings)}
+            maximizedChart={expandedChart}
+            expandHandler={expandHandler}
+            onClick={onClickDataPoint}
+            labelPrettifier={MetricsHelper.prettyLabelValues}
+            overlay={spanOverlayState}
+            showSpans={showSpans}
+            showTrendlines={showTrendlines}
+            dashboardHeight={dashboardHeight}
+            timeWindow={evalTimeRange(timeRange)}
+            brushHandlers={{
+              onDomainChangeEnd: (__, propsD) =>
+                onDomainChange(propsD.currentDomain.x),
+            }}
+          />
+        )}
+      </div>
     </>
   );
 };

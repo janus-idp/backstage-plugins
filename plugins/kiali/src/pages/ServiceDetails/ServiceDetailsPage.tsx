@@ -2,21 +2,17 @@ import * as React from 'react';
 import { useParams } from 'react-router-dom';
 import { useAsyncFn, useDebounce } from 'react-use';
 
-import {
-  CardTab,
-  Content,
-  EmptyState,
-  TabbedCard,
-} from '@backstage/core-components';
+import { Content, EmptyState } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
-import { CircularProgress } from '@material-ui/core';
+import { CircularProgress, Tab, Tabs } from '@material-ui/core';
 
 import { HistoryManager } from '../../app/History';
 import { BreadcrumbView } from '../../components/BreadcrumbView/BreadcrumbView';
 import { DefaultSecondaryMasthead } from '../../components/DefaultSecondaryMasthead/DefaultSecondaryMasthead';
 import * as FilterHelper from '../../components/FilterList/FilterHelper';
 import { IstioMetrics } from '../../components/Metrics/IstioMetrics';
+import { a11yProps, TabPanel, useStyles } from '../../components/Tab/TabPanel';
 import { TimeDurationComponent } from '../../components/Time/TimeDurationComponent';
 import { getErrorString, kialiApiRef } from '../../services/Api';
 import { KialiContext } from '../../store';
@@ -48,6 +44,8 @@ export const ServiceDetailsPage = () => {
   const [peerAuthentication, setPeerAuthentication] = React.useState<
     PeerAuthentication[]
   >([]);
+  const [value, setValue] = React.useState<number>(0);
+  const classes = useStyles();
 
   const grids = () => {
     const elements = [];
@@ -195,6 +193,13 @@ export const ServiceDetailsPage = () => {
     );
   };
 
+  const handleChange = (
+    _event: any,
+    newValue: React.SetStateAction<number>,
+  ) => {
+    setValue(newValue);
+  };
+
   return (
     <div className={baseStyle}>
       <Content>
@@ -210,12 +215,26 @@ export const ServiceDetailsPage = () => {
             description={<div>No Service found </div>}
           />
         )}
-        <div style={{ marginTop: '20px' }}>
-          <TabbedCard>
-            <CardTab label="Overview">{overviewTab()}</CardTab>
-            <CardTab label="Inbound Metrics">{inboundTab()}</CardTab>
-            <CardTab label="Outbound Metrics">{outboundTab()}</CardTab>
-          </TabbedCard>
+        <div className={classes.root}>
+          <Tabs
+            value={value}
+            onChange={handleChange}
+            aria-label="simple tabs example"
+            style={{ overflow: 'visible', borderBottom: '1px solid #dcdcdc' }}
+          >
+            <Tab label="Overview" {...a11yProps(0)} />
+            <Tab label="Inbound Metrics" {...a11yProps(1)} />
+            <Tab label="Outbound Metrics" {...a11yProps(2)} />
+          </Tabs>
+          <TabPanel value={value} index={0}>
+            {overviewTab()}
+          </TabPanel>
+          <TabPanel value={value} index={1}>
+            {inboundTab()}
+          </TabPanel>
+          <TabPanel value={value} index={2}>
+            {outboundTab()}
+          </TabPanel>
         </div>
       </Content>
     </div>
