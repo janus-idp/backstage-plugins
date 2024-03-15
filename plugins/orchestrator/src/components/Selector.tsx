@@ -11,9 +11,9 @@ const useStyles = makeStyles(theme => ({
     '& label + div': {
       marginTop: '0px',
     },
-    '& select': {
-      width: '7rem',
-    },
+  },
+  select: {
+    width: '10rem',
   },
   label: {
     color: theme.palette.text.primary,
@@ -53,14 +53,15 @@ export const Selector = ({
   return (
     <div className={styles.root}>
       <Typography className={styles.label}>{otherProps.label}</Typography>
-      <Select
-        onChange={handleChange}
-        items={selectItems}
-        selected={otherProps.selected}
-        margin="dense"
-        native
-        label={otherProps.label}
-      />
+      <div className={styles.select}>
+        <Select
+          onChange={handleChange}
+          items={selectItems}
+          selected={otherProps.selected}
+          margin="dense"
+          label={otherProps.label}
+        />
+      </div>
     </div>
   );
 };
