@@ -34,7 +34,12 @@ export const AddMembersForm = ({
   membersData,
 }: AddMembersFormProps) => {
   const [search, setSearch] = React.useState<string>('');
-  const [selectedMember, setSelectedMember] = React.useState<SelectedMember>();
+  const [selectedMember, setSelectedMember] = React.useState<SelectedMember>({
+    label: '',
+    etag: '',
+    type: '',
+    ref: '',
+  } as SelectedMember);
 
   const getDescription = (member: MemberEntity) => {
     const memberCount = getMembersCount(member);
@@ -73,7 +78,7 @@ export const AddMembersForm = ({
       <br />
       <Autocomplete
         options={membersOptions}
-        getOptionLabel={(option: SelectedMember) => option.label}
+        getOptionLabel={(option: SelectedMember) => option.label ?? ''}
         getOptionSelected={(option: SelectedMember, value: SelectedMember) =>
           option.etag === value.etag
         }
