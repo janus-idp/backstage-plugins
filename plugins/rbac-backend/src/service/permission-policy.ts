@@ -4,6 +4,9 @@ import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 import {
   AuthorizeResult,
   isResourcePermission,
+  PermissionCondition,
+  PermissionCriteria,
+  PermissionRuleParams,
   PolicyDecision,
 } from '@backstage/plugin-permission-common';
 import {
@@ -27,6 +30,8 @@ import { EnforcerDelegate } from './enforcer-delegate';
 import { validateEntityReference } from './policies-validation';
 
 const adminRoleName = 'role:default/rbac_admin';
+
+type NonEmptyArray<T> = [T, ...T[]];
 
 const useAdminsFromConfig = async (
   admins: Config[],
@@ -271,23 +276,38 @@ export class RBACPermissionPolicy implements PermissionPolicy {
         if (status && identityResp) {
           const roles = await this.enforcer.getRolesForUser(userEntityRef);
           console.log(`===== Roles ${roles} ${userEntityRef} ===`);
-          let conditionalDecision;
+
+          const conditions: PermissionCriteria<
+            PermissionCondition<string, PermissionRuleParams>
+          >[] = [];
+          let pluginId = '';
           for (const role of roles) {
-            conditionalDecision = await this.conditionStorage.findCondition(
-              role,
-              resourceType,
-            );
-            // todo handle few roles
+            const conditionalDecision =
+              await this.conditionStorage.findCondition(role, resourceType);
+
             if (conditionalDecision) {
-              break;
+              pluginId = conditionalDecision.pluginId;
+              conditions.push(conditionalDecision.conditions);
             }
           }
 
-          if (conditionalDecision) {
+          if (conditions.length > 0) {
+            console.log(`----- ${JSON.stringify(conditions)}`);
             this.logger.info(
               `${identityResp?.identity.userEntityRef} executed condition for permission ${request.permission.name}, resource type ${resourceType} and action ${action}`,
             );
-            return conditionalDecision;
+            return {
+              pluginId,
+              result: AuthorizeResult.CONDITIONAL,
+              resourceType,
+              conditions: {
+                allOf: conditions as NonEmptyArray<
+                  PermissionCriteria<
+                    PermissionCondition<string, PermissionRuleParams>
+                  >
+                >,
+              },
+            };
           }
         }
       } else {
