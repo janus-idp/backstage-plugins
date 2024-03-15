@@ -19,7 +19,7 @@ import { classes } from 'typestyle';
 
 import { history, URLParam } from '../../app/History';
 import { KialiIcon } from '../../config/KialiIcon';
-import { itemStyleWithoutInfo, titleStyle } from '../../styles/DropdownStyles';
+import { titleStyle } from '../../styles/DropdownStyles';
 import { kialiStyle } from '../../styles/StyleUtils';
 import { PromLabel } from '../../types/Metrics';
 import {
@@ -139,7 +139,6 @@ export class MetricsSettingsDropdown extends React.Component<Props, State> {
       singleSelection,
     );
     this.updateLabelsSettingsURL(newValues);
-
     this.setState(
       prevState => ({
         labelsSettings: mergeLabelFilter(
@@ -258,7 +257,7 @@ export class MetricsSettingsDropdown extends React.Component<Props, State> {
   renderBulkSelector(): JSX.Element {
     return (
       <div>
-        <div className={itemStyleWithoutInfo}>
+        <div style={{ marginLeft: '-10px' }}>
           <Checkbox
             id="bulk-select-id"
             key="bulk-select-key"
@@ -281,7 +280,7 @@ export class MetricsSettingsDropdown extends React.Component<Props, State> {
     );
   }
 
-  renderLabelOptions(): JSX.Element {
+  renderLabelOptions(): React.ReactElement {
     const displayGroupingLabels: any[] = [];
 
     this.state.labelsSettings.forEach((lblObj, promName) => {
@@ -297,9 +296,9 @@ export class MetricsSettingsDropdown extends React.Component<Props, State> {
                     checked={lblObj.values[val]}
                     id={val}
                     className={checkboxStyle}
-                    onChange={(_event, _) =>
-                      this.onLabelsFiltersChanged(promName, val, true, true)
-                    }
+                    onChange={(_event, _) => {
+                      this.onLabelsFiltersChanged(promName, val, true, true);
+                    }}
                     name={val}
                     value={val}
                   />
@@ -310,14 +309,14 @@ export class MetricsSettingsDropdown extends React.Component<Props, State> {
                         id={val}
                         className={checkboxStyle}
                         checked={lblObj.values[val]}
-                        onChange={(_event, checked) =>
+                        onChange={(_event, checked) => {
                           this.onLabelsFiltersChanged(
                             promName,
                             val,
                             checked,
                             false,
-                          )
-                        }
+                          );
+                        }}
                       />
                     }
                     label={val}
@@ -361,36 +360,44 @@ export class MetricsSettingsDropdown extends React.Component<Props, State> {
   renderHistogramOptions(): JSX.Element {
     const displayHistogramOptions = [
       <div key="histo_avg">
-        <FormLabel>
-          <Checkbox
-            id="histo_avg"
-            className={checkboxStyle}
-            checked={this.state.showAverage && this.props.hasHistogramsAverage}
-            disabled={!this.props.hasHistogramsAverage}
-            onChange={(_event, checked) =>
-              this.onHistogramAverageChanged(checked)
-            }
-            name="Average"
-          />
-        </FormLabel>
+        <FormControlLabel
+          control={
+            <Checkbox
+              id="histo_avg"
+              className={checkboxStyle}
+              checked={
+                this.state.showAverage && this.props.hasHistogramsAverage
+              }
+              disabled={!this.props.hasHistogramsAverage}
+              onChange={(_event, checked) =>
+                this.onHistogramAverageChanged(checked)
+              }
+              name="Average"
+            />
+          }
+          label="Average"
+        />
       </div>,
     ].concat(
       allQuantiles.map((o, idx) => {
         const checked = this.state.showQuantiles.includes(o);
         return (
           <div key={`histo_${idx}`}>
-            <FormLabel>
-              <Checkbox
-                id={o}
-                className={checkboxStyle}
-                checked={checked && this.props.hasHistogramsPercentiles}
-                disabled={!this.props.hasHistogramsPercentiles}
-                onChange={(_event, checkedE) =>
-                  this.onHistogramOptionsChanged(o, checkedE)
-                }
-                name={`Quantile ${o}`}
-              />
-            </FormLabel>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  id={o}
+                  className={checkboxStyle}
+                  checked={checked && this.props.hasHistogramsPercentiles}
+                  disabled={!this.props.hasHistogramsPercentiles}
+                  onChange={(_event, checkedE) =>
+                    this.onHistogramOptionsChanged(o, checkedE)
+                  }
+                  name={`Quantile ${o}`}
+                />
+              }
+              label={`Quantile ${o}`}
+            />
           </div>
         );
       }),
@@ -402,25 +409,25 @@ export class MetricsSettingsDropdown extends React.Component<Props, State> {
           className={classes(titleLabelStyle, titleStyle, labelStyle)}
           style={{ paddingRight: '0.5rem' }}
         >
-          Histograms:
-        </FormLabel>
-        <Tooltip
-          key="tooltip_histograms"
-          title={
-            <div style={{ textAlign: 'left' }}>
-              <div>
-                "No data available" is displayed for a histogram that does not
-                have telemetry supporting the selected option. If no histograms
-                support the necessary telemetry, the option will be disabled.
+          <Tooltip
+            key="tooltip_histograms"
+            title={
+              <div style={{ textAlign: 'left' }}>
+                <div>
+                  "No data available" is displayed for a histogram that does not
+                  have telemetry supporting the selected option. If no
+                  histograms support the necessary telemetry, the option will be
+                  disabled.
+                </div>
               </div>
+            }
+          >
+            <div>
+              <span>Histograms: </span>
+              <KialiIcon.Info />
             </div>
-          }
-        >
-          <div>
-            <KialiIcon.Info />
-          </div>
-        </Tooltip>
-
+          </Tooltip>
+        </FormLabel>
         {displayHistogramOptions}
         <div className={spacerStyle} />
       </>
@@ -449,7 +456,7 @@ export class MetricsSettingsDropdown extends React.Component<Props, State> {
         isOpen={this.state.isOpen}
         onOpenChange={(isOpen: boolean) => this.onToggle(isOpen)}
       >
-        <DropdownList>
+        <DropdownList style={{ padding: '20px' }}>
           {hasLabels && this.renderBulkSelector()}
           {hasLabels && this.renderLabelOptions()}
           {hasHistograms && this.renderHistogramOptions()}

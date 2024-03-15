@@ -266,16 +266,21 @@ export class KialiApiClient implements KialiApi {
     queryParams?: any,
     data?: any,
     proxy: boolean = true,
+    customParams: boolean = false,
   ) => {
     if (this.kialiUrl === '') {
       this.kialiUrl = `${await this.discoveryApi.getBaseUrl('kiali')}`;
     }
     const kialiHeaders = getHeadersWithMethod(method);
-    const endpoint = queryParams
-      ? `${url}${
-          queryParams && `?${new URLSearchParams(queryParams).toString()}`
-        }`
-      : url;
+    let params: string;
+    // This is because, the arrays are stringified as param=value1,value2
+    // but kiali needs param[]=value, param[]=value2
+    if (customParams) {
+      params = this.getCustomParams(queryParams);
+    } else {
+      params = new URLSearchParams(queryParams).toString();
+    }
+    const endpoint = queryParams ? `${url}${queryParams && `?${params}`}` : url;
     const dataRequest = data ? data : {};
     dataRequest.endpoint = endpoint;
     dataRequest.method = method;
@@ -293,6 +298,20 @@ export class KialiApiClient implements KialiApi {
     );
 
     return jsonResponse.json() as T;
+  };
+
+  getCustomParams = (queryParams: any): string => {
+    let params = '';
+    for (const key in queryParams) {
+      if (Array.isArray(queryParams[key])) {
+        for (let i = 0; i < queryParams[key].length; i++) {
+          params += `${key}[]=${queryParams[key]}&`;
+        }
+      } else {
+        params += `${key}=${queryParams[key]}&`;
+      }
+    }
+    return params.slice(0, -1);
   };
 
   isDevEnv = () => {
@@ -884,6 +903,8 @@ export class KialiApiClient implements KialiApi {
       urls.workloadDashboard(namespace, workload),
       queryParams,
       {},
+      undefined,
+      true,
     );
   };
 
@@ -904,6 +925,8 @@ export class KialiApiClient implements KialiApi {
       urls.serviceDashboard(namespace, service),
       queryParams,
       {},
+      undefined,
+      true,
     );
   };
 
@@ -924,6 +947,8 @@ export class KialiApiClient implements KialiApi {
       urls.appDashboard(namespace, app),
       queryParams,
       {},
+      undefined,
+      true,
     );
   };
 

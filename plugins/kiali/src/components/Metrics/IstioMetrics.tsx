@@ -406,7 +406,7 @@ export const IstioMetrics = (props: Props) => {
   return (
     <>
       <Card className={fullHeightStyle}>
-        <CardContent>
+        <CardContent style={{ overflow: 'auto' }}>
           {renderOptionsBar()}
           {dashboard && (
             <Dashboard
