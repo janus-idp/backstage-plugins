@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-analytics-module-matomo [1.1.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-analytics-module-matomo@1.1.0...@janus-idp/backstage-plugin-analytics-module-matomo@1.1.1) (2024-03-15)
+
+
+### Bug Fixes
+
+* **matomo-analytics:** event trigger on load ([#1341](https://github.com/janus-idp/backstage-plugins/issues/1341)) ([3bc11f3](https://github.com/janus-idp/backstage-plugins/commit/3bc11f318d012d7a2aa43b4928891c138ee2a5d9))
+
 ## @janus-idp/backstage-plugin-analytics-module-matomo [1.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-analytics-module-matomo@1.0.4...@janus-idp/backstage-plugin-analytics-module-matomo@1.1.0) (2024-03-15)
 
 
