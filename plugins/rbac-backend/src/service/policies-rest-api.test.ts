@@ -158,6 +158,17 @@ const conditionalStorage = {
   updateCondition: jest.fn().mockImplementation(),
 };
 
+const validateRoleConditionMock = jest.fn().mockImplementation();
+jest.mock('./condition-validation', () => {
+  return {
+    validateRoleCondition: jest
+      .fn()
+      .mockImplementation((condition: RoleConditionalPolicyDecision) => {
+        validateRoleConditionMock(condition);
+      }),
+  };
+});
+
 describe('REST policies api', () => {
   let app: express.Express;
 
@@ -193,6 +204,7 @@ describe('REST policies api', () => {
   let server: PolicesServer;
 
   beforeEach(async () => {
+    validateRoleConditionMock.mockReset();
     mockEnforcer.hasPolicy = jest
       .fn()
       .mockImplementation(async (..._param: string[]): Promise<boolean> => {
@@ -2499,7 +2511,7 @@ describe('REST policies api', () => {
     });
 
     // Define a test suite for the GET /conditions endpoint
-    describe('GET /conditions', () => {
+    describe('GET /roles/:kind/:namespace:/name/conditions', () => {
       it('should return a status of Unauthorized', async () => {
         mockedAuthorizeConditional.mockImplementationOnce(async () => [
           { result: AuthorizeResult.DENY },
@@ -2601,7 +2613,7 @@ describe('REST policies api', () => {
       });
     });
 
-    describe('DELETE /conditions/:id', () => {
+    describe('DELETE /roles/:kind/:namespace:/name/conditions/:id', () => {
       it('should return a status of Unauthorized', async () => {
         mockedAuthorizeConditional.mockImplementationOnce(async () => [
           { result: AuthorizeResult.DENY },
@@ -2660,7 +2672,7 @@ describe('REST policies api', () => {
       });
     });
 
-    describe('GET /condition/:id', () => {
+    describe('GET /roles/:kind/:namespace:/name/condition/:id', () => {
       it('should return a status of Unauthorized', async () => {
         mockedAuthorizeConditional.mockImplementationOnce(async () => [
           { result: AuthorizeResult.DENY },
@@ -2729,7 +2741,7 @@ describe('REST policies api', () => {
       });
     });
 
-    describe('POST /conditions', () => {
+    describe('POST /roles/:kind/:namespace:/name/conditions', () => {
       it('should return a status of Unauthorized', async () => {
         mockedAuthorizeConditional.mockImplementationOnce(async () => [
           { result: AuthorizeResult.DENY },
@@ -2758,27 +2770,30 @@ describe('REST policies api', () => {
           .mockImplementation(() => {
             return 1;
           });
+
+        const roleCondition: RoleConditionalPolicyDecision = {
+          pluginId: 'catalog',
+          roleEntityRef: 'role:default/test',
+          resourceType: 'catalog-entity',
+          result: AuthorizeResult.CONDITIONAL,
+          conditions: {
+            rule: 'IS_ENTITY_OWNER',
+            resourceType: 'catalog-entity',
+            params: { claims: ['group:default/team-a'] },
+          },
+        };
         const result = await request(app)
           .post('/roles/role/default/test/conditions')
-          .send({
-            pluginId: 'catalog',
-            roleEntityRef: 'role:default/test',
-            resourceType: 'catalog-entity',
-            result: AuthorizeResult.CONDITIONAL,
-            conditions: {
-              rule: 'IS_ENTITY_OWNER',
-              resourceType: 'catalog-entity',
-              params: { claims: ['group:default/team-a'] },
-            },
-          });
+          .send(roleCondition);
 
         expect(result.statusCode).toBe(201);
+        expect(validateRoleConditionMock).toHaveBeenCalledWith(roleCondition);
         expect(result.body).toEqual({ id: 1 });
         expect(mockIdentityClient.getIdentity).toHaveBeenCalledTimes(1);
       });
     });
 
-    describe('PUT /conditions', () => {
+    describe('PUT /roles/:kind/:namespace:/name/conditions', () => {
       it('should return a status of Unauthorized', async () => {
         mockedAuthorizeConditional.mockImplementationOnce(async () => [
           { result: AuthorizeResult.DENY },
@@ -2834,6 +2849,9 @@ describe('REST policies api', () => {
         expect(mockedAuthorizeConditional).toHaveBeenCalledWith(
           [{ permission: policyEntityUpdatePermission }],
           { token: 'token' },
+        );
+        expect(validateRoleConditionMock).toHaveBeenCalledWith(
+          conditionDecision,
         );
 
         expect(result.statusCode).toBe(200);

@@ -48,3 +48,5 @@ export type PermissionPolicy = {
 export type RoleConditionalPolicyDecision = ConditionalPolicyDecision & {
   roleEntityRef: string;
 };
+
+export type NonEmptyArray<T> = [T, ...T[]];
