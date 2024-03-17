@@ -30,6 +30,7 @@ import {
 import { resolve } from 'path';
 
 import { CasbinDBAdapterFactory } from '../database/casbin-adapter-factory';
+import { ConditionalStorage } from '../database/conditional-storage';
 import {
   PermissionPolicyMetadataDao,
   PolicyMetadataStorage,
@@ -66,7 +67,7 @@ const tokenManagerMock = {
   authenticate: jest.fn().mockImplementation(),
 };
 
-const conditionalStorage = {
+const conditionalStorage: ConditionalStorage = {
   getConditions: jest.fn().mockImplementation(),
   createCondition: jest.fn().mockImplementation(),
   findCondition: jest.fn().mockImplementation(),
@@ -1775,6 +1776,186 @@ describe('Policy checks for users and groups', () => {
       newIdentityResponse('user:default/mike'),
     );
     expect(decision.result).toBe(AuthorizeResult.ALLOW);
+  });
+});
+
+describe('Policy checks for conditional policies', () => {
+  let policy: RBACPermissionPolicy;
+
+  beforeEach(async () => {
+    const adapter = new StringAdapter(
+      `
+      p, role:default/test, catalog-entity, read, allow
+
+      g, group:default/test-group, role:default/test
+      g, group:default/qa, role:default/qa
+      `,
+    );
+    const config = newConfigReader();
+    const theModel = newModelFromString(MODEL);
+    const logger = getVoidLogger();
+    const enf = await createEnforcer(
+      theModel,
+      adapter,
+      logger,
+      tokenManagerMock,
+    );
+
+    const knex = Knex.knex({ client: MockClient });
+    const enfDelegate = new EnforcerDelegate(
+      enf,
+      policyMetadataStorageMock,
+      roleMetadataStorageMock,
+      knex,
+    );
+
+    policy = await RBACPermissionPolicy.build(
+      logger,
+      config,
+      conditionalStorage,
+      enfDelegate,
+      roleMetadataStorageMock,
+      policyMetadataStorageMock,
+      knex,
+    );
+
+    catalogApi.getEntities.mockReset();
+    (conditionalStorage.findCondition as jest.Mock).mockReset();
+  });
+
+  it('should execute condition policy', async () => {
+    const entityMock: Entity = {
+      apiVersion: 'v1',
+      kind: 'Group',
+      metadata: {
+        name: 'test-group',
+        namespace: 'default',
+      },
+      spec: {
+        members: ['mike'],
+      },
+    };
+    catalogApi.getEntities.mockReturnValue({ items: [entityMock] });
+    (conditionalStorage.findCondition as jest.Mock).mockReturnValueOnce({
+      pluginId: 'catalog',
+      resourceType: 'catalog-entity',
+      roleEntityRef: 'role:default/test',
+      result: AuthorizeResult.CONDITIONAL,
+      conditions: {
+        rule: 'IS_ENTITY_OWNER',
+        resourceType: 'catalog-entity',
+        params: {
+          claims: ['group:default/test-group'],
+        },
+      },
+    });
+
+    const decision = await policy.handle(
+      newPolicyQueryWithResourcePermission(
+        'catalog.entity.read',
+        'catalog-entity',
+        'read',
+      ),
+      newIdentityResponse('user:default/mike'),
+    );
+    expect(decision).toStrictEqual({
+      pluginId: 'catalog',
+      resourceType: 'catalog-entity',
+      result: AuthorizeResult.CONDITIONAL,
+      conditions: {
+        anyOf: [
+          {
+            rule: 'IS_ENTITY_OWNER',
+            resourceType: 'catalog-entity',
+            params: {
+              claims: ['group:default/test-group'],
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  it('should merge condition policies for user assigned to few roles', async () => {
+    const entityMock: Entity = {
+      apiVersion: 'v1',
+      kind: 'Group',
+      metadata: {
+        name: 'test-group',
+        namespace: 'default',
+      },
+      spec: {
+        members: ['mike'],
+      },
+    };
+    const qaGroupMock: Entity = {
+      apiVersion: 'v1',
+      kind: 'Group',
+      metadata: {
+        name: 'qa',
+        namespace: 'default',
+      },
+      spec: {
+        members: ['mike'],
+      },
+    };
+    catalogApi.getEntities.mockReturnValue({
+      items: [entityMock, qaGroupMock],
+    });
+    (conditionalStorage.findCondition as jest.Mock)
+      .mockReturnValueOnce({
+        pluginId: 'catalog',
+        resourceType: 'catalog-entity',
+        roleEntityRef: 'role:default/test',
+        result: AuthorizeResult.CONDITIONAL,
+        conditions: {
+          rule: 'IS_ENTITY_OWNER',
+          resourceType: 'catalog-entity',
+          params: {
+            claims: ['group:default/test-group'],
+          },
+        },
+      })
+      .mockReturnValueOnce({
+        pluginId: 'catalog',
+        resourceType: 'catalog-entity',
+        roleEntityRef: 'role:default/qa',
+        result: AuthorizeResult.CONDITIONAL,
+        conditions: {
+          rule: 'IS_ENTITY_KIND',
+          resourceType: 'catalog-entity',
+          params: { kinds: ['Group', 'User'] },
+        },
+      });
+    const decision = await policy.handle(
+      newPolicyQueryWithResourcePermission(
+        'catalog.entity.read',
+        'catalog-entity',
+        'read',
+      ),
+      newIdentityResponse('user:default/mike'),
+    );
+    expect(decision).toStrictEqual({
+      pluginId: 'catalog',
+      resourceType: 'catalog-entity',
+      result: AuthorizeResult.CONDITIONAL,
+      conditions: {
+        anyOf: [
+          {
+            rule: 'IS_ENTITY_OWNER',
+            resourceType: 'catalog-entity',
+            params: {
+              claims: ['group:default/test-group'],
+            },
+          },
+          {
+            rule: 'IS_ENTITY_KIND',
+            resourceType: 'catalog-entity',
+            params: { kinds: ['Group', 'User'] },
+          },
+        ],
+      },
+    });
   });
 });
 
