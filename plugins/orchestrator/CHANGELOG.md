@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-orchestrator [1.8.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.8.1...@janus-idp/backstage-plugin-orchestrator@1.8.2) (2024-03-17)
+
+
+### Bug Fixes
+
+* **orchestrator:** fix dropdown look ([#1344](https://github.com/janus-idp/backstage-plugins/issues/1344)) ([9284299](https://github.com/janus-idp/backstage-plugins/commit/9284299710f4d498deb098a94a2be57e6d7516a6))
+
 ## @janus-idp/backstage-plugin-orchestrator [1.8.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.8.0...@janus-idp/backstage-plugin-orchestrator@1.8.1) (2024-03-14)
 
 
