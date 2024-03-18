@@ -16,12 +16,16 @@
 
 import { PackageRoles } from '@backstage/cli-node';
 
+import chalk from 'chalk';
 import { OptionValues } from 'commander';
 import fs from 'fs-extra';
 
 import { paths } from '../../lib/paths';
 import { getConfigSchema } from '../../lib/schema/collect';
-import { backend } from './backend';
+import { Task } from '../../lib/tasks';
+import { backend as backendEmbedAsCode } from './backend-embed-as-code';
+import { backend as backendEmbedAsDependencies } from './backend-embed-as-dependencies';
+import { applyDevOptions } from './dev';
 import { frontend } from './frontend';
 
 const saveSchema = async (packageName: string, path: string) => {
@@ -39,25 +43,30 @@ export async function command(opts: OptionValues): Promise<void> {
     throw new Error(`Target package must have 'backstage.role' set`);
   }
 
+  let targetPath: string;
   const roleInfo = PackageRoles.getRoleInfo(role);
+  let configSchemaPath: string;
 
   if (role === 'backend-plugin' || role === 'backend-plugin-module') {
-    await backend(roleInfo, opts);
-
-    await saveSchema(rawPkg.name, 'dist-dynamic/dist/configSchema.json');
-
-    return;
+    if (opts.embedAsDependencies) {
+      targetPath = await backendEmbedAsDependencies(opts);
+    } else {
+      targetPath = await backendEmbedAsCode(roleInfo, opts);
+    }
+    configSchemaPath = 'dist-dynamic/dist/configSchema.json';
+  } else if (role === 'frontend-plugin') {
+    targetPath = await frontend(roleInfo, opts);
+    configSchemaPath = 'dist-scalprum/configSchema.json';
+  } else {
+    throw new Error(
+      'Only packages with the "backend-plugin", "backend-plugin-module" or "frontend-plugin" roles can be exported as dynamic backend plugins',
+    );
   }
 
-  if (role === 'frontend-plugin') {
-    await frontend(roleInfo, opts);
-
-    await saveSchema(rawPkg.name, 'dist-scalprum/configSchema.json');
-
-    return;
-  }
-
-  throw new Error(
-    'Only packages with the "backend-plugin", "backend-plugin-module" or "frontend-plugin" roles can be exported as dynamic backend plugins',
+  Task.log(
+    `Saving self-contained config schema in ${chalk.cyan(configSchemaPath)}`,
   );
+  await saveSchema(rawPkg.name, configSchemaPath);
+
+  await applyDevOptions(opts, rawPkg.name, roleInfo, targetPath);
 }

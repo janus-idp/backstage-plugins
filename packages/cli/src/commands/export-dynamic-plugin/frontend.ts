@@ -25,7 +25,7 @@ import { paths } from '../../lib/paths';
 export async function frontend(
   _: PackageRoleInfo,
   __: OptionValues,
-): Promise<void> {
+): Promise<string> {
   const {
     name,
     version,
@@ -66,4 +66,6 @@ export async function frontend(
     },
     fromPackage: name,
   });
+
+  return paths.targetDir;
 }

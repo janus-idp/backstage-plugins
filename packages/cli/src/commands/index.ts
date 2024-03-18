@@ -106,12 +106,24 @@ export function registerScriptCommand(program: Command) {
       'Do not run `yarn install` to fill the dynamic plugin `node_modules` folder (backend plugin only).',
     )
     .option(
+      '--no-build',
+      'Do not run `yarn build` on the main and embedded packages before exporting (backend plugin only).',
+    )
+    .option(
       '--clean',
       'Remove the dynamic plugin output before exporting again.',
     )
     .option(
       '--dev',
-      'Allow testing/debugging a backend plugin dynamic loading locally. This installs the dynamic plugin content (symlink) into the dynamic plugins root folder configured in the app config. This also creates a link from the dynamic plugin content to the plugin package `src` folder, to enable the use of source maps (backend plugin only).',
+      'Allow testing/debugging a dynamic plugin locally. This creates a link from the dynamic plugin content to the plugin package `src` folder, to enable the use of source maps (backend plugin only). This also installs the dynamic plugin content (symlink) into the dynamic plugins root folder configured in the app config (or copies the plugin content to the location explicitely provided by the `--dynamic-plugins-root` argument).',
+    )
+    .option(
+      '--dynamic-plugins-root <dynamic-plugins-root>',
+      'Provides the dynamic plugins root folder when the dynamic plugins content should be copied when using the `--dev` argument.',
+    )
+    .option(
+      '--embed-as-dependencies',
+      'Include embedded packages as private dependencies, instead of merging the with the generated code. Experimental for now, but expected to become the default.',
     )
     .action(lazy(() => import('./export-dynamic-plugin').then(m => m.command)));
 
