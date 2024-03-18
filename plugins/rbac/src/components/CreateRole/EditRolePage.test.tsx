@@ -52,7 +52,7 @@ jest.mock('@backstage/plugin-permission-react', () => ({
     .fn()
     .mockImplementation(({ permission, resourceRef, children }) => (
       <div>
-        {permission + ' ' + resourceRef}
+        {`${permission} ${resourceRef}`}
         {children}
       </div>
     )),
@@ -70,7 +70,7 @@ jest.mock('@backstage/core-components', () => ({
   )),
   Header: jest.fn().mockImplementation(({ title, type, children }) => (
     <div>
-      {title + ' ' + type}
+      {`${title} ${type}`}
       {children}
     </div>
   )),

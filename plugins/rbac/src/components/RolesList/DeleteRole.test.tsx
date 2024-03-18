@@ -54,11 +54,7 @@ describe('DeleteRole', () => {
 
   it('disables the button when disable prop is true', () => {
     render(
-      <DeleteRole
-        roleName="Admin"
-        disable={true}
-        dataTestId="delete-admin-role"
-      />,
+      <DeleteRole roleName="Admin" disable dataTestId="delete-admin-role" />,
     );
 
     expect(screen.getByRole('button')).toBeDisabled();
