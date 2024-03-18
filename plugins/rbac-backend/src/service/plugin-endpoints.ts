@@ -54,10 +54,10 @@ export class PluginPermissionMetadataCollector {
     });
   }
 
-  async getPluginConditionRules(): Promise<
-    PluginMetadataResponseSerializedRule[]
-  > {
-    const pluginMetadata = await this.getPluginMetaData();
+  async getPluginConditionRules(
+    token: string | undefined,
+  ): Promise<PluginMetadataResponseSerializedRule[]> {
+    const pluginMetadata = await this.getPluginMetaData(token);
 
     return pluginMetadata
       .filter(metadata => metadata.metaDataResponse.rules.length > 0)
@@ -69,8 +69,10 @@ export class PluginPermissionMetadataCollector {
       });
   }
 
-  async getPluginPolicies(): Promise<PluginPermissionMetaData[]> {
-    const pluginMetadata = await this.getPluginMetaData();
+  async getPluginPolicies(
+    token: string | undefined,
+  ): Promise<PluginPermissionMetaData[]> {
+    const pluginMetadata = await this.getPluginMetaData(token);
 
     return pluginMetadata
       .filter(metadata => metadata.metaDataResponse.permissions !== undefined)
@@ -88,14 +90,16 @@ export class PluginPermissionMetadataCollector {
     return [{ reader: new FetchUrlReader(), predicate: (_url: URL) => true }];
   };
 
-  private async getPluginMetaData(): Promise<PluginMetadataResponse[]> {
+  private async getPluginMetaData(
+    token: string | undefined,
+  ): Promise<PluginMetadataResponse[]> {
     let pluginResponses: PluginMetadataResponse[] = [];
 
     for (const pluginId of this.pluginIds) {
       const baseEndpoint = await this.discovery.getBaseUrl(pluginId);
       const wellKnownURL = `${baseEndpoint}/.well-known/backstage/permissions/metadata`;
       try {
-        const permResp = await this.urlReader.readUrl(wellKnownURL);
+        const permResp = await this.urlReader.readUrl(wellKnownURL, { token });
         const permMetaDataRaw = (await permResp.buffer()).toString();
         let permMetaData;
         try {

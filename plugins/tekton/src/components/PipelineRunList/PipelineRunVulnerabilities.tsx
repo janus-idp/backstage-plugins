@@ -109,7 +109,7 @@ const PipelineRunVulnerabilities: React.FC<PipelineRunVulnerabilitiesProps> = ({
           </div>
           <div className={classes.severityContainer}>
             <span className={classes.severityStatus}>
-              <Tooltip content="medium">
+              <Tooltip content="Low">
                 <AngleDoubleDownIcon
                   title="Low"
                   className={classes.lowStatus}

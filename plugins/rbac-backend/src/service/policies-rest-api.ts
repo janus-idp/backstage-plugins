@@ -551,8 +551,8 @@ export class PolicesServer {
       },
     );
 
-    router.get('/plugins/policies', async (req, resp) => {
-      const decision = await this.authorize(req, {
+    router.get('/plugins/policies', async (request, response) => {
+      const decision = await this.authorize(request, {
         permission: policyEntityReadPermission,
       });
 
@@ -560,12 +560,15 @@ export class PolicesServer {
         throw new NotAllowedError(); // 403
       }
 
-      const policies = await pluginPermMetaData.getPluginPolicies();
-      resp.json(policies);
+      const authHeader = request.header('authorization');
+      const token = getBearerTokenFromAuthorizationHeader(authHeader);
+
+      const policies = await pluginPermMetaData.getPluginPolicies(token);
+      response.json(policies);
     });
 
-    router.get('/plugins/condition-rules', async (req, resp) => {
-      const decision = await this.authorize(req, {
+    router.get('/plugins/condition-rules', async (request, response) => {
+      const decision = await this.authorize(request, {
         permission: policyEntityReadPermission,
       });
 
@@ -573,8 +576,11 @@ export class PolicesServer {
         throw new NotAllowedError(); // 403
       }
 
-      const rules = await pluginPermMetaData.getPluginConditionRules();
-      resp.json(rules);
+      const authHeader = request.header('authorization');
+      const token = getBearerTokenFromAuthorizationHeader(authHeader);
+
+      const rules = await pluginPermMetaData.getPluginConditionRules(token);
+      response.json(rules);
     });
 
     router.get('/conditions', async (req, resp) => {
