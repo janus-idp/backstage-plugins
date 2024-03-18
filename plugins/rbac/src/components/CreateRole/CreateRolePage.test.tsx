@@ -25,12 +25,7 @@ jest.mock('./RoleForm', () => ({
 jest.mock('@backstage/plugin-permission-react', () => ({
   RequirePermission: jest
     .fn()
-    .mockImplementation(({ permission, resourceRef, children }) => (
-      <div>
-        {permission + ' ' + resourceRef}
-        {children}
-      </div>
-    )),
+    .mockImplementation(({ children }) => <div>{children}</div>),
 }));
 
 const mockedPrequirePermission = RequirePermission as jest.MockedFunction<
@@ -44,12 +39,7 @@ jest.mock('@backstage/core-components', () => ({
       {children}
     </div>
   )),
-  Header: jest.fn().mockImplementation(({ title, type, children }) => (
-    <div>
-      {title + ' ' + type}
-      {children}
-    </div>
-  )),
+  Header: jest.fn().mockImplementation(({ children }) => <div>{children}</div>),
   Content: jest
     .fn()
     .mockImplementation(({ children }) => <div>{children}</div>),

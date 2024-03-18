@@ -20,7 +20,7 @@ describe('DeleteRoleDialog', () => {
   it('renders delete role dialog correctly with Delete button disabled when open', () => {
     render(
       <DeleteRoleDialog
-        open={true}
+        open
         closeDialog={jest.fn()}
         roleName="Test Role"
         propOptions={{ memberRefs: [], permissions: 0 }}
@@ -47,7 +47,7 @@ describe('DeleteRoleDialog', () => {
     const user = userEvent.setup();
     render(
       <DeleteRoleDialog
-        open={true}
+        open
         closeDialog={jest.fn()}
         roleName="Test Role"
         propOptions={{ memberRefs: [], permissions: 0 }}
@@ -80,7 +80,7 @@ describe('DeleteRoleDialog', () => {
     const user = userEvent.setup();
     render(
       <DeleteRoleDialog
-        open={true}
+        open
         closeDialog={jest.fn()}
         roleName="Test Role"
         propOptions={{ memberRefs: [], permissions: 0 }}

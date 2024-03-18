@@ -27,9 +27,8 @@ const handlers = [
           { name: 'testrole:testns/name2' },
         ]),
       );
-    } else {
-      return res(ctx.status(404));
     }
+    return res(ctx.status(404));
   }),
   rest.get(`${LOCAL_ADDR}/api/permission/policies`, (req, res, ctx) => {
     const authorizationHeader = req.headers.get('Authorization');
@@ -41,9 +40,8 @@ const handlers = [
           { policy: 'create', effect: 'allow' },
         ]),
       );
-    } else {
-      return res(ctx.status(404));
     }
+    return res(ctx.status(404));
   }),
   rest.get(
     `${LOCAL_ADDR}/api/permission/policies/:kind/:namespace/:name`,
@@ -62,9 +60,8 @@ const handlers = [
             { policy: 'create', effect: 'allow' },
           ]),
         );
-      } else {
-        return res(ctx.status(404));
       }
+      return res(ctx.status(404));
     },
   ),
   rest.delete(
@@ -78,9 +75,8 @@ const handlers = [
 
       if (authorizationHeader === 'Bearer test-token') {
         return res(ctx.status(200));
-      } else {
-        return res(ctx.status(404));
       }
+      return res(ctx.status(404));
     },
   ),
   rest.get(
@@ -97,9 +93,8 @@ const handlers = [
           ctx.status(200),
           ctx.json({ name: 'targetRole:targetNamespace/targetName' }),
         );
-      } else {
-        return res(ctx.status(404));
       }
+      return res(ctx.status(404));
     },
   ),
   rest.get(
@@ -112,9 +107,8 @@ const handlers = [
       };
       if (authorizationHeader === 'Bearer test-token') {
         return res(ctx.status(200), ctx.json([{ kind: 'User', spec: {} }]));
-      } else {
-        return res(ctx.status(404));
       }
+      return res(ctx.status(404));
     },
   ),
   rest.get(`${LOCAL_ADDR}/api/permission/plugins/policies`, (req, res, ctx) => {
@@ -137,9 +131,8 @@ const handlers = [
           },
         ]),
       );
-    } else {
-      return res(ctx.status(404));
     }
+    return res(ctx.status(404));
   }),
   rest.post(`${LOCAL_ADDR}/api/permission/roles`, async (req, res, ctx) => {
     const requestBody = await req.json();
@@ -206,12 +199,11 @@ const handlers = [
       };
       if (authorizationHeader === 'Bearer test-token') {
         return res(ctx.status(200));
-      } else {
-        return res(
-          ctx.status(400),
-          ctx.json({ message: 'Error deleting policies' }),
-        );
       }
+      return res(
+        ctx.status(400),
+        ctx.json({ message: 'Error deleting policies' }),
+      );
     },
   ),
   rest.post(`${LOCAL_ADDR}/api/permission/policies`, async (req, res, ctx) => {
@@ -303,17 +295,16 @@ describe('RBACBackendClient', () => {
 
     it('getRoles should handle non-200/204 responses correctly', async () => {
       server.use(
-        rest.get(`${LOCAL_ADDR}/api/permission/roles`, (req, res, ctx) => {
+        rest.get(`${LOCAL_ADDR}/api/permission/roles`, (_req, res, ctx) => {
           return res(ctx.status(404));
         }),
       );
 
-      const response = await rbacApi.getRoles();
-      if (!Array.isArray(response) && 'status' in response) {
-        expect(response.status).toBe(404);
-      } else {
-        fail('Expected a Response object with a status property');
-      }
+      await expect(rbacApi.getRoles()).resolves.toEqual(
+        expect.objectContaining({
+          status: 404,
+        }),
+      );
     });
   });
 
@@ -328,17 +319,16 @@ describe('RBACBackendClient', () => {
 
     it('getPolicies should handle non-200/204 responses correctly', async () => {
       server.use(
-        rest.get(`${LOCAL_ADDR}/api/permission/policies`, (req, res, ctx) => {
+        rest.get(`${LOCAL_ADDR}/api/permission/policies`, (_req, res, ctx) => {
           return res(ctx.status(404));
         }),
       );
 
-      const response = await rbacApi.getPolicies();
-      if (!Array.isArray(response) && 'status' in response) {
-        expect(response.status).toBe(404);
-      } else {
-        fail('Expected a Response object with a status property');
-      }
+      await expect(rbacApi.getPolicies()).resolves.toEqual(
+        expect.objectContaining({
+          status: 404,
+        }),
+      );
     });
   });
 
@@ -354,15 +344,14 @@ describe('RBACBackendClient', () => {
 
     it('getAssociatedPolicies should handle non-200/204 responses correctly', async () => {
       const invalidEntityReference = 'invalidKind:invalidNamespace/invalidName';
-      const response = await rbacApi.getAssociatedPolicies(
-        invalidEntityReference,
-      );
 
-      if (!Array.isArray(response) && 'status' in response) {
-        expect(response.status).toBe(404);
-      } else {
-        fail('Expected a Response object with a status property');
-      }
+      await expect(
+        rbacApi.getAssociatedPolicies(invalidEntityReference),
+      ).resolves.toEqual(
+        expect.objectContaining({
+          status: 404,
+        }),
+      );
     });
   });
 
@@ -419,13 +408,13 @@ describe('RBACBackendClient', () => {
           },
         ),
       );
+
       const targetRole = 'targetRole:targetNamespace/targetName';
-      const response = await rbacApi.getRole(targetRole);
-      if (!Array.isArray(response) && 'status' in response) {
-        expect(response.status).toBe(404);
-      } else {
-        fail('Expected a Response object with a status property');
-      }
+      await expect(rbacApi.getRole(targetRole)).resolves.toEqual(
+        expect.objectContaining({
+          status: 404,
+        }),
+      );
     });
   });
 
@@ -449,12 +438,12 @@ describe('RBACBackendClient', () => {
           },
         ),
       );
-      const response = await rbacApi.getMembers();
-      if (!Array.isArray(response) && 'status' in response) {
-        expect(response.status).toBe(404);
-      } else {
-        fail('Expected a Response object with a status property');
-      }
+
+      await expect(rbacApi.getMembers()).resolves.toEqual(
+        expect.objectContaining({
+          status: 404,
+        }),
+      );
     });
   });
 
@@ -487,12 +476,12 @@ describe('RBACBackendClient', () => {
           },
         ),
       );
-      const response = await rbacApi.listPermissions();
-      if (!Array.isArray(response) && 'status' in response) {
-        expect(response.status).toBe(404);
-      } else {
-        fail('Expected a Response object with a status property');
-      }
+
+      await expect(rbacApi.listPermissions()).resolves.toEqual(
+        expect.objectContaining({
+          status: 404,
+        }),
+      );
     });
   });
 

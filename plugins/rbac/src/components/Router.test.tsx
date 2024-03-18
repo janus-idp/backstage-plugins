@@ -28,7 +28,7 @@ jest.mock('@backstage/plugin-permission-react', () => ({
     .fn()
     .mockImplementation(({ permission, resourceRef, children }) => (
       <div>
-        {permission + ' ' + resourceRef}
+        {`${permission} ${resourceRef}`}
         {children}
       </div>
     )),

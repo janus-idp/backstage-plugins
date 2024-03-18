@@ -30,7 +30,7 @@ describe('ReviewStep', () => {
   });
 
   it('renders "Review and save" for editing existing roles', () => {
-    render(<ReviewStep values={mockValues} isEditing={true} />);
+    render(<ReviewStep values={mockValues} isEditing />);
     expect(screen.getByText('Review and save')).toBeInTheDocument();
   });
 

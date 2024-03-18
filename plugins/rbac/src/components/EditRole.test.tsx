@@ -17,11 +17,7 @@ describe('EditRole', () => {
   it('renders the button as disabled when disable is true', () => {
     render(
       <Router>
-        <EditRole
-          roleName="roleName"
-          disable={true}
-          dataTestId="edit-role-btn"
-        />
+        <EditRole roleName="roleName" disable dataTestId="edit-role-btn" />
       </Router>,
     );
 
