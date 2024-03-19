@@ -8,9 +8,9 @@ DEFINITION_FILE="./src/auto-generated/api/definition.ts"
 METADATA_FILE="./src/auto-generated/.METADATA.sha1"
 
 openapi_generate() {
-    npx openapi-typescript ${OPENAPI_SPEC_FILE} -o ${SCHEMA_FILE}
-    npx openapi-generator-cli generate -g asciidoc -i ./src/openapi/openapi.yaml -o ./src/auto-generated/docs/index.adoc
-    npx yaml2json -f ${OPENAPI_SPEC_FILE}
+    npx --yes openapi-typescript ${OPENAPI_SPEC_FILE} -o ${SCHEMA_FILE}
+    npx --yes openapi-generator-cli generate -g asciidoc -i ./src/openapi/openapi.yaml -o ./src/auto-generated/docs/index.adoc
+    npx --yes yaml2json -f ${OPENAPI_SPEC_FILE}
 
     OPENAPI_SPEC_FILE_JSON=$(tr -d '[:space:]' < "$(dirname $OPENAPI_SPEC_FILE)"/openapi.json)
     cat << EOF > ${DEFINITION_FILE}
