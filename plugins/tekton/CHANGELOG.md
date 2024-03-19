@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-tekton [3.5.11](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.5.10...@janus-idp/backstage-plugin-tekton@3.5.11) (2024-03-19)
+
+
+### Bug Fixes
+
+* **tekton:** fix low vulnerability tooltip text ([#1347](https://github.com/janus-idp/backstage-plugins/issues/1347)) ([47640a5](https://github.com/janus-idp/backstage-plugins/commit/47640a5c3a7ad33ad6ae6b190f2ca3d861970d94))
+
 ## @janus-idp/backstage-plugin-tekton [3.5.10](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.5.9...@janus-idp/backstage-plugin-tekton@3.5.10) (2024-03-04)
 
 
