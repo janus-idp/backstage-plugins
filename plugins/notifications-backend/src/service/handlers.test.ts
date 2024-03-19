@@ -18,8 +18,8 @@ describe('handlers', () => {
   //
   let dbClient: Knex<any, any>;
   let catalogClient: CatalogClient;
-  const catalogUser = 'test';
-  const catalogGroup = 'test';
+  const catalogUser = 'test/test';
+  const catalogGroup = 'test/test';
   const userEntity: Entity = {
     apiVersion: 'v1',
     kind: 'user',
