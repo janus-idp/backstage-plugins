@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac-backend [2.4.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.4.0...@janus-idp/backstage-plugin-rbac-backend@2.4.1) (2024-03-19)
+
+
+### Bug Fixes
+
+* **rbac:** pass token to readUrl for well-known permission endpoint ([#1342](https://github.com/janus-idp/backstage-plugins/issues/1342)) ([36b7c77](https://github.com/janus-idp/backstage-plugins/commit/36b7c7739753bd1cc55d10aa68d41ed7e15162e6))
+
 ## @janus-idp/backstage-plugin-rbac-backend [2.4.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.3.5...@janus-idp/backstage-plugin-rbac-backend@2.4.0) (2024-03-14)
 
 
