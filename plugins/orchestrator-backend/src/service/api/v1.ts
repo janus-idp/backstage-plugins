@@ -175,20 +175,30 @@ export class V1 {
       );
     }
 
-    await this.orchestratorService.updateInstanceInputData({
-      definitionId: instance.processId,
-      instanceId,
-      inputData,
-      serviceUrl: instance.serviceUrl,
-      cacheHandler: 'throw',
-    });
+    const isUpdateInstanceInputDataOk =
+      await this.orchestratorService.updateInstanceInputData({
+        definitionId: instance.processId,
+        instanceId,
+        inputData,
+        serviceUrl: instance.serviceUrl,
+        cacheHandler: 'throw',
+      });
 
-    await this.orchestratorService.retriggerInstanceInError({
-      definitionId: instance.processId,
-      instanceId,
-      serviceUrl: instance.serviceUrl,
-      cacheHandler: 'throw',
-    });
+    if (!isUpdateInstanceInputDataOk) {
+      throw new Error(`Couldn't update instance input data for ${instanceId}`);
+    }
+
+    const isRetriggerInstanceInErrorOk =
+      await this.orchestratorService.retriggerInstanceInError({
+        definitionId: instance.processId,
+        instanceId,
+        serviceUrl: instance.serviceUrl,
+        cacheHandler: 'throw',
+      });
+
+    if (!isRetriggerInstanceInErrorOk) {
+      throw new Error(`Couldn't retrigger instance in error for ${instanceId}`);
+    }
 
     return { id: instanceId };
   }

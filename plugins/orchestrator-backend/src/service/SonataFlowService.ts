@@ -197,16 +197,18 @@ export class SonataFlowService {
     definitionId: string;
     serviceUrl: string;
     instanceId: string;
-  }): Promise<void> {
+  }): Promise<boolean> {
     const { definitionId, serviceUrl, instanceId } = args;
     try {
       const urlToFetch = `${serviceUrl}/management/processes/${definitionId}/instances/${instanceId}/retrigger`;
-      await fetch(urlToFetch, {
+      const response = await fetch(urlToFetch, {
         method: 'POST',
       });
+      return response.ok;
     } catch (error) {
       this.logger.error(`Error when retriggering workflow in error: ${error}`);
     }
+    return false;
   }
 
   public async updateInstanceInputData(args: {
@@ -214,17 +216,19 @@ export class SonataFlowService {
     serviceUrl: string;
     instanceId: string;
     inputData: ProcessInstanceVariables;
-  }): Promise<void> {
+  }): Promise<boolean> {
     const { definitionId, serviceUrl, instanceId, inputData } = args;
     try {
       const urlToFetch = `${serviceUrl}/${definitionId}/${instanceId}`;
-      await fetch(urlToFetch, {
+      const response = await fetch(urlToFetch, {
         method: 'PATCH',
         body: JSON.stringify(inputData),
         headers: { 'content-type': 'application/json' },
       });
+      return response.ok;
     } catch (error) {
       this.logger.error(`Error when updating instance input data: ${error}`);
     }
+    return false;
   }
 }

@@ -36,6 +36,12 @@ describe('retriggerInstanceInError', () => {
     orchestratorServiceMock.fetchInstance = jest
       .fn()
       .mockResolvedValue(instance);
+    orchestratorServiceMock.updateInstanceInputData = jest
+      .fn()
+      .mockResolvedValue(true);
+    orchestratorServiceMock.retriggerInstanceInError = jest
+      .fn()
+      .mockResolvedValue(true);
 
     const response = await v1.retriggerInstanceInError(instance.id, inputData);
 
@@ -81,5 +87,48 @@ describe('retriggerInstanceInError', () => {
     expect(
       orchestratorServiceMock.retriggerInstanceInError,
     ).not.toHaveBeenCalled();
+  });
+
+  it('should throw an error if could not update the instance input data', async () => {
+    const instance = createInstance({ state: 'ERROR' });
+
+    orchestratorServiceMock.fetchInstance = jest
+      .fn()
+      .mockResolvedValue(instance);
+    orchestratorServiceMock.updateInstanceInputData = jest
+      .fn()
+      .mockResolvedValue(false);
+
+    const promise = v1.retriggerInstanceInError(instance.id, inputData);
+
+    await expect(promise).rejects.toThrow();
+
+    expect(orchestratorServiceMock.fetchInstance).toHaveBeenCalled();
+    expect(orchestratorServiceMock.updateInstanceInputData).toHaveBeenCalled();
+    expect(
+      orchestratorServiceMock.retriggerInstanceInError,
+    ).not.toHaveBeenCalled();
+  });
+
+  it('should throw an error if could not retrigger the instance', async () => {
+    const instance = createInstance({ state: 'ERROR' });
+
+    orchestratorServiceMock.fetchInstance = jest
+      .fn()
+      .mockResolvedValue(instance);
+    orchestratorServiceMock.updateInstanceInputData = jest
+      .fn()
+      .mockResolvedValue(true);
+    orchestratorServiceMock.retriggerInstanceInError = jest
+      .fn()
+      .mockResolvedValue(false);
+
+    const promise = v1.retriggerInstanceInError(instance.id, inputData);
+
+    await expect(promise).rejects.toThrow();
+
+    expect(orchestratorServiceMock.fetchInstance).toHaveBeenCalled();
+    expect(orchestratorServiceMock.updateInstanceInputData).toHaveBeenCalled();
+    expect(orchestratorServiceMock.retriggerInstanceInError).toHaveBeenCalled();
   });
 });

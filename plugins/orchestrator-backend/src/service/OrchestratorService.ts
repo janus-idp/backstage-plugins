@@ -194,7 +194,7 @@ export class OrchestratorService {
     serviceUrl: string;
     instanceId: string;
     cacheHandler?: CacheHandler;
-  }): Promise<void> {
+  }): Promise<boolean> {
     const { definitionId, cacheHandler } = args;
 
     const isWorkflowAvailable = this.workflowCacheService.isAvailable(
@@ -202,11 +202,9 @@ export class OrchestratorService {
       cacheHandler,
     );
 
-    if (!isWorkflowAvailable) {
-      return;
-    }
-
-    await this.sonataFlowService.retriggerInstanceInError(args);
+    return isWorkflowAvailable
+      ? await this.sonataFlowService.retriggerInstanceInError(args)
+      : false;
   }
 
   public async updateInstanceInputData(args: {
@@ -215,7 +213,7 @@ export class OrchestratorService {
     instanceId: string;
     inputData: ProcessInstanceVariables;
     cacheHandler?: CacheHandler;
-  }): Promise<void> {
+  }): Promise<boolean> {
     const { definitionId, cacheHandler } = args;
 
     const isWorkflowAvailable = this.workflowCacheService.isAvailable(
@@ -223,10 +221,8 @@ export class OrchestratorService {
       cacheHandler,
     );
 
-    if (!isWorkflowAvailable) {
-      return;
-    }
-
-    await this.sonataFlowService.updateInstanceInputData(args);
+    return isWorkflowAvailable
+      ? await this.sonataFlowService.updateInstanceInputData(args)
+      : false;
   }
 }

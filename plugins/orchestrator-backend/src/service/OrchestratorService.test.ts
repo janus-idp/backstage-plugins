@@ -663,9 +663,9 @@ describe('OrchestratorService', () => {
 
     it('should execute the operation when the workflow is available', async () => {
       workflowCacheServiceMock.isAvailable = jest.fn().mockReturnValue(true);
-      sonataFlowServiceMock.retriggerInstanceInError = jest.fn(() =>
-        Promise.resolve(),
-      );
+      sonataFlowServiceMock.retriggerInstanceInError = jest
+        .fn()
+        .mockResolvedValue(true);
 
       await orchestratorService.retriggerInstanceInError({
         definitionId,
@@ -724,9 +724,9 @@ describe('OrchestratorService', () => {
 
     it('should execute the operation when the workflow is available', async () => {
       workflowCacheServiceMock.isAvailable = jest.fn().mockReturnValue(true);
-      sonataFlowServiceMock.updateInstanceInputData = jest.fn(() =>
-        Promise.resolve(),
-      );
+      sonataFlowServiceMock.updateInstanceInputData = jest
+        .fn()
+        .mockResolvedValue(true);
 
       await orchestratorService.updateInstanceInputData({
         definitionId,
