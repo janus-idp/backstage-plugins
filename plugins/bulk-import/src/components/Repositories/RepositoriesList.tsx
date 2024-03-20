@@ -6,6 +6,7 @@ import { makeStyles } from '@material-ui/core';
 
 import { RepositoriesData } from '../../types';
 import { columns } from './RepositoriesListColumns';
+import { RepositoriesListToolbar } from './RepositoriesListToolbar';
 
 const useStyles = makeStyles(theme => ({
   empty: {
@@ -17,20 +18,31 @@ const useStyles = makeStyles(theme => ({
 
 export const RepositoriesList = () => {
   const classes = useStyles();
+  const [addedRepositories, setAddedRepositories] = React.useState<
+    number | undefined
+  >();
   const data: RepositoriesData[] = [];
 
+  const onSearchResultsChange = (searchResults: RepositoriesData[]) => {
+    setAddedRepositories(searchResults.length);
+  };
+
   return (
-    <Table
-      title="Added repositories (0)"
-      options={{ padding: 'default', search: true, paging: true }}
-      data={data}
-      isLoading={false}
-      columns={columns}
-      emptyContent={
-        <div data-testid="repositories-table-empty" className={classes.empty}>
-          No records found
-        </div>
-      }
-    />
+    <>
+      <RepositoriesListToolbar />
+      <Table
+        title={`Added repositories (${addedRepositories ?? data.length})`}
+        options={{ padding: 'default', search: true, paging: true }}
+        data={data}
+        isLoading={false}
+        renderSummaryRow={summary => onSearchResultsChange(summary.data)}
+        columns={columns}
+        emptyContent={
+          <div data-testid="repositories-table-empty" className={classes.empty}>
+            No records found
+          </div>
+        }
+      />
+    </>
   );
 };
