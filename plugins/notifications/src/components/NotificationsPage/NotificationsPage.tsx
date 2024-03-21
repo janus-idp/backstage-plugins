@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 
-import { Page, RoutedTabs } from '@backstage/core-components';
+import { Content, Header, Page, RoutedTabs } from '@backstage/core-components';
 
 import { PersonalNotifications } from '../PersonalNotifications';
 import { SendNotification } from '../SendNotification';
@@ -37,7 +37,10 @@ export const NotificationsPage = () => {
 
   return (
     <Page themeId="tool">
-      <RoutedTabs routes={routes} />
+      <Header title="Notifications" />
+      <Content noPadding>
+        <RoutedTabs routes={routes} />
+      </Content>
     </Page>
   );
 };
