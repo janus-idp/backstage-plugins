@@ -59,7 +59,8 @@
   "resolutions": {
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "vscode-languageserver-types": "3.17.1"
+    "vscode-languageserver-types": "3.17.1",
+    "@typescript-eslint/typescript-estree": "^7.3.1"
   },
   "lint-staged": {
     "*": "turbo run prettier:fix --",
