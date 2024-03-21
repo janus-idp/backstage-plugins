@@ -3,7 +3,10 @@ import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 import { Knex } from 'knex';
 
-import { RoleConditionalPolicyDecision } from '@janus-idp/backstage-plugin-rbac-common';
+import {
+  PermissionAction,
+  RoleConditionalPolicyDecision,
+} from '@janus-idp/backstage-plugin-rbac-common';
 
 const CONDITIONAL_TABLE = 'role-condition-policies';
 
@@ -11,26 +14,29 @@ interface ConditionalPolicyDecisionDAO {
   result: AuthorizeResult.CONDITIONAL;
   id?: number;
   roleEntityRef: string;
+  actions: string;
   pluginId: string;
   resourceType: string;
   conditionsJson: string;
 }
 
 export interface ConditionalStorage {
-  getConditions(
-    roleEntityRef: string,
-    pluginId: string,
-    resourceType: string,
+  filterConditions(
+    roleEntityRef?: string,
+    pluginId?: string,
+    resourceType?: string,
+    actions?: PermissionAction[],
   ): Promise<RoleConditionalPolicyDecision[]>;
   createCondition(
     conditionalDecision: RoleConditionalPolicyDecision,
   ): Promise<number>;
-  findCondition(
+  findUniqueCondition(
     roleEntityRef: string,
     resourceType: string,
+    actions: PermissionAction[],
   ): Promise<RoleConditionalPolicyDecision | undefined>;
   getCondition(id: number): Promise<RoleConditionalPolicyDecision | undefined>;
-  deleteCondition(roleEntityRef: string, id: number): Promise<void>;
+  deleteCondition(id: number): Promise<void>;
   updateCondition(
     id: number,
     conditionalDecision: RoleConditionalPolicyDecision,
@@ -40,10 +46,11 @@ export interface ConditionalStorage {
 export class DataBaseConditionalStorage implements ConditionalStorage {
   public constructor(private readonly knex: Knex<any, any[]>) {}
 
-  async getConditions(
-    roleEntityRef: string,
-    pluginId: string,
-    resourceType: string, // todo add ? where needed...
+  async filterConditions(
+    roleEntityRef?: string,
+    pluginId?: string,
+    resourceType?: string,
+    filterActions?: PermissionAction[] | undefined,
   ): Promise<RoleConditionalPolicyDecision[]> {
     const daoRaws = await this.knex?.table(CONDITIONAL_TABLE).where(builder => {
       if (pluginId) {
@@ -53,7 +60,7 @@ export class DataBaseConditionalStorage implements ConditionalStorage {
         builder.where('resourceType', resourceType);
       }
       if (roleEntityRef) {
-        builder.where('roleEntityRef', resourceType);
+        builder.where('roleEntityRef', roleEntityRef);
       }
     });
 
@@ -62,19 +69,34 @@ export class DataBaseConditionalStorage implements ConditionalStorage {
       conditions = daoRaws.map(dao => this.daoToConditionalDecision(dao));
     }
 
+    if (filterActions && filterActions.length > 0) {
+      return conditions.filter(condition => {
+        return filterActions.every(filterAction =>
+          condition.actions.includes(filterAction),
+        );
+      });
+    }
+
     return conditions;
   }
 
   async createCondition(
     conditionalDecision: RoleConditionalPolicyDecision,
   ): Promise<number> {
-    const condition = await this.findCondition(
+    const condition = await this.findUniqueCondition(
       conditionalDecision.roleEntityRef,
       conditionalDecision.resourceType,
+      conditionalDecision.actions,
     );
     if (condition) {
       throw new ConflictError(
-        `A condition with resource type ${condition.resourceType} has already been stored`,
+        `A condition with resource type ${
+          condition.resourceType
+        } and actions ${JSON.stringify(
+          condition.actions,
+        )} has already been stored for role ${
+          conditionalDecision.roleEntityRef
+        }`,
       );
     }
 
@@ -90,19 +112,28 @@ export class DataBaseConditionalStorage implements ConditionalStorage {
     throw new Error(`Failed to create the condition.`);
   }
 
-  async findCondition(
+  async findUniqueCondition(
     roleEntityRef: string,
     resourceType: string,
+    uniqueActions: PermissionAction[],
   ): Promise<RoleConditionalPolicyDecision | undefined> {
-    const daoRaw = await this.knex
+    const daoRaws = await this.knex
       ?.table(CONDITIONAL_TABLE)
       .where('roleEntityRef', roleEntityRef)
-      .where('resourceType', resourceType)
-      // condition with specified resource type should be unique.
-      .first();
+      .where('resourceType', resourceType);
 
-    if (daoRaw) {
-      return this.daoToConditionalDecision(daoRaw);
+    if (daoRaws) {
+      const conditions = daoRaws.map(daoRaw =>
+        this.daoToConditionalDecision(daoRaw),
+      );
+
+      return conditions.filter(condition => {
+        return (
+          uniqueActions.every(uniqueAction =>
+            condition.actions.includes(uniqueAction),
+          ) && condition.actions.length === uniqueActions.length
+        );
+      })[0];
     }
     return undefined;
   }
@@ -121,16 +152,12 @@ export class DataBaseConditionalStorage implements ConditionalStorage {
     return undefined;
   }
 
-  async deleteCondition(roleEntityRef: string, id: number): Promise<void> {
+  async deleteCondition(id: number): Promise<void> {
     const condition = await this.getCondition(id);
     if (!condition) {
       throw new NotFoundError(`Condition with id ${id} was not found`);
     }
-    await this.knex
-      ?.table(CONDITIONAL_TABLE)
-      .delete()
-      .whereIn('id', [id])
-      .whereIn('roleEntityRef', [roleEntityRef]);
+    await this.knex?.table(CONDITIONAL_TABLE).delete().whereIn('id', [id]);
   }
 
   async updateCondition(
@@ -141,15 +168,24 @@ export class DataBaseConditionalStorage implements ConditionalStorage {
     if (!condition) {
       throw new NotFoundError(`Condition with id ${id} was not found`);
     }
-    if (condition.resourceType !== conditionalDecision.resourceType) {
-      const conflictedCond = await this.findCondition(
-        conditionalDecision.roleEntityRef,
-        conditionalDecision.resourceType,
-      );
-      if (conflictedCond) {
-        throw new ConflictError(
-          `A condition with resource type ${condition.resourceType} has already been stored`,
-        );
+
+    const conditionsForTheSameResource = await this.filterConditions(
+      conditionalDecision.roleEntityRef,
+      undefined,
+      conditionalDecision.resourceType,
+    );
+
+    for (const updateAction of conditionalDecision.actions) {
+      for (const conditionToCompare of conditionsForTheSameResource) {
+        if (conditionToCompare.id === id) {
+          continue;
+        }
+        if (conditionToCompare.actions.includes(updateAction)) {
+          throw new ConflictError(
+            `Found condition with conflicted action '${updateAction}'. Role could have multiple ` +
+              `conditions for the same resource type '${conditionalDecision.resourceType}', but with different action sets.`,
+          );
+        }
       }
     }
 
@@ -169,8 +205,14 @@ export class DataBaseConditionalStorage implements ConditionalStorage {
   private toDAO(
     conditionalDecision: RoleConditionalPolicyDecision,
   ): ConditionalPolicyDecisionDAO {
-    const { result, pluginId, resourceType, conditions, roleEntityRef } =
-      conditionalDecision;
+    const {
+      result,
+      pluginId,
+      resourceType,
+      conditions,
+      roleEntityRef,
+      actions,
+    } = conditionalDecision;
     const conditionsJson = JSON.stringify(conditions);
     return {
       result,
@@ -178,6 +220,7 @@ export class DataBaseConditionalStorage implements ConditionalStorage {
       resourceType,
       conditionsJson,
       roleEntityRef,
+      actions: JSON.stringify(actions),
     };
   }
 
@@ -187,15 +230,25 @@ export class DataBaseConditionalStorage implements ConditionalStorage {
     if (!dao.id) {
       throw new InputError(`Missed id in the dao object: ${dao}`);
     }
-    const { result, pluginId, resourceType, conditionsJson, roleEntityRef } =
-      dao;
+    const {
+      id,
+      result,
+      pluginId,
+      resourceType,
+      conditionsJson,
+      roleEntityRef,
+      actions,
+    } = dao;
+
     const conditions = JSON.parse(conditionsJson);
     return {
+      id,
       result,
       pluginId,
       resourceType,
       conditions,
       roleEntityRef,
+      actions: JSON.parse(actions),
     };
   }
 }
