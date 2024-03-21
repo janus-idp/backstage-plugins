@@ -1,3 +1,10 @@
+## @janus-idp/plugin-notifications [1.1.13](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications@1.1.12...@janus-idp/plugin-notifications@1.1.13) (2024-03-21)
+
+
+### Bug Fixes
+
+* add header to the Notifications page ([#1358](https://github.com/janus-idp/backstage-plugins/issues/1358)) ([d1a75a3](https://github.com/janus-idp/backstage-plugins/commit/d1a75a3c977ad93672a8ca5355ddc99131ec1c34))
+
 ## @janus-idp/plugin-notifications [1.1.12](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications@1.1.11...@janus-idp/plugin-notifications@1.1.12) (2024-03-04)
 
 
