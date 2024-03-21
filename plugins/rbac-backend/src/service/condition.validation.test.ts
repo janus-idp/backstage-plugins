@@ -402,10 +402,12 @@ describe('condition-validation', () => {
 
       it('should validate role-condition.conditions.anyOf without errors', () => {
         const condition: RoleConditionalPolicyDecision = {
+          id: 1,
           pluginId: 'catalog',
           resourceType: 'catalog-entity',
           roleEntityRef: 'role:default/test',
           result: AuthorizeResult.CONDITIONAL,
+          actions: ['read'],
           conditions: {
             anyOf: [
               {
@@ -579,10 +581,12 @@ describe('condition-validation', () => {
 
       it('should success validation role-condition.conditions.allOf', () => {
         const condition: RoleConditionalPolicyDecision = {
+          id: 1,
           pluginId: 'catalog',
           resourceType: 'catalog-entity',
           roleEntityRef: 'role:default/test',
           result: AuthorizeResult.CONDITIONAL,
+          actions: ['read'],
           conditions: {
             allOf: [
               {

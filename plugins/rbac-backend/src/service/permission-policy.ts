@@ -17,7 +17,10 @@ import {
 import { Knex } from 'knex';
 import { Logger } from 'winston';
 
-import { NonEmptyArray } from '@janus-idp/backstage-plugin-rbac-common';
+import {
+  NonEmptyArray,
+  PermissionAction,
+} from '@janus-idp/backstage-plugin-rbac-common';
 
 import { ConditionalStorage } from '../database/conditional-storage';
 import { PolicyMetadataStorage } from '../database/policy-metadata-storage';
@@ -351,7 +354,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
   private async handleConditions(
     userEntityRef: string,
     resourceType: string,
-    action: 'create' | 'read' | 'update' | 'delete' | 'use',
+    action: PermissionAction,
     request: PolicyQuery,
     identityResp?: BackstageIdentityResponse | undefined,
   ): Promise<PolicyDecision | undefined> {
@@ -363,14 +366,16 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     >[] = [];
     let pluginId = '';
     for (const role of roles) {
-      const conditionalDecision = await this.conditionStorage.findCondition(
+      const conditionalDecisions = await this.conditionStorage.filterConditions(
         role,
+        undefined,
         resourceType,
+        [action],
       );
 
-      if (conditionalDecision) {
-        pluginId = conditionalDecision.pluginId;
-        conditions.push(conditionalDecision.conditions);
+      if (conditionalDecisions.length > 0) {
+        pluginId = conditionalDecisions[0].pluginId;
+        conditions.push(conditionalDecisions[0].conditions);
       }
     }
 

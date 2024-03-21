@@ -69,9 +69,9 @@ const tokenManagerMock = {
 };
 
 const conditionalStorage: ConditionalStorage = {
-  getConditions: jest.fn().mockImplementation(),
+  filterConditions: jest.fn().mockImplementation(() => []),
   createCondition: jest.fn().mockImplementation(),
-  findCondition: jest.fn().mockImplementation(),
+  findUniqueCondition: jest.fn().mockImplementation(),
   getCondition: jest.fn().mockImplementation(),
   deleteCondition: jest.fn().mockImplementation(),
   updateCondition: jest.fn().mockImplementation(),
@@ -2027,7 +2027,7 @@ describe('Policy checks for conditional policies', () => {
     );
 
     catalogApi.getEntities.mockReset();
-    (conditionalStorage.findCondition as jest.Mock).mockReset();
+    (conditionalStorage.findUniqueCondition as jest.Mock).mockReset();
   });
 
   it('should execute condition policy', async () => {
@@ -2043,19 +2043,23 @@ describe('Policy checks for conditional policies', () => {
       },
     };
     catalogApi.getEntities.mockReturnValue({ items: [entityMock] });
-    (conditionalStorage.findCondition as jest.Mock).mockReturnValueOnce({
-      pluginId: 'catalog',
-      resourceType: 'catalog-entity',
-      roleEntityRef: 'role:default/test',
-      result: AuthorizeResult.CONDITIONAL,
-      conditions: {
-        rule: 'IS_ENTITY_OWNER',
+    (conditionalStorage.filterConditions as jest.Mock).mockReturnValueOnce([
+      {
+        id: 1,
+        pluginId: 'catalog',
         resourceType: 'catalog-entity',
-        params: {
-          claims: ['group:default/test-group'],
+        actions: ['read'],
+        roleEntityRef: 'role:default/test',
+        result: AuthorizeResult.CONDITIONAL,
+        conditions: {
+          rule: 'IS_ENTITY_OWNER',
+          resourceType: 'catalog-entity',
+          params: {
+            claims: ['group:default/test-group'],
+          },
         },
       },
-    });
+    ]);
 
     const decision = await policy.handle(
       newPolicyQueryWithResourcePermission(
@@ -2109,31 +2113,39 @@ describe('Policy checks for conditional policies', () => {
     catalogApi.getEntities.mockReturnValue({
       items: [entityMock, qaGroupMock],
     });
-    (conditionalStorage.findCondition as jest.Mock)
-      .mockReturnValueOnce({
-        pluginId: 'catalog',
-        resourceType: 'catalog-entity',
-        roleEntityRef: 'role:default/test',
-        result: AuthorizeResult.CONDITIONAL,
-        conditions: {
-          rule: 'IS_ENTITY_OWNER',
+    (conditionalStorage.filterConditions as jest.Mock)
+      .mockReturnValueOnce([
+        {
+          id: 1,
+          pluginId: 'catalog',
           resourceType: 'catalog-entity',
-          params: {
-            claims: ['group:default/test-group'],
+          actions: ['read'],
+          roleEntityRef: 'role:default/test',
+          result: AuthorizeResult.CONDITIONAL,
+          conditions: {
+            rule: 'IS_ENTITY_OWNER',
+            resourceType: 'catalog-entity',
+            params: {
+              claims: ['group:default/test-group'],
+            },
           },
         },
-      })
-      .mockReturnValueOnce({
-        pluginId: 'catalog',
-        resourceType: 'catalog-entity',
-        roleEntityRef: 'role:default/qa',
-        result: AuthorizeResult.CONDITIONAL,
-        conditions: {
-          rule: 'IS_ENTITY_KIND',
+      ])
+      .mockReturnValueOnce([
+        {
+          id: 2,
+          pluginId: 'catalog',
           resourceType: 'catalog-entity',
-          params: { kinds: ['Group', 'User'] },
+          actions: ['read'],
+          roleEntityRef: 'role:default/qa',
+          result: AuthorizeResult.CONDITIONAL,
+          conditions: {
+            rule: 'IS_ENTITY_KIND',
+            resourceType: 'catalog-entity',
+            params: { kinds: ['Group', 'User'] },
+          },
         },
-      });
+      ]);
     const decision = await policy.handle(
       newPolicyQueryWithResourcePermission(
         'catalog.entity.read',

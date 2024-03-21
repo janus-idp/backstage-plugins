@@ -45,8 +45,13 @@ export type PermissionPolicy = {
   policies?: Policy[];
 };
 
-export type RoleConditionalPolicyDecision = ConditionalPolicyDecision & {
-  roleEntityRef: string;
-};
-
 export type NonEmptyArray<T> = [T, ...T[]];
+
+export type PermissionAction = 'create' | 'read' | 'update' | 'delete' | 'use';
+
+export type RoleConditionalPolicyDecision = ConditionalPolicyDecision & {
+  id: number;
+  roleEntityRef: string;
+
+  actions: PermissionAction[];
+};

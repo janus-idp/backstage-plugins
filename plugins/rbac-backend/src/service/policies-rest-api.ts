@@ -29,6 +29,7 @@ import { ParsedQs } from 'qs';
 import { Logger } from 'winston';
 
 import {
+  PermissionAction,
   policyEntityCreatePermission,
   policyEntityDeletePermission,
   policyEntityPermissions,
@@ -47,7 +48,7 @@ import {
   RoleMetadataDao,
   RoleMetadataStorage,
 } from '../database/role-metadata';
-import { deepSortedEqual, policyToString } from '../helper';
+import { deepSortedEqual, isPermissionAction, policyToString } from '../helper';
 import { validateRoleCondition } from './condition-validation';
 import { EnforcerDelegate } from './enforcer-delegate';
 import { PluginPermissionMetadataCollector } from './plugin-endpoints';
@@ -599,10 +600,17 @@ export class PolicesServer {
 
         const pluginId = this.getFirstQuery(req.query.pluginId);
         const resourceType = this.getFirstQuery(req.query.resourceType);
-        const conditions = await this.conditionalStorage.getConditions(
+        const actions = this.getActionQueries(req.query.actions);
+        console.log(
+          `******* ${roleEntityRef}, ${pluginId}, ${resourceType}, ${JSON.stringify(
+            actions,
+          )}`,
+        );
+        const conditions = await this.conditionalStorage.filterConditions(
           roleEntityRef,
           pluginId,
           resourceType,
+          actions,
         );
 
         resp.json(conditions);
@@ -678,14 +686,12 @@ export class PolicesServer {
           throw new NotAllowedError(); // 403
         }
 
-        const roleEntityRef = this.getEntityReference(req, true);
-
         const id: number = parseInt(req.params.id, 10);
         if (isNaN(id)) {
           throw new InputError('Id is not a valid number.');
         }
 
-        await this.conditionalStorage.deleteCondition(roleEntityRef, id);
+        await this.conditionalStorage.deleteCondition(id);
         resp.status(204).end();
       },
     );
@@ -796,6 +802,34 @@ export class PolicesServer {
       roles.push([entity, role.name]);
     }
     return roles;
+  }
+
+  getActionQueries(
+    queryValue: string | string[] | ParsedQs | ParsedQs[] | undefined,
+  ): PermissionAction[] | undefined {
+    if (!queryValue) {
+      return undefined;
+    }
+    if (Array.isArray(queryValue)) {
+      const actions: PermissionAction[] = [];
+      for (const action of queryValue) {
+        if (typeof action === 'string' && isPermissionAction(action)) {
+          actions.push(action);
+        } else {
+          throw new InputError(
+            `Invalid permission action query value: ${action}. Supported values are: 'create' | 'read' | 'update' | 'delete' | 'use'`,
+          );
+        }
+      }
+      return actions;
+    }
+
+    if (typeof queryValue === 'string' && isPermissionAction(queryValue)) {
+      return [queryValue];
+    }
+    throw new InputError(
+      `Invalid permission action query value: ${queryValue}. Supported values are: 'create' | 'read' | 'update' | 'delete' | 'use'`,
+    );
   }
 
   getFirstQuery(

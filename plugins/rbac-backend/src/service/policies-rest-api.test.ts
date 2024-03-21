@@ -150,9 +150,9 @@ const policyMetadataStorageMock: PolicyMetadataStorage = {
 };
 
 const conditionalStorage = {
-  getConditions: jest.fn().mockImplementation(),
+  filterConditions: jest.fn().mockImplementation(),
   createCondition: jest.fn().mockImplementation(),
-  findCondition: jest.fn().mockImplementation(),
+  findUniqueCondition: jest.fn().mockImplementation(),
   getCondition: jest.fn().mockImplementation(),
   deleteCondition: jest.fn().mockImplementation(),
   updateCondition: jest.fn().mockImplementation(),
@@ -2490,9 +2490,11 @@ describe('REST policies api', () => {
   describe('Conditions REST api', () => {
     const conditions: RoleConditionalPolicyDecision[] = [
       {
+        id: 1,
         pluginId: 'catalog',
         roleEntityRef: 'role:default/test',
         resourceType: 'catalog-entity',
+        actions: ['read'],
         result: AuthorizeResult.CONDITIONAL,
         conditions: {
           rule: 'IS_ENTITY_OWNER',
@@ -2503,7 +2505,7 @@ describe('REST policies api', () => {
     ];
 
     beforeEach(() => {
-      conditionalStorage.getConditions = jest
+      conditionalStorage.filterConditions = jest
         .fn()
         .mockImplementation(async () => {
           return conditions;
@@ -2545,7 +2547,7 @@ describe('REST policies api', () => {
       });
 
       it('should be returned condition decision by pluginId', async () => {
-        conditionalStorage.getConditions = jest
+        conditionalStorage.filterConditions = jest
           .fn()
           .mockImplementation(
             async (
@@ -2567,7 +2569,7 @@ describe('REST policies api', () => {
       });
 
       it('should be returned empty condition decision list by pluginId', async () => {
-        conditionalStorage.getConditions = jest
+        conditionalStorage.filterConditions = jest
           .fn()
           .mockImplementation(
             async (
@@ -2589,7 +2591,7 @@ describe('REST policies api', () => {
       });
 
       it('should be returned condition decision by resourceType', async () => {
-        conditionalStorage.getConditions = jest
+        conditionalStorage.filterConditions = jest
           .fn()
           .mockImplementation(
             async (
@@ -2772,9 +2774,11 @@ describe('REST policies api', () => {
           });
 
         const roleCondition: RoleConditionalPolicyDecision = {
+          id: 1,
           pluginId: 'catalog',
           roleEntityRef: 'role:default/test',
           resourceType: 'catalog-entity',
+          actions: ['read'],
           result: AuthorizeResult.CONDITIONAL,
           conditions: {
             rule: 'IS_ENTITY_OWNER',
@@ -2832,9 +2836,11 @@ describe('REST policies api', () => {
           { result: AuthorizeResult.ALLOW },
         ]);
         const conditionDecision: RoleConditionalPolicyDecision = {
+          id: 1,
           pluginId: 'catalog',
           roleEntityRef: 'role:default/test',
           resourceType: 'catalog-entity',
+          actions: ['read'],
           result: AuthorizeResult.CONDITIONAL,
           conditions: {
             rule: 'IS_ENTITY_OWNER',
