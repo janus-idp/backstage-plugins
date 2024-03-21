@@ -30,31 +30,23 @@ export async function createNotification(
   let isUser = false;
 
   // validate users
-  if (Array.isArray(req.targetGroups) && req.targetGroups.length > 0) {
+  if (
+    req.targetGroups &&
+    Array.isArray(req.targetGroups) &&
+    req.targetGroups.length > 0
+  ) {
     isUser = true;
-    const promises = req.targetGroups.map(group => {
-      return catalogClient.getEntityByRef(`group:${group}`).then(groupRef => {
-        if (!groupRef) {
-          throw new Error(`group '${group}' does not exist`);
-        }
-      });
-    });
-
-    await Promise.all(promises);
+    await validateUsersGroups(true, req.targetGroups, catalogClient);
   }
 
   // validate groups
-  if (Array.isArray(req.targetUsers) && req.targetUsers.length > 0) {
+  if (
+    req.targetUsers &&
+    Array.isArray(req.targetUsers) &&
+    req.targetUsers.length > 0
+  ) {
     isUser = true;
-    const promises = req.targetUsers.map(user => {
-      return catalogClient.getEntityByRef(`user:${user}`).then(userRef => {
-        if (!userRef) {
-          throw new Error(`user '${user}' does not exist`);
-        }
-      });
-    });
-
-    await Promise.all(promises);
+    await validateUsersGroups(false, req.targetUsers, catalogClient);
   }
 
   // validate actions
@@ -395,6 +387,27 @@ function createQuery(
   return query;
 }
 
+async function validateUsersGroups(
+  isUsers: boolean,
+  names: string[],
+  catalogClient: CatalogClient,
+) {
+  const type: string = isUsers ? 'user' : 'group';
+  const promises = names.map(name => {
+    if (!name.includes('/')) {
+      throw new Error('users and groups must be of the form: namespace/name');
+    }
+
+    return catalogClient.getEntityByRef(`${type}:${name}`).then(ref => {
+      if (!ref) {
+        throw new Error(`${type} '${name}' does not exist`);
+      }
+    });
+  });
+
+  await Promise.all(promises);
+}
+
 function getUserGroups(
   catalogClient: CatalogClient,
   user: string,
@@ -408,12 +421,21 @@ function getUserGroups(
       return userRef.spec.memberOf.map(value => {
         if (value) {
           const strValue = value.toString();
+          let groupName: string;
+          // remove the type prefix
           const splits = strValue.split(':', 2);
           if (splits.length === 2) {
-            return splits[1];
+            groupName = splits[1];
+          } else {
+            groupName = splits[0];
           }
 
-          return splits[0];
+          // add namespace if it is missing
+          if (!groupName.includes('/')) {
+            groupName = `${userRef.metadata.namespace}/${groupName}`;
+          }
+
+          return groupName;
         }
         return '';
       });
