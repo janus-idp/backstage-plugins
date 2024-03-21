@@ -1,3 +1,10 @@
+## @janus-idp/plugin-notifications-backend [1.4.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications-backend@1.3.6...@janus-idp/plugin-notifications-backend@1.4.0) (2024-03-21)
+
+
+### Features
+
+* **notifications:** require users and groups to be of the form namespace/name ([#1352](https://github.com/janus-idp/backstage-plugins/issues/1352)) ([5e54670](https://github.com/janus-idp/backstage-plugins/commit/5e546706fb5340a174e825d762e5e5cbc733bbcf))
+
 ## @janus-idp/plugin-notifications-backend [1.3.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications-backend@1.3.5...@janus-idp/plugin-notifications-backend@1.3.6) (2024-03-11)
 
 
