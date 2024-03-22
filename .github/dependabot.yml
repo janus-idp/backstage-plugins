@@ -26,3 +26,20 @@ updates:
       # pin to version that isn't broken - see https://github.com/RoadieHQ/roadie-backstage-plugins/issues/1238 https://github.com/janus-idp/backstage-showcase/pull/947 https://github.com/janus-idp/backstage-showcase/pull/1095
       - dependency-name: "backstage-plugin-argo-cd"
         versions: ['>2.4.1']
+
+  # repeat for the 1.1.x branch
+  - package-ecosystem: "npm"
+    directory: "/" # for a monorepo, use root package.json and yarn.lock files
+    schedule:
+      interval: "daily"
+    target-branch: "1.1.x"
+    ignore:
+      # pin to @keycloak/keycloak-admin-client <19 - see https://github.com/janus-idp/backstage-plugins/issues/47 https://github.com/janus-idp/backstage-plugins/issues/1046
+      - dependency-name: "keycloak-admin-client"
+        versions: ['> 18']
+      # pin to version that keycloak 18 needs
+      - dependency-name: "axios"
+        versions: ['>0.26.1']
+      # pin to version that isn't broken - see https://github.com/RoadieHQ/roadie-backstage-plugins/issues/1238 https://github.com/janus-idp/backstage-showcase/pull/947 https://github.com/janus-idp/backstage-showcase/pull/1095
+      - dependency-name: "backstage-plugin-argo-cd"
+        versions: ['>2.4.1']
