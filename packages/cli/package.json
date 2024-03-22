@@ -63,7 +63,7 @@
     "fork-ts-checker-webpack-plugin": "^7.0.0-alpha.8",
     "fs-extra": "^10.1.0",
     "handlebars": "^4.7.7",
-    "html-webpack-plugin": "^5.3.1",
+    "html-webpack-plugin": "^5.6.0",
     "inquirer": "^8.2.0",
     "lodash": "^4.17.21",
     "mini-css-extract-plugin": "^2.4.2",
