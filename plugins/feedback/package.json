@@ -34,7 +34,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.61",
     "@one-platform/opc-feedback": "0.1.1-alpha",
-    "axios": "^1.6.4",
+    "axios": "^1.6.1",
     "react-use": "^17.2.4"
   },
   "peerDependencies": {
