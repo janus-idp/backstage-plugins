@@ -1,5 +1,7 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
 
+export const ENTITY = 'entity';
+
 export interface KialiError {
   detail: string;
   error: string;

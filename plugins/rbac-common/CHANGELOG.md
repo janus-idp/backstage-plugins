@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac-common [1.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-common@1.2.1...@janus-idp/backstage-plugin-rbac-common@1.3.0) (2024-02-21)
+
+
+### Features
+
+* **rbac:** backend part - store role description to the database  ([#1178](https://github.com/janus-idp/backstage-plugins/issues/1178)) ([ec8b1c2](https://github.com/janus-idp/backstage-plugins/commit/ec8b1c27cce5c36997f84a068dc4cc5cc542f428))
+
 ## @janus-idp/backstage-plugin-rbac-common [1.2.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-common@1.2.0...@janus-idp/backstage-plugin-rbac-common@1.2.1) (2024-02-02)
 
 

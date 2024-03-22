@@ -1,4 +1,5 @@
 import { createServiceBuilder, UrlReader } from '@backstage/backend-common';
+import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
@@ -19,6 +20,7 @@ export interface ServerOptions {
   discovery: DiscoveryApi;
   catalogApi: CatalogApi;
   urlReader: UrlReader;
+  scheduler: PluginTaskScheduler;
 }
 
 export async function startStandaloneServer(
@@ -28,11 +30,11 @@ export async function startStandaloneServer(
   logger.debug('Starting application server...');
   const router = await createRouter({
     logger: logger,
-    eventBroker: options.eventBroker,
     config: options.config,
     discovery: options.discovery,
     catalogApi: options.catalogApi,
     urlReader: options.urlReader,
+    scheduler: options.scheduler,
   });
 
   let service = createServiceBuilder(module)

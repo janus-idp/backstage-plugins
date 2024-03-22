@@ -4,7 +4,6 @@ import { Logger } from 'winston';
 import {
   fromWorkflowSource,
   getWorkflowCategory,
-  Job,
   parseWorkflowVariables,
   ProcessInstance,
   ProcessInstanceVariables,
@@ -13,6 +12,9 @@ import {
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { ErrorBuilder } from '../helpers/errorBuilder';
+import { buildGraphQlQuery } from '../helpers/queryBuilder';
+import { Pagination } from '../types/pagination';
+import { FETCH_PROCESS_INSTANCES_SORT_FIELD } from './constants';
 
 export class DataIndexService {
   private client: Client;
@@ -26,7 +28,6 @@ export class DataIndexService {
     }
 
     this.client = this.getNewGraphQLClient();
-    this.logger.info('DataIndexService Initialized');
   }
 
   private getNewGraphQLClient(): Client {
@@ -37,58 +38,99 @@ export class DataIndexService {
     });
   }
 
-  public async abortWorkflowInstance(workflowId: string) {
-    this.logger.info(`Aborting workflow instance ${workflowId}`);
+  public async abortWorkflowInstance(instanceId: string): Promise<void> {
+    this.logger.info(`Aborting workflow instance ${instanceId}`);
     const ProcessInstanceAbortMutationDocument = gql`
       mutation ProcessInstanceAbortMutation($id: String) {
         ProcessInstanceAbort(id: $id)
       }
     `;
 
-    const result = await this.client
-      .mutation(ProcessInstanceAbortMutationDocument, { id: workflowId })
-      .toPromise();
+    const result = await this.client.mutation(
+      ProcessInstanceAbortMutationDocument,
+      { id: instanceId },
+    );
+
+    this.logger.debug(
+      `Abort workflow instance result: ${JSON.stringify(result)}`,
+    );
 
     if (result.error) {
-      this.logger.error(
-        `Error aborting workflow instance ${workflowId}: ${result.error}`,
+      throw new Error(
+        `Error aborting workflow instance ${instanceId}: ${result.error}`,
       );
     }
-
-    this.logger.debug(`Successfully aborted workflow instance ${workflowId}`);
-    return result;
+    this.logger.debug(`Successfully aborted workflow instance ${instanceId}`);
   }
 
-  public async getWorkflowDefinition(
+  public async fetchWorkflowInfo(
     definitionId: string,
-  ): Promise<WorkflowInfo> {
+  ): Promise<WorkflowInfo | undefined> {
     const graphQlQuery = `{ ProcessDefinitions ( where: {id: {equal: "${definitionId}" } } ) { id, name, version, type, endpoint, serviceUrl, source } }`;
 
     const result = await this.client.query(graphQlQuery, {});
+
+    this.logger.debug(
+      `Get workflow definition result: ${JSON.stringify(result)}`,
+    );
 
     if (result.error) {
       this.logger.error(`Error fetching workflow definition ${result.error}`);
       throw result.error;
     }
-    return (result.data.ProcessDefinitions as WorkflowInfo[])[0];
+
+    const processDefinitions = result.data.ProcessDefinitions as WorkflowInfo[];
+
+    if (processDefinitions.length === 0) {
+      this.logger.info(`No workflow definition found for ${definitionId}`);
+      return undefined;
+    }
+
+    return processDefinitions[0];
   }
 
-  public async getWorkflowDefinitions(): Promise<WorkflowInfo[]> {
-    const QUERY = `
-        query ProcessDefinitions {
-            ProcessDefinitions {
-                id
-                name
-                version
-                type
-                endpoint
-                serviceUrl
-            }
-        }
-      `;
+  public async fetchWorkflowServiceUrls(): Promise<Record<string, string>> {
+    const graphQlQuery = `{ ProcessDefinitions { id, serviceUrl } }`;
 
-    this.logger.info(`getWorkflowDefinitions() called:  ${this.dataIndexUrl}`);
-    const result = await this.client.query(QUERY, {});
+    const result = await this.client.query(graphQlQuery, {});
+
+    this.logger.debug(
+      `Get workflow service urls result: ${JSON.stringify(result)}`,
+    );
+
+    if (result.error) {
+      this.logger.error(`Error fetching workflow service urls ${result.error}`);
+      throw result.error;
+    }
+
+    const processDefinitions = result.data.ProcessDefinitions as WorkflowInfo[];
+    return processDefinitions
+      .filter(definition => definition.serviceUrl)
+      .map(definition => ({ [definition.id]: definition.serviceUrl! }))
+      .reduce((acc, curr) => ({ ...acc, ...curr }), {});
+  }
+
+  public async fetchWorkflowInfos(args: {
+    definitionIds?: string[];
+    pagination?: Pagination;
+  }): Promise<WorkflowInfo[]> {
+    this.logger.info(`fetchWorkflowInfos() called: ${this.dataIndexUrl}`);
+    const { definitionIds, pagination } = args;
+
+    const graphQlQuery = buildGraphQlQuery({
+      type: 'ProcessDefinitions',
+      queryBody: 'id, name, version, type, endpoint, serviceUrl, source',
+      whereClause: definitionIds
+        ? `id: {in: ${JSON.stringify(definitionIds)}}`
+        : undefined,
+      pagination,
+    });
+    this.logger.debug(`GraphQL query: ${graphQlQuery}`);
+    const result = await this.client.query(graphQlQuery, {});
+
+    this.logger.debug(
+      `Get workflow definitions result: ${JSON.stringify(result)}`,
+    );
 
     if (result.error) {
       this.logger.error(
@@ -100,18 +142,42 @@ export class DataIndexService {
     return result.data.ProcessDefinitions;
   }
 
-  public async fetchProcessInstances(): Promise<ProcessInstance[] | undefined> {
-    const graphQlQuery =
-      '{ ProcessInstances ( orderBy: { start: ASC }, where: {processId: {isNull: false} } ) { id, processName, processId, businessKey, state, start, end, nodes { id }, variables, parentProcessInstance {id, processName, businessKey} } }';
+  public async fetchInstances(args: {
+    definitionIds?: string[];
+    pagination?: Pagination;
+  }): Promise<ProcessInstance[]> {
+    const { pagination, definitionIds } = args;
+    if (pagination) pagination.sortField ??= FETCH_PROCESS_INSTANCES_SORT_FIELD;
 
-    const response = await this.client.query(graphQlQuery, {});
+    const processIdNotNullCondition = 'processId: {isNull: false}';
+    const definitionIdsCondition = definitionIds
+      ? `processId: {in: ${JSON.stringify(definitionIds)}}`
+      : undefined;
+    const whereClause = definitionIdsCondition
+      ? `and: [{${processIdNotNullCondition}}, {${definitionIdsCondition}}]`
+      : processIdNotNullCondition;
 
-    if (response.error) {
-      this.logger.error(`Error when fetching instances: ${response.error}`);
-      throw response.error;
+    const graphQlQuery = buildGraphQlQuery({
+      type: 'ProcessInstances',
+      queryBody:
+        'id, processName, processId, businessKey, state, start, end, nodes { id }, variables, parentProcessInstance {id, processName, businessKey}',
+      whereClause,
+      pagination,
+    });
+    this.logger.debug(`GraphQL query: ${graphQlQuery}`);
+
+    const result = await this.client.query(graphQlQuery, {});
+
+    this.logger.debug(
+      `Fetch process instances result: ${JSON.stringify(result)}`,
+    );
+
+    if (result.error) {
+      this.logger.error(`Error when fetching instances: ${result.error}`);
+      throw result.error;
     }
 
-    const processInstancesSrc = response.data
+    const processInstancesSrc = result.data
       .ProcessInstances as ProcessInstance[];
 
     const processInstances = await Promise.all(
@@ -122,50 +188,86 @@ export class DataIndexService {
     return processInstances;
   }
 
+  public async fetchInstancesTotalCount(
+    definitionIds?: string[],
+  ): Promise<number> {
+    const graphQlQuery = buildGraphQlQuery({
+      type: 'ProcessInstances',
+      queryBody: 'id',
+      whereClause: definitionIds
+        ? `processId: {in: ${JSON.stringify(definitionIds)}}`
+        : undefined,
+    });
+    this.logger.debug(`GraphQL query: ${graphQlQuery}`);
+    const result = await this.client.query(graphQlQuery, {});
+
+    if (result.error) {
+      this.logger.error(
+        `Error when fetching instances total count: ${result.error}`,
+      );
+      throw result.error;
+    }
+
+    const idArr = result.data.ProcessInstances as ProcessInstance[];
+
+    return idArr.length;
+  }
+
   private async getWorkflowDefinitionFromInstance(instance: ProcessInstance) {
-    const workflowItem: WorkflowInfo = await this.getWorkflowDefinition(
-      instance.processId,
-    );
-    if (!workflowItem?.source) {
+    const workflowInfo = await this.fetchWorkflowInfo(instance.processId);
+    if (!workflowInfo?.source) {
       throw new Error(
         `Workflow defintion is required to fetch instance ${instance.id}`,
       );
     }
     const workflowDefinitionSrc: WorkflowDefinition = fromWorkflowSource(
-      workflowItem.source,
+      workflowInfo.source,
     );
-    if (workflowItem) {
+    if (workflowInfo) {
       instance.category = getWorkflowCategory(workflowDefinitionSrc);
-      instance.description = workflowItem.description;
+      instance.description = workflowInfo.description;
     }
     return instance;
   }
 
   public async fetchWorkflowSource(
-    workflowId: string,
+    definitionId: string,
   ): Promise<string | undefined> {
-    const graphQlQuery = `{ ProcessDefinitions ( where: {id: {equal: "${workflowId}" } } ) { id, source } }`;
+    const graphQlQuery = `{ ProcessDefinitions ( where: {id: {equal: "${definitionId}" } } ) { id, source } }`;
 
-    const response = await this.client.query(graphQlQuery, {});
+    const result = await this.client.query(graphQlQuery, {});
 
-    if (response.error) {
-      this.logger.error(
-        `Error when fetching workflow source: ${response.error}`,
-      );
+    this.logger.debug(
+      `Fetch workflow source result: ${JSON.stringify(result)}`,
+    );
+
+    if (result.error) {
+      this.logger.error(`Error when fetching workflow source: ${result.error}`);
       return undefined;
     }
 
-    return response.data.ProcessDefinitions[0].source;
+    const processDefinitions = result.data.ProcessDefinitions as WorkflowInfo[];
+
+    if (processDefinitions.length === 0) {
+      this.logger.info(`No workflow source found for ${definitionId}`);
+      return undefined;
+    }
+
+    return processDefinitions[0].source;
   }
 
-  public async fetchWorkflowInstances(
-    workflowId: string,
-    limit: number,
-    offset: number,
-  ): Promise<ProcessInstance[]> {
-    const graphQlQuery = `{ ProcessInstances(where: {processId: {equal: "${workflowId}" } }, pagination: {limit: ${limit}, offset: ${offset}}) { processName, state, start, end } }`;
+  public async fetchInstancesByDefinitionId(args: {
+    definitionId: string;
+    limit: number;
+    offset: number;
+  }): Promise<ProcessInstance[]> {
+    const graphQlQuery = `{ ProcessInstances(where: {processId: {equal: "${args.definitionId}" } }, pagination: {limit: ${args.limit}, offset: ${args.offset}}) { processName, state, start, end } }`;
 
     const result = await this.client.query(graphQlQuery, {});
+
+    this.logger.debug(
+      `Fetch workflow instances result: ${JSON.stringify(result)}`,
+    );
 
     if (result.error) {
       this.logger.error(
@@ -177,27 +279,16 @@ export class DataIndexService {
     return result.data.ProcessInstances;
   }
 
-  public async fetchProcessInstanceJobs(
-    instanceId: string,
-  ): Promise<Job[] | undefined> {
-    const graphQlQuery = `{ Jobs (where: { processInstanceId: { equal: "${instanceId}" } }) { id, processId, processInstanceId, rootProcessId, status, expirationTime, priority, callbackEndpoint, repeatInterval, repeatLimit, scheduledId, retries, endpoint, nodeInstanceId, executionCounter } }`;
-
-    const result = await this.client.query(graphQlQuery, {});
-
-    if (result.error) {
-      this.logger.error(`Error when fetching jobs instances: ${result.error}`);
-      throw result.error;
-    }
-
-    return result.data.Jobs;
-  }
-
-  public async fetchProcessInstanceVariables(
+  public async fetchInstanceVariables(
     instanceId: string,
   ): Promise<ProcessInstanceVariables | undefined> {
     const graphQlQuery = `{ ProcessInstances (where: { id: {equal: "${instanceId}" } } ) { variables } }`;
 
     const result = await this.client.query(graphQlQuery, {});
+
+    this.logger.debug(
+      `Fetch process instance variables result: ${JSON.stringify(result)}`,
+    );
 
     if (result.error) {
       this.logger.error(
@@ -206,17 +297,52 @@ export class DataIndexService {
       throw result.error;
     }
 
-    const variables = result.data.ProcessInstances.pop().variables;
+    const processInstances = result.data.ProcessInstances as ProcessInstance[];
 
-    return parseWorkflowVariables(variables);
+    if (processInstances.length === 0) {
+      return undefined;
+    }
+
+    return parseWorkflowVariables(processInstances[0].variables);
   }
 
-  public async fetchProcessInstance(
+  public async fetchDefinitionIdByInstanceId(
+    instanceId: string,
+  ): Promise<string | undefined> {
+    const graphQlQuery = `{ ProcessInstances (where: { id: {equal: "${instanceId}" } } ) { processId } }`;
+
+    const result = await this.client.query(graphQlQuery, {});
+
+    this.logger.debug(
+      `Fetch process id from instance result: ${JSON.stringify(result)}`,
+    );
+
+    if (result.error) {
+      this.logger.error(
+        `Error when fetching process id from instance: ${result.error}`,
+      );
+      throw result.error;
+    }
+
+    const processInstances = result.data.ProcessInstances as ProcessInstance[];
+
+    if (processInstances.length === 0) {
+      return undefined;
+    }
+
+    return processInstances[0].processId;
+  }
+
+  public async fetchInstance(
     instanceId: string,
   ): Promise<ProcessInstance | undefined> {
     const graphQlQuery = `{ ProcessInstances (where: { id: {equal: "${instanceId}" } } ) { id, processName, processId, serviceUrl, businessKey, state, start, end, nodes { id, nodeId, definitionId, type, name, enter, exit }, variables, parentProcessInstance {id, processName, businessKey}, error { nodeDefinitionId, message} } }`;
 
     const result = await this.client.query(graphQlQuery, {});
+
+    this.logger.debug(
+      `Fetch process instance result: ${JSON.stringify(result)}`,
+    );
 
     if (result.error) {
       this.logger.error(
@@ -225,19 +351,24 @@ export class DataIndexService {
       throw result.error;
     }
 
-    const instance = (result.data.ProcessInstances as ProcessInstance[])[0];
-    const workflowItem: WorkflowInfo = await this.getWorkflowDefinition(
-      instance.processId,
-    );
-    if (!workflowItem?.source) {
+    const processInstances = result.data.ProcessInstances as ProcessInstance[];
+
+    if (processInstances.length === 0) {
+      return undefined;
+    }
+
+    const instance = processInstances[0];
+
+    const workflowInfo = await this.fetchWorkflowInfo(instance.processId);
+    if (!workflowInfo?.source) {
       throw new Error(
         `Workflow defintion is required to fetch instance ${instance.id}`,
       );
     }
     const workflowDefinitionSrc: WorkflowDefinition = fromWorkflowSource(
-      workflowItem.source,
+      workflowInfo.source,
     );
-    if (workflowItem) {
+    if (workflowInfo) {
       instance.category = getWorkflowCategory(workflowDefinitionSrc);
       instance.description = workflowDefinitionSrc.description;
     }

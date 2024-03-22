@@ -20,7 +20,7 @@ jobs:
       - name: Determine changes
         id: scan
         env:
-          HEAD: ${{ github.event.pull_request.head.sha }}
+          HEAD: ${{ github.sha }}
           BASE: ${{ github.event.pull_request.base.sha }}
         run: |
           root=$(pwd)

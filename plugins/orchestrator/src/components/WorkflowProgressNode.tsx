@@ -14,7 +14,7 @@ import { Paragraph } from './Paragraph';
 import { WorkflowProgressNodeModel } from './WorkflowProgressNodeModel';
 
 const WorkflowProgressNodeIcon: React.FC<{
-  status: WorkflowProgressNodeModel['status'];
+  status?: WorkflowProgressNodeModel['status'];
   error?: WorkflowProgressNodeModel['error'];
 }> = ({ status, error }) => {
   const color = useWorkflowInstanceStateColors(status);
@@ -56,6 +56,13 @@ const WorkflowProgressNodeIcon: React.FC<{
       return (
         <Tooltip title="Suspended">
           <PauseCircleIcon className={color} />
+        </Tooltip>
+      );
+    }
+    case 'PENDING': {
+      return (
+        <Tooltip title="Pending">
+          <HourglassTopIcon className={color} />
         </Tooltip>
       );
     }

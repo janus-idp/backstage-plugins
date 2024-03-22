@@ -43,8 +43,8 @@ export class PluginPermissionMetadataCollector {
   constructor(
     private readonly discovery: PluginEndpointDiscovery,
     private readonly pluginIdProvider: PluginIdProvider,
+    private readonly logger: Logger,
     config: Config,
-    logger: Logger,
   ) {
     this.pluginIds = this.pluginIdProvider.getPluginIds();
     this.urlReader = UrlReaders.default({
@@ -54,10 +54,10 @@ export class PluginPermissionMetadataCollector {
     });
   }
 
-  async getPluginConditionRules(): Promise<
-    PluginMetadataResponseSerializedRule[]
-  > {
-    const pluginMetadata = await this.getPluginMetaData();
+  async getPluginConditionRules(
+    token: string | undefined,
+  ): Promise<PluginMetadataResponseSerializedRule[]> {
+    const pluginMetadata = await this.getPluginMetaData(token);
 
     return pluginMetadata
       .filter(metadata => metadata.metaDataResponse.rules.length > 0)
@@ -69,8 +69,10 @@ export class PluginPermissionMetadataCollector {
       });
   }
 
-  async getPluginPolicies(): Promise<PluginPermissionMetaData[]> {
-    const pluginMetadata = await this.getPluginMetaData();
+  async getPluginPolicies(
+    token: string | undefined,
+  ): Promise<PluginPermissionMetaData[]> {
+    const pluginMetadata = await this.getPluginMetaData(token);
 
     return pluginMetadata
       .filter(metadata => metadata.metaDataResponse.permissions !== undefined)
@@ -88,16 +90,24 @@ export class PluginPermissionMetadataCollector {
     return [{ reader: new FetchUrlReader(), predicate: (_url: URL) => true }];
   };
 
-  private async getPluginMetaData(): Promise<PluginMetadataResponse[]> {
+  private async getPluginMetaData(
+    token: string | undefined,
+  ): Promise<PluginMetadataResponse[]> {
     let pluginResponses: PluginMetadataResponse[] = [];
 
     for (const pluginId of this.pluginIds) {
       const baseEndpoint = await this.discovery.getBaseUrl(pluginId);
       const wellKnownURL = `${baseEndpoint}/.well-known/backstage/permissions/metadata`;
       try {
-        const permResp = await this.urlReader.readUrl(wellKnownURL);
+        const permResp = await this.urlReader.readUrl(wellKnownURL, { token });
         const permMetaDataRaw = (await permResp.buffer()).toString();
-        const permMetaData = JSON.parse(permMetaDataRaw);
+        let permMetaData;
+        try {
+          permMetaData = JSON.parse(permMetaDataRaw);
+        } catch (err) {
+          // workaround for https://issues.redhat.com/browse/RHIDP-1456
+          continue;
+        }
         if (permMetaData) {
           pluginResponses = [
             ...pluginResponses,
@@ -108,9 +118,12 @@ export class PluginPermissionMetadataCollector {
           ];
         }
       } catch (err) {
-        if (!isError(err) || err.name !== 'NotFoundError') {
-          throw err;
+        if (isError(err) && err.name === 'NotFoundError') {
+          continue;
         }
+        this.logger.error(
+          `Failed to retrieve permission metadata for ${pluginId}. ${err}`,
+        );
       }
     }
     return pluginResponses;

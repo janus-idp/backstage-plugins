@@ -100,7 +100,19 @@ const policyMetadataStorageMock: PolicyMetadataStorage = {
         return [];
       },
     ),
-  findPolicyMetadata: jest.fn().mockImplementation(),
+  findPolicyMetadata: jest
+    .fn()
+    .mockImplementation(
+      async (
+        _policy: string[],
+        _trx: Knex.Knex.Transaction,
+      ): Promise<PermissionPolicyMetadata> => {
+        const test: PermissionPolicyMetadata = {
+          source: 'csv-file',
+        };
+        return test;
+      },
+    ),
   createPolicyMetadata: jest.fn().mockImplementation(),
   removePolicyMetadata: jest.fn().mockImplementation(),
 };
@@ -111,9 +123,15 @@ async function createEnforcer(
   logger: Logger,
   tokenManager: TokenManager,
 ): Promise<Enforcer> {
+  const catalogDBClient = Knex.knex({ client: MockClient });
   const enf = await newEnforcer(theModel, adapter);
 
-  const rm = new BackstageRoleManager(catalogApi, logger, tokenManager);
+  const rm = new BackstageRoleManager(
+    catalogApi,
+    logger,
+    tokenManager,
+    catalogDBClient,
+  );
   enf.setRoleManager(rm);
   enf.enableAutoBuildRoleLinks(false);
   await enf.buildRoleLinks();
@@ -431,7 +449,12 @@ describe('RBACPermissionPolicy Tests', () => {
 
       expect(await enf.getAllRoles()).toEqual(allEnfRoles);
 
-      expect(await enf.getPolicy()).toEqual(allEnfPolicies);
+      const nonAdminPolicies = (await enf.getPolicy()).filter(
+        (policy: string[]) => {
+          return policy[0] !== 'role:default/rbac_admin';
+        },
+      );
+      expect(nonAdminPolicies).toEqual(allEnfPolicies);
 
       // policy metadata should to be removed
       expect(policyMetadataStorage.removePolicyMetadata).toHaveBeenCalledTimes(
@@ -495,7 +518,10 @@ describe('RBACPermissionPolicy Tests', () => {
 
       expect(await enf.getGroupingPolicy()).toEqual(allEnfGroupPolicies);
 
-      expect(await enf.getPolicy()).toEqual(allEnfPolicies);
+      const nonAdminPolicies = (await enf.getPolicy()).filter((p: string[]) => {
+        return p[0] !== 'role:default/rbac_admin';
+      });
+      expect(nonAdminPolicies).toEqual(allEnfPolicies);
 
       // policy metadata should to be removed
       expect(policyMetadataStorage.removePolicyMetadata).toHaveBeenCalledTimes(
@@ -586,7 +612,12 @@ describe('RBACPermissionPolicy Tests', () => {
 
       expect(await enf.getGroupingPolicy()).toEqual(allEnfGroupPolicies);
 
-      expect(await enf.getPolicy()).toEqual(allEnfPolicies);
+      const nonAdminPolicies = (await enf.getPolicy()).filter(
+        (policy: string[]) => {
+          return policy[0] !== 'role:default/rbac_admin';
+        },
+      );
+      expect(nonAdminPolicies).toEqual(allEnfPolicies);
 
       // policy metadata should to be removed
       expect(policyMetadataStorage.removePolicyMetadata).toHaveBeenCalledTimes(
@@ -667,7 +698,12 @@ describe('RBACPermissionPolicy Tests', () => {
 
       expect(await enf.getGroupingPolicy()).toEqual(allEnfGroupPolicies);
 
-      expect(await enf.getPolicy()).toEqual(allEnfPolicies);
+      const nonAdminPolicies = (await enf.getPolicy()).filter(
+        (policy: string[]) => {
+          return policy[0] !== 'role:default/rbac_admin';
+        },
+      );
+      expect(nonAdminPolicies).toEqual(allEnfPolicies);
 
       // policy metadata should to be removed
       expect(policyMetadataStorage.removePolicyMetadata).toHaveBeenCalledTimes(
@@ -731,7 +767,12 @@ describe('RBACPermissionPolicy Tests', () => {
 
       expect(await enf.getGroupingPolicy()).toEqual(allEnfGroupPolicies);
 
-      expect(await enf.getPolicy()).toEqual(allEnfPolicies);
+      const nonAdminPolicies = (await enf.getPolicy()).filter(
+        (policy: string[]) => {
+          return policy[0] !== 'role:default/rbac_admin';
+        },
+      );
+      expect(nonAdminPolicies).toEqual(allEnfPolicies);
 
       // policy metadata should to be removed
       expect(policyMetadataStorage.removePolicyMetadata).toHaveBeenCalledTimes(
@@ -810,7 +851,12 @@ describe('RBACPermissionPolicy Tests', () => {
 
       expect(await enf.getGroupingPolicy()).toEqual(allEnfGroupPolicies);
 
-      expect(await enf.getPolicy()).toEqual(allEnfPolicies);
+      const nonAdminPolicies = (await enf.getPolicy()).filter(
+        (policy: string[]) => {
+          return policy[0] !== 'role:default/rbac_admin';
+        },
+      );
+      expect(nonAdminPolicies).toEqual(allEnfPolicies);
 
       // policy metadata should to be removed
       expect(policyMetadataStorage.removePolicyMetadata).toHaveBeenCalledTimes(

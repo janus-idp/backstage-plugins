@@ -1,10 +1,10 @@
 import React from 'react';
 
 import { makeStyles } from '@material-ui/core';
+import IconButton from '@material-ui/core/IconButton';
+import TextField from '@material-ui/core/TextField';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import RemoveIcon from '@mui/icons-material/Remove';
-import Autocomplete from '@mui/material/Autocomplete';
-import IconButton from '@mui/material/IconButton';
-import TextField from '@mui/material/TextField';
 import { FormikErrors } from 'formik';
 
 import { PermissionsData } from '../../types';
@@ -45,25 +45,17 @@ export const PermissionPoliciesFormRow = ({
   getPermissionDisabled,
 }: PermissionPoliciesFormRowProps) => {
   const classes = useStyles();
-  const [pluginSearch, setPluginSearch] = React.useState('');
-  const [permissionSearch, setPermissionSearch] = React.useState('');
   const { plugin: pluginError, permission: permissionError } =
     permissionPoliciesRowError;
 
   return (
     <div style={{ display: 'flex', gap: '20px', marginBottom: '25px' }}>
       <Autocomplete
-        disablePortal
         options={permissionPoliciesData?.plugins ?? []}
-        sx={{ width: '450px' }}
-        value={permissionPoliciesRowData.plugin}
-        isOptionEqualToValue={(option, value) => option === value}
-        onChange={(_e, value) => {
-          onChangePlugin(value || '');
-        }}
-        inputValue={pluginSearch}
-        onInputChange={(_e, newSearch) => setPluginSearch(newSearch)}
-        renderInput={params => (
+        style={{ width: '450px' }}
+        value={permissionPoliciesRowData.plugin ?? ''}
+        onChange={(_e, value) => onChangePlugin(value ?? '')}
+        renderInput={(params: any) => (
           <TextField
             {...params}
             label="Plugin"
@@ -77,19 +69,17 @@ export const PermissionPoliciesFormRow = ({
         )}
       />
       <Autocomplete
-        disablePortal
         disabled={!permissionPoliciesRowData.plugin}
         options={
           permissionPoliciesData?.pluginsPermissions?.[
             permissionPoliciesRowData.plugin
           ]?.permissions ?? []
         }
-        sx={{ width: '450px' }}
-        isOptionEqualToValue={(option, value) => option === value}
-        value={permissionPoliciesRowData.permission}
+        style={{ width: '450px' }}
+        value={permissionPoliciesRowData.permission ?? ''}
         onChange={(_e, value) =>
           onChangePermission(
-            value || '',
+            value ?? '',
             value
               ? permissionPoliciesData?.pluginsPermissions?.[
                   permissionPoliciesRowData.plugin
@@ -97,10 +87,8 @@ export const PermissionPoliciesFormRow = ({
               : undefined,
           )
         }
-        inputValue={permissionSearch}
-        onInputChange={(_e, newSearch) => setPermissionSearch(newSearch)}
         getOptionDisabled={getPermissionDisabled}
-        renderInput={params => (
+        renderInput={(params: any) => (
           <TextField
             {...params}
             label="Permission"

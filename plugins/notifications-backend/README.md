@@ -206,10 +206,8 @@ catalog:
     # Local example data, file locations are relative to the backend process, typically `packages/backend`
     - type: file
       # *** Here is a new change, refers to a file stored in the root of the Backstage:
-      target: ../../users.yaml
+      target: ../../plugins/notifications-backend/users.yaml
 ```
-
-The example list of users is stored in the `plugins/notifications-backend/users.yaml` and can be copied to the root of the Backstage for development purposes.
 
 ## REST API
 
@@ -308,7 +306,7 @@ Response:
 Request:
 
 ```bash
-curl -X PUT 'http://localhost:7007/api/notifications/notifications/read?messageID=48bbf896-4b7c-4b68-a446-246b6a801000&read=true'
+curl -X PUT 'http://localhost:7007/api/notifications/notifications/read?messageId=48bbf896-4b7c-4b68-a446-246b6a801000&read=true'
 ```
 
 Response: A HTTP Status Code

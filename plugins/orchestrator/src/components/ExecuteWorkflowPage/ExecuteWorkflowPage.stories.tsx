@@ -9,8 +9,8 @@ import { WorkflowInputSchemaResponse } from '@janus-idp/backstage-plugin-orchest
 import { fakeDataInputSchemaDifferentTypes } from '../../__fixtures__/fakeWorkflowDataInputSchemaDifferentTypes';
 import { fakeDataInputSchemaMultiStepResponse } from '../../__fixtures__/fakeWorkflowDataInputSchemaResponseMultiStep';
 import { fakeDataInputSchemaMultiStepInitialStateResponse } from '../../__fixtures__/fakeWorkflowDataInputSchemaResponseMultiStepInitialState';
+import { fakeWorkflowDefinition } from '../../__fixtures__/fakeWorkflowDefinition';
 import { fakeDataInputSchemaResponse } from '../../__fixtures__/fakeWorkflowInputSchemaResponse';
-import { fakeWorkflowItem } from '../../__fixtures__/fakeWorkflowItem';
 import { orchestratorApiRef } from '../../api';
 import { MockOrchestratorClient } from '../../api/MockOrchestratorClient';
 import { orchestratorRootRouteRef } from '../../routes';
@@ -92,7 +92,7 @@ export const ExecuteWorkflowPageNoSchemaStory: Story = {
   name: 'No schema',
   args: {
     schemaResponse: () => ({
-      workflowItem: fakeWorkflowItem,
+      workflowItem: fakeWorkflowDefinition,
       isComposedSchema: false,
       schemaSteps: [],
     }),

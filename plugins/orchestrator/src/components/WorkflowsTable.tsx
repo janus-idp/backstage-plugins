@@ -1,30 +1,18 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import {
-  Link,
-  Table,
-  TableColumn,
-  TableProps,
-} from '@backstage/core-components';
-import {
-  featureFlagsApiRef,
-  useApi,
-  useRouteRef,
-} from '@backstage/core-plugin-api';
+import { Link, TableColumn, TableProps } from '@backstage/core-components';
+import { useRouteRef } from '@backstage/core-plugin-api';
 
-import DeleteForever from '@material-ui/icons/DeleteForever';
-import Edit from '@material-ui/icons/Edit';
 import Pageview from '@material-ui/icons/Pageview';
 import PlayArrow from '@material-ui/icons/PlayArrow';
 
 import {
-  FEATURE_FLAG_DEVELOPER_MODE,
+  capitalize,
   ProcessInstanceStateValues,
   WorkflowOverview,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
-import { orchestratorApiRef } from '../api';
 import { VALUE_UNAVAILABLE } from '../constants';
 import WorkflowOverviewFormatter, {
   FormattedWorkflowOverview,
@@ -33,24 +21,18 @@ import {
   executeWorkflowRouteRef,
   workflowDefinitionsRouteRef,
 } from '../routes';
-import { capitalize } from '../utils/StringUtils';
+import OverrideBackstageTable from './ui/OverrideBackstageTable';
 import { WorkflowInstanceStatusIndicator } from './WorkflowInstanceStatusIndicator';
 
 export interface WorkflowsTableProps {
   items: WorkflowOverview[];
-  handleEdit: (workflowOverview: FormattedWorkflowOverview) => void;
 }
 
-export const WorkflowsTable = ({ items, handleEdit }: WorkflowsTableProps) => {
-  const orchestratorApi = useApi(orchestratorApiRef);
-  const featureFlagsApi = useApi(featureFlagsApiRef);
+export const WorkflowsTable = ({ items }: WorkflowsTableProps) => {
   const navigate = useNavigate();
   const definitionLink = useRouteRef(workflowDefinitionsRouteRef);
   const executeWorkflowLink = useRouteRef(executeWorkflowRouteRef);
   const [data, setData] = useState<FormattedWorkflowOverview[]>([]);
-  const isDeveloperModeOn = featureFlagsApi.isActive(
-    FEATURE_FLAG_DEVELOPER_MODE,
-  );
 
   const initialState = useMemo(
     () => items.map(WorkflowOverviewFormatter.format),
@@ -77,21 +59,6 @@ export const WorkflowsTable = ({ items, handleEdit }: WorkflowsTableProps) => {
     [executeWorkflowLink, navigate],
   );
 
-  const handleDelete = useCallback(
-    (rowData: FormattedWorkflowOverview) => {
-      // Lazy use of window.confirm vs writing a popup.
-      if (
-        // eslint-disable-next-line no-alert
-        window.confirm(
-          `Please confirm you want to delete '${rowData.id}' permanently.`,
-        )
-      ) {
-        orchestratorApi.deleteWorkflowDefinition(rowData.id);
-      }
-    },
-    [orchestratorApi],
-  );
-
   const actions = useMemo(() => {
     const actionItems: TableProps<FormattedWorkflowOverview>['actions'] = [
       {
@@ -108,25 +75,8 @@ export const WorkflowsTable = ({ items, handleEdit }: WorkflowsTableProps) => {
       },
     ];
 
-    if (isDeveloperModeOn) {
-      actionItems.push(
-        {
-          icon: Edit,
-          tooltip: 'Edit',
-          onClick: (_, rowData) =>
-            handleEdit(rowData as FormattedWorkflowOverview),
-        },
-        {
-          icon: DeleteForever,
-          tooltip: 'Delete',
-          onClick: (_, rowData) =>
-            handleDelete(rowData as FormattedWorkflowOverview),
-        },
-      );
-    }
-
     return actionItems;
-  }, [handleDelete, handleEdit, handleExecute, handleView, isDeveloperModeOn]);
+  }, [handleExecute, handleView]);
 
   const columns = useMemo<TableColumn<FormattedWorkflowOverview>[]>(
     () => [
@@ -178,7 +128,7 @@ export const WorkflowsTable = ({ items, handleEdit }: WorkflowsTableProps) => {
   );
 
   return (
-    <Table<FormattedWorkflowOverview>
+    <OverrideBackstageTable<FormattedWorkflowOverview>
       title="Workflows"
       options={options}
       columns={columns}

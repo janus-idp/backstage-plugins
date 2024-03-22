@@ -1,3 +1,42 @@
+## @janus-idp/backstage-scaffolder-backend-module-kubernetes [1.3.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-kubernetes@1.3.5...@janus-idp/backstage-scaffolder-backend-module-kubernetes@1.3.6) (2024-03-11)
+
+## @janus-idp/backstage-scaffolder-backend-module-kubernetes [1.3.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-kubernetes@1.3.4...@janus-idp/backstage-scaffolder-backend-module-kubernetes@1.3.5) (2024-03-04)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.5
+
+## @janus-idp/backstage-scaffolder-backend-module-kubernetes [1.3.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-kubernetes@1.3.3...@janus-idp/backstage-scaffolder-backend-module-kubernetes@1.3.4) (2024-02-27)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.4
+
+## @janus-idp/backstage-scaffolder-backend-module-kubernetes [1.3.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-kubernetes@1.3.2...@janus-idp/backstage-scaffolder-backend-module-kubernetes@1.3.3) (2024-02-26)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.3
+
+## @janus-idp/backstage-scaffolder-backend-module-kubernetes [1.3.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-kubernetes@1.3.1...@janus-idp/backstage-scaffolder-backend-module-kubernetes@1.3.2) (2024-02-21)
+
+
+### Bug Fixes
+
+* **kubernetes-actions:** support adding labels while creating namespace ([#1223](https://github.com/janus-idp/backstage-plugins/issues/1223)) ([2b266bc](https://github.com/janus-idp/backstage-plugins/commit/2b266bc123e3446c18bdaa0dda34fe7e53b16404))
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.2
+
 ## @janus-idp/backstage-scaffolder-backend-module-kubernetes [1.3.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-kubernetes@1.3.0...@janus-idp/backstage-scaffolder-backend-module-kubernetes@1.3.1) (2024-02-05)
 
 

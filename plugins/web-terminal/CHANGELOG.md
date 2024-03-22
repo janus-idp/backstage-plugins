@@ -1,3 +1,40 @@
+## @janus-idp/backstage-plugin-web-terminal [1.3.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-web-terminal@1.3.6...@janus-idp/backstage-plugin-web-terminal@1.3.7) (2024-03-04)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.5
+
+## @janus-idp/backstage-plugin-web-terminal [1.3.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-web-terminal@1.3.5...@janus-idp/backstage-plugin-web-terminal@1.3.6) (2024-02-27)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.4
+
+## @janus-idp/backstage-plugin-web-terminal [1.3.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-web-terminal@1.3.4...@janus-idp/backstage-plugin-web-terminal@1.3.5) (2024-02-26)
+
+
+### Other changes
+
+* **web-terminal:** fixes Terminal load test ([#1249](https://github.com/janus-idp/backstage-plugins/issues/1249)) ([1f2f17d](https://github.com/janus-idp/backstage-plugins/commit/1f2f17d66ac2a174e513f648ed8a48428e1b88bb))
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.3
+
+## @janus-idp/backstage-plugin-web-terminal [1.3.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-web-terminal@1.3.3...@janus-idp/backstage-plugin-web-terminal@1.3.4) (2024-02-21)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.2
+
 ## @janus-idp/backstage-plugin-web-terminal [1.3.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-web-terminal@1.3.2...@janus-idp/backstage-plugin-web-terminal@1.3.3) (2024-02-05)
 
 

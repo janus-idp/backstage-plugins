@@ -19,6 +19,7 @@ type VirtualItemProps = {
   key: string;
   statefulFilterProps?: StatefulFiltersProps;
   style?: CSSProperties;
+  view?: string;
 };
 
 export const VirtualItem = (props: VirtualItemProps) => {
@@ -53,6 +54,7 @@ export const VirtualItem = (props: VirtualItemProps) => {
           getBadge(),
           health,
           props.statefulFilterProps,
+          props.view,
         ),
       );
   };

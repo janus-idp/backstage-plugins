@@ -5,3 +5,4 @@ export * from './constants';
 export * from './models';
 export * from './workflow';
 export * from './QueryParams';
+export * from './utils/StringUtils';

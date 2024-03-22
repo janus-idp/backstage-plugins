@@ -1,56 +1,58 @@
 import { errorHandler } from '@backstage/backend-common';
+import { PluginTaskScheduler } from '@backstage/backend-tasks';
+import { Config } from '@backstage/config';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
-import { ScmIntegrations } from '@backstage/integration';
 import { JsonObject, JsonValue } from '@backstage/types';
 
+import { fullFormats } from 'ajv-formats/dist/formats';
 import express from 'express';
 import Router from 'express-promise-router';
 import { OpenAPIBackend, Request } from 'openapi-backend';
+import { Logger } from 'winston';
 
 import {
   openApiDocument,
-  ORCHESTRATOR_SERVICE_READY_TOPIC,
   QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
   QUERY_PARAM_BUSINESS_KEY,
   QUERY_PARAM_INCLUDE_ASSESSMENT,
   QUERY_PARAM_INSTANCE_ID,
-  QUERY_PARAM_URI,
   WorkflowInputSchemaResponse,
-  WorkflowItem,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { RouterArgs } from '../routerWrapper';
-import { ApiResponseBuilder } from '../types/apiResponse';
+import { buildPagination } from '../types/pagination';
 import { V1 } from './api/v1';
 import { V2 } from './api/v2';
 import { CloudEventService } from './CloudEventService';
+import { INTERNAL_SERVER_ERROR_MESSAGE } from './constants';
 import { DataIndexService } from './DataIndexService';
 import { DataInputSchemaService } from './DataInputSchemaService';
 import { JiraEvent, JiraService } from './JiraService';
-import { OpenApiService } from './OpenApiService';
+import { OrchestratorService } from './OrchestratorService';
 import { ScaffolderService } from './ScaffolderService';
 import { SonataFlowService } from './SonataFlowService';
-import { WorkflowService } from './WorkflowService';
+import { WorkflowCacheService } from './WorkflowCacheService';
 
-interface Services {
-  sonataFlowService: SonataFlowService;
-  workflowService: WorkflowService;
-  openApiService: OpenApiService;
+interface PublicServices {
   jiraService: JiraService;
-  dataIndexService: DataIndexService;
   dataInputSchemaService: DataInputSchemaService;
+  orchestratorService: OrchestratorService;
 }
-export async function createBackendRouter(
-  args: RouterArgs & {
-    sonataFlowService: SonataFlowService;
-    dataIndexService: DataIndexService;
-  },
-): Promise<express.Router> {
-  const { eventBroker, config, logger, discovery, catalogApi, urlReader } =
-    args;
 
-  const api = initOpenAPIBackend();
-  await api.init();
+interface RouterApi {
+  openApiBackend: OpenAPIBackend;
+  v1: V1;
+  v2: V2;
+}
+
+export async function createBackendRouter(
+  args: RouterArgs,
+): Promise<express.Router> {
+  const { config, logger, discovery, catalogApi, urlReader, scheduler } = args;
+
+  const publicServices = initPublicServices(logger, config, scheduler);
+
+  const routerApi = await initRouterApi(publicServices.orchestratorService);
 
   const router = Router();
   router.use(express.json());
@@ -61,38 +63,6 @@ export async function createBackendRouter(
     response.json({ status: 'ok' });
   });
 
-  const githubIntegration = ScmIntegrations.fromConfig(config)
-    .github.list()
-    .pop();
-
-  const githubToken = githubIntegration?.config.token;
-
-  if (!githubToken) {
-    logger.warn(
-      'No GitHub token found. Some features may not work as expected.',
-    );
-  }
-
-  const cloudEventService = new CloudEventService(logger);
-  const jiraService = new JiraService(
-    logger,
-    cloudEventService,
-    args.dataIndexService,
-  );
-  const openApiService = new OpenApiService(logger, discovery);
-  const dataInputSchemaService = new DataInputSchemaService(
-    logger,
-    githubToken,
-  );
-
-  const workflowService = new WorkflowService(
-    openApiService,
-    dataInputSchemaService,
-    args.sonataFlowService,
-    config,
-    logger,
-  );
-
   const scaffolderService: ScaffolderService = new ScaffolderService(
     logger,
     config,
@@ -100,45 +70,68 @@ export async function createBackendRouter(
     urlReader,
   );
 
-  await workflowService.reloadWorkflows();
-
-  const services: Services = {
-    sonataFlowService: args.sonataFlowService,
-    workflowService,
-    openApiService,
-    jiraService,
-    dataIndexService: args.dataIndexService,
-    dataInputSchemaService,
-  };
-
-  setupInternalRoutes(router, api, services);
+  setupInternalRoutes(router, publicServices, routerApi);
   setupExternalRoutes(router, discovery, scaffolderService);
-
-  await eventBroker.publish({
-    topic: ORCHESTRATOR_SERVICE_READY_TOPIC,
-    eventPayload: {},
-  });
 
   router.use((req, res, next) => {
     if (!next) {
       throw new Error('next is undefined');
     }
 
-    // const validation = api.validateRequest(req as Request);
+    // const validation = routerApi.validateRequest(req as Request);
     // if (!validation.valid) {
     //   console.log('errors: ', validation.errors);
     //   throw validation.errors;
     // }
 
-    api.handleRequest(req as Request, req, res, next);
+    routerApi.openApiBackend.handleRequest(req as Request, req, res, next);
   });
 
   router.use(errorHandler());
   return router;
 }
 
-function initOpenAPIBackend(): OpenAPIBackend {
-  return new OpenAPIBackend({
+function initPublicServices(
+  logger: Logger,
+  config: Config,
+  scheduler: PluginTaskScheduler,
+): PublicServices {
+  const dataIndexUrl = config.getString('orchestrator.dataIndexService.url');
+  const dataIndexService = new DataIndexService(dataIndexUrl, logger);
+  const sonataFlowService = new SonataFlowService(dataIndexService, logger);
+
+  const workflowCacheService = new WorkflowCacheService(
+    logger,
+    dataIndexService,
+    sonataFlowService,
+  );
+  workflowCacheService.schedule({ scheduler: scheduler });
+
+  const orchestratorService = new OrchestratorService(
+    sonataFlowService,
+    dataIndexService,
+    workflowCacheService,
+  );
+
+  const cloudEventService = new CloudEventService(logger);
+  const jiraService = new JiraService(
+    logger,
+    cloudEventService,
+    dataIndexService,
+  );
+  const dataInputSchemaService = new DataInputSchemaService();
+
+  return {
+    orchestratorService,
+    jiraService,
+    dataInputSchemaService,
+  };
+}
+
+async function initRouterApi(
+  orchestratorService: OrchestratorService,
+): Promise<RouterApi> {
+  const openApiBackend = new OpenAPIBackend({
     definition: openApiDocument,
     strict: false,
     ajvOpts: {
@@ -146,8 +139,28 @@ function initOpenAPIBackend(): OpenAPIBackend {
       strictSchema: false,
       verbose: true,
       addUsedSchema: false,
+      formats: fullFormats, // open issue: https://github.com/openapistack/openapi-backend/issues/280
+    },
+    handlers: {
+      validationFail: async (
+        c,
+        _req: express.Request,
+        res: express.Response,
+      ) => {
+        console.log('validationFail', c.operation);
+        res.status(400).json({ err: c.validation.errors });
+      },
+      notFound: async (_c, req: express.Request, res: express.Response) => {
+        res.status(404).json({ err: `${req.path} path not found` });
+      },
+      notImplemented: async (_c, req: express.Request, res: express.Response) =>
+        res.status(500).json({ err: `${req.path} not implemented` }),
     },
   });
+  await openApiBackend.init();
+  const v1 = new V1(orchestratorService);
+  const v2 = new V2(orchestratorService, v1);
+  return { v1, v2, openApiBackend };
 }
 
 // ======================================================
@@ -155,307 +168,308 @@ function initOpenAPIBackend(): OpenAPIBackend {
 // ======================================================
 function setupInternalRoutes(
   router: express.Router,
-  api: OpenAPIBackend,
-  services: Services,
+  services: PublicServices,
+  routerApi: RouterApi,
 ) {
-  router.get('/workflows/definitions', async (_, response) => {
-    const swfs = await services.dataIndexService.getWorkflowDefinitions();
-    response.json(ApiResponseBuilder.SUCCESS_RESPONSE(swfs));
-  });
-
+  // v1
   router.get('/workflows/overview', async (_c, res) => {
-    await V1.getWorkflowsOverview(services.sonataFlowService)
+    await routerApi.v1
+      .getWorkflowsOverview()
       .then(result => res.status(200).json(result))
       .catch(error => {
-        res.status(500).send(error.message || 'Internal Server Error');
+        res
+          .status(500)
+          .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
       });
   });
 
   // v2
-  api.register(
+  routerApi.openApiBackend.register(
     'getWorkflowsOverview',
-    async (_c, _req, res: express.Response, next) => {
-      await V2.getWorkflowsOverview(services.sonataFlowService)
+    async (_c, req, res: express.Response, next) => {
+      await routerApi.v2
+        .getWorkflowsOverview(buildPagination(req))
         .then(result => res.json(result))
         .catch(error => {
-          res.status(500).send(error.message || 'internal Server Error');
+          res
+            .status(500)
+            .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
           next();
         });
     },
   );
 
-  router.get('/workflows', async (_, res) => {
-    await V1.getWorkflows(services.sonataFlowService, services.dataIndexService)
-      .then(result => res.status(200).json(result))
-      .catch(error => {
-        res.status(500).send(error.message || 'internal Server Error');
-      });
-  });
-
-  // v2
-  api.register('getWorkflows', async (_c, _req, res, next) => {
-    await V2.getWorkflows(services.sonataFlowService, services.dataIndexService)
-      .then(result => res.json(result))
-      .catch(error => {
-        res.status(500).send(error.message || 'internal Server Error');
-        next();
-      });
-  });
-
+  // v1
   router.get('/workflows/:workflowId', async (req, res) => {
     const {
       params: { workflowId },
     } = req;
-    await V1.getWorkflowById(services.sonataFlowService, workflowId)
+    await routerApi.v1
+      .getWorkflowById(workflowId)
       .then(result => res.status(200).json(result))
       .catch(error => {
-        res.status(500).send(error.message || 'Internal Server Error');
+        res
+          .status(500)
+          .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
       });
   });
 
   // v2
-  api.register('getWorkflowById', async (c, _req, res, next) => {
-    const workflowId = c.request.params.workflowId as string;
+  routerApi.openApiBackend.register(
+    'getWorkflowById',
+    async (c, _req, res, next) => {
+      const workflowId = c.request.params.workflowId as string;
 
-    await V2.getWorkflowById(services.sonataFlowService, workflowId)
-      .then(result => res.json(result))
-      .catch(error => {
-        res.status(500).send(error.message || 'Internal Server Error');
-        next();
-      });
-  });
+      await routerApi.v2
+        .getWorkflowById(workflowId)
+        .then(result => res.json(result))
+        .catch(error => {
+          res
+            .status(500)
+            .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
+          next();
+        });
+    },
+  );
 
-  router.delete('/workflows/:workflowId/abort', async (req, res) => {
+  // v1
+  router.get('/workflows/:workflowId/source', async (req, res) => {
     const {
       params: { workflowId },
     } = req;
-
-    await V1.abortWorkflow(services.dataIndexService, workflowId)
-      .then(result => res.status(200).json(result.data))
+    await routerApi.v1
+      .getWorkflowSourceById(workflowId)
+      .then(result => res.status(200).send(result))
       .catch(error => {
-        res.status(500).send(error.message || 'Internal Server Error');
+        res.status(500).send(error.message || INTERNAL_SERVER_ERROR_MESSAGE);
       });
   });
 
   // v2
-  api.register('abortWorkflow', async (c, _req, res, next) => {
-    const workflowId = c.request.params.workflowId as string;
-    await V2.abortWorkflow(services.dataIndexService, workflowId)
-      .then(result => res.json(result))
+  routerApi.openApiBackend.register(
+    'getWorkflowSourceById',
+    async (c, _req, res, next) => {
+      const workflowId = c.request.params.workflowId as string;
+
+      await routerApi.v2
+        .getWorkflowSourceById(workflowId)
+        .then(result => res.send(result))
+        .catch(error => {
+          res.status(500).send(error.message || INTERNAL_SERVER_ERROR_MESSAGE);
+          next();
+        });
+    },
+  );
+
+  // v1
+  router.delete('/instances/:instanceId/abort', async (req, res) => {
+    const {
+      params: { instanceId },
+    } = req;
+
+    await routerApi.v1
+      .abortWorkflow(instanceId)
+      .then(() => res.status(200).send())
       .catch(error => {
-        res.status(500).send(error.message || 'Internal Server Error');
-        next();
+        res.status(500).send(error.message || INTERNAL_SERVER_ERROR_MESSAGE);
       });
   });
 
+  // v2
+  routerApi.openApiBackend.register(
+    'abortWorkflow',
+    async (c, _req, res, next) => {
+      const instanceId = c.request.params.instanceId as string;
+      await routerApi.v2
+        .abortWorkflow(instanceId)
+        .then(result => res.json(result))
+        .catch(error => {
+          res
+            .status(500)
+            .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
+          next();
+        });
+    },
+  );
+
+  // v1
   router.post('/workflows/:workflowId/execute', async (req, res) => {
     const {
       params: { workflowId },
     } = req;
 
-    const businessKey = V1.extractQueryParam(req, QUERY_PARAM_BUSINESS_KEY);
+    const businessKey = routerApi.v1.extractQueryParam(
+      req,
+      QUERY_PARAM_BUSINESS_KEY,
+    );
 
-    await V1.executeWorkflow(
-      services.dataIndexService,
-      services.sonataFlowService,
-      req.body,
-      workflowId,
-      businessKey,
-    )
+    await routerApi.v1
+      .executeWorkflow(req.body, workflowId, businessKey)
       .then((result: any) => res.status(200).json(result))
       .catch((error: { message: any }) => {
-        res.status(500).send(error.message || 'Internal Server Error');
+        res
+          .status(500)
+          .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
       });
   });
 
   // v2
-  api.register(
+  routerApi.openApiBackend.register(
     'executeWorkflow',
     async (c, req: express.Request, res: express.Response) => {
       const workflowId = c.request.params.workflowId as string;
-      const businessKey = V2.extractQueryParam(
+      const businessKey = routerApi.v2.extractQueryParam(
         c.request,
         QUERY_PARAM_BUSINESS_KEY,
       );
 
       const executeWorkflowRequestDTO = req.body;
-      await V2.executeWorkflow(
-        services.dataIndexService,
-        services.sonataFlowService,
-        executeWorkflowRequestDTO,
-        workflowId,
-        businessKey,
-      )
+      await routerApi.v2
+        .executeWorkflow(executeWorkflowRequestDTO, workflowId, businessKey)
         .then(result => res.status(200).json(result))
         .catch((error: { message: string }) => {
-          res.status(500).send(error.message || 'Internal Server Error');
+          res
+            .status(500)
+            .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
         });
     },
   );
 
-  // v2
-  api.register(
-    'executeWorkflow',
-    async (c, req: express.Request, res: express.Response) => {
-      const workflowId = c.request.params.workflowId as string;
-      const businessKey = V2.extractQueryParam(
-        c.request,
-        QUERY_PARAM_BUSINESS_KEY,
-      );
-
-      const executeWorkflowRequestDTO = req.body;
-      await V2.executeWorkflow(
-        services.dataIndexService,
-        services.sonataFlowService,
-        executeWorkflowRequestDTO,
-        workflowId,
-        businessKey,
-      )
-        .then(result => res.status(200).json(result))
-        .catch((error: { message: string }) => {
-          res.status(500).send(error.message || 'Internal Server Error');
-        });
-    },
-  );
-
+  // v1
   router.get('/workflows/:workflowId/overview', async (req, res) => {
     const {
       params: { workflowId },
     } = req;
-    await V1.getWorkflowOverviewById(
-      services.sonataFlowService,
-      workflowId,
-    ).then(result => res.json(result));
+    await routerApi.v1
+      .getWorkflowOverviewById(workflowId)
+      .then(result => res.json(result));
   });
 
   // v2
-  api.register(
+  routerApi.openApiBackend.register(
     'getWorkflowOverviewById',
-    async (_c, req: express.Request, res: express.Response, next) => {
-      const {
-        params: { workflowId },
-      } = req;
-      await V2.getWorkflowOverviewById(services.sonataFlowService, workflowId)
+    async (c, _req: express.Request, res: express.Response, next) => {
+      const workflowId = c.request.params.workflowId as string;
+
+      await routerApi.v2
+        .getWorkflowOverviewById(workflowId)
         .then(result => res.json(result))
         .catch(next);
     },
   );
 
+  // v1
   router.get('/instances', async (_, res) => {
-    await V1.getInstances(services.dataIndexService)
+    await routerApi.v1
+      .getInstances()
       .then(result => res.status(200).json(result))
       .catch(error => {
-        res.status(500).send(error.message || 'internal Server Error');
+        res
+          .status(500)
+          .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
       });
   });
 
   // v2
-  api.register(
+  routerApi.openApiBackend.register(
     'getInstances',
-    async (_c, _req: express.Request, res: express.Response, next) => {
-      await V2.getInstances(services.dataIndexService)
+    async (_c, req: express.Request, res: express.Response, next) => {
+      await routerApi.v2
+        .getInstances(buildPagination(req))
         .then(result => res.json(result))
         .catch(next);
     },
   );
 
+  // v1
   router.get('/instances/:instanceId', async (req, res) => {
     const {
       params: { instanceId },
     } = req;
 
-    const includeAssessment = V1.extractQueryParam(
+    const includeAssessment = routerApi.v1.extractQueryParam(
       req,
       QUERY_PARAM_INCLUDE_ASSESSMENT,
     );
 
-    await V1.getInstanceById(
-      services.dataIndexService,
-      instanceId,
-      includeAssessment,
-    )
+    await routerApi.v1
+      .getInstanceById(instanceId, !!includeAssessment)
       .then(result => res.status(200).json(result))
       .catch(error => {
-        res.status(500).send(error.message || 'Internal Server Error');
+        res
+          .status(500)
+          .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
       });
   });
 
   // v2
-  api.register(
+  routerApi.openApiBackend.register(
     'getInstanceById',
     async (c, _req: express.Request, res: express.Response, next) => {
       const instanceId = c.request.params.instanceId as string;
-      const includeAssessment = V2.extractQueryParam(
+      const includeAssessment = routerApi.v2.extractQueryParam(
         c.request,
         QUERY_PARAM_INCLUDE_ASSESSMENT,
       );
-      await V2.getInstanceById(
-        services.dataIndexService,
-        instanceId,
-        includeAssessment,
-      )
+      await routerApi.v2
+        .getInstanceById(instanceId, !!includeAssessment)
         .then(result => res.status(200).json(result))
         .catch(error => {
-          res.status(500).send(error.message || 'Internal Server Error');
+          res
+            .status(500)
+            .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
           next();
         });
     },
   );
 
-  router.get('/instances/:instanceId/jobs', async (req, res) => {
-    const {
-      params: { instanceId },
-    } = req;
-
-    const jobs =
-      await services.dataIndexService.fetchProcessInstanceJobs(instanceId);
-
-    if (!jobs) {
-      res.status(500).send(`Couldn't fetch jobs for instance ${instanceId}`);
-      return;
-    }
-
-    res.status(200).json(jobs);
-  });
-
+  // v1
   router.get('/workflows/:workflowId/inputSchema', async (req, res) => {
     const {
       params: { workflowId },
     } = req;
 
-    const instanceId = V1.extractQueryParam(req, QUERY_PARAM_INSTANCE_ID);
-    const assessmentInstanceId = V1.extractQueryParam(
+    const instanceId = routerApi.v1.extractQueryParam(
+      req,
+      QUERY_PARAM_INSTANCE_ID,
+    );
+    const assessmentInstanceId = routerApi.v1.extractQueryParam(
       req,
       QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
     );
 
     const workflowDefinition =
-      await services.dataIndexService.getWorkflowDefinition(workflowId);
+      await services.orchestratorService.fetchWorkflowInfo({
+        definitionId: workflowId,
+        cacheHandler: 'throw',
+      });
+
+    if (!workflowDefinition) {
+      res.status(500).send(`Couldn't fetch workflow definition ${workflowId}`);
+      return;
+    }
     const serviceUrl = workflowDefinition.serviceUrl;
     if (!serviceUrl) {
-      throw new Error(`ServiceUrl is not defined for workflow ${workflowId}`);
+      res
+        .status(500)
+        .send(`Service URL is not defined for workflow ${workflowId}`);
+      return;
     }
 
     // workflow source
     const definition =
-      await services.sonataFlowService.fetchWorkflowDefinition(workflowId);
+      await services.orchestratorService.fetchWorkflowDefinition({
+        definitionId: workflowId,
+        cacheHandler: 'throw',
+      });
 
     if (!definition) {
       res.status(500).send(`Couldn't fetch workflow definition ${workflowId}`);
       return;
     }
 
-    const uri = await services.sonataFlowService.fetchWorkflowUri(workflowId);
-
-    if (!uri) {
-      res.status(500).send(`Couldn't fetch workflow uri ${workflowId}`);
-      return;
-    }
-
-    const workflowItem: WorkflowItem = { uri, definition };
-
     const response: WorkflowInputSchemaResponse = {
-      workflowItem,
+      definition,
       schemaSteps: [],
       isComposedSchema: false,
     };
@@ -465,10 +479,12 @@ function setupInternalRoutes(
       return;
     }
 
-    const workflowInfo = await services.sonataFlowService.fetchWorkflowInfo(
-      workflowId,
-      serviceUrl,
-    );
+    const workflowInfo =
+      await services.orchestratorService.fetchWorkflowInfoOnService({
+        definitionId: workflowId,
+        serviceUrl,
+        cacheHandler: 'throw',
+      });
 
     if (!workflowInfo) {
       res.status(500).send(`couldn't fetch workflow info ${workflowId}`);
@@ -483,84 +499,29 @@ function setupInternalRoutes(
     }
 
     const instanceVariables = instanceId
-      ? await services.dataIndexService.fetchProcessInstanceVariables(
+      ? await services.orchestratorService.fetchInstanceVariables({
           instanceId,
-        )
+          cacheHandler: 'throw',
+        })
       : undefined;
 
     const assessmentInstanceVariables = assessmentInstanceId
-      ? await services.dataIndexService.fetchProcessInstanceVariables(
-          assessmentInstanceId,
-        )
+      ? await services.orchestratorService.fetchInstanceVariables({
+          instanceId: assessmentInstanceId,
+          cacheHandler: 'throw',
+        })
       : undefined;
 
     res
       .status(200)
       .json(
         services.dataInputSchemaService.getWorkflowInputSchemaResponse(
-          workflowItem,
+          definition,
           workflowInfo.inputSchema,
           instanceVariables,
           assessmentInstanceVariables,
         ),
       );
-  });
-
-  router.delete('/workflows/:workflowId', async (req, res) => {
-    const workflowId = req.params.workflowId;
-    const uri = await services.sonataFlowService.fetchWorkflowUri(workflowId);
-
-    if (!uri) {
-      res.status(500).send(`Couldn't fetch workflow uri ${workflowId}`);
-      return;
-    }
-
-    await services.workflowService.deleteWorkflowDefinitionById(uri);
-    res.status(200).send();
-  });
-
-  router.post('/workflows', async (req, res) => {
-    const uri = V1.extractQueryParam(req, QUERY_PARAM_URI);
-
-    if (!uri) {
-      res.status(400).send('uri query param is required');
-      return;
-    }
-
-    await V1.createWorkflow(services.workflowService, uri, req.body)
-      .then(result => res.status(201).json(result))
-      .catch(error => {
-        res.status(500).send(error.message || 'Internal Server Error');
-      });
-  });
-
-  // v2
-  api.register(
-    'createWorkflow',
-    async (c, _req, res: express.Response, next) => {
-      const uri = V2.extractQueryParam(c.request, QUERY_PARAM_URI);
-
-      if (!uri) {
-        res.status(400).send('uri query param is required');
-        return;
-      }
-      await V2.createWorkflow(services.workflowService, uri, c.request.body)
-        .then(result => res.json(result))
-        .catch(error => {
-          res.status(500).send(error.message || 'Internal Server Error');
-          next();
-        });
-    },
-  );
-
-  router.get('/actions/schema', async (_, res) => {
-    const openApi = await services.openApiService.generateOpenApi();
-    res.json(openApi).status(200).send();
-  });
-
-  router.put('/actions/schema', async (_, res) => {
-    const openApi = await services.workflowService.saveOpenApi();
-    res.json(openApi).status(200).send();
   });
 
   router.post('/webhook/jira', async (req, res) => {
@@ -569,48 +530,34 @@ function setupInternalRoutes(
     res.status(200).send();
   });
 
-  router.get('/specs', async (_, res) => {
-    await V1.getWorkflowSpecs(services.workflowService)
-      .then(result => res.status(200).json(result))
-      .catch(error => {
-        res.status(500).send(error.message || 'Internal Server Error');
-      });
-  });
-
   // v2
-  api.register(
-    'getWorkflowSpecs',
-    async (_c, _req: express.Request, res: express.Response) => {
-      await V2.getWorkflowSpecs(services.workflowService)
-        .then(result => res.status(200).json(result))
-        .catch((error: { message: string }) => {
-          res.status(500).send(error.message || 'Internal Server Error');
-        });
-    },
-  );
-
-  // v2
-  api.register(
+  routerApi.openApiBackend.register(
     'getWorkflowResults',
     async (c, _req: express.Request, res: express.Response) => {
       const instanceId = c.request.params.instanceId as string;
 
-      await V2.getWorkflowResults(services.dataIndexService, instanceId)
+      await routerApi.v2
+        .getWorkflowResults(instanceId)
         .then(result => res.status(200).json(result))
         .catch((error: { message: string }) => {
-          res.status(500).send(error.message || 'Internal Server Error');
+          res
+            .status(500)
+            .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
         });
     },
   );
 
   // v2
-  api.register(
+  routerApi.openApiBackend.register(
     'getWorkflowStatuses',
     async (_c, _req: express.Request, res: express.Response) => {
-      await V2.getWorkflowStatuses()
+      await routerApi.v2
+        .getWorkflowStatuses()
         .then(result => res.status(200).json(result))
         .catch((error: { message: string }) => {
-          res.status(500).send(error.message || 'Internal Server Error');
+          res
+            .status(500)
+            .json({ message: error.message || INTERNAL_SERVER_ERROR_MESSAGE });
         });
     },
   );

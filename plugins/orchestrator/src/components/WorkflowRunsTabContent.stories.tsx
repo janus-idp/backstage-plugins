@@ -17,12 +17,12 @@ const meta = {
   decorators: [
     (Story, context) => {
       const api = new MockOrchestratorClient({
-        getInstancesResponse: Promise.resolve(
+        listInstancesResponse: Promise.resolve(
           generateFakeProcessInstances(
             (context.args as { length: number }).length,
           ),
         ),
-        listWorkflowsOverviewResponse: Promise.resolve({
+        listWorkflowOverviewsResponse: Promise.resolve({
           limit: 0,
           offset: 0,
           totalCount: 1,

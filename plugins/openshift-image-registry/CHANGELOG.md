@@ -1,3 +1,36 @@
+## @janus-idp/backstage-plugin-openshift-image-registry [1.3.27](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-openshift-image-registry@1.3.26...@janus-idp/backstage-plugin-openshift-image-registry@1.3.27) (2024-03-04)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.5
+
+## @janus-idp/backstage-plugin-openshift-image-registry [1.3.26](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-openshift-image-registry@1.3.25...@janus-idp/backstage-plugin-openshift-image-registry@1.3.26) (2024-02-27)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.4
+
+## @janus-idp/backstage-plugin-openshift-image-registry [1.3.25](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-openshift-image-registry@1.3.24...@janus-idp/backstage-plugin-openshift-image-registry@1.3.25) (2024-02-26)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.3
+
+## @janus-idp/backstage-plugin-openshift-image-registry [1.3.24](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-openshift-image-registry@1.3.23...@janus-idp/backstage-plugin-openshift-image-registry@1.3.24) (2024-02-21)
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.5.2
+* **@janus-idp/cli:** upgraded to 1.7.2
+
 ## @janus-idp/backstage-plugin-openshift-image-registry [1.3.23](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-openshift-image-registry@1.3.22...@janus-idp/backstage-plugin-openshift-image-registry@1.3.23) (2024-02-05)
 
 

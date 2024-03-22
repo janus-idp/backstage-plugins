@@ -2,7 +2,6 @@ import { JsonObject } from '@backstage/types';
 
 import { Specification } from '@severlessworkflow/sdk-typescript';
 import { JSONSchema7, JSONSchema7Definition } from 'json-schema';
-import { OpenAPIV3 } from 'openapi-types';
 
 import { ProcessInstance, ProcessInstanceStateValues } from './models';
 
@@ -24,14 +23,8 @@ export type WorkflowDefinition = OmitRecursively<
   'normalize'
 >;
 
-export interface WorkflowItem {
-  serviceUrl?: string;
-  uri: string;
-  definition: WorkflowDefinition;
-}
-
 export type WorkflowListResult = {
-  items: WorkflowItem[];
+  items: WorkflowDefinition[];
   totalCount: number;
   offset: number;
   limit: number;
@@ -45,16 +38,6 @@ export type WorkflowOverviewListResult = {
 };
 
 export type WorkflowFormat = 'yaml' | 'json';
-
-export interface WorkflowSample {
-  id: string;
-  url: string;
-}
-
-export interface WorkflowSpecFile {
-  path: string;
-  content: OpenAPIV3.Document;
-}
 
 export type WorkflowInputSchemaStep = {
   schema: JsonObjectSchema;
@@ -94,7 +77,7 @@ export const isComposedSchema = (
   ).length === 0;
 
 export interface WorkflowInputSchemaResponse {
-  workflowItem: WorkflowItem;
+  definition: WorkflowDefinition;
   schemaSteps: WorkflowInputSchemaStep[];
   isComposedSchema: boolean;
   schemaParseError?: string;
@@ -111,8 +94,8 @@ export enum WorkflowCategory {
 
 export interface WorkflowOverview {
   workflowId: string;
+  format: WorkflowFormat;
   name?: string;
-  uri?: string;
   lastTriggeredMs?: number;
   lastRunStatus?: ProcessInstanceStateValues;
   category?: string;

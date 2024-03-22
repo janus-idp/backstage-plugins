@@ -1,57 +1,46 @@
 import { UrlReader } from '@backstage/backend-common';
+import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
-import { EventBroker } from '@backstage/plugin-events-node';
 
 import express from 'express';
 import { Logger } from 'winston';
 
-import { DataIndexService } from '../service/DataIndexService';
+import { DevModeService } from '../service/DevModeService';
 import { createBackendRouter } from '../service/router';
-import { SonataFlowService } from '../service/SonataFlowService';
 
 export interface RouterArgs {
-  eventBroker: EventBroker;
   config: Config;
   logger: Logger;
   discovery: DiscoveryApi;
   catalogApi: CatalogApi;
   urlReader: UrlReader;
+  scheduler: PluginTaskScheduler;
 }
 
 export async function createRouter(args: RouterArgs): Promise<express.Router> {
-  const dataIndexService = initDataIndexService(args.logger, args.config);
-  const sonataFlowService = new SonataFlowService(
-    args.config,
-    dataIndexService,
-    args.logger,
-  );
+  const autoStartDevMode =
+    args.config.getOptionalBoolean(
+      'orchestrator.sonataFlowService.autoStart',
+    ) ?? false;
 
-  const router = await createBackendRouter({
-    eventBroker: args.eventBroker,
+  if (autoStartDevMode) {
+    const devModeService = new DevModeService(args.config, args.logger);
+
+    const isSonataFlowUp = await devModeService.launchDevMode();
+
+    if (!isSonataFlowUp) {
+      args.logger.error('SonataFlow is not up. Check your configuration.');
+    }
+  }
+
+  return await createBackendRouter({
     config: args.config,
     logger: args.logger,
     discovery: args.discovery,
     catalogApi: args.catalogApi,
     urlReader: args.urlReader,
-    sonataFlowService,
-    dataIndexService,
+    scheduler: args.scheduler,
   });
-
-  const isSonataFlowUp = await sonataFlowService.connect();
-
-  if (!isSonataFlowUp) {
-    args.logger.error('SonataFlow is not up. Check your configuration.');
-  }
-
-  return router;
-}
-
-function initDataIndexService(
-  logger: Logger,
-  config: Config,
-): DataIndexService {
-  const dataIndexUrl = config.getString('orchestrator.dataIndexService.url');
-  return new DataIndexService(dataIndexUrl, logger);
 }

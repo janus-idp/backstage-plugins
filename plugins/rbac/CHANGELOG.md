@@ -1,3 +1,55 @@
+## @janus-idp/backstage-plugin-rbac [1.15.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.15.2...@janus-idp/backstage-plugin-rbac@1.15.3) (2024-03-04)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.5
+
+## @janus-idp/backstage-plugin-rbac [1.15.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.15.1...@janus-idp/backstage-plugin-rbac@1.15.2) (2024-02-27)
+
+
+### Bug Fixes
+
+* **rbac:** fixed autocomplete text input behavior on clear ([#1256](https://github.com/janus-idp/backstage-plugins/issues/1256)) ([cb70ff7](https://github.com/janus-idp/backstage-plugins/commit/cb70ff77fde0013eef58b233de226818617fcf6e))
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.4
+
+## @janus-idp/backstage-plugin-rbac [1.15.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.15.0...@janus-idp/backstage-plugin-rbac@1.15.1) (2024-02-26)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.3
+
+## @janus-idp/backstage-plugin-rbac [1.15.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.14.5...@janus-idp/backstage-plugin-rbac@1.15.0) (2024-02-26)
+
+
+### Features
+
+* **rbac:** save and display role description in the frontend ([#1206](https://github.com/janus-idp/backstage-plugins/issues/1206)) ([ff61266](https://github.com/janus-idp/backstage-plugins/commit/ff61266a729d472a0e4ff57cd9d2d6ea2389b820))
+
+## @janus-idp/backstage-plugin-rbac [1.14.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.14.4...@janus-idp/backstage-plugin-rbac@1.14.5) (2024-02-21)
+
+
+### Bug Fixes
+
+* **rbac:** add test selectors ([#1229](https://github.com/janus-idp/backstage-plugins/issues/1229)) ([dca5f2e](https://github.com/janus-idp/backstage-plugins/commit/dca5f2e4e7db29e522752bd5743f41a83bcb6f32))
+* **rbac:** fix labels and dropdowns in dark theme by aligning/downgrading components to MUI v4 ([#1243](https://github.com/janus-idp/backstage-plugins/issues/1243)) ([ad44fa8](https://github.com/janus-idp/backstage-plugins/commit/ad44fa8a445234c1e2be0c6386dd1374feba03b0))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-rbac-common:** upgraded to 1.3.0
+* **@janus-idp/shared-react:** upgraded to 2.5.2
+* **@janus-idp/cli:** upgraded to 1.7.2
+
 ## @janus-idp/backstage-plugin-rbac [1.14.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.14.3...@janus-idp/backstage-plugin-rbac@1.14.4) (2024-02-20)
 
 

@@ -3,19 +3,16 @@ import { JsonObject } from '@backstage/types';
 
 import {
   AssessedProcessInstance,
-  Job,
   ProcessInstance,
+  WorkflowDefinition,
   WorkflowExecutionResponse,
   WorkflowInputSchemaResponse,
-  WorkflowItem,
-  WorkflowListResult,
   WorkflowOverview,
   WorkflowOverviewListResult,
-  WorkflowSpecFile,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 export interface OrchestratorApi {
-  abortWorkflow(workflowId: string): Promise<void>;
+  abortWorkflowInstance(instanceId: string): Promise<void>;
 
   executeWorkflow(args: {
     workflowId: string;
@@ -23,20 +20,14 @@ export interface OrchestratorApi {
     businessKey?: string;
   }): Promise<WorkflowExecutionResponse>;
 
-  getWorkflow(workflowId: string): Promise<WorkflowItem>;
+  getWorkflowDefinition(workflowId: string): Promise<WorkflowDefinition>;
 
-  listWorkflows(): Promise<WorkflowListResult>;
-
-  listWorkflowsOverview(): Promise<WorkflowOverviewListResult>;
-
-  getInstances(): Promise<ProcessInstance[]>;
+  getWorkflowSource(workflowId: string): Promise<string>;
 
   getInstance(
     instanceId: string,
     includeAssessment: boolean,
   ): Promise<AssessedProcessInstance>;
-
-  getInstanceJobs(instanceId: string): Promise<Job[]>;
 
   getWorkflowDataInputSchema(args: {
     workflowId: string;
@@ -44,16 +35,11 @@ export interface OrchestratorApi {
     assessmentInstanceId?: string;
   }): Promise<WorkflowInputSchemaResponse>;
 
-  createWorkflowDefinition(
-    uri: string,
-    content?: string,
-  ): Promise<WorkflowItem>;
-
-  deleteWorkflowDefinition(workflowId: string): Promise<any>;
-
-  getSpecs(): Promise<WorkflowSpecFile[]>;
-
   getWorkflowOverview(workflowId: string): Promise<WorkflowOverview>;
+
+  listWorkflowOverviews(): Promise<WorkflowOverviewListResult>;
+
+  listInstances(): Promise<ProcessInstance[]>;
 }
 
 export const orchestratorApiRef = createApiRef<OrchestratorApi>({

@@ -57,6 +57,7 @@ export interface WorkloadOverview {
 }
 
 export interface Service {
+  additionalDetails: AdditionalItem[];
   type: string;
   name: string;
   createdAt: string;
@@ -87,6 +88,11 @@ export interface ServiceDetailsInfo {
   validations: Validations;
   additionalDetails: AdditionalItem[];
   cluster?: string;
+}
+
+export interface ServiceDetailsQuery {
+  rateInterval?: string;
+  validate?: boolean;
 }
 
 export function getServiceDetailsUpdateLabel(

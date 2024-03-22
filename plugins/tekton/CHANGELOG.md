@@ -1,3 +1,48 @@
+## @janus-idp/backstage-plugin-tekton [3.5.11](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.5.10...@janus-idp/backstage-plugin-tekton@3.5.11) (2024-03-19)
+
+
+### Bug Fixes
+
+* **tekton:** fix low vulnerability tooltip text ([#1347](https://github.com/janus-idp/backstage-plugins/issues/1347)) ([47640a5](https://github.com/janus-idp/backstage-plugins/commit/47640a5c3a7ad33ad6ae6b190f2ca3d861970d94))
+
+## @janus-idp/backstage-plugin-tekton [3.5.10](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.5.9...@janus-idp/backstage-plugin-tekton@3.5.10) (2024-03-04)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.5
+
+## @janus-idp/backstage-plugin-tekton [3.5.9](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.5.8...@janus-idp/backstage-plugin-tekton@3.5.9) (2024-02-27)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.4
+
+## @janus-idp/backstage-plugin-tekton [3.5.8](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.5.7...@janus-idp/backstage-plugin-tekton@3.5.8) (2024-02-26)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.3
+
+## @janus-idp/backstage-plugin-tekton [3.5.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.5.6...@janus-idp/backstage-plugin-tekton@3.5.7) (2024-02-21)
+
+
+### Other changes
+
+* **tekton:** add playwright tests for the plugin ([#1228](https://github.com/janus-idp/backstage-plugins/issues/1228)) ([705afc2](https://github.com/janus-idp/backstage-plugins/commit/705afc2892839f39a8cbad39f51c959aa3ac4c8a))
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.5.2
+* **@janus-idp/cli:** upgraded to 1.7.2
+
 ## @janus-idp/backstage-plugin-tekton [3.5.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.5.5...@janus-idp/backstage-plugin-tekton@3.5.6) (2024-02-16)
 
 

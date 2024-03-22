@@ -34,6 +34,7 @@ jest.mock('@backstage/backend-common', () => {
 });
 
 describe('plugin-endpoint', () => {
+  const fakeToken = 'fakeToken';
   const mockPluginEndpointDiscovery = {
     getBaseUrl: jest.fn().mockImplementation(async (pluginId: string) => {
       return `https://localhost:7007/api/${pluginId}`;
@@ -60,10 +61,10 @@ describe('plugin-endpoint', () => {
       const collector = new PluginPermissionMetadataCollector(
         mockPluginEndpointDiscovery,
         backendPluginIDsProviderMock,
-        config,
         logger,
+        config,
       );
-      const policiesMetadata = await collector.getPluginPolicies();
+      const policiesMetadata = await collector.getPluginPolicies(fakeToken);
 
       expect(policiesMetadata.length).toEqual(0);
     });
@@ -79,10 +80,10 @@ describe('plugin-endpoint', () => {
       const collector = new PluginPermissionMetadataCollector(
         mockPluginEndpointDiscovery,
         backendPluginIDsProviderMock,
-        config,
         logger,
+        config,
       );
-      const policiesMetadata = await collector.getPluginPolicies();
+      const policiesMetadata = await collector.getPluginPolicies(fakeToken);
 
       expect(policiesMetadata.length).toEqual(1);
       expect(policiesMetadata[0].pluginId).toEqual('permission');
@@ -109,10 +110,10 @@ describe('plugin-endpoint', () => {
       const collector = new PluginPermissionMetadataCollector(
         mockPluginEndpointDiscovery,
         backendPluginIDsProviderMock,
-        config,
         logger,
+        config,
       );
-      const policiesMetadata = await collector.getPluginPolicies();
+      const policiesMetadata = await collector.getPluginPolicies(fakeToken);
 
       expect(policiesMetadata.length).toEqual(1);
       expect(policiesMetadata[0].pluginId).toEqual('permission');
@@ -148,10 +149,10 @@ describe('plugin-endpoint', () => {
       const collector = new PluginPermissionMetadataCollector(
         mockPluginEndpointDiscovery,
         backendPluginIDsProviderMock,
-        config,
         logger,
+        config,
       );
-      const policiesMetadata = await collector.getPluginPolicies();
+      const policiesMetadata = await collector.getPluginPolicies(fakeToken);
 
       expect(policiesMetadata.length).toEqual(1);
       expect(policiesMetadata[0].pluginId).toEqual('permission');
@@ -163,7 +164,7 @@ describe('plugin-endpoint', () => {
       ]);
     });
 
-    it('should throw error when it is not possible to retrieve permission metadata for known endpoint', async () => {
+    it('should log error when it is not possible to retrieve permission metadata for known endpoint', async () => {
       backendPluginIDsProviderMock.getPluginIds.mockReturnValue([
         'permission',
         'catalog',
@@ -184,15 +185,68 @@ describe('plugin-endpoint', () => {
         '{"permissions":[{"type":"resource","name":"policy.entity.read","attributes":{"action":"read"}}]}',
       );
 
+      const errorSpy = jest.spyOn(logger, 'error').mockClear();
       const collector = new PluginPermissionMetadataCollector(
         mockPluginEndpointDiscovery,
         backendPluginIDsProviderMock,
-        config,
         logger,
+        config,
       );
-      await expect(collector.getPluginPolicies()).rejects.toThrow(
-        'Unexpected error',
+
+      const policiesMetadata = await collector.getPluginPolicies(fakeToken);
+
+      expect(policiesMetadata.length).toEqual(1);
+      expect(policiesMetadata[0].pluginId).toEqual('permission');
+      expect(policiesMetadata[0].policies).toEqual([
+        {
+          permission: 'policy.entity.read',
+          policy: 'read',
+        },
+      ]);
+
+      expect(errorSpy).toHaveBeenCalledWith(
+        'Failed to retrieve permission metadata for catalog. Error: Unexpected error',
       );
+    });
+
+    it('should not log error caused by non json permission metadata for known endpoint', async () => {
+      backendPluginIDsProviderMock.getPluginIds.mockReturnValue([
+        'permission',
+        'catalog',
+      ]);
+
+      mockUrlReaderService.readUrl = jest
+        .fn()
+        .mockImplementation(async (_wellKnownURL: string) => {
+          return mockReadUrlResponse;
+        });
+      bufferMock.toString
+        .mockReturnValueOnce(
+          '{"permissions":[{"type":"resource","name":"policy.entity.read","attributes":{"action":"read"}}]}',
+        )
+        .mockReturnValueOnce('non json data');
+
+      const errorSpy = jest.spyOn(logger, 'error').mockClear();
+
+      const collector = new PluginPermissionMetadataCollector(
+        mockPluginEndpointDiscovery,
+        backendPluginIDsProviderMock,
+        logger,
+        config,
+      );
+      const policiesMetadata = await collector.getPluginPolicies(fakeToken);
+
+      expect(policiesMetadata.length).toEqual(1);
+      expect(policiesMetadata[0].pluginId).toEqual('permission');
+      expect(policiesMetadata[0].policies).toEqual([
+        {
+          permission: 'policy.entity.read',
+          policy: 'read',
+        },
+      ]);
+
+      // workaround for https://issues.redhat.com/browse/RHIDP-1456
+      expect(errorSpy).not.toHaveBeenCalled();
     });
   });
 
@@ -203,10 +257,11 @@ describe('plugin-endpoint', () => {
       const collector = new PluginPermissionMetadataCollector(
         mockPluginEndpointDiscovery,
         backendPluginIDsProviderMock,
-        config,
         logger,
+        config,
       );
-      const conditionRulesMetadata = await collector.getPluginConditionRules();
+      const conditionRulesMetadata =
+        await collector.getPluginConditionRules(fakeToken);
 
       expect(conditionRulesMetadata.length).toEqual(0);
     });
@@ -222,10 +277,11 @@ describe('plugin-endpoint', () => {
       const collector = new PluginPermissionMetadataCollector(
         mockPluginEndpointDiscovery,
         backendPluginIDsProviderMock,
-        config,
         logger,
+        config,
       );
-      const conditionRulesMetadata = await collector.getPluginConditionRules();
+      const conditionRulesMetadata =
+        await collector.getPluginConditionRules(fakeToken);
 
       expect(conditionRulesMetadata.length).toEqual(1);
       expect(conditionRulesMetadata[0].pluginId).toEqual('catalog');

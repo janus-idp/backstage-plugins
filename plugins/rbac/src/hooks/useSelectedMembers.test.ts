@@ -3,11 +3,80 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { mockMembers } from '../__fixtures__/mockMembers';
 import { useSelectedMembers } from './useSelectedMembers';
 
-jest.mock('@backstage/core-plugin-api', () => ({
-  ...jest.requireActual('@backstage/core-plugin-api'),
-  useApi: jest.fn().mockReturnValue({
-    getRole: jest.fn().mockReturnValue([
-      {
+const apiMock = {
+  getRole: jest.fn().mockImplementation(),
+  getMembers: jest.fn().mockImplementation(),
+};
+
+jest.mock('@backstage/core-plugin-api', () => {
+  const actualApi = jest.requireActual('@backstage/core-plugin-api');
+  return {
+    ...actualApi,
+    useApi: jest.fn().mockImplementation(() => {
+      return apiMock;
+    }),
+  };
+});
+
+describe('useSelectedMembers', () => {
+  beforeEach(() => {
+    apiMock.getRole = jest.fn().mockImplementation(async () => {
+      return [
+        {
+          memberReferences: [
+            'group:default/admins',
+            'user:default/amelia.park',
+            'user:default/calum.leavy',
+            'group:default/team-b',
+            'group:default/team-c',
+          ],
+          name: 'role:default/rbac_admin',
+          metadata: {
+            source: 'rest',
+            description: 'default rbac admin group',
+          },
+        },
+      ];
+    });
+    apiMock.getMembers = jest.fn().mockImplementation(async () => mockMembers);
+  });
+
+  it('should throw an error on get role', async () => {
+    apiMock.getRole = jest.fn().mockImplementation(() => {
+      throw new Error('Some error message');
+    });
+    const { result } = renderHook(() =>
+      useSelectedMembers('role:default/rbac_admin'),
+    );
+    await waitFor(() => {
+      expect(result.current.loading).toBeFalsy();
+      expect(result.current.roleError.message).toEqual('Some error message');
+    });
+  });
+
+  it('should throw an error on get members', async () => {
+    apiMock.getMembers = jest.fn().mockImplementation(() => {
+      throw new Error('Some error message');
+    });
+    const { result } = renderHook(() =>
+      useSelectedMembers('role:default/rbac_admin'),
+    );
+    await waitFor(() => {
+      expect(result.current.loading).toBeFalsy();
+      expect(result.current.membersError.message).toEqual('Some error message');
+    });
+  });
+
+  it('should return selected members', async () => {
+    expect(true).toBeTruthy();
+
+    const { result } = renderHook(() =>
+      useSelectedMembers('role:default/rbac_admin'),
+    );
+    await waitFor(() => {
+      expect(result.current.loading).toBeFalsy();
+      expect(result.current.selectedMembers).toHaveLength(5);
+      expect(result.current.role).toEqual({
         memberReferences: [
           'group:default/admins',
           'user:default/amelia.park',
@@ -16,20 +85,11 @@ jest.mock('@backstage/core-plugin-api', () => ({
           'group:default/team-c',
         ],
         name: 'role:default/rbac_admin',
-      },
-    ]),
-    getMembers: jest.fn().mockReturnValue(mockMembers),
-  }),
-}));
-
-describe('useSelectedMembers', () => {
-  it('should return selected members', async () => {
-    const { result } = renderHook(() =>
-      useSelectedMembers('role:default/rbac_admin'),
-    );
-    await waitFor(() => {
-      expect(result.current.loading).toBeFalsy();
-      expect(result.current.selectedMembers).toHaveLength(5);
+        metadata: {
+          source: 'rest',
+          description: 'default rbac admin group',
+        },
+      });
     });
   });
 });

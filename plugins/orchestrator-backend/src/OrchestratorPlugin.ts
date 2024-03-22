@@ -4,7 +4,6 @@ import {
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
-import { DefaultEventBroker } from '@backstage/plugin-events-backend';
 
 import { createRouter } from './routerWrapper';
 
@@ -18,6 +17,7 @@ export const orchestratorPlugin = createBackendPlugin({
         discovery: coreServices.discovery,
         httpRouter: coreServices.httpRouter,
         urlReader: coreServices.urlReader,
+        scheduler: coreServices.scheduler,
         catalogApi: catalogServiceRef,
       },
       async init({
@@ -27,15 +27,16 @@ export const orchestratorPlugin = createBackendPlugin({
         httpRouter,
         catalogApi,
         urlReader,
+        scheduler,
       }) {
         const log = loggerToWinstonLogger(logger);
         const router = await createRouter({
-          eventBroker: new DefaultEventBroker(log),
           config: config,
           logger: log,
           discovery: discovery,
           catalogApi: catalogApi,
           urlReader: urlReader,
+          scheduler: scheduler,
         });
         httpRouter.use(router);
       },

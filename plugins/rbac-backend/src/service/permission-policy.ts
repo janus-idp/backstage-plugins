@@ -177,17 +177,20 @@ export class RBACPermissionPolicy implements PermissionPolicy {
       }
     }
 
-    if (adminUsers && adminUsers.length > 0) {
-      await useAdminsFromConfig(
-        adminUsers,
-        enforcerDelegate,
-        roleMetadataStorage,
-        knex,
-      );
-      await setAdminPermissions(enforcerDelegate);
-    } else {
+    await useAdminsFromConfig(
+      adminUsers || [],
+      enforcerDelegate,
+      roleMetadataStorage,
+      knex,
+    );
+    await setAdminPermissions(enforcerDelegate);
+
+    if (
+      (!adminUsers || adminUsers.length === 0) &&
+      (!superUsers || superUsers.length === 0)
+    ) {
       logger.warn(
-        'There are no admins configured for the RBAC-backend plugin. The plugin may not work properly.',
+        'There are no admins or super admins configured for the RBAC-backend plugin.',
       );
     }
 

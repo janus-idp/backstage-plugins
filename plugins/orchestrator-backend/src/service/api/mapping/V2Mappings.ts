@@ -1,8 +1,11 @@
 import moment from 'moment';
 
 import {
-  ASSESSMENT_WORKFLOW_TYPE,
+  capitalize,
   ExecuteWorkflowResponseDTO,
+  extractWorkflowFormat,
+  fromWorkflowSource,
+  getWorkflowCategory,
   ProcessInstance,
   ProcessInstanceDTO,
   ProcessInstanceState,
@@ -13,12 +16,10 @@ import {
   WorkflowDefinition,
   WorkflowDTO,
   WorkflowExecutionResponse,
-  WorkflowListResult,
-  WorkflowListResultDTO,
+  WorkflowFormatDTO,
   WorkflowOverview,
   WorkflowOverviewDTO,
-  WorkflowSpecFile,
-  WorkflowSpecFileDTO,
+  WorkflowRunStatusDTO,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 // Mapping functions
@@ -39,55 +40,24 @@ export function mapWorkflowCategoryDTOFromString(
     : 'infrastructure';
 }
 
-export function mapToWorkflowListResultDTO(
-  definitions: WorkflowListResult,
-): WorkflowListResultDTO {
-  const result = {
-    items: definitions.items.map(def => {
-      return {
-        annotations: def.definition.annotations,
-        category: getWorkflowCategoryDTO(def.definition),
-        description: def.definition.description,
-        name: def.definition.name,
-        uri: def.uri,
-        id: def.definition.id,
-      };
-    }),
-    paginationInfo: {
-      limit: definitions.limit,
-      offset: definitions.offset,
-      totalCount: definitions.totalCount,
-    },
-  };
-  return result;
-}
-
 export function getWorkflowCategoryDTO(
   definition: WorkflowDefinition | undefined,
 ): WorkflowCategoryDTO {
-  let result: WorkflowCategoryDTO = 'infrastructure';
-
-  if (
-    definition?.annotations?.find(
-      annotation => annotation === ASSESSMENT_WORKFLOW_TYPE,
-    )
-  ) {
-    result = 'assessment';
-  }
-
-  return result;
+  return getWorkflowCategory(definition);
 }
 
-export function mapToWorkflowDTO(
-  uri: string,
-  definition: WorkflowDefinition,
-): WorkflowDTO {
+export function getWorkflowFormatDTO(source: string): WorkflowFormatDTO {
+  return extractWorkflowFormat(source);
+}
+
+export function mapToWorkflowDTO(source: string): WorkflowDTO {
+  const definition = fromWorkflowSource(source);
   return {
     annotations: definition.annotations,
     category: getWorkflowCategoryDTO(definition),
     description: definition.description,
     name: definition.name,
-    uri: uri,
+    format: getWorkflowFormatDTO(source),
     id: definition.id,
   };
 }
@@ -102,7 +72,7 @@ export function mapWorkflowCategoryDTO(
 }
 
 export function getProcessInstancesDTOFromString(
-  state: string,
+  state?: string,
 ): ProcessInstanceStatusDTO {
   switch (state) {
     case ProcessInstanceState.Active.valueOf():
@@ -115,6 +85,8 @@ export function getProcessInstancesDTOFromString(
       return 'Aborted';
     case ProcessInstanceState.Suspended.valueOf():
       return 'Suspended';
+    case ProcessInstanceState.Pending.valueOf():
+      return 'Pending';
     default:
       throw new Error(
         'state is not one of the values of type ProcessInstanceStatusDTO',
@@ -125,9 +97,11 @@ export function getProcessInstancesDTOFromString(
 export function mapToProcessInstanceDTO(
   processInstance: ProcessInstance,
 ): ProcessInstanceDTO {
-  const start = moment(processInstance.start?.toString());
-  const end = moment(processInstance.end?.toString());
-  const duration = moment.duration(start.diff(end));
+  const start = moment(processInstance.start);
+  const end = moment(processInstance.end);
+  const duration = processInstance.end
+    ? moment.duration(start.diff(end)).humanize()
+    : undefined;
 
   let variables: Record<string, unknown> | undefined;
   if (typeof processInstance?.variables === 'string') {
@@ -139,13 +113,14 @@ export function mapToProcessInstanceDTO(
   return {
     category: mapWorkflowCategoryDTO(processInstance.category),
     description: processInstance.description,
-    duration: duration.humanize(),
     id: processInstance.id,
     name: processInstance.processName,
     // To be fixed https://issues.redhat.com/browse/FLPATH-950
     // @ts-ignore
     workflowdata: variables?.workflowdata,
-    started: start.toDate().toLocaleString(),
+    start: processInstance.start?.toUTCString(),
+    end: processInstance.end?.toUTCString(),
+    duration: duration,
     status: getProcessInstancesDTOFromString(processInstance.state),
     workflow: processInstance.processName ?? processInstance.processId,
   };
@@ -189,15 +164,11 @@ export function mapToGetWorkflowInstanceResults(
   return returnObject;
 }
 
-export function mapToWorkflowSpecFileDTO(
-  specV1: WorkflowSpecFile,
-): WorkflowSpecFileDTO {
-  if (!specV1.content) {
-    throw new Error('Workflow specification content is empty');
-  }
-
+export function mapToWorkflowRunStatusDTO(
+  status: ProcessInstanceState,
+): WorkflowRunStatusDTO {
   return {
-    content: JSON.stringify(specV1.content),
-    path: specV1.path,
+    key: capitalize(status),
+    value: status,
   };
 }

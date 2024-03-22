@@ -59,7 +59,64 @@
       "status": {}
     }
   ],
-  "gateways": [],
+  "gateways": [
+    {
+      "kind": "Gateway",
+      "apiVersion": "networking.istio.io/v1beta1",
+      "metadata": {
+        "name": "bookinfo-gateway",
+        "namespace": "bookinfo",
+        "uid": "39d3bdc1-0b75-41ad-b6c4-7b5e62266d4f",
+        "resourceVersion": "942",
+        "generation": 1,
+        "creationTimestamp": "2024-02-26T09:51:07Z",
+        "annotations": {
+          "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"networking.istio.io/v1alpha3\",\"kind\":\"Gateway\",\"metadata\":{\"annotations\":{},\"name\":\"bookinfo-gateway\",\"namespace\":\"bookinfo\"},\"spec\":{\"selector\":{\"istio\":\"ingressgateway\"},\"servers\":[{\"hosts\":[\"*\"],\"port\":{\"name\":\"http\",\"number\":8080,\"protocol\":\"HTTP\"}}]}}\n"
+        },
+        "managedFields": [
+          {
+            "manager": "kubectl-client-side-apply",
+            "operation": "Update",
+            "apiVersion": "networking.istio.io/v1alpha3",
+            "time": "2024-02-26T09:51:07Z",
+            "fieldsType": "FieldsV1",
+            "fieldsV1": {
+              "f:metadata": {
+                "f:annotations": {
+                  ".": {},
+                  "f:kubectl.kubernetes.io/last-applied-configuration": {}
+                }
+              },
+              "f:spec": {
+                ".": {},
+                "f:selector": {
+                  ".": {},
+                  "f:istio": {}
+                },
+                "f:servers": {}
+              }
+            }
+          }
+        ]
+      },
+      "spec": {
+        "servers": [
+          {
+            "port": {
+              "number": 8080,
+              "protocol": "HTTP",
+              "name": "http"
+            },
+            "hosts": ["*"]
+          }
+        ],
+        "selector": {
+          "istio": "ingressgateway"
+        }
+      },
+      "status": {}
+    }
+  ],
   "serviceEntries": [],
   "sidecars": [],
   "virtualServices": [],

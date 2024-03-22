@@ -7,8 +7,7 @@ import { Meta, StoryObj } from '@storybook/react';
 import {
   AssessedProcessInstance,
   ProcessInstance,
-  WorkflowItem,
-  WorkflowSpecFile,
+  WorkflowDefinition,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import {
@@ -16,8 +15,7 @@ import {
   fakeCompletedInstance,
   fakeProcessInstances,
 } from '../__fixtures__/fakeProcessInstance';
-import { fakeWorkflowItem } from '../__fixtures__/fakeWorkflowItem';
-import { fakeWorkflowSpecs } from '../__fixtures__/fakeWorkflowSpecs';
+import { fakeWorkflowDefinition } from '../__fixtures__/fakeWorkflowDefinition';
 import { orchestratorApiRef } from '../api';
 import { MockOrchestratorClient } from '../api/MockOrchestratorClient';
 import { orchestratorRootRouteRef } from '../routes';
@@ -70,20 +68,15 @@ const getFakeAssessedProcessInstance = async (
   };
 };
 
-const getFakeWorkflowItem = async (
+const getFakeWorkflowDefinition = async (
   workflowId?: string,
-): Promise<WorkflowItem> => {
+): Promise<WorkflowDefinition> => {
   if (workflowId === '__loading__') {
     await delay(5 * 1000);
-    return fakeWorkflowItem;
+    return fakeWorkflowDefinition;
   }
 
-  return fakeWorkflowItem;
-};
-
-const getFakeSpecs = async (): Promise<WorkflowSpecFile[]> => {
-  await delay(5 * 1000);
-  return fakeWorkflowSpecs;
+  return fakeWorkflowDefinition;
 };
 
 const meta = {
@@ -97,8 +90,7 @@ const meta = {
             [
               orchestratorApiRef,
               new MockOrchestratorClient({
-                getSpecsResponse: getFakeSpecs(),
-                getWorkflowResponse: getFakeWorkflowItem(
+                getWorkflowDefinitionResponse: getFakeWorkflowDefinition(
                   context.args.instanceId,
                 ),
                 getInstanceResponse: () => {

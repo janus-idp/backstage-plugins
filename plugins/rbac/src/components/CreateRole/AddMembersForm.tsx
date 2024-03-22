@@ -3,8 +3,8 @@ import React from 'react';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 
 import { LinearProgress, TextField } from '@material-ui/core';
+import FormHelperText from '@material-ui/core/FormHelperText';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import FormHelperText from '@mui/material/FormHelperText';
 import { FormikErrors } from 'formik';
 
 import { MemberEntity } from '../../types';
@@ -34,7 +34,12 @@ export const AddMembersForm = ({
   membersData,
 }: AddMembersFormProps) => {
   const [search, setSearch] = React.useState<string>('');
-  const [selectedMember, setSelectedMember] = React.useState<SelectedMember>();
+  const [selectedMember, setSelectedMember] = React.useState<SelectedMember>({
+    label: '',
+    etag: '',
+    type: '',
+    ref: '',
+  } as SelectedMember);
 
   const getDescription = (member: MemberEntity) => {
     const memberCount = getMembersCount(member);
@@ -73,7 +78,7 @@ export const AddMembersForm = ({
       <br />
       <Autocomplete
         options={membersOptions}
-        getOptionLabel={(option: SelectedMember) => option.label}
+        getOptionLabel={(option: SelectedMember) => option.label ?? ''}
         getOptionSelected={(option: SelectedMember, value: SelectedMember) =>
           option.etag === value.etag
         }
@@ -84,11 +89,14 @@ export const AddMembersForm = ({
         onChange={(_e, value: SelectedMember) => {
           setSelectedMember(value);
           if (value) {
+            setSearch(value.label);
             setFieldValue('selectedMembers', [...selectedMembers, value]);
           }
         }}
         inputValue={search}
-        onInputChange={(_e, newSearch: string) => setSearch(newSearch)}
+        onInputChange={(_e, newSearch: string, reason) =>
+          reason === 'input' && setSearch(newSearch)
+        }
         getOptionDisabled={(option: SelectedMember) =>
           !!selectedMembers.find(
             (sm: SelectedMember) => sm.etag === option.etag,

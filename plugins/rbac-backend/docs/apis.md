@@ -16,7 +16,7 @@ Each endpoint also requires an Authorization header with the Bearer token that w
 
 GET </api/permission/roles>
 
-lists all roles.
+Lists all roles.
 
 Returns:
 
@@ -24,11 +24,19 @@ Returns:
 [
   {
     "memberReferences": ["user:default/adam"],
-    "name": "role:default/guests"
+    "name": "role:default/rbac_admin",
+    "metadata": {
+      "source": "configuration",
+      "description": null
+    }
   },
   {
     "memberReferences": ["group:default/janus-authors", "user:default/matt"],
-    "name": "role:default/test"
+    "name": "role:default/test",
+    "metadata": {
+      "source": "csv-file",
+      "description": null
+    }
   }
 ]
 ```
@@ -54,7 +62,11 @@ Returns:
 [
   {
     "memberReferences": ["group:default/janus-authors", "user:default/matt"],
-    "name": "role:default/test"
+    "name": "role:default/test",
+    "metadata": {
+      "source": "csv-file",
+      "description": null
+    }
   }
 ]
 ```
@@ -69,17 +81,21 @@ Creates a new role.
 
 Request Parameters:
 
-| Parameter name   | Description                                                      | Type   |
-| ---------------- | ---------------------------------------------------------------- | ------ |
-| memberReferences | users / groups to be added to the role `<kind>:<default>/<name>` | Array  |
-| name             | name of the role                                                 | String |
+| Parameter name       | Description                                                      | Type   |
+| -------------------- | ---------------------------------------------------------------- | ------ |
+| memberReferences     | users / groups to be added to the role `<kind>:<default>/<name>` | Array  |
+| name                 | name of the role                                                 | String |
+| metadata.description | description of the role                                          | String |
 
 body:
 
 ```json
 {
   "memberReferences": ["group:default/test"],
-  "name": "role:default/test_admin"
+  "name": "role:default/test_admin",
+  "metadata": {
+    "description": "This is a test admin role"
+  }
 }
 ```
 
@@ -104,10 +120,11 @@ Request Parameters:
 
 Request Parameters for oldRole and newRole:
 
-| Parameter name   | Description                                                      | Type   |
-| ---------------- | ---------------------------------------------------------------- | ------ |
-| memberReferences | users / groups to be added to the role `<kind>:<default>/<name>` | Array  |
-| name             | name of the role                                                 | String |
+| Parameter name       | Description                                                      | Type   |
+| -------------------- | ---------------------------------------------------------------- | ------ |
+| memberReferences     | users / groups to be added to the role `<kind>:<default>/<name>` | Array  |
+| name                 | name of the role                                                 | String |
+| metadata.description | description of the role                                          | String |
 
 body:
 
@@ -115,11 +132,17 @@ body:
 {
   "oldRole": {
     "memberReferences": ["group:default/test"],
-    "name": "role:default/test_admin"
+    "name": "role:default/test_admin",
+    "metadata": {
+      "description": "This is a test admin role"
+    }
   },
   "newRole": {
     "memberReferences": ["group:default/test", "user:default/test2"],
-    "name": "role:default/test_admin"
+    "name": "role:default/test_admin",
+    "metadata": {
+      "description": "This is a test admin role with a group and user"
+    }
   }
 }
 ```
@@ -150,7 +173,10 @@ before:
 ```json
 {
   "memberReferences": ["group:default/test, user:default/test2"],
-  "name": "role:default/test_admin"
+  "name": "role:default/test_admin",
+  "metadata": {
+    "description": "This is a test admin role with a group and user"
+  }
 }
 ```
 
@@ -159,7 +185,10 @@ after:
 ```json
 {
   "memberReferences": ["group:default/test"],
-  "name": "role:default/test_admin"
+  "name": "role:default/test_admin",
+  "metadata": {
+    "description": "This is a test admin role with a group and user"
+  }
 }
 ```
 
@@ -190,7 +219,7 @@ Returns a status code of 204 upon success.
 
 GET </api/permission/policies>
 
-lists all permission polices.
+Lists all permission polices.
 
 Returns:
 
@@ -200,13 +229,19 @@ Returns:
     "entityReference": "role:default/test",
     "permission": "catalog-entity",
     "policy": "read",
-    "effect": "allow"
+    "effect": "allow",
+    "metadata": {
+      "source": "csv-file"
+    }
   },
   {
     "entityReference": "role:default/test",
     "permission": "catalog.entity.create",
     "policy": "create",
-    "effect": "allow"
+    "effect": "allow",
+    "metadata": {
+      "source": "csv-file"
+    }
   },
   ...
 ]
@@ -235,13 +270,19 @@ Returns:
     "entityReference": "role:default/test",
     "permission": "catalog-entity",
     "policy": "read",
-    "effect": "allow"
+    "effect": "allow",
+    "metadata": {
+      "source": "csv-file"
+    }
   },
   {
     "entityReference": "role:default/test",
     "permission": "catalog.entity.create",
     "policy": "create",
-    "effect": "allow"
+    "effect": "allow",
+    "metadata": {
+      "source": "csv-file"
+    }
   }
 ]
 ```
@@ -252,7 +293,7 @@ Returns:
 
 POST </api/permission/policies>
 
-Creates a permission policy for a specified entity.
+Creates one or more permission policies for a specified entity.
 
 Request parameters:
 
@@ -266,12 +307,14 @@ Request parameters:
 body:
 
 ```json
-{
-  "entityReference": "role:default/test",
-  "permission": "catalog-entity",
-  "policy": "read",
-  "effect": "allow"
-}
+[
+  {
+    "entityReference": "role:default/test",
+    "permission": "catalog-entity",
+    "policy": "delete",
+    "effect": "allow"
+  }
+]
 ```
 
 Returns a status code of 201 upon success.
@@ -283,7 +326,7 @@ Returns a status code of 201 upon success.
 PUT </api/permission/policies/:kind/:namespace/:name>
 ex. <http://localhost:7007/api/permission/policies/role/default/test>
 
-Updates a permission policy for a specified entity.
+Updates one or more permission policies for a specified entity.
 
 Request parameters:
 
@@ -305,16 +348,30 @@ body:
 
 ```json
 {
-  "oldPolicy": {
-    "permission": "catalog-entity",
-    "policy": "read",
-    "effect": "deny"
-  },
-  "newPolicy": {
-    "permission": "policy-entity",
-    "policy": "read",
-    "effect": "allow"
-  }
+  "oldPolicy": [
+    {
+      "permission": "catalog-entity",
+      "policy": "read",
+      "effect": "allow"
+    },
+    {
+      "permission": "catalog.entity.create",
+      "policy": "create",
+      "effect": "allow"
+    }
+  ],
+  "newPolicy": [
+    {
+      "permission": "catalog-entity",
+      "policy": "read",
+      "effect": "deny"
+    },
+    {
+      "permission": "policy-entity",
+      "policy": "create",
+      "effect": "allow"
+    }
+  ]
 }
 ```
 
@@ -350,7 +407,7 @@ Returns a status code of 204 upon success.
 
 GET </api/permission/plugins/policies>
 
-lists all plugin permission policies from plugins installed in your Backstage instance.
+Lists all plugin permission policies from plugins installed in your Backstage instance.
 
 Returns:
 
@@ -420,7 +477,9 @@ The structure of the condition JSON object is as follows:
 
 ### GET </plugins/condition-rules>
 
-GET </plugins/condition-rules> provides condition parameters schemas.
+GET </plugins/condition-rules>
+
+Provides condition parameters schemas.
 
 ```json
 [

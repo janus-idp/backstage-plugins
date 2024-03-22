@@ -1,7 +1,12 @@
 import React from 'react';
 
 import { Content, InfoCard, Link } from '@backstage/core-components';
-import { PathParams, RouteFunc, useRouteRef } from '@backstage/core-plugin-api';
+import {
+  PathParams,
+  RouteFunc,
+  useApi,
+  useRouteRef,
+} from '@backstage/core-plugin-api';
 
 import { Grid, makeStyles } from '@material-ui/core';
 import moment from 'moment';
@@ -11,11 +16,14 @@ import {
   parseWorkflowVariables,
   ProcessInstance,
   QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
+  WorkflowOverview,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
+import { orchestratorApiRef } from '../api';
 import { VALUE_UNAVAILABLE } from '../constants';
 import { executeWorkflowRouteRef } from '../routes';
 import { buildUrl } from '../utils/UrlUtils';
+import { WorkflowDescriptionModal } from './WorkflowDescriptionModal';
 import { EditorViewKind, WorkflowEditor } from './WorkflowEditor';
 import { WorkflowProgress } from './WorkflowProgress';
 import { WorkflowRunDetail, WorkflowSuggestion } from './WorkflowRunDetail';
@@ -26,13 +34,14 @@ export const mapProcessInstanceToDetails = (
   instance: ProcessInstance,
 ): WorkflowRunDetail => {
   const name = instance.processName || instance.processId;
-  const start = moment(instance.start);
+  const start = instance.start ? moment(instance.start) : undefined;
   let duration: string = VALUE_UNAVAILABLE;
-  if (instance.end) {
+  if (start && instance.end) {
     const end = moment(instance.end);
     duration = moment.duration(start.diff(end)).humanize();
   }
 
+  const started = start?.toDate().toLocaleString() ?? VALUE_UNAVAILABLE;
   const variables = parseWorkflowVariables(instance?.variables);
   const nextWorkflowSuggestions: WorkflowRunDetail['nextWorkflowSuggestions'] =
     // @ts-ignore
@@ -42,7 +51,7 @@ export const mapProcessInstanceToDetails = (
     id: instance.id,
     name,
     workflowId: instance.processId,
-    started: start.toDate().toLocaleString(),
+    started,
     duration,
     category: instance.category,
     status: instance.state,
@@ -52,11 +61,24 @@ export const mapProcessInstanceToDetails = (
   };
 };
 
+const useStyles = makeStyles(_ => ({
+  topRowCard: {
+    height: '20rem',
+  },
+  middleRowCard: {
+    height: 'calc(2 * 20rem)',
+  },
+  bottomRowCard: {
+    height: '100%',
+  },
+  autoOverflow: { overflow: 'auto' },
+}));
+
 const getNextWorkflows = (
   details: WorkflowRunDetail,
   executeWorkflowLink: RouteFunc<PathParams<'/workflows/:workflowId/execute'>>,
 ) => {
-  const nextWorkflows: { title: string; link: string }[] = [];
+  const nextWorkflows: { title: string; link: string; id: string }[] = [];
 
   if (details.nextWorkflowSuggestions) {
     Object.entries(details.nextWorkflowSuggestions).forEach(([_, value]) => {
@@ -74,6 +96,7 @@ const getNextWorkflows = (
         nextWorkflows.push({
           title: nextWorkflowSuggestion.name,
           link: urlToNavigate,
+          id: nextWorkflowSuggestion.id,
         });
       });
     });
@@ -81,19 +104,6 @@ const getNextWorkflows = (
 
   return nextWorkflows;
 };
-
-const useStyles = makeStyles(_ => ({
-  topRowCard: {
-    height: '20rem',
-  },
-  middleRowCard: {
-    height: 'calc(2 * 20rem)',
-  },
-  bottomRowCard: {
-    height: '100%',
-  },
-  autoOverflow: { overflow: 'auto' },
-}));
 
 export const WorkflowInstancePageContent: React.FC<{
   assessedInstance: AssessedProcessInstance;
@@ -104,6 +114,39 @@ export const WorkflowInstancePageContent: React.FC<{
     () => mapProcessInstanceToDetails(assessedInstance.instance),
     [assessedInstance.instance],
   );
+  const orchestratorApi = useApi(orchestratorApiRef);
+
+  const [
+    currentOpenedWorkflowDescriptionModalID,
+    setCurrentOpenedWorkflowDescriptionModalID,
+  ] = React.useState('');
+  const [currentWorkflow, setCurrentWorkflow] = React.useState(
+    {} as WorkflowOverview,
+  );
+
+  const openWorkflowDescriptionModal = (itemId: string) => {
+    if (itemId) {
+      orchestratorApi
+        .getWorkflowOverview(itemId)
+        .then(
+          workflow => {
+            setCurrentWorkflow(workflow);
+          },
+          error => {
+            throw new Error(error);
+          },
+        )
+        .catch(error => {
+          throw new Error(error);
+        });
+      setCurrentOpenedWorkflowDescriptionModalID(itemId);
+    }
+  };
+
+  const closeWorkflowDescriptionModal = () => {
+    setCurrentOpenedWorkflowDescriptionModalID('');
+    setCurrentWorkflow({} as WorkflowOverview);
+  };
 
   const nextWorkflows = React.useMemo(
     () => getNextWorkflows(details, executeWorkflowLink),
@@ -144,7 +187,21 @@ export const WorkflowInstancePageContent: React.FC<{
               <Grid container spacing={3}>
                 {nextWorkflows.map(item => (
                   <Grid item xs={4} key={item.title}>
-                    <Link to={item.link}>{item.title}</Link>
+                    <Link
+                      color="primary"
+                      to="#"
+                      onClick={() => {
+                        openWorkflowDescriptionModal(item.id);
+                      }}
+                    >
+                      {item.title}
+                    </Link>
+                    <WorkflowDescriptionModal
+                      workflow={currentWorkflow}
+                      runWorkflowLink={item.link}
+                      open={item.id === currentOpenedWorkflowDescriptionModalID}
+                      onClose={closeWorkflowDescriptionModal}
+                    />
                   </Grid>
                 ))}
               </Grid>
@@ -162,7 +219,6 @@ export const WorkflowInstancePageContent: React.FC<{
               workflowId={assessedInstance.instance.processId}
               kind={EditorViewKind.DIAGRAM_VIEWER}
               editorMode="text"
-              readonly
             />
           </InfoCard>
         </Grid>

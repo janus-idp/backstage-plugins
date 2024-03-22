@@ -15,22 +15,30 @@ export const KialiHeaderEntity = () => {
   return (
     <div style={{ marginLeft: '20px' }}>
       <Grid container spacing={0}>
-        <Grid item xs={9}>
+        <Grid item xs={5}>
           <NamespaceSelector />
         </Grid>
-        <Grid item xs>
-          <Tooltip title={<div>Kiali home cluster: {homeCluster?.name}</div>}>
-            <Chip
-              color="primary"
-              icon={<ClusterIcon />}
-              label={homeCluster?.name}
-            />
-          </Tooltip>
-          <HelpKiali />
-          <MessageCenter />
+        <Grid item xs={6}>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'right',
+            }}
+          >
+            <Tooltip title={<div>Kiali home cluster: {homeCluster?.name}</div>}>
+              <Chip
+                color="primary"
+                icon={<ClusterIcon />}
+                label={homeCluster?.name}
+              />
+            </Tooltip>
+            <HelpKiali />
+            <MessageCenter />
+          </div>
         </Grid>
         {kialiState.authentication.session && (
-          <Grid item xs>
+          <Grid item xs={1} style={{ marginTop: '5px' }}>
             <div
               style={{
                 display: 'flex',
@@ -38,7 +46,7 @@ export const KialiHeaderEntity = () => {
                 justifyContent: 'space-between',
               }}
             >
-              <span style={{ margin: '10px' }}>
+              <span>
                 <b>User : </b>
                 {kialiState.authentication.session.username || 'anonymous'}
               </span>

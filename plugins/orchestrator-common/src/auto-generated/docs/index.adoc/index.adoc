@@ -31,16 +31,16 @@ API to interact with orchestrator plugin
 [.abortWorkflow]
 ==== abortWorkflow
 
-`DELETE /v2/workflows/{workflowId}/abort`
+`DELETE /v2/instances/{instanceId}/abort`
 
 Abort a workflow instance
 
 ===== Description
 
-Aborts a workflow instance identified by the provided workflowId.
+Aborts a workflow instance identified by the provided instanceId.
 
 
-// markup not found, no include::{specDir}v2/workflows/\{workflowId\}/abort/DELETE/spec.adoc[opts=optional]
+// markup not found, no include::{specDir}v2/instances/\{instanceId\}/abort/DELETE/spec.adoc[opts=optional]
 
 
 
@@ -52,7 +52,7 @@ Aborts a workflow instance identified by the provided workflowId.
 |===
 |Name| Description| Required| Default| Pattern
 
-| workflowId
+| instanceId
 | The identifier of the workflow instance to abort. 
 | X
 | null
@@ -74,6 +74,7 @@ Aborts a workflow instance identified by the provided workflowId.
 ===== Content Type
 
 * text/plain
+* application/json
 
 ===== Responses
 
@@ -90,128 +91,27 @@ Aborts a workflow instance identified by the provided workflowId.
 
 | 500
 | Error aborting workflow
-|  <<String>>
+|  <<ErrorResponse>>
 
 |===
 
 ===== Samples
 
 
-// markup not found, no include::{snippetDir}v2/workflows/\{workflowId\}/abort/DELETE/http-request.adoc[opts=optional]
+// markup not found, no include::{snippetDir}v2/instances/\{instanceId\}/abort/DELETE/http-request.adoc[opts=optional]
 
 
-// markup not found, no include::{snippetDir}v2/workflows/\{workflowId\}/abort/DELETE/http-response.adoc[opts=optional]
-
-
-
-// file not found, no * wiremock data link :v2/workflows/{workflowId}/abort/DELETE/DELETE.json[]
-
-
-ifdef::internal-generation[]
-===== Implementation
-
-// markup not found, no include::{specDir}v2/workflows/\{workflowId\}/abort/DELETE/implementation.adoc[opts=optional]
-
-
-endif::internal-generation[]
-
-
-[.createWorkflow]
-==== createWorkflow
-
-`POST /v2/workflows`
-
-Create or update a workflow
-
-===== Description
+// markup not found, no include::{snippetDir}v2/instances/\{instanceId\}/abort/DELETE/http-response.adoc[opts=optional]
 
 
 
-
-// markup not found, no include::{specDir}v2/workflows/POST/spec.adoc[opts=optional]
-
-
-
-===== Parameters
-
-
-====== Body Parameter
-
-[cols="2,3,1,1,1"]
-|===
-|Name| Description| Required| Default| Pattern
-
-| CreateWorkflowRequest
-|  <<CreateWorkflowRequest>>
-| X
-| 
-| 
-
-|===
-
-
-
-====== Query Parameters
-
-[cols="2,3,1,1,1"]
-|===
-|Name| Description| Required| Default| Pattern
-
-| uri
-| URI parameter 
-| -
-| null
-| 
-
-|===
-
-
-===== Return Type
-
-<<createWorkflow_201_response>>
-
-
-===== Content Type
-
-* application/json
-* text/plain
-
-===== Responses
-
-.HTTP Response Codes
-[cols="2,3,1"]
-|===
-| Code | Message | Datatype
-
-
-| 201
-| Created
-|  <<createWorkflow_201_response>>
-
-
-| 500
-| Error creating workflow
-|  <<String>>
-
-|===
-
-===== Samples
-
-
-// markup not found, no include::{snippetDir}v2/workflows/POST/http-request.adoc[opts=optional]
-
-
-// markup not found, no include::{snippetDir}v2/workflows/POST/http-response.adoc[opts=optional]
-
-
-
-// file not found, no * wiremock data link :v2/workflows/POST/POST.json[]
+// file not found, no * wiremock data link :v2/instances/{instanceId}/abort/DELETE/DELETE.json[]
 
 
 ifdef::internal-generation[]
 ===== Implementation
 
-// markup not found, no include::{specDir}v2/workflows/POST/implementation.adoc[opts=optional]
+// markup not found, no include::{specDir}v2/instances/\{instanceId\}/abort/DELETE/implementation.adoc[opts=optional]
 
 
 endif::internal-generation[]
@@ -275,7 +175,6 @@ Execute a workflow
 ===== Content Type
 
 * application/json
-* text/plain
 
 ===== Responses
 
@@ -292,7 +191,7 @@ Execute a workflow
 
 | 500
 | Internal Server Error
-|  <<String>>
+|  <<ErrorResponse>>
 
 |===
 
@@ -363,7 +262,6 @@ Get Workflow Instance by ID
 ===== Content Type
 
 * application/json
-* text/plain
 
 ===== Responses
 
@@ -380,7 +278,7 @@ Get Workflow Instance by ID
 
 | 500
 | Error fetching instance
-|  <<String>>
+|  <<ErrorResponse>>
 
 |===
 
@@ -428,17 +326,47 @@ Retrieve an array of instances
 
 
 
+====== Query Parameters
+
+[cols="2,3,1,1,1"]
+|===
+|Name| Description| Required| Default| Pattern
+
+| page
+| page number 
+| -
+| null
+| 
+
+| pageSize
+| page size 
+| -
+| null
+| 
+
+| orderBy
+| field name to order the data 
+| -
+| null
+| 
+
+| orderDirection
+| ascending or descending 
+| -
+| null
+| 
+
+|===
 
 
 ===== Return Type
 
-array[<<ProcessInstanceDTO>>]
+<<ProcessInstanceListResultDTO>>
 
 
 ===== Content Type
 
 * application/json
-* text/plain
 
 ===== Responses
 
@@ -450,12 +378,12 @@ array[<<ProcessInstanceDTO>>]
 
 | 200
 | Success
-| List[<<ProcessInstanceDTO>>] 
+|  <<ProcessInstanceListResultDTO>>
 
 
 | 500
 | Error fetching instances
-|  <<String>>
+|  <<ErrorResponse>>
 
 |===
 
@@ -506,7 +434,7 @@ Get a workflow by ID
 |Name| Description| Required| Default| Pattern
 
 | workflowId
-| ID of the workflow to execute 
+| ID of the workflow to fetch 
 | X
 | null
 | 
@@ -526,7 +454,6 @@ Get a workflow by ID
 ===== Content Type
 
 * application/json
-* text/plain
 
 ===== Responses
 
@@ -542,8 +469,8 @@ Get a workflow by ID
 
 
 | 500
-| Error workflow by id
-|  <<String>>
+| Error fetching workflow by id
+|  <<ErrorResponse>>
 
 |===
 
@@ -614,7 +541,6 @@ Get a workflow overview by ID
 ===== Content Type
 
 * application/json
-* text/plain
 
 ===== Responses
 
@@ -631,7 +557,7 @@ Get a workflow overview by ID
 
 | 500
 | Error fetching workflow overview
-|  <<String>>
+|  <<ErrorResponse>>
 
 |===
 
@@ -702,7 +628,6 @@ Get workflow results
 ===== Content Type
 
 * application/json
-* text/plain
 
 ===== Responses
 
@@ -719,7 +644,7 @@ Get workflow results
 
 | 500
 | Error getting workflow results
-|  <<String>>
+|  <<ErrorResponse>>
 
 |===
 
@@ -745,24 +670,37 @@ ifdef::internal-generation[]
 endif::internal-generation[]
 
 
-[.getWorkflowSpecs]
-==== getWorkflowSpecs
+[.getWorkflowSourceById]
+==== getWorkflowSourceById
 
-`GET /v2/specs`
+`GET /v2/workflows/{workflowId}/source`
 
-Get workflow specifications
+
 
 ===== Description
 
+Get a workflow source by ID
 
 
-
-// markup not found, no include::{specDir}v2/specs/GET/spec.adoc[opts=optional]
+// markup not found, no include::{specDir}v2/workflows/\{workflowId\}/source/GET/spec.adoc[opts=optional]
 
 
 
 ===== Parameters
 
+====== Path Parameters
+
+[cols="2,3,1,1,1"]
+|===
+|Name| Description| Required| Default| Pattern
+
+| workflowId
+| ID of the workflow to fetch 
+| X
+| null
+| 
+
+|===
 
 
 
@@ -771,13 +709,14 @@ Get workflow specifications
 
 ===== Return Type
 
-array[<<WorkflowSpecFileDTO>>]
+
+<<String>>
 
 
 ===== Content Type
 
-* application/json
 * text/plain
+* application/json
 
 ===== Responses
 
@@ -788,33 +727,33 @@ array[<<WorkflowSpecFileDTO>>]
 
 
 | 200
-| Successful retrieval of workflow specifications
-| List[<<WorkflowSpecFileDTO>>] 
+| Success
+|  <<String>>
 
 
 | 500
-| Error fetching workflow specifications
-|  <<String>>
+| Error fetching workflow source by id
+|  <<ErrorResponse>>
 
 |===
 
 ===== Samples
 
 
-// markup not found, no include::{snippetDir}v2/specs/GET/http-request.adoc[opts=optional]
+// markup not found, no include::{snippetDir}v2/workflows/\{workflowId\}/source/GET/http-request.adoc[opts=optional]
 
 
-// markup not found, no include::{snippetDir}v2/specs/GET/http-response.adoc[opts=optional]
+// markup not found, no include::{snippetDir}v2/workflows/\{workflowId\}/source/GET/http-response.adoc[opts=optional]
 
 
 
-// file not found, no * wiremock data link :v2/specs/GET/GET.json[]
+// file not found, no * wiremock data link :v2/workflows/{workflowId}/source/GET/GET.json[]
 
 
 ifdef::internal-generation[]
 ===== Implementation
 
-// markup not found, no include::{specDir}v2/specs/GET/implementation.adoc[opts=optional]
+// markup not found, no include::{specDir}v2/workflows/\{workflowId\}/source/GET/implementation.adoc[opts=optional]
 
 
 endif::internal-generation[]
@@ -852,7 +791,6 @@ array[<<WorkflowRunStatusDTO>>]
 ===== Content Type
 
 * application/json
-* text/plain
 
 ===== Responses
 
@@ -869,7 +807,7 @@ array[<<WorkflowRunStatusDTO>>]
 
 | 500
 | Error fetching workflow statuses
-|  <<String>>
+|  <<ErrorResponse>>
 
 |===
 
@@ -890,81 +828,6 @@ ifdef::internal-generation[]
 ===== Implementation
 
 // markup not found, no include::{specDir}v2/workflows/instances/statuses/GET/implementation.adoc[opts=optional]
-
-
-endif::internal-generation[]
-
-
-[.getWorkflows]
-==== getWorkflows
-
-`GET /v2/workflows`
-
-
-
-===== Description
-
-Get a list of workflow
-
-
-// markup not found, no include::{specDir}v2/workflows/GET/spec.adoc[opts=optional]
-
-
-
-===== Parameters
-
-
-
-
-
-
-
-===== Return Type
-
-<<WorkflowListResultDTO>>
-
-
-===== Content Type
-
-* application/json
-* text/plain
-
-===== Responses
-
-.HTTP Response Codes
-[cols="2,3,1"]
-|===
-| Code | Message | Datatype
-
-
-| 200
-| Success
-|  <<WorkflowListResultDTO>>
-
-
-| 500
-| Error fetching workflow list
-|  <<String>>
-
-|===
-
-===== Samples
-
-
-// markup not found, no include::{snippetDir}v2/workflows/GET/http-request.adoc[opts=optional]
-
-
-// markup not found, no include::{snippetDir}v2/workflows/GET/http-response.adoc[opts=optional]
-
-
-
-// file not found, no * wiremock data link :v2/workflows/GET/GET.json[]
-
-
-ifdef::internal-generation[]
-===== Implementation
-
-// markup not found, no include::{specDir}v2/workflows/GET/implementation.adoc[opts=optional]
 
 
 endif::internal-generation[]
@@ -992,6 +855,37 @@ Get a list of workflow overviews
 
 
 
+====== Query Parameters
+
+[cols="2,3,1,1,1"]
+|===
+|Name| Description| Required| Default| Pattern
+
+| page
+| page number 
+| -
+| null
+| 
+
+| pageSize
+| page size 
+| -
+| null
+| 
+
+| orderBy
+| field name to order the data 
+| -
+| null
+| 
+
+| orderDirection
+| ascending or descending 
+| -
+| null
+| 
+
+|===
 
 
 ===== Return Type
@@ -1002,7 +896,6 @@ Get a list of workflow overviews
 ===== Content Type
 
 * application/json
-* text/plain
 
 ===== Responses
 
@@ -1019,7 +912,7 @@ Get a list of workflow overviews
 
 | 500
 | Error fetching workflow overviews
-|  <<String>>
+|  <<ErrorResponse>>
 
 |===
 
@@ -1074,45 +967,26 @@ endif::internal-generation[]
 |===
 
 
-[#CreateWorkflow201Response]
-=== _CreateWorkflow201Response_ 
+[#ErrorResponse]
+=== _ErrorResponse_ 
 
+The ErrorResponse object represents a common structure for handling errors in API responses. It includes essential information about the error, such as the error message and additional optional details.
 
-
-[.fields-CreateWorkflow201Response]
+[.fields-ErrorResponse]
 [cols="2,1,2,4,1"]
 |===
 | Field Name| Required| Type| Description| Format
 
-| workflowItem
-| 
-| WorkflowDTO 
-| 
-|  
-
-|===
-
-
-[#CreateWorkflowRequest]
-=== _CreateWorkflowRequest_ 
-
-
-
-[.fields-CreateWorkflowRequest]
-[cols="2,1,2,4,1"]
-|===
-| Field Name| Required| Type| Description| Format
-
-| uri
+| message
 | X
 | String 
-| 
+| A string providing a concise and human-readable description of the encountered error. This field is required in the ErrorResponse object.
 |  
 
-| body
+| additionalInfo
 | 
 | String 
-| 
+| An optional field that can contain additional information or context about the error. It provides flexibility for including extra details based on specific error scenarios.
 |  
 
 |===
@@ -1192,15 +1066,15 @@ endif::internal-generation[]
 
 | enter
 | 
-| Date 
+| String 
 | Date when the node was entered
-| date-time 
+|  
 
 | exit
 | 
-| Date 
+| String 
 | Date when the node was exited (optional)
-| date-time 
+|  
 
 | definitionId
 | 
@@ -1227,13 +1101,13 @@ endif::internal-generation[]
 |===
 | Field Name| Required| Type| Description| Format
 
-| limit
+| pageSize
 | 
 | BigDecimal 
 | 
 |  
 
-| offset
+| page
 | 
 | BigDecimal 
 | 
@@ -1282,11 +1156,17 @@ endif::internal-generation[]
 | 
 |  
 
-| started
+| start
 | 
-| Date 
+| String 
 | 
-| date-time 
+|  
+
+| end
+| 
+| String 
+| 
+|  
 
 | duration
 | 
@@ -1346,6 +1226,31 @@ endif::internal-generation[]
 |===
 
 
+[#ProcessInstanceListResultDTO]
+=== _ProcessInstanceListResultDTO_ 
+
+
+
+[.fields-ProcessInstanceListResultDTO]
+[cols="2,1,2,4,1"]
+|===
+| Field Name| Required| Type| Description| Format
+
+| items
+| 
+| List  of <<ProcessInstanceDTO>>
+| 
+|  
+
+| paginationInfo
+| 
+| PaginationInfoDTO 
+| 
+|  
+
+|===
+
+
 [#ProcessInstanceStatusDTO]
 === _ProcessInstanceStatusDTO_ 
 
@@ -1394,10 +1299,10 @@ Category of the workflow
 | Workflow name
 |  
 
-| uri
+| format
 | X
-| String 
-| URI of the workflow definition
+| WorkflowFormatDTO 
+| 
 |  
 
 | category
@@ -1436,6 +1341,19 @@ Category of the workflow
 | List  of <<array>>
 | 
 |  
+
+|===
+
+
+[#WorkflowFormatDTO]
+=== _WorkflowFormatDTO_ 
+
+Format of the workflow definition
+
+[.fields-WorkflowFormatDTO]
+[cols="2,1,2,4,1"]
+|===
+| Field Name| Required| Type| Description| Format
 
 |===
 
@@ -1487,9 +1405,9 @@ Category of the workflow
 | Workflow name
 |  
 
-| uri
+| format
 | 
-| String 
+| WorkflowFormatDTO 
 | 
 |  
 
@@ -1589,13 +1507,13 @@ Category of the workflow
 | 
 | oas_any_type_not_mapped 
 | Date when the node was entered
-| date-time 
+|  
 
 | exit
 | 
 | oas_any_type_not_mapped 
 | Date when the node was exited (optional)
-| date-time 
+|  
 
 | definitionId
 | 
@@ -1644,31 +1562,6 @@ Category of the workflow
 | 
 | String 
 | 
-|  
-
-|===
-
-
-[#WorkflowSpecFileDTO]
-=== _WorkflowSpecFileDTO_ 
-
-
-
-[.fields-WorkflowSpecFileDTO]
-[cols="2,1,2,4,1"]
-|===
-| Field Name| Required| Type| Description| Format
-
-| path
-| 
-| String 
-| 
-|  
-
-| content
-| X
-| String 
-| JSON string
 |  
 
 |===

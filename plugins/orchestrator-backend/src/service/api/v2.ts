@@ -5,56 +5,57 @@ import {
   AssessedProcessInstanceDTO,
   ExecuteWorkflowRequestDTO,
   ExecuteWorkflowResponseDTO,
-  ProcessInstancesDTO,
+  ProcessInstanceListResultDTO,
   ProcessInstanceState,
   WorkflowDataDTO,
   WorkflowDTO,
-  WorkflowListResult,
-  WorkflowListResultDTO,
   WorkflowOverviewDTO,
   WorkflowOverviewListResultDTO,
   WorkflowRunStatusDTO,
-  WorkflowSpecFileDTO,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
-import { DataIndexService } from '../DataIndexService';
-import { SonataFlowService } from '../SonataFlowService';
-import { WorkflowService } from '../WorkflowService';
+import { Pagination } from '../../types/pagination';
+import { OrchestratorService } from '../OrchestratorService';
 import {
   mapToExecuteWorkflowResponseDTO,
   mapToGetWorkflowInstanceResults,
   mapToProcessInstanceDTO,
   mapToWorkflowDTO,
-  mapToWorkflowListResultDTO,
   mapToWorkflowOverviewDTO,
-  mapToWorkflowSpecFileDTO,
+  mapToWorkflowRunStatusDTO,
 } from './mapping/V2Mappings';
 import { V1 } from './v1';
 
-export namespace V2 {
-  export async function getWorkflowsOverview(
-    sonataFlowService: SonataFlowService,
+export class V2 {
+  constructor(
+    private readonly orchestratorService: OrchestratorService,
+    private readonly v1: V1,
+  ) {}
+
+  public async getWorkflowsOverview(
+    pagination: Pagination,
   ): Promise<WorkflowOverviewListResultDTO> {
-    const overviewsV1 = await V1.getWorkflowsOverview(sonataFlowService);
+    const overviews = await this.orchestratorService.fetchWorkflowOverviews({
+      pagination,
+    });
+    if (!overviews) {
+      throw new Error("Couldn't fetch workflow overviews");
+    }
     const result: WorkflowOverviewListResultDTO = {
-      overviews: overviewsV1.items.map(item => mapToWorkflowOverviewDTO(item)),
+      overviews: overviews.map(item => mapToWorkflowOverviewDTO(item)),
       paginationInfo: {
-        limit: 0,
-        offset: 0,
-        totalCount: overviewsV1.items?.length ?? 0,
+        pageSize: pagination.limit,
+        page: pagination.offset,
+        totalCount: overviews.length,
       },
     };
     return result;
   }
 
-  export async function getWorkflowOverviewById(
-    sonataFlowService: SonataFlowService,
+  public async getWorkflowOverviewById(
     workflowId: string,
   ): Promise<WorkflowOverviewDTO> {
-    const overviewV1 = await V1.getWorkflowOverviewById(
-      sonataFlowService,
-      workflowId,
-    );
+    const overviewV1 = await this.v1.getWorkflowOverviewById(workflowId);
 
     if (!overviewV1) {
       throw new Error(`Couldn't fetch workflow overview for ${workflowId}`);
@@ -62,41 +63,41 @@ export namespace V2 {
     return mapToWorkflowOverviewDTO(overviewV1);
   }
 
-  export async function getWorkflows(
-    sonataFlowService: SonataFlowService,
-    dataIndexService: DataIndexService,
-  ): Promise<WorkflowListResultDTO> {
-    const definitions: WorkflowListResult = await V1.getWorkflows(
-      sonataFlowService,
-      dataIndexService,
-    );
-    return mapToWorkflowListResultDTO(definitions);
+  public async getWorkflowById(workflowId: string): Promise<WorkflowDTO> {
+    const resultV1 = await this.v1.getWorkflowSourceById(workflowId);
+    return mapToWorkflowDTO(resultV1);
   }
 
-  export async function getWorkflowById(
-    sonataFlowService: SonataFlowService,
-    workflowId: string,
-  ): Promise<WorkflowDTO> {
-    const resultV1 = await V1.getWorkflowById(sonataFlowService, workflowId);
-    return mapToWorkflowDTO(resultV1.uri, resultV1.definition);
+  public async getWorkflowSourceById(workflowId: string): Promise<string> {
+    const resultV1 = await this.v1.getWorkflowSourceById(workflowId);
+    return resultV1;
   }
 
-  export async function getInstances(
-    dataIndexService: DataIndexService,
-  ): Promise<ProcessInstancesDTO> {
-    const instances = await V1.getInstances(dataIndexService);
-    const result = instances.map(def => mapToProcessInstanceDTO(def));
+  public async getInstances(
+    pagination: Pagination,
+  ): Promise<ProcessInstanceListResultDTO> {
+    const instances = await this.orchestratorService.fetchInstances({
+      pagination,
+    });
+    const totalCount =
+      await this.orchestratorService.fetchInstancesTotalCount();
 
+    const result: ProcessInstanceListResultDTO = {
+      items: instances?.map(def => mapToProcessInstanceDTO(def)),
+      paginationInfo: {
+        pageSize: pagination.limit,
+        page: pagination.offset,
+        totalCount: totalCount,
+      },
+    };
     return result;
   }
 
-  export async function getInstanceById(
-    dataIndexService: DataIndexService,
+  public async getInstanceById(
     instanceId: string,
-    includeAssessment?: string,
+    includeAssessment: boolean = false,
   ): Promise<AssessedProcessInstanceDTO> {
-    const instance: AssessedProcessInstance = await V1.getInstanceById(
-      dataIndexService,
+    const instance: AssessedProcessInstance = await this.v1.getInstanceById(
       instanceId,
       includeAssessment,
     );
@@ -113,34 +114,18 @@ export namespace V2 {
     };
   }
 
-  export async function executeWorkflow(
-    dataIndexService: DataIndexService,
-    sonataFlowService: SonataFlowService,
+  public async executeWorkflow(
     executeWorkflowRequestDTO: ExecuteWorkflowRequestDTO,
     workflowId: string,
     businessKey: string | undefined,
   ): Promise<ExecuteWorkflowResponseDTO> {
-    if (!dataIndexService) {
-      throw new Error(
-        `No data index service provided for executing workflow with id ${workflowId}`,
-      );
-    }
-
-    if (!sonataFlowService) {
-      throw new Error(
-        `No sonata flow service provided for executing workflow with id ${workflowId}`,
-      );
-    }
-
     if (Object.keys(executeWorkflowRequestDTO?.inputData).length === 0) {
       throw new Error(
         `ExecuteWorkflowRequestDTO.inputData is required for executing workflow with id ${workflowId}`,
       );
     }
 
-    const executeWorkflowResponse = await V1.executeWorkflow(
-      dataIndexService,
-      sonataFlowService,
+    const executeWorkflowResponse = await this.v1.executeWorkflow(
       executeWorkflowRequestDTO,
       workflowId,
       businessKey,
@@ -153,39 +138,20 @@ export namespace V2 {
     return mapToExecuteWorkflowResponseDTO(workflowId, executeWorkflowResponse);
   }
 
-  export async function createWorkflow(
-    workflowService: WorkflowService,
-    uri: string,
-    reqBody: string,
-  ): Promise<WorkflowDTO> {
-    const workflowItem = await V1.createWorkflow(workflowService, uri, reqBody);
-    return mapToWorkflowDTO(uri, workflowItem.definition);
+  public async abortWorkflow(instanceId: string): Promise<string> {
+    await this.v1.abortWorkflow(instanceId);
+    return `Workflow instance ${instanceId} successfully aborted`;
   }
 
-  export async function abortWorkflow(
-    dataIndexService: DataIndexService,
-    workflowId: string,
-  ): Promise<string> {
-    await V1.abortWorkflow(dataIndexService, workflowId);
-    return 'Workflow ${workflowId} successfully aborted';
-  }
-
-  export async function getWorkflowResults(
-    dataIndexService: DataIndexService,
+  public async getWorkflowResults(
     instanceId: string,
-    includeAssessment?: string,
+    includeAssessment: boolean = false,
   ): Promise<WorkflowDataDTO> {
     if (!instanceId) {
       throw new Error(`No instance id was provided to get workflow results`);
     }
-    if (!dataIndexService) {
-      throw new Error(
-        `No data index service provided for executing workflow with id ${instanceId}`,
-      );
-    }
 
-    const instanceResult = await V1.getInstanceById(
-      dataIndexService,
+    const instanceResult = await this.v1.getInstanceById(
       instanceId,
       includeAssessment,
     );
@@ -199,33 +165,18 @@ export namespace V2 {
     return mapToGetWorkflowInstanceResults(instanceResult.instance.variables);
   }
 
-  export async function getWorkflowSpecs(
-    workflowService: WorkflowService,
-  ): Promise<WorkflowSpecFileDTO[]> {
-    const specV1 = await V1.getWorkflowSpecs(workflowService);
-    return specV1.map(spec => mapToWorkflowSpecFileDTO(spec));
-  }
-
-  export async function getWorkflowStatuses(): Promise<WorkflowRunStatusDTO[]> {
-    type Capitalized<S extends string> = Capitalize<Lowercase<S>>;
-    const capitalize = <S extends string>(text: S): Capitalized<S> =>
-      (text[0].toUpperCase() + text.slice(1).toLowerCase()) as Capitalized<S>;
-    const result: WorkflowRunStatusDTO[] = [
+  public async getWorkflowStatuses(): Promise<WorkflowRunStatusDTO[]> {
+    return [
       ProcessInstanceState.Active,
       ProcessInstanceState.Error,
       ProcessInstanceState.Completed,
       ProcessInstanceState.Aborted,
       ProcessInstanceState.Suspended,
-    ].map(
-      (status): WorkflowRunStatusDTO => ({
-        key: capitalize(status),
-        value: status,
-      }),
-    );
-    return result;
+      ProcessInstanceState.Pending,
+    ].map(status => mapToWorkflowRunStatusDTO(status));
   }
 
-  export function extractQueryParam(
+  public extractQueryParam(
     req: ParsedRequest,
     key: string,
   ): string | undefined {

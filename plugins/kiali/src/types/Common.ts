@@ -1,3 +1,5 @@
+import { defaultMetricsDuration } from '../components/Metrics/Helper';
+
 export type AppenderString = string;
 
 export type UserName = string;
@@ -84,4 +86,34 @@ export const isEqualTimeRange = (t1: TimeRange, t2: TimeRange): boolean => {
     return false;
   }
   return true;
+};
+
+// Type-guarding TimeRange: executes first callback when range is a duration, or second callback when it's a bounded range, mapping to a value
+export function guardTimeRange<T>(
+  range: TimeRange,
+  ifDuration: (d: DurationInSeconds) => T,
+  ifBounded: (b: BoundsInMilliseconds) => T,
+): T {
+  if (range.from) {
+    const b: BoundsInMilliseconds = {
+      from: range.from,
+    };
+    if (range.to) {
+      b.to = range.to;
+    }
+    return ifBounded(b);
+  }
+  if (range.rangeDuration) {
+    return ifDuration(range.rangeDuration);
+  }
+  // It shouldn't reach here a TimeRange should have DurationInSeconds or BoundsInMilliseconds
+  return ifDuration(defaultMetricsDuration);
+}
+
+export const evalTimeRange = (range: TimeRange): [Date, Date] => {
+  const bounds = guardTimeRange(range, durationToBounds, b => b);
+  return [
+    bounds.from ? new Date(bounds.from) : new Date(),
+    bounds.to ? new Date(bounds.to) : new Date(),
+  ];
 };
