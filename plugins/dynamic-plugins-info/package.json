@@ -25,9 +25,9 @@
     "tsc": "tsc"
   },
   "dependencies": {
-    "@backstage/core-components": "^0.14.0",
-    "@backstage/core-plugin-api": "^1.9.0",
-    "@backstage/theme": "^0.5.1",
+    "@backstage/core-components": "^0.14.1",
+    "@backstage/core-plugin-api": "^1.9.1",
+    "@backstage/theme": "^0.5.2",
     "@material-table/core": "^3.1.0",
     "react-use": "^17.4.0"
   },
@@ -36,10 +36,10 @@
     "react-router-dom": "^6.20.0"
   },
   "devDependencies": {
-    "@backstage/cli": "0.25.2",
-    "@backstage/core-app-api": "1.12.0",
-    "@backstage/dev-utils": "1.0.27",
-    "@backstage/test-utils": "1.5.0",
+    "@backstage/cli": "0.26.0",
+    "@backstage/core-app-api": "1.12.1",
+    "@backstage/dev-utils": "1.0.28",
+    "@backstage/test-utils": "1.5.1",
     "@testing-library/jest-dom": "6.4.2",
     "@testing-library/react": "14.2.1",
     "@testing-library/user-event": "14.5.1",

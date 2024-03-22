@@ -23,12 +23,12 @@
     "postpack": "backstage-cli package postpack"
   },
   "devDependencies": {
-    "@backstage/cli": "0.25.2"
+    "@backstage/cli": "0.26.0"
   },
   "files": [
     "dist"
   ],
   "dependencies": {
-    "@backstage/backend-plugin-api": "^0.6.13"
+    "@backstage/backend-plugin-api": "^0.6.14"
   }
 }
