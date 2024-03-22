@@ -8,9 +8,9 @@ import {
   RoleConditionalPolicyDecision,
 } from '@janus-idp/backstage-plugin-rbac-common';
 
-const CONDITIONAL_TABLE = 'role-condition-policies';
+export const CONDITIONAL_TABLE = 'role-condition-policies';
 
-interface ConditionalPolicyDecisionDAO {
+export interface ConditionalPolicyDecisionDAO {
   result: AuthorizeResult.CONDITIONAL;
   id?: number;
   roleEntityRef: string;
@@ -90,13 +90,9 @@ export class DataBaseConditionalStorage implements ConditionalStorage {
     );
     if (condition) {
       throw new ConflictError(
-        `A condition with resource type ${
-          condition.resourceType
-        } and actions ${JSON.stringify(
-          condition.actions,
-        )} has already been stored for role ${
-          conditionalDecision.roleEntityRef
-        }`,
+        `A condition with resource type '${condition.resourceType}'` +
+          ` and actions '${JSON.stringify(condition.actions)}'` +
+          ` has already been stored for role '${conditionalDecision.roleEntityRef}'`,
       );
     }
 
