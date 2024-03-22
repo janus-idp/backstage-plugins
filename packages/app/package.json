@@ -37,7 +37,7 @@
     "@backstage/plugin-catalog-import": "^0.10.6",
     "@backstage/plugin-catalog-react": "^1.10.0",
     "@backstage/plugin-github-actions": "^0.6.11",
-    "@backstage/plugin-org": "^0.6.20",
+    "@backstage/plugin-org": "^0.6.21",
     "@backstage/plugin-permission-react": "^0.4.20",
     "@backstage/plugin-scaffolder": "^1.18.0",
     "@backstage/plugin-search": "^1.4.6",
