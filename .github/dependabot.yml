@@ -23,3 +23,6 @@ updates:
       # pin to version that keycloak 18 needs
       - dependency-name: "axios"
         versions: ['>0.26.1']
+      # pin to version that isn't broken - see https://github.com/RoadieHQ/roadie-backstage-plugins/issues/1238 https://github.com/janus-idp/backstage-showcase/pull/947 https://github.com/janus-idp/backstage-showcase/pull/1095
+      - dependency-name: "backstage-plugin-argo-cd"
+        versions: ['>2.4.1']
