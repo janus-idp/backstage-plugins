@@ -5,7 +5,18 @@
 
 version: 2
 updates:
-  - package-ecosystem: "yarn" # See documentation for possible values
-    directory: "/" # Location of package manifests
+  # Maintain dependencies for GitHub Actions
+  - package-ecosystem: "github-actions"
+    # Workflow files stored in the default location of `.github/workflows`. (You don't need to specify `/.github/workflows` for `directory`. You can use `directory: "/"`.)
+    directory: "/"
     schedule:
       interval: "weekly"
+
+  - package-ecosystem: "npm" # See documentation for possible values
+    directory: "/" # Location of package manifests
+    schedule:
+      interval: "daily"
+    ignore:
+      - dependency-name: "keycloak-admin-client"
+        # pin to @keycloak/keycloak-admin-client <19 - see https://github.com/janus-idp/backstage-plugins/issues/47 https://github.com/janus-idp/backstage-plugins/issues/1046
+        versions: ['> 18']
