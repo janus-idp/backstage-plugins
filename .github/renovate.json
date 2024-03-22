@@ -31,5 +31,6 @@
       "groupName": "semantic-release monorepo"
     }
   ],
-  "ignorePaths": ["**/dist-dynamic/**"]
+  "ignorePaths": ["**/dist-dynamic/**"],
+  "ignoreDeps": ["@roadiehq/backstage-plugin-argo-cd"]
 }
