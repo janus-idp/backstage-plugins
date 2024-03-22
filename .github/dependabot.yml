@@ -20,3 +20,6 @@ updates:
       # pin to @keycloak/keycloak-admin-client <19 - see https://github.com/janus-idp/backstage-plugins/issues/47 https://github.com/janus-idp/backstage-plugins/issues/1046
       - dependency-name: "keycloak-admin-client"
         versions: ['> 18']
+      # pin to version that keycloak 18 needs
+      - dependency-name: "axios"
+        versions: ['>0.26.1']
