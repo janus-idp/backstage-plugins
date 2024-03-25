@@ -2494,7 +2494,7 @@ describe('REST policies api', () => {
         pluginId: 'catalog',
         roleEntityRef: 'role:default/test',
         resourceType: 'catalog-entity',
-        actions: ['read'],
+        permissions: [{ name: 'catalog.entity.read', action: 'read' }],
         result: AuthorizeResult.CONDITIONAL,
         conditions: {
           rule: 'IS_ENTITY_OWNER',
@@ -2778,7 +2778,7 @@ describe('REST policies api', () => {
           pluginId: 'catalog',
           roleEntityRef: 'role:default/test',
           resourceType: 'catalog-entity',
-          actions: ['read'],
+          permissions: [{ name: 'catalog.entity.read', action: 'read' }],
           result: AuthorizeResult.CONDITIONAL,
           conditions: {
             rule: 'IS_ENTITY_OWNER',
@@ -2840,7 +2840,7 @@ describe('REST policies api', () => {
           pluginId: 'catalog',
           roleEntityRef: 'role:default/test',
           resourceType: 'catalog-entity',
-          actions: ['read'],
+          permissions: [{ name: 'catalog.entity.read', action: 'read' }],
           result: AuthorizeResult.CONDITIONAL,
           conditions: {
             rule: 'IS_ENTITY_OWNER',

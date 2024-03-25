@@ -407,7 +407,7 @@ describe('condition-validation', () => {
           resourceType: 'catalog-entity',
           roleEntityRef: 'role:default/test',
           result: AuthorizeResult.CONDITIONAL,
-          actions: ['read'],
+          permissions: [{ name: 'catalog.entity-read', action: 'read' }],
           conditions: {
             anyOf: [
               {
@@ -586,7 +586,7 @@ describe('condition-validation', () => {
           resourceType: 'catalog-entity',
           roleEntityRef: 'role:default/test',
           result: AuthorizeResult.CONDITIONAL,
-          actions: ['read'],
+          permissions: [{ name: 'catalog.entity.read', action: 'read' }],
           conditions: {
             allOf: [
               {
