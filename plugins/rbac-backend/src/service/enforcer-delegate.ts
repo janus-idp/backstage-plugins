@@ -1,6 +1,6 @@
 import { NotAllowedError, NotFoundError } from '@backstage/errors';
 
-import { Enforcer } from 'casbin';
+import { Enforcer, newEnforcer, newModelFromString } from 'casbin';
 import { Knex } from 'knex';
 
 import {
@@ -17,6 +17,7 @@ import {
   RoleMetadataStorage,
 } from '../database/role-metadata';
 import { policiesToString, policyToString } from '../helper';
+import { MODEL } from './permission-model';
 
 export class EnforcerDelegate {
   constructor(
@@ -534,7 +535,26 @@ export class EnforcerDelegate {
     resourceType: string,
     action: string,
   ): Promise<boolean> {
-    return await this.enforcer.enforce(entityRef, resourceType, action);
+    const filter = [
+      {
+        ptype: 'p',
+        v1: resourceType,
+        v2: action,
+      },
+      {
+        ptype: 'g',
+        v0: entityRef,
+      },
+    ];
+
+    const adapt = this.enforcer.getAdapter();
+    const roleManager = this.enforcer.getRoleManager();
+    const tempEnforcer = await newEnforcer(newModelFromString(MODEL), adapt);
+    tempEnforcer.setRoleManager(roleManager);
+
+    await tempEnforcer.loadFilteredPolicy(filter);
+
+    return await tempEnforcer.enforce(entityRef, resourceType, action);
   }
 
   async getMetadata(policy: string[]): Promise<PermissionPolicyMetadata> {
@@ -608,5 +628,9 @@ export class EnforcerDelegate {
 
   async getImplicitPermissionsForUser(user: string): Promise<string[][]> {
     return this.enforcer.getImplicitPermissionsForUser(user);
+  }
+
+  async getAllRoles(): Promise<string[]> {
+    return this.enforcer.getAllRoles();
   }
 }
