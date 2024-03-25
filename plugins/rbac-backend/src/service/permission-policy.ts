@@ -280,8 +280,8 @@ export class RBACPermissionPolicy implements PermissionPolicy {
           const conditionResult = await this.handleConditions(
             userEntityRef,
             resourceType,
+            request.permission.name,
             action,
-            request,
             identityResp,
           );
           if (conditionResult) {
@@ -354,8 +354,8 @@ export class RBACPermissionPolicy implements PermissionPolicy {
   private async handleConditions(
     userEntityRef: string,
     resourceType: string,
-    action: PermissionAction,
-    request: PolicyQuery,
+    permissionName: string,
+    action: string,
     identityResp?: BackstageIdentityResponse | undefined,
   ): Promise<PolicyDecision | undefined> {
     const roles = await this.enforcer.getRolesForUser(userEntityRef);
@@ -370,8 +370,9 @@ export class RBACPermissionPolicy implements PermissionPolicy {
         role,
         undefined,
         resourceType,
-        [action],
+        [permissionName],
       );
+      console.log(`==== ${conditionalDecisions}`);
 
       if (conditionalDecisions.length > 0) {
         pluginId = conditionalDecisions[0].pluginId;
@@ -382,7 +383,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     if (conditions.length > 0) {
       console.log(`----- ${JSON.stringify(conditions)}`);
       this.logger.info(
-        `${identityResp?.identity.userEntityRef} executed condition for permission ${request.permission.name}, resource type ${resourceType} and action ${action}`,
+        `${identityResp?.identity.userEntityRef} executed condition for permission ${permissionName}, resource type ${resourceType} and action ${action}`,
       );
       return {
         pluginId,

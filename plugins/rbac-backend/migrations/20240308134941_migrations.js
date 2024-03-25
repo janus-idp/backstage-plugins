@@ -11,7 +11,7 @@ exports.up = async function up(knex) {
     table.string('result');
     table.string('pluginId');
     table.string('resourceType');
-    table.string('actions');
+    table.string('permissions');
     // Conditions is potentially long json.
     // In the future maybe we can use `json` or `jsonb` type instead of `text`:
     // table.json('conditions') or table.jsonb('conditions').

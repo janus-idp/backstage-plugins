@@ -49,9 +49,14 @@ export type NonEmptyArray<T> = [T, ...T[]];
 
 export type PermissionAction = 'create' | 'read' | 'update' | 'delete' | 'use';
 
+export type PermissionInfo = {
+  name: string;
+  action: PermissionAction;
+};
+
 export type RoleConditionalPolicyDecision = ConditionalPolicyDecision & {
   id: number;
   roleEntityRef: string;
 
-  actions: PermissionAction[];
+  permissions: PermissionInfo[];
 };

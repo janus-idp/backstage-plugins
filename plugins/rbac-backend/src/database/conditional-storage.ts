@@ -14,7 +14,7 @@ export interface ConditionalPolicyDecisionDAO {
   result: AuthorizeResult.CONDITIONAL;
   id?: number;
   roleEntityRef: string;
-  actions: string;
+  permissions: string;
   pluginId: string;
   resourceType: string;
   conditionsJson: string;
@@ -25,7 +25,7 @@ export interface ConditionalStorage {
     roleEntityRef?: string,
     pluginId?: string,
     resourceType?: string,
-    actions?: PermissionAction[],
+    permissionNames?: string[],
   ): Promise<RoleConditionalPolicyDecision[]>;
   createCondition(
     conditionalDecision: RoleConditionalPolicyDecision,
@@ -50,7 +50,7 @@ export class DataBaseConditionalStorage implements ConditionalStorage {
     roleEntityRef?: string,
     pluginId?: string,
     resourceType?: string,
-    filterActions?: PermissionAction[] | undefined,
+    permissionNames?: string[] | undefined,
   ): Promise<RoleConditionalPolicyDecision[]> {
     const daoRaws = await this.knex?.table(CONDITIONAL_TABLE).where(builder => {
       if (pluginId) {
@@ -69,10 +69,12 @@ export class DataBaseConditionalStorage implements ConditionalStorage {
       conditions = daoRaws.map(dao => this.daoToConditionalDecision(dao));
     }
 
-    if (filterActions && filterActions.length > 0) {
+    if (permissionNames && permissionNames.length > 0) {
       return conditions.filter(condition => {
-        return filterActions.every(filterAction =>
-          condition.actions.includes(filterAction),
+        return permissionNames.every(permissionName =>
+          condition.permissions
+            .map(permInfo => permInfo.name)
+            .includes(permissionName),
         );
       });
     }
@@ -86,12 +88,14 @@ export class DataBaseConditionalStorage implements ConditionalStorage {
     const condition = await this.findUniqueCondition(
       conditionalDecision.roleEntityRef,
       conditionalDecision.resourceType,
-      conditionalDecision.actions,
+      conditionalDecision.permissions.map(permInfo => permInfo.name),
     );
     if (condition) {
       throw new ConflictError(
         `A condition with resource type '${condition.resourceType}'` +
-          ` and actions '${JSON.stringify(condition.actions)}'` +
+          ` and permission names '${JSON.stringify(
+            condition.permissions.map(perm => perm.name),
+          )}'` +
           ` has already been stored for role '${conditionalDecision.roleEntityRef}'`,
       );
     }
@@ -111,7 +115,7 @@ export class DataBaseConditionalStorage implements ConditionalStorage {
   async findUniqueCondition(
     roleEntityRef: string,
     resourceType: string,
-    uniqueActions: PermissionAction[],
+    queryPermissionNames: string[],
   ): Promise<RoleConditionalPolicyDecision | undefined> {
     const daoRaws = await this.knex
       ?.table(CONDITIONAL_TABLE)
@@ -123,13 +127,18 @@ export class DataBaseConditionalStorage implements ConditionalStorage {
         this.daoToConditionalDecision(daoRaw),
       );
 
-      return conditions.filter(condition => {
-        return (
-          uniqueActions.every(uniqueAction =>
-            condition.actions.includes(uniqueAction),
-          ) && condition.actions.length === uniqueActions.length
+      return conditions.find(condition => {
+        const conditionPermissionNames = condition.permissions.map(
+          permInfo => permInfo.name,
         );
-      })[0];
+        const isContainTheSamePermissions = queryPermissionNames.every(name =>
+          conditionPermissionNames.includes(name),
+        );
+        return (
+          isContainTheSamePermissions &&
+          conditionPermissionNames.length === queryPermissionNames.length
+        );
+      });
     }
     return undefined;
   }
@@ -171,14 +180,20 @@ export class DataBaseConditionalStorage implements ConditionalStorage {
       conditionalDecision.resourceType,
     );
 
-    for (const updateAction of conditionalDecision.actions) {
+    for (const permission of conditionalDecision.permissions) {
       for (const conditionToCompare of conditionsForTheSameResource) {
         if (conditionToCompare.id === id) {
           continue;
         }
-        if (conditionToCompare.actions.includes(updateAction)) {
+        const conditionPermNames = conditionToCompare.permissions.map(
+          perm => perm.name,
+        );
+        if (conditionPermNames.includes(permission.name)) {
+          // todo maybe bug here...
           throw new ConflictError(
-            `Found condition with conflicted action '${updateAction}'. Role could have multiple ` +
+            `Found condition with conflicted action '${JSON.stringify(
+              permission,
+            )}'. Role could have multiple ` +
               `conditions for the same resource type '${conditionalDecision.resourceType}', but with different action sets.`,
           );
         }
@@ -207,7 +222,7 @@ export class DataBaseConditionalStorage implements ConditionalStorage {
       resourceType,
       conditions,
       roleEntityRef,
-      actions,
+      permissions,
     } = conditionalDecision;
     const conditionsJson = JSON.stringify(conditions);
     return {
@@ -216,7 +231,7 @@ export class DataBaseConditionalStorage implements ConditionalStorage {
       resourceType,
       conditionsJson,
       roleEntityRef,
-      actions: JSON.stringify(actions),
+      permissions: JSON.stringify(permissions),
     };
   }
 
@@ -233,7 +248,7 @@ export class DataBaseConditionalStorage implements ConditionalStorage {
       resourceType,
       conditionsJson,
       roleEntityRef,
-      actions,
+      permissions,
     } = dao;
 
     const conditions = JSON.parse(conditionsJson);
@@ -244,7 +259,7 @@ export class DataBaseConditionalStorage implements ConditionalStorage {
       resourceType,
       conditions,
       roleEntityRef,
-      actions: JSON.parse(actions),
+      permissions: JSON.parse(permissions),
     };
   }
 }
