@@ -169,6 +169,22 @@ jest.mock('./condition-validation', () => {
   };
 });
 
+const conditions: RoleConditionalPolicyDecision[] = [
+  {
+    id: 1,
+    pluginId: 'catalog',
+    roleEntityRef: 'role:default/test',
+    resourceType: 'catalog-entity',
+    permissions: [{ name: 'catalog.entity.read', action: 'read' }],
+    result: AuthorizeResult.CONDITIONAL,
+    conditions: {
+      rule: 'IS_ENTITY_OWNER',
+      resourceType: 'catalog-entity',
+      params: { claims: ['group:default/team-a'] },
+    },
+  },
+];
+
 describe('REST policies api', () => {
   let app: express.Express;
 
@@ -204,6 +220,12 @@ describe('REST policies api', () => {
   let server: PolicesServer;
 
   beforeEach(async () => {
+    conditionalStorage.filterConditions = jest
+      .fn()
+      .mockImplementation(async () => {
+        return conditions;
+      });
+
     validateRoleConditionMock.mockReset();
     mockEnforcer.hasPolicy = jest
       .fn()
@@ -2487,9 +2509,264 @@ describe('REST policies api', () => {
     });
   });
 
-  describe('Conditions REST api', () => {
-    const conditions: RoleConditionalPolicyDecision[] = [
-      {
+  // Define a test suite for the GET /conditions endpoint
+  describe('GET /roles/:kind/:namespace:/name/conditions', () => {
+    it('should return a status of Unauthorized', async () => {
+      mockedAuthorizeConditional.mockImplementationOnce(async () => [
+        { result: AuthorizeResult.DENY },
+      ]);
+
+      // Perform the GET request to the endpoint
+      const result = await request(app)
+        .get('/roles/role/default/test/conditions')
+        .send();
+
+      expect(mockedAuthorizeConditional).toHaveBeenCalledWith(
+        [{ permission: policyEntityReadPermission }],
+        { token: 'token' },
+      );
+
+      // Assert the response status code and error message
+      expect(result.statusCode).toBe(403);
+      expect(result.body.error).toEqual({
+        name: 'NotAllowedError',
+        message: '',
+      });
+    });
+
+    it('should be returned list all condition decisions', async () => {
+      const result = await request(app)
+        .get('/roles/role/default/test/conditions')
+        .send();
+      expect(result.statusCode).toBe(200);
+      expect(result.body).toEqual(conditions);
+      expect(mockIdentityClient.getIdentity).toHaveBeenCalledTimes(0);
+    });
+
+    it('should be returned condition decision by pluginId', async () => {
+      conditionalStorage.filterConditions = jest
+        .fn()
+        .mockImplementation(
+          async (
+            _roleEntityRef: string,
+            pluginId: string,
+            _resourceType: string,
+          ) => {
+            if (pluginId === 'catalog') {
+              return conditions;
+            }
+            return [];
+          },
+        );
+      const result = await request(app)
+        .get('/roles/role/default/test/conditions?pluginId=catalog')
+        .send();
+      expect(result.statusCode).toBe(200);
+      expect(result.body).toEqual(conditions);
+    });
+
+    it('should be returned empty condition decision list by pluginId', async () => {
+      conditionalStorage.filterConditions = jest
+        .fn()
+        .mockImplementation(
+          async (
+            _roleEntityRef: string,
+            pluginId: string,
+            _resourceType: string,
+          ) => {
+            if (pluginId === 'catalog') {
+              return conditions;
+            }
+            return [];
+          },
+        );
+      const result = await request(app)
+        .get('/roles/role/default/test/conditions?pluginId=scaffolder')
+        .send();
+      expect(result.statusCode).toBe(200);
+      expect(result.body).toEqual([]);
+    });
+
+    it('should be returned condition decision by resourceType', async () => {
+      conditionalStorage.filterConditions = jest
+        .fn()
+        .mockImplementation(
+          async (
+            _roleEntityRef: string,
+            _pluginId: string,
+            resourceType: string,
+          ) => {
+            if (resourceType === 'catalog-entity') {
+              return conditions;
+            }
+            return [];
+          },
+        );
+      const result = await request(app)
+        .get('/roles/role/default/test/conditions?resourceType=catalog-entity')
+        .send();
+      expect(result.statusCode).toBe(200);
+      expect(result.body).toEqual(conditions);
+    });
+  });
+
+  describe('DELETE /roles/:kind/:namespace:/name/conditions/:id', () => {
+    it('should return a status of Unauthorized', async () => {
+      mockedAuthorizeConditional.mockImplementationOnce(async () => [
+        { result: AuthorizeResult.DENY },
+      ]);
+
+      const result = await request(app)
+        .delete('/roles/role/default/test/conditions/1')
+        .send();
+
+      expect(mockedAuthorizeConditional).toHaveBeenCalledWith(
+        [{ permission: policyEntityDeletePermission }],
+        { token: 'token' },
+      );
+
+      // Assert the response status code and error message
+      expect(result.statusCode).toBe(403);
+      expect(result.body.error).toEqual({
+        name: 'NotAllowedError',
+        message: '',
+      });
+    });
+
+    it('should delete condition decision by id', async () => {
+      const result = await request(app)
+        .delete('/roles/role/default/test/conditions/1')
+        .send();
+
+      expect(result.statusCode).toEqual(204);
+      expect(mockIdentityClient.getIdentity).toHaveBeenCalledTimes(1);
+    });
+
+    it('should fail to delete condition decision by id', async () => {
+      conditionalStorage.deleteCondition = jest.fn(() => {
+        throw new Error('Failed to delete condition decision by id');
+      });
+
+      const result = await request(app)
+        .delete('/roles/role/default/test/conditions/1')
+        .send();
+
+      expect(result.statusCode).toEqual(500);
+      expect(result.body.error.message).toEqual(
+        'Failed to delete condition decision by id',
+      );
+    });
+
+    it('should return return 400', async () => {
+      const result = await request(app)
+        .delete('/roles/role/default/test/conditions/non-number')
+        .send();
+      expect(result.statusCode).toBe(400);
+      expect(result.body.error).toEqual({
+        message: 'Id is not a valid number.',
+        name: 'InputError',
+      });
+    });
+  });
+
+  describe('GET /roles/:kind/:namespace:/name/condition/:id', () => {
+    it('should return a status of Unauthorized', async () => {
+      mockedAuthorizeConditional.mockImplementationOnce(async () => [
+        { result: AuthorizeResult.DENY },
+      ]);
+
+      const result = await request(app)
+        .get('/roles/role/default/test/conditions/1')
+        .send();
+
+      expect(mockedAuthorizeConditional).toHaveBeenCalledWith(
+        [{ permission: policyEntityReadPermission }],
+        { token: 'token' },
+      );
+
+      // Assert the response status code and error message
+      expect(result.statusCode).toBe(403);
+      expect(result.body.error).toEqual({
+        name: 'NotAllowedError',
+        message: '',
+      });
+    });
+
+    it('should return condition decision by id', async () => {
+      conditionalStorage.getCondition = jest
+        .fn()
+        .mockImplementation(async (id: number) => {
+          if (id === 1) {
+            return conditions[0];
+          }
+          return undefined;
+        });
+
+      const result = await request(app)
+        .get('/roles/role/default/test/conditions/1')
+        .send();
+      expect(result.statusCode).toBe(200);
+      expect(result.body).toEqual(conditions[0]);
+      expect(mockIdentityClient.getIdentity).toHaveBeenCalledTimes(0);
+    });
+
+    it('should return return 404', async () => {
+      conditionalStorage.getCondition = jest
+        .fn()
+        .mockImplementation(async () => {
+          return [];
+        });
+      const result = await request(app)
+        .get('/roles/role/default/test/conditions/1')
+        .send();
+      expect(result.statusCode).toBe(404);
+      expect(result.body.error).toEqual({
+        message: '',
+        name: 'NotFoundError',
+      });
+    });
+
+    it('should return return 400', async () => {
+      const result = await request(app)
+        .get('/roles/role/default/test/conditions/non-number')
+        .send();
+      expect(result.statusCode).toBe(400);
+      expect(result.body.error).toEqual({
+        message: 'Id is not a valid number.',
+        name: 'InputError',
+      });
+    });
+  });
+
+  describe('POST /roles/:kind/:namespace:/name/conditions', () => {
+    it('should return a status of Unauthorized', async () => {
+      mockedAuthorizeConditional.mockImplementationOnce(async () => [
+        { result: AuthorizeResult.DENY },
+      ]);
+
+      const result = await request(app)
+        .post('/roles/role/default/test/conditions')
+        .send();
+
+      expect(mockedAuthorizeConditional).toHaveBeenCalledWith(
+        [{ permission: policyEntityCreatePermission }],
+        { token: 'token' },
+      );
+
+      // Assert the response status code and error message
+      expect(result.statusCode).toBe(403);
+      expect(result.body.error).toEqual({
+        name: 'NotAllowedError',
+        message: '',
+      });
+    });
+
+    it('should be created condition', async () => {
+      conditionalStorage.createCondition = jest.fn().mockImplementation(() => {
+        return 1;
+      });
+
+      const roleCondition: RoleConditionalPolicyDecision = {
         id: 1,
         pluginId: 'catalog',
         roleEntityRef: 'role:default/test',
@@ -2501,468 +2778,177 @@ describe('REST policies api', () => {
           resourceType: 'catalog-entity',
           params: { claims: ['group:default/team-a'] },
         },
-      },
-    ];
+      };
+      const result = await request(app)
+        .post('/roles/role/default/test/conditions')
+        .send(roleCondition);
 
-    beforeEach(() => {
-      conditionalStorage.filterConditions = jest
+      expect(result.statusCode).toBe(201);
+      expect(validateRoleConditionMock).toHaveBeenCalledWith(roleCondition);
+      expect(result.body).toEqual({ id: 1 });
+      expect(mockIdentityClient.getIdentity).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('PUT /roles/:kind/:namespace:/name/conditions', () => {
+    it('should return a status of Unauthorized', async () => {
+      mockedAuthorizeConditional.mockImplementationOnce(async () => [
+        { result: AuthorizeResult.DENY },
+      ]);
+
+      const result = await request(app)
+        .put('/roles/role/default/test/conditions/1')
+        .send();
+
+      expect(mockedAuthorizeConditional).toHaveBeenCalledWith(
+        [{ permission: policyEntityUpdatePermission }],
+        { token: 'token' },
+      );
+
+      // Assert the response status code and error message
+      expect(result.statusCode).toBe(403);
+      expect(result.body.error).toEqual({
+        name: 'NotAllowedError',
+        message: '',
+      });
+    });
+
+    it('should return return 400', async () => {
+      const result = await request(app)
+        .put('/roles/role/default/test/conditions/non-number')
+        .send();
+      expect(result.statusCode).toBe(400);
+      expect(result.body.error).toEqual({
+        message: 'Id is not a valid number.',
+        name: 'InputError',
+      });
+    });
+
+    it('should update condition decision', async () => {
+      mockedAuthorizeConditional.mockImplementationOnce(async () => [
+        { result: AuthorizeResult.ALLOW },
+      ]);
+      const conditionDecision: RoleConditionalPolicyDecision = {
+        id: 1,
+        pluginId: 'catalog',
+        roleEntityRef: 'role:default/test',
+        resourceType: 'catalog-entity',
+        permissions: [{ name: 'catalog.entity.read', action: 'read' }],
+        result: AuthorizeResult.CONDITIONAL,
+        conditions: {
+          rule: 'IS_ENTITY_OWNER',
+          resourceType: 'catalog-entity',
+          params: { claims: ['group:default/team-a'] },
+        },
+      };
+      const result = await request(app)
+        .put('/roles/role/default/test/conditions/1')
+        .send(conditionDecision);
+
+      expect(mockedAuthorizeConditional).toHaveBeenCalledWith(
+        [{ permission: policyEntityUpdatePermission }],
+        { token: 'token' },
+      );
+      expect(validateRoleConditionMock).toHaveBeenCalledWith(conditionDecision);
+
+      expect(result.statusCode).toBe(200);
+      expect(conditionalStorage.updateCondition).toHaveBeenCalledWith(
+        1,
+        conditionDecision,
+      );
+      expect(mockIdentityClient.getIdentity).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('list plugin permissions and condition rules', () => {
+    it('should return list plugins permission', async () => {
+      const pluginMetadata: PluginPermissionMetaData[] = [
+        {
+          pluginId: 'permissions',
+          policies: [
+            {
+              permission: 'policy-entity',
+              policy: 'read',
+            },
+          ],
+        },
+      ];
+      pluginPermissionMetadataCollectorMock.getPluginPolicies = jest
         .fn()
         .mockImplementation(async () => {
-          return conditions;
+          return pluginMetadata;
         });
+      const result = await request(app).get('/plugins/policies').send();
+      expect(result.statusCode).toEqual(200);
+      expect(result.body).toEqual(pluginMetadata);
     });
 
-    // Define a test suite for the GET /conditions endpoint
-    describe('GET /roles/:kind/:namespace:/name/conditions', () => {
-      it('should return a status of Unauthorized', async () => {
-        mockedAuthorizeConditional.mockImplementationOnce(async () => [
-          { result: AuthorizeResult.DENY },
-        ]);
+    it('should return a status of Unauthorized for /plugins/policies', async () => {
+      mockedAuthorizeConditional.mockImplementationOnce(async () => [
+        { result: AuthorizeResult.DENY },
+      ]);
+      const result = await request(app).get('/plugins/policies').send();
 
-        // Perform the GET request to the endpoint
-        const result = await request(app)
-          .get('/roles/role/default/test/conditions')
-          .send();
-
-        expect(mockedAuthorizeConditional).toHaveBeenCalledWith(
-          [{ permission: policyEntityReadPermission }],
-          { token: 'token' },
-        );
-
-        // Assert the response status code and error message
-        expect(result.statusCode).toBe(403);
-        expect(result.body.error).toEqual({
-          name: 'NotAllowedError',
-          message: '',
-        });
-      });
-
-      it('should be returned list all condition decisions', async () => {
-        const result = await request(app)
-          .get('/roles/role/default/test/conditions')
-          .send();
-        expect(result.statusCode).toBe(200);
-        expect(result.body).toEqual(conditions);
-        expect(mockIdentityClient.getIdentity).toHaveBeenCalledTimes(0);
-      });
-
-      it('should be returned condition decision by pluginId', async () => {
-        conditionalStorage.filterConditions = jest
-          .fn()
-          .mockImplementation(
-            async (
-              _roleEntityRef: string,
-              pluginId: string,
-              _resourceType: string,
-            ) => {
-              if (pluginId === 'catalog') {
-                return conditions;
-              }
-              return [];
-            },
-          );
-        const result = await request(app)
-          .get('/roles/role/default/test/conditions?pluginId=catalog')
-          .send();
-        expect(result.statusCode).toBe(200);
-        expect(result.body).toEqual(conditions);
-      });
-
-      it('should be returned empty condition decision list by pluginId', async () => {
-        conditionalStorage.filterConditions = jest
-          .fn()
-          .mockImplementation(
-            async (
-              _roleEntityRef: string,
-              pluginId: string,
-              _resourceType: string,
-            ) => {
-              if (pluginId === 'catalog') {
-                return conditions;
-              }
-              return [];
-            },
-          );
-        const result = await request(app)
-          .get('/roles/role/default/test/conditions?pluginId=scaffolder')
-          .send();
-        expect(result.statusCode).toBe(200);
-        expect(result.body).toEqual([]);
-      });
-
-      it('should be returned condition decision by resourceType', async () => {
-        conditionalStorage.filterConditions = jest
-          .fn()
-          .mockImplementation(
-            async (
-              _roleEntityRef: string,
-              _pluginId: string,
-              resourceType: string,
-            ) => {
-              if (resourceType === 'catalog-entity') {
-                return conditions;
-              }
-              return [];
-            },
-          );
-        const result = await request(app)
-          .get(
-            '/roles/role/default/test/conditions?resourceType=catalog-entity',
-          )
-          .send();
-        expect(result.statusCode).toBe(200);
-        expect(result.body).toEqual(conditions);
+      expect(mockedAuthorizeConditional).toHaveBeenCalledWith(
+        [{ permission: policyEntityReadPermission }],
+        { token: 'token' },
+      );
+      expect(result.statusCode).toBe(403);
+      expect(result.body.error).toEqual({
+        name: 'NotAllowedError',
+        message: '',
       });
     });
 
-    describe('DELETE /roles/:kind/:namespace:/name/conditions/:id', () => {
-      it('should return a status of Unauthorized', async () => {
-        mockedAuthorizeConditional.mockImplementationOnce(async () => [
-          { result: AuthorizeResult.DENY },
-        ]);
-
-        const result = await request(app)
-          .delete('/roles/role/default/test/conditions/1')
-          .send();
-
-        expect(mockedAuthorizeConditional).toHaveBeenCalledWith(
-          [{ permission: policyEntityDeletePermission }],
-          { token: 'token' },
-        );
-
-        // Assert the response status code and error message
-        expect(result.statusCode).toBe(403);
-        expect(result.body.error).toEqual({
-          name: 'NotAllowedError',
-          message: '',
-        });
-      });
-
-      it('should delete condition decision by id', async () => {
-        const result = await request(app)
-          .delete('/roles/role/default/test/conditions/1')
-          .send();
-
-        expect(result.statusCode).toEqual(204);
-        expect(mockIdentityClient.getIdentity).toHaveBeenCalledTimes(1);
-      });
-
-      it('should fail to delete condition decision by id', async () => {
-        conditionalStorage.deleteCondition = jest.fn(() => {
-          throw new Error('Failed to delete condition decision by id');
-        });
-
-        const result = await request(app)
-          .delete('/roles/role/default/test/conditions/1')
-          .send();
-
-        expect(result.statusCode).toEqual(500);
-        expect(result.body.error.message).toEqual(
-          'Failed to delete condition decision by id',
-        );
-      });
-
-      it('should return return 400', async () => {
-        const result = await request(app)
-          .delete('/roles/role/default/test/conditions/non-number')
-          .send();
-        expect(result.statusCode).toBe(400);
-        expect(result.body.error).toEqual({
-          message: 'Id is not a valid number.',
-          name: 'InputError',
-        });
-      });
-    });
-
-    describe('GET /roles/:kind/:namespace:/name/condition/:id', () => {
-      it('should return a status of Unauthorized', async () => {
-        mockedAuthorizeConditional.mockImplementationOnce(async () => [
-          { result: AuthorizeResult.DENY },
-        ]);
-
-        const result = await request(app)
-          .get('/roles/role/default/test/conditions/1')
-          .send();
-
-        expect(mockedAuthorizeConditional).toHaveBeenCalledWith(
-          [{ permission: policyEntityReadPermission }],
-          { token: 'token' },
-        );
-
-        // Assert the response status code and error message
-        expect(result.statusCode).toBe(403);
-        expect(result.body.error).toEqual({
-          name: 'NotAllowedError',
-          message: '',
-        });
-      });
-
-      it('should return condition decision by id', async () => {
-        conditionalStorage.getCondition = jest
-          .fn()
-          .mockImplementation(async (id: number) => {
-            if (id === 1) {
-              return conditions[0];
-            }
-            return undefined;
-          });
-
-        const result = await request(app)
-          .get('/roles/role/default/test/conditions/1')
-          .send();
-        expect(result.statusCode).toBe(200);
-        expect(result.body).toEqual(conditions[0]);
-        expect(mockIdentityClient.getIdentity).toHaveBeenCalledTimes(0);
-      });
-
-      it('should return return 404', async () => {
-        conditionalStorage.getCondition = jest
-          .fn()
-          .mockImplementation(async () => {
-            return [];
-          });
-        const result = await request(app)
-          .get('/roles/role/default/test/conditions/1')
-          .send();
-        expect(result.statusCode).toBe(404);
-        expect(result.body.error).toEqual({
-          message: '',
-          name: 'NotFoundError',
-        });
-      });
-
-      it('should return return 400', async () => {
-        const result = await request(app)
-          .get('/roles/role/default/test/conditions/non-number')
-          .send();
-        expect(result.statusCode).toBe(400);
-        expect(result.body.error).toEqual({
-          message: 'Id is not a valid number.',
-          name: 'InputError',
-        });
-      });
-    });
-
-    describe('POST /roles/:kind/:namespace:/name/conditions', () => {
-      it('should return a status of Unauthorized', async () => {
-        mockedAuthorizeConditional.mockImplementationOnce(async () => [
-          { result: AuthorizeResult.DENY },
-        ]);
-
-        const result = await request(app)
-          .post('/roles/role/default/test/conditions')
-          .send();
-
-        expect(mockedAuthorizeConditional).toHaveBeenCalledWith(
-          [{ permission: policyEntityCreatePermission }],
-          { token: 'token' },
-        );
-
-        // Assert the response status code and error message
-        expect(result.statusCode).toBe(403);
-        expect(result.body.error).toEqual({
-          name: 'NotAllowedError',
-          message: '',
-        });
-      });
-
-      it('should be created condition', async () => {
-        conditionalStorage.createCondition = jest
-          .fn()
-          .mockImplementation(() => {
-            return 1;
-          });
-
-        const roleCondition: RoleConditionalPolicyDecision = {
-          id: 1,
+    it('should return list plugins condition rules', async () => {
+      const rules: PluginMetadataResponseSerializedRule[] = [
+        {
           pluginId: 'catalog',
-          roleEntityRef: 'role:default/test',
-          resourceType: 'catalog-entity',
-          permissions: [{ name: 'catalog.entity.read', action: 'read' }],
-          result: AuthorizeResult.CONDITIONAL,
-          conditions: {
-            rule: 'IS_ENTITY_OWNER',
-            resourceType: 'catalog-entity',
-            params: { claims: ['group:default/team-a'] },
-          },
-        };
-        const result = await request(app)
-          .post('/roles/role/default/test/conditions')
-          .send(roleCondition);
-
-        expect(result.statusCode).toBe(201);
-        expect(validateRoleConditionMock).toHaveBeenCalledWith(roleCondition);
-        expect(result.body).toEqual({ id: 1 });
-        expect(mockIdentityClient.getIdentity).toHaveBeenCalledTimes(1);
-      });
-    });
-
-    describe('PUT /roles/:kind/:namespace:/name/conditions', () => {
-      it('should return a status of Unauthorized', async () => {
-        mockedAuthorizeConditional.mockImplementationOnce(async () => [
-          { result: AuthorizeResult.DENY },
-        ]);
-
-        const result = await request(app)
-          .put('/roles/role/default/test/conditions/1')
-          .send();
-
-        expect(mockedAuthorizeConditional).toHaveBeenCalledWith(
-          [{ permission: policyEntityUpdatePermission }],
-          { token: 'token' },
-        );
-
-        // Assert the response status code and error message
-        expect(result.statusCode).toBe(403);
-        expect(result.body.error).toEqual({
-          name: 'NotAllowedError',
-          message: '',
-        });
-      });
-
-      it('should return return 400', async () => {
-        const result = await request(app)
-          .put('/roles/role/default/test/conditions/non-number')
-          .send();
-        expect(result.statusCode).toBe(400);
-        expect(result.body.error).toEqual({
-          message: 'Id is not a valid number.',
-          name: 'InputError',
-        });
-      });
-
-      it('should update condition decision', async () => {
-        mockedAuthorizeConditional.mockImplementationOnce(async () => [
-          { result: AuthorizeResult.ALLOW },
-        ]);
-        const conditionDecision: RoleConditionalPolicyDecision = {
-          id: 1,
-          pluginId: 'catalog',
-          roleEntityRef: 'role:default/test',
-          resourceType: 'catalog-entity',
-          permissions: [{ name: 'catalog.entity.read', action: 'read' }],
-          result: AuthorizeResult.CONDITIONAL,
-          conditions: {
-            rule: 'IS_ENTITY_OWNER',
-            resourceType: 'catalog-entity',
-            params: { claims: ['group:default/team-a'] },
-          },
-        };
-        const result = await request(app)
-          .put('/roles/role/default/test/conditions/1')
-          .send(conditionDecision);
-
-        expect(mockedAuthorizeConditional).toHaveBeenCalledWith(
-          [{ permission: policyEntityUpdatePermission }],
-          { token: 'token' },
-        );
-        expect(validateRoleConditionMock).toHaveBeenCalledWith(
-          conditionDecision,
-        );
-
-        expect(result.statusCode).toBe(200);
-        expect(conditionalStorage.updateCondition).toHaveBeenCalledWith(
-          1,
-          conditionDecision,
-        );
-        expect(mockIdentityClient.getIdentity).toHaveBeenCalledTimes(1);
-      });
-    });
-
-    describe('list plugin permissions and condition rules', () => {
-      it('should return list plugins permission', async () => {
-        const pluginMetadata: PluginPermissionMetaData[] = [
-          {
-            pluginId: 'permissions',
-            policies: [
-              {
-                permission: 'policy-entity',
-                policy: 'read',
-              },
-            ],
-          },
-        ];
-        pluginPermissionMetadataCollectorMock.getPluginPolicies = jest
-          .fn()
-          .mockImplementation(async () => {
-            return pluginMetadata;
-          });
-        const result = await request(app).get('/plugins/policies').send();
-        expect(result.statusCode).toEqual(200);
-        expect(result.body).toEqual(pluginMetadata);
-      });
-
-      it('should return a status of Unauthorized for /plugins/policies', async () => {
-        mockedAuthorizeConditional.mockImplementationOnce(async () => [
-          { result: AuthorizeResult.DENY },
-        ]);
-        const result = await request(app).get('/plugins/policies').send();
-
-        expect(mockedAuthorizeConditional).toHaveBeenCalledWith(
-          [{ permission: policyEntityReadPermission }],
-          { token: 'token' },
-        );
-        expect(result.statusCode).toBe(403);
-        expect(result.body.error).toEqual({
-          name: 'NotAllowedError',
-          message: '',
-        });
-      });
-
-      it('should return list plugins condition rules', async () => {
-        const rules: PluginMetadataResponseSerializedRule[] = [
-          {
-            pluginId: 'catalog',
-            rules: [
-              {
-                description: 'Allow entities with the specified label',
-                name: 'HAS_LABEL',
-                paramsSchema: {
-                  $schema: 'http://json-schema.org/draft-07/schema#',
-                  additionalProperties: false,
-                  properties: {
-                    label: {
-                      description: 'Name of the label to match on',
-                      type: 'string',
-                    },
+          rules: [
+            {
+              description: 'Allow entities with the specified label',
+              name: 'HAS_LABEL',
+              paramsSchema: {
+                $schema: 'http://json-schema.org/draft-07/schema#',
+                additionalProperties: false,
+                properties: {
+                  label: {
+                    description: 'Name of the label to match on',
+                    type: 'string',
                   },
-                  required: ['label'],
-                  type: 'object',
                 },
-                resourceType: 'catalog-entity',
+                required: ['label'],
+                type: 'object',
               },
-            ],
-          },
-        ];
-        pluginPermissionMetadataCollectorMock.getPluginConditionRules = jest
-          .fn()
-          .mockImplementation(async () => {
-            return rules;
-          });
-        const result = await request(app)
-          .get('/plugins/condition-rules')
-          .send();
-        expect(result.statusCode).toEqual(200);
-        expect(result.body).toEqual(rules);
-      });
-
-      it('should return a status of Unauthorized for /plugins/condition-rules', async () => {
-        mockedAuthorizeConditional.mockImplementationOnce(async () => [
-          { result: AuthorizeResult.DENY },
-        ]);
-        const result = await request(app)
-          .get('/plugins/condition-rules')
-          .send();
-
-        expect(mockedAuthorizeConditional).toHaveBeenCalledWith(
-          [{ permission: policyEntityReadPermission }],
-          { token: 'token' },
-        );
-        expect(result.statusCode).toBe(403);
-        expect(result.body.error).toEqual({
-          name: 'NotAllowedError',
-          message: '',
+              resourceType: 'catalog-entity',
+            },
+          ],
+        },
+      ];
+      pluginPermissionMetadataCollectorMock.getPluginConditionRules = jest
+        .fn()
+        .mockImplementation(async () => {
+          return rules;
         });
+      const result = await request(app).get('/plugins/condition-rules').send();
+      expect(result.statusCode).toEqual(200);
+      expect(result.body).toEqual(rules);
+    });
+
+    it('should return a status of Unauthorized for /plugins/condition-rules', async () => {
+      mockedAuthorizeConditional.mockImplementationOnce(async () => [
+        { result: AuthorizeResult.DENY },
+      ]);
+      const result = await request(app).get('/plugins/condition-rules').send();
+
+      expect(mockedAuthorizeConditional).toHaveBeenCalledWith(
+        [{ permission: policyEntityReadPermission }],
+        { token: 'token' },
+      );
+      expect(result.statusCode).toBe(403);
+      expect(result.body.error).toEqual({
+        name: 'NotAllowedError',
+        message: '',
       });
     });
   });
