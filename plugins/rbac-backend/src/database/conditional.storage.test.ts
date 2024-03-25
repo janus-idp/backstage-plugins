@@ -24,7 +24,7 @@ describe('DataBaseConditionalStorage', () => {
   const conditionDao1: ConditionalPolicyDecisionDAO = {
     pluginId: 'catalog',
     resourceType: 'catalog-entity',
-    actions: '["read"]',
+    permissions: '[{"action":"read","name":"catalog.entity.read"}]',
     roleEntityRef: 'role:default/test',
     result: AuthorizeResult.CONDITIONAL,
     conditionsJson:
@@ -37,7 +37,7 @@ describe('DataBaseConditionalStorage', () => {
   const conditionDao2: ConditionalPolicyDecisionDAO = {
     pluginId: 'test',
     resourceType: 'test-entity',
-    actions: '["delete"]',
+    permissions: '[{"action": "delete", "name": "catalog.entity.delete"}]',
     roleEntityRef: 'role:default/test-2',
     result: AuthorizeResult.CONDITIONAL,
     conditionsJson:
@@ -51,7 +51,7 @@ describe('DataBaseConditionalStorage', () => {
     id: 1,
     pluginId: 'catalog',
     resourceType: 'catalog-entity',
-    actions: ['read'],
+    permissions: [{ action: 'read', name: 'catalog.entity.read' }],
     roleEntityRef: 'role:default/test',
     result: AuthorizeResult.CONDITIONAL,
     conditions: {
@@ -66,7 +66,7 @@ describe('DataBaseConditionalStorage', () => {
     id: 2,
     pluginId: 'test',
     resourceType: 'test-entity',
-    actions: ['delete'],
+    permissions: [{ action: 'delete', name: 'catalog.entity.delete' }],
     roleEntityRef: 'role:default/test-2',
     result: AuthorizeResult.CONDITIONAL,
     conditions: {
@@ -187,7 +187,7 @@ describe('DataBaseConditionalStorage', () => {
           undefined,
           undefined,
           undefined,
-          ['read'],
+          ['catalog.entity.read'],
         );
         expect(conditions.length).toEqual(1);
 
@@ -210,7 +210,7 @@ describe('DataBaseConditionalStorage', () => {
           'role:default/test',
           'catalog',
           'catalog-entity',
-          ['read'],
+          ['catalog.entity.read'],
         );
         expect(conditions.length).toEqual(1);
 
@@ -251,7 +251,7 @@ describe('DataBaseConditionalStorage', () => {
           await db.createCondition(condition1);
         }).rejects.toThrow(
           `A condition with resource type 'catalog-entity'` +
-            ` and actions '["read"]'` +
+            ` and permission names '[\"catalog.entity.read\"]'` +
             ` has already been stored for role 'role:default/test'`,
         );
       },
@@ -283,7 +283,7 @@ describe('DataBaseConditionalStorage', () => {
         const condition = await db.findUniqueCondition(
           'role:default/test',
           'catalog-entity',
-          ['read'],
+          ['catalog.entity.read'],
         );
 
         expect(condition).toEqual(condition1);
@@ -374,7 +374,10 @@ describe('DataBaseConditionalStorage', () => {
 
         const updateCondition: RoleConditionalPolicyDecision = {
           ...condition1,
-          actions: ['read', 'delete'],
+          permissions: [
+            { name: 'catalog.entity.read', action: 'read' },
+            { name: 'catalog.entity.delete', action: 'delete' },
+          ],
         };
         await db.updateCondition(1, updateCondition);
 
@@ -385,7 +388,8 @@ describe('DataBaseConditionalStorage', () => {
         expect(condition).toEqual([
           {
             ...conditionDao1,
-            actions: '["read","delete"]',
+            permissions:
+              '[{"name":"catalog.entity.read","action":"read"},{"name":"catalog.entity.delete","action":"delete"}]',
             id: 1,
           },
         ]);
@@ -399,7 +403,10 @@ describe('DataBaseConditionalStorage', () => {
 
         const updateCondition: RoleConditionalPolicyDecision = {
           ...condition1,
-          actions: ['read', 'delete'],
+          permissions: [
+            { name: 'catalog.entity.name', action: 'read' },
+            { name: 'catalog.entity.delete', action: 'delete' },
+          ],
         };
         await expect(async () => {
           await db.updateCondition(1, updateCondition);
@@ -408,7 +415,7 @@ describe('DataBaseConditionalStorage', () => {
     );
 
     it.each(databases.eachSupportedId())(
-      'should fail to update condition, because condition not found',
+      'should fail to update condition, because found condition with conflict',
       async databasesId => {
         const { knex, db } = await createDatabase(databasesId);
 
@@ -417,17 +424,21 @@ describe('DataBaseConditionalStorage', () => {
         );
         await knex<ConditionalPolicyDecisionDAO>(CONDITIONAL_TABLE).insert({
           ...conditionDao1,
-          actions: '["delete"]',
+          permissions:
+            '[{"name": "catalog.entity.delete", "action": "delete"}]',
         });
 
         const updateCondition: RoleConditionalPolicyDecision = {
           ...condition1,
-          actions: ['read', 'delete'],
+          permissions: [
+            { name: 'catalog.entity.read', action: 'read' },
+            { name: 'catalog.entity.delete', action: 'delete' },
+          ],
         };
         await expect(async () => {
           await db.updateCondition(1, updateCondition);
         }).rejects.toThrow(
-          `Found condition with conflicted action 'delete'. Role could have multiple ` +
+          `Found condition with conflicted action '{\"name\":\"catalog.entity.delete\",\"action\":\"delete\"}'. Role could have multiple ` +
             `conditions for the same resource type 'catalog-entity', but with different action sets.`,
         );
       },

@@ -29,7 +29,6 @@ import { ParsedQs } from 'qs';
 import { Logger } from 'winston';
 
 import {
-  PermissionAction,
   policyEntityCreatePermission,
   policyEntityDeletePermission,
   policyEntityPermissions,
@@ -48,7 +47,7 @@ import {
   RoleMetadataDao,
   RoleMetadataStorage,
 } from '../database/role-metadata';
-import { deepSortedEqual, isPermissionAction, policyToString } from '../helper';
+import { deepSortedEqual, policyToString } from '../helper';
 import { validateRoleCondition } from './condition-validation';
 import { EnforcerDelegate } from './enforcer-delegate';
 import { PluginPermissionMetadataCollector } from './plugin-endpoints';
@@ -600,17 +599,19 @@ export class PolicesServer {
 
         const pluginId = this.getFirstQuery(req.query.pluginId);
         const resourceType = this.getFirstQuery(req.query.resourceType);
-        const actions = this.getActionQueries(req.query.actions);
+        const permissionNames = this.getPermissionNameQueries(
+          req.query.permissionNames,
+        );
         console.log(
           `******* ${roleEntityRef}, ${pluginId}, ${resourceType}, ${JSON.stringify(
-            actions,
+            permissionNames,
           )}`,
         );
         const conditions = await this.conditionalStorage.filterConditions(
           roleEntityRef,
           pluginId,
           resourceType,
-          actions,
+          permissionNames,
         );
 
         resp.json(conditions);
@@ -804,31 +805,31 @@ export class PolicesServer {
     return roles;
   }
 
-  getActionQueries(
+  getPermissionNameQueries(
     queryValue: string | string[] | ParsedQs | ParsedQs[] | undefined,
-  ): PermissionAction[] | undefined {
+  ): string[] | undefined {
     if (!queryValue) {
       return undefined;
     }
     if (Array.isArray(queryValue)) {
-      const actions: PermissionAction[] = [];
-      for (const action of queryValue) {
-        if (typeof action === 'string' && isPermissionAction(action)) {
-          actions.push(action);
+      const permissionNames: string[] = [];
+      for (const permissionQuery of queryValue) {
+        if (typeof permissionQuery === 'string') {
+          permissionNames.push(permissionQuery);
         } else {
           throw new InputError(
-            `Invalid permission action query value: ${action}. Supported values are: 'create' | 'read' | 'update' | 'delete' | 'use'`,
+            `Invalid permission action query value: ${permissionQuery}. Permission name should be string.`,
           );
         }
       }
-      return actions;
+      return permissionNames;
     }
 
-    if (typeof queryValue === 'string' && isPermissionAction(queryValue)) {
+    if (typeof queryValue === 'string') {
       return [queryValue];
     }
     throw new InputError(
-      `Invalid permission action query value: ${queryValue}. Supported values are: 'create' | 'read' | 'update' | 'delete' | 'use'`,
+      `Invalid permission action query value: ${queryValue}. Permission name should be string.`,
     );
   }
 
