@@ -40,10 +40,10 @@
     tslib "^2.6.2"
     typescript "^5.2.2"
 
-"@aonic-ui/pipelines@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@aonic-ui/pipelines/-/pipelines-1.1.0.tgz#b40b1ffdc0c4c6d21a53c7dca9c7e48169e5e798"
-  integrity sha512-C5BvabW3Hhffn691DL3pwoUbN/2GcASjbFg3kDeFEElPp8G9UEJw5l4+c7esr/64/F/ffd2qA0ODNwAIcUVlcg==
+"@aonic-ui/pipelines@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@aonic-ui/pipelines/-/pipelines-1.1.1.tgz#7592d974bb69bbd403dc4c53f14ec80ba2a37a67"
+  integrity sha512-plfmKczOLdQltSO6hjOC7krx4NOWJm6gMOO6jwMo4H6jeMF+ABczagI7f7pONVe0iTG1TYyif4l6YZjJVAtBBQ==
   dependencies:
     "@patternfly/react-table" "^5.1.2"
     js-yaml "^4.1.0"
