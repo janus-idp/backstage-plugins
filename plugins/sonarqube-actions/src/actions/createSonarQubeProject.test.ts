@@ -18,6 +18,8 @@ describe('sonarqube:create-project', () => {
     logStream: new PassThrough(),
     output: jest.fn(),
     createTemporaryDirectory: jest.fn(),
+    checkpoint: jest.fn(),
+    getInitiatorCredentials: jest.fn(),
   };
 
   it('should throw unauthorized error', async () => {
