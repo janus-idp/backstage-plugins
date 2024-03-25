@@ -106,7 +106,7 @@ export const extractLabelsSettingsOnSeries = (
 
 export const extractLabelsSettings = (
   dashboard: DashboardModel,
-  stateSettings: LabelsSettings,
+  stateSettings: Map<PromLabel, LabelSettings>,
 ): LabelsSettings => {
   // Find all labels on all series
   const newSettings: LabelsSettings = new Map();

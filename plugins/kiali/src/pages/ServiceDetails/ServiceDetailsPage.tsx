@@ -5,12 +5,14 @@ import { useAsyncFn, useDebounce } from 'react-use';
 import { Content, EmptyState } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
-import { CircularProgress } from '@material-ui/core';
+import { CircularProgress, Tab, Tabs } from '@material-ui/core';
 
 import { HistoryManager } from '../../app/History';
 import { BreadcrumbView } from '../../components/BreadcrumbView/BreadcrumbView';
 import { DefaultSecondaryMasthead } from '../../components/DefaultSecondaryMasthead/DefaultSecondaryMasthead';
 import * as FilterHelper from '../../components/FilterList/FilterHelper';
+import { IstioMetrics } from '../../components/Metrics/IstioMetrics';
+import { a11yProps, TabPanel, useStyles } from '../../components/Tab/TabPanel';
 import { TimeDurationComponent } from '../../components/Time/TimeDurationComponent';
 import { getErrorString, kialiApiRef } from '../../services/Api';
 import { KialiContext } from '../../store';
@@ -22,6 +24,7 @@ import {
   PeerAuthentication,
   Validations,
 } from '../../types/IstioObjects';
+import { MetricsObjectTypes } from '../../types/Metrics';
 import { ServiceDetailsInfo } from '../../types/ServiceInfo';
 import { ServiceInfo } from './ServiceInfo';
 
@@ -41,6 +44,8 @@ export const ServiceDetailsPage = () => {
   const [peerAuthentication, setPeerAuthentication] = React.useState<
     PeerAuthentication[]
   >([]);
+  const [value, setValue] = React.useState<number>(0);
+  const classes = useStyles();
 
   const grids = () => {
     const elements = [];
@@ -152,6 +157,49 @@ export const ServiceDetailsPage = () => {
     );
   };
 
+  const inboundTab = (): React.ReactElement => {
+    return (
+      <>
+        {namespace && service && (
+          <IstioMetrics
+            data-test="inbound-metrics-component"
+            lastRefreshAt={duration}
+            namespace={namespace}
+            object={service}
+            cluster={serviceItem?.cluster}
+            objectType={MetricsObjectTypes.SERVICE}
+            direction="inbound"
+          />
+        )}
+      </>
+    );
+  };
+
+  const outboundTab = (): React.ReactElement => {
+    return (
+      <>
+        {namespace && service && (
+          <IstioMetrics
+            data-test="outbound-metrics-component"
+            lastRefreshAt={duration}
+            namespace={namespace}
+            object={service}
+            cluster={serviceItem?.cluster}
+            objectType={MetricsObjectTypes.SERVICE}
+            direction="outbound"
+          />
+        )}
+      </>
+    );
+  };
+
+  const handleChange = (
+    _event: any,
+    newValue: React.SetStateAction<number>,
+  ) => {
+    setValue(newValue);
+  };
+
   return (
     <div className={baseStyle}>
       <Content>
@@ -167,7 +215,27 @@ export const ServiceDetailsPage = () => {
             description={<div>No Service found </div>}
           />
         )}
-        <div style={{ marginTop: '20px' }}>{overviewTab()}</div>
+        <div className={classes.root}>
+          <Tabs
+            value={value}
+            onChange={handleChange}
+            aria-label="simple tabs example"
+            style={{ overflow: 'visible', borderBottom: '1px solid #dcdcdc' }}
+          >
+            <Tab label="Overview" {...a11yProps(0)} />
+            <Tab label="Inbound Metrics" {...a11yProps(1)} />
+            <Tab label="Outbound Metrics" {...a11yProps(2)} />
+          </Tabs>
+          <TabPanel value={value} index={0}>
+            {overviewTab()}
+          </TabPanel>
+          <TabPanel value={value} index={1}>
+            {inboundTab()}
+          </TabPanel>
+          <TabPanel value={value} index={2}>
+            {outboundTab()}
+          </TabPanel>
+        </div>
       </Content>
     </div>
   );

@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-kiali [1.14.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.13.0...@janus-idp/backstage-plugin-kiali@1.14.0) (2024-03-25)
+
+
+### Features
+
+* **kiali:** metrics tab ([#1331](https://github.com/janus-idp/backstage-plugins/issues/1331)) ([d80e331](https://github.com/janus-idp/backstage-plugins/commit/d80e33155481730c0e95de40da99ed0280e982c8))
+
 ## @janus-idp/backstage-plugin-kiali [1.13.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.12.1...@janus-idp/backstage-plugin-kiali@1.13.0) (2024-03-14)
 
 

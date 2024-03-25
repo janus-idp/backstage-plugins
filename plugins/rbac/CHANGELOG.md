@@ -1,3 +1,15 @@
+## @janus-idp/backstage-plugin-rbac [1.15.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.15.3...@janus-idp/backstage-plugin-rbac@1.15.4) (2024-03-25)
+
+
+### Bug Fixes
+
+* **rbac:** yarn lint command ([#1361](https://github.com/janus-idp/backstage-plugins/issues/1361)) ([459b909](https://github.com/janus-idp/backstage-plugins/commit/459b90985013695fb9626ac9b547cf0627a385be))
+
+
+### Other changes
+
+* **rbac:** add playwright tests for the plugin ([#1305](https://github.com/janus-idp/backstage-plugins/issues/1305)) ([16d0686](https://github.com/janus-idp/backstage-plugins/commit/16d0686ef8cc0d84d93e9e06d46f23b5bb7d5a1f))
+
 ## @janus-idp/backstage-plugin-rbac [1.15.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.15.2...@janus-idp/backstage-plugin-rbac@1.15.3) (2024-03-04)
 
 

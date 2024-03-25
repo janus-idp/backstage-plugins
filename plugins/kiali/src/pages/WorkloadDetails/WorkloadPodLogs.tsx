@@ -30,10 +30,8 @@ import { RenderComponentScroll } from '../../components/Nav/Page/RenderComponent
 import { PFBadge, PFBadges } from '../../components/Pf/PfBadges';
 import { PFColors, PFColorVal } from '../../components/Pf/PfColors';
 import { ToolbarDropdown } from '../../components/ToolbarDropdown/ToolbarDropdown';
-import { serverConfig } from '../../config';
 import { KialiIcon } from '../../config/KialiIcon';
 import { kialiApiRef } from '../../services/Api';
-import { KialiAppState, KialiContext } from '../../store';
 import { kialiStyle } from '../../styles/StyleUtils';
 import {
   evalTimeRange,
@@ -45,7 +43,6 @@ import { AccessLog, LogEntry, Pod, PodLogs } from '../../types/IstioObjects';
 import { Span, TracingQuery } from '../../types/Tracing';
 import { PromisesRegistry } from '../../utils/CancelablePromises';
 import { formatDuration } from '../../utils/tracing/TracingHelper';
-import { infoStyle } from '../Overview/OverviewCard/OverviewCardControlPlaneNamespace';
 
 const appContainerColors = [
   PFColors.Blue300,
@@ -106,17 +103,6 @@ interface WorkloadPodLogsState {
   showTimestamps: boolean;
   showToolbar: boolean;
   useRegex: boolean;
-}
-
-// LogLevel are the log levels supported by the proxy.
-enum LogLevel {
-  Off = 'off',
-  Trace = 'trace',
-  Debug = 'debug',
-  Info = 'info',
-  Warning = 'warning',
-  Error = 'error',
-  Critical = 'critical',
 }
 
 const NoLogsFoundMessage = 'No container logs found for the time period.';
@@ -234,7 +220,6 @@ export const WorkloadPodLogs = (props: WorkloadPodLogsProps) => {
     return toRet;
   };
   const kialiClient = useApi(kialiApiRef);
-  const kialiState = React.useContext(KialiContext) as KialiAppState;
   const getContainerOptions = (pod: Pod): ContainerOption[] => {
     // sort containers by name, consistently positioning proxy container first.
     let containers = [...(pod.istioContainers ?? [])];
@@ -767,53 +752,7 @@ export const WorkloadPodLogs = (props: WorkloadPodLogsProps) => {
     );
   };
 
-  const setLogLevel = (level: LogLevel): void => {
-    const updatedState = {
-      ...workloadPodLogsState,
-      kebabOpen: false,
-    };
-    setWorkloadPodLogsState(updatedState);
-
-    const podL = props.pods[workloadPodLogsState.podValue!];
-
-    kialiClient
-      .setPodEnvoyProxyLogLevel(
-        props.namespace,
-        podL.name,
-        level,
-        props.cluster,
-      )
-      .then((_resp: any) => {
-        kialiState.alertUtils!.add(
-          `Successfully updated proxy log level to '${level}' for pod: ${podL.name}`,
-        );
-      })
-      .catch((error: any) => {
-        kialiState.alertUtils!.add(`Unable to set proxy pod level: ${error}`);
-      });
-  };
-
   const getLogsDiv = (): React.ReactNode => {
-    const hasProxyContainer = workloadPodLogsState.containerOptions?.some(
-      opt => opt.isProxy,
-    );
-
-    const logDropDowns = Object.keys(LogLevel).map(level => {
-      return (
-        <MenuItem
-          key={`setLogLevel${level}`}
-          onClick={() => {
-            // @ts-ignore
-            setLogLevel(LogLevel[level]);
-          }}
-          disabled={serverConfig.deployment.viewOnlyMode}
-          value={level}
-        >
-          {level}
-        </MenuItem>
-      );
-    });
-
     const toggleToolbar = (): void => {
       const updatedState = {
         ...workloadPodLogsState,
@@ -858,34 +797,6 @@ export const WorkloadPodLogs = (props: WorkloadPodLogsProps) => {
             workloadPodLogsState.showTimestamps ? 'Remove' : 'Show'
           } Timestamps`}
         </MenuItem>
-
-        {hasProxyContainer && (
-          <MenuItem value="logs" disabled>
-            Set Proxy Log Level
-            <Tooltip
-              title={
-                <div style={{ textAlign: 'left' }}>
-                  <div>
-                    This action configures the proxy logger level but does not
-                    affect the proxy <b>access</b> logs. Setting the log level
-                    to 'off' disables the proxy loggers but does <b>not</b>{' '}
-                    disable access logging. To hide all proxy logging from the
-                    logs view, including access logs, un-check the proxy
-                    container. <br />
-                    <br />
-                    This option is disabled for pods with no proxy container, or
-                    in view-only mode.
-                  </div>
-                </div>
-              }
-            >
-              <div>
-                <KialiIcon.Info className={infoStyle} />
-              </div>
-            </Tooltip>
-          </MenuItem>
-        )}
-        {hasProxyContainer && logDropDowns}
       </Select>
     );
 
