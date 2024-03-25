@@ -17,10 +17,7 @@ import {
 import { Knex } from 'knex';
 import { Logger } from 'winston';
 
-import {
-  NonEmptyArray,
-  PermissionAction,
-} from '@janus-idp/backstage-plugin-rbac-common';
+import { NonEmptyArray } from '@janus-idp/backstage-plugin-rbac-common';
 
 import { ConditionalStorage } from '../database/conditional-storage';
 import { PolicyMetadataStorage } from '../database/policy-metadata-storage';
