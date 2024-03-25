@@ -251,7 +251,7 @@ describe('DataBaseConditionalStorage', () => {
           await db.createCondition(condition1);
         }).rejects.toThrow(
           `A condition with resource type 'catalog-entity'` +
-            ` and permission names '[\"catalog.entity.read\"]'` +
+            ` and permission names '["catalog.entity.read"]'` +
             ` has already been stored for role 'role:default/test'`,
         );
       },
@@ -438,7 +438,7 @@ describe('DataBaseConditionalStorage', () => {
         await expect(async () => {
           await db.updateCondition(1, updateCondition);
         }).rejects.toThrow(
-          `Found condition with conflicted action '{\"name\":\"catalog.entity.delete\",\"action\":\"delete\"}'. Role could have multiple ` +
+          `Found condition with conflicted action '{"name":"catalog.entity.delete","action":"delete"}'. Role could have multiple ` +
             `conditions for the same resource type 'catalog-entity', but with different action sets.`,
         );
       },
