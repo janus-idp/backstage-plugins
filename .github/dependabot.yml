@@ -6,23 +6,23 @@
 version: 2
 updates:
   # Maintain dependencies for GitHub Actions
-  - package-ecosystem: "github-actions"
+  - package-ecosystem: 'github-actions'
     # Workflow files stored in the default location of `.github/workflows`. (You don't need to specify `/.github/workflows` for `directory`. You can use `directory: "/"`.)
-    directory: "/"
+    directory: '/'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
 
-  - package-ecosystem: "npm"
-    directory: "/" # for a monorepo, use root package.json and yarn.lock files
+  - package-ecosystem: 'npm'
+    directory: '/' # for a monorepo, use root package.json and yarn.lock files
     schedule:
-      interval: "daily"
+      interval: 'daily'
     ignore:
       # pin to @keycloak/keycloak-admin-client <19 - see https://github.com/janus-idp/backstage-plugins/issues/47 https://github.com/janus-idp/backstage-plugins/issues/1046
-      - dependency-name: "keycloak-admin-client"
+      - dependency-name: 'keycloak-admin-client'
         versions: ['> 18']
       # pin to version that keycloak 18 needs
-      - dependency-name: "axios"
+      - dependency-name: 'axios'
         versions: ['>0.26.1']
       # pin to version that isn't broken - see https://github.com/RoadieHQ/roadie-backstage-plugins/issues/1238 https://github.com/janus-idp/backstage-showcase/pull/947 https://github.com/janus-idp/backstage-showcase/pull/1095
-      - dependency-name: "backstage-plugin-argo-cd"
+      - dependency-name: 'backstage-plugin-argo-cd'
         versions: ['>2.4.1']
