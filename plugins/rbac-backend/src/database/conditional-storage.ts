@@ -189,12 +189,11 @@ export class DataBaseConditionalStorage implements ConditionalStorage {
           perm => perm.name,
         );
         if (conditionPermNames.includes(permission.name)) {
-          // todo maybe bug here...
           throw new ConflictError(
-            `Found condition with conflicted action '${JSON.stringify(
+            `Found condition with conflicted permission '${JSON.stringify(
               permission,
             )}'. Role could have multiple ` +
-              `conditions for the same resource type '${conditionalDecision.resourceType}', but with different action sets.`,
+              `conditions for the same resource type '${conditionalDecision.resourceType}', but with different permission name sets.`,
           );
         }
       }
