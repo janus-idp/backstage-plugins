@@ -369,7 +369,6 @@ export class RBACPermissionPolicy implements PermissionPolicy {
         resourceType,
         [permissionName],
       );
-      console.log(`==== ${conditionalDecisions}`);
 
       if (conditionalDecisions.length > 0) {
         pluginId = conditionalDecisions[0].pluginId;

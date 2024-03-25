@@ -438,8 +438,8 @@ describe('DataBaseConditionalStorage', () => {
         await expect(async () => {
           await db.updateCondition(1, updateCondition);
         }).rejects.toThrow(
-          `Found condition with conflicted action '{"name":"catalog.entity.delete","action":"delete"}'. Role could have multiple ` +
-            `conditions for the same resource type 'catalog-entity', but with different action sets.`,
+          `Found condition with conflicted permission '{"name":"catalog.entity.delete","action":"delete"}'. Role could have multiple ` +
+            `conditions for the same resource type 'catalog-entity', but with different permission name sets.`,
         );
       },
     );
