@@ -64,6 +64,8 @@ describe('createRecord', () => {
     } as unknown as jest.Mocked<Writable>,
     output: jest.fn(),
     createTemporaryDirectory: jest.fn().mockResolvedValue(mockTmpDir),
+    checkpoint: jest.fn(),
+    getInitiatorCredentials: jest.fn(),
   };
 
   beforeAll(() => server.listen());

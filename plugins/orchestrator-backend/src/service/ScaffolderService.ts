@@ -95,6 +95,8 @@ export class ScaffolderService {
       output(name: string, value: JsonValue) {
         stepOutput[name] = value;
       },
+      checkpoint: jest.fn(),
+      getInitiatorCredentials: jest.fn(),
     };
     await action.handler(mockContext);
 

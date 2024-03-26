@@ -27,6 +27,8 @@ describe('regex:replace', () => {
     logStream: {} as Writable,
     output: jest.fn(),
     createTemporaryDirectory: jest.fn().mockResolvedValue(mockTmpDir),
+    checkpoint: jest.fn(),
+    getInitiatorCredentials: jest.fn(),
   };
 
   beforeEach(() => {

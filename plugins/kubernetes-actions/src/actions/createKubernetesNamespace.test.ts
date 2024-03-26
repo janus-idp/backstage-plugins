@@ -73,6 +73,8 @@ describe('kubernetes:create-namespace', () => {
     logStream: new PassThrough(),
     output: jest.fn(),
     createTemporaryDirectory: jest.fn(),
+    checkpoint: jest.fn(),
+    getInitiatorCredentials: jest.fn(),
   };
 
   it('should get the api url from the correct entity', async () => {

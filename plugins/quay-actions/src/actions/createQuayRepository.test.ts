@@ -22,6 +22,8 @@ describe('quay:create-repository', () => {
     logStream: new PassThrough(),
     output: jest.fn(),
     createTemporaryDirectory: jest.fn(),
+    checkpoint: jest.fn(),
+    getInitiatorCredentials: jest.fn(),
   };
 
   it('should create a quay repository', async () => {
