@@ -5,6 +5,7 @@ import { Link, Tooltip } from '@material-ui/core';
 
 import { isMultiCluster, KialiIcon, Paths } from '../../config';
 import { kialiStyle } from '../../styles/StyleUtils';
+import { pluginRoot } from '../BreadcrumbView/BreadcrumbView';
 import { PFBadge } from '../Pf/PfBadges';
 import { IstioTypes } from '../VirtualList/Config';
 
@@ -29,7 +30,7 @@ export const getIstioObjectUrl = (
   query?: string,
 ): string => {
   const istioType = IstioTypes[type];
-  let to = `${Paths.ISTIO}/${namespace}`;
+  let to = `/${pluginRoot}/${Paths.ISTIO}/${namespace}`;
 
   to = `${to}/${istioType.url}/${name}`;
 

@@ -34,6 +34,10 @@ export const IstioConfigDetailsPage = (): React.JSX.Element => {
   const kialiState = React.useContext(KialiContext) as KialiAppState;
   const [istioConfig, setIstioConfig] = React.useState<IstioConfigDetails>();
 
+  React.useEffect(() => {
+    fetchIstioConfig();
+  }, [namespace, objectType, object]);
+
   const fetchIstioConfig = async () => {
     if (!namespace || !objectType || !object) {
       kialiState.alertUtils!.add(

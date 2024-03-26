@@ -50,7 +50,7 @@ const getIstioLink = (item: TResource): string => {
 const getLink = (item: TResource, config: Resource, query?: string): string => {
   let url =
     config.name === 'istio'
-      ? `/${rootPath}/${getIstioLink(item)}`
+      ? `${getIstioLink(item)}`
       : `/${rootPath}/${config.name}/${item.namespace}/${item.name}`;
 
   if (item.cluster && isMultiCluster && !url.includes('cluster')) {
