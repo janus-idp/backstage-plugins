@@ -356,7 +356,6 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     identityResp?: BackstageIdentityResponse | undefined,
   ): Promise<PolicyDecision | undefined> {
     const roles = await this.enforcer.getRolesForUser(userEntityRef);
-    console.log(`===== Roles ${roles} ${userEntityRef} ===`);
 
     const conditions: PermissionCriteria<
       PermissionCondition<string, PermissionRuleParams>
@@ -377,7 +376,6 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     }
 
     if (conditions.length > 0) {
-      console.log(`----- ${JSON.stringify(conditions)}`);
       this.logger.info(
         `${identityResp?.identity.userEntityRef} executed condition for permission ${permissionName}, resource type ${resourceType} and action ${action}`,
       );
