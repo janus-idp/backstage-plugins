@@ -127,11 +127,13 @@ const StepperForm = ({
   steps: inputSteps,
   handleExecute,
   isExecuting,
+  onReset,
 }: {
   isComposedSchema: boolean;
   steps: WorkflowInputSchemaStep[];
   handleExecute: (getParameters: () => JsonObject) => Promise<void>;
   isExecuting: boolean;
+  onReset: () => void;
 }) => {
   const [activeStep, setActiveStep] = React.useState(0);
   const handleBack = () => setActiveStep(activeStep - 1);
@@ -182,6 +184,7 @@ const StepperForm = ({
           isComposedSchema={isComposedSchema}
           handleBack={handleBack}
           handleReset={() => {
+            onReset();
             setSteps([...inputSteps]);
             setActiveStep(0);
           }}
