@@ -71,7 +71,7 @@
     "testTimeout": 15000
   },
   "release": {
-    "branches": "main",
+    "branches": ["main","[0-9]+.[0-9]+.x"],
     "plugins": [
       [
         "@semantic-release/commit-analyzer",
