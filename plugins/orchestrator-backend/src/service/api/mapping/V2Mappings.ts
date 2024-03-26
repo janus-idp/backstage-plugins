@@ -115,11 +115,10 @@ export function mapToProcessInstanceDTO(
     description: processInstance.description,
     id: processInstance.id,
     name: processInstance.processName,
-    // To be fixed https://issues.redhat.com/browse/FLPATH-950
     // @ts-ignore
     workflowdata: variables?.workflowdata,
-    start: processInstance.start?.toUTCString(),
-    end: processInstance.end?.toUTCString(),
+    start: processInstance.start,
+    end: processInstance.end,
     duration: duration,
     status: getProcessInstancesDTOFromString(processInstance.state),
     workflow: processInstance.processName ?? processInstance.processId,

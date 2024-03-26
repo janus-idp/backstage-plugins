@@ -50,7 +50,7 @@ export const generateFakeProcessInstances = (
           .workflowId,
       state: randomState,
       endpoint: 'enpoint/foo',
-      start: valuesGenerator.getNextDate(),
+      start: valuesGenerator.getNextDate().toISOString(),
       nodes: [],
       variables: {},
       isOpen: false,
