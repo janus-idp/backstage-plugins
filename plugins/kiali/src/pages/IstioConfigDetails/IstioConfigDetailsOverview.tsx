@@ -129,17 +129,6 @@ export const IstioConfigDetailsOverview = (
           </span>
         </Tooltip>
 
-        <List style={{ paddingTop: 20 }}>
-          {istioObject?.metadata.labels && (
-            <ListItem style={{ padding: 0 }}>
-              <Labels
-                tooltipMessage="Labels defined on this resource"
-                labels={istioObject?.metadata.labels}
-              />
-            </ListItem>
-          )}
-        </List>
-
         {istioValidations &&
           (!statusMessages || statusMessages.length === 0) &&
           (!istioValidations.checks ||
@@ -154,6 +143,17 @@ export const IstioConfigDetailsOverview = (
               />
             </span>
           )}
+
+        {istioObject?.metadata.labels && (
+          <List style={{ paddingTop: 20 }}>
+            <ListItem style={{ padding: 0 }}>
+              <Labels
+                tooltipMessage="Labels defined on this resource"
+                labels={istioObject?.metadata.labels}
+              />
+            </ListItem>
+          </List>
+        )}
 
         {((statusMessages && statusMessages.length > 0) ||
           (istioValidations &&
