@@ -85,6 +85,10 @@ export const ExecuteWorkflowPage = () => {
     [orchestratorApi, workflowId, navigate, instanceLink, assessmentInstanceId],
   );
 
+  const onReset = useCallback(() => {
+    setUpdateError(undefined);
+  }, [setUpdateError]);
+
   let pageContent;
 
   if (loading) {
@@ -126,6 +130,7 @@ export const ExecuteWorkflowPage = () => {
                 isComposedSchema={schemaResponse.isComposedSchema}
                 handleExecute={handleExecute}
                 isExecuting={isExecuting}
+                onReset={onReset}
               />
             ) : (
               <JsonTextAreaForm
