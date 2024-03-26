@@ -112,7 +112,7 @@ yarn workspace backend add @janus-idp/backstage-plugin-3scale-backend
 #### New Backend Procedure
 
 1. If installing into the new backend system, make the same configurations to the `app=config.yaml` as in the [Legacy Backend Installation Procedure](#legacy-backend-installation-procedure). Make sure to configure the schedule inside the `app-config.yaml` file. The default schedule is a frequency of 30 minutes and a timeout of 3 minutes.
-2. Add the following code to the `packages/backend/src/index.ts` file:
+2. Add the following code to the `packages/backend/src/index.ts`  file:
 
    ```ts title="packages/backend/src/index.ts"
    const backend = createBackend();
