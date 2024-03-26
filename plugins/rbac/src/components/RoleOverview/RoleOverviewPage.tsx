@@ -5,6 +5,7 @@ import { Header, Page, TabbedLayout } from '@backstage/core-components';
 
 import { Grid } from '@material-ui/core';
 
+import { useLocationToast } from '../../hooks/useLocationToast';
 import { SnackbarAlert } from '../SnackbarAlert';
 import { useToast } from '../ToastContext';
 import { AboutCard } from './AboutCard';
@@ -14,6 +15,8 @@ import { PermissionsCard } from './PermissionsCard';
 export const RoleOverviewPage = () => {
   const { roleName, roleNamespace, roleKind } = useParams();
   const { toastMessage, setToastMessage } = useToast();
+
+  useLocationToast(setToastMessage);
 
   const onAlertClose = () => {
     setToastMessage('');

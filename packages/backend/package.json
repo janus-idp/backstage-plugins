@@ -38,7 +38,7 @@
     "@backstage/plugin-search-backend-module-pg": "^0.5.22",
     "@backstage/plugin-search-backend-node": "^1.2.17",
     "@backstage/plugin-techdocs-backend": "^1.9.6",
-    "@janus-idp/backstage-plugin-rbac-backend": "^2.2.4",
+    "@janus-idp/backstage-plugin-rbac-backend": "^2.4.1",
     "@backstage/plugin-catalog-backend-module-scaffolder-entity-model": "^0.1.10",
     "@backstage/plugin-search-backend-module-catalog": "^0.1.17",
     "@backstage/plugin-search-backend-module-techdocs": "^0.1.17",

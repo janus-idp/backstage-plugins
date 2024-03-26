@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac [1.15.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.15.4...@janus-idp/backstage-plugin-rbac@1.15.5) (2024-03-26)
+
+
+### Bug Fixes
+
+* **rbac:** alert display issue after role creating/updating ([#1354](https://github.com/janus-idp/backstage-plugins/issues/1354)) ([2e04ccb](https://github.com/janus-idp/backstage-plugins/commit/2e04ccb0c2853b8b08de671723d421df64d51699))
+
 ## @janus-idp/backstage-plugin-rbac [1.15.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.15.3...@janus-idp/backstage-plugin-rbac@1.15.4) (2024-03-25)
 
 

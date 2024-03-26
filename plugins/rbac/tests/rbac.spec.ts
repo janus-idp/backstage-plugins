@@ -108,7 +108,7 @@ test.describe('RBAC plugin', () => {
     });
     await page
       .getByPlaceholder('Search by user name or group name')
-      .fill('Guest Use');
+      .fill('Guest User');
     await page.getByText('Guest User').click();
     await expect(
       page.getByRole('heading', {
@@ -121,6 +121,14 @@ test.describe('RBAC plugin', () => {
     await clickButton('Next', page);
     await clickButton('Save', page);
     await verifyText('Role role:default/rbac_admin updated successfully', page);
+
+    // alert doesn't show up after Cancel button is clicked
+    await page.locator(RoleOverviewPO.updateMembers).click();
+    await expect(page.getByRole('heading', { name: 'Edit Role' })).toBeVisible({
+      timeout: 20000,
+    });
+    await clickButton('Cancel', page);
+    await expect(page.getByRole('alert')).toHaveCount(0);
 
     // edit/update policies
     await page.locator(RoleOverviewPO.updatePolicies).click();
