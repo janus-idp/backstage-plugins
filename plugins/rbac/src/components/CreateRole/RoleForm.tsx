@@ -28,7 +28,6 @@ import {
   isSamePermissionPolicy,
   onlyInLeft,
 } from '../../utils/rbac-utils';
-import { useToast } from '../ToastContext';
 import { AddedMembersTable } from './AddedMembersTable';
 import { AddMembersForm } from './AddMembersForm';
 import { PermissionPoliciesForm } from './PermissionPoliciesForm';
@@ -58,18 +57,19 @@ export const RoleForm = ({
   submitLabel,
   initialValues,
 }: RoleFormProps) => {
-  const { setToastMessage } = useToast();
   const [activeStep, setActiveStep] = React.useState<number>(step || 0);
   const navigate = useNavigate();
   const rbacApi = useApi(rbacApiRef);
 
-  const navigateTo = () => {
+  const navigateTo = (action?: string) => {
+    const stateProp = action
+      ? { state: { toastMessage: `Role ${action} successfully` } }
+      : { state: { toastMessage: '' } };
     if (step && roleName) {
       const { kind, namespace, name } = getKindNamespaceName(roleName);
-
-      navigate(`../roles/${kind}/${namespace}/${name}`);
+      navigate(`../roles/${kind}/${namespace}/${name}`, stateProp);
     } else {
-      navigate('..');
+      navigate('..', stateProp);
     }
   };
 
@@ -125,8 +125,7 @@ export const RoleForm = ({
             );
           }
         }
-        setToastMessage(`Role ${name} updated successfully`);
-        navigateTo();
+        navigateTo(`${name} updated`);
       }
     } catch (e) {
       formikHelpers.setStatus({ submitError: e });
@@ -156,8 +155,7 @@ export const RoleForm = ({
           }`,
         );
       }
-      setToastMessage(`Role ${newData.name} created successfully`);
-      navigateTo();
+      navigateTo(`${newData.name} created`);
     } catch (e) {
       formikHelpers.setStatus({ submitError: e });
     }
