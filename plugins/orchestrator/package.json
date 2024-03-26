@@ -29,10 +29,7 @@
   "scripts": {
     "start": "backstage-cli package start",
     "build": "backstage-cli package build",
-    "export-dynamic": "janus-cli package export-dynamic-plugin && yarn export-workflow-editor-envelope:dynamic",
-    "export-workflow-editor-envelope": "rm -rf dist/workflow-editor-envelope/ && webpack --config workflow-editor-envelope/webpack.config.js",
-    "export-workflow-editor-envelope:dynamic": "yarn export-workflow-editor-envelope --env envelopeParentFolder=./dist-scalprum",
-    "export-workflow-editor-envelope:embedded": "yarn export-workflow-editor-envelope --env envelopeParentFolder=../../packages/app/public",
+    "export-dynamic": "janus-cli package export-dynamic-plugin",
     "tsc": "tsc",
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test --passWithNoTests --coverage",
