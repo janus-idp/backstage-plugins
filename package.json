@@ -25,7 +25,8 @@
     "new": "janus-cli new --do-not-edit-packages",
     "release": "multi-semantic-release",
     "prepare": "husky install",
-    "versions:bump": "backstage-cli versions:bump && find . -name 'package.json' ! -path '*/node_modules/*' -exec sed -i -e '/devDependencies/,/\\\\}/{ s/\\\"\\\\^/\\\"/; }' {} ; && yarn install"
+    "export-dynamic": "turbo run export-dynamic",
+    "versions:bump": "backstage-cli versions:bump && find . -name 'package.json' ! -path '*/node_modules/*' -exec sed -i -e '/devDependencies/,/\\\\}/{ s/\\\"\\\\^/\\\"/; }' {} ; && yarn install && yarn run export-dynamic --no-cache -- -- --clean"
   },
   "workspaces": {
     "packages": [
