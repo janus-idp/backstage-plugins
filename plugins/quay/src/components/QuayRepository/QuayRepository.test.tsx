@@ -97,6 +97,31 @@ describe('QuayRepository', () => {
     expect(queryByTestId('quay-repo-security-scan-progress')).not.toBeNull();
   });
 
+  it('should show queued status for the tag that are waiting in the queue to be scanned', () => {
+    (useTags as jest.Mock).mockReturnValue({
+      loading: false,
+      data: [
+        {
+          name: 'latest',
+          manifest_digest: undefined,
+          securityStatus: 'queued',
+          size: null,
+          last_modified: 'Wed, 15 Mar 2023 18:22:18 -0000',
+        },
+      ],
+    });
+    const { queryByTestId, queryByText } = render(
+      <BrowserRouter>
+        <QuayRepository />
+      </BrowserRouter>,
+    );
+
+    expect(queryByTestId('quay-repo-table')).not.toBeNull();
+    expect(queryByTestId('quay-repo-table-empty')).toBeNull();
+    expect(queryByText(/Quay repository/i)).toBeInTheDocument();
+    expect(queryByTestId('quay-repo-queued-for-scan')).not.toBeNull();
+  });
+
   it('should show table if loaded and data is present but shows unsupported if security scan is not supported', () => {
     (useTags as jest.Mock).mockReturnValue({
       loading: false,
