@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-topology [1.18.8](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.18.7...@janus-idp/backstage-plugin-topology@1.18.8) (2024-03-26)
+
+
+### Bug Fixes
+
+* **topology:** adds check on service and routes to match same namespace as workloads ([#1389](https://github.com/janus-idp/backstage-plugins/issues/1389)) ([b8c217a](https://github.com/janus-idp/backstage-plugins/commit/b8c217ac153a16993867a0d4ba9377d08dc718ba))
+
 ## @janus-idp/backstage-plugin-topology [1.18.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-topology@1.18.6...@janus-idp/backstage-plugin-topology@1.18.7) (2024-03-04)
 
 
