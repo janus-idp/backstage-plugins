@@ -6635,6 +6635,100 @@
     "@backstage/config" "^1.1.1"
     deep-freeze "^0.0.1"
 
+"@janus-idp/backstage-plugin-ocm-common@2.2.2":
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/@janus-idp/backstage-plugin-ocm-common/-/backstage-plugin-ocm-common-2.2.2.tgz#8c3f8b7084b50b9ced4f80d2644a4faa069b02b9"
+  integrity sha512-HKyKpX7pB0taBbQfL/2Dr9R/zGJZJKQRwxJx3VBpC2YGEHiyoB03SDiZw2EDc61Owsw/GzBwdkK4DRPrBhrjgg==
+
+"@janus-idp/backstage-plugin-rbac-common@1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@janus-idp/backstage-plugin-rbac-common/-/backstage-plugin-rbac-common-1.3.0.tgz#1ab8327bd30f47a7c6b79de5de117154b46b1032"
+  integrity sha512-b3dDJKDJREHRIgvP+ZSRlp6/ZAlJOKnX2x+bZSiwRyBWGqa0uYaCX48CEQA0fNhGWfUNFGQ1x4cNnMNxguZXmQ==
+  dependencies:
+    "@backstage/plugin-permission-common" "^0.7.12"
+
+"@janus-idp/backstage-plugin-rbac-node@1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@janus-idp/backstage-plugin-rbac-node/-/backstage-plugin-rbac-node-1.0.3.tgz#2048c31d62fc0b090ce1190835f3d65f7cccf50d"
+  integrity sha512-/yXv1UeHjDjH6+wcwcrB/BFzyzfb/39BTFUCe4DGnJvuLntsbqUUHWeQ7Ddsd5gZtw3+1JgPlT31gVFAkJd7TQ==
+  dependencies:
+    "@backstage/backend-plugin-api" "^0.6.13"
+
+"@janus-idp/cli@1.7.5":
+  version "1.7.5"
+  resolved "https://registry.yarnpkg.com/@janus-idp/cli/-/cli-1.7.5.tgz#de6b3913240198dde0223bd0826e9fdfb71bab35"
+  integrity sha512-haNT+uATBnkc/IKG2mc7D4ptwcG1g/tnZSEAnXZQaA/SweFA/XxfvwfA0MG7Wl96UhfJPwT5BMJ6EltQM0rtYA==
+  dependencies:
+    "@backstage/cli-common" "^0.1.13"
+    "@backstage/cli-node" "^0.2.3"
+    "@backstage/config" "^1.1.1"
+    "@backstage/config-loader" "^1.6.2"
+    "@backstage/errors" "^1.2.3"
+    "@backstage/eslint-plugin" "^0.1.5"
+    "@backstage/types" "^1.1.1"
+    "@manypkg/get-packages" "^1.1.3"
+    "@openshift/dynamic-plugin-sdk-webpack" "^3.0.0"
+    "@pmmmwh/react-refresh-webpack-plugin" "^0.5.7"
+    "@rollup/plugin-commonjs" "^25.0.4"
+    "@rollup/plugin-json" "^6.0.0"
+    "@rollup/plugin-node-resolve" "^15.2.1"
+    "@rollup/plugin-yaml" "^4.0.0"
+    "@svgr/rollup" "^8.1.0"
+    "@svgr/webpack" "^6.5.1"
+    "@yarnpkg/lockfile" "^1.1.0"
+    "@yarnpkg/parsers" "^3.0.0-rc.4"
+    bfj "^7.0.2"
+    chalk "^4.0.0"
+    chokidar "^3.3.1"
+    commander "^9.1.0"
+    css-loader "^6.5.1"
+    esbuild "^0.19.0"
+    esbuild-loader "^2.18.0"
+    eslint "^8.49.0"
+    eslint-config-prettier "^8.10.0"
+    eslint-webpack-plugin "^3.2.0"
+    express "^4.18.2"
+    fork-ts-checker-webpack-plugin "^7.0.0-alpha.8"
+    fs-extra "^10.1.0"
+    handlebars "^4.7.7"
+    html-webpack-plugin "^5.3.1"
+    inquirer "^8.2.0"
+    lodash "^4.17.21"
+    mini-css-extract-plugin "^2.4.2"
+    node-libs-browser "^2.2.1"
+    npm-packlist "^5.0.0"
+    ora "^5.3.0"
+    postcss "^8.2.13"
+    process "^0.11.10"
+    react-dev-utils "^12.0.0-next.60"
+    react-refresh "^0.14.0"
+    recursive-readdir "^2.2.2"
+    rollup "^2.78.0"
+    rollup-plugin-dts "^4.0.1"
+    rollup-plugin-esbuild "^4.7.2"
+    rollup-plugin-postcss "^4.0.0"
+    rollup-pluginutils "^2.8.2"
+    semver "^7.5.4"
+    style-loader "^3.3.1"
+    swc-loader "^0.2.3"
+    typescript-json-schema "^0.62.0"
+    webpack "^5.89.0"
+    webpack-dev-server "^4.15.1"
+    yml-loader "^2.1.0"
+    yn "^4.0.0"
+
+"@janus-idp/shared-react@2.5.2":
+  version "2.5.2"
+  resolved "https://registry.yarnpkg.com/@janus-idp/shared-react/-/shared-react-2.5.2.tgz#94fb0f3478c1f06cef7bbc24f71c179c46c7b472"
+  integrity sha512-GSQDmeLMHNrD0O6Eqf5jeuR8iKvIri07GynHQux/1fAJ5orL6CaS14fuYQtjFhmvIdRFZPXpqqMxkK8NHNv3XA==
+  dependencies:
+    "@kubernetes/client-node" "^0.20.0"
+    classnames "^2.3.2"
+    date-fns "^2.30.0"
+    file-saver "^2.0.5"
+    lodash "^4.17.21"
+    mathjs "^11.11.2"
+
 "@jest/console@^29.7.0":
   version "29.7.0"
   resolved "https://registry.yarnpkg.com/@jest/console/-/console-29.7.0.tgz#cd4822dbdb84529265c5a2bdb529a3c9cc950ffc"
