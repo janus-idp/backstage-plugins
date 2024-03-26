@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-orchestrator [1.8.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.8.2...@janus-idp/backstage-plugin-orchestrator@1.8.3) (2024-03-26)
+
+
+### Bug Fixes
+
+* **orchestrator:** remove error on Reset workflow ([#1393](https://github.com/janus-idp/backstage-plugins/issues/1393)) ([6ce210d](https://github.com/janus-idp/backstage-plugins/commit/6ce210dfb3ac82a887985057ea234cf8b6065068))
+
 ## @janus-idp/backstage-plugin-orchestrator [1.8.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.8.1...@janus-idp/backstage-plugin-orchestrator@1.8.2) (2024-03-17)
 
 
