@@ -56,8 +56,7 @@ permission:
 2. Add Route in `packages/app/src/App.tsx`:
 
    ```tsx title="packages/app/src/App.tsx"
-   /* highlight-add-next-line */
-   import { RbacPage } from '@janus-idp/backstage-plugin-rbac';
+   /* highlight-add-next-line */ import { RbacPage } from '@janus-idp/backstage-plugin-rbac';
 
    <Route path="/rbac" element={<RbacPage />} />;
    ```

@@ -56,8 +56,7 @@ yarn workspace app add @janus-idp/backstage-plugin-openshift-image-registry
 2. Enable an additional sidebar-item on the app sidebar in the `packages/app/src/components/Root/Root.tsx` file:
 
    ```tsx title="packages/app/src/components/Root/Root.tsx"
-   /* highlight-add-next-line */
-   import ExtensionIcon from '@material-ui/icons/Extension';
+   /* highlight-add-next-line */ import ExtensionIcon from '@material-ui/icons/Extension';
 
    export const Root = ({ children }: PropsWithChildren<{}>) => (
      <SidebarPage>
@@ -82,8 +81,7 @@ yarn workspace app add @janus-idp/backstage-plugin-openshift-image-registry
 3. Add the Openshift Image Registry page in `packages/app/src/App.tsx` file:
 
    ```tsx title="packages/app/src/App.tsx"
-   /* highlight-add-next-line */
-   import { OpenshiftImageRegistryPage } from '@janus-idp/backstage-plugin-openshift-image-registry';
+   /* highlight-add-next-line */ import { OpenshiftImageRegistryPage } from '@janus-idp/backstage-plugin-openshift-image-registry';
 
    const routes = (
      <FlatRoutes>

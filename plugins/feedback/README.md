@@ -65,18 +65,18 @@ It is dedicated to simplifying the process of gathering and managing user feedba
      OpcFeedbackComponent,
    } from '@janus-idp/backstage-plugin-feedback';
 
-   // ...
+   //
    const app = createApp({
      apis,
      bindRoutes({ bind }) {
-       // ...
-       // Bind techdocs root route to feedback plugin externalRoute.viewDocs to add "View Docs" link in opc-feedback component
+       //
+       // Bind techdocs root route to feedback plugin externalRoute.viewDocs to add "View Docs" link in opc-feedback compon
        bind(feedbackPlugin.externalRoutes, {
          viewDocs: techdocsPlugin.routes.root,
        });
      },
      featureFlags: [
-       // ...
+       //
      ],
    });
    const routes = (
@@ -85,7 +85,6 @@ It is dedicated to simplifying the process of gathering and managing user feedba
        <Route path="/feedback" element={<GlobalFeedbackPage />} />
      </FlatRoutes>
    );
-
    export default app.createRoot(
      <>
        // ...

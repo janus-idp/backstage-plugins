@@ -27,8 +27,7 @@
 2. Enable the **Kiali** tab on the entity view page using the `packages/app/src/components/catalog/EntityPage.tsx` file:
 
    ```tsx title="packages/app/src/components/catalog/EntityPage.tsx"
-   /* highlight-add-next-line */
-   import { EntityKialiContent } from '@janus-idp/backstage-plugin-kiali';
+   /* highlight-add-next-line */ import { EntityKialiContent } from '@janus-idp/backstage-plugin-kiali';
 
    const serviceEntityPage = (
      <EntityLayout>
@@ -45,8 +44,7 @@
 3. Create a file called `kiali.ts` inside `packages/backend/src/plugins/` and add the following:
 
 ```ts
-/* highlight-add-start */
-import { Router } from 'express';
+/* highlight-add-start */ import { Router } from 'express';
 
 import { createRouter } from '@janus-idp/backstage-plugin-kiali-backend';
 
@@ -55,12 +53,8 @@ import { PluginEnvironment } from '../types';
 export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
-  return await createRouter({
-    logger: env.logger,
-    config: env.config,
-  });
-}
-/* highlight-add-end */
+  return await createRouter({ logger: env.logger, config: env.config });
+} /* highlight-add-end */
 ```
 
 5. import the plugin to `packages/backend/src/index.ts`. There are three lines of code you'll need to add, and they should be added near similar code in your existing Backstage backend.

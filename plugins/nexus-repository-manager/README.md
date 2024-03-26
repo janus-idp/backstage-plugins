@@ -50,8 +50,7 @@ The Nexus Repository Manager plugin displays the information about your build ar
 1. Enable an additional tab on the service entity page in `packages/app/src/components/catalog/EntityPage.tsx`:
 
    ```tsx title="packages/app/src/components/catalog/EntityPage.tsx"
-   /* highlight-add-next-line */
-   import {
+   /* highlight-add-next-line */ import {
      isNexusRepositoryManagerAvailable,
      NexusRepositoryManagerPage,
    } from '@janus-idp/backstage-plugin-nexus-repository-manager';

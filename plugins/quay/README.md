@@ -36,8 +36,10 @@ The Quay plugin displays the information about your container images within the 
 2. Enable an additional tab on the entity view page in `packages/app/src/components/catalog/EntityPage.tsx`:
 
    ```tsx title="packages/app/src/components/catalog/EntityPage.tsx"
-   /* highlight-add-next-line */
-   import { isQuayAvailable, QuayPage } from '@janus-idp/backstage-plugin-quay';
+   /* highlight-add-next-line */ import {
+     isQuayAvailable,
+     QuayPage,
+   } from '@janus-idp/backstage-plugin-quay';
 
    const serviceEntityPage = (
      <EntityLayout>
