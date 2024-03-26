@@ -106,6 +106,8 @@ export const getServicesForResource = (
   }
   const template = getPodTemplate(resource);
   return services.filter((service: V1Service) => {
+    if (resource.metadata?.namespace !== service.metadata?.namespace)
+      return false;
     const specSelector = service.spec?.selector || {};
     const selector = new LabelSelector(specSelector);
     return selector.matches(template);
@@ -262,7 +264,11 @@ export const getRoutesDataForResourceServices = (
 
   const routesData: RoutesData = routes.reduce(
     (acc: RoutesData, route: RouteKind) => {
-      if (route.spec?.to?.name && servicesNames.includes(route.spec.to.name)) {
+      if (
+        route.spec?.to?.name &&
+        servicesNames.includes(route.spec.to.name) &&
+        resource.metadata?.namespace === route.metadata?.namespace
+      ) {
         acc.push({
           route,
           url: getRouteWebURL(route),
