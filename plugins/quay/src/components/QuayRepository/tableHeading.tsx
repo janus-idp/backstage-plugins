@@ -32,6 +32,14 @@ export const columns: TableColumn<QuayTagData>[] = [
         );
       }
 
+      if (rowData.securityStatus === 'queued') {
+        return (
+          <Tooltip title="The manifest for this tag is queued to be scanned for vulnerabilities">
+            <span data-testid="quay-repo-queued-for-scan">Queued</span>
+          </Tooltip>
+        );
+      }
+
       if (rowData.securityStatus === 'unsupported') {
         return (
           <Tooltip title="The manifest for this tag has an operating system or package manager unsupported by Quay Security Scanner">
