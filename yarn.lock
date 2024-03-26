@@ -2760,30 +2760,7 @@
     winston "^3.2.1"
     zod "^3.22.4"
 
-"@backstage/backend-test-utils@0.3.3":
-  version "0.3.3"
-  resolved "https://registry.yarnpkg.com/@backstage/backend-test-utils/-/backend-test-utils-0.3.3.tgz#89f5f1ad884121837615166f0626aa346ddc3851"
-  integrity sha512-EHlx4scaKqskjrDMkkXEQqb3EKbK6kpNZuM9hf7Lzj7QdIyHSnpWa/ZP+PDLUPX8q+yI5vDsDLMIYEIl9pAscA==
-  dependencies:
-    "@backstage/backend-app-api" "^0.5.14"
-    "@backstage/backend-common" "^0.21.3"
-    "@backstage/backend-plugin-api" "^0.6.13"
-    "@backstage/config" "^1.1.1"
-    "@backstage/errors" "^1.2.3"
-    "@backstage/plugin-auth-node" "^0.4.8"
-    "@backstage/types" "^1.1.1"
-    better-sqlite3 "^9.0.0"
-    express "^4.17.1"
-    fs-extra "^11.0.0"
-    knex "^3.0.0"
-    msw "^1.0.0"
-    mysql2 "^2.2.5"
-    pg "^8.11.3"
-    testcontainers "^8.1.2"
-    textextensions "^5.16.0"
-    uuid "^8.0.0"
-
-"@backstage/backend-test-utils@^0.3.3":
+"@backstage/backend-test-utils@0.3.5", "@backstage/backend-test-utils@^0.3.5":
   version "0.3.5"
   resolved "https://registry.yarnpkg.com/@backstage/backend-test-utils/-/backend-test-utils-0.3.5.tgz#c70701dc1913e4fad34f7514667d5d798eabab5e"
   integrity sha512-3ls7vS8W64NgTsvIXZs1DLiqMEnC1gbtQomDbQCDzhLhNObo83AbLHOOKgKJfWKpF3xd/EQIEtikQ6zVuyHE7g==
@@ -13226,13 +13203,6 @@
     "@tufjs/canonical-json" "1.0.0"
     minimatch "^9.0.0"
 
-"@types/archiver@^5.3.1":
-  version "5.3.4"
-  resolved "https://registry.yarnpkg.com/@types/archiver/-/archiver-5.3.4.tgz#32172d5a56f165b5b4ac902e366248bf03d3ae84"
-  integrity sha512-Lj7fLBIMwYFgViVVZHEdExZC3lVYsl+QL0VmdNdIzGZH544jHveYWij6qdnBgJQDnR7pMKliN9z2cPZFEbhyPw==
-  dependencies:
-    "@types/readdir-glob" "*"
-
 "@types/argparse@1.0.38":
   version "1.0.38"
   resolved "https://registry.yarnpkg.com/@types/argparse/-/argparse-1.0.38.tgz#a81fd8606d481f873a3800c6ebae4f1d768a56a9"
@@ -13629,7 +13599,7 @@
     "@types/docker-modem" "*"
     "@types/node" "*"
 
-"@types/dockerode@^3.3.0", "@types/dockerode@^3.3.24", "@types/dockerode@^3.3.8":
+"@types/dockerode@^3.3.0", "@types/dockerode@^3.3.24":
   version "3.3.26"
   resolved "https://registry.yarnpkg.com/@types/dockerode/-/dockerode-3.3.26.tgz#e7f5f06e985ee045c9b9643fd9c34684deb80cd1"
   integrity sha512-/K+I9bGhRO2SvyIHisGeOsy/ypxnWLz8+Rde9S2tNNEKa3r91e0XMYIEq2D+kb7srm7xrmpAR0CDKfXoZOr4OA==
@@ -14241,13 +14211,6 @@
   dependencies:
     "@types/prop-types" "*"
     csstype "^3.0.2"
-
-"@types/readdir-glob@*":
-  version "1.1.5"
-  resolved "https://registry.yarnpkg.com/@types/readdir-glob/-/readdir-glob-1.1.5.tgz#21a4a98898fc606cb568ad815f2a0eedc24d412a"
-  integrity sha512-raiuEPUYqXu+nvtY2Pe8s8FEmZ3x5yAH4VkLdihcPdalvsHltomrRC9BzuStrJ9yk06470hS0Crw0f1pXqD+Hg==
-  dependencies:
-    "@types/node" "*"
 
 "@types/recursive-readdir@2.2.0":
   version "2.2.0"
@@ -15397,7 +15360,7 @@ archiver-utils@^4.0.1:
     normalize-path "^3.0.0"
     readable-stream "^3.6.0"
 
-archiver@^5.3.0, archiver@^5.3.1, archiver@^5.3.2:
+archiver@^5.3.0, archiver@^5.3.2:
   version "5.3.2"
   resolved "https://registry.yarnpkg.com/archiver/-/archiver-5.3.2.tgz#99991d5957e53bd0303a392979276ac4ddccf3b0"
   integrity sha512-+25nxyyznAXF7Nef3y0EbBeqmGZgeN/BxHX29Rs39djAfaFalmQ89SE6CWyDCHzGL0yt/ycBtNOmGTW0FyGWNw==
@@ -19141,13 +19104,6 @@ dns-packet@^5.2.2:
   dependencies:
     "@leichtgewicht/ip-codec" "^2.0.1"
 
-docker-compose@^0.23.17:
-  version "0.23.19"
-  resolved "https://registry.yarnpkg.com/docker-compose/-/docker-compose-0.23.19.tgz#9947726e2fe67bdfa9e8efe1ff15aa0de2e10eb8"
-  integrity sha512-v5vNLIdUqwj4my80wxFDkNH+4S85zsRuH29SO7dCWVWPCMt/ohZBsGN6g6KXWifT0pzQ7uOxqEKCYCDPJ8Vz4g==
-  dependencies:
-    yaml "^1.10.2"
-
 docker-compose@^0.24.6:
   version "0.24.7"
   resolved "https://registry.yarnpkg.com/docker-compose/-/docker-compose-0.24.7.tgz#66490508d5a08c221402108be8d5236d9567bb94"
@@ -19175,7 +19131,7 @@ docker-modem@^5.0.3:
     split-ca "^1.0.1"
     ssh2 "^1.15.0"
 
-dockerode@^3.3.1, dockerode@^3.3.5:
+dockerode@^3.3.5:
   version "3.3.5"
   resolved "https://registry.yarnpkg.com/dockerode/-/dockerode-3.3.5.tgz#7ae3f40f2bec53ae5e9a741ce655fff459745629"
   integrity sha512-/0YNa3ZDNeLr/tSckmD69+Gq+qVNhvKfAHNeZJBnp7EOP6RGKV8ORrJHkUn20So5wU+xxT7+1n5u8PjHbfjbSA==
@@ -29893,7 +29849,7 @@ proper-lockfile@^4.1.2:
     retry "^0.12.0"
     signal-exit "^3.0.2"
 
-properties-reader@^2.2.0, properties-reader@^2.3.0:
+properties-reader@^2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/properties-reader/-/properties-reader-2.3.0.tgz#f3ab84224c9535a7a36e011ae489a79a13b472b2"
   integrity sha512-z597WicA7nDZxK12kZqHr2TcvwNU1GCfA5UwfDY/HDp3hXPoPlb5rlEx9bwGTiJnc0OqbBTkU975jDToth8Gxw==
@@ -33510,24 +33466,6 @@ testcontainers@^10.0.0:
     ssh-remote-port-forward "^1.0.4"
     tar-fs "^3.0.5"
     tmp "^0.2.1"
-
-testcontainers@^8.1.2:
-  version "8.16.0"
-  resolved "https://registry.yarnpkg.com/testcontainers/-/testcontainers-8.16.0.tgz#bf8a814179934d0e271aeaf8aec7a7dc3648baff"
-  integrity sha512-4wVmnzj4mAVXSQ8kU4uyNiXPs5W8UHdwCRbUuyeOSSODcgmDGQ8Te/YOYuF12HnxyzABEm1nR2I0ZCsQw/GZ/Q==
-  dependencies:
-    "@balena/dockerignore" "^1.0.2"
-    "@types/archiver" "^5.3.1"
-    "@types/dockerode" "^3.3.8"
-    archiver "^5.3.1"
-    byline "^5.0.0"
-    debug "^4.3.4"
-    docker-compose "^0.23.17"
-    dockerode "^3.3.1"
-    get-port "^5.1.1"
-    properties-reader "^2.2.0"
-    ssh-remote-port-forward "^1.0.4"
-    tar-fs "^2.1.1"
 
 text-extensions@^1.0.0:
   version "1.9.0"
