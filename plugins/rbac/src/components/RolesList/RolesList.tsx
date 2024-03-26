@@ -4,6 +4,7 @@ import { Table, WarningPanel } from '@backstage/core-components';
 
 import { makeStyles } from '@material-ui/core';
 
+import { useLocationToast } from '../../hooks/useLocationToast';
 import { useRoles } from '../../hooks/useRoles';
 import { RolesData } from '../../types';
 import { SnackbarAlert } from '../SnackbarAlert';
@@ -24,7 +25,7 @@ const useStyles = makeStyles(theme => ({
 export const RolesList = () => {
   const { toastMessage, setToastMessage } = useToast();
   const { openDialog, setOpenDialog, deleteRoleName } = useDeleteDialog();
-
+  useLocationToast(setToastMessage);
   const [roles, setRoles] = React.useState<number | undefined>();
   const classes = useStyles();
   const { loading, data, retry, createRoleAllowed, createRoleLoading, error } =
