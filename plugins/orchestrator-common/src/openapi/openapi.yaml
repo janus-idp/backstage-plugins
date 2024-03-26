@@ -430,8 +430,10 @@ components:
           $ref: '#/components/schemas/ProcessInstanceStatusDTO'
         start:
           type: string
+          format: 'date-time'
         end:
           type: string
+          format: 'date-time'
         duration:
           type: string
         category:

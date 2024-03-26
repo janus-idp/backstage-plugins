@@ -67,8 +67,10 @@ export interface ProcessInstance {
   nodes: NodeInstance[];
   milestones?: Milestone[];
   variables?: ProcessInstanceVariables | string;
-  start?: Date;
-  end?: Date;
+  /** Format: date-time */
+  start?: string;
+  /** Format: date-time */
+  end?: string;
   parentProcessInstance?: ProcessInstance;
   childProcessInstances?: ProcessInstance[];
   error?: ProcessInstanceError;

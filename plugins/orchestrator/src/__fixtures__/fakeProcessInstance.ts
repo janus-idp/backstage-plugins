@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 import {
   ProcessInstance,
   ProcessInstanceState,
@@ -7,17 +9,14 @@ import {
 import { fakeWorkflowOverviewList } from './fakeWorkflowOverviewList';
 
 let id = 10;
-const baseDate = new Date('2023-11-16T10:50:34.346Z');
-const HOUR = 60 * 60 * 1000;
-const DAY = 24 * HOUR;
-
+const baseDate = '2023-11-16T10:50:34.346Z';
 export const fakeProcessInstance1: ProcessInstance = {
   id: `12f767c1-9002-43af-9515-62a72d0eaf${id++}`,
   processName: fakeWorkflowOverviewList[0].name,
   processId: fakeWorkflowOverviewList[0].workflowId,
   state: ProcessInstanceState.Error,
   start: baseDate,
-  end: new Date(baseDate.getTime() + 13 * HOUR),
+  end: moment(baseDate).add(13, 'hours').toISOString(),
   nodes: [],
   endpoint: 'enpoint/foo',
   serviceUrl: 'service/bar',
@@ -52,8 +51,8 @@ export const fakeCompletedInstance: ProcessInstance = {
   processName: fakeWorkflowOverviewList[1].name,
   processId: fakeWorkflowOverviewList[1].workflowId,
   state: ProcessInstanceState.Completed,
-  start: new Date(baseDate.getTime() + HOUR),
-  end: new Date(baseDate.getTime() + DAY),
+  start: moment(baseDate).add(1, 'hour').toISOString(),
+  end: moment(baseDate).add(1, 'day').toISOString(),
   nodes: [],
   variables: {},
   endpoint: 'enpoint/foo',
@@ -68,7 +67,7 @@ export const fakeActiveInstance: ProcessInstance = {
   processName: fakeWorkflowOverviewList[2].name,
   processId: fakeWorkflowOverviewList[2].workflowId,
   state: ProcessInstanceState.Active,
-  start: new Date(baseDate.getTime() + 2 * HOUR),
+  start: moment(baseDate).add(2, 'hours').toISOString(),
   nodes: [],
   variables: {},
   endpoint: 'enpoint/foo',
