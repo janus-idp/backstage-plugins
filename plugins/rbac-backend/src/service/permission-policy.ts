@@ -262,18 +262,9 @@ export class RBACPermissionPolicy implements PermissionPolicy {
 
       if (isResourcePermission(request.permission)) {
         const resourceType = request.permission.resourceType;
-        const hasNamedPermission =
-          await this.hasImplicitPermissionSpecifiedByName(
-            userEntityRef,
-            permissionName,
-            action,
-          );
-        // Let's set up higher priority for permission specified by name, than by resource type
-        const obj = hasNamedPermission ? permissionName : resourceType;
 
-        status = await this.isAuthorized(userEntityRef, obj, action);
-
-        if (status && identityResp) {
+        // handle conditions if they are present
+        if (identityResp) {
           const conditionResult = await this.handleConditions(
             userEntityRef,
             resourceType,
@@ -285,7 +276,20 @@ export class RBACPermissionPolicy implements PermissionPolicy {
             return conditionResult;
           }
         }
+
+        // handle permission with 'resource' type
+        const hasNamedPermission =
+          await this.hasImplicitPermissionSpecifiedByName(
+            userEntityRef,
+            permissionName,
+            action,
+          );
+        // Let's set up higher priority for permission specified by name, than by resource type
+        const obj = hasNamedPermission ? permissionName : resourceType;
+
+        status = await this.isAuthorized(userEntityRef, obj, action);
       } else {
+        // handle permission with 'basic' type
         status = await this.isAuthorized(userEntityRef, permissionName, action);
       }
 
