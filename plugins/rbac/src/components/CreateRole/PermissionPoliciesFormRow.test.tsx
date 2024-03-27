@@ -29,8 +29,17 @@ describe('PermissionPoliciesFormRow', () => {
 
   it('renders without crashing', () => {
     render(<PermissionPoliciesFormRow {...mockProps} />);
-    expect(screen.queryByText(/Plugin/)).toBeInTheDocument();
-    expect(screen.queryByText(/Permission/)).toBeInTheDocument();
+    screen.logTestingPlaygroundURL();
+    expect(
+      screen.getByRole('textbox', {
+        name: /plugin/i,
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('textbox', {
+        name: /permission/i,
+      }),
+    ).toBeInTheDocument();
   });
 
   it('calls onRemove when remove button is clicked', () => {
