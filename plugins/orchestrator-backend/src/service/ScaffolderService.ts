@@ -80,7 +80,7 @@ export class ScaffolderService {
       );
     } catch (err) {
       this.logger.error(
-        `Error getting workingDirecotury to execute action ${actionExecutionContext.actionId}`,
+        `Error getting workingDirectory to execute action ${actionExecutionContext.actionId}`,
         err,
       );
       throw err;
@@ -94,6 +94,16 @@ export class ScaffolderService {
         await fs.mkdtemp(`${workspacePath}_step-${0}-`),
       output(name: string, value: JsonValue) {
         stepOutput[name] = value;
+      },
+      getInitiatorCredentials: async () => {
+        return {
+          $$type: '@backstage/BackstageCredentials',
+          principal: 'mock-principal',
+        };
+      },
+      checkpoint: async (key, fn) => {
+        this.logger.info(`Orchestrator ScaffolderService checkpoint ${key}`);
+        return fn();
       },
     };
     await action.handler(mockContext);
