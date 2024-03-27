@@ -1,12 +1,11 @@
 import * as React from 'react';
 import AceEditor from 'react-ace';
 import { useParams } from 'react-router-dom';
-import { useAsyncFn, useDebounce } from 'react-use';
 
 import { Content } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
-import { CircularProgress, Grid } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import jsYaml from 'js-yaml';
 
 import { BreadcrumbView } from '../../components/BreadcrumbView/BreadcrumbView';
@@ -22,6 +21,8 @@ import 'ace-builds/src-noconflict/mode-yaml';
 import 'ace-builds/src-noconflict/theme-eclipse';
 import 'ace-builds/src-noconflict/theme-twilight';
 
+import { useCallback, useEffect } from 'react';
+
 import {
   AceValidations,
   parseKialiValidations,
@@ -34,7 +35,7 @@ export const IstioConfigDetailsPage = (): React.JSX.Element => {
   const kialiState = React.useContext(KialiContext) as KialiAppState;
   const [istioConfig, setIstioConfig] = React.useState<IstioConfigDetails>();
 
-  const fetchIstioConfig = async () => {
+  const fetchIstioConfig = useCallback(() => {
     if (!namespace || !objectType || !object) {
       kialiState.alertUtils!.add(
         `Could not fetch Istio Config: Empty namespace, object type or object name`,
@@ -47,25 +48,11 @@ export const IstioConfigDetailsPage = (): React.JSX.Element => {
       .then((istioConfigResponse: IstioConfigDetails) => {
         setIstioConfig(istioConfigResponse);
       });
-  };
+  }, [kialiClient, kialiState.alertUtils, namespace, objectType, object]);
 
-  const [{ loading }, refresh] = useAsyncFn(
-    async () => {
-      // Check if the config is loaded
-      await fetchIstioConfig();
-    },
-    [],
-    { loading: true },
-  );
-  useDebounce(refresh, 10);
-
-  React.useEffect(() => {
+  useEffect(() => {
     fetchIstioConfig();
   }, [fetchIstioConfig, namespace, objectType, object]);
-
-  if (loading) {
-    return <CircularProgress />;
-  }
 
   const fetchYaml = () => {
     const safeDumpOptions = {
