@@ -30,6 +30,8 @@ import bookinfoHealthApp from './namespaces/bookinfo/health/app.json';
 import bookinfoHealthService from './namespaces/bookinfo/health/service.json';
 import bookinfoHealthWorkload from './namespaces/bookinfo/health/workload.json';
 import bookinfoIstioConfig from './namespaces/bookinfo/istio_config.json';
+import bookinfoGateway from './namespaces/bookinfo/istio_configs/gateways/bookinfo-gateway.json';
+import bookinfoVirtualService from './namespaces/bookinfo/istio_configs/virtualservices/bookinfo.json';
 import bookInfoMetrics from './namespaces/bookinfo/metrics';
 import bookinfoServices from './namespaces/bookinfo/services.json';
 import detailsService from './namespaces/bookinfo/services/details.json';
@@ -124,6 +126,9 @@ import travelControlHealthApp from './namespaces/travel-control/health/app.json'
 import travelControlHealthService from './namespaces/travel-control/health/service.json';
 import travelControlHealthWorkload from './namespaces/travel-control/health/workload.json';
 import travelControlIstioConfig from './namespaces/travel-control/istio_config.json';
+import controlDR from './namespaces/travel-control/istio_configs/destinationrules/control.json';
+import controlGW from './namespaces/travel-control/istio_configs/gateways/control-gateway.json';
+import controlVR from './namespaces/travel-control/istio_configs/virtualservices/control.json';
 import travelControlMetrics from './namespaces/travel-control/metrics';
 import travelControlServices from './namespaces/travel-control/services.json';
 import controlService from './namespaces/travel-control/services/control.json';
@@ -236,6 +241,14 @@ export const kialiData: { [index: string]: any } = {
         reviews: reviewsApp,
         kialitrafficgenerator: kialiTrafficGeneratorApp,
       },
+      istioConfigDetails: {
+        gateways: {
+          'bookinfo-gateway': bookinfoGateway,
+        },
+        virtualservices: {
+          bookinfo: bookinfoVirtualService,
+        },
+      },
       istioConfigList: bookinfoIstioConfig,
       dashboard: bookinfoDashboard,
       spans: bookinfoSpans,
@@ -256,6 +269,17 @@ export const kialiData: { [index: string]: any } = {
       },
       apps: {
         control: controlApp,
+      },
+      istioConfigDetails: {
+        destinationrules: {
+          control: controlDR,
+        },
+        virtualservices: {
+          control: controlVR,
+        },
+        gateways: {
+          'control-gateway': controlGW,
+        },
       },
       istioConfigList: travelControlIstioConfig,
       dashboard: travelControlDashboard,

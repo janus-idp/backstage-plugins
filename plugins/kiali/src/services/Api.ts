@@ -20,6 +20,10 @@ import {
   WorkloadHealth,
 } from '../types/Health';
 import {
+  IstioConfigDetails,
+  IstioConfigDetailsQuery,
+} from '../types/IstioConfigDetails';
+import {
   IstioConfigList,
   IstioConfigListQuery,
   IstioConfigsMap,
@@ -157,6 +161,13 @@ export interface KialiApi {
     workloadSelector: string,
     cluster?: string,
   ): Promise<IstioConfigList>;
+  getIstioConfigDetail(
+    namespace: string,
+    objectType: string,
+    object: string,
+    validate: boolean,
+    cluster?: string,
+  ): Promise<IstioConfigDetails>;
   setEntity(entity?: Entity): void;
   status(): Promise<any>;
   getPodLogs(
@@ -576,6 +587,32 @@ export class KialiApiClient implements KialiApi {
       params,
       {},
     ).then(resp => resp);
+  };
+
+  getIstioConfigDetail = async (
+    namespace: string,
+    objectType: string,
+    object: string,
+    validate: boolean,
+    cluster?: string,
+  ): Promise<IstioConfigDetails> => {
+    const queryParams: QueryParams<IstioConfigDetailsQuery> = {};
+
+    if (cluster) {
+      queryParams.clusterName = cluster;
+    }
+
+    if (validate) {
+      queryParams.validate = true;
+      queryParams.help = true;
+    }
+
+    return this.newRequest<IstioConfigDetails>(
+      HTTP_VERBS.GET,
+      urls.istioConfigDetail(namespace, objectType, object),
+      queryParams,
+      {},
+    );
   };
 
   getNamespaceMetrics = (

@@ -93,6 +93,7 @@ export const Validation = (props: Props) => {
     const iconStyleP = props.iconStyle ? { ...props.iconStyle } : {};
     const defaultStyle: CSSProperties = {
       verticalAlign: '-0.125em',
+      marginRight: '0.5rem',
     };
     Object.assign(iconStyleP, severityColor());
     Object.assign(iconStyleP, defaultStyle);

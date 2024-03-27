@@ -3,6 +3,7 @@ import React from 'react';
 import { Content, Page } from '@backstage/core-components';
 
 import { AppListPage } from '../AppList/AppListPage';
+import { IstioConfigListPage } from '../IstioConfigList/IstioConfigListPage';
 import { OverviewPage } from '../Overview/OverviewPage';
 import { ServiceListPage } from '../ServiceList/ServiceListPage';
 import { WorkloadListPage } from '../WorkloadList/WorkloadListPage';
@@ -34,6 +35,8 @@ export const KialiPage = () => {
         return <ServiceListPage />;
       case 'applications':
         return <AppListPage />;
+      case 'istio':
+        return <IstioConfigListPage />;
       default:
         return <KialiNoPath />;
     }

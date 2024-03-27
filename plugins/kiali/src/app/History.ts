@@ -38,6 +38,7 @@ export enum URLParam {
   AGGREGATOR = 'aggregator',
   BY_LABELS = 'bylbl',
   CLUSTERNAME = 'clusterName',
+  CONFIG = 'config',
   DIRECTION = 'direction',
   DISPLAY_MODE = 'displayMode',
   DURATION = 'duration',
@@ -73,6 +74,7 @@ export enum URLParam {
   JAEGER_SHOW_SPANS_AVG = 'showSpansAvg',
   JAEGER_TRACE_ID = 'traceId',
   JAEGER_SPAN_ID = 'spanId',
+  ISTIO_NAME = 'istioName',
   NAMESPACES = 'namespaces',
   OVERVIEW_TYPE = 'otype',
   DIRECTION_TYPE = 'drtype',
@@ -92,6 +94,7 @@ export enum URLParam {
   TRACING_SHOW_SPANS_AVG = 'showSpansAvg',
   TRACING_TRACE_ID = 'traceId',
   TRACING_SPAN_ID = 'spanId',
+  TYPE = 'type',
 }
 
 export interface URLParamValue {

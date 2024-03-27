@@ -32,6 +32,12 @@ export const appsRouteRef: SubRouteRef<undefined> = createSubRouteRef({
   parent: rootRouteRef,
 });
 
+export const istioConfigRouteRef = createSubRouteRef({
+  id: 'kiali-istio-config',
+  parent: rootRouteRef,
+  path: '/istio',
+});
+
 export const workloadsDetailRouteRef = createSubRouteRef({
   id: 'kiali-workloads-details',
   parent: rootRouteRef,
@@ -48,4 +54,10 @@ export const appDetailRouteRef = createSubRouteRef({
   id: 'kiali-app-details',
   parent: rootRouteRef,
   path: '/applications/:namespace/:app',
+});
+
+export const istioConfigDetailRouteRef = createSubRouteRef({
+  id: 'kiali-istio-config-details',
+  parent: rootRouteRef,
+  path: '/istio/:namespace/:objectType/:object',
 });

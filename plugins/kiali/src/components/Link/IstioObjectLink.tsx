@@ -1,7 +1,12 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 
-import { isMultiCluster, Paths } from '../../config';
+import { Link, Tooltip } from '@material-ui/core';
+
+import { isMultiCluster, KialiIcon, Paths } from '../../config';
+import { kialiStyle } from '../../styles/StyleUtils';
+import { pluginRoot } from '../BreadcrumbView/BreadcrumbView';
+import { PFBadge } from '../Pf/PfBadges';
 import { IstioTypes } from '../VirtualList/Config';
 
 type ReferenceIstioObjectProps = {
@@ -9,6 +14,7 @@ type ReferenceIstioObjectProps = {
   name: string;
   namespace: string;
   query?: string;
+  subType?: string;
   type: string;
 };
 
@@ -24,7 +30,7 @@ export const getIstioObjectUrl = (
   query?: string,
 ): string => {
   const istioType = IstioTypes[type];
-  let to = `/namespaces/${namespace}/${Paths.ISTIO}`;
+  let to = `/${pluginRoot}/${Paths.ISTIO}/${namespace}`;
 
   to = `${to}/${istioType.url}/${name}`;
 
@@ -50,8 +56,61 @@ export const IstioObjectLink: React.FC<IstioObjectProps> = (
   const href = getIstioObjectUrl(name, namespace, type, cluster, query);
 
   return (
-    <Link to={href} data-test={`${type}-${namespace}-${name}`}>
+    <Link
+      component={RouterLink}
+      to={href}
+      data-test={`${type}-${namespace}-${name}`}
+    >
       {props.children}
     </Link>
+  );
+};
+
+export const ReferenceIstioObjectLink = (props: ReferenceIstioObjectProps) => {
+  const { name, namespace, cluster, type, subType } = props;
+  const istioType = IstioTypes[type];
+
+  let showLink = true;
+  let showTooltip = false;
+  let tooltipMsg: string | undefined = undefined;
+  let reference = `${namespace}/${name}`;
+
+  const infoStyle = kialiStyle({
+    marginLeft: '0.5rem',
+    verticalAlign: '-0.06em !important',
+  });
+
+  if (name === 'mesh') {
+    reference = name;
+    showLink = false;
+    showTooltip = true;
+    tooltipMsg =
+      'The reserved word, "mesh", implies all of the sidecars in the mesh';
+  }
+
+  return (
+    <>
+      <PFBadge badge={istioType.badge} />
+
+      {showLink && (
+        <IstioObjectLink
+          name={name}
+          namespace={namespace}
+          cluster={cluster}
+          type={type}
+          subType={subType}
+        >
+          {reference}
+        </IstioObjectLink>
+      )}
+
+      {!showLink && <div style={{ display: 'inline-block' }}>{reference}</div>}
+
+      {showTooltip && (
+        <Tooltip title={<div style={{ textAlign: 'left' }}>{tooltipMsg}</div>}>
+          <KialiIcon.Info className={infoStyle} />
+        </Tooltip>
+      )}
+    </>
   );
 };
