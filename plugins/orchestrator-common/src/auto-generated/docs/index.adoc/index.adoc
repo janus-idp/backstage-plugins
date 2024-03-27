@@ -1158,15 +1158,15 @@ The ErrorResponse object represents a common structure for handling errors in AP
 
 | start
 | 
-| Date 
+| String 
 | 
-| date-time 
+|  
 
 | end
 | 
-| Date 
+| String 
 | 
-| date-time 
+|  
 
 | duration
 | 
