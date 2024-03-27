@@ -117,17 +117,13 @@ For more information about the configuration options, including other optional p
 1. Add the following code to `packages/backend/src/plugins/catalog.ts` file:
 
    ```ts title="packages/backend/src/plugins/catalog.ts"
-   /* highlight-add-next-line */
-   import { OrchestratorEntityProvider } from '@janus-idp/backstage-plugin-orchestrator-backend';
+   /* highlight-add-next-line */ import { OrchestratorEntityProvider } from '@janus-idp/backstage-plugin-orchestrator-backend';
 
    export default async function createPlugin(
      env: PluginEnvironment,
    ): Promise<Router> {
      const builder = await CatalogBuilder.create(env);
-
-     /* ... other processors and/or providers ... */
-     /* highlight-add-start */
-     builder.addEntityProvider(
+     /* ... other processors and/or providers ... */ /* highlight-add-start */ builder.addEntityProvider(
        await OrchestratorEntityProvider.fromConfig({
          config: env.config,
          logger: env.logger,
@@ -135,9 +131,8 @@ For more information about the configuration options, including other optional p
          discovery: env.discovery,
        }),
      );
-     /* highlight-add-end */
-
-     const { processingEngine, router } = await builder.build();
+     /* highlight-add-end */ const { processingEngine, router } =
+       await builder.build();
      await processingEngine.start();
      return router;
    }
@@ -146,23 +141,23 @@ For more information about the configuration options, including other optional p
 1. Import and plug the new instance into `packages/backend/src/index.ts` file:
 
    ```ts title="packages/backend/src/index.ts"
-   /* highlight-add-next-line */
-   import orchestrator from './plugins/orchestrator';
-
+   /* highlight-add-next-line */ import orchestrator from './plugins/orchestrator';
    async function main() {
-     // ...
+     ...
      const createEnv = makeCreateEnv(config);
-     // ...
-     /* highlight-add-next-line */
-     const orchestratorEnv = useHotMemoize(module, () =>
-       createEnv('orchestrator'),
+     ...
+     /* highlight-add-next-line */ const orchestratorEnv = useHotMemoize(
+       module,
+       () => createEnv('orchestrator'),
      );
-     // ...
+     ...
      const apiRouter = Router();
-     // ...
-     /* highlight-add-next-line */
-     apiRouter.use('/orchestrator', await orchestrator(orchestratorEnv));
-     // ...
+     ...
+     /* highlight-add-next-line */ apiRouter.use(
+       '/orchestrator',
+       await orchestrator(orchestratorEnv),
+     ); ...
+   }
    }
    ```
 
@@ -183,8 +178,7 @@ For more information about the configuration options, including other optional p
    } from '@janus-idp/backstage-plugin-orchestrator-backend/alpha';
 
    const backend = createBackend();
-   /* highlight-add-next-line */
-   backend.add(orchestratorModuleEntityProvider);
+   /* highlight-add-next-line */ backend.add(orchestratorModuleEntityProvider);
    backend.add(orchestratorPlugin);
 
    backend.start();
@@ -201,8 +195,7 @@ For more information about the configuration options, including other optional p
 1. Add a route to the `OrchestratorPage` and the customized template card component to Backstage App (`packages/app/src/App.tsx`):
 
    ```tsx title="packages/app/src/App.tsx"
-   /* highlight-add-next-line */
-   import {
+   /* highlight-add-next-line */ import {
      OrchestratorPage,
      OrchestratorScaffolderTemplateCard,
    } from '@janus-idp/backstage-plugin-orchestrator';
@@ -232,8 +225,7 @@ For more information about the configuration options, including other optional p
 1. Add the Orchestrator to Backstage sidebar (`packages/app/src/components/Root/Root.tsx`):
 
    ```tsx title="packages/app/src/components/Root/Root.tsx"
-   /* highlight-add-next-line */
-   import { OrchestratorIcon } from '@janus-idp/backstage-plugin-orchestrator';
+   /* highlight-add-next-line */ import { OrchestratorIcon } from '@janus-idp/backstage-plugin-orchestrator';
 
    export const Root = ({ children }: PropsWithChildren<{}>) => (
      <SidebarPage>

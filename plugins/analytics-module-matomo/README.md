@@ -18,17 +18,16 @@ yarn add --cwd packages/app @janus-idp/backstage-plugin-analytics-module-matomo
 2. Wire up the API implementation to your App:
 
 ```tsx
-// packages/app/src/apis.ts
+ packages/app/src/apis.ts
+i
 import {
   analyticsApiRef,
   configApiRef,
   identityApiRef,
 } from '@backstage/core-plugin-api';
-
 import { MatomoAnalytics } from '@janus-idp/backstage-plugin-analytics-module-matomo';
-
 export const apis: AnyApiFactory[] = [
-  // Instantiate and register the GA Analytics API Implementation.
+  / Instantiate and register the GA Analytics API Implementation.
   createApiFactory({
     api: analyticsApiRef,
     deps: { configApi: configApiRef },

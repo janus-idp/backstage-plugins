@@ -24,14 +24,12 @@ Before we can install this plugin, we need to fulfill the following requirements
 2. Enable an additional tab on the entity view page using the `packages/app/src/components/catalog/EntityPage.tsx` file as follows:
 
    ```tsx title="packages/app/src/components/catalog/EntityPage.tsx"
-   /* highlight-add-start */
-   import {
+   /* highlight-add-start */ import {
      isWebTerminalAvailable,
      WebTerminal,
    } from '@janus-idp/backstage-plugin-web-terminal';
 
    /* highlight-add-end */
-
    const serviceEntityPage = (
      <EntityLayout>
        // ...
@@ -51,14 +49,12 @@ Before we can install this plugin, we need to fulfill the following requirements
 3. Alternative you can add the WebTerminal to an existing page:
 
    ```tsx title="packages/app/src/components/catalog/EntityPage.tsx"
-   /* highlight-add-start */
-   import {
+   /* highlight-add-start */ import {
      isWebTerminalAvailable,
      WebTerminal,
    } from '@janus-idp/backstage-plugin-web-terminal';
 
    /* highlight-add-end */
-
    <Grid container spacing={3}>
      {/* highlight-add-start */}
      <EntitySwitch>

@@ -21,8 +21,7 @@ You need to [set up the permission framework in Backstage](https://backstage.io/
 To connect the RBAC framework to your backend use the `PolicyBuilder` class in your backend permissions plugin (typically `packages/backend/src/plugins/permissions.ts`) as follows:
 
 ```ts
-/* highlight-add-start */
-import { Router } from 'express';
+/* highlight-add-start */ import { Router } from 'express';
 
 import {
   PluginIdProvider,
@@ -46,32 +45,29 @@ export default async function createPlugin(
     },
     pluginIdProvider,
   );
-}
-/* highlight-add-end */
+} /* highlight-add-end */
 ```
 
 Secondly, in your backend router (typically `packages/backend/src/index.ts`) add a route for `/permission` specifying the list of plugin id's that support permissions:
 
 ```ts
-// ...
-/* highlight-add-next-line */
-import permission from './plugins/permissions';
-
+ ...
+/
+/* highlight-add-next-line */ import permission from './plugins/permissions';
 async function main() {
-  // ...
-  /* highlight-add-next-line */
-  const permissionEnv = useHotMemoize(module, () => createEnv('permission'));
-
-  // ...
-  /* highlight-add-start */
-  apiRouter.use(
+  ...
+  /* highlight-add-next-line */ const permissionEnv = useHotMemoize(
+    module,
+    () => createEnv('permission'),
+  );
+  ...
+  /* highlight-add-start */ apiRouter.use(
     '/permission',
     await permission(permissionEnv, {
-      // return list static plugin which supports Backstage permissions.
+      return list static plugin which supports Backstage permissions.
       getPluginIds: () => ['catalog', 'scaffolder', 'permission'],
     }),
-  );
-  /* highlight-add-end */
+  ); /* highlight-add-end */
 }
 ```
 
