@@ -52,7 +52,7 @@ export const PermissionPoliciesFormRow = ({
     <div style={{ display: 'flex', gap: '20px', marginBottom: '25px' }}>
       <Autocomplete
         options={permissionPoliciesData?.plugins ?? []}
-        style={{ width: '450px' }}
+        style={{ width: '400px' }}
         value={permissionPoliciesRowData.plugin ?? ''}
         onChange={(_e, value) => onChangePlugin(value ?? '')}
         renderInput={(params: any) => (
@@ -60,6 +60,7 @@ export const PermissionPoliciesFormRow = ({
             {...params}
             label="Plugin"
             name={`${rowName}.plugin`}
+            variant="outlined"
             placeholder="Select a plugin"
             error={!!pluginError}
             helperText={pluginError ?? ''}
@@ -75,7 +76,7 @@ export const PermissionPoliciesFormRow = ({
             permissionPoliciesRowData.plugin
           ]?.permissions ?? []
         }
-        style={{ width: '450px' }}
+        style={{ width: '400px' }}
         value={permissionPoliciesRowData.permission ?? ''}
         onChange={(_e, value) =>
           onChangePermission(
@@ -93,6 +94,7 @@ export const PermissionPoliciesFormRow = ({
             {...params}
             label="Permission"
             name={`${rowName}.permission`}
+            variant="outlined"
             placeholder="Select a permission"
             error={!!permissionError}
             helperText={permissionError ?? ''}
