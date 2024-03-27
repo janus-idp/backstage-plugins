@@ -13,6 +13,7 @@ import {
   RoleBasedPolicy,
 } from '@janus-idp/backstage-plugin-rbac-common';
 
+import { mockConditionRules } from '../src/__fixtures__/mockConditionRules';
 import { mockMembers } from '../src/__fixtures__/mockMembers';
 import { mockPermissionPolicies } from '../src/__fixtures__/mockPermissionPolicies';
 import { mockPolicies } from '../src/__fixtures__/mockPolicies';
@@ -107,6 +108,10 @@ class MockRBACApi implements RBACAPI {
 
   async createPolicies(_policies: RoleBasedPolicy[]): Promise<Response> {
     return { status: 200 } as Response;
+  }
+
+  async getPluginsConditionRules(): Promise<any | Response> {
+    return mockConditionRules;
   }
 }
 

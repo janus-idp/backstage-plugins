@@ -37,6 +37,7 @@ export type RBACAPI = {
     entityReference: string,
     polices: RoleBasedPolicy[],
   ) => Promise<RoleError | Response>;
+  getPluginsConditionRules: () => Promise<any | Response>;
 };
 
 export type Options = {
@@ -311,5 +312,23 @@ export class RBACBackendClient implements RBACAPI {
       return jsonResponse.json();
     }
     return jsonResponse;
+  }
+
+  async getPluginsConditionRules() {
+    const { token: idToken } = await this.identityApi.getCredentials();
+    const backendUrl = this.configApi.getString('backend.baseUrl');
+    const jsonResponse = await fetch(
+      `${backendUrl}/api/permission/plugins/condition-rules`,
+      {
+        headers: {
+          ...(idToken && { Authorization: `Bearer ${idToken}` }),
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+    if (jsonResponse.status !== 200) {
+      return jsonResponse;
+    }
+    return jsonResponse.json();
   }
 }

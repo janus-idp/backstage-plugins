@@ -11,6 +11,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { FormikErrors } from 'formik';
 
 import { rbacApiRef } from '../../api/RBACBackendClient';
+import { useConditionRules } from '../../hooks/useConditionRules';
 import { PermissionsData } from '../../types';
 import { getPluginsPermissionPoliciesData } from '../../utils/create-role-utils';
 import { initialPermissionPolicyRowValue } from './const';
@@ -49,6 +50,7 @@ export const PermissionPoliciesForm = ({
 }: PermissionPoliciesFormProps) => {
   const classes = useStyles();
   const rbacApi = useApi(rbacApiRef);
+  const conditionRules = useConditionRules();
 
   const {
     value: permissionPolicies,
@@ -140,6 +142,7 @@ export const PermissionPoliciesForm = ({
               permissionPoliciesRowData={pp}
               permissionPoliciesData={permissionPoliciesData}
               rowCount={permissionPoliciesRows.length}
+              conditionRules={conditionRules}
               onChangePlugin={(plugin: string) => onChangePlugin(plugin, index)}
               onChangePermission={(permission: string, policies?: string[]) =>
                 onChangePermission(permission, index, policies)
