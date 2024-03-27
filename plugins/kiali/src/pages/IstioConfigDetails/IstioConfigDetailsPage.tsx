@@ -34,10 +34,6 @@ export const IstioConfigDetailsPage = (): React.JSX.Element => {
   const kialiState = React.useContext(KialiContext) as KialiAppState;
   const [istioConfig, setIstioConfig] = React.useState<IstioConfigDetails>();
 
-  React.useEffect(() => {
-    fetchIstioConfig();
-  }, [namespace, objectType, object]);
-
   const fetchIstioConfig = async () => {
     if (!namespace || !objectType || !object) {
       kialiState.alertUtils!.add(
@@ -62,6 +58,10 @@ export const IstioConfigDetailsPage = (): React.JSX.Element => {
     { loading: true },
   );
   useDebounce(refresh, 10);
+
+  React.useEffect(() => {
+    fetchIstioConfig();
+  }, [fetchIstioConfig, namespace, objectType, object]);
 
   if (loading) {
     return <CircularProgress />;
