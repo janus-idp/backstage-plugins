@@ -20,6 +20,11 @@ export interface OrchestratorApi {
     businessKey?: string;
   }): Promise<WorkflowExecutionResponse>;
 
+  retriggerInstanceInError(args: {
+    instanceId: string;
+    inputData: JsonObject;
+  }): Promise<WorkflowExecutionResponse>;
+
   getWorkflowDefinition(workflowId: string): Promise<WorkflowDefinition>;
 
   getWorkflowSource(workflowId: string): Promise<string>;
