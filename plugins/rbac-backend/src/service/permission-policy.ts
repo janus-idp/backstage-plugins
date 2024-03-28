@@ -270,7 +270,6 @@ export class RBACPermissionPolicy implements PermissionPolicy {
             resourceType,
             request.permission.name,
             action,
-            identityResp,
           );
           if (conditionResult) {
             return conditionResult;
@@ -357,7 +356,6 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     resourceType: string,
     permissionName: string,
     action: string,
-    identityResp?: BackstageIdentityResponse | undefined,
   ): Promise<PolicyDecision | undefined> {
     const roles = await this.enforcer.getRolesForUser(userEntityRef);
 
@@ -373,15 +371,25 @@ export class RBACPermissionPolicy implements PermissionPolicy {
         [permissionName],
       );
 
-      if (conditionalDecisions.length > 0) {
+      if (conditionalDecisions.length === 1) {
         pluginId = conditionalDecisions[0].pluginId;
         conditions.push(conditionalDecisions[0].conditions);
+      }
+
+      // this error is unexpected and should not happen, but just in case handle it.
+      if (conditionalDecisions.length > 1) {
+        this.logger.error(
+          `Detected ${conditionalDecisions.length} collisions for conditional policies. Expected to find a stored single condition for permission with name ${permissionName}, resource type ${resourceType}, action ${action} for user ${userEntityRef}`,
+        );
+        return {
+          result: AuthorizeResult.DENY,
+        };
       }
     }
 
     if (conditions.length > 0) {
       this.logger.info(
-        `${identityResp?.identity.userEntityRef} executed condition for permission ${permissionName}, resource type ${resourceType} and action ${action}`,
+        `${userEntityRef} executed condition for permission ${permissionName}, resource type ${resourceType} and action ${action}`,
       );
       return {
         pluginId,
