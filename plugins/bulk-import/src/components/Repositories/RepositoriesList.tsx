@@ -6,6 +6,7 @@ import { makeStyles } from '@material-ui/core';
 
 import { RepositoriesData } from '../../types';
 import { columns } from './RepositoriesListColumns';
+import { RepositoriesListToolbar } from './RepositoriesListToolbar';
 
 const useStyles = makeStyles(theme => ({
   empty: {
@@ -20,17 +21,20 @@ export const RepositoriesList = () => {
   const data: RepositoriesData[] = [];
 
   return (
-    <Table
-      title="Added repositories (0)"
-      options={{ padding: 'default', search: true, paging: true }}
-      data={data}
-      isLoading={false}
-      columns={columns}
-      emptyContent={
-        <div data-testid="repositories-table-empty" className={classes.empty}>
-          No records found
-        </div>
-      }
-    />
+    <>
+      <RepositoriesListToolbar />
+      <Table
+        title="Added repositories (0)"
+        options={{ padding: 'default', search: true, paging: true }}
+        data={data}
+        isLoading={false}
+        columns={columns}
+        emptyContent={
+          <div data-testid="repositories-table-empty" className={classes.empty}>
+            No records found
+          </div>
+        }
+      />
+    </>
   );
 };

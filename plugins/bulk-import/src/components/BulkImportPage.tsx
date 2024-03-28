@@ -8,7 +8,7 @@ export const BulkImportPage = () => (
   <Page themeId="tool">
     <Header title="Bulk import" />
     <TabbedLayout>
-      <TabbedLayout.Route path="/repositories" title="Repositories">
+      <TabbedLayout.Route path="/" title="Repositories">
         <RepositoriesList />
       </TabbedLayout.Route>
     </TabbedLayout>
