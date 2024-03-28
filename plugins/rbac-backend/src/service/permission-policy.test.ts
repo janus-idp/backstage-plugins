@@ -1969,6 +1969,65 @@ describe('Policy checks for conditional policies', () => {
       },
     });
   });
+
+  it('should deny condition policy caused collision', async () => {
+    const entityMock: Entity = {
+      apiVersion: 'v1',
+      kind: 'Group',
+      metadata: {
+        name: 'test-group',
+        namespace: 'default',
+      },
+      spec: {
+        members: ['mike'],
+      },
+    };
+    catalogApi.getEntities.mockReturnValue({ items: [entityMock] });
+    (conditionalStorage.filterConditions as jest.Mock).mockReturnValueOnce([
+      {
+        id: 1,
+        pluginId: 'catalog',
+        resourceType: 'catalog-entity',
+        actions: ['read'],
+        roleEntityRef: 'role:default/test',
+        result: AuthorizeResult.CONDITIONAL,
+        conditions: {
+          rule: 'IS_ENTITY_OWNER',
+          resourceType: 'catalog-entity',
+          params: {
+            claims: ['group:default/test-group'],
+          },
+        },
+      },
+      {
+        id: 2,
+        pluginId: 'catalog-fork',
+        resourceType: 'catalog-entity',
+        actions: ['read'],
+        roleEntityRef: 'role:default/test',
+        result: AuthorizeResult.CONDITIONAL,
+        conditions: {
+          rule: 'IS_ENTITY_OWNER',
+          resourceType: 'catalog-entity',
+          params: {
+            claims: ['group:default/test-group'],
+          },
+        },
+      },
+    ]);
+
+    const decision = await policy.handle(
+      newPolicyQueryWithResourcePermission(
+        'catalog.entity.read',
+        'catalog-entity',
+        'read',
+      ),
+      newIdentityResponse('user:default/mike'),
+    );
+    expect(decision).toStrictEqual({
+      result: AuthorizeResult.DENY,
+    });
+  });
 });
 
 function newPolicyQueryWithBasicPermission(name: string): PolicyQuery {
