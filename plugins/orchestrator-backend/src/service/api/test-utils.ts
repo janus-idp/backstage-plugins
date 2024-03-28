@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 import {
   ProcessInstance,
   ProcessInstanceState,
@@ -11,8 +13,8 @@ import {
   WorkflowOverviewListResult,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
-const baseDate = new Date('2023-02-19T11:45:21.123Z');
-const HOUR = 60 * 60 * 1000;
+const BASE_DATE = '2023-02-19T11:45:21.123Z';
+
 interface WorkflowOverviewParams {
   suffix?: string;
   workflowId?: string;
@@ -108,8 +110,8 @@ export function generateProcessInstance(id: number): ProcessInstance {
     processName: `name${id}`,
     processId: `proceesId${id}`,
     state: ProcessInstanceState.Active,
-    start: baseDate,
-    end: new Date(baseDate.getTime() + 1 * HOUR),
+    start: BASE_DATE,
+    end: moment(BASE_DATE).add(1, 'hour').toISOString(),
     nodes: [],
     endpoint: 'enpoint/foo',
     serviceUrl: 'service/bar',
