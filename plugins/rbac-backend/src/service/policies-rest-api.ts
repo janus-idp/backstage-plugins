@@ -16,7 +16,6 @@ import {
 } from '@backstage/plugin-permission-backend';
 import {
   AuthorizeResult,
-  ConditionalPolicyDecision,
   PermissionEvaluator,
   PolicyDecision,
   QueryPermissionRequest,
@@ -38,6 +37,7 @@ import {
   RESOURCE_TYPE_POLICY_ENTITY,
   Role,
   RoleBasedPolicy,
+  RoleConditionalPolicyDecision,
 } from '@janus-idp/backstage-plugin-rbac-common';
 import { PluginIdProvider } from '@janus-idp/backstage-plugin-rbac-node';
 
@@ -48,6 +48,7 @@ import {
   RoleMetadataStorage,
 } from '../database/role-metadata';
 import { deepSortedEqual, policyToString } from '../helper';
+import { validateRoleCondition } from './condition-validation';
 import { EnforcerDelegate } from './enforcer-delegate';
 import { PluginPermissionMetadataCollector } from './plugin-endpoints';
 import {
@@ -583,7 +584,7 @@ export class PolicesServer {
       response.json(rules);
     });
 
-    router.get('/conditions', async (req, resp) => {
+    router.get('/roles/conditions', async (req, resp) => {
       const decision = await this.authorize(req, {
         permission: policyEntityReadPermission,
       });
@@ -592,17 +593,17 @@ export class PolicesServer {
         throw new NotAllowedError(); // 403
       }
 
-      const pluginId = this.getFirstQuery(req.query.pluginId);
-      const resourceType = this.getFirstQuery(req.query.resourceType);
-      const conditions = await this.conditionalStorage.getConditions(
-        pluginId,
-        resourceType,
+      const conditions = await this.conditionalStorage.filterConditions(
+        this.getFirstQuery(req.query.roleEntityRef),
+        this.getFirstQuery(req.query.pluginId),
+        this.getFirstQuery(req.query.resourceType),
+        this.getPermissionNameQueries(req.query.permissionNames),
       );
 
       resp.json(conditions);
     });
 
-    router.post('/conditions', async (req, resp) => {
+    router.post('/roles/conditions', async (req, resp) => {
       const decision = await this.authorize(req, {
         permission: policyEntityCreatePermission,
       });
@@ -611,15 +612,17 @@ export class PolicesServer {
         throw new NotAllowedError(); // 403
       }
 
-      const conditionalPolicy: ConditionalPolicyDecision = req.body;
-      // TODO add validation.
+      const roleConditionPolicy: RoleConditionalPolicyDecision = req.body;
+
+      validateRoleCondition(roleConditionPolicy);
+
       const id =
-        await this.conditionalStorage.createCondition(conditionalPolicy);
+        await this.conditionalStorage.createCondition(roleConditionPolicy);
 
       resp.status(201).json({ id: id });
     });
 
-    router.get('/conditions/:id', async (req, resp) => {
+    router.get('/roles/conditions/:id', async (req, resp) => {
       const decision = await this.authorize(req, {
         permission: policyEntityReadPermission,
       });
@@ -641,7 +644,7 @@ export class PolicesServer {
       resp.json(condition);
     });
 
-    router.delete('/conditions/:id', async (req, resp) => {
+    router.delete('/roles/conditions/:id', async (req, resp) => {
       const decision = await this.authorize(req, {
         permission: policyEntityDeletePermission,
       });
@@ -659,7 +662,7 @@ export class PolicesServer {
       resp.status(204).end();
     });
 
-    router.put('/conditions/:id', async (req, resp) => {
+    router.put('/roles/conditions/:id', async (req, resp) => {
       const decision = await this.authorize(req, {
         permission: policyEntityUpdatePermission,
       });
@@ -672,9 +675,12 @@ export class PolicesServer {
       if (isNaN(id)) {
         throw new InputError('Id is not a valid number.');
       }
-      const conditionalPolicy: ConditionalPolicyDecision = req.body;
 
-      await this.conditionalStorage.updateCondition(id, conditionalPolicy);
+      const roleConditionPolicy: RoleConditionalPolicyDecision = req.body;
+
+      validateRoleCondition(roleConditionPolicy);
+
+      await this.conditionalStorage.updateCondition(id, roleConditionPolicy);
       resp.status(200).end();
     });
 
@@ -754,6 +760,34 @@ export class PolicesServer {
       roles.push([entity, role.name]);
     }
     return roles;
+  }
+
+  getPermissionNameQueries(
+    queryValue: string | string[] | ParsedQs | ParsedQs[] | undefined,
+  ): string[] | undefined {
+    if (!queryValue) {
+      return undefined;
+    }
+    if (Array.isArray(queryValue)) {
+      const permissionNames: string[] = [];
+      for (const permissionQuery of queryValue) {
+        if (typeof permissionQuery === 'string') {
+          permissionNames.push(permissionQuery);
+        } else {
+          throw new InputError(
+            `Invalid permission action query value: ${permissionQuery}. Permission name should be string.`,
+          );
+        }
+      }
+      return permissionNames;
+    }
+
+    if (typeof queryValue === 'string') {
+      return [queryValue];
+    }
+    throw new InputError(
+      `Invalid permission action query value: ${queryValue}. Permission name should be string.`,
+    );
   }
 
   getFirstQuery(
