@@ -22,7 +22,11 @@ export const PoliciesCheckboxGroup = ({
   return (
     <FormControl
       required
-      style={{ justifyContent: 'flex-start', gap: '12px', width: '400px' }}
+      style={{
+        justifyContent: 'flex-start',
+        gap: '12px',
+        width: '400px',
+      }}
     >
       <FormLabel
         style={{
