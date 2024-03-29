@@ -1,3 +1,17 @@
+## @janus-idp/backstage-plugin-rbac-backend [2.5.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.4.1...@janus-idp/backstage-plugin-rbac-backend@2.5.0) (2024-03-29)
+
+
+### Features
+
+* **rbac:** load filtered policies before enforcing ([#1387](https://github.com/janus-idp/backstage-plugins/issues/1387)) ([66980ba](https://github.com/janus-idp/backstage-plugins/commit/66980baebd4d8b5b398646bcab1750c0edec715e))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-rbac-common:** upgraded to 1.3.1
+* **@janus-idp/backstage-plugin-rbac-node:** upgraded to 1.0.4
+
 ## @janus-idp/backstage-plugin-rbac-backend [2.4.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.4.0...@janus-idp/backstage-plugin-rbac-backend@2.4.1) (2024-03-19)
 
 
