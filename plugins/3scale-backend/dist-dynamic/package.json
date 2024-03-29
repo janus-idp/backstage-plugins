@@ -1,6 +1,6 @@
 {
   "name": "@janus-idp/backstage-plugin-3scale-backend-dynamic",
-  "version": "1.4.7",
+  "version": "1.4.8",
   "license": "Apache-2.0",
   "main": "dist/index.cjs.js",
   "types": "dist/index.d.ts",

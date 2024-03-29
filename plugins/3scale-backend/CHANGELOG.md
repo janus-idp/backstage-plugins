@@ -1,3 +1,17 @@
+## @janus-idp/backstage-plugin-3scale-backend [1.4.8](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-3scale-backend@1.4.7...@janus-idp/backstage-plugin-3scale-backend@1.4.8) (2024-03-29)
+
+
+### Bug Fixes
+
+* **3scale:** pull in newer dynamic plugin... ([#1408](https://github.com/janus-idp/backstage-plugins/issues/1408)) ([95cad79](https://github.com/janus-idp/backstage-plugins/commit/95cad79f84d0771e63921ece1749c6827c2b9872))
+* **3scale:** revert readme change to pull plugin deps ([#1409](https://github.com/janus-idp/backstage-plugins/issues/1409)) ([b34acd2](https://github.com/janus-idp/backstage-plugins/commit/b34acd2874d7e5df44c937b2b197820fcb3a4c50))
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.6
+
 ## @janus-idp/backstage-plugin-3scale-backend [1.4.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-3scale-backend@1.4.6...@janus-idp/backstage-plugin-3scale-backend@1.4.7) (2024-03-04)
 
 
