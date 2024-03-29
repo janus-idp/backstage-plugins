@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-orchestrator-common [1.6.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-common@1.6.0...@janus-idp/backstage-plugin-orchestrator-common@1.6.1) (2024-03-29)
+
+
+### Bug Fixes
+
+* **orchestrator:** fixes v2/instances endpoint ([#1414](https://github.com/janus-idp/backstage-plugins/issues/1414)) ([88b49df](https://github.com/janus-idp/backstage-plugins/commit/88b49df35cf10e231ba69c239e873cb10e7cc25b))
+
 ## @janus-idp/backstage-plugin-orchestrator-common [1.6.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-common@1.5.1...@janus-idp/backstage-plugin-orchestrator-common@1.6.0) (2024-03-14)
 
 
