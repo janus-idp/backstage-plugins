@@ -2,68 +2,58 @@ import React from 'react';
 
 import { Link } from '@backstage/core-components';
 
-import ReadyIcon from '@mui/icons-material/CheckOutlined';
 import { get } from 'lodash';
 
 import {
+  AddedRepositories,
   AddRepositoriesData,
-  AddRepositoriesFormValues,
   Order,
+  RepositoryStatus,
 } from '../types';
-
-export const getRepositoryStatus = (
-  status: string,
-  isItemSelected?: boolean,
-  isDrawer: boolean = false,
-  selectedRepositories?: number,
-) => {
-  if (isItemSelected && !isDrawer) {
-    return (
-      <span>
-        {selectedRepositories || ''}
-        <ReadyIcon
-          color="success"
-          style={{ verticalAlign: 'sub', paddingTop: '7px' }}
-        />
-        Ready
-      </span>
-    );
-  }
-  if (status === 'Exists') {
-    return <span style={{ color: 'grey' }}>Repository already added</span>;
-  }
-
-  return !isDrawer ? <span>Not generated</span> : null;
-};
-
-export const getRepositoryStatusForOrg = (
-  data: AddRepositoriesData,
-  alreadyAdded: number,
-) => {
-  const isSelected = data.selectedRepositories && data.selectedRepositories > 0;
-  const allSelected =
-    (data.selectedRepositories || 0) + alreadyAdded ===
-    data.repositories?.length;
-
-  if (!isSelected) {
-    return <span>Not generated</span>;
-  }
-
-  if (allSelected) {
-    return getRepositoryStatus('Exists', true);
-  }
-
-  return getRepositoryStatus('Exists', true);
-};
 
 const descendingComparator = (
   a: AddRepositoriesData,
   b: AddRepositoriesData,
   orderBy: string,
+  isOrganization: boolean,
 ) => {
-  const value1 = get(a, orderBy);
-  const value2 = get(b, orderBy);
+  let value1 = get(a, orderBy);
+  let value2 = get(b, orderBy);
+  const order = {
+    [RepositoryStatus.Exists]: 1,
+    [RepositoryStatus.Ready]: 2,
+    [RepositoryStatus.NotGenerated]: 3,
+    [RepositoryStatus.Failed]: 4,
+  };
 
+  if (orderBy === 'selectedRepositories') {
+    value1 = value1?.length;
+    value2 = value2?.length;
+  }
+
+  if (orderBy === 'catalogInfoYaml') {
+    if (isOrganization) {
+      value1 =
+        order[
+          (a.selectedRepositories?.[0]?.catalogInfoYaml
+            ?.status as RepositoryStatus) || RepositoryStatus.NotGenerated
+        ];
+      value2 =
+        order[
+          (b.selectedRepositories?.[0]?.catalogInfoYaml
+            ?.status as RepositoryStatus) || RepositoryStatus.NotGenerated
+        ];
+    } else {
+      value1 =
+        order[
+          (value1?.status as RepositoryStatus) || RepositoryStatus.NotGenerated
+        ];
+      value2 =
+        order[
+          (value2?.status as RepositoryStatus) || RepositoryStatus.NotGenerated
+        ];
+    }
+  }
   if (value2 < value1) {
     return -1;
   }
@@ -76,92 +66,150 @@ const descendingComparator = (
 export const getComparator = (
   order: Order,
   orderBy: string,
+  isOrganization: boolean,
 ): ((a: AddRepositoriesData, b: AddRepositoriesData) => number) => {
   return order === 'desc'
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
+    ? (a, b) => descendingComparator(a, b, orderBy, isOrganization)
+    : (a, b) => -descendingComparator(a, b, orderBy, isOrganization);
+};
+
+export const getPRTemplate = (componentName: string, entityOwner: string) => {
+  return {
+    componentName,
+    entityOwner,
+    prTitle: 'This is the pull request title',
+    prDescription: 'This is the description of the pull request',
+    useCodeOwnersFile: false,
+    yaml: {
+      kind: 'Component',
+      apiVersion: 'v1',
+      metadata: { name: componentName },
+    },
+  };
 };
 
 export const createData = (
   id: number,
   name: string,
   url: string,
-  catalogInfoYaml: string,
+  catalogInfoYamlStatus: string,
+  entityOwner: string,
   organization?: string,
-  selectedRepositories?: number,
 ): AddRepositoriesData => {
   return {
     id,
-    name,
-    url,
-    organization,
-    selectedRepositories,
+    repoName: name,
+    repoUrl: url,
+    orgName: organization,
+    organizationUrl: organization,
     catalogInfoYaml: {
-      status: catalogInfoYaml,
-      yaml: '',
+      status: catalogInfoYamlStatus,
+      prTemplate: getPRTemplate(name, entityOwner),
     },
   };
 };
 
 export const createOrganizationData = (
-  id: number,
-  name: string,
-  url: string,
   repositories: AddRepositoriesData[],
-): AddRepositoriesData => {
-  return {
-    id,
-    name,
-    url,
-    repositories,
-    selectedRepositories: 0,
-  };
+): AddRepositoriesData[] => {
+  return repositories.reduce(
+    (acc: AddRepositoriesData[], repo: AddRepositoriesData) => {
+      const org = acc.find(a => a.organizationUrl === repo.organizationUrl);
+      if (org?.repositories) {
+        org.repositories.push(repo);
+      } else {
+        acc.push({
+          id: repo.id,
+          orgName: repo.organizationUrl,
+          organizationUrl: repo.organizationUrl,
+          repositories: [repo],
+          selectedRepositories: [],
+        });
+      }
+      return acc;
+    },
+    [],
+  );
 };
 
-export const getSelectedRepositories = (
+export const getSelectedRepositoriesCount = (
   onOrgRowSelected: (org: AddRepositoriesData) => void,
   organizationData: AddRepositoriesData,
   alreadyAdded: number,
 ) => {
-  if (!organizationData || organizationData.selectedRepositories === 0) {
+  if (
+    !organizationData ||
+    organizationData.selectedRepositories?.length === 0
+  ) {
     return (
-      <>
+      <span data-testid="select-repositories">
         None{' '}
         <Link to="" onClick={() => onOrgRowSelected(organizationData)}>
           Select
         </Link>
-      </>
+      </span>
     );
   }
   return (
-    <>
-      {organizationData.selectedRepositories} /{' '}
+    <span data-testid="edit-repositories">
+      {organizationData.selectedRepositories?.length} /{' '}
       {(organizationData.repositories?.length || 0) - alreadyAdded}{' '}
       <Link onClick={() => onOrgRowSelected(organizationData)} to="">
         Edit
       </Link>
-    </>
+    </span>
   );
 };
 
-export const getNewSelectedRepositories = (
+export const updateWithNewSelectedRepositories = (
   data: AddRepositoriesData[],
-  selectedIds: number[],
-) => {
-  return selectedIds.length === 0
-    ? []
-    : data
-        .map(d => {
-          if (selectedIds.find((id: number) => id === d.id)) {
-            return d;
-          }
-          return null;
-        })
-        .filter(repo => repo);
+  existingSelectedRepositories: AddedRepositories,
+  selectedRepoIds: number[],
+): AddedRepositories => {
+  return selectedRepoIds.length === 0
+    ? {}
+    : selectedRepoIds.reduce((acc, id) => {
+        const existingRepo = Object.values(existingSelectedRepositories).find(
+          repo => repo.id === id,
+        );
+        if (existingRepo) {
+          return {
+            ...acc,
+            ...{ [existingRepo.repoName as string]: existingRepo },
+          };
+        }
+        const repo = data.find((d: AddRepositoriesData) => id === d.id);
+        if (repo) {
+          return {
+            ...acc,
+            ...{
+              [repo.repoName as string]: {
+                ...repo,
+                catalogInfoYaml: {
+                  ...repo.catalogInfoYaml,
+                  status: RepositoryStatus.Ready,
+                },
+              },
+            },
+          };
+        }
+        return acc;
+      }, {});
 };
 
-export const getRepositoriesSelected = (data: AddRepositoriesFormValues) => {
-  return data.repositories?.length || 0;
+export const getSelectedRepositories = (
+  org: AddRepositoriesData,
+  drawerSelected: number[],
+): AddRepositoriesData[] => {
+  return drawerSelected
+    .filter(selId => org.repositories?.some(repo => repo.id === selId))
+    .reduce((acc: AddRepositoriesData[], id) => {
+      const repository = org.repositories?.find(repo => repo.id === id);
+      if (repository) {
+        acc.push(repository);
+      }
+      return acc;
+    }, []);
 };
 
 export const filterSelectedForActiveDrawer = (
@@ -174,5 +222,39 @@ export const filterSelectedForActiveDrawer = (
 };
 
 export const urlHelper = (url: string) => {
+  if (!url || url === '') {
+    return '-';
+  }
   return url.split('https://')[1] || url;
+};
+
+export const getNewOrgsData = (
+  orgsData: AddRepositoriesData[],
+  reposData: AddRepositoriesData[],
+  newSelected: number[],
+  id: number,
+) => {
+  const orgId = orgsData.find(
+    org => org.orgName === reposData.find(repo => repo.id === id)?.orgName,
+  )?.id;
+
+  const selectedRepositories = newSelected.filter(selId =>
+    orgsData
+      .find(org => org.id === orgId)
+      ?.repositories?.map(r => r.id)
+      .includes(selId),
+  );
+  const newOrgsData = orgsData.map(org => {
+    if (org.id === orgId) {
+      return {
+        ...org,
+        selectedRepositories:
+          (selectedRepositories
+            .map(repoId => reposData.find(repo => repo.id === repoId))
+            .filter(r => r?.id) as AddRepositoriesData[]) || [],
+      };
+    }
+    return org;
+  });
+  return newOrgsData;
 };

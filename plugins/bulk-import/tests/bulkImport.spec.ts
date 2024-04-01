@@ -69,13 +69,13 @@ test.describe('Bulk import plugin', () => {
     }
     await page.click('input[aria-label="select all repositories"]');
     await expect(
-      page.getByRole('heading', { name: 'Selected repositories (17)' }),
+      page.getByRole('heading', { name: 'Selected repositories (9)' }),
     ).toBeVisible({
       timeout: 20000,
     });
     await page.locator(`button`).filter({ hasText: 'Organization' }).click();
     await expect(
-      page.getByRole('heading', { name: 'Selected repositories (17)' }),
+      page.getByRole('heading', { name: 'Selected repositories (9)' }),
     ).toBeVisible({
       timeout: 20000,
     });
@@ -90,7 +90,7 @@ test.describe('Bulk import plugin', () => {
   test('Select Repositories side panel is shown', async () => {
     await page.locator('button[type="button"][value="repository"]').click();
     await expect(
-      page.getByRole('heading', { name: 'Selected repositories (17)' }),
+      page.getByRole('heading', { name: 'Selected repositories (9)' }),
     ).toBeVisible({
       timeout: 20000,
     });
@@ -153,19 +153,29 @@ test.describe('Bulk import plugin', () => {
     });
     await page.click('input[aria-label="select all repositories"]');
     await expect(
-      page.getByRole('heading', { name: 'Selected repositories (3)' }),
+      page.getByRole('heading', { name: 'Selected repositories (2)' }),
     ).toBeVisible();
 
     await page.locator('button[aria-labelledby="select-from-drawer"]').click();
 
     await expect(
-      page.getByRole('heading', { name: 'Selected repositories (3)' }),
+      page.getByRole('heading', { name: 'Selected repositories (2)' }),
     ).toBeVisible();
     await expect(
-      page.locator('tr:has-text("org/pet-store-boston") >> text=3'),
+      page.locator('tr:has-text("org/pet-store-boston") >> text=2'),
     ).toBeVisible();
     await expect(
       page.locator('tr:has-text("org/pet-store-boston") >> a >> text=Edit'),
+    ).toBeVisible();
+
+    await page.getByPlaceholder('Search').fill('org/pet-store-boston');
+    await page.locator('a[data-testid="preview-files"]').click();
+    await expect(page.getByRole('tab', { name: 'online-store' })).toBeVisible();
+    await expect(page.getByRole('tab', { name: 'pet-app' })).toBeVisible();
+    await expect(
+      page
+        .getByTestId('preview-file-sidebar')
+        .getByText('Pull request details'),
     ).toBeVisible();
   });
 });

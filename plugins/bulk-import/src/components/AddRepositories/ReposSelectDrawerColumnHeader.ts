@@ -4,12 +4,12 @@ export const ReposSelectDrawerColumnHeader: TableColumn[] = [
   {
     id: 'name',
     title: 'Name',
-    field: 'name',
+    field: 'repoName',
   },
   {
     id: 'url',
     title: 'URL',
-    field: 'url',
+    field: 'repoUrl',
   },
   {
     id: 'catalogInfoYaml',

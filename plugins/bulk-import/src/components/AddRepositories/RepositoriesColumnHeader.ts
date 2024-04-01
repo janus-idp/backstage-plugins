@@ -4,17 +4,17 @@ export const RepositoriesColumnHeader: TableColumn[] = [
   {
     id: 'name',
     title: 'Name',
-    field: 'name',
+    field: 'repoName',
   },
   {
     id: 'url',
     title: 'URL',
-    field: 'url',
+    field: 'repoUrl',
   },
   {
     id: 'organization',
     title: 'Organization',
-    field: 'organization',
+    field: 'organizationUrl',
   },
   {
     id: 'catalogInfoYaml',

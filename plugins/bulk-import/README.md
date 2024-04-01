@@ -26,8 +26,9 @@ The plugin work is still work in progress
 
    ```tsx title="packages/app/src/App.tsx"
    /* highlight-add-next-line */
-   import { BulkImportPage } from '@janus-idp/backstage-plugin-bulk-import’;
-
+   import { BulkImportPage } from '@janus-idp/backstage-plugin-bulk-import';
+   ...
+   /* highlight-add-start */
    <Route
         path="/bulk-import"
         element={<Navigate to="repositories" />}
@@ -36,18 +37,21 @@ The plugin work is still work in progress
         path="/bulk-import/repositories"
         element={<BulkImportPage />}
     />
+    /* highlight-add-end */
+   ...
    ```
 
 3. Add **Bulk import** Sidebar Item in `packages/app/src/components/Root/Root.tsx`:
 
    ```tsx title="packages/app/src/components/Root/Root.tsx"
    /* highlight-add-next-line */
-   import { BulkImportIcon } from '@janus-idp/backstage-plugin-bulk-import’;
+   import { BulkImportIcon } from '@janus-idp/backstage-plugin-bulk-import';
 
    export const Root = ({ children }: PropsWithChildren<{}>) => (
     <SidebarPage>
       <Sidebar>
       ...
+      /* highlight-add-next-line */
       <BulkImportIcon />
       ...
     </SidebarPage>

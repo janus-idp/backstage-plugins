@@ -1,13 +1,13 @@
-import React, { FormEvent } from 'react';
+import React from 'react';
 
 import { Link } from '@backstage/core-components';
 
 import { makeStyles } from '@material-ui/core';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
+import { useFormikContext } from 'formik';
 
-import { AddRepositoriesFormValues } from '../../types';
-import { getRepositoriesSelected } from '../../utils/repository-utils';
+import { AddRepositoriesFormValues, ApprovalTool } from '../../types';
 
 const useStyles = makeStyles(theme => ({
   createButton: {
@@ -20,7 +20,7 @@ const useStyles = makeStyles(theme => ({
     overflow: 'scroll',
   },
   tooltip: {
-    whiteSpace: 'nowrap',
+    maxWidth: 'none',
   },
   footer: {
     display: 'flex',
@@ -38,21 +38,18 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const AddRepositoriesFormFooter = ({
-  approvalTool,
-  values,
-  handleSubmit,
-}: {
-  approvalTool: string;
-  values: AddRepositoriesFormValues;
-  handleSubmit: (e?: FormEvent<HTMLFormElement> | undefined) => void;
-}) => {
+export const AddRepositoriesFormFooter = () => {
   const styles = useStyles();
+  const { values, handleSubmit } =
+    useFormikContext<AddRepositoriesFormValues>();
   const submitTitle =
-    (approvalTool === 'git'
+    (values.approvalTool === ApprovalTool.Git
       ? 'Create pull request'
       : 'Create ServiceNow ticket') +
-    (getRepositoriesSelected(values) > 1 ? 's' : '');
+    (((values.repositories && Object.keys(values.repositories)?.length) || 0) >
+    1
+      ? 's'
+      : '');
 
   return (
     <div className={styles.footer}>
@@ -65,7 +62,10 @@ export const AddRepositoriesFormFooter = ({
             variant="contained"
             onClick={handleSubmit as any}
             className={styles.createButton}
-            disabled={getRepositoriesSelected(values) === 0}
+            disabled={
+              !values.repositories ||
+              Object.keys(values.repositories).length === 0
+            }
           >
             {submitTitle}
           </Button>

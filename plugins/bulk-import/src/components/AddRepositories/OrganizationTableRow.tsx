@@ -8,10 +8,10 @@ import TableRow from '@mui/material/TableRow';
 
 import { AddRepositoriesData } from '../../types';
 import {
-  getRepositoryStatusForOrg,
-  getSelectedRepositories,
+  getSelectedRepositoriesCount,
   urlHelper,
 } from '../../utils/repository-utils';
+import { CatalogInfoStatus } from './CatalogInfoStatus';
 
 const tableCellStyle = {
   lineHeight: '1.5rem',
@@ -31,12 +31,12 @@ export const OrganizationTableRow = ({
   return (
     <TableRow hover>
       <TableCell component="th" scope="row" padding="none" sx={tableCellStyle}>
-        {data.name}
+        {data.orgName}
       </TableCell>
       <TableCell align="left" sx={tableCellStyle}>
-        <Link to={data.url}>
+        <Link to={data?.organizationUrl || ''}>
           <>
-            {urlHelper(data.url)}
+            {urlHelper(data?.organizationUrl || '')}
             <OpenInNewIcon
               style={{ verticalAlign: 'sub', paddingTop: '7px' }}
             />
@@ -44,10 +44,10 @@ export const OrganizationTableRow = ({
         </Link>
       </TableCell>
       <TableCell align="left" sx={tableCellStyle}>
-        {getSelectedRepositories(onOrgRowSelected, data, alreadyAdded)}
+        {getSelectedRepositoriesCount(onOrgRowSelected, data, alreadyAdded)}
       </TableCell>
       <TableCell align="left" sx={tableCellStyle}>
-        {getRepositoryStatusForOrg(data, alreadyAdded)}
+        <CatalogInfoStatus data={data} alreadyAdded={alreadyAdded} />
       </TableCell>
     </TableRow>
   );

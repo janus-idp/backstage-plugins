@@ -7,8 +7,9 @@ import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 
-import { AddRepositoriesData } from '../../types';
-import { getRepositoryStatus, urlHelper } from '../../utils/repository-utils';
+import { AddRepositoriesData, RepositoryStatus } from '../../types';
+import { urlHelper } from '../../utils/repository-utils';
+import { CatalogInfoStatus } from './CatalogInfoStatus';
 
 export const RepositoryTableRow = ({
   handleClick,
@@ -41,19 +42,31 @@ export const RepositoryTableRow = ({
           disableRipple
           color="primary"
           checked={
-            selectedRepositoryStatus === 'Exists' ? true : isItemSelected
+            selectedRepositoryStatus === RepositoryStatus.Exists
+              ? true
+              : isItemSelected
           }
-          disabled={selectedRepositoryStatus === 'Exists'}
+          disabled={selectedRepositoryStatus === RepositoryStatus.Exists}
           onClick={event => handleClick(event, data.id)}
           style={{ padding: '0 12px' }}
         />
-        {data.name}
+        {data.repoName}
       </TableCell>
-      {!isDrawer && data.organization && (
+      <TableCell align="left" sx={tableCellStyle}>
+        <Link to={data.repoUrl || ''}>
+          <>
+            {urlHelper(data?.repoUrl || '')}
+            <OpenInNewIcon
+              style={{ verticalAlign: 'sub', paddingTop: '7px' }}
+            />
+          </>
+        </Link>
+      </TableCell>
+      {!isDrawer && (
         <TableCell align="left" sx={tableCellStyle}>
-          <Link to={data.url}>
+          <Link to={data?.organizationUrl || ''}>
             <>
-              {urlHelper(data.url)}
+              {urlHelper(data?.organizationUrl || '')}
               <OpenInNewIcon
                 style={{ verticalAlign: 'sub', paddingTop: '7px' }}
               />
@@ -61,22 +74,13 @@ export const RepositoryTableRow = ({
           </Link>
         </TableCell>
       )}
+
       <TableCell align="left" sx={tableCellStyle}>
-        <Link to={data.url || ''}>
-          <>
-            {urlHelper(data.url)}
-            <OpenInNewIcon
-              style={{ verticalAlign: 'sub', paddingTop: '7px' }}
-            />
-          </>
-        </Link>
-      </TableCell>
-      <TableCell align="left" sx={tableCellStyle}>
-        {getRepositoryStatus(
-          data.catalogInfoYaml?.status || '',
-          isItemSelected,
-          isDrawer,
-        )}
+        <CatalogInfoStatus
+          data={data}
+          isItemSelected={isItemSelected}
+          isDrawer={isDrawer}
+        />
       </TableCell>
     </TableRow>
   );
