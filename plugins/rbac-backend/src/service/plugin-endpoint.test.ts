@@ -336,7 +336,7 @@ describe('plugin-endpoint', () => {
           resourceType: 'catalog-entity',
         },
       ]);
-      expect(metadata!.rules).toEqual([
+      expect(metadata?.rules).toEqual([
         {
           description: 'Allow entities with the specified label',
           name: 'HAS_LABEL',

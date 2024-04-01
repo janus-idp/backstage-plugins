@@ -927,7 +927,7 @@ export class PolicesServer {
         roleConditionPolicy.pluginId,
         token,
       );
-    if (!rule || !rule.permissions) {
+    if (!rule?.permissions) {
       throw new Error(
         `Unable to get permission list for plugin ${roleConditionPolicy.pluginId}`,
       );
