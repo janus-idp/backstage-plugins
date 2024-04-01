@@ -1,6 +1,7 @@
 import { RoleMetadataDao } from './database/role-metadata';
 import {
   deepSortedEqual,
+  isPermissionAction,
   metadataStringToPolicy,
   policiesToString,
   policyToString,
@@ -24,6 +25,7 @@ describe('helper.ts', () => {
       expect(policyToString(policy)).toEqual(expectedString);
     });
   });
+
   describe('policiesToString', () => {
     it('should convert one permission policy to string', () => {
       const policies = [
@@ -245,6 +247,30 @@ describe('helper.ts', () => {
         source: 'rest',
       };
       expect(deepSortedEqual(obj1, obj2)).toBe(false);
+    });
+  });
+
+  describe('isPermissionAction', () => {
+    it('should return true', () => {
+      let result = isPermissionAction('create');
+      expect(result).toBeTruthy();
+
+      result = isPermissionAction('read');
+      expect(result).toBeTruthy();
+
+      result = isPermissionAction('update');
+      expect(result).toBeTruthy();
+
+      result = isPermissionAction('delete');
+      expect(result).toBeTruthy();
+
+      result = isPermissionAction('use');
+      expect(result).toBeTruthy();
+    });
+
+    it('should return false', () => {
+      const result = isPermissionAction('unknown');
+      expect(result).toBeFalsy();
     });
   });
 });

@@ -20,7 +20,10 @@ import {
   PolicyDecision,
   QueryPermissionRequest,
 } from '@backstage/plugin-permission-common';
-import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
+import {
+  createPermissionIntegrationRouter,
+  MetadataResponse,
+} from '@backstage/plugin-permission-node';
 
 import { Router } from 'express';
 import { Request } from 'express-serve-static-core';
@@ -29,6 +32,8 @@ import { ParsedQs } from 'qs';
 import { Logger } from 'winston';
 
 import {
+  PermissionAction,
+  PermissionInfo,
   policyEntityCreatePermission,
   policyEntityDeletePermission,
   policyEntityPermissions,
@@ -47,7 +52,7 @@ import {
   RoleMetadataDao,
   RoleMetadataStorage,
 } from '../database/role-metadata';
-import { deepSortedEqual, policyToString } from '../helper';
+import { deepSortedEqual, isPermissionAction, policyToString } from '../helper';
 import { validateRoleCondition } from './condition-validation';
 import { EnforcerDelegate } from './enforcer-delegate';
 import { PluginPermissionMetadataCollector } from './plugin-endpoints';
@@ -584,8 +589,8 @@ export class PolicesServer {
       response.json(rules);
     });
 
-    router.get('/roles/conditions', async (req, resp) => {
-      const decision = await this.authorize(req, {
+    router.get('/roles/conditions', async (request, response) => {
+      const decision = await this.authorize(request, {
         permission: policyEntityReadPermission,
       });
 
@@ -594,17 +599,17 @@ export class PolicesServer {
       }
 
       const conditions = await this.conditionalStorage.filterConditions(
-        this.getFirstQuery(req.query.roleEntityRef),
-        this.getFirstQuery(req.query.pluginId),
-        this.getFirstQuery(req.query.resourceType),
-        this.getPermissionNameQueries(req.query.permissionNames),
+        this.getFirstQuery(request.query.roleEntityRef),
+        this.getFirstQuery(request.query.pluginId),
+        this.getFirstQuery(request.query.resourceType),
+        this.getActionQueries(request.query.actions),
       );
 
-      resp.json(conditions);
+      response.json(conditions);
     });
 
-    router.post('/roles/conditions', async (req, resp) => {
-      const decision = await this.authorize(req, {
+    router.post('/roles/conditions', async (request, response) => {
+      const decision = await this.authorize(request, {
         permission: policyEntityCreatePermission,
       });
 
@@ -612,18 +617,24 @@ export class PolicesServer {
         throw new NotAllowedError(); // 403
       }
 
-      const roleConditionPolicy: RoleConditionalPolicyDecision = req.body;
-
+      const roleConditionPolicy: RoleConditionalPolicyDecision<PermissionAction> =
+        request.body;
       validateRoleCondition(roleConditionPolicy);
 
-      const id =
-        await this.conditionalStorage.createCondition(roleConditionPolicy);
+      const conditionToCreate = await this.processConditionMapping(
+        roleConditionPolicy,
+        request,
+        pluginPermMetaData,
+      );
 
-      resp.status(201).json({ id: id });
+      const id =
+        await this.conditionalStorage.createCondition(conditionToCreate);
+
+      response.status(201).json({ id: id });
     });
 
-    router.get('/roles/conditions/:id', async (req, resp) => {
-      const decision = await this.authorize(req, {
+    router.get('/roles/conditions/:id', async (request, response) => {
+      const decision = await this.authorize(request, {
         permission: policyEntityReadPermission,
       });
 
@@ -631,7 +642,7 @@ export class PolicesServer {
         throw new NotAllowedError(); // 403
       }
 
-      const id: number = parseInt(req.params.id, 10);
+      const id: number = parseInt(request.params.id, 10);
       if (isNaN(id)) {
         throw new InputError('Id is not a valid number.');
       }
@@ -641,11 +652,11 @@ export class PolicesServer {
         throw new NotFoundError();
       }
 
-      resp.json(condition);
+      response.json(condition);
     });
 
-    router.delete('/roles/conditions/:id', async (req, resp) => {
-      const decision = await this.authorize(req, {
+    router.delete('/roles/conditions/:id', async (request, response) => {
+      const decision = await this.authorize(request, {
         permission: policyEntityDeletePermission,
       });
 
@@ -653,17 +664,17 @@ export class PolicesServer {
         throw new NotAllowedError(); // 403
       }
 
-      const id: number = parseInt(req.params.id, 10);
+      const id: number = parseInt(request.params.id, 10);
       if (isNaN(id)) {
         throw new InputError('Id is not a valid number.');
       }
 
       await this.conditionalStorage.deleteCondition(id);
-      resp.status(204).end();
+      response.status(204).end();
     });
 
-    router.put('/roles/conditions/:id', async (req, resp) => {
-      const decision = await this.authorize(req, {
+    router.put('/roles/conditions/:id', async (request, response) => {
+      const decision = await this.authorize(request, {
         permission: policyEntityUpdatePermission,
       });
 
@@ -671,17 +682,24 @@ export class PolicesServer {
         throw new NotAllowedError(); // 403
       }
 
-      const id: number = parseInt(req.params.id, 10);
+      const id: number = parseInt(request.params.id, 10);
       if (isNaN(id)) {
         throw new InputError('Id is not a valid number.');
       }
 
-      const roleConditionPolicy: RoleConditionalPolicyDecision = req.body;
+      const roleConditionPolicy: RoleConditionalPolicyDecision<PermissionAction> =
+        request.body;
 
       validateRoleCondition(roleConditionPolicy);
 
-      await this.conditionalStorage.updateCondition(id, roleConditionPolicy);
-      resp.status(200).end();
+      const conditionToUpdate = await this.processConditionMapping(
+        roleConditionPolicy,
+        request,
+        pluginPermMetaData,
+      );
+
+      await this.conditionalStorage.updateCondition(id, conditionToUpdate);
+      response.status(200).end();
     });
 
     return router;
@@ -762,16 +780,19 @@ export class PolicesServer {
     return roles;
   }
 
-  getPermissionNameQueries(
+  getActionQueries(
     queryValue: string | string[] | ParsedQs | ParsedQs[] | undefined,
-  ): string[] | undefined {
+  ): PermissionAction[] | undefined {
     if (!queryValue) {
       return undefined;
     }
     if (Array.isArray(queryValue)) {
-      const permissionNames: string[] = [];
+      const permissionNames: PermissionAction[] = [];
       for (const permissionQuery of queryValue) {
-        if (typeof permissionQuery === 'string') {
+        if (
+          typeof permissionQuery === 'string' &&
+          isPermissionAction(permissionQuery)
+        ) {
           permissionNames.push(permissionQuery);
         } else {
           throw new InputError(
@@ -782,7 +803,7 @@ export class PolicesServer {
       return permissionNames;
     }
 
-    if (typeof queryValue === 'string') {
+    if (typeof queryValue === 'string' && isPermissionAction(queryValue)) {
       return [queryValue];
     }
     throw new InputError(
@@ -879,5 +900,52 @@ export class PolicesServer {
       return 1;
     }
     return 0;
+  }
+
+  async processConditionMapping(
+    roleConditionPolicy: RoleConditionalPolicyDecision<PermissionAction>,
+    request: Request,
+    pluginPermMetaData: PluginPermissionMetadataCollector,
+  ): Promise<RoleConditionalPolicyDecision<PermissionInfo>> {
+    const token = getBearerTokenFromAuthorizationHeader(
+      request.header('authorization'),
+    );
+    const rule: MetadataResponse | undefined =
+      await pluginPermMetaData.getMetadataByPluginId(
+        roleConditionPolicy.pluginId,
+        token,
+      );
+    if (!rule || !rule.permissions) {
+      throw new Error(
+        `Unable to get permission list for plugin ${roleConditionPolicy.pluginId}`,
+      );
+    }
+
+    const permInfo: PermissionInfo[] = [];
+    for (const action of roleConditionPolicy.permissionMapping) {
+      const perm = rule.permissions.find(
+        permission =>
+          permission.type === 'resource' &&
+          action === permission.attributes.action,
+      );
+      if (!perm) {
+        throw new Error(
+          `Unable to find permission to get permission name for resource type '${
+            roleConditionPolicy.resourceType
+          }' and action ${JSON.stringify(action)}`,
+        );
+      }
+      console.log(
+        `Found permission ${JSON.stringify(perm)} for resource type ${
+          roleConditionPolicy.resourceType
+        } and action ${action}`,
+      );
+      permInfo.push({ name: perm.name, action });
+    }
+
+    return {
+      ...roleConditionPolicy,
+      permissionMapping: permInfo,
+    };
   }
 }

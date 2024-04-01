@@ -1,6 +1,9 @@
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
-import { RoleConditionalPolicyDecision } from '@janus-idp/backstage-plugin-rbac-common';
+import {
+  PermissionAction,
+  RoleConditionalPolicyDecision,
+} from '@janus-idp/backstage-plugin-rbac-common';
 
 import { validateRoleCondition } from './condition-validation';
 
@@ -11,6 +14,7 @@ describe('condition-validation', () => {
         resourceType: 'catalog-entity',
         roleEntityRef: 'role:default/test',
         result: AuthorizeResult.CONDITIONAL,
+        permissionMapping: ['read'],
         conditions: {
           anyOf: [
             {
@@ -38,6 +42,7 @@ describe('condition-validation', () => {
         pluginId: 'catalog',
         roleEntityRef: 'role:default/test',
         result: AuthorizeResult.CONDITIONAL,
+        permissionMapping: ['read'],
         conditions: {
           anyOf: [
             {
@@ -60,11 +65,98 @@ describe('condition-validation', () => {
       );
     });
 
+    it('should fail validation role condition without permissionMapping', () => {
+      const condition: any = {
+        resourceType: 'catalog-entity',
+        pluginId: 'catalog',
+        roleEntityRef: 'role:default/test',
+        result: AuthorizeResult.CONDITIONAL,
+        conditions: {
+          anyOf: [
+            {
+              rule: 'IS_ENTITY_OWNER',
+              resourceType: 'catalog-entity',
+              params: {
+                claims: ['user:default/logarifm', 'group:default/team-a'],
+              },
+            },
+            {
+              rule: 'IS_ENTITY_KIND',
+              resourceType: 'catalog-entity',
+              params: { kinds: ['Group'] },
+            },
+          ],
+        },
+      };
+      expect(() => validateRoleCondition(condition)).toThrow(
+        `'permissionMapping' must be non empty array in the role condition`,
+      );
+    });
+
+    it('should fail validation role condition with empty array permissionMapping', () => {
+      const condition: any = {
+        resourceType: 'catalog-entity',
+        pluginId: 'catalog',
+        roleEntityRef: 'role:default/test',
+        result: AuthorizeResult.CONDITIONAL,
+        permissionMapping: [],
+        conditions: {
+          anyOf: [
+            {
+              rule: 'IS_ENTITY_OWNER',
+              resourceType: 'catalog-entity',
+              params: {
+                claims: ['user:default/logarifm', 'group:default/team-a'],
+              },
+            },
+            {
+              rule: 'IS_ENTITY_KIND',
+              resourceType: 'catalog-entity',
+              params: { kinds: ['Group'] },
+            },
+          ],
+        },
+      };
+      expect(() => validateRoleCondition(condition)).toThrow(
+        `'permissionMapping' must be non empty array in the role condition`,
+      );
+    });
+
+    it('should fail validation role condition with array permissionMapping, but with wrong action value', () => {
+      const condition: any = {
+        resourceType: 'catalog-entity',
+        pluginId: 'catalog',
+        roleEntityRef: 'role:default/test',
+        result: AuthorizeResult.CONDITIONAL,
+        permissionMapping: ['wrong-value'],
+        conditions: {
+          anyOf: [
+            {
+              rule: 'IS_ENTITY_OWNER',
+              resourceType: 'catalog-entity',
+              params: {
+                claims: ['user:default/logarifm', 'group:default/team-a'],
+              },
+            },
+            {
+              rule: 'IS_ENTITY_KIND',
+              resourceType: 'catalog-entity',
+              params: { kinds: ['Group'] },
+            },
+          ],
+        },
+      };
+      expect(() => validateRoleCondition(condition)).toThrow(
+        `'permissionMapping' array contains non action value: 'wrong-value'`,
+      );
+    });
+
     it('should fail validation role condition without role entity reference', () => {
       const condition: any = {
         pluginId: 'catalog',
         resourceType: 'catalog-entity',
         result: AuthorizeResult.CONDITIONAL,
+        permissionMapping: ['read'],
         conditions: {
           anyOf: [
             {
@@ -92,6 +184,7 @@ describe('condition-validation', () => {
         pluginId: 'catalog',
         resourceType: 'catalog-entity',
         roleEntityRef: 'role:default/test',
+        permissionMapping: ['read'],
         conditions: {
           anyOf: [
             {
@@ -120,6 +213,7 @@ describe('condition-validation', () => {
         resourceType: 'catalog-entity',
         roleEntityRef: 'role:default/test',
         result: AuthorizeResult.CONDITIONAL,
+        permissionMapping: ['read'],
       };
       expect(() => validateRoleCondition(condition)).toThrow(
         `'conditions' must be specified in the role condition`,
@@ -134,6 +228,7 @@ describe('condition-validation', () => {
         resourceType: 'catalog-entity',
         roleEntityRef: 'role:default/test',
         result: AuthorizeResult.CONDITIONAL,
+        permissionMapping: ['read'],
         conditions: {
           resourceType: 'catalog-entity',
           params: {
@@ -152,6 +247,7 @@ describe('condition-validation', () => {
         resourceType: 'catalog-entity',
         roleEntityRef: 'role:default/test',
         result: AuthorizeResult.CONDITIONAL,
+        permissionMapping: ['read'],
         conditions: {
           rule: 'IS_ENTITY_OWNER',
           params: {
@@ -170,6 +266,7 @@ describe('condition-validation', () => {
         resourceType: 'catalog-entity',
         roleEntityRef: 'role:default/test',
         result: AuthorizeResult.CONDITIONAL,
+        permissionMapping: ['read'],
         conditions: {
           rule: 'IS_ENTITY_OWNER',
           resourceType: 'catalog-entity',
@@ -194,6 +291,7 @@ describe('condition-validation', () => {
         pluginId: 'catalog',
         resourceType: 'catalog-entity',
         roleEntityRef: 'role:default/test',
+        permissionMapping: ['read'],
         result: AuthorizeResult.CONDITIONAL,
         conditions: {
           not: {
@@ -215,6 +313,7 @@ describe('condition-validation', () => {
         resourceType: 'catalog-entity',
         roleEntityRef: 'role:default/test',
         result: AuthorizeResult.CONDITIONAL,
+        permissionMapping: ['read'],
         conditions: {
           not: {
             rule: 'IS_ENTITY_OWNER',
@@ -235,6 +334,7 @@ describe('condition-validation', () => {
         resourceType: 'catalog-entity',
         roleEntityRef: 'role:default/test',
         result: AuthorizeResult.CONDITIONAL,
+        permissionMapping: ['read'],
         conditions: {
           not: {
             rule: 'IS_ENTITY_OWNER',
@@ -262,6 +362,7 @@ describe('condition-validation', () => {
         resourceType: 'catalog-entity',
         roleEntityRef: 'role:default/test',
         result: AuthorizeResult.CONDITIONAL,
+        permissionMapping: ['read'],
         conditions: {
           anyOf: [],
         },
@@ -277,6 +378,7 @@ describe('condition-validation', () => {
         resourceType: 'catalog-entity',
         roleEntityRef: 'role:default/test',
         result: AuthorizeResult.CONDITIONAL,
+        permissionMapping: ['read'],
         conditions: {
           anyOf: {
             rule: 'IS_ENTITY_OWNER',
@@ -297,6 +399,7 @@ describe('condition-validation', () => {
         resourceType: 'catalog-entity',
         roleEntityRef: 'role:default/test',
         result: AuthorizeResult.CONDITIONAL,
+        permissionMapping: ['read'],
         conditions: {
           anyOf: [
             {
@@ -324,6 +427,7 @@ describe('condition-validation', () => {
         resourceType: 'catalog-entity',
         roleEntityRef: 'role:default/test',
         result: AuthorizeResult.CONDITIONAL,
+        permissionMapping: ['read'],
         conditions: {
           anyOf: [
             {
@@ -351,6 +455,7 @@ describe('condition-validation', () => {
         resourceType: 'catalog-entity',
         roleEntityRef: 'role:default/test',
         result: AuthorizeResult.CONDITIONAL,
+        permissionMapping: ['read'],
         conditions: {
           anyOf: [
             {
@@ -378,6 +483,7 @@ describe('condition-validation', () => {
         resourceType: 'catalog-entity',
         roleEntityRef: 'role:default/test',
         result: AuthorizeResult.CONDITIONAL,
+        permissionMapping: ['read'],
         conditions: {
           anyOf: [
             {
@@ -400,13 +506,13 @@ describe('condition-validation', () => {
     });
 
     it('should validate role-condition.conditions.anyOf without errors', () => {
-      const condition: RoleConditionalPolicyDecision = {
+      const condition: RoleConditionalPolicyDecision<PermissionAction> = {
         id: 1,
         pluginId: 'catalog',
         resourceType: 'catalog-entity',
         roleEntityRef: 'role:default/test',
         result: AuthorizeResult.CONDITIONAL,
-        permissions: [{ name: 'catalog.entity-read', action: 'read' }],
+        permissionMapping: ['read'],
         conditions: {
           anyOf: [
             {
@@ -441,6 +547,7 @@ describe('condition-validation', () => {
         resourceType: 'catalog-entity',
         roleEntityRef: 'role:default/test',
         result: AuthorizeResult.CONDITIONAL,
+        permissionMapping: ['read'],
         conditions: {
           allOf: [],
         },
@@ -456,6 +563,7 @@ describe('condition-validation', () => {
         resourceType: 'catalog-entity',
         roleEntityRef: 'role:default/test',
         result: AuthorizeResult.CONDITIONAL,
+        permissionMapping: ['read'],
         conditions: {
           allOf: {
             rule: 'IS_ENTITY_OWNER',
@@ -476,6 +584,7 @@ describe('condition-validation', () => {
         resourceType: 'catalog-entity',
         roleEntityRef: 'role:default/test',
         result: AuthorizeResult.CONDITIONAL,
+        permissionMapping: ['read'],
         conditions: {
           allOf: [
             {
@@ -503,6 +612,7 @@ describe('condition-validation', () => {
         resourceType: 'catalog-entity',
         roleEntityRef: 'role:default/test',
         result: AuthorizeResult.CONDITIONAL,
+        permissionMapping: ['read'],
         conditions: {
           allOf: [
             {
@@ -530,6 +640,7 @@ describe('condition-validation', () => {
         resourceType: 'catalog-entity',
         roleEntityRef: 'role:default/test',
         result: AuthorizeResult.CONDITIONAL,
+        permissionMapping: ['read'],
         conditions: {
           allOf: [
             {
@@ -557,6 +668,7 @@ describe('condition-validation', () => {
         resourceType: 'catalog-entity',
         roleEntityRef: 'role:default/test',
         result: AuthorizeResult.CONDITIONAL,
+        permissionMapping: ['read'],
         conditions: {
           allOf: [
             {
@@ -579,13 +691,13 @@ describe('condition-validation', () => {
     });
 
     it('should success validation role-condition.conditions.allOf', () => {
-      const condition: RoleConditionalPolicyDecision = {
+      const condition: RoleConditionalPolicyDecision<PermissionAction> = {
         id: 1,
         pluginId: 'catalog',
         resourceType: 'catalog-entity',
         roleEntityRef: 'role:default/test',
         result: AuthorizeResult.CONDITIONAL,
-        permissions: [{ name: 'catalog.entity.read', action: 'read' }],
+        permissionMapping: ['read'],
         conditions: {
           allOf: [
             {

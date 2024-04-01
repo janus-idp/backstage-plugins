@@ -4,10 +4,15 @@ import {
   PermissionRuleParams,
 } from '@backstage/plugin-permission-common';
 
-import { RoleConditionalPolicyDecision } from '@janus-idp/backstage-plugin-rbac-common';
+import {
+  PermissionAction,
+  RoleConditionalPolicyDecision,
+} from '@janus-idp/backstage-plugin-rbac-common';
+
+import { isPermissionAction } from '../helper';
 
 export function validateRoleCondition(
-  condition: RoleConditionalPolicyDecision,
+  condition: RoleConditionalPolicyDecision<PermissionAction>,
 ) {
   if (!condition.roleEntityRef) {
     throw new Error(`'roleEntityRef' must be specified in the role condition`);
@@ -21,6 +26,24 @@ export function validateRoleCondition(
   if (!condition.resourceType) {
     throw new Error(`'resourceType' must be specified in the role condition`);
   }
+
+  if (
+    !condition.permissionMapping ||
+    condition.permissionMapping.length === 0
+  ) {
+    throw new Error(
+      `'permissionMapping' must be non empty array in the role condition`,
+    );
+  }
+  const nonActionValue = condition.permissionMapping.find(
+    action => !isPermissionAction(action),
+  );
+  if (nonActionValue) {
+    throw new Error(
+      `'permissionMapping' array contains non action value: '${nonActionValue}'`,
+    );
+  }
+
   if (!condition.conditions) {
     throw new Error(`'conditions' must be specified in the role condition`);
   }
@@ -30,7 +53,6 @@ export function validateRoleCondition(
       'roleCondition.conditions',
     );
   }
-  console.log('ok');
 }
 
 function validatePermissionCondition(

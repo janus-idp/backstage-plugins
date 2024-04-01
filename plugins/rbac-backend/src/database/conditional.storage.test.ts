@@ -5,7 +5,10 @@ import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import * as Knex from 'knex';
 import { createTracker, MockClient } from 'knex-mock-client';
 
-import { RoleConditionalPolicyDecision } from '@janus-idp/backstage-plugin-rbac-common';
+import {
+  PermissionInfo,
+  RoleConditionalPolicyDecision,
+} from '@janus-idp/backstage-plugin-rbac-common';
 
 import {
   CONDITIONAL_TABLE,
@@ -47,11 +50,11 @@ describe('DataBaseConditionalStorage', () => {
       `"params": {"claims": ["group:default/test-group"]}` +
       `}`,
   };
-  const condition1: RoleConditionalPolicyDecision = {
+  const condition1: RoleConditionalPolicyDecision<PermissionInfo> = {
     id: 1,
     pluginId: 'catalog',
     resourceType: 'catalog-entity',
-    permissions: [{ action: 'read', name: 'catalog.entity.read' }],
+    permissionMapping: [{ action: 'read', name: 'catalog.entity.read' }],
     roleEntityRef: 'role:default/test',
     result: AuthorizeResult.CONDITIONAL,
     conditions: {
@@ -62,11 +65,11 @@ describe('DataBaseConditionalStorage', () => {
       },
     },
   };
-  const condition2: RoleConditionalPolicyDecision = {
+  const condition2: RoleConditionalPolicyDecision<PermissionInfo> = {
     id: 2,
     pluginId: 'test',
     resourceType: 'test-entity',
-    permissions: [{ action: 'delete', name: 'catalog.entity.delete' }],
+    permissionMapping: [{ action: 'delete', name: 'catalog.entity.delete' }],
     roleEntityRef: 'role:default/test-2',
     result: AuthorizeResult.CONDITIONAL,
     conditions: {
@@ -187,6 +190,30 @@ describe('DataBaseConditionalStorage', () => {
           undefined,
           undefined,
           undefined,
+          ['read'],
+        );
+        expect(conditions.length).toEqual(1);
+
+        expect(conditions[0]).toEqual(condition1);
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
+      'should return condition by permission name',
+      async databaseId => {
+        const { knex, db } = await createDatabase(databaseId);
+        await knex<ConditionalPolicyDecisionDAO>(CONDITIONAL_TABLE).insert(
+          conditionDao1,
+        );
+        await knex<ConditionalPolicyDecisionDAO>(CONDITIONAL_TABLE).insert(
+          conditionDao2,
+        );
+
+        const conditions = await db.filterConditions(
+          undefined,
+          undefined,
+          undefined,
+          undefined,
           ['catalog.entity.read'],
         );
         expect(conditions.length).toEqual(1);
@@ -210,6 +237,7 @@ describe('DataBaseConditionalStorage', () => {
           'role:default/test',
           'catalog',
           'catalog-entity',
+          ['read'],
           ['catalog.entity.read'],
         );
         expect(conditions.length).toEqual(1);
@@ -251,7 +279,7 @@ describe('DataBaseConditionalStorage', () => {
           await db.createCondition(condition1);
         }).rejects.toThrow(
           `A condition with resource type 'catalog-entity'` +
-            ` and permission names '["catalog.entity.read"]'` +
+            ` and permission '[{"action":"read","name":"catalog.entity.read"}]'` +
             ` has already been stored for role 'role:default/test'`,
         );
       },
@@ -372,9 +400,9 @@ describe('DataBaseConditionalStorage', () => {
           conditionDao1,
         );
 
-        const updateCondition: RoleConditionalPolicyDecision = {
+        const updateCondition: RoleConditionalPolicyDecision<PermissionInfo> = {
           ...condition1,
-          permissions: [
+          permissionMapping: [
             { name: 'catalog.entity.read', action: 'read' },
             { name: 'catalog.entity.delete', action: 'delete' },
           ],
@@ -401,9 +429,9 @@ describe('DataBaseConditionalStorage', () => {
       async databasesId => {
         const { db } = await createDatabase(databasesId);
 
-        const updateCondition: RoleConditionalPolicyDecision = {
+        const updateCondition: RoleConditionalPolicyDecision<PermissionInfo> = {
           ...condition1,
-          permissions: [
+          permissionMapping: [
             { name: 'catalog.entity.name', action: 'read' },
             { name: 'catalog.entity.delete', action: 'delete' },
           ],
@@ -428,9 +456,9 @@ describe('DataBaseConditionalStorage', () => {
             '[{"name": "catalog.entity.delete", "action": "delete"}]',
         });
 
-        const updateCondition: RoleConditionalPolicyDecision = {
+        const updateCondition: RoleConditionalPolicyDecision<PermissionInfo> = {
           ...condition1,
-          permissions: [
+          permissionMapping: [
             { name: 'catalog.entity.read', action: 'read' },
             { name: 'catalog.entity.delete', action: 'delete' },
           ],
@@ -439,7 +467,7 @@ describe('DataBaseConditionalStorage', () => {
           await db.updateCondition(1, updateCondition);
         }).rejects.toThrow(
           `Found condition with conflicted permission '{"name":"catalog.entity.delete","action":"delete"}'. Role could have multiple ` +
-            `conditions for the same resource type 'catalog-entity', but with different permission name sets.`,
+            `conditions for the same resource type 'catalog-entity', but with different permission name and action sets.`,
         );
       },
     );

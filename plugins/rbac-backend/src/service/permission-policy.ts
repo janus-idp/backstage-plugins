@@ -17,7 +17,10 @@ import {
 import { Knex } from 'knex';
 import { Logger } from 'winston';
 
-import { NonEmptyArray } from '@janus-idp/backstage-plugin-rbac-common';
+import {
+  NonEmptyArray,
+  PermissionAction,
+} from '@janus-idp/backstage-plugin-rbac-common';
 
 import { ConditionalStorage } from '../database/conditional-storage';
 import { PolicyMetadataStorage } from '../database/policy-metadata-storage';
@@ -355,7 +358,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     userEntityRef: string,
     resourceType: string,
     permissionName: string,
-    action: string,
+    action: PermissionAction,
   ): Promise<PolicyDecision | undefined> {
     const roles = await this.enforcer.getRolesForUser(userEntityRef);
 
@@ -368,6 +371,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
         role,
         undefined,
         resourceType,
+        [action],
         [permissionName],
       );
 
