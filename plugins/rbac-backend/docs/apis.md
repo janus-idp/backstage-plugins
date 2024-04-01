@@ -454,11 +454,11 @@ Returns:
 
 ## Conditions
 
-The Backstage permission framework provides conditions, and the RBAC backend plugin supports this feature. Conditions work like content filters for Backstage resources (provided by plugins). The RBAC backend plugin checks if a user has access to a particular resource. If the user has access to the resource, the RBAC backend API delegates the condition for this resource to the corresponding plugin by plugin ID.
+The Backstage permission framework provides conditions, and the RBAC backend plugin supports this feature. Conditions work like content filters for Backstage resources (provided by plugins). The RBAC backend API stores conditions assigned to the role in the database. When a user requests access to the frontend resources, the RBAC backend API searches for corresponding conditions and delegates the condition for this resource to the corresponding plugin by its plugin ID. If a user was assigned to multiple roles, and each of these roles contains its own condition, the RBAC backend merges conditions using the anyOf criteria.
 
-The corresponding plugin analyzes conditional parameters and makes a decision about which part of the content the user should see. Consequently, the user can view not all resource content but only some allowed parts. The RBAC backend plugin supports conditions on a generic level - conditions are bound to all roles but none to specific roles.
+The corresponding plugin analyzes conditional parameters and makes a decision about which part of the content the user should see. Consequently, the user can view not all resource content but only some allowed parts. The RBAC backend plugin supports conditions bounded to the RBAC role.
 
-A Backstage condition consists of a parameter or an array of parameters joined by criteria. The list of supported conditional criteria includes:
+A Backstage condition can be a simple condition with a rule and parameters. But also a Backstage condition could consists of a parameter or an array of parameters joined by criteria. The list of supported conditional criteria includes:
 
 - allOf
 - anyOf
@@ -468,12 +468,14 @@ The plugin defines the supported condition parameters. API users can retrieve th
 
 The structure of the condition JSON object is as follows:
 
-| Json field   | Description                                                           | Type   |
-| ------------ | --------------------------------------------------------------------- | ------ |
-| result       | Always has the value "CONDITIONAL"                                    | String |
-| pluginId     | Corresponding plugin ID (e.g., "catalog")                             | String |
-| resourceType | Resource type provided by the plugin (e.g., "catalog-entity")         | String |
-| conditions   | Condition JSON with parameters or array parameters joined by criteria | JSON   |
+| Json field        | Description                                                           | Type         |
+| ----------------- | --------------------------------------------------------------------- | ------------ |
+| result            | Always has the value "CONDITIONAL"                                    | String       |
+| roleEntityRef     | String entity reference to the RBAC role ('role:default/dev')         | String       |
+| pluginId          | Corresponding plugin ID (e.g., "catalog")                             | String       |
+| permissionMapping | Array permission actions (['read', 'update', 'delete'])               | String array |
+| resourceType      | Resource type provided by the plugin (e.g., "catalog-entity")         | String       |
+| conditions        | Condition JSON with parameters or array parameters joined by criteria | JSON         |
 
 ### GET </plugins/condition-rules>
 
@@ -633,7 +635,7 @@ For example, consider a condition without criteria: displaying catalogs only if 
 - criteria: in this example, criteria are not used since we need to use only one conditional parameter
 - params: from the schema, it is evident that it should be an object named "claims" with a string array. This string array constitutes a list of user or group string entity references.
 
-Based on the above schema:
+Based on the above schema condition is:
 
 ```json
 {
@@ -645,13 +647,15 @@ Based on the above schema:
 }
 ```
 
-To utilize this condition to the RBAC REST api you need to wrap it with more info:
+To utilize this condition to the RBAC REST api you need to wrap it with more info
 
 ```json
 {
   "result": "CONDITIONAL",
+  "roleEntityRef": "role:default/test",
   "pluginId": "catalog",
   "resourceType": "catalog-entity",
+  "permissionMapping": ["read"],
   "conditions": {
     "rule": "IS_ENTITY_OWNER",
     "resourceType": "catalog-entity",
@@ -699,8 +703,10 @@ To utilize this condition to the RBAC REST api you need to wrap it with more inf
 ```json
 {
   "result": "CONDITIONAL",
+  "roleEntityRef": "role:default/test",
   "pluginId": "catalog",
   "resourceType": "catalog-entity",
+  "permissionMapping": ["read"],
   "conditions": {
     "anyOf": [
       {
@@ -737,8 +743,10 @@ body:
 ```json
 {
   "result": "CONDITIONAL",
+  "roleEntityRef": "role:default/test",
   "pluginId": "catalog",
   "resourceType": "catalog-entity",
+  "permissionMapping": ["read"],
   "conditions": {
     "rule": "IS_ENTITY_OWNER",
     "resourceType": "catalog-entity",
@@ -772,8 +780,10 @@ body:
 ```json
 {
   "result": "CONDITIONAL",
+  "roleEntityRef": "role:default/test",
   "pluginId": "catalog",
   "resourceType": "catalog-entity",
+  "permissionMapping": ["read"],
   "conditions": {
     "anyOf": [
       {
@@ -807,9 +817,12 @@ Returns condition by id:
 
 ```json
 {
+  "id": 1,
   "result": "CONDITIONAL",
+  "roleEntityRef": "role:default/test",
   "pluginId": "catalog",
   "resourceType": "catalog-entity",
+  "permissionMapping": ["read"],
   "conditions": {
     "anyOf": [
       {
@@ -844,9 +857,12 @@ Returns lists all conditions:
 ```json
 [
   {
+    "id": 1,
     "result": "CONDITIONAL",
+    "roleEntityRef": "role:default/test",
     "pluginId": "catalog",
     "resourceType": "catalog-entity",
+    "permissionMapping": ["read"],
     "conditions": {
       "anyOf": [
         {

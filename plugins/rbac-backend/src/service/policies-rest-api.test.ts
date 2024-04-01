@@ -191,6 +191,22 @@ const conditions: RoleConditionalPolicyDecision<PermissionInfo>[] = [
   },
 ];
 
+const expectedConditions: RoleConditionalPolicyDecision<PermissionAction>[] = [
+  {
+    id: 1,
+    pluginId: 'catalog',
+    roleEntityRef: 'role:default/test',
+    resourceType: 'catalog-entity',
+    permissionMapping: ['read'],
+    result: AuthorizeResult.CONDITIONAL,
+    conditions: {
+      rule: 'IS_ENTITY_OWNER',
+      resourceType: 'catalog-entity',
+      params: { claims: ['group:default/team-a'] },
+    },
+  },
+];
+
 describe('REST policies api', () => {
   let app: express.Express;
 
@@ -2543,7 +2559,7 @@ describe('REST policies api', () => {
     it('should be returned list all condition decisions', async () => {
       const result = await request(app).get('/roles/conditions').send();
       expect(result.statusCode).toBe(200);
-      expect(result.body).toEqual(conditions);
+      expect(result.body).toEqual(expectedConditions);
       expect(mockIdentityClient.getIdentity).toHaveBeenCalledTimes(0);
     });
 
@@ -2566,7 +2582,7 @@ describe('REST policies api', () => {
         .get('/roles/conditions?pluginId=catalog')
         .send();
       expect(result.statusCode).toBe(200);
-      expect(result.body).toEqual(conditions);
+      expect(result.body).toEqual(expectedConditions);
     });
 
     it('should be returned empty condition decision list by pluginId', async () => {
@@ -2610,7 +2626,7 @@ describe('REST policies api', () => {
         .get('/roles/conditions?resourceType=catalog-entity')
         .send();
       expect(result.statusCode).toBe(200);
-      expect(result.body).toEqual(conditions);
+      expect(result.body).toEqual(expectedConditions);
     });
   });
 
@@ -2700,7 +2716,7 @@ describe('REST policies api', () => {
 
       const result = await request(app).get('/roles/conditions/1').send();
       expect(result.statusCode).toBe(200);
-      expect(result.body).toEqual(conditions[0]);
+      expect(result.body).toEqual(expectedConditions[0]);
       expect(mockIdentityClient.getIdentity).toHaveBeenCalledTimes(0);
     });
 

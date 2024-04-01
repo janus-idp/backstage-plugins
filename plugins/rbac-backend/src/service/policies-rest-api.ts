@@ -605,7 +605,14 @@ export class PolicesServer {
         this.getActionQueries(request.query.actions),
       );
 
-      response.json(conditions);
+      const result: RoleConditionalPolicyDecision<PermissionAction>[] =
+        conditions.map(condition => {
+          return {
+            ...condition,
+            permissionMapping: condition.permissionMapping.map(pm => pm.action),
+          };
+        });
+      response.json(result);
     });
 
     router.post('/roles/conditions', async (request, response) => {
@@ -652,7 +659,12 @@ export class PolicesServer {
         throw new NotFoundError();
       }
 
-      response.json(condition);
+      const result: RoleConditionalPolicyDecision<PermissionAction> = {
+        ...condition,
+        permissionMapping: condition.permissionMapping.map(pm => pm.action),
+      };
+
+      response.json(result);
     });
 
     router.delete('/roles/conditions/:id', async (request, response) => {
