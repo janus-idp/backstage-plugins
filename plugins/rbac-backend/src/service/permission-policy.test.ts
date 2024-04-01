@@ -1801,7 +1801,6 @@ describe('Policy checks for conditional policies', () => {
       tokenManagerMock,
     );
 
-    const knex = Knex.knex({ client: MockClient });
     const enfDelegate = new EnforcerDelegate(
       enf,
       policyMetadataStorageMock,
