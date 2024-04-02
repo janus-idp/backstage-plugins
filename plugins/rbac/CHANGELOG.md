@@ -1,3 +1,16 @@
+## @janus-idp/backstage-plugin-rbac [1.15.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.15.6...@janus-idp/backstage-plugin-rbac@1.15.7) (2024-04-02)
+
+
+### Bug Fixes
+
+* **rbac:** align styles with UXD ([#1416](https://github.com/janus-idp/backstage-plugins/issues/1416)) ([1df3592](https://github.com/janus-idp/backstage-plugins/commit/1df3592e298f66db1eda5b21c80aeda99fb2d7ce))
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.7
+
 ## @janus-idp/backstage-plugin-rbac [1.15.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.15.5...@janus-idp/backstage-plugin-rbac@1.15.6) (2024-03-29)
 
 
