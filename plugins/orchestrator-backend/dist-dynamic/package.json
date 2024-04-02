@@ -1,6 +1,6 @@
 {
   "name": "@janus-idp/backstage-plugin-orchestrator-backend-dynamic",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "license": "Apache-2.0",
   "main": "dist/index.cjs.js",
   "types": "dist/index.d.ts",
@@ -37,18 +37,7 @@
     "dist",
     "alpha"
   ],
-  "scripts": {
-    "start": "backstage-cli package start",
-    "build": "backstage-cli package build",
-    "tsc": "tsc",
-    "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test --passWithNoTests --coverage",
-    "clean": "backstage-cli package clean",
-    "prepack": "backstage-cli package prepack",
-    "postpack": "backstage-cli package postpack",
-    "postversion": "yarn run export-dynamic",
-    "export-dynamic": "janus-cli package export-dynamic-plugin"
-  },
+  "scripts": {},
   "dependencies": {
     "@urql/core": "^4.1.4",
     "cloudevents": "^8.0.0",
