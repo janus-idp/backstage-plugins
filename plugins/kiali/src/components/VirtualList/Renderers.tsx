@@ -97,6 +97,7 @@ export const item: Renderer<TResource> = (
   const key = `link_definition_${config.name}_${resource.namespace}_${resource.name}`;
   let serviceBadge = badge;
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const linkColor = useLinkStyle();
 
   if ('serviceRegistry' in resource && resource.serviceRegistry) {
