@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import { useTheme } from '@material-ui/core/styles';
 import {
   Chart,
   ChartArea,
@@ -32,10 +33,6 @@ type Props = ChartProps & {
   thresholds?: VCLines<RichDataPoint>;
 };
 
-const axisStyle = {
-  tickLabels: { fill: PFColors.Color100 },
-};
-
 export const INTERPOLATION_STRATEGY = 'monotoneX';
 
 export const SparklineChart = (props: Props) => {
@@ -45,6 +42,10 @@ export const SparklineChart = (props: Props) => {
   );
   const containerRef: React.RefObject<HTMLDivElement> | undefined =
     props.width === undefined ? React.createRef<HTMLDivElement>() : undefined;
+  const theme = useTheme();
+  const axisStyle = {
+    tickLabels: { fill: theme.palette.type === 'dark' ? '#dcdcdc' : '#000' },
+  };
 
   const handleResize = () => {
     if (containerRef?.current) {

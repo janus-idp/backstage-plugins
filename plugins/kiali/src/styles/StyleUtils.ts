@@ -1,3 +1,4 @@
+import { Theme } from '@material-ui/core';
 import { style } from 'typestyle';
 import { NestedCSSProperties } from 'typestyle/lib/types';
 
@@ -23,3 +24,15 @@ export const linkStyle = kialiStyle({
   color: '#06c',
   cursor: 'pointer',
 });
+
+export const getLinkStyle = (theme: Theme) =>
+  kialiStyle({
+    color: theme.palette.type === 'dark' ? '#9CC9FF' : '#06c',
+    cursor: 'pointer',
+  });
+
+export const getChipStyle = (theme: Theme) => {
+  return {
+    backgroundColor: theme.palette.type === 'dark' ? '#3d5061' : '#e7f1fa',
+  };
+};

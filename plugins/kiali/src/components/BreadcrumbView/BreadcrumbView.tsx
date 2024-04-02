@@ -2,10 +2,11 @@ import * as React from 'react';
 import { Link, Location, useLocation } from 'react-router-dom';
 
 import { Breadcrumbs } from '@material-ui/core';
+import { useTheme } from '@material-ui/core/styles';
 
 import { HistoryManager } from '../../app/History';
 import { isMultiCluster, Paths } from '../../config';
-import { kialiStyle, linkStyle } from '../../styles/StyleUtils';
+import { getLinkStyle, kialiStyle } from '../../styles/StyleUtils';
 import { dicIstioType } from '../../types/IstioConfigList';
 import { FilterSelected } from '../Filters/StatefulFilters';
 
@@ -51,6 +52,7 @@ export const BreadcrumbView = () => {
   };
 
   const path = getPath(useLocation());
+  const linkColor = getLinkStyle(useTheme());
 
   const istioTypeF = (rawType: string) => {
     const istioType = Object.keys(dicIstioType).find(
@@ -97,25 +99,26 @@ export const BreadcrumbView = () => {
     // @ts-ignore
     dicIstioType[path?.istioType || '']
   }`;
+
   return (
     <div className={breadcrumStyle}>
       <Breadcrumbs>
         <Link
           to={`/${pluginRoot}/${pathItem}`}
           onClick={cleanFilters}
-          className={linkStyle}
+          className={linkColor}
         >
           {isIstio ? IstioName : capitalize(pathItem)}
         </Link>
         <Link
           to={`/${pluginRoot}/${pathItem}?namespaces=${namespace}`}
           onClick={cleanFilters}
-          className={linkStyle}
+          className={linkColor}
         >
           Namespace: {namespace}
         </Link>
         {isIstio && (
-          <Link to={linkTo} onClick={cleanFilters} className={linkStyle}>
+          <Link to={linkTo} onClick={cleanFilters} className={linkColor}>
             {istioType ? istioTypeF(istioType) : istioType}
           </Link>
         )}
