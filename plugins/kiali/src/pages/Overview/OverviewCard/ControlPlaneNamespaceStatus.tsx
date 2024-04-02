@@ -26,6 +26,7 @@ export const ControlPlaneNamespaceStatus = (props: Props) => {
     maxProxyPushTime =
       props.namespace.controlPlaneMetrics?.istiod_proxy_time[0].datapoints.reduce(
         (a, b) => (a[1] < b[1] ? a : b),
+        [Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER],
       )[1] * 1000;
   }
   let showProxyPushTime = false;
