@@ -300,7 +300,7 @@ export const WorkloadInfo = (workloadProps: WorkloadInfoProps) => {
     <>
       {workloadProps.workload && (
         <Grid container spacing={1} style={{ paddingTop: '20px' }}>
-          <Grid key={`Card_${workloadProps.workload?.name}`} item xs={4}>
+          <Grid key={`Card_${workloadProps.workload?.name}`} xs={4}>
             <WorkloadDescription
               workload={workloadProps.workload}
               health={workloadProps.health}

@@ -1,13 +1,6 @@
 import * as React from 'react';
 
-import {
-  Card,
-  CardBody,
-  CardHeader,
-  Title,
-  TitleSizes,
-  TooltipPosition,
-} from '@patternfly/react-core';
+import { Card, CardContent, CardHeader, Typography } from '@material-ui/core';
 
 import { DetailDescription } from '../../components/DetailDescription/DetailDescription';
 import { HealthIndicator } from '../../components/Health/HealthIndicator';
@@ -44,9 +37,9 @@ export const AppDescription: React.FC<AppDescriptionProps> = (
   return props.app ? (
     <Card id="AppDescriptionCard" data-test="app-description-card">
       <CardHeader>
-        <Title headingLevel="h5" size={TitleSizes.lg}>
+        <Typography variant="h6" style={{ margin: '10px' }}>
           <div key="service-icon" className={iconStyle}>
-            <PFBadge badge={PFBadges.App} position={TooltipPosition.top} />
+            <PFBadge badge={PFBadges.App} />
           </div>
 
           {props.app.name}
@@ -54,19 +47,15 @@ export const AppDescription: React.FC<AppDescriptionProps> = (
           <span className={healthIconStyle}>
             <HealthIndicator id={props.app.name} health={props.health} />
           </span>
-        </Title>
+        </Typography>
 
         {props.app.cluster && isMultiCluster && (
           <div key="cluster-icon" style={{ paddingBottom: '0.5rem' }}>
-            <PFBadge
-              badge={PFBadges.Cluster}
-              position={TooltipPosition.right}
-            />{' '}
-            {props.app.cluster}
+            <PFBadge badge={PFBadges.Cluster} /> {props.app.cluster}
           </div>
         )}
       </CardHeader>
-      <CardBody>
+      <CardContent>
         <Labels
           labels={appLabels}
           tooltipMessage={`Workloads and Services grouped by ${serverConfig.istioLabels.appLabelName} label`}
@@ -79,7 +68,7 @@ export const AppDescription: React.FC<AppDescriptionProps> = (
           health={props.health}
           cluster={props.app?.cluster}
         />
-      </CardBody>
+      </CardContent>
     </Card>
   ) : (
     <>Loading</>
