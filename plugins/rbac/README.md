@@ -25,6 +25,7 @@ Follow the RBAC backend plugin [README](https://github.com/janus-idp/backstage-p
 
 ```CSV
 p, role:default/team_a, catalog-entity, read, allow
+p, role:default/team_a, policy-entity, read, allow
 p, role:default/team_a, policy-entity, create, allow
 g, user:default/<login-id/user-name>, role:default/team_a
 ```
