@@ -22,7 +22,12 @@ export const PoliciesCheckboxGroup = ({
   return (
     <FormControl
       required
-      style={{ justifyContent: 'flex-start', gap: '12px', width: '400px' }}
+      style={{
+        justifyContent: 'flex-start',
+        gap: '12px',
+        width: '402px',
+        flexGrow: '1',
+      }}
     >
       <FormLabel
         style={{
@@ -65,6 +70,7 @@ export const PoliciesCheckboxGroup = ({
                     checked={p.effect === 'allow'}
                     name={`${rowName}.policies[${index}].policy-${p.policy}`}
                     onChange={e => onChangePolicy(e.target.checked, index)}
+                    color="primary"
                   />
                 }
               />
