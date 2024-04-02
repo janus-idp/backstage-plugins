@@ -1,3 +1,11 @@
+## @janus-idp/plugin-notifications-backend [1.4.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications-backend@1.4.1...@janus-idp/plugin-notifications-backend@1.4.2) (2024-04-02)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.7
+
 ## @janus-idp/plugin-notifications-backend [1.4.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications-backend@1.4.0...@janus-idp/plugin-notifications-backend@1.4.1) (2024-03-29)
 
 
