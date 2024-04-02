@@ -35,7 +35,7 @@ export async function removeTheDifference(
 
   for (const missingRole of missing) {
     const role = [missingRole, roleName];
-    await enf.removeGroupingPolicy(role, source, true);
+    await enf.removeGroupingPolicy(role, source, false);
   }
 }
 

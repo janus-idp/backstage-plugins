@@ -89,7 +89,7 @@ export const MessageCenter = (props: { color?: string }) => {
   */
   return (
     <>
-      <Button onClick={() => toggleDrawer(true)}>
+      <Button onClick={() => toggleDrawer(true)} style={{ marginTop: '-15px' }}>
         <Badge
           overlap="circular"
           badgeContent={

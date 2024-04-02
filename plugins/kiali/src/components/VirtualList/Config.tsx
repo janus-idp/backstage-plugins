@@ -1,6 +1,8 @@
 import * as React from 'react';
 
 import { StatefulFilters } from '../../components/Filters/StatefulFilters';
+import { serverConfig } from '../../config';
+import { isGateway, isWaypoint } from '../../helpers/LabelFilterHelper';
 import { AppListItem } from '../../types/AppList';
 import { Health } from '../../types/Health';
 import { IstioConfigItem } from '../../types/IstioConfigList';
@@ -19,6 +21,7 @@ export type Renderer<R extends RenderResource> = (
   badge: PFBadgeType,
   health?: Health,
   statefulFilter?: React.RefObject<StatefulFilters>,
+  view?: string,
 ) => JSX.Element | undefined;
 
 export type ResourceType<R extends RenderResource> = {
@@ -390,6 +393,22 @@ const conf: Config = {
   overview: namespaces,
   services: services,
   workloads: workloads,
+};
+
+export const isIstioNamespace = (ns: string): boolean => {
+  if (ns === serverConfig.istioNamespace) {
+    return true;
+  }
+  return false;
+};
+
+export const hasMissingSidecar = (r: SortResource): boolean => {
+  return (
+    !isIstioNamespace(r.namespace) &&
+    !r.istioSidecar &&
+    !isGateway(r.labels) &&
+    !isWaypoint(r.labels)
+  );
 };
 
 export const config: Config = conf;

@@ -1,5 +1,6 @@
 import { AppHealth } from './Health';
 import { ObjectReference } from './IstioObjects';
+import { Namespace } from './Namespace';
 
 export interface AppOverview {
   cluster?: string;
@@ -13,4 +14,15 @@ export interface AppOverview {
 
 export interface AppListItem extends AppOverview {
   namespace: string;
+}
+
+export interface AppList {
+  applications: AppOverview[];
+  namespace: Namespace;
+}
+
+export interface AppListQuery {
+  health: 'true' | 'false';
+  istioResources: 'true' | 'false';
+  rateInterval: string;
 }

@@ -1,3 +1,98 @@
+## @janus-idp/backstage-plugin-orchestrator-backend [1.6.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.6.0...@janus-idp/backstage-plugin-orchestrator-backend@1.6.1) (2024-03-29)
+
+
+### Bug Fixes
+
+* **orchestrator:** fixes v2/instances endpoint ([#1414](https://github.com/janus-idp/backstage-plugins/issues/1414)) ([88b49df](https://github.com/janus-idp/backstage-plugins/commit/88b49df35cf10e231ba69c239e873cb10e7cc25b))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.6.1
+* **@janus-idp/cli:** upgraded to 1.7.6
+
+## @janus-idp/backstage-plugin-orchestrator-backend [1.6.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.5.3...@janus-idp/backstage-plugin-orchestrator-backend@1.6.0) (2024-03-14)
+
+
+### Features
+
+* **orchestrator:** verify availability and cache workflow definition IDs ([#1309](https://github.com/janus-idp/backstage-plugins/issues/1309)) ([4d322f1](https://github.com/janus-idp/backstage-plugins/commit/4d322f1fc5b6f8b1afedf40cfe1b24b2edae2ac1))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.6.0
+
+## @janus-idp/backstage-plugin-orchestrator-backend [1.5.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.5.2...@janus-idp/backstage-plugin-orchestrator-backend@1.5.3) (2024-03-12)
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.5.1
+
+## @janus-idp/backstage-plugin-orchestrator-backend [1.5.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.5.1...@janus-idp/backstage-plugin-orchestrator-backend@1.5.2) (2024-03-11)
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.5.0
+
+## @janus-idp/backstage-plugin-orchestrator-backend [1.5.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.5.0...@janus-idp/backstage-plugin-orchestrator-backend@1.5.1) (2024-03-11)
+
+
+### Other changes
+
+* **orchestrator:** add unit tests for v2 endpoints ([#1300](https://github.com/janus-idp/backstage-plugins/issues/1300)) ([9a13138](https://github.com/janus-idp/backstage-plugins/commit/9a13138c61d3cc7331f739da80f020bb68dd61e5))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.4.1
+
+## @janus-idp/backstage-plugin-orchestrator-backend [1.5.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.4.12...@janus-idp/backstage-plugin-orchestrator-backend@1.5.0) (2024-03-07)
+
+
+### Features
+
+* **orchestrator:** support pagination for /instances and /overview ([#1313](https://github.com/janus-idp/backstage-plugins/issues/1313)) ([79d5988](https://github.com/janus-idp/backstage-plugins/commit/79d598816f16c8346b6868bff4cc30d695cad518))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.4.0
+
+## @janus-idp/backstage-plugin-orchestrator-backend [1.4.12](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.4.11...@janus-idp/backstage-plugin-orchestrator-backend@1.4.12) (2024-03-04)
+
+
+### Bug Fixes
+
+* **orchestrator:** increase the number of attempts to fetch the instance after execution ([#1301](https://github.com/janus-idp/backstage-plugins/issues/1301)) ([77dcce3](https://github.com/janus-idp/backstage-plugins/commit/77dcce3adceaf12b583bda5e74be69a5cc273ba1))
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.5
+
+## @janus-idp/backstage-plugin-orchestrator-backend [1.4.11](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.4.10...@janus-idp/backstage-plugin-orchestrator-backend@1.4.11) (2024-03-03)
+
+
+### Bug Fixes
+
+* **orchestrator:** stop fetching workflow URI ([#1297](https://github.com/janus-idp/backstage-plugins/issues/1297)) ([2456a28](https://github.com/janus-idp/backstage-plugins/commit/2456a287dbff955a0916b9600e89a39511cd537a))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.3.7
+
 ## @janus-idp/backstage-plugin-orchestrator-backend [1.4.10](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.4.9...@janus-idp/backstage-plugin-orchestrator-backend@1.4.10) (2024-02-29)
 
 

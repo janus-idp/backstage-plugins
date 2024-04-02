@@ -1,7 +1,5 @@
 import React from 'react';
 
-import { LinkProps } from '@backstage/core-components';
-
 import { render, screen } from '@testing-library/react';
 import { useFormik } from 'formik';
 
@@ -9,11 +7,14 @@ import { RoleForm } from './RoleForm';
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
-  Link: (props: LinkProps) => (
-    <a href={props.to} data-test={props.to}>
+  Link: React.forwardRef<
+    HTMLAnchorElement,
+    { to: string; children?: React.ReactNode }
+  >((props, ref) => (
+    <a href={props.to} ref={ref} data-test={props.to}>
       {props.children}
     </a>
-  ),
+  )),
   useNavigate: jest.fn(),
 }));
 
@@ -200,6 +201,24 @@ describe('Edit RoleForm', () => {
         step={1}
         membersData={{
           members: [
+            {
+              metadata: {
+                namespace: 'default',
+                annotations: {},
+                name: '',
+                uid: '',
+                etag: '',
+              },
+              apiVersion: 'backstage.io/v1alpha1',
+              kind: 'User',
+              spec: {
+                profile: {
+                  displayName: '',
+                },
+                memberOf: [],
+              },
+              relations: [],
+            },
             {
               metadata: {
                 namespace: 'default',

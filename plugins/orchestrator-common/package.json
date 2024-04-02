@@ -1,6 +1,6 @@
 {
   "name": "@janus-idp/backstage-plugin-orchestrator-common",
-  "version": "1.3.6",
+  "version": "1.6.1",
   "license": "Apache-2.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -28,22 +28,22 @@
   ],
   "configSchema": "config.d.ts",
   "scripts": {
-    "build": "backstage-cli package build",
+    "build": "yarn openapi:check && backstage-cli package build",
     "tsc": "tsc",
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test --passWithNoTests --coverage",
     "clean": "backstage-cli package clean",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
-    "openapi": "./scripts/openapi.sh",
+    "openapi:generate": "./scripts/openapi.sh generate",
+    "openapi:check": "./scripts/openapi.sh check",
     "openapi:prettier:fix": "prettier --ignore-unknown --write ./src/auto-generated"
   },
   "dependencies": {
     "@backstage/types": "^1.1.1",
     "@severlessworkflow/sdk-typescript": "^3.0.3",
     "js-yaml": "^4.1.0",
-    "json-schema": "^0.4.0",
-    "openapi-types": "^12.1.3"
+    "json-schema": "^0.4.0"
   },
   "devDependencies": {
     "@backstage/cli": "0.25.2"

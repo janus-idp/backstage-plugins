@@ -1,3 +1,135 @@
+## @janus-idp/backstage-plugin-orchestrator [1.8.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.8.3...@janus-idp/backstage-plugin-orchestrator@1.8.4) (2024-03-29)
+
+
+### Bug Fixes
+
+* **orchestrator:** fixes v2/instances endpoint ([#1414](https://github.com/janus-idp/backstage-plugins/issues/1414)) ([88b49df](https://github.com/janus-idp/backstage-plugins/commit/88b49df35cf10e231ba69c239e873cb10e7cc25b))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.6.1
+* **@janus-idp/cli:** upgraded to 1.7.6
+
+## @janus-idp/backstage-plugin-orchestrator [1.8.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.8.2...@janus-idp/backstage-plugin-orchestrator@1.8.3) (2024-03-26)
+
+
+### Bug Fixes
+
+* **orchestrator:** remove error on Reset workflow ([#1393](https://github.com/janus-idp/backstage-plugins/issues/1393)) ([6ce210d](https://github.com/janus-idp/backstage-plugins/commit/6ce210dfb3ac82a887985057ea234cf8b6065068))
+
+## @janus-idp/backstage-plugin-orchestrator [1.8.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.8.1...@janus-idp/backstage-plugin-orchestrator@1.8.2) (2024-03-17)
+
+
+### Bug Fixes
+
+* **orchestrator:** fix dropdown look ([#1344](https://github.com/janus-idp/backstage-plugins/issues/1344)) ([9284299](https://github.com/janus-idp/backstage-plugins/commit/9284299710f4d498deb098a94a2be57e6d7516a6))
+
+## @janus-idp/backstage-plugin-orchestrator [1.8.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.8.0...@janus-idp/backstage-plugin-orchestrator@1.8.1) (2024-03-14)
+
+
+### Bug Fixes
+
+* **orchestrator:** update the installation instructions ([#1336](https://github.com/janus-idp/backstage-plugins/issues/1336)) ([d77e388](https://github.com/janus-idp/backstage-plugins/commit/d77e3887ee838a0d4ce075ab976203f13f2037c8))
+
+## @janus-idp/backstage-plugin-orchestrator [1.8.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.7.8...@janus-idp/backstage-plugin-orchestrator@1.8.0) (2024-03-14)
+
+
+### Features
+
+* **orchestrator:** verify availability and cache workflow definition IDs ([#1309](https://github.com/janus-idp/backstage-plugins/issues/1309)) ([4d322f1](https://github.com/janus-idp/backstage-plugins/commit/4d322f1fc5b6f8b1afedf40cfe1b24b2edae2ac1))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.6.0
+
+## @janus-idp/backstage-plugin-orchestrator [1.7.8](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.7.7...@janus-idp/backstage-plugin-orchestrator@1.7.8) (2024-03-12)
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.5.1
+
+## @janus-idp/backstage-plugin-orchestrator [1.7.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.7.6...@janus-idp/backstage-plugin-orchestrator@1.7.7) (2024-03-11)
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.5.0
+
+## @janus-idp/backstage-plugin-orchestrator [1.7.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.7.5...@janus-idp/backstage-plugin-orchestrator@1.7.6) (2024-03-11)
+
+
+### Other changes
+
+* **orchestrator:** add unit tests for v2 endpoints ([#1300](https://github.com/janus-idp/backstage-plugins/issues/1300)) ([9a13138](https://github.com/janus-idp/backstage-plugins/commit/9a13138c61d3cc7331f739da80f020bb68dd61e5))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.4.1
+
+## @janus-idp/backstage-plugin-orchestrator [1.7.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.7.4...@janus-idp/backstage-plugin-orchestrator@1.7.5) (2024-03-07)
+
+
+### Bug Fixes
+
+* **orchestraotr:** resolved grey background appears in actions column in workflows table ([#1317](https://github.com/janus-idp/backstage-plugins/issues/1317)) ([cd7b4e7](https://github.com/janus-idp/backstage-plugins/commit/cd7b4e7267c804c75b4bccf927b48c32f7943ed6))
+
+## @janus-idp/backstage-plugin-orchestrator [1.7.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.7.3...@janus-idp/backstage-plugin-orchestrator@1.7.4) (2024-03-07)
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.4.0
+
+## @janus-idp/backstage-plugin-orchestrator [1.7.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.7.2...@janus-idp/backstage-plugin-orchestrator@1.7.3) (2024-03-07)
+
+
+### Bug Fixes
+
+* **orchestrator:** fix abort button and rerun button disable issue ([#1311](https://github.com/janus-idp/backstage-plugins/issues/1311)) ([0c98279](https://github.com/janus-idp/backstage-plugins/commit/0c982798872f2cb1a3b9fef7ab15850474cb03a7))
+
+## @janus-idp/backstage-plugin-orchestrator [1.7.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.7.1...@janus-idp/backstage-plugin-orchestrator@1.7.2) (2024-03-04)
+
+
+### Bug Fixes
+
+* **orchestrator:** walk around the state field is empty issue when fetch instance ([#1299](https://github.com/janus-idp/backstage-plugins/issues/1299)) ([e5c33c0](https://github.com/janus-idp/backstage-plugins/commit/e5c33c06fc66a6ff393365282f825c5fdc4713c9))
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.5
+
+## @janus-idp/backstage-plugin-orchestrator [1.7.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.7.0...@janus-idp/backstage-plugin-orchestrator@1.7.1) (2024-03-03)
+
+
+### Bug Fixes
+
+* **orchestrator:** stop fetching workflow URI ([#1297](https://github.com/janus-idp/backstage-plugins/issues/1297)) ([2456a28](https://github.com/janus-idp/backstage-plugins/commit/2456a287dbff955a0916b9600e89a39511cd537a))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.3.7
+
+## @janus-idp/backstage-plugin-orchestrator [1.7.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.6.7...@janus-idp/backstage-plugin-orchestrator@1.7.0) (2024-03-03)
+
+
+### Features
+
+* **orchestrator:** display a description modal before triggering infra-wfs that resulted from an assessment wf ([#1284](https://github.com/janus-idp/backstage-plugins/issues/1284)) ([ec293c9](https://github.com/janus-idp/backstage-plugins/commit/ec293c9e79efd77873e17d07b1511ad9fdda8842))
+
 ## @janus-idp/backstage-plugin-orchestrator [1.6.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.6.6...@janus-idp/backstage-plugin-orchestrator@1.6.7) (2024-02-29)
 
 

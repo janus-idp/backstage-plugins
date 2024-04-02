@@ -1,3 +1,51 @@
+## @janus-idp/backstage-plugin-rbac-backend [2.5.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.4.1...@janus-idp/backstage-plugin-rbac-backend@2.5.0) (2024-03-29)
+
+
+### Features
+
+* **rbac:** load filtered policies before enforcing ([#1387](https://github.com/janus-idp/backstage-plugins/issues/1387)) ([66980ba](https://github.com/janus-idp/backstage-plugins/commit/66980baebd4d8b5b398646bcab1750c0edec715e))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-rbac-common:** upgraded to 1.3.1
+* **@janus-idp/backstage-plugin-rbac-node:** upgraded to 1.0.4
+
+## @janus-idp/backstage-plugin-rbac-backend [2.4.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.4.0...@janus-idp/backstage-plugin-rbac-backend@2.4.1) (2024-03-19)
+
+
+### Bug Fixes
+
+* **rbac:** pass token to readUrl for well-known permission endpoint ([#1342](https://github.com/janus-idp/backstage-plugins/issues/1342)) ([36b7c77](https://github.com/janus-idp/backstage-plugins/commit/36b7c7739753bd1cc55d10aa68d41ed7e15162e6))
+
+## @janus-idp/backstage-plugin-rbac-backend [2.4.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.3.5...@janus-idp/backstage-plugin-rbac-backend@2.4.0) (2024-03-14)
+
+
+### Features
+
+* **rbac:** query the catalog database when building graph ([#1298](https://github.com/janus-idp/backstage-plugins/issues/1298)) ([c2c9e22](https://github.com/janus-idp/backstage-plugins/commit/c2c9e22e90a594e2a44d1683a05d3111c4baa97b))
+
+
+### Bug Fixes
+
+* **rbac:** remove admin metadata, when all admins removed from config ([#1314](https://github.com/janus-idp/backstage-plugins/issues/1314)) ([cc6555e](https://github.com/janus-idp/backstage-plugins/commit/cc6555ea22a191c9f9f554b1909b67e517deee71))
+
+## @janus-idp/backstage-plugin-rbac-backend [2.3.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.3.4...@janus-idp/backstage-plugin-rbac-backend@2.3.5) (2024-03-07)
+
+
+### Bug Fixes
+
+* **rbac:** check source before throwing duplicate warning ([#1278](https://github.com/janus-idp/backstage-plugins/issues/1278)) ([a100eef](https://github.com/janus-idp/backstage-plugins/commit/a100eef67983ba73d929864f0b64991de69718d0))
+
+## @janus-idp/backstage-plugin-rbac-backend [2.3.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.3.3...@janus-idp/backstage-plugin-rbac-backend@2.3.4) (2024-03-04)
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-rbac-node:** upgraded to 1.0.3
+
 ## @janus-idp/backstage-plugin-rbac-backend [2.3.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.3.2...@janus-idp/backstage-plugin-rbac-backend@2.3.3) (2024-02-29)
 
 

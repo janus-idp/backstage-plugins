@@ -2,11 +2,15 @@ import { TokenManager } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 
+import * as Knex from 'knex';
+import { MockClient } from 'knex-mock-client';
 import { Logger } from 'winston';
 
 import { BackstageRoleManager } from '../role-manager/role-manager';
 
 describe('BackstageRoleManager', () => {
+  const catalogDBClient = Knex.knex({ client: MockClient });
+
   const catalogApiMock: any = {
     getEntities: jest
       .fn()
@@ -31,6 +35,7 @@ describe('BackstageRoleManager', () => {
       catalogApiMock as CatalogApi,
       loggerMock as Logger,
       tokenManagerMock as TokenManager,
+      catalogDBClient,
     );
   });
 
@@ -71,6 +76,10 @@ describe('BackstageRoleManager', () => {
   });
 
   describe('hasLink tests', () => {
+    afterEach(() => {
+      (loggerMock.warn as jest.Mock).mockReset();
+    });
+
     it('should throw an error for unsupported domain', async () => {
       await expect(
         roleManager.hasLink(
@@ -604,7 +613,7 @@ describe('BackstageRoleManager', () => {
       );
       expect(result).toBeFalsy();
       expect(loggerMock.warn).toHaveBeenCalledWith(
-        'Detected cycle dependencies in the Group graph: [["group:default/team-a","group:default/team-b"]]. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for group: group:default/team-b',
+        'Detected cycle dependencies in the Group graph: [["group:default/team-a","group:default/team-b"]]. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for groups: [["group:default/team-a","group:default/team-b"]]',
       );
 
       result = await roleManager.hasLink(
@@ -613,7 +622,7 @@ describe('BackstageRoleManager', () => {
       );
       expect(result).toBeFalsy();
       expect(loggerMock.warn).toHaveBeenCalledWith(
-        'Detected cycle dependencies in the Group graph: [["group:default/team-a","group:default/team-b"]]. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for group: group:default/team-a',
+        'Detected cycle dependencies in the Group graph: [["group:default/team-a","group:default/team-b"]]. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for groups: [["group:default/team-a","group:default/team-b"]]',
       );
     });
 
@@ -649,7 +658,7 @@ describe('BackstageRoleManager', () => {
       );
       expect(result).toBeFalsy();
       expect(loggerMock.warn).toHaveBeenCalledWith(
-        'Detected cycle dependencies in the Group graph: [["group:default/team-a","group:default/team-b"]]. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for group: group:default/team-b',
+        'Detected cycle dependencies in the Group graph: [["group:default/team-a","group:default/team-b"]]. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for groups: [["group:default/team-a","group:default/team-b"]]',
       );
 
       result = await roleManager.hasLink(
@@ -658,7 +667,7 @@ describe('BackstageRoleManager', () => {
       );
       expect(result).toBeFalsy();
       expect(loggerMock.warn).toHaveBeenCalledWith(
-        'Detected cycle dependencies in the Group graph: [["group:default/team-a","group:default/team-b"]]. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for group: group:default/team-a',
+        'Detected cycle dependencies in the Group graph: [["group:default/team-a","group:default/team-b"]]. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for groups: [["group:default/team-a","group:default/team-b"]]',
       );
     });
 
@@ -694,7 +703,7 @@ describe('BackstageRoleManager', () => {
       );
       expect(result).toBeFalsy();
       expect(loggerMock.warn).toHaveBeenCalledWith(
-        'Detected cycle dependencies in the Group graph: [["group:default/team-a","group:default/team-b"]]. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for group: group:default/team-c',
+        'Detected cycle dependencies in the Group graph: [["group:default/team-a","group:default/team-b"]]. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for groups: [["group:default/team-a","group:default/team-b"]]',
       );
 
       result = await roleManager.hasLink(
@@ -703,7 +712,7 @@ describe('BackstageRoleManager', () => {
       );
       expect(result).toBeFalsy();
       expect(loggerMock.warn).toHaveBeenCalledWith(
-        'Detected cycle dependencies in the Group graph: [["group:default/team-a","group:default/team-b"]]. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for group: group:default/team-b',
+        'Detected cycle dependencies in the Group graph: [["group:default/team-a","group:default/team-b"]]. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for groups: [["group:default/team-a","group:default/team-b"]]',
       );
 
       result = await roleManager.hasLink(
@@ -712,7 +721,7 @@ describe('BackstageRoleManager', () => {
       );
       expect(result).toBeFalsy();
       expect(loggerMock.warn).toHaveBeenCalledWith(
-        'Detected cycle dependencies in the Group graph: [["group:default/team-a","group:default/team-b"]]. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for group: group:default/team-a',
+        'Detected cycle dependencies in the Group graph: [["group:default/team-a","group:default/team-b"]]. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for groups: [["group:default/team-a","group:default/team-b"]]',
       );
     });
 
@@ -752,7 +761,7 @@ describe('BackstageRoleManager', () => {
       );
       expect(result).toBeFalsy();
       expect(loggerMock.warn).toHaveBeenCalledWith(
-        'Detected cycle dependencies in the Group graph: [["group:default/team-a","group:default/team-b"]]. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for group: group:default/team-c',
+        'Detected cycle dependencies in the Group graph: [["group:default/team-a","group:default/team-b"]]. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for groups: [["group:default/team-a","group:default/team-b"]]',
       );
 
       result = await roleManager.hasLink(
@@ -761,7 +770,7 @@ describe('BackstageRoleManager', () => {
       );
       expect(result).toBeFalsy();
       expect(loggerMock.warn).toHaveBeenCalledWith(
-        'Detected cycle dependencies in the Group graph: [["group:default/team-a","group:default/team-b"]]. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for group: group:default/team-b',
+        'Detected cycle dependencies in the Group graph: [["group:default/team-a","group:default/team-b"]]. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for groups: [["group:default/team-a","group:default/team-b"]]',
       );
 
       result = await roleManager.hasLink(
@@ -770,7 +779,7 @@ describe('BackstageRoleManager', () => {
       );
       expect(result).toBeFalsy();
       expect(loggerMock.warn).toHaveBeenCalledWith(
-        'Detected cycle dependencies in the Group graph: [["group:default/team-a","group:default/team-b"]]. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for group: group:default/team-a',
+        'Detected cycle dependencies in the Group graph: [["group:default/team-a","group:default/team-b"]]. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for groups: [["group:default/team-a","group:default/team-b"]]',
       );
     });
 
@@ -805,7 +814,7 @@ describe('BackstageRoleManager', () => {
       );
       expect(result).toBeFalsy();
       expect(loggerMock.warn).toHaveBeenCalledWith(
-        'Detected cycle dependencies in the Group graph: [["group:default/team-a","group:default/team-c"]]. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for group: group:default/team-a',
+        'Detected cycle dependencies in the Group graph: [["group:default/team-a","group:default/team-c"]]. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for groups: [["group:default/team-a","group:default/team-c"]]',
       );
     });
 
@@ -843,7 +852,7 @@ describe('BackstageRoleManager', () => {
       );
       expect(result).toBeFalsy();
       expect(loggerMock.warn).toHaveBeenCalledWith(
-        'Detected cycle dependencies in the Group graph: [["group:default/team-a","group:default/team-c"]]. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for group: group:default/team-a',
+        'Detected cycle dependencies in the Group graph: [["group:default/team-a","group:default/team-c"]]. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for groups: [["group:default/team-a","group:default/team-c"]]',
       );
     });
 
@@ -907,7 +916,7 @@ describe('BackstageRoleManager', () => {
       );
       expect(result).toBeFalsy();
       expect(loggerMock.warn).toHaveBeenCalledWith(
-        'Detected cycle dependencies in the Group graph: [["group:default/team-a","group:default/team-c"]]. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for group: group:default/team-a',
+        'Detected cycle dependencies in the Group graph: [["group:default/team-a","group:default/team-c"]]. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for groups: [["group:default/team-a","group:default/team-c"]]',
       );
 
       const test = await roleManager.hasLink(
@@ -1034,7 +1043,7 @@ describe('BackstageRoleManager', () => {
       );
       expect(result).toBeFalsy();
       expect(loggerMock.warn).toHaveBeenCalledWith(
-        'Detected cycle dependencies in the Group graph: [["group:default/team-a","group:default/team-c"]]. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for group: group:default/team-a',
+        'Detected cycle dependencies in the Group graph: [["group:default/team-a","group:default/team-c"]]. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for groups: [["group:default/team-a","group:default/team-c"]]',
       );
 
       result = await roleManager.hasLink(
@@ -1102,7 +1111,7 @@ describe('BackstageRoleManager', () => {
       );
       expect(result).toBeFalsy();
       expect(loggerMock.warn).toHaveBeenCalledWith(
-        'Detected cycle dependencies in the Group graph: [["group:default/team-a","group:default/team-c"]]. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for group: group:default/team-a',
+        'Detected cycle dependencies in the Group graph: [["group:default/team-a","group:default/team-c"]]. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for groups: [["group:default/team-a","group:default/team-c"]]',
       );
 
       result = await roleManager.hasLink(

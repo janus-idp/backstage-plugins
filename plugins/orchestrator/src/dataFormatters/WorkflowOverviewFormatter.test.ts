@@ -15,7 +15,7 @@ describe('WorkflowOverviewAdapter', () => {
       category: 'Sample Category',
       avgDurationMs: 150000,
       description: 'Sample description',
-      uri: 'sample.workflow.sw.yaml',
+      format: 'yaml',
     };
 
     const adaptedData: FormattedWorkflowOverview =
@@ -37,6 +37,7 @@ describe('WorkflowOverviewAdapter', () => {
     // Mock data for testing
     const mockWorkflowOverview: WorkflowOverview = {
       workflowId: '123',
+      format: 'yaml',
     };
     const adaptedData: FormattedWorkflowOverview =
       WorkflowOverviewFormatter.format(mockWorkflowOverview);

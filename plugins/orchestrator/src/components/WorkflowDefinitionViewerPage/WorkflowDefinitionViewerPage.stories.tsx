@@ -7,7 +7,7 @@ import { Meta, StoryObj } from '@storybook/react';
 
 import { WorkflowOverview } from '@janus-idp/backstage-plugin-orchestrator-common';
 
-import { fakeWorkflowItem } from '../../__fixtures__/fakeWorkflowItem';
+import { fakeWorkflowDefinition } from '../../__fixtures__/fakeWorkflowDefinition';
 import { fakeWorkflowOverview } from '../../__fixtures__/fakeWorkflowOverview';
 import { veryLongString } from '../../__fixtures__/veryLongString';
 import { orchestratorApiRef } from '../../api';
@@ -36,7 +36,7 @@ const meta = {
         getWorkflowOverviewResponse: Promise.resolve(
           context.args.workflowOverview || fakeWorkflowOverview,
         ),
-        getWorkflowResponse: Promise.resolve(fakeWorkflowItem),
+        getWorkflowDefinitionResponse: Promise.resolve(fakeWorkflowDefinition),
       });
       return wrapInTestApp(
         <TestApiProvider
@@ -53,7 +53,7 @@ const meta = {
           mountedRoutes: {
             '/orchestrator': orchestratorRootRouteRef,
           },
-          routeEntries: [`/workflows/yaml/${fakeWorkflowItem.definition.id}`],
+          routeEntries: [`/workflows/yaml/${fakeWorkflowDefinition.id}`],
         },
       );
     },
@@ -94,7 +94,7 @@ export const Loading: Story = {
   args: {
     api: new MockOrchestratorClient({
       getWorkflowOverviewResponse: new Promise(() => {}),
-      getWorkflowResponse: new Promise(() => {}),
+      getWorkflowDefinitionResponse: new Promise(() => {}),
     }),
   },
 };

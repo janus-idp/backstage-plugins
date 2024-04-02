@@ -1,16 +1,25 @@
+import moment from 'moment';
+
 import {
+  ProcessInstance,
   ProcessInstanceState,
   ProcessInstanceStateValues,
+  WorkflowCategory,
   WorkflowDefinition,
+  WorkflowExecutionResponse,
+  WorkflowFormat,
+  WorkflowInfo,
   WorkflowOverview,
   WorkflowOverviewListResult,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
+
+const BASE_DATE = '2023-02-19T11:45:21.123Z';
 
 interface WorkflowOverviewParams {
   suffix?: string;
   workflowId?: string;
   name?: string;
-  uri?: string;
+  format?: WorkflowFormat;
   lastTriggeredMs?: number;
   lastRunStatus?: ProcessInstanceStateValues;
   category?: string;
@@ -23,7 +32,7 @@ export function generateTestWorkflowOverview(
   return {
     workflowId: params.workflowId ?? `testWorkflowId${params.suffix}`,
     name: params.name ?? `Test Workflow${params.suffix}`,
-    uri: params.uri ?? 'http://example.com',
+    format: params.format ?? 'yaml',
     lastTriggeredMs:
       params.lastTriggeredMs ?? Date.parse('2024-02-09T10:34:56Z'),
     lastRunStatus: params.lastRunStatus ?? ProcessInstanceState.Completed,
@@ -44,13 +53,30 @@ export function generateTestWorkflowOverviewList(
     limit: 0,
   };
 
-  for (let i = 0; i <= howmany; i++) {
+  for (let i = 0; i < howmany; i++) {
     const params: WorkflowOverviewParams = inputParams ?? {};
     params.suffix = i.toString();
     res.items.push(generateTestWorkflowOverview(params));
   }
 
   return res;
+}
+
+export function generateTestWorkflowInfo(
+  id: string = 'test_workflowId',
+): WorkflowInfo {
+  return {
+    id: id,
+    serviceUrl: 'mock/serviceurl',
+  };
+}
+
+export function generateTestExecuteWorkflowResponse(
+  id: string = 'test_execId',
+): WorkflowExecutionResponse {
+  return {
+    id: id,
+  };
 }
 
 export const generateWorkflowDefinition: WorkflowDefinition = {
@@ -60,6 +86,7 @@ export const generateWorkflowDefinition: WorkflowDefinition = {
   name: '[WF] Create a starter Quarkus Backend application with a CI pipeline - CI Switch',
   description:
     '[WF] Create a starter Quarkus Backend application with a CI pipeline - CI Switch',
+  annotations: ['test_annotation'],
   states: [
     {
       name: 'Test state',
@@ -68,3 +95,49 @@ export const generateWorkflowDefinition: WorkflowDefinition = {
     },
   ],
 };
+
+export function generateProcessInstances(howmany: number): ProcessInstance[] {
+  const processInstances: ProcessInstance[] = [];
+  for (let i = 0; i < howmany; i++) {
+    processInstances.push(generateProcessInstance(i));
+  }
+  return processInstances;
+}
+
+export function generateProcessInstance(id: number): ProcessInstance {
+  return {
+    id: `processInstance${id}`,
+    processName: `name${id}`,
+    processId: `proceesId${id}`,
+    state: ProcessInstanceState.Active,
+    start: BASE_DATE,
+    end: moment(BASE_DATE).add(1, 'hour').toISOString(),
+    nodes: [],
+    endpoint: 'enpoint/foo',
+    serviceUrl: 'service/bar',
+    source: 'my-source',
+    category: WorkflowCategory.INFRASTRUCTURE,
+    description: 'test description 1',
+    variables: {
+      foo: 'bar',
+      workflowdata: {
+        workflowOptions: {
+          'my-category': {
+            id: 'next-workflow-1',
+            name: 'Next Workflow One',
+          },
+          'my-secod-category': [
+            {
+              id: 'next-workflow-20',
+              name: 'Next Workflow Twenty',
+            },
+            {
+              id: 'next-workflow-21',
+              name: 'Next Workflow Twenty One',
+            },
+          ],
+        },
+      },
+    },
+  };
+}

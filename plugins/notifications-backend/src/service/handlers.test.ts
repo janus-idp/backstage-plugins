@@ -18,8 +18,8 @@ describe('handlers', () => {
   //
   let dbClient: Knex<any, any>;
   let catalogClient: CatalogClient;
-  const catalogUser = 'test';
-  const catalogGroup = 'test';
+  const catalogUser = 'test/test';
+  const catalogGroup = 'test/test';
   const userEntity: Entity = {
     apiVersion: 'v1',
     kind: 'user',
@@ -164,7 +164,7 @@ describe('handlers', () => {
 
     expect(resultGet).toHaveLength(1);
     expect(createdDate >= before).toBeTruthy();
-    expect(createdDate < after).toBeTruthy();
+    expect(createdDate <= after).toBeTruthy();
     expect(resultGet[0].isSystem).toBeFalsy();
   });
 
@@ -195,7 +195,7 @@ describe('handlers', () => {
 
     expect(resultGet).toHaveLength(1);
     expect(createdDate >= before).toBeTruthy();
-    expect(createdDate < after).toBeTruthy();
+    expect(createdDate <= after).toBeTruthy();
     expect(resultGet[0].isSystem).toBeTruthy();
   });
 

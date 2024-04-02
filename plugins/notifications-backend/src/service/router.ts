@@ -142,7 +142,8 @@ export async function createRouter(
     }
     const validation = api.validateRequest(req as Request);
     if (!validation.valid) {
-      throw validation.errors;
+      res.status(500).json({ status: 500, err: validation.errors });
+      return;
     }
 
     api.handleRequest(req as Request, req, res).catch(next);

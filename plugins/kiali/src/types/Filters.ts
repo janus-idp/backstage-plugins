@@ -18,7 +18,7 @@ export interface FilterValue {
   title: string;
 }
 
-enum NonInputTypes {
+export enum NonInputTypes {
   typeAhead = 'typeahead',
   select = 'select',
   label = 'label',

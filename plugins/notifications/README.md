@@ -39,7 +39,7 @@ yarn add @janus-idp/plugin-notifications
 In the `packages/app/src/components/Root/Root.tsx`:
 
 ```
-import { NotificationsSidebarItem } from '@janus-idp/plugin-notifications';
+import { NotificationsActiveIcon } from '@janus-idp/plugin-notifications';
 
 ...
 export const Root = ({ children }: PropsWithChildren<{}>) => (

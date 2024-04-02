@@ -38,11 +38,12 @@ import { Diagnostic, DiagnosticSeverity } from 'vscode-languageserver-types';
 
 import {
   DEFAULT_EDITOR_PATH,
-  extractWorkflowFormatFromUri,
+  extractWorkflowFormat,
+  fromWorkflowSource,
   ProcessInstance,
   toWorkflowString,
+  WorkflowDefinition,
   WorkflowFormat,
-  WorkflowItem,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { orchestratorApiRef } from '../../api';
@@ -59,7 +60,7 @@ export enum EditorViewKind {
 export interface WorkflowEditorRef {
   validate: () => Promise<Notification[]>;
   getContent: () => Promise<string | undefined>;
-  workflowItem: WorkflowItem | undefined;
+  workflowDefinition: WorkflowDefinition | undefined;
   isReady: boolean;
 }
 
@@ -88,8 +89,8 @@ const RefForwardingWorkflowEditor: ForwardRefRenderFunction<
   const { workflowId, kind, format, editorMode = 'full' } = props;
   const { editor, editorRef } = useEditorRef();
   const [embeddedFile, setEmbeddedFile] = useState<EmbeddedEditorFile>();
-  const [workflowItemPromise, setWorkflowItemPromise] =
-    usePromiseState<WorkflowItem>();
+  const [workflowDefinitionPromise, setWorkflowDefinitionPromise] =
+    usePromiseState<WorkflowDefinition>();
   const [canRender, setCanRender] = useState(false);
   const [ready, setReady] = useState(false);
   const navigate = useNavigate();
@@ -203,11 +204,11 @@ const RefForwardingWorkflowEditor: ForwardRefRenderFunction<
       return {
         validate,
         getContent,
-        workflowItem: workflowItemPromise.data,
+        workflowDefinition: workflowDefinitionPromise.data,
         isReady: ready,
       };
     },
-    [validate, getContent, workflowItemPromise.data, ready],
+    [validate, getContent, workflowDefinitionPromise.data, ready],
   );
 
   useCancelableEffect(
@@ -216,23 +217,20 @@ const RefForwardingWorkflowEditor: ForwardRefRenderFunction<
         setCanRender(false);
 
         orchestratorApi
-          .getWorkflow(workflowId)
-          .then(item => {
+          .getWorkflowSource(workflowId)
+          .then(source => {
             if (canceled.get()) {
               return;
             }
-            setWorkflowItemPromise({ data: item });
+            const definition = fromWorkflowSource(source);
+            setWorkflowDefinitionPromise({ data: definition });
 
-            const workflowFormat = extractWorkflowFormatFromUri(item.uri);
-            const uriParts = item.uri.split('/');
-            const fileName = uriParts[uriParts.length - 1];
-            const fileNameParts = fileName.split('.');
-            const fileExtension = fileNameParts[fileNameParts.length - 1];
+            const workflowFormat = extractWorkflowFormat(source);
 
             if (format && workflowId && format !== workflowFormat) {
               const link = viewWorkflowLink({
                 workflowId: workflowId,
-                format: fileExtension,
+                format: workflowFormat,
               });
 
               navigate(link, { replace: true });
@@ -240,25 +238,26 @@ const RefForwardingWorkflowEditor: ForwardRefRenderFunction<
               return;
             }
 
+            const filename = `workflow.sw.${workflowFormat}`;
             setEmbeddedFile({
-              path: item.uri,
+              path: filename,
               getFileContents: async () =>
-                toWorkflowString(item.definition, workflowFormat),
+                toWorkflowString(definition, workflowFormat),
               isReadOnly: true,
-              fileExtension,
-              fileName,
+              fileExtension: workflowFormat,
+              fileName: filename,
             });
 
             setCanRender(true);
           })
           .catch(e => {
-            setWorkflowItemPromise({ error: e });
+            setWorkflowDefinitionPromise({ error: e });
           });
       },
       [
         orchestratorApi,
         workflowId,
-        setWorkflowItemPromise,
+        setWorkflowDefinitionPromise,
         format,
         viewWorkflowLink,
         navigate,
@@ -269,12 +268,12 @@ const RefForwardingWorkflowEditor: ForwardRefRenderFunction<
   const embeddedEditorWrapper = useMemo(
     () => (
       <PromiseStateWrapper
-        promise={workflowItemPromise}
-        resolved={workflowItem =>
+        promise={workflowDefinitionPromise}
+        resolved={workflowDefinition =>
           canRender &&
           embeddedFile && (
             <EmbeddedEditor
-              key={currentProcessInstance?.id ?? workflowItem.definition.id}
+              key={currentProcessInstance?.id ?? workflowDefinition.id}
               ref={editorRef}
               file={embeddedFile}
               channelType={ChannelType.ONLINE}
@@ -297,7 +296,7 @@ const RefForwardingWorkflowEditor: ForwardRefRenderFunction<
       envelopeLocator,
       ready,
       stateControl,
-      workflowItemPromise,
+      workflowDefinitionPromise,
     ],
   );
 

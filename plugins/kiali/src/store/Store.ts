@@ -6,6 +6,7 @@ import { NotificationGroup } from '../types/MessageCenter';
 import { Namespace } from '../types/Namespace';
 import { StatusState } from '../types/StatusState';
 import { TLSStatus } from '../types/TLSStatus';
+import { JaegerTrace, TracingInfo } from '../types/TracingInfo';
 import { AlertUtils } from '../utils/Alertutils';
 
 export interface NamespaceState {
@@ -59,6 +60,11 @@ export interface UserSettings {
   timeRange: TimeRange;
 }
 
+export type TracingState = {
+  info?: TracingInfo;
+  selectedTrace?: JaegerTrace;
+};
+
 // This defines the Kiali Global Application State
 export interface KialiAppState {
   // Global state === across multiple pages
@@ -73,6 +79,7 @@ export interface KialiAppState {
   statusState: StatusState;
   /** User Settings */
   userSettings: UserSettings;
+  tracingState: TracingState;
   dispatch: { [key: string]: React.Dispatch<KialiAppAction> };
   alertUtils?: AlertUtils;
 }

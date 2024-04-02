@@ -8,7 +8,8 @@ export type WorkflowDTO = components['schemas']['WorkflowDTO'];
 export type WorkflowListResultDTO =
   components['schemas']['WorkflowListResultDTO'];
 export type ProcessInstanceDTO = components['schemas']['ProcessInstanceDTO'];
-export type ProcessInstancesDTO = components['schemas']['ProcessInstancesDTO'];
+export type ProcessInstanceListResultDTO =
+  components['schemas']['ProcessInstanceListResultDTO'];
 export type AssessedProcessInstanceDTO =
   components['schemas']['AssessedProcessInstanceDTO'];
 export type ExecuteWorkflowRequestDTO =
@@ -19,5 +20,6 @@ export type WorkflowDataDTO = components['schemas']['WorkflowDataDTO'];
 export type ProcessInstanceStatusDTO =
   components['schemas']['ProcessInstanceStatusDTO'];
 export type WorkflowCategoryDTO = components['schemas']['WorkflowCategoryDTO'];
+export type WorkflowFormatDTO = components['schemas']['WorkflowFormatDTO'];
 export type WorkflowRunStatusDTO =
   components['schemas']['WorkflowRunStatusDTO'];

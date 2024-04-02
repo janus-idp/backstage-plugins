@@ -9,6 +9,7 @@ import {
   INITIAL_STATUS_STATE,
   INITIAL_USER_SETTINGS_STATE,
 } from '../reducers';
+import { INITIAL_TRACING_STATE } from '../reducers/Tracing';
 import { KialiAppState } from './Store';
 
 // Setup the initial state of the Redux store with defaults
@@ -21,6 +22,7 @@ export const initialStore: KialiAppState = {
   meshTLSStatus: INITIAL_MESH_TLS_STATE,
   messageCenter: INITIAL_MESSAGE_CENTER_STATE,
   namespaces: INITIAL_NAMESPACE_STATE,
+  tracingState: INITIAL_TRACING_STATE,
   statusState: INITIAL_STATUS_STATE,
   userSettings: INITIAL_USER_SETTINGS_STATE,
   dispatch: {},

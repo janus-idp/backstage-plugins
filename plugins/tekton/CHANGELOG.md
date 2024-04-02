@@ -1,3 +1,34 @@
+## @janus-idp/backstage-plugin-tekton [3.5.13](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.5.12...@janus-idp/backstage-plugin-tekton@3.5.13) (2024-03-29)
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.5.3
+* **@janus-idp/cli:** upgraded to 1.7.6
+
+## @janus-idp/backstage-plugin-tekton [3.5.12](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.5.11...@janus-idp/backstage-plugin-tekton@3.5.12) (2024-03-25)
+
+
+### Bug Fixes
+
+* **tekton:** bump aonic-ui/pipelines package to fix acs table crashing issue ([#1382](https://github.com/janus-idp/backstage-plugins/issues/1382)) ([b37cc94](https://github.com/janus-idp/backstage-plugins/commit/b37cc94ad140be43896bbd3bc48dd7af582eb7ff))
+
+## @janus-idp/backstage-plugin-tekton [3.5.11](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.5.10...@janus-idp/backstage-plugin-tekton@3.5.11) (2024-03-19)
+
+
+### Bug Fixes
+
+* **tekton:** fix low vulnerability tooltip text ([#1347](https://github.com/janus-idp/backstage-plugins/issues/1347)) ([47640a5](https://github.com/janus-idp/backstage-plugins/commit/47640a5c3a7ad33ad6ae6b190f2ca3d861970d94))
+
+## @janus-idp/backstage-plugin-tekton [3.5.10](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.5.9...@janus-idp/backstage-plugin-tekton@3.5.10) (2024-03-04)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.5
+
 ## @janus-idp/backstage-plugin-tekton [3.5.9](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.5.8...@janus-idp/backstage-plugin-tekton@3.5.9) (2024-02-27)
 
 

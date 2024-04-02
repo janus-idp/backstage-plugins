@@ -1,3 +1,40 @@
+## @janus-idp/backstage-plugin-rbac [1.15.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.15.5...@janus-idp/backstage-plugin-rbac@1.15.6) (2024-03-29)
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-rbac-common:** upgraded to 1.3.1
+* **@janus-idp/shared-react:** upgraded to 2.5.3
+* **@janus-idp/cli:** upgraded to 1.7.6
+
+## @janus-idp/backstage-plugin-rbac [1.15.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.15.4...@janus-idp/backstage-plugin-rbac@1.15.5) (2024-03-26)
+
+
+### Bug Fixes
+
+* **rbac:** alert display issue after role creating/updating ([#1354](https://github.com/janus-idp/backstage-plugins/issues/1354)) ([2e04ccb](https://github.com/janus-idp/backstage-plugins/commit/2e04ccb0c2853b8b08de671723d421df64d51699))
+
+## @janus-idp/backstage-plugin-rbac [1.15.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.15.3...@janus-idp/backstage-plugin-rbac@1.15.4) (2024-03-25)
+
+
+### Bug Fixes
+
+* **rbac:** yarn lint command ([#1361](https://github.com/janus-idp/backstage-plugins/issues/1361)) ([459b909](https://github.com/janus-idp/backstage-plugins/commit/459b90985013695fb9626ac9b547cf0627a385be))
+
+
+### Other changes
+
+* **rbac:** add playwright tests for the plugin ([#1305](https://github.com/janus-idp/backstage-plugins/issues/1305)) ([16d0686](https://github.com/janus-idp/backstage-plugins/commit/16d0686ef8cc0d84d93e9e06d46f23b5bb7d5a1f))
+
+## @janus-idp/backstage-plugin-rbac [1.15.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.15.2...@janus-idp/backstage-plugin-rbac@1.15.3) (2024-03-04)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.5
+
 ## @janus-idp/backstage-plugin-rbac [1.15.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.15.1...@janus-idp/backstage-plugin-rbac@1.15.2) (2024-02-27)
 
 

@@ -105,7 +105,8 @@ export const WorkflowInstancePage = ({
     (curValue: AssessedProcessInstance | undefined) =>
       !!curValue &&
       (curValue.instance.state === 'ACTIVE' ||
-        curValue.instance.state === 'PENDING'),
+        curValue.instance.state === 'PENDING' ||
+        !curValue.instance.state),
   );
 
   const canAbort = React.useMemo(
@@ -132,7 +133,7 @@ export const WorkflowInstancePage = ({
   const handleAbort = React.useCallback(async () => {
     if (value) {
       try {
-        await orchestratorApi.abortWorkflow(value.instance.id);
+        await orchestratorApi.abortWorkflowInstance(value.instance.id);
         restart();
       } catch (e) {
         setAbortWorkflowInstanceErrorMsg(`${(e as Error).message}`);

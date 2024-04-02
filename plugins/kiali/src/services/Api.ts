@@ -4,9 +4,13 @@ import { createApiRef, DiscoveryApi } from '@backstage/core-plugin-api';
 import { AxiosError } from 'axios';
 
 import { config } from '../config';
+import { App, AppQuery } from '../types/App';
+import { AppList, AppListQuery } from '../types/AppList';
 import { AuthInfo } from '../types/Auth';
 import { CertsInfo } from '../types/CertsInfo';
 import { DurationInSeconds, HTTP_VERBS, TimeInSeconds } from '../types/Common';
+import { DashboardModel } from '../types/Dashboards';
+import { GrafanaInfo } from '../types/GrafanaInfo';
 import {
   AppHealth,
   NamespaceAppHealth,
@@ -22,7 +26,10 @@ import {
 } from '../types/IstioConfigList';
 import {
   CanaryUpgradeStatus,
+  LogLevelQuery,
   OutboundTrafficPolicy,
+  PodLogs,
+  PodLogsQuery,
   ValidationStatus,
 } from '../types/IstioObjects';
 import {
@@ -32,9 +39,12 @@ import {
 import { IstioMetricsMap } from '../types/Metrics';
 import { IstioMetricsOptions } from '../types/MetricsOptions';
 import { Namespace } from '../types/Namespace';
-import { ServerConfig } from '../types/ServerConfig';
+import { KialiCrippledFeatures, ServerConfig } from '../types/ServerConfig';
+import { ServiceDetailsInfo, ServiceDetailsQuery } from '../types/ServiceInfo';
+import { ServiceList, ServiceListQuery } from '../types/ServiceList';
 import { StatusState } from '../types/StatusState';
 import { TLSStatus } from '../types/TLSStatus';
+import { Span, TracingQuery } from '../types/Tracing';
 import {
   Workload,
   WorkloadListItem,
@@ -149,6 +159,78 @@ export interface KialiApi {
   ): Promise<IstioConfigList>;
   setEntity(entity?: Entity): void;
   status(): Promise<any>;
+  getPodLogs(
+    namespace: string,
+    name: string,
+    container?: string,
+    maxLines?: number,
+    sinceTime?: number,
+    duration?: DurationInSeconds,
+    isProxy?: boolean,
+    cluster?: string,
+  ): Promise<PodLogs>;
+  getWorkloadSpans(
+    namespace: string,
+    workload: string,
+    params: TracingQuery,
+    cluster?: string,
+  ): Promise<Span[]>;
+  setPodEnvoyProxyLogLevel(
+    namespace: string,
+    name: string,
+    level: string,
+    cluster?: string,
+  ): Promise<void>;
+  getServices(
+    namespace: string,
+    params?: ServiceListQuery,
+  ): Promise<ServiceList>;
+  getServiceDetail(
+    namespace: string,
+    service: string,
+    validate: boolean,
+    cluster?: string,
+    rateInterval?: DurationInSeconds,
+  ): Promise<ServiceDetailsInfo>;
+  getApps(namespace: string, params: AppListQuery): Promise<AppList>;
+  getApp(
+    namespace: string,
+    app: string,
+    params: AppQuery,
+    cluster?: string,
+  ): Promise<App>;
+  getWorkloadDashboard(
+    namespace: string,
+    workload: string,
+    params: IstioMetricsOptions,
+    cluster?: string,
+  ): Promise<DashboardModel>;
+  getAppDashboard(
+    namespace: string,
+    app: string,
+    params: IstioMetricsOptions,
+    cluster?: string,
+  ): Promise<DashboardModel>;
+  getServiceDashboard(
+    namespace: string,
+    service: string,
+    params: IstioMetricsOptions,
+    cluster?: string,
+  ): Promise<DashboardModel>;
+  getGrafanaInfo(): Promise<GrafanaInfo>;
+  getAppSpans(
+    namespace: string,
+    app: string,
+    params: TracingQuery,
+    cluster?: string,
+  ): Promise<Span[]>;
+  getServiceSpans(
+    namespace: string,
+    service: string,
+    params: TracingQuery,
+    cluster?: string,
+  ): Promise<Span[]>;
+  getCrippledFeatures(): Promise<KialiCrippledFeatures>;
 }
 
 export const kialiApiRef = createApiRef<KialiApi>({
@@ -181,19 +263,27 @@ export class KialiApiClient implements KialiApi {
   private newRequest = async <T>(
     method: HTTP_VERBS,
     url: string,
-    queryParams: any,
-    data: any,
+    queryParams?: any,
+    data?: any,
     proxy: boolean = true,
+    customParams: boolean = false,
   ) => {
     if (this.kialiUrl === '') {
       this.kialiUrl = `${await this.discoveryApi.getBaseUrl('kiali')}`;
     }
     const kialiHeaders = getHeadersWithMethod(method);
-    const endpoint = `${url}${
-      queryParams && `?${new URLSearchParams(queryParams).toString()}`
-    }`;
-    const dataRequest = data;
+    let params: string;
+    // This is because, the arrays are stringified as param=value1,value2
+    // but kiali needs param[]=value, param[]=value2
+    if (customParams) {
+      params = this.getCustomParams(queryParams);
+    } else {
+      params = new URLSearchParams(queryParams).toString();
+    }
+    const endpoint = queryParams ? `${url}${queryParams && `?${params}`}` : url;
+    const dataRequest = data ? data : {};
     dataRequest.endpoint = endpoint;
+    dataRequest.method = method;
 
     const jsonResponse = await fetch(
       `${this.kialiUrl}/${proxy ? 'proxy' : 'status'}`,
@@ -208,6 +298,20 @@ export class KialiApiClient implements KialiApi {
     );
 
     return jsonResponse.json() as T;
+  };
+
+  getCustomParams = (queryParams: any): string => {
+    let params = '';
+    for (const key in queryParams) {
+      if (Array.isArray(queryParams[key])) {
+        for (let i = 0; i < queryParams[key].length; i++) {
+          params += `${key}[]=${queryParams[key]}&`;
+        }
+      } else {
+        params += `${key}=${queryParams[key]}&`;
+      }
+    }
+    return params.slice(0, -1);
   };
 
   isDevEnv = () => {
@@ -607,6 +711,296 @@ export class KialiApiClient implements KialiApi {
     ).then(resp => {
       return resp;
     });
+  };
+
+  getPodLogs = async (
+    namespace: string,
+    name: string,
+    container?: string,
+    maxLines?: number,
+    sinceTime?: number,
+    duration?: DurationInSeconds,
+    isProxy?: boolean,
+    cluster?: string,
+  ): Promise<PodLogs> => {
+    const params: QueryParams<PodLogsQuery> = {};
+
+    if (container) {
+      params.container = container;
+    }
+
+    if (sinceTime) {
+      params.sinceTime = sinceTime;
+    }
+
+    if (maxLines && maxLines > 0) {
+      params.maxLines = maxLines;
+    }
+
+    if (duration && duration > 0) {
+      params.duration = `${duration}s`;
+    }
+
+    if (cluster) {
+      params.clusterName = cluster;
+    }
+
+    params.isProxy = !!isProxy;
+
+    return this.newRequest<PodLogs>(
+      HTTP_VERBS.GET,
+      urls.podLogs(namespace, name),
+      params,
+      {},
+    ).then(resp => {
+      return resp;
+    });
+  };
+
+  setPodEnvoyProxyLogLevel = async (
+    namespace: string,
+    name: string,
+    level: string,
+    cluster?: string,
+  ): Promise<void> => {
+    const params: QueryParams<LogLevelQuery> = { level: level };
+
+    if (cluster) {
+      params.clusterName = cluster;
+    }
+
+    return this.newRequest<void>(
+      HTTP_VERBS.POST,
+      urls.podEnvoyProxyLogging(namespace, name),
+      params,
+      {},
+    ).then(resp => {
+      return resp;
+    });
+  };
+
+  getWorkloadSpans = async (
+    namespace: string,
+    workload: string,
+    params: TracingQuery,
+    cluster?: string,
+  ): Promise<Span[]> => {
+    const queryParams: QueryParams<TracingQuery> = { ...params };
+
+    if (cluster) {
+      queryParams.clusterName = cluster;
+    }
+
+    return this.newRequest<Span[]>(
+      HTTP_VERBS.GET,
+      urls.workloadSpans(namespace, workload),
+      queryParams,
+      {},
+    ).then(resp => {
+      return resp;
+    });
+  };
+
+  getServices = async (
+    namespace: string,
+    params?: ServiceListQuery,
+  ): Promise<ServiceList> => {
+    return this.newRequest<ServiceList>(
+      HTTP_VERBS.GET,
+      urls.services(namespace),
+      params,
+      {},
+    );
+  };
+
+  getServiceDetail = async (
+    namespace: string,
+    service: string,
+    validate: boolean,
+    cluster?: string,
+    rateInterval?: DurationInSeconds,
+  ): Promise<ServiceDetailsInfo> => {
+    const params: QueryParams<ServiceDetailsQuery> = {};
+
+    if (validate) {
+      params.validate = true;
+    }
+
+    if (rateInterval) {
+      params.rateInterval = `${rateInterval}s`;
+    }
+
+    if (cluster) {
+      params.clusterName = cluster;
+    }
+
+    return this.newRequest<ServiceDetailsInfo>(
+      HTTP_VERBS.GET,
+      urls.service(namespace, service),
+      params,
+      {},
+    ).then(r => {
+      const info: ServiceDetailsInfo = r;
+
+      if (info.health) {
+        // Default rate interval in backend = 600s
+        info.health = ServiceHealth.fromJson(namespace, service, info.health, {
+          rateInterval: rateInterval ?? 600,
+          hasSidecar: info.istioSidecar,
+          hasAmbient: info.istioAmbient,
+        });
+      }
+      return info;
+    });
+  };
+
+  getApps = async (
+    namespace: string,
+    params: AppListQuery,
+  ): Promise<AppList> => {
+    return this.newRequest<AppList>(
+      HTTP_VERBS.GET,
+      urls.apps(namespace),
+      params,
+      {},
+    );
+  };
+
+  getApp = async (
+    namespace: string,
+    app: string,
+    params: AppQuery,
+    cluster?: string,
+  ): Promise<App> => {
+    const queryParams: QueryParams<AppQuery> = { ...params };
+
+    if (cluster) {
+      queryParams.clusterName = cluster;
+    }
+
+    return this.newRequest<App>(
+      HTTP_VERBS.GET,
+      urls.app(namespace, app),
+      queryParams,
+      {},
+    );
+  };
+
+  getWorkloadDashboard = async (
+    namespace: string,
+    workload: string,
+    params: IstioMetricsOptions,
+    cluster?: string,
+  ): Promise<DashboardModel> => {
+    const queryParams: QueryParams<IstioMetricsOptions> = { ...params };
+
+    if (cluster) {
+      queryParams.clusterName = cluster;
+    }
+
+    return this.newRequest<DashboardModel>(
+      HTTP_VERBS.GET,
+      urls.workloadDashboard(namespace, workload),
+      queryParams,
+      {},
+      undefined,
+      true,
+    );
+  };
+
+  getServiceDashboard = async (
+    namespace: string,
+    service: string,
+    params: IstioMetricsOptions,
+    cluster?: string,
+  ): Promise<DashboardModel> => {
+    const queryParams: QueryParams<IstioMetricsOptions> = { ...params };
+
+    if (cluster) {
+      queryParams.clusterName = cluster;
+    }
+
+    return this.newRequest<DashboardModel>(
+      HTTP_VERBS.GET,
+      urls.serviceDashboard(namespace, service),
+      queryParams,
+      {},
+      undefined,
+      true,
+    );
+  };
+
+  getAppDashboard = async (
+    namespace: string,
+    app: string,
+    params: IstioMetricsOptions,
+    cluster?: string,
+  ): Promise<DashboardModel> => {
+    const queryParams: QueryParams<IstioMetricsOptions> = { ...params };
+
+    if (cluster) {
+      queryParams.clusterName = cluster;
+    }
+
+    return this.newRequest<DashboardModel>(
+      HTTP_VERBS.GET,
+      urls.appDashboard(namespace, app),
+      queryParams,
+      {},
+      undefined,
+      true,
+    );
+  };
+
+  getGrafanaInfo = async (): Promise<GrafanaInfo> => {
+    return this.newRequest<GrafanaInfo>(HTTP_VERBS.GET, urls.grafana);
+  };
+
+  getAppSpans = async (
+    namespace: string,
+    app: string,
+    params: TracingQuery,
+    cluster?: string,
+  ): Promise<Span[]> => {
+    const queryParams: QueryParams<TracingQuery> = { ...params };
+
+    if (cluster) {
+      queryParams.clusterName = cluster;
+    }
+
+    return this.newRequest<Span[]>(
+      HTTP_VERBS.GET,
+      urls.appSpans(namespace, app),
+      queryParams,
+      {},
+    );
+  };
+
+  getServiceSpans = async (
+    namespace: string,
+    service: string,
+    params: TracingQuery,
+    cluster?: string,
+  ): Promise<Span[]> => {
+    const queryParams: QueryParams<TracingQuery> = { ...params };
+
+    if (cluster) {
+      queryParams.clusterName = cluster;
+    }
+
+    return this.newRequest<Span[]>(
+      HTTP_VERBS.GET,
+      urls.serviceSpans(namespace, service),
+      queryParams,
+      {},
+    );
+  };
+
+  getCrippledFeatures = async (): Promise<KialiCrippledFeatures> => {
+    return this.newRequest<KialiCrippledFeatures>(
+      HTTP_VERBS.GET,
+      urls.crippledFeatures,
+    );
   };
 }
 

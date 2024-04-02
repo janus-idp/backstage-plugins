@@ -13,6 +13,8 @@ import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { Grid } from '@material-ui/core';
 
 import {
+  capitalize,
+  ellipsis,
   ProcessInstanceState,
   ProcessInstanceStateValues,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
@@ -21,7 +23,6 @@ import { orchestratorApiRef } from '../api';
 import { DEFAULT_TABLE_PAGE_SIZE, VALUE_UNAVAILABLE } from '../constants';
 import usePolling from '../hooks/usePolling';
 import { workflowInstanceRouteRef } from '../routes';
-import { capitalize, ellipsis } from '../utils/StringUtils';
 import { Selector } from './Selector';
 import { mapProcessInstanceToDetails } from './WorkflowInstancePageContent';
 import { WorkflowInstanceStatusIndicator } from './WorkflowInstanceStatusIndicator';
@@ -49,7 +50,7 @@ export const WorkflowRunsTabContent = () => {
   );
 
   const fetchInstances = React.useCallback(async () => {
-    const instances = await orchestratorApi.getInstances();
+    const instances = await orchestratorApi.listInstances();
     const clonedData: WorkflowRunDetail[] = instances.map(
       mapProcessInstanceToDetails,
     );

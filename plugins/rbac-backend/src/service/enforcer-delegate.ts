@@ -1,6 +1,6 @@
 import { NotAllowedError, NotFoundError } from '@backstage/errors';
 
-import { Enforcer } from 'casbin';
+import { Enforcer, newEnforcer, newModelFromString } from 'casbin';
 import { Knex } from 'knex';
 
 import {
@@ -17,6 +17,7 @@ import {
   RoleMetadataStorage,
 } from '../database/role-metadata';
 import { policiesToString, policyToString } from '../helper';
+import { MODEL } from './permission-model';
 
 export class EnforcerDelegate {
   constructor(
@@ -349,7 +350,21 @@ export class EnforcerDelegate {
       );
       await this.policyMetadataStorage.removePolicyMetadata(policy, trx);
       if (!isUpdate) {
-        await this.roleMetadataStorage.removeRoleMetadata(roleEntity, trx);
+        const roleMetadata = await this.roleMetadataStorage.findRoleMetadata(
+          roleEntity,
+          trx,
+        );
+        const groupPolicies = await this.enforcer.getFilteredGroupingPolicy(
+          1,
+          roleEntity,
+        );
+        if (
+          roleMetadata &&
+          groupPolicies.length === 0 &&
+          roleEntity !== 'role:default/rbac_admin'
+        ) {
+          await this.roleMetadataStorage.removeRoleMetadata(roleEntity, trx);
+        }
       }
       const ok = await this.enforcer.removeGroupingPolicy(...policy);
       if (!ok) {
@@ -376,20 +391,12 @@ export class EnforcerDelegate {
     const trx = externalTrx ?? (await this.knex.transaction());
     try {
       for (const policy of policies) {
-        const roleEntity = policy[1];
         await this.checkIfPolicyModifiable(
           policy,
           source,
           trx,
           allowToDeleteCSVFilePolicy,
         );
-        if (!isUpdate) {
-          if (
-            await this.roleMetadataStorage.findRoleMetadata(roleEntity, trx)
-          ) {
-            await this.roleMetadataStorage.removeRoleMetadata(roleEntity, trx);
-          }
-        }
         await this.policyMetadataStorage.removePolicyMetadata(policy, trx);
       }
 
@@ -398,6 +405,21 @@ export class EnforcerDelegate {
         throw new Error(
           `Failed to delete grouping policies: ${policiesToString(policies)}`,
         );
+      }
+
+      if (!isUpdate) {
+        const roleEntity = policies[0][1];
+        const roleMetadata = await this.roleMetadataStorage.findRoleMetadata(
+          roleEntity,
+          trx,
+        );
+        const groupPolicies = await this.enforcer.getFilteredGroupingPolicy(
+          1,
+          roleEntity,
+        );
+        if (roleMetadata && groupPolicies.length === 0) {
+          await this.roleMetadataStorage.removeRoleMetadata(roleEntity, trx);
+        }
       }
 
       if (!externalTrx) {
@@ -513,7 +535,26 @@ export class EnforcerDelegate {
     resourceType: string,
     action: string,
   ): Promise<boolean> {
-    return await this.enforcer.enforce(entityRef, resourceType, action);
+    const filter = [
+      {
+        ptype: 'p',
+        v1: resourceType,
+        v2: action,
+      },
+      {
+        ptype: 'g',
+        v0: entityRef,
+      },
+    ];
+
+    const adapt = this.enforcer.getAdapter();
+    const roleManager = this.enforcer.getRoleManager();
+    const tempEnforcer = await newEnforcer(newModelFromString(MODEL), adapt);
+    tempEnforcer.setRoleManager(roleManager);
+
+    await tempEnforcer.loadFilteredPolicy(filter);
+
+    return await tempEnforcer.enforce(entityRef, resourceType, action);
   }
 
   async getMetadata(policy: string[]): Promise<PermissionPolicyMetadata> {
@@ -587,5 +628,9 @@ export class EnforcerDelegate {
 
   async getImplicitPermissionsForUser(user: string): Promise<string[][]> {
     return this.enforcer.getImplicitPermissionsForUser(user);
+  }
+
+  async getAllRoles(): Promise<string[]> {
+    return this.enforcer.getAllRoles();
   }
 }

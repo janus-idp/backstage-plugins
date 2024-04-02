@@ -1,3 +1,52 @@
+## @janus-idp/plugin-notifications-backend [1.4.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications-backend@1.4.0...@janus-idp/plugin-notifications-backend@1.4.1) (2024-03-29)
+
+
+### Bug Fixes
+
+* **notifications:** flpath-1163 ([#1394](https://github.com/janus-idp/backstage-plugins/issues/1394)) ([836e161](https://github.com/janus-idp/backstage-plugins/commit/836e161d822536874833e8b1d6f535c4bfcbb5a6))
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.6
+
+## @janus-idp/plugin-notifications-backend [1.4.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications-backend@1.3.6...@janus-idp/plugin-notifications-backend@1.4.0) (2024-03-21)
+
+
+### Features
+
+* **notifications:** require users and groups to be of the form namespace/name ([#1352](https://github.com/janus-idp/backstage-plugins/issues/1352)) ([5e54670](https://github.com/janus-idp/backstage-plugins/commit/5e546706fb5340a174e825d762e5e5cbc733bbcf))
+
+## @janus-idp/plugin-notifications-backend [1.3.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications-backend@1.3.5...@janus-idp/plugin-notifications-backend@1.3.6) (2024-03-11)
+
+
+### Bug Fixes
+
+* **notifications:** return a detailed message for validation errors ([#1315](https://github.com/janus-idp/backstage-plugins/issues/1315)) ([e1c7046](https://github.com/janus-idp/backstage-plugins/commit/e1c70463b4d54917483a3a92355a128e85603a9e))
+
+## @janus-idp/plugin-notifications-backend [1.3.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications-backend@1.3.4...@janus-idp/plugin-notifications-backend@1.3.5) (2024-03-06)
+
+
+### Bug Fixes
+
+* **notifications:** notifications time is wrong when using sqlite ([#1306](https://github.com/janus-idp/backstage-plugins/issues/1306)) ([a98346e](https://github.com/janus-idp/backstage-plugins/commit/a98346ec3fe8746115b57e5c03b131ba3fafdf25))
+
+## @janus-idp/plugin-notifications-backend [1.3.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications-backend@1.3.3...@janus-idp/plugin-notifications-backend@1.3.4) (2024-03-04)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.5
+
+## @janus-idp/plugin-notifications-backend [1.3.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications-backend@1.3.2...@janus-idp/plugin-notifications-backend@1.3.3) (2024-03-01)
+
+
+### Bug Fixes
+
+* **notifications:** users.yaml path is wrong ([#1296](https://github.com/janus-idp/backstage-plugins/issues/1296)) ([12b9140](https://github.com/janus-idp/backstage-plugins/commit/12b9140f2dfb85494e20eeea764ed18e1863ba9f))
+
 ## @janus-idp/plugin-notifications-backend [1.3.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications-backend@1.3.1...@janus-idp/plugin-notifications-backend@1.3.2) (2024-02-28)
 
 

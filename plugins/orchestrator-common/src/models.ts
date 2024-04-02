@@ -67,8 +67,10 @@ export interface ProcessInstance {
   nodes: NodeInstance[];
   milestones?: Milestone[];
   variables?: ProcessInstanceVariables | string;
-  start?: Date;
-  end?: Date;
+  /** Format: date-time */
+  start?: string;
+  /** Format: date-time */
+  end?: string;
   parentProcessInstance?: ProcessInstance;
   childProcessInstances?: ProcessInstance[];
   error?: ProcessInstanceError;
@@ -82,31 +84,4 @@ export interface ProcessInstance {
   source?: string;
   category?: WorkflowCategory;
   description?: WorkflowDefinition['description'];
-}
-
-export enum JobStatus {
-  Error = 'ERROR',
-  Executed = 'EXECUTED',
-  Scheduled = 'SCHEDULED',
-  Retry = 'RETRY',
-  Canceled = 'CANCELED',
-}
-
-export interface Job {
-  id: string;
-  processId: string;
-  processInstanceId: string;
-  rootProcessInstanceId?: string;
-  rootProcessId?: string;
-  status: JobStatus;
-  expirationTime: Date;
-  priority: number;
-  callbackEndpoint: string;
-  repeatInterval: number;
-  repeatLimit: number;
-  scheduledId: string;
-  retries: number;
-  executionCounter?: number;
-  endpoint?: string;
-  nodeInstanceId?: string;
 }

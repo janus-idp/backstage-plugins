@@ -98,3 +98,12 @@ export function parseWorkflowVariables(
 
   return variables;
 }
+
+export function extractWorkflowFormat(source: string): WorkflowFormat {
+  try {
+    JSON.parse(source);
+    return 'json';
+  } catch (_) {
+    return 'yaml';
+  }
+}

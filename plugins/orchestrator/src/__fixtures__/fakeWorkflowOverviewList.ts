@@ -4,7 +4,7 @@ export const fakeWorkflowOverviewList: WorkflowOverview[] = [
   {
     workflowId: 'quarkus-backend-workflow-ci-switch',
     name: '[WF] Create a starter Quarkus Backend application with a CI pipeline - CI Switch',
-    uri: 'quarkus-backend-workflow-ci-switch.sw.yaml',
+    format: 'yaml',
     lastTriggeredMs: 1701765793,
     category: 'Infrastructure',
     avgDurationMs: 5000,
@@ -15,7 +15,7 @@ export const fakeWorkflowOverviewList: WorkflowOverview[] = [
   {
     workflowId: 'orchestrator-ansible-job-long-timeout',
     name: '[WF] Ansible Job with Jira and Timeout',
-    uri: 'orchestrator-ansible-job-long-timeout.sw.yaml',
+    format: 'yaml',
     lastTriggeredMs: 1701765793,
     category: 'Infrastructure',
     avgDurationMs: 5000,
@@ -26,7 +26,7 @@ export const fakeWorkflowOverviewList: WorkflowOverview[] = [
   {
     workflowId: 'orchestrator-ansible-job-parallel-error-handler',
     name: '[WF] Ansible Job - Parallel/ERROR',
-    uri: 'orchestrator-ansible-job-parallel-error-handler.sw.yaml',
+    format: 'yaml',
     lastTriggeredMs: 1701765793,
     category: 'Infrastructure',
     avgDurationMs: 5000,
@@ -37,7 +37,7 @@ export const fakeWorkflowOverviewList: WorkflowOverview[] = [
   {
     workflowId: 'orchestrator-ansible-job-long',
     name: '[WF] Ansible Job with Jira',
-    uri: 'orchestrator-ansible-job-long.sw.yaml',
+    format: 'yaml',
     lastTriggeredMs: 1701765793,
     category: 'Infrastructure',
     avgDurationMs: 5000,
@@ -48,7 +48,7 @@ export const fakeWorkflowOverviewList: WorkflowOverview[] = [
   {
     workflowId: 'orchestrator-ansible-job',
     name: '[WF] Ansible Job',
-    uri: 'orchestrator-ansible-job.sw.yaml',
+    format: 'yaml',
     lastTriggeredMs: 1701765793,
     category: 'Infrastructure',
     avgDurationMs: 5000,
@@ -59,7 +59,7 @@ export const fakeWorkflowOverviewList: WorkflowOverview[] = [
   {
     workflowId: 'quarkus-backend-workflow-extended',
     name: '[WF] Create a Quarkus Backend application with a CI pipeline - Extended',
-    uri: 'quarkus-backend-workflow-extended.sw.yaml',
+    format: 'yaml',
     lastTriggeredMs: 1701765793,
     category: 'Infrastructure',
     avgDurationMs: 5000,
@@ -70,7 +70,7 @@ export const fakeWorkflowOverviewList: WorkflowOverview[] = [
   {
     workflowId: 'workflow_actions',
     name: 'Workflow name',
-    uri: 'workflow_actions.sw.yaml',
+    format: 'yaml',
     lastTriggeredMs: 1701765793,
     category: 'Infrastructure',
     avgDurationMs: 5000,
@@ -80,7 +80,7 @@ export const fakeWorkflowOverviewList: WorkflowOverview[] = [
   {
     workflowId: 'yamlgreet',
     name: 'Greeting workflow',
-    uri: 'yamlgreet.sw.yaml',
+    format: 'yaml',
     lastTriggeredMs: 1701765793,
     category: 'Infrastructure',
     avgDurationMs: 5000,
@@ -90,7 +90,7 @@ export const fakeWorkflowOverviewList: WorkflowOverview[] = [
   {
     workflowId: 'jira',
     name: '[WF] Jira',
-    uri: 'jira.sw.json',
+    format: 'json',
     lastTriggeredMs: 1701765793,
     category: 'Infrastructure',
     avgDurationMs: 5000,

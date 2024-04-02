@@ -19,10 +19,9 @@ export const ReviewStepTable = ({
             ))}
           </tr>
         </thead>
-        <br />
         <tbody>
-          {rows.map(row => (
-            <>
+          {rows.map((row, rowIndex) => (
+            <React.Fragment key={rowIndex}>
               <tr>
                 {columns.map(rowCol => (
                   <td
@@ -36,7 +35,7 @@ export const ReviewStepTable = ({
                 ))}
               </tr>
               <tr />
-            </>
+            </React.Fragment>
           ))}
         </tbody>
       </table>

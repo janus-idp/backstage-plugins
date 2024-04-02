@@ -1,4 +1,3 @@
-import { OperationResult } from '@urql/core';
 import express from 'express';
 
 import {
@@ -6,25 +5,21 @@ import {
   ProcessInstance,
   WorkflowDefinition,
   WorkflowExecutionResponse,
-  WorkflowInfo,
-  WorkflowItem,
-  WorkflowListResult,
   WorkflowOverview,
   WorkflowOverviewListResult,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
-import { DataIndexService } from '../DataIndexService';
 import { retryAsyncFunction } from '../Helper';
-import { SonataFlowService } from '../SonataFlowService';
+import { OrchestratorService } from '../OrchestratorService';
 
-const FETCH_INSTANCE_MAX_RETRIES = 5;
+const FETCH_INSTANCE_MAX_ATTEMPTS = 10;
 const FETCH_INSTANCE_RETRY_DELAY_MS = 1000;
 
-export namespace V1 {
-  export async function getWorkflowsOverview(
-    sonataFlowService: SonataFlowService,
-  ): Promise<WorkflowOverviewListResult> {
-    const overviews = await sonataFlowService.fetchWorkflowOverviews();
+export class V1 {
+  constructor(private readonly orchestratorService: OrchestratorService) {}
+
+  public async getWorkflowsOverview(): Promise<WorkflowOverviewListResult> {
+    const overviews = await this.orchestratorService.fetchWorkflowOverviews({});
     if (!overviews) {
       throw new Error("Couldn't fetch workflow overviews");
     }
@@ -37,88 +32,60 @@ export namespace V1 {
     return result;
   }
 
-  export async function getWorkflowOverviewById(
-    sonataFlowService: SonataFlowService,
-    workflowId: string,
+  public async getWorkflowOverviewById(
+    definitionId: string,
   ): Promise<WorkflowOverview> {
-    const overviewObj =
-      await sonataFlowService.fetchWorkflowOverview(workflowId);
+    const overviewObj = await this.orchestratorService.fetchWorkflowOverview({
+      definitionId,
+      cacheHandler: 'throw',
+    });
 
     if (!overviewObj) {
-      throw new Error(`Couldn't fetch workflow overview for ${workflowId}`);
+      throw new Error(`Couldn't fetch workflow overview for ${definitionId}`);
     }
     return overviewObj;
   }
 
-  export async function getWorkflows(
-    sonataFlowService: SonataFlowService,
-    dataIndexService: DataIndexService,
-  ): Promise<WorkflowListResult> {
-    const definitions: WorkflowInfo[] =
-      await dataIndexService.getWorkflowDefinitions();
-    const items: WorkflowItem[] = await Promise.all(
-      definitions.map(async info => {
-        const uri = await sonataFlowService.fetchWorkflowUri(info.id);
-        if (!uri) {
-          throw new Error(`Uri is required for workflow ${info.id}`);
-        }
-        const item: WorkflowItem = {
-          definition: info as WorkflowDefinition,
-          serviceUrl: info.serviceUrl,
-          uri,
-        };
-        return item;
-      }),
-    );
-
-    if (!items) {
-      throw new Error("Couldn't fetch workflows");
-    }
-
-    return {
-      items: items,
-      limit: 0,
-      offset: 0,
-      totalCount: items?.length ?? 0,
-    };
-  }
-
-  export async function getWorkflowById(
-    sonataFlowService: SonataFlowService,
-    workflowId: string,
-  ): Promise<{ uri: string; definition: WorkflowDefinition }> {
-    const definition =
-      await sonataFlowService.fetchWorkflowDefinition(workflowId);
+  public async getWorkflowById(
+    definitionId: string,
+  ): Promise<WorkflowDefinition> {
+    const definition = await this.orchestratorService.fetchWorkflowDefinition({
+      definitionId,
+      cacheHandler: 'throw',
+    });
 
     if (!definition) {
-      throw new Error(`Couldn't fetch workflow definition for ${workflowId}`);
+      throw new Error(`Couldn't fetch workflow definition for ${definitionId}`);
     }
 
-    const uri = await sonataFlowService.fetchWorkflowUri(workflowId);
-    if (!uri) {
-      throw new Error(`Couldn't fetch workflow uri for ${workflowId}`);
-    }
-
-    return { uri, definition };
+    return definition;
   }
 
-  export async function getInstances(
-    dataIndexService: DataIndexService,
-  ): Promise<ProcessInstance[]> {
-    const instances = await dataIndexService.fetchProcessInstances();
+  public async getWorkflowSourceById(definitionId: string): Promise<string> {
+    const source = await this.orchestratorService.fetchWorkflowSource({
+      definitionId,
+      cacheHandler: 'throw',
+    });
 
-    if (!instances) {
-      throw new Error("Couldn't fetch process instances");
+    if (!source) {
+      throw new Error(`Couldn't fetch workflow source for ${definitionId}`);
     }
-    return instances;
+
+    return source;
   }
 
-  export async function getInstanceById(
-    dataIndexService: DataIndexService,
+  public async getInstances(): Promise<ProcessInstance[]> {
+    return await this.orchestratorService.fetchInstances({});
+  }
+
+  public async getInstanceById(
     instanceId: string,
-    includeAssessment?: string,
+    includeAssessment: boolean = false,
   ): Promise<AssessedProcessInstance> {
-    const instance = await dataIndexService.fetchProcessInstance(instanceId);
+    const instance = await this.orchestratorService.fetchInstance({
+      instanceId,
+      cacheHandler: 'throw',
+    });
 
     if (!instance) {
       throw new Error(`Couldn't fetch process instance ${instanceId}`);
@@ -126,10 +93,11 @@ export namespace V1 {
 
     let assessedByInstance: ProcessInstance | undefined;
 
-    if (!!includeAssessment && instance.businessKey) {
-      assessedByInstance = await dataIndexService.fetchProcessInstance(
-        instance.businessKey,
-      );
+    if (includeAssessment && instance.businessKey) {
+      assessedByInstance = await this.orchestratorService.fetchInstance({
+        instanceId: instance.businessKey,
+        cacheHandler: 'throw',
+      });
     }
 
     const response: AssessedProcessInstance = {
@@ -139,58 +107,55 @@ export namespace V1 {
     return response;
   }
 
-  export async function executeWorkflow(
-    dataIndexService: DataIndexService,
-    sonataFlowService: SonataFlowService,
+  public async executeWorkflow(
     reqBody: Record<string, any>,
-    workflowId: string,
+    definitionId: string,
     businessKey: string | undefined,
   ): Promise<WorkflowExecutionResponse> {
-    const definition = await dataIndexService.getWorkflowDefinition(workflowId);
+    const definition = await this.orchestratorService.fetchWorkflowInfo({
+      definitionId,
+      cacheHandler: 'throw',
+    });
     if (!definition) {
-      throw new Error(`Couldn't fetch workflow definition for ${workflowId}`);
+      throw new Error(`Couldn't fetch workflow definition for ${definitionId}`);
     }
     if (!definition.serviceUrl) {
-      throw new Error(`ServiceURL is not defined for workflow ${workflowId}`);
+      throw new Error(`ServiceURL is not defined for workflow ${definitionId}`);
     }
-    const executionResponse = await sonataFlowService.executeWorkflow({
-      workflowId,
+    const executionResponse = await this.orchestratorService.executeWorkflow({
+      definitionId: definitionId,
       inputData: reqBody,
-      endpoint: definition.serviceUrl,
+      serviceUrl: definition.serviceUrl,
       businessKey,
+      cacheHandler: 'throw',
     });
 
     if (!executionResponse) {
-      throw new Error(`Couldn't execute workflow ${workflowId}`);
+      throw new Error(`Couldn't execute workflow ${definitionId}`);
     }
 
     // Making sure the instance data is available before returning
     await retryAsyncFunction({
-      asyncFunc: () =>
-        dataIndexService.fetchProcessInstance(executionResponse.id),
-      retries: FETCH_INSTANCE_MAX_RETRIES,
+      asyncFn: () =>
+        this.orchestratorService.fetchInstance({
+          instanceId: executionResponse.id,
+          cacheHandler: 'throw',
+        }),
+      maxAttempts: FETCH_INSTANCE_MAX_ATTEMPTS,
       delayMs: FETCH_INSTANCE_RETRY_DELAY_MS,
     });
 
     return executionResponse;
   }
 
-  export async function abortWorkflow(
-    dataIndexService: DataIndexService,
-    workflowId: string,
-  ): Promise<OperationResult> {
-    const result = await dataIndexService.abortWorkflowInstance(workflowId);
-
-    if (result.error) {
-      throw new Error(
-        `Can't abort workflow ${workflowId}. The error was: ${result.error}`,
-      );
-    }
-
-    return result;
+  public async abortWorkflow(instanceId: string): Promise<void> {
+    await this.orchestratorService.abortWorkflowInstance({
+      instanceId,
+      cacheHandler: 'throw',
+    });
   }
 
-  export function extractQueryParam(
+  public extractQueryParam(
     req: express.Request,
     key: string,
   ): string | undefined {
