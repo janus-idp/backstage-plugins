@@ -1,3 +1,10 @@
+## @janus-idp/cli [1.7.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.7.6...@janus-idp/cli@1.7.7) (2024-04-02)
+
+
+### Other changes
+
+* experimental `embed-as-dependencies` option for the backend ([#1418](https://github.com/janus-idp/backstage-plugins/issues/1418)) ([b451380](https://github.com/janus-idp/backstage-plugins/commit/b451380bb048086d90bf7a9c34c4d9c056afbb1e))
+
 ## @janus-idp/cli [1.7.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.7.5...@janus-idp/cli@1.7.6) (2024-03-29)
 
 ## @janus-idp/cli [1.7.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.7.4...@janus-idp/cli@1.7.5) (2024-03-04)
