@@ -15,17 +15,14 @@
  */
 
 import { BackstagePackageJson, PackageRoleInfo } from '@backstage/cli-node';
-import { ConfigReader } from '@backstage/config';
-import { loadConfig } from '@backstage/config-loader';
 
 import { getPackages } from '@manypkg/get-packages';
 import { OptionValues } from 'commander';
 import fs from 'fs-extra';
 import { InteropType, rollup } from 'rollup';
-import * as semver from 'semver';
 
 import { execSync } from 'child_process';
-import path, { basename } from 'path';
+import path from 'path';
 
 import { Output } from '../../lib/builder';
 import { makeRollupConfigs } from '../../lib/builder/config';
@@ -35,11 +32,15 @@ import { readEntryPoints } from '../../lib/entryPoints';
 import { productionPack } from '../../lib/packager/productionPack';
 import { paths } from '../../lib/paths';
 import { Task } from '../../lib/tasks';
+import {
+  addToDependenciesForModule,
+  addToMainDependencies,
+} from './backend-utils';
 
 export async function backend(
   roleInfo: PackageRoleInfo,
   opts: OptionValues,
-): Promise<void> {
+): Promise<string> {
   if (!fs.existsSync(paths.resolveTarget('src', 'dynamic'))) {
     console.warn(
       `Package doesn't seem to provide dynamic loading entrypoints. You might want to add dynamic loading entrypoints in a src/dynamic folder.`,
@@ -166,46 +167,15 @@ export async function backend(
   rollupConfig.plugins?.push(
     embedModules({
       filter: filter,
-      addDependency(embeddedModule, dependencyName, newDependencyVersion) {
-        const existingDependencyVersion = dependenciesToAdd[dependencyName];
-        if (existingDependencyVersion === undefined) {
-          dependenciesToAdd[dependencyName] = newDependencyVersion;
-          return;
-        }
-
-        if (existingDependencyVersion === newDependencyVersion) {
-          return;
-        }
-
-        const existingDependencyMinVersion = semver.minVersion(
-          existingDependencyVersion,
-        );
-        if (
-          existingDependencyMinVersion &&
-          semver.satisfies(existingDependencyMinVersion, newDependencyVersion)
-        ) {
-          console.log(
-            `Several compatible versions ('${existingDependencyVersion}', '${newDependencyVersion}') of the same transitive dependency ('${dependencyName}') for embedded module ('${embeddedModule}'): keeping '${existingDependencyVersion}'`,
-          );
-          return;
-        }
-
-        const newDependencyMinVersion = semver.minVersion(newDependencyVersion);
-        if (
-          newDependencyMinVersion &&
-          semver.satisfies(newDependencyMinVersion, existingDependencyVersion)
-        ) {
-          dependenciesToAdd[dependencyName] = newDependencyVersion;
-          console.log(
-            `Several compatible versions ('${existingDependencyVersion}', '${newDependencyVersion}') of the same transitive dependency ('${dependencyName}') for embedded module ('${embeddedModule}'): keeping '${newDependencyVersion}'`,
-          );
-          return;
-        }
-
-        throw new Error(
-          `Several incompatible versions ('${existingDependencyVersion}', '${newDependencyVersion}') of the same transitive dependency ('${dependencyName}') for embedded module ('${embeddedModule}')`,
-        );
-      },
+      addDependency: (embeddedModule, dependencyName, newDependencyVersion) =>
+        addToDependenciesForModule(
+          {
+            name: dependencyName,
+            version: newDependencyVersion,
+          },
+          dependenciesToAdd,
+          embeddedModule,
+        ),
     }),
   );
 
@@ -267,33 +237,19 @@ export async function backend(
         f => !f.startsWith('dist-dynamic/'),
       );
 
-      for (const dep in dependenciesToAdd) {
-        if (!Object.prototype.hasOwnProperty.call(dependenciesToAdd, dep)) {
-          continue;
-        }
-        pkgToCustomize.dependencies ||= {};
-        const existingVersion = pkgToCustomize.dependencies[dep];
-        if (existingVersion === undefined) {
-          pkgToCustomize.dependencies[dep] = dependenciesToAdd[dep];
-          continue;
-        }
-        if (existingVersion !== dependenciesToAdd[dep]) {
-          const existingMinVersion = semver.minVersion(existingVersion);
+      // We remove scripts, because they do not make sense for this derived package.
+      // They even bring errors, especially the pre-pack and post-pack ones:
+      // we want to be able to use npm pack on this derived package to distribute it as a dynamic plugin,
+      // and obviously this should not trigger the backstage pre-pack or post-pack actions
+      // which are related to the packaging of the original static package.
+      pkgToCustomize.scripts = {};
 
-          if (
-            existingMinVersion &&
-            semver.satisfies(existingMinVersion, dependenciesToAdd[dep])
-          ) {
-            console.log(
-              `The version of a dependency ('${dep}') of an embedded module differs from the main module's dependencies: '${dependenciesToAdd[dep]}', '${existingVersion}': keeping it as it is compatible`,
-            );
-          } else {
-            throw new Error(
-              `The version of a dependency ('${dep}') of an embedded module conflicts with main module dependencies: '${dependenciesToAdd[dep]}', '${existingVersion}': cannot proceed!`,
-            );
-          }
-        }
+      const pkgDependencies = pkgToCustomize.dependencies || {};
+      addToMainDependencies(dependenciesToAdd, pkgDependencies);
+      if (Object.keys(pkgDependencies).length > 0) {
+        pkgToCustomize.dependencies = pkgDependencies;
       }
+
       if (pkgToCustomize.dependencies) {
         for (const monoRepoPackage of monoRepoPackages.packages) {
           if (pkgToCustomize.dependencies[monoRepoPackage.packageJson.name]) {
@@ -376,10 +332,13 @@ export async function backend(
   }
 
   if (opts.install) {
-    const version = execSync('yarn --version').toString().trim();
+    const yarn = 'yarn';
+    const version = execSync(`${yarn} --version`).toString().trim();
     const yarnInstall = version.startsWith('1.')
-      ? `yarn install --production${yarnLockExists ? ' --frozen-lockfile' : ''}`
-      : `yarn install${yarnLockExists ? ' --immutable' : ''}`;
+      ? `${yarn} install --production${
+          yarnLockExists ? ' --frozen-lockfile' : ''
+        }`
+      : `${yarn} install${yarnLockExists ? ' --immutable' : ''}`;
 
     await Task.forCommand(yarnInstall, { cwd: target, optional: false });
     await fs.remove(paths.resolveTarget('dist-dynamic', '.yarn'));
@@ -393,39 +352,5 @@ export async function backend(
     minify: Boolean(opts.minify),
   });
 
-  if (opts.dev) {
-    const appConfigs = await loadConfig({
-      configRoot: paths.targetRoot,
-      configTargets: [],
-    });
-    const fullConfig = ConfigReader.fromConfigs(appConfigs.appConfigs);
-
-    const dynamicPlugins = fullConfig.getOptional('dynamicPlugins');
-    if (
-      typeof dynamicPlugins === 'object' &&
-      dynamicPlugins !== null &&
-      'rootDirectory' in dynamicPlugins &&
-      typeof dynamicPlugins.rootDirectory === 'string'
-    ) {
-      await fs.ensureSymlink(
-        paths.resolveTarget('src'),
-        path.resolve(target, 'src'),
-        'dir',
-      );
-      const dynamicPluginsRootPath = path.isAbsolute(
-        dynamicPlugins.rootDirectory,
-      )
-        ? dynamicPlugins.rootDirectory
-        : paths.resolveTargetRoot(dynamicPlugins.rootDirectory);
-      await fs.ensureSymlink(
-        target,
-        path.resolve(dynamicPluginsRootPath, basename(paths.targetDir)),
-        'dir',
-      );
-    } else {
-      throw new Error(
-        `'dynamicPlugins.rootDirectory' should be configured in the app config in order to use the --dev option.`,
-      );
-    }
-  }
+  return target;
 }
