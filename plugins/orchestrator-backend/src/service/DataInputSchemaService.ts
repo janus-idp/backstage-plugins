@@ -70,17 +70,25 @@ export class DataInputSchemaService {
 
   private getInputSchemaSteps(
     schema: ComposedSchema,
-    isAssessment: boolean,
     workflowData?: JsonObject,
+    assessmentWorkflowData?: JsonObject,
   ): WorkflowInputSchemaStep[] {
     return Object.entries(schema.properties).map(([key, curSchema]) => {
-      const data = (workflowData?.[key] as JsonObject) ?? {};
+      const data = this.extractInnerProperty(workflowData, key);
+      const assessmentData = this.extractInnerProperty(
+        assessmentWorkflowData,
+        key,
+      );
+      const assessmentInitialState = this.extractInitialStateFromWorkflowData(
+        assessmentData,
+        curSchema.properties,
+      );
       return {
         title: curSchema.title || key,
         key,
         schema: curSchema,
         data,
-        readonlyKeys: isAssessment ? Object.keys(data) : [],
+        readonlyKeys: this.extractObjectKeys(assessmentInitialState),
       };
     });
   }
@@ -91,11 +99,11 @@ export class DataInputSchemaService {
     instanceVariables?: ProcessInstanceVariables,
     assessmentInstanceVariables?: ProcessInstanceVariables,
   ): WorkflowInputSchemaResponse {
-    const variables = instanceVariables ?? assessmentInstanceVariables;
-    const isAssessment = !!assessmentInstanceVariables;
-    const workflowData = variables
-      ? (variables[WORKFLOW_DATA_KEY] as JsonObject)
-      : undefined;
+    const instanceWorkflowData = this.extractWorkflowData(instanceVariables);
+    const assessmentInstanceWorkflowData = this.extractWorkflowData(
+      assessmentInstanceVariables,
+    );
+    const workflowData = instanceWorkflowData ?? assessmentInstanceWorkflowData;
 
     const res: WorkflowInputSchemaResponse = {
       definition,
@@ -115,8 +123,8 @@ export class DataInputSchemaService {
       if (isComposedSchema(resolvedSchema)) {
         res.schemaSteps = this.getInputSchemaSteps(
           resolvedSchema,
-          isAssessment,
           workflowData,
+          assessmentInstanceWorkflowData,
         );
         res.isComposedSchema = true;
       } else {
@@ -126,13 +134,19 @@ export class DataInputSchemaService {
               resolvedSchema.properties,
             )
           : {};
+        const assessmentData =
+          assessmentInstanceWorkflowData &&
+          this.extractInitialStateFromWorkflowData(
+            assessmentInstanceWorkflowData,
+            resolvedSchema.properties,
+          );
         res.schemaSteps = [
           {
             schema: resolvedSchema,
             title: resolvedSchema.title ?? SINGLE_SCHEMA_TITLE,
             key: SINGLE_SCHEMA_KEY,
             data,
-            readonlyKeys: isAssessment ? Object.keys(data) : [],
+            readonlyKeys: this.extractObjectKeys(assessmentData),
           },
         ];
       }
@@ -143,5 +157,22 @@ export class DataInputSchemaService {
           : 'unexpected parsing error';
     }
     return res;
+  }
+
+  private extractWorkflowData(
+    variables?: ProcessInstanceVariables,
+  ): JsonObject | undefined {
+    return variables ? (variables[WORKFLOW_DATA_KEY] as JsonObject) : undefined;
+  }
+
+  private extractObjectKeys(obj: JsonObject | undefined): string[] {
+    return obj ? Object.keys(obj) : [];
+  }
+
+  private extractInnerProperty(
+    obj: JsonObject | undefined,
+    key: string,
+  ): JsonObject {
+    return (obj?.[key] as JsonObject) ?? {};
   }
 }
