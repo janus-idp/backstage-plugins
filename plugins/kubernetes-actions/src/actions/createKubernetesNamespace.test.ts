@@ -1,12 +1,10 @@
-import { getVoidLogger } from '@backstage/backend-common';
 import { CatalogClient } from '@backstage/catalog-client';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
 import { V1Namespace } from '@kubernetes/client-node';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 
-import os from 'os';
-import { PassThrough } from 'stream';
 
 import {
   convertLabelsToObject,
@@ -67,13 +65,7 @@ describe('kubernetes:create-namespace', () => {
     getEntityByRef: catalogClientFn,
   } as unknown as CatalogClient);
 
-  const mockContext = {
-    workspacePath: os.tmpdir(),
-    logger: getVoidLogger(),
-    logStream: new PassThrough(),
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn(),
-  };
+  const mockContext = createMockActionContext()
 
   it('should get the api url from the correct entity', async () => {
     await action.handler({

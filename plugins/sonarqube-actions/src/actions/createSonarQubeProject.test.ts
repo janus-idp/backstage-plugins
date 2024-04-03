@@ -1,7 +1,4 @@
-import { getVoidLogger } from '@backstage/backend-common';
-
-import os from 'os';
-import { PassThrough } from 'stream';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
 import { createSonarQubeProjectAction } from './createSonarQubeProject';
 
@@ -12,13 +9,7 @@ describe('sonarqube:create-project', () => {
     jest.resetAllMocks();
   });
 
-  const mockContext = {
-    workspacePath: os.tmpdir(),
-    logger: getVoidLogger(),
-    logStream: new PassThrough(),
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn(),
-  };
+  const mockContext = createMockActionContext();
 
   it('should throw unauthorized error', async () => {
     const response = new Response(new Blob(), { status: 401, statusText: '' });

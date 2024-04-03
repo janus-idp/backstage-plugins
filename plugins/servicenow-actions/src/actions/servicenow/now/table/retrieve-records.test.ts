@@ -1,12 +1,8 @@
-import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
-import mockFs from 'mock-fs';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-
-import os from 'os';
-import { Writable } from 'stream';
 
 import { retrieveRecordsAction } from '.';
 import res401 from './__fixtures__/{tableName}/401.json';
@@ -53,18 +49,7 @@ describe('retrieveRecords', () => {
     }),
   });
 
-  const mockTmpDir = os.tmpdir();
-  const mockContext = {
-    input: {},
-    baseUrl: LOCAL_ADDR,
-    workspacePath: mockTmpDir,
-    logger: getVoidLogger(),
-    logStream: {
-      write: jest.fn(),
-    } as unknown as jest.Mocked<Writable>,
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn().mockResolvedValue(mockTmpDir),
-  };
+  const mockContext = createMockActionContext();
 
   beforeAll(() => server.listen());
 
@@ -73,7 +58,6 @@ describe('retrieveRecords', () => {
   });
 
   afterEach(() => {
-    mockFs.restore();
     server.restoreHandlers();
   });
 
