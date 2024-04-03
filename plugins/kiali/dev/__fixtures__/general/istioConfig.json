@@ -12,21 +12,59 @@
     "gateways": [
       {
         "kind": "Gateway",
-        "apiVersion": "networking.istio.io/v1alpha3",
+        "apiVersion": "networking.istio.io/v1beta1",
         "metadata": {
           "name": "bookinfo-gateway",
           "namespace": "bookinfo",
-          "resourceVersion": "30111",
-          "creationTimestamp": "2023-10-09T07:02:07Z",
+          "uid": "6369d379-ce97-4a77-98ef-5702845ddc56",
+          "resourceVersion": "811259",
+          "generation": 3,
+          "creationTimestamp": "2024-03-05T14:38:05Z",
           "annotations": {
-            "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"networking.istio.io/v1alpha3\",\"kind\":\"Gateway\",\"metadata\":{\"annotations\":{},\"name\":\"bookinfo-gateway\",\"namespace\":\"bookinfo\"},\"spec\":{\"selector\":{\"istio\":\"ingressgateway\"},\"servers\":[{\"hosts\":[\"*\"],\"port\":{\"name\":\"http\",\"number\":80,\"protocol\":\"HTTP\"}}]}}\n"
-          }
+            "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"networking.istio.io/v1alpha3\",\"kind\":\"Gateway\",\"metadata\":{\"annotations\":{},\"name\":\"bookinfo-gateway\",\"namespace\":\"bookinfo\"},\"spec\":{\"selector\":{\"istio\":\"ingressgateway\"},\"servers\":[{\"hosts\":[\"*\"],\"port\":{\"name\":\"http\",\"number\":8080,\"protocol\":\"HTTP\"}}]}}\n"
+          },
+          "managedFields": [
+            {
+              "manager": "kubectl-client-side-apply",
+              "operation": "Update",
+              "apiVersion": "networking.istio.io/v1alpha3",
+              "time": "2024-03-05T14:38:05Z",
+              "fieldsType": "FieldsV1",
+              "fieldsV1": {
+                "f:metadata": {
+                  "f:annotations": {
+                    ".": {},
+                    "f:kubectl.kubernetes.io/last-applied-configuration": {}
+                  }
+                },
+                "f:spec": {
+                  ".": {},
+                  "f:selector": {},
+                  "f:servers": {}
+                }
+              }
+            },
+            {
+              "manager": "kiali",
+              "operation": "Update",
+              "apiVersion": "networking.istio.io/v1beta1",
+              "time": "2024-03-20T12:42:26Z",
+              "fieldsType": "FieldsV1",
+              "fieldsV1": {
+                "f:spec": {
+                  "f:selector": {
+                    "f:istio": {}
+                  }
+                }
+              }
+            }
+          ]
         },
         "spec": {
           "servers": [
             {
               "port": {
-                "number": 80,
+                "number": 8080,
                 "protocol": "HTTP",
                 "name": "http"
               },
@@ -45,18 +83,54 @@
     "virtualServices": [
       {
         "kind": "VirtualService",
-        "apiVersion": "networking.istio.io/v1alpha3",
+        "apiVersion": "networking.istio.io/v1beta1",
         "metadata": {
           "name": "bookinfo",
           "namespace": "bookinfo",
-          "resourceVersion": "30205",
-          "creationTimestamp": "2023-10-09T07:02:07Z",
+          "uid": "16c9b2e6-4bc2-426c-9464-853a4148435f",
+          "resourceVersion": "784735",
+          "generation": 9,
+          "creationTimestamp": "2024-03-05T14:38:05Z",
           "annotations": {
             "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"networking.istio.io/v1alpha3\",\"kind\":\"VirtualService\",\"metadata\":{\"annotations\":{},\"name\":\"bookinfo\",\"namespace\":\"bookinfo\"},\"spec\":{\"gateways\":[\"bookinfo-gateway\"],\"hosts\":[\"*\"],\"http\":[{\"match\":[{\"uri\":{\"exact\":\"/productpage\"}},{\"uri\":{\"prefix\":\"/static\"}},{\"uri\":{\"exact\":\"/login\"}},{\"uri\":{\"exact\":\"/logout\"}},{\"uri\":{\"prefix\":\"/api/v1/products\"}}],\"route\":[{\"destination\":{\"host\":\"productpage\",\"port\":{\"number\":9080}}}]}]}}\n"
-          }
+          },
+          "managedFields": [
+            {
+              "manager": "kubectl-client-side-apply",
+              "operation": "Update",
+              "apiVersion": "networking.istio.io/v1alpha3",
+              "time": "2024-03-05T14:38:05Z",
+              "fieldsType": "FieldsV1",
+              "fieldsV1": {
+                "f:metadata": {
+                  "f:annotations": {
+                    ".": {},
+                    "f:kubectl.kubernetes.io/last-applied-configuration": {}
+                  }
+                },
+                "f:spec": {
+                  ".": {},
+                  "f:hosts": {},
+                  "f:http": {}
+                }
+              }
+            },
+            {
+              "manager": "kiali",
+              "operation": "Update",
+              "apiVersion": "networking.istio.io/v1beta1",
+              "time": "2024-03-19T14:43:01Z",
+              "fieldsType": "FieldsV1",
+              "fieldsV1": {
+                "f:spec": {
+                  "f:gateways": {}
+                }
+              }
+            }
+          ]
         },
         "spec": {
-          "hosts": ["istio-ingressgateway-istio-system.apps-crc.testing"],
+          "hosts": ["*"],
           "gateways": ["bookinfo-gateway"],
           "http": [
             {
@@ -108,7 +182,11 @@
     "wasmPlugins": [],
     "telemetries": [],
     "k8sGateways": [],
+    "k8sGRPCRoutes": [],
     "k8sHTTPRoutes": [],
+    "k8sReferenceGrants": [],
+    "k8sTCPRoutes": [],
+    "k8sTLSRoutes": [],
     "authorizationPolicies": [],
     "peerAuthentications": [],
     "requestAuthentications": [],
@@ -133,15 +211,19 @@
     "wasmPlugins": [],
     "telemetries": [],
     "k8sGateways": [],
+    "k8sGRPCRoutes": [],
     "k8sHTTPRoutes": [],
+    "k8sReferenceGrants": [],
+    "k8sTCPRoutes": [],
+    "k8sTLSRoutes": [],
     "authorizationPolicies": [],
     "peerAuthentications": [],
     "requestAuthentications": [],
     "validations": {}
   },
-  "hostpath-provisioner": {
+  "ingress-nginx": {
     "namespace": {
-      "name": "hostpath-provisioner",
+      "name": "ingress-nginx",
       "cluster": "",
       "isAmbient": false,
       "labels": null,
@@ -158,7 +240,11 @@
     "wasmPlugins": [],
     "telemetries": [],
     "k8sGateways": [],
+    "k8sGRPCRoutes": [],
     "k8sHTTPRoutes": [],
+    "k8sReferenceGrants": [],
+    "k8sTCPRoutes": [],
+    "k8sTLSRoutes": [],
     "authorizationPolicies": [],
     "peerAuthentications": [],
     "requestAuthentications": [],
@@ -183,32 +269,11 @@
     "wasmPlugins": [],
     "telemetries": [],
     "k8sGateways": [],
+    "k8sGRPCRoutes": [],
     "k8sHTTPRoutes": [],
-    "authorizationPolicies": [],
-    "peerAuthentications": [],
-    "requestAuthentications": [],
-    "validations": {}
-  },
-  "kiali": {
-    "namespace": {
-      "name": "kiali",
-      "cluster": "",
-      "isAmbient": false,
-      "labels": null,
-      "annotations": null
-    },
-    "destinationRules": [],
-    "envoyFilters": [],
-    "gateways": [],
-    "serviceEntries": [],
-    "sidecars": [],
-    "virtualServices": [],
-    "workloadEntries": [],
-    "workloadGroups": [],
-    "wasmPlugins": [],
-    "telemetries": [],
-    "k8sGateways": [],
-    "k8sHTTPRoutes": [],
+    "k8sReferenceGrants": [],
+    "k8sTCPRoutes": [],
+    "k8sTLSRoutes": [],
     "authorizationPolicies": [],
     "peerAuthentications": [],
     "requestAuthentications": [],
@@ -222,101 +287,22 @@
       "labels": null,
       "annotations": null
     },
-    "destinationRules": [
-      {
-        "kind": "DestinationRule",
-        "apiVersion": "networking.istio.io/v1alpha3",
-        "metadata": {
-          "name": "travels",
-          "namespace": "travel-agency",
-          "resourceVersion": "79940",
-          "creationTimestamp": "2023-10-09T10:34:13Z",
-          "labels": {
-            "kiali_wizard": "request_routing"
-          }
-        },
-        "spec": {
-          "host": "travels.travel-agency.svc.cluster.local",
-          "subsets": [
-            {
-              "name": "v1",
-              "labels": {
-                "version": "v1"
-              }
-            },
-            {
-              "name": "v2",
-              "labels": {
-                "version": "v2"
-              }
-            },
-            {
-              "name": "v3",
-              "labels": {
-                "version": "v3"
-              }
-            }
-          ]
-        },
-        "status": {}
-      }
-    ],
+    "destinationRules": [],
     "envoyFilters": [],
     "gateways": [],
     "serviceEntries": [],
     "sidecars": [],
-    "virtualServices": [
-      {
-        "kind": "VirtualService",
-        "apiVersion": "networking.istio.io/v1alpha3",
-        "metadata": {
-          "name": "travels",
-          "namespace": "travel-agency",
-          "resourceVersion": "79939",
-          "creationTimestamp": "2023-10-09T10:34:13Z",
-          "labels": {
-            "kiali_wizard": "request_routing"
-          }
-        },
-        "spec": {
-          "hosts": ["travels.travel-agency.svc.cluster.local"],
-          "http": [
-            {
-              "route": [
-                {
-                  "destination": {
-                    "host": "travels.travel-agency.svc.cluster.local",
-                    "subset": "v1"
-                  },
-                  "weight": 52
-                },
-                {
-                  "destination": {
-                    "host": "travels.travel-agency.svc.cluster.local",
-                    "subset": "v2"
-                  },
-                  "weight": 24
-                },
-                {
-                  "destination": {
-                    "host": "travels.travel-agency.svc.cluster.local",
-                    "subset": "v3"
-                  },
-                  "weight": 24
-                }
-              ]
-            }
-          ]
-        },
-        "status": {}
-      }
-    ],
+    "virtualServices": [],
     "workloadEntries": [],
     "workloadGroups": [],
     "wasmPlugins": [],
     "telemetries": [],
     "k8sGateways": [],
+    "k8sGRPCRoutes": [],
     "k8sHTTPRoutes": [],
+    "k8sReferenceGrants": [],
+    "k8sTCPRoutes": [],
+    "k8sTLSRoutes": [],
     "authorizationPolicies": [],
     "peerAuthentications": [],
     "requestAuthentications": [],
@@ -330,18 +316,186 @@
       "labels": null,
       "annotations": null
     },
-    "destinationRules": [],
+    "destinationRules": [
+      {
+        "kind": "DestinationRule",
+        "apiVersion": "networking.istio.io/v1beta1",
+        "metadata": {
+          "name": "control",
+          "namespace": "travel-control",
+          "uid": "a89f69da-5778-46be-b200-4085b6b4c356",
+          "resourceVersion": "811967",
+          "generation": 1,
+          "creationTimestamp": "2024-03-20T12:45:22Z",
+          "labels": {
+            "kiali_wizard": "request_routing"
+          },
+          "managedFields": [
+            {
+              "manager": "kiali",
+              "operation": "Update",
+              "apiVersion": "networking.istio.io/v1beta1",
+              "time": "2024-03-20T12:45:22Z",
+              "fieldsType": "FieldsV1",
+              "fieldsV1": {
+                "f:metadata": {
+                  "f:labels": {
+                    ".": {},
+                    "f:kiali_wizard": {}
+                  }
+                },
+                "f:spec": {
+                  ".": {},
+                  "f:host": {},
+                  "f:subsets": {}
+                }
+              }
+            }
+          ]
+        },
+        "spec": {
+          "host": "control.travel-control.svc.cluster.local",
+          "subsets": [
+            {
+              "name": "v1",
+              "labels": {
+                "version": "v1"
+              }
+            }
+          ]
+        },
+        "status": {}
+      }
+    ],
     "envoyFilters": [],
-    "gateways": [],
+    "gateways": [
+      {
+        "kind": "Gateway",
+        "apiVersion": "networking.istio.io/v1beta1",
+        "metadata": {
+          "name": "control-gateway",
+          "namespace": "travel-control",
+          "uid": "185675fa-6cca-45ab-a194-e64a57569452",
+          "resourceVersion": "812011",
+          "generation": 2,
+          "creationTimestamp": "2024-03-20T12:45:22Z",
+          "labels": {
+            "kiali_wizard": "request_routing"
+          },
+          "managedFields": [
+            {
+              "manager": "kiali",
+              "operation": "Update",
+              "apiVersion": "networking.istio.io/v1beta1",
+              "time": "2024-03-20T12:45:49Z",
+              "fieldsType": "FieldsV1",
+              "fieldsV1": {
+                "f:metadata": {
+                  "f:labels": {
+                    ".": {},
+                    "f:kiali_wizard": {}
+                  }
+                },
+                "f:spec": {
+                  ".": {},
+                  "f:selector": {
+                    ".": {},
+                    "f:istio": {}
+                  },
+                  "f:servers": {}
+                }
+              }
+            }
+          ]
+        },
+        "spec": {
+          "servers": [
+            {
+              "port": {
+                "number": 8080,
+                "protocol": "HTTP",
+                "name": "http"
+              },
+              "hosts": ["*"]
+            }
+          ],
+          "selector": {
+            "istio": "ingressgateway"
+          }
+        },
+        "status": {}
+      }
+    ],
     "serviceEntries": [],
     "sidecars": [],
-    "virtualServices": [],
+    "virtualServices": [
+      {
+        "kind": "VirtualService",
+        "apiVersion": "networking.istio.io/v1beta1",
+        "metadata": {
+          "name": "control",
+          "namespace": "travel-control",
+          "uid": "05468816-71ed-437d-9fc5-c0120d6ab61a",
+          "resourceVersion": "811969",
+          "generation": 1,
+          "creationTimestamp": "2024-03-20T12:45:22Z",
+          "labels": {
+            "kiali_wizard": "request_routing"
+          },
+          "managedFields": [
+            {
+              "manager": "kiali",
+              "operation": "Update",
+              "apiVersion": "networking.istio.io/v1beta1",
+              "time": "2024-03-20T12:45:22Z",
+              "fieldsType": "FieldsV1",
+              "fieldsV1": {
+                "f:metadata": {
+                  "f:labels": {
+                    ".": {},
+                    "f:kiali_wizard": {}
+                  }
+                },
+                "f:spec": {
+                  ".": {},
+                  "f:gateways": {},
+                  "f:hosts": {},
+                  "f:http": {}
+                }
+              }
+            }
+          ]
+        },
+        "spec": {
+          "hosts": ["*"],
+          "gateways": ["travel-control/control-gateway"],
+          "http": [
+            {
+              "route": [
+                {
+                  "destination": {
+                    "host": "control.travel-control.svc.cluster.local",
+                    "subset": "v1"
+                  },
+                  "weight": 100
+                }
+              ]
+            }
+          ]
+        },
+        "status": {}
+      }
+    ],
     "workloadEntries": [],
     "workloadGroups": [],
     "wasmPlugins": [],
     "telemetries": [],
     "k8sGateways": [],
+    "k8sGRPCRoutes": [],
     "k8sHTTPRoutes": [],
+    "k8sReferenceGrants": [],
+    "k8sTCPRoutes": [],
+    "k8sTLSRoutes": [],
     "authorizationPolicies": [],
     "peerAuthentications": [],
     "requestAuthentications": [],
@@ -366,7 +520,11 @@
     "wasmPlugins": [],
     "telemetries": [],
     "k8sGateways": [],
+    "k8sGRPCRoutes": [],
     "k8sHTTPRoutes": [],
+    "k8sReferenceGrants": [],
+    "k8sTCPRoutes": [],
+    "k8sTLSRoutes": [],
     "authorizationPolicies": [],
     "peerAuthentications": [],
     "requestAuthentications": [],

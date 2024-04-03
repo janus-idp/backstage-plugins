@@ -16,11 +16,13 @@ import { NamespaceInfo } from '../../types/NamespaceInfo';
 import { ServiceListItem } from '../../types/ServiceList';
 import { ENTITY } from '../../types/types';
 import { WorkloadListItem } from '../../types/Workload';
+import { getReconciliationCondition } from '../../utils/IstioConfigUtils';
 import { StatefulFilters } from '../Filters/StatefulFilters';
 import { HealthIndicator } from '../Health/HealthIndicator';
 import { getIstioObjectUrl } from '../Link/IstioObjectLink';
 import { NamespaceMTLSStatus } from '../MTls/NamespaceMTLSStatus';
 import { PFBadge, PFBadges, PFBadgeType } from '../Pf/PfBadges';
+import { ValidationObjectSummary } from '../Validations/ValidationObjectSummary';
 import { ValidationServiceSummary } from '../Validations/ValidationServiceSummary';
 import { ValidationSummary } from '../Validations/ValidationSummary';
 import {
@@ -47,7 +49,7 @@ const getIstioLink = (item: TResource): string => {
 const getLink = (item: TResource, config: Resource, query?: string): string => {
   let url =
     config.name === 'istio'
-      ? getIstioLink(item)
+      ? `${getIstioLink(item)}`
       : `/${rootPath}/${config.name}/${item.namespace}/${item.name}`;
 
   if (item.cluster && isMultiCluster && !url.includes('cluster')) {
@@ -307,6 +309,7 @@ export const istioConfiguration: Renderer<IstioConfigItem> = (
   _: Resource,
 ) => {
   const validation = resource.validation;
+  const reconciledCondition = getReconciliationCondition(resource);
 
   return (
     <TableCell
@@ -314,7 +317,17 @@ export const istioConfiguration: Renderer<IstioConfigItem> = (
       key={`VirtuaItem_Conf_${resource.namespace}_${resource.name}`}
       style={{ verticalAlign: 'middle' }}
     >
-      {validation ? <Link to="">{resource.name}</Link> : <>N/A</>}
+      {validation ? (
+        <Link to="">
+          <ValidationObjectSummary
+            id={`${item.name}-config-validation`}
+            validations={[validation]}
+            reconciledCondition={reconciledCondition}
+          />
+        </Link>
+      ) : (
+        <>N/A</>
+      )}
     </TableCell>
   );
 };
