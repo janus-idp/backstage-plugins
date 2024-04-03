@@ -1,3 +1,5 @@
+import { ConditionalPolicyDecision } from '@backstage/plugin-permission-common';
+
 export type Source =
   | 'rest' // created via REST API
   | 'csv-file' // created via policies-csv-file with defined path in the application configuration
@@ -41,4 +43,23 @@ export type UpdatePolicy = {
 export type PermissionPolicy = {
   pluginId?: string;
   policies?: Policy[];
+};
+
+export type NonEmptyArray<T> = [T, ...T[]];
+
+export type PermissionAction = 'create' | 'read' | 'update' | 'delete' | 'use';
+
+export type PermissionInfo = {
+  name: string;
+  action: PermissionAction;
+};
+
+// Frontend should use RoleConditionalPolicyDecision<PermissionAction>
+export type RoleConditionalPolicyDecision<
+  T extends PermissionAction | PermissionInfo,
+> = ConditionalPolicyDecision & {
+  id: number;
+  roleEntityRef: string;
+
+  permissionMapping: T[];
 };

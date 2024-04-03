@@ -1,6 +1,7 @@
 import { difference, isEqual, sortBy, toPairs } from 'lodash';
 
 import {
+  PermissionAction,
   RoleBasedPolicy,
   Source,
 } from '@janus-idp/backstage-plugin-rbac-common';
@@ -52,4 +53,10 @@ export function deepSortedEqual(
   const sortedObj2 = sortBy(toPairs(obj2), ([key]) => key);
 
   return isEqual(sortedObj1, sortedObj2);
+}
+
+export function isPermissionAction(action: string): action is PermissionAction {
+  return ['create', 'read', 'update', 'delete', 'use'].includes(
+    action as PermissionAction,
+  );
 }

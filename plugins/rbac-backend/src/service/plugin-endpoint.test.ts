@@ -306,4 +306,55 @@ describe('plugin-endpoint', () => {
       ]);
     });
   });
+
+  describe('Test get plugin metadata by id', () => {
+    it('should return metadata by id', async () => {
+      backendPluginIDsProviderMock.getPluginIds.mockReturnValue(['catalog']);
+
+      mockUrlReaderService.readUrl.mockReturnValue(mockReadUrlResponse);
+      bufferMock.toString.mockReturnValueOnce(
+        '{"permissions":[{"type":"resource","name":"catalog.entity.read","attributes":{"action":"read"},"resourceType":"catalog-entity"}], "rules": [{"description":"Allow entities with the specified label","name":"HAS_LABEL","paramsSchema":{"$schema":"http://json-schema.org/draft-07/schema#","additionalProperties":false,"properties":{"label":{"description":"Name of the label to match on","type":"string"}},"required":["label"],"type":"object"},"resourceType":"catalog-entity"}]}',
+      );
+
+      const collector = new PluginPermissionMetadataCollector(
+        mockPluginEndpointDiscovery,
+        backendPluginIDsProviderMock,
+        logger,
+        config,
+      );
+      const metadata = await collector.getMetadataByPluginId(
+        'catalog',
+        undefined,
+      );
+
+      expect(metadata).not.toBeUndefined();
+      expect(metadata?.permissions).toEqual([
+        {
+          name: 'catalog.entity.read',
+          attributes: { action: 'read' },
+          type: 'resource',
+          resourceType: 'catalog-entity',
+        },
+      ]);
+      expect(metadata?.rules).toEqual([
+        {
+          description: 'Allow entities with the specified label',
+          name: 'HAS_LABEL',
+          paramsSchema: {
+            $schema: 'http://json-schema.org/draft-07/schema#',
+            additionalProperties: false,
+            properties: {
+              label: {
+                description: 'Name of the label to match on',
+                type: 'string',
+              },
+            },
+            required: ['label'],
+            type: 'object',
+          },
+          resourceType: 'catalog-entity',
+        },
+      ]);
+    });
+  });
 });

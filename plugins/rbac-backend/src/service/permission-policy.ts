@@ -4,6 +4,9 @@ import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
 import {
   AuthorizeResult,
   isResourcePermission,
+  PermissionCondition,
+  PermissionCriteria,
+  PermissionRuleParams,
   PolicyDecision,
 } from '@backstage/plugin-permission-common';
 import {
@@ -13,6 +16,11 @@ import {
 
 import { Knex } from 'knex';
 import { Logger } from 'winston';
+
+import {
+  NonEmptyArray,
+  PermissionAction,
+} from '@janus-idp/backstage-plugin-rbac-common';
 
 import { ConditionalStorage } from '../database/conditional-storage';
 import { PolicyMetadataStorage } from '../database/policy-metadata-storage';
@@ -257,6 +265,21 @@ export class RBACPermissionPolicy implements PermissionPolicy {
 
       if (isResourcePermission(request.permission)) {
         const resourceType = request.permission.resourceType;
+
+        // handle conditions if they are present
+        if (identityResp) {
+          const conditionResult = await this.handleConditions(
+            userEntityRef,
+            resourceType,
+            request.permission.name,
+            action,
+          );
+          if (conditionResult) {
+            return conditionResult;
+          }
+        }
+
+        // handle permission with 'resource' type
         const hasNamedPermission =
           await this.hasImplicitPermissionSpecifiedByName(
             userEntityRef,
@@ -267,18 +290,8 @@ export class RBACPermissionPolicy implements PermissionPolicy {
         const obj = hasNamedPermission ? permissionName : resourceType;
 
         status = await this.isAuthorized(userEntityRef, obj, action);
-
-        if (status && identityResp) {
-          const conditionalDecision =
-            await this.conditionStorage.findCondition(resourceType);
-          if (conditionalDecision) {
-            this.logger.info(
-              `${identityResp?.identity.userEntityRef} executed condition for permission ${request.permission.name}, resource type ${resourceType} and action ${action}`,
-            );
-            return conditionalDecision;
-          }
-        }
       } else {
+        // handle permission with 'basic' type
         status = await this.isAuthorized(userEntityRef, permissionName, action);
       }
 
@@ -340,4 +353,61 @@ export class RBACPermissionPolicy implements PermissionPolicy {
 
     return await this.enforcer.enforce(userIdentity, permission, action);
   };
+
+  private async handleConditions(
+    userEntityRef: string,
+    resourceType: string,
+    permissionName: string,
+    action: PermissionAction,
+  ): Promise<PolicyDecision | undefined> {
+    const roles = await this.enforcer.getRolesForUser(userEntityRef);
+
+    const conditions: PermissionCriteria<
+      PermissionCondition<string, PermissionRuleParams>
+    >[] = [];
+    let pluginId = '';
+    for (const role of roles) {
+      const conditionalDecisions = await this.conditionStorage.filterConditions(
+        role,
+        undefined,
+        resourceType,
+        [action],
+        [permissionName],
+      );
+
+      if (conditionalDecisions.length === 1) {
+        pluginId = conditionalDecisions[0].pluginId;
+        conditions.push(conditionalDecisions[0].conditions);
+      }
+
+      // this error is unexpected and should not happen, but just in case handle it.
+      if (conditionalDecisions.length > 1) {
+        this.logger.error(
+          `Detected ${conditionalDecisions.length} collisions for conditional policies. Expected to find a stored single condition for permission with name ${permissionName}, resource type ${resourceType}, action ${action} for user ${userEntityRef}`,
+        );
+        return {
+          result: AuthorizeResult.DENY,
+        };
+      }
+    }
+
+    if (conditions.length > 0) {
+      this.logger.info(
+        `${userEntityRef} executed condition for permission ${permissionName}, resource type ${resourceType} and action ${action}`,
+      );
+      return {
+        pluginId,
+        result: AuthorizeResult.CONDITIONAL,
+        resourceType,
+        conditions: {
+          anyOf: conditions as NonEmptyArray<
+            PermissionCriteria<
+              PermissionCondition<string, PermissionRuleParams>
+            >
+          >,
+        },
+      };
+    }
+    return undefined;
+  }
 }
