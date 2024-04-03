@@ -222,11 +222,15 @@ The Orchestrator plugin enhances the Backstage with the execution of developer s
 
 ## OpenAPI
 
-The plugin provides OpenAPI endpoints definition to facilitate communication between the frontend and backend. This approach minimizes the data that needs to be sent to the frontend, provides flexibility and avoids dependencies on changes in the [CNCF serverless specification](https://github.com/serverlessworkflow/specification/blob/main/specification.md). It also allows for a seamless transition if there's a need to replace the backend implementation.
+The plugin provides OpenAPI `v2` endpoints definition to facilitate communication between the frontend and backend. This approach minimizes the data that needs to be sent to the frontend, provides flexibility and avoids dependencies on changes in the [CNCF serverless specification](https://github.com/serverlessworkflow/specification/blob/main/specification.md). It also allows for a seamless transition if there's a need to replace the backend implementation.
 
 In addition, by leveraging on OpenAPI spec, it is possible to generate clients and create CI steps.
 
 OpenAPI specification [file](https://github.com/janus-idp/backstage-plugins/blob/main/plugins/orchestrator-common/src/openapi/openapi.yaml) is available in [orchestrator-common](https://github.com/janus-idp/backstage-plugins/blob/main/plugins/orchestrator-common).
+
+> **NOTE:**\
+> While the OpenAPI specification is available in the Orchestrator plugin, the UI currently does not rely on this spec. \
+> We plan to incorporate v2 endpoints into the UI in the near future.
 
 ### orchestrator-common
 
