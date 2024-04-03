@@ -46,6 +46,9 @@ export const SparklineChart = (props: Props) => {
   const axisStyle = {
     tickLabels: { fill: theme.palette.type === 'dark' ? '#dcdcdc' : '#000' },
   };
+  const labelStyle = {
+    fill: theme.palette.type === 'dark' ? '#dcdcdc' : '#000',
+  };
 
   const handleResize = () => {
     if (containerRef?.current) {
@@ -157,7 +160,7 @@ export const SparklineChart = (props: Props) => {
                 x={15}
                 angle={0}
                 renderInPortal
-                style={{ fill: PFColors.Color100 }}
+                style={labelStyle}
               />
             }
             tickCount={2}
