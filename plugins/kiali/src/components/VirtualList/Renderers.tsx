@@ -8,7 +8,6 @@ import { isWaypoint } from '../../helpers/LabelFilterHelper';
 import { infoStyle } from '../../pages/Overview/OverviewCard/CanaryUpgradeProgress';
 import { ControlPlaneBadge } from '../../pages/Overview/OverviewCard/ControlPlaneBadge';
 import { OverviewCardSparklineCharts } from '../../pages/Overview/OverviewCard/OverviewCardSparklineCharts';
-import { useLinkStyle } from '../../styles/StyleUtils';
 import { Health } from '../../types/Health';
 import { IstioConfigItem } from '../../types/IstioConfigList';
 import { ValidationStatus } from '../../types/IstioObjects';
@@ -93,12 +92,10 @@ export const item: Renderer<TResource> = (
   _?: Health,
   __?: React.RefObject<StatefulFilters>,
   view?: string,
+  linkColor?: string,
 ): React.ReactElement => {
   const key = `link_definition_${config.name}_${resource.namespace}_${resource.name}`;
   let serviceBadge = badge;
-
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const linkColor = useLinkStyle();
 
   if ('serviceRegistry' in resource && resource.serviceRegistry) {
     switch (resource.serviceRegistry) {

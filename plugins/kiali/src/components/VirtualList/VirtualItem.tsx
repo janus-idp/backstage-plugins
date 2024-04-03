@@ -3,6 +3,7 @@ import { CSSProperties } from 'react';
 
 import { TableRow } from '@material-ui/core';
 
+import { useLinkStyle } from '../../styles/StyleUtils';
 import { hasHealth, Health } from '../../types/Health';
 import { StatefulFiltersProps } from '../Filters/StatefulFilters';
 import { PFBadgeType } from '../Pf/PfBadges';
@@ -41,6 +42,8 @@ export const VirtualItem = (props: VirtualItemProps) => {
       : IstioTypes[istioType].badge;
   };
 
+  const linkColor = useLinkStyle();
+
   const renderDetails = (
     item: RenderResource,
     health?: Health,
@@ -55,6 +58,7 @@ export const VirtualItem = (props: VirtualItemProps) => {
           health,
           props.statefulFilterProps,
           props.view,
+          linkColor,
         ),
       );
   };
