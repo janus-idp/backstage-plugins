@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac [1.16.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.16.0...@janus-idp/backstage-plugin-rbac@1.16.1) (2024-04-03)
+
+
+### Documentation
+
+* **rbac:** update to the rbac documentation ([#1433](https://github.com/janus-idp/backstage-plugins/issues/1433)) ([5d96db3](https://github.com/janus-idp/backstage-plugins/commit/5d96db3550690658341425786b6a382ea162faac))
+
 ## @janus-idp/backstage-plugin-rbac [1.16.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.15.7...@janus-idp/backstage-plugin-rbac@1.16.0) (2024-04-03)
 
 
