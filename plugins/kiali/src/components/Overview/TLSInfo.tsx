@@ -1,10 +1,11 @@
 import * as React from 'react';
 
 import { Chip, Tooltip } from '@material-ui/core';
+import { useTheme } from '@material-ui/core/styles';
 
 import { KialiIcon } from '../../config/KialiIcon';
 import { infoStyle } from '../../pages/Overview/OverviewCard/OverviewCardControlPlaneNamespace';
-import { kialiStyle } from '../../styles/StyleUtils';
+import { getChipStyle, kialiStyle } from '../../styles/StyleUtils';
 import { CertsInfo } from '../../types/CertsInfo';
 
 type Props = {
@@ -60,6 +61,9 @@ function LockIcon(props: Props) {
 }
 
 export const TLSInfo = (props: Props) => {
+  const theme = useTheme();
+  const chipStyle = getChipStyle(theme);
+
   return (
     <div style={{ textAlign: 'left' }}>
       <div>
@@ -75,7 +79,7 @@ export const TLSInfo = (props: Props) => {
 
         <Chip
           size="small"
-          style={{ backgroundColor: '#e7f1fa' }}
+          style={chipStyle}
           data-test="label-TLS"
           label={
             <div style={{ display: '-webkit-box' }}>

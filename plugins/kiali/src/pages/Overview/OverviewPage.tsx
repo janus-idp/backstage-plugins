@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { CardTab, Content, Page, TabbedCard } from '@backstage/core-components';
+import { CardTab, Content, TabbedCard } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
 import { CircularProgress, Grid } from '@material-ui/core';
@@ -11,6 +11,7 @@ import { isMultiCluster, serverConfig } from '../../config';
 import { getErrorString, kialiApiRef } from '../../services/Api';
 import { computePrometheusRateParams } from '../../services/Prometheus';
 import { KialiAppState, KialiContext } from '../../store';
+import { baseStyle } from '../../styles/StyleUtils';
 import {
   DEGRADED,
   FAILURE,
@@ -457,7 +458,7 @@ export const OverviewPage = (props: { entity?: boolean }) => {
           </TabbedCard>
         </div>
       ) : (
-        <Page themeId="tool">
+        <div className={baseStyle}>
           <Content>
             <OverviewToolbar
               onRefresh={() => load()}
@@ -495,7 +496,7 @@ export const OverviewPage = (props: { entity?: boolean }) => {
               ))}
             </Grid>
           </Content>
-        </Page>
+        </div>
       )}
     </>
   );

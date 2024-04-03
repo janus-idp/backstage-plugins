@@ -2,7 +2,8 @@ import React from 'react';
 
 import { Tooltip } from '@material-ui/core';
 
-import { PFColors } from '../../../components/Pf/PfColors';
+import { KialiIcon } from '../../../config';
+import { infoStyle } from './CanaryUpgradeProgress';
 
 type NamespaceLabelsprops = {
   labels?: { [key: string]: string };
@@ -21,11 +22,16 @@ export const NamespaceLabels = (props: NamespaceLabelsprops) => {
     </ul>
   );
   return props.labels ? (
-    <Tooltip title={tooltipTitle} placement="right">
-      <div id="labels_info" style={{ display: 'inline', color: PFColors.Link }}>
+    <>
+      <div id="labels_info" style={{ display: 'inline' }}>
         {labelsLength} label{labelsLength !== '1' ? 's' : ''}
       </div>
-    </Tooltip>
+      <Tooltip title={tooltipTitle} placement="right">
+        <span>
+          <KialiIcon.Info className={infoStyle} />
+        </span>
+      </Tooltip>
+    </>
   ) : (
     <div style={{ textAlign: 'left' }}>No labels</div>
   );

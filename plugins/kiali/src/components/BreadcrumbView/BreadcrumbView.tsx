@@ -5,7 +5,7 @@ import { Breadcrumbs } from '@material-ui/core';
 
 import { HistoryManager } from '../../app/History';
 import { isMultiCluster, Paths } from '../../config';
-import { kialiStyle, linkStyle } from '../../styles/StyleUtils';
+import { kialiStyle, useLinkStyle } from '../../styles/StyleUtils';
 import { dicIstioType } from '../../types/IstioConfigList';
 import { FilterSelected } from '../Filters/StatefulFilters';
 
@@ -83,6 +83,7 @@ export const BreadcrumbView = () => {
   const item = path ? path.item : '';
   const istioType = path ? path.istioType : '';
   const pathItem = path ? path.pathItem : '';
+  const linkStyle = useLinkStyle();
 
   const isIstio = isIstioF();
   const linkItem = isIstio ? (
@@ -97,6 +98,7 @@ export const BreadcrumbView = () => {
     // @ts-ignore
     dicIstioType[path?.istioType || '']
   }`;
+
   return (
     <div className={breadcrumStyle}>
       <Breadcrumbs>

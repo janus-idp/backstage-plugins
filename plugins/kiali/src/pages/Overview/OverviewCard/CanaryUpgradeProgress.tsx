@@ -1,8 +1,9 @@
 import * as React from 'react';
 
-import { Tooltip } from '@material-ui/core';
+import { Tooltip, useTheme } from '@material-ui/core';
 import {
   ChartDonutUtilization,
+  ChartLabel,
   ChartThemeColor,
 } from '@patternfly/react-charts';
 
@@ -26,6 +27,7 @@ export const CanaryUpgradeProgress = (props: Props) => {
     total > 0
       ? (props.canaryUpgradeStatus.migratedNamespaces.length * 100) / total
       : 0;
+  const theme = useTheme().palette.type;
   return (
     <div
       style={{ textAlign: 'center', paddingTop: '10px' }}
@@ -56,6 +58,14 @@ export const CanaryUpgradeProgress = (props: Props) => {
             title={`${migrated.toFixed(2)}%`}
             height={170}
             themeColor={ChartThemeColor.green}
+            titleComponent={
+              <ChartLabel
+                style={{
+                  fill: theme === 'dark' ? '#fff' : '#151515',
+                  fontSize: 24,
+                }}
+              />
+            }
           />
         </div>
         <div>

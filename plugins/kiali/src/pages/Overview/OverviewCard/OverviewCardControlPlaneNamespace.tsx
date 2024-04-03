@@ -181,7 +181,9 @@ export class OverviewCardControlPlaneNamespace extends React.Component<
                             </div>
                           }
                         >
-                          <KialiIcon.Info className={infoStyle} />
+                          <div style={{ display: 'inline' }}>
+                            <KialiIcon.Info className={infoStyle} />
+                          </div>
                         </Tooltip>
                       </Grid>
                     </Grid>
@@ -229,7 +231,9 @@ export class OverviewCardControlPlaneNamespace extends React.Component<
                             </div>
                           }
                         >
-                          <KialiIcon.Info className={infoStyle} />
+                          <div style={{ display: 'inline' }}>
+                            <KialiIcon.Info className={infoStyle} />
+                          </div>
                         </Tooltip>
                       </Grid>
                     </Grid>
