@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-kiali [1.15.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.14.2...@janus-idp/backstage-plugin-kiali@1.15.0) (2024-04-03)
+
+
+### Features
+
+* **kiali:** update dark theme ([#1434](https://github.com/janus-idp/backstage-plugins/issues/1434)) ([e0d84e1](https://github.com/janus-idp/backstage-plugins/commit/e0d84e177786187e0d7a8b279d7e72f710207d91))
+
 ## @janus-idp/backstage-plugin-kiali [1.14.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.14.1...@janus-idp/backstage-plugin-kiali@1.14.2) (2024-04-02)
 
 
