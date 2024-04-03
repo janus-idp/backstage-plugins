@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac [1.16.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.15.7...@janus-idp/backstage-plugin-rbac@1.16.0) (2024-04-03)
+
+
+### Features
+
+* **rbac:** add conditional access button and sidebar ([#1359](https://github.com/janus-idp/backstage-plugins/issues/1359)) ([448267d](https://github.com/janus-idp/backstage-plugins/commit/448267d017247fbcb595452783e628467a3582fe))
+
 ## @janus-idp/backstage-plugin-rbac [1.15.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.15.6...@janus-idp/backstage-plugin-rbac@1.15.7) (2024-04-02)
 
 
