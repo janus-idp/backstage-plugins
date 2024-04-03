@@ -46,7 +46,7 @@ describe('workflow input schema response', () => {
     expect(response.schemaSteps[0].title).toEqual('Data Input Schema');
   });
 
-  it('composed schema also wihtout refs should return multiple steps', () => {
+  it('composed schema also without refs should return multiple steps', () => {
     const response = service.getWorkflowInputSchemaResponse(
       mockComposedGreetingWorkflowData.workflowDefinition,
       mockComposedGreetingWorkflowData.schema,
@@ -116,5 +116,87 @@ describe('workflow input schema response', () => {
       name: 'John Doe',
     });
     expect(response.schemaSteps[0].readonlyKeys).toEqual(['language', 'name']);
+  });
+
+  it('using assessment variables on composed schema should return read only keys', () => {
+    const newComponentValues = {
+      orgName: 'org.example',
+      repoName: 'example',
+      description: 'example description',
+    };
+    const response = service.getWorkflowInputSchemaResponse(
+      mockSpringBootWorkflowData.workflowDefinition,
+      mockSpringBootWorkflowData.schema,
+      undefined,
+      {
+        workflowdata: {
+          newComponent: newComponentValues,
+        },
+      },
+    );
+    expect(response.isComposedSchema).toEqual(true);
+    expect(response.schemaSteps[0].data).toEqual(newComponentValues);
+    expect(response.schemaSteps[0].readonlyKeys).toEqual(
+      Object.keys(newComponentValues),
+    );
+  });
+
+  it('using initial workflow and assessment variables should return read only keys', () => {
+    const response = service.getWorkflowInputSchemaResponse(
+      mockGreetingWorkflowData.workflowDefinition,
+      mockGreetingWorkflowData.schema,
+      {
+        workflowdata: {
+          name: 'John Doe',
+          language: 'Spanish',
+        },
+      },
+      {
+        workflowdata: {
+          name: 'John Doe',
+          waitOrError: 'Error',
+        },
+      },
+    );
+    expect(response.isComposedSchema).toEqual(false);
+    expect(response.schemaSteps[0].data).toEqual({
+      language: 'Spanish',
+      name: 'John Doe',
+    });
+    expect(response.schemaSteps[0].readonlyKeys).toEqual(['name']);
+  });
+
+  it('using initial workflow and assessment variables on composed schema should return read only keys', () => {
+    const newComponentValues = {
+      orgName: 'org.example',
+      repoName: 'example',
+      description: 'example description',
+    };
+    const javaMetadataValues = {
+      groupId: 'org.example',
+      artifactId: 'example',
+      version: '1.0.0',
+    };
+    const response = service.getWorkflowInputSchemaResponse(
+      mockSpringBootWorkflowData.workflowDefinition,
+      mockSpringBootWorkflowData.schema,
+      {
+        workflowdata: {
+          newComponent: newComponentValues,
+          javaMetadata: javaMetadataValues,
+        },
+      },
+      {
+        workflowdata: {
+          newComponent: newComponentValues,
+        },
+      },
+    );
+    expect(response.isComposedSchema).toEqual(true);
+    expect(response.schemaSteps[0].data).toEqual(newComponentValues);
+    expect(response.schemaSteps[1].data).toEqual(javaMetadataValues);
+    expect(response.schemaSteps[0].readonlyKeys).toEqual(
+      Object.keys(newComponentValues),
+    );
   });
 });
