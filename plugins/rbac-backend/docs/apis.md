@@ -732,7 +732,7 @@ To utilize this condition to the RBAC REST api you need to wrap it with more inf
 
 ### POST condition
 
-POST </api/permission/conditions>
+POST </api/permission/roles/conditions>
 
 Creates a new condition.
 
@@ -769,7 +769,7 @@ Returns a status code of 201 and json with id upon success:
 
 ### PUT condition
 
-PUT </permission/conditions/:id>
+PUT </permission/roles/conditions/:id>
 
 Update conditions by id.
 
@@ -811,7 +811,7 @@ Returns a status code of 200 upon success.
 
 ### Get condition by id
 
-GET </api/permission/conditions/:id>
+GET </api/permission/roles/conditions/:id>
 
 Returns condition by id:
 
@@ -850,7 +850,7 @@ Returns a status code of 200 upon success.
 
 ### GET conditions
 
-GET </api/permission/conditions>
+GET </api/permission/roles/conditions>
 
 Returns lists all conditions:
 
@@ -891,7 +891,7 @@ Returns a status code of 200 upon success.
 
 ### DELETE condition by id
 
-DELETE </api/permission/conditions/:id>
+DELETE </api/permission/roles/conditions/:id>
 
 Deletes condition by id.
 
