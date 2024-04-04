@@ -17,6 +17,8 @@ const mockRole: Role = {
   metadata: {
     source: 'rest',
     description: 'performance dev team',
+    lastModified: '2024-04-04T14:25:53.000Z',
+    modifiedBy: 'user:default/tim',
   },
 };
 
@@ -46,9 +48,11 @@ describe('AboutCard', () => {
     );
     expect(queryByText('About')).not.toBeNull();
     expect(queryByText('performance dev team')).not.toBeNull();
+    expect(queryByText('user:default/tim')).not.toBeNull();
+    expect(queryByText('4 Apr 2024, 14:25')).not.toBeNull();
   });
 
-  it('should display stub, when role description is absent', async () => {
+  it('should display stub, when role metadata is absent', async () => {
     mockUseRole.mockReturnValue({
       loading: false,
       role: mockRoleWithoutDescription,
@@ -57,11 +61,12 @@ describe('AboutCard', () => {
         message: '',
       },
     });
-    const { queryByText } = await renderInTestApp(
+    const { queryByText, queryAllByText } = await renderInTestApp(
       <AboutCard roleName="role:default/rbac_admin" />,
     );
     expect(queryByText('About')).not.toBeNull();
     expect(queryByText('No description')).not.toBeNull();
+    expect(queryAllByText('No information').length).toEqual(2);
   });
 
   it('should show an error if api call fails', async () => {
