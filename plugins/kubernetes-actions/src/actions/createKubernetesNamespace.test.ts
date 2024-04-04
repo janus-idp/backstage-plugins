@@ -5,7 +5,6 @@ import { V1Namespace } from '@kubernetes/client-node';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 
-
 import {
   convertLabelsToObject,
   createKubernetesNamespaceAction,
@@ -65,7 +64,7 @@ describe('kubernetes:create-namespace', () => {
     getEntityByRef: catalogClientFn,
   } as unknown as CatalogClient);
 
-  const mockContext = createMockActionContext()
+  const mockContext = createMockActionContext();
 
   it('should get the api url from the correct entity', async () => {
     await action.handler({
