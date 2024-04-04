@@ -1,5 +1,10 @@
 import React from 'react';
 
+import { errorApiRef } from '@backstage/core-plugin-api';
+import { translationApiRef } from '@backstage/core-plugin-api/alpha';
+import { MockErrorApi, TestApiProvider } from '@backstage/test-utils';
+import { MockTranslationApi } from '@backstage/test-utils/alpha';
+
 import { render, screen } from '@testing-library/react';
 import { useFormik } from 'formik';
 
@@ -39,35 +44,42 @@ describe('Create RoleForm', () => {
       status: { submitError: '' },
     });
     render(
-      <RoleForm
-        membersData={{ members: [], loading: false, error: {} as Error }}
-        roleName=""
-        initialValues={{
-          name: '',
-          namespace: 'default',
-          kind: 'role',
-          description: '',
-          selectedMembers: [],
-          permissionPoliciesRows: [
-            {
-              plugin: '',
-              permission: '',
-              policies: [
-                { policy: 'Create', effect: 'deny' },
-                { policy: 'Read', effect: 'deny' },
-                { policy: 'Update', effect: 'deny' },
-                { policy: 'Delete', effect: 'deny' },
-              ],
-            },
-          ],
-        }}
-        titles={{
-          formTitle: 'Create Role',
-          nameAndDescriptionTitle: 'Enter name and description of role ',
-          usersAndGroupsTitle: 'Add users and groups',
-          permissionPoliciesTitle: 'Add permission policies',
-        }}
-      />,
+      <TestApiProvider
+        apis={[
+          [translationApiRef, MockTranslationApi.create()],
+          [errorApiRef, new MockErrorApi()],
+        ]}
+      >
+        <RoleForm
+          membersData={{ members: [], loading: false, error: {} as Error }}
+          roleName=""
+          initialValues={{
+            name: '',
+            namespace: 'default',
+            kind: 'role',
+            description: '',
+            selectedMembers: [],
+            permissionPoliciesRows: [
+              {
+                plugin: '',
+                permission: '',
+                policies: [
+                  { policy: 'Create', effect: 'deny' },
+                  { policy: 'Read', effect: 'deny' },
+                  { policy: 'Update', effect: 'deny' },
+                  { policy: 'Delete', effect: 'deny' },
+                ],
+              },
+            ],
+          }}
+          titles={{
+            formTitle: 'Create Role',
+            nameAndDescriptionTitle: 'Enter name and description of role ',
+            usersAndGroupsTitle: 'Add users and groups',
+            permissionPoliciesTitle: 'Add permission policies',
+          }}
+        />
+      </TestApiProvider>,
     );
 
     expect(
@@ -86,35 +98,42 @@ describe('Create RoleForm', () => {
       status: { submitError: 'Unable to create role. Unexpected error' },
     });
     render(
-      <RoleForm
-        membersData={{ members: [], loading: false, error: {} as Error }}
-        roleName=""
-        initialValues={{
-          name: '',
-          namespace: 'default',
-          kind: 'role',
-          description: '',
-          selectedMembers: [],
-          permissionPoliciesRows: [
-            {
-              plugin: '',
-              permission: '',
-              policies: [
-                { policy: 'Create', effect: 'deny' },
-                { policy: 'Read', effect: 'deny' },
-                { policy: 'Update', effect: 'deny' },
-                { policy: 'Delete', effect: 'deny' },
-              ],
-            },
-          ],
-        }}
-        titles={{
-          formTitle: 'Create Role',
-          nameAndDescriptionTitle: 'Enter name and description of role ',
-          usersAndGroupsTitle: 'Add users and groups',
-          permissionPoliciesTitle: 'Add permission policies',
-        }}
-      />,
+      <TestApiProvider
+        apis={[
+          [translationApiRef, MockTranslationApi.create()],
+          [errorApiRef, new MockErrorApi()],
+        ]}
+      >
+        <RoleForm
+          membersData={{ members: [], loading: false, error: {} as Error }}
+          roleName=""
+          initialValues={{
+            name: '',
+            namespace: 'default',
+            kind: 'role',
+            description: '',
+            selectedMembers: [],
+            permissionPoliciesRows: [
+              {
+                plugin: '',
+                permission: '',
+                policies: [
+                  { policy: 'Create', effect: 'deny' },
+                  { policy: 'Read', effect: 'deny' },
+                  { policy: 'Update', effect: 'deny' },
+                  { policy: 'Delete', effect: 'deny' },
+                ],
+              },
+            ],
+          }}
+          titles={{
+            formTitle: 'Create Role',
+            nameAndDescriptionTitle: 'Enter name and description of role ',
+            usersAndGroupsTitle: 'Add users and groups',
+            permissionPoliciesTitle: 'Add permission policies',
+          }}
+        />
+      </TestApiProvider>,
     );
 
     expect(
@@ -132,43 +151,50 @@ describe('Edit RoleForm', () => {
       status: { submitError: 'Unexpected error' },
     });
     render(
-      <RoleForm
-        membersData={{ members: [], loading: false, error: {} as Error }}
-        roleName="role:default/xyz"
-        initialValues={{
-          name: 'xyz',
-          namespace: 'default',
-          kind: 'role',
-          description: '',
-          selectedMembers: [
-            {
-              ref: 'user:default/janelle.dawe',
-              label: 'Janelle Dawe',
-              etag: 'b027e001c70faf091869106d4e9023f7bddb9502',
-              type: 'User',
-              namespace: 'default',
-            },
-          ],
-          permissionPoliciesRows: [
-            {
-              plugin: '',
-              permission: '',
-              policies: [
-                { policy: 'Create', effect: 'deny' },
-                { policy: 'Read', effect: 'deny' },
-                { policy: 'Update', effect: 'deny' },
-                { policy: 'Delete', effect: 'deny' },
-              ],
-            },
-          ],
-        }}
-        titles={{
-          formTitle: 'Edit Role',
-          nameAndDescriptionTitle: 'Edit name and description of role ',
-          usersAndGroupsTitle: 'Edit users and groups',
-          permissionPoliciesTitle: 'Edit permission policies',
-        }}
-      />,
+      <TestApiProvider
+        apis={[
+          [translationApiRef, MockTranslationApi.create()],
+          [errorApiRef, new MockErrorApi()],
+        ]}
+      >
+        <RoleForm
+          membersData={{ members: [], loading: false, error: {} as Error }}
+          roleName="role:default/xyz"
+          initialValues={{
+            name: 'xyz',
+            namespace: 'default',
+            kind: 'role',
+            description: '',
+            selectedMembers: [
+              {
+                ref: 'user:default/janelle.dawe',
+                label: 'Janelle Dawe',
+                etag: 'b027e001c70faf091869106d4e9023f7bddb9502',
+                type: 'User',
+                namespace: 'default',
+              },
+            ],
+            permissionPoliciesRows: [
+              {
+                plugin: '',
+                permission: '',
+                policies: [
+                  { policy: 'Create', effect: 'deny' },
+                  { policy: 'Read', effect: 'deny' },
+                  { policy: 'Update', effect: 'deny' },
+                  { policy: 'Delete', effect: 'deny' },
+                ],
+              },
+            ],
+          }}
+          titles={{
+            formTitle: 'Edit Role',
+            nameAndDescriptionTitle: 'Edit name and description of role ',
+            usersAndGroupsTitle: 'Edit users and groups',
+            permissionPoliciesTitle: 'Edit permission policies',
+          }}
+        />
+      </TestApiProvider>,
     );
 
     expect(
@@ -197,103 +223,110 @@ describe('Edit RoleForm', () => {
       status: { submitError: 'Unexpected error' },
     });
     render(
-      <RoleForm
-        step={1}
-        membersData={{
-          members: [
-            {
-              metadata: {
-                namespace: 'default',
-                annotations: {},
-                name: '',
-                uid: '',
-                etag: '',
-              },
-              apiVersion: 'backstage.io/v1alpha1',
-              kind: 'User',
-              spec: {
-                profile: {
-                  displayName: '',
+      <TestApiProvider
+        apis={[
+          [translationApiRef, MockTranslationApi.create()],
+          [errorApiRef, new MockErrorApi()],
+        ]}
+      >
+        <RoleForm
+          step={1}
+          membersData={{
+            members: [
+              {
+                metadata: {
+                  namespace: 'default',
+                  annotations: {},
+                  name: '',
+                  uid: '',
+                  etag: '',
                 },
-                memberOf: [],
-              },
-              relations: [],
-            },
-            {
-              metadata: {
-                namespace: 'default',
-                annotations: {},
-                name: 'janelle.dawe',
-                uid: '00a6a3c6-329c-4c0e-8ffb-ce2a16782d24',
-                etag: 'fb0eb7d5de1eb7d7bfd92c10ac5508623c7286b8',
-              },
-              apiVersion: 'backstage.io/v1alpha1',
-              kind: 'User',
-              spec: {
-                profile: {
-                  displayName: 'Janelle Dawe',
+                apiVersion: 'backstage.io/v1alpha1',
+                kind: 'User',
+                spec: {
+                  profile: {
+                    displayName: '',
+                  },
+                  memberOf: [],
                 },
-                memberOf: ['team-d'],
+                relations: [],
               },
-              relations: [],
-            },
-            {
-              metadata: {
-                namespace: 'default',
-                annotations: {},
-                name: 'lucy.sheehan',
-                uid: '00a6a3c6-329c-4c0e-8ffb-ce2a16782d24',
-                etag: 'fb0eb7d5de1eb7d7bfd92c10ac5508623c7286b8',
-              },
-              apiVersion: 'backstage.io/v1alpha1',
-              kind: 'User',
-              spec: {
-                profile: {
-                  displayName: 'Lucy Sheehan',
+              {
+                metadata: {
+                  namespace: 'default',
+                  annotations: {},
+                  name: 'janelle.dawe',
+                  uid: '00a6a3c6-329c-4c0e-8ffb-ce2a16782d24',
+                  etag: 'fb0eb7d5de1eb7d7bfd92c10ac5508623c7286b8',
                 },
-                memberOf: ['team-d'],
+                apiVersion: 'backstage.io/v1alpha1',
+                kind: 'User',
+                spec: {
+                  profile: {
+                    displayName: 'Janelle Dawe',
+                  },
+                  memberOf: ['team-d'],
+                },
+                relations: [],
               },
-              relations: [],
-            },
-          ],
-          loading: false,
-          error: {} as Error,
-        }}
-        roleName="role:default/xyz"
-        initialValues={{
-          name: 'xyz',
-          namespace: 'default',
-          kind: 'role',
-          description: '',
-          selectedMembers: [
-            {
-              ref: 'user:default/janelle.dawe',
-              label: 'Janelle Dawe',
-              etag: 'b027e001c70faf091869106d4e9023f7bddb9502',
-              type: 'User',
-              namespace: 'default',
-            },
-          ],
-          permissionPoliciesRows: [
-            {
-              plugin: '',
-              permission: '',
-              policies: [
-                { policy: 'Create', effect: 'deny' },
-                { policy: 'Read', effect: 'deny' },
-                { policy: 'Update', effect: 'deny' },
-                { policy: 'Delete', effect: 'deny' },
-              ],
-            },
-          ],
-        }}
-        titles={{
-          formTitle: 'Edit Role',
-          nameAndDescriptionTitle: 'Edit name and description of role ',
-          usersAndGroupsTitle: 'Edit users and groups',
-          permissionPoliciesTitle: 'Edit permission policies',
-        }}
-      />,
+              {
+                metadata: {
+                  namespace: 'default',
+                  annotations: {},
+                  name: 'lucy.sheehan',
+                  uid: '00a6a3c6-329c-4c0e-8ffb-ce2a16782d24',
+                  etag: 'fb0eb7d5de1eb7d7bfd92c10ac5508623c7286b8',
+                },
+                apiVersion: 'backstage.io/v1alpha1',
+                kind: 'User',
+                spec: {
+                  profile: {
+                    displayName: 'Lucy Sheehan',
+                  },
+                  memberOf: ['team-d'],
+                },
+                relations: [],
+              },
+            ],
+            loading: false,
+            error: {} as Error,
+          }}
+          roleName="role:default/xyz"
+          initialValues={{
+            name: 'xyz',
+            namespace: 'default',
+            kind: 'role',
+            description: '',
+            selectedMembers: [
+              {
+                ref: 'user:default/janelle.dawe',
+                label: 'Janelle Dawe',
+                etag: 'b027e001c70faf091869106d4e9023f7bddb9502',
+                type: 'User',
+                namespace: 'default',
+              },
+            ],
+            permissionPoliciesRows: [
+              {
+                plugin: '',
+                permission: '',
+                policies: [
+                  { policy: 'Create', effect: 'deny' },
+                  { policy: 'Read', effect: 'deny' },
+                  { policy: 'Update', effect: 'deny' },
+                  { policy: 'Delete', effect: 'deny' },
+                ],
+              },
+            ],
+          }}
+          titles={{
+            formTitle: 'Edit Role',
+            nameAndDescriptionTitle: 'Edit name and description of role ',
+            usersAndGroupsTitle: 'Edit users and groups',
+            permissionPoliciesTitle: 'Edit permission policies',
+          }}
+        />
+      </TestApiProvider>,
     );
 
     expect(screen.getByText(/edit users and groups/i)).toBeInTheDocument();
@@ -318,35 +351,42 @@ describe('Edit RoleForm', () => {
       status: { submitError: 'Unable to edit the role. Unexpected error' },
     });
     render(
-      <RoleForm
-        membersData={{ members: [], loading: false, error: {} as Error }}
-        roleName="role:default/xyz"
-        initialValues={{
-          name: 'xyz',
-          namespace: 'default',
-          kind: 'role',
-          description: '',
-          selectedMembers: [],
-          permissionPoliciesRows: [
-            {
-              plugin: '',
-              permission: '',
-              policies: [
-                { policy: 'Create', effect: 'deny' },
-                { policy: 'Read', effect: 'deny' },
-                { policy: 'Update', effect: 'deny' },
-                { policy: 'Delete', effect: 'deny' },
-              ],
-            },
-          ],
-        }}
-        titles={{
-          formTitle: 'Edit Role',
-          nameAndDescriptionTitle: 'Edit name and description of role ',
-          usersAndGroupsTitle: 'Edit users and groups',
-          permissionPoliciesTitle: 'Edit permission policies',
-        }}
-      />,
+      <TestApiProvider
+        apis={[
+          [translationApiRef, MockTranslationApi.create()],
+          [errorApiRef, new MockErrorApi()],
+        ]}
+      >
+        <RoleForm
+          membersData={{ members: [], loading: false, error: {} as Error }}
+          roleName="role:default/xyz"
+          initialValues={{
+            name: 'xyz',
+            namespace: 'default',
+            kind: 'role',
+            description: '',
+            selectedMembers: [],
+            permissionPoliciesRows: [
+              {
+                plugin: '',
+                permission: '',
+                policies: [
+                  { policy: 'Create', effect: 'deny' },
+                  { policy: 'Read', effect: 'deny' },
+                  { policy: 'Update', effect: 'deny' },
+                  { policy: 'Delete', effect: 'deny' },
+                ],
+              },
+            ],
+          }}
+          titles={{
+            formTitle: 'Edit Role',
+            nameAndDescriptionTitle: 'Edit name and description of role ',
+            usersAndGroupsTitle: 'Edit users and groups',
+            permissionPoliciesTitle: 'Edit permission policies',
+          }}
+        />
+      </TestApiProvider>,
     );
 
     expect(
