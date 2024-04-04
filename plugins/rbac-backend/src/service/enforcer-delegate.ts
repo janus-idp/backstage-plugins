@@ -461,8 +461,9 @@ export class EnforcerDelegate {
             await this.roleMetadataStorage.removeRoleMetadata(roleEntity, trx);
           } else if (roleMetadata) {
             roleMetadata.modifiedBy = modifiedBy;
+            roleMetadata.lastModified = new Date().toUTCString();
             await this.roleMetadataStorage.updateRoleMetadata(
-              this.mergeMetadata(roleMetadata, roleMetadata),
+              roleMetadata,
               roleEntity,
               trx,
             );
@@ -682,6 +683,7 @@ export class EnforcerDelegate {
     newMetadata: RoleMetadataDao,
   ): RoleMetadataDao {
     const mergedMetaData: RoleMetadataDao = { ...currentMetadata };
+    console.log(`===== new metadata: ${JSON.stringify(mergedMetaData)}`);
     mergedMetaData.lastModified =
       newMetadata.lastModified ?? new Date().toUTCString();
     mergedMetaData.modifiedBy = newMetadata.modifiedBy;
