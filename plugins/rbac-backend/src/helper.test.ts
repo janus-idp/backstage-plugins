@@ -10,10 +10,7 @@ import {
 } from './helper';
 // Import the function to test
 import { EnforcerDelegate } from './service/enforcer-delegate';
-import {
-  ADMIN_ROLE_AUTHOR,
-  ADMIN_ROLE_NAME,
-} from './service/permission-policy';
+import { ADMIN_ROLE_AUTHOR } from './service/permission-policy';
 
 describe('helper.ts', () => {
   describe('policyToString', () => {
