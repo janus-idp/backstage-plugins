@@ -529,11 +529,10 @@ describe('EnforcerDelegate', () => {
 
       const enfDelegate = await createEnfDelegate();
 
-      await enfDelegate.addGroupingPolicy(
-        groupingPolicy,
-        { source: 'rest', roleEntityRef: 'role:default/dev-team' },
-        undefined,
-      );
+      await enfDelegate.addGroupingPolicy(groupingPolicy, {
+        source: 'rest',
+        roleEntityRef: 'role:default/dev-team',
+      });
 
       expect(enfUpdateGroupingPolicySpy).toHaveBeenCalledWith(
         ...groupingPolicy,
