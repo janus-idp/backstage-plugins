@@ -144,8 +144,6 @@ export class EnforcerDelegate {
         );
       }
 
-      const currentDate: Date = new Date();
-      roleMetadata.lastModified = currentDate.toUTCString();
       if (currentMetadata) {
         await this.roleMetadataStorage.updateRoleMetadata(
           this.mergeMetadata(currentMetadata, roleMetadata),
@@ -153,7 +151,9 @@ export class EnforcerDelegate {
           trx,
         );
       } else {
+        const currentDate: Date = new Date();
         roleMetadata.createdAt = currentDate.toUTCString();
+        roleMetadata.lastModified = currentDate.toUTCString();
         await this.roleMetadataStorage.createRoleMetadata(roleMetadata, trx);
       }
 
@@ -188,19 +188,21 @@ export class EnforcerDelegate {
         );
       }
 
-      const entityRef = roleMetadata.roleEntityRef;
-      const currentDate: Date = new Date();
       const currentRoleMetadata =
-        await this.roleMetadataStorage.findRoleMetadata(entityRef, trx);
-      roleMetadata.lastModified = currentDate.toUTCString();
+        await this.roleMetadataStorage.findRoleMetadata(
+          roleMetadata.roleEntityRef,
+          trx,
+        );
       if (currentRoleMetadata) {
         await this.roleMetadataStorage.updateRoleMetadata(
           this.mergeMetadata(currentRoleMetadata, roleMetadata),
-          entityRef,
+          roleMetadata.roleEntityRef,
           trx,
         );
       } else {
+        const currentDate: Date = new Date();
         roleMetadata.createdAt = currentDate.toUTCString();
+        roleMetadata.lastModified = currentDate.toUTCString();
         await this.roleMetadataStorage.createRoleMetadata(roleMetadata, trx);
       }
 
@@ -392,7 +394,6 @@ export class EnforcerDelegate {
         ) {
           await this.roleMetadataStorage.removeRoleMetadata(roleEntity, trx);
         } else if (currentRoleMetadata) {
-          roleMetadata.lastModified = new Date().toUTCString();
           await this.roleMetadataStorage.updateRoleMetadata(
             this.mergeMetadata(currentRoleMetadata, roleMetadata),
             roleEntity,
@@ -460,7 +461,6 @@ export class EnforcerDelegate {
             await this.roleMetadataStorage.removeRoleMetadata(roleEntity, trx);
           } else if (roleMetadata) {
             roleMetadata.modifiedBy = modifiedBy;
-            roleMetadata.lastModified = new Date().toUTCString();
             await this.roleMetadataStorage.updateRoleMetadata(
               this.mergeMetadata(roleMetadata, roleMetadata),
               roleEntity,
@@ -681,9 +681,9 @@ export class EnforcerDelegate {
     currentMetadata: RoleMetadataDao,
     newMetadata: RoleMetadataDao,
   ): RoleMetadataDao {
-    const currentDate: Date = new Date();
     const mergedMetaData: RoleMetadataDao = { ...currentMetadata };
-    mergedMetaData.lastModified = currentDate.toUTCString();
+    mergedMetaData.lastModified =
+      newMetadata.lastModified ?? new Date().toUTCString();
     mergedMetaData.modifiedBy = newMetadata.modifiedBy;
     mergedMetaData.description =
       newMetadata.description ?? currentMetadata.description;

@@ -226,6 +226,7 @@ export const loadFilteredGroupingPoliciesFromCSV = async (
         roleEntityRef,
         source: 'csv-file',
         author: CSV_PERMISSION_POLICY_FILE_AUTHOR,
+        modifiedBy: CSV_PERMISSION_POLICY_FILE_AUTHOR,
       });
     } else if (roleSource?.source !== 'csv-file') {
       logger.warn(
@@ -254,6 +255,7 @@ export const loadFilteredGroupingPoliciesFromCSV = async (
           roleEntityRef: role[1],
           source: 'csv-file',
           author: CSV_PERMISSION_POLICY_FILE_AUTHOR,
+          modifiedBy: CSV_PERMISSION_POLICY_FILE_AUTHOR,
         },
         true,
         true,
