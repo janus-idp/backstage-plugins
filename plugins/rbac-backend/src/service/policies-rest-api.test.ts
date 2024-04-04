@@ -129,8 +129,6 @@ const mockEnforcer: Partial<EnforcerDelegate> = {
   updatePolicies: jest.fn().mockImplementation(),
 
   updateGroupingPolicies: jest.fn().mockImplementation(),
-
-  addOrUpdateGroupingPolicies: jest.fn().mockImplementation(),
 };
 
 const roleMetadataStorageMock: RoleMetadataStorage = {

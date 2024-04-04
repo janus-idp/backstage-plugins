@@ -20,6 +20,7 @@ import {
   RoleMetadataDao,
   RoleMetadataStorage,
 } from '../database/role-metadata';
+import { CSV_PERMISSION_POLICY_FILE_AUTHOR } from '../file-permissions/csv';
 import { policyToString } from '../helper';
 import { BackstageRoleManager } from '../role-manager/role-manager';
 import { EnforcerDelegate } from './enforcer-delegate';
@@ -418,7 +419,10 @@ describe('EnforcerDelegate', () => {
 
       const enfDelegate = await createEnfDelegate();
 
-      await enfDelegate.addGroupingPolicy(groupingPolicy, 'rest');
+      await enfDelegate.addGroupingPolicy(groupingPolicy, {
+        source: 'rest',
+        roleEntityRef: 'role:default/dev-team',
+      });
 
       expect(enfUpdateGroupingPolicySpy).toHaveBeenCalledWith(
         ...groupingPolicy,
@@ -459,7 +463,10 @@ describe('EnforcerDelegate', () => {
 
       const enfDelegate = await createEnfDelegate();
 
-      await enfDelegate.addGroupingPolicy(groupingPolicy, 'rest');
+      await enfDelegate.addGroupingPolicy(groupingPolicy, {
+        source: 'rest',
+        roleEntityRef: 'role:default/dev-team',
+      });
 
       expect(enfUpdateGroupingPolicySpy).toHaveBeenCalledWith(
         ...groupingPolicy,
@@ -480,7 +487,10 @@ describe('EnforcerDelegate', () => {
         });
 
       await expect(
-        enfDelegate.addGroupingPolicy(groupingPolicy, 'rest'),
+        enfDelegate.addGroupingPolicy(groupingPolicy, {
+          source: 'rest',
+          roleEntityRef: 'role:default/dev-team',
+        }),
       ).rejects.toThrow('some unexpected error');
     });
 
@@ -494,7 +504,10 @@ describe('EnforcerDelegate', () => {
         });
 
       await expect(
-        enfDelegate.addGroupingPolicy(groupingPolicy, 'rest'),
+        enfDelegate.addGroupingPolicy(groupingPolicy, {
+          source: 'rest',
+          roleEntityRef: 'role:default/dev-team',
+        }),
       ).rejects.toThrow('some unexpected error');
     });
 
@@ -516,7 +529,11 @@ describe('EnforcerDelegate', () => {
 
       const enfDelegate = await createEnfDelegate();
 
-      await enfDelegate.addGroupingPolicy(groupingPolicy, 'rest', undefined);
+      await enfDelegate.addGroupingPolicy(
+        groupingPolicy,
+        { source: 'rest', roleEntityRef: 'role:default/dev-team' },
+        undefined,
+      );
 
       expect(enfUpdateGroupingPolicySpy).toHaveBeenCalledWith(
         ...groupingPolicy,
@@ -1242,7 +1259,7 @@ describe('EnforcerDelegate', () => {
       const enfDelegate = await createEnfDelegate([], [groupingPolicyToDelete]);
       await enfDelegate.removeGroupingPolicy(
         groupingPolicyToDelete,
-        'rest',
+        { source: 'rest', roleEntityRef: 'role:default/team-dev' },
         false,
       );
 
@@ -1293,7 +1310,7 @@ describe('EnforcerDelegate', () => {
       );
       await enfDelegate.removeGroupingPolicy(
         groupingPolicyToDelete,
-        'rest',
+        { source: 'rest', roleEntityRef: 'role:default/team-dev' },
         false,
       );
 
@@ -1342,7 +1359,7 @@ describe('EnforcerDelegate', () => {
       const enfDelegate = await createEnfDelegate([], [groupingPolicyToDelete]);
       await enfDelegate.removeGroupingPolicy(
         groupingPolicyToDelete,
-        'rest',
+        { source: 'rest', roleEntityRef: 'role:default/team-dev' },
         true,
       );
 
@@ -1369,7 +1386,11 @@ describe('EnforcerDelegate', () => {
 
       const enfDelegate = await createEnfDelegate([], [groupingPolicyToDelete]);
       await expect(
-        enfDelegate.removeGroupingPolicy(groupingPolicyToDelete, 'rest', false),
+        enfDelegate.removeGroupingPolicy(
+          groupingPolicyToDelete,
+          { source: 'rest', roleEntityRef: 'role:default/team-dev' },
+          false,
+        ),
       ).rejects.toThrow(
         `A metadata for policy '${policyToString(
           groupingPolicyToDelete,
@@ -1388,7 +1409,11 @@ describe('EnforcerDelegate', () => {
 
       const enfDelegate = await createEnfDelegate([], [groupingPolicyToDelete]);
       await expect(
-        enfDelegate.removeGroupingPolicy(groupingPolicyToDelete, 'rest', false),
+        enfDelegate.removeGroupingPolicy(
+          groupingPolicyToDelete,
+          { source: 'rest', roleEntityRef: 'role:default/team-dev' },
+          false,
+        ),
       ).rejects.toThrow(
         `Error: Attempted to modify an immutable pre-defined policy '${policyToString(
           groupingPolicyToDelete,
@@ -1409,7 +1434,11 @@ describe('EnforcerDelegate', () => {
 
       const enfDelegate = await createEnfDelegate([], [groupingPolicyToDelete]);
       await expect(
-        enfDelegate.removeGroupingPolicy(groupingPolicyToDelete, 'rest', false),
+        enfDelegate.removeGroupingPolicy(
+          groupingPolicyToDelete,
+          { source: 'rest', roleEntityRef: 'role:default/team-dev' },
+          false,
+        ),
       ).rejects.toThrow(
         `policy '${policyToString(
           groupingPolicyToDelete,
@@ -1429,7 +1458,7 @@ describe('EnforcerDelegate', () => {
       const enfDelegate = await createEnfDelegate([], [groupingPolicyToDelete]);
       await enfDelegate.removeGroupingPolicy(
         groupingPolicyToDelete,
-        'rest',
+        { source: 'rest', roleEntityRef: 'role:default/team-dev' },
         false,
         true,
       );
@@ -1475,6 +1504,7 @@ describe('EnforcerDelegate', () => {
       await enfDelegate.removeGroupingPolicies(
         groupingPoliciesToDelete,
         'rest',
+        'user:default/test-user',
         false,
       );
 
@@ -1539,6 +1569,7 @@ describe('EnforcerDelegate', () => {
       await enfDelegate.removeGroupingPolicies(
         groupingPoliciesToDelete,
         'rest',
+        'user:default/test-user',
         false,
       );
 
@@ -1600,6 +1631,7 @@ describe('EnforcerDelegate', () => {
       await enfDelegate.removeGroupingPolicies(
         groupingPoliciesToDelete,
         'rest',
+        'user:default/test-user',
         true,
         true,
       );
@@ -1641,6 +1673,7 @@ describe('EnforcerDelegate', () => {
         enfDelegate.removeGroupingPolicies(
           groupingPoliciesToDelete,
           'rest',
+          'user:default/test-user',
           false,
         ),
       ).rejects.toThrow(
@@ -1664,6 +1697,7 @@ describe('EnforcerDelegate', () => {
         enfDelegate.removeGroupingPolicies(
           groupingPoliciesToDelete,
           'rest',
+          'user:default/test-user',
           false,
         ),
       ).rejects.toThrow(
@@ -1689,6 +1723,7 @@ describe('EnforcerDelegate', () => {
         enfDelegate.removeGroupingPolicies(
           groupingPoliciesToDelete,
           'rest',
+          'user:default/test-user',
           false,
         ),
       ).rejects.toThrow(
@@ -1713,6 +1748,7 @@ describe('EnforcerDelegate', () => {
       await enfDelegate.removeGroupingPolicies(
         groupingPoliciesToDelete,
         'rest',
+        CSV_PERMISSION_POLICY_FILE_AUTHOR,
         true,
         true,
       );
@@ -1778,7 +1814,10 @@ describe('EnforcerDelegate', () => {
 
       const enfDelegate = await createEnfDelegate();
 
-      await enfDelegate.addOrUpdateGroupingPolicy(groupingPolicy, 'rest');
+      await enfDelegate.addOrUpdateGroupingPolicy(groupingPolicy, {
+        source: 'rest',
+        roleEntityRef: 'role:default/dev-team',
+      });
 
       expect(enfUpdateGroupingPolicySpy).toHaveBeenCalledWith(
         ...groupingPolicy,
@@ -1820,7 +1859,10 @@ describe('EnforcerDelegate', () => {
 
       const enfDelegate = await createEnfDelegate([], [groupingPolicy]);
 
-      await enfDelegate.addOrUpdateGroupingPolicy(groupingPolicy, 'rest');
+      await enfDelegate.addOrUpdateGroupingPolicy(groupingPolicy, {
+        source: 'rest',
+        roleEntityRef: 'role:default/dev-team',
+      });
 
       const metadata: RoleMetadataDao = (
         roleMetadataStorageMock.updateRoleMetadata as jest.Mock

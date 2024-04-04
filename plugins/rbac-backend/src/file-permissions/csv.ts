@@ -3,7 +3,10 @@ import { isEqual } from 'lodash';
 import { Logger } from 'winston';
 
 import { PolicyMetadataStorage } from '../database/policy-metadata-storage';
-import { RoleMetadataStorage } from '../database/role-metadata';
+import {
+  RoleMetadataDao,
+  RoleMetadataStorage,
+} from '../database/role-metadata';
 import { metadataStringToPolicy, transformArrayToPolicy } from '../helper';
 import { EnforcerDelegate } from '../service/enforcer-delegate';
 import { MODEL } from '../service/permission-model';
@@ -14,6 +17,8 @@ import {
   validateEntityReference,
   validatePolicy,
 } from '../service/policies-validation';
+
+export const CSV_PERMISSION_POLICY_FILE_AUTHOR = 'csv permission policy file';
 
 const addPolicy = async (
   policy: string[],
@@ -204,7 +209,8 @@ export const loadFilteredGroupingPoliciesFromCSV = async (
       logger.warn(duplicateError.message);
     }
 
-    const err = validateEntityReference(role[1]);
+    const roleEntityRef = role[1];
+    const err = validateEntityReference(roleEntityRef);
     if (err) {
       logger.warn(
         `Failed to validate role from file ${policyFile}. Cause: ${err.message}`,
@@ -216,7 +222,11 @@ export const loadFilteredGroupingPoliciesFromCSV = async (
 
     // Role exists in the file but not the enforcer
     if (!(await enf.hasGroupingPolicy(...role))) {
-      await enf.addOrUpdateGroupingPolicy(role, 'csv-file');
+      await enf.addOrUpdateGroupingPolicy(role, {
+        roleEntityRef,
+        source: 'csv-file',
+        author: CSV_PERMISSION_POLICY_FILE_AUTHOR,
+      });
     } else if (roleSource?.source !== 'csv-file') {
       logger.warn(
         `Duplicate role: ${role[0]}, ${role[1]} found with the source ${roleSource?.source}`,
@@ -238,7 +248,16 @@ export const loadFilteredGroupingPoliciesFromCSV = async (
       !(await tempEnforcer.hasGroupingPolicy(...role)) &&
       enfRoleSource?.source === 'csv-file'
     ) {
-      await enf.removeGroupingPolicy(role, 'csv-file', true, true);
+      await enf.removeGroupingPolicy(
+        role,
+        {
+          roleEntityRef: role[1],
+          source: 'csv-file',
+          author: CSV_PERMISSION_POLICY_FILE_AUTHOR,
+        },
+        true,
+        true,
+      );
     }
   }
 
@@ -305,7 +324,12 @@ export const removedOldPermissionPoliciesFileData = async (
   }
 
   if (groupPoliciesToDelete.length > 0) {
-    await enf.removeGroupingPolicies(groupPoliciesToDelete, 'csv-file', true);
+    await enf.removeGroupingPolicies(
+      groupPoliciesToDelete,
+      'csv-file',
+      CSV_PERMISSION_POLICY_FILE_AUTHOR,
+      true,
+    );
   }
   if (policiesToDelete.length > 0) {
     await enf.removePolicies(policiesToDelete, 'csv-file', true);
@@ -360,6 +384,12 @@ export const addPermissionPoliciesFileData = async (
     if (duplicateError) {
       logger.warn(duplicateError.message);
     }
-    await enf.addOrUpdateGroupingPolicy(groupPolicy, 'csv-file', false);
+    const metadata: RoleMetadataDao = {
+      roleEntityRef: groupPolicy[1],
+      source: 'csv-file',
+      author: CSV_PERMISSION_POLICY_FILE_AUTHOR,
+      modifiedBy: CSV_PERMISSION_POLICY_FILE_AUTHOR,
+    };
+    await enf.addOrUpdateGroupingPolicy(groupPolicy, metadata, false);
   }
 };

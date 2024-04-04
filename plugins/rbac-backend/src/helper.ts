@@ -34,16 +34,21 @@ export async function removeTheDifference(
   originalGroup: string[],
   addedGroup: string[],
   source: Source,
-  roleName: string,
+  roleEntityRef: string,
   enf: EnforcerDelegate,
+  modifiedBy: string,
 ): Promise<void> {
   originalGroup.sort((a, b) => a.localeCompare(b));
   addedGroup.sort((a, b) => a.localeCompare(b));
   const missing = difference(originalGroup, addedGroup);
 
   for (const missingRole of missing) {
-    const role = [missingRole, roleName];
-    await enf.removeGroupingPolicy(role, source, false);
+    const role = [missingRole, roleEntityRef];
+    await enf.removeGroupingPolicy(
+      role,
+      { source, modifiedBy, roleEntityRef },
+      false,
+    );
   }
 }
 

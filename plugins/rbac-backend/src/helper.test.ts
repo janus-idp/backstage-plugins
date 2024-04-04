@@ -10,6 +10,10 @@ import {
 } from './helper';
 // Import the function to test
 import { EnforcerDelegate } from './service/enforcer-delegate';
+import {
+  ADMIN_ROLE_AUTHOR,
+  ADMIN_ROLE_NAME,
+} from './service/permission-policy';
 
 describe('helper.ts', () => {
   describe('policyToString', () => {
@@ -87,11 +91,16 @@ describe('helper.ts', () => {
         source,
         roleName,
         mockEnforcerDelegate as EnforcerDelegate,
+        ADMIN_ROLE_AUTHOR,
       );
 
       expect(mockEnforcerDelegate.removeGroupingPolicy).toHaveBeenCalledWith(
         ['user:default/admin', roleName],
-        source,
+        {
+          modifiedBy: ADMIN_ROLE_AUTHOR,
+          roleEntityRef: 'role:default/admin',
+          source: 'rest',
+        },
         false,
       );
     });
@@ -108,6 +117,7 @@ describe('helper.ts', () => {
         source,
         roleName,
         mockEnforcerDelegate as EnforcerDelegate,
+        ADMIN_ROLE_AUTHOR,
       );
 
       expect(mockEnforcerDelegate.removeGroupingPolicy).not.toHaveBeenCalled();
@@ -125,6 +135,7 @@ describe('helper.ts', () => {
         source,
         roleName,
         mockEnforcerDelegate as EnforcerDelegate,
+        ADMIN_ROLE_AUTHOR,
       );
 
       expect(mockEnforcerDelegate.removeGroupingPolicy).not.toHaveBeenCalled();

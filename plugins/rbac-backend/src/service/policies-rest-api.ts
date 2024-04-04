@@ -561,7 +561,13 @@ export class PolicesServer {
           );
         }
 
-        await this.enforcer.removeGroupingPolicies(roleMembers, 'rest', false);
+        const user = await this.identity.getIdentity({ request });
+        await this.enforcer.removeGroupingPolicies(
+          roleMembers,
+          'rest',
+          user?.identity.userEntityRef,
+          false,
+        );
 
         response.status(204).end();
       },

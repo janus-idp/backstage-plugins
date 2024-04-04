@@ -768,7 +768,10 @@ describe('CSV file', () => {
           },
         );
 
-      await enfDelegate.addGroupingPolicy(duplicateRest, 'rest');
+      await enfDelegate.addGroupingPolicy(duplicateRest, {
+        source: 'rest',
+        roleEntityRef: duplicateRest[1],
+      });
 
       const errorPolicyFile = resolve(
         __dirname,
@@ -962,7 +965,10 @@ describe('CSV file', () => {
         );
 
       await enfDelegate.addPolicy(duplicatePolicyEnforcer, 'rest');
-      await enfDelegate.addGroupingPolicy(duplicateRoleEnforcer, 'rest');
+      await enfDelegate.addGroupingPolicy(duplicateRoleEnforcer, {
+        source: 'rest',
+        roleEntityRef: duplicateRoleEnforcer[1],
+      });
 
       const errorPolicyFile = resolve(
         __dirname,
