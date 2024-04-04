@@ -27,7 +27,7 @@
     "@backstage/plugin-auth-backend": "^0.22.3",
     "@backstage/plugin-auth-node": "^0.4.11",
     "@backstage/plugin-catalog-backend": "^1.21.0",
-    "@backstage/plugin-events-backend": "^0.3.2",
+    "@backstage/plugin-events-backend": "^0.3.3",
     "@backstage/plugin-events-node": "^0.3.2",
     "@backstage/plugin-permission-backend": "^0.5.40",
     "@backstage/plugin-permission-common": "^0.7.13",

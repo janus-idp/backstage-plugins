@@ -41,7 +41,7 @@
     "tsc": "tsc"
   },
   "dependencies": {
-    "@backstage/backend-dynamic-feature-service": "^0.2.7",
+    "@backstage/backend-dynamic-feature-service": "^0.2.8",
     "@backstage/backend-plugin-api": "^0.6.16",
     "@backstage/plugin-scaffolder-node": "^0.4.2"
   },

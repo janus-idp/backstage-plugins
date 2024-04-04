@@ -50,7 +50,7 @@
     "@backstage/errors": "^1.2.4",
     "@backstage/plugin-auth-node": "^0.4.11",
     "@backstage/plugin-catalog-node": "^1.11.0",
-    "@backstage/backend-dynamic-feature-service": "^0.2.7"
+    "@backstage/backend-dynamic-feature-service": "^0.2.8"
   },
   "overrides": {
     "@aws-sdk/util-utf8-browser": {

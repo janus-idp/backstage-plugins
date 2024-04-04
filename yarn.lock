@@ -2957,10 +2957,10 @@
   resolved "https://registry.yarnpkg.com/@backstage/backend-dev-utils/-/backend-dev-utils-0.1.4.tgz#65d204939c49b5df6a2148e8ad4dc718ccd1df07"
   integrity sha512-5YgAPz4CRtnqdaUlYCHwGmXvpkGQ1jaUMoDtiQ81WDxQrf+0iYZCwS4ftVyQmB0Ga6BaGOUf6GG/OuFA56Y5mA==
 
-"@backstage/backend-dynamic-feature-service@^0.2.7":
-  version "0.2.7"
-  resolved "https://registry.yarnpkg.com/@backstage/backend-dynamic-feature-service/-/backend-dynamic-feature-service-0.2.7.tgz#dee04a8e2cb1cbf339d02a39d6fb194456a648af"
-  integrity sha512-XGpZI0TffdVJ+lgl9H+O/o7hTvBi7LFFN2Yyj2HddaSWyrfBegi259h8K/jRPYSGGsX253Ure6SVjZjv4Vb+YA==
+"@backstage/backend-dynamic-feature-service@^0.2.8":
+  version "0.2.8"
+  resolved "https://registry.yarnpkg.com/@backstage/backend-dynamic-feature-service/-/backend-dynamic-feature-service-0.2.8.tgz#4ca64e0a713aaf01155f3606a5ce24d026319a3b"
+  integrity sha512-7QB3voc1XCS9ioa8VEw9W/Yq3V0pPxGlBFdIaqJXcSGaehrCZm5qGKZG0EiP/WCqBEbzybPW4psHWwcOv3y9KA==
   dependencies:
     "@backstage/backend-app-api" "^0.6.2"
     "@backstage/backend-common" "^0.21.6"
@@ -2974,7 +2974,7 @@
     "@backstage/plugin-app-node" "^0.1.16"
     "@backstage/plugin-auth-node" "^0.4.11"
     "@backstage/plugin-catalog-backend" "^1.21.0"
-    "@backstage/plugin-events-backend" "^0.3.2"
+    "@backstage/plugin-events-backend" "^0.3.3"
     "@backstage/plugin-events-node" "^0.3.2"
     "@backstage/plugin-permission-common" "^0.7.13"
     "@backstage/plugin-permission-node" "^0.7.27"
@@ -3896,10 +3896,10 @@
     react-use "^17.2.4"
     zen-observable "^0.10.0"
 
-"@backstage/plugin-events-backend@^0.3.2":
-  version "0.3.2"
-  resolved "https://registry.yarnpkg.com/@backstage/plugin-events-backend/-/plugin-events-backend-0.3.2.tgz#b86a2a6fe8ca73220ce0d675588ca27731fa9f86"
-  integrity sha512-8ERVI9ft2BJqpdrd11EuURaAmpM151sU3Jifhv+wNRP44aumNXE97WsoPr/IYOdeIRfP6kqd11BBCFHVWjRnUg==
+"@backstage/plugin-events-backend@^0.3.3":
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/@backstage/plugin-events-backend/-/plugin-events-backend-0.3.3.tgz#12eecd2558da52927f17dcabedae683560c0ab21"
+  integrity sha512-nnBgVoAtVuM1jfq4qvVVncK7Kwr6cQw/dVUOrO88CgI/0LoCnQ/bUMG6Xn9fja3oDS+xnwZNtTyAHDsjR5R/QQ==
   dependencies:
     "@backstage/backend-common" "^0.21.6"
     "@backstage/backend-plugin-api" "^0.6.16"
