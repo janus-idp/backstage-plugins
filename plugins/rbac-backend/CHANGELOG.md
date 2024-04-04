@@ -1,3 +1,16 @@
+## @janus-idp/backstage-plugin-rbac-backend [2.5.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.5.0...@janus-idp/backstage-plugin-rbac-backend@2.5.1) (2024-04-04)
+
+
+### Bug Fixes
+
+* **rbac:** rework condition policies to bound them to RBAC roles ([#1330](https://github.com/janus-idp/backstage-plugins/issues/1330)) ([55c00b2](https://github.com/janus-idp/backstage-plugins/commit/55c00b21b27b449cb0e5100c7b64a6ae742536ac))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-rbac-common:** upgraded to 1.3.2
+
 ## @janus-idp/backstage-plugin-rbac-backend [2.5.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.4.1...@janus-idp/backstage-plugin-rbac-backend@2.5.0) (2024-03-29)
 
 
