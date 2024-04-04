@@ -1,23 +1,33 @@
 import { TokenManager } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import { parseEntityRef } from '@backstage/catalog-model';
+import { Config } from '@backstage/config';
 
 import { RoleManager } from 'casbin';
 import { Knex } from 'knex';
 import { Logger } from 'winston';
 
 import { AncestorSearchMemo } from './ancestor-search-memo';
+import { GroupCache } from './role-cache';
 import { RoleList } from './role-list';
 
 export class BackstageRoleManager implements RoleManager {
   private allRoles: Map<string, RoleList>;
+  private groupCache?: GroupCache;
   constructor(
     private readonly catalogApi: CatalogApi,
     private readonly log: Logger,
     private readonly tokenManager: TokenManager,
     private readonly catalogDBClient: Knex,
+    private readonly config: Config,
   ) {
     this.allRoles = new Map<string, RoleList>();
+    const cache = this.config.getOptionalConfig('permission.rbac.cache');
+    if (cache) {
+      const maxSize = cache.getOptionalNumber('maxSize');
+      const expiration = cache.getOptionalNumber('expiration');
+      this.groupCache = new GroupCache(maxSize, expiration);
+    }
   }
 
   /**
@@ -41,6 +51,7 @@ export class BackstageRoleManager implements RoleManager {
     const role2 = this.getOrCreateRole(name2);
 
     role1.addRole(role2);
+    this.removeRole(name2);
   }
 
   /**
@@ -56,6 +67,7 @@ export class BackstageRoleManager implements RoleManager {
     const role1 = this.getOrCreateRole(name1);
     const role2 = this.getOrCreateRole(name2);
     role1.deleteRole(role2);
+    this.removeRole(name2);
   }
 
   /**
@@ -86,7 +98,7 @@ export class BackstageRoleManager implements RoleManager {
     }
 
     // name1 is always user in our case.
-    // name2 is user or group.
+    // name2 is role or group.
     // user(name1) couldn't inherit user(name2).
     // We can use this fact for optimization.
     const { kind } = parseEntityRef(name2);
@@ -94,39 +106,33 @@ export class BackstageRoleManager implements RoleManager {
       return false;
     }
 
-    const memo = new AncestorSearchMemo(
-      name1,
-      this.tokenManager,
-      this.catalogApi,
-      this.catalogDBClient,
-    );
-    await memo.buildUserGraph(memo);
+    let memo: AncestorSearchMemo;
 
-    memo.debugNodesAndEdges(this.log, name1);
-    if (!memo.isAcyclic()) {
-      const cycles = memo.findCycles();
+    if (this.groupCache?.isEnabled()) {
+      if (!this.groupCache.get(name1) || this.groupCache.shouldUpdate(name1)) {
+        memo = await this.buildGraph(name1);
 
-      this.log.warn(
-        `Detected cycle dependencies in the Group graph: ${JSON.stringify(
-          cycles,
-        )}. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for groups: ${JSON.stringify(
-          cycles,
-        )}`,
-      );
+        if (!this.detectCycleError(memo, name1)) {
+          return false;
+        }
 
+        this.groupCache.put(name1, memo.getNodes());
+      }
+
+      const cacheTest = new Set(this.groupCache.get(name1)!);
+
+      return this.cachedCheck(cacheTest, name2);
+    }
+
+    // If the cache does not exist we need to build the graph and use it
+    // Otherwise we need to use the cache instead
+    memo = await this.buildGraph(name1);
+
+    if (!this.detectCycleError(memo, name1)) {
       return false;
     }
 
-    // iterate through the known roles to check if the second name is apart of the known roles
-    // and if the group that is attached to the second name is apart of the graph
-    if (!memo.hasEntityRef(name2) && this.parseEntityKind(name2) === 'role') {
-      for (const [key, value] of this.allRoles.entries()) {
-        if (value.hasRole(name2, 1) && memo.hasEntityRef(key)) {
-          return true;
-        }
-      }
-    }
-    return memo.hasEntityRef(name2);
+    return this.nonCachedCheck(memo, name2);
   }
 
   /**
@@ -170,14 +176,7 @@ export class BackstageRoleManager implements RoleManager {
   async getRoles(name: string, ..._domain: string[]): Promise<string[]> {
     const { kind } = parseEntityRef(name);
     if (kind === 'user') {
-      const memo = new AncestorSearchMemo(
-        name,
-        this.tokenManager,
-        this.catalogApi,
-        this.catalogDBClient,
-      );
-      await memo.getAllGroups();
-      await memo.buildUserGraph(memo);
+      const memo = await this.buildGraph(name);
       memo.debugNodesAndEdges(this.log, name);
       const userAndParentGroups = memo.getNodes();
       userAndParentGroups.push(name);
@@ -227,9 +226,64 @@ export class BackstageRoleManager implements RoleManager {
     return newRole;
   }
 
+  private removeRole(name: string): void {
+    this.allRoles.delete(name);
+  }
+
   // parse the entity to find out if it is a user / group / or role
   private parseEntityKind(name: string): string {
     const parsed = name.split(':');
     return parsed[0];
+  }
+
+  private cachedCheck(cachedGroups: Set<string>, name2: string): boolean {
+    for (const [key, value] of this.allRoles.entries()) {
+      if (value.hasRole(name2, 1) && cachedGroups.has(key)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private nonCachedCheck(memo: AncestorSearchMemo, name2: string): boolean {
+    if (!memo.hasEntityRef(name2) && this.parseEntityKind(name2) === 'role') {
+      for (const [key, value] of this.allRoles.entries()) {
+        if (value.hasRole(name2, 1) && memo.hasEntityRef(key)) {
+          return true;
+        }
+      }
+    }
+    return memo.hasEntityRef(name2);
+  }
+
+  private detectCycleError(memo: AncestorSearchMemo, name1: string): boolean {
+    memo.debugNodesAndEdges(this.log, name1);
+    if (!memo.isAcyclic()) {
+      const cycles = memo.findCycles();
+
+      this.log.warn(
+        `Detected cycle dependencies in the Group graph: ${JSON.stringify(
+          cycles,
+        )}. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for groups: ${JSON.stringify(
+          cycles,
+        )}`,
+      );
+
+      return false;
+    }
+    return true;
+  }
+
+  private async buildGraph(name1: string): Promise<AncestorSearchMemo> {
+    const memo = new AncestorSearchMemo(
+      name1,
+      this.tokenManager,
+      this.catalogApi,
+      this.catalogDBClient,
+    );
+    await memo.buildUserGraph(memo);
+
+    return memo;
   }
 }

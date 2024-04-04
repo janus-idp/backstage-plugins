@@ -175,3 +175,20 @@ The RBAC plugin offers the option to store policies in a database. It supports t
 - postgres: Recommended for production environments.
 
 Ensure that you have already configured the database backend for your Backstage instance, as the RBAC plugin utilizes the same database configuration.
+
+### Caching
+
+The RBAC offers optional cache support to enhance performance by reducing the need for the RBAC plugin to repeatedly traverse the user's group hierarchy graph. Although not mandatory, cache usage can cut down on the number of calls made while navigating Backstage. For instance, accessing the catalog page can trigger approximately 15 permission authorize API calls, which cache can help mitigate.
+
+However, we recognize the cache's downside: the potential for lingering user data after their removal from the organization. In such cases, we recommend using a short expiration time to manage essential API calls, ensuring cache validity during grouped API calls without prolonging user data retention.
+
+To enable caching, you will need to set maxSize and/or expiration under the cache section.
+
+```yaml
+permission:
+  enabled: true
+  rbac:
+    cache:
+      maxSize: 10 # Maximum size of the cache, defaults to 100
+      expiration: 60000 # Expiration in milliseconds (60 seconds), defaults to 1 hour
+```
