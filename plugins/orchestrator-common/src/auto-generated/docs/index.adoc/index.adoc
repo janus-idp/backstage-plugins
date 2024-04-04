@@ -1411,6 +1411,12 @@ Format of the workflow definition
 | 
 |  
 
+| lastRunId
+| 
+| String 
+| 
+|  
+
 | lastTriggeredMs
 | 
 | BigDecimal 
