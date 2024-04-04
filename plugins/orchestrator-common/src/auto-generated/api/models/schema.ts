@@ -79,6 +79,7 @@ export interface components {
       /** @description Workflow name */
       name?: string;
       format?: components['schemas']['WorkflowFormatDTO'];
+      lastRunId?: string;
       lastTriggeredMs?: number;
       lastRunStatus?: string;
       category?: components['schemas']['WorkflowCategoryDTO'];

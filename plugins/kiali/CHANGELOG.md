@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-kiali [1.16.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.15.0...@janus-idp/backstage-plugin-kiali@1.16.0) (2024-04-04)
+
+
+### Features
+
+* **kiali:** istio config list and details ([#1326](https://github.com/janus-idp/backstage-plugins/issues/1326)) ([f8fc349](https://github.com/janus-idp/backstage-plugins/commit/f8fc349e1305b10632520c4f25f78c45b54481bb))
+
 ## @janus-idp/backstage-plugin-kiali [1.15.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.14.2...@janus-idp/backstage-plugin-kiali@1.15.0) (2024-04-03)
 
 

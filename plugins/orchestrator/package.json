@@ -1,6 +1,6 @@
 {
   "name": "@janus-idp/backstage-plugin-orchestrator",
-  "version": "1.8.5",
+  "version": "1.8.6",
   "license": "Apache-2.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -43,7 +43,7 @@
     "@backstage/errors": "^1.2.4",
     "@backstage/plugin-catalog": "^1.18.2",
     "@backstage/types": "^1.1.1",
-    "@janus-idp/backstage-plugin-orchestrator-common": "1.6.1",
+    "@janus-idp/backstage-plugin-orchestrator-common": "1.6.2",
     "@kie-tools-core/editor": "^0.32.0",
     "@kie-tools-core/notifications": "^0.32.0",
     "@kie-tools-core/react-hooks": "^0.32.0",

@@ -1,3 +1,16 @@
+## @janus-idp/backstage-plugin-orchestrator [1.8.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.8.5...@janus-idp/backstage-plugin-orchestrator@1.8.6) (2024-04-04)
+
+
+### Documentation
+
+* **orchestrator:** add OpenAPI doc ([#1441](https://github.com/janus-idp/backstage-plugins/issues/1441)) ([f6275e2](https://github.com/janus-idp/backstage-plugins/commit/f6275e2b37f467e65c267f951db8c413a69eb923))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.6.2
+
 ## @janus-idp/backstage-plugin-orchestrator [1.8.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.8.4...@janus-idp/backstage-plugin-orchestrator@1.8.5) (2024-04-02)
 
 
