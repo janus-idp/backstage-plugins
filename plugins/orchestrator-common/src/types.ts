@@ -96,6 +96,7 @@ export interface WorkflowOverview {
   workflowId: string;
   format: WorkflowFormat;
   name?: string;
+  lastRunId?: string;
   lastTriggeredMs?: number;
   lastRunStatus?: ProcessInstanceStateValues;
   category?: string;

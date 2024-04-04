@@ -137,6 +137,7 @@ export class SonataFlowService {
 
     let lastTriggered: Date = new Date(0);
     let lastRunStatus: ProcessInstanceStateValues | undefined;
+    let lastRunId: string | undefined;
     let counter = 0;
     let totalDuration = 0;
     const definition = fromWorkflowSource(source);
@@ -154,6 +155,7 @@ export class SonataFlowService {
           continue;
         }
         if (new Date(pInstance.start) > lastTriggered) {
+          lastRunId = pInstance.id;
           lastTriggered = new Date(pInstance.start);
           lastRunStatus = pInstance.state;
         }
@@ -171,6 +173,7 @@ export class SonataFlowService {
       workflowId: definition.id,
       name: definition.name,
       format: extractWorkflowFormat(source),
+      lastRunId,
       lastTriggeredMs: lastTriggered.getTime(),
       lastRunStatus,
       category: getWorkflowCategory(definition),
