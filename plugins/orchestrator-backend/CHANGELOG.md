@@ -1,3 +1,17 @@
+## @janus-idp/backstage-plugin-orchestrator-backend [1.6.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.6.2...@janus-idp/backstage-plugin-orchestrator-backend@1.6.3) (2024-04-04)
+
+
+### Bug Fixes
+
+* **orchestrator:** add lastRunId to overview endpoints ([#1449](https://github.com/janus-idp/backstage-plugins/issues/1449)) ([cce56f7](https://github.com/janus-idp/backstage-plugins/commit/cce56f7de3acc41ecd30b1b9962d7817be69de7d))
+* **orchestrator:** only inputs inherited from the assessment workflow should be disabled ([#1436](https://github.com/janus-idp/backstage-plugins/issues/1436)) ([32d9bdf](https://github.com/janus-idp/backstage-plugins/commit/32d9bdfc38c07c4e60f0ce7670fc3813ad0d92c3))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.6.2
+
 ## @janus-idp/backstage-plugin-orchestrator-backend [1.6.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.6.1...@janus-idp/backstage-plugin-orchestrator-backend@1.6.2) (2024-04-02)
 
 
