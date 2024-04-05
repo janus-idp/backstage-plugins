@@ -446,37 +446,6 @@ describe('EnforcerDelegate', () => {
       expect(metadata.roleEntityRef).toEqual('role:default/dev-team');
     });
 
-    it('should add grouping policy, but do not create role metadata', async () => {
-      roleMetadataStorageMock.findRoleMetadata = jest
-        .fn()
-        .mockImplementation(
-          async (
-            _roleEntityRef: string,
-            _trx: Knex.Knex.Transaction,
-          ): Promise<RoleMetadataDao> => {
-            return {
-              source: 'csv-file',
-              roleEntityRef: 'role:default/dev-team',
-            };
-          },
-        );
-
-      const enfDelegate = await createEnfDelegate();
-
-      await enfDelegate.addGroupingPolicy(groupingPolicy, {
-        source: 'rest',
-        roleEntityRef: 'role:default/dev-team',
-      });
-
-      expect(enfUpdateGroupingPolicySpy).toHaveBeenCalledWith(
-        ...groupingPolicy,
-      );
-      expect(
-        policyMetadataStorageMock.createPolicyMetadata,
-      ).toHaveBeenCalledWith('rest', groupingPolicy, expect.anything());
-      expect(roleMetadataStorageMock.createRoleMetadata).not.toHaveBeenCalled();
-    });
-
     it('should fail to add policy, caused policy metadata storage error', async () => {
       const enfDelegate = await createEnfDelegate();
 
@@ -541,6 +510,7 @@ describe('EnforcerDelegate', () => {
         policyMetadataStorageMock.createPolicyMetadata,
       ).toHaveBeenCalledWith('rest', groupingPolicy, expect.anything());
 
+      expect(roleMetadataStorageMock.createRoleMetadata).not.toHaveBeenCalled();
       const metadata: RoleMetadataDao = (
         roleMetadataStorageMock.updateRoleMetadata as jest.Mock
       ).mock.calls[0][0];
@@ -591,6 +561,7 @@ describe('EnforcerDelegate', () => {
       expect(metadata.author).toEqual('user:default/some-user');
       expect(metadata.roleEntityRef).toEqual('role:default/security');
       expect(metadata.source).toEqual('rest');
+      expect(metadata.description).toBeUndefined();
     });
 
     it('should add grouping policies and create role metadata with description', async () => {
