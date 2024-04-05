@@ -101,7 +101,7 @@ const mockEnforcer: Partial<EnforcerDelegate> = {
 
   addPolicies: jest.fn().mockImplementation(),
 
-  addGroupingPolicy: jest.fn().mockImplementation(),
+  addOrUpdateGroupingPolicies: jest.fn().mockImplementation(),
 
   addGroupingPolicies: jest.fn().mockImplementation(),
 
@@ -129,8 +129,6 @@ const mockEnforcer: Partial<EnforcerDelegate> = {
   updatePolicies: jest.fn().mockImplementation(),
 
   updateGroupingPolicies: jest.fn().mockImplementation(),
-
-  addOrUpdateGroupingPolicies: jest.fn().mockImplementation(),
 };
 
 const roleMetadataStorageMock: RoleMetadataStorage = {
@@ -1705,9 +1703,11 @@ describe('REST policies api', () => {
       expect(mockEnforcer.addGroupingPolicies).toHaveBeenCalledWith(
         [['user:default/permission_admin', 'role:default/rbac_admin']],
         {
+          author: 'user:default/guest',
           roleEntityRef: 'role:default/rbac_admin',
           source: 'rest',
           description: '',
+          modifiedBy: 'user:default/guest',
         },
       );
     });
@@ -1729,7 +1729,9 @@ describe('REST policies api', () => {
         {
           roleEntityRef: 'role:default/rbac_admin',
           source: 'rest',
+          author: 'user:default/guest',
           description: 'some test description',
+          modifiedBy: 'user:default/guest',
         },
       );
     });
@@ -1985,7 +1987,7 @@ describe('REST policies api', () => {
       expect(result.statusCode).toEqual(204);
     });
 
-    it('should update description', async () => {
+    it('should update description and set author', async () => {
       mockEnforcer.hasGroupingPolicy = jest
         .fn()
         .mockImplementation(async (..._param: string[]): Promise<boolean> => {
@@ -2013,6 +2015,7 @@ describe('REST policies api', () => {
         [['user:default/permission_admin', 'role:default/rbac_admin']],
         {
           description: 'some admin role.',
+          modifiedBy: 'user:default/guest',
           roleEntityRef: 'role:default/rbac_admin',
           source: 'rest',
         },
@@ -2056,6 +2059,7 @@ describe('REST policies api', () => {
         ],
         {
           description: 'some admin role.',
+          modifiedBy: 'user:default/guest',
           roleEntityRef: 'role:default/rbac_admin',
           source: 'rest',
         },
@@ -2522,7 +2526,11 @@ describe('REST policies api', () => {
           memberReferences: ['group:default/test', 'user:default/test'],
           name: 'role:default/test',
           metadata: {
+            author: undefined,
+            createdAt: undefined,
             description: undefined,
+            lastModified: undefined,
+            modifiedBy: undefined,
             source: 'rest',
           },
         },

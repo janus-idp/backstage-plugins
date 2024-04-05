@@ -10,6 +10,7 @@ import {
 } from './helper';
 // Import the function to test
 import { EnforcerDelegate } from './service/enforcer-delegate';
+import { ADMIN_ROLE_AUTHOR } from './service/permission-policy';
 
 describe('helper.ts', () => {
   describe('policyToString', () => {
@@ -87,11 +88,16 @@ describe('helper.ts', () => {
         source,
         roleName,
         mockEnforcerDelegate as EnforcerDelegate,
+        ADMIN_ROLE_AUTHOR,
       );
 
       expect(mockEnforcerDelegate.removeGroupingPolicy).toHaveBeenCalledWith(
         ['user:default/admin', roleName],
-        source,
+        {
+          modifiedBy: ADMIN_ROLE_AUTHOR,
+          roleEntityRef: 'role:default/admin',
+          source: 'rest',
+        },
         false,
       );
     });
@@ -108,6 +114,7 @@ describe('helper.ts', () => {
         source,
         roleName,
         mockEnforcerDelegate as EnforcerDelegate,
+        ADMIN_ROLE_AUTHOR,
       );
 
       expect(mockEnforcerDelegate.removeGroupingPolicy).not.toHaveBeenCalled();
@@ -125,6 +132,7 @@ describe('helper.ts', () => {
         source,
         roleName,
         mockEnforcerDelegate as EnforcerDelegate,
+        ADMIN_ROLE_AUTHOR,
       );
 
       expect(mockEnforcerDelegate.removeGroupingPolicy).not.toHaveBeenCalled();
@@ -183,6 +191,34 @@ describe('helper.ts', () => {
         roleEntityRef: 'role:default/qa',
       };
       expect(deepSortedEqual(obj1, obj2)).toBe(true);
+    });
+
+    it('should return true for identical objects with different ordering of top-level properties with exclude read only fields', () => {
+      const obj1: RoleMetadataDao = {
+        description: 'qa team',
+        id: 1,
+        roleEntityRef: 'role:default/qa',
+        source: 'rest',
+        // read only properties
+        author: 'role:default/some-role',
+        modifiedBy: 'role:default/some-role',
+        createdAt: '2024-02-26 12:25:31+00',
+        lastModified: '2024-02-26 12:25:31+00',
+      };
+      const obj2: RoleMetadataDao = {
+        id: 1,
+        description: 'qa team',
+        source: 'rest',
+        roleEntityRef: 'role:default/qa',
+      };
+      expect(
+        deepSortedEqual(obj1, obj2, [
+          'author',
+          'modifiedBy',
+          'createdAt',
+          'lastModified',
+        ]),
+      ).toBe(true);
     });
 
     it('should return false for objects with different values', () => {

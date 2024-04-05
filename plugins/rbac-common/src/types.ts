@@ -13,9 +13,10 @@ export type PermissionPolicyMetadata = {
 export type RoleMetadata = {
   description?: string;
   source?: Source;
-  // not implemented yet
   modifiedBy?: string;
+  author?: string;
   lastModified?: string;
+  createdAt?: string;
 };
 
 export type Policy = {

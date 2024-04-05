@@ -24,7 +24,10 @@ import {
 
 import { ConditionalStorage } from '../database/conditional-storage';
 import { PolicyMetadataStorage } from '../database/policy-metadata-storage';
-import { RoleMetadataStorage } from '../database/role-metadata';
+import {
+  RoleMetadataDao,
+  RoleMetadataStorage,
+} from '../database/role-metadata';
 import {
   addPermissionPoliciesFileData,
   loadFilteredCSV,
@@ -34,7 +37,23 @@ import { metadataStringToPolicy, removeTheDifference } from '../helper';
 import { EnforcerDelegate } from './enforcer-delegate';
 import { validateEntityReference } from './policies-validation';
 
-const adminRoleName = 'role:default/rbac_admin';
+export const ADMIN_ROLE_NAME = 'role:default/rbac_admin';
+export const ADMIN_ROLE_AUTHOR = 'application configuration';
+const DEF_ADMIN_ROLE_DESCRIPTION =
+  'The default permission policy for the admin role allows for the creation, deletion, updating, and reading of roles and permission policies.';
+
+const getAdminRoleMetadata = (): RoleMetadataDao => {
+  const currentDate: Date = new Date();
+  return {
+    source: 'configuration',
+    roleEntityRef: ADMIN_ROLE_NAME,
+    description: DEF_ADMIN_ROLE_DESCRIPTION,
+    author: ADMIN_ROLE_AUTHOR,
+    modifiedBy: ADMIN_ROLE_AUTHOR,
+    lastModified: currentDate.toUTCString(),
+    createdAt: currentDate.toUTCString(),
+  };
+};
 
 const useAdminsFromConfig = async (
   admins: Config[],
@@ -49,27 +68,24 @@ const useAdminsFromConfig = async (
     const entityRef = admin.getString('name');
     validateEntityReference(entityRef);
 
-    addedGroupPolicies.set(entityRef, adminRoleName);
+    addedGroupPolicies.set(entityRef, ADMIN_ROLE_NAME);
   }
 
   const adminRoleMeta =
-    await roleMetadataStorage.findRoleMetadata(adminRoleName);
+    await roleMetadataStorage.findRoleMetadata(ADMIN_ROLE_NAME);
 
   const trx = await knex.transaction();
   try {
     if (!adminRoleMeta) {
-      await roleMetadataStorage.createRoleMetadata(
-        { source: 'configuration', roleEntityRef: adminRoleName },
-        trx,
-      );
+      // even if there are no user, we still create default role metadata for admins
+      await roleMetadataStorage.createRoleMetadata(getAdminRoleMetadata(), trx);
     } else if (adminRoleMeta.source === 'legacy') {
-      await roleMetadataStorage.removeRoleMetadata(adminRoleName, trx);
-      await roleMetadataStorage.createRoleMetadata(
-        { source: 'configuration', roleEntityRef: adminRoleName },
+      await roleMetadataStorage.updateRoleMetadata(
+        getAdminRoleMetadata(),
+        ADMIN_ROLE_NAME,
         trx,
       );
     }
-
     await trx.commit();
   } catch (error) {
     await trx.rollback(error);
@@ -78,7 +94,7 @@ const useAdminsFromConfig = async (
 
   await enf.addOrUpdateGroupingPolicies(
     Array.from<string[]>(addedGroupPolicies.entries()),
-    'configuration',
+    getAdminRoleMetadata(),
     false,
   );
 
@@ -96,17 +112,23 @@ const useAdminsFromConfig = async (
     groupPoliciesToCompare,
     Array.from<string>(addedGroupPolicies.keys()),
     'configuration',
-    adminRoleName,
+    ADMIN_ROLE_NAME,
     enf,
+    ADMIN_ROLE_AUTHOR,
   );
 };
 
 const setAdminPermissions = async (enf: EnforcerDelegate) => {
-  const adminReadPermission = [adminRoleName, 'policy-entity', 'read', 'allow'];
+  const adminReadPermission = [
+    ADMIN_ROLE_NAME,
+    'policy-entity',
+    'read',
+    'allow',
+  ];
   await enf.addOrUpdatePolicy(adminReadPermission, 'configuration', false);
 
   const adminCreatePermission = [
-    adminRoleName,
+    ADMIN_ROLE_NAME,
     'policy-entity',
     'create',
     'allow',
@@ -114,7 +136,7 @@ const setAdminPermissions = async (enf: EnforcerDelegate) => {
   await enf.addOrUpdatePolicy(adminCreatePermission, 'configuration', false);
 
   const adminDeletePermission = [
-    adminRoleName,
+    ADMIN_ROLE_NAME,
     'policy-entity',
     'delete',
     'allow',
@@ -122,7 +144,7 @@ const setAdminPermissions = async (enf: EnforcerDelegate) => {
   await enf.addOrUpdatePolicy(adminDeletePermission, 'configuration', false);
 
   const adminUpdatePermission = [
-    adminRoleName,
+    ADMIN_ROLE_NAME,
     'policy-entity',
     'update',
     'allow',
@@ -131,7 +153,7 @@ const setAdminPermissions = async (enf: EnforcerDelegate) => {
 
   // needed for rbac frontend.
   const adminCatalogReadPermission = [
-    adminRoleName,
+    ADMIN_ROLE_NAME,
     'catalog-entity',
     'read',
     'allow',

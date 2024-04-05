@@ -372,10 +372,13 @@ export class PolicesServer {
         }
       }
 
+      const user = await this.identity.getIdentity({ request });
       const metadata: RoleMetadataDao = {
         roleEntityRef: roleRaw.name,
         source: 'rest',
         description: roleRaw.metadata?.description ?? '',
+        author: user?.identity.userEntityRef,
+        modifiedBy: user?.identity.userEntityRef,
       };
       await this.enforcer.addGroupingPolicies(roles, metadata);
 
@@ -421,10 +424,12 @@ export class PolicesServer {
       const newRole = this.transformRoleToArray(newRoleRaw);
       // todo shell we allow newRole with an empty array?...
 
+      const user = await this.identity.getIdentity({ request });
       const newMetadata: RoleMetadataDao = {
         ...newRoleRaw.metadata,
         source: newRoleRaw.metadata?.source ?? 'rest',
         roleEntityRef: newRoleRaw.name,
+        modifiedBy: user?.identity.userEntityRef,
       };
 
       const oldMetadata =
@@ -445,7 +450,12 @@ export class PolicesServer {
 
       if (
         isEqual(oldRole, newRole) &&
-        deepSortedEqual(oldMetadata, newMetadata)
+        deepSortedEqual(oldMetadata, newMetadata, [
+          'author',
+          'modifiedBy',
+          'createdAt',
+          'lastModified',
+        ])
       ) {
         // no content: old role and new role are equal and their metadata too
         response.status(204).end();
@@ -551,7 +561,13 @@ export class PolicesServer {
           );
         }
 
-        await this.enforcer.removeGroupingPolicies(roleMembers, 'rest', false);
+        const user = await this.identity.getIdentity({ request });
+        await this.enforcer.removeGroupingPolicies(
+          roleMembers,
+          'rest',
+          user?.identity.userEntityRef,
+          false,
+        );
 
         response.status(204).end();
       },

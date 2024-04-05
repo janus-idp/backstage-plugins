@@ -39,7 +39,7 @@ import { RoleMetadataStorage } from '../database/role-metadata';
 import { BackstageRoleManager } from '../role-manager/role-manager';
 import { EnforcerDelegate } from './enforcer-delegate';
 import { MODEL } from './permission-model';
-import { RBACPermissionPolicy } from './permission-policy';
+import { ADMIN_ROLE_NAME, RBACPermissionPolicy } from './permission-policy';
 
 type PermissionAction = 'create' | 'read' | 'update' | 'delete';
 
@@ -1112,7 +1112,10 @@ describe('RBACPermissionPolicy Tests', () => {
 
       enfDelegate = await newEnforcerDelegate(adapter);
 
-      await enfDelegate.addGroupingPolicy(oldGroupPolicy, 'configuration');
+      await enfDelegate.addGroupingPolicy(oldGroupPolicy, {
+        source: 'configuration',
+        roleEntityRef: ADMIN_ROLE_NAME,
+      });
 
       policy = await newPermissionPolicy(
         config,
@@ -1146,8 +1149,7 @@ describe('RBACPermissionPolicy Tests', () => {
 
       expect(enfRole).toEqual(groupPolicy);
       expect(enfPermission).toEqual(permissions);
-      expect(roleMetadataStorageTest.removeRoleMetadata).toHaveBeenCalled();
-      expect(roleMetadataStorageTest.createRoleMetadata).toHaveBeenCalled();
+      expect(roleMetadataStorageTest.updateRoleMetadata).toHaveBeenCalled();
     });
 
     it('should allow read access to resource permission for user from config file', async () => {
@@ -1242,7 +1244,7 @@ describe('Policy checks for resourced permissions defined by name', () => {
 
     await enfDelegate.addGroupingPolicy(
       ['user:default/tor', 'role:default/catalog_reader'],
-      'csv-file',
+      { source: 'csv-file', roleEntityRef: 'role:default/catalog_reader' },
     );
     await enfDelegate.addPolicy(
       ['role:default/catalog_reader', 'catalog.entity.read', 'read', 'allow'],
@@ -1265,7 +1267,7 @@ describe('Policy checks for resourced permissions defined by name', () => {
 
     await enfDelegate.addGroupingPolicy(
       ['user:default/tor', 'role:default/catalog_reader'],
-      'csv-file',
+      { source: 'csv-file', roleEntityRef: 'role:default/catalog_reader' },
     );
     await enfDelegate.addPolicies(
       [
@@ -1291,7 +1293,7 @@ describe('Policy checks for resourced permissions defined by name', () => {
 
     await enfDelegate.addGroupingPolicy(
       ['user:default/tor', 'role:default/catalog_reader'],
-      'csv-file',
+      { source: 'csv-file', roleEntityRef: 'role:default/catalog_reader' },
     );
     await enfDelegate.addPolicies(
       [
@@ -1330,7 +1332,7 @@ describe('Policy checks for resourced permissions defined by name', () => {
 
     await enfDelegate.addGroupingPolicy(
       ['group:default/team-a', 'role:default/catalog_user'],
-      'csv-file',
+      { source: 'csv-file', roleEntityRef: 'role:default/catalog_user' },
     );
     await enfDelegate.addPolicies(
       [['role:default/catalog_user', 'catalog.entity.read', 'read', 'allow']],
@@ -1375,11 +1377,11 @@ describe('Policy checks for resourced permissions defined by name', () => {
 
     await enfDelegate.addGroupingPolicy(
       ['group:default/team-b', 'role:default/catalog_user'],
-      'csv-file',
+      { source: 'csv-file', roleEntityRef: 'role:default/catalog_user' },
     );
     await enfDelegate.addGroupingPolicy(
       ['group:default/team-a', 'group:default/team-b'],
-      'csv-file',
+      { source: 'csv-file', roleEntityRef: 'role:default/catalog_user' },
     );
     await enfDelegate.addPolicies(
       [['role:default/catalog_user', 'catalog.entity.read', 'read', 'allow']],

@@ -1,4 +1,11 @@
-import { difference, isEqual, sortBy, toPairs } from 'lodash';
+import {
+  difference,
+  isEqual,
+  omitBy,
+  sortBy,
+  toPairs,
+  ValueKeyIteratee,
+} from 'lodash';
 
 import {
   PermissionAction,
@@ -27,16 +34,21 @@ export async function removeTheDifference(
   originalGroup: string[],
   addedGroup: string[],
   source: Source,
-  roleName: string,
+  roleEntityRef: string,
   enf: EnforcerDelegate,
+  modifiedBy: string,
 ): Promise<void> {
   originalGroup.sort((a, b) => a.localeCompare(b));
   addedGroup.sort((a, b) => a.localeCompare(b));
   const missing = difference(originalGroup, addedGroup);
 
   for (const missingRole of missing) {
-    const role = [missingRole, roleName];
-    await enf.removeGroupingPolicy(role, source, false);
+    const role = [missingRole, roleEntityRef];
+    await enf.removeGroupingPolicy(
+      role,
+      { source, modifiedBy, roleEntityRef },
+      false,
+    );
   }
 }
 
@@ -48,9 +60,25 @@ export function transformArrayToPolicy(policyArray: string[]): RoleBasedPolicy {
 export function deepSortedEqual(
   obj1: Record<string, any>,
   obj2: Record<string, any>,
+  excludeFields?: string[],
 ): boolean {
-  const sortedObj1 = sortBy(toPairs(obj1), ([key]) => key);
-  const sortedObj2 = sortBy(toPairs(obj2), ([key]) => key);
+  let copyObj1;
+  let copyObj2;
+  if (excludeFields) {
+    const excludeFieldsPredicate: ValueKeyIteratee<any> = (_value, key) => {
+      for (const field of excludeFields) {
+        if (key === field) {
+          return true;
+        }
+      }
+      return false;
+    };
+    copyObj1 = omitBy(obj1, excludeFieldsPredicate);
+    copyObj2 = omitBy(obj2, excludeFieldsPredicate);
+  }
+
+  const sortedObj1 = sortBy(toPairs(copyObj1 || obj1), ([key]) => key);
+  const sortedObj2 = sortBy(toPairs(copyObj2 || obj2), ([key]) => key);
 
   return isEqual(sortedObj1, sortedObj2);
 }
