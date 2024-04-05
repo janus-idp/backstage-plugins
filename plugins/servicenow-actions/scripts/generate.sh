@@ -12,6 +12,7 @@ for file in $(find openapi -name '*.json'); do
   if [[ $file =~ openapi\/(.*).json ]]
   then
     name=${BASH_REMATCH[1]}
-    openapi-ts --input "./$file" --output "./src/generated/$name" -c node
+    # We must use axios over node-fetch because openapi-ts only supports node-fetch v3
+    openapi-ts --input "./$file" --output "./src/generated/$name" -c axios
   fi
 done

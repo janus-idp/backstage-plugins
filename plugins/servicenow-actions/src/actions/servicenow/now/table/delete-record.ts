@@ -82,9 +82,13 @@ export const deleteRecordAction = (
       updateOpenAPIConfig(OpenAPI, config);
 
       try {
-        await DefaultService.deleteApiNowTable(input);
+        await DefaultService.deleteApiNowTableByTableNameBySysId(input);
       } catch (error) {
-        throw new Error((error as ApiError).body.error.message);
+        const e = error as ApiError & {
+          body?: { error?: { message?: string } };
+        };
+
+        throw new Error(e.body?.error?.message);
       }
     },
   });
