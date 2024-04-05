@@ -683,7 +683,6 @@ export class EnforcerDelegate {
     newMetadata: RoleMetadataDao,
   ): RoleMetadataDao {
     const mergedMetaData: RoleMetadataDao = { ...currentMetadata };
-    console.log(`===== new metadata: ${JSON.stringify(mergedMetaData)}`);
     mergedMetaData.lastModified =
       newMetadata.lastModified ?? new Date().toUTCString();
     mergedMetaData.modifiedBy = newMetadata.modifiedBy;

@@ -11,6 +11,16 @@ exports.up = async function up(knex) {
       table.dateTime('createdAt');
       table.dateTime('lastModified');
     });
+
+    await knex('role-metadata')
+      .update({
+        description:
+          'The default permission policy for the admin role allows for the creation, deletion, updating, and reading of roles and permission policies.',
+        author: 'application configuration',
+        modifiedBy: 'application configuration',
+        lastModified: new Date().toUTCString(),
+      })
+      .where('roleEntityRef', 'role:default/rbac_admin');
   }
 };
 
