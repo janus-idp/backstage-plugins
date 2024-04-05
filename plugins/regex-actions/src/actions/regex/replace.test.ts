@@ -1,9 +1,4 @@
-import { getVoidLogger } from '@backstage/backend-common';
-
-import mockFs from 'mock-fs';
-
-import os from 'os';
-import { Writable } from 'stream';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
 import { createReplaceAction } from './replace';
 
@@ -18,23 +13,10 @@ import { createReplaceAction } from './replace';
 describe('regex:replace', () => {
   const action = createReplaceAction();
 
-  const mockTmpDir = os.tmpdir();
-  const mockContext = {
-    input: {},
-    baseUrl: 'somebase',
-    workspacePath: mockTmpDir,
-    logger: getVoidLogger(),
-    logStream: {} as Writable,
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn().mockResolvedValue(mockTmpDir),
-  };
+  const mockContext = createMockActionContext();
 
   beforeEach(() => {
     jest.resetAllMocks();
-  });
-
-  afterEach(() => {
-    mockFs.restore();
   });
 
   it('should complete a simple regex', async () => {

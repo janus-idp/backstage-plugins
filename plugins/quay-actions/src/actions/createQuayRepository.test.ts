@@ -1,7 +1,4 @@
-import { getVoidLogger } from '@backstage/backend-common';
-
-import os from 'os';
-import { PassThrough } from 'stream';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
 import {
   createQuayRepositoryAction,
@@ -16,13 +13,7 @@ describe('quay:create-repository', () => {
     jest.resetAllMocks();
   });
 
-  const mockContext = {
-    workspacePath: os.tmpdir(),
-    logger: getVoidLogger(),
-    logStream: new PassThrough(),
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn(),
-  };
+  const mockContext = createMockActionContext();
 
   it('should create a quay repository', async () => {
     const body: ResponseBody = {

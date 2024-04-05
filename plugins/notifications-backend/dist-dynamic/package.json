@@ -45,17 +45,17 @@
   ],
   "bundleDependencies": true,
   "peerDependencies": {
-    "@backstage/backend-common": "^0.21.3",
-    "@backstage/backend-openapi-utils": "^0.1.6",
-    "@backstage/catalog-client": "^1.6.0",
-    "@backstage/config": "^1.1.1",
-    "@backstage/errors": "^1.2.3",
-    "@backstage/backend-plugin-api": "^0.6.13",
-    "@backstage/backend-dynamic-feature-service": "^0.2.3",
-    "@backstage/plugin-auth-node": "^0.4.8",
-    "@backstage/plugin-permission-common": "^0.7.12",
-    "@backstage/plugin-permission-node": "^0.7.24",
-    "@backstage/plugin-scaffolder-node": "^0.3.3"
+    "@backstage/backend-common": "^0.21.6",
+    "@backstage/backend-openapi-utils": "^0.1.9",
+    "@backstage/catalog-client": "^1.6.3",
+    "@backstage/config": "^1.2.0",
+    "@backstage/errors": "^1.2.4",
+    "@backstage/backend-plugin-api": "^0.6.16",
+    "@backstage/backend-dynamic-feature-service": "^0.2.8",
+    "@backstage/plugin-auth-node": "^0.4.11",
+    "@backstage/plugin-permission-common": "^0.7.13",
+    "@backstage/plugin-permission-node": "^0.7.27",
+    "@backstage/plugin-scaffolder-node": "^0.4.2"
   },
   "overrides": {
     "@aws-sdk/util-utf8-browser": {
