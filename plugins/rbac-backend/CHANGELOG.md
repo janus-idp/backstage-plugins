@@ -1,3 +1,17 @@
+## @janus-idp/backstage-plugin-rbac-backend [2.6.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.5.1...@janus-idp/backstage-plugin-rbac-backend@2.6.0) (2024-04-05)
+
+
+### Features
+
+* **rbac:** save role modification information to the metadata ([#1280](https://github.com/janus-idp/backstage-plugins/issues/1280)) ([0454509](https://github.com/janus-idp/backstage-plugins/commit/0454509e41db2ae332d1b2bf8f72d34241483efd))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-rbac-common:** upgraded to 1.4.0
+* **@janus-idp/backstage-plugin-rbac-node:** upgraded to 1.0.5
+
 ## @janus-idp/backstage-plugin-rbac-backend [2.5.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.5.0...@janus-idp/backstage-plugin-rbac-backend@2.5.1) (2024-04-04)
 
 
