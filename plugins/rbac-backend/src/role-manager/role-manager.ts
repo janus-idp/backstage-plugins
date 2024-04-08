@@ -8,12 +8,12 @@ import { Knex } from 'knex';
 import { Logger } from 'winston';
 
 import { AncestorSearchMemo } from './ancestor-search-memo';
-import { GroupCache } from './role-cache';
+import { RoleCache } from './role-cache';
 import { RoleList } from './role-list';
 
 export class BackstageRoleManager implements RoleManager {
   private allRoles: Map<string, RoleList>;
-  private groupCache?: GroupCache;
+  private roleCache?: RoleCache;
   constructor(
     private readonly catalogApi: CatalogApi,
     private readonly log: Logger,
@@ -26,7 +26,7 @@ export class BackstageRoleManager implements RoleManager {
     if (cache) {
       const maxSize = cache.getOptionalNumber('maxSize');
       const expiration = cache.getOptionalNumber('expiration');
-      this.groupCache = new GroupCache(maxSize, expiration);
+      this.roleCache = new RoleCache(maxSize, expiration);
     }
   }
 
@@ -106,27 +106,15 @@ export class BackstageRoleManager implements RoleManager {
       return false;
     }
 
-    let memo: AncestorSearchMemo;
+    if (await this.cacheResults(name1)) {
+      const cachedResult = this.roleCache?.get(name1)!;
 
-    if (this.groupCache?.isEnabled()) {
-      if (!this.groupCache.get(name1) || this.groupCache.shouldUpdate(name1)) {
-        memo = await this.buildGraph(name1);
-
-        if (!this.detectCycleError(memo, name1)) {
-          return false;
-        }
-
-        this.groupCache.put(name1, memo.getNodes());
-      }
-
-      const cacheTest = new Set(this.groupCache.get(name1)!);
-
-      return this.cachedCheck(cacheTest, name2);
+      return cachedResult.has(name2);
     }
 
     // If the cache does not exist we need to build the graph and use it
     // Otherwise we need to use the cache instead
-    memo = await this.buildGraph(name1);
+    const memo = await this.buildGraph(name1);
 
     if (!this.detectCycleError(memo, name1)) {
       return false;
@@ -174,27 +162,20 @@ export class BackstageRoleManager implements RoleManager {
    * because we don't support role inheritance and we notify casbin about end of the role sub-tree.
    */
   async getRoles(name: string, ..._domain: string[]): Promise<string[]> {
+    if (await this.cacheResults(name)) {
+      const cachedResult = this.roleCache?.get(name)!;
+
+      return Array.from(cachedResult);
+    }
+
     const { kind } = parseEntityRef(name);
     if (kind === 'user') {
       const memo = await this.buildGraph(name);
-      memo.debugNodesAndEdges(this.log, name);
       const userAndParentGroups = memo.getNodes();
       userAndParentGroups.push(name);
 
-      const allRoles: string[] = [];
-      for (const userOrParentGroup of userAndParentGroups) {
-        const r = this.allRoles.get(userOrParentGroup);
-        if (r) {
-          const rolesEntityRefs = [...r.getRoles()]
-            .filter(role => {
-              return role.name.startsWith('role:default');
-            })
-            .map(role => role.name);
-
-          allRoles.push(...rolesEntityRefs);
-        }
-      }
-      return Promise.resolve(allRoles);
+      const allRoles = this.parseRoles(userAndParentGroups);
+      return allRoles;
     }
 
     return [];
@@ -236,16 +217,6 @@ export class BackstageRoleManager implements RoleManager {
     return parsed[0];
   }
 
-  private cachedCheck(cachedGroups: Set<string>, name2: string): boolean {
-    for (const [key, value] of this.allRoles.entries()) {
-      if (value.hasRole(name2, 1) && cachedGroups.has(key)) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
   private nonCachedCheck(memo: AncestorSearchMemo, name2: string): boolean {
     if (!memo.hasEntityRef(name2) && this.parseEntityKind(name2) === 'role') {
       for (const [key, value] of this.allRoles.entries()) {
@@ -284,6 +255,41 @@ export class BackstageRoleManager implements RoleManager {
     );
     await memo.buildUserGraph(memo);
 
+    memo.debugNodesAndEdges(this.log, name1);
     return memo;
+  }
+
+  private parseRoles(userAndParentGroups: string[]): string[] {
+    const allRoles: string[] = [];
+    for (const userOrParentGroup of userAndParentGroups) {
+      const r = this.allRoles.get(userOrParentGroup);
+      if (r) {
+        const rolesEntityRefs = [...r.getRoles()]
+          .filter(role => {
+            return role.name.startsWith('role:default');
+          })
+          .map(role => role.name);
+
+        allRoles.push(...rolesEntityRefs);
+      }
+    }
+    return allRoles;
+  }
+
+  private async cacheResults(name1: string): Promise<boolean> {
+    if (this.roleCache?.isEnabled()) {
+      if (!this.roleCache.get(name1) || this.roleCache.shouldUpdate(name1)) {
+        const memo = await this.buildGraph(name1);
+
+        if (this.detectCycleError(memo, name1)) {
+          const roles = new Set(this.parseRoles(memo.getNodes()));
+
+          this.roleCache?.put(name1, roles);
+
+          return true;
+        }
+      }
+    }
+    return false;
   }
 }

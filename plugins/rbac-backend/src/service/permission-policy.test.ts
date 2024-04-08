@@ -32,7 +32,6 @@ import {
 } from '../database/policy-metadata-storage';
 import { RoleMetadataStorage } from '../database/role-metadata';
 import { EnforcerDelegate } from './enforcer-delegate';
-import { MODEL } from './permission-model';
 import { ADMIN_ROLE_NAME, RBACPermissionPolicy } from './permission-policy';
 
 type PermissionAction = 'create' | 'read' | 'update' | 'delete';
@@ -1299,10 +1298,7 @@ describe('Policy checks for resourced permissions defined by name', () => {
       ['group:default/team-b', 'role:default/catalog_user'],
       { source: 'csv-file', roleEntityRef: 'role:default/catalog_user' },
     );
-    await enfDelegate.addGroupingPolicy(
-      ['group:default/team-a', 'group:default/team-b'],
-      { source: 'csv-file', roleEntityRef: 'role:default/catalog_user' },
-    );
+
     await enfDelegate.addPolicies(
       [['role:default/catalog_user', 'catalog.entity.read', 'read', 'allow']],
       'csv-file',
