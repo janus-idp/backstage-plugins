@@ -378,26 +378,10 @@ export async function backend(opts: OptionValues): Promise<string> {
     }
 
     // Check that the backend plugin provides expected entrypoints.
-    const dynamicPluginRequire = createRequire(target);
-    if (
-      ![`${target}/alpha`, target].some(root => {
-        try {
-          const pluginModule = dynamicPluginRequire(root);
-          return isValidPluginModule(pluginModule);
-        } catch (_) {
-          return false;
-        }
-      })
-    ) {
-      throw new Error(
-        `Backend plugin is not valid for dynamic loading: it should either export a ${chalk.cyan(
-          'BackendFeature',
-        )} or ${chalk.cyan(
-          'BackendFeatureFactory',
-        )} as default export, or export a ${chalk.cyan(
-          'const dynamicPluginInstaller: BackendDynamicPluginInstaller',
-        )} field as dynamic loading entrypoint`,
-      );
+    Task.log(`Validating plugin entry points`);
+    const validateEntryPointsError = validatePluginEntryPoints(target);
+    if (validateEntryPointsError) {
+      throw new Error(validateEntryPointsError);
     }
   }
   return target;
@@ -618,6 +602,10 @@ function customizeForDynamicUse(options: {
         const dependencyVersionSpec = pkgToCustomize.dependencies[dep];
         if (dependencyVersionSpec.startsWith('workspace:')) {
           let resolvedVersion: string | undefined;
+          const rangeSpecifier = dependencyVersionSpec.replace(
+            /^workspace:/,
+            '',
+          );
           const embeddedDep = options.embedded.find(
             e =>
               e.packageName === dep &&
@@ -644,7 +632,11 @@ function customizeForDynamicUse(options: {
                 version: relatedMonoRepoPackages[0].packageJson.version,
               })
             ) {
-              resolvedVersion = relatedMonoRepoPackages[0].packageJson.version;
+              resolvedVersion =
+                rangeSpecifier === '^' || rangeSpecifier === '~'
+                  ? rangeSpecifier +
+                    relatedMonoRepoPackages[0].packageJson.version
+                  : relatedMonoRepoPackages[0].packageJson.version;
             }
           }
 
@@ -736,4 +728,80 @@ function isPackageShared(
   }
 
   return false;
+}
+
+function validatePluginEntryPoints(target: string): string {
+  const dynamicPluginRequire = createRequire(target);
+
+  // require plugin main module
+
+  let pluginModule: any | undefined;
+  let needsTypeScriptSupport: boolean = false;
+  try {
+    pluginModule = dynamicPluginRequire(target);
+  } catch (e) {
+    if (
+      e?.name === SyntaxError.name &&
+      !dynamicPluginRequire.extensions['.ts']
+    ) {
+      needsTypeScriptSupport = true;
+    } else {
+      return `Unable to validate plugin entry points: ${e}`;
+    }
+  }
+
+  if (needsTypeScriptSupport) {
+    Task.log(
+      `  adding typescript extension support to enable entry point validation`,
+    );
+    let tsNode: string | undefined;
+    try {
+      tsNode = dynamicPluginRequire.resolve('ts-node');
+    } catch (e) {
+      Task.log(`    => unable to find 'ts-node' in the plugin context`);
+    }
+
+    if (tsNode) {
+      dynamicPluginRequire(tsNode).register({
+        transpileOnly: true,
+        project: path.resolve(paths.targetRoot, 'tsconfig.json'),
+        compilerOptions: {
+          module: 'CommonJS',
+        },
+      });
+    }
+
+    // Retry requiring the plugin main module after adding typescript extensions
+    try {
+      pluginModule = dynamicPluginRequire(target);
+    } catch (e) {
+      return `Unable to validate plugin entry points: ${e}`;
+    }
+  }
+
+  let pluginAlphaModule: any | undefined;
+  const alphaPackage = path.resolve(target, 'alpha');
+  if (fs.pathExistsSync(alphaPackage)) {
+    try {
+      pluginAlphaModule = dynamicPluginRequire(alphaPackage);
+    } catch (e) {
+      return `Unable to validate plugin entry points: ${e}`;
+    }
+  }
+
+  if (
+    ![pluginAlphaModule, pluginModule]
+      .filter(m => m !== undefined)
+      .some(isValidPluginModule)
+  ) {
+    return `Backend plugin is not valid for dynamic loading: it should either export a ${chalk.cyan(
+      'BackendFeature',
+    )} or ${chalk.cyan(
+      'BackendFeatureFactory',
+    )} as default export, or export a ${chalk.cyan(
+      'const dynamicPluginInstaller: BackendDynamicPluginInstaller',
+    )} field as dynamic loading entrypoint`;
+  }
+
+  return '';
 }
