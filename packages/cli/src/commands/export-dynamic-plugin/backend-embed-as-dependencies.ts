@@ -61,7 +61,7 @@ export async function backend(opts: OptionValues): Promise<string> {
     pkg,
     packagesToEmbed,
     monoRepoPackages,
-    createRequire(paths.targetDir),
+    createRequire(`${paths.targetDir}/package.json`),
     [],
   );
   const embeddedPackages = embeddedResolvedPackages.map(e => e.packageName);
@@ -731,7 +731,7 @@ function isPackageShared(
 }
 
 function validatePluginEntryPoints(target: string): string {
-  const dynamicPluginRequire = createRequire(target);
+  const dynamicPluginRequire = createRequire(`${target}/package.json`);
 
   // require plugin main module
 
