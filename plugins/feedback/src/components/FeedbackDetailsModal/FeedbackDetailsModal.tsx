@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import { parseEntityRef } from '@backstage/catalog-model';
 import { Progress, useQueryParamState } from '@backstage/core-components';
-import { useApi } from '@backstage/core-plugin-api';
+import { useAnalytics, useApi } from '@backstage/core-plugin-api';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
 
 import {
@@ -78,6 +78,7 @@ const useStyles = makeStyles((theme: Theme) =>
 export const FeedbackDetailsModal = () => {
   const classes = useStyles();
   const api = useApi(feedbackApiRef);
+  const analytics = useAnalytics();
   const [queryState, setQueryState] = useQueryParamState<string | undefined>(
     'id',
   );
