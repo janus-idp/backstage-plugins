@@ -120,7 +120,7 @@ export const WorkflowsTable = ({ items }: WorkflowsTableProps) => {
       { title: 'Avg. duration', field: 'avgDuration' },
       { title: 'Description', field: 'description' },
     ],
-    [definitionLink],
+    [definitionLink, workflowInstanceLink],
   );
 
   const options = useMemo<TableProps['options']>(
