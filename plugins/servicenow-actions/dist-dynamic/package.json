@@ -27,8 +27,8 @@
   "scripts": {},
   "dependencies": {
     "abort-controller": "^3.0.0",
+    "axios": "^1.6.8",
     "form-data": "^4.0.0",
-    "node-fetch": "^2.7.0",
     "yaml": "^2.3.3",
     "zod": "^3.22.4"
   },
