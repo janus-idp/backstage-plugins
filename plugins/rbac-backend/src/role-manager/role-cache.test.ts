@@ -63,6 +63,22 @@ describe('RoleCache', () => {
     });
   });
 
+  describe('delete', () => {
+    it('should delete the cached role', () => {
+      let cachedGroups = roleCache.get('user:default/todd');
+
+      expect(cachedGroups).toEqual(
+        new Set(['role:default/test', 'role:default/qe']),
+      );
+
+      roleCache.delete('user:default/todd');
+
+      cachedGroups = roleCache.get('user:default/todd');
+
+      expect(cachedGroups).toEqual(undefined);
+    });
+  });
+
   describe('shouldUpdate', () => {
     it('should not need updating if the cache has not expired', () => {
       const isExpired = roleCache.shouldUpdate('user:default/todd');
@@ -81,14 +97,6 @@ describe('RoleCache', () => {
       const isExpired = roleCache.shouldUpdate('user:default/test-user');
 
       expect(isExpired).toEqual(false);
-    });
-  });
-
-  describe('isEnabled', () => {
-    it('should be enabled', () => {
-      const isEnabled = roleCache.isEnabled();
-
-      expect(isEnabled).toEqual(true);
     });
   });
 });

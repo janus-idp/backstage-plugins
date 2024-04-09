@@ -68,6 +68,10 @@ export class BackstageRoleManager implements RoleManager {
     const role2 = this.getOrCreateRole(name2);
     role1.deleteRole(role2);
     this.removeRole(name2);
+
+    if (this.roleCache) {
+      this.roleCache.delete(name1);
+    }
   }
 
   /**
@@ -174,8 +178,7 @@ export class BackstageRoleManager implements RoleManager {
       const userAndParentGroups = memo.getNodes();
       userAndParentGroups.push(name);
 
-      const allRoles = this.parseRoles(userAndParentGroups);
-      return allRoles;
+      return this.matchRoles(userAndParentGroups);
     }
 
     return [];
@@ -259,7 +262,7 @@ export class BackstageRoleManager implements RoleManager {
     return memo;
   }
 
-  private parseRoles(userAndParentGroups: string[]): string[] {
+  private matchRoles(userAndParentGroups: string[]): string[] {
     const allRoles: string[] = [];
     for (const userOrParentGroup of userAndParentGroups) {
       const r = this.allRoles.get(userOrParentGroup);
@@ -277,12 +280,12 @@ export class BackstageRoleManager implements RoleManager {
   }
 
   private async cacheResults(name1: string): Promise<boolean> {
-    if (this.roleCache?.isEnabled()) {
+    if (this.roleCache) {
       if (!this.roleCache.get(name1) || this.roleCache.shouldUpdate(name1)) {
         const memo = await this.buildGraph(name1);
 
         if (this.detectCycleError(memo, name1)) {
-          const roles = new Set(this.parseRoles(memo.getNodes()));
+          const roles = new Set(this.matchRoles(memo.getNodes()));
 
           this.roleCache?.put(name1, roles);
 

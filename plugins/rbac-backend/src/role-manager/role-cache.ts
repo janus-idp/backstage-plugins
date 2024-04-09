@@ -30,6 +30,10 @@ export class RoleCache {
     this.cache.set(key, { data: value, timestamp: currentTime });
   }
 
+  public delete(key: string) {
+    this.cache.delete(key);
+  }
+
   public shouldUpdate(key: string): boolean {
     const currentTime = Date.now();
     const hasKey = this.cache.has(key);
@@ -41,9 +45,5 @@ export class RoleCache {
     }
 
     return false;
-  }
-
-  public isEnabled(): boolean {
-    return true;
   }
 }

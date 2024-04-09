@@ -1295,6 +1295,25 @@ describe('BackstageRoleManager', () => {
         'Detected cycle dependencies in the Group graph: [["group:default/team-a","group:default/team-b"]]. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for groups: [["group:default/team-a","group:default/team-b"]]',
       );
     });
+
+    it('should return false after the the link has been deleted even after caching', async () => {
+      let result = await roleManager.hasLink(
+        'user:default/mike',
+        'role:default/somerole',
+      );
+      expect(result).toBeTruthy();
+
+      await roleManager.deleteLink(
+        'group:default/somegroup',
+        'role:default/somerole',
+      );
+
+      result = await roleManager.hasLink(
+        'user:default/mike',
+        'role:default/somerole',
+      );
+      expect(result).toBeFalsy();
+    });
   });
 
   function createGroupEntity(
