@@ -1,3 +1,11 @@
+## @janus-idp/backstage-plugin-tekton [3.5.17](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.5.16...@janus-idp/backstage-plugin-tekton@3.5.17) (2024-04-09)
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.5.5
+
 ## @janus-idp/backstage-plugin-tekton [3.5.16](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.5.15...@janus-idp/backstage-plugin-tekton@3.5.16) (2024-04-09)
 
 
