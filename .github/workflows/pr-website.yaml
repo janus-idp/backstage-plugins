@@ -30,7 +30,14 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install --prefer-offline --frozen-lockfile
+        run: |
+          yarn install
+          if [[ $(git diff --name-only . || true) ]]; then
+            echo "After 'yarn install', workspace is dirty! The following files have changed:"
+            echo
+            git diff --name-only . || true
+            exit 42
+          fi
 
       - name: Run Build
         run: pnpm run build --filter=website
