@@ -5,6 +5,7 @@ import '@one-platform/opc-feedback';
 import {
   configApiRef,
   identityApiRef,
+  useAnalytics,
   useApi,
   useRouteRef,
 } from '@backstage/core-plugin-api';
@@ -20,6 +21,7 @@ export const OpcFeedbackComponent = () => {
   const appConfig = useApi(configApiRef);
   const feedbackApi = useApi(feedbackApiRef);
   const identityApi = useApi(identityApiRef);
+  const analytics = useAnalytics();
 
   const footer = JSON.stringify({
     name: appConfig.getString('app.title'),
@@ -62,6 +64,7 @@ export const OpcFeedbackComponent = () => {
         });
         throw Error('Summary cannot be empty');
       }
+      analytics.captureEvent('click', `submit - ${event.detail.data.summary}`);
       const userEntity = (await identityApi.getBackstageIdentity())
         .userEntityRef;
       const resp = await feedbackApi.createFeedback({
@@ -97,7 +100,7 @@ export const OpcFeedbackComponent = () => {
     };
     const elem: any = document.querySelector('opc-feedback');
     elem.onSubmit = onSubmit;
-  }, [feedbackApi, projectId, identityApi]);
+  }, [feedbackApi, projectId, identityApi, analytics]);
 
   return (
     <>
