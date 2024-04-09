@@ -1,3 +1,11 @@
+## @janus-idp/cli [1.7.9](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.7.8...@janus-idp/cli@1.7.9) (2024-04-09)
+
+
+### Bug Fixes
+
+* **cli:** fix entrypoint validation when running with `npx` ([#1473](https://github.com/janus-idp/backstage-plugins/issues/1473)) ([79db649](https://github.com/janus-idp/backstage-plugins/commit/79db649d44a01f8834f5275b17aa1000b7151d59))
+* **cli:** fix the `embed-as-dependencies` option on the `export-dynamic-plugin` CLI... ([#1478](https://github.com/janus-idp/backstage-plugins/issues/1478)) ([edd019e](https://github.com/janus-idp/backstage-plugins/commit/edd019e905fd918ee4dcb4f72f0cdd7f791f6300))
+
 ## @janus-idp/cli [1.7.8](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.7.7...@janus-idp/cli@1.7.8) (2024-04-05)
 
 ## @janus-idp/cli [1.7.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.7.6...@janus-idp/cli@1.7.7) (2024-04-02)
