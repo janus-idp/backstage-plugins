@@ -38,6 +38,11 @@ export interface Config {
        * The RBAC plugin will handle access control for plugins included in this list.
        */
       pluginsWithPermission?: string[];
+      /**
+       * An optional value that limits the depth when building the hierarchy group graph
+       * @visibility frontend
+       */
+      maxDepth?: number;
     };
   };
 }

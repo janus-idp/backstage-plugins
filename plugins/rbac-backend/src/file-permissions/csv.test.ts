@@ -1,4 +1,5 @@
 import { TokenManager } from '@backstage/backend-common';
+import { ConfigReader } from '@backstage/config';
 
 import {
   Adapter,
@@ -115,11 +116,14 @@ async function createEnforcer(
   const catalogDBClient = Knex.knex({ client: MockClient });
   const enf = await newEnforcer(theModel, adapter);
 
+  const config = newConfigReader();
+
   const rm = new BackstageRoleManager(
     catalogApi,
     log,
     tokenManager,
     catalogDBClient,
+    config,
   );
   enf.setRoleManager(rm);
   enf.enableAutoBuildRoleLinks(false);
@@ -1005,3 +1009,34 @@ describe('CSV file', () => {
     });
   });
 });
+
+function newConfigReader(
+  users?: Array<{ name: string }>,
+  superUsers?: Array<{ name: string }>,
+): ConfigReader {
+  const testUsers = [
+    {
+      name: 'user:default/guest',
+    },
+    {
+      name: 'group:default/guests',
+    },
+  ];
+
+  return new ConfigReader({
+    permission: {
+      rbac: {
+        admin: {
+          users: users || testUsers,
+          superUsers: superUsers,
+        },
+      },
+    },
+    backend: {
+      database: {
+        client: 'better-sqlite3',
+        connection: ':memory:',
+      },
+    },
+  });
+}
