@@ -119,13 +119,17 @@ export const createRecordAction = (
 
       let res: ServiceNowResponses['201'];
       try {
-        res = (await DefaultService.postApiNowTable({
+        res = (await DefaultService.postApiNowTableByTableName({
           ...input,
           // convert the array of fields to a comma-separated string
           sysparmFields: input.sysparmFields?.join(','),
         })) as ServiceNowResponses['201'];
       } catch (error) {
-        throw new Error((error as ApiError).body.error.message);
+        const e = error as ApiError & {
+          body?: { error?: { message?: string } };
+        };
+
+        throw new Error(e.body?.error?.message);
       }
 
       ctx.output('result', res.result);

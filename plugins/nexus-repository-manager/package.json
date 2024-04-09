@@ -16,7 +16,7 @@
     "build": "backstage-cli package build",
     "clean": "backstage-cli package clean",
     "export-dynamic": "janus-cli package export-dynamic-plugin",
-    "generate": "openapi --input ./nexus-swagger.json --output ./src/generated --useUnionTypes --useOptions",
+    "generate": "openapi-ts --input ./nexus-swagger.json --output ./src/generated",
     "lint": "backstage-cli package lint",
     "postpack": "backstage-cli package postpack",
     "postversion": "yarn run export-dynamic",
@@ -54,7 +54,7 @@
     "@types/node": "18.18.5",
     "cross-fetch": "4.0.0",
     "msw": "1.3.2",
-    "openapi-typescript-codegen": "0.25.0",
+    "@hey-api/openapi-ts": "0.34.5",
     "react": "18.2.0",
     "react-dom": "18.2.0"
   },

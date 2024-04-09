@@ -12,19 +12,7 @@ for file in $(find openapi -name '*.json'); do
   if [[ $file =~ openapi\/(.*).json ]]
   then
     name=${BASH_REMATCH[1]}
-    yarn openapi --input "./$file" --output "./src/generated/$name" --useUnionTypes --useOptions -c node
+    # We must use axios over node-fetch because openapi-ts only supports node-fetch v3
+    openapi-ts --input "./$file" --output "./src/generated/$name" -c axios
   fi
-done
-
-echo "Patching generated code"
-
-# FIXME: remove once https://github.com/ferdikoomen/openapi-typescript-codegen/issues/1751 is fixed
-# This is a workaround for https://github.com/ferdikoomen/openapi-typescript-codegen/pull/1627
-# iterate through the generated directory
-for file in $(find src/generated -name '*.ts'); do
-  echo "Patching $file"
-
-  # remove function optional chainging from the generated code
-  POSIXLY_CORRECT=1 sed -i.bak 's/\(this\.\#[[:alnum:]]*\)?\.(\(.*\))/if(\1) \1(\2)/g' $file
-  rm $file.bak
 done

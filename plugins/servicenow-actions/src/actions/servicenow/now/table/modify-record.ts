@@ -127,12 +127,16 @@ export const modifyRecordAction = (
 
       let res: ServiceNowResponses['200'];
       try {
-        res = (await DefaultService.putApiNowTable({
+        res = (await DefaultService.putApiNowTableByTableNameBySysId({
           ...input,
           sysparmFields: input.sysparmFields?.join(','),
         })) as ServiceNowResponses['200'];
       } catch (error) {
-        throw new Error((error as ApiError).body.error.message);
+        const e = error as ApiError & {
+          body?: { error?: { message?: string } };
+        };
+
+        throw new Error(e.body?.error?.message);
       }
 
       ctx.output('result', res?.result);
