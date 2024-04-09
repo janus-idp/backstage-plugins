@@ -39,7 +39,8 @@ import {
 } from './backend-utils';
 
 export async function backend(opts: OptionValues): Promise<string> {
-  const target = path.join(paths.targetDir, 'dist-dynamic');
+  const targetRelativePath = 'dist-dynamic';
+  const target = path.join(paths.targetDir, targetRelativePath);
   const yarn = 'yarn';
 
   const pkgContent = await fs.readFile(
@@ -124,7 +125,48 @@ export async function backend(opts: OptionValues): Promise<string> {
     );
   }
   for (const embedded of embeddedResolvedPackages) {
-    const customizeManifest = customizeForDynamicUse({
+    const embeddedDestRelativeDir = embeddedPackageRelativePath(embedded);
+    const embeddedDestDir = path.join(target, embeddedDestRelativeDir);
+    if (!embedded.alreadyPacked) {
+      if (opts.build) {
+        Task.log(
+          `Building embedded package ${chalk.cyan(
+            embedded.packageName,
+          )} in ${chalk.cyan(embedded.dir)}`,
+        );
+        await Task.forCommand(`${yarn} build`, {
+          cwd: embedded.dir,
+          optional: false,
+        });
+      }
+      Task.log(
+        `Packing embedded package ${chalk.cyan(
+          embedded.packageName,
+        )} in ${chalk.cyan(embedded.dir)} to ${chalk.cyan(
+          embeddedDestRelativeDir,
+        )}`,
+      );
+      await productionPack({
+        packageDir: embedded.dir,
+        targetDir: embeddedDestDir,
+      });
+    } else {
+      Task.log(
+        `Copying embedded package ${chalk.cyan(
+          embedded.packageName,
+        )} from ${chalk.cyan(embedded.dir)} to ${chalk.cyan(
+          embeddedDestRelativeDir,
+        )}`,
+      );
+      fs.rmSync(embeddedDestDir, { force: true, recursive: true });
+      fs.cpSync(embedded.dir, embeddedDestDir, { recursive: true });
+    }
+    Task.log(
+      `Customizing embedded package ${chalk.cyan(
+        embedded.packageName,
+      )} for dynamic loading`,
+    );
+    await customizeForDynamicUse({
       embedded: embeddedResolvedPackages,
       monoRepoPackages,
       sharedPackages: sharedPackagesRules,
@@ -145,40 +187,7 @@ export async function backend(opts: OptionValues): Promise<string> {
           );
         }
       },
-    });
-    const embeddedDestDir = path.join(
-      target,
-      embeddedPackageRelativePath(embedded),
-    );
-    if (!embedded.alreadyPacked) {
-      if (opts.build) {
-        Task.log(`Building embedded package ${chalk.cyan(embedded.dir)}`);
-        await Task.forCommand(`${yarn} build`, {
-          cwd: embedded.dir,
-          optional: false,
-        });
-      }
-      Task.log(`Packing embedded package ${chalk.cyan(embedded.dir)}`);
-      await productionPack({
-        packageDir: embedded.dir,
-        targetDir: embeddedDestDir,
-        customizeManifest,
-      });
-    } else {
-      Task.log(`Packing embedded package ${chalk.cyan(embedded.dir)}`);
-      fs.rmSync(embeddedDestDir, { force: true, recursive: true });
-      fs.cpSync(embedded.dir, embeddedDestDir, { recursive: true });
-      const embeddedPkgPath = path.join(embeddedDestDir, 'package.json');
-      const embeddedPkgContent = await fs.readFile(embeddedPkgPath, 'utf8');
-      const embeddedPkg = JSON.parse(
-        embeddedPkgContent,
-      ) as BackstagePackageJson;
-      customizeManifest(embeddedPkg);
-      await fs.writeJson(embeddedPkgPath, embeddedPkg, {
-        encoding: 'utf8',
-        spaces: 2,
-      });
-    }
+    })(path.join(embeddedDestDir, 'package.json'));
   }
 
   const embeddedDependenciesResolutions: { [key: string]: any } = {};
@@ -196,40 +205,58 @@ export async function backend(opts: OptionValues): Promise<string> {
     });
   }
 
-  Task.log(`Packing main package`);
+  Task.log(
+    `Packing main package to ${chalk.cyan(
+      path.join(targetRelativePath, 'package.json'),
+    )}`,
+  );
   await productionPack({
     packageDir: '',
     targetDir: target,
-    customizeManifest: customizeForDynamicUse({
-      embedded: embeddedResolvedPackages,
-      monoRepoPackages,
-      sharedPackages: sharedPackagesRules,
-      overridding: {
-        name: `${pkg.name}-dynamic`,
-        bundleDependencies: true,
-        // We remove scripts, because they do not make sense for this derived package.
-        // They even bring errors, especially the pre-pack and post-pack ones:
-        // we want to be able to use npm pack on this derived package to distribute it as a dynamic plugin,
-        // and obviously this should not trigger the backstage pre-pack or post-pack actions
-        // which are related to the packaging of the original static package.
-        scripts: {},
-      },
-      additionalResolutions: embeddedDependenciesResolutions,
-      after(mainPkg) {
-        if (Object.keys(embeddedPeerDependencies).length === 0) {
-          return;
-        }
-        Task.log(
-          `Hoisting peer dependencies of embedded packages to the main package`,
-        );
-        const mainPeerDependencies = mainPkg.peerDependencies || {};
-        addToMainDependencies(embeddedPeerDependencies, mainPeerDependencies);
-        if (Object.keys(mainPeerDependencies).length > 0) {
-          mainPkg.peerDependencies = mainPeerDependencies;
-        }
-      },
-    }),
   });
+
+  // Small cleanup in case the `dist-dynamic` entr was still in the `files` of the main plugin package.
+  if (fs.pathExistsSync(path.join(target, 'dist-dynamic'))) {
+    fs.rmSync(path.join(target, 'dist-dynamic'), {
+      force: true,
+      recursive: true,
+    });
+  }
+
+  Task.log(
+    `Customizing main package in ${chalk.cyan(
+      path.join(targetRelativePath, 'package.json'),
+    )} for dynamic loading`,
+  );
+  await customizeForDynamicUse({
+    embedded: embeddedResolvedPackages,
+    monoRepoPackages,
+    sharedPackages: sharedPackagesRules,
+    overridding: {
+      name: `${pkg.name}-dynamic`,
+      bundleDependencies: true,
+      // We remove scripts, because they do not make sense for this derived package.
+      // They even bring errors, especially the pre-pack and post-pack ones:
+      // we want to be able to use npm pack on this derived package to distribute it as a dynamic plugin,
+      // and obviously this should not trigger the backstage pre-pack or post-pack actions
+      // which are related to the packaging of the original static package.
+      scripts: {},
+    },
+    additionalResolutions: embeddedDependenciesResolutions,
+    after(mainPkg) {
+      if (Object.keys(embeddedPeerDependencies).length === 0) {
+        return;
+      }
+      Task.log(
+        `Hoisting peer dependencies of embedded packages to the main package`,
+      );
+      const mainPeerDependencies = mainPkg.peerDependencies || {};
+      addToMainDependencies(embeddedPeerDependencies, mainPeerDependencies);
+      if (Object.keys(mainPeerDependencies).length > 0) {
+        mainPkg.peerDependencies = mainPeerDependencies;
+      }
+    },
+  })(path.resolve(target, 'package.json'));
 
   const yarnLock = path.resolve(target, 'yarn.lock');
   const yarnLockExists = await fs.pathExists(yarnLock);
@@ -282,9 +309,10 @@ export async function backend(opts: OptionValues): Promise<string> {
       : `${yarn} install${yarnLockExists ? ' --immutable' : ''}`;
 
     await Task.forCommand(yarnInstall, { cwd: target, optional: false });
-    await fs.remove(paths.resolveTarget('dist-dynamic', '.yarn'));
+    await fs.remove(paths.resolveTarget(targetRelativePath, '.yarn'));
 
     // Checking if some shared dependencies have been included inside the private dependencies
+    Task.log(`Validating private dependencies`);
     const lockFile = await Lockfile.load(yarnLock);
     const sharedPackagesInPrivateDeps: string[] = [];
     for (const key of lockFile.keys()) {
@@ -364,7 +392,6 @@ export async function backend(opts: OptionValues): Promise<string> {
     }
 
     // Check whether private dependencies contain native modules, and fail for now (not supported).
-
     const nativePackages: string[] = [];
     for await (const n of gatherNativeModules(target)) {
       nativePackages.push(n);
@@ -575,8 +602,13 @@ function customizeForDynamicUse(options: {
   additionalOverrides?: { [key: string]: any } | undefined;
   additionalResolutions?: { [key: string]: any } | undefined;
   after?: ((pkg: BackstagePackageJson) => void) | undefined;
-}): (pkg: BackstagePackageJson) => void {
-  return (pkgToCustomize: BackstagePackageJson) => {
+}): (dynamicPkgPath: string) => Promise<void> {
+  return async (dynamicPkgPath: string): Promise<void> => {
+    const dynamicPkgContent = await fs.readFile(dynamicPkgPath, 'utf8');
+    const pkgToCustomize = JSON.parse(
+      dynamicPkgContent,
+    ) as BackstagePackageJson;
+
     for (const field in options.overridding || {}) {
       if (!Object.prototype.hasOwnProperty.call(options.overridding, field)) {
         continue;
@@ -700,6 +732,11 @@ function customizeForDynamicUse(options: {
     if (options.after) {
       options.after(pkgToCustomize);
     }
+
+    await fs.writeJson(dynamicPkgPath, pkgToCustomize, {
+      encoding: 'utf8',
+      spaces: 2,
+    });
   };
 }
 
