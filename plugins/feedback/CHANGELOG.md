@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-feedback [1.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback@1.0.3...@janus-idp/backstage-plugin-feedback@1.1.0) (2024-04-09)
+
+
+### Features
+
+* **feedback:** add capture events in feedback plugin ([#1472](https://github.com/janus-idp/backstage-plugins/issues/1472)) ([36a12e3](https://github.com/janus-idp/backstage-plugins/commit/36a12e332cb9d75bd367004948116697af9ff885))
+
 ## @janus-idp/backstage-plugin-feedback [1.0.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback@1.0.2...@janus-idp/backstage-plugin-feedback@1.0.3) (2024-04-05)
 
 ## @janus-idp/backstage-plugin-feedback [1.0.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback@1.0.1...@janus-idp/backstage-plugin-feedback@1.0.2) (2024-03-29)
