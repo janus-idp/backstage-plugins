@@ -1,3 +1,13 @@
+## @janus-idp/backstage-scaffolder-backend-module-regex [1.3.9](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-regex@1.3.8...@janus-idp/backstage-scaffolder-backend-module-regex@1.3.9) (2024-04-09)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.9
+
+## @janus-idp/backstage-scaffolder-backend-module-regex [1.3.8](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-regex@1.3.7...@janus-idp/backstage-scaffolder-backend-module-regex@1.3.8) (2024-04-08)
+
 ## @janus-idp/backstage-scaffolder-backend-module-regex [1.3.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-regex@1.3.6...@janus-idp/backstage-scaffolder-backend-module-regex@1.3.7) (2024-04-02)
 
 

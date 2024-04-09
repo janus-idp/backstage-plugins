@@ -1,3 +1,13 @@
+## @janus-idp/backstage-plugin-web-terminal [1.3.11](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-web-terminal@1.3.10...@janus-idp/backstage-plugin-web-terminal@1.3.11) (2024-04-09)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.9
+
+## @janus-idp/backstage-plugin-web-terminal [1.3.10](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-web-terminal@1.3.9...@janus-idp/backstage-plugin-web-terminal@1.3.10) (2024-04-08)
+
 ## @janus-idp/backstage-plugin-web-terminal [1.3.9](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-web-terminal@1.3.8...@janus-idp/backstage-plugin-web-terminal@1.3.9) (2024-04-02)
 
 

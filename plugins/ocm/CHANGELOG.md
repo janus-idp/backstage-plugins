@@ -1,3 +1,11 @@
+## @janus-idp/backstage-plugin-ocm [3.7.9](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm@3.7.8...@janus-idp/backstage-plugin-ocm@3.7.9) (2024-04-09)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.9
+
 ## @janus-idp/backstage-plugin-ocm [3.7.8](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm@3.7.7...@janus-idp/backstage-plugin-ocm@3.7.8) (2024-04-05)
 
 

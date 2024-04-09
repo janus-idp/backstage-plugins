@@ -1,3 +1,11 @@
+## @janus-idp/backstage-plugin-3scale-backend [1.4.11](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-3scale-backend@1.4.10...@janus-idp/backstage-plugin-3scale-backend@1.4.11) (2024-04-09)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.9
+
 ## @janus-idp/backstage-plugin-3scale-backend [1.4.10](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-3scale-backend@1.4.9...@janus-idp/backstage-plugin-3scale-backend@1.4.10) (2024-04-05)
 
 

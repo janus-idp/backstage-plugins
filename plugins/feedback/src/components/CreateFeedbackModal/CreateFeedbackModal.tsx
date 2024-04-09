@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 
 import {
   Button,
@@ -82,6 +82,7 @@ export const CreateFeedbackModal = React.forwardRef(
   ) => {
     const classes = useStyles();
     const api = useApi(feedbackApiRef);
+    const analytics = useAnalytics();
     const [feedbackType, setFeedbackType] = useState('BUG');
     const [selectedTag, setSelectedTag] = useState(issueTags[0]);
     const app = useApi(configApiRef);
@@ -130,6 +131,7 @@ export const CreateFeedbackModal = React.forwardRef(
         tag: selectedTag,
       });
       props.handleModalCloseFn(resp);
+      analytics.captureEvent('click', `submit - ${summary.value}`);
     }
 
     function handleInputChange(

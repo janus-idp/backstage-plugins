@@ -100,9 +100,9 @@ export function addToMainDependencies(
 
 export function isValidPluginModule(pluginModule: any): boolean {
   return (
-    isBackendFeature(pluginModule.default) ||
-    isBackendFeatureFactory(pluginModule.default) ||
-    isBackendDynamicPluginInstaller(pluginModule.dynamicPluginInstaller)
+    isBackendFeature(pluginModule?.default) ||
+    isBackendFeatureFactory(pluginModule?.default) ||
+    isBackendDynamicPluginInstaller(pluginModule?.dynamicPluginInstaller)
   );
 }
 
