@@ -20,6 +20,7 @@ import WorkflowOverviewFormatter, {
 import {
   executeWorkflowRouteRef,
   workflowDefinitionsRouteRef,
+  workflowInstanceRouteRef,
 } from '../routes';
 import OverrideBackstageTable from './ui/OverrideBackstageTable';
 import { WorkflowInstanceStatusIndicator } from './WorkflowInstanceStatusIndicator';
@@ -31,6 +32,7 @@ export interface WorkflowsTableProps {
 export const WorkflowsTable = ({ items }: WorkflowsTableProps) => {
   const navigate = useNavigate();
   const definitionLink = useRouteRef(workflowDefinitionsRouteRef);
+  const workflowInstanceLink = useRouteRef(workflowInstanceRouteRef);
   const executeWorkflowLink = useRouteRef(executeWorkflowRouteRef);
   const [data, setData] = useState<FormattedWorkflowOverview[]>([]);
 
@@ -104,10 +106,13 @@ export const WorkflowsTable = ({ items }: WorkflowsTableProps) => {
         title: 'Last run status',
         field: 'lastRunStatus',
         render: rowData =>
-          rowData.lastRunStatus !== VALUE_UNAVAILABLE ? (
-            <WorkflowInstanceStatusIndicator
-              status={rowData.lastRunStatus as ProcessInstanceStateValues}
-            />
+          rowData.lastRunStatus !== VALUE_UNAVAILABLE &&
+          rowData.lastRunId !== VALUE_UNAVAILABLE ? (
+            <Link to={workflowInstanceLink({ instanceId: rowData.lastRunId })}>
+              <WorkflowInstanceStatusIndicator
+                status={rowData.lastRunStatus as ProcessInstanceStateValues}
+              />
+            </Link>
           ) : (
             VALUE_UNAVAILABLE
           ),
