@@ -1,3 +1,5 @@
+## @janus-idp/backstage-plugin-nexus-repository-manager [1.4.36](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-nexus-repository-manager@1.4.35...@janus-idp/backstage-plugin-nexus-repository-manager@1.4.36) (2024-04-10)
+
 ## @janus-idp/backstage-plugin-nexus-repository-manager [1.4.35](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-nexus-repository-manager@1.4.34...@janus-idp/backstage-plugin-nexus-repository-manager@1.4.35) (2024-04-09)
 
 
