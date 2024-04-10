@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-orchestrator [1.9.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.8.9...@janus-idp/backstage-plugin-orchestrator@1.9.0) (2024-04-10)
+
+
+### Features
+
+* **orchestrator:** make workflow last run status as link to the workflow last run details page ([#1488](https://github.com/janus-idp/backstage-plugins/issues/1488)) ([fc2f94e](https://github.com/janus-idp/backstage-plugins/commit/fc2f94ed4ff2cb0795ba3b65eeea57eae3a8640c))
+
 ## @janus-idp/backstage-plugin-orchestrator [1.8.9](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.8.8...@janus-idp/backstage-plugin-orchestrator@1.8.9) (2024-04-09)
 
 
