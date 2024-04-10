@@ -33,7 +33,7 @@ jobs:
         run: |
           pnpm install
           if [[ $(git diff --name-only . || true) ]]; then
-            echo "After 'yarn install', workspace is dirty! The following files have changed:"
+            echo "After 'pnpm install', workspace is dirty! The following files have changed:"
             echo
             git diff --name-only . || true
             exit 42
