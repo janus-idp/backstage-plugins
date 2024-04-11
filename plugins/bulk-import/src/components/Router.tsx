@@ -1,7 +1,9 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 
-import { BulkImportPage } from '../plugin';
+import { addRepositoriesRouteRef } from '../routes';
+import { AddRepositoriesPage } from './AddRepositories/AddRepositoriesPage';
+import { BulkImportPage } from './BulkImportPage';
 
 /**
  *
@@ -9,6 +11,10 @@ import { BulkImportPage } from '../plugin';
  */
 export const Router = () => (
   <Routes>
-    <Route path="/repositories" element={<BulkImportPage />} />
+    <Route path="*" element={<BulkImportPage />} />
+    <Route
+      path={addRepositoriesRouteRef.path}
+      element={<AddRepositoriesPage />}
+    />
   </Routes>
 );
