@@ -1,6 +1,8 @@
 import * as React from 'react';
 
 import {
+  Box,
+  CircularProgress,
   Paper,
   SortDirection,
   Table,
@@ -44,6 +46,7 @@ type VirtualListProps<R> = {
   tableToolbar?: React.ReactNode;
   type: string;
   view?: string;
+  loading: boolean;
 };
 
 export const VirtualList = <R extends RenderResource>(
@@ -165,7 +168,18 @@ export const VirtualList = <R extends RenderResource>(
               </TableRow>
             </TableHead>
             <TableBody>
-              {listProps.rows.length > 0 ? (
+              {/* eslint-disable-next-line no-nested-ternary */}
+              {listProps.loading === true ? (
+                <Box
+                  display="flex"
+                  justifyContent="center"
+                  alignItems="center"
+                  minHeight="10vh"
+                  marginLeft="60vh"
+                >
+                  <CircularProgress />
+                </Box>
+              ) : listProps.rows.length > 0 ? (
                 stableSort(rows, getComparator()).map(
                   (row: RenderResource, index: number) => (
                     <VirtualItem

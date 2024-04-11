@@ -31,6 +31,7 @@ export const AppListPage = (props: { view?: string }): React.JSX.Element => {
   const activeNs = kialiState.namespaces.activeNamespaces.map(ns => ns.name);
   const prevActiveNs = useRef(activeNs);
   const prevDuration = useRef(duration);
+  const [loadingD, setLoading] = React.useState<boolean>(true);
 
   const hiddenColumns = isMultiCluster ? [] : ['cluster'];
   if (props.view === ENTITY) {
@@ -96,6 +97,9 @@ export const AppListPage = (props: { view?: string }): React.JSX.Element => {
       setNamespaces(namespaceInfos);
       fetchApps(namespaceInfos, duration);
     });
+    setTimeout(function () {
+      setLoading(false);
+    }, 400);
   };
 
   const [_, refresh] = useAsyncFn(
@@ -112,6 +116,7 @@ export const AppListPage = (props: { view?: string }): React.JSX.Element => {
       duration !== prevDuration.current ||
       !nsEqual(activeNs, prevActiveNs.current)
     ) {
+      setLoading(true);
       getNS();
       prevDuration.current = duration;
       prevActiveNs.current = activeNs;
@@ -134,6 +139,7 @@ export const AppListPage = (props: { view?: string }): React.JSX.Element => {
           type="applications"
           hiddenColumns={hiddenColumns}
           view={props.view}
+          loading={loadingD}
         />
       </Content>
     </div>
