@@ -110,8 +110,9 @@ export class BackstageRoleManager implements RoleManager {
       return false;
     }
 
-    if (await this.cacheResults(name1)) {
-      const cachedResult = this.roleCache?.get(name1)!;
+    await this.cacheResults(name1);
+    if (this.roleCache) {
+      const cachedResult = this.roleCache.get(name1)!;
 
       return cachedResult.has(name2);
     }
@@ -166,8 +167,9 @@ export class BackstageRoleManager implements RoleManager {
    * because we don't support role inheritance and we notify casbin about end of the role sub-tree.
    */
   async getRoles(name: string, ..._domain: string[]): Promise<string[]> {
-    if (await this.cacheResults(name)) {
-      const cachedResult = this.roleCache?.get(name)!;
+    await this.cacheResults(name);
+    if (this.roleCache) {
+      const cachedResult = this.roleCache.get(name)!;
 
       return Array.from(cachedResult);
     }
