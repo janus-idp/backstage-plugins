@@ -63,7 +63,7 @@ export const IstioConfigListPage = (props: {
       setNamespaces(nsl);
       fetchIstioConfigs(nsl);
     });
-    setTimeout(function () {
+    setTimeout(() => {
       setLoading(false);
     }, 400);
   };

@@ -163,7 +163,7 @@ export const ServiceListPage = (props: {
       setNamespaces(nsl);
       fetchServices(nsl, duration, activeToggles);
     });
-    setTimeout(function () {
+    setTimeout(() => {
       setLoading(false);
     }, 400);
   };

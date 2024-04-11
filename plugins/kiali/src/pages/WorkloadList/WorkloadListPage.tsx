@@ -72,7 +72,7 @@ export const WorkloadListPage = (props: { view?: string }) => {
       fetchWorkloads(nsl, duration);
     });
     // Add a delay so it doesn't look like a flash
-    setTimeout(function () {
+    setTimeout(() => {
       setLoading(false);
     }, 400);
   };

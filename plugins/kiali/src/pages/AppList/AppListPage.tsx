@@ -97,7 +97,7 @@ export const AppListPage = (props: { view?: string }): React.JSX.Element => {
       setNamespaces(namespaceInfos);
       fetchApps(namespaceInfos, duration);
     });
-    setTimeout(function () {
+    setTimeout(() => {
       setLoading(false);
     }, 400);
   };
