@@ -15,14 +15,7 @@ import {
   tokenManagerMock,
 } from '../__fixtures__/__utils__/utils.test';
 import { CasbinDBAdapterFactory } from '../database/casbin-adapter-factory';
-import {
-  PermissionPolicyMetadataDao,
-  PolicyMetadataStorage,
-} from '../database/policy-metadata-storage';
-import {
-  RoleMetadataDao,
-  RoleMetadataStorage,
-} from '../database/role-metadata';
+import { RoleMetadataDao } from '../database/role-metadata';
 import { CSV_PERMISSION_POLICY_FILE_AUTHOR } from '../file-permissions/csv';
 import { policyToString } from '../helper';
 import { BackstageRoleManager } from '../role-manager/role-manager';
