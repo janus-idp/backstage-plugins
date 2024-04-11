@@ -18,7 +18,14 @@ runs:
 
     - name: Install dependencies
       shell: bash
-      run: yarn --prefer-offline --frozen-lockfile
+      run: |
+        yarn install
+        if [[ $(git diff --name-only . || true) ]]; then
+          echo "After 'yarn install', workspace is dirty! The following files have changed:"
+          echo
+          git diff --name-only . || true
+          exit 42
+        fi
 
     - name: Run prettier
       shell: bash
