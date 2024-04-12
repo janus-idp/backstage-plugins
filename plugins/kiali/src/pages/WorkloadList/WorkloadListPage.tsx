@@ -32,7 +32,7 @@ export const WorkloadListPage = (props: { view?: string }) => {
   const activeNs = kialiState.namespaces.activeNamespaces.map(ns => ns.name);
   const prevActiveNs = useRef(activeNs);
   const prevDuration = useRef(duration);
-  const [loadingD, setLoading] = React.useState<boolean>(true);
+  const [loadingData, setLoadingData] = React.useState<boolean>(true);
 
   const fetchWorkloads = (
     nss: NamespaceInfo[],
@@ -73,7 +73,7 @@ export const WorkloadListPage = (props: { view?: string }) => {
     });
     // Add a delay so it doesn't look like a flash
     setTimeout(() => {
-      setLoading(false);
+      setLoadingData(false);
     }, 400);
   };
 
@@ -139,7 +139,7 @@ export const WorkloadListPage = (props: { view?: string }) => {
           type="workloads"
           hiddenColumns={hiddenColumns}
           view={props.view}
-          loading={loadingD}
+          loading={loadingData}
         />
       </Content>
     </div>
