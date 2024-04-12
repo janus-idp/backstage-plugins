@@ -6,8 +6,7 @@ Feedback plugin is a valuable addition to backstage which allows project manager
 
 It is dedicated to simplifying the process of gathering and managing user feedback for service catalog entities. This plugin seamlessly integrates with the [feedback-backend-plugin](../feedback-backend) and extends its capabilities by allowing users to create Jira tickets associated with their feedback.
 
-<details>
-<summary><strong>Screenshots</strong></summary>
+### Screenshots
 
 | Global Page                                  | Entity Page                                  |
 | -------------------------------------------- | -------------------------------------------- |
@@ -20,8 +19,6 @@ It is dedicated to simplifying the process of gathering and managing user feedba
 | Opc Feedback Component                             |                                                |                                                      |                                                |
 | -------------------------------------------------- | ---------------------------------------------- | ---------------------------------------------------- | ---------------------------------------------- |
 | ![initialDialog](./docs/images/initial-dialog.png) | ![issueDialog](./docs/images/issue-dialog.png) | ![feedbackDialog](./docs/images/feedback-dialog.png) | ![finalDialog](./docs/images/final-dialog.png) |
-
-</details>
 
 ### Key Features
 
@@ -171,4 +168,3 @@ metadata:
 ### Credits
 
 - @1-Platform for [opc-feedback](https://github.com/1-platform/op-components) component.
--
