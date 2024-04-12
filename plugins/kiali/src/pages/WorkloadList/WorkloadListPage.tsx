@@ -92,7 +92,7 @@ export const WorkloadListPage = (props: { view?: string }) => {
       duration !== prevDuration.current ||
       !nsEqual(activeNs, prevActiveNs.current)
     ) {
-      setLoading(true);
+      setLoadingData(true);
       load();
       prevDuration.current = duration;
       prevActiveNs.current = activeNs;

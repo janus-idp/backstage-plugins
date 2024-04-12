@@ -168,16 +168,6 @@ export const ServiceListPage = (props: {
     }, 400);
   };
 
-  const [{ loading }, refresh] = useAsyncFn(
-    async () => {
-      // Check if the config is loaded
-      await load();
-    },
-    [],
-    { loading: true },
-  );
-  useDebounce(refresh, 10);
-
   React.useEffect(() => {
     if (
       duration !== prevDuration.current ||
@@ -190,6 +180,16 @@ export const ServiceListPage = (props: {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeNs, duration]);
+
+  const [{ loading }, refresh] = useAsyncFn(
+    async () => {
+      // Check if the config is loaded
+      await load();
+    },
+    [],
+    { loading: true },
+  );
+  useDebounce(refresh, 10);
 
   if (loading) {
     return <CircularProgress />;
