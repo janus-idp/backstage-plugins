@@ -22,6 +22,7 @@ export type Renderer<R extends RenderResource> = (
   health?: Health,
   statefulFilter?: React.RefObject<StatefulFilters>,
   view?: string,
+  linkColor?: string,
 ) => JSX.Element | undefined;
 
 export type ResourceType<R extends RenderResource> = {
@@ -377,6 +378,7 @@ const services: Resource = {
 const istio: Resource = {
   name: 'istio',
   columns: [istioItem, namespace, cluster, istioType, istioObjectConfiguration],
+  badge: PFBadges.App,
 };
 
 type Config = {

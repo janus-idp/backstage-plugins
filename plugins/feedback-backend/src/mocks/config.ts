@@ -1,6 +1,7 @@
 export const mockConfig = {
   app: {
     title: 'Backstage Test App',
+    baseUrl: 'http://localhost:3000',
   },
   backend: {
     baseUrl: 'http://localhost:7007',

@@ -1,3 +1,64 @@
+## @janus-idp/backstage-plugin-kiali [1.16.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.16.2...@janus-idp/backstage-plugin-kiali@1.16.3) (2024-04-09)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.10
+
+## @janus-idp/backstage-plugin-kiali [1.16.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.16.1...@janus-idp/backstage-plugin-kiali@1.16.2) (2024-04-09)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.9
+
+## @janus-idp/backstage-plugin-kiali [1.16.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.16.0...@janus-idp/backstage-plugin-kiali@1.16.1) (2024-04-05)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.8
+
+## @janus-idp/backstage-plugin-kiali [1.16.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.15.0...@janus-idp/backstage-plugin-kiali@1.16.0) (2024-04-04)
+
+
+### Features
+
+* **kiali:** istio config list and details ([#1326](https://github.com/janus-idp/backstage-plugins/issues/1326)) ([f8fc349](https://github.com/janus-idp/backstage-plugins/commit/f8fc349e1305b10632520c4f25f78c45b54481bb))
+
+## @janus-idp/backstage-plugin-kiali [1.15.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.14.2...@janus-idp/backstage-plugin-kiali@1.15.0) (2024-04-03)
+
+
+### Features
+
+* **kiali:** update dark theme ([#1434](https://github.com/janus-idp/backstage-plugins/issues/1434)) ([e0d84e1](https://github.com/janus-idp/backstage-plugins/commit/e0d84e177786187e0d7a8b279d7e72f710207d91))
+
+## @janus-idp/backstage-plugin-kiali [1.14.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.14.1...@janus-idp/backstage-plugin-kiali@1.14.2) (2024-04-02)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.7
+
+## @janus-idp/backstage-plugin-kiali [1.14.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.14.0...@janus-idp/backstage-plugin-kiali@1.14.1) (2024-03-29)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.6
+
+## @janus-idp/backstage-plugin-kiali [1.14.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.13.0...@janus-idp/backstage-plugin-kiali@1.14.0) (2024-03-25)
+
+
+### Features
+
+* **kiali:** metrics tab ([#1331](https://github.com/janus-idp/backstage-plugins/issues/1331)) ([d80e331](https://github.com/janus-idp/backstage-plugins/commit/d80e33155481730c0e95de40da99ed0280e982c8))
+
 ## @janus-idp/backstage-plugin-kiali [1.13.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.12.1...@janus-idp/backstage-plugin-kiali@1.13.0) (2024-03-14)
 
 

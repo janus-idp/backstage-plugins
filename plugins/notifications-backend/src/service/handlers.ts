@@ -36,7 +36,7 @@ export async function createNotification(
     req.targetGroups.length > 0
   ) {
     isUser = true;
-    await validateUsersGroups(true, req.targetGroups, catalogClient);
+    await validateUsersGroups(false, req.targetGroups, catalogClient);
   }
 
   // validate groups
@@ -46,7 +46,7 @@ export async function createNotification(
     req.targetUsers.length > 0
   ) {
     isUser = true;
-    await validateUsersGroups(false, req.targetUsers, catalogClient);
+    await validateUsersGroups(true, req.targetUsers, catalogClient);
   }
 
   // validate actions

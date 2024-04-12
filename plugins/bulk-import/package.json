@@ -1,9 +1,10 @@
 {
   "name": "@janus-idp/backstage-plugin-bulk-import",
-  "version": "1.0.0",
+  "version": "1.0.5",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
+  "private": true,
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",
@@ -26,13 +27,16 @@
     "ui-test": "yarn playwright test"
   },
   "dependencies": {
-    "@backstage/core-components": "^0.14.0",
-    "@backstage/core-plugin-api": "^1.9.0",
-    "@backstage/theme": "^0.5.1",
+    "@backstage/core-components": "^0.14.3",
+    "@backstage/core-plugin-api": "^1.9.1",
+    "@backstage/theme": "^0.5.2",
     "@material-ui/core": "^4.9.13",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.61",
     "@mui/icons-material": "5.14.11",
+    "@mui/material": "^5.12.2",
+    "lodash": "^4.17.21",
+    "formik": "^2.4.5",
     "react-use": "^17.2.4"
   },
   "peerDependencies": {
@@ -40,11 +44,11 @@
     "react-router-dom": "^6.20.0"
   },
   "devDependencies": {
-    "@backstage/cli": "0.25.2",
-    "@backstage/core-app-api": "1.12.0",
-    "@backstage/dev-utils": "1.0.27",
-    "@backstage/test-utils": "1.5.0",
-    "@janus-idp/cli": "1.7.5",
+    "@backstage/cli": "0.26.2",
+    "@backstage/core-app-api": "1.12.3",
+    "@backstage/dev-utils": "1.0.30",
+    "@backstage/test-utils": "1.5.3",
+    "@janus-idp/cli": "1.7.10",
     "@testing-library/jest-dom": "6.0.0",
     "@testing-library/react": "14.0.0",
     "@testing-library/user-event": "14.0.0",

@@ -104,9 +104,11 @@ export const WorkflowsTable = ({ items }: WorkflowsTableProps) => {
         title: 'Last run status',
         field: 'lastRunStatus',
         render: rowData =>
-          rowData.lastRunStatus !== VALUE_UNAVAILABLE ? (
+          rowData.lastRunStatus !== VALUE_UNAVAILABLE &&
+          rowData.lastRunId !== VALUE_UNAVAILABLE ? (
             <WorkflowInstanceStatusIndicator
               status={rowData.lastRunStatus as ProcessInstanceStateValues}
+              lastRunId={rowData.lastRunId}
             />
           ) : (
             VALUE_UNAVAILABLE

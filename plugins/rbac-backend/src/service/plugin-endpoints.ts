@@ -96,37 +96,48 @@ export class PluginPermissionMetadataCollector {
     let pluginResponses: PluginMetadataResponse[] = [];
 
     for (const pluginId of this.pluginIds) {
-      const baseEndpoint = await this.discovery.getBaseUrl(pluginId);
-      const wellKnownURL = `${baseEndpoint}/.well-known/backstage/permissions/metadata`;
-      try {
-        const permResp = await this.urlReader.readUrl(wellKnownURL, { token });
-        const permMetaDataRaw = (await permResp.buffer()).toString();
-        let permMetaData;
-        try {
-          permMetaData = JSON.parse(permMetaDataRaw);
-        } catch (err) {
-          // workaround for https://issues.redhat.com/browse/RHIDP-1456
-          continue;
-        }
-        if (permMetaData) {
-          pluginResponses = [
-            ...pluginResponses,
-            {
-              metaDataResponse: permMetaData,
-              pluginId,
-            },
-          ];
-        }
-      } catch (err) {
-        if (isError(err) && err.name === 'NotFoundError') {
-          continue;
-        }
-        this.logger.error(
-          `Failed to retrieve permission metadata for ${pluginId}. ${err}`,
-        );
+      const permMetaData = await this.getMetadataByPluginId(pluginId, token);
+      if (permMetaData) {
+        pluginResponses = [
+          ...pluginResponses,
+          {
+            metaDataResponse: permMetaData,
+            pluginId,
+          },
+        ];
       }
     }
+
     return pluginResponses;
+  }
+
+  async getMetadataByPluginId(
+    pluginId: string,
+    token: string | undefined,
+  ): Promise<MetadataResponse | undefined> {
+    let permMetaData: MetadataResponse | undefined;
+    try {
+      const baseEndpoint = await this.discovery.getBaseUrl(pluginId);
+      const wellKnownURL = `${baseEndpoint}/.well-known/backstage/permissions/metadata`;
+
+      const permResp = await this.urlReader.readUrl(wellKnownURL, { token });
+      const permMetaDataRaw = (await permResp.buffer()).toString();
+
+      try {
+        permMetaData = JSON.parse(permMetaDataRaw);
+      } catch (err) {
+        // workaround for https://issues.redhat.com/browse/RHIDP-1456
+        return undefined;
+      }
+    } catch (err) {
+      if (isError(err) && err.name === 'NotFoundError') {
+        return undefined;
+      }
+      this.logger.error(
+        `Failed to retrieve permission metadata for ${pluginId}. ${err}`,
+      );
+    }
+    return permMetaData;
   }
 }
 

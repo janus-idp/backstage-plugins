@@ -62,6 +62,7 @@ const WorkflowDefinitionDetailsCard = ({
               status={
                 formattedWorkflowOverview?.lastRunStatus as ProcessInstanceStateValues
               }
+              lastRunId={formattedWorkflowOverview?.lastRunId}
             />
           ) : (
             VALUE_UNAVAILABLE

@@ -1,6 +1,9 @@
 /* Config Data */
 import anonymousAuth from './general/auth_info_anonymous.json';
 import configData from './general/config.json';
+/** Metrics **/
+import crippledFeatures from './general/crippledFeatures.json';
+import grafanaInfo from './general/grafana.json';
 import istioCertsInfo from './general/istioCertsInfo.json';
 import istioConfig from './general/istioConfig.json';
 import istioContainerLogs from './general/istioLogs.json';
@@ -20,18 +23,22 @@ import kialiTrafficGeneratorApp from './namespaces/bookinfo/apps/kiali_traffic_g
 import productpageApp from './namespaces/bookinfo/apps/productpage.json';
 import ratingsApp from './namespaces/bookinfo/apps/ratings.json';
 import reviewsApp from './namespaces/bookinfo/apps/reviews.json';
+import bookinfoDashboard from './namespaces/bookinfo/dashboard.json';
 /** health **/
 
 import bookinfoHealthApp from './namespaces/bookinfo/health/app.json';
 import bookinfoHealthService from './namespaces/bookinfo/health/service.json';
 import bookinfoHealthWorkload from './namespaces/bookinfo/health/workload.json';
 import bookinfoIstioConfig from './namespaces/bookinfo/istio_config.json';
+import bookinfoGateway from './namespaces/bookinfo/istio_configs/gateways/bookinfo-gateway.json';
+import bookinfoVirtualService from './namespaces/bookinfo/istio_configs/virtualservices/bookinfo.json';
 import bookInfoMetrics from './namespaces/bookinfo/metrics';
 import bookinfoServices from './namespaces/bookinfo/services.json';
 import detailsService from './namespaces/bookinfo/services/details.json';
 import productpageService from './namespaces/bookinfo/services/productpage.json';
 import ratingsService from './namespaces/bookinfo/services/ratings.json';
 import reviewsService from './namespaces/bookinfo/services/reviews.json';
+import bookinfoSpans from './namespaces/bookinfo/spans.json';
 /* bookinfo */
 import bookinfoTls from './namespaces/bookinfo/tls.json';
 /** Workloads **/
@@ -49,6 +56,7 @@ import istioingressgatewayApp from './namespaces/istio-system/apps/istio_ingress
 import istiodApp from './namespaces/istio-system/apps/istiod.json';
 import jaegerApp from './namespaces/istio-system/apps/jaeger.json';
 import kialiApp from './namespaces/istio-system/apps/kiali.json';
+import istioDashboard from './namespaces/istio-system/dashboard.json';
 /**   health  **/
 import istioSystemHealthApp from './namespaces/istio-system/health/app.json';
 import istioSystemHealthService from './namespaces/istio-system/health/service.json';
@@ -63,6 +71,7 @@ import istiodService from './namespaces/istio-system/services/istiod.json';
 import jaegerService from './namespaces/istio-system/services/jaeger_collector.json';
 import kialiService from './namespaces/istio-system/services/kiali.json';
 import prometheusService from './namespaces/istio-system/services/prometheus.json';
+import istioSpans from './namespaces/istio-system/spans.json';
 /* istio-system */
 import istioSystemTls from './namespaces/istio-system/tls.json';
 import istioSystemWorkloads from './namespaces/istio-system/workloads.json';
@@ -81,6 +90,7 @@ import hotelsApp from './namespaces/travel-agency/apps/hotels.json';
 import insurancesApp from './namespaces/travel-agency/apps/insurances.json';
 import mysqldbApp from './namespaces/travel-agency/apps/mysqldb.json';
 import travelApp from './namespaces/travel-agency/apps/travels.json';
+import travelAgencyDashboard from './namespaces/travel-agency/dashboard.json';
 /** health **/
 
 import travelAgencyHealthApp from './namespaces/travel-agency/health/app.json';
@@ -96,6 +106,7 @@ import hotelsService from './namespaces/travel-agency/services/hotels.json';
 import insurancesService from './namespaces/travel-agency/services/insurances.json';
 import mysqldbService from './namespaces/travel-agency/services/mysqldb.json';
 import travelService from './namespaces/travel-agency/services/travels.json';
+import travelAgencySpans from './namespaces/travel-agency/spans.json';
 /* Travel agency */
 import travelAgencyTls from './namespaces/travel-agency/tls.json';
 import travelAgencyWorkloads from './namespaces/travel-agency/workloads.json';
@@ -108,15 +119,20 @@ import mysqldbv1Workload from './namespaces/travel-agency/workloads/mysqldb_v1.j
 import travelsv1Workload from './namespaces/travel-agency/workloads/travels_v1.json';
 import travelControlApps from './namespaces/travel-control/apps.json';
 import controlApp from './namespaces/travel-control/apps/control.json';
+import travelControlDashboard from './namespaces/travel-control/dashboard.json';
 /** health **/
 
 import travelControlHealthApp from './namespaces/travel-control/health/app.json';
 import travelControlHealthService from './namespaces/travel-control/health/service.json';
 import travelControlHealthWorkload from './namespaces/travel-control/health/workload.json';
 import travelControlIstioConfig from './namespaces/travel-control/istio_config.json';
+import controlDR from './namespaces/travel-control/istio_configs/destinationrules/control.json';
+import controlGW from './namespaces/travel-control/istio_configs/gateways/control-gateway.json';
+import controlVR from './namespaces/travel-control/istio_configs/virtualservices/control.json';
 import travelControlMetrics from './namespaces/travel-control/metrics';
 import travelControlServices from './namespaces/travel-control/services.json';
 import controlService from './namespaces/travel-control/services/control.json';
+import travelControlSpans from './namespaces/travel-control/spans.json';
 /* Travel control */
 import travelControlTls from './namespaces/travel-control/tls.json';
 import travelControlWorkloads from './namespaces/travel-control/workloads.json';
@@ -124,6 +140,7 @@ import travelControlWorkload from './namespaces/travel-control/workloads/control
 import travelsApp from './namespaces/travel-portal/apps/travels.json';
 import viaggiApp from './namespaces/travel-portal/apps/viaggi.json';
 import voyagesApp from './namespaces/travel-portal/apps/voyages.json';
+import travelPortalDashboard from './namespaces/travel-portal/dashboard.json';
 /** health **/
 
 import travelPortalHealthApp from './namespaces/travel-portal/health/app.json';
@@ -135,6 +152,7 @@ import travelPortalServices from './namespaces/travel-portal/services.json';
 import travelsService from './namespaces/travel-portal/services/travels.json';
 import viaggiService from './namespaces/travel-portal/services/viaggi.json';
 import voyagesService from './namespaces/travel-portal/services/voyages.json';
+import travelPortalSpans from './namespaces/travel-portal/spans.json';
 /* Travel portal */
 import travelPortalTls from './namespaces/travel-portal/tls.json';
 import travelPortalWorkloads from './namespaces/travel-portal/workloads.json';
@@ -190,6 +208,8 @@ export const kialiData: { [index: string]: any } = {
         kiali: kialiApp,
       },
       istioConfigList: istioSystemIstioConfig,
+      dashboard: istioDashboard,
+      spans: istioSpans,
     },
     bookinfo: {
       tls: bookinfoTls,
@@ -221,7 +241,17 @@ export const kialiData: { [index: string]: any } = {
         reviews: reviewsApp,
         kialitrafficgenerator: kialiTrafficGeneratorApp,
       },
+      istioConfigDetails: {
+        gateways: {
+          'bookinfo-gateway': bookinfoGateway,
+        },
+        virtualservices: {
+          bookinfo: bookinfoVirtualService,
+        },
+      },
       istioConfigList: bookinfoIstioConfig,
+      dashboard: bookinfoDashboard,
+      spans: bookinfoSpans,
     },
     'travel-control': {
       tls: travelControlTls,
@@ -240,7 +270,20 @@ export const kialiData: { [index: string]: any } = {
       apps: {
         control: controlApp,
       },
+      istioConfigDetails: {
+        destinationrules: {
+          control: controlDR,
+        },
+        virtualservices: {
+          control: controlVR,
+        },
+        gateways: {
+          'control-gateway': controlGW,
+        },
+      },
       istioConfigList: travelControlIstioConfig,
+      dashboard: travelControlDashboard,
+      spans: travelControlSpans,
     },
     'travel-portal': {
       tls: travelPortalTls,
@@ -266,6 +309,8 @@ export const kialiData: { [index: string]: any } = {
         voyages: voyagesApp,
       },
       istioConfigList: travelPortalIstioConfig,
+      dashboard: travelPortalDashboard,
+      spans: travelPortalSpans,
     },
     'travel-agency': {
       tls: travelAgencyTls,
@@ -303,6 +348,8 @@ export const kialiData: { [index: string]: any } = {
         travels: travelApp,
       },
       istioConfigList: travelAgencyIstioConfig,
+      dashboard: travelAgencyDashboard,
+      spans: travelAgencySpans,
     },
   },
   logs: containerLogs,
@@ -330,4 +377,6 @@ export const kialiData: { [index: string]: any } = {
     'travel-control': travelControlApps,
   },
   status: status,
+  crippledFeatures: crippledFeatures,
+  grafanaInfo: grafanaInfo,
 };

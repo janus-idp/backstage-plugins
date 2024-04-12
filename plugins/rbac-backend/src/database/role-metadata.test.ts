@@ -26,17 +26,6 @@ describe('role-metadata-db-table', () => {
       }),
       migrations: { skip: false },
     };
-    await knex.schema.createTable('casbin_rule', table => {
-      table.increments('id').primary();
-      table.string('ptype');
-      table.string('v0');
-      table.string('v1');
-      table.string('v2');
-      table.string('v3');
-      table.string('v4');
-      table.string('v5');
-      table.string('v6');
-    });
     await migrate(databaseManagerMock);
     return {
       knex,
@@ -81,8 +70,12 @@ describe('role-metadata-db-table', () => {
           );
           await trx.commit();
           expect(roleMetadata).toEqual({
+            author: null,
+            createdAt: null,
             description: null,
             id: 1,
+            lastModified: null,
+            modifiedBy: null,
             roleEntityRef: 'role:default/some-super-important-role',
             source: 'rest',
           });
@@ -122,9 +115,13 @@ describe('role-metadata-db-table', () => {
         );
         expect(metadata.length).toEqual(1);
         expect(metadata[0]).toEqual({
+          author: null,
+          createdAt: null,
           roleEntityRef: 'role:default/some-super-important-role',
           description: null,
           id: 1,
+          lastModified: null,
+          modifiedBy: null,
           source: 'configuration',
         });
       },
@@ -274,10 +271,14 @@ describe('role-metadata-db-table', () => {
         );
         expect(metadata.length).toEqual(1);
         expect(metadata[0]).toEqual({
+          author: null,
+          createdAt: null,
           description: null,
           source: 'rest',
           roleEntityRef: 'role:default/some-super-important-role',
           id: 1,
+          lastModified: null,
+          modifiedBy: null,
         });
       },
     );
@@ -344,10 +345,14 @@ describe('role-metadata-db-table', () => {
         );
         expect(metadata.length).toEqual(1);
         expect(metadata[0]).toEqual({
+          author: null,
+          createdAt: null,
           description: null,
           source: 'configuration',
           roleEntityRef: 'role:default/important-role',
           id: 1,
+          lastModified: null,
+          modifiedBy: null,
         });
       },
     );

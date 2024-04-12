@@ -5,13 +5,15 @@ import { useAsyncFn, useDebounce } from 'react-use';
 import { Content, EmptyState } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
-import { CircularProgress } from '@material-ui/core';
+import { CircularProgress, Tab, Tabs } from '@material-ui/core';
 import { AxiosError } from 'axios';
 
 import { HistoryManager } from '../../app/History';
 import { BreadcrumbView } from '../../components/BreadcrumbView/BreadcrumbView';
 import { DefaultSecondaryMasthead } from '../../components/DefaultSecondaryMasthead/DefaultSecondaryMasthead';
 import * as FilterHelper from '../../components/FilterList/FilterHelper';
+import { IstioMetrics } from '../../components/Metrics/IstioMetrics';
+import { a11yProps, TabPanel, useStyles } from '../../components/Tab/TabPanel';
 import { TimeDurationComponent } from '../../components/Time/TimeDurationComponent';
 import { getErrorString, kialiApiRef } from '../../services/Api';
 import { KialiContext } from '../../store';
@@ -19,6 +21,7 @@ import { KialiAppState } from '../../store/Store';
 import { baseStyle } from '../../styles/StyleUtils';
 import { App, AppQuery } from '../../types/App';
 import { AppHealth } from '../../types/Health';
+import { MetricsObjectTypes } from '../../types/Metrics';
 import { AppInfo } from './AppInfo';
 
 export const AppDetailsPage = () => {
@@ -32,6 +35,8 @@ export const AppDetailsPage = () => {
     FilterHelper.currentDuration(),
   );
   const cluster = HistoryManager.getClusterName();
+  const [value, setValue] = React.useState<number>(0);
+  const classes = useStyles();
 
   const grids = () => {
     const elements = [];
@@ -104,6 +109,49 @@ export const AppDetailsPage = () => {
     );
   };
 
+  const inboundTab = (): React.ReactElement => {
+    return (
+      <>
+        {namespace && app && (
+          <IstioMetrics
+            data-test="inbound-metrics-component"
+            lastRefreshAt={duration}
+            namespace={namespace}
+            object={app}
+            cluster={appItem?.cluster}
+            objectType={MetricsObjectTypes.APP}
+            direction="inbound"
+          />
+        )}
+      </>
+    );
+  };
+
+  const outboundTab = (): React.ReactElement => {
+    return (
+      <>
+        {namespace && app && (
+          <IstioMetrics
+            data-test="outbound-metrics-component"
+            lastRefreshAt={duration}
+            namespace={namespace}
+            object={app}
+            cluster={appItem?.cluster}
+            objectType={MetricsObjectTypes.APP}
+            direction="outbound"
+          />
+        )}
+      </>
+    );
+  };
+
+  const handleChange = (
+    _event: any,
+    newValue: React.SetStateAction<number>,
+  ) => {
+    setValue(newValue);
+  };
+
   return (
     <div className={baseStyle}>
       <Content>
@@ -119,7 +167,27 @@ export const AppDetailsPage = () => {
             description={<div>No App found </div>}
           />
         )}
-        <div style={{ marginTop: '20px' }}>{overviewTab()}</div>
+        <div className={classes.root}>
+          <Tabs
+            value={value}
+            onChange={handleChange}
+            aria-label="simple tabs example"
+            style={{ overflow: 'visible', borderBottom: '1px solid #dcdcdc' }}
+          >
+            <Tab label="Overview" {...a11yProps(0)} />
+            <Tab label="Inbound Metrics" {...a11yProps(1)} />
+            <Tab label="Outbound Metrics" {...a11yProps(2)} />
+          </Tabs>
+          <TabPanel value={value} index={0}>
+            {overviewTab()}
+          </TabPanel>
+          <TabPanel value={value} index={1}>
+            {inboundTab()}
+          </TabPanel>
+          <TabPanel value={value} index={2}>
+            {outboundTab()}
+          </TabPanel>
+        </div>
       </Content>
     </div>
   );

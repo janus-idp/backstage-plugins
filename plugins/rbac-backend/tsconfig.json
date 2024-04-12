@@ -4,6 +4,7 @@
   "exclude": ["node_modules"],
   "compilerOptions": {
     "outDir": "../../dist-types/plugins/rbac-backend",
-    "rootDir": "."
+    "rootDir": ".",
+    "downlevelIteration": true
   }
 }

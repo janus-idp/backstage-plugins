@@ -9,6 +9,6 @@ createDevApp()
   .addPage({
     element: <BulkImportPage />,
     title: 'Bulk import',
-    path: '/bulk-import',
+    path: '/bulk-import/repositories',
   })
   .render();

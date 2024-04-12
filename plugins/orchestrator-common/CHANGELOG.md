@@ -1,3 +1,20 @@
+## @janus-idp/backstage-plugin-orchestrator-common [1.6.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-common@1.6.2...@janus-idp/backstage-plugin-orchestrator-common@1.6.3) (2024-04-05)
+
+## @janus-idp/backstage-plugin-orchestrator-common [1.6.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-common@1.6.1...@janus-idp/backstage-plugin-orchestrator-common@1.6.2) (2024-04-04)
+
+
+### Bug Fixes
+
+* **orchestrator:** add lastRunId to overview endpoints ([#1449](https://github.com/janus-idp/backstage-plugins/issues/1449)) ([cce56f7](https://github.com/janus-idp/backstage-plugins/commit/cce56f7de3acc41ecd30b1b9962d7817be69de7d))
+* **orchestrator:** update devmode container tag ([#1439](https://github.com/janus-idp/backstage-plugins/issues/1439)) ([d59ad04](https://github.com/janus-idp/backstage-plugins/commit/d59ad044cd5d8d7566464f140cdbc1dfbad85a62))
+
+## @janus-idp/backstage-plugin-orchestrator-common [1.6.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-common@1.6.0...@janus-idp/backstage-plugin-orchestrator-common@1.6.1) (2024-03-29)
+
+
+### Bug Fixes
+
+* **orchestrator:** fixes v2/instances endpoint ([#1414](https://github.com/janus-idp/backstage-plugins/issues/1414)) ([88b49df](https://github.com/janus-idp/backstage-plugins/commit/88b49df35cf10e231ba69c239e873cb10e7cc25b))
+
 ## @janus-idp/backstage-plugin-orchestrator-common [1.6.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-common@1.5.1...@janus-idp/backstage-plugin-orchestrator-common@1.6.0) (2024-03-14)
 
 

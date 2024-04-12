@@ -13,6 +13,7 @@ export interface FormattedWorkflowOverview {
   readonly name: string;
   readonly lastTriggered: string;
   readonly lastRunStatus: string;
+  readonly lastRunId: string;
   readonly category: string;
   readonly avgDuration: string;
   readonly description: string;
@@ -34,6 +35,7 @@ const WorkflowOverviewFormatter: DataFormatter<
         ? moment(data.lastTriggeredMs).toDate().toLocaleString()
         : VALUE_UNAVAILABLE,
       lastRunStatus: data.lastRunStatus ?? VALUE_UNAVAILABLE,
+      lastRunId: data.lastRunId ?? VALUE_UNAVAILABLE,
       category: data.category ?? VALUE_UNAVAILABLE,
       avgDuration: data.avgDurationMs
         ? formatDuration(data.avgDurationMs)

@@ -1,3 +1,29 @@
+## @janus-idp/cli [1.7.10](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.7.9...@janus-idp/cli@1.7.10) (2024-04-09)
+
+
+### Bug Fixes
+
+* **cli:** `node_modules` of the main plugin unexpectedly copied to the `dist-dynamic` folder. ([#1482](https://github.com/janus-idp/backstage-plugins/issues/1482)) ([deaa19d](https://github.com/janus-idp/backstage-plugins/commit/deaa19d2aaf9e25617911e8bebc67ff8d7471010))
+
+## @janus-idp/cli [1.7.9](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.7.8...@janus-idp/cli@1.7.9) (2024-04-09)
+
+
+### Bug Fixes
+
+* **cli:** fix entrypoint validation when running with `npx` ([#1473](https://github.com/janus-idp/backstage-plugins/issues/1473)) ([79db649](https://github.com/janus-idp/backstage-plugins/commit/79db649d44a01f8834f5275b17aa1000b7151d59))
+* **cli:** fix the `embed-as-dependencies` option on the `export-dynamic-plugin` CLI... ([#1478](https://github.com/janus-idp/backstage-plugins/issues/1478)) ([edd019e](https://github.com/janus-idp/backstage-plugins/commit/edd019e905fd918ee4dcb4f72f0cdd7f791f6300))
+
+## @janus-idp/cli [1.7.8](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.7.7...@janus-idp/cli@1.7.8) (2024-04-05)
+
+## @janus-idp/cli [1.7.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.7.6...@janus-idp/cli@1.7.7) (2024-04-02)
+
+
+### Other changes
+
+* experimental `embed-as-dependencies` option for the backend ([#1418](https://github.com/janus-idp/backstage-plugins/issues/1418)) ([b451380](https://github.com/janus-idp/backstage-plugins/commit/b451380bb048086d90bf7a9c34c4d9c056afbb1e))
+
+## @janus-idp/cli [1.7.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.7.5...@janus-idp/cli@1.7.6) (2024-03-29)
+
 ## @janus-idp/cli [1.7.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.7.4...@janus-idp/cli@1.7.5) (2024-03-04)
 
 ## @janus-idp/cli [1.7.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.7.3...@janus-idp/cli@1.7.4) (2024-02-27)

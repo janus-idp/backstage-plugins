@@ -1,6 +1,11 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 
+import { errorApiRef } from '@backstage/core-plugin-api';
+import { translationApiRef } from '@backstage/core-plugin-api/alpha';
+import { MockErrorApi, TestApiProvider } from '@backstage/test-utils';
+import { MockTranslationApi } from '@backstage/test-utils/alpha';
+
 import { render } from '@testing-library/react';
 
 import { useTagDetails } from '../../hooks';
@@ -51,7 +56,16 @@ describe('QuayTagPage', () => {
   it('should show error: no digest if value is not there', () => {
     (useParams as jest.Mock).mockReturnValue({ digest: 'digest_data' });
     (useTagDetails as jest.Mock).mockReturnValue({ loading: false });
-    const { queryByTestId, queryAllByText } = render(<QuayTagPage />);
+    const { queryByTestId, queryAllByText } = render(
+      <TestApiProvider
+        apis={[
+          [translationApiRef, MockTranslationApi.create()],
+          [errorApiRef, new MockErrorApi()],
+        ]}
+      >
+        <QuayTagPage />
+      </TestApiProvider>,
+    );
     expect(queryAllByText(/no digest/i)[0]).toBeInTheDocument();
     expect(queryByTestId('quay-tag-page-progress')).toBeNull();
   });

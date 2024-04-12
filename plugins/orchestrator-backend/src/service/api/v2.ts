@@ -83,7 +83,7 @@ export class V2 {
       await this.orchestratorService.fetchInstancesTotalCount();
 
     const result: ProcessInstanceListResultDTO = {
-      items: instances?.map(def => mapToProcessInstanceDTO(def)),
+      items: instances?.map(mapToProcessInstanceDTO),
       paginationInfo: {
         pageSize: pagination.limit,
         page: pagination.offset,

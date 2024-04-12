@@ -20,6 +20,8 @@ import { AppList, AppListQuery } from '../src/types/AppList';
 import { AuthInfo } from '../src/types/Auth';
 import { CertsInfo } from '../src/types/CertsInfo';
 import { DurationInSeconds, TimeInSeconds } from '../src/types/Common';
+import { DashboardModel } from '../src/types/Dashboards';
+import { GrafanaInfo } from '../src/types/GrafanaInfo';
 import {
   AppHealth,
   NamespaceAppHealth,
@@ -28,6 +30,7 @@ import {
   ServiceHealth,
   WorkloadHealth,
 } from '../src/types/Health';
+import { IstioConfigDetails } from '../src/types/IstioConfigDetails';
 import { IstioConfigList, IstioConfigsMap } from '../src/types/IstioConfigList';
 import {
   CanaryUpgradeStatus,
@@ -42,7 +45,7 @@ import {
 import { IstioMetricsMap } from '../src/types/Metrics';
 import { IstioMetricsOptions } from '../src/types/MetricsOptions';
 import { Namespace } from '../src/types/Namespace';
-import { ServerConfig } from '../src/types/ServerConfig';
+import { KialiCrippledFeatures, ServerConfig } from '../src/types/ServerConfig';
 import { ServiceDetailsInfo } from '../src/types/ServiceInfo';
 import { ServiceList, ServiceListQuery } from '../src/types/ServiceList';
 import { StatusState } from '../src/types/StatusState';
@@ -350,6 +353,18 @@ class MockKialiClient implements KialiApi {
     return kialiData.services[namespace];
   }
 
+  async getIstioConfigDetail(
+    namespace: string,
+    objectType: string,
+    object: string,
+    _validate: boolean,
+    _cluster?: string,
+  ): Promise<IstioConfigDetails> {
+    return kialiData.namespacesData[namespace].istioConfigDetails[objectType][
+      object
+    ];
+  }
+
   async getServiceDetail(
     namespace: string,
     service: string,
@@ -388,6 +403,59 @@ class MockKialiClient implements KialiApi {
     const parsedName = app.replace(/-/g, '');
     return kialiData.namespacesData[namespace].apps[parsedName];
   };
+
+  getCrippledFeatures = async (): Promise<KialiCrippledFeatures> => {
+    return kialiData.crippledFeatures;
+  };
+
+  getWorkloadDashboard = async (
+    namespace: string,
+    _workload: string,
+    _params: IstioMetricsOptions,
+    _cluster?: string,
+  ): Promise<DashboardModel> => {
+    return kialiData.namespacesData[namespace].dashboard;
+  };
+
+  getServiceDashboard = async (
+    namespace: string,
+    _service: string,
+    _params: IstioMetricsOptions,
+    _cluster?: string,
+  ): Promise<DashboardModel> => {
+    return kialiData.namespacesData[namespace].dashboard;
+  };
+
+  getAppDashboard = async (
+    namespace: string,
+    _app: string,
+    _params: IstioMetricsOptions,
+    _cluster?: string,
+  ): Promise<DashboardModel> => {
+    return kialiData.namespacesData[namespace].dashboard;
+  };
+
+  getGrafanaInfo = async (): Promise<GrafanaInfo> => {
+    return kialiData.grafanaInfo;
+  };
+
+  getAppSpans = async (
+    namespace: string,
+    _app: string,
+    _params: TracingQuery,
+    _cluster?: string,
+  ): Promise<Span[]> => {
+    return kialiData.namespacesData[namespace].spans;
+  };
+
+  getServiceSpans = async (
+    namespace: string,
+    _service: string,
+    _params: TracingQuery,
+    _cluster?: string,
+  ): Promise<Span[]> => {
+    return kialiData.namespacesData[namespace].spans;
+  };
 }
 
 interface Props {
@@ -403,6 +471,7 @@ export const TabsMock = () => {
     { label: 'Workloads', route: `${pluginRoot}/workloads` },
     { label: 'Services', route: `${pluginRoot}/services` },
     { label: 'Applications', route: `${pluginRoot}/applications` },
+    { label: 'Istio Config', route: `${pluginRoot}/istio` },
   ];
   const navigate = useNavigate();
   return (

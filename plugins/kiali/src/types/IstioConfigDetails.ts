@@ -114,3 +114,8 @@ export const compareResourceVersion = (
   }
   return [false, '', ''];
 };
+
+export interface IstioConfigDetailsQuery {
+  help?: boolean;
+  validate?: boolean;
+}

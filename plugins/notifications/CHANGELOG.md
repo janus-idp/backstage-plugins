@@ -1,3 +1,43 @@
+## @janus-idp/plugin-notifications [1.1.18](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications@1.1.17...@janus-idp/plugin-notifications@1.1.18) (2024-04-09)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.10
+
+## @janus-idp/plugin-notifications [1.1.17](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications@1.1.16...@janus-idp/plugin-notifications@1.1.17) (2024-04-09)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.9
+
+## @janus-idp/plugin-notifications [1.1.16](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications@1.1.15...@janus-idp/plugin-notifications@1.1.16) (2024-04-05)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.8
+
+## @janus-idp/plugin-notifications [1.1.15](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications@1.1.14...@janus-idp/plugin-notifications@1.1.15) (2024-04-02)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.7
+
+## @janus-idp/plugin-notifications [1.1.14](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications@1.1.13...@janus-idp/plugin-notifications@1.1.14) (2024-03-29)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.6
+
 ## @janus-idp/plugin-notifications [1.1.13](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications@1.1.12...@janus-idp/plugin-notifications@1.1.13) (2024-03-21)
 
 

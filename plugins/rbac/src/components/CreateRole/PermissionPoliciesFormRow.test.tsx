@@ -19,6 +19,7 @@ describe('PermissionPoliciesFormRow', () => {
     permissionPoliciesRowError: { plugin: '', permission: '' },
     rowCount: 2,
     rowName: 'testRow',
+    conditionRules: { data: [] },
     onRemove: jest.fn(),
     onChangePlugin: jest.fn(),
     onChangePermission: jest.fn(),
@@ -29,8 +30,17 @@ describe('PermissionPoliciesFormRow', () => {
 
   it('renders without crashing', () => {
     render(<PermissionPoliciesFormRow {...mockProps} />);
-    expect(screen.queryByText(/Plugin/)).toBeInTheDocument();
-    expect(screen.queryByText(/Permission/)).toBeInTheDocument();
+    screen.logTestingPlaygroundURL();
+    expect(
+      screen.getByRole('textbox', {
+        name: /plugin/i,
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('textbox', {
+        name: /permission/i,
+      }),
+    ).toBeInTheDocument();
   });
 
   it('calls onRemove when remove button is clicked', () => {
@@ -57,5 +67,30 @@ describe('PermissionPoliciesFormRow', () => {
     fireEvent.click(listbox.getByText(/Plugin1/));
 
     expect(mockProps.onChangePlugin).toHaveBeenCalledWith('Plugin1');
+  });
+
+  // eslint-disable-next-line jest/no-disabled-tests
+  it.skip('opens sidebar on clicking conditional access button', async () => {
+    const newMockProps = {
+      ...mockProps,
+      permissionPoliciesRowData: {
+        ...mockProps.permissionPoliciesRowData,
+        plugin: 'Plugin2',
+      },
+    };
+
+    const { queryByTestId } = render(
+      <PermissionPoliciesFormRow {...newMockProps} />,
+    );
+
+    expect(queryByTestId('rules-sidebar')).not.toBeInTheDocument();
+
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: /conditional-access/i,
+      }),
+    );
+
+    expect(queryByTestId('rules-sidebar')).toBeInTheDocument();
   });
 });

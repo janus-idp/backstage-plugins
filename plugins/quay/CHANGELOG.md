@@ -1,3 +1,68 @@
+## @janus-idp/backstage-plugin-quay [1.5.17](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.5.16...@janus-idp/backstage-plugin-quay@1.5.17) (2024-04-09)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.10
+
+## @janus-idp/backstage-plugin-quay [1.5.16](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.5.15...@janus-idp/backstage-plugin-quay@1.5.16) (2024-04-09)
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.5.5
+
+## @janus-idp/backstage-plugin-quay [1.5.15](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.5.14...@janus-idp/backstage-plugin-quay@1.5.15) (2024-04-09)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.9
+
+## @janus-idp/backstage-plugin-quay [1.5.14](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.5.13...@janus-idp/backstage-plugin-quay@1.5.14) (2024-04-08)
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.5.4
+
+## @janus-idp/backstage-plugin-quay [1.5.13](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.5.12...@janus-idp/backstage-plugin-quay@1.5.13) (2024-04-05)
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.5.4
+* **@janus-idp/cli:** upgraded to 1.7.8
+
+## @janus-idp/backstage-plugin-quay [1.5.12](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.5.11...@janus-idp/backstage-plugin-quay@1.5.12) (2024-04-02)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.7
+
+## @janus-idp/backstage-plugin-quay [1.5.11](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.5.10...@janus-idp/backstage-plugin-quay@1.5.11) (2024-03-29)
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.5.3
+* **@janus-idp/cli:** upgraded to 1.7.6
+
+## @janus-idp/backstage-plugin-quay [1.5.10](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.5.9...@janus-idp/backstage-plugin-quay@1.5.10) (2024-03-26)
+
+
+### Bug Fixes
+
+* **quay:** add queued status for tags waiting for scan ([#1400](https://github.com/janus-idp/backstage-plugins/issues/1400)) ([ef37ae1](https://github.com/janus-idp/backstage-plugins/commit/ef37ae10727a3d0ba3dd5e02f2048fad79f63157))
+
 ## @janus-idp/backstage-plugin-quay [1.5.9](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.5.8...@janus-idp/backstage-plugin-quay@1.5.9) (2024-03-04)
 
 

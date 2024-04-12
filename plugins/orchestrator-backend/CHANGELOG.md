@@ -1,3 +1,64 @@
+## @janus-idp/backstage-plugin-orchestrator-backend [1.6.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.6.5...@janus-idp/backstage-plugin-orchestrator-backend@1.6.6) (2024-04-09)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.10
+
+## @janus-idp/backstage-plugin-orchestrator-backend [1.6.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.6.4...@janus-idp/backstage-plugin-orchestrator-backend@1.6.5) (2024-04-09)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.9
+
+## @janus-idp/backstage-plugin-orchestrator-backend [1.6.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.6.3...@janus-idp/backstage-plugin-orchestrator-backend@1.6.4) (2024-04-05)
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.6.3
+* **@janus-idp/cli:** upgraded to 1.7.8
+
+## @janus-idp/backstage-plugin-orchestrator-backend [1.6.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.6.2...@janus-idp/backstage-plugin-orchestrator-backend@1.6.3) (2024-04-04)
+
+
+### Bug Fixes
+
+* **orchestrator:** add lastRunId to overview endpoints ([#1449](https://github.com/janus-idp/backstage-plugins/issues/1449)) ([cce56f7](https://github.com/janus-idp/backstage-plugins/commit/cce56f7de3acc41ecd30b1b9962d7817be69de7d))
+* **orchestrator:** only inputs inherited from the assessment workflow should be disabled ([#1436](https://github.com/janus-idp/backstage-plugins/issues/1436)) ([32d9bdf](https://github.com/janus-idp/backstage-plugins/commit/32d9bdfc38c07c4e60f0ce7670fc3813ad0d92c3))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.6.2
+
+## @janus-idp/backstage-plugin-orchestrator-backend [1.6.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.6.1...@janus-idp/backstage-plugin-orchestrator-backend@1.6.2) (2024-04-02)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.7
+
+## @janus-idp/backstage-plugin-orchestrator-backend [1.6.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.6.0...@janus-idp/backstage-plugin-orchestrator-backend@1.6.1) (2024-03-29)
+
+
+### Bug Fixes
+
+* **orchestrator:** fixes v2/instances endpoint ([#1414](https://github.com/janus-idp/backstage-plugins/issues/1414)) ([88b49df](https://github.com/janus-idp/backstage-plugins/commit/88b49df35cf10e231ba69c239e873cb10e7cc25b))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.6.1
+* **@janus-idp/cli:** upgraded to 1.7.6
+
 ## @janus-idp/backstage-plugin-orchestrator-backend [1.6.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.5.3...@janus-idp/backstage-plugin-orchestrator-backend@1.6.0) (2024-03-14)
 
 

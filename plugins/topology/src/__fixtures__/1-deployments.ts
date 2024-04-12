@@ -1,7 +1,7 @@
 export const customResourceRoute = {
   metadata: {
     name: 'hello-minikube2',
-    namespace: 'jai-test',
+    namespace: 'test-app',
     uid: '17c0f520-3878-4834-96a1-b19854f0d06f',
     resourceVersion: '174049',
     creationTimestamp: '2023-05-22T08:14:25Z',

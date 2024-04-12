@@ -3,6 +3,7 @@ import { CSSProperties } from 'react';
 
 import { TableRow } from '@material-ui/core';
 
+import { useLinkStyle } from '../../styles/StyleUtils';
 import { hasHealth, Health } from '../../types/Health';
 import { StatefulFiltersProps } from '../Filters/StatefulFilters';
 import { PFBadgeType } from '../Pf/PfBadges';
@@ -15,7 +16,7 @@ type VirtualItemProps = {
   columns: any[];
   config: Resource;
   index: number;
-  item: RenderResource;
+  item: RenderResource & { type?: string }; // Add 'type' property to 'RenderResource' type
   key: string;
   statefulFilterProps?: StatefulFiltersProps;
   style?: CSSProperties;
@@ -35,14 +36,18 @@ export const VirtualItem = (props: VirtualItemProps) => {
   }, [itemState]);
 
   const getBadge = (): React.ReactNode | PFBadgeType => {
-    const istioType = typeof props.item;
-    return props.config.name !== 'istio'
-      ? props.config.badge
-      : IstioTypes[istioType].badge;
+    if (props.config.name !== 'istio') {
+      return props.config.badge;
+    } else if (props.item.type) {
+      return IstioTypes[props.item.type].badge;
+    }
+    return <></>;
   };
 
+  const linkColor = useLinkStyle();
+
   const renderDetails = (
-    item: RenderResource,
+    item: RenderResource & { type?: string }, // Add 'type' property to 'RenderResource' type
     health?: Health,
   ): React.ReactNode => {
     return props.columns
@@ -55,6 +60,7 @@ export const VirtualItem = (props: VirtualItemProps) => {
           health,
           props.statefulFilterProps,
           props.view,
+          linkColor,
         ),
       );
   };

@@ -8,7 +8,6 @@ import { isWaypoint } from '../../helpers/LabelFilterHelper';
 import { infoStyle } from '../../pages/Overview/OverviewCard/CanaryUpgradeProgress';
 import { ControlPlaneBadge } from '../../pages/Overview/OverviewCard/ControlPlaneBadge';
 import { OverviewCardSparklineCharts } from '../../pages/Overview/OverviewCard/OverviewCardSparklineCharts';
-import { linkStyle } from '../../styles/StyleUtils';
 import { Health } from '../../types/Health';
 import { IstioConfigItem } from '../../types/IstioConfigList';
 import { ValidationStatus } from '../../types/IstioObjects';
@@ -17,11 +16,13 @@ import { NamespaceInfo } from '../../types/NamespaceInfo';
 import { ServiceListItem } from '../../types/ServiceList';
 import { ENTITY } from '../../types/types';
 import { WorkloadListItem } from '../../types/Workload';
+import { getReconciliationCondition } from '../../utils/IstioConfigUtils';
 import { StatefulFilters } from '../Filters/StatefulFilters';
 import { HealthIndicator } from '../Health/HealthIndicator';
 import { getIstioObjectUrl } from '../Link/IstioObjectLink';
 import { NamespaceMTLSStatus } from '../MTls/NamespaceMTLSStatus';
 import { PFBadge, PFBadges, PFBadgeType } from '../Pf/PfBadges';
+import { ValidationObjectSummary } from '../Validations/ValidationObjectSummary';
 import { ValidationServiceSummary } from '../Validations/ValidationServiceSummary';
 import { ValidationSummary } from '../Validations/ValidationSummary';
 import {
@@ -48,7 +49,7 @@ const getIstioLink = (item: TResource): string => {
 const getLink = (item: TResource, config: Resource, query?: string): string => {
   let url =
     config.name === 'istio'
-      ? getIstioLink(item)
+      ? `${getIstioLink(item)}`
       : `/${rootPath}/${config.name}/${item.namespace}/${item.name}`;
 
   if (item.cluster && isMultiCluster && !url.includes('cluster')) {
@@ -93,9 +94,11 @@ export const item: Renderer<TResource> = (
   _?: Health,
   __?: React.RefObject<StatefulFilters>,
   view?: string,
-) => {
+  linkColor?: string,
+): React.ReactElement => {
   const key = `link_definition_${config.name}_${resource.namespace}_${resource.name}`;
   let serviceBadge = badge;
+
   if ('serviceRegistry' in resource && resource.serviceRegistry) {
     switch (resource.serviceRegistry) {
       case 'External':
@@ -119,7 +122,7 @@ export const item: Renderer<TResource> = (
       {view !== ENTITY && (
         <PFBadge badge={serviceBadge} position={topPosition} />
       )}
-      <Link key={key} to={getLink(resource, config)} className={linkStyle}>
+      <Link key={key} to={getLink(resource, config)} className={linkColor}>
         {resource.name}
       </Link>
     </TableCell>
@@ -306,6 +309,7 @@ export const istioConfiguration: Renderer<IstioConfigItem> = (
   _: Resource,
 ) => {
   const validation = resource.validation;
+  const reconciledCondition = getReconciliationCondition(resource);
 
   return (
     <TableCell
@@ -313,7 +317,17 @@ export const istioConfiguration: Renderer<IstioConfigItem> = (
       key={`VirtuaItem_Conf_${resource.namespace}_${resource.name}`}
       style={{ verticalAlign: 'middle' }}
     >
-      {validation ? <Link to="">{resource.name}</Link> : <>N/A</>}
+      {validation ? (
+        <Link to="">
+          <ValidationObjectSummary
+            id={`${item.name}-config-validation`}
+            validations={[validation]}
+            reconciledCondition={reconciledCondition}
+          />
+        </Link>
+      ) : (
+        <>N/A</>
+      )}
     </TableCell>
   );
 };

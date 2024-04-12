@@ -1,3 +1,61 @@
+## @janus-idp/backstage-plugin-jfrog-artifactory [1.2.35](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-jfrog-artifactory@1.2.34...@janus-idp/backstage-plugin-jfrog-artifactory@1.2.35) (2024-04-09)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.10
+
+## @janus-idp/backstage-plugin-jfrog-artifactory [1.2.34](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-jfrog-artifactory@1.2.33...@janus-idp/backstage-plugin-jfrog-artifactory@1.2.34) (2024-04-09)
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.5.5
+
+## @janus-idp/backstage-plugin-jfrog-artifactory [1.2.33](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-jfrog-artifactory@1.2.32...@janus-idp/backstage-plugin-jfrog-artifactory@1.2.33) (2024-04-09)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.9
+
+## @janus-idp/backstage-plugin-jfrog-artifactory [1.2.32](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-jfrog-artifactory@1.2.31...@janus-idp/backstage-plugin-jfrog-artifactory@1.2.32) (2024-04-08)
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.5.4
+
+## @janus-idp/backstage-plugin-jfrog-artifactory [1.2.31](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-jfrog-artifactory@1.2.30...@janus-idp/backstage-plugin-jfrog-artifactory@1.2.31) (2024-04-05)
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.5.4
+* **@janus-idp/cli:** upgraded to 1.7.8
+
+## @janus-idp/backstage-plugin-jfrog-artifactory [1.2.30](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-jfrog-artifactory@1.2.29...@janus-idp/backstage-plugin-jfrog-artifactory@1.2.30) (2024-04-02)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.7.7
+
+## @janus-idp/backstage-plugin-jfrog-artifactory [1.2.29](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-jfrog-artifactory@1.2.28...@janus-idp/backstage-plugin-jfrog-artifactory@1.2.29) (2024-03-29)
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.5.3
+* **@janus-idp/cli:** upgraded to 1.7.6
+
 ## @janus-idp/backstage-plugin-jfrog-artifactory [1.2.28](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-jfrog-artifactory@1.2.27...@janus-idp/backstage-plugin-jfrog-artifactory@1.2.28) (2024-03-04)
 
 
