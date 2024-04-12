@@ -18,6 +18,7 @@ import { kialiStyle } from '../../styles/StyleUtils';
 import { Namespace } from '../../types/Namespace';
 import { NamespaceInfo } from '../../types/NamespaceInfo';
 import { SortField } from '../../types/SortFilters';
+import { ENTITY } from '../../types/types';
 import { StatefulFiltersProps } from '../Filters/StatefulFilters';
 import { config, RenderResource, Resource, ResourceType } from './Config';
 import { VirtualItem } from './VirtualItem';
@@ -73,6 +74,16 @@ export const VirtualList = <R extends RenderResource>(
   const { rows } = listProps;
   const typeDisplay =
     listProps.type === 'istio' ? 'Istio config' : listProps.type;
+
+  const tableEntityHeaderStyle: any = {
+    minWidth: '100px',
+    fontWeight: '700',
+    color: 'grey',
+    borderTop: '1px solid #d5d5d5',
+    borderBottom: '1px solid #d5d5d5',
+    whiteSpace: 'nowrap',
+    padding: '15px',
+  };
 
   const tableHeaderStyle: any = {
     minWidth: '120px',
@@ -144,7 +155,11 @@ export const VirtualList = <R extends RenderResource>(
                   <TableCell
                     key={`column_${index}`}
                     align="center"
-                    style={tableHeaderStyle}
+                    style={
+                      listProps.view === ENTITY
+                        ? tableEntityHeaderStyle
+                        : tableHeaderStyle
+                    }
                     sortDirection={
                       column.sortable && orderBy === column.title.toLowerCase()
                         ? order
@@ -161,7 +176,10 @@ export const VirtualList = <R extends RenderResource>(
                         handleRequestSort(e, column.title.toLowerCase())
                       }
                     >
-                      {column.title.toUpperCase()}
+                      {listProps.view === ENTITY &&
+                      column.title === 'Configuration'
+                        ? 'CONFIG'
+                        : column.title.toUpperCase()}
                     </TableSortLabel>
                   </TableCell>
                 ))}
