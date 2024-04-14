@@ -209,16 +209,7 @@ For more information about the configuration options, including other optional p
 
 The Orchestrator plugin enhances the Backstage with the execution of developer self-service flows. It provides a graphical editor to visualize workflow definitions, and a dashboard to monitor the execution of the workflows.
 
-#### Prerequisites
-
-- Your Backstage application is installed and running.
-- You have installed the Orchestrator plugin. For the installation process, see [Installation](#installation).
-
-#### Procedure
-
-1. Open your Backstage application.
-1. Click the **Orchestrator** tab from the left-side panel to navigate to the **Orchestrator** main page.
-1. Inside the **Orchestrator** main page, you can see the list of workflow definitions that are available in your Backstage application.
+Refer to the [Quick start](https://github.com/batzionb/backstage-plugins/blob/orchestratorquickstart/plugins/orchestrator/docs/quickstart.md) to install the Orchestrator using the helm chart and execute a sample workflow through the Red Hat Developer Hub orchestrator plugin UI.
 
 ## OpenAPI
 
