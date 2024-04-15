@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-orchestrator [1.9.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.9.0...@janus-idp/backstage-plugin-orchestrator@1.9.1) (2024-04-15)
+
+
+### Documentation
+
+* **orchestrator:** add a quickstart for users ([#1499](https://github.com/janus-idp/backstage-plugins/issues/1499)) ([28fe8da](https://github.com/janus-idp/backstage-plugins/commit/28fe8da644350facb4c414f1bd5ff48ba4801b24))
+
 ## @janus-idp/backstage-plugin-orchestrator [1.9.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.8.9...@janus-idp/backstage-plugin-orchestrator@1.9.0) (2024-04-10)
 
 
