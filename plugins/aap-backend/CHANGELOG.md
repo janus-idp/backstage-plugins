@@ -1,3 +1,16 @@
+## @janus-idp/backstage-plugin-aap-backend [1.6.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-aap-backend@1.5.10...@janus-idp/backstage-plugin-aap-backend@1.6.0) (2024-04-15)
+
+
+### Features
+
+* checkPluginVersion.sh bump plugins for 1.2.0 release ([#1511](https://github.com/janus-idp/backstage-plugins/issues/1511)) ([73c6588](https://github.com/janus-idp/backstage-plugins/commit/73c6588adb7e8c20907b06f2a8ef248cfd4332e4))
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.8.0
+
 ## @janus-idp/backstage-plugin-aap-backend [1.5.10](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-aap-backend@1.5.9...@janus-idp/backstage-plugin-aap-backend@1.5.10) (2024-04-09)
 
 
