@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-feedback [1.1.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback@1.1.0...@janus-idp/backstage-plugin-feedback@1.1.1) (2024-04-15)
+
+
+### Bug Fixes
+
+* **feedback-docs:** move out collapsed screenshots ([#1496](https://github.com/janus-idp/backstage-plugins/issues/1496)) ([562364d](https://github.com/janus-idp/backstage-plugins/commit/562364d80633178302fc2f9e759465cea482ce8a)), closes [#discussion_r1560988756](https://github.com/janus-idp/backstage-plugins/issues/discussion_r1560988756)
+
 ## @janus-idp/backstage-plugin-feedback [1.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback@1.0.3...@janus-idp/backstage-plugin-feedback@1.1.0) (2024-04-09)
 
 
