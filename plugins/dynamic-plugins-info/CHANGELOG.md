@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-dynamic-plugins-info [1.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-dynamic-plugins-info@1.0.4...@janus-idp/backstage-plugin-dynamic-plugins-info@1.1.0) (2024-04-15)
+
+
+### Features
+
+* checkPluginVersion.sh bump plugins for 1.2.0 release ([#1511](https://github.com/janus-idp/backstage-plugins/issues/1511)) ([73c6588](https://github.com/janus-idp/backstage-plugins/commit/73c6588adb7e8c20907b06f2a8ef248cfd4332e4))
+
 ## @janus-idp/backstage-plugin-dynamic-plugins-info [1.0.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-dynamic-plugins-info@1.0.3...@janus-idp/backstage-plugin-dynamic-plugins-info@1.0.4) (2024-04-05)
 
 ## @janus-idp/backstage-plugin-dynamic-plugins-info [1.0.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-dynamic-plugins-info@1.0.2...@janus-idp/backstage-plugin-dynamic-plugins-info@1.0.3) (2024-03-29)
