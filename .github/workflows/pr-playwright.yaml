@@ -126,7 +126,7 @@ jobs:
           # Kill backend
           pid=$(lsof -i :7007 -Fp | grep p | sed s/p//)
           kill -9 $pid && echo "Backend shut down"
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: playwright-report
