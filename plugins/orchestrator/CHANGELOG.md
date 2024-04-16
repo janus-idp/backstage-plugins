@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-orchestrator [1.9.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.9.2...@janus-idp/backstage-plugin-orchestrator@1.9.3) (2024-04-16)
+
+
+### Bug Fixes
+
+* fix typo in orchestrator documentation ([#1508](https://github.com/janus-idp/backstage-plugins/issues/1508)) ([bfa360a](https://github.com/janus-idp/backstage-plugins/commit/bfa360af97b5daf1902c267cd682e51cb6d71c83))
+
 ## @janus-idp/backstage-plugin-orchestrator [1.9.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.9.1...@janus-idp/backstage-plugin-orchestrator@1.9.2) (2024-04-15)
 
 
