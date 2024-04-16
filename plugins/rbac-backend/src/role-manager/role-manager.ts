@@ -38,9 +38,16 @@ export class BackstageRoleManager implements RoleManager {
   }
 
   /**
-   * addLink adds the inheritance link between role: name1 and role: name2.
-   * aka role: name1 inherits role: name2.
+   * addLink adds the inheritance link between name1 and role: name2.
+   * aka name1 inherits role: name2.
    * domain is a prefix to the roles.
+   * The link that is established is based on the defined grouping policies that
+   * are added by the enforcer.
+   *
+   * ex. `g, name1, name2`.
+   * @param name1 User or group that will be assigned to a role
+   * @param name2 The role that will be created
+   * @param _domain Unimplemented
    */
   async addLink(
     name1: string,
@@ -55,9 +62,16 @@ export class BackstageRoleManager implements RoleManager {
   }
 
   /**
-   * deleteLink deletes the inheritance link between role: name1 and role: name2.
-   * aka role: name1 does not inherit role: name2 any more.
+   * deleteLink deletes the inheritance link between name1 and role: name2.
+   * aka name1 does not inherit role: name2 any more.
    * domain is a prefix to the roles.
+   * The link that is deleted is based on the defined grouping policies that
+   * are removed by the enforcer.
+   *
+   * ex. `g, name1, name2`.
+   * @param name1 User or group that will be assigned to a role
+   * @param name2 The role that will be created
+   * @param _domain Unimplemented
    */
   async deleteLink(
     name1: string,
@@ -70,16 +84,21 @@ export class BackstageRoleManager implements RoleManager {
     this.removeRole(name2);
 
     if (this.roleCache) {
-      this.roleCache.delete(name1);
+      // this.roleCache.delete(name1);
+      this.roleCache.deleteCacheWithRole(name2);
     }
   }
 
   /**
-   * hasLink determines whether role: name1 inherits role: name2.
+   * hasLink determines whether name1 inherits role: name2.
    * domain is a prefix to the roles.
-   *
-   * name1 will always be the user that we are authorizing
-   * name2 will be the roles that the role manager is aware of
+   * During this check we build the group hierarchy graph to
+   * determine if the particular user is directly or indirectly
+   * attached to the role that we are receiving.
+   * @param name1 The user that we are authorizing
+   * @param name2 The name of the role that we are checking against
+   * @param domain Unimplemented
+   * @returns True if the user is directly or indirectly attached to the role
    */
   async hasLink(
     name1: string,
@@ -110,13 +129,14 @@ export class BackstageRoleManager implements RoleManager {
       return false;
     }
 
-    const cachedResult = this.roleCache?.get(name1)!;
-    if ((await this.cacheResults(name1)) && cachedResult) {
+    // Check if are able to cache the user to the role to reduce the number
+    // of times that we need to build the graph
+    if (await this.cacheResults(name1)) {
+      const cachedResult = this.roleCache?.get(name1)!;
       return cachedResult.has(name2);
     }
 
     // If the cache does not exist we need to build the graph and use it
-    // Otherwise we need to use the cache instead
     const memo = await this.buildGraph(name1);
 
     if (!this.detectCycleError(memo, name1)) {
@@ -165,13 +185,13 @@ export class BackstageRoleManager implements RoleManager {
    * because we don't support role inheritance and we notify casbin about end of the role sub-tree.
    */
   async getRoles(name: string, ..._domain: string[]): Promise<string[]> {
-    const cachedResult = this.roleCache?.get(name)!;
-    if ((await this.cacheResults(name)) && cachedResult) {
-      return Array.from(cachedResult);
-    }
-
     const { kind } = parseEntityRef(name);
     if (kind === 'user') {
+      if (await this.cacheResults(name)) {
+        const cachedResult = this.roleCache?.get(name)!;
+        return Array.from(cachedResult);
+      }
+
       const memo = await this.buildGraph(name);
       const userAndParentGroups = memo.getNodes();
       userAndParentGroups.push(name);
@@ -197,6 +217,14 @@ export class BackstageRoleManager implements RoleManager {
     // do nothing
   }
 
+  /**
+   * getOrCreateRole will get a role if it has already been cached
+   * or it will create a new role to be cached.
+   * This cache is a simple tree that is used to quickly compare
+   * users and groups to roles.
+   * @param name The user or group whose cache we will be getting / creating
+   * @returns The cached role as a RoleList
+   */
   private getOrCreateRole(name: string): RoleList {
     const role = this.allRoles.get(name);
     if (role) {
@@ -208,6 +236,10 @@ export class BackstageRoleManager implements RoleManager {
     return newRole;
   }
 
+  /**
+   * removeRole removes the role from the simple cache tree.
+   * @param name The user or group who is cached within the tree
+   */
   private removeRole(name: string): void {
     this.allRoles.delete(name);
   }
@@ -218,6 +250,20 @@ export class BackstageRoleManager implements RoleManager {
     return parsed[0];
   }
 
+  /**
+   * nonCachedCheck attempts to check if a user's group hierarchy graph
+   * and the simple cache tree contain the relevant information needed to
+   * authorize a particular user.
+   *
+   * We iterate through the known roles within the cached tree to find
+   * groups that are attached to the group hierarchy graph.
+   *
+   * We will then compare those groups and their roles in the cached tree to the roles and
+   * the group hierarchy graph.
+   * @param memo The group hierarchy graph
+   * @param name2 The name of the role that we are authorizing with
+   * @returns True or false if the group is present in the tree and attached to the role
+   */
   private nonCachedCheck(memo: AncestorSearchMemo, name2: string): boolean {
     if (!memo.hasEntityRef(name2) && this.parseEntityKind(name2) === 'role') {
       for (const [key, value] of this.allRoles.entries()) {
@@ -229,6 +275,13 @@ export class BackstageRoleManager implements RoleManager {
     return memo.hasEntityRef(name2);
   }
 
+  /**
+   * detectCycleError checks if there is a cycle dependency within the group hierarchy graph
+   * and logs the information as a warning.
+   * @param memo The group hierarchy graph
+   * @param name1 The user that the hierarchy is based on
+   * @returns True in the event that there is a cycle dependency present in the graph
+   */
   private detectCycleError(memo: AncestorSearchMemo, name1: string): boolean {
     memo.debugNodesAndEdges(this.log, name1);
     if (!memo.isAcyclic()) {
@@ -247,6 +300,12 @@ export class BackstageRoleManager implements RoleManager {
     return true;
   }
 
+  /**
+   * buildGraph will build an Ancestor Search Memo group hierarchy graph
+   * based on the name of the user that is supplied.
+   * @param name1 The name of the user
+   * @returns The group hierarchy graph
+   */
   private async buildGraph(name1: string): Promise<AncestorSearchMemo> {
     const memo = new AncestorSearchMemo(
       name1,
@@ -260,6 +319,11 @@ export class BackstageRoleManager implements RoleManager {
     return memo;
   }
 
+  /**
+   * matchRoles will match the roles to the user and groups that are supplied.
+   * @param userAndParentGroups The user and their associated groups
+   * @returns The roles that are attached to the user and their groups
+   */
   private matchRoles(userAndParentGroups: string[]): string[] {
     const allRoles: string[] = [];
     for (const userOrParentGroup of userAndParentGroups) {
@@ -277,19 +341,28 @@ export class BackstageRoleManager implements RoleManager {
     return allRoles;
   }
 
+  /**
+   * cacheResults will return true if the role was cached
+   * otherwise it will return false.
+   * Prevent the role from being cached if there is a cycle dependency and return false.
+   * @param name1 The user or group that we are caching to
+   * @returns True if the user was cached
+   */
   private async cacheResults(name1: string): Promise<boolean> {
     if (this.roleCache) {
       if (!this.roleCache.get(name1) || this.roleCache.shouldUpdate(name1)) {
         const memo = await this.buildGraph(name1);
 
-        if (this.detectCycleError(memo, name1)) {
-          const roles = new Set(this.matchRoles(memo.getNodes()));
-
-          this.roleCache?.put(name1, roles);
-
-          return true;
+        // We want to return false due to cycle dependency
+        if (!this.detectCycleError(memo, name1)) {
+          return false;
         }
+
+        const roles = new Set(this.matchRoles(memo.getNodes()));
+
+        this.roleCache?.put(name1, roles);
       }
+      return true; // If the result does exist and should not be updated we still want to return true
     }
     return false;
   }
