@@ -1,3 +1,16 @@
+## @janus-idp/backstage-plugin-rbac-backend [2.6.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.6.3...@janus-idp/backstage-plugin-rbac-backend@2.6.4) (2024-04-17)
+
+
+### Bug Fixes
+
+* **rbac:** reduce the number of permissions returned, add isResourced flag ([#1474](https://github.com/janus-idp/backstage-plugins/issues/1474)) ([e5dda95](https://github.com/janus-idp/backstage-plugins/commit/e5dda95bfc87d1d5d404726cbbe05c8bfdb73845))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-rbac-common:** upgraded to 1.4.1
+
 ## @janus-idp/backstage-plugin-rbac-backend [2.6.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.6.2...@janus-idp/backstage-plugin-rbac-backend@2.6.3) (2024-04-15)
 
 
