@@ -46,7 +46,7 @@ export class BackstageRoleManager implements RoleManager {
    *
    * ex. `g, name1, name2`.
    * @param name1 User or group that will be assigned to a role
-   * @param name2 The role that will be created
+   * @param name2 The role that will be created or updated
    * @param _domain Unimplemented
    */
   async addLink(
@@ -69,8 +69,8 @@ export class BackstageRoleManager implements RoleManager {
    * are removed by the enforcer.
    *
    * ex. `g, name1, name2`.
-   * @param name1 User or group that will be assigned to a role
-   * @param name2 The role that will be created
+   * @param name1 User or group that will be removed from assignment of a role
+   * @param name2 The role that will be deleted or updated
    * @param _domain Unimplemented
    */
   async deleteLink(
@@ -262,7 +262,7 @@ export class BackstageRoleManager implements RoleManager {
    * the group hierarchy graph.
    * @param memo The group hierarchy graph
    * @param name2 The name of the role that we are authorizing with
-   * @returns True or false if the group is present in the tree and attached to the role
+   * @returns True if the group is present in the tree and attached to the role
    */
   private nonCachedCheck(memo: AncestorSearchMemo, name2: string): boolean {
     if (!memo.hasEntityRef(name2) && this.parseEntityKind(name2) === 'role') {
