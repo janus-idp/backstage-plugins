@@ -69,7 +69,7 @@ describe('plugin-endpoint', () => {
       expect(policiesMetadata.length).toEqual(0);
     });
 
-    it('should return non empty plugin policies list', async () => {
+    it('should return non empty plugin policies list with resourced permission', async () => {
       backendPluginIDsProviderMock.getPluginIds.mockReturnValue(['permission']);
 
       mockUrlReaderService.readUrl.mockReturnValue(mockReadUrlResponse);
@@ -89,22 +89,19 @@ describe('plugin-endpoint', () => {
       expect(policiesMetadata[0].pluginId).toEqual('permission');
       expect(policiesMetadata[0].policies).toEqual([
         {
+          isResourced: true,
           permission: 'policy-entity',
-          policy: 'read',
-        },
-        {
-          permission: 'policy.entity.read',
           policy: 'read',
         },
       ]);
     });
 
-    it('should return plugin policies list without resource type permissions', async () => {
+    it('should return non empty plugin policies list with non resourced permission', async () => {
       backendPluginIDsProviderMock.getPluginIds.mockReturnValue(['permission']);
 
       mockUrlReaderService.readUrl.mockReturnValue(mockReadUrlResponse);
       bufferMock.toString.mockReturnValueOnce(
-        '{"permissions":[{"type":"resource","name":"policy.entity.read","attributes":{"action":"read"}}]}',
+        '{"permissions":[{"type":"basic","name":"catalog.entity.create","attributes":{"action":"create"}}]}',
       );
 
       const collector = new PluginPermissionMetadataCollector(
@@ -119,8 +116,9 @@ describe('plugin-endpoint', () => {
       expect(policiesMetadata[0].pluginId).toEqual('permission');
       expect(policiesMetadata[0].policies).toEqual([
         {
-          permission: 'policy.entity.read',
-          policy: 'read',
+          isResourced: false,
+          permission: 'catalog.entity.create',
+          policy: 'create',
         },
       ]);
     });
@@ -143,7 +141,7 @@ describe('plugin-endpoint', () => {
           throw new NotFoundError();
         });
       bufferMock.toString.mockReturnValueOnce(
-        '{"permissions":[{"type":"resource","name":"policy.entity.read","attributes":{"action":"read"}}]}',
+        '{"permissions":[{"type":"resource","resourceType":"policy-entity","name":"policy.entity.read","attributes":{"action":"read"}}]}',
       );
 
       const collector = new PluginPermissionMetadataCollector(
@@ -158,7 +156,8 @@ describe('plugin-endpoint', () => {
       expect(policiesMetadata[0].pluginId).toEqual('permission');
       expect(policiesMetadata[0].policies).toEqual([
         {
-          permission: 'policy.entity.read',
+          isResourced: true,
+          permission: 'policy-entity',
           policy: 'read',
         },
       ]);
@@ -182,7 +181,7 @@ describe('plugin-endpoint', () => {
           throw new Error('Unexpected error');
         });
       bufferMock.toString.mockReturnValueOnce(
-        '{"permissions":[{"type":"resource","name":"policy.entity.read","attributes":{"action":"read"}}]}',
+        '{"permissions":[{"type":"resource","resourceType":"policy-entity","name":"policy.entity.read","attributes":{"action":"read"}}]}',
       );
 
       const errorSpy = jest.spyOn(logger, 'error').mockClear();
@@ -199,7 +198,8 @@ describe('plugin-endpoint', () => {
       expect(policiesMetadata[0].pluginId).toEqual('permission');
       expect(policiesMetadata[0].policies).toEqual([
         {
-          permission: 'policy.entity.read',
+          isResourced: true,
+          permission: 'policy-entity',
           policy: 'read',
         },
       ]);
@@ -222,7 +222,7 @@ describe('plugin-endpoint', () => {
         });
       bufferMock.toString
         .mockReturnValueOnce(
-          '{"permissions":[{"type":"resource","name":"policy.entity.read","attributes":{"action":"read"}}]}',
+          '{"permissions":[{"type":"resource","resourceType":"policy-entity","name":"policy.entity.read","attributes":{"action":"read"}}]}',
         )
         .mockReturnValueOnce('non json data');
 
@@ -240,7 +240,8 @@ describe('plugin-endpoint', () => {
       expect(policiesMetadata[0].pluginId).toEqual('permission');
       expect(policiesMetadata[0].policies).toEqual([
         {
-          permission: 'policy.entity.read',
+          isResourced: true,
+          permission: 'policy-entity',
           policy: 'read',
         },
       ]);

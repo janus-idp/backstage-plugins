@@ -415,37 +415,44 @@ Returns:
 [
   {
     "pluginId": "catalog",
-      "policies": [
-        {
-          "permission": "catalog-entity",
-          "policy": "read"
-        },
-        {
-          "permission": "catalog.entity.create",
-          "policy": "create"
-        },
-        {
-          "permission": "catalog-entity",
-          "policy": "delete"
-        },
-        {
-          "permission": "catalog-entity",
-          "policy": "update"
-        },
-        {
-          "permission": "catalog.location.read",
-          "policy": "read"
-        },
-        {
-          "permission": "catalog.location.create",
-          "policy": "create"
-        },
-        {
-          "permission": "catalog.location.delete",
-          "policy": "delete"
-        }
-      ]
-    },
+    "policies": [
+      {
+        "isResourced": true,
+        "permission": "catalog-entity",
+        "policy": "read"
+      },
+      {
+        "isResourced": false,
+        "permission": "catalog.entity.create",
+        "policy": "create"
+      },
+      {
+        "isResourced": true,
+        "permission": "catalog-entity",
+        "policy": "delete"
+      },
+      {
+        "isResourced": true,
+        "permission": "catalog-entity",
+        "policy": "update"
+      },
+      {
+        "isResourced": false,
+        "permission": "catalog.location.read",
+        "policy": "read"
+      },
+      {
+        "isResourced": false,
+        "permission": "catalog.location.create",
+        "policy": "create"
+      },
+      {
+        "isResourced": false,
+        "permission": "catalog.location.delete",
+        "policy": "delete"
+      }
+    ]
+  },
   ...
 ]
 ```

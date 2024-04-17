@@ -142,18 +142,22 @@ export class PluginPermissionMetadataCollector {
 }
 
 function permissionsToCasbinPolicies(permissions: Permission[]): Policy[] {
-  const policies = [];
+  const policies: Policy[] = [];
   for (const permission of permissions) {
     if (isResourcePermission(permission)) {
       policies.push({
         permission: permission.resourceType,
         policy: permission.attributes.action || 'use',
+        isResourced: true,
+      });
+    } else {
+      policies.push({
+        permission: permission.name,
+        policy: permission.attributes.action || 'use',
+        isResourced: false,
       });
     }
-    policies.push({
-      permission: permission.name,
-      policy: permission.attributes.action || 'use',
-    });
   }
+
   return policies;
 }

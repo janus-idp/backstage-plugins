@@ -21,6 +21,7 @@ export type RoleMetadata = {
 
 export type Policy = {
   permission?: string;
+  isResourced?: boolean;
   policy?: string;
   effect?: string;
   metadata?: PermissionPolicyMetadata;
