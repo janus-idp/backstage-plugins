@@ -8,7 +8,7 @@ import {
   TableColumn,
   useQueryParamState,
 } from '@backstage/core-components';
-import { useApi } from '@backstage/core-plugin-api';
+import { useAnalytics, useApi } from '@backstage/core-plugin-api';
 import {
   EntityPeekAheadPopover,
   EntityRefLink,
@@ -51,6 +51,7 @@ export const FeedbackTable: React.FC<{ projectId?: string }> = (props: {
 }) => {
   const projectId = props.projectId ? props.projectId : 'all';
   const api = useApi(feedbackApiRef);
+  const analytics = useAnalytics();
   const [feedbackData, setFeedbackData] = useState<FeedbackType[]>([]);
   const [tableConfig, setTableConfig] = useState({
     totalFeedbacks: 100,
@@ -169,6 +170,7 @@ export const FeedbackTable: React.FC<{ projectId?: string }> = (props: {
 
   useDebounce(
     () => {
+      if (searchText.length > 0) analytics.captureEvent('search', searchText);
       api
         .getAllFeedbacks(1, tableConfig.pageSize, projectId, searchText)
         .then(data => {
@@ -189,6 +191,10 @@ export const FeedbackTable: React.FC<{ projectId?: string }> = (props: {
   );
 
   async function handlePageChange(newPage: number, pageSize: number) {
+    analytics.captureEvent(
+      'paginate',
+      `page: ${newPage + 1}, size: ${pageSize}`,
+    );
     if (newPage > tableConfig.page) {
       setTableConfig({
         totalFeedbacks: tableConfig.totalFeedbacks,
@@ -210,7 +216,7 @@ export const FeedbackTable: React.FC<{ projectId?: string }> = (props: {
     return setFeedbackData(newData.data);
   }
 
-  async function handleChangeRowsPerPage(pageSize: number) {
+  async function handleRowsPerPageChange(pageSize: number) {
     setTableConfig({
       ...tableConfig,
       pageSize: pageSize,
@@ -280,7 +286,7 @@ export const FeedbackTable: React.FC<{ projectId?: string }> = (props: {
           isLoading={loading}
           onRowClick={handleRowClick}
           onPageChange={handlePageChange}
-          onRowsPerPageChange={handleChangeRowsPerPage}
+          onRowsPerPageChange={handleRowsPerPageChange}
           data={feedbackData}
           columns={columns}
           totalCount={tableConfig.totalFeedbacks}
