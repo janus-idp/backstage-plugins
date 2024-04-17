@@ -17,7 +17,7 @@ import {
   getTicketDetails,
 } from '../api';
 import { DatabaseFeedbackStore } from '../database/feedbackStore';
-import { FeedbackModel } from '../model/feedback.model';
+import { FeedbackCategory, FeedbackModel } from '../model/feedback.model';
 import { NodeMailer } from './emails';
 
 export interface RouterOptions {
@@ -53,10 +53,27 @@ export async function createRouter(
       reqData.updatedBy = reqData.createdBy;
       reqData.updatedAt = reqData.createdAt;
 
+      if (reqData.feedbackType?.toUpperCase() === 'FEEDBACK')
+        reqData.feedbackType = FeedbackCategory.FEEDBACK;
+      else if (reqData.feedbackType?.toUpperCase() === 'BUG')
+        reqData.feedbackType = FeedbackCategory.BUG;
+      else
+        return res.status(400).json({
+          error: `The value of feedbackType should be either 'FEEDBACK'/'BUG'`,
+        });
+
       const entityRef: Entity | undefined = await catalogClient.getEntityByRef(
         reqData.projectId!,
       );
-      const entityRoute = `${req.headers.origin}/catalog/${entityRef?.metadata.namespace}/${entityRef?.kind}/${entityRef?.metadata.name}/feedback`;
+      if (!entityRef) {
+        return res
+          .status(404)
+          .json({ error: `Entity not found: ${reqData.projectId}` });
+      }
+
+      const entityRoute = `${config.getString('app.baseUrl')}/catalog/${
+        entityRef.metadata.namespace
+      }/${entityRef.kind}/${entityRef.metadata.name}/feedback`;
 
       const feedbackType =
         reqData.feedbackType === 'FEEDBACK' ? 'Feedback' : 'Issue';
@@ -67,7 +84,7 @@ export async function createRouter(
           .concat(reqData.description ?? '');
         reqData.summary = `${feedbackType} reported by ${reqData.createdBy?.split(
           '/',
-        )[1]} for ${entityRef?.metadata.title ?? entityRef?.metadata.name}`;
+        )[1]} for ${entityRef.metadata.title ?? entityRef.metadata.name}`;
       }
 
       const respObj = await feedbackDB.storeFeedbackGetUuid(reqData);
@@ -83,7 +100,7 @@ export async function createRouter(
         data: respObj,
       });
 
-      if (entityRef?.metadata.annotations) {
+      if (entityRef.metadata.annotations) {
         const annotations = entityRef.metadata.annotations;
         const type = annotations['feedback/type'];
         const replyTo = annotations['feedback/email-to'];
@@ -132,7 +149,7 @@ export async function createRouter(
             summary: reqData.summary,
             description: jiraDescription,
             tag: reqData.tag!.toLowerCase().split(' ').join('-'),
-            feedbackType: reqData.feedbackType!,
+            feedbackType: reqData.feedbackType,
             reporter: jiraUsername,
           });
           reqData.ticketUrl = `${host}/browse/${resp.key}`;
@@ -242,9 +259,14 @@ export async function createRouter(
       if (ticketId && projectId) {
         const entityRef: Entity | undefined =
           await catalogClient.getEntityByRef(projectId);
-        const feedbackType = entityRef?.metadata.annotations?.['feedback/type'];
+        if (!entityRef) {
+          return res
+            .status(404)
+            .json({ error: `Entity not found: ${projectId}` });
+        }
+        const feedbackType = entityRef.metadata.annotations?.['feedback/type'];
         if (feedbackType?.toLowerCase() === 'jira') {
-          let host = entityRef?.metadata.annotations?.['feedback/host'];
+          let host = entityRef.metadata.annotations?.['feedback/host'];
 
           // if host is undefined then
           // use the first host from config

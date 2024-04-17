@@ -4,6 +4,7 @@ import { Progress } from '@backstage/core-components';
 import {
   configApiRef,
   identityApiRef,
+  useAnalytics,
   useApi,
 } from '@backstage/core-plugin-api';
 import { useEntity } from '@backstage/plugin-catalog-react';
@@ -46,6 +47,7 @@ export const EntityFeedbackPage = () => {
   const classes = useStyles();
   const { entity } = useEntity();
   const user = useApi(identityApiRef);
+  const analytics = useAnalytics();
 
   const [modalProps, setModalProps] = useState<{
     projectEntity: string;
@@ -84,6 +86,7 @@ export const EntityFeedbackPage = () => {
 
   async function handleModalOpen() {
     const userEntity = (await user.getBackstageIdentity()).userEntityRef;
+    analytics.captureEvent('click', 'open - create feedback modal');
     setModalProps({
       projectEntity: projectEntity,
       userEntity: userEntity,
@@ -95,6 +98,7 @@ export const EntityFeedbackPage = () => {
 
   const handleModalClose = (respObj: { [key: string]: string } | false) => {
     setModalOpen(false);
+    analytics.captureEvent('click', 'close - feedback modal');
     if (respObj) {
       setReload(true);
       if (respObj.error) {
@@ -125,6 +129,7 @@ export const EntityFeedbackPage = () => {
   };
 
   const handleResyncClick = () => {
+    analytics.captureEvent('click', 'refresh');
     setReload(true);
   };
 
