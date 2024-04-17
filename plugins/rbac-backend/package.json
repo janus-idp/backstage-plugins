@@ -39,7 +39,7 @@
     "@janus-idp/backstage-plugin-rbac-common": "1.4.1",
     "@janus-idp/backstage-plugin-rbac-node": "1.1.0",
     "casbin": "^5.27.1",
-    "express": "^4.18.2",
+    "express": "^4.19.2",
     "express-promise-router": "^4.1.1",
     "knex": "^3.0.0",
     "lodash": "^4.17.21",
