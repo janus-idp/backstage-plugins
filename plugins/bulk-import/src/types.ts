@@ -1,4 +1,5 @@
 export type RepositoriesData = {
+  id: number;
   name: string;
   repoURL: string;
   organization: string;
@@ -11,8 +12,9 @@ export type AddRepositoriesData = {
   name: string;
   url: string;
   organization?: string;
+  repositories?: AddRepositoriesData[];
   selectedRepositories?: number;
-  catalogInfoYaml: {
+  catalogInfoYaml?: {
     yaml: string;
     status: string;
   };

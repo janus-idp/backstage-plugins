@@ -14,13 +14,16 @@ import {
 export const getRepositoryStatus = (
   status: string,
   isItemSelected?: boolean,
+  isDrawer: boolean = false,
+  selectedRepositories?: number,
 ) => {
-  if (isItemSelected) {
+  if (isItemSelected && !isDrawer) {
     return (
       <span>
+        {selectedRepositories || ''}
         <ReadyIcon
           color="success"
-          style={{ verticalAlign: 'bottom', paddingTop: '7px' }}
+          style={{ verticalAlign: 'sub', paddingTop: '7px' }}
         />
         Ready
       </span>
@@ -30,15 +33,27 @@ export const getRepositoryStatus = (
     return <span style={{ color: 'grey' }}>Repository already added</span>;
   }
 
-  return <span>Not generated</span>;
+  return !isDrawer ? <span>Not generated</span> : null;
 };
 
-export const getRepositoryStatusForOrg = (data: AddRepositoriesData) => {
-  if (data.selectedRepositories && data.selectedRepositories > 0) {
-    return getRepositoryStatus(data.catalogInfoYaml.status);
+export const getRepositoryStatusForOrg = (
+  data: AddRepositoriesData,
+  alreadyAdded: number,
+) => {
+  const isSelected = data.selectedRepositories && data.selectedRepositories > 0;
+  const allSelected =
+    (data.selectedRepositories || 0) + alreadyAdded ===
+    data.repositories?.length;
+
+  if (!isSelected) {
+    return <span>Not generated</span>;
   }
 
-  return <span>Not generated</span>;
+  if (allSelected) {
+    return getRepositoryStatus('Exists', true);
+  }
+
+  return getRepositoryStatus('Exists', true);
 };
 
 const descendingComparator = (
@@ -88,12 +103,31 @@ export const createData = (
   };
 };
 
-export const getSelectedRepositories = (repositories: number | undefined) => {
-  if (!repositories || repositories === 0) {
+export const createOrganizationData = (
+  id: number,
+  name: string,
+  url: string,
+  repositories: AddRepositoriesData[],
+): AddRepositoriesData => {
+  return {
+    id,
+    name,
+    url,
+    repositories,
+    selectedRepositories: 0,
+  };
+};
+
+export const getSelectedRepositories = (
+  onOrgRowSelected: (org: AddRepositoriesData) => void,
+  organizationData: AddRepositoriesData,
+  alreadyAdded: number,
+) => {
+  if (!organizationData || organizationData.selectedRepositories === 0) {
     return (
       <>
         None{' '}
-        <Link onClick={() => {}} to="">
+        <Link to="" onClick={() => onOrgRowSelected(organizationData)}>
           Select
         </Link>
       </>
@@ -101,8 +135,9 @@ export const getSelectedRepositories = (repositories: number | undefined) => {
   }
   return (
     <>
-      {repositories}{' '}
-      <Link onClick={() => {}} to="">
+      {organizationData.selectedRepositories} /{' '}
+      {(organizationData.repositories?.length || 0) - alreadyAdded}{' '}
+      <Link onClick={() => onOrgRowSelected(organizationData)} to="">
         Edit
       </Link>
     </>
@@ -113,24 +148,31 @@ export const getNewSelectedRepositories = (
   data: AddRepositoriesData[],
   selectedIds: number[],
 ) => {
-  return data
-    .map(d => {
-      if (selectedIds.find((id: number) => id === d.id)) {
-        return d;
-      }
-      return null;
-    })
-    .filter(repo => repo);
+  return selectedIds.length === 0
+    ? []
+    : data
+        .map(d => {
+          if (selectedIds.find((id: number) => id === d.id)) {
+            return d;
+          }
+          return null;
+        })
+        .filter(repo => repo);
 };
 
 export const getRepositoriesSelected = (data: AddRepositoriesFormValues) => {
-  if (data.repositoryType === 'repository') {
-    return data.repositories?.length || 0;
-  }
-  return (
-    data.organizations?.reduce((acc, org) => {
-      const repos = acc + (org.selectedRepositories || 0);
-      return repos;
-    }, 0) || 0
-  );
+  return data.repositories?.length || 0;
+};
+
+export const filterSelectedForActiveDrawer = (
+  repositories: AddRepositoriesData[],
+  selectedReposID: number[],
+) => {
+  return selectedReposID
+    .filter(id => id > -1)
+    .filter(id => repositories?.map(r => r.id).includes(id));
+};
+
+export const urlHelper = (url: string) => {
+  return url.split('https://')[1] || url;
 };

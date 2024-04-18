@@ -13,6 +13,7 @@ test.describe('Bulk import plugin', () => {
   });
 
   test.afterAll(async ({ browser }) => {
+    test.setTimeout(60000);
     await browser.close();
   });
 
@@ -62,13 +63,13 @@ test.describe('Bulk import plugin', () => {
     }
     await page.click('input[aria-label="select all repositories"]');
     await expect(
-      page.getByRole('heading', { name: 'Selected repositories (6)' }),
+      page.getByRole('heading', { name: 'Selected repositories (17)' }),
     ).toBeVisible({
       timeout: 20000,
     });
     await page.locator(`button`).filter({ hasText: 'Organization' }).click();
     await expect(
-      page.getByRole('heading', { name: 'Selected repositories (0)' }),
+      page.getByRole('heading', { name: 'Selected repositories (17)' }),
     ).toBeVisible({
       timeout: 20000,
     });
@@ -78,5 +79,87 @@ test.describe('Bulk import plugin', () => {
     for (const col of columns) {
       await expect(thead.getByText(col)).toBeVisible();
     }
+  });
+
+  test('Select Repositories side panel is shown', async () => {
+    await page.locator('button[type="button"][value="repository"]').click();
+    await expect(
+      page.getByRole('heading', { name: 'Selected repositories (17)' }),
+    ).toBeVisible({
+      timeout: 20000,
+    });
+    await page.click('input[aria-label="select all repositories"]');
+    await expect(
+      page.getByRole('heading', { name: 'Selected repositories (0)' }),
+    ).toBeVisible({
+      timeout: 20000,
+    });
+    await page.locator(`button`).filter({ hasText: 'Organization' }).click();
+    await expect(
+      page.locator('tr:has-text("org/pet-store-boston") >> text=None'),
+    ).toBeVisible();
+    await page
+      .locator('tr:has-text("org/pet-store-boston") >> text=Select')
+      .click();
+    await expect(
+      page.getByRole('heading', { name: 'org/pet-store-boston' }),
+    ).toBeVisible({
+      timeout: 20000,
+    });
+
+    const columns = ['Name', 'URL'];
+    const thead = page.locator(
+      'table[aria-labelledby="drawer-repositories-table"] >> thead',
+    );
+
+    for (const col of columns) {
+      const thLocator = thead.locator(`th:has-text("${col}")`);
+      await expect(thLocator).toBeVisible();
+    }
+  });
+
+  test('Cancel button closes side panel', async () => {
+    await page
+      .locator('button[aria-labelledby="cancel-drawer-select"]')
+      .click();
+
+    await expect(
+      page.getByRole('heading', { name: 'org/pet-store-boston' }),
+    ).not.toBeVisible({
+      timeout: 20000,
+    });
+
+    await expect(
+      page.getByRole('heading', { name: 'Selected repositories (0)' }),
+    ).toBeVisible({
+      timeout: 20000,
+    });
+  });
+
+  test('Side panel selected repositories are shown in table', async () => {
+    await page
+      .locator('tr:has-text("org/pet-store-boston") >> text=Select')
+      .click();
+    await expect(
+      page.getByRole('heading', { name: 'org/pet-store-boston' }),
+    ).toBeVisible({
+      timeout: 20000,
+    });
+    await page.click('input[aria-label="select all repositories"]');
+    await expect(
+      page.getByRole('heading', { name: 'Selected repositories (3)' }),
+    ).toBeVisible();
+
+    await page.locator('button[aria-labelledby="select-from-drawer"]').click();
+
+    await expect(
+      page.getByRole('heading', { name: 'Selected repositories (3)' }),
+    ).toBeVisible();
+    await expect(
+      page.locator('tr:has-text("org/pet-store-boston") >> text=3'),
+    ).toBeVisible();
+    await expect(
+      page.locator('tr:has-text("org/pet-store-boston") >> a >> text=Edit'),
+    ).toBeVisible();
   });
 });
