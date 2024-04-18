@@ -35,6 +35,7 @@
   "files": [
     "app-config.janus-idp.yaml",
     "dist",
+    "static",
     "alpha"
   ],
   "scripts": {
