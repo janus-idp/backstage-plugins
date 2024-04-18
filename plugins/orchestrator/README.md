@@ -209,7 +209,7 @@ For more information about the configuration options, including other optional p
 
 The Orchestrator plugin enhances the Backstage with the execution of developer self-service flows. It provides a graphical editor to visualize workflow definitions, and a dashboard to monitor the execution of the workflows.
 
-Refer to the [Quick start](https://github.com/batzionb/backstage-plugins/blob/orchestratorquickstart/plugins/orchestrator/docs/quickstart.md) to install the Orchestrator using the helm chart and execute a sample workflow through the Red Hat Developer Hub orchestrator plugin UI.
+Refer to the [Quick start](https://github.com/janus-idp/backstage-plugins/blob/main/plugins/orchestrator/docs/quickstart.md) to install the Orchestrator using the helm chart and execute a sample workflow through the Red Hat Developer Hub orchestrator plugin UI.
 
 ## OpenAPI
 
