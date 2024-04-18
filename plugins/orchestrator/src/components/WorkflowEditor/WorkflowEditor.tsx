@@ -37,7 +37,6 @@ import { SwfPreviewOptionsChannelApiImpl } from '@kie-tools/serverless-workflow-
 import { Diagnostic, DiagnosticSeverity } from 'vscode-languageserver-types';
 
 import {
-  DEFAULT_EDITOR_PATH,
   extractWorkflowFormat,
   fromWorkflowSource,
   ProcessInstance,
@@ -83,9 +82,9 @@ const RefForwardingWorkflowEditor: ForwardRefRenderFunction<
 > = (props, forwardedRef) => {
   const orchestratorApi = useApi(orchestratorApiRef);
   const configApi = useApi(configApiRef);
-  const contextPath =
-    configApi.getOptionalString('orchestrator.editor.path') ??
-    DEFAULT_EDITOR_PATH;
+  const contextPath = `${configApi.getString(
+    'backend.baseUrl',
+  )}/api/orchestrator/static/generated/envelope`;
   const { workflowId, kind, format, editorMode = 'full' } = props;
   const { editor, editorRef } = useEditorRef();
   const [embeddedFile, setEmbeddedFile] = useState<EmbeddedEditorFile>();

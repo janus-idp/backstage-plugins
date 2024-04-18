@@ -64,7 +64,15 @@ Please follow this link for instructions: https://github.com/janus-idp/backstage
 The following configuration is required for the Orchestrator plugin to work properly:
 
 ```yaml title="app-config.yaml"
+backend:
+  csp:
+    frame-ancestors: ['http://localhost:3000', 'http://localhost:7007']
+    script-src: ["'self'", "'unsafe-inline'", "'unsafe-eval'"]
+    script-src-elem: ["'self'", "'unsafe-inline'", "'unsafe-eval'"]
+    connect-src: ["'self'", 'http:', 'https:', 'data:']
 orchestrator:
+  editor:
+    path: http://localhost:7007/api/orchestrator/static/envelope
   sonataFlowService:
     baseUrl: http://localhost
     port: 8899
