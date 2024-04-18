@@ -1,3 +1,21 @@
+## @janus-idp/backstage-plugin-orchestrator [1.9.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.9.3...@janus-idp/backstage-plugin-orchestrator@1.9.4) (2024-04-18)
+
+
+### Bug Fixes
+
+* **orchestrator:** allows serving the editor envelope in disconnected environments ([#1450](https://github.com/janus-idp/backstage-plugins/issues/1450)) ([1e778d8](https://github.com/janus-idp/backstage-plugins/commit/1e778d88336dfec79d48ece4fd8d2a035133b70e))
+
+
+### Documentation
+
+* **orchestrator:** fix quick start urls to private repo and make image urls raw ([#1521](https://github.com/janus-idp/backstage-plugins/issues/1521)) ([eefd264](https://github.com/janus-idp/backstage-plugins/commit/eefd2642b0dd3a2d6eb26eaf229c97a280adf07c))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.6.4
+
 ## @janus-idp/backstage-plugin-orchestrator [1.9.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.9.2...@janus-idp/backstage-plugin-orchestrator@1.9.3) (2024-04-16)
 
 
