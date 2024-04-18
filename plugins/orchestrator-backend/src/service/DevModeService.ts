@@ -6,7 +6,7 @@ import { Logger } from 'winston';
 import {
   DEFAULT_SONATAFLOW_BASE_URL,
   DEFAULT_SONATAFLOW_CONTAINER_IMAGE,
-  DEFAULT_SONATAFLOW_PERSISTANCE_PATH,
+  DEFAULT_SONATAFLOW_PERSISTENCE_PATH,
   DEFAULT_WORKFLOWS_PATH,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
@@ -185,7 +185,7 @@ export class DevModeService {
     const persistencePath =
       config.getOptionalString(
         'orchestrator.sonataFlowService.persistence.path',
-      ) ?? DEFAULT_SONATAFLOW_PERSISTANCE_PATH;
+      ) ?? DEFAULT_SONATAFLOW_PERSISTENCE_PATH;
 
     const jiraHost = config.getOptionalString('orchestrator.jira.host');
     const jiraBearerToken = config.getOptionalString(
