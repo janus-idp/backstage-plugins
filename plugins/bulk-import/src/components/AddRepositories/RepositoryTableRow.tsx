@@ -8,19 +8,26 @@ import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 
 import { AddRepositoriesData } from '../../types';
-import { getRepositoryStatus } from '../../utils/repository-utils';
+import { getRepositoryStatus, urlHelper } from '../../utils/repository-utils';
 
 export const RepositoryTableRow = ({
   handleClick,
   isItemSelected,
   data,
   selectedRepositoryStatus,
+  isDrawer = false,
 }: {
   handleClick: (_event: React.MouseEvent, id: number) => void;
   isItemSelected: boolean;
   data: AddRepositoriesData;
   selectedRepositoryStatus: string;
+  isDrawer?: boolean;
 }) => {
+  const tableCellStyle = {
+    lineHeight: '1.5rem',
+    fontSize: '0.875rem',
+    padding: '15px 16px 15px 6px',
+  };
   return (
     <TableRow
       hover
@@ -29,41 +36,47 @@ export const RepositoryTableRow = ({
       key={data.id}
       selected={isItemSelected}
     >
-      <TableCell padding="checkbox">
+      <TableCell component="th" scope="row" padding="none" sx={tableCellStyle}>
         <Checkbox
+          disableRipple
           color="primary"
           checked={
             selectedRepositoryStatus === 'Exists' ? true : isItemSelected
           }
           disabled={selectedRepositoryStatus === 'Exists'}
           onClick={event => handleClick(event, data.id)}
+          style={{ padding: '0 12px' }}
         />
-      </TableCell>
-      <TableCell component="th" scope="row" padding="none">
         {data.name}
       </TableCell>
-      <TableCell align="left">
-        <Link to={data.url}>
+      {!isDrawer && data.organization && (
+        <TableCell align="left" sx={tableCellStyle}>
+          <Link to={data.url}>
+            <>
+              {urlHelper(data.url)}
+              <OpenInNewIcon
+                style={{ verticalAlign: 'sub', paddingTop: '7px' }}
+              />
+            </>
+          </Link>
+        </TableCell>
+      )}
+      <TableCell align="left" sx={tableCellStyle}>
+        <Link to={data.url || ''}>
           <>
-            {data.url}
+            {urlHelper(data.url)}
             <OpenInNewIcon
-              style={{ verticalAlign: 'bottom', paddingTop: '7px' }}
+              style={{ verticalAlign: 'sub', paddingTop: '7px' }}
             />
           </>
         </Link>
       </TableCell>
-      <TableCell align="left">
-        <Link to={data.organization || ''}>
-          <>
-            {data.organization}
-            <OpenInNewIcon
-              style={{ verticalAlign: 'bottom', paddingTop: '7px' }}
-            />
-          </>
-        </Link>
-      </TableCell>
-      <TableCell align="left">
-        {getRepositoryStatus(data.catalogInfoYaml.status, isItemSelected)}
+      <TableCell align="left" sx={tableCellStyle}>
+        {getRepositoryStatus(
+          data.catalogInfoYaml?.status || '',
+          isItemSelected,
+          isDrawer,
+        )}
       </TableCell>
     </TableRow>
   );

@@ -6,8 +6,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { FormikErrors } from 'formik';
 
-import { AddRepositoriesFormValues } from '../../types';
-import { getRepositoriesSelected } from '../../utils/repository-utils';
+import { AddRepositoriesData, AddRepositoriesFormValues } from '../../types';
 import { RepositoriesSearchBar } from './AddRepositoriesSearchBar';
 
 export const AddRepositoriesTableToolbar = ({
@@ -16,24 +15,29 @@ export const AddRepositoriesTableToolbar = ({
   selectedRepositoriesFormData,
   setFieldValue,
   onPageChange,
+  activeOrganization,
+  selectedReposFromDrawer,
 }: {
   title: string;
   setSearchString: (str: string) => void;
   selectedRepositoriesFormData: AddRepositoriesFormValues;
-  setFieldValue: (
+  setFieldValue?: (
     field: string,
     value: any,
     shouldValidate?: boolean,
   ) => Promise<FormikErrors<AddRepositoriesFormValues>> | Promise<void>;
-  onPageChange: (page: number) => void;
+  onPageChange?: (page: number) => void;
+  activeOrganization?: AddRepositoriesData;
+  selectedReposFromDrawer?: number[];
 }) => {
   const [selection, setSelection] = React.useState('repository');
   const [search, setSearch] = React.useState<string>('');
+  const [selectedReposNumber, setSelectedReposNumber] = React.useState(0);
   const handleToggle = (
     _event: React.MouseEvent<HTMLElement>,
     type: string,
   ) => {
-    if (type) {
+    if (type && setFieldValue && onPageChange) {
       setSelection(type);
       setFieldValue('repositoryType', type);
       onPageChange(0);
@@ -45,6 +49,23 @@ export const AddRepositoriesTableToolbar = ({
     setSearch(filter);
   };
 
+  React.useEffect(() => {
+    if (activeOrganization && selectedReposFromDrawer) {
+      const thisSelectedReposCount = activeOrganization.repositories?.filter(
+        repo => selectedReposFromDrawer.includes(repo.id) && repo.id > -1,
+      ).length;
+      setSelectedReposNumber(thisSelectedReposCount || 0);
+    } else {
+      setSelectedReposNumber(
+        selectedRepositoriesFormData.repositories?.length || 0,
+      );
+    }
+  }, [
+    selectedReposFromDrawer,
+    selectedRepositoriesFormData,
+    activeOrganization,
+  ]);
+
   return (
     <Toolbar
       sx={{
@@ -54,19 +75,21 @@ export const AddRepositoriesTableToolbar = ({
       }}
     >
       <Typography sx={{ flex: '1 1 100%' }} variant="h5" id={title}>
-        {`${title} (${getRepositoriesSelected(selectedRepositoriesFormData)})`}
+        {`${title} (${selectedReposNumber})`}
       </Typography>
-      <ToggleButtonGroup
-        size="medium"
-        color="primary"
-        value={selection}
-        exclusive
-        onChange={handleToggle}
-        aria-label="repository-type"
-      >
-        <ToggleButton value="repository">Repositories</ToggleButton>
-        <ToggleButton value="organization">Organization</ToggleButton>
-      </ToggleButtonGroup>
+      {!activeOrganization && (
+        <ToggleButtonGroup
+          size="medium"
+          color="primary"
+          value={selection}
+          exclusive
+          onChange={handleToggle}
+          aria-label="repository-type"
+        >
+          <ToggleButton value="repository">Repositories</ToggleButton>
+          <ToggleButton value="organization">Organization</ToggleButton>
+        </ToggleButtonGroup>
+      )}
       <RepositoriesSearchBar value={search} onChange={handleSearch} />
     </Toolbar>
   );

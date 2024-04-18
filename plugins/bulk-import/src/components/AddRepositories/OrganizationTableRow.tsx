@@ -10,32 +10,45 @@ import { AddRepositoriesData } from '../../types';
 import {
   getRepositoryStatusForOrg,
   getSelectedRepositories,
+  urlHelper,
 } from '../../utils/repository-utils';
 
+const tableCellStyle = {
+  lineHeight: '1.5rem',
+  fontSize: '0.875rem',
+  padding: '15px 16px 15px 24px',
+};
+
 export const OrganizationTableRow = ({
+  onOrgRowSelected,
   data,
+  alreadyAdded,
 }: {
+  onOrgRowSelected: (org: AddRepositoriesData) => void;
   data: AddRepositoriesData;
+  alreadyAdded: number;
 }) => {
   return (
     <TableRow hover>
-      <TableCell component="th" scope="row" padding="none">
+      <TableCell component="th" scope="row" padding="none" sx={tableCellStyle}>
         {data.name}
       </TableCell>
-      <TableCell align="left">
+      <TableCell align="left" sx={tableCellStyle}>
         <Link to={data.url}>
           <>
-            {data.url}
+            {urlHelper(data.url)}
             <OpenInNewIcon
-              style={{ verticalAlign: 'bottom', paddingTop: '7px' }}
+              style={{ verticalAlign: 'sub', paddingTop: '7px' }}
             />
           </>
         </Link>
       </TableCell>
-      <TableCell align="left">
-        <>{getSelectedRepositories(data.selectedRepositories)}</>
+      <TableCell align="left" sx={tableCellStyle}>
+        {getSelectedRepositories(onOrgRowSelected, data, alreadyAdded)}
       </TableCell>
-      <TableCell align="left">{getRepositoryStatusForOrg(data)}</TableCell>
+      <TableCell align="left" sx={tableCellStyle}>
+        {getRepositoryStatusForOrg(data, alreadyAdded)}
+      </TableCell>
     </TableRow>
   );
 };
