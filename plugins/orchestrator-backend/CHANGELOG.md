@@ -1,3 +1,16 @@
+## @janus-idp/backstage-plugin-orchestrator-backend [1.6.8](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.6.7...@janus-idp/backstage-plugin-orchestrator-backend@1.6.8) (2024-04-18)
+
+
+### Bug Fixes
+
+* **orchestrator:** allows serving the editor envelope in disconnected environments ([#1450](https://github.com/janus-idp/backstage-plugins/issues/1450)) ([1e778d8](https://github.com/janus-idp/backstage-plugins/commit/1e778d88336dfec79d48ece4fd8d2a035133b70e))
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.6.4
+
 ## @janus-idp/backstage-plugin-orchestrator-backend [1.6.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.6.6...@janus-idp/backstage-plugin-orchestrator-backend@1.6.7) (2024-04-15)
 
 
