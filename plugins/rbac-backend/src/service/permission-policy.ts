@@ -284,6 +284,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
 
       const userEntityRef = identityResp.identity.userEntityRef;
       const permissionName = request.permission.name;
+      const roles = await this.enforcer.getRolesForUser(userEntityRef);
 
       if (isResourcePermission(request.permission)) {
         const resourceType = request.permission.resourceType;
@@ -295,6 +296,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
             resourceType,
             request.permission.name,
             action,
+            roles,
           );
           if (conditionResult) {
             return conditionResult;
@@ -311,10 +313,15 @@ export class RBACPermissionPolicy implements PermissionPolicy {
         // Let's set up higher priority for permission specified by name, than by resource type
         const obj = hasNamedPermission ? permissionName : resourceType;
 
-        status = await this.isAuthorized(userEntityRef, obj, action);
+        status = await this.isAuthorized(userEntityRef, obj, action, roles);
       } else {
         // handle permission with 'basic' type
-        status = await this.isAuthorized(userEntityRef, permissionName, action);
+        status = await this.isAuthorized(
+          userEntityRef,
+          permissionName,
+          action,
+          roles,
+        );
       }
 
       const result = status ? AuthorizeResult.ALLOW : AuthorizeResult.DENY;
@@ -357,6 +364,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     userIdentity: string,
     permission: string,
     action: string,
+    roles: string[],
   ): Promise<boolean> => {
     if (this.superUserList!.includes(userIdentity)) {
       return true;
@@ -373,7 +381,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
       );
     }
 
-    return await this.enforcer.enforce(userIdentity, permission, action);
+    return await this.enforcer.enforce(userIdentity, permission, action, roles);
   };
 
   private async handleConditions(
@@ -381,9 +389,8 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     resourceType: string,
     permissionName: string,
     action: PermissionAction,
+    roles: string[],
   ): Promise<PolicyDecision | undefined> {
-    const roles = await this.enforcer.getRolesForUser(userEntityRef);
-
     const conditions: PermissionCriteria<
       PermissionCondition<string, PermissionRuleParams>
     >[] = [];

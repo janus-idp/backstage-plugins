@@ -1,6 +1,6 @@
 import { NotAllowedError, NotFoundError } from '@backstage/errors';
 
-import { Enforcer, newEnforcer, newModelFromString } from 'casbin';
+import { Enforcer, newModelFromString } from 'casbin';
 import { Knex } from 'knex';
 
 import {
@@ -575,26 +575,51 @@ export class EnforcerDelegate {
     }
   }
 
+  /**
+   * enforce aims to enforce a particular permission policy based on the user that it receives.
+   * Under the hood, enforce uses the `enforce` method from the enforcer`.
+   *
+   * Before enforcement, a filter is set up to reduce the number of permission policies that will
+   * be loaded in.
+   * This will reduce the amount of checks that need to be made to determine if a user is authorize
+   * to perform an action
+   *
+   * A temporary enforcer will also be used while enforcing.
+   * This is to ensure that the filter does not interact with the base enforcer.
+   * The temporary enforcer has lazy loading of the permission policies enabled to reduce the amount
+   * of time it takes to initialize the temporary enforcer.
+   * The justification for lazy loading is because permission policies are already present in the
+   * role manager / database and it will be filtered and loaded whenever `loadFilteredPolicy` is called.
+   * @param entityRef The user to enforce
+   * @param resourceType The resource type / name of the permission policy
+   * @param action The action of the permission policy
+   * @param roles Any roles that the user is directly or indirectly attached to.
+   * Used for filtering permission policies.
+   * @returns True if the user is allowed based on the particular permission
+   */
   async enforce(
     entityRef: string,
     resourceType: string,
     action: string,
+    roles: string[],
   ): Promise<boolean> {
-    const filter = [
-      {
-        ptype: 'p',
-        v1: resourceType,
-        v2: action,
-      },
-      {
-        ptype: 'g',
-        v0: entityRef,
-      },
-    ];
+    const filter = [];
+    if (roles.length > 0) {
+      roles.forEach(role => {
+        filter.push({ ptype: 'p', v0: role, v1: resourceType, v2: action });
+      });
+    } else {
+      filter.push({ ptype: 'p', v1: resourceType, v2: action });
+    }
 
     const adapt = this.enforcer.getAdapter();
     const roleManager = this.enforcer.getRoleManager();
-    const tempEnforcer = await newEnforcer(newModelFromString(MODEL), adapt);
+    const tempEnforcer = new Enforcer();
+    await tempEnforcer.initWithModelAndAdapter(
+      newModelFromString(MODEL),
+      adapt,
+      true,
+    );
     tempEnforcer.setRoleManager(roleManager);
 
     await tempEnforcer.loadFilteredPolicy(filter);
