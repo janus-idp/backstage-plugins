@@ -41,7 +41,8 @@
     "dist",
     "dist-dynamic/*.*",
     "dist-dynamic/dist/**",
-    "dist-dynamic/alpha/*"
+    "dist-dynamic/alpha/*",
+    "static"
   ],
   "scripts": {
     "start": "backstage-cli package start",
@@ -58,8 +59,8 @@
   "dependencies": {
     "@backstage/backend-app-api": "^0.6.2",
     "@backstage/backend-common": "^0.21.6",
-    "@backstage/backend-plugin-api": "^0.6.16",
     "@backstage/backend-dynamic-feature-service": "^0.2.8",
+    "@backstage/backend-plugin-api": "^0.6.16",
     "@backstage/backend-tasks": "^0.5.21",
     "@backstage/catalog-client": "^1.6.3",
     "@backstage/config": "^1.2.0",
@@ -73,23 +74,23 @@
     "@backstage/types": "^1.1.1",
     "@janus-idp/backstage-plugin-orchestrator-common": "1.6.3",
     "@urql/core": "^4.1.4",
+    "ajv-formats": "^2.1.1",
     "cloudevents": "^8.0.0",
     "express": "^4.18.2",
     "express-promise-router": "^4.1.1",
     "fs-extra": "^10.1.0",
     "json-schema": "^0.4.0",
+    "moment": "^2.29.4",
     "openapi-backend": "^5.10.5",
     "winston": "^3.11.0",
-    "yn": "^5.0.0",
-    "moment": "^2.29.4",
-    "ajv-formats": "^2.1.1"
+    "yn": "^5.0.0"
   },
   "devDependencies": {
+    "@backstage/backend-test-utils": "0.3.6",
     "@backstage/cli": "0.26.2",
     "@janus-idp/cli": "1.8.0",
     "@types/express": "4.17.20",
     "@types/fs-extra": "11.0.1",
-    "@types/json-schema": "7.0.12",
-    "@backstage/backend-test-utils": "0.3.6"
+    "@types/json-schema": "7.0.12"
   }
 }
