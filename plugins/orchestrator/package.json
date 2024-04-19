@@ -74,7 +74,7 @@
     "@backstage/test-utils": "1.5.3",
     "@janus-idp/cli": "1.8.0",
     "@storybook/react": "7.5.3",
-    "@testing-library/react": "14.2.1",
+    "@testing-library/react": "14.3.1",
     "@storybook/preview-api": "7.5.3",
     "react": "18.2.0",
     "react-dom": "18.2.0"
