@@ -10,6 +10,7 @@
     ":pinOnlyDevDependencies"
   ],
   "labels": ["kind/dependency upgrade"],
+  "baseBranches": ["main", "/^1\\..*\\.x/"],  
   "npm": {
     "minimumReleaseAge": "1 day"
   },
@@ -21,7 +22,8 @@
     {
       "matchDepTypes": ["devDependencies"],
       "matchUpdateTypes": ["patch", "minor"],
-      "groupName": ["DevDependencies (non-major)"]
+      "groupName": ["DevDependencies (non-major)"],
+      "automerge": true
     },    
     {
       "matchPackagePatterns": ["^@backstage/"],
