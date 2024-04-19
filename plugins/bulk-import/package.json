@@ -50,7 +50,7 @@
     "@backstage/test-utils": "1.5.3",
     "@janus-idp/cli": "1.7.10",
     "@testing-library/jest-dom": "6.0.0",
-    "@testing-library/react": "14.0.0",
+    "@testing-library/react": "15.0.2",
     "@testing-library/user-event": "14.0.0",
     "@playwright/test": "1.41.2",
     "msw": "1.0.0"
