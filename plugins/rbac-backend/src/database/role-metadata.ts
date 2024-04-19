@@ -1,6 +1,7 @@
 import { ConflictError, InputError, NotFoundError } from '@backstage/errors';
 
 import { Knex } from 'knex';
+import { Logger } from 'winston';
 
 import { RoleMetadata, Source } from '@janus-idp/backstage-plugin-rbac-common';
 
@@ -30,12 +31,16 @@ export interface RoleMetadataStorage {
   ): Promise<void>;
   removeRoleMetadata(
     roleEntityRef: string,
+    modifiedBy: string,
     trx: Knex.Transaction,
   ): Promise<void>;
 }
 
 export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
-  constructor(private readonly knex: Knex<any, any[]>) {}
+  constructor(
+    private readonly knex: Knex<any, any[]>,
+    private readonly logger: Logger,
+  ) {}
 
   async findRoleMetadata(
     roleEntityRef: string,
@@ -54,21 +59,26 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
     trx: Knex.Transaction,
   ): Promise<number> {
     if (await this.findRoleMetadata(metadata.roleEntityRef, trx)) {
-      throw new ConflictError(
+      const err = new ConflictError(
         `A metadata for role ${metadata.roleEntityRef} has already been stored`,
       );
+      this.logError(metadata.roleEntityRef, 'create', err);
+      throw err;
     }
 
     const result = await trx<RoleMetadataDao>(ROLE_METADATA_TABLE)
       .insert(metadata)
       .returning<[{ id: number }]>('id');
     if (result && result?.length > 0) {
+      this.logInfo(metadata, 'Created');
       return result[0].id;
     }
 
-    throw new Error(
+    const err = new Error(
       `Failed to create the role metadata: '${JSON.stringify(metadata)}'.`,
     );
+    this.logError(metadata.roleEntityRef, 'create', err);
+    throw err;
   }
 
   async updateRoleMetadata(
@@ -82,16 +92,22 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
     );
 
     if (!currentMetadataDao) {
-      throw new NotFoundError(
+      const err = new NotFoundError(
         `A metadata for role '${oldRoleEntityRef}' was not found`,
       );
+      this.logError(oldRoleEntityRef, 'update', err);
+      throw err;
     }
 
     if (
       currentMetadataDao.source !== 'legacy' &&
       currentMetadataDao.source !== newRoleMetadata.source
     ) {
-      throw new InputError(`The RoleMetadata.source field is 'read-only'.`);
+      const err = new InputError(
+        `The RoleMetadata.source field is 'read-only'.`,
+      );
+      this.logError(oldRoleEntityRef, 'update', err);
+      throw err;
     }
 
     if (deepSortedEqual(currentMetadataDao, newRoleMetadata)) {
@@ -104,28 +120,78 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
       .returning('id');
 
     if (!result || result.length === 0) {
-      throw new Error(
+      const err = new Error(
         `Failed to update the role metadata '${JSON.stringify(
           currentMetadataDao,
         )}' with new value: '${JSON.stringify(newRoleMetadata)}'.`,
       );
+      this.logError(oldRoleEntityRef, 'update', err);
+      throw err;
     }
+    this.logInfo(newRoleMetadata, 'Updated');
   }
 
   async removeRoleMetadata(
     roleEntityRef: string,
+    modifiedBy: string,
     trx: Knex.Transaction,
   ): Promise<void> {
     const metadataDao = await this.findRoleMetadata(roleEntityRef, trx);
     if (!metadataDao) {
-      throw new NotFoundError(
+      const err = new NotFoundError(
         `A metadata for role '${roleEntityRef}' was not found`,
       );
+      this.logError(roleEntityRef, 'delete', err);
+      throw err;
     }
 
     await trx<RoleMetadataDao>(ROLE_METADATA_TABLE)
       .delete()
       .whereIn('id', [metadataDao.id!]);
+    metadataDao.modifiedBy = modifiedBy;
+    this.logInfo(metadataDao, 'Deleted');
+  }
+
+  private logError(
+    roleEntityRef: string,
+    operation: 'create' | 'update' | 'delete',
+    error: Error,
+  ) {
+    this.logger.log({
+      level: 'error',
+      message: `Fail to ${operation} role: ${roleEntityRef}. Cause: ${error.message}`,
+      isAuditLog: true,
+    });
+  }
+
+  private logInfo(
+    metadata: RoleMetadataDao,
+    operation: 'Created' | 'Updated' | 'Deleted',
+  ) {
+    const logMsg = {
+      level: 'info',
+      message: `${operation} role ${metadata.roleEntityRef}`,
+      isAuditLog: true,
+      source: metadata.source,
+      modifiedBy: metadata.modifiedBy,
+      lastModified: '',
+      author: metadata.author ?? 'no information',
+      createdAt: '',
+    };
+
+    if (metadata.createdAt) {
+      logMsg.createdAt = new Date(metadata.createdAt).toUTCString();
+    }
+
+    if (metadata.lastModified) {
+      logMsg.lastModified = new Date(metadata.lastModified).toUTCString();
+    }
+
+    if (operation === 'Deleted') {
+      logMsg.lastModified = new Date().toUTCString();
+    }
+
+    this.logger.log(logMsg);
   }
 }
 

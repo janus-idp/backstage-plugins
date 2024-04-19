@@ -392,7 +392,11 @@ export class EnforcerDelegate {
           groupPolicies.length === 0 &&
           roleEntity !== ADMIN_ROLE_NAME
         ) {
-          await this.roleMetadataStorage.removeRoleMetadata(roleEntity, trx);
+          await this.roleMetadataStorage.removeRoleMetadata(
+            roleEntity,
+            roleMetadata.modifiedBy!,
+            trx,
+          );
         } else if (currentRoleMetadata) {
           await this.roleMetadataStorage.updateRoleMetadata(
             this.mergeMetadata(currentRoleMetadata, roleMetadata),
@@ -458,7 +462,11 @@ export class EnforcerDelegate {
             groupPolicies.length === 0 &&
             roleEntity !== ADMIN_ROLE_NAME
           ) {
-            await this.roleMetadataStorage.removeRoleMetadata(roleEntity, trx);
+            await this.roleMetadataStorage.removeRoleMetadata(
+              roleEntity,
+              modifiedBy!,
+              trx,
+            );
           } else if (roleMetadata) {
             roleMetadata.modifiedBy = modifiedBy;
             roleMetadata.lastModified = new Date().toUTCString();
