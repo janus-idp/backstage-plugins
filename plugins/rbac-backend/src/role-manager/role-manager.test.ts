@@ -1,41 +1,32 @@
-import { TokenManager } from '@backstage/backend-common';
-import { CatalogApi } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 
 import * as Knex from 'knex';
 import { MockClient } from 'knex-mock-client';
-import { Logger } from 'winston';
 
+import {
+  catalogApiMock,
+  loggerMock,
+  newConfigReader,
+  tokenManagerMock,
+} from '../__fixtures__/__utils__/utils.test';
 import { BackstageRoleManager } from '../role-manager/role-manager';
 
 describe('BackstageRoleManager', () => {
   const catalogDBClient = Knex.knex({ client: MockClient });
 
-  const catalogApiMock: any = {
-    getEntities: jest
-      .fn()
-      .mockImplementation(() => Promise.resolve({ items: [] })),
-  };
-
-  const loggerMock: any = {
-    warn: jest.fn().mockImplementation(),
-    debug: jest.fn().mockImplementation(),
-  };
-
-  const tokenManagerMock = {
-    getToken: jest.fn().mockImplementation(async () => {
-      return Promise.resolve({ token: 'some-token' });
-    }),
-    authenticate: jest.fn().mockImplementation(),
-  };
+  let config = newConfigReader();
 
   let roleManager: BackstageRoleManager;
   beforeEach(() => {
+    catalogApiMock.getEntities.mockImplementation(_arg => {
+      return { items: [] };
+    });
     roleManager = new BackstageRoleManager(
-      catalogApiMock as CatalogApi,
-      loggerMock as Logger,
-      tokenManagerMock as TokenManager,
+      catalogApiMock,
+      loggerMock,
+      tokenManagerMock,
       catalogDBClient,
+      config,
     );
   });
 
@@ -1003,7 +994,6 @@ describe('BackstageRoleManager', () => {
     //               ↓               ↓
     //   user:default/mike    user:default/tom
     //
-    // This test passes now ?
     it('should return false for hasLink for user:default/mike and group:default/team-a(cycle dependency), but should be true for user:default/tom and group:default/team-b', async () => {
       const groupRootMock = createGroupEntity('root', undefined, [
         'team-a',
@@ -1068,7 +1058,6 @@ describe('BackstageRoleManager', () => {
     // group:default/team-c                         group:default/team-d
     //               ↓                                        ↓
     //   user:default/mike                           user:default/tom
-    // This test passes now ?
     it('should return false for hasLink for user:default/mike and role:default/team-a(cycle dependency), but should be true for user:default/tom and role:default/team-b', async () => {
       const groupRootMock = createGroupEntity('root', undefined, [
         'team-a',
@@ -1179,6 +1168,151 @@ describe('BackstageRoleManager', () => {
       // should return empty array for role
       roles = await roleManager.getRoles('role:default/rbac_admin');
       expect(roles.length).toBe(0);
+    });
+  });
+
+  describe('cached roles', () => {
+    beforeEach(() => {
+      config = newConfigReader(undefined, undefined, undefined, true);
+
+      roleManager = new BackstageRoleManager(
+        catalogApiMock,
+        loggerMock,
+        tokenManagerMock,
+        catalogDBClient,
+        config,
+      );
+
+      const entityMock = createGroupEntity(
+        'somegroup',
+        undefined,
+        [],
+        ['mike'],
+      );
+      roleManager.addLink('group:default/somegroup', 'role:default/somerole');
+      catalogApiMock.getEntities.mockReturnValue({ items: [entityMock] });
+    });
+
+    afterEach(() => {
+      (loggerMock.warn as jest.Mock).mockReset();
+    });
+
+    it('should initialize when cache is set', () => {
+      expect(roleManager).not.toBeNull();
+    });
+
+    it('should return true after the user has been cached the first time when calling hasLink', async () => {
+      let result = await roleManager.hasLink(
+        'user:default/mike',
+        'role:default/somerole',
+      );
+      expect(result).toBeTruthy();
+
+      result = await roleManager.hasLink(
+        'user:default/mike',
+        'role:default/somerole',
+      );
+      expect(result).toBeTruthy();
+    });
+
+    it('should return false even after the user has been cached the first time when calling hasLink', async () => {
+      roleManager.addLink(
+        'group:default/not-matched-group',
+        'role:default/different-role',
+      );
+
+      let result = await roleManager.hasLink(
+        'user:default/mike',
+        'role:default/different-role',
+      );
+      expect(result).toBeFalsy();
+
+      result = await roleManager.hasLink(
+        'user:default/mike',
+        'role:default/different-role',
+      );
+      expect(result).toBeFalsy();
+    });
+
+    it('should prevent cached and return false whenever there is a cycle dependency when calling hasLink', async () => {
+      const groupBMock = createGroupEntity('team-b', 'team-a', [], ['mike']);
+      const groupAMock = createGroupEntity('team-a', 'team-b', ['team-b']);
+
+      roleManager.addLink('group:default/team-a', 'role:default/somerole');
+      catalogApiMock.getEntities.mockImplementation((arg: any) => {
+        const hasMember = arg.filter['relations.hasMember'];
+        if (hasMember && hasMember === 'user:default/mike') {
+          return { items: [groupBMock] };
+        }
+        return { items: [groupBMock, groupAMock] };
+      });
+
+      let result = await roleManager.hasLink(
+        'user:default/mike',
+        'role:default/somerole',
+      );
+      expect(result).toBeFalsy();
+      expect(loggerMock.warn).toHaveBeenCalledWith(
+        'Detected cycle dependencies in the Group graph: [["group:default/team-a","group:default/team-b"]]. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for groups: [["group:default/team-a","group:default/team-b"]]',
+      );
+
+      result = await roleManager.hasLink(
+        'user:default/mike',
+        'role:default/somerole',
+      );
+      expect(result).toBeFalsy();
+      expect(loggerMock.warn).toHaveBeenCalledWith(
+        'Detected cycle dependencies in the Group graph: [["group:default/team-a","group:default/team-b"]]. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for groups: [["group:default/team-a","group:default/team-b"]]',
+      );
+    });
+
+    it('should return the roles when cached as expected after calling getRoles', async () => {
+      let allRoles = await roleManager.getRoles('user:default/mike');
+
+      expect(allRoles).toEqual(['role:default/somerole']);
+
+      allRoles = await roleManager.getRoles('user:default/mike');
+
+      expect(allRoles).toEqual(['role:default/somerole']);
+    });
+
+    it('should return the cached roles even if there is a cycle dependency when calling getRoles', async () => {
+      const groupBMock = createGroupEntity('team-b', 'team-a', [], ['mike']);
+      const groupAMock = createGroupEntity('team-a', 'team-b', ['team-b']);
+
+      roleManager.addLink('group:default/team-a', 'role:default/somerole');
+      catalogApiMock.getEntities.mockImplementation((arg: any) => {
+        const hasMember = arg.filter['relations.hasMember'];
+        if (hasMember && hasMember === 'user:default/mike') {
+          return { items: [groupBMock] };
+        }
+        return { items: [groupBMock, groupAMock] };
+      });
+
+      const allRoles = await roleManager.getRoles('user:default/mike');
+      expect(allRoles).toEqual(['role:default/somerole']);
+      expect(loggerMock.warn).toHaveBeenCalledWith(
+        'Detected cycle dependencies in the Group graph: [["group:default/team-a","group:default/team-b"]]. Admin/(catalog owner) have to fix it to make RBAC permission evaluation correct for groups: [["group:default/team-a","group:default/team-b"]]',
+      );
+    });
+
+    it('should return false after the the link has been deleted even after caching', async () => {
+      let result = await roleManager.hasLink(
+        'user:default/mike',
+        'role:default/somerole',
+      );
+      expect(result).toBeTruthy();
+
+      await roleManager.deleteLink(
+        'group:default/somegroup',
+        'role:default/somerole',
+      );
+
+      result = await roleManager.hasLink(
+        'user:default/mike',
+        'role:default/somerole',
+      );
+      expect(result).toBeFalsy();
     });
   });
 

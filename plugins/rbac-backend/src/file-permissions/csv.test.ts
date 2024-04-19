@@ -1,33 +1,24 @@
-import { TokenManager } from '@backstage/backend-common';
-
 import {
-  Adapter,
   Enforcer,
   FileAdapter,
-  Model,
-  newEnforcer,
   newModelFromString,
   StringAdapter,
 } from 'casbin';
 import * as Knex from 'knex';
 import { MockClient } from 'knex-mock-client';
 import { isEqual } from 'lodash';
-import { Logger } from 'winston';
 
-import {
-  PermissionPolicyMetadata,
-  RoleMetadata,
-  Source,
-} from '@janus-idp/backstage-plugin-rbac-common';
+import { PermissionPolicyMetadata } from '@janus-idp/backstage-plugin-rbac-common';
 
 import { resolve } from 'path';
 
 import {
-  PermissionPolicyMetadataDao,
-  PolicyMetadataStorage,
-} from '../database/policy-metadata-storage';
-import { RoleMetadataStorage } from '../database/role-metadata';
-import { BackstageRoleManager } from '../role-manager/role-manager';
+  createEnforcer,
+  loggerMock,
+  policyMetadataStorageMock,
+  roleMetadataStorageMock,
+  tokenManagerMock,
+} from '../__fixtures__/__utils__/utils.test';
 import { EnforcerDelegate } from '../service/enforcer-delegate';
 import { MODEL } from '../service/permission-model';
 import {
@@ -35,98 +26,6 @@ import {
   loadFilteredGroupingPoliciesFromCSV,
   loadFilteredPoliciesFromCSV,
 } from './csv';
-
-const catalogApi = {
-  getEntityAncestors: jest.fn().mockImplementation(),
-  getLocationById: jest.fn().mockImplementation(),
-  getEntities: jest.fn().mockImplementation(),
-  getEntitiesByRefs: jest.fn().mockImplementation(),
-  queryEntities: jest.fn().mockImplementation(),
-  getEntityByRef: jest.fn().mockImplementation(),
-  refreshEntity: jest.fn().mockImplementation(),
-  getEntityFacets: jest.fn().mockImplementation(),
-  addLocation: jest.fn().mockImplementation(),
-  getLocationByRef: jest.fn().mockImplementation(),
-  removeLocationById: jest.fn().mockImplementation(),
-  removeEntityByUid: jest.fn().mockImplementation(),
-  validateEntity: jest.fn().mockImplementation(),
-  getLocationByEntity: jest.fn().mockImplementation(),
-};
-
-const roleMetadataStorageMock: RoleMetadataStorage = {
-  findRoleMetadata: jest
-    .fn()
-    .mockImplementation(
-      async (
-        _roleEntityRef: string,
-        _trx: Knex.Knex.Transaction,
-      ): Promise<RoleMetadata> => {
-        return { source: 'csv-file' };
-      },
-    ),
-  createRoleMetadata: jest.fn().mockImplementation(),
-  updateRoleMetadata: jest.fn().mockImplementation(),
-  removeRoleMetadata: jest.fn().mockImplementation(),
-};
-
-const policyMetadataStorageMock: PolicyMetadataStorage = {
-  findPolicyMetadataBySource: jest
-    .fn()
-    .mockImplementation(
-      async (_source: Source): Promise<PermissionPolicyMetadataDao[]> => {
-        return [];
-      },
-    ),
-  findPolicyMetadata: jest
-    .fn()
-    .mockImplementation(
-      async (
-        _policy: string[],
-        _trx: Knex.Knex.Transaction,
-      ): Promise<PermissionPolicyMetadata> => {
-        const test: PermissionPolicyMetadata = {
-          source: 'csv-file',
-        };
-        return test;
-      },
-    ),
-  createPolicyMetadata: jest.fn().mockImplementation(),
-  removePolicyMetadata: jest.fn().mockImplementation(),
-};
-
-const tokenManagerMock = {
-  getToken: jest.fn().mockImplementation(async () => {
-    return Promise.resolve({ token: 'some-token' });
-  }),
-  authenticate: jest.fn().mockImplementation(),
-};
-
-const loggerMock: any = {
-  warn: jest.fn().mockImplementation(),
-  debug: jest.fn().mockImplementation(),
-};
-
-async function createEnforcer(
-  theModel: Model,
-  adapter: Adapter,
-  log: Logger,
-  tokenManager: TokenManager,
-): Promise<Enforcer> {
-  const catalogDBClient = Knex.knex({ client: MockClient });
-  const enf = await newEnforcer(theModel, adapter);
-
-  const rm = new BackstageRoleManager(
-    catalogApi,
-    log,
-    tokenManager,
-    catalogDBClient,
-  );
-  enf.setRoleManager(rm);
-  enf.enableAutoBuildRoleLinks(false);
-  await enf.buildRoleLinks();
-
-  return enf;
-}
 
 describe('CSV file', () => {
   let enfAddPolicySpy: jest.SpyInstance<Promise<boolean>, string[], any>;

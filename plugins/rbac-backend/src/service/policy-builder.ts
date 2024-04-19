@@ -60,6 +60,7 @@ export class PolicyBuilder {
       env.logger,
       env.tokenManager,
       catalogDBClient,
+      env.config,
     );
     enf.setRoleManager(rm);
     enf.enableAutoBuildRoleLinks(false);

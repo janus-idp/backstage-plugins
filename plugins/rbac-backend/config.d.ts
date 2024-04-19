@@ -38,6 +38,23 @@ export interface Config {
        * The RBAC plugin will handle access control for plugins included in this list.
        */
       pluginsWithPermission?: string[];
+      /**
+       * An optional cache that can be used to help with performance issues
+       * Stores the groups that a user is attached to
+       * @visibility frontend
+       */
+      cache?: {
+        /**
+         * The maximum size of the cache
+         * @visibility frontend
+         */
+        maxSize?: number;
+        /**
+         * The expiration time of the cached user in milliseconds
+         * @visibility frontend
+         */
+        expiration?: number;
+      };
     };
   };
 }
