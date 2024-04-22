@@ -42,10 +42,6 @@ import {
   EntityCatalogGraphCard,
 } from '@backstage/plugin-catalog-graph';
 import {
-  EntityGithubActionsContent,
-  isGithubActionsAvailable,
-} from '@backstage/plugin-github-actions';
-import {
   EntityGroupProfileCard,
   EntityMembersListCard,
   EntityOwnershipCard,
@@ -55,6 +51,10 @@ import { EntityTechdocsContent } from '@backstage/plugin-techdocs';
 import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
 import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
 
+import {
+  EntityGithubActionsContent,
+  isGithubActionsAvailable,
+} from '@backstage-community/plugin-github-actions';
 import { Button, Grid } from '@material-ui/core';
 
 const techdocsContent = (
