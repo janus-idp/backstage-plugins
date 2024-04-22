@@ -4,13 +4,16 @@ inputs:
   args:
     description: Backstage CLI repo build arguments
     default: '@janus-idp/*'
+  node-version:
+    description: Node.js version
+    required: true
 runs:
   using: 'composite'
   steps:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version-file: '.nvmrc'
+        node-version: ${{ inputs.node-version }}
         cache: 'yarn'
 
     - name: Setup local Turbo cache
