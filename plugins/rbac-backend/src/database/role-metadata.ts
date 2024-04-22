@@ -1,10 +1,10 @@
 import { ConflictError, InputError, NotFoundError } from '@backstage/errors';
 
 import { Knex } from 'knex';
-import { Logger } from 'winston';
 
 import { RoleMetadata, Source } from '@janus-idp/backstage-plugin-rbac-common';
 
+import { AuditLogger } from '../audit-log/audit-logger';
 import { deepSortedEqual } from '../helper';
 
 export const ROLE_METADATA_TABLE = 'role-metadata';
@@ -39,7 +39,7 @@ export interface RoleMetadataStorage {
 export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
   constructor(
     private readonly knex: Knex<any, any[]>,
-    private readonly logger: Logger,
+    private readonly aLog: AuditLogger,
   ) {}
 
   async findRoleMetadata(
@@ -62,7 +62,7 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
       const err = new ConflictError(
         `A metadata for role ${metadata.roleEntityRef} has already been stored`,
       );
-      this.logError(metadata.roleEntityRef, 'create', err);
+      this.aLog.error(metadata.roleEntityRef, 'create', err);
       throw err;
     }
 
@@ -70,14 +70,14 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
       .insert(metadata)
       .returning<[{ id: number }]>('id');
     if (result && result?.length > 0) {
-      this.logInfo(metadata, 'Created');
+      this.aLog.info(metadata, 'Created');
       return result[0].id;
     }
 
     const err = new Error(
       `Failed to create the role metadata: '${JSON.stringify(metadata)}'.`,
     );
-    this.logError(metadata.roleEntityRef, 'create', err);
+    this.aLog.error(metadata.roleEntityRef, 'create', err);
     throw err;
   }
 
@@ -95,7 +95,7 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
       const err = new NotFoundError(
         `A metadata for role '${oldRoleEntityRef}' was not found`,
       );
-      this.logError(oldRoleEntityRef, 'update', err);
+      this.aLog.error(oldRoleEntityRef, 'update', err);
       throw err;
     }
 
@@ -106,7 +106,7 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
       const err = new InputError(
         `The RoleMetadata.source field is 'read-only'.`,
       );
-      this.logError(oldRoleEntityRef, 'update', err);
+      this.aLog.error(oldRoleEntityRef, 'update', err);
       throw err;
     }
 
@@ -125,10 +125,10 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
           currentMetadataDao,
         )}' with new value: '${JSON.stringify(newRoleMetadata)}'.`,
       );
-      this.logError(oldRoleEntityRef, 'update', err);
+      this.aLog.error(oldRoleEntityRef, 'update', err);
       throw err;
     }
-    this.logInfo(newRoleMetadata, 'Updated');
+    this.aLog.info(newRoleMetadata, 'Updated');
   }
 
   async removeRoleMetadata(
@@ -141,7 +141,7 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
       const err = new NotFoundError(
         `A metadata for role '${roleEntityRef}' was not found`,
       );
-      this.logError(roleEntityRef, 'delete', err);
+      this.aLog.error(roleEntityRef, 'delete', err);
       throw err;
     }
 
@@ -149,49 +149,7 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
       .delete()
       .whereIn('id', [metadataDao.id!]);
     metadataDao.modifiedBy = modifiedBy;
-    this.logInfo(metadataDao, 'Deleted');
-  }
-
-  private logError(
-    roleEntityRef: string,
-    operation: 'create' | 'update' | 'delete',
-    error: Error,
-  ) {
-    this.logger.log({
-      level: 'error',
-      message: `Fail to ${operation} role: ${roleEntityRef}. Cause: ${error.message}`,
-      isAuditLog: true,
-    });
-  }
-
-  private logInfo(
-    metadata: RoleMetadataDao,
-    operation: 'Created' | 'Updated' | 'Deleted',
-  ) {
-    const logMsg = {
-      level: 'info',
-      message: `${operation} role ${metadata.roleEntityRef}`,
-      isAuditLog: true,
-      source: metadata.source,
-      modifiedBy: metadata.modifiedBy,
-      lastModified: '',
-      author: metadata.author ?? 'no information',
-      createdAt: '',
-    };
-
-    if (metadata.createdAt) {
-      logMsg.createdAt = new Date(metadata.createdAt).toUTCString();
-    }
-
-    if (metadata.lastModified) {
-      logMsg.lastModified = new Date(metadata.lastModified).toUTCString();
-    }
-
-    if (operation === 'Deleted') {
-      logMsg.lastModified = new Date().toUTCString();
-    }
-
-    this.logger.log(logMsg);
+    this.aLog.info(metadataDao, 'Deleted');
   }
 }
 

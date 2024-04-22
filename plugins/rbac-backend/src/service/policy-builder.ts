@@ -15,6 +15,7 @@ import { Logger } from 'winston';
 
 import { PluginIdProvider } from '@janus-idp/backstage-plugin-rbac-node';
 
+import { AuditLogger } from '../audit-log/audit-logger';
 import { CasbinDBAdapterFactory } from '../database/casbin-adapter-factory';
 import { DataBaseConditionalStorage } from '../database/conditional-storage';
 import { migrate } from '../database/migration';
@@ -74,7 +75,7 @@ export class PolicyBuilder {
     const policyMetadataStorage = new DataBasePolicyMetadataStorage(knex);
     const roleMetadataStorage = new DataBaseRoleMetadataStorage(
       knex,
-      env.logger,
+      new AuditLogger(env.logger),
     );
     const enforcerDelegate = new EnforcerDelegate(
       enf,
