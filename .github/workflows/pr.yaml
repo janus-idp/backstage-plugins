@@ -4,7 +4,7 @@ on: pull_request
 
 jobs:
   test:
-    name: Test Node.js ${{ matrix.node-version }}
+    name: Test with Node.js ${{ matrix.node-version }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -22,7 +22,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
   build:
-    name: Build all packages Node.js ${{ matrix.node-version }}
+    name: Build all packages with Node.js ${{ matrix.node-version }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
