@@ -11,10 +11,10 @@ jobs:
     outputs:
       plugins: ${{ steps.scan.outputs.plugins }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@1d96c772d19495a3b5c517cd2bc0cb401ea0529f # v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4
         with:
           node-version: 18
       - name: Determine changes
@@ -48,8 +48,8 @@ jobs:
     if: needs.changes.outputs.plugins != '[]'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@1d96c772d19495a3b5c517cd2bc0cb401ea0529f # v4
+      - uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4
         with:
           node-version: 18
       - name: Install dependencies
@@ -126,7 +126,7 @@ jobs:
           # Kill backend
           pid=$(lsof -i :7007 -Fp | grep p | sed s/p//)
           kill -9 $pid && echo "Backend shut down"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4
         if: always()
         with:
           name: playwright-report

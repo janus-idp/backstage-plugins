@@ -8,13 +8,13 @@ runs:
   using: 'composite'
   steps:
     - name: Setup Node.js
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@1a4442cacd436585916779262731d5b162bc6ec7 # v3
       with:
         node-version-file: '.nvmrc'
         cache: 'yarn'
 
     - name: Setup local Turbo cache
-      uses: dtinth/setup-github-actions-caching-for-turbo@v1
+      uses: dtinth/setup-github-actions-caching-for-turbo@a0e976d970c2a94366a26984efcef3030e2c0115 # v1
 
     - name: Install dependencies
       shell: bash
