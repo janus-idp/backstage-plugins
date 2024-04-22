@@ -35,5 +35,8 @@
     "plugin"
   ],
   "homepage": "https://janus-idp.io/",
-  "bugs": "https://github.com/janus-idp/backstage-plugins/issues"
+  "bugs": "https://github.com/janus-idp/backstage-plugins/issues",
+  "dependencies": {
+    "@backstage/plugin-permission-common": "^0.7.13"
+  }
 }
