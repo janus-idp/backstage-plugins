@@ -40,7 +40,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "0.26.2",
-    "@ianvs/prettier-plugin-sort-imports": "4.1.1",
+    "@ianvs/prettier-plugin-sort-imports": "4.2.1",
     "@janus-idp/cli": "*",
     "@semantic-release/changelog": "6.0.3",
     "@semantic-release/exec": "6.0.3",
@@ -51,16 +51,16 @@
     "conventional-changelog-conventionalcommits": "6.1.0",
     "eslint-plugin-jest": "27.4.2",
     "husky": "8.0.3",
-    "lint-staged": "15.0.1",
+    "lint-staged": "15.2.2",
     "multi-semantic-release": "3.0.2",
     "prettier": "3.0.3",
-    "turbo": "1.10.15",
-    "typescript": "5.3.3"
+    "turbo": "1.13.2",
+    "typescript": "5.4.5"
   },
   "resolutions": {
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "vscode-languageserver-types": "3.17.1",
+    "vscode-languageserver-types": "3.17.5",
     "@typescript-eslint/typescript-estree": "^7.3.1"
   },
   "lint-staged": {
