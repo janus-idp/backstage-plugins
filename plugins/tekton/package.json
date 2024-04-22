@@ -30,7 +30,7 @@
     "@backstage/catalog-model": "^1.4.5",
     "@backstage/core-components": "^0.14.3",
     "@backstage/core-plugin-api": "^1.9.1",
-    "@backstage/plugin-catalog-react": "^1.11.2",
+    "@backstage/plugin-catalog-react": "^1.11.3",
     "@backstage/plugin-kubernetes": "^0.11.8",
     "@backstage/plugin-kubernetes-common": "^0.7.5",
     "@backstage/theme": "^0.5.2",
