@@ -10,6 +10,10 @@
     ":pinOnlyDevDependencies"
   ],
   "labels": ["kind/dependency upgrade"],
+  "baseBranches": [
+    "main",
+    "/^1\\..*\\.x/"
+  ],
   "npm": {
     "minimumReleaseAge": "1 day"
   },
@@ -18,6 +22,12 @@
       "matchManagers": ["github-actions"],
       "groupName": "GitHub Actions"
     },
+    {
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["patch", "minor"],
+      "groupName": ["DevDependencies (non-major)"],
+      "automerge": true
+    },    
     {
       "matchPackagePatterns": ["^@backstage/"],
       "groupName": "Core Backstage packages"
@@ -29,8 +39,25 @@
         "^multi-semantic-release$"
       ],
       "groupName": "semantic-release monorepo"
-    }
+    },
+    {
+      "description": "disable updates to the keycloak admin client - see https://github.com/janus-idp/backstage-plugins/issues/47 https://github.com/janus-idp/backstage-plugins/issues/1046", 
+      "matchPackageName": ["@keycloak/keycloak-admin-client"],
+      "groupName": "Keycloak dependency",
+      "enabled": "false"
+    },
+    {
+      "description": "ignore updates to the axios to version that keycloak 18 needs", 
+      "matchCurrentVersion": "0.26.1",
+      "matchPackageName": ["axios"],
+      "enabled": "false",
+      "groupName": "Keycloak dependency"
+    }    
   ],
   "ignorePaths": ["**/dist-dynamic/**"],
-  "ignoreDeps": ["@roadiehq/backstage-plugin-argo-cd"]
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "addLabels": ["kind/security"]
+  },
+  "osvVulnerabilityAlerts": true  
 }
