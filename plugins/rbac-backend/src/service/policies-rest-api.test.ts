@@ -25,9 +25,13 @@ import {
 } from '@janus-idp/backstage-plugin-rbac-common';
 
 import {
-  RoleMetadataDao,
-  RoleMetadataStorage,
-} from '../database/role-metadata';
+  conditionalStorageMock,
+  mockedAuthorizeConditional,
+  mockPermissionEvaluator,
+  policyMetadataStorageMock,
+  roleMetadataStorageMock,
+} from '../__fixtures__/utils/utils.test';
+import { RoleMetadataDao } from '../database/role-metadata';
 import { EnforcerDelegate } from './enforcer-delegate';
 import { RBACPermissionPolicy } from './permission-policy';
 import {
@@ -131,22 +135,6 @@ const mockEnforcer: Partial<EnforcerDelegate> = {
   updateGroupingPolicies: jest.fn().mockImplementation(),
 };
 
-const roleMetadataStorageMock: RoleMetadataStorage = {
-  findRoleMetadata: jest.fn().mockImplementation(),
-  createRoleMetadata: jest.fn().mockImplementation(),
-  updateRoleMetadata: jest.fn().mockImplementation(),
-  removeRoleMetadata: jest.fn().mockImplementation(),
-};
-
-const conditionalStorage = {
-  filterConditions: jest.fn().mockImplementation(),
-  createCondition: jest.fn().mockImplementation(),
-  findUniqueCondition: jest.fn().mockImplementation(),
-  getCondition: jest.fn().mockImplementation(),
-  deleteCondition: jest.fn().mockImplementation(),
-  updateCondition: jest.fn().mockImplementation(),
-};
-
 const validateRoleConditionMock = jest.fn().mockImplementation();
 jest.mock('./condition-validation', () => {
   return {
@@ -198,22 +186,10 @@ const expectedConditions: RoleConditionalPolicyDecision<PermissionAction>[] = [
 
 describe('REST policies api', () => {
   let app: express.Express;
-
-  const mockedAuthorize = jest.fn().mockImplementation(async () => [
-    {
-      result: AuthorizeResult.ALLOW,
-    },
-  ]);
-
-  const mockedAuthorizeConditional = jest.fn().mockImplementation(async () => [
-    {
-      result: AuthorizeResult.ALLOW,
-    },
-  ]);
-
-  const mockPermissionEvaluator = {
-    authorize: mockedAuthorize,
-    authorizeConditional: mockedAuthorizeConditional,
+  const mockUser = {
+    type: 'User',
+    userEntityRef: 'user:default/guest',
+    ownershipEntityRefs: ['guest'],
   };
 
   const mockIdentityClient = {
@@ -255,12 +231,15 @@ describe('REST policies api', () => {
   let server: PoliciesServer;
 
   beforeEach(async () => {
-    conditionalStorage.filterConditions = jest
+    conditionalStorageMock.filterConditions = jest
       .fn()
       .mockImplementation(async () => {
         return conditions;
       });
 
+    conditionalStorageMock.getCondition.mockReset();
+
+    validateRoleConditionMock.mockReset();
     mockEnforcer.hasPolicy = jest
       .fn()
       .mockImplementation(async (..._param: string[]): Promise<boolean> => {
@@ -288,7 +267,7 @@ describe('REST policies api', () => {
       policy: await RBACPermissionPolicy.build(
         logger,
         config,
-        conditionalStorage,
+        conditionalStorageMock,
         mockEnforcer as EnforcerDelegate,
         roleMetadataStorageMock,
         knex,
@@ -300,9 +279,9 @@ describe('REST policies api', () => {
       options,
       mockEnforcer as EnforcerDelegate,
       config,
-      mockHttpAuth,
-      mockAuth,
-      conditionalStorage,
+      logger,
+      mockDiscovery,
+      conditionalStorageMock,
       backendPluginIDsProviderMock,
       roleMetadataStorageMock,
     );
@@ -2642,7 +2621,7 @@ describe('REST policies api', () => {
     });
 
     it('should be returned condition decision by pluginId', async () => {
-      conditionalStorage.filterConditions = jest
+      conditionalStorageMock.filterConditions = jest
         .fn()
         .mockImplementation(
           async (
@@ -2664,7 +2643,7 @@ describe('REST policies api', () => {
     });
 
     it('should be returned empty condition decision list by pluginId', async () => {
-      conditionalStorage.filterConditions = jest
+      conditionalStorageMock.filterConditions = jest
         .fn()
         .mockImplementation(
           async (
@@ -2686,7 +2665,7 @@ describe('REST policies api', () => {
     });
 
     it('should be returned condition decision by resourceType', async () => {
-      conditionalStorage.filterConditions = jest
+      conditionalStorageMock.filterConditions = jest
         .fn()
         .mockImplementation(
           async (
@@ -2744,7 +2723,7 @@ describe('REST policies api', () => {
     });
 
     it('should fail to delete condition decision by id', async () => {
-      conditionalStorage.deleteCondition = jest.fn(() => {
+      conditionalStorageMock.deleteCondition = jest.fn(() => {
         throw new Error('Failed to delete condition decision by id');
       });
 
@@ -2797,7 +2776,7 @@ describe('REST policies api', () => {
     });
 
     it('should return condition decision by id', async () => {
-      conditionalStorage.getCondition = jest
+      conditionalStorageMock.getCondition = jest
         .fn()
         .mockImplementation(async (id: number) => {
           if (id === 1) {
@@ -2862,9 +2841,11 @@ describe('REST policies api', () => {
     });
 
     it('should be created condition', async () => {
-      conditionalStorage.createCondition = jest.fn().mockImplementation(() => {
-        return 1;
-      });
+      conditionalStorageMock.createCondition = jest
+        .fn()
+        .mockImplementation(() => {
+          return 1;
+        });
       pluginPermissionMetadataCollectorMock.getMetadataByPluginId = jest
         .fn()
         .mockImplementation(() => {
@@ -2983,7 +2964,7 @@ describe('REST policies api', () => {
       expect(validateRoleConditionMock).toHaveBeenCalledWith(conditionDecision);
 
       expect(result.statusCode).toBe(200);
-      expect(conditionalStorage.updateCondition).toHaveBeenCalledWith(1, {
+      expect(conditionalStorageMock.updateCondition).toHaveBeenCalledWith(1, {
         id: 1,
         pluginId: 'catalog',
         roleEntityRef: 'role:default/test',

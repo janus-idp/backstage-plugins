@@ -1,6 +1,5 @@
 import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
-import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 import { Adapter, Enforcer } from 'casbin';
 import { Router } from 'express';
@@ -9,6 +8,7 @@ import { Logger } from 'winston';
 
 import { PluginIdProvider } from '@janus-idp/backstage-plugin-rbac-node';
 
+import { mockPermissionEvaluator } from '../__fixtures__/utils/utils.test';
 import { CasbinDBAdapterFactory } from '../database/casbin-adapter-factory';
 import { RBACPermissionPolicy } from './permission-policy';
 import { PoliciesServer } from './policies-rest-api';
@@ -73,23 +73,6 @@ jest.mock('./permission-policy', () => {
 });
 
 describe('PolicyBuilder', () => {
-  const mockedAuthorize = jest.fn().mockImplementation(async () => [
-    {
-      result: AuthorizeResult.ALLOW,
-    },
-  ]);
-
-  const mockedAuthorizeConditional = jest.fn().mockImplementation(async () => [
-    {
-      result: AuthorizeResult.ALLOW,
-    },
-  ]);
-
-  const mockPermissionEvaluator = {
-    authorize: mockedAuthorize,
-    authorizeConditional: mockedAuthorizeConditional,
-  };
-
   const mockUser = {
     type: 'User',
     userEntityRef: 'user:default/guest',

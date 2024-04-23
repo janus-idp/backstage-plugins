@@ -1,26 +1,24 @@
 import { mockServices } from '@backstage/backend-test-utils';
-import { CatalogApi } from '@backstage/catalog-client';
-import { Entity } from '@backstage/catalog-model';
-import { ConfigReader } from '@backstage/config';
 
 import * as Knex from 'knex';
 import { MockClient } from 'knex-mock-client';
 import { Logger } from 'winston';
 
+import {
+  catalogApiMock,
+  createGroupEntity,
+  loggerMock,
+  newConfigReader,
+  tokenManagerMock,
+} from '../__fixtures__/utils/utils.test';
 import { BackstageRoleManager } from '../role-manager/role-manager';
 
 describe('BackstageRoleManager', () => {
   const catalogDBClient = Knex.knex({ client: MockClient });
-  const catalogApiMock: any = {
-    getEntities: jest.fn().mockImplementation(),
-  };
 
-  const loggerMock: any = {
-    warn: jest.fn().mockImplementation(),
-    debug: jest.fn().mockImplementation(),
-  };
-
-  const mockAuthService = mockServices.auth();
+  catalogApiMock.getEntities.mockImplementation(() =>
+    Promise.resolve({ items: [] }),
+  );
 
   let roleManager: BackstageRoleManager;
   beforeEach(() => {
@@ -31,7 +29,7 @@ describe('BackstageRoleManager', () => {
     const config = newConfigReader();
 
     roleManager = new BackstageRoleManager(
-      catalogApiMock as CatalogApi,
+      catalogApiMock,
       loggerMock as Logger,
       catalogDBClient,
       config,
@@ -1009,10 +1007,10 @@ describe('BackstageRoleManager', () => {
     //               user:default/mike -------------------|---------------------------------|
     //
     it('should return false for hasLink, when user:default/mike inherits role from group tree with group:default/team-e, complex tree, maxDepth of 3', async () => {
-      const config = newConfigReader(1);
+      const config = newConfigReader(undefined, undefined, undefined, 1);
 
       const roleManagerMaxDepth = new BackstageRoleManager(
-        catalogApiMock as CatalogApi,
+        catalogApiMock,
         loggerMock as Logger,
         catalogDBClient,
         config,
@@ -1287,68 +1285,4 @@ describe('BackstageRoleManager', () => {
       expect(roles.length).toBe(0);
     });
   });
-
-  function createGroupEntity(
-    name: string,
-    parent?: string,
-    children?: string[],
-    members?: string[],
-  ): Entity {
-    const entity: Entity = {
-      apiVersion: 'v1',
-      kind: 'Group',
-      metadata: {
-        name,
-        namespace: 'default',
-      },
-      spec: {},
-    };
-
-    if (children) {
-      entity.spec!.children = children;
-    }
-
-    if (members) {
-      entity.spec!.members = members;
-    }
-
-    if (parent) {
-      entity.spec!.parent = parent;
-    }
-
-    return entity;
-  }
 });
-
-function newConfigReader(
-  maxDepth?: number,
-  users?: Array<{ name: string }>,
-  superUsers?: Array<{ name: string }>,
-): ConfigReader {
-  const testUsers = [
-    {
-      name: 'user:default/guest',
-    },
-    {
-      name: 'group:default/guests',
-    },
-  ];
-
-  return new ConfigReader({
-    permission: {
-      rbac: {
-        admin: {
-          users: users || testUsers,
-          superUsers: superUsers,
-        },
-        maxDepth,
-      },
-    },
-    backend: {
-      database: {
-        client: 'better-sqlite3',
-        connection: ':memory:',
-      },
-    },
-  });
-}

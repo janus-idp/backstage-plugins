@@ -1,9 +1,10 @@
 import { mockServices } from '@backstage/backend-test-utils';
-import { Entity, GroupEntity } from '@backstage/catalog-model';
+import { GroupEntity } from '@backstage/catalog-model';
 
 import * as Knex from 'knex';
 import { createTracker, MockClient, Tracker } from 'knex-mock-client';
 
+import { createGroupEntity } from '../__fixtures__/utils/utils.test';
 import { AncestorSearchMemo, Relation } from './ancestor-search-memo';
 
 const mockAuthService = mockServices.auth();
@@ -327,35 +328,4 @@ describe('ancestor-search-memo', () => {
       expect(asmUserGraph.hasEntityRef('group:default/team-d')).toBeFalsy();
     });
   });
-
-  function createGroupEntity(
-    name: string,
-    parent?: string,
-    children?: string[],
-    members?: string[],
-  ): Entity {
-    const entity: Entity = {
-      apiVersion: 'v1',
-      kind: 'Group',
-      metadata: {
-        name,
-        namespace: 'default',
-      },
-      spec: {},
-    };
-
-    if (children) {
-      entity.spec!.children = children;
-    }
-
-    if (members) {
-      entity.spec!.members = members;
-    }
-
-    if (parent) {
-      entity.spec!.parent = parent;
-    }
-
-    return entity;
-  }
 });

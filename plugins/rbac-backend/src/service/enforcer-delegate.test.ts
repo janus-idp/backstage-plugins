@@ -1,16 +1,9 @@
 import { getVoidLogger } from '@backstage/backend-common';
-import { DatabaseService } from '@backstage/backend-plugin-api';
-import { mockServices } from '@backstage/backend-test-utils';
-import { ConfigReader } from '@backstage/config';
 
-import { newEnforcer, newModelFromString } from 'casbin';
+import { newModelFromString } from 'casbin';
 import * as Knex from 'knex';
-import { MockClient } from 'knex-mock-client';
 
-import {
-  PermissionPolicyMetadata,
-  Source,
-} from '@janus-idp/backstage-plugin-rbac-common';
+import { PermissionPolicyMetadata } from '@janus-idp/backstage-plugin-rbac-common';
 
 import { CasbinDBAdapterFactory } from '../database/casbin-adapter-factory';
 import {
@@ -23,64 +16,10 @@ import {
 } from '../database/role-metadata';
 import { CSV_PERMISSION_POLICY_FILE_AUTHOR } from '../file-permissions/csv-file-watcher';
 import { policyToString } from '../helper';
-import { BackstageRoleManager } from '../role-manager/role-manager';
 import { EnforcerDelegate } from './enforcer-delegate';
 import { MODEL } from './permission-model';
 
-const catalogApi = {
-  getEntityAncestors: jest.fn().mockImplementation(),
-  getLocationById: jest.fn().mockImplementation(),
-  getEntities: jest.fn().mockImplementation(),
-  getEntitiesByRefs: jest.fn().mockImplementation(),
-  queryEntities: jest.fn().mockImplementation(),
-  getEntityByRef: jest.fn().mockImplementation(),
-  refreshEntity: jest.fn().mockImplementation(),
-  getEntityFacets: jest.fn().mockImplementation(),
-  addLocation: jest.fn().mockImplementation(),
-  getLocationByRef: jest.fn().mockImplementation(),
-  removeLocationById: jest.fn().mockImplementation(),
-  removeEntityByUid: jest.fn().mockImplementation(),
-  validateEntity: jest.fn().mockImplementation(),
-  getLocationByEntity: jest.fn().mockImplementation(),
-};
-
-const roleMetadataStorageMock: RoleMetadataStorage = {
-  findRoleMetadata: jest.fn().mockImplementation(),
-  createRoleMetadata: jest.fn().mockImplementation(),
-  updateRoleMetadata: jest.fn().mockImplementation(),
-  removeRoleMetadata: jest.fn().mockImplementation(),
-};
-
-const policyMetadataStorageMock: PolicyMetadataStorage = {
-  findPolicyMetadataBySource: jest
-    .fn()
-    .mockImplementation(
-      async (_source: Source): Promise<PermissionPolicyMetadataDao[]> => {
-        return [];
-      },
-    ),
-  findPolicyMetadata: jest.fn().mockImplementation(),
-  createPolicyMetadata: jest.fn().mockImplementation(),
-  removePolicyMetadata: jest.fn().mockImplementation(),
-};
-
-const dbManagerMock: DatabaseService = {
-  getClient: jest.fn().mockImplementation(),
-};
-
-const mockAuthService = mockServices.auth();
-
-const config = new ConfigReader({
-  backend: {
-    database: {
-      client: 'better-sqlite3',
-      connection: ':memory:',
-    },
-  },
-  permission: {
-    rbac: {},
-  },
-});
+const config = newConfigReader();
 const policy = ['user:default/tom', 'policy-entity', 'read', 'allow'];
 const secondPolicy = ['user:default/tim', 'catalog-entity', 'write', 'allow'];
 
@@ -140,20 +79,23 @@ describe('EnforcerDelegate', () => {
     (policyMetadataStorageMock.findPolicyMetadata as jest.Mock).mockReset();
   });
 
+  // TODO: Come up with a better name for this, I am initializing an enforcer with spies
+  // and setting up and enforcer delegate with policies and group policies
   async function createEnfDelegate(
     policies?: string[][],
     groupingPolicies?: string[][],
   ): Promise<EnforcerDelegate> {
+    const adapter = await newAdapter(config);
     const theModel = newModelFromString(MODEL);
     const logger = getVoidLogger();
 
-    const sqliteInMemoryAdapter = await new CasbinDBAdapterFactory(
+    const enf = await createEnforcer(
+      theModel,
+      adapter,
+      logger,
+      tokenManagerMock,
       config,
-      dbManagerMock,
-    ).createAdapter();
-
-    const catalogDBClient = Knex.knex({ client: MockClient });
-    const enf = await newEnforcer(theModel, sqliteInMemoryAdapter);
+    );
     enfRemovePolicySpy = jest.spyOn(enf, 'removePolicy');
     enfRemovePoliciesSpy = jest.spyOn(enf, 'removePolicies');
     enfRemoveGroupingPolicySpy = jest.spyOn(enf, 'removeGroupingPolicy');
@@ -164,32 +106,17 @@ describe('EnforcerDelegate', () => {
     enfUpdateGroupingPolicySpy = jest.spyOn(enf, 'addGroupingPolicy');
     enfAddPoliciesSpy = jest.spyOn(enf, 'addPolicies');
 
-    const rm = new BackstageRoleManager(
-      catalogApi,
-      logger,
-      catalogDBClient,
+    const enfDelegate = await newEnforcerDelegate(
+      adapter,
       config,
-      mockAuthService,
-    );
-    enf.setRoleManager(rm);
-    enf.enableAutoBuildRoleLinks(false);
-    await enf.buildRoleLinks();
-
-    if (policies && policies.length > 0) {
-      await enf.addPolicies(policies);
-    }
-    if (groupingPolicies && groupingPolicies.length > 0) {
-      await enf.addGroupingPolicies(groupingPolicies);
-    }
-
-    const knex = Knex.knex({ client: MockClient });
-
-    return new EnforcerDelegate(
-      enf,
+      policies,
+      groupingPolicies,
       policyMetadataStorageMock,
       roleMetadataStorageMock,
-      knex,
+      enf,
     );
+
+    return enfDelegate;
   }
 
   describe('hasPolicy', () => {
