@@ -7,7 +7,7 @@
   },
   "scripts": {
     "preinstall": "npx only-allow yarn",
-    "start:backstage": "turbo run start:backstage",
+    "start:backend": "turbo run start --filter=backend",
     "start:plugins": "turbo run start --filter=@janus-idp/*",
     "start:storybook": "yarn --cwd packages/storybook start",
     "build": "turbo run build",
@@ -17,6 +17,7 @@
     "tsc": "turbo run tsc",
     "clean": "turbo run clean",
     "test": "turbo run test",
+    "test:ui": "turbo run test:ui --concurrency 1",
     "lint": "turbo run lint",
     "lint:fix": "turbo run lint -- --fix",
     "lint-staged": "lint-staged",
@@ -54,7 +55,7 @@
     "lint-staged": "15.0.1",
     "multi-semantic-release": "3.0.2",
     "prettier": "3.0.3",
-    "turbo": "1.10.15",
+    "turbo": "1.13.2",
     "typescript": "5.3.3"
   },
   "resolutions": {

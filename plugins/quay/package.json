@@ -24,7 +24,7 @@
     "start": "backstage-cli package start",
     "test": "backstage-cli package test --passWithNoTests --coverage",
     "tsc": "tsc",
-    "ui-test": "yarn playwright test"
+    "test:ui": "start-server-and-test start localhost:3000 'turbo run start --filter=backend' 7007 'playwright test'"
   },
   "dependencies": {
     "@backstage/catalog-model": "^1.4.5",
@@ -58,7 +58,8 @@
     "msw": "1.3.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-router-dom": "6.17.0"
+    "react-router-dom": "6.17.0",
+    "start-server-and-test": "2.0.3"
   },
   "files": [
     "dist",

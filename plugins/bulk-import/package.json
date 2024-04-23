@@ -24,7 +24,7 @@
     "start": "backstage-cli package start",
     "test": "backstage-cli package test --passWithNoTests --coverage",
     "tsc": "tsc",
-    "ui-test": "yarn playwright test"
+    "test:ui": "start-server-and-test start localhost:3000 'turbo run start --filter=backend' 7007 'playwright test'"
   },
   "dependencies": {
     "@backstage/core-components": "^0.14.3",
@@ -53,7 +53,8 @@
     "@testing-library/react": "14.0.0",
     "@testing-library/user-event": "14.0.0",
     "@playwright/test": "1.41.2",
-    "msw": "1.0.0"
+    "msw": "1.0.0",
+    "start-server-and-test": "2.0.3"
   },
   "scalprum": {
     "name": "janus-idp.backstage-plugin-rbac",
