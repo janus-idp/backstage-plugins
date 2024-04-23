@@ -77,7 +77,7 @@ describe('useApplications', () => {
     });
   });
 
-  test('should return the applications and loading state', async () => {
+  test('should return the applications and loading state when the app selector updates', async () => {
     (useApi as any).mockReturnValue({
       listApps: async () => {
         return Promise.resolve({ items: [mockApplication] });

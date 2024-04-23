@@ -10,7 +10,6 @@ import {
   createStyles,
   Divider,
   Grid,
-  IconButton,
   Link,
   makeStyles,
   Theme,
@@ -19,14 +18,13 @@ import {
 } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import { Flex, FlexItem } from '@patternfly/react-core';
-import ExternalLinkIcon from '@patternfly/react-icons/dist/esm/icons/external-link-alt-icon';
 import GitLabIcon from '@patternfly/react-icons/dist/esm/icons/gitlab-icon';
 import moment from 'moment';
 
-import { useArgocdConfig } from '../../hooks/useArgocdConfig';
 import { Application, Revision } from '../../types';
 import { getCommitUrl } from '../../utils/utils';
 import StatusHeading from '../AppStatus/StatusHeading';
+import DeploymentLifecycleHeader from './DeploymentLifecycleHeader';
 
 const useCardStyles = makeStyles<Theme>(theme =>
   createStyles({
@@ -37,35 +35,6 @@ const useCardStyles = makeStyles<Theme>(theme =>
     },
   }),
 );
-
-const Header: React.FC<{ app: Application }> = ({ app }) => {
-  const { instances, baseUrl } = useArgocdConfig();
-
-  const supportsMultipleArgoInstances = !!instances.length;
-  const getBaseUrl = (row: Application): string | undefined => {
-    if (supportsMultipleArgoInstances && !baseUrl) {
-      return instances?.find(
-        value => value?.name === row.metadata?.instance?.name,
-      )?.url;
-    }
-    return baseUrl;
-  };
-  return (
-    <>
-      {app.metadata.name}{' '}
-      <IconButton
-        data-testid={`${app.metadata.name}-link`}
-        color="primary"
-        size="small"
-        target="_blank"
-        href={`${getBaseUrl(app)}/applications/${app.metadata.name}`}
-        onClick={e => e.stopPropagation()}
-      >
-        <ExternalLinkIcon />
-      </IconButton>
-    </>
-  );
-};
 
 interface DeploymentLifecycleCardProps {
   app: Application;
@@ -98,7 +67,7 @@ const DeploymentLifecycleCard: React.FC<DeploymentLifecycleCardProps> = ({
       onClick={onclick}
     >
       <CardHeader
-        title={<Header app={app} />}
+        title={<DeploymentLifecycleHeader app={app} />}
         titleTypographyProps={{
           variant: 'subtitle2',
         }}
@@ -180,7 +149,7 @@ const DeploymentLifecycleCard: React.FC<DeploymentLifecycleCardProps> = ({
                   onClick={e => {
                     e.stopPropagation();
                     const repoUrl = app?.spec?.source?.repoURL ?? '';
-                    repoUrl.length &&
+                    if (repoUrl.length) {
                       window.open(
                         getCommitUrl(
                           repoUrl,
@@ -189,6 +158,7 @@ const DeploymentLifecycleCard: React.FC<DeploymentLifecycleCardProps> = ({
                         ),
                         '_blank',
                       );
+                    }
                   }}
                   icon={<GitLabIcon />}
                   color="primary"

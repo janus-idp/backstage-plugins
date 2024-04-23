@@ -59,7 +59,7 @@ describe('DeploymentLifecycle', () => {
     render(<DeploymentLifecycle />);
 
     await waitFor(() => {
-      screen.getByTestId('argocd-loader');
+      expect(screen.getByTestId('argocd-loader')).toBeInTheDocument();
     });
   });
 

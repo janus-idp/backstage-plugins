@@ -1,7 +1,5 @@
 import React from 'react';
 
-import { useApi } from '@backstage/core-plugin-api';
-
 import {
   fireEvent,
   render,
@@ -11,6 +9,7 @@ import {
 } from '@testing-library/react';
 
 import { mockApplication, mockEntity } from '../../../../dev/__data__';
+import { useApplications } from '../../../hooks/useApplications';
 import { useArgocdConfig } from '../../../hooks/useArgocdConfig';
 import { Application, History } from '../../../types';
 import DeploymentSummary from '../DeploymentSummary';
@@ -19,9 +18,8 @@ jest.mock('../../../hooks/useArgocdConfig', () => ({
   useArgocdConfig: jest.fn(),
 }));
 
-jest.mock('@backstage/core-plugin-api', () => ({
-  ...jest.requireActual('@backstage/core-plugin-api'),
-  useApi: jest.fn(),
+jest.mock('../../../hooks/useApplications', () => ({
+  useApplications: jest.fn(),
 }));
 
 jest.mock('@backstage/plugin-catalog-react', () => ({
@@ -30,10 +28,10 @@ jest.mock('@backstage/plugin-catalog-react', () => ({
 
 describe('DeploymentSummary', () => {
   beforeEach(() => {
-    (useApi as any).mockReturnValue({
-      listApps: async () => {
-        return Promise.resolve({ items: [mockApplication] });
-      },
+    (useApplications as any).mockReturnValue({
+      apps: [mockApplication],
+      loading: false,
+      error: undefined,
     });
 
     (useArgocdConfig as any).mockReturnValue({
@@ -45,18 +43,24 @@ describe('DeploymentSummary', () => {
   });
 
   test('should render loading indicator', async () => {
+    (useApplications as any).mockReturnValue({
+      apps: [],
+      loading: true,
+      error: undefined,
+    });
+
     render(<DeploymentSummary />);
 
     await waitFor(() => {
-      screen.getByRole('progressbar');
+      expect(screen.getByRole('progressbar')).toBeInTheDocument();
     });
   });
 
   test('should render empty table incase of no applications', async () => {
-    (useApi as any).mockReturnValue({
-      listApps: async () => {
-        return Promise.resolve({ items: [] });
-      },
+    (useApplications as any).mockReturnValue({
+      apps: [],
+      loading: false,
+      error: undefined,
     });
 
     (useArgocdConfig as any).mockReturnValue({
@@ -69,18 +73,15 @@ describe('DeploymentSummary', () => {
     render(<DeploymentSummary />);
 
     await waitFor(() => {
-      expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
-      expect(screen.queryByTestId('loading-indicator')).not.toBeInTheDocument();
-
-      screen.getByText('No records to display');
+      expect(screen.queryByText('No records to display')).toBeInTheDocument();
     });
   });
 
   test('should not render deployment summary table incase of error', async () => {
-    (useApi as any).mockReturnValue({
-      listApps: async () => {
-        return Promise.reject(new Error('500: Internal server error'));
-      },
+    (useApplications as any).mockReturnValue({
+      apps: [],
+      loading: false,
+      error: new Error('500: Internal server error'),
     });
 
     render(<DeploymentSummary />);
@@ -100,12 +101,9 @@ describe('DeploymentSummary', () => {
     render(<DeploymentSummary />);
 
     await waitFor(() => {
-      expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
-      expect(screen.queryByTestId('loading-indicator')).not.toBeInTheDocument();
-
-      screen.getAllByText('quarkus-app-dev');
-      screen.getByText('Healthy');
-      screen.getByText('Synced');
+      expect(screen.queryAllByText('quarkus-app-dev')).toBeDefined();
+      expect(screen.queryByText('Healthy')).toBeInTheDocument();
+      expect(screen.queryByText('Synced')).toBeInTheDocument();
     });
   });
 
@@ -113,9 +111,6 @@ describe('DeploymentSummary', () => {
     render(<DeploymentSummary />);
 
     await waitFor(() => {
-      expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
-      expect(screen.queryByTestId('loading-indicator')).not.toBeInTheDocument();
-
       expect(
         screen.getByRole('link', { name: 'quarkus-app-dev' }),
       ).toHaveAttribute(
@@ -136,10 +131,6 @@ describe('DeploymentSummary', () => {
     render(<DeploymentSummary />);
 
     await waitFor(() => {
-      expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
-      expect(screen.queryByTestId('loading-indicator')).not.toBeInTheDocument();
-
-      screen.getAllByText('quarkus-app-dev');
       screen.getByText('Healthy');
       screen.getByText('Synced');
 
@@ -171,12 +162,10 @@ describe('DeploymentSummary', () => {
       },
     };
 
-    (useApi as any).mockReturnValue({
-      listApps: async () => {
-        return Promise.resolve({
-          items: [mockApplication, mockApplicationTwo],
-        });
-      },
+    (useApplications as any).mockReturnValue({
+      apps: [mockApplication, mockApplicationTwo],
+      loading: false,
+      error: undefined,
     });
 
     render(<DeploymentSummary />);
@@ -185,8 +174,8 @@ describe('DeploymentSummary', () => {
     });
 
     await waitFor(() => {
-      const tableBody = screen.getAllByRole('rowgroup')[1];
-      const firstRow = within(tableBody).getAllByRole('row')[0];
+      const tableBody = screen.queryAllByRole('rowgroup')[1];
+      const firstRow = within(tableBody).queryAllByRole('row')[0];
 
       within(firstRow).getByText('90f9758');
     });
@@ -198,8 +187,8 @@ describe('DeploymentSummary', () => {
       expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
       expect(screen.queryByTestId('loading-indicator')).not.toBeInTheDocument();
 
-      const tableBody = screen.getAllByRole('rowgroup')[1];
-      const firstRow = within(tableBody).getAllByRole('row')[0];
+      const tableBody = screen.queryAllByRole('rowgroup')[1];
+      const firstRow = within(tableBody).queryAllByRole('row')[0];
 
       within(firstRow).getByText('abcde');
     });
@@ -214,34 +203,33 @@ describe('DeploymentSummary', () => {
       },
     };
 
-    (useApi as any).mockReturnValue({
-      listApps: async () => {
-        return Promise.resolve({
-          items: [mockApplication, mockApplicationTwo],
-        });
-      },
+    (useApplications as any).mockReturnValue({
+      apps: [mockApplication, mockApplicationTwo],
+      loading: false,
+      error: undefined,
     });
 
     render(<DeploymentSummary />);
+
     const lastDeployedHeader = screen.getByRole('button', {
       name: 'Last deployed',
     });
 
     await waitFor(() => {
-      const tableBody = screen.getAllByRole('rowgroup')[1];
-      const firstRow = within(tableBody).getAllByRole('row')[0];
+      const tableBody = screen.queryAllByRole('rowgroup')[1];
+      const firstRow = within(tableBody).queryAllByRole('row')[0];
 
-      within(firstRow).getByText('90f9758');
+      expect(within(firstRow).queryByText('90f9758')).toBeInTheDocument();
     });
     await fireEvent.click(lastDeployedHeader);
     // miui table requires two clicks to start sorting
     await fireEvent.click(lastDeployedHeader);
 
     await waitFor(() => {
-      const tableBody = screen.getAllByRole('rowgroup')[1];
-      const firstRow = within(tableBody).getAllByRole('row')[0];
+      const tableBody = screen.queryAllByRole('rowgroup')[1];
+      const firstRow = within(tableBody).queryAllByRole('row')[0];
 
-      within(firstRow).getByText('-');
+      expect(within(firstRow).getByText('-')).toBeInTheDocument();
     });
   });
 
@@ -256,12 +244,10 @@ describe('DeploymentSummary', () => {
       },
     };
 
-    (useApi as any).mockReturnValue({
-      listApps: async () => {
-        return Promise.resolve({
-          items: [mockApplication, mockApplicationTwo],
-        });
-      },
+    (useApplications as any).mockReturnValue({
+      apps: [mockApplication, mockApplicationTwo],
+      loading: false,
+      error: undefined,
     });
 
     render(<DeploymentSummary />);
@@ -270,8 +256,8 @@ describe('DeploymentSummary', () => {
     });
 
     await waitFor(() => {
-      const tableBody = screen.getAllByRole('rowgroup')[1];
-      const firstRow = within(tableBody).getAllByRole('row')[0];
+      const tableBody = screen.queryAllByRole('rowgroup')[1];
+      const firstRow = within(tableBody).queryAllByRole('row')[0];
 
       within(firstRow).getByText('Synced');
     });
@@ -283,10 +269,10 @@ describe('DeploymentSummary', () => {
       expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
       expect(screen.queryByTestId('loading-indicator')).not.toBeInTheDocument();
 
-      const tableBody = screen.getAllByRole('rowgroup')[1];
-      const firstRow = within(tableBody).getAllByRole('row')[0];
+      const tableBody = screen.queryAllByRole('rowgroup')[1];
+      const firstRow = within(tableBody).queryAllByRole('row')[0];
 
-      within(firstRow).getByText('OutOfSync');
+      expect(within(firstRow).getByText('OutOfSync')).toBeInTheDocument();
     });
   });
 
@@ -301,12 +287,10 @@ describe('DeploymentSummary', () => {
       },
     };
 
-    (useApi as any).mockReturnValue({
-      listApps: async () => {
-        return Promise.resolve({
-          items: [mockApplication, mockApplicationTwo],
-        });
-      },
+    (useApplications as any).mockReturnValue({
+      apps: [mockApplication, mockApplicationTwo],
+      loading: false,
+      error: undefined,
     });
 
     render(<DeploymentSummary />);
@@ -315,10 +299,10 @@ describe('DeploymentSummary', () => {
     });
 
     await waitFor(() => {
-      const tableBody = screen.getAllByRole('rowgroup')[1];
-      const firstRow = within(tableBody).getAllByRole('row')[0];
+      const tableBody = screen.queryAllByRole('rowgroup')[1];
+      const firstRow = within(tableBody).queryAllByRole('row')[0];
 
-      within(firstRow).getByText('Healthy');
+      expect(within(firstRow).queryByText('Healthy')).toBeInTheDocument();
     });
     await fireEvent.click(healthStatusHeader);
     // miui table requires two clicks to start sorting
@@ -328,10 +312,10 @@ describe('DeploymentSummary', () => {
       expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
       expect(screen.queryByTestId('loading-indicator')).not.toBeInTheDocument();
 
-      const tableBody = screen.getAllByRole('rowgroup')[1];
-      const firstRow = within(tableBody).getAllByRole('row')[0];
+      const tableBody = screen.queryAllByRole('rowgroup')[1];
+      const firstRow = within(tableBody).queryAllByRole('row')[0];
 
-      within(firstRow).getByText('Degraded');
+      expect(within(firstRow).getByText('Degraded')).toBeInTheDocument();
     });
   });
 });

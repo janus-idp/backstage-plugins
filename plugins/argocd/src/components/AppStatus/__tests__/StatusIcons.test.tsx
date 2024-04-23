@@ -9,38 +9,38 @@ describe('StatusIcons', () => {
   describe('Sync Status', () => {
     test('should return application sync icon', () => {
       render(<SyncIcon status="Synced" />);
-      screen.getByTestId('synced-icon');
+      expect(screen.getByTestId('synced-icon')).toBeInTheDocument();
 
       render(<SyncIcon status="OutOfSync" />);
-      screen.getByTestId('outofsync-icon');
+      expect(screen.getByTestId('outofsync-icon')).toBeInTheDocument();
 
       render(<SyncIcon status="Unknown" />);
-      screen.getByTestId('unknown-icon');
+      expect(screen.getByTestId('unknown-icon')).toBeInTheDocument();
 
       render(<SyncIcon status={'invalid' as SyncStatusCode} />);
-      screen.getByTestId('unknown-icon');
+      expect(screen.getByTestId('unknown-icon')).toBeInTheDocument();
     });
   });
 
   describe('Health Status', () => {
     test('should return application health status icon', () => {
       render(<AppHealthIcon status={HealthStatus.Healthy} />);
-      screen.getByTestId('healthy-icon');
+      expect(screen.getByTestId('healthy-icon')).toBeInTheDocument();
 
       render(<AppHealthIcon status={HealthStatus.Suspended} />);
-      screen.getByTestId('suspended-icon');
+      expect(screen.getByTestId('suspended-icon')).toBeInTheDocument();
 
       render(<AppHealthIcon status={HealthStatus.Progressing} />);
-      screen.getByTestId('progressing-icon');
+      expect(screen.getByTestId('progressing-icon')).toBeInTheDocument();
 
       render(<AppHealthIcon status={HealthStatus.Missing} />);
-      screen.getByTestId('missing-icon');
+      expect(screen.getByTestId('missing-icon')).toBeInTheDocument();
 
       render(<AppHealthIcon status={HealthStatus.Degraded} />);
-      screen.getByTestId('degraded-icon');
+      expect(screen.getByTestId('degraded-icon')).toBeInTheDocument();
 
       render(<AppHealthIcon status={HealthStatus.Unknown} />);
-      screen.getByTestId('unknown-icon');
+      expect(screen.getByTestId('unknown-icon')).toBeInTheDocument();
     });
   });
 });

@@ -7,12 +7,12 @@ import { Application } from '../../../types';
 import StatusHeading from '../StatusHeading';
 
 describe('StatusHeading', () => {
-  test('should not render if the application is not available ', () => {
+  test('should not render if the application is not available', () => {
     render(<StatusHeading app={null as unknown as Application} />);
     expect(screen.queryByText('app-sync-status-chip')).not.toBeInTheDocument();
   });
 
-  test('should render if the application is available ', () => {
+  test('should render if the application is available', () => {
     render(<StatusHeading app={mockApplication} />);
 
     expect(screen.queryByTestId('app-health-status-chip')).toBeInTheDocument();

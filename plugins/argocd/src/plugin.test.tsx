@@ -86,7 +86,7 @@ describe('argocd', () => {
     );
 
     await waitFor(() => {
-      screen.getByText('Deployment lifecycle');
+      expect(screen.queryByText('Deployment lifecycle')).toBeInTheDocument();
     });
   });
 
@@ -105,7 +105,7 @@ describe('argocd', () => {
     );
 
     await waitFor(() => {
-      screen.getByText('Deployment summary');
+      expect(screen.queryByText('Deployment summary')).toBeInTheDocument();
     });
   });
 });

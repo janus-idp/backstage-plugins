@@ -9,13 +9,13 @@ describe('AppSyncStatus', () => {
   test('should return default component', () => {
     render(<AppSyncStatus app={mockApplication} />);
 
-    screen.getByTestId('synced-icon');
-    screen.getByText('Synced');
+    expect(screen.getByTestId('synced-icon')).toBeInTheDocument();
+    expect(screen.getByText('Synced')).toBeInTheDocument();
   });
 
   test('should return application health chip component', () => {
     render(<AppSyncStatus app={mockApplication} isChip />);
 
-    screen.getByTestId('app-sync-status-chip');
+    expect(screen.getByTestId('app-sync-status-chip')).toBeInTheDocument();
   });
 });

@@ -3450,9 +3450,9 @@
     zod "^3.22.4"
 
 "@backstage/core-components@^0.14.4":
-  version "0.14.4"
-  resolved "https://registry.yarnpkg.com/@backstage/core-components/-/core-components-0.14.4.tgz#96867e77898327a4bc12a671597d0ca481d4d227"
-  integrity sha512-yPsLtXI37Ar4bcmtL1VHxlR8GZAhRiXKor+25zuu6stArkVirIJvH4CdS0S2eMQZ9HEFnzo1O+QzeKGxsm7PKw==
+  version "0.14.5"
+  resolved "https://registry.yarnpkg.com/@backstage/core-components/-/core-components-0.14.5.tgz#5fc4fe6041058b8ee750409fbe1d218b6380a061"
+  integrity sha512-r0N/UH0CBl0PmPy3aCfACPNAl7N8s6ggyCm2r1OAOjJQDZ8PLza00AAmNe35EjXkfMOS7upeRCEe9N9tXuZ6IA==
   dependencies:
     "@backstage/config" "^1.2.0"
     "@backstage/core-plugin-api" "^1.9.2"
@@ -27502,7 +27502,7 @@ moment@^2.30.1:
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.30.1.tgz#f8c91c07b7a786e30c59926df530b4eac96974ae"
   integrity sha512-uEmtNhbDOrWPFS+hdjFCBfy9f2YoyzRpwcl+DqpC6taX21FzsTLQVbMV/W7PzNSX6x/bhC1zA3c2UQ5NzH6how==
 
-monaco-editor-webpack-plugin@^7.1.0:
+monaco-editor-webpack-plugin@7.1.0:
   version "7.1.0"
   resolved "https://registry.yarnpkg.com/monaco-editor-webpack-plugin/-/monaco-editor-webpack-plugin-7.1.0.tgz#16f265c2b5dbb5fe08681b6b3b7d00d3c5b2ee97"
   integrity sha512-ZjnGINHN963JQkFqjjcBtn1XBtUATDZBMgNQhDQwd78w2ukRhFXAPNgWuacaQiDZsUr4h1rWv5Mv6eriKuOSzA==

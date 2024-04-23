@@ -50,7 +50,7 @@ describe('DeploymentLifecylceCard', () => {
   });
   test('should render if the application card', () => {
     render(<DeploymentLifecycleCard app={mockApplication} revisionsMap={{}} />);
-    screen.getByTestId('quarkus-app-dev-card');
+    expect(screen.getByTestId('quarkus-app-dev-card')).toBeInTheDocument();
   });
 
   test('application header should link to external link', () => {
@@ -69,7 +69,7 @@ describe('DeploymentLifecylceCard', () => {
 
     fireEvent.mouseDown(screen.getByText('(in-cluster)'));
 
-    screen.getByTestId('local-cluster-tooltip');
+    expect(screen.getByTestId('local-cluster-tooltip')).toBeInTheDocument();
   });
 
   test('should render remote cluster url', () => {
@@ -78,7 +78,7 @@ describe('DeploymentLifecylceCard', () => {
       spec: {
         ...mockApplication.spec,
         destination: {
-          server: 'http://remote-url.com',
+          server: 'https://remote-url.com',
           namespace: 'remote-ns',
         },
       },
@@ -92,7 +92,7 @@ describe('DeploymentLifecylceCard', () => {
       screen.queryByTestId('local-cluster-tooltip'),
     ).not.toBeInTheDocument();
 
-    screen.getByText('http://remote-url.com');
+    screen.getByText('https://remote-url.com');
   });
 
   test('should not open a new windown if the missing git url', () => {

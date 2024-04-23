@@ -3,8 +3,6 @@ import { Config } from '@kubernetes/client-node';
 export const mockArgocdConfig: Config = {
   argocd: {
     baseUrl: 'https://localhost:8080',
-    username: 'argocd-test-account',
-    password: 'argocd-test-pass',
     appLocatorMethods: [
       {
         type: 'config',

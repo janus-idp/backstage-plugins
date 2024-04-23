@@ -1,5 +1,8 @@
 import React from 'react';
 
+import { configApiRef } from '@backstage/core-plugin-api';
+import { MockConfigApi, TestApiProvider } from '@backstage/test-utils';
+
 import { fireEvent, render, screen } from '@testing-library/react';
 
 import { mockApplication, mockEntity } from '../../../../dev/__data__';
@@ -18,12 +21,41 @@ jest.mock('@backstage/plugin-catalog-react', () => ({
     },
   }),
 }));
+
 describe('DeploymentLifecycleDrawer', () => {
+  const wrapper = ({ children }: { children: React.ReactNode }) => {
+    return (
+      <TestApiProvider
+        apis={[
+          [
+            configApiRef,
+            new MockConfigApi({
+              argocd: {
+                appLocatorMethods: [
+                  {
+                    instances: [
+                      {
+                        name: 'main',
+                        url: 'https://test.com',
+                      },
+                    ],
+                    type: 'config',
+                  },
+                ],
+              },
+            }),
+          ],
+        ]}
+      >
+        {children}
+      </TestApiProvider>
+    );
+  };
   test('should not render the application drawer component', () => {
     render(
       <DeploymentLifecycleDrawer
         app={null as unknown as Application}
-        isOpen={true}
+        isOpen
         onClose={() => jest.fn()}
         revisionsMap={{}}
       />,
@@ -38,13 +70,14 @@ describe('DeploymentLifecycleDrawer', () => {
     render(
       <DeploymentLifecycleDrawer
         app={mockApplication}
-        isOpen={true}
+        isOpen
         onClose={() => jest.fn()}
         revisionsMap={{}}
       />,
+      { wrapper },
     );
 
-    screen.getByTestId('quarkus-app-dev-drawer');
+    expect(screen.getByTestId('quarkus-app-dev-drawer')).toBeInTheDocument();
   });
 
   test('should render the commit link in drawer component', () => {
@@ -53,7 +86,7 @@ describe('DeploymentLifecycleDrawer', () => {
     render(
       <DeploymentLifecycleDrawer
         app={mockApplication}
-        isOpen={true}
+        isOpen
         onClose={() => jest.fn()}
         revisionsMap={{
           '90f9758b7033a4bbb7c33a35ee474d61091644bc': {
@@ -63,6 +96,7 @@ describe('DeploymentLifecycleDrawer', () => {
           },
         }}
       />,
+      { wrapper },
     );
     const commitLink = screen.getByTestId('90f97-commit-link');
     fireEvent.click(commitLink);
@@ -91,6 +125,7 @@ describe('DeploymentLifecycleDrawer', () => {
         app={remoteApplication}
         revisionsMap={{}}
       />,
+      { wrapper },
     );
     const commitLink = screen.getByTestId('90f97-commit-link');
     fireEvent.click(commitLink);
@@ -104,7 +139,7 @@ describe('DeploymentLifecycleDrawer', () => {
       spec: {
         ...mockApplication.spec,
         destination: {
-          server: 'http://remote-url.com',
+          server: 'https://remote-url.com',
           namespace: 'remote-ns',
         },
       },
@@ -116,6 +151,7 @@ describe('DeploymentLifecycleDrawer', () => {
         app={remoteApplication}
         revisionsMap={{}}
       />,
+      { wrapper },
     );
 
     expect(screen.queryByText('(in-cluster)')).not.toBeInTheDocument();
@@ -123,6 +159,6 @@ describe('DeploymentLifecycleDrawer', () => {
       screen.queryByTestId('local-cluster-tooltip'),
     ).not.toBeInTheDocument();
 
-    screen.getByText('http://remote-url.com');
+    screen.getByText('https://remote-url.com');
   });
 });

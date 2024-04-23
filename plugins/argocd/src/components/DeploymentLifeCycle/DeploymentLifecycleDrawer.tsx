@@ -26,6 +26,7 @@ import moment from 'moment';
 import { Application, Revision } from '../../types';
 import { getCommitUrl } from '../../utils/utils';
 import StatusHeading from '../AppStatus/StatusHeading';
+import DeploymentLifecycledHeader from './DeploymentLifecycleHeader';
 
 interface DeploymentLifecycleDrawerProps {
   app: Application | undefined;
@@ -82,7 +83,9 @@ const DeploymentLifecycleDrawer: React.FC<DeploymentLifecycleDrawerProps> = ({
         <Grid container alignItems="stretch">
           <Grid item xs={12}>
             <div className={classes.header}>
-              <Typography variant="h4">{app?.metadata?.name} </Typography>
+              <Typography variant="h4">
+                <DeploymentLifecycledHeader app={app} />
+              </Typography>
 
               <IconButton
                 key="dismiss"
@@ -168,7 +171,7 @@ const DeploymentLifecycleDrawer: React.FC<DeploymentLifecycleDrawerProps> = ({
                     e.stopPropagation();
 
                     const repoUrl = app?.spec?.source?.repoURL ?? '';
-                    repoUrl &&
+                    if (repoUrl) {
                       window.open(
                         getCommitUrl(
                           repoUrl,
@@ -177,6 +180,7 @@ const DeploymentLifecycleDrawer: React.FC<DeploymentLifecycleDrawerProps> = ({
                         ),
                         '_blank',
                       );
+                    }
                   }}
                   label={latestRevision?.revision.slice(0, 7)}
                 />

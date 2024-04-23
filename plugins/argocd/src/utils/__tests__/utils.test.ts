@@ -99,7 +99,7 @@ describe('Utils', () => {
       ).toBe('gitlab');
     });
 
-    test('should return gitlab based on the annotation key', () => {
+    test('should return github based on the annotation key', () => {
       expect(
         getGitProvider({
           'github.com/source-url': 'https://custom-gh-url.com/testrepo',
@@ -195,7 +195,7 @@ describe('Utils', () => {
       expect(getUniqueRevisions([mockApplication])).toHaveLength(1);
     });
 
-    test('should return unique revision', () => {
+    test('should return unique revision for multiple applications', () => {
       const mockApplicationTwo: Application = {
         ...mockApplication,
         status: {
