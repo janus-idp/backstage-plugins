@@ -175,3 +175,16 @@ The RBAC plugin offers the option to store policies in a database. It supports t
 - postgres: Recommended for production environments.
 
 Ensure that you have already configured the database backend for your Backstage instance, as the RBAC plugin utilizes the same database configuration.
+
+### Optional maximum depth
+
+The RBAC plugin also includes an option max depth feature for organizations with potentially complex group hierarchy, this configuration value will ensure that the RBAC plugin will stop at a certain depth when building user graphs.
+
+```YAML
+permission:
+  enabled: true
+  rbac:
+    maxDepth: 1
+```
+
+The maxDepth must be greater than 0 to ensure that the graphs are built correctly. Also the graph will be built with a hierarchy of 1 + maxDepth.

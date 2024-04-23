@@ -1,6 +1,7 @@
 import { TokenManager } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
+import { ConfigReader } from '@backstage/config';
 
 import * as Knex from 'knex';
 import { MockClient } from 'knex-mock-client';
@@ -31,11 +32,14 @@ describe('BackstageRoleManager', () => {
 
   let roleManager: BackstageRoleManager;
   beforeEach(() => {
+    const config = newConfigReader();
+
     roleManager = new BackstageRoleManager(
       catalogApiMock as CatalogApi,
       loggerMock as Logger,
       tokenManagerMock as TokenManager,
       catalogDBClient,
+      config,
     );
   });
 
@@ -987,6 +991,107 @@ describe('BackstageRoleManager', () => {
       expect(result).toBeTruthy();
     });
 
+    // user:default/mike should inherits role from group:default/team-e, and we have a complex graph
+    // So return true on call hasLink.
+    //
+    //     Hierarchy:
+    //                                                        role:default/team-e
+    //                                                                ↓
+    //                                     |----------------- group:default/team-e ---------|
+    //                                     ↓                                                |
+    //       | ----------------- group:default/team-f ----|                                 |
+    //       ↓                                            ↓                                 |
+    // group:default/team-a -> role:default/team-a   group:default/team-b         group:default/team-h -> role:default/team-h
+    //       ↓                                            ↓                                 ↓
+    // group:default/team-c -> role:default/team-c   group:default/team-d         group:default/team-g -> role:default/team-g
+    //               ↓                                    ↓                                 ↓
+    //               user:default/mike -------------------|---------------------------------|
+    //
+    it('should return false for hasLink, when user:default/mike inherits role from group tree with group:default/team-e, complex tree, maxDepth of 3', async () => {
+      const config = newConfigReader(1);
+
+      const roleManagerMaxDepth = new BackstageRoleManager(
+        catalogApiMock as CatalogApi,
+        loggerMock as Logger,
+        tokenManagerMock as TokenManager,
+        catalogDBClient,
+        config,
+      );
+
+      const groupCMock = createGroupEntity('team-c', 'team-a', [], ['mike']);
+      const groupDMock = createGroupEntity('team-d', 'team-b', [], ['mike']);
+      const groupAMock = createGroupEntity('team-a', 'team-f', ['team-c']);
+      const groupBMock = createGroupEntity('team-b', 'team-f', ['team-d']);
+      const groupFMock = createGroupEntity('team-f', 'team-e', [
+        'team-a',
+        'team-b',
+      ]);
+      const groupEMock = createGroupEntity('team-e', undefined, [
+        'team-f',
+        'team-g',
+      ]);
+      const groupGMock = createGroupEntity('team-g', 'team-h', [], ['mike']);
+      const groupHMock = createGroupEntity('team-h', 'team-e', ['team-g'], []);
+
+      catalogApiMock.getEntities.mockImplementation((arg: any) => {
+        const hasMember = arg.filter['relations.hasMember'];
+        if (hasMember && hasMember === 'user:default/mike') {
+          return { items: [groupCMock, groupDMock, groupGMock] };
+        }
+        return {
+          items: [
+            groupCMock,
+            groupDMock,
+            groupAMock,
+            groupBMock,
+            groupFMock,
+            groupEMock,
+            groupGMock,
+            groupHMock,
+          ],
+        };
+      });
+
+      roleManagerMaxDepth.addLink(
+        'group:default/team-a',
+        'role:default/team-a',
+      );
+      roleManagerMaxDepth.addLink(
+        'group:default/team-c',
+        'role:default/team-c',
+      );
+      roleManagerMaxDepth.addLink(
+        'group:default/team-e',
+        'role:default/team-e',
+      );
+      roleManagerMaxDepth.addLink(
+        'group:default/team-g',
+        'role:default/team-g',
+      );
+
+      roleManagerMaxDepth.addLink(
+        'group:default/team-h',
+        'role:default/team-h',
+      );
+
+      const resultE = await roleManagerMaxDepth.hasLink(
+        'user:default/mike',
+        'role:default/team-e',
+      );
+      const resultG = await roleManagerMaxDepth.hasLink(
+        'user:default/mike',
+        'role:default/team-g',
+      );
+      const resultH = await roleManagerMaxDepth.hasLink(
+        'user:default/mike',
+        'role:default/team-h',
+      );
+
+      expect(resultE).toBeFalsy();
+      expect(resultH).toBeTruthy();
+      expect(resultG).toBeTruthy();
+    });
+
     // user:default/mike should inherits from group:default/team-a, but we have cycle dependency: team-a -> team-c.
     // So return false on call hasLink.
     //
@@ -1213,3 +1318,36 @@ describe('BackstageRoleManager', () => {
     return entity;
   }
 });
+
+function newConfigReader(
+  maxDepth?: number,
+  users?: Array<{ name: string }>,
+  superUsers?: Array<{ name: string }>,
+): ConfigReader {
+  const testUsers = [
+    {
+      name: 'user:default/guest',
+    },
+    {
+      name: 'group:default/guests',
+    },
+  ];
+
+  return new ConfigReader({
+    permission: {
+      rbac: {
+        admin: {
+          users: users || testUsers,
+          superUsers: superUsers,
+        },
+        maxDepth,
+      },
+    },
+    backend: {
+      database: {
+        client: 'better-sqlite3',
+        connection: ':memory:',
+      },
+    },
+  });
+}
