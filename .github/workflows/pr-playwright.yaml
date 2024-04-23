@@ -23,7 +23,7 @@ jobs:
 
       - name: Run tests
         run: |
-          yarn run test:ui -- --filter=[HEAD^1]
+          yarn run test:ui -- --filter=...[origin/main]
 
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
