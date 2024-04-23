@@ -10,6 +10,7 @@ export const mockEntity: Entity = {
       'argocd/app-selector':
         'rht-gitops.com/janus-argocd=quarkus-app-bootstrap',
       'argocd/project-name': 'project-name',
+      'argocd/instance-name': 'instance-1',
     },
   },
   spec: {

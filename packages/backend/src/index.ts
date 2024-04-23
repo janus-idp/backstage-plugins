@@ -29,7 +29,6 @@ import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 import Router from 'express-promise-router';
 
 import app from './plugins/app';
-import argocd from './plugins/argocd';
 import auth from './plugins/auth';
 import catalog from './plugins/catalog';
 import permission from './plugins/permissions';
@@ -100,7 +99,6 @@ async function main() {
   const searchEnv = useHotMemoize(module, () => createEnv('search'));
   const appEnv = useHotMemoize(module, () => createEnv('app'));
   const permissionEnv = useHotMemoize(module, () => createEnv('permission'));
-  const argocdEnv = useHotMemoize(module, () => createEnv('argocd'));
 
   const apiRouter = Router();
   apiRouter.use('/catalog', await catalog(catalogEnv));
@@ -116,7 +114,6 @@ async function main() {
       getPluginIds: () => ['catalog', 'scaffolder', 'permission'],
     }),
   );
-  apiRouter.use('/argocd', await argocd(argocdEnv));
 
   // Add backends ABOVE this line; this 404 handler is the catch-all fallback
   apiRouter.use(notFoundHandler());

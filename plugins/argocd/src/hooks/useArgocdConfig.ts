@@ -5,7 +5,6 @@ import { Instances } from '../types';
 export const useArgocdConfig = (): {
   instances: Instances;
   intervalMs: number;
-  instanceName: string;
   baseUrl: string | undefined;
 } => {
   const configApi = useApi(configApiRef);
@@ -26,6 +25,5 @@ export const useArgocdConfig = (): {
     baseUrl,
     instances,
     intervalMs,
-    instanceName: instances?.[0]?.name ?? 'main',
   };
 };

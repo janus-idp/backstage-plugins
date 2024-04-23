@@ -13,6 +13,7 @@ import { Application, HealthStatus, SyncStatuses } from '../../types';
 import {
   getAppSelector,
   getCommitUrl,
+  getInstanceName,
   getProjectName,
 } from '../../utils/utils';
 import AppSyncStatus from '../AppStatus/AppSyncStatus';
@@ -21,7 +22,8 @@ import { AppHealthIcon } from '../AppStatus/StatusIcons';
 const DeploymentSummary = () => {
   const { entity } = useEntity();
 
-  const { baseUrl, instances, instanceName, intervalMs } = useArgocdConfig();
+  const { baseUrl, instances, intervalMs } = useArgocdConfig();
+  const instanceName = getInstanceName(entity) || instances?.[0]?.name;
 
   const { apps, loading, error } = useApplications({
     instanceName,

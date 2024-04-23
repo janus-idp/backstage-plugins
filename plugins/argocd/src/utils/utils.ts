@@ -4,12 +4,16 @@ import { Application, OperationPhases, OperationState } from '../types';
 
 export const enum ArgoCdLabels {
   appSelector = 'argocd/app-selector',
-  proxyPath = 'arocd/proxy-url',
+  instanceName = 'argocd/instance-name',
   projectName = 'argocd/project-name',
 }
 
 export const getAppSelector = (entity: Entity): string => {
   return entity?.metadata?.annotations?.[ArgoCdLabels.appSelector] ?? '';
+};
+
+export const getInstanceName = (entity: Entity): string => {
+  return entity?.metadata?.annotations?.[ArgoCdLabels.instanceName] ?? '';
 };
 
 export const getProjectName = (entity: Entity): string | undefined => {

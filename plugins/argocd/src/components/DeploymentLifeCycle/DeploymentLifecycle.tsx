@@ -10,7 +10,11 @@ import { argoCDApiRef } from '../../api';
 import { useApplications } from '../../hooks/useApplications';
 import { useArgocdConfig } from '../../hooks/useArgocdConfig';
 import { Application, Revision } from '../../types';
-import { getAppSelector, getUniqueRevisions } from '../../utils/utils';
+import {
+  getAppSelector,
+  getInstanceName,
+  getUniqueRevisions,
+} from '../../utils/utils';
 import DeploymentLifecycleCard from './DeploymentLifecycleCard';
 import DeploymentLifecycleDrawer from './DeploymentLifecycleDrawer';
 
@@ -38,7 +42,8 @@ const DeploymentLifecycle = () => {
 
   const api = useApi(argoCDApiRef);
 
-  const { instanceName, intervalMs } = useArgocdConfig();
+  const { instances, intervalMs } = useArgocdConfig();
+  const instanceName = getInstanceName(entity) || instances?.[0]?.name;
   const { apps, loading, error } = useApplications({
     instanceName,
     intervalMs,
