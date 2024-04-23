@@ -19,7 +19,7 @@ jobs:
           persist-credentials: false
           fetch-depth: 0
 
-      - uses: pnpm/action-setup@v2
+      - uses: pnpm/action-setup@v3
         name: Install pnpm
         id: pnpm-install
 
