@@ -14,8 +14,11 @@ jobs:
 
       - name: Test
         uses: ./.github/actions/test
+        env:
+          HEAD: ${{ github.sha }}
+          BASE: ${{ github.event.pull_request.base.sha }}
         with:
-          args: '[HEAD^1]'
+          args: '[$BASE...$HEAD]'
 
   build:
     name: Build all packages
@@ -28,5 +31,8 @@ jobs:
 
       - name: Build
         uses: ./.github/actions/build
+        env:
+          HEAD: ${{ github.sha }}
+          BASE: ${{ github.event.pull_request.base.sha }}
         with:
-          args: '[HEAD^1]'
+          args: '[$BASE...$HEAD]'

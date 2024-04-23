@@ -22,8 +22,11 @@ jobs:
         run: yarn playwright install --with-deps chromium
 
       - name: Run tests
+        env:
+          HEAD: ${{ github.sha }}
+          BASE: ${{ github.event.pull_request.base.sha }}
         run: |
-          yarn run test:ui -- --filter=[HEAD^1]
+          yarn run test:ui -- --filter=[$BASE...$HEAD]
 
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
