@@ -23,7 +23,7 @@ jobs:
 
       - name: Run tests
         env:
-          HEAD: ${{ github.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
           BASE: ${{ github.event.pull_request.base.sha }}
         run: |
           yarn run test:ui -- --filter=[$BASE...$HEAD]
