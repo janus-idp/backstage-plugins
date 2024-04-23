@@ -23,7 +23,7 @@
     "start": "backstage-cli package start",
     "test": "backstage-cli package test --passWithNoTests --coverage",
     "tsc": "tsc",
-    "test:ui": "start-server-and-test start localhost:3000 'yarn turbo run start --filter=backend' localhost:7007 'playwright test'"
+    "test:ui": "start-server-and-test 'turbo run start --filter=backend' localhost:7007 start localhost:3000 'playwright test'"
   },
   "dependencies": {
     "@aonic-ui/pipelines": "^1.1.1",
