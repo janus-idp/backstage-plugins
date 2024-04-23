@@ -23,7 +23,7 @@ jobs:
 
       - name: Run tests
         run: |
-          turbo run test:ui --concurrency 1 --filter=[HEAD^1]
+          yarn run test:ui
 
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
