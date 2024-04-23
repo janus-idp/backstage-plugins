@@ -8,6 +8,7 @@ import {
   Source,
 } from '@janus-idp/backstage-plugin-rbac-common';
 
+import { AuditLogger } from '../audit-log/audit-logger';
 import {
   PermissionPolicyMetadataDao,
   PolicyMetadataStorage,
@@ -26,6 +27,7 @@ export class EnforcerDelegate {
     private readonly policyMetadataStorage: PolicyMetadataStorage,
     private readonly roleMetadataStorage: RoleMetadataStorage,
     private readonly knex: Knex,
+    private readonly aLog: AuditLogger,
   ) {}
 
   async hasPolicy(...policy: string[]): Promise<boolean> {
@@ -82,10 +84,16 @@ export class EnforcerDelegate {
       if (!externalTrx) {
         await trx.commit();
       }
+      this.aLog.permissionInfo(
+        policy,
+        'CREATE',
+        await this.roleMetadataStorage.findRoleMetadata(policy[0]),
+      );
     } catch (err) {
       if (!externalTrx) {
         await trx.rollback(err);
       }
+      this.aLog.permissionError(policy, 'CREATE', err);
       throw err;
     }
   }

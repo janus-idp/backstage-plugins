@@ -62,7 +62,7 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
       const err = new ConflictError(
         `A metadata for role ${metadata.roleEntityRef} has already been stored`,
       );
-      this.aLog.error(metadata.roleEntityRef, 'create', err);
+      this.aLog.roleError(metadata.roleEntityRef, 'CREATE', err);
       throw err;
     }
 
@@ -70,14 +70,14 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
       .insert(metadata)
       .returning<[{ id: number }]>('id');
     if (result && result?.length > 0) {
-      this.aLog.info(metadata, 'Created');
+      this.aLog.roleInfo(metadata, 'CREATE');
       return result[0].id;
     }
 
     const err = new Error(
       `Failed to create the role metadata: '${JSON.stringify(metadata)}'.`,
     );
-    this.aLog.error(metadata.roleEntityRef, 'create', err);
+    this.aLog.roleError(metadata.roleEntityRef, 'CREATE', err);
     throw err;
   }
 
@@ -95,7 +95,7 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
       const err = new NotFoundError(
         `A metadata for role '${oldRoleEntityRef}' was not found`,
       );
-      this.aLog.error(oldRoleEntityRef, 'update', err);
+      this.aLog.roleError(oldRoleEntityRef, 'UPDATE', err);
       throw err;
     }
 
@@ -106,7 +106,7 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
       const err = new InputError(
         `The RoleMetadata.source field is 'read-only'.`,
       );
-      this.aLog.error(oldRoleEntityRef, 'update', err);
+      this.aLog.roleError(oldRoleEntityRef, 'UPDATE', err);
       throw err;
     }
 
@@ -125,10 +125,10 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
           currentMetadataDao,
         )}' with new value: '${JSON.stringify(newRoleMetadata)}'.`,
       );
-      this.aLog.error(oldRoleEntityRef, 'update', err);
+      this.aLog.roleError(oldRoleEntityRef, 'UPDATE', err);
       throw err;
     }
-    this.aLog.info(newRoleMetadata, 'Updated');
+    this.aLog.roleInfo(newRoleMetadata, 'UPDATE');
   }
 
   async removeRoleMetadata(
@@ -141,15 +141,17 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
       const err = new NotFoundError(
         `A metadata for role '${roleEntityRef}' was not found`,
       );
-      this.aLog.error(roleEntityRef, 'delete', err);
+      this.aLog.roleError(roleEntityRef, 'DELETE', err);
       throw err;
     }
 
     await trx<RoleMetadataDao>(ROLE_METADATA_TABLE)
       .delete()
       .whereIn('id', [metadataDao.id!]);
+
     metadataDao.modifiedBy = modifiedBy;
-    this.aLog.info(metadataDao, 'Deleted');
+    metadataDao.lastModified = new Date().toUTCString();
+    this.aLog.roleInfo(metadataDao, 'DELETE');
   }
 }
 
