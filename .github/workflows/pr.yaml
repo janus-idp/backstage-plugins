@@ -2,9 +2,6 @@ name: Pull request
 
 on: pull_request
 
-env:
-  TURBO_REF_FILTER: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
-
 jobs:
   test:
     name: Test
@@ -18,7 +15,7 @@ jobs:
       - name: Test
         uses: ./.github/actions/test
         with:
-          args: '...[$TURBO_REF_FILTER]'
+          args: '...[HEAD^1]'
 
   build:
     name: Build all packages
@@ -32,4 +29,4 @@ jobs:
       - name: Build
         uses: ./.github/actions/build
         with:
-          args: '...[$TURBO_REF_FILTER]'
+          args: '...[HEAD^1]'

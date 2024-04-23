@@ -4,9 +4,6 @@ on:
   pull_request:
     branches: [main]
 
-env:
-  TURBO_REF_FILTER: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
-
 jobs:
   playwright:
     name: 'Run Playwright Tests'
@@ -29,7 +26,7 @@ jobs:
 
       - name: Run tests
         run: |
-          yarn run test:ui -- --filter=...[$TURBO_REF_FILTER]
+          yarn run test:ui -- --filter=...[HEAD^1]
 
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
