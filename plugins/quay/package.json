@@ -24,7 +24,7 @@
     "start": "backstage-cli package start",
     "test": "backstage-cli package test --passWithNoTests --coverage",
     "tsc": "tsc",
-    "test:ui": "start-server-and-test start localhost:3000 'yarn --cwd ../../packages/backend run start' http-get://localhost:7007 'playwright test'"
+    "test:ui": "start-server-and-test start localhost:3000 'yarn --cwd ../../packages/backend run start' 7007 'playwright test'"
   },
   "dependencies": {
     "@backstage/catalog-model": "^1.4.5",
