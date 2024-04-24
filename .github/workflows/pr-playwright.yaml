@@ -26,7 +26,33 @@ jobs:
 
       - name: Run tests
         run: |
-          yarn run test:ui -- --filter=...[HEAD^1...HEAD]
+          # Start backend
+          echo "Starting backend"
+          logfile=$(mktemp)
+          yarn run start:backend >$logfile 2>&1 &
+          for attempt in $(seq 1 45); do
+            sleep 1
+            if grep -q "Error:" $logfile; then
+              cat $logfile
+              exit 1
+            fi
+            if grep -q "Listening on" $logfile; then
+              echo "Backend started"
+              break
+            fi
+            if [[ attempt -eq 45 ]]; then
+              echo "Failed to launch backend"
+              cat $logfile
+              exit 1
+            fi
+          done
+
+          # Run UI tests
+          yarn run test:ui -- --filter=...[HEAD^1]
+
+          # Kill backend
+          pid=$(lsof -i :7007 -Fp | grep p | sed s/p//)
+          kill -9 $pid && echo "Backend shut down"
 
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
