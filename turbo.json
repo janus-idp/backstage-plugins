@@ -15,7 +15,9 @@
     "test": {
       "outputs": ["coverage/**"]
     },
-    "test:ui": {},
+    "test:ui": {
+      "outputs": ["test-results/**"]
+    },
     "export-dynamic": {
       "cache": false
     },
