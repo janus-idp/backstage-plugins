@@ -1,3 +1,16 @@
+## @janus-idp/backstage-plugin-orchestrator [1.10.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.9.4...@janus-idp/backstage-plugin-orchestrator@1.10.0) (2024-04-25)
+
+
+### Features
+
+* **orchestrator:** add endpoint to retrigger workflow in error state ([#1343](https://github.com/janus-idp/backstage-plugins/issues/1343)) ([328d23a](https://github.com/janus-idp/backstage-plugins/commit/328d23a7992da125becc8d7775a4ebd68165f243))
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.8.1
+
 ## @janus-idp/backstage-plugin-orchestrator [1.9.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.9.3...@janus-idp/backstage-plugin-orchestrator@1.9.4) (2024-04-18)
 
 
