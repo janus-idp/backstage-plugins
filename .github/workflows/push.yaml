@@ -3,14 +3,9 @@ name: Push
 on:
   push:
     branches:
+      # since we use multi-semantic-release, which assumes that all plugins in the 1.1.x branch
+      # are versioned < 1.2, we can only release from main branch. See RHIDP-1720 for more info
       - main
-      # starting from 1.1.x, allow releases from the 1.yy.x branches as long as we remember to bump plugin versions in main immediately after creating a 1.new.x branch
-      # see this script for how to check which plugins need bumping
-      # see also root package.json -> .release.branches
-      - 1.**.x
-      # do not run on 1.0.x, as we didn't bump plugin versions correctly there
-      - '!1.0.x'
-
 concurrency:
   group: push
   cancel-in-progress: true
