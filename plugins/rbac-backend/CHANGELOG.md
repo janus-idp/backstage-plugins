@@ -1,3 +1,11 @@
+## @janus-idp/backstage-plugin-rbac-backend [2.7.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.6.4...@janus-idp/backstage-plugin-rbac-backend@2.7.0) (2024-04-25)
+
+
+### Features
+
+* **rbac:** add the optional maxDepth feature ([#1486](https://github.com/janus-idp/backstage-plugins/issues/1486)) ([ea87f34](https://github.com/janus-idp/backstage-plugins/commit/ea87f3412eb374123ea623332de0648d4c7bda5c))
+* **rbac:** lazy load temporary enforcer ([#1513](https://github.com/janus-idp/backstage-plugins/issues/1513)) ([b5f1552](https://github.com/janus-idp/backstage-plugins/commit/b5f1552f069068af43a4ca2756a5a38187f6d453))
+
 ## @janus-idp/backstage-plugin-rbac-backend [2.6.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.6.3...@janus-idp/backstage-plugin-rbac-backend@2.6.4) (2024-04-17)
 
 
