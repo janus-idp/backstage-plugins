@@ -16,6 +16,12 @@ import { OrchestratorApi } from './api';
 export interface MockOrchestratorApiData {
   executeWorkflowResponse: () => ReturnType<OrchestratorApi['executeWorkflow']>;
   getInstanceResponse: () => ReturnType<OrchestratorApi['getInstance']>;
+  retriggerInstanceInErrorResponse: () => ReturnType<
+    OrchestratorApi['retriggerInstanceInError']
+  >;
+  abortWorkflowInstanceResponse: () => ReturnType<
+    OrchestratorApi['abortWorkflowInstance']
+  >;
   listInstancesResponse: ReturnType<OrchestratorApi['listInstances']>;
   getWorkflowDefinitionResponse: ReturnType<
     OrchestratorApi['getWorkflowDefinition']
@@ -138,6 +144,27 @@ export class MockOrchestratorClient implements OrchestratorApi {
   }
 
   abortWorkflowInstance(_instanceId: string): Promise<void> {
-    return Promise.resolve(undefined);
+    if (
+      !hasOwnProp(this._mockData, 'abortWorkflowInstanceResponse') ||
+      !isNonNullable(this._mockData.abortWorkflowInstanceResponse)
+    ) {
+      throw new Error(`[abortWorkflowInstance]: No mock data available`);
+    }
+
+    return this._mockData.abortWorkflowInstanceResponse();
+  }
+
+  retriggerInstanceInError(_args: {
+    instanceId: string;
+    inputData: JsonObject;
+  }): Promise<WorkflowExecutionResponse> {
+    if (
+      !hasOwnProp(this._mockData, 'retriggerInstanceInErrorResponse') ||
+      !isNonNullable(this._mockData.retriggerInstanceInErrorResponse)
+    ) {
+      throw new Error(`[retriggerInstanceInError]: No mock data available`);
+    }
+
+    return this._mockData.retriggerInstanceInErrorResponse();
   }
 }

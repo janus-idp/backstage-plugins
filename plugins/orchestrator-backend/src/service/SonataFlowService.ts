@@ -6,6 +6,7 @@ import {
   getWorkflowCategory,
   ProcessInstance,
   ProcessInstanceStateValues,
+  ProcessInstanceVariables,
   WorkflowDefinition,
   WorkflowExecutionResponse,
   WorkflowInfo,
@@ -14,7 +15,6 @@ import {
 
 import { Pagination } from '../types/pagination';
 import { DataIndexService } from './DataIndexService';
-import { executeWithRetry } from './Helper';
 
 export class SonataFlowService {
   constructor(
@@ -28,7 +28,7 @@ export class SonataFlowService {
   }): Promise<WorkflowInfo | undefined> {
     try {
       const urlToFetch = `${args.serviceUrl}/management/processes/${args.definitionId}`;
-      const response = await executeWithRetry(() => fetch(urlToFetch));
+      const response = await fetch(urlToFetch);
 
       if (response.ok) {
         const json = await response.json();
@@ -93,15 +93,15 @@ export class SonataFlowService {
   public async executeWorkflow(args: {
     definitionId: string;
     serviceUrl: string;
-    inputData: Record<string, string>;
+    inputData: ProcessInstanceVariables;
     businessKey?: string;
   }): Promise<WorkflowExecutionResponse | undefined> {
     try {
-      const workflowEndpoint = args.businessKey
+      const urlToFetch = args.businessKey
         ? `${args.serviceUrl}/${args.definitionId}?businessKey=${args.businessKey}`
         : `${args.serviceUrl}/${args.definitionId}`;
 
-      const result = await fetch(workflowEndpoint, {
+      const result = await fetch(urlToFetch, {
         method: 'POST',
         body: JSON.stringify(args.inputData),
         headers: { 'content-type': 'application/json' },
@@ -192,6 +192,45 @@ export class SonataFlowService {
       return response.ok;
     } catch (error) {
       this.logger.debug(`Error when pinging workflow service: ${error}`);
+    }
+    return false;
+  }
+
+  public async retriggerInstanceInError(args: {
+    definitionId: string;
+    serviceUrl: string;
+    instanceId: string;
+  }): Promise<boolean> {
+    const { definitionId, serviceUrl, instanceId } = args;
+    try {
+      const urlToFetch = `${serviceUrl}/management/processes/${definitionId}/instances/${instanceId}/retrigger`;
+      const response = await fetch(urlToFetch, {
+        method: 'POST',
+      });
+      return response.ok;
+    } catch (error) {
+      this.logger.error(`Error when retriggering workflow in error: ${error}`);
+    }
+    return false;
+  }
+
+  public async updateInstanceInputData(args: {
+    definitionId: string;
+    serviceUrl: string;
+    instanceId: string;
+    inputData: ProcessInstanceVariables;
+  }): Promise<boolean> {
+    const { definitionId, serviceUrl, instanceId, inputData } = args;
+    try {
+      const urlToFetch = `${serviceUrl}/${definitionId}/${instanceId}`;
+      const response = await fetch(urlToFetch, {
+        method: 'PATCH',
+        body: JSON.stringify(inputData),
+        headers: { 'content-type': 'application/json' },
+      });
+      return response.ok;
+    } catch (error) {
+      this.logger.error(`Error when updating instance input data: ${error}`);
     }
     return false;
   }
