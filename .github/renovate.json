@@ -7,7 +7,8 @@
     "group:linters",
     "group:test",
     ":preserveSemverRanges",
-    ":pinOnlyDevDependencies"
+    ":pinOnlyDevDependencies",
+    "helpers:pinGitHubActionDigests"
   ],
   "labels": ["kind/dependency upgrade"],
   "baseBranches": [
@@ -19,8 +20,15 @@
   },
   "packageRules": [
     {
+      "description": "Do automerge and pin actions in GH workflows, except for versions starting with 0",
+      "enabled": "true",
       "matchManagers": ["github-actions"],
-      "groupName": "GitHub Actions"
+      "matchCurrentVersion": "!/^0/",
+      "groupName": "GitHub Actions",
+      "matchUpdateTypes": [
+        "minor","patch"
+      ],
+      "automerge": true
     },
     {
       "matchDepTypes": ["devDependencies"],
