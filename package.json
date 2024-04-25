@@ -7,7 +7,7 @@
   },
   "scripts": {
     "preinstall": "npx only-allow yarn",
-    "start:backstage": "turbo run start:backstage",
+    "start:backend": "turbo run start --filter=backend",
     "start:plugins": "turbo run start --filter=@janus-idp/*",
     "start:storybook": "yarn --cwd packages/storybook start",
     "build": "turbo run build",
@@ -17,6 +17,7 @@
     "tsc": "turbo run tsc",
     "clean": "turbo run clean",
     "test": "turbo run test",
+    "test:ui": "turbo run test:ui --concurrency 1",
     "lint": "turbo run lint",
     "lint:fix": "turbo run lint -- --fix",
     "lint-staged": "lint-staged",
