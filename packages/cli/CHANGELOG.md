@@ -1,3 +1,11 @@
+## @janus-idp/cli [1.8.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.8.0...@janus-idp/cli@1.8.1) (2024-04-25)
+
+
+### Bug Fixes
+
+* **cli:** fix entrypoint validation when running with `npx` on some packages with `alpha` API. ([#1545](https://github.com/janus-idp/backstage-plugins/issues/1545)) ([3d9781c](https://github.com/janus-idp/backstage-plugins/commit/3d9781cbf48cbd11a576d54afa225b95b2ad5726))
+* **deps:** update dependency bfj to v8 ([#1463](https://github.com/janus-idp/backstage-plugins/issues/1463)) ([01d9360](https://github.com/janus-idp/backstage-plugins/commit/01d9360e08e0d22fd34a6df304eca60cae908a9e))
+
 ## @janus-idp/cli [1.8.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.7.10...@janus-idp/cli@1.8.0) (2024-04-15)
 
 
