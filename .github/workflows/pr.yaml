@@ -4,8 +4,11 @@ on: pull_request
 
 jobs:
   test:
-    name: Test
+    name: Test with Node.js ${{ matrix.node-version }}
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18, 20]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -16,10 +19,14 @@ jobs:
         uses: ./.github/actions/test
         with:
           args: '[HEAD^1]'
+          node-version: ${{ matrix.node-version }}
 
   build:
-    name: Build all packages
+    name: Build all packages with Node.js ${{ matrix.node-version }}
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18, 20]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
