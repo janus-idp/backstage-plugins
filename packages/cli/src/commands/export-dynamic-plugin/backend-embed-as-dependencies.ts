@@ -161,6 +161,16 @@ export async function backend(opts: OptionValues): Promise<string> {
       fs.rmSync(embeddedDestDir, { force: true, recursive: true });
       fs.cpSync(embedded.dir, embeddedDestDir, { recursive: true });
     }
+
+    // Remove the `node_modules` sub-folder of the embedded package,
+    // if it has been copied (in the case typical case of wrappers).
+    if (fs.pathExistsSync(path.join(embeddedDestDir, 'node_modules'))) {
+      fs.rmSync(path.join(embeddedDestDir, 'node_modules'), {
+        force: true,
+        recursive: true,
+      });
+    }
+
     Task.log(
       `Customizing embedded package ${chalk.cyan(
         embedded.packageName,
@@ -215,7 +225,7 @@ export async function backend(opts: OptionValues): Promise<string> {
     targetDir: target,
   });
 
-  // Small cleanup in case the `dist-dynamic` entr was still in the `files` of the main plugin package.
+  // Small cleanup in case the `dist-dynamic` entry was still in the `files` of the main plugin package.
   if (fs.pathExistsSync(path.join(target, 'dist-dynamic'))) {
     fs.rmSync(path.join(target, 'dist-dynamic'), {
       force: true,
@@ -770,24 +780,20 @@ function isPackageShared(
 function validatePluginEntryPoints(target: string): string {
   const dynamicPluginRequire = createRequire(`${target}/package.json`);
 
-  // require plugin main module
-
-  let pluginModule: any | undefined;
-  let needsTypeScriptSupport: boolean = false;
-  try {
-    pluginModule = dynamicPluginRequire(target);
-  } catch (e) {
-    if (
-      e?.name === SyntaxError.name &&
-      !dynamicPluginRequire.extensions['.ts']
-    ) {
-      needsTypeScriptSupport = true;
-    } else {
-      return `Unable to validate plugin entry points: ${e}`;
+  function requireModule(modulePath: string): any {
+    try {
+      return dynamicPluginRequire(modulePath);
+    } catch (e) {
+      // Retry only if we failed with SyntaxError because the `ts` require extension was not there.
+      // Else we should throw.
+      if (
+        e?.name !== SyntaxError.name ||
+        dynamicPluginRequire.extensions['.ts'] !== undefined
+      ) {
+        throw e;
+      }
     }
-  }
 
-  if (needsTypeScriptSupport) {
     Task.log(
       `  adding typescript extension support to enable entry point validation`,
     );
@@ -809,35 +815,31 @@ function validatePluginEntryPoints(target: string): string {
     }
 
     // Retry requiring the plugin main module after adding typescript extensions
-    try {
-      pluginModule = dynamicPluginRequire(target);
-    } catch (e) {
-      return `Unable to validate plugin entry points: ${e}`;
-    }
+    return dynamicPluginRequire(modulePath);
   }
 
-  let pluginAlphaModule: any | undefined;
-  const alphaPackage = path.resolve(target, 'alpha');
-  if (fs.pathExistsSync(alphaPackage)) {
-    try {
-      pluginAlphaModule = dynamicPluginRequire(alphaPackage);
-    } catch (e) {
-      return `Unable to validate plugin entry points: ${e}`;
-    }
-  }
+  try {
+    const pluginModule = requireModule(target);
+    const alphaPackage = path.resolve(target, 'alpha');
+    const pluginAlphaModule = fs.pathExistsSync(alphaPackage)
+      ? requireModule(alphaPackage)
+      : undefined;
 
-  if (
-    ![pluginAlphaModule, pluginModule]
-      .filter(m => m !== undefined)
-      .some(isValidPluginModule)
-  ) {
-    return `Backend plugin is not valid for dynamic loading: it should either export a ${chalk.cyan(
-      'BackendFeature',
-    )} or ${chalk.cyan(
-      'BackendFeatureFactory',
-    )} as default export, or export a ${chalk.cyan(
-      'const dynamicPluginInstaller: BackendDynamicPluginInstaller',
-    )} field as dynamic loading entrypoint`;
+    if (
+      ![pluginAlphaModule, pluginModule]
+        .filter(m => m !== undefined)
+        .some(isValidPluginModule)
+    ) {
+      return `Backend plugin is not valid for dynamic loading: it should either export a ${chalk.cyan(
+        'BackendFeature',
+      )} or ${chalk.cyan(
+        'BackendFeatureFactory',
+      )} as default export, or export a ${chalk.cyan(
+        'const dynamicPluginInstaller: BackendDynamicPluginInstaller',
+      )} field as dynamic loading entrypoint`;
+    }
+  } catch (e) {
+    return `Unable to validate plugin entry points: ${e}`;
   }
 
   return '';
