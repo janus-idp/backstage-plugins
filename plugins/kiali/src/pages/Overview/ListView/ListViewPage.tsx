@@ -4,7 +4,6 @@ import { CardTab, TabbedCard } from '@backstage/core-components';
 
 import { ENTITY } from '../../../types/types';
 import { AppListPage } from '../../AppList/AppListPage';
-import { IstioConfigListPage } from '../../IstioConfigList/IstioConfigListPage';
 import { ServiceListPage } from '../../ServiceList/ServiceListPage';
 import { WorkloadListPage } from '../../WorkloadList/WorkloadListPage';
 
@@ -34,11 +33,6 @@ export const ListViewPage = () => {
         <CardTab label="Applications">
           <div style={tabStyle}>
             <AppListPage view={ENTITY} />
-          </div>
-        </CardTab>
-        <CardTab label="Istio Config">
-          <div style={tabStyle}>
-            <IstioConfigListPage view={ENTITY} />
           </div>
         </CardTab>
       </TabbedCard>
