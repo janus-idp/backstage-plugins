@@ -11,31 +11,26 @@
     "helpers:pinGitHubActionDigests"
   ],
   "labels": ["kind/dependency upgrade"],
-  "baseBranches": [
-    "main",
-    "/^1\\..*\\.x/"
-  ],
+  "baseBranches": ["main", "/^1\\..*\\.x/"],
   "npm": {
     "minimumReleaseAge": "1 day"
   },
   "packageRules": [
     {
       "description": "Do automerge and pin actions in GH workflows, except for versions starting with 0",
-      "enabled": "true",
+      "enabled": true,
       "matchManagers": ["github-actions"],
       "matchCurrentVersion": "!/^0/",
       "groupName": "GitHub Actions",
-      "matchUpdateTypes": [
-        "minor","patch"
-      ],
+      "matchUpdateTypes": ["minor", "patch"],
       "automerge": true
     },
     {
       "matchDepTypes": ["devDependencies"],
       "matchUpdateTypes": ["patch", "minor"],
-      "groupName": ["DevDependencies (non-major)"],
+      "groupName": "DevDependencies (non-major)",
       "automerge": true
-    },    
+    },
     {
       "matchPackagePatterns": ["^@backstage/"],
       "groupName": "Core Backstage packages"
@@ -49,25 +44,25 @@
       "groupName": "semantic-release monorepo"
     },
     {
-      "description": "disable updates to the keycloak admin client - see https://github.com/janus-idp/backstage-plugins/issues/47 https://github.com/janus-idp/backstage-plugins/issues/1046", 
-      "enabled": "false",
+      "description": "disable updates to the keycloak admin client - see https://github.com/janus-idp/backstage-plugins/issues/47 https://github.com/janus-idp/backstage-plugins/issues/1046",
+      "enabled": false,
       "matchDatasources": ["npm"],
       "matchPackageNames": ["@keycloak/keycloak-admin-client"],
       "groupName": "Keycloak dependency"
     },
     {
-      "description": "ignore updates to the axios to version that keycloak 18 needs", 
-      "enabled": "false",
+      "description": "ignore updates to the axios to version that keycloak 18 needs",
+      "enabled": false,
       "matchDatasources": ["npm"],
       "matchPackageNames": ["axios"],
       "matchCurrentVersion": "0.26.1",
       "groupName": "Keycloak dependency"
-    }    
+    }
   ],
   "ignorePaths": ["**/dist-dynamic/**"],
   "vulnerabilityAlerts": {
     "enabled": true,
     "addLabels": ["kind/security"]
   },
-  "osvVulnerabilityAlerts": true  
+  "osvVulnerabilityAlerts": true
 }
