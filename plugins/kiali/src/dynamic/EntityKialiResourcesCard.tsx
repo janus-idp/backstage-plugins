@@ -13,6 +13,7 @@ import { Box } from '@material-ui/core';
 import { AppListPage } from '../pages/AppList/AppListPage';
 import { ServiceListPage } from '../pages/ServiceList/ServiceListPage';
 import { WorkloadListPage } from '../pages/WorkloadList/WorkloadListPage';
+import { DRAWER } from '../types/types';
 
 const tabStyle: React.CSSProperties = {
   overflowY: 'scroll',

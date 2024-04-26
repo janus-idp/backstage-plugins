@@ -2,7 +2,17 @@ import * as React from 'react';
 
 import { Link } from '@backstage/core-components';
 
-import { Chip, TableCell, Tooltip } from '@material-ui/core';
+import {
+  Button,
+  Chip,
+  Drawer,
+  IconButton,
+  TableCell,
+  Tooltip,
+  Typography,
+} from '@material-ui/core';
+// eslint-disable-next-line no-restricted-imports
+import { Close } from '@material-ui/icons';
 
 import { KialiIcon, serverConfig } from '../../config';
 import { isWaypoint } from '../../helpers/LabelFilterHelper';
@@ -15,7 +25,7 @@ import { ValidationStatus } from '../../types/IstioObjects';
 import { ComponentStatus } from '../../types/IstioStatus';
 import { NamespaceInfo } from '../../types/NamespaceInfo';
 import { ServiceListItem } from '../../types/ServiceList';
-import { ENTITY } from '../../types/types';
+import { DRAWER, ENTITY } from '../../types/types';
 import { WorkloadListItem } from '../../types/Workload';
 import { getReconciliationCondition } from '../../utils/IstioConfigUtils';
 import { JanusObjectLink } from '../../utils/janusLinks';
@@ -78,6 +88,63 @@ export const item: Renderer<TResource> = (
     }
   }
 
+  if (view === DRAWER) {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const [isOpen, toggleDrawer] = React.useState(false);
+    const DrawerContent = ({
+      toggleDrawer2,
+    }: {
+      toggleDrawer2: (isOpen: boolean) => void;
+    }) => {
+      return (
+        <div style={{ padding: '10px', minWidth: '400px' }}>
+          <div style={{ paddingBottom: '10px' }}>
+            <Typography variant="h5" style={{ display: 'inline' }}>
+              {resource.name}
+            </Typography>
+            <IconButton
+              key="dismiss"
+              title="Close the drawer"
+              onClick={() => toggleDrawer2(false)}
+              color="inherit"
+              style={{ right: '0', position: 'absolute', top: '5px' }}
+            >
+              <Close />
+            </IconButton>
+          </div>
+          <div />
+          <div>
+            {resource.namespace}
+            <br />
+            {resource.name}
+          </div>
+        </div>
+      );
+    };
+
+    return (
+      <TableCell
+        role="gridcell"
+        key={`VirtuaItem_Item_${resource.namespace}_${resource.name}`}
+        style={{ verticalAlign: 'middle', whiteSpace: 'nowrap' }}
+      >
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => toggleDrawer(true)}
+        >
+          {resource.name}
+        </Button>
+        <Drawer
+          anchor="right"
+          open={isOpen}
+          onClose={() => toggleDrawer(false)}
+        >
+          <DrawerContent toggleDrawer2={toggleDrawer} />
+        </Drawer>
+      </TableCell>
+    );
+  }
   return (
     <TableCell
       role="gridcell"
