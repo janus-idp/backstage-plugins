@@ -69,9 +69,9 @@
     "vscode-languageserver-types": "^3.16.0"
   },
   "devDependencies": {
-    "@backstage/cli": "0.26.2",
-    "@backstage/dev-utils": "1.0.30",
-    "@backstage/test-utils": "1.5.3",
+    "@backstage/cli": "0.26.4",
+    "@backstage/dev-utils": "1.0.31",
+    "@backstage/test-utils": "1.5.4",
     "@janus-idp/cli": "1.8.1",
     "@storybook/react": "7.5.3",
     "@testing-library/react": "14.2.1",
