@@ -29,6 +29,9 @@ import { DRAWER, ENTITY } from '../../types/types';
 import { WorkloadListItem } from '../../types/Workload';
 import { getReconciliationCondition } from '../../utils/IstioConfigUtils';
 import { JanusObjectLink } from '../../utils/janusLinks';
+import { AppDetailsDrawer } from '../Drawers/AppDetailsDrawer';
+import { ServiceDetailsDrawer } from '../Drawers/ServiceDetailsDrawer';
+import { WorkloadDetailsDrawer } from '../Drawers/WorkloadDetailsDrawer';
 import { StatefulFilters } from '../Filters/StatefulFilters';
 import { HealthIndicator } from '../Health/HealthIndicator';
 import { NamespaceMTLSStatus } from '../MTls/NamespaceMTLSStatus';
@@ -100,7 +103,7 @@ export const item: Renderer<TResource> = (
         <div style={{ padding: '10px', minWidth: '400px' }}>
           <div style={{ paddingBottom: '10px' }}>
             <Typography variant="h5" style={{ display: 'inline' }}>
-              {resource.name}
+              {config.name} details
             </Typography>
             <IconButton
               key="dismiss"
@@ -114,9 +117,24 @@ export const item: Renderer<TResource> = (
           </div>
           <div />
           <div>
-            {resource.namespace}
-            <br />
-            {resource.name}
+            {config.name === 'workloads' && (
+              <WorkloadDetailsDrawer
+                namespace={resource.namespace}
+                workload={resource.name}
+              />
+            )}
+            {config.name === 'services' && (
+              <ServiceDetailsDrawer
+                namespace={resource.namespace}
+                service={resource.name}
+              />
+            )}
+            {config.name === 'applications' && (
+              <AppDetailsDrawer
+                namespace={resource.namespace}
+                app={resource.name}
+              />
+            )}
           </div>
         </div>
       );

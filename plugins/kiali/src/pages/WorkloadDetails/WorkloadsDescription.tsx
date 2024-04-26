@@ -46,17 +46,17 @@ const resourceListStyle = kialiStyle({
   },
 });
 
-const iconStyle = kialiStyle({
+export const iconStyle = kialiStyle({
   display: 'inline-block',
 });
 
-const infoStyle = kialiStyle({
+export const infoStyle = kialiStyle({
   marginLeft: '0.5rem',
   verticalAlign: '-0.125rem',
   display: 'inline-block',
 });
 
-const healthIconStyle = kialiStyle({
+export const healthIconStyle = kialiStyle({
   marginLeft: '0.5rem',
   verticalAlign: '-0.075rem',
 });
