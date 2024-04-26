@@ -54,7 +54,7 @@ jobs:
 
       - name: Checkout from master
         if: steps.get_checkout_ref.outputs.GIT_REF == 'master'
-        uses: actions/checkout@v4
+        uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4
         with:
           repository: backstage/backstage
           ref: master
@@ -64,7 +64,7 @@ jobs:
 
       - name: Checkout from a git ref
         if: steps.get_checkout_ref.outputs.GIT_REF != 'master'
-        uses: actions/checkout@v4
+        uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4
         with:
           repository: backstage/backstage
           ref: '${{ steps.get_checkout_ref.outputs.GIT_REF }}'
@@ -91,7 +91,7 @@ jobs:
           echo "GH Output: " && cat $GITHUB_OUTPUT
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4
         if: steps.test_commit_already_published.outputs.ALREADY_PUSHED == 'false'
         env:
           FORCE_COLOR: 0
