@@ -3291,10 +3291,10 @@
     "@material-ui/core" "^4.12.2"
     "@material-ui/icons" "^4.9.1"
 
-"@backstage/backend-app-api@0.7.0", "@backstage/backend-app-api@^0.7.0":
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/@backstage/backend-app-api/-/backend-app-api-0.7.0.tgz#d1283424e76d7f02ac1572032709d1d61b8b5e23"
-  integrity sha512-ipi9Kk96Gc9xrbdCOnvtjZaZ1OsPNFvi4RFdXSa9+d0PmNlu/xBuzi2I1iQSUry9c9+SItgr3hel9aU+Rl4gQA==
+"@backstage/backend-app-api@0.7.1", "@backstage/backend-app-api@^0.7.0", "@backstage/backend-app-api@^0.7.1":
+  version "0.7.1"
+  resolved "https://registry.yarnpkg.com/@backstage/backend-app-api/-/backend-app-api-0.7.1.tgz#0a58efae4f792bf1721e0601cf66a66a27f08fd2"
+  integrity sha512-Yrm+GtqV3+b3MC9+Ogc6BImWpme8ykPjz1Rh70BJEp0G3Oc+x4dO6ia32V8kThDInbw5BZA7nhfSA8Z6Od0VvQ==
   dependencies:
     "@backstage/backend-common" "^0.21.7"
     "@backstage/backend-plugin-api" "^0.6.17"
@@ -3731,10 +3731,10 @@
     "@backstage/version-bridge" "^1.0.8"
     "@types/react" "^16.13.1 || ^17.0.0"
 
-"@backstage/core-components@0.14.4", "@backstage/core-components@^0.14.4":
-  version "0.14.4"
-  resolved "https://registry.yarnpkg.com/@backstage/core-components/-/core-components-0.14.4.tgz#96867e77898327a4bc12a671597d0ca481d4d227"
-  integrity sha512-yPsLtXI37Ar4bcmtL1VHxlR8GZAhRiXKor+25zuu6stArkVirIJvH4CdS0S2eMQZ9HEFnzo1O+QzeKGxsm7PKw==
+"@backstage/core-components@0.14.5", "@backstage/core-components@^0.14.4", "@backstage/core-components@^0.14.5":
+  version "0.14.5"
+  resolved "https://registry.yarnpkg.com/@backstage/core-components/-/core-components-0.14.5.tgz#5fc4fe6041058b8ee750409fbe1d218b6380a061"
+  integrity sha512-r0N/UH0CBl0PmPy3aCfACPNAl7N8s6ggyCm2r1OAOjJQDZ8PLza00AAmNe35EjXkfMOS7upeRCEe9N9tXuZ6IA==
   dependencies:
     "@backstage/config" "^1.2.0"
     "@backstage/core-plugin-api" "^1.9.2"
@@ -4198,11 +4198,11 @@
     zod-to-json-schema "^3.21.4"
 
 "@backstage/plugin-auth-react@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@backstage/plugin-auth-react/-/plugin-auth-react-0.1.0.tgz#a65015542b974730c3f69cb87fd96a155815f43f"
-  integrity sha512-uZkyjTZyeApSSwWYXA1u1fjLYJBC0nu0Dwc68P9+GzcwbYiQnCn11ULfT2LfeXiUtZzmJsEMKu8Y6DyHmTMc/w==
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@backstage/plugin-auth-react/-/plugin-auth-react-0.1.1.tgz#8307b83c6d1958c2a0c790bed5d9d9c3f6598670"
+  integrity sha512-abMsTCgAT9OpHtOeCTk7b9izpk8MygcR4bwfCLXrE1hogb1KakyHijfz8YVLNmQr41c/CRhXZX3zGNqAd0pybQ==
   dependencies:
-    "@backstage/core-components" "^0.14.4"
+    "@backstage/core-components" "^0.14.5"
     "@backstage/core-plugin-api" "^1.9.2"
     "@backstage/errors" "^1.2.4"
     "@material-ui/core" "^4.9.13"
@@ -4928,10 +4928,10 @@
     zod "^3.22.4"
     zod-to-json-schema "^3.20.4"
 
-"@backstage/plugin-search-backend-module-catalog@^0.1.22":
-  version "0.1.22"
-  resolved "https://registry.yarnpkg.com/@backstage/plugin-search-backend-module-catalog/-/plugin-search-backend-module-catalog-0.1.22.tgz#e955d26d1c3b28a2178e7d59fd12490462f8d2d8"
-  integrity sha512-e8FABQJPu+/yOrgfvA68TO9v6FEGpCQkNoOVNrpZIJMY6uEF+Edu/eYs4QGkqVz51CXHkAi4LkICb0Y112b+ZA==
+"@backstage/plugin-search-backend-module-catalog@^0.1.22", "@backstage/plugin-search-backend-module-catalog@^0.1.23":
+  version "0.1.23"
+  resolved "https://registry.yarnpkg.com/@backstage/plugin-search-backend-module-catalog/-/plugin-search-backend-module-catalog-0.1.23.tgz#bf763c535352d7f01797a7fa365f2add85c36a00"
+  integrity sha512-wpdqqDuosvGQZ2hB7HbSzoKJFYu9AsyIdGf2QsCFpaZBX3Igr0sgR1r5si1UZUUU2Apuy4dpfaKy/3n8QnjdjQ==
   dependencies:
     "@backstage/backend-common" "^0.21.7"
     "@backstage/backend-plugin-api" "^0.6.17"

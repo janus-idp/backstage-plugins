@@ -41,7 +41,7 @@
   "peerDependencies": {
     "@backstage/cli": "^0.26.4",
     "@backstage/core-app-api": "^1.12.4",
-    "@backstage/core-components": "^0.14.4",
+    "@backstage/core-components": "^0.14.5",
     "@backstage/core-plugin-api": "^1.9.2",
     "@backstage/test-utils": "^1.5.4",
     "@backstage/theme": "^0.5.3"

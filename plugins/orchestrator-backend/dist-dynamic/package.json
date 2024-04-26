@@ -57,7 +57,7 @@
   "devDependencies": {},
   "bundleDependencies": true,
   "peerDependencies": {
-    "@backstage/backend-app-api": "^0.7.0",
+    "@backstage/backend-app-api": "^0.7.1",
     "@backstage/backend-common": "^0.21.7",
     "@backstage/backend-dynamic-feature-service": "^0.2.9",
     "@backstage/backend-plugin-api": "^0.6.17",
