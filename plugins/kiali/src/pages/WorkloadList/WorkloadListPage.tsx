@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useRef } from 'react';
 import { useAsyncFn, useDebounce } from 'react-use';
 
+import { Entity } from '@backstage/catalog-model';
 import { Content } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
@@ -12,7 +13,7 @@ import * as FilterHelper from '../../components/FilterList/FilterHelper';
 import { TimeDurationComponent } from '../../components/Time/TimeDurationComponent';
 import { VirtualList } from '../../components/VirtualList/VirtualList';
 import { isMultiCluster } from '../../config';
-import { nsEqual } from '../../helpers/namespaces';
+import { getEntityNs, nsEqual } from '../../helpers/namespaces';
 import { getErrorString, kialiApiRef } from '../../services/Api';
 import { KialiAppState, KialiContext } from '../../store';
 import { baseStyle } from '../../styles/StyleUtils';
@@ -21,7 +22,7 @@ import { WorkloadListItem } from '../../types/Workload';
 import { NamespaceInfo } from '../Overview/NamespaceInfo';
 import { getNamespaces } from '../Overview/OverviewPage';
 
-export const WorkloadListPage = (props: { view?: string }) => {
+export const WorkloadListPage = (props: { view?: string; entity?: Entity }) => {
   const kialiClient = useApi(kialiApiRef);
   const [namespaces, setNamespaces] = React.useState<NamespaceInfo[]>([]);
   const [allWorkloads, setWorkloads] = React.useState<WorkloadListItem[]>([]);
@@ -29,7 +30,9 @@ export const WorkloadListPage = (props: { view?: string }) => {
     FilterHelper.currentDuration(),
   );
   const kialiState = React.useContext(KialiContext) as KialiAppState;
-  const activeNs = kialiState.namespaces.activeNamespaces.map(ns => ns.name);
+  const activeNs = props.entity
+    ? getEntityNs(props.entity)
+    : kialiState.namespaces.activeNamespaces.map(ns => ns.name);
   const prevActiveNs = useRef(activeNs);
   const prevDuration = useRef(duration);
   const [loadingData, setLoadingData] = React.useState<boolean>(true);
@@ -54,11 +57,11 @@ export const WorkloadListPage = (props: { view?: string }) => {
         });
         setWorkloads(wkList);
       })
-      .catch(err =>
-        kialiState.alertUtils!.add(
+      .catch(err => {
+        kialiState.alertUtils?.add(
           `Could not fetch workloads: ${getErrorString(err)}`,
-        ),
-      );
+        );
+      });
   };
 
   const load = async () => {
@@ -71,6 +74,7 @@ export const WorkloadListPage = (props: { view?: string }) => {
       setNamespaces(nsl);
       fetchWorkloads(nsl, duration);
     });
+
     // Add a delay so it doesn't look like a flash
     setTimeout(() => {
       setLoadingData(false);

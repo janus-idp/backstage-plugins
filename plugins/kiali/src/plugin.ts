@@ -1,5 +1,6 @@
 import {
   createApiFactory,
+  createComponentExtension,
   createPlugin,
   createRoutableExtension,
   discoveryApiRef,
@@ -40,6 +41,17 @@ export const KialiPage = kialiPlugin.provide(
   }),
 );
 
+export const EntityKialiResourcesCard = kialiPlugin.provide(
+  createComponentExtension({
+    name: 'EntityKialiResourcesCard',
+    component: {
+      lazy: () =>
+        import('./dynamic/EntityKialiResourcesCard').then(
+          m => m.EntityKialiResourcesCard,
+        ),
+    },
+  }),
+);
 /**
  * Props of EntityExampleComponent
  *
