@@ -37,11 +37,12 @@
       "automerge": true
     },    
     {
-      "matchPackagePatterns": ["^@backstage/"],
-      "groupName": "Core Backstage packages"
+      "matchDepPatterns": ["^@backstage/"],
+      "groupName": "Core Backstage packages",
+      "enabled": "false"
     },
     {
-      "matchPackagePatterns": [
+      "matchDepPatterns": [
         "^@semantic-release/",
         "^@semrel-extra/",
         "^multi-semantic-release$"
