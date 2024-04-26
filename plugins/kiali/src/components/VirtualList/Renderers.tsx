@@ -142,7 +142,6 @@ export const item: Renderer<TResource> = (
 
     return (
       <TableCell
-        role="gridcell"
         key={`VirtuaItem_Item_${resource.namespace}_${resource.name}`}
         style={{ verticalAlign: 'middle', whiteSpace: 'nowrap' }}
       >
@@ -165,7 +164,6 @@ export const item: Renderer<TResource> = (
   }
   return (
     <TableCell
-      role="gridcell"
       key={`VirtuaItem_Item_${resource.namespace}_${resource.name}`}
       style={{ verticalAlign: 'middle', whiteSpace: 'nowrap' }}
     >

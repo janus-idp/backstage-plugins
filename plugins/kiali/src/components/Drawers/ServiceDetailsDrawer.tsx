@@ -8,12 +8,7 @@ import { CircularProgress } from '@material-ui/core';
 import { HistoryManager } from '../../app/History';
 import { ServiceInfo } from '../../pages/ServiceDetails/ServiceInfo';
 import { kialiApiRef } from '../../services/Api';
-import {
-  Gateway,
-  K8sGateway,
-  PeerAuthentication,
-  Validations,
-} from '../../types/IstioObjects';
+import { Validations } from '../../types/IstioObjects';
 import { ServiceDetailsInfo } from '../../types/ServiceInfo';
 import { ENTITY } from '../../types/types';
 
@@ -25,41 +20,7 @@ export const ServiceDetailsDrawer = (props: Props) => {
   const kialiClient = useApi(kialiApiRef);
   const [serviceItem, setServiceItem] = React.useState<ServiceDetailsInfo>();
   const cluster = HistoryManager.getClusterName();
-  const [validations, setValidations] = React.useState<Validations>();
-  const [gateways, setGateways] = React.useState<Gateway[]>([]);
-  const [k8sGateways, setK8sGateways] = React.useState<K8sGateway[]>([]);
-  const [peerAuthentication, setPeerAuthentication] = React.useState<
-    PeerAuthentication[]
-  >([]);
-
-  const fetchIstioObjects = async () => {
-    kialiClient
-      .getAllIstioConfigs(
-        [props.namespace],
-        ['gateways', 'k8sgateways', 'peerauthentications'],
-        false,
-        '',
-        '',
-        cluster,
-      )
-      .then(response => {
-        const gws: Gateway[] = [];
-        const k8sGws: K8sGateway[] = [];
-        const peer: PeerAuthentication[] = [];
-        Object.values(response.data).forEach(item => {
-          gws.push(...item.gateways);
-          k8sGws.push(...item.k8sGateways);
-          peer.push(...item.peerAuthentication);
-        });
-        setGateways(gws);
-        setK8sGateways(k8sGws);
-        setPeerAuthentication(peer);
-      })
-      .catch(gwError => {
-        // eslint-disable-next-line no-console
-        console.error(gwError);
-      });
-  };
+  const [validations, setValidations] = React.useState<Validations>({});
 
   const fetchService = async () => {
     kialiClient
@@ -67,7 +28,6 @@ export const ServiceDetailsDrawer = (props: Props) => {
       .then((serviceResponse: ServiceDetailsInfo) => {
         setServiceItem(serviceResponse);
         setValidations(serviceResponse.validations);
-        fetchIstioObjects();
       })
       .catch(err => {
         // eslint-disable-next-line no-console
@@ -96,12 +56,12 @@ export const ServiceDetailsDrawer = (props: Props) => {
           service={props.service}
           duration={60}
           namespace={props.namespace}
-          validations={validations ? validations : {}}
+          validations={validations}
           cluster={cluster}
           serviceDetails={serviceItem}
-          gateways={gateways}
-          k8sGateways={k8sGateways}
-          peerAuthentications={peerAuthentication}
+          gateways={[]}
+          k8sGateways={[]}
+          peerAuthentications={[]}
           istioAPIEnabled
           view={ENTITY}
         />
