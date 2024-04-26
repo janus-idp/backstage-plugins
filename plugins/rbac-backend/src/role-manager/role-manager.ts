@@ -1,6 +1,7 @@
 import { TokenManager } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import { parseEntityRef } from '@backstage/catalog-model';
+import { Config } from '@backstage/config';
 
 import { RoleManager } from 'casbin';
 import { Knex } from 'knex';
@@ -11,13 +12,22 @@ import { RoleList } from './role-list';
 
 export class BackstageRoleManager implements RoleManager {
   private allRoles: Map<string, RoleList>;
+  private maxDepth?: number;
   constructor(
     private readonly catalogApi: CatalogApi,
     private readonly log: Logger,
     private readonly tokenManager: TokenManager,
     private readonly catalogDBClient: Knex,
+    private readonly config: Config,
   ) {
     this.allRoles = new Map<string, RoleList>();
+    const rbacConfig = this.config.getOptionalConfig('permission.rbac');
+    this.maxDepth = rbacConfig?.getOptionalNumber('maxDepth');
+    if (this.maxDepth !== undefined && this.maxDepth! <= 0) {
+      throw new Error(
+        'Max Depth for RBAC group hierarchy must be greater than zero',
+      );
+    }
   }
 
   /**
@@ -99,6 +109,7 @@ export class BackstageRoleManager implements RoleManager {
       this.tokenManager,
       this.catalogApi,
       this.catalogDBClient,
+      this.maxDepth,
     );
     await memo.buildUserGraph(memo);
 
@@ -175,6 +186,7 @@ export class BackstageRoleManager implements RoleManager {
         this.tokenManager,
         this.catalogApi,
         this.catalogDBClient,
+        this.maxDepth,
       );
       await memo.getAllGroups();
       await memo.buildUserGraph(memo);

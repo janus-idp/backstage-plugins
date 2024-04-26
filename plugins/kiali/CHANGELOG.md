@@ -1,3 +1,16 @@
+## @janus-idp/backstage-plugin-kiali [1.16.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.16.4...@janus-idp/backstage-plugin-kiali@1.16.5) (2024-04-25)
+
+
+### Bug Fixes
+
+* **kiali:** update load for overview page ([#1491](https://github.com/janus-idp/backstage-plugins/issues/1491)) ([8de16e2](https://github.com/janus-idp/backstage-plugins/commit/8de16e2f08f2f02ad8001a21d7ec0511ba965a86))
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.8.1
+
 ## @janus-idp/backstage-plugin-kiali [1.16.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.16.3...@janus-idp/backstage-plugin-kiali@1.16.4) (2024-04-15)
 
 

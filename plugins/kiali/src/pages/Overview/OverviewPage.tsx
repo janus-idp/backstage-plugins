@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 
 import { CardTab, Content, TabbedCard } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
@@ -8,6 +8,7 @@ import _ from 'lodash';
 
 import * as FilterHelper from '../../components/FilterList/FilterHelper';
 import { isMultiCluster, serverConfig } from '../../config';
+import { nsEqual } from '../../helpers/namespaces';
 import { getErrorString, kialiApiRef } from '../../services/Api';
 import { computePrometheusRateParams } from '../../services/Prometheus';
 import { KialiAppState, KialiContext } from '../../store';
@@ -69,6 +70,10 @@ export const getNamespaces = (
 export const OverviewPage = (props: { entity?: boolean }) => {
   const kialiClient = useApi(kialiApiRef);
   const kialiState = React.useContext(KialiContext) as KialiAppState;
+  const activeNsName = kialiState.namespaces.activeNamespaces.map(
+    ns => ns.name,
+  );
+  const prevActiveNs = useRef(activeNsName);
   const promises = new PromisesRegistry();
   const [namespaces, setNamespaces] = React.useState<NamespaceInfo[]>([]);
   const [outboundTrafficPolicy, setOutboundTrafficPolicy] =
@@ -87,6 +92,7 @@ export const OverviewPage = (props: { entity?: boolean }) => {
   const [directionType, setDirectionType] = React.useState<DirectionType>(
     currentDirectionType(),
   );
+  const [activeNs, setActiveNs] = React.useState<NamespaceInfo[]>([]);
 
   const sortedNamespaces = (nss: NamespaceInfo[]) => {
     nss.sort((a, b) => {
@@ -340,7 +346,7 @@ export const OverviewPage = (props: { entity?: boolean }) => {
     });
   };
 
-  const fetchMetricsChunk = (chunk: NamespaceInfo[]) => {
+  const fetchMetricsChunk = async (chunk: NamespaceInfo[]) => {
     const rateParams = computePrometheusRateParams(duration, 10);
     const options: IstioMetricsOptions = {
       filters: ['request_count', 'request_error_count'],
@@ -379,20 +385,22 @@ export const OverviewPage = (props: { entity?: boolean }) => {
     );
   };
 
-  const fetchMetrics = (nss: NamespaceInfo[]) => {
+  const filterActiveNamespaces = (nss: NamespaceInfo[]) => {
+    return nss.filter(ns => activeNsName.includes(ns.name));
+  };
+
+  const fetchMetrics = async (nss: NamespaceInfo[]) => {
     // debounce async for back-pressure, ten by ten
     _.chunk(nss, 10).forEach(chunk => {
       promises
         .registerChained('metricschunks', undefined, () =>
           fetchMetricsChunk(chunk),
         )
-        .then(() => nss.slice());
+        .then(() => {
+          nss.slice();
+          setActiveNs(filterActiveNamespaces(nss));
+        });
     });
-  };
-
-  const filterActiveNamespaces = () => {
-    const activeNs = kialiState.namespaces.activeNamespaces.map(ns => ns.name);
-    return namespaces.filter(ns => activeNs.includes(ns.name));
   };
 
   const load = async () => {
@@ -421,6 +429,14 @@ export const OverviewPage = (props: { entity?: boolean }) => {
   };
 
   React.useEffect(() => {
+    if (!nsEqual(activeNsName, prevActiveNs.current)) {
+      prevActiveNs.current = activeNsName;
+      load();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeNsName]);
+
+  React.useEffect(() => {
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [duration, overviewType, directionType]);
@@ -434,7 +450,7 @@ export const OverviewPage = (props: { entity?: boolean }) => {
       {props.entity ? (
         <div style={{ marginBottom: '20px' }}>
           <TabbedCard title="Overview">
-            {filterActiveNamespaces().map(ns => (
+            {activeNs.map(ns => (
               <CardTab label={ns.name} key={`card_ns_${ns.name}`}>
                 <OverviewCard
                   entity
@@ -470,7 +486,7 @@ export const OverviewPage = (props: { entity?: boolean }) => {
               setDuration={setDuration}
             />
             <Grid container spacing={2}>
-              {filterActiveNamespaces().map((ns, i) => (
+              {activeNs.map((ns, i) => (
                 <Grid
                   key={`Card_${ns.name}_${i}`}
                   item

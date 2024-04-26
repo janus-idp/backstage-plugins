@@ -7,17 +7,35 @@
     "group:linters",
     "group:test",
     ":preserveSemverRanges",
-    ":pinOnlyDevDependencies"
+    ":pinOnlyDevDependencies",
+    "helpers:pinGitHubActionDigests"
   ],
   "labels": ["kind/dependency upgrade"],
+  "baseBranches": [
+    "main",
+    "/^1\\..*\\.x/"
+  ],
   "npm": {
     "minimumReleaseAge": "1 day"
   },
   "packageRules": [
     {
+      "description": "Do automerge and pin actions in GH workflows, except for versions starting with 0",
+      "enabled": "true",
       "matchManagers": ["github-actions"],
-      "groupName": "GitHub Actions"
+      "matchCurrentVersion": "!/^0/",
+      "groupName": "GitHub Actions",
+      "matchUpdateTypes": [
+        "minor","patch"
+      ],
+      "automerge": true
     },
+    {
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["patch", "minor"],
+      "groupName": ["DevDependencies (non-major)"],
+      "automerge": true
+    },    
     {
       "matchPackagePatterns": ["^@backstage/"],
       "groupName": "Core Backstage packages"
@@ -29,8 +47,27 @@
         "^multi-semantic-release$"
       ],
       "groupName": "semantic-release monorepo"
-    }
+    },
+    {
+      "description": "disable updates to the keycloak admin client - see https://github.com/janus-idp/backstage-plugins/issues/47 https://github.com/janus-idp/backstage-plugins/issues/1046", 
+      "enabled": "false",
+      "matchDatasources": ["npm"],
+      "matchPackageNames": ["@keycloak/keycloak-admin-client"],
+      "groupName": "Keycloak dependency"
+    },
+    {
+      "description": "ignore updates to the axios to version that keycloak 18 needs", 
+      "enabled": "false",
+      "matchDatasources": ["npm"],
+      "matchPackageNames": ["axios"],
+      "matchCurrentVersion": "0.26.1",
+      "groupName": "Keycloak dependency"
+    }    
   ],
   "ignorePaths": ["**/dist-dynamic/**"],
-  "ignoreDeps": ["@roadiehq/backstage-plugin-argo-cd"]
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "addLabels": ["kind/security"]
+  },
+  "osvVulnerabilityAlerts": true  
 }

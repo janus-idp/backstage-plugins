@@ -141,11 +141,28 @@ export class OrchestratorClient implements OrchestratorApi {
   }
 
   async getWorkflowOverview(workflowId: string): Promise<WorkflowOverview> {
-    const baseUrl = await this.discoveryApi.getBaseUrl('orchestrator');
+    const baseUrl = await this.getBaseUrl();
     const res = await fetch(`${baseUrl}/workflows/${workflowId}/overview`);
     if (!res.ok) {
       throw await ResponseError.fromResponse(res);
     }
     return res.json();
+  }
+
+  async retriggerInstanceInError(args: {
+    instanceId: string;
+    inputData: JsonObject;
+  }): Promise<WorkflowExecutionResponse> {
+    const baseUrl = await this.getBaseUrl();
+    const urlToFetch = `${baseUrl}/instances/${args.instanceId}/retrigger`;
+    const response = await fetch(urlToFetch, {
+      method: 'POST',
+      body: JSON.stringify(args.inputData),
+      headers: { 'content-type': 'application/json' },
+    });
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+    return response.json();
   }
 }

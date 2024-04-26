@@ -29,6 +29,7 @@ export const IstioConfigListPage = (props: {
   );
   const activeNs = kialiState.namespaces.activeNamespaces.map(ns => ns.name);
   const prevActiveNs = React.useRef(activeNs);
+  const [loadingD, setLoading] = React.useState<boolean>(true);
 
   const fetchIstioConfigs = async (nss: NamespaceInfo[]): Promise<void> => {
     return kialiClient
@@ -62,6 +63,9 @@ export const IstioConfigListPage = (props: {
       setNamespaces(nsl);
       fetchIstioConfigs(nsl);
     });
+    setTimeout(() => {
+      setLoading(false);
+    }, 400);
   };
 
   const [{ loading }, refresh] = useAsyncFn(
@@ -76,6 +80,7 @@ export const IstioConfigListPage = (props: {
 
   React.useEffect(() => {
     if (!nsEqual(activeNs, prevActiveNs.current)) {
+      setLoading(true);
       load();
       prevActiveNs.current = activeNs;
     }
@@ -100,6 +105,7 @@ export const IstioConfigListPage = (props: {
           type="istio"
           hiddenColumns={hiddenColumns}
           view={props.view}
+          loading={loadingD}
         />
       </Content>
     </div>

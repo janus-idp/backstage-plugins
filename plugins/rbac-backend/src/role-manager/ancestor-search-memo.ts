@@ -25,18 +25,21 @@ export class AncestorSearchMemo {
   private catalogDBClient: Knex;
 
   private userEntityRef: string;
+  private maxDepth?: number;
 
   constructor(
     userEntityRef: string,
     tokenManager: TokenManager,
     catalogApi: CatalogApi,
     catalogDBClient: Knex,
+    maxDepth?: number,
   ) {
     this.graph = new Graph({ directed: true });
     this.userEntityRef = userEntityRef;
     this.tokenManager = tokenManager;
     this.catalogApi = catalogApi;
     this.catalogDBClient = catalogDBClient;
+    this.maxDepth = maxDepth;
   }
 
   isAcyclic(): boolean {
@@ -126,7 +129,17 @@ export class AncestorSearchMemo {
     }
   }
 
-  traverseGroups(memo: AncestorSearchMemo, group: Entity, allGroups: Entity[]) {
+  traverseGroups(
+    memo: AncestorSearchMemo,
+    group: Entity,
+    allGroups: Entity[],
+    current_depth: number,
+  ) {
+    const depth = current_depth + 1;
+    if (this.maxDepth && current_depth >= this.maxDepth) {
+      return;
+    }
+
     const groupsRefs = new Set<string>();
     const groupName = `group:${group.metadata.namespace?.toLocaleLowerCase(
       'en-US',
@@ -147,7 +160,7 @@ export class AncestorSearchMemo {
     }
 
     if (groupsRefs.size > 0 && memo.isAcyclic()) {
-      this.traverseGroups(memo, parentGroup!, allGroups);
+      this.traverseGroups(memo, parentGroup!, allGroups, depth);
     }
   }
 
@@ -155,7 +168,14 @@ export class AncestorSearchMemo {
     memo: AncestorSearchMemo,
     relation: Relation,
     allRelations: Relation[],
+    current_depth: number,
   ) {
+    // We add one to the maxDepth here because the user is considered the starting node
+    if (this.maxDepth && current_depth >= this.maxDepth + 1) {
+      return;
+    }
+    const depth = current_depth + 1;
+
     if (!memo.hasEntityRef(relation.source_entity_ref)) {
       memo.setNode(relation.source_entity_ref);
     }
@@ -167,7 +187,7 @@ export class AncestorSearchMemo {
     );
 
     if (parentGroup && memo.isAcyclic()) {
-      this.traverseRelations(memo, parentGroup!, allRelations);
+      this.traverseRelations(memo, parentGroup!, allRelations, depth);
     }
   }
 
@@ -180,13 +200,14 @@ export class AncestorSearchMemo {
           memo,
           group as Relation,
           allRelations as Relation[],
+          0,
         ),
       );
     } else {
       const userGroups = await this.getUserGroups();
       const allGroups = await this.getAllGroups();
       userGroups.forEach(group =>
-        this.traverseGroups(memo, group as Entity, allGroups as Entity[]),
+        this.traverseGroups(memo, group as Entity, allGroups as Entity[], 0),
       );
     }
   }

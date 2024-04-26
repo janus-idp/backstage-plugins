@@ -173,6 +173,7 @@ describe('EnforcerDelegate', () => {
       logger,
       tokenManagerMock,
       catalogDBClient,
+      config,
     );
     enf.setRoleManager(rm);
     enf.enableAutoBuildRoleLinks(false);

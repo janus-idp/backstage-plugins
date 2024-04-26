@@ -41,6 +41,7 @@ export const ServiceListPage = (props: {
   const prevActiveNs = useRef(activeNs);
   const prevDuration = useRef(duration);
   const activeToggles: ActiveTogglesInfo = Toggles.getToggles();
+  const [loadingD, setLoading] = React.useState<boolean>(true);
 
   const hiddenColumns = isMultiCluster ? [] : ['cluster'];
   if (props.view === ENTITY) {
@@ -162,7 +163,23 @@ export const ServiceListPage = (props: {
       setNamespaces(nsl);
       fetchServices(nsl, duration, activeToggles);
     });
+    setTimeout(() => {
+      setLoading(false);
+    }, 400);
   };
+
+  React.useEffect(() => {
+    if (
+      duration !== prevDuration.current ||
+      !nsEqual(activeNs, prevActiveNs.current)
+    ) {
+      setLoading(true);
+      load();
+      prevDuration.current = duration;
+      prevActiveNs.current = activeNs;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeNs, duration]);
 
   const [{ loading }, refresh] = useAsyncFn(
     async () => {
@@ -173,18 +190,6 @@ export const ServiceListPage = (props: {
     { loading: true },
   );
   useDebounce(refresh, 10);
-
-  React.useEffect(() => {
-    if (
-      duration !== prevDuration.current ||
-      !nsEqual(activeNs, prevActiveNs.current)
-    ) {
-      load();
-      prevDuration.current = duration;
-      prevActiveNs.current = activeNs;
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeNs, duration]);
 
   if (loading) {
     return <CircularProgress />;
@@ -205,6 +210,7 @@ export const ServiceListPage = (props: {
           type="services"
           hiddenColumns={hiddenColumns}
           view={props.view}
+          loading={loadingD}
         />
       </Content>
     </div>

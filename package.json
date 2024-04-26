@@ -3,7 +3,7 @@
   "version": "3.2.0",
   "private": true,
   "engines": {
-    "node": "18"
+    "node": "18 || 20"
   },
   "scripts": {
     "preinstall": "npx only-allow yarn",
@@ -71,10 +71,7 @@
     "testTimeout": 15000
   },
   "release": {
-    "branches": [
-      "main",
-      "[0-9]+.[0-9]+.x"
-    ],
+    "branches": "main",
     "plugins": [
       [
         "@semantic-release/commit-analyzer",

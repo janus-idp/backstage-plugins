@@ -133,7 +133,7 @@ describe('RBACPermissionPolicy Tests', () => {
     const stringPolicy = `p, user:default/known_user, test-resource, update, allow `;
     const config = newConfigReader();
     const adapter = await newAdapter(config, stringPolicy);
-    const enfDelegate = await newEnforcerDelegate(adapter);
+    const enfDelegate = await newEnforcerDelegate(adapter, config);
 
     const policy = await newPermissionPolicy(config, enfDelegate);
 
@@ -147,7 +147,7 @@ describe('RBACPermissionPolicy Tests', () => {
     beforeEach(async () => {
       const config = newConfigReader();
       const adapter = await newAdapter(config);
-      enfDelegate = await newEnforcerDelegate(adapter);
+      enfDelegate = await newEnforcerDelegate(adapter, config);
       policy = await newPermissionPolicy(config, enfDelegate);
 
       catalogApi.getEntities.mockReturnValue({ items: [] });
@@ -305,6 +305,7 @@ describe('RBACPermissionPolicy Tests', () => {
 
       enforcerDelegate = await newEnforcerDelegate(
         adapter,
+        config,
         storedPolicies,
         storedGroupPolicies,
         policyMetadataStorage,
@@ -379,6 +380,7 @@ describe('RBACPermissionPolicy Tests', () => {
 
       enforcerDelegate = await newEnforcerDelegate(
         adapter,
+        config,
         storedPolicies,
         storedGroupPolicies,
         policyMetadataStorage,
@@ -480,6 +482,7 @@ describe('RBACPermissionPolicy Tests', () => {
 
       enforcerDelegate = await newEnforcerDelegate(
         adapter,
+        config,
         storedPolicies,
         storedGroupPolicies,
         policyMetadataStorage,
@@ -571,6 +574,7 @@ describe('RBACPermissionPolicy Tests', () => {
 
       enforcerDelegate = await newEnforcerDelegate(
         adapter,
+        config,
         storedPolicies,
         storedGroupPolicies,
         policyMetadataStorage,
@@ -645,6 +649,7 @@ describe('RBACPermissionPolicy Tests', () => {
 
       enforcerDelegate = await newEnforcerDelegate(
         adapter,
+        config,
         storedPolicies,
         storedGroupPolicies,
         policyMetadataStorage,
@@ -734,6 +739,7 @@ describe('RBACPermissionPolicy Tests', () => {
 
       enforcerDelegate = await newEnforcerDelegate(
         adapter,
+        config,
         storedPolicies,
         storedGroupPolicies,
         policyMetadataStorage,
@@ -842,7 +848,7 @@ describe('RBACPermissionPolicy Tests', () => {
       );
       const config = newConfigReader(basicAndResourcePermissions);
       const adapter = await newAdapter(config);
-      enfDelegate = await newEnforcerDelegate(adapter);
+      enfDelegate = await newEnforcerDelegate(adapter, config);
 
       policy = await newPermissionPolicy(
         config,
@@ -1110,7 +1116,7 @@ describe('RBACPermissionPolicy Tests', () => {
       const config = newConfigReader(csvPermFile, admins, superUser);
       const adapter = await newAdapter(config);
 
-      enfDelegate = await newEnforcerDelegate(adapter);
+      enfDelegate = await newEnforcerDelegate(adapter, config);
 
       await enfDelegate.addGroupingPolicy(oldGroupPolicy, {
         source: 'configuration',
@@ -1230,7 +1236,7 @@ describe('Policy checks for resourced permissions defined by name', () => {
   beforeEach(async () => {
     const config = newConfigReader();
     const adapter = await newAdapter(config);
-    enfDelegate = await newEnforcerDelegate(adapter);
+    enfDelegate = await newEnforcerDelegate(adapter, config);
     policy = await newPermissionPolicy(
       config,
       enfDelegate,
@@ -1411,7 +1417,7 @@ describe('Policy checks for users and groups', () => {
     const config = newConfigReader(policyChecksCSV);
     const adapter = await newAdapter(config);
 
-    const enfDelegate = await newEnforcerDelegate(adapter);
+    const enfDelegate = await newEnforcerDelegate(adapter, config);
 
     policy = await newPermissionPolicy(config, enfDelegate);
 
@@ -1801,6 +1807,7 @@ describe('Policy checks for conditional policies', () => {
       adapter,
       logger,
       tokenManagerMock,
+      config,
     );
 
     const enfDelegate = new EnforcerDelegate(
@@ -2123,6 +2130,7 @@ async function createEnforcer(
   adapter: Adapter,
   logger: Logger,
   tokenManager: TokenManager,
+  config: ConfigReader,
 ): Promise<Enforcer> {
   const catalogDBClient = Knex.knex({ client: MockClient });
   const enf = await newEnforcer(theModel, adapter);
@@ -2132,6 +2140,7 @@ async function createEnforcer(
     logger,
     tokenManager,
     catalogDBClient,
+    config,
   );
   enf.setRoleManager(rm);
   enf.enableAutoBuildRoleLinks(false);
@@ -2142,6 +2151,7 @@ async function createEnforcer(
 
 async function newEnforcerDelegate(
   adapter: Adapter,
+  config: ConfigReader,
   storedPolicies?: string[][],
   storedGroupingPolicies?: string[][],
   policyMock?: PolicyMetadataStorage,
@@ -2149,7 +2159,13 @@ async function newEnforcerDelegate(
   const theModel = newModelFromString(MODEL);
   const logger = getVoidLogger();
 
-  const enf = await createEnforcer(theModel, adapter, logger, tokenManagerMock);
+  const enf = await createEnforcer(
+    theModel,
+    adapter,
+    logger,
+    tokenManagerMock,
+    config,
+  );
 
   if (storedPolicies) {
     await enf.addPolicies(storedPolicies);

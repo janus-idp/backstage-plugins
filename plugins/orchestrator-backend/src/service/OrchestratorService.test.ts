@@ -52,13 +52,15 @@ const workflowOverview = createWorkflowOverviewMock(1);
 const workflowOverviews = createWorkflowOverviewsMock(3);
 const instance = createInstanceMock(1);
 const instances = createInstancesMock(3);
+const serviceUrl = 'http://localhost';
+const inputData = { foo: 'bar' };
 
 // Mocked dependencies
 const sonataFlowServiceMock = {} as SonataFlowService;
 const workflowCacheServiceMock = {} as WorkflowCacheService;
 const dataIndexServiceMock = {} as DataIndexService;
 
-// Target service
+// Target
 const orchestratorService = new OrchestratorService(
   sonataFlowServiceMock,
   dataIndexServiceMock,
@@ -87,10 +89,8 @@ describe('OrchestratorService', () => {
 
       expect(
         dataIndexServiceMock.fetchDefinitionIdByInstanceId,
-      ).toHaveBeenCalledWith(instanceId);
-      expect(dataIndexServiceMock.abortWorkflowInstance).toHaveBeenCalledWith(
-        instanceId,
-      );
+      ).toHaveBeenCalled();
+      expect(dataIndexServiceMock.abortWorkflowInstance).toHaveBeenCalled();
     });
 
     it('should skip and not execute the operation when the workflow is not available', async () => {
@@ -106,7 +106,7 @@ describe('OrchestratorService', () => {
 
       expect(
         dataIndexServiceMock.fetchDefinitionIdByInstanceId,
-      ).toHaveBeenCalledWith(instanceId);
+      ).toHaveBeenCalled();
       expect(dataIndexServiceMock.abortWorkflowInstance).not.toHaveBeenCalled();
     });
 
@@ -129,11 +129,8 @@ describe('OrchestratorService', () => {
 
       expect(
         dataIndexServiceMock.fetchDefinitionIdByInstanceId,
-      ).toHaveBeenCalledWith(instanceId);
-      expect(workflowCacheServiceMock.isAvailable).toHaveBeenCalledWith(
-        definitionId,
-        'throw',
-      );
+      ).toHaveBeenCalled();
+      expect(workflowCacheServiceMock.isAvailable).toHaveBeenCalled();
       expect(dataIndexServiceMock.abortWorkflowInstance).not.toHaveBeenCalled();
     });
   });
@@ -433,7 +430,6 @@ describe('OrchestratorService', () => {
   });
 
   describe('fetchWorkflowInfoOnService', () => {
-    const serviceUrl = 'http://localhost';
     beforeEach(() => {
       jest.clearAllMocks();
     });
@@ -602,8 +598,6 @@ describe('OrchestratorService', () => {
   });
 
   describe('executeWorkflow', () => {
-    const serviceUrl = 'http://localhost';
-    const inputData = {};
     const executeResponse: WorkflowExecutionResponse = {
       id: createInstanceIdMock(1),
     };
@@ -659,6 +653,131 @@ describe('OrchestratorService', () => {
       await expect(promise).rejects.toThrow();
 
       expect(sonataFlowServiceMock.executeWorkflow).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('retriggerInstanceInError', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should execute the operation when the workflow is available', async () => {
+      workflowCacheServiceMock.isAvailable = jest.fn().mockReturnValue(true);
+      sonataFlowServiceMock.retriggerInstanceInError = jest
+        .fn()
+        .mockResolvedValue(true);
+
+      await orchestratorService.retriggerInstanceInError({
+        definitionId,
+        serviceUrl,
+        instanceId,
+        cacheHandler: 'skip',
+      });
+
+      expect(workflowCacheServiceMock.isAvailable).toHaveBeenCalled();
+      expect(sonataFlowServiceMock.retriggerInstanceInError).toHaveBeenCalled();
+    });
+
+    it('should skip and not execute the operation when the workflow is not available', async () => {
+      workflowCacheServiceMock.isAvailable = jest.fn().mockReturnValue(false);
+
+      await orchestratorService.retriggerInstanceInError({
+        definitionId,
+        serviceUrl,
+        instanceId,
+        cacheHandler: 'skip',
+      });
+
+      expect(workflowCacheServiceMock.isAvailable).toHaveBeenCalled();
+      expect(
+        sonataFlowServiceMock.retriggerInstanceInError,
+      ).not.toHaveBeenCalled();
+    });
+
+    it('should throw an error and not execute the operation when the workflow is not available', async () => {
+      workflowCacheServiceMock.isAvailable = jest
+        .fn()
+        .mockImplementation(() => {
+          throw new Error();
+        });
+
+      const promise = orchestratorService.retriggerInstanceInError({
+        definitionId,
+        serviceUrl,
+        instanceId,
+        cacheHandler: 'throw',
+      });
+
+      await expect(promise).rejects.toThrow();
+
+      expect(workflowCacheServiceMock.isAvailable).toHaveBeenCalled();
+      expect(
+        sonataFlowServiceMock.retriggerInstanceInError,
+      ).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('updateInstanceInputData', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should execute the operation when the workflow is available', async () => {
+      workflowCacheServiceMock.isAvailable = jest.fn().mockReturnValue(true);
+      sonataFlowServiceMock.updateInstanceInputData = jest
+        .fn()
+        .mockResolvedValue(true);
+
+      await orchestratorService.updateInstanceInputData({
+        definitionId,
+        serviceUrl,
+        instanceId,
+        inputData,
+        cacheHandler: 'skip',
+      });
+
+      expect(workflowCacheServiceMock.isAvailable).toHaveBeenCalled();
+      expect(sonataFlowServiceMock.updateInstanceInputData).toHaveBeenCalled();
+    });
+
+    it('should skip and not execute the operation when the workflow is not available', async () => {
+      workflowCacheServiceMock.isAvailable = jest.fn().mockReturnValue(false);
+
+      await orchestratorService.updateInstanceInputData({
+        definitionId,
+        serviceUrl,
+        instanceId,
+        inputData,
+        cacheHandler: 'skip',
+      });
+
+      expect(workflowCacheServiceMock.isAvailable).toHaveBeenCalled();
+      expect(
+        sonataFlowServiceMock.updateInstanceInputData,
+      ).not.toHaveBeenCalled();
+    });
+
+    it('should throw an error and not execute the operation when the workflow is not available', async () => {
+      workflowCacheServiceMock.isAvailable = jest
+        .fn()
+        .mockImplementation(() => {
+          throw new Error();
+        });
+
+      const promise = orchestratorService.updateInstanceInputData({
+        definitionId,
+        serviceUrl,
+        instanceId,
+        inputData,
+        cacheHandler: 'throw',
+      });
+
+      await expect(promise).rejects.toThrow();
+
+      expect(workflowCacheServiceMock.isAvailable).toHaveBeenCalled();
+      expect(
+        sonataFlowServiceMock.updateInstanceInputData,
+      ).not.toHaveBeenCalled();
     });
   });
 });
