@@ -50,15 +50,17 @@
     },
     {
       "description": "disable updates to the keycloak admin client - see https://github.com/janus-idp/backstage-plugins/issues/47 https://github.com/janus-idp/backstage-plugins/issues/1046", 
-      "matchPackageName": ["@keycloak/keycloak-admin-client"],
-      "groupName": "Keycloak dependency",
-      "enabled": "false"
+      "enabled": "false",
+      "matchDatasources": ["npm"],
+      "matchPackageNames": ["@keycloak/keycloak-admin-client"],
+      "groupName": "Keycloak dependency"
     },
     {
       "description": "ignore updates to the axios to version that keycloak 18 needs", 
-      "matchCurrentVersion": "0.26.1",
-      "matchPackageName": ["axios"],
       "enabled": "false",
+      "matchDatasources": ["npm"],
+      "matchPackageNames": ["axios"],
+      "matchCurrentVersion": "0.26.1",
       "groupName": "Keycloak dependency"
     }    
   ],
