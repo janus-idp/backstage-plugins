@@ -7,4 +7,14 @@ export const ocmClusterReadPermission = createPermission({
   },
 });
 
-export const ocmEntityPermissions = [ocmClusterReadPermission];
+export const ocmEntityReadPermission = createPermission({
+  name: 'ocm.entity.read',
+  attributes: {
+    action: 'read',
+  },
+});
+
+export const ocmEntityPermissions = [
+  ocmClusterReadPermission,
+  ocmEntityReadPermission,
+];

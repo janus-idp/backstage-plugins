@@ -28,7 +28,10 @@ import {
 } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { NotAllowedError } from '@backstage/errors';
-import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import {
+  AuthorizeResult,
+  BasicPermission,
+} from '@backstage/plugin-permission-common';
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 
 import express from 'express';
@@ -41,6 +44,7 @@ import {
   ClusterOverview,
   ocmClusterReadPermission,
   ocmEntityPermissions,
+  ocmEntityReadPermission,
 } from '@janus-idp/backstage-plugin-ocm-common';
 
 import { readOcmConfigs } from '../helpers/config';
@@ -95,9 +99,9 @@ const buildRouter = (
     ]),
   );
 
-  const authorize = async (request: Request) => {
+  const authorize = async (request: Request, permission: BasicPermission) => {
     const decision = (
-      await permissions.authorize([{ permission: ocmClusterReadPermission }], {
+      await permissions.authorize([{ permission: permission }], {
         credentials: await httpAuth.credentials(request),
       })
     )[0];
@@ -106,7 +110,7 @@ const buildRouter = (
   };
 
   router.get('/status/:providerId/:clusterName', async (request, response) => {
-    const decision = await authorize(request);
+    const decision = await authorize(request, ocmEntityReadPermission);
 
     if (decision.result === AuthorizeResult.DENY) {
       throw new NotAllowedError('Unauthorized');
@@ -146,7 +150,7 @@ const buildRouter = (
   });
 
   router.get('/status', async (request, response) => {
-    const decision = await authorize(request);
+    const decision = await authorize(request, ocmClusterReadPermission);
 
     if (decision.result === AuthorizeResult.DENY) {
       throw new NotAllowedError('Unauthorized');
