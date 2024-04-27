@@ -31,6 +31,7 @@
     "@backstage/errors": "^1.2.4",
     "@backstage/plugin-catalog-react": "^1.11.2",
     "@backstage/plugin-home": "^0.7.2",
+    "@backstage/plugin-permission-react": "^0.4.22",
     "@backstage/plugin-search-react": "^1.7.9",
     "@backstage/theme": "^0.5.2",
     "@janus-idp/backstage-plugin-ocm-common": "2.3.0",
