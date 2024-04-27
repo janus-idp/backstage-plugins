@@ -35,7 +35,7 @@
   "devDependencies": {
     "@backstage/cli": "0.25.2",
     "clean-webpack-plugin": "4.0.0",
-    "css-loader": "6.11.0",
+    "css-loader": "7.1.1",
     "filemanager-webpack-plugin": "8.0.0",
     "html-webpack-plugin": "5.6.0",
     "monaco-editor": "0.47.0",
