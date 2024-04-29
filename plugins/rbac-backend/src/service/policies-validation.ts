@@ -111,7 +111,7 @@ export function validateEntityReference(
   return undefined;
 }
 
-async function validateGroupingPolicy(
+export async function validateGroupingPolicy(
   groupPolicy: string[],
   preDefinedPoliciesFile: string,
   roleMetadataStorage: RoleMetadataStorage,
@@ -219,6 +219,26 @@ export const checkForDuplicatePolicies = async (
       `Duplicate policy: ${policy} found in the file ${policyFile}`,
     );
   }
+
+  const flipPolicyEffect = [
+    policy[0],
+    policy[1],
+    policy[2],
+    policy[3] === 'deny' ? 'allow' : 'deny',
+  ];
+
+  // Check if the same policy exists but with a different effect
+  const dupWithDifferentEffect = await fileEnf.getFilteredPolicy(
+    0,
+    ...flipPolicyEffect,
+  );
+
+  if (dupWithDifferentEffect.length > 0) {
+    return new Error(
+      `Duplicate policy: ${policy[0]}, ${policy[1]}, ${policy[2]} with different effect found in the file ${policyFile}`,
+    );
+  }
+
   return undefined;
 };
 

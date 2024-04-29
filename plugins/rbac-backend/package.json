@@ -39,6 +39,8 @@
     "@janus-idp/backstage-plugin-rbac-common": "1.4.2",
     "@janus-idp/backstage-plugin-rbac-node": "1.1.1",
     "casbin": "^5.27.1",
+    "chokidar": "^3.6.0",
+    "csv-parse": "^5.5.5",
     "express": "^4.18.2",
     "express-promise-router": "^4.1.1",
     "knex": "^3.0.0",
