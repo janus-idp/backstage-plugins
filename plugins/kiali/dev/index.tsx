@@ -13,7 +13,7 @@ import { EntityKialiResourcesCard, kialiPlugin } from '../src';
 import { KialiHelper } from '../src/pages/Kiali/KialiHelper';
 import { KialiNoAnnotation } from '../src/pages/Kiali/KialiNoAnnotation';
 import { KialiNoResources } from '../src/pages/Kiali/KialiNoResources';
-import { pluginName } from '../src/plugin';
+import { EntityKialiGraphCard, pluginName } from '../src/plugin';
 import { rootRouteRef } from '../src/routes';
 import { kialiApiRef } from '../src/services/Api';
 import { KialiChecker, ValidationCategory } from '../src/store/KialiProvider';
@@ -36,6 +36,28 @@ const MockEntityCard = () => {
           <Grid container spacing={3} alignItems="stretch">
             <Grid item md={8} xs={12}>
               <EntityKialiResourcesCard />
+            </Grid>
+          </Grid>
+        </TestApiProvider>
+      </div>
+    </EntityProvider>
+  );
+
+  return (
+    <TestApiProvider apis={[[kialiApiRef, new MockKialiClient()]]}>
+      {content}
+    </TestApiProvider>
+  );
+};
+
+const MockEntityGraphCard = () => {
+  const content = (
+    <EntityProvider entity={mockEntity}>
+      <div style={{ padding: '20px' }}>
+        <TestApiProvider apis={[[kialiApiRef, new MockKialiClient()]]}>
+          <Grid container spacing={3} alignItems="stretch">
+            <Grid item md={8} xs={12}>
+              <EntityKialiGraphCard />
             </Grid>
           </Grid>
         </TestApiProvider>
@@ -144,5 +166,10 @@ createDevApp()
     element: <MockEntityCard />,
     title: 'Resources card',
     path: '/kiali-entity-card',
+  })
+  .addPage({
+    element: <MockEntityGraphCard />,
+    title: 'Graph card',
+    path: '/kiali-graph-card',
   })
   .render();
