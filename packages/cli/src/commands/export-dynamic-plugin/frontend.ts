@@ -16,20 +16,28 @@
 
 import { PackageRoleInfo } from '@backstage/cli-node';
 
+import { getPackages } from '@manypkg/get-packages';
+import chalk from 'chalk';
 import { OptionValues } from 'commander';
 import fs from 'fs-extra';
 
+import path from 'path';
+
 import { buildScalprumPlugin } from '../../lib/builder/buildScalprumPlugin';
+import { productionPack } from '../../lib/packager/productionPack';
 import { paths } from '../../lib/paths';
+import { Task } from '../../lib/tasks';
+import { customizeForDynamicUse } from './backend-embed-as-dependencies';
 
 export async function frontend(
   _: PackageRoleInfo,
-  __: OptionValues,
+  opts: OptionValues,
 ): Promise<string> {
   const {
     name,
     version,
     scalprum: scalprumExternal,
+    files,
   } = await fs.readJson(paths.resolveTarget('package.json'));
 
   let scalprum = scalprumExternal;
@@ -54,7 +62,63 @@ export async function frontend(
     );
   }
 
-  await fs.remove(paths.resolveTarget('dist-scalprum'));
+  const distDynamicRelativePath = 'dist-dynamic';
+  const target = opts.inPlace
+    ? path.resolve(paths.targetDir)
+    : path.resolve(paths.targetDir, distDynamicRelativePath);
+
+  if (!opts.inPlace) {
+    Task.log(
+      `Packing main package to ${chalk.cyan(
+        path.join(distDynamicRelativePath, 'package.json'),
+      )}`,
+    );
+
+    if (opts.clean) {
+      await fs.remove(target);
+    }
+
+    await fs.mkdirs(target);
+
+    await productionPack({
+      packageDir: paths.targetDir,
+      targetDir: target,
+    });
+
+    Task.log(
+      `Customizing main package in ${chalk.cyan(
+        path.join(distDynamicRelativePath, 'package.json'),
+      )} for dynamic loading`,
+    );
+    if (files && Array.isArray(files) && !files.includes('dist-scalprum')) {
+      files.push('dist-scalprum');
+    }
+    const monoRepoPackages = await getPackages(paths.targetDir);
+    await customizeForDynamicUse({
+      embedded: [],
+      monoRepoPackages,
+      overridding: {
+        name: `${name}-dynamic`,
+        // We remove scripts, because they do not make sense for this derived package.
+        // They even bring errors, especially the pre-pack and post-pack ones:
+        // we want to be able to use npm pack on this derived package to distribute it as a dynamic plugin,
+        // and obviously this should not trigger the backstage pre-pack or post-pack actions
+        // which are related to the packaging of the original static package.
+        scripts: {},
+        files,
+      },
+    })(path.resolve(target, 'package.json'));
+  }
+
+  const resolvedScalprumDistPath = path.join(target, 'dist-scalprum');
+
+  Task.log(
+    `Generating dynamic frontend plugin assets in ${chalk.cyan(
+      resolvedScalprumDistPath,
+    )}`,
+  );
+
+  await fs.remove(resolvedScalprumDistPath);
 
   await buildScalprumPlugin({
     writeStats: false,
@@ -65,7 +129,8 @@ export async function frontend(
       version,
     },
     fromPackage: name,
+    resolvedScalprumDistPath,
   });
 
-  return paths.targetDir;
+  return target;
 }

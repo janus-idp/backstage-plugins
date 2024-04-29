@@ -123,8 +123,16 @@ export function registerScriptCommand(program: Command) {
     )
     .option(
       '--embed-as-dependencies',
-      'Include embedded packages as private dependencies, instead of merging the with the generated code. Experimental for now, but expected to become the default.',
+      'Include embedded packages as private dependencies of backend plugins, instead of merging them with the generated code. Experimental for now, but expected to become the default.',
+      false,
     )
+    .option('--no-embed-as-dependencies', undefined, true)
+    .option(
+      '--in-place',
+      'Adds the frontend dynamic plugin assets to the `dist-scalprum` folder of the original plugin package. When value is `false` (using `--no-in-place`), it produces the assets in a distinct package located in the `dist-dynamic` sub-folder, as for backend plugins. `true` by default for now, it is expected to become `false` by default.',
+      true,
+    )
+    .option('--no-in-place', undefined, false)
     .action(lazy(() => import('./export-dynamic-plugin').then(m => m.command)));
 
   command

@@ -10,10 +10,12 @@ interface BuildScalprumPluginOptions {
   configPaths: string[];
   pluginMetadata: PluginBuildMetadata;
   fromPackage: string;
+  resolvedScalprumDistPath: string;
 }
 
 export async function buildScalprumPlugin(options: BuildScalprumPluginOptions) {
-  const { targetDir, pluginMetadata, fromPackage } = options;
+  const { targetDir, pluginMetadata, fromPackage, resolvedScalprumDistPath } =
+    options;
   await buildScalprumBundle({
     targetDir,
     entry: 'src/index',
@@ -23,5 +25,6 @@ export async function buildScalprumPlugin(options: BuildScalprumPluginOptions) {
       args: [],
       fromPackage,
     })),
+    resolvedScalprumDistPath,
   });
 }
