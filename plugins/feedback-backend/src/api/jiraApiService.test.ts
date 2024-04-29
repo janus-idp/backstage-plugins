@@ -8,11 +8,7 @@ import {
   mockJiraTicketDetailsResp,
   mockJiraUsernameResp,
 } from '../mocks';
-import {
-  createJiraTicket,
-  getJiraUsernameByEmail,
-  getTicketDetails,
-} from './jiraApiService';
+import { JiraApiService } from './jiraApiService';
 
 const handlers = [
   rest.post(
@@ -37,11 +33,10 @@ describe('JIRA issue', () => {
   mswMockServer.listen({ onUnhandledRequest: 'warn' });
   const jiraHost = mockConfig.feedback.integrations.jira[0].host;
   const jiraToken = mockConfig.feedback.integrations.jira[0].token;
+  const jiraService = new JiraApiService(jiraHost, jiraToken);
 
   it('createJiraTicket', async () => {
-    const data = await createJiraTicket({
-      host: jiraHost,
-      authToken: jiraToken,
+    const data = await jiraService.createJiraTicket({
       projectKey: 'proj-key',
       summary: mockFeedback.summary!,
       description: 'Submitted from Test App',
@@ -53,16 +48,14 @@ describe('JIRA issue', () => {
   });
 
   it('getJiraUsernameByEmail', async () => {
-    const data = await getJiraUsernameByEmail(
-      jiraHost,
+    const data = await jiraService.getJiraUsernameByEmail(
       'john.doe@example.com',
-      jiraToken,
     );
     expect(data).toEqual('John Doe');
   });
 
   it('getTicketDetails', async () => {
-    const data = await getTicketDetails(jiraHost, 'ticket-id', jiraToken);
+    const data = await jiraService.getTicketDetails('ticket-id');
     expect(data?.status).toEqual('Backlog');
     expect(data?.assignee).toEqual('John Doe');
   });

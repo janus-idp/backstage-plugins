@@ -2,22 +2,31 @@
  * Configuration options for the application.
  */
 export interface Config {
+  /**
+   * @visibility frontend
+   */
   feedback?: {
     integrations: {
       /**
        * Configuration options for JIRA integration.
        * It is an array, which can be used to set up multiple jira servers at the same time.
+       * @visibility frontend
        */
       jira?: Array<{
         /**
          * The hostname or URL of the JIRA organization.
+         * @visibility frontend
          */
         host: string;
-
         /**
          * The access token for authenticating with JIRA.
+         * @visibility secret
          */
         token: string;
+        /**
+         * what type of jira instance are you using, CLOUD/SERVER
+         */
+        hostType: string;
       }>;
 
       /**
