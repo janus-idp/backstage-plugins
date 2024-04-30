@@ -13,6 +13,7 @@ import * as FilterHelper from '../../components/FilterList/FilterHelper';
 import { TimeDurationComponent } from '../../components/Time/TimeDurationComponent';
 import { VirtualList } from '../../components/VirtualList/VirtualList';
 import { isMultiCluster } from '../../config';
+import { useKialiEntityContext } from '../../dynamic/KialiContext';
 import { getEntityNs, nsEqual } from '../../helpers/namespaces';
 import { getErrorString, kialiApiRef } from '../../services/Api';
 import { KialiAppState, KialiContext } from '../../store';
@@ -30,6 +31,8 @@ export const WorkloadListPage = (props: { view?: string; entity?: Entity }) => {
     FilterHelper.currentDuration(),
   );
   const kialiState = React.useContext(KialiContext) as KialiAppState;
+  const kialiContext = useKialiEntityContext();
+
   const activeNs = props.entity
     ? getEntityNs(props.entity)
     : kialiState.namespaces.activeNamespaces.map(ns => ns.name);
@@ -65,15 +68,20 @@ export const WorkloadListPage = (props: { view?: string; entity?: Entity }) => {
   };
 
   const load = async () => {
-    kialiClient.getNamespaces().then(namespacesResponse => {
-      const allNamespaces: NamespaceInfo[] = getNamespaces(
-        namespacesResponse,
-        namespaces,
-      );
-      const nsl = allNamespaces.filter(ns => activeNs.includes(ns.name));
-      setNamespaces(nsl);
-      fetchWorkloads(nsl, duration);
-    });
+    if (kialiContext.data) {
+      setNamespaces(kialiContext.data);
+      fetchWorkloads(kialiContext.data, duration);
+    } else {
+      kialiClient.getNamespaces().then(namespacesResponse => {
+        const allNamespaces: NamespaceInfo[] = getNamespaces(
+          namespacesResponse,
+          namespaces,
+        );
+        const nsl = allNamespaces.filter(ns => activeNs.includes(ns.name));
+        setNamespaces(nsl);
+        fetchWorkloads(nsl, duration);
+      });
+    }
 
     // Add a delay so it doesn't look like a flash
     setTimeout(() => {

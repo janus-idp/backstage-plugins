@@ -9,7 +9,6 @@ import {
   IconButton,
   TableCell,
   Tooltip,
-  Typography,
 } from '@material-ui/core';
 // eslint-disable-next-line no-restricted-imports
 import { Close } from '@material-ui/icons';
@@ -102,9 +101,6 @@ export const item: Renderer<TResource> = (
       return (
         <div style={{ padding: '10px', minWidth: '400px' }}>
           <div style={{ paddingBottom: '10px' }}>
-            <Typography variant="h5" style={{ display: 'inline' }}>
-              {config.name} details
-            </Typography>
             <IconButton
               key="dismiss"
               title="Close the drawer"
@@ -167,7 +163,7 @@ export const item: Renderer<TResource> = (
       key={`VirtuaItem_Item_${resource.namespace}_${resource.name}`}
       style={{ verticalAlign: 'middle', whiteSpace: 'nowrap' }}
     >
-      {view !== ENTITY && (
+      {view !== ENTITY && view !== DRAWER && (
         <PFBadge badge={serviceBadge} position={topPosition} />
       )}
       <JanusObjectLink
@@ -217,7 +213,7 @@ export const namespace: Renderer<TResource> = (
       key={`VirtuaItem_Namespace_${resource.namespace}_${item.name}`}
       style={{ verticalAlign: 'middle', whiteSpace: 'nowrap' }}
     >
-      {view !== ENTITY && (
+      {view !== ENTITY && view !== DRAWER && (
         <PFBadge badge={PFBadges.Namespace} position={topPosition} />
       )}
       {resource.namespace}
@@ -255,12 +251,12 @@ export const labels: Renderer<SortResource | NamespaceInfo> = (
       }${resource.name}`}
       style={{ verticalAlign: 'middle', paddingBottom: '0.25rem' }}
     >
-      {view === ENTITY && resource.labels && (
+      {(view === ENTITY || view === DRAWER) && resource.labels && (
         <Tooltip title={labelsWrap}>
           <Chip label={Object.entries(resource.labels).length.toString()} />
         </Tooltip>
       )}
-      {view !== ENTITY && labelsView}
+      {view !== ENTITY && view !== DRAWER && labelsView}
     </TableCell>
   );
 };
