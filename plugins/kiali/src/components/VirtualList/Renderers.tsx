@@ -64,6 +64,67 @@ export const actionRenderer = (
   );
 };
 
+const DrawerDiv = ({
+  name,
+  namespace,
+  config,
+}: {
+  name: string;
+  namespace: string;
+  config: string;
+}) => {
+  const [isOpen, toggleDrawer] = React.useState(false);
+
+  const DrawerContent = ({
+    toggleDrawer2,
+  }: {
+    toggleDrawer2: (isOpen: boolean) => void;
+  }) => {
+    return (
+      <div style={{ padding: '10px', minWidth: '400px' }}>
+        <div style={{ paddingBottom: '10px' }}>
+          <IconButton
+            key="dismiss"
+            title="Close the drawer"
+            onClick={() => toggleDrawer2(false)}
+            color="inherit"
+            style={{ right: '0', position: 'absolute', top: '5px' }}
+          >
+            <Close />
+          </IconButton>
+        </div>
+        <div />
+        <div>
+          {config === 'workloads' && (
+            <WorkloadDetailsDrawer namespace={namespace} workload={name} />
+          )}
+          {config === 'services' && (
+            <ServiceDetailsDrawer namespace={namespace} service={name} />
+          )}
+          {config === 'applications' && (
+            <AppDetailsDrawer namespace={namespace} app={name} />
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => toggleDrawer(true)}
+      >
+        {name}
+      </Button>
+      <Drawer anchor="right" open={isOpen} onClose={() => toggleDrawer(false)}>
+        <DrawerContent toggleDrawer2={toggleDrawer} />
+      </Drawer>
+    </>
+  );
+};
+
 export const item: Renderer<TResource> = (
   resource: TResource,
   config: Resource,
@@ -91,70 +152,16 @@ export const item: Renderer<TResource> = (
   }
 
   if (view === DRAWER) {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const [isOpen, toggleDrawer] = React.useState(false);
-    const DrawerContent = ({
-      toggleDrawer2,
-    }: {
-      toggleDrawer2: (isOpen: boolean) => void;
-    }) => {
-      return (
-        <div style={{ padding: '10px', minWidth: '400px' }}>
-          <div style={{ paddingBottom: '10px' }}>
-            <IconButton
-              key="dismiss"
-              title="Close the drawer"
-              onClick={() => toggleDrawer2(false)}
-              color="inherit"
-              style={{ right: '0', position: 'absolute', top: '5px' }}
-            >
-              <Close />
-            </IconButton>
-          </div>
-          <div />
-          <div>
-            {config.name === 'workloads' && (
-              <WorkloadDetailsDrawer
-                namespace={resource.namespace}
-                workload={resource.name}
-              />
-            )}
-            {config.name === 'services' && (
-              <ServiceDetailsDrawer
-                namespace={resource.namespace}
-                service={resource.name}
-              />
-            )}
-            {config.name === 'applications' && (
-              <AppDetailsDrawer
-                namespace={resource.namespace}
-                app={resource.name}
-              />
-            )}
-          </div>
-        </div>
-      );
-    };
-
     return (
       <TableCell
         key={`VirtuaItem_Item_${resource.namespace}_${resource.name}`}
         style={{ verticalAlign: 'middle', whiteSpace: 'nowrap' }}
       >
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => toggleDrawer(true)}
-        >
-          {resource.name}
-        </Button>
-        <Drawer
-          anchor="right"
-          open={isOpen}
-          onClose={() => toggleDrawer(false)}
-        >
-          <DrawerContent toggleDrawer2={toggleDrawer} />
-        </Drawer>
+        <DrawerDiv
+          name={resource.name}
+          namespace={resource.namespace}
+          config={config.name}
+        />
       </TableCell>
     );
   }
