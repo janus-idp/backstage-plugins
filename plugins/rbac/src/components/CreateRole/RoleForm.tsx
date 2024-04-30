@@ -19,6 +19,7 @@ import { FormikErrors, FormikHelpers, useFormik } from 'formik';
 import { rbacApiRef } from '../../api/RBACBackendClient';
 import { MemberEntity, PermissionsData, RoleError } from '../../types';
 import {
+  getConditionalPermissionPoliciesData,
   getPermissionPoliciesData,
   getRoleData,
   validationSchema,
@@ -139,6 +140,8 @@ export const RoleForm = ({
     try {
       const newData = getRoleData(values);
       const newPermissionsData = getPermissionPoliciesData(values);
+      const newConditionalPermissionPoliciesData =
+        getConditionalPermissionPoliciesData(values);
 
       const res = await rbacApi.createRole(newData);
       if ((res as RoleError).error) {
@@ -146,15 +149,36 @@ export const RoleForm = ({
           `${'Unable to create role. '}${(res as RoleError).error.message}`,
         );
       }
-      const permissionsRes: Response | RoleError =
-        await rbacApi.createPolicies(newPermissionsData);
-      if ((permissionsRes as unknown as RoleError).error) {
+
+      if (newPermissionsData?.length > 0) {
+        const permissionsRes: Response | RoleError =
+          await rbacApi.createPolicies(newPermissionsData);
+        if ((permissionsRes as unknown as RoleError).error) {
+          throw new Error(
+            `Role was created successfully but unable to add permissions to the role. ${
+              (permissionsRes as unknown as RoleError).error.message
+            }`,
+          );
+        }
+      }
+
+      const promises = newConditionalPermissionPoliciesData.map(cpp =>
+        rbacApi.createConditionalPermission(cpp),
+      );
+
+      const cppRes: (Response | RoleError)[] = await Promise.all(promises);
+      const cpErr = cppRes
+        .map(r => (r as unknown as RoleError).error?.message)
+        .filter(m => m);
+
+      if (cpErr.length > 0) {
         throw new Error(
-          `Role was created successfully but unable to add permissions to the role. ${
-            (permissionsRes as unknown as RoleError).error.message
-          }`,
+          `Role was created successfully but unable to add conditions to the role. ${cpErr.join(
+            '\n',
+          )}`,
         );
       }
+
       navigateTo(`${newData.name} created`);
     } catch (e) {
       formikHelpers.setStatus({ submitError: e });

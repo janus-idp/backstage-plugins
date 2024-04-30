@@ -42,6 +42,7 @@ describe('getRoleData', () => {
             { policy: 'Update', effect: 'deny' },
             { policy: 'Delete', effect: 'deny' },
           ],
+          isResourced: false,
         },
       ],
     };
@@ -86,6 +87,7 @@ describe('getRoleData', () => {
             { policy: 'Update', effect: 'deny' },
             { policy: 'Delete', effect: 'deny' },
           ],
+          isResourced: false,
         },
       ],
     };
@@ -165,16 +167,17 @@ describe('getChildGroupsCount', () => {
 });
 
 describe('getPermissionPolicies', () => {
-  test('returns empty object for empty input', () => {
+  it('returns empty object for empty input', () => {
     const result = getPermissionPolicies([]);
     expect(result).toEqual({});
   });
 
-  test('correctly transforms policies into PermissionPolicies', () => {
+  it('correctly transforms policies into PermissionPolicies', () => {
     const policies = [
       {
         permission: 'catalog-entity',
         policy: 'read',
+        isResourced: true,
       },
       {
         permission: 'catalog.entity.create',
@@ -183,27 +186,32 @@ describe('getPermissionPolicies', () => {
       {
         permission: 'catalog-entity',
         policy: 'delete',
+        isResourced: true,
       },
       {
         permission: 'catalog-entity',
         policy: 'update',
+        isResourced: true,
       },
     ];
     const result = getPermissionPolicies(policies);
     expect(result).toEqual({
-      'catalog-entity': ['Read', 'Delete', 'Update'],
-      'catalog.entity.create': ['Create'],
+      'catalog-entity': {
+        policies: ['Read', 'Delete', 'Update'],
+        isResourced: true,
+      },
+      'catalog.entity.create': { policies: ['Create'], isResourced: undefined },
     });
   });
 });
 
 describe('getPluginsPermissionPoliciesData', () => {
-  test('returns empty object for empty input', () => {
+  it('returns empty object for empty input', () => {
     const result = getPluginsPermissionPoliciesData([]);
     expect(result).toEqual({ plugins: [], pluginsPermissions: {} });
   });
 
-  test('correctly transforms pluginsPermissionPolicies', () => {
+  it('correctly transforms pluginsPermissionPolicies', () => {
     const result = getPluginsPermissionPoliciesData(mockPermissionPolicies);
     expect(result).toEqual({
       plugins: ['catalog', 'scaffolder', 'permission'],
@@ -217,24 +225,42 @@ describe('getPluginsPermissionPoliciesData', () => {
             'catalog.location.delete',
           ],
           policies: {
-            'catalog-entity': ['Read', 'Delete', 'Update'],
-            'catalog.entity.create': ['Create'],
-            'catalog.location.read': ['Read'],
-            'catalog.location.create': ['Create'],
-            'catalog.location.delete': ['Delete'],
+            'catalog-entity': {
+              policies: ['Read', 'Delete', 'Update'],
+              isResourced: true,
+            },
+            'catalog.entity.create': {
+              policies: ['Create'],
+              isResourced: undefined,
+            },
+            'catalog.location.read': {
+              policies: ['Read'],
+              isResourced: undefined,
+            },
+            'catalog.location.create': {
+              policies: ['Create'],
+              isResourced: undefined,
+            },
+            'catalog.location.delete': {
+              policies: ['Delete'],
+              isResourced: undefined,
+            },
           },
         },
         scaffolder: {
           permissions: ['scaffolder-template', 'scaffolder-action'],
           policies: {
-            'scaffolder-template': ['Read'],
-            'scaffolder-action': ['Use'],
+            'scaffolder-template': { policies: ['Read'], isResourced: true },
+            'scaffolder-action': { policies: ['Use'], isResourced: true },
           },
         },
         permission: {
           permissions: ['policy-entity'],
           policies: {
-            'policy-entity': ['Read', 'Create', 'Delete', 'Update'],
+            'policy-entity': {
+              policies: ['Read', 'Create', 'Delete', 'Update'],
+              isResourced: undefined,
+            },
           },
         },
       },
@@ -243,7 +269,7 @@ describe('getPluginsPermissionPoliciesData', () => {
 });
 
 describe('getPermissionPoliciesData', () => {
-  test('returns empty array for empty input', () => {
+  it('returns empty array for empty input', () => {
     const result = getPermissionPoliciesData({
       kind: 'role',
       name: 'testRole',
@@ -254,7 +280,7 @@ describe('getPermissionPoliciesData', () => {
     expect(result).toEqual([]);
   });
 
-  test('correctly transforms permissionPoliciesRows into RoleBasedPolicy', () => {
+  it('correctly transforms permissionPoliciesRows into RoleBasedPolicy', () => {
     const values = {
       name: 'testRole',
       namespace: 'default',

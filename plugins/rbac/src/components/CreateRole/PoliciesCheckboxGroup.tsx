@@ -24,18 +24,19 @@ export const PoliciesCheckboxGroup = ({
       required
       style={{
         justifyContent: 'flex-start',
-        gap: '12px',
+        gap: '1px',
         width: '402px',
         flexGrow: '1',
+        marginBottom: '25px',
       }}
     >
       <FormLabel
         style={{
-          fontWeight: 600,
+          fontWeight: 800,
           fontSize: '0.8rem',
         }}
       >
-        Policy
+        What actions they can do?
       </FormLabel>
       <FormGroup
         style={{
