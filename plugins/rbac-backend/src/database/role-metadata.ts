@@ -31,6 +31,7 @@ export interface RoleMetadataStorage {
   ): Promise<void>;
   removeRoleMetadata(
     roleEntityRef: string,
+    source: Source,
     modifiedBy: string,
     trx: Knex.Transaction,
   ): Promise<void>;
@@ -62,7 +63,13 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
       const err = new ConflictError(
         `A metadata for role ${metadata.roleEntityRef} has already been stored`,
       );
-      this.aLog.roleError(metadata.roleEntityRef, 'CREATE', err);
+      this.aLog.roleError(
+        metadata.roleEntityRef,
+        'CREATE',
+        metadata.source,
+        metadata.modifiedBy!,
+        err,
+      );
       throw err;
     }
 
@@ -77,7 +84,13 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
     const err = new Error(
       `Failed to create the role metadata: '${JSON.stringify(metadata)}'.`,
     );
-    this.aLog.roleError(metadata.roleEntityRef, 'CREATE', err);
+    this.aLog.roleError(
+      metadata.roleEntityRef,
+      'CREATE',
+      metadata.source,
+      metadata.modifiedBy!,
+      err,
+    );
     throw err;
   }
 
@@ -95,7 +108,13 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
       const err = new NotFoundError(
         `A metadata for role '${oldRoleEntityRef}' was not found`,
       );
-      this.aLog.roleError(oldRoleEntityRef, 'UPDATE', err);
+      this.aLog.roleError(
+        oldRoleEntityRef,
+        'UPDATE',
+        newRoleMetadata.source,
+        newRoleMetadata.modifiedBy!,
+        err,
+      );
       throw err;
     }
 
@@ -106,7 +125,13 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
       const err = new InputError(
         `The RoleMetadata.source field is 'read-only'.`,
       );
-      this.aLog.roleError(oldRoleEntityRef, 'UPDATE', err);
+      this.aLog.roleError(
+        oldRoleEntityRef,
+        'UPDATE',
+        newRoleMetadata.source,
+        newRoleMetadata.modifiedBy!,
+        err,
+      );
       throw err;
     }
 
@@ -125,7 +150,13 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
           currentMetadataDao,
         )}' with new value: '${JSON.stringify(newRoleMetadata)}'.`,
       );
-      this.aLog.roleError(oldRoleEntityRef, 'UPDATE', err);
+      this.aLog.roleError(
+        oldRoleEntityRef,
+        'UPDATE',
+        newRoleMetadata.source,
+        newRoleMetadata.modifiedBy!,
+        err,
+      );
       throw err;
     }
     this.aLog.roleInfo(newRoleMetadata, 'UPDATE');
@@ -133,6 +164,7 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
 
   async removeRoleMetadata(
     roleEntityRef: string,
+    source: Source,
     modifiedBy: string,
     trx: Knex.Transaction,
   ): Promise<void> {
@@ -141,7 +173,7 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
       const err = new NotFoundError(
         `A metadata for role '${roleEntityRef}' was not found`,
       );
-      this.aLog.roleError(roleEntityRef, 'DELETE', err);
+      this.aLog.roleError(roleEntityRef, 'DELETE', source, modifiedBy, err);
       throw err;
     }
 
@@ -175,4 +207,19 @@ export function metadataToDao(
     source: roleMetadata.source,
     description: roleMetadata.description,
   };
+}
+
+export function mergeMetadata(
+  currentMetadata: RoleMetadataDao,
+  newMetadata: RoleMetadataDao,
+): RoleMetadataDao {
+  const mergedMetaData: RoleMetadataDao = { ...currentMetadata };
+  mergedMetaData.lastModified =
+    newMetadata.lastModified ?? new Date().toUTCString();
+  mergedMetaData.modifiedBy = newMetadata.modifiedBy;
+  mergedMetaData.description =
+    newMetadata.description ?? currentMetadata.description;
+  mergedMetaData.roleEntityRef = newMetadata.roleEntityRef;
+  mergedMetaData.source = newMetadata.source;
+  return mergedMetaData;
 }

@@ -70,18 +70,17 @@ export class PolicyBuilder {
     await migrate(databaseManager);
     const knex = await databaseManager.getClient();
 
+    const auditLog = new AuditLogger(env.logger);
     const conditionStorage = new DataBaseConditionalStorage(knex);
 
     const policyMetadataStorage = new DataBasePolicyMetadataStorage(knex);
-    const roleMetadataStorage = new DataBaseRoleMetadataStorage(
-      knex,
-      new AuditLogger(env.logger),
-    );
+    const roleMetadataStorage = new DataBaseRoleMetadataStorage(knex, auditLog);
     const enforcerDelegate = new EnforcerDelegate(
       enf,
       policyMetadataStorage,
       roleMetadataStorage,
       knex,
+      auditLog,
     );
 
     const options: RouterOptions = {
@@ -124,6 +123,7 @@ export class PolicyBuilder {
       conditionStorage,
       pluginIdProvider,
       roleMetadataStorage,
+      auditLog,
     );
     return server.serve();
   }

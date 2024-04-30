@@ -29,7 +29,7 @@ const addPolicy = async (
   const source = await policyMetadataStorage?.findPolicyMetadata(policy);
 
   if (!(await enf.hasPolicy(...policy))) {
-    await enf.addPolicy(policy, 'csv-file');
+    await enf.addPolicy(policy, 'csv-file', CSV_PERMISSION_POLICY_FILE_AUTHOR);
   } else if (source?.source !== 'csv-file') {
     logger.warn(
       `Duplicate policy: ${policy[0]}, ${policy[1]}, ${policy[2]} found with the source ${source?.source}`,
@@ -50,7 +50,13 @@ const removeEnforcerPolicies = async (
       !(await tempEnf.hasPolicy(...policy)) &&
       enfPolicySource?.source === 'csv-file'
     ) {
-      await enf.removePolicy(policy, 'csv-file', true);
+      await enf.removePolicy(
+        policy,
+        'csv-file',
+        CSV_PERMISSION_POLICY_FILE_AUTHOR,
+        false,
+        true,
+      );
     }
   }
 };
@@ -167,7 +173,13 @@ export const loadFilteredPoliciesFromCSV = async (
     }
 
     if (isDupFlipPolicy && isCSVSource) {
-      await enf.removePolicy(effectFlipPolicy, 'csv-file', true);
+      await enf.removePolicy(
+        effectFlipPolicy,
+        'csv-file',
+        CSV_PERMISSION_POLICY_FILE_AUTHOR,
+        false,
+        true,
+      );
 
       enforcerPolicies = enforcerPolicies.filter(
         policyCheck => !isEqual(policyCheck, effectFlipPolicy),
@@ -334,7 +346,13 @@ export const removedOldPermissionPoliciesFileData = async (
     );
   }
   if (policiesToDelete.length > 0) {
-    await enf.removePolicies(policiesToDelete, 'csv-file', true);
+    await enf.removePolicies(
+      policiesToDelete,
+      'csv-file',
+      CSV_PERMISSION_POLICY_FILE_AUTHOR,
+      false,
+      true,
+    );
   }
 };
 
@@ -373,7 +391,12 @@ export const addPermissionPoliciesFileData = async (
     if (duplicateError) {
       logger.warn(duplicateError.message);
     }
-    await enf.addOrUpdatePolicy(policy, 'csv-file', true);
+    await enf.addOrUpdatePolicy(
+      policy,
+      'csv-file',
+      CSV_PERMISSION_POLICY_FILE_AUTHOR,
+      true,
+    );
   }
 
   for (const groupPolicy of groupPolicies) {

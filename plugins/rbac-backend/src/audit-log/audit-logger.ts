@@ -11,11 +11,11 @@ type LogMsg = {
   message: string;
   isAuditLog: true;
   entityRef: string;
+  source: Source;
+  modifiedBy?: string;
 };
 
 type LogMsgWithRoleInfo = LogMsg & {
-  source: Source;
-  modifiedBy?: string;
   lastModified?: string;
   author?: string;
   createdAt?: string;
@@ -33,51 +33,73 @@ class UnknownErrorWrapper extends Error {
 export class AuditLogger {
   constructor(private readonly logger: Logger) {}
 
+  // todo add members information.....
   roleInfo(metadata: RoleMetadataDao, operation: Operation) {
     const logMsg: LogMsg = {
       level: 'info',
       message: `${this.fmtToPastTime(operation)} '${metadata.roleEntityRef}'`,
       isAuditLog: true,
       entityRef: metadata.roleEntityRef,
+      source: metadata.source,
+      modifiedBy: metadata.modifiedBy,
     };
 
     this.logger.log(this.toLogMsgWithRoleInfo(logMsg, metadata));
   }
 
-  roleError(roleEntityRef: string, operation: Operation, error: Error) {
+  roleError(
+    roleEntityRef: string,
+    operation: Operation,
+    source: Source,
+    modifiedBy: string,
+    error: Error,
+  ) {
     const msg: LogMsg = {
       level: 'error',
       message: `Fail to ${operation} '${roleEntityRef}'. Cause: ${error.message}`,
       isAuditLog: true,
       entityRef: roleEntityRef,
+      source,
+      modifiedBy,
     };
     this.logger.log(msg);
   }
 
   permissionInfo(
-    policy: string[],
+    policies: string[][],
     operation: Operation,
-    roleMetadata?: RoleMetadataDao,
+    source: Source,
+    modifiedBy: string,
+    oldPolicies?: string[][],
   ) {
-    const actor = roleMetadata ? roleMetadata.roleEntityRef : policy[0];
-    let msg: LogMsg | LogMsgWithRoleInfo = {
-      level: 'info',
-      message: `Permission policy ${policy} was ${this.fmtToPastTime(
+    const entityRef = policies[0][0];
+    let message = `${this.fmtToPastTime(
+      operation,
+    )} permission policies ${JSON.stringify(policies)} for '${entityRef}'`;
+
+    if (operation === 'UPDATE') {
+      message = `${this.fmtToPastTime(
         operation,
-      )} for: ${actor}`,
-      isAuditLog: true,
-      entityRef: actor,
-    };
-    if (roleMetadata) {
-      msg = this.toLogMsgWithRoleInfo(msg, roleMetadata);
+      )} permission policies from ${JSON.stringify(
+        policies,
+      )} to ${JSON.stringify(oldPolicies)} for '${entityRef}'`;
     }
 
-    this.logger.log(msg);
+    this.logger.log({
+      level: 'info',
+      message,
+      isAuditLog: true,
+      entityRef,
+      source,
+      modifiedBy,
+    });
   }
 
   permissionError(
-    policy: string[],
+    policies: string[][],
     operation: Operation,
+    source: Source,
+    modifiedBy: string,
     error: Error | unknown,
   ) {
     const e =
@@ -87,10 +109,12 @@ export class AuditLogger {
     const msg: LogMsg = {
       level: 'error',
       message: `Fail to ${operation} permission policy: '${JSON.stringify(
-        policy,
+        policies,
       )}'. Cause: ${e.message}. Stack trace: ${e.stack}`,
       isAuditLog: true,
-      entityRef: policy[0],
+      entityRef: policies[0][0],
+      source,
+      modifiedBy,
     };
 
     this.logger.log(msg);

@@ -46,6 +46,7 @@ import {
 } from '@janus-idp/backstage-plugin-rbac-common';
 import { PluginIdProvider } from '@janus-idp/backstage-plugin-rbac-node';
 
+import { AuditLogger } from '../audit-log/audit-logger';
 import { ConditionalStorage } from '../database/conditional-storage';
 import {
   daoToMetadata,
@@ -74,6 +75,7 @@ export class PolicesServer {
     private readonly conditionalStorage: ConditionalStorage,
     private readonly pluginIdProvider: PluginIdProvider,
     private readonly roleMetadata: RoleMetadataStorage,
+    private readonly auditLog: AuditLogger,
   ) {}
 
   private async authorize(
@@ -196,7 +198,17 @@ export class PolicesServer {
 
         const processedPolicies = await this.processPolicies(policyRaw, true);
 
-        await this.enforcer.removePolicies(processedPolicies, 'rest');
+        // todo try/catch and log error
+        const user = await this.identity.getIdentity({ request });
+        const modifiedBy = user?.identity.userEntityRef!;
+        await this.enforcer.removePolicies(
+          processedPolicies,
+          'rest',
+          modifiedBy,
+        );
+
+        // this.auditLog.permissionInfo(processedPolicies, 'DELETE', 'rest', modifiedBy);
+
         response.status(204).end();
       },
     );
@@ -218,7 +230,16 @@ export class PolicesServer {
 
       const processedPolicies = await this.processPolicies(policyRaw);
 
-      await this.enforcer.addPolicies(processedPolicies, 'rest');
+      const entityRef = processedPolicies[0][0];
+      const roleMetadata = await this.roleMetadata.findRoleMetadata(entityRef);
+      if (entityRef.startsWith('role:default') && !roleMetadata) {
+        throw new Error(`Corresponding role ${entityRef} was not found`);
+      }
+
+      const user = await this.identity.getIdentity({ request });
+      const modifiedBy = user?.identity.userEntityRef!;
+      await this.enforcer.addPolicies(processedPolicies, 'rest', modifiedBy);
+      // this.auditLog.permissionInfo(processedPolicies, 'CREATE', 'rest', modifiedBy);
 
       response.status(201).end();
     });
@@ -284,12 +305,23 @@ export class PolicesServer {
           'new policy',
         );
 
+        const roleMetadata =
+          await this.roleMetadata.findRoleMetadata(entityRef);
+        if (entityRef.startsWith('role:default') && !roleMetadata) {
+          throw new Error(`Corresponding role ${entityRef} was not found`);
+        }
+
+        const user = await this.identity.getIdentity({ request });
+        const modifiedBy = user?.identity.userEntityRef!;
         await this.enforcer.updatePolicies(
           processedOldPolicy,
           processedNewPolicy,
           'rest',
+          modifiedBy,
           false,
         );
+
+        // this.auditLog.permissionInfo(processedNewPolicy,'UPDATE', 'rest', modifiedBy, processedOldPolicy);
 
         response.status(200).end();
       },
