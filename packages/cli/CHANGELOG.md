@@ -1,3 +1,10 @@
+## @janus-idp/cli [1.8.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.8.1...@janus-idp/cli@1.8.2) (2024-04-30)
+
+
+### Other changes
+
+* **cli:** new `--in-place`/`--no-in-place` option to the `export-dynamic-plugin` CLI command to allow exporting to `dist-dynamic` (when value is `false`). ([#1584](https://github.com/janus-idp/backstage-plugins/issues/1584)) ([4b5cc40](https://github.com/janus-idp/backstage-plugins/commit/4b5cc403c00fab222bf5d5faa43a30c7fa6a97a4))
+
 ## @janus-idp/cli [1.8.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.8.0...@janus-idp/cli@1.8.1) (2024-04-25)
 
 
