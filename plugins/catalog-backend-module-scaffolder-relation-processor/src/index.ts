@@ -1,10 +1,4 @@
-/***/
-/**
- * The scaffolder-relation-processor backend module for the catalog-backend plugin.
- *
- * @packageDocumentation
- */
-
-export { catalogModuleScaffolderRelationProcessor as default } from './module';
 export * from './relations';
 export * from './types';
+export * from './dynamic/index';
+export * from './ScaffolderRelationEntityProcessor';

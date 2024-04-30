@@ -42,6 +42,7 @@
   },
   "dependencies": {
     "@backstage/backend-common": "^0.21.6",
+    "@backstage/backend-dynamic-feature-service": "^0.2.8",
     "@backstage/backend-plugin-api": "^0.6.16",
     "@backstage/catalog-model": "^1.4.5",
     "@backstage/plugin-catalog-common": "^1.0.22",
