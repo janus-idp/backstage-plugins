@@ -11,11 +11,7 @@ import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 
-import {
-  createJiraTicket,
-  getJiraUsernameByEmail,
-  getTicketDetails,
-} from '../api';
+import { JiraApiService } from '../api';
 import { DatabaseFeedbackStore } from '../database/feedbackStore';
 import { FeedbackCategory, FeedbackModel } from '../model/feedback.model';
 import { NodeMailer } from './emails';
@@ -124,13 +120,13 @@ export async function createRouter(
             config.getConfigArray('feedback.integrations.jira')[0];
           host = serviceConfig.getString('host');
           const authToken = serviceConfig.getString('token');
+          const hostType = serviceConfig.getOptionalString('hostType');
 
           const projectKey = entityRef.metadata.annotations['jira/project-key'];
-          const jiraUsername = await getJiraUsernameByEmail(
-            host,
-            reporterEmail,
-            authToken,
-          );
+          const jiraService = new JiraApiService(host, authToken, hostType);
+          const jiraUsername =
+            await jiraService.getJiraUsernameByEmail(reporterEmail);
+
           // if jira id is not there for reporter, add reporter email in description
           const jiraDescription = reqData.description!.concat(
             `\n\n${
@@ -142,9 +138,7 @@ export async function createRouter(
             }]`,
           );
 
-          const resp = await createJiraTicket({
-            host: host,
-            authToken: authToken,
+          const resp = await jiraService.createJiraTicket({
             projectKey: projectKey,
             summary: reqData.summary,
             description: jiraDescription,
@@ -278,7 +272,10 @@ export async function createRouter(
           host = serviceConfig.getString('host');
           const authToken = serviceConfig.getString('token');
 
-          const resp = await getTicketDetails(host, ticketId, authToken);
+          const resp = await new JiraApiService(
+            host,
+            authToken,
+          ).getTicketDetails(ticketId);
           return res.status(200).json({
             data: { ...resp },
             message: 'fetched successfully',

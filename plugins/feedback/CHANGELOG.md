@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-feedback [1.1.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback@1.1.1...@janus-idp/backstage-plugin-feedback@1.1.2) (2024-04-30)
+
+
+### Bug Fixes
+
+* **feedback:** add support for jira cloud instance ([#1582](https://github.com/janus-idp/backstage-plugins/issues/1582)) ([5425e54](https://github.com/janus-idp/backstage-plugins/commit/5425e5494c9b8301e6732f534d5ede889996342c)), closes [#1543](https://github.com/janus-idp/backstage-plugins/issues/1543)
+
 ## @janus-idp/backstage-plugin-feedback [1.1.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback@1.1.0...@janus-idp/backstage-plugin-feedback@1.1.1) (2024-04-15)
 
 

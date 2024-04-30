@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-quay [1.6.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.6.1...@janus-idp/backstage-plugin-quay@1.6.2) (2024-04-30)
+
+
+### Bug Fixes
+
+* **ui:** remove extra inline style ([#1548](https://github.com/janus-idp/backstage-plugins/issues/1548)) ([4f38030](https://github.com/janus-idp/backstage-plugins/commit/4f3803068f9b5e3007d85feaf7fb12e837ce09d5))
+
 ## @janus-idp/backstage-plugin-quay [1.6.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.6.0...@janus-idp/backstage-plugin-quay@1.6.1) (2024-04-25)
 
 
