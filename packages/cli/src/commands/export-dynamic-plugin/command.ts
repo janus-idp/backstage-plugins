@@ -56,7 +56,7 @@ export async function command(opts: OptionValues): Promise<void> {
       targetPath = await backendEmbedAsCode(roleInfo, opts);
     }
     configSchemaPath = path.join(targetPath, 'dist/configSchema.json');
-  } else if (role === 'frontend-plugin') {
+  } else if (role === 'frontend-plugin' || role === 'frontend-plugin-module') {
     targetPath = await frontend(roleInfo, opts);
     configSchemaPath = path.join(targetPath, 'dist-scalprum/configSchema.json');
   } else {
