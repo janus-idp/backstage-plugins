@@ -71,7 +71,7 @@ export const sharedModules = {
 };
 
 export async function createScalprumConfig(
-  paths: BundlingPaths,
+  paths: BundlingPaths & { targetScalprumDist: string },
   options: DynamicPluginOptions,
 ): Promise<webpack.Configuration> {
   const { checksEnabled, isDev } = options;

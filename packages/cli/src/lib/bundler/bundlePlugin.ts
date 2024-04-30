@@ -23,23 +23,35 @@ function applyContextToError(error: string, moduleName: string): string {
 }
 
 export async function buildScalprumBundle(
-  options: BundlingPathsOptions & DynamicPluginOptions,
+  options: BundlingPathsOptions &
+    DynamicPluginOptions & {
+      resolvedScalprumDistPath: string;
+    },
 ) {
   const paths = resolveBundlingPaths(options);
-  const config = await createScalprumConfig(paths, {
-    ...options,
-    checksEnabled: false,
-    isDev: false,
-    baseUrl: resolveBaseUrl(options.frontendConfig),
-  });
+  const config = await createScalprumConfig(
+    {
+      targetScalprumDist: options.resolvedScalprumDistPath,
+      ...paths,
+    },
+    {
+      ...options,
+      checksEnabled: false,
+      isDev: false,
+      baseUrl: resolveBaseUrl(options.frontendConfig),
+    },
+  );
 
   const isCi = yn(process.env.CI, { default: false });
 
   const previousFileSizes = await measureFileSizesBeforeBuild(
-    paths.targetScalprumDist,
+    options.resolvedScalprumDistPath,
   );
-  await fs.emptyDir(paths.targetScalprumDist);
+  await fs.emptyDir(options.resolvedScalprumDistPath);
 
+  // TODO(davidfestal): ask @tumido or @Hyperkid123if this still makes sense here for dynamic plugins.
+  // That seems strange since the public assets are not copied to `dist-scalprum`,
+  // which is the place from where the dynamic plugin assets will be served
   if (paths.targetPublic) {
     await fs.copy(paths.targetPublic, paths.targetDist, {
       dereference: true,
@@ -56,7 +68,7 @@ export async function buildScalprumBundle(
   printFileSizesAfterBuild(
     stats,
     previousFileSizes,
-    paths.targetScalprumDist,
+    options.resolvedScalprumDistPath,
     WARN_AFTER_BUNDLE_GZIP_SIZE,
     WARN_AFTER_CHUNK_GZIP_SIZE,
   );
