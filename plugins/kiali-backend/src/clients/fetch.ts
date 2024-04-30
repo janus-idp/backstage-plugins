@@ -12,8 +12,18 @@ import {
   SessionInfo,
 } from './Auth';
 
-export type AuthValid = {
+export enum ValidationCategory {
+  configuration = 'configuration',
+  authentication = 'authentication',
+  versionSupported = 'versionSupported',
+  networking = 'networking',
+  unknown = 'unknown',
+}
+
+export type KialiValidations = {
   verify: boolean;
+  category: ValidationCategory;
+  title?: string;
   missingAttributes?: string[];
   message?: string;
   helper?: string;
@@ -32,13 +42,9 @@ export class KialiFetcher {
     this.kialiAuth = new KialiAuthentication(KD);
   }
 
-  newRequest = async <P>(
-    endpoint: string,
-    auth: boolean = false,
-    method?: string,
-  ) => {
+  newRequest = async <P>(endpoint: string, auth: boolean = false) => {
     this.logger.info(`Query to ${endpoint}`);
-    return axios.request<P>(this.getRequestInit(endpoint, auth, method));
+    return axios.request<P>(this.getRequestInit(endpoint, auth));
   };
 
   private async getAuthInfo(): Promise<AuthInfo> {
@@ -49,9 +55,10 @@ export class KialiFetcher {
     return this.kialiAuth.getSession();
   }
 
-  private validateConfiguration = (auth: AuthInfo): AuthValid => {
-    const result: AuthValid = {
+  private validateConfiguration = (auth: AuthInfo): KialiValidations => {
+    const result: KialiValidations = {
       verify: true,
+      category: ValidationCategory.unknown,
       authData: auth,
     };
     switch (auth.strategy) {
@@ -63,6 +70,8 @@ export class KialiFetcher {
           this.KialiDetails.serviceAccountToken === ''
         ) {
           result.verify = false;
+          result.title = 'Authentication failed. Missing Configuration';
+          result.category = ValidationCategory.configuration;
           result.message = `Attribute 'serviceAccountToken' is not in the backstage configuration`;
           result.helper = `For more information follow the steps in https://janus-idp.io/plugins/kiali`;
           result.missingAttributes = ['serviceAccountToken'];
@@ -71,6 +80,8 @@ export class KialiFetcher {
       }
       default:
         result.verify = false;
+        result.category = ValidationCategory.configuration;
+        result.title = 'Authentication failed. Not supported';
         result.message = `Strategy ${auth.strategy} is not supported in Kiali backstage plugin yet`;
         break;
     }
@@ -78,23 +89,37 @@ export class KialiFetcher {
     return result;
   };
 
-  async checkSession(): Promise<AuthValid> {
-    let checkAuth: AuthValid = { verify: true };
+  async checkSession(): Promise<KialiValidations> {
+    let checkValidations: KialiValidations = {
+      verify: true,
+      category: ValidationCategory.unknown,
+    };
     /*
      * Get/Update AuthInformation from /api/auth/info
      */
 
-    const auth = await this.getAuthInfo();
-    this.kialiAuth.setAuthInfo(auth);
-    this.logger.info(`AuthInfo: ${JSON.stringify(auth)}`);
-    /*
-     * Check Configuration
-     */
-    checkAuth = this.validateConfiguration(auth);
+    try {
+      const auth = await this.getAuthInfo();
+      this.kialiAuth.setAuthInfo(auth);
+      this.logger.info(`AuthInfo: ${JSON.stringify(auth)}`);
+      /*
+       * Check Configuration
+       */
+      checkValidations = this.validateConfiguration(auth);
+    } catch (error: any) {
+      return {
+        verify: false,
+        category: ValidationCategory.networking,
+        title: 'Error reaching Kiali',
+        message: error.message || '',
+        helper: `Check if ${this.KialiDetails.url} works`,
+      };
+    }
+
     /*
      * Check if the actual cookie/session is valid and if the configuration is right
      */
-    if (checkAuth.verify && this.kialiAuth.shouldRelogin()) {
+    if (checkValidations.verify && this.kialiAuth.shouldRelogin()) {
       this.logger.info(`User must relogin`);
       await this.newRequest<AuthInfo>('api/authenticate', true)
         .then(resp => {
@@ -106,11 +131,13 @@ export class KialiFetcher {
           this.logger.info(`User ${session.username} logged in kiali plugin`);
         })
         .catch(err => {
-          checkAuth.verify = false;
-          checkAuth.message = this.handleUnsuccessfulResponse(err);
+          checkValidations.verify = false;
+          checkValidations.category = ValidationCategory.authentication;
+          checkValidations.title = 'Authentication failed';
+          checkValidations.message = this.handleUnsuccessfulResponse(err);
         });
     }
-    return checkAuth;
+    return checkValidations;
   }
 
   private bufferFromFileOrString(file?: string, data?: string): Buffer | null {
@@ -126,7 +153,6 @@ export class KialiFetcher {
   private getRequestInit = (
     endpoint: string,
     auth: boolean = false,
-    method?: string,
   ): AxiosRequestConfig => {
     const requestInit: AxiosRequestConfig = { timeout: TIMEOUT_FETCH };
     const headers = { 'X-Auth-Type-Kiali-UI': '1' };
@@ -141,7 +167,7 @@ export class KialiFetcher {
       requestInit.data = params;
       requestInit.method = 'post';
     } else {
-      requestInit.method = method ? method : 'get';
+      requestInit.method = 'get';
       requestInit.headers = {
         ...headers,
         Accept: 'application/json',

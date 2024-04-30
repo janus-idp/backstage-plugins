@@ -8,6 +8,7 @@ export const rootRouteRef = createRouteRef({
   id: 'kiali',
 });
 
+/* Kiali Page Routes */
 export const overviewRouteRef = createSubRouteRef({
   id: 'kiali-overview',
   path: '/overview',

@@ -23,7 +23,7 @@ import { Workload, WorkloadQuery } from '../../types/Workload';
 import { WorkloadInfo } from './WorkloadInfo';
 import { WorkloadPodLogs } from './WorkloadPodLogs';
 
-export const WorkloadDetailsPage = () => {
+export const WorkloadDetailsPage = (props: { entity?: boolean }) => {
   const { namespace, workload } = useParams();
   const kialiClient = useApi(kialiApiRef);
   const kialiState = React.useContext(KialiContext) as KialiAppState;
@@ -183,7 +183,7 @@ export const WorkloadDetailsPage = () => {
   return (
     <div className={baseStyle}>
       <Content>
-        <BreadcrumbView />
+        <BreadcrumbView entity={props.entity} />
         <DefaultSecondaryMasthead
           elements={grids()}
           onRefresh={() => fetchWorkload()}

@@ -2,7 +2,7 @@ import { AxiosError } from 'axios';
 import { createLogger, transports } from 'winston';
 
 import { AuthStrategy } from './Auth';
-import { KialiFetcher } from './fetch';
+import { KialiFetcher, ValidationCategory } from './fetch';
 
 const logger = createLogger({
   transports: [new transports.Console({ silent: true })],
@@ -22,6 +22,7 @@ describe('kiali Fetch', () => {
         });
 
         expect(result.verify).toBeTruthy();
+        expect(result.category).toBe(ValidationCategory.unknown);
         expect(result.message).toBeUndefined();
         expect(result.missingAttributes).toBeUndefined();
         expect(result.helper).toBeUndefined();
@@ -39,6 +40,7 @@ describe('kiali Fetch', () => {
         });
 
         expect(result.verify).toBeFalsy();
+        expect(result.category).toBe(ValidationCategory.configuration);
         expect(result.message).toBeDefined();
         expect(result.message).toStrictEqual(
           "Attribute 'serviceAccountToken' is not in the backstage configuration",
@@ -60,6 +62,7 @@ describe('kiali Fetch', () => {
         });
 
         expect(result.verify).toBeTruthy();
+        expect(result.category).toBe(ValidationCategory.unknown);
         expect(result.message).toBeUndefined();
         expect(result.missingAttributes).toBeUndefined();
         expect(result.helper).toBeUndefined();
@@ -78,6 +81,7 @@ describe('kiali Fetch', () => {
         });
 
         expect(result.verify).toBeFalsy();
+        expect(result.category).toBe(ValidationCategory.configuration);
         expect(result.message).toBeDefined();
         expect(result.message).toStrictEqual(
           `Strategy ${AuthStrategy.openid} is not supported in Kiali backstage plugin yet`,
@@ -124,6 +128,23 @@ describe('kiali Fetch', () => {
         expect(result).toBeDefined();
         expect(result).toBeInstanceOf(Buffer);
       });
+    });
+  });
+
+  describe('Return networking error in checkSession', () => {
+    it('Respond with verify category to network', async () => {
+      const kialiFetch = new KialiFetcher(
+        { url: 'https://localhost:4000' },
+        logger,
+      );
+
+      jest.mock('./fetch', () => ({
+        getAuthInfo: Promise.reject({}),
+      }));
+      const validations = await kialiFetch.checkSession();
+      expect(validations).toBeDefined();
+      expect(validations.title).toBe('Error reaching Kiali');
+      expect(validations.category).toBe(ValidationCategory.networking);
     });
   });
 

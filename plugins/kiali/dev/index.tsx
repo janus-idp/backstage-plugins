@@ -2,19 +2,31 @@ import React from 'react';
 import { BrowserRouter, useNavigate } from 'react-router-dom';
 
 import { Entity } from '@backstage/catalog-model';
-import { Content, HeaderTabs, Page } from '@backstage/core-components';
+import {
+  Content,
+  HeaderTabs,
+  InfoCard,
+  Page,
+} from '@backstage/core-components';
 import { createDevApp } from '@backstage/dev-utils';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { TestApiProvider } from '@backstage/test-utils';
 
+import { Grid } from '@material-ui/core';
+
 import { kialiPlugin } from '../src';
-import { pluginRoot } from '../src/components/BreadcrumbView/BreadcrumbView';
+import { getEntityRoutes, getRoutes } from '../src/components/Router';
 import { KialiHeader } from '../src/pages/Kiali/Header/KialiHeader';
+import { KialiHelper } from '../src/pages/Kiali/KialiHelper';
 import { KialiNoAnnotation } from '../src/pages/Kiali/KialiNoAnnotation';
 import { KialiNoResources } from '../src/pages/Kiali/KialiNoResources';
-import { getRoutes } from '../src/Router';
+import { pluginName } from '../src/plugin';
 import { KialiApi, kialiApiRef } from '../src/services/Api';
-import { KialiProvider } from '../src/store/KialiProvider';
+import {
+  KialiChecker,
+  KialiProvider,
+  ValidationCategory,
+} from '../src/store/KialiProvider';
 import { App, AppQuery } from '../src/types/App';
 import { AppList, AppListQuery } from '../src/types/AppList';
 import { AuthInfo } from '../src/types/Auth';
@@ -467,11 +479,11 @@ interface Props {
 export const TabsMock = () => {
   const [selectedTab, setSelectedTab] = React.useState<number>(0);
   const tabs = [
-    { label: 'Overview', route: `${pluginRoot}/overview` },
-    { label: 'Workloads', route: `${pluginRoot}/workloads` },
-    { label: 'Services', route: `${pluginRoot}/services` },
-    { label: 'Applications', route: `${pluginRoot}/applications` },
-    { label: 'Istio Config', route: `${pluginRoot}/istio` },
+    { label: 'Overview', route: `${pluginName}/overview` },
+    { label: 'Workloads', route: `${pluginName}/workloads` },
+    { label: 'Services', route: `${pluginName}/services` },
+    { label: 'Applications', route: `${pluginName}/applications` },
+    { label: 'Istio Config', route: `${pluginName}/istio` },
   ];
   const navigate = useNavigate();
   return (
@@ -501,7 +513,7 @@ const MockProvider = (props: Props) => {
               {getRoutes(true)}
             </>
           )}
-          {props.isEntity && <Content>{getRoutes(true)}</Content>}
+          {props.isEntity && <Content>{getEntityRoutes()}</Content>}
         </Page>
       </BrowserRouter>
     </KialiProvider>
@@ -518,17 +530,84 @@ const MockProvider = (props: Props) => {
   );
 };
 
+const MockKialiError = () => {
+  const errorsTypes: KialiChecker[] = [
+    {
+      verify: false,
+      title: 'Error reaching Kiali',
+      message: ' Error status code 502',
+      category: ValidationCategory.networking,
+      helper: 'Check if http://kialiendpoint works',
+    },
+    {
+      verify: false,
+      title: 'Authentication failed. Missing Configuration',
+      message: `Attribute 'serviceAccountToken' is not in the backstage configuration`,
+      category: ValidationCategory.configuration,
+      helper: 'Check if http://kialiendpoint works',
+      missingAttributes: ['serviceAccountToken'],
+    },
+    {
+      verify: false,
+      title: 'Authentication failed. Not supported',
+      message: `Strategy oauth2 is not supported in Kiali backstage plugin yet`,
+      category: ValidationCategory.configuration,
+    },
+    {
+      verify: false,
+      title: 'Authentication failed',
+      message: `We can't authenticate`,
+      category: ValidationCategory.authentication,
+    },
+    {
+      verify: false,
+      title: 'Unkown error ',
+      message: `Internal error`,
+      category: ValidationCategory.unknown,
+    },
+    {
+      verify: false,
+      title: 'kiali version not supported',
+      message: `Kiali version supported is v1.74, we found version v1.80`,
+      category: ValidationCategory.versionSupported,
+    },
+    {
+      verify: true,
+      title: 'True verification, we not expect something',
+      category: ValidationCategory.unknown,
+    },
+  ];
+
+  return (
+    <Page themeId="tool">
+      <Content>
+        <Grid container direction="column">
+          {errorsTypes.map(error => (
+            <Grid item>
+              <InfoCard
+                title={`Error type : ${error.category} -- ${error.title}`}
+              >
+                <KialiHelper check={error} />
+              </InfoCard>
+            </Grid>
+          ))}
+        </Grid>
+      </Content>
+    </Page>
+  );
+};
+
 createDevApp()
   .registerPlugin(kialiPlugin)
   .addPage({
     element: <MockProvider />,
     title: 'KialiPage',
-    path: `/${pluginRoot}/overview`,
+    path: `/${pluginName}/overview`,
   })
   .addPage({
-    element: <MockProvider isEntity />,
-    title: 'Entity',
-    path: `/${pluginRoot}/kiali/entity`,
+    element: <MockKialiError />,
+    title: 'Kiali error',
+    path: `/kiali-error`,
   })
   .addPage({
     element: <KialiNoResources entity={mockEntityAnnotationNoNamespace} />,

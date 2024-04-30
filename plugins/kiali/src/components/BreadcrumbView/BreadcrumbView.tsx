@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Link, Location, useLocation } from 'react-router-dom';
+import { Location, useLocation } from 'react-router-dom';
 
 import { Breadcrumbs } from '@material-ui/core';
 
@@ -7,6 +7,7 @@ import { HistoryManager } from '../../app/History';
 import { isMultiCluster, Paths } from '../../config';
 import { kialiStyle, useLinkStyle } from '../../styles/StyleUtils';
 import { dicIstioType } from '../../types/IstioConfigList';
+import { JanusObjectLink } from '../../utils/janusLinks';
 import { FilterSelected } from '../Filters/StatefulFilters';
 
 const ItemNames = {
@@ -16,7 +17,6 @@ const ItemNames = {
   istio: 'Istio Object',
 };
 
-export const pluginRoot = 'kiali';
 const IstioName = 'Istio Config';
 const namespaceRegex =
   /kiali\/([a-z0-9-]+)\/([\w-.]+)\/([\w-.*]+)(\/([\w-.]+))?(\/([\w-.]+))?/;
@@ -45,7 +45,7 @@ const breadcrumStyle = kialiStyle({
   marginTop: '-20px',
 });
 
-export const BreadcrumbView = () => {
+export const BreadcrumbView = (props: { entity?: boolean }) => {
   const capitalize = (str: string) => {
     return str?.charAt(0)?.toUpperCase() + str?.slice(1);
   };
@@ -68,17 +68,6 @@ export const BreadcrumbView = () => {
     return path?.pathItem === 'istio';
   };
 
-  const getItemPage = () => {
-    if (path) {
-      let pathT = `/${pluginRoot}/${path?.pathItem}/${path?.namespace}/${path?.item}`;
-      if (path?.cluster && isMultiCluster) {
-        pathT += `?clusterName=${path.cluster}`;
-      }
-      return pathT;
-    }
-    return '';
-  };
-
   const namespace = path ? path.namespace : '';
   const item = path ? path.item : '';
   const istioType = path ? path.istioType : '';
@@ -86,42 +75,64 @@ export const BreadcrumbView = () => {
   const linkStyle = useLinkStyle();
 
   const isIstio = isIstioF();
-  const linkItem = isIstio ? (
-    <>{item}</>
-  ) : (
-    <Link to={getItemPage()} onClick={cleanFilters}>
-      {item}
-    </Link>
-  );
 
-  const linkTo = `/${pluginRoot}/${pathItem}?namespaces=${namespace}&type=${
-    // @ts-ignore
-    dicIstioType[path?.istioType || '']
-  }`;
+  const tab = `tabresources=${pathItem}`;
+  const filterNs = `namespaces=${namespace}`;
 
   return (
     <div className={breadcrumStyle}>
       <Breadcrumbs>
-        <Link
-          to={`/${pluginRoot}/${pathItem}`}
+        <JanusObjectLink
+          entity={props.entity}
+          query={tab}
           onClick={cleanFilters}
           className={linkStyle}
+          type={pathItem}
         >
           {isIstio ? IstioName : capitalize(pathItem)}
-        </Link>
-        <Link
-          to={`/${pluginRoot}/${pathItem}?namespaces=${namespace}`}
+        </JanusObjectLink>
+        <JanusObjectLink
+          entity={props.entity}
+          query={props.entity ? `${tab}&${filterNs}` : filterNs}
           onClick={cleanFilters}
           className={linkStyle}
+          type={pathItem}
         >
           Namespace: {namespace}
-        </Link>
-        {isIstio && (
-          <Link to={linkTo} onClick={cleanFilters} className={linkStyle}>
-            {istioType ? istioTypeF(istioType) : istioType}
-          </Link>
+        </JanusObjectLink>
+        {isIstio ? (
+          <>
+            <JanusObjectLink
+              entity={props.entity}
+              query={`${filterNs}&type=${
+                // @ts-ignore
+                dicIstioType[path?.istioType || '']
+              }`}
+              onClick={cleanFilters}
+              className={linkStyle}
+              type={pathItem}
+            >
+              {istioType ? istioTypeF(istioType) : istioType}
+            </JanusObjectLink>
+            {' / '}
+            {item}
+          </>
+        ) : (
+          <JanusObjectLink
+            entity={props.entity}
+            query={
+              path?.cluster && isMultiCluster
+                ? `clusterName=${path.cluster}`
+                : ''
+            }
+            namespace={path?.namespace}
+            name={path?.item}
+            onClick={cleanFilters}
+            type={path?.pathItem}
+          >
+            {item}
+          </JanusObjectLink>
         )}
-        <>{linkItem}</>
       </Breadcrumbs>
     </div>
   );

@@ -11,8 +11,10 @@ import { KialiApiClient, kialiApiRef } from './services/Api';
 
 import '@patternfly/patternfly/patternfly.css';
 
+export const pluginName = 'kiali';
+
 export const kialiPlugin = createPlugin({
-  id: 'kiali',
+  id: pluginName,
   routes: {
     root: rootRouteRef,
     overview: overviewRouteRef,
@@ -33,7 +35,7 @@ export const kialiPlugin = createPlugin({
 export const KialiPage = kialiPlugin.provide(
   createRoutableExtension({
     name: 'KialiPage',
-    component: () => import('./Router').then(m => m.Router),
+    component: () => import('./components/Router').then(m => m.Router),
     mountPoint: rootRouteRef,
   }),
 );
@@ -55,7 +57,7 @@ export const EntityKialiContent: (
 ) => JSX.Element = kialiPlugin.provide(
   createRoutableExtension({
     name: 'EntityKialiContent',
-    component: () => import('./Router').then(m => m.EmbeddedRouter),
+    component: () => import('./components/Router').then(m => m.EmbeddedRouter),
     mountPoint: rootRouteRef,
   }),
 );

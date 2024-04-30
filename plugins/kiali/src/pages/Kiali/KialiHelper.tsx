@@ -2,10 +2,8 @@ import React from 'react';
 
 import {
   CodeSnippet,
-  Content,
   InfoCard,
   Link,
-  Page,
   WarningPanel,
 } from '@backstage/core-components';
 
@@ -22,8 +20,6 @@ export const KialiHelper = (props: { check: KialiChecker }) => {
         `Missing attributes: ${props.check.missingAttributes.join(',')}.`;
       return (
         <>
-          <br />
-          <br />
           <InfoCard>
             <CodeSnippet text={props.check.message} language="bash" />
           </InfoCard>
@@ -57,18 +53,11 @@ export const KialiHelper = (props: { check: KialiChecker }) => {
     </>
   );
 
-  const getTitle = () => {
-    if (!props.check.verify) {
-      return 'Authentication failed.';
-    }
-
-    return 'Unexpected Check';
-  };
-  return (
-    <Page themeId="tool">
-      <Content>
-        <WarningPanel title={getTitle()}>{printAuthentication}</WarningPanel>
-      </Content>
-    </Page>
+  return props.check.verify ? (
+    <></>
+  ) : (
+    <WarningPanel title={props.check.title || 'Unexpected Check'}>
+      {props.check.authData ? printAuthentication : pretty()}
+    </WarningPanel>
   );
 };

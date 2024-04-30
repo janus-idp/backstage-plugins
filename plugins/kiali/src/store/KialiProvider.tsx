@@ -36,9 +36,19 @@ import { PromisesRegistry } from '../utils/CancelablePromises';
 import { initialStore } from './ConfigStore';
 import { KialiContext } from './Context';
 
+export enum ValidationCategory {
+  configuration = 'configuration',
+  authentication = 'authentication',
+  versionSupported = 'versionSupported',
+  networking = 'networking',
+  unknown = 'unknown',
+}
+
 export type KialiChecker = {
   verify: boolean;
+  category: ValidationCategory;
   missingAttributes?: string[];
+  title?: string;
   message?: string;
   helper?: string;
   authData?: AuthInfo;
@@ -46,6 +56,7 @@ export type KialiChecker = {
 
 const initialChecker: KialiChecker = {
   verify: true,
+  category: ValidationCategory.unknown,
 };
 
 interface Props {
@@ -169,6 +180,7 @@ export const KialiProvider: React.FC<Props> = ({
       }
       setKialiCheck({
         verify: false,
+        category: ValidationCategory.unknown,
         message: `Error in axios: ${errDetails || err}`,
       });
     }
@@ -196,6 +208,7 @@ export const KialiProvider: React.FC<Props> = ({
       }
       setKialiCheck({
         verify: false,
+        category: ValidationCategory.networking,
         message: `Could not fetch auth info: ${errDetails || err}`,
       });
     }
@@ -255,7 +268,8 @@ export const KialiProvider: React.FC<Props> = ({
         alertUtils: alertUtils,
       }}
     >
-      {kialiCheck.verify ? children : <KialiHelper check={kialiCheck} />}
+      <KialiHelper check={kialiCheck} />
+      {children}
     </KialiContext.Provider>
   );
 };
