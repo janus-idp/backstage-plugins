@@ -35,7 +35,9 @@
     "test": "backstage-cli package test --passWithNoTests --coverage",
     "clean": "backstage-cli package clean",
     "prepack": "backstage-cli package prepack",
-    "postpack": "backstage-cli package postpack"
+    "postpack": "backstage-cli package postpack",
+    "build:copy": "yarn tsc && yarn build && yarn export-dynamic && yarn node scripts/copyToShowcase",
+    "watch": "nodemon --exec 'yarn build:copy' --ext ts,tsx --ignore dist --ignore dist-scalprum src"
   },
   "dependencies": {
     "@backstage/core-components": "^0.14.3",
@@ -77,7 +79,8 @@
     "@testing-library/react": "14.2.1",
     "@storybook/preview-api": "7.5.3",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "fs-extra": "11.1.1"
   },
   "peerDependencies": {
     "react": "^16.13.1 || ^17.0.0 || ^18.2.0",

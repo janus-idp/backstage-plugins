@@ -54,7 +54,9 @@
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
     "postversion": "yarn run export-dynamic",
-    "export-dynamic": "janus-cli package export-dynamic-plugin"
+    "export-dynamic": "janus-cli package export-dynamic-plugin",
+    "build:copy": "yarn tsc && yarn build && yarn export-dynamic && yarn node scripts/copyToShowcase",
+    "watch": "nodemon --exec 'yarn build:copy' --ext ts,tsx --ignore dist --ignore dist-scalprum src"
   },
   "dependencies": {
     "@backstage/backend-app-api": "^0.6.2",
