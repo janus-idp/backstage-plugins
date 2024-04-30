@@ -9,7 +9,6 @@ import fs from 'fs-extra';
 import webpack from 'webpack';
 import yn from 'yn';
 
-import { resolveBaseUrl } from './config';
 import { BundlingPathsOptions, resolveBundlingPaths } from './paths';
 import { createScalprumConfig } from './scalprumConfig';
 import { DynamicPluginOptions } from './types';
@@ -38,7 +37,6 @@ export async function buildScalprumBundle(
       ...options,
       checksEnabled: false,
       isDev: false,
-      baseUrl: resolveBaseUrl(options.frontendConfig),
     },
   );
 

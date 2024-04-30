@@ -107,7 +107,6 @@ export async function createScalprumConfig(
   plugins.push(
     new webpack.EnvironmentPlugin({
       HAS_REACT_DOM_CLIENT: false,
-      APP_CONFIG: options.frontendAppConfigs,
     }),
   );
 
