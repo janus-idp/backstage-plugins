@@ -2,7 +2,9 @@
   "extends": ["//"],
   "pipeline": {
     "tsc": {
-      "outputs": ["../../dist-types/plugins/catalog/**"],
+      "outputs": [
+        "../../dist-types/plugins/catalog-backend-module-scaffolder-relation-processor/**"
+      ],
       "dependsOn": ["^tsc"]
     }
   }
