@@ -58,7 +58,7 @@ const backend = createBackend();
 
 // Add the following line
 backend.add(
-  import('@janus-idp/backstage-scaffolder-backend-module-regex/alpha'),
+  import('@janus-idp/backstage-scaffolder-backend-module-servicenow/alpha'),
 );
 
 backend.start();
