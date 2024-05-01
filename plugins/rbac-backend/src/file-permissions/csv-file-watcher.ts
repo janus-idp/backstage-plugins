@@ -97,7 +97,7 @@ export class CSVFileWatcher {
     allowReload: boolean,
   ): Promise<void> {
     let content: string[][] = [];
-    // If the file is set, check for any new policies that need to be added
+    // If the file is set load the file contents
     if (csvFileName) {
       this.csvFileName = csvFileName;
       content = this.parse();

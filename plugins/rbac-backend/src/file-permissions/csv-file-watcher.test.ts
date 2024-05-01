@@ -269,10 +269,7 @@ describe('CSVFileWatcher', () => {
       ];
 
       await enforcerDelegate.addPolicy(legacyPermission, 'legacy');
-      // await enforcerDelegate.addGroupingPolicy(legacyRole, {
-      //   roleEntityRef: legacyRole[1],
-      //   source: 'legacy',
-      // });
+
       await csvFileWatcher.initialize(csvFileName, false);
 
       const enfPolicies = await enforcerDelegate.getPolicy();
