@@ -10,15 +10,13 @@ type LogMsg = {
   level: 'info' | 'error'; // todo should we support debug or another log levels?
   message: string;
   isAuditLog: true;
-  entityRef: string;
+  entityRef: string | string[];
   source: Source;
   modifiedBy?: string;
+  time: string;
 };
 
 type LogMsgWithRoleInfo = LogMsg & {
-  lastModified?: string;
-  author?: string;
-  createdAt?: string;
   roleDescription?: string;
 };
 
@@ -42,25 +40,34 @@ export class AuditLogger {
       entityRef: metadata.roleEntityRef,
       source: metadata.source,
       modifiedBy: metadata.modifiedBy,
+      time: new Date().toUTCString(),
     };
 
     this.logger.log(this.toLogMsgWithRoleInfo(logMsg, metadata));
   }
 
   roleError(
-    roleEntityRef: string,
-    operation: Operation,
+    roleEntityRefs: string | string[],
+    operation: Operation[],
+    error: Error | unknown,
     source: Source,
-    modifiedBy: string,
-    error: Error,
+    modifiedBy?: string,
   ) {
+    const e =
+      error instanceof Error
+        ? error
+        : new UnknownErrorWrapper('Unknown error occurred');
+
     const msg: LogMsg = {
       level: 'error',
-      message: `Fail to ${operation} '${roleEntityRef}'. Cause: ${error.message}`,
+      message: `Fail to ${operation} '${JSON.stringify(
+        roleEntityRefs,
+      )}'. Cause: ${e.message}. Stack trace: ${e.stack}`,
       isAuditLog: true,
-      entityRef: roleEntityRef,
+      entityRef: roleEntityRefs,
       source,
       modifiedBy,
+      time: new Date().toUTCString(),
     };
     this.logger.log(msg);
   }
@@ -85,19 +92,21 @@ export class AuditLogger {
       )} to ${JSON.stringify(oldPolicies)} for '${entityRef}'`;
     }
 
-    this.logger.log({
+    const msg: LogMsg = {
       level: 'info',
       message,
       isAuditLog: true,
       entityRef,
       source,
       modifiedBy,
-    });
+      time: new Date().toUTCString(),
+    };
+    this.logger.log(msg);
   }
 
   permissionError(
     policies: string[][],
-    operation: Operation,
+    operation: Operation[],
     source: Source,
     modifiedBy: string,
     error: Error | unknown,
@@ -115,6 +124,7 @@ export class AuditLogger {
       entityRef: policies[0][0],
       source,
       modifiedBy,
+      time: new Date().toUTCString(),
     };
 
     this.logger.log(msg);
@@ -133,19 +143,8 @@ export class AuditLogger {
       entityRef: metadata.roleEntityRef,
       source: metadata.source,
       modifiedBy: metadata.modifiedBy,
-      lastModified: '',
-      author: metadata.author ?? 'no information',
-      createdAt: '',
       roleDescription: metadata.description ?? 'no information',
     };
-
-    if (metadata.createdAt) {
-      result.createdAt = new Date(metadata.createdAt).toUTCString();
-    }
-
-    if (metadata.lastModified) {
-      result.lastModified = new Date(metadata.lastModified).toUTCString();
-    }
 
     return result;
   }

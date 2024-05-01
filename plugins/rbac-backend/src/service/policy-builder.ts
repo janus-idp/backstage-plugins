@@ -74,7 +74,7 @@ export class PolicyBuilder {
     const conditionStorage = new DataBaseConditionalStorage(knex);
 
     const policyMetadataStorage = new DataBasePolicyMetadataStorage(knex);
-    const roleMetadataStorage = new DataBaseRoleMetadataStorage(knex, auditLog);
+    const roleMetadataStorage = new DataBaseRoleMetadataStorage(knex);
     const enforcerDelegate = new EnforcerDelegate(
       enf,
       policyMetadataStorage,
