@@ -1,3 +1,12 @@
+## @janus-idp/cli [1.8.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.8.2...@janus-idp/cli@1.8.3) (2024-04-30)
+
+
+### Bug Fixes
+
+* **cli:** add `resolve.fallback` for node dependencies in the `export-dynamic-plugin` CLI for frontend plugins. ([#1590](https://github.com/janus-idp/backstage-plugins/issues/1590)) ([e860c3b](https://github.com/janus-idp/backstage-plugins/commit/e860c3bd179961af8bc6e68d5af57c69578badc7))
+* **cli:** allow exporting dynamic plugins from `frontend-plugin-module` packages. ([#1593](https://github.com/janus-idp/backstage-plugins/issues/1593)) ([55508ba](https://github.com/janus-idp/backstage-plugins/commit/55508baff436b41d7c99f119b2adb7047286bd00))
+* **cli:** remove the requirement for `app-config` when exporting fronted plugins to dynamic. ([#1592](https://github.com/janus-idp/backstage-plugins/issues/1592)) ([577efff](https://github.com/janus-idp/backstage-plugins/commit/577efff16b503a5f88126f2c5d26b7c4139e95d0))
+
 ## @janus-idp/cli [1.8.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.8.1...@janus-idp/cli@1.8.2) (2024-04-30)
 
 

@@ -1,6 +1,7 @@
 import { DynamicRemotePlugin } from '@openshift/dynamic-plugin-sdk-webpack';
 import ESLintPlugin from 'eslint-webpack-plugin';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
+import pickBy from 'lodash/pickBy';
 import webpack, { ProvidePlugin } from 'webpack';
 
 import { join as joinPath, resolve as resolvePath } from 'path';
@@ -106,7 +107,6 @@ export async function createScalprumConfig(
   plugins.push(
     new webpack.EnvironmentPlugin({
       HAS_REACT_DOM_CLIENT: false,
-      APP_CONFIG: options.frontendAppConfigs,
     }),
   );
 
@@ -142,6 +142,23 @@ export async function createScalprumConfig(
         ),
       },
       extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx', '.json', '.wasm'],
+      fallback: {
+        ...pickBy(require('node-libs-browser')),
+        module: false,
+        dgram: false,
+        dns: false,
+        fs: false,
+        http2: false,
+        net: false,
+        tls: false,
+        child_process: false,
+
+        /* new ignores */
+        path: false,
+        https: false,
+        http: false,
+        util: require.resolve('util/'),
+      },
     },
     module: {
       rules: loaders,
