@@ -1,7 +1,10 @@
+import React from 'react';
+
 import { Entity } from '@backstage/catalog-model';
 import { EntityLayout, EntitySwitch } from '@backstage/plugin-catalog';
+
 import Box from '@mui/material/Box';
-import React from 'react';
+
 import getMountPointData from '../../../utils/dynamicUI/getMountPointData';
 import Grid from '../Grid';
 

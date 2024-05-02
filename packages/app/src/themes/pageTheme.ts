@@ -1,4 +1,5 @@
-import { PageTheme, genPageTheme, shapes } from '@backstage/theme';
+import { genPageTheme, PageTheme, shapes } from '@backstage/theme';
+
 import { ThemeColors } from '../types/types';
 
 export const pageTheme = (input: ThemeColors): Record<string, PageTheme> => {

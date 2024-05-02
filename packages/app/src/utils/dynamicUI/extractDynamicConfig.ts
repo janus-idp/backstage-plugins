@@ -1,5 +1,6 @@
 import { Entity } from '@backstage/catalog-model';
 import { isKind } from '@backstage/plugin-catalog';
+
 import { hasAnnotation, isType } from '../../components/catalog/utils';
 import {
   DynamicModuleEntry,

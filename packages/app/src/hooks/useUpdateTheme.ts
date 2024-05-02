@@ -1,4 +1,5 @@
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
+
 import { ThemeColors } from '../types/types';
 
 export const useUpdateTheme = (selTheme: string): ThemeColors => {

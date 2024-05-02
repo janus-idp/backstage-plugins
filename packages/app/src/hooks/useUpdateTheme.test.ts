@@ -1,5 +1,7 @@
-import { renderHook } from '@testing-library/react-hooks';
 import { useApi } from '@backstage/core-plugin-api';
+
+import { renderHook } from '@testing-library/react-hooks';
+
 import { useUpdateTheme } from './useUpdateTheme';
 
 jest.mock('@backstage/core-plugin-api', () => ({

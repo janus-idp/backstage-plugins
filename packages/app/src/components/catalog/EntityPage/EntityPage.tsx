@@ -1,7 +1,9 @@
 import React from 'react';
+
 import { EntityLayout } from '@backstage/plugin-catalog';
+
+import { defaultTabs, tabChildren, tabRules } from './defaultTabs';
 import { dynamicEntityTab, DynamicEntityTabProps } from './DynamicEntityTab';
-import { defaultTabs, tabRules, tabChildren } from './defaultTabs';
 
 /**
  * Displays the tabs and content for a catalog entity

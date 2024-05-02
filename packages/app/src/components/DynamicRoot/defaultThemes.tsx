@@ -1,11 +1,14 @@
 import React from 'react';
+
 import { AppTheme } from '@backstage/core-plugin-api';
 import { UnifiedThemeProvider } from '@backstage/theme';
-import LightIcon from '@mui/icons-material/WbSunny';
+
 import DarkIcon from '@mui/icons-material/Brightness2';
-import { customLightTheme } from '../../themes/lightTheme';
+import LightIcon from '@mui/icons-material/WbSunny';
+
 import { useUpdateTheme } from '../../hooks/useUpdateTheme';
 import { customDarkTheme } from '../../themes/darkTheme';
+import { customLightTheme } from '../../themes/lightTheme';
 
 const defaultThemes: (Partial<AppTheme> & Omit<AppTheme, 'theme'>)[] = [
   {

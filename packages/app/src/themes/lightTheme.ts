@@ -1,7 +1,8 @@
 import { createUnifiedTheme, themes } from '@backstage/theme';
+
+import { ThemeColors } from '../types/types';
 import { components, redHatFont } from './componentOverrides';
 import { pageTheme } from './pageTheme';
-import { ThemeColors } from '../types/types';
 
 export const customLightTheme = (themeColors: ThemeColors) =>
   createUnifiedTheme({

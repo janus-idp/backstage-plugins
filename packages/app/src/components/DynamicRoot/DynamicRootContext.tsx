@@ -2,6 +2,7 @@ import React, { createContext } from 'react';
 
 import { Entity } from '@backstage/catalog-model';
 import { AnyApiFactory, BackstagePlugin } from '@backstage/core-plugin-api';
+
 import { ScalprumComponentProps } from '@scalprum/react-core';
 
 export type RouteBinding = {
