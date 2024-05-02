@@ -1,101 +1,126 @@
-import React, { PropsWithChildren } from 'react';
+import React, { PropsWithChildren, useContext } from 'react';
 
 import {
-  Link,
   Sidebar,
-  sidebarConfig,
   SidebarDivider,
   SidebarGroup,
   SidebarItem,
   SidebarPage,
   SidebarScrollWrapper,
   SidebarSpace,
-  useSidebarOpenState,
 } from '@backstage/core-components';
+import { IconComponent, useApp } from '@backstage/core-plugin-api';
 import { SidebarSearchModal } from '@backstage/plugin-search';
+import { Settings as SidebarSettings } from '@backstage/plugin-user-settings';
 
-import { makeStyles } from '@material-ui/core';
-import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
-import ExtensionIcon from '@material-ui/icons/Extension';
-import HomeIcon from '@material-ui/icons/Home';
-import LibraryBooks from '@material-ui/icons/LibraryBooks';
-import MenuIcon from '@material-ui/icons/Menu';
-import MapIcon from '@material-ui/icons/MyLocation';
-import SearchIcon from '@material-ui/icons/Search';
-import { ScalprumComponent } from '@scalprum/react-core';
+import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
+import CreateComponentIcon from '@mui/icons-material/AddCircleOutline';
+import AdminPanelSettingsOutlinedIcon from '@mui/icons-material/AdminPanelSettingsOutlined';
+import CategoryOutlinedIcon from '@mui/icons-material/CategoryOutlined';
+import ExtensionOutlinedIcon from '@mui/icons-material/ExtensionOutlined';
+import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
+import MuiMenuIcon from '@mui/icons-material/Menu';
+import SearchIcon from '@mui/icons-material/Search';
+import { makeStyles } from 'tss-react/mui';
 
-import LogoFull from './LogoFull';
-import LogoIcon from './LogoIcon';
+import DynamicRootContext from '../DynamicRoot/DynamicRootContext';
+import { SidebarLogo } from './SidebarLogo';
 
-const useSidebarLogoStyles = makeStyles({
-  root: {
-    width: sidebarConfig.drawerWidthClosed,
-    height: 3 * sidebarConfig.logoHeight,
-    display: 'flex',
-    flexFlow: 'row nowrap',
-    alignItems: 'center',
-    marginBottom: -14,
-  },
-  link: {
-    width: sidebarConfig.drawerWidthClosed,
-    marginLeft: 24,
+const useStyles = makeStyles()({
+  sidebarItem: {
+    textDecorationLine: 'none',
   },
 });
 
-const SidebarLogo = () => {
-  const classes = useSidebarLogoStyles();
-  const { isOpen } = useSidebarOpenState();
+// Backstage does not expose the props object, pulling it from the component argument
+type SidebarItemProps = Parameters<typeof SidebarItem>[0];
 
+const SideBarItemWrapper = (props: SidebarItemProps) => {
+  const {
+    classes: { sidebarItem },
+  } = useStyles();
   return (
-    <div className={classes.root}>
-      <Link to="/" underline="none" className={classes.link} aria-label="Home">
-        {isOpen ? <LogoFull /> : <LogoIcon />}
-      </Link>
-    </div>
+    <SidebarItem
+      {...props}
+      className={`${sidebarItem}${props.className ?? ''}`}
+    />
   );
 };
 
-export const Root = ({ children }: PropsWithChildren<{}>) => (
-  <SidebarPage>
-    <Sidebar>
-      <SidebarLogo />
-      <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
-        <SidebarSearchModal />
-      </SidebarGroup>
-      <SidebarDivider />
-      <SidebarGroup label="Menu" icon={<MenuIcon />}>
-        {/* Global nav, not org-specific */}
-        <SidebarItem icon={HomeIcon} to="catalog" text="Home" />
-        <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />
-        <SidebarItem icon={LibraryBooks} to="docs" text="Docs" />
-        <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
-        {/* End global nav */}
+export const MenuIcon = ({ icon }: { icon: string }) => {
+  const app = useApp();
+
+  const Icon = app.getSystemIcon(icon) || (() => null);
+  return <Icon />;
+};
+
+export const Root = ({ children }: PropsWithChildren<{}>) => {
+  const { dynamicRoutes, mountPoints } = useContext(DynamicRootContext);
+  return (
+    <SidebarPage>
+      <Sidebar>
+        <SidebarLogo />
+        <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
+          <SidebarSearchModal />
+        </SidebarGroup>
         <SidebarDivider />
-        <SidebarScrollWrapper>
-          <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
-        </SidebarScrollWrapper>
-      </SidebarGroup>
-      <SidebarDivider />
-      <SidebarSpace />
-      <SidebarDivider />
-      <SidebarGroup
-        label="Settings"
-        icon={
-          <ScalprumComponent
-            scope="janus.dynamic-frontend-plugin"
-            module="UserSettings"
-            importName="UserSettingsSignInAvatar"
+        <SidebarGroup label="Menu" icon={<MuiMenuIcon />}>
+          {/* Global nav, not org-specific */}
+          <SideBarItemWrapper
+            icon={HomeOutlinedIcon as any}
+            to="/"
+            text="Home"
           />
-        }
-        to="/settings"
-      >
-        <ScalprumComponent
-          scope="janus.dynamic-frontend-plugin"
-          module="UserSettings"
-          importName="Settings"
-        />
-      </SidebarGroup>
-    </Sidebar>
-    {children}
-  </SidebarPage>
-);
+          <SideBarItemWrapper
+            icon={CategoryOutlinedIcon as IconComponent}
+            to="catalog"
+            text="Catalog"
+          />
+          <SideBarItemWrapper
+            icon={ExtensionOutlinedIcon as IconComponent}
+            to="api-docs"
+            text="APIs"
+          />
+          <SideBarItemWrapper
+            icon={CreateComponentIcon as IconComponent}
+            to="create"
+            text="Create..."
+          />
+          <SidebarDivider />
+          <SidebarScrollWrapper>
+            {dynamicRoutes.map(({ scope, menuItem, path }) => {
+              if (menuItem) {
+                return (
+                  <SideBarItemWrapper
+                    key={`${scope}/${path}`}
+                    icon={() => <MenuIcon icon={menuItem.icon} />}
+                    to={path}
+                    text={menuItem.text}
+                  />
+                );
+              }
+              return null;
+            })}
+          </SidebarScrollWrapper>
+        </SidebarGroup>
+        <SidebarSpace />
+        <SidebarDivider />
+        {Object.keys(mountPoints).some(scope =>
+          scope.startsWith('admin.page'),
+        ) ? (
+          <SideBarItemWrapper
+            icon={AdminPanelSettingsOutlinedIcon as IconComponent}
+            to="/admin"
+            text="Administration"
+          />
+        ) : (
+          <></>
+        )}
+        <SidebarGroup label="Settings" to="/settings">
+          <SidebarSettings icon={AccountCircleOutlinedIcon as IconComponent} />
+        </SidebarGroup>
+      </Sidebar>
+      {children}
+    </SidebarPage>
+  );
+};

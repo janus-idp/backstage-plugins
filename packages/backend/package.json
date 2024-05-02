@@ -8,8 +8,7 @@
     "role": "backend"
   },
   "scripts": {
-    "start": "yarn start:backstage",
-    "start:backstage": "backstage-cli package start",
+    "start": "backstage-cli package start",
     "build": "backstage-cli package build",
     "tsc": "tsc",
     "lint": "backstage-cli package lint",

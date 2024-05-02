@@ -8,7 +8,8 @@ import { catalogImportPlugin } from '@backstage/plugin-catalog-import';
 import { orgPlugin } from '@backstage/plugin-org';
 
 import { apis } from '../../apis';
-import DynamicRootContext from '../../DynamicRoot/DynamicRootContext';
+import DynamicRootContext from '../../components/DynamicRoot/DynamicRootContext';
+import { scaffolderPlugin } from '@backstage/plugin-scaffolder';
 
 const TestRoot = ({ children }: PropsWithChildren<{}>) => {
   const { current } = useRef<BackstageApp>(
@@ -16,8 +17,15 @@ const TestRoot = ({ children }: PropsWithChildren<{}>) => {
       apis,
       bindRoutes: ({ bind }) => {
         // Static bindings
+        bind(catalogPlugin.externalRoutes, {
+          createComponent: scaffolderPlugin.routes.root,
+          createFromTemplate: scaffolderPlugin.routes.selectedTemplate,
+        });
         bind(apiDocsPlugin.externalRoutes, {
           registerApi: catalogImportPlugin.routes.importPage,
+        });
+        bind(scaffolderPlugin.externalRoutes, {
+          registerComponent: catalogImportPlugin.routes.importPage,
         });
         bind(orgPlugin.externalRoutes, {
           catalogIndex: catalogPlugin.routes.catalogIndex,
@@ -31,6 +39,8 @@ const TestRoot = ({ children }: PropsWithChildren<{}>) => {
         AppProvider: current.getProvider(),
         AppRouter: current.getRouter(),
         dynamicRoutes: [],
+        mountPoints: {},
+        entityTabOverrides: {},
       }}
     >
       {children}
