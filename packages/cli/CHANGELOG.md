@@ -1,3 +1,17 @@
+## @janus-idp/cli [1.8.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.8.4...@janus-idp/cli@1.8.5) (2024-05-02)
+
+
+### Bug Fixes
+
+* **cli:** completely removing the requirement for `app-config` when exporting fronted plugins to dynamic. ([#1603](https://github.com/janus-idp/backstage-plugins/issues/1603)) ([7fb243a](https://github.com/janus-idp/backstage-plugins/commit/7fb243ad5345a241e1c0a848e17f9936cac8234a))
+
+## @janus-idp/cli [1.8.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.8.3...@janus-idp/cli@1.8.4) (2024-05-02)
+
+
+### Bug Fixes
+
+* **cli:** allow retrieving scalprum config from an external file in `export-dynamic-plugin`. ([#1598](https://github.com/janus-idp/backstage-plugins/issues/1598)) ([889be7f](https://github.com/janus-idp/backstage-plugins/commit/889be7f8d22b88d18d180195cdf7bdae53585983))
+
 ## @janus-idp/cli [1.8.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.8.2...@janus-idp/cli@1.8.3) (2024-04-30)
 
 
