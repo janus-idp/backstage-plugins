@@ -600,7 +600,7 @@ function checkWorkspacePackageVersion(
   );
 }
 
-function customizeForDynamicUse(options: {
+export function customizeForDynamicUse(options: {
   embedded: ResolvedEmbedded[];
   monoRepoPackages: Packages | undefined;
   sharedPackages?: SharedPackagesRules | undefined;
