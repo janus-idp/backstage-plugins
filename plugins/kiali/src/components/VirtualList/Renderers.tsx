@@ -1,9 +1,10 @@
 import * as React from 'react';
-import { Link } from 'react-router-dom';
+
+import { Link } from '@backstage/core-components';
 
 import { Chip, TableCell, Tooltip } from '@material-ui/core';
 
-import { isMultiCluster, KialiIcon, serverConfig } from '../../config';
+import { KialiIcon, serverConfig } from '../../config';
 import { isWaypoint } from '../../helpers/LabelFilterHelper';
 import { infoStyle } from '../../pages/Overview/OverviewCard/CanaryUpgradeProgress';
 import { ControlPlaneBadge } from '../../pages/Overview/OverviewCard/ControlPlaneBadge';
@@ -17,9 +18,9 @@ import { ServiceListItem } from '../../types/ServiceList';
 import { ENTITY } from '../../types/types';
 import { WorkloadListItem } from '../../types/Workload';
 import { getReconciliationCondition } from '../../utils/IstioConfigUtils';
+import { JanusObjectLink } from '../../utils/janusLinks';
 import { StatefulFilters } from '../Filters/StatefulFilters';
 import { HealthIndicator } from '../Health/HealthIndicator';
-import { getIstioObjectUrl } from '../Link/IstioObjectLink';
 import { NamespaceMTLSStatus } from '../MTls/NamespaceMTLSStatus';
 import { PFBadge, PFBadges, PFBadgeType } from '../Pf/PfBadges';
 import { ValidationObjectSummary } from '../Validations/ValidationObjectSummary';
@@ -34,42 +35,6 @@ import {
 } from './Config';
 
 const topPosition = 'top';
-const rootPath = 'kiali';
-// Istio Links
-const getIstioLink = (item: TResource): string => {
-  let type = '';
-  if ('type' in item) {
-    type = item.type;
-  }
-
-  return getIstioObjectUrl(item.name, item.namespace, type, item.cluster);
-};
-
-// Links
-const getLink = (item: TResource, config: Resource, query?: string): string => {
-  let url =
-    config.name === 'istio'
-      ? `${getIstioLink(item)}`
-      : `/${rootPath}/${config.name}/${item.namespace}/${item.name}`;
-
-  if (item.cluster && isMultiCluster && !url.includes('cluster')) {
-    if (url.includes('?')) {
-      url = `${url}&clusterName=${item.cluster}`;
-    } else {
-      url = `${url}?clusterName=${item.cluster}`;
-    }
-  }
-
-  if (query) {
-    if (url.includes('?')) {
-      url = `${url}&${query}`;
-    } else {
-      url = `${url}?${query}`;
-    }
-  }
-
-  return url;
-};
 
 // Cells
 export const actionRenderer = (
@@ -122,9 +87,22 @@ export const item: Renderer<TResource> = (
       {view !== ENTITY && (
         <PFBadge badge={serviceBadge} position={topPosition} />
       )}
-      <Link key={key} to={getLink(resource, config)} className={linkColor}>
+      <JanusObjectLink
+        type={config.name}
+        entity={view === ENTITY}
+        name={resource.name}
+        namespace={resource.namespace}
+        cluster={resource.cluster}
+        objectType={
+          config.name === 'istio'
+            ? IstioTypes[(resource as IstioConfigItem).type].url
+            : (resource as WorkloadListItem).type || undefined
+        }
+        key={key}
+        className={linkColor}
+      >
         {resource.name}
-      </Link>
+      </JanusObjectLink>
     </TableCell>
   );
 };

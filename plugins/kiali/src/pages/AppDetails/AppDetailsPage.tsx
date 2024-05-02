@@ -24,7 +24,7 @@ import { AppHealth } from '../../types/Health';
 import { MetricsObjectTypes } from '../../types/Metrics';
 import { AppInfo } from './AppInfo';
 
-export const AppDetailsPage = () => {
+export const AppDetailsPage = (props: { entity?: boolean }) => {
   const { namespace, app } = useParams();
   const kialiClient = useApi(kialiApiRef);
   const kialiState = React.useContext(KialiContext) as KialiAppState;
@@ -155,7 +155,7 @@ export const AppDetailsPage = () => {
   return (
     <div className={baseStyle}>
       <Content>
-        <BreadcrumbView />
+        <BreadcrumbView entity={props.entity} />
         <DefaultSecondaryMasthead
           elements={grids()}
           onRefresh={() => fetchApp()}
