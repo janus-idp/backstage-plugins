@@ -34,9 +34,6 @@ export type BundlingOptions = {
 export type DynamicPluginOptions = {
   checksEnabled?: boolean;
   isDev?: boolean;
-  frontendConfig: Config;
-  frontendAppConfigs: AppConfig[];
-  baseUrl?: URL;
   parallelism?: number;
   pluginMetadata: PluginBuildMetadata;
 };

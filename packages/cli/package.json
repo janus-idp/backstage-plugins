@@ -1,7 +1,7 @@
 {
   "name": "@janus-idp/cli",
   "description": "CLI for developing Backstage plugins and apps",
-  "version": "1.8.1",
+  "version": "1.8.3",
   "publishConfig": {
     "access": "public"
   },

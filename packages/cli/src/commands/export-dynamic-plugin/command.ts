@@ -20,6 +20,8 @@ import chalk from 'chalk';
 import { OptionValues } from 'commander';
 import fs from 'fs-extra';
 
+import path from 'path';
+
 import { paths } from '../../lib/paths';
 import { getConfigSchema } from '../../lib/schema/collect';
 import { Task } from '../../lib/tasks';
@@ -28,9 +30,9 @@ import { backend as backendEmbedAsDependencies } from './backend-embed-as-depend
 import { applyDevOptions } from './dev';
 import { frontend } from './frontend';
 
-const saveSchema = async (packageName: string, path: string) => {
+const saveSchema = async (packageName: string, destination: string) => {
   const configSchema = await getConfigSchema(packageName);
-  await fs.writeJson(paths.resolveTarget(path), configSchema, {
+  await fs.writeJson(paths.resolveTarget(destination), configSchema, {
     encoding: 'utf8',
     spaces: 2,
   });
@@ -53,10 +55,10 @@ export async function command(opts: OptionValues): Promise<void> {
     } else {
       targetPath = await backendEmbedAsCode(roleInfo, opts);
     }
-    configSchemaPath = 'dist-dynamic/dist/configSchema.json';
-  } else if (role === 'frontend-plugin') {
+    configSchemaPath = path.join(targetPath, 'dist/configSchema.json');
+  } else if (role === 'frontend-plugin' || role === 'frontend-plugin-module') {
     targetPath = await frontend(roleInfo, opts);
-    configSchemaPath = 'dist-scalprum/configSchema.json';
+    configSchemaPath = path.join(targetPath, 'dist-scalprum/configSchema.json');
   } else {
     throw new Error(
       'Only packages with the "backend-plugin", "backend-plugin-module" or "frontend-plugin" roles can be exported as dynamic backend plugins',

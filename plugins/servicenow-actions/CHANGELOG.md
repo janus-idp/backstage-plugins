@@ -1,3 +1,26 @@
+## @janus-idp/backstage-scaffolder-backend-module-servicenow [1.4.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-servicenow@1.4.3...@janus-idp/backstage-scaffolder-backend-module-servicenow@1.4.4) (2024-05-01)
+
+
+### Documentation
+
+* **servicenow:** fix typo in the service now documentation ([#1596](https://github.com/janus-idp/backstage-plugins/issues/1596)) ([9de4ff6](https://github.com/janus-idp/backstage-plugins/commit/9de4ff605de2c520ad8da7030f064ea865783d58))
+
+## @janus-idp/backstage-scaffolder-backend-module-servicenow [1.4.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-servicenow@1.4.2...@janus-idp/backstage-scaffolder-backend-module-servicenow@1.4.3) (2024-04-30)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.8.3
+
+## @janus-idp/backstage-scaffolder-backend-module-servicenow [1.4.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-servicenow@1.4.1...@janus-idp/backstage-scaffolder-backend-module-servicenow@1.4.2) (2024-04-30)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.8.2
+
 ## @janus-idp/backstage-scaffolder-backend-module-servicenow [1.4.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-servicenow@1.4.0...@janus-idp/backstage-scaffolder-backend-module-servicenow@1.4.1) (2024-04-25)
 
 

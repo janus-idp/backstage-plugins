@@ -1,3 +1,26 @@
+## @janus-idp/backstage-plugin-feedback-backend [1.2.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback-backend@1.2.2...@janus-idp/backstage-plugin-feedback-backend@1.2.3) (2024-04-30)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.8.3
+
+## @janus-idp/backstage-plugin-feedback-backend [1.2.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback-backend@1.2.1...@janus-idp/backstage-plugin-feedback-backend@1.2.2) (2024-04-30)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.8.2
+
+## @janus-idp/backstage-plugin-feedback-backend [1.2.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback-backend@1.2.0...@janus-idp/backstage-plugin-feedback-backend@1.2.1) (2024-04-30)
+
+
+### Bug Fixes
+
+* **feedback:** add support for jira cloud instance ([#1582](https://github.com/janus-idp/backstage-plugins/issues/1582)) ([5425e54](https://github.com/janus-idp/backstage-plugins/commit/5425e5494c9b8301e6732f534d5ede889996342c)), closes [#1543](https://github.com/janus-idp/backstage-plugins/issues/1543)
+
 ## @janus-idp/backstage-plugin-feedback-backend [1.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback-backend@1.1.6...@janus-idp/backstage-plugin-feedback-backend@1.2.0) (2024-04-15)
 
 

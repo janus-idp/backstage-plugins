@@ -1,3 +1,26 @@
+## @janus-idp/backstage-plugin-orchestrator [1.10.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.10.2...@janus-idp/backstage-plugin-orchestrator@1.10.3) (2024-05-02)
+
+
+### Bug Fixes
+
+* **orchestrator:** disable sorting ID column in workflow runs table ([#1595](https://github.com/janus-idp/backstage-plugins/issues/1595)) ([4d4875e](https://github.com/janus-idp/backstage-plugins/commit/4d4875eb4f91a3a3464b1ecbdcf647e9f1b84be5))
+
+## @janus-idp/backstage-plugin-orchestrator [1.10.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.10.1...@janus-idp/backstage-plugin-orchestrator@1.10.2) (2024-04-30)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.8.3
+
+## @janus-idp/backstage-plugin-orchestrator [1.10.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.10.0...@janus-idp/backstage-plugin-orchestrator@1.10.1) (2024-04-30)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.8.2
+
 ## @janus-idp/backstage-plugin-orchestrator [1.10.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.9.4...@janus-idp/backstage-plugin-orchestrator@1.10.0) (2024-04-25)
 
 
