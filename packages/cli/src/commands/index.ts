@@ -133,6 +133,10 @@ export function registerScriptCommand(program: Command) {
       true,
     )
     .option('--no-in-place', undefined, false)
+    .option(
+      '--scalprum-config <file>',
+      'Allows retrieving scalprum configuration from an external JSON file, instead of using a `scalprum` field of the `package.json`. Frontend plugins only.',
+    )
     .action(lazy(() => import('./export-dynamic-plugin').then(m => m.command)));
 
   command

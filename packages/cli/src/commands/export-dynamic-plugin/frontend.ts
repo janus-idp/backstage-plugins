@@ -36,12 +36,22 @@ export async function frontend(
   const {
     name,
     version,
-    scalprum: scalprumExternal,
+    scalprum: scalprumInline,
     files,
   } = await fs.readJson(paths.resolveTarget('package.json'));
 
-  let scalprum = scalprumExternal;
-  if (scalprum === undefined) {
+  let scalprum: any = undefined;
+
+  if (opts.scalprumConfig) {
+    const scalprumConfigFile = paths.resolveTarget(opts.scalprumConfig);
+    Task.log(
+      `Using external scalprum config file: ${chalk.cyan(scalprumConfigFile)}`,
+    );
+    scalprum = await fs.readJson(scalprumConfigFile);
+  } else if (scalprumInline) {
+    Task.log(`Using scalprum config inlined in the 'package.json'`);
+    scalprum = scalprumInline;
+  } else {
     let scalprumName;
     if (name.includes('/')) {
       const fragments = name.split('/');
@@ -55,10 +65,10 @@ export async function frontend(
         PluginRoot: './src/index.ts',
       },
     };
-    console.log(`No scalprum config. Using default dynamic UI configuration:`);
-    console.log(JSON.stringify(scalprum, null, 2));
-    console.log(
-      `If you wish to change the defaults, add "scalprum" configuration to plugin "package.json" file.`,
+    Task.log(`No scalprum config. Using default dynamic UI configuration:`);
+    Task.log(chalk.cyan(JSON.stringify(scalprum, null, 2)));
+    Task.log(
+      `If you wish to change the defaults, add "scalprum" configuration to plugin "package.json" file, or use the '--scalprum-config' option to specify an external config.`,
     );
   }
 
@@ -79,6 +89,12 @@ export async function frontend(
     }
 
     await fs.mkdirs(target);
+    await fs.writeFile(
+      path.join(target, '.gitignore'),
+      `
+*
+`,
+    );
 
     await productionPack({
       packageDir: paths.targetDir,
