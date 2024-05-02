@@ -69,6 +69,7 @@ export const WorkflowRunsTabContent = () => {
             {ellipsis(data.id)}
           </Link>
         ),
+        sorting: false,
       },
       {
         title: 'Name',
