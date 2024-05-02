@@ -4,7 +4,7 @@ import { Location, useLocation } from 'react-router-dom';
 import { Breadcrumbs } from '@material-ui/core';
 
 import { HistoryManager } from '../../app/History';
-import { isMultiCluster, Paths } from '../../config';
+import { Paths } from '../../config';
 import { kialiStyle, useLinkStyle } from '../../styles/StyleUtils';
 import { dicIstioType } from '../../types/IstioConfigList';
 import { JanusObjectLink } from '../../utils/janusLinks';
@@ -112,7 +112,7 @@ export const BreadcrumbView = (props: { entity?: boolean }) => {
             }`}
             onClick={cleanFilters}
             className={linkStyle}
-            type={'istio'}
+            type="istio"
           >
             {istioType ? istioTypeF(istioType) : istioType}
           </JanusObjectLink>

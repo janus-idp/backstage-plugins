@@ -580,7 +580,7 @@ const MockKialiError = () => {
 
   return (
     <Page themeId="tool">
-      <Content>
+      <Content data-test="Kiali Errors">
         <Grid container direction="column">
           {errorsTypes.map(error => (
             <Grid item>

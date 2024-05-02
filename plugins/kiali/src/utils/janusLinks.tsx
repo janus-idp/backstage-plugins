@@ -61,18 +61,24 @@ interface JanusLinkProps {
   onClick?: React.MouseEventHandler<HTMLAnchorElement>;
 }
 
+const getRef = (type: string, entity?: boolean, root?: boolean) => {
+  if (entity && root) {
+    return rootRouteRef;
+  }
+
+  if (!entity && root) {
+    return janusRoutesSection[type];
+  }
+
+  return janusRoutesObject[type].ref;
+};
+
 export const JanusObjectLink = (props: JanusLinkProps) => {
   const { name, type, objectType, namespace, query, cluster } = props;
   const link: RouteFunc<routeRefParams> = useRouteRef(
-    props.entity
-      ? props.root
-        ? rootRouteRef
-        : janusRoutesObject[type].ref
-      : props.root
-      ? janusRoutesSection[type]
-      : janusRoutesObject[type].ref,
+    getRef(type, props.entity, props.root),
   );
-  var to = '';
+  let to = '';
   if (!props.root) {
     const items: { [key: string]: string } = { namespace: namespace || '' };
 

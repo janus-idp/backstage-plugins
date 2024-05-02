@@ -56,7 +56,10 @@ export const KialiHelper = (props: { check: KialiChecker }) => {
   return props.check.verify ? (
     <></>
   ) : (
-    <WarningPanel title={props.check.title || 'Unexpected Check'}>
+    <WarningPanel
+      data-test={props.check.title || 'Unexpected Check'}
+      title={props.check.title || 'Unexpected Check'}
+    >
       {props.check.authData ? printAuthentication : pretty()}
     </WarningPanel>
   );
