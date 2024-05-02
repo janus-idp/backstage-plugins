@@ -1,0 +1,11 @@
+{
+  "extends": ["//"],
+  "pipeline": {
+    "tsc": {
+      "outputs": [
+        "../../dist-types/plugins/scaffolder-backend-module-scaffolder-relation/**"
+      ],
+      "dependsOn": ["^tsc"]
+    }
+  }
+}
