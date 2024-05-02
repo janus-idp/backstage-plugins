@@ -16,7 +16,7 @@ test.describe('Quay plugin', () => {
     await browser.close();
   });
 
-  test('All columns are shown', async () => {
+  test('All columns are shown in the table', async () => {
     const columns = [
       'Tag',
       'Last Modified',

@@ -1,12 +1,28 @@
 import { expect, Page, test } from '@playwright/test';
 
+import { Common } from './bulkImportHelper';
+
 test.describe('Bulk import plugin', () => {
   let page: Page;
+  // let common: Common;
 
   test.beforeAll(async ({ browser }) => {
     const context = await browser.newContext();
     page = await context.newPage();
     await page.goto('/');
+    // common = new Common(page);
+
+    // const headingLocator = page
+    //   .locator('h1, h2, h3, h4, h5, h6')
+    //   .filter({ hasText: 'Select a sign-in method' })
+    //   .first();
+    // headingLocator.isVisible().then(async val => {
+    //   if (val) {
+    //     await common.loginAsGuest();
+    //   }
+    //   await page.goto('/bulk-import/repositories');
+    // });
+
     await expect(page.getByRole('link', { name: 'Bulk import' })).toBeEnabled({
       timeout: 20000,
     });
