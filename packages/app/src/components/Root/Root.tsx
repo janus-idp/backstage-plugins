@@ -26,6 +26,8 @@ import MapIcon from '@mui/icons-material/MyLocation';
 import SearchIcon from '@mui/icons-material/Search';
 import { makeStyles } from 'tss-react/mui';
 
+import { OrchestratorIcon } from '@janus-idp/backstage-plugin-orchestrator';
+
 import LogoFull from './LogoFull';
 import LogoIcon from './LogoIcon';
 
@@ -98,6 +100,11 @@ export const Root = ({
             text="Tech Radar"
           />
         </SidebarScrollWrapper>
+        <SidebarItem
+          icon={OrchestratorIcon}
+          to="orchestrator"
+          text="Orchestrator"
+        />
       </SidebarGroup>
       <SidebarSpace />
       <SidebarDivider />
