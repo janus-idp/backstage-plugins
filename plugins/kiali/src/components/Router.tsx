@@ -58,7 +58,7 @@ const validateAnnotation = (entity: Entity) => {
 export const getEntityRoutes = () => {
   return (
     <Routes>
-      <Route path="/" element={<KialiEntity />} />
+      <Route path="/*" element={<KialiEntity />} />
       <Route
         path={`${workloadsDetailRouteRef.path}`}
         element={<WorkloadDetailsPage entity />}
@@ -71,11 +71,11 @@ export const getEntityRoutes = () => {
         path={`${appDetailRouteRef.path}`}
         element={<AppDetailsPage entity />}
       />
-      <Route path="*" element={<KialiNoPath />} />
       <Route
         path={`${istioConfigDetailRouteRef.path}`}
         element={<IstioConfigDetailsPage entity />}
       />
+      <Route path="*" element={<KialiNoPath />} />
     </Routes>
   );
 };

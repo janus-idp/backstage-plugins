@@ -269,7 +269,7 @@ export const KialiProvider: React.FC<Props> = ({
       }}
     >
       <KialiHelper check={kialiCheck} />
-      {children}
+      {kialiCheck.verify && children}
     </KialiContext.Provider>
   );
 };

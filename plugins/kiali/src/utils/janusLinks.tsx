@@ -1,13 +1,11 @@
 import * as React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 
+import { Link } from '@backstage/core-components';
 import {
   RouteFunc,
   SubRouteRef,
   useRouteRef,
 } from '@backstage/core-plugin-api';
-
-import { Link } from '@material-ui/core';
 
 import { isMultiCluster } from '../config';
 import {
@@ -53,6 +51,7 @@ interface JanusLinkProps {
   key?: string;
   className?: string;
   entity?: boolean;
+  root?: boolean;
   name?: string;
   type: string;
   namespace?: string;
@@ -65,19 +64,31 @@ interface JanusLinkProps {
 export const JanusObjectLink = (props: JanusLinkProps) => {
   const { name, type, objectType, namespace, query, cluster } = props;
   const link: RouteFunc<routeRefParams> = useRouteRef(
-    props.entity ? rootRouteRef : janusRoutesObject[type].ref,
+    props.entity
+      ? props.root
+        ? rootRouteRef
+        : janusRoutesObject[type].ref
+      : props.root
+      ? janusRoutesSection[type]
+      : janusRoutesObject[type].ref,
   );
-  const items: { [key: string]: string } = { namespace: namespace || '' };
-  if (type && name) {
-    items[janusRoutesObject[type].id] = name;
+  var to = '';
+  if (!props.root) {
+    const items: { [key: string]: string } = { namespace: namespace || '' };
+
+    if (type && name) {
+      items[janusRoutesObject[type].id] = name;
+    }
+    if (objectType) {
+      items.objectType = objectType;
+    }
+    to = link(items);
+  } else {
+    to = link();
   }
-  if (objectType) {
-    items.objectType = objectType;
-  }
-  const href = addQuery(link(items), cluster, query);
+  const href = addQuery(to, cluster, query);
   return (
     <Link
-      component={RouterLink}
       to={href}
       data-test={`${
         type ? janusRoutesObject[type].id : ''

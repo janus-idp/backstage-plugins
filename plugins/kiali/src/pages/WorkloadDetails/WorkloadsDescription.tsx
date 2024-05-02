@@ -30,6 +30,7 @@ import { hasMissingAuthPolicy } from '../../utils/IstioConfigUtils';
 
 type WorkloadDescriptionProps = {
   health?: H.Health;
+  entity?: boolean;
   namespace: string;
   workload: Workload;
 };
@@ -263,6 +264,7 @@ export const WorkloadDescription: React.FC<WorkloadDescriptionProps> = (
         )}
         <DetailDescription
           namespace={props.namespace}
+          entity={props.entity}
           apps={apps}
           services={services}
           health={props.health}

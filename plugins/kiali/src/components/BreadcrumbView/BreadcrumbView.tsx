@@ -83,15 +83,17 @@ export const BreadcrumbView = (props: { entity?: boolean }) => {
     <div className={breadcrumStyle}>
       <Breadcrumbs>
         <JanusObjectLink
+          root
           entity={props.entity}
-          query={tab}
           onClick={cleanFilters}
           className={linkStyle}
+          query={props.entity ? `${tab}` : ''}
           type={pathItem}
         >
           {isIstio ? IstioName : capitalize(pathItem)}
         </JanusObjectLink>
         <JanusObjectLink
+          root
           entity={props.entity}
           query={props.entity ? `${tab}&${filterNs}` : filterNs}
           onClick={cleanFilters}
@@ -100,39 +102,22 @@ export const BreadcrumbView = (props: { entity?: boolean }) => {
         >
           Namespace: {namespace}
         </JanusObjectLink>
-        {isIstio ? (
-          <>
-            <JanusObjectLink
-              entity={props.entity}
-              query={`${filterNs}&type=${
-                // @ts-ignore
-                dicIstioType[path?.istioType || '']
-              }`}
-              onClick={cleanFilters}
-              className={linkStyle}
-              type={pathItem}
-            >
-              {istioType ? istioTypeF(istioType) : istioType}
-            </JanusObjectLink>
-            {' / '}
-            {item}
-          </>
-        ) : (
+        {isIstio && (
           <JanusObjectLink
+            root
             entity={props.entity}
-            query={
-              path?.cluster && isMultiCluster
-                ? `clusterName=${path.cluster}`
-                : ''
-            }
-            namespace={path?.namespace}
-            name={path?.item}
+            query={`${filterNs}&type=${
+              // @ts-ignore
+              dicIstioType[istioType || '']
+            }`}
             onClick={cleanFilters}
-            type={path?.pathItem}
+            className={linkStyle}
+            type={'istio'}
           >
-            {item}
+            {istioType ? istioTypeF(istioType) : istioType}
           </JanusObjectLink>
         )}
+        <>{item}</>
       </Breadcrumbs>
     </div>
   );

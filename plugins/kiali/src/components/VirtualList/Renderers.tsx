@@ -89,6 +89,7 @@ export const item: Renderer<TResource> = (
       )}
       <JanusObjectLink
         type={config.name}
+        entity={view === ENTITY}
         name={resource.name}
         namespace={resource.namespace}
         cluster={resource.cluster}

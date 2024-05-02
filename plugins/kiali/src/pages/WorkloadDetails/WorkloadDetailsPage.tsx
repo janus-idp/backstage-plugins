@@ -109,6 +109,7 @@ export const WorkloadDetailsPage = (props: { entity?: boolean }) => {
       <>
         {workloadItem && (
           <WorkloadInfo
+            entity={props.entity}
             workload={workloadItem}
             duration={duration}
             namespace={namespace}
