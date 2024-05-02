@@ -62,12 +62,4 @@ export default async function createPlugin(
 
 ### Action: catalog:scaffolded-from
 
-#### Input
-
-| Parameter Name | Type   | Required | Description                                                                                                                                                                              | Example             |
-| -------------- | ------ | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
-| filePath       | string | No       | Relative path to the target `catalog-info.yaml` file in the task workspace. Defaults to `./catalog-info.yaml` if left empty. Note: only supports the reading of a single catalog entity. | ./catalog-info.yaml |
-
-#### Examples
-
-Refer to the [example templates](./examples/)
+Appends a `spec.scaffoldedFrom` field to the `catalog-info.yaml` file in the scaffolder task workspace. Refer to the [example templates](./examples/) for examples on how it's used.
