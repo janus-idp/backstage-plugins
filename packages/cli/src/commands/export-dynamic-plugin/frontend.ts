@@ -144,7 +144,6 @@ export async function frontend(
       ...scalprum,
       version,
     },
-    fromPackage: name,
     resolvedScalprumDistPath,
   });
 
