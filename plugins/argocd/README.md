@@ -142,15 +142,67 @@ const cicdcontent = (
 
 ## Loading as Dynamic Plugin
 
+To install this plugin into Red Hat Developer Hub or Janus IDP via Helm use this configuration:
+
+```yaml
+global:
+ dynamic:
+   includes:
+     - dynamic-plugins.default.yaml
+   plugins:
+      - package: ./dynamic-plugins/dist/roadiehq-backstage-plugin-argo-cd-backend-dynamic
+        disabled: false
+        pluginConfig:
+          argocd:
+            username: "${ARGOCD_USERNAME}"
+            password: "${ARGOCD_PASSWORD}"
+            appLocatorMethods:
+              - type: 'config'
+                instances:
+                  - name: argoInstance1
+                    url: "${ARGOCD_INSTANCE1_URL}"
+                    token: "${ARGOCD_AUTH_TOKEN}"
+        - package: ./dynamic-plugins/dist/janus-idp-backstage-plugin-argocd
+          disabled: false
+          pluginConfig:
+            dynamicPlugins:
+              frontend:
+                janus-idp.backstage-plugin-argocd:
+                  mountPoints:
+                    - mountPoint: entity.page.overview/cards
+                      importName: ArgocdDeploymentSummary
+                      config:
+                        layout:
+                          gridColumnEnd:
+                            lg: "span 8"
+                            xs: "span 12"
+                        if:
+                          allOf:
+                            - isArgocdAvailable
+                    - mountPoint: entity.page.cd/cards
+                      importName: ArgocdDeploymentLifecycle
+                      config:
+                        layout:
+                          gridColumn: '1 / -1'
+                        if:
+                          allOf:
+                            - isArgocdConfigured
+
+```
+
 This plugin can be loaded in backstage showcase application as a dynamic plugin.
 
 Follow the below steps -
 
 - Export dynamic plugin assets. This will build and create the static assets for the plugin and put it inside dist-scalprum folder.
 
-```sh
-yarn export-dynamic
-```
+`yarn install`
+
+`yarn tsc`
+
+`yarn build`
+
+`yarn export-dynamic`
 
 - Package and copy dist-scalprum folder assets to dynamic-plugins-root folder in showcase application.
 
@@ -161,22 +213,31 @@ tar -xzf "$archive" && rm "$archive"
 mv package $(echo $archive | sed -e 's:\.tgz$::')
 ```
 
-- Add the extension point inside the app-config.yaml or app-config.local.yaml file.
+- Add the extension point inside the `app-config.yaml` or `app-config.local.yaml` file.
 
 ```yaml
 dynamicPlugins:
   frontend:
     janus-idp.backstage-plugin-argocd:
       mountPoints:
+        - mountPoint: entity.page.overview/cards
+          importName: ArgocdDeploymentSummary
+          config:
+            layout:
+              gridColumnEnd:
+                lg: 'span 8'
+                xs: 'span 12'
+            if:
+              allOf:
+                - isArgocdAvailable
         - mountPoint: entity.page.cd/cards
-          importName: ArgocdPage
+          importName: ArgocdDeploymentLifecycle
           config:
             layout:
               gridColumn: '1 / -1'
             if:
-              anyOf:
-                - hasAnnotation: backstage.io/kubernetes-id
-                - hasAnnotation: backstage.io/kubernetes-namespace
+              allOf:
+                - isArgocdConfigured
 ```
 
 For more detailed explanation on dynamic plugins follow this [doc](https://github.com/janus-idp/backstage-showcase/blob/main/showcase-docs/dynamic-plugins.md).
