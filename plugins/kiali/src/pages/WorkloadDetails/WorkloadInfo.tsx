@@ -27,6 +27,7 @@ import { WorkloadPods } from './WorkloadPods';
 import { WorkloadDescription } from './WorkloadsDescription';
 
 type WorkloadInfoProps = {
+  entity?: boolean;
   duration?: number;
   namespace?: string;
   workload: Workload;
@@ -302,6 +303,7 @@ export const WorkloadInfo = (workloadProps: WorkloadInfoProps) => {
         <Grid container spacing={1} style={{ paddingTop: '20px' }}>
           <Grid key={`Card_${workloadProps.workload?.name}`} xs={4}>
             <WorkloadDescription
+              entity={workloadProps.entity}
               workload={workloadProps.workload}
               health={workloadProps.health}
               namespace={namespace}
