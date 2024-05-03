@@ -35,11 +35,6 @@ export const EntityKialiResourcesCard = () => {
     const hash = location.hash.replace(/^#,?\s*/, '');
     const data = hash.split('/');
 
-    const close = document.getElementById('close_drawer');
-    if (close) {
-      close.click();
-    }
-
     if (data.length > 1 && data[1] !== element) {
       setElement(data[1]);
     }
@@ -69,23 +64,30 @@ export const EntityKialiResourcesCard = () => {
   }, []);
 
   React.useEffect(() => {
-    const val = getInitValue();
-    if (val !== value) {
-      setValue(val);
-      setTimeout(() => {
-        setRenderCount(prevCount => prevCount + 1);
-      }, 1000);
-      return;
-    }
-
-    if (element && element !== prevElement.current && renderCount > 0) {
-      const drawer = document.getElementById(`drawer_${element}`);
-      if (drawer) {
-        drawer.click();
+    const hash = location.hash.replace(/^#,?\s*/, '');
+    const data = hash.split('/');
+    if (data.length > 0) {
+      const val = data[0];
+      if (val !== value) {
+        setValue(val);
+        setTimeout(() => {
+          setRenderCount(prevCount => prevCount + 1);
+        }, 1000);
       }
-      prevElement.current = element;
     }
-  }, [element, getInitValue, renderCount, value]);
+  }, [location.hash, value]);
+
+  React.useEffect(() => {
+    if (element && element !== prevElement.current && renderCount > 0) {
+      setTimeout(() => {
+        const drawer = document.getElementById(`drawer_${element}`);
+        if (drawer) {
+          drawer.click();
+        }
+        prevElement.current = element;
+      }, 1000);
+    }
+  }, [element, renderCount]);
 
   return !entity ? (
     <EmptyState
