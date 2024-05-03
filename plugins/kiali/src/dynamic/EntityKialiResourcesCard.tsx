@@ -115,6 +115,7 @@ export const EntityKialiResourcesCard = () => {
       title="Service Mesh Resources"
       onChange={handleChange}
       value={value}
+      data-test="kiali-tabbed-card"
     >
       <CardTab label="Workloads" value="workload">
         <div style={tabStyle}>

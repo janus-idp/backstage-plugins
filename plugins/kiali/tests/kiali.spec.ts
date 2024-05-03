@@ -20,4 +20,21 @@ test.describe('Kiali plugin', () => {
       ).toBeDefined();
     });
   });
+
+  test.describe('kiali resources', () => {
+    test.beforeAll(async ({ browser }) => {
+      const context = await browser.newContext();
+      page = await context.newPage();
+      await page.goto('/kiali-entity-card');
+      await page.locator('[data-test="kiali-tabbed-card"]');
+    });
+
+    test.afterAll(async ({ browser }) => {
+      await browser.close();
+    });
+
+    test('Workloads content', async () => {
+      await expect(page.locator('[data-test="virtual-list"]')).toBeDefined();
+    });
+  });
 });

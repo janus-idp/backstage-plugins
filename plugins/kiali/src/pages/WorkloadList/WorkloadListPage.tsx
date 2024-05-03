@@ -152,6 +152,7 @@ export const WorkloadListPage = (props: { view?: string; entity?: Entity }) => {
           hiddenColumns={hiddenColumns}
           view={props.view}
           loading={loadingData}
+          data-test="virtual-list"
         />
       </Content>
     </div>
