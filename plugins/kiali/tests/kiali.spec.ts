@@ -38,7 +38,7 @@ test.describe('Kiali plugin', () => {
     });
 
     test('Workloads Drawer', async () => {
-      await page.locator('#drawer_bookinfo_details').click();
+      await page.locator('#drawer_bookinfo_details-v1').click();
       expect(page.locator('[data-test="drawer"]')).toBeDefined();
     });
   });

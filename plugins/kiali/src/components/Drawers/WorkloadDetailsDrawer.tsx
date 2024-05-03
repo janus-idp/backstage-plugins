@@ -77,7 +77,6 @@ export const WorkloadDetailsDrawer = (props: Props) => {
           namespace={props.namespace}
           health={health}
           view={DRAWER}
-          data-test="drawer"
         />
       )}
     </>

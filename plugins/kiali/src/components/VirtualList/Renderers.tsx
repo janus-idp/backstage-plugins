@@ -81,7 +81,7 @@ const DrawerDiv = ({
     toggleDrawer2: (isOpen: boolean) => void;
   }) => {
     return (
-      <div style={{ padding: '10px', minWidth: '400px' }}>
+      <div style={{ padding: '10px', minWidth: '400px' }} data-test="drawer">
         <div style={{ paddingBottom: '10px' }}>
           <IconButton
             key="dismiss"
