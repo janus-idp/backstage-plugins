@@ -7,7 +7,7 @@ test.describe('Kiali plugin', () => {
       const context = await browser.newContext();
       page = await context.newPage();
       await page.goto('/kiali-error');
-      await page.locator('[data-test="Kiali Errors"]');
+      page.locator('[data-test="Kiali Errors"]');
     });
 
     test.afterAll(async ({ browser }) => {
@@ -15,7 +15,7 @@ test.describe('Kiali plugin', () => {
     });
 
     test('Networking error', async () => {
-      await expect(
+      expect(
         page.locator('[data-test="Warning: Error reaching Kiali"]'),
       ).toBeDefined();
     });
@@ -26,7 +26,7 @@ test.describe('Kiali plugin', () => {
       const context = await browser.newContext();
       page = await context.newPage();
       await page.goto('/kiali-entity-card');
-      await page.locator('[data-test="kiali-tabbed-card"]');
+      page.locator('[data-test="kiali-tabbed-card"]');
     });
 
     test.afterAll(async ({ browser }) => {
@@ -34,7 +34,12 @@ test.describe('Kiali plugin', () => {
     });
 
     test('Workloads content', async () => {
-      await expect(page.locator('[data-test="virtual-list"]')).toBeDefined();
+      expect(page.locator('[data-test="virtual-list"]')).toBeDefined();
+    });
+
+    test('Workloads Drawer', async () => {
+      await page.locator('#drawer_bookinfo_details').click();
+      expect(page.locator('[data-test="drawer"]')).toBeDefined();
     });
   });
 });
