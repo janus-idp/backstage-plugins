@@ -85,7 +85,7 @@ export const EntityKialiResourcesCard = () => {
       }
       prevElement.current = element;
     }
-  }, [element, renderCount]);
+  }, [element, getInitValue, renderCount, value]);
 
   return !entity ? (
     <EmptyState

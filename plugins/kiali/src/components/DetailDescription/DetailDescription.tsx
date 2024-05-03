@@ -282,21 +282,6 @@ export const DetailDescription: React.FC<Props> = (props: Props) => {
 
     if (workload) {
       let link: React.ReactNode;
-      link = (
-        <JanusObjectLink
-          entity={props.entity}
-          namespace={props.namespace}
-          type="workloads"
-          query={
-            props.cluster && isMultiCluster
-              ? `clusterName=${props.cluster}`
-              : ''
-          }
-          name={workload.workloadName}
-        >
-          {workload.workloadName}
-        </JanusObjectLink>
-      );
 
       if (props.view === DRAWER) {
         let href = `/namespaces/${props.namespace}/workloads/${workload.workloadName}`;
@@ -307,6 +292,22 @@ export const DetailDescription: React.FC<Props> = (props: Props) => {
 
         href = `#workload/${props.namespace}_${workload.workloadName}`;
         link = <Link to={href}>{workload.workloadName}</Link>;
+      } else {
+        link = (
+          <JanusObjectLink
+            entity={props.entity}
+            namespace={props.namespace}
+            type="workloads"
+            query={
+              props.cluster && isMultiCluster
+                ? `clusterName=${props.cluster}`
+                : ''
+            }
+            name={workload.workloadName}
+          >
+            {workload.workloadName}
+          </JanusObjectLink>
+        );
       }
 
       return (
