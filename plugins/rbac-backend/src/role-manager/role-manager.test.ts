@@ -1,4 +1,5 @@
 import { TokenManager } from '@backstage/backend-common';
+import { mockServices } from '@backstage/backend-test-utils';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
@@ -11,11 +12,8 @@ import { BackstageRoleManager } from '../role-manager/role-manager';
 
 describe('BackstageRoleManager', () => {
   const catalogDBClient = Knex.knex({ client: MockClient });
-
   const catalogApiMock: any = {
-    getEntities: jest
-      .fn()
-      .mockImplementation(() => Promise.resolve({ items: [] })),
+    getEntities: jest.fn().mockImplementation(),
   };
 
   const loggerMock: any = {
@@ -30,8 +28,14 @@ describe('BackstageRoleManager', () => {
     authenticate: jest.fn().mockImplementation(),
   };
 
+  const mockAuthService = mockServices.auth();
+
   let roleManager: BackstageRoleManager;
   beforeEach(() => {
+    catalogApiMock.getEntities = jest
+      .fn()
+      .mockImplementation(() => Promise.resolve({ items: [] }));
+
     const config = newConfigReader();
 
     roleManager = new BackstageRoleManager(
@@ -40,6 +44,7 @@ describe('BackstageRoleManager', () => {
       tokenManagerMock as TokenManager,
       catalogDBClient,
       config,
+      mockAuthService,
     );
   });
 
@@ -82,6 +87,7 @@ describe('BackstageRoleManager', () => {
   describe('hasLink tests', () => {
     afterEach(() => {
       (loggerMock.warn as jest.Mock).mockReset();
+      (catalogApiMock.getEntities as jest.Mock).mockReset();
     });
 
     it('should throw an error for unsupported domain', async () => {
@@ -128,7 +134,9 @@ describe('BackstageRoleManager', () => {
           },
           fields: ['metadata.name', 'metadata.namespace', 'spec.parent'],
         },
-        { token: 'some-token' },
+        {
+          token: 'mock-service-token:{"sub":"plugin:test","target":"catalog"}',
+        },
       );
       expect(result).toBeFalsy();
     });
@@ -151,7 +159,9 @@ describe('BackstageRoleManager', () => {
           },
           fields: ['metadata.name', 'metadata.namespace', 'spec.parent'],
         },
-        { token: 'some-token' },
+        {
+          token: 'mock-service-token:{"sub":"plugin:test","target":"catalog"}',
+        },
       );
       expect(result).toBeFalsy();
     });
@@ -1016,6 +1026,7 @@ describe('BackstageRoleManager', () => {
         tokenManagerMock as TokenManager,
         catalogDBClient,
         config,
+        mockAuthService,
       );
 
       const groupCMock = createGroupEntity('team-c', 'team-a', [], ['mike']);

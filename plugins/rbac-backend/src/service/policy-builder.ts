@@ -1,8 +1,10 @@
 import {
+  createLegacyAuthAdapters,
   DatabaseManager,
   PluginEndpointDiscovery,
   TokenManager,
 } from '@backstage/backend-common';
+import { AuthService, HttpAuthService } from '@backstage/backend-plugin-api';
 import { CatalogClient } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { IdentityApi } from '@backstage/plugin-auth-node';
@@ -35,12 +37,16 @@ export class PolicyBuilder {
       identity: IdentityApi;
       permissions: PermissionEvaluator;
       tokenManager: TokenManager;
+      auth?: AuthService;
+      httpAuth?: HttpAuthService;
     },
     pluginIdProvider: PluginIdProvider = { getPluginIds: () => [] },
   ): Promise<Router> {
     const databaseManager = DatabaseManager.fromConfig(env.config).forPlugin(
       'permission',
     );
+
+    const { auth, httpAuth } = createLegacyAuthAdapters(env);
 
     const adapter = await new CasbinDBAdapterFactory(
       env.config,
@@ -61,6 +67,7 @@ export class PolicyBuilder {
       env.tokenManager,
       catalogDBClient,
       env.config,
+      auth,
     );
     enf.setRoleManager(rm);
     enf.enableAutoBuildRoleLinks(false);
@@ -94,6 +101,8 @@ export class PolicyBuilder {
         policyMetadataStorage,
         knex,
       ),
+      auth: auth,
+      httpAuth: httpAuth,
     };
 
     const pluginIdsConfig = env.config.getOptionalStringArray(
@@ -110,13 +119,11 @@ export class PolicyBuilder {
     }
 
     const server = new PolicesServer(
-      env.identity,
       env.permissions,
       options,
       enforcerDelegate,
-      env.config,
-      env.logger,
-      env.discovery,
+      httpAuth,
+      auth,
       conditionStorage,
       pluginIdProvider,
       roleMetadataStorage,
