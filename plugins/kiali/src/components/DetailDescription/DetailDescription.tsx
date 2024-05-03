@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Link } from 'react-router-dom';
 
 import { Tooltip } from '@material-ui/core';
 
@@ -16,7 +17,6 @@ import { JanusObjectLink } from '../../utils/janusLinks';
 import { renderTrafficStatus } from '../Health/HealthDetails';
 import { MissingSidecar } from '../MissingSidecar/MissingSidecar';
 import { PFBadge, PFBadges } from '../Pf/PfBadges';
-import {Link} from "react-router-dom";
 
 type Props = {
   entity?: boolean;
@@ -77,7 +77,6 @@ export const DetailDescription: React.FC<Props> = (props: Props) => {
     namespace: string,
     appName: string,
   ): React.ReactNode => {
-
     let link: React.ReactNode;
 
     link = (
@@ -103,8 +102,7 @@ export const DetailDescription: React.FC<Props> = (props: Props) => {
     if (props.view === DRAWER) {
       href = `#application/${namespace}_${appName}`;
 
-
-     link = <Link to={href}>{appName}</Link>;
+      link = <Link to={href}>{appName}</Link>;
     }
 
     return (
@@ -122,10 +120,9 @@ export const DetailDescription: React.FC<Props> = (props: Props) => {
     namespace: string,
     serviceName: string,
   ): React.ReactNode => {
+    let link: React.ReactNode;
 
-      let link: React.ReactNode;
-
-     link = (
+    link = (
       <JanusObjectLink
         entity={props.entity}
         namespace={namespace}
@@ -139,18 +136,16 @@ export const DetailDescription: React.FC<Props> = (props: Props) => {
       </JanusObjectLink>
     );
 
-
     if (props.view === DRAWER) {
-        let href = `/namespaces/${namespace}/services/${serviceName}`;
+      let href = `/namespaces/${namespace}/services/${serviceName}`;
 
-        if (props.cluster && isMultiCluster) {
-            href = `${href}?clusterName=${props.cluster}`;
-        }
+      if (props.cluster && isMultiCluster) {
+        href = `${href}?clusterName=${props.cluster}`;
+      }
 
-        href = `#service/${namespace}_${serviceName}`;
-        link = <Link to={href}>{serviceName}</Link>;
+      href = `#service/${namespace}_${serviceName}`;
+      link = <Link to={href}>{serviceName}</Link>;
     }
-
 
     return (
       <li key={`Service_${serviceName}`} className={itemStyle}>
@@ -219,9 +214,9 @@ export const DetailDescription: React.FC<Props> = (props: Props) => {
   };
 
   const renderWorkloadItem = (workload: AppWorkload): React.ReactNode => {
-let link: React.ReactNode;
+    let link: React.ReactNode;
 
-     link = (
+    link = (
       <JanusObjectLink
         entity={props.entity}
         namespace={props.namespace}
@@ -235,17 +230,15 @@ let link: React.ReactNode;
       </JanusObjectLink>
     );
 
-      if (props.view === DRAWER) {
+    if (props.view === DRAWER) {
+      let href = `/namespaces/${props.namespace}/workloads/${workload.workloadName}`;
 
-    let href = `/namespaces/${props.namespace}/workloads/${workload.workloadName}`;
-
-    if (props.cluster && isMultiCluster) {
-      href = `${href}?clusterName=${props.cluster}`;
-    }
-
+      if (props.cluster && isMultiCluster) {
+        href = `${href}?clusterName=${props.cluster}`;
+      }
 
       href = `#workload/${props.namespace}_${workload.workloadName}`;
-          link = <Link to={href}>{workload.workloadName}</Link>;
+      link = <Link to={href}>{workload.workloadName}</Link>;
     }
 
     return (
@@ -288,9 +281,8 @@ let link: React.ReactNode;
     }
 
     if (workload) {
-
-        let link: React.ReactNode;
-       link = (
+      let link: React.ReactNode;
+      link = (
         <JanusObjectLink
           entity={props.entity}
           namespace={props.namespace}
@@ -306,18 +298,16 @@ let link: React.ReactNode;
         </JanusObjectLink>
       );
 
-        if (props.view === DRAWER) {
-      let href = `/namespaces/${props.namespace}/workloads/${workload.workloadName}`;
+      if (props.view === DRAWER) {
+        let href = `/namespaces/${props.namespace}/workloads/${workload.workloadName}`;
 
-      if (props.cluster && isMultiCluster) {
-        href = `${href}?clusterName=${props.cluster}`;
-      }
-
+        if (props.cluster && isMultiCluster) {
+          href = `${href}?clusterName=${props.cluster}`;
+        }
 
         href = `#workload/${props.namespace}_${workload.workloadName}`;
-      link = <Link to={href}>{workload.workloadName}</Link>;
+        link = <Link to={href}>{workload.workloadName}</Link>;
       }
-
 
       return (
         <span key={`WorkloadItem_${workload.workloadName}`}>
