@@ -1,6 +1,6 @@
 import { Entity } from '@backstage/catalog-model';
 
-import { KUBERNETES_NAMESPACE } from '../Router';
+import { KUBERNETES_NAMESPACE } from '../components/Router';
 
 export const nsEqual = (ns: string[], ns2: string[]): boolean => {
   return (

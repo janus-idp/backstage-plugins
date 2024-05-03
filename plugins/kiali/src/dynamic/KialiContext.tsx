@@ -5,9 +5,9 @@ import useDebounce from 'react-use/lib/useDebounce';
 import { useApi } from '@backstage/core-plugin-api';
 import { useEntity } from '@backstage/plugin-catalog-react';
 
+import { KUBERNETES_NAMESPACE } from '../components/Router';
 import { NamespaceInfo } from '../pages/Overview/NamespaceInfo';
 import { getNamespaces } from '../pages/Overview/OverviewPage';
-import { KUBERNETES_NAMESPACE } from '../Router';
 import { kialiApiRef } from '../services/Api';
 
 type KialiEntityContextType = {
