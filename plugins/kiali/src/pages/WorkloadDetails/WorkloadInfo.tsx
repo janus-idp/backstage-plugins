@@ -22,7 +22,7 @@ import {
   Validations,
   ValidationTypes,
 } from '../../types/IstioObjects';
-import { ENTITY } from '../../types/types';
+import { DRAWER, ENTITY } from '../../types/types';
 import { Workload } from '../../types/Workload';
 import { WorkloadPods } from './WorkloadPods';
 import { WorkloadDescription } from './WorkloadsDescription';
@@ -299,7 +299,8 @@ export const WorkloadInfo = (workloadProps: WorkloadInfoProps) => {
     return validations;
   };
 
-  const size = workloadProps.view === ENTITY ? 12 : 4;
+  const size =
+    workloadProps.view === ENTITY || workloadProps.view === DRAWER ? 12 : 4;
   return (
     <>
       {workloadProps.workload && (
@@ -310,9 +311,10 @@ export const WorkloadInfo = (workloadProps: WorkloadInfoProps) => {
               workload={workloadProps.workload}
               health={workloadProps.health}
               namespace={namespace}
+              view={workloadProps.view}
             />
           </Grid>
-          {workloadProps.view !== ENTITY && (
+          {workloadProps.view !== DRAWER && (
             <>
               <Grid key={`Card_${workloadProps.workload?.name}`} item xs={4}>
                 <WorkloadPods

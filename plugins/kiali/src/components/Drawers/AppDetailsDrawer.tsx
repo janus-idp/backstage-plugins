@@ -11,7 +11,7 @@ import { AppInfo } from '../../pages/AppDetails/AppInfo';
 import { kialiApiRef } from '../../services/Api';
 import { App, AppQuery } from '../../types/App';
 import { AppHealth } from '../../types/Health';
-import { ENTITY } from '../../types/types';
+import { DRAWER } from '../../types/types';
 
 type Props = {
   namespace: string;
@@ -68,7 +68,7 @@ export const AppDetailsDrawer = (props: Props) => {
   return (
     <>
       {appItem && (
-        <AppInfo app={appItem} duration={60} health={health} view={ENTITY} />
+        <AppInfo app={appItem} duration={60} health={health} view={DRAWER} />
       )}
     </>
   );

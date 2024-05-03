@@ -10,7 +10,7 @@ import { ServiceInfo } from '../../pages/ServiceDetails/ServiceInfo';
 import { kialiApiRef } from '../../services/Api';
 import { Validations } from '../../types/IstioObjects';
 import { ServiceDetailsInfo } from '../../types/ServiceInfo';
-import { ENTITY } from '../../types/types';
+import { DRAWER } from '../../types/types';
 
 type Props = {
   namespace: string;
@@ -63,7 +63,7 @@ export const ServiceDetailsDrawer = (props: Props) => {
           k8sGateways={[]}
           peerAuthentications={[]}
           istioAPIEnabled
-          view={ENTITY}
+          view={DRAWER}
         />
       )}
     </>

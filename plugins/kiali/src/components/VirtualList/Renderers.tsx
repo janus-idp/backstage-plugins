@@ -85,6 +85,7 @@ const DrawerDiv = ({
         <div style={{ paddingBottom: '10px' }}>
           <IconButton
             key="dismiss"
+            id="close_drawer"
             title="Close the drawer"
             onClick={() => toggleDrawer2(false)}
             color="inherit"
@@ -114,6 +115,7 @@ const DrawerDiv = ({
       <Button
         variant="contained"
         color="primary"
+        id={`drawer_${namespace}_${name}`}
         onClick={() => toggleDrawer(true)}
       >
         {name}

@@ -8,7 +8,7 @@ import { CircularProgress } from '@material-ui/core';
 import { WorkloadInfo } from '../../pages/WorkloadDetails/WorkloadInfo';
 import { kialiApiRef } from '../../services/Api';
 import { WorkloadHealth } from '../../types/Health';
-import { ENTITY } from '../../types/types';
+import { DRAWER } from '../../types/types';
 import { Workload, WorkloadQuery } from '../../types/Workload';
 
 type Props = {
@@ -76,7 +76,7 @@ export const WorkloadDetailsDrawer = (props: Props) => {
           duration={60}
           namespace={props.namespace}
           health={health}
-          view={ENTITY}
+          view={DRAWER}
         />
       )}
     </>

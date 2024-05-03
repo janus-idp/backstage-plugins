@@ -22,7 +22,7 @@ import {
 } from '../../types/IstioObjects';
 import { ServiceId } from '../../types/ServiceId';
 import { ServiceDetailsInfo } from '../../types/ServiceInfo';
-import { ENTITY } from '../../types/types';
+import { DRAWER, ENTITY } from '../../types/types';
 import { ServiceDescription } from './ServiceDescription';
 import { ServiceNetwork } from './ServiceNetwork';
 
@@ -112,7 +112,8 @@ export const ServiceInfo = (serviceProps: Props) => {
     ),
   );
 
-  const size = serviceProps.view === ENTITY ? 12 : 4;
+  const size =
+    serviceProps.view === ENTITY || serviceProps.view === DRAWER ? 12 : 4;
   return (
     <>
       {serviceProps.serviceDetails && (
@@ -121,9 +122,10 @@ export const ServiceInfo = (serviceProps: Props) => {
             <ServiceDescription
               namespace={serviceProps.namespace}
               serviceDetails={serviceProps.serviceDetails}
+              view={serviceProps.view}
             />
           </Grid>
-          {serviceProps.view !== ENTITY && (
+          {serviceProps.view !== DRAWER && (
             <>
               <Grid key={`Card_${serviceProps.service}`} item xs={4}>
                 <ServiceNetwork

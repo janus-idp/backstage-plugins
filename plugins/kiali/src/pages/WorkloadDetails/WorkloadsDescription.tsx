@@ -33,6 +33,7 @@ type WorkloadDescriptionProps = {
   entity?: boolean;
   namespace: string;
   workload: Workload;
+  view?: string;
 };
 
 const resourceListStyle = kialiStyle({
@@ -269,6 +270,7 @@ export const WorkloadDescription: React.FC<WorkloadDescriptionProps> = (
           services={services}
           health={props.health}
           cluster={props.workload.cluster}
+          view={props.view}
           waypointWorkloads={
             isWaypoint(props.workload.labels)
               ? props.workload.waypointWorkloads
