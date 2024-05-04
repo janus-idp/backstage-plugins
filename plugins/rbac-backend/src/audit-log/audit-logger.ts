@@ -1,6 +1,10 @@
 import { Logger } from 'winston';
 
-import { Source } from '@janus-idp/backstage-plugin-rbac-common';
+import {
+  PermissionInfo,
+  RoleConditionalPolicyDecision,
+  Source,
+} from '@janus-idp/backstage-plugin-rbac-common';
 
 import { RoleMetadataDao } from '../database/role-metadata';
 
@@ -18,6 +22,11 @@ type LogMsg = {
 
 type LogMsgWithRoleInfo = LogMsg & {
   roleDescription?: string;
+};
+
+type LogMsgWithConditionInfo = LogMsg & {
+  pluginId: string;
+  resourceType: string;
 };
 
 class UnknownErrorWrapper extends Error {
@@ -69,7 +78,7 @@ export class AuditLogger {
       modifiedBy,
       time: new Date().toUTCString(),
     };
-    this.logger.log(msg);
+    this.logger.error(msg);
   }
 
   permissionInfo(
@@ -106,7 +115,7 @@ export class AuditLogger {
 
   permissionError(
     policies: string[][],
-    operation: Operation[],
+    operations: Operation[],
     source: Source,
     modifiedBy: string,
     error: Error | unknown,
@@ -117,7 +126,7 @@ export class AuditLogger {
         : new UnknownErrorWrapper('Unknown error occurred');
     const msg: LogMsg = {
       level: 'error',
-      message: `Fail to ${operation} permission policy: '${JSON.stringify(
+      message: `Fail to ${operations} permission policy: '${JSON.stringify(
         policies,
       )}'. Cause: ${e.message}. Stack trace: ${e.stack}`,
       isAuditLog: true,
@@ -127,12 +136,68 @@ export class AuditLogger {
       time: new Date().toUTCString(),
     };
 
+    this.logger.error(msg);
+  }
+
+  conditionInfo(
+    condition: RoleConditionalPolicyDecision<PermissionInfo>,
+    operation: Operation,
+    modifiedBy: string,
+  ) {
+    const msg: LogMsgWithConditionInfo = {
+      level: 'info',
+      message: `${this.fmtToPastTime(operation)} condition '${JSON.stringify(
+        condition.conditions,
+      )}' for permissions: '${JSON.stringify(condition.permissionMapping)}'`,
+      isAuditLog: true,
+      entityRef: condition.roleEntityRef,
+      source: 'rest',
+      modifiedBy,
+      time: new Date().toUTCString(),
+      pluginId: condition.pluginId,
+      resourceType: condition.resourceType,
+    };
+
     this.logger.log(msg);
   }
 
-  conditionInfo() {}
+  conditionError(
+    conditionOrId: RoleConditionalPolicyDecision<PermissionInfo> | number,
+    operation: Operation,
+    modifiedBy: string,
+    error: Error | unknown,
+  ) {
+    const e =
+      error instanceof Error
+        ? error
+        : new UnknownErrorWrapper('Unknown error occurred');
 
-  conditionError() {}
+    let entityRef;
+    let msg;
+    if (typeof conditionOrId === 'number') {
+      entityRef = 'no information';
+      msg = `Fail to ${operation.toLowerCase()} condition with id '${conditionOrId}'. Cause: ${
+        e.message
+      }. Stack trace: ${e.stack}`;
+    } else {
+      entityRef = conditionOrId.roleEntityRef;
+      msg = `Fail to ${operation.toLowerCase()} condition '${JSON.stringify(
+        conditionOrId,
+      )}'. Cause: ${e.message}. Stack trace: ${e.stack}`;
+    }
+
+    const time = new Date().toUTCString();
+    const logMsg: LogMsg = {
+      level: 'error',
+      message: msg,
+      isAuditLog: true,
+      entityRef,
+      source: 'rest',
+      modifiedBy,
+      time,
+    };
+    this.logger.error(logMsg);
+  }
 
   private toLogMsgWithRoleInfo(
     msg: LogMsg,

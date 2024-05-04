@@ -71,7 +71,7 @@ export class PolicyBuilder {
     const knex = await databaseManager.getClient();
 
     const auditLog = new AuditLogger(env.logger);
-    const conditionStorage = new DataBaseConditionalStorage(knex);
+    const conditionStorage = new DataBaseConditionalStorage(knex, auditLog);
 
     const policyMetadataStorage = new DataBasePolicyMetadataStorage(knex);
     const roleMetadataStorage = new DataBaseRoleMetadataStorage(knex);

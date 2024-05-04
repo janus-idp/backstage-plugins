@@ -207,8 +207,6 @@ export class PolicesServer {
           modifiedBy,
         );
 
-        // this.auditLog.permissionInfo(processedPolicies, 'DELETE', 'rest', modifiedBy);
-
         response.status(204).end();
       },
     );
@@ -239,7 +237,6 @@ export class PolicesServer {
       const user = await this.identity.getIdentity({ request });
       const modifiedBy = user?.identity.userEntityRef!;
       await this.enforcer.addPolicies(processedPolicies, 'rest', modifiedBy);
-      // this.auditLog.permissionInfo(processedPolicies, 'CREATE', 'rest', modifiedBy);
 
       response.status(201).end();
     });
@@ -320,8 +317,6 @@ export class PolicesServer {
           modifiedBy,
           false,
         );
-
-        // this.auditLog.permissionInfo(processedNewPolicy,'UPDATE', 'rest', modifiedBy, processedOldPolicy);
 
         response.status(200).end();
       },
@@ -682,8 +677,11 @@ export class PolicesServer {
         pluginPermMetaData,
       );
 
-      const id =
-        await this.conditionalStorage.createCondition(conditionToCreate);
+      const user = await this.identity.getIdentity({ request });
+      const id = await this.conditionalStorage.createCondition(
+        conditionToCreate,
+        user!.identity.userEntityRef,
+      );
 
       response.status(201).json({ id: id });
     });
@@ -729,7 +727,11 @@ export class PolicesServer {
         throw new InputError('Id is not a valid number.');
       }
 
-      await this.conditionalStorage.deleteCondition(id);
+      const user = await this.identity.getIdentity({ request });
+      await this.conditionalStorage.deleteCondition(
+        id,
+        user!.identity.userEntityRef,
+      );
       response.status(204).end();
     });
 
@@ -758,7 +760,12 @@ export class PolicesServer {
         pluginPermMetaData,
       );
 
-      await this.conditionalStorage.updateCondition(id, conditionToUpdate);
+      const user = await this.identity.getIdentity({ request });
+      await this.conditionalStorage.updateCondition(
+        id,
+        conditionToUpdate,
+        user!.identity.userEntityRef,
+      );
       response.status(200).end();
     });
 
