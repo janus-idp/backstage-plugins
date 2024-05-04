@@ -155,6 +155,8 @@ For more information about the default owner configuration, see [upstream string
      return await createRouter({
        logger: env.logger,
        config: env.config,
+       permissions: env.permissions,
+       discovery: env.discovery,
      });
    }
    ```
