@@ -14,7 +14,6 @@ import {
   PolicyMetadataStorage,
 } from '../database/policy-metadata-storage';
 import {
-  mergeMetadata,
   RoleMetadataDao,
   RoleMetadataStorage,
 } from '../database/role-metadata';
@@ -170,7 +169,7 @@ export class EnforcerDelegate {
       if (currentMetadata) {
         operation = 'UPDATE';
         await this.roleMetadataStorage.updateRoleMetadata(
-          mergeMetadata(currentMetadata, roleMetadata),
+          this.mergeMetadata(currentMetadata, roleMetadata),
           entityRef,
           trx,
         );
@@ -230,7 +229,7 @@ export class EnforcerDelegate {
       if (currentRoleMetadata) {
         operation = 'UPDATE';
         await this.roleMetadataStorage.updateRoleMetadata(
-          mergeMetadata(currentRoleMetadata, roleMetadata),
+          this.mergeMetadata(currentRoleMetadata, roleMetadata),
           roleMetadata.roleEntityRef,
           trx,
         );
@@ -486,16 +485,11 @@ export class EnforcerDelegate {
           roleEntity !== ADMIN_ROLE_NAME
         ) {
           operation = 'DELETE';
-          await this.roleMetadataStorage.removeRoleMetadata(
-            roleEntity,
-            roleMetadata.source,
-            roleMetadata.modifiedBy!,
-            trx,
-          );
+          await this.roleMetadataStorage.removeRoleMetadata(roleEntity, trx);
         } else if (currentRoleMetadata) {
           operation = 'UPDATE';
           await this.roleMetadataStorage.updateRoleMetadata(
-            mergeMetadata(currentRoleMetadata, roleMetadata),
+            this.mergeMetadata(currentRoleMetadata, roleMetadata),
             roleEntity,
             trx,
           );
@@ -575,12 +569,7 @@ export class EnforcerDelegate {
             roleEntity !== ADMIN_ROLE_NAME
           ) {
             roleOperations.set(roleMetadata, 'DELETE');
-            await this.roleMetadataStorage.removeRoleMetadata(
-              roleEntity,
-              source,
-              modifiedBy!,
-              trx,
-            );
+            await this.roleMetadataStorage.removeRoleMetadata(roleEntity, trx);
           } else if (roleMetadata) {
             roleOperations.set(roleMetadata, 'UPDATE');
             roleMetadata.modifiedBy = modifiedBy;
@@ -874,5 +863,20 @@ export class EnforcerDelegate {
 
   async getAllRoles(): Promise<string[]> {
     return this.enforcer.getAllRoles();
+  }
+
+  private mergeMetadata(
+    currentMetadata: RoleMetadataDao,
+    newMetadata: RoleMetadataDao,
+  ): RoleMetadataDao {
+    const mergedMetaData: RoleMetadataDao = { ...currentMetadata };
+    mergedMetaData.lastModified =
+      newMetadata.lastModified ?? new Date().toUTCString();
+    mergedMetaData.modifiedBy = newMetadata.modifiedBy;
+    mergedMetaData.description =
+      newMetadata.description ?? currentMetadata.description;
+    mergedMetaData.roleEntityRef = newMetadata.roleEntityRef;
+    mergedMetaData.source = newMetadata.source;
+    return mergedMetaData;
   }
 }
