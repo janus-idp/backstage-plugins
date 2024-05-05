@@ -90,6 +90,7 @@ export class PolicyBuilder {
       identity: env.identity,
       policy: await RBACPermissionPolicy.build(
         env.logger,
+        auditLog,
         env.config,
         conditionStorage,
         enforcerDelegate,

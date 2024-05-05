@@ -1,9 +1,18 @@
+import {
+  AuthorizeResult,
+  ConditionalPolicyDecision,
+  ResourcePermission,
+} from '@backstage/plugin-permission-common';
+import { PolicyQuery } from '@backstage/plugin-permission-node';
+
 import { Logger } from 'winston';
 
 import {
+  PermissionAction,
   PermissionInfo,
   RoleConditionalPolicyDecision,
   Source,
+  toPermissionAction,
 } from '@janus-idp/backstage-plugin-rbac-common';
 
 import { RoleMetadataDao } from '../database/role-metadata';
@@ -11,7 +20,7 @@ import { RoleMetadataDao } from '../database/role-metadata';
 export type Operation = 'CREATE' | 'UPDATE' | 'DELETE';
 
 type LogMsg = {
-  level: 'info' | 'error'; // todo should we support debug or another log levels?
+  level: 'info' | 'error';
   message: string;
   isAuditLog: true;
   entityRef: string | string[];
@@ -27,6 +36,19 @@ type LogMsgWithRoleInfo = LogMsg & {
 type LogMsgWithConditionInfo = LogMsg & {
   pluginId: string;
   resourceType: string;
+};
+
+type LogMsgWithEvaluationInfo = {
+  level: 'info' | 'error';
+  message: string;
+  isAuditLog: true;
+  userEntityRef: string;
+  permissionName: string;
+  action: PermissionAction;
+  resourceType?: string;
+  result?: AuthorizeResult;
+  time: string;
+  condition?: string;
 };
 
 class UnknownErrorWrapper extends Error {
@@ -197,6 +219,42 @@ export class AuditLogger {
       time,
     };
     this.logger.error(logMsg);
+  }
+
+  logEvaluation(
+    level: 'info' | 'error' = 'info',
+    message: string,
+    userEntityRef: string,
+    request: PolicyQuery,
+    result?: AuthorizeResult,
+    condition?: ConditionalPolicyDecision,
+  ) {
+    const resourceType = (request.permission as ResourcePermission)
+      .resourceType;
+
+    const logMsg: LogMsgWithEvaluationInfo = {
+      level,
+      message,
+      isAuditLog: true,
+      time: '',
+      userEntityRef,
+      permissionName: request.permission.name,
+      action: toPermissionAction(request.permission.attributes),
+      result,
+    };
+
+    if (result) {
+      logMsg.result = result;
+    }
+    if (resourceType) {
+      logMsg.resourceType = resourceType;
+    }
+    if (condition) {
+      logMsg.condition = JSON.stringify(condition);
+    }
+    logMsg.time = new Date().toUTCString();
+
+    this.logger.log(logMsg);
   }
 
   private toLogMsgWithRoleInfo(
