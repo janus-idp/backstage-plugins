@@ -104,12 +104,11 @@ export class DataBaseRoleMetadataStorage implements RoleMetadataStorage {
       .returning('id');
 
     if (!result || result.length === 0) {
-      const err = new Error(
+      throw new Error(
         `Failed to update the role metadata '${JSON.stringify(
           currentMetadataDao,
         )}' with new value: '${JSON.stringify(newRoleMetadata)}'.`,
       );
-      throw err;
     }
   }
 
