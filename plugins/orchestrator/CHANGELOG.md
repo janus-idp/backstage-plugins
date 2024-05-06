@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-orchestrator [1.10.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.10.5...@janus-idp/backstage-plugin-orchestrator@1.10.6) (2024-05-06)
+
+
+### Bug Fixes
+
+* **orchestrator:** disabled MUI table thirdSortClick ([#1614](https://github.com/janus-idp/backstage-plugins/issues/1614)) ([5e541bd](https://github.com/janus-idp/backstage-plugins/commit/5e541bd217500c83bd8d9eb94cf060805ef4b8a9))
+
 ## @janus-idp/backstage-plugin-orchestrator [1.10.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.10.4...@janus-idp/backstage-plugin-orchestrator@1.10.5) (2024-05-02)
 
 
