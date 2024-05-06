@@ -1,19 +1,8 @@
-import React from 'react';
-
-import { removeScalprum } from '@scalprum/core';
-import { mockPluginData } from '@scalprum/react-test-utils';
 import { render, waitFor } from '@testing-library/react';
-
-import TestRoot from './utils/test/TestRoot';
-
-const AppBase = React.lazy(() => import('./components/AppBase'));
+import App from './App';
 
 describe('App', () => {
-  beforeEach(() => {
-    removeScalprum();
-  });
   it('should render', async () => {
-    const { TestScalprumProvider } = mockPluginData({}, {});
     process.env = {
       NODE_ENV: 'test',
       APP_CONFIG: [
@@ -21,23 +10,19 @@ describe('App', () => {
           data: {
             app: { title: 'Test' },
             backend: { baseUrl: 'http://localhost:7007' },
-            auth: { environment: 'development' },
+            techdocs: {
+              storageUrl: 'http://localhost:7007/api/techdocs/static/docs',
+            },
           },
           context: 'test',
         },
       ] as any,
     };
 
-    const rendered = render(
-      <TestScalprumProvider>
-        <TestRoot>
-          <React.Suspense fallback={null}>
-            <AppBase />
-          </React.Suspense>
-        </TestRoot>
-      </TestScalprumProvider>,
-    );
+    const rendered = render(<App />);
 
-    await waitFor(() => expect(rendered.baseElement).toBeInTheDocument());
-  }, 100000);
+    await waitFor(() => {
+      expect(rendered.baseElement).toBeInTheDocument();
+    });
+  });
 });

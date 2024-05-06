@@ -1,42 +1,52 @@
-import React from 'react';
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
+import { Theme } from '@mui/material/styles';
 
-import { CatalogIcon, Content, Header, Page } from '@backstage/core-components';
+import { makeStyles } from 'tss-react/mui';
+
 import { CatalogSearchResultListItem } from '@backstage/plugin-catalog';
+import {
+  CATALOG_FILTER_EXISTS,
+  catalogApiRef,
+} from '@backstage/plugin-catalog-react';
+import { TechDocsSearchResultListItem } from '@backstage/plugin-techdocs';
+
+import {
+  CatalogIcon,
+  Content,
+  DocsIcon,
+  Header,
+  Page,
+} from '@backstage/core-components';
+import { useApi } from '@backstage/core-plugin-api';
 import { SearchType } from '@backstage/plugin-search';
 import {
   SearchBar,
   SearchFilter,
   SearchPagination,
   SearchResult,
+  useSearch,
 } from '@backstage/plugin-search-react';
 
-import Grid from '@mui/material/Grid';
-import Paper from '@mui/material/Paper';
-import { makeStyles } from 'tss-react/mui';
-
-import getMountPointData from '../../utils/dynamicUI/getMountPointData';
-import { MenuIcon } from '../Root/Root';
-
-const useStyles = makeStyles()(theme => ({
-  searchBar: {
-    borderRadius: '50px',
-    margin: 'auto',
-    boxShadow: theme.shadows.at(1),
+const useStyles = makeStyles()((theme: Theme) => ({
+  bar: {
+    padding: theme.spacing(1, 0),
   },
   filters: {
     padding: theme.spacing(2),
-    gap: theme.spacing(2.5),
     marginTop: theme.spacing(2),
-    display: 'flex',
-    flexDirection: 'column',
   },
-  notchedOutline: {
-    borderStyle: 'none!important',
+  filter: {
+    '& + &': {
+      marginTop: theme.spacing(2.5),
+    },
   },
 }));
 
-export const SearchPage = () => {
+const SearchPage = () => {
   const { classes } = useStyles();
+  const { types } = useSearch();
+  const catalogApi = useApi(catalogApiRef);
 
   return (
     <Page themeId="home">
@@ -44,15 +54,9 @@ export const SearchPage = () => {
       <Content>
         <Grid container direction="row">
           <Grid item xs={12}>
-            {/* useStyles has a lower precedence over mui styles hence why we need use use css */}
-            <SearchBar
-              InputProps={{
-                classes: {
-                  notchedOutline: classes.notchedOutline,
-                },
-              }}
-              className={classes.searchBar}
-            />
+            <Paper className={classes.bar}>
+              <SearchBar />
+            </Paper>
           </Grid>
           <Grid item xs={3}>
             <SearchType.Accordion
@@ -64,62 +68,54 @@ export const SearchPage = () => {
                   name: 'Software Catalog',
                   icon: <CatalogIcon />,
                 },
-                ...getMountPointData<
-                  (
-                    name: string,
-                    icon: React.ReactElement,
-                  ) => {
-                    name: string;
-                    icon: React.ReactElement;
-                    value: string;
-                  }
-                >('search.page.types').map(
-                  ({ Component: getSearchType, config: { props } }) =>
-                    getSearchType(
-                      props?.name || '',
-                      <MenuIcon icon={props?.icon || ''} />,
-                    ),
-                ),
+                {
+                  value: 'techdocs',
+                  name: 'Documentation',
+                  icon: <DocsIcon />,
+                },
               ]}
             />
             <Paper className={classes.filters}>
+              {types.includes('techdocs') && (
+                <SearchFilter.Select
+                  className={classes.filter}
+                  label="Entity"
+                  name="name"
+                  values={async () => {
+                    // Return a list of entities which are documented.
+                    const { items } = await catalogApi.getEntities({
+                      fields: ['metadata.name'],
+                      filter: {
+                        'metadata.annotations.backstage.io/techdocs-ref':
+                          CATALOG_FILTER_EXISTS,
+                      },
+                    });
+
+                    const names = items.map(entity => entity.metadata.name);
+                    names.sort();
+                    return names;
+                  }}
+                />
+              )}
               <SearchFilter.Select
+                className={classes.filter}
                 label="Kind"
                 name="kind"
                 values={['Component', 'Template']}
               />
               <SearchFilter.Checkbox
+                className={classes.filter}
                 label="Lifecycle"
                 name="lifecycle"
                 values={['experimental', 'production']}
               />
-              {...getMountPointData<React.ComponentType>(
-                'search.page.filters',
-              ).map(({ Component, config }, idx) => {
-                return (
-                  <Component key={`search_filter_${idx}`} {...config.props} />
-                );
-              })}
             </Paper>
           </Grid>
           <Grid item xs={9}>
             <SearchPagination />
             <SearchResult>
               <CatalogSearchResultListItem icon={<CatalogIcon />} />
-              {getMountPointData<React.ComponentType>(
-                'search.page.results',
-              ).map(({ Component, config }, idx) => {
-                const ComponentWithIcon = Component as React.FunctionComponent<{
-                  icon: React.ReactElement;
-                }>;
-                return (
-                  <ComponentWithIcon
-                    {...config.props}
-                    key={`search_results_${idx}`}
-                    icon={<MenuIcon icon={config.props?.icon || ''} />}
-                  />
-                );
-              })}
+              <TechDocsSearchResultListItem icon={<DocsIcon />} />
             </SearchResult>
           </Grid>
         </Grid>
@@ -127,3 +123,5 @@ export const SearchPage = () => {
     </Page>
   );
 };
+
+export const searchPage: React.JSX.Element = <SearchPage />;
