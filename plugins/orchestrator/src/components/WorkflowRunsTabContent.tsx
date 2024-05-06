@@ -5,7 +5,6 @@ import {
   InfoCard,
   Link,
   SelectItem,
-  Table,
   TableColumn,
 } from '@backstage/core-components';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
@@ -24,6 +23,7 @@ import { DEFAULT_TABLE_PAGE_SIZE, VALUE_UNAVAILABLE } from '../constants';
 import usePolling from '../hooks/usePolling';
 import { workflowInstanceRouteRef } from '../routes';
 import { Selector } from './Selector';
+import OverrideBackstageTable from './ui/OverrideBackstageTable';
 import { mapProcessInstanceToDetails } from './WorkflowInstancePageContent';
 import { WorkflowInstanceStatusIndicator } from './WorkflowInstanceStatusIndicator';
 import { WorkflowRunDetail } from './WorkflowRunDetail';
@@ -128,7 +128,7 @@ export const WorkflowRunsTabContent = () => {
     <ErrorPanel error={error} />
   ) : (
     <InfoCard noPadding title={selectors}>
-      <Table
+      <OverrideBackstageTable
         title="Workflow Runs"
         options={{
           paging,
