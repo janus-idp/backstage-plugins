@@ -59,3 +59,10 @@ When defining a permission for the RBAC Backend plugin to consume, follow these 
 | scaffolder.action.execute          | scaffolder-action   |        | Allows the execution of an action from a template | scaffolder.template.parameter.read, scaffolder.template.step.read |
 | scaffolder.template.parameter.read | scaffolder-template | read   | Allows the user to read parameters of a template  | scaffolder.template.step.read                                     |
 | scaffolder.template.step.read      | scaffolder-template | read   | Allows the user to read steps of a template       | scaffolder.template.paramater.read                                |
+
+## OCM
+
+| Name             | Resource Type | Policy | Description                                                       | Requirements |
+| ---------------- | ------------- | ------ | ----------------------------------------------------------------- | ------------ |
+| ocm.entity.read  |               | read   | Allows the user to read from the ocm plugin                       | X            |
+| ocm.cluster.read |               | read   | Allows the user to read the cluster information in the ocm plugin | X            |
