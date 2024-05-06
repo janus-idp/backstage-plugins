@@ -9,6 +9,11 @@ import { TlsOptions } from 'tls';
 
 const DEFAULT_SQLITE3_STORAGE_FILE_NAME = 'rbac.sqlite';
 
+type DbSSLOptions = {
+  ca: string;
+  rejectUnauthorized?: boolean;
+};
+
 export class CasbinDBAdapterFactory {
   public constructor(
     private readonly config: ConfigApi,
@@ -65,6 +70,7 @@ export class CasbinDBAdapterFactory {
     if (!connection) {
       return undefined;
     }
+
     const ssl = (connection as { ssl: Object | boolean | undefined }).ssl;
 
     if (ssl === undefined) {
@@ -76,12 +82,17 @@ export class CasbinDBAdapterFactory {
     }
 
     if (typeof ssl.valueOf() === 'object') {
-      const ca = (ssl as { ca: string }).ca;
-      if (ca) {
-        return { ca };
+      const sslOpts = ssl as DbSSLOptions;
+      const tlsOpts = {
+        ca: sslOpts.ca,
+        rejectUnauthorized: sslOpts.rejectUnauthorized ?? undefined,
+      };
+
+      if (Object.values(tlsOpts).every(el => el === undefined)) {
+        return true;
       }
-      // SSL object was defined with some options that we don't support yet.
-      return true;
+
+      return tlsOpts;
     }
 
     return undefined;

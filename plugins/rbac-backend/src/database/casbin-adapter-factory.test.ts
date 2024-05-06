@@ -185,6 +185,41 @@ describe('CasbinAdapterFactory', () => {
         },
       });
     });
+
+    it('test building an adapter using a PostgreSQL configuration with intentionally ssl and TLS options.', async () => {
+      const config = new ConfigReader({
+        backend: {
+          database: {
+            client: 'pg',
+            connection: {
+              host: 'localhost',
+              port: '5432',
+              user: 'postgresUser',
+              password: process.env.TEST,
+              ssl: {
+                ca: 'abc',
+                rejectUnauthorized: false,
+              },
+            },
+          },
+        },
+      });
+      const factory = new CasbinDBAdapterFactory(config, mockDatabaseManager);
+      const adapter = await factory.createAdapter();
+      expect(adapter).not.toBeNull();
+      expect(newAdapterMock).toHaveBeenCalledWith({
+        type: 'postgres',
+        host: 'localhost',
+        port: 5432,
+        username: 'postgresUser',
+        password: process.env.TEST,
+        database: 'test-database',
+        ssl: {
+          ca: 'abc',
+          rejectUnauthorized: false,
+        },
+      });
+    });
   });
 
   it('ensure that building an adapter with an unknown configuration fails.', async () => {
