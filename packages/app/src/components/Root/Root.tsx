@@ -16,6 +16,7 @@ import {
   Settings as SidebarSettings,
   UserSettingsSignInAvatar,
 } from '@backstage/plugin-user-settings';
+
 import CreateComponentIcon from '@mui/icons-material/AddCircleOutline';
 import ExtensionIcon from '@mui/icons-material/Extension';
 import HomeIcon from '@mui/icons-material/Home';
@@ -24,6 +25,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import MapIcon from '@mui/icons-material/MyLocation';
 import SearchIcon from '@mui/icons-material/Search';
 import { makeStyles } from 'tss-react/mui';
+
 import LogoFull from './LogoFull';
 import LogoIcon from './LogoIcon';
 
@@ -55,7 +57,9 @@ const SidebarLogo = () => {
   );
 };
 
-export const Root = ({ children }: React.PropsWithChildren): React.JSX.Element => (
+export const Root = ({
+  children,
+}: React.PropsWithChildren): React.JSX.Element => (
   <SidebarPage>
     <Sidebar>
       <SidebarLogo />
@@ -65,14 +69,34 @@ export const Root = ({ children }: React.PropsWithChildren): React.JSX.Element =
       <SidebarDivider />
       <SidebarGroup label="Menu" icon={<MenuIcon />}>
         {/* Global nav, not org-specific */}
-        <SidebarItem icon={HomeIcon as IconComponent} to="catalog" text="Home" />
-        <SidebarItem icon={ExtensionIcon as IconComponent} to="api-docs" text="APIs" />
-        <SidebarItem icon={LibraryBooks as IconComponent} to="docs" text="Docs" />
-        <SidebarItem icon={CreateComponentIcon as IconComponent} to="create" text="Create..." />
+        <SidebarItem
+          icon={HomeIcon as IconComponent}
+          to="catalog"
+          text="Home"
+        />
+        <SidebarItem
+          icon={ExtensionIcon as IconComponent}
+          to="api-docs"
+          text="APIs"
+        />
+        <SidebarItem
+          icon={LibraryBooks as IconComponent}
+          to="docs"
+          text="Docs"
+        />
+        <SidebarItem
+          icon={CreateComponentIcon as IconComponent}
+          to="create"
+          text="Create..."
+        />
         {/* End global nav */}
         <SidebarDivider />
         <SidebarScrollWrapper>
-          <SidebarItem icon={MapIcon as IconComponent} to="tech-radar" text="Tech Radar" />
+          <SidebarItem
+            icon={MapIcon as IconComponent}
+            to="tech-radar"
+            text="Tech Radar"
+          />
         </SidebarScrollWrapper>
       </SidebarGroup>
       <SidebarSpace />
