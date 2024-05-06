@@ -1,4 +1,7 @@
-import { ConditionalPolicyDecision } from '@backstage/plugin-permission-common';
+import {
+  ConditionalPolicyDecision,
+  PermissionAttributes,
+} from '@backstage/plugin-permission-common';
 
 export type Source =
   | 'rest' // created via REST API
@@ -49,7 +52,13 @@ export type PermissionPolicy = {
 
 export type NonEmptyArray<T> = [T, ...T[]];
 
+// Permission framework attributes action has values: 'create' | 'read' | 'update' | 'delete' | undefined.
+// But we are introducing an action named "use" when action does not exist('undefined') to avoid
+// a more complicated model with multiple policy and request shapes.
 export type PermissionAction = 'create' | 'read' | 'update' | 'delete' | 'use';
+export const toPermissionAction = (
+  attr: PermissionAttributes,
+): PermissionAction => attr.action ?? 'use';
 
 export type PermissionInfo = {
   name: string;
