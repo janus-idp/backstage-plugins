@@ -57,6 +57,7 @@ import {
   validateEntityReference,
   validatePolicy,
   validateRole,
+  validateSource,
 } from '../validation/policies-validation';
 import { EnforcerDelegate } from './enforcer-delegate';
 import { PluginPermissionMetadataCollector } from './plugin-endpoints';
@@ -377,11 +378,18 @@ export class PoliciesServer {
         throw new NotAllowedError(); // 403
       }
       const roleRaw: Role = request.body;
-      const err = validateRole(roleRaw);
+      let err = validateRole(roleRaw);
       if (err) {
         throw new InputError( // 400
           `Invalid role definition. Cause: ${err.message}`,
         );
+      }
+
+      const rMetadata = await this.roleMetadata.findRoleMetadata(roleRaw.name);
+
+      err = await validateSource('rest', rMetadata);
+      if (err) {
+        throw new NotAllowedError(`Unable to add role: ${err.message}`);
       }
 
       const roles = this.transformRoleToArray(roleRaw);
@@ -473,15 +481,10 @@ export class PoliciesServer {
       if (!oldMetadata) {
         throw new NotFoundError(`Unable to find metadata for ${roleEntityRef}`);
       }
-      if (oldMetadata.source === 'csv-file') {
-        throw new Error(
-          `Role ${roleEntityRef} can be modified only using csv policy file.`,
-        );
-      }
-      if (oldMetadata.source === 'configuration') {
-        throw new Error(
-          `Role ${roleEntityRef} can be modified only using application config`,
-        );
+
+      err = await validateSource('rest', oldMetadata);
+      if (err) {
+        throw new NotAllowedError(`Unable to edit role: ${err.message}`);
       }
 
       if (
@@ -588,15 +591,10 @@ export class PoliciesServer {
 
         const metadata =
           await this.roleMetadata.findRoleMetadata(roleEntityRef);
-        if (metadata?.source === 'csv-file') {
-          throw new Error(
-            `Role ${roleEntityRef} can be modified only using csv policy file.`,
-          );
-        }
-        if (metadata?.source === 'configuration') {
-          throw new Error(
-            `Pre-defined role ${roleEntityRef} is reserved and can not be modified.`,
-          );
+
+        const err = await validateSource('rest', metadata);
+        if (err) {
+          throw new NotAllowedError(`Unable to delete role: ${err.message}`);
         }
 
         const user = await identity.getIdentity({ request });
@@ -919,13 +917,27 @@ export class PoliciesServer {
     const policies: string[][] = [];
     const uniqueItems = new Set<string>();
     for (const policy of policyArray) {
-      const err = validatePolicy(policy);
+      let err = validatePolicy(policy);
       if (err) {
         throw new InputError(
           `Invalid ${errorMessage ?? 'policy'} definition. Cause: ${
             err.message
           }`,
         ); // 400
+      }
+
+      const metadata = await this.roleMetadata.findRoleMetadata(
+        policy.entityReference!,
+      );
+
+      let action = errorMessage ? 'edit' : 'delete';
+      action = isOld ? action : 'add';
+
+      err = await validateSource('rest', metadata, policy);
+      if (err) {
+        throw new NotAllowedError(
+          `Unable to ${action} policy ${policy.entityReference},${policy.permission},${policy.policy},${policy.effect}: ${err.message}`,
+        );
       }
 
       const transformedPolicy = this.transformPolicyToArray(policy);

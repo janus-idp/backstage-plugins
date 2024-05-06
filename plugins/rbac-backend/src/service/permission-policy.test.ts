@@ -36,7 +36,10 @@ import {
   PermissionPolicyMetadataDao,
   PolicyMetadataStorage,
 } from '../database/policy-metadata-storage';
-import { RoleMetadataStorage } from '../database/role-metadata';
+import {
+  RoleMetadataDao,
+  RoleMetadataStorage,
+} from '../database/role-metadata';
 import { BackstageRoleManager } from '../role-manager/role-manager';
 import { EnforcerDelegate } from './enforcer-delegate';
 import { MODEL } from './permission-model';
@@ -125,6 +128,10 @@ const knex = Knex.knex({ client: MockClient });
 const mockAuthService = mockServices.auth();
 
 describe('RBACPermissionPolicy Tests', () => {
+  beforeEach(() => {
+    roleMetadataStorageMock.updateRoleMetadata = jest.fn().mockImplementation();
+  });
+
   it('should build', async () => {
     const stringPolicy = `p, user:default/known_user, test-resource, update, allow `;
     const config = newConfigReader();
@@ -134,6 +141,23 @@ describe('RBACPermissionPolicy Tests', () => {
     const policy = await newPermissionPolicy(config, enfDelegate);
 
     expect(policy).not.toBeNull();
+  });
+
+  it('should fail to build when creating admin role', async () => {
+    roleMetadataStorageMock.updateRoleMetadata = jest
+      .fn()
+      .mockImplementation(async (): Promise<void> => {
+        throw new Error(`Failed to create`);
+      });
+
+    const stringPolicy = `p, user:default/known_user, test-resource, update, allow `;
+    const config = newConfigReader();
+    const adapter = await newAdapter(config, stringPolicy);
+    const enfDelegate = await newEnforcerDelegate(adapter, config);
+
+    await expect(newPermissionPolicy(config, enfDelegate)).rejects.toThrow(
+      'Failed to create',
+    );
   });
 
   describe('Policy checks from csv file', () => {
@@ -216,6 +240,7 @@ describe('RBACPermissionPolicy Tests', () => {
       'role:default/some-role',
       'role:default/rbac_admin',
       'role:default/catalog-writer',
+      'role:default/legacy',
       'role:default/catalog-reader',
       'role:default/catalog-deleter',
       'role:default/known_role',
@@ -226,6 +251,7 @@ describe('RBACPermissionPolicy Tests', () => {
       ['user:default/guest', 'role:default/rbac_admin'],
       ['group:default/guests', 'role:default/rbac_admin'],
       ['user:default/guest', 'role:default/catalog-writer'],
+      ['user:default/guest', 'role:default/legacy'],
       ['user:default/guest', 'role:default/catalog-reader'],
       ['user:default/guest', 'role:default/catalog-deleter'],
       ['user:default/known_user', 'role:default/known_role'],
@@ -236,6 +262,7 @@ describe('RBACPermissionPolicy Tests', () => {
       ['role:default/some-role', 'test.some.resource', 'use', 'allow'],
       // policies from csv file
       ['role:default/catalog-writer', 'catalog-entity', 'update', 'allow'],
+      ['role:default/legacy', 'catalog-entity', 'update', 'allow'],
       ['role:default/catalog-writer', 'catalog-entity', 'read', 'allow'],
       ['role:default/catalog-writer', 'catalog.entity.create', 'use', 'allow'],
       ['role:default/catalog-deleter', 'catalog-entity', 'delete', 'deny'],
@@ -1026,8 +1053,11 @@ describe('RBACPermissionPolicy Tests', () => {
           async (
             _roleEntityRef: string,
             _trx: Knex.Knex.Transaction,
-          ): Promise<RoleMetadata> => {
-            return { source: 'legacy' };
+          ): Promise<RoleMetadataDao> => {
+            return {
+              roleEntityRef: 'role:default/catalog-writer',
+              source: 'legacy',
+            };
           },
         ),
       createRoleMetadata: jest.fn().mockImplementation(),
@@ -1036,13 +1066,7 @@ describe('RBACPermissionPolicy Tests', () => {
     };
 
     const policyMetadataStorageTest: PolicyMetadataStorage = {
-      findPolicyMetadataBySource: jest
-        .fn()
-        .mockImplementation(
-          async (_source: Source): Promise<PermissionPolicyMetadataDao[]> => {
-            return [];
-          },
-        ),
+      findPolicyMetadataBySource: jest.fn().mockImplementation(),
       findPolicyMetadata: jest.fn().mockImplementation(),
       createPolicyMetadata: jest.fn().mockImplementation(),
       removePolicyMetadata: jest.fn().mockImplementation(),
@@ -1108,6 +1132,20 @@ describe('RBACPermissionPolicy Tests', () => {
           },
         );
 
+      roleMetadataStorageMock.findRoleMetadata = jest
+        .fn()
+        .mockImplementation(
+          async (
+            _roleEntityRef: string,
+            _trx: Knex.Knex.Transaction,
+          ): Promise<RoleMetadataDao> => {
+            return {
+              roleEntityRef: 'role:default/catalog-writer',
+              source: 'legacy',
+            };
+          },
+        );
+
       const config = newConfigReader(csvPermFile, admins, superUser);
       const adapter = await newAdapter(config);
 
@@ -1130,6 +1168,39 @@ describe('RBACPermissionPolicy Tests', () => {
       const enfPermission = await enfDelegate.getFilteredPolicy(0, adminRole);
       expect(enfRole).toEqual(groupPolicy);
       expect(enfPermission).toEqual(permissions);
+    });
+
+    it('should fail to build the admin permissions, problem with creating role metadata', async () => {
+      roleMetadataStorageMock.findRoleMetadata = jest
+        .fn()
+        .mockImplementation(async (): Promise<void> => {
+          return undefined;
+        });
+
+      roleMetadataStorageMock.createRoleMetadata = jest
+        .fn()
+        .mockImplementation(async (): Promise<void> => {
+          throw new Error(`Failed to create`);
+        });
+
+      const config = new ConfigReader({
+        permission: {
+          rbac: {
+            'policies-csv-file': csvPermFile,
+            policyFileReload: true,
+          },
+        },
+        backend: {
+          database: {
+            client: 'better-sqlite3',
+            connection: ':memory:',
+          },
+        },
+      });
+
+      await expect(
+        newPermissionPolicy(config, enfDelegate, roleMetadataStorageMock),
+      ).rejects.toThrow('Failed to create');
     });
 
     it('should build and update a legacy admin permission', async () => {
@@ -1204,8 +1275,11 @@ describe('Policy checks for resourced permissions defined by name', () => {
         async (
           _roleEntityRef: string,
           _trx: Knex.Knex.Transaction,
-        ): Promise<RoleMetadata> => {
-          return { source: 'rest' };
+        ): Promise<RoleMetadataDao> => {
+          return {
+            roleEntityRef: 'role:default/catalog-writer',
+            source: 'legacy',
+          };
         },
       ),
     createRoleMetadata: jest.fn().mockImplementation(),

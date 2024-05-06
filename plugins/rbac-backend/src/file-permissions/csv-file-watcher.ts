@@ -19,6 +19,7 @@ import {
   checkForDuplicatePolicies,
   validateGroupingPolicy,
   validatePolicy,
+  validateSource,
 } from '../validation/policies-validation';
 
 export const CSV_PERMISSION_POLICY_FILE_AUTHOR = 'csv permission policy file';
@@ -262,10 +263,23 @@ export class CSVFileWatcher {
    */
   async addPermissionPolicies(tempEnforcer: Enforcer): Promise<void> {
     for (const policy of this.csvFilePolicies.addedPolicies) {
-      let err = validatePolicy(transformArrayToPolicy(policy));
+      const transformedPolicy = transformArrayToPolicy(policy);
+      const metadata = await this.roleMetadataStorage.findRoleMetadata(
+        policy[0],
+      );
+
+      let err = validatePolicy(transformedPolicy);
       if (err) {
         this.logger.warn(
           `Failed to validate policy from file ${this.csvFileName}. Cause: ${err.message}`,
+        );
+        continue;
+      }
+
+      err = await validateSource('csv-file', metadata, transformedPolicy);
+      if (err) {
+        this.logger.warn(
+          `Unable to add policy ${policy} from file ${this.csvFileName}. Cause: ${err.message}`,
         );
         continue;
       }
@@ -321,12 +335,13 @@ export class CSVFileWatcher {
     for (const groupPolicy of this.csvFilePolicies.addedGroupPolicies) {
       let err = await validateGroupingPolicy(
         groupPolicy,
-        this.csvFileName,
         this.roleMetadataStorage,
         'csv-file',
       );
       if (err) {
-        this.logger.warn(err.message);
+        this.logger.warn(
+          `${err.message}, error originates from file ${this.csvFileName}`,
+        );
         continue;
       }
 
