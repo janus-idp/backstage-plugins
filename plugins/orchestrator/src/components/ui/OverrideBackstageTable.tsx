@@ -23,7 +23,10 @@ const OverrideBackstageTable = <T extends object>(props: TableProps<T>) => {
   const classes = useStyles();
   return (
     <div className={classes.orchestratorTable}>
-      <BackstageTable {...props} />
+      <BackstageTable
+        {...props}
+        options={{ ...props.options, thirdSortClick: false }}
+      />
     </div>
   );
 };
