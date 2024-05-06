@@ -1,4 +1,4 @@
-import { DiscoveryApi } from '@backstage/core-plugin-api';
+import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 import { JsonObject } from '@backstage/types';
 
 import { WorkflowExecutionResponse } from '@janus-idp/backstage-plugin-orchestrator-common';
@@ -10,9 +10,12 @@ import {
 
 describe('OrchestratorClient', () => {
   let mockDiscoveryApi: jest.Mocked<DiscoveryApi>;
+  let mockIdentityApi: jest.Mocked<IdentityApi>;
   let orchestratorClientOptions: jest.Mocked<OrchestratorClientOptions>;
   let orchestratorClient: OrchestratorClient;
   const baseUrl = 'https://api.example.com';
+  const mockToken = 'test-token';
+  const defaultAuthHeaders = { Authorization: `Bearer ${mockToken}` };
 
   const mockFetch = jest.fn();
   (global as any).fetch = mockFetch; // Cast global to any to avoid TypeScript errors
@@ -23,10 +26,21 @@ describe('OrchestratorClient', () => {
     mockDiscoveryApi = {
       getBaseUrl: jest.fn().mockResolvedValue('https://api.example.com'),
     } as jest.Mocked<DiscoveryApi>;
+    mockIdentityApi = {
+      getCredentials: jest.fn().mockResolvedValue({ token: mockToken }),
+      getProfileInfo: jest
+        .fn()
+        .mockResolvedValue({ displayName: 'test', email: 'test@test' }),
+      getBackstageIdentity: jest
+        .fn()
+        .mockResolvedValue({ userEntityRef: 'default/test' }),
+      signOut: jest.fn().mockImplementation(),
+    } as jest.Mocked<IdentityApi>;
 
     // Create OrchestratorClientOptions with the mocked DiscoveryApi
     orchestratorClientOptions = {
       discoveryApi: mockDiscoveryApi,
+      identityApi: mockIdentityApi,
     };
     orchestratorClient = new OrchestratorClient(orchestratorClientOptions);
   });
@@ -59,7 +73,10 @@ describe('OrchestratorClient', () => {
         {
           method: 'POST',
           body: JSON.stringify(parameters),
-          headers: { 'content-type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            ...defaultAuthHeaders,
+          },
         },
       );
 
@@ -98,7 +115,10 @@ describe('OrchestratorClient', () => {
         {
           method: 'POST',
           body: JSON.stringify(parameters),
-          headers: { 'content-type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            ...defaultAuthHeaders,
+          },
         },
       );
 
@@ -141,7 +161,10 @@ describe('OrchestratorClient', () => {
         {
           method: 'POST',
           body: JSON.stringify(parameters),
-          headers: { 'content-type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            ...defaultAuthHeaders,
+          },
         },
       );
 
@@ -168,7 +191,7 @@ describe('OrchestratorClient', () => {
         `${baseUrl}/instances/${instanceId}/abort`,
         {
           method: 'DELETE',
-          headers: { 'content-type': 'application/json' },
+          headers: defaultAuthHeaders,
         },
       );
     });
@@ -207,7 +230,9 @@ describe('OrchestratorClient', () => {
       const result = await orchestratorClient.getWorkflowDefinition(workflowId);
 
       // Then
-      expect(fetch).toHaveBeenCalledWith(`${baseUrl}/workflows/${workflowId}`);
+      expect(fetch).toHaveBeenCalledWith(`${baseUrl}/workflows/${workflowId}`, {
+        headers: defaultAuthHeaders,
+      });
       expect(result).toEqual(mockWorkflowDefinition);
     });
 
@@ -247,6 +272,7 @@ describe('OrchestratorClient', () => {
       // Then
       expect(fetch).toHaveBeenCalledWith(
         `${baseUrl}/workflows/${workflowId}/source`,
+        { headers: defaultAuthHeaders },
       );
       expect(result).toEqual(mockWorkflowSource);
     });
@@ -287,7 +313,9 @@ describe('OrchestratorClient', () => {
       const result = await orchestratorClient.listWorkflowOverviews();
 
       // Then
-      expect(fetch).toHaveBeenCalledWith(`${baseUrl}/workflows/overview`);
+      expect(fetch).toHaveBeenCalledWith(`${baseUrl}/workflows/overview`, {
+        headers: defaultAuthHeaders,
+      });
       expect(result).toEqual(mockWorkflowOverviews);
     });
 
@@ -323,7 +351,9 @@ describe('OrchestratorClient', () => {
       const result = await orchestratorClient.listInstances();
 
       // Then
-      expect(fetch).toHaveBeenCalledWith(`${baseUrl}/instances`);
+      expect(fetch).toHaveBeenCalledWith(`${baseUrl}/instances`, {
+        headers: defaultAuthHeaders,
+      });
       expect(result).toEqual(mockInstances);
     });
 
@@ -365,7 +395,9 @@ describe('OrchestratorClient', () => {
       // Then
       const expectedEndpoint = `${baseUrl}/instances/${instanceId}?includeAssessment=${includeAssessment}`;
 
-      expect(fetch).toHaveBeenCalledWith(expectedEndpoint);
+      expect(fetch).toHaveBeenCalledWith(expectedEndpoint, {
+        headers: defaultAuthHeaders,
+      });
       expect(result).toEqual(mockInstance);
     });
 
@@ -411,7 +443,9 @@ describe('OrchestratorClient', () => {
       // Then
       const expectedEndpoint = `${baseUrl}/workflows/${workflowId}/inputSchema?instanceId=${instanceId}&assessmentInstanceId=${assessmentInstanceId}`;
 
-      expect(fetch).toHaveBeenCalledWith(expectedEndpoint);
+      expect(fetch).toHaveBeenCalledWith(expectedEndpoint, {
+        headers: defaultAuthHeaders,
+      });
       expect(result).toEqual(mockInputSchema);
     });
 
@@ -452,7 +486,9 @@ describe('OrchestratorClient', () => {
 
       // Then
       const expectedEndpoint = `${baseUrl}/workflows/${workflowId}/overview`;
-      expect(fetch).toHaveBeenCalledWith(expectedEndpoint);
+      expect(fetch).toHaveBeenCalledWith(expectedEndpoint, {
+        headers: defaultAuthHeaders,
+      });
       expect(result).toEqual(mockOverview);
     });
 
@@ -498,7 +534,7 @@ describe('OrchestratorClient', () => {
       expect(fetch).toHaveBeenCalledWith(expectedUrlToFetch, {
         method: 'POST',
         body: JSON.stringify(inputData),
-        headers: { 'content-type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...defaultAuthHeaders },
       });
       expect(result).toEqual(mockResponse);
     });

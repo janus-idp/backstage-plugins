@@ -1,4 +1,4 @@
-import { DiscoveryApi } from '@backstage/core-plugin-api';
+import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
 
@@ -21,12 +21,15 @@ import { OrchestratorApi } from './api';
 
 export interface OrchestratorClientOptions {
   discoveryApi: DiscoveryApi;
+  identityApi: IdentityApi;
 }
 export class OrchestratorClient implements OrchestratorApi {
   private readonly discoveryApi: DiscoveryApi;
+  private readonly identityApi: IdentityApi;
   private baseUrl: string | null = null;
   constructor(options: OrchestratorClientOptions) {
     this.discoveryApi = options.discoveryApi;
+    this.identityApi = options.identityApi;
   }
 
   private async getBaseUrl(): Promise<string> {
@@ -47,63 +50,44 @@ export class OrchestratorClient implements OrchestratorApi {
     const urlToFetch = buildUrl(endpoint, {
       [QUERY_PARAM_BUSINESS_KEY]: args.businessKey,
     });
-    const res = await fetch(urlToFetch, {
+    return await this.fetcher(urlToFetch, {
       method: 'POST',
       body: JSON.stringify(args.parameters),
-      headers: { 'content-type': 'application/json' },
-    });
-    if (!res.ok) {
-      throw await ResponseError.fromResponse(res);
-    }
-    return await res.json();
+      headers: { 'Content-Type': 'application/json' },
+    }).then(r => r.json());
   }
 
   async abortWorkflowInstance(instanceId: string): Promise<void> {
     const baseUrl = await this.getBaseUrl();
-    const response = await fetch(`${baseUrl}/instances/${instanceId}/abort`, {
+    return await this.fetcher(`${baseUrl}/instances/${instanceId}/abort`, {
       method: 'DELETE',
-      headers: { 'content-type': 'application/json' },
-    });
-
-    if (!response.ok) {
-      throw await ResponseError.fromResponse(response);
-    }
+    }).then(_ => undefined);
   }
 
   async getWorkflowDefinition(workflowId: string): Promise<WorkflowDefinition> {
     const baseUrl = await this.getBaseUrl();
-    const res = await fetch(`${baseUrl}/workflows/${workflowId}`);
-    if (!res.ok) {
-      throw await ResponseError.fromResponse(res);
-    }
-    return await res.json();
+    return await this.fetcher(`${baseUrl}/workflows/${workflowId}`).then(r =>
+      r.json(),
+    );
   }
 
   async getWorkflowSource(workflowId: string): Promise<string> {
     const baseUrl = await this.getBaseUrl();
-    const res = await fetch(`${baseUrl}/workflows/${workflowId}/source`);
-    if (!res.ok) {
-      throw await ResponseError.fromResponse(res);
-    }
-    return await res.text();
+    return await this.fetcher(`${baseUrl}/workflows/${workflowId}/source`).then(
+      r => r.text(),
+    );
   }
 
   async listWorkflowOverviews(): Promise<WorkflowOverviewListResult> {
     const baseUrl = await this.getBaseUrl();
-    const res = await fetch(`${baseUrl}/workflows/overview`);
-    if (!res.ok) {
-      throw await ResponseError.fromResponse(res);
-    }
-    return res.json();
+    return await this.fetcher(`${baseUrl}/workflows/overview`).then(r =>
+      r.json(),
+    );
   }
 
   async listInstances(): Promise<ProcessInstance[]> {
     const baseUrl = await this.getBaseUrl();
-    const res = await fetch(`${baseUrl}/instances`);
-    if (!res.ok) {
-      throw await ResponseError.fromResponse(res);
-    }
-    return await res.json();
+    return await this.fetcher(`${baseUrl}/instances`).then(r => r.json());
   }
 
   async getInstance(
@@ -115,11 +99,7 @@ export class OrchestratorClient implements OrchestratorApi {
     const urlToFetch = buildUrl(endpoint, {
       [QUERY_PARAM_INCLUDE_ASSESSMENT]: includeAssessment,
     });
-    const res = await fetch(urlToFetch);
-    if (!res.ok) {
-      throw await ResponseError.fromResponse(res);
-    }
-    return await res.json();
+    return await this.fetcher(urlToFetch).then(r => r.json());
   }
 
   async getWorkflowDataInputSchema(args: {
@@ -133,20 +113,14 @@ export class OrchestratorClient implements OrchestratorApi {
       [QUERY_PARAM_INSTANCE_ID]: args.instanceId,
       [QUERY_PARAM_ASSESSMENT_INSTANCE_ID]: args.assessmentInstanceId,
     });
-    const res = await fetch(urlToFetch);
-    if (!res.ok) {
-      throw await ResponseError.fromResponse(res);
-    }
-    return await res.json();
+    return await this.fetcher(urlToFetch).then(r => r.json());
   }
 
   async getWorkflowOverview(workflowId: string): Promise<WorkflowOverview> {
     const baseUrl = await this.getBaseUrl();
-    const res = await fetch(`${baseUrl}/workflows/${workflowId}/overview`);
-    if (!res.ok) {
-      throw await ResponseError.fromResponse(res);
-    }
-    return res.json();
+    return await this.fetcher(
+      `${baseUrl}/workflows/${workflowId}/overview`,
+    ).then(r => r.json());
   }
 
   async retriggerInstanceInError(args: {
@@ -155,14 +129,29 @@ export class OrchestratorClient implements OrchestratorApi {
   }): Promise<WorkflowExecutionResponse> {
     const baseUrl = await this.getBaseUrl();
     const urlToFetch = `${baseUrl}/instances/${args.instanceId}/retrigger`;
-    const response = await fetch(urlToFetch, {
+    return await this.fetcher(urlToFetch, {
       method: 'POST',
       body: JSON.stringify(args.inputData),
-      headers: { 'content-type': 'application/json' },
-    });
+      headers: { 'Content-Type': 'application/json' },
+    }).then(r => r.json());
+  }
+
+  /** fetcher is convenience fetch wrapper that includes authentication
+   * and other necessary headers **/
+  private async fetcher(
+    url: string,
+    requestInit?: RequestInit,
+  ): Promise<Response> {
+    const { token: idToken } = await this.identityApi.getCredentials();
+    const r = { ...requestInit };
+    r.headers = {
+      ...r.headers,
+      ...(idToken && { Authorization: `Bearer ${idToken}` }),
+    };
+    const response = await fetch(url, r);
     if (!response.ok) {
       throw await ResponseError.fromResponse(response);
     }
-    return response.json();
+    return response;
   }
 }
