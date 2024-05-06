@@ -214,10 +214,10 @@ describe('catalog annotator', () => {
     const entity = yaml.parse(updatedCatalogInfoYaml);
 
     expect(logger.info).toHaveBeenCalledWith('some logger info msg');
-    expect(entity?.spec?.['scaffoldedFrom']).toBe('testt-ref');
+    expect(entity?.spec?.scaffoldedFrom).toBe('testt-ref');
 
     // undo catalog-info.yaml file changes
-    delete entity?.spec?.['scaffoldedFrom'];
+    delete entity?.spec?.scaffoldedFrom;
     await fs.writeFile(
       resolveSafeChildPath(workspacePath, './catalog-info.yaml'),
       yaml.stringify(entity),
@@ -260,10 +260,10 @@ describe('catalog annotator', () => {
     const entity = yaml.parse(updatedCatalogInfoYaml);
 
     expect(logger.info).toHaveBeenCalledWith('some logger info msg');
-    expect(entity?.spec?.['scaffoldedFrom']).toBe('test-entityRef');
+    expect(entity?.spec?.scaffoldedFrom).toBe('test-entityRef');
 
     // undo catalog-info.yaml file changes
-    delete entity?.spec?.['scaffoldedFrom'];
+    delete entity?.spec?.scaffoldedFrom;
     await fs.writeFile(
       resolveSafeChildPath(workspacePath, './catalog-info.yaml'),
       yaml.stringify(entity),

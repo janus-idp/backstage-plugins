@@ -10,7 +10,7 @@ export const getObjectToAnnotate = async (
   const obj = await fs.readFile(
     resolveSafeChildPath(
       workspacePath,
-      objectFilePath ? objectFilePath : './catalog-info.yaml',
+      objectFilePath || './catalog-info.yaml',
     ),
     'utf8',
   );

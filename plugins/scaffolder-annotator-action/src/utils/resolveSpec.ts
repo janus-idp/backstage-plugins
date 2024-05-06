@@ -2,23 +2,23 @@ import { ActionContext } from '@backstage/plugin-scaffolder-node';
 
 import { get } from 'lodash';
 
+export type Value = string | { readFromContext: string };
+
 export const resolveSpec = (
-  spec: { [key: string]: any | { readFromContext: string } } | undefined,
+  spec: { [key: string]: Value } | undefined,
   ctx: ActionContext<any>,
 ) => {
   if (!spec || Object.keys(spec).length === 0) {
     return {};
   }
   return Object.keys(spec).reduce((acc, s) => {
-    acc = {
+    const val = spec[s];
+    return {
       ...acc,
       ...{
         [`${s}`]:
-          spec[s].readFromContext && spec[s].readFromContext !== ''
-            ? get(ctx, spec[s].readFromContext)
-            : spec[s],
+          typeof val === 'string' ? spec[s] : get(ctx, val.readFromContext),
       },
     };
-    return acc;
   }, {});
 };

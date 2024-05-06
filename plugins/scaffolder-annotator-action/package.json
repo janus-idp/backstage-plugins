@@ -13,6 +13,21 @@
   "backstage": {
     "role": "backend-plugin-module"
   },
+  "exports": {
+    ".": "./src/index.ts",
+    "./alpha": "./src/alpha.ts",
+    "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "alpha": [
+        "src/alpha.ts"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
   "scripts": {
     "start": "backstage-cli package start",
     "build": "backstage-cli package build",
@@ -26,10 +41,13 @@
     "tsc": "tsc"
   },
   "dependencies": {
-    "@backstage/plugin-scaffolder-node": "^0.4.2",
     "@backstage/backend-common": "^0.21.6",
+    "@backstage/backend-dynamic-feature-service": "^0.2.9",
+    "@backstage/backend-plugin-api": "^0.6.17",
     "@backstage/catalog-model": "^1.4.5",
+    "@backstage/plugin-scaffolder-node": "^0.4.2",
     "fs-extra": "^11.2.0",
+    "lodash": "^4.17.21",
     "yaml": "^2.0.0"
   },
   "devDependencies": {
@@ -38,7 +56,10 @@
   },
   "files": [
     "dist",
-    "dist-scalprum",
+    "config.d.ts",
+    "dist-dynamic/*.*",
+    "dist-dynamic/dist/**",
+    "dist-dynamic/alpha/*",
     "app-config.janus-idp.yaml"
   ],
   "repository": "github:janus-idp/backstage-plugins",

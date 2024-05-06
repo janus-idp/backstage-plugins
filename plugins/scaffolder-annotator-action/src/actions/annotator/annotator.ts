@@ -6,10 +6,10 @@ import * as yaml from 'yaml';
 
 import { convertLabelsToObject } from '../../utils/convertLabelsToObject';
 import { getObjectToAnnotate } from '../../utils/getObjectToAnnotate';
-import { resolveSpec } from '../../utils/resolveSpec';
+import { resolveSpec, Value } from '../../utils/resolveSpec';
 
 /**
- * Creates a new Scaffolder action to annotate a catalog-info.yaml with desired lable(s), annotation(s) and spec property(ies).
+ * Creates a new Scaffolder action to annotate an entity object with specified label(s), annotation(s) and spec property(ies).
  *
  */
 
@@ -18,15 +18,15 @@ export const createAnnotatorAction = (
   actionDescription: string,
   loggerInfoMsg?: string,
   annotateEntityObject?: {
-    annotations?: { [key: string]: any };
-    labels?: { [key: string]: any };
-    spec?: { [key: string]: any | { readFromContext: string } };
+    annotations?: { [key: string]: string };
+    labels?: { [key: string]: string };
+    spec?: { [key: string]: Value };
   },
 ) => {
   return createTemplateAction<{
     labels?: string;
     annotations?: string;
-    objectFilePath?: string;
+    entityFilePath?: string;
     objectYaml?: object;
     writeToFile?: string;
   }>({
@@ -46,14 +46,14 @@ export const createAnnotatorAction = (
             description: 'Annotations that will be applied to the object',
             type: 'string',
           },
-          objectFilePath: {
-            title: 'Object File Path',
-            description: 'Path to the object yaml you want to annonate',
+          entityFilePath: {
+            title: 'Entity File Path',
+            description: 'Path to the entity yaml you want to annotate',
             type: 'string',
           },
           objectYaml: {
             title: 'Object Yaml',
-            description: 'Any object yaml you want to annonate',
+            description: 'Entity object yaml you want to annotate',
             type: 'object',
           },
           writeToFile: {
@@ -69,7 +69,7 @@ export const createAnnotatorAction = (
           annotatedObject: {
             type: 'object',
             title:
-              'The object annotated with your desired annotation(s), label(s) and spec property(ies)',
+              'The entity object annotated with your desired annotation(s), label(s) and spec property(ies)',
           },
         },
       },
@@ -82,7 +82,7 @@ export const createAnnotatorAction = (
       } else {
         objToAnnotate = await getObjectToAnnotate(
           ctx.workspacePath,
-          ctx.input?.objectFilePath,
+          ctx.input?.entityFilePath,
         );
       }
       const annotatedObj = {
@@ -102,7 +102,7 @@ export const createAnnotatorAction = (
         },
         spec: {
           ...(objToAnnotate.spec || {}),
-          ...(resolveSpec(annotateEntityObject?.spec, ctx) || {}),
+          ...resolveSpec(annotateEntityObject?.spec, ctx),
         },
       };
 
@@ -110,9 +110,12 @@ export const createAnnotatorAction = (
       ctx.logger.info(loggerInfoMsg || 'Annotating your object');
       if (
         Object.keys(annotateEntityObject || {}).length > 0 &&
-        (Object.keys(annotateEntityObject?.labels || {}).length > 0 ||
-          Object.keys(annotateEntityObject?.annotations || {}).length > 0 ||
-          Object.keys(annotateEntityObject?.spec || {}).length > 0)
+        Object.keys(
+          annotateEntityObject?.labels ||
+            annotateEntityObject?.annotations ||
+            annotateEntityObject?.spec ||
+            {},
+        ).length > 0
       ) {
         await fs.writeFile(
           resolveSafeChildPath(ctx.workspacePath, './catalog-info.yaml'),
