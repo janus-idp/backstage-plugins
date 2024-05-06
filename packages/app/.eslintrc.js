@@ -1,4 +1,6 @@
-const backstageConfig = require('@backstage/cli/config/eslint-factory')(__dirname);
+const backstageConfig = require('@backstage/cli/config/eslint-factory')(
+  __dirname,
+);
 
 module.exports = {
   ...backstageConfig,
