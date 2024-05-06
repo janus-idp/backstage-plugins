@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-ocm-backend [4.0.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@4.0.0...@janus-idp/backstage-plugin-ocm-backend@4.0.1) (2024-05-06)
+
+
+### Bug Fixes
+
+* **ocm:** update ocm frontend plugin readme ([#1611](https://github.com/janus-idp/backstage-plugins/issues/1611)) ([9960cc0](https://github.com/janus-idp/backstage-plugins/commit/9960cc0c2d611cdd1ee10a82ed02b7be9becefcf))
+
 ## @janus-idp/backstage-plugin-ocm-backend [4.0.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-backend@3.6.5...@janus-idp/backstage-plugin-ocm-backend@4.0.0) (2024-05-04)
 
 
