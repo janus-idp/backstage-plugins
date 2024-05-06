@@ -10,7 +10,7 @@ import { TlsOptions } from 'tls';
 const DEFAULT_SQLITE3_STORAGE_FILE_NAME = 'rbac.sqlite';
 
 type DbSSLOptions = {
-  ca: string;
+  ca?: string;
   rejectUnauthorized?: boolean;
 };
 
@@ -85,7 +85,7 @@ export class CasbinDBAdapterFactory {
       const sslOpts = ssl as DbSSLOptions;
       const tlsOpts = {
         ca: sslOpts.ca,
-        rejectUnauthorized: sslOpts.rejectUnauthorized ?? undefined,
+        rejectUnauthorized: sslOpts.rejectUnauthorized,
       };
 
       if (Object.values(tlsOpts).every(el => el === undefined)) {
