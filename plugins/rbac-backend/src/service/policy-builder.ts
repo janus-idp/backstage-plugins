@@ -124,7 +124,6 @@ export class PolicyBuilder {
       conditionStorage,
       pluginIdProvider,
       roleMetadataStorage,
-      auditLog,
     );
     return server.serve();
   }

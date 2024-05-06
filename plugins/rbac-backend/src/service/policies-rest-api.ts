@@ -46,7 +46,6 @@ import {
 } from '@janus-idp/backstage-plugin-rbac-common';
 import { PluginIdProvider } from '@janus-idp/backstage-plugin-rbac-node';
 
-import { AuditLogger } from '../audit-log/audit-logger';
 import { ConditionalStorage } from '../database/conditional-storage';
 import {
   daoToMetadata,
@@ -75,7 +74,6 @@ export class PolicesServer {
     private readonly conditionalStorage: ConditionalStorage,
     private readonly pluginIdProvider: PluginIdProvider,
     private readonly roleMetadata: RoleMetadataStorage,
-    private readonly auditLog: AuditLogger,
   ) {}
 
   private async authorize(
