@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-kiali-backend [1.10.13](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali-backend@1.10.12...@janus-idp/backstage-plugin-kiali-backend@1.10.13) (2024-05-06)
+
+
+### Bug Fixes
+
+* **kiali:** remove kiali-common from package. ([#1586](https://github.com/janus-idp/backstage-plugins/issues/1586)) ([b1748a4](https://github.com/janus-idp/backstage-plugins/commit/b1748a4ee58f2920cf94dfbac8e88cd850fca2d9))
+
 ## @janus-idp/backstage-plugin-kiali-backend [1.10.12](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali-backend@1.10.11...@janus-idp/backstage-plugin-kiali-backend@1.10.12) (2024-05-04)
 
 
