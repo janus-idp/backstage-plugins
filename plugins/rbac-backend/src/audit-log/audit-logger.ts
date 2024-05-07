@@ -39,8 +39,6 @@ type LogMsgWithConditionInfo = LogMsg & {
 };
 
 type LogMsgWithEvaluationInfo = {
-  level: 'info' | 'error';
-  message: string;
   isAuditLog: true;
   userEntityRef: string;
   permissionName: string;
