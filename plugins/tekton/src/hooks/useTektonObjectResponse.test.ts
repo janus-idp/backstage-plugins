@@ -1,6 +1,8 @@
+import { act } from 'react';
+
 import { useKubernetesObjects } from '@backstage/plugin-kubernetes';
 
-import { act, renderHook, waitFor } from '@testing-library/react';
+import { renderHook, waitFor } from '@testing-library/react';
 
 import { mockKubernetesPlrResponse } from '../__fixtures__/1-pipelinesData';
 import { kubernetesObjects } from '../__fixtures__/kubernetesObject';

@@ -1,4 +1,6 @@
-import { act, renderHook, waitFor } from '@testing-library/react';
+import { act } from 'react';
+
+import { renderHook, waitFor } from '@testing-library/react';
 
 import { SHORT_REFRESH_INTERVAL } from '../constants';
 import usePolling from './usePolling';
