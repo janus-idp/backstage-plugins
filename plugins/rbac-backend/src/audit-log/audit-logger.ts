@@ -91,17 +91,18 @@ export class AuditLogger {
         : new UnknownErrorWrapper('Unknown error occurred');
 
     const msg: LogMsg = {
-      level: 'error',
-      message: `Fail to ${operation} '${JSON.stringify(
-        roleEntityRefs,
-      )}'. Cause: ${e.message}. Stack trace: ${e.stack}`,
       isAuditLog: true,
       entityRef: roleEntityRefs,
       source,
       modifiedBy,
       time: new Date().toUTCString(),
     };
-    this.logger.error(msg);
+    this.logger.error(
+      `Fail to ${operation} '${JSON.stringify(
+        roleEntityRefs,
+      )}'. Cause: ${e.message}. Stack trace: ${e.stack}`,
+      msg
+    );
   }
 
   permissionInfo(
