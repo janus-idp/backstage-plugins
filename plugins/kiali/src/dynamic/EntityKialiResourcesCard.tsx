@@ -122,7 +122,7 @@ export const EntityKialiResourcesCard = () => {
           <WorkloadListPage view={DRAWER} entity={entity} />
         </div>
       </CardTab>
-      <CardTab label="Services" value="service">
+      <CardTab label="Services" value="service" data-test="service-tab">
         <div style={tabStyle}>
           <ServiceListPage view={DRAWER} entity={entity} />
         </div>
