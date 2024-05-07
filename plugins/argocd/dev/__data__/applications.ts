@@ -146,7 +146,7 @@ export const preProdApplication = {
           },
           {
             name: 'environment',
-            value: 'dev',
+            value: 'preprod',
           },
           {
             name: 'image.tag',
@@ -156,7 +156,7 @@ export const preProdApplication = {
       },
       path: './helm/app',
       repoURL:
-        'https://gitlab-gitlab.apps.cluster.test.com/development/quarkus-app-gitops.git',
+        'https://gitlab-gitlab.apps.cluster.test.com/preprod/quarkus-app-gitops.git',
       targetRevision: 'HEAD',
     },
   },
@@ -168,7 +168,7 @@ export const preProdApplication = {
         id: 0,
         source: {
           repoURL:
-            'https://gitlab-gitlab.apps.cluster.test.com/development/quarkus-app-gitops.git',
+            'https://gitlab-gitlab.apps.cluster.test.com/preprod/quarkus-app-gitops.git',
           path: './helm/app',
           targetRevision: 'HEAD',
           helm: {
@@ -179,7 +179,7 @@ export const preProdApplication = {
               },
               {
                 name: 'environment',
-                value: 'dev',
+                value: 'preprod',
               },
               {
                 name: 'image.tag',
@@ -196,7 +196,7 @@ export const preProdApplication = {
         id: 1,
         source: {
           repoURL:
-            'https://gitlab-gitlab.apps.cluster.test.com/development/quarkus-app-gitops.git',
+            'https://gitlab-gitlab.apps.cluster.test.com/preprod/quarkus-app-gitops.git',
           path: './helm/app',
           targetRevision: 'HEAD',
           helm: {
@@ -207,7 +207,7 @@ export const preProdApplication = {
               },
               {
                 name: 'environment',
-                value: 'dev',
+                value: 'preprod',
               },
               {
                 name: 'image.tag',
@@ -268,7 +268,7 @@ export const prodApplication = {
           },
           {
             name: 'environment',
-            value: 'dev',
+            value: 'prod',
           },
           {
             name: 'image.tag',
@@ -278,7 +278,7 @@ export const prodApplication = {
       },
       path: './helm/app',
       repoURL:
-        'https://gitlab-gitlab.apps.cluster.test.com/development/quarkus-app-gitops.git',
+        'https://gitlab-gitlab.apps.cluster.test.com/prod/quarkus-app-gitops.git',
       targetRevision: 'HEAD',
     },
   },
@@ -290,7 +290,7 @@ export const prodApplication = {
         id: 0,
         source: {
           repoURL:
-            'https://gitlab-gitlab.apps.cluster.test.com/development/quarkus-app-gitops.git',
+            'https://gitlab-gitlab.apps.cluster.test.com/prod/quarkus-app-gitops.git',
           path: './helm/app',
           targetRevision: 'HEAD',
           helm: {
@@ -301,7 +301,7 @@ export const prodApplication = {
               },
               {
                 name: 'environment',
-                value: 'dev',
+                value: 'prod',
               },
               {
                 name: 'image.tag',
@@ -318,7 +318,7 @@ export const prodApplication = {
         id: 1,
         source: {
           repoURL:
-            'https://gitlab-gitlab.apps.cluster.test.com/development/quarkus-app-gitops.git',
+            'https://gitlab-gitlab.apps.cluster.test.com/prod/quarkus-app-gitops.git',
           path: './helm/app',
           targetRevision: 'HEAD',
           helm: {
@@ -329,7 +329,7 @@ export const prodApplication = {
               },
               {
                 name: 'environment',
-                value: 'dev',
+                value: 'prod',
               },
               {
                 name: 'image.tag',
