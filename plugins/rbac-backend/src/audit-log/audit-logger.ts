@@ -250,7 +250,11 @@ export class AuditLogger {
     }
     logMsg.time = new Date().toUTCString();
 
-    this.logger.log(logMsg);
+    if (level === 'error'){
+      this.logger.error(message, logMsg);
+    } else {
+      this.logger.info(message, logMsg);
+    }
   }
 
   private toLogMsgWithRoleInfo(
