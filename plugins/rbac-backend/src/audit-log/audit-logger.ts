@@ -163,11 +163,7 @@ export class AuditLogger {
     operation: Operation,
     modifiedBy: string,
   ) {
-    const msg: LogMsgWithConditionInfo = {
-      level: 'info',
-      message: `${this.fmtToPastTime(operation)} condition '${JSON.stringify(
-        condition.conditions,
-      )}' for permissions: '${JSON.stringify(condition.permissionMapping)}'`,
+    const msg: LogMsgWithConditionInfo = { 
       isAuditLog: true,
       entityRef: condition.roleEntityRef,
       source: 'rest',
@@ -177,7 +173,12 @@ export class AuditLogger {
       resourceType: condition.resourceType,
     };
 
-    this.logger.log(msg);
+    this.logger.info(
+      `${this.fmtToPastTime(operation)} condition '${JSON.stringify(
+        condition.conditions,
+      )}' for permissions: '${JSON.stringify(condition.permissionMapping)}'`,
+      msg
+    );
   }
 
   conditionError(
