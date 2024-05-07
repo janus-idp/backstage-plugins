@@ -1,4 +1,5 @@
 import { TokenManager } from '@backstage/backend-common';
+import { AuthService } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 
@@ -23,6 +24,7 @@ export class AncestorSearchMemo {
   private tokenManager: TokenManager;
   private catalogApi: CatalogApi;
   private catalogDBClient: Knex;
+  private auth: AuthService;
 
   private userEntityRef: string;
   private maxDepth?: number;
@@ -32,6 +34,7 @@ export class AncestorSearchMemo {
     tokenManager: TokenManager,
     catalogApi: CatalogApi,
     catalogDBClient: Knex,
+    auth: AuthService,
     maxDepth?: number,
   ) {
     this.graph = new Graph({ directed: true });
@@ -39,6 +42,7 @@ export class AncestorSearchMemo {
     this.tokenManager = tokenManager;
     this.catalogApi = catalogApi;
     this.catalogDBClient = catalogDBClient;
+    this.auth = auth;
     this.maxDepth = maxDepth;
   }
 
@@ -84,7 +88,11 @@ export class AncestorSearchMemo {
   }
 
   async getAllGroups(): Promise<ASMGroup[]> {
-    const { token } = await this.tokenManager.getToken();
+    const { token } = await this.auth.getPluginRequestToken({
+      onBehalfOf: await this.auth.getOwnServiceCredentials(),
+      targetPluginId: 'catalog',
+    });
+
     const { items } = await this.catalogApi.getEntities(
       {
         filter: { kind: 'Group' },

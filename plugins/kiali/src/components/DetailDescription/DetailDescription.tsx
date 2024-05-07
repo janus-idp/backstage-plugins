@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Link } from 'react-router-dom';
 
 import { Tooltip } from '@material-ui/core';
 
@@ -10,6 +11,7 @@ import { kialiStyle } from '../../styles/StyleUtils';
 import { AppWorkload } from '../../types/App';
 import * as H from '../../types/Health';
 import { HealthSubItem } from '../../types/Health';
+import { DRAWER } from '../../types/types';
 import { Workload } from '../../types/Workload';
 import { JanusObjectLink } from '../../utils/janusLinks';
 import { renderTrafficStatus } from '../Health/HealthDetails';
@@ -25,6 +27,7 @@ type Props = {
   services?: string[];
   waypointWorkloads?: Workload[];
   workloads?: AppWorkload[];
+  view?: string;
 };
 
 const iconStyle = kialiStyle({
@@ -74,7 +77,9 @@ export const DetailDescription: React.FC<Props> = (props: Props) => {
     namespace: string,
     appName: string,
   ): React.ReactNode => {
-    const link = (
+    let link: React.ReactNode;
+
+    link = (
       <JanusObjectLink
         entity={props.entity}
         namespace={namespace}
@@ -87,6 +92,18 @@ export const DetailDescription: React.FC<Props> = (props: Props) => {
         {appName}
       </JanusObjectLink>
     );
+
+    let href = `/namespaces/${namespace}/applications/${appName}`;
+
+    if (props.cluster && isMultiCluster) {
+      href = `${href}?clusterName=${props.cluster}`;
+    }
+
+    if (props.view === DRAWER) {
+      href = `#application/${namespace}_${appName}`;
+
+      link = <Link to={href}>{appName}</Link>;
+    }
 
     return (
       <li key={`App_${namespace}_${appName}`} className={itemStyle}>
@@ -103,7 +120,9 @@ export const DetailDescription: React.FC<Props> = (props: Props) => {
     namespace: string,
     serviceName: string,
   ): React.ReactNode => {
-    const link = (
+    let link: React.ReactNode;
+
+    link = (
       <JanusObjectLink
         entity={props.entity}
         namespace={namespace}
@@ -116,6 +135,17 @@ export const DetailDescription: React.FC<Props> = (props: Props) => {
         {serviceName}
       </JanusObjectLink>
     );
+
+    if (props.view === DRAWER) {
+      let href = `/namespaces/${namespace}/services/${serviceName}`;
+
+      if (props.cluster && isMultiCluster) {
+        href = `${href}?clusterName=${props.cluster}`;
+      }
+
+      href = `#service/${namespace}_${serviceName}`;
+      link = <Link to={href}>{serviceName}</Link>;
+    }
 
     return (
       <li key={`Service_${serviceName}`} className={itemStyle}>
@@ -184,7 +214,9 @@ export const DetailDescription: React.FC<Props> = (props: Props) => {
   };
 
   const renderWorkloadItem = (workload: AppWorkload): React.ReactNode => {
-    const link = (
+    let link: React.ReactNode;
+
+    link = (
       <JanusObjectLink
         entity={props.entity}
         namespace={props.namespace}
@@ -197,6 +229,18 @@ export const DetailDescription: React.FC<Props> = (props: Props) => {
         {workload.workloadName}
       </JanusObjectLink>
     );
+
+    if (props.view === DRAWER) {
+      let href = `/namespaces/${props.namespace}/workloads/${workload.workloadName}`;
+
+      if (props.cluster && isMultiCluster) {
+        href = `${href}?clusterName=${props.cluster}`;
+      }
+
+      href = `#workload/${props.namespace}_${workload.workloadName}`;
+      link = <Link to={href}>{workload.workloadName}</Link>;
+    }
+
     return (
       <span key={`WorkloadItem_${workload.workloadName}`}>
         <div className={iconStyle}>
@@ -237,21 +281,34 @@ export const DetailDescription: React.FC<Props> = (props: Props) => {
     }
 
     if (workload) {
-      const link = (
-        <JanusObjectLink
-          entity={props.entity}
-          namespace={props.namespace}
-          type="workloads"
-          query={
-            props.cluster && isMultiCluster
-              ? `clusterName=${props.cluster}`
-              : ''
-          }
-          name={workload.workloadName}
-        >
-          {workload.workloadName}
-        </JanusObjectLink>
-      );
+      let link: React.ReactNode;
+
+      if (props.view === DRAWER) {
+        let href = `/namespaces/${props.namespace}/workloads/${workload.workloadName}`;
+
+        if (props.cluster && isMultiCluster) {
+          href = `${href}?clusterName=${props.cluster}`;
+        }
+
+        href = `#workload/${props.namespace}_${workload.workloadName}`;
+        link = <Link to={href}>{workload.workloadName}</Link>;
+      } else {
+        link = (
+          <JanusObjectLink
+            entity={props.entity}
+            namespace={props.namespace}
+            type="workloads"
+            query={
+              props.cluster && isMultiCluster
+                ? `clusterName=${props.cluster}`
+                : ''
+            }
+            name={workload.workloadName}
+          >
+            {workload.workloadName}
+          </JanusObjectLink>
+        );
+      }
 
       return (
         <span key={`WorkloadItem_${workload.workloadName}`}>

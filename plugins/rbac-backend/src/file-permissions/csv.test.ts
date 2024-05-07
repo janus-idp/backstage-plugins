@@ -1,4 +1,5 @@
 import { TokenManager } from '@backstage/backend-common';
+import { mockServices } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 
 import {
@@ -107,6 +108,8 @@ const loggerMock: any = {
   debug: jest.fn().mockImplementation(),
 };
 
+const mockAuthService = mockServices.auth();
+
 async function createEnforcer(
   theModel: Model,
   adapter: Adapter,
@@ -124,6 +127,7 @@ async function createEnforcer(
     tokenManager,
     catalogDBClient,
     config,
+    mockAuthService,
   );
   enf.setRoleManager(rm);
   enf.enableAutoBuildRoleLinks(false);

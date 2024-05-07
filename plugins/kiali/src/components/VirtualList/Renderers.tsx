@@ -2,7 +2,16 @@ import * as React from 'react';
 
 import { Link } from '@backstage/core-components';
 
-import { Chip, TableCell, Tooltip } from '@material-ui/core';
+import {
+  Button,
+  Chip,
+  Drawer,
+  IconButton,
+  TableCell,
+  Tooltip,
+} from '@material-ui/core';
+// eslint-disable-next-line no-restricted-imports
+import { Close } from '@material-ui/icons';
 
 import { KialiIcon, serverConfig } from '../../config';
 import { isWaypoint } from '../../helpers/LabelFilterHelper';
@@ -15,10 +24,13 @@ import { ValidationStatus } from '../../types/IstioObjects';
 import { ComponentStatus } from '../../types/IstioStatus';
 import { NamespaceInfo } from '../../types/NamespaceInfo';
 import { ServiceListItem } from '../../types/ServiceList';
-import { ENTITY } from '../../types/types';
+import { DRAWER, ENTITY } from '../../types/types';
 import { WorkloadListItem } from '../../types/Workload';
 import { getReconciliationCondition } from '../../utils/IstioConfigUtils';
 import { JanusObjectLink } from '../../utils/janusLinks';
+import { AppDetailsDrawer } from '../Drawers/AppDetailsDrawer';
+import { ServiceDetailsDrawer } from '../Drawers/ServiceDetailsDrawer';
+import { WorkloadDetailsDrawer } from '../Drawers/WorkloadDetailsDrawer';
 import { StatefulFilters } from '../Filters/StatefulFilters';
 import { HealthIndicator } from '../Health/HealthIndicator';
 import { NamespaceMTLSStatus } from '../MTls/NamespaceMTLSStatus';
@@ -52,6 +64,69 @@ export const actionRenderer = (
   );
 };
 
+const DrawerDiv = ({
+  name,
+  namespace,
+  config,
+}: {
+  name: string;
+  namespace: string;
+  config: string;
+}) => {
+  const [isOpen, toggleDrawer] = React.useState(false);
+
+  const DrawerContent = ({
+    toggleDrawer2,
+  }: {
+    toggleDrawer2: (isOpen: boolean) => void;
+  }) => {
+    return (
+      <div style={{ padding: '10px', minWidth: '400px' }} data-test="drawer">
+        <div style={{ paddingBottom: '10px' }}>
+          <IconButton
+            key="dismiss"
+            id="close_drawer"
+            title="Close the drawer"
+            onClick={() => toggleDrawer2(false)}
+            color="inherit"
+            style={{ right: '0', position: 'absolute', top: '5px' }}
+          >
+            <Close />
+          </IconButton>
+        </div>
+        <div />
+        <div>
+          {config === 'workloads' && (
+            <WorkloadDetailsDrawer namespace={namespace} workload={name} />
+          )}
+          {config === 'services' && (
+            <ServiceDetailsDrawer namespace={namespace} service={name} />
+          )}
+          {config === 'applications' && (
+            <AppDetailsDrawer namespace={namespace} app={name} />
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <>
+      <Button
+        variant="contained"
+        color="primary"
+        id={`drawer_${namespace}_${name}`}
+        onClick={() => toggleDrawer(true)}
+      >
+        {name}
+      </Button>
+      <Drawer anchor="right" open={isOpen} onClose={() => toggleDrawer(false)}>
+        <DrawerContent toggleDrawer2={toggleDrawer} />
+      </Drawer>
+    </>
+  );
+};
+
 export const item: Renderer<TResource> = (
   resource: TResource,
   config: Resource,
@@ -78,13 +153,26 @@ export const item: Renderer<TResource> = (
     }
   }
 
+  if (view === DRAWER) {
+    return (
+      <TableCell
+        key={`VirtuaItem_Item_${resource.namespace}_${resource.name}`}
+        style={{ verticalAlign: 'middle', whiteSpace: 'nowrap' }}
+      >
+        <DrawerDiv
+          name={resource.name}
+          namespace={resource.namespace}
+          config={config.name}
+        />
+      </TableCell>
+    );
+  }
   return (
     <TableCell
-      role="gridcell"
       key={`VirtuaItem_Item_${resource.namespace}_${resource.name}`}
       style={{ verticalAlign: 'middle', whiteSpace: 'nowrap' }}
     >
-      {view !== ENTITY && (
+      {view !== ENTITY && view !== DRAWER && (
         <PFBadge badge={serviceBadge} position={topPosition} />
       )}
       <JanusObjectLink
@@ -134,7 +222,7 @@ export const namespace: Renderer<TResource> = (
       key={`VirtuaItem_Namespace_${resource.namespace}_${item.name}`}
       style={{ verticalAlign: 'middle', whiteSpace: 'nowrap' }}
     >
-      {view !== ENTITY && (
+      {view !== ENTITY && view !== DRAWER && (
         <PFBadge badge={PFBadges.Namespace} position={topPosition} />
       )}
       {resource.namespace}
@@ -172,12 +260,12 @@ export const labels: Renderer<SortResource | NamespaceInfo> = (
       }${resource.name}`}
       style={{ verticalAlign: 'middle', paddingBottom: '0.25rem' }}
     >
-      {view === ENTITY && resource.labels && (
+      {(view === ENTITY || view === DRAWER) && resource.labels && (
         <Tooltip title={labelsWrap}>
           <Chip label={Object.entries(resource.labels).length.toString()} />
         </Tooltip>
       )}
-      {view !== ENTITY && labelsView}
+      {view !== ENTITY && view !== DRAWER && labelsView}
     </TableCell>
   );
 };

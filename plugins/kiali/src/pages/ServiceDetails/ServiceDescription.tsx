@@ -24,6 +24,7 @@ import { ServiceDetailsInfo, WorkloadOverview } from '../../types/ServiceInfo';
 interface ServiceInfoDescriptionProps {
   namespace: string;
   serviceDetails?: ServiceDetailsInfo;
+  view?: string;
 }
 
 const resourceListStyle = kialiStyle({
@@ -235,6 +236,7 @@ export const ServiceDescription: React.FC<ServiceInfoDescriptionProps> = (
           workloads={workloads}
           health={props.serviceDetails?.health}
           cluster={props.serviceDetails?.cluster}
+          view={props.view}
         />
       </CardContent>
     </Card>

@@ -1,9 +1,12 @@
+import { mockServices } from '@backstage/backend-test-utils';
 import { Entity, GroupEntity } from '@backstage/catalog-model';
 
 import * as Knex from 'knex';
 import { createTracker, MockClient, Tracker } from 'knex-mock-client';
 
 import { AncestorSearchMemo, Relation } from './ancestor-search-memo';
+
+const mockAuthService = mockServices.auth();
 
 describe('ancestor-search-memo', () => {
   const userRelations = [
@@ -78,6 +81,7 @@ describe('ancestor-search-memo', () => {
       tokenManagerMock,
       catalogApiMock,
       catalogDBClient,
+      mockAuthService,
     );
   });
 
@@ -200,6 +204,7 @@ describe('ancestor-search-memo', () => {
         tokenManagerMock,
         catalogApiMock,
         catalogDBClient,
+        mockAuthService,
         1,
       );
 
@@ -266,6 +271,7 @@ describe('ancestor-search-memo', () => {
         tokenManagerMock,
         catalogApiMock,
         catalogDBClient,
+        mockAuthService,
         1,
       );
 
@@ -297,6 +303,7 @@ describe('ancestor-search-memo', () => {
       tokenManagerMock,
       catalogApiMock,
       catalogDBClient,
+      mockAuthService,
     );
 
     const asmDBSpy = jest

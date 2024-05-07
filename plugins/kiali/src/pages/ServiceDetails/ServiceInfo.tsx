@@ -22,6 +22,7 @@ import {
 } from '../../types/IstioObjects';
 import { ServiceId } from '../../types/ServiceId';
 import { ServiceDetailsInfo } from '../../types/ServiceInfo';
+import { DRAWER, ENTITY } from '../../types/types';
 import { ServiceDescription } from './ServiceDescription';
 import { ServiceNetwork } from './ServiceNetwork';
 
@@ -34,6 +35,7 @@ interface Props extends ServiceId {
   peerAuthentications: PeerAuthentication[];
   validations: Validations;
   istioAPIEnabled: boolean;
+  view?: string;
 }
 
 export const ServiceInfo = (serviceProps: Props) => {
@@ -110,29 +112,36 @@ export const ServiceInfo = (serviceProps: Props) => {
     ),
   );
 
+  const size =
+    serviceProps.view === ENTITY || serviceProps.view === DRAWER ? 12 : 4;
   return (
     <>
       {serviceProps.serviceDetails && (
         <Grid container spacing={1} style={{ paddingTop: '20px' }}>
-          <Grid key={`Card_${serviceProps.service}`} item xs={4}>
+          <Grid key={`Card_${serviceProps.service}`} item xs={size}>
             <ServiceDescription
               namespace={serviceProps.namespace}
               serviceDetails={serviceProps.serviceDetails}
+              view={serviceProps.view}
             />
           </Grid>
-          <Grid key={`Card_${serviceProps.service}`} item xs={4}>
-            <ServiceNetwork
-              serviceDetails={serviceProps.serviceDetails}
-              gateways={serviceProps.gateways}
-              validations={getServiceValidation()}
-            />
-          </Grid>
-          <Grid key={`Card_${serviceProps.service}`} item xs={4}>
-            <IstioConfigCard
-              name={serviceProps.service}
-              items={istioConfigItems}
-            />
-          </Grid>
+          {serviceProps.view !== DRAWER && (
+            <>
+              <Grid key={`Card_${serviceProps.service}`} item xs={4}>
+                <ServiceNetwork
+                  serviceDetails={serviceProps.serviceDetails}
+                  gateways={serviceProps.gateways}
+                  validations={getServiceValidation()}
+                />
+              </Grid>
+              <Grid key={`Card_${serviceProps.service}`} item xs={4}>
+                <IstioConfigCard
+                  name={serviceProps.service}
+                  items={istioConfigItems}
+                />
+              </Grid>
+            </>
+          )}
         </Grid>
       )}
     </>

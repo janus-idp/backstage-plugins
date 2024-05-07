@@ -14,7 +14,7 @@ import { TestApiProvider } from '@backstage/test-utils';
 
 import { Grid } from '@material-ui/core';
 
-import { kialiPlugin } from '../src';
+import { EntityKialiResourcesCard, kialiPlugin } from '../src';
 import { getEntityRoutes, getRoutes } from '../src/components/Router';
 import { KialiHeader } from '../src/pages/Kiali/Header/KialiHeader';
 import { KialiHelper } from '../src/pages/Kiali/KialiHelper';
@@ -530,6 +530,30 @@ const MockProvider = (props: Props) => {
   );
 };
 
+const MockEntityCard = () => {
+  const content = (
+    <EntityProvider entity={mockEntity}>
+      <BrowserRouter>
+        <div style={{ padding: '20px' }}>
+          <TestApiProvider apis={[[kialiApiRef, new MockKialiClient()]]}>
+            <Grid container spacing={3} alignItems="stretch">
+              <Grid item md={8} xs={12}>
+                <EntityKialiResourcesCard />
+              </Grid>
+            </Grid>
+          </TestApiProvider>
+        </div>
+      </BrowserRouter>
+    </EntityProvider>
+  );
+
+  return (
+    <TestApiProvider apis={[[kialiApiRef, new MockKialiClient()]]}>
+      {content}
+    </TestApiProvider>
+  );
+};
+
 const MockKialiError = () => {
   const errorsTypes: KialiChecker[] = [
     {
@@ -618,5 +642,10 @@ createDevApp()
     element: <KialiNoAnnotation />,
     title: 'No Annotation',
     path: '/no-annotation',
+  })
+  .addPage({
+    element: <MockEntityCard />,
+    title: 'Resources card',
+    path: '/kiali-entity-card',
   })
   .render();

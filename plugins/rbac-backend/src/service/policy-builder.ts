@@ -1,8 +1,10 @@
 import {
+  createLegacyAuthAdapters,
   DatabaseManager,
   PluginEndpointDiscovery,
   TokenManager,
 } from '@backstage/backend-common';
+import { AuthService, HttpAuthService } from '@backstage/backend-plugin-api';
 import { CatalogClient } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { IdentityApi } from '@backstage/plugin-auth-node';
@@ -24,7 +26,7 @@ import { BackstageRoleManager } from '../role-manager/role-manager';
 import { EnforcerDelegate } from './enforcer-delegate';
 import { MODEL } from './permission-model';
 import { RBACPermissionPolicy } from './permission-policy';
-import { PolicesServer } from './policies-rest-api';
+import { PoliciesServer } from './policies-rest-api';
 
 export class PolicyBuilder {
   public static async build(
@@ -35,12 +37,25 @@ export class PolicyBuilder {
       identity: IdentityApi;
       permissions: PermissionEvaluator;
       tokenManager: TokenManager;
+      auth?: AuthService;
+      httpAuth?: HttpAuthService;
     },
     pluginIdProvider: PluginIdProvider = { getPluginIds: () => [] },
   ): Promise<Router> {
+    const isPluginEnabled = env.config.getOptionalBoolean('permission.enabled');
+    if (isPluginEnabled) {
+      env.logger.info('RBAC backend plugin was enabled');
+    } else {
+      env.logger.warn(
+        'RBAC backend plugin was disabled by application config permission.enabled: false',
+      );
+    }
+
     const databaseManager = DatabaseManager.fromConfig(env.config).forPlugin(
       'permission',
     );
+
+    const { auth, httpAuth } = createLegacyAuthAdapters(env);
 
     const adapter = await new CasbinDBAdapterFactory(
       env.config,
@@ -61,6 +76,7 @@ export class PolicyBuilder {
       env.tokenManager,
       catalogDBClient,
       env.config,
+      auth,
     );
     enf.setRoleManager(rm);
     enf.enableAutoBuildRoleLinks(false);
@@ -94,6 +110,8 @@ export class PolicyBuilder {
         policyMetadataStorage,
         knex,
       ),
+      auth: auth,
+      httpAuth: httpAuth,
     };
 
     const pluginIdsConfig = env.config.getOptionalStringArray(
@@ -109,14 +127,13 @@ export class PolicyBuilder {
       };
     }
 
-    const server = new PolicesServer(
-      env.identity,
+    const server = new PoliciesServer(
       env.permissions,
       options,
       enforcerDelegate,
       env.config,
-      env.logger,
-      env.discovery,
+      httpAuth,
+      auth,
       conditionStorage,
       pluginIdProvider,
       roleMetadataStorage,

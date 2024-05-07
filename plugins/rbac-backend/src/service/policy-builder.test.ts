@@ -5,10 +5,13 @@ import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { Adapter, Enforcer } from 'casbin';
 import { Router } from 'express';
 import TypeORMAdapter from 'typeorm-adapter';
+import { Logger } from 'winston';
+
+import { PluginIdProvider } from '@janus-idp/backstage-plugin-rbac-node';
 
 import { CasbinDBAdapterFactory } from '../database/casbin-adapter-factory';
 import { RBACPermissionPolicy } from './permission-policy';
-import { PolicesServer as PoliciesServer } from './policies-rest-api';
+import { PoliciesServer } from './policies-rest-api';
 import { PolicyBuilder } from './policy-builder';
 
 const mockEnforcer: Partial<Enforcer> = {
@@ -52,11 +55,10 @@ const mockPoliciesServer: Partial<PoliciesServer> = {
     return mockRouter;
   }),
 };
+
 jest.mock('./policies-rest-api', () => {
   return {
-    PolicesServer: jest.fn().mockImplementation(() => {
-      return mockPoliciesServer;
-    }),
+    PoliciesServer: jest.fn().mockImplementation(() => mockPoliciesServer),
   };
 });
 
@@ -116,11 +118,17 @@ describe('PolicyBuilder', () => {
     }),
   };
 
+  const logger = getVoidLogger();
+  let loggerInfoSpy: jest.SpyInstance<Logger, [infoObject: object], any>;
+  let loggerWarnSpy: jest.SpyInstance<Logger, [infoObject: object], any>;
+
   beforeEach(async () => {
+    loggerInfoSpy = jest.spyOn(logger, 'info');
+    loggerWarnSpy = jest.spyOn(logger, 'warn');
     jest.clearAllMocks();
   });
 
-  it('should build policy server with database adapter', async () => {
+  it('should build policy server', async () => {
     const router = await PolicyBuilder.build(
       {
         config: new ConfigReader({
@@ -135,7 +143,7 @@ describe('PolicyBuilder', () => {
             rbac: {},
           },
         }),
-        logger: getVoidLogger(),
+        logger,
         discovery: mockDiscovery,
         identity: mockIdentityClient,
         permissions: mockPermissionEvaluator,
@@ -152,5 +160,167 @@ describe('PolicyBuilder', () => {
     expect(mockPoliciesServer.serve).toHaveBeenCalled();
     expect(router).toBeTruthy();
     expect(router).toBe(mockRouter);
+    expect(loggerInfoSpy).toHaveBeenCalledWith(
+      'RBAC backend plugin was enabled',
+    );
+  });
+
+  it('should build policy server, but log warning that permission framework disabled', async () => {
+    const router = await PolicyBuilder.build(
+      {
+        config: new ConfigReader({
+          backend: {
+            database: {
+              client: 'better-sqlite3',
+              connection: ':memory:',
+            },
+          },
+          permission: {
+            enabled: false,
+            rbac: {},
+          },
+        }),
+        logger,
+        discovery: mockDiscovery,
+        identity: mockIdentityClient,
+        permissions: mockPermissionEvaluator,
+        tokenManager: tokenManagerMock,
+      },
+      backendPluginIDsProviderMock,
+    );
+    expect(CasbinDBAdapterFactory).toHaveBeenCalled();
+    expect(mockEnforcer.loadPolicy).toHaveBeenCalled();
+    expect(mockEnforcer.enableAutoSave).toHaveBeenCalled();
+    expect(RBACPermissionPolicy.build).toHaveBeenCalled();
+
+    expect(PoliciesServer).toHaveBeenCalled();
+    expect(mockPoliciesServer.serve).toHaveBeenCalled();
+    expect(router).toBeTruthy();
+    expect(router).toBe(mockRouter);
+    expect(loggerWarnSpy).toHaveBeenCalledWith(
+      'RBAC backend plugin was disabled by application config permission.enabled: false',
+    );
+  });
+
+  it('should get list plugin ids from application configuration', async () => {
+    const pluginIdProvider: PluginIdProvider = { getPluginIds: () => [] };
+    const router = await PolicyBuilder.build(
+      {
+        config: new ConfigReader({
+          backend: {
+            database: {
+              client: 'better-sqlite3',
+              connection: ':memory:',
+            },
+          },
+          permission: {
+            enabled: true,
+            rbac: {
+              pluginsWithPermission: ['catalog'],
+            },
+          },
+        }),
+        logger,
+        discovery: mockDiscovery,
+        identity: mockIdentityClient,
+        permissions: mockPermissionEvaluator,
+        tokenManager: tokenManagerMock,
+      },
+      pluginIdProvider,
+    );
+    expect(CasbinDBAdapterFactory).toHaveBeenCalled();
+    expect(mockEnforcer.loadPolicy).toHaveBeenCalled();
+    expect(mockEnforcer.enableAutoSave).toHaveBeenCalled();
+    expect(RBACPermissionPolicy.build).toHaveBeenCalled();
+
+    expect(PoliciesServer).toHaveBeenCalled();
+    expect(mockPoliciesServer.serve).toHaveBeenCalled();
+    expect(router).toBeTruthy();
+    expect(router).toBe(mockRouter);
+    expect(loggerInfoSpy).toHaveBeenCalledWith(
+      'RBAC backend plugin was enabled',
+    );
+
+    expect(pluginIdProvider.getPluginIds()).toEqual(['catalog']);
+  });
+
+  it('should merge list plugin ids from application configuration and build method', async () => {
+    const pluginIdProvider: PluginIdProvider = { getPluginIds: () => ['rbac'] };
+    const router = await PolicyBuilder.build(
+      {
+        config: new ConfigReader({
+          backend: {
+            database: {
+              client: 'better-sqlite3',
+              connection: ':memory:',
+            },
+          },
+          permission: {
+            enabled: true,
+            rbac: {
+              pluginsWithPermission: ['catalog'],
+            },
+          },
+        }),
+        logger,
+        discovery: mockDiscovery,
+        identity: mockIdentityClient,
+        permissions: mockPermissionEvaluator,
+        tokenManager: tokenManagerMock,
+      },
+      pluginIdProvider,
+    );
+    expect(CasbinDBAdapterFactory).toHaveBeenCalled();
+    expect(mockEnforcer.loadPolicy).toHaveBeenCalled();
+    expect(mockEnforcer.enableAutoSave).toHaveBeenCalled();
+    expect(RBACPermissionPolicy.build).toHaveBeenCalled();
+
+    expect(PoliciesServer).toHaveBeenCalled();
+    expect(mockPoliciesServer.serve).toHaveBeenCalled();
+    expect(router).toBeTruthy();
+    expect(router).toBe(mockRouter);
+    expect(loggerInfoSpy).toHaveBeenCalledWith(
+      'RBAC backend plugin was enabled',
+    );
+
+    expect(pluginIdProvider.getPluginIds()).toEqual(['catalog', 'rbac']);
+  });
+
+  it('should get list plugin ids from application configuration, but provider should be created by default', async () => {
+    const router = await PolicyBuilder.build({
+      config: new ConfigReader({
+        backend: {
+          database: {
+            client: 'better-sqlite3',
+            connection: ':memory:',
+          },
+        },
+        permission: {
+          enabled: true,
+          rbac: {
+            pluginsWithPermission: ['catalog'],
+          },
+        },
+      }),
+      logger,
+      discovery: mockDiscovery,
+      identity: mockIdentityClient,
+      permissions: mockPermissionEvaluator,
+      tokenManager: tokenManagerMock,
+    });
+    expect(CasbinDBAdapterFactory).toHaveBeenCalled();
+    expect(mockEnforcer.loadPolicy).toHaveBeenCalled();
+    expect(mockEnforcer.enableAutoSave).toHaveBeenCalled();
+    expect(RBACPermissionPolicy.build).toHaveBeenCalled();
+
+    expect(PoliciesServer).toHaveBeenCalled();
+    expect(mockPoliciesServer.serve).toHaveBeenCalled();
+    expect(router).toBeTruthy();
+    expect(router).toBe(mockRouter);
+    expect(loggerInfoSpy).toHaveBeenCalledWith(
+      'RBAC backend plugin was enabled',
+    );
+    const pIdProvider = (PoliciesServer as jest.Mock).mock.calls[0][7];
+    expect(pIdProvider.getPluginIds()).toEqual(['catalog']);
   });
 });
