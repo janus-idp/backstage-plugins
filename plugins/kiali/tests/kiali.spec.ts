@@ -7,7 +7,7 @@ test.describe('Kiali plugin', () => {
       const context = await browser.newContext();
       page = await context.newPage();
       await page.goto('/kiali-error');
-      page.locator('[data-test="Kiali Errors"]');
+      await page.locator('[data-test="Kiali Errors"]');
     });
 
     test.afterAll(async ({ browser }) => {
@@ -15,7 +15,7 @@ test.describe('Kiali plugin', () => {
     });
 
     test('Networking error', async () => {
-      expect(
+      await expect(
         page.locator('[data-test="Warning: Error reaching Kiali"]'),
       ).toBeDefined();
     });
