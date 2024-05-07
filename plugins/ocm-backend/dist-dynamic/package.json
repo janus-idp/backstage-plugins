@@ -59,9 +59,9 @@
     "@backstage/config": "^1.2.0",
     "@backstage/plugin-catalog-node": "^1.11.1",
     "@backstage/backend-dynamic-feature-service": "^0.2.9",
-    "@backstage/plugin-permission-common": "^0.7.13",
     "@backstage/errors": "^1.2.4",
-    "@backstage/plugin-permission-node": "0.7.27",
+    "@backstage/plugin-permission-common": "^0.7.13",
+    "@backstage/plugin-permission-node": "^0.7.28",
     "@backstage/types": "^1.1.1"
   },
   "overrides": {
