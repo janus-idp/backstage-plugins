@@ -65,8 +65,6 @@ export class AuditLogger {
   // todo add members information.....
   roleInfo(metadata: RoleMetadataDao, operation: Operation) {
     const logMsg: LogMsg = {
-      level: 'info',
-      message: `${this.fmtToPastTime(operation)} '${metadata.roleEntityRef}'`,
       isAuditLog: true,
       entityRef: metadata.roleEntityRef,
       source: metadata.source,
@@ -74,7 +72,10 @@ export class AuditLogger {
       time: new Date().toUTCString(),
     };
 
-    this.logger.log(this.toLogMsgWithRoleInfo(logMsg, metadata));
+    this.logger.info(
+      `${this.fmtToPastTime(operation)} '${metadata.roleEntityRef}'`
+      this.toLogMsgWithRoleInfo(logMsg, metadata)
+    );
   }
 
   roleError(
