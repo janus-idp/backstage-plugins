@@ -232,8 +232,6 @@ export class AuditLogger {
       .resourceType;
 
     const logMsg: LogMsgWithEvaluationInfo = {
-      level,
-      message,
       isAuditLog: true,
       time: '',
       userEntityRef,
