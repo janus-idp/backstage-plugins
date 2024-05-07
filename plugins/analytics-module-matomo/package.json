@@ -27,7 +27,7 @@
     "@backstage/core-plugin-api": "^1.9.2"
   },
   "peerDependencies": {
-    "react": "^16.13.1 || ^17.0.0 || ^18.2.0"
+    "react": "^16.13.1 || ^17.0.0 || ^18.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "0.26.4",

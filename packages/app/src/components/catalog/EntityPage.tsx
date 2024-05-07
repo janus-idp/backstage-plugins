@@ -1,8 +1,4 @@
 import {
-  EntityGithubActionsContent,
-  isGithubActionsAvailable,
-} from '@backstage-community/plugin-github-actions';
-import {
   RELATION_API_CONSUMED_BY,
   RELATION_API_PROVIDED_BY,
   RELATION_CONSUMES_API,
@@ -55,6 +51,10 @@ import { EntityTechdocsContent } from '@backstage/plugin-techdocs';
 import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
 import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
 
+import {
+  EntityGithubActionsContent,
+  isGithubActionsAvailable,
+} from '@backstage-community/plugin-github-actions';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 

@@ -1,6 +1,5 @@
 import { Navigate, Route } from 'react-router-dom';
 
-import { TechRadarPage } from '@backstage-community/plugin-tech-radar';
 import { createApp } from '@backstage/app-defaults';
 import { AppRouter, FlatRoutes } from '@backstage/core-app-api';
 import {
@@ -32,6 +31,8 @@ import {
 import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
 import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
 import { UserSettingsPage } from '@backstage/plugin-user-settings';
+
+import { TechRadarPage } from '@backstage-community/plugin-tech-radar';
 
 import { apis } from './apis';
 import { entityPage } from './components/catalog/EntityPage';
