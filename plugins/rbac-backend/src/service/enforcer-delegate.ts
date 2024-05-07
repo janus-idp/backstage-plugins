@@ -17,7 +17,7 @@ import {
   RoleMetadataDao,
   RoleMetadataStorage,
 } from '../database/role-metadata';
-import { policiesToString, policyToString } from '../helper';
+import { membersDiff, policiesToString, policyToString } from '../helper';
 import { MODEL } from './permission-model';
 import { ADMIN_ROLE_NAME } from './permission-policy';
 
@@ -187,7 +187,7 @@ export class EnforcerDelegate {
       }
       if (!externalTrx) {
         await trx.commit();
-        this.aLog.roleInfo(roleMetadata, operation);
+        this.aLog.roleInfo(roleMetadata, operation, [policy[0]]);
       }
     } catch (err) {
       if (!externalTrx) {
@@ -250,7 +250,11 @@ export class EnforcerDelegate {
 
       if (!externalTrx) {
         await trx.commit();
-        this.aLog.roleInfo(roleMetadata, operation);
+        this.aLog.roleInfo(
+          roleMetadata,
+          operation,
+          policies.map(p => p[0]),
+        );
       }
     } catch (err) {
       if (!externalTrx) {
@@ -297,7 +301,11 @@ export class EnforcerDelegate {
       await this.addGroupingPolicies(newRole, newRoleMetadata, trx);
 
       await trx.commit();
-      this.aLog.roleInfo(newRoleMetadata, 'UPDATE');
+      const { added, removed } = membersDiff(
+        oldRole.map(role => role[0]),
+        newRole.map(role => role[0]),
+      );
+      this.aLog.roleInfo(newRoleMetadata, 'UPDATE', added, removed);
     } catch (err) {
       await trx.rollback(err);
 
@@ -500,7 +508,7 @@ export class EnforcerDelegate {
         await trx.commit();
       }
       if (!isUpdate && operation) {
-        this.aLog.roleInfo(roleMetadata, operation);
+        this.aLog.roleInfo(roleMetadata, operation, undefined, [policy[0]]);
       }
     } catch (err) {
       if (!externalTrx) {
@@ -588,7 +596,11 @@ export class EnforcerDelegate {
       }
       if (!isUpdate) {
         for (const entry of roleOperations.entries()) {
-          this.aLog.roleInfo(entry[0], entry[1]);
+          const roleMeta = entry[0];
+          const removedMembers = policies
+            .filter(gp => gp[1] === roleMeta.roleEntityRef)
+            .map(gp => gp[0]);
+          this.aLog.roleInfo(roleMeta, entry[1], [], removedMembers);
         }
       }
     } catch (err) {
@@ -649,13 +661,16 @@ export class EnforcerDelegate {
     const trx = await this.knex.transaction();
     let operation: Operation | undefined;
     try {
+      operation = !this.roleMetadataStorage.findRoleMetadata(
+        roleMetadata.roleEntityRef,
+      )
+        ? 'CREATE'
+        : 'UPDATE';
       if (!(await this.hasGroupingPolicy(...groupPolicy))) {
-        operation = 'CREATE';
         await this.addGroupingPolicy(groupPolicy, roleMetadata, trx);
       } else if (
         await this.hasFilteredPolicyMetadata(groupPolicy, 'legacy', trx)
       ) {
-        operation = 'UPDATE';
         await this.removeGroupingPolicy(
           groupPolicy,
           roleMetadata,
@@ -668,7 +683,9 @@ export class EnforcerDelegate {
 
       await trx.commit();
 
-      if (operation) {
+      if (operation === 'CREATE') {
+        this.aLog.roleInfo(roleMetadata, operation, [groupPolicy[0]]);
+      } else {
         this.aLog.roleInfo(roleMetadata, operation);
       }
     } catch (err) {
@@ -696,14 +713,17 @@ export class EnforcerDelegate {
     const trx = await this.knex.transaction();
     let operation: Operation | undefined;
     try {
+      operation = !this.roleMetadataStorage.findRoleMetadata(
+        roleMetadata.roleEntityRef,
+      )
+        ? 'CREATE'
+        : 'UPDATE';
       for (const groupPolicy of groupPolicies) {
         if (!(await this.hasGroupingPolicy(...groupPolicy))) {
-          operation = 'CREATE';
           await this.addGroupingPolicy(groupPolicy, roleMetadata, trx);
         } else if (
           await this.hasFilteredPolicyMetadata(groupPolicy, 'legacy', trx)
         ) {
-          operation = 'UPDATE';
           await this.removeGroupingPolicy(
             groupPolicy,
             roleMetadata,
@@ -717,7 +737,13 @@ export class EnforcerDelegate {
 
       await trx.commit();
 
-      if (operation) {
+      if (operation === 'CREATE') {
+        this.aLog.roleInfo(
+          roleMetadata,
+          operation,
+          groupPolicies.map(gp => gp[0]),
+        );
+      } else {
         this.aLog.roleInfo(roleMetadata, operation);
       }
     } catch (err) {

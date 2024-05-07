@@ -29,6 +29,8 @@ type LogMsg = {
 
 type LogMsgWithRoleInfo = LogMsg & {
   roleDescription?: string;
+  addedMembers: string;
+  removedMembers: string;
 };
 
 type LogMsgWithConditionInfo = LogMsg & {
@@ -58,19 +60,26 @@ class UnknownErrorWrapper extends Error {
 export class AuditLogger {
   constructor(private readonly logger: Logger) {}
 
-  // todo add members information.....
-  roleInfo(metadata: RoleMetadataDao, operation: Operation) {
-    const logMsg: LogMsg = {
+  roleInfo(
+    metadata: RoleMetadataDao,
+    operation: Operation,
+    addedMembers?: string[],
+    removedMembers?: string[],
+  ) {
+    const logMsg: LogMsgWithRoleInfo = {
       isAuditLog: true,
       entityRef: metadata.roleEntityRef,
       source: metadata.source,
       modifiedBy: metadata.modifiedBy,
       time: new Date().toUTCString(),
+      roleDescription: metadata.description,
+      addedMembers: JSON.stringify(addedMembers),
+      removedMembers: JSON.stringify(removedMembers),
     };
 
     this.logger.info(
       `${this.fmtToPastTime(operation)} '${metadata.roleEntityRef}'`,
-      this.toLogMsgWithRoleInfo(logMsg, metadata),
+      logMsg,
     );
   }
 
@@ -253,21 +262,6 @@ export class AuditLogger {
     } else {
       this.logger.info(message, logMsg);
     }
-  }
-
-  private toLogMsgWithRoleInfo(
-    msg: LogMsg,
-    metadata: RoleMetadataDao,
-  ): LogMsgWithRoleInfo {
-    const result: LogMsgWithRoleInfo = {
-      ...msg,
-      entityRef: metadata.roleEntityRef,
-      source: metadata.source,
-      modifiedBy: metadata.modifiedBy,
-      roleDescription: metadata.description ?? 'no information',
-    };
-
-    return result;
   }
 
   private fmtToPastTime(operation: Operation): string {

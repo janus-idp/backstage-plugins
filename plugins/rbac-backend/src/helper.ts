@@ -83,6 +83,18 @@ export function deepSortedEqual(
   return isEqual(sortedObj1, sortedObj2);
 }
 
+export type Diff = {
+  added: string[];
+  removed: string[];
+};
+
+export function membersDiff(a: string[], b: string[]): Diff {
+  const differenceAtoB = a.filter(item => !b.includes(item));
+  const differenceBtoA = b.filter(item => !a.includes(item));
+
+  return { removed: differenceAtoB, added: differenceBtoA };
+}
+
 export function isPermissionAction(action: string): action is PermissionAction {
   return ['create', 'read', 'update', 'delete', 'use'].includes(
     action as PermissionAction,
