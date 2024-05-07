@@ -26,7 +26,7 @@ import { BackstageRoleManager } from '../role-manager/role-manager';
 import { EnforcerDelegate } from './enforcer-delegate';
 import { MODEL } from './permission-model';
 import { RBACPermissionPolicy } from './permission-policy';
-import { PolicesServer } from './policies-rest-api';
+import { PoliciesServer } from './policies-rest-api';
 
 export class PolicyBuilder {
   public static async build(
@@ -42,6 +42,15 @@ export class PolicyBuilder {
     },
     pluginIdProvider: PluginIdProvider = { getPluginIds: () => [] },
   ): Promise<Router> {
+    const isPluginEnabled = env.config.getOptionalBoolean('permission.enabled');
+    if (isPluginEnabled) {
+      env.logger.info('RBAC backend plugin was enabled');
+    } else {
+      env.logger.warn(
+        'RBAC backend plugin was disabled by application config permission.enabled: false',
+      );
+    }
+
     const databaseManager = DatabaseManager.fromConfig(env.config).forPlugin(
       'permission',
     );
@@ -118,10 +127,11 @@ export class PolicyBuilder {
       };
     }
 
-    const server = new PolicesServer(
+    const server = new PoliciesServer(
       env.permissions,
       options,
       enforcerDelegate,
+      env.config,
       httpAuth,
       auth,
       conditionStorage,

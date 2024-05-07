@@ -3,6 +3,7 @@ import {
   HttpAuthService,
   PermissionsService,
 } from '@backstage/backend-plugin-api';
+import { Config } from '@backstage/config';
 import {
   ConflictError,
   InputError,
@@ -60,11 +61,12 @@ import {
   validateRole,
 } from './policies-validation';
 
-export class PolicesServer {
+export class PoliciesServer {
   constructor(
     private readonly permissions: PermissionsService,
     private readonly options: RouterOptions,
     private readonly enforcer: EnforcerDelegate,
+    private readonly config: Config,
     private readonly httpAuth: HttpAuthService,
     private readonly auth: AuthService,
     private readonly conditionalStorage: ConditionalStorage,
@@ -111,6 +113,13 @@ export class PolicesServer {
       resourceType: RESOURCE_TYPE_POLICY_ENTITY,
       permissions: policyEntityPermissions,
     });
+    router.use(permissionsIntegrationRouter);
+
+    const isPluginEnabled =
+      this.config.getOptionalBoolean('permission.enabled');
+    if (!isPluginEnabled) {
+      return router;
+    }
 
     const pluginPermMetaData = new PluginPermissionMetadataCollector(
       discovery,
@@ -118,8 +127,6 @@ export class PolicesServer {
       logger,
       config,
     );
-
-    router.use(permissionsIntegrationRouter);
 
     router.get('/', async (request, response) => {
       const decision = await this.authorize(
