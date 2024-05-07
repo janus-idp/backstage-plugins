@@ -1,5 +1,6 @@
 import { Navigate, Route } from 'react-router-dom';
 
+import { TechRadarPage } from '@backstage-community/plugin-tech-radar';
 import { createApp } from '@backstage/app-defaults';
 import { AppRouter, FlatRoutes } from '@backstage/core-app-api';
 import {
@@ -23,7 +24,6 @@ import { orgPlugin } from '@backstage/plugin-org';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import { ScaffolderPage, scaffolderPlugin } from '@backstage/plugin-scaffolder';
 import { SearchPage } from '@backstage/plugin-search';
-import { TechRadarPage } from '@backstage/plugin-tech-radar';
 import {
   TechDocsIndexPage,
   techdocsPlugin,
