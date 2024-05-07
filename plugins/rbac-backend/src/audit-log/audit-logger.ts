@@ -145,10 +145,6 @@ export class AuditLogger {
         ? error
         : new UnknownErrorWrapper('Unknown error occurred');
     const msg: LogMsg = {
-      level: 'error',
-      message: `Fail to ${operations} permission policy: '${JSON.stringify(
-        policies,
-      )}'. Cause: ${e.message}. Stack trace: ${e.stack}`,
       isAuditLog: true,
       entityRef: policies[0][0],
       source,
@@ -156,7 +152,12 @@ export class AuditLogger {
       time: new Date().toUTCString(),
     };
 
-    this.logger.error(msg);
+    this.logger.error(
+       `Fail to ${operations} permission policy: '${JSON.stringify(
+        policies,
+      )}'. Cause: ${e.message}. Stack trace: ${e.stack}`,
+      msg
+    );
   }
 
   conditionInfo(
