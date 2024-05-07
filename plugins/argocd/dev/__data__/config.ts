@@ -1,6 +1,4 @@
-import { Config } from '@kubernetes/client-node';
-
-export const mockArgocdConfig: Config = {
+export const mockArgocdConfig = {
   argocd: {
     baseUrl: 'https://localhost:8080',
     appLocatorMethods: [

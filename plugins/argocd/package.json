@@ -23,7 +23,8 @@
     "prepack": "backstage-cli package prepack",
     "start": "backstage-cli package start",
     "test": "backstage-cli package test --passWithNoTests --coverage",
-    "tsc": "tsc"
+    "tsc": "tsc",
+    "ui-test": "yarn playwright test"
   },
   "dependencies": {
     "@backstage/catalog-model": "^1.4.4",
@@ -54,6 +55,7 @@
     "@backstage/dev-utils": "1.0.30",
     "@backstage/test-utils": "1.5.3",
     "@janus-idp/cli": "1.8.5",
+    "@playwright/test": "1.41.2",
     "@testing-library/jest-dom": "6.0.0",
     "@testing-library/react": "14.0.0",
     "@testing-library/user-event": "14.0.0",
