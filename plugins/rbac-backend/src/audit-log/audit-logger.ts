@@ -69,8 +69,8 @@ export class AuditLogger {
     };
 
     this.logger.info(
-      `${this.fmtToPastTime(operation)} '${metadata.roleEntityRef}'`
-      this.toLogMsgWithRoleInfo(logMsg, metadata)
+      `${this.fmtToPastTime(operation)} '${metadata.roleEntityRef}'`,
+      this.toLogMsgWithRoleInfo(logMsg, metadata),
     );
   }
 
@@ -94,10 +94,10 @@ export class AuditLogger {
       time: new Date().toUTCString(),
     };
     this.logger.error(
-      `Fail to ${operation} '${JSON.stringify(
-        roleEntityRefs,
-      )}'. Cause: ${e.message}. Stack trace: ${e.stack}`,
-      msg
+      `Fail to ${operation} '${JSON.stringify(roleEntityRefs)}'. Cause: ${
+        e.message
+      }. Stack trace: ${e.stack}`,
+      msg,
     );
   }
 
@@ -151,10 +151,10 @@ export class AuditLogger {
     };
 
     this.logger.error(
-       `Fail to ${operations} permission policy: '${JSON.stringify(
+      `Fail to ${operations} permission policy: '${JSON.stringify(
         policies,
       )}'. Cause: ${e.message}. Stack trace: ${e.stack}`,
-      msg
+      msg,
     );
   }
 
@@ -163,7 +163,7 @@ export class AuditLogger {
     operation: Operation,
     modifiedBy: string,
   ) {
-    const msg: LogMsgWithConditionInfo = { 
+    const msg: LogMsgWithConditionInfo = {
       isAuditLog: true,
       entityRef: condition.roleEntityRef,
       source: 'rest',
@@ -177,7 +177,7 @@ export class AuditLogger {
       `${this.fmtToPastTime(operation)} condition '${JSON.stringify(
         condition.conditions,
       )}' for permissions: '${JSON.stringify(condition.permissionMapping)}'`,
-      msg
+      msg,
     );
   }
 
@@ -248,7 +248,7 @@ export class AuditLogger {
     }
     logMsg.time = new Date().toUTCString();
 
-    if (level === 'error'){
+    if (level === 'error') {
       this.logger.error(message, logMsg);
     } else {
       this.logger.info(message, logMsg);

@@ -199,7 +199,7 @@ const evaluatePermMsg = (
     isResourcePermission(permission)
       ? `, resource type '${permission.resourceType}'`
       : ''
-  } and action ${toPermissionAction(permission.attributes)}`;
+  } and action '${toPermissionAction(permission.attributes)}'`;
 
 export class RBACPermissionPolicy implements PermissionPolicy {
   private readonly enforcer: EnforcerDelegate;
