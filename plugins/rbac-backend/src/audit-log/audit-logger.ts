@@ -123,16 +123,14 @@ export class AuditLogger {
       )} to ${JSON.stringify(oldPolicies)} for '${entityRef}'`;
     }
 
-    const msg: LogMsg = {
-      level: 'info',
-      message,
+    const msgMeta: LogMsg = {
       isAuditLog: true,
       entityRef,
       source,
       modifiedBy,
       time: new Date().toUTCString(),
     };
-    this.logger.log(msg);
+    this.logger.info(message, msgMeta);
   }
 
   permissionError(
