@@ -20,8 +20,6 @@ import { RoleMetadataDao } from '../database/role-metadata';
 export type Operation = 'CREATE' | 'UPDATE' | 'DELETE';
 
 type LogMsg = {
-  level: 'info' | 'error';
-  message: string;
   isAuditLog: true;
   entityRef: string | string[];
   source: Source;
