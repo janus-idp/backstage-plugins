@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac-backend [2.8.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.8.0...@janus-idp/backstage-plugin-rbac-backend@2.8.1) (2024-05-07)
+
+
+### Bug Fixes
+
+* **rbac:** implement ability to disable rbac-backend plugin ([#1501](https://github.com/janus-idp/backstage-plugins/issues/1501)) ([6367965](https://github.com/janus-idp/backstage-plugins/commit/6367965c550286dc8423b0942341ecee178dc6c1))
+
 ## @janus-idp/backstage-plugin-rbac-backend [2.8.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.7.1...@janus-idp/backstage-plugin-rbac-backend@2.8.0) (2024-05-07)
 
 
