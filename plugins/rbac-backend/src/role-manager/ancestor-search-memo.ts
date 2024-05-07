@@ -148,7 +148,6 @@ export class AncestorSearchMemo {
       return;
     }
 
-    const groupsRefs = new Set<string>();
     const groupName = `group:${group.metadata.namespace?.toLocaleLowerCase(
       'en-US',
     )}/${group.metadata.name.toLocaleLowerCase('en-US')}`;
@@ -162,13 +161,12 @@ export class AncestorSearchMemo {
     if (parentGroup) {
       const parentName = `group:${group.metadata.namespace?.toLocaleLowerCase(
         'en-US',
-      )}/${parent.toLocaleLowerCase('en-US')}`;
+      )}/${parentGroup.metadata.name.toLocaleLowerCase('en-US')}`;
       memo.setEdge(parentName, groupName);
-      groupsRefs.add(parentName);
-    }
 
-    if (groupsRefs.size > 0 && memo.isAcyclic()) {
-      this.traverseGroups(memo, parentGroup!, allGroups, depth);
+      if (memo.isAcyclic()) {
+        this.traverseGroups(memo, parentGroup, allGroups, depth);
+      }
     }
   }
 
@@ -195,7 +193,7 @@ export class AncestorSearchMemo {
     );
 
     if (parentGroup && memo.isAcyclic()) {
-      this.traverseRelations(memo, parentGroup!, allRelations, depth);
+      this.traverseRelations(memo, parentGroup, allRelations, depth);
     }
   }
 
