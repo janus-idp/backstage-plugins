@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-kiali [1.17.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.16.10...@janus-idp/backstage-plugin-kiali@1.17.0) (2024-05-07)
+
+
+### Features
+
+* **kiali:** add card for resources  ([#1565](https://github.com/janus-idp/backstage-plugins/issues/1565)) ([1e727aa](https://github.com/janus-idp/backstage-plugins/commit/1e727aae0464aa55e4dce754a04e97a5708c07f9))
+
 ## @janus-idp/backstage-plugin-kiali [1.16.10](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.16.9...@janus-idp/backstage-plugin-kiali@1.16.10) (2024-05-04)
 
 
