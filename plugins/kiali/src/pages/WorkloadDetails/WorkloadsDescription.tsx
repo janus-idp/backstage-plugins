@@ -33,6 +33,7 @@ type WorkloadDescriptionProps = {
   entity?: boolean;
   namespace: string;
   workload: Workload;
+  view?: string;
 };
 
 const resourceListStyle = kialiStyle({
@@ -46,17 +47,17 @@ const resourceListStyle = kialiStyle({
   },
 });
 
-const iconStyle = kialiStyle({
+export const iconStyle = kialiStyle({
   display: 'inline-block',
 });
 
-const infoStyle = kialiStyle({
+export const infoStyle = kialiStyle({
   marginLeft: '0.5rem',
   verticalAlign: '-0.125rem',
   display: 'inline-block',
 });
 
-const healthIconStyle = kialiStyle({
+export const healthIconStyle = kialiStyle({
   marginLeft: '0.5rem',
   verticalAlign: '-0.075rem',
 });
@@ -269,6 +270,7 @@ export const WorkloadDescription: React.FC<WorkloadDescriptionProps> = (
           services={services}
           health={props.health}
           cluster={props.workload.cluster}
+          view={props.view}
           waypointWorkloads={
             isWaypoint(props.workload.labels)
               ? props.workload.waypointWorkloads

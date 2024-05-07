@@ -314,15 +314,17 @@ export abstract class Health {
     // Check if the config applied is the kiali defaults one
     const tolConfDefault =
       serverConfig.healthConfig.rate[serverConfig.healthConfig.rate.length - 1]
-        .tolerance;
-    for (const tol of tolConfDefault) {
-      // Check if the tolerance applied is one of kiali defaults
-      if (
-        this.health.statusConfig &&
-        tol === this.health.statusConfig.threshold
-      ) {
-        // In the case is a kiali's default return undefined
-        return undefined;
+        ?.tolerance;
+    if (tolConfDefault) {
+      for (const tol of tolConfDefault) {
+        // Check if the tolerance applied is one of kiali defaults
+        if (
+          this.health.statusConfig &&
+          tol === this.health.statusConfig.threshold
+        ) {
+          // In the case is a kiali's default return undefined
+          return undefined;
+        }
       }
     }
     // Otherwise return the threshold configuration that kiali used to calculate the status
