@@ -26,7 +26,7 @@ export interface Config {
      * @visibility frontend
      */
     appLocatorMethods?: Array</**
-     * @visibility secret
+     * @visibility frontend
      */
     {
       /**
@@ -43,6 +43,14 @@ export interface Config {
          * @visibility frontend
          */
         url: string;
+        /**
+         * @visibility secret
+         */
+        username: string;
+        /**
+         * @visibility secret
+         */
+        password: string;
       }>;
     }>;
   };
