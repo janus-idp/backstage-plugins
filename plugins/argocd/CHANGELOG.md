@@ -1,3 +1,15 @@
+## @janus-idp/backstage-plugin-argocd [1.0.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-argocd@1.0.0...@janus-idp/backstage-plugin-argocd@1.0.1) (2024-05-07)
+
+
+### Bug Fixes
+
+* **argocd:** fix argocd configurations visibility ([#1618](https://github.com/janus-idp/backstage-plugins/issues/1618)) ([ade677f](https://github.com/janus-idp/backstage-plugins/commit/ade677f1bccff30b16091c76112c3b6aaf7fa421))
+
+
+### Other changes
+
+* **argocd:** add playwright dev mode tests ([#1616](https://github.com/janus-idp/backstage-plugins/issues/1616)) ([07c1452](https://github.com/janus-idp/backstage-plugins/commit/07c1452b3098f2a4a59477845a9ab678d1766fba))
+
 ## @janus-idp/backstage-plugin-argocd 1.0.0 (2024-05-07)
 
 
