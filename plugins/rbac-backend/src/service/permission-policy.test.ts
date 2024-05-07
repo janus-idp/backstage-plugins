@@ -1,5 +1,6 @@
 import { getVoidLogger, TokenManager } from '@backstage/backend-common';
 import { DatabaseService } from '@backstage/backend-plugin-api';
+import { mockServices } from '@backstage/backend-test-utils';
 import { Entity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
@@ -127,6 +128,8 @@ const csvPermFile = resolve(
 );
 
 const knex = Knex.knex({ client: MockClient });
+
+const mockAuthService = mockServices.auth();
 
 describe('RBACPermissionPolicy Tests', () => {
   it('should build', async () => {
@@ -2141,6 +2144,7 @@ async function createEnforcer(
     tokenManager,
     catalogDBClient,
     config,
+    mockAuthService,
   );
   enf.setRoleManager(rm);
   enf.enableAutoBuildRoleLinks(false);

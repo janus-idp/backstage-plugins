@@ -1,24 +1,23 @@
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import { Config } from '@backstage/config';
+import {
+  AuthService,
+  HttpAuthService,
+  PermissionsService,
+} from '@backstage/backend-plugin-api';
 import {
   ConflictError,
   InputError,
   NotAllowedError,
   NotFoundError,
 } from '@backstage/errors';
-import {
-  getBearerTokenFromAuthorizationHeader,
-  IdentityApi,
-} from '@backstage/plugin-auth-node';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 import {
   createRouter,
   RouterOptions,
 } from '@backstage/plugin-permission-backend';
 import {
   AuthorizeResult,
-  PermissionEvaluator,
   PolicyDecision,
-  QueryPermissionRequest,
+  ResourcePermission,
 } from '@backstage/plugin-permission-common';
 import {
   createPermissionIntegrationRouter,
@@ -29,7 +28,6 @@ import { Router } from 'express';
 import { Request } from 'express-serve-static-core';
 import { isEmpty, isEqual } from 'lodash';
 import { ParsedQs } from 'qs';
-import { Logger } from 'winston';
 
 import {
   PermissionAction,
@@ -64,13 +62,11 @@ import {
 
 export class PolicesServer {
   constructor(
-    private readonly identity: IdentityApi,
-    private readonly permissions: PermissionEvaluator,
+    private readonly permissions: PermissionsService,
     private readonly options: RouterOptions,
     private readonly enforcer: EnforcerDelegate,
-    private readonly config: Config,
-    private readonly logger: Logger,
-    private readonly discovery: PluginEndpointDiscovery,
+    private readonly httpAuth: HttpAuthService,
+    private readonly auth: AuthService,
     private readonly conditionalStorage: ConditionalStorage,
     private readonly pluginIdProvider: PluginIdProvider,
     private readonly roleMetadata: RoleMetadataStorage,
@@ -78,19 +74,23 @@ export class PolicesServer {
 
   private async authorize(
     request: Request,
-    permission: QueryPermissionRequest,
+    identity: IdentityApi,
+    permission: ResourcePermission,
   ): Promise<PolicyDecision> {
-    if (permission.permission !== policyEntityReadPermission) {
-      const user = await this.identity.getIdentity({ request });
+    if (permission !== policyEntityReadPermission) {
+      const user = await identity.getIdentity({ request });
       if (!user) {
         throw new NotAllowedError('User not found');
       }
     }
-    const authHeader = request.header('authorization');
-    const token = getBearerTokenFromAuthorizationHeader(authHeader);
 
     const decision = (
-      await this.permissions.authorizeConditional([permission], { token })
+      await this.permissions.authorize(
+        [{ permission: permission, resourceRef: permission.resourceType }],
+        {
+          credentials: await this.httpAuth.credentials(request),
+        },
+      )
     )[0];
 
     return decision;
@@ -98,24 +98,35 @@ export class PolicesServer {
 
   async serve(): Promise<Router> {
     const router = await createRouter(this.options);
+
+    const { identity, discovery, logger, config } = this.options;
+
+    if (!identity) {
+      throw new NotAllowedError(
+        'Identity api not found, ensure the correct configuration for the RBAC plugin',
+      );
+    }
+
     const permissionsIntegrationRouter = createPermissionIntegrationRouter({
       resourceType: RESOURCE_TYPE_POLICY_ENTITY,
       permissions: policyEntityPermissions,
     });
 
     const pluginPermMetaData = new PluginPermissionMetadataCollector(
-      this.discovery,
+      discovery,
       this.pluginIdProvider,
-      this.logger,
-      this.config,
+      logger,
+      config,
     );
 
     router.use(permissionsIntegrationRouter);
 
     router.get('/', async (request, response) => {
-      const decision = await this.authorize(request, {
-        permission: policyEntityReadPermission,
-      });
+      const decision = await this.authorize(
+        request,
+        identity,
+        policyEntityReadPermission,
+      );
 
       if (decision.result === AuthorizeResult.DENY) {
         throw new NotAllowedError(); // 403
@@ -126,9 +137,11 @@ export class PolicesServer {
     // Policy CRUD
 
     router.get('/policies', async (request, response) => {
-      const decision = await this.authorize(request, {
-        permission: policyEntityReadPermission,
-      });
+      const decision = await this.authorize(
+        request,
+        identity,
+        policyEntityReadPermission,
+      );
 
       if (decision.result === AuthorizeResult.DENY) {
         throw new NotAllowedError(); // 403
@@ -153,9 +166,11 @@ export class PolicesServer {
     router.get(
       '/policies/:kind/:namespace/:name',
       async (request, response) => {
-        const decision = await this.authorize(request, {
-          permission: policyEntityReadPermission,
-        });
+        const decision = await this.authorize(
+          request,
+          identity,
+          policyEntityReadPermission,
+        );
 
         if (decision.result === AuthorizeResult.DENY) {
           throw new NotAllowedError(); // 403
@@ -175,9 +190,11 @@ export class PolicesServer {
     router.delete(
       '/policies/:kind/:namespace/:name',
       async (request, response) => {
-        const decision = await this.authorize(request, {
-          permission: policyEntityDeletePermission,
-        });
+        const decision = await this.authorize(
+          request,
+          identity,
+          policyEntityDeletePermission,
+        );
 
         if (decision.result === AuthorizeResult.DENY) {
           throw new NotAllowedError(); // 403
@@ -202,9 +219,11 @@ export class PolicesServer {
     );
 
     router.post('/policies', async (request, response) => {
-      const decision = await this.authorize(request, {
-        permission: policyEntityCreatePermission,
-      });
+      const decision = await this.authorize(
+        request,
+        identity,
+        policyEntityCreatePermission,
+      );
 
       if (decision.result === AuthorizeResult.DENY) {
         throw new NotAllowedError(); // 403
@@ -226,9 +245,11 @@ export class PolicesServer {
     router.put(
       '/policies/:kind/:namespace/:name',
       async (request, response) => {
-        const decision = await this.authorize(request, {
-          permission: policyEntityUpdatePermission,
-        });
+        const decision = await this.authorize(
+          request,
+          identity,
+          policyEntityUpdatePermission,
+        );
 
         if (decision.result === AuthorizeResult.DENY) {
           throw new NotAllowedError(); // 403
@@ -298,9 +319,11 @@ export class PolicesServer {
     // Role CRUD
 
     router.get('/roles', async (request, response) => {
-      const decision = await this.authorize(request, {
-        permission: policyEntityReadPermission,
-      });
+      const decision = await this.authorize(
+        request,
+        identity,
+        policyEntityReadPermission,
+      );
 
       if (decision.result === AuthorizeResult.DENY) {
         throw new NotAllowedError(); // 403
@@ -312,9 +335,11 @@ export class PolicesServer {
     });
 
     router.get('/roles/:kind/:namespace/:name', async (request, response) => {
-      const decision = await this.authorize(request, {
-        permission: policyEntityReadPermission,
-      });
+      const decision = await this.authorize(
+        request,
+        identity,
+        policyEntityReadPermission,
+      );
 
       if (decision.result === AuthorizeResult.DENY) {
         throw new NotAllowedError(); // 403
@@ -335,9 +360,11 @@ export class PolicesServer {
 
     router.post('/roles', async (request, response) => {
       const uniqueItems = new Set<string>();
-      const decision = await this.authorize(request, {
-        permission: policyEntityCreatePermission,
-      });
+      const decision = await this.authorize(
+        request,
+        identity,
+        policyEntityCreatePermission,
+      );
 
       if (decision.result === AuthorizeResult.DENY) {
         throw new NotAllowedError(); // 403
@@ -372,7 +399,7 @@ export class PolicesServer {
         }
       }
 
-      const user = await this.identity.getIdentity({ request });
+      const user = await identity.getIdentity({ request });
       const metadata: RoleMetadataDao = {
         roleEntityRef: roleRaw.name,
         source: 'rest',
@@ -387,9 +414,11 @@ export class PolicesServer {
 
     router.put('/roles/:kind/:namespace/:name', async (request, response) => {
       const uniqueItems = new Set<string>();
-      const decision = await this.authorize(request, {
-        permission: policyEntityUpdatePermission,
-      });
+      const decision = await this.authorize(
+        request,
+        identity,
+        policyEntityUpdatePermission,
+      );
 
       if (decision.result === AuthorizeResult.DENY) {
         throw new NotAllowedError(); // 403
@@ -424,7 +453,7 @@ export class PolicesServer {
       const newRole = this.transformRoleToArray(newRoleRaw);
       // todo shell we allow newRole with an empty array?...
 
-      const user = await this.identity.getIdentity({ request });
+      const user = await identity.getIdentity({ request });
       const newMetadata: RoleMetadataDao = {
         ...newRoleRaw.metadata,
         source: newRoleRaw.metadata?.source ?? 'rest',
@@ -520,9 +549,11 @@ export class PolicesServer {
       '/roles/:kind/:namespace/:name',
       async (request, response) => {
         let roleMembers = [];
-        const decision = await this.authorize(request, {
-          permission: policyEntityDeletePermission,
-        });
+        const decision = await this.authorize(
+          request,
+          identity,
+          policyEntityDeletePermission,
+        );
 
         if (decision.result === AuthorizeResult.DENY) {
           throw new NotAllowedError(); // 403
@@ -561,7 +592,7 @@ export class PolicesServer {
           );
         }
 
-        const user = await this.identity.getIdentity({ request });
+        const user = await identity.getIdentity({ request });
         await this.enforcer.removeGroupingPolicies(
           roleMembers,
           'rest',
@@ -574,41 +605,41 @@ export class PolicesServer {
     );
 
     router.get('/plugins/policies', async (request, response) => {
-      const decision = await this.authorize(request, {
-        permission: policyEntityReadPermission,
-      });
+      const decision = await this.authorize(
+        request,
+        identity,
+        policyEntityReadPermission,
+      );
 
       if (decision.result === AuthorizeResult.DENY) {
         throw new NotAllowedError(); // 403
       }
 
-      const authHeader = request.header('authorization');
-      const token = getBearerTokenFromAuthorizationHeader(authHeader);
-
-      const policies = await pluginPermMetaData.getPluginPolicies(token);
+      const policies = await pluginPermMetaData.getPluginPolicies(this.auth);
       response.json(policies);
     });
 
     router.get('/plugins/condition-rules', async (request, response) => {
-      const decision = await this.authorize(request, {
-        permission: policyEntityReadPermission,
-      });
+      const decision = await this.authorize(
+        request,
+        identity,
+        policyEntityReadPermission,
+      );
 
       if (decision.result === AuthorizeResult.DENY) {
         throw new NotAllowedError(); // 403
       }
 
-      const authHeader = request.header('authorization');
-      const token = getBearerTokenFromAuthorizationHeader(authHeader);
-
-      const rules = await pluginPermMetaData.getPluginConditionRules(token);
+      const rules = await pluginPermMetaData.getPluginConditionRules(this.auth);
       response.json(rules);
     });
 
     router.get('/roles/conditions', async (request, response) => {
-      const decision = await this.authorize(request, {
-        permission: policyEntityReadPermission,
-      });
+      const decision = await this.authorize(
+        request,
+        identity,
+        policyEntityReadPermission,
+      );
 
       if (decision.result === AuthorizeResult.DENY) {
         throw new NotAllowedError(); // 403
@@ -632,9 +663,11 @@ export class PolicesServer {
     });
 
     router.post('/roles/conditions', async (request, response) => {
-      const decision = await this.authorize(request, {
-        permission: policyEntityCreatePermission,
-      });
+      const decision = await this.authorize(
+        request,
+        identity,
+        policyEntityCreatePermission,
+      );
 
       if (decision.result === AuthorizeResult.DENY) {
         throw new NotAllowedError(); // 403
@@ -646,7 +679,6 @@ export class PolicesServer {
 
       const conditionToCreate = await this.processConditionMapping(
         roleConditionPolicy,
-        request,
         pluginPermMetaData,
       );
 
@@ -657,9 +689,11 @@ export class PolicesServer {
     });
 
     router.get('/roles/conditions/:id', async (request, response) => {
-      const decision = await this.authorize(request, {
-        permission: policyEntityReadPermission,
-      });
+      const decision = await this.authorize(
+        request,
+        identity,
+        policyEntityReadPermission,
+      );
 
       if (decision.result === AuthorizeResult.DENY) {
         throw new NotAllowedError(); // 403
@@ -684,9 +718,11 @@ export class PolicesServer {
     });
 
     router.delete('/roles/conditions/:id', async (request, response) => {
-      const decision = await this.authorize(request, {
-        permission: policyEntityDeletePermission,
-      });
+      const decision = await this.authorize(
+        request,
+        identity,
+        policyEntityDeletePermission,
+      );
 
       if (decision.result === AuthorizeResult.DENY) {
         throw new NotAllowedError(); // 403
@@ -702,9 +738,11 @@ export class PolicesServer {
     });
 
     router.put('/roles/conditions/:id', async (request, response) => {
-      const decision = await this.authorize(request, {
-        permission: policyEntityUpdatePermission,
-      });
+      const decision = await this.authorize(
+        request,
+        identity,
+        policyEntityUpdatePermission,
+      );
 
       if (decision.result === AuthorizeResult.DENY) {
         throw new NotAllowedError(); // 403
@@ -722,7 +760,6 @@ export class PolicesServer {
 
       const conditionToUpdate = await this.processConditionMapping(
         roleConditionPolicy,
-        request,
         pluginPermMetaData,
       );
 
@@ -932,12 +969,13 @@ export class PolicesServer {
 
   async processConditionMapping(
     roleConditionPolicy: RoleConditionalPolicyDecision<PermissionAction>,
-    request: Request,
     pluginPermMetaData: PluginPermissionMetadataCollector,
   ): Promise<RoleConditionalPolicyDecision<PermissionInfo>> {
-    const token = getBearerTokenFromAuthorizationHeader(
-      request.header('authorization'),
-    );
+    const { token } = await this.auth.getPluginRequestToken({
+      onBehalfOf: await this.auth.getOwnServiceCredentials(),
+      targetPluginId: roleConditionPolicy.pluginId,
+    });
+
     const rule: MetadataResponse | undefined =
       await pluginPermMetaData.getMetadataByPluginId(
         roleConditionPolicy.pluginId,
