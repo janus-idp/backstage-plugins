@@ -208,15 +208,13 @@ export class AuditLogger {
 
     const time = new Date().toUTCString();
     const logMsg: LogMsg = {
-      level: 'error',
-      message: msg,
       isAuditLog: true,
       entityRef,
       source: 'rest',
       modifiedBy,
       time,
     };
-    this.logger.error(logMsg);
+    this.logger.error(msg, logMsg);
   }
 
   logEvaluation(
