@@ -24,6 +24,11 @@ test.describe('Entity resources', () => {
       expect(page.locator('[data-test="drawer"]')).toBeDefined();
     });
 
+    test('Close drawer', async () => {
+      await page.locator('#close_drawer').click();
+      expect(page.locator('[data-test="service-tab"]')).toBeDefined();
+    });
+
     test('Services tab', async () => {
       await page.locator('[data-test="service-tab"]').click();
       expect(page.locator('#drawer_bookinfo_details')).toBeDefined();
