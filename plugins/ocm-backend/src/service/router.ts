@@ -157,10 +157,12 @@ const buildRouter = (
     }
 
     logger.debug(`Incoming status request for all clusters`);
-
+    console.log(`=====`);
     const allClusters = await Promise.all(
       Object.values(clients).map(async c => {
+        console.log(`-----`);
         const mcs = await listManagedClusters(c.client);
+        console.log(`==== ${mcs}`);
         const mcis = await listManagedClusterInfos(c.client);
 
         return mcs.items.map(mc => {

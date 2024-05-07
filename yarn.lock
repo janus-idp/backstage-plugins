@@ -6364,6 +6364,54 @@
     "@backstage/config" "^1.1.1"
     deep-freeze "^0.0.1"
 
+"@janus-idp/backstage-plugin-ocm-backend@^3.6.1":
+  version "3.6.5"
+  resolved "https://registry.yarnpkg.com/@janus-idp/backstage-plugin-ocm-backend/-/backstage-plugin-ocm-backend-3.6.5.tgz#03c0966341c88b4e5e0b2eaa7ff81f8d40d34cba"
+  integrity sha512-BWnuOfy+mNLyjL0Hz7VWfxIc+Xt3zUUaDW5T3U6DgdGiYNuYWJWBRVi3BUe3a7Smw/T0WyDv9JdOHek4ziJHjg==
+  dependencies:
+    "@backstage/backend-common" "^0.21.6"
+    "@backstage/backend-dynamic-feature-service" "^0.2.8"
+    "@backstage/backend-plugin-api" "^0.6.16"
+    "@backstage/backend-tasks" "^0.5.21"
+    "@backstage/catalog-client" "^1.6.3"
+    "@backstage/catalog-model" "^1.4.5"
+    "@backstage/config" "^1.2.0"
+    "@backstage/plugin-catalog-node" "^1.11.0"
+    "@backstage/plugin-kubernetes-common" "^0.7.5"
+    "@janus-idp/backstage-plugin-ocm-common" "2.3.0"
+    "@kubernetes/client-node" "^0.20.0"
+    express "^4.18.2"
+    express-promise-router "^4.1.1"
+    semver "^7.5.4"
+    winston "^3.11.0"
+
+"@janus-idp/backstage-plugin-ocm-common@2.3.0":
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/@janus-idp/backstage-plugin-ocm-common/-/backstage-plugin-ocm-common-2.3.0.tgz#d44c4911550b5c9322e9d46d42a90c42bef00ae0"
+  integrity sha512-xtlx8y5cw3qmCVZ/yxxNogtn5GCVTcTTa6vGjwzGCyCZ9MoNNjf7af0dl6N4AvBL652EfvYyFCydRDKKkvCf2g==
+
+"@janus-idp/backstage-plugin-ocm@3.8.1":
+  version "3.8.1"
+  resolved "https://registry.yarnpkg.com/@janus-idp/backstage-plugin-ocm/-/backstage-plugin-ocm-3.8.1.tgz#2651aa80914cc2dad4700b7ccf30cc6345fc95ca"
+  integrity sha512-3ecHT3ZDO7nDwfmqzcCVI0yLKHGgH9jevuNV86OIRdsY/lMO2ZHub3BZa0UPAuNmSTknBK9IrXH64lGefnwWOg==
+  dependencies:
+    "@backstage/catalog-model" "^1.4.5"
+    "@backstage/core-components" "^0.14.3"
+    "@backstage/core-plugin-api" "^1.9.1"
+    "@backstage/errors" "^1.2.4"
+    "@backstage/plugin-catalog-react" "^1.11.2"
+    "@backstage/plugin-home" "^0.7.2"
+    "@backstage/plugin-search-react" "^1.7.9"
+    "@backstage/theme" "^0.5.2"
+    "@janus-idp/backstage-plugin-ocm-common" "2.3.0"
+    "@material-ui/core" "^4.9.13"
+    "@material-ui/icons" "^4.11.3"
+    "@material-ui/lab" "^4.0.0-alpha.45"
+    "@patternfly/patternfly" "^5.1.0"
+    "@patternfly/react-icons" "^5.1.1"
+    react-use "^17.4.0"
+    semver "^7.5.4"
+
 "@janus-idp/cli@1.7.10":
   version "1.7.10"
   resolved "https://registry.npmjs.org/@janus-idp/cli/-/cli-1.7.10.tgz#84e0001b121f86b8a5e11e904c6b0512379eb901"
@@ -33508,7 +33556,16 @@ string-length@^4.0.1:
     char-regex "^1.0.2"
     strip-ansi "^6.0.0"
 
-"string-width-cjs@npm:string-width@^4.2.0", "string-width@^1.0.2 || 2 || 3 || 4", string-width@^4.0.0, string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:
+"string-width-cjs@npm:string-width@^4.2.0":
+  version "4.2.3"
+  resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
+  integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
+  dependencies:
+    emoji-regex "^8.0.0"
+    is-fullwidth-code-point "^3.0.0"
+    strip-ansi "^6.0.1"
+
+"string-width@^1.0.2 || 2 || 3 || 4", string-width@^4.0.0, string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:
   version "4.2.3"
   resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
   integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
@@ -33582,7 +33639,7 @@ string_decoder@~1.1.1:
   dependencies:
     safe-buffer "~5.1.0"
 
-"strip-ansi-cjs@npm:strip-ansi@^6.0.1", strip-ansi@^6.0.0, strip-ansi@^6.0.1:
+"strip-ansi-cjs@npm:strip-ansi@^6.0.1":
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
   integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
@@ -33595,6 +33652,13 @@ strip-ansi@5.2.0:
   integrity sha512-DuRs1gKbBqsMKIZlrffwlug8MHkcnpjs5VPmL1PAh+mA30U0DTotfDZ0d2UUsXpPmPmMMJ6W773MaA3J+lbiWA==
   dependencies:
     ansi-regex "^4.1.0"
+
+strip-ansi@^6.0.0, strip-ansi@^6.0.1:
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
+  integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
+  dependencies:
+    ansi-regex "^5.0.1"
 
 strip-ansi@^7.0.1:
   version "7.1.0"
@@ -36544,7 +36608,7 @@ wordwrap@^1.0.0:
   resolved "https://registry.yarnpkg.com/wordwrap/-/wordwrap-1.0.0.tgz#27584810891456a4171c8d0226441ade90cbcaeb"
   integrity sha512-gvVzJFlPycKc5dZN4yPkP8w7Dc37BtP1yczEneOb4uq34pXZcvrtRTmWV8W+Ume+XCxKgbjM+nevkyFPMybd4Q==
 
-"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0", wrap-ansi@^7.0.0:
+"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0":
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
   integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
@@ -36557,6 +36621,15 @@ wrap-ansi@^6.0.1, wrap-ansi@^6.2.0:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-6.2.0.tgz#e9393ba07102e6c91a3b221478f0257cd2856e53"
   integrity sha512-r6lPcBGxZXlIcymEu7InxDMhdW0KDxpLgoFLcguasxCaJ/SOIZwINatK9KY/tf+ZrlywOKU0UDj3ATXUBfxJXA==
+  dependencies:
+    ansi-styles "^4.0.0"
+    string-width "^4.1.0"
+    strip-ansi "^6.0.0"
+
+wrap-ansi@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
+  integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
   dependencies:
     ansi-styles "^4.0.0"
     string-width "^4.1.0"

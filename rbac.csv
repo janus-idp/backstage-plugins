@@ -1,0 +1,459 @@
+g, group:default/group-1a, role:default/group-1a
+g, group:default/group-1b, role:default/group-1b
+g, group:default/group-1c, role:default/group-1c
+g, group:default/group-1d, role:default/group-1d
+g, group:default/group-1e, role:default/group-1e
+g, group:default/group-1f, role:default/group-1f
+g, group:default/group-1g, role:default/group-1g
+g, group:default/group-1h, role:default/group-1h
+g, group:default/group-1i, role:default/group-1i
+g, group:default/group-1j, role:default/group-1j
+g, group:default/group-1k, role:default/group-1k
+g, group:default/group-1l, role:default/group-1l
+g, group:default/group-1m, role:default/group-1m
+
+g, group:default/group-2a, role:default/group-2a
+g, group:default/group-2b, role:default/group-2b
+g, group:default/group-2c, role:default/group-2c
+g, group:default/group-2d, role:default/group-2d
+g, group:default/group-2e, role:default/group-2e
+g, group:default/group-2f, role:default/group-2f
+g, group:default/group-2g, role:default/group-2g
+g, group:default/group-2h, role:default/group-2h
+g, group:default/group-2i, role:default/group-2i
+g, group:default/group-2j, role:default/group-2j
+g, group:default/group-2k, role:default/group-2k
+g, group:default/group-2l, role:default/group-2l
+g, group:default/group-2m, role:default/group-2m
+
+g, group:default/group-3a, role:default/group-3a
+g, group:default/group-3b, role:default/group-3b
+g, group:default/group-3c, role:default/group-3c
+g, group:default/group-3d, role:default/group-3d
+g, group:default/group-3e, role:default/group-3e
+g, group:default/group-3f, role:default/group-3f
+g, group:default/group-3g, role:default/group-3g
+g, group:default/group-3h, role:default/group-3h
+g, group:default/group-3i, role:default/group-3i
+g, group:default/group-3j, role:default/group-3j
+g, group:default/group-3k, role:default/group-3k
+g, group:default/group-3l, role:default/group-3l
+g, group:default/group-3m, role:default/group-3m
+
+g, group:default/group-4a, role:default/group-4a
+g, group:default/group-4b, role:default/group-4b
+g, group:default/group-4c, role:default/group-4c
+g, group:default/group-4d, role:default/group-4d
+g, group:default/group-4e, role:default/group-4e
+g, group:default/group-4f, role:default/group-4f
+g, group:default/group-4g, role:default/group-4g
+g, group:default/group-4h, role:default/group-4h
+g, group:default/group-4i, role:default/group-4i
+g, group:default/group-4j, role:default/group-4j
+g, group:default/group-4k, role:default/group-4k
+g, group:default/group-4l, role:default/group-4l
+g, group:default/group-4m, role:default/group-4m
+
+
+
+p, role:default/group-1a, catalog.entity.read, read, allow
+p, role:default/group-1b, test-permission, read, allow
+p, role:default/group-1c, test-permission, read, allow
+p, role:default/group-1d, test-permission, read, allow
+p, role:default/group-1e, catalog.entity.create, create, allow
+p, role:default/group-1f, test-permission, read, allow
+p, role:default/group-1g, test-permission, read, allow
+p, role:default/group-1h, test-permission, read, allow
+p, role:default/group-1i, catalog.entity.update, update, allow
+p, role:default/group-1j, test-permission, read, allow
+p, role:default/group-1k, test-permission, read, allow
+p, role:default/group-1l, test-permission, read, allow
+p, role:default/group-1m, catalog.entity.delete, delete, allow
+
+p, role:default/group-2a, catalog.entity.read, read, allow
+p, role:default/group-2b, test-permission, read, allow
+p, role:default/group-2c, test-permission, read, allow
+p, role:default/group-2d, test-permission, read, allow
+p, role:default/group-2e, catalog.entity.create, create, allow
+p, role:default/group-2f, test-permission, read, allow
+p, role:default/group-2g, test-permission, read, allow
+p, role:default/group-2h, test-permission, read, allow
+p, role:default/group-2i, catalog.entity.update, update, allow
+p, role:default/group-2j, test-permission, read, allow
+p, role:default/group-2k, test-permission, read, allow
+p, role:default/group-2l, test-permission, read, allow
+p, role:default/group-2m, catalog.entity.delete, delete, allow
+
+p, role:default/group-3a, catalog.entity.read, read, allow
+p, role:default/group-3b, test-permission, read, allow
+p, role:default/group-3c, test-permission, read, allow
+p, role:default/group-3d, test-permission, read, allow
+p, role:default/group-3e, catalog.entity.create, create, allow
+p, role:default/group-3f, test-permission, read, allow
+p, role:default/group-3g, test-permission, read, allow
+p, role:default/group-3h, test-permission, read, allow
+p, role:default/group-3i, catalog.entity.update, update, allow
+p, role:default/group-3j, test-permission, read, allow
+p, role:default/group-3k, test-permission, read, allow
+p, role:default/group-3l, test-permission, read, allow
+p, role:default/group-3m, catalog.entity.delete, delete, allow
+
+p, role:default/group-4a, catalog.entity.read, read, allow
+p, role:default/group-4b, test-permission, read, allow
+p, role:default/group-4c, test-permission, read, allow
+p, role:default/group-4d, test-permission, read, allow
+p, role:default/group-4e, catalog.entity.create, create, allow
+p, role:default/group-4f, test-permission, read, allow
+p, role:default/group-4g, test-permission, read, allow
+p, role:default/group-4h, test-permission, read, allow
+p, role:default/group-4i, catalog.entity.update, update, allow
+p, role:default/group-4j, test-permission, read, allow
+p, role:default/group-4k, test-permission, read, allow
+p, role:default/group-4l, test-permission, read, allow
+p, role:default/group-4m, catalog.entity.delete, delete, allow
+
+
+g, group:default/group-5a, role:default/group-5a
+g, group:default/group-5b, role:default/group-5b
+g, group:default/group-5c, role:default/group-5c
+g, group:default/group-5d, role:default/group-5d
+g, group:default/group-5e, role:default/group-5e
+g, group:default/group-5f, role:default/group-5f
+g, group:default/group-5g, role:default/group-5g
+g, group:default/group-5h, role:default/group-5h
+g, group:default/group-5i, role:default/group-5i
+g, group:default/group-5j, role:default/group-5j
+g, group:default/group-5k, role:default/group-5k
+g, group:default/group-5l, role:default/group-5l
+g, group:default/group-5m, role:default/group-5m
+
+g, group:default/group-6a, role:default/group-6a
+g, group:default/group-6b, role:default/group-6b
+g, group:default/group-6c, role:default/group-6c
+g, group:default/group-6d, role:default/group-6d
+g, group:default/group-6e, role:default/group-6e
+g, group:default/group-6f, role:default/group-6f
+g, group:default/group-6g, role:default/group-6g
+g, group:default/group-6h, role:default/group-6h
+g, group:default/group-6i, role:default/group-6i
+g, group:default/group-6j, role:default/group-6j
+g, group:default/group-6k, role:default/group-6k
+g, group:default/group-6l, role:default/group-6l
+g, group:default/group-6m, role:default/group-6m
+
+g, group:default/group-7a, role:default/group-7a
+g, group:default/group-7b, role:default/group-7b
+g, group:default/group-7c, role:default/group-7c
+g, group:default/group-7d, role:default/group-7d
+g, group:default/group-7e, role:default/group-7e
+g, group:default/group-7f, role:default/group-7f
+g, group:default/group-7g, role:default/group-7g
+g, group:default/group-7h, role:default/group-7h
+g, group:default/group-7i, role:default/group-7i
+g, group:default/group-7j, role:default/group-7j
+g, group:default/group-7k, role:default/group-7k
+g, group:default/group-7l, role:default/group-7l
+g, group:default/group-7m, role:default/group-7m
+
+g, group:default/group-8a, role:default/group-8a
+g, group:default/group-8b, role:default/group-8b
+g, group:default/group-8c, role:default/group-8c
+g, group:default/group-8d, role:default/group-8d
+g, group:default/group-8e, role:default/group-8e
+g, group:default/group-8f, role:default/group-8f
+g, group:default/group-8g, role:default/group-8g
+g, group:default/group-8h, role:default/group-8h
+g, group:default/group-8i, role:default/group-8i
+g, group:default/group-8j, role:default/group-8j
+g, group:default/group-8k, role:default/group-8k
+g, group:default/group-8l, role:default/group-8l
+g, group:default/group-8m, role:default/group-8m
+
+
+
+p, role:default/group-5a, catalog.entity.read, read, allow
+p, role:default/group-5b, test-permission, read, allow
+p, role:default/group-5c, test-permission, read, allow
+p, role:default/group-5d, test-permission, read, allow
+p, role:default/group-5e, catalog.entity.create, create, allow
+p, role:default/group-5f, test-permission, read, allow
+p, role:default/group-5g, test-permission, read, allow
+p, role:default/group-5h, test-permission, read, allow
+p, role:default/group-5i, catalog.entity.update, update, allow
+p, role:default/group-5j, test-permission, read, allow
+p, role:default/group-5k, test-permission, read, allow
+p, role:default/group-5l, test-permission, read, allow
+p, role:default/group-5m, catalog.entity.delete, delete, allow
+
+p, role:default/group-6a, catalog.entity.read, read, allow
+p, role:default/group-6b, test-permission, read, allow
+p, role:default/group-6c, test-permission, read, allow
+p, role:default/group-6d, test-permission, read, allow
+p, role:default/group-6e, catalog.entity.create, create, allow
+p, role:default/group-6f, test-permission, read, allow
+p, role:default/group-6g, test-permission, read, allow
+p, role:default/group-6h, test-permission, read, allow
+p, role:default/group-6i, catalog.entity.update, update, allow
+p, role:default/group-6j, test-permission, read, allow
+p, role:default/group-6k, test-permission, read, allow
+p, role:default/group-6l, test-permission, read, allow
+p, role:default/group-6m, catalog.entity.delete, delete, allow
+
+p, role:default/group-7a, catalog.entity.read, read, allow
+p, role:default/group-7b, test-permission, read, allow
+p, role:default/group-7c, test-permission, read, allow
+p, role:default/group-7d, test-permission, read, allow
+p, role:default/group-7e, catalog.entity.create, create, allow
+p, role:default/group-7f, test-permission, read, allow
+p, role:default/group-7g, test-permission, read, allow
+p, role:default/group-7h, test-permission, read, allow
+p, role:default/group-7i, catalog.entity.update, update, allow
+p, role:default/group-7j, test-permission, read, allow
+p, role:default/group-7k, test-permission, read, allow
+p, role:default/group-7l, test-permission, read, allow
+p, role:default/group-7m, catalog.entity.delete, delete, allow
+
+p, role:default/group-8a, catalog.entity.read, read, allow
+p, role:default/group-8b, test-permission, read, allow
+p, role:default/group-8c, test-permission, read, allow
+p, role:default/group-8d, test-permission, read, allow
+p, role:default/group-8e, catalog.entity.create, create, allow
+p, role:default/group-8f, test-permission, read, allow
+p, role:default/group-8g, test-permission, read, allow
+p, role:default/group-8h, test-permission, read, allow
+p, role:default/group-8i, catalog.entity.update, update, allow
+p, role:default/group-8j, test-permission, read, allow
+p, role:default/group-8k, test-permission, read, allow
+p, role:default/group-8l, test-permission, read, allow
+p, role:default/group-8m, catalog.entity.delete, delete, allow
+
+
+
+g, group:default/group-11a, role:default/group-11a
+g, group:default/group-11b, role:default/group-11b
+g, group:default/group-11c, role:default/group-11c
+g, group:default/group-11d, role:default/group-11d
+g, group:default/group-11e, role:default/group-11e
+g, group:default/group-11f, role:default/group-11f
+g, group:default/group-11g, role:default/group-11g
+g, group:default/group-11h, role:default/group-11h
+g, group:default/group-11i, role:default/group-11i
+g, group:default/group-11j, role:default/group-11j
+g, group:default/group-11k, role:default/group-11k
+g, group:default/group-11l, role:default/group-11l
+g, group:default/group-11m, role:default/group-11m
+
+g, group:default/group-12a, role:default/group-12a
+g, group:default/group-12b, role:default/group-12b
+g, group:default/group-12c, role:default/group-12c
+g, group:default/group-12d, role:default/group-12d
+g, group:default/group-12e, role:default/group-12e
+g, group:default/group-12f, role:default/group-12f
+g, group:default/group-12g, role:default/group-12g
+g, group:default/group-12h, role:default/group-12h
+g, group:default/group-12i, role:default/group-12i
+g, group:default/group-12j, role:default/group-12j
+g, group:default/group-12k, role:default/group-12k
+g, group:default/group-12l, role:default/group-12l
+g, group:default/group-12m, role:default/group-12m
+
+g, group:default/group-13a, role:default/group-13a
+g, group:default/group-13b, role:default/group-13b
+g, group:default/group-13c, role:default/group-13c
+g, group:default/group-13d, role:default/group-13d
+g, group:default/group-13e, role:default/group-13e
+g, group:default/group-13f, role:default/group-13f
+g, group:default/group-13g, role:default/group-13g
+g, group:default/group-13h, role:default/group-13h
+g, group:default/group-13i, role:default/group-13i
+g, group:default/group-13j, role:default/group-13j
+g, group:default/group-13k, role:default/group-13k
+g, group:default/group-13l, role:default/group-13l
+g, group:default/group-13m, role:default/group-13m
+
+g, group:default/group-14a, role:default/group-14a
+g, group:default/group-14b, role:default/group-14b
+g, group:default/group-14c, role:default/group-14c
+g, group:default/group-14d, role:default/group-14d
+g, group:default/group-14e, role:default/group-14e
+g, group:default/group-14f, role:default/group-14f
+g, group:default/group-14g, role:default/group-14g
+g, group:default/group-14h, role:default/group-14h
+g, group:default/group-14i, role:default/group-14i
+g, group:default/group-14j, role:default/group-14j
+g, group:default/group-14k, role:default/group-14k
+g, group:default/group-14l, role:default/group-14l
+g, group:default/group-14m, role:default/group-14m
+
+
+
+p, role:default/group-11a, catalog.entity.read, read, allow
+p, role:default/group-11b, test-permission, read, allow
+p, role:default/group-11c, test-permission, read, allow
+p, role:default/group-11d, test-permission, read, allow
+p, role:default/group-11e, catalog.entity.create, create, allow
+p, role:default/group-11f, test-permission, read, allow
+p, role:default/group-11g, test-permission, read, allow
+p, role:default/group-11h, test-permission, read, allow
+p, role:default/group-11i, catalog.entity.update, update, allow
+p, role:default/group-11j, test-permission, read, allow
+p, role:default/group-11k, test-permission, read, allow
+p, role:default/group-11l, test-permission, read, allow
+p, role:default/group-11m, catalog.entity.delete, delete, allow
+
+p, role:default/group-12a, catalog.entity.read, read, allow
+p, role:default/group-12b, test-permission, read, allow
+p, role:default/group-12c, test-permission, read, allow
+p, role:default/group-12d, test-permission, read, allow
+p, role:default/group-12e, catalog.entity.create, create, allow
+p, role:default/group-12f, test-permission, read, allow
+p, role:default/group-12g, test-permission, read, allow
+p, role:default/group-12h, test-permission, read, allow
+p, role:default/group-12i, catalog.entity.update, update, allow
+p, role:default/group-12j, test-permission, read, allow
+p, role:default/group-12k, test-permission, read, allow
+p, role:default/group-12l, test-permission, read, allow
+p, role:default/group-12m, catalog.entity.delete, delete, allow
+
+p, role:default/group-13a, catalog.entity.read, read, allow
+p, role:default/group-13b, test-permission, read, allow
+p, role:default/group-13c, test-permission, read, allow
+p, role:default/group-13d, test-permission, read, allow
+p, role:default/group-13e, catalog.entity.create, create, allow
+p, role:default/group-13f, test-permission, read, allow
+p, role:default/group-13g, test-permission, read, allow
+p, role:default/group-13h, test-permission, read, allow
+p, role:default/group-13i, catalog.entity.update, update, allow
+p, role:default/group-13j, test-permission, read, allow
+p, role:default/group-13k, test-permission, read, allow
+p, role:default/group-13l, test-permission, read, allow
+p, role:default/group-13m, catalog.entity.delete, delete, allow
+
+p, role:default/group-14a, catalog.entity.read, read, allow
+p, role:default/group-14b, test-permission, read, allow
+p, role:default/group-14c, test-permission, read, allow
+p, role:default/group-14d, test-permission, read, allow
+p, role:default/group-14e, catalog.entity.create, create, allow
+p, role:default/group-14f, test-permission, read, allow
+p, role:default/group-14g, test-permission, read, allow
+p, role:default/group-14h, test-permission, read, allow
+p, role:default/group-14i, catalog.entity.update, update, allow
+p, role:default/group-14j, test-permission, read, allow
+p, role:default/group-14k, test-permission, read, allow
+p, role:default/group-14l, test-permission, read, allow
+p, role:default/group-14m, catalog.entity.delete, delete, allow
+
+
+g, group:default/group-15a, role:default/group-15a
+g, group:default/group-15b, role:default/group-15b
+g, group:default/group-15c, role:default/group-15c
+g, group:default/group-15d, role:default/group-15d
+g, group:default/group-15e, role:default/group-15e
+g, group:default/group-15f, role:default/group-15f
+g, group:default/group-15g, role:default/group-15g
+g, group:default/group-15h, role:default/group-15h
+g, group:default/group-15i, role:default/group-15i
+g, group:default/group-15j, role:default/group-15j
+g, group:default/group-15k, role:default/group-15k
+g, group:default/group-15l, role:default/group-15l
+g, group:default/group-15m, role:default/group-15m
+
+g, group:default/group-16a, role:default/group-16a
+g, group:default/group-16b, role:default/group-16b
+g, group:default/group-16c, role:default/group-16c
+g, group:default/group-16d, role:default/group-16d
+g, group:default/group-16e, role:default/group-16e
+g, group:default/group-16f, role:default/group-16f
+g, group:default/group-16g, role:default/group-16g
+g, group:default/group-16h, role:default/group-16h
+g, group:default/group-16i, role:default/group-16i
+g, group:default/group-16j, role:default/group-16j
+g, group:default/group-16k, role:default/group-16k
+g, group:default/group-16l, role:default/group-16l
+g, group:default/group-16m, role:default/group-16m
+
+g, group:default/group-17a, role:default/group-17a
+g, group:default/group-17b, role:default/group-17b
+g, group:default/group-17c, role:default/group-17c
+g, group:default/group-17d, role:default/group-17d
+g, group:default/group-17e, role:default/group-17e
+g, group:default/group-17f, role:default/group-17f
+g, group:default/group-17g, role:default/group-17g
+g, group:default/group-17h, role:default/group-17h
+g, group:default/group-17i, role:default/group-17i
+g, group:default/group-17j, role:default/group-17j
+g, group:default/group-17k, role:default/group-17k
+g, group:default/group-17l, role:default/group-17l
+g, group:default/group-17m, role:default/group-17m
+
+g, group:default/group-18a, role:default/group-18a
+g, group:default/group-18b, role:default/group-18b
+g, group:default/group-18c, role:default/group-18c
+g, group:default/group-18d, role:default/group-18d
+g, group:default/group-18e, role:default/group-18e
+g, group:default/group-18f, role:default/group-18f
+g, group:default/group-18g, role:default/group-18g
+g, group:default/group-18h, role:default/group-18h
+g, group:default/group-18i, role:default/group-18i
+g, group:default/group-18j, role:default/group-18j
+g, group:default/group-18k, role:default/group-18k
+g, group:default/group-18l, role:default/group-18l
+g, group:default/group-18m, role:default/group-18m
+
+
+
+p, role:default/group-15a, catalog.entity.read, read, allow
+p, role:default/group-15b, test-permission, read, allow
+p, role:default/group-15c, test-permission, read, allow
+p, role:default/group-15d, test-permission, read, allow
+p, role:default/group-15e, catalog.entity.create, create, allow
+p, role:default/group-15f, test-permission, read, allow
+p, role:default/group-15g, test-permission, read, allow
+p, role:default/group-15h, test-permission, read, allow
+p, role:default/group-15i, catalog.entity.update, update, allow
+p, role:default/group-15j, test-permission, read, allow
+p, role:default/group-15k, test-permission, read, allow
+p, role:default/group-15l, test-permission, read, allow
+p, role:default/group-15m, catalog.entity.delete, delete, allow
+
+p, role:default/group-16a, catalog.entity.read, read, allow
+p, role:default/group-16b, test-permission, read, allow
+p, role:default/group-16c, test-permission, read, allow
+p, role:default/group-16d, test-permission, read, allow
+p, role:default/group-16e, catalog.entity.create, create, allow
+p, role:default/group-16f, test-permission, read, allow
+p, role:default/group-16g, test-permission, read, allow
+p, role:default/group-16h, test-permission, read, allow
+p, role:default/group-16i, catalog.entity.update, update, allow
+p, role:default/group-16j, test-permission, read, allow
+p, role:default/group-16k, test-permission, read, allow
+p, role:default/group-16l, test-permission, read, allow
+p, role:default/group-16m, catalog.entity.delete, delete, allow
+
+p, role:default/group-17a, catalog.entity.read, read, allow
+p, role:default/group-17b, test-permission, read, allow
+p, role:default/group-17c, test-permission, read, allow
+p, role:default/group-17d, test-permission, read, allow
+p, role:default/group-17e, catalog.entity.create, create, allow
+p, role:default/group-17f, test-permission, read, allow
+p, role:default/group-17g, test-permission, read, allow
+p, role:default/group-17h, test-permission, read, allow
+p, role:default/group-17i, catalog.entity.update, update, allow
+p, role:default/group-17j, test-permission, read, allow
+p, role:default/group-17k, test-permission, read, allow
+p, role:default/group-17l, test-permission, read, allow
+p, role:default/group-17m, catalog.entity.delete, delete, allow
+
+p, role:default/group-18a, catalog.entity.read, read, allow
+p, role:default/group-18b, test-permission, read, allow
+p, role:default/group-18c, test-permission, read, allow
+p, role:default/group-18d, test-permission, read, allow
+p, role:default/group-18e, catalog.entity.create, create, allow
+p, role:default/group-18f, test-permission, read, allow
+p, role:default/group-18g, test-permission, read, allow
+p, role:default/group-18h, test-permission, read, allow
+p, role:default/group-18i, catalog.entity.update, update, allow
+p, role:default/group-18j, test-permission, read, allow
+p, role:default/group-18k, test-permission, read, allow
+p, role:default/group-18l, test-permission, read, allow
+p, role:default/group-18m, catalog.entity.delete, delete, allow

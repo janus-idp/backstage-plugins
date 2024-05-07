@@ -55,8 +55,11 @@ export const useRoles = (
 
   const catalogEntityReadPermissionResult = usePermission({
     permission: catalogEntityReadPermission,
-    resourceRef: catalogEntityReadPermission.resourceType,
+    // resourceRef: undefined,
+    // resourceRef: catalogEntityReadPermission.resourceType,
+    resourceRef: 'group:default/team-a',
   });
+  // console.log(`${catalogEntityReadPermissionResult.allowed}`);
 
   const createRoleLoading =
     policyEntityCreatePermissionResult.loading ||

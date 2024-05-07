@@ -19,6 +19,9 @@ import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
 
 import { ScalprumProvider } from '@scalprum/react-core';
 
+import { OcmPage } from '@janus-idp/backstage-plugin-ocm';
+import { RbacPage } from '@janus-idp/backstage-plugin-rbac';
+
 import { apis } from './apis';
 import { entityPage } from './components/catalog/EntityPage';
 import { Root } from './components/Root';
@@ -36,6 +39,8 @@ export const AppBase = () => {
       <AppRouter>
         <Root>
           <FlatRoutes>
+            <Route path="/rbac" element={<RbacPage />} />;
+            <Route path="/ocm" element={<OcmPage />} />
             <Route path="/" element={<Navigate to="catalog" />} />
             <Route path="/catalog" element={<CatalogIndexPage />} />
             <Route

@@ -22,7 +22,10 @@ import LibraryBooks from '@material-ui/icons/LibraryBooks';
 import MenuIcon from '@material-ui/icons/Menu';
 import MapIcon from '@material-ui/icons/MyLocation';
 import SearchIcon from '@material-ui/icons/Search';
+import StorageIcon from '@material-ui/icons/Storage';
 import { ScalprumComponent } from '@scalprum/react-core';
+
+import { Administration } from '@janus-idp/backstage-plugin-rbac';
 
 import LogoFull from './LogoFull';
 import LogoIcon from './LogoIcon';
@@ -59,6 +62,7 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
   <SidebarPage>
     <Sidebar>
       <SidebarLogo />
+      <Administration />
       <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
         <SidebarSearchModal />
       </SidebarGroup>
@@ -74,6 +78,7 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
         <SidebarScrollWrapper>
           <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
         </SidebarScrollWrapper>
+        <SidebarItem icon={StorageIcon} to="ocm" text="Clusters" />
       </SidebarGroup>
       <SidebarDivider />
       <SidebarSpace />
