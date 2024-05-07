@@ -30030,7 +30030,7 @@ react-router-dom@6.14.1:
     "@remix-run/router" "1.7.1"
     react-router "6.14.1"
 
-react-router-dom@^6.17.0:
+react-router-dom@^6.23.0:
   version "6.23.0"
   resolved "https://registry.yarnpkg.com/react-router-dom/-/react-router-dom-6.23.0.tgz#8b80ad92ad28f4dc38972e92d84b4c208150545a"
   integrity sha512-Q9YaSYvubwgbal2c9DJKfx6hTNoBp3iJDsl+Duva/DwxoJH+OTXkxGpql4iUK2sla/8z4RpjAm6EWx1qUDuopQ==
