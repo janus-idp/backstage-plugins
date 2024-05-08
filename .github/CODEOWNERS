@@ -20,17 +20,26 @@ yarn.lock                    @janus-idp/maintainers-plugins
 *.md                         @janus-idp/maintainers-docs
 
 # Plugin specific owners:
-/plugins/jfrog-artifactory/  @janus-idp/maintainers-plugins @fmenesesg
-/plugins/3scale-backend/     @janus-idp/maintainers-plugins @fmenesesg
-/plugins/quay/               @janus-idp/maintainers-plugins @fmenesesg
-/plugins/topology/           @janus-idp/maintainers-plugins @debsmita1 @divyanshiGupta
-/plugins/tekton/             @janus-idp/maintainers-plugins @debsmita1 @divyanshiGupta
-/plugins/rbac-backend/       @janus-idp/maintainers-plugins @gorkem @AndrienkoAleksandr @PatAKnight
-/plugins/rbac-common/        @janus-idp/maintainers-plugins @gorkem @AndrienkoAleksandr @PatAKnight
-/plugins/notifications       @janus-idp/maintainers-plugins @mareklibra
-/plugins/notifications-backend  @janus-idp/maintainers-plugins @mareklibra @ydayagi
-/plugins/orchestrator          @janus-idp/maintainers-plugins @caponetto @jkilzi
-/plugins/orchestrator-backend  @janus-idp/maintainers-plugins @caponetto @jkilzi
-/plugins/orchestrator-common   @janus-idp/maintainers-plugins @caponetto @jkilzi
-/plugins/feedback           @janus-idp/maintainers-plugins @yashoswalyo @riginoommen @deshmukhmayur 
-/plugins/feedback-backend   @janus-idp/maintainers-plugins @yashoswalyo @riginoommen @deshmukhmayur
+/plugins/jfrog-artifactory/         @janus-idp/maintainers-plugins @fmenesesg
+/plugins/3scale-backend/            @janus-idp/maintainers-plugins @fmenesesg
+/plugins/quay/                      @janus-idp/maintainers-plugins @fmenesesg
+/plugins/topology/                  @janus-idp/maintainers-plugins @debsmita1 @divyanshiGupta
+/plugins/tekton/                    @janus-idp/maintainers-plugins @debsmita1 @divyanshiGupta
+/plugins/rbac-backend/              @janus-idp/maintainers-plugins @AndrienkoAleksandr @PatAKnight
+/plugins/rbac-common/               @janus-idp/maintainers-plugins @AndrienkoAleksandr @PatAKnight
+/plugins/notifications              @janus-idp/maintainers-plugins @janus-idp/notifications
+/plugins/notifications-backend      @janus-idp/maintainers-plugins @janus-idp/notifications
+/plugins/orchestrator               @janus-idp/maintainers-plugins @janus-idp/orchestrator-codeowners
+/plugins/orchestrator-backend       @janus-idp/maintainers-plugins @janus-idp/orchestrator-codeowners
+/plugins/orchestrator-common        @janus-idp/maintainers-plugins @janus-idp/orchestrator-codeowners
+/plugins/feedback                   @janus-idp/maintainers-plugins  @janus-idp/devex-uxe
+/plugins/feedback-backend           @janus-idp/maintainers-plugins @janus-idp/devex-uxe
+/plugins/matomo                     @janus-idp/maintainers-plugins @janus-idp/devex-uxe
+/plugins/matomo-backend             @janus-idp/maintainers-plugins @janus-idp/devex-uxe
+/plugins/analytics-provider-segment @janus-idp/maintainers-plugins @janus-idp/devex-uxe
+/plugins/kiali                      @janus-idp/maintainers-plugins @janus-idp/kiali
+/plugins/kiali-backend              @janus-idp/maintainers-plugins @janus-idp/kiali
+/plugins/kiali-common               @janus-idp/maintainers-plugins @janus-idp/kiali
+/plugins/quay                       @janus-idp/rhtap
+/plugins/tekton                     @janus-idp/rhtap
+/plugins/argocd                     @janus-idp/rhtap
