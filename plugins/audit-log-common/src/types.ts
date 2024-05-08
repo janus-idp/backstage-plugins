@@ -1,37 +1,79 @@
+import { AuthService, HttpAuthService } from '@backstage/backend-plugin-api';
+
+import { Request } from 'express';
+
 export type ActorDetails = {
   actorId: string;
-  ip: string;
-  hostname: string;
-  userAgent: string;
+  ip?: string;
+  hostname?: string;
+  userAgent?: string;
 };
 
-// TODO: Get proper type for body
 export type AuditRequest = {
-  body: unknown;
-  uri: string;
+  body: any;
+  url: string;
   method: string;
+  params?: any;
+  query?: any;
 };
+
 export type AuditResponse = {
-  body: unknown;
   status: number;
+  body?: any;
 };
-export type auditLog = {
+
+export type AuditLogStatus =
+  | {
+      status: 'failed';
+      error: {
+        name: string;
+        message: string;
+        stack?: string;
+      };
+    }
+  | { status: 'succeeded' };
+
+/**
+ * Common fields of an audit log. Note: timestamp and pluginId are automatically added at log creation.
+ *
+ * @public
+ */
+export type AuditLogDetails = {
   actor: ActorDetails;
   eventName: string;
   stage: string;
   request?: AuditRequest;
   response?: AuditResponse;
-  meta: { [key: string]: any };
+  meta?: Record<PropertyKey, unknown>;
   isAuditLog: true;
-} & auditStatus;
+} & AuditLogStatus;
 
-export type auditStatus =
+/**
+ * Used to obtain the user entityRef
+ *
+ * @public
+ */
+export type AuditAuthServices = {
+  auth: AuthService;
+  httpAuth: HttpAuthService;
+};
+
+export type AuditActorOptions =
   | {
-      status: 'failed';
-      errors: {
-        name: string;
-        message: string;
-        stack: string;
-      };
+      actor_id: string;
+      request?: Request;
+      authServices?: AuditAuthServices;
     }
-  | { status: 'succeeded' };
+  | {
+      actor_id?: string;
+      request: Request;
+      authServices: AuditAuthServices;
+    };
+
+export type AuditLogOptions = {
+  eventName: string;
+  stage: string;
+  metadata: Record<PropertyKey, unknown>;
+  response?: AuditResponse;
+} & AuditActorOptions &
+  ({ status: 'succeeded' } | { status: 'failed'; error: Error });
