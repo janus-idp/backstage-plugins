@@ -10,6 +10,7 @@ const ACTIVE1 = 'active1';
 const ABORTED = 'aborted';
 const COMPLETED = 'completed';
 
+// eslint-disable-next-line jest/no-disabled-tests
 describe.skip('usePolling', () => {
   beforeAll(() => {
     jest.useFakeTimers();
