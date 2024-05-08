@@ -14,6 +14,7 @@ import { rbacApiRef } from '../../api/RBACBackendClient';
 import { useConditionRules } from '../../hooks/useConditionRules';
 import { PermissionsData } from '../../types';
 import { getPluginsPermissionPoliciesData } from '../../utils/create-role-utils';
+import { ConditionsData } from '../ConditionalAccess/types';
 import { initialPermissionPolicyRowValue } from './const';
 import { PermissionPoliciesFormRow } from './PermissionPoliciesFormRow';
 import { RoleFormValues } from './types';
@@ -68,6 +69,12 @@ export const PermissionPoliciesForm = ({
   const onChangePlugin = (plugin: string, index: number) => {
     setFieldValue(`permissionPoliciesRows[${index}].plugin`, plugin, true);
     setFieldValue(`permissionPoliciesRows[${index}].permission`, '', false);
+    setFieldValue(`permissionPoliciesRows[${index}].isResourced`, false, false);
+    setFieldValue(
+      `permissionPoliciesRows[${index}].conditions`,
+      undefined,
+      false,
+    );
     setFieldValue(
       `permissionPoliciesRows[${index}].policies`,
       initialPermissionPolicyRowValue.policies,
@@ -78,12 +85,23 @@ export const PermissionPoliciesForm = ({
   const onChangePermission = (
     permission: string,
     index: number,
+    isResourced: boolean,
     policies?: string[],
   ) => {
     setFieldValue(
       `permissionPoliciesRows[${index}].permission`,
       permission,
       true,
+    );
+    setFieldValue(
+      `permissionPoliciesRows[${index}].isResourced`,
+      isResourced,
+      false,
+    );
+    setFieldValue(
+      `permissionPoliciesRows[${index}].conditions`,
+      undefined,
+      false,
     );
     setFieldValue(
       `permissionPoliciesRows[${index}].policies`,
@@ -104,6 +122,10 @@ export const PermissionPoliciesForm = ({
       isChecked ? 'allow' : 'deny',
       true,
     );
+  };
+
+  const onAddConditions = (index: number, conditions?: ConditionsData) => {
+    setFieldValue(`permissionPoliciesRows[${index}].conditions`, conditions);
   };
 
   const onRowRemove = (index: number) => {
@@ -144,11 +166,16 @@ export const PermissionPoliciesForm = ({
               rowCount={permissionPoliciesRows.length}
               conditionRules={conditionRules}
               onChangePlugin={(plugin: string) => onChangePlugin(plugin, index)}
-              onChangePermission={(permission: string, policies?: string[]) =>
-                onChangePermission(permission, index, policies)
-              }
+              onChangePermission={(
+                permission: string,
+                isResourced: boolean,
+                policies?: string[],
+              ) => onChangePermission(permission, index, isResourced, policies)}
               onChangePolicy={(isChecked: boolean, policyIndex: number) =>
                 onChangePolicy(isChecked, policyIndex, index)
+              }
+              onAddConditions={(conditions?: ConditionsData) =>
+                onAddConditions(index, conditions)
               }
               onRemove={() => onRowRemove(index)}
               handleBlur={handleBlur}
@@ -156,8 +183,14 @@ export const PermissionPoliciesForm = ({
                 const pluginPermissionPolicies = permissionPoliciesRows.filter(
                   ppr => ppr.plugin === pp.plugin,
                 );
-                return !!pluginPermissionPolicies.find(
-                  ppp => ppp.permission === permission,
+                const previouslySelectedPermission =
+                  !!pluginPermissionPolicies.find(
+                    ppp => ppp.permission === permission,
+                  );
+                return (
+                  previouslySelectedPermission &&
+                  !permissionPoliciesData?.pluginsPermissions[pp.plugin]
+                    ?.policies[permission ?? '']?.isResourced
                 );
               }}
             />

@@ -19,7 +19,7 @@ import { mockPermissionPolicies } from '../src/__fixtures__/mockPermissionPolici
 import { mockPolicies } from '../src/__fixtures__/mockPolicies';
 import { RBACAPI, rbacApiRef } from '../src/api/RBACBackendClient';
 import { RbacPage, rbacPlugin } from '../src/plugin';
-import { MemberEntity } from '../src/types';
+import { MemberEntity, RoleBasedConditions } from '../src/types';
 
 class MockPermissionApi implements PermissionApi {
   readonly result;
@@ -112,6 +112,12 @@ class MockRBACApi implements RBACAPI {
 
   async getPluginsConditionRules(): Promise<any | Response> {
     return mockConditionRules;
+  }
+
+  async createConditionalPermission(
+    _conditionalPermission: RoleBasedConditions,
+  ): Promise<Response> {
+    return { status: 200 } as Response;
   }
 }
 

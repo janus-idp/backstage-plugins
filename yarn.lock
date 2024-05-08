@@ -9675,6 +9675,17 @@
     nanoid "^3.3.7"
     prop-types "^15.8.1"
 
+"@rjsf/core@^5.18.2":
+  version "5.18.3"
+  resolved "https://registry.yarnpkg.com/@rjsf/core/-/core-5.18.3.tgz#7cef908598c77ec0f0caaa301148e3e4a909292e"
+  integrity sha512-HVqqoVzcjYX1BUCqHm7iUjBoVx1UDud1KP6bJ5drtOOvHChfKEbMUt2hWJcuXIlmNPuw2lRxETtcuRbEM2wsRA==
+  dependencies:
+    lodash "^4.17.21"
+    lodash-es "^4.17.21"
+    markdown-to-jsx "^7.4.1"
+    nanoid "^3.3.7"
+    prop-types "^15.8.1"
+
 "@rjsf/material-ui-v5@npm:@rjsf/material-ui@5.7.3":
   version "5.7.3"
   resolved "https://registry.yarnpkg.com/@rjsf/material-ui/-/material-ui-5.7.3.tgz#2f8c35d83f7d53c748804031c7f78c299ce98f00"
@@ -9684,6 +9695,11 @@
   version "5.17.1"
   resolved "https://registry.yarnpkg.com/@rjsf/material-ui/-/material-ui-5.17.1.tgz#009f31d0e8b0c5801bc858847060081a074e0a1d"
   integrity sha512-WCk3wZ+oiBCEKz/uwF9VwTl0XNYrcgsQwIh+qBk6JcB2TGSguRM7KtGcLSq/91+lqFvR9PWjP2pvnTJgyfO2cA==
+
+"@rjsf/mui@^5.18.2":
+  version "5.18.3"
+  resolved "https://registry.yarnpkg.com/@rjsf/mui/-/mui-5.18.3.tgz#25569fe9951795487813357f74ac3aeceb85aad6"
+  integrity sha512-zcudsSECpm3hSTEjWsRLnrT5IMzG4Q3/muBaYtdlapzTaK0Mb3ktEPyXN+iZ6NjxZQTwH7aYn1vo/msbend4ww==
 
 "@rjsf/utils@5.17.1":
   version "5.17.1"
@@ -9707,6 +9723,17 @@
     lodash-es "^4.17.21"
     react-is "^18.2.0"
 
+"@rjsf/utils@^5.18.2":
+  version "5.18.3"
+  resolved "https://registry.yarnpkg.com/@rjsf/utils/-/utils-5.18.3.tgz#a5c00aadd679098cab88b994e188851f426392c7"
+  integrity sha512-0TzjAKAlqXSCneVnHhcL3gAr4DlIPgwzkFdNEI4A+LFjLFlECPah2o3RhEgvqJnUXFviDGF1dqhkxa/Pr59ajw==
+  dependencies:
+    json-schema-merge-allof "^0.8.1"
+    jsonpointer "^5.0.1"
+    lodash "^4.17.21"
+    lodash-es "^4.17.21"
+    react-is "^18.2.0"
+
 "@rjsf/validator-ajv8@5.17.1":
   version "5.17.1"
   resolved "https://registry.yarnpkg.com/@rjsf/validator-ajv8/-/validator-ajv8-5.17.1.tgz#9b5e4b22f3ab47316c7a19da22639812e4a91193"
@@ -9721,6 +9748,16 @@
   version "5.7.3"
   resolved "https://registry.yarnpkg.com/@rjsf/validator-ajv8/-/validator-ajv8-5.7.3.tgz#79f51382f1f57ac74f02090211afd7d0ddaecf11"
   integrity sha512-/lU9Nyx7s/wMLkTyAgv2dMCKz9et183XohmV6YjHRP+slbxHorKObAYlbLezCYc85TSXGWhgHiyn5FWEP0SEXQ==
+  dependencies:
+    ajv "^8.12.0"
+    ajv-formats "^2.1.1"
+    lodash "^4.17.21"
+    lodash-es "^4.17.21"
+
+"@rjsf/validator-ajv8@^5.18.2":
+  version "5.18.3"
+  resolved "https://registry.yarnpkg.com/@rjsf/validator-ajv8/-/validator-ajv8-5.18.3.tgz#0e162f199c92869b7078cd5196fd9e971d3bff40"
+  integrity sha512-geEVuNuYulHVUBnnkLCS7QZRvAuD1clOjuUbwNjFzSpnYHVO0+mvvi4uHTia/eSvRyDy4vdkxu320uPe4TsgeQ==
   dependencies:
     ajv "^8.12.0"
     ajv-formats "^2.1.1"
