@@ -14,9 +14,19 @@ dynamicPlugins:
         - config:
             layout:
               gridColumn: '1 / -1'
-              height: 75vh
             if:
               anyOf:
                 - hasAnnotation: backstage.io/kubernetes-namespace
           importName: EntityKialiContent
           mountPoint: entity.page.kiali/cards
+        - config:
+            layout:
+              gridColumnEnd:
+                lg: 'span 8'
+                md: 'span 12'
+                xs: 'span 24'
+            if:
+              anyOf:
+                - hasAnnotation: backstage.io/kubernetes-namespace
+          importName: EntityKialiResourcesCard
+          mountPoint: entity.page.overview/cards
