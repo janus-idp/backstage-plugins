@@ -4,7 +4,10 @@ import { StructuredMetadataTable } from '@backstage/core-components';
 
 import Typography from '@material-ui/core/Typography';
 
-import { getPermissionsNumber } from '../../utils/create-role-utils';
+import {
+  getConditionsNumber,
+  getPermissionsNumber,
+} from '../../utils/create-role-utils';
 import { getMembers } from '../../utils/rbac-utils';
 import { reviewStepMemebersTableColumns } from './AddedMembersTableColumn';
 import { ReviewStepTable } from './ReviewStepTable';
@@ -19,6 +22,8 @@ const tableMetadata = (values: RoleFormValues) => {
   const permissionPoliciesKey = `Permission policies (${getPermissionsNumber(
     values,
   )})`;
+  const conditionsCount = getConditionsNumber(values);
+  const conditionsKey = `Conditional permission policies (${conditionsCount})`;
   return {
     'Name and description of role': (
       <>
@@ -35,10 +40,22 @@ const tableMetadata = (values: RoleFormValues) => {
     ),
     [permissionPoliciesKey]: (
       <ReviewStepTable
-        rows={values.permissionPoliciesRows}
+        rows={values.permissionPoliciesRows.filter(row => !row.conditions)}
         columns={selectedPermissionPoliciesColumn()}
       />
     ),
+    ...(conditionsCount > 0
+      ? {
+          [conditionsKey]: (
+            <ReviewStepTable
+              rows={values.permissionPoliciesRows.filter(
+                row => !!row.conditions,
+              )}
+              columns={selectedPermissionPoliciesColumn()}
+            />
+          ),
+        }
+      : {}),
   };
 };
 

@@ -7,6 +7,7 @@ export const mockPermissionPolicies: PermissionPolicy[] = [
       {
         permission: 'catalog-entity',
         policy: 'read',
+        isResourced: true,
       },
       {
         permission: 'catalog.entity.create',
@@ -15,10 +16,12 @@ export const mockPermissionPolicies: PermissionPolicy[] = [
       {
         permission: 'catalog-entity',
         policy: 'delete',
+        isResourced: true,
       },
       {
         permission: 'catalog-entity',
         policy: 'update',
+        isResourced: true,
       },
       {
         permission: 'catalog.location.read',
@@ -40,14 +43,17 @@ export const mockPermissionPolicies: PermissionPolicy[] = [
       {
         permission: 'scaffolder-template',
         policy: 'read',
+        isResourced: true,
       },
       {
         permission: 'scaffolder-template',
         policy: 'read',
+        isResourced: true,
       },
       {
         permission: 'scaffolder-action',
         policy: 'use',
+        isResourced: true,
       },
     ],
   },

@@ -64,6 +64,9 @@ jobs:
           cd packages/backend
           readarray folders < <(echo $PLUGINS | sed 's/[][]//g' | sed 's/,/ /g')
 
+          # enable permission support and RBAC plugins
+          printf "\npermission:\n  enabled: true\n" >> ${root}/app-config.yaml
+
           # Start backend
           echo "Starting backend"
           logfile=$(mktemp)

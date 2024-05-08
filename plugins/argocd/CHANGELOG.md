@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-argocd [1.0.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-argocd@1.0.1...@janus-idp/backstage-plugin-argocd@1.0.2) (2024-05-08)
+
+
+### Bug Fixes
+
+* **argocd:** fix sonarcloud lint warnings in argocd plugin ([#1620](https://github.com/janus-idp/backstage-plugins/issues/1620)) ([66d3763](https://github.com/janus-idp/backstage-plugins/commit/66d3763324d83875fa30d568cd3fd1d69c72a7e7))
+
 ## @janus-idp/backstage-plugin-argocd [1.0.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-argocd@1.0.0...@janus-idp/backstage-plugin-argocd@1.0.1) (2024-05-07)
 
 

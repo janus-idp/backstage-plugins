@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-kiali [1.17.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.17.0...@janus-idp/backstage-plugin-kiali@1.17.1) (2024-05-08)
+
+
+### Documentation
+
+* **kiali:** update rhdh docs ([#1621](https://github.com/janus-idp/backstage-plugins/issues/1621)) ([7087cba](https://github.com/janus-idp/backstage-plugins/commit/7087cbad8929708f065e0027871a337946f09881))
+
 ## @janus-idp/backstage-plugin-kiali [1.17.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.16.10...@janus-idp/backstage-plugin-kiali@1.17.0) (2024-05-07)
 
 

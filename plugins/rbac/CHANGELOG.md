@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac [1.18.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.17.11...@janus-idp/backstage-plugin-rbac@1.18.0) (2024-05-08)
+
+
+### Features
+
+* **rbac:** support for adding conditional permissions ([#1588](https://github.com/janus-idp/backstage-plugins/issues/1588)) ([2042244](https://github.com/janus-idp/backstage-plugins/commit/2042244dc31a557d62bfcf6f7eb556c12154430e))
+
 ## @janus-idp/backstage-plugin-rbac [1.17.11](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.17.10...@janus-idp/backstage-plugin-rbac@1.17.11) (2024-05-02)
 
 

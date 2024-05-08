@@ -2,7 +2,11 @@ import React from 'react';
 import { useAsync } from 'react-use';
 
 import { SidebarItem } from '@backstage/core-components';
-import { IconComponent, useApi } from '@backstage/core-plugin-api';
+import {
+  configApiRef,
+  IconComponent,
+  useApi,
+} from '@backstage/core-plugin-api';
 
 import AdminPanelSettingsOutlinedIcon from '@mui/icons-material/AdminPanelSettingsOutlined';
 
@@ -15,7 +19,10 @@ export const Administration = () => {
     [],
   );
 
-  if (!isUserLoading) {
+  const config = useApi(configApiRef);
+  const isRBACPluginEnabled = config.getOptionalBoolean('permission.enabled');
+
+  if (!isUserLoading && isRBACPluginEnabled) {
     return result?.status === 'Authorized' ? (
       <SidebarItem
         text="Administration"

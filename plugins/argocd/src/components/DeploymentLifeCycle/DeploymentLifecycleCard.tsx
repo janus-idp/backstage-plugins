@@ -17,12 +17,12 @@ import {
   Typography,
 } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
-import { Flex, FlexItem } from '@patternfly/react-core';
 import GitLabIcon from '@patternfly/react-icons/dist/esm/icons/gitlab-icon';
 import moment from 'moment';
 
 import { Application, Revision } from '../../types';
 import { getCommitUrl } from '../../utils/utils';
+import AppNamespace from '../AppStatus/AppNamespace';
 import StatusHeading from '../AppStatus/StatusHeading';
 import DeploymentLifecycleHeader from './DeploymentLifecycleHeader';
 
@@ -115,25 +115,7 @@ const DeploymentLifecycleCard: React.FC<DeploymentLifecycleCardProps> = ({
               Namespace
             </Typography>
 
-            <Flex
-              gap={{ default: 'gapNone' }}
-              alignItems={{ default: 'alignItemsFlexStart' }}
-            >
-              <FlexItem>
-                <Chip
-                  size="small"
-                  variant="default"
-                  color="primary"
-                  label="NS"
-                  style={{ background: 'green' }}
-                />
-              </FlexItem>
-              <FlexItem>
-                <Typography variant="body2" color="textSecondary">
-                  {app.spec.destination.namespace}{' '}
-                </Typography>
-              </FlexItem>
-            </Flex>
+            <AppNamespace app={app} />
           </Grid>
           <Grid item xs={12}>
             <Typography color="textPrimary">Commit</Typography>

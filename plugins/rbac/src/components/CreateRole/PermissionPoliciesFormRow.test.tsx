@@ -4,33 +4,45 @@ import { fireEvent, render, screen, within } from '@testing-library/react';
 
 import '@testing-library/jest-dom';
 
+import { mockTransformedConditionRules } from '../../__fixtures__/mockTransformedConditionRules';
 import { PermissionPoliciesFormRow } from './PermissionPoliciesFormRow';
 
 describe('PermissionPoliciesFormRow', () => {
   const mockProps = {
-    permissionPoliciesRowData: { plugin: '', permission: '', policies: [] },
+    permissionPoliciesRowData: {
+      plugin: '',
+      permission: '',
+      policies: [],
+      isResourced: false,
+    },
     permissionPoliciesData: {
       plugins: ['', 'Plugin1', 'Plugin2'],
       pluginsPermissions: {
-        Plugin1: { permissions: ['Permission1', 'Permission2'], policies: {} },
-        Plugin2: { permissions: ['Permission1', 'Permission2'], policies: {} },
+        Plugin1: {
+          permissions: ['Permission1', 'Permission2'],
+          policies: {},
+        },
+        Plugin2: {
+          permissions: ['Permission1', 'Permission2'],
+          policies: {},
+        },
       },
     },
     permissionPoliciesRowError: { plugin: '', permission: '' },
     rowCount: 2,
     rowName: 'testRow',
-    conditionRules: { data: [] },
+    conditionRules: { data: mockTransformedConditionRules },
     onRemove: jest.fn(),
     onChangePlugin: jest.fn(),
     onChangePermission: jest.fn(),
     onChangePolicy: jest.fn(),
     handleBlur: jest.fn(),
     getPermissionDisabled: jest.fn().mockReturnValue(false),
+    onAddConditions: jest.fn(),
   };
 
   it('renders without crashing', () => {
     render(<PermissionPoliciesFormRow {...mockProps} />);
-    screen.logTestingPlaygroundURL();
     expect(
       screen.getByRole('textbox', {
         name: /plugin/i,
@@ -38,7 +50,7 @@ describe('PermissionPoliciesFormRow', () => {
     ).toBeInTheDocument();
     expect(
       screen.getByRole('textbox', {
-        name: /permission/i,
+        name: /resource type/i,
       }),
     ).toBeInTheDocument();
   });
@@ -69,13 +81,14 @@ describe('PermissionPoliciesFormRow', () => {
     expect(mockProps.onChangePlugin).toHaveBeenCalledWith('Plugin1');
   });
 
-  // eslint-disable-next-line jest/no-disabled-tests
-  it.skip('opens sidebar on clicking conditional access button', async () => {
+  it('opens sidebar on clicking conditional access button', async () => {
     const newMockProps = {
       ...mockProps,
       permissionPoliciesRowData: {
-        ...mockProps.permissionPoliciesRowData,
-        plugin: 'Plugin2',
+        plugin: 'catalog',
+        permission: 'catalog-entity',
+        isResourced: true,
+        policies: [],
       },
     };
 
@@ -84,13 +97,7 @@ describe('PermissionPoliciesFormRow', () => {
     );
 
     expect(queryByTestId('rules-sidebar')).not.toBeInTheDocument();
-
-    fireEvent.click(
-      screen.getByRole('button', {
-        name: /conditional-access/i,
-      }),
-    );
-
+    fireEvent.click(screen.getByLabelText('configure-access'));
     expect(queryByTestId('rules-sidebar')).toBeInTheDocument();
   });
 });

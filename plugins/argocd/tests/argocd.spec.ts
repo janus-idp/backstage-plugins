@@ -8,14 +8,14 @@ import {
 import { verifyAppCard, verifyAppSidebar } from './utils';
 
 test.describe('ArgoCD plugin', () => {
-  let page: Page;
+  let argocdPage: Page;
 
   test.beforeAll(async ({ browser }) => {
     const context = await browser.newContext();
-    page = await context.newPage();
-    await page.goto('/');
+    argocdPage = await context.newPage();
+    await argocdPage.goto('/');
     await expect(
-      page.getByRole('heading', { name: 'Deployment lifecycle' }),
+      argocdPage.getByRole('heading', { name: 'Deployment lifecycle' }),
     ).toBeVisible({ timeout: 20000 });
   });
 
@@ -29,15 +29,15 @@ test.describe('ArgoCD plugin', () => {
     for (const [index, app] of apps.entries()) {
       /* eslint-disable-next-line  no-loop-func */
       test(`Verify ${app.metadata.name} card`, async () => {
-        const card = page.getByTestId(`${app.metadata.name}-card`);
+        const card = argocdPage.getByTestId(`${app.metadata.name}-card`);
         await expect(card).toBeVisible();
         await verifyAppCard(app, card, index);
       });
 
       /* eslint-disable-next-line  no-loop-func */
       test(`Verify ${app.metadata.name} side bar`, async () => {
-        await page.getByTestId(`${app.metadata.name}-card`).click();
-        const sideBar = page.locator(`.MuiDrawer-paper`);
+        await argocdPage.getByTestId(`${app.metadata.name}-card`).click();
+        const sideBar = argocdPage.locator(`.MuiDrawer-paper`);
         await expect(sideBar).toBeVisible();
         await verifyAppSidebar(app, sideBar, index);
         await sideBar.getByRole('button', { name: 'Close the drawer' }).click();
@@ -59,14 +59,16 @@ test.describe('ArgoCD plugin', () => {
     ];
 
     test.beforeAll(async () => {
-      await page.getByRole('link', { name: 'Summary' }).click();
-      await expect(page.getByRole('heading')).toHaveText('Deployment summary');
+      await argocdPage.getByRole('link', { name: 'Summary' }).click();
+      await expect(argocdPage.getByRole('heading')).toHaveText(
+        'Deployment summary',
+      );
     });
 
     test('Verify column names', async () => {
       for (const col of columns) {
         await expect(
-          page.getByRole('columnheader', { name: col }),
+          argocdPage.getByRole('columnheader', { name: col }),
         ).toBeVisible();
       }
     });
@@ -76,7 +78,9 @@ test.describe('ArgoCD plugin', () => {
 
       /* eslint-disable-next-line  no-loop-func */
       test(`Verify ${appName} row`, async () => {
-        const row = page.locator('.MuiTableRow-root', { hasText: appName });
+        const row = argocdPage.locator('.MuiTableRow-root', {
+          hasText: appName,
+        });
         const revision = app.status.history
           ?.slice(-1)[0]
           .revision.substring(0, 7);

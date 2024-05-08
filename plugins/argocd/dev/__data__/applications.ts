@@ -1,242 +1,205 @@
 import { Application } from '../../src/types';
 
-export const mockApplication: Application = {
-  metadata: {
-    creationTimestamp: new Date('2024-04-22T05:39:23Z'),
-    labels: {
-      'rht-gitops.com/janus-argocd': 'quarkus-app-bootstrap',
-    },
-    instance: { name: 'main' },
-    name: 'quarkus-app-dev',
+const commonMetadata = {
+  creationTimestamp: new Date('2024-04-22T05:39:23Z'),
+  labels: {
+    'rht-gitops.com/janus-argocd': 'quarkus-app-bootstrap',
   },
-  spec: {
-    destination: {
-      namespace: 'quarkus-app-dev',
-      server: 'https://kubernetes.default.svc',
-    },
-    project: 'janus',
-    source: {
-      helm: {
-        parameters: [
-          {
-            name: 'namespace.name',
-            value: 'quarkus-app-dev',
-          },
-          {
-            name: 'environment',
-            value: 'dev',
-          },
-          {
-            name: 'image.tag',
-            value: 'latest',
-          },
-        ],
-      },
-      path: './helm/app',
-      repoURL:
-        'https://gitlab-gitlab.apps.cluster.test.com/development/quarkus-app-gitops.git',
-      targetRevision: 'HEAD',
-    },
+  instance: { name: 'main' },
+  name: 'quarkus-app-dev',
+};
+
+const commonSpec = {
+  project: 'janus',
+  destination: {
+    namespace: 'quarkus-app-dev',
+    server: 'https://kubernetes.default.svc',
   },
-  status: {
-    history: [
-      {
-        revision: '90f9758b7033a4bbb7c33a35ee474d61091644bc',
-        deployedAt: '2024-04-22T05:39:24Z',
-        id: 0,
-        source: {
-          repoURL:
-            'https://gitlab-gitlab.apps.cluster.test.com/development/quarkus-app-gitops.git',
-          path: './helm/app',
-          targetRevision: 'HEAD',
-          helm: {
-            parameters: [
-              {
-                name: 'namespace.name',
-                value: 'quarkus-app-dev',
-              },
-              {
-                name: 'environment',
-                value: 'dev',
-              },
-              {
-                name: 'image.tag',
-                value: 'latest',
-              },
-            ],
-          },
+  source: {
+    helm: {
+      parameters: [
+        {
+          name: 'namespace.name',
+          value: 'quarkus-app-dev',
         },
-        deployStartedAt: '2024-04-22T05:39:23Z',
-      },
-      {
-        revision: '90f9758b7033a4bbb7c33a35ee474d61091644bc',
-        deployedAt: '2024-04-22T16:57:40Z',
-        id: 1,
-        source: {
-          repoURL:
-            'https://gitlab-gitlab.apps.cluster.test.com/development/quarkus-app-gitops.git',
-          path: './helm/app',
-          targetRevision: 'HEAD',
-          helm: {
-            parameters: [
-              {
-                name: 'namespace.name',
-                value: 'quarkus-app-dev',
-              },
-              {
-                name: 'environment',
-                value: 'dev',
-              },
-              {
-                name: 'image.tag',
-                value: 'latest',
-              },
-            ],
-          },
+        {
+          name: 'environment',
+          value: 'dev',
         },
-        deployStartedAt: '2024-04-22T16:57:40Z',
-      },
-    ],
-    health: {
-      status: 'Healthy',
-    },
-    operationState: {
-      operation: {
-        sync: {
-          prune: true,
-          revision: '90f9758b7033a4bbb7c33a35ee474d61091644bc',
-          syncOptions: [
-            'RespectIgnoreDifferences=true',
-            'ApplyOutOfSyncOnly=true',
-          ],
+        {
+          name: 'image.tag',
+          value: 'latest',
         },
-      },
-      phase: 'Succeeded',
+      ],
     },
-    summary: {
-      images: ['quay-hw6fw.apps.cluster.test.com/quayadmin/quarkus-app:latest'],
-    },
-    sync: {
-      status: 'Synced',
-    },
+    path: './helm/app',
+    repoURL:
+      'https://gitlab-gitlab.apps.cluster.test.com/development/quarkus-app-gitops.git',
+    targetRevision: 'HEAD',
   },
 };
 
+const commonStatus = {
+  history: [
+    {
+      revision: '90f9758b7033a4bbb7c33a35ee474d61091644bc',
+      deployedAt: '2024-04-22T05:39:24Z',
+      id: 0,
+      source: {
+        repoURL:
+          'https://gitlab-gitlab.apps.cluster.test.com/development/quarkus-app-gitops.git',
+        path: './helm/app',
+        targetRevision: 'HEAD',
+        helm: {
+          parameters: [
+            {
+              name: 'namespace.name',
+              value: 'quarkus-app-dev',
+            },
+            {
+              name: 'environment',
+              value: 'dev',
+            },
+            {
+              name: 'image.tag',
+              value: 'latest',
+            },
+          ],
+        },
+      },
+      deployStartedAt: '2024-04-22T05:39:23Z',
+    },
+    {
+      revision: '90f9758b7033a4bbb7c33a35ee474d61091644bc',
+      deployedAt: '2024-04-22T17:57:40Z',
+      id: 1,
+      source: {
+        repoURL:
+          'https://gitlab-gitlab.apps.cluster.test.com/development/quarkus-app-gitops.git',
+        path: './helm/app',
+        targetRevision: 'HEAD',
+        helm: {
+          parameters: [
+            {
+              name: 'namespace.name',
+              value: 'quarkus-app-dev',
+            },
+            {
+              name: 'environment',
+              value: 'dev',
+            },
+            {
+              name: 'image.tag',
+              value: 'latest',
+            },
+          ],
+        },
+      },
+      deployStartedAt: '2024-04-22T17:57:40Z',
+    },
+  ],
+  health: {
+    status: 'Healthy',
+  },
+  operationState: {
+    operation: {
+      sync: {
+        prune: true,
+        revision: '90f9758b7033a4bbb7c33a35ee474d61091644bc',
+        syncOptions: [
+          'RespectIgnoreDifferences=true',
+          'ApplyOutOfSyncOnly=true',
+        ],
+      },
+    },
+    phase: 'Succeeded',
+  },
+  summary: {
+    images: ['quay-hw6fw.apps.cluster.test.com/quayadmin/quarkus-app:latest'],
+  },
+  sync: {
+    status: 'Synced',
+  },
+};
+
+export const mockApplication: Application = {
+  metadata: {
+    ...commonMetadata,
+    creationTimestamp: new Date('2024-04-22T05:39:23Z'),
+    name: 'quarkus-app-dev',
+  },
+  spec: commonSpec,
+  status: commonStatus,
+};
+
+const preProdHelmParameters = {
+  parameters: [
+    {
+      name: 'namespace.name',
+      value: 'quarkus-app-preprod',
+    },
+    {
+      name: 'environment',
+      value: 'preprod',
+    },
+    {
+      name: 'image.tag',
+      value: 'latest',
+    },
+  ],
+};
 export const preProdApplication = {
   metadata: {
+    ...commonMetadata,
     creationTimestamp: new Date('2024-04-22T05:39:23Z'),
-    labels: {
-      'rht-gitops.com/janus-argocd': 'quarkus-app-bootstrap',
-    },
-    instance: { name: 'main' },
     name: 'quarkus-app-preprod',
   },
   spec: {
+    ...commonSpec,
     destination: {
+      ...commonSpec.destination,
       namespace: 'quarkus-app-preprod',
-      server: 'https://kubernetes.default.svc',
     },
-    project: 'janus',
     source: {
+      ...commonSpec.source,
       helm: {
-        parameters: [
-          {
-            name: 'namespace.name',
-            value: 'quarkus-app-pre-prod',
-          },
-          {
-            name: 'environment',
-            value: 'preprod',
-          },
-          {
-            name: 'image.tag',
-            value: 'preprod',
-          },
-        ],
+        parameters: preProdHelmParameters,
       },
-      path: './helm/app',
-      repoURL:
-        'https://gitlab-gitlab.apps.cluster.test.com/preprod/quarkus-app-gitops.git',
-      targetRevision: 'HEAD',
     },
   },
   status: {
+    ...commonStatus,
     history: [
       {
+        ...commonStatus.history[0],
         revision: '80f9758b7033a4bbb7c33a35ee474d61091644bc',
         deployedAt: '2024-04-22T05:39:24Z',
-        id: 0,
         source: {
-          repoURL:
-            'https://gitlab-gitlab.apps.cluster.test.com/preprod/quarkus-app-gitops.git',
-          path: './helm/app',
-          targetRevision: 'HEAD',
-          helm: {
-            parameters: [
-              {
-                name: 'namespace.name',
-                value: 'quarkus-app-preprod',
-              },
-              {
-                name: 'environment',
-                value: 'preprod',
-              },
-              {
-                name: 'image.tag',
-                value: 'latest',
-              },
-            ],
-          },
+          ...commonStatus.history[0].source,
+          helm: preProdHelmParameters,
         },
-        deployStartedAt: '2024-04-22T05:39:23Z',
       },
       {
+        ...commonStatus.history[1],
         revision: '80f9758b7033a4bbb7c33a35ee474d61091644bc',
-        deployedAt: '2024-04-20T16:57:40Z',
-        id: 1,
         source: {
-          repoURL:
-            'https://gitlab-gitlab.apps.cluster.test.com/preprod/quarkus-app-gitops.git',
-          path: './helm/app',
-          targetRevision: 'HEAD',
-          helm: {
-            parameters: [
-              {
-                name: 'namespace.name',
-                value: 'quarkus-app-preprod',
-              },
-              {
-                name: 'environment',
-                value: 'preprod',
-              },
-              {
-                name: 'image.tag',
-                value: 'preprod',
-              },
-            ],
-          },
+          ...commonStatus.history[0].source,
+          helm: preProdHelmParameters,
         },
-        deployStartedAt: '2024-04-22T16:57:40Z',
       },
     ],
-    health: {
-      status: 'Degraded',
-    },
     operationState: {
+      ...commonStatus.operationState,
       operation: {
+        ...commonStatus.operationState.operation,
         sync: {
-          prune: true,
+          ...commonStatus.operationState.operation.sync,
           revision: '80f9758b7033a4bbb7c33a35ee474d61091644bc',
-          syncOptions: [
-            'RespectIgnoreDifferences=true',
-            'ApplyOutOfSyncOnly=true',
-          ],
         },
       },
-      phase: 'Succeeded',
     },
-    summary: {
-      images: ['quay-hw6fw.apps.cluster.test.com/quayadmin/quarkus-app:latest'],
+    health: {
+      status: 'Degraded',
     },
     sync: {
       status: 'Synced',
@@ -244,6 +207,22 @@ export const preProdApplication = {
   },
 };
 
+const prodHelmParameters = {
+  parameters: [
+    {
+      name: 'namespace.name',
+      value: 'quarkus-app-pre-prod',
+    },
+    {
+      name: 'environment',
+      value: 'prod',
+    },
+    {
+      name: 'image.tag',
+      value: 'prod',
+    },
+  ],
+};
 export const prodApplication = {
   metadata: {
     creationTimestamp: new Date('2024-04-22T05:39:23Z'),
@@ -260,22 +239,7 @@ export const prodApplication = {
     },
     project: 'janus',
     source: {
-      helm: {
-        parameters: [
-          {
-            name: 'namespace.name',
-            value: 'quarkus-app-pre-prod',
-          },
-          {
-            name: 'environment',
-            value: 'prod',
-          },
-          {
-            name: 'image.tag',
-            value: 'prod',
-          },
-        ],
-      },
+      helm: prodHelmParameters,
       path: './helm/app',
       repoURL:
         'https://gitlab-gitlab.apps.cluster.test.com/prod/quarkus-app-gitops.git',
@@ -285,80 +249,45 @@ export const prodApplication = {
   status: {
     history: [
       {
+        ...commonStatus.history[0],
         revision: '70f9758b7033a4bbb7c33a35ee474d61091644bc',
         deployedAt: '2024-04-19T05:39:24Z',
-        id: 0,
         source: {
+          ...commonStatus.history[0].source,
+          helm: preProdHelmParameters,
           repoURL:
             'https://gitlab-gitlab.apps.cluster.test.com/prod/quarkus-app-gitops.git',
-          path: './helm/app',
-          targetRevision: 'HEAD',
-          helm: {
-            parameters: [
-              {
-                name: 'namespace.name',
-                value: 'quarkus-app-prod',
-              },
-              {
-                name: 'environment',
-                value: 'prod',
-              },
-              {
-                name: 'image.tag',
-                value: 'latest',
-              },
-            ],
-          },
         },
-        deployStartedAt: '2024-04-22T05:39:23Z',
       },
       {
+        ...commonStatus.history[1],
         revision: '70f9758b7033a4bbb7c33a35ee474d61091644bc',
-        deployedAt: '2024-04-19T16:57:40Z',
+        deployedAt: '2024-04-19T05:39:24Z',
         id: 1,
         source: {
+          ...commonStatus.history[1].source,
+          helm: preProdHelmParameters,
           repoURL:
             'https://gitlab-gitlab.apps.cluster.test.com/prod/quarkus-app-gitops.git',
-          path: './helm/app',
-          targetRevision: 'HEAD',
-          helm: {
-            parameters: [
-              {
-                name: 'namespace.name',
-                value: 'quarkus-app-prod',
-              },
-              {
-                name: 'environment',
-                value: 'prod',
-              },
-              {
-                name: 'image.tag',
-                value: 'prod',
-              },
-            ],
-          },
         },
-        deployStartedAt: '2024-04-22T16:57:40Z',
       },
     ],
-    health: {
-      status: 'Missing',
-    },
+
     operationState: {
+      ...commonStatus.operationState,
       operation: {
+        ...commonStatus.operationState.operation,
         sync: {
-          prune: true,
+          ...commonStatus.operationState.operation.sync,
           revision: '80f9758b7033a4bbb7c33a35ee474d61091644bc',
-          syncOptions: [
-            'RespectIgnoreDifferences=true',
-            'ApplyOutOfSyncOnly=true',
-          ],
         },
       },
-      phase: 'Succeeded',
     },
     summary: {
       images: ['quay-hw6fw.apps.cluster.test.com/quayadmin/quarkus-app:latest'],
+    },
+    health: {
+      status: 'Missing',
     },
     sync: {
       status: 'OutOfSync',
