@@ -8692,17 +8692,6 @@
   resolved "https://registry.yarnpkg.com/@repeaterjs/repeater/-/repeater-3.0.5.tgz#b77571685410217a548a9c753aa3cdfc215bfc78"
   integrity sha512-l3YHBLAol6d/IKnB9LhpD0cEZWAoe3eFKUyTYWmFmCO2Q/WOckxLQAUyMZWwZV2M/m3+4vgRoaolFqaII82/TA==
 
-"@rjsf/core-v5@npm:@rjsf/core@5.7.3":
-  version "5.7.3"
-  resolved "https://registry.yarnpkg.com/@rjsf/core/-/core-5.7.3.tgz#7d49b65a6f9bad5fa9773d25473f361f1b6a71de"
-  integrity sha512-GebhuCyNK8db+UT2COFmaLsCWjVsZwNXC8jubadqTji5rNCpuB1ywzp+vbqX0vnFPd8phVKbVfHNl2S86fUaIA==
-  dependencies:
-    lodash "^4.17.21"
-    lodash-es "^4.17.21"
-    markdown-to-jsx "^7.2.0"
-    nanoid "^3.3.6"
-    prop-types "^15.8.1"
-
 "@rjsf/core@5.17.1":
   version "5.17.1"
   resolved "https://registry.yarnpkg.com/@rjsf/core/-/core-5.17.1.tgz#747e82bc68347fc8b786fd817d380c7d8c36f766"
@@ -8714,15 +8703,26 @@
     nanoid "^3.3.7"
     prop-types "^15.8.1"
 
-"@rjsf/material-ui-v5@npm:@rjsf/material-ui@5.7.3":
-  version "5.7.3"
-  resolved "https://registry.yarnpkg.com/@rjsf/material-ui/-/material-ui-5.7.3.tgz#2f8c35d83f7d53c748804031c7f78c299ce98f00"
-  integrity sha512-PeaVjiBhw8N1PxGzcC03gE/eq3Kcu6p84i0EI80A0VFQ5Xbu2V2YI0Bc4imiXehbCn+AthMt6zzBZXKlbhu+Sw==
+"@rjsf/core@^5.7.3":
+  version "5.18.3"
+  resolved "https://registry.yarnpkg.com/@rjsf/core/-/core-5.18.3.tgz#7cef908598c77ec0f0caaa301148e3e4a909292e"
+  integrity sha512-HVqqoVzcjYX1BUCqHm7iUjBoVx1UDud1KP6bJ5drtOOvHChfKEbMUt2hWJcuXIlmNPuw2lRxETtcuRbEM2wsRA==
+  dependencies:
+    lodash "^4.17.21"
+    lodash-es "^4.17.21"
+    markdown-to-jsx "^7.4.1"
+    nanoid "^3.3.7"
+    prop-types "^15.8.1"
 
 "@rjsf/material-ui@5.17.1":
   version "5.17.1"
   resolved "https://registry.yarnpkg.com/@rjsf/material-ui/-/material-ui-5.17.1.tgz#009f31d0e8b0c5801bc858847060081a074e0a1d"
   integrity sha512-WCk3wZ+oiBCEKz/uwF9VwTl0XNYrcgsQwIh+qBk6JcB2TGSguRM7KtGcLSq/91+lqFvR9PWjP2pvnTJgyfO2cA==
+
+"@rjsf/material-ui@^5.7.3":
+  version "5.18.3"
+  resolved "https://registry.yarnpkg.com/@rjsf/material-ui/-/material-ui-5.18.3.tgz#fa0405752c023779c24db9125b340824b287d898"
+  integrity sha512-H4Ed0qPtUjP8BesBXvM82W1zK3c4SFGToiEefE35EN49yOn4E5ERk5kDmVoBNMlalcN2rE4w08b0FuL0vQt9SA==
 
 "@rjsf/utils@5.17.1":
   version "5.17.1"
@@ -25180,7 +25180,7 @@ markdown-table@^3.0.0:
   resolved "https://registry.yarnpkg.com/markdown-table/-/markdown-table-3.0.3.tgz#e6331d30e493127e031dd385488b5bd326e4a6bd"
   integrity sha512-Z1NL3Tb1M9wH4XESsCDEksWoKTdlUafKc4pt0GRwjUyXaCFZ+dc3g2erqB6zm3szA2IUSi7VnPI+o/9jnxh9hw==
 
-markdown-to-jsx@^7.1.8, markdown-to-jsx@^7.2.0, markdown-to-jsx@^7.4.1:
+markdown-to-jsx@^7.1.8, markdown-to-jsx@^7.4.1:
   version "7.4.7"
   resolved "https://registry.yarnpkg.com/markdown-to-jsx/-/markdown-to-jsx-7.4.7.tgz#740ee7ec933865ef5cc683a0992797685a75e2ee"
   integrity sha512-0+ls1IQZdU6cwM1yu0ZjjiVWYtkbExSyUIFU2ZeDIFuZM1W42Mh4OlJ4nb4apX4H8smxDHRdFaoIVJGwfv5hkg==
@@ -26442,7 +26442,7 @@ nanoclone@^0.2.1:
   resolved "https://registry.yarnpkg.com/nanoclone/-/nanoclone-0.2.1.tgz#dd4090f8f1a110d26bb32c49ed2f5b9235209ed4"
   integrity sha512-wynEP02LmIbLpcYw8uBKpcfF6dmg2vcpKqxeH5UcoKEYdExslsdUA4ugFauuaeYdTB76ez6gJW8XAZ6CgkXYxA==
 
-nanoid@^3.3.6, nanoid@^3.3.7:
+nanoid@^3.3.7:
   version "3.3.7"
   resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.3.7.tgz#d0c301a691bc8d54efa0a2226ccf3fe2fd656bd8"
   integrity sha512-eSRppjcPIatRIMC1U6UngP8XFcz8MQWGQdt1MTBQ7NaAmvXDfvNxbvWV3x2y6CdEUciCSsDHDQZbhYaB8QEo2g==
