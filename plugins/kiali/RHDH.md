@@ -67,6 +67,31 @@ _The mountPoints configuration is not available in the tech preview, we’ll use
 
 ![workloads](./images/rhdh/RHDH_kiali_page_workloads.png)
 
+Also, the Services, Applications list and the istio config list is available.
+
+### Workloads Details
+
+![details](./images/rhdh/RHDH_kiali_page_workloads_details.png)
+
+Also, the Services and Applications details is available.
+
+### Istio Config
+
+![config](./images/rhdh/RHDH_kiali_page_istio_config.png)
+
 ### Video Demo
 
 [![RHDH-demo](https://img.youtube.com/vi/jCExpeXl9A8/0.jpg)](https://youtu.be/jCExpeXl9A8)
+
+## Kiali Resources List card
+
+A Kiali Card can be added to see the Service Mesh resources (workloads, services and applications) for a component.
+The card name is EntityKialiResourcesCard and the complete configuration can be checked in [Lapp-config.janus-idp.yaml](app-config.janus-idp.yaml)
+
+### Kiali Resources Card
+
+![card](./images/rhdh/RHDH_kiali_resources_card.png)
+
+### Kiali Resources Card Details
+
+![card-details](./images/rhdh/RHDH_kiali_resources_card_details.png)
