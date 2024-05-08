@@ -27,11 +27,11 @@ yarn.lock                    @janus-idp/maintainers-plugins
 /plugins/tekton/                    @janus-idp/maintainers-plugins @debsmita1 @divyanshiGupta
 /plugins/rbac-backend/              @janus-idp/maintainers-plugins @AndrienkoAleksandr @PatAKnight
 /plugins/rbac-common/               @janus-idp/maintainers-plugins @AndrienkoAleksandr @PatAKnight
-/plugins/notifications              @janus-idp/maintainers-plugins @janus-idp/orchestrator/notifications
-/plugins/notifications-backend      @janus-idp/maintainers-plugins @janus-idp/orchestrator/notifications
-/plugins/orchestrator               @janus-idp/maintainers-plugins @janus-idp/orchestrator/orchestrator-codeowners
-/plugins/orchestrator-backend       @janus-idp/maintainers-plugins @janus-idp/orchestrator/orchestrator-codeowners
-/plugins/orchestrator-common        @janus-idp/maintainers-plugins @janus-idp/orchestrator/orchestrator-codeowners
+/plugins/notifications              @janus-idp/maintainers-plugins @janus-idp/notifications
+/plugins/notifications-backend      @janus-idp/maintainers-plugins @janus-idp/notifications
+/plugins/orchestrator               @janus-idp/maintainers-plugins @janus-idp/orchestrator-codeowners
+/plugins/orchestrator-backend       @janus-idp/maintainers-plugins @janus-idp/orchestrator-codeowners
+/plugins/orchestrator-common        @janus-idp/maintainers-plugins @janus-idp/orchestrator-codeowners
 /plugins/feedback                   @janus-idp/maintainers-plugins  @janus-idp/devex-uxe
 /plugins/feedback-backend           @janus-idp/maintainers-plugins @janus-idp/devex-uxe
 /plugins/matomo                     @janus-idp/maintainers-plugins @janus-idp/devex-uxe
