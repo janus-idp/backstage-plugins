@@ -1,12 +1,17 @@
 import { expect, Page, test } from '@playwright/test';
 
+import { Common } from './quayHelper';
+
 test.describe('Quay plugin', () => {
   let page: Page;
+  let common: Common;
 
   test.beforeAll(async ({ browser }) => {
     const context = await browser.newContext();
     page = await context.newPage();
-    await page.goto('/');
+    common = new Common(page);
+
+    await common.loginAsGuest();
     await expect(
       page.getByRole('link', { name: 'backstage-test/test-images' }),
     ).toBeEnabled({ timeout: 20000 });
@@ -16,7 +21,7 @@ test.describe('Quay plugin', () => {
     await browser.close();
   });
 
-  test('All columns are shown', async () => {
+  test('All columns are shown in the table', async () => {
     const columns = [
       'Tag',
       'Last Modified',

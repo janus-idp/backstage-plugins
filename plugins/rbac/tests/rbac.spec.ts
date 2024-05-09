@@ -1,7 +1,7 @@
 import { expect, Page, test } from '@playwright/test';
 
 import {
-  clickButton,
+  Common,
   verifyCellsInTable,
   verifyColumnHeading,
   verifyText,
@@ -9,11 +9,13 @@ import {
 
 test.describe('RBAC plugin', () => {
   let page: Page;
+  let common: Common;
 
   test.beforeAll(async ({ browser }) => {
     const context = await browser.newContext();
     page = await context.newPage();
-    await page.goto('/');
+    common = new Common(page);
+    await common.loginAsGuest();
     const navSelector = 'nav [aria-label="Administration"]';
     await page.locator(navSelector).click();
     await expect(
@@ -117,9 +119,9 @@ test.describe('RBAC plugin', () => {
     ).toBeVisible({
       timeout: 20000,
     });
-    await clickButton('Next', page);
-    await clickButton('Next', page);
-    await clickButton('Save', page);
+    await common.clickButton('Next');
+    await common.clickButton('Next');
+    await common.clickButton('Save');
     await verifyText('Role role:default/rbac_admin updated successfully', page);
 
     // alert doesn't show up after Cancel button is clicked
@@ -127,7 +129,7 @@ test.describe('RBAC plugin', () => {
     await expect(page.getByRole('heading', { name: 'Edit Role' })).toBeVisible({
       timeout: 20000,
     });
-    await clickButton('Cancel', page);
+    await common.clickButton('Cancel');
     await expect(page.getByRole('alert')).toHaveCount(0);
 
     // edit/update policies
@@ -142,8 +144,8 @@ test.describe('RBAC plugin', () => {
     await page.getByPlaceholder('Select a resource type').last().click();
     await page.getByText('scaffolder-action').click();
 
-    await clickButton('Next', page);
-    await clickButton('Save', page);
+    await common.clickButton('Next');
+    await common.clickButton('Save');
     await verifyText('Role role:default/rbac_admin updated successfully', page);
 
     await page.locator(`a`).filter({ hasText: 'RBAC' }).click();
@@ -162,7 +164,7 @@ test.describe('RBAC plugin', () => {
 
     await page.fill('input[name="name"]', 'sample-role-1');
     await page.fill('textarea[name="description"]', 'Test Description data');
-    await clickButton('Next', page);
+    await common.clickButton('Next');
 
     await page
       .getByPlaceholder('Search by user name or group name')
@@ -175,7 +177,7 @@ test.describe('RBAC plugin', () => {
     ).toBeVisible({
       timeout: 20000,
     });
-    await clickButton('Next', page);
+    await common.clickButton('Next');
 
     await page.getByPlaceholder('Select a plugin').first().click();
     await page.getByRole('option', { name: 'permission' }).click();
@@ -217,9 +219,9 @@ test.describe('RBAC plugin', () => {
       timeout: 20000,
     });
 
-    await clickButton('Next', page);
+    await common.clickButton('Next');
 
-    await clickButton('Create', page);
+    await common.clickButton('Create');
     await verifyText(
       'Role role:default/sample-role-1 created successfully',
       page,

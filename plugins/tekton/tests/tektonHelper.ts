@@ -1,50 +1,5 @@
 import { expect, Page } from '@playwright/test';
 
-export const verifyCellsInTable = async (
-  cellIdentifier: (string | RegExp)[],
-  page: Page,
-) => {
-  for (const text of cellIdentifier) {
-    const cellLocator = page
-      .locator('td[class*="MuiTableCell-root"]')
-      .filter({ hasText: text });
-    const count = await cellLocator.count();
-
-    if (count === 0) {
-      throw new Error(
-        `Expected at least one cell with text matching ${text}, but none were found.`,
-      );
-    }
-
-    // Checks if all matching cells are visible.
-    for (let i = 0; i < count; i++) {
-      await expect(cellLocator.nth(i)).toBeVisible();
-    }
-  }
-};
-
-export const verifyColumnHeading = async (
-  columns: (string | RegExp)[],
-  page: Page,
-) => {
-  const thead = page.locator('thead');
-  for (const col of columns) {
-    await expect(
-      thead.getByRole('columnheader', { name: col, exact: true }),
-    ).toBeVisible();
-  }
-};
-
-export const verifyText = async (
-  text: string | RegExp,
-  page: Page,
-  exact: boolean = true,
-) => {
-  const element = page.getByText(text, { exact: exact }).first();
-  await element.scrollIntoViewIfNeeded();
-  await expect(element).toBeVisible();
-};
-
 export class Common {
   page: Page;
 

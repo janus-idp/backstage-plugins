@@ -28,6 +28,8 @@ import ResourceBadge from './ResourceBadge';
 
 import './PipelineRunRow.css';
 
+import classNames from 'classnames';
+
 const useStyles = makeStyles((theme: Theme) => ({
   plrRow: {
     '&:nth-of-type(odd)': {
@@ -71,7 +73,12 @@ const PipelineRunName = ({ row }: PipelineRunNameProps) => {
           suffix={
             signed ? (
               <Tooltip content="Signed">
-                <div className={classes.signedIndicator}>
+                <div
+                  className={classNames(
+                    classes.signedIndicator,
+                    'signed-indicator',
+                  )}
+                >
                   <img src={signedBadgeSrc} alt="Signed" />
                 </div>
               </Tooltip>

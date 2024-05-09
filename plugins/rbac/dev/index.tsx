@@ -1,11 +1,13 @@
 import React from 'react';
 
+import { configApiRef } from '@backstage/core-plugin-api';
 import { createDevApp } from '@backstage/dev-utils';
+import { permissionApiRef } from '@backstage/plugin-permission-react';
 import {
-  PermissionApi,
-  permissionApiRef,
-} from '@backstage/plugin-permission-react';
-import { TestApiProvider } from '@backstage/test-utils';
+  MockConfigApi,
+  MockPermissionApi,
+  TestApiProvider,
+} from '@backstage/test-utils';
 
 import {
   PermissionPolicy,
@@ -20,18 +22,6 @@ import { mockPolicies } from '../src/__fixtures__/mockPolicies';
 import { RBACAPI, rbacApiRef } from '../src/api/RBACBackendClient';
 import { RbacPage, rbacPlugin } from '../src/plugin';
 import { MemberEntity, RoleBasedConditions } from '../src/types';
-
-class MockPermissionApi implements PermissionApi {
-  readonly result;
-
-  constructor(fixtureData: any) {
-    this.result = fixtureData;
-  }
-
-  async authorize(_request: any): Promise<any> {
-    return this.result;
-  }
-}
 
 class MockRBACApi implements RBACAPI {
   readonly resources;
@@ -121,7 +111,7 @@ class MockRBACApi implements RBACAPI {
   }
 }
 
-const mockPermissionApi = new MockPermissionApi({ result: 'ALLOW' });
+const mockPermissionApi = new MockPermissionApi();
 const mockRBACApi = new MockRBACApi([
   {
     memberReferences: ['user:default/guest'],
@@ -132,6 +122,11 @@ const mockRBACApi = new MockRBACApi([
     name: 'role:default/rbac_admin',
   },
 ]);
+const mockConfigApi = new MockConfigApi({
+  permission: {
+    enabled: true,
+  },
+});
 
 createDevApp()
   .registerPlugin(rbacPlugin)
@@ -141,6 +136,7 @@ createDevApp()
         apis={[
           [permissionApiRef, mockPermissionApi],
           [rbacApiRef, mockRBACApi],
+          [configApiRef, mockConfigApi],
         ]}
       >
         <RbacPage />
