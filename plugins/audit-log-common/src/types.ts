@@ -1,4 +1,9 @@
-import { AuthService, HttpAuthService } from '@backstage/backend-plugin-api';
+import {
+  AuthService,
+  HttpAuthService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
+import { ErrorLike } from '@backstage/errors';
 
 import { Request } from 'express';
 
@@ -48,32 +53,65 @@ export type AuditLogDetails = {
   isAuditLog: true;
 } & AuditLogStatus;
 
-/**
- * Used to obtain the user entityRef
- *
- * @public
- */
-export type AuditAuthServices = {
-  auth: AuthService;
-  httpAuth: HttpAuthService;
-};
-
 export type AuditActorOptions =
   | {
       actor_id: string;
       request?: Request;
-      authServices?: AuditAuthServices;
     }
   | {
       actor_id?: string;
       request: Request;
-      authServices: AuditAuthServices;
     };
 
-export type AuditLogOptions = {
+export type AuditLogDetailsOptions = {
   eventName: string;
   stage: string;
   metadata?: Record<PropertyKey, unknown>;
   response?: AuditResponse;
 } & AuditActorOptions &
   ({ status: 'succeeded' } | { status: 'failed'; errors: unknown[] });
+
+export type AuditLogOptions = {
+  eventName: string;
+  message: string;
+  stage: string;
+  metadata?: Record<PropertyKey, unknown>;
+  response?: AuditResponse;
+} & AuditActorOptions;
+
+export type AuditErrorLogOptions = AuditLogOptions & { errors: ErrorLike[] };
+
+export type ScaffolderAuditLoggerOptions = {
+  logger: LoggerService;
+  authService: AuthService;
+  httpAuthService: HttpAuthService;
+};
+
+export interface AuditLogger {
+  /**
+   *
+   * Processes an express request and obtains the actorId from it. Returns undefined if actorId is not obtainable.
+   */
+  getActorId(request?: Request): Promise<string | undefined>;
+
+  /**
+   *
+   * Generates an AuditLogDetails object containing non-message details of the audit log
+   * Secrets in the request body field should be redacted by the user before passing in the request object
+   */
+  createAuditLogDetails(
+    options: AuditLogDetailsOptions,
+  ): Promise<AuditLogDetails>;
+
+  /**
+   *
+   * Generates an Audit Log and logs it at the info level
+   */
+  auditLog(options: AuditLogOptions): Promise<void>;
+
+  /**
+   *
+   * Generates an Audit Log for an error and logs it at the error level
+   */
+  auditErrorLog(options: AuditErrorLogOptions): Promise<void>;
+}
