@@ -143,6 +143,32 @@ export function registerScriptCommand(program: Command) {
     .command('schema')
     .description('Print configuration schema for a package')
     .action(lazy(() => import('./schema').then(m => m.default)));
+
+  command
+    .command('metadata')
+    .description('Add metadata to a package.json file')
+    .option(
+      '--dir <path/to/folder>',
+      'Folder in which to make changes to package.json, if not the current directory',
+      './',
+    )
+    .option('--author <author>', 'Set author', 'Red Hat')
+    .option('--license <license>', 'Set license', 'Apache-2.0')
+    .option('--homepage <homepage>', 'Set homepage', 'https://red.ht/rhdh')
+    .option(
+      '--bugs <bugs>',
+      'Set issue tracker URL',
+      'https://github.com/janus-idp/backstage-plugins/issues',
+    )
+    .option(
+      '--keywords <unique,keywords,to,add>',
+      'Add or replace keywords; there can be only one `support:` or `lifecycle:` value,\n                                     ' + 
+      'but unlimited other keywords can be added. To remove values, manually edit package.json\n\n                                     ' +
+      'Valid values for support: alpha, beta, tech-preview, or production.\n                                     ' +
+      'Valid values for lifecycle: active, maintenance, deprecated, inactive, retired.\n                                    ',
+      'backstage,plugin,support:production,lifecycle:active',
+    )
+    .action(lazy(() => import('./metadata').then(m => m.command)));
 }
 
 export function registerCommands(program: Command) {
