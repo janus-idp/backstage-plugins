@@ -18,6 +18,7 @@ import {
   AssessedProcessInstance,
   QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
   QUERY_PARAM_INSTANCE_ID,
+  QUERY_PARAM_INSTANCE_STATE,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { orchestratorApiRef } from '../api';
@@ -154,6 +155,7 @@ export const WorkflowInstancePage = ({
     const urlToNavigate = buildUrl(routeUrl, {
       [QUERY_PARAM_INSTANCE_ID]: value.instance.id,
       [QUERY_PARAM_ASSESSMENT_INSTANCE_ID]: value.assessedBy?.id,
+      [QUERY_PARAM_INSTANCE_STATE]: value.instance.state,
     });
     navigate(urlToNavigate);
   }, [value, navigate, executeWorkflowLink]);
@@ -196,18 +198,30 @@ export const WorkflowInstancePage = ({
             />
             <Grid container item justifyContent="flex-end" spacing={1}>
               {!canRerun && (
-                <Grid item>
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    disabled={!canAbort}
-                    onClick={
-                      canAbort ? toggleAbortConfirmationDialog : undefined
-                    }
-                  >
-                    Abort
-                  </Button>
-                </Grid>
+                <>
+                  <Grid item>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      disabled={!canAbort}
+                      onClick={canAbort ? handleRerun : undefined}
+                    >
+                      Retrigger
+                    </Button>
+                  </Grid>
+                  <Grid item>
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      disabled={!canAbort}
+                      onClick={
+                        canAbort ? toggleAbortConfirmationDialog : undefined
+                      }
+                    >
+                      Abort
+                    </Button>
+                  </Grid>
+                </>
               )}
               {!canAbort && (
                 <Grid item>
