@@ -63,7 +63,7 @@ export async function createAuditLogDetails(
       hostname: request?.hostname,
       userAgent: request?.get('user-agent'),
     },
-    meta: metadata,
+    meta: metadata || {},
     request: auditRequest,
     isAuditLog: true as const,
     response,

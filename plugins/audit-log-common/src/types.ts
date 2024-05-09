@@ -44,7 +44,7 @@ export type AuditLogDetails = {
   stage: string;
   request?: AuditRequest;
   response?: AuditResponse;
-  meta?: Record<PropertyKey, unknown>;
+  meta: Record<PropertyKey, unknown>;
   isAuditLog: true;
 } & AuditLogStatus;
 
