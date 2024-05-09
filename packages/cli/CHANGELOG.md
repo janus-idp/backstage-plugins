@@ -1,3 +1,5 @@
+## @janus-idp/cli [1.8.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.8.5...@janus-idp/cli@1.8.6) (2024-05-09)
+
 ## @janus-idp/cli [1.8.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.8.4...@janus-idp/cli@1.8.5) (2024-05-02)
 
 
