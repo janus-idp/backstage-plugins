@@ -5,9 +5,11 @@ import {
 } from '@backstage/core-plugin-api';
 
 import {
+  PermissionAction,
   PermissionPolicy,
   Role,
   RoleBasedPolicy,
+  RoleConditionalPolicyDecision,
 } from '@janus-idp/backstage-plugin-rbac-common';
 
 import {
@@ -45,6 +47,16 @@ export type RBACAPI = {
   getPluginsConditionRules: () => Promise<PluginConditionRules[] | Response>;
   createConditionalPermission: (
     conditionalPermission: RoleBasedConditions,
+  ) => Promise<RoleError | Response>;
+  getRoleConditions: (
+    roleRef: string,
+  ) => Promise<RoleConditionalPolicyDecision<PermissionAction>[] | Response>;
+  updateConditionalPolicies: (
+    conditionId: number,
+    data: RoleBasedConditions,
+  ) => Promise<RoleError | Response>;
+  deleteConditionalPolicies: (
+    conditionId: number,
   ) => Promise<RoleError | Response>;
 };
 
@@ -358,6 +370,73 @@ export class RBACBackendClient implements RBACAPI {
       },
     );
     if (jsonResponse.status !== 200 && jsonResponse.status !== 201) {
+      return jsonResponse.json();
+    }
+    return jsonResponse;
+  }
+
+  async getRoleConditions(roleRef: string) {
+    const { token: idToken } = await this.identityApi.getCredentials();
+    const backendUrl = this.configApi.getString('backend.baseUrl');
+    const jsonResponse = await fetch(
+      `${backendUrl}/api/permission/roles/conditions?roleEntityRef=${roleRef}`,
+      {
+        headers: {
+          ...(idToken && { Authorization: `Bearer ${idToken}` }),
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+    if (jsonResponse.status !== 200) {
+      return jsonResponse;
+    }
+    return jsonResponse.json();
+  }
+
+  async updateConditionalPolicies(
+    conditionId: number,
+    data: RoleBasedConditions,
+  ) {
+    const { token: idToken } = await this.identityApi.getCredentials();
+    const backendUrl = this.configApi.getString('backend.baseUrl');
+    const jsonResponse = await fetch(
+      `${backendUrl}/api/permission/roles/conditions/${conditionId}}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          ...(idToken && { Authorization: `Bearer ${idToken}` }),
+        },
+        body: JSON.stringify(data),
+      },
+    );
+    if (jsonResponse.status !== 200 && jsonResponse.status !== 201) {
+      return jsonResponse.json();
+    }
+    return jsonResponse;
+  }
+
+  async deleteConditionalPolicies(conditionId: number) {
+    const { token: idToken } = await this.identityApi.getCredentials();
+    const backendUrl = this.configApi.getString('backend.baseUrl');
+    const jsonResponse = await fetch(
+      `${backendUrl}/api/permission/roles/conditions/${conditionId}`,
+      {
+        headers: {
+          ...(idToken && { Authorization: `Bearer ${idToken}` }),
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        method: 'DELETE',
+      },
+    );
+
+    if (
+      jsonResponse.status !== 200 &&
+      jsonResponse.status !== 201 &&
+      jsonResponse.status !== 204
+    ) {
       return jsonResponse.json();
     }
     return jsonResponse;

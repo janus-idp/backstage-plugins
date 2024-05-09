@@ -188,6 +188,7 @@ export const PermissionPoliciesFormRow = ({
             className={classes.removeButton}
             onClick={() => onRemove()}
             disabled={rowCount === 1}
+            data-testid={`${rowName}-remove`}
           >
             <RemoveIcon id={`${rowName}-remove`} />
           </IconButton>
@@ -207,7 +208,6 @@ export const PermissionPoliciesFormRow = ({
           onAddConditions(conditions);
           setSidebarOpen(false);
         }}
-        onRemoveAll={() => onAddConditions(undefined)}
         conditionsFormVal={permissionPoliciesRowData.conditions}
         selPluginResourceType={permissionPoliciesRowData.permission}
         conditionRulesData={

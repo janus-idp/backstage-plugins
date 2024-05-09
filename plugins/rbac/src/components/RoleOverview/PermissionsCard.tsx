@@ -81,7 +81,7 @@ export const PermissionsCard = ({ entityReference }: PermissionsCardProps) => {
   return (
     <Card>
       <CardContent>
-        {error?.name && (
+        {error?.name && error.name !== 404 && (
           <div style={{ paddingBottom: '16px' }}>
             <WarningPanel
               message={error?.message}

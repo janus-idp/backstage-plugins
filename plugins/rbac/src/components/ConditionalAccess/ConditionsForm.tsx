@@ -34,7 +34,6 @@ type ConditionFormProps = {
   selPluginResourceType: string;
   onClose: () => void;
   onSave: (conditions: ConditionsData) => void;
-  onRemoveAll: () => void;
 };
 
 export const ConditionsForm = ({
@@ -43,7 +42,6 @@ export const ConditionsForm = ({
   conditionsFormVal,
   onClose,
   onSave,
-  onRemoveAll,
 }: ConditionFormProps) => {
   const classes = useStyles();
   const [conditions, setConditions] = React.useState<ConditionsData>(
@@ -124,7 +122,6 @@ export const ConditionsForm = ({
                 params: {},
               },
             });
-            onRemoveAll();
           }}
         >
           Remove all
