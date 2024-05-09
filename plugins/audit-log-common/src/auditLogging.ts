@@ -3,6 +3,7 @@ import { AuditLogDetails, AuditLogOptions } from './types';
 /**
  * Generates the audit log details to place in the metadata argument of the logger
  *
+ * Secrets in the body field should be redacted by the user before passing in the request object
  * @public
  */
 export async function createAuditLogDetails(
@@ -44,7 +45,7 @@ export async function createAuditLogDetails(
     throw new Error('No actor_id provided for audit log');
   }
 
-  // FIXME: Need to redact scaffolder secrets in the request.body
+  // Secrets in the body field should be redacted by the user before passing in the request object
   const auditRequest = request
     ? {
         method: request.method,
