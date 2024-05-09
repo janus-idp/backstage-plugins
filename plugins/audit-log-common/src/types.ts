@@ -25,11 +25,11 @@ export type AuditResponse = {
 export type AuditLogStatus =
   | {
       status: 'failed';
-      error: {
+      errors: {
         name: string;
         message: string;
         stack?: string;
-      };
+      }[];
     }
   | { status: 'succeeded' };
 
@@ -76,4 +76,4 @@ export type AuditLogOptions = {
   metadata?: Record<PropertyKey, unknown>;
   response?: AuditResponse;
 } & AuditActorOptions &
-  ({ status: 'succeeded' } | { status: 'failed'; error: Error });
+  ({ status: 'succeeded' } | { status: 'failed'; errors: unknown[] });

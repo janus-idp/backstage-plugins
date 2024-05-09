@@ -45,6 +45,7 @@
   "bugs": "https://github.com/janus-idp/backstage-plugins/issues",
   "dependencies": {
     "@backstage/backend-plugin-api": "^0.6.17",
+    "@backstage/errors": "^1.2.4",
     "express": "^4.19.2"
   }
 }

@@ -1,3 +1,5 @@
+import { ErrorLike } from '@backstage/errors';
+
 import { AuditLogDetails, AuditLogOptions } from './types';
 
 /**
@@ -72,15 +74,17 @@ export async function createAuditLogDetails(
   };
 
   if (status === 'failed') {
-    const err = {
-      name: options.error.name,
-      message: options.error.message,
-      stack: options.error.message,
-    };
+    const errs = options.errors as ErrorLike[];
     return {
       ...auditLogCommonDetails,
       status,
-      error: err,
+      errors: errs.map(err => {
+        return {
+          name: err.name,
+          message: err.message,
+          stack: err.stack,
+        };
+      }),
     };
   }
 
