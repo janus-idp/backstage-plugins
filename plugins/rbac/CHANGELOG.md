@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac [1.18.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.18.0...@janus-idp/backstage-plugin-rbac@1.18.1) (2024-05-08)
+
+
+### Bug Fixes
+
+* **rbac:** hide frontend when permission framework was disabled ([#1493](https://github.com/janus-idp/backstage-plugins/issues/1493)) ([5aa012f](https://github.com/janus-idp/backstage-plugins/commit/5aa012f0a35c1ee1269c570e4b5c94032f592559))
+
 ## @janus-idp/backstage-plugin-rbac [1.18.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.17.11...@janus-idp/backstage-plugin-rbac@1.18.0) (2024-05-08)
 
 
