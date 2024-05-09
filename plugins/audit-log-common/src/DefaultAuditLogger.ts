@@ -11,22 +11,16 @@ import {
   AuditErrorLogOptions,
   AuditLogDetailsOptions,
   AuditLogger,
+  AuditLoggerOptions,
   AuditLogOptions,
-  ScaffolderAuditLoggerOptions,
 } from './types';
 
-/**
- * Generates the audit log details to place in the metadata argument of the logger
- *
- * Secrets in the body field should be redacted by the user before passing in the request object
- * @public
- */
 export class DefaultAuditLogger implements AuditLogger {
   private readonly logger: LoggerService;
   private readonly authService: AuthService;
   private readonly httpAuthService: HttpAuthService;
 
-  constructor(options: ScaffolderAuditLoggerOptions) {
+  constructor(options: AuditLoggerOptions) {
     this.logger = options.logger;
     this.authService = options.authService;
     this.httpAuthService = options.httpAuthService;

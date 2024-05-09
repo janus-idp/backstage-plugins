@@ -81,7 +81,7 @@ export type AuditLogOptions = {
 
 export type AuditErrorLogOptions = AuditLogOptions & { errors: ErrorLike[] };
 
-export type ScaffolderAuditLoggerOptions = {
+export type AuditLoggerOptions = {
   logger: LoggerService;
   authService: AuthService;
   httpAuthService: HttpAuthService;
@@ -95,9 +95,10 @@ export interface AuditLogger {
   getActorId(request?: Request): Promise<string | undefined>;
 
   /**
+   * Generates the audit log details to place in the metadata argument of the logger
    *
-   * Generates an AuditLogDetails object containing non-message details of the audit log
    * Secrets in the request body field should be redacted by the user before passing in the request object
+   * @public
    */
   createAuditLogDetails(
     options: AuditLogDetailsOptions,
