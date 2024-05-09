@@ -81,10 +81,10 @@ export async function createAuditLogDetails(
       status,
       error: err,
     };
-  } else {
-    return {
-      ...auditLogCommonDetails,
-      status,
-    };
   }
+
+  return {
+    ...auditLogCommonDetails,
+    status,
+  };
 }

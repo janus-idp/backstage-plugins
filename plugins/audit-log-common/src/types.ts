@@ -73,7 +73,7 @@ export type AuditActorOptions =
 export type AuditLogOptions = {
   eventName: string;
   stage: string;
-  metadata: Record<PropertyKey, unknown>;
+  metadata?: Record<PropertyKey, unknown>;
   response?: AuditResponse;
 } & AuditActorOptions &
   ({ status: 'succeeded' } | { status: 'failed'; error: Error });
