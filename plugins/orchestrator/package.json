@@ -75,7 +75,9 @@
     "@janus-idp/cli": "1.8.5",
     "@storybook/react": "7.5.3",
     "@testing-library/react": "14.2.1",
-    "@storybook/preview-api": "7.5.3"
+    "@storybook/preview-api": "7.5.3",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0"
   },
   "peerDependencies": {
     "react": "^16.13.1 || ^17.0.0 || ^18.0.0",

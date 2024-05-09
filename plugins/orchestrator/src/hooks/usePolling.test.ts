@@ -11,7 +11,7 @@ const ABORTED = 'aborted';
 const COMPLETED = 'completed';
 
 // eslint-disable-next-line jest/no-disabled-tests
-describe.skip('usePolling', () => {
+describe('usePolling', () => {
   beforeAll(() => {
     jest.useFakeTimers();
   });
