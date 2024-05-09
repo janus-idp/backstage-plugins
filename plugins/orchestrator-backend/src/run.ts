@@ -6,7 +6,6 @@ import {
 } from '@backstage/backend-common';
 import { TaskScheduler } from '@backstage/backend-tasks';
 import { CatalogClient } from '@backstage/catalog-client';
-import { DefaultEventBroker } from '@backstage/plugin-events-backend';
 
 import yn from 'yn';
 
@@ -16,7 +15,6 @@ const port = process.env.PLUGIN_PORT ? Number(process.env.PLUGIN_PORT) : 7007;
 const enableCors = yn(process.env.PLUGIN_CORS, { default: false });
 const logger = getRootLogger();
 const config = await loadBackendConfig({ logger, argv: process.argv });
-const eventBroker = new DefaultEventBroker(logger);
 const discovery = HostDiscovery.fromConfig(config);
 const scheduler = TaskScheduler.fromConfig(config).forPlugin('orchestrator');
 const catalogApi = new CatalogClient({
@@ -28,7 +26,6 @@ startStandaloneServer({
   port,
   enableCors,
   logger,
-  eventBroker,
   config,
   discovery,
   catalogApi,

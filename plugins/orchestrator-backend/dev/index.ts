@@ -3,7 +3,6 @@ import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
-import { EventBroker } from '@backstage/plugin-events-node';
 
 import { Logger } from 'winston';
 
@@ -15,7 +14,6 @@ export interface ServerOptions {
   port: number;
   enableCors: boolean;
   logger: Logger;
-  eventBroker: EventBroker;
   config: Config;
   discovery: DiscoveryApi;
   catalogApi: CatalogApi;

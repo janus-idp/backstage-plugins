@@ -23,7 +23,7 @@ import { TaskScheduler } from '@backstage/backend-tasks';
 import { CatalogClient } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
-import { DefaultEventBroker } from '@backstage/plugin-events-backend';
+import { DefaultEventsService } from '@backstage/plugin-events-node';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 
 import Router from 'express-promise-router';
@@ -46,6 +46,7 @@ function makeCreateEnv(config: Config) {
   const databaseManager = DatabaseManager.fromConfig(config, { logger: root });
   const tokenManager = ServerTokenManager.fromConfig(config, { logger: root });
   const taskScheduler = TaskScheduler.fromConfig(config);
+  const eventsService = DefaultEventsService.create({ logger: root });
   const catalogApi = new CatalogClient({
     discoveryApi: HostDiscovery.fromConfig(config),
   });
@@ -57,8 +58,6 @@ function makeCreateEnv(config: Config) {
     discovery,
     tokenManager,
   });
-
-  const eventBroker = new DefaultEventBroker(root.child({ type: 'plugin' }));
 
   root.info(`Created UrlReader ${reader}`);
 
@@ -78,7 +77,7 @@ function makeCreateEnv(config: Config) {
       scheduler,
       permissions,
       identity,
-      eventBroker,
+      eventsService,
       catalogApi,
     };
   };
