@@ -1,3 +1,33 @@
+## @janus-idp/backstage-plugin-rbac [1.18.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.18.0...@janus-idp/backstage-plugin-rbac@1.18.1) (2024-05-08)
+
+
+### Bug Fixes
+
+* **rbac:** hide frontend when permission framework was disabled ([#1493](https://github.com/janus-idp/backstage-plugins/issues/1493)) ([5aa012f](https://github.com/janus-idp/backstage-plugins/commit/5aa012f0a35c1ee1269c570e4b5c94032f592559))
+
+## @janus-idp/backstage-plugin-rbac [1.18.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.17.11...@janus-idp/backstage-plugin-rbac@1.18.0) (2024-05-08)
+
+
+### Features
+
+* **rbac:** support for adding conditional permissions ([#1588](https://github.com/janus-idp/backstage-plugins/issues/1588)) ([2042244](https://github.com/janus-idp/backstage-plugins/commit/2042244dc31a557d62bfcf6f7eb556c12154430e))
+
+## @janus-idp/backstage-plugin-rbac [1.17.11](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.17.10...@janus-idp/backstage-plugin-rbac@1.17.11) (2024-05-02)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.8.5
+
+## @janus-idp/backstage-plugin-rbac [1.17.10](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.17.9...@janus-idp/backstage-plugin-rbac@1.17.10) (2024-05-02)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.8.4
+
 ## @janus-idp/backstage-plugin-rbac [1.17.9](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.17.8...@janus-idp/backstage-plugin-rbac@1.17.9) (2024-04-30)
 
 

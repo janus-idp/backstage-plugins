@@ -1,4 +1,6 @@
-export const initialPermissionPolicyRowValue = {
+import { PermissionsData } from '../../types';
+
+export const initialPermissionPolicyRowValue: PermissionsData = {
   plugin: '',
   permission: '',
   policies: [
@@ -7,4 +9,5 @@ export const initialPermissionPolicyRowValue = {
     { policy: 'Update', effect: 'deny' },
     { policy: 'Delete', effect: 'deny' },
   ],
+  isResourced: false,
 };

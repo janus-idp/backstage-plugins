@@ -1,6 +1,7 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
 
 export const ENTITY = 'entity';
+export const DRAWER = 'drawer';
 
 export interface KialiError {
   detail: string;

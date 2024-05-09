@@ -1,4 +1,5 @@
 import { TokenManager } from '@backstage/backend-common';
+import { AuthService } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { parseEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
@@ -19,6 +20,7 @@ export class BackstageRoleManager implements RoleManager {
     private readonly tokenManager: TokenManager,
     private readonly catalogDBClient: Knex,
     private readonly config: Config,
+    private readonly auth: AuthService,
   ) {
     this.allRoles = new Map<string, RoleList>();
     const rbacConfig = this.config.getOptionalConfig('permission.rbac');
@@ -109,6 +111,7 @@ export class BackstageRoleManager implements RoleManager {
       this.tokenManager,
       this.catalogApi,
       this.catalogDBClient,
+      this.auth,
       this.maxDepth,
     );
     await memo.buildUserGraph(memo);
@@ -186,6 +189,7 @@ export class BackstageRoleManager implements RoleManager {
         this.tokenManager,
         this.catalogApi,
         this.catalogDBClient,
+        this.auth,
         this.maxDepth,
       );
       await memo.getAllGroups();

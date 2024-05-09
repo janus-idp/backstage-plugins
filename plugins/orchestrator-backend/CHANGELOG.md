@@ -1,3 +1,34 @@
+## @janus-idp/backstage-plugin-orchestrator-backend [1.8.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.8.0...@janus-idp/backstage-plugin-orchestrator-backend@1.8.1) (2024-05-09)
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-orchestrator-common:** upgraded to 1.7.0
+
+## @janus-idp/backstage-plugin-orchestrator-backend [1.8.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.7.4...@janus-idp/backstage-plugin-orchestrator-backend@1.8.0) (2024-05-06)
+
+
+### Features
+
+* **orchestrator:** make the internal sonata podman compatible ([#1612](https://github.com/janus-idp/backstage-plugins/issues/1612)) ([e4e528e](https://github.com/janus-idp/backstage-plugins/commit/e4e528e2c10536d029ffec11953f3a1d0309b0c5))
+
+## @janus-idp/backstage-plugin-orchestrator-backend [1.7.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.7.3...@janus-idp/backstage-plugin-orchestrator-backend@1.7.4) (2024-05-02)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.8.5
+
+## @janus-idp/backstage-plugin-orchestrator-backend [1.7.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.7.2...@janus-idp/backstage-plugin-orchestrator-backend@1.7.3) (2024-05-02)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.8.4
+
 ## @janus-idp/backstage-plugin-orchestrator-backend [1.7.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.7.1...@janus-idp/backstage-plugin-orchestrator-backend@1.7.2) (2024-04-30)
 
 

@@ -1,11 +1,10 @@
 import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 
-import { Link, Tooltip } from '@material-ui/core';
+import { Tooltip } from '@material-ui/core';
 
-import { isMultiCluster, KialiIcon, Paths } from '../../config';
+import { KialiIcon } from '../../config';
 import { kialiStyle } from '../../styles/StyleUtils';
-import { pluginRoot } from '../BreadcrumbView/BreadcrumbView';
+import { JanusObjectLink } from '../../utils/janusLinks';
 import { PFBadge } from '../Pf/PfBadges';
 import { IstioTypes } from '../VirtualList/Config';
 
@@ -22,47 +21,23 @@ type IstioObjectProps = ReferenceIstioObjectProps & {
   children: React.ReactNode;
 };
 
-export const getIstioObjectUrl = (
-  name: string,
-  namespace: string,
-  type: string,
-  cluster?: string,
-  query?: string,
-): string => {
-  const istioType = IstioTypes[type];
-  let to = `/${pluginRoot}/${Paths.ISTIO}/${namespace}`;
-
-  to = `${to}/${istioType.url}/${name}`;
-
-  if (cluster && isMultiCluster) {
-    to = `${to}?clusterName=${cluster}`;
-  }
-
-  if (!query) {
-    if (to.includes('?')) {
-      to = `${to}&${query}`;
-    } else {
-      to = `${to}?${query}`;
-    }
-  }
-
-  return to;
-};
-
 export const IstioObjectLink: React.FC<IstioObjectProps> = (
   props: IstioObjectProps,
 ) => {
   const { name, namespace, type, cluster, query } = props;
-  const href = getIstioObjectUrl(name, namespace, type, cluster, query);
-
+  const istioType = IstioTypes[type];
   return (
-    <Link
-      component={RouterLink}
-      to={href}
+    <JanusObjectLink
+      name={name}
+      namespace={namespace}
+      type="istio"
+      objectType={istioType.url}
+      cluster={cluster}
+      query={query}
       data-test={`${type}-${namespace}-${name}`}
     >
       {props.children}
-    </Link>
+    </JanusObjectLink>
   );
 };
 

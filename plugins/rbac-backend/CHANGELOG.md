@@ -1,3 +1,24 @@
+## @janus-idp/backstage-plugin-rbac-backend [2.8.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.8.0...@janus-idp/backstage-plugin-rbac-backend@2.8.1) (2024-05-07)
+
+
+### Bug Fixes
+
+* **rbac:** implement ability to disable rbac-backend plugin ([#1501](https://github.com/janus-idp/backstage-plugins/issues/1501)) ([6367965](https://github.com/janus-idp/backstage-plugins/commit/6367965c550286dc8423b0942341ecee178dc6c1))
+
+## @janus-idp/backstage-plugin-rbac-backend [2.8.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.7.1...@janus-idp/backstage-plugin-rbac-backend@2.8.0) (2024-05-07)
+
+
+### Features
+
+* **rbac:** add support for the new backend services ([#1607](https://github.com/janus-idp/backstage-plugins/issues/1607)) ([2892709](https://github.com/janus-idp/backstage-plugins/commit/2892709860987c6f4b36d821afa2e612b220d030))
+
+## @janus-idp/backstage-plugin-rbac-backend [2.7.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.7.0...@janus-idp/backstage-plugin-rbac-backend@2.7.1) (2024-05-06)
+
+
+### Bug Fixes
+
+* **ocm:** update ocm frontend plugin readme ([#1611](https://github.com/janus-idp/backstage-plugins/issues/1611)) ([9960cc0](https://github.com/janus-idp/backstage-plugins/commit/9960cc0c2d611cdd1ee10a82ed02b7be9becefcf))
+
 ## @janus-idp/backstage-plugin-rbac-backend [2.7.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.6.4...@janus-idp/backstage-plugin-rbac-backend@2.7.0) (2024-04-25)
 
 

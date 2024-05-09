@@ -139,7 +139,7 @@ test.describe('RBAC plugin', () => {
     await page.getByTestId('AddIcon').click();
     await page.getByPlaceholder('Select a plugin').last().click();
     await page.getByText('scaffolder').click();
-    await page.getByPlaceholder('Select a permission').last().click();
+    await page.getByPlaceholder('Select a resource type').last().click();
     await page.getByText('scaffolder-action').click();
 
     await clickButton('Next', page);
@@ -149,7 +149,7 @@ test.describe('RBAC plugin', () => {
     await page.locator(`a`).filter({ hasText: 'RBAC' }).click();
   });
 
-  test('Create role from rolelist page', async () => {
+  test('Create role from rolelist page with simple/conditional permission policies', async () => {
     await expect(
       page.getByRole('heading', { name: 'All roles (2)' }),
     ).toBeVisible({ timeout: 20000 });
@@ -178,9 +178,45 @@ test.describe('RBAC plugin', () => {
     await clickButton('Next', page);
 
     await page.getByPlaceholder('Select a plugin').first().click();
+    await page.getByRole('option', { name: 'permission' }).click();
+    await page.getByPlaceholder('Select a resource type').first().click();
+    await page.getByText('policy-entity').click();
+
+    await page.getByRole('button', { name: 'Add' }).click();
+
+    await page.getByPlaceholder('Select a plugin').last().click();
     await page.getByText('scaffolder').click();
-    await page.getByPlaceholder('Select a permission').last().click();
+    await page.getByPlaceholder('Select a resource type').last().click();
     await page.getByText('scaffolder-action').click();
+    await page.getByText('Configure access').first().click();
+    await page.getByPlaceholder('Select a rule').first().click();
+    await page.getByText('HAS_ACTION_ID').click();
+    await page.getByLabel('actionId').fill('temp');
+    await page.getByTestId('save-conditions').click();
+    await expect(page.getByText('Configure access (1 rule)')).toBeVisible({
+      timeout: 20000,
+    });
+
+    await page.getByRole('button', { name: 'Add' }).click();
+
+    await page.getByPlaceholder('Select a plugin').last().click();
+    await page.getByText('catalog').click();
+    await page.getByPlaceholder('Select a resource type').last().click();
+    await page.getByText('catalog-entity').click();
+    await page.getByText('Configure access').last().click();
+    await page.getByRole('button', { name: 'AllOf' }).click();
+    await page.getByPlaceholder('Select a rule').first().click();
+    await page.getByText('HAS_LABEL').click();
+    await page.getByLabel('label').fill('temp');
+    await page.getByRole('button', { name: 'Add rule' }).click();
+    await page.getByPlaceholder('Select a rule').last().click();
+    await page.getByText('HAS_SPEC').click();
+    await page.getByLabel('key').fill('test');
+    await page.getByTestId('save-conditions').click();
+    await expect(page.getByText('Configure access (2 rules)')).toBeVisible({
+      timeout: 20000,
+    });
+
     await clickButton('Next', page);
 
     await clickButton('Create', page);

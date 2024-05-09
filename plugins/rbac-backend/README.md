@@ -36,6 +36,8 @@ yarn workspace backend add @janus-idp/backstage-plugin-rbac-backend
 
 ### Configuring the Backend
 
+#### Old Backend System
+
 To connect the RBAC framework to your backend use the `PolicyBuilder` class in your backend permissions plugin (typically `packages/backend/src/plugins/permissions.ts`) as follows:
 
 ```ts
@@ -91,6 +93,16 @@ async function main() {
   );
   /* highlight-add-end */
 }
+```
+
+#### New Backend System
+
+The RBAC plugin supports the integration with the new backend system.
+
+Add the RBAC plugin to the `packages/backend/src/index.ts` file.
+
+```ts
+backend.add(import('@janus-idp/backstage-plugin-rbac-backend'));
 ```
 
 ### Configure policy admins

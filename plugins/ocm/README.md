@@ -31,7 +31,7 @@ If you are interested in Resource discovery and do not want any of the front-end
 
 #### Prerequisites
 
-- OCM is deployed and configured on a Kubernetes cluster.
+- OCM is [deployed and configured](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.10/html/install/installing#doc-wrapper) on a Kubernetes cluster.
 - [Kubernetes plugin for Backstage](https://backstage.io/docs/features/kubernetes) is installed and configured (Optional)
 - On the target Hub clusters please create a `ServiceAccount` and grant it the following `ClusterRole`:
 
@@ -155,6 +155,8 @@ For more information about the default owner configuration, see [upstream string
      return await createRouter({
        logger: env.logger,
        config: env.config,
+       permissions: env.permissions,
+       discovery: env.discovery,
      });
    }
    ```
@@ -417,6 +419,12 @@ The OCM plugin integrates your Backstage instance with multi-cluster engines and
 
 - Your Backstage application is installed and running.
 - You have installed the OCM plugin. For the installation process, see [Installation](#installation).
+- If RBAC permission framework is enabled, ensure adding the following permission policies in an external permission policies configuration file named `rbac-policy.csv` to allow the rbac admins or your desired user(s)/group(s) to access the ocm backend plugin:
+
+```csv rbac-policy.csv
+p, role:default/rbac_admin, ocm.entity.read, read, allow
+p, role:default/rbac_admin, ocm.cluster.read, read, allow
+```
 
 #### Procedure
 

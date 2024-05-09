@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useRef } from 'react';
 import { useAsyncFn, useDebounce } from 'react-use';
 
+import { Entity } from '@backstage/catalog-model';
 import { Content } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
@@ -13,7 +14,7 @@ import { Toggles } from '../../components/Filters/StatefulFilters';
 import { TimeDurationComponent } from '../../components/Time/TimeDurationComponent';
 import { VirtualList } from '../../components/VirtualList/VirtualList';
 import { isMultiCluster } from '../../config';
-import { nsEqual } from '../../helpers/namespaces';
+import { getEntityNs, nsEqual } from '../../helpers/namespaces';
 import { getErrorString, kialiApiRef } from '../../services/Api';
 import { KialiAppState, KialiContext } from '../../store';
 import { baseStyle } from '../../styles/StyleUtils';
@@ -29,6 +30,7 @@ import { getNamespaces } from '../Overview/OverviewPage';
 
 export const ServiceListPage = (props: {
   view?: string;
+  entity?: Entity;
 }): React.JSX.Element => {
   const kialiClient = useApi(kialiApiRef);
   const [namespaces, setNamespaces] = React.useState<NamespaceInfo[]>([]);
@@ -37,7 +39,9 @@ export const ServiceListPage = (props: {
     FilterHelper.currentDuration(),
   );
   const kialiState = React.useContext(KialiContext) as KialiAppState;
-  const activeNs = kialiState.namespaces.activeNamespaces.map(ns => ns.name);
+  const activeNs = props.entity
+    ? getEntityNs(props.entity)
+    : kialiState.namespaces.activeNamespaces.map(ns => ns.name);
   const prevActiveNs = useRef(activeNs);
   const prevDuration = useRef(duration);
   const activeToggles: ActiveTogglesInfo = Toggles.getToggles();
@@ -146,10 +150,11 @@ export const ServiceListPage = (props: {
         });
         setServices(serviceListItems);
       })
-      .catch(err =>
-        kialiState.alertUtils!.add(
-          `Could not fetch services: ${getErrorString(err)}`,
-        ),
+      .catch(
+        err =>
+          kialiState.alertUtils?.add(
+            `Could not fetch services: ${getErrorString(err)}`,
+          ),
       );
   };
 

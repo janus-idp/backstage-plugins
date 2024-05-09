@@ -1,3 +1,19 @@
+## @janus-idp/backstage-plugin-analytics-module-matomo [1.1.12](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-analytics-module-matomo@1.1.11...@janus-idp/backstage-plugin-analytics-module-matomo@1.1.12) (2024-05-02)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.8.5
+
+## @janus-idp/backstage-plugin-analytics-module-matomo [1.1.11](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-analytics-module-matomo@1.1.10...@janus-idp/backstage-plugin-analytics-module-matomo@1.1.11) (2024-05-02)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.8.4
+
 ## @janus-idp/backstage-plugin-analytics-module-matomo [1.1.10](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-analytics-module-matomo@1.1.9...@janus-idp/backstage-plugin-analytics-module-matomo@1.1.10) (2024-04-30)
 
 

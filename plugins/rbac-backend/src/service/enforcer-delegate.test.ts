@@ -1,5 +1,6 @@
 import { getVoidLogger } from '@backstage/backend-common';
 import { DatabaseService } from '@backstage/backend-plugin-api';
+import { mockServices } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 
 import { newEnforcer, newModelFromString } from 'casbin';
@@ -74,6 +75,8 @@ const dbManagerMock: DatabaseService = {
   getClient: jest.fn().mockImplementation(),
 };
 
+const mockAuthService = mockServices.auth();
+
 const config = new ConfigReader({
   backend: {
     database: {
@@ -105,7 +108,7 @@ describe('EnforcerDelegate', () => {
   >;
   let enfFilterGroupingPolicySpy: jest.SpyInstance<
     Promise<string[][]>,
-    [number, ...fieldValues: string[]],
+    [fieldIndex: number, ...fieldValues: string[]],
     any
   >;
   let enfRemoveGroupingPoliciesSpy: jest.SpyInstance<
@@ -174,6 +177,7 @@ describe('EnforcerDelegate', () => {
       tokenManagerMock,
       catalogDBClient,
       config,
+      mockAuthService,
     );
     enf.setRoleManager(rm);
     enf.enableAutoBuildRoleLinks(false);

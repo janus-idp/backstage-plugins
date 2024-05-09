@@ -1,9 +1,19 @@
 import * as React from 'react';
-import { Link } from 'react-router-dom';
 
-import { Chip, TableCell, Tooltip } from '@material-ui/core';
+import { Link } from '@backstage/core-components';
 
-import { isMultiCluster, KialiIcon, serverConfig } from '../../config';
+import {
+  Button,
+  Chip,
+  Drawer,
+  IconButton,
+  TableCell,
+  Tooltip,
+} from '@material-ui/core';
+// eslint-disable-next-line no-restricted-imports
+import { Close } from '@material-ui/icons';
+
+import { KialiIcon, serverConfig } from '../../config';
 import { isWaypoint } from '../../helpers/LabelFilterHelper';
 import { infoStyle } from '../../pages/Overview/OverviewCard/CanaryUpgradeProgress';
 import { ControlPlaneBadge } from '../../pages/Overview/OverviewCard/ControlPlaneBadge';
@@ -14,12 +24,15 @@ import { ValidationStatus } from '../../types/IstioObjects';
 import { ComponentStatus } from '../../types/IstioStatus';
 import { NamespaceInfo } from '../../types/NamespaceInfo';
 import { ServiceListItem } from '../../types/ServiceList';
-import { ENTITY } from '../../types/types';
+import { DRAWER, ENTITY } from '../../types/types';
 import { WorkloadListItem } from '../../types/Workload';
 import { getReconciliationCondition } from '../../utils/IstioConfigUtils';
+import { JanusObjectLink } from '../../utils/janusLinks';
+import { AppDetailsDrawer } from '../Drawers/AppDetailsDrawer';
+import { ServiceDetailsDrawer } from '../Drawers/ServiceDetailsDrawer';
+import { WorkloadDetailsDrawer } from '../Drawers/WorkloadDetailsDrawer';
 import { StatefulFilters } from '../Filters/StatefulFilters';
 import { HealthIndicator } from '../Health/HealthIndicator';
-import { getIstioObjectUrl } from '../Link/IstioObjectLink';
 import { NamespaceMTLSStatus } from '../MTls/NamespaceMTLSStatus';
 import { PFBadge, PFBadges, PFBadgeType } from '../Pf/PfBadges';
 import { ValidationObjectSummary } from '../Validations/ValidationObjectSummary';
@@ -34,42 +47,6 @@ import {
 } from './Config';
 
 const topPosition = 'top';
-const rootPath = 'kiali';
-// Istio Links
-const getIstioLink = (item: TResource): string => {
-  let type = '';
-  if ('type' in item) {
-    type = item.type;
-  }
-
-  return getIstioObjectUrl(item.name, item.namespace, type, item.cluster);
-};
-
-// Links
-const getLink = (item: TResource, config: Resource, query?: string): string => {
-  let url =
-    config.name === 'istio'
-      ? `${getIstioLink(item)}`
-      : `/${rootPath}/${config.name}/${item.namespace}/${item.name}`;
-
-  if (item.cluster && isMultiCluster && !url.includes('cluster')) {
-    if (url.includes('?')) {
-      url = `${url}&clusterName=${item.cluster}`;
-    } else {
-      url = `${url}?clusterName=${item.cluster}`;
-    }
-  }
-
-  if (query) {
-    if (url.includes('?')) {
-      url = `${url}&${query}`;
-    } else {
-      url = `${url}?${query}`;
-    }
-  }
-
-  return url;
-};
 
 // Cells
 export const actionRenderer = (
@@ -84,6 +61,69 @@ export const actionRenderer = (
     >
       {action}
     </TableCell>
+  );
+};
+
+const DrawerDiv = ({
+  name,
+  namespace,
+  config,
+}: {
+  name: string;
+  namespace: string;
+  config: string;
+}) => {
+  const [isOpen, toggleDrawer] = React.useState(false);
+
+  const DrawerContent = ({
+    toggleDrawer2,
+  }: {
+    toggleDrawer2: (isOpen: boolean) => void;
+  }) => {
+    return (
+      <div style={{ padding: '10px', minWidth: '400px' }} data-test="drawer">
+        <div style={{ paddingBottom: '10px' }}>
+          <IconButton
+            key="dismiss"
+            id="close_drawer"
+            title="Close the drawer"
+            onClick={() => toggleDrawer2(false)}
+            color="inherit"
+            style={{ right: '0', position: 'absolute', top: '5px' }}
+          >
+            <Close />
+          </IconButton>
+        </div>
+        <div />
+        <div>
+          {config === 'workloads' && (
+            <WorkloadDetailsDrawer namespace={namespace} workload={name} />
+          )}
+          {config === 'services' && (
+            <ServiceDetailsDrawer namespace={namespace} service={name} />
+          )}
+          {config === 'applications' && (
+            <AppDetailsDrawer namespace={namespace} app={name} />
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <>
+      <Button
+        variant="contained"
+        color="primary"
+        id={`drawer_${namespace}_${name}`}
+        onClick={() => toggleDrawer(true)}
+      >
+        {name}
+      </Button>
+      <Drawer anchor="right" open={isOpen} onClose={() => toggleDrawer(false)}>
+        <DrawerContent toggleDrawer2={toggleDrawer} />
+      </Drawer>
+    </>
   );
 };
 
@@ -113,18 +153,44 @@ export const item: Renderer<TResource> = (
     }
   }
 
+  if (view === DRAWER) {
+    return (
+      <TableCell
+        key={`VirtuaItem_Item_${resource.namespace}_${resource.name}`}
+        style={{ verticalAlign: 'middle', whiteSpace: 'nowrap' }}
+      >
+        <DrawerDiv
+          name={resource.name}
+          namespace={resource.namespace}
+          config={config.name}
+        />
+      </TableCell>
+    );
+  }
   return (
     <TableCell
-      role="gridcell"
       key={`VirtuaItem_Item_${resource.namespace}_${resource.name}`}
       style={{ verticalAlign: 'middle', whiteSpace: 'nowrap' }}
     >
-      {view !== ENTITY && (
+      {view !== ENTITY && view !== DRAWER && (
         <PFBadge badge={serviceBadge} position={topPosition} />
       )}
-      <Link key={key} to={getLink(resource, config)} className={linkColor}>
+      <JanusObjectLink
+        type={config.name}
+        entity={view === ENTITY}
+        name={resource.name}
+        namespace={resource.namespace}
+        cluster={resource.cluster}
+        objectType={
+          config.name === 'istio'
+            ? IstioTypes[(resource as IstioConfigItem).type].url
+            : (resource as WorkloadListItem).type || undefined
+        }
+        key={key}
+        className={linkColor}
+      >
         {resource.name}
-      </Link>
+      </JanusObjectLink>
     </TableCell>
   );
 };
@@ -156,7 +222,7 @@ export const namespace: Renderer<TResource> = (
       key={`VirtuaItem_Namespace_${resource.namespace}_${item.name}`}
       style={{ verticalAlign: 'middle', whiteSpace: 'nowrap' }}
     >
-      {view !== ENTITY && (
+      {view !== ENTITY && view !== DRAWER && (
         <PFBadge badge={PFBadges.Namespace} position={topPosition} />
       )}
       {resource.namespace}
@@ -194,12 +260,12 @@ export const labels: Renderer<SortResource | NamespaceInfo> = (
       }${resource.name}`}
       style={{ verticalAlign: 'middle', paddingBottom: '0.25rem' }}
     >
-      {view === ENTITY && resource.labels && (
+      {(view === ENTITY || view === DRAWER) && resource.labels && (
         <Tooltip title={labelsWrap}>
           <Chip label={Object.entries(resource.labels).length.toString()} />
         </Tooltip>
       )}
-      {view !== ENTITY && labelsView}
+      {view !== ENTITY && view !== DRAWER && labelsView}
     </TableCell>
   );
 };

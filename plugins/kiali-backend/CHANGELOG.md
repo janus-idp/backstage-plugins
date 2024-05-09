@@ -1,3 +1,33 @@
+## @janus-idp/backstage-plugin-kiali-backend [1.10.13](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali-backend@1.10.12...@janus-idp/backstage-plugin-kiali-backend@1.10.13) (2024-05-06)
+
+
+### Bug Fixes
+
+* **kiali:** remove kiali-common from package. ([#1586](https://github.com/janus-idp/backstage-plugins/issues/1586)) ([b1748a4](https://github.com/janus-idp/backstage-plugins/commit/b1748a4ee58f2920cf94dfbac8e88cd850fca2d9))
+
+## @janus-idp/backstage-plugin-kiali-backend [1.10.12](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali-backend@1.10.11...@janus-idp/backstage-plugin-kiali-backend@1.10.12) (2024-05-04)
+
+
+### Bug Fixes
+
+* **kiali:** remove IstioConfig extra, Fix links and add kiali control ([#1452](https://github.com/janus-idp/backstage-plugins/issues/1452)) ([51a35f0](https://github.com/janus-idp/backstage-plugins/commit/51a35f0ccee8a38555079b2fa6027639ee595f9b))
+
+## @janus-idp/backstage-plugin-kiali-backend [1.10.11](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali-backend@1.10.10...@janus-idp/backstage-plugin-kiali-backend@1.10.11) (2024-05-02)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.8.5
+
+## @janus-idp/backstage-plugin-kiali-backend [1.10.10](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali-backend@1.10.9...@janus-idp/backstage-plugin-kiali-backend@1.10.10) (2024-05-02)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.8.4
+
 ## @janus-idp/backstage-plugin-kiali-backend [1.10.9](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali-backend@1.10.8...@janus-idp/backstage-plugin-kiali-backend@1.10.9) (2024-04-30)
 
 

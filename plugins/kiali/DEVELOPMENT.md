@@ -154,3 +154,35 @@
    ```bash
    export KIALI_SERVICE_ACCOUNT_TOKEN=$(kubectl describe secret $(kubectl get secret -n istio-system | grep kiali-service-account-token | cut -d" " -f1) -n istio-system | grep token: | cut -d ":" -f2 | sed 's/^ *//')
    ```
+
+## Testing with Playwright
+
+To run the UI tests locally, take the following steps:
+
+First, install playwright dependencies:
+
+```bash
+$ yarn install --with-deps chromium
+```
+
+The remaining steps need to be run in parallel.
+
+Launch the plugin:
+
+```bash
+$ cd plugins/${plugin} && yarn start
+```
+
+Finally, launch the UI tests (headless):
+
+```bash
+$ cd plugins/${plugin} && yarn run ui-test
+```
+
+If you wish to see the test runner UI, instead of headless:
+
+```bash
+$ cd plugins/${plugin} && yarn playwright test --ui
+```
+
+Test results from the headless run will be available in `plugins/${plugin}/playwright-report` folder.

@@ -1,3 +1,40 @@
+## @janus-idp/backstage-plugin-kiali [1.17.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.17.0...@janus-idp/backstage-plugin-kiali@1.17.1) (2024-05-08)
+
+
+### Documentation
+
+* **kiali:** update rhdh docs ([#1621](https://github.com/janus-idp/backstage-plugins/issues/1621)) ([7087cba](https://github.com/janus-idp/backstage-plugins/commit/7087cbad8929708f065e0027871a337946f09881))
+
+## @janus-idp/backstage-plugin-kiali [1.17.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.16.10...@janus-idp/backstage-plugin-kiali@1.17.0) (2024-05-07)
+
+
+### Features
+
+* **kiali:** add card for resources  ([#1565](https://github.com/janus-idp/backstage-plugins/issues/1565)) ([1e727aa](https://github.com/janus-idp/backstage-plugins/commit/1e727aae0464aa55e4dce754a04e97a5708c07f9))
+
+## @janus-idp/backstage-plugin-kiali [1.16.10](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.16.9...@janus-idp/backstage-plugin-kiali@1.16.10) (2024-05-04)
+
+
+### Bug Fixes
+
+* **kiali:** remove IstioConfig extra, Fix links and add kiali control ([#1452](https://github.com/janus-idp/backstage-plugins/issues/1452)) ([51a35f0](https://github.com/janus-idp/backstage-plugins/commit/51a35f0ccee8a38555079b2fa6027639ee595f9b))
+
+## @janus-idp/backstage-plugin-kiali [1.16.9](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.16.8...@janus-idp/backstage-plugin-kiali@1.16.9) (2024-05-02)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.8.5
+
+## @janus-idp/backstage-plugin-kiali [1.16.8](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.16.7...@janus-idp/backstage-plugin-kiali@1.16.8) (2024-05-02)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.8.4
+
 ## @janus-idp/backstage-plugin-kiali [1.16.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.16.6...@janus-idp/backstage-plugin-kiali@1.16.7) (2024-04-30)
 
 

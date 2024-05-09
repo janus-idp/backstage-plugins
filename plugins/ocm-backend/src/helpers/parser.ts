@@ -85,7 +85,7 @@ export const parseUpdateInfo = (clusterInfo: ManagedClusterInfo) => {
       available: true,
       version,
       url: versionAvailableUpdates[availableUpdates.indexOf(version as string)]
-        .url,
+        ?.url,
     },
   };
 };

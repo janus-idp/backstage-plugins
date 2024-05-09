@@ -97,11 +97,11 @@ const getAggregate = (
   outbound: RequestTolerance[];
 } => {
   // Get all tolerances where direction is inbound
-  const inboundTolerances = conf.filter(tol =>
+  const inboundTolerances = conf?.filter(tol =>
     checkExpr(tol.direction, 'inbound'),
   );
   // Get all tolerances where direction is outbound
-  const outboundTolerances = conf.filter(tol =>
+  const outboundTolerances = conf?.filter(tol =>
     checkExpr(tol.direction, 'outbound'),
   );
 
@@ -164,7 +164,7 @@ export const calculateErrorRate = (
   const rateAnnotation = new RateHealth(requests.healthAnnotations);
   const conf =
     rateAnnotation.toleranceConfig ||
-    getRateHealthConfig(ns, name, kind).tolerance;
+    getRateHealthConfig(ns, name, kind)?.tolerance;
 
   // Get aggregate
   const status = getAggregate(requests, conf);

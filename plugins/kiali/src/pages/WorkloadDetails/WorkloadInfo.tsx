@@ -22,15 +22,18 @@ import {
   Validations,
   ValidationTypes,
 } from '../../types/IstioObjects';
+import { DRAWER, ENTITY } from '../../types/types';
 import { Workload } from '../../types/Workload';
 import { WorkloadPods } from './WorkloadPods';
 import { WorkloadDescription } from './WorkloadsDescription';
 
 type WorkloadInfoProps = {
+  entity?: boolean;
   duration?: number;
   namespace?: string;
   workload: Workload;
   health?: WorkloadHealth;
+  view?: string;
 };
 
 export const WorkloadInfo = (workloadProps: WorkloadInfoProps) => {
@@ -296,35 +299,45 @@ export const WorkloadInfo = (workloadProps: WorkloadInfoProps) => {
     return validations;
   };
 
+  const size =
+    workloadProps.view === ENTITY || workloadProps.view === DRAWER ? 12 : 4;
   return (
     <>
       {workloadProps.workload && (
         <Grid container spacing={1} style={{ paddingTop: '20px' }}>
-          <Grid key={`Card_${workloadProps.workload?.name}`} xs={4}>
+          <Grid key={`Card_${workloadProps.workload?.name}`} item xs={size}>
             <WorkloadDescription
+              entity={workloadProps.entity}
               workload={workloadProps.workload}
               health={workloadProps.health}
               namespace={namespace}
+              view={workloadProps.view}
             />
           </Grid>
-          <Grid key={`Card_${workloadProps.workload?.name}`} item xs={4}>
-            <WorkloadPods
-              namespace={namespace}
-              workload={workloadProps.workload?.name || ''}
-              pods={pods}
-              validations={
-                workloadProps.workload
-                  ? workloadValidations(workloadProps.workload).pod || {}
-                  : {}
-              }
-            />
-          </Grid>
-          <Grid key={`Card_${workloadProps.workload?.name}`} item xs={4}>
-            <IstioConfigCard
-              name={workloadProps.workload ? workloadProps.workload.name : ''}
-              items={istioValidations ? istioValidations : []}
-            />
-          </Grid>
+          {workloadProps.view !== DRAWER && (
+            <>
+              <Grid key={`Card_${workloadProps.workload?.name}`} item xs={4}>
+                <WorkloadPods
+                  namespace={namespace}
+                  workload={workloadProps.workload?.name || ''}
+                  pods={pods}
+                  validations={
+                    workloadProps.workload
+                      ? workloadValidations(workloadProps.workload).pod || {}
+                      : {}
+                  }
+                />
+              </Grid>
+              <Grid key={`Card_${workloadProps.workload?.name}`} item xs={4}>
+                <IstioConfigCard
+                  name={
+                    workloadProps.workload ? workloadProps.workload.name : ''
+                  }
+                  items={istioValidations ? istioValidations : []}
+                />
+              </Grid>
+            </>
+          )}
         </Grid>
       )}
     </>

@@ -1,3 +1,14 @@
+## @janus-idp/backstage-plugin-ocm-common [3.0.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-common@2.3.0...@janus-idp/backstage-plugin-ocm-common@3.0.0) (2024-05-04)
+
+
+### ⚠ BREAKING CHANGES
+
+* **ocm:** add basic permissions to ocm backend plugin (#1528)
+
+### Features
+
+* **ocm:** add basic permissions to ocm backend plugin ([#1528](https://github.com/janus-idp/backstage-plugins/issues/1528)) ([c28d564](https://github.com/janus-idp/backstage-plugins/commit/c28d5643034912228425930a42b60bbe4bc8a8ec))
+
 ## @janus-idp/backstage-plugin-ocm-common [2.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-ocm-common@2.2.4...@janus-idp/backstage-plugin-ocm-common@2.3.0) (2024-04-15)
 
 
