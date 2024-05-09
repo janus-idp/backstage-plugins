@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { Entity } from '@backstage/catalog-model';
 import {
@@ -504,18 +504,16 @@ export const TabsMock = () => {
 const MockProvider = (props: Props) => {
   const content = (
     <KialiProvider entity={props.entity || mockEntity}>
-      <BrowserRouter>
-        <Page themeId="tool">
-          {!props.isEntity && (
-            <>
-              <KialiHeader />
-              <TabsMock />
-              {getRoutes(true)}
-            </>
-          )}
-          {props.isEntity && <Content>{getEntityRoutes()}</Content>}
-        </Page>
-      </BrowserRouter>
+      <Page themeId="tool">
+        {!props.isEntity && (
+          <>
+            <KialiHeader />
+            <TabsMock />
+            {getRoutes(true)}
+          </>
+        )}
+        {props.isEntity && <Content>{getEntityRoutes()}</Content>}
+      </Page>
     </KialiProvider>
   );
 
@@ -533,17 +531,15 @@ const MockProvider = (props: Props) => {
 const MockEntityCard = () => {
   const content = (
     <EntityProvider entity={mockEntity}>
-      <BrowserRouter>
-        <div style={{ padding: '20px' }}>
-          <TestApiProvider apis={[[kialiApiRef, new MockKialiClient()]]}>
-            <Grid container spacing={3} alignItems="stretch">
-              <Grid item md={8} xs={12}>
-                <EntityKialiResourcesCard />
-              </Grid>
+      <div style={{ padding: '20px' }}>
+        <TestApiProvider apis={[[kialiApiRef, new MockKialiClient()]]}>
+          <Grid container spacing={3} alignItems="stretch">
+            <Grid item md={8} xs={12}>
+              <EntityKialiResourcesCard />
             </Grid>
-          </TestApiProvider>
-        </div>
-      </BrowserRouter>
+          </Grid>
+        </TestApiProvider>
+      </div>
     </EntityProvider>
   );
 

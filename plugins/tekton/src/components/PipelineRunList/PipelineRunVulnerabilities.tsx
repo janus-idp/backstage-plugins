@@ -12,6 +12,7 @@ import { global_palette_blue_300 as lowColor } from '@patternfly/react-tokens/di
 import { global_palette_gold_400 as mediumColor } from '@patternfly/react-tokens/dist/js/global_palette_gold_400';
 import { global_palette_orange_300 as highColor } from '@patternfly/react-tokens/dist/js/global_palette_orange_300';
 import { global_palette_red_200 as criticalColor } from '@patternfly/react-tokens/dist/js/global_palette_red_200';
+import classNames from 'classnames';
 
 import { PipelineRunKind } from '@janus-idp/shared-react';
 
@@ -68,7 +69,7 @@ const PipelineRunVulnerabilities: React.FC<PipelineRunVulnerabilitiesProps> = ({
     <div className={classes.pipelineVulnerabilities}>
       {scanResults?.vulnerabilities ? (
         <>
-          <div className={classes.severityContainer}>
+          <div className={classNames(classes.severityContainer, 'severity')}>
             <span className={classes.severityStatus}>
               <Tooltip content="Critical">
                 <CriticalRiskIcon
@@ -82,7 +83,7 @@ const PipelineRunVulnerabilities: React.FC<PipelineRunVulnerabilitiesProps> = ({
               {scanResults.vulnerabilities.critical || 0}
             </span>
           </div>
-          <div className={classes.severityContainer}>
+          <div className={classNames(classes.severityContainer, 'severity')}>
             <span className={classes.severityStatus}>
               <Tooltip content="High">
                 <AngleDoubleUpIcon
@@ -96,7 +97,7 @@ const PipelineRunVulnerabilities: React.FC<PipelineRunVulnerabilitiesProps> = ({
               {scanResults.vulnerabilities.high || 0}
             </span>
           </div>
-          <div className={classes.severityContainer}>
+          <div className={classNames(classes.severityContainer, 'severity')}>
             <span className={classes.severityStatus}>
               <Tooltip content="Medium">
                 <EqualsIcon title="Medium" className={classes.mediumStatus} />
@@ -107,7 +108,7 @@ const PipelineRunVulnerabilities: React.FC<PipelineRunVulnerabilitiesProps> = ({
               {scanResults.vulnerabilities.medium || 0}
             </span>
           </div>
-          <div className={classes.severityContainer}>
+          <div className={classNames(classes.severityContainer, 'severity')}>
             <span className={classes.severityStatus}>
               <Tooltip content="Low">
                 <AngleDoubleDownIcon

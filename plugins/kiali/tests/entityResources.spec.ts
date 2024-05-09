@@ -1,18 +1,20 @@
 import { expect, Page, test } from '@playwright/test';
 
+import { Common } from './kialiHelper';
+
 test.describe('Entity resources', () => {
   let page: Page;
+  let common: Common;
 
   test.describe('kiali resources', () => {
     test.beforeAll(async ({ browser }) => {
       const context = await browser.newContext();
       page = await context.newPage();
+      common = new Common(page);
+
+      await common.loginAsGuest();
       await page.goto('/kiali-entity-card');
       page.locator('[data-test="kiali-tabbed-card"]');
-    });
-
-    test.afterAll(async ({ browser }) => {
-      await browser.close();
     });
 
     test('Workloads content', async () => {

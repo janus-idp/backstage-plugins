@@ -38,10 +38,10 @@
     "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
-    "@backstage/core-components": "^0.14.3",
-    "@backstage/core-plugin-api": "^1.9.1",
+    "@backstage/core-components": "^0.14.6",
+    "@backstage/core-plugin-api": "^1.9.2",
     "@backstage/errors": "^1.2.4",
-    "@backstage/plugin-catalog": "^1.18.2",
+    "@backstage/plugin-catalog": "^1.19.0",
     "@backstage/types": "^1.1.1",
     "@janus-idp/backstage-plugin-orchestrator-common": "1.7.0",
     "@kie-tools-core/editor": "^0.32.0",
@@ -55,8 +55,8 @@
     "@material-ui/lab": "^4.0.0-alpha.45",
     "@monaco-editor/react": "^4.6.0",
     "@mui/icons-material": "^5.15.3",
-    "@rjsf/core-v5": "npm:@rjsf/core@5.7.3",
-    "@rjsf/material-ui-v5": "npm:@rjsf/material-ui@5.7.3",
+    "@rjsf/core": "^5.7.3",
+    "@rjsf/material-ui": "^5.7.3",
     "@rjsf/utils": "5.7.3",
     "@rjsf/validator-ajv8": "5.7.3",
     "moment": "^2.29.4",
@@ -69,19 +69,20 @@
     "vscode-languageserver-types": "^3.16.0"
   },
   "devDependencies": {
-    "@backstage/cli": "0.26.2",
-    "@backstage/dev-utils": "1.0.30",
-    "@backstage/test-utils": "1.5.3",
+    "@backstage/cli": "0.26.4",
+    "@backstage/dev-utils": "1.0.31",
+    "@backstage/test-utils": "1.5.4",
     "@janus-idp/cli": "1.8.5",
     "@storybook/react": "7.5.3",
     "@testing-library/react": "14.2.1",
     "@storybook/preview-api": "7.5.3",
-    "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
   },
   "peerDependencies": {
-    "react": "^16.13.1 || ^17.0.0 || ^18.2.0",
-    "react-router-dom": "^6.3.0"
+    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-router-dom": "^6.0.0"
   },
   "scalprum": {
     "name": "janus-idp.backstage-plugin-orchestrator",

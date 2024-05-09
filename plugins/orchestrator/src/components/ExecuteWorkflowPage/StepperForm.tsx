@@ -13,8 +13,8 @@ import {
   Stepper,
   Typography,
 } from '@material-ui/core';
-import { FormProps, ThemeProps, withTheme } from '@rjsf/core-v5';
-import { Theme as MuiTheme } from '@rjsf/material-ui-v5';
+import { FormProps, ThemeProps, withTheme } from '@rjsf/core';
+import { Theme as MuiTheme } from '@rjsf/material-ui';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import validator from '@rjsf/validator-ajv8';
 

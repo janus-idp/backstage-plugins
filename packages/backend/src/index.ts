@@ -1,135 +1,30 @@
-/*
- * Hi!
- *
- * Note that this is an EXAMPLE Backstage backend. Please check the README.
- *
- * Happy hacking!
- */
+import { createBackend } from '@backstage/backend-defaults';
 
-import {
-  CacheManager,
-  createServiceBuilder,
-  DatabaseManager,
-  getRootLogger,
-  HostDiscovery,
-  loadBackendConfig,
-  notFoundHandler,
-  ServerTokenManager,
-  SingleHostDiscovery,
-  UrlReaders,
-  useHotMemoize,
-} from '@backstage/backend-common';
-import { TaskScheduler } from '@backstage/backend-tasks';
-import { CatalogClient } from '@backstage/catalog-client';
-import { Config } from '@backstage/config';
-import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
-import { DefaultEventsService } from '@backstage/plugin-events-node';
-import { ServerPermissionClient } from '@backstage/plugin-permission-node';
+const backend = createBackend();
 
-import Router from 'express-promise-router';
+backend.add(import('@backstage/plugin-app-backend/alpha'));
+backend.add(import('@backstage/plugin-proxy-backend/alpha'));
+backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
+backend.add(import('@backstage/plugin-techdocs-backend/alpha'));
 
-import app from './plugins/app';
-import auth from './plugins/auth';
-import catalog from './plugins/catalog';
-import permission from './plugins/permissions';
-import proxy from './plugins/proxy';
-import scaffolder from './plugins/scaffolder';
-import search from './plugins/search';
-import techdocs from './plugins/techdocs';
-import { PluginEnvironment } from './types';
+// auth plugin
+backend.add(import('@backstage/plugin-auth-backend'));
+// See https://backstage.io/docs/backend-system/building-backends/migrating#the-auth-plugin
+backend.add(import('@backstage/plugin-auth-backend-module-guest-provider'));
+// See https://backstage.io/docs/auth/guest/provider
 
-function makeCreateEnv(config: Config) {
-  const root = getRootLogger();
-  const reader = UrlReaders.default({ logger: root, config });
-  const discovery = SingleHostDiscovery.fromConfig(config);
-  const cacheManager = CacheManager.fromConfig(config);
-  const databaseManager = DatabaseManager.fromConfig(config, { logger: root });
-  const tokenManager = ServerTokenManager.fromConfig(config, { logger: root });
-  const taskScheduler = TaskScheduler.fromConfig(config);
-  const eventsService = DefaultEventsService.create({ logger: root });
-  const catalogApi = new CatalogClient({
-    discoveryApi: HostDiscovery.fromConfig(config),
-  });
+// catalog plugin
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(
+  import('@backstage/plugin-catalog-backend-module-scaffolder-entity-model'),
+);
 
-  const identity = DefaultIdentityClient.create({
-    discovery,
-  });
-  const permissions = ServerPermissionClient.fromConfig(config, {
-    discovery,
-    tokenManager,
-  });
+// permission plugin
+backend.add(import('@janus-idp/backstage-plugin-rbac-backend'));
 
-  root.info(`Created UrlReader ${reader}`);
+// search plugin
+backend.add(import('@backstage/plugin-search-backend/alpha'));
+backend.add(import('@backstage/plugin-search-backend-module-catalog/alpha'));
+backend.add(import('@backstage/plugin-search-backend-module-techdocs/alpha'));
 
-  return (plugin: string): PluginEnvironment => {
-    const logger = root.child({ type: 'plugin', plugin });
-    const database = databaseManager.forPlugin(plugin);
-    const cache = cacheManager.forPlugin(plugin);
-    const scheduler = taskScheduler.forPlugin(plugin);
-    return {
-      logger,
-      database,
-      cache,
-      config,
-      reader,
-      discovery,
-      tokenManager,
-      scheduler,
-      permissions,
-      identity,
-      eventsService,
-      catalogApi,
-    };
-  };
-}
-
-async function main() {
-  const config = await loadBackendConfig({
-    argv: process.argv,
-    logger: getRootLogger(),
-  });
-  const createEnv = makeCreateEnv(config);
-
-  const catalogEnv = useHotMemoize(module, () => createEnv('catalog'));
-  const scaffolderEnv = useHotMemoize(module, () => createEnv('scaffolder'));
-  const authEnv = useHotMemoize(module, () => createEnv('auth'));
-  const proxyEnv = useHotMemoize(module, () => createEnv('proxy'));
-  const techdocsEnv = useHotMemoize(module, () => createEnv('techdocs'));
-  const searchEnv = useHotMemoize(module, () => createEnv('search'));
-  const appEnv = useHotMemoize(module, () => createEnv('app'));
-  const permissionEnv = useHotMemoize(module, () => createEnv('permission'));
-
-  const apiRouter = Router();
-  apiRouter.use('/catalog', await catalog(catalogEnv));
-  apiRouter.use('/scaffolder', await scaffolder(scaffolderEnv));
-  apiRouter.use('/auth', await auth(authEnv));
-  apiRouter.use('/techdocs', await techdocs(techdocsEnv));
-  apiRouter.use('/proxy', await proxy(proxyEnv));
-  apiRouter.use('/search', await search(searchEnv));
-  apiRouter.use(
-    '/permission',
-    await permission(permissionEnv, {
-      // return list static plugin which supports Backstage permissions.
-      getPluginIds: () => ['catalog', 'scaffolder', 'permission'],
-    }),
-  );
-
-  // Add backends ABOVE this line; this 404 handler is the catch-all fallback
-  apiRouter.use(notFoundHandler());
-
-  const service = createServiceBuilder(module)
-    .loadConfig(config)
-    .addRouter('/api', apiRouter)
-    .addRouter('', await app(appEnv));
-
-  await service.start().catch(err => {
-    console.log(err);
-    process.exit(1);
-  });
-}
-
-module.hot?.accept();
-main().catch(error => {
-  console.error('Backend failed to start up', error);
-  process.exit(1);
-});
+backend.start();
