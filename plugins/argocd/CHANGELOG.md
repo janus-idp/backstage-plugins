@@ -1,3 +1,11 @@
+## @janus-idp/backstage-plugin-argocd [1.0.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-argocd@1.0.2...@janus-idp/backstage-plugin-argocd@1.0.3) (2024-05-09)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.8.6
+
 ## @janus-idp/backstage-plugin-argocd [1.0.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-argocd@1.0.1...@janus-idp/backstage-plugin-argocd@1.0.2) (2024-05-08)
 
 
