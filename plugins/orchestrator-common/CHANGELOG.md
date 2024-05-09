@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-orchestrator-common [1.7.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-common@1.6.4...@janus-idp/backstage-plugin-orchestrator-common@1.7.0) (2024-05-09)
+
+
+### Features
+
+* **orchestrator:** add ability to re-trigger workflow in error state ([#1624](https://github.com/janus-idp/backstage-plugins/issues/1624)) ([8709a37](https://github.com/janus-idp/backstage-plugins/commit/8709a37d08c2eafc22f10bd2a41f0a105768222d))
+
 ## @janus-idp/backstage-plugin-orchestrator-common [1.6.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-common@1.6.3...@janus-idp/backstage-plugin-orchestrator-common@1.6.4) (2024-04-18)
 
 
