@@ -34,7 +34,7 @@
     {
       "matchDepPatterns": ["^@backstage/"],
       "groupName": "Core Backstage packages",
-      "enabled": "false"
+      "enabled": false
     },
     {
       "matchDepPatterns": [

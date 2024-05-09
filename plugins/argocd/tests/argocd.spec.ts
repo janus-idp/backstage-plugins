@@ -5,15 +5,19 @@ import {
   preProdApplication,
   prodApplication,
 } from '../dev/__data__';
+import { Common } from './argocdHelper';
 import { verifyAppCard, verifyAppSidebar } from './utils';
 
 test.describe('ArgoCD plugin', () => {
   let argocdPage: Page;
+  let common: Common;
 
   test.beforeAll(async ({ browser }) => {
     const context = await browser.newContext();
     argocdPage = await context.newPage();
-    await argocdPage.goto('/');
+    common = new Common(argocdPage);
+
+    await common.loginAsGuest();
     await expect(
       argocdPage.getByRole('heading', { name: 'Deployment lifecycle' }),
     ).toBeVisible({ timeout: 20000 });

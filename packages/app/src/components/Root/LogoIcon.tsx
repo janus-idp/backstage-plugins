@@ -1,8 +1,6 @@
-import React from 'react';
+import { makeStyles } from 'tss-react/mui';
 
-import { makeStyles } from '@material-ui/core';
-
-const useStyles = makeStyles({
+const useStyles = makeStyles()({
   svg: {
     width: 'auto',
     height: 28,
@@ -12,8 +10,8 @@ const useStyles = makeStyles({
   },
 });
 
-const LogoIcon = () => {
-  const classes = useStyles();
+const LogoIcon = (): React.JSX.Element => {
+  const { classes } = useStyles();
 
   return (
     <svg

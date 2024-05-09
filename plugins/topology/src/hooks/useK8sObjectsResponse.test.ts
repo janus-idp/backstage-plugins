@@ -1,6 +1,8 @@
+import { act } from 'react';
+
 import { useKubernetesObjects } from '@backstage/plugin-kubernetes';
 
-import { act, renderHook } from '@testing-library/react';
+import { renderHook } from '@testing-library/react';
 
 import { watchResourcesData } from '../__fixtures__/k8sResourcesContextData';
 import { kubernetesObject } from '../__fixtures__/kubernetesObject';

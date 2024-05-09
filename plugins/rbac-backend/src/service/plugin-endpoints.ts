@@ -4,7 +4,11 @@ import {
   ReaderFactory,
   UrlReaders,
 } from '@backstage/backend-common';
-import { AuthService, UrlReaderService } from '@backstage/backend-plugin-api';
+import {
+  AuthService,
+  LoggerService,
+  UrlReaderService,
+} from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { isError } from '@backstage/errors';
 import {
@@ -15,8 +19,6 @@ import {
   MetadataResponse,
   MetadataResponseSerializedRule,
 } from '@backstage/plugin-permission-node';
-
-import { Logger } from 'winston';
 
 import { Policy } from '@janus-idp/backstage-plugin-rbac-common';
 import { PluginIdProvider } from '@janus-idp/backstage-plugin-rbac-node';
@@ -43,7 +45,7 @@ export class PluginPermissionMetadataCollector {
   constructor(
     private readonly discovery: PluginEndpointDiscovery,
     private readonly pluginIdProvider: PluginIdProvider,
-    private readonly logger: Logger,
+    private readonly logger: LoggerService,
     config: Config,
   ) {
     this.pluginIds = this.pluginIdProvider.getPluginIds();
