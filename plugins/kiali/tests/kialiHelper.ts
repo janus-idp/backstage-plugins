@@ -1,4 +1,4 @@
-import { expect, Page } from '@playwright/test';
+import { expect, type Locator, type Page } from '@playwright/test';
 
 export class Common {
   page: Page;
@@ -18,24 +18,17 @@ export class Common {
 
   async clickButton(
     label: string,
-    options: { exact?: boolean; force?: boolean } = {
-      exact: true,
-      force: false,
-    },
+    clickOpts?: Parameters<Locator['click']>[0],
+    getByTextOpts: Parameters<Locator['getByText']>[1] = { exact: true },
   ) {
     const muiButtonLabel = 'span[class^="MuiButton-label"]';
     const selector = `${muiButtonLabel}:has-text("${label}")`;
     const button = this.page
       .locator(selector)
-      .getByText(label, { exact: options.exact })
+      .getByText(label, getByTextOpts)
       .first();
     await button.waitFor({ state: 'visible' });
-
-    if (options?.force) {
-      await button.click({ force: true });
-    } else {
-      await button.click();
-    }
+    await button.click(clickOpts);
   }
 
   async waitForSideBarVisible() {
