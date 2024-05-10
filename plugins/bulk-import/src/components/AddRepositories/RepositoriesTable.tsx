@@ -265,11 +265,12 @@ export const RepositoriesTable = ({
           org.name === reposData.find(repo => repo.id === id)?.organization,
       )?.id;
 
-      const selectedRepositories = newSelected.filter(selId =>
-        orgsData
-          .find(org => org.id === orgId)
-          ?.repositories?.map(r => r.id)
-          .includes(selId),
+      const selectedRepositories = newSelected.filter(
+        selId =>
+          orgsData
+            .find(org => org.id === orgId)
+            ?.repositories?.map(r => r.id)
+            .includes(selId),
       );
       // and update the selectedRepositories in the org
       const newOrgsData = orgsData.map(org => {
@@ -337,8 +338,8 @@ export const RepositoriesTable = ({
     org: AddRepositoriesData,
     drawerSelected: number[],
   ): number => {
-    return drawerSelected.filter(selId =>
-      org.repositories?.some(repo => repo.id === selId),
+    return drawerSelected.filter(
+      selId => org.repositories?.some(repo => repo.id === selId),
     ).length;
   };
 

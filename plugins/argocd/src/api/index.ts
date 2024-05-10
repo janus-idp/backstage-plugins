@@ -146,8 +146,8 @@ export class ArgoCDApiClient implements ArgoCDApi {
     }
     const promises: any = [];
     options.revisionIDs.forEach((revisionID: string) => {
-      const application = options.apps.find(app =>
-        app?.status?.history?.find(h => h.revision === revisionID),
+      const application = options.apps.find(
+        app => app?.status?.history?.find(h => h.revision === revisionID),
       );
       if (application) {
         promises.push(

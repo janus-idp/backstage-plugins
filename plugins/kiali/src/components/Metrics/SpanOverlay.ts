@@ -67,8 +67,8 @@ export class SpanOverlay {
       opts.targetKind === MetricsObjectTypes.APP
         ? this.kialiClient.getAppSpans
         : opts.targetKind === MetricsObjectTypes.SERVICE
-          ? this.kialiClient.getServiceSpans
-          : this.kialiClient.getWorkloadSpans;
+        ? this.kialiClient.getServiceSpans
+        : this.kialiClient.getWorkloadSpans;
     apiCall(opts.namespace, opts.target, q, opts.cluster)
       .then(res => {
         this.lastFetchError = false;

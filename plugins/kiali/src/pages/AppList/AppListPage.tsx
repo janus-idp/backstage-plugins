@@ -84,10 +84,11 @@ export const AppListPage = (props: {
         });
         setApps(appListItems);
       })
-      .catch(err =>
-        kialiState.alertUtils?.add(
-          `Could not fetch services: ${getErrorString(err)}`,
-        ),
+      .catch(
+        err =>
+          kialiState.alertUtils?.add(
+            `Could not fetch services: ${getErrorString(err)}`,
+          ),
       );
   };
 
