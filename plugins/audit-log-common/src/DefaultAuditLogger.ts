@@ -114,12 +114,7 @@ export class DefaultAuditLogger implements AuditLogger {
       response: options.response,
       metadata: options.metadata,
     });
-    /**
-     * FIXME: yarn tsc is currently complaining about the following:
-     * Property 'meta' is incompatible with index signature.
-     *  Type 'Record<PropertyKey, unknown>' is not assignable to type 'JsonValue | undefined'.
-     *    Type 'Record<PropertyKey, unknown>' is missing the following properties from type 'JsonValue[]': length, pop, push, concat, and 35 more.ts
-     */
+
     this.logger.info(options.message, auditLogDetails);
   }
 
@@ -138,12 +133,6 @@ export class DefaultAuditLogger implements AuditLogger {
       metadata: options.metadata,
     });
 
-    /**
-     * FIXME: yarn tsc is currently complaining about the following:
-     * Property 'meta' is incompatible with index signature.
-     *  Type 'Record<PropertyKey, unknown>' is not assignable to type 'JsonValue | undefined'.
-     *    Type 'Record<PropertyKey, unknown>' is missing the following properties from type 'JsonValue[]': length, pop, push, concat, and 35 more.ts
-     */
     this.logger.error(options.message, auditLogDetails);
   }
 }

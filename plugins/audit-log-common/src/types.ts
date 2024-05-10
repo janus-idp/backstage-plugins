@@ -4,6 +4,7 @@ import {
   LoggerService,
 } from '@backstage/backend-plugin-api';
 import { ErrorLike } from '@backstage/errors';
+import { JsonValue } from '@backstage/types';
 
 import { Request } from 'express';
 
@@ -49,7 +50,7 @@ export type AuditLogDetails = {
   stage: string;
   request?: AuditRequest;
   response?: AuditResponse;
-  meta: Record<PropertyKey, unknown>;
+  meta: JsonValue;
   isAuditLog: true;
 } & AuditLogStatus;
 
@@ -66,7 +67,7 @@ export type AuditActorOptions =
 export type AuditLogDetailsOptions = {
   eventName: string;
   stage: string;
-  metadata?: Record<PropertyKey, unknown>;
+  metadata?: JsonValue;
   response?: AuditResponse;
 } & AuditActorOptions &
   ({ status: 'succeeded' } | { status: 'failed'; errors: unknown[] });
@@ -75,7 +76,7 @@ export type AuditLogOptions = {
   eventName: string;
   message: string;
   stage: string;
-  metadata?: Record<PropertyKey, unknown>;
+  metadata?: JsonValue;
   response?: AuditResponse;
 } & AuditActorOptions;
 
