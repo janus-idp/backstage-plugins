@@ -1,4 +1,3 @@
-import { TokenManager } from '@backstage/backend-common';
 import { AuthService } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { parseEntityRef } from '@backstage/catalog-model';
@@ -17,7 +16,6 @@ export class BackstageRoleManager implements RoleManager {
   constructor(
     private readonly catalogApi: CatalogApi,
     private readonly log: Logger,
-    private readonly tokenManager: TokenManager,
     private readonly catalogDBClient: Knex,
     private readonly config: Config,
     private readonly auth: AuthService,
@@ -108,7 +106,6 @@ export class BackstageRoleManager implements RoleManager {
 
     const memo = new AncestorSearchMemo(
       name1,
-      this.tokenManager,
       this.catalogApi,
       this.catalogDBClient,
       this.auth,
@@ -186,7 +183,6 @@ export class BackstageRoleManager implements RoleManager {
     if (kind === 'user') {
       const memo = new AncestorSearchMemo(
         name,
-        this.tokenManager,
         this.catalogApi,
         this.catalogDBClient,
         this.auth,

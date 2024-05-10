@@ -64,13 +64,6 @@ const policyMetadataStorageMock: PolicyMetadataStorage = {
   removePolicyMetadata: jest.fn().mockImplementation(),
 };
 
-const tokenManagerMock = {
-  getToken: jest.fn().mockImplementation(async () => {
-    return Promise.resolve({ token: 'some-token' });
-  }),
-  authenticate: jest.fn().mockImplementation(),
-};
-
 const dbManagerMock: DatabaseService = {
   getClient: jest.fn().mockImplementation(),
 };
@@ -174,7 +167,6 @@ describe('EnforcerDelegate', () => {
     const rm = new BackstageRoleManager(
       catalogApi,
       logger,
-      tokenManagerMock,
       catalogDBClient,
       config,
       mockAuthService,

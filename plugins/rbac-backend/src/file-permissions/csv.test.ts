@@ -1,4 +1,3 @@
-import { TokenManager } from '@backstage/backend-common';
 import { mockServices } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 
@@ -96,13 +95,6 @@ const policyMetadataStorageMock: PolicyMetadataStorage = {
   removePolicyMetadata: jest.fn().mockImplementation(),
 };
 
-const tokenManagerMock = {
-  getToken: jest.fn().mockImplementation(async () => {
-    return Promise.resolve({ token: 'some-token' });
-  }),
-  authenticate: jest.fn().mockImplementation(),
-};
-
 const loggerMock: any = {
   warn: jest.fn().mockImplementation(),
   debug: jest.fn().mockImplementation(),
@@ -114,7 +106,6 @@ async function createEnforcer(
   theModel: Model,
   adapter: Adapter,
   log: Logger,
-  tokenManager: TokenManager,
 ): Promise<Enforcer> {
   const catalogDBClient = Knex.knex({ client: MockClient });
   const enf = await newEnforcer(theModel, adapter);
@@ -124,7 +115,6 @@ async function createEnforcer(
   const rm = new BackstageRoleManager(
     catalogApi,
     log,
-    tokenManager,
     catalogDBClient,
     config,
     mockAuthService,
@@ -176,12 +166,7 @@ describe('CSV file', () => {
       const adapter = new FileAdapter(csvPermFile);
 
       const stringModel = newModelFromString(MODEL);
-      enf = await createEnforcer(
-        stringModel,
-        adapter,
-        loggerMock,
-        tokenManagerMock,
-      );
+      enf = await createEnforcer(stringModel, adapter, loggerMock);
 
       knex = Knex.knex({ client: MockClient });
 
@@ -557,12 +542,7 @@ describe('CSV file', () => {
       const adapter = new FileAdapter(csvPermFile);
 
       const stringModel = newModelFromString(MODEL);
-      enf = await createEnforcer(
-        stringModel,
-        adapter,
-        loggerMock,
-        tokenManagerMock,
-      );
+      enf = await createEnforcer(stringModel, adapter, loggerMock);
 
       const knex = Knex.knex({ client: MockClient });
 
@@ -837,12 +817,7 @@ describe('CSV file', () => {
       );
 
       const stringModel = newModelFromString(MODEL);
-      enf = await createEnforcer(
-        stringModel,
-        adapter,
-        loggerMock,
-        tokenManagerMock,
-      );
+      enf = await createEnforcer(stringModel, adapter, loggerMock);
 
       const knex = Knex.knex({ client: MockClient });
 

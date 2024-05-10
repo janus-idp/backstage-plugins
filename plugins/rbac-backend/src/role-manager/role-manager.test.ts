@@ -1,4 +1,3 @@
-import { TokenManager } from '@backstage/backend-common';
 import { mockServices } from '@backstage/backend-test-utils';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
@@ -21,13 +20,6 @@ describe('BackstageRoleManager', () => {
     debug: jest.fn().mockImplementation(),
   };
 
-  const tokenManagerMock = {
-    getToken: jest.fn().mockImplementation(async () => {
-      return Promise.resolve({ token: 'some-token' });
-    }),
-    authenticate: jest.fn().mockImplementation(),
-  };
-
   const mockAuthService = mockServices.auth();
 
   let roleManager: BackstageRoleManager;
@@ -41,7 +33,6 @@ describe('BackstageRoleManager', () => {
     roleManager = new BackstageRoleManager(
       catalogApiMock as CatalogApi,
       loggerMock as Logger,
-      tokenManagerMock as TokenManager,
       catalogDBClient,
       config,
       mockAuthService,
@@ -1023,7 +1014,6 @@ describe('BackstageRoleManager', () => {
       const roleManagerMaxDepth = new BackstageRoleManager(
         catalogApiMock as CatalogApi,
         loggerMock as Logger,
-        tokenManagerMock as TokenManager,
         catalogDBClient,
         config,
         mockAuthService,

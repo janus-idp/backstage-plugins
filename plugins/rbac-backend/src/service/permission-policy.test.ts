@@ -1,4 +1,4 @@
-import { getVoidLogger, TokenManager } from '@backstage/backend-common';
+import { getVoidLogger } from '@backstage/backend-common';
 import { DatabaseService } from '@backstage/backend-plugin-api';
 import { mockServices } from '@backstage/backend-test-utils';
 import { Entity } from '@backstage/catalog-model';
@@ -59,13 +59,6 @@ const catalogApi = {
   removeEntityByUid: jest.fn().mockImplementation(),
   validateEntity: jest.fn().mockImplementation(),
   getLocationByEntity: jest.fn().mockImplementation(),
-};
-
-const tokenManagerMock = {
-  getToken: jest.fn().mockImplementation(async () => {
-    return Promise.resolve({ token: 'some-token' });
-  }),
-  authenticate: jest.fn().mockImplementation(),
 };
 
 const conditionalStorage: ConditionalStorage = {
@@ -1805,13 +1798,7 @@ describe('Policy checks for conditional policies', () => {
     const config = newConfigReader();
     const theModel = newModelFromString(MODEL);
     const logger = getVoidLogger();
-    const enf = await createEnforcer(
-      theModel,
-      adapter,
-      logger,
-      tokenManagerMock,
-      config,
-    );
+    const enf = await createEnforcer(theModel, adapter, logger, config);
 
     const enfDelegate = new EnforcerDelegate(
       enf,
@@ -2132,7 +2119,6 @@ async function createEnforcer(
   theModel: Model,
   adapter: Adapter,
   logger: Logger,
-  tokenManager: TokenManager,
   config: ConfigReader,
 ): Promise<Enforcer> {
   const catalogDBClient = Knex.knex({ client: MockClient });
@@ -2141,7 +2127,6 @@ async function createEnforcer(
   const rm = new BackstageRoleManager(
     catalogApi,
     logger,
-    tokenManager,
     catalogDBClient,
     config,
     mockAuthService,
@@ -2163,13 +2148,7 @@ async function newEnforcerDelegate(
   const theModel = newModelFromString(MODEL);
   const logger = getVoidLogger();
 
-  const enf = await createEnforcer(
-    theModel,
-    adapter,
-    logger,
-    tokenManagerMock,
-    config,
-  );
+  const enf = await createEnforcer(theModel, adapter, logger, config);
 
   if (storedPolicies) {
     await enf.addPolicies(storedPolicies);
