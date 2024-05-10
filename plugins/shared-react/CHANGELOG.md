@@ -1,3 +1,5 @@
+## @janus-idp/shared-react [2.6.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/shared-react@2.6.0...@janus-idp/shared-react@2.6.1) (2024-05-09)
+
 ## @janus-idp/shared-react [2.6.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/shared-react@2.5.5...@janus-idp/shared-react@2.6.0) (2024-04-15)
 
 
