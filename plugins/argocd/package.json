@@ -15,7 +15,7 @@
   },
   "backstage": {
     "role": "frontend-plugin",
-    "supported-versions": "1.25.2"
+    "supported-versions": "1.26.5"
   },
   "sideEffects": false,
   "scripts": {

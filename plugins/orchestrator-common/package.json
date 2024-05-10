@@ -11,16 +11,23 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "common-library"
+    "role": "common-library",
+    "supported-versions": "1.26.5"
   },
-  "homepage": "https://janus-idp.io/",
-  "repository": "github:janus-idp/backstage-plugins",
+  "homepage": "https://red.ht/rhdh",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/janus-idp/backstage-plugins",
+    "directory": "plugins/orchestrator-common"
+  },
   "bugs": "https://github.com/janus-idp/backstage-plugins/issues",
   "keywords": [
     "backstage",
     "plugin",
     "orchestrator",
-    "workflows"
+    "workflows",
+    "support:tech-preview",
+    "lifecycle:active"
   ],
   "files": [
     "config.d.ts",
@@ -47,5 +54,10 @@
   },
   "devDependencies": {
     "@backstage/cli": "0.26.4"
-  }
+  },
+  "maintainers": [
+    "@janus-idp/maintainers-plugins",
+    "@janus-idp/orchestrator-codeowners"
+  ],
+  "author": "'The"
 }

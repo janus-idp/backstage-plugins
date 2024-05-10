@@ -13,7 +13,8 @@
     ]
   },
   "backstage": {
-    "role": "web-library"
+    "role": "web-library",
+    "supported-versions": "1.26.5"
   },
   "scripts": {
     "build": "webpack --progress",
@@ -61,8 +62,15 @@
   },
   "keywords": [
     "backstage",
-    "plugin"
+    "plugin",
+    "support:tech-preview",
+    "lifecycle:active"
   ],
-  "homepage": "https://janus-idp.io/",
-  "bugs": "https://github.com/janus-idp/backstage-plugins/issues"
+  "homepage": "https://red.ht/rhdh",
+  "bugs": "https://github.com/janus-idp/backstage-plugins/issues",
+  "maintainers": [
+    "@janus-idp/maintainers-plugins",
+    "@janus-idp/orchestrator-codeowners"
+  ],
+  "author": "'The"
 }
