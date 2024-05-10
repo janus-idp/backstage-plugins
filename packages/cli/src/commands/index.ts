@@ -162,7 +162,7 @@ export function registerScriptCommand(program: Command) {
     )
     .option(
       '--keywords <unique,keywords,to,add>',
-      'Add or replace keywords; there can be only one `support:` or `lifecycle:` value,\n                                     ' + 
+      'Add or replace keywords; there can be only one `support:` or `lifecycle:` value,\n                                     ' +
       'but unlimited other keywords can be added. To remove values, manually edit package.json\n\n                                     ' +
       'Valid values for support: alpha, beta, tech-preview, or production.\n                                     ' +
       'Valid values for lifecycle: active, maintenance, deprecated, inactive, retired.\n                                    ',

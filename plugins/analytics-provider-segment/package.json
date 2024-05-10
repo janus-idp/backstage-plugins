@@ -10,7 +10,8 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "frontend-plugin"
+    "role": "frontend-plugin",
+    "supported-versions": "1.26.5"
   },
   "scripts": {
     "start": "backstage-cli package start",
@@ -61,5 +62,20 @@
     "config.d.ts",
     "app-config.janus-idp.yaml"
   ],
-  "configSchema": "config.d.ts"
+  "configSchema": "config.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/janus-idp/backstage-plugins",
+    "directory": "plugins/analytics-provider-segment"
+  },
+  "maintainers": [
+    "@janus-idp/maintainers-plugins"
+  ],
+  "author": "Red Hat",
+  "homepage": "https://red.ht/rhdh",
+  "bugs": "https://github.com/janus-idp/backstage-plugins/issues",
+  "keywords": [
+    "support:production",
+    "lifecycle:active"
+  ]
 }

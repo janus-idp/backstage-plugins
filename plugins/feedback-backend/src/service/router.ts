@@ -78,9 +78,9 @@ export async function createRouter(
         reqData.description = reqData.summary
           ?.concat('\n\n')
           .concat(reqData.description ?? '');
-        reqData.summary = `${feedbackType} reported by ${reqData.createdBy?.split(
-          '/',
-        )[1]} for ${entityRef.metadata.title ?? entityRef.metadata.name}`;
+        reqData.summary = `${feedbackType} reported by ${
+          reqData.createdBy?.split('/')[1]
+        } for ${entityRef.metadata.title ?? entityRef.metadata.name}`;
       }
 
       const respObj = await feedbackDB.storeFeedbackGetUuid(reqData);
@@ -154,11 +154,9 @@ export async function createRouter(
           mailer.sendMail({
             to: reporterEmail,
             replyTo: replyTo,
-            subject: `${
-              reqData.tag
-            } - ${feedbackType} reported for ${reqData.projectId?.split(
-              '/',
-            )[1]}`,
+            subject: `${reqData.tag} - ${feedbackType} reported for ${
+              reqData.projectId?.split('/')[1]
+            }`,
             body: `
             <div>
               Hi ${reqData.createdBy?.split('/')[1]},

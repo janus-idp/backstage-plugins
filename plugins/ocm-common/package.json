@@ -12,7 +12,8 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "common-library"
+    "role": "common-library",
+    "supported-versions": "1.26.5"
   },
   "scripts": {
     "build": "backstage-cli package build",
@@ -29,14 +30,24 @@
   "files": [
     "dist"
   ],
-  "repository": "github:janus-idp/backstage-plugins",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/janus-idp/backstage-plugins",
+    "directory": "plugins/ocm-common"
+  },
   "keywords": [
     "backstage",
-    "plugin"
+    "plugin",
+    "support:production",
+    "lifecycle:active"
   ],
-  "homepage": "https://janus-idp.io/",
+  "homepage": "https://red.ht/rhdh",
   "bugs": "https://github.com/janus-idp/backstage-plugins/issues",
   "dependencies": {
     "@backstage/plugin-permission-common": "^0.7.13"
-  }
+  },
+  "maintainers": [
+    "@janus-idp/maintainers-plugins"
+  ],
+  "author": "Red Hat"
 }
