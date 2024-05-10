@@ -31,11 +31,7 @@ export type AuditResponse = {
 export type AuditLogStatus =
   | {
       status: 'failed';
-      errors: {
-        name: string;
-        message: string;
-        stack?: string;
-      }[];
+      errors: ErrorLike[];
     }
   | { status: 'succeeded' };
 
@@ -80,7 +76,7 @@ export type AuditLogOptions = {
   response?: AuditResponse;
 } & AuditActorOptions;
 
-export type AuditErrorLogOptions = AuditLogOptions & { errors: ErrorLike[] };
+export type AuditErrorLogOptions = AuditLogOptions & { errors: unknown[] };
 
 export type AuditLoggerOptions = {
   logger: LoggerService;
