@@ -10,7 +10,8 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "frontend-plugin"
+    "role": "frontend-plugin",
+    "supported-versions": "1.26.5"
   },
   "scripts": {
     "build": "backstage-cli package build",
@@ -57,5 +58,20 @@
     "config.d.ts",
     "app-config.janus-idp.yaml"
   ],
-  "configSchema": "config.d.ts"
+  "configSchema": "config.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/janus-idp/backstage-plugins",
+    "directory": "plugins/openshift-image-registry"
+  },
+  "maintainers": [
+    "@janus-idp/maintainers-plugins"
+  ],
+  "author": "'The",
+  "homepage": "https://red.ht/rhdh",
+  "bugs": "https://github.com/janus-idp/backstage-plugins/issues",
+  "keywords": [
+    "support:tech-preview",
+    "lifecycle:active"
+  ]
 }

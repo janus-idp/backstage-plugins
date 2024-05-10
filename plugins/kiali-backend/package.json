@@ -10,7 +10,8 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "backend-plugin"
+    "role": "backend-plugin",
+    "supported-versions": "1.26.5"
   },
   "exports": {
     ".": "./src/index.ts",
@@ -71,5 +72,21 @@
     "dist-dynamic/dist/**",
     "dist-dynamic/alpha/*",
     "app-config.janus-idp.yaml"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/janus-idp/backstage-plugins",
+    "directory": "plugins/kiali-backend"
+  },
+  "maintainers": [
+    "@janus-idp/maintainers-plugins",
+    "@janus-idp/kiali"
+  ],
+  "author": "'The",
+  "homepage": "https://red.ht/rhdh",
+  "bugs": "https://github.com/janus-idp/backstage-plugins/issues",
+  "keywords": [
+    "support:tech-preview",
+    "lifecycle:active"
   ]
 }

@@ -10,7 +10,8 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "frontend-plugin"
+    "role": "frontend-plugin",
+    "supported-versions": "1.26.5"
   },
   "sideEffects": false,
   "scripts": {
@@ -59,10 +60,16 @@
     "dist-scalprum"
   ],
   "configSchema": "config.d.ts",
-  "repository": "github:janus-idp/backstage-plugins",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/janus-idp/backstage-plugins",
+    "directory": "plugins/feedback"
+  },
   "keywords": [
     "backstage",
-    "plugin"
+    "plugin",
+    "support:tech-preview",
+    "lifecycle:active"
   ],
   "scalprum": {
     "name": "janus-idp.backstage-plugin-feedback",
@@ -70,6 +77,11 @@
       "PluginRoot": "./src/index.ts"
     }
   },
-  "homepage": "https://janus-idp.io/",
-  "bugs": "https://github.com/janus-idp/backstage-plugins/issues"
+  "homepage": "https://red.ht/rhdh",
+  "bugs": "https://github.com/janus-idp/backstage-plugins/issues",
+  "maintainers": [
+    "@janus-idp/maintainers-plugins",
+    "@janus-idp/devex-uxe"
+  ],
+  "author": "'The"
 }

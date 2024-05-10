@@ -10,7 +10,8 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "backend-plugin"
+    "role": "backend-plugin",
+    "supported-versions": "1.26.5"
   },
   "exports": {
     ".": "./src/index.ts",
@@ -27,14 +28,20 @@
       ]
     }
   },
-  "homepage": "https://janus-idp.io/",
-  "repository": "github:janus-idp/backstage-plugins",
+  "homepage": "https://red.ht/rhdh",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/janus-idp/backstage-plugins",
+    "directory": "plugins/orchestrator-backend"
+  },
   "bugs": "https://github.com/janus-idp/backstage-plugins/issues",
   "keywords": [
     "backstage",
     "plugin",
     "orchestrator",
-    "workflows"
+    "workflows",
+    "support:tech-preview",
+    "lifecycle:active"
   ],
   "files": [
     "app-config.janus-idp.yaml",
@@ -92,5 +99,10 @@
     "@types/express": "4.17.20",
     "@types/fs-extra": "11.0.1",
     "@types/json-schema": "7.0.12"
-  }
+  },
+  "maintainers": [
+    "@janus-idp/maintainers-plugins",
+    "@janus-idp/orchestrator-codeowners"
+  ],
+  "author": "'The"
 }
