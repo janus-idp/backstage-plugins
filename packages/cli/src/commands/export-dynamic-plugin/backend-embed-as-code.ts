@@ -253,8 +253,9 @@ export async function backend(
       if (pkgToCustomize.dependencies) {
         for (const monoRepoPackage of monoRepoPackages.packages) {
           if (pkgToCustomize.dependencies[monoRepoPackage.packageJson.name]) {
-            pkgToCustomize.dependencies[monoRepoPackage.packageJson.name] =
-              `^${monoRepoPackage.packageJson.version}`;
+            pkgToCustomize.dependencies[
+              monoRepoPackage.packageJson.name
+            ] = `^${monoRepoPackage.packageJson.version}`;
           }
         }
 

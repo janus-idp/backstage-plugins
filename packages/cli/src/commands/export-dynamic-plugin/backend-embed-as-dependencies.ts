@@ -202,8 +202,9 @@ export async function backend(opts: OptionValues): Promise<string> {
 
   const embeddedDependenciesResolutions: { [key: string]: any } = {};
   embeddedResolvedPackages.map(ep => {
-    embeddedDependenciesResolutions[ep.packageName] =
-      `file:./${embeddedPackageRelativePath(ep)}`;
+    embeddedDependenciesResolutions[
+      ep.packageName
+    ] = `file:./${embeddedPackageRelativePath(ep)}`;
   });
 
   if (opts.build) {

@@ -233,8 +233,8 @@ export class NexusRepositoryManagerApiClient
       })),
     );
 
-    const filteredValues = values.filter(v =>
-      v.component?.assets?.some(asset => isPrimaryAsset(asset)),
+    const filteredValues = values.filter(
+      v => v.component?.assets?.some(asset => isPrimaryAsset(asset)),
     );
 
     return {
