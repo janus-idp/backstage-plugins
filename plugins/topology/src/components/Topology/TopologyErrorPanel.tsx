@@ -32,8 +32,8 @@ const TopologyErrorPanel = ({ allErrors }: TopologyErrorPanelProps) => {
                 err.errorType === 'FETCH_ERROR'
                   ? `Error communicating with Kubernetes: ${err.errorType}, message: ${err.message}`
                   : err.message
-                  ? `${err.message}`
-                  : `Error fetching Kubernetes resource: '${err.resourcePath}', error: ${err.errorType}, status code: ${err.statusCode}`
+                    ? `${err.message}`
+                    : `Error fetching Kubernetes resource: '${err.resourcePath}', error: ${err.errorType}, status code: ${err.statusCode}`
               }
             </Typography>
           ))}
