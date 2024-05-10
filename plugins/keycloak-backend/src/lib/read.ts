@@ -235,9 +235,8 @@ export const readKeycloakRealm = async (
       g.entity.spec.children?.map(
         c => parsedGroups.find(p => p.name === c)?.entity.metadata.name!,
       ) ?? [];
-    entity.spec.parent = parsedGroups.find(
-      p => p.name === entity.spec.parent,
-    )?.entity.metadata.name;
+    entity.spec.parent = parsedGroups.find(p => p.name === entity.spec.parent)
+      ?.entity.metadata.name;
     return entity;
   });
 
