@@ -1,7 +1,11 @@
 import { createBackendModule } from '@backstage/backend-plugin-api';
 import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
 
-import { createScaffoldedFromAction, createTimestampAction } from './actions';
+import {
+  createAnnotatorAction,
+  createScaffoldedFromAction,
+  createTimestampAction,
+} from './actions';
 
 /***/
 /**
@@ -20,6 +24,7 @@ export const scaffolderCustomActionsScaffolderModule = createBackendModule({
       async init({ scaffolder }) {
         scaffolder.addActions(createScaffoldedFromAction());
         scaffolder.addActions(createTimestampAction());
+        scaffolder.addActions(createAnnotatorAction());
       },
     });
   },

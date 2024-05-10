@@ -5,7 +5,6 @@ import * as yaml from 'yaml';
 
 import { PassThrough } from 'stream';
 
-import { convertLabelsToObject } from '../../utils/convertLabelsToObject';
 import { getCurrentTimestamp } from '../../utils/getCurrentTimestamp';
 import { createAnnotatorAction } from './annotator';
 
@@ -79,8 +78,16 @@ describe('catalog annotator', () => {
       logger,
       logStream: new PassThrough(),
       input: {
-        labels: 'label1=value1;label2=value2;label3=value3',
-        annotations: 'annotation1=value1;annotation2=value2;annotation3=value3',
+        labels: {
+          label1: 'value1',
+          label2: 'value2',
+          label3: 'value3',
+        },
+        annotations: {
+          annotation1: 'value1',
+          annotation2: 'value2',
+          annotation3: 'value3',
+        },
       },
       output: jest.fn(),
       createTemporaryDirectory() {
@@ -98,11 +105,11 @@ describe('catalog annotator', () => {
         ...entity.metadata,
         labels: {
           ...entity.metadata.labels,
-          ...convertLabelsToObject(mockContext.input.labels),
+          ...mockContext.input.labels,
         },
         annotations: {
           ...entity.metadata.annotations,
-          ...convertLabelsToObject(mockContext.input.annotations),
+          ...mockContext.input.annotations,
         },
       },
     };
@@ -144,8 +151,16 @@ describe('catalog annotator', () => {
       logger,
       logStream: new PassThrough(),
       input: {
-        labels: 'label1=value1;label2=value2;label3=value3',
-        annotations: 'annotation1=value1;annotation2=value2;annotation3=value3',
+        labels: {
+          label1: 'value1',
+          label2: 'value2',
+          label3: 'value3',
+        },
+        annotations: {
+          annotation1: 'value1',
+          annotation2: 'value2',
+          annotation3: 'value3',
+        },
         objectYaml: obj,
       },
       output: jest.fn(),
@@ -163,11 +178,11 @@ describe('catalog annotator', () => {
         ...obj.metadata,
         labels: {
           ...(obj.metadata.labels || {}),
-          ...convertLabelsToObject(mockContext.input.labels),
+          ...mockContext.input.labels,
         },
         annotations: {
           ...(obj.metadata.annotations || {}),
-          ...convertLabelsToObject(mockContext.input.annotations),
+          ...mockContext.input.annotations,
         },
       },
     };
