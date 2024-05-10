@@ -150,11 +150,10 @@ export const ServiceListPage = (props: {
         });
         setServices(serviceListItems);
       })
-      .catch(
-        err =>
-          kialiState.alertUtils?.add(
-            `Could not fetch services: ${getErrorString(err)}`,
-          ),
+      .catch(err =>
+        kialiState.alertUtils?.add(
+          `Could not fetch services: ${getErrorString(err)}`,
+        ),
       );
   };
 

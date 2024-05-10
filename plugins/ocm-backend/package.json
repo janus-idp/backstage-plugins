@@ -10,7 +10,8 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "backend-plugin"
+    "role": "backend-plugin",
+    "supported-versions": "1.26.5"
   },
   "exports": {
     ".": "./src/index.ts",
@@ -80,11 +81,21 @@
     "dist-dynamic/alpha/*",
     "app-config.janus-idp.yaml"
   ],
-  "repository": "github:janus-idp/backstage-plugins",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/janus-idp/backstage-plugins",
+    "directory": "plugins/ocm-backend"
+  },
   "keywords": [
     "backstage",
-    "plugin"
+    "plugin",
+    "support:production",
+    "lifecycle:active"
   ],
-  "homepage": "https://janus-idp.io/",
-  "bugs": "https://github.com/janus-idp/backstage-plugins/issues"
+  "homepage": "https://red.ht/rhdh",
+  "bugs": "https://github.com/janus-idp/backstage-plugins/issues",
+  "maintainers": [
+    "@janus-idp/maintainers-plugins"
+  ],
+  "author": "Red Hat"
 }

@@ -11,7 +11,8 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "node-library"
+    "role": "node-library",
+    "supported-versions": "1.26.5"
   },
   "scripts": {
     "build": "backstage-cli package build",
@@ -30,5 +31,20 @@
   ],
   "dependencies": {
     "@backstage/backend-plugin-api": "^0.6.17"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/janus-idp/backstage-plugins",
+    "directory": "plugins/rbac-node"
+  },
+  "maintainers": [
+    "@janus-idp/maintainers-plugins"
+  ],
+  "author": "Red Hat",
+  "homepage": "https://red.ht/rhdh",
+  "bugs": "https://github.com/janus-idp/backstage-plugins/issues",
+  "keywords": [
+    "support:production",
+    "lifecycle:active"
+  ]
 }
