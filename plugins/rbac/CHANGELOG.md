@@ -1,3 +1,13 @@
+## @janus-idp/backstage-plugin-rbac [1.18.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.18.1...@janus-idp/backstage-plugin-rbac@1.18.2) (2024-05-09)
+
+
+
+### Dependencies
+
+* **@janus-idp/backstage-plugin-rbac-common:** upgraded to 1.4.2
+* **@janus-idp/shared-react:** upgraded to 2.6.1
+* **@janus-idp/cli:** upgraded to 1.8.6
+
 ## @janus-idp/backstage-plugin-rbac [1.18.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.18.0...@janus-idp/backstage-plugin-rbac@1.18.1) (2024-05-08)
 
 

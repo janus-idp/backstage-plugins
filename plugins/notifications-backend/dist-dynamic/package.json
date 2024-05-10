@@ -1,6 +1,6 @@
 {
   "name": "@janus-idp/plugin-notifications-backend-dynamic",
-  "version": "1.4.11",
+  "version": "1.4.12",
   "main": "dist/index.cjs.js",
   "types": "dist/index.d.ts",
   "license": "Apache-2.0",
@@ -45,17 +45,17 @@
   ],
   "bundleDependencies": true,
   "peerDependencies": {
-    "@backstage/backend-common": "^0.21.6",
-    "@backstage/backend-openapi-utils": "^0.1.9",
-    "@backstage/catalog-client": "^1.6.3",
+    "@backstage/backend-common": "^0.21.7",
+    "@backstage/backend-openapi-utils": "^0.1.10",
+    "@backstage/catalog-client": "^1.6.4",
     "@backstage/config": "^1.2.0",
     "@backstage/errors": "^1.2.4",
-    "@backstage/backend-plugin-api": "^0.6.16",
-    "@backstage/backend-dynamic-feature-service": "^0.2.8",
-    "@backstage/plugin-auth-node": "^0.4.11",
+    "@backstage/backend-plugin-api": "^0.6.17",
+    "@backstage/backend-dynamic-feature-service": "^0.2.9",
+    "@backstage/plugin-auth-node": "^0.4.12",
     "@backstage/plugin-permission-common": "^0.7.13",
-    "@backstage/plugin-permission-node": "^0.7.27",
-    "@backstage/plugin-scaffolder-node": "^0.4.2"
+    "@backstage/plugin-permission-node": "^0.7.28",
+    "@backstage/plugin-scaffolder-node": "^0.4.3"
   },
   "overrides": {
     "@aws-sdk/util-utf8-browser": {

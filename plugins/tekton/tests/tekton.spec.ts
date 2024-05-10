@@ -1,12 +1,16 @@
 import { expect, Locator, Page, test } from '@playwright/test';
 
+import { Common } from './tektonHelper';
+
 test.describe('Tekton plugin', () => {
   let page: Page;
-
+  let common: Common;
   test.beforeAll(async ({ browser }) => {
     const context = await browser.newContext();
     page = await context.newPage();
-    await page.goto('/');
+    common = new Common(page);
+
+    await common.loginAsGuest();
     await expect(
       page.getByRole('heading', { name: 'Pipeline Runs' }),
     ).toBeVisible({ timeout: 20000 });
@@ -267,7 +271,7 @@ test.describe('Tekton plugin', () => {
 
   test('Signed pipeline shows the signed indicator', async () => {
     const row = page.getByRole('row', { name: 'ruby-ex-git-xf45fo' });
-    await expect(row.locator('.makeStyles-signedIndicator-120')).toBeVisible();
+    await expect(row.locator('.signed-indicator')).toBeVisible();
   });
 });
 
@@ -304,7 +308,7 @@ async function checkVulnerabilities(
     low: number;
   },
 ) {
-  const vuln = row.locator('.makeStyles-severityContainer-122');
+  const vuln = row.locator('.severity');
   let i = 0;
 
   for (const prop in vulnerabilities) {

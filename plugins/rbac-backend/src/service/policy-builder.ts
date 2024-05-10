@@ -2,7 +2,6 @@ import {
   createLegacyAuthAdapters,
   DatabaseManager,
   PluginEndpointDiscovery,
-  TokenManager,
 } from '@backstage/backend-common';
 import { AuthService, HttpAuthService } from '@backstage/backend-plugin-api';
 import { CatalogClient } from '@backstage/catalog-client';
@@ -36,7 +35,6 @@ export class PolicyBuilder {
       discovery: PluginEndpointDiscovery;
       identity: IdentityApi;
       permissions: PermissionEvaluator;
-      tokenManager: TokenManager;
       auth?: AuthService;
       httpAuth?: HttpAuthService;
     },
@@ -73,7 +71,6 @@ export class PolicyBuilder {
     const rm = new BackstageRoleManager(
       catalogClient,
       env.logger,
-      env.tokenManager,
       catalogDBClient,
       env.config,
       auth,

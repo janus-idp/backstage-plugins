@@ -7,11 +7,12 @@
   },
   "scripts": {
     "preinstall": "npx only-allow yarn",
-    "start:backstage": "turbo run start:backstage",
+    "start:backend": "turbo run start --filter=...backend",
+    "start:backstage": "turbo run start --filter=...app --filter=...backend",
     "start:plugins": "turbo run start --filter=@janus-idp/*",
     "start:storybook": "yarn --cwd packages/storybook start",
     "build": "turbo run build",
-    "build:backstage": "turbo run build --filter=...{./packages/app} --filter=...{./packages/backend}",
+    "build:backstage": "turbo run build --filter=...app --filter=...backend",
     "build:plugins": "turbo run build --filter=@janus-idp/*",
     "build:storybook": "yarn --cwd packages/storybook build",
     "tsc": "turbo run tsc",
@@ -39,7 +40,7 @@
     ]
   },
   "devDependencies": {
-    "@backstage/cli": "0.26.2",
+    "@backstage/cli": "0.26.4",
     "@ianvs/prettier-plugin-sort-imports": "4.1.1",
     "@janus-idp/cli": "*",
     "@semantic-release/changelog": "6.0.3",

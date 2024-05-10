@@ -39,11 +39,11 @@
     "storybook-dark-mode": "^3.0.1"
   },
   "peerDependencies": {
-    "@backstage/cli": "^0.26.2",
-    "@backstage/core-app-api": "^1.12.3",
-    "@backstage/core-components": "^0.14.3",
-    "@backstage/core-plugin-api": "^1.9.1",
-    "@backstage/test-utils": "^1.5.3",
-    "@backstage/theme": "^0.5.2"
+    "@backstage/cli": "^0.26.4",
+    "@backstage/core-app-api": "^1.12.4",
+    "@backstage/core-components": "^0.14.6",
+    "@backstage/core-plugin-api": "^1.9.2",
+    "@backstage/test-utils": "^1.5.4",
+    "@backstage/theme": "^0.5.3"
   }
 }
