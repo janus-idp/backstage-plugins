@@ -35,3 +35,5 @@ for support in $supportLevelsToProcess; do
     done
 done
 echo
+
+# TODO should we run something similar for the "other-plugins", assiging them to --author "The Backstage Community" rather than Red Hat?

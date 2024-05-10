@@ -36,7 +36,8 @@
     ]
   },
 
-  "description:other-plugins1": "This is a list of plugins in the janus-idp repo which are NOT included in the showcase; these will be installablae dynamically via some other process.",
+  "description:other-plugins1": "This is a list of plugins in the janus-idp repo which are NOT included in the showcase; these will be installable dynamically via some other process.",
+  "description:other-plugins2": "These might be considered authored by The Backstage Community rather than Red Hat (?)",
   "other-plugins": {
     "support:production": ["@janus-idp/backstage-plugin-argocd"],
 
