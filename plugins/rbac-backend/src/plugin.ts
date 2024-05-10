@@ -41,7 +41,6 @@ export const rbacPlugin = createBackendPlugin({
         discovery: coreServices.discovery,
         identity: coreServices.identity,
         permissions: coreServices.permissions,
-        tokenManager: coreServices.tokenManager,
         auth: coreServices.auth,
         httpAuth: coreServices.httpAuth,
       },
@@ -52,7 +51,6 @@ export const rbacPlugin = createBackendPlugin({
         discovery,
         identity,
         permissions,
-        tokenManager,
         auth,
         httpAuth,
       }) {
@@ -66,7 +64,6 @@ export const rbacPlugin = createBackendPlugin({
               discovery,
               identity,
               permissions,
-              tokenManager,
               auth,
               httpAuth,
             },

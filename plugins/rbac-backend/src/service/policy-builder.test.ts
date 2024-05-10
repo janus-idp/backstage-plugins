@@ -107,11 +107,6 @@ describe('PolicyBuilder', () => {
     getExternalBaseUrl: jest.fn(),
   };
 
-  const tokenManagerMock = {
-    getToken: jest.fn().mockImplementation(),
-    authenticate: jest.fn().mockImplementation(),
-  };
-
   const backendPluginIDsProviderMock = {
     getPluginIds: jest.fn().mockImplementation(() => {
       return [];
@@ -147,7 +142,6 @@ describe('PolicyBuilder', () => {
         discovery: mockDiscovery,
         identity: mockIdentityClient,
         permissions: mockPermissionEvaluator,
-        tokenManager: tokenManagerMock,
       },
       backendPluginIDsProviderMock,
     );
@@ -184,7 +178,6 @@ describe('PolicyBuilder', () => {
         discovery: mockDiscovery,
         identity: mockIdentityClient,
         permissions: mockPermissionEvaluator,
-        tokenManager: tokenManagerMock,
       },
       backendPluginIDsProviderMock,
     );
@@ -224,7 +217,6 @@ describe('PolicyBuilder', () => {
         discovery: mockDiscovery,
         identity: mockIdentityClient,
         permissions: mockPermissionEvaluator,
-        tokenManager: tokenManagerMock,
       },
       pluginIdProvider,
     );
@@ -266,7 +258,6 @@ describe('PolicyBuilder', () => {
         discovery: mockDiscovery,
         identity: mockIdentityClient,
         permissions: mockPermissionEvaluator,
-        tokenManager: tokenManagerMock,
       },
       pluginIdProvider,
     );
@@ -306,7 +297,6 @@ describe('PolicyBuilder', () => {
       discovery: mockDiscovery,
       identity: mockIdentityClient,
       permissions: mockPermissionEvaluator,
-      tokenManager: tokenManagerMock,
     });
     expect(CasbinDBAdapterFactory).toHaveBeenCalled();
     expect(mockEnforcer.loadPolicy).toHaveBeenCalled();
