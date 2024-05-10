@@ -1,5 +1,6 @@
 import { TokenManager } from '@backstage/backend-common';
 import { DatabaseService } from '@backstage/backend-plugin-api';
+import { mockServices } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 
 import {
@@ -103,6 +104,8 @@ const tokenManagerMock = {
 const dbManagerMock: DatabaseService = {
   getClient: jest.fn().mockImplementation(),
 };
+
+const mockAuthService = mockServices.auth();
 
 const currentPermissionPolicies = [
   ['role:default/catalog-writer', 'catalog-entity', 'update', 'allow'],
@@ -590,6 +593,7 @@ async function createEnforcer(
     tokenManager,
     catalogDBClient,
     config,
+    mockAuthService,
   );
   enf.setRoleManager(rm);
   enf.enableAutoBuildRoleLinks(false);
