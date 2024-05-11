@@ -3,36 +3,103 @@
     "config:best-practices",
     ":gitSignOff",
     ":rebaseStalePrs",
-    "group:allNonMajor",
     "group:linters",
-    "group:test",
     ":preserveSemverRanges",
     ":pinOnlyDevDependencies",
     "helpers:pinGitHubActionDigests"
   ],
-  "labels": ["kind/dependency upgrade"],
-  "baseBranches": ["main", "/^1\\..*\\.x/"],
+  "ignorePresets": [
+    "group:monorepos"
+  ],
+  "labels": [
+    "kind/dependency upgrade"
+  ],
   "npm": {
     "minimumReleaseAge": "1 day"
+  },
+  "major": {
+    "dependencyDashboardApproval": true
   },
   "packageRules": [
     {
       "description": "Do automerge and pin actions in GH workflows, except for versions starting with 0",
       "enabled": true,
-      "matchManagers": ["github-actions"],
+      "matchManagers": [
+        "github-actions"
+      ],
       "matchCurrentVersion": "!/^0/",
       "groupName": "GitHub Actions",
-      "matchUpdateTypes": ["minor", "patch"],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
       "automerge": true
     },
     {
-      "matchDepTypes": ["devDependencies"],
-      "matchUpdateTypes": ["patch", "minor"],
-      "groupName": "DevDependencies (non-major)",
+      "matchDepTypes": [
+        "dependencies"
+      ],
+      "groupName": "{{additionalBranchPrefix}} Dependencies (minor)",
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ]
+    },
+    {
+      "matchDepTypes": [
+        "dependencies"
+      ],
+      "groupName": "{{additionalBranchPrefix}} Dependencies",
+      "matchUpdateTypes": [
+        "major"
+      ]
+    },
+    {
+      "matchDepTypes": [
+        "devDependencies"
+      ],
+      "matchUpdateTypes": [
+        "patch",
+        "minor"
+      ],
+      "matchCurrentVersion": "!/^0/",      
+      "groupName": "{{additionalBranchPrefix}} DevDependencies (minor)",
       "automerge": true
     },
     {
-      "matchDepPatterns": ["^@backstage/"],
+      "matchDepTypes": [
+        "devDependencies"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "groupName": "{{additionalBranchPrefix}} DevDependencies"
+    },
+    {
+      "extends": [
+        "packages:test"
+      ],
+      "matchUpdateTypes": [
+        "patch",
+        "minor"
+      ],
+      "matchCurrentVersion": "!/^0/",      
+      "groupName": "{{additionalBranchPrefix}}  Test packages (minor)",
+      "automerge": true
+    },
+    {
+      "extends": [
+        "packages:test"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "groupName": "{{additionalBranchPrefix}} Test packages"
+    },
+    {
+      "matchDepPatterns": [
+        "^@backstage/"
+      ],
       "groupName": "Core Backstage packages",
       "enabled": false
     },
@@ -47,23 +114,132 @@
     {
       "description": "disable updates to the keycloak admin client - see https://github.com/janus-idp/backstage-plugins/issues/47 https://github.com/janus-idp/backstage-plugins/issues/1046",
       "enabled": false,
-      "matchDatasources": ["npm"],
-      "matchPackageNames": ["@keycloak/keycloak-admin-client"],
+      "matchDatasources": [
+        "npm"
+      ],
+      "matchPackageNames": [
+        "@keycloak/keycloak-admin-client"
+      ],
       "groupName": "Keycloak dependency"
     },
     {
       "description": "ignore updates to the axios to version that keycloak 18 needs",
       "enabled": false,
-      "matchDatasources": ["npm"],
-      "matchPackageNames": ["axios"],
+      "matchDatasources": [
+        "npm"
+      ],
+      "matchPackageNames": [
+        "axios"
+      ],
       "matchCurrentVersion": "0.26.1",
       "groupName": "Keycloak dependency"
+    },
+    {
+      "matchFileNames": [
+        "plugins/orchestrator*/**"
+      ],
+      "additionalBranchPrefix": "orchestrator ",
+      "addLabels": [
+        "team/orchestrator"
+      ]
+    },
+    {
+      "matchFileNames": [
+        "plugins/notifications*/**"
+      ],
+      "additionalBranchPrefix": "notifications ",
+      "addLabels": [
+        "team/notifications"
+      ]
+    },
+    {
+      "matchFileNames": [
+        "plugins/kiali*/**"
+      ],
+      "additionalBranchPrefix": "kiali ",
+      "addLabels": [
+        "team/kiali"
+      ]
+    },
+    {
+      "matchFileNames": [
+        "plugins/*matomo*/**",
+        "plugins/analytics-module-matomo*/**",
+        "plugins/feedback*/**"
+      ],
+      "additionalBranchPrefix": "devex ",
+      "addLabels": [
+        "team/devex"
+      ]
+    },
+    {
+      "matchFileNames": [
+        "plugins/quay*/**",
+        "plugins/tekton*/**",
+        "plugins/argocd*/**"        
+      ],
+      "additionalBranchPrefix": "rhtap ",
+      "addLabels": [
+        "team/rhtap"
+      ]
+    },
+    {
+      "matchFileNames": [
+        "plugins/analytics-provider-segment*/**",        
+        "plugins/bulk-import*/**",    
+        "plugins/dynamic-plugins-info*/**",
+        "plugins/keycloak*/**",
+        "plugins/ocm*/**",
+        "plugins/quay-actions*/**",
+        "plugins/rbac*/**",
+        "plugins/regex-actions*/**",
+        "plugins/scaffolder-annotator-action*/**",          
+        "plugins/topology*/**",
+        "packages/**"
+      ],
+      "additionalBranchPrefix": "rhdh ",
+      "addLabels": [
+        "team/rhdh"
+      ]
+    },
+    {
+      "matchFileNames": [ 
+        "package.json"  
+      ],
+      "additionalBranchPrefix": "rhdh ",
+      "addLabels": [
+        "team/rhdh"
+      ]  
+    },
+    {
+      "matchFileNames": [
+        "plugins/3scale-backend*/**",
+        "plugins/aap-backend*/**",
+        "plugins/acr*/**",
+        "plugins/jfrog-artifactory*/**",
+        "plugins/kubernetes-actions*/**",
+        "plugins/nexus-repository-manager*/**",
+        "plugins/openshift-image-registry*/**",
+        "plugins/servicenow-actions*/**",
+        "plugins/shared-react*/**",
+        "plugins/sonarqube-actions*/**", 
+        "plugins/web-terminal*/**"
+      ],
+      "additionalBranchPrefix": "community ",
+      "addLabels": [
+        "team/community"
+      ]
     }
   ],
-  "ignorePaths": ["**/dist-dynamic/**"],
+  "ignorePaths": [
+    "**/dist-dynamic/**"
+  ],
   "vulnerabilityAlerts": {
+    "additionalBranchPrefix": "",
     "enabled": true,
-    "addLabels": ["kind/security"]
+    "addLabels": [
+      "kind/security"
+    ]
   },
   "osvVulnerabilityAlerts": true
 }
