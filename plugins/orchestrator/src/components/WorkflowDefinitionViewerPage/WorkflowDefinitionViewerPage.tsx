@@ -8,10 +8,13 @@ import {
   useRouteRef,
   useRouteRefParams,
 } from '@backstage/core-plugin-api';
+import { usePermission } from '@backstage/plugin-permission-react';
 
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import Skeleton from '@mui/material/Skeleton';
+
+import { orchestratorWorkflowExecutePermission } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { orchestratorApiRef } from '../../api';
 import {
@@ -25,6 +28,9 @@ import WorkflowDefinitionDetailsCard from './WorkflowDefinitionDetailsCard';
 export const WorkflowDefinitionViewerPage = () => {
   const { workflowId, format } = useRouteRefParams(workflowDefinitionsRouteRef);
   const orchestratorApi = useApi(orchestratorApiRef);
+  const { loading: loadingPermission, allowed: canRun } = usePermission({
+    permission: orchestratorWorkflowExecutePermission,
+  });
   const {
     value: workflowOverview,
     loading,
@@ -61,13 +67,16 @@ export const WorkflowDefinitionViewerPage = () => {
             {loading ? (
               <Skeleton variant="text" width="5rem" />
             ) : (
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleExecute}
-              >
-                Run
-              </Button>
+              !loadingPermission && (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleExecute}
+                  disabled={!canRun}
+                >
+                  Run
+                </Button>
+              )
             )}
           </Grid>
         </Grid>

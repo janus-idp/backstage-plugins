@@ -11,12 +11,15 @@ import {
   useRouteRef,
   useRouteRefParams,
 } from '@backstage/core-plugin-api';
+import { usePermission } from '@backstage/plugin-permission-react';
 
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 
 import {
   AssessedProcessInstance,
+  orchestratorWorkflowExecutePermission,
+  orchestratorWorkflowInstanceAbortPermission,
   QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
   QUERY_PARAM_INSTANCE_ID,
   QUERY_PARAM_INSTANCE_STATE,
@@ -88,6 +91,13 @@ export const WorkflowInstancePage = ({
   const [isAbortAlertDialogOpen, setIsAbortAlertDialogOpen] = useState(false);
   const [abortWorkflowInstanceErrorMsg, setAbortWorkflowInstanceErrorMsg] =
     useState('');
+  const permittedToExecute = usePermission({
+    permission: orchestratorWorkflowExecutePermission,
+  });
+
+  const permittedToAbort = usePermission({
+    permission: orchestratorWorkflowInstanceAbortPermission,
+  });
 
   const fetchInstance = React.useCallback(async () => {
     if (!instanceId && !queryInstanceId) {
@@ -204,7 +214,7 @@ export const WorkflowInstancePage = ({
                     <Button
                       variant="contained"
                       color="primary"
-                      disabled={!canAbort}
+                      disabled={!permittedToAbort.allowed || !canAbort}
                       onClick={canAbort ? handleRerun : undefined}
                     >
                       Retrigger
@@ -214,7 +224,7 @@ export const WorkflowInstancePage = ({
                     <Button
                       variant="contained"
                       color="secondary"
-                      disabled={!canAbort}
+                      disabled={!permittedToAbort.allowed || !canAbort}
                       onClick={
                         canAbort ? toggleAbortConfirmationDialog : undefined
                       }
@@ -229,7 +239,7 @@ export const WorkflowInstancePage = ({
                   <Button
                     variant="contained"
                     color="primary"
-                    disabled={!canRerun}
+                    disabled={!permittedToExecute.allowed || !canRerun}
                     onClick={canRerun ? handleRerun : undefined}
                   >
                     Rerun

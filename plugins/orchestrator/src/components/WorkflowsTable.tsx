@@ -3,12 +3,15 @@ import { useNavigate } from 'react-router-dom';
 
 import { Link, TableColumn, TableProps } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
+import { usePermission } from '@backstage/plugin-permission-react';
 
 import Pageview from '@mui/icons-material/Pageview';
 import PlayArrow from '@mui/icons-material/PlayArrow';
 
 import {
   capitalize,
+  orchestratorWorkflowExecutePermission,
+  orchestratorWorkflowInstancesReadPermission,
   ProcessInstanceStateValues,
   WorkflowOverview,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
@@ -33,7 +36,12 @@ export const WorkflowsTable = ({ items }: WorkflowsTableProps) => {
   const definitionLink = useRouteRef(workflowDefinitionsRouteRef);
   const executeWorkflowLink = useRouteRef(executeWorkflowRouteRef);
   const [data, setData] = useState<FormattedWorkflowOverview[]>([]);
-
+  const permittedToExecute = usePermission({
+    permission: orchestratorWorkflowExecutePermission,
+  });
+  const permittedToReadWorkflows = usePermission({
+    permission: orchestratorWorkflowInstancesReadPermission,
+  });
   const initialState = useMemo(
     () => items.map(WorkflowOverviewFormatter.format),
     [items],
@@ -64,6 +72,7 @@ export const WorkflowsTable = ({ items }: WorkflowsTableProps) => {
       {
         icon: () => <PlayArrow />,
         tooltip: 'Execute',
+        disabled: !permittedToExecute.allowed,
         onClick: (_, rowData) =>
           handleExecute(rowData as FormattedWorkflowOverview),
       },
