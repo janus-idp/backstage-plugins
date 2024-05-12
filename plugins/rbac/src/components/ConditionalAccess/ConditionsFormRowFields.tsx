@@ -4,7 +4,7 @@ import { PermissionCondition } from '@backstage/plugin-permission-common';
 
 import { Box, makeStyles, TextField } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
-import Form from '@rjsf/mui';
+import Form from '@rjsf/material-ui';
 import { RegistryFieldsType, RJSFSchema, UiSchema } from '@rjsf/utils';
 import validator from '@rjsf/validator-ajv8';
 

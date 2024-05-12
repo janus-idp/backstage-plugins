@@ -105,6 +105,7 @@ export const Root = ({
           to="orchestrator"
           text="Orchestrator"
         />
+
       </SidebarGroup>
       <SidebarSpace />
       <SidebarDivider />
@@ -115,6 +116,7 @@ export const Root = ({
       >
         <SidebarSettings />
       </SidebarGroup>
+     
     </Sidebar>
     {children}
   </SidebarPage>
