@@ -20,6 +20,7 @@ import {
   QUERY_PARAM_ASSESSMENT_INSTANCE_ID,
   QUERY_PARAM_INSTANCE_ID,
   QUERY_PARAM_INSTANCE_STATE,
+  orchestratorWorkflowExecutePermission,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import { orchestratorApiRef } from '../api';
@@ -31,6 +32,7 @@ import { buildUrl } from '../utils/UrlUtils';
 import { BaseOrchestratorPage } from './BaseOrchestratorPage';
 import { InfoDialog } from './InfoDialog';
 import { WorkflowInstancePageContent } from './WorkflowInstancePageContent';
+import { usePermission } from '@backstage/plugin-permission-react';
 
 export type AbortConfirmationDialogActionsProps = {
   handleSubmit: () => void;
@@ -88,6 +90,10 @@ export const WorkflowInstancePage = ({
   const [isAbortAlertDialogOpen, setIsAbortAlertDialogOpen] = useState(false);
   const [abortWorkflowInstanceErrorMsg, setAbortWorkflowInstanceErrorMsg] =
     useState('');
+    const permittedToExecute = usePermission({
+    permission: orchestratorWorkflowExecutePermission,
+  });
+
 
   const fetchInstance = React.useCallback(async () => {
     if (!instanceId && !queryInstanceId) {
@@ -204,7 +210,7 @@ export const WorkflowInstancePage = ({
                     <Button
                       variant="contained"
                       color="primary"
-                      disabled={!canAbort}
+                      disabled={!permittedToExecute.allowed|| !canAbort}
                       onClick={canAbort ? handleRerun : undefined}
                     >
                       Retrigger
@@ -214,7 +220,7 @@ export const WorkflowInstancePage = ({
                     <Button
                       variant="contained"
                       color="secondary"
-                      disabled={!canAbort}
+                      disabled={!permittedToExecute.allowed || !canAbort}
                       onClick={
                         canAbort ? toggleAbortConfirmationDialog : undefined
                       }
@@ -229,7 +235,7 @@ export const WorkflowInstancePage = ({
                   <Button
                     variant="contained"
                     color="primary"
-                    disabled={!canRerun}
+                    disabled={!permittedToExecute.allowed || !canRerun}
                     onClick={canRerun ? handleRerun : undefined}
                   >
                     Rerun

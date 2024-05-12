@@ -9,6 +9,8 @@ import PlayArrow from '@mui/icons-material/PlayArrow';
 
 import {
   capitalize,
+  orchestratorWorkflowExecutePermission,
+  orchestratorWorkflowInstancesReadPermission,
   ProcessInstanceStateValues,
   WorkflowOverview,
 } from '@janus-idp/backstage-plugin-orchestrator-common';
@@ -23,6 +25,7 @@ import {
 } from '../routes';
 import OverrideBackstageTable from './ui/OverrideBackstageTable';
 import { WorkflowInstanceStatusIndicator } from './WorkflowInstanceStatusIndicator';
+import { usePermission } from '@backstage/plugin-permission-react';
 
 export interface WorkflowsTableProps {
   items: WorkflowOverview[];
@@ -33,7 +36,12 @@ export const WorkflowsTable = ({ items }: WorkflowsTableProps) => {
   const definitionLink = useRouteRef(workflowDefinitionsRouteRef);
   const executeWorkflowLink = useRouteRef(executeWorkflowRouteRef);
   const [data, setData] = useState<FormattedWorkflowOverview[]>([]);
-
+  const permittedToExecute = usePermission({
+    permission: orchestratorWorkflowExecutePermission,
+  });
+  const permittedToReadWorkflows = usePermission({
+    permission: orchestratorWorkflowInstancesReadPermission,
+  });
   const initialState = useMemo(
     () => items.map(WorkflowOverviewFormatter.format),
     [items],
@@ -64,6 +72,7 @@ export const WorkflowsTable = ({ items }: WorkflowsTableProps) => {
       {
         icon: () => <PlayArrow />,
         tooltip: 'Execute',
+        disabled: !permittedToExecute.allowed,
         onClick: (_, rowData) =>
           handleExecute(rowData as FormattedWorkflowOverview),
       },
@@ -130,12 +139,14 @@ export const WorkflowsTable = ({ items }: WorkflowsTableProps) => {
   );
 
   return (
-    <OverrideBackstageTable<FormattedWorkflowOverview>
-      title="Workflows"
-      options={options}
-      columns={columns}
-      data={data}
-      actions={actions}
-    />
+        !permittedToReadWorkflows && ( 
+        <OverrideBackstageTable<FormattedWorkflowOverview>
+          title="Workflows"
+          options={options}
+          columns={columns}
+          data={data}
+          actions={actions}
+        />
+        )
   );
 };

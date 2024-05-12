@@ -36,7 +36,6 @@ import { TechRadarPage } from '@backstage-community/plugin-tech-radar';
 import { getThemes } from '@redhat-developer/red-hat-developer-hub-theme';
 
 import { OrchestratorPage } from '@janus-idp/backstage-plugin-orchestrator';
-import { OrchestratorPlugin } from '@janus-idp/backstage-plugin-orchestrator';
 
 import { apis } from './apis';
 import { entityPage } from './components/catalog/EntityPage';
