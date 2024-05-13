@@ -37,7 +37,8 @@
     },
     {
       "matchDepTypes": [
-        "dependencies"
+        "dependencies",
+        "peerDependencies"
       ],
       "groupName": "{{additionalBranchPrefix}} Dependencies (minor)",
       "matchUpdateTypes": [
@@ -47,7 +48,8 @@
     },
     {
       "matchDepTypes": [
-        "dependencies"
+        "dependencies",
+        "peerDependencies"
       ],
       "groupName": "{{additionalBranchPrefix}} Dependencies",
       "matchUpdateTypes": [
