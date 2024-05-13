@@ -474,4 +474,55 @@ describe('OrchestratorClient', () => {
       await expect(promise).rejects.toThrow();
     });
   });
+  describe('retriggerInstanceInError', () => {
+    it('should retrigger instance when successful', async () => {
+      // Given
+      const instanceId = 'instance123';
+      const inputData = { key: 'value' };
+      const mockResponse = { id: 'newInstanceId', status: 'running' };
+
+      // Mock fetch to simulate a successful response
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        json: jest.fn().mockResolvedValue(mockResponse),
+      });
+
+      // When
+      const result = await orchestratorClient.retriggerInstanceInError({
+        instanceId,
+        inputData,
+      });
+
+      // Then
+      const expectedUrlToFetch = `${baseUrl}/instances/${instanceId}/retrigger`;
+      expect(fetch).toHaveBeenCalledWith(expectedUrlToFetch, {
+        method: 'POST',
+        body: JSON.stringify(inputData),
+        headers: { 'content-type': 'application/json' },
+      });
+      expect(result).toEqual(mockResponse);
+    });
+
+    it('should throw a ResponseError when retriggering instance fails', async () => {
+      // Given
+      const instanceId = 'instance123';
+      const inputData = { key: 'value' };
+
+      // Mock fetch to simulate a failed response
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: false,
+        status: 500,
+        statusText: 'Internal Server Error',
+      });
+
+      // When
+      const promise = orchestratorClient.retriggerInstanceInError({
+        instanceId,
+        inputData,
+      });
+
+      // Then
+      await expect(promise).rejects.toThrow();
+    });
+  });
 });
