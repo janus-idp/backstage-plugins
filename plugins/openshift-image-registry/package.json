@@ -67,7 +67,7 @@
   "maintainers": [
     "@janus-idp/maintainers-plugins"
   ],
-  "author": "'The",
+  "author": "The Backstage Community",
   "homepage": "https://red.ht/rhdh",
   "bugs": "https://github.com/janus-idp/backstage-plugins/issues",
   "keywords": [
