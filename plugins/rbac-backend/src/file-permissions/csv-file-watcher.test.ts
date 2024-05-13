@@ -1,4 +1,3 @@
-import { TokenManager } from '@backstage/backend-common';
 import { DatabaseService } from '@backstage/backend-plugin-api';
 import { mockServices } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
@@ -94,13 +93,6 @@ const policyMetadataStorageMock: PolicyMetadataStorage = {
   removePolicyMetadata: jest.fn().mockImplementation(),
 };
 
-const tokenManagerMock = {
-  getToken: jest.fn().mockImplementation(async () => {
-    return Promise.resolve({ token: 'some-token' });
-  }),
-  authenticate: jest.fn().mockImplementation(),
-};
-
 const dbManagerMock: DatabaseService = {
   getClient: jest.fn().mockImplementation(),
 };
@@ -155,12 +147,7 @@ describe('CSVFileWatcher', () => {
     ).createAdapter();
 
     const stringModel = newModelFromString(MODEL);
-    const enf = await createEnforcer(
-      stringModel,
-      adapter,
-      loggerMock,
-      tokenManagerMock,
-    );
+    const enf = await createEnforcer(stringModel, adapter, loggerMock);
 
     const knex = Knex.knex({ client: MockClient });
 
@@ -580,7 +567,6 @@ async function createEnforcer(
   theModel: Model,
   adapter: Adapter,
   log: Logger,
-  tokenManager: TokenManager,
 ): Promise<Enforcer> {
   const catalogDBClient = Knex.knex({ client: MockClient });
   const enf = await newEnforcer(theModel, adapter);
@@ -590,7 +576,6 @@ async function createEnforcer(
   const rm = new BackstageRoleManager(
     catalogApi,
     log,
-    tokenManager,
     catalogDBClient,
     config,
     mockAuthService,
