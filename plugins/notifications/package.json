@@ -11,7 +11,8 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "frontend-plugin"
+    "role": "frontend-plugin",
+    "supported-versions": "1.26.5"
   },
   "scripts": {
     "start": "backstage-cli package start",
@@ -67,11 +68,22 @@
     "dist-scalprum",
     "app-config.janus-idp.yaml"
   ],
-  "repository": "github:janus-idp/backstage-plugins",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/janus-idp/backstage-plugins",
+    "directory": "plugins/notifications"
+  },
   "keywords": [
     "backstage",
-    "plugin"
+    "plugin",
+    "support:tech-preview",
+    "lifecycle:active"
   ],
-  "homepage": "https://janus-idp.io/",
-  "bugs": "https://github.com/janus-idp/backstage-plugins/issues"
+  "homepage": "https://red.ht/rhdh",
+  "bugs": "https://github.com/janus-idp/backstage-plugins/issues",
+  "maintainers": [
+    "@janus-idp/maintainers-plugins",
+    "@janus-idp/notifications"
+  ],
+  "author": "The Backstage Community"
 }
