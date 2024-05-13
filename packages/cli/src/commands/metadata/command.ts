@@ -30,8 +30,7 @@ const pGitconfig = promisify(gitconfig);
 
 export async function command(opts: OptionValues): Promise<void> {
   const config = await pGitconfig(process.cwd());
-  const gitconfigremoteoriginurl =
-    config.remote && config.remote.origin && config.remote.origin.url;
+  const gitconfigremoteoriginurl = config?.remote?.origin?.url;
   updatePackageMetadata(opts, gitconfigremoteoriginurl);
 }
 
@@ -41,7 +40,7 @@ interface Repository {
   directory: string;
 }
 
-interface packageJSON {
+interface PackageJSON {
   name: string;
   version: string;
   main: string;
@@ -78,8 +77,8 @@ const path = {
    * @param {String} DotDotPath relative path
    * @returns {String} resolved absolutePath
    */
-  resolveRelativeFromAbsolute(DotDotPath: String) {
-    const pathsArray = DotDotPath.replaceAll(/[\/|\\]/g, '/').split('/');
+  resolveRelativeFromAbsolute(DotDotPath: string) {
+    const pathsArray = DotDotPath.replaceAll(/[/|\\]/g, '/').split('/');
     const map = pathsArray.reduce(
       (acc, e) => acc.set(e, (acc.get(e) || 0) + 1),
       new Map(),
@@ -92,17 +91,14 @@ const path = {
   },
 };
 
-function findCodeowners(element: String) {
+function findCodeowners(element: string) {
   if (fs.existsSync(`${element}/.github/CODEOWNERS`)) {
     return element; // found the root dir
   }
   return findCodeowners(`${element}/..`);
 }
 
-export function updatePackageMetadata(
-  opts: OptionValues,
-  gitconfigremoteoriginurl: string,
-) {
+function loadPackageJSON(opts: OptionValues) {
   // load the package.json from the specified (or current) folder
   const workingDir = `${process.cwd()}/${opts.dir}`;
   console.log(`Updating ${workingDir} / package.json`);
@@ -116,9 +112,63 @@ export function updatePackageMetadata(
   const packageJSONPath = join(workingDir, 'package.json');
   const packageJSON = JSON.parse(
     readFileSync(packageJSONPath, 'utf8'),
-  ) as packageJSON;
+  ) as PackageJSON;
 
-  /* now let's change some values */
+  return [packageJSON, packageJSONPath, rootdir, relative_path];
+}
+
+function replaceKeywordsInPackageJSON(
+  packageJSON: PackageJSON,
+  newKeywords: string[],
+  i: any,
+) {
+  for (let j = 0; j < newKeywords.length; j++) {
+    if (
+      newKeywords[j].startsWith('lifecycle:') ||
+      newKeywords[j].startsWith('support:')
+    ) {
+      // replace existing; remove from array
+      packageJSON.keywords[i] = newKeywords[j];
+      newKeywords.splice(j, 1);
+    }
+  }
+  return packageJSON;
+}
+
+function addNewKeywords(packageJSON: PackageJSON, opts: OptionValues) {
+  // initialize empty string array if not already present
+  if (!packageJSON.keywords) {
+    packageJSON.keywords = [];
+  }
+
+  // eslint-disable-next-line prefer-const
+  let newKeywords = opts.keywords.split(',');
+  // if already have keywords, replace lifecycle and support with new values (if defined)
+  if (packageJSON.keywords.length > 0) {
+    for (let i = 0; i < packageJSON.keywords.length; i++) {
+      // can only have ONE lifecycle and one support keyword, so remove replace any existing values
+      if (
+        packageJSON.keywords[i].startsWith('lifecycle:') ||
+        packageJSON.keywords[i].startsWith('support:')
+      ) {
+        packageJSON = replaceKeywordsInPackageJSON(packageJSON, newKeywords, i);
+      }
+    }
+  }
+  // add in the remaining keywords + dedupe
+  for (const element of newKeywords) {
+    packageJSON.keywords.push(element);
+  }
+  packageJSON.keywords = _.uniq(packageJSON.keywords);
+  return [packageJSON, opts];
+}
+
+export function updatePackageMetadata(
+  opts: OptionValues,
+  gitconfigremoteoriginurl: string,
+) {
+  const [packageJSON, packageJSONPath, rootdir, relative_path] =
+    loadPackageJSON(opts);
 
   // 1. add backstage version matching the current value of backstage.json in this repo
   if (fs.existsSync(join(rootdir, '/backstage.json'))) {
@@ -158,39 +208,8 @@ export function updatePackageMetadata(
   packageJSON.homepage = new URL(opts.homepage);
   packageJSON.bugs = new URL(opts.bugs);
 
-  // initialize empty string array if not already present
-  if (!packageJSON.keywords) {
-    packageJSON.keywords = [];
-  }
-
-  // eslint-disable-next-line prefer-const
-  let newKeywords = opts.keywords.split(',');
-  // if already have keywords, replace lifecycle and support with new values (if defined)
-  if (packageJSON.keywords.length > 0) {
-    for (let i = 0; i < packageJSON.keywords.length; i++) {
-      // can only have ONE lifecycle and one support keyword, so remove replace any existing values
-      if (
-        packageJSON.keywords[i].startsWith('lifecycle:') ||
-        packageJSON.keywords[i].startsWith('support:')
-      ) {
-        for (let j = 0; j < newKeywords.length; j++) {
-          if (
-            newKeywords[j].startsWith('lifecycle:') ||
-            newKeywords[j].startsWith('support:')
-          ) {
-            // replace existing; remove from array
-            packageJSON.keywords[i] = newKeywords[j];
-            newKeywords.splice(j, 1);
-          }
-        }
-      }
-    }
-  }
-  // add in the remaining keywords + dedupe
-  for (let j = 0; j < newKeywords.length; j++) {
-    packageJSON.keywords.push(newKeywords[j]);
-  }
-  packageJSON.keywords = _.uniq(packageJSON.keywords);
+  // add keywords (replace some), then uniquify
+  addNewKeywords(packageJSON, opts);
 
   /* all done! */
 
