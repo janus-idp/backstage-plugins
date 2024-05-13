@@ -1,5 +1,5 @@
 import { errorHandler, getVoidLogger } from '@backstage/backend-common';
-import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
+import { mockCredentials } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { InputError } from '@backstage/errors';
 import { RouterOptions } from '@backstage/plugin-permission-backend';
@@ -26,7 +26,9 @@ import {
 
 import {
   conditionalStorageMock,
-  mockedAuthorizeConditional,
+  mockAuth,
+  mockedAuthorize,
+  mockHttpAuth,
   mockPermissionEvaluator,
   policyMetadataStorageMock,
   roleMetadataStorageMock,
@@ -148,8 +150,6 @@ jest.mock('./condition-validation', () => {
   };
 });
 
-const mockHttpAuth = mockServices.httpAuth();
-const mockAuth = mockServices.auth();
 const credentials = mockCredentials.user();
 
 const conditions: RoleConditionalPolicyDecision<PermissionInfo>[] = [
@@ -186,11 +186,6 @@ const expectedConditions: RoleConditionalPolicyDecision<PermissionAction>[] = [
 
 describe('REST policies api', () => {
   let app: express.Express;
-  const mockUser = {
-    type: 'User',
-    userEntityRef: 'user:default/guest',
-    ownershipEntityRefs: ['guest'],
-  };
 
   const mockIdentityClient = {
     getIdentity: jest.fn().mockImplementation(async () => ({
@@ -279,8 +274,8 @@ describe('REST policies api', () => {
       options,
       mockEnforcer as EnforcerDelegate,
       config,
-      logger,
-      mockDiscovery,
+      mockHttpAuth,
+      mockAuth,
       conditionalStorageMock,
       backendPluginIDsProviderMock,
       roleMetadataStorageMock,
@@ -288,7 +283,7 @@ describe('REST policies api', () => {
     const router = await server.serve();
     app = express().use(router);
     app.use(errorHandler());
-    conditionalStorage.getCondition.mockReset();
+    conditionalStorageMock.getCondition.mockReset();
     validateRoleConditionMock.mockReset();
     jest.clearAllMocks();
   });
@@ -3300,7 +3295,7 @@ describe('REST policies api', () => {
     });
 
     it('should not return condition decision by id, because permission framework was disabled', async () => {
-      conditionalStorage.getCondition = jest
+      conditionalStorageMock.getCondition = jest
         .fn()
         .mockImplementation(async (id: number) => {
           if (id === 1) {
@@ -3316,9 +3311,11 @@ describe('REST policies api', () => {
     });
 
     it('should not create condition, because permission framework was disabled', async () => {
-      conditionalStorage.createCondition = jest.fn().mockImplementation(() => {
-        return 1;
-      });
+      conditionalStorageMock.createCondition = jest
+        .fn()
+        .mockImplementation(() => {
+          return 1;
+        });
       pluginPermissionMetadataCollectorMock.getMetadataByPluginId = jest
         .fn()
         .mockImplementation(() => {
@@ -3361,7 +3358,7 @@ describe('REST policies api', () => {
     });
 
     it('should not update condition decision, because permission framework was disabled', async () => {
-      mockedAuthorizeConditional.mockImplementationOnce(async () => [
+      mockedAuthorize.mockImplementationOnce(async () => [
         { result: AuthorizeResult.ALLOW },
       ]);
       const conditionDecision: RoleConditionalPolicyDecision<PermissionAction> =

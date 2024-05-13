@@ -1,8 +1,8 @@
 import { getVoidLogger, ReadUrlResponse } from '@backstage/backend-common';
-import { mockServices } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
 
+import { mockAuth } from '../__fixtures__/utils/utils.test';
 import { PluginPermissionMetadataCollector } from './plugin-endpoints';
 
 const backendPluginIDsProviderMock = {
@@ -25,8 +25,6 @@ const mockUrlReaderService = {
     });
   }),
 };
-
-const mockAuth = mockServices.auth();
 
 jest.mock('@backstage/backend-common', () => {
   const actualBackendCommon = jest.requireActual('@backstage/backend-common');

@@ -5,16 +5,16 @@ import * as Knex from 'knex';
 
 import { PermissionPolicyMetadata } from '@janus-idp/backstage-plugin-rbac-common';
 
-import { CasbinDBAdapterFactory } from '../database/casbin-adapter-factory';
 import {
-  PermissionPolicyMetadataDao,
-  PolicyMetadataStorage,
-} from '../database/policy-metadata-storage';
-import {
-  RoleMetadataDao,
-  RoleMetadataStorage,
-} from '../database/role-metadata';
-import { CSV_PERMISSION_POLICY_FILE_AUTHOR } from '../file-permissions/csv-file-watcher';
+  createEnforcer,
+  newAdapter,
+  newConfigReader,
+  newEnforcerDelegate,
+  policyMetadataStorageMock,
+  roleMetadataStorageMock,
+} from '../__fixtures__/utils/utils.test';
+import { RoleMetadataDao } from '../database/role-metadata';
+import { CSV_PERMISSION_POLICY_FILE_AUTHOR } from '../file-permissions/csv';
 import { policyToString } from '../helper';
 import { EnforcerDelegate } from './enforcer-delegate';
 import { MODEL } from './permission-model';
@@ -89,13 +89,7 @@ describe('EnforcerDelegate', () => {
     const theModel = newModelFromString(MODEL);
     const logger = getVoidLogger();
 
-    const enf = await createEnforcer(
-      theModel,
-      adapter,
-      logger,
-      tokenManagerMock,
-      config,
-    );
+    const enf = await createEnforcer(theModel, adapter, logger, config);
     enfRemovePolicySpy = jest.spyOn(enf, 'removePolicy');
     enfRemovePoliciesSpy = jest.spyOn(enf, 'removePolicies');
     enfRemoveGroupingPolicySpy = jest.spyOn(enf, 'removeGroupingPolicy');

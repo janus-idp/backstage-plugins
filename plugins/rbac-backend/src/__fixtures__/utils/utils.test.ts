@@ -1,5 +1,6 @@
-import { getVoidLogger, TokenManager } from '@backstage/backend-common';
+import { getVoidLogger } from '@backstage/backend-common';
 import { DatabaseService } from '@backstage/backend-plugin-api';
+import { mockServices } from '@backstage/backend-test-utils';
 import { Entity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
@@ -108,13 +109,6 @@ export const conditionalStorageMock = {
   updateCondition: jest.fn().mockImplementation(),
 };
 
-export const tokenManagerMock = {
-  getToken: jest.fn().mockImplementation(async () => {
-    return Promise.resolve({ token: 'some-token' });
-  }),
-  authenticate: jest.fn().mockImplementation(),
-};
-
 export const dbManagerMock: DatabaseService = {
   getClient: jest.fn().mockImplementation(),
 };
@@ -124,7 +118,7 @@ export const loggerMock: any = {
   debug: jest.fn().mockImplementation(),
 };
 
-const mockedAuthorize = jest.fn().mockImplementation(async () => [
+export const mockedAuthorize = jest.fn().mockImplementation(async () => [
   {
     result: AuthorizeResult.ALLOW,
   },
@@ -142,6 +136,9 @@ export const mockPermissionEvaluator = {
   authorize: mockedAuthorize,
   authorizeConditional: mockedAuthorizeConditional,
 };
+
+export const mockHttpAuth = mockServices.httpAuth();
+export const mockAuth = mockServices.auth();
 
 export function newConfigReader(
   permFile?: string,
@@ -200,7 +197,6 @@ export async function createEnforcer(
   theModel: Model,
   adapter: Adapter,
   logger: Logger,
-  tokenManager: TokenManager,
   config?: ConfigReader,
 ): Promise<Enforcer> {
   const configRead = config || new ConfigReader({});
@@ -210,9 +206,9 @@ export async function createEnforcer(
   const rm = new BackstageRoleManager(
     catalogApiMock,
     logger,
-    tokenManager,
     catalogDBClient,
     configRead,
+    mockAuth,
   );
   enf.setRoleManager(rm);
   enf.enableAutoBuildRoleLinks(false);
@@ -234,8 +230,7 @@ export async function newEnforcerDelegate(
   const logger = getVoidLogger();
 
   const enforcer =
-    enf ||
-    (await createEnforcer(theModel, adapter, logger, tokenManagerMock, config));
+    enf || (await createEnforcer(theModel, adapter, logger, config));
 
   if (storedPolicies) {
     await enforcer.addPolicies(storedPolicies);

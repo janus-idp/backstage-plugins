@@ -1,5 +1,3 @@
-import { mockServices } from '@backstage/backend-test-utils';
-
 import * as Knex from 'knex';
 import { MockClient } from 'knex-mock-client';
 import { Logger } from 'winston';
@@ -8,8 +6,8 @@ import {
   catalogApiMock,
   createGroupEntity,
   loggerMock,
+  mockAuth,
   newConfigReader,
-  tokenManagerMock,
 } from '../__fixtures__/utils/utils.test';
 import { BackstageRoleManager } from '../role-manager/role-manager';
 
@@ -33,7 +31,7 @@ describe('BackstageRoleManager', () => {
       loggerMock as Logger,
       catalogDBClient,
       config,
-      mockAuthService,
+      mockAuth,
     );
   });
 
@@ -1014,7 +1012,7 @@ describe('BackstageRoleManager', () => {
         loggerMock as Logger,
         catalogDBClient,
         config,
-        mockAuthService,
+        mockAuth,
       );
 
       const groupCMock = createGroupEntity('team-c', 'team-a', [], ['mike']);

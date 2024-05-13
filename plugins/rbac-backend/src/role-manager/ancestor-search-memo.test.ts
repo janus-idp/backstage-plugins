@@ -1,13 +1,10 @@
-import { mockServices } from '@backstage/backend-test-utils';
 import { GroupEntity } from '@backstage/catalog-model';
 
 import * as Knex from 'knex';
 import { createTracker, MockClient, Tracker } from 'knex-mock-client';
 
-import { createGroupEntity } from '../__fixtures__/utils/utils.test';
+import { createGroupEntity, mockAuth } from '../__fixtures__/utils/utils.test';
 import { AncestorSearchMemo, Relation } from './ancestor-search-memo';
-
-const mockAuthService = mockServices.auth();
 
 describe('ancestor-search-memo', () => {
   const userRelations = [
@@ -74,7 +71,7 @@ describe('ancestor-search-memo', () => {
       'user:default/adam',
       catalogApiMock,
       catalogDBClient,
-      mockAuthService,
+      mockAuth,
     );
   });
 
@@ -196,7 +193,7 @@ describe('ancestor-search-memo', () => {
         'user:default/adam',
         catalogApiMock,
         catalogDBClient,
-        mockAuthService,
+        mockAuth,
         1,
       );
 
@@ -262,7 +259,7 @@ describe('ancestor-search-memo', () => {
         'user:default/adam',
         catalogApiMock,
         catalogDBClient,
-        mockAuthService,
+        mockAuth,
         1,
       );
 
@@ -293,7 +290,7 @@ describe('ancestor-search-memo', () => {
       'user:default/adam',
       catalogApiMock,
       catalogDBClient,
-      mockAuthService,
+      mockAuth,
     );
 
     const asmDBSpy = jest
