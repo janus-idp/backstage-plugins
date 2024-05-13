@@ -1,2 +1,2 @@
-export { orchestratorPlugin } from './OrchestratorPlugin';
+export { orchestratorPlugin as default } from './OrchestratorPlugin';
 export { dynamicPluginInstaller } from './dynamic/alpha';

@@ -150,14 +150,15 @@ For more information about the configuration options, including other optional p
    yarn workspace backend add @janus-idp/backstage-plugin-orchestrator-backend
    ```
 
-1. Add the following code to `packages/backend/src/index.ts` file:
+1. Add the following code to the `packages/backend/src/index.ts` file:
 
    ```ts title="packages/backend/src/index.ts"
-   import { orchestratorPlugin } from '@janus-idp/backstage-plugin-orchestrator-backend/alpha';
-
    const backend = createBackend();
+
    /* highlight-add-next-line */
-   backend.add(orchestratorPlugin);
+   backend.add(
+     import('@janus-idp/backstage-plugin-orchestrator-backend/alpha'),
+   );
 
    backend.start();
    ```
