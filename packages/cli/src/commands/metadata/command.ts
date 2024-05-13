@@ -214,7 +214,7 @@ export function updatePackageMetadata(
     newKeywords.unshift(optsSupport ?? oldSupport ?? '');
   }
 
-  // dedup new keywords
+  // dedupe new keywords
   packageJSON.keywords = Array.from(new Set(newKeywords));
 
   // write changes to file
