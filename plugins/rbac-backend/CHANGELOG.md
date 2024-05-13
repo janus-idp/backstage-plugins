@@ -1,3 +1,14 @@
+## @janus-idp/backstage-plugin-rbac-backend [3.0.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.8.2...@janus-idp/backstage-plugin-rbac-backend@3.0.0) (2024-05-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* **rbac:** remove token manager for auth service (#1632)
+
+### Bug Fixes
+
+* **rbac:** remove token manager for auth service ([#1632](https://github.com/janus-idp/backstage-plugins/issues/1632)) ([2f19655](https://github.com/janus-idp/backstage-plugins/commit/2f196556cffc61c83239721b1cd51d6a2c64eee7))
+
 ## @janus-idp/backstage-plugin-rbac-backend [2.8.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.8.1...@janus-idp/backstage-plugin-rbac-backend@2.8.2) (2024-05-09)
 
 

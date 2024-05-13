@@ -9,7 +9,7 @@ This quickstart guide will help you install the Orchestrator using the helm char
    Follow the [installation instructions for the greetings workflow](https://github.com/parodos-dev/serverless-workflows-config/blob/gh-pages/docs/greeting/README.md).
 
 3. **Access Red Hat Developer Hub**:
-   Open your web browser and navigate to the Red Hat Developer Hub application. Retrieve the URL using the following openshift CLI command.
+   Open your web browser and navigate to the Red Hat Developer Hub application. Retrieve the URL using the following OpenShift CLI command.
 
    ```bash
    oc get route backstage-backstage -n rhdh-operator -o jsonpath='{.spec.host}'
@@ -24,7 +24,7 @@ This quickstart guide will help you install the Orchestrator using the helm char
    Navigate to the Orchestrator page by clicking on the Orchestrator icon in the left navigation menu.
    ![orchestratorIcon](https://raw.githubusercontent.com/janus-idp/backstage-plugins/main/plugins/orchestrator/docs/orchestratorIcon.png)
 
-6. **Execute Greeting Workflow**:  
+6. **Execute Greeting Workflow**:
    Click on the 'Execute' button in the ACTIONS column of the Greeting workflow.
    ![workflowsPage](https://raw.githubusercontent.com/janus-idp/backstage-plugins/main/plugins/orchestrator/docs/workflowsPage.png)
    The 'Run workflow' page will open. Click 'Next step' and then 'Run'
