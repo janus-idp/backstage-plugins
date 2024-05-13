@@ -72,5 +72,5 @@
     "@janus-idp/maintainers-plugins",
     "@janus-idp/orchestrator-codeowners"
   ],
-  "author": "'The"
+  "author": "The Backstage Community"
 }
