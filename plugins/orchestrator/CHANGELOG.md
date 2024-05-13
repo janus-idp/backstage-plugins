@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-orchestrator [1.11.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.11.1...@janus-idp/backstage-plugin-orchestrator@1.11.2) (2024-05-13)
+
+
+### Bug Fixes
+
+* **orchestrator:** typos mentioning OpenShift ([#1639](https://github.com/janus-idp/backstage-plugins/issues/1639)) ([7ff4c75](https://github.com/janus-idp/backstage-plugins/commit/7ff4c754f73681e1a596d56721972af8872f3211))
+
 ## @janus-idp/backstage-plugin-orchestrator [1.11.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.11.0...@janus-idp/backstage-plugin-orchestrator@1.11.1) (2024-05-09)
 
 
