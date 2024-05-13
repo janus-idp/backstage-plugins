@@ -28,7 +28,7 @@ The orchestrator controls the flow orchestrating operations/tasks that may be ex
 - Timer/timeout control
 - Built-in powerful expression evaluation with JQ
 - Low Code/No code
-- Cloud-native architecture Kubernetes/Openshit with Operator support
+- Cloud-native architecture Kubernetes/OpenShift with Operator support
 - OpenAPI / REST built-in integration etc.
 
 **Client-side tooling**
