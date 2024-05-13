@@ -435,4 +435,43 @@ describe('OrchestratorClient', () => {
       await expect(promise).rejects.toThrow();
     });
   });
+  describe('getWorkflowOverview', () => {
+    it('should return workflow overview when successful', async () => {
+      // Given
+      const workflowId = 'workflow123';
+      const mockOverview = { id: workflowId, name: 'Workflow 1' };
+
+      // Mock fetch to simulate a successful response
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        json: jest.fn().mockResolvedValue(mockOverview),
+      });
+
+      // When
+      const result = await orchestratorClient.getWorkflowOverview(workflowId);
+
+      // Then
+      const expectedEndpoint = `${baseUrl}/workflows/${workflowId}/overview`;
+      expect(fetch).toHaveBeenCalledWith(expectedEndpoint);
+      expect(result).toEqual(mockOverview);
+    });
+
+    it('should throw a ResponseError when fetching the workflow overview fails', async () => {
+      // Given
+      const workflowId = 'workflow123';
+
+      // Mock fetch to simulate a failed response
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: false,
+        status: 404,
+        statusText: 'Not Found',
+      });
+
+      // When
+      const promise = orchestratorClient.getWorkflowOverview(workflowId);
+
+      // Then
+      await expect(promise).rejects.toThrow();
+    });
+  });
 });
