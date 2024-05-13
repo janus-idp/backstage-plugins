@@ -1,8 +1,10 @@
 #!/bin/bash
+
 SCRIPT_DIR=$(cd "$(dirname "$0")" || exit; pwd)
 workingDir=$SCRIPT_DIR
 if [[ $workingDir == *"/plugins" ]]; then workingDir=$(cd "${SCRIPT_DIR}/../" || exit; pwd); fi
 supportLevelsJSON="${workingDir}/plugins/plugin-metadata.json"
+
 packageMetadata() {
     which_plugins="$1"
     supportLevelsToProcess="$2"
