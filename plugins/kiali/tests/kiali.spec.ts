@@ -16,10 +16,6 @@ test.describe('Kiali plugin', () => {
       await page.locator('[data-test="Kiali Errors"]');
     });
 
-    test.afterAll(async ({ browser }) => {
-      await browser.close();
-    });
-
     test('Networking error', async () => {
       await expect(
         page.locator('[data-test="Warning: Error reaching Kiali"]'),
