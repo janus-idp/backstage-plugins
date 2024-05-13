@@ -308,4 +308,39 @@ describe('OrchestratorClient', () => {
       await expect(promise).rejects.toThrow();
     });
   });
+  describe('listInstances', () => {
+    it('should return instances when successful', async () => {
+      // Given
+      const mockInstances = [{ id: 'instance123', name: 'Instance 1' }];
+
+      // Mock fetch to simulate a successful response
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        json: jest.fn().mockResolvedValue(mockInstances),
+      });
+
+      // When
+      const result = await orchestratorClient.listInstances();
+
+      // Then
+      expect(fetch).toHaveBeenCalledWith(`${baseUrl}/instances`);
+      expect(result).toEqual(mockInstances);
+    });
+
+    it('should throw a ResponseError when listing instances fails', async () => {
+      // Given
+      // Mock fetch to simulate a failed response
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: false,
+        status: 404,
+        statusText: 'Not Found',
+      });
+
+      // When
+      const promise = orchestratorClient.listInstances();
+
+      // Then
+      await expect(promise).rejects.toThrow();
+    });
+  });
 });
