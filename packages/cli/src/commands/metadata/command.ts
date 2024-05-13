@@ -16,9 +16,9 @@
 
 // test with ./packages/cli/bin/janus-cli package metadata --help
 
+import Codeowners from 'codeowners';
 import { OptionValues } from 'commander';
 import gitconfig from 'gitconfiglocal';
-import _ from 'lodash';
 
 import * as fs from 'fs';
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -30,8 +30,7 @@ const pGitconfig = promisify(gitconfig);
 
 export async function command(opts: OptionValues): Promise<void> {
   const config = await pGitconfig(process.cwd());
-  const gitconfigremoteoriginurl = config?.remote?.origin?.url;
-  updatePackageMetadata(opts, gitconfigremoteoriginurl);
+  updatePackageMetadata(opts, config?.remote?.origin?.url);
 }
 
 interface Repository {
@@ -40,7 +39,7 @@ interface Repository {
   directory: string;
 }
 
-interface PackageJSON {
+interface PackageJson {
   name: string;
   version: string;
   main: string;
@@ -74,20 +73,20 @@ interface PackageJSON {
 const path = {
   /**
    * @method resolveRelativeFromAbsolute resolves a relative path from an absolute path
-   * @param {String} DotDotPath relative path
-   * @returns {String} resolved absolutePath
+   * @param {string} DotDotPath relative path
+   * @returns {string} resolved absolutePath
    */
   resolveRelativeFromAbsolute(DotDotPath: string) {
-    const pathsArray = DotDotPath.replaceAll(/[/|\\]/g, '/').split('/');
+    const pathsArray = DotDotPath.replaceAll(/[\/|\\]/g, '/').split('/');
     const map = pathsArray.reduce(
       (acc, e) => acc.set(e, (acc.get(e) || 0) + 1),
       new Map(),
     );
     // console.log(` @ ${DotDotPath} => ${pathsArray} (${map.get("..")} backs)`)
-    const rootdir = pathsArray.slice(0, -(map.get('..') * 2)).join('/');
+    const rootDir = pathsArray.slice(0, -(map.get('..') * 2)).join('/');
     // console.log(` @ root dir: ${rootdir}`)
-    const relativeDir = process.cwd().replaceAll(`${rootdir}/`, '');
-    return [rootdir, relativeDir];
+    const relativeDir = process.cwd().replaceAll(`${rootDir}/`, '');
+    return [rootDir, relativeDir];
   },
 };
 
@@ -98,13 +97,45 @@ function findCodeowners(element: string) {
   return findCodeowners(`${element}/..`);
 }
 
-function loadPackageJSON(opts: OptionValues) {
+function separateKeywords(array: string[]): {
+  keywords: string[];
+  lifecycle?: string;
+  support?: string;
+} {
+  return array.reduce(
+    (prev, keyword) => {
+      // separate lifecycle keyword
+      if (keyword.startsWith('lifecycle:')) {
+        return { ...prev, lifecycle: keyword };
+      }
+
+      // separate support keyword
+      if (keyword.startsWith('support:')) {
+        return { ...prev, support: keyword };
+      }
+
+      // keep the remaining keywords together
+      prev.keywords.push(keyword);
+      return prev;
+    },
+    { keywords: [] } as {
+      keywords: string[];
+      lifecycle?: string;
+      support?: string;
+    },
+  );
+}
+
+export function updatePackageMetadata(
+  opts: OptionValues,
+  gitconfigRemoteOriginUrl: string,
+) {
   // load the package.json from the specified (or current) folder
   const workingDir = `${process.cwd()}/${opts.dir}`;
   console.log(`Updating ${workingDir} / package.json`);
 
   // compute the root dir and relative path to the current dir
-  const [rootdir, relative_path] = opts.dir
+  const [rootDir, relativePath] = opts.dir
     ? [process.cwd(), opts.dir]
     : path.resolveRelativeFromAbsolute(findCodeowners(`${process.cwd()}`));
   // console.log(` @ rootdir = ${rootdir}, relative_path = ${relative_path}`)
@@ -112,89 +143,33 @@ function loadPackageJSON(opts: OptionValues) {
   const packageJSONPath = join(workingDir, 'package.json');
   const packageJSON = JSON.parse(
     readFileSync(packageJSONPath, 'utf8'),
-  ) as PackageJSON;
+  ) as PackageJson;
 
-  return [packageJSON, packageJSONPath, rootdir, relative_path];
-}
-
-function replaceKeywordsInPackageJSON(
-  packageJSON: PackageJSON,
-  newKeywords: string[],
-  i: any,
-) {
-  for (let j = 0; j < newKeywords.length; j++) {
-    if (
-      newKeywords[j].startsWith('lifecycle:') ||
-      newKeywords[j].startsWith('support:')
-    ) {
-      // replace existing; remove from array
-      packageJSON.keywords[i] = newKeywords[j];
-      newKeywords.splice(j, 1);
-    }
-  }
-  return packageJSON;
-}
-
-function addNewKeywords(packageJSON: PackageJSON, opts: OptionValues) {
-  // initialize empty string array if not already present
-  if (!packageJSON.keywords) {
-    packageJSON.keywords = [];
-  }
-
-  // eslint-disable-next-line prefer-const
-  let newKeywords = opts.keywords.split(',');
-  // if already have keywords, replace lifecycle and support with new values (if defined)
-  if (packageJSON.keywords.length > 0) {
-    for (let i = 0; i < packageJSON.keywords.length; i++) {
-      // can only have ONE lifecycle and one support keyword, so remove replace any existing values
-      if (
-        packageJSON.keywords[i].startsWith('lifecycle:') ||
-        packageJSON.keywords[i].startsWith('support:')
-      ) {
-        packageJSON = replaceKeywordsInPackageJSON(packageJSON, newKeywords, i);
-      }
-    }
-  }
-  // add in the remaining keywords + dedupe
-  for (const element of newKeywords) {
-    packageJSON.keywords.push(element);
-  }
-  packageJSON.keywords = _.uniq(packageJSON.keywords);
-  return [packageJSON, opts];
-}
-
-export function updatePackageMetadata(
-  opts: OptionValues,
-  gitconfigremoteoriginurl: string,
-) {
-  const [packageJSON, packageJSONPath, rootdir, relative_path] =
-    loadPackageJSON(opts);
+  /* now let's change some values */
 
   // 1. add backstage version matching the current value of backstage.json in this repo
-  if (fs.existsSync(join(rootdir, '/backstage.json'))) {
+  if (fs.existsSync(join(rootDir, '/backstage.json'))) {
     packageJSON.backstage['supported-versions'] = JSON.parse(
-      readFileSync(join(rootdir, '/backstage.json'), 'utf8'),
+      readFileSync(join(rootDir, '/backstage.json'), 'utf8'),
     ).version;
-    // console.log(packageJSON.backstage)
   }
 
   // 2. set up repository values and the current path as repo.directory
   const repo = {} as Repository;
   repo.type = 'git';
-  repo.url = gitconfigremoteoriginurl
+  repo.url = gitconfigRemoteOriginUrl
     .toString()
     .replaceAll('git@github.com:', 'https://github.com/')
     .replaceAll('.git', '')
     .trim();
-  repo.directory = relative_path;
+  repo.directory = relativePath;
   packageJSON.repository = repo;
 
   // 3. load owners from CODEOWNERS file, using this package.json's repository.directory field to compute maintainer groups
-  let owners = [];
+  let owners: string[] = [];
   if (packageJSON.repository.directory) {
-    const Codeowners = require('codeowners');
     const repos = new Codeowners();
-    owners = repos.getOwner(relative_path);
+    owners = repos.getOwner(relativePath);
   } else {
     console.log(
       ` ! Could not load .github/CODEOWNERS file, so cannot update maintainers in package.json`,
@@ -208,10 +183,39 @@ export function updatePackageMetadata(
   packageJSON.homepage = new URL(opts.homepage);
   packageJSON.bugs = new URL(opts.bugs);
 
-  // add keywords (replace some), then uniquify
-  addNewKeywords(packageJSON, opts);
+  // initialize empty string array if not already present
+  if (!packageJSON.keywords) {
+    packageJSON.keywords = [];
+  }
 
-  /* all done! */
+  // if already have keywords, replace lifecycle and support with new values (if defined)
+  // we can only have ONE lifecycle and one support keyword, so remove replace any existing values
+  const {
+    keywords: oldKeywords,
+    lifecycle: oldLifecycle,
+    support: oldSupport,
+  } = separateKeywords(packageJSON.keywords);
+
+  const {
+    keywords: optsKeywords,
+    lifecycle: optsLifecycle,
+    support: optsSupport,
+  } = separateKeywords(opts.keywords.split(','));
+
+  const newKeywords = oldKeywords.concat(optsKeywords);
+
+  // if there is a lifecycle keyword, push to the beginning of the array
+  if (oldLifecycle || optsLifecycle) {
+    newKeywords.unshift(optsLifecycle ?? oldLifecycle ?? '');
+  }
+
+  // if there is a support keyword, push to the beginning of the array
+  if (oldSupport || optsSupport) {
+    newKeywords.unshift(optsSupport ?? oldSupport ?? '');
+  }
+
+  // dedupe new keywords
+  packageJSON.keywords = Array.from(new Set(newKeywords));
 
   // write changes to file
   writeFileSync(packageJSONPath, JSON.stringify(packageJSON, null, 2), 'utf8');

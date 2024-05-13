@@ -66,10 +66,10 @@
     "directory": "plugins/regex-actions"
   },
   "keywords": [
-    "backstage",
-    "backend-plugin-module",
     "support:production",
-    "lifecycle:active"
+    "lifecycle:active",
+    "backstage",
+    "backend-plugin-module"
   ],
   "homepage": "https://red.ht/rhdh",
   "bugs": "https://github.com/janus-idp/backstage-plugins/issues",

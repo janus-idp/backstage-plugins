@@ -64,10 +64,10 @@
     "directory": "plugins/dynamic-plugins-info"
   },
   "keywords": [
-    "backstage",
-    "plugin",
     "support:production",
-    "lifecycle:active"
+    "lifecycle:active",
+    "backstage",
+    "plugin"
   ],
   "homepage": "https://red.ht/rhdh",
   "bugs": "https://github.com/janus-idp/backstage-plugins/issues",

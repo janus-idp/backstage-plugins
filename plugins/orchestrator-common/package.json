@@ -22,12 +22,12 @@
   },
   "bugs": "https://github.com/janus-idp/backstage-plugins/issues",
   "keywords": [
+    "support:tech-preview",
+    "lifecycle:active",
     "backstage",
     "plugin",
     "orchestrator",
-    "workflows",
-    "support:tech-preview",
-    "lifecycle:active"
+    "workflows"
   ],
   "files": [
     "config.d.ts",

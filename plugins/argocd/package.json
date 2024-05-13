@@ -86,10 +86,10 @@
     "directory": "plugins/argocd"
   },
   "keywords": [
-    "backstage",
-    "plugin",
     "support:production",
     "lifecycle:active",
+    "backstage",
+    "plugin",
     "usage:ci-cd",
     "usage:integration"
   ],

@@ -21,7 +21,7 @@ packageMetadata() {
     for support in $supportLevelsToProcess; do
         (( s++ )) || true
         echo;echo "[$s/$num_s] Processing ${support} plugins to add/update metadata ..."
-        for plugin in $(jq -r '."'"${which_plugins}"'"."'"${support}"'"[]' "$supportLevelsJSON"); do 
+        for plugin in $(jq -r '."'"${which_plugins}"'"."'"${support}"'"[]' "$supportLevelsJSON"); do
             (( num_p++ )) || true
         done
         for plugin in $(jq -r '."'"${which_plugins}"'"."'"${support}"'"[]' "$supportLevelsJSON"); do
@@ -34,8 +34,8 @@ packageMetadata() {
                 -e "s|@janus-idp/(.+)|plugins/\1|" \
                 -e "s|annotator-actions|scaffolder-annotator-action|"
             )
-            if [[ ! -d "${workingDir}/${dir}" ]] || [[ ! -f "${workingDir}/${dir}/package.json" ]]; then 
-                echo; echo "[$s/$num_s] [$p/$num_p] [WARNING] ${workingDir}/${dir}/package.json not found! Skipping..."; 
+            if [[ ! -d "${workingDir}/${dir}" ]] || [[ ! -f "${workingDir}/${dir}/package.json" ]]; then
+                echo; echo "[$s/$num_s] [$p/$num_p] [WARNING] ${workingDir}/${dir}/package.json not found! Skipping...";
             else
                 echo;echo "[$s/$num_s] [$p/$num_p] Processing ${plugin} in ${dir}"
                 pushd "${workingDir}" >/dev/null || exit

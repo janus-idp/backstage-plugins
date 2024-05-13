@@ -67,10 +67,10 @@
     "directory": "plugins/feedback"
   },
   "keywords": [
-    "backstage",
-    "plugin",
     "support:tech-preview",
-    "lifecycle:active"
+    "lifecycle:active",
+    "backstage",
+    "plugin"
   ],
   "scalprum": {
     "name": "janus-idp.backstage-plugin-feedback",

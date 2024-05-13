@@ -78,10 +78,10 @@
     "directory": "plugins/servicenow-actions"
   },
   "keywords": [
-    "backstage",
-    "backend-plugin-module",
     "support:tech-preview",
-    "lifecycle:active"
+    "lifecycle:active",
+    "backstage",
+    "backend-plugin-module"
   ],
   "homepage": "https://red.ht/rhdh",
   "bugs": "https://github.com/janus-idp/backstage-plugins/issues",
