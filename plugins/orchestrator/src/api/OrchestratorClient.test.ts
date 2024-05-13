@@ -1,5 +1,4 @@
 import { DiscoveryApi } from '@backstage/core-plugin-api';
-import { ResponseError } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
 
 import { WorkflowExecutionResponse } from '@janus-idp/backstage-plugin-orchestrator-common';
@@ -225,6 +224,46 @@ describe('OrchestratorClient', () => {
 
       // When
       const promise = orchestratorClient.getWorkflowDefinition(workflowId);
+
+      // Then
+      await expect(promise).rejects.toThrow();
+    });
+  });
+  describe('getWorkflowSource', () => {
+    it('should return workflow source when successful', async () => {
+      // Given
+      const workflowId = 'workflow123';
+      const mockWorkflowSource = 'test workflow source';
+
+      // Mock fetch to simulate a successful response
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        text: jest.fn().mockResolvedValue(mockWorkflowSource),
+      });
+
+      // When
+      const result = await orchestratorClient.getWorkflowSource(workflowId);
+
+      // Then
+      expect(fetch).toHaveBeenCalledWith(
+        `${baseUrl}/workflows/${workflowId}/source`,
+      );
+      expect(result).toEqual(mockWorkflowSource);
+    });
+
+    it('should throw a ResponseError when fetching the workflow source fails', async () => {
+      // Given
+      const workflowId = 'workflow123';
+
+      // Mock fetch to simulate a failed response
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: false,
+        status: 404,
+        statusText: 'Not Found',
+      });
+
+      // When
+      const promise = orchestratorClient.getWorkflowSource(workflowId);
 
       // Then
       await expect(promise).rejects.toThrow();
