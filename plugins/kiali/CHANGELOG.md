@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-kiali [1.17.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.17.2...@janus-idp/backstage-plugin-kiali@1.17.3) (2024-05-13)
+
+
+### Bug Fixes
+
+* **kiali:** removing unnecessary afterAll hook ([#1642](https://github.com/janus-idp/backstage-plugins/issues/1642)) ([a314607](https://github.com/janus-idp/backstage-plugins/commit/a3146073bebb17b6f990891a277323a19e3731d6))
+
 ## @janus-idp/backstage-plugin-kiali [1.17.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.17.1...@janus-idp/backstage-plugin-kiali@1.17.2) (2024-05-09)
 
 
