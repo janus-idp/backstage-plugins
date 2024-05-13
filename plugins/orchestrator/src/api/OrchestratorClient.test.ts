@@ -343,4 +343,48 @@ describe('OrchestratorClient', () => {
       await expect(promise).rejects.toThrow();
     });
   });
+  describe('getInstance', () => {
+    it('should return instance when successful', async () => {
+      // Given
+      const instanceId = 'instance123';
+      const includeAssessment = false;
+      const mockInstance = { id: instanceId, name: 'Instance 1' };
+
+      // Mock fetch to simulate a successful response
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        json: jest.fn().mockResolvedValue(mockInstance),
+      });
+
+      // When
+      const result = await orchestratorClient.getInstance(
+        instanceId,
+        includeAssessment,
+      );
+
+      // Then
+      const expectedEndpoint = `${baseUrl}/instances/${instanceId}?includeAssessment=false`;
+
+      expect(fetch).toHaveBeenCalledWith(expectedEndpoint);
+      expect(result).toEqual(mockInstance);
+    });
+
+    it('should throw a ResponseError when fetching the instance fails', async () => {
+      // Given
+      const instanceId = 'instance123';
+
+      // Mock fetch to simulate a failed response
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: false,
+        status: 404,
+        statusText: 'Not Found',
+      });
+
+      // When
+      const promise = orchestratorClient.getInstance(instanceId);
+
+      // Then
+      await expect(promise).rejects.toThrow();
+    });
+  });
 });
