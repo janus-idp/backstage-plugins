@@ -269,4 +269,43 @@ describe('OrchestratorClient', () => {
       await expect(promise).rejects.toThrow();
     });
   });
+  describe('listWorkflowOverviews', () => {
+    it('should return workflow overviews when successful', async () => {
+      // Given
+      const mockWorkflowOverviews = [
+        { id: 'workflow123', name: 'Workflow 1' },
+        { id: 'workflow456', name: 'Workflow 2' },
+      ];
+
+      // Mock fetch to simulate a successful response
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        json: jest.fn().mockResolvedValue(mockWorkflowOverviews),
+      });
+
+      // When
+      const result = await orchestratorClient.listWorkflowOverviews();
+
+      // Then
+      expect(fetch).toHaveBeenCalledWith(`${baseUrl}/workflows/overview`);
+      expect(result).toEqual(mockWorkflowOverviews);
+    });
+
+    it('should throw a ResponseError when listing workflow overviews fails', async () => {
+      // Given
+
+      // Mock fetch to simulate a failed response
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: false,
+        status: 500,
+        statusText: 'Internal Server Error',
+      });
+
+      // When
+      const promise = orchestratorClient.listWorkflowOverviews();
+
+      // Then
+      await expect(promise).rejects.toThrow();
+    });
+  });
 });
