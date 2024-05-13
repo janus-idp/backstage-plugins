@@ -1,5 +1,11 @@
 {
   "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": [
+    ".prettierrc.js",
+    ".eslintrc.js",
+    "tsconfig.json",
+    "yarn.lock"
+  ],
   "pipeline": {
     "start": {
       "cache": false,
@@ -30,6 +36,5 @@
       "outputs": ["../../dist-types/**"],
       "dependsOn": ["^tsc"]
     }
-  },
-  "globalDependencies": ["prettierrc.js"]
+  }
 }
