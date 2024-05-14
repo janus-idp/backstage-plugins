@@ -9,7 +9,7 @@ import { JsonValue } from '@backstage/types';
 import { Request } from 'express';
 
 export type ActorDetails = {
-  actorId: string;
+  actorId: string | null;
   ip?: string;
   hostname?: string;
   userAgent?: string;
@@ -50,31 +50,24 @@ export type AuditLogDetails = {
   isAuditLog: true;
 } & AuditLogStatus;
 
-export type AuditActorOptions =
-  | {
-      actor_id: string;
-      request?: Request;
-    }
-  | {
-      actor_id?: string;
-      request: Request;
-    };
-
 export type AuditLogDetailsOptions = {
   eventName: string;
   stage: string;
   metadata?: JsonValue;
   response?: AuditResponse;
-} & AuditActorOptions &
-  ({ status: 'succeeded' } | { status: 'failed'; errors: unknown[] });
+  actor_id?: string;
+  request?: Request;
+} & ({ status: 'succeeded' } | { status: 'failed'; errors: unknown[] });
 
 export type AuditLogOptions = {
   eventName: string;
   message: string;
   stage: string;
+  actor_id?: string;
   metadata?: JsonValue;
   response?: AuditResponse;
-} & AuditActorOptions;
+  request?: Request;
+};
 
 export type AuditErrorLogOptions = AuditLogOptions & { errors: unknown[] };
 
