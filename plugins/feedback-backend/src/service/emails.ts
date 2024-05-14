@@ -1,7 +1,7 @@
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 
 import { createTransport, Transporter } from 'nodemailer';
-import { Logger } from 'winston';
 
 import { readFileSync } from 'fs';
 
@@ -11,7 +11,7 @@ export class NodeMailer {
 
   constructor(
     config: Config,
-    private logger: Logger,
+    private logger: LoggerService,
   ) {
     const useSecure: boolean = config.getBoolean(
       'feedback.integrations.email.secure',

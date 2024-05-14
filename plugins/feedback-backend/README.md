@@ -15,7 +15,20 @@ Install the NPM Package
 yarn workspace backend add @janus-idp/backstage-plugin-feedback-backend
 ```
 
-#### Adding the plugin to the legacy backend
+#### Adding the plugin to the new backend
+
+Add the following to your `packages/backend/src/index.ts` file:
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+
+// Add the following line
+backend.add(import('@janus-idp/backstage-plugin-feedback-backend'));
+
+backend.start();
+```
+
+#### Adding the plugin to the legacy backend (`@janus-idp/backstage-plugin-feedback-backend@1.2.6` and lower)
 
 1. Create a new file `packages/backend/src/plugins/feedback.ts` and add the following:
 
@@ -49,19 +62,6 @@ yarn workspace backend add @janus-idp/backstage-plugin-feedback-backend
      apiRouter.use('/feedback', await feedback(feedbackEnv));
    }
    ```
-
-#### Adding the plugin to the new backend
-
-Add the following to your `packages/backend/src/index.ts` file:
-
-```ts title="packages/backend/src/index.ts"
-const backend = createBackend();
-
-// Add the following line
-backend.add(import('@janus-idp/backstage-plugin-feedback-backend/alpha'));
-
-backend.start();
-```
 
 ### Configurations
 
