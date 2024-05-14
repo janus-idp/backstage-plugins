@@ -195,23 +195,16 @@
         "plugins/quay-actions*/**",
         "plugins/rbac*/**",
         "plugins/regex-actions*/**",
-        "plugins/scaffolder-annotator-action*/**",          
+        "plugins/scaffolder-annotator-action*/**",  
+        "plugins/shared-react*/**",                
         "plugins/topology*/**",
-        "packages/**"
+        "packages/**",
+        "package.json" 
       ],
       "additionalBranchPrefix": "rhdh ",
       "addLabels": [
         "team/rhdh"
       ]
-    },
-    {
-      "matchFileNames": [ 
-        "package.json"  
-      ],
-      "additionalBranchPrefix": "rhdh ",
-      "addLabels": [
-        "team/rhdh"
-      ]  
     },
     {
       "matchFileNames": [
@@ -223,7 +216,6 @@
         "plugins/nexus-repository-manager*/**",
         "plugins/openshift-image-registry*/**",
         "plugins/servicenow-actions*/**",
-        "plugins/shared-react*/**",
         "plugins/sonarqube-actions*/**", 
         "plugins/web-terminal*/**"
       ],
