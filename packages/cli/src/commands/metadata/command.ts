@@ -16,6 +16,7 @@
 
 // test with ./packages/cli/bin/janus-cli package metadata --help
 
+// @ts-ignore
 import Codeowners from 'codeowners';
 import { OptionValues } from 'commander';
 import gitconfig from 'gitconfiglocal';
@@ -76,8 +77,8 @@ const path = {
    * @param {string} DotDotPath relative path
    * @returns {string} resolved absolutePath
    */
-  resolveRelativeFromAbsolute(DotDotPath: string) {
-    const pathsArray = DotDotPath.replaceAll(/[\/|\\]/g, '/').split('/');
+  resolveRelativeFromAbsolute(DotDotPath: string): string[] {
+    const pathsArray = DotDotPath.replaceAll(/[/|\\]/g, '/').split('/');
     const map = pathsArray.reduce(
       (acc, e) => acc.set(e, (acc.get(e) || 0) + 1),
       new Map(),
