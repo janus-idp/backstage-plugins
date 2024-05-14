@@ -20,7 +20,7 @@ export interface Config {
      * Polling interval timeout
      * @visibility frontend
      */
-    refreshInterval: number;
+    refreshInterval?: number;
     /**
      * The base url of the ArgoCD instance.
      * @visibility frontend
