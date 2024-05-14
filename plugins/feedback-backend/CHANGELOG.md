@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-feedback-backend [1.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback-backend@1.2.6...@janus-idp/backstage-plugin-feedback-backend@1.3.0) (2024-05-14)
+
+
+### Features
+
+* **feedback:** use backstage auth service in backend plugin ([#1646](https://github.com/janus-idp/backstage-plugins/issues/1646)) ([7d9ee11](https://github.com/janus-idp/backstage-plugins/commit/7d9ee11d1ed0dbc1ff026de3b1e50f2888c3f542)), closes [#1626](https://github.com/janus-idp/backstage-plugins/issues/1626)
+
 ## @janus-idp/backstage-plugin-feedback-backend [1.2.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback-backend@1.2.5...@janus-idp/backstage-plugin-feedback-backend@1.2.6) (2024-05-09)
 
 
