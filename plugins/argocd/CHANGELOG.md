@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-argocd [1.0.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-argocd@1.0.3...@janus-idp/backstage-plugin-argocd@1.0.4) (2024-05-14)
+
+
+### Bug Fixes
+
+* **argocd:** make refreshInterval configuration as optional ([#1647](https://github.com/janus-idp/backstage-plugins/issues/1647)) ([2c24d35](https://github.com/janus-idp/backstage-plugins/commit/2c24d35f050801801c597967e890b6d2e647fb06))
+
 ## @janus-idp/backstage-plugin-argocd [1.0.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-argocd@1.0.2...@janus-idp/backstage-plugin-argocd@1.0.3) (2024-05-09)
 
 
