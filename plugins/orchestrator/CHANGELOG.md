@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-orchestrator [1.12.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.11.2...@janus-idp/backstage-plugin-orchestrator@1.12.0) (2024-05-14)
+
+
+### Features
+
+* **deps:** use RHDH themes in the backstage app and dev pages ([#1480](https://github.com/janus-idp/backstage-plugins/issues/1480)) ([8263bf0](https://github.com/janus-idp/backstage-plugins/commit/8263bf099736cbb0d0f2316082d338ba81fa6927))
+
 ## @janus-idp/backstage-plugin-orchestrator [1.11.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.11.1...@janus-idp/backstage-plugin-orchestrator@1.11.2) (2024-05-13)
 
 
