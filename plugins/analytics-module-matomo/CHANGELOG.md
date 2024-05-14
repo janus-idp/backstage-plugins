@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-analytics-module-matomo [1.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-analytics-module-matomo@1.1.13...@janus-idp/backstage-plugin-analytics-module-matomo@1.2.0) (2024-05-14)
+
+
+### Features
+
+* **deps:** use RHDH themes in the backstage app and dev pages ([#1480](https://github.com/janus-idp/backstage-plugins/issues/1480)) ([8263bf0](https://github.com/janus-idp/backstage-plugins/commit/8263bf099736cbb0d0f2316082d338ba81fa6927))
+
 ## @janus-idp/backstage-plugin-analytics-module-matomo [1.1.13](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-analytics-module-matomo@1.1.12...@janus-idp/backstage-plugin-analytics-module-matomo@1.1.13) (2024-05-09)
 
 
