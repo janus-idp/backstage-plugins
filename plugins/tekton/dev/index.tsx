@@ -12,6 +12,8 @@ import {
 } from '@backstage/plugin-kubernetes';
 import { TestApiProvider } from '@backstage/test-utils';
 
+import { createDevAppThemes } from '@redhat-developer/red-hat-developer-hub-theme';
+
 import { mockKubernetesPlrResponse } from '../src/__fixtures__/1-pipelinesData';
 import {
   acsDeploymentCheck,
@@ -165,6 +167,7 @@ class MockKubernetesClient implements KubernetesApi {
 }
 
 createDevApp()
+  .addThemes(createDevAppThemes())
   .addPage({
     element: (
       <TestApiProvider

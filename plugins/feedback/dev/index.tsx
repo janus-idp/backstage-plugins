@@ -3,6 +3,8 @@ import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 
+import { createDevAppThemes } from '@redhat-developer/red-hat-developer-hub-theme';
+
 import { mockEntity } from '../src/mocks';
 import {
   EntityFeedbackPage,
@@ -13,6 +15,7 @@ import {
 
 createDevApp()
   .registerPlugin(feedbackPlugin)
+  .addThemes(createDevAppThemes())
   .addPage({
     element: (
       <>

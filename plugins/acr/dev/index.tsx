@@ -4,6 +4,8 @@ import { createDevApp } from '@backstage/dev-utils';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { TestApiProvider } from '@backstage/test-utils';
 
+import { createDevAppThemes } from '@redhat-developer/red-hat-developer-hub-theme';
+
 import { mockAcrTagsData } from '../src/__fixtures__/acrTagsObject';
 import { mockEntity } from '../src/__fixtures__/mockEntity';
 import {
@@ -29,6 +31,7 @@ class MockAzureContainerRegistryApiClient
 
 createDevApp()
   .registerPlugin(acrPlugin)
+  .addThemes(createDevAppThemes())
   .addPage({
     element: (
       <TestApiProvider
