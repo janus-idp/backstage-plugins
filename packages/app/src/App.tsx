@@ -33,6 +33,7 @@ import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
 import { UserSettingsPage } from '@backstage/plugin-user-settings';
 
 import { TechRadarPage } from '@backstage-community/plugin-tech-radar';
+import { getThemes } from '@redhat-developer/red-hat-developer-hub-theme';
 
 import { apis } from './apis';
 import { entityPage } from './components/catalog/EntityPage';
@@ -61,6 +62,7 @@ const app = createApp({
   components: {
     SignInPage: props => <SignInPage {...props} auto providers={['guest']} />,
   },
+  themes: getThemes(),
 });
 
 const routes = (

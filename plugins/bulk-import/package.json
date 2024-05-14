@@ -35,8 +35,8 @@
     "@material-ui/lab": "^4.0.0-alpha.61",
     "@mui/icons-material": "5.14.11",
     "@mui/material": "^5.12.2",
-    "lodash": "^4.17.21",
     "formik": "^2.4.5",
+    "lodash": "^4.17.21",
     "react-use": "^17.2.4"
   },
   "peerDependencies": {
@@ -49,10 +49,11 @@
     "@backstage/dev-utils": "1.0.31",
     "@backstage/test-utils": "1.5.4",
     "@janus-idp/cli": "1.7.10",
+    "@playwright/test": "1.41.2",
+    "@redhat-developer/red-hat-developer-hub-theme": "*",
     "@testing-library/jest-dom": "6.0.0",
     "@testing-library/react": "14.0.0",
     "@testing-library/user-event": "14.0.0",
-    "@playwright/test": "1.41.2",
     "msw": "1.0.0"
   },
   "scalprum": {
