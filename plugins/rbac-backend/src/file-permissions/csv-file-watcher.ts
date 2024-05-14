@@ -279,7 +279,13 @@ export class CSVFileWatcher {
         this.logger.warn(err.message);
         continue;
       }
-      await this.enforcer.addOrUpdatePolicy(policy, 'csv-file', true);
+      try {
+        await this.enforcer.addOrUpdatePolicy(policy, 'csv-file', true);
+      } catch (e) {
+        this.logger.warn(
+          `Failed to add or update policy ${policy} after modification ${this.csvFileName}. Cause: ${e}`,
+        );
+      }
     }
 
     this.csvFilePolicies.addedPolicies = [];
@@ -289,11 +295,19 @@ export class CSVFileWatcher {
    * removePermissionPolicies will remove the permission policies that are no longer present in the CSV file.
    */
   async removePermissionPolicies(): Promise<void> {
-    await this.enforcer.removePolicies(
-      this.csvFilePolicies.removedPolicies,
-      'csv-file',
-      true,
-    );
+    try {
+      await this.enforcer.removePolicies(
+        this.csvFilePolicies.removedPolicies,
+        'csv-file',
+        true,
+      );
+    } catch (e) {
+      this.logger.warn(
+        `Failed to remove policies ${JSON.stringify(
+          this.csvFilePolicies.removedPolicies,
+        )} after modification ${this.csvFileName}. Cause: ${e}`,
+      );
+    }
     this.csvFilePolicies.removedPolicies = [];
   }
 
@@ -326,16 +340,22 @@ export class CSVFileWatcher {
         continue;
       }
 
-      await this.enforcer.addOrUpdateGroupingPolicy(
-        groupPolicy,
-        {
-          source: 'csv-file',
-          roleEntityRef: groupPolicy[1],
-          author: CSV_PERMISSION_POLICY_FILE_AUTHOR,
-          modifiedBy: CSV_PERMISSION_POLICY_FILE_AUTHOR,
-        },
-        true,
-      );
+      try {
+        await this.enforcer.addOrUpdateGroupingPolicy(
+          groupPolicy,
+          {
+            source: 'csv-file',
+            roleEntityRef: groupPolicy[1],
+            author: CSV_PERMISSION_POLICY_FILE_AUTHOR,
+            modifiedBy: CSV_PERMISSION_POLICY_FILE_AUTHOR,
+          },
+          true,
+        );
+      } catch (e) {
+        this.logger.warn(
+          `Failed to add or update group policy ${groupPolicy} after modification ${this.csvFileName}. Cause: ${e}`,
+        );
+      }
     }
     this.csvFilePolicies.addedGroupPolicies = [];
   }
@@ -354,17 +374,23 @@ export class CSVFileWatcher {
       );
 
       // Need to update the time
-      await this.enforcer.removeGroupingPolicy(
-        groupPolicy,
-        {
-          source: 'csv-file',
-          roleEntityRef: groupPolicy[1],
-          author: CSV_PERMISSION_POLICY_FILE_AUTHOR,
-          modifiedBy: CSV_PERMISSION_POLICY_FILE_AUTHOR,
-        },
-        isUpdate.length > 1,
-        true,
-      );
+      try {
+        await this.enforcer.removeGroupingPolicy(
+          groupPolicy,
+          {
+            source: 'csv-file',
+            roleEntityRef: groupPolicy[1],
+            author: CSV_PERMISSION_POLICY_FILE_AUTHOR,
+            modifiedBy: CSV_PERMISSION_POLICY_FILE_AUTHOR,
+          },
+          isUpdate.length > 1,
+          true,
+        );
+      } catch (e) {
+        this.logger.warn(
+          `Failed to remove group policy ${groupPolicy} after modification ${this.csvFileName}. Cause: ${e}`,
+        );
+      }
     }
     this.csvFilePolicies.removedGroupPolicies = [];
   }
