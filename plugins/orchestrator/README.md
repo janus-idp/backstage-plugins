@@ -78,7 +78,7 @@ orchestrator:
     port: 8899
     autoStart: true
     workflowsSource:
-      gitRepositoryUrl: https://github.com/tiagodolphine/backstage-orchestrator-workflows
+      gitRepositoryUrl: https://github.com/parodos-dev/backstage-orchestrator-workflows
       localPath: /tmp/orchestrator/repository
   dataIndexService:
     url: http://localhost:8899
