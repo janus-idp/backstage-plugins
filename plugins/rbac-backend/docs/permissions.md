@@ -66,3 +66,9 @@ When defining a permission for the RBAC Backend plugin to consume, follow these 
 | ---------------- | ------------- | ------ | ----------------------------------------------------------------- | ------------ |
 | ocm.entity.read  |               | read   | Allows the user to read from the ocm plugin                       | X            |
 | ocm.cluster.read |               | read   | Allows the user to read the cluster information in the ocm plugin | X            |
+
+## Topology
+
+| Name               | Resource Type | Policy | Description                                 | Requirements |
+| ------------------ | ------------- | ------ | ------------------------------------------- | ------------ |
+| topology.view.read |               | read   | Allows the user to view the topology plugin | X            |

@@ -25,6 +25,11 @@ import TopologyToolbar from './TopologyToolbar';
 
 import './TopologyToolbar.css';
 
+import { catalogEntityReadPermission } from '@backstage/plugin-catalog-common/alpha';
+import { usePermission } from '@backstage/plugin-permission-react';
+
+import { topologyViewPermission } from '@janus-idp/backstage-plugin-topology-common';
+
 type TopologyViewWorkloadComponentProps = {
   useToolbar?: boolean;
 };
@@ -48,6 +53,15 @@ const TopologyViewWorkloadComponent = ({
     setSelectedNode,
     removeSelectedIdParam,
   ] = useSideBar();
+
+  const topologyViewPermissionResult = usePermission({
+    permission: topologyViewPermission,
+  });
+
+  const catalogEntityPermissionResult = usePermission({
+    permission: catalogEntityReadPermission,
+    resourceRef: catalogEntityReadPermission.resourceType,
+  });
 
   const allErrors: ClusterErrors = [
     ...(responseError ? [{ message: responseError }] : []),
@@ -126,7 +140,11 @@ const TopologyViewWorkloadComponent = ({
             sideBarOpen={sideBarOpen}
             minSideBarSize="400px"
           >
-            {loaded && dataModel?.nodes?.length === 0 ? (
+            {isDataModelEmpty ||
+            !(
+              topologyViewPermissionResult.allowed &&
+              catalogEntityPermissionResult.allowed
+            ) ? (
               <TopologyEmptyState />
             ) : (
               <VisualizationSurface state={{ selectedIds: [selectedId] }} />

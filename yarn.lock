@@ -3226,6 +3226,16 @@
     ajv "^8.10.0"
     lodash "^4.17.21"
 
+"@backstage/catalog-model@^1.5.0":
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/@backstage/catalog-model/-/catalog-model-1.5.0.tgz#7f5c4a80a3341555db5209fbc6fc2d25f6500707"
+  integrity sha512-CfLO5/DMGahneuLU4KTQEs1tgNhBciUtyGUDZB4Ii9i1Uha1poWcqp4HKg61lj1hmXNDUHmlbFqY9W7kmzRC0A==
+  dependencies:
+    "@backstage/errors" "^1.2.4"
+    "@backstage/types" "^1.1.1"
+    ajv "^8.10.0"
+    lodash "^4.17.21"
+
 "@backstage/cli-common@^0.1.13":
   version "0.1.13"
   resolved "https://registry.yarnpkg.com/@backstage/cli-common/-/cli-common-0.1.13.tgz#cbeda6a359ca4437fc782f0ac51bb957e8d49e73"
@@ -4074,6 +4084,15 @@
   integrity sha512-8bYlGF3yLALLL8LcOey5BpZhCCu9JRq45bwsAx9sEaEQenf09hVPta3hHANl4+YBHWBB7l/OanqMp0+SkKQDLw==
   dependencies:
     "@backstage/catalog-model" "^1.4.5"
+    "@backstage/plugin-permission-common" "^0.7.13"
+    "@backstage/plugin-search-common" "^1.2.11"
+
+"@backstage/plugin-catalog-common@^1.0.23":
+  version "1.0.23"
+  resolved "https://registry.yarnpkg.com/@backstage/plugin-catalog-common/-/plugin-catalog-common-1.0.23.tgz#2ba1fe13450f6283e049acc83aa4fcebda6153e8"
+  integrity sha512-u04VUq/2wNjF9ikpGxdt1kXSQf5VlPDWTwzYyJYKD80qGa6l/klUXJ3IBs8P4XyQObkPNyS/Tho/H8XDFNeqEw==
+  dependencies:
+    "@backstage/catalog-model" "^1.5.0"
     "@backstage/plugin-permission-common" "^0.7.13"
     "@backstage/plugin-search-common" "^1.2.11"
 
