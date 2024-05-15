@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-orchestrator-backend [1.8.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.8.2...@janus-idp/backstage-plugin-orchestrator-backend@1.8.3) (2024-05-15)
+
+
+### Bug Fixes
+
+* **orchestrator:** export the `OrchestratorPlugin` accordingly ([#1644](https://github.com/janus-idp/backstage-plugins/issues/1644)) ([4a9d1f8](https://github.com/janus-idp/backstage-plugins/commit/4a9d1f821a30437e73631fac98b1aabc65473fba))
+
 ## @janus-idp/backstage-plugin-orchestrator-backend [1.8.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.8.1...@janus-idp/backstage-plugin-orchestrator-backend@1.8.2) (2024-05-09)
 
 
