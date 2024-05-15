@@ -148,7 +148,7 @@ const conditionalStorage = {
 };
 
 const validateRoleConditionMock = jest.fn().mockImplementation();
-jest.mock('./condition-validation', () => {
+jest.mock('../validation/condition-validation', () => {
   return {
     validateRoleCondition: jest
       .fn()

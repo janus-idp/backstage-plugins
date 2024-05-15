@@ -351,6 +351,7 @@ describe('condition-validation', () => {
       } catch (err) {
         unexpectedErr = err;
       }
+
       expect(unexpectedErr).toBeUndefined();
     });
   });
@@ -715,6 +716,205 @@ describe('condition-validation', () => {
           ],
         },
       };
+      let unexpectedErr;
+      try {
+        validateRoleCondition(condition);
+      } catch (err) {
+        unexpectedErr = err;
+      }
+      expect(unexpectedErr).toBeUndefined();
+    });
+  });
+
+  describe('complex conditions', () => {
+    it('should fail validation of role-condition.conditions in parallel with condition rule', () => {
+      const condition: RoleConditionalPolicyDecision<PermissionAction> = {
+        id: 1,
+        pluginId: 'catalog',
+        resourceType: 'catalog-entity',
+        roleEntityRef: 'role:default/test',
+        result: AuthorizeResult.CONDITIONAL,
+        permissionMapping: ['read'],
+        conditions: {
+          allOf: [
+            {
+              rule: 'IS_ENTITY_OWNER',
+              resourceType: 'catalog-entity',
+              params: {
+                claims: ['user:default/logarifm', 'group:default/team-a'],
+              },
+            },
+            {
+              rule: 'IS_ENTITY_KIND',
+              resourceType: 'catalog-entity',
+              params: { kinds: ['Group'] },
+            },
+          ],
+          rule: 'IS_ENTITY_OWNER',
+          resourceType: 'catalog-entity',
+          params: {
+            claims: ['user:default/logarifm', 'group:default/team-a'],
+          },
+        },
+      };
+      expect(() => validateRoleCondition(condition)).toThrow(
+        `RBAC plugin does not support parallel conditions alongside rules, consider reworking request to include nested condition criteria. Conditional criteria causing the error allOf, 'rule: IS_ENTITY_OWNER'.`,
+      );
+    });
+
+    it('should fail validation of role-condition.conditions criteria (allOf, not) in parallel', () => {
+      const condition: RoleConditionalPolicyDecision<PermissionAction> = {
+        id: 1,
+        pluginId: 'catalog',
+        resourceType: 'catalog-entity',
+        roleEntityRef: 'role:default/test',
+        result: AuthorizeResult.CONDITIONAL,
+        permissionMapping: ['read'],
+        conditions: {
+          allOf: [
+            {
+              rule: 'IS_ENTITY_OWNER',
+              resourceType: 'catalog-entity',
+              params: {
+                claims: ['user:default/logarifm', 'group:default/team-a'],
+              },
+            },
+            {
+              rule: 'IS_ENTITY_KIND',
+              resourceType: 'catalog-entity',
+              params: { kinds: ['Group'] },
+            },
+          ],
+          not: {
+            rule: 'IS_ENTITY_OWNER',
+            resourceType: 'catalog-entity',
+            params: {
+              claims: ['user:default/logarifm', 'group:default/team-a'],
+            },
+          },
+        },
+      };
+      expect(() => validateRoleCondition(condition)).toThrow(
+        `RBAC plugin does not support parallel conditions, consider reworking request to include nested condition criteria. Conditional criteria causing the error allOf,not.`,
+      );
+    });
+
+    it('should fail validation of role-condition.conditions criteria (allOf, anyOf) in parallel', () => {
+      const condition: RoleConditionalPolicyDecision<PermissionAction> = {
+        id: 1,
+        pluginId: 'catalog',
+        resourceType: 'catalog-entity',
+        roleEntityRef: 'role:default/test',
+        result: AuthorizeResult.CONDITIONAL,
+        permissionMapping: ['read'],
+        conditions: {
+          allOf: [
+            {
+              rule: 'IS_ENTITY_OWNER',
+              resourceType: 'catalog-entity',
+              params: {
+                claims: ['user:default/logarifm', 'group:default/team-a'],
+              },
+            },
+            {
+              rule: 'IS_ENTITY_KIND',
+              resourceType: 'catalog-entity',
+              params: { kinds: ['Group'] },
+            },
+          ],
+          anyOf: [
+            {
+              rule: 'IS_ENTITY_OWNER',
+              resourceType: 'catalog-entity',
+              params: {
+                claims: ['user:default/logarifm', 'group:default/team-a'],
+              },
+            },
+            {
+              rule: 'IS_ENTITY_KIND',
+              resourceType: 'catalog-entity',
+              params: { kinds: ['Group'] },
+            },
+          ],
+        },
+      };
+      expect(() => validateRoleCondition(condition)).toThrow(
+        `RBAC plugin does not support parallel conditions, consider reworking request to include nested condition criteria. Conditional criteria causing the error allOf,anyOf.`,
+      );
+    });
+
+    it('should fail validation of role-condition.conditions criteria (not, anyOf) in parallel', () => {
+      const condition: RoleConditionalPolicyDecision<PermissionAction> = {
+        id: 1,
+        pluginId: 'catalog',
+        resourceType: 'catalog-entity',
+        roleEntityRef: 'role:default/test',
+        result: AuthorizeResult.CONDITIONAL,
+        permissionMapping: ['read'],
+        conditions: {
+          not: {
+            rule: 'IS_ENTITY_OWNER',
+            resourceType: 'catalog-entity',
+            params: {
+              claims: ['user:default/logarifm', 'group:default/team-a'],
+            },
+          },
+          anyOf: [
+            {
+              rule: 'IS_ENTITY_OWNER',
+              resourceType: 'catalog-entity',
+              params: {
+                claims: ['user:default/logarifm', 'group:default/team-a'],
+              },
+            },
+            {
+              rule: 'IS_ENTITY_KIND',
+              resourceType: 'catalog-entity',
+              params: { kinds: ['Group'] },
+            },
+          ],
+        },
+      };
+      expect(() => validateRoleCondition(condition)).toThrow(
+        `RBAC plugin does not support parallel conditions, consider reworking request to include nested condition criteria. Conditional criteria causing the error anyOf,not.`,
+      );
+    });
+
+    it('should validate role-condition.conditions that are nested', () => {
+      const condition: RoleConditionalPolicyDecision<PermissionAction> = {
+        id: 1,
+        pluginId: 'catalog',
+        resourceType: 'catalog-entity',
+        roleEntityRef: 'role:default/test',
+        result: AuthorizeResult.CONDITIONAL,
+        permissionMapping: ['read'],
+        conditions: {
+          anyOf: [
+            {
+              not: {
+                rule: 'IS_ENTITY_OWNER',
+                resourceType: 'catalog-entity',
+                params: {
+                  claims: ['user:default/logarifm', 'group:default/team-a'],
+                },
+              },
+            },
+            {
+              rule: 'IS_ENTITY_OWNER',
+              resourceType: 'catalog-entity',
+              params: {
+                claims: ['user:default/logarifm', 'group:default/team-a'],
+              },
+            },
+            {
+              rule: 'IS_ENTITY_KIND',
+              resourceType: 'catalog-entity',
+              params: { kinds: ['Group'] },
+            },
+          ],
+        },
+      };
+
       let unexpectedErr;
       try {
         validateRoleCondition(condition);

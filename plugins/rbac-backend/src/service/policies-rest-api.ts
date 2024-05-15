@@ -52,14 +52,14 @@ import {
   RoleMetadataStorage,
 } from '../database/role-metadata';
 import { deepSortedEqual, isPermissionAction, policyToString } from '../helper';
-import { validateRoleCondition } from './condition-validation';
-import { EnforcerDelegate } from './enforcer-delegate';
-import { PluginPermissionMetadataCollector } from './plugin-endpoints';
+import { validateRoleCondition } from '../validation/condition-validation';
 import {
   validateEntityReference,
   validatePolicy,
   validateRole,
-} from './policies-validation';
+} from '../validation/policies-validation';
+import { EnforcerDelegate } from './enforcer-delegate';
+import { PluginPermissionMetadataCollector } from './plugin-endpoints';
 
 export class PoliciesServer {
   constructor(
