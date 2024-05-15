@@ -9511,7 +9511,7 @@
     nanoid "^3.3.7"
     prop-types "^15.8.1"
 
-"@rjsf/core@^5.18.2", "@rjsf/core@^5.7.3":
+"@rjsf/core@^5.18.2":
   version "5.18.3"
   resolved "https://registry.yarnpkg.com/@rjsf/core/-/core-5.18.3.tgz#7cef908598c77ec0f0caaa301148e3e4a909292e"
   integrity sha512-HVqqoVzcjYX1BUCqHm7iUjBoVx1UDud1KP6bJ5drtOOvHChfKEbMUt2hWJcuXIlmNPuw2lRxETtcuRbEM2wsRA==
@@ -9527,7 +9527,7 @@
   resolved "https://registry.yarnpkg.com/@rjsf/material-ui/-/material-ui-5.17.1.tgz#009f31d0e8b0c5801bc858847060081a074e0a1d"
   integrity sha512-WCk3wZ+oiBCEKz/uwF9VwTl0XNYrcgsQwIh+qBk6JcB2TGSguRM7KtGcLSq/91+lqFvR9PWjP2pvnTJgyfO2cA==
 
-"@rjsf/material-ui@^5.7.3":
+"@rjsf/material-ui@^5.18.2":
   version "5.18.3"
   resolved "https://registry.yarnpkg.com/@rjsf/material-ui/-/material-ui-5.18.3.tgz#fa0405752c023779c24db9125b340824b287d898"
   integrity sha512-H4Ed0qPtUjP8BesBXvM82W1zK3c4SFGToiEefE35EN49yOn4E5ERk5kDmVoBNMlalcN2rE4w08b0FuL0vQt9SA==
@@ -9541,17 +9541,6 @@
   version "5.17.1"
   resolved "https://registry.yarnpkg.com/@rjsf/utils/-/utils-5.17.1.tgz#ad85d503dd15cc9fc49b5d6870534fa2ed8103b0"
   integrity sha512-q1Igz/cuM2hi+jiXFkoaXqdRTUFB+a0jfVKNmZlHmvPmfYeeJfcfyOTzO8dQ41fHNHUFb15ryxa/TblDQimwkA==
-  dependencies:
-    json-schema-merge-allof "^0.8.1"
-    jsonpointer "^5.0.1"
-    lodash "^4.17.21"
-    lodash-es "^4.17.21"
-    react-is "^18.2.0"
-
-"@rjsf/utils@5.7.3":
-  version "5.7.3"
-  resolved "https://registry.yarnpkg.com/@rjsf/utils/-/utils-5.7.3.tgz#715e14011d5740a1c3c60589ac6fa73710ac7f25"
-  integrity sha512-4bUJE4u1A7/wGupiOIKicm50QJ5iJ+C9Zq27EKnk7TeKKIr2MLdg3ljYSV7aKp2ZiGX6CFtXBX3RpaTjugpKAw==
   dependencies:
     json-schema-merge-allof "^0.8.1"
     jsonpointer "^5.0.1"
