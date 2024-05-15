@@ -3,7 +3,7 @@
   "include": ["src"],
   "exclude": ["node_modules"],
   "compilerOptions": {
-    "outDir": "../../dist-types/plugins/audit-log-common",
+    "outDir": "../../dist-types/plugins/audit-log-node",
     "rootDir": "."
   }
 }

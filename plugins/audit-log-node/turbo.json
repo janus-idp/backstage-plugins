@@ -2,7 +2,7 @@
   "extends": ["//"],
   "pipeline": {
     "tsc": {
-      "outputs": ["../../dist-types/plugins/audit-log-common/**"],
+      "outputs": ["../../dist-types/plugins/audit-log-node/**"],
       "dependsOn": ["^tsc"]
     }
   }

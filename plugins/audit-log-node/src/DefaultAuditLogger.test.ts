@@ -19,7 +19,7 @@ describe('DefaultAuditLogger', () => {
   });
 
   it('Returns nothing if no request is provided to getActorId', async () => {
-    const actor_id = auditLogger.getActorId();
+    const actor_id = await auditLogger.getActorId();
     expect(actor_id).toBeUndefined();
   });
 });
