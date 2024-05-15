@@ -30,20 +30,23 @@ export class DefaultAuditLogger implements AuditLogger {
     if (!(request && this.httpAuthService && this.authService)) {
       return undefined;
     }
-    const credentials = await this.httpAuthService.credentials(request);
+    try {
+      const credentials = await this.httpAuthService.credentials(request);
+      const userEntityRef = this.authService.isPrincipal(credentials, 'user')
+        ? credentials.principal.userEntityRef
+        : undefined;
 
-    const userEntityRef = this.authService.isPrincipal(credentials, 'user')
-      ? credentials.principal.userEntityRef
-      : undefined;
+      const serviceEntityRef = this.authService.isPrincipal(
+        credentials,
+        'service',
+      )
+        ? credentials.principal.subject
+        : undefined;
 
-    const serviceEntityRef = this.authService.isPrincipal(
-      credentials,
-      'service',
-    )
-      ? credentials.principal.subject
-      : undefined;
-
-    return userEntityRef ?? serviceEntityRef ?? '';
+      return userEntityRef ?? serviceEntityRef;
+    } catch {
+      return undefined;
+    }
   }
   async createAuditLogDetails(options: AuditLogDetailsOptions) {
     const { eventName, stage, metadata, actor_id, request, response, status } =
