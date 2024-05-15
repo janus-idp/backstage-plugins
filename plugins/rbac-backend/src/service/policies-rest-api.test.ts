@@ -30,7 +30,6 @@ import {
   mockedAuthorize,
   mockHttpAuth,
   mockPermissionEvaluator,
-  policyMetadataStorageMock,
   roleMetadataStorageMock,
 } from '../__fixtures__/utils/utils.test';
 import { RoleMetadataDao } from '../database/role-metadata';

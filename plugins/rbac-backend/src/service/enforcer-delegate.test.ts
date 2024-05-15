@@ -14,7 +14,7 @@ import {
   roleMetadataStorageMock,
 } from '../__fixtures__/utils/utils.test';
 import { RoleMetadataDao } from '../database/role-metadata';
-import { CSV_PERMISSION_POLICY_FILE_AUTHOR } from '../file-permissions/csv';
+import { CSV_PERMISSION_POLICY_FILE_AUTHOR } from '../file-permissions/csv-file-watcher';
 import { policyToString } from '../helper';
 import { EnforcerDelegate } from './enforcer-delegate';
 import { MODEL } from './permission-model';

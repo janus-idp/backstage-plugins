@@ -252,7 +252,6 @@ export async function newPermissionPolicy(
   config: ConfigReader,
   enfDelegate: EnforcerDelegate,
   roleMock?: RoleMetadataStorage,
-  policyMock?: PolicyMetadataStorage,
   conMock?: ConditionalStorage,
 ): Promise<RBACPermissionPolicy> {
   const logger = getVoidLogger();
@@ -262,7 +261,6 @@ export async function newPermissionPolicy(
     conMock || conditionalStorageMock,
     enfDelegate,
     roleMock || roleMetadataStorageMock,
-    policyMock || policyMetadataStorageMock,
     knex,
   );
 }
