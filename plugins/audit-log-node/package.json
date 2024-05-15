@@ -27,7 +27,8 @@
   "devDependencies": {
     "@backstage/backend-common": "^0.21.7",
     "@backstage/backend-test-utils": "0.3.7",
-    "@backstage/cli": "0.26.4"
+    "@backstage/cli": "0.26.4",
+    "jest-express": "^1.12.0"
   },
   "files": [
     "dist"
