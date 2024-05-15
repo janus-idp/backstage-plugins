@@ -71,8 +71,6 @@ backend:
     script-src-elem: ["'self'", "'unsafe-inline'", "'unsafe-eval'"]
     connect-src: ["'self'", 'http:', 'https:', 'data:']
 orchestrator:
-  editor:
-    path: http://localhost:7007/api/orchestrator/static/envelope
   sonataFlowService:
     baseUrl: http://localhost
     port: 8899
