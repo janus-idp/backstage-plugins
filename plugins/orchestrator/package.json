@@ -57,7 +57,7 @@
     "@mui/icons-material": "^5.15.3",
     "@rjsf/core": "^5.18.2",
     "@rjsf/material-ui": "^5.18.2",
-    "@rjsf/utils": "5.18.2",
+    "@rjsf/utils": "^5.18.2",
     "@rjsf/validator-ajv8": "5.7.3",
     "moment": "^2.29.4",
     "monaco-editor": "^0.39.0",
