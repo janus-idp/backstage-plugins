@@ -1,13 +1,21 @@
+import {
+  mockFormCurrentValues,
+  mockFormInitialValues,
+} from '../__fixtures__/mockFormValues';
 import { mockMembers } from '../__fixtures__/mockMembers';
 import { mockPermissionPolicies } from '../__fixtures__/mockPermissionPolicies';
 import {
   getChildGroupsCount,
+  getConditionalPermissionPoliciesData,
   getMembersCount,
+  getNewConditionalPolicies,
   getParentGroupsCount,
   getPermissionPolicies,
   getPermissionPoliciesData,
   getPluginsPermissionPoliciesData,
+  getRemovedConditionalPoliciesIds,
   getRoleData,
+  getUpdatedConditionalPolicies,
 } from './create-role-utils';
 
 describe('getRoleData', () => {
@@ -344,5 +352,212 @@ describe('getPermissionPoliciesData', () => {
         effect: 'allow',
       },
     ]);
+  });
+});
+
+describe('getConditionalPermissionPoliciesData', () => {
+  it('should return conditional permission policies data correctly', () => {
+    const values = mockFormCurrentValues;
+
+    const result = getConditionalPermissionPoliciesData(values);
+
+    expect(result).toEqual([
+      {
+        result: 'CONDITIONAL',
+        roleEntityRef: 'user:default/div',
+        pluginId: 'catalog',
+        resourceType: 'catalog-entity',
+        permissionMapping: ['read'],
+        conditions: {
+          rule: 'HAS_LABEL',
+          params: {
+            label: 'temp',
+          },
+          resourceType: 'catalog-entity',
+        },
+      },
+    ]);
+  });
+
+  it('should return empty array if permissionPoliciesRows is empty', () => {
+    const values = {
+      kind: 'user',
+      name: 'div',
+      namespace: 'default',
+      selectedMembers: [],
+      permissionPoliciesRows: [],
+    };
+
+    const result = getConditionalPermissionPoliciesData(values);
+
+    expect(result).toEqual([]);
+  });
+});
+
+describe('getUpdatedConditionalPolicies', () => {
+  it('should return updated conditional policies correctly', () => {
+    const values = {
+      kind: 'user',
+      name: 'div',
+      namespace: 'default',
+      selectedMembers: [],
+      permissionPoliciesRows: [
+        {
+          id: 1,
+          permission: 'catalog-entity',
+          policies: [{ policy: 'update', effect: 'allow' }],
+          isResourced: true,
+          plugin: 'catalog',
+          conditions: {
+            allOf: [
+              {
+                rule: 'HAS_LABEL',
+                params: {
+                  label: 'temp',
+                },
+                resourceType: 'catalog-entity',
+              },
+              {
+                rule: 'HAS_SPEC',
+                params: {
+                  label: 'test',
+                },
+                resourceType: 'catalog-entity',
+              },
+            ],
+          },
+        },
+      ],
+    };
+
+    const initialValues = mockFormInitialValues;
+
+    const result = getUpdatedConditionalPolicies(values, initialValues);
+
+    expect(result).toEqual([
+      {
+        id: 1,
+        updateCondition: {
+          result: 'CONDITIONAL',
+          roleEntityRef: 'user:default/div',
+          pluginId: 'catalog',
+          resourceType: 'catalog-entity',
+          permissionMapping: ['update'],
+          conditions: {
+            allOf: [
+              {
+                rule: 'HAS_LABEL',
+                params: {
+                  label: 'temp',
+                },
+                resourceType: 'catalog-entity',
+              },
+              {
+                rule: 'HAS_SPEC',
+                params: {
+                  label: 'test',
+                },
+                resourceType: 'catalog-entity',
+              },
+            ],
+          },
+        },
+      },
+    ]);
+  });
+
+  it('should return empty array if values.permissionPoliciesRows is empty', () => {
+    const values = {
+      kind: 'user',
+      name: 'div',
+      namespace: 'default',
+      selectedMembers: [],
+      permissionPoliciesRows: [],
+    };
+
+    const initialValues = mockFormInitialValues;
+
+    const result = getUpdatedConditionalPolicies(values, initialValues);
+
+    expect(result).toEqual([]);
+  });
+});
+
+describe('getNewConditionalPolicies', () => {
+  it('should return new conditional policies correctly', () => {
+    const values = mockFormCurrentValues;
+
+    const result = getNewConditionalPolicies(values);
+
+    expect(result).toEqual([
+      {
+        result: 'CONDITIONAL',
+        roleEntityRef: 'user:default/div',
+        pluginId: 'catalog',
+        resourceType: 'catalog-entity',
+        permissionMapping: ['read'],
+        conditions: {
+          rule: 'HAS_LABEL',
+          params: {
+            label: 'temp',
+          },
+          resourceType: 'catalog-entity',
+        },
+      },
+    ]);
+  });
+
+  it('should return empty array if values.permissionPoliciesRows is empty', () => {
+    const values = {
+      kind: 'user',
+      name: 'div',
+      namespace: 'default',
+      selectedMembers: [],
+      permissionPoliciesRows: [],
+    };
+
+    const result = getNewConditionalPolicies(values);
+
+    expect(result).toEqual([]);
+  });
+});
+
+describe('getRemovedConditionalPoliciesIds', () => {
+  it('should return removed conditional policies IDs correctly', () => {
+    const values = {
+      kind: 'user',
+      name: 'div',
+      namespace: 'default',
+      selectedMembers: [],
+      permissionPoliciesRows: [],
+    };
+
+    const initialValues = mockFormInitialValues;
+
+    const result = getRemovedConditionalPoliciesIds(values, initialValues);
+
+    expect(result).toEqual([1]);
+  });
+
+  it('should return empty array if both values.permissionPoliciesRows and initialValues.permissionPoliciesRows are empty', () => {
+    const values = {
+      kind: 'user',
+      name: 'div',
+      namespace: 'default',
+      selectedMembers: [],
+      permissionPoliciesRows: [],
+    };
+
+    const initialValues = {
+      kind: 'user',
+      name: 'div',
+      namespace: 'default',
+      selectedMembers: [],
+      permissionPoliciesRows: [],
+    };
+
+    const result = getRemovedConditionalPoliciesIds(values, initialValues);
+
+    expect(result).toEqual([]);
   });
 });

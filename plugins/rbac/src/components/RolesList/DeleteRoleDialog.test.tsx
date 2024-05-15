@@ -74,6 +74,7 @@ describe('DeleteRoleDialog', () => {
     const useApiMock = useApi as jest.Mock;
     useApiMock.mockReturnValue({
       getAssociatedPolicies: jest.fn(),
+      getRoleConditions: jest.fn(),
       deleteRole: mockDeleteRole,
     });
 

@@ -12,18 +12,21 @@ import {
 import { createDevAppThemes } from '@redhat-developer/red-hat-developer-hub-theme';
 
 import {
+  PermissionAction,
   PermissionPolicy,
   Role,
   RoleBasedPolicy,
+  RoleConditionalPolicyDecision,
 } from '@janus-idp/backstage-plugin-rbac-common';
 
 import { mockConditionRules } from '../src/__fixtures__/mockConditionRules';
+import { mockConditions } from '../src/__fixtures__/mockConditions';
 import { mockMembers } from '../src/__fixtures__/mockMembers';
 import { mockPermissionPolicies } from '../src/__fixtures__/mockPermissionPolicies';
 import { mockPolicies } from '../src/__fixtures__/mockPolicies';
 import { RBACAPI, rbacApiRef } from '../src/api/RBACBackendClient';
 import { RbacPage, rbacPlugin } from '../src/plugin';
-import { MemberEntity, RoleBasedConditions } from '../src/types';
+import { MemberEntity, RoleBasedConditions, RoleError } from '../src/types';
 
 class MockRBACApi implements RBACAPI {
   readonly resources;
@@ -110,6 +113,25 @@ class MockRBACApi implements RBACAPI {
     _conditionalPermission: RoleBasedConditions,
   ): Promise<Response> {
     return { status: 200 } as Response;
+  }
+
+  async getRoleConditions(
+    roleRef: string,
+  ): Promise<RoleConditionalPolicyDecision<PermissionAction>[] | Response> {
+    return mockConditions.filter(mc => mc.roleEntityRef === roleRef);
+  }
+
+  async updateConditionalPolicies(
+    _conditionId: number,
+    _data: RoleBasedConditions,
+  ): Promise<RoleError | Response> {
+    return { status: 200 } as Response;
+  }
+
+  async deleteConditionalPolicies(
+    _conditionId: number,
+  ): Promise<RoleError | Response> {
+    return { status: 204 } as Response;
   }
 }
 
