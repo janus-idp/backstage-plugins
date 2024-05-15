@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-orchestrator-common [1.7.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-common@1.7.1...@janus-idp/backstage-plugin-orchestrator-common@1.7.2) (2024-05-15)
+
+
+### Documentation
+
+* **orchestrator:** removes instructions related to the editor ([#1664](https://github.com/janus-idp/backstage-plugins/issues/1664)) ([10a75b2](https://github.com/janus-idp/backstage-plugins/commit/10a75b2706c72751bd774d6fae4332bbc527dc2b))
+
 ## @janus-idp/backstage-plugin-orchestrator-common [1.7.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-common@1.7.0...@janus-idp/backstage-plugin-orchestrator-common@1.7.1) (2024-05-09)
 
 ## @janus-idp/backstage-plugin-orchestrator-common [1.7.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-common@1.6.4...@janus-idp/backstage-plugin-orchestrator-common@1.7.0) (2024-05-09)
