@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-orchestrator [1.12.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.12.3...@janus-idp/backstage-plugin-orchestrator@1.12.4) (2024-05-16)
+
+
+### Bug Fixes
+
+* **orchestrator:** remove the need of react dev dependencies ([#1650](https://github.com/janus-idp/backstage-plugins/issues/1650)) ([5e60875](https://github.com/janus-idp/backstage-plugins/commit/5e60875932b906fd40e282d53b277a0f29efc67f))
+
 ## @janus-idp/backstage-plugin-orchestrator [1.12.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.12.2...@janus-idp/backstage-plugin-orchestrator@1.12.3) (2024-05-16)
 
 
