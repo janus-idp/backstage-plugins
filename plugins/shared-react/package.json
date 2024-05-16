@@ -23,7 +23,7 @@
     "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
-    "@kubernetes/client-node": "^0.20.0",
+    "@kubernetes/client-node": "^0.21.0",
     "classnames": "^2.3.2",
     "date-fns": "^2.30.0",
     "file-saver": "^2.0.5",
