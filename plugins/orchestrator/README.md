@@ -120,23 +120,23 @@ For more information about the configuration options, including other optional p
 1. Import and plug the new instance into `packages/backend/src/index.ts` file:
 
    ```ts title="packages/backend/src/index.ts"
-   /* highlight-add-next-line */
-   import orchestrator from './plugins/orchestrator';
-
+   /* highlight-add-next-line */ import orchestrator from './plugins/orchestrator';
    async function main() {
-     // ...
+     ...
      const createEnv = makeCreateEnv(config);
-     // ...
-     /* highlight-add-next-line */
-     const orchestratorEnv = useHotMemoize(module, () =>
-       createEnv('orchestrator'),
+     ...
+     /* highlight-add-next-line */ const orchestratorEnv = useHotMemoize(
+       module,
+       () => createEnv('orchestrator'),
      );
-     // ...
+     ...
      const apiRouter = Router();
-     // ...
-     /* highlight-add-next-line */
-     apiRouter.use('/orchestrator', await orchestrator(orchestratorEnv));
-     // ...
+     ...
+     /* highlight-add-next-line */ apiRouter.use(
+       '/orchestrator',
+       await orchestrator(orchestratorEnv),
+     ); ...
+   }
    }
    ```
 
@@ -172,8 +172,7 @@ For more information about the configuration options, including other optional p
 1. Add a route to the `OrchestratorPage` and the customized template card component to Backstage App (`packages/app/src/App.tsx`):
 
    ```tsx title="packages/app/src/App.tsx"
-   /* highlight-add-next-line */
-   import { OrchestratorPage } from '@janus-idp/backstage-plugin-orchestrator';
+   /* highlight-add-next-line */ import { OrchestratorPage } from '@janus-idp/backstage-plugin-orchestrator';
 
    const routes = (
      <FlatRoutes>
@@ -187,8 +186,7 @@ For more information about the configuration options, including other optional p
 1. Add the Orchestrator to Backstage sidebar (`packages/app/src/components/Root/Root.tsx`):
 
    ```tsx title="packages/app/src/components/Root/Root.tsx"
-   /* highlight-add-next-line */
-   import { OrchestratorIcon } from '@janus-idp/backstage-plugin-orchestrator';
+   /* highlight-add-next-line */ import { OrchestratorIcon } from '@janus-idp/backstage-plugin-orchestrator';
 
    export const Root = ({ children }: PropsWithChildren<{}>) => (
      <SidebarPage>

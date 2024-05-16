@@ -30,9 +30,7 @@ import { PluginEnvironment } from '../types';
 export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
-  return await createRouter({
-    config: env.config,
-  });
+  return await createRouter({ config: env.config });
 }
 ```
 
@@ -41,16 +39,14 @@ export default async function createPlugin(
 ```ts title="packages/backend/src/index.ts"
 import matomo from './plugins/matomo';
 
-// ...
-
+/ ...
 async function main() {
-  // ...
-  // Add this line under the other lines that follow the useHotMemoize pattern
+  / ...
+  / Add this line under the other lines that follow the useHotMemoize pattern
   const matomoEnv = useHotMemoize(module, () => createEnv('matomo'));
-  // ...
-  // Insert this line under the other lines that add their routers to apiRouter in the same way
-  apiRouter.use('/matomo', await matomo(matomoEnv));
-  // ...
+  / ...
+  / Insert this line under the other lines that add their routers to apiRouter in the same way
+  apiRouter.use('/matomo', await matomo(matomoEnv)); / ...
 }
 ```
 

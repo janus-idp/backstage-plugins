@@ -19,28 +19,22 @@ This plugin contains no other functionality.
 1. Wire up the API implementation to your App in `packages/app/src/apis.ts`:
 
    ```tsx title="packages/app/src/apis.ts"
-   /* highlight-add-start */
-   import {
+   /* highlight-add-start */ import {
      analyticsApiRef,
      configApiRef,
      identityApiRef,
    } from '@backstage/core-plugin-api';
-
    import { SegmentAnalytics } from '@janus-idp/backstage-plugin-analytics-provider-segment';
-
    /* highlight-add-end */
-
    export const apis: AnyApiFactory[] = [
-     // Other APIs...
-     // Instantiate and register the GA Analytics API Implementation.
-     /* highlight-add-start */
-     createApiFactory({
+     / Other APIs...
+     / Instantiate and register the GA Analytics API Implementation.
+     /* highlight-add-start */ createApiFactory({
        api: analyticsApiRef,
        deps: { configApi: configApiRef, identityApi: identityApiRef },
        factory: ({ configApi, identityApi }) =>
          SegmentAnalytics.fromConfig(configApi, identityApi),
-     }),
-     /* highlight-add-end */
+     }) /* highlight-add-end */,
    ];
    ```
 

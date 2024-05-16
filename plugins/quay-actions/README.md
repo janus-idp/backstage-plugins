@@ -35,21 +35,15 @@ yarn workspace backend add @janus-idp/backstage-scaffolder-backend-module-quay
    export default async function createPlugin(
      env: PluginEnvironment,
    ): Promise<Router> {
-     const catalogClient = new CatalogClient({
-       discoveryApi: env.discovery,
-     });
-
+     const catalogClient = new CatalogClient({ discoveryApi: env.discovery });
      const integrations = ScmIntegrations.fromConfig(env.config);
-
      const builtInActions = createBuiltinActions({
        integrations,
        catalogClient,
        config: env.config,
        reader: env.reader,
      });
-
      const actions = [...builtInActions, createQuayRepositoryAction()];
-
      return await createRouter({
        actions,
        logger: env.logger,

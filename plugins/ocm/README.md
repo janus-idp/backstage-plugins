@@ -164,21 +164,19 @@ For more information about the default owner configuration, see [upstream string
 1. Import and plug the new instance into the `packages/backend/src/index.ts` file:
 
    ```ts title="packages/backend/src/index.ts"
-   /* highlight-add-next-line */
-   import ocm from './plugins/ocm';
-
+   /* highlight-add-next-line */ import ocm from './plugins/ocm';
    async function main() {
-     // ...
+     ...
      const createEnv = makeCreateEnv(config);
-     // ...
-     /* highlight-add-next-line */
-     const ocmEnv = useHotMemoize(module, () => createEnv('ocm'));
-     // ...
+     ...
+     /* highlight-add-next-line */ const ocmEnv = useHotMemoize(module, () =>
+       createEnv('ocm'),
+     );
+     ...
      const apiRouter = Router();
-     // ...
-     /* highlight-add-next-line */
-     apiRouter.use('/ocm', await ocm(ocmEnv));
-     // ...
+     ...
+     /* highlight-add-next-line */ apiRouter.use('/ocm', await ocm(ocmEnv)); ...
+   }
    }
    ```
 
@@ -204,22 +202,19 @@ For more information about the default owner configuration, see [upstream string
      Then use the configured scheduler by adding the following to the `packages/backend/src/plugins/catalog.ts`:
 
      ```ts title="packages/backend/src/plugins/catalog.ts"
-     /* highlight-add-next-line */
-     import { ManagedClusterProvider } from '@janus-idp/backstage-plugin-ocm-backend';
-
+     /* highlight-add-next-line */ import { ManagedClusterProvider } from '@janus-idp/backstage-plugin-ocm-backend';
      export default async function createPlugin(
        env: PluginEnvironment,
      ): Promise<Router> {
        const builder = await CatalogBuilder.create(env);
-       // ...
-       /* highlight-add-start */
-       const ocm = ManagedClusterProvider.fromConfig(env.config, {
-         logger: env.logger,
-         scheduler: env.scheduler,
-       });
-       builder.addEntityProvider(ocm);
-       /* highlight-add-start */
-       // ...
+
+       /*
+       /* highlight-add-start */ const ocm = ManagedClusterProvider.fromConfig(
+         env.config,
+         { logger: env.logger, scheduler: env.scheduler },
+       );
+       builder.addEntityProvider(ocm); /* highlight-add-start */
+     }
      }
      ```
 
@@ -234,25 +229,25 @@ For more information about the default owner configuration, see [upstream string
    - **Method 2**: Add a schedule directly inside the `packages/backend/src/plugins/catalog.ts` file:
 
      ```ts title="packages/backend/src/plugins/catalog.ts"
-     /* highlight-add-next-line */
-     import { ManagedClusterProvider } from '@janus-idp/backstage-plugin-ocm-backend';
-
+     /* highlight-add-next-line */ import { ManagedClusterProvider } from '@janus-idp/backstage-plugin-ocm-backend';
      export default async function createPlugin(
        env: PluginEnvironment,
      ): Promise<Router> {
        const builder = await CatalogBuilder.create(env);
-       // ...
-       /* highlight-add-start */
-       const ocm = ManagedClusterProvider.fromConfig(env.config, {
-         logger: env.logger,
-         schedule: env.scheduler.createScheduledTaskRunner({
-           frequency: { minutes: 1 },
-           timeout: { minutes: 1 },
-         }),
-       });
-       builder.addEntityProvider(ocm);
-       /* highlight-add-start */
-       // ...
+
+       /*
+       /* highlight-add-start */ const ocm = ManagedClusterProvider.fromConfig(
+         env.config,
+         {
+           logger: env.logger,
+           schedule: env.scheduler.createScheduledTaskRunner({
+             frequency: { minutes: 1 },
+             timeout: { minutes: 1 },
+           }),
+         },
+       );
+       builder.addEntityProvider(ocm); /* highlight-add-start */
+     }
      }
      ```
 
@@ -275,8 +270,7 @@ import {
 } from '@janus-idp/backstage-plugin-ocm-backend/alpha';
 
 const backend = createBackend();
-/* highlight-add-next-line */
-backend.add(catalogModuleOCMEntityProvider);
+/* highlight-add-next-line */ backend.add(catalogModuleOCMEntityProvider);
 backend.add(ocmPlugin);
 
 backend.start();
@@ -317,8 +311,7 @@ catalog:
    - `OcmPage`: This is a standalone page or dashboard displaying all clusters as tiles. You can add `OcmPage` to `packages/app/src/App.tsx` file as follows:
 
      ```tsx title="packages/app/src/App.tsx"
-     /* highlight-add-next-line */
-     import { OcmPage } from '@janus-idp/backstage-plugin-ocm';
+     /* highlight-add-next-line */ import { OcmPage } from '@janus-idp/backstage-plugin-ocm';
 
      const routes = (
        <FlatRoutes>
@@ -332,8 +325,7 @@ catalog:
      You can also update navigation in `packages/app/src/components/Root/Root.tsx` as follows:
 
      ```tsx title="packages/app/src/components/Root/Root.tsx"
-     /* highlight-add-next-line */
-     import StorageIcon from '@material-ui/icons/Storage';
+     /* highlight-add-next-line */ import StorageIcon from '@material-ui/icons/Storage';
 
      export const Root = ({ children }: PropsWithChildren<{}>) => (
        <SidebarPage>

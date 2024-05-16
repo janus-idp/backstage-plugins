@@ -24,17 +24,16 @@ yarn workspace backend add @janus-idp/backstage-scaffolder-backend-module-sonarq
 [Register](https://backstage.io/docs/features/software-templates/writing-custom-actions#registering-custom-actions) the SonarQube actions by modifying the `packages/backend/src/plugins/scaffolder.ts` file from your project with the following changes:
 
 ```ts title=packages/backend/src/plugins/scaffolder.ts
-/* highlight-add-next-line */
-import { createSonarQubeProjectAction } from '@janus-idp/backstage-scaffolder-backend-module-sonarqube';
+/* highlight-add-next-line */ import { createSonarQubeProjectAction } from '@janus-idp/backstage-scaffolder-backend-module-sonarqube';
 
 export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
-  // ...
-
-  /* highlight-add-next-line */
-  const actions = [...builtInActions, createSonarQubeProjectAction()];
-
+  /*
+  /* highlight-add-next-line */ const actions = [
+    ...builtInActions,
+    createSonarQubeProjectAction(),
+  ];
   return await createRouter({
     actions,
     logger: env.logger,

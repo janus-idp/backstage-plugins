@@ -28,11 +28,11 @@ yarn workspace app add @roadiehq/backstage-plugin-argo-cd-backend
 - Create plugin file for ArgoCD backend in your `packages/backend/src/plugins/` directory.
 
 ```ts
-// packages/backend/src/plugins/argocd.ts
-
 import { createRouter } from '@roadiehq/backstage-plugin-argo-cd-backend';
 
 import { PluginEnvironment } from '../types';
+
+packages / backend / src / plugins / argocd.ts;
 
 export default async function createPlugin({
   logger,
@@ -83,13 +83,13 @@ yarn workspace app add @janus-idp/backstage-plugin-argocd
 2. Add deployment summary and deployment lifecycle compoennt to the `entityPage.tsx` source file:
 
 ```ts
-// packages/app/src/components/catalog/EntityPage.tsx
+ packages/app/src/components/catalog/EntityPage.tsx
+i
 import {
-  ArgocdDeploymentSummary,
   ArgocdDeploymentLifecycle,
+  ArgocdDeploymentSummary,
   isArgocdConfigured,
 } from '@janus-idp/backstage-plugin-argocd';
-
 const overviewContent = (
   <Grid container spacing={3} alignItems="stretch">
     ...
@@ -104,19 +104,18 @@ const overviewContent = (
   </Grid>
 );
 
-
 const cicdcontent = (
-    <EntitySwitch>
-        {/* ... */}
-        {/* highlight-add-start */}
-        ...
-          <EntitySwitch.Case if={e => Boolean(isArgocdConfigured(e))}>
-            <Grid item sm={12}>
-              <ArgocdDeploymentLifecycle />
-            </Grid>
-          </EntitySwitch.Case>
-        {/* highlight-add-end */}
-    </EntitySwitch>
+  <EntitySwitch>
+    {/* ... */}
+    {/* highlight-add-start */}
+    ...
+    <EntitySwitch.Case if={e => Boolean(isArgocdConfigured(e))}>
+      <Grid item sm={12}>
+        <ArgocdDeploymentLifecycle />
+      </Grid>
+    </EntitySwitch.Case>
+    {/* highlight-add-end */}
+  </EntitySwitch>
 );
 ```
 

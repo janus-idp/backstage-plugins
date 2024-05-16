@@ -23,20 +23,16 @@ yarn workspace backend add @janus-idp/backstage-scaffolder-backend-module-servic
 [Register](https://backstage.io/docs/features/software-templates/writing-custom-actions#registering-custom-actions) the ServiceNow actions by modifying the `packages/backend/src/plugins/scaffolder.ts` file from your project with the following changes:
 
 ```ts title="packages/backend/src/plugins/scaffolder.ts"
-/* highlight-add-next-line */
-import { createServiceNowActions } from '@janus-idp/backstage-scaffolder-backend-module-servicenow';
+/* highlight-add-next-line */ import { createServiceNowActions } from '@janus-idp/backstage-scaffolder-backend-module-servicenow';
 
 export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
-  // ...
-
-  /* highlight-add-next-line */
-  const actions = [
+  /*
+  /* highlight-add-next-line */ const actions = [
     ...builtInActions,
     ...createServiceNowActions({ config: env.config }),
   ];
-
   return await createRouter({
     actions,
     logger: env.logger,

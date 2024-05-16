@@ -30,14 +30,11 @@ The Jfrog Artifactory plugin displays information about your container images wi
 1. Enable the **JFROG ARTIFACTORY** tab on the entity view page in `packages/app/src/components/catalog/EntityPage.tsx`:
 
    ```ts title="packages/app/src/components/catalog/EntityPage.tsx"
-   /* highlight-add-start */
-   import {
+   /* highlight-add-start */ import {
      isJfrogArtifactoryAvailable,
      JfrogArtifactoryPage,
    } from '@janus-idp/backstage-plugin-jfrog-artifactory';
-
    /* highlight-add-end */
-
    const serviceEntityPage = (
      <EntityLayout>
        // ...

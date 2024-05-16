@@ -122,8 +122,7 @@ The Tekton plugin enables you to visualize the `PipelineRun` resources available
 1. To enable the PipelineRun list in the **CI/CD** tab on the entity view page, add the following snippet in the `packages/app/src/components/catalog/EntityPage.tsx`.
 
    ```tsx title="packages/app/src/components/catalog/EntityPage.tsx"
-   /* highlight-add-next-line */
-   import {
+   /* highlight-add-next-line */ import {
      isTektonCIAvailable,
      TektonCI,
    } from '@janus-idp/backstage-plugin-tekton';

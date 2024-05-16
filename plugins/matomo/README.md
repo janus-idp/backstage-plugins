@@ -19,9 +19,9 @@ yarn add @janus-idp/plugin-matomo
 1. Add the plugin as a tab to website entity pages
 
 ```ts
-// In packages/app/src/components/catalog/EntityPage.tsx
+ In packages/app/src/components/catalog/EntityPage.tsx
+i
 import { MatomoPage } from '@janus-idp/plugin-matomo';
-
 const websiteEntityPage = (
   <EntityLayout>
     <EntityLayout.Route path="/matomo" title="Matomo">

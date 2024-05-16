@@ -35,24 +35,18 @@ yarn workspace backend add @janus-idp/backstage-scaffolder-backend-module-kubern
    export default async function createPlugin(
      env: PluginEnvironment,
    ): Promise<Router> {
-     const catalogClient = new CatalogClient({
-       discoveryApi: env.discovery,
-     });
-
+     const catalogClient = new CatalogClient({ discoveryApi: env.discovery });
      const integrations = ScmIntegrations.fromConfig(env.config);
-
      const builtInActions = createBuiltinActions({
        integrations,
        catalogClient,
        config: env.config,
        reader: env.reader,
      });
-
      const actions = [
        ...builtInActions,
        createKubernetesNamespaceAction(catalogClient),
      ];
-
      return await createRouter({
        actions,
        logger: env.logger,

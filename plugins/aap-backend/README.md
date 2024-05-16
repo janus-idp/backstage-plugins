@@ -39,25 +39,20 @@ The AAP Backstage provider plugin allows the configuration of one or multiple pr
    - **Method 1**: If the scheduler is configured inside the `app-config.yaml` using the schedule config key mentioned previously, add the following code to `packages/backend/src/plugins/catalog.ts` file:
 
      ```ts title="packages/backend/src/plugins/catalog.ts"
-     /* highlight-add-next-line */
-     import { AapResourceEntityProvider } from '@janus-idp/backstage-plugin-aap-backend';
+     /* highlight-add-next-line */ import { AapResourceEntityProvider } from '@janus-idp/backstage-plugin-aap-backend';
 
      export default async function createPlugin(
        env: PluginEnvironment,
      ): Promise<Router> {
        const builder = await CatalogBuilder.create(env);
-
-       /* ... other processors and/or providers ... */
-       /* highlight-add-start */
-       builder.addEntityProvider(
+       /* ... other processors and/or providers ... */ /* highlight-add-start */ builder.addEntityProvider(
          AapResourceEntityProvider.fromConfig(env.config, {
            logger: env.logger,
            scheduler: env.scheduler,
          }),
        );
-       /* highlight-add-end */
-
-       const { processingEngine, router } = await builder.build();
+       /* highlight-add-end */ const { processingEngine, router } =
+         await builder.build();
        await processingEngine.start();
        return router;
      }
@@ -74,17 +69,13 @@ The AAP Backstage provider plugin allows the configuration of one or multiple pr
    - **Method 2**: Add a schedule directly inside the `packages/backend/src/plugins/catalog.ts` file as follows:
 
      ```ts title="packages/backend/src/plugins/catalog.ts"
-     /* highlight-add-next-line */
-     import { AapResourceEntityProvider } from '@janus-idp/backstage-plugin-aap-backend';
+     /* highlight-add-next-line */ import { AapResourceEntityProvider } from '@janus-idp/backstage-plugin-aap-backend';
 
      export default async function createPlugin(
        env: PluginEnvironment,
      ): Promise<Router> {
        const builder = await CatalogBuilder.create(env);
-
-       /* ... other processors and/or providers ... */
-       /* highlight-add-start */
-       builder.addEntityProvider(
+       /* ... other processors and/or providers ... */ /* highlight-add-start */ builder.addEntityProvider(
          AapResourceEntityProvider.fromConfig(env.config, {
            logger: env.logger,
            schedule: env.scheduler.createScheduledTaskRunner({
@@ -93,9 +84,8 @@ The AAP Backstage provider plugin allows the configuration of one or multiple pr
            }),
          }),
        );
-       /* highlight-add-end */
-
-       const { processingEngine, router } = await builder.build();
+       /* highlight-add-end */ const { processingEngine, router } =
+         await builder.build();
        await processingEngine.start();
        return router;
      }

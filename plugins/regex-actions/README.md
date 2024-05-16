@@ -23,17 +23,16 @@ yarn workspace backend add @janus-idp/backstage-scaffolder-backend-module-regex
 [Register](https://backstage.io/docs/features/software-templates/writing-custom-actions#registering-custom-actions) the regex actions by modifying the `packages/backend/src/plugins/scaffolder.ts` file from your project with the following changes:
 
 ```ts title="packages/backend/src/plugins/scaffolder.ts"
-/* highlight-add-next-line */
-import { createReplaceAction } from '@janus-idp/backstage-scaffolder-backend-module-regex';
+/* highlight-add-next-line */ import { createReplaceAction } from '@janus-idp/backstage-scaffolder-backend-module-regex';
 
 export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
-  // ...
-
-  /* highlight-add-next-line */
-  const actions = [...builtInActions, createReplaceAction()];
-
+  /*
+  /* highlight-add-next-line */ const actions = [
+    ...builtInActions,
+    createReplaceAction(),
+  ];
   return await createRouter({
     actions,
     logger: env.logger,

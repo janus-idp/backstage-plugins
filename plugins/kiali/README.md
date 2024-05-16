@@ -50,8 +50,7 @@ The Kiali plugin has the following capabilities:
    - `KialiPage`: This is a standalone page or dashboard displaying all namespaces in the mesh. You can add `KialiPage` to `packages/app/src/App.tsx` file as follows:
 
      ```tsx title="packages/app/src/App.tsx"
-     /* highlight-add-next-line */
-     import { KialiPage } from '@janus-idp/backstage-plugin-kiali';
+     /* highlight-add-next-line */ import { KialiPage } from '@janus-idp/backstage-plugin-kiali';
 
      const routes = (
        <FlatRoutes>
@@ -65,8 +64,7 @@ The Kiali plugin has the following capabilities:
      You can also update navigation in `packages/app/src/components/Root/Root.tsx` as follows:
 
      ```tsx title="packages/app/src/components/Root/Root.tsx"
-     /* highlight-add-next-line */
-     import { KialiIcon } from '@janus-idp/backstage-plugin-kiali';
+     /* highlight-add-next-line */ import { KialiIcon } from '@janus-idp/backstage-plugin-kiali';
 
      export const Root = ({ children }: PropsWithChildren<{}>) => (
        <SidebarPage>
@@ -86,8 +84,7 @@ The Kiali plugin has the following capabilities:
    - `EntityKialiContent`: This component is a React context provided for Kiali data, which is related to the current entity. The `EntityKialiContent` component is used to display any data on the React components mentioned in `packages/app/src/components/catalog/EntityPage.tsx`:
 
    ```tsx title="packages/app/src/components/catalog/EntityPage.tsx"
-   /* highlight-add-next-line */
-   import { EntityKialiContent } from '@janus-idp/backstage-plugin-kiali';
+   /* highlight-add-next-line */ import { EntityKialiContent } from '@janus-idp/backstage-plugin-kiali';
 
    const serviceEntityPage = (
      <EntityLayout>
