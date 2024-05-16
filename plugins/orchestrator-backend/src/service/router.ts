@@ -239,12 +239,15 @@ function setupInternalRoutes(
     const {
       params: { workflowId },
     } = req;
-    await routerApi.v1
-      .getWorkflowSourceById(workflowId)
-      .then(result => res.status(200).send(result))
-      .catch(error => {
-        res.status(500).send(error.message || INTERNAL_SERVER_ERROR_MESSAGE);
-      });
+    try {
+      const result = await routerApi.v1.getWorkflowSourceById(workflowId);
+      res.status(200).contentType('text/plain').send(result);
+    } catch (error) {
+      res
+        .status(500)
+        .contentType('text/plain')
+        .send((error as Error)?.message || INTERNAL_SERVER_ERROR_MESSAGE);
+    }
   });
 
   // v2
@@ -253,13 +256,16 @@ function setupInternalRoutes(
     async (c, _req, res, next) => {
       const workflowId = c.request.params.workflowId as string;
 
-      await routerApi.v2
-        .getWorkflowSourceById(workflowId)
-        .then(result => res.send(result))
-        .catch(error => {
-          res.status(500).send(error.message || INTERNAL_SERVER_ERROR_MESSAGE);
-          next();
-        });
+      try {
+        const result = await routerApi.v2.getWorkflowSourceById(workflowId);
+        res.status(200).contentType('plain/text').send(result);
+      } catch (error) {
+        res
+          .status(500)
+          .contentType('plain/text')
+          .send((error as Error)?.message || INTERNAL_SERVER_ERROR_MESSAGE);
+        next();
+      }
     },
   );
 
@@ -269,12 +275,15 @@ function setupInternalRoutes(
       params: { instanceId },
     } = req;
 
-    await routerApi.v1
-      .abortWorkflow(instanceId)
-      .then(() => res.status(200).send())
-      .catch(error => {
-        res.status(500).send(error.message || INTERNAL_SERVER_ERROR_MESSAGE);
-      });
+    try {
+      await routerApi.v1.abortWorkflow(instanceId);
+      res.status(200).send();
+    } catch (error) {
+      res
+        .status(500)
+        .contentType('plain/text')
+        .send((error as Error)?.message || INTERNAL_SERVER_ERROR_MESSAGE);
+    }
   });
 
   // v2

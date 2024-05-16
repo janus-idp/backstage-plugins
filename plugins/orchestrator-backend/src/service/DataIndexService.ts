@@ -336,9 +336,43 @@ export class DataIndexService {
   public async fetchInstance(
     instanceId: string,
   ): Promise<ProcessInstance | undefined> {
-    const graphQlQuery = `{ ProcessInstances (where: { id: {equal: "${instanceId}" } } ) { id, processName, processId, serviceUrl, businessKey, state, start, end, nodes { id, nodeId, definitionId, type, name, enter, exit }, variables, parentProcessInstance {id, processName, businessKey}, error { nodeDefinitionId, message} } }`;
+    const FindProcessInstanceQuery = gql`
+      query FindProcessInstanceQuery($instanceId: String!) {
+        ProcessInstances(where: { id: { equal: $instanceId } }) {
+          id
+          processName
+          processId
+          serviceUrl
+          businessKey
+          state
+          start
+          end
+          nodes {
+            id
+            nodeId
+            definitionId
+            type
+            name
+            enter
+            exit
+          }
+          variables
+          parentProcessInstance {
+            id
+            processName
+            businessKey
+          }
+          error {
+            nodeDefinitionId
+            message
+          }
+        }
+      }
+    `;
 
-    const result = await this.client.query(graphQlQuery, {});
+    const result = await this.client.query(FindProcessInstanceQuery, {
+      instanceId,
+    });
 
     this.logger.debug(
       `Fetch process instance result: ${JSON.stringify(result)}`,
