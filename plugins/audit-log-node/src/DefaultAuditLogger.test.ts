@@ -8,8 +8,8 @@ import { DefaultAuditLogger } from './DefaultAuditLogger';
 
 describe('DefaultAuditLogger', () => {
   const logger = getVoidLogger();
-  let loggerSpy: jest.SpyInstance = jest.spyOn(logger, 'info');
-  let loggerErrorSpy: jest.SpyInstance = jest.spyOn(logger, 'error');
+  const loggerSpy: jest.SpyInstance = jest.spyOn(logger, 'info');
+  const loggerErrorSpy: jest.SpyInstance = jest.spyOn(logger, 'error');
 
   const auditLogger = new DefaultAuditLogger({
     logger,
