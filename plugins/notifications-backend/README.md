@@ -86,8 +86,11 @@ Create a `packages/backend/src/plugins/notifications.ts` file with the following
 import { CatalogClient } from '@backstage/catalog-client';
 
 import { Router } from 'express';
+
 import { createRouter } from '@janus-idp/plugin-notifications-backend';
+
 import { PluginEnvironment } from '../types';
+
 export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {

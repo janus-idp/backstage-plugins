@@ -18,11 +18,9 @@ import { NamespaceInfo } from '../../types/NamespaceInfo';
 import { ENTITY } from '../../types/types';
 import { getNamespaces } from '../Overview/OverviewPage';
 
-export const IstioConfigListPage = (
-  props: {
-    view?: string;
-  },
-): React.JSX.Element => {
+export const IstioConfigListPage = (props: {
+  view?: string;
+}): React.JSX.Element => {
   const kialiClient = useApi(kialiApiRef);
   const kialiState = React.useContext(KialiContext) as KialiAppState;
   const [namespaces, setNamespaces] = React.useState<NamespaceInfo[]>([]);

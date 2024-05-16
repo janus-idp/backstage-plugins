@@ -12,15 +12,13 @@ type RoleDetailsFormProps = {
   >;
 };
 
-export const RoleDetailsForm = (
-  {
-    name,
-    description,
-    nameError,
-    handleBlur,
-    handleChange,
-  }: RoleDetailsFormProps,
-) => {
+export const RoleDetailsForm = ({
+  name,
+  description,
+  nameError,
+  handleBlur,
+  handleChange,
+}: RoleDetailsFormProps) => {
   return (
     <div
       style={{

@@ -20,17 +20,15 @@ type HorizontalStackedBarsProps = {
   onClick?: () => void;
 };
 
-export const HorizontalStackedBars = (
-  {
-    id,
-    barGap,
-    height,
-    inline,
-    values,
-    width,
-    onClick,
-  }: HorizontalStackedBarsProps,
-) => (
+export const HorizontalStackedBars = ({
+  id,
+  barGap,
+  height,
+  inline,
+  values,
+  width,
+  onClick,
+}: HorizontalStackedBarsProps) => (
   <div
     id={`horizontal-stacked-bars-${id}`}
     data-testid={`horizontal-stacked-bars-${id}`}

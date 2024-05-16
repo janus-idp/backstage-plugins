@@ -26,9 +26,10 @@ type AddedMembersTableProps = {
   ) => Promise<FormikErrors<RoleFormValues>> | Promise<void>;
 };
 
-export const AddedMembersTable = (
-  { selectedMembers, setFieldValue }: AddedMembersTableProps,
-) => {
+export const AddedMembersTable = ({
+  selectedMembers,
+  setFieldValue,
+}: AddedMembersTableProps) => {
   const classes = useStyles();
   return (
     <Table

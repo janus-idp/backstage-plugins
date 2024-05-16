@@ -59,9 +59,13 @@ const tableMetadata = (values: RoleFormValues) => {
   };
 };
 
-export const ReviewStep = (
-  { values, isEditing }: { values: RoleFormValues; isEditing: boolean },
-) => {
+export const ReviewStep = ({
+  values,
+  isEditing,
+}: {
+  values: RoleFormValues;
+  isEditing: boolean;
+}) => {
   return (
     <div style={{ overflow: 'scroll' }}>
       <Typography variant="h6">

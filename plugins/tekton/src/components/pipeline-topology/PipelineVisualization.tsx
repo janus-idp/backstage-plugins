@@ -13,9 +13,10 @@ type PipelineVisualizationProps = {
   taskRuns: TaskRunKind[];
 };
 
-export const PipelineVisualization = (
-  { pipelineRun, taskRuns }: PipelineVisualizationProps,
-) => {
+export const PipelineVisualization = ({
+  pipelineRun,
+  taskRuns,
+}: PipelineVisualizationProps) => {
   useDarkTheme();
 
   const model = getGraphDataModel(pipelineRun ?? undefined, taskRuns ?? []);

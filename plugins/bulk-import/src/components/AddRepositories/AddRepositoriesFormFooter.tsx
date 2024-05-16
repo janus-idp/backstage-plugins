@@ -38,17 +38,15 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const AddRepositoriesFormFooter = (
-  {
-    approvalTool,
-    values,
-    handleSubmit,
-  }: {
-    approvalTool: string;
-    values: AddRepositoriesFormValues;
-    handleSubmit: (e?: FormEvent<HTMLFormElement> | undefined) => void;
-  },
-) => {
+export const AddRepositoriesFormFooter = ({
+  approvalTool,
+  values,
+  handleSubmit,
+}: {
+  approvalTool: string;
+  values: AddRepositoriesFormValues;
+  handleSubmit: (e?: FormEvent<HTMLFormElement> | undefined) => void;
+}) => {
   const styles = useStyles();
   const submitTitle =
     (approvalTool === 'git'

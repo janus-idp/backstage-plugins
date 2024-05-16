@@ -48,9 +48,13 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const NodeChip = (
-  { count, indicator }: { count: number; indicator: ReactElement },
-) => (
+const NodeChip = ({
+  count,
+  indicator,
+}: {
+  count: number;
+  indicator: ReactElement;
+}) => (
   <>
     {count > 0 ? (
       <Chip

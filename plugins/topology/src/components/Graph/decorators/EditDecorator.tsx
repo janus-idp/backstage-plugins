@@ -17,9 +17,12 @@ interface DefaultDecoratorProps {
   y: number;
 }
 
-const EditDecorator: React.FC<DefaultDecoratorProps> = (
-  { element, radius, x, y },
-) => {
+const EditDecorator: React.FC<DefaultDecoratorProps> = ({
+  element,
+  radius,
+  x,
+  y,
+}) => {
   const workloadData = element.getData().data;
   const { editURL, vcsURI, vcsRef, cheCluster } = workloadData;
   const cheURL = getCheDecoratorData(cheCluster);

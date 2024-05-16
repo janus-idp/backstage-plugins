@@ -45,16 +45,14 @@ const DASH = '-';
  * <Status status='Warning' />
  * ```
  */
-export const Status = (
-  {
-    status,
-    iconOnly,
-    className,
-    height,
-    width,
-    spin,
-  }: React.PropsWithChildren<StatusProps>,
-): React.ReactElement => {
+export const Status = ({
+  status,
+  iconOnly,
+  className,
+  height,
+  width,
+  spin,
+}: React.PropsWithChildren<StatusProps>): React.ReactElement => {
   const statusProps = {
     title: status ?? '',
     iconOnly,

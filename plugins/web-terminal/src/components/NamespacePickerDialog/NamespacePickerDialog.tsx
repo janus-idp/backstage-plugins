@@ -35,9 +35,13 @@ type props = {
   onSubmit: (selectedNamesapce: string) => void;
 };
 
-export const NamespacePickerDialog = (
-  { onInit, open, previousNamespace, handleClose, onSubmit }: props,
-) => {
+export const NamespacePickerDialog = ({
+  onInit,
+  open,
+  previousNamespace,
+  handleClose,
+  onSubmit,
+}: props) => {
   const classes = useStyles();
   const namespaceRef = React.useRef<HTMLInputElement>(null);
   const [selectedNamespace, setSelectedNamespace] = React.useState('');

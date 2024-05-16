@@ -12,9 +12,12 @@ type DeleteRoleProps = {
   dataTestId: string;
 };
 
-const DeleteRole = (
-  { roleName, tooltip, disable, dataTestId }: DeleteRoleProps,
-) => {
+const DeleteRole = ({
+  roleName,
+  tooltip,
+  disable,
+  dataTestId,
+}: DeleteRoleProps) => {
   const { setDeleteRoleName, setOpenDialog } = useDeleteDialog();
 
   const openDialog = (name: string) => {

@@ -54,6 +54,7 @@ The Azure Container Registry (ACR) plugin displays information about your contai
      AcrPage,
      isAcrAvailable,
    } from '@janus-idp/backstage-plugin-acr';
+
    /* highlight-add-end */ const serviceEntityPage = (
      <EntityLayout>
        // ...

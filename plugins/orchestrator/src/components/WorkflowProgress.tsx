@@ -14,14 +14,12 @@ export interface WorkflowProgressProps {
   emptyState?: React.ReactNode;
 }
 
-export const WorkflowProgress: React.FC<WorkflowProgressProps> = (
-  {
-    workflowStatus,
-    workflowError,
-    workflowNodes,
-    emptyState = <Paragraph>No data available</Paragraph>,
-  },
-) => (
+export const WorkflowProgress: React.FC<WorkflowProgressProps> = ({
+  workflowStatus,
+  workflowError,
+  workflowNodes,
+  emptyState = <Paragraph>No data available</Paragraph>,
+}) => (
   <>
     {workflowNodes.length === 0
       ? emptyState

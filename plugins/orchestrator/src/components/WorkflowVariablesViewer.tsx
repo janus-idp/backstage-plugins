@@ -12,9 +12,10 @@ interface ProcessVariablesViewerProps {
   emptyState?: React.ReactNode;
 }
 
-export const WorkflowVariablesViewer: React.FC<ProcessVariablesViewerProps> = (
-  { variables = {}, emptyState = <Paragraph>No data available</Paragraph> },
-) => {
+export const WorkflowVariablesViewer: React.FC<ProcessVariablesViewerProps> = ({
+  variables = {},
+  emptyState = <Paragraph>No data available</Paragraph>,
+}) => {
   const theme = useTheme();
 
   return !variables ? (

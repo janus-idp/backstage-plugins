@@ -12,16 +12,14 @@ export class JiraApiService {
     private hostType: string = 'SERVER',
   ) {}
 
-  createJiraTicket = async (
-    options: {
-      projectKey: string;
-      summary: string;
-      description: string;
-      tag: string;
-      feedbackType: string;
-      reporter?: string;
-    },
-  ): Promise<any> => {
+  createJiraTicket = async (options: {
+    projectKey: string;
+    summary: string;
+    description: string;
+    tag: string;
+    feedbackType: string;
+    reporter?: string;
+  }): Promise<any> => {
     const { projectKey, summary, description, tag, feedbackType, reporter } =
       options;
     const requestBody = {

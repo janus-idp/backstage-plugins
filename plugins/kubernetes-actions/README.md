@@ -25,10 +25,13 @@ yarn workspace backend add @janus-idp/backstage-scaffolder-backend-module-kubern
      createBuiltinActions,
      createRouter,
    } from '@backstage/plugin-scaffolder-backend';
+
    import { Router } from 'express';
+
    import { createKubernetesNamespaceAction } from '@janus-idp/backstage-scaffolder-backend-module-kubernetes';
 
    import type { PluginEnvironment } from '../types';
+
    export default async function createPlugin(
      env: PluginEnvironment,
    ): Promise<Router> {

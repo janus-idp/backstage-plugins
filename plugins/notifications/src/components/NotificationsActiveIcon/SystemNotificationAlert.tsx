@@ -19,9 +19,10 @@ export type SystemNotificationAlertProps = {
   onCloseNotification: () => void;
 };
 
-export const SystemNotificationAlert = (
-  { message, onCloseNotification }: SystemNotificationAlertProps,
-) => {
+export const SystemNotificationAlert = ({
+  message,
+  onCloseNotification,
+}: SystemNotificationAlertProps) => {
   const styles = useStyles();
   const notificationsRoute = useRouteRef(notificationsRootRouteRef);
 

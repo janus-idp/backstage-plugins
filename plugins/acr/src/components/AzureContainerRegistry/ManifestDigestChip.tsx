@@ -18,9 +18,10 @@ type ManifestDigestChipProps = {
   hash: string;
 };
 
-export const ManifestDigestChip = (
-  { label, hash }: ManifestDigestChipProps,
-) => {
+export const ManifestDigestChip = ({
+  label,
+  hash,
+}: ManifestDigestChipProps) => {
   const localClasses = useLocalStyles();
   return (
     <Box sx={{ display: 'flex', alignItems: 'center' }}>

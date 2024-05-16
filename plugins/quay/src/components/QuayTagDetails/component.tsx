@@ -110,9 +110,11 @@ const useStyles = makeStyles({
   },
 });
 
-export const QuayTagDetails = (
-  { layer, rootLink, digest }: QuayTagDetailsProps,
-) => {
+export const QuayTagDetails = ({
+  layer,
+  rootLink,
+  digest,
+}: QuayTagDetailsProps) => {
   const classes = useStyles();
   const vulnerabilities = layer.Features.filter(
     feat => typeof feat.Vulnerabilities !== 'undefined',

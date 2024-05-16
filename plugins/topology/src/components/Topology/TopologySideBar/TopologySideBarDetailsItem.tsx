@@ -7,13 +7,11 @@ type TopologySideBarDetailsItemProps = {
   emptyText?: string;
 };
 
-const TopologySideBarDetailsItem = (
-  {
-    label,
-    children,
-    emptyText,
-  }: React.PropsWithChildren<TopologySideBarDetailsItemProps>,
-) => {
+const TopologySideBarDetailsItem = ({
+  label,
+  children,
+  emptyText,
+}: React.PropsWithChildren<TopologySideBarDetailsItemProps>) => {
   return (
     <div className="topology-side-bar-details-item">
       <dt>{label}</dt>

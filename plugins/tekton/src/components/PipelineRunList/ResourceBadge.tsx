@@ -4,19 +4,17 @@ import { Split, SplitItem } from '@patternfly/react-core';
 
 import './ResourceBadge.css';
 
-const ResourceBadge = (
-  {
-    color,
-    abbr,
-    name,
-    suffix,
-  }: {
-    color: string;
-    abbr: string;
-    name: string;
-    suffix?: React.ReactNode;
-  },
-) => {
+const ResourceBadge = ({
+  color,
+  abbr,
+  name,
+  suffix,
+}: {
+  color: string;
+  abbr: string;
+  name: string;
+  suffix?: React.ReactNode;
+}) => {
   return (
     <Split className="bs-tkn-pipeline-visualization__label">
       <SplitItem style={{ marginRight: 'var(--pf-v5-global--spacer--sm)' }}>

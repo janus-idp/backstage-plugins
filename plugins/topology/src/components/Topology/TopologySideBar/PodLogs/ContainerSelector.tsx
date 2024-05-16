@@ -17,13 +17,11 @@ type ContainerSelectorType = {
   ) => void;
 };
 
-export const ContainerSelector = (
-  {
-    containersList,
-    containerSelected,
-    onContainerChange,
-  }: ContainerSelectorType,
-) => {
+export const ContainerSelector = ({
+  containersList,
+  containerSelected,
+  onContainerChange,
+}: ContainerSelectorType) => {
   return (
     <Select
       onChange={onContainerChange}

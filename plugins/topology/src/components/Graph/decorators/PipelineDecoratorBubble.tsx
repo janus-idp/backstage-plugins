@@ -9,9 +9,13 @@ type PipelineDecoratorBubbleProps = React.ComponentProps<typeof Decorator> & {
   y: number;
 };
 
-const PipelineDecoratorBubble: React.FC<PipelineDecoratorBubbleProps> = (
-  { children, radius, x, y, ...otherDecoratorProps },
-) => (
+const PipelineDecoratorBubble: React.FC<PipelineDecoratorBubbleProps> = ({
+  children,
+  radius,
+  x,
+  y,
+  ...otherDecoratorProps
+}) => (
   <Decorator x={x} y={y} radius={radius} {...otherDecoratorProps}>
     <g transform={`translate(-${radius / 2}, -${radius / 2})`}>
       <foreignObject

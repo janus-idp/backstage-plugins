@@ -32,9 +32,9 @@ const useIconStyles = makeStyles<Theme>(theme =>
     },
   }),
 );
-export const SyncIcon: React.FC<{ status: SyncStatusCode }> = (
-  { status },
-): React.ReactNode => {
+export const SyncIcon: React.FC<{ status: SyncStatusCode }> = ({
+  status,
+}): React.ReactNode => {
   const classes = useIconStyles();
   switch (status) {
     case SyncStatuses.Synced:
@@ -66,9 +66,9 @@ export const SyncIcon: React.FC<{ status: SyncStatusCode }> = (
   }
 };
 
-export const AppHealthIcon: React.FC<{ status: HealthStatus }> = (
-  { status },
-): React.ReactNode => {
+export const AppHealthIcon: React.FC<{ status: HealthStatus }> = ({
+  status,
+}): React.ReactNode => {
   const classes = useIconStyles();
 
   switch (status) {

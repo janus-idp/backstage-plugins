@@ -146,7 +146,9 @@ For more information about the default owner configuration, see [upstream string
    import { Router } from 'express';
 
    import { createRouter } from '@janus-idp/backstage-plugin-ocm-backend';
+
    import { PluginEnvironment } from '../types';
+
    export default async function createPlugin(
      env: PluginEnvironment,
    ): Promise<Router> {
@@ -266,6 +268,7 @@ import {
   catalogModuleOCMEntityProvider,
   ocmPlugin,
 } from '@janus-idp/backstage-plugin-ocm-backend/alpha';
+
 const backend = createBackend();
 /* highlight-add-next-line */ backend.add(catalogModuleOCMEntityProvider);
 backend.add(ocmPlugin);

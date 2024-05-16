@@ -110,9 +110,8 @@ export class CSVFileWatcher {
 
     // Check for any old policies that will need to be removed by checking if
     // the policy no longer exists in the temp enforcer (csv file)
-    const policiesToRemove = await this.enforcer.getFilteredPolicyMetadata(
-      'csv-file',
-    );
+    const policiesToRemove =
+      await this.enforcer.getFilteredPolicyMetadata('csv-file');
 
     for (const policy of policiesToRemove) {
       const convertedPolicy = metadataStringToPolicy(policy.policy);
@@ -150,9 +149,8 @@ export class CSVFileWatcher {
     // This will involve removing legacy policies if they exist in both the
     // temp enforcer (csv file) and the enforcer
     // We will then add them back with the new source
-    const policiesToUpdate = await this.enforcer.getFilteredPolicyMetadata(
-      'legacy',
-    );
+    const policiesToUpdate =
+      await this.enforcer.getFilteredPolicyMetadata('legacy');
 
     for (const policy of policiesToUpdate) {
       const convertedPolicy = metadataStringToPolicy(policy.policy);

@@ -25,10 +25,13 @@ yarn workspace backend add @janus-idp/backstage-scaffolder-backend-module-quay
      createBuiltinActions,
      createRouter,
    } from '@backstage/plugin-scaffolder-backend';
+
    import { Router } from 'express';
+
    import { createQuayRepositoryAction } from '@janus-idp/backstage-scaffolder-backend-module-quay';
 
    import type { PluginEnvironment } from '../types';
+
    export default async function createPlugin(
      env: PluginEnvironment,
    ): Promise<Router> {

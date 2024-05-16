@@ -33,9 +33,10 @@ const DASH = '-';
  * <Status status='Warning' />
  * ```
  */
-const Status = (
-  { status, iconOnly }: React.PropsWithChildren<StatusProps>,
-): React.ReactElement => {
+const Status = ({
+  status,
+  iconOnly,
+}: React.PropsWithChildren<StatusProps>): React.ReactElement => {
   const statusProps = {
     title: status ?? '',
     iconOnly,

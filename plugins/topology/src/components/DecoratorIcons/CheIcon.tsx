@@ -1,8 +1,8 @@
 import * as React from 'react';
 
-const CheIcon: React.FC<React.HTMLProps<SVGElement>> = (
-  { style },
-): React.ReactElement => {
+const CheIcon: React.FC<React.HTMLProps<SVGElement>> = ({
+  style,
+}): React.ReactElement => {
   return (
     <svg
       height="1em"

@@ -10,9 +10,13 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export const Illustrations = (
-  { iconClassname, iconText }: { iconClassname: string; iconText: string },
-) => {
+export const Illustrations = ({
+  iconClassname,
+  iconText,
+}: {
+  iconClassname: string;
+  iconText: string;
+}) => {
   const styles = useStyles();
   return (
     <div>

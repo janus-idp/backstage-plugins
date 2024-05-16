@@ -44,18 +44,16 @@ export const rbacPlugin = createBackendPlugin({
         auth: coreServices.auth,
         httpAuth: coreServices.httpAuth,
       },
-      async init(
-        {
-          http,
-          config,
-          logger,
-          discovery,
-          identity,
-          permissions,
-          auth,
-          httpAuth,
-        },
-      ) {
+      async init({
+        http,
+        config,
+        logger,
+        discovery,
+        identity,
+        permissions,
+        auth,
+        httpAuth,
+      }) {
         const winstonLogger = loggerToWinstonLogger(logger);
 
         http.use(

@@ -20,9 +20,11 @@ export const useWorkloadsWatcher = (): {
   const k8sResponseData = React.useContext(K8sResourcesContext);
 
   const updateResults = React.useCallback(
-    async (
-      { watchResourcesData, loading, responseError }: K8sResourcesContextData,
-    ) => {
+    async ({
+      watchResourcesData,
+      loading,
+      responseError,
+    }: K8sResourcesContextData) => {
       if (!loading) {
         setLoaded(true);
         if (!responseError) {

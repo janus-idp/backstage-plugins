@@ -24,13 +24,11 @@ type ResourceStatusProps = {
  * )
  * ```
  */
-export const ResourceStatus = (
-  {
-    additionalClassNames,
-    badgeAlt,
-    children,
-  }: React.PropsWithChildren<ResourceStatusProps>,
-) => {
+export const ResourceStatus = ({
+  additionalClassNames,
+  badgeAlt,
+  children,
+}: React.PropsWithChildren<ResourceStatusProps>) => {
   return (
     <span
       className={classNames('bs-tkn-resource-status', additionalClassNames)}
