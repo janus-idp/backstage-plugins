@@ -21,10 +21,9 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const MembersDropdownOption = ({
-  option,
-  state,
-}: MembersDropdownOptionProps) => {
+export const MembersDropdownOption = (
+  { option, state }: MembersDropdownOptionProps,
+) => {
   const classes = useStyles();
   const { inputValue } = state;
   const { label, etag } = option;

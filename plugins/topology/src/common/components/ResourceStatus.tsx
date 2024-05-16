@@ -25,12 +25,14 @@ type ResourceStatusProps = {
  * )
  * ```
  */
-const ResourceStatus = ({
-  additionalClassNames,
-  badgeAlt,
-  children,
-  noStatusBackground,
-}: React.PropsWithChildren<ResourceStatusProps>) => {
+const ResourceStatus = (
+  {
+    additionalClassNames,
+    badgeAlt,
+    children,
+    noStatusBackground,
+  }: React.PropsWithChildren<ResourceStatusProps>,
+) => {
   return (
     <span
       className={classNames(

@@ -13,17 +13,19 @@ import { PipelinesData } from '../../../types/pipeline';
 import PipelineDecoratorBubble from './PipelineDecoratorBubble';
 import PipelineRunDecoratorTooltip from './PipelineRunDecoratorTooltip';
 
-export const PipelineRunDecorator = ({
-  pipelinesData,
-  radius,
-  x,
-  y,
-}: {
-  pipelinesData: PipelinesData;
-  radius: number;
-  x: number;
-  y: number;
-}) => {
+export const PipelineRunDecorator = (
+  {
+    pipelinesData,
+    radius,
+    x,
+    y,
+  }: {
+    pipelinesData: PipelinesData;
+    radius: number;
+    x: number;
+    y: number;
+  },
+) => {
   const decoratorRef = React.useRef<SVGGElement | null>(null);
 
   const latestPipelineRun = getLatestPipelineRun(

@@ -57,7 +57,7 @@ spec:
           description: ${{ parameters.description }}
           destination: ${{ parameters.repoUrl | parseRepoUrl }}
           owner: ${{ parameters.owner }}
-  
+
     - id: timestamp
       name: Add Timestamp to catalog-info.yaml
       action: catalog:timestamping

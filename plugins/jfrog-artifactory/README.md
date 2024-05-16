@@ -34,8 +34,7 @@ The Jfrog Artifactory plugin displays information about your container images wi
      isJfrogArtifactoryAvailable,
      JfrogArtifactoryPage,
    } from '@janus-idp/backstage-plugin-jfrog-artifactory';
-   /* highlight-add-end */
-   const serviceEntityPage = (
+   /* highlight-add-end */ const serviceEntityPage = (
      <EntityLayout>
        // ...
        {/* highlight-add-start */}

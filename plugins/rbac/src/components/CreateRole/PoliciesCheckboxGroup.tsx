@@ -9,16 +9,18 @@ import FormLabel from '@material-ui/core/FormLabel';
 import { PermissionsData } from '../../types';
 import { RowPolicy } from './types';
 
-export const PoliciesCheckboxGroup = ({
-  permissionPoliciesRowData,
-  rowName,
-  onChangePolicy,
-}: {
-  permissionPoliciesRowData: PermissionsData;
-  rowName: string;
+export const PoliciesCheckboxGroup = (
+  {
+    permissionPoliciesRowData,
+    rowName,
+    onChangePolicy,
+  }: {
+    permissionPoliciesRowData: PermissionsData;
+    rowName: string;
 
-  onChangePolicy: (isChecked: boolean, policyIndex: number) => void;
-}) => {
+    onChangePolicy: (isChecked: boolean, policyIndex: number) => void;
+  },
+) => {
   return (
     <FormControl
       required

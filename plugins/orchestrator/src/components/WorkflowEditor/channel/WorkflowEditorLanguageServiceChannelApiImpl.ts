@@ -17,19 +17,23 @@ export class WorkflowEditorLanguageServiceChannelApiImpl
     private readonly ls: SwfJsonLanguageService | SwfYamlLanguageService,
   ) {}
 
-  public async kogitoSwfLanguageService__getCompletionItems(args: {
-    content: string;
-    uri: string;
-    cursorPosition: Position;
-    cursorWordRange: Range;
-  }): Promise<CompletionItem[]> {
+  public async kogitoSwfLanguageService__getCompletionItems(
+    args: {
+      content: string;
+      uri: string;
+      cursorPosition: Position;
+      cursorWordRange: Range;
+    },
+  ): Promise<CompletionItem[]> {
     return this.ls.getCompletionItems(args);
   }
 
-  public async kogitoSwfLanguageService__getCodeLenses(args: {
-    uri: string;
-    content: string;
-  }): Promise<CodeLens[]> {
+  public async kogitoSwfLanguageService__getCodeLenses(
+    args: {
+      uri: string;
+      content: string;
+    },
+  ): Promise<CodeLens[]> {
     return this.ls.getCodeLenses(args);
   }
 }

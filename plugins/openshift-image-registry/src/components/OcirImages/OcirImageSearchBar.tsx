@@ -29,10 +29,9 @@ type OcirImageSearchBarProps = {
   >;
 };
 
-export const OcirImageSearchBar = ({
-  imageStreams,
-  setImageStreams,
-}: OcirImageSearchBarProps) => {
+export const OcirImageSearchBar = (
+  { imageStreams, setImageStreams }: OcirImageSearchBarProps,
+) => {
   const classes = useStyles();
 
   const [search, setSearch] = React.useState<string>('');

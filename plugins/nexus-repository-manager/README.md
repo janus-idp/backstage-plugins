@@ -54,7 +54,6 @@ The Nexus Repository Manager plugin displays the information about your build ar
      isNexusRepositoryManagerAvailable,
      NexusRepositoryManagerPage,
    } from '@janus-idp/backstage-plugin-nexus-repository-manager';
-
    const serviceEntityPage = (
      <EntityLayout>
        {/* ... */}

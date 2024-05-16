@@ -21,10 +21,9 @@ const useStyles = makeStyles({
   },
 });
 
-export const RepositoriesSearchBar = ({
-  value,
-  onChange,
-}: RepositoriesSearchBarProps) => {
+export const RepositoriesSearchBar = (
+  { value, onChange }: RepositoriesSearchBarProps,
+) => {
   const classes = useStyles();
 
   return (

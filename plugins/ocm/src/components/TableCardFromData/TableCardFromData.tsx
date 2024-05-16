@@ -23,15 +23,17 @@ const valueFormatter = (value: any): any => {
   return value;
 };
 
-export const TableCardFromData = ({
-  data,
-  title,
-  nameMap,
-}: {
-  data: any;
-  title: string;
-  nameMap: Map<string, string>;
-}) => {
+export const TableCardFromData = (
+  {
+    data,
+    title,
+    nameMap,
+  }: {
+    data: any;
+    title: string;
+    nameMap: Map<string, string>;
+  },
+) => {
   const parsedData: { name: string; value: any }[] = [];
   const entries = Object.entries(data);
 

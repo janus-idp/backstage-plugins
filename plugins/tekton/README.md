@@ -126,7 +126,6 @@ The Tekton plugin enables you to visualize the `PipelineRun` resources available
      isTektonCIAvailable,
      TektonCI,
    } from '@janus-idp/backstage-plugin-tekton';
-
    const cicdContent = (
      <EntitySwitch>
        {/* ... */}

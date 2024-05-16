@@ -10,13 +10,15 @@ import SubmitButton from '../SubmitButton';
 
 const DEFAULT_VALUE = JSON.stringify({ myKey: 'myValue' }, null, 4);
 
-const JsonTextAreaForm = ({
-  isExecuting,
-  handleExecute,
-}: {
-  isExecuting: boolean;
-  handleExecute: (getParameters: () => JsonObject) => Promise<void>;
-}) => {
+const JsonTextAreaForm = (
+  {
+    isExecuting,
+    handleExecute,
+  }: {
+    isExecuting: boolean;
+    handleExecute: (getParameters: () => JsonObject) => Promise<void>;
+  },
+) => {
   const [jsonText, setJsonText] = React.useState(DEFAULT_VALUE);
   const theme = useTheme();
   const getParameters = (): JsonObject => {

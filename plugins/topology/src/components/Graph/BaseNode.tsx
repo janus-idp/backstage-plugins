@@ -44,17 +44,19 @@ type BaseNodeProps = {
 } & Partial<WithSelectionProps> &
   Partial<WithDragNodeProps>;
 
-const BaseNode = ({
-  className,
-  innerRadius = 10,
-  icon,
-  kind,
-  element,
-  hoverRef,
-  children,
-  alertVariant,
-  ...rest
-}: React.PropsWithChildren<BaseNodeProps>) => {
+const BaseNode = (
+  {
+    className,
+    innerRadius = 10,
+    icon,
+    kind,
+    element,
+    hoverRef,
+    children,
+    alertVariant,
+    ...rest
+  }: React.PropsWithChildren<BaseNodeProps>,
+) => {
   const [hover, internalHoverRef] = useHover();
   const nodeHoverRefs = useCombineRefs(
     internalHoverRef,

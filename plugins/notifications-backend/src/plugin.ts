@@ -39,16 +39,18 @@ export const notificationBackendPlugin = createBackendPlugin({
         identity: coreServices.identity,
         tokenManager: coreServices.tokenManager,
       },
-      async init({
-        http,
-        logger,
-        config,
-        database,
-        discovery,
-        permissions,
-        identity,
-        tokenManager,
-      }) {
+      async init(
+        {
+          http,
+          logger,
+          config,
+          database,
+          discovery,
+          permissions,
+          identity,
+          tokenManager,
+        },
+      ) {
         const winstonLogger = loggerToWinstonLogger(logger);
         const router = await createRouter({
           logger: winstonLogger,

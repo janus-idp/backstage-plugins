@@ -20,13 +20,15 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const RolesListToolbar = ({
-  createRoleAllowed,
-  createRoleLoading,
-}: {
-  createRoleAllowed: boolean;
-  createRoleLoading: boolean;
-}) => {
+export const RolesListToolbar = (
+  {
+    createRoleAllowed,
+    createRoleLoading,
+  }: {
+    createRoleAllowed: boolean;
+    createRoleLoading: boolean;
+  },
+) => {
   const classes = useStyles();
   return (
     <div>

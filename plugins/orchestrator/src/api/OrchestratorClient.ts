@@ -37,11 +37,13 @@ export class OrchestratorClient implements OrchestratorApi {
     return this.baseUrl;
   }
 
-  async executeWorkflow(args: {
-    workflowId: string;
-    parameters: JsonObject;
-    businessKey?: string;
-  }): Promise<WorkflowExecutionResponse> {
+  async executeWorkflow(
+    args: {
+      workflowId: string;
+      parameters: JsonObject;
+      businessKey?: string;
+    },
+  ): Promise<WorkflowExecutionResponse> {
     const baseUrl = await this.getBaseUrl();
     const endpoint = `${baseUrl}/workflows/${args.workflowId}/execute`;
     const urlToFetch = buildUrl(endpoint, {
@@ -122,11 +124,13 @@ export class OrchestratorClient implements OrchestratorApi {
     return await res.json();
   }
 
-  async getWorkflowDataInputSchema(args: {
-    workflowId: string;
-    instanceId?: string;
-    assessmentInstanceId?: string;
-  }): Promise<WorkflowInputSchemaResponse> {
+  async getWorkflowDataInputSchema(
+    args: {
+      workflowId: string;
+      instanceId?: string;
+      assessmentInstanceId?: string;
+    },
+  ): Promise<WorkflowInputSchemaResponse> {
     const baseUrl = await this.getBaseUrl();
     const endpoint = `${baseUrl}/workflows/${args.workflowId}/inputSchema`;
     const urlToFetch = buildUrl(endpoint, {
@@ -149,10 +153,12 @@ export class OrchestratorClient implements OrchestratorApi {
     return res.json();
   }
 
-  async retriggerInstanceInError(args: {
-    instanceId: string;
-    inputData: JsonObject;
-  }): Promise<WorkflowExecutionResponse> {
+  async retriggerInstanceInError(
+    args: {
+      instanceId: string;
+      inputData: JsonObject;
+    },
+  ): Promise<WorkflowExecutionResponse> {
     const baseUrl = await this.getBaseUrl();
     const urlToFetch = `${baseUrl}/instances/${args.instanceId}/retrigger`;
     const response = await fetch(urlToFetch, {

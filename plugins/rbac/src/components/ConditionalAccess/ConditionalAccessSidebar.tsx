@@ -48,14 +48,16 @@ type ConditionalAccessSidebarProps = {
   conditionsFormVal?: ConditionsData;
 };
 
-export const ConditionalAccessSidebar = ({
-  open,
-  onClose,
-  onSave,
-  selPluginResourceType,
-  conditionRulesData,
-  conditionsFormVal,
-}: ConditionalAccessSidebarProps) => {
+export const ConditionalAccessSidebar = (
+  {
+    open,
+    onClose,
+    onSave,
+    selPluginResourceType,
+    conditionRulesData,
+    conditionsFormVal,
+  }: ConditionalAccessSidebarProps,
+) => {
   const classes = useDrawerStyles();
   const contentClasses = useDrawerContentStyles();
   return (

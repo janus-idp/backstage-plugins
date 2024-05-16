@@ -22,10 +22,9 @@ const useStyles = makeStyles({
   },
 });
 
-export const PipelineRunListSearchBar = ({
-  value,
-  onChange,
-}: PipelineRunListSearchBarProps) => {
+export const PipelineRunListSearchBar = (
+  { value, onChange }: PipelineRunListSearchBarProps,
+) => {
   const classes = useStyles();
 
   return (

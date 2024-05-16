@@ -40,7 +40,6 @@ The Quay plugin displays the information about your container images within the 
      isQuayAvailable,
      QuayPage,
    } from '@janus-idp/backstage-plugin-quay';
-
    const serviceEntityPage = (
      <EntityLayout>
        {/* ... */}

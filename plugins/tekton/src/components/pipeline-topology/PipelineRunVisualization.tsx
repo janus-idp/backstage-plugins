@@ -7,9 +7,9 @@ type PipelineRunVisualizationProps = {
   pipelineRunName?: string;
 };
 
-export const PipelineRunVisualization = ({
-  pipelineRunName,
-}: PipelineRunVisualizationProps) => {
+export const PipelineRunVisualization = (
+  { pipelineRunName }: PipelineRunVisualizationProps,
+) => {
   useDarkTheme();
 
   return (

@@ -100,9 +100,7 @@ For more information about the configuration options, including other optional p
    import { Router } from 'express';
 
    import { createRouter } from '@janus-idp/backstage-plugin-orchestrator-backend';
-
    import { PluginEnvironment } from '../types';
-
    export default async function createPlugin(
      env: PluginEnvironment,
    ): Promise<Router> {

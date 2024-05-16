@@ -89,8 +89,9 @@ describe('OrchestratorClient', () => {
 
       // When
       const client = new OrchestratorClient(orchestratorClientOptions);
-      const result: WorkflowExecutionResponse =
-        await client.executeWorkflow(args);
+      const result: WorkflowExecutionResponse = await client.executeWorkflow(
+        args,
+      );
 
       // Then
       expect(fetch).toHaveBeenCalledWith(
@@ -132,8 +133,9 @@ describe('OrchestratorClient', () => {
 
       // When
       const client = new OrchestratorClient(orchestratorClientOptions);
-      const result: WorkflowExecutionResponse =
-        await client.executeWorkflow(args);
+      const result: WorkflowExecutionResponse = await client.executeWorkflow(
+        args,
+      );
 
       // Then
       expect(fetch).toHaveBeenCalledWith(

@@ -34,12 +34,9 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const EnhancedTableHead = ({
-  order,
-  orderBy,
-  orderById,
-  onRequestSort,
-}: EnhancedTableProps) => {
+export const EnhancedTableHead = (
+  { order, orderBy, orderById, onRequestSort }: EnhancedTableProps,
+) => {
   const createSortHandler =
     (property: string, id: string) => (event: React.MouseEvent<unknown>) => {
       onRequestSort(event, property, id);

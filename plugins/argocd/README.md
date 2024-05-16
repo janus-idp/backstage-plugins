@@ -31,13 +31,10 @@ yarn workspace app add @roadiehq/backstage-plugin-argo-cd-backend
 import { createRouter } from '@roadiehq/backstage-plugin-argo-cd-backend';
 
 import { PluginEnvironment } from '../types';
-
 packages / backend / src / plugins / argocd.ts;
-
-export default async function createPlugin({
-  logger,
-  config,
-}: PluginEnvironment) {
+export default async function createPlugin(
+  { logger, config }: PluginEnvironment,
+) {
   return await createRouter({ logger, config });
 }
 ```
@@ -83,13 +80,13 @@ yarn workspace app add @janus-idp/backstage-plugin-argocd
 2. Add deployment summary and deployment lifecycle compoennt to the `entityPage.tsx` source file:
 
 ```ts
- packages/app/src/components/catalog/EntityPage.tsx
-i
 import {
   ArgocdDeploymentLifecycle,
   ArgocdDeploymentSummary,
   isArgocdConfigured,
 } from '@janus-idp/backstage-plugin-argocd';
+packages / app / src / components / catalog / EntityPage.tsx;
+i;
 const overviewContent = (
   <Grid container spacing={3} alignItems="stretch">
     ...
@@ -103,7 +100,6 @@ const overviewContent = (
     ...
   </Grid>
 );
-
 const cicdcontent = (
   <EntitySwitch>
     {/* ... */}

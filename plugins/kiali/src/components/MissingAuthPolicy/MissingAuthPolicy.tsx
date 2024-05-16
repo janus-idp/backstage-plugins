@@ -22,15 +22,17 @@ const infoStyle = kialiStyle({
   marginLeft: '0.5rem',
 });
 
-export const MissingAuthPolicy: React.FC<MissingAuthPolicyProps> = ({
-  text = 'Missing Authorization Policy',
-  textTooltip = 'This workload is not covered by any authorization policy.',
-  tooltip = false,
-  icon = icons.istio.missingAuthPolicy.icon,
-  color = icons.istio.missingAuthPolicy.color,
-  namespace,
-  className,
-}) => {
+export const MissingAuthPolicy: React.FC<MissingAuthPolicyProps> = (
+  {
+    text = 'Missing Authorization Policy',
+    textTooltip = 'This workload is not covered by any authorization policy.',
+    tooltip = false,
+    icon = icons.istio.missingAuthPolicy.icon,
+    color = icons.istio.missingAuthPolicy.color,
+    namespace,
+    className,
+  },
+) => {
   const iconComponent = (
     <span className={className}>
       {React.createElement(icon, { style: { color: color } })}

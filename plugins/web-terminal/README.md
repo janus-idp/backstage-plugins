@@ -28,9 +28,7 @@ Before we can install this plugin, we need to fulfill the following requirements
      isWebTerminalAvailable,
      WebTerminal,
    } from '@janus-idp/backstage-plugin-web-terminal';
-
-   /* highlight-add-end */
-   const serviceEntityPage = (
+   /* highlight-add-end */ const serviceEntityPage = (
      <EntityLayout>
        // ...
        {/* highlight-add-start */}
@@ -53,9 +51,7 @@ Before we can install this plugin, we need to fulfill the following requirements
      isWebTerminalAvailable,
      WebTerminal,
    } from '@janus-idp/backstage-plugin-web-terminal';
-
-   /* highlight-add-end */
-   <Grid container spacing={3}>
+   /* highlight-add-end */ <Grid container spacing={3}>
      {/* highlight-add-start */}
      <EntitySwitch>
        <EntitySwitch.Case if={isWebTerminalAvailable}>

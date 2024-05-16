@@ -8,19 +8,21 @@ import { AddRepositoriesFormValues } from '../../types';
 import { AddRepositoriesTableToolbar } from './AddRepositoriesTableToolbar';
 import { RepositoriesTable } from './RepositoriesTable';
 
-export const AddRepositoriesTable = ({
-  title,
-  selectedRepositoriesFormData,
-  setFieldValue,
-}: {
-  title: string;
-  selectedRepositoriesFormData: AddRepositoriesFormValues;
-  setFieldValue: (
-    field: string,
-    value: any,
-    shouldValidate?: boolean,
-  ) => Promise<FormikErrors<AddRepositoriesFormValues>> | Promise<void>;
-}) => {
+export const AddRepositoriesTable = (
+  {
+    title,
+    selectedRepositoriesFormData,
+    setFieldValue,
+  }: {
+    title: string;
+    selectedRepositoriesFormData: AddRepositoriesFormValues;
+    setFieldValue: (
+      field: string,
+      value: any,
+      shouldValidate?: boolean,
+    ) => Promise<FormikErrors<AddRepositoriesFormValues>> | Promise<void>;
+  },
+) => {
   const [searchString, setSearchString] = React.useState<string>('');
   const [page, setPage] = React.useState<number>(0);
 

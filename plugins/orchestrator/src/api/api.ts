@@ -14,16 +14,20 @@ import {
 export interface OrchestratorApi {
   abortWorkflowInstance(instanceId: string): Promise<void>;
 
-  executeWorkflow(args: {
-    workflowId: string;
-    parameters: JsonObject;
-    businessKey?: string;
-  }): Promise<WorkflowExecutionResponse>;
+  executeWorkflow(
+    args: {
+      workflowId: string;
+      parameters: JsonObject;
+      businessKey?: string;
+    },
+  ): Promise<WorkflowExecutionResponse>;
 
-  retriggerInstanceInError(args: {
-    instanceId: string;
-    inputData: JsonObject;
-  }): Promise<WorkflowExecutionResponse>;
+  retriggerInstanceInError(
+    args: {
+      instanceId: string;
+      inputData: JsonObject;
+    },
+  ): Promise<WorkflowExecutionResponse>;
 
   getWorkflowDefinition(workflowId: string): Promise<WorkflowDefinition>;
 
@@ -34,11 +38,13 @@ export interface OrchestratorApi {
     includeAssessment: boolean,
   ): Promise<AssessedProcessInstance>;
 
-  getWorkflowDataInputSchema(args: {
-    workflowId: string;
-    instanceId?: string;
-    assessmentInstanceId?: string;
-  }): Promise<WorkflowInputSchemaResponse>;
+  getWorkflowDataInputSchema(
+    args: {
+      workflowId: string;
+      instanceId?: string;
+      assessmentInstanceId?: string;
+    },
+  ): Promise<WorkflowInputSchemaResponse>;
 
   getWorkflowOverview(workflowId: string): Promise<WorkflowOverview>;
 

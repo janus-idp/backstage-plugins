@@ -15,13 +15,9 @@ type EditRoleProps = {
   to?: string;
 };
 
-const EditRole = ({
-  roleName,
-  tooltip,
-  disable,
-  dataTestId,
-  to,
-}: EditRoleProps) => {
+const EditRole = (
+  { roleName, tooltip, disable, dataTestId, to }: EditRoleProps,
+) => {
   const { name, namespace, kind } = getKindNamespaceName(roleName);
   return (
     <Tooltip title={tooltip || ''}>

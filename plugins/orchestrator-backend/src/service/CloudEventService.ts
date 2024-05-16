@@ -8,10 +8,12 @@ export type CloudEventResponse =
 export class CloudEventService {
   constructor(private readonly logger: Logger) {}
 
-  public async send<T>(args: {
-    event: CloudEvent<T>;
-    targetUrl: string;
-  }): Promise<CloudEventResponse> {
+  public async send<T>(
+    args: {
+      event: CloudEvent<T>;
+      targetUrl: string;
+    },
+  ): Promise<CloudEventResponse> {
     try {
       this.logger.info(
         `Sending CloudEvent to ${args.targetUrl} with data ${JSON.stringify(

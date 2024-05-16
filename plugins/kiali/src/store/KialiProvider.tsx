@@ -64,10 +64,9 @@ interface Props {
   entity?: Entity;
 }
 
-export const KialiProvider: React.FC<Props> = ({
-  children,
-  entity,
-}): JSX.Element => {
+export const KialiProvider: React.FC<Props> = (
+  { children, entity },
+): JSX.Element => {
   const promises = new PromisesRegistry();
   const [kialiCheck, setKialiCheck] =
     React.useState<KialiChecker>(initialChecker);

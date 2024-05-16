@@ -10,14 +10,16 @@ export interface BaseOrchestratorProps {
   noPadding?: boolean;
 }
 
-export const BaseOrchestratorPage = ({
-  title,
-  subtitle,
-  type,
-  typeLink,
-  noPadding,
-  children,
-}: PropsWithChildren<BaseOrchestratorProps>) => {
+export const BaseOrchestratorPage = (
+  {
+    title,
+    subtitle,
+    type,
+    typeLink,
+    noPadding,
+    children,
+  }: PropsWithChildren<BaseOrchestratorProps>,
+) => {
   return (
     <Page themeId="tool">
       <Header

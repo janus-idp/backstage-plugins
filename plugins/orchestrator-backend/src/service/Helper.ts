@@ -5,11 +5,13 @@ import { Logger } from 'winston';
 
 import os from 'os';
 
-export async function retryAsyncFunction<T>(args: {
-  asyncFn: () => Promise<T | undefined>;
-  maxAttempts: number;
-  delayMs: number;
-}): Promise<T> {
+export async function retryAsyncFunction<T>(
+  args: {
+    asyncFn: () => Promise<T | undefined>;
+    maxAttempts: number;
+    delayMs: number;
+  },
+): Promise<T> {
   let result: T | undefined;
   for (let i = 0; i < args.maxAttempts; i++) {
     result = await args.asyncFn();

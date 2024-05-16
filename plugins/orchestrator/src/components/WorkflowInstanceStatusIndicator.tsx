@@ -14,13 +14,15 @@ import { VALUE_UNAVAILABLE } from '../constants';
 import { useWorkflowInstanceStateColors } from '../hooks/useWorkflowInstanceStatusColors';
 import { workflowInstanceRouteRef } from '../routes';
 
-export const WorkflowInstanceStatusIndicator = ({
-  status,
-  lastRunId,
-}: {
-  status?: ProcessInstanceStateValues;
-  lastRunId?: string;
-}) => {
+export const WorkflowInstanceStatusIndicator = (
+  {
+    status,
+    lastRunId,
+  }: {
+    status?: ProcessInstanceStateValues;
+    lastRunId?: string;
+  },
+) => {
   const iconColor = useWorkflowInstanceStateColors(status);
   const workflowInstanceLink = useRouteRef(workflowInstanceRouteRef);
 

@@ -9,10 +9,7 @@ export class NodeMailer {
   private readonly transportConfig: Transporter;
   private readonly from: string;
 
-  constructor(
-    config: Config,
-    private logger: LoggerService,
-  ) {
+  constructor(config: Config, private logger: LoggerService) {
     const useSecure: boolean = config.getBoolean(
       'feedback.integrations.email.secure',
     );
@@ -38,12 +35,14 @@ export class NodeMailer {
     });
   }
 
-  async sendMail(options: {
-    to: string;
-    replyTo: string;
-    subject: string;
-    body: string;
-  }): Promise<{}> {
+  async sendMail(
+    options: {
+      to: string;
+      replyTo: string;
+      subject: string;
+      body: string;
+    },
+  ): Promise<{}> {
     try {
       const { to, replyTo, subject, body } = options;
       this.logger.info(`Sending mail to ${to}`);

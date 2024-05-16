@@ -17,12 +17,14 @@ export function a11yProps(index: number) {
   };
 }
 
-export const TabPanel = (props: {
-  [x: string]: any;
-  children: any;
-  value: any;
-  index: any;
-}) => {
+export const TabPanel = (
+  props: {
+    [x: string]: any;
+    children: any;
+    value: any;
+    index: any;
+  },
+) => {
   const { children, value, index, ...other } = props;
 
   return (

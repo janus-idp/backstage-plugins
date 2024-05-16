@@ -19,73 +19,93 @@
  */
 
 function _gwtbootstrap3_Create(parent, name, value) {
-  if (typeof parent[name] === "undefined") parent[name] = value;
+  if (typeof parent[name] === 'undefined') parent[name] = value;
 }
 
-_gwtbootstrap3_Create(this, "org", {});
-_gwtbootstrap3_Create(org, "gwtbootstrap3", {});
-_gwtbootstrap3_Create(org.gwtbootstrap3, "client", {});
-_gwtbootstrap3_Create(org.gwtbootstrap3.client, "ui", {});
-_gwtbootstrap3_Create(org.gwtbootstrap3.client.ui, "base", {});
-_gwtbootstrap3_Create(org.gwtbootstrap3.client.ui.base, "AbstractTooltip", {});
+_gwtbootstrap3_Create(this, 'org', {});
+_gwtbootstrap3_Create(org, 'gwtbootstrap3', {});
+_gwtbootstrap3_Create(org.gwtbootstrap3, 'client', {});
+_gwtbootstrap3_Create(org.gwtbootstrap3.client, 'ui', {});
+_gwtbootstrap3_Create(org.gwtbootstrap3.client.ui, 'base', {});
+_gwtbootstrap3_Create(org.gwtbootstrap3.client.ui.base, 'AbstractTooltip', {});
 _gwtbootstrap3_Create(
   org.gwtbootstrap3.client.ui.base.AbstractTooltip,
-  "updateBool",
+  'updateBool',
   function (dataTarget, e, option, value) {
     window.jQuery(e).data(dataTarget).options[option] = value;
-  }
+  },
 );
 _gwtbootstrap3_Create(
   org.gwtbootstrap3.client.ui.base.AbstractTooltip,
-  "updateDelay",
+  'updateDelay',
   function (dataTarget, e, showDelay, hideDelay) {
-    window.jQuery(e).data(dataTarget).options["delay"] = {
+    window.jQuery(e).data(dataTarget).options['delay'] = {
       show: showDelay,
       hide: hideDelay,
     };
-  }
+  },
 );
 _gwtbootstrap3_Create(
   org.gwtbootstrap3.client.ui.base.AbstractTooltip,
-  "updateString",
+  'updateString',
   function (dataTarget, e, option, value) {
     window.jQuery(e).data(dataTarget).options[option] = value;
-  }
+  },
 );
 _gwtbootstrap3_Create(
   org.gwtbootstrap3.client.ui.base.AbstractTooltip,
-  "updateViewport",
+  'updateViewport',
   function (dataTarget, e, selector, padding) {
-    window.jQuery(e).data(dataTarget).options["viewport"] = {
+    window.jQuery(e).data(dataTarget).options['viewport'] = {
       selector: selector,
       padding: padding,
     };
-  }
+  },
 );
-_gwtbootstrap3_Create(org.gwtbootstrap3.client.ui, "Affix", {});
-_gwtbootstrap3_Create(org.gwtbootstrap3.client.ui.Affix, "internalAffix", function (e, offset) {
-  window.jQuery(e).affix({
-    offset: offset,
-  });
-});
-_gwtbootstrap3_Create(org.gwtbootstrap3.client.ui, "Carousel", {});
-_gwtbootstrap3_Create(org.gwtbootstrap3.client.ui.Carousel, "carousel", function (e, interval, pause, wrap) {
-  window.jQuery(e).carousel({
-    interval: interval,
-    pause: pause,
-    wrap: wrap,
-  });
-});
-_gwtbootstrap3_Create(org.gwtbootstrap3.client.ui, "ScrollSpy", {});
-_gwtbootstrap3_Create(org.gwtbootstrap3.client.ui.ScrollSpy, "init", function (e, target) {
-  window.jQuery(e).scrollspy({
-    target: target,
-  });
-});
-_gwtbootstrap3_Create(org.gwtbootstrap3.client, "GwtBootstrap3EntryPoint", {});
-_gwtbootstrap3_Create(org.gwtbootstrap3.client.GwtBootstrap3EntryPoint, "isBootstrapLoaded", function () {
-  return typeof window["jQuery"].fn.emulateTransitionEnd !== "undefined";
-});
-_gwtbootstrap3_Create(org.gwtbootstrap3.client.GwtBootstrap3EntryPoint, "isjQueryLoaded", function () {
-  return typeof window["jQuery"] !== "undefined";
-});
+_gwtbootstrap3_Create(org.gwtbootstrap3.client.ui, 'Affix', {});
+_gwtbootstrap3_Create(
+  org.gwtbootstrap3.client.ui.Affix,
+  'internalAffix',
+  function (e, offset) {
+    window.jQuery(e).affix({
+      offset: offset,
+    });
+  },
+);
+_gwtbootstrap3_Create(org.gwtbootstrap3.client.ui, 'Carousel', {});
+_gwtbootstrap3_Create(
+  org.gwtbootstrap3.client.ui.Carousel,
+  'carousel',
+  function (e, interval, pause, wrap) {
+    window.jQuery(e).carousel({
+      interval: interval,
+      pause: pause,
+      wrap: wrap,
+    });
+  },
+);
+_gwtbootstrap3_Create(org.gwtbootstrap3.client.ui, 'ScrollSpy', {});
+_gwtbootstrap3_Create(
+  org.gwtbootstrap3.client.ui.ScrollSpy,
+  'init',
+  function (e, target) {
+    window.jQuery(e).scrollspy({
+      target: target,
+    });
+  },
+);
+_gwtbootstrap3_Create(org.gwtbootstrap3.client, 'GwtBootstrap3EntryPoint', {});
+_gwtbootstrap3_Create(
+  org.gwtbootstrap3.client.GwtBootstrap3EntryPoint,
+  'isBootstrapLoaded',
+  function () {
+    return typeof window['jQuery'].fn.emulateTransitionEnd !== 'undefined';
+  },
+);
+_gwtbootstrap3_Create(
+  org.gwtbootstrap3.client.GwtBootstrap3EntryPoint,
+  'isjQueryLoaded',
+  function () {
+    return typeof window['jQuery'] !== 'undefined';
+  },
+);

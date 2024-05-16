@@ -31,10 +31,9 @@ export type SelectorProps = Omit<BackstageSelectProps, 'onChange'> & {
   onChange: (item: string) => void;
 };
 
-export const Selector = ({
-  includeAll = true,
-  ...otherProps
-}: SelectorProps) => {
+export const Selector = (
+  { includeAll = true, ...otherProps }: SelectorProps,
+) => {
   const styles = useStyles();
 
   const selectItems = React.useMemo(

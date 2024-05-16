@@ -47,9 +47,7 @@ import {
   PluginIdProvider,
   PolicyBuilder,
 } from '@janus-idp/backstage-plugin-rbac-backend';
-
 import { PluginEnvironment } from '../types';
-
 export default async function createPlugin(
   env: PluginEnvironment,
   pluginIdProvider: PluginIdProvider,

@@ -8,12 +8,14 @@ type TopologyResourcesTabPanelItemProps = {
   showResCount?: number;
 };
 
-const TopologyResourcesTabPanelItem = ({
-  resourceLabel,
-  children,
-  dataTest,
-  showResCount,
-}: React.PropsWithChildren<TopologyResourcesTabPanelItemProps>) => {
+const TopologyResourcesTabPanelItem = (
+  {
+    resourceLabel,
+    children,
+    dataTest,
+    showResCount,
+  }: React.PropsWithChildren<TopologyResourcesTabPanelItemProps>,
+) => {
   const emptyState = (
     <span className="bs-topology-text-muted">{`No ${resourceLabel} found for this resource.`}</span>
   );

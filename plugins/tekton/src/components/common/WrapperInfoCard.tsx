@@ -12,13 +12,15 @@ type WrapperInfoCardProps = {
   showClusterSelector?: boolean;
 };
 
-export const WrapperInfoCard = ({
-  children,
-  allErrors,
-  footerLink,
-  title,
-  showClusterSelector = true,
-}: React.PropsWithChildren<WrapperInfoCardProps>) => (
+export const WrapperInfoCard = (
+  {
+    children,
+    allErrors,
+    footerLink,
+    title,
+    showClusterSelector = true,
+  }: React.PropsWithChildren<WrapperInfoCardProps>,
+) => (
   <>
     {allErrors && allErrors.length > 0 && <ErrorPanel allErrors={allErrors} />}
     <InfoCard

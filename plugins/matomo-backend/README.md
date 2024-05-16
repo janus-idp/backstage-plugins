@@ -24,9 +24,7 @@ yarn add --cwd packages/backend  @janus-idp/plugin-matomo-backend
 import { Router } from 'express';
 
 import { createRouter } from '@janus-idp/plugin-matomo-backend';
-
 import { PluginEnvironment } from '../types';
-
 export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {

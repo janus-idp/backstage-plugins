@@ -29,10 +29,9 @@ const useStyles = makeStyles({
   },
 });
 
-export const WorkflowRunDetails: React.FC<WorkflowDetailsCardProps> = ({
-  assessedBy,
-  details,
-}) => {
+export const WorkflowRunDetails: React.FC<WorkflowDetailsCardProps> = (
+  { assessedBy, details },
+) => {
   const styles = useStyles();
   const workflowInstanceLink = useRouteRef(workflowInstanceRouteRef);
 

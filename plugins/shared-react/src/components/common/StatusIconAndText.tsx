@@ -16,13 +16,9 @@ type StatusIconAndTextProps = {
 
 const DASH = '-';
 
-export const StatusIconAndText = ({
-  icon,
-  title,
-  spin,
-  iconOnly,
-  className,
-}: StatusIconAndTextProps): React.ReactElement => {
+export const StatusIconAndText = (
+  { icon, title, spin, iconOnly, className }: StatusIconAndTextProps,
+): React.ReactElement => {
   if (!title) {
     return <>{DASH}</>;
   }

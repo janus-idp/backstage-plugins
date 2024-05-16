@@ -1,12 +1,8 @@
 import React from 'react';
 
-export const ReviewStepTable = ({
-  columns,
-  rows,
-}: {
-  columns: any[];
-  rows: any[];
-}) => {
+export const ReviewStepTable = (
+  { columns, rows }: { columns: any[]; rows: any[] },
+) => {
   return (
     <div style={{ maxHeight: '230px', overflow: 'scroll', width: '650px' }}>
       <table style={{ width: '600px' }}>

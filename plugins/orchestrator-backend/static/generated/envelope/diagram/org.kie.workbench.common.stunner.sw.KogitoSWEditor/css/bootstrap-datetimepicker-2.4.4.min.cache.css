@@ -29,8 +29,8 @@
   top: 0;
   left: 0;
 }
-[class*=" datetimepicker-dropdown"]:before {
-  content: "";
+[class*=' datetimepicker-dropdown']:before {
+  content: '';
   display: inline-block;
   border-left: 7px solid transparent;
   border-right: 7px solid transparent;
@@ -38,16 +38,16 @@
   border-bottom-color: rgba(0, 0, 0, 0.2);
   position: absolute;
 }
-[class*=" datetimepicker-dropdown"]:after {
-  content: "";
+[class*=' datetimepicker-dropdown']:after {
+  content: '';
   display: inline-block;
   border-left: 6px solid transparent;
   border-right: 6px solid transparent;
   border-bottom: 6px solid #fff;
   position: absolute;
 }
-[class*=" datetimepicker-dropdown-top"]:before {
-  content: "";
+[class*=' datetimepicker-dropdown-top']:before {
+  content: '';
   display: inline-block;
   border-left: 7px solid transparent;
   border-right: 7px solid transparent;
@@ -55,8 +55,8 @@
   border-top-color: rgba(0, 0, 0, 0.2);
   border-bottom: 0;
 }
-[class*=" datetimepicker-dropdown-top"]:after {
-  content: "";
+[class*=' datetimepicker-dropdown-top']:after {
+  content: '';
   display: inline-block;
   border-left: 6px solid transparent;
   border-right: 6px solid transparent;
@@ -159,7 +159,13 @@
   background-color: #fde19a;
   background-image: -moz-linear-gradient(top, #fdd49a, #fdf59a);
   background-image: -ms-linear-gradient(top, #fdd49a, #fdf59a);
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fdd49a), to(#fdf59a));
+  background-image: -webkit-gradient(
+    linear,
+    0 0,
+    0 100%,
+    from(#fdd49a),
+    to(#fdf59a)
+  );
   background-image: -webkit-linear-gradient(top, #fdd49a, #fdf59a);
   background-image: -o-linear-gradient(top, #fdd49a, #fdf59a);
   background-image: linear-gradient(top, #fdd49a, #fdf59a);

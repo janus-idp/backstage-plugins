@@ -19,15 +19,17 @@ const tableCellStyle = {
   padding: '15px 16px 15px 24px',
 };
 
-export const OrganizationTableRow = ({
-  onOrgRowSelected,
-  data,
-  alreadyAdded,
-}: {
-  onOrgRowSelected: (org: AddRepositoriesData) => void;
-  data: AddRepositoriesData;
-  alreadyAdded: number;
-}) => {
+export const OrganizationTableRow = (
+  {
+    onOrgRowSelected,
+    data,
+    alreadyAdded,
+  }: {
+    onOrgRowSelected: (org: AddRepositoriesData) => void;
+    data: AddRepositoriesData;
+    alreadyAdded: number;
+  },
+) => {
   return (
     <TableRow hover>
       <TableCell component="th" scope="row" padding="none" sx={tableCellStyle}>

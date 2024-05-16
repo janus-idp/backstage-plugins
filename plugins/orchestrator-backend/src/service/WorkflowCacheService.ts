@@ -43,11 +43,13 @@ export class WorkflowCacheService {
     return isAvailable;
   }
 
-  public schedule(args: {
-    scheduler: PluginTaskScheduler;
-    frequencyInSeconds?: number;
-    timeoutInMinutes?: number;
-  }): void {
+  public schedule(
+    args: {
+      scheduler: PluginTaskScheduler;
+      frequencyInSeconds?: number;
+      timeoutInMinutes?: number;
+    },
+  ): void {
     const {
       scheduler,
       frequencyInSeconds = this.DEFAULT_FREQUENCY_IN_SECONDS,

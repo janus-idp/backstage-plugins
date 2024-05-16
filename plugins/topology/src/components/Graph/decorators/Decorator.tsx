@@ -16,15 +16,17 @@ type DecoratorTypes = {
   circleRef?: React.Ref<SVGCircleElement>;
 };
 
-const Decorator = ({
-  x,
-  y,
-  radius,
-  href,
-  ariaLabel,
-  external,
-  ...rest
-}: React.PropsWithChildren<DecoratorTypes>) => {
+const Decorator = (
+  {
+    x,
+    y,
+    radius,
+    href,
+    ariaLabel,
+    external,
+    ...rest
+  }: React.PropsWithChildren<DecoratorTypes>,
+) => {
   const decorator = (
     <PfDecorator
       x={x}

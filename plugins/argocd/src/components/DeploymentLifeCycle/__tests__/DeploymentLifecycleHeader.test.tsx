@@ -60,11 +60,9 @@ describe('DeploymentLifecycleCardHeader', () => {
   });
 
   test('should render the deployment lifecylce appliction header with base url', () => {
-    const apiProviderWrapper = ({
-      children,
-    }: {
-      children: React.ReactNode;
-    }) => {
+    const apiProviderWrapper = (
+      { children }: { children: React.ReactNode },
+    ) => {
       return (
         <TestApiProvider
           apis={[

@@ -45,10 +45,12 @@ export class MockOrchestratorClient implements OrchestratorApi {
     this._mockData = mockData;
   }
 
-  executeWorkflow(_args: {
-    workflowId: string;
-    parameters: JsonObject;
-  }): Promise<WorkflowExecutionResponse> {
+  executeWorkflow(
+    _args: {
+      workflowId: string;
+      parameters: JsonObject;
+    },
+  ): Promise<WorkflowExecutionResponse> {
     if (
       !hasOwnProp(this._mockData, 'executeWorkflowResponse') ||
       !isNonNullable(this._mockData.executeWorkflowResponse)
@@ -106,11 +108,13 @@ export class MockOrchestratorClient implements OrchestratorApi {
     return Promise.resolve(this._mockData.getWorkflowDefinitionResponse);
   }
 
-  getWorkflowDataInputSchema(_args: {
-    workflowId: string;
-    instanceId?: string;
-    assessmentInstanceId?: string;
-  }): Promise<WorkflowInputSchemaResponse> {
+  getWorkflowDataInputSchema(
+    _args: {
+      workflowId: string;
+      instanceId?: string;
+      assessmentInstanceId?: string;
+    },
+  ): Promise<WorkflowInputSchemaResponse> {
     if (
       !hasOwnProp(this._mockData, 'getWorkflowDataInputSchemaResponse') ||
       !isNonNullable(this._mockData.getWorkflowDataInputSchemaResponse)
@@ -154,10 +158,12 @@ export class MockOrchestratorClient implements OrchestratorApi {
     return this._mockData.abortWorkflowInstanceResponse();
   }
 
-  retriggerInstanceInError(_args: {
-    instanceId: string;
-    inputData: JsonObject;
-  }): Promise<WorkflowExecutionResponse> {
+  retriggerInstanceInError(
+    _args: {
+      instanceId: string;
+      inputData: JsonObject;
+    },
+  ): Promise<WorkflowExecutionResponse> {
     if (
       !hasOwnProp(this._mockData, 'retriggerInstanceInErrorResponse') ||
       !isNonNullable(this._mockData.retriggerInstanceInErrorResponse)

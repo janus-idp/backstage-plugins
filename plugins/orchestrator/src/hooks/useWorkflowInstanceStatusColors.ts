@@ -29,7 +29,7 @@ export const useWorkflowInstanceStateColors = (
         [ProcessInstanceState.Pending]: {
           color: theme.palette.grey[500],
         },
-      }) as const,
+      } as const),
   );
 
   const styles = useStyles();

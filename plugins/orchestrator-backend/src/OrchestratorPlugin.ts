@@ -20,15 +20,17 @@ export const orchestratorPlugin = createBackendPlugin({
         scheduler: coreServices.scheduler,
         catalogApi: catalogServiceRef,
       },
-      async init({
-        logger,
-        config,
-        discovery,
-        httpRouter,
-        catalogApi,
-        urlReader,
-        scheduler,
-      }) {
+      async init(
+        {
+          logger,
+          config,
+          discovery,
+          httpRouter,
+          catalogApi,
+          urlReader,
+          scheduler,
+        },
+      ) {
         const log = loggerToWinstonLogger(logger);
         const router = await createRouter({
           config: config,

@@ -37,19 +37,21 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const AddRepositoriesForm = ({
-  values,
-  setFieldValue,
-  setapprovalTool,
-}: {
-  values: AddRepositoriesFormValues;
-  setFieldValue: (
-    field: string,
-    value: any,
-    shouldValidate?: boolean | undefined,
-  ) => Promise<void> | Promise<FormikErrors<AddRepositoriesFormValues>>;
-  setapprovalTool: any;
-}) => {
+export const AddRepositoriesForm = (
+  {
+    values,
+    setFieldValue,
+    setapprovalTool,
+  }: {
+    values: AddRepositoriesFormValues;
+    setFieldValue: (
+      field: string,
+      value: any,
+      shouldValidate?: boolean | undefined,
+    ) => Promise<void> | Promise<FormikErrors<AddRepositoriesFormValues>>;
+    setapprovalTool: any;
+  },
+) => {
   const styles = useStyles();
 
   return (

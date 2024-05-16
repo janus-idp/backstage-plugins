@@ -16,11 +16,9 @@ type RouteDecoratorIconProps = {
   cheEnabled?: boolean;
 };
 
-const RouteDecoratorIcon = ({
-  routeURL,
-  radius,
-  cheEnabled,
-}: RouteDecoratorIconProps) => {
+const RouteDecoratorIcon = (
+  { routeURL, radius, cheEnabled }: RouteDecoratorIconProps,
+) => {
   if (cheEnabled && routeURL) {
     return <CheIcon style={{ fontSize: radius }} />;
   }
