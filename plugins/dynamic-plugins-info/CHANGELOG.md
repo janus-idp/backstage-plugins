@@ -1,3 +1,5 @@
+## @janus-idp/backstage-plugin-dynamic-plugins-info [1.2.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-dynamic-plugins-info@1.2.0...@janus-idp/backstage-plugin-dynamic-plugins-info@1.2.1) (2024-05-16)
+
 ## @janus-idp/backstage-plugin-dynamic-plugins-info [1.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-dynamic-plugins-info@1.1.1...@janus-idp/backstage-plugin-dynamic-plugins-info@1.2.0) (2024-05-14)
 
 
