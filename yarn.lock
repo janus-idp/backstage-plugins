@@ -9600,7 +9600,7 @@
   dependencies:
     "@react-hookz/deep-equal" "^1.0.4"
 
-"@redhat-developer/red-hat-developer-hub-theme@*", "@redhat-developer/red-hat-developer-hub-theme@^0.0.40":
+"@redhat-developer/red-hat-developer-hub-theme@*", "@redhat-developer/red-hat-developer-hub-theme@0.0.40", "@redhat-developer/red-hat-developer-hub-theme@^0.0.40":
   version "0.0.40"
   resolved "https://registry.yarnpkg.com/@redhat-developer/red-hat-developer-hub-theme/-/red-hat-developer-hub-theme-0.0.40.tgz#870379e2107d40824de2c05e48b4dfe9156ccdc9"
   integrity sha512-or2YShmjhcPCuGDYmio8abABLAkFXqcqFPhUA6QQJ9BFYHL97AFJ+h+1JNi29lZCcw4PHEUDACHJJZkN86Ld3g==
