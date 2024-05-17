@@ -1,3 +1,5 @@
+## @janus-idp/backstage-plugin-acr [1.4.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-acr@1.4.2...@janus-idp/backstage-plugin-acr@1.4.3) (2024-05-17)
+
 ## @janus-idp/backstage-plugin-acr [1.4.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-acr@1.4.1...@janus-idp/backstage-plugin-acr@1.4.2) (2024-05-16)
 
 ## @janus-idp/backstage-plugin-acr [1.4.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-acr@1.4.0...@janus-idp/backstage-plugin-acr@1.4.1) (2024-05-16)
