@@ -47,7 +47,7 @@ describe('QuayRepository', () => {
     expect(getByTestId('quay-repo-table')).not.toBeNull();
     expect(getByTestId('quay-repo-table-empty')).not.toBeNull();
     expect(queryByText(/Quay repository/i)).toBeInTheDocument();
-    expect(queryByText(/No data was added yet/i)).toBeInTheDocument();
+    expect(queryByText('There are no images available.')).toBeInTheDocument();
   });
 
   it('should show table if loaded and data is present', () => {
@@ -71,7 +71,9 @@ describe('QuayRepository', () => {
     expect(queryByTestId('quay-repo-table')).not.toBeNull();
     expect(queryByTestId('quay-repo-table-empty')).toBeNull();
     expect(queryByText(/Quay repository/i)).toBeInTheDocument();
-    expect(queryByText(/No data was added yet/i)).not.toBeInTheDocument();
+    expect(
+      queryByText('There are no images available.'),
+    ).not.toBeInTheDocument();
   });
 
   it('should show table if loaded and data is present but shows progress if security scan is not loaded', () => {
