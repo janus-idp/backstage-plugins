@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-quay [1.7.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.7.1...@janus-idp/backstage-plugin-quay@1.7.2) (2024-05-17)
+
+
+### Bug Fixes
+
+* **quay:** remove unuseful link ([#1692](https://github.com/janus-idp/backstage-plugins/issues/1692)) ([ae27d91](https://github.com/janus-idp/backstage-plugins/commit/ae27d919a312f66d592bc5a48837f78e82302903))
+
 ## @janus-idp/backstage-plugin-quay [1.7.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.7.0...@janus-idp/backstage-plugin-quay@1.7.1) (2024-05-16)
 
 
