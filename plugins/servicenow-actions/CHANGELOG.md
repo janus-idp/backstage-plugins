@@ -1,3 +1,5 @@
+## @janus-idp/backstage-scaffolder-backend-module-servicenow [1.4.9](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-servicenow@1.4.8...@janus-idp/backstage-scaffolder-backend-module-servicenow@1.4.9) (2024-05-17)
+
 ## @janus-idp/backstage-scaffolder-backend-module-servicenow [1.4.8](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-servicenow@1.4.7...@janus-idp/backstage-scaffolder-backend-module-servicenow@1.4.8) (2024-05-16)
 
 
