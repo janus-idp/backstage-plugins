@@ -461,34 +461,13 @@ Returns:
 
 ## Conditions
 
-The Backstage permission framework provides conditions, and the RBAC backend plugin supports this feature. Conditions work like content filters for Backstage resources (provided by plugins). The RBAC backend API stores conditions assigned to the role in the database. When a user requests access to the frontend resources, the RBAC backend API searches for corresponding conditions and delegates the condition for this resource to the corresponding plugin by its plugin ID. If a user was assigned to multiple roles, and each of these roles contains its own condition, the RBAC backend merges conditions using the anyOf criteria.
+Conditional permission policies are fairly complex. For more information on how to structure your conditional policies, consult our documentation on [conditions](./conditions.md).
 
-The corresponding plugin analyzes conditional parameters and makes a decision about which part of the content the user should see. Consequently, the user can view not all resource content but only some allowed parts. The RBAC backend plugin supports conditions bounded to the RBAC role.
+### GET conditional rules
 
-A Backstage condition can be a simple condition with a rule and parameters. But also a Backstage condition could consists of a parameter or an array of parameters joined by criteria. The list of supported conditional criteria includes:
+GET <api/plugins/condition-rules>
 
-- allOf
-- anyOf
-- not
-
-The plugin defines the supported condition parameters. API users can retrieve the conditional object schema from the RBAC API endpoint to determine how to build a condition JSON object and utilize it through the RBAC backend plugin API.
-
-The structure of the condition JSON object is as follows:
-
-| Json field        | Description                                                           | Type         |
-| ----------------- | --------------------------------------------------------------------- | ------------ |
-| result            | Always has the value "CONDITIONAL"                                    | String       |
-| roleEntityRef     | String entity reference to the RBAC role ('role:default/dev')         | String       |
-| pluginId          | Corresponding plugin ID (e.g., "catalog")                             | String       |
-| permissionMapping | Array permission actions (['read', 'update', 'delete'])               | String array |
-| resourceType      | Resource type provided by the plugin (e.g., "catalog-entity")         | String       |
-| conditions        | Condition JSON with parameters or array parameters joined by criteria | JSON         |
-
-### GET </plugins/condition-rules>
-
-GET </plugins/condition-rules>
-
-Provides condition parameters schemas.
+Provides conditional rule parameter schemas.
 
 ```json
 [
@@ -631,136 +610,6 @@ Provides condition parameters schemas.
    }
    ... <another plugin condition parameter schemas>
 ]
-```
-
-From this condition schema, the RBAC backend API user can determine how to build a condition JSON object.
-
-For example, consider a condition without criteria: displaying catalogs only if the user is a member of the owner group. The Catalog plugin schema "IS_ENTITY_OWNER" can be utilized to achieve this goal. To construct the condition JSON object based on this schema, the following information should be used:
-
-- rule: the parameter name is "IS_ENTITY_OWNER" in this case
-- resourceType: "catalog-entity"
-- criteria: in this example, criteria are not used since we need to use only one conditional parameter
-- params: from the schema, it is evident that it should be an object named "claims" with a string array. This string array constitutes a list of user or group string entity references.
-
-Based on the above schema condition is:
-
-```json
-{
-  "rule": "IS_ENTITY_OWNER",
-  "resourceType": "catalog-entity",
-  "params": {
-    "claims": ["group:default/team-a"]
-  }
-}
-```
-
-To utilize this condition to the RBAC REST api you need to wrap it with more info
-
-```json
-{
-  "result": "CONDITIONAL",
-  "roleEntityRef": "role:default/test",
-  "pluginId": "catalog",
-  "resourceType": "catalog-entity",
-  "permissionMapping": ["read"],
-  "conditions": {
-    "rule": "IS_ENTITY_OWNER",
-    "resourceType": "catalog-entity",
-    "params": {
-      "claims": ["group:default/team-a"]
-    }
-  }
-}
-```
-
-**Example condition with criteria**: display catalogs only if user is a member of owner group "OR" display list of all catalog user groups.
-
-We can reuse previous condition parameter to display catalogs only for owner. Also we can use one more condition "IS_ENTITY_KIND" to display catalog groups for any user:
-
-- rule - the parameter name is "IS_ENTITY_KIND" in this case.
-- resource type: "catalog-entity".
-- criteria - "anyOf".
-- params - from the schema, it is evident that it should be an object named "kinds" with string array. This string array is a list of catalog kinds. It should be array with single element "Group" in our case.
-
-Based on the above schema:
-
-```json
-{
-  "anyOf": [
-    {
-      "rule": "IS_ENTITY_OWNER",
-      "resourceType": "catalog-entity",
-      "params": {
-        "claims": ["group:default/team-a"]
-      }
-    },
-    {
-      "rule": "IS_ENTITY_KIND",
-      "resourceType": "catalog-entity",
-      "params": {
-        "kinds": ["Group"]
-      }
-    }
-  ]
-}
-```
-
-**NOTE**: We do not support the ability to run conditions in parallel during creation. An example can be found below, notice that `anyOf` and `not` are on the same level. Consider making separate condition requests, or nest your conditions based on the available criteria.
-
-```json
-{
-  "anyOf": [
-    {
-      "rule": "IS_ENTITY_OWNER",
-      "resourceType": "catalog-entity",
-      "params": {
-        "claims": ["group:default/team-a"]
-      }
-    },
-    {
-      "rule": "IS_ENTITY_KIND",
-      "resourceType": "catalog-entity",
-      "params": {
-        "kinds": ["Group"]
-      }
-    }
-  ],
-  "not": {
-    "rule": "IS_ENTITY_KIND",
-    "resourceType": "catalog-entity",
-    "params": { "kinds": ["Api"] }
-  }
-}
-```
-
-To utilize this condition to the RBAC REST api you need to wrap it with more info:
-
-```json
-{
-  "result": "CONDITIONAL",
-  "roleEntityRef": "role:default/test",
-  "pluginId": "catalog",
-  "resourceType": "catalog-entity",
-  "permissionMapping": ["read"],
-  "conditions": {
-    "anyOf": [
-      {
-        "rule": "IS_ENTITY_OWNER",
-        "resourceType": "catalog-entity",
-        "params": {
-          "claims": ["group:default/team-a"]
-        }
-      },
-      {
-        "rule": "IS_ENTITY_KIND",
-        "resourceType": "catalog-entity",
-        "params": {
-          "kinds": ["Group"]
-        }
-      }
-    ]
-  }
-}
 ```
 
 ---
