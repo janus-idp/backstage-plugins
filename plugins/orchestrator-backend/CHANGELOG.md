@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-orchestrator-backend [1.8.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.8.5...@janus-idp/backstage-plugin-orchestrator-backend@1.8.6) (2024-05-20)
+
+
+### Bug Fixes
+
+* **orchestrator:** fixes many security-related issues ([#1681](https://github.com/janus-idp/backstage-plugins/issues/1681)) ([3e801c8](https://github.com/janus-idp/backstage-plugins/commit/3e801c84015f925bdecd226a161ef81a5fc69432))
+
 ## @janus-idp/backstage-plugin-orchestrator-backend [1.8.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.8.4...@janus-idp/backstage-plugin-orchestrator-backend@1.8.5) (2024-05-16)
 
 
