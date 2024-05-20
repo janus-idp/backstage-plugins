@@ -29,8 +29,4 @@ The Orchestrator plugin uses these assets when it renders the Serverless Workflo
        script-src: ["'self'", "'unsafe-inline'", "'unsafe-eval'"]
        script-src-elem: ["'self'", "'unsafe-inline'", "'unsafe-eval'"]
        connect-src: ["'self'", 'http:', 'https:', 'data:']
-   orchestrator:
-     editor:
-       path: http://localhost:7007/api/orchestrator/static/envelope
    ```
-   The `orchestrator.editor.path` corresponds to the endpoint from where the static files are served (in the example above the `dist` folder has been renamed to `envelope` and placed inside `plugins/orchestrator-backend/static/`).

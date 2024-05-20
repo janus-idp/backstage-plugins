@@ -43,7 +43,6 @@ type ConditionalAccessSidebarProps = {
   open: boolean;
   onClose: () => void;
   onSave: (conditions: ConditionsData) => void;
-  onRemoveAll: () => void;
   selPluginResourceType: string;
   conditionRulesData?: RulesData;
   conditionsFormVal?: ConditionsData;
@@ -53,7 +52,6 @@ export const ConditionalAccessSidebar = ({
   open,
   onClose,
   onSave,
-  onRemoveAll,
   selPluginResourceType,
   conditionRulesData,
   conditionsFormVal,
@@ -100,7 +98,6 @@ export const ConditionalAccessSidebar = ({
           conditionsFormVal={conditionsFormVal}
           onClose={onClose}
           onSave={onSave}
-          onRemoveAll={onRemoveAll}
         />
       </Box>
     </Drawer>

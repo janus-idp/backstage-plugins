@@ -13,6 +13,7 @@ import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { TestApiProvider } from '@backstage/test-utils';
 
 import { Grid } from '@material-ui/core';
+import { createDevAppThemes } from '@redhat-developer/red-hat-developer-hub-theme';
 
 import { EntityKialiResourcesCard, kialiPlugin } from '../src';
 import { getEntityRoutes, getRoutes } from '../src/components/Router';
@@ -619,6 +620,7 @@ const MockKialiError = () => {
 
 createDevApp()
   .registerPlugin(kialiPlugin)
+  .addThemes(createDevAppThemes())
   .addPage({
     element: <MockProvider />,
     title: 'KialiPage',

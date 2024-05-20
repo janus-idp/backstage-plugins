@@ -17,7 +17,7 @@
     "build:storybook": "yarn --cwd packages/storybook build",
     "tsc": "turbo run tsc",
     "clean": "turbo run clean",
-    "test": "turbo run test",
+    "test": "turbo run test --concurrency=1",
     "lint": "turbo run lint",
     "lint:fix": "turbo run lint -- --fix",
     "lint-staged": "lint-staged",
@@ -61,6 +61,8 @@
   "resolutions": {
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "react": "^18",
+    "react-dom": "^18",
     "vscode-languageserver-types": "3.17.1",
     "@typescript-eslint/typescript-estree": "^7.3.1"
   },

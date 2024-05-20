@@ -1,3 +1,19 @@
+## @janus-idp/backstage-plugin-tekton [3.7.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.7.0...@janus-idp/backstage-plugin-tekton@3.7.1) (2024-05-16)
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.6.2
+* **@janus-idp/cli:** upgraded to 1.8.7
+
+## @janus-idp/backstage-plugin-tekton [3.7.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.6.5...@janus-idp/backstage-plugin-tekton@3.7.0) (2024-05-14)
+
+
+### Features
+
+* **deps:** use RHDH themes in the backstage app and dev pages ([#1480](https://github.com/janus-idp/backstage-plugins/issues/1480)) ([8263bf0](https://github.com/janus-idp/backstage-plugins/commit/8263bf099736cbb0d0f2316082d338ba81fa6927))
+
 ## @janus-idp/backstage-plugin-tekton [3.6.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-tekton@3.6.4...@janus-idp/backstage-plugin-tekton@3.6.5) (2024-05-09)
 
 

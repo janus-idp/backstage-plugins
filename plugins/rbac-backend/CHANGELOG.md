@@ -1,3 +1,17 @@
+## @janus-idp/backstage-plugin-rbac-backend [3.1.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@3.1.0...@janus-idp/backstage-plugin-rbac-backend@3.1.1) (2024-05-16)
+
+## @janus-idp/backstage-plugin-rbac-backend [3.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@3.0.0...@janus-idp/backstage-plugin-rbac-backend@3.1.0) (2024-05-14)
+
+
+### Features
+
+* **rbac:** implement a file watcher for csv reloads ([#1587](https://github.com/janus-idp/backstage-plugins/issues/1587)) ([62fcafc](https://github.com/janus-idp/backstage-plugins/commit/62fcafcdb3ab3cb308b16b8fab0a14916b921b82))
+
+
+### Bug Fixes
+
+* **rbac:** fix sonar cloud issues for rbac-backend plugin ([#1619](https://github.com/janus-idp/backstage-plugins/issues/1619)) ([bf93354](https://github.com/janus-idp/backstage-plugins/commit/bf9335404232f8ec66253f56387d3432d8839406))
+
 ## @janus-idp/backstage-plugin-rbac-backend [3.0.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@2.8.2...@janus-idp/backstage-plugin-rbac-backend@3.0.0) (2024-05-10)
 
 

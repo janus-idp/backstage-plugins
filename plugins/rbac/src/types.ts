@@ -42,6 +42,7 @@ export type PermissionsDataSet = {
 };
 
 export type PermissionsData = {
+  id?: number;
   plugin: string;
   permission: string;
   policies: RowPolicy[];

@@ -50,6 +50,7 @@ describe('PermissionsCard', () => {
     mockPermissionPolicies.mockReturnValue({
       loading: false,
       data: usePermissionPoliciesMockData,
+      conditionsData: [],
       retry: { policiesRetry: jest.fn(), permissionPoliciesRetry: jest.fn() },
       error: new Error(''),
     });
@@ -65,6 +66,7 @@ describe('PermissionsCard', () => {
     mockPermissionPolicies.mockReturnValue({
       loading: false,
       data: [],
+      conditionsData: [],
       retry: { policiesRetry: jest.fn(), permissionPoliciesRetry: jest.fn() },
       error: new Error(''),
     });
@@ -79,6 +81,7 @@ describe('PermissionsCard', () => {
     mockPermissionPolicies.mockReturnValue({
       loading: false,
       data: [],
+      conditionsData: [],
       retry: { policiesRetry: jest.fn(), permissionPoliciesRetry: jest.fn() },
       error: { message: '404', name: 'Not Found' },
     });
@@ -98,6 +101,7 @@ describe('PermissionsCard', () => {
     mockPermissionPolicies.mockReturnValue({
       loading: false,
       data: [],
+      conditionsData: [],
       error: new Error(''),
       retry: { policiesRetry: jest.fn(), permissionPoliciesRetry: jest.fn() },
     });
@@ -112,6 +116,7 @@ describe('PermissionsCard', () => {
     mockPermissionPolicies.mockReturnValue({
       loading: false,
       data: [],
+      conditionsData: [],
       error: new Error(''),
       retry: { policiesRetry: jest.fn(), permissionPoliciesRetry: jest.fn() },
     });

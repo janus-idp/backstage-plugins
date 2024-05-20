@@ -1,3 +1,0 @@
-p, role:default/catalog-writer, catalog.entity.create, use, allow
-
-p, role:default/catalog-writer, catalog.entity.create, use, deny

@@ -1,3 +1,18 @@
+## @janus-idp/backstage-scaffolder-backend-module-servicenow [1.4.9](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-servicenow@1.4.8...@janus-idp/backstage-scaffolder-backend-module-servicenow@1.4.9) (2024-05-17)
+
+## @janus-idp/backstage-scaffolder-backend-module-servicenow [1.4.8](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-servicenow@1.4.7...@janus-idp/backstage-scaffolder-backend-module-servicenow@1.4.8) (2024-05-16)
+
+
+### Bug Fixes
+
+* **lint:** ignore lint rules on generated code ([#1668](https://github.com/janus-idp/backstage-plugins/issues/1668)) ([e375c2f](https://github.com/janus-idp/backstage-plugins/commit/e375c2fee868813a1b9b320bb31f7681dc4d4e0a))
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.8.7
+
 ## @janus-idp/backstage-scaffolder-backend-module-servicenow [1.4.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-scaffolder-backend-module-servicenow@1.4.6...@janus-idp/backstage-scaffolder-backend-module-servicenow@1.4.7) (2024-05-09)
 
 

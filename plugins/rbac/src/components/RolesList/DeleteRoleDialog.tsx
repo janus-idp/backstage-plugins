@@ -69,6 +69,7 @@ const DeleteRoleDialog = ({
   const deleteRole = async () => {
     try {
       const policies = await rbacApi.getAssociatedPolicies(roleName);
+      const conditionalPolicies = await rbacApi.getRoleConditions(roleName);
       if (Array.isArray(policies)) {
         const allowedPolicies = policies.filter(
           (policy: RoleBasedPolicy) => policy.effect !== 'deny',
@@ -86,6 +87,27 @@ const DeleteRoleDialog = ({
             );
             return;
           }
+        }
+      }
+
+      if (
+        Array.isArray(conditionalPolicies) &&
+        conditionalPolicies.length > 0
+      ) {
+        const cleanupPoliciesPromises = conditionalPolicies.map(cp =>
+          rbacApi.deleteConditionalPolicies(cp.id),
+        );
+        const res: (Response | RoleError)[] = await Promise.all(
+          cleanupPoliciesPromises,
+        );
+        const err = res
+          .map(r => (r as unknown as RoleError).error?.message)
+          .filter(m => m);
+        if (err.length > 0) {
+          setError(
+            `Unable to remove conditions from the role. ${err.join('\n')}`,
+          );
+          return;
         }
       }
 

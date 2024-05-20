@@ -20,8 +20,11 @@ import { rbacApiRef } from '../../api/RBACBackendClient';
 import { MemberEntity, PermissionsData, RoleError } from '../../types';
 import {
   getConditionalPermissionPoliciesData,
+  getNewConditionalPolicies,
   getPermissionPoliciesData,
+  getRemovedConditionalPoliciesIds,
   getRoleData,
+  getUpdatedConditionalPolicies,
   validationSchema,
 } from '../../utils/create-role-utils';
 import {
@@ -82,6 +85,15 @@ export const RoleForm = ({
     try {
       const newData = getRoleData(values);
       const newPermissionsData = getPermissionPoliciesData(values);
+      const newConditions = getNewConditionalPolicies(values);
+      const deleteConditions = getRemovedConditionalPoliciesIds(
+        values,
+        initialValues,
+      );
+      const updateConditions = getUpdatedConditionalPolicies(
+        values,
+        initialValues,
+      );
 
       const oldData = getRoleData(initialValues);
       const res = await rbacApi.updateRole(oldData, newData);
@@ -126,6 +138,56 @@ export const RoleForm = ({
             );
           }
         }
+
+        if (deleteConditions.length > 0) {
+          const promises = deleteConditions.map(cid =>
+            rbacApi.deleteConditionalPolicies(cid),
+          );
+
+          const cppRes: (Response | RoleError)[] = await Promise.all(promises);
+          const cpErr = cppRes
+            .map(r => (r as unknown as RoleError).error?.message)
+            .filter(m => m);
+
+          if (cpErr.length > 0) {
+            throw new Error(
+              `Unable to remove conditions from the role. ${cpErr.join('\n')}`,
+            );
+          }
+        }
+
+        if (newConditions.length > 0) {
+          const promises = newConditions.map(cpp =>
+            rbacApi.createConditionalPermission(cpp),
+          );
+
+          const cppRes: (Response | RoleError)[] = await Promise.all(promises);
+          const cpErr = cppRes
+            .map(r => (r as unknown as RoleError).error?.message)
+            .filter(m => m);
+
+          if (cpErr.length > 0) {
+            throw new Error(
+              `Unable to add conditions to the role. ${cpErr.join('\n')}`,
+            );
+          }
+        }
+
+        if (updateConditions.length > 0) {
+          const promises = updateConditions.map(({ id, updateCondition }) =>
+            rbacApi.updateConditionalPolicies(id, updateCondition),
+          );
+
+          const cppRes: (Response | RoleError)[] = await Promise.all(promises);
+          const cpErr = cppRes
+            .map(r => (r as unknown as RoleError).error?.message)
+            .filter(m => m);
+
+          if (cpErr.length > 0) {
+            throw new Error(`Unable to update conditions. ${cpErr.join('\n')}`);
+          }
+        }
+
         navigateTo(`${name} updated`);
       }
     } catch (e) {

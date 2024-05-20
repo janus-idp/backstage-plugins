@@ -1,3 +1,25 @@
+## @janus-idp/backstage-plugin-argocd [1.1.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-argocd@1.1.0...@janus-idp/backstage-plugin-argocd@1.1.1) (2024-05-16)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.8.7
+
+## @janus-idp/backstage-plugin-argocd [1.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-argocd@1.0.4...@janus-idp/backstage-plugin-argocd@1.1.0) (2024-05-14)
+
+
+### Features
+
+* **deps:** use RHDH themes in the backstage app and dev pages ([#1480](https://github.com/janus-idp/backstage-plugins/issues/1480)) ([8263bf0](https://github.com/janus-idp/backstage-plugins/commit/8263bf099736cbb0d0f2316082d338ba81fa6927))
+
+## @janus-idp/backstage-plugin-argocd [1.0.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-argocd@1.0.3...@janus-idp/backstage-plugin-argocd@1.0.4) (2024-05-14)
+
+
+### Bug Fixes
+
+* **argocd:** make refreshInterval configuration as optional ([#1647](https://github.com/janus-idp/backstage-plugins/issues/1647)) ([2c24d35](https://github.com/janus-idp/backstage-plugins/commit/2c24d35f050801801c597967e890b6d2e647fb06))
+
 ## @janus-idp/backstage-plugin-argocd [1.0.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-argocd@1.0.2...@janus-idp/backstage-plugin-argocd@1.0.3) (2024-05-09)
 
 

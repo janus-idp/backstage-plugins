@@ -202,6 +202,74 @@ export const getConditionalPermissionPoliciesData = (
   );
 };
 
+export const getUpdatedConditionalPolicies = (
+  values: RoleFormValues,
+  initialValues: RoleFormValues,
+) => {
+  const initialConditionsWithId = initialValues.permissionPoliciesRows.filter(
+    ppr => ppr.id,
+  );
+
+  const conditionsWithId = values.permissionPoliciesRows.filter(ppr => ppr.id);
+
+  return conditionsWithId.length > 0
+    ? conditionsWithId.reduce(
+        (
+          acc: { id: number; updateCondition: RoleBasedConditions }[],
+          condition: PermissionsData,
+        ) => {
+          const conditionExists = initialConditionsWithId.find(
+            c => c.id === condition.id,
+          );
+
+          if (conditionExists && condition.id)
+            return [
+              ...acc,
+              {
+                id: condition.id,
+                updateCondition: getConditionalPermissionPoliciesData({
+                  ...values,
+                  permissionPoliciesRows: [condition],
+                })[0],
+              },
+            ];
+          return acc;
+        },
+        [],
+      )
+    : [];
+};
+
+export const getNewConditionalPolicies = (values: RoleFormValues) => {
+  const newValues = { ...values };
+  const newPermissionPolicies = values.permissionPoliciesRows.filter(
+    ppr => !ppr.id,
+  );
+  newValues.permissionPoliciesRows = newPermissionPolicies;
+  return getConditionalPermissionPoliciesData(newValues);
+};
+
+export const getRemovedConditionalPoliciesIds = (
+  values: RoleFormValues,
+  initialValues: RoleFormValues,
+) => {
+  const initialConditionsIds = initialValues.permissionPoliciesRows
+    .map(ppr => ppr.id)
+    .filter(id => id);
+
+  const newConditionsIds = values.permissionPoliciesRows
+    .map(ppr => ppr.id)
+    .filter(id => id);
+
+  return initialConditionsIds.length > 0
+    ? initialConditionsIds.reduce((acc: number[], oldId) => {
+        const conditionExists = newConditionsIds.includes(oldId);
+        if (conditionExists) return acc;
+        return oldId ? [...acc, oldId] : acc;
+      }, [])
+    : [];
+};
+
 export const getPermissionsNumber = (values: RoleFormValues) => {
   return getPermissionPoliciesData(values).length;
 };

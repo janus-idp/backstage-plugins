@@ -30,6 +30,7 @@ const useStyles = makeStyles(theme => ({
   criteriaButton: {
     width: '100%',
     textTransform: 'none',
+    color: theme.palette.grey[700],
   },
   addRuleButton: {
     color: theme.palette.primary.light,
@@ -126,11 +127,7 @@ export const ConditionsFormRow = ({
 
   return (
     <Box className={classes.conditionRow}>
-      <ButtonGroup
-        size="large"
-        className={classes.criteriaButtonGroup}
-        color="info"
-      >
+      <ButtonGroup size="large" className={classes.criteriaButtonGroup}>
         {conditionButtons.map(({ val, label }) => (
           <Button
             variant="outlined"
