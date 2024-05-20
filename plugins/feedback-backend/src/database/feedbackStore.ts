@@ -2,10 +2,10 @@ import {
   PluginDatabaseManager,
   resolvePackagePath,
 } from '@backstage/backend-common';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 import { Knex } from 'knex';
 import short from 'short-uuid';
-import { Logger } from 'winston';
 
 import { FeedbackModel } from '../model/feedback.model';
 
@@ -36,7 +36,7 @@ const migrationsDir = resolvePackagePath(
 export class DatabaseFeedbackStore implements FeedbackStore {
   private constructor(
     private readonly db: Knex,
-    private readonly logger: Logger,
+    private readonly logger: LoggerService,
   ) {}
 
   static async create({
@@ -46,7 +46,7 @@ export class DatabaseFeedbackStore implements FeedbackStore {
   }: {
     database: PluginDatabaseManager;
     skipMigrations: boolean;
-    logger: Logger;
+    logger: LoggerService;
   }): Promise<DatabaseFeedbackStore> {
     const client = await database.getClient();
 

@@ -23,16 +23,11 @@ import {
 } from '@janus-idp/backstage-plugin-rbac-common';
 
 import { ConditionalStorage } from '../database/conditional-storage';
-import { PolicyMetadataStorage } from '../database/policy-metadata-storage';
 import {
   RoleMetadataDao,
   RoleMetadataStorage,
 } from '../database/role-metadata';
-import {
-  addPermissionPoliciesFileData,
-  loadFilteredCSV,
-  removedOldPermissionPoliciesFileData,
-} from '../file-permissions/csv';
+import { CSVFileWatcher } from '../file-permissions/csv-file-watcher';
 import { metadataStringToPolicy, removeTheDifference } from '../helper';
 import { EnforcerDelegate } from './enforcer-delegate';
 import { validateEntityReference } from './policies-validation';
@@ -169,9 +164,6 @@ export class RBACPermissionPolicy implements PermissionPolicy {
   private readonly enforcer: EnforcerDelegate;
   private readonly logger: Logger;
   private readonly conditionStorage: ConditionalStorage;
-  private readonly policyMetadataStorage: PolicyMetadataStorage;
-  private readonly policiesFile?: string;
-  private readonly allowReload?: boolean;
   private readonly superUserList?: string[];
 
   public static async build(
@@ -180,7 +172,6 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     conditionalStorage: ConditionalStorage,
     enforcerDelegate: EnforcerDelegate,
     roleMetadataStorage: RoleMetadataStorage,
-    policyMetaDataStorage: PolicyMetadataStorage,
     knex: Knex,
   ): Promise<RBACPermissionPolicy> {
     const superUserList: string[] = [];
@@ -196,9 +187,8 @@ export class RBACPermissionPolicy implements PermissionPolicy {
       'permission.rbac.policies-csv-file',
     );
 
-    const allowReload = configApi.getOptionalBoolean(
-      'permission.rbac.policyFileReload',
-    );
+    const allowReload =
+      configApi.getOptionalBoolean('permission.rbac.policyFileReload') || false;
 
     if (superUsers && superUsers.length > 0) {
       for (const user of superUsers) {
@@ -224,24 +214,17 @@ export class RBACPermissionPolicy implements PermissionPolicy {
       );
     }
 
-    if (policiesFile) {
-      await addPermissionPoliciesFileData(
-        policiesFile,
-        enforcerDelegate,
-        roleMetadataStorage,
-        logger,
-      );
-    } else {
-      await removedOldPermissionPoliciesFileData(enforcerDelegate);
-    }
+    const csvFile = new CSVFileWatcher(
+      enforcerDelegate,
+      logger,
+      roleMetadataStorage,
+    );
+    await csvFile.initialize(policiesFile, allowReload);
 
     return new RBACPermissionPolicy(
       enforcerDelegate,
       logger,
       conditionalStorage,
-      policyMetaDataStorage,
-      policiesFile,
-      allowReload,
       superUserList,
     );
   }
@@ -250,17 +233,11 @@ export class RBACPermissionPolicy implements PermissionPolicy {
     enforcer: EnforcerDelegate,
     logger: Logger,
     conditionStorage: ConditionalStorage,
-    policyMetadataStorage: PolicyMetadataStorage,
-    policiesFile?: string,
-    allowReload?: boolean,
     superUserList?: string[],
   ) {
     this.enforcer = enforcer;
     this.logger = logger;
     this.conditionStorage = conditionStorage;
-    this.policyMetadataStorage = policyMetadataStorage;
-    this.policiesFile = policiesFile;
-    this.allowReload = allowReload;
     this.superUserList = superUserList;
   }
 
@@ -368,17 +345,6 @@ export class RBACPermissionPolicy implements PermissionPolicy {
   ): Promise<boolean> => {
     if (this.superUserList!.includes(userIdentity)) {
       return true;
-    }
-
-    const filter: string[] = [userIdentity, permission, action];
-    if (this.policiesFile && this.allowReload) {
-      await loadFilteredCSV(
-        this.policiesFile,
-        this.enforcer,
-        filter,
-        this.logger,
-        this.policyMetadataStorage,
-      );
     }
 
     return await this.enforcer.enforce(userIdentity, permission, action, roles);

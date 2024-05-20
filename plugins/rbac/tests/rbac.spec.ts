@@ -144,6 +144,22 @@ test.describe('RBAC plugin', () => {
     await page.getByPlaceholder('Select a resource type').last().click();
     await page.getByText('scaffolder-action').click();
 
+    // update existing conditional policy
+    await page
+      .getByText('Configure access (1 rule)', { exact: true })
+      .first()
+      .click();
+    await page.getByPlaceholder('Select a rule').first().click();
+    await page.getByText('HAS_METADATA').click();
+    await page.getByLabel('key').fill('status');
+    await page.getByTestId('save-conditions').click();
+
+    // remove existing conditional policy
+    await page.getByTestId('permissionPoliciesRows[1]-remove').first().click();
+    expect(
+      page.getByText('Configure access (2 rules)', { exact: true }),
+    ).toBeHidden();
+
     await common.clickButton('Next');
     await common.clickButton('Save');
     await verifyText('Role role:default/rbac_admin updated successfully', page);

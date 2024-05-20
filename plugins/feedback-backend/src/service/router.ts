@@ -3,13 +3,13 @@ import {
   errorHandler,
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
+import { AuthService, LoggerService } from '@backstage/backend-plugin-api';
 import { CatalogClient } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 
 import express from 'express';
 import Router from 'express-promise-router';
-import { Logger } from 'winston';
 
 import { JiraApiService } from '../api';
 import { DatabaseFeedbackStore } from '../database/feedbackStore';
@@ -17,16 +17,16 @@ import { FeedbackCategory, FeedbackModel } from '../model/feedback.model';
 import { NodeMailer } from './emails';
 
 export interface RouterOptions {
-  logger: Logger;
+  logger: LoggerService;
   config: Config;
   discovery: PluginEndpointDiscovery;
+  auth: AuthService;
 }
 
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { logger, config, discovery } = options;
-
+  const { logger, config, discovery, auth } = options;
   const router = Router();
   const feedbackDB = await DatabaseFeedbackStore.create({
     database: DatabaseManager.fromConfig(config).forPlugin('feedback'),
@@ -58,8 +58,15 @@ export async function createRouter(
           error: `The value of feedbackType should be either 'FEEDBACK'/'BUG'`,
         });
 
+      const { token } = await auth.getPluginRequestToken({
+        onBehalfOf: await auth.getOwnServiceCredentials(),
+        targetPluginId: 'catalog',
+      });
       const entityRef: Entity | undefined = await catalogClient.getEntityByRef(
         reqData.projectId!,
+        {
+          token,
+        },
       );
       if (!entityRef) {
         return res
@@ -101,8 +108,8 @@ export async function createRouter(
         const type = annotations['feedback/type'];
         const replyTo = annotations['feedback/email-to'];
         const reporterEmail = (
-          (await catalogClient.getEntityByRef(reqData.createdBy!))?.spec
-            ?.profile as { email: string }
+          (await catalogClient.getEntityByRef(reqData.createdBy!, { token }))
+            ?.spec?.profile as { email: string }
         ).email;
         const appTitle = config.getString('app.title');
 
@@ -251,8 +258,12 @@ export async function createRouter(
         : null;
 
       if (ticketId && projectId) {
+        const { token } = await auth.getPluginRequestToken({
+          onBehalfOf: await auth.getOwnServiceCredentials(),
+          targetPluginId: 'catalog',
+        });
         const entityRef: Entity | undefined =
-          await catalogClient.getEntityByRef(projectId);
+          await catalogClient.getEntityByRef(projectId, { token });
         if (!entityRef) {
           return res
             .status(404)

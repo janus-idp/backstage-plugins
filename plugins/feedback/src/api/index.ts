@@ -2,6 +2,7 @@ import {
   ConfigApi,
   createApiRef,
   DiscoveryApi,
+  FetchApi,
   IdentityApi,
 } from '@backstage/core-plugin-api';
 
@@ -15,6 +16,7 @@ type Options = {
   discoveryApi: DiscoveryApi;
   configApi: ConfigApi;
   identityApi: IdentityApi;
+  fetchApi: FetchApi;
 };
 
 type feedbackResp = {
@@ -32,9 +34,11 @@ type feedbacksResp = {
 
 export class FeedbackAPI {
   private readonly discoveryApi: DiscoveryApi;
+  private readonly fetchApi: FetchApi;
 
   constructor(options: Options) {
     this.discoveryApi = options.discoveryApi;
+    this.fetchApi = options.fetchApi;
   }
 
   async getAllFeedbacks(
@@ -46,7 +50,7 @@ export class FeedbackAPI {
     const baseUrl = await this.discoveryApi.getBaseUrl('feedback');
     const offset = (page - 1) * pageSize;
     try {
-      const resp = await fetch(
+      const resp = await this.fetchApi.fetch(
         `${baseUrl}?query=${searchText}&offset=${offset}&limit=${pageSize}&projectId=${projectId}`,
       );
       const respData: feedbacksResp = await resp.json();
@@ -58,17 +62,17 @@ export class FeedbackAPI {
 
   async getFeedbackById(feedbackId: string): Promise<feedbackResp> {
     const baseUrl = await this.discoveryApi.getBaseUrl('feedback');
-    const resp = await fetch(`${baseUrl}/${feedbackId}`);
+    const resp = await this.fetchApi.fetch(`${baseUrl}/${feedbackId}`);
     const respData: feedbackResp = await resp.json();
     return respData;
   }
 
   async createFeedback(
-    data: any,
+    data: Partial<FeedbackType>,
   ): Promise<{ data?: {}; message?: string; error?: string }> {
     try {
       const baseUrl = await this.discoveryApi.getBaseUrl('feedback');
-      const resp = await fetch(`${baseUrl}`, {
+      const resp = await this.fetchApi.fetch(`${baseUrl}`, {
         method: 'POST',
         body: JSON.stringify(data),
         headers: {
@@ -89,13 +93,10 @@ export class FeedbackAPI {
   ): Promise<{ status: string; assignee: string; avatarUrls: any }> {
     const baseUrl = await this.discoveryApi.getBaseUrl('feedback');
     const ticketId = ticketUrl.split('/').at(-1);
-    const resp = await fetch(
+    const resp = await this.fetchApi.fetch(
       `${baseUrl}/${feedbackId}/ticket?ticketId=${ticketId}&projectId=${projectId}`,
       {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
       },
     );
     const data = (await resp.json()).data;

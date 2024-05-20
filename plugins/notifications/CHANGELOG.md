@@ -1,3 +1,18 @@
+## @janus-idp/plugin-notifications [1.3.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications@1.3.0...@janus-idp/plugin-notifications@1.3.1) (2024-05-16)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.8.7
+
+## @janus-idp/plugin-notifications [1.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications@1.2.6...@janus-idp/plugin-notifications@1.3.0) (2024-05-14)
+
+
+### Features
+
+* **deps:** use RHDH themes in the backstage app and dev pages ([#1480](https://github.com/janus-idp/backstage-plugins/issues/1480)) ([8263bf0](https://github.com/janus-idp/backstage-plugins/commit/8263bf099736cbb0d0f2316082d338ba81fa6927))
+
 ## @janus-idp/plugin-notifications [1.2.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/plugin-notifications@1.2.5...@janus-idp/plugin-notifications@1.2.6) (2024-05-09)
 
 

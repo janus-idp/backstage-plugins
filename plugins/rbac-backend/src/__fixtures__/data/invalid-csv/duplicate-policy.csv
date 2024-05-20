@@ -7,3 +7,6 @@ p, role:default/catalog-writer, catalog.entity.create, use, allow
 p, role:default/catalog-writer, catalog.entity.create, use, allow
 
 p, role:default/catalog-writer, catalog-entity, delete, allow
+
+p, role:default/duplication-effect, catalog-entity, update, allow
+p, role:default/duplication-effect, catalog-entity, update, deny

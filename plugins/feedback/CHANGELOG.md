@@ -1,3 +1,27 @@
+## @janus-idp/backstage-plugin-feedback [1.3.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback@1.3.1...@janus-idp/backstage-plugin-feedback@1.3.2) (2024-05-16)
+
+## @janus-idp/backstage-plugin-feedback [1.3.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback@1.3.0...@janus-idp/backstage-plugin-feedback@1.3.1) (2024-05-16)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.8.7
+
+## @janus-idp/backstage-plugin-feedback [1.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback@1.2.0...@janus-idp/backstage-plugin-feedback@1.3.0) (2024-05-14)
+
+
+### Features
+
+* **deps:** use RHDH themes in the backstage app and dev pages ([#1480](https://github.com/janus-idp/backstage-plugins/issues/1480)) ([8263bf0](https://github.com/janus-idp/backstage-plugins/commit/8263bf099736cbb0d0f2316082d338ba81fa6927))
+
+## @janus-idp/backstage-plugin-feedback [1.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback@1.1.7...@janus-idp/backstage-plugin-feedback@1.2.0) (2024-05-14)
+
+
+### Features
+
+* **feedback:** use backstage auth service in backend plugin ([#1646](https://github.com/janus-idp/backstage-plugins/issues/1646)) ([7d9ee11](https://github.com/janus-idp/backstage-plugins/commit/7d9ee11d1ed0dbc1ff026de3b1e50f2888c3f542)), closes [#1626](https://github.com/janus-idp/backstage-plugins/issues/1626)
+
 ## @janus-idp/backstage-plugin-feedback [1.1.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback@1.1.6...@janus-idp/backstage-plugin-feedback@1.1.7) (2024-05-09)
 
 

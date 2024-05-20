@@ -18,11 +18,14 @@ import React from 'react';
 
 import { createDevApp } from '@backstage/dev-utils';
 
+import { createDevAppThemes } from '@redhat-developer/red-hat-developer-hub-theme';
+
 import { analyticsModuleSegment } from '../src';
 import { Playground } from './Playground';
 
 createDevApp()
   .registerPlugin(analyticsModuleSegment)
+  .addThemes(createDevAppThemes())
   .addPage({
     path: '/segment',
     title: 'Segment Playground',

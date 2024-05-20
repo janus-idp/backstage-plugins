@@ -1,3 +1,25 @@
+## @janus-idp/backstage-plugin-kiali [1.18.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.18.0...@janus-idp/backstage-plugin-kiali@1.18.1) (2024-05-16)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.8.7
+
+## @janus-idp/backstage-plugin-kiali [1.18.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.17.3...@janus-idp/backstage-plugin-kiali@1.18.0) (2024-05-14)
+
+
+### Features
+
+* **deps:** use RHDH themes in the backstage app and dev pages ([#1480](https://github.com/janus-idp/backstage-plugins/issues/1480)) ([8263bf0](https://github.com/janus-idp/backstage-plugins/commit/8263bf099736cbb0d0f2316082d338ba81fa6927))
+
+## @janus-idp/backstage-plugin-kiali [1.17.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.17.2...@janus-idp/backstage-plugin-kiali@1.17.3) (2024-05-13)
+
+
+### Bug Fixes
+
+* **kiali:** removing unnecessary afterAll hook ([#1642](https://github.com/janus-idp/backstage-plugins/issues/1642)) ([a314607](https://github.com/janus-idp/backstage-plugins/commit/a3146073bebb17b6f990891a277323a19e3731d6))
+
 ## @janus-idp/backstage-plugin-kiali [1.17.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-kiali@1.17.1...@janus-idp/backstage-plugin-kiali@1.17.2) (2024-05-09)
 
 

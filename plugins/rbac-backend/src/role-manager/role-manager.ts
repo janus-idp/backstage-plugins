@@ -188,7 +188,6 @@ export class BackstageRoleManager implements RoleManager {
         this.auth,
         this.maxDepth,
       );
-      await memo.getAllGroups();
       await memo.buildUserGraph(memo);
       memo.debugNodesAndEdges(this.log, name);
       const userAndParentGroups = memo.getNodes();

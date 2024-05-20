@@ -1,3 +1,26 @@
+## @janus-idp/backstage-plugin-quay [1.7.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.7.1...@janus-idp/backstage-plugin-quay@1.7.2) (2024-05-17)
+
+
+### Bug Fixes
+
+* **quay:** remove unuseful link ([#1692](https://github.com/janus-idp/backstage-plugins/issues/1692)) ([ae27d91](https://github.com/janus-idp/backstage-plugins/commit/ae27d919a312f66d592bc5a48837f78e82302903))
+
+## @janus-idp/backstage-plugin-quay [1.7.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.7.0...@janus-idp/backstage-plugin-quay@1.7.1) (2024-05-16)
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.6.2
+* **@janus-idp/cli:** upgraded to 1.8.7
+
+## @janus-idp/backstage-plugin-quay [1.7.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.6.7...@janus-idp/backstage-plugin-quay@1.7.0) (2024-05-14)
+
+
+### Features
+
+* **deps:** use RHDH themes in the backstage app and dev pages ([#1480](https://github.com/janus-idp/backstage-plugins/issues/1480)) ([8263bf0](https://github.com/janus-idp/backstage-plugins/commit/8263bf099736cbb0d0f2316082d338ba81fa6927))
+
 ## @janus-idp/backstage-plugin-quay [1.6.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-quay@1.6.6...@janus-idp/backstage-plugin-quay@1.6.7) (2024-05-09)
 
 

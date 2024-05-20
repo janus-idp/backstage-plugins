@@ -4,6 +4,8 @@ import { Entity } from '@backstage/catalog-model';
 import { createDevApp } from '@backstage/dev-utils';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 
+import { createDevAppThemes } from '@redhat-developer/red-hat-developer-hub-theme';
+
 import { JfrogArtifactoryPage, jfrogArtifactoryPlugin } from '../src/plugin';
 
 const mockEntity: Entity = {
@@ -25,6 +27,7 @@ const mockEntity: Entity = {
 
 createDevApp()
   .registerPlugin(jfrogArtifactoryPlugin)
+  .addThemes(createDevAppThemes())
   .addPage({
     element: (
       <EntityProvider entity={mockEntity}>
