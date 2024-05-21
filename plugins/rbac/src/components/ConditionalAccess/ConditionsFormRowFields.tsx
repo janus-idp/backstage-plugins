@@ -123,14 +123,14 @@ export const ConditionsFormRowFields = ({
         {schema ? (
           <Form
             schema={paramsSchema}
-            formData={oldCondition?.params ?? null}
+            formData={oldCondition?.params || {}}
             validator={validator}
             uiSchema={uiSchema}
             fields={customFields}
             onChange={data =>
               handleConditionChange({
                 ...oldCondition,
-                params: data.formData ?? {},
+                params: data.formData || {},
               })
             }
             transformErrors={errors => {
