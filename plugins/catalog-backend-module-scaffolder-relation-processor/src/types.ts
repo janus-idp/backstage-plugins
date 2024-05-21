@@ -4,7 +4,7 @@
  *
  * @public
  */
-export type ScaffoldedBySpec = {
+export type ScaffoldedFromSpec = {
   spec: {
     scaffoldedFrom: string;
   };
