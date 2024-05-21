@@ -25,28 +25,28 @@ describe('DefaultAuditLogger', () => {
 
   describe('getActorId', () => {
     it('Returns nothing if no request is provided', async () => {
-      const actor_id = await auditLogger.getActorId();
-      expect(actor_id).toBeUndefined();
+      const actorId = await auditLogger.getActorId();
+      expect(actorId).toBeUndefined();
     });
     it('Returns a user if a request is provided', async () => {
       const cred = mockCredentials.user.header('user:default/test');
       const request = new JestRequest();
       request.setHeaders('Authorization', cred);
-      const actor_id = await auditLogger.getActorId(
+      const actorId = await auditLogger.getActorId(
         request as unknown as Request,
       );
 
-      expect(actor_id).toEqual('user:default/test');
+      expect(actorId).toEqual('user:default/test');
     });
     it('Returns nothing if request has invalid token', async () => {
       const cred = mockCredentials.user.invalidHeader();
       const request = new JestRequest();
       request.setHeaders('Authorization', cred);
-      const actor_id = await auditLogger.getActorId(
+      const actorId = await auditLogger.getActorId(
         request as unknown as Request,
       );
 
-      expect(actor_id).toBeUndefined();
+      expect(actorId).toBeUndefined();
     });
   });
 
@@ -73,7 +73,7 @@ describe('DefaultAuditLogger', () => {
         eventName: 'TestAuditLog',
         stage: 'completion',
         status: 'succeeded',
-        actor_id: 'user:default/tester',
+        actorId: 'user:default/tester',
       });
       expect(auditLogDetails).toEqual({
         actor: {
@@ -103,7 +103,7 @@ describe('DefaultAuditLogger', () => {
         eventName: 'TestAuditLog',
         stage: 'completion',
         status: 'succeeded',
-        actor_id: 'user:default/tester',
+        actorId: 'user:default/tester',
         request: request as unknown as Request,
       });
       expect(auditLogDetails).toEqual({
@@ -216,7 +216,7 @@ describe('DefaultAuditLogger', () => {
         eventName: 'TestAuditLog',
         stage: 'completion',
         status: 'failed',
-        actor_id: 'user:default/tester',
+        actorId: 'user:default/tester',
         errors: [customError],
       });
 
@@ -245,7 +245,7 @@ describe('DefaultAuditLogger', () => {
       await auditLogger.auditLog({
         eventName: 'TestAuditLog',
         stage: 'completion',
-        actor_id: 'user:default/tester',
+        actorId: 'user:default/tester',
         message: 'Audit Log Triggered',
       });
       expect(loggerSpy).toHaveBeenCalledWith('Audit Log Triggered', {
@@ -269,7 +269,7 @@ describe('DefaultAuditLogger', () => {
       await auditLogger.auditErrorLog({
         eventName: 'TestAuditLog',
         stage: 'completion',
-        actor_id: 'user:default/tester',
+        actorId: 'user:default/tester',
         errors: [customError],
         message: 'Audit Log Triggered',
       });

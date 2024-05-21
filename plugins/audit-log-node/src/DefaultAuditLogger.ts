@@ -4,11 +4,14 @@ import {
   LoggerService,
 } from '@backstage/backend-plugin-api';
 import { ErrorLike } from '@backstage/errors';
+import { JsonObject } from '@backstage/types';
 
 import { Request } from 'express';
 
 import {
+  ActorDetails,
   AuditErrorLogOptions,
+  AuditLogDetails,
   AuditLogDetailsOptions,
   AuditLogger,
   AuditLoggerOptions,
@@ -48,11 +51,12 @@ export class DefaultAuditLogger implements AuditLogger {
       return undefined;
     }
   }
-  async createAuditLogDetails(options: AuditLogDetailsOptions) {
-    const { eventName, stage, metadata, actor_id, request, response, status } =
-      options;
+  async createAuditLogDetails(
+    options: AuditLogDetailsOptions,
+  ): Promise<AuditLogDetails> {
+    const { eventName, stage, metadata, request, response, status } = options;
 
-    const actorId = actor_id || (await this.getActorId(request)) || null;
+    const actorId = options.actorId || (await this.getActorId(request)) || null;
 
     // Secrets in the body field should be redacted by the user before passing in the request object
     const auditRequest = request
@@ -65,13 +69,15 @@ export class DefaultAuditLogger implements AuditLogger {
         }
       : undefined;
 
+    let actor: ActorDetails = { actorId };
+    if (request) {
+      actor.ip = request.ip;
+      actor.hostname = request.hostname;
+      actor.userAgent = request.get('user-agent');
+    }
+
     const auditLogCommonDetails = {
-      actor: {
-        actorId,
-        ip: request?.ip,
-        hostname: request?.hostname,
-        userAgent: request?.get('user-agent'),
-      },
+      actor,
       meta: metadata || {},
       request: auditRequest,
       isAuditLog: true as const,
@@ -79,6 +85,13 @@ export class DefaultAuditLogger implements AuditLogger {
       eventName,
       stage,
     };
+
+    if (auditRequest) {
+      auditLogCommonDetails.request = auditRequest;
+    }
+    if (response) {
+      auditLogCommonDetails.response = response;
+    }
 
     if (status === 'failed') {
       const errs = options.errors as ErrorLike[];
@@ -105,12 +118,12 @@ export class DefaultAuditLogger implements AuditLogger {
       eventName: options.eventName,
       status: 'succeeded',
       stage: options.stage,
-      actor_id: options.actor_id,
+      actorId: options.actorId,
       request: options.request,
       response: options.response,
       metadata: options.metadata,
     });
-    this.logger.info(options.message, auditLogDetails);
+    this.logger.info(options.message, auditLogDetails as JsonObject);
   }
 
   async auditErrorLog(options: AuditErrorLogOptions): Promise<void> {
@@ -119,12 +132,12 @@ export class DefaultAuditLogger implements AuditLogger {
       status: 'failed',
       stage: options.stage,
       errors: options.errors,
-      actor_id: options.actor_id,
+      actorId: options.actorId,
       request: options.request,
       response: options.response,
       metadata: options.metadata,
     });
 
-    this.logger.error(options.message, auditLogDetails);
+    this.logger.error(options.message, auditLogDetails as JsonObject);
   }
 }

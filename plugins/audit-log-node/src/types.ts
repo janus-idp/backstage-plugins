@@ -55,7 +55,7 @@ export type AuditLogDetailsOptions = {
   stage: string;
   metadata?: JsonValue;
   response?: AuditResponse;
-  actor_id?: string;
+  actorId?: string;
   request?: Request;
 } & ({ status: 'succeeded' } | { status: 'failed'; errors: unknown[] });
 
@@ -63,7 +63,7 @@ export type AuditLogOptions = {
   eventName: string;
   message: string;
   stage: string;
-  actor_id?: string;
+  actorId?: string;
   metadata?: JsonValue;
   response?: AuditResponse;
   request?: Request;
