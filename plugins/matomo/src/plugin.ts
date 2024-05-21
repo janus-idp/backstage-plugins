@@ -3,6 +3,7 @@ import {
   createApiFactory,
   createPlugin,
   createRoutableExtension,
+  fetchApiRef,
 } from '@backstage/core-plugin-api';
 
 import { MatomoApiClient, matomoApiRef } from './api';
@@ -18,8 +19,10 @@ export const matomoPlugin = createPlugin({
       api: matomoApiRef,
       deps: {
         configApi: configApiRef,
+        fetchApi: fetchApiRef,
       },
-      factory: ({ configApi }) => new MatomoApiClient({ configApi }),
+      factory: ({ configApi, fetchApi }) =>
+        new MatomoApiClient({ configApi, fetchApi }),
     }),
   ],
 });
