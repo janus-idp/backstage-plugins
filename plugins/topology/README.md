@@ -342,7 +342,10 @@ Topology is a front-end plugin that enables you to view the workloads as nodes t
 ```csv rbac-policy.csv
 g, user:default/<YOUR_USERNAME>, role:default/topology-viewer
 p, role:default/topology-viewer, topology.view.read, read, allow
+p, role:default/topology-viewer, kubernetes.proxy, use, allow
 ```
+
+`p, role:default/topology-viewer, topology.view.read, read, allow` grants the user the ability to see the Topology panel. `p, role:default/topology-viewer, kubernetes.proxy, use, allow` grants the user the ability to view the pod logs.
 
 #### Procedure
 

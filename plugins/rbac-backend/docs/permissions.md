@@ -69,6 +69,7 @@ When defining a permission for the RBAC Backend plugin to consume, follow these 
 
 ## Topology
 
-| Name               | Resource Type | Policy | Description                                 | Requirements |
-| ------------------ | ------------- | ------ | ------------------------------------------- | ------------ |
-| topology.view.read |               | read   | Allows the user to view the topology plugin | X            |
+| Name               | Resource Type | Policy | Description                                                                                                 | Requirements        |
+| ------------------ | ------------- | ------ | ----------------------------------------------------------------------------------------------------------- | ------------------- |
+| topology.view.read |               | read   | Allows the user to view the topology plugin                                                                 | X                   |
+| kubernetes.proxy   |               |        | Allows the user to access the proxy endpoint (ability to read pod logs and events within Showcase and RHDH) | catalog.entity.read |

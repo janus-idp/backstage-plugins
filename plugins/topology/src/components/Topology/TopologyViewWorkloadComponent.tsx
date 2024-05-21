@@ -145,7 +145,10 @@ const TopologyViewWorkloadComponent = ({
               topologyViewPermissionResult.allowed &&
               catalogEntityPermissionResult.allowed
             ) ? (
-              <TopologyEmptyState />
+              <TopologyEmptyState
+                title="Permission required"
+                description="To view Topology, contact your administrator to give you the topology.view.read permission"
+              />
             ) : (
               <VisualizationSurface state={{ selectedIds: [selectedId] }} />
             )}
