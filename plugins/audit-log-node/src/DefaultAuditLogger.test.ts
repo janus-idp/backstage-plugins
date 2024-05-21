@@ -171,7 +171,6 @@ describe('DefaultAuditLogger', () => {
           },
         },
       });
-      console.warn(JSON.stringify(auditLogDetails, null, 2));
       expect(auditLogDetails).toEqual({
         actor: {
           actorId: 'user:default/test',
