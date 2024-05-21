@@ -60,6 +60,7 @@ export const fakeDataInputSchemaMultiStepResponse: WorkflowInputSchemaResponse =
                         jobTemplate: '${.ansibleJobDefinition.jobTemplate}',
                         component_id: '${.ansibleJobDefinition.name}',
                         namespace: '${.ansibleJobDefinition.namespace}',
+                        // deepcode ignore HardcodedNonCryptoSecret: False positive
                         connection_secret:
                           '${.ansibleJobDefinition.connectionSecret}',
                         description: '${.ansibleJobDefinition.description}',

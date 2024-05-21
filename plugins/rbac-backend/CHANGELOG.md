@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac-backend [3.2.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@3.1.1...@janus-idp/backstage-plugin-rbac-backend@3.2.0) (2024-05-21)
+
+
+### Features
+
+* **topology:** add permissions to topology plugin ([#1665](https://github.com/janus-idp/backstage-plugins/issues/1665)) ([9d8f244](https://github.com/janus-idp/backstage-plugins/commit/9d8f244ae136cdf1980a5abf416180bce3f235ea))
+
 ## @janus-idp/backstage-plugin-rbac-backend [3.1.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@3.1.0...@janus-idp/backstage-plugin-rbac-backend@3.1.1) (2024-05-16)
 
 ## @janus-idp/backstage-plugin-rbac-backend [3.1.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@3.0.0...@janus-idp/backstage-plugin-rbac-backend@3.1.0) (2024-05-14)
