@@ -69,7 +69,7 @@ export class DefaultAuditLogger implements AuditLogger {
         }
       : undefined;
 
-    let actor: ActorDetails = { actorId };
+    const actor: ActorDetails = { actorId };
     if (request) {
       actor.ip = request.ip;
       actor.hostname = request.hostname;
