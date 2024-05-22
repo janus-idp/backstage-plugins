@@ -14,13 +14,13 @@ yarn workspace <package/plugin> add @janus-idp/backstage-plugin-audit-log-node
 
 The audit logging node package contains a helper class for generating audit logs with a common structure, as well as logging them.
 
-The `auditLog` and `auditErrorLog` functions can be used to log out an audit log using the backstage `LoggerService`.
+The `auditLog` and `auditErrorLog` functions can be used to log out an audit log using the backstage `LoggerService`. You can provide a log level to log to in the `auditLog` function. The supported levels are: `info`, `debug`, `warn`, and `error`.
 
 Alternatively, if you want to generate the audit log object (does not contain message) without it being logged out for you, the `createAuditLogDetails` helper function of the `DefaultAuditLogger` can be used.
 
 The `DefaultAuditLogger.createAuditLogDetails` will generate the `actorId` of the actor with the following priority (highest to lowest):
 
-- The `actor_id` provided in the arguments
+- The `actorId` provided in the arguments
 - The actor id generated from the `express.Request` object provided in the arguments
 - `null` if neither of the above fields were provided in the arguments
 
@@ -87,9 +87,11 @@ export async function createRouter(
     response.json({ status: 'ok' });
 
     /* highlight-add-start */
+    // Note: if `level` is not provided, it defaults to `info`
     auditLogger.auditLog({
       eventName: 'HealthEndpointHit',
       stage: 'completion',
+      level: 'debug',
       request,
       response: {
         status: 200,
@@ -109,5 +111,5 @@ export async function createRouter(
 Assuming the `user:default/tester` user hit requested this endpoint, something similar to the following would be outputted if the logger format is JSON:
 
 ```JSON
-{"actor":{"actorId":"user:default/tester","hostname":"localhost","ip":"::1","userAgent":"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"},"eventName":"HealthEndpointHit","isAuditLog":true,"level":"info","message":"The Health Endpoint was hit by user:default/tester","meta":{},"plugin":"test","request":{"body": "","method":"GET","params":{},"query":{},"url":"/api/test/health"},"service":"backstage","stage":"completion","status":"succeeded","timestamp":"2024-05-17 11:17:07","type":"plugin"}
+{"actor":{"actorId":"user:default/tester","hostname":"localhost","ip":"::1","userAgent":"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"},"eventName":"HealthEndpointHit","isAuditLog":true,"level":"debug","message":"The Health Endpoint was hit by user:default/tester","meta":{},"plugin":"test","request":{"body": "","method":"GET","params":{},"query":{},"url":"/api/test/health"},"service":"backstage","stage":"completion","status":"succeeded","timestamp":"2024-05-17 11:17:07","type":"plugin"}
 ```

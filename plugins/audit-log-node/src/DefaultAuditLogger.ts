@@ -114,6 +114,7 @@ export class DefaultAuditLogger implements AuditLogger {
     };
   }
   async auditLog(options: AuditLogOptions): Promise<void> {
+    const logLevel = options.level || 'info';
     const auditLogDetails = await this.createAuditLogDetails({
       eventName: options.eventName,
       status: 'succeeded',
@@ -123,7 +124,22 @@ export class DefaultAuditLogger implements AuditLogger {
       response: options.response,
       metadata: options.metadata,
     });
-    this.logger.info(options.message, auditLogDetails as JsonObject);
+    switch (logLevel) {
+      case 'info':
+        this.logger.info(options.message, auditLogDetails as JsonObject);
+        return;
+      case 'debug':
+        this.logger.debug(options.message, auditLogDetails as JsonObject);
+        return;
+      case 'warn':
+        this.logger.warn(options.message, auditLogDetails as JsonObject);
+        return;
+      case 'error':
+        this.logger.error(options.message, auditLogDetails as JsonObject);
+        return;
+      default:
+        throw new Error(`Log level of ${logLevel} is not supported`);
+    }
   }
 
   async auditErrorLog(options: AuditErrorLogOptions): Promise<void> {
