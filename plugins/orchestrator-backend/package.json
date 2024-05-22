@@ -76,7 +76,7 @@
     "@backstage/plugin-permission-node": "^0.7.27",
     "@backstage/plugin-auth-node": "^0.4.11",
     "@backstage/types": "^1.1.1",
-    "@janus-idp/backstage-plugin-orchestrator-common": "1.7.2",
+    "@janus-idp/backstage-plugin-orchestrator-common": "1.8.0",
     "@urql/core": "^4.1.4",
     "ajv-formats": "^2.1.1",
     "cloudevents": "^8.0.0",

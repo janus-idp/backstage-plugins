@@ -44,7 +44,7 @@
     "@backstage/errors": "^1.2.4",
     "@backstage/plugin-catalog": "^1.19.0",
     "@backstage/types": "^1.1.1",
-    "@janus-idp/backstage-plugin-orchestrator-common": "1.7.2",
+    "@janus-idp/backstage-plugin-orchestrator-common": "1.8.0",
     "@kie-tools-core/editor": "^0.32.0",
     "@kie-tools-core/notifications": "^0.32.0",
     "@kie-tools-core/react-hooks": "^0.32.0",
