@@ -18,6 +18,8 @@ export const orchestratorPlugin = createBackendPlugin({
         httpRouter: coreServices.httpRouter,
         urlReader: coreServices.urlReader,
         scheduler: coreServices.scheduler,
+        permissions: coreServices.permissions,
+        httpAuth: coreServices.httpAuth,
         catalogApi: catalogServiceRef,
       },
       async init({
@@ -28,6 +30,8 @@ export const orchestratorPlugin = createBackendPlugin({
         catalogApi,
         urlReader,
         scheduler,
+        permissions,
+        httpAuth,
       }) {
         const log = loggerToWinstonLogger(logger);
         const router = await createRouter({
@@ -37,6 +41,8 @@ export const orchestratorPlugin = createBackendPlugin({
           catalogApi: catalogApi,
           urlReader: urlReader,
           scheduler: scheduler,
+          permissions: permissions,
+          httpAuth: httpAuth,
         });
         httpRouter.use(router);
       },
