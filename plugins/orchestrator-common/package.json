@@ -1,6 +1,6 @@
 {
   "name": "@janus-idp/backstage-plugin-orchestrator-common",
-  "version": "1.7.2",
+  "version": "1.8.0",
   "license": "Apache-2.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -41,6 +41,7 @@
   },
   "dependencies": {
     "@backstage/types": "^1.1.1",
+    "@backstage/plugin-permission-common": "^0.7.13",
     "@severlessworkflow/sdk-typescript": "^3.0.3",
     "js-yaml": "^4.1.0",
     "json-schema": "^0.4.0"

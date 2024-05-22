@@ -1,8 +1,12 @@
-import { UrlReader } from '@backstage/backend-common';
+import { createLegacyAuthAdapters, UrlReader } from '@backstage/backend-common';
+import {
+  DiscoveryService,
+  HttpAuthService,
+  PermissionsService,
+} from '@backstage/backend-plugin-api';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
-import { DiscoveryApi } from '@backstage/core-plugin-api';
 
 import express from 'express';
 import { Logger } from 'winston';
@@ -13,10 +17,12 @@ import { createBackendRouter } from '../service/router';
 export interface RouterArgs {
   config: Config;
   logger: Logger;
-  discovery: DiscoveryApi;
+  discovery: DiscoveryService;
   catalogApi: CatalogApi;
   urlReader: UrlReader;
   scheduler: PluginTaskScheduler;
+  permissions: PermissionsService;
+  httpAuth?: HttpAuthService;
 }
 
 export async function createRouter(args: RouterArgs): Promise<express.Router> {
@@ -35,6 +41,10 @@ export async function createRouter(args: RouterArgs): Promise<express.Router> {
     }
   }
 
+  const { httpAuth } = createLegacyAuthAdapters({
+    httpAuth: args.httpAuth,
+    discovery: args.discovery,
+  });
   return await createBackendRouter({
     config: args.config,
     logger: args.logger,
@@ -42,5 +52,7 @@ export async function createRouter(args: RouterArgs): Promise<express.Router> {
     catalogApi: args.catalogApi,
     urlReader: args.urlReader,
     scheduler: args.scheduler,
+    permissions: args.permissions,
+    httpAuth: httpAuth,
   });
 }
