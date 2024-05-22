@@ -1,9 +1,24 @@
 {
   "extends": ["//"],
   "pipeline": {
+    "start": {
+      "dependsOn": ["openapi:check"]
+    },
     "tsc": {
       "outputs": ["../../dist-types/plugins/orchestrator-common/**"],
-      "dependsOn": ["^tsc"]
+      "dependsOn": ["^tsc", "openapi:check"]
+    },
+    "openapi:check": {
+      "outputs": ["src/generated/**"]
+    },
+    "openapi:generate": {
+      "outputs": ["src/generated/**"]
+    },
+    "test": {
+      "dependsOn": ["openapi:check"]
+    },
+    "export-dynamic": {
+      "dependsOn": ["openapi:check"]
     }
   }
 }
