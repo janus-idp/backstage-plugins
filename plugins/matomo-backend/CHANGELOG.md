@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-matomo-backend [1.4.8](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-matomo-backend@1.4.7...@janus-idp/backstage-plugin-matomo-backend@1.4.8) (2024-05-23)
+
+
+### Bug Fixes
+
+* **deps:** upgrade devex plugins to mui v5 ([#1696](https://github.com/janus-idp/backstage-plugins/issues/1696)) ([06d9cf0](https://github.com/janus-idp/backstage-plugins/commit/06d9cf0d8c134212329eb691ac21eb78ae155c09))
+
 ## @janus-idp/backstage-plugin-matomo-backend [1.4.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-matomo-backend@1.4.6...@janus-idp/backstage-plugin-matomo-backend@1.4.7) (2024-05-16)
 
 
