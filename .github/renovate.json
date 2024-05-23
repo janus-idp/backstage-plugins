@@ -187,8 +187,7 @@
     },
     {
       "matchFileNames": [
-        "plugins/analytics-provider-segment*/**",  
-        "plugins/audit-log*/**",      
+        "plugins/analytics-provider-segment*/**",        
         "plugins/bulk-import*/**",    
         "plugins/dynamic-plugins-info*/**",
         "plugins/keycloak*/**",
