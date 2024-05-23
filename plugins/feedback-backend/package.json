@@ -40,6 +40,7 @@
   },
   "dependencies": {
     "@backstage/backend-common": "^0.21.7",
+    "@backstage/backend-dynamic-feature-service": "^0.2.10",
     "@backstage/backend-plugin-api": "^0.6.17",
     "@backstage/backend-test-utils": "^0.3.7",
     "@backstage/catalog-client": "^1.6.4",
@@ -69,7 +70,9 @@
     "config.d.ts",
     "app-config.janus-idp.yaml",
     "migrations/**/*.{js,d.ts}",
-    "dist-dynamic"
+    "dist-dynamic/*.*",
+    "dist-dynamic/dist/**",
+    "dist-dynamic/alpha/*"
   ],
   "configSchema": "config.d.ts",
   "repository": "github:janus-idp/backstage-plugins",

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   coreServices,
   createBackendPlugin,
@@ -32,9 +31,8 @@ export const matomoBackendPlugin = createBackendPlugin({
         config: coreServices.rootConfig,
       },
       async init({ http, logger, config }) {
-        const winstonLogger = loggerToWinstonLogger(logger);
+        logger.info('Matomo plugin is running');
         const router = await createRouter({
-          logger: winstonLogger,
           config,
         });
         http.use(router);
