@@ -2,90 +2,91 @@ import React, { useEffect, useState } from 'react';
 
 import { parseEntityRef } from '@backstage/catalog-model';
 import { Progress, useQueryParamState } from '@backstage/core-components';
-import { useApi } from '@backstage/core-plugin-api';
+import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
 
-import {
-  Avatar,
-  Button,
-  Chip,
-  createStyles,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Grid,
-  IconButton,
-  Link,
-  List,
-  ListItem,
-  ListItemSecondaryAction,
-  ListItemText,
-  makeStyles,
-  Snackbar,
-  Theme,
-  Tooltip,
-  Typography,
-  Zoom,
-} from '@material-ui/core';
-import ArrowForwardRounded from '@material-ui/icons/ArrowForwardRounded';
-import BugReportOutlined from '@material-ui/icons/BugReportOutlined';
-import CloseRounded from '@material-ui/icons/CloseRounded';
-import ExpandLessRounded from '@material-ui/icons/ExpandLessRounded';
-import ExpandMoreRounded from '@material-ui/icons/ExpandMoreRounded';
-import SmsOutlined from '@material-ui/icons/SmsOutlined';
-import { Alert } from '@material-ui/lab';
+import ArrowForwardRounded from '@mui/icons-material/ArrowForwardRounded';
+import BugReportOutlined from '@mui/icons-material/BugReportOutlined';
+import CloseRounded from '@mui/icons-material/CloseRounded';
+import ExpandLessRounded from '@mui/icons-material/ExpandLessRounded';
+import ExpandMoreRounded from '@mui/icons-material/ExpandMoreRounded';
+import SmsOutlined from '@mui/icons-material/SmsOutlined';
+import Avatar from '@mui/material/Avatar';
+import Button from '@mui/material/Button';
+import Chip from '@mui/material/Chip';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import Link from '@mui/material/Link';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
+import { styled, Theme } from '@mui/material/styles';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import Zoom from '@mui/material/Zoom';
 
 import { feedbackApiRef } from '../../api';
 import { FeedbackType } from '../../models/feedback.model';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    closeButton: {
+const PREFIX = 'FeedbackDetailsModal';
+
+const classes = {
+  closeButton: `${PREFIX}-closeButton`,
+  dialogAction: `${PREFIX}-dialogAction`,
+  dialogTitle: `${PREFIX}-dialogTitle`,
+  submittedBy: `${PREFIX}-submittedBy`,
+  readMoreLink: `${PREFIX}-readMoreLink`,
+};
+
+const StyledDialog = styled(Dialog)(({ theme }: { theme: Theme }) => ({
+  [`& .${classes.dialogAction}`]: {
+    justifyContent: 'flex-start',
+    paddingLeft: theme.spacing(3),
+    paddingBottom: theme.spacing(2),
+  },
+
+  [`& .${classes.submittedBy}`]: {
+    color: '#9e9e9e',
+    fontWeight: 500,
+  },
+
+  [`& .${classes.readMoreLink}`]: {
+    display: 'flex',
+    alignItems: 'center',
+    cursor: 'pointer',
+  },
+}));
+
+const StyledDialogTitle = styled(DialogTitle)(
+  ({ theme }: { theme: Theme }) => ({
+    display: 'flex',
+    paddingBottom: theme.spacing(0),
+    marginRight: theme.spacing(2),
+    '& > svg': {
+      marginTop: theme.spacing(0.5),
+      marginRight: theme.spacing(1),
+    },
+    [`& .${classes.closeButton}`]: {
       position: 'absolute',
       right: theme.spacing(1),
       top: theme.spacing(1),
       color: theme.palette.grey[500],
     },
-    dialogAction: {
-      justifyContent: 'flex-start',
-      paddingLeft: theme.spacing(3),
-      paddingBottom: theme.spacing(2),
-    },
-    dialogTitle: {
-      '& > *': {
-        display: 'flex',
-        alignItems: 'center',
-        marginRight: theme.spacing(2),
-        wordBreak: 'break-word',
-      },
-      '& > * > svg': { marginRight: theme.spacing(1) },
-
-      paddingBottom: theme.spacing(0),
-    },
-    submittedBy: {
-      color: theme.palette.textSubtle,
-      fontWeight: 500,
-    },
-    readMoreLink: {
-      display: 'flex',
-      alignItems: 'center',
-      cursor: 'pointer',
-    },
   }),
 );
 
 export const FeedbackDetailsModal = () => {
-  const classes = useStyles();
   const api = useApi(feedbackApiRef);
+  const alertApi = useApi(alertApiRef);
   const [queryState, setQueryState] = useQueryParamState<string | undefined>(
     'id',
   );
   const [modalData, setModalData] = useState<FeedbackType>();
-  const [snackbarOpen, setSnackbarOpen] = useState({
-    message: '',
-    open: false,
-  });
 
   const [ticketDetails, setTicketDetails] = useState<{
     status: string | null;
@@ -148,26 +149,18 @@ export const FeedbackDetailsModal = () => {
     if (!modalData && queryState) {
       api.getFeedbackById(queryState).then(resp => {
         if (resp?.error !== undefined) {
-          setSnackbarOpen({ message: resp.error, open: true });
+          alertApi.post({
+            message: resp.error,
+            display: 'transient',
+            severity: 'error',
+          });
         } else {
           const respData: FeedbackType = resp?.data!;
           setModalData(respData);
         }
       });
     }
-  }, [modalData, api, queryState]);
-
-  const handleSnackbarClose = (
-    event?: React.SyntheticEvent,
-    reason?: string,
-  ) => {
-    event?.preventDefault();
-    if (reason === 'clickaway') {
-      return;
-    }
-    setSnackbarOpen({ ...snackbarOpen, open: false });
-    setQueryState(undefined);
-  };
+  }, [modalData, api, queryState, alertApi]);
 
   const handleClose = () => {
     setModalData(undefined);
@@ -194,7 +187,7 @@ export const FeedbackDetailsModal = () => {
   };
 
   return (
-    <Dialog
+    <StyledDialog
       open={Boolean(queryState)}
       onClose={handleClose}
       aria-labelledby="dialog-title"
@@ -202,19 +195,9 @@ export const FeedbackDetailsModal = () => {
       maxWidth="sm"
       scroll="paper"
     >
-      {!modalData ? (
-        <Snackbar
-          open={snackbarOpen.open}
-          autoHideDuration={6000}
-          onClose={handleSnackbarClose}
-        >
-          <Alert severity="error" onClose={handleSnackbarClose}>
-            {snackbarOpen.message}
-          </Alert>
-        </Snackbar>
-      ) : (
+      {modalData ? (
         <>
-          <DialogTitle className={classes.dialogTitle} id="dialog-title">
+          <StyledDialogTitle id="dialog-title">
             <Tooltip
               title={modalData.feedbackType === 'FEEDBACK' ? 'Feedback' : 'Bug'}
               arrow
@@ -231,10 +214,11 @@ export const FeedbackDetailsModal = () => {
               aria-label="close"
               className={classes.closeButton}
               onClick={handleClose}
+              size="large"
             >
               <CloseRounded />
             </IconButton>
-          </DialogTitle>
+          </StyledDialogTitle>
           <DialogContent>
             <Grid
               container
@@ -350,7 +334,7 @@ export const FeedbackDetailsModal = () => {
             </DialogActions>
           ) : null}
         </>
-      )}
-    </Dialog>
+      ) : null}
+    </StyledDialog>
   );
 };

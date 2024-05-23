@@ -1,4 +1,4 @@
-export { default as FeedbackIcon } from '@material-ui/icons/TextsmsOutlined';
+export { default as FeedbackIcon } from '@mui/icons-material/TextsmsOutlined';
 export {
   feedbackPlugin,
   GlobalFeedbackPage,

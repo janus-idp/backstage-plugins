@@ -3,16 +3,16 @@ import React from 'react';
 import { Content, Header, Page } from '@backstage/core-components';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 
-import { Grid } from '@material-ui/core';
+import Grid from '@mui/material/Grid';
 
 import { FeedbackDetailsModal } from '../FeedbackDetailsModal';
 import { FeedbackTable } from '../FeedbackTable';
 
-export const GlobalFeedbackPage = () => {
+export const GlobalFeedbackPage = (props: { themeId?: string }) => {
   const app = useApi(configApiRef);
   const appTitle = app.getString('app.title');
   return (
-    <Page themeId="tool">
+    <Page themeId={props.themeId ? props.themeId : 'tool'}>
       <Header title="Feedback" subtitle={`on ${appTitle}`} />
       <Content>
         <FeedbackDetailsModal />
