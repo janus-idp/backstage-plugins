@@ -93,7 +93,7 @@ export const PermissionPoliciesFormRow = ({
           <Autocomplete
             options={permissionPoliciesData?.plugins ?? []}
             style={{ width: '35%', flexGrow: '1' }}
-            value={permissionPoliciesRowData.plugin ?? ''}
+            value={permissionPoliciesRowData.plugin || null}
             onChange={(_e, value) => {
               onChangePlugin(value ?? '');
             }}
@@ -119,7 +119,7 @@ export const PermissionPoliciesFormRow = ({
               ]?.permissions ?? []
             }
             style={{ width: '35%', flexGrow: '1' }}
-            value={permissionPoliciesRowData.permission ?? ''}
+            value={permissionPoliciesRowData.permission || null}
             onChange={(_e, value) =>
               onChangePermission(
                 value ?? '',
