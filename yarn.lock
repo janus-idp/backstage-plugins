@@ -3604,7 +3604,7 @@
     zod "^3.22.4"
     zod-to-json-schema "^3.21.4"
 
-"@backstage/plugin-auth-node@^0.4.13":
+"@backstage/plugin-auth-node@^0.4.11", "@backstage/plugin-auth-node@^0.4.13":
   version "0.4.13"
   resolved "https://registry.yarnpkg.com/@backstage/plugin-auth-node/-/plugin-auth-node-0.4.13.tgz#df54d69b0f6cbce91526937cfb21a7c732630787"
   integrity sha512-i+41bNGQGY8JWFq/9GO08mylaAlSTn4vxiVpj3BYG1BZdtqpHT45MqpnVZ3s1i+/49gLoAo+PquLks9WNvmU0A==
@@ -4118,7 +4118,7 @@
     zod "^3.22.4"
     zod-to-json-schema "^3.20.4"
 
-"@backstage/plugin-permission-node@^0.7.29":
+"@backstage/plugin-permission-node@^0.7.27", "@backstage/plugin-permission-node@^0.7.29":
   version "0.7.29"
   resolved "https://registry.yarnpkg.com/@backstage/plugin-permission-node/-/plugin-permission-node-0.7.29.tgz#9545fe0fce26ca191beff5e458b920e4445a0a03"
   integrity sha512-Bjvuk9m3a2qCqoQKIuTA2Lm1zQwf+zVRJWVDIGtK+gJl1xR/gEdyEDDzIa9jX6YjfXRZ3RVsuQVA7jUg8DMw+Q==
