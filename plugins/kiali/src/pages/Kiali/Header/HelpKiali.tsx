@@ -16,7 +16,7 @@ export const HelpKiali = (props: { color?: string }) => {
 
   return (
     <>
-      <Button onClick={openAbout} style={{ marginTop: '-5px' }}>
+      <Button onClick={openAbout} style={{ marginTop: '-5px' }} data-test={'help-button'} >
         <QuestionCircleIcon color={`${props.color}`} />
       </Button>
       <AboutUIModal

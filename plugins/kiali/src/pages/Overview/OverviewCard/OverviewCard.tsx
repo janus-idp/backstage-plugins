@@ -111,7 +111,7 @@ export const OverviewCard = (props: OverviewCardProps) => {
   };
 
   return (
-    <Card>
+    <Card data-test={`overview-card-${props.namespace.name}`}>
       {!props.entity && <NamespaceHeader {...props} />}
       <CardContent>
         {!props.entity && isMultiCluster && props.namespace.cluster && (

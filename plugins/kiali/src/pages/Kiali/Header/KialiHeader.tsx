@@ -24,6 +24,7 @@ export const KialiHeader = () => {
           color="primary"
           icon={<ClusterIcon />}
           label={homeCluster?.name}
+          data-test={'home-cluster'}
         />
       </Tooltip>
       <HelpKiali />
@@ -35,6 +36,7 @@ export const KialiHeader = () => {
             flexDirection: 'row',
             justifyContent: 'space-between',
           }}
+          data-test={'user'}
         >
           <span style={{ margin: '10px' }}>
             <b>User : </b>
