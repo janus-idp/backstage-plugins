@@ -3,15 +3,13 @@ import React, { useEffect } from 'react';
 import '@one-platform/opc-feedback';
 
 import {
+  alertApiRef,
   configApiRef,
   identityApiRef,
   useAnalytics,
   useApi,
   useRouteRef,
 } from '@backstage/core-plugin-api';
-
-import { Snackbar } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
 
 import { feedbackApiRef } from '../../api';
 import { FeedbackCategory } from '../../models/feedback.model';
@@ -21,6 +19,7 @@ export const OpcFeedbackComponent = () => {
   const appConfig = useApi(configApiRef);
   const feedbackApi = useApi(feedbackApiRef);
   const identityApi = useApi(identityApiRef);
+  const alertApi = useApi(alertApiRef);
   const analytics = useAnalytics();
 
   const footer = JSON.stringify({
@@ -33,34 +32,13 @@ export const OpcFeedbackComponent = () => {
   const docsSpa = useRouteRef(viewDocsRouteRef);
   const feedbackSpa = useRouteRef(rootRouteRef);
 
-  const [snackbarState, setSnackbarState] = React.useState<{
-    message?: string;
-    open: boolean;
-    severity: 'success' | 'error';
-  }>({
-    message: '',
-    open: false,
-    severity: 'success',
-  });
-
-  const handleSnackbarClose = (
-    event?: React.SyntheticEvent,
-    reason?: string,
-  ) => {
-    event?.preventDefault();
-    if (reason === 'clickaway') {
-      return;
-    }
-    setSnackbarState({ ...snackbarState, open: false });
-  };
-
   useEffect(() => {
     const onSubmit = async (event: any) => {
       if (event.detail.data.summary.trim().length < 1) {
-        setSnackbarState({
+        alertApi.post({
           message: 'Summary cannot be empty',
           severity: 'error',
-          open: true,
+          display: 'transient',
         });
         throw Error('Summary cannot be empty');
       }
@@ -84,42 +62,31 @@ export const OpcFeedbackComponent = () => {
             : FeedbackCategory.FEEDBACK,
       });
       if (resp.error) {
-        setSnackbarState({
+        alertApi.post({
           message: resp.error,
           severity: 'error',
-          open: true,
+          display: 'transient',
         });
         throw new Error(resp.error);
       } else {
-        setSnackbarState({
-          message: resp.message,
+        alertApi.post({
+          message: resp.message as string,
           severity: 'success',
-          open: true,
+          display: 'transient',
         });
       }
     };
     const elem: any = document.querySelector('opc-feedback');
     elem.onSubmit = onSubmit;
-  }, [feedbackApi, projectId, identityApi, analytics]);
+  }, [feedbackApi, projectId, identityApi, analytics, alertApi]);
 
   return (
-    <>
-      <Snackbar
-        open={snackbarState?.open}
-        autoHideDuration={6000}
-        onClose={handleSnackbarClose}
-      >
-        <Alert severity={snackbarState.severity} onClose={handleSnackbarClose}>
-          {snackbarState?.message}
-        </Alert>
-      </Snackbar>
-      <opc-feedback
-        docs={docsSpa()}
-        spa={feedbackSpa()}
-        theme="blue"
-        app={footer}
-        summaryLimit={summaryLimit}
-      />
-    </>
+    <opc-feedback
+      docs={docsSpa()}
+      spa={feedbackSpa()}
+      theme="blue"
+      app={footer}
+      summaryLimit={summaryLimit}
+    />
   );
 };

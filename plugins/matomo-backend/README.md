@@ -74,5 +74,9 @@ Add the following configurations into your `app-config.yaml` file:
 ```yaml
 matomo:
   apiToken: ${MATOMO_API_TOKEN}
+
   apiUrl: ${MATOMO_API_URL}
+
+  # (OPTIONAL) Set to false if you get SSL certificate error
+  secure: ${MATOMO_SECURE_FLAG}
 ```

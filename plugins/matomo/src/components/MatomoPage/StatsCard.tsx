@@ -1,11 +1,9 @@
 import React, { ReactNode } from 'react';
 
-import {
-  Card,
-  CardContent,
-  CircularProgress,
-  Typography,
-} from '@material-ui/core';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CircularProgress from '@mui/material/CircularProgress';
+import Typography from '@mui/material/Typography';
 
 type Props = {
   title: string;

@@ -1,3 +1,4 @@
+import { NotAllowedError } from '@backstage/errors';
 import { ConditionalPolicyDecision } from '@backstage/plugin-permission-common';
 
 export type Source =
@@ -65,3 +66,10 @@ export type RoleConditionalPolicyDecision<
 
   permissionMapping: T[];
 };
+
+// UnauthorizedError should be uniformely used for authorization errors.
+export class UnauthorizedError extends NotAllowedError {
+  constructor() {
+    super('Unauthorized');
+  }
+}

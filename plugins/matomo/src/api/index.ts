@@ -1,4 +1,4 @@
-import { ConfigApi, createApiRef } from '@backstage/core-plugin-api';
+import { ConfigApi, createApiRef, FetchApi } from '@backstage/core-plugin-api';
 
 import {
   TActionByPageURLMetrics,
@@ -47,6 +47,7 @@ export type MatomoAPI = {
 
 type Options = {
   configApi: ConfigApi;
+  fetchApi: FetchApi;
 };
 
 export const matomoApiRef = createApiRef<MatomoAPI>({
@@ -75,9 +76,11 @@ export const transformVisitByTime = (
 
 export class MatomoApiClient implements MatomoAPI {
   private readonly configApi: ConfigApi;
+  private readonly fetchApi: FetchApi;
 
   constructor(options: Options) {
     this.configApi = options.configApi;
+    this.fetchApi = options.fetchApi;
   }
 
   async getUserVisitMetrics(
@@ -86,20 +89,23 @@ export class MatomoApiClient implements MatomoAPI {
     date: string,
   ): Promise<TUserVisitMetrics> {
     const backendUrl = this.configApi.getString('backend.baseUrl');
-    const res = await fetch(`${backendUrl}/api/matomo?module=API&format=json`, {
-      method: 'POST',
-      body: new URLSearchParams({
-        idSite,
-        method: 'API.getProcessedReport',
-        period,
-        date,
-        apiModule: 'VisitsSummary',
-        apiAction: 'get',
-      }).toString(),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+    const res = await this.fetchApi.fetch(
+      `${backendUrl}/api/matomo?module=API&format=json`,
+      {
+        method: 'POST',
+        body: new URLSearchParams({
+          idSite,
+          method: 'API.getProcessedReport',
+          period,
+          date,
+          apiModule: 'VisitsSummary',
+          apiAction: 'get',
+        }).toString(),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+        },
       },
-    });
+    );
     return res.json();
   }
 
@@ -109,20 +115,23 @@ export class MatomoApiClient implements MatomoAPI {
     date: string,
   ): Promise<TGeoMetrics> {
     const backendUrl = this.configApi.getString('backend.baseUrl');
-    const res = await fetch(`${backendUrl}/api/matomo?module=API&format=json`, {
-      method: 'POST',
-      body: new URLSearchParams({
-        idSite,
-        method: 'API.getProcessedReport',
-        period,
-        date,
-        apiModule: 'UserCountry',
-        apiAction: 'getCountry',
-      }).toString(),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+    const res = await this.fetchApi.fetch(
+      `${backendUrl}/api/matomo?module=API&format=json`,
+      {
+        method: 'POST',
+        body: new URLSearchParams({
+          idSite,
+          method: 'API.getProcessedReport',
+          period,
+          date,
+          apiModule: 'UserCountry',
+          apiAction: 'getCountry',
+        }).toString(),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+        },
       },
-    });
+    );
     return res.json();
   }
 
@@ -132,20 +141,23 @@ export class MatomoApiClient implements MatomoAPI {
     date: string,
   ): Promise<TDeviceMetrics> {
     const backendUrl = this.configApi.getString('backend.baseUrl');
-    const res = await fetch(`${backendUrl}/api/matomo?module=API&format=json`, {
-      method: 'POST',
-      body: new URLSearchParams({
-        idSite,
-        method: 'API.getProcessedReport',
-        period,
-        date,
-        apiModule: 'DevicesDetection',
-        apiAction: 'getType',
-      }).toString(),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+    const res = await this.fetchApi.fetch(
+      `${backendUrl}/api/matomo?module=API&format=json`,
+      {
+        method: 'POST',
+        body: new URLSearchParams({
+          idSite,
+          method: 'API.getProcessedReport',
+          period,
+          date,
+          apiModule: 'DevicesDetection',
+          apiAction: 'getType',
+        }).toString(),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+        },
       },
-    });
+    );
     return res.json();
   }
 
@@ -161,20 +173,23 @@ export class MatomoApiClient implements MatomoAPI {
     >
   > {
     const backendUrl = this.configApi.getString('backend.baseUrl');
-    const res = await fetch(`${backendUrl}/api/matomo?module=API&format=json`, {
-      method: 'POST',
-      body: new URLSearchParams({
-        idSite,
-        method: 'API.getProcessedReport',
-        period,
-        date,
-        apiModule: 'Actions',
-        apiAction: 'getPageUrls',
-      }).toString(),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+    const res = await this.fetchApi.fetch(
+      `${backendUrl}/api/matomo?module=API&format=json`,
+      {
+        method: 'POST',
+        body: new URLSearchParams({
+          idSite,
+          method: 'API.getProcessedReport',
+          period,
+          date,
+          apiModule: 'Actions',
+          apiAction: 'getPageUrls',
+        }).toString(),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+        },
       },
-    });
+    );
     const data = (await res.json()) as TActionByPageURLMetrics;
     return data.reportData.map(({ bounce_rate, avg_time_on_page, ...el }) => {
       const avgTimeStr = avg_time_on_page.split(':');
@@ -197,20 +212,23 @@ export class MatomoApiClient implements MatomoAPI {
     date: string,
   ): Promise<Metric[]> {
     const backendUrl = this.configApi.getString('backend.baseUrl');
-    const res = await fetch(`${backendUrl}/api/matomo?module=API&format=json`, {
-      method: 'POST',
-      body: new URLSearchParams({
-        idSite,
-        method: 'API.getProcessedReport',
-        period,
-        date,
-        apiModule: 'Actions',
-        apiAction: 'get',
-      }).toString(),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+    const res = await this.fetchApi.fetch(
+      `${backendUrl}/api/matomo?module=API&format=json`,
+      {
+        method: 'POST',
+        body: new URLSearchParams({
+          idSite,
+          method: 'API.getProcessedReport',
+          period,
+          date,
+          apiModule: 'Actions',
+          apiAction: 'get',
+        }).toString(),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+        },
       },
-    });
+    );
     const { reportData, columns } = (await res.json()) as TActionMetrics;
     return Object.keys(columns).map(metric => ({
       metric: columns[metric as keyof TActionMetrics['reportData']],
