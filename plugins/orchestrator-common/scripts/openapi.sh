@@ -5,7 +5,6 @@ set -e
 GENERATED_FOLDER="./src/generated"
 OPENAPI_SPEC_FILE="./src/openapi/openapi.yaml"
 API_FOLDER="${GENERATED_FOLDER}/api"
-SCHEMA_FILE="${API_FOLDER}/models/schema.ts"
 DEFINITION_FILE="${API_FOLDER}/definition.ts"
 METADATA_FILE="${GENERATED_FOLDER}/.METADATA.sha1"
 CLIENT_FOLDER="${GENERATED_FOLDER}/client"
@@ -14,8 +13,6 @@ openapi_generate() {
     # TypeScript Client generation
     openapi-ts --input ${OPENAPI_SPEC_FILE} --output ${CLIENT_FOLDER}
 
-    ## Schema generation
-    npx --yes openapi-typescript@6.7.5 ${OPENAPI_SPEC_FILE} -o ${SCHEMA_FILE}
     # Docs generation
     npx --yes @openapitools/openapi-generator-cli@v2.13.1 generate -g asciidoc -i ./src/openapi/openapi.yaml -o ./src/generated/docs/index.adoc
     
@@ -37,7 +34,7 @@ EOF
 }
 
 openapi_checksum() {
-    export CONCATENATED_CONTENT=$(cat ${DEFINITION_FILE} ${SCHEMA_FILE} ${OPENAPI_SPEC_FILE})
+    export CONCATENATED_CONTENT=$(cat ${DEFINITION_FILE} ${OPENAPI_SPEC_FILE})
     node -e $'console.log(crypto.createHash("sha1").update(`${process.env.CONCATENATED_CONTENT}`).digest("hex"))'
 }
 
