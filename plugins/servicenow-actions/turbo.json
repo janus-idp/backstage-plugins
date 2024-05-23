@@ -2,20 +2,20 @@
   "extends": ["//"],
   "pipeline": {
     "start": {
-      "dependsOn": ["generate"]
+      "dependsOn": ["openapi:generate"]
     },
     "tsc": {
       "outputs": ["../../dist-types/plugins/servicenow-actions/**"],
-      "dependsOn": ["^tsc", "generate"]
+      "dependsOn": ["^tsc", "openapi:generate"]
     },
-    "generate": {
+    "openapi:generate": {
       "outputs": ["src/generated/**"]
     },
     "test": {
-      "dependsOn": ["generate"]
+      "dependsOn": ["openapi:generate"]
     },
     "export-dynamic": {
-      "dependsOn": ["generate"]
+      "dependsOn": ["openapi:generate"]
     }
   }
 }
