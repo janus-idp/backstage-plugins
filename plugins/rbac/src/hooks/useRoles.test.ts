@@ -63,6 +63,7 @@ jest.mock('@backstage/core-plugin-api', () => ({
           effect: 'allow',
         },
       ]),
+    getRoleConditions: jest.fn().mockReturnValue([]),
   }),
 }));
 
