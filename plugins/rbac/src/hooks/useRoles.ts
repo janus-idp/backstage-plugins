@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useAsync, useAsyncRetry, useInterval } from 'react-use';
 
 import { useApi } from '@backstage/core-plugin-api';
@@ -16,6 +16,8 @@ import { rbacApiRef } from '../api/RBACBackendClient';
 import { RolesData } from '../types';
 import { getPermissions } from '../utils/rbac-utils';
 
+type RoleWithConditionalPolicies = Role & { conditionalPolicies: number };
+
 export const useRoles = (
   pollInterval?: number,
 ): {
@@ -30,6 +32,9 @@ export const useRoles = (
   retry: { roleRetry: () => void; policiesRetry: () => void };
 } => {
   const rbacApi = useApi(rbacApiRef);
+  const [newRoles, setNewRoles] = React.useState<RoleWithConditionalPolicies[]>(
+    [],
+  );
   const {
     value: roles,
     retry: roleRetry,
@@ -76,14 +81,46 @@ export const useRoles = (
     permission: policyEntityUpdatePermission,
     resourceRef: policyEntityUpdatePermission.resourceType,
   });
+
+  useEffect(() => {
+    const fetchAllPermissionPolicies = async () => {
+      if (Array.isArray(roles)) {
+        try {
+          const updatedRoles: RoleWithConditionalPolicies[] = await Promise.all(
+            roles.map(async role => {
+              const conditionalPolicies = await rbacApi.getRoleConditions(
+                role.name,
+              );
+
+              return {
+                ...role,
+                conditionalPolicies: Array.isArray(conditionalPolicies)
+                  ? conditionalPolicies.length
+                  : 0,
+              };
+            }),
+          );
+
+          setNewRoles(updatedRoles);
+        } catch (e) {
+          throw new Error(`Error in fetchAllPermissionPolicies: ${e}`);
+        }
+      }
+    };
+    if (Array.isArray(roles) && roles.length > 0) {
+      fetchAllPermissionPolicies();
+    }
+  }, [roles, rbacApi]);
+
   const data: RolesData[] = React.useMemo(
     () =>
-      Array.isArray(roles) && roles?.length > 0
-        ? roles.reduce((acc: RolesData[], role: Role) => {
-            const permissions = getPermissions(
-              role.name,
-              policies as RoleBasedPolicy[],
-            );
+      Array.isArray(newRoles) && newRoles?.length > 0
+        ? newRoles.reduce(
+            (acc: RolesData[], role: RoleWithConditionalPolicies) => {
+              const permissions = getPermissions(
+                role.name,
+                policies as RoleBasedPolicy[],
+              );
 
             return [
               ...acc,
@@ -108,7 +145,7 @@ export const useRoles = (
           }, [])
         : [],
     [
-      roles,
+      newRoles,
       policies,
       deletePermissionResult,
       editPermissionResult.allowed,
