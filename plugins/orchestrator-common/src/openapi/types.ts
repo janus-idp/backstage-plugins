@@ -1,4 +1,4 @@
-import { components } from '../auto-generated/api/models/schema';
+import { components } from '../generated/api/models/schema';
 
 export type ErrorResponse = components['schemas']['ErrorResponse'];
 export type WorkflowOverviewListResultDTO =

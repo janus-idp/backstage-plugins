@@ -28,7 +28,7 @@
   ],
   "configSchema": "config.d.ts",
   "scripts": {
-    "build": "yarn openapi:check && backstage-cli package build",
+    "build": "backstage-cli package build",
     "tsc": "tsc",
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test --passWithNoTests --coverage",
@@ -37,7 +37,7 @@
     "postpack": "backstage-cli package postpack",
     "openapi:generate": "./scripts/openapi.sh generate",
     "openapi:check": "./scripts/openapi.sh check",
-    "openapi:prettier:fix": "prettier --ignore-unknown --write ./src/auto-generated"
+    "openapi:prettier:fix": "prettier --ignore-unknown --write ./src/generated/api"
   },
   "dependencies": {
     "@backstage/types": "^1.1.1",
@@ -47,6 +47,7 @@
     "json-schema": "^0.4.0"
   },
   "devDependencies": {
-    "@backstage/cli": "0.26.4"
+    "@backstage/cli": "0.26.4",
+    "@hey-api/openapi-ts": "0.34.5"
   }
 }
