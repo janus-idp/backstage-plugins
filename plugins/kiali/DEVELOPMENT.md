@@ -67,22 +67,10 @@
    /* highlight-add-end */
    ```
 
-4. import the plugin to `packages/backend/src/index.ts`. There are three lines of code you'll need to add, and they should be added near similar code in your existing Backstage backend.
+4. import the plugin to `packages/backend/src/index.ts`.
 
    ```typescript title="packages/backend/src/index.ts"
-   // ..
-   /* highlight-add-next-line */
-   import kiali from './plugins/kiali';
-
-   async function main() {
-     // ...
-     /* highlight-add-next-line */
-     const kialiEnv = useHotMemoize(module, () => createEnv('kiali'));
-     // ...
-     /* highlight-add-next-line */
-     apiRouter.use('/kiali', await kiali(kialiEnv));
-     // ...
-   }
+   backend.add(import('@janus-idp/backstage-plugin-kiali-backend/alpha'));
    ```
 
 5. Configure you `app-config.local.yaml` with kiali configuration
@@ -112,14 +100,22 @@
    Add to locations in `app-config.local.yaml`
 
    ```yaml
+   backend:
+     auth:
+       dangerouslyDisableDefaultAuthPolicy: true
+   ---
    locations:
      # Local example data for Kiali plugin
      - type: file
        target: ../../plugins/kiali/catalog-demo.yaml
    ```
 
-7. Run `yarn start:backstage` from the project root.
-8. After create a new component, the Kiali tab should be enabled:
+7. Add catalog
+
+   Add to locations in `app-config.local.yaml`
+
+8. Run `yarn start:backstage` from the project root.
+9. After create a new component, the Kiali tab should be enabled:
 
 ![catalog-list](./images/kiali-tab-backstage.png)
 
