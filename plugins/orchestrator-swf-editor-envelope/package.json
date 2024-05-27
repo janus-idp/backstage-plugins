@@ -16,7 +16,7 @@
     "role": "web-library"
   },
   "scripts": {
-    "build": "webpack --progress",
+    "build": "scripts/build",
     "postbuild": "scripts/postbuild copy",
     "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
