@@ -1,6 +1,6 @@
 export * from './types';
-export * from './openapi/types';
 export * from './generated/api/definition';
+export * from './generated/client';
 export * from './constants';
 export * from './models';
 export * from './workflow';
