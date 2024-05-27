@@ -999,7 +999,8 @@ export class PoliciesServer {
       const perm = rule.permissions.find(
         permission =>
           permission.type === 'resource' &&
-          action === permission.attributes.action,
+          (action === permission.attributes.action ||
+            (action === 'use' && permission.attributes.action === undefined)),
       );
       if (!perm) {
         throw new Error(

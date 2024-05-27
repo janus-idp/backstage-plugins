@@ -283,6 +283,30 @@ describe('condition-validation', () => {
       }
       expect(unexpectedErr).toBeUndefined();
     });
+
+    it('should validate role-condition.conditions with permission policy action of use without errors', () => {
+      const condition: any = {
+        pluginId: 'scaffolder',
+        resourceType: 'scaffolder-action',
+        roleEntityRef: 'role:default/test',
+        result: AuthorizeResult.CONDITIONAL,
+        permissionMapping: ['use'],
+        conditions: {
+          rule: 'HAS_ACTION_ID',
+          resourceType: 'scaffolder-action',
+          params: {
+            actionId: 'quay:create-repository',
+          },
+        },
+      };
+      let unexpectedErr;
+      try {
+        validateRoleCondition(condition);
+      } catch (err) {
+        unexpectedErr = err;
+      }
+      expect(unexpectedErr).toBeUndefined();
+    });
   });
 
   describe('validate "not" criteria', () => {
