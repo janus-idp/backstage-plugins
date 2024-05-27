@@ -124,6 +124,13 @@ const knex = Knex.knex({ client: MockClient });
 
 const mockAuthService = mockServices.auth();
 
+const auditLoggerMock = {
+  getActorId: jest.fn().mockImplementation(),
+  createAuditLogDetails: jest.fn().mockImplementation(),
+  auditLog: jest.fn().mockImplementation(),
+  auditErrorLog: jest.fn().mockImplementation(),
+};
+
 describe('RBACPermissionPolicy Tests', () => {
   it('should build', async () => {
     const stringPolicy = `p, user:default/known_user, test-resource, update, allow `;
@@ -160,6 +167,13 @@ describe('RBACPermissionPolicy Tests', () => {
         newIdentityResponse('user:default/guest'),
       );
       expect(decision.result).toBe(AuthorizeResult.ALLOW);
+      verifyAuditLogForResourcedPermission(
+        'user:default/guest',
+        'catalog.entity.read',
+        'read',
+        'catalog-entity',
+        AuthorizeResult.ALLOW,
+      );
     });
 
     // case2
@@ -169,6 +183,12 @@ describe('RBACPermissionPolicy Tests', () => {
         newIdentityResponse('user:default/guest'),
       );
       expect(decision.result).toBe(AuthorizeResult.ALLOW);
+      verifyAuditLogForNonResourcedPermission(
+        'user:default/guest',
+        'catalog.entity.create',
+        'use',
+        AuthorizeResult.ALLOW,
+      );
     });
 
     // case3
@@ -178,6 +198,12 @@ describe('RBACPermissionPolicy Tests', () => {
         newIdentityResponse('user:default/known_user'),
       );
       expect(decision.result).toBe(AuthorizeResult.ALLOW);
+      verifyAuditLogForNonResourcedPermission(
+        'user:default/known_user',
+        'test.resource.deny',
+        'use',
+        AuthorizeResult.ALLOW,
+      );
     });
 
     // case1 with role
@@ -191,6 +217,13 @@ describe('RBACPermissionPolicy Tests', () => {
         newIdentityResponse('user:default/guest'),
       );
       expect(decision.result).toBe(AuthorizeResult.ALLOW);
+      verifyAuditLogForResourcedPermission(
+        'user:default/guest',
+        'catalog.entity.read',
+        'update',
+        'catalog-entity',
+        AuthorizeResult.ALLOW,
+      );
     });
 
     // case2 with role
@@ -204,6 +237,13 @@ describe('RBACPermissionPolicy Tests', () => {
         newIdentityResponse('role:default/catalog-writer'),
       );
       expect(decision.result).toBe(AuthorizeResult.ALLOW);
+      verifyAuditLogForResourcedPermission(
+        'role:default/catalog-writer',
+        'catalog.entity.read',
+        'update',
+        'catalog-entity',
+        AuthorizeResult.ALLOW,
+      );
     });
   });
 
@@ -417,6 +457,12 @@ describe('RBACPermissionPolicy Tests', () => {
         newIdentityResponse('user:default/user-old-1'),
       );
       expect(decision.result).toBe(AuthorizeResult.DENY);
+      verifyAuditLogForNonResourcedPermission(
+        'user:default/user-old-1',
+        'test.some.resource',
+        'use',
+        AuthorizeResult.DENY,
+      );
     });
 
     it('should cleanup old policies and group policies and metadata after re-attach policy file', async () => {
@@ -871,6 +917,12 @@ describe('RBACPermissionPolicy Tests', () => {
         newIdentityResponse('user:default/known_user'),
       );
       expect(decision.result).toBe(AuthorizeResult.DENY);
+      verifyAuditLogForNonResourcedPermission(
+        'user:default/known_user',
+        'test.resource.deny',
+        'use',
+        AuthorizeResult.DENY,
+      );
     });
     // case2
     it('should deny access to basic permission for unlisted user', async () => {
@@ -879,6 +931,12 @@ describe('RBACPermissionPolicy Tests', () => {
         newIdentityResponse('unuser:default/known_user'),
       );
       expect(decision.result).toBe(AuthorizeResult.DENY);
+      verifyAuditLogForNonResourcedPermission(
+        'unuser:default/known_user',
+        'test.resource',
+        'use',
+        AuthorizeResult.DENY,
+      );
     });
     // case3
     it('should deny access to basic permission for listed user deny and allow', async () => {
@@ -887,6 +945,12 @@ describe('RBACPermissionPolicy Tests', () => {
         newIdentityResponse('user:default/duplicated'),
       );
       expect(decision.result).toBe(AuthorizeResult.DENY);
+      verifyAuditLogForNonResourcedPermission(
+        'user:default/duplicated',
+        'test.resource',
+        'use',
+        AuthorizeResult.DENY,
+      );
     });
     // case4
     it('should allow access to basic permission for user listed on policy', async () => {
@@ -895,6 +959,12 @@ describe('RBACPermissionPolicy Tests', () => {
         newIdentityResponse('user:default/known_user'),
       );
       expect(decision.result).toBe(AuthorizeResult.ALLOW);
+      verifyAuditLogForNonResourcedPermission(
+        'user:default/known_user',
+        'test.resource',
+        'use',
+        AuthorizeResult.ALLOW,
+      );
     });
     // case5
     it('should deny access to undefined user', async () => {
@@ -903,6 +973,7 @@ describe('RBACPermissionPolicy Tests', () => {
         newIdentityResponse(),
       );
       expect(decision.result).toBe(AuthorizeResult.DENY);
+      // verifyAuditLogForNonResourcedPermission('', 'test.resource', 'use', AuthorizeResult.DENY);
     });
 
     // Tests for Resource Permission type
@@ -1116,6 +1187,7 @@ describe('RBACPermissionPolicy Tests', () => {
       await enfDelegate.addGroupingPolicy(oldGroupPolicy, {
         source: 'configuration',
         roleEntityRef: ADMIN_ROLE_NAME,
+        modifiedBy: `user:default/tom`,
       });
 
       policy = await newPermissionPolicy(
@@ -1229,13 +1301,19 @@ describe('Policy checks for resourced permissions defined by name', () => {
   it('should allow access to resourced permission assigned by name', async () => {
     catalogApi.getEntities.mockReturnValue({ items: [] });
 
+    const modifiedBy = `user:default/tom`;
     await enfDelegate.addGroupingPolicy(
       ['user:default/tor', 'role:default/catalog_reader'],
-      { source: 'csv-file', roleEntityRef: 'role:default/catalog_reader' },
+      {
+        source: 'csv-file',
+        roleEntityRef: 'role:default/catalog_reader',
+        modifiedBy,
+      },
     );
     await enfDelegate.addPolicy(
       ['role:default/catalog_reader', 'catalog.entity.read', 'read', 'allow'],
       'csv-file',
+      modifiedBy,
     );
 
     const decision = await policy.handle(
@@ -1252,9 +1330,14 @@ describe('Policy checks for resourced permissions defined by name', () => {
   it('should allow access to resourced permission assigned by name, because it has higher priority then permission for the same resource assigned by resource type', async () => {
     catalogApi.getEntities.mockReturnValue({ items: [] });
 
+    const modifiedBy = `user:default/tom`;
     await enfDelegate.addGroupingPolicy(
       ['user:default/tor', 'role:default/catalog_reader'],
-      { source: 'csv-file', roleEntityRef: 'role:default/catalog_reader' },
+      {
+        source: 'csv-file',
+        roleEntityRef: 'role:default/catalog_reader',
+        modifiedBy,
+      },
     );
     await enfDelegate.addPolicies(
       [
@@ -1262,6 +1345,7 @@ describe('Policy checks for resourced permissions defined by name', () => {
         ['role:default/catalog_reader', 'catalog-entity', 'read', 'deny'],
       ],
       'csv-file',
+      modifiedBy,
     );
 
     const decision = await policy.handle(
@@ -1278,16 +1362,23 @@ describe('Policy checks for resourced permissions defined by name', () => {
   it('should deny access to resourced permission assigned by name, because it has higher priority then permission for the same resource assigned by resource type', async () => {
     catalogApi.getEntities.mockReturnValue({ items: [] });
 
+    const modifiedBy = `user:default/tom`;
     await enfDelegate.addGroupingPolicy(
       ['user:default/tor', 'role:default/catalog_reader'],
-      { source: 'csv-file', roleEntityRef: 'role:default/catalog_reader' },
+      {
+        source: 'csv-file',
+        roleEntityRef: 'role:default/catalog_reader',
+        modifiedBy,
+      },
     );
+
     await enfDelegate.addPolicies(
       [
         ['role:default/catalog_reader', 'catalog.entity.read', 'read', 'deny'],
         ['role:default/catalog_reader', 'catalog-entity', 'read', 'allow'],
       ],
       'csv-file',
+      modifiedBy,
     );
 
     const decision = await policy.handle(
@@ -1317,13 +1408,20 @@ describe('Policy checks for resourced permissions defined by name', () => {
       return { items: [groupEntityMock] };
     });
 
+    const modifiedBy = `user:default/tom`;
     await enfDelegate.addGroupingPolicy(
       ['group:default/team-a', 'role:default/catalog_user'],
-      { source: 'csv-file', roleEntityRef: 'role:default/catalog_user' },
+      {
+        source: 'csv-file',
+        roleEntityRef: 'role:default/catalog_user',
+        modifiedBy,
+      },
     );
+
     await enfDelegate.addPolicies(
       [['role:default/catalog_user', 'catalog.entity.read', 'read', 'allow']],
       'csv-file',
+      modifiedBy,
     );
 
     const decision = await policy.handle(
@@ -1362,17 +1460,28 @@ describe('Policy checks for resourced permissions defined by name', () => {
       return { items: [groupParentMock, groupEntityMock] };
     });
 
+    const modifiedBy = `user:default/tom`;
     await enfDelegate.addGroupingPolicy(
       ['group:default/team-b', 'role:default/catalog_user'],
-      { source: 'csv-file', roleEntityRef: 'role:default/catalog_user' },
+      {
+        source: 'csv-file',
+        roleEntityRef: 'role:default/catalog_user',
+        modifiedBy,
+      },
     );
     await enfDelegate.addGroupingPolicy(
       ['group:default/team-a', 'group:default/team-b'],
-      { source: 'csv-file', roleEntityRef: 'role:default/catalog_user' },
+      {
+        source: 'csv-file',
+        roleEntityRef: 'role:default/catalog_user',
+        modifiedBy,
+      },
     );
+
     await enfDelegate.addPolicies(
       [['role:default/catalog_user', 'catalog.entity.read', 'read', 'allow']],
       'csv-file',
+      modifiedBy,
     );
 
     const decision = await policy.handle(
@@ -1790,10 +1899,12 @@ describe('Policy checks for conditional policies', () => {
       policyMetadataStorageMock,
       roleMetadataStorageMock,
       knex,
+      auditLoggerMock,
     );
 
     policy = await RBACPermissionPolicy.build(
       logger,
+      auditLoggerMock,
       config,
       conditionalStorage,
       enfDelegate,
@@ -2147,6 +2258,7 @@ async function newEnforcerDelegate(
     policyMock || policyMetadataStorageMock,
     roleMetadataStorageMock,
     knex,
+    auditLoggerMock,
   );
 }
 
@@ -2156,12 +2268,82 @@ async function newPermissionPolicy(
   roleMock?: RoleMetadataStorage,
 ): Promise<RBACPermissionPolicy> {
   const logger = getVoidLogger();
-  return await RBACPermissionPolicy.build(
+  const permissionPolicy = await RBACPermissionPolicy.build(
     logger,
+    auditLoggerMock,
     config,
     conditionalStorage,
     enfDelegate,
     roleMock || roleMetadataStorageMock,
     knex,
   );
+  auditLoggerMock.auditLog.mockReset();
+  return permissionPolicy;
+}
+
+function verifyAuditLogForNonResourcedPermission(
+  user: string,
+  permissionName: string,
+  action: string,
+  result: AuthorizeResult,
+) {
+  expect(auditLoggerMock.auditLog).toHaveBeenNthCalledWith(1, {
+    actorId: user,
+    eventName: 'PermissionEvaluationStarted',
+    message: `Policy check for ${user}`,
+    metadata: {
+      action,
+      permissionName,
+      userEntityRef: user,
+    },
+    stage: 'evaluatePermissionAccess',
+  });
+  expect(auditLoggerMock.auditLog).toHaveBeenNthCalledWith(2, {
+    actorId: user,
+    eventName: 'PermissionEvaluationCompleted',
+    message: `${user} is ${result} for permission '${permissionName}' and action '${action}'`,
+    metadata: {
+      action,
+      decision: { result },
+      permissionName,
+      userEntityRef: user,
+    },
+    stage: 'evaluatePermissionAccess',
+  });
+}
+
+function verifyAuditLogForResourcedPermission(
+  user: string,
+  permissionName: string,
+  action: string,
+  resourceType: string,
+  result: AuthorizeResult,
+) {
+  expect(auditLoggerMock.auditLog).toHaveBeenNthCalledWith(1, {
+    actorId: user,
+    eventName: 'PermissionEvaluationStarted',
+    message: `Policy check for ${user}`,
+    metadata: {
+      action,
+      permissionName,
+      resourceType,
+      userEntityRef: user,
+    },
+    stage: 'evaluatePermissionAccess',
+  });
+  expect(auditLoggerMock.auditLog).toHaveBeenNthCalledWith(2, {
+    actorId: user,
+    eventName: 'PermissionEvaluationCompleted',
+    message: `${user} is ${result} for permission '${permissionName}', resource type '${resourceType}' and action '${action}'`,
+    metadata: {
+      action,
+      decision: {
+        result,
+      },
+      permissionName,
+      resourceType,
+      userEntityRef: user,
+    },
+    stage: 'evaluatePermissionAccess',
+  });
 }

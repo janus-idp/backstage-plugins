@@ -19,6 +19,14 @@ export function policyToString(policy: string[]): string {
   return `[${policy.join(', ')}]`;
 }
 
+export function stringToPolicy(policyStr: string): string[] {
+  // Remove the surrounding square brackets and split the string by commas
+  return policyStr
+    .slice(1, -1)
+    .split(', ')
+    .map(item => item.trim());
+}
+
 export function policiesToString(policies: string[][]): string {
   const policiesString = policies
     .map(policy => policyToString(policy))

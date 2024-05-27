@@ -12,6 +12,8 @@ import {
 import { EnforcerDelegate } from './service/enforcer-delegate';
 import { ADMIN_ROLE_AUTHOR } from './service/permission-policy';
 
+const modifiedBy = 'user:default/some-user';
+
 describe('helper.ts', () => {
   describe('policyToString', () => {
     it('should convert permission policy to string', () => {
@@ -167,12 +169,14 @@ describe('helper.ts', () => {
         id: 1,
         roleEntityRef: 'role:default/qa',
         source: 'rest',
+        modifiedBy,
       };
       const obj2: RoleMetadataDao = {
         roleEntityRef: 'role:default/qa',
         description: 'qa team',
         id: 1,
         source: 'rest',
+        modifiedBy,
       };
       expect(deepSortedEqual(obj1, obj2)).toBe(true);
     });
@@ -183,12 +187,14 @@ describe('helper.ts', () => {
         id: 1,
         roleEntityRef: 'role:default/qa',
         source: 'rest',
+        modifiedBy,
       };
       const obj2: RoleMetadataDao = {
         id: 1,
         description: 'qa team',
         source: 'rest',
         roleEntityRef: 'role:default/qa',
+        modifiedBy,
       };
       expect(deepSortedEqual(obj1, obj2)).toBe(true);
     });
@@ -210,6 +216,7 @@ describe('helper.ts', () => {
         description: 'qa team',
         source: 'rest',
         roleEntityRef: 'role:default/qa',
+        modifiedBy,
       };
       expect(
         deepSortedEqual(obj1, obj2, [
@@ -227,12 +234,14 @@ describe('helper.ts', () => {
         id: 1,
         roleEntityRef: 'role:default/qa',
         source: 'rest',
+        modifiedBy,
       };
       const obj2: RoleMetadataDao = {
         description: 'great qa',
         id: 1,
         roleEntityRef: 'role:default/qa',
         source: 'rest',
+        modifiedBy,
       };
       expect(deepSortedEqual(obj1, obj2)).toBe(false);
     });
@@ -243,12 +252,14 @@ describe('helper.ts', () => {
         id: 1,
         roleEntityRef: 'role:default/qa',
         source: 'rest',
+        modifiedBy,
       };
       const obj2: RoleMetadataDao = {
         description: 'qa teams',
         id: 1,
         roleEntityRef: 'role:default/qa',
         source: 'configuration',
+        modifiedBy,
       };
       expect(deepSortedEqual(obj1, obj2)).toBe(false);
     });
@@ -259,12 +270,14 @@ describe('helper.ts', () => {
         id: 1,
         roleEntityRef: 'role:default/qa',
         source: 'rest',
+        modifiedBy,
       };
       const obj2: RoleMetadataDao = {
         description: 'qa teams',
         id: 2,
         roleEntityRef: 'role:default/qa',
         source: 'rest',
+        modifiedBy,
       };
       expect(deepSortedEqual(obj1, obj2)).toBe(false);
     });
@@ -275,12 +288,14 @@ describe('helper.ts', () => {
         id: 1,
         roleEntityRef: 'role:default/qa',
         source: 'rest',
+        modifiedBy,
       };
       const obj2: RoleMetadataDao = {
         description: 'qa teams',
         id: 1,
         roleEntityRef: 'role:default/dev',
         source: 'rest',
+        modifiedBy,
       };
       expect(deepSortedEqual(obj1, obj2)).toBe(false);
     });

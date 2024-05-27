@@ -13,6 +13,7 @@ import * as Knex from 'knex';
 import { MockClient } from 'knex-mock-client';
 import { Logger } from 'winston';
 
+import { DefaultAuditLogger } from '@janus-idp/backstage-plugin-audit-log-node';
 import {
   PermissionPolicyMetadata,
   RoleMetadata,
@@ -31,7 +32,10 @@ import { policyToString } from '../helper';
 import { BackstageRoleManager } from '../role-manager/role-manager';
 import { EnforcerDelegate } from '../service/enforcer-delegate';
 import { MODEL } from '../service/permission-model';
-import { CSVFileWatcher } from './csv-file-watcher';
+import {
+  CSV_PERMISSION_POLICY_FILE_AUTHOR,
+  CSVFileWatcher,
+} from './csv-file-watcher';
 
 const catalogApi = {
   getEntityAncestors: jest.fn().mockImplementation(),
@@ -53,6 +57,7 @@ const catalogApi = {
 const loggerMock: any = {
   warn: jest.fn().mockImplementation(),
   debug: jest.fn().mockImplementation(),
+  info: jest.fn().mockImplementation(),
 };
 
 const roleMetadataStorageMock: RoleMetadataStorage = {
@@ -97,7 +102,14 @@ const dbManagerMock: DatabaseService = {
   getClient: jest.fn().mockImplementation(),
 };
 
+const httpAuthServiceMock = mockServices.httpAuth();
 const mockAuthService = mockServices.auth();
+
+const aLog = new DefaultAuditLogger({
+  authService: mockAuthService,
+  httpAuthService: httpAuthServiceMock,
+  logger: loggerMock,
+});
 
 const currentPermissionPolicies = [
   ['role:default/catalog-writer', 'catalog-entity', 'update', 'allow'],
@@ -156,6 +168,7 @@ describe('CSVFileWatcher', () => {
       policyMetadataStorageMock,
       roleMetadataStorageMock,
       knex,
+      aLog,
     );
 
     enfAddPolicySpy = jest.spyOn(enf, 'addPolicy');
@@ -258,7 +271,11 @@ describe('CSVFileWatcher', () => {
         ['role:default/catalog-writer', 'catalog-entity', 'update', 'allow'],
       ];
 
-      await enforcerDelegate.addPolicy(legacyPermission, 'legacy');
+      await enforcerDelegate.addPolicy(
+        legacyPermission,
+        'legacy',
+        CSV_PERMISSION_POLICY_FILE_AUTHOR,
+      );
 
       await csvFileWatcher.initialize(csvFileName, false);
 
@@ -313,6 +330,7 @@ describe('CSVFileWatcher', () => {
       await enforcerDelegate.addGroupingPolicy(legacyRole, {
         roleEntityRef: legacyRole[1],
         source: 'legacy',
+        modifiedBy: CSV_PERMISSION_POLICY_FILE_AUTHOR,
       });
 
       await csvFileWatcher.initialize(csvFileName, false);

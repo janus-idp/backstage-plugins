@@ -280,7 +280,12 @@ export class CSVFileWatcher {
         continue;
       }
       try {
-        await this.enforcer.addOrUpdatePolicy(policy, 'csv-file', true);
+        await this.enforcer.addOrUpdatePolicy(
+          policy,
+          'csv-file',
+          CSV_PERMISSION_POLICY_FILE_AUTHOR,
+          true,
+        );
       } catch (e) {
         this.logger.warn(
           `Failed to add or update policy ${policy} after modification ${this.csvFileName}. Cause: ${e}`,
@@ -299,6 +304,8 @@ export class CSVFileWatcher {
       await this.enforcer.removePolicies(
         this.csvFilePolicies.removedPolicies,
         'csv-file',
+        CSV_PERMISSION_POLICY_FILE_AUTHOR,
+        false,
         true,
       );
     } catch (e) {
