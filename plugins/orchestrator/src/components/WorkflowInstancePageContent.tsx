@@ -8,7 +8,7 @@ import {
   useRouteRef,
 } from '@backstage/core-plugin-api';
 
-import { Grid, makeStyles } from '@material-ui/core';
+import { Chip, Grid, makeStyles } from '@material-ui/core';
 import moment from 'moment';
 
 import {
@@ -72,13 +72,24 @@ const useStyles = makeStyles(_ => ({
     height: '100%',
   },
   autoOverflow: { overflow: 'auto' },
+  recommendedLabelContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    whiteSpace: 'nowrap',
+  },
+  recommendedLabel: { margin: '0 0.25rem' },
 }));
 
 const getNextWorkflows = (
   details: WorkflowRunDetail,
   executeWorkflowLink: RouteFunc<PathParams<'/workflows/:workflowId/execute'>>,
 ) => {
-  const nextWorkflows: { title: string; link: string; id: string }[] = [];
+  const nextWorkflows: {
+    title: string;
+    link: string;
+    id: string;
+    isRecommended: boolean;
+  }[] = [];
 
   if (details.nextWorkflowSuggestions) {
     Object.entries(details.nextWorkflowSuggestions).forEach(([_, value]) => {
@@ -97,6 +108,11 @@ const getNextWorkflows = (
           title: nextWorkflowSuggestion.name,
           link: urlToNavigate,
           id: nextWorkflowSuggestion.id,
+          isRecommended:
+            (
+              details.nextWorkflowSuggestions
+                ?.currentVersion as WorkflowSuggestion
+            )?.id === nextWorkflowSuggestion.id,
         });
       });
     });
@@ -187,15 +203,28 @@ export const WorkflowInstancePageContent: React.FC<{
               <Grid container spacing={3}>
                 {nextWorkflows.map(item => (
                   <Grid item xs={4} key={item.title}>
-                    <Link
-                      color="primary"
-                      to="#"
-                      onClick={() => {
-                        openWorkflowDescriptionModal(item.id);
-                      }}
+                    <div
+                      className={styles.recommendedLabelContainer}
+                      key={item.title}
                     >
-                      {item.title}
-                    </Link>
+                      <Link
+                        color="primary"
+                        to="#"
+                        onClick={() => {
+                          openWorkflowDescriptionModal(item.id);
+                        }}
+                      >
+                        {item.title}
+                      </Link>
+                      {item.isRecommended ? (
+                        <Chip
+                          size="small"
+                          label="Recommended"
+                          color="secondary"
+                          className={styles.recommendedLabel}
+                        />
+                      ) : null}
+                    </div>
                     <WorkflowDescriptionModal
                       workflow={currentWorkflow}
                       runWorkflowLink={item.link}
