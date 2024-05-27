@@ -13,18 +13,14 @@ import {
   Stepper,
   Typography,
 } from '@material-ui/core';
-import { FormProps, ThemeProps, withTheme } from '@rjsf/core';
-import { Theme as MuiTheme } from '@rjsf/material-ui';
+import { FormProps } from '@rjsf/core';
+import Form from '@rjsf/mui';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import validator from '@rjsf/validator-ajv8';
 
 import { WorkflowInputSchemaStep } from '@janus-idp/backstage-plugin-orchestrator-common';
 
 import SubmitButton from '../SubmitButton';
-
-const MuiForm = withTheme<JsonObject>(
-  MuiTheme as ThemeProps<JsonObject, RJSFSchema, any>,
-);
 
 const getCombinedData = (
   steps: WorkflowInputSchemaStep[],
@@ -98,7 +94,7 @@ const FormWrapper = ({
 }) => {
   const firstKey = Object.keys(step.schema.properties ?? {})[0];
   const uiSchema = React.useMemo(() => {
-    const res: UiSchema<JsonObject> = firstKey
+    const res: UiSchema<any, RJSFSchema, any> = firstKey
       ? { [firstKey]: { 'ui:autofocus': 'true' } }
       : {};
     for (const key of step.readonlyKeys) {
@@ -108,7 +104,7 @@ const FormWrapper = ({
   }, [firstKey, step.readonlyKeys]);
 
   return (
-    <MuiForm
+    <Form
       validator={validator}
       showErrorList={false}
       noHtml5Validate
@@ -118,7 +114,7 @@ const FormWrapper = ({
       uiSchema={uiSchema}
     >
       {children}
-    </MuiForm>
+    </Form>
   );
 };
 
