@@ -45,6 +45,14 @@ export const orchestratorPlugin = createBackendPlugin({
           httpAuth: httpAuth,
         });
         httpRouter.use(router);
+        httpRouter.addAuthPolicy({
+          path: '/static/generated/envelope',
+          allow: 'unauthenticated',
+        });
+        httpRouter.addAuthPolicy({
+          path: '/health',
+          allow: 'unauthenticated',
+        });
       },
     });
   },
