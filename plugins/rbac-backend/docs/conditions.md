@@ -244,34 +244,6 @@ Based on the above schema:
 }
 ```
 
-**NOTE**: We do not support the ability to run conditions in parallel during creation. An example can be found below, notice that `anyOf` and `not` are on the same level. Consider making separate condition requests, or nest your conditions based on the available criteria.
-
-```json
-{
-  "anyOf": [
-    {
-      "rule": "IS_ENTITY_OWNER",
-      "resourceType": "catalog-entity",
-      "params": {
-        "claims": ["group:default/team-a"]
-      }
-    },
-    {
-      "rule": "IS_ENTITY_KIND",
-      "resourceType": "catalog-entity",
-      "params": {
-        "kinds": ["Group"]
-      }
-    }
-  ],
-  "not": {
-    "rule": "IS_ENTITY_KIND",
-    "resourceType": "catalog-entity",
-    "params": { "kinds": ["Api"] }
-  }
-}
-```
-
 To utilize this condition to the RBAC REST api you need to wrap it with more info:
 
 ```json
@@ -351,3 +323,31 @@ Notice the use of the annotation `keycloak.org/realm` requires the value of `<YO
 This example will prevent users from using the Quay scaffolder action if they are a part of the role `role:default/developer`.
 
 Notice, we use the `permissionMapping` field with `use`. This is because the `scaffolder-action` resource type permission does not have a permission policy. More information can be found in our documentation on [permissions](./permissions.md).
+
+**NOTE**: We do not support the ability to run conditions in parallel during creation. An example can be found below, notice that `anyOf` and `not` are on the same level. Consider making separate condition requests, or nest your conditions based on the available criteria.
+
+```json
+{
+  "anyOf": [
+    {
+      "rule": "IS_ENTITY_OWNER",
+      "resourceType": "catalog-entity",
+      "params": {
+        "claims": ["group:default/team-a"]
+      }
+    },
+    {
+      "rule": "IS_ENTITY_KIND",
+      "resourceType": "catalog-entity",
+      "params": {
+        "kinds": ["Group"]
+      }
+    }
+  ],
+  "not": {
+    "rule": "IS_ENTITY_KIND",
+    "resourceType": "catalog-entity",
+    "params": { "kinds": ["Api"] }
+  }
+}
+```
