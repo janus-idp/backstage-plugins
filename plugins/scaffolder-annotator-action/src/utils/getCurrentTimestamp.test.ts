@@ -14,14 +14,14 @@ describe('getCurrentTimestamp', () => {
     dateObj.setMinutes(3);
     dateObj.setSeconds(18);
     let dateAndTime = getCurrentTimestamp(dateObj);
-    expect(dateAndTime).toBe('2021-05-12, 07:03:18 AM');
+    expect(dateAndTime).toBe('5/12/2021, 07:03:18 AM');
 
     dateObj.setHours(14);
     dateAndTime = getCurrentTimestamp(dateObj);
-    expect(dateAndTime).toBe('2021-05-12, 02:03:18 PM');
+    expect(dateAndTime).toBe('5/12/2021, 02:03:18 PM');
 
     dateObj.setMinutes(20);
     dateAndTime = getCurrentTimestamp(dateObj);
-    expect(dateAndTime).toBe('2021-05-12, 02:20:18 PM');
+    expect(dateAndTime).toBe('5/12/2021, 02:20:18 PM');
   });
 });
