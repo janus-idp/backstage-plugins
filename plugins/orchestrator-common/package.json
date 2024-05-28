@@ -28,7 +28,7 @@
   ],
   "configSchema": "config.d.ts",
   "scripts": {
-    "build": "backstage-cli package build",
+    "build": "yarn openapi:check && backstage-cli package build",
     "tsc": "tsc",
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test --passWithNoTests --coverage",
