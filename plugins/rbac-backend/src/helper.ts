@@ -14,7 +14,7 @@ import {
   Source,
 } from '@janus-idp/backstage-plugin-rbac-common';
 
-import { createAuditRoleOptions } from './audit-log/audit-logger';
+import { createAuditRoleOptions, RoleEvents } from './audit-log/audit-logger';
 import { EnforcerDelegate } from './service/enforcer-delegate';
 
 export function policyToString(policy: string[]): string {
@@ -65,11 +65,18 @@ export async function removeTheDifference(
   const roleMetadata = { source, modifiedBy, roleEntityRef };
   await enf.removeGroupingPolicies(groupPolicies, roleMetadata, false);
 
+  const remainingMembers = await enf.getFilteredGroupingPolicy(
+    1,
+    roleEntityRef,
+  );
+  const roleEvent =
+    remainingMembers.length > 0
+      ? RoleEvents.UPDATE_ROLE
+      : RoleEvents.DELETE_ROLE;
   const auditOptions = createAuditRoleOptions(
-    'DELETE',
+    roleEvent,
     roleMetadata,
     groupPolicies.map(gp => gp[0]),
-    // currentRoleMetadata
   );
   await aLog.auditLog(auditOptions);
 }

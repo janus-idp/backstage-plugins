@@ -75,6 +75,7 @@ describe('helper.ts', () => {
   describe('removeTheDifference', () => {
     const mockEnforcerDelegate: Partial<EnforcerDelegate> = {
       removeGroupingPolicies: jest.fn().mockImplementation(),
+      getFilteredGroupingPolicy: jest.fn().mockReturnValue([]),
     };
 
     beforeEach(() => {

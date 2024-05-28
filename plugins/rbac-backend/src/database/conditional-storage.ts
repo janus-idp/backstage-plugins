@@ -10,7 +10,10 @@ import {
   RoleConditionalPolicyDecision,
 } from '@janus-idp/backstage-plugin-rbac-common';
 
-import { createAuditConditionOptions } from '../audit-log/audit-logger';
+import {
+  ConditionEvents,
+  createAuditConditionOptions,
+} from '../audit-log/audit-logger';
 
 export const CONDITIONAL_TABLE = 'role-condition-policies';
 
@@ -133,7 +136,7 @@ export class DataBaseConditionalStorage implements ConditionalStorage {
         conditionalDecision.id = result[0].id;
         const conditionAuditOptions = createAuditConditionOptions(
           conditionalDecision,
-          'CREATE',
+          ConditionEvents.CREATE_CONDITION,
           modifiedBy,
         );
         await this.aLog.auditLog(conditionAuditOptions);
@@ -142,7 +145,7 @@ export class DataBaseConditionalStorage implements ConditionalStorage {
       throw new Error(`Failed to create the condition.`);
     } catch (err) {
       await this.aLog.auditErrorLog({
-        eventName: 'AddConditionError',
+        eventName: ConditionEvents.CREATE_CONDITION_ERROR,
         message: 'Error adding condition',
         stage: 'rollback',
         actorId: modifiedBy,
@@ -214,13 +217,13 @@ export class DataBaseConditionalStorage implements ConditionalStorage {
       condition.id = result;
       const conditionAuditOptions = createAuditConditionOptions(
         condition,
-        'DELETE',
+        ConditionEvents.DELETE_CONDITION,
         modifiedBy,
       );
       await this.aLog.auditLog(conditionAuditOptions);
     } catch (err) {
       await this.aLog.auditErrorLog({
-        eventName: 'RemoveConditionError',
+        eventName: ConditionEvents.DELETE_CONDITION_ERROR,
         message: `Error removing condition with id: ${id}`,
         stage: 'rollback',
         actorId: modifiedBy,
@@ -281,13 +284,13 @@ export class DataBaseConditionalStorage implements ConditionalStorage {
 
       const conditionAuditOptions = createAuditConditionOptions(
         conditionalDecision,
-        'UPDATE',
+        ConditionEvents.UPDATE_CONDITION,
         modifiedBy,
       );
       await this.aLog.auditLog(conditionAuditOptions);
     } catch (err) {
       await this.aLog.auditErrorLog({
-        eventName: 'UpdateConditionError',
+        eventName: ConditionEvents.UPDATE_CONDITION_ERROR,
         message: 'Error updating condition',
         stage: 'rollback',
         actorId: modifiedBy,

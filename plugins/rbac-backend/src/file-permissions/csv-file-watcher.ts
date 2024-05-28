@@ -11,6 +11,8 @@ import fs from 'fs';
 import {
   createAuditPermissionOptions,
   createAuditRoleOptions,
+  PermissionEvents,
+  RoleEvents,
 } from '../audit-log/audit-logger';
 import {
   RoleMetadataDao,
@@ -308,7 +310,7 @@ export class CSVFileWatcher {
 
         const auditOptions = createAuditPermissionOptions(
           [policy],
-          'CREATE_OR_UPDATE',
+          PermissionEvents.CREATE_OR_UPDATE_POLICY,
           'csv-file',
           CSV_PERMISSION_POLICY_FILE_AUTHOR,
         );
@@ -332,7 +334,7 @@ export class CSVFileWatcher {
 
       const auditOptions = createAuditPermissionOptions(
         this.csvFilePolicies.removedPolicies,
-        'DELETE',
+        PermissionEvents.DELETE_POLICY,
         'csv-file',
         CSV_PERMISSION_POLICY_FILE_AUTHOR,
       );
@@ -385,17 +387,21 @@ export class CSVFileWatcher {
           modifiedBy: CSV_PERMISSION_POLICY_FILE_AUTHOR,
         };
 
+        const currentMetadata = await this.roleMetadataStorage.findRoleMetadata(
+          roleMetadata.roleEntityRef,
+        );
+
         await this.enforcer.addOrUpdateGroupingPolicy(
           groupPolicy,
           roleMetadata,
         );
 
-        const auditOptions = createAuditRoleOptions(
-          'CREATE_OR_UPDATE',
-          roleMetadata,
-          [groupPolicy[1]],
-          // oldRoleMetadata,
-        );
+        const roleEvent = currentMetadata
+          ? RoleEvents.UPDATE_ROLE
+          : RoleEvents.CREATE_ROLE;
+        const auditOptions = createAuditRoleOptions(roleEvent, roleMetadata, [
+          groupPolicy[0],
+        ]);
         await this.aLog.auditLog(auditOptions);
       } catch (e) {
         this.logger.warn(
@@ -424,24 +430,25 @@ export class CSVFileWatcher {
       try {
         const metadata: RoleMetadataDao = {
           source: 'csv-file',
-          roleEntityRef: groupPolicy[1],
+          roleEntityRef,
           author: CSV_PERMISSION_POLICY_FILE_AUTHOR,
           modifiedBy: CSV_PERMISSION_POLICY_FILE_AUTHOR,
         };
-        const currentRoleMetadata =
-          await this.roleMetadataStorage.findRoleMetadata(roleEntityRef);
+
         await this.enforcer.removeGroupingPolicy(
           groupPolicy,
           metadata,
           isUpdate.length > 1,
         );
 
-        const auditOptions = createAuditRoleOptions(
-          'DELETE',
-          metadata,
-          [roleEntityRef],
-          currentRoleMetadata,
-        );
+        const roleEvent = (await this.roleMetadataStorage.findRoleMetadata(
+          roleEntityRef,
+        ))
+          ? RoleEvents.UPDATE_ROLE
+          : RoleEvents.DELETE_ROLE;
+        const auditOptions = createAuditRoleOptions(roleEvent, metadata, [
+          groupPolicy[0],
+        ]);
         await this.aLog.auditLog(auditOptions);
       } catch (e) {
         this.logger.warn(

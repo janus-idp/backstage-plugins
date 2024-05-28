@@ -48,6 +48,8 @@ import { PluginIdProvider } from '@janus-idp/backstage-plugin-rbac-node';
 
 import {
   ConditionEvents,
+  createAuditPermissionOptions,
+  createAuditRoleOptions,
   PermissionEvents,
   RoleEvents,
   SEND_RESPONSE_STAGE,
@@ -232,16 +234,18 @@ export class PoliciesServer {
 
           await this.enforcer.removePolicies(processedPolicies);
 
+          const user = await identity.getIdentity({ request });
+          const opts = createAuditPermissionOptions(
+            processedPolicies,
+            PermissionEvents.DELETE_POLICY,
+            'rest',
+            user?.identity.userEntityRef!,
+            SEND_RESPONSE_STAGE,
+          );
           await this.aLog.auditLog({
-            message:
-              'Send response to report about deleted permission policies',
-            eventName: PermissionEvents.DELETE_POLICY,
-            stage: 'response',
+            ...opts,
             request,
-            metadata: { policies: processedPolicies },
-            response: {
-              status: 201,
-            },
+            response: { status: 201 },
           });
 
           response.status(204).end();
@@ -287,15 +291,18 @@ export class PoliciesServer {
 
         await this.enforcer.addPolicies(processedPolicies, 'rest');
 
+        const user = await identity.getIdentity({ request });
+        const opts = createAuditPermissionOptions(
+          processedPolicies,
+          PermissionEvents.CREATE_POLICY,
+          'rest',
+          user?.identity.userEntityRef!,
+          SEND_RESPONSE_STAGE,
+        );
         await this.aLog.auditLog({
-          message: 'Send response to report about created permission policies',
-          eventName: PermissionEvents.CREATE_POLICY,
-          stage: 'response',
+          ...opts,
           request,
-          metadata: { policies: processedPolicies },
-          response: {
-            status: 201,
-          },
+          response: { status: 201 },
         });
 
         response.status(201).end();
@@ -387,16 +394,18 @@ export class PoliciesServer {
             'rest',
           );
 
+          const user = await identity.getIdentity({ request });
+          const opts = createAuditPermissionOptions(
+            processedNewPolicy,
+            PermissionEvents.UPDATE_POLICY,
+            'rest',
+            user?.identity.userEntityRef!,
+            SEND_RESPONSE_STAGE,
+          );
           await this.aLog.auditLog({
-            message:
-              'Send response to report about updated permission policies',
-            eventName: PermissionEvents.UPDATE_POLICY,
-            stage: 'response',
+            ...opts,
             request,
-            metadata: { processedOldPolicy, processedNewPolicy },
-            response: {
-              status: 201,
-            },
+            response: { status: 201 },
           });
 
           response.status(200).end();
@@ -509,15 +518,16 @@ export class PoliciesServer {
 
         await this.enforcer.addGroupingPolicies(roles, metadata);
 
+        const opts = createAuditRoleOptions(
+          RoleEvents.CREATE_ROLE,
+          metadata,
+          roles.map(gp => gp[0]),
+          SEND_RESPONSE_STAGE,
+        );
         await this.aLog.auditLog({
-          message: 'Send response to report about created role',
-          eventName: RoleEvents.CREATE_ROLE,
-          stage: 'response',
+          ...opts,
           request,
-          metadata: { roleEntityRef: metadata.roleEntityRef },
-          response: {
-            status: 201,
-          },
+          response: { status: 201 },
         });
 
         response.status(201).end();
@@ -659,15 +669,17 @@ export class PoliciesServer {
           newMetadata,
         );
 
+        const opts = createAuditRoleOptions(
+          RoleEvents.UPDATE_ROLE,
+          newMetadata,
+          newRole.map(gp => gp[0]),
+          SEND_RESPONSE_STAGE,
+          oldMetadata,
+        );
         await this.aLog.auditLog({
-          message: 'Send response to report about updated role',
-          eventName: RoleEvents.UPDATE_ROLE,
-          stage: 'response',
+          ...opts,
           request,
-          metadata: { roleEntityRef },
-          response: {
-            status: 200,
-          },
+          response: { status: 201 },
         });
 
         response.status(200).end();
@@ -718,34 +730,36 @@ export class PoliciesServer {
             }
           }
 
-          const metadata =
+          const currentMetadata =
             await this.roleMetadata.findRoleMetadata(roleEntityRef);
 
-          const err = await validateSource('rest', metadata);
+          const err = await validateSource('rest', currentMetadata);
           if (err) {
             throw new NotAllowedError(`Unable to delete role: ${err.message}`);
           }
 
           const user = await identity.getIdentity({ request });
+          const metadata: RoleMetadataDao = {
+            roleEntityRef,
+            source: 'rest',
+            modifiedBy: user?.identity.userEntityRef!,
+          };
           await this.enforcer.removeGroupingPolicies(
             roleMembers,
-            {
-              roleEntityRef,
-              source: 'rest',
-              modifiedBy: user?.identity.userEntityRef!,
-            },
+            metadata,
             false,
           );
 
+          const opts = createAuditRoleOptions(
+            RoleEvents.DELETE_ROLE,
+            metadata,
+            roleMembers.map(gp => gp[0]),
+            SEND_RESPONSE_STAGE,
+          );
           await this.aLog.auditLog({
-            message: 'Send response to report about deleted role',
-            eventName: RoleEvents.DELETE_ROLE,
-            stage: 'response',
+            ...opts,
             request,
-            metadata: { roleEntityRef },
-            response: {
-              status: 200,
-            },
+            response: { status: 201 },
           });
 
           response.status(204).end();
