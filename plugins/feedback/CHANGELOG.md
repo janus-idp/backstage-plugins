@@ -1,3 +1,11 @@
+## @janus-idp/backstage-plugin-feedback [1.3.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback@1.3.3...@janus-idp/backstage-plugin-feedback@1.3.4) (2024-05-28)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.8.8
+
 ## @janus-idp/backstage-plugin-feedback [1.3.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-feedback@1.3.2...@janus-idp/backstage-plugin-feedback@1.3.3) (2024-05-23)
 
 
