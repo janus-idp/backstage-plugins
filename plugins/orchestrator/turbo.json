@@ -1,9 +1,24 @@
 {
   "extends": ["//"],
   "pipeline": {
+    "start": {
+      "dependsOn": [
+        "@janus-idp/backstage-plugin-orchestrator-common#openapi:generate"
+      ]
+    },
     "tsc": {
       "outputs": ["../../dist-types/plugins/orchestrator/**"],
       "dependsOn": ["^tsc"]
+    },
+    "test": {
+      "dependsOn": [
+        "@janus-idp/backstage-plugin-orchestrator-common#openapi:generate"
+      ]
+    },
+    "export-dynamic": {
+      "dependsOn": [
+        "@janus-idp/backstage-plugin-orchestrator-common#openapi:generate"
+      ]
     }
   }
 }
