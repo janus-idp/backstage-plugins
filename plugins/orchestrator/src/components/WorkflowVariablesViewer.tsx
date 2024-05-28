@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactJson from 'react-json-view';
 
-import { useTheme } from '@material-ui/core';
+import { useTheme } from '@mui/material/styles';
 
 import { ProcessInstanceVariables } from '@janus-idp/backstage-plugin-orchestrator-common';
 
@@ -24,7 +24,7 @@ export const WorkflowVariablesViewer: React.FC<ProcessVariablesViewerProps> = ({
     <ReactJson
       src={variables}
       name={false}
-      theme={theme.palette.type === 'dark' ? 'monokai' : 'rjv-default'}
+      theme={theme.palette.mode === 'dark' ? 'monokai' : 'rjv-default'}
     />
   );
 };

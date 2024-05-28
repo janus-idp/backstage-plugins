@@ -7,7 +7,7 @@ import {
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
-import Grid from '@material-ui/core/Grid/Grid';
+import Grid from '@mui/material/Grid';
 
 import { WorkflowOverview } from '@janus-idp/backstage-plugin-orchestrator-common';
 
