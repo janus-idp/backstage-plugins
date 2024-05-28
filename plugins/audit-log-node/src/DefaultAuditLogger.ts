@@ -7,6 +7,7 @@ import { ErrorLike } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
 
 import { Request } from 'express';
+import { cloneDeep } from 'lodash';
 
 import {
   ActorDetails,
@@ -63,9 +64,9 @@ export class DefaultAuditLogger implements AuditLogger {
       ? {
           method: request.method,
           url: request.originalUrl,
-          params: request.params,
-          query: request.query,
-          body: request.body,
+          params: cloneDeep(request.params),
+          query: cloneDeep(request.query),
+          body: cloneDeep(request.body),
         }
       : undefined;
 
@@ -77,11 +78,11 @@ export class DefaultAuditLogger implements AuditLogger {
     }
 
     const auditLogCommonDetails = {
-      actor,
-      meta: metadata || {},
+      actor: cloneDeep(actor),
+      meta: cloneDeep(metadata) || {},
       request: auditRequest,
       isAuditLog: true as const,
-      response,
+      response: cloneDeep(response),
       eventName,
       stage,
     };
@@ -90,11 +91,11 @@ export class DefaultAuditLogger implements AuditLogger {
       auditLogCommonDetails.request = auditRequest;
     }
     if (response) {
-      auditLogCommonDetails.response = response;
+      auditLogCommonDetails.response = cloneDeep(response);
     }
 
     if (status === 'failed') {
-      const errs = options.errors as ErrorLike[];
+      const errs = cloneDeep(options.errors) as ErrorLike[];
       return {
         ...auditLogCommonDetails,
         status,
