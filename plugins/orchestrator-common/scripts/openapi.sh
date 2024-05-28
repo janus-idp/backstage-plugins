@@ -19,6 +19,7 @@ openapi_generate() {
     npx --yes --package=js-yaml-cli@0.6.0 -- yaml2json -f ${OPENAPI_SPEC_FILE}
 
     OPENAPI_SPEC_FILE_JSON=$(tr -d '[:space:]' < "$(dirname $OPENAPI_SPEC_FILE)"/openapi.json)
+    mkdir -p ${API_FOLDER}
     cat << EOF > ${DEFINITION_FILE}
 /* eslint-disable */
 /* prettier-ignore */
