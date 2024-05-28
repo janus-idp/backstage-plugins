@@ -32,6 +32,10 @@ jest.mock('./CreateRole/EditRolePage', () => ({
   EditRolePage: () => <div>EditRole</div>,
 }));
 
+jest.mock('@backstage/core-components', () => ({
+  ErrorPage: jest.fn().mockImplementation(() => <div>Mocked ErrorPage</div>),
+}));
+
 jest.mock('@backstage/plugin-permission-react', () => ({
   RequirePermission: jest
     .fn()
@@ -65,6 +69,17 @@ describe('Router component', () => {
       </MemoryRouter>,
     );
     expect(screen.queryByText('RBAC')).not.toBeInTheDocument();
+  });
+
+  it('should render ErrorPage when rbac-backend plugin is disabled', () => {
+    configMock.getOptionalBoolean.mockReturnValueOnce(false);
+    render(
+      <MemoryRouter initialEntries={['/']}>
+        <Router />
+      </MemoryRouter>,
+    );
+
+    expect(screen.queryByText('Mocked ErrorPage')).toBeInTheDocument();
   });
 
   it('renders RoleOverviewPage when path matches roleRouteRef', () => {
