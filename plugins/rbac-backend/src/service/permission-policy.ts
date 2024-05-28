@@ -29,8 +29,8 @@ import {
 } from '../database/role-metadata';
 import { CSVFileWatcher } from '../file-permissions/csv-file-watcher';
 import { metadataStringToPolicy, removeTheDifference } from '../helper';
+import { validateEntityReference } from '../validation/policies-validation';
 import { EnforcerDelegate } from './enforcer-delegate';
-import { validateEntityReference } from './policies-validation';
 
 export const ADMIN_ROLE_NAME = 'role:default/rbac_admin';
 export const ADMIN_ROLE_AUTHOR = 'application configuration';

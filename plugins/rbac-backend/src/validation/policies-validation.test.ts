@@ -1,10 +1,19 @@
 import { RoleBasedPolicy } from '@janus-idp/backstage-plugin-rbac-common';
 
+import { RoleMetadataStorage } from '../database/role-metadata';
 import {
   validateEntityReference,
+  validateGroupingPolicy,
   validatePolicy,
   validateRole,
 } from './policies-validation';
+
+const roleMetadataStorageMock: RoleMetadataStorage = {
+  findRoleMetadata: jest.fn().mockImplementation(),
+  createRoleMetadata: jest.fn().mockImplementation(),
+  updateRoleMetadata: jest.fn().mockImplementation(),
+  removeRoleMetadata: jest.fn().mockImplementation(),
+};
 
 describe('rest data validation', () => {
   describe('validate entity referenced policy', () => {
@@ -194,6 +203,66 @@ describe('rest data validation', () => {
       } as any;
       const err = validateRole(request);
       expect(err).toBeUndefined();
+    });
+  });
+
+  describe('validateGroupingPolicy', () => {
+    it('should fail validation if the group policy length is greater than two', async () => {
+      const groupPolicy = ['user:default/test', 'role:default/test', 'invalid'];
+
+      const err = await validateGroupingPolicy(
+        groupPolicy,
+        './test',
+        roleMetadataStorageMock,
+        'csv-file',
+      );
+      expect(err).toBeTruthy();
+      expect(err?.message).toEqual(`Group policy should have length 2`);
+    });
+
+    it('should fail validation if the member of the group policy starts with role:', async () => {
+      const groupPolicy = ['role:default/test', 'role:default/test'];
+
+      const err = await validateGroupingPolicy(
+        groupPolicy,
+        './test',
+        roleMetadataStorageMock,
+        'csv-file',
+      );
+      expect(err).toBeTruthy();
+      expect(err?.message).toEqual(
+        `Group policy is invalid: ${groupPolicy}. rbac-backend plugin doesn't support role inheritance.`,
+      );
+    });
+
+    it('should fail validation if the group policy contains two groups for group inheritance', async () => {
+      const groupPolicy = ['group:default/test', 'group:default/test'];
+
+      const err = await validateGroupingPolicy(
+        groupPolicy,
+        './test',
+        roleMetadataStorageMock,
+        'csv-file',
+      );
+      expect(err).toBeTruthy();
+      expect(err?.message).toEqual(
+        `Group policy is invalid: ${groupPolicy}. Group inheritance information could be provided only with help of Catalog API.`,
+      );
+    });
+
+    it('should fail validation if the group policy is a user to a group for inheritance', async () => {
+      const groupPolicy = ['user:default/test', 'group:default/test'];
+
+      const err = await validateGroupingPolicy(
+        groupPolicy,
+        './test',
+        roleMetadataStorageMock,
+        'csv-file',
+      );
+      expect(err).toBeTruthy();
+      expect(err?.message).toEqual(
+        `Group policy is invalid: ${groupPolicy}. User membership information could be provided only with help of Catalog API.`,
+      );
     });
   });
 });

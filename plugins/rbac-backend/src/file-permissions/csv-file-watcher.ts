@@ -19,7 +19,7 @@ import {
   checkForDuplicatePolicies,
   validateGroupingPolicy,
   validatePolicy,
-} from '../service/policies-validation';
+} from '../validation/policies-validation';
 
 export const CSV_PERMISSION_POLICY_FILE_AUTHOR = 'csv permission policy file';
 
