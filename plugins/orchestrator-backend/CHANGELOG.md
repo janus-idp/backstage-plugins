@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-orchestrator-backend [1.9.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.9.0...@janus-idp/backstage-plugin-orchestrator-backend@1.9.1) (2024-05-28)
+
+
+### Bug Fixes
+
+* **orchestrator:** fixed broken workflow viewer ([#1717](https://github.com/janus-idp/backstage-plugins/issues/1717)) ([19cc79b](https://github.com/janus-idp/backstage-plugins/commit/19cc79bb9c1422556ddb9f85a2ac323186808321))
+
 ## @janus-idp/backstage-plugin-orchestrator-backend [1.9.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator-backend@1.8.7...@janus-idp/backstage-plugin-orchestrator-backend@1.9.0) (2024-05-22)
 
 
