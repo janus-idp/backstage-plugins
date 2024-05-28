@@ -3,7 +3,7 @@ import React from 'react';
 import { Link } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 
-import DotIcon from '@material-ui/icons/FiberManualRecord';
+import DotIcon from '@mui/icons-material/FiberManualRecord';
 
 import {
   capitalize,

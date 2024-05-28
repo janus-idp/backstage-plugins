@@ -1,15 +1,12 @@
 import React, { PropsWithChildren } from 'react';
 
-import { Typography } from '@material-ui/core';
-import { Variant } from '@material-ui/core/styles/createTypography';
+import Typography from '@mui/material/Typography';
 
-export const Paragraph = (
-  props: PropsWithChildren<{ variant?: Variant | 'inherit' }>,
-) => {
+export const Paragraph = (props: PropsWithChildren<{}>) => {
   return (
     <Typography
       style={{ marginTop: '14px', marginBottom: '14px' }}
-      variant={props.variant ?? 'body2'}
+      variant="body2"
       component="p"
     >
       {props.children}

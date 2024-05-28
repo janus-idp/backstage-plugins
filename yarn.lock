@@ -7436,7 +7436,7 @@
   resolved "https://registry.yarnpkg.com/@mui/core-downloads-tracker/-/core-downloads-tracker-5.15.18.tgz#0f9426409a82f78423bdf504b2a5a3788656d612"
   integrity sha512-/9pVk+Al8qxAjwFUADv4BRZgMpZM4m5E+2Q/20qhVPuIJWqKp4Ie4tGExac6zu93rgPTYVQGgu+1vjiT0E+cEw==
 
-"@mui/icons-material@5.15.17", "@mui/icons-material@^5.15.16", "@mui/icons-material@^5.15.3", "@mui/icons-material@^5.15.8":
+"@mui/icons-material@5.15.17", "@mui/icons-material@^5.15.16", "@mui/icons-material@^5.15.8":
   version "5.15.17"
   resolved "https://registry.yarnpkg.com/@mui/icons-material/-/icons-material-5.15.17.tgz#518c02354036f7df28c8f9890b1db6a3269fcc2f"
   integrity sha512-xVzl2De7IY36s/keHX45YMiCpsIx3mNv2xwDgtBkRSnZQtVk+Gqufwj1ktUxEyjzEhBl0+PiNJqYC31C+n1n6A==

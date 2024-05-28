@@ -8,7 +8,10 @@ import {
   useRouteRef,
 } from '@backstage/core-plugin-api';
 
-import { Chip, Grid, makeStyles } from '@material-ui/core';
+import CardContent from '@mui/material/CardContent';
+import Chip from '@mui/material/Chip';
+import Grid from '@mui/material/Grid';
+import { styled } from '@mui/material/styles';
 import moment from 'moment';
 
 import {
@@ -61,24 +64,31 @@ export const mapProcessInstanceToDetails = (
   };
 };
 
-const useStyles = makeStyles(_ => ({
-  topRowCard: {
-    height: '20rem',
-  },
-  middleRowCard: {
-    height: 'calc(2 * 20rem)',
-  },
-  bottomRowCard: {
-    height: '100%',
-  },
-  autoOverflow: { overflow: 'auto' },
-  recommendedLabelContainer: {
-    display: 'flex',
-    alignItems: 'center',
-    whiteSpace: 'nowrap',
-  },
-  recommendedLabel: { margin: '0 0.25rem' },
-}));
+const AutoOverflowCardContent = styled(CardContent)({
+  overflow: 'auto',
+});
+
+const TopRowCard = styled(InfoCard)({
+  height: '20rem',
+});
+
+const MiddleRowCard = styled(InfoCard)({
+  height: `calc(2 * 20rem)`,
+});
+
+const BottomRowCard = styled(InfoCard)({
+  height: '100%',
+});
+
+const RecommendedLabelContainer = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  whiteSpace: 'nowrap',
+});
+
+const RecommendedLabel = styled(Chip)({
+  margin: '0 0.25rem',
+});
 
 const getNextWorkflows = (
   details: WorkflowRunDetail,
@@ -124,7 +134,6 @@ const getNextWorkflows = (
 export const WorkflowInstancePageContent: React.FC<{
   assessedInstance: AssessedProcessInstance;
 }> = ({ assessedInstance }) => {
-  const styles = useStyles();
   const executeWorkflowLink = useRouteRef(executeWorkflowRouteRef);
   const details = React.useMemo(
     () => mapProcessInstanceToDetails(assessedInstance.instance),
@@ -178,105 +187,86 @@ export const WorkflowInstancePageContent: React.FC<{
     <Content noPadding>
       <Grid container spacing={2}>
         <Grid item xs={6}>
-          <InfoCard
-            title="Details"
-            divider={false}
-            className={styles.topRowCard}
-          >
+          <TopRowCard title="Details" divider={false}>
             <WorkflowRunDetails
               details={details}
               assessedBy={assessedInstance.assessedBy}
             />
-          </InfoCard>
+          </TopRowCard>
         </Grid>
 
         <Grid item xs={6}>
-          <InfoCard
-            title="Results"
-            divider={false}
-            className={styles.topRowCard}
-            cardClassName={styles.autoOverflow}
-          >
-            {nextWorkflows.length === 0 ? (
-              <WorkflowVariablesViewer variables={instanceVariables} />
-            ) : (
-              <Grid container spacing={3}>
-                {nextWorkflows.map(item => (
-                  <Grid item xs={4} key={item.title}>
-                    <div
-                      className={styles.recommendedLabelContainer}
-                      key={item.title}
-                    >
-                      <Link
-                        color="primary"
-                        to="#"
-                        onClick={() => {
-                          openWorkflowDescriptionModal(item.id);
-                        }}
-                      >
-                        {item.title}
-                      </Link>
-                      {item.isRecommended ? (
-                        <Chip
-                          size="small"
-                          label="Recommended"
-                          color="secondary"
-                          className={styles.recommendedLabel}
-                        />
-                      ) : null}
-                    </div>
-                    <WorkflowDescriptionModal
-                      workflow={currentWorkflow}
-                      runWorkflowLink={item.link}
-                      open={item.id === currentOpenedWorkflowDescriptionModalID}
-                      onClose={closeWorkflowDescriptionModal}
-                    />
-                  </Grid>
-                ))}
-              </Grid>
-            )}
-          </InfoCard>
+          <TopRowCard title="Results" divider={false}>
+            <AutoOverflowCardContent>
+              {nextWorkflows.length === 0 ? (
+                <WorkflowVariablesViewer variables={instanceVariables} />
+              ) : (
+                <Grid container spacing={3}>
+                  {nextWorkflows.map(item => (
+                    <Grid item xs={4} key={item.title}>
+                      <RecommendedLabelContainer key={item.title}>
+                        <Link
+                          color="primary"
+                          to="#"
+                          onClick={() => {
+                            openWorkflowDescriptionModal(item.id);
+                          }}
+                        >
+                          {item.title}
+                        </Link>
+                        {item.isRecommended ? (
+                          <RecommendedLabel
+                            size="small"
+                            label="Recommended"
+                            color="secondary"
+                          />
+                        ) : null}
+                      </RecommendedLabelContainer>
+                      <WorkflowDescriptionModal
+                        workflow={currentWorkflow}
+                        runWorkflowLink={item.link}
+                        open={
+                          item.id === currentOpenedWorkflowDescriptionModalID
+                        }
+                        onClose={closeWorkflowDescriptionModal}
+                      />
+                    </Grid>
+                  ))}
+                </Grid>
+              )}
+            </AutoOverflowCardContent>
+          </TopRowCard>
         </Grid>
 
         <Grid item xs={6}>
-          <InfoCard
-            title="Workflow definition"
-            divider={false}
-            className={styles.middleRowCard}
-          >
+          <MiddleRowCard title="Workflow definition" divider={false}>
             <WorkflowEditor
               workflowId={assessedInstance.instance.processId}
               kind={EditorViewKind.DIAGRAM_VIEWER}
               editorMode="text"
             />
-          </InfoCard>
+          </MiddleRowCard>
         </Grid>
 
         <Grid item xs={6}>
-          <InfoCard
-            title="Workflow progress"
-            divider={false}
-            className={styles.middleRowCard}
-            cardClassName={styles.autoOverflow}
-          >
-            <WorkflowProgress
-              workflowError={assessedInstance.instance.error}
-              workflowNodes={assessedInstance.instance.nodes}
-              workflowStatus={assessedInstance.instance.state}
-            />
-          </InfoCard>
+          <MiddleRowCard title="Workflow progress" divider={false}>
+            <AutoOverflowCardContent>
+              <WorkflowProgress
+                workflowError={assessedInstance.instance.error}
+                workflowNodes={assessedInstance.instance.nodes}
+                workflowStatus={assessedInstance.instance.state}
+              />
+            </AutoOverflowCardContent>
+          </MiddleRowCard>
         </Grid>
 
         {nextWorkflows.length > 0 ? (
           <Grid item xs={12}>
-            <InfoCard
-              title="Variables"
-              divider={false}
-              className={styles.bottomRowCard}
-              cardClassName={styles.autoOverflow}
-            >
-              <WorkflowVariablesViewer variables={instanceVariables} />
-            </InfoCard>
+            <BottomRowCard title="Variables" divider={false}>
+              <AutoOverflowCardContent>
+                <WorkflowVariablesViewer variables={instanceVariables} />
+              </AutoOverflowCardContent>
+            </BottomRowCard>
           </Grid>
         ) : null}
       </Grid>
