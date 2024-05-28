@@ -13,6 +13,11 @@ openapi_generate() {
     # TypeScript Client generation
     openapi-ts --input ${OPENAPI_SPEC_FILE} --output ${CLIENT_FOLDER}
 
+    # Workaround to temporarly ignore SonarCloud super-linear runtime vulnerability warning
+    REQ_FILE="${CLIENT_FOLDER}"/core/request.ts
+    TMPFILE=$(mktemp)
+    awk '/\/{\(.*?\)}\/g/ {print $0 " // NOSONAR"} !/\/{\(.*?\)}\/g/ {print}' "${REQ_FILE}" > ${TMPFILE} && mv ${TMPFILE} "${REQ_FILE}"
+
     # Docs generation
     npx --yes @openapitools/openapi-generator-cli@v2.13.1 generate -g asciidoc -i ./src/openapi/openapi.yaml -o ./src/generated/docs/index.adoc
     
