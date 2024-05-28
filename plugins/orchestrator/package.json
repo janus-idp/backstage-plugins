@@ -51,7 +51,7 @@
     "@kie-tools/serverless-workflow-combined-editor": "^0.32.0",
     "@kie-tools/serverless-workflow-language-service": "^0.32.0",
     "@kie-tools/serverless-workflow-service-catalog": "^0.32.0",
-    "@material-ui/core": "^4.12.4",
+    "@mui/material": "^5.0.0",
     "@material-ui/icons": "^4.11.3",
     "@material-ui/lab": "^4.0.0-alpha.45",
     "@monaco-editor/react": "^4.6.0",
