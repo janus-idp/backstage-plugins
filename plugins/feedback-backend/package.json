@@ -36,7 +36,7 @@
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
     "tsc": "tsc",
-    "export-dynamic": "janus-cli package export-dynamic-plugin"
+    "export-dynamic": "janus-cli package export-dynamic-plugin --no-embed-as-dependencies"
   },
   "dependencies": {
     "@backstage/backend-common": "^0.21.7",

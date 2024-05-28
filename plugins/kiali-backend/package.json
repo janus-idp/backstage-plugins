@@ -36,7 +36,7 @@
     "clean": "backstage-cli package clean",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
-    "export-dynamic": "janus-cli package export-dynamic-plugin"
+    "export-dynamic": "janus-cli package export-dynamic-plugin --no-embed-as-dependencies"
   },
   "configSchema": "config.d.ts",
   "dependencies": {

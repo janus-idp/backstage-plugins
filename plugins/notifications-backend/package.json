@@ -38,7 +38,7 @@
     "postversion": "yarn run export-dynamic",
     "tsc": "tsc",
     "openapi": "./scripts/openapi.sh",
-    "export-dynamic": "janus-cli package export-dynamic-plugin"
+    "export-dynamic": "janus-cli package export-dynamic-plugin --no-embed-as-dependencies"
   },
   "configSchema": "config.d.ts",
   "dependencies": {

@@ -16,14 +16,14 @@
   "scripts": {
     "start": "backstage-cli package start",
     "build": "backstage-cli package build",
-    "export-dynamic": "janus-cli package export-dynamic-plugin",
+    "export-dynamic": "janus-cli package export-dynamic-plugin --in-place",
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test --passWithNoTests --coverage",
     "clean": "backstage-cli package clean",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
     "tsc": "tsc",
-    "openapi:generate": "openapi-generator-cli generate -i ../notifications-backend/src/openapi.yaml --enable-post-process-file -g typescript-fetch -o ./src/openapi && find ./src/openapi -name '*.ts' -exec sed  -i '1i // @ts-nocheck' {} \\;"
+    "openapi:generate": "openapi-generator-cli generate -i ../notifications-backend/src/openapi.yaml --enable-post-process-file -g typescript-fetch -o ./src/openapi && find ./src/openapi -name '*.ts' -exec sed -i '1i // @ts-nocheck' {} \\;"
   },
   "dependencies": {
     "@backstage/core-components": "^0.14.6",
