@@ -32,6 +32,8 @@ import {
   createPermissionEvaluationOptions,
   EVALUATE_PERMISSION_ACCESS_STAGE,
   EvaluationEvents,
+  PermissionEvents,
+  RoleEvents,
 } from '../audit-log/audit-logger';
 import { ConditionalStorage } from '../database/conditional-storage';
 import {
@@ -108,10 +110,9 @@ const useAdminsFromConfig = async (
     getAdminRoleMetadata(),
   );
   const auditOption = createAuditRoleOptions(
-    'CREATE_OR_UPDATE',
+    RoleEvents.CREATE_OR_UPDATE_ROLE,
     getAdminRoleMetadata(),
     addedRoleMembers.map(gp => gp[0]),
-    // oldRoleMetadata,
   );
   await aLog.auditLog(auditOption);
 
@@ -145,7 +146,7 @@ const addAdminPermission = async (
 
   const auditOptions = createAuditPermissionOptions(
     [policy],
-    'CREATE_OR_UPDATE',
+    PermissionEvents.CREATE_OR_UPDATE_POLICY,
     'configuration',
     CSV_PERMISSION_POLICY_FILE_AUTHOR,
   );
