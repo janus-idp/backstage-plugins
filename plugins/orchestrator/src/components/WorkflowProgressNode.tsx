@@ -27,14 +27,14 @@ const WorkflowProgressNodeIcon: React.FC<{
             'Additional details about this error are not available'
           }
         >
-          <ErrorIcon className={color} />
+          <ErrorIcon style={{ color }} />
         </Tooltip>
       );
     }
     case 'COMPLETED': {
       return (
         <Tooltip title="Completed">
-          <CheckCircleIcon className={color} />
+          <CheckCircleIcon style={{ color }} />
         </Tooltip>
       );
     }

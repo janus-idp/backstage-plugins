@@ -30,7 +30,7 @@ export const WorkflowInstanceStatusIndicator = ({
 
   return (
     <>
-      <DotIcon style={{ fontSize: '0.75rem' }} className={iconColor} />{' '}
+      <DotIcon style={{ fontSize: '0.75rem', color: iconColor }} />{' '}
       {lastRunId ? (
         <Link to={workflowInstanceLink({ instanceId: lastRunId })}>
           {capitalize(status)}
