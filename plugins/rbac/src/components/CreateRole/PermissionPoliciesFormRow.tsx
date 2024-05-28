@@ -204,7 +204,7 @@ export const PermissionPoliciesFormRow = ({
         onClose={() => {
           setSidebarOpen(false);
         }}
-        onSave={(conditions: ConditionsData) => {
+        onSave={(conditions?: ConditionsData) => {
           onAddConditions(conditions);
           setSidebarOpen(false);
         }}

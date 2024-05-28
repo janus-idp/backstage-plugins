@@ -53,6 +53,7 @@ type ConditionFormRowProps = {
   criteria: string;
   setCriteria: React.Dispatch<React.SetStateAction<string>>;
   setErrors: React.Dispatch<React.SetStateAction<RuleParamsErrors | undefined>>;
+  setRemoveAllClicked: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const ConditionsFormRow = ({
@@ -63,6 +64,7 @@ export const ConditionsFormRow = ({
   onRuleChange,
   setCriteria,
   setErrors,
+  setRemoveAllClicked,
 }: ConditionFormRowProps) => {
   const classes = useStyles();
   const theme = useTheme();
@@ -126,7 +128,7 @@ export const ConditionsFormRow = ({
   };
 
   return (
-    <Box className={classes.conditionRow}>
+    <Box className={classes.conditionRow} data-testid="conditions-row">
       <ButtonGroup size="large" className={classes.criteriaButtonGroup}>
         {conditionButtons.map(({ val, label }) => (
           <Button
@@ -164,6 +166,7 @@ export const ConditionsFormRow = ({
                   optionDisabled={ruleOption =>
                     ruleOptionDisabled(ruleOption, conditionRow.allOf)
                   }
+                  setRemoveAllClicked={setRemoveAllClicked}
                 />
                 <IconButton
                   title="Remove"
@@ -194,6 +197,7 @@ export const ConditionsFormRow = ({
                   optionDisabled={ruleOption =>
                     ruleOptionDisabled(ruleOption, conditionRow.anyOf)
                   }
+                  setRemoveAllClicked={setRemoveAllClicked}
                 />
                 <IconButton
                   title="Remove"
@@ -252,6 +256,7 @@ export const ConditionsFormRow = ({
               conditionRow.condition ? [conditionRow.condition] : undefined,
             )
           }
+          setRemoveAllClicked={setRemoveAllClicked}
         />
       )}
       {criteria === criterias.not && (
@@ -274,6 +279,7 @@ export const ConditionsFormRow = ({
               conditionRow.not ? [conditionRow.not] : undefined,
             )
           }
+          setRemoveAllClicked={setRemoveAllClicked}
         />
       )}
     </Box>

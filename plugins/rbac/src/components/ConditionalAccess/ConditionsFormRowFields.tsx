@@ -31,6 +31,7 @@ type ConditionFormRowFieldsProps = {
   conditionRulesData?: RulesData;
   setErrors: React.Dispatch<React.SetStateAction<RuleParamsErrors | undefined>>;
   optionDisabled: (ruleOption: string) => boolean;
+  setRemoveAllClicked: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const ConditionsFormRowFields = ({
@@ -42,6 +43,7 @@ export const ConditionsFormRowFields = ({
   conditionRulesData,
   setErrors,
   optionDisabled,
+  setRemoveAllClicked,
 }: ConditionFormRowFieldsProps) => {
   const classes = useStyles();
   const rules = conditionRulesData?.rules ?? [];
@@ -60,6 +62,7 @@ export const ConditionsFormRowFields = ({
   const customFields: RegistryFieldsType = { ArrayField: CustomArrayField };
 
   const handleConditionChange = (newCondition: PermissionCondition) => {
+    setRemoveAllClicked(false);
     switch (criteria) {
       case criterias.condition: {
         onRuleChange({ condition: newCondition });

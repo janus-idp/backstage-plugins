@@ -33,7 +33,7 @@ type ConditionFormProps = {
   conditionsFormVal?: ConditionsData;
   selPluginResourceType: string;
   onClose: () => void;
-  onSave: (conditions: ConditionsData) => void;
+  onSave: (conditions?: ConditionsData) => void;
 };
 
 export const ConditionsForm = ({
@@ -58,30 +58,38 @@ export const ConditionsForm = ({
   );
   const [errors, setErrors] = React.useState<RuleParamsErrors>();
 
-  const isSaveDisabled = () => {
-    const hasErrors = !!errors?.[criteria]?.length;
-    let noRuleSelected;
+  const [removeAllClicked, setRemoveAllClicked] =
+    React.useState<boolean>(false);
+
+  const isNoRuleSelected = () => {
     switch (criteria) {
       case criterias.condition: {
-        noRuleSelected = !conditions.condition?.rule;
-        break;
+        return !conditions.condition?.rule;
       }
       case criterias.not: {
-        noRuleSelected = !conditions.not?.rule;
-        break;
+        return !conditions.not?.rule;
       }
       case criterias.allOf: {
-        noRuleSelected = !!conditions.allOf?.find(c => !c.rule);
-        break;
+        return !!conditions.allOf?.find(c => !c.rule);
       }
       case criterias.anyOf: {
-        noRuleSelected = !!conditions.anyOf?.find(c => !c.rule);
-        break;
+        return !!conditions.anyOf?.find(c => !c.rule);
       }
       default:
-        noRuleSelected = true;
+        return true;
     }
-    return hasErrors || noRuleSelected;
+  };
+
+  const isSaveDisabled = () => {
+    const hasErrors = !!errors?.[criteria]?.length;
+
+    if (removeAllClicked) return false;
+
+    return (
+      hasErrors ||
+      isNoRuleSelected() ||
+      Object.is(conditionsFormVal, conditions)
+    );
   };
 
   return (
@@ -95,6 +103,7 @@ export const ConditionsForm = ({
           onRuleChange={newCondition => setConditions(newCondition)}
           setCriteria={setCriteria}
           setErrors={setErrors}
+          setRemoveAllClicked={setRemoveAllClicked}
         />
       </Box>
       <Box className={classes.footer}>
@@ -103,17 +112,25 @@ export const ConditionsForm = ({
           data-testid="save-conditions"
           disabled={isSaveDisabled()}
           onClick={() => {
-            onSave(conditions);
+            if (removeAllClicked) {
+              onSave(undefined);
+            } else onSave(conditions);
           }}
         >
           Save
         </Button>
-        <Button variant="outlined" onClick={onClose}>
+        <Button
+          variant="outlined"
+          onClick={onClose}
+          data-testid="cancel-conditions"
+        >
           Cancel
         </Button>
         <Button
           variant="text"
+          disabled={removeAllClicked || isNoRuleSelected()}
           onClick={() => {
+            setRemoveAllClicked(true);
             setCriteria(criterias.condition);
             setConditions({
               condition: {
@@ -123,6 +140,7 @@ export const ConditionsForm = ({
               },
             });
           }}
+          data-testid="remove-conditions"
         >
           Remove all
         </Button>
