@@ -13,7 +13,7 @@ yarn start --filter=@janus-idp/backstage-plugin-nexus-repository-manager
 Alternatively, you can run the following commands from any directory in the repository:
 
 ```console
-yarn workspace @janus-idp/backstage-plugin-nexus-repository-manager generate
+yarn workspace @janus-idp/backstage-plugin-nexus-repository-manager openapi:generate
 yarn workspace @janus-idp/backstage-plugin-nexus-repository-manager run start
 ```
 
