@@ -49,7 +49,7 @@ export const isValid = (
 };
 
 export const sanitizeHTML = str => {
-  return str.replace(/[^\w. ]/gi, function (c) {
+  return str.replace(/[^\w. ]/gi, c => {
     return `&#${c.charCodeAt(0)};`;
   });
 };
