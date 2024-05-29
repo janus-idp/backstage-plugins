@@ -47,3 +47,9 @@ export const isValid = (
   }
   return isWarning ? 'warning' : 'error';
 };
+
+export const sanitizeHTML = str => {
+  return str.replace(/[^\w. ]/gi, function (c) {
+    return `&#${c.charCodeAt(0)};`;
+  });
+};
