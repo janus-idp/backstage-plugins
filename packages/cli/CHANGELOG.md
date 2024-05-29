@@ -1,3 +1,10 @@
+## @janus-idp/cli [1.8.9](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.8.8...@janus-idp/cli@1.8.9) (2024-05-29)
+
+
+### Bug Fixes
+
+* **release:** change problematic plugins to private ([#1738](https://github.com/janus-idp/backstage-plugins/issues/1738)) ([69176bd](https://github.com/janus-idp/backstage-plugins/commit/69176bd75ccd842a313445e096223ecc339b655b))
+
 ## @janus-idp/cli [1.8.8](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.8.7...@janus-idp/cli@1.8.8) (2024-05-28)
 
 ## @janus-idp/cli [1.8.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.8.6...@janus-idp/cli@1.8.7) (2024-05-16)
