@@ -15,7 +15,7 @@
     "clean": "backstage-cli package clean"
   },
   "devDependencies": {
-    "@storybook/react-webpack5": "7.5.3",
+    "@storybook/react-webpack5": "7.6.19",
     "@storybook/testing-library": "0.2.2",
     "@testing-library/jest-dom": "6.4.5",
     "@types/react": "18.3.3",
