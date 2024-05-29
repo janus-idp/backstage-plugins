@@ -933,7 +933,7 @@ export class PoliciesServer {
       let action = errorMessage ? 'edit' : 'delete';
       action = isOld ? action : 'add';
 
-      err = await validateSource('rest', metadata, policy);
+      err = await validateSource('rest', metadata);
       if (err) {
         throw new NotAllowedError(
           `Unable to ${action} policy ${policy.entityReference},${policy.permission},${policy.policy},${policy.effect}: ${err.message}`,

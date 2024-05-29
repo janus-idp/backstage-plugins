@@ -550,7 +550,13 @@ describe('REST policies api', () => {
           },
         ]);
 
-      expect(result.statusCode).toBe(201);
+      expect(result.statusCode).toBe(403);
+      expect(result.body.error).toEqual({
+        name: 'NotAllowedError',
+        message: `Unable to add policy user:default/permission_admin,policy-entity,delete,deny: source does not match originating role ${
+          roleMeta.roleEntityRef
+        }, consider making changes to the '${roleMeta.source.toLocaleUpperCase()}'`,
+      });
     });
 
     it('should not be created permission policy, because it is has been already present', async () => {
@@ -999,7 +1005,19 @@ describe('REST policies api', () => {
           },
         ]);
 
-      expect(result.statusCode).toEqual(204);
+      const policy = [
+        'user:default/permission_admin',
+        'policy-entity',
+        'read',
+        'allow',
+      ];
+
+      expect(result.body.error).toEqual({
+        name: 'NotAllowedError',
+        message: `Unable to delete policy ${policy}: source does not match originating role ${
+          roleMeta.roleEntityRef
+        }, consider making changes to the '${roleMeta.source.toLocaleUpperCase()}'`,
+      });
     });
 
     it('should delete policy', async () => {
@@ -1761,7 +1779,20 @@ describe('REST policies api', () => {
           ],
         });
 
-      expect(result.statusCode).toEqual(200);
+      const policy = [
+        'user:default/permission_admin',
+        'policy-entity',
+        'read',
+        'allow',
+      ];
+
+      expect(result.statusCode).toBe(403);
+      expect(result.body.error).toEqual({
+        name: 'NotAllowedError',
+        message: `Unable to edit policy ${policy}: source does not match originating role ${
+          roleMeta.roleEntityRef
+        }, consider making changes to the '${roleMeta.source.toLocaleUpperCase()}'`,
+      });
     });
   });
 

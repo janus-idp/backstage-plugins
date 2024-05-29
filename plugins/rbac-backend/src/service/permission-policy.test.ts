@@ -826,10 +826,13 @@ describe('RBACPermissionPolicy Tests', () => {
         .fn()
         .mockImplementation(
           async (
-            _roleEntityRef: string,
+            roleEntityRef: string,
             _trx: Knex.Knex.Transaction,
           ): Promise<RoleMetadata> => {
-            return { source: 'configuration' };
+            if (roleEntityRef.includes('rbac_admin')) {
+              return { source: 'configuration' };
+            }
+            return { source: 'csv-file' };
           },
         ),
       createRoleMetadata: jest.fn().mockImplementation(),
@@ -855,13 +858,18 @@ describe('RBACPermissionPolicy Tests', () => {
         .fn()
         .mockImplementation(
           async (
-            _policy: string[],
+            policyOrGPolicy: string[],
             _trx: Knex.Knex.Transaction,
           ): Promise<PermissionPolicyMetadata> => {
-            const test: PermissionPolicyMetadata = {
-              source: 'configuration',
-            };
-            return test;
+            if (
+              (policyOrGPolicy.length > 2 &&
+                policyOrGPolicy[0].includes('rbac_admin')) ||
+              (policyOrGPolicy.length === 2 &&
+                policyOrGPolicy[1].includes('rbac_admin'))
+            ) {
+              return { source: 'configuration' };
+            }
+            return { source: 'configuration' };
           },
         );
 

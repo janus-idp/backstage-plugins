@@ -409,18 +409,22 @@ describe('CSVFileWatcher', () => {
       );
       expect(loggerMock.warn).toHaveBeenNthCalledWith(
         4,
-        `Failed to validate group policy ${entityRoleError}. Cause: Entity reference "${entityRoleError[0]}" was not on the form [<kind>:][<namespace>/]<name>, error originates from file ${csvFileName}`,
+        `Unable to add policy ${configPermission} from file ${csvFileName}. Cause: source does not match originating role ${configPermission[0]}, consider making changes to the 'CONFIGURATION'`,
       );
       expect(loggerMock.warn).toHaveBeenNthCalledWith(
         5,
-        `Failed to validate group policy ${roleError}. Cause: Entity reference "${roleError[1]}" was not on the form [<kind>:][<namespace>/]<name>, error originates from file ${csvFileName}`,
+        `Failed to validate group policy ${entityRoleError}. Cause: Entity reference "${entityRoleError[0]}" was not on the form [<kind>:][<namespace>/]<name>, error originates from file ${csvFileName}`,
       );
       expect(loggerMock.warn).toHaveBeenNthCalledWith(
         6,
-        `Unable to validate role ${restRole}. Cause: source does not match originating role ${restRole[1]}, consider making changes to the 'REST', error originates from file ${csvFileName}`,
+        `Failed to validate group policy ${roleError}. Cause: Entity reference "${roleError[1]}" was not on the form [<kind>:][<namespace>/]<name>, error originates from file ${csvFileName}`,
       );
       expect(loggerMock.warn).toHaveBeenNthCalledWith(
         7,
+        `Unable to validate role ${restRole}. Cause: source does not match originating role ${restRole[1]}, consider making changes to the 'REST', error originates from file ${csvFileName}`,
+      );
+      expect(loggerMock.warn).toHaveBeenNthCalledWith(
+        8,
         `Unable to validate role ${configRole}. Cause: source does not match originating role ${configRole[1]}, consider making changes to the 'CONFIGURATION', error originates from file ${csvFileName}`,
       );
     });
@@ -534,6 +538,10 @@ describe('CSVFileWatcher', () => {
 
       expect(loggerMock.warn).toHaveBeenNthCalledWith(
         1,
+        `Unable to add policy ${configPermission} from file ${csvFileName}. Cause: source does not match originating role ${configPermission[0]}, consider making changes to the 'CONFIGURATION'`,
+      );
+      expect(loggerMock.warn).toHaveBeenNthCalledWith(
+        2,
         `Unable to add policy ${restPermission} from file ${csvFileName}. Cause: source does not match originating role ${restPermission[0]}, consider making changes to the 'REST'`,
       );
     });

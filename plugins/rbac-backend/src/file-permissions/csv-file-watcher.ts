@@ -276,7 +276,7 @@ export class CSVFileWatcher {
         continue;
       }
 
-      err = await validateSource('csv-file', metadata, transformedPolicy);
+      err = await validateSource('csv-file', metadata);
       if (err) {
         this.logger.warn(
           `Unable to add policy ${policy} from file ${this.csvFileName}. Cause: ${err.message}`,

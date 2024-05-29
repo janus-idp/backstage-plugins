@@ -29,14 +29,9 @@ import {
 export const validateSource = async (
   source: Source,
   roleMetadata: RoleMetadataDao | undefined,
-  policy?: RoleBasedPolicy,
 ): Promise<Error | undefined> => {
   if (!roleMetadata) {
     return undefined; // Role does not exist yet, there is no conflict with the source
-  }
-
-  if (policy && roleMetadata.source === 'configuration') {
-    return undefined;
   }
 
   if (roleMetadata.source !== source && roleMetadata.source !== 'legacy') {

@@ -254,26 +254,6 @@ describe('rest data validation', () => {
       expect(err).toBeUndefined();
     });
 
-    it('should not return an error whenever there is a permission policy being added to config role', async () => {
-      const roleMetaConfig: RoleMetadataDao = {
-        roleEntityRef: 'role:default/role:default/permission_admin',
-        source: 'configuration',
-      };
-
-      const policy: RoleBasedPolicy = {
-        entityReference: 'role:default/permission_admin',
-        permission: 'catalog-entity',
-        policy: 'read',
-        effect: 'allow',
-      };
-
-      const source: Source = 'rest';
-
-      const err = await validateSource(source, roleMetaConfig, policy);
-
-      expect(err).toBeUndefined();
-    });
-
     it('should return an error whenever the source that is passed does not match the source of the role', async () => {
       const source: Source = 'csv-file';
 
