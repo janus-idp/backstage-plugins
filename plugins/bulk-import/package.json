@@ -16,7 +16,7 @@
   "scripts": {
     "build": "backstage-cli package build",
     "clean": "backstage-cli package clean",
-    "export-dynamic": "janus-cli package export-dynamic-plugin",
+    "export-dynamic": "janus-cli package export-dynamic-plugin --in-place",
     "lint": "backstage-cli package lint",
     "postpack": "backstage-cli package postpack",
     "postversion": "yarn run export-dynamic",
@@ -48,7 +48,7 @@
     "@backstage/core-app-api": "1.12.4",
     "@backstage/dev-utils": "1.0.31",
     "@backstage/test-utils": "1.5.4",
-    "@janus-idp/cli": "1.7.10",
+    "@janus-idp/cli": "1.8.7",
     "@playwright/test": "1.41.2",
     "@redhat-developer/red-hat-developer-hub-theme": "0.0.40",
     "@testing-library/jest-dom": "6.4.5",

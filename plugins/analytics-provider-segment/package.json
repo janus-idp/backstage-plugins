@@ -15,7 +15,7 @@
   "scripts": {
     "start": "backstage-cli package start",
     "build": "backstage-cli package build",
-    "export-dynamic": "janus-cli package export-dynamic-plugin",
+    "export-dynamic": "janus-cli package export-dynamic-plugin --in-place",
     "tsc": "tsc",
     "lint": "backstage-cli package lint",
     "test": "backstage-cli package test --passWithNoTests --coverage",

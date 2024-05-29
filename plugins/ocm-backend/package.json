@@ -30,7 +30,7 @@
   "scripts": {
     "build": "backstage-cli package build",
     "clean": "backstage-cli package clean",
-    "export-dynamic": "janus-cli package export-dynamic-plugin --embed-package --embed-package @backstage/plugin-kubernetes-common",
+    "export-dynamic": "janus-cli package export-dynamic-plugin --embed-package --embed-package @backstage/plugin-kubernetes-common --no-embed-as-dependencies",
     "lint": "backstage-cli package lint",
     "postpack": "backstage-cli package postpack",
     "postversion": "yarn run export-dynamic",
