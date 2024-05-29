@@ -75,11 +75,7 @@
     }
   },
   "configSchema": "config.d.ts",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/janus-idp/backstage-plugins",
-    "directory": "plugins/argocd"
-  },
+  "repository": "github:janus-idp/backstage-plugins",
   "keywords": [
     "backstage",
     "plugin"
