@@ -84,21 +84,22 @@ export const useRoles = (
     resourceRef: policyEntityUpdatePermission.resourceType,
   });
 
-  const conditionsPromises: Promise<RoleWithConditionalPoliciesCount>[] =
-    (Array.isArray(roles) &&
-      roles.map(async role => {
-        const conditionalPolicies = await rbacApi.getRoleConditions(role.name);
-
-        return {
-          ...role,
-          conditionalPoliciesCount: Array.isArray(conditionalPolicies)
-            ? conditionalPolicies.length
-            : 0,
-        };
-      })) ||
-    [];
-
   React.useEffect(() => {
+    const conditionsPromises: Promise<RoleWithConditionalPoliciesCount>[] =
+      (Array.isArray(roles) &&
+        roles.map(async role => {
+          const conditionalPolicies = await rbacApi.getRoleConditions(
+            role.name,
+          );
+
+          return {
+            ...role,
+            conditionalPoliciesCount: Array.isArray(conditionalPolicies)
+              ? conditionalPolicies.length
+              : 0,
+          };
+        })) ||
+      [];
     const fetchAllPermissionPolicies = async () => {
       if (Array.isArray(roles)) {
         try {
