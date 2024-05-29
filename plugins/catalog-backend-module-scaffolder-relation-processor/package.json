@@ -63,11 +63,7 @@
     "app-config.janus-idp.yaml"
   ],
   "configSchema": "config.d.ts",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/janus-idp/backstage-plugins",
-    "directory": "plugins/catalog-backend-module-scaffolder-relation-processor"
-  },
+  "repository": "github:janus-idp/backstage-plugins",
   "keywords": [
     "backstage",
     "plugin"

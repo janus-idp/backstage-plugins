@@ -9,11 +9,7 @@
     "role": "cli"
   },
   "homepage": "https://janus-idp.io",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/janus-idp/backstage-plugins",
-    "directory": "packages/cli"
-  },
+  "repository": "github:janus-idp/backstage-plugins",
   "keywords": [
     "backstage"
   ],
