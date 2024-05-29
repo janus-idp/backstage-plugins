@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useAsync, useAsyncRetry, useInterval } from 'react-use';
 
 import { useApi } from '@backstage/core-plugin-api';
@@ -16,7 +16,9 @@ import { rbacApiRef } from '../api/RBACBackendClient';
 import { RolesData } from '../types';
 import { getPermissions } from '../utils/rbac-utils';
 
-type RoleWithConditionalPolicies = Role & { conditionalPolicies: number };
+type RoleWithConditionalPoliciesCount = Role & {
+  conditionalPoliciesCount: number;
+};
 
 export const useRoles = (
   pollInterval?: number,
@@ -32,9 +34,9 @@ export const useRoles = (
   retry: { roleRetry: () => void; policiesRetry: () => void };
 } => {
   const rbacApi = useApi(rbacApiRef);
-  const [newRoles, setNewRoles] = React.useState<RoleWithConditionalPolicies[]>(
-    [],
-  );
+  const [newRoles, setNewRoles] = React.useState<
+    RoleWithConditionalPoliciesCount[]
+  >([]);
   const {
     value: roles,
     retry: roleRetry,
@@ -82,24 +84,26 @@ export const useRoles = (
     resourceRef: policyEntityUpdatePermission.resourceType,
   });
 
-  useEffect(() => {
+  const conditionsPromises: Promise<RoleWithConditionalPoliciesCount>[] =
+    (Array.isArray(roles) &&
+      roles.map(async role => {
+        const conditionalPolicies = await rbacApi.getRoleConditions(role.name);
+
+        return {
+          ...role,
+          conditionalPoliciesCount: Array.isArray(conditionalPolicies)
+            ? conditionalPolicies.length
+            : 0,
+        };
+      })) ||
+    [];
+
+  React.useEffect(() => {
     const fetchAllPermissionPolicies = async () => {
       if (Array.isArray(roles)) {
         try {
-          const updatedRoles: RoleWithConditionalPolicies[] = await Promise.all(
-            roles.map(async role => {
-              const conditionalPolicies = await rbacApi.getRoleConditions(
-                role.name,
-              );
-
-              return {
-                ...role,
-                conditionalPolicies: Array.isArray(conditionalPolicies)
-                  ? conditionalPolicies.length
-                  : 0,
-              };
-            }),
-          );
+          const updatedRoles: RoleWithConditionalPoliciesCount[] =
+            await Promise.all(conditionsPromises);
 
           setNewRoles(updatedRoles);
         } catch (e) {
@@ -116,7 +120,7 @@ export const useRoles = (
     () =>
       Array.isArray(newRoles) && newRoles?.length > 0
         ? newRoles.reduce(
-            (acc: RolesData[], role: RoleWithConditionalPolicies) => {
+            (acc: RolesData[], role: RoleWithConditionalPoliciesCount) => {
               const permissions = getPermissions(
                 role.name,
                 policies as RoleBasedPolicy[],
@@ -129,7 +133,7 @@ export const useRoles = (
                 name: role.name,
                 description: role.metadata?.description ?? '-',
                 members: role.memberReferences,
-                permissions,
+                permissions: role.conditionalPoliciesCount + permissions,
                 modifiedBy: '-',
                 lastModified: '-',
                 actionsPermissionResults: {
