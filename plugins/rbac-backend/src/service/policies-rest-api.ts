@@ -221,7 +221,7 @@ export class PoliciesServer {
 
         const processedPolicies = await this.processPolicies(policyRaw, true);
 
-        await this.enforcer.removePolicies(processedPolicies, 'rest');
+        await this.enforcer.removePolicies(processedPolicies);
         response.status(204).end();
       },
     );
@@ -317,7 +317,6 @@ export class PoliciesServer {
           processedOldPolicy,
           processedNewPolicy,
           'rest',
-          false,
         );
 
         response.status(200).end();
@@ -545,12 +544,7 @@ export class PoliciesServer {
         }
       }
 
-      await this.enforcer.updateGroupingPolicies(
-        oldRole,
-        newRole,
-        newMetadata,
-        false,
-      );
+      await this.enforcer.updateGroupingPolicies(oldRole, newRole, newMetadata);
 
       response.status(200).end();
     });
@@ -600,7 +594,6 @@ export class PoliciesServer {
         const user = await identity.getIdentity({ request });
         await this.enforcer.removeGroupingPolicies(
           roleMembers,
-          'rest',
           user?.identity.userEntityRef,
           false,
         );

@@ -2401,7 +2401,6 @@ describe('REST policies api', () => {
           roleEntityRef: 'role:default/rbac_admin',
           source: 'rest',
         },
-        false,
       );
     });
 
@@ -2445,7 +2444,6 @@ describe('REST policies api', () => {
           roleEntityRef: 'role:default/rbac_admin',
           source: 'rest',
         },
-        false,
       );
     });
 
