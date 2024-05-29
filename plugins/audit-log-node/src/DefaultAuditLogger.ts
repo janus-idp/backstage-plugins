@@ -86,7 +86,7 @@ export class DefaultAuditLogger implements AuditLogger {
       stage,
     };
 
-    if (options.errors) {
+    if (status === 'failed') {
       const errs = cloneDeep(options.errors) as ErrorLike[];
       return {
         ...auditLogCommonDetails,
@@ -107,17 +107,29 @@ export class DefaultAuditLogger implements AuditLogger {
     };
   }
   async auditLog(options: AuditLogOptions): Promise<void> {
+    let auditLogDetails: AuditLogDetails;
     const logLevel = options.level || 'info';
-    const auditLogDetails = await this.createAuditLogDetails({
+    const auditLogCommonDetails = {
       eventName: options.eventName,
-      status: options.status,
       stage: options.stage,
       actorId: options.actorId,
       request: options.request,
       response: options.response,
       metadata: options.metadata,
-      errors: options.errors,
-    });
+    };
+    if (options.status === 'failed') {
+      auditLogDetails = await this.createAuditLogDetails({
+        ...auditLogCommonDetails,
+        status: options.status,
+        errors: options.errors,
+      });
+    } else {
+      auditLogDetails = await this.createAuditLogDetails({
+        ...auditLogCommonDetails,
+        status: options.status,
+      });
+    }
+
     switch (logLevel) {
       case 'info':
         this.logger.info(options.message, auditLogDetails as JsonObject);

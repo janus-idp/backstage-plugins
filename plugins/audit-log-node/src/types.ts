@@ -27,8 +27,17 @@ export type AuditResponse = {
   status: number;
   body?: any;
 };
+export type AuditLogSuccessStatus = { status: 'succeeded' };
+export type AuditLogFailureStatus = {
+  status: 'failed';
+  errors: ErrorLike[];
+};
+export type AuditLogUnknownFailureStatus = {
+  status: 'failed';
+  errors: unknown[];
+};
 
-export type AuditLogStatus = 'succeeded' | 'failed';
+export type AuditLogStatus = AuditLogSuccessStatus | AuditLogFailureStatus;
 
 /**
  * Common fields of an audit log. Note: timestamp and pluginId are automatically added at log creation.
@@ -43,9 +52,7 @@ export type AuditLogDetails = {
   response?: AuditResponse;
   meta: JsonValue;
   isAuditLog: true;
-  status: AuditLogStatus;
-  errors?: ErrorLike[];
-};
+} & AuditLogStatus;
 
 export type AuditLogDetailsOptions = {
   eventName: string;
@@ -54,22 +61,18 @@ export type AuditLogDetailsOptions = {
   response?: AuditResponse;
   actorId?: string;
   request?: Request;
-  status: AuditLogStatus;
-  errors?: unknown[];
-};
+} & (AuditLogSuccessStatus | AuditLogUnknownFailureStatus);
 
 export type AuditLogOptions = {
   eventName: string;
   message: string;
   stage: string;
-  status: AuditLogStatus;
   level?: 'info' | 'debug' | 'warn' | 'error';
   actorId?: string;
   metadata?: JsonValue;
   response?: AuditResponse;
   request?: Request;
-  errors?: unknown[];
-};
+} & (AuditLogSuccessStatus | AuditLogUnknownFailureStatus);
 
 export type AuditLoggerOptions = {
   logger: LoggerService;
