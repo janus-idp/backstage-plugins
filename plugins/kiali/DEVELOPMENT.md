@@ -100,19 +100,21 @@
    Add to locations in `app-config.local.yaml`
 
    ```yaml
-   backend:
-     auth:
-       dangerouslyDisableDefaultAuthPolicy: true
-   ---
    locations:
      # Local example data for Kiali plugin
      - type: file
        target: ../../plugins/kiali/catalog-demo.yaml
    ```
 
-7. Add catalog
+7. Disable backend authentication for development (If required)
 
-   Add to locations in `app-config.local.yaml`
+   Add the auth config to backend in `app-config.local.yaml`
+
+   ```yaml
+   backend:
+     auth:
+       dangerouslyDisableDefaultAuthPolicy: true
+   ```
 
 8. Run `yarn start:backstage` from the project root.
 9. After create a new component, the Kiali tab should be enabled:
