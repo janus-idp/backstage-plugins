@@ -54,11 +54,7 @@
   "files": [
     "dist"
   ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/janus-idp/backstage-plugins",
-    "directory": "plugins/orchestrator-swf-editor-envelope"
-  },
+  "repository": "github:janus-idp/backstage-plugins",
   "keywords": [
     "backstage",
     "plugin"
