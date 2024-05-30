@@ -3,17 +3,11 @@ import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 import { Knex } from 'knex';
 
-import { AuditLogger } from '@janus-idp/backstage-plugin-audit-log-node';
 import {
   PermissionAction,
   PermissionInfo,
   RoleConditionalPolicyDecision,
 } from '@janus-idp/backstage-plugin-rbac-common';
-
-import {
-  ConditionEvents,
-  createAuditConditionOptions,
-} from '../audit-log/audit-logger';
 
 export const CONDITIONAL_TABLE = 'role-condition-policies';
 
@@ -37,7 +31,6 @@ export interface ConditionalStorage {
   ): Promise<RoleConditionalPolicyDecision<PermissionInfo>[]>;
   createCondition(
     conditionalDecision: RoleConditionalPolicyDecision<PermissionInfo>,
-    modifiedBy: string,
   ): Promise<number>;
   findUniqueCondition(
     roleEntityRef: string,
@@ -47,19 +40,15 @@ export interface ConditionalStorage {
   getCondition(
     id: number,
   ): Promise<RoleConditionalPolicyDecision<PermissionInfo> | undefined>;
-  deleteCondition(id: number, modifiedBy: string): Promise<void>;
+  deleteCondition(id: number): Promise<void>;
   updateCondition(
     id: number,
     conditionalDecision: RoleConditionalPolicyDecision<PermissionInfo>,
-    modifiedBy: string,
   ): Promise<void>;
 }
 
 export class DataBaseConditionalStorage implements ConditionalStorage {
-  public constructor(
-    private readonly knex: Knex<any, any[]>,
-    private readonly aLog: AuditLogger,
-  ) {}
+  public constructor(private readonly knex: Knex<any, any[]>) {}
 
   async filterConditions(
     roleEntityRef?: string,
@@ -110,51 +99,30 @@ export class DataBaseConditionalStorage implements ConditionalStorage {
 
   async createCondition(
     conditionalDecision: RoleConditionalPolicyDecision<PermissionInfo>,
-    modifiedBy: string,
   ): Promise<number> {
-    try {
-      const condition = await this.findUniqueCondition(
-        conditionalDecision.roleEntityRef,
-        conditionalDecision.resourceType,
-        conditionalDecision.permissionMapping.map(permInfo => permInfo.name),
+    const condition = await this.findUniqueCondition(
+      conditionalDecision.roleEntityRef,
+      conditionalDecision.resourceType,
+      conditionalDecision.permissionMapping.map(permInfo => permInfo.name),
+    );
+    if (condition) {
+      throw new ConflictError(
+        `A condition with resource type '${condition.resourceType}'` +
+          ` and permission '${JSON.stringify(condition.permissionMapping)}'` +
+          ` has already been stored for role '${conditionalDecision.roleEntityRef}'`,
       );
-
-      if (condition) {
-        throw new ConflictError(
-          `A condition with resource type '${condition.resourceType}'` +
-            ` and permission '${JSON.stringify(condition.permissionMapping)}'` +
-            ` has already been stored for role '${conditionalDecision.roleEntityRef}'`,
-        );
-      }
-
-      const conditionRaw = this.toDAO(conditionalDecision);
-      const result = await this.knex
-        ?.table(CONDITIONAL_TABLE)
-        .insert<ConditionalPolicyDecisionDAO>(conditionRaw)
-        .returning('id');
-      if (result && result?.length > 0) {
-        conditionalDecision.id = result[0].id;
-        const conditionAuditOptions = createAuditConditionOptions(
-          conditionalDecision,
-          ConditionEvents.CREATE_CONDITION,
-          modifiedBy,
-        );
-        await this.aLog.auditLog(conditionAuditOptions);
-        return result[0].id;
-      }
-      throw new Error(`Failed to create the condition.`);
-    } catch (err) {
-      await this.aLog.auditErrorLog({
-        eventName: ConditionEvents.CREATE_CONDITION_ERROR,
-        message: 'Error adding condition',
-        stage: 'rollback',
-        actorId: modifiedBy,
-        errors: [err],
-        metadata: { condition: conditionalDecision, source: 'rest' },
-      });
-
-      throw err;
     }
+
+    const conditionRaw = this.toDAO(conditionalDecision);
+    const result = await this.knex
+      ?.table(CONDITIONAL_TABLE)
+      .insert<ConditionalPolicyDecisionDAO>(conditionRaw)
+      .returning('id');
+    if (result && result?.length > 0) {
+      return result[0].id;
+    }
+
+    throw new Error(`Failed to create the condition.`);
   }
 
   async findUniqueCondition(
@@ -202,103 +170,58 @@ export class DataBaseConditionalStorage implements ConditionalStorage {
     return undefined;
   }
 
-  async deleteCondition(id: number, modifiedBy: string): Promise<void> {
-    let condition;
-    try {
-      condition = await this.getCondition(id);
-      if (!condition) {
-        throw new NotFoundError(`Condition with id ${id} was not found`);
-      }
-      const result = await this.knex
-        ?.table(CONDITIONAL_TABLE)
-        .whereIn('id', [id])
-        .delete();
-
-      condition.id = result;
-      const conditionAuditOptions = createAuditConditionOptions(
-        condition,
-        ConditionEvents.DELETE_CONDITION,
-        modifiedBy,
-      );
-      await this.aLog.auditLog(conditionAuditOptions);
-    } catch (err) {
-      await this.aLog.auditErrorLog({
-        eventName: ConditionEvents.DELETE_CONDITION_ERROR,
-        message: `Error removing condition with id: ${id}`,
-        stage: 'rollback',
-        actorId: modifiedBy,
-        errors: [err],
-        metadata: { condition, id, source: 'rest' },
-      });
-      throw err;
+  async deleteCondition(id: number): Promise<void> {
+    const condition = await this.getCondition(id);
+    if (!condition) {
+      throw new NotFoundError(`Condition with id ${id} was not found`);
     }
+    await this.knex?.table(CONDITIONAL_TABLE).delete().whereIn('id', [id]);
   }
 
   async updateCondition(
     id: number,
     conditionalDecision: RoleConditionalPolicyDecision<PermissionInfo>,
-    modifiedBy: string,
   ): Promise<void> {
-    try {
-      const condition = await this.getCondition(id);
-      if (!condition) {
-        throw new NotFoundError(`Condition with id ${id} was not found`);
-      }
+    const condition = await this.getCondition(id);
+    if (!condition) {
+      throw new NotFoundError(`Condition with id ${id} was not found`);
+    }
 
-      const conditionsForTheSameResource = await this.filterConditions(
-        conditionalDecision.roleEntityRef,
-        conditionalDecision.pluginId,
-        conditionalDecision.resourceType,
-      );
+    const conditionsForTheSameResource = await this.filterConditions(
+      conditionalDecision.roleEntityRef,
+      conditionalDecision.pluginId,
+      conditionalDecision.resourceType,
+    );
 
-      for (const permission of conditionalDecision.permissionMapping) {
-        for (const conditionToCompare of conditionsForTheSameResource) {
-          if (conditionToCompare.id === id) {
-            continue;
-          }
-          const conditionPermNames = conditionToCompare.permissionMapping.map(
-            perm => perm.name,
+    for (const permission of conditionalDecision.permissionMapping) {
+      for (const conditionToCompare of conditionsForTheSameResource) {
+        if (conditionToCompare.id === id) {
+          continue;
+        }
+        const conditionPermNames = conditionToCompare.permissionMapping.map(
+          perm => perm.name,
+        );
+        if (conditionPermNames.includes(permission.name)) {
+          throw new ConflictError(
+            `Found condition with conflicted permission '${JSON.stringify(
+              permission,
+            )}'. Role could have multiple ` +
+              `conditions for the same resource type '${conditionalDecision.resourceType}', but with different permission name and action sets.`,
           );
-          if (conditionPermNames.includes(permission.name)) {
-            throw new ConflictError(
-              `Found condition with conflicted permission '${JSON.stringify(
-                permission,
-              )}'. Role could have multiple ` +
-                `conditions for the same resource type '${conditionalDecision.resourceType}', but with different permission name and action sets.`,
-            );
-          }
         }
       }
+    }
 
-      const conditionRaw = this.toDAO(conditionalDecision);
-      conditionRaw.id = id;
-      const result = await this.knex
-        ?.table(CONDITIONAL_TABLE)
-        .where('id', conditionRaw.id)
-        .update<ConditionalPolicyDecisionDAO>(conditionRaw)
-        .returning('id');
+    const conditionRaw = this.toDAO(conditionalDecision);
+    conditionRaw.id = id;
+    const result = await this.knex
+      ?.table(CONDITIONAL_TABLE)
+      .where('id', conditionRaw.id)
+      .update<ConditionalPolicyDecisionDAO>(conditionRaw)
+      .returning('id');
 
-      if (!result || result.length === 0) {
-        throw new Error(`Failed to update the condition with id: ${id}.`);
-      }
-
-      const conditionAuditOptions = createAuditConditionOptions(
-        conditionalDecision,
-        ConditionEvents.UPDATE_CONDITION,
-        modifiedBy,
-      );
-      await this.aLog.auditLog(conditionAuditOptions);
-    } catch (err) {
-      await this.aLog.auditErrorLog({
-        eventName: ConditionEvents.UPDATE_CONDITION_ERROR,
-        message: 'Error updating condition',
-        stage: 'rollback',
-        actorId: modifiedBy,
-        errors: [err],
-        metadata: { newCondition: conditionalDecision, id, source: 'rest' },
-      });
-
-      throw err;
+    if (!result || result.length === 0) {
+      throw new Error(`Failed to update the condition with id: ${id}.`);
     }
   }
 
