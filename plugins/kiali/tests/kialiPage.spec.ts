@@ -1,8 +1,10 @@
 import { expect, Page, test } from '@playwright/test';
 
-import CONFIG from '../dev/__fixtures__/general/config.json';
-import NAMESPACES from '../dev/__fixtures__/general/namespaces.json';
-import { Common } from './kialiHelper';
+import { Common, kialiData } from './kialiHelper';
+
+const CONFIG = kialiData.config;
+const NAMESPACES = kialiData.namespaces;
+const STATUS = kialiData.status;
 
 function filterByIstioInjectionEnabled(jsonArray: any): any {
   return jsonArray.filter(
@@ -17,11 +19,14 @@ test.describe('Kiali page', () => {
   let page: Page;
   let common: Common;
   test.describe('overview', () => {
-    test.beforeEach(async ({ browser }) => {
+    test.beforeAll(async ({ browser }) => {
       const context = await browser.newContext();
       page = await context.newPage();
       common = new Common(page);
       await common.loginAsGuest();
+    });
+    test.beforeEach(async () => {
+      page.reload();
     });
 
     test('Home cluster is visible', async () => {
@@ -36,6 +41,93 @@ test.describe('Kiali page', () => {
       await expect(
         page.locator('css=[aria-describedby="Debug information"]'),
       ).toBeVisible();
+    });
+
+    test('About page can be opened', async () => {
+      await page.click('data-test=help-button');
+      await page.click('text=About');
+      await expect(page.locator('data-test=Kiali')).toContainText(
+        STATUS.status['Kiali version'],
+      );
+      await expect(page.locator('data-test=Kiali')).toContainText(
+        STATUS.status['Kiali commit hash'],
+      );
+      await expect(page.locator('data-test=Kiali container')).toContainText(
+        STATUS.status['Kiali container version'],
+      );
+      await expect(page.locator('data-test=Service Mesh')).toContainText(
+        STATUS.status['Mesh name'],
+      );
+      await expect(page.locator('data-test=Service Mesh')).toContainText(
+        STATUS.status['Mesh version'],
+      );
+
+      for (const external of STATUS.externalServices) {
+        let text;
+        if (external.version) {
+          text = external.version;
+        } else {
+          text = 'N/A';
+        }
+        await expect(page.locator(`data-test=${external.name}`)).toContainText(
+          text,
+        );
+      }
+    });
+
+    test('MessageCenter can be opened', async () => {
+      await page.click('data-test=message-center');
+      await expect(
+        page.locator('data-test=message-center-modal'),
+      ).toBeVisible();
+      await expect(page.locator('data-test=message-center-summary')).toHaveText(
+        'Notifications 2 Unread Messages',
+      );
+      await page.click('data-test=message-center-summary');
+      await page.locator(
+        'data-test=message-center-messages [data-test=drawer-message]',
+      );
+    });
+
+    test('Detail of a message in MessageCenter can be opened', async () => {
+      await page.click('data-test=message-center');
+      await page.click('data-test=message-center-summary');
+      await page.click('data-test=show-message-detail');
+      await expect(page.locator('data-test=message-detail').first()).toHaveText(
+        'grafana URL is not set in Kiali configuration',
+      );
+    });
+
+    test('Detail of a message in MessageCenter can be closed', async () => {
+      await page.click('data-test=message-center');
+      await page.click('data-test=message-center-summary');
+      await page.click('data-test=show-message-detail');
+      await page.click('data-test=hide-message-detail');
+      await expect(
+        page.locator('data-test=message-detail').first(),
+      ).toBeHidden();
+    });
+
+    test('Messages can be marked as read', async () => {
+      await page.click('data-test=message-center');
+      await page.click('data-test=message-center-summary');
+      await page.click('data-test=mark-as-read');
+      await expect(page.locator('data-test=message-center-summary')).toHaveText(
+        'Notifications 0 Unread Messages',
+      );
+    });
+
+    test('Messages can be cleared', async () => {
+      await page.click('data-test=message-center');
+      await page.click('data-test=message-center-summary');
+      await page.click('data-test=clear-all');
+      await expect(page.locator('data-test=message-center-summary')).toHaveText(
+        'Notifications 0 Unread Messages',
+      );
+      await expect(
+        page.locator('data-test=message-center-messages'),
+      ).toHaveText('No Messages Available');
+      await expect(page.locator('data-test=drawer-message')).toHaveCount(0);
     });
 
     test('User is visible', async () => {
