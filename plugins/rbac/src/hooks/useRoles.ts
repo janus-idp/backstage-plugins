@@ -30,6 +30,7 @@ export const useRoles = (
   error: {
     rolesError: string;
     policiesError: string;
+    roleConditionError: string;
   };
   retry: { roleRetry: () => void; policiesRetry: () => void };
 } => {
@@ -37,6 +38,8 @@ export const useRoles = (
   const [newRoles, setNewRoles] = React.useState<
     RoleWithConditionalPoliciesCount[]
   >([]);
+  const [fetchRoleConditionsError, setFetchRoleConditionsError] =
+    React.useState<string>('');
   const {
     value: roles,
     retry: roleRetry,
@@ -85,33 +88,34 @@ export const useRoles = (
   });
 
   React.useEffect(() => {
-    const conditionsPromises: Promise<RoleWithConditionalPoliciesCount>[] =
-      (Array.isArray(roles) &&
-        roles.map(async role => {
+    const fetchAllPermissionPolicies = async () => {
+      if (!Array.isArray(roles)) return;
+      const conditionPromises = roles.map(async role => {
+        try {
           const conditionalPolicies = await rbacApi.getRoleConditions(
             role.name,
           );
-
           return {
             ...role,
             conditionalPoliciesCount: Array.isArray(conditionalPolicies)
               ? conditionalPolicies.length
               : 0,
           };
-        })) ||
-      [];
-    const fetchAllPermissionPolicies = async () => {
-      if (Array.isArray(roles)) {
-        try {
-          const updatedRoles: RoleWithConditionalPoliciesCount[] =
-            await Promise.all(conditionsPromises);
-
-          setNewRoles(updatedRoles);
-        } catch (e) {
-          throw new Error(`Error in fetchAllPermissionPolicies: ${e}`);
+        } catch (error) {
+          setFetchRoleConditionsError(
+            `Error fetching role conditions for role ${role.name}, please try again later.`,
+          );
+          return {
+            ...role,
+            conditionalPoliciesCount: 0,
+          };
         }
-      }
+      });
+
+      const updatedRoles = await Promise.all(conditionPromises);
+      setNewRoles(updatedRoles);
     };
+
     if (Array.isArray(roles) && roles.length > 0) {
       fetchAllPermissionPolicies();
     }
@@ -180,6 +184,7 @@ export const useRoles = (
         (typeof policies === 'object'
           ? (policies as any as Response)?.statusText
           : '')) as string,
+      roleConditionError: fetchRoleConditionsError,
     },
     createRoleLoading,
     createRoleAllowed,
