@@ -163,9 +163,6 @@ export const ConditionsFormRow = ({
                   criteria={criteria}
                   conditionRulesData={conditionRulesData}
                   setErrors={setErrors}
-                  optionDisabled={ruleOption =>
-                    ruleOptionDisabled(ruleOption, conditionRow.allOf)
-                  }
                   setRemoveAllClicked={setRemoveAllClicked}
                 />
                 <IconButton
@@ -194,9 +191,6 @@ export const ConditionsFormRow = ({
                   criteria={criteria}
                   conditionRulesData={conditionRulesData}
                   setErrors={setErrors}
-                  optionDisabled={ruleOption =>
-                    ruleOptionDisabled(ruleOption, conditionRow.anyOf)
-                  }
                   setRemoveAllClicked={setRemoveAllClicked}
                 />
                 <IconButton
