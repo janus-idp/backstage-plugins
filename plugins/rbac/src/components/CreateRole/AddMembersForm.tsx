@@ -107,6 +107,7 @@ export const AddMembersForm = ({
         renderOption={(option: SelectedMember, state) => (
           <MembersDropdownOption option={option} state={state} />
         )}
+        noOptionsText="No users and groups found."
         clearOnEscape
         renderInput={params => (
           <TextField

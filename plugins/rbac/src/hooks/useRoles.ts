@@ -1,8 +1,7 @@
 import React from 'react';
-import { useAsyncRetry, useInterval } from 'react-use';
+import { useAsync, useAsyncRetry, useInterval } from 'react-use';
 
 import { useApi } from '@backstage/core-plugin-api';
-import { catalogEntityReadPermission } from '@backstage/plugin-catalog-common/alpha';
 import { usePermission } from '@backstage/plugin-permission-react';
 
 import {
@@ -43,6 +42,20 @@ export const useRoles = (
     error: policiesError,
   } = useAsyncRetry(async () => await rbacApi.getPolicies(), []);
 
+  const {
+    loading: membersLoading,
+    value: members,
+    error: membersError,
+  } = useAsync(async () => {
+    return await rbacApi.getMembers();
+  });
+
+  const canReadUsersAndGroups =
+    !membersLoading &&
+    !membersError &&
+    Array.isArray(members) &&
+    members.length > 0;
+
   const deletePermissionResult = usePermission({
     permission: policyEntityDeletePermission,
     resourceRef: policyEntityDeletePermission.resourceType,
@@ -53,18 +66,11 @@ export const useRoles = (
     resourceRef: policyEntityCreatePermission.resourceType,
   });
 
-  const catalogEntityReadPermissionResult = usePermission({
-    permission: catalogEntityReadPermission,
-    resourceRef: catalogEntityReadPermission.resourceType,
-  });
-
   const createRoleLoading =
-    policyEntityCreatePermissionResult.loading ||
-    catalogEntityReadPermissionResult.loading;
+    policyEntityCreatePermissionResult.loading || membersLoading;
 
   const createRoleAllowed =
-    policyEntityCreatePermissionResult.allowed &&
-    catalogEntityReadPermissionResult.allowed;
+    policyEntityCreatePermissionResult.allowed && canReadUsersAndGroups;
 
   const editPermissionResult = usePermission({
     permission: policyEntityUpdatePermission,
@@ -93,11 +99,8 @@ export const useRoles = (
                   delete: deletePermissionResult,
                   edit: {
                     allowed:
-                      editPermissionResult.allowed &&
-                      catalogEntityReadPermissionResult.allowed,
-                    loading:
-                      editPermissionResult.loading &&
-                      catalogEntityReadPermissionResult.loading,
+                      editPermissionResult.allowed && canReadUsersAndGroups,
+                    loading: editPermissionResult.loading,
                   },
                 },
               },
@@ -108,8 +111,9 @@ export const useRoles = (
       roles,
       policies,
       deletePermissionResult,
-      editPermissionResult,
-      catalogEntityReadPermissionResult,
+      editPermissionResult.allowed,
+      editPermissionResult.loading,
+      canReadUsersAndGroups,
     ],
   );
   const loading = !rolesError && !policiesError && !roles && !policies;
