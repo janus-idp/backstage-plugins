@@ -53,11 +53,13 @@ export class PolicyBuilder {
       'permission',
     );
 
+    const databaseClient = await databaseManager.getClient();
+
     const { auth, httpAuth } = createLegacyAuthAdapters(env);
 
     const adapter = await new CasbinDBAdapterFactory(
       env.config,
-      databaseManager,
+      databaseClient,
     ).createAdapter();
 
     const enf = await newEnforcer(newModelFromString(MODEL), adapter);
@@ -68,10 +70,12 @@ export class PolicyBuilder {
     const catalogDBClient = await DatabaseManager.fromConfig(env.config)
       .forPlugin('catalog')
       .getClient();
+
     const rm = new BackstageRoleManager(
       catalogClient,
       env.logger,
       catalogDBClient,
+      databaseClient,
       env.config,
       auth,
     );
@@ -80,17 +84,18 @@ export class PolicyBuilder {
     await enf.buildRoleLinks();
 
     await migrate(databaseManager);
-    const knex = await databaseManager.getClient();
 
-    const conditionStorage = new DataBaseConditionalStorage(knex);
+    const conditionStorage = new DataBaseConditionalStorage(databaseClient);
 
-    const policyMetadataStorage = new DataBasePolicyMetadataStorage(knex);
-    const roleMetadataStorage = new DataBaseRoleMetadataStorage(knex);
+    const policyMetadataStorage = new DataBasePolicyMetadataStorage(
+      databaseClient,
+    );
+    const roleMetadataStorage = new DataBaseRoleMetadataStorage(databaseClient);
     const enforcerDelegate = new EnforcerDelegate(
       enf,
       policyMetadataStorage,
       roleMetadataStorage,
-      knex,
+      databaseClient,
     );
 
     const options: RouterOptions = {
@@ -104,7 +109,7 @@ export class PolicyBuilder {
         conditionStorage,
         enforcerDelegate,
         roleMetadataStorage,
-        knex,
+        databaseClient,
       ),
       auth: auth,
       httpAuth: httpAuth,

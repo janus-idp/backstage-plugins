@@ -1,5 +1,4 @@
 import { getVoidLogger } from '@backstage/backend-common';
-import { DatabaseService } from '@backstage/backend-plugin-api';
 import { mockServices } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 
@@ -63,9 +62,7 @@ const policyMetadataStorageMock: PolicyMetadataStorage = {
   removePolicyMetadata: jest.fn().mockImplementation(),
 };
 
-const dbManagerMock: DatabaseService = {
-  getClient: jest.fn().mockImplementation(),
-};
+const dbManagerMock = Knex.knex({ client: MockClient });
 
 const mockAuthService = mockServices.auth();
 
@@ -152,6 +149,7 @@ describe('EnforcerDelegate', () => {
     ).createAdapter();
 
     const catalogDBClient = Knex.knex({ client: MockClient });
+    const rbacDBClient = Knex.knex({ client: MockClient });
     const enf = await newEnforcer(theModel, sqliteInMemoryAdapter);
     enfRemovePolicySpy = jest.spyOn(enf, 'removePolicy');
     enfRemovePoliciesSpy = jest.spyOn(enf, 'removePolicies');
@@ -167,6 +165,7 @@ describe('EnforcerDelegate', () => {
       catalogApi,
       logger,
       catalogDBClient,
+      rbacDBClient,
       config,
       mockAuthService,
     );

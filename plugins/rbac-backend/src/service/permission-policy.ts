@@ -310,7 +310,9 @@ export class RBACPermissionPolicy implements PermissionPolicy {
         result: result,
       });
     } catch (error) {
-      this.logger.error(`Policy check failed with ${error}`);
+      this.logger.error(
+        `Policy check failed with ${error} for permission ${request.permission.name}`,
+      );
       return Promise.resolve({
         result: AuthorizeResult.DENY,
       });
