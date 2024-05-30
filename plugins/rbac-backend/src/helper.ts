@@ -76,6 +76,7 @@ export async function removeTheDifference(
   const auditOptions = createAuditRoleOptions(
     roleEvent,
     roleMetadata,
+    modifiedBy,
     groupPolicies.map(gp => gp[0]),
   );
   await aLog.auditLog(auditOptions);
