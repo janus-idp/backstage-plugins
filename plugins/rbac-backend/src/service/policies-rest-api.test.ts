@@ -522,7 +522,7 @@ describe('REST policies api', () => {
       });
     });
 
-    it('should add permission policy, with original source of configuration', async () => {
+    it('should fail to add permission policy, with original source of configuration', async () => {
       const roleMeta: RoleMetadataDao = {
         roleEntityRef: 'user:default/permission_admin',
         source: 'configuration',
@@ -967,7 +967,7 @@ describe('REST policies api', () => {
       });
     });
 
-    it('should delete policy, with original source of configuration', async () => {
+    it('should fail to delete policy, with original source of configuration', async () => {
       const roleMeta: RoleMetadataDao = {
         roleEntityRef: 'user:default/permission_admin',
         source: 'configuration',
@@ -1733,7 +1733,7 @@ describe('REST policies api', () => {
       });
     });
 
-    it('should update permission policy, with original source of configuration', async () => {
+    it('should fail to update permission policy, with original source of configuration', async () => {
       const roleMeta: RoleMetadataDao = {
         roleEntityRef: 'user:default/permission_admin',
         source: 'configuration',
