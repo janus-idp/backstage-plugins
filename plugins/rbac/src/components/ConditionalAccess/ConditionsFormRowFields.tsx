@@ -30,7 +30,7 @@ type ConditionFormRowFieldsProps = {
   conditionRow: ConditionsData;
   conditionRulesData?: RulesData;
   setErrors: React.Dispatch<React.SetStateAction<RuleParamsErrors | undefined>>;
-  optionDisabled: (ruleOption: string) => boolean;
+  optionDisabled?: (ruleOption: string) => boolean;
   setRemoveAllClicked: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
@@ -96,7 +96,9 @@ export const ConditionsFormRowFields = ({
         style={{ marginTop: '27px', width: '50%' }}
         options={rules ?? []}
         value={oldCondition?.rule || null}
-        getOptionDisabled={option => optionDisabled(option)}
+        getOptionDisabled={option =>
+          optionDisabled ? optionDisabled(option) : false
+        }
         onChange={(_event, ruleVal?: string | null) =>
           handleConditionChange({
             ...oldCondition,

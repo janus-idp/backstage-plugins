@@ -1,3 +1,17 @@
+## @janus-idp/cli [1.8.10](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.8.9...@janus-idp/cli@1.8.10) (2024-05-29)
+
+
+### Bug Fixes
+
+* **cli:** fix entrypoint validation on backstage 1.24.0 and above. ([#1741](https://github.com/janus-idp/backstage-plugins/issues/1741)) ([6ed4171](https://github.com/janus-idp/backstage-plugins/commit/6ed4171dd4953da03be7f083b967f778909a768d))
+
+## @janus-idp/cli [1.8.9](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.8.8...@janus-idp/cli@1.8.9) (2024-05-29)
+
+
+### Bug Fixes
+
+* **release:** change problematic plugins to private ([#1738](https://github.com/janus-idp/backstage-plugins/issues/1738)) ([69176bd](https://github.com/janus-idp/backstage-plugins/commit/69176bd75ccd842a313445e096223ecc339b655b))
+
 ## @janus-idp/cli [1.8.8](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.8.7...@janus-idp/cli@1.8.8) (2024-05-28)
 
 ## @janus-idp/cli [1.8.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/cli@1.8.6...@janus-idp/cli@1.8.7) (2024-05-16)

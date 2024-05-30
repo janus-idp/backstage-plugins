@@ -1,3 +1,34 @@
+## @janus-idp/backstage-plugin-rbac [1.20.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.20.4...@janus-idp/backstage-plugin-rbac@1.20.5) (2024-05-30)
+
+
+### Bug Fixes
+
+* **rbac:** do not disable already selected rule for allOf/anyOf ([#1739](https://github.com/janus-idp/backstage-plugins/issues/1739)) ([dc73650](https://github.com/janus-idp/backstage-plugins/commit/dc73650587cd13e80923a36473a46e016fae3e81))
+
+## @janus-idp/backstage-plugin-rbac [1.20.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.20.3...@janus-idp/backstage-plugin-rbac@1.20.4) (2024-05-29)
+
+
+
+### Dependencies
+
+* **@janus-idp/cli:** upgraded to 1.8.10
+
+## @janus-idp/backstage-plugin-rbac [1.20.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.20.2...@janus-idp/backstage-plugin-rbac@1.20.3) (2024-05-29)
+
+
+### Bug Fixes
+
+* **rbac:** conditional access form validation ([#1699](https://github.com/janus-idp/backstage-plugins/issues/1699)) ([d56f4af](https://github.com/janus-idp/backstage-plugins/commit/d56f4affd2538c5b9554e19b6ec2951d98d2b218))
+* **rbac:** enable save on remove-all button click ([#1712](https://github.com/janus-idp/backstage-plugins/issues/1712)) ([0502332](https://github.com/janus-idp/backstage-plugins/commit/0502332409b092ebc860c9a77d8b966ef920f7bf))
+* **rbac:** fix mui autocomplete related warnings ([#1707](https://github.com/janus-idp/backstage-plugins/issues/1707)) ([8e5c5ae](https://github.com/janus-idp/backstage-plugins/commit/8e5c5aef5e0472fdb876d81fc7f2356cfb4319f0))
+
+
+
+### Dependencies
+
+* **@janus-idp/shared-react:** upgraded to 2.6.3
+* **@janus-idp/cli:** upgraded to 1.8.9
+
 ## @janus-idp/backstage-plugin-rbac [1.20.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.20.1...@janus-idp/backstage-plugin-rbac@1.20.2) (2024-05-16)
 
 ## @janus-idp/backstage-plugin-rbac [1.20.1](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.20.0...@janus-idp/backstage-plugin-rbac@1.20.1) (2024-05-16)

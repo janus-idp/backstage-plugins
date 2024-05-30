@@ -1155,7 +1155,7 @@
   dependencies:
     "@babel/highlight" "^7.0.0"
 
-"@babel/code-frame@^7.0.0", "@babel/code-frame@^7.10.4", "@babel/code-frame@^7.12.13", "@babel/code-frame@^7.16.0", "@babel/code-frame@^7.16.7", "@babel/code-frame@^7.18.6", "@babel/code-frame@^7.22.13", "@babel/code-frame@^7.23.5", "@babel/code-frame@^7.24.2", "@babel/code-frame@^7.8.3":
+"@babel/code-frame@^7.0.0", "@babel/code-frame@^7.10.4", "@babel/code-frame@^7.12.13", "@babel/code-frame@^7.16.0", "@babel/code-frame@^7.16.7", "@babel/code-frame@^7.18.6", "@babel/code-frame@^7.22.13", "@babel/code-frame@^7.23.5", "@babel/code-frame@^7.8.3":
   version "7.24.2"
   resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.24.2.tgz#718b4b19841809a58b29b68cde80bc5e1aa6d9ae"
   integrity sha512-y5+tLQyV8pg3fsiln67BVLD1P13Eg4lh5RW9mF0zUuvLrv9uIQ4MCL+CRT+FTsBlBjcIan6PGsLcBN0m3ClUyQ==
@@ -1181,28 +1181,7 @@
   resolved "https://registry.yarnpkg.com/@babel/compat-data/-/compat-data-7.24.6.tgz#b3600217688cabb26e25f8e467019e66d71b7ae2"
   integrity sha512-aC2DGhBq5eEdyXWqrDInSqQjO0k8xtPRf5YylULqx8MCd6jBtzqfta/3ETMRpuKIc5hyswfO80ObyA1MvkCcUQ==
 
-"@babel/core@^7.11.6", "@babel/core@^7.12.3", "@babel/core@^7.19.6", "@babel/core@^7.21.3", "@babel/core@^7.22.0", "@babel/core@^7.23.0", "@babel/core@^7.23.2", "@babel/core@^7.23.9", "@babel/core@^7.7.5":
-  version "7.24.5"
-  resolved "https://registry.yarnpkg.com/@babel/core/-/core-7.24.5.tgz#15ab5b98e101972d171aeef92ac70d8d6718f06a"
-  integrity sha512-tVQRucExLQ02Boi4vdPp49svNGcfL2GhdTCT9aldhXgCJVAI21EtRfBettiuLUwce/7r6bFdgs6JFkcdTiFttA==
-  dependencies:
-    "@ampproject/remapping" "^2.2.0"
-    "@babel/code-frame" "^7.24.2"
-    "@babel/generator" "^7.24.5"
-    "@babel/helper-compilation-targets" "^7.23.6"
-    "@babel/helper-module-transforms" "^7.24.5"
-    "@babel/helpers" "^7.24.5"
-    "@babel/parser" "^7.24.5"
-    "@babel/template" "^7.24.0"
-    "@babel/traverse" "^7.24.5"
-    "@babel/types" "^7.24.5"
-    convert-source-map "^2.0.0"
-    debug "^4.1.0"
-    gensync "^1.0.0-beta.2"
-    json5 "^2.2.3"
-    semver "^6.3.1"
-
-"@babel/core@^7.24.0":
+"@babel/core@7.24.6", "@babel/core@^7.11.6", "@babel/core@^7.12.3", "@babel/core@^7.19.6", "@babel/core@^7.21.3", "@babel/core@^7.22.0", "@babel/core@^7.23.0", "@babel/core@^7.23.2", "@babel/core@^7.23.9", "@babel/core@^7.24.0", "@babel/core@^7.7.5":
   version "7.24.6"
   resolved "https://registry.yarnpkg.com/@babel/core/-/core-7.24.6.tgz#8650e0e4b03589ebe886c4e4a60398db0a7ec787"
   integrity sha512-qAHSfAdVyFmIvl0VHELib8xar7ONuSHrE2hLnsaWkYNTI68dmi1x8GYDhJjMI/e7XWal9QBlZkwbOnkcw7Z8gQ==
@@ -1223,17 +1202,7 @@
     json5 "^2.2.3"
     semver "^6.3.1"
 
-"@babel/generator@^7.12.11", "@babel/generator@^7.23.0", "@babel/generator@^7.24.5", "@babel/generator@^7.7.2":
-  version "7.24.5"
-  resolved "https://registry.yarnpkg.com/@babel/generator/-/generator-7.24.5.tgz#e5afc068f932f05616b66713e28d0f04e99daeb3"
-  integrity sha512-x32i4hEXvr+iI0NEoEfDKzlemF8AmtOP8CcrRaEcpzysWuoEb1KknpcvMsHKPONoKZiDuItklgWhB18xEhr9PA==
-  dependencies:
-    "@babel/types" "^7.24.5"
-    "@jridgewell/gen-mapping" "^0.3.5"
-    "@jridgewell/trace-mapping" "^0.3.25"
-    jsesc "^2.5.1"
-
-"@babel/generator@^7.23.6", "@babel/generator@^7.24.6":
+"@babel/generator@7.24.6", "@babel/generator@^7.12.11", "@babel/generator@^7.23.0", "@babel/generator@^7.23.6", "@babel/generator@^7.24.6", "@babel/generator@^7.7.2":
   version "7.24.6"
   resolved "https://registry.yarnpkg.com/@babel/generator/-/generator-7.24.6.tgz#dfac82a228582a9d30c959fe50ad28951d4737a7"
   integrity sha512-S7m4eNa6YAPJRHmKsLHIDJhNAGNKoWNiWefz1MBbpnt8g9lvMDl1hir4P9bo/57bQEmuwEhnRU/AMWsD0G/Fbg==
@@ -1375,7 +1344,7 @@
   dependencies:
     "@babel/types" "^7.24.6"
 
-"@babel/helper-module-transforms@^7.23.3", "@babel/helper-module-transforms@^7.24.5":
+"@babel/helper-module-transforms@^7.23.3":
   version "7.24.5"
   resolved "https://registry.yarnpkg.com/@babel/helper-module-transforms/-/helper-module-transforms-7.24.5.tgz#ea6c5e33f7b262a0ae762fd5986355c45f54a545"
   integrity sha512-9GxeY8c2d2mdQUP1Dye0ks3VDyIMS98kt/llQ2nUId8IsWqTF0l1LkSX0/uP7l7MCDrzXS009Hyhe2gzTiGW8A==
@@ -1501,15 +1470,6 @@
     "@babel/template" "^7.24.0"
     "@babel/types" "^7.24.5"
 
-"@babel/helpers@^7.24.5":
-  version "7.24.5"
-  resolved "https://registry.yarnpkg.com/@babel/helpers/-/helpers-7.24.5.tgz#fedeb87eeafa62b621160402181ad8585a22a40a"
-  integrity sha512-CiQmBMMpMQHwM5m01YnrM6imUG1ebgYJ+fAIW4FZe6m4qHTPaRHti+R8cggAwkdz4oXhtO4/K9JWlh+8hIfR2Q==
-  dependencies:
-    "@babel/template" "^7.24.0"
-    "@babel/traverse" "^7.24.5"
-    "@babel/types" "^7.24.5"
-
 "@babel/helpers@^7.24.6":
   version "7.24.6"
   resolved "https://registry.yarnpkg.com/@babel/helpers/-/helpers-7.24.6.tgz#cd124245299e494bd4e00edda0e4ea3545c2c176"
@@ -1538,7 +1498,7 @@
     js-tokens "^4.0.0"
     picocolors "^1.0.0"
 
-"@babel/parser@^7.1.0", "@babel/parser@^7.14.7", "@babel/parser@^7.20.7", "@babel/parser@^7.23.0", "@babel/parser@^7.23.9", "@babel/parser@^7.24.0", "@babel/parser@^7.24.5":
+"@babel/parser@^7.1.0", "@babel/parser@^7.14.7", "@babel/parser@^7.20.7", "@babel/parser@^7.23.0", "@babel/parser@^7.23.9", "@babel/parser@^7.24.0":
   version "7.24.5"
   resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.24.5.tgz#4a4d5ab4315579e5398a82dcf636ca80c3392790"
   integrity sha512-EOv5IK8arwh3LI47dz1b0tKUb/1uhHAnHJOrjgtQMIpu1uXd9mlFrJg9IUgGUgZ41Ch0K8REPTYpO7B76b4vJg==
@@ -2362,23 +2322,7 @@
     "@babel/parser" "^7.24.6"
     "@babel/types" "^7.24.6"
 
-"@babel/traverse@^7.1.6", "@babel/traverse@^7.23.2", "@babel/traverse@^7.24.5":
-  version "7.24.5"
-  resolved "https://registry.yarnpkg.com/@babel/traverse/-/traverse-7.24.5.tgz#972aa0bc45f16983bf64aa1f877b2dd0eea7e6f8"
-  integrity sha512-7aaBLeDQ4zYcUFDUD41lJc1fG8+5IU9DaNSJAgal866FGvmD5EbWQgnEC6kO1gGLsX0esNkfnJSndbTXA3r7UA==
-  dependencies:
-    "@babel/code-frame" "^7.24.2"
-    "@babel/generator" "^7.24.5"
-    "@babel/helper-environment-visitor" "^7.22.20"
-    "@babel/helper-function-name" "^7.23.0"
-    "@babel/helper-hoist-variables" "^7.22.5"
-    "@babel/helper-split-export-declaration" "^7.24.5"
-    "@babel/parser" "^7.24.5"
-    "@babel/types" "^7.24.5"
-    debug "^4.3.1"
-    globals "^11.1.0"
-
-"@babel/traverse@^7.24.0", "@babel/traverse@^7.24.6":
+"@babel/traverse@7.24.6", "@babel/traverse@^7.1.6", "@babel/traverse@^7.23.2", "@babel/traverse@^7.24.0", "@babel/traverse@^7.24.6":
   version "7.24.6"
   resolved "https://registry.yarnpkg.com/@babel/traverse/-/traverse-7.24.6.tgz#0941ec50cdeaeacad0911eb67ae227a4f8424edc"
   integrity sha512-OsNjaJwT9Zn8ozxcfoBc+RaHdj3gFmCmYoQLUII1o6ZrUwku0BMg80FoOTPx+Gi6XhcQxAYE4xyjPTo4SxEQqw==
@@ -6414,70 +6358,6 @@
   resolved "https://registry.yarnpkg.com/@istanbuljs/schema/-/schema-0.1.3.tgz#e45e384e4b8ec16bce2fd903af78450f6bf7ec98"
   integrity sha512-ZXRY4jNvVgSVQ8DL3LTcakaAtXwTVUxE81hslsyD2AtoXW/wVob10HkOJ1X/pAlcI7D+2YoZKg5do8G/w6RYgA==
 
-"@janus-idp/cli@1.7.10":
-  version "1.7.10"
-  resolved "https://registry.yarnpkg.com/@janus-idp/cli/-/cli-1.7.10.tgz#84e0001b121f86b8a5e11e904c6b0512379eb901"
-  integrity sha512-18xXRCU5zG3DoBdC9JAYQAWB9vlMJ61m/Im7FS5ugdiv8FUKdjdcWq+hf6soF/lK/imEiCt0Eyu0HLYgq0+4vQ==
-  dependencies:
-    "@backstage/cli-common" "^0.1.13"
-    "@backstage/cli-node" "^0.2.4"
-    "@backstage/config" "^1.2.0"
-    "@backstage/config-loader" "^1.7.0"
-    "@backstage/errors" "^1.2.4"
-    "@backstage/eslint-plugin" "^0.1.6"
-    "@backstage/types" "^1.1.1"
-    "@manypkg/get-packages" "^1.1.3"
-    "@openshift/dynamic-plugin-sdk-webpack" "^3.0.0"
-    "@pmmmwh/react-refresh-webpack-plugin" "^0.5.7"
-    "@rollup/plugin-commonjs" "^25.0.4"
-    "@rollup/plugin-json" "^6.0.0"
-    "@rollup/plugin-node-resolve" "^15.2.1"
-    "@rollup/plugin-yaml" "^4.0.0"
-    "@svgr/rollup" "^8.1.0"
-    "@svgr/webpack" "^6.5.1"
-    "@yarnpkg/lockfile" "^1.1.0"
-    "@yarnpkg/parsers" "^3.0.0-rc.4"
-    bfj "^7.0.2"
-    chalk "^4.0.0"
-    chokidar "^3.3.1"
-    commander "^9.1.0"
-    css-loader "^6.5.1"
-    esbuild "^0.19.0"
-    esbuild-loader "^2.18.0"
-    eslint "^8.49.0"
-    eslint-config-prettier "^8.10.0"
-    eslint-webpack-plugin "^3.2.0"
-    express "^4.18.2"
-    fork-ts-checker-webpack-plugin "^7.0.0-alpha.8"
-    fs-extra "^10.1.0"
-    handlebars "^4.7.7"
-    html-webpack-plugin "^5.3.1"
-    inquirer "^8.2.0"
-    is-native-module "^1.1.3"
-    lodash "^4.17.21"
-    mini-css-extract-plugin "^2.4.2"
-    node-libs-browser "^2.2.1"
-    npm-packlist "^5.0.0"
-    ora "^5.3.0"
-    postcss "^8.2.13"
-    process "^0.11.10"
-    react-dev-utils "^12.0.0-next.60"
-    react-refresh "^0.14.0"
-    recursive-readdir "^2.2.2"
-    rollup "^2.78.0"
-    rollup-plugin-dts "^4.0.1"
-    rollup-plugin-esbuild "^4.7.2"
-    rollup-plugin-postcss "^4.0.0"
-    rollup-pluginutils "^2.8.2"
-    semver "^7.5.4"
-    style-loader "^3.3.1"
-    swc-loader "^0.2.3"
-    typescript-json-schema "^0.62.0"
-    webpack "^5.89.0"
-    webpack-dev-server "^4.15.1"
-    yml-loader "^2.1.0"
-    yn "^4.0.0"
-
 "@janus-idp/cli@1.8.2":
   version "1.8.2"
   resolved "https://registry.yarnpkg.com/@janus-idp/cli/-/cli-1.8.2.tgz#3f6afa73cb6392aca64dc09cb76980c2f03117fb"
@@ -6537,6 +6417,70 @@
     style-loader "^3.3.1"
     swc-loader "^0.2.3"
     typescript-json-schema "^0.62.0"
+    webpack "^5.89.0"
+    webpack-dev-server "^4.15.1"
+    yml-loader "^2.1.0"
+    yn "^4.0.0"
+
+"@janus-idp/cli@1.8.7":
+  version "1.8.7"
+  resolved "https://registry.npmjs.org/@janus-idp/cli/-/cli-1.8.7.tgz#ded3ed8240730f6970087a9be4a6e67fb5e69a10"
+  integrity sha512-ECnS04H9mIs47hvRRtFikc9Vw7/YSCq/v6nmHgRHDOdn38xqiSQ/kGiDqOD45i+BVMXwkR8SB42V7Wq8npoLzg==
+  dependencies:
+    "@backstage/cli-common" "^0.1.13"
+    "@backstage/cli-node" "^0.2.5"
+    "@backstage/config" "^1.2.0"
+    "@backstage/config-loader" "^1.8.0"
+    "@backstage/errors" "^1.2.4"
+    "@backstage/eslint-plugin" "^0.1.7"
+    "@backstage/types" "^1.1.1"
+    "@manypkg/get-packages" "^1.1.3"
+    "@openshift/dynamic-plugin-sdk-webpack" "^3.0.0"
+    "@pmmmwh/react-refresh-webpack-plugin" "^0.5.7"
+    "@rollup/plugin-commonjs" "^25.0.4"
+    "@rollup/plugin-json" "^6.0.0"
+    "@rollup/plugin-node-resolve" "^15.2.1"
+    "@rollup/plugin-yaml" "^4.0.0"
+    "@svgr/rollup" "^8.1.0"
+    "@svgr/webpack" "^6.5.1"
+    "@yarnpkg/lockfile" "^1.1.0"
+    "@yarnpkg/parsers" "^3.0.0-rc.4"
+    bfj "^8.0.0"
+    chalk "^4.0.0"
+    chokidar "^3.3.1"
+    commander "^9.1.0"
+    css-loader "^6.5.1"
+    esbuild "^0.21.0"
+    esbuild-loader "^2.18.0"
+    eslint "^8.49.0"
+    eslint-config-prettier "^8.10.0"
+    eslint-webpack-plugin "^3.2.0"
+    express "^4.18.2"
+    fork-ts-checker-webpack-plugin "^7.0.0-alpha.8"
+    fs-extra "^10.1.0"
+    handlebars "^4.7.7"
+    html-webpack-plugin "^5.3.1"
+    inquirer "^8.2.0"
+    is-native-module "^1.1.3"
+    lodash "^4.17.21"
+    mini-css-extract-plugin "^2.4.2"
+    node-libs-browser "^2.2.1"
+    npm-packlist "^5.0.0"
+    ora "^5.3.0"
+    postcss "^8.2.13"
+    process "^0.11.10"
+    react-dev-utils "^12.0.0-next.60"
+    react-refresh "^0.14.0"
+    recursive-readdir "^2.2.2"
+    rollup "^2.78.0"
+    rollup-plugin-dts "^4.0.1"
+    rollup-plugin-esbuild "^4.7.2"
+    rollup-plugin-postcss "^4.0.0"
+    rollup-pluginutils "^2.8.2"
+    semver "^7.5.4"
+    style-loader "^3.3.1"
+    swc-loader "^0.2.3"
+    typescript-json-schema "^0.63.0"
     webpack "^5.89.0"
     webpack-dev-server "^4.15.1"
     yml-loader "^2.1.0"
@@ -14754,9 +14698,9 @@
     "@types/react" "*"
 
 "@types/react@*", "@types/react@18.3.3", "@types/react@>=16", "@types/react@^16.13.1 || ^17.0.0", "@types/react@^16.13.1 || ^17.0.0 || ^18.0.0", "@types/react@^18":
-  version "18.3.2"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.3.2.tgz#462ae4904973bc212fa910424d901e3d137dbfcd"
-  integrity sha512-Btgg89dAnqD4vV7R3hlwOxgqobUQKgx3MmrQRi0yYbs/P0ym8XozIAlkqVilPqHQwXs4e9Tf63rrCgl58BcO4w==
+  version "18.3.3"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.3.3.tgz#9679020895318b0915d7a3ab004d92d33375c45f"
+  integrity sha512-hti/R0pS0q1/xx+TsI73XIqk26eBsISZ2R0wUijXIngRK9R/e7Xw/cXVxQK7R5JjW+SV4zGcn5hXjudkN/pLIw==
   dependencies:
     "@types/prop-types" "*"
     csstype "^3.0.2"
@@ -15109,18 +15053,18 @@
   resolved "https://registry.yarnpkg.com/@typescript-eslint/types/-/types-6.21.0.tgz#205724c5123a8fef7ecd195075fa6e85bac3436d"
   integrity sha512-1kFmZ1rOm5epu9NZEZm1kckCDGj5UJEf7P1kliH4LKu/RkwpsfqqGmY2OOcUs18lSlQBKLDYBOGxRVtrMN5lpg==
 
-"@typescript-eslint/types@7.10.0":
-  version "7.10.0"
-  resolved "https://registry.yarnpkg.com/@typescript-eslint/types/-/types-7.10.0.tgz#da92309c97932a3a033762fd5faa8b067de84e3b"
-  integrity sha512-7fNj+Ya35aNyhuqrA1E/VayQX9Elwr8NKZ4WueClR3KwJ7Xx9jcCdOrLW04h51de/+gNbyFMs+IDxh5xIwfbNg==
+"@typescript-eslint/types@7.11.0":
+  version "7.11.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/types/-/types-7.11.0.tgz#5e9702a5e8b424b7fc690e338d359939257d6722"
+  integrity sha512-MPEsDRZTyCiXkD4vd3zywDCifi7tatc4K37KqTprCvaXptP7Xlpdw0NR2hRJTetG5TxbWDB79Ys4kLmHliEo/w==
 
 "@typescript-eslint/typescript-estree@5.62.0", "@typescript-eslint/typescript-estree@6.21.0", "@typescript-eslint/typescript-estree@^7.3.1":
-  version "7.10.0"
-  resolved "https://registry.yarnpkg.com/@typescript-eslint/typescript-estree/-/typescript-estree-7.10.0.tgz#6dcdc5de3149916a6a599fa89dde5c471b88b8bb"
-  integrity sha512-LXFnQJjL9XIcxeVfqmNj60YhatpRLt6UhdlFwAkjNc6jSUlK8zQOl1oktAP8PlWFzPQC1jny/8Bai3/HPuvN5g==
+  version "7.11.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/typescript-estree/-/typescript-estree-7.11.0.tgz#7cbc569bc7336c3a494ceaf8204fdee5d5dbb7fa"
+  integrity sha512-cxkhZ2C/iyi3/6U9EPc5y+a6csqHItndvN/CzbNXTNrsC3/ASoYQZEt9uMaEp+xFNjasqQyszp5TumAVKKvJeQ==
   dependencies:
-    "@typescript-eslint/types" "7.10.0"
-    "@typescript-eslint/visitor-keys" "7.10.0"
+    "@typescript-eslint/types" "7.11.0"
+    "@typescript-eslint/visitor-keys" "7.11.0"
     debug "^4.3.4"
     globby "^11.1.0"
     is-glob "^4.0.3"
@@ -15171,12 +15115,12 @@
     "@typescript-eslint/types" "6.21.0"
     eslint-visitor-keys "^3.4.1"
 
-"@typescript-eslint/visitor-keys@7.10.0":
-  version "7.10.0"
-  resolved "https://registry.yarnpkg.com/@typescript-eslint/visitor-keys/-/visitor-keys-7.10.0.tgz#2af2e91e73a75dd6b70b4486c48ae9d38a485a78"
-  integrity sha512-9ntIVgsi6gg6FIq9xjEO4VQJvwOqA3jaBFQJ/6TK5AvEup2+cECI6Fh7QiBxmfMHXU0V0J4RyPeOU1VDNzl9cg==
+"@typescript-eslint/visitor-keys@7.11.0":
+  version "7.11.0"
+  resolved "https://registry.yarnpkg.com/@typescript-eslint/visitor-keys/-/visitor-keys-7.11.0.tgz#2c50cd292e67645eec05ac0830757071b4a4d597"
+  integrity sha512-7syYk4MzjxTEk0g/w3iqtgxnFQspDJfn6QKD36xMuuhTzjcxY7F8EmBLnALjVyaOF1/bVocu3bS/2/F7rXrveQ==
   dependencies:
-    "@typescript-eslint/types" "7.10.0"
+    "@typescript-eslint/types" "7.11.0"
     eslint-visitor-keys "^3.4.3"
 
 "@uiw/codemirror-extensions-basic-setup@4.22.0":
@@ -16563,17 +16507,6 @@ better-sqlite3@^9.0.0:
   dependencies:
     bindings "^1.5.0"
     prebuild-install "^7.1.1"
-
-bfj@^7.0.2:
-  version "7.1.0"
-  resolved "https://registry.yarnpkg.com/bfj/-/bfj-7.1.0.tgz#c5177d522103f9040e1b12980fe8c38cf41d3f8b"
-  integrity sha512-I6MMLkn+anzNdCUp9hMRyui1HaNEUCco50lxbvNS4+EyXg8lN3nJ48PjPWtbH8UVS9CuMoaKE9U2V3l29DaRQw==
-  dependencies:
-    bluebird "^3.7.2"
-    check-types "^11.2.3"
-    hoopy "^0.1.4"
-    jsonpath "^1.1.1"
-    tryer "^1.0.1"
 
 bfj@^8.0.0:
   version "8.0.0"
@@ -35651,10 +35584,10 @@ vscode-languageserver-textdocument@^1.0.0, vscode-languageserver-textdocument@^1
   resolved "https://registry.yarnpkg.com/vscode-languageserver-textdocument/-/vscode-languageserver-textdocument-1.0.11.tgz#0822a000e7d4dc083312580d7575fe9e3ba2e2bf"
   integrity sha512-X+8T3GoiwTVlJbicx/sIAF+yuJAqz8VvwJyoMVhwEMoEKE/fkDmrqUgDMyBECcM2A2frVZIUj5HI/ErRXCfOeA==
 
-vscode-languageserver-types@3.16.0, vscode-languageserver-types@3.16.0-next.2, vscode-languageserver-types@3.17.1, vscode-languageserver-types@3.17.5, vscode-languageserver-types@^3.0.0, vscode-languageserver-types@^3.16.0, vscode-languageserver-types@^3.17.1:
-  version "3.17.1"
-  resolved "https://registry.yarnpkg.com/vscode-languageserver-types/-/vscode-languageserver-types-3.17.1.tgz#c2d87fa7784f8cac389deb3ff1e2d9a7bef07e16"
-  integrity sha512-K3HqVRPElLZVVPtMeKlsyL9aK0GxGQpvtAUTfX4k7+iJ4mc1M+JM+zQwkgGy2LzY0f0IAafe8MKqIkJrxfGGjQ==
+vscode-languageserver-types@3.16.0, vscode-languageserver-types@3.16.0-next.2, vscode-languageserver-types@3.17.5, vscode-languageserver-types@^3.0.0, vscode-languageserver-types@^3.16.0, vscode-languageserver-types@^3.17.1:
+  version "3.17.5"
+  resolved "https://registry.yarnpkg.com/vscode-languageserver-types/-/vscode-languageserver-types-3.17.5.tgz#3273676f0cf2eab40b3f44d085acbb7f08a39d8a"
+  integrity sha512-Ld1VelNuX9pdF39h2Hgaeb5hEZM2Z3jUrrMgWQAu82jMtZp7p3vJT3BzToKtZI7NgQssZje5o0zryOrhQvzQAg==
 
 vscode-languageserver@^7.0.0:
   version "7.0.0"
