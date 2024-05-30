@@ -1,0 +1,18 @@
+#!/bin/bash
+
+set -e
+
+package="@redhat-developer/red-hat-developer-hub-theme"
+version=$(npm view $package@latest version)
+
+echo "Updating $package in app"
+yarn workspace app add "$package@$version"
+
+for packageJson in $(grep -l "$package" plugins/*/package.json)
+do
+  folder=$(dirname $packageJson)
+  echo "Updating $package in $folder"
+  cd $folder
+  yarn add --dev "$package@$version"
+  cd -
+done
