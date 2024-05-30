@@ -33,6 +33,7 @@ import {
   EVALUATE_PERMISSION_ACCESS_STAGE,
   EvaluationEvents,
   PermissionEvents,
+  RBAC_BACKEND,
   RoleEvents,
 } from '../audit-log/audit-logger';
 import { ConditionalStorage } from '../database/conditional-storage';
@@ -40,10 +41,7 @@ import {
   RoleMetadataDao,
   RoleMetadataStorage,
 } from '../database/role-metadata';
-import {
-  CSV_PERMISSION_POLICY_FILE_AUTHOR,
-  CSVFileWatcher,
-} from '../file-permissions/csv-file-watcher';
+import { CSVFileWatcher } from '../file-permissions/csv-file-watcher';
 import { metadataStringToPolicy, removeTheDifference } from '../helper';
 import { validateEntityReference } from '../validation/policies-validation';
 import { EnforcerDelegate } from './enforcer-delegate';
@@ -112,6 +110,7 @@ const useAdminsFromConfig = async (
   const auditOption = createAuditRoleOptions(
     RoleEvents.CREATE_OR_UPDATE_ROLE,
     getAdminRoleMetadata(),
+    RBAC_BACKEND,
     addedRoleMembers.map(gp => gp[0]),
   );
   await aLog.auditLog(auditOption);
@@ -148,7 +147,7 @@ const addAdminPermission = async (
     [policy],
     PermissionEvents.CREATE_OR_UPDATE_POLICY,
     'configuration',
-    CSV_PERMISSION_POLICY_FILE_AUTHOR,
+    RBAC_BACKEND,
   );
   await aLog.auditLog(auditOptions);
 };

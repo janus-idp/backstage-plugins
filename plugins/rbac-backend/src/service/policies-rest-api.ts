@@ -521,6 +521,7 @@ export class PoliciesServer {
         const opts = createAuditRoleOptions(
           RoleEvents.CREATE_ROLE,
           metadata,
+          modifiedBy,
           roles.map(gp => gp[0]),
           SEND_RESPONSE_STAGE,
         );
@@ -672,6 +673,7 @@ export class PoliciesServer {
         const opts = createAuditRoleOptions(
           RoleEvents.UPDATE_ROLE,
           newMetadata,
+          newMetadata.modifiedBy,
           newRole.map(gp => gp[0]),
           SEND_RESPONSE_STAGE,
           oldMetadata,
@@ -753,6 +755,7 @@ export class PoliciesServer {
           const opts = createAuditRoleOptions(
             RoleEvents.DELETE_ROLE,
             metadata,
+            metadata.modifiedBy,
             roleMembers.map(gp => gp[0]),
             SEND_RESPONSE_STAGE,
           );

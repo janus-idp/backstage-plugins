@@ -12,6 +12,7 @@ import {
   createAuditPermissionOptions,
   createAuditRoleOptions,
   PermissionEvents,
+  RBAC_BACKEND,
   RoleEvents,
 } from '../audit-log/audit-logger';
 import {
@@ -312,7 +313,7 @@ export class CSVFileWatcher {
           [policy],
           PermissionEvents.CREATE_OR_UPDATE_POLICY,
           'csv-file',
-          CSV_PERMISSION_POLICY_FILE_AUTHOR,
+          RBAC_BACKEND,
         );
         await this.aLog.auditLog(auditOptions);
       } catch (e) {
@@ -336,7 +337,7 @@ export class CSVFileWatcher {
         this.csvFilePolicies.removedPolicies,
         PermissionEvents.DELETE_POLICY,
         'csv-file',
-        CSV_PERMISSION_POLICY_FILE_AUTHOR,
+        RBAC_BACKEND,
       );
       await this.aLog.auditLog(auditOptions);
     } catch (e) {
@@ -399,9 +400,12 @@ export class CSVFileWatcher {
         const roleEvent = currentMetadata
           ? RoleEvents.UPDATE_ROLE
           : RoleEvents.CREATE_ROLE;
-        const auditOptions = createAuditRoleOptions(roleEvent, roleMetadata, [
-          groupPolicy[0],
-        ]);
+        const auditOptions = createAuditRoleOptions(
+          roleEvent,
+          roleMetadata,
+          RBAC_BACKEND,
+          [groupPolicy[0]],
+        );
         await this.aLog.auditLog(auditOptions);
       } catch (e) {
         this.logger.warn(
@@ -446,9 +450,12 @@ export class CSVFileWatcher {
         ))
           ? RoleEvents.UPDATE_ROLE
           : RoleEvents.DELETE_ROLE;
-        const auditOptions = createAuditRoleOptions(roleEvent, metadata, [
-          groupPolicy[0],
-        ]);
+        const auditOptions = createAuditRoleOptions(
+          roleEvent,
+          metadata,
+          RBAC_BACKEND,
+          [groupPolicy[0]],
+        );
         await this.aLog.auditLog(auditOptions);
       } catch (e) {
         this.logger.warn(

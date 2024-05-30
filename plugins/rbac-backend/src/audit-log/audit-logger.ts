@@ -22,8 +22,6 @@ export const RoleEvents = {
   DELETE_ROLE: 'DeleteRole',
   CREATE_OR_UPDATE_ROLE: 'CreateOrUpdateRole',
 
-  CREATE_OR_UPDATE_ROLE_ERROR: 'CreateOrUpdateRoleError',
-  DELETE_OR_UPDATE_ROLE_ERROR: 'DeleteOrUpdateRoleError',
   CREATE_ROLE_ERROR: 'CreateRoleError',
   UPDATE_ROLE_ERROR: 'UpdateRoleError',
   DELETE_ROLE_ERROR: 'DeleteRoleError',
@@ -36,7 +34,6 @@ export const PermissionEvents = {
   DELETE_POLICY: 'DeletePolicy',
 
   CREATE_POLICY_ERROR: 'CreatePolicyError',
-  CREATE_OR_UPDATE_POLICY_ERROR: `CreateOrUpdatePolicyError`,
   UPDATE_POLICY_ERROR: 'UpdatePolicyError',
   DELETE_POLICY_ERROR: 'DeletePolicyError',
 } as const;
@@ -85,6 +82,8 @@ export type ConditionAuditInfo = {
   source: Source;
 };
 
+export const RBAC_BACKEND = 'rbac-backend';
+
 // Audit log stage for processing Role-Based Access Control (RBAC) data
 export const HANDLE_RBAC_DATA_STAGE = 'handleRBACData';
 
@@ -97,6 +96,7 @@ export const SEND_RESPONSE_STAGE = 'sendResponse';
 export function createAuditRoleOptions(
   roleEvent: (typeof RoleEvents)[keyof typeof RoleEvents],
   metadata: RoleMetadataDao,
+  modifiedBy: string,
   members: string[],
   stage?: string,
   oldRoleMetadata?: RoleMetadataDao,
@@ -138,7 +138,7 @@ export function createAuditRoleOptions(
     eventName: roleEvent,
     stage: stage ?? HANDLE_RBAC_DATA_STAGE,
     metadata: auditInfo,
-    actorId: metadata.modifiedBy || metadata.author,
+    actorId: modifiedBy || metadata.modifiedBy || metadata.author,
   };
 }
 

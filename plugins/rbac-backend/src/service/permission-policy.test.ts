@@ -1392,7 +1392,6 @@ describe('Policy checks for resourced permissions defined by name', () => {
     await enfDelegate.addPolicy(
       ['role:default/catalog_reader', 'catalog.entity.read', 'read', 'allow'],
       'csv-file',
-      // modifiedBy,
     );
 
     const decision = await policy.handle(
