@@ -14,15 +14,14 @@
   "backstage": {
     "role": "common-library"
   },
-  "sideEffects": false,
   "scripts": {
     "build": "backstage-cli package build",
-    "clean": "backstage-cli package clean",
+    "tsc": "tsc",
     "lint": "backstage-cli package lint",
-    "postpack": "backstage-cli package postpack",
-    "prepack": "backstage-cli package prepack",
     "test": "backstage-cli package test --passWithNoTests --coverage",
-    "tsc": "tsc"
+    "clean": "backstage-cli package clean",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack"
   },
   "devDependencies": {
     "@backstage/cli": "0.26.4"
