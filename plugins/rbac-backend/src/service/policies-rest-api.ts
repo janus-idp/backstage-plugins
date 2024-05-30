@@ -858,18 +858,15 @@ export class PoliciesServer {
           pluginPermMetaData,
         );
 
-        const user = await identity.getIdentity({ request });
-        const id = await this.conditionalStorage.createCondition(
-          conditionToCreate,
-          user!.identity.userEntityRef,
-        );
+        const id =
+          await this.conditionalStorage.createCondition(conditionToCreate);
 
         await this.aLog.auditLog({
           message: 'Send response to report about created condition',
           eventName: ConditionEvents.CREATE_CONDITION,
           stage: 'response',
           request,
-          metadata: { conditionId: id },
+          metadata: { conditionId: id, condition: conditionToCreate },
           response: {
             status: 200,
           },
@@ -934,11 +931,7 @@ export class PoliciesServer {
           throw new InputError('Id is not a valid number.');
         }
 
-        const user = await identity.getIdentity({ request });
-        await this.conditionalStorage.deleteCondition(
-          id,
-          user!.identity.userEntityRef,
-        );
+        await this.conditionalStorage.deleteCondition(id);
 
         await this.aLog.auditLog({
           message: 'Send response to report about deleted condition',
@@ -991,19 +984,14 @@ export class PoliciesServer {
           pluginPermMetaData,
         );
 
-        const user = await identity.getIdentity({ request });
-        await this.conditionalStorage.updateCondition(
-          id,
-          conditionToUpdate,
-          user!.identity.userEntityRef,
-        );
+        await this.conditionalStorage.updateCondition(id, conditionToUpdate);
 
         await this.aLog.auditLog({
           message: 'Send response to report about updated condition',
           eventName: ConditionEvents.UPDATE_CONDITION,
           stage: 'response',
           request,
-          metadata: { conditionId: id },
+          metadata: { conditionId: id, condition: conditionToUpdate },
           response: {
             status: 200,
           },

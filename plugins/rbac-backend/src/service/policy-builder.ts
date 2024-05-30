@@ -86,12 +86,7 @@ export class PolicyBuilder {
 
     await migrate(databaseManager);
 
-    const defAuditLog = new DefaultAuditLogger({
-      logger: env.logger,
-      authService: auth,
-      httpAuthService: httpAuth,
-    });
-    const conditionStorage = new DataBaseConditionalStorage(databaseClient, defAuditLog);
+    const conditionStorage = new DataBaseConditionalStorage(databaseClient);
 
     const policyMetadataStorage = new DataBasePolicyMetadataStorage(
       databaseClient,
@@ -103,6 +98,12 @@ export class PolicyBuilder {
       roleMetadataStorage,
       databaseClient,
     );
+
+    const defAuditLog = new DefaultAuditLogger({
+      logger: env.logger,
+      authService: auth,
+      httpAuthService: httpAuth,
+    });
 
     const options: RouterOptions = {
       config: env.config,
