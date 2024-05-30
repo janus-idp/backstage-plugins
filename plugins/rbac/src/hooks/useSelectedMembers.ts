@@ -20,6 +20,7 @@ export const useSelectedMembers = (
   membersError: Error;
   roleError: Error;
   loading: boolean;
+  canReadUsersAndGroups: boolean;
 } => {
   const rbacApi = useApi(rbacApiRef);
   const { role, loading: roleLoading, roleError } = useRole(roleName);
@@ -31,6 +32,12 @@ export const useSelectedMembers = (
   } = useAsync(async () => {
     return await rbacApi.getMembers();
   });
+
+  const canReadUsersAndGroups =
+    !membersLoading &&
+    !membersError &&
+    Array.isArray(members) &&
+    members.length > 0;
 
   const data: SelectedMember[] = role
     ? (role as Role).memberReferences.reduce((acc: SelectedMember[], ref) => {
@@ -54,5 +61,6 @@ export const useSelectedMembers = (
     },
     roleError: roleError,
     loading: roleLoading && membersLoading,
+    canReadUsersAndGroups,
   };
 };

@@ -6360,7 +6360,7 @@
 
 "@janus-idp/backstage-plugin-topology-common@1.0.0":
   version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@janus-idp/backstage-plugin-topology-common/-/backstage-plugin-topology-common-1.0.0.tgz#d8336a3dd7938905328bd15a76714dcc455b5f66"
+  resolved "https://registry.npmjs.org/@janus-idp/backstage-plugin-topology-common/-/backstage-plugin-topology-common-1.0.0.tgz#d8336a3dd7938905328bd15a76714dcc455b5f66"
   integrity sha512-BGMVMR7ghMip4hpsvAGkx/MKlgfcGZuvqWAKiNpB9U0ek8mawmc2Jg6iBnZA4ERt8lSorU9gg9xe/NJoOdvZzA==
   dependencies:
     "@backstage/plugin-permission-common" "^0.7.13"

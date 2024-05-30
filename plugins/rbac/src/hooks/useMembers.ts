@@ -8,6 +8,14 @@ import { rbacApiRef } from '../api/RBACBackendClient';
 import { MemberEntity, MembersData } from '../types';
 import { getKindNamespaceName, getMembersFromGroup } from '../utils/rbac-utils';
 
+export type MembersInfo = {
+  loading: boolean;
+  data: MembersData[];
+  retry: { roleRetry: () => void; membersRetry: () => void };
+  error?: { message: string };
+  canReadUsersAndGroups: boolean;
+};
+
 const getErrorText = (
   role: any,
   members: any,
@@ -58,7 +66,10 @@ const getMemberData = (
   };
 };
 
-export const useMembers = (roleName: string, pollInterval?: number) => {
+export const useMembers = (
+  roleName: string,
+  pollInterval?: number,
+): MembersInfo => {
   const rbacApi = useApi(rbacApiRef);
   let data: MembersData[] = [];
   const {
@@ -76,6 +87,9 @@ export const useMembers = (roleName: string, pollInterval?: number) => {
   } = useAsyncRetry(async () => {
     return await rbacApi.getMembers();
   });
+
+  const canReadUsersAndGroups =
+    !membersError && Array.isArray(members) && members.length > 0;
 
   const loading = !roleError && !membersError && !role && !members;
 
@@ -109,5 +123,6 @@ export const useMembers = (roleName: string, pollInterval?: number) => {
     data,
     retry: { roleRetry, membersRetry },
     error: getErrorText(role, members) || roleError || membersError,
+    canReadUsersAndGroups,
   };
 };
