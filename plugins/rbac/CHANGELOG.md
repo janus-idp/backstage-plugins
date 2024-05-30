@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac [1.20.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.20.5...@janus-idp/backstage-plugin-rbac@1.20.6) (2024-05-30)
+
+
+### Bug Fixes
+
+* **rbac:** fix to enable create and edit role buttons on having correct permissions ([#1703](https://github.com/janus-idp/backstage-plugins/issues/1703)) ([19a9088](https://github.com/janus-idp/backstage-plugins/commit/19a908844f48b59116e92091169dd906c45f5621))
+
 ## @janus-idp/backstage-plugin-rbac [1.20.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.20.4...@janus-idp/backstage-plugin-rbac@1.20.5) (2024-05-30)
 
 
