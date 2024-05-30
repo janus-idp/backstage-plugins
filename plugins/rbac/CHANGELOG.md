@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac [1.20.5](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.20.4...@janus-idp/backstage-plugin-rbac@1.20.5) (2024-05-30)
+
+
+### Bug Fixes
+
+* **rbac:** do not disable already selected rule for allOf/anyOf ([#1739](https://github.com/janus-idp/backstage-plugins/issues/1739)) ([dc73650](https://github.com/janus-idp/backstage-plugins/commit/dc73650587cd13e80923a36473a46e016fae3e81))
+
 ## @janus-idp/backstage-plugin-rbac [1.20.4](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.20.3...@janus-idp/backstage-plugin-rbac@1.20.4) (2024-05-29)
 
 
