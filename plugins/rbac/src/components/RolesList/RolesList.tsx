@@ -2,7 +2,8 @@ import React from 'react';
 
 import { Table, WarningPanel } from '@backstage/core-components';
 
-import { makeStyles } from '@material-ui/core';
+import { Box, makeStyles } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
 
 import { useLocationToast } from '../../hooks/useLocationToast';
 import { useRoles } from '../../hooks/useRoles';
@@ -47,6 +48,11 @@ export const RolesList = () => {
   return (
     <>
       <SnackbarAlert toastMessage={toastMessage} onAlertClose={onAlertClose} />
+      {error?.roleConditionError && (
+        <Box>
+          <Alert severity="warning">{error?.roleConditionError}</Alert>
+        </Box>
+      )}
       <RolesListToolbar
         createRoleAllowed={createRoleAllowed}
         createRoleLoading={createRoleLoading}
