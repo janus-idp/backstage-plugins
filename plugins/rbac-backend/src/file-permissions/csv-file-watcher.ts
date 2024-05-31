@@ -4,9 +4,18 @@ import { parse } from 'csv-parse/sync';
 import { difference } from 'lodash';
 import { Logger } from 'winston';
 
+import { AuditLogger } from '@janus-idp/backstage-plugin-audit-log-node';
+
 import fs from 'fs';
 
-import { RoleMetadataStorage } from '../database/role-metadata';
+import {
+  createAuditPermissionOptions,
+  createAuditRoleOptions,
+} from '../audit-log/audit-logger';
+import {
+  RoleMetadataDao,
+  RoleMetadataStorage,
+} from '../database/role-metadata';
 import {
   metadataStringToPolicy,
   policyToString,
@@ -39,6 +48,7 @@ export class CSVFileWatcher {
     private readonly enforcer: EnforcerDelegate,
     private readonly logger: Logger,
     private readonly roleMetadataStorage: RoleMetadataStorage,
+    private readonly aLog: AuditLogger,
   ) {
     this.csvFileName = '';
     this.currentContent = [];
@@ -295,6 +305,14 @@ export class CSVFileWatcher {
       }
       try {
         await this.enforcer.addOrUpdatePolicy(policy, 'csv-file');
+
+        const auditOptions = createAuditPermissionOptions(
+          [policy],
+          'CREATE_OR_UPDATE',
+          'csv-file',
+          CSV_PERMISSION_POLICY_FILE_AUTHOR,
+        );
+        await this.aLog.auditLog(auditOptions);
       } catch (e) {
         this.logger.warn(
           `Failed to add or update policy ${policy} after modification ${this.csvFileName}. Cause: ${e}`,
@@ -311,6 +329,14 @@ export class CSVFileWatcher {
   async removePermissionPolicies(): Promise<void> {
     try {
       await this.enforcer.removePolicies(this.csvFilePolicies.removedPolicies);
+
+      const auditOptions = createAuditPermissionOptions(
+        this.csvFilePolicies.removedPolicies,
+        'DELETE',
+        'csv-file',
+        CSV_PERMISSION_POLICY_FILE_AUTHOR,
+      );
+      await this.aLog.auditLog(auditOptions);
     } catch (e) {
       this.logger.warn(
         `Failed to remove policies ${JSON.stringify(
@@ -352,12 +378,25 @@ export class CSVFileWatcher {
       }
 
       try {
-        await this.enforcer.addOrUpdateGroupingPolicy(groupPolicy, {
+        const roleMetadata: RoleMetadataDao = {
           source: 'csv-file',
           roleEntityRef: groupPolicy[1],
           author: CSV_PERMISSION_POLICY_FILE_AUTHOR,
           modifiedBy: CSV_PERMISSION_POLICY_FILE_AUTHOR,
-        });
+        };
+
+        await this.enforcer.addOrUpdateGroupingPolicy(
+          groupPolicy,
+          roleMetadata,
+        );
+
+        const auditOptions = createAuditRoleOptions(
+          'CREATE_OR_UPDATE',
+          roleMetadata,
+          [groupPolicy[1]],
+          // oldRoleMetadata,
+        );
+        await this.aLog.auditLog(auditOptions);
       } catch (e) {
         this.logger.warn(
           `Failed to add or update group policy ${groupPolicy} after modification ${this.csvFileName}. Cause: ${e}`,
@@ -374,24 +413,36 @@ export class CSVFileWatcher {
    */
   async removeRoles(): Promise<void> {
     for (const groupPolicy of this.csvFilePolicies.removedGroupPolicies) {
+      const roleEntityRef = groupPolicy[1];
       // this requires knowledge of whether or not it is an update
       const isUpdate = await this.enforcer.getFilteredGroupingPolicy(
         1,
-        groupPolicy[1],
+        roleEntityRef,
       );
 
       // Need to update the time
       try {
+        const metadata: RoleMetadataDao = {
+          source: 'csv-file',
+          roleEntityRef: groupPolicy[1],
+          author: CSV_PERMISSION_POLICY_FILE_AUTHOR,
+          modifiedBy: CSV_PERMISSION_POLICY_FILE_AUTHOR,
+        };
+        const currentRoleMetadata =
+          await this.roleMetadataStorage.findRoleMetadata(roleEntityRef);
         await this.enforcer.removeGroupingPolicy(
           groupPolicy,
-          {
-            source: 'csv-file',
-            roleEntityRef: groupPolicy[1],
-            author: CSV_PERMISSION_POLICY_FILE_AUTHOR,
-            modifiedBy: CSV_PERMISSION_POLICY_FILE_AUTHOR,
-          },
+          metadata,
           isUpdate.length > 1,
         );
+
+        const auditOptions = createAuditRoleOptions(
+          'DELETE',
+          metadata,
+          [roleEntityRef],
+          currentRoleMetadata,
+        );
+        await this.aLog.auditLog(auditOptions);
       } catch (e) {
         this.logger.warn(
           `Failed to remove group policy ${groupPolicy} after modification ${this.csvFileName}. Cause: ${e}`,

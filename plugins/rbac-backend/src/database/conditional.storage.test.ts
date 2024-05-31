@@ -1,10 +1,22 @@
-import { PluginDatabaseManager } from '@backstage/backend-common';
-import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
+import {
+  getVoidLogger,
+  PluginDatabaseManager,
+} from '@backstage/backend-common';
+import {
+  mockServices,
+  TestDatabaseId,
+  TestDatabases,
+} from '@backstage/backend-test-utils';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 import * as Knex from 'knex';
 import { createTracker, MockClient } from 'knex-mock-client';
+import { Logger } from 'winston';
 
+import {
+  AuditLogOptions,
+  DefaultAuditLogger,
+} from '@janus-idp/backstage-plugin-audit-log-node';
 import {
   PermissionInfo,
   RoleConditionalPolicyDecision,
@@ -18,6 +30,13 @@ import {
 import { migrate } from './migration';
 
 jest.setTimeout(60000);
+
+let loggerInfoSpy: jest.SpyInstance<Logger, [infoObject: object], any>;
+let auditLoggerInfoSpy: jest.SpyInstance<
+  Promise<void>,
+  [options: AuditLogOptions],
+  any
+>;
 
 describe('DataBaseConditionalStorage', () => {
   const databases = TestDatabases.create({
@@ -80,6 +99,23 @@ describe('DataBaseConditionalStorage', () => {
       },
     },
   };
+  const logger = getVoidLogger();
+
+  const mockHttpAuth = mockServices.httpAuth();
+  const mockAuth = mockServices.auth();
+
+  const aLog = new DefaultAuditLogger({
+    authService: mockAuth,
+    httpAuthService: mockHttpAuth,
+    logger,
+  });
+  loggerInfoSpy = jest.spyOn(logger, 'info');
+  auditLoggerInfoSpy = jest.spyOn(aLog, 'auditLog');
+
+  beforeEach(() => {
+    loggerInfoSpy.mockClear();
+    auditLoggerInfoSpy.mockClear();
+  });
 
   async function createDatabase(databaseId: TestDatabaseId) {
     const knex = await databases.init(databaseId);
@@ -93,7 +129,7 @@ describe('DataBaseConditionalStorage', () => {
     await migrate(databaseManagerMock);
     return {
       knex,
-      db: new DataBaseConditionalStorage(knex),
+      db: new DataBaseConditionalStorage(knex, aLog),
     };
   }
 
@@ -253,7 +289,8 @@ describe('DataBaseConditionalStorage', () => {
       async databasesId => {
         const { knex, db } = await createDatabase(databasesId);
 
-        const id = await db.createCondition(condition1);
+        const modifiedBy = `user:default/tom`;
+        const id = await db.createCondition(condition1, modifiedBy);
 
         const condition = await knex<ConditionalPolicyDecisionDAO>(
           CONDITIONAL_TABLE,
@@ -262,6 +299,18 @@ describe('DataBaseConditionalStorage', () => {
         expect(condition[0]).toEqual({
           id: 1,
           ...conditionDao1,
+        });
+        const logOpts = auditLoggerInfoSpy.mock.calls[0][0] as AuditLogOptions;
+        expect(logOpts).toEqual({
+          actorId: modifiedBy,
+          eventName: 'CreateCondition',
+          message: `Created condition for role '${condition1.roleEntityRef}'`,
+          metadata: {
+            condition: condition1,
+            roleEntityRef: condition1.roleEntityRef,
+            source: 'rest',
+          },
+          stage: 'handleRBACData',
         });
       },
     );
@@ -275,8 +324,9 @@ describe('DataBaseConditionalStorage', () => {
           conditionDao1,
         );
 
+        const modifiedBy = `user:default/tom`;
         await expect(async () => {
-          await db.createCondition(condition1);
+          await db.createCondition(condition1, modifiedBy);
         }).rejects.toThrow(
           `A condition with resource type 'catalog-entity'` +
             ` and permission '[{"action":"read","name":"catalog.entity.read"}]'` +
@@ -291,10 +341,11 @@ describe('DataBaseConditionalStorage', () => {
       tracker.on.select(CONDITIONAL_TABLE).response(undefined);
       tracker.on.insert(CONDITIONAL_TABLE).response(undefined);
 
-      const db = new DataBaseConditionalStorage(knex);
+      const db = new DataBaseConditionalStorage(knex, aLog);
 
+      const modifiedBy = `user:default/tom`;
       await expect(async () => {
-        await db.createCondition(condition1);
+        await db.createCondition(condition1, modifiedBy);
       }).rejects.toThrow(`Failed to create the condition.`);
     });
   });
@@ -370,12 +421,27 @@ describe('DataBaseConditionalStorage', () => {
           conditionDao1,
         );
 
-        await db.deleteCondition(1);
+        const modifiedBy = `user:default/tom`;
+        await db.deleteCondition(1, modifiedBy);
 
         const conditions = await knex
           .table(CONDITIONAL_TABLE)
           .select<ConditionalPolicyDecisionDAO[]>();
         expect(conditions.length).toEqual(0);
+
+        const loggedOpts = auditLoggerInfoSpy.mock
+          .calls[0][0] as AuditLogOptions;
+        expect(loggedOpts).toEqual({
+          actorId: modifiedBy,
+          eventName: 'DeleteCondition',
+          message: `Deleted condition for role '${condition1.roleEntityRef}'`,
+          metadata: {
+            condition: condition1,
+            roleEntityRef: condition1.roleEntityRef,
+            source: 'rest',
+          },
+          stage: 'handleRBACData',
+        });
       },
     );
 
@@ -384,8 +450,9 @@ describe('DataBaseConditionalStorage', () => {
       async databasesId => {
         const { db } = await createDatabase(databasesId);
 
+        const modifiedBy = `user:default/tom`;
         await expect(async () => {
-          await db.deleteCondition(1);
+          await db.deleteCondition(1, modifiedBy);
         }).rejects.toThrow('Condition with id 1 was not found');
       },
     );
@@ -407,7 +474,8 @@ describe('DataBaseConditionalStorage', () => {
             { name: 'catalog.entity.delete', action: 'delete' },
           ],
         };
-        await db.updateCondition(1, updateCondition);
+        const modifiedBy = `user:default/tom`;
+        await db.updateCondition(1, updateCondition, modifiedBy);
 
         const condition = await knex
           .table(CONDITIONAL_TABLE)
@@ -421,6 +489,18 @@ describe('DataBaseConditionalStorage', () => {
             id: 1,
           },
         ]);
+        const logOpts = auditLoggerInfoSpy.mock.calls[0][0] as AuditLogOptions;
+        expect(logOpts).toEqual({
+          actorId: modifiedBy,
+          eventName: 'UpdateCondition',
+          message: `Updated condition for role '${condition1.roleEntityRef}'`,
+          metadata: {
+            condition: updateCondition,
+            roleEntityRef: condition1.roleEntityRef,
+            source: 'rest',
+          },
+          stage: 'handleRBACData',
+        });
       },
     );
 
@@ -437,7 +517,8 @@ describe('DataBaseConditionalStorage', () => {
           ],
         };
         await expect(async () => {
-          await db.updateCondition(1, updateCondition);
+          const modifiedBy = `user:default/tom`;
+          await db.updateCondition(1, updateCondition, modifiedBy);
         }).rejects.toThrow('Condition with id 1 was not found');
       },
     );
@@ -464,7 +545,8 @@ describe('DataBaseConditionalStorage', () => {
           ],
         };
         await expect(async () => {
-          await db.updateCondition(1, updateCondition);
+          const modifiedBy = `user:default/tom`;
+          await db.updateCondition(1, updateCondition, modifiedBy);
         }).rejects.toThrow(
           `Found condition with conflicted permission '{"name":"catalog.entity.delete","action":"delete"}'. Role could have multiple ` +
             `conditions for the same resource type 'catalog-entity', but with different permission name and action sets.`,

@@ -7,16 +7,26 @@ import {
   ValueKeyIteratee,
 } from 'lodash';
 
+import { AuditLogger } from '@janus-idp/backstage-plugin-audit-log-node';
 import {
   PermissionAction,
   RoleBasedPolicy,
   Source,
 } from '@janus-idp/backstage-plugin-rbac-common';
 
+import { createAuditRoleOptions } from './audit-log/audit-logger';
 import { EnforcerDelegate } from './service/enforcer-delegate';
 
 export function policyToString(policy: string[]): string {
   return `[${policy.join(', ')}]`;
+}
+
+export function stringToPolicy(policyStr: string): string[] {
+  // Remove the surrounding square brackets and split the string by commas
+  return policyStr
+    .slice(1, -1)
+    .split(', ')
+    .map(item => item.trim());
 }
 
 export function policiesToString(policies: string[][]): string {
@@ -36,20 +46,32 @@ export async function removeTheDifference(
   source: Source,
   roleEntityRef: string,
   enf: EnforcerDelegate,
+  aLog: AuditLogger,
   modifiedBy: string,
 ): Promise<void> {
   originalGroup.sort((a, b) => a.localeCompare(b));
   addedGroup.sort((a, b) => a.localeCompare(b));
   const missing = difference(originalGroup, addedGroup);
 
+  const groupPolicies: string[][] = [];
   for (const missingRole of missing) {
-    const role = [missingRole, roleEntityRef];
-    await enf.removeGroupingPolicy(
-      role,
-      { source, modifiedBy, roleEntityRef },
-      false,
-    );
+    groupPolicies.push([missingRole, roleEntityRef]);
   }
+
+  if (groupPolicies.length === 0) {
+    return;
+  }
+
+  const roleMetadata = { source, modifiedBy, roleEntityRef };
+  await enf.removeGroupingPolicies(groupPolicies, roleMetadata, false);
+
+  const auditOptions = createAuditRoleOptions(
+    'DELETE',
+    roleMetadata,
+    groupPolicies.map(gp => gp[0]),
+    // currentRoleMetadata
+  );
+  await aLog.auditLog(auditOptions);
 }
 
 export function transformArrayToPolicy(policyArray: string[]): RoleBasedPolicy {
