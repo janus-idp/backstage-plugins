@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac [1.20.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.20.6...@janus-idp/backstage-plugin-rbac@1.20.7) (2024-05-31)
+
+
+### Bug Fixes
+
+* **rbac:** show configure-access cta for existing simple permission policies in edit form ([#1702](https://github.com/janus-idp/backstage-plugins/issues/1702)) ([16b7e00](https://github.com/janus-idp/backstage-plugins/commit/16b7e00646153dffd9919f32e57853dbcbd2facb))
+
 ## @janus-idp/backstage-plugin-rbac [1.20.6](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.20.5...@janus-idp/backstage-plugin-rbac@1.20.6) (2024-05-30)
 
 
