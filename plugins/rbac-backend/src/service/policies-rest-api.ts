@@ -113,12 +113,7 @@ export class PoliciesServer {
   }
 
   async serve(): Promise<express.Router> {
-    // const router = Router();
-    // router.use(express.json());
-
-    const backstagePermissionRouter = await createRouter(this.options);
-    // router.use(backstagePermissionRouter);
-    const router = backstagePermissionRouter;
+    const router = await createRouter(this.options);
 
     const { identity, discovery, logger, config } = this.options;
 
