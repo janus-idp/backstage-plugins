@@ -1,3 +1,10 @@
+## @janus-idp/backstage-plugin-rbac [1.20.8](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.20.7...@janus-idp/backstage-plugin-rbac@1.20.8) (2024-05-31)
+
+
+### Bug Fixes
+
+* **rbac:** improve criteria toggle button readability on dark themes ([#1755](https://github.com/janus-idp/backstage-plugins/issues/1755)) ([345230b](https://github.com/janus-idp/backstage-plugins/commit/345230baa4188ce659b7c48c114fa98b68d41a0c))
+
 ## @janus-idp/backstage-plugin-rbac [1.20.7](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac@1.20.6...@janus-idp/backstage-plugin-rbac@1.20.7) (2024-05-31)
 
 
