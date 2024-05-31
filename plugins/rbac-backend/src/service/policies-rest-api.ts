@@ -1,4 +1,3 @@
-import { errorHandler, getVoidLogger } from '@backstage/backend-common';
 import {
   AuthService,
   HttpAuthService,
@@ -27,7 +26,6 @@ import {
 } from '@backstage/plugin-permission-node';
 
 import express from 'express';
-import Router from 'express-promise-router';
 import { Request } from 'express-serve-static-core';
 import { isEmpty, isEqual } from 'lodash';
 import { ParsedQs } from 'qs';
@@ -868,7 +866,7 @@ export class PoliciesServer {
         response: { status: 201, body },
       });
 
-      response.status(201).json();
+      response.status(201).json(body);
     });
 
     router.get('/roles/conditions/:id', async (request, response) => {
@@ -979,10 +977,6 @@ export class PoliciesServer {
     });
 
     router.use(logAuditError(this.aLog));
-    // backstagePermissionRouter.use(logAuditError(this.aLog));
-    // getVoidLogger to prevent double log errors
-    // backstagePermissionRouter.use(errorHandler({logger: getVoidLogger()}));
-    router.use(errorHandler({ logger: getVoidLogger() }));
 
     return router;
   }
@@ -1233,11 +1227,6 @@ export class PoliciesServer {
           }' and action ${JSON.stringify(action)}`,
         );
       }
-      console.log(
-        `Found permission ${JSON.stringify(perm)} for resource type ${
-          roleConditionPolicy.resourceType
-        } and action ${action}`,
-      );
       permInfo.push({ name: perm.name, action });
     }
 
