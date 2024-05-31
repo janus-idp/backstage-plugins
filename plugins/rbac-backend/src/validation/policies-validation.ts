@@ -1,4 +1,5 @@
 import { CompoundEntityRef, parseEntityRef } from '@backstage/catalog-model';
+import { NotAllowedError } from '@backstage/errors';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 import { Enforcer } from 'casbin';
@@ -9,8 +10,42 @@ import {
   Source,
 } from '@janus-idp/backstage-plugin-rbac-common';
 
-import { RoleMetadataStorage } from '../database/role-metadata';
+import {
+  RoleMetadataDao,
+  RoleMetadataStorage,
+} from '../database/role-metadata';
 
+/**
+ * validateSource validates the source to the role that is being modified. This includes comparing the source from the
+ * originating role to the source that the modification is coming from.
+ * We do this to ensure consistency between permissions and roles and where they are originally defined.
+ * This is a strict comparison where the source of all new roles (grouping policies) and permissions must match
+ * the source of the first role that was created.
+ * We are not strict for permission policies defined with an originating role source of configuration.
+ * @param source The source in which the modification is coming from
+ * @param roleMetadata The original role that was created
+ * @returns An error in the event that the source does not match the originating role
+ */
+export const validateSource = async (
+  source: Source,
+  roleMetadata: RoleMetadataDao | undefined,
+): Promise<Error | undefined> => {
+  if (!roleMetadata) {
+    return undefined; // Role does not exist yet, there is no conflict with the source
+  }
+
+  if (roleMetadata.source !== source && roleMetadata.source !== 'legacy') {
+    return new Error(
+      `source does not match originating role ${
+        roleMetadata.roleEntityRef
+      }, consider making changes to the '${roleMetadata.source.toLocaleUpperCase()}'`,
+    );
+  }
+
+  return undefined;
+};
+
+// This should be called on add and edit and delete
 export function validatePolicy(policy: RoleBasedPolicy): Error | undefined {
   const err = validateEntityReference(policy.entityReference);
   if (err) {
@@ -112,7 +147,6 @@ export function validateEntityReference(
 
 export async function validateGroupingPolicy(
   groupPolicy: string[],
-  preDefinedPoliciesFile: string,
   roleMetadataStorage: RoleMetadataStorage,
   source: Source,
 ): Promise<Error | undefined> {
@@ -124,14 +158,14 @@ export async function validateGroupingPolicy(
   let err = validateEntityReference(member);
   if (err) {
     return new Error(
-      `Failed to validate group policy ${groupPolicy} from file ${preDefinedPoliciesFile}. Cause: ${err.message}`,
+      `Failed to validate group policy ${groupPolicy}. Cause: ${err.message}`,
     );
   }
   const parent = groupPolicy[1];
   err = validateEntityReference(parent);
   if (err) {
     return new Error(
-      `Failed to validate group policy ${groupPolicy} from file ${preDefinedPoliciesFile}. Cause: ${err.message}`,
+      `Failed to validate group policy ${groupPolicy}. Cause: ${err.message}`,
     );
   }
   if (member.startsWith(`role:`)) {
@@ -151,11 +185,14 @@ export async function validateGroupingPolicy(
   }
 
   const metadata = await roleMetadataStorage.findRoleMetadata(parent);
-  if (metadata && metadata.source !== source && metadata.source !== 'legacy') {
-    return new Error(
-      `Group policy is invalid: ${groupPolicy}. You could not add user or group to the role created with source ${metadata.source}`,
+
+  err = await validateSource(source, metadata);
+  if (metadata && err) {
+    return new NotAllowedError(
+      `Unable to validate role ${groupPolicy}. Cause: ${err.message}`,
     );
   }
+
   return undefined;
 }
 

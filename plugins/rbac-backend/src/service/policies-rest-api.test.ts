@@ -485,6 +485,80 @@ describe('REST policies api', () => {
       expect(result.statusCode).toBe(201);
     });
 
+    it('should fail to create permission policy, because of source mismatch', async () => {
+      const roleMeta: RoleMetadataDao = {
+        roleEntityRef: 'user:default/permission_admin',
+        source: 'csv-file',
+      };
+
+      roleMetadataStorageMock.findRoleMetadata = jest
+        .fn()
+        .mockImplementation(
+          async (roleEntityRef: string): Promise<RoleMetadataDao> => {
+            if (roleEntityRef === roleMeta.roleEntityRef) {
+              return roleMeta;
+            }
+            return { source: 'rest', roleEntityRef: roleEntityRef };
+          },
+        );
+
+      const result = await request(app)
+        .post('/policies')
+        .send([
+          {
+            entityReference: 'user:default/permission_admin',
+            permission: 'policy-entity',
+            policy: 'delete',
+            effect: 'deny',
+          },
+        ]);
+
+      expect(result.statusCode).toBe(403);
+      expect(result.body.error).toEqual({
+        name: 'NotAllowedError',
+        message: `Unable to add policy user:default/permission_admin,policy-entity,delete,deny: source does not match originating role ${
+          roleMeta.roleEntityRef
+        }, consider making changes to the '${roleMeta.source.toLocaleUpperCase()}'`,
+      });
+    });
+
+    it('should fail to add permission policy, with original source of configuration', async () => {
+      const roleMeta: RoleMetadataDao = {
+        roleEntityRef: 'user:default/permission_admin',
+        source: 'configuration',
+      };
+
+      roleMetadataStorageMock.findRoleMetadata = jest
+        .fn()
+        .mockImplementation(
+          async (roleEntityRef: string): Promise<RoleMetadataDao> => {
+            if (roleEntityRef === roleMeta.roleEntityRef) {
+              return roleMeta;
+            }
+            return { source: 'rest', roleEntityRef: roleEntityRef };
+          },
+        );
+
+      const result = await request(app)
+        .post('/policies')
+        .send([
+          {
+            entityReference: 'user:default/permission_admin',
+            permission: 'policy-entity',
+            policy: 'delete',
+            effect: 'deny',
+          },
+        ]);
+
+      expect(result.statusCode).toBe(403);
+      expect(result.body.error).toEqual({
+        name: 'NotAllowedError',
+        message: `Unable to add policy user:default/permission_admin,policy-entity,delete,deny: source does not match originating role ${
+          roleMeta.roleEntityRef
+        }, consider making changes to the '${roleMeta.source.toLocaleUpperCase()}'`,
+      });
+    });
+
     it('should not be created permission policy, because it is has been already present', async () => {
       mockEnforcer.hasPolicy = jest
         .fn()
@@ -847,6 +921,102 @@ describe('REST policies api', () => {
       expect(result.body.error).toEqual({
         name: 'Error',
         message: 'Fail to delete policy',
+      });
+    });
+
+    it('should fail to delete, because source mismatch', async () => {
+      const roleMeta: RoleMetadataDao = {
+        roleEntityRef: 'user:default/permission_admin',
+        source: 'csv-file',
+      };
+
+      roleMetadataStorageMock.findRoleMetadata = jest
+        .fn()
+        .mockImplementation(
+          async (roleEntityRef: string): Promise<RoleMetadataDao> => {
+            if (roleEntityRef === roleMeta.roleEntityRef) {
+              return roleMeta;
+            }
+            return { source: 'rest', roleEntityRef: roleEntityRef };
+          },
+        );
+
+      const result = await request(app)
+        .delete('/policies/user/default/permission_admin')
+        .send([
+          {
+            permission: 'policy-entity',
+            policy: 'read',
+            effect: 'allow',
+          },
+        ]);
+
+      const policy = [
+        'user:default/permission_admin',
+        'policy-entity',
+        'read',
+        'allow',
+      ];
+
+      expect(result.statusCode).toEqual(403);
+      expect(result.body.error).toEqual({
+        name: 'NotAllowedError',
+        message: `Unable to delete policy ${policy}: source does not match originating role ${
+          roleMeta.roleEntityRef
+        }, consider making changes to the '${roleMeta.source.toLocaleUpperCase()}'`,
+      });
+    });
+
+    it('should fail to delete policy, with original source of configuration', async () => {
+      const roleMeta: RoleMetadataDao = {
+        roleEntityRef: 'user:default/permission_admin',
+        source: 'configuration',
+      };
+
+      roleMetadataStorageMock.findRoleMetadata = jest
+        .fn()
+        .mockImplementation(
+          async (roleEntityRef: string): Promise<RoleMetadataDao> => {
+            if (roleEntityRef === roleMeta.roleEntityRef) {
+              return roleMeta;
+            }
+            return { source: 'rest', roleEntityRef: roleEntityRef };
+          },
+        );
+
+      mockEnforcer.hasPolicy = jest
+        .fn()
+        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
+          return true;
+        });
+      mockEnforcer.removePolicies = jest
+        .fn()
+        .mockImplementation(async (..._param: string[]): Promise<boolean> => {
+          return true;
+        });
+
+      const result = await request(app)
+        .delete('/policies/user/default/permission_admin')
+        .send([
+          {
+            permission: 'policy-entity',
+            policy: 'read',
+            effect: 'allow',
+          },
+        ]);
+
+      const policy = [
+        'user:default/permission_admin',
+        'policy-entity',
+        'read',
+        'allow',
+      ];
+
+      expect(result.body.error).toEqual({
+        name: 'NotAllowedError',
+        message: `Unable to delete policy ${policy}: source does not match originating role ${
+          roleMeta.roleEntityRef
+        }, consider making changes to the '${roleMeta.source.toLocaleUpperCase()}'`,
       });
     });
 
@@ -1505,6 +1675,125 @@ describe('REST policies api', () => {
         message: `'oldPolicy' object has more permission policies compared to 'newPolicy' object`,
       });
     });
+
+    it('should fail to update permission policy, because of source mismatch', async () => {
+      const roleMeta: RoleMetadataDao = {
+        roleEntityRef: 'user:default/permission_admin',
+        source: 'csv-file',
+      };
+
+      roleMetadataStorageMock.findRoleMetadata = jest
+        .fn()
+        .mockImplementation(
+          async (roleEntityRef: string): Promise<RoleMetadataDao> => {
+            if (roleEntityRef === roleMeta.roleEntityRef) {
+              return roleMeta;
+            }
+            return { source: 'rest', roleEntityRef: roleEntityRef };
+          },
+        );
+
+      const result = await request(app)
+        .put('/policies/user/default/permission_admin')
+        .send({
+          oldPolicy: [
+            {
+              permission: 'policy-entity',
+              policy: 'read',
+              effect: 'allow',
+            },
+            {
+              permission: 'policy-entity',
+              policy: 'create',
+              effect: 'allow',
+            },
+          ],
+          newPolicy: [
+            {
+              permission: 'policy-entity',
+              policy: 'delete',
+              effect: 'allow',
+            },
+          ],
+        });
+
+      const policy = [
+        'user:default/permission_admin',
+        'policy-entity',
+        'read',
+        'allow',
+      ];
+
+      expect(result.statusCode).toBe(403);
+      expect(result.body.error).toEqual({
+        name: 'NotAllowedError',
+        message: `Unable to edit policy ${policy}: source does not match originating role ${
+          roleMeta.roleEntityRef
+        }, consider making changes to the '${roleMeta.source.toLocaleUpperCase()}'`,
+      });
+    });
+
+    it('should fail to update permission policy, with original source of configuration', async () => {
+      const roleMeta: RoleMetadataDao = {
+        roleEntityRef: 'user:default/permission_admin',
+        source: 'configuration',
+      };
+
+      roleMetadataStorageMock.findRoleMetadata = jest
+        .fn()
+        .mockImplementation(
+          async (roleEntityRef: string): Promise<RoleMetadataDao> => {
+            if (roleEntityRef === roleMeta.roleEntityRef) {
+              return roleMeta;
+            }
+            return { source: 'rest', roleEntityRef: roleEntityRef };
+          },
+        );
+
+      mockEnforcer.hasPolicy = jest
+        .fn()
+        .mockImplementation(async (...param: string[]): Promise<boolean> => {
+          if (param[2] === 'delete') {
+            return false;
+          }
+          return true;
+        });
+      mockEnforcer.updatePolicies = jest.fn().mockImplementation();
+
+      const result = await request(app)
+        .put('/policies/user/default/permission_admin')
+        .send({
+          oldPolicy: [
+            {
+              permission: 'policy-entity',
+              policy: 'read',
+              effect: 'allow',
+            },
+          ],
+          newPolicy: [
+            {
+              permission: 'policy-entity',
+              policy: 'delete',
+              effect: 'allow',
+            },
+          ],
+        });
+
+      const policy = [
+        'user:default/permission_admin',
+        'policy-entity',
+        'read',
+        'allow',
+      ];
+
+      expect(result.statusCode).toBe(403);
+      expect(result.body.error).toEqual({
+        name: 'NotAllowedError',
+        message: `Unable to edit policy ${policy}: source does not match originating role ${
+          roleMeta.roleEntityRef
+        }, consider making changes to the '${roleMeta.source.toLocaleUpperCase()}'`,
+      });
+    });
   });
 
   describe('GET /roles', () => {
@@ -1844,6 +2133,39 @@ describe('REST policies api', () => {
         message: `Duplicate role members found; user:default/permission_admin, role:default/rbac_admin is a duplicate`,
       });
     });
+
+    it('should fail to add role, because source mismatch', async () => {
+      const roleMeta: RoleMetadataDao = {
+        roleEntityRef: 'role:default/rbac_admin',
+        source: 'configuration',
+      };
+
+      roleMetadataStorageMock.findRoleMetadata = jest
+        .fn()
+        .mockImplementation(
+          async (roleEntityRef: string): Promise<RoleMetadataDao> => {
+            if (roleEntityRef === roleMeta.roleEntityRef) {
+              return roleMeta;
+            }
+            return { source: 'rest', roleEntityRef: roleEntityRef };
+          },
+        );
+
+      const result = await request(app)
+        .post('/roles')
+        .send({
+          memberReferences: ['user:default/permission_admin'],
+          name: 'role:default/rbac_admin',
+        });
+
+      expect(result.statusCode).toBe(403);
+      expect(result.body.error).toEqual({
+        name: 'NotAllowedError',
+        message: `Unable to add role: source does not match originating role ${
+          roleMeta.roleEntityRef
+        }, consider making changes to the '${roleMeta.source.toLocaleUpperCase()}'`,
+      });
+    });
   });
 
   describe('PUT /roles/:kind/:namespace/:name', () => {
@@ -2079,7 +2401,6 @@ describe('REST policies api', () => {
           roleEntityRef: 'role:default/rbac_admin',
           source: 'rest',
         },
-        false,
       );
     });
 
@@ -2123,7 +2444,6 @@ describe('REST policies api', () => {
           roleEntityRef: 'role:default/rbac_admin',
           source: 'rest',
         },
-        false,
       );
     });
 
@@ -2431,6 +2751,44 @@ describe('REST policies api', () => {
         message: `Unsupported kind x. Supported value should be "role"`,
       });
     });
+
+    it('should fail to update role, because source mismatch', async () => {
+      const roleMeta: RoleMetadataDao = {
+        roleEntityRef: 'role:default/rbac_admin',
+        source: 'configuration',
+      };
+
+      roleMetadataStorageMock.findRoleMetadata = jest
+        .fn()
+        .mockImplementation(
+          async (roleEntityRef: string): Promise<RoleMetadataDao> => {
+            if (roleEntityRef === roleMeta.roleEntityRef) {
+              return roleMeta;
+            }
+            return { source: 'rest', roleEntityRef: roleEntityRef };
+          },
+        );
+
+      const result = await request(app)
+        .put('/roles/role/default/rbac_admin')
+        .send({
+          oldRole: {
+            memberReferences: ['user:default/permission_admin'],
+          },
+          newRole: {
+            memberReferences: ['user:default/test'],
+            name: 'role:default/rbac_admin',
+          },
+        });
+
+      expect(result.statusCode).toBe(403);
+      expect(result.body.error).toEqual({
+        name: 'NotAllowedError',
+        message: `Unable to edit role: source does not match originating role ${
+          roleMeta.roleEntityRef
+        }, consider making changes to the '${roleMeta.source.toLocaleUpperCase()}'`,
+      });
+    });
   });
 
   describe('DELETE /roles/:kind/:namespace/:name', () => {
@@ -2545,6 +2903,36 @@ describe('REST policies api', () => {
         .send();
 
       expect(result.statusCode).toEqual(204);
+    });
+
+    it('should fail to delete role, because source mismatch', async () => {
+      const roleMeta: RoleMetadataDao = {
+        roleEntityRef: 'role:default/rbac_admin',
+        source: 'configuration',
+      };
+
+      roleMetadataStorageMock.findRoleMetadata = jest
+        .fn()
+        .mockImplementation(
+          async (roleEntityRef: string): Promise<RoleMetadataDao> => {
+            if (roleEntityRef === roleMeta.roleEntityRef) {
+              return roleMeta;
+            }
+            return { source: 'rest', roleEntityRef: roleEntityRef };
+          },
+        );
+
+      const result = await request(app)
+        .delete('/roles/role/default/rbac_admin')
+        .send();
+
+      expect(result.statusCode).toBe(403);
+      expect(result.body.error).toEqual({
+        name: 'NotAllowedError',
+        message: `Unable to delete role: source does not match originating role ${
+          roleMeta.roleEntityRef
+        }, consider making changes to the '${roleMeta.source.toLocaleUpperCase()}'`,
+      });
     });
   });
 

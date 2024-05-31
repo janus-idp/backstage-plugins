@@ -21,7 +21,6 @@ import {
   RoleMetadataDao,
   RoleMetadataStorage,
 } from '../database/role-metadata';
-import { CSV_PERMISSION_POLICY_FILE_AUTHOR } from '../file-permissions/csv-file-watcher';
 import { policyToString } from '../helper';
 import { BackstageRoleManager } from '../role-manager/role-manager';
 import { EnforcerDelegate } from './enforcer-delegate';
@@ -1003,7 +1002,7 @@ describe('EnforcerDelegate', () => {
         });
 
       const enfDelegate = await createEnfDelegate([policyToDelete]);
-      await enfDelegate.removePolicy(policyToDelete, 'rest', false);
+      await enfDelegate.removePolicy(policyToDelete);
 
       expect(
         policyMetadataStorageMock.findPolicyMetadata,
@@ -1020,74 +1019,11 @@ describe('EnforcerDelegate', () => {
         .mockImplementation();
 
       const enfDelegate = await createEnfDelegate([policyToDelete]);
-      await expect(
-        enfDelegate.removePolicy(policyToDelete, 'rest', false),
-      ).rejects.toThrow(
+      await expect(enfDelegate.removePolicy(policyToDelete)).rejects.toThrow(
         `A metadata for policy '${policyToString(
           policyToDelete,
         )}' was not found`,
       );
-    });
-
-    it('should fail to remove policy with source "configuration"', async () => {
-      policyMetadataStorageMock.findPolicyMetadata = jest
-        .fn()
-        .mockImplementation(() => {
-          return {
-            source: 'configuration',
-          };
-        });
-
-      const enfDelegate = await createEnfDelegate([policyToDelete]);
-      await expect(
-        enfDelegate.removePolicy(policyToDelete, 'rest', false),
-      ).rejects.toThrow(
-        `Error: Attempted to modify an immutable pre-defined policy '${policyToString(
-          policyToDelete,
-        )}'. This policy cannot be altered directly. If you need to make changes, consider removing the associated RBAC admin '${
-          policyToDelete[0]
-        }' using the application configuration.`,
-      );
-    });
-
-    it('should fail to remove policy with source "csv-file"', async () => {
-      policyMetadataStorageMock.findPolicyMetadata = jest
-        .fn()
-        .mockImplementation(() => {
-          return {
-            source: 'csv-file',
-          };
-        });
-
-      const enfDelegate = await createEnfDelegate([policyToDelete]);
-      await expect(
-        enfDelegate.removePolicy(policyToDelete, 'rest', false),
-      ).rejects.toThrow(
-        `policy '${policyToString(
-          policyToDelete,
-        )}' can be modified or deleted only with help of 'policies-csv-file'`,
-      );
-    });
-
-    it('should be removed even with source "csv-file", when corresponding flag is enabled', async () => {
-      policyMetadataStorageMock.findPolicyMetadata = jest
-        .fn()
-        .mockImplementation(() => {
-          return {
-            source: 'csv-file',
-          };
-        });
-
-      const enfDelegate = await createEnfDelegate([policyToDelete]);
-      await enfDelegate.removePolicy(policyToDelete, 'rest', true);
-
-      expect(
-        policyMetadataStorageMock.findPolicyMetadata,
-      ).toHaveBeenCalledTimes(1);
-      expect(
-        policyMetadataStorageMock.removePolicyMetadata,
-      ).toHaveBeenCalledWith(policyToDelete, expect.anything());
-      expect(enfRemovePolicySpy).toHaveBeenCalledWith(...policyToDelete);
     });
   });
 
@@ -1106,7 +1042,7 @@ describe('EnforcerDelegate', () => {
         });
 
       const enfDelegate = await createEnfDelegate(policiesToDelete);
-      await enfDelegate.removePolicies(policiesToDelete, 'rest', false);
+      await enfDelegate.removePolicies(policiesToDelete);
 
       expect(
         policyMetadataStorageMock.findPolicyMetadata,
@@ -1127,76 +1063,12 @@ describe('EnforcerDelegate', () => {
 
       const enfDelegate = await createEnfDelegate(policiesToDelete);
       await expect(
-        enfDelegate.removePolicies(policiesToDelete, 'rest', false),
+        enfDelegate.removePolicies(policiesToDelete),
       ).rejects.toThrow(
         `A metadata for policy '${policyToString(
           policiesToDelete[0],
         )}' was not found`,
       );
-    });
-
-    it('should fail to remove policy with source "configuration"', async () => {
-      policyMetadataStorageMock.findPolicyMetadata = jest
-        .fn()
-        .mockImplementation(() => {
-          return {
-            source: 'configuration',
-          };
-        });
-
-      const enfDelegate = await createEnfDelegate(policiesToDelete);
-      await expect(
-        enfDelegate.removePolicies(policiesToDelete, 'rest', false),
-      ).rejects.toThrow(
-        `Error: Attempted to modify an immutable pre-defined policy '${policyToString(
-          policiesToDelete[0],
-        )}'. This policy cannot be altered directly. If you need to make changes, consider removing the associated RBAC admin '${
-          policiesToDelete[0][0]
-        }' using the application configuration.`,
-      );
-    });
-
-    it('should fail to remove policy with source "csv-file"', async () => {
-      policyMetadataStorageMock.findPolicyMetadata = jest
-        .fn()
-        .mockImplementation(() => {
-          return {
-            source: 'csv-file',
-          };
-        });
-
-      const enfDelegate = await createEnfDelegate(policiesToDelete);
-      await expect(
-        enfDelegate.removePolicies(policiesToDelete, 'rest', false),
-      ).rejects.toThrow(
-        `policy '${policyToString(
-          policiesToDelete[0],
-        )}' can be modified or deleted only with help of 'policies-csv-file'`,
-      );
-    });
-
-    it('should be removed even with source "csv-file", when corresponding flag is enabled', async () => {
-      policyMetadataStorageMock.findPolicyMetadata = jest
-        .fn()
-        .mockImplementation(() => {
-          return {
-            source: 'csv-file',
-          };
-        });
-
-      const enfDelegate = await createEnfDelegate(policiesToDelete);
-      await enfDelegate.removePolicies(policiesToDelete, 'rest', true);
-
-      expect(
-        policyMetadataStorageMock.findPolicyMetadata,
-      ).toHaveBeenCalledTimes(2);
-      expect(
-        policyMetadataStorageMock.removePolicyMetadata,
-      ).toHaveBeenCalledWith(policiesToDelete[0], expect.anything());
-      expect(
-        policyMetadataStorageMock.removePolicyMetadata,
-      ).toHaveBeenCalledWith(policiesToDelete[1], expect.anything());
-      expect(enfRemovePoliciesSpy).toHaveBeenCalledWith(policiesToDelete);
     });
   });
 
@@ -1364,82 +1236,6 @@ describe('EnforcerDelegate', () => {
         )}' was not found`,
       );
     });
-
-    it('should fail to remove grouping policy with source "configuration"', async () => {
-      policyMetadataStorageMock.findPolicyMetadata = jest
-        .fn()
-        .mockImplementation(() => {
-          return {
-            source: 'configuration',
-          };
-        });
-
-      const enfDelegate = await createEnfDelegate([], [groupingPolicyToDelete]);
-      await expect(
-        enfDelegate.removeGroupingPolicy(
-          groupingPolicyToDelete,
-          { source: 'rest', roleEntityRef: 'role:default/team-dev' },
-          false,
-        ),
-      ).rejects.toThrow(
-        `Error: Attempted to modify an immutable pre-defined policy '${policyToString(
-          groupingPolicyToDelete,
-        )}'. This policy cannot be altered directly. If you need to make changes, consider removing the associated RBAC admin '${
-          groupingPolicyToDelete[0]
-        }' using the application configuration.`,
-      );
-    });
-
-    it('should fail to remove grouping policy with source "csv-file"', async () => {
-      policyMetadataStorageMock.findPolicyMetadata = jest
-        .fn()
-        .mockImplementation(() => {
-          return {
-            source: 'csv-file',
-          };
-        });
-
-      const enfDelegate = await createEnfDelegate([], [groupingPolicyToDelete]);
-      await expect(
-        enfDelegate.removeGroupingPolicy(
-          groupingPolicyToDelete,
-          { source: 'rest', roleEntityRef: 'role:default/team-dev' },
-          false,
-        ),
-      ).rejects.toThrow(
-        `policy '${policyToString(
-          groupingPolicyToDelete,
-        )}' can be modified or deleted only with help of 'policies-csv-file'`,
-      );
-    });
-
-    it('should be removed grouping policy even with source "csv-file", when corresponding flag is enabled', async () => {
-      policyMetadataStorageMock.findPolicyMetadata = jest
-        .fn()
-        .mockImplementation(() => {
-          return {
-            source: 'csv-file',
-          };
-        });
-
-      const enfDelegate = await createEnfDelegate([], [groupingPolicyToDelete]);
-      await enfDelegate.removeGroupingPolicy(
-        groupingPolicyToDelete,
-        { source: 'rest', roleEntityRef: 'role:default/team-dev' },
-        false,
-        true,
-      );
-
-      expect(
-        policyMetadataStorageMock.findPolicyMetadata,
-      ).toHaveBeenCalledTimes(1);
-      expect(
-        policyMetadataStorageMock.removePolicyMetadata,
-      ).toHaveBeenCalledWith(groupingPolicyToDelete, expect.anything());
-      expect(enfRemoveGroupingPolicySpy).toHaveBeenCalledWith(
-        ...groupingPolicyToDelete,
-      );
-    });
   });
 
   describe('removeGroupingPolicies', () => {
@@ -1470,7 +1266,6 @@ describe('EnforcerDelegate', () => {
       const enfDelegate = await createEnfDelegate([], groupingPoliciesToDelete);
       await enfDelegate.removeGroupingPolicies(
         groupingPoliciesToDelete,
-        'rest',
         'user:default/test-user',
         false,
       );
@@ -1535,7 +1330,6 @@ describe('EnforcerDelegate', () => {
       );
       await enfDelegate.removeGroupingPolicies(
         groupingPoliciesToDelete,
-        'rest',
         'user:default/test-user',
         false,
       );
@@ -1597,9 +1391,7 @@ describe('EnforcerDelegate', () => {
       const enfDelegate = await createEnfDelegate([], groupingPoliciesToDelete);
       await enfDelegate.removeGroupingPolicies(
         groupingPoliciesToDelete,
-        'rest',
         'user:default/test-user',
-        true,
         true,
       );
 
@@ -1639,7 +1431,6 @@ describe('EnforcerDelegate', () => {
       await expect(
         enfDelegate.removeGroupingPolicies(
           groupingPoliciesToDelete,
-          'rest',
           'user:default/test-user',
           false,
         ),
@@ -1649,90 +1440,6 @@ describe('EnforcerDelegate', () => {
         )}' was not found`,
       );
     });
-
-    it('should fail to remove grouping policy with source "configuration"', async () => {
-      policyMetadataStorageMock.findPolicyMetadata = jest
-        .fn()
-        .mockImplementation(() => {
-          return {
-            source: 'configuration',
-          };
-        });
-
-      const enfDelegate = await createEnfDelegate([], groupingPoliciesToDelete);
-      await expect(
-        enfDelegate.removeGroupingPolicies(
-          groupingPoliciesToDelete,
-          'rest',
-          'user:default/test-user',
-          false,
-        ),
-      ).rejects.toThrow(
-        `Error: Attempted to modify an immutable pre-defined policy '${policyToString(
-          groupingPoliciesToDelete[0],
-        )}'. This policy cannot be altered directly. If you need to make changes, consider removing the associated RBAC admin '${
-          groupingPoliciesToDelete[0][0]
-        }' using the application configuration.`,
-      );
-    });
-
-    it('should fail to remove grouping policy with source "csv-file"', async () => {
-      policyMetadataStorageMock.findPolicyMetadata = jest
-        .fn()
-        .mockImplementation(() => {
-          return {
-            source: 'csv-file',
-          };
-        });
-
-      const enfDelegate = await createEnfDelegate([], groupingPoliciesToDelete);
-      await expect(
-        enfDelegate.removeGroupingPolicies(
-          groupingPoliciesToDelete,
-          'rest',
-          'user:default/test-user',
-          false,
-        ),
-      ).rejects.toThrow(
-        `policy '${policyToString(
-          groupingPoliciesToDelete[0],
-        )}' can be modified or deleted only with help of 'policies-csv-file'`,
-      );
-    });
-
-    it('should be removed grouping policy even with source "csv-file", when corresponding flag is enabled', async () => {
-      policyMetadataStorageMock.findPolicyMetadata = jest
-        .fn()
-        .mockImplementation(() => {
-          return {
-            source: 'csv-file',
-          };
-        });
-      enfRemoveGroupingPoliciesSpy.mockReset();
-      enfFilterGroupingPolicySpy.mockReset();
-
-      const enfDelegate = await createEnfDelegate([], groupingPoliciesToDelete);
-      await enfDelegate.removeGroupingPolicies(
-        groupingPoliciesToDelete,
-        'rest',
-        CSV_PERMISSION_POLICY_FILE_AUTHOR,
-        true,
-        true,
-      );
-
-      expect(
-        policyMetadataStorageMock.findPolicyMetadata,
-      ).toHaveBeenCalledTimes(2);
-      expect(
-        policyMetadataStorageMock.removePolicyMetadata,
-      ).toHaveBeenCalledWith(groupingPoliciesToDelete[0], expect.anything());
-      expect(
-        policyMetadataStorageMock.removePolicyMetadata,
-      ).toHaveBeenCalledWith(groupingPoliciesToDelete[1], expect.anything());
-      expect(enfRemoveGroupingPoliciesSpy).toHaveBeenCalledWith(
-        groupingPoliciesToDelete,
-      );
-    });
   });
 
   describe('addOrUpdatePolicy', () => {
@@ -1740,7 +1447,7 @@ describe('EnforcerDelegate', () => {
       const enfDelegate = await createEnfDelegate([]);
       enfAddPolicySpy.mockClear();
 
-      await enfDelegate.addOrUpdatePolicy(policy, 'rest', false);
+      await enfDelegate.addOrUpdatePolicy(policy, 'rest');
 
       expect(
         policyMetadataStorageMock.createPolicyMetadata,
@@ -1759,7 +1466,7 @@ describe('EnforcerDelegate', () => {
       const enfDelegate = await createEnfDelegate([policy]);
       enfAddPolicySpy.mockClear();
 
-      await enfDelegate.addOrUpdatePolicy(policy, 'rest', false);
+      await enfDelegate.addOrUpdatePolicy(policy, 'rest');
 
       expect(
         policyMetadataStorageMock.removePolicyMetadata,

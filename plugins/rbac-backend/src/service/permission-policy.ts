@@ -90,7 +90,6 @@ const useAdminsFromConfig = async (
   await enf.addOrUpdateGroupingPolicies(
     Array.from<string[]>(addedGroupPolicies.entries()),
     getAdminRoleMetadata(),
-    false,
   );
 
   const configPoliciesMetadata =
@@ -120,7 +119,7 @@ const setAdminPermissions = async (enf: EnforcerDelegate) => {
     'read',
     'allow',
   ];
-  await enf.addOrUpdatePolicy(adminReadPermission, 'configuration', false);
+  await enf.addOrUpdatePolicy(adminReadPermission, 'configuration');
 
   const adminCreatePermission = [
     ADMIN_ROLE_NAME,
@@ -128,7 +127,7 @@ const setAdminPermissions = async (enf: EnforcerDelegate) => {
     'create',
     'allow',
   ];
-  await enf.addOrUpdatePolicy(adminCreatePermission, 'configuration', false);
+  await enf.addOrUpdatePolicy(adminCreatePermission, 'configuration');
 
   const adminDeletePermission = [
     ADMIN_ROLE_NAME,
@@ -136,7 +135,7 @@ const setAdminPermissions = async (enf: EnforcerDelegate) => {
     'delete',
     'allow',
   ];
-  await enf.addOrUpdatePolicy(adminDeletePermission, 'configuration', false);
+  await enf.addOrUpdatePolicy(adminDeletePermission, 'configuration');
 
   const adminUpdatePermission = [
     ADMIN_ROLE_NAME,
@@ -144,7 +143,7 @@ const setAdminPermissions = async (enf: EnforcerDelegate) => {
     'update',
     'allow',
   ];
-  await enf.addOrUpdatePolicy(adminUpdatePermission, 'configuration', false);
+  await enf.addOrUpdatePolicy(adminUpdatePermission, 'configuration');
 
   // needed for rbac frontend.
   const adminCatalogReadPermission = [
@@ -153,11 +152,7 @@ const setAdminPermissions = async (enf: EnforcerDelegate) => {
     'read',
     'allow',
   ];
-  await enf.addOrUpdatePolicy(
-    adminCatalogReadPermission,
-    'configuration',
-    false,
-  );
+  await enf.addOrUpdatePolicy(adminCatalogReadPermission, 'configuration');
 };
 
 export class RBACPermissionPolicy implements PermissionPolicy {

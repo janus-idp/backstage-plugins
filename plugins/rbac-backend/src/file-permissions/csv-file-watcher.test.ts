@@ -15,7 +15,6 @@ import { Logger } from 'winston';
 
 import {
   PermissionPolicyMetadata,
-  RoleMetadata,
   Source,
 } from '@janus-idp/backstage-plugin-rbac-common';
 
@@ -26,12 +25,42 @@ import {
   PermissionPolicyMetadataDao,
   PolicyMetadataStorage,
 } from '../database/policy-metadata-storage';
-import { RoleMetadataStorage } from '../database/role-metadata';
+import {
+  RoleMetadataDao,
+  RoleMetadataStorage,
+} from '../database/role-metadata';
 import { policyToString } from '../helper';
 import { BackstageRoleManager } from '../role-manager/role-manager';
 import { EnforcerDelegate } from '../service/enforcer-delegate';
 import { MODEL } from '../service/permission-model';
 import { CSVFileWatcher } from './csv-file-watcher';
+
+const legacyPermission = [
+  'role:default/legacy',
+  'catalog-entity',
+  'update',
+  'allow',
+];
+
+const legacyRole = ['user:default/guest', 'role:default/legacy'];
+
+const restPermission = [
+  'role:default/rest',
+  'catalog-entity',
+  'update',
+  'allow',
+];
+
+const restRole = ['user:default/guest', 'role:default/rest'];
+
+const configPermission = [
+  'role:default/config',
+  'catalog-entity',
+  'update',
+  'allow',
+];
+
+const configRole = ['user:default/guest', 'role:default/config'];
 
 const catalogApi = {
   getEntityAncestors: jest.fn().mockImplementation(),
@@ -60,10 +89,21 @@ const roleMetadataStorageMock: RoleMetadataStorage = {
     .fn()
     .mockImplementation(
       async (
-        _roleEntityRef: string,
+        roleEntityRef: string,
         _trx: Knex.Knex.Transaction,
-      ): Promise<RoleMetadata> => {
-        return { source: 'csv-file' };
+      ): Promise<RoleMetadataDao> => {
+        if (roleEntityRef === legacyPermission[0]) {
+          return { roleEntityRef: legacyPermission[0], source: 'legacy' };
+        } else if (roleEntityRef === restPermission[0]) {
+          return { roleEntityRef: restPermission[0], source: 'rest' };
+        }
+        if (roleEntityRef === configPermission[0]) {
+          return {
+            roleEntityRef: configPermission[0],
+            source: 'configuration',
+          };
+        }
+        return { roleEntityRef: '', source: 'csv-file' };
       },
     ),
   createRoleMetadata: jest.fn().mockImplementation(),
@@ -75,7 +115,37 @@ const policyMetadataStorageMock: PolicyMetadataStorage = {
   findPolicyMetadataBySource: jest
     .fn()
     .mockImplementation(
-      async (_source: Source): Promise<PermissionPolicyMetadataDao[]> => {
+      async (source: Source): Promise<PermissionPolicyMetadataDao[]> => {
+        if (source === 'legacy') {
+          return [
+            {
+              id: 0,
+              policy: '[role:default/legacy, catalog-entity, update, allow]',
+              source: 'legacy',
+            },
+            {
+              id: 1,
+              policy: '[user:default/guest, role:default/legacy]',
+              source: 'legacy',
+            },
+          ];
+        } else if (source === 'rest') {
+          return [
+            {
+              id: 0,
+              policy: '[role:default/rest, catalog-entity, update, allow]',
+              source: 'rest',
+            },
+          ];
+        } else if (source === 'configuration') {
+          return [
+            {
+              id: 0,
+              policy: '[role:default/config, catalog-entity, update, allow]',
+              source: 'configuration',
+            },
+          ];
+        }
         return [];
       },
     ),
@@ -83,9 +153,21 @@ const policyMetadataStorageMock: PolicyMetadataStorage = {
     .fn()
     .mockImplementation(
       async (
-        _policy: string[],
+        policy: string[],
         _trx: Knex.Knex.Transaction,
       ): Promise<PermissionPolicyMetadata> => {
+        if (
+          policyToString(policy) === policyToString(legacyPermission) ||
+          policyToString(policy) === policyToString(legacyRole)
+        ) {
+          return { source: 'legacy' };
+        } else if (policyToString(policy) === policyToString(restPermission)) {
+          return { source: 'rest' };
+        } else if (
+          policyToString(policy) === policyToString(configPermission)
+        ) {
+          return { source: 'configuration' };
+        }
         return { source: 'csv-file' };
       },
     ),
@@ -101,6 +183,7 @@ const mockAuthService = mockServices.auth();
 
 const currentPermissionPolicies = [
   ['role:default/catalog-writer', 'catalog-entity', 'update', 'allow'],
+  ['role:default/legacy', 'catalog-entity', 'update', 'allow'],
   ['role:default/catalog-writer', 'catalog-entity', 'read', 'allow'],
   ['role:default/catalog-writer', 'catalog.entity.create', 'use', 'allow'],
   ['role:default/catalog-deleter', 'catalog-entity', 'delete', 'deny'],
@@ -109,19 +192,11 @@ const currentPermissionPolicies = [
 
 const currentRoles = [
   ['user:default/guest', 'role:default/catalog-writer'],
+  ['user:default/guest', 'role:default/legacy'],
   ['user:default/guest', 'role:default/catalog-reader'],
   ['user:default/guest', 'role:default/catalog-deleter'],
   ['user:default/known_user', 'role:default/known_role'],
 ];
-
-const legacyPermission = [
-  'role:default/catalog-writer',
-  'catalog-entity',
-  'update',
-  'allow',
-];
-
-const legacyRole = ['user:default/guest', 'role:default/catalog-writer'];
 
 describe('CSVFileWatcher', () => {
   let csvFileWatcher: CSVFileWatcher;
@@ -175,27 +250,6 @@ describe('CSVFileWatcher', () => {
   });
 
   describe('initialize', () => {
-    beforeEach(() => {
-      policyMetadataStorageMock.findPolicyMetadataBySource = jest
-        .fn()
-        .mockImplementation(
-          async (_source: Source): Promise<PermissionPolicyMetadataDao[]> => {
-            return [];
-          },
-        );
-
-      policyMetadataStorageMock.findPolicyMetadata = jest
-        .fn()
-        .mockImplementation(
-          async (
-            _policy: string[],
-            _trx: Knex.Knex.Transaction,
-          ): Promise<PermissionPolicyMetadata> => {
-            return { source: 'csv-file' };
-          },
-        );
-    });
-
     it('should be able to add permission policies during initialization', async () => {
       await csvFileWatcher.initialize(csvFileName, false);
 
@@ -213,39 +267,8 @@ describe('CSVFileWatcher', () => {
     });
 
     it('should be able to update legacy permission policies during initialization', async () => {
-      policyMetadataStorageMock.findPolicyMetadataBySource = jest
-        .fn()
-        .mockImplementation(
-          async (source: Source): Promise<PermissionPolicyMetadataDao[]> => {
-            if (source === 'legacy') {
-              return [
-                {
-                  id: 0,
-                  policy:
-                    '[role:default/catalog-writer, catalog-entity, update, allow]',
-                  source: 'legacy',
-                },
-              ];
-            }
-            return [];
-          },
-        );
-
-      policyMetadataStorageMock.findPolicyMetadata = jest
-        .fn()
-        .mockImplementation(
-          async (
-            policy: string[],
-            _trx: Knex.Knex.Transaction,
-          ): Promise<PermissionPolicyMetadata> => {
-            if (policyToString(policy) === policyToString(legacyPermission)) {
-              return { source: 'legacy' };
-            }
-            return { source: 'csv-file' };
-          },
-        );
-
       const permissionPolicies = [
+        ['role:default/catalog-writer', 'catalog-entity', 'update', 'allow'],
         ['role:default/catalog-writer', 'catalog-entity', 'read', 'allow'],
         [
           'role:default/catalog-writer',
@@ -255,7 +278,7 @@ describe('CSVFileWatcher', () => {
         ],
         ['role:default/catalog-deleter', 'catalog-entity', 'delete', 'deny'],
         ['role:default/known_role', 'test.resource.deny', 'use', 'allow'],
-        ['role:default/catalog-writer', 'catalog-entity', 'update', 'allow'],
+        ['role:default/legacy', 'catalog-entity', 'update', 'allow'],
       ];
 
       await enforcerDelegate.addPolicy(legacyPermission, 'legacy');
@@ -272,42 +295,12 @@ describe('CSVFileWatcher', () => {
     });
 
     it('should be able to update legacy roles during initialization', async () => {
-      policyMetadataStorageMock.findPolicyMetadataBySource = jest
-        .fn()
-        .mockImplementation(
-          async (source: Source): Promise<PermissionPolicyMetadataDao[]> => {
-            if (source === 'legacy') {
-              return [
-                {
-                  id: 0,
-                  policy: '[user:default/guest, role:default/catalog-writer]',
-                  source: 'legacy',
-                },
-              ];
-            }
-            return [];
-          },
-        );
-
-      policyMetadataStorageMock.findPolicyMetadata = jest
-        .fn()
-        .mockImplementation(
-          async (
-            policy: string[],
-            _trx: Knex.Knex.Transaction,
-          ): Promise<PermissionPolicyMetadata> => {
-            if (policyToString(policy) === policyToString(legacyRole)) {
-              return { source: 'legacy' };
-            }
-            return { source: 'csv-file' };
-          },
-        );
-
       const roles = [
+        ['user:default/guest', 'role:default/catalog-writer'],
         ['user:default/guest', 'role:default/catalog-reader'],
         ['user:default/guest', 'role:default/catalog-deleter'],
         ['user:default/known_user', 'role:default/known_role'],
-        ['user:default/guest', 'role:default/catalog-writer'],
+        ['user:default/guest', 'role:default/legacy'],
       ];
 
       await enforcerDelegate.addGroupingPolicy(legacyRole, {
@@ -412,11 +405,27 @@ describe('CSVFileWatcher', () => {
       );
       expect(loggerMock.warn).toHaveBeenNthCalledWith(
         3,
-        `Failed to validate group policy ${entityRoleError} from file ${csvFileName}. Cause: Entity reference "${entityRoleError[0]}" was not on the form [<kind>:][<namespace>/]<name>`,
+        `Unable to add policy ${restPermission} from file ${csvFileName}. Cause: source does not match originating role ${restPermission[0]}, consider making changes to the 'REST'`,
       );
       expect(loggerMock.warn).toHaveBeenNthCalledWith(
         4,
-        `Failed to validate group policy ${roleError} from file ${csvFileName}. Cause: Entity reference "${roleError[1]}" was not on the form [<kind>:][<namespace>/]<name>`,
+        `Unable to add policy ${configPermission} from file ${csvFileName}. Cause: source does not match originating role ${configPermission[0]}, consider making changes to the 'CONFIGURATION'`,
+      );
+      expect(loggerMock.warn).toHaveBeenNthCalledWith(
+        5,
+        `Failed to validate group policy ${entityRoleError}. Cause: Entity reference "${entityRoleError[0]}" was not on the form [<kind>:][<namespace>/]<name>, error originates from file ${csvFileName}`,
+      );
+      expect(loggerMock.warn).toHaveBeenNthCalledWith(
+        6,
+        `Failed to validate group policy ${roleError}. Cause: Entity reference "${roleError[1]}" was not on the form [<kind>:][<namespace>/]<name>, error originates from file ${csvFileName}`,
+      );
+      expect(loggerMock.warn).toHaveBeenNthCalledWith(
+        7,
+        `Unable to validate role ${restRole}. Cause: source does not match originating role ${restRole[1]}, consider making changes to the 'REST', error originates from file ${csvFileName}`,
+      );
+      expect(loggerMock.warn).toHaveBeenNthCalledWith(
+        8,
+        `Unable to validate role ${configRole}. Cause: source does not match originating role ${configRole[1]}, consider making changes to the 'CONFIGURATION', error originates from file ${csvFileName}`,
       );
     });
   });
@@ -492,6 +501,91 @@ describe('CSVFileWatcher', () => {
       const enfRoles = await enforcerDelegate.getGroupingPolicy();
 
       expect(enfRoles).toStrictEqual(roles);
+    });
+
+    it('should fail to add new permission policies on change if there is a mismatch in source', async () => {
+      const addContents = [
+        ['g', 'user:default/guest', 'role:default/catalog-writer'],
+        [
+          'p',
+          'role:default/catalog-writer',
+          'catalog-entity',
+          'update',
+          'allow',
+        ],
+        ['p', 'role:default/config', 'catalog-entity', 'update', 'allow'],
+        ['p', 'role:default/rest', 'catalog-entity', 'update', 'allow'],
+      ];
+
+      const policies = [
+        ['role:default/catalog-writer', 'catalog-entity', 'update', 'allow'],
+        ['role:default/config', 'catalog-entity', 'update', 'allow'],
+        ['role:default/rest', 'catalog-entity', 'update', 'allow'],
+      ];
+
+      await enforcerDelegate.addPolicy(configPermission, 'configuration');
+      await enforcerDelegate.addPolicy(restPermission, 'rest');
+
+      csvFileWatcher.parse = jest.fn().mockImplementation(() => {
+        return addContents;
+      });
+
+      await csvFileWatcher.onChange();
+
+      const enfPolicies = await enforcerDelegate.getPolicy();
+
+      expect(enfPolicies).toStrictEqual(policies);
+
+      expect(loggerMock.warn).toHaveBeenNthCalledWith(
+        1,
+        `Unable to add policy ${configPermission} from file ${csvFileName}. Cause: source does not match originating role ${configPermission[0]}, consider making changes to the 'CONFIGURATION'`,
+      );
+      expect(loggerMock.warn).toHaveBeenNthCalledWith(
+        2,
+        `Unable to add policy ${restPermission} from file ${csvFileName}. Cause: source does not match originating role ${restPermission[0]}, consider making changes to the 'REST'`,
+      );
+    });
+
+    it('should fail to add new roles on change if there is a mismatch in source', async () => {
+      const addContents = [
+        ['g', 'user:default/guest', 'role:default/catalog-writer'],
+        ['g', 'user:default/guest', 'role:default/rest'],
+        ['g', 'user:default/guest', 'role:default/config'],
+      ];
+
+      const roles = [
+        ['user:default/guest', 'role:default/catalog-writer'],
+        ['user:default/guest', 'role:default/config'],
+        ['user:default/guest', 'role:default/rest'],
+      ];
+
+      await enforcerDelegate.addGroupingPolicy(configRole, {
+        roleEntityRef: configRole[1],
+        source: 'configuration',
+      });
+      await enforcerDelegate.addGroupingPolicy(restRole, {
+        roleEntityRef: restRole[1],
+        source: 'rest',
+      });
+
+      csvFileWatcher.parse = jest.fn().mockImplementation(() => {
+        return addContents;
+      });
+
+      await csvFileWatcher.onChange();
+
+      const enfRoles = await enforcerDelegate.getGroupingPolicy();
+
+      expect(enfRoles).toStrictEqual(roles);
+
+      expect(loggerMock.warn).toHaveBeenNthCalledWith(
+        1,
+        `Unable to validate role ${restRole}. Cause: source does not match originating role ${restRole[1]}, consider making changes to the 'REST', error originates from file ${csvFileName}`,
+      );
+      expect(loggerMock.warn).toHaveBeenNthCalledWith(
+        2,
+        `Unable to validate role ${configRole}. Cause: source does not match originating role ${configRole[1]}, consider making changes to the 'CONFIGURATION', error originates from file ${csvFileName}`,
+      );
     });
 
     it('should remove old permission policies on change', async () => {

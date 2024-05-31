@@ -1,4 +1,4 @@
-import { NotAllowedError, NotFoundError } from '@backstage/errors';
+import { NotFoundError } from '@backstage/errors';
 
 import { Enforcer, newModelFromString } from 'casbin';
 import { Knex } from 'knex';
@@ -228,7 +228,6 @@ export class EnforcerDelegate {
     oldRole: string[][],
     newRole: string[][],
     newRoleMetadata: RoleMetadataDao,
-    allowToDeleteCSVFilePolicy?: boolean,
     externalTrx?: Knex.Transaction,
   ): Promise<void> {
     const trx = externalTrx ?? (await this.knex.transaction());
@@ -244,9 +243,7 @@ export class EnforcerDelegate {
 
       await this.removeGroupingPolicies(
         oldRole,
-        newRoleMetadata.source,
         newRoleMetadata.modifiedBy,
-        allowToDeleteCSVFilePolicy,
         true,
         trx,
       );
@@ -266,18 +263,12 @@ export class EnforcerDelegate {
     oldPolicies: string[][],
     newPolicies: string[][],
     source: Source,
-    allowToDeleteCSVFilePolicy?: boolean,
     externalTrx?: Knex.Transaction,
   ): Promise<void> {
     const trx = externalTrx ?? (await this.knex.transaction());
 
     try {
-      await this.removePolicies(
-        oldPolicies,
-        source,
-        allowToDeleteCSVFilePolicy,
-        trx,
-      );
+      await this.removePolicies(oldPolicies, trx);
       await this.addPolicies(newPolicies, source, trx);
       if (!externalTrx) {
         await trx.commit();
@@ -290,21 +281,19 @@ export class EnforcerDelegate {
     }
   }
 
-  async removePolicy(
-    policy: string[],
-    source: Source,
-    allowToDeleteCSVFilePolicy?: boolean,
-    externalTrx?: Knex.Transaction,
-  ) {
+  async removePolicy(policy: string[], externalTrx?: Knex.Transaction) {
     const trx = externalTrx ?? (await this.knex.transaction());
 
     try {
-      await this.checkIfPolicyModifiable(
+      const metadata = await this.policyMetadataStorage.findPolicyMetadata(
         policy,
-        source,
         trx,
-        allowToDeleteCSVFilePolicy,
       );
+      if (!metadata) {
+        throw new NotFoundError(
+          `A metadata for policy '${policyToString(policy)}' was not found`,
+        );
+      }
       await this.policyMetadataStorage.removePolicyMetadata(policy, trx);
       const ok = await this.enforcer.removePolicy(...policy);
       if (!ok) {
@@ -323,20 +312,22 @@ export class EnforcerDelegate {
 
   async removePolicies(
     policies: string[][],
-    source: Source,
-    allowToDeleCSVFilePolicy?: boolean,
     externalTrx?: Knex.Transaction,
   ): Promise<void> {
     const trx = externalTrx ?? (await this.knex.transaction());
 
     try {
       for (const policy of policies) {
-        await this.checkIfPolicyModifiable(
+        const metadata = await this.policyMetadataStorage.findPolicyMetadata(
           policy,
-          source,
           trx,
-          allowToDeleCSVFilePolicy,
         );
+        if (!metadata) {
+          throw new NotFoundError(
+            `A metadata for policy '${policyToString(policy)}' was not found`,
+          );
+        }
+
         await this.policyMetadataStorage.removePolicyMetadata(policy, trx);
       }
       const ok = await this.enforcer.removePolicies(policies);
@@ -361,19 +352,21 @@ export class EnforcerDelegate {
     policy: string[],
     roleMetadata: RoleMetadataDao,
     isUpdate?: boolean,
-    allowToDeleCSVFilePolicy?: boolean,
     externalTrx?: Knex.Transaction,
   ): Promise<void> {
     const trx = externalTrx ?? (await this.knex.transaction());
     const roleEntity = policy[1];
 
     try {
-      await this.checkIfPolicyModifiable(
+      const metadata = await this.policyMetadataStorage.findPolicyMetadata(
         policy,
-        roleMetadata.source,
         trx,
-        allowToDeleCSVFilePolicy,
       );
+      if (!metadata) {
+        throw new NotFoundError(
+          `A metadata for policy '${policyToString(policy)}' was not found`,
+        );
+      }
       await this.policyMetadataStorage.removePolicyMetadata(policy, trx);
       const ok = await this.enforcer.removeGroupingPolicy(...policy);
       if (!ok) {
@@ -415,9 +408,7 @@ export class EnforcerDelegate {
 
   async removeGroupingPolicies(
     policies: string[][],
-    source: Source,
     modifiedBy?: string,
-    allowToDeleteCSVFilePolicy?: boolean,
     isUpdate?: boolean,
     externalTrx?: Knex.Transaction,
   ): Promise<void> {
@@ -425,13 +416,15 @@ export class EnforcerDelegate {
     const roles = new Set<string>();
     try {
       for (const policy of policies) {
-        await this.checkIfPolicyModifiable(
+        const metadata = await this.policyMetadataStorage.findPolicyMetadata(
           policy,
-          source,
           trx,
-          allowToDeleteCSVFilePolicy,
         );
-
+        if (!metadata) {
+          throw new NotFoundError(
+            `A metadata for policy '${policyToString(policy)}' was not found`,
+          );
+        }
         await this.policyMetadataStorage.removePolicyMetadata(policy, trx);
         roles.add(policy[1]);
       }
@@ -485,7 +478,6 @@ export class EnforcerDelegate {
   async addOrUpdatePolicy(
     policy: string[],
     source: Source,
-    isCSV: boolean,
     externalTrx?: Knex.Transaction,
   ): Promise<void> {
     const trx = externalTrx ?? (await this.knex.transaction());
@@ -493,7 +485,7 @@ export class EnforcerDelegate {
       if (!(await this.enforcer.hasPolicy(...policy))) {
         await this.addPolicy(policy, source, trx);
       } else if (await this.hasFilteredPolicyMetadata(policy, 'legacy', trx)) {
-        await this.removePolicy(policy, source, isCSV, trx);
+        await this.removePolicy(policy, trx);
         await this.addPolicy(policy, source, trx);
       }
       if (!externalTrx) {
@@ -510,7 +502,6 @@ export class EnforcerDelegate {
   async addOrUpdateGroupingPolicy(
     groupPolicy: string[],
     roleMetadata: RoleMetadataDao,
-    isCSV?: boolean,
     externalTrx?: Knex.Transaction,
   ): Promise<void> {
     const trx = externalTrx ?? (await this.knex.transaction());
@@ -520,13 +511,7 @@ export class EnforcerDelegate {
       } else if (
         await this.hasFilteredPolicyMetadata(groupPolicy, 'legacy', trx)
       ) {
-        await this.removeGroupingPolicy(
-          groupPolicy,
-          roleMetadata,
-          true,
-          isCSV,
-          trx,
-        );
+        await this.removeGroupingPolicy(groupPolicy, roleMetadata, true, trx);
         await this.addGroupingPolicy(groupPolicy, roleMetadata, trx);
       }
       if (!externalTrx) {
@@ -543,7 +528,6 @@ export class EnforcerDelegate {
   async addOrUpdateGroupingPolicies(
     groupPolicies: string[][],
     roleMetadata: RoleMetadataDao,
-    isCSV?: boolean,
     externalTrx?: Knex.Transaction,
   ): Promise<void> {
     const trx = externalTrx ?? (await this.knex.transaction());
@@ -554,13 +538,7 @@ export class EnforcerDelegate {
         } else if (
           await this.hasFilteredPolicyMetadata(groupPolicy, 'legacy', trx)
         ) {
-          await this.removeGroupingPolicy(
-            groupPolicy,
-            roleMetadata,
-            true,
-            isCSV,
-            trx,
-          );
+          await this.removeGroupingPolicy(groupPolicy, roleMetadata, true, trx);
           await this.addGroupingPolicy(groupPolicy, roleMetadata, trx);
         }
       }
@@ -634,42 +612,6 @@ export class EnforcerDelegate {
       throw new NotFoundError(`A metadata for policy ${policy} was not found`);
     }
     return metadata;
-  }
-
-  private async checkIfPolicyModifiable(
-    policy: string[],
-    policySource: Source,
-    trx: Knex.Transaction,
-    allowToModifyCSVFilePolicy?: boolean,
-  ) {
-    const metadata = await this.policyMetadataStorage.findPolicyMetadata(
-      policy,
-      trx,
-    );
-    if (!metadata) {
-      throw new NotFoundError(
-        `A metadata for policy '${policyToString(policy)}' was not found`,
-      );
-    }
-    if (metadata.source === 'csv-file' && !allowToModifyCSVFilePolicy) {
-      throw new NotAllowedError(
-        `policy '${policyToString(
-          policy,
-        )}' can be modified or deleted only with help of 'policies-csv-file'`,
-      );
-    }
-    if (
-      metadata?.source === 'configuration' &&
-      policySource !== 'configuration'
-    ) {
-      throw new Error(
-        `Error: Attempted to modify an immutable pre-defined policy '${policyToString(
-          policy,
-        )}'. This policy cannot be altered directly. If you need to make changes, consider removing the associated RBAC admin '${
-          policy[0]
-        }' using the application configuration.`,
-      );
-    }
   }
 
   async getFilteredPolicyMetadata(
