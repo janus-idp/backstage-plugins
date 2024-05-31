@@ -404,10 +404,7 @@ export class CSVFileWatcher {
           actorId: RBAC_BACKEND,
           message,
           eventName,
-          metadata: {
-            ...roleMetadata,
-            members: [groupPolicy[0]],
-          },
+          metadata: { ...roleMetadata, members: [groupPolicy[0]] },
           stage: HANDLE_RBAC_DATA_STAGE,
         });
       } catch (e) {
@@ -448,18 +445,17 @@ export class CSVFileWatcher {
           isUpdate.length > 1,
         );
 
-        const eventName = metadata
+        const isRolePresent =
+          await this.roleMetadataStorage.findRoleMetadata(roleEntityRef);
+        const eventName = isRolePresent
           ? RoleEvents.UPDATE_ROLE
-          : RoleEvents.CREATE_ROLE;
-        const message = metadata ? 'Updated role' : 'Created role';
+          : RoleEvents.DELETE_ROLE;
+        const message = isRolePresent ? 'Updated role' : 'Deleted role';
         await this.aLog.auditLog({
           actorId: RBAC_BACKEND,
           message,
           eventName,
-          metadata: {
-            ...metadata,
-            members: [groupPolicy[0]],
-          },
+          metadata: { ...metadata, members: [groupPolicy[0]] },
           stage: HANDLE_RBAC_DATA_STAGE,
         });
       } catch (e) {
