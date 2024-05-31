@@ -150,7 +150,7 @@ const addAdminPermission = async (
     actorId: RBAC_BACKEND,
     message: `Created or updated policy`,
     eventName: PermissionEvents.CREATE_OR_UPDATE_POLICY,
-    metadata: { policies: [policy] },
+    metadata: { policies: [policy], source: 'configuration' },
     stage: HANDLE_RBAC_DATA_STAGE,
   });
 };

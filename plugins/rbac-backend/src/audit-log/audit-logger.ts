@@ -91,9 +91,7 @@ export const ConditionEvents = {
 };
 
 export type ConditionAuditInfo = {
-  roleEntityRef: string;
   condition: RoleConditionalPolicyDecision<PermissionInfo>;
-  source: Source;
 };
 
 export const RBAC_BACKEND = 'rbac-backend';

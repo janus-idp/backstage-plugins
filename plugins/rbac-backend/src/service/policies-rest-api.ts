@@ -257,7 +257,7 @@ export class PoliciesServer {
         await this.aLog.auditLog({
           message: `Deleted permission policies`,
           eventName: PermissionEvents.DELETE_POLICY,
-          metadata: { policies: processedPolicies },
+          metadata: { policies: processedPolicies, source: 'rest' },
           stage: SEND_RESPONSE_STAGE,
           request,
           response: { status: 204 },
@@ -297,7 +297,7 @@ export class PoliciesServer {
       await this.aLog.auditLog({
         message: `Created permission policies`,
         eventName: PermissionEvents.CREATE_POLICY,
-        metadata: { policies: processedPolicies },
+        metadata: { policies: processedPolicies, source: 'rest' },
         stage: SEND_RESPONSE_STAGE,
         request,
         response: { status: 201 },
@@ -384,7 +384,7 @@ export class PoliciesServer {
         await this.aLog.auditLog({
           message: `Updated permission policies`,
           eventName: PermissionEvents.UPDATE_POLICY,
-          metadata: { policies: processedNewPolicy },
+          metadata: { policies: processedNewPolicy, source: 'rest' },
           stage: SEND_RESPONSE_STAGE,
           request,
           response: { status: 200 },
@@ -822,7 +822,7 @@ export class PoliciesServer {
         });
 
       await this.aLog.auditLog({
-        message: ` Return list conditional permission policies`,
+        message: `Return list conditional permission policies`,
         eventName: ConditionEvents.GET_CONDITION,
         stage: SEND_RESPONSE_STAGE,
         request,
@@ -858,7 +858,7 @@ export class PoliciesServer {
       const body = { id: id };
 
       await this.aLog.auditLog({
-        message: ` Create conditional permission policy`,
+        message: `Create conditional permission policy`,
         eventName: ConditionEvents.CREATE_CONDITION,
         metadata: { condition: conditionToCreate },
         stage: SEND_RESPONSE_STAGE,
@@ -896,7 +896,7 @@ export class PoliciesServer {
       };
 
       await this.aLog.auditLog({
-        message: ` Return conditional permission policy by id`,
+        message: `Return conditional permission policy by id`,
         eventName: ConditionEvents.GET_CONDITION,
         stage: SEND_RESPONSE_STAGE,
         request,
@@ -922,12 +922,17 @@ export class PoliciesServer {
         throw new InputError('Id is not a valid number.');
       }
 
+      const condition = await this.conditionalStorage.getCondition(id);
+      if (!condition) {
+        throw new NotFoundError(`Condition with id ${id} was not found`);
+      }
+
       await this.conditionalStorage.deleteCondition(id);
 
       await this.aLog.auditLog({
-        message: ` Delete conditional permission policy`,
+        message: `Delete conditional permission policy`,
         eventName: ConditionEvents.DELETE_CONDITION,
-        metadata: { id },
+        metadata: { condition },
         stage: SEND_RESPONSE_STAGE,
         request,
         response: { status: 204 },
