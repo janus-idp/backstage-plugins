@@ -76,7 +76,6 @@ export function auditError(auditLogger: AuditLogger): ErrorRequestHandler {
         break;
       default:
         // log nothing
-        console.log(`========== ${req.path}`);
         next(err);
         return;
     }
