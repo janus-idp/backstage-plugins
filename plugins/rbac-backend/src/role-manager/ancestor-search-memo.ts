@@ -1,10 +1,9 @@
-import { AuthService } from '@backstage/backend-plugin-api';
+import { AuthService, LoggerService } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 
 import { alg, Graph } from '@dagrejs/graphlib';
 import { Knex } from 'knex';
-import { Logger } from 'winston';
 
 export interface Relation {
   source_entity_ref: string;
@@ -62,7 +61,7 @@ export class AncestorSearchMemo {
     return this.graph.hasNode(groupRef);
   }
 
-  debugNodesAndEdges(log: Logger, userEntity: string): void {
+  debugNodesAndEdges(log: LoggerService, userEntity: string): void {
     log.debug(
       `SubGraph edges: ${JSON.stringify(this.graph.edges())} for ${userEntity}`,
     );

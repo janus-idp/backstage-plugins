@@ -7,8 +7,6 @@ import {
 import { mockServices } from '@backstage/backend-test-utils';
 import { Config, ConfigReader } from '@backstage/config';
 
-import { Logger } from 'winston';
-
 import { Server } from 'http';
 
 import { createRouter } from './router';
@@ -16,7 +14,7 @@ import { createRouter } from './router';
 export interface ServerOptions {
   port: number;
   enableCors: boolean;
-  logger: Logger;
+  logger: LoggerService;
 }
 
 export async function startStandaloneServer(

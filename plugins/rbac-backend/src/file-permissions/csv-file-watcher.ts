@@ -1,8 +1,9 @@
+import { LoggerService } from '@backstage/backend-plugin-api';
+
 import { Enforcer, FileAdapter, newEnforcer, newModelFromString } from 'casbin';
 import chokidar from 'chokidar';
 import { parse } from 'csv-parse/sync';
 import { difference } from 'lodash';
-import { Logger } from 'winston';
 
 import { AuditLogger } from '@janus-idp/backstage-plugin-audit-log-node';
 
@@ -48,7 +49,7 @@ export class CSVFileWatcher {
   private csvFileName: string;
   constructor(
     private readonly enforcer: EnforcerDelegate,
-    private readonly logger: Logger,
+    private readonly logger: LoggerService,
     private readonly roleMetadataStorage: RoleMetadataStorage,
     private readonly auditLogger: AuditLogger,
   ) {

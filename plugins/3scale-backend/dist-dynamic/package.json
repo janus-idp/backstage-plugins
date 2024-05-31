@@ -25,9 +25,7 @@
     "./package.json": "./package.json"
   },
   "scripts": {},
-  "dependencies": {
-    "winston": "^3.11.0"
-  },
+  "dependencies": {},
   "devDependencies": {},
   "files": [
     "dist",

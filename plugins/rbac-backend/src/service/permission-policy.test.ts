@@ -1,4 +1,5 @@
 import { getVoidLogger } from '@backstage/backend-common';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { mockServices } from '@backstage/backend-test-utils';
 import { Entity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
@@ -19,7 +20,6 @@ import {
 } from 'casbin';
 import * as Knex from 'knex';
 import { MockClient } from 'knex-mock-client';
-import { Logger } from 'winston';
 
 import {
   PermissionPolicyMetadata,
@@ -2475,7 +2475,7 @@ async function newAdapter(
 async function createEnforcer(
   theModel: Model,
   adapter: Adapter,
-  logger: Logger,
+  logger: LoggerService,
   config: ConfigReader,
 ): Promise<Enforcer> {
   const catalogDBClient = Knex.knex({ client: MockClient });

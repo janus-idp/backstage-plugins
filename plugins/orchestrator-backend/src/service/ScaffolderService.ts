@@ -1,4 +1,5 @@
-import { UrlReader } from '@backstage/backend-common';
+import { loggerToWinstonLogger, UrlReader } from '@backstage/backend-common';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
@@ -13,7 +14,6 @@ import {
 import { JsonObject, JsonValue } from '@backstage/types';
 
 import fs from 'fs-extra';
-import { Logger } from 'winston';
 
 import { randomUUID } from 'crypto';
 import path from 'path';
@@ -32,7 +32,7 @@ export class ScaffolderService {
   private streamLogger = new PassThrough();
 
   constructor(
-    private readonly logger: Logger,
+    private readonly logger: LoggerService,
     private readonly config: Config,
     private readonly catalogApi: CatalogApi,
     private readonly urlReader: UrlReader,
@@ -88,7 +88,8 @@ export class ScaffolderService {
     const mockContext: ActionContext<JsonObject> = {
       input: actionExecutionContext.input,
       workspacePath: workspacePath,
-      logger: this.logger,
+      // TODO: Move this to LoggerService after scaffolder-node moves to LoggerService
+      logger: loggerToWinstonLogger(this.logger),
       logStream: this.streamLogger,
       createTemporaryDirectory: async () =>
         await fs.mkdtemp(`${workspacePath}_step-${0}-`),

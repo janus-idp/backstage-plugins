@@ -1,3 +1,4 @@
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { mockServices } from '@backstage/backend-test-utils';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
@@ -5,7 +6,6 @@ import { ConfigReader } from '@backstage/config';
 
 import * as Knex from 'knex';
 import { createTracker, MockClient, Tracker } from 'knex-mock-client';
-import { Logger } from 'winston';
 
 import { BackstageRoleManager } from '../role-manager/role-manager';
 
@@ -33,7 +33,7 @@ describe('BackstageRoleManager', () => {
 
     roleManager = new BackstageRoleManager(
       catalogApiMock as CatalogApi,
-      loggerMock as Logger,
+      loggerMock as LoggerService,
       catalogDBClient,
       rbacDBClient,
       config,
@@ -54,7 +54,7 @@ describe('BackstageRoleManager', () => {
       try {
         errorRoleManager = new BackstageRoleManager(
           catalogApiMock as CatalogApi,
-          loggerMock as Logger,
+          loggerMock as LoggerService,
           catalogDBClient,
           rbacDBClient,
           config,
@@ -1045,7 +1045,7 @@ describe('BackstageRoleManager', () => {
 
       const roleManagerMaxDepth = new BackstageRoleManager(
         catalogApiMock as CatalogApi,
-        loggerMock as Logger,
+        loggerMock as LoggerService,
         catalogDBClient,
         rbacDBClient,
         config,

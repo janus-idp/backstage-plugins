@@ -1,13 +1,12 @@
 import { Git } from '@backstage/backend-common';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
-
-import { Logger } from 'winston';
 
 export class GitService {
   private readonly git: Git;
 
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private authenticated: boolean;
 
   private readonly author = {
@@ -20,7 +19,7 @@ export class GitService {
     email: 'orchestrator@backstage.io',
   };
 
-  constructor(logger: Logger, config: Config) {
+  constructor(logger: LoggerService, config: Config) {
     this.logger = logger;
     const githubIntegration = ScmIntegrations.fromConfig(config)
       .github.list()

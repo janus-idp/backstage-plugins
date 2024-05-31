@@ -1,5 +1,6 @@
+import { LoggerService } from '@backstage/backend-plugin-api';
+
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
-import { Logger } from 'winston';
 
 import fs from 'fs';
 import https from 'https';
@@ -32,11 +33,11 @@ export type KialiValidations = {
 
 const TIMEOUT_FETCH = 8000;
 export class KialiFetcher {
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private kialiAuth: KialiAuthentication;
   private KialiDetails: KialiDetails;
 
-  constructor(KD: KialiDetails, log: Logger) {
+  constructor(KD: KialiDetails, log: LoggerService) {
     this.KialiDetails = KD;
     this.logger = log;
     this.kialiAuth = new KialiAuthentication(KD);

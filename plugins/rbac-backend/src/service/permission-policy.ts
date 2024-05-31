@@ -1,3 +1,4 @@
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { ConfigApi } from '@backstage/core-plugin-api';
 import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
@@ -18,7 +19,6 @@ import {
 } from '@backstage/plugin-permission-node';
 
 import { Knex } from 'knex';
-import { Logger } from 'winston';
 
 import { AuditLogger } from '@janus-idp/backstage-plugin-audit-log-node';
 import {
@@ -207,7 +207,7 @@ export class RBACPermissionPolicy implements PermissionPolicy {
   private readonly superUserList?: string[];
 
   public static async build(
-    logger: Logger,
+    logger: LoggerService,
     auditLogger: AuditLogger,
     configApi: ConfigApi,
     conditionalStorage: ConditionalStorage,

@@ -1,7 +1,5 @@
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
-
-import { Logger } from 'winston';
-
 import { DataIndexService } from './DataIndexService';
 import { SonataFlowService } from './SonataFlowService';
 
@@ -14,7 +12,7 @@ export class WorkflowCacheService {
   private readonly definitionIdCache = new Set<string>();
 
   constructor(
-    private readonly logger: Logger,
+    private readonly logger: LoggerService,
     private readonly dataIndexService: DataIndexService,
     private readonly sonataFlowService: SonataFlowService,
   ) {}

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   coreServices,
   createBackendModule,
@@ -46,7 +45,7 @@ export const catalogModuleKeycloakEntityProvider = createBackendModule({
         catalog.addEntityProvider(
           KeycloakOrgEntityProvider.fromConfig(config, {
             id: 'development',
-            logger: loggerToWinstonLogger(logger),
+            logger: logger,
             scheduler,
           }),
         );

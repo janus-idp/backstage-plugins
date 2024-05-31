@@ -1,7 +1,7 @@
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 
 import fs from 'fs-extra';
-import { Logger } from 'winston';
 
 import {
   DEFAULT_SONATAFLOW_BASE_URL,
@@ -45,7 +45,7 @@ export class DevModeService {
 
   constructor(
     config: Config,
-    private readonly logger: Logger,
+    private readonly logger: LoggerService,
   ) {
     this.connection = this.extractConnectionConfig(config);
     this.gitService = new GitService(logger, config);

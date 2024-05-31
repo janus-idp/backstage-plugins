@@ -1,11 +1,11 @@
 import { getVoidLogger } from '@backstage/backend-common';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 import { Adapter, Enforcer } from 'casbin';
 import { Router } from 'express';
 import TypeORMAdapter from 'typeorm-adapter';
-import { Logger } from 'winston';
 
 import { PluginIdProvider } from '@janus-idp/backstage-plugin-rbac-node';
 
@@ -114,8 +114,8 @@ describe('PolicyBuilder', () => {
   };
 
   const logger = getVoidLogger();
-  let loggerInfoSpy: jest.SpyInstance<Logger, [infoObject: object], any>;
-  let loggerWarnSpy: jest.SpyInstance<Logger, [infoObject: object], any>;
+  let loggerInfoSpy: jest.SpyInstance<LoggerService, [infoObject: object], any>;
+  let loggerWarnSpy: jest.SpyInstance<LoggerService, [infoObject: object], any>;
 
   beforeEach(async () => {
     loggerInfoSpy = jest.spyOn(logger, 'info');

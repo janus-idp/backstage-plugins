@@ -1,11 +1,10 @@
-import { AuthService } from '@backstage/backend-plugin-api';
+import { AuthService, LoggerService} from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { parseEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 
 import { RoleManager } from 'casbin';
 import { Knex } from 'knex';
-import { Logger } from 'winston';
 
 import { AncestorSearchMemo } from './ancestor-search-memo';
 import { RoleMemberList } from './member-list';
@@ -15,7 +14,7 @@ export class BackstageRoleManager implements RoleManager {
   private maxDepth?: number;
   constructor(
     private readonly catalogApi: CatalogApi,
-    private readonly log: Logger,
+    private readonly log: LoggerService,
     private readonly catalogDBClient: Knex,
     private readonly rbacDBClient: Knex,
     private readonly config: Config,

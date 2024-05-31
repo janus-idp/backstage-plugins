@@ -1,12 +1,11 @@
+import { getVoidLogger } from '@backstage/backend-common';
+
 import { AxiosError } from 'axios';
-import { createLogger, transports } from 'winston';
 
 import { AuthStrategy } from './Auth';
 import { KialiFetcher, ValidationCategory } from './fetch';
 
-const logger = createLogger({
-  transports: [new transports.Console({ silent: true })],
-});
+const logger = getVoidLogger();
 
 describe('kiali Fetch', () => {
   describe('Kiali configuration validation', () => {

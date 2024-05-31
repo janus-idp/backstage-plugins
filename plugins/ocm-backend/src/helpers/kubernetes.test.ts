@@ -1,7 +1,7 @@
+import { getVoidLogger } from '@backstage/backend-common';
+
 import { CustomObjectsApi, KubeConfig } from '@kubernetes/client-node';
 import { setupServer } from 'msw/node';
-import { createLogger } from 'winston';
-import transports from 'winston/lib/winston/transports';
 
 import { handlers } from '../../__fixtures__/handlers';
 import { OcmConfig } from '../types';
@@ -20,9 +20,7 @@ afterEach(() => server.restoreHandlers());
 afterAll(() => server.close());
 
 const FIXTURES_DIR = `${__dirname}/../../__fixtures__`;
-const logger = createLogger({
-  transports: [new transports.Console({ silent: true })],
-});
+const logger = getVoidLogger();
 
 describe('hubApiClient', () => {
   it('should use the default config if there is no service account token configured', () => {

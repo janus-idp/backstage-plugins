@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   coreServices,
   createBackendPlugin,
@@ -49,7 +48,7 @@ export const notificationBackendPlugin = createBackendPlugin({
         identity,
         tokenManager,
       }) {
-        const winstonLogger = loggerToWinstonLogger(logger);
+        const winstonLogger = logger;
         const router = await createRouter({
           logger: winstonLogger,
           config,

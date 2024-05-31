@@ -1,11 +1,9 @@
-import { createLogger, transports } from 'winston';
+import { getVoidLogger } from '@backstage/backend-common';
 
 import supported from '../kiali_supported.json';
 import { KIALI_CORE_VERSION, KialiApiImpl } from './KialiAPIConnector';
 
-const logger = createLogger({
-  transports: [new transports.Console({ silent: true })],
-});
+const logger = getVoidLogger();
 
 const kialiApi = new KialiApiImpl({
   logger: logger,

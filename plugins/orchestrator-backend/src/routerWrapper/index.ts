@@ -2,6 +2,7 @@ import { createLegacyAuthAdapters, UrlReader } from '@backstage/backend-common';
 import {
   DiscoveryService,
   HttpAuthService,
+  LoggerService,
   PermissionsService,
 } from '@backstage/backend-plugin-api';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
@@ -9,14 +10,13 @@ import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 
 import express from 'express';
-import { Logger } from 'winston';
 
 import { DevModeService } from '../service/DevModeService';
 import { createBackendRouter } from '../service/router';
 
 export interface RouterArgs {
   config: Config;
-  logger: Logger;
+  logger: LoggerService;
   discovery: DiscoveryService;
   catalogApi: CatalogApi;
   urlReader: UrlReader;
