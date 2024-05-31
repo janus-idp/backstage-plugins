@@ -40,9 +40,9 @@
   "dependencies": {
     "@backstage/core-components": "^0.14.6",
     "@backstage/core-plugin-api": "^1.9.2",
-    "@backstage/plugin-permission-react": "^0.4.22",
     "@backstage/errors": "^1.2.4",
     "@backstage/plugin-catalog": "^1.19.0",
+    "@backstage/plugin-permission-react": "^0.4.22",
     "@backstage/types": "^1.1.1",
     "@janus-idp/backstage-plugin-orchestrator-common": "1.8.0",
     "@kie-tools-core/editor": "^0.32.0",
@@ -72,7 +72,7 @@
     "@backstage/dev-utils": "1.0.31",
     "@backstage/test-utils": "1.5.4",
     "@janus-idp/cli": "1.8.10",
-    "@redhat-developer/red-hat-developer-hub-theme": "*",
+    "@redhat-developer/red-hat-developer-hub-theme": "0.0.54",
     "@storybook/preview-api": "7.6.19",
     "@storybook/react": "7.6.19",
     "@testing-library/react": "14.2.1"
