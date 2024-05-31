@@ -2,8 +2,7 @@ import React from 'react';
 
 import { Table, WarningPanel } from '@backstage/core-components';
 
-import { Box, makeStyles } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
+import { makeStyles } from '@material-ui/core';
 
 import { useLocationToast } from '../../hooks/useLocationToast';
 import { useRoles } from '../../hooks/useRoles';
@@ -45,27 +44,42 @@ export const RolesList = () => {
     setRoles(searchResults.length);
   };
 
+  const getErrorWarning = () => {
+    const errorTitleBase = 'Something went wrong while fetching the';
+    const errorWarningArr = [
+      { message: error?.rolesError, title: `${errorTitleBase} roles` },
+      {
+        message: error?.policiesError,
+        title: `${errorTitleBase} permission policies`,
+      },
+      {
+        message: error?.roleConditionError,
+        title: `${errorTitleBase} role conditions`,
+      },
+    ];
+
+    return (
+      errorWarningArr.find(({ message }) => message) || {
+        message: '',
+        title: '',
+      }
+    );
+  };
+
+  const errorWarning = getErrorWarning();
+
   return (
     <>
       <SnackbarAlert toastMessage={toastMessage} onAlertClose={onAlertClose} />
-      {error?.roleConditionError && (
-        <Box>
-          <Alert severity="warning">{error?.roleConditionError}</Alert>
-        </Box>
-      )}
       <RolesListToolbar
         createRoleAllowed={createRoleAllowed}
         createRoleLoading={createRoleLoading}
       />
-      {(error?.rolesError || error?.policiesError) && (
+      {errorWarning.message && (
         <div style={{ paddingBottom: '16px' }}>
           <WarningPanel
-            message={error.rolesError || error.policiesError}
-            title={
-              error.rolesError
-                ? 'Something went wrong while fetching the roles'
-                : 'Something went wrong while fetching the permission policies'
-            }
+            message={errorWarning.message}
+            title={errorWarning.title}
             severity="error"
           />
         </div>

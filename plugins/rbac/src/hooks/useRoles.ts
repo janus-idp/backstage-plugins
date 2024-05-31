@@ -38,7 +38,7 @@ export const useRoles = (
   const [newRoles, setNewRoles] = React.useState<
     RoleWithConditionalPoliciesCount[]
   >([]);
-  const [fetchRoleConditionsError, setFetchRoleConditionsError] =
+  const [roleConditionError, setRoleConditionError] =
     React.useState<string>('');
   const {
     value: roles,
@@ -102,7 +102,7 @@ export const useRoles = (
               : 0,
           };
         } catch (error) {
-          setFetchRoleConditionsError(
+          setRoleConditionError(
             `Error fetching role conditions for role ${role.name}, please try again later.`,
           );
           return {
@@ -186,7 +186,7 @@ export const useRoles = (
         (typeof policies === 'object'
           ? (policies as any as Response)?.statusText
           : '')) as string,
-      roleConditionError: fetchRoleConditionsError,
+      roleConditionError,
     },
     createRoleLoading,
     createRoleAllowed,
