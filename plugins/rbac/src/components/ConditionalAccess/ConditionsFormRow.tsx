@@ -7,7 +7,8 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import ButtonGroup from '@mui/material/ButtonGroup';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
 import { ConditionsFormRowFields } from './ConditionsFormRowFields';
 import { conditionButtons, criterias } from './const';
@@ -30,7 +31,7 @@ const useStyles = makeStyles(theme => ({
   criteriaButton: {
     width: '100%',
     textTransform: 'none',
-    color: theme.palette.grey[700],
+    padding: theme.spacing(1),
   },
   addRuleButton: {
     color: theme.palette.primary.light,
@@ -129,10 +130,16 @@ export const ConditionsFormRow = ({
 
   return (
     <Box className={classes.conditionRow} data-testid="conditions-row">
-      <ButtonGroup size="large" className={classes.criteriaButtonGroup}>
+      <ToggleButtonGroup
+        exclusive
+        value={criteria}
+        onChange={(_event, newCriteria) => handleCriteriaChange(newCriteria)}
+        className={classes.criteriaButtonGroup}
+      >
         {conditionButtons.map(({ val, label }) => (
-          <Button
-            variant="outlined"
+          <ToggleButton
+            key={val}
+            value={val}
             style={
               val === criteria
                 ? {
@@ -141,15 +148,13 @@ export const ConditionsFormRow = ({
                   }
                 : {}
             }
-            key={val}
             className={classes.criteriaButton}
-            onClick={() => handleCriteriaChange(val)}
             size="large"
           >
             {label}
-          </Button>
+          </ToggleButton>
         ))}
-      </ButtonGroup>
+      </ToggleButtonGroup>
       {(criteria === criterias.allOf || criteria === criterias.anyOf) && (
         <Box>
           {criteria === criterias.allOf &&
