@@ -1,3 +1,32 @@
+## @janus-idp/backstage-plugin-rbac-backend [4.0.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@3.3.0...@janus-idp/backstage-plugin-rbac-backend@4.0.0) (2024-05-31)
+
+
+### ⚠ BREAKING CHANGES
+
+* **rbac:** This will lead to more strict validation on the source of permission policies and roles based on the where the first role is defined.
+
+Improves the validation of the different sources of permission policies and roles. Aims to make policy definition more consistent.
+
+Now checks if a permission policy or role with new member matches the originating role's source and prevents any action if the sources do not match. Exception includes the event of adding
+new permission policies to the RBAC Admin role defined by the configuration file. Sources include 'REST, 'CSV', 'Configuration', and 'legacy'.
+
+Before updating, ensure that you have attempted to migrate all permission policies and roles to a single source. This can be done by checking source information through the REST API and
+by querying the database. Make updates through one of the available avenues: REST API, CSV file, and the database.
+
+To view the originating source for a particular role, query the role-metadata table or use the GET roles endpoint.
+
+* feat(rbac): remove the ability to add permission policies to configuration role
+
+* feat(rbac): remove no longer needed check for source in EnforcerDelegate
+
+* feat(rbac): update yarn lock
+
+* feat(rbac): address review comments
+
+### Features
+
+* **rbac:** improve validation from source ([#1643](https://github.com/janus-idp/backstage-plugins/issues/1643)) ([5f983cb](https://github.com/janus-idp/backstage-plugins/commit/5f983cbc0184e0a8e74f7e89cdff71d5ed5cd2fa))
+
 ## @janus-idp/backstage-plugin-rbac-backend [3.3.0](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-rbac-backend@3.2.0...@janus-idp/backstage-plugin-rbac-backend@3.3.0) (2024-05-29)
 
 
