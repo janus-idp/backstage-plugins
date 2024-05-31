@@ -1,3 +1,5 @@
+## @janus-idp/backstage-plugin-orchestrator [1.13.3](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.13.2...@janus-idp/backstage-plugin-orchestrator@1.13.3) (2024-05-31)
+
 ## @janus-idp/backstage-plugin-orchestrator [1.13.2](https://github.com/janus-idp/backstage-plugins/compare/@janus-idp/backstage-plugin-orchestrator@1.13.1...@janus-idp/backstage-plugin-orchestrator@1.13.2) (2024-05-29)
 
 
