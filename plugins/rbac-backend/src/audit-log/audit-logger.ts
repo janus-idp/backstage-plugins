@@ -21,10 +21,12 @@ export const RoleEvents = {
   UPDATE_ROLE: 'UpdateRole',
   DELETE_ROLE: 'DeleteRole',
   CREATE_OR_UPDATE_ROLE: 'CreateOrUpdateRole',
+  GET_ROLE: 'GetRole',
 
   CREATE_ROLE_ERROR: 'CreateRoleError',
   UPDATE_ROLE_ERROR: 'UpdateRoleError',
   DELETE_ROLE_ERROR: 'DeleteRoleError',
+  GET_ROLE_ERROR: 'GetRoleError',
 } as const;
 
 export const PermissionEvents = {
@@ -32,10 +34,12 @@ export const PermissionEvents = {
   CREATE_OR_UPDATE_POLICY: 'CreateOrUpdatePolicy',
   UPDATE_POLICY: 'UpdatePolicy',
   DELETE_POLICY: 'DeletePolicy',
+  GET_POLICY: 'GetPolicy',
 
   CREATE_POLICY_ERROR: 'CreatePolicyError',
   UPDATE_POLICY_ERROR: 'UpdatePolicyError',
   DELETE_POLICY_ERROR: 'DeletePolicyError',
+  GET_POLICY_ERROR: 'GetPolicyError',
 } as const;
 
 export type RoleAuditInfo = {
@@ -58,6 +62,16 @@ export const EvaluationEvents = {
   PERMISSION_EVALUATION_FAILED: 'PermissionEvaluationFailed',
 } as const;
 
+export const ListPluginPoliciesEvents = {
+  GET_PLUGINS_POLICIES: 'GetPluginsPolicies',
+  GET_PLUGINS_POLICIES_ERROR: 'GetPluginsPoliciesError',
+};
+
+export const ListConditionEvents = {
+  GET_CONDITION_RULES: 'GetConditionRules',
+  GET_CONDITION_RULES_ERROR: 'GetConditionRulesError',
+};
+
 export type EvaluationAuditInfo = {
   userEntityRef: string;
   permissionName: string;
@@ -70,10 +84,12 @@ export const ConditionEvents = {
   CREATE_CONDITION: 'CreateCondition',
   UPDATE_CONDITION: 'UpdateCondition',
   DELETE_CONDITION: 'DeleteCondition',
+  GET_CONDITION: 'GetCondition',
 
   CREATE_CONDITION_ERROR: 'CreateConditionError',
   UPDATE_CONDITION_ERROR: 'UpdateConditionError',
   DELETE_CONDITION_ERROR: 'DeleteConditionError',
+  GET_CONDITION_ERROR: 'GetConditionError',
 };
 
 export type ConditionAuditInfo = {
@@ -92,6 +108,7 @@ export const EVALUATE_PERMISSION_ACCESS_STAGE = 'evaluatePermissionAccess';
 
 // Audit log stage for sending the response to the client about handled permission policies, roles, and condition policies
 export const SEND_RESPONSE_STAGE = 'sendResponse';
+export const RESPONSE_ERROR = 'responseError';
 
 export function createAuditRoleOptions(
   roleEvent: (typeof RoleEvents)[keyof typeof RoleEvents],
@@ -239,7 +256,7 @@ export function createAuditConditionOptions(
   return {
     message,
     eventName,
-    stage: HANDLE_RBAC_DATA_STAGE,
+    stage: SEND_RESPONSE_STAGE,
     metadata: conditionInfo,
     actorId: modifiedBy,
   };
