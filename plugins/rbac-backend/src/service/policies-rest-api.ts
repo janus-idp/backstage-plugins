@@ -1009,11 +1009,6 @@ export class PoliciesServer {
           }' and action ${JSON.stringify(action)}`,
         );
       }
-      console.log(
-        `Found permission ${JSON.stringify(perm)} for resource type ${
-          roleConditionPolicy.resourceType
-        } and action ${action}`,
-      );
       permInfo.push({ name: perm.name, action });
     }
 
