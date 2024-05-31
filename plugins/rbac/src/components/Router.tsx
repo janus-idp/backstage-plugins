@@ -29,8 +29,8 @@ export const Router = ({ useHeader = true }: { useHeader?: boolean }) => {
     return (
       <ErrorPage
         status="404"
-        statusMessage={'RBAC-backend plugin is not enabled.'}
-        additionalInfo={'Set `permission.enabled` to `true` in the app-config.'}
+        statusMessage="Enable the RBAC backend plugin to use this feature."
+        additionalInfo="To enable RBAC, set `permission.enabled` to `true` in the app-config file."
       />
     );
   }
