@@ -39,6 +39,7 @@ export type PermissionsDataSet = {
   permission: string;
   policies: Set<RowPolicy>;
   policyString?: Set<string>;
+  isResourced?: boolean;
 };
 
 export type PermissionsData = {

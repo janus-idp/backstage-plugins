@@ -21,7 +21,7 @@ import {
   getMembersFromGroup,
   getPermissions,
   getPermissionsData,
-  getPluginId,
+  getPluginInfo,
   getPoliciesData,
 } from './rbac-utils';
 
@@ -168,12 +168,21 @@ describe('rbac utils', () => {
   });
 
   it('should return plugin-id of the policy', () => {
-    expect(getPluginId(mockPermissionPolicies, 'catalog-entity')).toBe(
-      'catalog',
-    );
-    expect(getPluginId(mockPermissionPolicies, 'scaffolder-template')).toBe(
-      'scaffolder',
-    );
+    expect(
+      getPluginInfo(mockPermissionPolicies, 'catalog-entity').pluginId,
+    ).toBe('catalog');
+    expect(
+      getPluginInfo(mockPermissionPolicies, 'scaffolder-template').pluginId,
+    ).toBe('scaffolder');
+  });
+
+  it('should return if the permission is resourced', () => {
+    expect(
+      getPluginInfo(mockPermissionPolicies, 'catalog-entity').isResourced,
+    ).toBe(true);
+    expect(
+      getPluginInfo(mockPermissionPolicies, 'scaffolder-template').isResourced,
+    ).toBe(true);
   });
 
   it('should return kind, namespace and name from the reference', () => {
@@ -213,6 +222,7 @@ describe('rbac utils', () => {
         },
       ],
       policyString: ['Read', ', Create', ', Delete'],
+      isResourced: false,
     });
     data = getPermissionsData(mockPolicies, []);
     expect(data[0]).toEqual({
@@ -233,6 +243,7 @@ describe('rbac utils', () => {
         },
       ],
       policyString: ['Read', ', Create', ', Delete'],
+      isResourced: false,
     });
   });
 });
