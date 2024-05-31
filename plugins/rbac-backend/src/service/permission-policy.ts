@@ -27,11 +27,10 @@ import {
 } from '@janus-idp/backstage-plugin-rbac-common';
 
 import {
-  createAuditPermissionOptions,
-  createAuditRoleOptions,
   createPermissionEvaluationOptions,
   EVALUATE_PERMISSION_ACCESS_STAGE,
   EvaluationEvents,
+  HANDLE_RBAC_DATA_STAGE,
   PermissionEvents,
   RBAC_BACKEND,
   RoleEvents,
@@ -107,13 +106,17 @@ const useAdminsFromConfig = async (
     addedRoleMembers,
     getAdminRoleMetadata(),
   );
-  const auditOption = createAuditRoleOptions(
-    RoleEvents.CREATE_OR_UPDATE_ROLE,
-    getAdminRoleMetadata(),
-    RBAC_BACKEND,
-    addedRoleMembers.map(gp => gp[0]),
-  );
-  await aLog.auditLog(auditOption);
+
+  await aLog.auditLog({
+    actorId: RBAC_BACKEND,
+    message: `Created or updated role`,
+    eventName: RoleEvents.CREATE_OR_UPDATE_ROLE,
+    metadata: {
+      ...getAdminRoleMetadata(),
+      members: addedRoleMembers.map(gp => gp[0]),
+    },
+    stage: HANDLE_RBAC_DATA_STAGE,
+  });
 
   const configPoliciesMetadata =
     await enf.getFilteredPolicyMetadata('configuration');
@@ -143,13 +146,13 @@ const addAdminPermission = async (
 ) => {
   await enf.addOrUpdatePolicy(policy, 'configuration');
 
-  const auditOptions = createAuditPermissionOptions(
-    [policy],
-    PermissionEvents.CREATE_OR_UPDATE_POLICY,
-    'configuration',
-    RBAC_BACKEND,
-  );
-  await aLog.auditLog(auditOptions);
+  await aLog.auditLog({
+    actorId: RBAC_BACKEND,
+    message: `Created or updated policy`,
+    eventName: PermissionEvents.CREATE_OR_UPDATE_POLICY,
+    metadata: { policies: [policy] },
+    stage: HANDLE_RBAC_DATA_STAGE,
+  });
 };
 
 const setAdminPermissions = async (

@@ -50,7 +50,6 @@ import { PluginIdProvider } from '@janus-idp/backstage-plugin-rbac-node';
 
 import {
   ConditionEvents,
-  createAuditRoleOptions,
   ListConditionEvents,
   ListPluginPoliciesEvents,
   PermissionEvents,
@@ -739,21 +738,8 @@ export class PoliciesServer {
           false,
         );
 
-        const opts = createAuditRoleOptions(
-          RoleEvents.DELETE_ROLE,
-          metadata,
-          metadata.modifiedBy,
-          roleMembers.map(gp => gp[0]),
-          SEND_RESPONSE_STAGE,
-        );
         await this.aLog.auditLog({
-          ...opts,
-          request,
-          response: { status: 201 },
-        });
-
-        await this.aLog.auditLog({
-          message: ` Deleted ${metadata.roleEntityRef}`,
+          message: `Deleted ${metadata.roleEntityRef}`,
           eventName: RoleEvents.DELETE_ROLE,
           metadata: {
             ...metadata,

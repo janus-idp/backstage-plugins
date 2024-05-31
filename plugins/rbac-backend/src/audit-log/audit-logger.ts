@@ -14,8 +14,6 @@ import {
   toPermissionAction,
 } from '@janus-idp/backstage-plugin-rbac-common';
 
-import { RoleMetadataDao } from '../database/role-metadata';
-
 export const RoleEvents = {
   CREATE_ROLE: 'CreateRole',
   UPDATE_ROLE: 'UpdateRole',
@@ -110,78 +108,6 @@ export const EVALUATE_PERMISSION_ACCESS_STAGE = 'evaluatePermissionAccess';
 export const SEND_RESPONSE_STAGE = 'sendResponse';
 export const RESPONSE_ERROR = 'responseError';
 
-export function createAuditRoleOptions(
-  roleEvent: (typeof RoleEvents)[keyof typeof RoleEvents],
-  metadata: RoleMetadataDao,
-  modifiedBy: string,
-  members: string[],
-  stage?: string,
-  oldRoleMetadata?: RoleMetadataDao,
-): AuditLogOptions {
-  let message: string;
-
-  switch (roleEvent) {
-    case RoleEvents.CREATE_ROLE:
-      message = `Created '${metadata.roleEntityRef}'`;
-      break;
-    case RoleEvents.UPDATE_ROLE:
-    case RoleEvents.CREATE_OR_UPDATE_ROLE:
-      message = `Updated '${
-        oldRoleMetadata?.roleEntityRef ?? metadata.roleEntityRef
-      }'`;
-      if (
-        oldRoleMetadata &&
-        metadata.roleEntityRef !== oldRoleMetadata?.roleEntityRef
-      ) {
-        message = `${message}. Role entity reference renamed to ${metadata.roleEntityRef}`;
-      }
-      break;
-    case RoleEvents.DELETE_ROLE:
-      message = `Deleted '${metadata.roleEntityRef}'`;
-      break;
-    default:
-      throw new Error(`Unexpected audit log role event: ${roleEvent}`);
-  }
-
-  const auditInfo: RoleAuditInfo = {
-    roleEntityRef: metadata.roleEntityRef,
-    source: metadata.source,
-    description: metadata.description ?? oldRoleMetadata?.description ?? '',
-    members,
-  };
-
-  return {
-    message,
-    eventName: roleEvent,
-    stage: stage ?? HANDLE_RBAC_DATA_STAGE,
-    metadata: auditInfo,
-    actorId: modifiedBy || metadata.modifiedBy || metadata.author,
-  };
-}
-
-export function createAuditPermissionOptions(
-  policies: string[][],
-  policyEvent: (typeof PermissionEvents)[keyof typeof PermissionEvents],
-  source: Source,
-  modifiedBy: string,
-  stage?: string,
-): AuditLogOptions {
-  const message = `Completed permission policies operation "${policyEvent}"`;
-
-  const auditInfo: PermissionAuditInfo = {
-    source,
-    policies,
-  };
-
-  return {
-    message,
-    eventName: policyEvent,
-    stage: stage ?? HANDLE_RBAC_DATA_STAGE,
-    metadata: auditInfo,
-    actorId: modifiedBy,
-  };
-}
-
 export function createPermissionEvaluationOptions(
   message: string,
   userEntityRef: string,
@@ -224,40 +150,5 @@ export function createPermissionEvaluationOptions(
     stage: EVALUATE_PERMISSION_ACCESS_STAGE,
     metadata: auditInfo,
     actorId: userEntityRef,
-  };
-}
-
-export function createAuditConditionOptions(
-  condition: RoleConditionalPolicyDecision<PermissionInfo>,
-  eventName: (typeof ConditionEvents)[keyof typeof ConditionEvents],
-  modifiedBy: string,
-): AuditLogOptions {
-  let message;
-  switch (eventName) {
-    case ConditionEvents.CREATE_CONDITION:
-      message = `Created condition for role '${condition.roleEntityRef}'`;
-      break;
-    case ConditionEvents.UPDATE_CONDITION:
-      message = `Updated condition for role '${condition.roleEntityRef}'`;
-      break;
-    case ConditionEvents.DELETE_CONDITION:
-      message = `Deleted condition for role '${condition.roleEntityRef}'`;
-      break;
-    default:
-      throw new Error('Unknown policy decision result');
-  }
-
-  const conditionInfo: ConditionAuditInfo = {
-    roleEntityRef: condition.roleEntityRef,
-    source: 'rest',
-    condition,
-  };
-
-  return {
-    message,
-    eventName,
-    stage: SEND_RESPONSE_STAGE,
-    metadata: conditionInfo,
-    actorId: modifiedBy,
   };
 }
