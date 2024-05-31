@@ -66,6 +66,7 @@ describe('RolesList', () => {
       error: {
         rolesError: '',
         policiesError: '',
+        roleConditionError: '',
       },
       retry: { roleRetry: jest.fn(), policiesRetry: jest.fn() },
       createRoleAllowed: false,
@@ -87,6 +88,7 @@ describe('RolesList', () => {
       error: {
         rolesError: '',
         policiesError: '',
+        roleConditionError: '',
       },
       retry: { roleRetry: jest.fn(), policiesRetry: jest.fn() },
       createRoleAllowed: false,
@@ -108,6 +110,7 @@ describe('RolesList', () => {
       error: {
         rolesError: '',
         policiesError: '',
+        roleConditionError: '',
       },
       retry: { roleRetry: jest.fn(), policiesRetry: jest.fn() },
       createRoleAllowed: false,
@@ -144,6 +147,7 @@ describe('RolesList', () => {
       error: {
         rolesError: '',
         policiesError: '',
+        roleConditionError: '',
       },
       retry: { roleRetry: jest.fn(), policiesRetry: jest.fn() },
       createRoleAllowed: false,
@@ -182,6 +186,7 @@ describe('RolesList', () => {
       error: {
         rolesError: '',
         policiesError: '',
+        roleConditionError: '',
       },
       retry: { roleRetry: jest.fn(), policiesRetry: jest.fn() },
       createRoleAllowed: true,
@@ -203,6 +208,7 @@ describe('RolesList', () => {
       error: {
         rolesError: '',
         policiesError: '',
+        roleConditionError: '',
       },
       retry: { roleRetry: jest.fn(), policiesRetry: jest.fn() },
       createRoleAllowed: false,
@@ -224,6 +230,7 @@ describe('RolesList', () => {
       error: {
         rolesError: '',
         policiesError: '',
+        roleConditionError: '',
       },
       retry: { roleRetry: jest.fn(), policiesRetry: jest.fn() },
       createRoleAllowed: true,
@@ -245,6 +252,7 @@ describe('RolesList', () => {
       error: {
         rolesError: '',
         policiesError: '',
+        roleConditionError: '',
       },
       retry: { roleRetry: jest.fn(), policiesRetry: jest.fn() },
       createRoleAllowed: false,
@@ -264,6 +272,7 @@ describe('RolesList', () => {
       error: {
         rolesError: 'Something went wrong',
         policiesError: '',
+        roleConditionError: '',
       },
       retry: { roleRetry: jest.fn(), policiesRetry: jest.fn() },
       createRoleAllowed: false,
@@ -272,5 +281,30 @@ describe('RolesList', () => {
 
     const { queryByText } = await renderInTestApp(<RolesList />);
     expect(queryByText('Something went wrong')).toBeInTheDocument();
+  });
+
+  it('should show error message when there is an error fetching the role conditions', async () => {
+    RequirePermissionMock.mockImplementation(props => <>{props.children}</>);
+    mockUsePermission.mockReturnValue({ loading: false, allowed: true });
+    mockUseRoles.mockReturnValue({
+      loading: true,
+      data: [],
+      error: {
+        rolesError: '',
+        policiesError: '',
+        roleConditionError:
+          'Error fetching role conditions for role role:default/xyz, please try again later.',
+      },
+      retry: { roleRetry: jest.fn(), policiesRetry: jest.fn() },
+      createRoleAllowed: false,
+      createRoleLoading: false,
+    });
+
+    const { queryByText } = await renderInTestApp(<RolesList />);
+    expect(
+      queryByText(
+        'Error fetching role conditions for role role:default/xyz, please try again later.',
+      ),
+    ).toBeInTheDocument();
   });
 });
